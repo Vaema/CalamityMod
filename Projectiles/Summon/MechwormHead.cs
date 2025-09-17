@@ -180,6 +180,7 @@ namespace CalamityMod.Projectiles.Summon
                     PortalAttackMovement(potentialTarget);
                 UpdateAttackStates();
                 Projectile.extraUpdates = 1;
+                Projectile.localNPCHitCooldown = 30 * Projectile.MaxUpdates;
             }
             // Attacking movement can be canceled, so if it was, run the passive movement instead.
             else
@@ -201,6 +202,7 @@ namespace CalamityMod.Projectiles.Summon
         private void PlayerFollowMovement(Player owner)
         {
             Projectile.extraUpdates = 0;
+            Projectile.localNPCHitCooldown = 30;
 
             // Reset the gate UUID from any previous teleports.
             if (EndRiftGateUUID != -1)
@@ -316,7 +318,7 @@ namespace CalamityMod.Projectiles.Summon
                     TeleportEndingPoint = target.Center - offset;
                 }
                 else
-                    TeleportEndingPoint = Projectile.Center + Projectile.velocity * chargeTime / 2f;
+                    TeleportEndingPoint = Projectile.Center + CalamityUtils.CalculatePredictiveAimToTargetMaxUpdates(Projectile.Center, target, Projectile.velocity.Length(), Projectile.MaxUpdates) * chargeTime / 2f;
 
                 // On the starting frame of a teleport, spawn portals.
                 if (Main.myPlayer == Projectile.owner)

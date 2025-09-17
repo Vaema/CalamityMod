@@ -2,6 +2,7 @@
 using CalamityMod.Tiles.Furniture.CraftingStations;
 using Terraria;
 using Terraria.ID;
+using Terraria.Localization;
 using Terraria.ModLoader;
 
 namespace CalamityMod.Items.Armor.Statigel
@@ -10,6 +11,11 @@ namespace CalamityMod.Items.Armor.Statigel
     public class StatigelGreaves : ModItem, ILocalizedModType
     {
         public new string LocalizationCategory => "Items.Armor.PreHardmode";
+
+        public static float DamageBoost = 0.05f;
+        public static float MoveSpeedBoost = 0.05f; // NOTE: Tooltip shares this number with damage % as they're equal
+        public override LocalizedText Tooltip => base.Tooltip.WithFormatArgs(DamageBoost.ToPercent());
+
         public override void SetDefaults()
         {
             Item.width = 18;
@@ -21,8 +27,8 @@ namespace CalamityMod.Items.Armor.Statigel
 
         public override void UpdateEquip(Player player)
         {
-            player.GetDamage<GenericDamageClass>() += 0.05f;
-            player.moveSpeed += 0.05f;
+            player.GetDamage<GenericDamageClass>() += DamageBoost;
+            player.moveSpeed += MoveSpeedBoost;
         }
 
         public override void AddRecipes()
@@ -30,7 +36,7 @@ namespace CalamityMod.Items.Armor.Statigel
             CreateRecipe().
                 AddIngredient<PurifiedGel>(7).
                 AddIngredient<BlightedGel>(7).
-                AddTile<StaticRefiner>().
+                AddTile(TileID.Solidifier).
                 Register();
         }
     }

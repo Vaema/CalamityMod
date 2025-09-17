@@ -508,11 +508,7 @@ namespace CalamityMod.DataStructures
         {
             if (Procced)
             {
-                if (!player.moonLeech)
-                {
-                    player.HealPlayer(OmegaBiomeBlade.SuperPogoAttunement_PassiveLifeSteal);
-                }
-
+                player.DoLifestealDirect(null, OmegaBiomeBlade.SuperPogoAttunement_PassiveLifeSteal);
                 Procced = false;
             }
         }

@@ -40,12 +40,11 @@ namespace CalamityMod.NPCs.NormalNPCs
             NPC.width = 54;
             NPC.height = 54;
             NPC.defense = 10;
-            NPC.DR_NERD(0.1f);
             NPC.lifeMax = 20000;
             NPC.knockBackResist = 0f;
             NPC.aiStyle = -1;
             AIType = -1;
-            NPC.value = Item.buyPrice(0, 5, 0, 0);
+            NPC.value = Item.buyPrice(gold: 5);
             NPC.behindTiles = true;
             NPC.noGravity = true;
             NPC.noTileCollide = true;
@@ -56,10 +55,6 @@ namespace CalamityMod.NPCs.NormalNPCs
             BannerItem = ModContent.ItemType<ArmoredDiggerBanner>();
             NPC.Calamity().VulnerableToSickness = false;
             NPC.Calamity().VulnerableToElectricity = true;
-
-            // Scale stats in Expert and Master
-            CalamityGlobalNPC.AdjustExpertModeStatScaling(NPC);
-            CalamityGlobalNPC.AdjustMasterModeStatScaling(NPC);
         }
 
         public override void SetBestiary(BestiaryDatabase database, BestiaryEntry bestiaryEntry)
@@ -394,19 +389,6 @@ namespace CalamityMod.NPCs.NormalNPCs
                 }
             }
 
-            // Calculate contact damage based on velocity
-            float minimalContactDamageVelocity = maxChaseSpeed * 0.25f;
-            float minimalDamageVelocity = maxChaseSpeed * 0.5f;
-            if (NPC.velocity.Length() <= minimalContactDamageVelocity)
-            {
-                NPC.damage = (int)Math.Round(NPC.defDamage * 0.5);
-            }
-            else
-            {
-                float velocityDamageScalar = MathHelper.Clamp((NPC.velocity.Length() - minimalContactDamageVelocity) / minimalDamageVelocity, 0f, 1f);
-                NPC.damage = (int)MathHelper.Lerp((float)Math.Round(NPC.defDamage * 0.5), NPC.defDamage, velocityDamageScalar);
-            }
-
             NPC.rotation = (float)Math.Atan2((double)NPC.velocity.Y, (double)NPC.velocity.X) + 1.57f;
 
             if (flying)
@@ -439,14 +421,14 @@ namespace CalamityMod.NPCs.NormalNPCs
             {
                 if (!CalamityPlayer.areThereAnyDamnBosses && NPC.downedPlantBoss && !NPC.AnyNPCs(ModContent.NPCType<ArmoredDiggerHead>()))
                 {
-                    float spawnRateDivisor = CalamityWorld.LegendaryMode ? 125f : CalamityWorld.revenge ? 425f : 500f;
+                    float spawnRateDivisor = CalamityWorld.revenge ? 425f : 500f;
                     return 1 / spawnRateDivisor;
                 }
             }
             return 0f;
         }
 
-        public override void BossLoot(ref string name, ref int potionType)
+        public override void BossLoot(ref int potionType)
         {
             potionType = ItemID.GreaterHealingPotion;
         }

@@ -51,9 +51,9 @@ namespace CalamityMod.NPCs.NormalNPCs
             NPC.width = 44;
             NPC.height = 44;
             NPC.defense = 4;
-            NPC.lifeMax = Main.zenithWorld ? 90 : 58;
+            NPC.lifeMax = Main.zenithWorld ? 200 : 100;
             NPC.knockBackResist = 0f;
-            NPC.value = Item.buyPrice(0, 0, 1, 0);
+            NPC.value = Item.buyPrice(silver: 1);
             NPC.noGravity = false;
             NPC.noTileCollide = false;
             NPC.HitSound = Hit;
@@ -64,10 +64,6 @@ namespace CalamityMod.NPCs.NormalNPCs
             NPC.Calamity().VulnerableToElectricity = true;
             if (Main.zenithWorld)
                 NPC.scale = 1.5f;
-
-            // Scale stats in Expert and Master
-            CalamityGlobalNPC.AdjustExpertModeStatScaling(NPC);
-            CalamityGlobalNPC.AdjustMasterModeStatScaling(NPC);
         }
 
         public override void SetBestiary(BestiaryDatabase database, BestiaryEntry bestiaryEntry)
@@ -99,7 +95,7 @@ namespace CalamityMod.NPCs.NormalNPCs
                 // Spawn some off-screen enemies to act as threats if the player enters the field.
                 if (Main.netMode != NetmodeID.MultiplayerClient)
                 {
-                    int enemiesToSpawn = CalamityWorld.LegendaryMode ? 4 : CalamityWorld.death ? 3 : CalamityWorld.revenge ? 2 : 1;
+                    int enemiesToSpawn = Main.getGoodWorld ? 4 : CalamityWorld.death ? 3 : CalamityWorld.revenge ? 2 : 1;
                     for (int i = 0; i < enemiesToSpawn; i++)
                     {
                         int tries = 0;
@@ -123,7 +119,7 @@ namespace CalamityMod.NPCs.NormalNPCs
                         else if (tries < 500 && Main.zenithWorld)
                         {
                             //Summon the army
-                            int npcToSpawn = CalamityWorld.LegendaryMode ? 0 : Main.rand.Next(0, 4);
+                            int npcToSpawn = Main.rand.Next(0, 4);
                             switch (enemiesToSpawn)
                             {
                                 case 0:
@@ -190,11 +186,11 @@ namespace CalamityMod.NPCs.NormalNPCs
                         Dust.NewDust(npcAtIndex.position, npcAtIndex.width, npcAtIndex.height, DustID.Electric);
                     }
                 }
-                if (CalamityWorld.LegendaryMode)
+                if (Main.getGoodWorld)
                 {
                     laserDelay--;
                     NPC.spriteDirection = (player.Center.X - NPC.Center.X < 0).ToDirectionInt();
-                    for (int times = CalamityWorld.LegendaryMode ? 3 : 2; times > 0 && laserDelay == 0; times--)
+                    for (int times = 3; times > 0 && laserDelay == 0; times--)
                     {
                         Projectile.NewProjectile(NPC.GetSource_FromAI(), NPC.Center + Vector2.UnitX * 6f * NPC.spriteDirection, NPC.SafeDirectionTo(player.Center, Vector2.UnitY) * 4.5f, ProjectileID.SaucerMissile, 10, 0f);
                     }

@@ -1,4 +1,6 @@
 ﻿using System;
+using CalamityMod.Items.Weapons.Magic;
+using CalamityMod.Items.Weapons.Rogue;
 using CalamityMod.Projectiles.Ranged;
 using CalamityMod.Rarities;
 using Microsoft.Xna.Framework;
@@ -21,7 +23,10 @@ namespace CalamityMod.Items.Weapons.Ranged
         public static readonly SoundStyle WeldingShoot = new("CalamityMod/Sounds/Item/WeldingShoot") { Volume = 0.45f };
 
         public int Counter = 0;
-
+        public override void SetStaticDefaults()
+        {
+            ItemID.Sets.ShimmerTransformToItem[Type] = ModContent.ItemType<PhoenixFlameBarrage>();
+        }
         public override void SetDefaults()
         {
             Item.width = 124;

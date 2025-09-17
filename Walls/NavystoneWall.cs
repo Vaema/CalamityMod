@@ -1,9 +1,14 @@
-﻿using Microsoft.Xna.Framework;
+﻿using System;
+using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
+using Terraria.GameContent;
+using Terraria;
 using Terraria.ModLoader;
 namespace CalamityMod.Walls
 {
     public class NavystoneWall : ModWall, IVisibleThroughWater
     {
+        internal static FramedMaskTexture GlowMask;
         int IVisibleThroughWater.WaterMapEntry { get; set; }
 
         public override void SetStaticDefaults()
@@ -11,7 +16,7 @@ namespace CalamityMod.Walls
             DustType = 96;
             this.AddMapEntryWithWaterVisibility(new Color(16, 45, 48));
         }
-
+        
         public override void NumDust(int i, int j, bool fail, ref int num) => num = fail ? 1 : 3;
     }
 }

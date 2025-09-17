@@ -1,4 +1,5 @@
 ﻿using System;
+using CalamityMod.Items.Materials;
 using CalamityMod.Projectiles.Melee;
 using Microsoft.Xna.Framework;
 using Terraria;
@@ -94,6 +95,15 @@ namespace CalamityMod.Items.Weapons.Melee
                 Main.dust[swingDust].velocity *= 0.2f;
                 Main.dust[swingDust].noGravity = true;
             }
+        }
+
+        public override void AddRecipes()
+        {
+            CreateRecipe().
+                AddIngredient<LifeAlloy>(10).
+                AddIngredient<EffulgentFeather>(15).
+                AddTile(TileID.MythrilAnvil).
+                Register();
         }
     }
 }

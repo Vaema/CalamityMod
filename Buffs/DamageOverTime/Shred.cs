@@ -11,6 +11,8 @@ namespace CalamityMod.Buffs.DamageOverTime
 {
     public class Shred : ModBuff
     {
+        //This is not ported to the custom debuff system yet due to the complexities of it.
+        //I didn't want to break it! It will be done in a future PR
         internal const int StackFalloffFrames = 320;
 
         // This deals 600 DPS per stack, is boosted by ranged stats and can supercrit.

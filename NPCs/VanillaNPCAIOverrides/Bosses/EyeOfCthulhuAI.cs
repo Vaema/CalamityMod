@@ -14,6 +14,12 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
     {
         private const float ProjectileOffset = 50f;
 
+        // Rev+ exclusive
+        public static float Phase1ContactDamageMult = 1.333f; // 40 (buffed from 30)
+        public static float Phase2ContactDamageMult = 1.6f; // 48 (buffed from 36)
+        public static float Phase3ContactDamageMult = 1.8f; // 54 (buffed from 40)
+        public static int BloodShotDamage = 8; // 32
+
         public static bool BuffedEyeofCthulhuAI(NPC npc, Mod mod)
         {
             CalamityGlobalNPC calamityGlobalNPC = npc.Calamity();
@@ -23,8 +29,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
             // Percent life remaining
             float lifeRatio = npc.life / (float)npc.lifeMax;
 
-            bool bossRush = BossRushEvent.BossRushActive;
-            bool death = CalamityWorld.death || bossRush;
+            bool death = CalamityWorld.death || BossRushEvent.BossRushActive;
 
             // Phases
             float phase2LifeRatio = death ? 0.75f : 0.6f;
@@ -40,16 +45,11 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
 
             float lineUpDist = death ? 15f : 20f;
 
+            // Set contact damage
+            npc.damage = (int)Math.Round(npc.defDamage * (phase3 ? Phase3ContactDamageMult : phase2 ? Phase2ContactDamageMult : Phase1ContactDamageMult));
+
             // Servant and projectile velocity, the projectile velocity is multiplied by 2
             float servantAndProjectileVelocity = death ? 10f : 6f;
-
-            float enrageScale = bossRush ? 2.25f : death ? 0.5f : 0f;
-            if (Main.IsItDay())
-            {
-                npc.Calamity().CurrentlyEnraged = !bossRush;
-                enrageScale += 2f;
-            }
-
             npc.reflectsProjectiles = false;
 
             // Get a target
@@ -118,33 +118,23 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
 
             bool charge = Vector2.Distance(Main.player[npc.target].Center, npc.Center) >= 320f; // 20 tile distance
 
-            if (dead)
+            if ((dead || Main.IsItDay()) && !BossRushEvent.BossRushActive)
             {
                 npc.velocity.Y -= 0.04f;
 
                 if (npc.timeLeft > 10)
                     npc.timeLeft = 10;
+                return false;
             }
 
             else if (npc.ai[0] == 0f)
             {
                 if (npc.ai[1] == 0f)
                 {
-                    // Avoid cheap bullshit
-                    npc.damage = 0;
+                    float hoverSpeed = death ? 9.5f + 7f * (1f - lifeRatio) : 7f;
+                    float hoverAcceleration = death ? 0.2f + 0.15f * (1f - lifeRatio) : 0.15f;
 
-                    float hoverSpeed = 7f;
-                    float hoverAcceleration = 0.15f;
-                    hoverSpeed += 5f * enrageScale;
-                    hoverAcceleration += 0.1f * enrageScale;
-
-                    if (death)
-                    {
-                        hoverSpeed += 7f * (1f - lifeRatio);
-                        hoverAcceleration += 0.15f * (1f - lifeRatio);
-                    }
-
-                    if (CalamityWorld.LegendaryMode)
+                    if (Main.getGoodWorld)
                     {
                         hoverSpeed += 3f;
                         hoverAcceleration += 0.08f;
@@ -173,7 +163,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                             npc.ai[3] += 1f;
 
                         float servantSpawnGateValue = death ? 10f : 40f;
-                        if (CalamityWorld.LegendaryMode)
+                        if (Main.getGoodWorld)
                             servantSpawnGateValue *= 0.8f;
 
                         if (npc.ai[3] >= servantSpawnGateValue && shootProjectile)
@@ -192,7 +182,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                             {
                                 if (spawnServant)
                                 {
-                                    int eye = NPC.NewNPC(npc.GetSource_FromAI(), (int)servantSpawnCenter.X, (int)servantSpawnCenter.Y, NPCID.ServantofCthulhu, 0, 0f, 0f, enrageScale);
+                                    int eye = NPC.NewNPC(npc.GetSource_FromAI(), (int)servantSpawnCenter.X, (int)servantSpawnCenter.Y, NPCID.ServantofCthulhu);
                                     Main.npc[eye].velocity = servantSpawnVelocity;
 
                                     if (Main.dedServ && eye < Main.maxNPCs)
@@ -201,8 +191,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                                 else
                                 {
                                     int projType = ProjectileID.BloodNautilusShot;
-                                    int projDamage = npc.GetProjectileDamage(projType);
-                                    int proj = Projectile.NewProjectile(npc.GetSource_FromAI(), npc.Center + servantSpawnVelocity.SafeNormalize(Vector2.UnitY) * ProjectileOffset, servantSpawnVelocity * 2f, projType, projDamage, 0f, Main.myPlayer);
+                                    int proj = Projectile.NewProjectile(npc.GetSource_FromAI(), npc.Center + servantSpawnVelocity.SafeNormalize(Vector2.UnitY) * ProjectileOffset, servantSpawnVelocity * 2f, projType, BloodShotDamage, 0f, Main.myPlayer);
                                     Main.projectile[proj].timeLeft = 600;
                                 }
                             }
@@ -217,16 +206,12 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                 }
                 else if (npc.ai[1] == 1f)
                 {
-                    // Set damage
-                    npc.damage = npc.defDamage;
-
                     npc.rotation = eyeRotation;
                     float additionalVelocityPerCharge = 2f;
-                    float chargeSpeed = 8f + npc.ai[3] * additionalVelocityPerCharge;
-                    chargeSpeed += 5f * enrageScale;
+                    float chargeSpeed = (death ? 10.5f : 8f) + npc.ai[3] * additionalVelocityPerCharge;
                     if (death)
                         chargeSpeed += 10f * (1f - lifeRatio);
-                    if (CalamityWorld.LegendaryMode)
+                    if (Main.getGoodWorld)
                         chargeSpeed += 4f;
 
                     npc.velocity = npc.SafeDirectionTo(Main.player[npc.target].Center) * chargeSpeed;
@@ -236,11 +221,8 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                 }
                 else if (npc.ai[1] == 2f)
                 {
-                    // Set damage
-                    npc.damage = npc.defDamage;
-
                     int chargeDelay = death ? (75 - (int)Math.Round(30f * (1f - lifeRatio))) : 95;
-                    if (CalamityWorld.LegendaryMode)
+                    if (Main.getGoodWorld)
                         chargeDelay -= 30;
 
                     float slowDownGateValue = chargeDelay * (death ? 0.85f : 0.65f);
@@ -248,15 +230,12 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                     npc.ai[2] += 1f;
                     if (npc.ai[2] >= slowDownGateValue)
                     {
-                        // Avoid cheap bullshit
-                        npc.damage = 0;
-
                         float decelerationScalar = death ? ((lifeRatio - phase2LifeRatio) / (1f - phase2LifeRatio)) : 1f;
                         if (decelerationScalar < 0f)
                             decelerationScalar = 0f;
 
                         npc.velocity *= (MathHelper.Lerp(death ? 0.76f : 0.92f, death ? 0.88f : 0.96f, decelerationScalar));
-                        if (CalamityWorld.LegendaryMode)
+                        if (Main.getGoodWorld)
                             npc.velocity *= 0.99f;
 
                         if (npc.velocity.X > -0.1 && npc.velocity.X < 0.1)
@@ -276,9 +255,6 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                         float numCharges = death ? 4f : 3f;
                         if (npc.ai[3] >= numCharges)
                         {
-                            // Avoid cheap bullshit
-                            npc.damage = 0;
-
                             npc.ai[1] = 0f;
                             npc.ai[3] = 0f;
                         }
@@ -289,9 +265,6 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
 
                 if (phase2)
                 {
-                    // Avoid cheap bullshit
-                    npc.damage = 0;
-
                     npc.ai[0] = 1f;
                     npc.ai[1] = 0f;
                     npc.ai[2] = 0f;
@@ -304,10 +277,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
 
             else if (npc.ai[0] == 1f || npc.ai[0] == 2f)
             {
-                // Avoid cheap bullshit
-                npc.damage = 0;
-
-                if (CalamityWorld.LegendaryMode)
+                if (Main.getGoodWorld)
                     npc.reflectsProjectiles = true;
 
                 if (npc.ai[0] == 1f)
@@ -326,39 +296,24 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                 npc.rotation += npc.ai[2];
 
                 float phaseChangeRate = death ? 2f : 1f;
-                float servantSpawnGateValue = CalamityWorld.LegendaryMode ? 4f : 20f;
+                float servantSpawnGateValue = Main.getGoodWorld ? 4f : 20f;
                 npc.ai[1] += phaseChangeRate;
                 if (npc.ai[1] % servantSpawnGateValue == 0f)
                 {
                     float servantVelocity = death ? 11.3f : 5.65f;
                     Vector2 servantSpawnVelocity = Main.rand.NextVector2CircularEdge(servantVelocity, servantVelocity);
-                    if (CalamityWorld.LegendaryMode)
+                    if (Main.getGoodWorld)
                         servantSpawnVelocity *= 3f;
 
                     Vector2 servantSpawnCenter = npc.Center + servantSpawnVelocity.SafeNormalize(Vector2.UnitY) * ProjectileOffset;
                     if (Main.netMode != NetmodeID.MultiplayerClient)
                     {
-                        int servantSpawn = NPC.NewNPC(npc.GetSource_FromAI(), (int)servantSpawnCenter.X, (int)servantSpawnCenter.Y, NPCID.ServantofCthulhu, 0, 0f, 0f, enrageScale);
+                        int servantSpawn = NPC.NewNPC(npc.GetSource_FromAI(), (int)servantSpawnCenter.X, (int)servantSpawnCenter.Y, NPCID.ServantofCthulhu);
                         Main.npc[servantSpawn].velocity.X = servantSpawnVelocity.X;
                         Main.npc[servantSpawn].velocity.Y = servantSpawnVelocity.Y;
 
                         if (Main.dedServ && servantSpawn < Main.maxNPCs)
                             NetMessage.SendData(MessageID.SyncNPC, -1, -1, null, servantSpawn);
-
-                        if (CalamityWorld.LegendaryMode)
-                        {
-                            int type = ProjectileID.BloodNautilusShot;
-                            Vector2 projectileVelocity = Main.rand.NextVector2CircularEdge(15f, 15f);
-                            int numProj = 3;
-                            int spread = 20;
-                            float rotation = MathHelper.ToRadians(spread);
-                            for (int i = 0; i < numProj; i++)
-                            {
-                                Vector2 perturbedSpeed = projectileVelocity.RotatedBy(MathHelper.Lerp(-rotation, rotation, i / (float)(numProj - 1)));
-                                int proj = Projectile.NewProjectile(npc.GetSource_FromAI(), npc.Center + perturbedSpeed.SafeNormalize(Vector2.UnitY) * ProjectileOffset, perturbedSpeed, type, 15, 0f, Main.myPlayer);
-                                Main.projectile[proj].timeLeft = 600;
-                            }
-                        }
                     }
 
                     for (int n = 0; n < 10; n++)
@@ -407,27 +362,14 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
             else
             {
                 npc.defense = 0;
-                int setDamage = (int)Math.Round(npc.defDamage * (phase3 ? 1.4 : 1.2));
-                int reducedSetDamage = (int)Math.Round(setDamage * 0.5);
 
                 if (npc.ai[1] == 0f & phase3)
                     npc.ai[1] = 5f;
 
                 if (npc.ai[1] == 0f)
                 {
-                    // Deal less damage overall while not charging
-                    npc.damage = reducedSetDamage;
-
-                    float hoverSpeed = 5.5f + 3f * (phase2LifeRatio - lifeRatio);
-                    float hoverAcceleration = 0.06f + 0.02f * (phase2LifeRatio - lifeRatio);
-                    hoverSpeed += 4f * enrageScale;
-                    hoverAcceleration += 0.04f * enrageScale;
-
-                    if (death)
-                    {
-                        hoverSpeed += 5.5f * (phase2LifeRatio - lifeRatio);
-                        hoverAcceleration += 0.06f * (phase2LifeRatio - lifeRatio);
-                    }
+                    float hoverSpeed = (death ? 7.5f : 5.5f) + (death ? 8.5f : 3f) * (phase2LifeRatio - lifeRatio);
+                    float hoverAcceleration = (death ? 0.08f : 0.06f) + (death ? 0.08f : 0.02f) * (phase2LifeRatio - lifeRatio);
 
                     Vector2 hoverDestination = Main.player[npc.target].Center - Vector2.UnitY * 400f;
                     float distanceFromHoverDestination = npc.Distance(hoverDestination);
@@ -448,7 +390,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                         }
                     }
 
-                    if (CalamityWorld.LegendaryMode)
+                    if (Main.getGoodWorld)
                     {
                         hoverSpeed += 1f;
                         hoverAcceleration += 0.1f;
@@ -471,14 +413,13 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                             if (Main.netMode != NetmodeID.MultiplayerClient)
                             {
                                 int type = ProjectileID.BloodNautilusShot;
-                                int damage = npc.GetProjectileDamage(type);
                                 int numProj = 3;
                                 int spread = 10;
                                 float rotation = MathHelper.ToRadians(spread);
                                 for (int i = 0; i < numProj; i++)
                                 {
                                     Vector2 perturbedSpeed = projectileVelocity.RotatedBy(MathHelper.Lerp(-rotation, rotation, i / (float)(numProj - 1)));
-                                    int proj = Projectile.NewProjectile(npc.GetSource_FromAI(), npc.Center + perturbedSpeed.SafeNormalize(Vector2.UnitY) * ProjectileOffset, perturbedSpeed, type, damage, 0f, Main.myPlayer);
+                                    int proj = Projectile.NewProjectile(npc.GetSource_FromAI(), npc.Center + perturbedSpeed.SafeNormalize(Vector2.UnitY) * ProjectileOffset, perturbedSpeed, type, BloodShotDamage, 0f, Main.myPlayer);
                                     Main.projectile[proj].timeLeft = 600;
                                 }
                             }
@@ -496,22 +437,16 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
 
                 else if (npc.ai[1] == 1f)
                 {
-                    // Set damage
-                    npc.damage = setDamage;
-
                     SoundEngine.PlaySound(SoundID.ForceRoar, npc.Center);
                     npc.rotation = eyeRotation;
 
                     float additionalVelocityPerCharge = 3f;
-                    float chargeSpeed = 10f + (3.5f * (phase2LifeRatio - lifeRatio)) + npc.ai[3] * additionalVelocityPerCharge;
-                    chargeSpeed += 4f * enrageScale;
-                    if (death)
-                        chargeSpeed += 6.5f * (phase2LifeRatio - lifeRatio);
+                    float chargeSpeed = (death ? 12f : 10f) + ((death ? 10f : 3.5f) * (phase2LifeRatio - lifeRatio)) + npc.ai[3] * additionalVelocityPerCharge;
                     if (npc.ai[3] == 1f)
                         chargeSpeed *= 1.15f;
                     if (npc.ai[3] == 2f)
                         chargeSpeed *= 1.3f;
-                    if (CalamityWorld.LegendaryMode)
+                    if (Main.getGoodWorld)
                         chargeSpeed *= 1.2f;
 
                     npc.velocity = npc.SafeDirectionTo(Main.player[npc.target].Center) * chargeSpeed;
@@ -521,9 +456,6 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
 
                 else if (npc.ai[1] == 2f)
                 {
-                    // Set damage
-                    npc.damage = setDamage;
-
                     int phase2ChargeDelay = death ? (70 - (int)Math.Round(25f * (phase2LifeRatio - lifeRatio))) : 85;
 
                     float slowDownGateValue = phase2ChargeDelay * (death ? 0.9f : 0.75f);
@@ -531,9 +463,6 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                     npc.ai[2] += 1f;
                     if (npc.ai[2] >= slowDownGateValue)
                     {
-                        // Deal less damage overall while not charging
-                        npc.damage = reducedSetDamage;
-
                         float decelerationScalar = death ? ((lifeRatio - phase3LifeRatio) / (phase2LifeRatio - phase3LifeRatio)) : 1f;
                         if (decelerationScalar < 0f)
                             decelerationScalar = 0f;
@@ -556,9 +485,6 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                         float numCharges = death ? 4f : 3f;
                         if (npc.ai[3] >= numCharges)
                         {
-                            // Deal less damage overall while not charging
-                            npc.damage = reducedSetDamage;
-
                             npc.ai[1] = 0f;
                             npc.ai[3] = 0f;
                             npc.ForceNetUpdate(false);
@@ -572,9 +498,6 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                 {
                     if ((npc.ai[3] == 4f & phase3) && npc.Center.Y > Main.player[npc.target].Center.Y)
                     {
-                        // Deal less damage overall while not charging
-                        npc.damage = reducedSetDamage;
-
                         npc.ai[1] = 0f;
                         npc.ai[2] = 0f;
                         npc.ai[3] = 0f;
@@ -582,12 +505,8 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                     }
                     else if (Main.netMode != NetmodeID.MultiplayerClient)
                     {
-                        // Set damage
-                        npc.damage = setDamage;
-
                         float speedBoost = death ? 10f * (phase3LifeRatio - lifeRatio) : 7f * (phase3LifeRatio - lifeRatio);
-                        float finalChargeSpeed = 18f + speedBoost;
-                        finalChargeSpeed += 10f * enrageScale;
+                        float finalChargeSpeed = (death ? 23f : 18f) + speedBoost;
 
                         Vector2 eyeChargeDirection = npc.Center;
                         float targetX = Main.player[npc.target].Center.X - eyeChargeDirection.X;
@@ -653,9 +572,6 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
 
                 else if (npc.ai[1] == 4f)
                 {
-                    // Set damage
-                    npc.damage = setDamage;
-
                     if (npc.ai[2] == 0f)
                         SoundEngine.PlaySound(SoundID.ForceRoarPitched, npc.Center);
 
@@ -667,9 +583,6 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
 
                     if (npc.ai[2] >= lineUpDistControl)
                     {
-                        // Deal less damage overall while not charging
-                        npc.damage = reducedSetDamage;
-
                         npc.velocity *= 0.95f;
                         if (npc.velocity.X > -0.1 && npc.velocity.X < 0.1)
                             npc.velocity.X = 0f;
@@ -690,9 +603,6 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                         float maxCharges = death ? (finalPhaseDeath ? 0f : penultimatePhaseDeath ? 1f : 2f) : finalPhaseRev ? 2f : 3f;
                         if (npc.ai[3] >= maxCharges)
                         {
-                            // Deal less damage overall while not charging
-                            npc.damage = reducedSetDamage;
-
                             npc.ai[1] = 0f;
                             npc.ai[3] = 0f;
                         }
@@ -703,14 +613,11 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
 
                 else if (npc.ai[1] == 5f)
                 {
-                    // Deal less damage overall while not charging
-                    npc.damage = reducedSetDamage;
-
                     float offset = death ? 540f : 600f;
                     float speedBoost = death ? 15f * (phase3LifeRatio - lifeRatio) : 5f * (phase3LifeRatio - lifeRatio);
                     float accelerationBoost = death ? 0.425f * (phase3LifeRatio - lifeRatio) : 0.125f * (phase3LifeRatio - lifeRatio);
-                    float hoverSpeed = 8f + speedBoost;
-                    float hoverAcceleration = 0.25f + accelerationBoost;
+                    float hoverSpeed = (death ? 10f : 8f) + speedBoost;
+                    float hoverAcceleration = (death ? 0.3125f : 0.25f) + accelerationBoost;
 
                     bool horizontalCharge = calamityGlobalNPC.newAI[0] == 1f || calamityGlobalNPC.newAI[0] == 3f;
                     float timeGateValue = horizontalCharge ? (110f - (death ? 60f * (phase3LifeRatio - lifeRatio) : 0f)) : (95f - (death ? 55f * (phase3LifeRatio - lifeRatio) : 0f));
@@ -720,9 +627,6 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                         hoverSpeed += velocityScalar * 0.05f;
                         hoverAcceleration += velocityScalar * 0.0025f;
                     }
-
-                    hoverSpeed += enrageScale * 4f;
-                    hoverAcceleration += enrageScale * 0.125f;
 
                     Vector2 eyeLineUpChargeDirection = npc.Center;
                     float lineUpChargeTargetX = Main.player[npc.target].Center.X - eyeLineUpChargeDirection.X;
@@ -750,7 +654,6 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                         Vector2 servantSpawnVelocity = (Main.player[npc.target].Center - npc.Center).SafeNormalize(Vector2.UnitY) * servantAndProjectileVelocity;
                         Vector2 servantSpawnCenter = npc.Center + servantSpawnVelocity.SafeNormalize(Vector2.UnitY) * ProjectileOffset;
 
-                        float enrageScaleToPass = enrageScale;
                         int maxServants = death ? (finalPhaseDeath ? 1 : penultimatePhaseDeath ? 2 : 3) : (finalPhaseRev ? 2 : 4);
                         bool spawnServant = NPC.CountNPCS(NPCID.ServantofCthulhu) < maxServants;
 
@@ -766,22 +669,21 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                         {
                             if (spawnServant)
                             {
-                                int eye = NPC.NewNPC(npc.GetSource_FromAI(), (int)servantSpawnCenter.X, (int)servantSpawnCenter.Y, NPCID.ServantofCthulhu, 0, 0f, 0f, enrageScaleToPass);
+                                int eye = NPC.NewNPC(npc.GetSource_FromAI(), (int)servantSpawnCenter.X, (int)servantSpawnCenter.Y, NPCID.ServantofCthulhu);
                                 Main.npc[eye].velocity.X = servantSpawnVelocity.X;
                                 Main.npc[eye].velocity.Y = servantSpawnVelocity.Y;
 
                                 if (Main.dedServ && eye < Main.maxNPCs)
                                     NetMessage.SendData(MessageID.SyncNPC, -1, -1, null, eye);
                             }
-                            else if (!CalamityWorld.LegendaryMode)
+                            else if (!Main.getGoodWorld)
                             {
                                 int projType = ProjectileID.BloodNautilusShot;
-                                int projDamage = npc.GetProjectileDamage(projType);
-                                int proj = Projectile.NewProjectile(npc.GetSource_FromAI(), npc.Center + servantSpawnVelocity.SafeNormalize(Vector2.UnitY) * ProjectileOffset, servantSpawnVelocity * 2f, projType, projDamage, 0f, Main.myPlayer);
+                                int proj = Projectile.NewProjectile(npc.GetSource_FromAI(), npc.Center + servantSpawnVelocity.SafeNormalize(Vector2.UnitY) * ProjectileOffset, servantSpawnVelocity * 2f, projType, BloodShotDamage, 0f, Main.myPlayer);
                                 Main.projectile[proj].timeLeft = 600;
                             }
 
-                            if (CalamityWorld.LegendaryMode)
+                            if (Main.getGoodWorld)
                             {
                                 int type = ProjectileID.BloodNautilusShot;
                                 Vector2 projectileVelocity = servantSpawnVelocity * 3f;
@@ -840,14 +742,10 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
 
                 else if (npc.ai[1] == 6f)
                 {
-                    // Set damage
-                    npc.damage = setDamage;
-
                     if (Main.netMode != NetmodeID.MultiplayerClient)
                     {
                         float speedBoost = death ? 15f * (phase3LifeRatio - lifeRatio) : 5f * (phase3LifeRatio - lifeRatio);
-                        float chargeSpeed = 18f + speedBoost;
-                        chargeSpeed += 10f * enrageScale;
+                        float chargeSpeed = (death ? 23f : 18f) + speedBoost;
                         npc.velocity = npc.SafeDirectionTo(Main.player[npc.target].Center) * chargeSpeed;
 
                         npc.ai[1] = 7f;
@@ -857,9 +755,6 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
 
                 else if (npc.ai[1] == 7f)
                 {
-                    // Set damage
-                    npc.damage = setDamage;
-
                     if (npc.ai[2] == 0f)
                         SoundEngine.PlaySound(SoundID.ForceRoar, npc.Center);
 
@@ -871,9 +766,6 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
 
                     if (npc.ai[2] >= lineUpDistControl)
                     {
-                        // Deal less damage overall while not charging
-                        npc.damage = reducedSetDamage;
-
                         npc.velocity *= 0.95f;
                         if (npc.velocity.X > -0.1 && npc.velocity.X < 0.1)
                             npc.velocity.X = 0f;
@@ -886,8 +778,6 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                     float lineUpDistNetUpdate = lineUpDistControl + 13f;
                     if (npc.ai[2] >= lineUpDistNetUpdate)
                     {
-                        // Deal less damage overall while not charging
-                        npc.damage = reducedSetDamage;
                         npc.ForceNetUpdate(false);
 
                         npc.ai[2] = 0f;

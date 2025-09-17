@@ -33,8 +33,8 @@ namespace CalamityMod.Items.Weapons.Ranged
             Item.noUseGraphic = true;
             Item.autoReuse = true;
 
-            Item.value = CalamityGlobalItem.RarityGreenBuyPrice;
-            Item.rare = ItemRarityID.Green;
+            Item.value = CalamityGlobalItem.RarityOrangeBuyPrice;
+            Item.rare = ItemRarityID.Orange;
             Item.shoot = ModContent.ProjectileType<FirestormCannonHoldout>();
             Item.shootSpeed = 5.5f;
             Item.useAmmo = AmmoID.Flare;
@@ -53,7 +53,7 @@ namespace CalamityMod.Items.Weapons.Ranged
             }
         }
 
-        public override bool CanUseItem(Player player) => player.ownedProjectileCounts[Item.shoot] <= 0;
+        public override bool CanUseItem(Player player) => player.ownedProjectileCounts[Item.shoot] <= 0 && !player.Calamity().mouseRight;
         public override bool CanConsumeAmmo(Item ammo, Player player) => player.ownedProjectileCounts[Item.shoot] > 0; // Spawning the holdout cannot consume ammo
         public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)
         {

@@ -1,4 +1,5 @@
 ﻿using System;
+using CalamityMod.Buffs.Summon;
 using CalamityMod.Projectiles.Summon;
 using Microsoft.Xna.Framework;
 using Terraria;
@@ -25,8 +26,8 @@ namespace CalamityMod.Items.Weapons.Summon
             Item.damage = 56;
             Item.knockBack = 3f;
             Item.useAnimation = Item.useTime = 20;
+            Item.buffType = ModContent.BuffType<AbandonedSlimeBuff>();
             Item.shoot = ModContent.ProjectileType<AstrageldonSummon>();
-            Item.shootSpeed = 10f;
 
             Item.value = CalamityGlobalItem.RarityLimeBuyPrice;
             Item.rare = ItemRarityID.Lime;
@@ -48,21 +49,16 @@ namespace CalamityMod.Items.Weapons.Summon
             slimeSlots = (int)(player.maxMinions - minionCount);
         }
 
-        public override bool CanUseItem(Player player)
-        {
-            return slimeSlots >= 1;
-        }
+        public override bool CanUseItem(Player player) => slimeSlots >= 1;
 
         public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)
         {
+            player.AddBuff(Item.buffType, 2);
             CalamityUtils.KillShootProjectiles(true, type, player);
             float damageMult = ((float)Math.Log(slimeSlots, 8f)) + 1f;
-            position = player.ClampedMouseWorld();
-            velocity.X = 0;
-            velocity.Y = 0;
-            int slime = Projectile.NewProjectile(source, position, velocity, type, (int)(damage * damageMult), knockback, player.whoAmI);
-            Main.projectile[slime].originalDamage = (int)(Item.damage * damageMult);
-            Main.projectile[slime].minionSlots = slimeSlots;
+            var minion = Projectile.NewProjectileDirect(source, player.ClampedMouseWorld(), Vector2.Zero, type, (int)(damage * damageMult), knockback, player.whoAmI);
+            minion.originalDamage = (int)(Item.damage * damageMult);
+            minion.minionSlots = slimeSlots;
             return false;
         }
     }

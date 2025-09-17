@@ -26,7 +26,6 @@ namespace CalamityMod.Projectiles.Ranged
             Projectile.timeLeft = 600;
             Projectile.extraUpdates = 1;
             AIType = ProjectileID.Bullet;
-            Projectile.Calamity().pointBlankShotDuration = CalamityGlobalProjectile.DefaultPointBlankDuration;
         }
 
         public override void AI()
@@ -77,15 +76,11 @@ namespace CalamityMod.Projectiles.Ranged
 
         public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
         {
-            SpawnStars();
-        }
-
-        private void SpawnStars()
-        {
-            // The patron said 10 blocks, but 10 blocks is like nothing...  I'm sure they won't mind.
+            // The patron said 10 blocks, but 10 blocks is like nothing...  I'm sure they won't mind
             int maxDistance = 480; // 30 blocks
             bool bossFound = false;
             int life = 0;
+            int index = -1;
             Vector2 targetVec = Projectile.Center;
             foreach (NPC npc in Main.ActiveNPCs)
             {
@@ -94,7 +89,7 @@ namespace CalamityMod.Projectiles.Ranged
                 if (npc.CanBeChasedBy(Projectile, false))
                 {
                     float extraDist = (npc.width / 2) + (npc.height / 2);
-                    //Calculate distance between target and the projectile to know if it's too far or not
+                    // Calculate distance between target and the projectile to know if it's too far or not
                     float targetDist = Vector2.Distance(npc.Center, Projectile.Center);
                     if (targetDist < (maxDistance + extraDist) && (npc.IsABoss() || npc.life > life))
                     {
@@ -102,16 +97,15 @@ namespace CalamityMod.Projectiles.Ranged
                             bossFound = true;
                         life = npc.life;
                         targetVec = npc.Center;
+                        index = npc.whoAmI;
                     }
                 }
             }
 
-            var source = Projectile.GetSource_FromThis();
-            for (int n = 0; n < 2; n++)
-            {
-                Projectile star = CalamityUtils.ProjectileRain(source, targetVec, 400f, 100f, 500f, 800f, 29f, ModContent.ProjectileType<UniversalGenesisStar>(), Projectile.damage / 2, Projectile.knockBack, Projectile.owner);
-                star.ai[0] = n;
-            }
+            Vector2 spawnPos = targetVec - new Vector2(Main.rand.NextFloat(-300f, 300f), Main.rand.NextFloat(500f, 800f));
+            Vector2 velocity = index == -1 ? Utils.DirectionTo(spawnPos, Projectile.Center) * 29f : CalamityUtils.CalculatePredictiveAimToTargetMaxUpdates(spawnPos, Main.npc[index], 29f, 2);
+            velocity.X += Main.rand.NextFloat(-1f, 1f);
+            Projectile.NewProjectile(Projectile.GetSource_FromThis(), spawnPos, velocity, ModContent.ProjectileType<UniversalGenesisStar>(), (int)(Projectile.damage * 0.65f), Projectile.knockBack, Projectile.owner);
         }
 
         public override void OnKill(int timeLeft)

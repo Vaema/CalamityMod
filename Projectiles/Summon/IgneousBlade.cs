@@ -1,107 +1,193 @@
-﻿using System.IO;
+﻿using System;
+using System.IO;
 using CalamityMod.Buffs.Summon;
-using CalamityMod.CalPlayer;
+using CalamityMod.Items.Weapons.Summon;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria;
+using Terraria.Graphics;
+using Terraria.Graphics.Shaders;
 using Terraria.ID;
 using Terraria.ModLoader;
 
 namespace CalamityMod.Projectiles.Summon
 {
+    //Based off Virid Vanguard projectile code for circling and drawing logic
     public class IgneousBlade : ModProjectile, ILocalizedModType
     {
         public new string LocalizationCategory => "Projectiles.Summon";
-        public bool Firing = false;
+        public enum AIState
+        {
+            CircleOwner,
+            TransitionToLaunch,
+            LaunchAtPos
+        }
+
+        public int BladeIndex;
+
+        public VertexStrip TrailDrawer;
+
+        public Vector2 ChargeStartingPosition;
+
+        public float BladeHoverOffsetAngle
+        {
+            get
+            {
+                float projectileCounts = Owner.ownedProjectileCounts[Type];
+                if (projectileCounts <= 1f)
+                    projectileCounts = 1f;
+
+                return MathHelper.TwoPi * BladeIndex / projectileCounts + AITimer / 10f;
+            }
+        }
+
+        public AIState CurrentState
+        {
+            get => (AIState)Projectile.ai[0];
+            set => Projectile.ai[0] = (int)value;
+        }
+
+        public Player Owner => Main.player[Projectile.owner];
+
+        public ref float AITimer => ref Projectile.ai[1];
+
+        public ref float BladeGleamInterpolant => ref Projectile.localAI[0];
+
+        public Vector2 ChargeTargetPos = Vector2.Zero;
+        public Vector2 ChargeStartPos = Vector2.Zero;
+
         public override void SetStaticDefaults()
         {
-            ProjectileID.Sets.TrailingMode[Type] = 0;
-            ProjectileID.Sets.TrailCacheLength[Type] = 7;
+            ProjectileID.Sets.MinionSacrificable[Type] = true;
+            ProjectileID.Sets.TrailingMode[Type] = 2;
+            ProjectileID.Sets.TrailCacheLength[Type] = 45;
         }
 
         public override void SetDefaults()
         {
-            Projectile.width = 52;
-            Projectile.height = 86;
+
+            Projectile.width = 84;
+            Projectile.height = 84;
             Projectile.netImportant = true;
             Projectile.friendly = true;
             Projectile.ignoreWater = true;
-            Projectile.minionSlots = 1f;
-            Projectile.timeLeft = 18000;
+            Projectile.timeLeft = 90000;
             Projectile.penetrate = -1;
             Projectile.usesLocalNPCImmunity = true;
             Projectile.localNPCHitCooldown = 7;
             Projectile.tileCollide = false;
-            Projectile.timeLeft *= 5;
             Projectile.minion = true;
+            Projectile.minionSlots = 1f;
             Projectile.DamageType = DamageClass.Summon;
+            Projectile.stopsDealingDamageAfterPenetrateHits = true;
         }
+
         public override void SendExtraAI(BinaryWriter writer)
         {
-            writer.Write(Firing);
+            writer.Write(BladeIndex);
+            writer.WriteVector2(ChargeStartingPosition);
         }
+
         public override void ReceiveExtraAI(BinaryReader reader)
         {
-            Firing = reader.ReadBoolean();
+            BladeIndex = reader.ReadInt32();
+            ChargeStartingPosition = reader.ReadVector2();
         }
+
+
         public override void AI()
         {
-            Player player = Main.player[Projectile.owner];
-            CalamityPlayer modPlayer = player.Calamity();
-            bool isProperProjectile = Projectile.type == ModContent.ProjectileType<IgneousBlade>();
-            player.AddBuff(ModContent.BuffType<IgneousExaltationBuff>(), 3600);
-            if (isProperProjectile)
+            // Decide whether the minion should still exist.
+            HandleMinionBools();
+
+            // Reset extra updates.
+            Projectile.MaxUpdates = 1;
+
+            // Have the gleam interpolant dissipate.
+            BladeGleamInterpolant = MathHelper.Lerp(BladeGleamInterpolant, 0f, 0.1f);
+            if (BladeGleamInterpolant <= 0.02f)
+                BladeGleamInterpolant = 0f;
+
+            switch (CurrentState)
             {
-                if (player.dead)
-                {
-                    modPlayer.igneousExaltation = false;
-                }
-                if (modPlayer.igneousExaltation)
-                {
-                    Projectile.timeLeft = 2;
-                }
+                case AIState.CircleOwner:
+                    CircleOwner();
+                    break;
+                case AIState.TransitionToLaunch:
+                    ChargeTargetPos = Owner.Calamity().mouseWorld;
+                    ChargeStartPos = Owner.Center;
+                    CurrentState = AIState.LaunchAtPos;
+                    AITimer = 0;
+                    Projectile.penetrate = 50;
+                    LaunchAtTargetPos();
+                    break;
+                case AIState.LaunchAtPos:
+                    LaunchAtTargetPos();
+                    break;
             }
 
-            // Orbiting. 1 = Shooting
-            if (!Firing)
+            AITimer++;
+        }
+
+        public void CircleOwner()
+        {
+            Vector2 hoverDestination = Owner.Center + BladeHoverOffsetAngle.ToRotationVector2() * (AITimer < 0 ? MathHelper.Lerp(200, 100, 1 - (-AITimer) / IgneousExaltation.ChargeCooldown) : 100f);
+            Projectile.Center = Vector2.Lerp(Projectile.Center, hoverDestination, 0.04f).MoveTowards(hoverDestination, 20f);
+            Projectile.velocity *= 0.8f;
+
+            // Teleport to the owner if sufficiently far away.
+            if (!Projectile.WithinRange(Owner.Center, 3200f))
             {
-                const float outwardPosition = 180f;
-                Projectile.Center = player.Center + Projectile.ai[0].ToRotationVector2() * outwardPosition + Vector2.UnitY * player.gfxOffY;
-                Projectile.rotation = Projectile.ai[0] + MathHelper.PiOver2 + MathHelper.PiOver4;
-                Projectile.ai[0] -= MathHelper.ToRadians(4f);
+                Projectile.Center = hoverDestination;
+                Projectile.netUpdate = true;
             }
-            else
+
+            // Aim away from the target.
+            Projectile.rotation = Projectile.AngleFrom(Owner.Center) + MathHelper.PiOver2;
+        }
+
+        public void LaunchAtTargetPos()
+        {
+            Projectile.damage = Projectile.originalDamage;
+            if (Projectile.penetrate > 40) //First 10 hits do 2x damage
+                Projectile.damage *= 2;
+            int chargeTime = IgneousExaltation.ChargeDuration * 2;
+            int chargeLength = 2000;
+            float circleWidth = Math.Min(75, Owner.ownedProjectileCounts[Type] * 4);
+            var CurrentPlace = Vector2.Lerp(ChargeStartPos, ChargeStartPos + ChargeStartPos.DirectionTo(ChargeTargetPos) * chargeLength, MathF.Pow(AITimer / chargeTime, 3));
+            Projectile.Center = CurrentPlace + BladeHoverOffsetAngle.ToRotationVector2() * Math.Max(MathHelper.Lerp(100f, 25f, AITimer / 10f), circleWidth);
+            Projectile.rotation = Projectile.AngleFrom(CurrentPlace) + MathHelper.PiOver2;
+            if (AITimer >= chargeTime)
             {
-                if (Projectile.penetrate == -1) //limit penetration for worm memes
-                    Projectile.penetrate = 3;
-
-                Projectile.ai[0]--;
-                if (Projectile.ai[0] == 1)
-                    Projectile.Kill();
-
-                if (Projectile.ai[0] % 10f == 9f)
-                {
-                    for (int i = 0; i < 20; i++)
-                    {
-                        float angle = MathHelper.TwoPi / 20f * i;
-                        Dust dust = Dust.NewDustPerfect(Projectile.position + angle.ToRotationVector2().RotatedBy(Projectile.rotation) * new Vector2(14f, 21f), 6);
-                        dust.velocity = angle.ToRotationVector2().RotatedBy(Projectile.rotation) * 2f;
-                        dust.noGravity = true;
-                    }
-                }
+                Projectile.damage = Projectile.originalDamage;
+                AITimer = -IgneousExaltation.ChargeCooldown;
+                CurrentState = AIState.CircleOwner;
+                Projectile.penetrate = -1;
             }
         }
+
+        public void HandleMinionBools()
+        {
+            Owner.AddBuff(ModContent.BuffType<IgneousExaltationBuff>(), 3600);
+            if (Projectile.type == ModContent.ProjectileType<IgneousBlade>())
+            {
+                if (Owner.dead)
+                    Owner.Calamity().igneousExaltation = false;
+
+                if (Owner.Calamity().igneousExaltation)
+                    Projectile.timeLeft = 2;
+            }
+        }
+
         public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
         {
-            if (Firing)
-            {
+            if (Projectile.penetrate >= 40 && CurrentState != AIState.CircleOwner) //The first 10 hits per launch can spawn blades
                 if (Main.myPlayer == Projectile.owner)
                 {
-                    Projectile.ai[0] = 50;
-                    for (int i = 0; i < 3; i++)
+                    for (int i = 0; i < 1; i++)
                     {
-                        Vector2 spawnPosition = target.Center - new Vector2(0f, 550f).RotatedByRandom(MathHelper.ToRadians(8f));
-                        Projectile.NewProjectile(Projectile.GetSource_FromThis(), spawnPosition, Vector2.Normalize(target.Center - spawnPosition) * 24f, ModContent.ProjectileType<IgneousBladeStrike>(),
+                        Vector2 spawnPosition = Projectile.Center - new Vector2(0f, 550f).RotatedByRandom(MathHelper.TwoPi);
+                        Projectile.NewProjectile(Projectile.GetSource_FromThis(), spawnPosition, Vector2.Normalize(Projectile.Center - spawnPosition) * 24f, ModContent.ProjectileType<IgneousBladeStrike>(),
                             Projectile.damage, Projectile.knockBack, Projectile.owner);
                     }
                     for (int i = 0; i < Main.rand.Next(28, 41); i++)
@@ -113,44 +199,65 @@ namespace CalamityMod.Projectiles.Summon
                     }
                     Projectile.netUpdate = true;
                 }
-            }
+            base.OnHitNPC(target, hit, damageDone);
         }
-        public override void OnKill(int timeLeft)
+        public Color TrailColorFunction(float completionRatio)
         {
-            for (int j = 0; j < 40; j++)
-            {
-                Dust dust = Dust.NewDustDirect(Projectile.position, Projectile.width, Projectile.height, DustID.Torch);
-                dust.velocity = Vector2.UnitY * Main.rand.NextFloat(3f, 5.5f) * Main.rand.NextBool().ToDirectionInt();
-                dust.noGravity = true;
-            }
+            float opacity = (float)Math.Pow(Utils.GetLerpValue(1f, 0.45f, completionRatio, true), 4D) * Projectile.Opacity * 0.48f;
+            var redColor = new Color(166, 46, 61);
+            return Color.Lerp(redColor, new(64, 51, 66), MathHelper.Clamp(completionRatio * 1.4f, 0f, 1f)) * opacity;
         }
+
+        public float TrailWidthFunction(float completionRatio) => Projectile.height * (1f - completionRatio) * 0.3f;
+
         public override bool PreDraw(ref Color lightColor)
         {
-            if (Firing)
+            Texture2D texture = Terraria.GameContent.TextureAssets.Projectile[Type].Value;
+            Rectangle frame = texture.Frame(1, Main.projFrames[Type], 0, Projectile.frame);
+            Vector2 origin = frame.Size() * 0.5f;
+            Vector2 drawPosition = Projectile.Center - Main.screenPosition;
+            SpriteEffects direction = Projectile.spriteDirection == 1 ? SpriteEffects.FlipHorizontally : SpriteEffects.None;
+
+
+            // Draw the afterimage trail.
+            TrailDrawer ??= new();
+            GameShaders.Misc["EmpressBlade"].UseImage0("Images/Extra_201");
+            GameShaders.Misc["EmpressBlade"].UseImage1("Images/Extra_193");
+            GameShaders.Misc["EmpressBlade"].UseShaderSpecificData(new Vector4(1f, 0f, 0f, 0.6f));
+            GameShaders.Misc["EmpressBlade"].Apply(null);
+            TrailDrawer.PrepareStrip(Projectile.oldPos, Projectile.oldRot, TrailColorFunction, TrailWidthFunction, Projectile.Size * 0.5f - Main.screenPosition, Projectile.oldPos.Length, true);
+            TrailDrawer.DrawTrail();
+            Main.pixelShader.CurrentTechnique.Passes[0].Apply();
+
+            // Draw the blade.
+            float outlineOpacity = 1;
+            float outlineWidth = 1;
+            if ((CurrentState == AIState.CircleOwner && AITimer < 0))
             {
-                Texture2D texture = ModContent.Request<Texture2D>("CalamityMod/Projectiles/Summon/IgneousBlade").Value;
-
-                Rectangle rectangle = new Rectangle(0, 0, texture.Width, texture.Height);
-
-                if (Lighting.NotRetro)
-                {
-                    for (int i = 0; i < Projectile.oldPos.Length; i++)
-                    {
-                        Vector2 drawPos = Projectile.oldPos[i] + Projectile.Size / 2f - Main.screenPosition + new Vector2(0f, Projectile.gfxOffY);
-                        Color color = Color.Lerp(Color.White, Color.Red, i / (float)Projectile.oldPos.Length) *
-                            ((Projectile.oldPos.Length - i) / (float)Projectile.oldPos.Length);
-                        float scale = MathHelper.Lerp(Projectile.scale * 1.35f, Projectile.scale * 0.6f, i / (float)Projectile.oldPos.Length);
-                        Main.EntitySpriteDraw(texture, drawPos, new Rectangle?(rectangle), color,
-                            Projectile.rotation,
-                            rectangle.Size() / 2f, scale, SpriteEffects.None, 0);
-                    }
-                }
-                Main.EntitySpriteDraw(texture, Projectile.Center - Main.screenPosition + new Vector2(0f, Projectile.gfxOffY), new Rectangle?(rectangle), Color.White,
-                           Projectile.rotation,
-                           rectangle.Size() / 2f, 1.35f, SpriteEffects.None, 0);
-                return false;
+                outlineWidth = Math.Clamp(MathF.Pow(1 - (AITimer) / -IgneousExaltation.ChargeCooldown, 3), 0, 100);
+                outlineOpacity = 0.75f;
             }
-            return true;
+            var outlineTex = IgneousExaltation.GetBladeOutlineTex();
+            Main.EntitySpriteDraw(outlineTex, drawPosition + new Vector2(2, 0) * outlineWidth, frame, new Color(166, 46, 61) * outlineOpacity, Projectile.rotation - MathHelper.PiOver4, origin, Projectile.scale, direction, 0);
+            Main.EntitySpriteDraw(outlineTex, drawPosition + new Vector2(0, 2) * outlineWidth, frame, new Color(166, 46, 61) * outlineOpacity, Projectile.rotation - MathHelper.PiOver4, origin, Projectile.scale, direction, 0);
+            Main.EntitySpriteDraw(outlineTex, drawPosition + new Vector2(-2, 0) * outlineWidth, frame, new Color(166, 46, 61) * outlineOpacity, Projectile.rotation - MathHelper.PiOver4, origin, Projectile.scale, direction, 0);
+            Main.EntitySpriteDraw(outlineTex, drawPosition + new Vector2(0, -2) * outlineWidth, frame, new Color(166, 46, 61) * outlineOpacity, Projectile.rotation - MathHelper.PiOver4, origin, Projectile.scale, direction, 0);
+            Main.EntitySpriteDraw(texture, drawPosition, frame, Projectile.GetAlpha(lightColor), Projectile.rotation - MathHelper.PiOver4, origin, Projectile.scale, direction, 0);
+
+            // Draw the gleam at the tip of the blade.
+            Texture2D shineTex = ModContent.Request<Texture2D>("CalamityMod/Particles/HalfStar").Value;
+            Vector2 shineScale = new Vector2(1.67f, 3f) * Projectile.scale;
+            shineScale *= MathHelper.Lerp(0.9f, 1.1f, (float)Math.Cos(Main.GlobalTimeWrappedHourly * 7.4f + Projectile.identity) * 0.5f + 0.5f);
+
+            Vector2 lensFlareWorldPosition = Projectile.Center + (Projectile.rotation - MathHelper.PiOver2).ToRotationVector2() * Projectile.width * Projectile.scale * 0.88f;
+            Color lensFlareColor = Color.Lerp(Color.LimeGreen, Color.Yellow, 0.23f) with { A = 0 } * BladeGleamInterpolant;
+            Main.EntitySpriteDraw(shineTex, lensFlareWorldPosition - Main.screenPosition, null, lensFlareColor, 0f, shineTex.Size() * 0.5f, shineScale * 0.6f, 0, 0);
+            Main.EntitySpriteDraw(shineTex, lensFlareWorldPosition - Main.screenPosition, null, lensFlareColor, MathHelper.PiOver2, shineTex.Size() * 0.5f, shineScale, 0, 0);
+
+            // Reset textures for shaders, since they're only defined once at load-time in vanilla.
+            GameShaders.Misc["EmpressBlade"].UseImage0("Images/Extra_209");
+            GameShaders.Misc["EmpressBlade"].UseImage1("Images/Extra_210");
+            return false;
         }
     }
 }

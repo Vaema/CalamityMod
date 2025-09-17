@@ -207,8 +207,8 @@ namespace CalamityMod.Projectiles.Ranged
                         ChargeSound?.Stop();
 
                         Vector2 shootVelocity = Projectile.velocity.SafeNormalize(Vector2.UnitY) * BulletSpeed;
-                        int charge2DamagePos = Projectile.damage; // Most of the damage comes from the explosion
-                        int charge2DamageNeg = Projectile.damage * 32; // Big charge time? Check. No pierce? Check. 32x damage? Yes!
+                        int charge2DamagePos = (int)(Projectile.damage * 0.5f); // Most of the damage comes from the explosion
+                        int charge2DamageNeg = Projectile.damage * 20; // Big charge time? Check. No pierce? Check. 20x damage? Yes!
 
                         if (Positive)
                         {
@@ -267,7 +267,7 @@ namespace CalamityMod.Projectiles.Ranged
                             for (int i = 0; i < 3; i++)
                             {
                                 float angle = i == 0 ? -0.25f : i == 2 ? 0.25f : 0;
-                                Projectile.NewProjectile(Projectile.GetSource_FromThis(), GunTipPosition, fireVec.RotatedBy(angle) * (1 - Math.Abs(angle * 0.25f)), ModContent.ProjectileType<OntologicalDespoilerShot>(), (int)(Projectile.damage / 1.5f), Projectile.knockBack, Projectile.owner, 0, 0, i);
+                                Projectile.NewProjectile(Projectile.GetSource_FromThis(), GunTipPosition, fireVec.RotatedBy(angle) * (1 - Math.Abs(angle * 0.25f)), ModContent.ProjectileType<OntologicalDespoilerShot>(), (int)(Projectile.damage / 1.2f), Projectile.knockBack, Projectile.owner, 0, 0, i);
                             }
                         }
                         else

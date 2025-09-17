@@ -1,4 +1,6 @@
 ﻿using System.Collections.Generic;
+using CalamityMod.Items.Weapons.Ranged;
+using CalamityMod.Items.Weapons.Rogue;
 using CalamityMod.Projectiles.Melee;
 using CalamityMod.Rarities;
 using Microsoft.Xna.Framework;
@@ -13,7 +15,10 @@ namespace CalamityMod.Items.Weapons.Melee
     {
         public new string LocalizationCategory => "Items.Weapons.Melee";
         internal const float TerrorBlastMultiplier = 0.3f;
-
+        public override void SetStaticDefaults()
+        {
+            ItemID.Sets.ShimmerTransformToItem[Type] = ModContent.ItemType<DaemonsFlame>();
+        }
         public override void SetDefaults()
         {
             Item.width = 88;

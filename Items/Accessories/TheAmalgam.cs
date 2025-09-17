@@ -16,6 +16,9 @@ namespace CalamityMod.Items.Accessories
     public class TheAmalgam : ModItem, ILocalizedModType, IHoldShiftTooltipItem
     {
         public new string LocalizationCategory => "Items.Accessories";
+
+        public static int NimbusDamage => CalamityUtils.ScaleWithDifficulty(200);
+
         public override void SetStaticDefaults()
         {
             Main.RegisterItemAnimation(Item.type, new DrawAnimationVertical(9, 6));
@@ -38,6 +41,11 @@ namespace CalamityMod.Items.Accessories
             modPlayer.amalgam = true;
             player.brainOfConfusionItem = Item;
             player.GetDamage<GenericDamageClass>() += 0.1f;
+            modPlayer.HeatDebuffMultiplier += 2f;
+            modPlayer.ColdDebuffMultiplier += 2f;
+            modPlayer.SicknessDebuffMultiplier += 2f;
+            modPlayer.WaterDebuffMultiplier += 2f;
+            modPlayer.ElectricDebuffMultiplier += 2f;
         }
 
         public override void AddRecipes()

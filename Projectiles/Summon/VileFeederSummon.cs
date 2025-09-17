@@ -18,6 +18,7 @@ namespace CalamityMod.Projectiles.Summon
         public override void SetStaticDefaults()
         {
             Main.projFrames[Type] = 3;
+            Main.projPet[Type] = true;
             ProjectileID.Sets.MinionSacrificable[Type] = true;
             ProjectileID.Sets.MinionTargettingFeature[Type] = true;
         }
@@ -39,16 +40,6 @@ namespace CalamityMod.Projectiles.Summon
             Projectile.localNPCHitCooldown = 60;
         }
 
-        public override void SendExtraAI(BinaryWriter writer)
-        {
-            writer.Write(Projectile.Calamity().lineColor);
-        }
-
-        public override void ReceiveExtraAI(BinaryReader reader)
-        {
-            Projectile.Calamity().lineColor = reader.ReadInt32();
-        }
-
         public override void AI()
         {
             Player player = Main.player[Projectile.owner];
@@ -56,7 +47,7 @@ namespace CalamityMod.Projectiles.Summon
 
             if (spawnDust)
             {
-                Projectile.Calamity().lineColor = -1;
+                Projectile.ai[1] = -1;
                 int dustAmt = 36;
                 for (int d = 0; d < dustAmt; d++)
                 {
@@ -115,7 +106,7 @@ namespace CalamityMod.Projectiles.Summon
                 {
                     spawnDust = true;
                 }
-                int npcIndex = Projectile.Calamity().lineColor;
+                int npcIndex = (int)Projectile.ai[1];
                 if (Projectile.localAI[0] >= 600000f) //tryna make it stay on there "forever" without glitching
                 {
                     breakAway = true;
@@ -156,6 +147,8 @@ namespace CalamityMod.Projectiles.Summon
                 }
             }
         }
+
+        public override bool MinionContactDamage() => true;
 
         public override void ModifyHitNPC(NPC target, ref NPC.HitModifiers modifiers)
         {
@@ -201,7 +194,7 @@ namespace CalamityMod.Projectiles.Summon
 
                                 //let the projectile know it is sticking and the npc it is sticking too
                                 Projectile.ai[0] = 3f;
-                                Projectile.Calamity().lineColor = npcIndex;
+                                Projectile.ai[1] = npcIndex;
 
                                 //follow the NPC
                                 Projectile.velocity = (npc.Center - Projectile.Center) * 0.75f;
@@ -214,7 +207,7 @@ namespace CalamityMod.Projectiles.Summon
                                 for (int projIndex = 0; projIndex < Main.maxProjectiles; projIndex++)
                                 {
                                     Projectile proj = Main.projectile[projIndex];
-                                    if (projIndex != Projectile.whoAmI && proj.active && proj.owner == Main.myPlayer && proj.type == Projectile.type && proj.ai[0] == 3f && proj.Calamity().lineColor == npcIndex)
+                                    if (projIndex != Projectile.whoAmI && proj.active && proj.owner == Main.myPlayer && proj.type == Projectile.type && proj.ai[0] == 3f && proj.ai[1] == npcIndex)
                                     {
                                         array2[projCount++] = new Point(projIndex, proj.timeLeft);
                                         if (projCount >= array2.Length)

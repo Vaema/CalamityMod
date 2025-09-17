@@ -1,4 +1,5 @@
 ﻿using System;
+using CalamityMod.Buffs.Summon;
 using CalamityMod.Dusts;
 using CalamityMod.Items.Materials;
 using CalamityMod.Items.Placeables.SunkenSea;
@@ -38,6 +39,7 @@ namespace CalamityMod.Items.Weapons.Summon
             Item.shootSpeed = 12f;
             Item.mana = 10;
             Item.rare = ItemRarityID.Green;
+            Item.buffType = ModContent.BuffType<SeashineSwordBuff>();
             Item.shoot = ModContent.ProjectileType<SeashineSwordProj>();
         }
         public override bool AltFunctionUse(Player player) => true;
@@ -90,11 +92,11 @@ namespace CalamityMod.Items.Weapons.Summon
             }
             else // Toss out the summon
             {
+                player.AddBuff(Item.buffType, 2);
                 SoundEngine.PlaySound(SoundID.Item1, player.Center);
 
-                int pr = Projectile.NewProjectile(source, player.Center, velocity, type, damage, knockback, player.whoAmI);
-                if (Main.projectile.IndexInRange(pr))
-                    Main.projectile[pr].originalDamage = Item.damage;
+                var minion = Projectile.NewProjectileDirect(source, player.Center, velocity, type, damage, knockback, player.whoAmI);
+                minion.originalDamage = Item.damage;
 
                 float angleMax = MathHelper.ToRadians(360f);
                 if (CalamityUtils.CountProjectiles(type) == 1)

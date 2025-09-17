@@ -14,7 +14,7 @@ namespace CalamityMod.Items.Weapons.Summon
         {
             Item.width = 82;
             Item.height = 84;
-            Item.damage = 50;
+            Item.damage = 30;
             Item.mana = 10;
             Item.DamageType = DamageClass.Summon;
             Item.sentry = true;

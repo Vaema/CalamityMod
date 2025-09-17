@@ -1,4 +1,5 @@
-﻿using Terraria;
+﻿using CalamityMod.DataStructures;
+using Terraria;
 using Terraria.ModLoader;
 
 namespace CalamityMod.Buffs.StatDebuffs
@@ -16,10 +17,7 @@ namespace CalamityMod.Buffs.StatDebuffs
 
         public override void Update(NPC npc, ref int buffIndex)
         {
-            if (npc.Calamity().marked < npc.buffTime[buffIndex])
-                npc.Calamity().marked = npc.buffTime[buffIndex];
-            npc.DelBuff(buffIndex);
-            buffIndex--;
+            npc.Calamity().markedForDeath = true;
         }
     }
 }

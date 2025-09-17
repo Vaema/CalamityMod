@@ -84,7 +84,7 @@ namespace CalamityMod.Projectiles.Boss
             if (info.Damage <= 0)
                 return;
 
-            target.AddBuff(ModContent.BuffType<Irradiated>(), 240, true);
+            target.AddBuff(BuffID.Venom, 180);
         }
     }
 }

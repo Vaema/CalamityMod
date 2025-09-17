@@ -31,7 +31,7 @@ namespace CalamityMod.NPCs.PrimordialWyrm
 
         public override void SetDefaults()
         {
-            NPC.damage = 100;
+            NPC.damage = 0; // No contact damage
             NPC.width = 100;
             NPC.height = 88;
             NPC.defense = 0;
@@ -65,8 +65,6 @@ namespace CalamityMod.NPCs.PrimordialWyrm
 
         public override void AI()
         {
-            NPC.damage = 0;
-
             // Difficulty modes
             bool death = CalamityWorld.death;
             bool revenge = CalamityWorld.revenge;

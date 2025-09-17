@@ -1,4 +1,5 @@
-﻿using CalamityMod.Items.Materials;
+﻿using CalamityMod.Buffs.Summon;
+using CalamityMod.Items.Materials;
 using CalamityMod.Projectiles.Summon;
 using CalamityMod.Rarities;
 using Microsoft.Xna.Framework;
@@ -47,33 +48,28 @@ namespace CalamityMod.Items.Weapons.Summon
             Item.rare = ItemRarityID.Red;
             Item.UseSound = SoundID.Item71;
             Item.autoReuse = true;
+            Item.buffType = ModContent.BuffType<ViridVanguardBuff>();
             Item.shoot = ModContent.ProjectileType<ViridVanguardBlade>();
             Item.rare = ModContent.RarityType<Turquoise>();
         }
 
         public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)
         {
-            if (player.altFunctionUse != 2)
-            {
-                int p = Projectile.NewProjectile(source, position, velocity, type, damage, knockback, player.whoAmI, 0f, 1f);
-                if (Main.projectile.IndexInRange(p))
-                {
-                    Main.projectile[p].originalDamage = Item.damage;
-                    Main.projectile[p].ModProjectile<ViridVanguardBlade>().BladeIndex = player.ownedProjectileCounts[type];
-                }
+            player.AddBuff(Item.buffType, 2);
+            var minion = Projectile.NewProjectileDirect(source, position, velocity, type, damage, knockback, player.whoAmI, 0f, 1f);
+            minion.originalDamage = Item.damage;
+            minion.ModProjectile<ViridVanguardBlade>().BladeIndex = player.ownedProjectileCounts[type];
 
-                int bladeIndex = 0;
-                foreach (Projectile pro in Main.ActiveProjectiles)
+            int bladeIndex = 0;
+            foreach (Projectile pro in Main.ActiveProjectiles)
+            {
+                if (pro.type == type && pro.owner == player.whoAmI)
                 {
-                    if (pro.type == type && pro.owner == player.whoAmI)
-                    {
-                        pro.ModProjectile<ViridVanguardBlade>().BladeIndex = bladeIndex++;
-                        pro.ModProjectile<ViridVanguardBlade>().AITimer = 0f;
-                        pro.netUpdate = true;
-                    }
+                    pro.ModProjectile<ViridVanguardBlade>().BladeIndex = bladeIndex++;
+                    pro.ModProjectile<ViridVanguardBlade>().AITimer = 0f;
+                    pro.netUpdate = true;
                 }
             }
-
             return false;
         }
         public override void AddRecipes()

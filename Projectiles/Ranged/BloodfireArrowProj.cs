@@ -39,7 +39,6 @@ namespace CalamityMod.Projectiles.Ranged
             Projectile.penetrate = 1;
             Projectile.extraUpdates = 9;
             Projectile.timeLeft = 1200;
-            Projectile.Calamity().pointBlankShotDuration = CalamityGlobalProjectile.DefaultPointBlankDuration;
         }
 
         public override void AI()
@@ -117,12 +116,6 @@ namespace CalamityMod.Projectiles.Ranged
             Player player = Main.player[Projectile.owner];
             player.lifeRegenTime += 2;
 
-            if (player.moonLeech)
-                return;
-
-            if (target.lifeMax <= 5)
-                return;
-
             float lifeRatio = (float)player.statLife / player.statLifeMax2;
             float averageHealAmount = MathHelper.Lerp(4.0f, 0.5f, lifeRatio); // Average heal increases from 1/2 to 4 HP based on missing health
             int guaranteedHeal = (int)averageHealAmount;
@@ -130,11 +123,7 @@ namespace CalamityMod.Projectiles.Ranged
             float chanceOfOneMoreHP = averageHealAmount - guaranteedHeal;
             bool bonusHeal = Main.rand.NextFloat() < chanceOfOneMoreHP;
             int finalHeal = guaranteedHeal + (bonusHeal ? 1 : 0);
-            if (finalHeal > BalancingConstants.LifeStealCap)
-                finalHeal = BalancingConstants.LifeStealCap;
-
-            if (finalHeal > 0)
-                CalamityGlobalProjectile.SpawnLifeStealProjectile(Projectile, Main.player[Projectile.owner], finalHeal, ProjectileID.VampireHeal, BalancingConstants.LifeStealRange);
+            player.SpawnLifeStealProjectile(target, Projectile, ProjectileID.VampireHeal, finalHeal, 0.5f);
         }
 
         public override bool PreDraw(ref Color lightColor)

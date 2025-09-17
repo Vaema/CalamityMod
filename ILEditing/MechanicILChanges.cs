@@ -6,6 +6,7 @@ using CalamityMod.Buffs.DamageOverTime;
 using CalamityMod.CalPlayer;
 using CalamityMod.Cooldowns;
 using CalamityMod.DataStructures;
+using CalamityMod.Enums;
 using CalamityMod.Events;
 using CalamityMod.FluidSimulation;
 using CalamityMod.Items.Accessories;
@@ -161,26 +162,7 @@ namespace CalamityMod.ILEditing
             // This will occur precisely when the player has no vanilla OR Calamity dash items equipped.
             cursor.Emit(OpCodes.Or);
 
-            //
-            // SHIELD OF CTHULHU
-            //
-
-            // Move to Shield of Cthulhu's code by finding its function call for iframes.
-            if (!cursor.TryGotoNext(MoveType.Before, i => i.MatchCall<Player>("GiveImmuneTimeForCollisionAttack")))
-            {
-                LogFailure("Vanilla Dash Fixes", "Could not locate function call for Shield of Cthulhu iframes.");
-                return;
-            }
-
-            if (!cursor.TryGotoPrev(MoveType.AfterLabel, i => i.MatchLdcI4(30)))
-            {
-                LogFailure("Vanilla Dash Fixes", "Could not locate amount of frames of dash cooldown applied on impact with Shield of Cthulhu.");
-                return;
-            }
-
-            // Remove the instruction and replace it with one which gives Calamity's (customizable) amount of dash cooldown.
-            cursor.Remove();
-            cursor.Emit(OpCodes.Ldc_I4, BalancingConstants.OnShieldBonkCooldown);
+            // CIT 22JUL2025: Shield of Cthulhu bonk is reimplemented in a separate On edit; removed the change made to it via this IL edit.
 
             //
             // SOLAR FLARE ARMOR
@@ -331,15 +313,19 @@ namespace CalamityMod.ILEditing
                 self.dashTime = 0;
             }
         }
-        #endregion
 
-        #region Allow Empress to Enrage in Boss Rush
-        private static bool AllowEmpressToEnrageInBossRush(On_NPC.orig_ShouldEmpressBeEnraged orig)
+        private static void DisableDoubleTapOnConfig(On_Player.orig_KeyDoubleTap orig, Player self, int keyDir)
         {
-            if (BossRushEvent.BossRushActive)
-                return true;
+            if (self.whoAmI != Main.myPlayer)
+            {
+                orig(self, keyDir);
+                return;
+            }
 
-            return orig();
+            if ((CalamityKeybinds.ArmorSetBonusHotKey.GetAssignedKeys().Count != 0 && CalamityClientConfig.Instance.SetBonusDoubleTap == SetBonusDoubleTapOptions.Auto) || CalamityClientConfig.Instance.SetBonusDoubleTap == SetBonusDoubleTapOptions.Off)
+                return;
+
+            orig(self, keyDir);
         }
         #endregion
 
@@ -390,6 +376,15 @@ namespace CalamityMod.ILEditing
                 return;
             }
             orig(self, fall, cPosition, cWidth, cHeight);
+        }
+        #endregion
+
+        #region Prevent Diabolists from Dropping Stuff in GFB Before Plantera
+        private static void PreventDiabolistLootLogic(On_NPC.orig_NPCLoot orig, NPC self)
+        {
+            if (self.type == NPCID.DiabolistWhite && Main.getGoodWorld && !NPC.downedPlantBoss)
+                return;
+            orig(self);
         }
         #endregion
 
@@ -628,7 +623,7 @@ namespace CalamityMod.ILEditing
         #endregion
 
         #region Chaos Stone and Chalice of the Blood God
-        private static void ManaSicknessAndChaliceBufferHeal(ILContext il)
+        private static void ChaliceBufferHeal(ILContext il)
         {
             ILCursor cursor = new ILCursor(il);
 
@@ -676,31 +671,32 @@ namespace CalamityMod.ILEditing
                     }
                 }
             });
+        }
+        #endregion
 
-            //
-            // The following section enables Mana Burn for Chaos Stone by conditionally replacing Mana Sickness.
-            //
-
-            // Start by finding the vanilla code which applies Mana Sickness (buff ID 94).
-            if (!cursor.TryGotoNext(c => c.MatchLdcI4(BuffID.ManaSickness)))
+        #region Chaos Stone Mana Burn changes
+        private static bool AllowNegativeCheckMana(On_Player.orig_CheckMana_int_bool_bool orig,Player self, int amount, bool pay, bool blockQuickMana) {
+            if (self.Calamity().ChaosStone)
             {
-                LogFailure("Conditionally Replace Mana Sickness", "Could not locate the mana sickness buff ID.");
-                return;
+                if (pay)
+                    self.statMana -= amount;
+                if (self.statMana < -self.statManaMax2)
+                    self.statMana = -self.statManaMax2;
+                return true;
             }
+            return orig(self, amount, pay, blockQuickMana);
+        }
 
-            // Remove the constant buff ID.
-            cursor.Remove();
-
-            // Load the player onto the stack for use in the following delegate.
-            cursor.Emit(OpCodes.Ldarg_0);
-
-            // Emit code which checks for the Chaos Stone. If equipped, the player gets Mana Burn instead of Mana Sickness.
-            cursor.EmitDelegate<Func<Player, int>>(player =>
+        private static bool AllowNegativeCheckMana(On_Player.orig_CheckMana_Item_int_bool_bool orig, Player self, Item item, int amount, bool pay, bool blockQuickMana) {
+            if (self.Calamity().ChaosStone)
             {
-                if (!player.active || !player.Calamity().ChaosStone)
-                    return BuffID.ManaSickness;
-                return ModContent.BuffType<ManaBurn>();
-            });
+                if (pay)
+                    self.statMana -= item.mana;
+                if (self.statMana < -self.statManaMax2)
+                    self.statMana = -self.statManaMax2;
+                return true;
+            }
+            return orig(self, item, amount, pay, blockQuickMana);
         }
         #endregion
 
@@ -1088,6 +1084,18 @@ namespace CalamityMod.ILEditing
         #region Lava Blocking
         private void BlockLavaDrawing(ILContext il)
         {
+            if (ModLoader.HasMod("LiquidSlopesPatch"))
+            {
+                BlockLavaDrawing_LiquidSlopesPatch(il);
+            }
+            else
+            {
+                BlockLavaDrawing_Vanilla(il);
+            }
+        }
+        
+        private void BlockLavaDrawing_Vanilla(ILContext il)
+        {
             //This edit to DrawNormalLiquids makes lavas in normal and white lighting draw with an alpha and with new textures
             //If the parameter for the waterstyle is more than the max waterstyles then its subtracted by the max water style count and thats the lava style ID
             ILCursor cursor = new ILCursor(il);
@@ -1131,6 +1139,61 @@ namespace CalamityMod.ILEditing
             cursor.EmitLdarg3();
             cursor.EmitLdloc2(); //Initiated Liquid Draw Cache (needed for the Type parameter)
             cursor.EmitLdfld(typeof(LiquidRenderer).GetNestedType("LiquidDrawCache", BindingFlags.NonPublic).GetRuntimeField("Type"));
+            cursor.EmitDelegate<Func<Texture2D, int, int, Texture2D>>((initialTexture, style, type) =>
+                (style >= LavaRenderingSystem.Instance.WaterStyleMaxCount + 1 && type == LiquidID.Lava)
+                    ? LavaRenderingSystem.Textures.liquid[style - LavaRenderingSystem.Instance.WaterStyleMaxCount - 1].Value
+                    : initialTexture
+            );
+        }
+
+        private void BlockLavaDrawing_LiquidSlopesPatch(ILContext il)
+        {
+            Assembly lspAsm = ModLoader.GetMod("LiquidSlopesPatch").Code;
+            Type liquidDrawCache = lspAsm.GetType("LiquidSlopesPatch.Common.RewrittenLiquidRenderer").GetNestedType("LiquidDrawCache");
+            
+            //This edit to DrawNormalLiquids makes lavas in normal and white lighting draw with an alpha and with new textures
+            //If the parameter for the waterstyle is more than the max waterstyles then its subtracted by the max water style count and thats the lava style ID
+            ILCursor cursor = new ILCursor(il);
+
+            //Continue if statement, basically
+            //if the liquid being drawn is lava and the water style is greater than the max water styles or if the liquid is water and less than the max water styles then the draw code is ran
+            //otherwise the loop/s are continued for the next liquid
+            if (!cursor.TryGotoNext(MoveType.After, i => i.MatchLdfld(liquidDrawCache, "IsVisible")))
+            {
+                LogFailure("Liquid Renderer Drawing", "Could not locate the IsVisible boolean check");
+                return;
+            }
+            cursor.EmitLdarg3();
+            cursor.EmitLdloc2(); //Initiated Liquid Draw Cache (needed for the Type parameter)
+            cursor.EmitLdfld(liquidDrawCache.GetField("Type"));
+            cursor.EmitDelegate<Func<bool, int, int, bool>>((IsVisible, style, type) => IsVisible && ((type == 1 && style >= LavaRenderingSystem.Instance.WaterStyleMaxCount + 1) || (type != 1 && style <= LavaRenderingSystem.Instance.WaterStyleMaxCount)));
+
+            //Lava alpha color, if the liquid drawn is lava, multiply num by the water alpha
+            if (!cursor.TryGotoNext(MoveType.Before, i => i.MatchLdloc(2), i => i.MatchLdfld(liquidDrawCache.GetField("Type")), i => i.MatchStloc(8)))
+            {
+                LogFailure("Liquid Renderer Drawing", "Could not locate creation of the local variable num2 (the liquid type holder variable)");
+                return;
+            }
+            cursor.EmitLdloc(8);
+            cursor.EmitLdloca(7);
+            cursor.EmitLdarg(4);
+            cursor.EmitDelegate((int num2, ref float num, float globalAlpha) =>
+            {
+                if (num2 == LiquidID.Lava)
+                {
+                    num *= globalAlpha;
+                }
+            });
+
+            //Conditionally replace the liquid texture whether the liquid is lava or water
+            if (!cursor.TryGotoNext(MoveType.After, i => i.MatchCallvirt(typeof(Asset<Texture2D>).GetMethod("get_Value", BindingFlags.Public | BindingFlags.Instance))))
+            {
+                LogFailure("Liquid Renderer Drawing", "Could not locate the Texture2D array of liquids");
+                return;
+            }
+            cursor.EmitLdarg3();
+            cursor.EmitLdloc2(); //Initiated Liquid Draw Cache (needed for the Type parameter)
+            cursor.EmitLdfld(liquidDrawCache.GetField("Type"));
             cursor.EmitDelegate<Func<Texture2D, int, int, Texture2D>>((initialTexture, style, type) =>
                 (style >= LavaRenderingSystem.Instance.WaterStyleMaxCount + 1 && type == LiquidID.Lava)
                     ? LavaRenderingSystem.Textures.liquid[style - LavaRenderingSystem.Instance.WaterStyleMaxCount - 1].Value
@@ -1392,6 +1455,18 @@ namespace CalamityMod.ILEditing
 
         private static void LiquidDrawColors(ILContext il)
         {
+            if (ModLoader.HasMod("LiquidSlopesPatch"))
+            {
+                LiquidDrawColors_LiquidSlopesPatch(il);
+            }
+            else
+            {
+                LiquidDrawColors_Vanilla(il);
+            }
+        }
+        
+        private static void LiquidDrawColors_Vanilla(ILContext il)
+        {
             ILCursor cursor = new ILCursor(il);
             if (!cursor.TryGotoNext(MoveType.Before, c => c.MatchLdarg2(), c => c.MatchLdloc3(), c => c.MatchLdloc(4), c => c.MatchCall<Main>("DrawTileInWater")))
             {
@@ -1404,6 +1479,37 @@ namespace CalamityMod.ILEditing
             cursor.Emit(OpCodes.Ldloc_2);
             cursor.Emit(OpCodes.Ldfld, typeof(LiquidRenderer).GetNestedType("LiquidDrawCache", BindingFlags.NonPublic).GetRuntimeField("Type"));
             cursor.Emit(OpCodes.Ldloca, 9);
+
+            cursor.EmitDelegate((int x, int y, int liquidType, ref VertexColors initialColor) =>
+            {
+                if (liquidType == LiquidID.Water)
+                {
+                    CalamityWaterLoader.DrawColorSetup(x, y, Main.waterStyle, ref initialColor);
+                }
+                else if (liquidType == LiquidID.Lava && ExternalMods.biomeLava == null)
+                {
+                    LavaStylesLoader.DrawColorSetup(x, y, LavaRenderingSystem.LavaStyle, ref initialColor);
+                }
+            });
+        }
+        
+        private static void LiquidDrawColors_LiquidSlopesPatch(ILContext il)
+        {
+            Assembly lspAsm = ModLoader.GetMod("LiquidSlopesPatch").Code;
+            Type liquidDrawCache = lspAsm.GetType("LiquidSlopesPatch.Common.RewrittenLiquidRenderer").GetNestedType("LiquidDrawCache");
+            
+            ILCursor cursor = new ILCursor(il);
+            if (!cursor.TryGotoNext(MoveType.Before, c => c.MatchLdarg2(), c => c.MatchLdloc(out _), c => c.MatchLdloc(out _), c => c.MatchCall<Main>("DrawTileInWater")))
+            {
+                LogFailure("Liquid Draw Colors (LSP)", "Could not locate the liquid vertex colors for drawing");
+                return;
+            }
+
+            cursor.Emit(OpCodes.Ldloc, 9);
+            cursor.Emit(OpCodes.Ldloc, 10);
+            cursor.Emit(OpCodes.Ldloc_2);
+            cursor.Emit(OpCodes.Ldfld, liquidDrawCache.GetField("Type"));
+            cursor.Emit(OpCodes.Ldloca, 11);
 
             cursor.EmitDelegate((int x, int y, int liquidType, ref VertexColors initialColor) =>
             {

@@ -282,7 +282,7 @@ ClockworkBow: {
 	DisplayName: Clockwork Bow
 	Tooltip:
 		'''
-		Hold left click to load up to six precision bolts
+		Hold <left> to load up to six precision bolts
 		The more precision bolts are loaded, the harder they hit
 		'''
 }
@@ -559,7 +559,7 @@ HalleysInferno: {
 		Press <right> to zoom out
 		Uses gel for ammo
 		50% chance to save ammo
-		'Halley came sooner than expected'
+		'Halley arrived sooner than expected'
 		'''
 }
 
@@ -673,6 +673,17 @@ LunarianBow: {
 		'''
 		Fires two arrows at once
 		Converts wooden arrows into sliding energy bolts
+		'''
+}
+
+M1Garand: {
+	DisplayName: M1 Garand
+	Tooltip:
+		'''
+		Shots fired only inherit the damage of the bullet used
+		Fires 8 bullets before ejecting the rifle's cartridge
+		Bullets which ricochet off coins can ricochet off cartridges too
+		'Mind your thumb'
 		'''
 }
 
@@ -938,7 +949,7 @@ PolarisParrotfish: {
 		'''
 		Rapidly fires an array of colorful star shots
 		Firing speed increases the closer you are to an enemy
-		Right click to give the little girl some attention
+		<right> to give the little girl some attention
 		'She is a happy girl'
 		'''
 }

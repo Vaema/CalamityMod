@@ -2,6 +2,7 @@
 using CalamityMod.Items.Materials;
 using Terraria;
 using Terraria.ID;
+using Terraria.Localization;
 using Terraria.ModLoader;
 
 namespace CalamityMod.Items.Armor.Aerospec
@@ -11,6 +12,16 @@ namespace CalamityMod.Items.Armor.Aerospec
     public class AerospecHeadMagic : ModItem, ILocalizedModType
     {
         public new string LocalizationCategory => "Items.Armor.PreHardmode";
+
+        public static int MaxManaBoost = 30;
+        public static float MagicDamageBoost = 0.1f;
+        public override LocalizedText Tooltip => base.Tooltip.WithFormatArgs(MaxManaBoost, MagicDamageBoost.ToPercent());
+
+        // Set Bonus
+        public static float SetBonusManaCostReduction = 0.08f;
+        public static float SetBonusMoveSpeedBoost = 0.05f;
+        public static int SetBonusMagicCritBoost = 5; // NOTE: Tooltip shares this number with move speed % as they're equal
+
         public override void SetDefaults()
         {
             Item.width = 18;
@@ -20,31 +31,25 @@ namespace CalamityMod.Items.Armor.Aerospec
             Item.defense = 3; //15
         }
 
-        public override bool IsArmorSet(Item head, Item body, Item legs)
-        {
-            return body.type == ModContent.ItemType<AerospecBreastplate>() && legs.type == ModContent.ItemType<AerospecLeggings>();
-        }
+        public override bool IsArmorSet(Item head, Item body, Item legs) => body.type == ModContent.ItemType<AerospecBreastplate>() && legs.type == ModContent.ItemType<AerospecLeggings>();
 
-        public override void ArmorSetShadows(Player player)
-        {
-            player.armorEffectDrawShadow = true;
-        }
+        public override void ArmorSetShadows(Player player) => player.armorEffectDrawShadow = true;
 
         public override void UpdateArmorSet(Player player)
         {
-            player.setBonus = this.GetLocalizedValue("SetBonus") + "\n" + CalamityUtils.GetTextValueFromModItem<AerospecBreastplate>("CommonSetBonus");
+            player.setBonus = this.GetLocalization("SetBonus").Format(SetBonusManaCostReduction.ToPercent(), SetBonusMoveSpeedBoost.ToPercent(), AerospecBreastplate.SetBonusHurtDamageThreshold);
             var modPlayer = player.Calamity();
             modPlayer.aeroSet = true;
             player.noFallDmg = true;
-            player.moveSpeed += 0.05f;
-            player.manaCost -= 0.08f;
-            player.GetCritChance<MagicDamageClass>() += 5;
+            player.moveSpeed += SetBonusMoveSpeedBoost;
+            player.manaCost -= SetBonusManaCostReduction;
+            player.GetCritChance<MagicDamageClass>() += SetBonusMagicCritBoost;
         }
 
         public override void UpdateEquip(Player player)
         {
-            player.GetDamage<MagicDamageClass>() += 0.1f;
-            player.statManaMax2 += 30;
+            player.GetDamage<MagicDamageClass>() += MagicDamageBoost;
+            player.statManaMax2 += MaxManaBoost;
         }
 
         public override void AddRecipes()

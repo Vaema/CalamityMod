@@ -8,6 +8,7 @@ using CalamityMod.Items.TreasureBags.MiscGrabBags;
 using CalamityMod.NPCs.AcidRain;
 using CalamityMod.NPCs.NormalNPCs;
 using CalamityMod.NPCs.TownNPCs;
+using CalamityMod.Projectiles.Typeless;
 using CalamityMod.Walls;
 using CalamityMod.World;
 using Microsoft.Xna.Framework;
@@ -240,34 +241,6 @@ namespace CalamityMod.ILEditing
         }
         #endregion
 
-        #region Make Windy Day Music Play Less Often
-        private static void MakeWindyDayMusicPlayLessOften(ILContext il)
-        {
-            // Make windy day theme only play when the wind speed is over 0.5f instead of 0.4f and make it stop when the wind dies down to below 0.44f instead of 0.34f.
-            var cursor = new ILCursor(il);
-
-            FieldInfo _minWindField = typeof(Main).GetField("_minWind", BindingFlags.NonPublic | BindingFlags.Static);
-
-            if (!cursor.TryGotoNext(MoveType.Before, i => i.MatchLdsfld(_minWindField))) // The min wind speed check that stops the windy day theme when the wind dies down enough.
-            {
-                LogFailure("Make Windy Day Music Play Less Often", "Could not locate the _minWind variable.");
-                return;
-            }
-            cursor.Remove();
-            cursor.Emit(OpCodes.Ldc_R4, 0.44f); // Change to 0.44f.
-
-            FieldInfo _maxWindField = typeof(Main).GetField("_maxWind", BindingFlags.NonPublic | BindingFlags.Static);
-
-            if (!cursor.TryGotoNext(MoveType.Before, i => i.MatchLdsfld(_maxWindField))) // The max wind speed check that causes the windy day theme to play.
-            {
-                LogFailure("Make Windy Day Music Play Less Often", "Could not locate the _maxWind variable.");
-                return;
-            }
-            cursor.Remove();
-            cursor.Emit(OpCodes.Ldc_R4, 0.5f); // Change to 0.5f.
-        }
-        #endregion Make Windy Day Music Play Less Often
-
         #region Change Blood Moon Max HP Requirements
         private static void BloodMoonsRequire200MaxLife(ILContext il)
         {
@@ -330,6 +303,59 @@ namespace CalamityMod.ILEditing
             orig(self);
             if (self.ai[0] == 1f && self.ai[1] == 0f)
                 self.velocity -= Main.player[self.owner].velocity;
+        }
+        #endregion
+
+        #region Allow Victide Bobber to Exist
+        private static void WhitelistVictideBobber(ILContext il)
+        {
+            var cursor = new ILCursor(il);
+
+            // Find the label which skips the "flag = true" that kills the projectile
+            ILLabel flagStorage = null;
+            if (!cursor.TryGotoNext(MoveType.After, x => x.MatchBeq(out flagStorage)))
+            {
+                LogFailure("Allow Victide Bobber to Exist", "Failed to properly navigate label to direct to");
+                return;
+            }
+
+            // Properly perform the skip if the projectile type is the Victide Bobber
+            cursor.Emit(OpCodes.Ldarg_0);
+            cursor.Emit(OpCodes.Ldfld, typeof(Projectile).GetField("type"));
+            cursor.Emit(OpCodes.Ldc_I4, ModContent.ProjectileType<VictideBobber>());
+            cursor.Emit(OpCodes.Beq_S, flagStorage);
+        }
+        #endregion
+
+        #region Prevent Victide Bobber from Jammming
+        private static bool PreventVictideBobberFromJamming(On_Player.orig_ItemCheck_CheckFishingBobbers orig, Player self, bool canUse)
+        {
+            // Run through the original stuff
+            canUse = orig(self, canUse);
+
+            int bobberCount = 0;
+            foreach (Projectile proj in Main.ActiveProjectiles)
+            {
+                if (proj.active && proj.owner == self.whoAmI && proj.bobber)
+                {
+                    bobberCount++;
+                    if (proj.type == ModContent.ProjectileType<VictideBobber>())
+                    {
+                        // Go back to casting if there's nothing loaded
+                        if (proj.ai[1] == 0f)
+                            proj.ai[0] = 0f;
+
+                        // Allow you to still use the fishing rod
+                        canUse = true;
+                    }
+                }
+            }
+
+            // Unless.. you have a bobber already that's NOT Victide, then back to disabling
+            if (canUse && bobberCount > 1)
+                canUse = false;
+
+            return canUse;
         }
         #endregion
 

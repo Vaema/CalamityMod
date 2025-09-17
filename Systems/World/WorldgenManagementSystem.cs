@@ -224,13 +224,6 @@ namespace CalamityMod.Systems
                     int sunkenSeaX = (GenVars.UndergroundDesertLocation.Left + GenVars.UndergroundDesertLocation.Right) / 2;
                     int sunkenSeaY = Main.maxTilesY / 2;
 
-                    SunkenSea.ForLoop = CalamityClientConfig.Instance.SunkenSeaMultiThreading switch
-                    {
-                        2 => SunkenSea.CSharpParallelFor,
-                        1 => SunkenSea.ReLogicParallelFor,
-                        _ => SunkenSea.NormalForLoop,
-                    };
-
                     // place each piece of the sunken sea based on the above positons
 
                     // messages intentionally in the "incorrect" order for the player's experience.
@@ -238,6 +231,7 @@ namespace CalamityMod.Systems
                     // it breaks up the 3 minute gen time and makes it more interesting for those who dont tab out while worldgen runs,
                     // rather than keeping the player in the dark about what's happening.
                     // it doesn't have to make sense, just be cool for the players :) -ena
+                    //SunkenSea.PlaceBasaltGullyBorderBlend(sunkenSeaX, sunkenSeaY + (Main.maxTilesY / 4));
                     progress.Message = Language.GetOrRegister("Mods.CalamityMod.UI.SunkenSea").Value;
                     SunkenSea.PlaceBasaltGully(sunkenSeaX, sunkenSeaY + (Main.maxTilesY / 4));
                     progress.Message = Language.GetOrRegister("Mods.CalamityMod.UI.TimelessShores").Value;
@@ -249,9 +243,9 @@ namespace CalamityMod.Systems
                     SunkenSea.PlaceClamDen(sunkenSeaX, sunkenSeaY + 630);
                     progress.Message = Language.GetOrRegister("Mods.CalamityMod.UI.GleamingBurrows").Value;
                     SunkenSea.PlaceTimelessShores(sunkenSeaX, sunkenSeaY);
+                    SunkenSea.PlaceSunkenSeaAmbience();
                     SunkenSea.BasaltGullyLavaCleanup(sunkenSeaX, sunkenSeaY + (Main.maxTilesY / 4));
                     progress.Message = Language.GetOrRegister("Mods.CalamityMod.UI.BasaltGully").Value;
-                    SunkenSea.PlaceSunkenSeaAmbience();
                 }));
             }
 

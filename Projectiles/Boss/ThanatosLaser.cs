@@ -38,7 +38,6 @@ namespace CalamityMod.Projectiles.Boss
 
         public override void SetDefaults()
         {
-            Projectile.Calamity().DealsDefenseDamage = true;
             Projectile.width = 22;
             Projectile.height = 22;
             Projectile.hostile = true;
@@ -98,8 +97,8 @@ namespace CalamityMod.Projectiles.Boss
                     // If a velocity is in reserve, set the true velocity to it and make it as "taken" by setting it to <0,0>
                     if (Velocity != Vector2.Zero)
                     {
-                        Projectile.extraUpdates = CalamityWorld.LegendaryMode ? 4 : 3;
-                        Projectile.velocity = Velocity * (BossRushEvent.BossRushActive ? 1.25f : 1f);
+                        Projectile.extraUpdates = Main.getGoodWorld ? 4 : 3;
+                        Projectile.velocity = Velocity;
                         Velocity = Vector2.Zero;
                         Projectile.netUpdate = true;
                     }
@@ -161,8 +160,8 @@ namespace CalamityMod.Projectiles.Boss
                 // If a velocity is in reserve, set the true velocity to it and make it as "taken" by setting it to <0,0>
                 if (Velocity != Vector2.Zero)
                 {
-                    Projectile.extraUpdates = CalamityWorld.LegendaryMode ? 4 : 3;
-                    Projectile.velocity = Velocity * (BossRushEvent.BossRushActive ? 1.25f : 1f);
+                    Projectile.extraUpdates = Main.getGoodWorld ? 4 : 3;
+                    Projectile.velocity = Velocity;
                     Velocity = Vector2.Zero;
                     Projectile.netUpdate = true;
                 }
@@ -239,14 +238,6 @@ namespace CalamityMod.Projectiles.Boss
         }
 
         public override bool CanHitPlayer(Player target) => TelegraphDelay > TelegraphTotalTime;
-
-        public override void OnHitPlayer(Player target, Player.HurtInfo info)
-        {
-            if (info.Damage <= 0 || TelegraphDelay <= TelegraphTotalTime)
-                return;
-
-            target.AddBuff(ModContent.BuffType<BrimstoneFlames>(), 90);
-        }
 
         public override bool? Colliding(Rectangle projHitbox, Rectangle targetHitbox)
         {

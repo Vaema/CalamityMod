@@ -4167,7 +4167,7 @@ PrepareToShoot:
 
             if (Main.netMode != NetmodeID.MultiplayerClient && !targetDead)
             {
-                if (CalamityWorld.LegendaryMode && npc.type == NPCID.EaterofSouls)
+                if (Main.getGoodWorld && npc.type == NPCID.EaterofSouls)
                 {
                     if (NPC.AnyNPCs(NPCID.EaterofWorldsHead))
                     {
@@ -5433,7 +5433,7 @@ PrepareToShoot:
             }
             else
             {
-                if (CalamityWorld.LegendaryMode && npc.type == NPCID.FireImp)
+                if (Main.getGoodWorld && npc.type == NPCID.FireImp)
                 {
                     if (NPC.AnyNPCs(NPCID.WallofFlesh))
                     {
@@ -6790,15 +6790,8 @@ PrepareToShoot:
 
                 int projType = ProjectileID.SandBallFalling;
 
-                // If Legendary is enabled, can fire 8 to 13 sand balls (random chance for 10x the amount)
-                int projAmt = 1;
-                if (CalamityWorld.LegendaryMode)
-                {
-                    projAmt = Main.rand.Next(8, 14);
-                    if (Main.rand.NextBool(1000) || Main.zenithWorld)
-                        projAmt = Main.rand.Next(80, 131);
-                }
-
+                // In FTW, can fire 8 sand balls (100 in stupid meme seed)
+                int projAmt = Main.zenithWorld ? 100 : Main.getGoodWorld ? 8 : 1;
                 for (int i = 0; i < projAmt; i++)
                 {
                     // Adjust the velocity to make it a shotgun-like spread

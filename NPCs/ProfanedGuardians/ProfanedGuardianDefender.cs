@@ -54,13 +54,18 @@ namespace CalamityMod.NPCs.ProfanedGuardians
             }
         }
 
+        public static int FireDamage = 36; // 144; HolyFlare
+        public static int BlobDamage = 36; // 144
+        public static int FireSentryDamage = 54; // 216; HolyBomb
+        public static int MoltenBlastDamage = 54; // 216
+
         public override void SetDefaults()
         {
             NPC.BossBar = Main.BigBossProgressBar.NeverValid;
             NPC.Calamity().canBreakPlayerDefense = true;
+            NPC.damage = 108; // 216
             NPC.npcSlots = 3f;
             NPC.aiStyle = -1;
-            NPC.GetNPCDamage();
             NPC.width = 228;
             NPC.height = 164;
             NPC.defense = 50;
@@ -76,10 +81,6 @@ namespace CalamityMod.NPCs.ProfanedGuardians
             NPC.Calamity().VulnerableToCold = true;
             NPC.Calamity().VulnerableToSickness = false;
             NPC.Calamity().VulnerableToWater = true;
-
-            // Scale stats in Expert and Master
-            CalamityGlobalNPC.AdjustExpertModeStatScaling(NPC);
-            CalamityGlobalNPC.AdjustMasterModeStatScaling(NPC);
         }
 
         public override void SetBestiary(BestiaryDatabase database, BestiaryEntry bestiaryEntry)
@@ -242,17 +243,16 @@ namespace CalamityMod.NPCs.ProfanedGuardians
             // Get the Guardian Commander's target
             Player player = Main.player[Main.npc[CalamityGlobalNPC.doughnutBoss].target];
 
-            bool bossRush = BossRushEvent.BossRushActive;
-            bool expertMode = Main.expertMode || bossRush;
-            bool revenge = CalamityWorld.revenge || bossRush;
-            bool death = CalamityWorld.death || bossRush;
+            bool expertMode = Main.expertMode || BossRushEvent.BossRushActive;
+            bool revenge = CalamityWorld.revenge || BossRushEvent.BossRushActive;
+            bool death = CalamityWorld.death || BossRushEvent.BossRushActive;
 
             bool phase1 = healerAlive;
 
             NPC.chaseable = !phase1;
 
             // Phase durations
-            float commanderGuardPhase2Duration = bossRush ? 420f : death ? 480f : revenge ? 510f : expertMode ? 540f : 600f;
+            float commanderGuardPhase2Duration = death ? 480f : revenge ? 510f : expertMode ? 540f : 600f;
             float timeBeforeRocksRespawnInPhase2 = 90f;
             float throwRocksGateValue = 60f;
 
@@ -261,8 +261,8 @@ namespace CalamityMod.NPCs.ProfanedGuardians
 
             // Charge variables
             float chargeVelocityMult = 0.25f;
-            float maxChargeVelocity = bossRush ? 25f : death ? 22f : revenge ? 20.5f : expertMode ? 19f : 16f;
-            if (CalamityWorld.LegendaryMode)
+            float maxChargeVelocity = death ? 22f : revenge ? 20.5f : expertMode ? 19f : 16f;
+            if (Main.getGoodWorld)
                 maxChargeVelocity *= 1.15f;
 
             // Whether the commander is calling all guardians together for the laser attack
@@ -381,8 +381,8 @@ namespace CalamityMod.NPCs.ProfanedGuardians
                 }
             }
 
-            float moveVelocity = bossRush ? 24f : death ? 22f : revenge ? 21f : expertMode ? 20f : 18f;
-            if (CalamityWorld.LegendaryMode)
+            float moveVelocity = death ? 22f : revenge ? 21f : expertMode ? 20f : 18f;
+            if (Main.getGoodWorld)
                 moveVelocity *= 1.25f;
             if (healerAlive)
                 moveVelocity *= 0.8f;
@@ -431,7 +431,7 @@ namespace CalamityMod.NPCs.ProfanedGuardians
                 // Lay a holy bomb every once in a while in phase 1 and while not doing the laser attack
                 if (!commanderUsingLaser)
                 {
-                    float projectileShootGateValue = bossRush ? 420f : death ? 480f : revenge ? 510f : expertMode ? 540f : 600f;
+                    float projectileShootGateValue = death ? 480f : revenge ? 510f : expertMode ? 540f : 600f;
                     NPC.ai[1] += 1f;
                     if (NPC.ai[1] >= projectileShootGateValue)
                     {
@@ -444,9 +444,7 @@ namespace CalamityMod.NPCs.ProfanedGuardians
 
                             projectileVelocityY += expertMode ? 4f : 3f;
                             Vector2 projectileVelocity = new Vector2(NPC.velocity.X * 0.25f, projectileVelocityY);
-                            int type = ModContent.ProjectileType<HolyBomb>();
-                            int damage = NPC.GetProjectileDamage(type);
-                            Projectile.NewProjectile(NPC.GetSource_FromAI(), shootFrom, projectileVelocity, type, damage, 0f, Main.myPlayer);
+                            Projectile.NewProjectile(NPC.GetSource_FromAI(), shootFrom, projectileVelocity, ModContent.ProjectileType<HolyBomb>(), FireSentryDamage, 0f, Main.myPlayer);
                         }
                     }
                 }
@@ -457,7 +455,7 @@ namespace CalamityMod.NPCs.ProfanedGuardians
                 if (distanceFromDestination.Length() > 40f)
                 {
                     float inertia = (commanderUsingLaser || commanderGoingLowOrHighInPhase1) ? 10f : 15f;
-                    if (CalamityWorld.LegendaryMode)
+                    if (Main.getGoodWorld)
                         inertia *= 0.8f;
 
                     NPC.velocity = (NPC.velocity * (inertia - 1) + desiredVelocity) / inertia;
@@ -489,7 +487,7 @@ namespace CalamityMod.NPCs.ProfanedGuardians
                 if (NPC.ai[1] >= -throwRocksGateValue)
                 {
                     NPC.velocity *= 0.8f;
-                    if (CalamityWorld.LegendaryMode)
+                    if (Main.getGoodWorld)
                         NPC.velocity *= 0.5f;
                 }
 
@@ -501,18 +499,13 @@ namespace CalamityMod.NPCs.ProfanedGuardians
                     float shootMoltenBlastsGateValue = commanderGuardPhase2Duration / moltenBlastsDivisor;
                     if (NPC.ai[1] % shootMoltenBlastsGateValue == 0f && !commanderGoingLowOrHighInPhase2)
                     {
-                        float moltenBlastVelocity = bossRush ? 18f : death ? 16f : revenge ? 15f : expertMode ? 14f : 12f;
+                        float moltenBlastVelocity = death ? 16f : revenge ? 15f : expertMode ? 14f : 12f;
                         int projTimeLeft = (int)(2400f / moltenBlastVelocity);
                         Vector2 velocity = Vector2.Normalize(player.Center - shootFrom) * moltenBlastVelocity;
                         if (Main.netMode != NetmodeID.MultiplayerClient)
                         {
-                            int type = ModContent.ProjectileType<MoltenBlast>();
-                            int damage = NPC.GetProjectileDamage(type);
-                            if (Main.netMode != NetmodeID.MultiplayerClient)
-                            {
-                                int proj = Projectile.NewProjectile(NPC.GetSource_FromAI(), shootFrom, velocity, type, damage, 0f, Main.myPlayer, player.position.X, player.position.Y, 1f);
-                                Main.projectile[proj].timeLeft = projTimeLeft;
-                            }
+                            int proj = Projectile.NewProjectile(NPC.GetSource_FromAI(), shootFrom, velocity, ModContent.ProjectileType<MoltenBlast>(), MoltenBlastDamage, 0f, Main.myPlayer, player.position.X, player.position.Y, 1f);
+                            Main.projectile[proj].timeLeft = projTimeLeft;
                         }
 
                         // Dust for blasting out the molten blasts
@@ -555,7 +548,7 @@ namespace CalamityMod.NPCs.ProfanedGuardians
                     if (distanceFromDestination.Length() > 40f)
                     {
                         float inertia = commanderGoingLowOrHighInPhase2 ? 8f : 15f;
-                        if (CalamityWorld.LegendaryMode)
+                        if (Main.getGoodWorld)
                             inertia *= 0.8f;
 
                         NPC.velocity = (NPC.velocity * (inertia - 1) + desiredVelocity) / inertia;
@@ -608,7 +601,7 @@ namespace CalamityMod.NPCs.ProfanedGuardians
                 NPC.spriteDirection = Math.Sign(NPC.velocity.X);
 
                 NPC.ai[1] += 1f;
-                float phaseGateValue = bossRush ? 120f : death ? 140f : revenge ? 150f : expertMode ? 160f : 180f;
+                float phaseGateValue = death ? 140f : revenge ? 150f : expertMode ? 160f : 180f;
                 if (NPC.ai[1] >= phaseGateValue)
                 {
                     NPC.ai[0] = 3f;
@@ -629,7 +622,7 @@ namespace CalamityMod.NPCs.ProfanedGuardians
                         // Accelerate
                         if (NPC.velocity.Length() < maxChargeVelocity)
                         {
-                            float velocityMult = bossRush ? 1.04f : death ? 1.036667f : revenge ? 1.035f : expertMode ? 1.033333f : 1.03f;
+                            float velocityMult = death ? 1.036667f : revenge ? 1.035f : expertMode ? 1.033333f : 1.03f;
                             NPC.velocity = targetVector * (NPC.velocity.Length() * velocityMult);
                             if (NPC.velocity.Length() > maxChargeVelocity)
                             {
@@ -641,7 +634,7 @@ namespace CalamityMod.NPCs.ProfanedGuardians
                     else if (NPC.localAI[2] == 1f)
                     {
                         // Charge towards target
-                        float inertia = bossRush ? 57f : death ? 63f : revenge ? 66f : expertMode ? 69f : 75f;
+                        float inertia = death ? 63f : revenge ? 66f : expertMode ? 69f : 75f;
                         NPC.velocity = (NPC.velocity * (inertia - 1f) + targetVector * (NPC.velocity.Length() + (0.111111117f * inertia))) / inertia;
 
                         // Stop charging towards the player when within a certain distance
@@ -672,9 +665,7 @@ namespace CalamityMod.NPCs.ProfanedGuardians
 
                             projectileVelocityY += expertMode ? 4f : 3f;
                             Vector2 projectileVelocity = new Vector2(NPC.velocity.X * 0.25f, projectileVelocityY);
-                            int type = ModContent.ProjectileType<HolyBomb>();
-                            int damage = NPC.GetProjectileDamage(type);
-                            Projectile.NewProjectile(NPC.GetSource_FromAI(), shootFrom, projectileVelocity, type, damage, 0f, Main.myPlayer);
+                            Projectile.NewProjectile(NPC.GetSource_FromAI(), shootFrom, projectileVelocity, ModContent.ProjectileType<HolyBomb>(), FireSentryDamage, 0f, Main.myPlayer);
                         }
                     }
                 }
@@ -947,7 +938,7 @@ namespace CalamityMod.NPCs.ProfanedGuardians
         public override void OnHitPlayer(Player target, Player.HurtInfo hurtInfo)
         {
             if (hurtInfo.Damage > 0)
-                target.AddBuff(ModContent.BuffType<HolyFlames>(), 240);
+                target.AddBuff(ModContent.BuffType<HolyFlames>(), 180);
         }
 
         public override void ModifyHitByProjectile(Projectile projectile, ref NPC.HitModifiers modifiers)

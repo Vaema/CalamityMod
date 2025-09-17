@@ -3,6 +3,7 @@ using CalamityMod.Items.Placeables;
 using CalamityMod.Rarities;
 using Terraria;
 using Terraria.ID;
+using Terraria.Localization;
 using Terraria.ModLoader;
 
 namespace CalamityMod.Items.Armor.OmegaBlue
@@ -12,6 +13,12 @@ namespace CalamityMod.Items.Armor.OmegaBlue
     public class OmegaBlueTentacles : ModItem, ILocalizedModType
     {
         public new string LocalizationCategory => "Items.Armor.PostMoonLord";
+
+        public static float DamageBoost = 0.16f;
+        public static int CritBoost = 12;
+        public static float MoveSpeedBoost = 0.12f;
+        public override LocalizedText Tooltip => base.Tooltip.WithFormatArgs(DamageBoost.ToPercent(), CritBoost, MoveSpeedBoost.ToPercent());
+
         public override void SetStaticDefaults()
         {
             if (Main.dedServ)
@@ -33,9 +40,9 @@ namespace CalamityMod.Items.Armor.OmegaBlue
 
         public override void UpdateEquip(Player player)
         {
-            player.GetDamage<GenericDamageClass>() += 0.12f;
-            player.GetCritChance<GenericDamageClass>() += 12;
-            player.moveSpeed += 0.12f;
+            player.GetDamage<GenericDamageClass>() += DamageBoost;
+            player.GetCritChance<GenericDamageClass>() += CritBoost;
+            player.moveSpeed += MoveSpeedBoost;
         }
 
         public override void AddRecipes()

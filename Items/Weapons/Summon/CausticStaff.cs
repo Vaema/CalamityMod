@@ -1,4 +1,5 @@
-﻿using CalamityMod.Projectiles.Summon;
+﻿using CalamityMod.Buffs.Summon;
+using CalamityMod.Projectiles.Summon;
 using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.DataStructures;
@@ -17,7 +18,7 @@ namespace CalamityMod.Items.Weapons.Summon
             Item.mana = 10;
             Item.damage = 15;
             Item.useStyle = ItemUseStyleID.Swing;
-            Item.shootSpeed = 10f;
+            Item.buffType = ModContent.BuffType<CausticStaffBuff>();
             Item.shoot = ModContent.ProjectileType<CausticStaffSummon>();
             Item.UseSound = SoundID.Item77;
             Item.useAnimation = Item.useTime = 25;
@@ -34,12 +35,9 @@ namespace CalamityMod.Items.Weapons.Summon
 
         public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)
         {
-            if (player.altFunctionUse != 2)
-            {
-                int p = Projectile.NewProjectile(source, player.ClampedMouseWorld(), Vector2.Zero, type, damage, knockback, player.whoAmI, 0f, 1f);
-                if (Main.projectile.IndexInRange(p))
-                    Main.projectile[p].originalDamage = Item.damage;
-            }
+            player.AddBuff(Item.buffType, 2);
+            var minion = Projectile.NewProjectileDirect(source, player.ClampedMouseWorld(), Vector2.Zero, type, damage, knockback, player.whoAmI, 0f, 1f);
+            minion.originalDamage = Item.damage;
             return false;
         }
 
