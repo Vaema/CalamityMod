@@ -40,7 +40,6 @@ namespace CalamityMod.Buffs.DamageOverTime
 
             //Apply the DOT
             int baseSagePoisonDoTValue = (int)multiplier.ApplyTo(npc.Calamity().sagePoisonDamage);
-            Main.NewText(baseSagePoisonDoTValue);
             npc.Calamity().ApplyDPSDebuff(baseSagePoisonDoTValue, baseSagePoisonDoTValue / 5, ref npc.lifeRegen, ref damage);
         }
         public override void SetStaticDefaults()
