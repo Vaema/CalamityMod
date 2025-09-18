@@ -29,7 +29,7 @@ namespace CalamityMod.Projectiles.Summon
             ChargingCircle,
             PhotonRipperZenithSlashes,
             PhotonRipperZenithEndlag,
-            AxeCircle,
+            AxeCircle
         }
 
         public int BladeIndex;
@@ -78,8 +78,6 @@ namespace CalamityMod.Projectiles.Summon
         bool ActiveAttacking = false;
 
         Vector2 StoredAttackMousePos = Vector2.Zero;
-
-        bool anySlashingBladesThisFrame = false;
 
         public ref float BladeGleamInterpolant => ref Projectile.localAI[0];
 
