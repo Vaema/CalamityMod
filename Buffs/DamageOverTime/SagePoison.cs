@@ -14,7 +14,7 @@ namespace CalamityMod.Buffs.DamageOverTime
             NPCLifeRegenMethod = SagePoisonPower
         };
 
-        public static float ViridVanguardPoisonMultiplier => 3;
+        public static float ViridVanguardPoisonMultiplier => 2;
         public static void SagePoisonPower(NPC npc, int buffType, ref int buffIndex, ref int damage)
         {
             // The base DoT is multiplied by the amount of Viral Sprouts you have when applied

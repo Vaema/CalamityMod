@@ -2013,8 +2013,14 @@ namespace CalamityMod.CalPlayer
             ViridVanguardActiveAttackerThisFrame = Main.projectile.Any(x => x.active && x.type == ModContent.ProjectileType<ViridVanguardBlade>() && x.owner == Player.whoAmI && x.ModProjectile<ViridVanguardBlade>().CurrentState == ViridVanguardBlade.ViridVanguardAIState.PhotonRipperZenithSlashes);
             ViridVanguardRotation = MathHelper.WrapAngle(ViridVanguardRotation + ViridVanguardRotationToAdd);
             ViridVanguardRotationToAdd = ViridVanguard.IdleCirclingSpeed;
-            if (ViridVanguardActiveCooldown > 0)
-                ViridVanguardActiveCooldown--;
+
+            if (Player.HeldItem.type == ModContent.ItemType<ViridVanguard>())
+            {
+                if (ViridVanguardActiveCooldown > 0)
+                    ViridVanguardActiveCooldown--;
+            }
+            else if (ViridVanguardActiveCooldown >= 0 && ViridVanguardActiveCooldown < ViridVanguard.ActiveAttackCooldown)
+                ViridVanguardActiveCooldown++;
             if (fleshKnuckles)
                 Player.statLifeMax2 += 25;
 

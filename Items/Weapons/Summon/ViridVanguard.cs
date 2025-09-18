@@ -42,7 +42,7 @@ namespace CalamityMod.Items.Weapons.Summon
         public static float ActiveAttackSlashDmgMult => 5f;
 
         //Note: the following two only apply when not using the active attack
-        public static float AxeDmgMult => 1.5f;
+        public static float AxeDmgMult => 1.25f;
         public static float SwordDmgMult => 1f;
         #endregion
 
@@ -77,7 +77,7 @@ namespace CalamityMod.Items.Weapons.Summon
         {
             Item.width = 26;
             Item.height = 36;
-            Item.damage = 73;
+            Item.damage = 60;
             Item.DamageType = DamageClass.Summon;
             Item.mana = 10;
             Item.useAnimation = Item.useTime = 14;
@@ -117,7 +117,6 @@ namespace CalamityMod.Items.Weapons.Summon
                 player.AddBuff(Item.buffType, 2);
 
                 var minion = Projectile.NewProjectileDirect(source, position, velocity, type, damage, knockback, player.whoAmI, 0f, 1f);
-                minion.originalDamage = damage;
                 minion.ModProjectile<ViridVanguardBlade>().BladeIndex = player.ownedProjectileCounts[type];
 
                 int bladeIndex = 0;
