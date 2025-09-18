@@ -271,7 +271,7 @@ namespace CalamityMod.NPCs.DevourerofGods
             float segmentVelocity = death ? 17.5f : 16f;
             if (expertMode)
                 segmentVelocity += 4f * (1f - lifeRatio);
-            if (CalamityWorld.LegendaryMode)
+            if (Main.getGoodWorld)
                 segmentVelocity *= 1.1f;
         }
 

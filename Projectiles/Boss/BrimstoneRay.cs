@@ -134,8 +134,6 @@ namespace CalamityMod.Projectiles.Boss
                         Vector2 projVelocity = Projectile.velocity.RotatedBy(radians * j + MathHelper.PiOver2);
                         int proj = Projectile.NewProjectile(Projectile.GetSource_FromThis(), fireFrom, projVelocity, type, BrimstoneElemental.DartDamage, 0f, Main.myPlayer, death ? 2f : 1f, 0f, projectileVelocityToPass);
                         Main.projectile[proj].tileCollide = true;
-                        if (CalamityWorld.LegendaryMode)
-                            Main.projectile[proj].extraUpdates += 1;
                     }
                     fireFrom += velocity * distanceBetweenProjectiles;
                 }

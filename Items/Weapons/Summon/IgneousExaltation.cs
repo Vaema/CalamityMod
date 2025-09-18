@@ -1,4 +1,5 @@
-﻿using CalamityMod.Items.Materials;
+﻿using CalamityMod.Buffs.Summon;
+using CalamityMod.Items.Materials;
 using CalamityMod.Projectiles.Summon;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
@@ -36,7 +37,6 @@ namespace CalamityMod.Items.Weapons.Summon
         public override void SetStaticDefaults()
         {
             Item.staff[Type] = true;
-            ItemID.Sets.ItemsThatAllowRepeatedRightClick[Type] = true;
         }
 
         public override void SetDefaults()
@@ -53,18 +53,25 @@ namespace CalamityMod.Items.Weapons.Summon
             Item.rare = ItemRarityID.Pink;
             Item.UseSound = SoundID.Item71;
             Item.autoReuse = true;
+            Item.buffType = ModContent.BuffType<IgneousExaltationBuff>();
             Item.shoot = ModContent.ProjectileType<IgneousBlade>();
             Item.shootSpeed = 10f;
             Item.DamageType = DamageClass.Summon;
         }
 
-        public override bool AltFunctionUse(Player player)
-        {
-            return player.ownedProjectileCounts[Item.shoot] > 0;
-        }
+        public override bool AltFunctionUse(Player player) => player.ownedProjectileCounts[Item.shoot] > 0;
+
         public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)
         {
-            if (player.altFunctionUse == 2)
+            float totalSlots = 0f;
+            foreach (Projectile p in Main.ActiveProjectiles)
+            {
+                if (p.minion && p.owner == player.whoAmI)
+                {
+                    totalSlots += p.minionSlots;
+                }
+            }
+            if (totalSlots >= player.maxMinions)
             {
                 foreach (Projectile pro in Main.ActiveProjectiles)
                 {
@@ -77,12 +84,9 @@ namespace CalamityMod.Items.Weapons.Summon
             }
             else
             {
-
-                int p = Projectile.NewProjectile(source, position, velocity, type, damage, knockback, player.whoAmI, 0f, 1f);
-                if (Main.projectile.IndexInRange(p))
-                {
-                    Main.projectile[p].originalDamage = Item.damage;
-                }
+                player.AddBuff(Item.buffType, 2);
+                var minion = Projectile.NewProjectileDirect(source, position, velocity, type, damage, knockback, player.whoAmI, 0f, 1f);
+                minion.originalDamage = Item.damage;
 
                 int bladeIndex = 0;
                 foreach (Projectile pro in Main.ActiveProjectiles)
@@ -91,6 +95,7 @@ namespace CalamityMod.Items.Weapons.Summon
                     {
                         pro.ModProjectile<IgneousBlade>().BladeIndex = bladeIndex++;
                         pro.ModProjectile<IgneousBlade>().AITimer = -ChargeCooldown;
+                        pro.ModProjectile<IgneousBlade>().DistanceTimer = -IgneousExaltation.ChargeCooldown;
                         pro.ModProjectile<IgneousBlade>().CurrentState = IgneousBlade.AIState.CircleOwner;
                         pro.netUpdate = true;
                     }

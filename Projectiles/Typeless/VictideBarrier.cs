@@ -166,7 +166,7 @@ namespace CalamityMod.Projectiles.Typeless
                 if (Owner.Calamity().victideBarrierHeal > 0)
                 {
                     HealTimer++;
-                    if (HealTimer % 10f == 9f)
+                    if (HealTimer % VictideHeadBarrier.BarrierFramesPerHeal == VictideHeadBarrier.BarrierFramesPerHeal - 1)
                     {
                         Owner.Calamity().victideBarrierHeal--;
                         Owner.HealPlayer(1);

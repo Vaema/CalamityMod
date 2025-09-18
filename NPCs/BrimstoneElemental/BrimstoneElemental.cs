@@ -67,14 +67,14 @@ namespace CalamityMod.NPCs.BrimstoneElemental
 
         // These values are all applied alongside their respective GFB attacks (too many to list)
         public static int DartDamage = 19; // 76
-        public static int HellblastDamage = 22; // 88
-        public static int HellfireballDamage = 22; // 88
+        public static int HellblastDamage = 24; // 96
+        public static int HellfireballDamage = 24; // 96
         public static int RayDamage = 35; // 140
 
         public override void SetDefaults()
         {
             NPC.npcSlots = 64f;
-            NPC.damage = 52; // 104
+            NPC.damage = 56; // 112
             NPC.Calamity().canBreakPlayerDefense = true;
             NPC.width = 100;
             NPC.height = 150;
@@ -460,7 +460,7 @@ namespace CalamityMod.NPCs.BrimstoneElemental
                     NPC.chaseable = true;
                     NPC.ai[3] += 1f;
                     NPC.alpha = 0;
-                    if (NPC.ai[3] >= 2f || phase2 || CalamityWorld.LegendaryMode)
+                    if (NPC.ai[3] >= 2f || phase2 || Main.getGoodWorld)
                     {
                         NPC.ai[0] = -1f;
                         NPC.ai[1] = 0f;
@@ -510,8 +510,6 @@ namespace CalamityMod.NPCs.BrimstoneElemental
                     {
                         int proj = Projectile.NewProjectile(NPC.GetSource_FromAI(), NPC.Center + projectileVelocity.SafeNormalize(Vector2.UnitY) * 5f, projectileVelocity, type, damage, 0f, Main.myPlayer, player.position.X, player.position.Y);
                         Main.projectile[proj].timeLeft = 240;
-                        if (CalamityWorld.MaliceMode)
-                            Main.projectile[proj].extraUpdates += 1;
                     }
 
                     if (NPC.ai[1] % divisor2 == divisor2 - 1f)
@@ -531,7 +529,7 @@ namespace CalamityMod.NPCs.BrimstoneElemental
                         projectileVelocity = (player.Center - NPC.Center).SafeNormalize(Vector2.UnitY) * velocity;
                         int numProj = death ? 8 : 4;
                         int spread = death ? 90 : 45;
-                        if (CalamityWorld.LegendaryMode)
+                        if (Main.getGoodWorld)
                         {
                             numProj *= 3;
                             spread *= 2;
@@ -544,9 +542,7 @@ namespace CalamityMod.NPCs.BrimstoneElemental
                             for (int i = 0; i < numProj; i++)
                             {
                                 Vector2 perturbedSpeed = projectileVelocity.RotatedBy(MathHelper.Lerp(-rotation, rotation, i / (float)(numProj - 1)));
-                                int proj2 = Projectile.NewProjectile(NPC.GetSource_FromAI(), NPC.Center + perturbedSpeed.SafeNormalize(Vector2.UnitY) * 5f, perturbedSpeed, type, damage, 0f, Main.myPlayer, 1f, 0f, projectileVelocityToPass);
-                                if (CalamityWorld.MaliceMode)
-                                    Main.projectile[proj2].extraUpdates += 1;
+                                Projectile.NewProjectile(NPC.GetSource_FromAI(), NPC.Center + perturbedSpeed.SafeNormalize(Vector2.UnitY) * 5f, perturbedSpeed, type, damage, 0f, Main.myPlayer, 1f, 0f, projectileVelocityToPass);
                             }
                         }
                     }
@@ -570,7 +566,7 @@ namespace CalamityMod.NPCs.BrimstoneElemental
 
                 NPC.chaseable = false;
                 NPC.localAI[0] += 1f;
-                if (CalamityWorld.LegendaryMode)
+                if (Main.getGoodWorld)
                     NPC.localAI[0] += 2f;
                 if (expertMode)
                     NPC.localAI[0] += 1f - lifeRatio;
@@ -608,8 +604,6 @@ namespace CalamityMod.NPCs.BrimstoneElemental
                             int proj = Projectile.NewProjectile(NPC.GetSource_FromAI(), NPC.Center + offset, projectileVelocity, type, damage, 0f, Main.myPlayer, 1f, 0f);
                             Main.projectile[proj].timeLeft = 300;
                             Main.projectile[proj].tileCollide = false;
-                            if (CalamityWorld.MaliceMode)
-                                Main.projectile[proj].extraUpdates += 1;
                         }
                     }
 
@@ -637,9 +631,7 @@ namespace CalamityMod.NPCs.BrimstoneElemental
                         for (int k = 0; k < totalProjectiles; k++)
                         {
                             Vector2 vector255 = spinningPoint.RotatedBy(radians2 * k);
-                            int proj = Projectile.NewProjectile(NPC.GetSource_FromAI(), NPC.Center + vector255.SafeNormalize(Vector2.UnitY) * 5f, vector255, type, damage, 0f, Main.myPlayer, 1f, 0f, projectileVelocityToPass);
-                            if (CalamityWorld.MaliceMode)
-                                Main.projectile[proj].extraUpdates += 1;
+                            Projectile.NewProjectile(NPC.GetSource_FromAI(), NPC.Center + vector255.SafeNormalize(Vector2.UnitY) * 5f, vector255, type, damage, 0f, Main.myPlayer, 1f, 0f, projectileVelocityToPass);
                         }
 
                         if (death)
@@ -648,9 +640,7 @@ namespace CalamityMod.NPCs.BrimstoneElemental
                             for (int k = 0; k < totalProjectiles; k++)
                             {
                                 Vector2 vector255 = spinningPoint.RotatedBy(radians2 * k);
-                                int proj = Projectile.NewProjectile(NPC.GetSource_FromAI(), NPC.Center + vector255.SafeNormalize(Vector2.UnitY) * 5f, vector255 * 0.75f, type, damage, 0f, Main.myPlayer, 1f, 0f, projectileVelocityToPass);
-                                if (CalamityWorld.MaliceMode)
-                                    Main.projectile[proj].extraUpdates += 1;
+                                Projectile.NewProjectile(NPC.GetSource_FromAI(), NPC.Center + vector255.SafeNormalize(Vector2.UnitY) * 5f, vector255 * 0.75f, type, damage, 0f, Main.myPlayer, 1f, 0f, projectileVelocityToPass);
                             }
                         }
                     }
@@ -738,7 +728,7 @@ namespace CalamityMod.NPCs.BrimstoneElemental
                             int damage = RayDamage;
 
                             Projectile.NewProjectile(NPC.GetSource_FromAI(), source, laserVelocity2, type, damage, 0f, Main.myPlayer, 0f, NPC.whoAmI);
-                            if (CalamityWorld.LegendaryMode)
+                            if (Main.getGoodWorld)
                                 Projectile.NewProjectile(NPC.GetSource_FromAI(), source, -laserVelocity2, type, damage, 0f, Main.myPlayer, 0f, NPC.whoAmI);
 
                             if (Main.zenithWorld)
@@ -779,7 +769,7 @@ namespace CalamityMod.NPCs.BrimstoneElemental
                         if (Main.netMode != NetmodeID.MultiplayerClient)
                         {
                             Projectile.NewProjectile(NPC.GetSource_FromAI(), source, laserVelocity, ModContent.ProjectileType<BrimstoneTargetRay>(), 0, 0f, Main.myPlayer, 0f, NPC.whoAmI);
-                            if (CalamityWorld.LegendaryMode)
+                            if (Main.getGoodWorld)
                                 Projectile.NewProjectile(NPC.GetSource_FromAI(), source, -laserVelocity, ModContent.ProjectileType<BrimstoneTargetRay>(), 0, 0f, Main.myPlayer, 0f, NPC.whoAmI);
 
                             if (Main.zenithWorld)
@@ -801,7 +791,7 @@ namespace CalamityMod.NPCs.BrimstoneElemental
                             if (Main.netMode != NetmodeID.MultiplayerClient)
                             {
                                 Projectile.NewProjectile(NPC.GetSource_FromAI(), source.X, source.Y, NPC.localAI[0], NPC.localAI[1], ModContent.ProjectileType<BrimstoneTargetRay>(), 0, 0f, Main.myPlayer, 1f, NPC.whoAmI);
-                                if (CalamityWorld.LegendaryMode)
+                                if (Main.getGoodWorld)
                                     Projectile.NewProjectile(NPC.GetSource_FromAI(), source.X, source.Y, -NPC.localAI[0], -NPC.localAI[1], ModContent.ProjectileType<BrimstoneTargetRay>(), 0, 0f, Main.myPlayer, 1f, NPC.whoAmI);
 
                                 if (Main.zenithWorld)

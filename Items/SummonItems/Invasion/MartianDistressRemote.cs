@@ -15,6 +15,7 @@ namespace CalamityMod.Items.SummonItems.Invasion
         public int frame = 0;
         public override void SetStaticDefaults()
         {
+            Item.ResearchUnlockCount = 3;
             ItemID.Sets.SortingPriorityBossSpawns[Type] = 17; // Solar Tablet (1 above Lihzahrd Power Cell)
         }
 
@@ -22,14 +23,13 @@ namespace CalamityMod.Items.SummonItems.Invasion
         {
             Item.width = 26;
             Item.height = 52;
-            Item.maxStack = 1;
+            Item.consumable = true;
+            Item.maxStack = Item.CommonMaxStack;
+            Item.useAnimation = Item.useTime = 10;
+            Item.UseSound = SoundID.Zombie67;
+            Item.useStyle = ItemUseStyleID.HoldUp;
             Item.value = Item.buyPrice(gold: 50); // Sold by Cyborg
             Item.rare = ItemRarityID.Yellow;
-            Item.useAnimation = 10;
-            Item.useTime = 10;
-            Item.useStyle = ItemUseStyleID.HoldUp;
-            Item.consumable = false;
-            Item.UseSound = SoundID.Zombie67;
         }
 
         public override void ModifyResearchSorting(ref ContentSamples.CreativeHelper.ItemGroup itemGroup)

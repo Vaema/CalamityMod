@@ -276,9 +276,8 @@ namespace CalamityMod.CalPlayer
             if (calamityPlayer.crushDepth && drawInfo.shadow == 0f)
                 CrushDepth.DrawEffects(drawInfo);
 
-            // Daybroken's visual effects are reduced if the player resists it
             if (calamityPlayer.daybroken && drawInfo.shadow == 0f)
-                Daybroken.DrawEffects(drawInfo, reducedDaybrokenDamage);
+                Daybroken.DrawEffects(drawInfo);
 
             if (calamityPlayer.demonicFlames && drawInfo.shadow == 0f)
                 DemonicFlames.DrawEffects(drawInfo);
@@ -319,8 +318,8 @@ namespace CalamityMod.CalPlayer
             if (calamityPlayer.mushy && drawInfo.shadow == 0f)
                 Mushy.DrawEffects(drawInfo);
 
-            if (calamityPlayer.nightwither && drawInfo.shadow == 0f) // Looks weaker if you have Moon Stone equipped
-                Nightwither.DrawEffects(drawInfo, reducedNightwitherDamage);
+            if (calamityPlayer.nightwither && drawInfo.shadow == 0f)
+                Nightwither.DrawEffects(drawInfo);
 
             if (calamityPlayer.plague && drawInfo.shadow == 0f)
                 Plague.DrawEffects(drawInfo);

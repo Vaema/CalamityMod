@@ -91,7 +91,7 @@ namespace CalamityMod.NPCs.Cryogen
 
         public static int IceBlastDamage = 23; // 92; Also applies to GFB darts
         public static int IceRainDamage = 23; // 92; Also applies to GFB darts
-        public static int IceBombDamage = 30; // 120; Also applies to GFB fireblasts
+        public static int IceBombDamage = 28; // 112; Also applies to GFB fireblasts
 
         public override void SetDefaults()
         {
@@ -115,7 +115,7 @@ namespace CalamityMod.NPCs.Cryogen
             NPC.HitSound = HitSound;
             NPC.DeathSound = DeathSound;
 
-            if (CalamityWorld.LegendaryMode)
+            if (Main.getGoodWorld)
                 NPC.scale *= 0.8f;
 
             if (Main.zenithWorld)
@@ -270,7 +270,7 @@ namespace CalamityMod.NPCs.Cryogen
             else if (NPC.timeLeft < 1800)
                 NPC.timeLeft = 1800;
 
-            if (CalamityWorld.LegendaryMode)
+            if (Main.getGoodWorld)
             {
                 int spawnType = Main.zenithWorld ? NPCID.RedDevil : NPCID.IceGolem;
                 if (!NPC.AnyNPCs(spawnType))
@@ -298,13 +298,13 @@ namespace CalamityMod.NPCs.Cryogen
 
             float chargePhaseGateValue = 360f;
             float chargeDuration = 60f;
-            float chargeTelegraphTime = NPC.ai[0] == 2f ? (CalamityWorld.LegendaryMode ? 60f : 80f) : (CalamityWorld.LegendaryMode ? 90f : 120f);
+            float chargeTelegraphTime = NPC.ai[0] == 2f ? (Main.getGoodWorld ? 60f : 80f) : (Main.getGoodWorld ? 90f : 120f);
             float chargeTelegraphMaxRotationIncrement = 1f;
             float chargeTelegraphRotationIncrement = chargeTelegraphMaxRotationIncrement / chargeTelegraphTime;
             float chargeSlowDownTime = 15f;
-            float chargeVelocityMin = CalamityWorld.LegendaryMode ? 24f : 12f;
-            float chargeVelocityMax = CalamityWorld.LegendaryMode ? 42f : 30f;
-            if (CalamityWorld.LegendaryMode)
+            float chargeVelocityMin = Main.getGoodWorld ? 24f : 12f;
+            float chargeVelocityMax = Main.getGoodWorld ? 42f : 30f;
+            if (Main.getGoodWorld)
             {
                 chargePhaseGateValue *= 0.7f;
                 chargeDuration *= 0.8f;
@@ -387,7 +387,7 @@ namespace CalamityMod.NPCs.Cryogen
                 playerYDist *= playerDistance;
 
                 float inertia = 50f;
-                if (CalamityWorld.LegendaryMode)
+                if (Main.getGoodWorld)
                     inertia *= 0.5f;
 
                 NPC.velocity.X = (NPC.velocity.X * inertia + playerXDist) / (inertia + 1f);
@@ -655,7 +655,7 @@ namespace CalamityMod.NPCs.Cryogen
                     playerYDist *= playerDistance;
 
                     float inertia = 50f;
-                    if (CalamityWorld.LegendaryMode)
+                    if (Main.getGoodWorld)
                         inertia *= 0.5f;
 
                     NPC.velocity.X = (NPC.velocity.X * inertia + playerXDist) / (inertia + 1f);
@@ -815,7 +815,7 @@ namespace CalamityMod.NPCs.Cryogen
                 playerYDist *= playerDistance;
 
                 float inertia = 50f;
-                if (CalamityWorld.LegendaryMode)
+                if (Main.getGoodWorld)
                     inertia *= 0.5f;
 
                 NPC.velocity.X = (NPC.velocity.X * inertia + playerXDist) / (inertia + 1f);
@@ -1092,7 +1092,7 @@ namespace CalamityMod.NPCs.Cryogen
                 }
 
                 float inertia = 30f;
-                if (CalamityWorld.LegendaryMode)
+                if (Main.getGoodWorld)
                     inertia *= 0.5f;
 
                 NPC.velocity.X = (NPC.velocity.X * inertia + playerchargeXDist) / (inertia + 1f);

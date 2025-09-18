@@ -2581,7 +2581,6 @@ if (NPC.localAI[2] == timeWhenDoGShouldTeleportDuringPhase2Countdown + 115)
                 };
                 normalOnly.Add(DropHelper.CalamityStyle(DropHelper.NormalWeaponDropRateFraction, weapons));
                 normalOnly.Add(ModContent.ItemType<CosmicDischarge>(), 10);
-                normalOnly.Add(ModContent.ItemType<Norfleet>(), 10);
 
                 // Vanity
                 normalOnly.Add(ModContent.ItemType<DevourerofGodsMask>(), 7);

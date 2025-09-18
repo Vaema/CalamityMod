@@ -1,4 +1,5 @@
-﻿using CalamityMod.Items.Materials;
+﻿using CalamityMod.Buffs.Summon;
+using CalamityMod.Items.Materials;
 using CalamityMod.Projectiles.Summon;
 using CalamityMod.Rarities;
 using CalamityMod.Tiles.Furniture.CraftingStations;
@@ -33,8 +34,8 @@ namespace CalamityMod.Items.Weapons.Summon
             Item.knockBack = 4f;
             Item.autoReuse = true;
             Item.useAnimation = Item.useTime = 10;
+            Item.buffType = ModContent.BuffType<EndoCooperBuff>();
             Item.shoot = ModContent.ProjectileType<EndoCooperBody>();
-            Item.shootSpeed = 10f;
 
             Item.value = CalamityGlobalItem.RarityHotPinkBuyPrice;
             Item.rare = ModContent.RarityType<HotPink>();
@@ -45,21 +46,19 @@ namespace CalamityMod.Items.Weapons.Summon
 
         public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)
         {
-            if (player.altFunctionUse != 2)
+            CalamityUtils.KillShootProjectileMany(player, new int[]
             {
-                CalamityUtils.KillShootProjectileMany(player, new int[]
-                {
-                    type,
-                    ModContent.ProjectileType<EndoCooperLimbs>(),
-                    ModContent.ProjectileType<EndoBeam>()
-                });
+                type,
+                ModContent.ProjectileType<EndoCooperLimbs>(),
+                ModContent.ProjectileType<EndoBeam>()
+            });
 
-                SummonEndoCooper(source, AttackMode, player.ClampedMouseWorld(), damage, Item.damage, knockback, player, out _, out _);
+            player.AddBuff(Item.buffType, 2);
+            SummonEndoCooper(source, AttackMode, player.ClampedMouseWorld(), damage, Item.damage, knockback, player, out _, out _);
 
-                AttackMode++;
-                if (AttackMode > 3)
-                    AttackMode = 0;
-            }
+            AttackMode++;
+            if (AttackMode > 3)
+                AttackMode = 0;
             return false;
         }
 

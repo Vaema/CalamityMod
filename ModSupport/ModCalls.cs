@@ -866,46 +866,6 @@ namespace CalamityMod
         public static bool DisableAllDodges(bool disable) => Main.LocalPlayer.Calamity().disableAllDodges = disable;
         #endregion
 
-        #region Can Fire Point Blank Shots
-        /// <summary>
-        /// Gets whether the given item can fire point blank shots.
-        /// </summary>
-        /// <param name="it">The item which is being checked.</param>
-        /// <returns>Whether the item can fire point blank shots.</returns>
-        public static bool CanFirePointBlank(Item it)
-        {
-            if (it is null || it.Calamity() is null)
-                return false;
-            CalamityGlobalItem cgi = it.Calamity();
-            return cgi.canFirePointBlankShots;
-        }
-
-        /// <summary>
-        /// Sets whether the given item can fire point blank shots.
-        /// </summary>
-        /// <param name="it">The item whose point blank capabilities is being toggled.</param>
-        /// <param name="enabled">The value to apply.</param>
-        /// <returns>Whether the item can fire point blank shots.</returns>
-        public static bool SetFirePointBlank(Item it, bool enabled)
-        {
-            if (it is null || it.Calamity() is null)
-                return false;
-            CalamityGlobalItem cgi = it.Calamity();
-            cgi.canFirePointBlankShots = enabled;
-            return cgi.canFirePointBlankShots;
-        }
-
-        // Set a projectile's point blank duration
-        public static void SetPointBlankDuration(Projectile projectile, int duration)
-        {
-            if (projectile != null)
-                projectile.Calamity().pointBlankShotDuration = duration;
-        }
-
-        // Gets a projectile's current point blank duration
-        public static int GetPointBlankDuration(Projectile projectile) => projectile?.Calamity()?.pointBlankShotDuration ?? 0;
-        #endregion
-
         #region Amalgam Potion Buff List
         public static bool SetAmalgamBuffList(int type, bool shouldBeListed)
         {
@@ -1889,55 +1849,6 @@ namespace CalamityMod
                         if (!isValidNPCArg(args[1]))
                             return new ArgumentException("ERROR: The first argument to \"GetShouldCloseBossHealthBar\" must be an NPC.");
                         return GetShouldCloseBossHealthBar(castNPC(args[1]));
-                    }
-
-                case "CanFirePointBlank":
-                case "CanFirePointBlankShots":
-                    if (args.Length < 2)
-                        return new ArgumentNullException("ERROR: Must specify an Item object (or int index of an Item in the Main.item array)."); ;
-                    if (!isValidItemArg(args[1]))
-                        return new ArgumentException("ERROR: The first argument to \"CanFirePointBlank\" must be an Item or an int.");
-                    return CanFirePointBlank(castItem(args[1]));
-
-                case "SetFirePointBlank":
-                case "SetFirePointBlankShots":
-                    if (args.Length < 2)
-                        return new ArgumentNullException("ERROR: Must specify both an Item object (or int index of an Item in the Main.item array) and a bool.");
-                    if (args.Length < 3)
-                        return new ArgumentNullException("ERROR: Must specify whether the item can fire point blank as a bool.");
-                    if (!(args[2] is bool firePointBlank))
-                        return new ArgumentException("ERROR: The second argument to \"SetFirePointBlank\" must be a bool.");
-                    if (!isValidItemArg(args[1]))
-                        return new ArgumentException("ERROR: The first argument to \"SetFirePointBlank\" must be an Item or an int.");
-                    return SetFirePointBlank(castItem(args[1]), firePointBlank);
-
-
-                case "GetPointBlankDuration":
-                case "GetProjectilePointBlank":
-                case "GetProjectilePointBlankDuration":
-                    {
-                        if (args.Length < 2)
-                            return new ArgumentNullException("ERROR: Must specify a Projectile.");
-                        if (!isValidProjectileArg(args[1]))
-                            return new ArgumentException("ERROR: The first argument to \"GetPointBlankDuration\" must be a Projectile.");
-                        return GetPointBlankDuration(castProjectile(args[1]));
-                    }
-
-                case "SetPointBlankDuration":
-                case "SetProjectilePointBlank":
-                case "SetProjectilePointBlankDuration":
-                    {
-                        if (args.Length < 2)
-                            return new ArgumentNullException("ERROR: Must specify both a Projectile and point blank duration as an int.");
-                        if (args.Length < 3)
-                            return new ArgumentNullException("ERROR: Must specify the point blank duration as an int.");
-                        if (!(args[2] is int pbDuration))
-                            return new ArgumentException("ERROR: The second argument to \"SetPointBlankDuration\" must be an int.");
-                        if (!isValidProjectileArg(args[1]))
-                            return new ArgumentException("ERROR: The first argument to \"SetPointBlankDuration\" must be a Projectile.");
-
-                        SetPointBlankDuration(castProjectile(args[1]), pbDuration);
-                        return null;
                     }
 
                 case "NoDodges":

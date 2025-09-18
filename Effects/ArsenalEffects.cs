@@ -10,7 +10,7 @@ namespace CalamityMod.Effects
 
         // Plasma
         public static int ArsenalPlasmaDust = ModContent.DustType<SquashDustTileTouch>();
-        public static Color ArsenalPlasmaColor = Color.Lerp(Color.Green, Color.Chartreuse, 0.45f);
+        public static Color ArsenalPlasmaColor = new Color(154, 255, 0);
         // Laser
         public static int ArsenalLaserDust = ModContent.DustType<DiamondDust>();
         public static Color ArsenalLaserColor = Color.Lerp(Color.Crimson, Color.Red, 0.45f);

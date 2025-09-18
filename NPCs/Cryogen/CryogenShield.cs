@@ -31,7 +31,7 @@ namespace CalamityMod.NPCs.Cryogen
             NPC.coldDamage = true;
             NPC.width = 216;
             NPC.height = 216;
-            NPC.scale *= (CalamityWorld.death || BossRushEvent.BossRushActive || CalamityWorld.LegendaryMode) ? 0.8f : 1f;
+            NPC.scale *= (CalamityWorld.death || BossRushEvent.BossRushActive || Main.getGoodWorld) ? 0.8f : 1f;
             NPC.DR_NERD(0.4f);
             NPC.LifeMaxNERB(2800, 3360, 33600);
             NPC.Opacity = 0f;

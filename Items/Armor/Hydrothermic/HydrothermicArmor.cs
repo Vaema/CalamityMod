@@ -17,6 +17,8 @@ namespace CalamityMod.Items.Armor.Hydrothermic
         public static float DamageBoost = 0.13f;
         public override LocalizedText Tooltip => base.Tooltip.WithFormatArgs(DamageBoost.ToPercent());
 
+        // Common Set Bonus
+        public static int BlazeDamage => CalamityUtils.ScaleWithDifficulty(115);
         public static float InfernoHealthThreshold = 0.5f;
         public static int InfernoHitRate = 30;
         public static int InfernoDamage = 50;
