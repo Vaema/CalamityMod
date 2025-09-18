@@ -65,6 +65,9 @@ namespace CalamityMod.NPCs.TownNPCs
             NPC.DeathSound = SoundID.NPCDeath1;
             NPC.knockBackResist = 0.8f;
             AnimationType = NPCID.Guide;
+            NPC.Calamity().VulnerableToCold = false;
+            NPC.Calamity().VulnerableToHeat = true;
+            NPC.Calamity().VulnerableToSickness = true;
         }
 
         public override void SetBestiary(BestiaryDatabase database, BestiaryEntry bestiaryEntry)

@@ -85,8 +85,8 @@ namespace CalamityMod.NPCs.NormalNPCs
 
                         npcPos.X += velocity.X;
                         npcPos.Y += velocity.Y;
-                        int spread = CalamityWorld.LegendaryMode ? 100 : 20;
-                        for (int i = 0; i < (CalamityWorld.LegendaryMode ? 10 : 2); i++)
+                        int spread = 20;
+                        for (int i = 0; i < 2; i++)
                         {
                             velocity = Main.player[NPC.target].Center - npcPos;
                             targetDist = velocity.Length();
@@ -404,7 +404,7 @@ namespace CalamityMod.NPCs.NormalNPCs
             {
                 return 0f;
             }
-            return SpawnCondition.Sky.Chance * (CalamityWorld.LegendaryMode ? 0.5f : 0.1f);
+            return SpawnCondition.Sky.Chance * 0.1f;
         }
 
         public override void ModifyNPCLoot(NPCLoot npcLoot)

@@ -44,12 +44,12 @@ namespace CalamityMod.NPCs.DesertScourge
             NPC.height = 88;
 
             NPC.defense = 5;
-            if (CalamityWorld.LegendaryMode)
+            if (Main.getGoodWorld)
                 NPC.defense += 27;
 
             NPC.LifeMaxNERB(1500, 1800, 40000);
-            if (CalamityWorld.LegendaryMode)
-                NPC.lifeMax = 4800;
+            if (Main.getGoodWorld)
+                NPC.lifeMax *= 2;
             NPC.aiStyle = -1;
             AIType = -1;
             NPC.knockBackResist = 0f;

@@ -7,7 +7,10 @@ using CalamityMod.Rarities;
 using CalamityMod.Tiles.Furniture.CraftingStations;
 using Microsoft.Xna.Framework;
 using Terraria;
+using Terraria.Localization;
 using Terraria.ModLoader;
+using static CalamityMod.Items.Armor.Bloodflare.BloodflareHeadSummon;
+using static CalamityMod.Items.Armor.Silva.SilvaArmor;
 
 namespace CalamityMod.Items.Armor.Auric
 {
@@ -16,28 +19,32 @@ namespace CalamityMod.Items.Armor.Auric
     public class AuricTeslaHeadSummon : ModItem, ILocalizedModType
     {
         public new string LocalizationCategory => "Items.Armor.PostMoonLord";
+
+        public static int MinionSlotBoost = 2;
+        public static float SummonDamageBoost = 0.32f;
+        public override LocalizedText Tooltip => base.Tooltip.WithFormatArgs(MinionSlotBoost, SummonDamageBoost.ToPercent());
+
+        // Set Bonus
+        public static int SetBonusMinionSlotBoost = 4;
+        public static float SetBonusSummonDamageBoost = 0.55f;
+        public static int CrystalDamage = 500;
+
         public override void SetDefaults()
         {
             Item.width = 18;
             Item.height = 18;
             Item.value = CalamityGlobalItem.RarityVioletBuyPrice;
-            Item.defense = 12; //132
+            Item.defense = 18; // 104
             Item.rare = ModContent.RarityType<BurnishedAuric>();
         }
 
-        public override bool IsArmorSet(Item head, Item body, Item legs)
-        {
-            return body.type == ModContent.ItemType<AuricTeslaBodyArmor>() && legs.type == ModContent.ItemType<AuricTeslaCuisses>();
-        }
+        public override bool IsArmorSet(Item head, Item body, Item legs) => body.type == ModContent.ItemType<AuricTeslaBodyArmor>() && legs.type == ModContent.ItemType<AuricTeslaCuisses>();
 
-        public override void ArmorSetShadows(Player player)
-        {
-            player.armorEffectDrawOutlines = true;
-        }
+        public override void ArmorSetShadows(Player player) => player.armorEffectDrawOutlines = true;
 
         public override void UpdateArmorSet(Player player)
         {
-            player.setBonus = this.GetLocalizedValue("SetBonus");
+            player.setBonus = this.GetLocalization("SetBonus").Format(SetBonusMinionSlotBoost, SetBonusSummonDamageBoost.ToPercent());
             var modPlayer = player.Calamity();
             modPlayer.tarraSet = true;
             modPlayer.tarraSummon = true;
@@ -47,19 +54,17 @@ namespace CalamityMod.Items.Armor.Auric
             modPlayer.silvaSummon = true;
             modPlayer.auricSet = true;
             modPlayer.WearingPostMLSummonerSet = true;
-            player.thorns += 3f;
-            player.ignoreWater = true;
-            player.crimsonRegen = true;
-            player.GetDamage<SummonDamageClass>() += 0.75f;
-            player.maxMinions += 6;
+            player.crimsonRegen = true; // Inherited from Bloodflare
+            player.maxMinions += SetBonusMinionSlotBoost;
+            player.GetDamage<SummonDamageClass>() += SetBonusSummonDamageBoost;
         }
 
         public override void UpdateEquip(Player player)
         {
-            var modPlayer = player.Calamity();
-            modPlayer.auricBoost = true;
-            player.GetDamage<SummonDamageClass>() += 0.15f;
+            player.maxMinions += MinionSlotBoost;
+            player.GetDamage<SummonDamageClass>() += SummonDamageBoost;
         }
+
         public override void ModifyTooltips(List<TooltipLine> tooltips)
         {
             ref var holdingShift = ref AuricTeslaBodyArmor.holdingShift;
@@ -77,7 +82,10 @@ namespace CalamityMod.Items.Armor.Auric
                     if (line.Name == "SetBonus")
                     {
                         Color[] armorColors = { AuricTeslaBodyArmor.tooltipTarragonColor, AuricTeslaBodyArmor.tooltipBloodflareColor, AuricTeslaBodyArmor.tooltipSilvaColor };
-                        line.Text = this.GetLocalizedValue($"SetBonus{setBonusTooltipNumber}");
+                        var LocalizedText = this.GetLocalization($"SetBonus{setBonusTooltipNumber}");
+                        line.Text = (setBonusTooltipNumber == 3 ? LocalizedText.Format(SetBonusRegenBoost.ToRegenPerSecond(), AccelerationBoost.ToPercent(), ReviveDuration.FramesToSeconds(), (ReviveCooldown / 60).FramesToSeconds())
+                        : setBonusTooltipNumber == 2 ? LocalizedText.Format(DefenseBoostBelowHealthThreshold, DefenseBoostHealthThreshold.ToPercent())
+                        : LocalizedText.Format());
                         line.OverrideColor = armorColors[setBonusTooltipNumber - 1];
                     }
                 }

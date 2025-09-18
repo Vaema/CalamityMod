@@ -50,14 +50,4 @@ namespace CalamityMod.Tiles.Rubblemaker.SunkenSea
             frameYOffset = yPos * subsheetHeight;
         }
     }
-
-    public class TableCoralEcho2 : TableCoralEcho
-    {
-        public override string Texture => "CalamityMod/Tiles/SunkenSea/Ambient/TableCoral2";
-    }
-
-    public class TableCoralEcho3 : TableCoralEcho
-    {
-        public override string Texture => "CalamityMod/Tiles/SunkenSea/Ambient/TableCoral3";
-    }
 }

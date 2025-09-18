@@ -12,6 +12,7 @@ namespace CalamityMod.Items.Accessories
         public new string LocalizationCategory => "Items.Accessories";
 
         public static readonly int MaxBonusIFrames = 30;
+        public static int StarDamage => CalamityUtils.ScaleWithDifficulty(130);
 
         public override void SetDefaults()
         {

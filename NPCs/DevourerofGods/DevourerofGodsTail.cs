@@ -86,6 +86,9 @@ namespace CalamityMod.NPCs.DevourerofGods
 
             if (Main.zenithWorld)
                 NPC.scale *= 1.5f;
+
+            if (Main.getGoodWorld)
+                NPC.takenDamageMultiplier = 2;
         }
 
         public override void BossHeadSlot(ref int index)
@@ -293,7 +296,7 @@ namespace CalamityMod.NPCs.DevourerofGods
             float segmentVelocity = death ? 17.5f : 16f;
             if (expertMode)
                 segmentVelocity += 4f * (1f - lifeRatio);
-            if (CalamityWorld.LegendaryMode)
+            if (Main.getGoodWorld)
                 segmentVelocity *= 1.1f;
         }
 

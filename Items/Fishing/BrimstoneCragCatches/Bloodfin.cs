@@ -11,8 +11,8 @@ namespace CalamityMod.Items.Fishing.BrimstoneCragCatches
     {
         public new string LocalizationCategory => "Items.Fishing";
 
-        public static int RegenBoost = 5;
-        public static int RegenTimeBoost = 10;
+        public static int RegenBoost = 4;
+        public static int RegenTimeBoost = 4;
 
         public static int DebuffedRegenBoost = 10; // Does not stack with above
         public static int DebuffedRegenTimeFloor = 900;

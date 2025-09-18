@@ -18,8 +18,6 @@ namespace CalamityMod.CalPlayer.Dashes
     {
         public static new string ID => "Godslayer Armor";
 
-        public static int GodslayerCooldown = 45;
-
         public SlotId GSDashSlot;
 
         public static readonly SoundStyle Impact = new("CalamityMod/Sounds/NPCKilled/DevourerDeathImpact") { Volume = 0.5f };
@@ -113,7 +111,7 @@ namespace CalamityMod.CalPlayer.Dashes
             runSpeedDecelerationFactor = 0.8f;
 
             // Cooldown for God Slayer Armor dash.
-            player.AddCooldown(Cooldowns.GodSlayerDash.ID, CalamityUtils.SecondsToFrames(GodslayerCooldown));
+            player.AddCooldown(Cooldowns.GodSlayerDash.ID, GodSlayerChestplate.DashCooldown);
             player.Calamity().godSlayerDashHotKeyPressed = false;
         }
 
@@ -140,14 +138,14 @@ namespace CalamityMod.CalPlayer.Dashes
 
             // Define damage parameters.
             hitContext.damageClass = player.GetBestClass();
-            hitContext.BaseDamage = 3000;
-            hitContext.BaseKnockback = 15f;
+            hitContext.BaseDamage = GodSlayerChestplate.DashDamage;
+            hitContext.BaseKnockback = GodSlayerChestplate.DashKnockback;
 
             // God Slayer Dash intentionally does not use the vanilla function for collision attack iframes.
             // This is because its immunity is meant to be completely consistent and not subject to vanilla anticheese.
             hitContext.PlayerImmunityFrames = GodSlayerChestplate.DashIFrames;
 
-            npc.AddBuff(ModContent.BuffType<GodSlayerInferno>(), 300);
+            npc.AddBuff(ModContent.BuffType<GodSlayerInferno>(), GodSlayerChestplate.DashGodSlayerInfernoDuration);
         }
     }
 }

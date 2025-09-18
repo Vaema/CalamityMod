@@ -39,7 +39,7 @@ namespace CalamityMod.Projectiles.Boss
             CooldownSlot = ImmunityCooldownID.Bosses;
             Projectile.timeLeft = timeLeft;
 
-            if (CalamityWorld.LegendaryMode)
+            if (Main.zenithWorld)
                 Projectile.extraUpdates = 1;
         }
 

@@ -137,17 +137,9 @@ namespace CalamityMod.UI.DialogueDisplay
         /// </summary>
         public int DialogueTimer = 0;
         /// <summary>
-        /// Which page are we reading?
-        /// </summary>
-        //public int currentPage;
-        /// <summary>
         /// The position from which the text originates
         /// </summary>
         public Vector2 Position = Vector2.Zero;
-        /// <summary>
-        /// How many page there are
-        /// </summary>
-        //public int pageCount => DialogueData.Length;
 
         public bool SwitchingPage = false;
         public bool ProgressDialogue = true;
@@ -495,7 +487,7 @@ namespace CalamityMod.UI.DialogueDisplay
                                     else
                                         ColorParams.Add(Param);
                                 }
-                                if (ID == "BorderColors")
+                                else if (ID == "BorderColors")
                                 {
                                     if (float.TryParse(Param, out float result))
                                         Params.Add(result);
@@ -998,7 +990,7 @@ namespace CalamityMod.UI.DialogueDisplay
         /// </summary>
         /// <param name="key">The name of the dialogue's localization key</param>
         /// <param name="startPosition">The position of the text in the world</param>
-        public static void StartDialogue(string key, Vector2 startPosition, int Uptime = -1, bool progressDialogue = true, DisplayEffect effects = null, float wrapWidth = -1)
+        public static void StartDialogue(string key, Vector2 startPosition, int startIndex = 0, int Uptime = -1, bool progressDialogue = true, DisplayEffect effects = null, float wrapWidth = -1)
         {
             UI ??= new();
             State ??= new();
@@ -1006,7 +998,10 @@ namespace CalamityMod.UI.DialogueDisplay
 
             DialogueTextData textData = Deserialize(key);
 
-            DialogueDisplay display = new(textData.Pages[0], effects, wrapWidth: wrapWidth)
+            if (startIndex >= textData.PageCount)
+                startIndex = textData.PageCount - 1;
+
+            DialogueDisplay display = new(textData.Pages[startIndex], effects, wrapWidth: wrapWidth)
             {
                 Position = startPosition,
                 ProgressDialogue = progressDialogue,
@@ -1027,7 +1022,7 @@ namespace CalamityMod.UI.DialogueDisplay
         /// <param name="key">The name of the dialogue's localization key</param>
         /// <param name="entity">The entity this dialogue will appear with</param>
         /// <param name="Uptime">The entity this dialogue will appear with</param>
-        public static void StartDialogue(string key, Entity entity, int Uptime = -1, DisplayEffect effects = null, float wrapWidth = -1)
+        public static void StartDialogue(string key, Entity entity, int startIndex = 0, int Uptime = -1, DisplayEffect effects = null, float wrapWidth = -1)
         {
             UI ??= new();
             State ??= new();
@@ -1035,7 +1030,10 @@ namespace CalamityMod.UI.DialogueDisplay
 
             DialogueTextData textData = Deserialize(key);
 
-            DialogueDisplay display = new(textData[0], effects, wrapWidth: wrapWidth)
+            if (startIndex >= textData.PageCount)
+                startIndex = textData.PageCount - 1;
+
+            DialogueDisplay display = new(textData[startIndex], effects, wrapWidth: wrapWidth)
             {
                 Position = entity.Center
             };

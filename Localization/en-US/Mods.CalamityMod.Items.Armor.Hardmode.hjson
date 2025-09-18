@@ -211,7 +211,11 @@ HydrothermicHeadMagic: {
 		{$CommonItemTooltip.IncreasesMaxManaBy} and {$CommonItemTooltip.PercentReducedManaCost@1}
 		{$CommonItemTooltip.PercentIncreasedMagicDamage@2} and {$CommonItemTooltip.PercentIncreasedMagicCritChance@3}
 		'''
-	SetBonus: Magic attacks summon damaging and healing flare orbs on hit
+	SetBonus:
+		'''
+		Magic attacks summon damaging and healing flare orbs on hit
+		{$HydrothermicArmor.CommonSetBonus}
+		'''
 }
 
 HydrothermicHeadMelee: {
@@ -225,6 +229,7 @@ HydrothermicHeadMelee: {
 		'''
 		{$Common.AggroBoost}
 		Melee attacks and projectiles cause chaos flames to erupt on enemy hits
+		{$HydrothermicArmor.CommonSetBonus}
 		'''
 }
 
@@ -235,7 +240,11 @@ HydrothermicHeadRanged: {
 		{$CommonItemTooltip.PercentIncreasedRangedDamage} and {$CommonItemTooltip.PercentIncreasedRangedCritChance@1}
 		25% chance to save ammo
 		'''
-	SetBonus: You fire a homing chaos flare when using ranged weapons every {0} seconds
+	SetBonus:
+		'''
+		You fire a homing chaos flare when using ranged weapons every {0} seconds
+		{$HydrothermicArmor.CommonSetBonus@1}
+		'''
 }
 
 HydrothermicHeadRogue: {
@@ -249,6 +258,7 @@ HydrothermicHeadRogue: {
 		'''
 		{$Common.RogueStealth}
 		Rogue weapons unleash a volley of homing chaos flames around the player every {1} seconds
+		{$HydrothermicArmor.CommonSetBonus@2}
 		'''
 }
 
@@ -264,6 +274,7 @@ HydrothermicHeadSummon: {
 		{$CommonItemTooltip.IncreasesMaxMinionsBy}
 		{$CommonItemTooltip.PercentIncreasedSummonDamage@1}
 		Summons a hydrothermic vent to protect you
+		{$HydrothermicArmor.CommonSetBonus@2}
 		'''
 }
 
@@ -280,7 +291,7 @@ LunicCorpsBoots: {
 	DisplayName: Lunic Corps Boots
 	Tooltip:
 		'''
-		{0}% increased ranged critical strike chance
+		{$CommonItemTooltip.PercentIncreasedRangedCritChance}
 		{1}% increased movement speed and acceleration
 		'''
 }
@@ -296,8 +307,8 @@ LunicCorpsHelmet: {
 		'''
 		{0}% increased jump speed
 		[c/{1}:MJOLNIR Shield - Projects a bubble shield that absorbs up to {2} damage]{3}
-		[c/52CBDE:The shield starts recharging {4} seconds after being hit]
-		[c/52CBDE:Recharging from zero to full charge takes {5} seconds]
+		[c/52CBDE:The shield starts recharging {4} {^4:second;seconds} after being hit]
+		[c/52CBDE:Recharging from zero to full charge takes {5} {^5:second;seconds}]
 		[c/52CBDE:Being hit again while recharging restarts the charge timer]
 		[c/9EA67F:'Finish the fight']
 		'''
@@ -346,9 +357,9 @@ PlaguebringerCarapace: {
 	DisplayName: Plaguebringer Carapace
 	Tooltip:
 		'''
+		{$CommonItemTooltip.IncreasesMaxMinionsBy}
+		{$CommonItemTooltip.PercentIncreasedSummonDamage@1}
 		Grants immunity to the Plague
-		15% increased summon damage
-		Friendly bees inflict the plague
 		'''
 }
 
@@ -356,32 +367,41 @@ PlaguebringerPistons: {
 	DisplayName: Plaguebringer Pistons
 	Tooltip:
 		'''
-		15% increased summon damage and 15% increased movement speed
-		You grow flowers on the grass beneath you, chance to grow very random dye plants on grassless dirt
+		{$CommonItemTooltip.IncreasesMaxMinionsBy}
+		{$CommonItemTooltip.PercentIncreasedSummonDamage@1} and {$CommonItemTooltip.PercentIncreasedMovementSpeed@2}
+		Flowers grow on the grass you walk on, and dye plants rarely grow on grassless dirt you walk on
 		'''
 }
 
 PlaguebringerVisor: {
 	DisplayName: Plaguebringer Visor
-	Tooltip: 15% increased summon damage
+	Tooltip:
+		'''
+		{$CommonItemTooltip.IncreasesMaxMinionsBy}
+		{$CommonItemTooltip.PercentIncreasedSummonDamage@1}
+		'''
 	SetBonus:
 		'''
 		Grants a plague dash which can slam through enemies without taking damage
 		Summons a lil' plaguebringer which swarms your foes with little bees
-		+3 max minions
+		Friendly bees inflict the plague
 		'''
 }
 
 PlagueReaperMask: {
 	DisplayName: Plague Reaper Mask
-	Tooltip: 10% increased ranged damage and 8% increased ranged critical strike chance
+	Tooltip:
+		'''
+		{$CommonItemTooltip.PercentIncreasedRangedDamage} and {$CommonItemTooltip.PercentIncreasedRangedCritChance@1}
+		25% chance to save ammo
+		'''
 	SetBonus:
 		'''
-		25% reduced ammo usage and 5% increased flight time
-		Enemies receive 10% more damage from ranged projectiles when afflicted by the Plague
-		Getting hit causes plague cinders to rain from above
-		{0} to blind yourself for 5 seconds but massively boost your ranged damage
-		This has a 25 second cooldown
+		{0}% increased flight time
+		Enemies afflicted by the Plague take {1}x damage from ranged projectiles
+		[c/{2}:Plague Blackout - {3} to greatly empower your damage but completely blind yourself]
+		[c/009418:{$CommonItemTooltip.PercentIncreasedRangedDamage@4} and {$CommonItemTooltip.PercentIncreasedRangedCritChance@5} while blacked out]
+		[c/009418:This effect lasts {6} {^6:second;seconds} and has a cooldown of {7} {^7:second;seconds}]
 		'''
 }
 
@@ -389,8 +409,8 @@ PlagueReaperStriders: {
 	DisplayName: Plague Reaper Striders
 	Tooltip:
 		'''
-		3% increased ranged critical strike chance
-		15% increased movement speed
+		{$CommonItemTooltip.PercentIncreasedRangedCritChance}
+		{$CommonItemTooltip.PercentIncreasedMovementSpeed@1}
 		'''
 }
 
@@ -398,71 +418,61 @@ PlagueReaperVest: {
 	DisplayName: Plague Reaper Vest
 	Tooltip:
 		'''
+		{$CommonItemTooltip.PercentIncreasedRangedDamage}
 		Grants immunity to the Plague
-		15% increased ranged damage and 5% increased ranged critical strike chance
 		'''
 }
 
 ReaverCuisses: {
 	DisplayName: Reaver Cuisses
-	Tooltip:
-		'''
-		5% increased critical strike chance
-		12% increased movement speed
-		'''
+	Tooltip: "{$CommonItemTooltip.PercentIncreasedMovementSpeed}"
 }
 
 ReaverHeadExplore: {
 	DisplayName: Reaver Headgear
 	Tooltip:
 		'''
-		20% increased mining speed
-		50% increased block & wall placement speed
+		{0}% increased mining speed
+		{1}% increased block & wall placement speed
 		Grants immunity to lava and can move freely through liquids
 		'''
 	SetBonus:
 		'''
-		Summons an orb which highlights nearby treasure and provides light
-		Grants underwater breathing and reduced enemy aggression
+		Emits light and shows the location of treasure and ore
+		{$Common.AggroReduction} and grants underwater breathing
 		These have a moderate effect while in the Abyss
-		Increased block placement & tool range by 7
+		Increased block placement & tool range by {0}
 		Increases pickup range for items
 		'''
 }
 
 ReaverHeadMobility: {
 	DisplayName: Reaver Visage
-	Tooltip: 10% increased jump speed and 15% increased movement speed
+	Tooltip: "{$CommonItemTooltip.PercentIncreasedMovementSpeed} and {1}% increased jump speed"
 	SetBonus:
 		'''
 		Grants immunity to fall damage and allows constant jumping
-		10% increased flight time and horizontal wing speed
-		Hooks fly out and retract 50% faster
-		Reduces the cooldown of dashes
+		{0}% increased flight time and horizontal wing speed
+		Grappling hooks retract and pull the player {1}% faster
+		Reduces the cooldown of dashes by {2}%
 		'''
 }
 
 ReaverHeadTank: {
 	DisplayName: Reaver Helm
-	Tooltip:
-		'''
-		15% increased damage reduction but 30% decreased damage
-		+50 max life
-		'''
+	Tooltip: +{0} max life and +{1} HP/s life regen
 	SetBonus:
 		'''
-		+10 defense and +5 HP/s life regen
-		Enemies are more likely to target you
-		Reduces the life regen lost from damage over time debuffs by 20%
-		30% decreased movement speed and flight time
-		Enemy damage is reflected and summons a thorn spike
-		Reaver Rage activates when you are damaged
+		{$Common.AggroBoost}
+		Reduces the life regen lost from damage over time debuffs by {0}%
+		{1}% decreased movement speed and flight time
+		Grants Reaver Rage for {2} {^2:second;seconds} after taking damage
 		'''
 }
 
 ReaverScaleMail: {
 	DisplayName: Reaver Scale Mail
-	Tooltip: 9% increased damage and 4% increased critical strike chance
+	Tooltip: "{0}% increased damage reduction"
 }
 
 TitanHeartBoots: {

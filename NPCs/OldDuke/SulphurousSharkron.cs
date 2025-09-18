@@ -207,7 +207,7 @@ namespace CalamityMod.NPCs.OldDuke
             if (Main.rand.NextBool(8) && Main.player[closestPlayer].statLife < Main.player[closestPlayer].statLifeMax2)
                 Item.NewItem(NPC.GetSource_Loot(), (int)NPC.position.X, (int)NPC.position.Y, NPC.width, NPC.height, ItemID.Heart);
 
-            if (Main.netMode != NetmodeID.MultiplayerClient && CalamityWorld.LegendaryMode)
+            if (Main.netMode != NetmodeID.MultiplayerClient && Main.getGoodWorld)
             {
                 int spawnX = NPC.width / 2;
                 int type = ModContent.ProjectileType<OldDukeGore>();

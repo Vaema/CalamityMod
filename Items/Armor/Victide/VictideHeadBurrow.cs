@@ -22,7 +22,7 @@ namespace CalamityMod.Items.Armor.Victide
         public static float BaseBurrowSpeed = 9f; // 46 mph
         public static float SubmergedBurrowSpeed = 12f; // 61 mph
         public static float BaseAcceleration = 0.4f; // For reference, base player running acceleration is 0.08
-        public static int BurrowDuration = CalamityUtils.SecondsToFrames(8);
+        public static int BurrowDuration = CalamityUtils.SecondsToFrames(7);
         public static int BurrowCooldown = CalamityUtils.SecondsToFrames(30);
 
         public override void SetDefaults()

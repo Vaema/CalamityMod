@@ -29,14 +29,11 @@ namespace CalamityMod.Items.Armor.Statigel
             Item.defense = 5; //22
         }
 
-        public override bool IsArmorSet(Item head, Item body, Item legs)
-        {
-            return body.type == ModContent.ItemType<StatigelArmor>() && legs.type == ModContent.ItemType<StatigelGreaves>();
-        }
+        public override bool IsArmorSet(Item head, Item body, Item legs) => body.type == ModContent.ItemType<StatigelArmor>() && legs.type == ModContent.ItemType<StatigelGreaves>();
 
         public override void UpdateArmorSet(Player player)
         {
-            player.setBonus = CalamityUtils.GetTextFromModItem<StatigelArmor>("CommonSetBonus").Format(StatigelArmor.SetBonusHurtDamageThreshold, StatigelArmor.SetBonusJumpSpeedBoost.ToJumpSpeedPercent());
+            player.setBonus = CalamityUtils.GetTextFromModItem<StatigelArmor>("CommonSetBonus").Format(StatigelArmor.SetBonusJumpSpeedBoost.ToJumpSpeedPercent());
             var modPlayer = player.Calamity();
             modPlayer.statigelSet = true;
             player.GetJumpState<StatigelJump>().Enable();

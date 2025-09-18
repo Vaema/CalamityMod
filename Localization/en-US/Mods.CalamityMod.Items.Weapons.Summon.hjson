@@ -485,7 +485,8 @@ IgneousExaltation: {
 	Tooltip:
 		'''
 		Summons an Igneous blade that orbits around you
-		<right> to launch all blades towards the cursor
+		When your minion slots are full, <left> again to launch all blades towards the cursor
+		This ability has a two-second cooldown that requires holding this item
 		'''
 }
 

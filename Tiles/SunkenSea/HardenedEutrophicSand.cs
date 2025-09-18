@@ -17,11 +17,12 @@ namespace CalamityMod.Tiles.SunkenSea
         {
             Main.tileSolid[Type] = true;
             Main.tileBlockLight[Type] = true;
+            TileID.Sets.HasSlopeFrames[Type] = true;
 
             CalamityUtils.MergeWithGeneral(Type);
             CalamityUtils.MergeWithDesert(Type);
 
-            Main.tileShine[Type] = 1800;
+            Main.tileShine[Type] = 2500;
             Main.tileShine2[Type] = true;
 
             TileID.Sets.ChecksForMerge[Type] = true;
@@ -44,7 +45,7 @@ namespace CalamityMod.Tiles.SunkenSea
 
         public override bool TileFrame(int i, int j, ref bool resetFrame, ref bool noBreak)
         {
-            return TileFramingSystem.BrimstoneFraming(i, j, resetFrame);
+            return TileFramingSystem.BetterGemsparkFraming(i, j, resetFrame);
         }
 
         public override void RandomUpdate(int i, int j)
@@ -82,6 +83,20 @@ namespace CalamityMod.Tiles.SunkenSea
                 {
                     WorldGen.PlaceObject(i, j - 1, (ushort)ModContent.TileType<SeaAnemone>(), true);
                     NetMessage.SendObjectPlacement(-1, i, j - 1, (ushort)ModContent.TileType<SeaAnemone>(), 0, 0, -1, -1);
+                }
+            }
+
+            // Place sunken kelp
+            if (WorldGen.genRand.NextBool(2) && !up.HasTile && !up2.HasTile && up.LiquidAmount > 0 && up2.LiquidAmount > 0 && !tile.LeftSlope && !tile.RightSlope && !tile.IsHalfBlock)
+            {
+                up.TileType = (ushort)ModContent.TileType<SunkenKelp>();
+                up.HasTile = true;
+
+                WorldGen.SquareTileFrame(i, j - 1, true);
+
+                if (Main.dedServ)
+                {
+                    NetMessage.SendTileSquare(-1, i, j - 1, 3, TileChangeType.None);
                 }
             }
         }

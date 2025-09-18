@@ -168,7 +168,7 @@ namespace CalamityMod.Projectiles.Boss
                 for (int b = 0; b < blobAmt; b++)
                 {
                     Vector2 velocity = CalamityUtils.RandomVelocity(100f, 70f, 100f) + additionalBlobVelocity;
-                    if (CalamityWorld.LegendaryMode)
+                    if (Main.getGoodWorld)
                         velocity *= 2f;
 
                     Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center, velocity, ModContent.ProjectileType<MoltenBlob>(), BlobDamage, 0f, Projectile.owner);

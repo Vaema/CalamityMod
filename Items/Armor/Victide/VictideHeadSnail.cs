@@ -21,6 +21,9 @@ namespace CalamityMod.Items.Armor.Victide
         public static int AggroReduction = 200;
         public override LocalizedText Tooltip => base.Tooltip.WithFormatArgs(FishingPowerBoost);
 
+        // Set Bonus
+        public static int SetBonusGrabRangeBoost = 102; // (2.625 + 6.375 = 9 tiles)
+
         public override void SetDefaults()
         {
             Item.width = 18;

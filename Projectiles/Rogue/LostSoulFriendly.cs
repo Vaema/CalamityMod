@@ -27,7 +27,6 @@ namespace CalamityMod.Projectiles.Rogue
             Projectile.DamageType = RogueDamageClass.Instance;
             Projectile.extraUpdates = 1;
             Projectile.alpha = 150;
-            Projectile.Calamity().pointBlankShotDuration = CalamityGlobalProjectile.DefaultPointBlankDuration;
         }
 
         public override bool? CanHitNPC(NPC target) => (Projectile.timeLeft < 210 || Projectile.ai[0] == 2f) && target.CanBeChasedBy(Projectile);

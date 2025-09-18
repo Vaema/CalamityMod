@@ -40,7 +40,6 @@ namespace CalamityMod.NPCs.Astral
             NPC.width = 60;
             NPC.height = 50;
             NPC.aiStyle = NPCAIStyleID.Bat; //bats
-            NPC.npcSlots = 0.5f; //needed?
             NPC.damage = 55;
             NPC.defense = 26;
             NPC.knockBackResist = 0.65f;

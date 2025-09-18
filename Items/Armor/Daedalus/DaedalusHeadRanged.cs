@@ -19,7 +19,7 @@ namespace CalamityMod.Items.Armor.Daedalus
         public override LocalizedText Tooltip => base.Tooltip.WithFormatArgs(RangedDamageBoost.ToPercent(), RangedCritBoost);
 
         // Set Bonus
-        public static int ShardDamage = 60;
+        public static int ShardDamage => CalamityUtils.ScaleWithDifficulty(30);
 
         public override void SetDefaults()
         {

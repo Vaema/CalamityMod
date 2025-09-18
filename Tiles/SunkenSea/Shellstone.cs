@@ -15,11 +15,11 @@ namespace CalamityMod.Tiles.SunkenSea
 
             Main.tileSolid[Type] = true;
             Main.tileBlockLight[Type] = true;
+            TileID.Sets.HasSlopeFrames[Type] = true;
 
             CalamityUtils.MergeWithGeneral(Type);
             CalamityUtils.MergeWithDesert(Type);
 
-            TileID.Sets.HasSlopeFrames[Type] = true;
             TileID.Sets.ChecksForMerge[Type] = true;
             HitSound = SoundID.Tink;
             DustType = DustID.CorruptPlants;
@@ -28,7 +28,10 @@ namespace CalamityMod.Tiles.SunkenSea
             this.RegisterUniversalMerge(ModContent.TileType<Navystone>(), "CalamityMod/Tiles/Merges/NavystoneMerge");
         }
 
-        public override bool TileFrame(int i, int j, ref bool resetFrame, ref bool noBreak) => TileFramingSystem.BetterGemsparkFraming(i, j, resetFrame);
+        public override bool TileFrame(int i, int j, ref bool resetFrame, ref bool noBreak)
+        {
+            return TileFramingSystem.BetterGemsparkFraming(i, j, resetFrame);
+        }
 
         public override void RandomUpdate(int i, int j)
         {

@@ -15,6 +15,7 @@ using Terraria.DataStructures;
 using Terraria.GameContent;
 using Terraria.Graphics.Effects;
 using Terraria.ID;
+using Terraria.Localization;
 using Terraria.ModLoader;
 
 namespace CalamityMod.Items.Accessories
@@ -33,11 +34,10 @@ namespace CalamityMod.Items.Accessories
         public static readonly SoundStyle BreakSound = new("CalamityMod/Sounds/Custom/RoverDriveBreak") { Volume = 0.75f };
 
         public static int ShieldDurabilityMax = 120;
+        public static float ShieldActiveDamageReduction = 0.1f;
         public static int ShieldRechargeDelay = CalamityUtils.SecondsToFrames(8); // Was 6, then was 9
         public static int TotalShieldRechargeTime = CalamityUtils.SecondsToFrames(10); // Was 6
-
-        // While active, The Sponge gives 10% DR
-        public static float ShieldActiveDamageReduction = 0.1f;
+        public override LocalizedText Tooltip => base.Tooltip.WithFormatArgs(ShieldDurabilityMax, ShieldActiveDamageReduction.ToPercent(), ShieldRechargeDelay.FramesToSeconds(), TotalShieldRechargeTime.FramesToSeconds());
 
         public int OwnerPlayer { get; set; }
         public float RenderDepth => IDyeableShaderRenderer.SpongeShieldDepth;

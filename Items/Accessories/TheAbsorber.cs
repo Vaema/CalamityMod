@@ -13,9 +13,9 @@ namespace CalamityMod.Items.Accessories
 
         public static float MoveSpeedBoost = 0.12f;
         public static float JumpSpeedBoost = 0.6f; // Both 12% so we only need just one in the tooltip
-        public static float ThornsBoost = 3.5f;
+        public static int ThornsDamage => CalamityUtils.ScaleWithDifficulty(200);
         public static int AuraLifetime = 1800;
-        public static int AuraRegenBoost = 6;
+        public static int AuraRegenBoost = 4;
         public static float AuraDamageBoost = 0.08f;
         public static float AuraDamageReductionBoost = 0.05f;
         public static float DamageTakenHealedPercent = 0.05f;

@@ -1,4 +1,5 @@
-﻿using CalamityMod.Projectiles.Summon;
+﻿using CalamityMod.Buffs.Summon;
+using CalamityMod.Projectiles.Summon;
 using CalamityMod.Rarities;
 using Microsoft.Xna.Framework;
 using Terraria;
@@ -40,6 +41,7 @@ namespace CalamityMod.Items.Weapons.Summon
         {
             Item.damage = 512;
             Item.DamageType = DamageClass.Summon;
+            Item.buffType = ModContent.BuffType<LiliesOfFinalityBuff>();
             Item.shoot = ProjectileType<LiliesOfFinalityElster>();
             Item.knockBack = 5f;
 
@@ -58,9 +60,12 @@ namespace CalamityMod.Items.Weapons.Summon
 
         public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)
         {
+            player.AddBuff(Item.buffType, 2);
             Vector2 mouse = player.ClampedMouseWorld();
-            Projectile.NewProjectile(source, mouse, new Vector2(-1f, -1f) * 3f, type, damage, knockback, player.whoAmI);
-            Projectile.NewProjectile(source, mouse, new Vector2(1f, -1f) * 3f, ProjectileType<LiliesOfFinalityAriane>(), damage, knockback, player.whoAmI);
+            var elster = Projectile.NewProjectileDirect(source, mouse, new Vector2(-1f, -1f) * 3f, type, damage, knockback, player.whoAmI);
+            elster.originalDamage = Item.damage;
+            var ariane = Projectile.NewProjectileDirect(source, mouse, new Vector2(1f, -1f) * 3f, ProjectileType<LiliesOfFinalityAriane>(), damage, knockback, player.whoAmI);
+            ariane.originalDamage = Item.damage;
 
             if (Main.dedServ)
                 return false;
