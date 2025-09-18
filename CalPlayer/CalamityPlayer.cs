@@ -4504,6 +4504,20 @@ namespace CalamityMod.CalPlayer
 
         public override void PostUpdate()
         {
+
+            if (subtitletext != null)
+            {
+                if (!subtitletext.active)
+                {
+                    subtitletext = null;
+                }
+                else
+                {
+                    subtitletext.position = Player.Center + new Vector2(-FontAssets.CombatText[subtitletext.crit ? 1 : 0].Value.MeasureString(subtitletext.text).X * 0.5f, 64);
+                    subtitletext.color = Color.Lerp(subtitleColors[1], subtitleColors[0], subtitletext.lifeTime / 120f);
+                }
+            }
+
             #region Managing time control
             if (Main.netMode != NetmodeID.Server && Player == Main.LocalPlayer)
             {
@@ -5598,21 +5612,6 @@ namespace CalamityMod.CalPlayer
                             spearsFired++;
                         }
                     }
-                }
-            }
-        }
-
-        public override void PostUpdate() 
-        {
-            if (subtitletext != null)
-            {
-                if (!subtitletext.active)
-                {
-                    subtitletext = null;
-                } else
-                {      
-                    subtitletext.position = Player.Center + new Vector2(-FontAssets.CombatText[subtitletext.crit ? 1 : 0].Value.MeasureString(subtitletext.text).X * 0.5f, 64);
-                    subtitletext.color = Color.Lerp(subtitleColors[1], subtitleColors[0], subtitletext.lifeTime/120f);
                 }
             }
         }
