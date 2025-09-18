@@ -1544,7 +1544,11 @@ namespace CalamityMod.CalPlayer
         public bool deathstareEyeball = false;
         public bool witherBlossom = false;
         public bool flowersOfMortality = false;
-        public bool ViridVanguard = false;
+        public bool viridVanguard = false;
+        public bool ViridVanguardActiveAttackerThisFrame = false;
+        public float ViridVanguardRotation = 0;
+        public float ViridVanguardActiveCooldown = 0;
+        public float ViridVanguardRotationToAdd = 0;
         public bool sageSpirit = false;
         public bool fleshBall = false;
         public bool eyeOfNight = false;
@@ -2006,6 +2010,11 @@ namespace CalamityMod.CalPlayer
         #region ResetEffects
         public override void ResetEffects()
         {
+            ViridVanguardActiveAttackerThisFrame = Main.projectile.Any(x => x.active && x.type == ModContent.ProjectileType<ViridVanguardBlade>() && x.owner == Player.whoAmI && x.ModProjectile<ViridVanguardBlade>().CurrentState == ViridVanguardBlade.ViridVanguardAIState.PhotonRipperZenithSlashes);
+            ViridVanguardRotation = MathHelper.WrapAngle(ViridVanguardRotation + ViridVanguardRotationToAdd);
+            ViridVanguardRotationToAdd = ViridVanguard.IdleCirclingSpeed;
+            if (ViridVanguardActiveCooldown > 0)
+                ViridVanguardActiveCooldown--;
             if (fleshKnuckles)
                 Player.statLifeMax2 += 25;
 
@@ -2696,7 +2705,7 @@ namespace CalamityMod.CalPlayer
             deathstareEyeball = false;
             witherBlossom = false;
             flowersOfMortality = false;
-            ViridVanguard = false;
+            viridVanguard = false;
             sageSpirit = false;
             fleshBall = false;
             eyeOfNight = false;

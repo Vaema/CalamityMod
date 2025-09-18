@@ -1,6 +1,4 @@
-﻿using CalamityMod.Buffs.StatDebuffs;
-using CalamityMod.DataStructures;
-using CalamityMod.NPCs;
+﻿using CalamityMod.DataStructures;
 using CalamityMod.Systems.Collections;
 using Terraria;
 using Terraria.ModLoader;
@@ -15,6 +13,8 @@ namespace CalamityMod.Buffs.DamageOverTime
             SicknessDebuffScaling = 1,
             NPCLifeRegenMethod = SagePoisonPower
         };
+
+        public static float ViridVanguardPoisonMultiplier => 3;
         public static void SagePoisonPower(NPC npc, int buffType, ref int buffIndex, ref int damage)
         {
             // The base DoT is multiplied by the amount of Viral Sprouts you have when applied
