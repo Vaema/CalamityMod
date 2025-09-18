@@ -24,13 +24,10 @@ namespace CalamityMod.Projectiles.Melee
     {
         public new string LocalizationCategory => "Projectiles.Melee";
         public override string Texture => "CalamityMod/Projectiles/InvisibleProj";
-        public int TargetIndex = -1;
 
         public static float MaxWidth = 30;
         public ref float Time => ref Projectile.ai[0];
 
-        public static Asset<Texture2D> BloomTex;
-        public static Asset<Texture2D> SlashTex;
         public static Asset<Texture2D> TrailTex;
 
         public override void SetStaticDefaults()
