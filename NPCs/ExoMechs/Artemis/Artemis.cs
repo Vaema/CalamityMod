@@ -174,13 +174,13 @@ namespace CalamityMod.NPCs.ExoMechs.Artemis
             }
         }
 
-        public static int LaserDamage = 85; // 340
-        public static int BeamDamage = 110; // 440
+        public static int LaserDamage = 80; // 320
+        public static int BeamDamage = 105; // 420
 
         public override void SetDefaults()
         {
             NPC.Calamity().canBreakPlayerDefense = true;
-            NPC.damage = 200; // 400
+            NPC.damage = 190; // 380
             NPC.npcSlots = 5f;
             NPC.width = 204;
             NPC.height = 226;

@@ -23,7 +23,7 @@ namespace CalamityMod.NPCs.Polterghast
             NPCID.Sets.TrailingMode[Type] = 1;
         }
 
-        public static int MineDamage = 75; // 300
+        public static int MineDamage = 70; // 280
 
         public override void SetDefaults()
         {

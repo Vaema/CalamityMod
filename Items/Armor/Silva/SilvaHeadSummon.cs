@@ -7,9 +7,10 @@ using CalamityMod.Projectiles.Summon;
 using CalamityMod.Rarities;
 using CalamityMod.Tiles.Furniture.CraftingStations;
 using Terraria;
-using Terraria.Audio;
 using Terraria.ID;
+using Terraria.Localization;
 using Terraria.ModLoader;
+using static CalamityMod.Items.Armor.Silva.SilvaArmor;
 
 namespace CalamityMod.Items.Armor.Silva
 {
@@ -19,27 +20,28 @@ namespace CalamityMod.Items.Armor.Silva
     {
         public new string LocalizationCategory => "Items.Armor.PostMoonLord";
         internal static string SilvaCrystalEntitySourceContext => "SetBonus_Calamity_SilvaSummon";
-        public static readonly SoundStyle ActivationSound = new("CalamityMod/Sounds/Custom/AbilitySounds/SilvaActivation");
-        public static readonly SoundStyle DispelSound = new("CalamityMod/Sounds/Custom/AbilitySounds/SilvaDispel");
+
+        public static int MinionSlotBoost = 2;
+        public static float SummonDamageBoost = 0.3f;
+        public override LocalizedText Tooltip => base.Tooltip.WithFormatArgs(MinionSlotBoost, SummonDamageBoost.ToPercent());
+
+        // Set Bonus
+        public static int SetBonusMinionSlotBoost = 3;
+        public static float SetBonusSummonDamageBoost = 0.4f;
+        public static int CrystalDamage = 380;
 
         public override void SetDefaults()
         {
             Item.width = 28;
             Item.height = 24;
             Item.value = CalamityGlobalItem.RarityDarkBlueBuyPrice;
-            Item.defense = 13; //110
+            Item.defense = 18; // 84
             Item.rare = ModContent.RarityType<CosmicPurple>();
         }
 
-        public override bool IsArmorSet(Item head, Item body, Item legs)
-        {
-            return body.type == ModContent.ItemType<SilvaArmor>() && legs.type == ModContent.ItemType<SilvaLeggings>();
-        }
+        public override bool IsArmorSet(Item head, Item body, Item legs) => body.type == ModContent.ItemType<SilvaArmor>() && legs.type == ModContent.ItemType<SilvaLeggings>();
 
-        public override void ArmorSetShadows(Player player)
-        {
-            player.armorEffectDrawShadow = true;
-        }
+        public override void ArmorSetShadows(Player player) => player.armorEffectDrawShadow = true;
 
         public override void UpdateArmorSet(Player player)
         {
@@ -47,12 +49,16 @@ namespace CalamityMod.Items.Armor.Silva
             modPlayer.silvaSet = true;
             modPlayer.silvaSummon = true;
             modPlayer.WearingPostMLSummonerSet = true;
-            player.setBonus = this.GetLocalizedValue("SetBonus") + "\n" + CalamityUtils.GetTextValueFromModItem<SilvaArmor>("CommonSetBonus");
-            player.GetDamage<SummonDamageClass>() += 0.65f;
-            player.maxMinions += 5;
+            player.setBonus = this.GetLocalization("SetBonus").Format(SetBonusMinionSlotBoost, SetBonusSummonDamageBoost.ToPercent(), SetBonusRegenBoost.ToRegenPerSecond(), AccelerationBoost.ToPercent(), ReviveDuration.FramesToSeconds(), (ReviveCooldown / 60).FramesToSeconds());
+            player.maxMinions += SetBonusMinionSlotBoost;
+            player.GetDamage<SummonDamageClass>() += SetBonusSummonDamageBoost;
         }
 
-        public override void UpdateEquip(Player player) => player.GetDamage<SummonDamageClass>() += 0.1f;
+        public override void UpdateEquip(Player player)
+        {
+            player.maxMinions += MinionSlotBoost;
+            player.GetDamage<SummonDamageClass>() += SummonDamageBoost;
+        }
 
         public override void AddRecipes()
         {

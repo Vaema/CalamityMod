@@ -65,15 +65,15 @@ namespace CalamityMod.NPCs.ProfanedGuardians
             }
         }
 
-        public static int FireDamage = 42; // 168; HolyFire, HolyFire2
-        public static int SpearDamage = 55; // 220; HolySpear, ProfanedSpear
-        public static int HolyBlastDamage = 64; // 256
+        public static int FireDamage = 36; // 144; HolyFire, HolyFire2
+        public static int SpearDamage = 42; // 168; HolySpear, ProfanedSpear
+        public static int HolyBlastDamage = 60; // 240
         public static int RayDamage = 80; // 320
 
         public override void SetDefaults()
         {
             NPC.Calamity().canBreakPlayerDefense = true;
-            NPC.damage = 110; // 220
+            NPC.damage = 120; // 240
             NPC.npcSlots = 20f;
             NPC.aiStyle = -1;
             NPC.width = 228;
@@ -87,7 +87,7 @@ namespace CalamityMod.NPCs.ProfanedGuardians
             AIType = -1;
             NPC.boss = true;
             NPC.BossBar = ModContent.GetInstance<ProfanedGuardianBossBar>();
-            NPC.value = Item.buyPrice(platinum: 1);
+            NPC.value = Item.buyPrice(gold: 50);
             NPC.HitSound = SoundID.NPCHit52;
             NPC.DeathSound = SoundID.NPCDeath55;
             NPC.Calamity().VulnerableToHeat = false;

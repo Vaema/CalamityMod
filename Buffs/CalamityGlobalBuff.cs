@@ -90,6 +90,14 @@ namespace CalamityMod.Buffs
                 player.Calamity().shine = true;
             }
 
+            // Star in a Bottle provides Mana Regeneration Potion effect and cancels out the usual effect if you don't have it
+            else if (type == BuffID.StarInBottle && !player.manaRegenBuff)
+            {
+                player.manaRegenBuff = true;
+                player.manaRegenDelayBonus -= 0.5f;
+                player.manaRegenBonus -= 10;
+            }
+
             // Beetle Shell DR is a full compensation, as the vanilla multiplicative DR is removed entirely.
             else if (type >= BuffID.BeetleEndurance1 && type <= BuffID.BeetleEndurance3 && player.beetleDefense)
             {
@@ -200,10 +208,6 @@ namespace CalamityMod.Buffs
                     tip = tip.Replace("25", "15");
                     break;
 
-                case BuffID.LeafCrystal:
-                    tip = CalamityUtils.GetTextValue("Vanilla.BuffDescription.LeafCrystal");
-                    break;
-
                 case BuffID.MagicPower:
                     tip = tip.Replace("20", "10");
                     break;
@@ -247,10 +251,6 @@ namespace CalamityMod.Buffs
 
                 case BuffID.Swiftness:
                     tip = tip.Replace("25", "15");
-                    break;
-
-                case BuffID.Warmth:
-                    tip += "\n" + CalamityUtils.GetTextValue("Vanilla.BuffDescription.WarmthExtra");
                     break;
 
                 case BuffID.WeaponImbueConfetti:

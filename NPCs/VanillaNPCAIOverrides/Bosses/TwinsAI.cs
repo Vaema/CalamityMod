@@ -21,7 +21,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
         public static int FireballDamage = 22; // 88; Applies to both fireball types
 
         // Rev+ exclusive
-        public static int LaserDamage = 23; // 92 (buffed)
+        public static int LaserDamage = 21; // 84 (buffed)
         public static int RedLaserDamage = 27; // 108 (buffed)
         public static int HomingDartDamage = 27; // 108
 

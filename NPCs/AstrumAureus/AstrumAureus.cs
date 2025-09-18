@@ -88,7 +88,7 @@ namespace CalamityMod.NPCs.AstrumAureus
             }
         }
 
-        public static int LaserDamage = 24; // 96
+        public static int LaserDamage = 25; // 100
         public static int CrystalDamage = 30; // 120
 
         public override void SetDefaults()

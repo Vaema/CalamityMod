@@ -219,10 +219,10 @@ namespace CalamityMod.NPCs.ExoMechs.Ares
             }
         }
 
-        public static int BlenderDamage = 110; // 440
+        public static int BlenderDamage = 105; // 420
 
         // Hekate (GFB)
-        public static int NeuronLaserDamage = 85; // 340
+        public static int NeuronLaserDamage = 80; // 320
 
         public override void SetDefaults()
         {

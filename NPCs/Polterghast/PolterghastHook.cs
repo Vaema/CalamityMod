@@ -32,7 +32,7 @@ namespace CalamityMod.NPCs.Polterghast
             }
         }
 
-        public static int ShotDamage = 60; // 240
+        public static int ShotDamage = 55; // 220
 
         public override void SetDefaults()
         {

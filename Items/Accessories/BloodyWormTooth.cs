@@ -30,7 +30,8 @@ namespace CalamityMod.Items.Accessories
                 AddIngredient<RottenBrain>().
                 AddTile(TileID.TinkerersWorkbench).
                 AddCondition(Condition.InGraveyard).
-                Register();
+                Register()
+                .DisableDecraft();
         }
     }
 }

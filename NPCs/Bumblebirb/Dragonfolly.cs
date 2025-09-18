@@ -60,13 +60,14 @@ namespace CalamityMod.NPCs.Bumblebirb
         public override string Texture => "CalamityMod/NPCs/Bumblebirb/Birb";
         public override string BossHeadTexture => "CalamityMod/NPCs/Bumblebirb/Birb_Head_Boss";
 
-        public static int FeatherDamage = 42; // 168
-        public static int LightningDamage = 65; // 260
+        public static float DashDamageMult = 1.5f; // 240
+        public static int FeatherDamage = 36; // 144
+        public static int LightningDamage = 64; // 256
 
         public override void SetDefaults()
         {
             NPC.Calamity().canBreakPlayerDefense = true;
-            NPC.damage = 120; // 240
+            NPC.damage = 80; // 160
             NPC.npcSlots = 32f;
             NPC.aiStyle = -1;
             AIType = -1;
@@ -80,7 +81,7 @@ namespace CalamityMod.NPCs.Bumblebirb
             NPC.noTileCollide = true;
             NPC.lavaImmune = true;
             NPC.noGravity = true;
-            NPC.value = Item.buyPrice(platinum: 1);
+            NPC.value = Item.buyPrice(gold: 50);
             NPC.HitSound = SoundID.NPCHit51;
             NPC.DeathSound = SoundID.NPCDeath46;
             NPC.Calamity().VulnerableToHeat = true;
@@ -227,8 +228,6 @@ namespace CalamityMod.NPCs.Bumblebirb
 
             calamityGlobalNPC.DR = phaseSwitchPhase || NPC.ai[0] == 5f || enrageScale == 3f ? 0.55f : 0.1f;
             calamityGlobalNPC.CurrentlyIncreasingDefenseOrDR = phaseSwitchPhase || NPC.ai[0] == 5f || enrageScale == 3f;
-
-            int reducedSetDamage = (int)Math.Round(NPC.defDamage * 0.5);
 
             if (phaseSwitchPhase)
             {
@@ -618,8 +617,7 @@ namespace CalamityMod.NPCs.Bumblebirb
             // Fly towards target quickly
             else if (NPC.ai[0] == 2f)
             {
-                // Set reduced damage
-                NPC.damage = reducedSetDamage;
+                NPC.damage = NPC.defDamage;
 
                 if (NPC.target < 0 || !player.active || player.dead)
                 {
@@ -735,8 +733,7 @@ namespace CalamityMod.NPCs.Bumblebirb
                 NPC.ai[1] += 1f;
                 if (NPC.ai[1] > 10f)
                 {
-                    // Set damage
-                    NPC.damage = NPC.defDamage;
+                    NPC.damage = (int)Math.Round(NPC.defDamage * DashDamageMult);
 
                     NPC.velocity = follyChargePrepareTargetDirection;
 
@@ -756,8 +753,7 @@ namespace CalamityMod.NPCs.Bumblebirb
             // Charge
             else if (NPC.ai[0] == 3.2f)
             {
-                // Set damage
-                NPC.damage = NPC.defDamage;
+                NPC.damage = (int)Math.Round(NPC.defDamage * DashDamageMult);
 
                 NPC.ai[2] += 0.0333333351f;
                 float velocity = 28f + (enrageScale - 1f) * 4f;

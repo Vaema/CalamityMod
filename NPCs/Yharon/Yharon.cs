@@ -97,18 +97,18 @@ namespace CalamityMod.NPCs.Yharon
             }
         }
 
-        public static int FlareDamage = 72; // 288; FlareBomb, FlareDust, FlareDust2
-        public static int FireballDamage = 72; // 288
-        public static int TornadoDamage = 90; // 360; Flarenado, Infernado, Infernado2
+        public static int FlareDamage = 66; // 264; FlareBomb, FlareDust, FlareDust2
+        public static int FireballDamage = 66; // 264
+        public static int TornadoDamage = 85; // 340; Flarenado, Infernado, Infernado2
         public static int BordernadoDamage = 125; // 500; SkyFlareRevenge
 
         // GFB exclusive
-        public static int VortexDamage = 90; // 360
+        public static int VortexDamage = 85; // 340
 
         public override void SetDefaults()
         {
             NPC.Calamity().canBreakPlayerDefense = true;
-            NPC.damage = 220; // 440
+            NPC.damage = 210; // 420
             NPC.npcSlots = 50f;
             NPC.width = 200;
             NPC.height = 200;

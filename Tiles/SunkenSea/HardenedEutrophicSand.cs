@@ -85,6 +85,20 @@ namespace CalamityMod.Tiles.SunkenSea
                     NetMessage.SendObjectPlacement(-1, i, j - 1, (ushort)ModContent.TileType<SeaAnemone>(), 0, 0, -1, -1);
                 }
             }
+
+            // Place sunken kelp
+            if (WorldGen.genRand.NextBool(2) && !up.HasTile && !up2.HasTile && up.LiquidAmount > 0 && up2.LiquidAmount > 0 && !tile.LeftSlope && !tile.RightSlope && !tile.IsHalfBlock)
+            {
+                up.TileType = (ushort)ModContent.TileType<SunkenKelp>();
+                up.HasTile = true;
+
+                WorldGen.SquareTileFrame(i, j - 1, true);
+
+                if (Main.dedServ)
+                {
+                    NetMessage.SendTileSquare(-1, i, j - 1, 3, TileChangeType.None);
+                }
+            }
         }
     }
 }

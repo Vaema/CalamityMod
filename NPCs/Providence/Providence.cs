@@ -169,6 +169,7 @@ namespace CalamityMod.NPCs.Providence
             Main.npcFrameCount[Type] = 3;
             NPCID.Sets.TrailingMode[Type] = 1;
             NPCID.Sets.BossBestiaryPriority.Add(Type);
+            NPCID.Sets.NeedsExpertScaling[Type] = true;
             NPCID.Sets.NPCBestiaryDrawModifiers value = new NPCID.Sets.NPCBestiaryDrawModifiers()
             {
                 Scale = 0.2f,
@@ -237,14 +238,14 @@ namespace CalamityMod.NPCs.Providence
             base.ModifyHoverBoundingBox(ref boundingBox);
         }
 
-        public static int FireDamage = 42; // 168; HolyFire, HolyFire2, HolyFlare
-        public static int BlobDamage = 42; // 168
-        public static int FireSentryDamage = 55; // 220; HolyBomb
-        public static int MoltenBlastDamage = 55; // 220
-        public static int StarDamage = 55; // 220; HolyBurnOrb
-        public static int SpearDamage = 55; // 220
-        public static int CrystalDamage = 55; // 220
-        public static int HolyBlastDamage = 64; // 256
+        public static int FireDamage = 36; // 144; HolyFire, HolyFire2, HolyFlare
+        public static int BlobDamage = 36; // 144
+        public static int FireSentryDamage = 54; // 216; HolyBomb
+        public static int MoltenBlastDamage = 54; // 216
+        public static int StarDamage = 54; // 216; HolyBurnOrb
+        public static int SpearDamage = 42; // 168
+        public static int CrystalDamage = 48; // 192
+        public static int HolyBlastDamage = 60; // 240
         public static int RayDamage = 100; // 400
 
         public static int StarHeal = Main.expertMode ? 50 : 35; // HolyLight

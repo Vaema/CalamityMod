@@ -108,7 +108,6 @@ namespace CalamityMod.Projectiles.Summon
             if (BladeGleamInterpolant <= 0.02f)
                 BladeGleamInterpolant = 0f;
 
-            NPC potentialTarget = Projectile.Center.MinionHoming(ViridVanguard.MaxTargetingDistance, Owner);
             switch (CurrentState)
             {
                 case AIState.CircleOwner:

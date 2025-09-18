@@ -233,8 +233,6 @@ namespace CalamityMod.NPCs
         /// </summary>
         public int destroyerLaserColor = -1;
 
-        /// <summary> Constant multiplier used to increase vanilla enemy health. </summary>
-        private const double EnemyHPMultiplier = 1.25;
         /// <summary> Constant multiplier used to decrease the health and/or damage of pre-Hardmode Desert enemies. </summary>
         private const double DesertEnemyStatMultiplier = 0.75;
 
@@ -927,48 +925,13 @@ namespace CalamityMod.NPCs
             bool wormBoss = CalamityNPCTypeSets.DesertScourge.Contains(npc.type) || CalamityNPCTypeSets.EaterOfWorlds.Contains(npc.type) || CalamityNPCTypeSets.Perforators.Contains(npc.type) ||
                 CalamityNPCTypeSets.AquaticScourge.Contains(npc.type) || CalamityNPCTypeSets.AstrumDeus.Contains(npc.type) || CalamityNPCTypeSets.StormWeaver.Contains(npc.type);
             bool slimeGod = CalamityNPCTypeSets.SlimeGod.Contains(npc.type);
+
+
             ActiveHeatDebuffMultiplier = HeatDebuffMultiplier;
-            if (VulnerableToHeat.HasValue)
-            {
-                if (VulnerableToHeat.Value)
-                    ActiveHeatDebuffMultiplier *= wormBoss ? VulnerableToDoTDamageMult_Worms_SlimeGod : VulnerableToDoTDamageMult;
-                else
-                    ActiveHeatDebuffMultiplier *= ResistantToDoTDamageMult;
-            }
-
             ActiveColdDebuffMultiplier = ColdDebuffMultiplier;
-            if (VulnerableToCold.HasValue)
-            {
-                if (VulnerableToCold.Value)
-                    ActiveColdDebuffMultiplier *= wormBoss ? VulnerableToDoTDamageMult_Worms_SlimeGod : VulnerableToDoTDamageMult;
-                else
-                    ActiveColdDebuffMultiplier *= ResistantToDoTDamageMult;
-            }
-
             ActiveSicknessDebuffMultiplier = SicknessDebuffMultiplier;
-            if (VulnerableToSickness.HasValue)
-            {
-                if (VulnerableToSickness.Value)
-                    ActiveSicknessDebuffMultiplier *= wormBoss ? VulnerableToDoTDamageMult_Worms_SlimeGod : VulnerableToDoTDamageMult;
-                else
-                    ActiveSicknessDebuffMultiplier *= ResistantToDoTDamageMult;
-            }
             ActiveElectricDebuffMultiplier = ElectricDebuffMultiplier;
-            if (VulnerableToElectricity.HasValue)
-            {
-                if (VulnerableToElectricity.Value)
-                    ActiveElectricDebuffMultiplier *= wormBoss ? VulnerableToDoTDamageMult_Worms_SlimeGod : VulnerableToDoTDamageMult;
-                else
-                    ActiveElectricDebuffMultiplier *= ResistantToDoTDamageMult;
-            }
             ActiveWaterDebuffMultiplier = WaterDebuffMultiplier;
-            if (VulnerableToWater.HasValue)
-            {
-                if (VulnerableToWater.Value)
-                    ActiveWaterDebuffMultiplier *= wormBoss ? VulnerableToDoTDamageMult_Worms_SlimeGod : VulnerableToDoTDamageMult;
-                else
-                    ActiveWaterDebuffMultiplier *= ResistantToDoTDamageMult;
-            }
 
             if (irradiated)
             {
@@ -995,11 +958,48 @@ namespace CalamityMod.NPCs
             {
                 ActiveWaterDebuffMultiplier += 1;
             }
+            if (VulnerableToHeat.HasValue)
+            {
+                if (VulnerableToHeat.Value)
+                    ActiveHeatDebuffMultiplier *= wormBoss ? VulnerableToDoTDamageMult_Worms_SlimeGod : VulnerableToDoTDamageMult;
+                else
+                    ActiveHeatDebuffMultiplier *= ResistantToDoTDamageMult;
+            }
+
+            if (VulnerableToCold.HasValue)
+            {
+                if (VulnerableToCold.Value)
+                    ActiveColdDebuffMultiplier *= wormBoss ? VulnerableToDoTDamageMult_Worms_SlimeGod : VulnerableToDoTDamageMult;
+                else
+                    ActiveColdDebuffMultiplier *= ResistantToDoTDamageMult;
+            }
+
+            if (VulnerableToSickness.HasValue)
+            {
+                if (VulnerableToSickness.Value)
+                    ActiveSicknessDebuffMultiplier *= wormBoss ? VulnerableToDoTDamageMult_Worms_SlimeGod : VulnerableToDoTDamageMult;
+                else
+                    ActiveSicknessDebuffMultiplier *= ResistantToDoTDamageMult;
+            }
+            if (VulnerableToElectricity.HasValue)
+            {
+                if (VulnerableToElectricity.Value)
+                    ActiveElectricDebuffMultiplier *= wormBoss ? VulnerableToDoTDamageMult_Worms_SlimeGod : VulnerableToDoTDamageMult;
+                else
+                    ActiveElectricDebuffMultiplier *= ResistantToDoTDamageMult;
+            }
+            if (VulnerableToWater.HasValue)
+            {
+                if (VulnerableToWater.Value)
+                    ActiveWaterDebuffMultiplier *= wormBoss ? VulnerableToDoTDamageMult_Worms_SlimeGod : VulnerableToDoTDamageMult;
+                else
+                    ActiveWaterDebuffMultiplier *= ResistantToDoTDamageMult;
+            }
             #endregion
 
-            // Oiled
-
+            
             bool hasModHotOil = false;
+            //Apply DoT Debuffs
             for (var index = 0; index < npc.buffType.Count(); index++)
             {
                 var type = npc.buffType[index];
@@ -1010,21 +1010,15 @@ namespace CalamityMod.NPCs
                 if (debuffData.HeatDebuffScaling > 0)
                     hasModHotOil = true;
             }
-            //Oiled comes after so that we can detect if they have a heat debuff
-            bool hasColdOil = npc.onFrostBurn || npc.onFrostBurn2;
-            bool hasHotOil = npc.onFire || npc.onFire2 || npc.onFire3 || npc.shadowFlame;
+            //Oiled comes after so that we can detect if they have a heat debuff in the above loop
+            bool hasVanillaOil = npc.onFrostBurn || npc.onFrostBurn2 || npc.onFire || npc.onFire2 || npc.onFire3 || npc.shadowFlame;
             if (npc.oiled)
             {
                 var oil = DebuffData.Oiled;
                 int index = npc.FindBuffIndex(BuffID.Oiled);
-                if (hasHotOil || hasColdOil)
+                if (hasVanillaOil)
                     npc.lifeRegen -= oil.EnemyVanillaRegenToCancelOut;
                 oil.NPCLifeRegenMethod(npc, BuffID.Oiled, ref index, ref damage);
-            }
-
-            if (npc.dryadBane)
-            {
-               
             }
 
             // Debuffs that aren't affected by weaknesses or resistances.
@@ -2540,13 +2534,6 @@ namespace CalamityMod.NPCs
                 case NPCID.QueenSlimeBoss:
                 case NPCID.Deerclops:
                     canBreakPlayerDefense = true;
-                    break;
-
-                // Enemies that should have coldDamage set to true
-                case NPCID.IceMimic:
-                case NPCID.IceBat:
-                case NPCID.IceTortoise:
-                    npc.coldDamage = true;
                     break;
 
                 // These go through walls and are very annoying with the new tombstone breaking spawning them mechanic in 1.4
@@ -5898,12 +5885,12 @@ namespace CalamityMod.NPCs
             if (CalamityWorld.death && Main.bloodMoon)
             {
                 spawnRate = (int)(spawnRate * 0.25);
-                maxSpawns = (int)(maxSpawns * 10f);
+                maxSpawns = (int)(maxSpawns * 5f);
             }
 
             if (CalamityWorld.death && player.ZoneGraveyard)
             {
-                spawnRate = (int)(spawnRate * 0.6);
+                spawnRate = (int)(spawnRate * 0.6667);
                 maxSpawns = (int)(maxSpawns * 1.5f);
             }
 
@@ -5920,27 +5907,18 @@ namespace CalamityMod.NPCs
             if (CalamityWorld.revenge)
                 spawnRate = (int)(spawnRate * 0.85);
 
-            if (Main.SceneMetrics.WaterCandleCount > 0)
-                spawnRate = (int)(spawnRate * 0.8888); // On top of 0.75 = 0.6666x (1.33x -> 1.5x spawn rate)
-            if (player.enemySpawns) // Battle Potion
-            {
-                spawnRate = (int)(spawnRate * 0.8); // On top of 0.5 = 0.4x (2x -> 2.5x spawn rate)
-                maxSpawns = (int)(maxSpawns * 1.25f); // On top of 2 (2x -> 2.5x max spawns)
-            }
             if (player.Calamity().chaosCandle)
             {
-                spawnRate = (int)(spawnRate * 0.4); // 2.5x spawn rate
-                maxSpawns = (int)(maxSpawns * 2.5f);
+                spawnRate = (int)(spawnRate * 0.5); // 2x spawn rate
+                maxSpawns = (int)(maxSpawns * 2f);
             }
             if (player.Calamity().zerg)
             {
-                spawnRate = (int)(spawnRate * 0.2); // 5x spawn rate
-                maxSpawns = (int)(maxSpawns * 5f);
+                spawnRate = (int)(spawnRate * 0.25); // 4x spawn rate
+                maxSpawns = (int)(maxSpawns * 4f);
             }
 
             // Reductions
-            if (Main.SceneMetrics.PeaceCandleCount > 0)
-                spawnRate = (int)(spawnRate * 1.0989); // On top of 1.3 = 1.4286x (0.77x -> 0.7x spawn rate)
             if (player.Calamity().tranquilityCandle)
             {
                 spawnRate = (int)(spawnRate * 1.6666); // 0.6x spawn rate
@@ -5948,8 +5926,8 @@ namespace CalamityMod.NPCs
             }
             if (player.Calamity().zen || (CalamityServerConfig.Instance.ForceTownSafety && player.townNPCs > 1f && Main.expertMode))
             {
-                spawnRate = (int)(spawnRate * 3.3333); // 0.3x spawn rate
-                maxSpawns = (int)(maxSpawns * 0.3f);
+                spawnRate = (int)(spawnRate * 2.5); // 0.4x spawn rate
+                maxSpawns = (int)(maxSpawns * 0.4f);
             }
             if (player.Calamity().isNearbyBoss && CalamityServerConfig.Instance.BossZen)
             {

@@ -8,8 +8,12 @@ using CalamityMod.Enums;
 using CalamityMod.Events;
 using CalamityMod.Items.Accessories;
 using CalamityMod.Items.Ammo;
+using CalamityMod.Items.Armor.Bloodflare;
+using CalamityMod.Items.Armor.GodSlayer;
 using CalamityMod.Items.Armor.Hydrothermic;
+using CalamityMod.Items.Armor.Prismatic;
 using CalamityMod.Items.Armor.Reaver;
+using CalamityMod.Items.Armor.Tarragon;
 using CalamityMod.Items.Armor.Victide;
 using CalamityMod.Items.Potions;
 using CalamityMod.Items.Potions.Alcohol;
@@ -21,6 +25,7 @@ using CalamityMod.NPCs.Other;
 using CalamityMod.NPCs.TownNPCs;
 using CalamityMod.Packets;
 using CalamityMod.Particles;
+using CalamityMod.Projectiles.Healing;
 using CalamityMod.Projectiles.Magic;
 using CalamityMod.Projectiles.Melee;
 using CalamityMod.Projectiles.Ranged;
@@ -44,6 +49,7 @@ using Terraria.ID;
 using Terraria.ModLoader;
 using Terraria.ModLoader.IO;
 using Terraria.Utilities;
+using static Terraria.ModLoader.ModContent;
 
 namespace CalamityMod.Items
 {
@@ -252,7 +258,7 @@ namespace CalamityMod.Items
 
             // Zenith rarity
             if (item.type == ItemID.Zenith)
-                item.rare = ModContent.RarityType<BurnishedAuric>();
+                item.rare = RarityType<BurnishedAuric>();
 
             // Make most expert items no longer expert because they drop in all modes now.
             switch (item.type)
@@ -335,9 +341,9 @@ namespace CalamityMod.Items
 
             if (Main.myPlayer == player.whoAmI && player.Calamity().cursedSummonsEnchant)
             {
-                if (NPC.CountNPCS(ModContent.NPCType<CalamitasEnchantDemon>()) < 2)
+                if (NPC.CountNPCS(NPCType<CalamitasEnchantDemon>()) < 2)
                 {
-                    CalamityNetcode.NewNPC_ClientSide(mouse, ModContent.NPCType<CalamitasEnchantDemon>(), player);
+                    CalamityNetcode.NewNPC_ClientSide(mouse, NPCType<CalamitasEnchantDemon>(), player);
                     SoundEngine.PlaySound(SoundID.DD2_DarkMageSummonSkeleton, mouse);
                 }
             }
@@ -348,7 +354,7 @@ namespace CalamityMod.Items
             // 
             // Traitorous has been reworked to be a guaranteed effect below 25% mana, which removes all your remaining mana
             bool belowManaThreshold = player.statMana < player.statManaMax2 * 0.25f;
-            bool traitorousAlreadyInPlay = player.ownedProjectileCounts[ModContent.ProjectileType<ManaMonster>()] > 0;
+            bool traitorousAlreadyInPlay = player.ownedProjectileCounts[ProjectileType<ManaMonster>()] > 0;
             if (Main.myPlayer == player.whoAmI && player.Calamity().manaMonsterEnchant && !traitorousAlreadyInPlay && belowManaThreshold)
             {
                 // Calculate how much damage to deal based on how much mana was consumed
@@ -358,7 +364,7 @@ namespace CalamityMod.Items
 
                 // Spawn the Mana Monster
                 Vector2 shootVelocity = player.SafeDirectionTo(mouse, -Vector2.UnitY).RotatedByRandom(0.07f) * Main.rand.NextFloat(4f, 5f);
-                Projectile.NewProjectile(source, player.Center + shootVelocity, shootVelocity, ModContent.ProjectileType<ManaMonster>(), monsterDamage, 0f, player.whoAmI);
+                Projectile.NewProjectile(source, player.Center + shootVelocity, shootVelocity, ProjectileType<ManaMonster>(), monsterDamage, 0f, player.whoAmI);
 
                 // Set the player's mana to zero.
                 player.statMana = 0;
@@ -371,10 +377,8 @@ namespace CalamityMod.Items
                     modPlayer.canFireBloodflareMageProjectile = false;
                     if (player.whoAmI == Main.myPlayer)
                     {
-                        // Bloodflare Mage Bolt: 130%, soft cap starts at 2000 base damage
-                        int bloodflareBoltDamage = CalamityUtils.DamageSoftCap(damage * 1.3, 2600);
-
-                        Projectile.NewProjectile(playerSource, position, velocity, ModContent.ProjectileType<GhostlyBolt>(), bloodflareBoltDamage, 1f, player.whoAmI);
+                        int bloodflareBoltDamage = CalamityUtils.DamageSoftCap(damage * BloodflareHeadMagic.GhostBoltDamageRatio, BloodflareHeadMagic.GhostBoltonDamageSoftcap);
+                        Projectile.NewProjectile(playerSource, position, velocity, ProjectileType<GhostlyBolt>(), bloodflareBoltDamage, 1f, player.whoAmI);
                     }
                 }
             }
@@ -385,22 +389,19 @@ namespace CalamityMod.Items
                     modPlayer.canFireBloodflareRangedProjectile = false;
                     if (player.whoAmI == Main.myPlayer)
                     {
-                        // Bloodflare Ranged Bloodsplosion: 80%, soft cap starts at 150 base damage
-                        // This is intentionally extremely low because this effect can be grossly overpowered with sniper rifles and the like.
-                        int bloodsplosionDamage = CalamityUtils.DamageSoftCap(damage * 0.8, 120);
-
-                        Projectile.NewProjectile(playerSource, position, velocity, ModContent.ProjectileType<BloodBomb>(), bloodsplosionDamage, 2f, player.whoAmI);
+                        int bloodsplosionDamage = CalamityUtils.DamageSoftCap(damage * BloodflareHeadRanged.BloodBombDamageRatio, BloodflareHeadRanged.BloodBombDamageSoftcap);
+                        Projectile.NewProjectile(playerSource, position, velocity, ProjectileType<BloodBomb>(), bloodsplosionDamage, 2f, player.whoAmI);
                     }
                 }
             }
             if (modPlayer.tarraMage && !item.channel)
             {
-                if (modPlayer.tarraCrits >= 5 && player.whoAmI == Main.myPlayer)
+                if (modPlayer.tarraCrits >= TarragonHeadMagic.CritsToSpawnLeaves && player.whoAmI == Main.myPlayer)
                 {
                     modPlayer.tarraCrits = 0;
                     // Tarragon Mage Leaves: (8-10) x 20%, soft cap starts at 200 base damage
                     int leafAmt = 8 + Main.rand.Next(3); // 8, 9, or 10
-                    int leafDamage = (int)(damage * 0.2f);
+                    int leafDamage = (int)(damage * TarragonHeadMagic.LeafDamageRatio);
 
                     for (int l = 0; l < leafAmt; l++)
                     {
@@ -425,7 +426,7 @@ namespace CalamityMod.Items
                     if (player.whoAmI == Main.myPlayer)
                     {
                         int ataxiaFlareDamage = (int)(damage * HydrothermicHeadRanged.FlareDamageRatio);
-                        Projectile.NewProjectile(playerSource, position, velocity * 1.25f, ModContent.ProjectileType<HydrothermicFlare>(), ataxiaFlareDamage, 2f, player.whoAmI);
+                        Projectile.NewProjectile(playerSource, position, velocity * 1.25f, ProjectileType<HydrothermicFlare>(), ataxiaFlareDamage, 2f, player.whoAmI);
                     }
                 }
             }
@@ -436,10 +437,8 @@ namespace CalamityMod.Items
                     modPlayer.canFireGodSlayerRangedProjectile = false;
                     if (player.whoAmI == Main.myPlayer)
                     {
-                        // God Slayer Ranged Shrapnel: 100%, soft cap starts at 800 base damage
-                        int shrapnelRoundDamage = CalamityUtils.DamageSoftCap(damage, 800);
-
-                        Projectile.NewProjectile(playerSource, position, velocity * 1.25f, ModContent.ProjectileType<GodSlayerShrapnelRound>(), shrapnelRoundDamage, 2f, player.whoAmI);
+                        int shrapnelRoundDamage = CalamityUtils.DamageSoftCap(damage * GodSlayerHeadRanged.ShrapnelRoundDamageRatio, GodSlayerHeadRanged.ShrapnelRoundDamageSoftcap);
+                        Projectile.NewProjectile(playerSource, position, velocity * 1.25f, ProjectileType<GodSlayerShrapnelRound>(), shrapnelRoundDamage, 2f, player.whoAmI);
                     }
                 }
             }
@@ -448,7 +447,7 @@ namespace CalamityMod.Items
                 if (item.CountsAsClass<ThrowingDamageClass>() && !item.channel)
                 {
                     modPlayer.canFireAtaxiaRogueProjectile = false;
-                    int flareID = ModContent.ProjectileType<HydrothermicFlareRogue>();
+                    int flareID = ProjectileType<HydrothermicFlareRogue>();
                     int flareDamage = CalamityUtils.DamageSoftCap(HydrothermicHeadRogue.VolleyDamage + damage * HydrothermicHeadRogue.VolleyDamageRatio, HydrothermicHeadRogue.VolleyDamageSoftcap);
 
                     if (player.whoAmI == Main.myPlayer)
@@ -464,7 +463,7 @@ namespace CalamityMod.Items
             }
             if (modPlayer.prismaticRegalia)
             {
-                if (item.CountsAsClass<MagicDamageClass>() && Main.rand.NextBool(20) && !item.channel)
+                if (item.CountsAsClass<MagicDamageClass>() && Main.rand.NextBool(PrismaticRegalia.RocketChanceDenominator) && !item.channel)
                 {
                     if (player.whoAmI == Main.myPlayer)
                     {
@@ -473,7 +472,7 @@ namespace CalamityMod.Items
                             if (i != 0)
                             {
                                 Vector2 perturbedSpeed = velocity.RotatedBy(MathHelper.ToRadians(i));
-                                int rocket = Projectile.NewProjectile(playerSource, position, perturbedSpeed, ModContent.ProjectileType<ScorpioRocket>(), (int)(damage * 0.25), 2f, player.whoAmI, 0, 12f);
+                                int rocket = Projectile.NewProjectile(playerSource, position, perturbedSpeed, ProjectileType<ScorpioRocket>(), (int)(damage * PrismaticRegalia.RocketDamageRatio), 2f, player.whoAmI, 0, 12f);
                                 //First extra value is rocket type which I just used 0 to get the default, second is the velocity I went with my gut feeling and got quite close to Scorpio's velocity with Rockets I
                                 if (rocket.WithinBounds(Main.maxProjectiles))
                                     Main.projectile[rocket].DamageType = DamageClass.Generic;
@@ -612,7 +611,7 @@ namespace CalamityMod.Items
             // Prevent Mana Stars from being picked up while wielding Ion Blaster or Apoctosis Array
             if (item.type == ItemID.Star || item.type == ItemID.SoulCake || item.type == ItemID.SugarPlum)
             {
-                if (player.ActiveItem().type == ModContent.ItemType<IonBlaster>() || player.ActiveItem().type == ModContent.ItemType<ApoctosisArray>())
+                if (player.ActiveItem().type == ItemType<IonBlaster>() || player.ActiveItem().type == ItemType<ApoctosisArray>())
                     return false;
             }
             return base.CanPickup(item, player);
@@ -635,7 +634,7 @@ namespace CalamityMod.Items
             // Clear Evil Smasher buffs if not holding Evil Smasher
             if (player.Calamity().evilSmasherBoost > 0)
             {
-                if (item.type != ModContent.ItemType<EvilSmasher>())
+                if (item.type != ItemType<EvilSmasher>())
                     player.Calamity().evilSmasherBoost = 0;
             }
 
@@ -651,24 +650,46 @@ namespace CalamityMod.Items
 
             if (Main.zenithWorld && item.type == ItemID.RodOfHarmony)
             {
-                if (NPC.AnyNPCs(ModContent.NPCType<THELORDE>()))
+                if (NPC.AnyNPCs(NPCType<THELORDE>()))
                 {
                     //one hour of NOU when using rod of harmony while LORDE is alive
-                    player.AddBuff(ModContent.BuffType<NOU>(), 3600 * 60);
+                    player.AddBuff(BuffType<NOU>(), 3600 * 60);
                 }
             }
 
             // Give 1 minute of Mushy buff when consuming Mushrooms with Fungal Symbiote equipped.
             if (item.type == ItemID.Mushroom && player.Calamity().fungalSymbiote)
-                player.AddBuff(ModContent.BuffType<Mushy>(), 3600);
+                player.AddBuff(BuffType<Mushy>(), 3600);
 
-            // Trigger Bloom Stone's heal over time from healing items
-            if (item.healLife > 0 && modPlayer.bloomStone)
+            // Healing item interactions
+            if (item.healLife > 0)
             {
-                // Temporarily disable Bloom Stone so that GetHealLife doesn't return 0
-                modPlayer.bloomStone = false;
-                modPlayer.bloomStoneTotalHeal = modPlayer.bloomStoneHealPool = player.GetHealLife(item);
-                modPlayer.bloomStone = true;
+                // Jelly aura spawning
+                // This runs twice per use for whatever reason so we need a stopping player variable
+                if (player.whoAmI == Main.myPlayer && !modPlayer.spawnedJellyAura)
+                {
+                    if (modPlayer.absorber)
+                        Projectile.NewProjectile(player.GetSource_FromThis(), player.Center, Vector2.Zero, ProjectileType<AbsorberAura>(), 0, 0, player.whoAmI);
+                    else if (modPlayer.GrandGelatin)
+                        Projectile.NewProjectile(player.GetSource_FromThis(), player.Center, Vector2.Zero, ProjectileType<GreenJellyAura>(), 0, 0, player.whoAmI);
+                    else
+                    {
+                        if (modPlayer.cleansingjelly)
+                            Projectile.NewProjectile(player.GetSource_FromThis(), player.Center, Vector2.Zero, ProjectileType<BlueJellyAura>(), 0, 0, player.whoAmI);
+                        if (modPlayer.lifejelly)
+                            Projectile.NewProjectile(player.GetSource_FromThis(), player.Center, Vector2.Zero, ProjectileType<PinkJellyAura>(), 0, 0, player.whoAmI);
+                    }
+                    modPlayer.spawnedJellyAura = true;
+                }
+
+                // Trigger Bloom Stone's heal over time from healing items
+                if (modPlayer.bloomStone)
+                {
+                    // Temporarily disable Bloom Stone so that GetHealLife doesn't return 0
+                    modPlayer.bloomStone = false;
+                    modPlayer.bloomStoneTotalHeal = modPlayer.bloomStoneHealPool = player.GetHealLife(item);
+                    modPlayer.bloomStone = true;
+                }
             }
 
             // Staff/Axe of Regrowth growing Calamity grass
@@ -677,16 +698,16 @@ namespace CalamityMod.Items
                 Tile tile = Framing.GetTileSafely(Player.tileTargetX, Player.tileTargetY);
                 Tile tileAbove = Framing.GetTileSafely(Player.tileTargetX, Player.tileTargetY - 1);
 
-                if (tile.HasTile && !tileAbove.HasTile && tileAbove.LiquidAmount == 0 && tile.TileType == ModContent.TileType<Tiles.Crags.ScorchedRemains>() && player.IsInTileInteractionRange(Player.tileTargetX, Player.tileTargetY, TileReachCheckSettings.Simple))
+                if (tile.HasTile && !tileAbove.HasTile && tileAbove.LiquidAmount == 0 && tile.TileType == TileType<Tiles.Crags.ScorchedRemains>() && player.IsInTileInteractionRange(Player.tileTargetX, Player.tileTargetY, TileReachCheckSettings.Simple))
                 {
-                    Main.tile[Player.tileTargetX, Player.tileTargetY].TileType = (ushort)ModContent.TileType<Tiles.Crags.ScorchedRemainsGrass>();
+                    Main.tile[Player.tileTargetX, Player.tileTargetY].TileType = (ushort)TileType<Tiles.Crags.ScorchedRemainsGrass>();
 
                     SoundEngine.PlaySound(SoundID.Dig, player.Center);
                     return true;
                 }
-                else if (tile.HasTile && tile.TileType == ModContent.TileType<Tiles.Astral.AstralDirt>() && player.IsInTileInteractionRange(Player.tileTargetX, Player.tileTargetY, TileReachCheckSettings.Simple))
+                else if (tile.HasTile && tile.TileType == TileType<Tiles.Astral.AstralDirt>() && player.IsInTileInteractionRange(Player.tileTargetX, Player.tileTargetY, TileReachCheckSettings.Simple))
                 {
-                    Main.tile[Player.tileTargetX, Player.tileTargetY].TileType = (ushort)ModContent.TileType<Tiles.Astral.AstralGrass>();
+                    Main.tile[Player.tileTargetX, Player.tileTargetY].TileType = (ushort)TileType<Tiles.Astral.AstralGrass>();
 
                     SoundEngine.PlaySound(SoundID.Dig, player.Center);
                     return true;
@@ -701,7 +722,7 @@ namespace CalamityMod.Items
             {
                 return false;
             }
-            if (player.ActiveItem().type == ModContent.ItemType<VoidConcentrationStaff>() && player.ownedProjectileCounts[ModContent.ProjectileType<VoidConcentrationBlackhole>()] == 0)
+            if (player.ActiveItem().type == ItemType<VoidConcentrationStaff>() && player.ownedProjectileCounts[ProjectileType<VoidConcentrationBlackhole>()] == 0)
             {
                 foreach (Projectile p in Main.ActiveProjectiles)
                 {
@@ -716,13 +737,13 @@ namespace CalamityMod.Items
                 }
                 return false;
             }
-            if (player.ActiveItem().type == ModContent.ItemType<GlacialEmbrace>())
+            if (player.ActiveItem().type == ItemType<GlacialEmbrace>())
             {
                 bool canContinue = true;
                 int count = 0;
                 foreach (Projectile p in Main.ActiveProjectiles)
                 {
-                    if (p.type == ModContent.ProjectileType<GlacialEmbracePointyThing>() && p.owner == player.whoAmI)
+                    if (p.type == ProjectileType<GlacialEmbracePointyThing>() && p.owner == player.whoAmI)
                     {
                         if (p.ai[1] > 1f)
                         {
@@ -752,7 +773,7 @@ namespace CalamityMod.Items
                             if (Main.projectile.Length == Main.maxProjectiles)
                                 break;
                             int GlacialEmbraceDamage = (int)player.GetTotalDamage<SummonDamageClass>().ApplyTo(80);
-                            int projj = Projectile.NewProjectile(source, mouse, Vector2.Zero, ModContent.ProjectileType<GlacialEmbracePointyThing>(), GlacialEmbraceDamage, 1f, player.whoAmI, angle, 2f);
+                            int projj = Projectile.NewProjectile(source, mouse, Vector2.Zero, ProjectileType<GlacialEmbracePointyThing>(), GlacialEmbraceDamage, 1f, player.whoAmI, angle, 2f);
                             Main.projectile[projj].originalDamage = 80;
 
                             angle += angleVariance;
@@ -780,10 +801,10 @@ namespace CalamityMod.Items
                 return false;
 
             // Can't use anything while burrowing
-            if (player.ownedProjectileCounts[ModContent.ProjectileType<VictideSpirit>()] > 0)
+            if (player.ownedProjectileCounts[ProjectileType<VictideSpirit>()] > 0)
                 return false;
 
-            if (player.ownedProjectileCounts[ModContent.ProjectileType<RelicOfDeliveranceSpear>()] > 0 &&
+            if (player.ownedProjectileCounts[ProjectileType<RelicOfDeliveranceSpear>()] > 0 &&
                 (item.damage > 0 || item.ammo != AmmoID.None))
             {
                 return false; // Don't use weapons if you're charging with a spear
@@ -795,7 +816,7 @@ namespace CalamityMod.Items
                 return base.CanUseItem(item, player);
 
             // Conversion for Andromeda
-            if (player.ownedProjectileCounts[ModContent.ProjectileType<GiantIbanRobotOfDoom>()] > 0)
+            if (player.ownedProjectileCounts[ProjectileType<GiantIbanRobotOfDoom>()] > 0)
             {
                 if (item.type == ItemID.WireKite)
                     return false;
@@ -964,7 +985,7 @@ namespace CalamityMod.Items
                 target.Calamity().hyperiusDamage -= damage;
 
                 // Spawn overflow hit
-                Projectile overflow = Projectile.NewProjectileDirect(target.GetSource_FromThis(), target.Center, Vector2.Zero, ModContent.ProjectileType<HyperiusDamage>(), (int)(damage * HyperiusBullet.overflowEfficency), 0, player.whoAmI, target.whoAmI);
+                Projectile overflow = Projectile.NewProjectileDirect(target.GetSource_FromThis(), target.Center, Vector2.Zero, ProjectileType<HyperiusDamage>(), (int)(damage * HyperiusBullet.overflowEfficency), 0, player.whoAmI, target.whoAmI);
                 overflow.DamageType = item.DamageType;
                 overflow.ArmorPenetration = item.ArmorPenetration; // Takes the armor pen from what did the hit
 
@@ -1219,10 +1240,6 @@ namespace CalamityMod.Items
         {
             CalamityPlayer modPlayer = player.Calamity();
 
-            // Obsidian Skull and its upgrades make you immune to On Fire!
-            if (item.type == ItemID.ObsidianSkull || item.type == ItemID.ObsidianHorseshoe || item.type == ItemID.ObsidianShield || item.type == ItemID.ObsidianWaterWalkingBoots || item.type == ItemID.LavaWaders || item.type == ItemID.ObsidianSkullRose || item.type == ItemID.MoltenCharm || item.type == ItemID.LavaSkull || item.type == ItemID.MoltenSkullRose || item.type == ItemID.AnkhShield)
-                player.buffImmune[BuffID.OnFire] = true;
-
             // Ankh Shield Mighty Wind immunity.
             if (item.type == ItemID.AnkhShield)
                 player.buffImmune[BuffID.WindPushed] = true;
@@ -1360,9 +1377,6 @@ namespace CalamityMod.Items
                 player.GetAttackSpeed<MeleeDamageClass>() -= 0.1f;
             }
 
-            if (item.type == ItemID.TerrasparkBoots)
-                player.buffImmune[BuffID.OnFire] = true;
-
             if (item.type == ItemID.GravityGlobe)
             {
                 player.GetJumpState<GravityJump>().Enable();
@@ -1401,7 +1415,7 @@ namespace CalamityMod.Items
                     {
                         Vector2 ornamentPos = player.Center + Vector2.UnitY.RotatedByRandom(MathHelper.ToRadians(105f)) * Main.rand.NextFloat(-512f, -320f);
 
-                        int p = Projectile.NewProjectile(source, ornamentPos, Vector2.Zero, ModContent.ProjectileType<FestiveWingsOrnament>(), 0, 0f, player.whoAmI);
+                        int p = Projectile.NewProjectile(source, ornamentPos, Vector2.Zero, ProjectileType<FestiveWingsOrnament>(), 0, 0f, player.whoAmI);
                         if (p.WithinBounds(Main.maxProjectiles))
                             modPlayer.wingProjectileCooldown = 90;
                     }
@@ -1417,7 +1431,7 @@ namespace CalamityMod.Items
                     {
                         Vector2 fairyDustVel = Vector2.UnitY.RotatedByRandom(MathHelper.Pi) * Main.rand.NextFloat(0.08f, 0.2f);
 
-                        int p = Projectile.NewProjectile(source, player.Center, fairyDustVel, ModContent.ProjectileType<TatteredFairyDust>(), 0, 0f, player.whoAmI);
+                        int p = Projectile.NewProjectile(source, player.Center, fairyDustVel, ProjectileType<TatteredFairyDust>(), 0, 0f, player.whoAmI);
                         if (p.WithinBounds(Main.maxProjectiles))
                             modPlayer.wingProjectileCooldown = 8;
                     }
@@ -1622,12 +1636,12 @@ namespace CalamityMod.Items
             Texture2D itemTexture = TextureAssets.Item[item.type].Value;
             Rectangle itemFrame = (Main.itemAnimations[item.type] == null) ? itemTexture.Frame() : Main.itemAnimations[item.type].GetFrame(itemTexture);
 
-            if (!EnchantmentManager.ItemUpgradeRelationship.ContainsKey(item.type) || !Main.LocalPlayer.InventoryHas(ModContent.ItemType<BrimstoneLocus>()))
+            if (!EnchantmentManager.ItemUpgradeRelationship.ContainsKey(item.type) || !Main.LocalPlayer.InventoryHas(ItemType<BrimstoneLocus>()))
                 return true;
 
             // Draw all particles.
             float currentPower = 0f;
-            int calamitasNPCIndex = NPC.FindFirstNPC(ModContent.NPCType<BrimstoneWitch>());
+            int calamitasNPCIndex = NPC.FindFirstNPC(NPCType<BrimstoneWitch>());
             if (calamitasNPCIndex != -1)
                 currentPower = Utils.GetLerpValue(11750f, 1000f, Main.LocalPlayer.Distance(Main.npc[calamitasNPCIndex].Center), true);
 
@@ -1652,7 +1666,7 @@ namespace CalamityMod.Items
             // This was moved out of an On edit in the DraedonsForge item for Magic Storage compatibility.
             Player p = Main.LocalPlayer;
             if (cachedForgeID < 0)
-                cachedForgeID = ModContent.TileType<DraedonsForge>();
+                cachedForgeID = TileType<DraedonsForge>();
             if (context is RecipeItemCreationContext && p.adjTile[cachedForgeID])
                 p.Calamity().HasCraftedDraedonsForge = true;
         }
@@ -1691,7 +1705,7 @@ namespace CalamityMod.Items
         {
             storedPrefix = -1;
             // Bandit steals 20% of the total price of the reforge if she's around.
-            if (NPC.AnyNPCs(ModContent.NPCType<Bandit>()))
+            if (NPC.AnyNPCs(NPCType<Bandit>()))
             {
                 // Calculate the item's reforge cost.
                 int value = item.value;
@@ -1793,17 +1807,17 @@ namespace CalamityMod.Items
                 return RarityBuyPriceArray[rarity];
 
             // Calamity rarities aren't guaranteed to have the monotonic IDs, so they're handled directly.
-            if (rarity == ModContent.RarityType<Turquoise>())
+            if (rarity == RarityType<Turquoise>())
                 return RarityTurquoiseBuyPrice;
-            if (rarity == ModContent.RarityType<PureGreen>())
+            if (rarity == RarityType<PureGreen>())
                 return RarityPureGreenBuyPrice;
-            if (rarity == ModContent.RarityType<CosmicPurple>())
+            if (rarity == RarityType<CosmicPurple>())
                 return RarityDarkBlueBuyPrice;
-            if (rarity == ModContent.RarityType<BurnishedAuric>())
+            if (rarity == RarityType<BurnishedAuric>())
                 return RarityVioletBuyPrice;
-            if (rarity == ModContent.RarityType<HotPink>())
+            if (rarity == RarityType<HotPink>())
                 return RarityHotPinkBuyPrice;
-            if (rarity == ModContent.RarityType<CalamityRed>())
+            if (rarity == RarityType<CalamityRed>())
                 return RarityCalamityRedBuyPrice;
 
             // Return 0 if it's not a progression based or other mod's rarity

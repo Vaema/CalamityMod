@@ -9,7 +9,10 @@ using CalamityMod.Cooldowns;
 using CalamityMod.Enums;
 using CalamityMod.Items.Accessories;
 using CalamityMod.Items.Accessories.Wings;
+using CalamityMod.Items.Armor.Fearmonger;
 using CalamityMod.Items.Armor.Reaver;
+using CalamityMod.Items.Armor.Silva;
+using CalamityMod.Items.Armor.Tarragon;
 using CalamityMod.Items.Fishing.BrimstoneCragCatches;
 using CalamityMod.Items.Placeables.Furniture;
 using CalamityMod.Items.Potions;
@@ -295,29 +298,6 @@ namespace CalamityMod.CalPlayer
             Player.lifeRegen -= (int)totalNegativeLifeRegen;
 
             #region Life Regen That Works Even During DoT Debuffs
-
-            // Honey Dew (and upgrades)
-            if (alwaysHoneyRegen)
-            {
-                // Exact copy of vanilla Honey behavior, but does not stack with actually standing in Honey
-                if (!Player.honey)
-                {
-                    alwaysHoneyRegenAmount += 1;
-                    Player.lifeRegen += 2;
-                    Player.lifeRegenTime += 1;
-
-                    // Grants +2 life regen if negative life regen would otherwise occur.
-                    // However, this can't bring regen into the positives.
-                    if (Player.lifeRegen < 0)
-                    {
-                        alwaysHoneyRegenAmount += Math.Min(1f, 0 - Player.lifeRegen/2f);
-                        Player.lifeRegen += 2;
-                        if (Player.lifeRegen > 0)
-                            Player.lifeRegen = 0;
-                    }
-                }
-            }
-
             if (honeyDewHalveDebuffs)
             {
                 // Tick down all sickness debuffs; this makes them expire 2x faster
@@ -388,10 +368,9 @@ namespace CalamityMod.CalPlayer
             {
                 float missingLifeRatio = (Player.statLifeMax2 - Player.statLife) / (float)Player.statLifeMax2;
                 //Ambrosial Ampule and ooze give between 2 and 5 hp/s
-                int lifeRegenToGive = (int)Math.Round(MathHelper.Lerp((purity || aAmpoule? 2f : 4f), (purity || aAmpoule ? 8f : 10f), missingLifeRatio));//Rounding is needed for it to ever actually give +5 hp/s, as the integer conversion would otherwise floor it.
+                int lifeRegenToGive = (int)Math.Round(MathHelper.Lerp(4f, 10f, missingLifeRatio));//Rounding is needed for it to ever actually give +5 hp/s, as the integer conversion would otherwise floor it.
                 Player.lifeRegen += lifeRegenToGive; 
                 radiantOozeRegen += lifeRegenToGive / 2f;
-                ambrosialAmpouleRegen += lifeRegenToGive / 2f;
                 purityRegen += lifeRegenToGive / 2f;
             }
 
@@ -577,7 +556,7 @@ namespace CalamityMod.CalPlayer
             }
 
             if (tRegen)
-                Player.lifeRegen += 3;
+                Player.lifeRegen += TarragonHeadMelee.TarraLifeRegenBoost;
 
             if (sRegen)
                 Player.lifeRegen += SpiritGlyph.RegenBoost;
@@ -613,7 +592,7 @@ namespace CalamityMod.CalPlayer
             }
 
             if (silvaSet)
-                Player.lifeRegen += 6;
+                Player.lifeRegen += SilvaArmor.SetBonusRegenBoost;
 
             if (phantomicHeartRegen <= 720 && phantomicHeartRegen >= 600)
             {
@@ -653,20 +632,13 @@ namespace CalamityMod.CalPlayer
                 Player.lifeRegen += 4;
             }
 
-            if (bloodflareSummon)
-            {
-                if (Player.statLife <= (int)(actualMaxLife * 0.5))
-                    Player.lifeRegen += 2;
-            }
-
             if (fearmongerSet && fearmongerRegenFrames > 0)
             {
-                Player.lifeRegen += 7;
+                if (Player.lifeRegenTime < FearmongerGreathelm.MinionRegenTimeFloor)
+                    Player.lifeRegenTime = FearmongerGreathelm.MinionRegenTimeFloor;
 
-                if (Player.lifeRegenTime < 900)
-                    Player.lifeRegenTime = 900;
-
-                Player.lifeRegenTime += 4;
+                Player.lifeRegen += FearmongerGreathelm.MinionRegenBoost;
+                Player.lifeRegenTime += FearmongerGreathelm.MinionRegenTimeBoost;
             }
 
             if (pinkCandle && !noLifeRegen)
@@ -691,50 +663,38 @@ namespace CalamityMod.CalPlayer
 
             #region Standing Still Life Regen
             // Standing still healing bonuses (all are exclusive with vanilla Shiny Stone, but all function similarly)
-            if (!Player.shinyStone && Player.StandingStill() && Player.velocity.Y == 0 && Player.itemAnimation == 0)
+            if (!Player.shinyStone && Player.StandingStill() && Player.velocity.Y == 0 && Player.itemAnimation == 0 && (shadeRegen || cFreeze))
             {
-                bool honeyDewWorking = honeyTurboRegen && Player.honeyWet;
-                bool anyStandingStillLifeRegen = shadeRegen || cFreeze || honeyDewWorking || aAmpoule || purity;
-
                 // Divides all negative life regen by two before applying any other effects.
-                if (anyStandingStillLifeRegen && Player.lifeRegen < 0)
+                if (Player.lifeRegen < 0)
                     Player.lifeRegen /= 2;
 
-                // Spawn dust of some flavor while actually regenerating, aAmpule and purity have a slightly different looking style
+                // Spawn dust of some flavor while actually regenerating
                 if (Player.lifeRegen > 0 && Player.statLife < actualMaxLife)
                 {
-                    int dustType = shadeRegen ? 173 : cFreeze ? 67 : honeyDewWorking ? DustID.Honey2 : aAmpoule ? 228 : purity ? 187 : -1;
-                    bool dustSpawnRolled = Main.rand.Next(30000) < Player.lifeRegenTime || purity ? Main.rand.NextBool() : aAmpoule ? Main.rand.NextBool(4) : Main.rand.NextBool(30);
+                    int dustType = shadeRegen ? 173 : 67;
+                    bool dustSpawnRolled = Main.rand.Next(30000) < Player.lifeRegenTime ? Main.rand.NextBool() : Main.rand.NextBool(30);
                     if (dustType != -1 && dustSpawnRolled)
                     {
-                        Dust regen = Dust.NewDustDirect(Player.position, Player.width, Player.height, dustType, 0f, 0f, purity || aAmpoule ? 80 : 200, default, purity || aAmpoule ? 0.5f : 1f);
+                        Dust regen = Dust.NewDustDirect(Player.position, Player.width, Player.height, dustType, 0f, 0f, 200, default, 1f);
                         regen.noGravity = true;
                         regen.fadeIn = 1.3f;
                         Vector2 velocity = CalamityUtils.RandomVelocity(100f, 50f, 100f, 0.04f);
                         regen.velocity = velocity;
                         velocity.Normalize();
-                        velocity *= purity || aAmpoule ? 55f : 34f;
                         regen.position = Player.Center - velocity;
                     }
                 }
 
                 // Actually apply "standing still" regeneration (the stats are granted even at full health)
-                float regenTimeNeededForTurboRegen = shadeRegen ? 40f : cFreeze ? 60f : honeyDewWorking ? 90f : aAmpoule ? 90f : purity ? 60f : -1f;
+                float regenTimeNeededForTurboRegen = shadeRegen ? 40f : 60f;
 
-                // 4 = vanilla Shiny Stone
-                int turboRegenPower = shadeRegen || cFreeze || purity ? 4 : honeyDewWorking || aAmpoule ? 3 : -1;
+                // After a brief delay determined by your form of standing still regen, min-cap life regen time at 900 / 3600.
+                if (Player.lifeRegenTime > regenTimeNeededForTurboRegen && Player.lifeRegenTime < 900f)
+                    Player.lifeRegenTime = 900f;
 
-                if (turboRegenPower > 0)
-                {
-                    // After a brief delay determined by your form of standing still regen, min-cap life regen time at 900 / 3600.
-                    if (Player.lifeRegenTime > regenTimeNeededForTurboRegen && Player.lifeRegenTime < 900f)
-                        Player.lifeRegenTime = 900f;
-
-                    Player.lifeRegen += turboRegenPower;
-                    Player.lifeRegenTime += turboRegenPower;
-                    purityRegen += turboRegenPower / 2f;
-                    if (!shadeRegen || cFreeze || purity) ambrosialAmpouleRegen += turboRegenPower / 2f;
-                }
+                Player.lifeRegen += 4;
+                Player.lifeRegenTime += 4;
 
             }
             #endregion

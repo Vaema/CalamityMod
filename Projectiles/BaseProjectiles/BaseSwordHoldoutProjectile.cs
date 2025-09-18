@@ -366,6 +366,7 @@ namespace CalamityMod.Projectiles.BaseProjectiles
         public override void AI()
         {
             var player = Main.player[Projectile.owner];
+            Projectile.gfxOffY = player.gfxOffY;
             var modplayer = player.GetModPlayer<BaseSwordHoldoutPlayer>();
             float adust = MathHelper.ToRadians(225);
             if (timer < StartupTime || timer > StartupTime + swingTime)
@@ -393,7 +394,7 @@ namespace CalamityMod.Projectiles.BaseProjectiles
             if (AfterImageLength > 0)
             {
                 oldProjectileRot.Add(Projectile.rotation);
-                oldProjectilePos.Add(Projectile.Center);
+                oldProjectilePos.Add(Projectile.Center + new Vector2(0, Projectile.gfxOffY));
                 if (oldProjectileRot.Count > AfterImageLength)
                 {
                     oldProjectileRot.RemoveAt(0);
@@ -440,11 +441,11 @@ namespace CalamityMod.Projectiles.BaseProjectiles
                     var col = Projectile.Opacity * (i / (float)AfterImageLength) * 0.1f;
                     if (Projectile.spriteDirection == 1)
                     {
-                        Main.EntitySpriteDraw(texture, oldProjectilePos[i] - Main.screenPosition, null, Color.White * col, oldProjectileRot[i], texture.Size() / 2, 1, SpriteEffects.None, 0);
+                        Main.EntitySpriteDraw(texture, oldProjectilePos[i] - Main.screenPosition, null, Color.White * col, oldProjectileRot[i], texture.Size() / 2, oldScale[i], SpriteEffects.None, 0);
                     }
                     else
                     {
-                        Main.EntitySpriteDraw(texture, oldProjectilePos[i] - Main.screenPosition, null, Color.White * col, oldProjectileRot[i], texture.Size() / 2, 1, SpriteEffects.FlipHorizontally, 0);
+                        Main.EntitySpriteDraw(texture, oldProjectilePos[i] - Main.screenPosition, null, Color.White * col, oldProjectileRot[i], texture.Size() / 2, oldScale[i], SpriteEffects.FlipHorizontally, 0);
                     }
                 }
             }
