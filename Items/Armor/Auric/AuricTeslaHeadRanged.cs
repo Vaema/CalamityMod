@@ -25,6 +25,9 @@ namespace CalamityMod.Items.Armor.Auric
         public static int RangedCritBoost = 20;
         public override LocalizedText Tooltip => base.Tooltip.WithFormatArgs(RangedDamageBoost.ToPercent(), RangedCritBoost);
 
+        // Set Bonus
+        public static float SetBonusAmmoReduction = 0.7f;
+
         public override void SetDefaults()
         {
             Item.width = 18;
@@ -40,7 +43,7 @@ namespace CalamityMod.Items.Armor.Auric
 
         public override void UpdateArmorSet(Player player)
         {
-            player.setBonus = this.GetLocalizedValue("SetBonus");
+            player.setBonus = this.GetLocalization("SetBonus").Format((1f - SetBonusAmmoReduction).ToPercent());
             var modPlayer = player.Calamity();
             modPlayer.tarraSet = true;
             modPlayer.tarraRanged = true;
@@ -50,6 +53,7 @@ namespace CalamityMod.Items.Armor.Auric
             modPlayer.godSlayerRanged = true;
             modPlayer.auricSet = true;
             player.crimsonRegen = true; // Inherited from Bloodflare
+            modPlayer.ammoCost *= SetBonusAmmoReduction;
 
             if (modPlayer.godSlayerDashHotKeyPressed || (player.dashDelay != 0 && modPlayer.LastUsedDashID == GodslayerArmorDash.ID))
                 modPlayer.DeferredDashID = GodslayerArmorDash.ID;

@@ -21,6 +21,7 @@ namespace CalamityMod.Items.Armor.GodSlayer
 
         // Set Bonus
         public static int ShrapnelRoundCooldown = CalamityUtils.SecondsToFrames(2.5f);
+        public static float SetBonusAmmoReduction = 0.7f;
         public static double ShrapnelRoundDamageRatio = 1D;
         public static int ShrapnelRoundDamageSoftcap = 800;
 
@@ -40,10 +41,11 @@ namespace CalamityMod.Items.Armor.GodSlayer
         public override void UpdateArmorSet(Player player)
         {
             var modPlayer = player.Calamity();
+            modPlayer.ammoCost *= SetBonusAmmoReduction;
             modPlayer.godSlayer = true;
             modPlayer.godSlayerRanged = true;
             var hotkey = CalamityKeybinds.GodSlayerDashHotKey.TooltipHotkeyString();
-            player.setBonus = this.GetLocalization("SetBonus").Format(ShrapnelRoundCooldown.FramesToSeconds(), hotkey, GodSlayerChestplate.DashCooldown.FramesToSeconds());
+            player.setBonus = this.GetLocalization("SetBonus").Format(ShrapnelRoundCooldown.FramesToSeconds(), hotkey, GodSlayerChestplate.DashCooldown.FramesToSeconds(), (1f - SetBonusAmmoReduction).ToPercent());
 
             if (modPlayer.godSlayerDashHotKeyPressed || (player.dashDelay != 0 && modPlayer.LastUsedDashID == GodslayerArmorDash.ID))
             {

@@ -4,6 +4,7 @@ AstralBreastplate: {
 		'''
 		{$CommonItemTooltip.IncreasesMaxManaBy}
 		{$CommonItemTooltip.PercentIncreasedDamage@1}
+		{$Common.AmmoUseReduction@2}
 		'''
 }
 

@@ -12,8 +12,9 @@ namespace CalamityMod.Items.Armor.Astral
         public new string LocalizationCategory => "Items.Armor.Hardmode";
 
         public static int MaxManaBoost = 80;
+        public static float AmmoReduction = 0.75f;
         public static float DamageBoost = 0.07f;
-        public override LocalizedText Tooltip => base.Tooltip.WithFormatArgs(MaxManaBoost, DamageBoost.ToPercent());
+        public override LocalizedText Tooltip => base.Tooltip.WithFormatArgs(MaxManaBoost, DamageBoost.ToPercent(), (1f - AmmoReduction).ToPercent());
 
         public override void SetDefaults()
         {
@@ -26,6 +27,8 @@ namespace CalamityMod.Items.Armor.Astral
 
         public override void UpdateEquip(Player player)
         {
+            var modPlayer = player.Calamity();
+            modPlayer.ammoCost *= AmmoReduction;
             player.statManaMax2 += MaxManaBoost;
             player.GetDamage<GenericDamageClass>() += DamageBoost;
         }

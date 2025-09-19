@@ -20,6 +20,7 @@ namespace CalamityMod.Items.Armor.Tarragon
 
         // Set Bonus
         public static int OnHitEffectCooldown = CalamityUtils.SecondsToFrames(1);
+        public static float SetBonusAmmoReduction = 0.75f;
         public static float LeafDamageRatio = 0.25f;
         public static int LeafDamageSoftcap = 150;
         public static float EnergyDamageRatio = 0.33f;
@@ -45,9 +46,10 @@ namespace CalamityMod.Items.Armor.Tarragon
         public override void UpdateArmorSet(Player player)
         {
             var modPlayer = player.Calamity();
+            modPlayer.ammoCost *= SetBonusAmmoReduction;
             modPlayer.tarraSet = true;
             modPlayer.tarraRanged = true;
-            player.setBonus = this.GetLocalizedValue("SetBonus");
+            player.setBonus = this.GetLocalization("SetBonus").Format((1f - SetBonusAmmoReduction).ToPercent());
         }
 
         public override void UpdateEquip(Player player)
