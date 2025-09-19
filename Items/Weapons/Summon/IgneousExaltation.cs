@@ -37,7 +37,6 @@ namespace CalamityMod.Items.Weapons.Summon
         public override void SetStaticDefaults()
         {
             Item.staff[Type] = true;
-            ItemID.Sets.ItemsThatAllowRepeatedRightClick[Type] = true;
         }
 
         public override void SetDefaults()
@@ -64,7 +63,15 @@ namespace CalamityMod.Items.Weapons.Summon
 
         public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)
         {
-            if (player.altFunctionUse == 2)
+            float totalSlots = 0f;
+            foreach (Projectile p in Main.ActiveProjectiles)
+            {
+                if (p.minion && p.owner == player.whoAmI)
+                {
+                    totalSlots += p.minionSlots;
+                }
+            }
+            if (totalSlots >= player.maxMinions)
             {
                 foreach (Projectile pro in Main.ActiveProjectiles)
                 {
@@ -88,6 +95,7 @@ namespace CalamityMod.Items.Weapons.Summon
                     {
                         pro.ModProjectile<IgneousBlade>().BladeIndex = bladeIndex++;
                         pro.ModProjectile<IgneousBlade>().AITimer = -ChargeCooldown;
+                        pro.ModProjectile<IgneousBlade>().DistanceTimer = -IgneousExaltation.ChargeCooldown;
                         pro.ModProjectile<IgneousBlade>().CurrentState = IgneousBlade.AIState.CircleOwner;
                         pro.netUpdate = true;
                     }

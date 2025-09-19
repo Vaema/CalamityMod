@@ -4030,7 +4030,9 @@ namespace CalamityMod.CalPlayer
                 if (Player.whoAmI == Main.myPlayer)
                 {
                     var source = Player.GetSource_Accessory(FindAccessory(ModContent.ItemType<ProfanedSoulArtifact>()));
-                    if (Player.FindBuffIndex(ModContent.BuffType<ProfanedSoulGuardians>()) == -1)
+                    if (Player.HasBuff(ModContent.BuffType<ProfanedSoulGuardians>()))
+                        Player.buffTime[Player.FindBuffIndex(ModContent.BuffType<ProfanedSoulGuardians>())] = 3600;
+                    else
                         Player.AddBuff(ModContent.BuffType<ProfanedSoulGuardians>(), 3600, true);
 
                     pSoulGuardians = true;

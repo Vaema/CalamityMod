@@ -26,25 +26,27 @@ namespace CalamityMod.NPCs.Signus
             {
                 GlowTexture = ModContent.Request<Texture2D>(Texture + "Glow", AssetRequestMode.AsyncLoad);
             }
+            NPCID.Sets.DontDoHardmodeScaling[Type] = true; //prevent HP from scaling. We manually scale the damage to compensate
         }
 
         public override void SetDefaults()
         {
-            NPC.damage = 120; // 240
+            NPC.damage = 120 * (Main.masterMode ? 3 : Main.expertMode ? 2 : 1); // 240
             NPC.aiStyle = -1;
             AIType = -1;
             NPC.width = 25;
             NPC.height = 25;
             NPC.defense = 50;
-            NPC.lifeMax = 25;
+            NPC.lifeMax = 3;
             NPC.alpha = 255;
-            NPC.knockBackResist = 0.85f;
+            NPC.knockBackResist = 0f;
             NPC.noGravity = true;
             NPC.dontTakeDamage = true;
             NPC.chaseable = false;
             NPC.noTileCollide = true;
             NPC.HitSound = SoundID.NPCHit53;
             NPC.DeathSound = SoundID.NPCDeath44;
+            NPC.SuperArmor = true;
             NPC.Calamity().VulnerableToSickness = false;
         }
 
@@ -114,6 +116,11 @@ namespace CalamityMod.NPCs.Signus
             bool revenge = CalamityWorld.revenge;
             float playerDistNormMult = revenge ? 24f : 22f;
             CalamityRegularEnemyAI.DungeonSpiritAI(NPC, Mod, playerDistNormMult, 0f, true);
+        }
+
+        public override void ModifyIncomingHit(ref NPC.HitModifiers modifiers)
+        {
+            modifiers.DisableCrit();
         }
 
         public override bool PreDraw(SpriteBatch spriteBatch, Vector2 screenPos, Color drawColor)
