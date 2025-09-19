@@ -42,11 +42,9 @@ using Terraria.GameContent;
 using Terraria.GameContent.Bestiary;
 using Terraria.GameContent.Events;
 using Terraria.GameContent.ItemDropRules;
-using Terraria.Graphics.Shaders;
 using Terraria.ID;
 using Terraria.Localization;
 using Terraria.ModLoader;
-using static System.Net.Mime.MediaTypeNames;
 
 namespace CalamityMod.NPCs.DevourerofGods
 {
@@ -291,6 +289,8 @@ namespace CalamityMod.NPCs.DevourerofGods
 
             NPC.Calamity().VulnerableToElectricity = true;
             NPC.Calamity().VulnerableToSickness = false;
+
+            NPC.life = NPC.lifeMax;
         }
 
         public override void BossHeadSlot(ref int index)
@@ -538,9 +538,6 @@ namespace CalamityMod.NPCs.DevourerofGods
             // Continuously reset certain things.
             AttemptingToEnterPortal = false;
 
-            // Worm variable
-            if (NPC.ai[2] > 0f)
-                NPC.realLife = (int)NPC.ai[2];
 
             // Despawn
             if (player.dead)

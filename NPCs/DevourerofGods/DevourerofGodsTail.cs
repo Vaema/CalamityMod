@@ -70,7 +70,7 @@ namespace CalamityMod.NPCs.DevourerofGods
             NPC.width = 66;
             NPC.height = 66;
             NPC.defense = 50;
-            NPC.LifeMaxNERB(750000, 900000, 1500000);
+            NPC.LifeMaxNERB(760000, 910000, 1500000);
             NPC.aiStyle = -1;
             AIType = -1;
             NPC.knockBackResist = 0f;
@@ -152,30 +152,26 @@ namespace CalamityMod.NPCs.DevourerofGods
             if (NPC.ai[2] > 0f)
                 NPC.realLife = (int)NPC.ai[2];
 
-            if (NPC.life > Main.npc[(int)NPC.ai[1]].life)
-                NPC.life = Main.npc[(int)NPC.ai[1]].life;
+            NPC.life = Main.npc[(int)NPC.ai[2]].life;
+            NPC.lifeMax = Main.npc[(int)NPC.ai[2]].lifeMax;
+
 
             // Percent life remaining
-            float lifeRatio = NPC.life / (float)NPC.lifeMax;
+            float lifeRatio = Main.npc[(int)NPC.ai[2]].life / (float)Main.npc[(int)NPC.ai[2]].lifeMax;
 
             bool phase2 = lifeRatio < 0.65f;
             bool expertMode = Main.expertMode || BossRushEvent.BossRushActive;
             bool death = CalamityWorld.death || BossRushEvent.BossRushActive;
 
-            if (phase2)
+            if (phase2 && !phase2Started && Main.npc[(int)NPC.ai[2]].localAI[2] <= 60)
             {
                 phase2Started = true;
-
-                // Once before DoG spawns, set new size
-                if (Main.npc[(int)NPC.ai[2]].localAI[2] == 60f)
-                {
                     NPC.position = NPC.Center;
                     NPC.width = (int)(80 * NPC.scale);
-                    NPC.height = (int)(140 * NPC.scale);
+                    NPC.height = (int)(80 * NPC.scale);
                     NPC.frame = new Rectangle(0, 0, 86, 148);
                     NPC.position -= NPC.Size * 0.5f;
                     NPC.ForceNetUpdate(false);
-                }
             }
 
             if (invinceTime > 0)

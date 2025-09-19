@@ -74,7 +74,7 @@ namespace CalamityMod.NPCs.DevourerofGods
                 global.unbreakableDR = true;
                 NPC.chaseable = false;
             }
-            NPC.LifeMaxNERB(750000, 900000, 1500000);
+            NPC.LifeMaxNERB(760000, 910000, 1500000);
             NPC.aiStyle = -1;
             AIType = -1;
             NPC.knockBackResist = 0f;
@@ -149,19 +149,20 @@ namespace CalamityMod.NPCs.DevourerofGods
             if (NPC.ai[2] > 0f)
                 NPC.realLife = (int)NPC.ai[2];
 
-            if (NPC.life > Main.npc[(int)NPC.ai[1]].life)
-                NPC.life = Main.npc[(int)NPC.ai[1]].life;
+            NPC.life = Main.npc[(int)NPC.ai[2]].life;
+            NPC.lifeMax = Main.npc[(int)NPC.ai[2]].lifeMax;NPC.life = NPC.lifeMax;
 
             // Percent life remaining
-            float lifeRatio = NPC.life / (float)NPC.lifeMax;
+            float lifeRatio = Main.npc[(int)NPC.ai[2]].life / (float)Main.npc[(int)NPC.ai[2]].lifeMax;
 
             bool phase2 = lifeRatio < 0.65f;
             bool expertMode = Main.expertMode || BossRushEvent.BossRushActive;
             bool revenge = CalamityWorld.revenge || BossRushEvent.BossRushActive;
             bool death = CalamityWorld.death || BossRushEvent.BossRushActive;
 
-            if (phase2)
+            if (phase2 && !phase2Started && Main.npc[(int)NPC.ai[2]].localAI[2] <= 60)
             {
+
                 phase2Started = true;
 
                 // Once before DoG spawns, set new size
@@ -264,7 +265,7 @@ namespace CalamityMod.NPCs.DevourerofGods
 
             // Decide segment offset stuff.
             NPC.rotation = directionToNextSegment.ToRotation() + MathHelper.PiOver2;
-            NPC.Center = aheadSegment.Center - directionToNextSegment.SafeNormalize(Vector2.Zero) * NPC.scale * NPC.width;
+            NPC.Center = aheadSegment.Center - directionToNextSegment.SafeNormalize(Vector2.Zero) * NPC.scale * (phase2Started ? 80 : NPC.width );
             NPC.spriteDirection = (directionToNextSegment.X > 0).ToDirectionInt();
 
             // Velocity variables
