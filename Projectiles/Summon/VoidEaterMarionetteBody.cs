@@ -10,7 +10,7 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.Projectiles.Summon
 {
-    public class MechwormBody : ModProjectile, ILocalizedModType
+    public class VoidEaterMarionetteBody : ModProjectile, ILocalizedModType
     {
         public new string LocalizationCategory => "Projectiles.Summon";
         public override void SetStaticDefaults()
@@ -47,7 +47,7 @@ namespace CalamityMod.Projectiles.Summon
 
         internal static void SegmentAI(Projectile projectile, int offsetFromNextSegment, ref int playerMinionSlots)
         {
-            // If the mechworm is opaque enough, produce light.
+            // If the worm is opaque enough, produce light.
             if (projectile.alpha <= 128)
                 Lighting.AddLight(projectile.Center, Color.DarkMagenta.ToVector3());
 
@@ -56,13 +56,13 @@ namespace CalamityMod.Projectiles.Summon
 
             // Track the minion presence boolean.
             if (owner.dead)
-                modPlayer.mWorm = false;
-            if (modPlayer.mWorm)
+                modPlayer.hasVoidEaterMarionette = false;
+            if (modPlayer.hasVoidEaterMarionette)
                 projectile.timeLeft = 2;
 
-            int headProjType = ModContent.ProjectileType<MechwormHead>();
-            int bodyProjType = ModContent.ProjectileType<MechwormBody>();
-            int tailProjType = ModContent.ProjectileType<MechwormTail>();
+            int headProjType = ModContent.ProjectileType<VoidEaterMarionetteHead>();
+            int bodyProjType = ModContent.ProjectileType<VoidEaterMarionetteBody>();
+            int tailProjType = ModContent.ProjectileType<VoidEaterMarionetteTail>();
 
             ref float segmentAheadIdentity = ref projectile.ai[0];
             Projectile segmentAhead = Main.projectile.Take(Main.maxProjectiles).FirstOrDefault(proj => SameIdentity(proj, projectile.owner, (int)projectile.ai[0]));
@@ -85,7 +85,7 @@ namespace CalamityMod.Projectiles.Summon
                     // Each body slot is actually 0.5 slots. Kill two segments to lose 1 "true" slot.
                     for (int i = 0; i < 2; ++i)
                     {
-                        if (ahead.type != ModContent.ProjectileType<MechwormHead>())
+                        if (ahead.type != ModContent.ProjectileType<VoidEaterMarionetteHead>())
                             projectile.localAI[1] = ahead.localAI[1];
 
                         // Inherit the ahead segment index of the ahead segment (basically attaching to the segment that's two indices ahead).
@@ -133,7 +133,7 @@ namespace CalamityMod.Projectiles.Summon
             projectile.extraUpdates = head.extraUpdates;
             projectile.localNPCHitCooldown = head.localNPCHitCooldown;
 
-            MechwormHead headModProj = head.ModProjectile<MechwormHead>();
+            VoidEaterMarionetteHead headModProj = head.ModProjectile<VoidEaterMarionetteHead>();
             if (headModProj.EndRiftGateUUID == -1)
             {
                 // Very rapidly fade-in.
@@ -141,7 +141,7 @@ namespace CalamityMod.Projectiles.Summon
             }
             else if (projectile.Hitbox.Intersects(Main.projectile[headModProj.EndRiftGateUUID].Hitbox))
             {
-                // Disappear if touching the mechworm portal.
+                // Disappear if touching the portal.
                 // It will look like it's teleporting, when in reality, it's
                 // just an invisible, uninteractable projectile for the time being.
                 projectile.alpha = 255;
@@ -157,7 +157,7 @@ namespace CalamityMod.Projectiles.Summon
             if (segmentAhead.rotation != projectile.rotation)
             {
                 float offsetAngle = MathHelper.WrapAngle(segmentAhead.rotation - projectile.rotation);
-                offsetToDestination = offsetToDestination.RotatedBy(offsetAngle * 0.08f);
+                offsetToDestination = offsetToDestination.RotatedBy(offsetAngle * 0.25f);
             }
             projectile.rotation = offsetToDestination.ToRotation() + MathHelper.PiOver2;
 
@@ -170,7 +170,7 @@ namespace CalamityMod.Projectiles.Summon
 
         public static Projectile LocateHead(Projectile projectile)
         {
-            int headType = ModContent.ProjectileType<MechwormHead>();
+            int headType = ModContent.ProjectileType<VoidEaterMarionetteHead>();
             foreach (Projectile p in Main.ActiveProjectiles)
             {
                 if (p.type != headType || p.owner != projectile.owner)

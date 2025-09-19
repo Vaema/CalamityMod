@@ -273,7 +273,7 @@ namespace CalamityMod.Projectiles
         /// <summary>
         /// Custom update priority.<br/>
         /// Calamity sorts projectiles by their update priority to fix otherwise absurdly difficult to resolve visual bugs on certain weapons.<br/>
-        /// Examples include Mechworm segments detaching or Rancor's laser beam being offset from the magic circle.
+        /// Examples include Void Eater Marionette segments detaching or Rancor's laser beam being offset from the magic circle.
         /// </summary>
         public float UpdatePriority = 0f;
 

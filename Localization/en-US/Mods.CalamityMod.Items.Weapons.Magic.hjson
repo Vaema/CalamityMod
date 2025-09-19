@@ -232,9 +232,9 @@ DarkSpark: {
 		'''
 }
 
-DeathhailStaff: {
+HyperdeathRiftScepter: {
 	DisplayName: Hyperdeath Rift Scepter
-	Tooltip: Rips a massive rift in spacetime
+	Tooltip: Tears space in two with [c/ff00ff:Hyperdeath Rift Ripper]
 }
 
 DeathValleyDuster: {

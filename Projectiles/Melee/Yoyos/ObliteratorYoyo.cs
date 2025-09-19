@@ -123,7 +123,7 @@ namespace CalamityMod.Projectiles.Melee.Yoyos
                     }
                     if (Main.myPlayer == Projectile.owner)
                     {
-                        Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center, Vector2.Zero, ModContent.ProjectileType<MechwormTeleportRift>(), 0, 0, Projectile.owner);
+                        Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center, Vector2.Zero, ModContent.ProjectileType<DoGWeaponTeleportRift>(), 0, 0, Projectile.owner);
                     }
                     int laserAmount = 8;
                     for (int i = 0; i < laserAmount; i++)

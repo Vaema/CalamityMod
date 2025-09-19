@@ -102,7 +102,7 @@ namespace CalamityMod.CalPlayer
             }
 
             //Charge animation for Thread of Eradication
-            if (Player.HeldItem.type == ModContent.ItemType<Deathwind>() && !Player.ItemTimeIsZero && drawInfo.shadow == 0f)
+            if (Player.HeldItem.type == ModContent.ItemType<ThreadOfEradication>() && !Player.ItemTimeIsZero && drawInfo.shadow == 0f)
             {
                 var color = Color.Fuchsia;
                 float scale = (1 - (Player.itemTime - 7) / 50f) * 0.2f;

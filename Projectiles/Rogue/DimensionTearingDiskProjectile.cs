@@ -14,10 +14,10 @@ using Terraria.ModLoader;
 namespace CalamityMod.Projectiles.Rogue
 {
     [PierceResistException]
-    public class EradicatorProjectile : ModProjectile, ILocalizedModType
+    public class DimensionTearingDiskProjectile : ModProjectile, ILocalizedModType
     {
         public new string LocalizationCategory => "Projectiles.Rogue";
-        public override string Texture => "CalamityMod/Items/Weapons/Rogue/Eradicator";
+        public override string Texture => "CalamityMod/Items/Weapons/Rogue/DimensionTearingDisk";
         private static float RotationIncrement = 0.15f;
         private static int Lifetime = 350;
         public static int StealthExtraLifetime = 240; // 1 extra update means this is double what you'd expect for 2 seconds
@@ -228,7 +228,7 @@ namespace CalamityMod.Projectiles.Rogue
         public override void PostDraw(Color lightColor)
         {
             Vector2 origin = new Vector2(31f, 29f);
-            Main.EntitySpriteDraw(ModContent.Request<Texture2D>("CalamityMod/Items/Weapons/Rogue/EradicatorGlow").Value, Projectile.Center - Main.screenPosition, null, Color.White, Projectile.rotation, origin, 1f, SpriteEffects.None, 0);
+            Main.EntitySpriteDraw(ModContent.Request<Texture2D>("CalamityMod/Items/Weapons/Rogue/DimensionTearingDiskGlow").Value, Projectile.Center - Main.screenPosition, null, Color.White, Projectile.rotation, origin, 1f, SpriteEffects.None, 0);
         }
     }
 }

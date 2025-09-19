@@ -51,7 +51,7 @@ CosmicTentacle.DisplayName: Dark Tentacle
 CryoBlast.DisplayName: Cryo Blast
 DarkSparkBeam.DisplayName: Dark Spark Beam
 DarkSparkPrism.DisplayName: Dark Crystal
-DeathhailBeam.DisplayName: Deathhail
+HyperdeathRiftScepterBeam.DisplayName: Hypderdeath Rift Ripper
 DeathValleyDusterProjectile.DisplayName: Death Valley Duster
 EelDrop.DisplayName: Acid Eel Drop
 EidolicWailSoundwave.DisplayName: Eidolic Wail
@@ -261,3 +261,4 @@ WyvernFeatherPurple.DisplayName: Feather
 WyvernProjectile.DisplayName: Wyvern
 YharimsCrystalBeam.DisplayName: Yharim's Beam
 YharimsCrystalPrism.DisplayName: Yermes Christal
+DeathhailBeam.DisplayName: Deathhail Beam

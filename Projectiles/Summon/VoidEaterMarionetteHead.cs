@@ -16,7 +16,7 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.Projectiles.Summon
 {
-    public class MechwormHead : ModProjectile, ILocalizedModType
+    public class VoidEaterMarionetteHead : ModProjectile, ILocalizedModType
     {
         public new string LocalizationCategory => "Projectiles.Summon";
         internal enum AttackState : byte
@@ -40,7 +40,7 @@ namespace CalamityMod.Projectiles.Summon
         internal ref float Time => ref Projectile.ai[1];
         internal ref float TotalWormSegments => ref Projectile.localAI[0];
 
-        // Helper functions because Mechworm does a lot of checking for either itself or its target being near the edge of the world.
+        // Helper functions because Void Eater Marionette does a lot of checking for either itself or its target being near the edge of the world.
         private static Vector2 WorldTopLeft(int tileDist = 15) => new Vector2(tileDist * 16f);
         private static Vector2 WorldBottomRight(int tileDist = 15) => new Vector2(Main.maxTilesX - tileDist, Main.maxTilesY - tileDist) * 16f;
 
@@ -124,10 +124,10 @@ namespace CalamityMod.Projectiles.Summon
             CalamityPlayer modPlayer = owner.Calamity();
 
             // Maintain or remove the Mechworm buff from the owner.
-            owner.AddBuff(ModContent.BuffType<Mechworm>(), 3600);
+            owner.AddBuff(ModContent.BuffType<VoidEaterMarionetteBuff>(), 3600);
             if (owner.dead)
-                modPlayer.mWorm = false;
-            if (modPlayer.mWorm)
+                modPlayer.hasVoidEaterMarionette = false;
+            if (modPlayer.hasVoidEaterMarionette)
                 Projectile.timeLeft = 2;
 
             Time++;
@@ -320,6 +320,7 @@ namespace CalamityMod.Projectiles.Summon
             int chargeTime = (int)MathHelper.Min(36 + TotalWormSegments, 70);
             if (AttackStateTimer % chargeTime == 0)
             {
+                Projectile.ResetLocalNPCHitImmunity();
                 Vector2 offsetBounds = Vector2.Max(target.Size, new Vector2(425f + TotalWormSegments * 8f));
                 Vector2 offset = Main.rand.NextVector2CircularEdge(offsetBounds.X, offsetBounds.Y) * 0.65f;
 
@@ -352,9 +353,9 @@ namespace CalamityMod.Projectiles.Summon
                             SparkParticle spark = new SparkParticle(TeleportStartingPoint, sparkVelocity, false, sparkLifetime, sparkScale, sparkColor);
                             GeneralParticleHandler.SpawnParticle(spark);
                         }
-                        Projectile.NewProjectile(Projectile.GetSource_FromThis(), TeleportStartingPoint, Vector2.Zero, ModContent.ProjectileType<MechwormTeleportRift>(), 0, 0f, Projectile.owner);
+                        Projectile.NewProjectile(Projectile.GetSource_FromThis(), TeleportStartingPoint, Vector2.Zero, ModContent.ProjectileType<DoGWeaponTeleportRift>(), 0, 0f, Projectile.owner);
                     }
-                    int endGateIndex = Projectile.NewProjectile(Projectile.GetSource_FromThis(), TeleportEndingPoint, Vector2.Zero, ModContent.ProjectileType<MechwormTeleportRift>(), 0, 0f, Projectile.owner);
+                    int endGateIndex = Projectile.NewProjectile(Projectile.GetSource_FromThis(), TeleportEndingPoint, Vector2.Zero, ModContent.ProjectileType<DoGWeaponTeleportRift>(), 0, 0f, Projectile.owner);
                     EndRiftGateUUID = Projectile.GetByUUID(Projectile.owner, endGateIndex);
 
                     Main.projectile[EndRiftGateUUID].ai[0] = chargeTime;
@@ -371,8 +372,9 @@ namespace CalamityMod.Projectiles.Summon
                     if (otherProj.owner != Projectile.owner || otherProj.whoAmI == Projectile.whoAmI)
                         continue;
 
-                    if (otherProj.type == ModContent.ProjectileType<MechwormBody>() || otherProj.type == ModContent.ProjectileType<MechwormTail>())
+                    if (otherProj.type == ModContent.ProjectileType<VoidEaterMarionetteBody>() || otherProj.type == ModContent.ProjectileType<VoidEaterMarionetteTail>())
                     {
+                        otherProj.ResetLocalNPCHitImmunity();
                         otherProj.alpha = 0;
                         if (AttackStateTimer != 0)
                             otherProj.Center = Projectile.Center;
@@ -403,7 +405,7 @@ namespace CalamityMod.Projectiles.Summon
 
         private void CleanUpMechwormPortals()
         {
-            int portalType = ModContent.ProjectileType<MechwormTeleportRift>();
+            int portalType = ModContent.ProjectileType<DoGWeaponTeleportRift>();
             foreach (Projectile proj in Main.ActiveProjectiles)
             {
                 if (proj.type != portalType || proj.owner != Projectile.owner)
@@ -435,7 +437,7 @@ namespace CalamityMod.Projectiles.Summon
                 return;
 
             Vector2 origin = new Vector2(21f, 25f);
-            Main.EntitySpriteDraw(ModContent.Request<Texture2D>("CalamityMod/Projectiles/Summon/MechwormHeadGlow").Value, Projectile.Center - Main.screenPosition, null, Color.White, Projectile.rotation, origin, 1f, SpriteEffects.None, 0);
+            Main.EntitySpriteDraw(ModContent.Request<Texture2D>("CalamityMod/Projectiles/Summon/VoidEaterMarionetteHeadGlow").Value, Projectile.Center - Main.screenPosition, null, Color.White, Projectile.rotation, origin, 1f, SpriteEffects.None, 0);
         }
 
         public override void DrawBehind(int index, List<int> behindNPCsAndTiles, List<int> behindNPCs, List<int> behindProjectiles, List<int> overPlayers, List<int> overWiresUI)

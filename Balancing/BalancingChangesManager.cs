@@ -52,9 +52,6 @@ namespace CalamityMod.Balancing
             bool HiveBeeFilter(Projectile p) =>
                 p.type == ProjectileType<BasicPlagueBee>() && Main.player[p.owner].ActiveItem().type == ItemType<TheHive>();
 
-            bool EradicatorLaserFilter(Projectile p) =>
-                p.type == ProjectileType<NebulaShot>() && p.DamageType == RogueDamageClass.Instance;
-
             NPCSpecificBalancingChanges = new List<NPCBalancingChange>();
 
             #region Crabulon
@@ -401,9 +398,6 @@ namespace CalamityMod.Balancing
 
             // 20% resist to Ariane's aura (Lilies of Finality).
             NPCSpecificBalancingChanges.AddRange(Bundle(CalamityNPCTypeSets.Thanatos, Do(new ProjectileResistBalancingRule(0.8f, ProjectileType<LiliesOfFinalityAoE>()))));
-
-            // 20% resist to Eradicator's beams.
-            NPCSpecificBalancingChanges.AddRange(Bundle(CalamityNPCTypeSets.Thanatos, Do(new ProjectileSpecificRequirementBalancingRule(0.8f, EradicatorLaserFilter))));
 
             // 20% resist to Mirror of Kalandra's Paradoxica minion.
             NPCSpecificBalancingChanges.AddRange(Bundle(CalamityNPCTypeSets.Thanatos, Do(new ProjectileResistBalancingRule(0.8f, ProjectileType<Paradoxica>()))));

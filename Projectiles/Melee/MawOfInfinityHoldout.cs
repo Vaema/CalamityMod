@@ -14,13 +14,13 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.Projectiles.Melee
 {
-    public class ExcelsusHoldout : BaseSwordHoldoutProjectile, ILocalizedModType
+    public class MawOfInfinityHoldout : BaseSwordHoldoutProjectile, ILocalizedModType
     {
         public new string LocalizationCategory => "Projectiles.Melee";
         public override bool useMeleeSpeed => true;
         public override bool useMeleeSize => true;
         public override int swingWidth => 270;
-        public override Item BaseItem => ModContent.GetModItem(ModContent.ItemType<Excelsus>()).Item;
+        public override Item BaseItem => ModContent.GetModItem(ModContent.ItemType<MawOfInfinity>()).Item;
         public override int AfterImageLength => 0;
 
         public override int StartupTime { get; set; }
@@ -116,7 +116,7 @@ namespace CalamityMod.Projectiles.Melee
                     break;
                 case 0:
                     if (Main.myPlayer == Projectile.owner)
-                        Projectile.NewProjectile(Projectile.GetSource_FromThis(), player.Center, -angle * 3, ModContent.ProjectileType<ExcelsusJaws>(), Projectile.damage * 2, Projectile.knockBack, player.whoAmI);
+                        Projectile.NewProjectile(Projectile.GetSource_FromThis(), player.Center, -angle * 3, ModContent.ProjectileType<MawOfInfinityJaws>(), Projectile.damage * 2, Projectile.knockBack, player.whoAmI);
                     player.itemAnimation = BaseItem.useAnimation;
                     player.itemTime = BaseItem.useTime;
                     Projectile.Kill();

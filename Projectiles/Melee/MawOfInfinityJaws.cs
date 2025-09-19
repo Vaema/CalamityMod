@@ -13,7 +13,7 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.Projectiles.Melee
 {
-    public class ExcelsusJaws : ModProjectile, ILocalizedModType
+    public class MawOfInfinityJaws : ModProjectile, ILocalizedModType
     {
         public new string LocalizationCategory => "Projectiles.Melee";
 

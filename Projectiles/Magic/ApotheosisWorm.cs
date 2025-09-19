@@ -179,7 +179,7 @@ namespace CalamityMod.Projectiles.Magic
             // This variant of segment attachment incorporates rotation.
             // Given the fact that all segments will execute this code is succession, the
             // result across the entire worm will exponentially decay over each segment,
-            // allowing for smooth rotations. This code is what the stardust dragon and mechworm use for their segmenting.
+            // allowing for smooth rotations. This code is what the stardust dragon and Void Eater Marionette use for their segmenting.
             if (aheadSegmentRotation != Segments[segmentIndex].Rotation)
             {
                 float offsetAngle = MathHelper.WrapAngle(aheadSegmentRotation - Segments[segmentIndex].Rotation);

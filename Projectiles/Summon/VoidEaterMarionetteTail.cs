@@ -8,7 +8,7 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.Projectiles.Summon
 {
-    public class MechwormTail : ModProjectile, ILocalizedModType
+    public class VoidEaterMarionetteTail : ModProjectile, ILocalizedModType
     {
         public new string LocalizationCategory => "Projectiles.Summon";
         private int playerMinionSlots = 0;
@@ -53,7 +53,7 @@ namespace CalamityMod.Projectiles.Summon
 
             Projectile.localAI[0] = 0f;
 
-            MechwormBody.SegmentAI(Projectile, 16, ref playerMinionSlots);
+            VoidEaterMarionetteBody.SegmentAI(Projectile, 16, ref playerMinionSlots);
         }
 
         public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone) => target.AddBuff(ModContent.BuffType<GodSlayerInferno>(), 90);

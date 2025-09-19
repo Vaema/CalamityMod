@@ -1,4 +1,6 @@
-﻿using CalamityMod.Items.Weapons.Magic;
+﻿using System.Collections.Generic;
+using CalamityMod.Items.Weapons.Magic;
+using CalamityMod.NPCs.DevourerofGods;
 using CalamityMod.Particles;
 using CalamityMod.Projectiles.Ranged;
 using CalamityMod.Projectiles.Typeless;
@@ -8,16 +10,24 @@ using Microsoft.Xna.Framework.Graphics;
 using Terraria;
 using Terraria.DataStructures;
 using Terraria.ID;
+using Terraria.Localization;
 using Terraria.ModLoader;
 
 namespace CalamityMod.Items.Weapons.Ranged
 {
-    public class Deathwind : ModItem, ILocalizedModType
+    [LegacyName("Deathwind")]
+    public class ThreadOfEradication : ModItem, ILocalizedModType
     {
         public new string LocalizationCategory => "Items.Weapons.Ranged";
+        public override void ModifyTooltips(List<TooltipLine> tooltips)
+        {
+            tooltips.FindAndReplace("ff00ff", Utils.Hex3(DevourerofGodsHead.SpecialMoveColor));
+            tooltips.FindAndReplace("ff00ff", Utils.Hex3(DevourerofGodsHead.SpecialMoveColor));
+            tooltips.FindAndReplace("ff00ff", Utils.Hex3(DevourerofGodsHead.SpecialMoveColor));
+        }
         public override void SetStaticDefaults()
         {
-            ItemID.Sets.ShimmerTransformToItem[Type] = ModContent.ItemType<DeathhailStaff>();
+            ItemID.Sets.ShimmerTransformToItem[Type] = ModContent.ItemType<HyperdeathRiftScepter>();
         }
         public override void SetDefaults()
         {
@@ -41,7 +51,7 @@ namespace CalamityMod.Items.Weapons.Ranged
 
         public override void PostDrawInWorld(SpriteBatch spriteBatch, Color lightColor, Color alphaColor, float rotation, float scale, int whoAmI)
         {
-            Item.DrawItemGlowmaskSingleFrame(spriteBatch, rotation, ModContent.Request<Texture2D>("CalamityMod/Items/Weapons/Ranged/DeathwindGlow").Value);
+            Item.DrawItemGlowmaskSingleFrame(spriteBatch, rotation, ModContent.Request<Texture2D>("CalamityMod/Items/Weapons/Ranged/ThreadOfEradicationGlow").Value);
         }
         private int storedDMG = 1;
         private float storedKB = 1;

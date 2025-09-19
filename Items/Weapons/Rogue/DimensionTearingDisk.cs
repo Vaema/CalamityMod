@@ -1,4 +1,6 @@
-﻿using CalamityMod.Items.Weapons.Melee;
+﻿using System.Collections.Generic;
+using CalamityMod.Items.Weapons.Melee;
+using CalamityMod.NPCs.DevourerofGods;
 using CalamityMod.Projectiles.Rogue;
 using CalamityMod.Rarities;
 using Microsoft.Xna.Framework;
@@ -6,16 +8,18 @@ using Microsoft.Xna.Framework.Graphics;
 using Terraria;
 using Terraria.DataStructures;
 using Terraria.ID;
+using Terraria.Localization;
 using Terraria.ModLoader;
 
 namespace CalamityMod.Items.Weapons.Rogue
 {
-    public class Eradicator : RogueWeapon
+    [LegacyName("Eradicator")]
+    public class DimensionTearingDisk : RogueWeapon
     {
         public static float Speed = 10.5f;
         public override void SetStaticDefaults()
         {
-            ItemID.Sets.ShimmerTransformToItem[Type] = ModContent.ItemType<Excelsus>();
+            ItemID.Sets.ShimmerTransformToItem[Type] = ModContent.ItemType<MawOfInfinity>();
         }
         public override void SetDefaults()
         {
@@ -32,8 +36,13 @@ namespace CalamityMod.Items.Weapons.Rogue
             Item.UseSound = SoundID.Item1;
             Item.value = CalamityGlobalItem.RarityDarkBlueBuyPrice;
             Item.rare = ModContent.RarityType<CosmicPurple>();
-            Item.shoot = ModContent.ProjectileType<EradicatorProjectile>();
+            Item.shoot = ModContent.ProjectileType<DimensionTearingDiskProjectile>();
             Item.shootSpeed = Speed;
+        }
+
+        public override void ModifyTooltips(List<TooltipLine> tooltips)
+        { 
+            tooltips.FindAndReplace("ff00ff", Utils.Hex3(DevourerofGodsHead.SpecialMoveColor));
         }
 
         public override float StealthDamageMultiplier => 1f;
@@ -50,7 +59,7 @@ namespace CalamityMod.Items.Weapons.Rogue
 
         public override void PostDrawInWorld(SpriteBatch spriteBatch, Color lightColor, Color alphaColor, float rotation, float scale, int whoAmI)
         {
-            Item.DrawItemGlowmaskSingleFrame(spriteBatch, rotation, ModContent.Request<Texture2D>("CalamityMod/Items/Weapons/Rogue/EradicatorGlow").Value);
+            Item.DrawItemGlowmaskSingleFrame(spriteBatch, rotation, ModContent.Request<Texture2D>("CalamityMod/Items/Weapons/Rogue/DimensionTearingDiskGlow").Value);
         }
     }
 }

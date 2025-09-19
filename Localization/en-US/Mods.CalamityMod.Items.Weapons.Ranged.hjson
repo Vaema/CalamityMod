@@ -379,13 +379,13 @@ DeadSunsWind: {
 		'''
 }
 
-Deathwind: {
+ThreadOfEradication: {
 	DisplayName: Thread of Eradication
 	Tooltip:
 		'''
-		Charges up a God Killer Doombeam
-		Channelling the weapon causes it to charge up an even more powerful Hyperdeath Ripper
-		While charging the Hyperdeath Ripper, the bow's turning speed is slowed down
+		Charges up [c/ff00ff:God's Bane Doombeam]
+		Channelling the weapon causes it to charge up [c/ff00ff:Hyperdeath Rift] instead
+		While charging [c/ff00ff:Hyperdeath Rift], the bow's turning speed is slowed down
 		'''
 }
 

@@ -383,12 +383,12 @@ Equanimity: {
 		'''
 }
 
-Eradicator: {
+DimensionTearingDisk: {
 	DisplayName: Dimension-Tearing Disk
 	Tooltip:
 		'''
 		Throws a disk that tears space in the direction of the nearest enemy
-		Stealth strikes stick to enemies and unleash God Killer Doombeam Array
+		Stealth strikes stick to enemies and unleash [c/ff00ff:God's Bane Doombeam Array]
 		'''
 }
 
