@@ -292,7 +292,7 @@ namespace CalamityMod.Projectiles.Summon
             if (AITimer >= (hoverTime + chargeTime) * ViridVanguard.HorizontalSlashAmount)
             {
                 AITimer = 0f;
-                CurrentState = false ? ViridVanguardAIState.VerticalPierceTeleport : ViridVanguardAIState.RegularPierceSlashes;
+                CurrentState = ViridVanguardAIState.RegularPierceSlashes;
                 Projectile.netUpdate = true;
             }
         }
@@ -426,7 +426,7 @@ namespace CalamityMod.Projectiles.Summon
             Projectile.MaxUpdates = 2;
             float completion = AITimer / (ViridVanguard.ActiveAttackStartup * (float)Projectile.MaxUpdates);
             Vector2 hoverDestination = Owner.Center + BladeAngleForPhripperZenith.ToRotationVector2() * MathHelper.Lerp(200f, 116f, completion);
-            //Projectile.Center = hoverDestination;
+
             Projectile.Center = Vector2.Lerp(Projectile.Center, hoverDestination, 0.04f).MoveTowards(hoverDestination, MathHelper.Lerp(16f, 64f, completion));
             Projectile.velocity *= 0.8f;
             Owner.Calamity().ViridVanguardRotationToAdd = MathHelper.Lerp(1, ViridVanguard.ActiveAttackCirclingSpeedMultiplier, completion) * ViridVanguard.IdleCirclingSpeed;
@@ -511,7 +511,6 @@ namespace CalamityMod.Projectiles.Summon
             }
             Vector2 hoverDestination = Owner.Center + BladeAngleForPhripperZenith.ToRotationVector2() * MathHelper.Lerp(200f, 116f, completion);
             Projectile.Center = hoverDestination;
-            //Projectile.Center = Vector2.Lerp(Projectile.Center, hoverDestination, 0.04f).MoveTowards(hoverDestination, MathHelper.Lerp(16f,64f,completion));
             Projectile.velocity *= 0.8f;
             Owner.Calamity().ViridVanguardRotationToAdd = MathHelper.Lerp(1, ViridVanguard.ActiveAttackCirclingSpeedMultiplier, completion) * ViridVanguard.IdleCirclingSpeed;
             BladeAngleForPhripperZenith += Owner.Calamity().ViridVanguardRotationToAdd / Projectile.MaxUpdates;
