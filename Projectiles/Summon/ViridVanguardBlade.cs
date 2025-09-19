@@ -610,7 +610,7 @@ namespace CalamityMod.Projectiles.Summon
             TrailDrawer.DrawTrail();
             Main.pixelShader.CurrentTechnique.Passes[0].Apply();
 
-            // Draw the blade.// Draw the blade.
+            // Draw the blade.
             float outlineOpacity = 1;
             float outlineWidth = 1;
             Color outlineColor = Color.LimeGreen;
