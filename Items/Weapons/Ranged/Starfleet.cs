@@ -18,7 +18,7 @@ namespace CalamityMod.Items.Weapons.Ranged
         {
             Item.width = 76;
             Item.height = 36;
-            Item.damage = 1562;
+            Item.damage = 2888;
             Item.DamageType = DamageClass.Ranged;
             Item.useTime = 70;
             Item.useAnimation = 70;
@@ -51,7 +51,7 @@ namespace CalamityMod.Items.Weapons.Ranged
             int colorIndex = (int)(rate / 2 % eColors.Count);
             Color currentColor = eColors[colorIndex];
             Color nextColor = eColors[(colorIndex + 1) % eColors.Count];
-            Color eTooltipColor = Color.Lerp(currentColor, nextColor, rate % 2f > 1f ? 1f : rate % 1f);
+            Color eTooltipColor = Color.Lerp(currentColor, nextColor, rate % 2f >= 1f ? 1f : rate % 1f);
 
             TooltipLine line = list.FirstOrDefault(x => x.Mod == "Terraria" && x.Name == "Tooltip7");
             if (line != null)
@@ -60,10 +60,10 @@ namespace CalamityMod.Items.Weapons.Ranged
         public override void AddRecipes()
         {
             CreateRecipe().
+                AddIngredient(ItemID.SuperStarCannon).
                 AddIngredient<RuinousSoul>(4).
                 AddIngredient(ItemID.FallenStar, 15).
                 AddIngredient<GalacticaSingularity>(3).
-                AddIngredient<ExodiumCluster>(25).
                 AddTile(TileID.LunarCraftingStation).
                 Register();
         }

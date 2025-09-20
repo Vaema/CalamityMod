@@ -67,7 +67,7 @@ namespace CalamityMod.Projectiles.Ranged
             int colorIndex = (int)(rate / 2 % eColors.Count);
             Color currentColor = eColors[colorIndex];
             Color nextColor = eColors[(colorIndex + 1) % eColors.Count];
-            shiftColor = Color.Lerp(currentColor, nextColor, rate % 2f > 1f ? 1f : rate % 1f);
+            shiftColor = Color.Lerp(currentColor, nextColor, rate % 2f >= 1f ? 1f : rate % 1f);
 
             SetUsage = false;
             bool doingNothing = shootingCooldown == 0 && starburstCooldown == 0 && starburstTimer == 0;
@@ -145,7 +145,7 @@ namespace CalamityMod.Projectiles.Ranged
 
             SoundStyle shotgunFire = new("CalamityMod/Sounds/Item/StarfleetFire");
             for (int i = 0; i < (naildriver ? 2 : 1); i++)
-                SoundEngine.PlaySound(shotgunFire with { Volume = 0.7f, Pitch = ((naildriver && i == 0) ? 0f : 0.2f), MaxInstances = 2 }, Projectile.Center);
+                SoundEngine.PlaySound(shotgunFire with { Volume = (naildriver && i == 0 ? 0.3f : 0.6f), Pitch = ((naildriver && i == 0) ? 0f : 0.2f), MaxInstances = 2 }, Projectile.Center);
             // Perfects have longer cooldown
             int cooldown = (naildriver ? naildriverCooldown : lastUseTime);
             recoilTimerMax = cooldown;
@@ -154,10 +154,11 @@ namespace CalamityMod.Projectiles.Ranged
             Owner.Calamity().GeneralScreenShakePower = (naildriver ? 9 : scattershot ? 7 : 4);
             OffsetLengthFromArm = (naildriver ? 0 : scattershot ? 7 : 15);
 
-            for (int i = 0; i < 6; i++)
+            int baseShotCount = 6;
+            for (int i = 0; i < baseShotCount; i++)
             {
                 float randomVel = Main.rand.NextFloat(0.8f, 1f);
-                float damageMult = (naildriver || scattershot) ? 2f : 1f;
+                float damageMult = ((naildriver || scattershot) ? 1.75f : 1f) / baseShotCount;
                 float spread = (naildriver ? 0.06f : scattershot ? 0.9f : 0.25f);
                 Projectile shotgun = Projectile.NewProjectileDirect(Projectile.GetSource_FromThis(), GunTipPosition, randomVel * Projectile.velocity.RotatedByRandom(spread) * 8, ModContent.ProjectileType<StarfleetStar>(), (int)(Projectile.damage * damageMult), Projectile.knockBack, Projectile.owner, 0, 0, Main.rand.Next(0, 300 + 1));
                 shotgun.extraUpdates = naildriver ? 9 : scattershot ? 7 : 3;

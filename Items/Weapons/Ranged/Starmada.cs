@@ -20,7 +20,7 @@ namespace CalamityMod.Items.Weapons.Ranged
         {
             Item.width = 122;
             Item.height = 50;
-            Item.damage = 3050;
+            Item.damage = 3727;
             Item.DamageType = DamageClass.Ranged;
             Item.useAnimation = Item.useTime = 70;
             Item.knockBack = 15f;
@@ -52,9 +52,9 @@ namespace CalamityMod.Items.Weapons.Ranged
             int colorIndex = (int)(rate / 2 % eColors.Count);
             Color currentColor = eColors[colorIndex];
             Color nextColor = eColors[(colorIndex + 1) % eColors.Count];
-            Color eTooltipColor = Color.Lerp(currentColor, nextColor, rate % 2f > 1f ? 1f : rate % 1f);
+            Color eTooltipColor = Color.Lerp(currentColor, nextColor, rate % 2f >= 1f ? 1f : rate % 1f);
 
-            TooltipLine line = list.FirstOrDefault(x => x.Mod == "Terraria" && x.Name == "Tooltip9");
+            TooltipLine line = list.FirstOrDefault(x => x.Mod == "Terraria" && x.Name == "Tooltip8");
             if (line != null)
                 line.OverrideColor = Color.Lerp(eTooltipColor, Color.White, 0.2f);
         }
@@ -62,9 +62,8 @@ namespace CalamityMod.Items.Weapons.Ranged
         {
             CreateRecipe().
                 AddIngredient<Starfleet>().
-                AddIngredient(ItemID.SuperStarCannon).
                 AddIngredient<AuricBar>(5).
-                AddIngredient<ExodiumCluster>(15).
+                AddIngredient<ExodiumCluster>(25).
                 AddTile<CosmicAnvil>().
                 Register();
         }

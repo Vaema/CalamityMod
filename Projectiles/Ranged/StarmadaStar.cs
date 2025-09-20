@@ -48,7 +48,7 @@ namespace CalamityMod.Projectiles.Ranged
             int colorIndex = (int)(rate / 2 % eColors.Count);
             Color currentColor = eColors[colorIndex];
             Color nextColor = eColors[(colorIndex + 1) % eColors.Count];
-            shiftColor = Color.Lerp(currentColor, nextColor, rate % 2f > 1f ? 1f : rate % 1f);
+            shiftColor = Color.Lerp(currentColor, nextColor, rate % 2f >= 1f ? 1f : rate % 1f);
             Projectile.ai[2]++;
 
             if (time > 5 && time % 2 == 0)
@@ -104,13 +104,13 @@ namespace CalamityMod.Projectiles.Ranged
             float damageMult = Utils.Remap(Projectile.numHits, 0, hitsToMinMult, 1, minMult, true);
             modifiers.SourceDamage *= damageMult;
 
-            if (Projectile.numHits == 0)
+            if (Projectile.numHits == 0 && false)
             {
                 // spawn slice projectiles
-                Vector2 spawnPos = target.Center + Vector2.UnitY.RotatedByRandom(0.6f) * (target.height / 2 + 40);
+                Vector2 spawnPos = target.Center + target.Center.DirectionFrom(Owner.Center).RotatedByRandom(0.5f) * (target.height / 2 + 40);
                 Vector2 vel = spawnPos.DirectionTo(target.Center);
-                int damage = (int)(Projectile.damage * 0.33f);
-                Projectile shotgun = Projectile.NewProjectileDirect(Projectile.GetSource_FromThis(), spawnPos, vel, ModContent.ProjectileType<StarmadaHitProj>(), damage, 0, Projectile.owner, target.whoAmI, Main.rand.Next(0, 7 + 1), Main.rand.Next(0, 300 + 1));
+                int damage = (int)(Projectile.damage * 0.25f);
+                Projectile star = Projectile.NewProjectileDirect(Projectile.GetSource_FromThis(), spawnPos, vel, ModContent.ProjectileType<StarmadaHitProj>(), damage, 0, Projectile.owner, target.whoAmI, Main.rand.Next(0, 7 + 1), Main.rand.Next(0, 300 + 1));
             }
         }
         public override void OnKill(int timeLeft)

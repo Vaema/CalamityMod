@@ -1216,11 +1216,10 @@ Starmada: {
 		<left> Fires a spread of starshots
 		<right> Fires a concussive short range starburst
 		Holding down <right> disables the recoil damper
-		Starshots create stardrops on impact
-		Stardrops can be hit with the starburst to be launched back into enemies
 		Starshots can be accelerated by firing when the starburst goes off
-		Perfect timing reduces spread and increases damage
-		Imperfect timing still increases damage, but heavily increases spread
+		Perfect timing reduces spread and increases damage, while increasing weapon power, up to three times
+		Imperfect timing still increases damage, but heavily increases spread and decreases weapon power
+		Each level of weapon power increases the power of the starburst and starshots
 		Uses fallen stars, 50% chance to save ammo
 		'Et toi, et moi'
 		'''

@@ -37,7 +37,7 @@ namespace CalamityMod.Projectiles.Ranged
             Projectile.DamageType = DamageClass.Ranged;
             Projectile.extraUpdates = 3;
             Projectile.penetrate = -1;
-            Projectile.timeLeft = 600;
+            Projectile.timeLeft = 800;
             Projectile.ignoreWater = true;
             Projectile.usesLocalNPCImmunity = true;
             Projectile.localNPCHitCooldown = -1;
@@ -71,30 +71,8 @@ namespace CalamityMod.Projectiles.Ranged
             int colorIndex = (int)(rate / 2 % eColors.Count);
             Color currentColor = eColors[colorIndex];
             Color nextColor = eColors[(colorIndex + 1) % eColors.Count];
-            shiftColor = Color.Lerp(currentColor, nextColor, rate % 2f > 1f ? 1f : rate % 1f);
+            shiftColor = Color.Lerp(currentColor, nextColor, rate % 2f >= 1f ? 1f : rate % 1f);
             Projectile.ai[2]++;
-
-
-            if (time > 5 && time % 2 == 0)
-            {
-               
-                //Particle trail = new CustomSpark(Projectile.Center - Projectile.velocity.SafeNormalize(Vector2.UnitX) * 28, Projectile.velocity, "CalamityMod/Particles/DualTrail", false, 15, 0.11f, shiftColor, new Vector2(0.9f, 1.1f), shrinkSpeed: 0.5f);
-                //GeneralParticleHandler.SpawnParticle(trail);
-                
-
-                if (time > 18)
-                {
-                    int dustStyle = DustType<SquashDust>();
-                    Dust dust = Dust.NewDustPerfect(Projectile.Center + Main.rand.NextVector2Circular(8, 8), dustStyle);
-                    dust.scale = Main.rand.NextFloat(1.2f, 1.8f);
-                    dust.velocity = -Projectile.velocity * Main.rand.NextFloat(3f, 5f);
-                    dust.noGravity = true;
-                    dust.color = shiftColor;
-                    dust.fadeIn = 5f;
-                }
-            }
-
-
 
             float startTime = 120 + Projectile.ai[1];
             float endTime = startTime + 15 + Projectile.ai[1];
@@ -102,7 +80,7 @@ namespace CalamityMod.Projectiles.Ranged
             {
                 if (setLaunchStats)
                 {
-                    time = 0;
+                    Projectile.extraUpdates = 12;
                     Projectile.penetrate = 1;
                     for (int i = 0; i < Main.maxNPCs; i++)
                         Projectile.localNPCImmunity[i] = 0;
@@ -110,10 +88,11 @@ namespace CalamityMod.Projectiles.Ranged
                     setLaunchStats = false;
                 }
                 Projectile.rotation += (MathHelper.TwoPi) / (endTime / 3);
-                Particle trail = new CustomSpark(Projectile.Center - Projectile.velocity.SafeNormalize(Vector2.UnitX) * 28, Projectile.velocity, "CalamityMod/Particles/BloomCircle", false, 15, 0.3f, shiftColor, new Vector2(0.8f, 1.3f), shrinkSpeed: 0.5f);
-                GeneralParticleHandler.SpawnParticle(trail);
-                if (time > 10)
-                    CalamityUtils.HomeInOnSelectedNPC(Projectile, targeted, true, 0.6f, 25, 0.9f + (Utils.GetLerpValue(200, 0, time, true) * 0.1f));
+                if (time % 2 == 0)
+                {
+                    Particle trail = new CustomSpark(Projectile.Center - Projectile.velocity.SafeNormalize(Vector2.UnitX) * 28, Projectile.velocity, "CalamityMod/Particles/BloomCircle", false, 13, 0.11f, shiftColor * 0.6f, new Vector2(launched ? 5.5f : 0.8f, 3f), shrinkSpeed: launched ? 1f : 0.5f);
+                    GeneralParticleHandler.SpawnParticle(trail);
+                }
             }
             else
             {
@@ -124,6 +103,17 @@ namespace CalamityMod.Projectiles.Ranged
                         Projectile.localAI[2] = 1;
                     if (time >= endTime)
                     {
+                        if (Main.rand.NextBool(15))
+                        {
+                            int dustStyle = DustType<SquashDust>();
+                            Dust dust = Dust.NewDustPerfect(Projectile.Center + Main.rand.NextVector2Circular(8, 8), dustStyle);
+                            dust.scale = Main.rand.NextFloat(1.2f, 1.8f);
+                            dust.velocity = Vector2.One.RotatedByRandom(MathHelper.TwoPi) * Main.rand.NextFloat(5f, 7f);
+                            dust.noGravity = true;
+                            dust.color = shiftColor;
+                            dust.fadeIn = 2f;
+                        }
+
                         Projectile.Center += Projectile.velocity.SafeNormalize(Vector2.UnitX) * 0.2f;
                         if (time < endTime * 2f)
                             Projectile.velocity *= 0.9f + (Projectile.ai[1] * 0.005f);
@@ -158,13 +148,15 @@ namespace CalamityMod.Projectiles.Ranged
                     Projectile.velocity *= 0.97f + (Projectile.ai[1] * 0.0025f);
                 }
             }
-
-            if (time == startTime)
+            if (time == startTime && setLaunchStats)
             {
-                Projectile.timeLeft = (int)(endTime * 2);
+                Projectile.timeLeft = (int)(endTime * 3);
                 move = true;
                 Projectile.velocity = Projectile.velocity.SafeNormalize(Vector2.UnitX) * 15;
             }
+
+            Projectile.scale = (float)Math.Pow(Math.Min(Utils.GetLerpValue(0, 40, time, true), Utils.GetLerpValue(0, 40, Projectile.timeLeft, true)), 3);
+
             time++;
         }
         public override bool ShouldUpdatePosition() => move;
@@ -196,23 +188,32 @@ namespace CalamityMod.Projectiles.Ranged
         }
         public override void ModifyHitNPC(NPC target, ref NPC.HitModifiers modifiers)
         {
+
             float minMult = 0.1f;
             int hitsToMinMult = 2;
             float damageMult = Utils.Remap(Projectile.numHits, 0, hitsToMinMult, 1, minMult, true);
-            modifiers.SourceDamage *= damageMult;
+            modifiers.SourceDamage *= damageMult * (launched ? 2 : 1);
         }
         public override void OnKill(int timeLeft)
         {
-            for (int i = 0; i < 15; i++)
+            if (launched)
             {
-                float variance = Main.rand.NextFloat(-0.5f, 0.5f);
-                int dustStyle = DustType<SquashDust>();
-                Dust dust = Dust.NewDustPerfect(Projectile.Center, dustStyle);
-                dust.scale = (Main.rand.NextFloat(1.4f, 1.8f) - Math.Abs(variance)) * 1.5f;
-                dust.velocity = Projectile.velocity.SafeNormalize(Vector2.UnitX).RotatedBy(variance) * Main.rand.NextFloat(18f, 19f) * (float)Math.Pow(1 - Math.Abs(variance), 2);
-                dust.noGravity = true;
-                dust.color = GetRandomColor();
-                dust.fadeIn = 2.5f;
+                float rot = Main.rand.NextFloat(0, MathHelper.TwoPi);
+                for (int b = 1; b <= 6; b++)
+                {
+                    for (int i = 0; i < 5; i++)
+                    {
+                        int dustStyle = DustType<SquashDust>();
+                        Dust dust = Dust.NewDustPerfect(Projectile.Center, dustStyle);
+                        dust.scale = 8 - b;
+                        dust.velocity = -Vector2.UnitY.RotatedBy((MathHelper.TwoPi / 5 * i) + rot) * (b * 1.75f + 2);
+                        dust.noGravity = true;
+                        dust.color = GetRandomColor();
+                        dust.fadeIn = 6.5f - b * 0.5f;
+                    }
+                }
+                Particle bloom = new CustomSpark(Projectile.Center, Vector2.Zero, "CalamityMod/Particles/BloomCircle", false, 25, 1.2f, shiftColor, new Vector2(1, 1), true, true, 0, false, false, glowOpacity: 0.85f);
+                GeneralParticleHandler.SpawnParticle(bloom);
             }
         }
 
