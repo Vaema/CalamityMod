@@ -15,7 +15,7 @@ using Terraria.ModLoader;
 namespace CalamityMod.Items.Weapons.Melee
 {
     [LegacyName("Excelsus")]
-    public class MawOfInfinity : BaseSwordHoldoutItem, ILocalizedModType
+    public class MawOfInfinity: BaseSwordHoldoutItem, ILocalizedModType
     {
         public new string LocalizationCategory => "Items.Weapons.Melee";
         public override int ProjectileType => ModContent.ProjectileType<MawOfInfinityHoldout>();
@@ -33,7 +33,7 @@ namespace CalamityMod.Items.Weapons.Melee
         {
             Item.width = 78;
             Item.height = 94;
-            Item.damage = 4000;
+            Item.damage = 2650;
             Item.DamageType = DamageClass.Melee;
             Item.useTime = Item.useAnimation = 33;
             Item.useStyle = ItemUseStyleID.Swing;
