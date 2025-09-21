@@ -35,6 +35,8 @@ namespace CalamityMod.Tiles.SunkenSea
             this.RegisterUniversalMerge(ModContent.TileType<EutrophicSand>(), "CalamityMod/Tiles/Merges/EutrophicSandMerge");
             this.RegisterUniversalMerge(ModContent.TileType<Navystone>(), "CalamityMod/Tiles/Merges/NavystoneMerge");
             this.RegisterUniversalMerge(ModContent.TileType<Runestone>(), "CalamityMod/Tiles/Merges/RunestoneMerge");
+            this.RegisterUniversalMerge(ModContent.TileType<Basalt>(), "CalamityMod/Tiles/Merges/BasaltMerge");
+
             this.RegisterUniversalMerge(TileID.Sandstone, "CalamityMod/Tiles/Merges/SandstoneMerge");
             this.RegisterUniversalMerge(TileID.Sand, "CalamityMod/Tiles/Merges/SandMerge");
             this.RegisterUniversalMerge(TileID.HardenedSand, "CalamityMod/Tiles/Merges/HardenedSandMerge");
@@ -58,11 +60,8 @@ namespace CalamityMod.Tiles.SunkenSea
         {
             return (MathF.Sin(Main.GlobalTimeWrappedHourly * 0.1f + i * 0.08f - j * 0.05f) + 1f) / 2f;
         }
-        public override void PostDraw(int i, int j, SpriteBatch spriteBatch)
+        public override bool PreDraw(int i, int j, SpriteBatch spriteBatch)
         {
-            if (Main.tile[i, j].IsTileActuallyInvisible())
-                return;
-
             float transparency = 1f;
 
             // Must be set here 
@@ -114,6 +113,7 @@ namespace CalamityMod.Tiles.SunkenSea
                     spriteBatch.Draw(GlintTex, position, frame, (Lighting.GetColor(i, j)) * (strength * 1f), 0f, Vector2.Zero, 1f, SpriteEffects.None, 0f);
                 }
             }
+            return true;
         }
     }
 }

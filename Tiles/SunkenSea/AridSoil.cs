@@ -26,11 +26,6 @@ namespace CalamityMod.Tiles.SunkenSea
             DustType = DustID.Hive;
             AddMapEntry(new Color(171, 101, 87));
 
-            //Stone merges
-            this.RegisterUniversalMerge(ModContent.TileType<Shellstone>(), "CalamityMod/Tiles/Merges/ShellstoneMerge");
-            this.RegisterUniversalMerge(ModContent.TileType<Navystone>(), "CalamityMod/Tiles/Merges/NavystoneMerge");
-            this.RegisterUniversalMerge(ModContent.TileType<Runestone>(), "CalamityMod/Tiles/Merges/RunestoneMerge");
-
             //Sand merges
             this.RegisterUniversalMerge(ModContent.TileType<PolypSand>(), "CalamityMod/Tiles/Merges/PolypSandMerge");
             this.RegisterUniversalMerge(ModContent.TileType<Dunesand>(), "CalamityMod/Tiles/Merges/DunesandMerge");
