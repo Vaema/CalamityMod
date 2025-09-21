@@ -411,6 +411,7 @@ namespace CalamityMod.NPCs.SunkenSea
         {
             base.SetDefaults();
 
+            Banner = Type;
             BannerItem = ItemType<ProbesnoutBanner>();
 
             NPC.lifeMax = 5;
