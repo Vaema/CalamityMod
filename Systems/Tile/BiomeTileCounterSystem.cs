@@ -65,7 +65,7 @@ namespace CalamityMod.Systems
             SunkenSeaPolypTiles = tileCounts[ModContent.TileType<Limestone>()] + tileCounts[ModContent.TileType<PolypSand>()] + tileCounts[ModContent.TileType<ScarletSeaGrassTile>()];
             SunkenSeaReefsTiles = tileCounts[ModContent.TileType<Shellstone>()] + tileCounts[ModContent.TileType<EutrophicSand>()] + tileCounts[ModContent.TileType<YellowCoral>()] + tileCounts[ModContent.TileType<OrangeCoral>()] + tileCounts[ModContent.TileType<CyanCoral>()] + tileCounts[ModContent.TileType<LimeCoral>()] + tileCounts[ModContent.TileType<MagentaCoral>()];
             SunkenSeaBurrowsTiles = tileCounts[ModContent.TileType<Navystone>()] + tileCounts[ModContent.TileType<HardenedEutrophicSand>()] + tileCounts[ModContent.TileType<WhitePearlPile>()] + tileCounts[ModContent.TileType<BlackPearlPile>()] + tileCounts[ModContent.TileType<PinkPearlPile>()] + tileCounts[ModContent.TileType<SeaPrism>()];
-            SunkenSeaBasaltTiles = tileCounts[ModContent.TileType<Basalt>()] + tileCounts[ModContent.TileType<VolcanicSand>()] + tileCounts[ModContent.WallType<LargeBasaltWall>()];
+            SunkenSeaBasaltTiles = tileCounts[ModContent.TileType<Basalt>()] + tileCounts[ModContent.TileType<VolcanicSand>()];
             AbyssTiles = tileCounts[ModContent.TileType<AbyssGravel>()] + tileCounts[ModContent.TileType<Voidstone>()];
             SulphurTiles = tileCounts[ModContent.TileType<SulphurousSand>()] + tileCounts[ModContent.TileType<SulphurousSandstone>()] + tileCounts[ModContent.TileType<HardenedSulphurousSandstone>()];
             FloralParadiseTiles = tileCounts[ModContent.TileType<AlgalSlate>()] + tileCounts[ModContent.TileType<PeatMoss>()] + tileCounts[ModContent.TileType<Peat>()];
