@@ -21,7 +21,7 @@ namespace CalamityMod.Tiles.SunkenSea
             TileID.Sets.ChecksForMerge[Type] = true;
             HitSound = SoundID.Tink;
             DustType = DustID.Pot;
-            AddMapEntry(new Color(154, 119, 119));
+            AddMapEntry(new Color(200, 120, 101));
 
             //Stone merges
             this.RegisterUniversalMerge(ModContent.TileType<Shellstone>(), "CalamityMod/Tiles/Merges/ShellstoneMerge");

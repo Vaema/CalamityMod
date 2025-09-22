@@ -106,7 +106,7 @@ namespace CalamityMod.World
                             new Modifiers.OnlyTiles((ushort)ModContent.TileType<Basalt>()),
                             new Actions.ClearTile(),
                             new Actions.SetTile((ushort)ModContent.TileType<Runestone>()),
-                            new Actions.PlaceWall((ushort)ModContent.WallType<RunestoneWall>())
+                            new Actions.PlaceWall((ushort)ModContent.WallType<UnsafeRunestoneWall>())
                     }));
 
                 }
@@ -126,7 +126,7 @@ namespace CalamityMod.World
                         new Modifiers.Blotches().Output(circle)
                     }));
                     WorldUtils.Gen(new Point(x, y), new ModShapes.All(circle), new Actions.SetTile((ushort)ModContent.TileType<Runestone>()));
-                    WorldUtils.Gen(new Point(x, y), new ModShapes.All(circle), new Actions.PlaceWall((ushort)ModContent.WallType<RunestoneWall>()));
+                    WorldUtils.Gen(new Point(x, y), new ModShapes.All(circle), new Actions.PlaceWall((ushort)ModContent.WallType<UnsafeRunestoneWall>()));
                 }
             });
             ParallelFor(startX + biomeSize - 200, startX + biomeSize, 5, (x) =>
@@ -141,7 +141,7 @@ namespace CalamityMod.World
                         new Modifiers.Blotches().Output(circle)
                     }));
                     WorldUtils.Gen(new Point(x, y), new ModShapes.All(circle), new Actions.SetTile((ushort)ModContent.TileType<Runestone>()));
-                    WorldUtils.Gen(new Point(x, y), new ModShapes.All(circle), new Actions.PlaceWall((ushort)ModContent.WallType<RunestoneWall>()));
+                    WorldUtils.Gen(new Point(x, y), new ModShapes.All(circle), new Actions.PlaceWall((ushort)ModContent.WallType<UnsafeRunestoneWall>()));
                 }
             });
 
@@ -181,7 +181,7 @@ namespace CalamityMod.World
 
                 WorldUtils.Gen(new Point(moundX, moundY), new Shapes.Mound(30, moundHeight), blotchMod);
                 WorldUtils.Gen(new Point(moundX, moundY), new ModShapes.All(mound), new Actions.SetTile((ushort)ModContent.TileType<Runestone>()));
-                WorldUtils.Gen(new Point(moundX, moundY), new ModShapes.All(mound), new Actions.PlaceWall((ushort)ModContent.WallType<RunestoneWall>()));
+                WorldUtils.Gen(new Point(moundX, moundY), new ModShapes.All(mound), new Actions.PlaceWall((ushort)ModContent.WallType<UnsafeRunestoneWall>()));
             });
             ParallelFor(startX + biomeSize - 200, startX + biomeSize + 85, 20, (moundX) =>
             {
@@ -192,7 +192,7 @@ namespace CalamityMod.World
 
                 WorldUtils.Gen(new Point(moundX, moundY), new Shapes.Mound(30, moundHeight), blotchMod);
                 WorldUtils.Gen(new Point(moundX, moundY), new ModShapes.All(mound), new Actions.SetTile((ushort)ModContent.TileType<Runestone>()));
-                WorldUtils.Gen(new Point(moundX, moundY), new ModShapes.All(mound), new Actions.PlaceWall((ushort)ModContent.WallType<RunestoneWall>()));
+                WorldUtils.Gen(new Point(moundX, moundY), new ModShapes.All(mound), new Actions.PlaceWall((ushort)ModContent.WallType<UnsafeRunestoneWall>()));
             });
 
 
@@ -213,7 +213,7 @@ namespace CalamityMod.World
                         // Clear all tiles and place tiles.
                         new Actions.ClearTile(),
                         new Actions.PlaceTile((ushort)ModContent.TileType<Runestone>()),
-                        new Actions.PlaceWall((ushort)ModContent.WallType<RunestoneWall>())
+                        new Actions.PlaceWall((ushort)ModContent.WallType<UnsafeRunestoneWall>())
                     }));
                 }
             });
@@ -241,7 +241,7 @@ namespace CalamityMod.World
 
                     ShapeData Circle = new ShapeData();
                     GenAction blotchFilter = new Modifiers.Blotches(1, 0.4);
-                    if (Main.tile[startX, startY].WallType == (ushort)ModContent.WallType<RunestoneWall>())
+                    if (Main.tile[startX, startY].WallType == (ushort)ModContent.WallType<UnsafeRunestoneWall>())
                     {
                         WorldUtils.Gen(new Point(randomDisplacement + wallPlateauX + PlateauWidth / 2, randomDisplacement + wallPlateauY), new Shapes.Circle(RandomH - PlateauWidth + 3, RandomX), Actions.Chain(new GenAction[]
                         {
@@ -251,7 +251,7 @@ namespace CalamityMod.World
                         WorldUtils.Gen(new Point(randomDisplacement + wallPlateauX + PlateauWidth / 4, randomDisplacement + wallPlateauY), new ModShapes.All(Circle), Actions.Chain(new GenAction[]
                         {
                         new Actions.SetTile((ushort)ModContent.TileType<Runestone>()),
-                        new Actions.PlaceWall((ushort)ModContent.WallType<RunestoneWall>())
+                        new Actions.PlaceWall((ushort)ModContent.WallType<UnsafeRunestoneWall>())
                         }))
                         ;
                     }
@@ -330,7 +330,7 @@ namespace CalamityMod.World
 
                     WorldUtils.Gen(new Point(randomDisplacementX + wallPillarX + pillarWidth / 2, wallPillarY), new ModShapes.All(rectangle), Actions.Chain(new GenAction[]
                     {
-                        new Actions.PlaceWall((ushort)ModContent.WallType<RunestoneWall>()) // The shape places walls.
+                        new Actions.PlaceWall((ushort)ModContent.WallType<UnsafeRunestoneWall>()) // The shape places walls.
                     }))
                     ;
                 }
@@ -349,20 +349,20 @@ namespace CalamityMod.World
                 {
                     float interpolator = Utils.GetLerpValue(startY - 90, startY - 150, y, true);
 
-                    WorldUtils.Gen(new Point(x, y + curveDepth + curveDepth2), new Shapes.Circle(15), Actions.Chain(new GenAction[]
-                    {
-                            new Modifiers.OnlyTiles(TileID.Sand),
-                            new Actions.ClearTile(),
-                            new Actions.PlaceTile((ushort)ModContent.TileType<Dunesand>()),
-                            new Actions.PlaceWall((ushort)ModContent.WallType<RunestoneWall>())
-                    }));
+                    //WorldUtils.Gen(new Point(x, y + curveDepth + curveDepth2), new Shapes.Circle(15), Actions.Chain(new GenAction[]
+                    //{
+                    //        new Modifiers.OnlyTiles(TileID.Sand),
+                    //        new Actions.ClearTile(),
+                    //        new Actions.PlaceTile((ushort)ModContent.TileType<Dunesand>()),
+                    //        new Actions.PlaceWall((ushort)ModContent.WallType<UnsafeRunestoneWall>())
+                    //}));
 
                     WorldUtils.Gen(new Point(x, y + curveDepth + curveDepth2), new Shapes.Circle(15), Actions.Chain(new GenAction[]
                     {
-                            new Modifiers.OnlyTiles(TileID.HardenedSand),
+                            new Modifiers.OnlyTiles(TileID.HardenedSand, TileID.Sand),
                             new Actions.ClearTile(),
                             new Actions.PlaceTile((ushort)ModContent.TileType<AridSoil>()),
-                            new Actions.PlaceWall((ushort)ModContent.WallType<RunestoneWall>())
+                            new Actions.PlaceWall((ushort)ModContent.WallType<UnsafeRunestoneWall>())
                     }));
 
                     WorldUtils.Gen(new Point(x, y + curveDepth + curveDepth2), new Shapes.Circle(15), Actions.Chain(new GenAction[]
@@ -370,7 +370,7 @@ namespace CalamityMod.World
                             new Modifiers.OnlyTiles(TileID.DesertFossil),
                             new Actions.ClearTile(),
                             new Actions.PlaceTile((ushort)ModContent.TileType<Mire>()),
-                            new Actions.PlaceWall((ushort)ModContent.WallType<RunestoneWall>())
+                            new Actions.PlaceWall((ushort)ModContent.WallType<UnsafeRunestoneWall>())
                     }));
 
                     WorldUtils.Gen(new Point(x, y + curveDepth + curveDepth2), new Shapes.Circle(15), Actions.Chain(new GenAction[]
@@ -386,7 +386,7 @@ namespace CalamityMod.World
                     {
                             new Modifiers.OnlyWalls(WallID.Sandstone, WallID.HardenedSand),
                             new Actions.ClearWall(),
-                            new Actions.PlaceWall((ushort)ModContent.WallType<RunestoneWall>()),
+                            new Actions.PlaceWall((ushort)ModContent.WallType<UnsafeRunestoneWall>()),
                     }));
 
                     interpolator = Utils.GetLerpValue(startY - 90, startY - 150, y, true);
@@ -395,7 +395,7 @@ namespace CalamityMod.World
                             new Modifiers.OnlyTiles(TileID.Sandstone),
                             new Actions.ClearTile(),
                             new Actions.PlaceTile((ushort)ModContent.TileType<Runestone>()),
-                            new Actions.PlaceWall((ushort)ModContent.WallType<RunestoneWall>())
+                            new Actions.PlaceWall((ushort)ModContent.WallType<UnsafeRunestoneWall>())
                     }));
                     interpolator = Utils.GetLerpValue(startY - 90, startY - 150, y, true);
                     WorldUtils.Gen(new Point(x, y + curveDepth + curveDepth2), new Shapes.Circle(15), Actions.Chain(new GenAction[]
@@ -410,7 +410,7 @@ namespace CalamityMod.World
                     {
                             new Modifiers.OnlyWalls((ushort)ModContent.WallType<LargeBasaltWall>()),
                             new Actions.ClearWall(),
-                            new Actions.PlaceWall((ushort)ModContent.WallType<RunestoneWall>())
+                            new Actions.PlaceWall((ushort)ModContent.WallType<UnsafeRunestoneWall>())
                     }));
 
                     if (Main.tile[x, y].Get<LiquidData>().LiquidType == LiquidID.Lava)
@@ -497,7 +497,7 @@ namespace CalamityMod.World
             Vector2 bottomFoci = center + fociOffset;
 
             ushort Shellstone = (ushort)ModContent.TileType<Shellstone>();
-            ushort ShellstoneWall = (ushort)ModContent.WallType<ShellstoneWall>();
+            ushort ShellstoneWall = (ushort)ModContent.WallType<UnsafeShellstoneWall>();
 
             // Generate the actual caverns
             bool runOnce = false; // This is used to make the wall on the left side go boom on the second run
@@ -678,7 +678,7 @@ namespace CalamityMod.World
             Vector2 bottomFoci = center + fociOffset;
 
             ushort Limestone = (ushort)ModContent.TileType<Limestone>();
-            ushort LimestoneWall = (ushort)ModContent.WallType<LimestoneWall>();
+            ushort LimestoneWall = (ushort)ModContent.WallType<UnsafeLimestoneWall>();
 
             // Place the polyp forest caverns
             for (int X = origin.X - biomeSize - 3; X <= origin.X + biomeSize + 3; X++)
@@ -750,7 +750,7 @@ namespace CalamityMod.World
                             if ((caveNoiseMapWalls + 0.085f) * (caveNoiseMapWalls + 0.085f) > caveCreationThresholdWalls)
                             {
                                 if (t.WallType == 0)
-                                    t.WallType = (ushort)ModContent.WallType<ScarletSeaGrassWall>();
+                                    t.WallType = (ushort)ModContent.WallType<UnsafeScarletSeaGrassWall>();
                             }
                             Main.tile[X, Y].Get<LiquidData>().LiquidType = LiquidID.Water;
                             Main.tile[X, Y].LiquidAmount = byte.MaxValue;
@@ -1011,7 +1011,7 @@ namespace CalamityMod.World
             GenAction paintBasalt = Actions.Chain(
                 new Actions.Clear(),
                 new Actions.SetTile((ushort)ModContent.TileType<Basalt>()),
-                new Actions.PlaceWall((ushort)ModContent.WallType<LargeBasaltWall>()),
+                new Actions.PlaceWall((ushort)ModContent.WallType<UnsafeLargeBasaltWall>()),
                 new Actions.SetFrames(true)
             );
 
@@ -1031,7 +1031,7 @@ namespace CalamityMod.World
             GenAction paintObsidian = Actions.Chain(
                 new Actions.Clear(),
                 new Actions.SetTile((ushort)ModContent.TileType<SuperheatedObsidian>()),
-                new Actions.PlaceWall((ushort)ModContent.WallType<LargeBasaltWall>()),
+                new Actions.PlaceWall((ushort)ModContent.WallType<UnsafeLargeBasaltWall>()),
                 new Actions.SetFrames(true)
             );
 
@@ -1117,7 +1117,7 @@ namespace CalamityMod.World
 
                             if (caveNoiseMapWallsinner * caveNoiseMapWallsinner > caveCreationThresholdWallsinner)
                             {
-                                t.WallType = (ushort)ModContent.WallType<NavyslateWall>();
+                                t.WallType = (ushort)ModContent.WallType<UnsafeNavyslateWall>();
                             }
 
                             //place walls in the biome using a different "seed" so it differs from the cave generation
@@ -1726,12 +1726,12 @@ namespace CalamityMod.World
                         int Rand6() => WorldGen.genRand.Next(6);
                         int NavystonePileVariants = Rand6();
                         //brain coral
-                        if (WorldGen.genRand.NextBool(10))
+                        if (WorldGen.genRand.NextBool(30))
                         {
                             WorldGen.PlaceObject(X, Y - 1, (ushort)ModContent.TileType<BrainCoral>());
                         }
                         //small brain coral
-                        if (WorldGen.genRand.NextBool(5))
+                        if (WorldGen.genRand.NextBool(30))
                         {
                             WorldGen.PlaceObject(X, Y - 1, (ushort)ModContent.TileType<SmallBrainCoral>());
                         }
@@ -1841,12 +1841,12 @@ namespace CalamityMod.World
                         int Rand6() => WorldGen.genRand.Next(6);
                         int NavystonePileVariants = Rand6();
 
-                        if (WorldGen.genRand.NextBool(5) && !Main.tile[X + 1, Y].HasTile)
+                        if (WorldGen.genRand.NextBool(30) && !Main.tile[X + 1, Y].HasTile)
                         {
                             WorldGen.PlaceTile(X + 2, Y, ModContent.TileType<TableCoralLeft>(), true, false, -1, TableCoralVariants);
                         }
 
-                        if (WorldGen.genRand.NextBool(5) && !Main.tile[X - 1, Y].HasTile)
+                        if (WorldGen.genRand.NextBool(30) && !Main.tile[X - 1, Y].HasTile)
                         {
                             WorldGen.PlaceTile(X - 2, Y, ModContent.TileType<TableCoral>(), true, false, -1, TableCoralVariants);
                         }
@@ -2232,7 +2232,7 @@ namespace CalamityMod.World
 
             WorldUtils.Gen(new Point(X, Y), new Shapes.Circle(radius - 4), Actions.Chain(new GenAction[]
             {
-                new Actions.PlaceWall((ushort)ModContent.WallType<SeaPrismWall>())
+                new Actions.PlaceWall((ushort)ModContent.WallType<UnsafeSeaPrismWall>())
             }));
 
             return true;
@@ -2243,21 +2243,28 @@ namespace CalamityMod.World
         {
             List<ushort> blockTileTypes = new()
             {
+                (ushort)ModContent.TileType<Runestone>(),
+                (ushort)ModContent.TileType<Dunesand>(),
+                (ushort)ModContent.TileType<AridSoil>(),
                 (ushort)ModContent.TileType<Shellstone>(),
                 (ushort)ModContent.TileType<EutrophicSand>(),
-                (ushort)ModContent.TileType<Limestone>(),
-                (ushort)ModContent.TileType<PolypSand>(),
-                (ushort)ModContent.TileType<Navystone>(),
-                (ushort)ModContent.TileType<HardenedEutrophicSand>(),
-                (ushort)ModContent.TileType<SeaPrism>(),
-                (ushort)ModContent.TileType<Basalt>(),
-                (ushort)ModContent.TileType<VolcanicSand>(),
-                (ushort)ModContent.TileType<ScarletSeaGrassTile>(),
                 (ushort)ModContent.TileType<CyanCoral>(),
                 (ushort)ModContent.TileType<MagentaCoral>(),
                 (ushort)ModContent.TileType<OrangeCoral>(),
                 (ushort)ModContent.TileType<YellowCoral>(),
                 (ushort)ModContent.TileType<LimeCoral>(),
+                (ushort)ModContent.TileType<Limestone>(),
+                (ushort)ModContent.TileType<ScarletSeaGrassTile>(),
+                (ushort)ModContent.TileType<PolypSand>(),
+                (ushort)ModContent.TileType<Navystone>(),
+                (ushort)ModContent.TileType<HardenedEutrophicSand>(),
+                (ushort)ModContent.TileType<BlackPearlPile>(),
+                (ushort)ModContent.TileType<WhitePearlPile>(),
+                (ushort)ModContent.TileType<PinkPearlPile>(),
+                (ushort)ModContent.TileType<SeaPrism>(),
+                (ushort)ModContent.TileType<Basalt>(),
+                (ushort)ModContent.TileType<SuperheatedObsidian>(),
+                (ushort)ModContent.TileType<VolcanicSand>(),
             };
 
             void getAttachedPoints(int x, int y, List<Point> points)

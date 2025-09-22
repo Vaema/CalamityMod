@@ -29,7 +29,7 @@ namespace CalamityMod.Tiles.SunkenSea
             TileID.Sets.ChecksForMerge[Type] = true;
             HitSound = CommonCalamitySounds.VoidstoneMine;
             DustType = DustID.Lead;
-            AddMapEntry(new Color(29, 33, 38));
+            AddMapEntry(new Color(48, 55, 63));
 
             TileID.Sets.CanBeDugByShovel[Type] = true;
 

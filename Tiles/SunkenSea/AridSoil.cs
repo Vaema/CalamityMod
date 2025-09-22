@@ -21,10 +21,10 @@ namespace CalamityMod.Tiles.SunkenSea
             TileID.Sets.HasSlopeFrames[Type] = true;
             TileID.Sets.ChecksForMerge[Type] = true;
             TileID.Sets.CanBeDugByShovel[Type] = true;
-            Main.tileShine2[Type] = true;
+            Main.tileShine2[Type] = false;
 
             DustType = DustID.Hive;
-            AddMapEntry(new Color(171, 101, 87));
+            AddMapEntry(new Color(203, 123, 107));
 
             //Sand merges
             this.RegisterUniversalMerge(ModContent.TileType<PolypSand>(), "CalamityMod/Tiles/Merges/PolypSandMerge");

@@ -6,18 +6,20 @@ using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
 
-namespace CalamityMod.Walls
+namespace CalamityMod.Walls.UnsafeWalls
 {
-    public class ScarletSeaGrassWall : ModWall, IVisibleThroughWater
+    public class UnsafeScarletSeaGrassWall : ModWall, IVisibleThroughWater
     {
+        public override string Texture => "CalamityMod/Walls/ScarletSeaGrassWall";
         public static Asset<Texture2D> leafTexture = null;
         int IVisibleThroughWater.WaterMapEntry { get; set; }
         public static Vector2 TileAdj => (Lighting.Mode == Terraria.Graphics.Light.LightMode.Retro || Lighting.Mode == Terraria.Graphics.Light.LightMode.Trippy) ? Vector2.Zero : Vector2.One * 12;
 
         public override void SetStaticDefaults()
         {
+            // 18APR2025: Ozzatron: guessed a red dust for scarlet sea grass
             DustType = DustID.CrimsonPlants;
-
+            Main.wallHouse[Type] = false;
             WallID.Sets.Conversion.Grass[Type] = true;
 
             AddMapEntry(new Color(144, 33, 33));
@@ -43,5 +45,9 @@ namespace CalamityMod.Walls
         }
 
         public override void NumDust(int i, int j, bool fail, ref int num) => num = fail ? 1 : 3;
+        public override bool Drop(int i, int j, ref int type)
+        {
+            return false;
+        }
     }
 }

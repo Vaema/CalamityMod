@@ -29,7 +29,7 @@ namespace CalamityMod.Tiles.SunkenSea
             TileID.Sets.CanBeDugByShovel[Type] = true;
 
             DustType = DustID.Ice_Red;
-            AddMapEntry(new Color(221, 180, 182));
+            AddMapEntry(new Color(215, 170, 170));
 
             this.RegisterUniversalMerge(ModContent.TileType<Shellstone>(), "CalamityMod/Tiles/Merges/ShellstoneMerge");
             this.RegisterUniversalMerge(TileID.Sandstone, "CalamityMod/Tiles/Merges/SandstoneMerge");

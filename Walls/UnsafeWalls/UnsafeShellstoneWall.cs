@@ -2,20 +2,26 @@
 using Terraria;
 using Terraria.ModLoader;
 
-namespace CalamityMod.Walls
+namespace CalamityMod.Walls.UnsafeWalls
 {
-    public class ShellstoneWall : ModWall, IVisibleThroughWater
+    public class UnsafeShellstoneWall : ModWall, IVisibleThroughWater
     {
+        public override string Texture => "CalamityMod/Walls/ShellstoneWall";
         int IVisibleThroughWater.WaterMapEntry { get; set; }
 
         public override void SetStaticDefaults()
         {
-            Main.wallHouse[Type] = true;
+            Main.wallHouse[Type] = false;
             DustType = 24;
 
             this.AddMapEntryWithWaterVisibility(new Color(74, 71, 84));
         }
 
         public override void NumDust(int i, int j, bool fail, ref int num) => num = fail ? 1 : 3;
+
+        public override bool Drop(int i, int j, ref int type)
+        {
+            return false;
+        }
     }
 }

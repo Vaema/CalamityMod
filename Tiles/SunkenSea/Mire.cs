@@ -19,7 +19,7 @@ namespace CalamityMod.Tiles.SunkenSea
             CalamityUtils.MergeWithDesert(Type);
             TileID.Sets.ChecksForMerge[Type] = true;
             TileID.Sets.CanBeDugByShovel[Type] = true;
-            Main.tileShine2[Type] = true;
+            Main.tileShine2[Type] = false;
 
             DustType = DustID.Hive;
             AddMapEntry(new Color(71, 38, 30));
