@@ -33,6 +33,7 @@ using CalamityMod.Projectiles.Typeless;
 using CalamityMod.Systems;
 using CalamityMod.Tiles;
 using CalamityMod.Walls;
+using CalamityMod.Walls.UnsafeWalls;
 using CalamityMod.Waterfalls;
 using CalamityMod.World;
 using Microsoft.Xna.Framework;
@@ -1865,7 +1866,7 @@ namespace CalamityMod.ILEditing
             if (Style == 2)
             {
                 // Check if it's an Abyss wall
-                if (t.WallType == ModContent.WallType<SulphurousShaleWall>() || t.WallType == ModContent.WallType<AbyssGravelWall>() || t.WallType == ModContent.WallType<PyreMantleWall>() || t.WallType == ModContent.WallType<VoidstoneWallUnsafe>() || t.WallType == ModContent.WallType<HardenedSulphurousSandstoneWall>() || t.WallType == ModContent.WallType<SulphurousSandstoneWall>())
+                if (t.WallType == ModContent.WallType<UnsafeSulphurousShaleWall>() || t.WallType == ModContent.WallType<UnsafeAbyssGravelWall>() || t.WallType == ModContent.WallType<PyreMantleWall>() || t.WallType == ModContent.WallType<UnsafeVoidstoneWall>() || t.WallType == ModContent.WallType<HardenedSulphurousSandstoneWall>() || t.WallType == ModContent.WallType<UnsafeSulphurousSandstoneWall>())
                 {
                     // If an Abyss wall is detected, try to find another teleportation location
                     bool canSpawn = false;
@@ -1894,7 +1895,7 @@ namespace CalamityMod.ILEditing
                 // Potion of Return triggers Jared if used in the Abyss
                 if (Style == 8)
                 {
-                    if (t.WallType == ModContent.WallType<SulphurousShaleWall>() || t.WallType == ModContent.WallType<AbyssGravelWall>() || t.WallType == ModContent.WallType<PyreMantleWall>() || t.WallType == ModContent.WallType<VoidstoneWallUnsafe>() || t.WallType == ModContent.WallType<HardenedSulphurousSandstoneWall>() || t.WallType == ModContent.WallType<SulphurousSandstoneWall>())
+                    if (t.WallType == ModContent.WallType<UnsafeSulphurousShaleWall>() || t.WallType == ModContent.WallType<UnsafeAbyssGravelWall>() || t.WallType == ModContent.WallType<PyreMantleWall>() || t.WallType == ModContent.WallType<UnsafeVoidstoneWall>() || t.WallType == ModContent.WallType<HardenedSulphurousSandstoneWall>() || t.WallType == ModContent.WallType<UnsafeSulphurousSandstoneWall>())
                         self.AddBuff(BuffID.ChaosState, 2);
                 }
             }

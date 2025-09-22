@@ -24,14 +24,5 @@ namespace CalamityMod.Items.Placeables.SunkenSea
             Item.ammo = AmmoID.Sand;
             Item.notAmmo = true;
         }
-
-        public override void AddRecipes()
-        {
-            CreateRecipe().
-                AddIngredient<EutrophicSandWallSafe>(4).
-                AddTile(TileID.WorkBenches).
-                DisableDecraft().
-                Register();
-        }
     }
 }

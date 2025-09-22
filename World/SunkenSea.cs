@@ -7,6 +7,7 @@ using CalamityMod.Tiles.SunkenSea;
 using CalamityMod.Tiles.SunkenSea.Ambient;
 using CalamityMod.Utilities;
 using CalamityMod.Walls;
+using CalamityMod.Walls.UnsafeWalls;
 using Microsoft.VisualBasic;
 using Microsoft.Xna.Framework;
 using ReLogic.Threading;
@@ -916,7 +917,7 @@ namespace CalamityMod.World
             Vector2 bottomFoci = center + fociOffset;
 
             ushort Navystone = (ushort)ModContent.TileType<Navystone>();
-            ushort NavystoneWall = (ushort)ModContent.WallType<NavystoneWall>();
+            ushort NavystoneWall = (ushort)ModContent.WallType<UnsafeNavystoneWall>();
 
 
 
@@ -989,7 +990,7 @@ namespace CalamityMod.World
             Vector2 bottomFoci = center + fociOffset;
 
             ushort Navystone = (ushort)ModContent.TileType<Navystone>();
-            ushort NavystoneWall = (ushort)ModContent.WallType<NavystoneWall>();
+            ushort NavystoneWall = (ushort)ModContent.WallType<UnsafeNavystoneWall>();
 
             int XStart = origin.X - biomeSize - 3;
             int XEnd = origin.X + biomeSize + 3;
@@ -1064,7 +1065,7 @@ namespace CalamityMod.World
                             {
                                 //place smaller navystone clumps infront of the basalt so the basalt isnt actually inside of the biome itself
                                 WorldGen.TileRunner(X, Y, WorldGen.genRand.Next(8, 12), WorldGen.genRand.Next(8, 12), ModContent.TileType<Navystone>(), true, 0f, 0f, true, true);
-                                t.WallType = (ushort)ModContent.WallType<NavystoneWall>();
+                                t.WallType = (ushort)ModContent.WallType<UnsafeNavystoneWall>();
                             }
 
                             //place clean transition between the burrows and the other biomes
@@ -1079,7 +1080,7 @@ namespace CalamityMod.World
 
                                 WorldUtils.Gen(new Point(X, Y), new ModShapes.All(circle), Actions.Chain(new GenAction[]
                                 {
-                                    new Actions.ClearTile(), new Actions.PlaceTile((ushort)ModContent.TileType<Navystone>()), new Actions.PlaceWall((ushort)ModContent.WallType<NavystoneWall>())
+                                    new Actions.ClearTile(), new Actions.PlaceTile((ushort)ModContent.TileType<Navystone>()), new Actions.PlaceWall((ushort)ModContent.WallType<UnsafeNavystoneWall>())
                                 }));
                             }
                         }
@@ -1143,8 +1144,8 @@ namespace CalamityMod.World
             }
 
             //Tunnels
-            MiscWorldgenRoutines.ClearTunnel(startX - 200, startY + 40, newTunnelXLeft, newTunnelYLeft, 3, (ushort)ModContent.WallType<NavystoneWall>(), 2, false, false);
-            MiscWorldgenRoutines.ClearTunnel(startX + 200, startY + 40, newTunnelXRight, newTunnelYRight, 3, (ushort)ModContent.WallType<NavystoneWall>(), 2, false, false);
+            MiscWorldgenRoutines.ClearTunnel(startX - 200, startY + 40, newTunnelXLeft, newTunnelYLeft, 3, (ushort)ModContent.WallType<UnsafeNavystoneWall>(), 2, false, false);
+            MiscWorldgenRoutines.ClearTunnel(startX + 200, startY + 40, newTunnelXRight, newTunnelYRight, 3, (ushort)ModContent.WallType<UnsafeNavystoneWall>(), 2, false, false);
 
             //cleanup the perlin caves
             for (int X = origin.X - biomeSize - 3; X < origin.X + biomeSize + 3; X += 1)
@@ -1269,7 +1270,7 @@ namespace CalamityMod.World
 
                             if (caveNoiseMapWalls * caveNoiseMapWalls > caveCreationThresholdWalls)
                             {
-                                t.WallType = (ushort)ModContent.WallType<NavystoneWall>();
+                                t.WallType = (ushort)ModContent.WallType<UnsafeNavystoneWall>();
                             }
 
                             Main.tile[X, Y].Get<LiquidData>().LiquidType = LiquidID.Water;

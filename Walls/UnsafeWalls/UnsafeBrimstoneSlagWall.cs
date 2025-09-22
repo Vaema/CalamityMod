@@ -1,10 +1,12 @@
 ﻿using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.ID;
+using Terraria.ModLoader;
 
-namespace CalamityMod.Walls
+namespace CalamityMod.Walls.UnsafeWalls
 {
-    public class BrimstoneSlagWallUnsafe : MultiVariantModWall
+    [LegacyName("BrimstoneSlagWallUnsafe")]
+    public class UnsafeBrimstoneSlagWall : MultiVariantModWall
     {
         public override string Texture => "CalamityMod/Walls/BrimstoneSlagWall";
         public override void SetStaticDefaults()

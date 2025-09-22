@@ -8,6 +8,7 @@ using CalamityMod.Tiles.Crags.Spike;
 using CalamityMod.Tiles.Crags.Tree;
 using CalamityMod.Tiles.Ores;
 using CalamityMod.Walls;
+using CalamityMod.Walls.UnsafeWalls;
 using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.DataStructures;
@@ -59,7 +60,7 @@ namespace CalamityMod.World
                     Tile tile = Main.tile[x, y];
                     tile.TileType = (ushort)ModContent.TileType<BrimstoneSlag>();
                     tile.HasTile = true;
-                    tile.WallType = (ushort)ModContent.WallType<BrimstoneSlagWallUnsafe>();
+                    tile.WallType = (ushort)ModContent.WallType<UnsafeBrimstoneSlagWall>();
                 }
             }
 
@@ -146,7 +147,7 @@ namespace CalamityMod.World
                     //place more walls behind slag so theres not just a box of walls from the initial rectangle
                     if (tile.HasTile && tileDown.HasTile && tileDown2.HasTile && Main.tile[x, y + 5].HasTile)
                     {
-                        Main.tile[x, y + 5].WallType = (ushort)ModContent.WallType<BrimstoneSlagWallUnsafe>();
+                        Main.tile[x, y + 5].WallType = (ushort)ModContent.WallType<UnsafeBrimstoneSlagWall>();
                     }
 
                     if (tile.LiquidType == LiquidID.Water && tile.LiquidAmount > 0)

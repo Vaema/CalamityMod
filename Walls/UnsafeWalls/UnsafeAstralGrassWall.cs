@@ -2,16 +2,23 @@
 using System;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using ReLogic.Content;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
-namespace CalamityMod.Walls
+namespace CalamityMod.Walls.UnsafeWalls
 {
-    public class AstralGrassWallSafe : ModWall
+    public class UnsafeAstralGrassWall : ModWall
     {
         public override string Texture => "CalamityMod/Walls/AstralGrassWall";
+        public static Asset<Texture2D> leafTexture = null;
 
         public static Vector2 TileAdj => (Lighting.Mode == Terraria.Graphics.Light.LightMode.Retro || Lighting.Mode == Terraria.Graphics.Light.LightMode.Trippy) ? Vector2.Zero : Vector2.One * 12;
+        /*public override bool Autoload(ref string name, ref string texture)
+        {
+            mod.AddWall("AstralGrassWallUnsafe", this, texture);
+            return base.Autoload(ref name, ref texture);
+        }*/
 
         public override void SetStaticDefaults()
         {
@@ -20,15 +27,18 @@ namespace CalamityMod.Walls
 
             WallID.Sets.Conversion.Grass[Type] = true;
 
-            Main.wallHouse[Type] = true;
-
             AddMapEntry(new Color(60, 48, 64));
+
+            if (!Main.dedServ)
+            {
+                leafTexture = ModContent.Request<Texture2D>("CalamityMod/Walls/AstralGrassWallLeaves");
+            }
         }
         public override void PostDraw(int i, int j, SpriteBatch spriteBatch)
         {
             if (i > Main.screenPosition.X / 16 && i < Main.screenPosition.X / 16 + Main.screenWidth / 16 && j > Main.screenPosition.Y / 16 && j < Main.screenPosition.Y / 16 + Main.screenHeight / 16)
             {
-                Texture2D tex = AstralGrassWall.leafTexture.Value;
+                Texture2D tex = leafTexture.Value;
                 var rand = new Random(i + (j * 100000));
 
                 float offset = i * j % 6.28f + (float)rand.NextDouble() / 8f;

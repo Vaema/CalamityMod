@@ -7,9 +7,9 @@ using Terraria.GameContent;
 using Terraria.ID;
 using Terraria.ModLoader;
 
-namespace CalamityMod.Walls
+namespace CalamityMod.Walls.UnsafeWalls
 {
-    public class VoidstoneWallUnsafe : ModWall
+    public class UnsafeVoidstoneWall : ModWall
     {
         internal static FramedMaskTexture GlowMask;
         public override string Texture => "CalamityMod/Walls/VoidstoneWall";
