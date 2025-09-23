@@ -40,7 +40,7 @@ namespace CalamityMod.Tiles.SunkenSea
             TileID.Sets.Conversion.Sand[Type] = true;
             TileID.Sets.ForAdvancedCollision.ForSandshark[Type] = true;
             TileID.Sets.Falling[Type] = true;
-            TileID.Sets.FallingBlockProjectile[Type] = new TileID.Sets.FallingBlockProjectileInfo(ModContent.ProjectileType<PolypSandBallFalling>(), 15);
+            TileID.Sets.FallingBlockProjectile[Type] = new TileID.Sets.FallingBlockProjectileInfo(ModContent.ProjectileType<PolypSandBallFalling>(), 10);
 
             this.RegisterUniversalMerge(ModContent.TileType<Shellstone>(), "CalamityMod/Tiles/Merges/ShellstoneMerge");
             this.RegisterUniversalMerge(TileID.Sandstone, "CalamityMod/Tiles/Merges/SandstoneMerge");
