@@ -1,11 +1,14 @@
-﻿using CalamityMod.Buffs.Summon;
+﻿using System.IO;
+using CalamityMod.Buffs.Summon;
 using CalamityMod.Items.Materials;
+using CalamityMod.Packets;
 using CalamityMod.Projectiles.Summon;
 using CalamityMod.Rarities;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria;
 using Terraria.DataStructures;
+using Terraria.GameContent;
 using Terraria.ID;
 using Terraria.ModLoader;
 namespace CalamityMod.Items.Weapons.Summon
@@ -45,8 +48,6 @@ namespace CalamityMod.Items.Weapons.Summon
         public static float AxeDmgMult => 1.25f;
         public static float SwordDmgMult => 1f;
         #endregion
-
-
 
         private static Texture2D BladeOutline = null;
         public static Texture2D GetBladeOutlineTex()
@@ -91,6 +92,39 @@ namespace CalamityMod.Items.Weapons.Summon
             Item.buffType = ModContent.BuffType<ViridVanguardBuff>();
             Item.shoot = ModContent.ProjectileType<ViridVanguardBlade>();
             Item.rare = ModContent.RarityType<Turquoise>();
+        }
+
+        public override bool CanRightClick()
+        {
+            if (!Main.keyState.PressingShift())
+                return false;
+            return true;
+        }
+        public override void RightClick(Player player)
+        {
+            Main.LocalPlayer.Calamity().InvertExaltationLineRotationDirections = !Main.LocalPlayer.Calamity().InvertExaltationLineRotationDirections;
+            if (Main.netMode != NetmodeID.SinglePlayer)
+                ExaltationDirectionSyncPacket.Send(Main.LocalPlayer.Calamity());
+        }
+
+        public override bool ConsumeItem(Player player) => false;
+
+        public override bool PreDrawInInventory(SpriteBatch spriteBatch, Vector2 position, Rectangle frame, Color drawColor, Color itemColor, Vector2 origin, float scale)
+        {
+            var tex = TextureAssets.Item[Type].Value;
+            CalamityUtils.DrawInventoryCustomScale(
+                spriteBatch,
+                tex,
+                position,
+                frame,
+                drawColor,
+                itemColor,
+                origin,
+                scale,
+                wantedScale: 0.9f,
+                spriteEffects: Main.LocalPlayer.Calamity().InvertExaltationLineRotationDirections ? SpriteEffects.FlipHorizontally : SpriteEffects.None
+            );
+            return false;
         }
         public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)
         {
@@ -143,4 +177,5 @@ namespace CalamityMod.Items.Weapons.Summon
                 Register();
         }
     }
+
 }
