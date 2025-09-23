@@ -3,14 +3,15 @@ using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
 
-namespace CalamityMod.Walls
+namespace CalamityMod.Walls.UnsafeWalls
 {
-    public class EutrophicSandWall : ModWall
+    public class UnsafeAbyssGravelWall : ModWall
     {
+        public override string Texture => "CalamityMod/Walls/AbyssGravelWall";
         public override void SetStaticDefaults()
         {
-            DustType = 108;
-            AddMapEntry(new Color(11, 56, 81));
+            DustType = 33;
+            AddMapEntry(new Color(6, 10, 54));
         }
 
         public override void RandomUpdate(int i, int j)
@@ -24,6 +25,10 @@ namespace CalamityMod.Walls
                     NetMessage.sendWater(i, j);
             }
         }
+
+        public override void KillWall(int i, int j, ref bool fail) => fail = true;
+
+        public override bool CanExplode(int i, int j) => false;
 
         public override void NumDust(int i, int j, bool fail, ref int num) => num = fail ? 1 : 3;
     }

@@ -21,6 +21,69 @@ namespace CalamityMod.Projectiles.Typeless
         public override int DustType => 108;
     }
 
+    public class EutrophicSandBallFalling : SandBall
+    {
+        public override string Texture => "CalamityMod/Projectiles/Typeless/SandBallEutrophic";
+        public override bool Fired => false;
+        public override int TileType => ModContent.TileType<Tiles.SunkenSea.EutrophicSand>();
+        public override int ItemType => ModContent.ItemType<Items.Placeables.SunkenSea.EutrophicSand>();
+        public override int DustType => DustID.Titanium;
+    }
+
+    public class DunesandBallFalling : SandBall
+    {
+        public override string Texture => "CalamityMod/Projectiles/Typeless/SandBallDune";
+        public override bool Fired => false;
+        public override int TileType => ModContent.TileType<Tiles.SunkenSea.Dunesand>();
+        public override int ItemType => ModContent.ItemType<Items.Placeables.SunkenSea.Dunesand>();
+        public override int DustType => DustID.Hive;
+    }
+
+    public class PolypSandBallFalling : SandBall
+    {
+        public override string Texture => "CalamityMod/Projectiles/Typeless/SandBallPolyp";
+        public override bool Fired => false;
+        public override int TileType => ModContent.TileType<Tiles.SunkenSea.PolypSand>();
+        public override int ItemType => ModContent.ItemType<Items.Placeables.SunkenSea.PolypSand>();
+        public override int DustType => DustID.Ice_Red;
+    }
+
+    public class VolcanicSandBallFalling : SandBall
+    {
+        public override string Texture => "CalamityMod/Projectiles/Typeless/SandBallVolcanic";
+        public override bool Fired => false;
+        public override int TileType => ModContent.TileType<Tiles.SunkenSea.VolcanicSand>();
+        public override int ItemType => ModContent.ItemType<Items.Placeables.SunkenSea.VolcanicSand>();
+        public override int DustType => DustID.t_PearlWood;
+    }
+
+    public class WhitePearlFalling : SandBall
+    {
+        public override string Texture => "CalamityMod/Projectiles/Typeless/WhitePearl";
+        public override bool Fired => false;
+        public override int TileType => ModContent.TileType<Tiles.SunkenSea.WhitePearlPile>();
+        public override int ItemType => ModContent.ItemType<Items.Placeables.SunkenSea.WhitePearlPile>();
+        public override int DustType => DustID.Slush;
+    }
+
+    public class PinkPearlFalling : SandBall
+    {
+        public override string Texture => "CalamityMod/Projectiles/Typeless/PinkPearl";
+        public override bool Fired => false;
+        public override int TileType => ModContent.TileType<Tiles.SunkenSea.PinkPearlPile>();
+        public override int ItemType => ModContent.ItemType<Items.Placeables.SunkenSea.PinkPearlPile>();
+        public override int DustType => DustID.Ice_Pink;
+    }
+
+    public class BlackPearlFalling : SandBall
+    {
+        public override string Texture => "CalamityMod/Projectiles/Typeless/BlackPearl";
+        public override bool Fired => false;
+        public override int TileType => ModContent.TileType<Tiles.SunkenSea.BlackPearlPile>();
+        public override int ItemType => ModContent.ItemType<Items.Placeables.SunkenSea.BlackPearlPile>();
+        public override int DustType => DustID.Lead;
+    }
+
     public class AstralSandBallGun : SandBall
     {
         public override string Texture => "CalamityMod/Projectiles/Typeless/SandBallAstral";

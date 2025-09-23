@@ -21,6 +21,7 @@ namespace CalamityMod.Items.Armor.Bloodflare
         public override LocalizedText Tooltip => base.Tooltip.WithFormatArgs(RangedDamageBoost.ToPercent());
 
         // Set Bonus
+        public static float SetBonusAmmoReduction = 0.75f;
         public static int SoulCooldown = CalamityUtils.SecondsToFrames(30);
         public static int SoulDamage = 300;
         public static int SoulAmount = 16;
@@ -44,9 +45,10 @@ namespace CalamityMod.Items.Armor.Bloodflare
         public override void UpdateArmorSet(Player player)
         {
             var modPlayer = player.Calamity();
+            modPlayer.ammoCost *= SetBonusAmmoReduction;
             modPlayer.bloodflareSet = true;
             modPlayer.bloodflareRanged = true;
-            player.setBonus = this.GetLocalization("SetBonus").Format(CalamityUtils.GetArmorSetBonusKey(), SoulCooldown.FramesToSeconds(), BloodBombCooldown.FramesToSeconds());
+            player.setBonus = this.GetLocalization("SetBonus").Format(CalamityUtils.GetArmorSetBonusKey(), SoulCooldown.FramesToSeconds(), BloodBombCooldown.FramesToSeconds(), (1f - SetBonusAmmoReduction).ToPercent());
             player.crimsonRegen = true;
         }
 

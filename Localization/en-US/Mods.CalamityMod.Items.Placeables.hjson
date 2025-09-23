@@ -4653,3 +4653,8 @@ BasaltSlab: {
 	DisplayName: Basalt Slab
 	Tooltip: ""
 }
+
+UnsafeNavystoneWall: {
+	DisplayName: Unsafe Navystone Wall
+	Tooltip: ""
+}
