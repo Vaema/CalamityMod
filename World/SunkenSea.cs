@@ -3,6 +3,7 @@ using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Reflection.Metadata;
 using System.Threading.Tasks;
+using Terraria.ObjectData;
 using CalamityMod.Tiles.SunkenSea;
 using CalamityMod.Tiles.SunkenSea.Ambient;
 using CalamityMod.Utilities;
@@ -336,6 +337,33 @@ namespace CalamityMod.World
                 }
             });
 
+            // places wall flowers in the curved cavity inside the timeless shores. This is done here to prevent them from appearing in the transiton area
+            ParallelFor(startX - biomeSize + 10, startX + biomeSize - 10, 1, (X) =>
+            {
+                int curveDepth = (int)MathHelper.Lerp(totalCuveDepth, 0f, MathF.Sqrt(Utils.GetLerpValue(startX + biomeSize + 20, startX + biomeSize - 200, X, true)));
+                int curveDepth2 = (int)MathHelper.Lerp(totalCuveDepth, 0f, MathF.Sqrt(Utils.GetLerpValue(startX - biomeSize - 17, startX - biomeSize + 200, X, true)));
+
+                for (int Y = startY - 60 + curveDepth + curveDepth2; Y <= startY + 30; Y++)
+                {
+                    int Rand3() => WorldGen.genRand.Next(3);
+                    int ShoresFlowerVariants = Rand3();
+
+                    if (Main.tile[X, Y].WallType == ModContent.WallType<UnsafeRunestoneWall>() && WorldGen.EmptyTileCheck(X - 1, Y - 1, 3, 3))
+                    {
+                        if (WorldGen.genRand.NextBool(60))
+                        {
+                            WorldGen.PlaceObject(X - 1, Y - 1, ModContent.TileType<LargeShoresFlower>(), mute: true, style: ShoresFlowerVariants);
+                        }
+                    }
+
+                    if (Main.tile[X, Y].WallType == ModContent.WallType<UnsafeRunestoneWall>() && WorldGen.EmptyTileCheck(X - 1, Y - 1, 2, 2))
+                    {
+                        if (WorldGen.genRand.NextBool(60))
+                            WorldGen.PlaceObject(X - 1, Y - 1, ModContent.TileType<ShoresFlower>(), mute: true, style: ShoresFlowerVariants);
+                    }
+                }
+            });
+
             //
             // Makes the transition area to the Timeless Shores.
             // Replaces tiles, walls, and places some water spots.
@@ -359,7 +387,7 @@ namespace CalamityMod.World
 
                     WorldUtils.Gen(new Point(x, y + curveDepth + curveDepth2), new Shapes.Circle(15), Actions.Chain(new GenAction[]
                     {
-                            new Modifiers.OnlyTiles(TileID.HardenedSand, TileID.Sand),
+                            new Modifiers.OnlyTiles(TileID.HardenedSand, TileID.Sand,TileID.Copper,TileID.Tin, TileID.Iron, TileID.Lead),
                             new Actions.ClearTile(),
                             new Actions.PlaceTile((ushort)ModContent.TileType<AridSoil>()),
                             new Actions.PlaceWall((ushort)ModContent.WallType<UnsafeRunestoneWall>())
@@ -367,7 +395,7 @@ namespace CalamityMod.World
 
                     WorldUtils.Gen(new Point(x, y + curveDepth + curveDepth2), new Shapes.Circle(15), Actions.Chain(new GenAction[]
                     {
-                            new Modifiers.OnlyTiles(TileID.DesertFossil),
+                            new Modifiers.OnlyTiles(TileID.DesertFossil,TileID.Tungsten,TileID.Silver,TileID.Gold,TileID.Platinum,TileID.Demonite,TileID.Crimtane),
                             new Actions.ClearTile(),
                             new Actions.PlaceTile((ushort)ModContent.TileType<Mire>()),
                             new Actions.PlaceWall((ushort)ModContent.WallType<UnsafeRunestoneWall>())
@@ -1666,20 +1694,37 @@ namespace CalamityMod.World
                     //Timeless Shores ambiant tiles
                     if (Main.tile[X, Y].TileType == ModContent.TileType<Dunesand>())
                     {
+                        int Rand3() => WorldGen.genRand.Next(3);
+                        int MediumShorePileVariants = Rand3();
                         int Rand6() => WorldGen.genRand.Next(6);
                         int DriftwoodVariants = Rand6();
+                        int Rand9() => WorldGen.genRand.Next(9);
+                        int ShorePileVariants = Rand9();
                         //Driftwood Ambiance
-                        if (WorldGen.genRand.NextBool(60))
+                        if (WorldGen.genRand.NextBool(100))
                         {
                             WorldGen.PlaceObject(X, Y - 1, ModContent.TileType<DriftwoodMast>(), true, DriftwoodVariants);
                         }
-                        if (WorldGen.genRand.NextBool(30))
+                        if (WorldGen.genRand.NextBool(100))
                         {;
                             WorldGen.PlaceObject(X, Y - 1, ModContent.TileType<DriftwoodScraps>(), true, DriftwoodVariants);
                         }
-                        if (WorldGen.genRand.NextBool(30))
+                        if (WorldGen.genRand.NextBool(100))
                         {
                             WorldGen.PlaceObject(X, Y - 1, ModContent.TileType<LargeDriftwoodWreckage>(), true, DriftwoodVariants);
+                        }
+                        //Shore piles
+                        if (WorldGen.genRand.NextBool(30))
+                        {
+                            WorldGen.PlaceTile(X, Y - 1, ModContent.TileType<ShorePile>(), mute: true, style: ShorePileVariants);
+                        }
+                        if (WorldGen.genRand.NextBool(30))
+                        {
+                            WorldGen.PlaceTile(X, Y - 1, ModContent.TileType<MediumShorePile>(), mute: true, style: MediumShorePileVariants);
+                        }
+                        if (WorldGen.genRand.NextBool(30))
+                        {
+                            WorldGen.PlaceTile(X, Y - 1, ModContent.TileType<MediumDunesandPile>(), mute: true, style: MediumShorePileVariants);
                         }
                     }
 
@@ -1690,7 +1735,7 @@ namespace CalamityMod.World
                         if (Y > 0)
                         {
                             Tile above = Main.tile[X, Y - 1];
-
+                            
                             // only if it's open air (no solid tile), and we don't overwrite other special liquids other than lava (just incase)
                             if (!above.HasTile &&
                                 above.Get<LiquidData>().LiquidType != LiquidID.Honey &&
@@ -1707,19 +1752,22 @@ namespace CalamityMod.World
                         int Rand6() => WorldGen.genRand.Next(6);
                         int DriftwoodVariants = Rand6();
                         //Driftwood Ambiance
-                        if (WorldGen.genRand.NextBool(60))
+                        if (WorldGen.genRand.NextBool(80))
                         {
                             WorldGen.PlaceObject(X, Y - 1, ModContent.TileType<DriftwoodMast>(), true, DriftwoodVariants);
                         }
-                        if (WorldGen.genRand.NextBool(30))
+                        if (WorldGen.genRand.NextBool(60))
                         {
                             WorldGen.PlaceObject(X, Y - 1, ModContent.TileType<DriftwoodScraps>(), true, DriftwoodVariants);
                         }
-                        if (WorldGen.genRand.NextBool(30))
+                        if (WorldGen.genRand.NextBool(60))
                         {
                             WorldGen.PlaceObject(X, Y - 1, ModContent.TileType<LargeDriftwoodWreckage>(), true, DriftwoodVariants);
                         }
                     }
+
+                    
+
                     //gleaming burrows ambient tiles
                     if (Main.tile[X, Y].TileType == ModContent.TileType<HardenedEutrophicSand>())
                     {
@@ -1999,7 +2047,12 @@ namespace CalamityMod.World
                             if (WorldGen.PlaceObject(X, Y - 1, ModContent.TileType<SunkenShip>(), mute: true))
                                 shipPlaced = true;
                         }
-                        
+                        //small limestone piles
+                        if (WorldGen.genRand.NextBool(25))
+                        {
+                            WorldGen.PlaceTile(X, Y - 1, ModContent.TileType<SmallLimestoneCobblePile>(), mute: true, style: DriftwoodVariants);
+                        }
+
                     }
 
                     //radiant reefs ambient tiles
