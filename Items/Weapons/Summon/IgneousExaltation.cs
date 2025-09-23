@@ -131,7 +131,8 @@ namespace CalamityMod.Items.Weapons.Summon
                 origin,
                 scale,
                 wantedScale: 0.75f,
-                spriteEffects: Main.LocalPlayer.Calamity().InvertExaltationLineRotationDirections ? SpriteEffects.FlipHorizontally : SpriteEffects.None
+                spriteEffects: Main.LocalPlayer.Calamity().InvertExaltationLineRotationDirections ? SpriteEffects.FlipHorizontally : SpriteEffects.None,
+                rotation: Main.LocalPlayer.Calamity().InvertExaltationLineRotationDirections ? MathHelper.PiOver2 : 0
             );
             return false;
         }

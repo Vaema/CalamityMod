@@ -285,12 +285,12 @@ namespace CalamityMod
         /// <param name="scale"></param>
         /// <param name="wantedScale"></param>
         /// <param name="drawOffset"></param>
-        public static void DrawInventoryCustomScale(SpriteBatch spriteBatch, Texture2D texture, Vector2 position, Rectangle frame, Color drawColor, Color itemColor, Vector2 origin, float scale, float wantedScale = 1f, Vector2 drawOffset = default, SpriteEffects spriteEffects = SpriteEffects.None)
+        public static void DrawInventoryCustomScale(SpriteBatch spriteBatch, Texture2D texture, Vector2 position, Rectangle frame, Color drawColor, Color itemColor, Vector2 origin, float scale, float wantedScale = 1f, Vector2 drawOffset = default, SpriteEffects spriteEffects = SpriteEffects.None, float rotation = 0f)
         {
             wantedScale = Math.Max(scale, wantedScale * Main.inventoryScale);
             float scaleDifference = wantedScale - scale;
             position += drawOffset * wantedScale;
-            spriteBatch.Draw(texture, position, frame, drawColor, 0f, origin, wantedScale, spriteEffects, 0);
+            spriteBatch.Draw(texture, position, frame, drawColor, rotation, origin, wantedScale, spriteEffects, 0);
         }
 
         static Asset<Texture2D> ItemDotTexture;
