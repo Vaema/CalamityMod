@@ -1,4 +1,5 @@
-﻿using Terraria;
+﻿using CalamityMod.Items.Placeables.SunkenSea;
+using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
 
@@ -25,10 +26,9 @@ namespace CalamityMod.Items.Materials
         public override void AddRecipes()
         {
             CreateRecipe().
-                AddIngredient<PearlShard>(2).
-                AddIngredient(ItemID.Coral, 2).
-                AddIngredient(ItemID.Starfish, 2).
-                AddIngredient(ItemID.Seashell, 2).
+                AddIngredient<WillOWisp>(1).
+                //AddIngredient<PolypItem>(2).
+                AddIngredient<PearlShard>(3).
                 AddTile(TileID.Furnaces).
                 Register();
         }

@@ -11,6 +11,7 @@ using Terraria.ID;
 using Terraria.ModLoader;
 using Terraria.ModLoader.Utilities;
 using System.IO;
+using CalamityMod.Items.Materials;
 
 namespace CalamityMod.NPCs.SunkenSea
 {
@@ -178,6 +179,10 @@ namespace CalamityMod.NPCs.SunkenSea
                 spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, Main.DefaultSamplerState, DepthStencilState.None, Main.Rasterizer, null, Main.GameViewMatrix.TransformationMatrix);
             }
             return true;
+        }
+        public override void ModifyNPCLoot(NPCLoot npcLoot)
+        {
+            npcLoot.Add(ModContent.ItemType<WillOWisp>(), 1, 1, 2);
         }
     }
 }
