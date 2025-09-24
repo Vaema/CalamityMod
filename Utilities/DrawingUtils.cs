@@ -55,6 +55,22 @@ namespace CalamityMod
                 return backgroundMatrix;
             }
         }
+        /// <summary>
+        /// Gets the texture for the passed string and stores it in the referenced field
+        /// If the texture is already stored in the field, it will not request it again.
+        /// Use this instead of requesting every frame.
+        /// </summary>
+        /// <param name="textureAsset"></param>
+        /// <param name="texture"></param>
+        /// <returns></returns>
+        public static Asset<Texture2D> GetTextureEfficient(ref Asset<Texture2D> textureAsset, string texture)
+        {
+            if (textureAsset is null)
+            {
+                textureAsset = ModContent.Request<Texture2D>(texture);
+            }
+            return textureAsset;
+        }
 
         #region Projectile Afterimages
         /// <summary>
