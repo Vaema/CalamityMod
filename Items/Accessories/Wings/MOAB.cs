@@ -1,4 +1,5 @@
-﻿using Microsoft.Xna.Framework;
+﻿using System.IO;
+using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria;
 using Terraria.Audio;
@@ -35,38 +36,50 @@ namespace CalamityMod.Items.Accessories.Wings
             Item.value = CalamityGlobalItem.RarityLightPurpleBuyPrice;
             Item.rare = ItemRarityID.LightPurple;
         }
-
-        public override void SaveData(TagCompound tag)
+        #region Toggleable Wings
+        bool toggleEnabled
         {
-            tag.Add("wingsDisabled", Item.wingSlot == -1);
-        }
-
-        public override void LoadData(TagCompound tag)
-        {
-            if (tag.TryGet("wingsDisabled", out bool wingsDisabled))
+            get { return Item.wingSlot != -1; }
+            set
             {
-                if (wingsDisabled) Item.wingSlot = -1;
+                if (value)
+                    Item.wingSlot = wingSlot;
+                else
+                    Item.wingSlot = -1;
             }
         }
-        public override bool CanRightClick()
-        {
-            if (!Main.keyState.PressingShift())
-                return false;
-            return true;
-        }
+        public override bool CanRightClick() => Main.keyState.PressingShift();
         public override void RightClick(Player player)
         {
-            if (Item.wingSlot == wingSlot)
-                Item.wingSlot = -1;
-            else
-                Item.wingSlot = wingSlot;
+            toggleEnabled = !toggleEnabled;
+            Item.NetStateChanged();
         }
-
         public override bool ConsumeItem(Player player) => false;
+        public override void SaveData(TagCompound tag)
+        {
+            tag.Add("toggleEffect", toggleEnabled);
+        }
+        public override void LoadData(TagCompound tag)
+        {
+            toggleEnabled = tag.GetBool("toggleEffect");
+        }
+        public override void NetSend(BinaryWriter writer)
+        {
+            writer.Write(toggleEnabled);
+        }
+        public override void NetReceive(BinaryReader reader)
+        {
+            toggleEnabled = reader.ReadBoolean();
+        }
+        public override void PostDrawInInventory(SpriteBatch spriteBatch, Vector2 position, Rectangle frame, Color drawColor, Color itemColor, Vector2 origin, float scale)
+        {
+            CalamityUtils.DrawInventoryDot(spriteBatch, position, new Vector2(16, 16) * Main.inventoryScale, toggleEnabled);
+        }
+        #endregion
 
         public override void UpdateAccessory(Player player, bool hideVisual)
         {
-            if (Item.wingSlot != -1 && player.controlJump && player.wingTime > 0f && player.jump == 0 && player.velocity.Y != 0f && !hideVisual)
+            if (toggleEnabled && player.controlJump && player.wingTime > 0f && player.jump == 0 && player.velocity.Y != 0f && !hideVisual)
             {
                 player.rocketDelay2--;
                 if (player.rocketDelay2 <= 0)
@@ -131,34 +144,6 @@ namespace CalamityMod.Items.Accessories.Wings
             // Mirrors the +5% luck from Lucky Horseshoe (vanilla behavior).
             player.Calamity().calamityBonusLuck += 0.05f;
         }
-
-        //This code is commented out so it can be used when we get a MOAB wingless sprite
-        /*public override bool PreDrawInInventory(SpriteBatch spriteBatch, Vector2 position, Rectangle frame, Color drawColor, Color itemColor, Vector2 origin, float scale)
-        {
-            frame = new Rectangle(0, (Item.wingSlot == -1 ? frame.Height / 2 : 0), frame.Width, frame.Height / 2);
-            position -= -new Vector2(0, frame.Height/2-2);
-            CalamityUtils.DrawInventoryCustomScale(
-                spriteBatch,
-                texture: TextureAssets.Item[Type].Value,
-                position,
-                frame,
-                drawColor,
-                itemColor,
-                origin,
-                scale
-            );
-            return false;
-        }*/
-
-        //This entire method can be deleted when we get a wingless sprite
-        public override void UpdateInventory(Player player)
-        {
-            if (Item.wingSlot == -1)
-                Item.color = Color.DarkGray;
-            else
-                Item.color = Color.Transparent;
-        }
-
         public override void AddRecipes()
         {
             CreateRecipe().

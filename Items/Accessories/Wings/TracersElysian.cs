@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System.IO;
+using System.Linq;
 using CalamityMod.CalPlayer;
 using CalamityMod.Items.Materials;
 using CalamityMod.Rarities;
@@ -40,45 +41,46 @@ namespace CalamityMod.Items.Accessories.Wings
             Item.value = CalamityGlobalItem.RarityDarkBlueBuyPrice;
             Item.rare = ModContent.RarityType<CosmicPurple>();
         }
-        public override void SaveData(TagCompound tag)
+        #region Toggleable Wings
+        bool toggleEnabled
         {
-            tag.Add("wingsDisabled", Item.wingSlot == -1);
-        }
-
-        public override void LoadData(TagCompound tag)
-        {
-            if (tag.TryGet("wingsDisabled", out bool wingsDisabled))
+            get { return Item.wingSlot != -1; }
+            set
             {
-                if (wingsDisabled) Item.wingSlot = -1;
+                if (value)
+                    Item.wingSlot = wingSlot;
+                else
+                    Item.wingSlot = -1;
             }
         }
-
-        public override bool CanRightClick()
-        {
-            if (!Main.keyState.PressingShift())
-                return false;
-            if (Main.LocalPlayer.armor.Contains(Item)) foreach (var item in Main.LocalPlayer.armor)
-                {
-                    if (item.wingSlot > 0 && item.wingSlot != wingSlot)
-                        return false;
-                }
-            return true;
-        }
+        public override bool CanRightClick() => Main.keyState.PressingShift();
         public override void RightClick(Player player)
         {
-            if (Item.wingSlot == wingSlot)
-            {
-                Item.wingSlot = -1;
-                Item.color = Color.Gray;
-            }
-            else
-            {
-                Item.wingSlot = wingSlot;
-                Item.color = Color.White;
-            }
+            toggleEnabled = !toggleEnabled;
+            Item.NetStateChanged();
         }
-
         public override bool ConsumeItem(Player player) => false;
+        public override void SaveData(TagCompound tag)
+        {
+            tag.Add("toggleEffect", toggleEnabled);
+        }
+        public override void LoadData(TagCompound tag)
+        {
+            toggleEnabled = tag.GetBool("toggleEffect");
+        }
+        public override void NetSend(BinaryWriter writer)
+        {
+            writer.Write(toggleEnabled);
+        }
+        public override void NetReceive(BinaryReader reader)
+        {
+            toggleEnabled = reader.ReadBoolean();
+        }
+        public override void PostDrawInInventory(SpriteBatch spriteBatch, Vector2 position, Rectangle frame, Color drawColor, Color itemColor, Vector2 origin, float scale)
+        {
+            CalamityUtils.DrawInventoryDot(spriteBatch, position, new Vector2(16, 16) * Main.inventoryScale, toggleEnabled);
+        }
+        #endregion
         public override void UpdateAccessory(Player player, bool hideVisual)
         {
             if (player.controlJump && player.wingTime > 0f && player.jump == 0 && player.velocity.Y != 0f && !hideVisual)
@@ -107,12 +109,12 @@ namespace CalamityMod.Items.Accessories.Wings
             player.buffImmune[BuffID.OnFire] = true;
             player.noFallDmg = true;
             player.socialShadowRocketBoots = true;
-            if (Item.wingSlot == -1) //Only applies if tracers are plucked
+            if (!toggleEnabled) //Only applies if tracers are plucked
             {
                 player.rocketBoots = player.vanityRocketBoots = 1;
                 modPlayer.angelTreads = true;
             }
-            modPlayer.tracersDust = !hideVisual;
+            modPlayer.tracersDust = !hideVisual && toggleEnabled;
             modPlayer.tracersElysian = true;
         }
 
@@ -125,35 +127,6 @@ namespace CalamityMod.Items.Accessories.Wings
                 AddIngredient<AscendantSpiritEssence>(4).
                 AddTile<CosmicAnvil>().
                 Register();
-        }
-
-        public override bool PreDrawInInventory(SpriteBatch spriteBatch, Vector2 position, Rectangle frame, Color drawColor, Color itemColor, Vector2 origin, float scale)
-        {
-            //This code is commented out as it's for when Tracers get wingless sprites. Uncomment it then.
-            //frame = new Rectangle(0, (Item.wingSlot == -1 ? frame.Height / 2 : 0), frame.Width, frame.Height / 2); //Draws the tracers with/without wings depending on if they're set to function as wings.
-            //position -= -new Vector2((Item.wingSlot == -1 ? 4 : 0), frame.Height / 2 - (Item.wingSlot == -1 ? 2 : 0));
-            
-            CalamityUtils.DrawInventoryCustomScale(
-                spriteBatch,
-                texture: TextureAssets.Item[Type].Value,
-                position,
-                frame,
-                drawColor,
-                itemColor,
-                origin,
-                scale,
-                wantedScale: 0.9f,
-                drawOffset: new(1f, 0f)
-            );
-            return false;
-        }
-        // This code is to color the sprite until we get wingless sprites.
-        public override void UpdateInventory(Player player)
-        {
-            if (Item.wingSlot == -1)
-                Item.color = Color.DarkGray;
-            else
-                Item.color = Color.Transparent;
         }
     }
 }
