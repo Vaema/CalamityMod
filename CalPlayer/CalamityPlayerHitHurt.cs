@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Linq;
 using CalamityMod.Balancing;
 using CalamityMod.Buffs.Cooldowns;
@@ -2546,7 +2546,8 @@ namespace CalamityMod.CalPlayer
                     Projectile.NewProjectile(source, Player.Center.X, Player.Center.Y, 0f, 0f, ModContent.ProjectileType<HideOfAstrumDeusExplosion>(), blazeDamage, 5f, Player.whoAmI, 0f, 1f);
                 }
                 // TODO -- Make Deific Amulet and Rampart of Deities' retaliation effects way cooler
-                // In the meantime, gave them homing astral bombers instead of the lame falling stars
+                // In the meantime, gave them homing astral stars instead of the lame falling stars.
+                // This also serves to make the Honeycomb in Sweetheart Necklace make sense
                 if (dAmulet)
                 {
                     var source = Player.GetSource_Accessory(FindAccessory(ModContent.ItemType<DeificAmulet>()));

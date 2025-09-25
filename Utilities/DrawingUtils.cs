@@ -293,6 +293,20 @@ namespace CalamityMod
             spriteBatch.Draw(texture, position, frame, drawColor, 0f, origin, wantedScale, SpriteEffects.None, 0);
         }
 
+        static Asset<Texture2D> ItemDotTexture;
+        /// <summary>
+        /// Draws an enabled/disabled dot at the bottom right of the item's sprite
+        /// Used for effects that are enabled/disabled
+        /// </summary>
+        /// <param name="itemPosition"></param>
+        /// <param name="enabled"></param>
+        public static void DrawInventoryDot(SpriteBatch spriteBatch, Vector2 itemPosition, Vector2 dotOffset, bool enabled)
+        {
+            var tex = CalamityUtils.GetTextureEfficient(ref ItemDotTexture, "Terraria/Images/Extra_20").Value;
+            var dotFrame = tex.Frame(1,4, frameY: enabled ? 1 : 2);
+            spriteBatch.Draw(tex, itemPosition + dotOffset, dotFrame, Color.White, 0, dotFrame.Size() * 0.5f, Main.inventoryScale, SpriteEffects.None, 0);
+        }
+
         /// <summary>
         /// Draws a treasure bag in the world in the exact same way as how Terraria 1.4's bags are drawn.
         /// </summary>
