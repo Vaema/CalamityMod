@@ -98,7 +98,7 @@ namespace CalamityMod.Items.Weapons.Melee
                 AddIngredient(ItemID.VampireKnives).
                 AddIngredient<MonstrousKnives>().
                 AddIngredient<TwistingNether>(3).
-                AddTile(TileID.LunarCraftingStation).
+                AddTile(TileID.MythrilAnvil).
                 Register();
         }
     }

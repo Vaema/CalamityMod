@@ -1,4 +1,6 @@
-﻿using CalamityMod.Systems;
+﻿using System;
+using CalamityMod.Systems;
+using CalamityMod.Tiles.SunkenSea.Ambient;
 using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.ID;
@@ -8,37 +10,39 @@ namespace CalamityMod.Tiles.SunkenSea
 {
     public class Basalt : ModTile
     {
-        private int sheetWidth = 234;
-        private int sheetHeight = 90;
-
-        public byte[,] tileAdjacency;
-        public byte[,] secondTileAdjacency;
-        public byte[,] thirdTileAdjacency;
-        public byte[,] fourthTileAdjacency;
-
         public override void SetStaticDefaults()
         {
             TileID.Sets.GeneralPlacementTiles[Type] = false;
-
+            TileID.Sets.HasSlopeFrames[Type] = true;
             Main.tileSolid[Type] = true;
             Main.tileBlockLight[Type] = true;
-            Main.tileShine2[Type] = true;
+            Main.tileShine2[Type] = false;
 
             CalamityUtils.MergeWithGeneral(Type);
             CalamityUtils.MergeWithDesert(Type);
 
-            DustType = 36;
+            DustType = DustID.Ash;
             HitSound = SoundID.Tink;
 
-            AddMapEntry(new Color(58, 55, 70));
+            AddMapEntry(new Color(77, 75, 86));
 
             MinPick = 110;
 
-            // 02JUN2024: Ozzatron: RuneSand has no merge
-            // TileFraming.SetUpUniversalMerge(Type, ModContent.TileType<RuneSand>(), out tileAdjacency);
+            //Stone merges
+            this.RegisterUniversalMerge(ModContent.TileType<Shellstone>(), "CalamityMod/Tiles/Merges/ShellstoneMerge");
+            this.RegisterUniversalMerge(ModContent.TileType<Navystone>(), "CalamityMod/Tiles/Merges/NavystoneMerge");
+            this.RegisterUniversalMerge(ModContent.TileType<Runestone>(), "CalamityMod/Tiles/Merges/RunestoneMerge");
+            //Sand merges
+            this.RegisterUniversalMerge(ModContent.TileType<EutrophicSand>(), "CalamityMod/Tiles/Merges/EutrophicSandMerge");
+            this.RegisterUniversalMerge(ModContent.TileType<VolcanicSand>(), "CalamityMod/Tiles/Merges/VolcanicSandMerge");
             this.RegisterUniversalMerge(TileID.Sandstone, "CalamityMod/Tiles/Merges/SandstoneMerge");
             this.RegisterUniversalMerge(TileID.Sand, "CalamityMod/Tiles/Merges/SandMerge");
             this.RegisterUniversalMerge(TileID.HardenedSand, "CalamityMod/Tiles/Merges/HardenedSandMerge");
+            //Normal merges
+            this.RegisterUniversalMerge(TileID.Stone, "CalamityMod/Tiles/Merges/StoneMerge");
+            this.RegisterUniversalMerge(TileID.Dirt, "CalamityMod/Tiles/Merges/DirtMerge");
+            this.RegisterUniversalMerge(TileID.Ash, "CalamityMod/Tiles/Merges/AshMerge");
+            this.RegisterUniversalMerge(TileID.Mud, "CalamityMod/Tiles/Merges/MudMerge");
         }
 
         public override bool CreateDust(int i, int j, ref int type)
@@ -47,16 +51,16 @@ namespace CalamityMod.Tiles.SunkenSea
             return false;
         }
 
-        public override void AnimateIndividualTile(int type, int i, int j, ref int frameXOffset, ref int frameYOffset)
-        {
-            frameXOffset = i % 4 * sheetWidth;
-            frameYOffset = j % 4 * sheetHeight;
-        }
-
         public override bool TileFrame(int i, int j, ref bool resetFrame, ref bool noBreak)
         {
-            // 02JUN2024: Ozzatron: unclear if this is the correct framing strategy for Basalt
             return TileFramingSystem.BetterGemsparkFraming(i, j, resetFrame);
+        }
+        public override void RandomUpdate(int i, int j)
+        {
+                Dust dust;
+                dust = Main.dust[Dust.NewDust(new Vector2(i * 16f, j * 16f), 16, 16, DustID.Smoke, 0f, -1.9069767f, 195, new Color(255, 255, 255), 1f)];
+                dust.noGravity = false;
+                dust.fadeIn = 1.4209302f;
         }
     }
 }

@@ -65,32 +65,15 @@ namespace CalamityMod.Tiles.Abyss.AbyssAmbient
             Tile tile = Framing.GetTileSafely(i, j);
             if (tile.TileFrameX <= 324)
             {
-                float brightness = 0.7f;
-                float declareThisHereToPreventRunningTheSameCalculationMultipleTimes = Main.GameUpdateCount * 0.0025f;
-                brightness *= (float)MathF.Sin(-j / 2f + declareThisHereToPreventRunningTheSameCalculationMultipleTimes + i);
-                brightness *= (float)MathF.Sin(-i / 2f + declareThisHereToPreventRunningTheSameCalculationMultipleTimes + j);
-                brightness += 0.7f;
                 r = 0.26f;
                 g = 0.4f;
                 b = 0.41f;
-                r *= brightness;
-                g *= brightness;
-                b *= brightness;
             }
-
             if (tile.TileFrameX > 324)
             {
-                float brightness = 0.7f;
-                float declareThisHereToPreventRunningTheSameCalculationMultipleTimes = Main.GameUpdateCount * 0.0025f;
-                brightness *= (float)MathF.Sin(-j / 2f + declareThisHereToPreventRunningTheSameCalculationMultipleTimes + i);
-                brightness *= (float)MathF.Sin(-i / 2f + declareThisHereToPreventRunningTheSameCalculationMultipleTimes + j);
-                brightness += 0.7f;
                 r = 0.46f;
                 g = 0.51f;
                 b = 0f;
-                r *= brightness;
-                g *= brightness;
-                b *= brightness;
             }
         }
     }

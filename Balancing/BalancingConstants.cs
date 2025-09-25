@@ -21,7 +21,8 @@
         internal const float VanillaFrogLegJumpSpeedBoost = 1.6f;
 
         // Altered jump speed boost provided by Amphibian Boots via global item UpdateAccessory
-        internal static readonly float AmphibianBootsJumpSpeedBoost = 1f;
+        //doze 23apr2025 - Undid nerf, it's now the same as frog leg. If it's a problem, maybe retier it?
+        internal static readonly float AmphibianBootsJumpSpeedBoost = 1.6f;
 
         // Altered movement stats provided by Shadow Armor via IL edit
         // This item is modified to not stack with Magiluminescence if on the ground. If in the air, it still functions.
@@ -71,8 +72,6 @@
         internal static readonly int AmalgamDodgeCooldownMax = 5400;
         internal static readonly int MirrorDodgeCooldownMin = 1200;
         internal static readonly int MirrorDodgeCooldownMax = 5400;
-        internal static readonly int DaedalusReflectCooldownMin = 1200;
-        internal static readonly int DaedalusReflectCooldownMax = 5400;
         internal static readonly int EvolutionReflectCooldownMin = 1200;
         internal static readonly int EvolutionReflectCooldownMax = 5400;
         #endregion
@@ -116,54 +115,22 @@
         #endregion
 
         #region Life Steal
-        // Life steal cap
+        // Life steal cap (Maximum HP healed per instance of lifesteal)
         internal static readonly int LifeStealCap = 100;
-        
-        // Life steal accessories require a more strict cooldown due to their ease of use and global application
-        internal static readonly float LifeStealAccessoryCooldownMultiplier = 3f;
 
-        // Life steal cooldown multipliers used for armor set bonuses
-        internal static readonly float LifeStealSetBonusCooldownMultiplier = 2f;
-        internal static readonly float LifeStealReaverTankCooldownMultiplier = 4f;
-
-        // The range was buffed in vanilla from 1200 to 3000 in 1.4.4, and I agree with that decision
-        internal static readonly float LifeStealRange = 3000f;
-
-        // Life steal caps (aka, how much life steal the player is allowed before it goes on cooldown)
-        internal static readonly float LifeStealCap_Classic = 60f;
-        internal static readonly float LifeStealCap_Expert = 50f;
-        internal static readonly float LifeStealCap_Revengeance = 40f;
-        internal static readonly float LifeStealCap_Death = 30f;
-
-        // Master nerfs the life steal cap by 10, resulting in 40 in non-Rev Master, 30 in Rev Master, and 20 in Death Master
-        internal static readonly float LifeStealCapReduction_Master = 10f;
+        // Base life steal caps from vanilla (aka, how much life steal the player is allowed before it goes on cooldown)
+        internal static readonly float LifeStealCap_Classic = 80f;
+        internal static readonly float LifeStealCap_Expert = 70f;
 
         // The base life steal cooldowns from vanilla
         internal static readonly float LifeStealRecoveryRate_Classic = 0.6f;
         internal static readonly float LifeStealRecoveryRate_Expert = 0.5f;
 
-        // The calculations below show the time (in frames) for 10 life steal cooldown to recover in each difficulty
-        // Classic: 10 / 0.2 = 50
-        // Expert: 10 / 0.15 = 66.667
-        // Revengeance: 10 / 0.125 = 80
-        // Death: 10 / 0.1 = 100
-        // Master: 10 / 0.1 = 100
-        // Revengeance Master: 10 / 0.075 = 133.333
-        // Death Master: 10 / 0.05 = 200
-        // Nerfs the life steal recovery rate in Classic from 0.6/s to 0.2/s
+        // Nerfs the life steal recovery rate in Classic from 0.6 to 0.2 (36 HP/s to 12 HP/s)
         internal static readonly float LifeStealRecoveryRateReduction_Classic = 0.4f;
 
-        // Nerfs the life steal recovery rate in Expert from 0.5/s to 0.15/s
+        // Nerfs the life steal recovery rate in Expert from 0.5 to 0.15 (30 HP/s to 9 HP/s)
         internal static readonly float LifeStealRecoveryRateReduction_Expert = 0.35f;
-
-        // Nerfs the life steal recovery rate in Revengeance from 0.5/s to 0.125/s
-        internal static readonly float LifeStealRecoveryRateReduction_Revengeance = 0.375f;
-
-        // Nerfs the life steal recovery rate in Death from 0.5/s to 0.1/s
-        internal static readonly float LifeStealRecoveryRateReduction_Death = 0.4f;
-
-        // Nerfs the life steal recovery rate in Master by 0.05/s, resulting in 0.1/s in non-Rev Master, 0.075/s in Rev Master, and 0.05/s in Death Master
-        internal static readonly float LifeStealRecoveryRateReduction_Master = 0.05f;
         #endregion
 
         #region Rogue Base Stats
@@ -240,6 +207,16 @@
         internal static readonly float AdrenalineFalloffTinyHitHealthRatio = 0.05f; // Hits for 5% max HP or less result in less Adrenaline loss
 
         internal static readonly float TrueMeleeRipperReductionFactor = 0.5f; // True melee benefits less from rippers to prevent excessive melting.
+        #endregion
+
+        #region Pierce Resistance
+        // Both of the below variables only apply when an NPC has universal pierce resistance enabled via attribute.
+        // Projectiles may be marked as exempt from this pierce resistance by using an attribute.
+
+        /// <summary> Constant variable used to determine the percentage a projectile's damage is reduced by pierce resist on each hit. </summary>
+        public const float PierceResistHarshness = 0.12f;
+        /// <summary> Constant variable used to determine the maximum percentage a projectile's damage can be reduced by pierce resist. </summary>
+        public const float PierceResistCap = 0.8f;
         #endregion
 
         // TODO -- NPC classification is not done consistently with predictable thresholds.

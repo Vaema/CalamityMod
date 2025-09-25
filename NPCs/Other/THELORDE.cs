@@ -63,7 +63,7 @@ namespace CalamityMod.NPCs.Other
             NPC.defense = 100;
             NPC.lifeMax = 2500000;
             NPC.knockBackResist = 0f;
-            NPC.value = Item.buyPrice(100, 0, 0, 0);
+            NPC.value = Item.buyPrice(platinum: 100);
             NPC.HitSound = SoundID.NPCHit13;
             NPC.DeathSound = null;
             NPC.boss = true;
@@ -584,8 +584,7 @@ namespace CalamityMod.NPCs.Other
         public override void ModifyNPCLoot(NPCLoot npcLoot)
         {
             double pisquaredover6 = Math.Pow(MathHelper.Pi, 2) / 6;
-            npcLoot.AddIf(() => CalamityWorld.LegendaryMode && CalamityWorld.revenge, ModContent.ItemType<SuspiciousLookingNOU>()); // guaranteed in legendarev mode
-            npcLoot.AddIf(() => !(CalamityWorld.LegendaryMode && CalamityWorld.revenge), ModContent.ItemType<SuspiciousLookingNOU>(), 27); // otherwise 1 in 27
+            npcLoot.Add(ModContent.ItemType<SuspiciousLookingNOU>());
             npcLoot.Add(ModContent.ItemType<DeliciousMeat>(), 1, 22, (int)(pisquaredover6 * 100));
         }
     }

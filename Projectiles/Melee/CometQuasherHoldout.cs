@@ -1,5 +1,6 @@
 ﻿using System;
 using CalamityMod.Items.Weapons.Melee;
+using CalamityMod.NPCs;
 using CalamityMod.Particles;
 using CalamityMod.Projectiles.BaseProjectiles;
 using Microsoft.Xna.Framework;
@@ -13,6 +14,7 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.Projectiles.Melee
 {
+    [PierceResistException]
     public class CometQuasherHoldout : BaseCustomUseStyleProjectile, ILocalizedModType
     {
         public override int AssignedItemID => ModContent.ItemType<CometQuasher>();
@@ -220,7 +222,7 @@ namespace CalamityMod.Projectiles.Melee
             if (spawnBoom)
             {
                 Vector2 spawnSpot = target.Center + new Vector2(Main.rand.NextFloat(-550, 550), Main.rand.NextFloat(-750, -950));
-                Projectile.NewProjectile(Projectile.GetSource_FromThis(), spawnSpot, Vector2.Zero, ModContent.ProjectileType<CometQuasherMeteor>(), (int)(Projectile.damage * 1.5f), 0, Projectile.owner, 0, 0, 4);
+                Projectile.NewProjectile(Projectile.GetSource_FromThis(), spawnSpot, Vector2.Zero, ModContent.ProjectileType<CometQuasherMeteor>(), (int)(Projectile.damage * 1.5f), 0, Projectile.owner, 0, Main.rand.Next(3), 4);
                 spawnBoom = false;
             }
         }

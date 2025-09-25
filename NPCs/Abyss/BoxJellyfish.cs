@@ -29,12 +29,12 @@ namespace CalamityMod.NPCs.Abyss
             NPC.damage = 44;
             NPC.width = 30;
             NPC.height = 33;
-            NPC.defense = 5;
-            NPC.lifeMax = 115;
+            NPC.defense = 8;
+            NPC.lifeMax = 100;
             NPC.alpha = 20;
             NPC.aiStyle = -1;
             AIType = -1;
-            NPC.value = Item.buyPrice(0, 0, 1, 0);
+            NPC.value = Item.buyPrice(silver: 1);
             NPC.HitSound = SoundID.NPCHit25;
             NPC.DeathSound = SoundID.NPCDeath28;
             Banner = NPC.type;
@@ -44,10 +44,6 @@ namespace CalamityMod.NPCs.Abyss
             NPC.Calamity().VulnerableToElectricity = true;
             NPC.Calamity().VulnerableToWater = false;
             SpawnModBiomes = new int[1] { ModContent.GetInstance<AbyssLayer1Biome>().Type };
-
-            // Scale stats in Expert and Master
-            CalamityGlobalNPC.AdjustExpertModeStatScaling(NPC);
-            CalamityGlobalNPC.AdjustMasterModeStatScaling(NPC);
         }
 
         public override void SetBestiary(BestiaryDatabase database, BestiaryEntry bestiaryEntry)
@@ -224,7 +220,7 @@ namespace CalamityMod.NPCs.Abyss
 
         public override void ModifyNPCLoot(NPCLoot npcLoot)
         {
-            npcLoot.Add(ItemID.JellyfishNecklace, 100);
+            npcLoot.Add(ItemID.JellyfishNecklace, 25);
             var postSkeletron = npcLoot.DefineConditionalDropSet(() => NPC.downedBoss3);
             postSkeletron.Add(ItemDropRule.NormalvsExpert(ModContent.ItemType<AbyssShocker>(), 50, 40));
         }

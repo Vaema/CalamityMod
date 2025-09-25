@@ -35,7 +35,7 @@ namespace CalamityMod.NPCs.NormalNPCs
             NPC.lifeMax = 100;
             NPC.aiStyle = -1;
             NPC.knockBackResist = 0.4f;
-            NPC.value = Item.buyPrice(0, 0, 2, 0);
+            NPC.value = Item.buyPrice(silver: 2);
             NPC.HitSound = SoundID.NPCHit41 with { Pitch = 0.6f };
             NPC.DeathSound = SoundID.NPCDeath36 with { Pitch = -0.4f };
             Banner = NPC.type;
@@ -43,10 +43,6 @@ namespace CalamityMod.NPCs.NormalNPCs
             NPC.Calamity().VulnerableToHeat = true;
             NPC.Calamity().VulnerableToCold = true;
             NPC.Calamity().VulnerableToSickness = true;
-
-            // Scale stats in Expert and Master
-            CalamityGlobalNPC.AdjustExpertModeStatScaling(NPC);
-            CalamityGlobalNPC.AdjustMasterModeStatScaling(NPC);
         }
 
         public override void AI()
@@ -111,7 +107,7 @@ namespace CalamityMod.NPCs.NormalNPCs
                 if (!NPC.justHit)
                     NPC.velocity.X = MathHelper.Lerp(NPC.velocity.X, NPC.direction * movementSpeed, 0.05f);
                 // Don't get stuck on 1 block obstacles 
-                StepUp();
+                NPC.StepUpBlocks();
             }
             // Stand still
             else if (NPC.ai[0] == 1)
@@ -147,7 +143,7 @@ namespace CalamityMod.NPCs.NormalNPCs
                 // Move
                 if (!NPC.justHit)
                     NPC.velocity.X = MathHelper.Lerp(NPC.velocity.X, NPC.direction * movementSpeed, 0.05f);
-                StepUp();
+                NPC.StepUpBlocks();
             }
 
             // Phase timer 
@@ -159,59 +155,6 @@ namespace CalamityMod.NPCs.NormalNPCs
             NPC.ai[3]--;
 
             NPC.spriteDirection = -NPC.direction;
-        }
-
-        public static bool IsPassableTile(int x, int y)
-        {
-            return (!Main.tile[x, y].HasUnactuatedTile ||
-                !Main.tileSolid[(int)Main.tile[x, y].TileType] || Main.tileSolidTop[(int)Main.tile[x, y].TileType]);
-        }
-
-        public void StepUp()
-        {
-            Vector2 position = NPC.position;
-            position.X += NPC.velocity.X;
-            int x = (int)((position.X + (float)(NPC.width / 2) + (float)((NPC.width / 2 + 1)) * NPC.direction) / 16f);
-            int y = (int)((position.Y + (float)NPC.height - 1f) / 16f);
-
-            if ((float)(x * 16) >= position.X + (float)NPC.width || (float)(x * 16 + 16) <= position.X)
-                return;
-
-            bool nextTileValid = Main.tile[x, y].HasUnactuatedTile && !Main.tile[x, y].TopSlope && !Main.tile[x, y - 1].TopSlope && Main.tileSolid[(int)Main.tile[x, y].TileType] && !Main.tileSolidTop[(int)Main.tile[x, y].TileType];
-            bool aboveTileHalfBlock = Main.tile[x, y - 1].IsHalfBlock && Main.tile[x, y - 1].HasUnactuatedTile;
-            bool aboveTileHasRoom = Main.tile[x, y - 1].IsHalfBlock && IsPassableTile(x, y - 4);
-            bool aboveTileEmpty = !Main.tile[x, y - 1].HasUnactuatedTile || !Main.tileSolid[(int)Main.tile[x, y - 1].TileType] || Main.tileSolidTop[(int)Main.tile[x, y - 1].TileType] || aboveTileHasRoom;
-            bool tile3AbovePassable = !Main.tile[x - NPC.direction, y - 3].HasUnactuatedTile || !Main.tileSolid[(int)Main.tile[x - NPC.direction, y - 3].TileType];
-
-            if ((nextTileValid || aboveTileHalfBlock) && aboveTileEmpty && IsPassableTile(x, y - 2) && IsPassableTile(x, y - 3) && tile3AbovePassable)
-            {
-                float npcBottom = (float)(y * 16);
-                if (Main.tile[x, y].IsHalfBlock)
-                {
-                    npcBottom += 8f;
-                }
-                if (Main.tile[x, y - 1].IsHalfBlock)
-                {
-                    npcBottom -= 8f;
-                }
-                if (npcBottom < position.Y + (float)NPC.height)
-                {
-                    float percentageTileRisen = position.Y + (float)NPC.height - npcBottom;
-                    if (percentageTileRisen <= 16.1f)
-                    {
-                        NPC.gfxOffY += NPC.position.Y + (float)NPC.height - npcBottom;
-                        NPC.position.Y = npcBottom - (float)NPC.height;
-                        if (percentageTileRisen < 9f)
-                        {
-                            NPC.stepSpeed = 1f;
-                        }
-                        else
-                        {
-                            NPC.stepSpeed = 2f;
-                        }
-                    }
-                }
-            }
         }
 
         public override void SetBestiary(BestiaryDatabase database, BestiaryEntry bestiaryEntry)

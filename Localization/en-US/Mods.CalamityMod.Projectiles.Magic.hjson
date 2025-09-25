@@ -13,7 +13,6 @@ AquamarineBolt.DisplayName: Aqua Bolt
 ArcticBearPawProj.DisplayName: Arctic Bear Paw
 ArtAttackStar.DisplayName: Artsy Star
 ArtAttackStrike.DisplayName: Art Attack
-Asteroid.DisplayName: Asteroid
 AsteroidMolten.DisplayName: Molten Asteroid
 AstralachneaFang.DisplayName: Astral Fang
 AstralCrystal.DisplayName: Astral Crystal
@@ -54,7 +53,6 @@ DarkSparkBeam.DisplayName: Dark Spark Beam
 DarkSparkPrism.DisplayName: Dark Crystal
 DeathhailBeam.DisplayName: Deathhail
 DeathValleyDusterProjectile.DisplayName: Death Valley Duster
-DivineRetributionSpear.DisplayName: Divine Retribution
 EelDrop.DisplayName: Acid Eel Drop
 EidolicWailSoundwave.DisplayName: Eidolic Wail
 EldritchTentacle.DisplayName: Eldritch Tentacle
@@ -68,8 +66,6 @@ EventHorizonStar.DisplayName: Event Horizon Star
 EvergladeSprayProjectile.DisplayName: Everglade Spray
 ExoVortex.DisplayName: Subsuming Vortex
 ExoVortex2.DisplayName: Subsuming Vortex
-FabBolt.DisplayName: Fab Bolt
-FabRay.DisplayName: Fab Ray
 FatesRevealFlame.DisplayName: Fate's Reveal
 FireImplosion.DisplayName: Swirling Backdraft
 FlareBoltProjectile.DisplayName: Flare Bolt
@@ -201,6 +197,7 @@ SHPB.DisplayName: SHPB
 SHPExplosion.DisplayName: SHPB Explosion
 SHPL.DisplayName: SHPL
 SHPS.DisplayName: SHPS
+SHPV.DisplayName: SHPV
 SilvaBurst.DisplayName: Silva Burst
 SlitheringEelProjectile.DisplayName: Slithering Eel
 SmallSpirit.DisplayName: Small Angry Spirit
@@ -217,6 +214,8 @@ SpiritDust.DisplayName: Spirit Dust
 Starblast.DisplayName: Star
 StardustElementalBeam.DisplayName: Stardust Beam
 StickyFeather.DisplayName: Feather
+SylvBolt.DisplayName: Sylv Bolt
+SylvRay.DisplayName: Sylv Ray
 TacticiansElectricBoom.DisplayName: Electric Explosion
 TacticiansTrumpCardProj.DisplayName: Trump Beam
 TearsofHeavenProjectile.DisplayName: Tears of Heaven

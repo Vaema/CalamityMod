@@ -17,10 +17,11 @@ using Terraria.ModLoader;
 using Terraria.ModLoader.Utilities;
 using Terraria.GameContent.Bestiary;
 using CalamityMod.NPCs.Crags;
+using CalamityMod.Enums;
 
 namespace CalamityMod.NPCs.SunkenSea
 {
-    public class SandProwlerNested : ModNPC
+    public class SandProwlerNested : SunkenSeaNPC
     {
         public bool PeekingOut;
         public bool HasChosenSpotToHideIn => SpotToHideIn != Vector2.Zero;
@@ -52,6 +53,19 @@ namespace CalamityMod.NPCs.SunkenSea
         public ref float InitialSnapDirection => ref NPC.localAI[1];
         public ref float CurrentSnapDirection => ref NPC.localAI[2];
         public override string Texture => "CalamityMod/NPCs/SunkenSea/SandProwler";
+        protected override List<int> PreyIDs => new List<int>()
+        {
+            ModContent.NPCType<PolypPanasea>(),
+            ModContent.NPCType<PrismaticGuppy>(),
+            ModContent.NPCType<Slugbun>(),
+        };
+
+        protected override List<int> PredatorIDs => new List<int>()
+        {
+            ModContent.NPCType<Polyperil>()
+        };
+
+        protected override SunkenSeaBiomeFlags BiomeDesignation => SunkenSeaBiomeFlags.PolypForest;
 
         public override void SetStaticDefaults()
         {
@@ -61,6 +75,7 @@ namespace CalamityMod.NPCs.SunkenSea
             NPCID.Sets.UsesNewTargetting[Type] = true;
             NPCID.Sets.CantTakeLunchMoney[Type] = true;
             Main.npcFrameCount[Type] = 11;
+            base.SetStaticDefaults();
         }
 
         public override void SetDefaults()
@@ -73,12 +88,13 @@ namespace CalamityMod.NPCs.SunkenSea
             NPC.aiStyle = -1;
             AIType = -1;
             NPC.knockBackResist = 0f;
-            NPC.value = Item.buyPrice(0, 0, 20, 0);
+            NPC.value = Item.buyPrice(silver: 20);
             NPC.behindTiles = true;
             NPC.noGravity = true;
             NPC.noTileCollide = true;
             NPC.HitSound = SoundID.NPCHit1;
             NPC.DeathSound = SoundID.NPCDeath1;
+            NPC.chaseable = false;
             NPC.netAlways = true;
             Banner = NPC.type;
             BannerItem = ModContent.ItemType<SeaSerpentBanner>();
@@ -86,11 +102,6 @@ namespace CalamityMod.NPCs.SunkenSea
             NPC.Calamity().VulnerableToSickness = true;
             NPC.Calamity().VulnerableToElectricity = true;
             NPC.Calamity().VulnerableToWater = false;
-            SpawnModBiomes = new int[1] { ModContent.GetInstance<SunkenSeaBiome>().Type };
-
-            // Scale stats in Expert and Master
-            CalamityGlobalNPC.AdjustExpertModeStatScaling(NPC);
-            CalamityGlobalNPC.AdjustMasterModeStatScaling(NPC);
 
             NPC.waterMovementSpeed = 1f;
         }
@@ -110,6 +121,7 @@ namespace CalamityMod.NPCs.SunkenSea
             writer.Write(InitialSnapDirection);
             writer.Write(CurrentSnapDirection);
             writer.Write(NPC.Calamity().newAI[1]);
+            writer.Write(NPC.chaseable);
         }
 
         public override void ReceiveExtraAI(BinaryReader reader)
@@ -119,6 +131,7 @@ namespace CalamityMod.NPCs.SunkenSea
             InitialSnapDirection = reader.ReadSingle();
             CurrentSnapDirection = reader.ReadSingle();
             NPC.Calamity().newAI[1] = reader.ReadSingle();
+            NPC.chaseable = reader.ReadBoolean();
         }
 
         public override void AI()
@@ -188,16 +201,8 @@ namespace CalamityMod.NPCs.SunkenSea
             {
                 if (NPC.life > NPC.lifeMax * 0.99f)
                 {
-                    for (int i = 0; i < Main.maxNPCs; i++)
-                    {
-                        NPC n = Main.npc[i];
-                        if (n == null || !n.active || n.type != ModContent.NPCType<SeaMinnow>())
-                            continue;
-                        if (n.Distance(NPC.Center) <= 300 && Collision.CheckAABBvLineCollision(NPC.Center, NPC.Size, NPC.Center, n.Center))
-                        {
-                            target = n;
-                        }
-                    }
+                    if (CurrentPrey != null)
+                        target = CurrentPrey;
                 }
                 // If you've pissed it off, it now goes after YOU
                 else
@@ -341,6 +346,21 @@ namespace CalamityMod.NPCs.SunkenSea
             }
         }
 
+        public override void OnHitByProjectile(Projectile projectile, NPC.HitInfo hit, int damageDone)
+        {
+            PlayerHurt();
+        }
+
+        public override void OnHitByItem(Player player, Item item, NPC.HitInfo hit, int damageDone)
+        {
+            PlayerHurt();
+        }
+
+        public void PlayerHurt()
+        {
+            NPC.chaseable = true;
+        }
+
         public override void FindFrame(int frameHeight)
         {
             if (NPC.Calamity().newAI[1] == 1)
@@ -439,6 +459,12 @@ namespace CalamityMod.NPCs.SunkenSea
             }
             return false;
         }
+        protected override bool NPCSearchFilter(NPC n)
+        {
+            return Vector2.DistanceSquared(NPC.Center, n.Center) < 200f * 200f && (PreyIDs.Contains(n.type) || PredatorIDs.Contains(n.type));
+        }
+
+        public override bool CanBeHitByNPC(NPC attacker) => PredatorIDs.Contains(attacker.type);
 
         public override bool CanHitPlayer(Player target, ref int cooldownSlot)
         {

@@ -5,6 +5,7 @@ using System.Linq;
 using System.Threading;
 using System.Xml.XPath;
 using CalamityMod.Enums;
+using CalamityMod.Items.Critters;
 using CalamityMod.Items.Placeables.Banners;
 using CalamityMod.Tiles;
 using Microsoft.Xna.Framework;
@@ -14,6 +15,7 @@ using Terraria.DataStructures;
 using Terraria.GameContent;
 using Terraria.ID;
 using Terraria.ModLoader;
+using Terraria.ModLoader.Utilities;
 using static CalamityMod.CalamityUtils;
 using static Terraria.ModLoader.ModContent;
 
@@ -33,14 +35,14 @@ namespace CalamityMod.NPCs.SunkenSea
 
         protected override List<int> PreyIDs =>
         [
-            // NPCType<Slugbun>(),
+            NPCType<Slugbun>(),
         ];
 
         protected override List<int> PredatorIDs =>
         [
             // NPCType<IlmerianAxolotl>(),
             NPCType<Sharkoon>(),
-            // NPCType<Polyperil>(),
+            NPCType<Polyperil>(),
             // NPCType<CrestedStalker>(),
             // NPCType<Hermititan>(),
         ];
@@ -129,20 +131,29 @@ namespace CalamityMod.NPCs.SunkenSea
 
         public override void OnSpawn(IEntitySource source)
         {
-            CurrentBehavior = IdlingBehavior;
-            NPC.spriteDirection = Main.rand.NextBool().ToDirectionInt();
-            NPC.GravityMultiplier *= 2f;
-            NPC.MaxFallSpeedMultiplier *= 2f;
             pathfinding = new PathfindingManager(NPC)
             {
                 Acceleration = 0.4f,
                 MaxSpeed = 8f,
                 MinimumPointDistance = 60f
             };
+            CurrentBehavior = IdlingBehavior;
+            NPC.spriteDirection = Main.rand.NextBool().ToDirectionInt();
+            NPC.GravityMultiplier *= 2f;
+            NPC.MaxFallSpeedMultiplier *= 2f;
         }
 
         public override void AI()
         {
+            if (pathfinding == null)
+            {
+                pathfinding = new PathfindingManager(NPC)
+                {
+                    Acceleration = 0.4f,
+                    MaxSpeed = 8f,
+                    MinimumPointDistance = 60f
+                };
+            }
             CurrentBehavior?.Invoke();
 
             NPC.rotation = MathHelper.ToRadians(NPC.velocity.X * 3f);
@@ -352,6 +363,8 @@ namespace CalamityMod.NPCs.SunkenSea
             }
         }
 
+        public override bool CanBeHitByNPC(NPC attacker) => PredatorIDs.Contains(attacker.type);
+
         #endregion
 
         #region Drawing & Animation
@@ -398,6 +411,7 @@ namespace CalamityMod.NPCs.SunkenSea
         {
             base.SetDefaults();
 
+            Banner = Type;
             BannerItem = ItemType<ProbesnoutBanner>();
 
             NPC.lifeMax = 5;
@@ -411,12 +425,22 @@ namespace CalamityMod.NPCs.SunkenSea
 
             NPC.HitSound = SoundID.NPCHit1;
             NPC.DeathSound = SoundID.NPCDeath1;
-            NPC.value = Item.buyPrice(0, 0, 5, 0);
+            NPC.catchItem = ModContent.ItemType<ProbesnoutItem>();
 
             NPC.Calamity().VulnerableToHeat = false;
             NPC.Calamity().VulnerableToSickness = true;
             NPC.Calamity().VulnerableToElectricity = true;
             NPC.Calamity().VulnerableToWater = false;
+        }
+
+        public override float SpawnChance(NPCSpawnInfo spawnInfo)
+        {
+            if (spawnInfo.Water && !spawnInfo.Player.Calamity().clamity)
+            {
+                if (spawnInfo.Player.Calamity().ZoneRadiantReefs)
+                    return SpawnCondition.CaveJellyfish.Chance * 0.3f;
+            }
+            return 0f;
         }
 
         #endregion
@@ -450,6 +474,7 @@ namespace CalamityMod.NPCs.SunkenSea
         {
             base.SetDefaults();
             NPC.rarity = 3;
+            NPC.catchItem = ItemType<ProbesnoutGoldItem>();
         }
 
         public override void HitEffect(NPC.HitInfo hit)
@@ -463,6 +488,16 @@ namespace CalamityMod.NPCs.SunkenSea
                 for (int i = 0; i < 4; i++)
                     Gore.NewGoreDirect(NPC.GetSource_Death(), NPC.Center, new Vector2(hit.HitDirection, -1f), Mod.Find<ModGore>($"{Name}{i + 1}").Type);
             }
+        }
+
+        public override float SpawnChance(NPCSpawnInfo spawnInfo)
+        {
+            if (spawnInfo.Water && !spawnInfo.Player.Calamity().clamity)
+            {
+                if (spawnInfo.Player.Calamity().ZoneRadiantReefs)
+                    return SpawnCondition.CaveJellyfish.Chance * 0.05f;
+            }
+            return 0f;
         }
     }
 }

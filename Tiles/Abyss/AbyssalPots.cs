@@ -36,11 +36,10 @@ namespace CalamityMod.Tiles.Abyss
             {
                 if (!Main.dedServ)
                 {
-                    int goreAmt = Main.rand.Next(1, 2 + 1);
+                    int goreAmt = Main.rand.Next(2, 4 + 1);
                     for (int k = 0; k < goreAmt; k++)
                     {
-                        Gore.NewGore(new EntitySource_TileBreak(i, j), new Vector2(i, j) * 16, Main.rand.NextVector2CircularEdge(3f, 3f), Mod.Find<ModGore>("AbyssPotGore1").Type);
-                        Gore.NewGore(new EntitySource_TileBreak(i, j), new Vector2(i, j) * 16, Main.rand.NextVector2CircularEdge(3f, 3f), Mod.Find<ModGore>("AbyssPotGore2").Type);
+                        Gore.NewGore(new EntitySource_TileBreak(i, j), new Vector2(i, j) * 16, Main.rand.NextVector2CircularEdge(3f, 3f), Mod.Find<ModGore>($"AbyssPot{WorldGen.genRand.Next(1, 6 + 1)}").Type);
                     }
                 }
 

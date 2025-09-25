@@ -29,7 +29,7 @@ namespace CalamityMod.Items.Materials
                 AddIngredient<Bloodstone>(5).
                 AddIngredient<BloodOrb>().
                 AddIngredient<Necroplasm>().
-                AddTile(TileID.AdamantiteForge).
+                AddTile(TileID.MythrilAnvil).
                 Register();
         }
     }

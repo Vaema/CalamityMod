@@ -73,8 +73,10 @@ namespace CalamityMod.Items.Accessories
                     continue;
 
                 // Inflict Riptide on empowered parries.
+                //Doze - I gave all parry accessories long debuff infliction times due to the lack of weapons that inflict debuffs for a decent time, and the scarcity of using the parry
+                //Most common vanilla debuffs have a way to inflict them for 15, 20, or even 30 seconds
                 if (empowered)
-                    npc.AddBuff(ModContent.BuffType<RiptideDebuff>(), 300);
+                    npc.AddBuff(ModContent.BuffType<RiptideDebuff>(), CalamityUtils.SecondsToFrames(15));
 
                 // If the NPC can be moved, violently shove them away. Make them susceptible to fall damage on empowered parries.
                 // Otherwise, simply deal a large amount of damage to them if empowered.
@@ -84,7 +86,7 @@ namespace CalamityMod.Items.Accessories
                     Vector2 shoveVelocity = Utils.DirectionTo(player.Center, npc.Center) * (Main.zenithWorld ? 35f : 12.5f) - Vector2.UnitY * 6f;
                     npc.MoveNPC(Vector2.Normalize(shoveVelocity), shoveVelocity.Length(), true);
 
-                    int scaledFallDamage = ShoveFallBaseDamage * (Main.masterMode ? 3 : Main.expertMode ? 2 : 1) * (Main.zenithWorld ? 10 : 1);
+                    int scaledFallDamage = CalamityUtils.ScaleWithDifficulty(ShoveFallBaseDamage) * (Main.zenithWorld ? 10 : 1);
                     if (empowered)
                         npc.FlungNPC().ApplyCollisionDamage(npc, player, scaledFallDamage, shoveVelocity * 0.5f, 5f, true);
                     else
@@ -101,7 +103,7 @@ namespace CalamityMod.Items.Accessories
                 {
                     if (empowered)
                     {
-                        int scaledImmuneDamage = ImmuneToShoveBaseDamage * (Main.masterMode ? 3 : Main.expertMode ? 2 : 1) * (Main.zenithWorld ? 10 : 1);
+                        int scaledImmuneDamage = CalamityUtils.ScaleWithDifficulty(ImmuneToShoveBaseDamage) * (Main.zenithWorld ? 10 : 1);
                         Projectile.NewProjectile(player.GetSource_FromThis(), npc.Center, Vector2.Zero, ModContent.ProjectileType<DirectStrike>(), scaledImmuneDamage, 0f, player.whoAmI, npc.whoAmI);
                     }
 

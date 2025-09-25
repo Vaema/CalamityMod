@@ -2,6 +2,7 @@
 using CalamityMod.Items.Materials;
 using Terraria;
 using Terraria.ID;
+using Terraria.Localization;
 using Terraria.ModLoader;
 
 namespace CalamityMod.Items.Armor.Daedalus
@@ -11,19 +12,27 @@ namespace CalamityMod.Items.Armor.Daedalus
     public class DaedalusHeadMelee : ModItem, ILocalizedModType
     {
         public new string LocalizationCategory => "Items.Armor.Hardmode";
+
+        public static float MeleeDamageBoost = 0.1f;
+        public static int MeleeCritBoost = 10; // NOTE: Tooltip shares this number with damage % as they're equal
+        public static float MeleeSpeedBoost = 0.1f;
+        public override LocalizedText Tooltip => base.Tooltip.WithFormatArgs(MeleeDamageBoost.ToPercent(), MeleeSpeedBoost.ToPercent());
+
+        // Set Bonus
+        public static int SetBonusAggroBoost = 500;
+        public static int ReflectCooldownMin = CalamityUtils.SecondsToFrames(20);
+        public static int ReflectCooldownMax = CalamityUtils.SecondsToFrames(90);
+
         public override void SetDefaults()
         {
             Item.width = 18;
             Item.height = 18;
             Item.value = CalamityGlobalItem.RarityPinkBuyPrice;
             Item.rare = ItemRarityID.Pink;
-            Item.defense = 21; //51
+            Item.defense = 21; // 55
         }
 
-        public override bool IsArmorSet(Item head, Item body, Item legs)
-        {
-            return body.type == ModContent.ItemType<DaedalusBreastplate>() && legs.type == ModContent.ItemType<DaedalusLeggings>();
-        }
+        public override bool IsArmorSet(Item head, Item body, Item legs) => body.type == ModContent.ItemType<DaedalusBreastplate>() && legs.type == ModContent.ItemType<DaedalusLeggings>();
 
         public override void ArmorSetShadows(Player player)
         {
@@ -36,14 +45,14 @@ namespace CalamityMod.Items.Armor.Daedalus
             player.setBonus = this.GetLocalizedValue("SetBonus");
             var modPlayer = player.Calamity();
             modPlayer.daedalusReflect = true;
-            player.GetAttackSpeed<MeleeDamageClass>() += 0.1f;
-            player.aggro += 500;
+            player.aggro += SetBonusAggroBoost;
         }
 
         public override void UpdateEquip(Player player)
         {
-            player.GetDamage<MeleeDamageClass>() += 0.15f;
-            player.GetCritChance<MeleeDamageClass>() += 10;
+            player.GetDamage<MeleeDamageClass>() += MeleeDamageBoost;
+            player.GetCritChance<MeleeDamageClass>() += MeleeCritBoost;
+            player.GetAttackSpeed<MeleeDamageClass>() += MeleeSpeedBoost;
         }
 
         public override void AddRecipes()

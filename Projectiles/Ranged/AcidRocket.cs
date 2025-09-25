@@ -1,6 +1,7 @@
 ﻿using System;
 using CalamityMod.Buffs.DamageOverTime;
 using CalamityMod.Graphics.Primitives;
+using CalamityMod.NPCs;
 using CalamityMod.Particles;
 using CalamityMod.Projectiles.Ranged;
 using Microsoft.Xna.Framework;
@@ -15,6 +16,7 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.Projectiles.Ranged
 {
+    [PierceResistException]
     public class AcidRocket : ModProjectile, ILocalizedModType
     {
         public new string LocalizationCategory => "Projectiles.Ranged";
@@ -103,7 +105,7 @@ namespace CalamityMod.Projectiles.Ranged
                 if (stuckTimer == 40)
                 {
                     SoundStyle Primed = new("CalamityMod/Sounds/Custom/PlagueSounds/PBGAttackSwitchShort");
-                    SoundEngine.PlaySound(Primed with { Volume = 0.5f }, Projectile.Center);
+                    SoundEngine.PlaySound(Primed with { Volume = 0.4f , PitchVariance = 0.2f }, Projectile.Center);
                 }
             }
             Projectile.Opacity = 1f;

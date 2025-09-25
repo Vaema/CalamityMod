@@ -5,7 +5,11 @@ using CalamityMod.Buffs.StatBuffs;
 using CalamityMod.Buffs.Summon.Whips;
 using CalamityMod.CalPlayer;
 using CalamityMod.DataStructures;
+using CalamityMod.Items.BaseItems;
 using CalamityMod.Items.Materials;
+using CalamityMod.NPCs.ProfanedGuardians;
+using CalamityMod.NPCs.Providence;
+using CalamityMod.Particles;
 using CalamityMod.Projectiles.Summon;
 using CalamityMod.Rarities;
 using CalamityMod.Tiles.Furniture.CraftingStations;
@@ -14,16 +18,17 @@ using Microsoft.Xna.Framework.Graphics;
 using Terraria;
 using Terraria.Audio;
 using Terraria.DataStructures;
+using Terraria.GameContent;
 using Terraria.ID;
 using Terraria.ModLoader;
 
 namespace CalamityMod.Items.Accessories
 {
     //Developer item, dedicatee: Mishiro Usui/Amber Sienna
-    public class ProfanedSoulCrystal : ModItem, ILocalizedModType, IDyeableShaderRenderer
+    public class ProfanedSoulCrystal : TransformationAccessory, ILocalizedModType, IDyeableShaderRenderer
     {
         public static string[] contributorNames = new[] { "IbanPlay", "Chen", "Nincity", "Amber", "Mishiro", "LordMetarex", "Memes" };
-        public static int ShieldDurabilityMax = 125;
+        public static int ShieldDurabilityMax = 100;
         public new string LocalizationCategory => "Items.Accessories";
 
         public static int ShieldRechargeDelay = CalamityUtils.SecondsToFrames(5);
@@ -31,6 +36,26 @@ namespace CalamityMod.Items.Accessories
 
         public const int maxMinionRequirement = 10;
         public const int maxPscAnimTime = 120;
+        public static SummonTag SummonTag = new() { MultiplicativeTagDamage = 0.2f, TagModifyHitEffects = ApplyTagModifyHit, AutoDrawTooltip = false };
+
+        public static void ApplyTagModifyHit(Projectile proj, NPC npc, ref NPC.HitModifiers modifiers, ref float tagDamageMult, ref float critChance)
+        {
+            if (Main.player[proj.owner].Calamity().pscState >= (int)ProfanedSoulCrystalState.Buffs)
+            {
+                var empowered = Main.player[proj.owner].Calamity().pscState == (int)ProfanedSoulCrystalState.Empowered;
+                //20% is balanced for non empowered, while 40% helps ensure psc remains balanced at empowered tier
+                //Some PSC projectiles receive a reduced amount of benefit from this, for balancing purposes
+                modifiers.ScalingBonusDamage += (empowered ? 0.4f : SummonTag.MultiplicativeTagDamage) * tagDamageMult;
+                if (!Main.dedServ)
+                {
+                    var color = ProvUtils.GetColorBasedOnEnrage(!Main.dayTime, 0);
+                    float power = Math.Min(npc.height / 100f, 3f);
+                    var position = new Vector2(Main.rand.NextFloat(npc.Left.X, npc.Right.X), Main.rand.NextFloat(npc.Top.Y, npc.Bottom.Y));
+                    var particle = new FlameParticle(position, 50, 0.25f, power, color * (Main.dayTime ? 1f : 1.25f), color * (Main.dayTime ? 1.25f : 1f));
+                    GeneralParticleHandler.SpawnParticle(particle);
+                }
+            }
+        }
 
         // Interface stuff.
         public int OwnerPlayer { get; set; }
@@ -81,7 +106,7 @@ namespace CalamityMod.Items.Accessories
             if (ignoreNoBuffs &&
                 (!DownedBossSystem.downedCalamitas || !DownedBossSystem.downedExoMechs ||
                  (player.maxMinions - player.slotsMinions) < maxMinionRequirement) ||
-                player.Calamity().profanedCrystalForce || !player.HasBuff<ProfanedCrystalBuff>())
+                player.Transformation().Type == ModContent.ItemType<ProfanedSoulCrystal>() || !player.HasBuff<ProfanedCrystalBuff>())
             {
                 return ProfanedSoulCrystalState.Vanity; //failsafe for vanity
             }
@@ -155,28 +180,22 @@ namespace CalamityMod.Items.Accessories
          * Projectiles transformed are ONLY affected by alldamage and summon damage bonuses, likewise the weapon's base damage/usetime is NOT taken into account.
          * The on-hit effect for the whip is in globalnpc
          */
-        public override void Load()
+        public override string AssetPath => "CalamityMod/Items/Accessories/";
+
+        public override (EquipType Type, string AssetName, string EquipName)[] EquipSlots =>
+        [
+            (EquipType.Head, "ProfanedSoulTrans", null),
+            (EquipType.Body, "ProfanedSoulTrans", null),
+            (EquipType.Legs, "ProfanedSoulTrans", null),
+            (EquipType.Wings, "ProfanedSoulTrans", null),
+            (EquipType.Head, "ProfanedSoulTransNight", "PscNightHead"),
+            (EquipType.Legs, "ProfanedSoulTransNight", "PscNightLegs"),
+            (EquipType.Wings, "ProfanedSoulTransNight", "PscNightWings"),
+            (EquipType.Face, null, null), //results in setting this equip slot to -1
+        ];
+
+        public override void ArmorIDSets()
         {
-            if (Main.dedServ)
-                return;
-
-            EquipLoader.AddEquipTexture(Mod, "CalamityMod/Items/Accessories/ProfanedSoulTransHead", EquipType.Head, this);
-            EquipLoader.AddEquipTexture(Mod, "CalamityMod/Items/Accessories/ProfanedSoulTransHeadNight", EquipType.Head, this, "PscNightHead");
-            EquipLoader.AddEquipTexture(Mod, "CalamityMod/Items/Accessories/ProfanedSoulTransBody", EquipType.Body, this);
-            EquipLoader.AddEquipTexture(Mod, "CalamityMod/Items/Accessories/ProfanedSoulTransLegs", EquipType.Legs, this);
-            EquipLoader.AddEquipTexture(Mod, "CalamityMod/Items/Accessories/ProfanedSoulTransLegsNight", EquipType.Legs, this, "PscNightLegs");
-            EquipLoader.AddEquipTexture(Mod, "CalamityMod/Items/Accessories/Wings/ProfanedSoulTransWings", EquipType.Wings, this);
-            EquipLoader.AddEquipTexture(Mod, "CalamityMod/Items/Accessories/Wings/ProfanedSoulTransWingsNight", EquipType.Wings, this, "PscNightWings");
-        }
-
-        public override void SetStaticDefaults()
-        {
-            Main.RegisterItemAnimation(Item.type, new DrawAnimationVertical(8, 4));
-            ItemID.Sets.AnimatesAsSoul[Type] = true;
-
-            if (Main.dedServ)
-                return;
-
             int equipSlotBody = EquipLoader.GetEquipSlot(Mod, Name, EquipType.Body);
             ArmorIDs.Body.Sets.HidesTopSkin[equipSlotBody] = true;
             ArmorIDs.Body.Sets.HidesArms[equipSlotBody] = true;
@@ -190,8 +209,20 @@ namespace CalamityMod.Items.Accessories
             ArmorIDs.Legs.Sets.OverridesLegs[equipSlotNightLegs] = true;
         }
 
+        public override (SoundStyle sound, int delay)? HurtSound(Player p) => (p.Calamity().pSoulShieldDurability > 0 ? ProfanedGuardianDefender.ShieldDeathSound : Providence.HurtSound, 20);
+
+        public override void SetStaticDefaults()
+        {
+            Main.RegisterItemAnimation(Item.type, new DrawAnimationVertical(8, 4));
+            ItemID.Sets.AnimatesAsSoul[Type] = true;
+
+            base.SetStaticDefaults();
+        }
+
         public override void SetDefaults()
         {
+            SummonTag.TagItem = Item.type;
+            SummonTag.TagTexture = TextureAssets.Item[Type];
             Item.width = 50;
             Item.height = 50;
             Item.accessory = true;
@@ -200,10 +231,7 @@ namespace CalamityMod.Items.Accessories
             Item.Calamity().devItem = true;
         }
 
-        public override bool CanAccessoryBeEquippedWith(Item equippedItem, Item incomingItem, Player player)
-        {
-            return incomingItem.type != ModContent.ItemType<ProfanedSoulArtifact>();
-        }
+        public override bool CanAccessoryBeEquippedWith(Item equippedItem, Item incomingItem, Player player) => incomingItem.type != ModContent.ItemType<ProfanedSoulArtifact>();
 
         public override void ModifyTooltips(List<TooltipLine> tooltips)
         {
@@ -235,12 +263,30 @@ namespace CalamityMod.Items.Accessories
             }
         }
 
+        public override bool CustomSetEquipType(Player player, EquipType type, Mod mod, string name)
+        {
+            switch (type)
+            {
+                case EquipType.Legs:
+                    player.legs = EquipLoader.GetEquipSlot(Mod, Main.dayTime ? "ProfanedSoulCrystal" : "PscNightLegs", type);
+                    return true;
+                case EquipType.Head:
+                    player.head = EquipLoader.GetEquipSlot(Mod, Main.dayTime ? "ProfanedSoulCrystal" : "PscNightHead", type);
+                    return true;
+                case EquipType.Wings:
+                    player.wings = EquipLoader.GetEquipSlot(Mod, Main.dayTime ? "ProfanedSoulCrystal" : "PscNightWings", type);
+                    return true;
+            }
+            return false;
+        }
+
         public override void UpdateAccessory(Player player, bool hideVisual)
         {
             CalamityPlayer modPlayer = player.Calamity();
 
             modPlayer.pSoulArtifact = true;
             modPlayer.profanedCrystal = true;
+
             if (!modPlayer.profanedCrystalPrevious && player.ownedProjectileCounts[ModContent.ProjectileType<PscTransformAnimation>()] == 0)
             {
                 modPlayer.pSoulShieldDurability = 1;
@@ -250,23 +296,15 @@ namespace CalamityMod.Items.Accessories
             if (DownedBossSystem.downedCalamitas && DownedBossSystem.downedExoMechs)
                 player.Calamity().profanedSoulRelicBuff = true;
 
-            modPlayer.profanedCrystalHide = hideVisual || modPlayer.profanedCrystalAnim > 0;
             modPlayer.pSoulShieldVisible = !hideVisual;
 
             DetermineTransformationEligibility(player);
         }
 
-        public override void UpdateVanity(Player player)
-        {
-            player.Calamity().profanedCrystalHide = false;
-            player.Calamity().profanedCrystalForce = true;
-        }
-
         internal static void DetermineTransformationEligibility(Player player)
         {
             //short circuit immediately if profanedcrystalbuffs has already been set
-
-            if (!player.Calamity().profanedCrystalBuffs && player.Calamity().profanedCrystalAnim == -1 && DownedBossSystem.downedCalamitas && DownedBossSystem.downedExoMechs && (player.maxMinions - player.slotsMinions) >= maxMinionRequirement && !player.Calamity().profanedCrystalForce && player.HasBuff<ProfanedCrystalBuff>())
+            if (!player.Calamity().profanedCrystalBuffs && player.Calamity().profanedCrystalAnim == -1 && DownedBossSystem.downedCalamitas && DownedBossSystem.downedExoMechs && (player.maxMinions - player.slotsMinions) >= maxMinionRequirement && player.HasBuff<ProfanedCrystalBuff>())
             {
                 player.Calamity().profanedCrystalBuffs = true;
                 player.Calamity().pscState = (int)GetPscStateFor(player); //update psc state, default is 0 which is the same as the int value of vanity
@@ -508,6 +546,86 @@ namespace CalamityMod.Items.Accessories
                 }
             }
             return false;
+        }
+
+        public override void TransformFrameEffects(Player player)
+        {
+            bool enrage = player.Calamity().pscState >= (int)ProfanedSoulCrystal.ProfanedSoulCrystalState.Enraged;
+
+            if (profanedCrystalWingCounter.Value == 0)
+            {
+                int key = profanedCrystalWingCounter.Key;
+                profanedCrystalWingCounter = new KeyValuePair<int, int>(key == 3 ? 0 : key + 1, enrage ? 5 : 8);
+            }
+
+            player.wingFrame = profanedCrystalWingCounter.Key;
+            profanedCrystalWingCounter = new KeyValuePair<int, int>(profanedCrystalWingCounter.Key, profanedCrystalWingCounter.Value - 1);
+            player.armorEffectDrawOutlines = true;
+            if (player.Calamity().profanedCrystalBuffs)
+            {
+                player.armorEffectDrawShadow = true;
+                if (enrage)
+                {
+                    player.armorEffectDrawOutlinesForbidden = true;
+                }
+            }
+        }
+
+        public KeyValuePair<int, int> profanedCrystalWingCounter = new KeyValuePair<int, int>(1, 10);
+        public KeyValuePair<int, int> profanedCrystalAnimCounter = new KeyValuePair<int, int>(0, 10);
+
+        private bool IsValidTransitionFrame(AnimationType currentAnim, AnimationType newAnim, int frame, int counter) //this exists so it doesn't loop through the entire walk/idle anim just to find one frame for switching.
+        {
+            bool result = newAnim != AnimationType.Jump && currentAnim != AnimationType.Jump;
+            if (currentAnim == AnimationType.Walk && newAnim == AnimationType.Idle)
+            {
+                result = counter <= 0 && (frame == 11 || frame == 15 || frame == 19);
+            }
+            else if (currentAnim == AnimationType.Idle && newAnim == AnimationType.Walk)
+            {
+                result = counter <= 0 && (frame == 2 || frame == 6);
+            }
+            return currentAnim != newAnim && result; //swapping to jumps should be instant, no need to check the counter here
+        }
+
+        private int HandlePSCAnimationFrames(Player player, AnimationType newType)
+        {
+            int key = profanedCrystalAnimCounter.Key; //0-based indexing
+            int value = profanedCrystalAnimCounter.Value - 1;
+            AnimationType currentType = key < 8 ? AnimationType.Idle : key == 8 ? AnimationType.Jump : AnimationType.Walk;
+
+            bool isInvalidTransFrame = !IsValidTransitionFrame(currentType, newType, key, value); //to make the transition between walk and idle frames less jarring and smoother
+            AnimationType type = isInvalidTransFrame ? newType : currentType;
+            int frameCount = type == AnimationType.Walk || (player.Calamity().profanedCrystal && player.statLife <= (int)(player.statLifeMax2 * 0.5)) ? 7 : 10;
+            int lowerRange = type == AnimationType.Idle ? 0 : type == AnimationType.Jump ? 8 : 9;
+            int upperRange = type == AnimationType.Idle ? 7 : type == AnimationType.Jump ? 8 : 22;
+            if (value <= 0 || !isInvalidTransFrame)
+            {
+                value = frameCount;
+                if (key >= lowerRange && key < upperRange)
+                    key++;
+                else
+                    key = lowerRange;
+            }
+            profanedCrystalAnimCounter = new KeyValuePair<int, int>(key, value);
+            return profanedCrystalAnimCounter.Key;
+        }
+
+        public override void TransformPostUpdate(Player player)
+        {
+            bool validEquipSlot = player.legs == EquipLoader.GetEquipSlot(Mod, "ProfanedSoulCrystal", EquipType.Legs) ||
+                                  player.legs == EquipLoader.GetEquipSlot(Mod, "PscNightLegs", EquipType.Legs);
+            if (player.Transformation().Type == ModContent.ItemType<ProfanedSoulCrystal>() && validEquipSlot)
+            {
+                bool usingCarpet = player.carpetTime > 0 && player.controlJump; //doesn't make sense for carpet to use jump frame since you have solid ground
+                AnimationType animType = AnimationType.Walk;
+                if ((player.sliding || player.velocity.Y != 0 || player.mount.Active || (player.grappling[0] != -1 || !player.CheckSolidGround()) || player.GoingDownWithGrapple) && !usingCarpet)
+                    animType = AnimationType.Jump;
+                else if (player.velocity.X == 0 || usingCarpet)
+                    animType = AnimationType.Idle;
+                int frame = HandlePSCAnimationFrames(player, animType);
+                player.legFrame.Y = player.legFrame.Height * frame;
+            }
         }
 
         public override void AddRecipes()

@@ -34,12 +34,12 @@ namespace CalamityMod.Projectiles.Boss
         {
             // Animation
             Projectile.frameCounter++;
-            if (Projectile.frameCounter > 4)
+            if (Projectile.frameCounter >= 3)
             {
                 Projectile.frame++;
                 Projectile.frameCounter = 0;
             }
-            if (Projectile.frame > 4)
+            if (Projectile.frame >= 3)
                 Projectile.frame = 0;
 
             // Direction and rotation
@@ -47,18 +47,19 @@ namespace CalamityMod.Projectiles.Boss
             Projectile.rotation = Projectile.velocity.X * 0.1f;
 
             // Difficulty modes
-            bool bossRush = BossRushEvent.BossRushActive;
-            bool death = CalamityWorld.death || bossRush;
+            bool death = CalamityWorld.death || BossRushEvent.BossRushActive;
 
             // Get a target and calculate distance from it
             int target = Player.FindClosest(Projectile.Center, 1, 1);
             Vector2 distanceFromTarget = Main.player[target].Center - Projectile.Center;
 
             // Set AI to stop homing, start accelerating
-            float stopHomingDistance = bossRush ? 80f : 120f;
+            float stopHomingDistance = 120f;
             if (distanceFromTarget.Length() < stopHomingDistance || Projectile.ai[0] == 1f || Projectile.timeLeft < 120)
             {
                 Projectile.ai[0] = 1f;
+
+                Projectile.tileCollide = true;
 
                 if (Projectile.velocity.Length() < Projectile.ai[2])
                     Projectile.velocity *= 1.05f;
@@ -77,7 +78,7 @@ namespace CalamityMod.Projectiles.Boss
 
             // Home in on target
             float scaleFactor = Projectile.velocity.Length();
-            float inertia = bossRush ? 12f : 16f;
+            float inertia = 16f;
             distanceFromTarget.Normalize();
             distanceFromTarget *= scaleFactor;
             Projectile.velocity = (Projectile.velocity * inertia + distanceFromTarget) / (inertia + 1f);
@@ -85,8 +86,8 @@ namespace CalamityMod.Projectiles.Boss
             Projectile.velocity *= scaleFactor;
 
             // Fly away from other bees
-            float pushForce = bossRush ? 0.06f : 0.05f;
-            float pushDistance = bossRush ? 90f : 60f;
+            float pushForce = 0.05f;
+            float pushDistance = 60f;
             for (int k = 0; k < Main.maxProjectiles; k++)
             {
                 Projectile otherProj = Main.projectile[k];

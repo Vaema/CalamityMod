@@ -1,4 +1,4 @@
-﻿using CalamityMod.Items.Placeables.Abyss;
+﻿using CalamityMod.Items.Placeables.FurnitureAcidwood;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
@@ -26,7 +26,6 @@ namespace CalamityMod.Items.Weapons.Ranged
             Item.shoot = ProjectileID.WoodenArrowFriendly;
             Item.shootSpeed = 6.6f;
             Item.useAmmo = AmmoID.Arrow;
-            Item.Calamity().canFirePointBlankShots = true;
         }
 
         public override void AddRecipes()

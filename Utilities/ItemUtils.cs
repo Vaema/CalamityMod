@@ -41,65 +41,6 @@ namespace CalamityMod
         internal static readonly Color DonatorItemColor = new Color(255, 121, 156);
         #endregion
 
-        // TODO -- This probably isn't the best place to put this but it needs to be somewhere easily accessible.
-        #region Accessory Prefix Stats
-        internal static int GetScalingDefense(int prefixID)
-        {
-            switch (prefixID)
-            {
-                default:
-                    return 0;
-
-                // Ironskin Potion
-                // This makes sense to be here but also not
-                case -1:
-                    if (DownedBossSystem.downedDoG)
-                        return 14;
-                    else if (NPC.downedMoonlord)
-                        return 12;
-                    else if (Main.hardMode)
-                        return 10;
-                    return 8;
-
-                case PrefixID.Hard:
-                    if (DownedBossSystem.downedDoG)
-                        return 4;
-                    else if (NPC.downedMoonlord)
-                        return 3;
-                    else if (Main.hardMode)
-                        return 2;
-                    return 1;
-
-                case PrefixID.Guarding:
-                    if (DownedBossSystem.downedDoG)
-                        return 5;
-                    else if (NPC.downedMoonlord)
-                        return 4;
-                    else if (Main.hardMode)
-                        return 3;
-                    return 2;
-
-                case PrefixID.Armored:
-                    if (DownedBossSystem.downedDoG)
-                        return 6;
-                    else if (NPC.downedMoonlord)
-                        return 5;
-                    else if (Main.hardMode)
-                        return 4;
-                    return 3;
-
-                case PrefixID.Warding:
-                    if (DownedBossSystem.downedDoG)
-                        return 7;
-                    else if (NPC.downedMoonlord)
-                        return 6;
-                    else if (Main.hardMode)
-                        return 5;
-                    return 4;
-            }
-        }
-        #endregion
-
         #region Reforging Algorithm
         internal static int GetReworkedReforge(Item item, UnifiedRandom rand, int currentPrefix)
         {
@@ -120,9 +61,9 @@ namespace CalamityMod
                 int accRerolls = 0;
                 int[][] accessoryReforgeTiers = new int[][]
                 {
-                    /* 0 */ new int[] { PrefixID.Hard, PrefixID.Jagged, PrefixID.Brisk, PrefixID.Wild, GetCalPrefix("Quiet") },
+                    /* 0 */ new int[] { PrefixID.Hard, PrefixID.Jagged, PrefixID.Brisk, PrefixID.Wild },
                     /* 1 */ new int[] { PrefixID.Guarding, PrefixID.Spiked, PrefixID.Precise, PrefixID.Fleeting, PrefixID.Rash, GetCalPrefix("Cloaked") },
-                    /* 2 */ new int[] { PrefixID.Armored, PrefixID.Angry, PrefixID.Hasty2, PrefixID.Intrepid, PrefixID.Arcane, GetCalPrefix("Camouflaged") },
+                    /* 2 */ new int[] { PrefixID.Armored, PrefixID.Angry, PrefixID.Hasty2, PrefixID.Intrepid, PrefixID.Arcane },
                     /* 3 */ new int[] { PrefixID.Warding, PrefixID.Menacing, PrefixID.Lucky, PrefixID.Quick2, PrefixID.Violent, GetCalPrefix("Silent") },
                 };
 
@@ -304,7 +245,7 @@ namespace CalamityMod
 
             List<string> keys = mhk.GetAssignedKeys();
             if (keys.Count == 0)
-                return "[NONE]";
+                return GetText("Misc.HotkeyNotBound").Value;
             else
             {
                 StringBuilder sb = new StringBuilder(16);

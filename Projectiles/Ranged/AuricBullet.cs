@@ -32,7 +32,6 @@ namespace CalamityMod.Projectiles.Ranged
             Projectile.penetrate = 1;
             Projectile.timeLeft = 600;
             Projectile.extraUpdates = 15;
-            Projectile.Calamity().pointBlankShotDuration = CalamityGlobalProjectile.DefaultPointBlankDuration;
             Projectile.tileCollide = false;
             Projectile.ArmorPenetration = 50;
             Projectile.alpha = 255;
@@ -103,5 +102,6 @@ namespace CalamityMod.Projectiles.Ranged
                 dust2.scale = Main.rand.NextFloat(0.3f, 0.9f);
             }
         }
+        public override bool? CanHitNPC(NPC target) => target.CanBeChasedBy() ? null : false;
     }
 }

@@ -9,7 +9,7 @@ namespace CalamityMod.Projectiles.Ranged
     {
         public new string LocalizationCategory => "Projectiles.Ranged";
         public override string Texture => "CalamityMod/Projectiles/Ranged/RealmRavagerBullet";
-        private int bounce = 2;
+        private int bounce = 3;
         public override void SetDefaults()
         {
             Projectile.width = 4;
@@ -21,7 +21,6 @@ namespace CalamityMod.Projectiles.Ranged
             Projectile.aiStyle = ProjAIStyleID.Arrow;
             AIType = ProjectileID.BulletHighVelocity;
             Projectile.timeLeft = 180;
-            Projectile.Calamity().pointBlankShotDuration = CalamityGlobalProjectile.DefaultPointBlankDuration;
         }
 
         public override bool OnTileCollide(Vector2 oldVelocity)
@@ -29,14 +28,42 @@ namespace CalamityMod.Projectiles.Ranged
             bounce--;
             if (bounce <= 0)
                 Projectile.Kill();
-            else
+
+            Player owner = Main.player[Projectile.owner];
+
+            if (bounce == 1)
+            {
+                float npcDistCheck = 640f; // 40 tiles
+                int index = -1;
+                foreach (NPC n in Main.ActiveNPCs)
+                {
+                    if (!n.CanBeChasedBy(Projectile))
+                        continue;
+
+                    float currentNPCDist = Vector2.Distance(n.Center, owner.ClampedMouseWorld());
+                    if (currentNPCDist < npcDistCheck)
+                    {
+                        npcDistCheck = currentNPCDist;
+                        index = n.whoAmI;
+                    }
+                }
+                // If the index is not default, smart bounce in the direction of that enemy.
+                if (index != -1)
+                {
+                    Projectile.velocity = CalamityUtils.CalculatePredictiveAimToTargetMaxUpdates(Projectile.Center, Main.npc[index], owner.ActiveItem().shootSpeed, 3);
+                }
+                return false;
+            }
+            else // Otherwise, use standard bouncing behavior.
             {
                 if (Projectile.velocity.X != oldVelocity.X)
+                {
                     Projectile.velocity.X = -oldVelocity.X;
+                }
                 if (Projectile.velocity.Y != oldVelocity.Y)
+                {
                     Projectile.velocity.Y = -oldVelocity.Y;
-                SoundEngine.PlaySound(SoundID.Item10, Projectile.Center);
-                Projectile.damage /= 2;
+                }
             }
             return false;
         }

@@ -1,10 +1,12 @@
 ﻿using System;
+using CalamityMod.NPCs;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
 
 namespace CalamityMod.Projectiles.Rogue
 {
+    [PierceResistException(onlyForSingleHitbox: true)]
     public class BallisticPoisonCloud : ModProjectile, ILocalizedModType
     {
         public new string LocalizationCategory => "Projectiles.Rogue";

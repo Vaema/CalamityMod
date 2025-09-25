@@ -77,13 +77,13 @@ namespace CalamityMod.Tiles.Abyss
 
         public override void NearbyEffects(int i, int j, bool closer)
         {
-            if (closer && Main.rand.NextBool(200) && j > Main.worldSurface)
+            if (closer && Main.rand.NextBool(j > Main.worldSurface ? 200 : 300) && j > (Main.worldSurface - CalamityUtils.TilesToPixels(200)))
             {
                 Dust dust;
-                dust = Main.dust[Dust.NewDust(new Vector2(i * 16f, j * 16f), 274, 279, DustID.Firefly, 0.23255825f, 10f, 0, new Color(22, 255, 0), 1.5116279f)];
+                dust = Main.dust[Dust.NewDust(new Vector2(i * 16f, j * 16f), 280, 280, DustID.Firefly, 0.2f, 0f, 0, j > Main.worldSurface ? new Color(200, 255, 0) : Color.Lime, Main.rand.NextFloat(1f, 2f))];
                 dust.noGravity = true;
                 dust.noLight = true;
-                dust.fadeIn = 2.5813954f;
+                dust.fadeIn = 2.5f;
             }
         }
 

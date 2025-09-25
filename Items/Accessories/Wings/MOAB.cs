@@ -126,7 +126,6 @@ namespace CalamityMod.Items.Accessories.Wings
             player.GetJumpState(ExtraJump.BlizzardInABottle).Enable();
             player.jumpBoost = true;
             player.autoJump = true;
-            player.noFallDmg = true;
             player.jumpSpeedBoost += 1.6f;
 
             // Mirrors the +5% luck from Lucky Horseshoe (vanilla behavior).

@@ -1,5 +1,6 @@
 ﻿using System;
 using CalamityMod.Items.Weapons.Melee;
+using CalamityMod.NPCs;
 using CalamityMod.Particles;
 using CalamityMod.Projectiles.BaseProjectiles;
 using Microsoft.Xna.Framework;
@@ -14,6 +15,7 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.Projectiles.Melee
 {
+    [PierceResistException]
     public class HellkiteHoldout : BaseCustomUseStyleProjectile, ILocalizedModType
     {
         public override int AssignedItemID => ModContent.ItemType<Hellkite>();
@@ -418,10 +420,11 @@ namespace CalamityMod.Projectiles.Melee
             if (chargedSwing)
                 modifiers.SetCrit();
 
+            float critDamage = Math.Min(Owner.GetTotalCritChance(Projectile.DamageType) * 0.01f, 1f);
             float minMult = 0.25f;
             int hitsToMinMult = 10;
             float damageMult = Utils.Remap(pierceReduction, 0, hitsToMinMult, 1, minMult, true);
-            modifiers.SourceDamage *= (chargedSwing ? 3f * (GFBMulti) : 1) * damageMult;
+            modifiers.SourceDamage *= (chargedSwing ? (2.9f * GFBMulti + critDamage) : 1) * damageMult;
         }
         public override bool PreDraw(ref Color lightColor)
         {

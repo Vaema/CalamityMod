@@ -1,12 +1,3 @@
-AcidicRainBarrel: {
-	DisplayName: Acidic Rain Barrel
-	Tooltip:
-		'''
-		Throws a rolling barrel that explodes on wall collision
-		Stealth strikes make it rain on collision
-		'''
-}
-
 AdamantiteThrowingAxe: {
 	DisplayName: Adamantite Throwing Axe
 	Tooltip: Stealth strikes ignore gravity and rain down lightning on enemy hits
@@ -85,8 +76,9 @@ BloodsoakedCrasher: {
 		'''
 		Throws a bloody axe that is affected by gravity and can bounce twice
 		The axe speeds up over time, but will slow down upon hitting an enemy
-		Heals on enemy hits
-		Stealth strikes spawn homing blood on enemy hits
+		Spews blood orbs upon enemy hits
+		Picking up these blood orbs reduces the duration of [Potion Sickness]
+		Stealth strikes spawn homing blood bolts on hit
 		'''
 }
 
@@ -145,7 +137,7 @@ Cinquedea: {
 
 CobaltKunai: {
 	DisplayName: Cobalt Kunai
-	Tooltip: Stealth strikes fire three homing cobalt energy bolts
+	Tooltip: Stealth strikes fire four homing cobalt energy bolts
 }
 
 ConsecratedWater: {
@@ -203,7 +195,7 @@ CrushsawCrasher: {
 	Tooltip:
 		'''
 		Throws bouncing axes
-		Stealth strikes throw five at once
+		Stealth strikes throw six at once
 		'''
 	GFBFirstWords:
 		'''
@@ -284,8 +276,8 @@ DeepWounder: {
 	DisplayName: Deep Wounder
 	Tooltip:
 		'''
-		Throws an abyssal hatchet that inflicts Armor Crunch and Crush Depth to the enemies it hits
-		Stealth strikes cause the hatchet to stick to struck enemies, causing Heavy Bleeding and spawning a burst of water projectiles
+		Throws an abyssal hatchet that inflicts Heavy Bleeding and Crush Depth to the enemies it hits
+		Stealth strikes cause the hatchet to stick to struck enemies, releasing a barrage of water projectiles
 		Water projectiles launch at the closest enemy after a brief delay
 		'''
 }
@@ -415,7 +407,7 @@ Exorcism: {
 		'''
 		Throws a gigantic hallowed cross to the heavens, which will fall at your cursor a moment later
 		Enemies hit as it falls are impaled and repeatedly seared with holy light
-		Upon experation a cross shaped explosion is created
+		Upon expiration a cross shaped explosion is created
 		Stealth strikes twirl and throw the cross, ending in a stronger explosion at your cursor
 		'''
 }
@@ -457,7 +449,6 @@ FrostcrushValari: {
 		'''
 		Fires a long ranged frosty boomerang that chips off homing icicles on hit
 		Stealth strikes throw a boomerang which follows the cursor
-		This boomerang creates a freezing blast and chips off homing icicles on every hit
 		'''
 }
 
@@ -466,7 +457,7 @@ FrostyFlare: {
 	Tooltip:
 		'''
 		Throw a flare that sticks to enemies and rains a hailstorm on them
-		Stealth strikes trail snowflakes and summon phantom copies instead of ice shards
+		Stealth strikes summon phantom copies instead of ice shards
 		'Do not insert in flare gun'
 		'''
 }
@@ -512,8 +503,8 @@ Glaive: {
 	DisplayName: Glaive
 	Tooltip:
 		'''
-		Tosses up to 3 sharp returning glaives
-		Stealth strikes are super fast and pierce infinitely
+		Tosses a very fast and sharp returning glaive
+		Stealth strikes are faster and can ricochet between enemies, or stick into a single enemy
 		'''
 }
 
@@ -564,7 +555,7 @@ HeavenfallenStardisk: {
 		'''
 		Throws a stardisk upwards which then launches itself towards your mouse cursor
 		Explodes into a star of astral bolts on hit
-		Stealth strikes throw three disks that rain astral energy bolts from the sky
+		Stealth strikes rain astral energy bolts from the sky
 		'''
 }
 
@@ -608,8 +599,8 @@ InfernalKris: {
 	DisplayName: Infernal Kris
 	Tooltip:
 		'''
-		Throws a burning dagger that starts spinning after travelling a short distance, inflicting additional damage while spinning
-		Stealth strikes cause the dagger to be engulfed in flames, exploding on contact with walls and enemies
+		Rapidly throws burning daggers
+		Stealth strikes engulf the dagger in flames, exploding when hitting walls and enemies
 		'''
 }
 
@@ -685,7 +676,7 @@ LeviathanTeeth: {
 		'''
 		Rapidly throws a spread of teeth that stick into enemies
 		After sticking to an enemy, the teeth will gouge through them and shoot out the other side
-		Stealth strikes throw a single piercing tooth that creates a jawline of teeth to maul your foes
+		Stealth strikes create a clamping jaw of teeth to maul your foes
 		'''
 }
 
@@ -956,8 +947,9 @@ SandDollar: {
 	DisplayName: Sand Dollar
 	Tooltip:
 		'''
-		Throws up to 2 returning sand dollars
-		Stealth strikes throw 2 long ranged sand dollars that explode into coral shards on enemy hits
+		Throws gliding sand dollars which can pierce enemies or bounce off floors
+		After bouncing, sand dollars lose their pierce but split into damaging shards on impact
+		Stealth strikes linger in place after bouncing, creating a small sandstorm around them
 		'''
 }
 
@@ -1078,16 +1070,6 @@ SkyfinBombers: {
 		Launches a skyfin nuke that homes in on enemies below it
 		Stealth strikes rapidly home in regardless of enemy position
 		'Fishy bombers inbound!'
-		'''
-}
-
-SkyStabber: {
-	DisplayName: Sky Stabber
-	Tooltip:
-		'''
-		Throws up to 4 gravity-defying spiky balls
-		Stealth strikes make the balls rain feathers onto enemies when they hit
-		Press <right> to delete all existing spiky balls
 		'''
 }
 
@@ -1409,7 +1391,8 @@ WulfrumKnife: {
 	DisplayName: Wulfrum Knife
 	Tooltip:
 		'''
-		Fires wulfrum knives in bursts of 3
+		Fires wulfrum knives in bursts of 3 that stick in enemies
 		Stealth strikes make the knife fly further and hit several times at once
+		<right> to magnetize all stuck knives back to you, restoring stealth
 		'''
 }

@@ -4,6 +4,7 @@ using System.IO;
 using CalamityMod.CalPlayer;
 using CalamityMod.Dusts;
 using CalamityMod.Items.Weapons.Typeless;
+using CalamityMod.NPCs;
 using CalamityMod.Particles;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
@@ -17,6 +18,7 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.Projectiles.Typeless
 {
+    [PierceResistException]
     public class RelicOfDeliveranceSpear : ModProjectile
     {
         public override LocalizedText DisplayName => CalamityUtils.GetItemName<RelicOfDeliverance>();
@@ -476,7 +478,9 @@ namespace CalamityMod.Projectiles.Typeless
         public override bool PreDraw(ref Color lightColor)
         {
             Vector2 drawPos = Owner.MountedCenter + (drifting ? idealVel : Projectile.velocity).SafeNormalize(Vector2.UnitX) * (55 - 35 * Utils.GetLerpValue(0, 25, driftTimer, true));
-            Projectile.DrawProjectileWithBackglow(Color.Goldenrod with { A = 0 }, Color.White, 3f * driftPowerScaling, effects: Math.Sign((drifting ? idealVel.X : Projectile.velocity.X)) == -1 ? Microsoft.Xna.Framework.Graphics.SpriteEffects.FlipVertically : Microsoft.Xna.Framework.Graphics.SpriteEffects.None, xPos: drawPos.X, yPos: drawPos.Y);
+            Projectile.DrawProjectileWithBackglow(Color.Goldenrod with { A = 0 }, Color.White, 3f * driftPowerScaling, effects: Math.Sign((drifting ? idealVel.X : Projectile.velocity.X)) == -1 ? SpriteEffects.FlipVertically : SpriteEffects.None, xPos: drawPos.X, yPos: drawPos.Y);
+            //Asset<Texture2D> texBase = ModContent.Request<Texture2D>(Texture);
+            //Main.EntitySpriteDraw(texBase.Value, drawPos, null, Color.White, Projectile.rotation, texBase.Size() * 0.5f, Projectile.scale, Math.Sign((drifting ? idealVel.X : Projectile.velocity.X)) == -1 ? Microsoft.Xna.Framework.Graphics.SpriteEffects.FlipVertically : Microsoft.Xna.Framework.Graphics.SpriteEffects.None);
 
             Texture2D texture = ModContent.Request<Texture2D>("CalamityMod/Particles/BloomRing").Value;
             Texture2D texture2 = ModContent.Request<Texture2D>("CalamityMod/Particles/GlowSpark").Value;

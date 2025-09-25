@@ -23,8 +23,9 @@ namespace CalamityMod.Particles
         private bool FadeOut;
         private Vector2 Squish;
         private Color BaseColor;
+        private float MakeLight;
 
-        public CustomPulse(Vector2 position, Vector2 velocity, Color color, string texture, Vector2 squish, float rotation, float originalScale, float finalScale, int lifeTime, bool UseAdditiveBlend = true, float baseOpacity = 1f, bool fade = true)
+        public CustomPulse(Vector2 position, Vector2 velocity, Color color, string texture, Vector2 squish, float rotation, float originalScale, float finalScale, int lifeTime, bool UseAdditiveBlend = true, float baseOpacity = 1f, bool fade = true, float makeLight = 1)
         {
             Position = position;
             Velocity = velocity;
@@ -39,6 +40,7 @@ namespace CalamityMod.Particles
             Squish = squish;
             Rotation = rotation;
             UseAltVisual = UseAdditiveBlend;
+            MakeLight = makeLight;
         }
 
         public override void Update()
@@ -49,14 +51,27 @@ namespace CalamityMod.Particles
             opacity = (FadeOut ? (float)Math.Sin(MathHelper.PiOver2 + LifetimeCompletion * MathHelper.PiOver2) : 1f) * BaseOpacity;
 
             Color = BaseColor * opacity;
-            Lighting.AddLight(Position, Color.R / 255f, Color.G / 255f, Color.B / 255f);
+            if (MakeLight > 0)
+                Lighting.AddLight(Position, (Color.R / 255f) * MakeLight, (Color.G / 255f) * MakeLight, (Color.B / 255f) * MakeLight);
             Velocity *= 0.95f;
         }
 
         public override void CustomDraw(SpriteBatch spriteBatch)
         {
             Texture2D tex = ModContent.Request<Texture2D>(NewTexture).Value;
-            spriteBatch.Draw(tex, Position - Main.screenPosition, null, Color * opacity, Rotation, tex.Size() / 2f, Scale * Squish, SpriteEffects.None, 0);
+            float scaleMult = 1;
+            if (Main.zenithWorld)
+            {
+                DateTime day = DateTime.Now;
+                if (day.DayOfWeek == DayOfWeek.Tuesday)
+                {
+                    Texture2D joke = ModContent.Request<Texture2D>("CalamityMod/Particles/MammothParticle").Value;
+                    scaleMult = (MathHelper.Lerp(tex.Size().X / joke.Size().X, tex.Size().Y / joke.Size().Y, 0.5f));
+                    tex = joke;
+                    UseAltVisual = true;
+                }
+            }
+            spriteBatch.Draw(tex, Position - Main.screenPosition, null, Color * opacity, Rotation, tex.Size() / 2f, Scale * Squish * scaleMult, SpriteEffects.None, 0);
         }
 
     }

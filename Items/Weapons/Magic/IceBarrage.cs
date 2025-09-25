@@ -28,10 +28,10 @@ namespace CalamityMod.Items.Weapons.Magic
             Item.UseSound = CastSound;
 
             Item.value = CalamityGlobalItem.RarityDarkBlueBuyPrice;
-            Item.rare = ModContent.RarityType<DarkBlue>();
+            Item.rare = ModContent.RarityType<CosmicPurple>();
             Item.Calamity().donorItem = true;
 
-            Item.damage = 2300;
+            Item.damage = 2250;
             Item.knockBack = 6f;
             Item.useAnimation = Item.useTime = 300;
             Item.reuseDelay = 60;

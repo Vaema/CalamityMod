@@ -1,21 +1,35 @@
 ﻿using System;
+using CalamityMod.Graphics.Primitives;
 using CalamityMod.Items.Weapons.Magic;
+using CalamityMod.Particles;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria;
 using Terraria.Audio;
+using Terraria.Graphics.Shaders;
 using Terraria.ID;
 using Terraria.ModLoader;
 namespace CalamityMod.Projectiles.Magic
 {
-    public class SHPB : ModProjectile, ILocalizedModType
+    public class SHPB : ModProjectile, ILocalizedModType, IPixelatedPrimitiveRenderer
     {
+        public PixelationPrimitiveLayer LayerToRenderTo => PixelationPrimitiveLayer.BeforeProjectiles;
+
+        public ref float ExplodeTimer => ref Projectile.ai[2];
+
+        public bool CanExplodeFromProximity
+        {
+            get => Projectile.ai[1] == 1f;
+            set => Projectile.ai[1] = value.ToInt();
+        }
+
         public new string LocalizationCategory => "Projectiles.Magic";
-        public int explosionTimer = 120;
 
         public override void SetStaticDefaults()
         {
             Main.projFrames[Type] = 4;
+            ProjectileID.Sets.TrailCacheLength[Type] = 12;
+            ProjectileID.Sets.TrailingMode[Type] = 2;
         }
 
         public override void SetDefaults()
@@ -23,8 +37,8 @@ namespace CalamityMod.Projectiles.Magic
             Projectile.width = 24;
             Projectile.height = 24;
             Projectile.friendly = true;
-            Projectile.alpha = 255;
-            Projectile.scale = 0.4f;
+            Projectile.alpha = 0;
+            Projectile.scale = 0f;
             Projectile.timeLeft = 300;
             Projectile.DamageType = DamageClass.Magic;
         }
@@ -78,7 +92,7 @@ namespace CalamityMod.Projectiles.Magic
                 case 4:
                     return new(79, 255, 124);
                 case 5:
-                    return new(255, 128, 20);
+                    return new(255, 96, 20);
 
                 default:
                     return new(0, 0, 0);
@@ -92,7 +106,6 @@ namespace CalamityMod.Projectiles.Magic
             float lights = (float)Main.rand.Next(90, 111) * 0.01f;
             lights *= Main.essScale;
             Lighting.AddLight(Projectile.Center, 1f * lights, 0.2f * lights, 0.75f * lights);
-            Projectile.alpha -= 2;
 
             // Animation
             Projectile.frameCounter++;
@@ -102,22 +115,6 @@ namespace CalamityMod.Projectiles.Magic
                 Projectile.frame++;
                 if (Projectile.frame > 3)
                     Projectile.frame = 0;
-            }
-
-            // Size pulsing
-            bool lightSoul = GetSoulEffects((int)Projectile.ai[0]) == SoulType.Light;
-
-            if (Projectile.localAI[0] == 0f)
-            {
-                Projectile.scale += 0.05f;
-                if (Projectile.scale > 1.9f * (lightSoul ? SHPC.LightExplosionSizeMult : 1f))
-                    Projectile.localAI[0] = 1f;
-            }
-            else
-            {
-                Projectile.scale -= 0.05f;
-                if (Projectile.scale < 1.5f * (lightSoul ? SHPC.LightExplosionSizeMult : 1f))
-                    Projectile.localAI[0] = 0f;
             }
 
             // Sight has weak homing
@@ -139,18 +136,15 @@ namespace CalamityMod.Projectiles.Magic
                 }
 
                 if (index != -1)
-                {
-                    float speed = Projectile.velocity.Length();
-                    Projectile.velocity = Projectile.velocity.ToRotation().AngleTowards(Projectile.SafeDirectionTo(Main.npc[index].Center).ToRotation(), 0.1f).ToRotationVector2() * speed;
-                }
-                else // Slow down over time if not homing
-                    Projectile.velocity *= 0.9875f;
+                    Projectile.velocity = (Projectile.velocity * 17f + Utils.DirectionTo(Projectile.Center, Main.npc[index].Center) * 20f) / 18f;
+                else
+                    Projectile.velocity *= 0.9875f; // Slow down over time if not homing
             }
-            else if (!(GetSoulEffects((int)Projectile.ai[0]) == SoulType.Flight))// Always slow down if not Flight
+            else if (GetSoulEffects((int)Projectile.ai[0]) != SoulType.Flight) // Always slow down if not Flight
                 Projectile.velocity *= 0.9875f;
 
+            // As soon as a plasma orb is in range of an enemy, it will explode in 1 second.
             float explodeRange = 250f;
-            bool canExplode = false;
             foreach (NPC n in Main.ActiveNPCs)
             {
                 if (n.CanBeChasedBy(Projectile, false) && Collision.CanHit(Projectile.Center, 1, 1, n.Center, 1, 1))
@@ -161,15 +155,99 @@ namespace CalamityMod.Projectiles.Magic
                     if (npcDist < explodeRange)
                     {
                         explodeRange = npcDist;
-                        canExplode = true;
+                        CanExplodeFromProximity = true;
                     }
                 }
             }
-            if (canExplode)
+
+            if (CanExplodeFromProximity)
             {
-                explosionTimer--;
-                if (explosionTimer <= 0)
+                ExplodeTimer++;
+                if (ExplodeTimer >= 60f)
                     Projectile.Kill();
+
+                // Quickly scale down before exploding.
+                bool lightSoul = GetSoulEffects((int)Projectile.ai[0]) == SoulType.Light;
+                float minScale = 0.5f * (lightSoul ? SHPC.LightExplosionSizeMult : 1f);
+                float maxScale = 1.9f * (lightSoul ? SHPC.LightExplosionSizeMult : 1f);
+                Projectile.scale = MathHelper.Clamp(Projectile.scale - 0.075f, minScale, maxScale);
+            }
+            else
+            {
+                // Size control.
+                // Scale up to the minimum scale at the start.
+                if (Projectile.timeLeft >= 285)
+                {
+                    bool lightSoul = GetSoulEffects((int)Projectile.ai[0]) == SoulType.Light;
+                    float minScale = 1.5f * (lightSoul ? SHPC.LightExplosionSizeMult : 1f);
+                    Projectile.scale += 0.125f;
+                    if (Projectile.scale > minScale)
+                        Projectile.scale = minScale;
+                }
+                // Pulse occasionally afterwards.
+                else if (Projectile.timeLeft <= 285 && Projectile.timeLeft >= 45)
+                {
+                    bool lightSoul = GetSoulEffects((int)Projectile.ai[0]) == SoulType.Light;
+                    float minScale = 1.5f * (lightSoul ? SHPC.LightExplosionSizeMult : 1f);
+                    float maxScale = 1.9f * (lightSoul ? SHPC.LightExplosionSizeMult : 1f);
+
+                    Projectile.localAI[0]++;
+                    Projectile.scale = MathHelper.Lerp(minScale, maxScale, CalamityUtils.SineBumpEasing(Projectile.localAI[0] / 75f, 1));
+                }
+                // Scale down once the projectile is about to die.
+                else
+                {
+                    // Save the last scale value of the projectile so that we can seamlessly shrink the projectile.
+                    if (Projectile.localAI[1] == 0f)
+                        Projectile.localAI[1] = Projectile.scale;
+
+                    Projectile.scale = Utils.Remap(Projectile.timeLeft, 45, 0, Projectile.localAI[1], 0.35f, true);
+                }
+            }
+
+            Projectile.ExpandHitboxBy((int)(24 * Projectile.scale));
+            Projectile.rotation = Projectile.velocity.ToRotation() + MathHelper.PiOver2;
+
+            // Miscellaneous visual additions.
+            float deathInterpolant = ExplodeTimer > 0 ? Utils.GetLerpValue(0, 50, ExplodeTimer, true) : Utils.GetLerpValue(60, 10, Projectile.timeLeft, true);
+            if (Main.rand.NextBool(3) && deathInterpolant <= 0f)
+            {
+                for (int i = 0; i < 4; i++)
+                {
+                    Vector2 dustSpawnPosition = Projectile.Center + Main.rand.NextVector2Circular(Projectile.width * 0.75f, Projectile.height * 0.75f);
+                    Vector2 dustVelocity = Projectile.velocity * -1.2f; 
+                    Dust dust = Dust.NewDustDirect(dustSpawnPosition, 1, 1, DustID.TintableDustLighted, dustVelocity.X, dustVelocity.Y);
+                    dust.scale = Main.rand.NextFloat(0.8f, 1.2f);
+                    dust.noGravity = true;
+                    dust.noLight = false;
+                    dust.color = FindColorForSoul((int)Projectile.ai[0]);
+                    dust.velocity *= 0.9f;
+                }
+            }
+
+            // Start emitting particles on death.
+            if (deathInterpolant > 0f)
+            {
+                float speedMultiplier = MathHelper.Lerp(1f, 3f, deathInterpolant);
+                float scaleMultiplier = MathHelper.Lerp(1f, 1.65f, deathInterpolant);
+                for (int i = 0; i < 3; i++)
+                {
+                    Vector2 dustVelocity = Main.rand.NextVector2Circular(1f, 1f) * 2.5f * speedMultiplier;
+                    Dust dust = Dust.NewDustDirect(Projectile.Center, 1, 1, DustID.TintableDustLighted, dustVelocity.X, dustVelocity.Y);
+                    dust.scale = Main.rand.NextFloat(1.4f, 1.8f) * scaleMultiplier;
+                    dust.color = FindColorForSoul((int)Projectile.ai[0]);
+                    dust.noGravity = true;
+                    dust.noLight = false;
+                }
+
+                Vector2 plasmaVelocity = Main.rand.NextVector2Circular(1f, 1f) * 1.35f * speedMultiplier;
+                Color plasmaColor = Color.Lerp(FindColorForSoul((int)Projectile.ai[0]), Color.White, deathInterpolant);
+
+                float plasmaScale = Main.rand.NextFloat(0.2f, 0.4f) * scaleMultiplier;
+                int plasmaLifetime = Main.rand.Next(30, 45);
+
+                SquishyLightParticle plasma = new(Projectile.Center, plasmaVelocity, plasmaScale, plasmaColor, plasmaLifetime);
+                GeneralParticleHandler.SpawnParticle(plasma);
             }
         }
 
@@ -190,7 +268,7 @@ namespace CalamityMod.Projectiles.Magic
             if (GetSoulEffects((int)Projectile.ai[0]) == SoulType.Might && target.CanBeMoved(false))
             {
                 // 14NOV2024: Ozzatron: clamped mouse position unnecessary, only used for direction
-                Vector2 launchVel = (owner.Calamity().mouseWorld - owner.Center).SafeNormalize(Vector2.UnitY) * SHPC.MightKnockbackStrength - new Vector2(0, 3);
+                Vector2 launchVel = Utils.DirectionTo(owner.Center, owner.Calamity().mouseWorld) - Vector2.UnitY * 5f;
                 target.MoveNPC(launchVel, SHPC.MightKnockbackStrength, false);
             }
         }
@@ -211,24 +289,99 @@ namespace CalamityMod.Projectiles.Magic
 
             if (Projectile.owner == Main.myPlayer)
             {
-                Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center, Vector2.Zero, ModContent.ProjectileType<SHPExplosion>(), (int)(Projectile.damage * 1.5f), Projectile.knockBack, Projectile.owner, Projectile.ai[0], 0f);
+                Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center, Vector2.Zero, ModContent.ProjectileType<SHPExplosion>(), Projectile.damage, Projectile.knockBack, Projectile.owner, Projectile.ai[0], 0f);
 
-                for (int i = 0; i < 5; i++)
+                for (int i = 0; i < 8; i++)
                 {
-                    Vector2 soulVelocity = -Vector2.UnitY.RotatedByRandom(MathHelper.Pi) * Main.rand.NextFloat(6f, 9f);
-                    Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center, soulVelocity, ModContent.ProjectileType<SHPS>(), (int)(Projectile.damage * 0.33f), 0f, Projectile.owner, Main.rand.Next(6));
+                    bool pickup = i >= 5;
+                    Vector2 soulVelocity = -Vector2.UnitY.RotatedByRandom(MathHelper.Pi) * (pickup ? 2.75f : Main.rand.NextFloat(6f, 9f));
+                    int p = Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center, soulVelocity, ModContent.ProjectileType<SHPS>(), (int)(Projectile.damage * 0.33f), 0f, Projectile.owner, Main.rand.Next(6), 0f, pickup ? 1f : 0f);
+                    if (pickup)
+                        Main.projectile[p].timeLeft *= 3;
                 }
+            }
+
+            // Explosion visuals.
+            for (int i = 0; i < 25; i++)
+            {
+                Vector2 plasmaVelocity = Vector2.One.RotatedByRandom(MathHelper.TwoPi) * Main.rand.NextFloat(6f, 11f);
+                Color plasmaColor = Color.Lerp(FindColorForSoul((int)Projectile.ai[0]), Color.White, Main.rand.NextFloat());
+
+                float plasmaScale = Main.rand.NextFloat(0.8f, 1.4f);
+                int plasmaLifetime = Main.rand.Next(30, 45);
+
+                SquishyLightParticle plasma = new(Projectile.Center, plasmaVelocity, plasmaScale, plasmaColor, plasmaLifetime);
+                GeneralParticleHandler.SpawnParticle(plasma);
+            }
+
+            for (int i = 0; i < 15; i++)
+            {
+                Vector2 dustVelocity = Main.rand.NextVector2Circular(1f, 1f) * 6f;
+                float dustScale = Main.rand.NextFloat(1.8f, 2.4f);
+                Color dustColor = Color.Lerp(FindColorForSoul((int)Projectile.ai[0]), Color.White, Main.rand.NextFloat());
+
+                Dust dust = Dust.NewDustDirect(Projectile.Center, 1, 1, DustID.TintableDustLighted, dustVelocity.X, dustVelocity.Y, 0, dustColor, dustScale);
+                dust.noGravity = true;
+                dust.noLight = false;
+                dust.noLightEmittence = false;
             }
         }
 
-        public override Color? GetAlpha(Color lightColor) => FindColorForSoul((int)Projectile.ai[0]);
-
         public override bool PreDraw(ref Color lightColor)
         {
-            Texture2D tex = ModContent.Request<Texture2D>(Texture).Value;
-            Rectangle frame = tex.Frame(1, Main.projFrames[Type], 0, Projectile.frame);
-            Main.EntitySpriteDraw(tex, Projectile.Center - Main.screenPosition, frame, Projectile.GetAlpha(lightColor), Projectile.rotation, frame.Size() / 2f, Projectile.scale, SpriteEffects.None);
+            Texture2D mainTexture = ModContent.Request<Texture2D>(Texture).Value;
+            Texture2D bloomCircleTexture = ModContent.Request<Texture2D>("CalamityMod/Particles/BloomCircle").Value;
+            Rectangle frame = mainTexture.Frame(1, Main.projFrames[Type], 0, Projectile.frame);
+
+            // Start to shake before exploding.
+            float deathInterpolant = ExplodeTimer > 0 ? Utils.GetLerpValue(0, 50, ExplodeTimer, true) : Utils.GetLerpValue(60, 10, Projectile.timeLeft, true);
+            float shakeStrength = MathHelper.Lerp(0f, 6f, deathInterpolant);
+            Vector2 drawPosition = Projectile.Center + Main.rand.NextVector2Circular(shakeStrength, shakeStrength) - Main.screenPosition;
+
+            // Turn the entire projectile white while exploding.
+            Color drawColor = Color.Lerp(FindColorForSoul((int)Projectile.ai[0]), Color.White, deathInterpolant);
+            Color bloomColor = Color.Lerp(drawColor, Color.White, 0.25f);
+
+            Main.spriteBatch.SetBlendState(BlendState.Additive);
+
+            Main.EntitySpriteDraw(bloomCircleTexture, drawPosition, null, Projectile.GetAlpha(bloomColor) * 0.85f, Projectile.rotation, bloomCircleTexture.Size() / 2f, Projectile.scale * 0.65f, SpriteEffects.None);
+            Main.EntitySpriteDraw(mainTexture, drawPosition, frame, Projectile.GetAlpha(drawColor), Projectile.rotation, frame.Size() / 2f, Projectile.scale, SpriteEffects.None);
+            Main.EntitySpriteDraw(mainTexture, drawPosition, frame, Projectile.GetAlpha(Color.White), Projectile.rotation, frame.Size() / 2f, Projectile.scale * 0.8f, SpriteEffects.None);
+
+            Main.spriteBatch.SetBlendState(BlendState.AlphaBlend);
             return false;
+        }
+
+        public float PlasmaBallWidthFunction(float completion)
+        {
+            float deathInterpolant = ExplodeTimer > 0 ? Utils.GetLerpValue(0, 50, ExplodeTimer, true) : Utils.GetLerpValue(60, 10, Projectile.timeLeft, true);
+
+            float width;
+            float maxBodyWidth = Projectile.scale * 58f;
+            float curveRatio = 0.15f;
+
+            if (completion < curveRatio)
+                width = MathF.Sin(completion / curveRatio * MathHelper.PiOver2) * maxBodyWidth + curveRatio;
+            else
+                width = Utils.Remap(completion, curveRatio, 1f, maxBodyWidth, 0f);
+
+            return width * MathHelper.Lerp(1f, 0f, deathInterpolant);
+        }
+
+        public Color PlasmaBallColorFunction(float completion)
+        {
+            Color bodyColor = Color.Lerp(Color.Transparent, FindColorForSoul((int)Projectile.ai[0]), Utils.GetLerpValue(0f, 0.35f, completion));
+            Color endColor = Color.Lerp(bodyColor, FindColorForSoul((int)Projectile.ai[0]), Utils.GetLerpValue(0.35f, 1f, completion));
+
+            // Change to white when the ball is about to explode.
+            float deathInterpolant = ExplodeTimer > 0 ? Utils.GetLerpValue(0, 50, ExplodeTimer, true) : Utils.GetLerpValue(60, 10, Projectile.timeLeft, true);
+            return Color.Lerp(endColor, Color.White, deathInterpolant);
+        }
+
+        public void RenderPixelatedPrimitives(SpriteBatch spriteBatch, PixelationPrimitiveLayer layer)
+        {
+            GameShaders.Misc["CalamityMod:ImpFlameTrail"].SetShaderTexture(ModContent.Request<Texture2D>("CalamityMod/ExtraTextures/Trails/SylvestaffStreak"));
+            PrimitiveRenderer.RenderTrail(Projectile.oldPos, new(PlasmaBallWidthFunction, PlasmaBallColorFunction, (_) => Projectile.Size * 0.5f, true, true, GameShaders.Misc["CalamityMod:ImpFlameTrail"]), Projectile.oldPos.Length * 2);
         }
     }
 }

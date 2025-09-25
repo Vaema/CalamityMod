@@ -41,6 +41,37 @@ namespace CalamityMod
             new Color(199, 62, 62),
         };
 
+        /// <summary>
+        /// The transformation matrix used for drawing backgrounds in Vanilla Terraria. Should be used for any custom background drawing or CustomSky
+        /// drawing, such as independent sky entities or background shader effects. 
+        /// </summary>
+        public static Matrix BackgroundMatrix
+        {
+            get
+            {
+                Matrix backgroundMatrix = Main.BackgroundViewMatrix.TransformationMatrix;
+                Vector3 translationDirection = new(1f, Main.BackgroundViewMatrix.Effects.HasFlag(SpriteEffects.FlipVertically) ? -1f : 1f, 1f);
+                backgroundMatrix.Translation -= Main.BackgroundViewMatrix.ZoomMatrix.Translation * translationDirection;
+                return backgroundMatrix;
+            }
+        }
+        /// <summary>
+        /// Gets the texture for the passed string and stores it in the referenced field
+        /// If the texture is already stored in the field, it will not request it again.
+        /// Use this instead of requesting every frame.
+        /// </summary>
+        /// <param name="textureAsset"></param>
+        /// <param name="texture"></param>
+        /// <returns></returns>
+        public static Asset<Texture2D> GetTextureEfficient(ref Asset<Texture2D> textureAsset, string texture)
+        {
+            if (textureAsset is null)
+            {
+                textureAsset = ModContent.Request<Texture2D>(texture);
+            }
+            return textureAsset;
+        }
+
         #region Projectile Afterimages
         /// <summary>
         /// Draws a projectile as a series of afterimages. The first of these afterimages is centered on the center of the projectile's hitbox.<br />
@@ -263,6 +294,20 @@ namespace CalamityMod
             spriteBatch.Draw(texture, position, frame, itemColor.MultiplyRGB(drawColor), 0f, origin, wantedScale, SpriteEffects.None, 0);
         }
 
+        static Asset<Texture2D> ItemDotTexture;
+        /// <summary>
+        /// Draws an enabled/disabled dot at the bottom right of the item's sprite
+        /// Used for effects that are enabled/disabled
+        /// </summary>
+        /// <param name="itemPosition"></param>
+        /// <param name="enabled"></param>
+        public static void DrawInventoryDot(SpriteBatch spriteBatch, Vector2 itemPosition, Vector2 dotOffset, bool enabled)
+        {
+            var tex = CalamityUtils.GetTextureEfficient(ref ItemDotTexture, "Terraria/Images/Extra_20").Value;
+            var dotFrame = tex.Frame(1,4, frameY: enabled ? 1 : 2);
+            spriteBatch.Draw(tex, itemPosition + dotOffset, dotFrame, Color.White, 0, dotFrame.Size() * 0.5f, Main.inventoryScale, SpriteEffects.None, 0);
+        }
+
         /// <summary>
         /// Draws a treasure bag in the world in the exact same way as how Terraria 1.4's bags are drawn.
         /// </summary>
@@ -413,9 +458,7 @@ namespace CalamityMod
         {
             Vector2 origin = new Vector2(glowmaskTexture.Width / 2f, glowmaskTexture.Height / 2f);
 
-            Color color = new Color(250, 250, 250, item.alpha);
-            if (item.type == ModContent.ItemType<GrandGuardian>())
-                color = Color.White;
+            Color color = Color.White;
 
             spriteBatch.Draw(glowmaskTexture, item.Center - Main.screenPosition, null, color, rotation, origin, 1f, SpriteEffects.None, 0f);
         }

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.IO;
 using CalamityMod.Buffs.DamageOverTime;
+using CalamityMod.NPCs;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria;
@@ -12,6 +13,7 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.Projectiles.Magic
 {
+    [PierceResistException]
     public class YharimsCrystalBeam : ModProjectile, ILocalizedModType
     {
         public new string LocalizationCategory => "Projectiles.Magic";
@@ -310,7 +312,6 @@ namespace CalamityMod.Projectiles.Magic
             {
                 switch (name)
                 {
-                    case "Fabsol":
                     case "Ziggums":
                         return 2f;
                     case "Poly":

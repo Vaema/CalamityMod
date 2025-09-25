@@ -16,7 +16,7 @@ namespace CalamityMod.Items.Weapons.Melee
             Item.width = Item.height = 28;
             Item.damage = 128;
             Item.value = CalamityGlobalItem.RarityVioletBuyPrice;
-            Item.rare = ModContent.RarityType<Violet>();
+            Item.rare = ModContent.RarityType<BurnishedAuric>();
             Item.noMelee = true;
             Item.noUseGraphic = true;
             Item.channel = true;

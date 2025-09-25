@@ -1,5 +1,5 @@
 ﻿using CalamityMod.CalPlayer;
-using CalamityMod.Items.Placeables.FurnitureAbyss;
+using CalamityMod.Items.Placeables.Furniture;
 using CalamityMod.Systems;
 using CalamityMod.Waters;
 using CalamityMod.World;
@@ -48,7 +48,7 @@ namespace CalamityMod.BiomeManagers
 
         // Temporarily use sulphur for now
         public override ModWaterStyle WaterStyle => SulphuricDepthsWater.Instance;
-        public override int BiomeTorchItemType => ModContent.ItemType<AbyssTorch>();
+        public override int BiomeTorchItemType => ModContent.ItemType<CausticTorch>();
         public override SceneEffectPriority Priority => SceneEffectPriority.Environment;
         public override string BestiaryIcon => "CalamityMod/BiomeManagers/AbyssLayer1Icon";
         public override string BackgroundPath => "CalamityMod/Backgrounds/MapBackgrounds/AbyssBGLayer1";

@@ -30,7 +30,7 @@ namespace CalamityMod.NPCs.PlaguebringerGoliath
         public override void SetDefaults()
         {
             NPC.Calamity().canBreakPlayerDefense = true;
-            NPC.GetNPCDamage();
+            NPC.damage = 80; // 160
             NPC.width = 42;
             NPC.height = 42;
             NPC.defense = 20;
@@ -44,17 +44,12 @@ namespace CalamityMod.NPCs.PlaguebringerGoliath
             NPC.DeathSound = SoundID.NPCDeath14;
             NPC.Calamity().VulnerableToSickness = false;
             NPC.Calamity().VulnerableToElectricity = true;
-
-            // Scale stats in Expert and Master
-            CalamityGlobalNPC.AdjustExpertModeStatScaling(NPC);
-            CalamityGlobalNPC.AdjustMasterModeStatScaling(NPC);
         }
 
         public override void AI()
         {
-            bool bossRush = BossRushEvent.BossRushActive;
-            bool death = CalamityWorld.death || bossRush;
-            bool revenge = CalamityWorld.revenge || bossRush;
+            bool death = CalamityWorld.death || BossRushEvent.BossRushActive;
+            bool revenge = CalamityWorld.revenge || BossRushEvent.BossRushActive;
 
             Lighting.AddLight(NPC.Center, 0.03f, 0.2f, 0f);
 
@@ -78,7 +73,7 @@ namespace CalamityMod.NPCs.PlaguebringerGoliath
 
             Vector2 vector = Main.player[NPC.target].Center - NPC.Center;
             float distanceRequiredForExplosion = 90f;
-            float timeBeforeExplosion = (bossRush ? 1000f : death ? 740f : revenge ? 520f : 400f) + NPC.ai[3] * 4f;
+            float timeBeforeExplosion = (death ? 740f : revenge ? 520f : 400f) + NPC.ai[3] * 4f;
             if (vector.Length() < distanceRequiredForExplosion || NPC.ai[0] >= timeBeforeExplosion)
             {
                 CheckDead();
@@ -94,7 +89,7 @@ namespace CalamityMod.NPCs.PlaguebringerGoliath
             }
 
             NPC.TargetClosest(true);
-            float velocity = (bossRush ? 14f : death ? 12f : revenge ? 10f : 8f) + NPC.ai[3] * 0.04f;
+            float velocity = (death ? 12f : revenge ? 10f : 8f) + NPC.ai[3] * 0.04f;
             Vector2 npcDirection = new Vector2(NPC.Center.X + (float)(NPC.direction * 20), NPC.Center.Y + 6f);
             float targetX = player.position.X + (float)player.width * 0.5f - npcDirection.X;
             float targetY = player.Center.Y - npcDirection.Y;
@@ -102,7 +97,7 @@ namespace CalamityMod.NPCs.PlaguebringerGoliath
             float npcSpeed = velocity / targetDistance;
             targetX *= npcSpeed;
             targetY *= npcSpeed;
-            float inertia = (bossRush ? 35f : death ? 40f : revenge ? 45f : 50f) - NPC.ai[3] * 0.25f;
+            float inertia = (death ? 40f : revenge ? 45f : 50f) - NPC.ai[3] * 0.25f;
             NPC.velocity.X = (NPC.velocity.X * inertia + targetX) / (inertia + 1f);
             NPC.velocity.Y = (NPC.velocity.Y * inertia + targetY) / (inertia + 1f);
         }
@@ -124,10 +119,10 @@ namespace CalamityMod.NPCs.PlaguebringerGoliath
                 spriteEffects = SpriteEffects.FlipHorizontally;
 
             Texture2D texture = TextureAssets.Npc[Type].Value;
-            Vector2 halfSizeTexture = new Vector2(TextureAssets.Npc[Type].Value.Width / 2, TextureAssets.Npc[Type].Value.Height / 2);
+            Vector2 halfSizeTexture = NPC.frame.Size() / 2f;
             Vector2 drawLocation = NPC.Center - screenPos;
             drawLocation -= new Vector2(texture.Width, texture.Height / Main.npcFrameCount[Type]) * NPC.scale / 2f;
-            drawLocation += halfSizeTexture * NPC.scale + new Vector2(0f, NPC.gfxOffY);
+            drawLocation += halfSizeTexture * NPC.scale + Vector2.UnitY * NPC.gfxOffY;
 
             Color backAfterimageColor = PlaguebringerGoliath.BackglowColor * NPC.Opacity;
             for (int i = 0; i < 10; i++)
@@ -152,11 +147,11 @@ namespace CalamityMod.NPCs.PlaguebringerGoliath
             {
                 if (Main.zenithWorld) // it is the plague, you get very sick.
                 {
-                    target.AddBuff(ModContent.BuffType<SulphuricPoisoning>(), 300, true);
-                    target.AddBuff(BuffID.Poisoned, 300, true);
-                    target.AddBuff(BuffID.Venom, 300, true);
+                    target.AddBuff(ModContent.BuffType<SulphuricPoisoning>(), 300);
+                    target.AddBuff(BuffID.Poisoned, 300);
+                    target.AddBuff(BuffID.Venom, 300);
                 }
-                target.AddBuff(ModContent.BuffType<Plague>(), 150, true);
+                target.AddBuff(ModContent.BuffType<Plague>(), 180);
             }
         }
 

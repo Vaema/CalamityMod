@@ -1,4 +1,5 @@
-﻿using CalamityMod.Projectiles.Summon;
+﻿using CalamityMod.Buffs.Summon;
+using CalamityMod.Projectiles.Summon;
 using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.DataStructures;
@@ -13,8 +14,9 @@ namespace CalamityMod.Items.Weapons.Summon
 
         public override void SetDefaults()
         {
-            Item.damage = 18;
+            Item.damage = 20;
             Item.DamageType = DamageClass.Summon;
+            Item.buffType = ModContent.BuffType<FlarebatBuff>();
             Item.shoot = ModContent.ProjectileType<FlarebatMinion>();
             Item.knockBack = 1f;
 
@@ -31,7 +33,9 @@ namespace CalamityMod.Items.Weapons.Summon
 
         public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)
         {
-            Projectile.NewProjectile(source, player.ClampedMouseWorld(), Vector2.Zero, type, damage, knockback, player.whoAmI);
+            player.AddBuff(Item.buffType, 2);
+            var minion = Projectile.NewProjectileDirect(source, player.ClampedMouseWorld(), Vector2.Zero, type, damage, knockback, player.whoAmI);
+            minion.originalDamage = Item.damage;
             return false;
         }
     }

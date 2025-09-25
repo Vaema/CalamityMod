@@ -83,7 +83,7 @@ namespace CalamityMod.Items.Weapons.Melee
         public override void AddRecipes()
         {
             CreateRecipe().
-                AddIngredient(ItemID.ThrowingKnife, 200).
+                AddIngredient(ItemID.ThrowingKnife, 50).
                 AddIngredient(ItemID.LifeCrystal).
                 AddIngredient(ItemID.LesserHealingPotion, 5).
                 AddTile(TileID.Anvils).

@@ -17,6 +17,7 @@ namespace CalamityMod.Projectiles.Magic
         public override string Texture => "CalamityMod/Projectiles/InvisibleProj";
         public int time = 0;
         public int direction = 0;
+        public Vector2 lastPos;
         public override void SetDefaults()
         {
             Projectile.width = 16;
@@ -44,14 +45,15 @@ namespace CalamityMod.Projectiles.Magic
             if (time == 0)
             {
                 direction = Main.rand.NextBool() ? 1 : -1;
+                lastPos = Projectile.Center;
             }
 
             if (time > 3)
-                Projectile.Center += offset * direction;
+                Projectile.Center += offset * direction * Utils.GetLerpValue(3, 10, time, true);
 
             if (time > 3 && targetDist < 1400)
             {
-                Particle spark = new GlowSparkParticle(Projectile.Center, -Projectile.velocity * 0.3f, false, (int)(15 * MathHelper.Clamp(Projectile.ai[2], 0.5f, 1f)), 0.07f * MathHelper.Clamp(Projectile.ai[2], 0.25f, 1f), Color.Chartreuse, new Vector2(1, 0.7f), false, true);
+                Particle spark = new GlowSparkParticle(Projectile.Center, Utils.DirectionTo(Projectile.Center, lastPos), false, (int)(15 * MathHelper.Clamp(Projectile.ai[2], 0.5f, 1f)), 0.07f * MathHelper.Clamp(Projectile.ai[2], 0.25f, 1f), Color.Chartreuse, new Vector2(1, 1.4f), false, true);
                 GeneralParticleHandler.SpawnParticle(spark);
 
                 if (Main.rand.NextBool((int)(MathHelper.Clamp((1 - Projectile.ai[2]) * 5, 1, 15))))
@@ -64,6 +66,7 @@ namespace CalamityMod.Projectiles.Magic
                 }
             }
             time++;
+            lastPos = Projectile.Center;
         }
         public override void ModifyHitNPC(NPC target, ref NPC.HitModifiers modifiers)
         {

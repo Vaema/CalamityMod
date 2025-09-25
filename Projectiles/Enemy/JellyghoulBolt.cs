@@ -63,7 +63,7 @@ namespace CalamityMod.Projectiles.Enemy
             if (info.Damage <= 0)
                 return;
 
-            target.AddBuff(ModContent.BuffType<BrimstoneFlames>(), 120);
+            target.AddBuff(ModContent.BuffType<BrimstoneFlames>(), 60);
         }
 
         public override void OnKill(int timeLeft)

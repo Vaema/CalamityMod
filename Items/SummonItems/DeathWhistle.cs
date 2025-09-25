@@ -52,7 +52,7 @@ namespace CalamityMod.Items.SummonItems
             CreateRecipe().
                 AddIngredient(ItemID.LunarTabletFragment, 15).
                 AddIngredient(ItemID.LihzahrdBrick, 25).
-                AddTile(TileID.MythrilAnvil).
+                AddTile(TileID.DemonAltar).
                 Register();
         }
     }

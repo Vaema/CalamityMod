@@ -17,7 +17,7 @@ namespace CalamityMod.Items.Weapons.Ranged
         {
             Item.width = 68;
             Item.height = 32;
-            Item.damage = 74;
+            Item.damage = 79;
             Item.DamageType = DamageClass.Ranged;
             Item.useTime = 5;
             Item.useAnimation = 5;
@@ -34,7 +34,6 @@ namespace CalamityMod.Items.Weapons.Ranged
             Item.value = CalamityGlobalItem.RarityPurpleBuyPrice;
             Item.rare = ItemRarityID.Purple;
             Item.Calamity().donorItem = true;
-            Item.Calamity().canFirePointBlankShots = true;
         }
 
         public override Vector2? HoldoutOffset() => new Vector2(-12, -6);
@@ -63,7 +62,7 @@ namespace CalamityMod.Items.Weapons.Ranged
                 AddIngredient(ItemID.Uzi).
                 AddIngredient(ItemID.LunarBar, 5).
                 AddIngredient(ItemID.FragmentVortex, 10).
-                AddTile(TileID.LunarCraftingStation).
+                AddTile(TileID.MythrilAnvil).
                 Register();
         }
     }

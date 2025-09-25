@@ -49,7 +49,7 @@ namespace CalamityMod.Items.Weapons.Ranged
                 AddIngredient<DubiousPlating>(15).
                 AddIngredient<AstralBar>(10).
                 AddIngredient<RuinousSoul>(2).
-                AddTile(TileID.LunarCraftingStation).
+                AddTile(TileID.MythrilAnvil).
                 Register();
         }
     }

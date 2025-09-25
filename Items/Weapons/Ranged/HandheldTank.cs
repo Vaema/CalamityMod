@@ -21,8 +21,7 @@ namespace CalamityMod.Items.Weapons.Ranged
             Item.DamageType = DamageClass.Ranged;
             Item.damage = 740;
             Item.knockBack = 16f;
-            Item.useTime = 84;
-            Item.useAnimation = 84;
+            Item.useTime = Item.useAnimation = 74;
             Item.autoReuse = true;
 
             Item.useStyle = ItemUseStyleID.Shoot;
@@ -52,11 +51,11 @@ namespace CalamityMod.Items.Weapons.Ranged
         public override void AddRecipes()
         {
             CreateRecipe().
-                AddIngredient<Shroomer>().
+                AddIngredient(ItemID.RocketLauncher).
                 AddRecipeGroup("IronBar", 50).
                 AddIngredient<DivineGeode>(5).
                 AddIngredient(ItemID.TigerSkin).
-                AddTile(TileID.LunarCraftingStation).
+                AddTile(TileID.MythrilAnvil).
                 Register();
         }
     }

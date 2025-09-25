@@ -31,11 +31,6 @@ AegisBlade: {
 		'''
 }
 
-Aftershock: {
-	DisplayName: Aftershock
-	Tooltip: Summons boulders from the sky on enemy hits
-}
-
 AirSpinner: {
 	DisplayName: Air Spinner
 	Tooltip:
@@ -89,7 +84,7 @@ ArkoftheCosmos: {
 		<right> to snip out the scissor blades in front of you
 		Hitting an enemy with it will parry them, granting you brief invulnerability
 		You can also parry projectiles to make them deal 160 less damage for a short period
-		Parrying will empower the next 15 swings of the sword
+		Parrying will empower the next 16 swings of the sword
 		'''
 	BlastInfo: Double <right> with charges available to cause a Big Rip in spacetime and consume all charges
 }
@@ -116,11 +111,6 @@ ArkoftheElements: {
 		'''
 }
 
-AstralBlade: {
-	DisplayName: Astral Blade
-	Tooltip: Deals more damage the more life an enemy has left
-}
-
 AstralPike: {
 	DisplayName: Astral Pike
 	Tooltip: Summons astral star swarms on hit
@@ -142,16 +132,6 @@ Avalanche: {
 		'''
 		Hitting enemies spawns orbiting ice bombs
 		After 2 seconds, ice bombs explode into gravity-affected ice shards
-		'''
-}
-
-Azathoth: {
-	DisplayName: Azathoth
-	Tooltip:
-		'''
-		{$Common.YoyoStatsInfinite}
-		Fires cosmic orbs that blast nearby enemies with lasers
-		'Destroy the universe in the blink of an eye'
 		'''
 }
 
@@ -205,12 +185,7 @@ BladecrestOathsword: {
 
 BlightedCleaver: {
 	DisplayName: Blighted Cleaver
-	Tooltip:
-		'''
-		Fires homing blazing blades
-		Gives the player the Brutal Carnage buff on enemy hits
-		This buff increases melee damage by 20%
-		'''
+	Tooltip: Fires homing blazing blades
 }
 
 Bonebreaker: {
@@ -354,12 +329,7 @@ DeathsAscension: {
 
 DefiledGreatsword: {
 	DisplayName: Defiled Greatsword
-	Tooltip:
-		'''
-		Fires blazing, hyper, and sunlight blades
-		Gives the player the Brutal Carnage buff on enemy hits
-		This buff increases melee damage by 20%
-		'''
+	Tooltip: Fires blazing, hyper, and sunlight blades
 }
 
 DepthCrusher: {
@@ -518,11 +488,7 @@ ExaltedOathblade: {
 
 Excelsus: {
 	DisplayName: Excelsus
-	Tooltip:
-		'''
-		Fires a spread of spinning blades
-		Summons laser fountains on hit
-		'''
+	Tooltip: Fires a spread of spinning blades
 }
 
 Exoblade: {
@@ -674,7 +640,14 @@ GeliticBlade: {
 
 GildedProboscis: {
 	DisplayName: Gilded Proboscis
-	Tooltip: Heals the player on hit
+	Tooltip:
+		'''
+		Steals life proportional to the damage dealt to foes
+		<left> to charge up a precise thrust
+		The thrust begins weak, but becomes more powerful the longer it's held
+		<right> to dash forward with a mighty upstrike
+		The distance you dash depends on if you are moving with or against the dash
+		'''
 }
 
 GoldplumeSpear: {
@@ -715,7 +688,11 @@ GrandGuardian: {
 
 GreatswordofJudgement: {
 	DisplayName: Greatsword of Judgement
-	Tooltip: Fires a piercing energy wave that releases homing stars as it flies
+	Tooltip:
+		'''
+		Fires a piercing energy wave that releases homing stars as it flies
+		Hits with the blade summon two stronger stars from behind you
+		'''
 }
 
 Greentide: {
@@ -788,22 +765,16 @@ InsidiousImpaler: {
 		'''
 }
 
-IridescentExcalibur: {
-	DisplayName: Iridescent Excalibur
-	Tooltip:
-		'''
-		True melee strikes freeze enemies
-		Fires rainbow beams that change their behavior based on their color
-		Press <right> for true melee
-		'''
-}
-
 Lacerator: {
 	DisplayName: Lacerator
 	Tooltip:
 		'''
 		{$Common.YoyoStatsInfinite}
-		Accelerates natural life regeneration on hits with the yoyo
+		Striking enemies conjures a bloody saw to shred them
+		The saw does more damage the more often the yoyo hits, and fades away when not striking enemies
+		Enemies touching the edge of the sawblade get blood orbs torn out of them
+		Picking up these blood orbs reduces the duration of [Potion Sickness]
+		The direction of the saw's spin depends on which direction you originally threw the yoyo
 		[GFB]
 		'''
 	TooltipNormal: Someone thought this was a viable weapon against DoG at one point lol
@@ -829,8 +800,10 @@ Lucrecia: {
 	DisplayName: Lucrecia
 	Tooltip:
 		'''
-		Fires a DNA chain
-		Finesse
+		[c/9370db:Fires a spiraling darklight shard when swung]
+		[c/837ce4:Hits with the blade itself build energy]
+		[c/7489ee:Energy is lost over time but briefly stops depleting after reaching its maximum]
+		[c/6495f7:Press <right> with maximum energy to fire a double helix comet]
 		'''
 }
 
@@ -858,9 +831,17 @@ MirrorBlade: {
 	DisplayName: Mirror Blade
 	Tooltip:
 		'''
-		The amount of contact damage an enemy does is added to this weapons' damage
-		You must hit an enemy with the blade to trigger this effect
+		Striking an enemy or a hostile projectile summons up to 10 orbiting mirror shards
+		Any shards above 10 instead seek out enemies 
+		Holding <right> coalesces the orbiting mirror shards into a shield
 		'''
+	HoldShiftTooltip:
+		'''
+		[c/aab7f1:Each shard reduces the damage of a projectile that hit the shield by 10%]
+		[c/aab7f1:The shield shatters after one projectile, launching the shards at enemies with increased damage]
+		[c/aab7f1:With all 10 shards, you gain a brief period of invulnerability when shattering the shield]
+		'''
+	FlavorTooltip: "[c/7b6d8d:'A blade taken from your own reflection within the Ceaseless Void']"
 }
 
 MonolithSword: {
@@ -932,7 +913,7 @@ OldLordClaymore: {
 	HoldShiftTooltip:
 		'''
 		[c/df4420:A gift to outstanding Demons, a replica of the sword used by the greatest of all Demon Lords.]
-		[c/df4420:The prosperity he brought to their kind is unmatched even now that they alone rule the Undeworld.]
+		[c/df4420:The prosperity he brought to their kind is unmatched even now that they alone rule the Underworld.]
 		'''
 }
 
@@ -966,9 +947,18 @@ Orderbringer: {
 	Tooltip:
 		'''
 		Fires piercing energy waves and summons four homing stars near your cursor
-		Energy waves deal more damage with each consecutive hit
 		Hits with the blade summon two beams from the sky
 		'No matter where you may be you are never alone'
+		'''
+}
+
+Ozzathoth: {
+	DisplayName: Ozzathoth
+	Tooltip:
+		'''
+		{$Common.YoyoStatsInfinite}
+		Fires cosmic orbs that blast nearby enemies with lasers
+		'Destroy the universe in the blink of an eye'
 		'''
 }
 
@@ -1296,11 +1286,13 @@ Terratomere: {
 
 TerrorBlade: {
 	DisplayName: Terror Blade
+	GFBName: TERROR BLADD4
 	Tooltip:
 		'''
 		Fires a terror beam that bounces off tiles
-		On every bounce it emits an explosion
+		On every bounce it emits an explosion[STATUS]
 		'''
+	GFB: "'Ignore my spelling.'"
 }
 
 TheBurningSky: {
@@ -1324,11 +1316,6 @@ TheDarkMaster: {
 		The clones may only exist while holding this weapon
 		'The blade by which the shadows levy their foes with a terrible fate'
 		'''
-}
-
-TheEnforcer: {
-	DisplayName: The Enforcer
-	Tooltip: Spawns essence flames on hit
 }
 
 TheGodsGambit: {
@@ -1359,8 +1346,9 @@ TheMutilator: {
 	DisplayName: The Mutilator
 	Tooltip:
 		'''
-		Striking an enemy below 20% life will trigger a bloodsplosion
-		Bloodsplosions cause hearts to drop that can be picked up to heal you
+		Striking enemies empowers The Mutilator, increasing its damage
+		At full charge, striking enemies causes a blood orb explosion
+		Picking up these blood orbs reduces the duration of [Potion Sickness]
 		'''
 }
 
@@ -1475,7 +1463,12 @@ UltimusCleaver: {
 
 UrchinMace: {
 	DisplayName: Urchin Mace
-	Tooltip: Throws out a whirlpool when released
+	Tooltip:
+		'''
+		Throws out a whirlpool when released
+		[c/5C95A1:'The people of the sea were adept hunters, but they abhorred unnecessary violence.]
+		[c/5C95A1:Unfortunately, neighboring nations were brutish, so they fashioned their tools for war.']
+		'''
 }
 
 VanishingPoint: {
@@ -1494,7 +1487,12 @@ VeinBurster: {
 
 Violence: {
 	DisplayName: Violence
-	Tooltip: Releases a blazing fork which stays near the mouse and shreds enemies
+	Tooltip:
+		'''
+		A demonic pitchfork, cursed to cause endless bloodshed
+		<left> commands the trident to follow your cursor and shred enemies with devastating speed
+		<right> throws the trident, violently tearing through enemies with immense power and inflicting Vulnerability Hex
+		'''
 }
 
 Virulence: {

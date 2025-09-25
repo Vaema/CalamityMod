@@ -25,6 +25,7 @@ namespace CalamityMod.Items.Accessories
             CalamityPlayer modPlayer = player.Calamity();
             modPlayer.sSpiritAmulet = true;
             modPlayer.sSpiritAmuletVisual = !hideVisual;
+            modPlayer.WaterDebuffMultiplier += 0.35f;
         }
     }
 }

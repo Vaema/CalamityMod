@@ -18,7 +18,7 @@ namespace CalamityMod.Items.Weapons.Rogue
         {
             Item.width = 20;
             Item.height = 20;
-            Item.damage = 210;
+            Item.damage = 163;
             Item.DamageType = RogueDamageClass.Instance;
             Item.noMelee = true;
             Item.noUseGraphic = true;
@@ -26,7 +26,7 @@ namespace CalamityMod.Items.Weapons.Rogue
             Item.useStyle = ItemUseStyleID.Swing;
             Item.knockBack = 5;
             Item.value = CalamityGlobalItem.RarityDarkBlueBuyPrice;
-            Item.rare = ModContent.RarityType<DarkBlue>();
+            Item.rare = ModContent.RarityType<CosmicPurple>();
             Item.UseSound = SoundID.Item1;
             Item.autoReuse = true;
 

@@ -1,4 +1,5 @@
-﻿using CalamityMod.Projectiles.Rogue;
+﻿using CalamityMod.Items.Weapons.Melee;
+using CalamityMod.Projectiles.Rogue;
 using CalamityMod.Rarities;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
@@ -12,28 +13,30 @@ namespace CalamityMod.Items.Weapons.Rogue
     public class Eradicator : RogueWeapon
     {
         public static float Speed = 10.5f;
-
+        public override void SetStaticDefaults()
+        {
+            ItemID.Sets.ShimmerTransformToItem[Type] = ModContent.ItemType<Excelsus>();
+        }
         public override void SetDefaults()
         {
             Item.width = 62;
             Item.height = 58;
-            Item.damage = 620;
+            Item.damage = 540;
+            Item.DamageType = RogueDamageClass.Instance;
+            Item.useTime = Item.useAnimation = 24;
+            Item.knockBack = 7f;
             Item.noMelee = true;
             Item.noUseGraphic = true;
             Item.autoReuse = true;
             Item.useStyle = ItemUseStyleID.Swing;
-            Item.useTime = 33;
-            Item.useAnimation = 33;
-            Item.knockBack = 7f;
             Item.UseSound = SoundID.Item1;
             Item.value = CalamityGlobalItem.RarityDarkBlueBuyPrice;
-            Item.rare = ModContent.RarityType<DarkBlue>();
+            Item.rare = ModContent.RarityType<CosmicPurple>();
             Item.shoot = ModContent.ProjectileType<EradicatorProjectile>();
             Item.shootSpeed = Speed;
-            Item.DamageType = RogueDamageClass.Instance;
         }
 
-        public override float StealthDamageMultiplier => 0.6f;
+        public override float StealthDamageMultiplier => 0.75f;
 
         public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)
         {

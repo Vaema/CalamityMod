@@ -22,7 +22,7 @@ namespace CalamityMod.Items.Ammo
         {
             Item.width = 22;
             Item.height = 46;
-            Item.damage = 30;
+            Item.damage = 16;
             Item.DamageType = DamageClass.Ranged;
             Item.maxStack = Item.CommonMaxStack;
             Item.consumable = true;
@@ -31,7 +31,7 @@ namespace CalamityMod.Items.Ammo
             Item.shoot = ModContent.ProjectileType<VanquisherArrowProj>();
             Item.shootSpeed = 0.1f;
             Item.ammo = AmmoID.Arrow;
-            Item.rare = ModContent.RarityType<DarkBlue>();
+            Item.rare = ModContent.RarityType<CosmicPurple>();
         }
 
         public override void PostDrawInWorld(SpriteBatch spriteBatch, Color lightColor, Color alphaColor, float rotation, float scale, int whoAmI)

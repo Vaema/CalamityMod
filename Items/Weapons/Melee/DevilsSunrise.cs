@@ -51,7 +51,7 @@ namespace CalamityMod.Items.Weapons.Melee
                 AddIngredient(ItemID.Terragrim).
                 AddIngredient<BloodstoneCore>(25).
                 AddIngredient<ScorchedBone>(10).
-                AddTile(TileID.LunarCraftingStation).
+                AddTile(TileID.MythrilAnvil).
                 Register();
         }
     }

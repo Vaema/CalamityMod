@@ -62,15 +62,11 @@ namespace CalamityMod.Systems
                             // Total darkness
                             float signusDarkness = signusLifeRatio * multiplier;
                             darkRatio = MathHelper.Clamp(signusDarkness, 0f, 1f);
-                            scale += (CalamityWorld.LegendaryMode ? MaxGFBSignusDarkness : MaxSignusDarkness) * darkRatio;
+                            scale += (Main.zenithWorld ? MaxGFBSignusDarkness : MaxSignusDarkness) * darkRatio;
                         }
                     }
                 }
             }
-
-            // Bat Wings give stronger night vision
-            if (Main.LocalPlayer.wingsLogic == (int)VanillaWingID.BatWings)
-                scale *= 1.08f;
         }
 
         public override void ModifySunLightColor(ref Color tileColor, ref Color backgroundColor)

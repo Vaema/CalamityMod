@@ -1,6 +1,7 @@
 ﻿using System;
 using CalamityMod.Buffs.StatDebuffs;
 using CalamityMod.Items.Weapons.Melee;
+using CalamityMod.NPCs;
 using CalamityMod.Particles;
 using CalamityMod.Projectiles.BaseProjectiles;
 using Microsoft.Xna.Framework;
@@ -15,6 +16,7 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.Projectiles.Melee
 {
+    [PierceResistException]
     public class BasherHoldout : BaseCustomUseStyleProjectile, ILocalizedModType
     {
         public override int AssignedItemID => ModContent.ItemType<Basher>();
@@ -195,7 +197,7 @@ namespace CalamityMod.Projectiles.Melee
             {
                 Owner.Calamity().GeneralScreenShakePower = 1.2f;
 
-                SoundStyle fire3 = new("CalamityMod/Sounds/Item/HolyFireBulletExplosion");
+                SoundStyle fire3 = new("CalamityMod/Sounds/Item/DampExplosion");
                 SoundEngine.PlaySound(fire3 with { Volume = 0.35f, Pitch = 0.7f }, Projectile.Center);
                 for (int i = 0; i < MathHelper.Clamp(15 - Projectile.numHits * 3, 2, 15); i++)
                 {

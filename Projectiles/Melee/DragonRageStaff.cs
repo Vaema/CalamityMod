@@ -2,6 +2,7 @@
 using CalamityMod.Buffs.DamageOverTime;
 using CalamityMod.CalPlayer;
 using CalamityMod.Items.Weapons.Melee;
+using CalamityMod.NPCs;
 using CalamityMod.Projectiles.Typeless;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
@@ -13,6 +14,7 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.Projectiles.Melee
 {
+    [PierceResistException]
     public class DragonRageStaff : ModProjectile
     {
         public override LocalizedText DisplayName => CalamityUtils.GetItemName<DragonRage>();
@@ -159,7 +161,7 @@ namespace CalamityMod.Projectiles.Melee
             {
                 CalamityPlayer modPlayer = Main.player[Projectile.owner].Calamity();
                 modPlayer.dragonRageHits++;
-                if (modPlayer.dragonRageHits > 10 && modPlayer.dragonRageCooldown <= 0)
+                if (modPlayer.dragonRageHits >= 10 && modPlayer.dragonRageCooldown <= 0)
                 {
                     SpawnFireballs();
                     modPlayer.dragonRageHits = 0;

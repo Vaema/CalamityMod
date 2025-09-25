@@ -1,4 +1,7 @@
-﻿using CalamityMod.Items.Ammo;
+﻿using System;
+using CalamityMod.Dusts;
+using CalamityMod.Items.Ammo;
+using CalamityMod.NPCs;
 using CalamityMod.Particles;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
@@ -16,11 +19,7 @@ namespace CalamityMod.Projectiles.Ranged
         private int rotDirection = 1;
         private float rotIntensity;
         private bool rotPhase2 = false;
-        public override void SetStaticDefaults()
-        {
-            ProjectileID.Sets.TrailCacheLength[Type] = 20;
-            ProjectileID.Sets.TrailingMode[Type] = 2;
-        }
+        public bool photosen = CalamityClientConfig.Instance.Photosensitivity;
         public override void SetDefaults()
         {
             Projectile.width = 12;
@@ -29,11 +28,11 @@ namespace CalamityMod.Projectiles.Ranged
             Projectile.friendly = true;
             Projectile.DamageType = DamageClass.Ranged;
             Projectile.tileCollide = false;
-            Projectile.penetrate = 2;
+            Projectile.penetrate = 4;
             Projectile.timeLeft = 500;
             Projectile.extraUpdates = 4;
             Projectile.usesLocalNPCImmunity = true;
-            Projectile.localNPCHitCooldown = 10 * Projectile.extraUpdates;
+            Projectile.localNPCHitCooldown = -1;
             Projectile.alpha = 255;
             Projectile.ignoreWater = true;
             AIType = ProjectileID.Bullet;
@@ -42,31 +41,40 @@ namespace CalamityMod.Projectiles.Ranged
         public override void AI()
         {
             Projectile.localAI[0]++;
+            int trailLifetime = 8;
             if (currentColor == Color.Black)
             {
+                Player Owner = Main.player[Projectile.owner];
+
                 Projectile.scale = 0.015f;
                 Projectile.alpha = 255;
                 rotDirection = Main.rand.NextBool() ? 1 : -1;
-                rotIntensity = Main.rand.NextFloat(0.5f, 1.5f);
+                rotIntensity = Main.rand.NextFloat(0.3f, 1.1f);
                 Projectile.timeLeft = Main.rand.Next(250, 300 + 1);
                 switch (Projectile.ai[2])
                 {
                     case 4: // Yellow shot
-                        currentColor = Color.Yellow * 0.65f;
+                        currentColor = Color.Yellow;
                         break;
                     case 3: // Magenta shot
-                        currentColor = Color.Magenta * 0.65f;
+                        currentColor = Color.Magenta;
                         break;
                     case 2: // Red shot
-                        currentColor = Color.Red * 0.65f;
+                        currentColor = Color.Red;
                         break;
                     case 1: // Blue shot
-                        currentColor = Color.Cyan * 0.65f;
+                        currentColor = Color.Cyan;
                         break;
                     default: // Green shot
-                        currentColor = Color.Lime * 0.65f;
+                        currentColor = Color.Lime;
                         break;
                 }
+            }
+
+            if (Projectile.localAI[0] > 4 && Projectile.localAI[0] % 2 == 0 && !photosen)
+            {
+                Particle trail = new CustomSpark(Projectile.Center + Projectile.velocity.SafeNormalize(Vector2.UnitX) * 9, -Projectile.velocity * 0.01f, "CalamityMod/Particles/BloomCircle", false, trailLifetime, 0.15f, currentColor, new Vector2(0.8f, 1.3f), true, true, shrinkSpeed: 0.6f / rotIntensity, glowCenterScale: 0.8f, glowOpacity: 0.7f);
+                GeneralParticleHandler.SpawnParticle(trail);
             }
 
             if (Projectile.timeLeft == 180)
@@ -74,33 +82,42 @@ namespace CalamityMod.Projectiles.Ranged
 
             if (rotPhase2)
             {
-                rotIntensity *= 1.001f;
-                Projectile.velocity *= 0.997f;
-                Projectile.velocity = Projectile.velocity.RotatedBy(-0.025f * rotIntensity * rotDirection);
+                rotIntensity *= 1.003f;
+                Projectile.velocity *= 0.995f;
+                Projectile.velocity = Projectile.velocity.RotatedBy(-0.04f * rotIntensity * rotDirection);
             }
             else
             {
-                Projectile.velocity = Projectile.velocity.RotatedBy(0.015f * rotIntensity * rotDirection);
+                Projectile.velocity = Projectile.velocity.RotatedBy(0.02f * rotIntensity * rotDirection);
             }
         }
         public override void OnKill(int timeLeft)
         {
-            for (int b = 0; b < 2; b++)
-            {
-                GlowOrbParticle orb = new GlowOrbParticle(Projectile.Center, new Vector2(2, 2).RotatedByRandom(100) * Main.rand.NextFloat(0.2f, 1.5f), false, 5, Main.rand.NextFloat(0.35f, 0.45f), currentColor, true, true);
-                GeneralParticleHandler.SpawnParticle(orb);
-            }
+            
         }
-        public override bool? Colliding(Rectangle projHitbox, Rectangle targetHitbox) => CalamityUtils.CircularHitboxCollision(Projectile.Center, 12, targetHitbox);
         public override bool PreDraw(ref Color lightColor)
         {
             Texture2D texture = ModContent.Request<Texture2D>("CalamityMod/Particles/GlowSpark").Value;
 
-            CalamityUtils.DrawAfterimagesCentered(Projectile, ProjectileID.Sets.TrailingMode[Type], Color.Lerp(currentColor, Color.White, 0.15f) with { A = 0 }, 1, texture, true, true);
+            Main.EntitySpriteDraw(texture, Projectile.Center - Main.screenPosition, null, currentColor with { A = 0 } * (photosen ? 0.4f : 1), Projectile.rotation, texture.Size() * 0.5f, new Vector2(0.9f, 1.5f) * Projectile.scale, SpriteEffects.None);
             return false;
         }
-        public override bool? CanDamage() => Projectile.localAI[0] < 20 ? false : null;
+        public override void ModifyHitNPC(NPC target, ref NPC.HitModifiers modifiers)
+        {
+            CalamityGlobalNPC modNPC = target.Calamity();
 
-        public override void ModifyHitNPC(NPC target, ref NPC.HitModifiers modifiers) => modifiers.SourceDamage.Flat += HyperiusBullet.SplitBulletBonusDamage;
+            if (!modNPC.hyperiusMarked)
+                modNPC.hyperiusMarked = true;
+
+            Player Owner = Main.player[Projectile.owner];
+            // Hits can crit and the collapse damage will take that into account
+            bool crit = Main.rand.Next(0, 100 + 1) < Owner.GetTotalCritChance(Projectile.DamageType);
+            modNPC.hyperiusDamage += Math.Max(Projectile.damage * (crit ? 2 : 1) - 1, 1);
+
+            modifiers.DisableCrit();
+            modifiers.SourceDamage *= 0;
+            modifiers.FinalDamage.Flat = 0.1f;
+            modifiers.HideCombatText();
+        }
     }
 }

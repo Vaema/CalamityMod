@@ -13,13 +13,13 @@ namespace CalamityMod.Items.Accessories.Wings
     [LegacyName("DiscordianWings")]
     public class HadalMantle : BaseWings
     {
-        public override float BonusAscentWhileFalling => 0.6f;
-        public override float BonusAscentWhileRising => 0.12f;
-        public override float RisingSpeedThreshold => 0.7f;
-        public override float MaxAscentSpeed => 1.75f;
-        public override float BaseAscent => 0.11f;
+        public override float BonusAscentWhileFalling => 0.75f;
+        public override float BonusAscentWhileRising => 0.15f;
+        public override float RisingSpeedThreshold => 1f;
+        public override float MaxAscentSpeed => 1.805f;
+        public override float BaseAscent => 0.125f;
 
-        public override void SetStaticDefaults() => ArmorIDs.Wing.Sets.Stats[Item.wingSlot] = new WingStats(180, 7.75f, 1.5f);
+        public override void SetStaticDefaults() => ArmorIDs.Wing.Sets.Stats[Item.wingSlot] = new WingStats(150, 8f, 2f);
 
         public override void SetDefaults()
         {
@@ -48,7 +48,6 @@ namespace CalamityMod.Items.Accessories.Wings
                 }
                 Main.dust[flightDust].shader = GameShaders.Armor.GetSecondaryShader(player.cWings, player);
             }
-            player.noFallDmg = true;
         }
 
         public override void AddRecipes()

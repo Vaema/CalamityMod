@@ -1,4 +1,5 @@
 ﻿using CalamityMod.Balancing;
+using CalamityMod.NPCs;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria;
@@ -9,6 +10,7 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.Projectiles.Typeless
 {
+    [PierceResistException]
     public class OmegaBlueTentacle : ModProjectile, ILocalizedModType
     {
         public new string LocalizationCategory => "Projectiles.Typeless";
@@ -173,24 +175,7 @@ namespace CalamityMod.Projectiles.Typeless
                 modifiers.SetCrit();
         }
 
-        public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
-        {
-            if (Projectile.owner == Main.myPlayer && Owner.lifeSteal > 0f && !Owner.moonLeech && target.lifeMax > 5)
-            {
-                int healAmount = 10 * damageDone / Projectile.damage; //should always be around max, less if enemy has defense/DR
-                if (healAmount > BalancingConstants.LifeStealCap)
-                    healAmount = BalancingConstants.LifeStealCap;
-
-                if (healAmount > 0)
-                {
-                    Owner.lifeSteal -= healAmount;
-                    if (Owner.Calamity().omegaBlueAbyssalMadness) // Always crits during Abyssal Madness, this makes it have same lifesteal delay
-                        Owner.lifeSteal += healAmount / 2;
-
-                    Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center, Vector2.Zero, ProjectileID.SpiritHeal, 0, 0f, Projectile.owner, Projectile.owner, healAmount);
-                }
-            }
-        }
+        public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone) => Owner.DoLifestealDirect(target, 10 * hit.Damage / Projectile.damage, 0.5f);
 
         public override bool PreDraw(ref Color lightColor)
         {

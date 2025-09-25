@@ -16,9 +16,9 @@ namespace CalamityMod.Cooldowns
 {
     public class WarbanneroftheRighteousBuff : CooldownHandler
     {
-        public float CompletionPercentage => Utils.GetLerpValue(80, 0, instance.timeLeft);
+        public float CompletionPercentage => Utils.GetLerpValue(70, 0, instance.timeLeft);
         private bool IsEmpty => CompletionPercentage == 0;
-        private float TextXOffset => (instance.timeLeft <= 20 ? -11 : -18f);
+        private float TextXOffset => instance.timeLeft <= 20 ? -11f : -18f;
         private Vector2 TextPosition => new(TextXOffset, 15);
         private Color TextColor => Color.White;
         private Color TextBorderColor => Color.Black;

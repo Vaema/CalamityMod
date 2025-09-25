@@ -32,7 +32,7 @@ namespace CalamityMod.Projectiles.Rogue
 
         public override void AI()
         {
-            Projectile.rotation += (StuckTo == null ? 0.2f : 0.35f) * Projectile.direction;
+            Projectile.rotation += (StuckTo == null ? 0.3f : 0.6f) * Projectile.direction;
 
             if (Projectile.Calamity().stealthStrike)
             {
@@ -64,11 +64,10 @@ namespace CalamityMod.Projectiles.Rogue
 
         public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
         {
-            target.AddBuff(ModContent.BuffType<ArmorCrunch>(), 120);
+            target.AddBuff(ModContent.BuffType<HeavyBleeding>(), 120);
             target.AddBuff(ModContent.BuffType<CrushDepth>(), 120);
             if (Projectile.Calamity().stealthStrike)
             {
-                target.AddBuff(ModContent.BuffType<HeavyBleeding>(), 120);
                 if (StuckTo == null)
                 {
                     StuckTo = target;

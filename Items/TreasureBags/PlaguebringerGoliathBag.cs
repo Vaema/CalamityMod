@@ -60,15 +60,15 @@ namespace CalamityMod.Items.TreasureBags
 
             // Materials
             itemLoot.Add(ModContent.ItemType<PlagueCellCanister>(), 1, 25, 30);
-            itemLoot.Add(ModContent.ItemType<InfectedArmorPlating>(), 1, 30, 35);
+            itemLoot.Add(ModContent.ItemType<InfectedArmorPlating>(), 1, 40, 50);
             itemLoot.Add(ItemID.Stinger, 1, 4, 8);
 
             // Weapons
             itemLoot.Add(DropHelper.CalamityStyle(DropHelper.BagWeaponDropRateFraction, new int[]
             {
                 ModContent.ItemType<Virulence>(),
-                ModContent.ItemType<BlightSpewer>(),
                 ModContent.ItemType<TheHive>(),
+                ModContent.ItemType<Malevolence>(),
                 ModContent.ItemType<PlagueStaff>(),
                 ModContent.ItemType<FuelCellBundle>(),
                 ModContent.ItemType<InfectedRemote>(),

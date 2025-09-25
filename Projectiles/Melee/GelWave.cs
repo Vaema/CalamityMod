@@ -10,6 +10,9 @@ namespace CalamityMod.Projectiles.Melee
     public class GelWave : ModProjectile, ILocalizedModType
     {
         public new string LocalizationCategory => "Projectiles.Melee";
+
+        public static readonly SoundStyle UseSound = new("CalamityMod/Sounds/Item/GeliticBladeWave");
+
         public override void SetStaticDefaults()
         {
             ProjectileID.Sets.TrailCacheLength[Type] = 10;
@@ -34,7 +37,7 @@ namespace CalamityMod.Projectiles.Melee
         {
             if (Projectile.localAI[0] == 0f)
             {
-                SoundEngine.PlaySound(SoundID.Item92, Projectile.position);
+                SoundEngine.PlaySound(UseSound with { Volume = 3f, PitchVariance = 0.25f }, Projectile.position);
                 Projectile.localAI[0] += 1f;
             }
             Lighting.AddLight(Projectile.Center, Color.Blue.ToVector3());

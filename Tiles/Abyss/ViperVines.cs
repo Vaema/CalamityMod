@@ -69,39 +69,39 @@ namespace CalamityMod.Tiles.Abyss
         }
 
         public override void RandomUpdate(int i, int j)
-		{
-			Tile tileBelow = Framing.GetTileSafely(i, j + 1);
-			if (WorldGen.genRand.NextBool(5) && !tileBelow.HasTile && tileBelow.LiquidType != LiquidID.Lava)
+        {
+            Tile tileBelow = Framing.GetTileSafely(i, j + 1);
+            if (WorldGen.genRand.NextBool(5) && !tileBelow.HasTile && tileBelow.LiquidType != LiquidID.Lava)
             {
-				bool PlaceVine = false;
-				int Test = j;
-				while (Test > j - 10) 
+                bool PlaceVine = false;
+                int Test = j;
+                while (Test > j - 10)
                 {
-					Tile testTile = Framing.GetTileSafely(i, Test);
-					if (testTile.BottomSlope) 
+                    Tile testTile = Framing.GetTileSafely(i, Test);
+                    if (testTile.BottomSlope)
                     {
-						break;
-					}
-					else if (!testTile.HasTile || testTile.TileType != ModContent.TileType<PlantyMush>()) 
+                        break;
+                    }
+                    else if (!testTile.HasTile || testTile.TileType != ModContent.TileType<PlantyMush>())
                     {
-						Test--;
-						continue;
-					}
-					PlaceVine = true;
-					break;
-				}
-				
-				if (PlaceVine) 
+                        Test--;
+                        continue;
+                    }
+                    PlaceVine = true;
+                    break;
+                }
+
+                if (PlaceVine)
                 {
-					tileBelow.TileType = Type;
-					tileBelow.HasTile = true;
-					WorldGen.SquareTileFrame(i, j + 1, true);
-					if (Main.dedServ) 
+                    tileBelow.TileType = Type;
+                    tileBelow.HasTile = true;
+                    WorldGen.SquareTileFrame(i, j + 1, true);
+                    if (Main.dedServ)
                     {
-						NetMessage.SendTileSquare(-1, i, j + 1, 3, TileChangeType.None);
-					}
-				}
-			}
-		}
+                        NetMessage.SendTileSquare(-1, i, j + 1, 3, TileChangeType.None);
+                    }
+                }
+            }
+        }
     }
 }

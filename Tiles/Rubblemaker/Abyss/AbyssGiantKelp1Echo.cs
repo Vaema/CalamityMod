@@ -44,10 +44,10 @@ namespace CalamityMod.Tiles.Rubblemaker.Abyss
             if (closer && Main.rand.NextBool(100) && j > Main.worldSurface)
             {
                 Dust dust;
-                dust = Main.dust[Dust.NewDust(new Vector2(i * 16f, j * 16f), 274, 279, DustID.Firefly, 0.23255825f, 10f, 0, new Color(117, 55, 15), 1.5116279f)];
+                dust = Main.dust[Dust.NewDust(new Vector2(i * 16f, j * 16f), 280, 280, DustID.Firefly, 0.2f, 0f, 0, new Color(157, 175, 15), Main.rand.NextFloat(1f, 2f))];
                 dust.noGravity = true;
                 dust.noLight = true;
-                dust.fadeIn = 2.5813954f;
+                dust.fadeIn = 2.5f;
             }
         }
 

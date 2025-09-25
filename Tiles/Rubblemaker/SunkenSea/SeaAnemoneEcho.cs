@@ -1,7 +1,9 @@
 ﻿using CalamityMod.Items.Placeables.SunkenSea;
 using Microsoft.Xna.Framework;
+using System;
 using Terraria;
 using Terraria.GameContent;
+using Terraria.ID;
 using Terraria.Localization;
 using Terraria.ModLoader;
 using Terraria.ObjectData;
@@ -13,17 +15,25 @@ namespace CalamityMod.Tiles.Rubblemaker.SunkenSea
         public override string Texture => "CalamityMod/Tiles/SunkenSea/Ambient/SeaAnemone";
         public override void SetStaticDefaults()
         {
+            Main.tileLighted[Type] = true;
             AnimationFrameHeight = 36;
             Main.tileFrameImportant[Type] = true;
             Main.tileNoAttach[Type] = true;
             TileObjectData.newTile.CopyFrom(TileObjectData.Style2x2);
             TileObjectData.addTile(Type);
-            DustType = 253;
+            DustType = DustID.TsunamiInABottle;
             AddMapEntry(new Color(54, 69, 72));
-            RegisterItemDrop(ModContent.ItemType<Navystone>());
-            FlexibleTileWand.RubblePlacementMedium.AddVariations(ModContent.ItemType<Navystone>(), Type, 0);
+            RegisterItemDrop(ModContent.ItemType<HardenedEutrophicSand>());
+            FlexibleTileWand.RubblePlacementMedium.AddVariations(ModContent.ItemType<HardenedEutrophicSand>(), Type, 0);
 
             base.SetStaticDefaults();
+        }
+
+        public override void ModifyLight(int i, int j, ref float r, ref float g, ref float b)
+        {
+            r = 0.11f;
+            g = 0.29f;
+            b = 0.57f;
         }
 
         public override void NumDust(int i, int j, bool fail, ref int num)

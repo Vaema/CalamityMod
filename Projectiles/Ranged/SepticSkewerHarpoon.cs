@@ -7,6 +7,7 @@ using CalamityMod.NPCs;
 using CalamityMod.Particles;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using System;
 using Terraria;
 using Terraria.Audio;
 using Terraria.ID;
@@ -73,7 +74,6 @@ namespace CalamityMod.Projectiles.Ranged
             Projectile.localNPCHitCooldown = -1;
             Projectile.extraUpdates = 1;
             Projectile.timeLeft = 900;
-            Projectile.Calamity().pointBlankShotDuration = CalamityGlobalProjectile.DefaultPointBlankDuration;
         }
 
         public override void AI()
@@ -267,8 +267,11 @@ namespace CalamityMod.Projectiles.Ranged
                             Projectile.NewProjectile(Projectile.GetSource_FromThis(), Owner.Center, ((closestTarget.Center - Owner.Center + closestTarget.velocity * 1.5f).SafeNormalize(Vector2.UnitX) * 18), Projectile.type, Projectile.damage, Projectile.knockBack, Projectile.owner, 0, Projectile.ai[1] + 1);
                         }
 
-                        int heal = 25;
-                        Owner.HealPlayer(heal);
+                        if (!chosenTarget.SpawnedFromStatue)
+                        {
+                            int heal = Math.Max(25 - (int)Projectile.ai[1], 10);
+                            Owner.HealPlayer(heal);
+                        }
 
                         spawnPullBlood = false;
                     }
@@ -339,7 +342,8 @@ namespace CalamityMod.Projectiles.Ranged
 
         public override void ModifyHitNPC(NPC target, ref NPC.HitModifiers modifiers)
         {
-            if (!stuckInTarget && canStick)
+
+            if (!stuckInTarget && canStick && !target.Calamity().pacified)
             {
                 for (int i = 0; i <= 8; i++)
                 {
@@ -404,7 +408,6 @@ namespace CalamityMod.Projectiles.Ranged
         }
         public override bool? CanDamage() => canDamage ? null : false;
         public override bool? Colliding(Rectangle projHitbox, Rectangle targetHitbox) => CalamityUtils.CircularHitboxCollision(Projectile.Center, 25 * (!spawnPullBlood ? 4 : 1), targetHitbox);
-
         public override bool PreDraw(ref Color lightColor)
         {
             Player Owner = Main.player[Projectile.owner];

@@ -19,7 +19,7 @@ namespace CalamityMod.Items.Weapons.Ranged
         {
             Item.width = 92;
             Item.height = 44;
-            Item.damage = 245;
+            Item.damage = 249;
             Item.DamageType = DamageClass.Ranged;
             Item.useTime = 3;
             Item.useAnimation = 3;
@@ -34,7 +34,7 @@ namespace CalamityMod.Items.Weapons.Ranged
             Item.shoot = ModContent.ProjectileType<KingsbaneHoldout>();
             Item.shootSpeed = 2f;
             Item.useAmmo = AmmoID.Bullet;
-            Item.rare = ModContent.RarityType<Violet>();
+            Item.rare = ModContent.RarityType<BurnishedAuric>();
         }
         public override bool CanUseItem(Player player) => player.ownedProjectileCounts[Item.shoot] <= 0;
         public override bool CanConsumeAmmo(Item ammo, Player player) => Main.rand.NextFloat() > 0.95f && player.ownedProjectileCounts[Item.shoot] > 0;
@@ -52,6 +52,7 @@ namespace CalamityMod.Items.Weapons.Ranged
                 AddIngredient(ItemID.ChainGun).
                 AddIngredient<P90>().
                 AddIngredient<AuricBar>(5).
+                AddIngredient<LifeAlloy>(3).
                 AddTile<CosmicAnvil>().
                 Register();
         }

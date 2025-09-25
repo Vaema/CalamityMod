@@ -46,7 +46,6 @@ ChromaticFlare.DisplayName: Chromatic Flare
 CinderArrowProj.DisplayName: Cinder Arrow
 ClamorRifleProj.DisplayName: Clamor Bolt
 ClamorRifleProjSplit.DisplayName: Clamor Bolt
-ClaretCannonProj.DisplayName: Claret Cannon
 CondemnationArrow.DisplayName: Condemning Arrow
 CondemnationArrowHoming.DisplayName: Condemning Echo
 ContagionArrow.DisplayName: Contagion Arrow
@@ -87,6 +86,7 @@ FlakKrakenProjectile.DisplayName: Flak Kraken
 FlakToxicannonProjectile.DisplayName: Flak Toxicannon
 FlareBat.DisplayName: Flare Bat
 Flash.DisplayName: Flash
+FlashRoundFlash.DisplayName: Flash
 FlashRoundProj.DisplayName: Flash Round
 FlurrystormIceChunk.DisplayName: Ice Chunk
 FlurrystormIceShard.DisplayName: Ice Shard
@@ -99,7 +99,6 @@ GodSlayerSlugProj.DisplayName: God Slayer Slug
 HalleysComet.DisplayName: Halley's Comet
 HandheldTankShell.DisplayName: Tank Shell
 HeavenlyGaleProj.DisplayName: Heavenly Gale
-HighExplosivePeanutShell.DisplayName: High Explosive Peanut Shell
 HiveMissile.DisplayName: Hive Missile
 HiveNuke.DisplayName: Hive Nuke
 HolyFireBulletProj.DisplayName: Holy Fire Bullet
@@ -107,7 +106,7 @@ HydraHead.DisplayName: Hydra Head
 HydraHeadLaunch.DisplayName: Hydra Head
 HydrasBlood.DisplayName: Hydra's Blood
 HyperiusBulletProj.DisplayName: Hyperius Bullet
-HyperiusSplit.DisplayName: Hyperius Bad Time
+HyperiusSplit.DisplayName: Hyperius Fragment
 IcicleArrowProj.DisplayName: Icicle Arrow
 HailstormBulletProj.DisplayName: Hailstorm Bullet
 HallowPointRoundProj.DisplayName: Hallow-Point Round
@@ -176,7 +175,6 @@ RicoshotCoin.DisplayName: Ricoshot Coin
 RocketFire.DisplayName: Fire
 RubberMortarRoundProj.DisplayName: Rubber Mortar
 SandblasterBullet.DisplayName: Sandstorm
-ScorchedEarthBlast.DisplayName: Earth Scorcher
 ScorchedEarthClusterBomb.DisplayName: Cluster Bomb
 ScorchedEarthRocket.DisplayName: Rocket
 ScorpioRocket.DisplayName: Nano Missile
@@ -198,14 +196,16 @@ ShadeFire.DisplayName: Shady Fire
 Shell.DisplayName: Shell
 Shockblast.DisplayName: Blast
 ShockblastRound.DisplayName: Round
+ShortCircuitExplosion.DisplayName: Short Circuit
+ShortCircuitShot.DisplayName: Short Circuit Shot
 Shroom.DisplayName: Shroom
 Sickness.DisplayName: Sickness
 SicknessRound.DisplayName: Round
 SicknessRound2.DisplayName: Round
 SlagRound.DisplayName: Slag Round
 SlimeBolt.DisplayName: Slime Bolt
-SmallCoral.DisplayName: Small Coral
 SparkSpreaderFire.DisplayName: Sparked Flames
+SpectralFlare.DisplayName: Spectral Flare
 SpeedBlasterShot.DisplayName: Splatter Shot
 SporeBomb.DisplayName: Spore Bomb
 SproutingArrowMain.DisplayName: Sprouting Arrow
@@ -224,7 +224,6 @@ SuperradiantSawLingering.DisplayName: Ultraradiant Saw
 TauCannonBeam.DisplayName: Tau Cannon Beam
 TauCannonBolt.DisplayName: Tau Cannon Bolt
 TauCannonPortal.DisplayName: Tau Cannon Portal
-TaserExplosion.DisplayName: Taser Explosion
 TelluricGlareArrow.DisplayName: Radiant Arrow
 TheMaelstromExplosion.DisplayName: Reaper Explosion
 TheMaelstromShark.DisplayName: Reaper Shark
@@ -262,4 +261,5 @@ LeviatitanMeteor.DisplayName: Leviatitan Meteor
 LeviatitanExplosion.DisplayName: Leviatitan Explosion
 SulphuricDrop.DisplayName: Sulphuric Drop
 AcidRocket.DisplayName: Acid Rocket
-TaserShot.DisplayName: Taser Shot
+M1GarandBulletCasing.DisplayName: M1 Garand Bullet Casing
+M1GarandEmptyClip.DisplayName: M1 Garand Empty Clip

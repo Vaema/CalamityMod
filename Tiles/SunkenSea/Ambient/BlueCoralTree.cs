@@ -30,11 +30,12 @@ namespace CalamityMod.Tiles.SunkenSea.Ambient
             DustType = 155;
             HitSound = SoundID.Dig;
         }
+
         public override void ModifyLight(int i, int j, ref float r, ref float g, ref float b)
         {
-            r = 60f / 255f;
-            g = 110f / 255f;
-            b = 146f / 255f;
+            r = 0.235f;
+            g = 0.431f;
+            b = 0.573f;
         }
     }
 }

@@ -84,10 +84,9 @@ namespace CalamityMod.Projectiles.Boss
             }
 
             // Difficulty modes
-            bool bossRush = BossRushEvent.BossRushActive;
-            bool expertMode = Main.expertMode || bossRush;
-            bool revenge = CalamityWorld.revenge || bossRush;
-            bool death = CalamityWorld.death || bossRush;
+            bool expertMode = Main.expertMode || BossRushEvent.BossRushActive;
+            bool revenge = CalamityWorld.revenge || BossRushEvent.BossRushActive;
+            bool death = CalamityWorld.death || BossRushEvent.BossRushActive;
 
             Lighting.AddLight(Projectile.Center, 0f, 0.95f, 1.15f);
 
@@ -102,7 +101,7 @@ namespace CalamityMod.Projectiles.Boss
 
             double deg = Projectile.ai[1];
             double rad = deg * (Math.PI / 180);
-            double dist = bossRush ? 360D : death ? 400D : revenge ? 420D : expertMode ? 440D : 480D;
+            double dist = death ? 400D : revenge ? 420D : expertMode ? 440D : 480D;
             Projectile.position.X = player.Center.X - (int)(Math.Cos(rad) * dist) - Projectile.width / 2;
             Projectile.position.Y = player.Center.Y - (int)(Math.Sin(rad) * dist) - Projectile.height / 2;
             Projectile.ai[1] += 1f;

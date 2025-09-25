@@ -29,7 +29,7 @@ namespace CalamityMod.Items.Materials
             Item.height = 54;
             Item.maxStack = Item.CommonMaxStack;
             Item.value = Item.sellPrice(gold: 6);
-            Item.rare = ModContent.RarityType<DarkBlue>();
+            Item.rare = ModContent.RarityType<CosmicPurple>();
         }
         public override bool PreDrawInWorld(SpriteBatch spriteBatch, Color lightColor, Color alphaColor, ref float rotation, ref float scale, int whoAmI)
         {
@@ -57,7 +57,7 @@ namespace CalamityMod.Items.Materials
                 AddIngredient<NightmareFuel>(5).
                 AddIngredient<EndothermicEnergy>(5).
                 AddIngredient<DarksunFragment>(2).
-                AddTile(TileID.LunarCraftingStation).
+                AddTile(TileID.MythrilAnvil).
                 Register();
         }
     }

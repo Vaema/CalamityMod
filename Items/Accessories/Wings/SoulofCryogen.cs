@@ -42,7 +42,6 @@ namespace CalamityMod.Items.Accessories.Wings
         {
             CalamityPlayer modPlayer = player.Calamity();
             modPlayer.cryogenSoul = true;
-            player.noFallDmg = true;
             if (modPlayer.wingProjectileCooldown <= 0)
             {
                 if (player.controlJump && player.jump == 0 && player.velocity.Y != 0f && !player.mount.Active && !player.mount.Cart)

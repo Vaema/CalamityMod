@@ -8,7 +8,9 @@ using CalamityMod.Items.TreasureBags.MiscGrabBags;
 using CalamityMod.NPCs.AcidRain;
 using CalamityMod.NPCs.NormalNPCs;
 using CalamityMod.NPCs.TownNPCs;
+using CalamityMod.Projectiles.Typeless;
 using CalamityMod.Walls;
+using CalamityMod.World;
 using Microsoft.Xna.Framework;
 using Mono.Cecil.Cil;
 using MonoMod.Cil;
@@ -17,9 +19,11 @@ using Terraria.Audio;
 using Terraria.DataStructures;
 using Terraria.GameContent;
 using Terraria.GameContent.Drawing;
-using Terraria.GameContent.Personalities;
+using Terraria.GameContent.ItemDropRules;
 using Terraria.ID;
 using Terraria.ModLoader;
+using Terraria.Graphics.Effects;
+using Terraria.GameInput;
 
 namespace CalamityMod.ILEditing
 {
@@ -123,8 +127,35 @@ namespace CalamityMod.ILEditing
         }
         #endregion Reforge Requirement Relaxation
 
+        #region Remove Forced Inaccuracy from Chain Gun and Gatligator
+        private static void RemoveForcedInaccuracyFromChainGunAndGatligator(ILContext il)
+        {
+            var cursor = new ILCursor(il);
+
+            // Go to the load of the Chain Gun's item ID (1929).
+            if (!cursor.TryGotoNext(MoveType.AfterLabel, i => i.MatchLdcI4(1929)))
+            {
+                LogFailure("Remove Chain Gun and Gatligator Inaccuracy", "Could not locate the ID of the Chain Gun.");
+                return;
+            }
+
+            // Change this item ID check to check for -1048576. This will never occur.
+            cursor.Next.Operand = -1048576;
+
+            // Go to the load of the Gatligator's item ID (2270).
+            if (!cursor.TryGotoNext(MoveType.AfterLabel, i => i.MatchLdcI4(2270)))
+            {
+                LogFailure("Remove Chain Gun and Gatligator Inaccuracy", "Could not locate the ID of the Gatligator.");
+                return;
+            }
+
+            // Change this item ID check to check for -1048576. This will never occur.
+            cursor.Next.Operand = -1048576;
+        }
+        #endregion
+
         #region Prevention of Slime Rain Spawns When Near Bosses
-        private static void PreventBossSlimeRainSpawns(Terraria.On_NPC.orig_SlimeRainSpawns orig, int plr)
+        private static void PreventBossSlimeRainSpawns(On_NPC.orig_SlimeRainSpawns orig, int plr)
         {
             if (!Main.player[plr].Calamity().isNearbyBoss && CalamityServerConfig.Instance.BossZen)
                 orig(plr);
@@ -145,9 +176,44 @@ namespace CalamityMod.ILEditing
             }
 
             // Remove the Expert Mode check, and in its place put a check for the Zenith seed (Get fixed boi).
-            // Note from CIT: I originally removed these entirely; restoring it in GFB was Fabsol's idea.
             cursor.Emit(OpCodes.Pop);
             cursor.Emit(OpCodes.Ldsfld, typeof(Main).GetField("zenithWorld"));
+        }
+        #endregion
+
+        #region Disable Detonating Bubble StrikeNPC Hardcoded Override
+        private static void LetDetonatingBubblesTakeDamage(ILContext il)
+        {
+            // In vanilla's StrikeNPC function, Detonating Bubbles have a hardcoded type check which sets the damage of the strike to 0.
+            // This IL edit disables that type check in Death Mode.
+            var cursor = new ILCursor(il);
+
+            // Go to the point after the check for the Detonating Bubble NPC ID.
+            if (!cursor.TryGotoNext(MoveType.AfterLabel, i => i.MatchLdcR8(0.0)))
+            {
+                LogFailure("Let Detonating Bubbles Take Damage in Death", "Could not move after the NPC type check.");
+                return;
+            }
+
+            // Define the label.
+            var label = il.DefineLabel();
+
+            // Add a branch if it is Death Mode.
+            cursor.Emit(OpCodes.Ldsfld, typeof(CalamityWorld).GetField("death"));
+            cursor.Emit(OpCodes.Brtrue, label);
+
+            // Move to the point after Detonating Bubble changes are implemented to place the branch label.
+            if (!cursor.TryGotoNext(MoveType.After, i => i.MatchStfld<NPC>("dontTakeDamage")))
+            {
+                LogFailure("Let Detonating Bubbles Take Damage in Death", "Could not move to after the Detonating Bubble logic.");
+                return;
+            }
+            if (!cursor.TryGotoNext(MoveType.AfterLabel, i => i.MatchLdarg0()))
+            {
+                LogFailure("Let Detonating Bubbles Take Damage in Death", "Could not move to after the Detonating Bubble logic.");
+                return;
+            }
+            cursor.MarkLabel(label);
         }
         #endregion
 
@@ -174,34 +240,6 @@ namespace CalamityMod.ILEditing
             cursor.Emit(OpCodes.Ldc_I4, TileID.HellstoneBrick); // This won't actually do anything since the ID is above Meteorite's and thus unreachable
         }
         #endregion
-
-        #region Make Windy Day Music Play Less Often
-        private static void MakeWindyDayMusicPlayLessOften(ILContext il)
-        {
-            // Make windy day theme only play when the wind speed is over 0.5f instead of 0.4f and make it stop when the wind dies down to below 0.44f instead of 0.34f.
-            var cursor = new ILCursor(il);
-
-            FieldInfo _minWindField = typeof(Main).GetField("_minWind", BindingFlags.NonPublic | BindingFlags.Static);
-
-            if (!cursor.TryGotoNext(MoveType.Before, i => i.MatchLdsfld(_minWindField))) // The min wind speed check that stops the windy day theme when the wind dies down enough.
-            {
-                LogFailure("Make Windy Day Music Play Less Often", "Could not locate the _minWind variable.");
-                return;
-            }
-            cursor.Remove();
-            cursor.Emit(OpCodes.Ldc_R4, 0.44f); // Change to 0.44f.
-
-            FieldInfo _maxWindField = typeof(Main).GetField("_maxWind", BindingFlags.NonPublic | BindingFlags.Static);
-
-            if (!cursor.TryGotoNext(MoveType.Before, i => i.MatchLdsfld(_maxWindField))) // The max wind speed check that causes the windy day theme to play.
-            {
-                LogFailure("Make Windy Day Music Play Less Often", "Could not locate the _maxWind variable.");
-                return;
-            }
-            cursor.Remove();
-            cursor.Emit(OpCodes.Ldc_R4, 0.5f); // Change to 0.5f.
-        }
-        #endregion Make Windy Day Music Play Less Often
 
         #region Change Blood Moon Max HP Requirements
         private static void BloodMoonsRequire200MaxLife(ILContext il)
@@ -242,13 +280,15 @@ namespace CalamityMod.ILEditing
                 LogFailure("Prevent Fossil Shattering", "Could not locate the Desert Fossil Tile ID variable.");
                 return;
             }
+
+            // Remove this value and replace it with a large number that will never be a valid tile ID.
             cursor.Remove();
-            cursor.Emit(OpCodes.Ldc_I4, TileID.PixelBox); // Change to Pixel Box because it cannot be obtained in-game without cheating.
+            cursor.Emit(OpCodes.Ldc_I4, 40000);
         }
         #endregion
 
         #region Remove Hellforge Pickaxe Requirement
-        private static int RemoveHellforgePickaxeRequirement(Terraria.On_Player.orig_GetPickaxeDamage orig, Player self, int x, int y, int pickPower, int hitBufferIndex, Tile tileTarget)
+        private static int RemoveHellforgePickaxeRequirement(On_Player.orig_GetPickaxeDamage orig, Player self, int x, int y, int pickPower, int hitBufferIndex, Tile tileTarget)
         {
             if (tileTarget.TileType == TileID.Hellforge)
                 pickPower = 65;
@@ -266,9 +306,58 @@ namespace CalamityMod.ILEditing
         }
         #endregion
 
-        #region Fix Chlorophyte Crystal Attacking Where it Shouldn't
-        // TODO -- Finish this
-        #endregion Fix Chlorophyte Crystal Attacking Where it Shouldn't
+        #region Allow Victide Bobber to Exist
+        private static void WhitelistVictideBobber(ILContext il)
+        {
+            var cursor = new ILCursor(il);
+
+            // Find the label which skips the "flag = true" that kills the projectile
+            ILLabel flagStorage = null;
+            if (!cursor.TryGotoNext(MoveType.After, x => x.MatchBeq(out flagStorage)))
+            {
+                LogFailure("Allow Victide Bobber to Exist", "Failed to properly navigate label to direct to");
+                return;
+            }
+
+            // Properly perform the skip if the projectile type is the Victide Bobber
+            cursor.Emit(OpCodes.Ldarg_0);
+            cursor.Emit(OpCodes.Ldfld, typeof(Projectile).GetField("type"));
+            cursor.Emit(OpCodes.Ldc_I4, ModContent.ProjectileType<VictideBobber>());
+            cursor.Emit(OpCodes.Beq_S, flagStorage);
+        }
+        #endregion
+
+        #region Prevent Victide Bobber from Jammming
+        private static bool PreventVictideBobberFromJamming(On_Player.orig_ItemCheck_CheckFishingBobbers orig, Player self, bool canUse)
+        {
+            // Run through the original stuff
+            canUse = orig(self, canUse);
+
+            int bobberCount = 0;
+            foreach (Projectile proj in Main.ActiveProjectiles)
+            {
+                if (proj.active && proj.owner == self.whoAmI && proj.bobber)
+                {
+                    bobberCount++;
+                    if (proj.type == ModContent.ProjectileType<VictideBobber>())
+                    {
+                        // Go back to casting if there's nothing loaded
+                        if (proj.ai[1] == 0f)
+                            proj.ai[0] = 0f;
+
+                        // Allow you to still use the fishing rod
+                        canUse = true;
+                    }
+                }
+            }
+
+            // Unless.. you have a bobber already that's NOT Victide, then back to disabling
+            if (canUse && bobberCount > 1)
+                canUse = false;
+
+            return canUse;
+        }
+        #endregion
 
         #region Prevent UFO Mount from Dismounting in Water
         private static void PreventUFODismountInWater(ILContext il)
@@ -302,7 +391,7 @@ namespace CalamityMod.ILEditing
         #endregion Prevent UFO Mount from Dismounting in Water
 
         #region Color Blighted Gel
-        private static void ColorBlightedGel(Terraria.GameContent.ItemDropRules.On_CommonCode.orig_ModifyItemDropFromNPC orig, NPC npc, int itemIndex)
+        private static void ColorBlightedGel(On_CommonCode.orig_ModifyItemDropFromNPC orig, NPC npc, int itemIndex)
         {
             orig(npc, itemIndex);
 
@@ -328,7 +417,7 @@ namespace CalamityMod.ILEditing
         #endregion Color Blighted Gel
 
         #region Improve Angler Quest Rewards
-        private static void ImproveAnglerRewards(Terraria.On_Player.orig_GetAnglerReward orig, Player self, NPC angler, int questItemType)
+        private static void ImproveAnglerRewards(On_Player.orig_GetAnglerReward orig, Player self, NPC angler, int questItemType)
         {
             orig(self, angler, questItemType);
 
@@ -1017,7 +1106,7 @@ namespace CalamityMod.ILEditing
             var cursor = new ILCursor(il);
             if (!cursor.TryGotoNext(MoveType.After, i => i.MatchLdfld<Player>("magmaStone"))) // Flag for if Magma Stone is equipped. Fire Gauntlet also uses this.
             {
-                LogFailure("Make Magma Stone & Fire Gauntlet Dust Toggleable", "Could not locate the magma stone variable.");
+                LogFailure("Make Magma Stone & Fire Gauntlet Dust Toggleable", "Could not locate the Magma Stone variable.");
                 return;
             }
             // Load the player itself onto the stack so that it becomes an argument for the following delegate.
@@ -1062,7 +1151,7 @@ namespace CalamityMod.ILEditing
             }
 
             // Remove the instruction and replace with 1 (true). This effectively removes the requirement for defeating Plantera.
-            // The only requirements for summoning Golems with Power Cells are now: 1) Golem is not alive, and 2) The world is in Hardmode.
+            // The only requirements for summoning Golem with Power Cells are now: 1) Golem is not alive, and 2) The world is in Hardmode.
             cursor.EmitPop();
             cursor.Emit(OpCodes.Ldc_I4_1);
         }
@@ -1115,7 +1204,7 @@ namespace CalamityMod.ILEditing
                 return;
             }
 
-            // branch is used for exit condition. So setting ble.s opcode to nop will remove the condition
+            // Branch is used for exit condition. So setting ble.s opcode to nop will remove the condition
             cursor.Prev.OpCode = OpCodes.Nop;
 
             // After that we pop NPC.damage and 0 from stack
@@ -1124,14 +1213,17 @@ namespace CalamityMod.ILEditing
         }
         #endregion
 
-        #region Multiple NPC Happiness support for Cirrus
-        private static void AllowMultipleLikedNPCs(On_ShopHelper.orig_ApplyNpcRelationshipEffect orig, ShopHelper self, int npcType, AffectionLevel affectionLevel)
+        #region Multiple NPC Happiness support 
+        // Currently unused as the one NPC who used it was removed. However it is very likely it'll be used again in the future, so this code is being kept.
+        /*private static void AllowMultipleLikedNPCs(On_ShopHelper.orig_ApplyNpcRelationshipEffect orig, ShopHelper self, int npcType, AffectionLevel affectionLevel)
         {
             FieldInfo npcTalkField = typeof(ShopHelper).GetField("_currentNPCBeingTalkedTo", BindingFlags.Instance | BindingFlags.NonPublic);
             NPC talkedNPC = (NPC)npcTalkField.GetValue(self);
 
-            // Allow Cirrus to have things to say about multiple NPCs with the same happiness level
-            if (talkedNPC.type == ModContent.NPCType<Cirrus>())
+            int npcTypee = 0;
+
+            // Allow the given NPC to have things to say about multiple NPCs with the same happiness level
+            if (talkedNPC.type == npcTypee)
             {
                 MethodInfo addReportField = typeof(ShopHelper).GetMethod("AddHappinessReportText", BindingFlags.Instance | BindingFlags.NonPublic);
 
@@ -1152,6 +1244,85 @@ namespace CalamityMod.ILEditing
             else
             {
                 orig(self, npcType, affectionLevel);
+            }
+        }*/
+        #endregion
+
+        #region Allow Disabling Gravity Swap Visual and Allow Gravity Keybind
+        private static void DelayGravity(On_Player.orig_UpdateControlHolds orig, Player Player)
+        {
+            var cplay = Player.Calamity();
+            if (CalamityKeybinds.SwitchGravityHotkey.GetAssignedKeys().Count != 0 && (Player.gravControl || Player.gravControl2) && !Player.mount.Active)
+            {
+                if (Player.controlUp && Player.releaseUp) {
+                    Player.gravDir *= -1;
+                }
+                if (CalamityKeybinds.SwitchGravityHotkey.JustPressed) 
+                {
+                    Player.gravDir *= -1;
+                    Player.fallStart = (int)(Player.position.Y / 16f);
+                    Player.jump = 0;
+                    SoundEngine.PlaySound(SoundID.Item8, Player.position);
+                }
+
+                if (Player.forcedGravity > 0) {
+				    Player.gravDir = -1f;
+			}   
+            }
+            
+            if (cplay.justChangedGravity) {
+                Player.gravDir = cplay.oldGravDir;
+            }
+            cplay.justChangedGravity = cplay.oldGravDir != Player.gravDir;
+            
+            cplay.oldGravDir = Player.gravDir;
+            if (Main.netMode != NetmodeID.Server && !Main.gameMenu && CalamityClientConfig.Instance.DisableGravityScreenSwap)
+            {
+            if (Player.gravDir == -1) {
+                if (!Filters.Scene["CalamityMod:FlipScreen"].IsActive()) {
+                    Filters.Scene.Activate("CalamityMod:FlipScreen");
+                    Filters.Scene["CalamityMod:FlipScreen"].Opacity = 1f;
+
+                }
+            } else {
+                if (Filters.Scene["CalamityMod:FlipScreen"].IsActive()) {
+                    Filters.Scene["CalamityMod:FlipScreen"].Opacity = 0f;
+                    Filters.Scene.Deactivate("CalamityMod:FlipScreen");
+
+                }
+            }
+            }
+            if (cplay.justChangedGravity)
+            {
+                Player.gravDir *= -1;
+            }
+            orig(Player);
+        }
+
+        private static void GravityMouse(On_PlayerInput.orig_SetZoom_MouseInWorld orig) {
+            orig();
+            if (!Main.gameMenu && Filters.Scene["CalamityMod:FlipScreen"].IsActive())//((Main.LocalPlayer.gravDir == -1 && !Main.LocalPlayer.Calamity().justChangedGravity) || (Main.LocalPlayer.Calamity().oldGravDir == -1 && Main.LocalPlayer.Calamity().justChangedGravity))
+            {
+                var center = Main.screenHeight / 2;
+                Main.mouseY = center - (Main.mouseY - center);
+            };
+        }
+        private static void UI_Unflip_Start(On_Main.orig_DrawPlayerChatBubbles orig, Main self)
+        {
+            if (!Main.gameMenu && (Filters.Scene["CalamityMod:FlipScreen"].IsActive() || Main.LocalPlayer.Calamity().justChangedGravity))
+            {
+                Main.LocalPlayer.Calamity().tempGravDir = Main.LocalPlayer.gravDir;
+                Main.LocalPlayer.gravDir = 1;
+            }
+            orig(self);
+        }
+        
+        private static void UI_Unflip_End(On_Main.orig_DrawInterface orig, Main self, GameTime gameTime)
+        {
+            orig(self, gameTime);
+            if (!Main.gameMenu && Filters.Scene["CalamityMod:FlipScreen"].IsActive())
+            {
+                Main.LocalPlayer.gravDir = Main.LocalPlayer.Calamity().tempGravDir;
             }
         }
         #endregion

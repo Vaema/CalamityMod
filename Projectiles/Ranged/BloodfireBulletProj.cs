@@ -1,4 +1,6 @@
-﻿using CalamityMod.Particles;
+﻿using CalamityMod.Balancing;
+using CalamityMod.Dusts;
+using CalamityMod.Particles;
 using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.ID;
@@ -25,7 +27,6 @@ namespace CalamityMod.Projectiles.Ranged
             Projectile.DamageType = DamageClass.Ranged;
             Projectile.extraUpdates = 12;
             Projectile.timeLeft = Lifetime;
-            Projectile.Calamity().pointBlankShotDuration = CalamityGlobalProjectile.DefaultPointBlankDuration;
             Projectile.tileCollide = false;
         }
 
@@ -76,36 +77,35 @@ namespace CalamityMod.Projectiles.Ranged
             return true;
         }
 
-        public override void ModifyHitNPC(NPC target, ref NPC.HitModifiers modifiers) => modifiers.SourceDamage.Flat += OnHitEffect(Main.player[Projectile.owner]);
+        public override void ModifyHitNPC(NPC target, ref NPC.HitModifiers modifiers) => modifiers.SourceDamage *= OnHitEffect(Main.player[Projectile.owner], target);
 
         // Returns the amount of bonus damage that should be dealt. Boosts life regeneration appropriately as a side effect.
-        private int OnHitEffect(Player owner)
+        private float OnHitEffect(Player owner, NPC target)
         {
-            // Adds 3 frames to lifeRegenTime on every hit. This increased value is used for the damage calculation.
-            owner.lifeRegenTime += 3;
+            // The bonus scales based on a rough estimate of how strong the hit is
+            // Caps at min 12 and max 720
+            float lifeRegenTimeBonus = 3600 * MathHelper.Clamp((Projectile.damage / target.lifeMax), 0.0035f, 0.2f);
+            owner.lifeRegenTime += (int)lifeRegenTimeBonus;
+            // Provides up to 10% damage boost based on life regen time, caps at 3600
+            float lifeRegenTimeContribution = Utils.GetLerpValue(0, 3600, owner.lifeRegenTime, true) * 0.1f;
+            float finalDamageBoost = 1 + lifeRegenTimeContribution;
 
-            // Deals (1.00 + (0.1 * current lifeRegen))% of current lifeRegenTime as flat bonus damage on hit.
-            // For example, at 0 life regen, you get 1% of lifeRegenTime as bonus damage.
-            // At 10 life regen, you get 2%. At 20 life regen, you get 3%.
-            // Negative life regen does not decrease damage.
-            int regenForCalc = owner.lifeRegen > 0 ? owner.lifeRegen : 0;
-            float regenDamageRatio = (1f + 0.1f * regenForCalc) / 100f;
-
-            // For the sake of bonus damage, life regen time caps at 3600, aka 60 seconds. This is its natural cap in vanilla. 75% of this is taken for computing the final damage.
-            int regenTimeForCalc = (int)(MathHelper.Clamp(owner.lifeRegenTime, 0f, 3600f) * 0.75f);
-
-            int finalDamageBoost = (int)(regenDamageRatio * regenTimeForCalc);
-            // Damage boost has a cap of 35 to prevent it from getting too crazy.
-            int damageCap = 35;
-            if (finalDamageBoost > damageCap)
-                finalDamageBoost = damageCap;
-
-            if (finalDamageBoost == damageCap) // Special hit visual if the bonus damage is at the cap.
+            if (lifeRegenTimeContribution == 0.1f) // Special hit visual if the bonus damage is at the cap.
             {
                 for (int k = 0; k < 3; k++)
                 {
                     BloodParticle blood = new BloodParticle(Projectile.Center, new Vector2(6.5f, 6.5f).RotatedByRandom(100) * Main.rand.NextFloat(0.8f, 1.2f), Main.rand.Next(8, 10 + 1), Main.rand.NextFloat(0.7f, 0.9f), Color.Red);
                     GeneralParticleHandler.SpawnParticle(blood);
+
+                    int dustType = ModContent.DustType<DiamondDust>();
+                    float velMulti = Main.rand.NextFloat(0.1f, 0.75f);
+                    Dust dust = Dust.NewDustPerfect(Projectile.Center, dustType, (-Projectile.velocity * 4).RotatedByRandom(0.4) * velMulti);
+                    dust.noGravity = true;
+                    dust.scale = Main.rand.NextFloat(0.55f, 0.65f);
+                    dust.color = Color.Firebrick;
+                    dust.noLightEmittence = true;
+                    dust.noLight = true;
+                    dust.fadeIn = 15;
                 }
             }
             return finalDamageBoost;

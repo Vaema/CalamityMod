@@ -7,6 +7,7 @@ using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.GameContent;
 using Terraria.GameContent.Bestiary;
+using Terraria.GameContent.ItemDropRules;
 using Terraria.ID;
 using Terraria.Localization;
 using Terraria.ModLoader;
@@ -16,26 +17,27 @@ namespace CalamityMod.NPCs.SlimeGod
     public class CrimsonSlimeSpawn2 : ModNPC
     {
         public float spikeTimer = 60f;
+
         public override LocalizedText DisplayName => CalamityUtils.GetText("NPCs.CrimsonSlimeSpawn.DisplayName");
+
         public override void SetStaticDefaults()
         {
             Main.npcFrameCount[Type] = 5;
             NPCID.Sets.BossBestiaryPriority.Add(Type);
         }
 
+        public static int SmallSpikeDamage = 11; // 44
+
         public override void SetDefaults()
         {
             NPC.aiStyle = NPCAIStyleID.Slime;
-            NPC.GetNPCDamage();
+            NPC.damage = 28; // 56
             NPC.width = 40;
             NPC.height = 30;
-            if (CalamityWorld.LegendaryMode && CalamityWorld.revenge)
-                NPC.scale = 2f;
 
             NPC.defense = 6;
-            NPC.lifeMax = BossRushEvent.BossRushActive ? 12000 : (CalamityWorld.LegendaryMode && CalamityWorld.revenge) ? 260 : 130;
+            NPC.lifeMax = BossRushEvent.BossRushActive ? 12000 : 130;
             NPC.knockBackResist = 0.7f;
-            NPC.Opacity = 0.8f;
             NPC.lavaImmune = false;
             NPC.noGravity = false;
             NPC.noTileCollide = false;
@@ -60,13 +62,18 @@ namespace CalamityMod.NPCs.SlimeGod
 
         public override void FindFrame(int frameHeight)
         {
+            Vector3 light = new Vector3(0.5f, 0.1f, 0.1f);
+            Lighting.AddLight(NPC.Center, light.X, light.Y, light.Z);
+
             int frameY = 1;
             if (!Main.dedServ)
             {
                 if (TextureAssets.Npc[Type].Value is null)
                     return;
+
                 frameY = TextureAssets.Npc[Type].Value.Height / Main.npcFrameCount[Type];
             }
+
             int aiState = 0;
             if (NPC.aiAction == 0)
                 aiState = NPC.velocity.Y >= 0f ? (NPC.velocity.Y <= 0f ? (NPC.velocity.X == 0f ? 0 : 1) : 3) : 2;
@@ -78,6 +85,7 @@ namespace CalamityMod.NPCs.SlimeGod
                 NPC.frameCounter++;
             if (aiState == 4)
                 NPC.frameCounter++;
+
             if (NPC.frameCounter >= 8f)
             {
                 NPC.frame.Y += frameY;
@@ -93,11 +101,10 @@ namespace CalamityMod.NPCs.SlimeGod
                 spikeTimer -= 1f;
 
             int type = ModContent.ProjectileType<CrimsonSpike>();
-            int damage = NPC.GetProjectileDamage(type);
+            int damage = SmallSpikeDamage;
             if (Main.zenithWorld)
-            {
                 type = Main.rand.NextBool() ? ModContent.ProjectileType<IchorShot>() : ModContent.ProjectileType<BloodGeyser>();
-            }
+
             if (!NPC.wet)
             {
                 Vector2 faceDirection = new Vector2(NPC.position.X + (float)NPC.width * 0.5f, NPC.position.Y + (float)NPC.height * 0.5f);
@@ -108,9 +115,8 @@ namespace CalamityMod.NPCs.SlimeGod
                 {
                     NPC.ai[0] = -40f;
                     if (NPC.velocity.Y == 0f)
-                    {
                         NPC.velocity.X = NPC.velocity.X * 0.9f;
-                    }
+
                     if (Main.netMode != NetmodeID.MultiplayerClient && spikeTimer == 0f)
                     {
                         int projcount = Main.zenithWorld ? 12 : 5;
@@ -130,9 +136,8 @@ namespace CalamityMod.NPCs.SlimeGod
                 {
                     NPC.ai[0] = -40f;
                     if (NPC.velocity.Y == 0f)
-                    {
                         NPC.velocity.X = NPC.velocity.X * 0.9f;
-                    }
+
                     if (Main.netMode != NetmodeID.MultiplayerClient && spikeTimer == 0f)
                     {
                         targetY = Main.player[NPC.target].position.Y - faceDirection.Y - (float)Main.rand.Next(0, 200);
@@ -151,16 +156,14 @@ namespace CalamityMod.NPCs.SlimeGod
         {
             Color dustColor = Color.Crimson;
             dustColor.A = 150;
+
             for (int k = 0; k < 5; k++)
-            {
-                Dust.NewDust(NPC.position, NPC.width, NPC.height, DustID.TintableDust, hit.HitDirection, -1f, NPC.alpha, dustColor, 1f);
-            }
+                Dust.NewDust(NPC.position, NPC.width, NPC.height, DustID.TintableDust, hit.HitDirection, -1f, 0, dustColor, 1f);
+
             if (NPC.life <= 0)
             {
                 for (int k = 0; k < 20; k++)
-                {
-                    Dust.NewDust(NPC.position, NPC.width, NPC.height, DustID.TintableDust, hit.HitDirection, -1f, NPC.alpha, dustColor, 1f);
-                }
+                    Dust.NewDust(NPC.position, NPC.width, NPC.height, DustID.TintableDust, hit.HitDirection, -1f, 0, dustColor, 1f);
             }
         }
 
@@ -171,12 +174,12 @@ namespace CalamityMod.NPCs.SlimeGod
                 Item.NewItem(NPC.GetSource_Loot(), (int)NPC.position.X, (int)NPC.position.Y, NPC.width, NPC.height, ItemID.Heart);
         }
 
-        public override void ModifyNPCLoot(NPCLoot npcLoot) => npcLoot.Add(ItemID.Blindfold, 50);
+        public override void ModifyNPCLoot(NPCLoot npcLoot) => npcLoot.Add(ItemDropRule.NormalvsExpert(ItemID.Blindfold, 100, 50));
 
         public override void OnHitPlayer(Player target, Player.HurtInfo hurtInfo)
         {
             if (hurtInfo.Damage > 0)
-                target.AddBuff(BuffID.Darkness, 90, true);
+                target.AddBuff(BuffID.Darkness, 180);
         }
     }
 }

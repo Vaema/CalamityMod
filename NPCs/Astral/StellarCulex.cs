@@ -40,13 +40,11 @@ namespace CalamityMod.NPCs.Astral
             NPC.width = 60;
             NPC.height = 50;
             NPC.aiStyle = NPCAIStyleID.Bat; //bats
-            NPC.npcSlots = 0.5f; //needed?
             NPC.damage = 55;
-            NPC.defense = 18;
-            NPC.DR_NERD(0.15f);
+            NPC.defense = 26;
             NPC.knockBackResist = 0.65f;
-            NPC.lifeMax = 270;
-            NPC.value = Item.buyPrice(0, 0, 5, 0);
+            NPC.lifeMax = 280;
+            NPC.value = Item.buyPrice(silver: 5);
             NPC.DeathSound = CommonCalamitySounds.AstralNPCDeathSound;
             AnimationType = NPCID.GiantFlyingFox;
             Banner = NPC.type;
@@ -54,17 +52,13 @@ namespace CalamityMod.NPCs.Astral
             if (DownedBossSystem.downedAstrumAureus)
             {
                 NPC.damage = 90;
-                NPC.defense = 28;
+                NPC.defense = 36;
                 NPC.knockBackResist = 0.55f;
-                NPC.lifeMax = 405;
+                NPC.lifeMax = 420;
             }
             NPC.Calamity().VulnerableToHeat = true;
             NPC.Calamity().VulnerableToSickness = false;
             SpawnModBiomes = new int[1] { ModContent.GetInstance<AstralUnderground>().Type };
-
-            // Scale stats in Expert and Master
-            CalamityGlobalNPC.AdjustExpertModeStatScaling(NPC);
-            CalamityGlobalNPC.AdjustMasterModeStatScaling(NPC);
         }
 
         public override void SetBestiary(BestiaryDatabase database, BestiaryEntry bestiaryEntry)
@@ -131,7 +125,7 @@ namespace CalamityMod.NPCs.Astral
         public override void OnHitPlayer(Player target, Player.HurtInfo hurtInfo)
         {
             if (hurtInfo.Damage > 0)
-                target.AddBuff(ModContent.BuffType<AstralInfectionDebuff>(), 45, true);
+                target.AddBuff(ModContent.BuffType<AstralInfectionDebuff>(), 180);
         }
 
         public override void ModifyNPCLoot(NPCLoot npcLoot)

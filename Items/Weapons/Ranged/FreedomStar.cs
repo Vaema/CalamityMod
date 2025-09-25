@@ -63,7 +63,7 @@ namespace CalamityMod.Items.Weapons.Ranged
                 AddIngredient<DubiousPlating>(18).
                 AddIngredient<UelibloomBar>(8).
                 AddIngredient(ItemID.LunarBar, 4).
-                AddTile(TileID.LunarCraftingStation).
+                AddTile(TileID.MythrilAnvil).
                 Register();
         }
     }

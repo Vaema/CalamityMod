@@ -56,7 +56,6 @@ namespace CalamityMod
             //Abyss.AbleToUnlockChests = false; //Yet another fucking failsave for abyss chests
 
             spawnedBandit = false;
-            spawnedCirrus = false;
             foundHomePermafrost = false;
 
             catName = false;
@@ -92,8 +91,6 @@ namespace CalamityMod
                 downed.Add("acidRain");
             if (spawnedBandit)
                 downed.Add("bandit");
-            if (spawnedCirrus)
-                downed.Add("drunkPrincess");
             if (foundHomePermafrost)
                 downed.Add("archmageHome");
 
@@ -151,7 +148,6 @@ namespace CalamityMod
             BossRushEvent.BossRushActive = downed.Contains("bossRushActive");
             AcidRainEvent.AcidRainEventIsOngoing = downed.Contains("acidRain");
             spawnedBandit = downed.Contains("bandit");
-            spawnedCirrus = downed.Contains("drunkPrincess");
             foundHomePermafrost = downed.Contains("archmageHome");
 
             #region Load Pet Names
@@ -237,7 +233,7 @@ namespace CalamityMod
             BitsByte flags5 = new BitsByte();
             flags5[0] = downedAstrumDeus;
             flags5[1] = spawnedBandit;
-            flags5[2] = spawnedCirrus;
+            flags5[2] = false;
             flags5[3] = AcidRainEvent.HasStartedAcidicDownpour;
             flags5[4] = false;
             flags5[5] = downedPolterghast;
@@ -391,7 +387,7 @@ namespace CalamityMod
             BitsByte flags5 = reader.ReadByte();
             downedAstrumDeus = flags5[0];
             spawnedBandit = flags5[1];
-            spawnedCirrus = flags5[2];
+            _ = flags5[2];
             AcidRainEvent.HasStartedAcidicDownpour = flags5[3];
             _ = flags5[4];
             downedPolterghast = flags5[5];

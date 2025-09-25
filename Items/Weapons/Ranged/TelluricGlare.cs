@@ -1,4 +1,6 @@
-﻿using CalamityMod.Projectiles.Ranged;
+﻿using CalamityMod.Items.Weapons.Magic;
+using CalamityMod.Items.Weapons.Rogue;
+using CalamityMod.Projectiles.Ranged;
 using CalamityMod.Rarities;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
@@ -20,12 +22,13 @@ namespace CalamityMod.Items.Weapons.Ranged
         {
             Main.RegisterItemAnimation(Type, new DrawAnimationVertical(3, 5));
             ItemID.Sets.AnimatesAsSoul[Type] = true;
+            ItemID.Sets.ShimmerTransformToItem[Type] = ModContent.ItemType<PurgeGuzzler>();
         }
         public override void SetDefaults()
         {
             Item.width = 74;
             Item.height = 126;
-            Item.damage = 101; 
+            Item.damage = 83;
             Item.DamageType = DamageClass.Ranged;
             Item.useTime = 3;
             Item.useAnimation = 25;
@@ -42,7 +45,6 @@ namespace CalamityMod.Items.Weapons.Ranged
             Item.shoot = ModContent.ProjectileType<TelluricGlareArrow>();
             Item.shootSpeed = 18f;
             Item.useAmmo = AmmoID.Arrow;
-            Item.Calamity().canFirePointBlankShots = true;
         }
         public override Vector2? HoldoutOffset() => new Vector2(-14f, 0f);
         public override bool CanConsumeAmmo(Item ammo, Player player) => Main.rand.NextFloat() < 0.25f;

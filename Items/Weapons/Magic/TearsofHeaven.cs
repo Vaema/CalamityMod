@@ -18,11 +18,10 @@ namespace CalamityMod.Items.Weapons.Magic
         {
             Item.width = 38;
             Item.height = 48;
-            Item.damage = 45;
+            Item.damage = 43;
             Item.DamageType = DamageClass.Magic;
-            Item.mana = 18;
-            Item.useTime = 20;
-            Item.useAnimation = 20;
+            Item.mana = 15;
+            Item.useTime = Item.useAnimation = 20;
             Item.useStyle = ItemUseStyleID.Shoot;
             Item.noMelee = true;
             Item.knockBack = 5.5f;
@@ -38,9 +37,9 @@ namespace CalamityMod.Items.Weapons.Magic
         {
             for (int index = 0; index < 2; ++index)
             {
-                float SpeedX = velocity.X + (float)Main.rand.Next(-40, 41) * 0.05f;
-                float SpeedY = velocity.Y + (float)Main.rand.Next(-40, 41) * 0.05f;
-                Projectile.NewProjectile(source, position.X, position.Y, SpeedX, SpeedY, type, damage, knockback, player.whoAmI);
+                float SpeedX = velocity.X + Main.rand.NextFloat(-2f, 2f);
+                float SpeedY = velocity.Y + Main.rand.NextFloat(-2f, 2f);
+                Projectile.NewProjectile(source, position, new Vector2(SpeedX, SpeedY), type, damage, knockback, player.whoAmI);
             }
             return false;
         }

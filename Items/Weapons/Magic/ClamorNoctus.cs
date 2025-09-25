@@ -107,7 +107,7 @@ namespace CalamityMod.Items.Weapons.Magic
                 AddIngredient<Lumenyl>(6).
                 AddIngredient<RuinousSoul>(5).
                 AddIngredient<ExodiumCluster>(10).
-                AddTile(TileID.LunarCraftingStation).
+                AddTile(TileID.MythrilAnvil).
                 Register();
         }
     }

@@ -64,7 +64,7 @@ namespace CalamityMod.Projectiles.Ranged
                 if (rainDownTimer >= 80)
                 {
                     bool isClusterRocket = (RocketID == ItemID.ClusterRocketI || RocketID == ItemID.ClusterRocketII);
-                    if (rainDownTimer % 15 == 0)
+                    if (rainDownTimer % 15 == 0 && Main.myPlayer == Projectile.owner)
                     {
                         SoundStyle fire = new("CalamityMod/Sounds/Custom/Providence/ProvidenceHolyBlastShoot");
                         SoundEngine.PlaySound(fire with { Volume = 0.45f, Pitch = (0 - 0.3f * Utils.GetLerpValue(0, 300, rainDownTimer, true)) }, Projectile.Center);

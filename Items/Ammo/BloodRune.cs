@@ -22,7 +22,7 @@ namespace CalamityMod.Items.Ammo
             Item.consumable = true;
             Item.knockBack = 10f;
             Item.value = Item.buyPrice(gold: 1); // Sold by Archmage
-            Item.rare = ModContent.RarityType<DarkBlue>();
+            Item.rare = ModContent.RarityType<CosmicPurple>();
             Item.Calamity().donorItem = true;
             Item.shoot = ModContent.ProjectileType<IceBarrageMain>();
             Item.shootSpeed = 0f;

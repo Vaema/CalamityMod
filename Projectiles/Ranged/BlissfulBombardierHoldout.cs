@@ -87,6 +87,7 @@ namespace CalamityMod.Projectiles.Ranged
             if (Owner.CantUseHoldout() && PostFireCooldown <= 0 && shootingTimer < (int)(Owner.itemAnimationMax * 0.8f))
             {
                 Projectile.Kill();
+                return;
             }
 
             if (!hasFired)
@@ -152,10 +153,12 @@ namespace CalamityMod.Projectiles.Ranged
             }
 
             // Spawns the projectile.
-            Projectile.NewProjectileDirect(Projectile.GetSource_FromThis(), GunTipPosition, shootDirection * projSpeed * velocityMultiplier, ProjectileType<NukeOfBliss>(), damage, knockback, Projectile.owner, rocketType);
-            PostFireCooldown = Owner.itemAnimationMax;
-            Owner.Calamity().GeneralScreenShakePower = 5f;
-
+            if (Main.myPlayer == Projectile.owner)
+            {
+                Projectile.NewProjectileDirect(Projectile.GetSource_FromThis(), GunTipPosition, shootDirection * projSpeed * velocityMultiplier, ProjectileType<NukeOfBliss>(), damage, knockback, Projectile.owner, rocketType);
+                PostFireCooldown = Owner.itemAnimationMax;
+                Owner.Calamity().GeneralScreenShakePower = 5f;
+            }
 
             // Inside here go all the things that dedicated servers shouldn't spend resources on.
             // Like visuals and sounds.

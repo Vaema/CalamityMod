@@ -12,7 +12,7 @@
         BoneWings = 8,
         FlameWings = 9,
         FrozenWings = 10,
-        SpectreWings = 11,
+        GhostWings = 11, // Spectre Wings
         SteampunkWings = 12,
         LeafWings = 13,
         BatWings = 14,

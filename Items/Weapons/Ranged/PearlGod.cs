@@ -24,7 +24,7 @@ namespace CalamityMod.Items.Weapons.Ranged
         {
             Item.width = 80;
             Item.height = 46;
-            Item.damage = 150;
+            Item.damage = 160;
             Item.scale = 0.75f;
             Item.DamageType = DamageClass.Ranged;
             Item.useTime = 9;
@@ -39,7 +39,6 @@ namespace CalamityMod.Items.Weapons.Ranged
             Item.shootSpeed = 14f;
             Item.shoot = ProjectileID.PurificationPowder;
             Item.useAmmo = AmmoID.Bullet;
-            Item.Calamity().canFirePointBlankShots = true;
         }
 
         public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)
@@ -159,7 +158,7 @@ namespace CalamityMod.Items.Weapons.Ranged
                 AddIngredient<LifeAlloy>(5).
                 AddIngredient<RuinousSoul>(2).
                 AddIngredient(ItemID.WhitePearl).
-                AddTile(TileID.LunarCraftingStation).
+                AddTile(TileID.MythrilAnvil).
                 Register();
         }
     }

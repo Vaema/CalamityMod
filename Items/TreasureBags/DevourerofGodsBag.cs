@@ -70,7 +70,7 @@ namespace CalamityMod.Items.TreasureBags
             itemLoot.Add(ItemDropRule.CoinsBasedOnNPCValue(ModContent.NPCType<DevourerofGodsHead>()));
 
             // Materials
-            itemLoot.Add(ModContent.ItemType<CosmiliteBar>(), 1, 55, 65);
+            itemLoot.Add(ModContent.ItemType<CosmiliteBar>(), 1, 75, 90);
             itemLoot.Add(ModContent.ItemType<CosmiliteBrick>(), 1, 200, 320);
 
             // Weapons
@@ -84,7 +84,6 @@ namespace CalamityMod.Items.TreasureBags
                 ModContent.ItemType<Eradicator>()
             }));
             itemLoot.Add(ModContent.ItemType<CosmicDischarge>(), 10);
-            itemLoot.Add(ModContent.ItemType<Norfleet>(), 10);
 
             // Equipment
             itemLoot.Add(ModContent.ItemType<NebulousCore>());

@@ -31,20 +31,16 @@ namespace CalamityMod.NPCs.PlagueEnemies
             NPC.damage = 55;
             NPC.width = 38;
             NPC.height = 34;
-            NPC.defense = 15;
-            NPC.lifeMax = 630;
+            NPC.defense = 20;
+            NPC.lifeMax = 800;
             NPC.knockBackResist = 0.3f;
-            NPC.value = Item.buyPrice(0, 0, 10, 0);
+            NPC.value = Item.buyPrice(silver: 10);
             NPC.HitSound = SoundID.NPCHit1;
             Banner = NPC.type;
             BannerItem = ModContent.ItemType<MelterBanner>();
             NPC.Calamity().VulnerableToHeat = true;
             NPC.Calamity().VulnerableToCold = true;
             NPC.Calamity().VulnerableToSickness = false;
-
-            // Scale stats in Expert and Master
-            CalamityGlobalNPC.AdjustExpertModeStatScaling(NPC);
-            CalamityGlobalNPC.AdjustMasterModeStatScaling(NPC);
         }
 
         public override void SetBestiary(BestiaryDatabase database, BestiaryEntry bestiaryEntry)
@@ -69,7 +65,7 @@ namespace CalamityMod.NPCs.PlagueEnemies
         public override void OnHitPlayer(Player target, Player.HurtInfo hurtInfo)
         {
             if (hurtInfo.Damage > 0)
-                target.AddBuff(ModContent.BuffType<Plague>(), 90, true);
+                target.AddBuff(ModContent.BuffType<Plague>(), 180);
         }
 
         public override void HitEffect(NPC.HitInfo hit)

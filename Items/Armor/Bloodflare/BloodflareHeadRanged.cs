@@ -4,6 +4,7 @@ using CalamityMod.Rarities;
 using Terraria;
 using Terraria.Audio;
 using Terraria.ID;
+using Terraria.Localization;
 using Terraria.ModLoader;
 
 namespace CalamityMod.Items.Armor.Bloodflare
@@ -15,39 +16,46 @@ namespace CalamityMod.Items.Armor.Bloodflare
         public new string LocalizationCategory => "Items.Armor.PostMoonLord";
         public static readonly SoundStyle ActivationSound = new("CalamityMod/Sounds/Custom/AbilitySounds/BloodflareRangerActivation");
 
+        public static float RangedDamageBoost = 0.1f;
+        public static int RangedCritBoost = 10; // NOTE: Tooltip shares this number with damage % as they're equal
+        public override LocalizedText Tooltip => base.Tooltip.WithFormatArgs(RangedDamageBoost.ToPercent());
+
+        // Set Bonus
+        public static float SetBonusAmmoReduction = 0.75f;
+        public static int SoulCooldown = CalamityUtils.SecondsToFrames(30);
+        public static int SoulDamage = 300;
+        public static int SoulAmount = 16;
+        public static int BloodBombCooldown = CalamityUtils.SecondsToFrames(2.5f);
+        public static double BloodBombDamageRatio = 0.8D;
+        public static int BloodBombDamageSoftcap = 120;
+
         public override void SetDefaults()
         {
             Item.width = 18;
             Item.height = 18;
             Item.value = CalamityGlobalItem.RarityPureGreenBuyPrice;
-            Item.defense = 34; //85
+            Item.defense = 30; // 94
             Item.rare = ModContent.RarityType<PureGreen>();
         }
 
-        public override bool IsArmorSet(Item head, Item body, Item legs)
-        {
-            return body.type == ModContent.ItemType<BloodflareBodyArmor>() && legs.type == ModContent.ItemType<BloodflareCuisses>();
-        }
+        public override bool IsArmorSet(Item head, Item body, Item legs) => body.type == ModContent.ItemType<BloodflareBodyArmor>() && legs.type == ModContent.ItemType<BloodflareCuisses>();
 
-        public override void ArmorSetShadows(Player player)
-        {
-            player.armorEffectDrawShadowSubtle = true;
-        }
+        public override void ArmorSetShadows(Player player) => player.armorEffectDrawShadowSubtle = true;
 
         public override void UpdateArmorSet(Player player)
         {
             var modPlayer = player.Calamity();
+            modPlayer.ammoCost *= SetBonusAmmoReduction;
             modPlayer.bloodflareSet = true;
             modPlayer.bloodflareRanged = true;
-            var hotkey = CalamityKeybinds.ArmorSetBonusHotKey.TooltipHotkeyString();
-            player.setBonus = this.GetLocalization("SetBonus").Format(hotkey) + "\n" + CalamityUtils.GetTextValueFromModItem<BloodflareBodyArmor>("CommonSetBonus");
+            player.setBonus = this.GetLocalization("SetBonus").Format(CalamityUtils.GetArmorSetBonusKey(), SoulCooldown.FramesToSeconds(), BloodBombCooldown.FramesToSeconds(), (1f - SetBonusAmmoReduction).ToPercent());
             player.crimsonRegen = true;
         }
 
         public override void UpdateEquip(Player player)
         {
-            player.GetDamage<RangedDamageClass>() += 0.1f;
-            player.GetCritChance<RangedDamageClass>() += 10;
+            player.GetDamage<RangedDamageClass>() += RangedDamageBoost;
+            player.GetCritChance<RangedDamageClass>() += RangedCritBoost;
         }
 
         public override void AddRecipes()
@@ -55,7 +63,7 @@ namespace CalamityMod.Items.Armor.Bloodflare
             CreateRecipe().
                 AddIngredient<BloodstoneCore>(11).
                 AddIngredient<RuinousSoul>(2).
-                AddTile(TileID.LunarCraftingStation).
+                AddTile(TileID.MythrilAnvil).
                 SortBeforeFirstRecipesOf(ModContent.ItemType<BloodflareHeadMagic>()).
                 Register();
         }

@@ -61,7 +61,7 @@ namespace CalamityMod.Items.TreasureBags
             itemLoot.Add(ItemDropRule.CoinsBasedOnNPCValue(ModContent.NPCType<Yharon>()));
 
             // Materials
-            itemLoot.Add(ModContent.ItemType<YharonSoulFragment>(), 1, 30, 35);
+            itemLoot.Add(ModContent.ItemType<YharonSoulFragment>(), 1, 40, 50);
 
             // Weapons
             itemLoot.Add(DropHelper.CalamityStyle(DropHelper.BagWeaponDropRateFraction, new int[]
@@ -78,7 +78,7 @@ namespace CalamityMod.Items.TreasureBags
             itemLoot.Add(ModContent.ItemType<YharimsCrystal>(), 10);
 
             // Equipment
-            itemLoot.Add(ModContent.ItemType<DrewsWings>());
+            itemLoot.Add(ModContent.ItemType<WingsofRebirth>());
             itemLoot.Add(ModContent.ItemType<YharimsGift>());
             itemLoot.AddRevBagAccessories();
 

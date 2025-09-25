@@ -1,5 +1,7 @@
 ﻿using System;
 using CalamityMod.Buffs.StatDebuffs;
+using CalamityMod.NPCs.OldDuke;
+using CalamityMod.Particles;
 using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.ID;
@@ -32,6 +34,9 @@ namespace CalamityMod.Projectiles.Boss
 
         public override void AI()
         {
+            Projectile.spriteDirection = 1;
+            if (Projectile.Center.X < Main.LocalPlayer.Center.X) Projectile.spriteDirection = -1;
+
             Lighting.AddLight(Projectile.Center, 0.1f, 0.7f, 0f);
 
             Projectile.ai[0] += 1f;
@@ -43,6 +48,8 @@ namespace CalamityMod.Projectiles.Boss
             }
             if (Projectile.ai[0] < 1620f)
             {
+                GeneralParticleHandler.SpawnParticle(new GlowOrbParticle(Projectile.Top + new Vector2(Main.rand.NextFloat(-12, 12), 6f), new Vector2(0, -Main.rand.NextFloat(2)), false, 20, Main.rand.NextFloat(0.5f, 1.2f), new Color(100, 255, 0)));
+
                 if (Projectile.frame >= 4)
                 {
                     Projectile.frame = 0;
@@ -67,11 +74,12 @@ namespace CalamityMod.Projectiles.Boss
 
         public override bool PreDraw(ref Color lightColor)
         {
-            lightColor.R = (byte)(255 * Projectile.Opacity);
-            lightColor.G = (byte)(255 * Projectile.Opacity);
-            lightColor.B = (byte)(255 * Projectile.Opacity);
-            CalamityUtils.DrawProjectileWithBackglow(Projectile, new Color(66, 236, 113), lightColor, 3.75f);
-            CalamityUtils.DrawAfterimagesCentered(Projectile, ProjectileID.Sets.TrailingMode[Type], lightColor, 1);
+            lightColor.R = (byte)(100 * Projectile.Opacity);
+            lightColor.G = (byte)(155 * Projectile.Opacity);
+            lightColor.B = (byte)(55 * Projectile.Opacity);
+            lightColor.A = 0;
+            CalamityUtils.DrawProjectileWithBackglow(Projectile, new Color(20, 60, 26, 0), Color.White, 2f);
+            CalamityUtils.DrawAfterimagesCentered(Projectile, ProjectileID.Sets.TrailingMode[Projectile.type], lightColor, 1);
             return false;
         }
 
@@ -84,7 +92,7 @@ namespace CalamityMod.Projectiles.Boss
             if (info.Damage <= 0)
                 return;
 
-            target.AddBuff(ModContent.BuffType<Irradiated>(), 240, true);
+            target.AddBuff(ModContent.BuffType<Irradiated>(), 480, true);
         }
     }
 }

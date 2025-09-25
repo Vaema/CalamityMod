@@ -60,7 +60,7 @@ namespace CalamityMod.Items.Weapons.Melee
                 AddIngredient<TaintedBlade>().
                 AddRecipeGroup("CursedFlameIchor", 8).
                 AddIngredient(ItemID.SpiderFang, 8).
-                AddTile(TileID.DemonAltar).
+                AddTile(TileID.Anvils).
                 Register();
         }
     }

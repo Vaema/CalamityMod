@@ -70,10 +70,10 @@ namespace CalamityMod.NPCs.SupremeCalamitas
         public const int ThirdBulletHellEndValue = BulletHellDuration * 3;
         public const int FourthBulletHellEndValue = BulletHellDuration * 4;
         public const int FifthBulletHellEndValue = BulletHellDuration * 5;
-        public const int CirrusPhotonRipperDamage = 3725;
-        private const float CirrusPhotonRipperDashVelocity = 6f;
-        private const float CirrusPhotonRipperMinDistanceFromTarget = 64f;
-        private const float CirrusPhotonRipperDashAcceleration = 0.3f;
+        public const int PermafrostAbsoluteZeroDamage = 3725;
+        private const float PermafrostPhotonRipperDashVelocity = 6f;
+        private const float PermafrostPhotonRipperMinDistanceFromTarget = 64f;
+        private const float PermafrostPhotonRipperDashAcceleration = 0.3f;
 
         public float bossLife;
         public float uDieLul = 1f;
@@ -103,7 +103,7 @@ namespace CalamityMod.NPCs.SupremeCalamitas
         public bool spawnArena = false;
         public bool enteredBrothersPhase = false;
         public bool hasSummonedBrothers = false;
-        public bool cirrus = false;
+        public bool permafrost = false;
         public bool hasDoneDeathAnim = false;
         public bool postMusicHit = false;
 
@@ -124,8 +124,6 @@ namespace CalamityMod.NPCs.SupremeCalamitas
         public int bulletHellCounter2 = 0;
         public int attackCastDelay = 0;
         public int hitTimer = 0;
-        public int alicornFrame = 0;
-        public int alicornFrameCounter = 0;
         public int dashVisualCounter = 0;
         public int preventionPause = 15; // Helps prevent telefragging
         public int attackPause = 0;
@@ -191,17 +189,14 @@ namespace CalamityMod.NPCs.SupremeCalamitas
         public static int hoodedHeadIconP2Index;
         public static int hoodlessHeadIconIndex;
         public static int hoodlessHeadIconP2Index;
-        public static int cirrusHeadIconIndex;
-        public static int cirrusHeadIconP2Index;
+        public static int permafrostHeadIconIndex;
         public static float normalDR = 0.25f;
         public static float enragedDR = 0.9999f;
 
         public static readonly Color textColor = Color.Orange;
-        public static readonly Color cirrusTextColor = Color.Pink;
+        public static readonly Color permafrostTextColor = Color.LightCyan;
         public const int sepulcherSpawnCastTime = 75;
         public const int brothersSpawnCastTime = 150;
-        public const int MaxCirrusAlcohols = 20;
-        public const int MaxCirrusAlcoholDebuffDuration = 1500;
 
         // Sounds.
         public static readonly SoundStyle SpawnSound = new("CalamityMod/Sounds/Custom/SupremeCalamitasSpawn") { Volume = 1.2f };
@@ -209,7 +204,7 @@ namespace CalamityMod.NPCs.SupremeCalamitas
         public static readonly SoundStyle BrimstoneShotSound = new("CalamityMod/Sounds/Custom/SCalSounds/BrimstoneShoot");
         public static readonly SoundStyle BrotherHit = new("CalamityMod/Sounds/Custom/SCalSounds/BrothersHurt", 2);
         public static readonly SoundStyle BrotherDeath = new("CalamityMod/Sounds/Custom/SCalSounds/BrothersDeath", 2);
-        public static readonly SoundStyle CatastropheSwing = new("CalamityMod/Sounds/Custom/SCalSounds/CatastropheResonanceSlash1");
+        public static readonly SoundStyle CatastropheSwing = new("CalamityMod/Sounds/Custom/SCalSounds/CatastropheResonanceSlash");
         public static readonly SoundStyle BrimstoneBigShotSound = new("CalamityMod/Sounds/Custom/SCalSounds/BrimstoneBigShoot"); // DON'T YOU WANNA BE A [BIG SHOT]
         public static readonly SoundStyle DashSound = new("CalamityMod/Sounds/Custom/SCalSounds/SCalDash");
         public static readonly SoundStyle HellblastSound = new("CalamityMod/Sounds/Custom/SCalSounds/BrimstoneHellblastSound");
@@ -220,8 +215,7 @@ namespace CalamityMod.NPCs.SupremeCalamitas
         public SlotId BulletHellRumbleSlot;
 
         public static Asset<Texture2D> HoodedTexture;
-        public static Asset<Texture2D> CirrusTexture;
-        public static Asset<Texture2D> CirrusTexture2;
+        public static Asset<Texture2D> PermafrostTexture;
         public static Asset<Texture2D> ShieldTopTexture;
         public static Asset<Texture2D> ShieldBottomTexture;
         public static Asset<Texture2D> ForcefieldTexture;
@@ -231,13 +225,11 @@ namespace CalamityMod.NPCs.SupremeCalamitas
         {
             string hoodedIconPath = "CalamityMod/NPCs/SupremeCalamitas/HoodedHeadIcon";
             string hoodlessIconPath = "CalamityMod/NPCs/SupremeCalamitas/HoodlessHeadIcon";
-            string cirrusIconPath = "CalamityMod/NPCs/SupremeCalamitas/CirrusHeadIcon";
-            string cirrusIconP2Path = "CalamityMod/NPCs/SupremeCalamitas/CirrusHeadIcon2";
+            string permafrostIconPath = "CalamityMod/NPCs/TownNPCs/Archmage_Head";
             
             hoodedHeadIconIndex = CalamityMod.Instance.AddBossHeadTexture(hoodedIconPath, -1);
             hoodlessHeadIconIndex = CalamityMod.Instance.AddBossHeadTexture(hoodlessIconPath, -1);
-            cirrusHeadIconIndex = CalamityMod.Instance.AddBossHeadTexture(cirrusIconPath, -1);
-            cirrusHeadIconP2Index = CalamityMod.Instance.AddBossHeadTexture(cirrusIconP2Path, -1);
+            permafrostHeadIconIndex = CalamityMod.Instance.AddBossHeadTexture(permafrostIconPath, -1);
         }
 
         public override void SetStaticDefaults()
@@ -254,23 +246,28 @@ namespace CalamityMod.NPCs.SupremeCalamitas
             if (!Main.dedServ)
             {
                 HoodedTexture = ModContent.Request<Texture2D>(Texture + "Hooded", AssetRequestMode.AsyncLoad);
-                CirrusTexture = ModContent.Request<Texture2D>("CalamityMod/NPCs/SupremeCalamitas/SupremeCirrus", AssetRequestMode.AsyncLoad);
-                CirrusTexture2 = ModContent.Request<Texture2D>("CalamityMod/NPCs/SupremeCalamitas/SupremeCirrus_Shimmered", AssetRequestMode.AsyncLoad);
+                PermafrostTexture = ModContent.Request<Texture2D>("CalamityMod/NPCs/SupremeCalamitas/SupremePermafrost", AssetRequestMode.AsyncLoad);
                 ShieldTopTexture = ModContent.Request<Texture2D>("CalamityMod/NPCs/SupremeCalamitas/SupremeShieldTop", AssetRequestMode.AsyncLoad);
                 ShieldBottomTexture = ModContent.Request<Texture2D>("CalamityMod/NPCs/SupremeCalamitas/SupremeShieldBottom", AssetRequestMode.AsyncLoad);
                 ForcefieldTexture = ModContent.Request<Texture2D>("CalamityMod/NPCs/SupremeCalamitas/ForcefieldTexture", AssetRequestMode.AsyncLoad);
             }
         }
 
+        public static int DartDamage = 80; // 320
+        public static int SkullDamage = 85; // 340
+        public static int HellblastDamage = 95; // 380
+        public static int FireblastDamage = 95; // 380
+        public static int GigablastDamage = 105; // 420
+
         public override void SetDefaults()
         {
             NPC.Calamity().canBreakPlayerDefense = true;
-            NPC.GetNPCDamage();
+            NPC.damage = 210; // 420
             NPC.npcSlots = 50f;
             NPC.width = NPC.height = 44;
             NPC.defense = 100;
             NPC.DR_NERD(normalDR);
-            NPC.value = Item.buyPrice(3, 0, 0, 0);
+            NPC.value = Item.buyPrice(platinum: 3);
             NPC.LifeMaxNERB(960000, 1150000, 900000);
             NPC.aiStyle = -1;
             AIType = -1;
@@ -283,9 +280,6 @@ namespace CalamityMod.NPCs.SupremeCalamitas
             NPC.Calamity().VulnerableToHeat = false;
             NPC.Calamity().VulnerableToCold = true;
             NPC.Calamity().VulnerableToSickness = true;
-
-            // Scale HP in Master
-            CalamityGlobalNPC.AdjustMasterModeStatScaling(NPC, true);
         }
 
         public override void SetBestiary(BestiaryDatabase database, BestiaryEntry bestiaryEntry)
@@ -300,9 +294,9 @@ namespace CalamityMod.NPCs.SupremeCalamitas
         public override void BossHeadSlot(ref int index)
         {
             bool inPhase2 = NPC.ai[0] == 3f;
-            if (cirrus)
+            if (permafrost)
             {
-                index = inPhase2 ? cirrusHeadIconP2Index : cirrusHeadIconIndex;
+                index = permafrostHeadIconIndex;
             }
             else
             {
@@ -315,8 +309,8 @@ namespace CalamityMod.NPCs.SupremeCalamitas
 
         public override void ModifyTypeName(ref string typeName)
         {
-            if (cirrus)
-                typeName = CalamityUtils.GetTextValue("NPCs.SupremeCirrus");
+            if (permafrost)
+                typeName = CalamityUtils.GetTextValue("NPCs.SupremePermafrost");
         }
 
         public override void SendExtraAI(BinaryWriter writer)
@@ -344,7 +338,7 @@ namespace CalamityMod.NPCs.SupremeCalamitas
             writer.Write(spawnArena);
             writer.Write(hasSummonedBrothers);
             writer.Write(enteredBrothersPhase);
-            writer.Write(cirrus);
+            writer.Write(permafrost);
             writer.Write(NPC.dontTakeDamage);
             writer.Write(NPC.chaseable);
 
@@ -396,7 +390,7 @@ namespace CalamityMod.NPCs.SupremeCalamitas
             spawnArena = reader.ReadBoolean();
             hasSummonedBrothers = reader.ReadBoolean();
             enteredBrothersPhase = reader.ReadBoolean();
-            cirrus = reader.ReadBoolean();
+            permafrost = reader.ReadBoolean();
             NPC.dontTakeDamage = reader.ReadBoolean();
             NPC.chaseable = reader.ReadBoolean();
 
@@ -454,38 +448,18 @@ namespace CalamityMod.NPCs.SupremeCalamitas
             if (CalamityServerConfig.Instance.BossesStopWeather)
                 CalamityWorld.StopRain();
 
-            bool bossRush = BossRushEvent.BossRushActive;
-            bool expertMode = Main.expertMode || bossRush;
-            bool revenge = CalamityWorld.revenge || bossRush;
-            bool death = CalamityWorld.death || bossRush;
+            bool expertMode = Main.expertMode || BossRushEvent.BossRushActive;
+            bool revenge = CalamityWorld.revenge || BossRushEvent.BossRushActive;
+            bool death = CalamityWorld.death || BossRushEvent.BossRushActive;
 
             // Used for Scal's teleport at the start of brothers phase
             bool teleport = false;
 
-            // cirrus and zenith scal are mutually exclusive unless it's legendary
-            bool zenithAI = Main.zenithWorld && (!cirrus || (CalamityWorld.LegendaryMode && revenge && cirrus));
+            // permafrost and zenith scal are mutually exclusive
+            bool zenithAI = Main.zenithWorld && !permafrost;
 
             // Percent life remaining
             float lifeRatio = NPC.life / (float)NPC.lifeMax;
-
-            // Projectile damage values
-            int bulletHellblastDamage = NPC.GetProjectileDamage(ModContent.ProjectileType<BrimstoneHellblast2>());
-            int barrageDamage = NPC.GetProjectileDamage(ModContent.ProjectileType<BrimstoneBarrage>());
-            int fireblastDamage = NPC.GetProjectileDamage(ModContent.ProjectileType<SCalBrimstoneFireblast>());
-            int gigablastDamage = NPC.GetProjectileDamage(ModContent.ProjectileType<SCalBrimstoneGigablast>());
-            int monsterDamage = NPC.GetProjectileDamage(ModContent.ProjectileType<BrimstoneMonster>());
-            int waveDamage = NPC.GetProjectileDamage(ModContent.ProjectileType<BrimstoneWave>());
-            int hellblastDamage = NPC.GetProjectileDamage(ModContent.ProjectileType<BrimstoneHellblast>());
-            if (bossRush)
-            {
-                bulletHellblastDamage /= 2;
-                barrageDamage /= 2;
-                fireblastDamage /= 2;
-                gigablastDamage /= 2;
-                monsterDamage /= 2;
-                waveDamage /= 2;
-                hellblastDamage /= 2;
-            }
 
             int bulletHellblast = zenithAI ? ModContent.ProjectileType<BrimstoneWave>() : ModContent.ProjectileType<BrimstoneHellblast2>();
             int barrage = ModContent.ProjectileType<BrimstoneBarrage>();
@@ -515,14 +489,14 @@ namespace CalamityMod.NPCs.SupremeCalamitas
 
             if (!startText)
             {
-                if (!bossRush)
+                if (!BossRushEvent.BossRushActive)
                 {
                     string key = "Mods.CalamityMod.Status.Boss.SCalSummonText";
-                    if (cirrus)
-                        key = "Mods.CalamityMod.Status.Boss.CirrusSummonText";
+                    if (permafrost)
+                        key = "Mods.CalamityMod.Status.Boss.PermafrostSummonText";
                     else if (DownedBossSystem.downedCalamitas)
                         key += "Rematch";
-                    CalamityUtils.DisplayLocalizedText(key, cirrus ? cirrusTextColor : textColor);
+                    CalamityUtils.DisplayLocalizedText(key, permafrost ? permafrostTextColor : textColor);
                 }
                 startText = true;
             }
@@ -557,7 +531,7 @@ namespace CalamityMod.NPCs.SupremeCalamitas
             if (NPC.Size != hitboxSize)
                 NPC.Size = hitboxSize;
             bool shouldNotUseShield = bulletHellCounter2 % BulletHellDuration != 0 || attackCastDelay > 0 ||
-                (cirrus ? NPC.AnyNPCs(ModContent.NPCType<DevourerofGodsHead>()) : (NPC.AnyNPCs(ModContent.NPCType<SupremeCataclysm>()) || NPC.AnyNPCs(ModContent.NPCType<SupremeCatastrophe>()))) ||
+                (permafrost ? NPC.AnyNPCs(ModContent.NPCType<DevourerofGodsHead>()) : (NPC.AnyNPCs(ModContent.NPCType<SupremeCataclysm>()) || NPC.AnyNPCs(ModContent.NPCType<SupremeCatastrophe>()))) ||
                 NPC.ai[0] == 1f || NPC.ai[0] == 2f;
 
             // Make the shield and forcefield fade away in SCal's acceptance phase.
@@ -582,7 +556,7 @@ namespace CalamityMod.NPCs.SupremeCalamitas
                         shieldRotation = shieldRotation.AngleTowards(idealRotation, 0.18f);
                     }
                 }
-                else if (!cirrus)
+                else if (!permafrost)
                 {
                     // Emit dust off the skull at the position of its eye socket.
                     for (float num6 = 1f; num6 < 16f; num6 += 1f)
@@ -693,13 +667,11 @@ namespace CalamityMod.NPCs.SupremeCalamitas
             }
             #endregion
             #region Enrage and DR
-            if ((spawnArena && !player.Hitbox.Intersects(safeBox)) || bossRush)
+            if (spawnArena && !player.Hitbox.Intersects(safeBox))
             {
-                float projectileVelocityMultCap = (!player.Hitbox.Intersects(safeBox) && spawnArena) ? 2f : 1.35f;
+                float projectileVelocityMultCap = 2f;
                 uDieLul = MathHelper.Clamp(uDieLul * 1.01f, 1f, projectileVelocityMultCap);
-                protectionBoost = !bossRush;
-                if (!player.Hitbox.Intersects(safeBox))
-                    protectionBoost = true;
+                protectionBoost = true;
             }
             else
             {
@@ -708,8 +680,8 @@ namespace CalamityMod.NPCs.SupremeCalamitas
             }
             NPC.Calamity().CurrentlyEnraged = !player.Hitbox.Intersects(safeBox);
 
-            // Cirrus fucks mounts if you exit her arena.
-            if (cirrus)
+            // Permafrost fucks mounts if you exit his arena.
+            if (permafrost)
             {
                 if (!player.Hitbox.Intersects(safeBox) && player.mount.Active)
                 {
@@ -786,15 +758,15 @@ namespace CalamityMod.NPCs.SupremeCalamitas
                     forcefieldOpacity = Utils.GetLerpValue(0.1f, 0.6f, NPC.Opacity, true);
                     if (NPC.alpha >= 230)
                     {
-                        if (DownedBossSystem.downedCalamitas && !bossRush)
+                        if (DownedBossSystem.downedCalamitas && !BossRushEvent.BossRushActive)
                         {
                             // Create a teleport line effect
-                            Dust.QuickDustLine(NPC.Center, initialRitualPosition, 500f, cirrus ? Color.Pink : Color.Red);
+                            Dust.QuickDustLine(NPC.Center, initialRitualPosition, 500f, permafrost ? Color.Cyan : Color.Red);
                             NPC.Center = initialRitualPosition;
 
                             // Make the town NPC spawn.
                             if (Main.netMode != NetmodeID.MultiplayerClient)
-                                NPC.NewNPC(NPC.GetSource_FromAI(), (int)NPC.Center.X, (int)NPC.Center.Y + 12, cirrus ? ModContent.NPCType<Cirrus>() : ModContent.NPCType<BrimstoneWitch>());
+                                NPC.NewNPC(NPC.GetSource_FromAI(), (int)NPC.Center.X, (int)NPC.Center.Y + 12, permafrost ? ModContent.NPCType<Archmage>() : ModContent.NPCType<BrimstoneWitch>());
                         }
 
                         NPC.active = false;
@@ -804,7 +776,7 @@ namespace CalamityMod.NPCs.SupremeCalamitas
                     for (int i = 0; i < MathHelper.Lerp(2f, 6f, 1f - NPC.Opacity); i++)
                     {
                         Dust brimstoneFire = Dust.NewDustPerfect(NPC.Center + Main.rand.NextVector2Square(-24f, 24f), DustID.Torch);
-                        brimstoneFire.color = cirrus ? Color.Pink : Color.Red;
+                        brimstoneFire.color = permafrost ? Color.Cyan : Color.Red;
                         brimstoneFire.velocity = Vector2.UnitY * -Main.rand.NextFloat(2f, 3.25f);
                         brimstoneFire.scale = Main.rand.NextFloat(0.95f, 1.15f);
                         brimstoneFire.noGravity = true;
@@ -872,24 +844,24 @@ namespace CalamityMod.NPCs.SupremeCalamitas
                         {
                             float distance = Main.rand.NextBool() ? -1000f : 1000f;
                             float velocity = (distance == -1000f ? 4f : -4f) * uDieLul;
-                            Projectile.NewProjectile(NPC.GetSource_FromAI(), player.position.X + distance, player.position.Y, velocity, 0f, bulletHellblast, bulletHellblastDamage, 0f, Main.myPlayer, 0f, 2f);
+                            Projectile.NewProjectile(NPC.GetSource_FromAI(), player.position.X + distance, player.position.Y, velocity, 0f, bulletHellblast, HellblastDamage, 0f, Main.myPlayer, 0f, 2f);
                         }
                         if (bulletHellCounter2 < 300 && !Main.zenithWorld) // Blasts from above
                         {
-                            Projectile.NewProjectile(NPC.GetSource_FromAI(), player.position.X + Main.rand.Next(-1000, 1001), player.position.Y - 1000f, 0f, 4f * uDieLul, bulletHellblast, bulletHellblastDamage, 0f, Main.myPlayer, 0f, 2f);
+                            Projectile.NewProjectile(NPC.GetSource_FromAI(), player.position.X + Main.rand.Next(-1000, 1001), player.position.Y - 1000f, 0f, 4f * uDieLul, bulletHellblast, HellblastDamage, 0f, Main.myPlayer, 0f, 2f);
                         }
                         else if (bulletHellCounter2 < 600) // Blasts from left and right
                         {
-                            Projectile.NewProjectile(NPC.GetSource_FromAI(), player.position.X + 1000f, player.position.Y + Main.rand.Next(-1000, 1001), -3.5f * uDieLul, 0f, bulletHellblast, bulletHellblastDamage, 0f, Main.myPlayer, 0f, 2f);
-                            Projectile.NewProjectile(NPC.GetSource_FromAI(), player.position.X - 1000f, player.position.Y + Main.rand.Next(-1000, 1001), 3.5f * uDieLul, 0f, bulletHellblast, bulletHellblastDamage, 0f, Main.myPlayer, 0f, 2f);
+                            Projectile.NewProjectile(NPC.GetSource_FromAI(), player.position.X + 1000f, player.position.Y + Main.rand.Next(-1000, 1001), -3.5f * uDieLul, 0f, bulletHellblast, HellblastDamage, 0f, Main.myPlayer, 0f, 2f);
+                            Projectile.NewProjectile(NPC.GetSource_FromAI(), player.position.X - 1000f, player.position.Y + Main.rand.Next(-1000, 1001), 3.5f * uDieLul, 0f, bulletHellblast, HellblastDamage, 0f, Main.myPlayer, 0f, 2f);
                         }
                         else // Blasts from above, left, and right
                         {
                             if (!Main.zenithWorld)
-                                Projectile.NewProjectile(NPC.GetSource_FromAI(), player.position.X + Main.rand.Next(-1000, 1001), player.position.Y - 1000f, 0f, 3f * uDieLul, bulletHellblast, bulletHellblastDamage, 0f, Main.myPlayer, 0f, 2f);
+                                Projectile.NewProjectile(NPC.GetSource_FromAI(), player.position.X + Main.rand.Next(-1000, 1001), player.position.Y - 1000f, 0f, 3f * uDieLul, bulletHellblast, HellblastDamage, 0f, Main.myPlayer, 0f, 2f);
 
-                            Projectile.NewProjectile(NPC.GetSource_FromAI(), player.position.X + 1000f, player.position.Y + Main.rand.Next(-1000, 1001), -3f * uDieLul, 0f, bulletHellblast, bulletHellblastDamage, 0f, Main.myPlayer, 0f, 2f);
-                            Projectile.NewProjectile(NPC.GetSource_FromAI(), player.position.X - 1000f, player.position.Y + Main.rand.Next(-1000, 1001), 3f * uDieLul, 0f, bulletHellblast, bulletHellblastDamage, 0f, Main.myPlayer, 0f, 2f);
+                            Projectile.NewProjectile(NPC.GetSource_FromAI(), player.position.X + 1000f, player.position.Y + Main.rand.Next(-1000, 1001), -3f * uDieLul, 0f, bulletHellblast, HellblastDamage, 0f, Main.myPlayer, 0f, 2f);
+                            Projectile.NewProjectile(NPC.GetSource_FromAI(), player.position.X - 1000f, player.position.Y + Main.rand.Next(-1000, 1001), 3f * uDieLul, 0f, bulletHellblast, HellblastDamage, 0f, Main.myPlayer, 0f, 2f);
                         }
                     }
                 }
@@ -900,9 +872,9 @@ namespace CalamityMod.NPCs.SupremeCalamitas
             {
                 attackCastDelay = sepulcherSpawnCastTime;
 
-                Particle pulse = new DirectionalPulseRing(NPC.Center, Vector2.Zero, cirrus ? Color.Pink : Color.Red, new Vector2(1f, 1f), 0, 0.1f, 5f, 15);
+                Particle pulse = new DirectionalPulseRing(NPC.Center, Vector2.Zero, permafrost ? Color.Cyan : Color.Red, new Vector2(1f, 1f), 0, 0.1f, 5f, 15);
                 GeneralParticleHandler.SpawnParticle(pulse);
-                Particle pulse2 = new DirectionalPulseRing(NPC.Center, Vector2.Zero, cirrus ? Color.Pink : Color.Lerp(Color.Red, Color.Magenta, 0.3f), new Vector2(1f, 1f), 0, 0.05f, 4f, 18);
+                Particle pulse2 = new DirectionalPulseRing(NPC.Center, Vector2.Zero, permafrost ? Color.Cyan : Color.Lerp(Color.Red, Color.Magenta, 0.3f), new Vector2(1f, 1f), 0, 0.05f, 4f, 18);
                 GeneralParticleHandler.SpawnParticle(pulse2);
                 for (int i = 0; i < 100; i++)
                 {
@@ -948,9 +920,9 @@ namespace CalamityMod.NPCs.SupremeCalamitas
                         failShotDust.velocity = dustVel * Main.rand.NextFloat(0.3f, 1.3f);
                         failShotDust.scale = Main.rand.NextFloat(2f, 3.2f);
                     }
-                    Particle pulse = new DirectionalPulseRing(NPC.Center, Vector2.Zero, cirrus ? Color.Pink : Color.Red, new Vector2(1f, 1f), 0, 0.1f, 5f, 15);
+                    Particle pulse = new DirectionalPulseRing(NPC.Center, Vector2.Zero, permafrost ? Color.Cyan : Color.Red, new Vector2(1f, 1f), 0, 0.1f, 5f, 15);
                     GeneralParticleHandler.SpawnParticle(pulse);
-                    Particle pulse2 = new DirectionalPulseRing(NPC.Center, Vector2.Zero, cirrus ? Color.Pink : Color.Lerp(Color.Red, Color.Magenta, 0.3f), new Vector2(1f, 1f), 0, 0.05f, 4f, 18);
+                    Particle pulse2 = new DirectionalPulseRing(NPC.Center, Vector2.Zero, permafrost ? Color.Cyan : Color.Lerp(Color.Red, Color.Magenta, 0.3f), new Vector2(1f, 1f), 0, 0.05f, 4f, 18);
                     GeneralParticleHandler.SpawnParticle(pulse2);
 
                     SoundEngine.PlaySound(BulletHellEndSound, NPC.Center);
@@ -962,31 +934,31 @@ namespace CalamityMod.NPCs.SupremeCalamitas
 
                 if (Main.netMode != NetmodeID.MultiplayerClient)
                 {
-                    // Cirrus throws alcohol bottles that explode into Fabstaff Rays
-                    if (cirrus)
+                    // Permafrost throws delicious meat that explode into more meat which doesn't split
+                    if (permafrost)
                     {
                         if (bulletHellCounter2 % 90 == 0)
                         {
                             float bottleSpeed = 12f;
                             Vector2 bottleVelocity = (player.Center + player.velocity * 20f - NPC.Center).SafeNormalize(Vector2.UnitY) * bottleSpeed;
-                            Projectile.NewProjectile(NPC.GetSource_FromAI(), NPC.Center, bottleVelocity * uDieLul, ModContent.ProjectileType<CirrusVolatileVodkaBottle>(), 350, 0f, Main.myPlayer, 0f, 2f);
+                            Projectile.NewProjectile(NPC.GetSource_FromAI(), NPC.Center, bottleVelocity * uDieLul, ModContent.ProjectileType<PermafrostMeat>(), 350, 0f, Main.myPlayer, 0f, 2f);
                         }
                     }
 
                     if (bulletHellCounter2 < 1200)
                     {
                         if (bulletHellCounter2 % 180 == 0) // Blasts from top
-                            Projectile.NewProjectile(NPC.GetSource_FromAI(), player.position.X + Main.rand.Next(-1000, 1001), player.position.Y - 1000f, 0f, 5f * uDieLul, fireblast, fireblastDamage, 0f, Main.myPlayer, 0f, 2f);
+                            Projectile.NewProjectile(NPC.GetSource_FromAI(), player.position.X + Main.rand.Next(-1000, 1001), player.position.Y - 1000f, 0f, 5f * uDieLul, fireblast, FireblastDamage, 0f, Main.myPlayer, 0f, 2f);
                     }
                     else if (bulletHellCounter2 < 1500 && bulletHellCounter2 > 1200)
                     {
                         if (bulletHellCounter2 % 180 == 0) // Blasts from right
-                            Projectile.NewProjectile(NPC.GetSource_FromAI(), player.position.X + 1000f, player.position.Y + Main.rand.Next(-1000, 1001), -5f * uDieLul, 0f, fireblast, fireblastDamage, 0f, Main.myPlayer, 0f, 2f);
+                            Projectile.NewProjectile(NPC.GetSource_FromAI(), player.position.X + 1000f, player.position.Y + Main.rand.Next(-1000, 1001), -5f * uDieLul, 0f, fireblast, FireblastDamage, 0f, Main.myPlayer, 0f, 2f);
                     }
                     else if (bulletHellCounter2 > 1500)
                     {
                         if (bulletHellCounter2 % 180 == 0) // Blasts from top
-                            Projectile.NewProjectile(NPC.GetSource_FromAI(), player.position.X + Main.rand.Next(-1000, 1001), player.position.Y - 1000f, 0f, 5f * uDieLul, fireblast, fireblastDamage, 0f, Main.myPlayer, 0f, 2f);
+                            Projectile.NewProjectile(NPC.GetSource_FromAI(), player.position.X + Main.rand.Next(-1000, 1001), player.position.Y - 1000f, 0f, 5f * uDieLul, fireblast, FireblastDamage, 0f, Main.myPlayer, 0f, 2f);
                     }
 
                     bulletHellCounter++;
@@ -997,21 +969,21 @@ namespace CalamityMod.NPCs.SupremeCalamitas
                         {
                             float distance = Main.rand.NextBool() ? -1000f : 1000f;
                             float velocity = (distance == -1000f ? 4f : -4f) * uDieLul;
-                            Projectile.NewProjectile(NPC.GetSource_FromAI(), player.position.X + distance, player.position.Y, velocity, 0f, bulletHellblast, bulletHellblastDamage, 0f, Main.myPlayer, 0f, 2f);
+                            Projectile.NewProjectile(NPC.GetSource_FromAI(), player.position.X + distance, player.position.Y, velocity, 0f, bulletHellblast, HellblastDamage, 0f, Main.myPlayer, 0f, 2f);
                         }
 
                         if (bulletHellCounter2 < 1200 && !Main.zenithWorld) // Blasts from below
                         {
-                            Projectile.NewProjectile(NPC.GetSource_FromAI(), player.position.X + Main.rand.Next(-1000, 1001), player.position.Y + 1000f, 0f, -4f * uDieLul, bulletHellblast, bulletHellblastDamage, 0f, Main.myPlayer, 0f, 2f);
+                            Projectile.NewProjectile(NPC.GetSource_FromAI(), player.position.X + Main.rand.Next(-1000, 1001), player.position.Y + 1000f, 0f, -4f * uDieLul, bulletHellblast, HellblastDamage, 0f, Main.myPlayer, 0f, 2f);
                         }
                         else if (bulletHellCounter2 < 1500) // Blasts from left
                         {
-                            Projectile.NewProjectile(NPC.GetSource_FromAI(), player.position.X - 1000f, player.position.Y + Main.rand.Next(-1000, 1001), 3.5f * uDieLul, 0f, bulletHellblast, bulletHellblastDamage, 0f, Main.myPlayer, 0f, 2f);
+                            Projectile.NewProjectile(NPC.GetSource_FromAI(), player.position.X - 1000f, player.position.Y + Main.rand.Next(-1000, 1001), 3.5f * uDieLul, 0f, bulletHellblast, HellblastDamage, 0f, Main.myPlayer, 0f, 2f);
                         }
                         else // Blasts from left and right
                         {
-                            Projectile.NewProjectile(NPC.GetSource_FromAI(), player.position.X - 1000f, player.position.Y + Main.rand.Next(-1000, 1001), 3f * uDieLul, 0f, bulletHellblast, bulletHellblastDamage, 0f, Main.myPlayer, 0f, 2f);
-                            Projectile.NewProjectile(NPC.GetSource_FromAI(), player.position.X + 1000f, player.position.Y + Main.rand.Next(-1000, 1001), -3f * uDieLul, 0f, bulletHellblast, bulletHellblastDamage, 0f, Main.myPlayer, 0f, 2f);
+                            Projectile.NewProjectile(NPC.GetSource_FromAI(), player.position.X - 1000f, player.position.Y + Main.rand.Next(-1000, 1001), 3f * uDieLul, 0f, bulletHellblast, HellblastDamage, 0f, Main.myPlayer, 0f, 2f);
+                            Projectile.NewProjectile(NPC.GetSource_FromAI(), player.position.X + 1000f, player.position.Y + Main.rand.Next(-1000, 1001), -3f * uDieLul, 0f, bulletHellblast, HellblastDamage, 0f, Main.myPlayer, 0f, 2f);
                         }
                     }
                 }
@@ -1023,7 +995,7 @@ namespace CalamityMod.NPCs.SupremeCalamitas
             if (!startSecondAttack && lifeRatio <= 0.75f)
             {
                 // Bouncy Boulders
-                if (cirrus)
+                if (permafrost)
                 {
                     if (Main.netMode != NetmodeID.MultiplayerClient)
                     {
@@ -1035,15 +1007,15 @@ namespace CalamityMod.NPCs.SupremeCalamitas
                     }
                 }
 
-                if (!bossRush)
+                if (!BossRushEvent.BossRushActive)
                 {
                     string key = "Mods.CalamityMod.Status.Boss.SCalBH2Text";
-                    if (cirrus)
-                        key = "Mods.CalamityMod.Status.Boss.CirrusBH2Text";
+                    if (permafrost)
+                        key = "Mods.CalamityMod.Status.Boss.PermafrostBH2Text";
                     else if (DownedBossSystem.downedCalamitas)
                         key += "Rematch";
 
-                    CalamityUtils.DisplayLocalizedText(key, cirrus ? cirrusTextColor : textColor);
+                    CalamityUtils.DisplayLocalizedText(key, permafrost ? permafrostTextColor : textColor);
                 }
 
                 startSecondAttack = true;
@@ -1079,23 +1051,23 @@ namespace CalamityMod.NPCs.SupremeCalamitas
                         failShotDust.velocity = dustVel * Main.rand.NextFloat(0.3f, 1.3f);
                         failShotDust.scale = Main.rand.NextFloat(2f, 3.2f);
                     }
-                    Particle pulse = new DirectionalPulseRing(NPC.Center, Vector2.Zero, cirrus ? Color.Pink : Color.Red, new Vector2(1f, 1f), 0, 0.1f, 5f, 15);
+                    Particle pulse = new DirectionalPulseRing(NPC.Center, Vector2.Zero, permafrost ? Color.Cyan : Color.Red, new Vector2(1f, 1f), 0, 0.1f, 5f, 15);
                     GeneralParticleHandler.SpawnParticle(pulse);
-                    Particle pulse2 = new DirectionalPulseRing(NPC.Center, Vector2.Zero, cirrus ? Color.Pink : Color.Lerp(Color.Red, Color.Magenta, 0.3f), new Vector2(1f, 1f), 0, 0.05f, 4f, 18);
+                    Particle pulse2 = new DirectionalPulseRing(NPC.Center, Vector2.Zero, permafrost ? Color.Cyan : Color.Lerp(Color.Red, Color.Magenta, 0.3f), new Vector2(1f, 1f), 0, 0.05f, 4f, 18);
                     GeneralParticleHandler.SpawnParticle(pulse2);
 
                     SoundEngine.PlaySound(BulletHellEndSound, NPC.Center);
                 }
                 #endregion
 
-                if (cirrus)
+                if (permafrost)
                 {
                     Vector2 destination = player.Center;
                     Vector2 distanceFromDestination = destination - NPC.Center;
-                    Vector2 desiredVelocity = (distanceFromDestination - NPC.velocity).SafeNormalize(Vector2.UnitY) * CirrusPhotonRipperDashVelocity;
+                    Vector2 desiredVelocity = (distanceFromDestination - NPC.velocity).SafeNormalize(Vector2.UnitY) * PermafrostPhotonRipperDashVelocity;
 
-                    if (Vector2.Distance(NPC.Center, destination) > CirrusPhotonRipperMinDistanceFromTarget)
-                        NPC.SimpleFlyMovement(desiredVelocity * uDieLul, CirrusPhotonRipperDashAcceleration * uDieLul);
+                    if (Vector2.Distance(NPC.Center, destination) > PermafrostPhotonRipperMinDistanceFromTarget)
+                        NPC.SimpleFlyMovement(desiredVelocity * uDieLul, PermafrostPhotonRipperDashAcceleration * uDieLul);
                     else
                         NPC.velocity *= 0.9f;
                 }
@@ -1104,15 +1076,15 @@ namespace CalamityMod.NPCs.SupremeCalamitas
 
                 if (Main.netMode != NetmodeID.MultiplayerClient)
                 {
-                    // Cirrus uses Photon Ripper
-                    if (bulletHellCounter2 == SecondBulletHellEndValue + 1 && cirrus)
-                        Projectile.NewProjectile(NPC.GetSource_FromAI(), NPC.Center, Vector2.One, ModContent.ProjectileType<CirrusPhotonRipperProjectile>(), CirrusPhotonRipperDamage, 0f, Main.myPlayer, 0f, 0f, NPC.whoAmI);
+                    // Permafrost uses Absolute Zero which acts like Photon Ripper
+                    if (bulletHellCounter2 == SecondBulletHellEndValue + 1 && permafrost)
+                        Projectile.NewProjectile(NPC.GetSource_FromAI(), NPC.Center, Vector2.One, ModContent.ProjectileType<PermafrostAbsoluteZeroProjectile>(), PermafrostAbsoluteZeroDamage, 0f, Main.myPlayer, 0f, 0f, NPC.whoAmI);
 
                     if (bulletHellCounter2 % 180 == 0) // Blasts from top
-                        Projectile.NewProjectile(NPC.GetSource_FromAI(), player.position.X + Main.rand.Next(-1000, 1001), player.position.Y - 1000f, 0f, 5f * uDieLul, fireblast, fireblastDamage, 0f, Main.myPlayer, 0f, 2f);
+                        Projectile.NewProjectile(NPC.GetSource_FromAI(), player.position.X + Main.rand.Next(-1000, 1001), player.position.Y - 1000f, 0f, 5f * uDieLul, fireblast, FireblastDamage, 0f, Main.myPlayer, 0f, 2f);
 
                     if (bulletHellCounter2 % 240 == 0) // Fireblasts from above
-                        Projectile.NewProjectile(NPC.GetSource_FromAI(), player.position.X + Main.rand.Next(-1000, 1001), player.position.Y - 1000f, 0f, 10f * uDieLul, gigablast, gigablastDamage, 0f, Main.myPlayer, 0f, 2f);
+                        Projectile.NewProjectile(NPC.GetSource_FromAI(), player.position.X + Main.rand.Next(-1000, 1001), player.position.Y - 1000f, 0f, 10f * uDieLul, gigablast, GigablastDamage, 0f, Main.myPlayer, 0f, 2f);
 
                     bulletHellCounter++;
                     if (bulletHellCounter >= baseBulletHellProjectileGateValue + 4)
@@ -1122,21 +1094,21 @@ namespace CalamityMod.NPCs.SupremeCalamitas
                         {
                             float distance = Main.rand.NextBool() ? -1000f : 1000f;
                             float velocity = (distance == -1000f ? 4f : -4f) * uDieLul;
-                            Projectile.NewProjectile(NPC.GetSource_FromAI(), player.position.X + distance, player.position.Y, velocity, 0f, bulletHellblast, bulletHellblastDamage, 0f, Main.myPlayer, 0f, 2f);
+                            Projectile.NewProjectile(NPC.GetSource_FromAI(), player.position.X + distance, player.position.Y, velocity, 0f, bulletHellblast, HellblastDamage, 0f, Main.myPlayer, 0f, 2f);
                         }
 
                         if (bulletHellCounter2 < 2100 && !Main.zenithWorld) // Blasts from above
                         {
-                            Projectile.NewProjectile(NPC.GetSource_FromAI(), player.position.X + Main.rand.Next(-1000, 1001), player.position.Y - 1000f, 0f, 4f * uDieLul, bulletHellblast, bulletHellblastDamage, 0f, Main.myPlayer, 0f, 2f);
+                            Projectile.NewProjectile(NPC.GetSource_FromAI(), player.position.X + Main.rand.Next(-1000, 1001), player.position.Y - 1000f, 0f, 4f * uDieLul, bulletHellblast, HellblastDamage, 0f, Main.myPlayer, 0f, 2f);
                         }
                         else if (bulletHellCounter2 < 2400) // Blasts from right
                         {
-                            Projectile.NewProjectile(NPC.GetSource_FromAI(), player.position.X + 1000f, player.position.Y + Main.rand.Next(-1000, 1001), -3.5f * uDieLul, 0f, bulletHellblast, bulletHellblastDamage, 0f, Main.myPlayer, 0f, 2f);
+                            Projectile.NewProjectile(NPC.GetSource_FromAI(), player.position.X + 1000f, player.position.Y + Main.rand.Next(-1000, 1001), -3.5f * uDieLul, 0f, bulletHellblast, HellblastDamage, 0f, Main.myPlayer, 0f, 2f);
                         }
                         else // Blasts from left and right
                         {
-                            Projectile.NewProjectile(NPC.GetSource_FromAI(), player.position.X + 1000f, player.position.Y + Main.rand.Next(-1000, 1001), -3.5f * uDieLul, 0f, bulletHellblast, bulletHellblastDamage, 0f, Main.myPlayer, 0f, 2f);
-                            Projectile.NewProjectile(NPC.GetSource_FromAI(), player.position.X - 1000f, player.position.Y + Main.rand.Next(-1000, 1001), 3.5f * uDieLul, 0f, bulletHellblast, bulletHellblastDamage, 0f, Main.myPlayer, 0f, 2f);
+                            Projectile.NewProjectile(NPC.GetSource_FromAI(), player.position.X + 1000f, player.position.Y + Main.rand.Next(-1000, 1001), -3.5f * uDieLul, 0f, bulletHellblast, HellblastDamage, 0f, Main.myPlayer, 0f, 2f);
+                            Projectile.NewProjectile(NPC.GetSource_FromAI(), player.position.X - 1000f, player.position.Y + Main.rand.Next(-1000, 1001), 3.5f * uDieLul, 0f, bulletHellblast, HellblastDamage, 0f, Main.myPlayer, 0f, 2f);
                         }
                     }
                 }
@@ -1148,7 +1120,7 @@ namespace CalamityMod.NPCs.SupremeCalamitas
             if (!startThirdAttack && lifeRatio <= 0.5f)
             {
                 // Bouncy Boulders
-                if (cirrus)
+                if (permafrost)
                 {
                     if (Main.netMode != NetmodeID.MultiplayerClient)
                     {
@@ -1160,15 +1132,15 @@ namespace CalamityMod.NPCs.SupremeCalamitas
                     }
                 }
 
-                if (!bossRush)
+                if (!BossRushEvent.BossRushActive)
                 {
                     string key = "Mods.CalamityMod.Status.Boss.SCalBH3Text";
-                    if (cirrus)
-                        key = "Mods.CalamityMod.Status.Boss.CirrusBH3Text";
+                    if (permafrost)
+                        key = "Mods.CalamityMod.Status.Boss.PermafrostBH3Text";
                     else if (DownedBossSystem.downedCalamitas)
                         key += "Rematch";
 
-                    CalamityUtils.DisplayLocalizedText(key, cirrus ? cirrusTextColor : textColor);
+                    CalamityUtils.DisplayLocalizedText(key, permafrost ? permafrostTextColor : textColor);
                 }
 
                 startThirdAttack = true;
@@ -1191,9 +1163,9 @@ namespace CalamityMod.NPCs.SupremeCalamitas
             }
             if (musicSyncCounter == 0 && !postMusicHit)
             {
-                Particle pulse = new DirectionalPulseRing(NPC.Center, Vector2.Zero, cirrus ? Color.Pink : Color.Red, new Vector2(1f, 1f), 0, 0.1f, 4f, 17);
+                Particle pulse = new DirectionalPulseRing(NPC.Center, Vector2.Zero, permafrost ? Color.Cyan : Color.Red, new Vector2(1f, 1f), 0, 0.1f, 4f, 17);
                 GeneralParticleHandler.SpawnParticle(pulse);
-                Particle pulse2 = new DirectionalPulseRing(NPC.Center, Vector2.Zero, cirrus ? Color.Pink : Color.Lerp(Color.Red, Color.Magenta, 0.3f), new Vector2(1f, 1f), 0, 0.05f, 3f, 19);
+                Particle pulse2 = new DirectionalPulseRing(NPC.Center, Vector2.Zero, permafrost ? Color.Cyan : Color.Lerp(Color.Red, Color.Magenta, 0.3f), new Vector2(1f, 1f), 0, 0.05f, 3f, 19);
                 GeneralParticleHandler.SpawnParticle(pulse2);
                 for (int i = 0; i < 30; i++)
                 {
@@ -1255,9 +1227,9 @@ namespace CalamityMod.NPCs.SupremeCalamitas
                         failShotDust.velocity = dustVel * Main.rand.NextFloat(0.3f, 1.3f);
                         failShotDust.scale = Main.rand.NextFloat(2f, 3.2f);
                     }
-                    Particle pulse = new DirectionalPulseRing(NPC.Center, Vector2.Zero, cirrus ? Color.Pink : Color.Red, new Vector2(1f, 1f), 0, 0.1f, 5f, 15);
+                    Particle pulse = new DirectionalPulseRing(NPC.Center, Vector2.Zero, permafrost ? Color.Cyan : Color.Red, new Vector2(1f, 1f), 0, 0.1f, 5f, 15);
                     GeneralParticleHandler.SpawnParticle(pulse);
-                    Particle pulse2 = new DirectionalPulseRing(NPC.Center, Vector2.Zero, cirrus ? Color.Pink : Color.Lerp(Color.Red, Color.Magenta, 0.3f), new Vector2(1f, 1f), 0, 0.05f, 4f, 18);
+                    Particle pulse2 = new DirectionalPulseRing(NPC.Center, Vector2.Zero, permafrost ? Color.Cyan : Color.Lerp(Color.Red, Color.Magenta, 0.3f), new Vector2(1f, 1f), 0, 0.05f, 4f, 18);
                     GeneralParticleHandler.SpawnParticle(pulse2);
 
                     SoundEngine.PlaySound(BulletHellEndSound, NPC.Center);
@@ -1269,22 +1241,22 @@ namespace CalamityMod.NPCs.SupremeCalamitas
 
                 if (Main.netMode != NetmodeID.MultiplayerClient) // More clustered attack
                 {
-                    // Cirrus throws alcohol bottles that explode into Fabstaff Rays
-                    if (cirrus)
+                    // Permafrost throws Delicious Meat that explodes into more meat that splits
+                    if (permafrost)
                     {
                         if (bulletHellCounter2 % 90 == 0)
                         {
                             float bottleSpeed = 12f;
                             Vector2 bottleVelocity = (player.Center + player.velocity * 20f - NPC.Center).SafeNormalize(Vector2.UnitY) * bottleSpeed;
-                            Projectile.NewProjectile(NPC.GetSource_FromAI(), NPC.Center, bottleVelocity * uDieLul, ModContent.ProjectileType<CirrusVolatileVodkaBottle>(), 125, 0f, Main.myPlayer, 0f, 2f);
+                            Projectile.NewProjectile(NPC.GetSource_FromAI(), NPC.Center, bottleVelocity * uDieLul, ModContent.ProjectileType<PermafrostMeat>(), 125, 0f, Main.myPlayer, 0f, 2f);
                         }
                     }
 
                     if (bulletHellCounter2 % 180 == 0) // Blasts from top
-                        Projectile.NewProjectile(NPC.GetSource_FromAI(), player.position.X + Main.rand.Next(-1000, 1001), player.position.Y - 1000f, 0f, 5f * uDieLul, fireblast, fireblastDamage, 0f, Main.myPlayer, 0f, 2f);
+                        Projectile.NewProjectile(NPC.GetSource_FromAI(), player.position.X + Main.rand.Next(-1000, 1001), player.position.Y - 1000f, 0f, 5f * uDieLul, fireblast, FireblastDamage, 0f, Main.myPlayer, 0f, 2f);
 
                     if (bulletHellCounter2 % 240 == 0) // Fireblasts from above
-                        Projectile.NewProjectile(NPC.GetSource_FromAI(), player.position.X + Main.rand.Next(-1000, 1001), player.position.Y - 1000f, 0f, 10f * uDieLul, gigablast, gigablastDamage, 0f, Main.myPlayer, 0f, 2f);
+                        Projectile.NewProjectile(NPC.GetSource_FromAI(), player.position.X + Main.rand.Next(-1000, 1001), player.position.Y - 1000f, 0f, 10f * uDieLul, gigablast, GigablastDamage, 0f, Main.myPlayer, 0f, 2f);
 
                     int divisor = revenge ? 225 : expertMode ? 450 : 675;
 
@@ -1305,18 +1277,19 @@ namespace CalamityMod.NPCs.SupremeCalamitas
                     {
                         for (int i = 0; i < 90; i++)
                         {
-                            Dust spawnDust = Dust.NewDustPerfect(safeBox.Center(), cirrus ? (int)CalamityDusts.PurpleCosmilite : (int)CalamityDusts.Brimstone, new Vector2(30, 30).RotatedByRandom(100) * Main.rand.NextFloat(0.05f, 1.2f));
+                            Dust spawnDust = Dust.NewDustPerfect(safeBox.Center(), permafrost ? DustID.IceGolem : (int)CalamityDusts.Brimstone, new Vector2(30, 30).RotatedByRandom(100) * Main.rand.NextFloat(0.05f, 1.2f));
                             spawnDust.noGravity = true;
                             spawnDust.scale = Main.rand.NextFloat(1.2f, 2.3f);
                         }
                         for (int i = 0; i < 40; i++)
                         {
                             Vector2 sparkVel = new Vector2(20, 20).RotatedByRandom(100) * Main.rand.NextFloat(0.1f, 1.1f);
-                            GlowOrbParticle orb = new GlowOrbParticle(safeBox.Center() + sparkVel * 2, sparkVel, false, 120, Main.rand.NextFloat(1.55f, 2.75f), cirrus ? Color.Magenta : Color.Lerp(Color.Red, Color.Magenta, 0.3f), true, true);
+                            GlowOrbParticle orb = new GlowOrbParticle(safeBox.Center() + sparkVel * 2, sparkVel, false, 120, Main.rand.NextFloat(1.55f, 2.75f), permafrost ? Color.DarkCyan : Color.Lerp(Color.Red, Color.Magenta, 0.3f), true, true);
                             GeneralParticleHandler.SpawnParticle(orb);
                         }
 
-                        Projectile.NewProjectile(NPC.GetSource_FromAI(), spawnSpot, Vector2.Zero, ModContent.ProjectileType<BrimstoneMonster>(), monsterDamage, 0f, Main.myPlayer, 0f);
+                        // Whispering Maelstrom passes through normal CanHitPlayer hooks then overrides them. This needs it to have contact damage but the number itself doesn't matter.
+                        Projectile.NewProjectile(NPC.GetSource_FromAI(), spawnSpot, Vector2.Zero, ModContent.ProjectileType<BrimstoneMonster>(), 100, 0f, Main.myPlayer, 0f);
                     }
 
                     bulletHellCounter++;
@@ -1327,21 +1300,21 @@ namespace CalamityMod.NPCs.SupremeCalamitas
                         {
                             float distance = Main.rand.NextBool() ? -1000f : 1000f;
                             float velocity = (distance == -1000f ? 4f : -4f) * uDieLul;
-                            Projectile.NewProjectile(NPC.GetSource_FromAI(), player.position.X + distance, player.position.Y, velocity, 0f, bulletHellblast, bulletHellblastDamage, 0f, Main.myPlayer, 0f, 2f);
+                            Projectile.NewProjectile(NPC.GetSource_FromAI(), player.position.X + distance, player.position.Y, velocity, 0f, bulletHellblast, HellblastDamage, 0f, Main.myPlayer, 0f, 2f);
                         }
 
                         if (bulletHellCounter2 < 3000 && !Main.zenithWorld) // Blasts from below
                         {
-                            Projectile.NewProjectile(NPC.GetSource_FromAI(), player.position.X + Main.rand.Next(-1000, 1001), player.position.Y + 1000f, 0f, -4f * uDieLul, bulletHellblast, bulletHellblastDamage, 0f, Main.myPlayer, 0f, 2f);
+                            Projectile.NewProjectile(NPC.GetSource_FromAI(), player.position.X + Main.rand.Next(-1000, 1001), player.position.Y + 1000f, 0f, -4f * uDieLul, bulletHellblast, HellblastDamage, 0f, Main.myPlayer, 0f, 2f);
                         }
                         else if (bulletHellCounter2 < 3300) // Blasts from left
                         {
-                            Projectile.NewProjectile(NPC.GetSource_FromAI(), player.position.X - 1000f, player.position.Y + Main.rand.Next(-1000, 1001), 3.5f * uDieLul, 0f, bulletHellblast, bulletHellblastDamage, 0f, Main.myPlayer, 0f, 2f);
+                            Projectile.NewProjectile(NPC.GetSource_FromAI(), player.position.X - 1000f, player.position.Y + Main.rand.Next(-1000, 1001), 3.5f * uDieLul, 0f, bulletHellblast, HellblastDamage, 0f, Main.myPlayer, 0f, 2f);
                         }
                         else // Blasts from left and right
                         {
-                            Projectile.NewProjectile(NPC.GetSource_FromAI(), player.position.X + 1000f, player.position.Y + Main.rand.Next(-1000, 1001), -3.5f * uDieLul, 0f, bulletHellblast, bulletHellblastDamage, 0f, Main.myPlayer, 0f, 2f);
-                            Projectile.NewProjectile(NPC.GetSource_FromAI(), player.position.X - 1000f, player.position.Y + Main.rand.Next(-1000, 1001), 3.5f * uDieLul, 0f, bulletHellblast, bulletHellblastDamage, 0f, Main.myPlayer, 0f, 2f);
+                            Projectile.NewProjectile(NPC.GetSource_FromAI(), player.position.X + 1000f, player.position.Y + Main.rand.Next(-1000, 1001), -3.5f * uDieLul, 0f, bulletHellblast, HellblastDamage, 0f, Main.myPlayer, 0f, 2f);
+                            Projectile.NewProjectile(NPC.GetSource_FromAI(), player.position.X - 1000f, player.position.Y + Main.rand.Next(-1000, 1001), 3.5f * uDieLul, 0f, bulletHellblast, HellblastDamage, 0f, Main.myPlayer, 0f, 2f);
                         }
                     }
                 }
@@ -1353,7 +1326,7 @@ namespace CalamityMod.NPCs.SupremeCalamitas
             if (!startFourthAttack && lifeRatio <= 0.3f)
             {
                 // Bouncy Boulders
-                if (cirrus)
+                if (permafrost)
                 {
                     if (Main.netMode != NetmodeID.MultiplayerClient)
                     {
@@ -1365,15 +1338,15 @@ namespace CalamityMod.NPCs.SupremeCalamitas
                     }
                 }
 
-                if (!bossRush)
+                if (!BossRushEvent.BossRushActive)
                 {
                     string key = "Mods.CalamityMod.Status.Boss.SCalBH4Text";
-                    if (cirrus)
-                        key = "Mods.CalamityMod.Status.Boss.CirrusBH4Text";
+                    if (permafrost)
+                        key = "Mods.CalamityMod.Status.Boss.PermafrostBH4Text";
                     else if (DownedBossSystem.downedCalamitas)
                         key += "Rematch";
 
-                    CalamityUtils.DisplayLocalizedText(key, cirrus ? cirrusTextColor : textColor);
+                    CalamityUtils.DisplayLocalizedText(key, permafrost ? permafrostTextColor : textColor);
                 }
 
                 startFourthAttack = true;
@@ -1409,23 +1382,23 @@ namespace CalamityMod.NPCs.SupremeCalamitas
                         failShotDust.velocity = dustVel * Main.rand.NextFloat(0.3f, 1.3f);
                         failShotDust.scale = Main.rand.NextFloat(2f, 3.2f);
                     }
-                    Particle pulse = new DirectionalPulseRing(NPC.Center, Vector2.Zero, cirrus ? Color.Pink : Color.Red, new Vector2(1f, 1f), 0, 0.1f, 5f, 15);
+                    Particle pulse = new DirectionalPulseRing(NPC.Center, Vector2.Zero, permafrost ? Color.Cyan : Color.Red, new Vector2(1f, 1f), 0, 0.1f, 5f, 15);
                     GeneralParticleHandler.SpawnParticle(pulse);
-                    Particle pulse2 = new DirectionalPulseRing(NPC.Center, Vector2.Zero, cirrus ? Color.Pink : Color.Lerp(Color.Red, Color.Magenta, 0.3f), new Vector2(1f, 1f), 0, 0.05f, 4f, 18);
+                    Particle pulse2 = new DirectionalPulseRing(NPC.Center, Vector2.Zero, permafrost ? Color.Cyan : Color.Lerp(Color.Red, Color.Magenta, 0.3f), new Vector2(1f, 1f), 0, 0.05f, 4f, 18);
                     GeneralParticleHandler.SpawnParticle(pulse2);
 
                     SoundEngine.PlaySound(BulletHellEndSound, NPC.Center);
                 }
                 #endregion
 
-                if (cirrus)
+                if (permafrost)
                 {
                     Vector2 destination = player.Center;
                     Vector2 distanceFromDestination = destination - NPC.Center;
-                    Vector2 desiredVelocity = (distanceFromDestination - NPC.velocity).SafeNormalize(Vector2.UnitY) * CirrusPhotonRipperDashVelocity;
+                    Vector2 desiredVelocity = (distanceFromDestination - NPC.velocity).SafeNormalize(Vector2.UnitY) * PermafrostPhotonRipperDashVelocity;
 
-                    if (Vector2.Distance(NPC.Center, destination) > CirrusPhotonRipperMinDistanceFromTarget)
-                        NPC.SimpleFlyMovement(desiredVelocity * uDieLul, CirrusPhotonRipperDashAcceleration * uDieLul);
+                    if (Vector2.Distance(NPC.Center, destination) > PermafrostPhotonRipperMinDistanceFromTarget)
+                        NPC.SimpleFlyMovement(desiredVelocity * uDieLul, PermafrostPhotonRipperDashAcceleration * uDieLul);
                     else
                         NPC.velocity *= 0.9f;
                 }
@@ -1434,32 +1407,32 @@ namespace CalamityMod.NPCs.SupremeCalamitas
 
                 if (Main.netMode != NetmodeID.MultiplayerClient)
                 {
-                    // Cirrus throws alcohol bottles that explode into Fabstaff Rays
-                    if (cirrus)
+                    // Permafrost throws delicious meat that explode into more delicious meat that doesn't split
+                    if (permafrost)
                     {
-                        // Cirrus uses Photon Ripper
+                        // Permafrost uses Absolute Zero similarly to Photon Ripper
                         if (bulletHellCounter2 == FourthBulletHellEndValue + 1)
-                            Projectile.NewProjectile(NPC.GetSource_FromAI(), NPC.Center, Vector2.One, ModContent.ProjectileType<CirrusPhotonRipperProjectile>(), CirrusPhotonRipperDamage, 0f, Main.myPlayer, 0f, 0f, NPC.whoAmI);
+                            Projectile.NewProjectile(NPC.GetSource_FromAI(), NPC.Center, Vector2.One, ModContent.ProjectileType<PermafrostAbsoluteZeroProjectile>(), PermafrostAbsoluteZeroDamage, 0f, Main.myPlayer, 0f, 0f, NPC.whoAmI);
 
                         if (bulletHellCounter2 % 90 == 0)
                         {
                             float bottleSpeed = 12f;
                             Vector2 bottleVelocity = (player.Center + player.velocity * 20f - NPC.Center).SafeNormalize(Vector2.UnitY) * bottleSpeed;
-                            Projectile.NewProjectile(NPC.GetSource_FromAI(), NPC.Center, bottleVelocity * uDieLul, ModContent.ProjectileType<CirrusVolatileVodkaBottle>(), 125, 0f, Main.myPlayer);
+                            Projectile.NewProjectile(NPC.GetSource_FromAI(), NPC.Center, bottleVelocity * uDieLul, ModContent.ProjectileType<PermafrostMeat>(), 125, 0f, Main.myPlayer);
                         }
                     }
 
                     if (bulletHellCounter2 % 240 == 0) // Blasts from top
-                        Projectile.NewProjectile(NPC.GetSource_FromAI(), player.position.X + Main.rand.Next(-1000, 1001), player.position.Y - 1000f, 0f, 5f * uDieLul, fireblast, fireblastDamage, 0f, Main.myPlayer, 0f, 2f);
+                        Projectile.NewProjectile(NPC.GetSource_FromAI(), player.position.X + Main.rand.Next(-1000, 1001), player.position.Y - 1000f, 0f, 5f * uDieLul, fireblast, FireblastDamage, 0f, Main.myPlayer, 0f, 2f);
 
                     if (bulletHellCounter2 % 360 == 0) // Fireblasts from above
-                        Projectile.NewProjectile(NPC.GetSource_FromAI(), player.position.X + Main.rand.Next(-1000, 1001), player.position.Y - 1000f, 0f, 10f * uDieLul, gigablast, gigablastDamage, 0f, Main.myPlayer, 0f, 2f);
+                        Projectile.NewProjectile(NPC.GetSource_FromAI(), player.position.X + Main.rand.Next(-1000, 1001), player.position.Y - 1000f, 0f, 10f * uDieLul, gigablast, GigablastDamage, 0f, Main.myPlayer, 0f, 2f);
 
                     if (bulletHellCounter2 % 30 == 0) // Projectiles that move in wave pattern
                     {
                         int random = Main.rand.Next(-500, 501);
-                        Projectile.NewProjectile(NPC.GetSource_FromAI(), player.position.X + 1000f, player.position.Y + random, -5f * uDieLul, 0f, wave, waveDamage, 0f, Main.myPlayer, 0f, 2f);
-                        Projectile.NewProjectile(NPC.GetSource_FromAI(), player.position.X - 1000f, player.position.Y - random, 5f * uDieLul, 0f, wave, waveDamage, 0f, Main.myPlayer, 0f, 2f);
+                        Projectile.NewProjectile(NPC.GetSource_FromAI(), player.position.X + 1000f, player.position.Y + random, -5f * uDieLul, 0f, wave, SkullDamage, 0f, Main.myPlayer, 0f, 2f);
+                        Projectile.NewProjectile(NPC.GetSource_FromAI(), player.position.X - 1000f, player.position.Y - random, 5f * uDieLul, 0f, wave, SkullDamage, 0f, Main.myPlayer, 0f, 2f);
                     }
 
                     bulletHellCounter++;
@@ -1470,25 +1443,25 @@ namespace CalamityMod.NPCs.SupremeCalamitas
                         {
                             float distance = Main.rand.NextBool() ? -1000f : 1000f;
                             float velocity = (distance == -1000f ? 4f : -4f) * uDieLul;
-                            Projectile.NewProjectile(NPC.GetSource_FromAI(), player.position.X + distance, player.position.Y, velocity, 0f, bulletHellblast, bulletHellblastDamage, 0f, Main.myPlayer, 0f, 2f);
+                            Projectile.NewProjectile(NPC.GetSource_FromAI(), player.position.X + distance, player.position.Y, velocity, 0f, bulletHellblast, HellblastDamage, 0f, Main.myPlayer, 0f, 2f);
                         }
 
                         if (bulletHellCounter2 < 3900 && !Main.zenithWorld) // Blasts from above
                         {
-                            Projectile.NewProjectile(NPC.GetSource_FromAI(), player.position.X + Main.rand.Next(-1000, 1001), player.position.Y - 1000f, 0f, 4f * uDieLul, bulletHellblast, bulletHellblastDamage, 0f, Main.myPlayer, 0f, 2f);
+                            Projectile.NewProjectile(NPC.GetSource_FromAI(), player.position.X + Main.rand.Next(-1000, 1001), player.position.Y - 1000f, 0f, 4f * uDieLul, bulletHellblast, HellblastDamage, 0f, Main.myPlayer, 0f, 2f);
                         }
                         else if (bulletHellCounter2 < 4200) // Blasts from left and right
                         {
-                            Projectile.NewProjectile(NPC.GetSource_FromAI(), player.position.X + 1000f, player.position.Y + Main.rand.Next(-1000, 1001), -3.5f * uDieLul, 0f, bulletHellblast, bulletHellblastDamage, 0f, Main.myPlayer, 0f, 2f);
-                            Projectile.NewProjectile(NPC.GetSource_FromAI(), player.position.X - 1000f, player.position.Y + Main.rand.Next(-1000, 1001), 3.5f * uDieLul, 0f, bulletHellblast, bulletHellblastDamage, 0f, Main.myPlayer, 0f, 2f);
+                            Projectile.NewProjectile(NPC.GetSource_FromAI(), player.position.X + 1000f, player.position.Y + Main.rand.Next(-1000, 1001), -3.5f * uDieLul, 0f, bulletHellblast, HellblastDamage, 0f, Main.myPlayer, 0f, 2f);
+                            Projectile.NewProjectile(NPC.GetSource_FromAI(), player.position.X - 1000f, player.position.Y + Main.rand.Next(-1000, 1001), 3.5f * uDieLul, 0f, bulletHellblast, HellblastDamage, 0f, Main.myPlayer, 0f, 2f);
                         }
                         else // Blasts from above, left, and right
                         {
                             if (!Main.zenithWorld)
-                                Projectile.NewProjectile(NPC.GetSource_FromAI(), player.position.X + Main.rand.Next(-1000, 1001), player.position.Y - 1000f, 0f, 3f * uDieLul, bulletHellblast, bulletHellblastDamage, 0f, Main.myPlayer, 0f, 2f);
+                                Projectile.NewProjectile(NPC.GetSource_FromAI(), player.position.X + Main.rand.Next(-1000, 1001), player.position.Y - 1000f, 0f, 3f * uDieLul, bulletHellblast, HellblastDamage, 0f, Main.myPlayer, 0f, 2f);
 
-                            Projectile.NewProjectile(NPC.GetSource_FromAI(), player.position.X + 1000f, player.position.Y + Main.rand.Next(-1000, 1001), -3f * uDieLul, 0f, bulletHellblast, bulletHellblastDamage, 0f, Main.myPlayer, 0f, 2f);
-                            Projectile.NewProjectile(NPC.GetSource_FromAI(), player.position.X - 1000f, player.position.Y + Main.rand.Next(-1000, 1001), 3f * uDieLul, 0f, bulletHellblast, bulletHellblastDamage, 0f, Main.myPlayer, 0f, 2f);
+                            Projectile.NewProjectile(NPC.GetSource_FromAI(), player.position.X + 1000f, player.position.Y + Main.rand.Next(-1000, 1001), -3f * uDieLul, 0f, bulletHellblast, HellblastDamage, 0f, Main.myPlayer, 0f, 2f);
+                            Projectile.NewProjectile(NPC.GetSource_FromAI(), player.position.X - 1000f, player.position.Y + Main.rand.Next(-1000, 1001), 3f * uDieLul, 0f, bulletHellblast, HellblastDamage, 0f, Main.myPlayer, 0f, 2f);
                         }
                     }
                 }
@@ -1500,7 +1473,7 @@ namespace CalamityMod.NPCs.SupremeCalamitas
             if (!startFifthAttack && lifeRatio <= 0.1f)
             {
                 // Bouncy Boulders
-                if (cirrus)
+                if (permafrost)
                 {
                     if (Main.netMode != NetmodeID.MultiplayerClient)
                     {
@@ -1513,15 +1486,15 @@ namespace CalamityMod.NPCs.SupremeCalamitas
                 }
 
                 string key = "Mods.CalamityMod.Status.Boss.SCalBH5Text";
-                if (cirrus)
-                    key = "Mods.CalamityMod.Status.Boss.CirrusBH5Text";
+                if (permafrost)
+                    key = "Mods.CalamityMod.Status.Boss.PermafrostBH5Text";
 
-                if (!bossRush)
+                if (!BossRushEvent.BossRushActive)
                 {
-                    if (DownedBossSystem.downedCalamitas && !cirrus)
+                    if (DownedBossSystem.downedCalamitas && !permafrost)
                         key += "Rematch";
 
-                    CalamityUtils.DisplayLocalizedText(key, cirrus ? cirrusTextColor : textColor);
+                    CalamityUtils.DisplayLocalizedText(key, permafrost ? permafrostTextColor : textColor);
                 }
 
                 startFifthAttack = true;
@@ -1533,7 +1506,7 @@ namespace CalamityMod.NPCs.SupremeCalamitas
             {
                 if (gettingTired5)
                 {
-                    if (cirrus)
+                    if (permafrost)
                     {
                         if (giveUpCounter > 1)
                         {
@@ -1546,7 +1519,7 @@ namespace CalamityMod.NPCs.SupremeCalamitas
                             if (blasterTimer % blasterDivisor == 0)
                             {
                                 if (Main.netMode != NetmodeID.MultiplayerClient)
-                                    Projectile.NewProjectile(NPC.GetSource_FromAI(), circleOffset, player.Center, ModContent.ProjectileType<CirrusBlaster>(), 350, 0f, Main.myPlayer, 0f, 1f);
+                                    Projectile.NewProjectile(NPC.GetSource_FromAI(), circleOffset, player.Center, ModContent.ProjectileType<PermafrostBlaster>(), 350, 0f, Main.myPlayer, 0f, 1f);
                             }
 
                             int beamDivisor = 60;
@@ -1561,12 +1534,13 @@ namespace CalamityMod.NPCs.SupremeCalamitas
                                     for (int k = 0; k < totalProjectiles; k++)
                                     {
                                         Vector2 rayVelocity = spinningPoint.RotatedBy(radians * k);
-                                        int proj = Projectile.NewProjectile(NPC.GetSource_FromAI(), NPC.Center + (rayVelocity).SafeNormalize(Vector2.UnitY) * 16f, rayVelocity, ModContent.ProjectileType<Projectiles.Magic.FabRay>(), 250, 0f, Main.myPlayer);
+                                        int proj = Projectile.NewProjectile(NPC.GetSource_FromAI(), NPC.Center + (rayVelocity).SafeNormalize(Vector2.UnitY) * 16f, rayVelocity, ModContent.ProjectileType<Projectiles.Melee.DarkIceZero>(), 250, 0f, Main.myPlayer);
                                         if (proj.WithinBounds(Main.maxProjectiles))
                                         {
                                             Main.projectile[proj].DamageType = DamageClass.Default;
                                             Main.projectile[proj].friendly = false;
                                             Main.projectile[proj].hostile = true;
+                                            Main.projectile[proj].tileCollide = false;
                                         }
                                     }
                                 }
@@ -1581,8 +1555,8 @@ namespace CalamityMod.NPCs.SupremeCalamitas
                             if (giveUpCounter == 1)
                             {
                                 NPC.velocity = Vector2.Zero;
-                                CalamityUtils.DisplayLocalizedText("Mods.CalamityMod.Status.Boss.CirrusGiveUpText", cirrusTextColor);
-                                Dust.QuickDustLine(NPC.Center, initialRitualPosition, 500f, Color.Pink);
+                                CalamityUtils.DisplayLocalizedText("Mods.CalamityMod.Status.Boss.PermafrostGiveUpText", permafrostTextColor);
+                                Dust.QuickDustLine(NPC.Center, initialRitualPosition, 500f, Color.Cyan);
                                 NPC.Center = initialRitualPosition;
                                 giveUpCounter--;
                             }
@@ -1600,7 +1574,13 @@ namespace CalamityMod.NPCs.SupremeCalamitas
 
                                 NPC.active = false;
                                 NPC.netUpdate = true;
-                                NPC.NPCLoot();
+
+                                NPC.NPCLoot(); int cryo = NPC.FindFirstNPC(ModContent.NPCType<Cryogen.Cryogen>());
+                                if (cryo > -1)
+                                {
+                                    Main.npc[cryo].active = false;
+                                    Main.npc[cryo].netUpdate = true;
+                                }
                             }
 
                             return;
@@ -1613,17 +1593,17 @@ namespace CalamityMod.NPCs.SupremeCalamitas
                         {
                             int buffID = NPC.buffType[l];
 
-                            bool shouldHalveDuration = DebuffsList.Includes(buffID);
+                            bool shouldHalveDuration = CalamityBuffSets.IsDebuff[buffID];
 
                             if (shouldHalveDuration && NPC.buffTime[l] > 4)
                                 NPC.buffTime[l] = 4;
                         }
 
 
-                        if (!hasDoneDeathAnim && !bossRush) // Scrapped death animation for Scal
+                        if (!hasDoneDeathAnim && !BossRushEvent.BossRushActive) // Scrapped death animation for Scal
                         {
                             attackPause = 5;
-                            Dust.QuickDustLine(NPC.Center, safeBox.Center() + new Vector2(0, -30), 500f, cirrus ? Color.Pink : Color.Red);
+                            Dust.QuickDustLine(NPC.Center, safeBox.Center() + new Vector2(0, -30), 500f, permafrost ? Color.Cyan : Color.Red);
                             NPC.Center = safeBox.Center() + new Vector2(0, -30);
                             NPC.velocity = new Vector2(10 * NPC.spriteDirection, -7);
                             hasDoneDeathAnim = true;
@@ -1635,7 +1615,7 @@ namespace CalamityMod.NPCs.SupremeCalamitas
                             // Teleport back to the arena on defeat
                             if (giveUpCounter == GiveUpCounterMax)
                             {
-                                Dust.QuickDustLine(NPC.Center, initialRitualPosition + new Vector2(0, -30), 500f, cirrus ? Color.Pink : Color.Red);
+                                Dust.QuickDustLine(NPC.Center, initialRitualPosition + new Vector2(0, -30), 500f, permafrost ? Color.Cyan : Color.Red);
                                 NPC.Center = initialRitualPosition + new Vector2(0, -30);
                                 NPC.noTileCollide = false;
                                 NPC.noGravity = false;
@@ -1710,7 +1690,7 @@ namespace CalamityMod.NPCs.SupremeCalamitas
                         }
                         else
                         {
-                            if (bossRush)
+                            if (BossRushEvent.BossRushActive)
                                 NPC.Center = initialRitualPosition + new Vector2(0, -30);
 
                             if (NPC.velocity.Y < 8f)
@@ -1718,11 +1698,11 @@ namespace CalamityMod.NPCs.SupremeCalamitas
                             if (!canDespawn)
                                 NPC.velocity.X *= 0.965f;
 
-                            if (DownedBossSystem.downedCalamitas || bossRush)
+                            if (DownedBossSystem.downedCalamitas || BossRushEvent.BossRushActive)
                             {
                                 if (giveUpCounter == 720)
                                 {
-                                    if (bossRush)
+                                    if (BossRushEvent.BossRushActive)
                                     {
                                         NPC.chaseable = true;
                                         NPC.dontTakeDamage = false;
@@ -1732,7 +1712,7 @@ namespace CalamityMod.NPCs.SupremeCalamitas
                                     for (int i = 0; i < 24; i++)
                                     {
                                         Dust brimstoneFire = Dust.NewDustPerfect(NPC.Center + Main.rand.NextVector2Square(-24f, 24f), DustID.Torch);
-                                        brimstoneFire.color = cirrus ? Color.Pink : Color.Red;
+                                        brimstoneFire.color = permafrost ? Color.Cyan : Color.Red;
                                         brimstoneFire.velocity = Vector2.UnitY * -Main.rand.NextFloat(2f, 3.25f);
                                         brimstoneFire.scale = Main.rand.NextFloat(0.95f, 1.15f);
                                         brimstoneFire.fadeIn = 1.25f;
@@ -1744,15 +1724,15 @@ namespace CalamityMod.NPCs.SupremeCalamitas
                                     NPC.NPCLoot();
                                 }
                             }
-                            else if (giveUpCounter == 900 && !bossRush)
+                            else if (giveUpCounter == 900 && !BossRushEvent.BossRushActive)
                             {
                                 CalamityUtils.DisplayLocalizedText("Mods.CalamityMod.Status.Boss.SCalAcceptanceText1", textColor);
                             }
-                            else if (giveUpCounter == 600 && !bossRush)
+                            else if (giveUpCounter == 600 && !BossRushEvent.BossRushActive)
                             {
                                 CalamityUtils.DisplayLocalizedText("Mods.CalamityMod.Status.Boss.SCalAcceptanceText2", textColor);
                             }
-                            else if (giveUpCounter == 300 && !bossRush)
+                            else if (giveUpCounter == 300 && !BossRushEvent.BossRushActive)
                             {
                                 CalamityUtils.DisplayLocalizedText("Mods.CalamityMod.Status.Boss.SCalAcceptanceText3", textColor);
                             }
@@ -1762,7 +1742,7 @@ namespace CalamityMod.NPCs.SupremeCalamitas
                                 for (int i = 0; i < 24; i++)
                                 {
                                     Dust brimstoneFire = Dust.NewDustPerfect(NPC.Center + Main.rand.NextVector2Square(-24f, 24f), DustID.Torch);
-                                    brimstoneFire.color = cirrus ? Color.Pink : Color.Red;
+                                    brimstoneFire.color = permafrost ? Color.Cyan : Color.Red;
                                     brimstoneFire.velocity = Vector2.UnitY * -Main.rand.NextFloat(2f, 3.25f);
                                     brimstoneFire.scale = Main.rand.NextFloat(0.95f, 1.15f);
                                     brimstoneFire.fadeIn = 1.25f;
@@ -1812,15 +1792,15 @@ namespace CalamityMod.NPCs.SupremeCalamitas
                         }
                     }
 
-                    if (!bossRush)
+                    if (!BossRushEvent.BossRushActive)
                     {
                         string key = "Mods.CalamityMod.Status.Boss.SCalDesparationText4";
-                        if (cirrus)
-                            key = "Mods.CalamityMod.Status.Boss.CirrusBruhText";
+                        if (permafrost)
+                            key = "Mods.CalamityMod.Status.Boss.PermafrostBruhText";
                         else if (DownedBossSystem.downedCalamitas)
                             key += "Rematch";
 
-                        CalamityUtils.DisplayLocalizedText(key, cirrus ? cirrusTextColor : textColor);
+                        CalamityUtils.DisplayLocalizedText(key, permafrost ? permafrostTextColor : textColor);
                     }
 
                     gettingTired5 = true;
@@ -1828,7 +1808,7 @@ namespace CalamityMod.NPCs.SupremeCalamitas
                 }
                 else if (!gettingTired4 && lifeRatio <= 0.02f)
                 {
-                    if (!bossRush && !cirrus)
+                    if (!BossRushEvent.BossRushActive && !permafrost)
                     {
                         string key = "Mods.CalamityMod.Status.Boss.SCalDesparationText3";
                         if (DownedBossSystem.downedCalamitas)
@@ -1842,7 +1822,7 @@ namespace CalamityMod.NPCs.SupremeCalamitas
                 }
                 else if (!gettingTired3 && lifeRatio <= 0.04f)
                 {
-                    if (!bossRush && !cirrus)
+                    if (!BossRushEvent.BossRushActive && !permafrost)
                     {
                         string key = "Mods.CalamityMod.Status.Boss.SCalDesparationText2";
                         if (DownedBossSystem.downedCalamitas)
@@ -1856,15 +1836,15 @@ namespace CalamityMod.NPCs.SupremeCalamitas
                 }
                 else if (!gettingTired2 && lifeRatio <= 0.06f)
                 {
-                    if (!bossRush)
+                    if (!BossRushEvent.BossRushActive)
                     {
                         string key = "Mods.CalamityMod.Status.Boss.SCalDesparationText1";
-                        if (cirrus)
-                            key = "Mods.CalamityMod.Status.Boss.CirrusNonchalantText";
+                        if (permafrost)
+                            key = "Mods.CalamityMod.Status.Boss.PermafrostNonchalantText";
                         else if (DownedBossSystem.downedCalamitas)
                             key += "Rematch";
 
-                        CalamityUtils.DisplayLocalizedText(key, cirrus ? cirrusTextColor : textColor);
+                        CalamityUtils.DisplayLocalizedText(key, permafrost ? permafrostTextColor : textColor);
                     }
 
                     gettingTired2 = true;
@@ -1875,7 +1855,7 @@ namespace CalamityMod.NPCs.SupremeCalamitas
                     attackCastDelay = sepulcherSpawnCastTime;
                     for (int i = 0; i < 40; i++)
                     {
-                        Dust castFire = Dust.NewDustPerfect(NPC.Center + Main.rand.NextVector2Square(-70f, 70f), cirrus ? (int)CalamityDusts.PurpleCosmilite : (int)CalamityDusts.Brimstone);
+                        Dust castFire = Dust.NewDustPerfect(NPC.Center + Main.rand.NextVector2Square(-70f, 70f), permafrost ? (int)CalamityDusts.PurpleCosmilite : (int)CalamityDusts.Brimstone);
                         castFire.velocity = Vector2.UnitY.RotatedByRandom(0.08f) * -Main.rand.NextFloat(3f, 4.45f);
                         castFire.scale = Main.rand.NextFloat(1.35f, 1.6f);
                         castFire.fadeIn = 1.25f;
@@ -1884,7 +1864,7 @@ namespace CalamityMod.NPCs.SupremeCalamitas
 
                     for (int i = 0; i < 40; i++)
                     {
-                        Dust castFire = Dust.NewDustPerfect(NPC.Center + Main.rand.NextVector2Square(-70f, 70f), cirrus ? (int)CalamityDusts.PurpleCosmilite : (int)CalamityDusts.Brimstone);
+                        Dust castFire = Dust.NewDustPerfect(NPC.Center + Main.rand.NextVector2Square(-70f, 70f), permafrost ? (int)CalamityDusts.PurpleCosmilite : (int)CalamityDusts.Brimstone);
                         castFire.velocity = Vector2.UnitY.RotatedByRandom(0.08f) * -Main.rand.NextFloat(3f, 4.45f);
                         castFire.scale = Main.rand.NextFloat(1.35f, 1.6f);
                         castFire.fadeIn = 1.25f;
@@ -1925,17 +1905,17 @@ namespace CalamityMod.NPCs.SupremeCalamitas
             }
             #endregion
             #region TransformSeekerandBrotherTriggers
-            if (!halfLife && lifeRatio <= 0.45f && hasSummonedBrothers && (cirrus ? NPC.AnyNPCs(ModContent.NPCType<DevourerofGodsHead>()) : (NPC.AnyNPCs(ModContent.NPCType<SupremeCataclysm>()) || NPC.AnyNPCs(ModContent.NPCType<SupremeCatastrophe>()))) == false)
+            if (!halfLife && lifeRatio <= 0.45f && hasSummonedBrothers && (permafrost ? NPC.AnyNPCs(ModContent.NPCType<DevourerofGodsHead>()) : (NPC.AnyNPCs(ModContent.NPCType<SupremeCataclysm>()) || NPC.AnyNPCs(ModContent.NPCType<SupremeCatastrophe>()))) == false)
             {
-                if (!bossRush)
+                if (!BossRushEvent.BossRushActive)
                 {
                     string key = "Mods.CalamityMod.Status.Boss.SCalPhase2Text";
-                    if (cirrus)
-                        key = "Mods.CalamityMod.Status.Boss.CirrusPhase2Text";
+                    if (permafrost)
+                        key = "Mods.CalamityMod.Status.Boss.PermafrostPhase2Text";
                     else if (DownedBossSystem.downedCalamitas)
                         key += "Rematch";
 
-                    CalamityUtils.DisplayLocalizedText(key, cirrus ? cirrusTextColor : textColor);
+                    CalamityUtils.DisplayLocalizedText(key, permafrost ? permafrostTextColor : textColor);
                 }
 
                 halfLife = true;
@@ -1945,60 +1925,29 @@ namespace CalamityMod.NPCs.SupremeCalamitas
             {
                 if (!secondStage)
                 {
-                    if (!bossRush)
+                    if (!BossRushEvent.BossRushActive)
                     {
                         string key = "Mods.CalamityMod.Status.Boss.SCalSeekerRingText";
-                        if (cirrus)
-                            key = "Mods.CalamityMod.Status.Boss.CirrusHallowBossSpamText";
+                        if (permafrost)
+                            key = "Mods.CalamityMod.Status.Boss.PermafrostHallowBossSpamText";
                         else if (DownedBossSystem.downedCalamitas)
                             key += "Rematch";
 
-                        CalamityUtils.DisplayLocalizedText(key, cirrus ? cirrusTextColor : textColor);
+                        CalamityUtils.DisplayLocalizedText(key, permafrost ? permafrostTextColor : textColor);
                     }
 
                     if (Main.netMode != NetmodeID.MultiplayerClient)
                     {
-                        if (cirrus)
+                        if (permafrost)
                         {
-                            // Spawn 1 Providence, 2 Queen Slimes and 2 Empress of Lights
-                            int maximumBullshit = 5;
-                            int angleFromCirrus = 360 / maximumBullshit;
-                            int distanceFromCirrus = 300;
-                            for (int i = 0; i < maximumBullshit; i++)
-                            {
-                                switch (i)
-                                {
-                                    case 0:
-                                        int npc = NPC.NewNPC(NPC.GetSource_FromAI(),
-                                            (int)(vectorCenter.X + (Math.Sin(i * angleFromCirrus) * distanceFromCirrus)),
-                                            (int)(vectorCenter.Y + (Math.Cos(i * angleFromCirrus) * distanceFromCirrus)),
-                                            ModContent.NPCType<Providence.Providence>(), NPC.whoAmI);
-                                        Main.npc[npc].timeLeft *= 20;
-                                        CalamityUtils.BossAwakenMessage(npc);
-                                        break;
-
-                                    case 1:
-                                    case 2:
-                                        int npc2 = NPC.NewNPC(NPC.GetSource_FromAI(),
-                                            (int)(vectorCenter.X + (Math.Sin(i * angleFromCirrus) * distanceFromCirrus)),
-                                            (int)(vectorCenter.Y + (Math.Cos(i * angleFromCirrus) * distanceFromCirrus)),
-                                            NPCID.HallowBoss, NPC.whoAmI);
-                                        Main.npc[npc2].timeLeft *= 20;
-                                        break;
-
-                                    case 3:
-                                    case 4:
-                                        int npc3 = NPC.NewNPC(NPC.GetSource_FromAI(),
-                                            (int)(vectorCenter.X + (Math.Sin(i * angleFromCirrus) * distanceFromCirrus)),
-                                            (int)(vectorCenter.Y + (Math.Cos(i * angleFromCirrus) * distanceFromCirrus)),
-                                            NPCID.QueenSlimeBoss, NPC.whoAmI);
-                                        Main.npc[npc3].timeLeft *= 20;
-                                        break;
-
-                                    default:
-                                        break;
-                                }
-                            }
+                            // Spawn a buffed Pyrogen
+                            int npc = NPC.NewNPC(NPC.GetSource_FromAI(),
+                                (int)(vectorCenter.X),
+                                (int)(vectorCenter.Y),
+                                ModContent.NPCType<Cryogen.Cryogen>(), NPC.whoAmI);
+                            Main.npc[npc].timeLeft *= 20;
+                            Main.npc[npc].lifeMax = Main.npc[npc].life *= 22;
+                            CalamityUtils.BossAwakenMessage(npc);
                         }
                         else
                         {
@@ -2040,7 +1989,7 @@ namespace CalamityMod.NPCs.SupremeCalamitas
                         NPC.netUpdate = true;
                         if (!teleport)
                         {
-                            Dust.QuickDustLine(NPC.Center, player.Center + new Vector2(0, -155), 500f, cirrus ? Color.Pink : Color.Red);
+                            Dust.QuickDustLine(NPC.Center, player.Center + new Vector2(0, -155), 500f, permafrost ? Color.Cyan : Color.Red);
                             NPC.velocity = Vector2.Zero;
                             NPC.Center = player.Center + new Vector2(0, -175);
                             Particle pulse = new DirectionalPulseRing(NPC.Center, Vector2.Zero, Color.Red, new Vector2(1f, 1f), 0, 0.1f, 5f, 15);
@@ -2096,6 +2045,7 @@ namespace CalamityMod.NPCs.SupremeCalamitas
                         NPC.dontTakeDamage = true;
                         NPC.chaseable = false;
                         NPC.damage = 0;
+                        attackPause = 5;
 
                         if (!canDespawn)
                             NPC.velocity *= 0.95f;
@@ -2263,13 +2213,13 @@ namespace CalamityMod.NPCs.SupremeCalamitas
                                 for (int i = 0; i < 9; i++) // fireblasts pre laugh
                                 {
                                     Vector2 velOffset = NPC.DirectionTo(player.Center).RotatedByRandom(0.6) * Main.rand.NextFloat(5f, 13f);
-                                    GlowOrbParticle spark2 = new GlowOrbParticle(projectileSpawn + velOffset * 2f, velOffset * 0.7f, false, 30, Main.rand.NextFloat(0.4f, 0.65f), cirrus ? Color.HotPink : Main.rand.NextBool(3) ? Color.Lerp(Color.Red, Color.Magenta, 0.3f) : Color.Red);
+                                    GlowOrbParticle spark2 = new GlowOrbParticle(projectileSpawn + velOffset * 2f, velOffset * 0.7f, false, 30, Main.rand.NextFloat(0.4f, 0.65f), permafrost ? Color.LightBlue : Main.rand.NextBool(3) ? Color.Lerp(Color.Red, Color.Magenta, 0.3f) : Color.Red);
                                     GeneralParticleHandler.SpawnParticle(spark2);
                                 }
 
-                                if (Main.netMode != NetmodeID.MultiplayerClient)
+                                if (Main.netMode != NetmodeID.MultiplayerClient && attackPause == 0)
                                 {
-                                    Projectile.NewProjectile(NPC.GetSource_FromAI(), projectileSpawn, projectileVelocity, randomShot, gigablastDamage, 0f, Main.myPlayer, 0f, 2f);
+                                    Projectile.NewProjectile(NPC.GetSource_FromAI(), projectileSpawn, projectileVelocity, randomShot, GigablastDamage, 0f, Main.myPlayer, 0f, 2f);
                                     NPC.netUpdate = true;
                                 }
                             }
@@ -2282,13 +2232,13 @@ namespace CalamityMod.NPCs.SupremeCalamitas
                                 for (int i = 0; i < 9; i++)
                                 {
                                     Vector2 velOffset = NPC.DirectionTo(player.Center).RotatedByRandom(0.6) * Main.rand.NextFloat(5f, 13f);
-                                    GlowOrbParticle spark2 = new GlowOrbParticle(projectileSpawn + velOffset * 2f, velOffset * 0.8f, false, 30, Main.rand.NextFloat(0.4f, 0.65f), cirrus ? Color.HotPink : Main.rand.NextBool(3) ? Color.Lerp(Color.Red, Color.Magenta, 0.3f) : Color.Red);
+                                    GlowOrbParticle spark2 = new GlowOrbParticle(projectileSpawn + velOffset * 2f, velOffset * 0.8f, false, 30, Main.rand.NextFloat(0.4f, 0.65f), permafrost ? Color.LightBlue : Main.rand.NextBool(3) ? Color.Lerp(Color.Red, Color.Magenta, 0.3f) : Color.Red);
                                     GeneralParticleHandler.SpawnParticle(spark2);
                                 }
 
-                                if (Main.netMode != NetmodeID.MultiplayerClient)
+                                if (Main.netMode != NetmodeID.MultiplayerClient && attackPause == 0)
                                 {
-                                    Projectile.NewProjectile(NPC.GetSource_FromAI(), projectileSpawn, projectileVelocity, randomShot, fireblastDamage, 0f, Main.myPlayer, 0f, 2f);
+                                    Projectile.NewProjectile(NPC.GetSource_FromAI(), projectileSpawn, projectileVelocity, randomShot, FireblastDamage, 0f, Main.myPlayer, 0f, 2f);
                                     NPC.netUpdate = true;
                                 }
                             }
@@ -2304,15 +2254,15 @@ namespace CalamityMod.NPCs.SupremeCalamitas
                                     for (int i = 0; i < 6; i++) // Spread dust for pre laugh floating
                                     {
                                         Vector2 dustVel = (projectileVelocity * 2).RotatedByRandom(0.9) * (Main.rand.NextFloat(0.5f, 1.9f));
-                                        GlowOrbParticle orb = new GlowOrbParticle(projectileSpawn, dustVel, false, 15, Main.rand.NextFloat(0.65f, 0.9f), cirrus ? Color.Magenta : Main.rand.NextBool() ? Color.Red : Color.Lerp(Color.Red, Color.Magenta, 0.3f));
+                                        GlowOrbParticle orb = new GlowOrbParticle(projectileSpawn, dustVel, false, 15, Main.rand.NextFloat(0.65f, 0.9f), permafrost ? Color.Cyan : Main.rand.NextBool() ? Color.Red : Color.Lerp(Color.Red, Color.Magenta, 0.3f));
                                         GeneralParticleHandler.SpawnParticle(orb);
                                     }
 
-                                    if (Main.netMode != NetmodeID.MultiplayerClient)
+                                    if (Main.netMode != NetmodeID.MultiplayerClient && attackPause == 0)
                                     {
                                         float projectileVelocityToPass = projectileVelocity.Length() * 1.3f;
                                         Vector2 perturbedSpeed = projectileVelocity.RotatedBy(MathHelper.Lerp(-rotation, rotation, j / (float)(numProj - 1)));
-                                        Projectile.NewProjectile(NPC.GetSource_FromAI(), projectileSpawn, perturbedSpeed, randomShot, barrageDamage, 0f, Main.myPlayer, 0, 4f, projectileVelocityToPass);
+                                        Projectile.NewProjectile(NPC.GetSource_FromAI(), projectileSpawn, perturbedSpeed, randomShot, DartDamage, 0f, Main.myPlayer, 0, 4f, projectileVelocityToPass);
                                         NPC.netUpdate = true;
                                     }
                                 }
@@ -2341,13 +2291,13 @@ namespace CalamityMod.NPCs.SupremeCalamitas
                             NPC.netUpdate = true;
 
                             SoundEngine.PlaySound(DashSound, NPC.Center);
-                            if (cirrus)
+                            if (permafrost)
                             {
                                 if (Main.netMode != NetmodeID.MultiplayerClient)
                                 {
                                     SoundEngine.PlaySound(SoundID.Item60, NPC.Center);
                                     float velocity = 8;
-                                    int type = ModContent.ProjectileType<Projectiles.Magic.FabRay>();
+                                    int type = ModContent.ProjectileType<Projectiles.Melee.DarkIceZero>();
                                     int damage = (int)(NPC.damage / 3);
                                     Vector2 projectileVelocity = (player.Center - NPC.Center).SafeNormalize(Vector2.UnitY) * velocity;
                                     float rotation = MathHelper.ToRadians(22);
@@ -2361,6 +2311,7 @@ namespace CalamityMod.NPCs.SupremeCalamitas
                                             Main.projectile[p].DamageType = DamageClass.Default;
                                             Main.projectile[p].friendly = false;
                                             Main.projectile[p].hostile = true;
+                                            Main.projectile[p].tileCollide = true;
                                         }
                                     }
                                 }
@@ -2476,7 +2427,7 @@ namespace CalamityMod.NPCs.SupremeCalamitas
                                 for (int i = 0; i < 6; i++)
                                 {
                                     Vector2 velOffset = NPC.DirectionTo(player.Center).RotatedByRandom(0.6) * Main.rand.NextFloat(5f, 13f);
-                                    PointParticle spark2 = new PointParticle(handPosition + velOffset * 2f, velOffset * 1.5f, false, 18, Main.rand.NextFloat(0.4f, 0.65f), cirrus ? Color.HotPink : Main.rand.NextBool(3) ? Color.Lerp(Color.Red, Color.Magenta, 0.3f) : Color.Red);
+                                    PointParticle spark2 = new PointParticle(handPosition + velOffset * 2f, velOffset * 1.5f, false, 18, Main.rand.NextFloat(0.4f, 0.65f), permafrost ? Color.Cyan : Main.rand.NextBool(3) ? Color.Lerp(Color.Red, Color.Magenta, 0.3f) : Color.Red);
                                     GeneralParticleHandler.SpawnParticle(spark2);
                                 }
 
@@ -2487,14 +2438,14 @@ namespace CalamityMod.NPCs.SupremeCalamitas
                                     projectileVelocity *= 10f * uDieLul;
                                     int projectileType = hellblast;
                                     if (attackPause == 0)
-                                        Projectile.NewProjectile(NPC.GetSource_FromAI(), projectileSpawn, projectileVelocity, projectileType, hellblastDamage, 0f, Main.myPlayer, 0f, 2f);
+                                        Projectile.NewProjectile(NPC.GetSource_FromAI(), projectileSpawn, projectileVelocity, projectileType, HellblastDamage, 0f, Main.myPlayer, 0f, 2f);
                                 }
                             }
                         }
 
                         if (Main.rand.NextBool()) // Hand spray magic
                         {
-                            GlowOrbParticle orb = new GlowOrbParticle(handPosition, new Vector2(0, -6).RotatedByRandom(0.4) * Main.rand.NextFloat(0.8f, 1.4f), false, 15, Main.rand.NextFloat(0.85f, 1.2f), cirrus ? Color.Magenta : Main.rand.NextBool() ? Color.Red : Color.Lerp(Color.Red, Color.Magenta, 0.3f), true, true);
+                            GlowOrbParticle orb = new GlowOrbParticle(handPosition, new Vector2(0, -6).RotatedByRandom(0.4) * Main.rand.NextFloat(0.8f, 1.4f), false, 15, Main.rand.NextFloat(0.85f, 1.2f), permafrost ? Color.LightBlue : Main.rand.NextBool() ? Color.Red : Color.Lerp(Color.Red, Color.Magenta, 0.3f), true, true);
                             GeneralParticleHandler.SpawnParticle(orb);
                         }
 
@@ -2545,7 +2496,7 @@ namespace CalamityMod.NPCs.SupremeCalamitas
                             for (int i = 0; i < 25; i++)
                             {
                                 Vector2 velOffset = NPC.DirectionTo(player.Center).RotatedByRandom(0.6) * Main.rand.NextFloat(5f, 13f);
-                                GlowOrbParticle spark2 = new GlowOrbParticle(handPosition + velOffset * 2f, velOffset * 1.5f, false, 9, Main.rand.NextFloat(0.4f, 0.65f), cirrus ? Color.HotPink : Main.rand.NextBool(3) ? Color.Lerp(Color.Red, Color.Magenta, 0.3f) : Color.Red);
+                                GlowOrbParticle spark2 = new GlowOrbParticle(handPosition + velOffset * 2f, velOffset * 1.5f, false, 9, Main.rand.NextFloat(0.4f, 0.65f), permafrost ? Color.Cyan : Main.rand.NextBool(3) ? Color.Lerp(Color.Red, Color.Magenta, 0.3f) : Color.Red);
                                 GeneralParticleHandler.SpawnParticle(spark2);
                             }
                             NPC.localAI[1] = 0f;
@@ -2557,7 +2508,8 @@ namespace CalamityMod.NPCs.SupremeCalamitas
                                 Vector2 projectileSpawn = NPC.Center + projectileVelocity * 8f;
                                 projectileVelocity *= 5f * uDieLul;
                                 int projectileType = gigablast;
-                                Projectile.NewProjectile(NPC.GetSource_FromAI(), projectileSpawn, projectileVelocity, projectileType, gigablastDamage, 0f, Main.myPlayer, 0f, 2f);
+                                if (attackPause == 0)
+                                    Projectile.NewProjectile(NPC.GetSource_FromAI(), projectileSpawn, projectileVelocity, projectileType, GigablastDamage, 0f, Main.myPlayer, 0f, 2f);
                             }
                         }
 
@@ -2571,8 +2523,8 @@ namespace CalamityMod.NPCs.SupremeCalamitas
                     }
                 }
 
-                // Previously the 0.4% health threshold transition
-                if (lifeRatio <= 0.45f && hasSummonedBrothers && (cirrus ? NPC.AnyNPCs(ModContent.NPCType<DevourerofGodsHead>()) : (NPC.AnyNPCs(ModContent.NPCType<SupremeCataclysm>()) || NPC.AnyNPCs(ModContent.NPCType<SupremeCatastrophe>()))) == false)
+                // Previously the 40% health threshold transition
+                if (lifeRatio <= 0.45f && hasSummonedBrothers && (permafrost ? NPC.AnyNPCs(ModContent.NPCType<DevourerofGodsHead>()) : (NPC.AnyNPCs(ModContent.NPCType<SupremeCataclysm>()) || NPC.AnyNPCs(ModContent.NPCType<SupremeCatastrophe>()))) == false)
                 {
                     NPC.ai[0] = 1f;
                     NPC.ai[1] = 0f;
@@ -2617,17 +2569,17 @@ namespace CalamityMod.NPCs.SupremeCalamitas
                     {
                         for (int i = 0; i < 90; i++)
                         {
-                            Dust spawnDust = Dust.NewDustPerfect(NPC.Center, cirrus ? (int)CalamityDusts.PurpleCosmilite : (int)CalamityDusts.Brimstone, new Vector2(30, 30).RotatedByRandom(100) * Main.rand.NextFloat(0.05f, 1.2f));
+                            Dust spawnDust = Dust.NewDustPerfect(NPC.Center, permafrost ? DustID.IceGolem : (int)CalamityDusts.Brimstone, new Vector2(30, 30).RotatedByRandom(100) * Main.rand.NextFloat(0.05f, 1.2f));
                             spawnDust.noGravity = true;
                             spawnDust.scale = Main.rand.NextFloat(1.2f, 2.3f);
                         }
                         for (int i = 0; i < 40; i++)
                         {
                             Vector2 sparkVel = new Vector2(20, 20).RotatedByRandom(100) * Main.rand.NextFloat(0.1f, 1.1f);
-                            GlowOrbParticle orb = new GlowOrbParticle(NPC.Center + sparkVel * 2, sparkVel, false, 120, Main.rand.NextFloat(1.55f, 2.75f), cirrus ? Color.Magenta : Color.Red, true, true);
+                            GlowOrbParticle orb = new GlowOrbParticle(NPC.Center + sparkVel * 2, sparkVel, false, 120, Main.rand.NextFloat(1.55f, 2.75f), permafrost ? Color.LightBlue : Color.Red, true, true);
                             GeneralParticleHandler.SpawnParticle(orb);
                         }
-                        Particle pulse = new DirectionalPulseRing(NPC.Center, Vector2.Zero, cirrus ? Color.Magenta : Color.Red, new Vector2(2f, 2f), 0, 0f, 1.1f, 25);
+                        Particle pulse = new DirectionalPulseRing(NPC.Center, Vector2.Zero, permafrost ? Color.LightBlue : Color.Red, new Vector2(2f, 2f), 0, 0f, 1.1f, 25);
                         GeneralParticleHandler.SpawnParticle(pulse);
 
                         SoundEngine.PlaySound(SpawnSound, NPC.Center);
@@ -2636,7 +2588,7 @@ namespace CalamityMod.NPCs.SupremeCalamitas
 
                 for (int i = 0; i < 4; i++)
                 {
-                    Dust brimstoneFire = Dust.NewDustPerfect(NPC.Center + Main.rand.NextVector2Square(-24f, 24f), cirrus ? (int)CalamityDusts.PurpleCosmilite : (int)CalamityDusts.Brimstone);
+                    Dust brimstoneFire = Dust.NewDustPerfect(NPC.Center + Main.rand.NextVector2Square(-24f, 24f), permafrost ? DustID.IceGolem : (int)CalamityDusts.Brimstone);
                     brimstoneFire.velocity = Vector2.UnitY * -Main.rand.NextFloat(2.75f, 4.25f);
                     brimstoneFire.noGravity = true;
                 }
@@ -2662,7 +2614,7 @@ namespace CalamityMod.NPCs.SupremeCalamitas
                 }
                 else
                 {
-                    if (cirrus ? NPC.AnyNPCs(ModContent.NPCType<Providence.Providence>()) : NPC.AnyNPCs(ModContent.NPCType<SoulSeekerSupreme>()))
+                    if (permafrost ? NPC.AnyNPCs(ModContent.NPCType<Providence.Providence>()) : NPC.AnyNPCs(ModContent.NPCType<SoulSeekerSupreme>()))
                     {
                         NPC.dontTakeDamage = true;
                         NPC.chaseable = false;
@@ -2825,14 +2777,14 @@ namespace CalamityMod.NPCs.SupremeCalamitas
                                 canFireSplitingFireball = false;
                                 randomShot = gigablast;
 
-                                Particle pulse = new DirectionalPulseRing(NPC.Center, projectileVelocity * 1.2f, cirrus ? Color.Pink : Color.Red, new Vector2(0.5f, 1f), projectileVelocity.ToRotation(), 0.92f, 0f, 55);
+                                Particle pulse = new DirectionalPulseRing(NPC.Center, projectileVelocity * 1.2f, permafrost ? Color.Cyan : Color.Red, new Vector2(0.5f, 1f), projectileVelocity.ToRotation(), 0.92f, 0f, 55);
                                 GeneralParticleHandler.SpawnParticle(pulse);
-                                Particle pulse2 = new DirectionalPulseRing(NPC.Center, projectileVelocity * 1f, cirrus ? Color.Pink : Color.Magenta, new Vector2(0.5f, 1f), projectileVelocity.ToRotation(), 0.95f, 0.4f, 55);
+                                Particle pulse2 = new DirectionalPulseRing(NPC.Center, projectileVelocity * 1f, permafrost ? Color.Cyan : Color.Magenta, new Vector2(0.5f, 1f), projectileVelocity.ToRotation(), 0.95f, 0.4f, 55);
                                 GeneralParticleHandler.SpawnParticle(pulse2);
 
                                 if (Main.netMode != NetmodeID.MultiplayerClient)
                                 {
-                                    Projectile.NewProjectile(NPC.GetSource_FromAI(), projectileSpawn, projectileVelocity, randomShot, gigablastDamage, 0f, Main.myPlayer, 0f, 2f);
+                                    Projectile.NewProjectile(NPC.GetSource_FromAI(), projectileSpawn, projectileVelocity, randomShot, GigablastDamage, 0f, Main.myPlayer, 0f, 2f);
                                     NPC.netUpdate = true;
                                 }
                             }
@@ -2843,14 +2795,14 @@ namespace CalamityMod.NPCs.SupremeCalamitas
                                     canFireSplitingFireball = false;
                                 randomShot = fireblast;
 
-                                Particle pulse = new DirectionalPulseRing(NPC.Center, projectileVelocity * 1.2f, cirrus ? Color.Pink : Color.Red, new Vector2(0.5f, 1f), projectileVelocity.ToRotation(), 0.95f, 0f, 55);
+                                Particle pulse = new DirectionalPulseRing(NPC.Center, projectileVelocity * 1.2f, permafrost ? Color.Cyan : Color.Red, new Vector2(0.5f, 1f), projectileVelocity.ToRotation(), 0.95f, 0f, 55);
                                 GeneralParticleHandler.SpawnParticle(pulse);
-                                Particle pulse2 = new DirectionalPulseRing(NPC.Center, projectileVelocity * 1f, cirrus ? Color.Pink : Color.Magenta, new Vector2(0.5f, 1f), projectileVelocity.ToRotation(), 0.98f, 0.4f, 55);
+                                Particle pulse2 = new DirectionalPulseRing(NPC.Center, projectileVelocity * 1f, permafrost ? Color.Cyan : Color.Magenta, new Vector2(0.5f, 1f), projectileVelocity.ToRotation(), 0.98f, 0.4f, 55);
                                 GeneralParticleHandler.SpawnParticle(pulse2);
 
                                 if (Main.netMode != NetmodeID.MultiplayerClient)
                                 {
-                                    Projectile.NewProjectile(NPC.GetSource_FromAI(), projectileSpawn, projectileVelocity, randomShot, fireblastDamage, 0f, Main.myPlayer, 0f, 2f);
+                                    Projectile.NewProjectile(NPC.GetSource_FromAI(), projectileSpawn, projectileVelocity, randomShot, FireblastDamage, 0f, Main.myPlayer, 0f, 2f);
                                     NPC.netUpdate = true;
                                 }
                             }
@@ -2866,7 +2818,7 @@ namespace CalamityMod.NPCs.SupremeCalamitas
                                     for (int i = 0; i < 7; i++) // Spred dust while floating post laugh
                                     {
                                         Vector2 dustVel = (projectileVelocity * 2).RotatedByRandom(0.9) * (Main.rand.NextFloat(0.5f, 1.9f));
-                                        GlowOrbParticle orb = new GlowOrbParticle(projectileSpawn, dustVel, false, 15, Main.rand.NextFloat(0.75f, 1f), cirrus ? Color.Magenta : Main.rand.NextBool() ? Color.Red : Color.Lerp(Color.Red, Color.Magenta, 0.3f), true, true);
+                                        GlowOrbParticle orb = new GlowOrbParticle(projectileSpawn, dustVel, false, 15, Main.rand.NextFloat(0.75f, 1f), permafrost ? Color.LightBlue : Main.rand.NextBool() ? Color.Red : Color.Lerp(Color.Red, Color.Magenta, 0.3f), true, true);
                                         GeneralParticleHandler.SpawnParticle(orb);
                                     }
 
@@ -2874,7 +2826,7 @@ namespace CalamityMod.NPCs.SupremeCalamitas
                                     {
                                         float projectileVelocityToPass = projectileVelocity.Length() * 1.3f;
                                         Vector2 perturbedSpeed = projectileVelocity.RotatedBy(MathHelper.Lerp(-rotation, rotation, j / (float)(numProj - 1)));
-                                        Projectile.NewProjectile(NPC.GetSource_FromAI(), projectileSpawn, perturbedSpeed, randomShot, barrageDamage, 0f, Main.myPlayer, 0f, 4f, projectileVelocityToPass);
+                                        Projectile.NewProjectile(NPC.GetSource_FromAI(), projectileSpawn, perturbedSpeed, randomShot, DartDamage, 0f, Main.myPlayer, 0f, 4f, projectileVelocityToPass);
                                         NPC.netUpdate = true;
                                     }
                                 }
@@ -3009,7 +2961,7 @@ namespace CalamityMod.NPCs.SupremeCalamitas
                                 for (int i = 0; i < 9; i++)
                                 {
                                     Vector2 velOffset = NPC.DirectionTo(player.Center).RotatedByRandom(0.6) * Main.rand.NextFloat(5f, 13f);
-                                    PointParticle spark2 = new PointParticle(handPosition + velOffset * 2f, velOffset * 1.5f, false, 9, Main.rand.NextFloat(0.5f, 0.75f), cirrus ? Color.HotPink : Main.rand.NextBool(3) ? Color.Lerp(Color.Red, Color.Magenta, 0.3f) : Color.Red);
+                                    PointParticle spark2 = new PointParticle(handPosition + velOffset * 2f, velOffset * 1.5f, false, 9, Main.rand.NextFloat(0.5f, 0.75f), permafrost ? Color.Cyan : Main.rand.NextBool(3) ? Color.Lerp(Color.Red, Color.Magenta, 0.3f) : Color.Red);
                                     GeneralParticleHandler.SpawnParticle(spark2);
                                 }
 
@@ -3020,14 +2972,14 @@ namespace CalamityMod.NPCs.SupremeCalamitas
                                     projectileVelocity *= 10f * uDieLul;
                                     int projectileType = hellblast;
                                     if (attackPause == 0)
-                                        Projectile.NewProjectile(NPC.GetSource_FromAI(), projectileSpawn, projectileVelocity, projectileType, hellblastDamage, 0f, Main.myPlayer, 0f, 2f);
+                                        Projectile.NewProjectile(NPC.GetSource_FromAI(), projectileSpawn, projectileVelocity, projectileType, HellblastDamage, 0f, Main.myPlayer, 0f, 2f);
                                 }
                             }
                         }
 
                         if (Main.rand.NextBool()) // Hand visual post laugh
                         {
-                            GlowOrbParticle orb = new GlowOrbParticle(handPosition, new Vector2(0, -6).RotatedByRandom(0.4) * Main.rand.NextFloat(0.8f, 1.4f), false, 15, Main.rand.NextFloat(0.95f, 1.45f), cirrus ? Color.Magenta : Main.rand.NextBool() ? Color.Red : Color.Lerp(Color.Red, Color.Magenta, 0.5f), true, true);
+                            GlowOrbParticle orb = new GlowOrbParticle(handPosition, new Vector2(0, -6).RotatedByRandom(0.4) * Main.rand.NextFloat(0.8f, 1.4f), false, 15, Main.rand.NextFloat(0.95f, 1.45f), permafrost ? Color.LightBlue : Main.rand.NextBool() ? Color.Red : Color.Lerp(Color.Red, Color.Magenta, 0.5f), true, true);
                             GeneralParticleHandler.SpawnParticle(orb);
                         }
                         Dust fust = Dust.NewDustPerfect(handPosition, Main.rand.NextBool(3) ? 60 : 114);
@@ -3085,9 +3037,9 @@ namespace CalamityMod.NPCs.SupremeCalamitas
                             Vector2 projectileSpawn = NPC.Center + projectileVelocity * 8f;
 
                             // Release a burst of magic dust when punching.
-                            Particle pulse = new DirectionalPulseRing(NPC.Center, projectileVelocity * 9, cirrus ? Color.Pink : Color.Red, new Vector2(0.5f, 1f), projectileVelocity.ToRotation(), 0.9f, 0f, 60);
+                            Particle pulse = new DirectionalPulseRing(NPC.Center, projectileVelocity * 9, permafrost ? Color.Cyan : Color.Red, new Vector2(0.5f, 1f), projectileVelocity.ToRotation(), 0.9f, 0f, 60);
                             GeneralParticleHandler.SpawnParticle(pulse);
-                            Particle pulse2 = new DirectionalPulseRing(NPC.Center, projectileVelocity * 8, cirrus ? Color.Pink : Color.Magenta, new Vector2(0.5f, 1f), projectileVelocity.ToRotation(), 0.93f, 0.4f, 60);
+                            Particle pulse2 = new DirectionalPulseRing(NPC.Center, projectileVelocity * 8, permafrost ? Color.Cyan : Color.Magenta, new Vector2(0.5f, 1f), projectileVelocity.ToRotation(), 0.93f, 0.4f, 60);
                             GeneralParticleHandler.SpawnParticle(pulse2);
 
                             NPC.localAI[1] = 0f;
@@ -3097,7 +3049,7 @@ namespace CalamityMod.NPCs.SupremeCalamitas
                                 SoundEngine.PlaySound(BrimstoneBigShotSound, NPC.Center);
                                 projectileVelocity *= 5f * uDieLul;
                                 int projectileType = gigablast;
-                                Projectile.NewProjectile(NPC.GetSource_FromAI(), projectileSpawn, projectileVelocity, projectileType, gigablastDamage, 0f, Main.myPlayer, 0f, 2f);
+                                Projectile.NewProjectile(NPC.GetSource_FromAI(), projectileSpawn, projectileVelocity, projectileType, GigablastDamage, 0f, Main.myPlayer, 0f, 2f);
                             }
                         }
 
@@ -3170,31 +3122,31 @@ namespace CalamityMod.NPCs.SupremeCalamitas
                 castMagicDust.scale = 1.67f;
                 castMagicDust.velocity = Main.rand.NextVector2CircularEdge(0.2f, 0.2f);
                 castMagicDust.fadeIn = 0.67f;
-                castMagicDust.color = cirrus ? Color.Pink : Color.Red;
+                castMagicDust.color = permafrost ? Color.Cyan : Color.Red;
                 castMagicDust.noGravity = true;
             }
 
             if (attackCastDelay == 0)
             {
-                string key = cirrus ? "Mods.CalamityMod.Status.Boss.CirrusBirbSwarmText" : "Mods.CalamityMod.Status.Boss.SCalStartText";
+                string key = permafrost ? "Mods.CalamityMod.Status.Boss.PermafrostBirbSwarmText" : "Mods.CalamityMod.Status.Boss.SCalStartText";
                 if (NPC.life <= NPC.lifeMax * 0.08)
-                    key = cirrus ? "Mods.CalamityMod.Status.Boss.CirrusSecondBirbSwarmText" : "Mods.CalamityMod.Status.Boss.SCalSepulcher2Text";
+                    key = permafrost ? "Mods.CalamityMod.Status.Boss.PermafrostSecondBirbSwarmText" : "Mods.CalamityMod.Status.Boss.SCalSepulcher2Text";
 
                 if (!BossRushEvent.BossRushActive)
                 {
-                    if (DownedBossSystem.downedCalamitas && !cirrus)
+                    if (DownedBossSystem.downedCalamitas && !permafrost)
                         key += "Rematch";
 
-                    CalamityUtils.DisplayLocalizedText(key, cirrus ? cirrusTextColor : textColor);
+                    CalamityUtils.DisplayLocalizedText(key, permafrost ? permafrostTextColor : textColor);
                 }
 
                 foreach (Vector2 heartSpawnPosition in heartSpawnPositions)
                 {
                     // Make the hearts appear in a burst of flame.
-                    // Spawn Dragonfollies if Cirrus exists.
+                    // Spawn Dragonfollies if Permfroast exists.
                     for (int i = 0; i < 20; i++)
                     {
-                        Dust castFire = Dust.NewDustPerfect(heartSpawnPosition + Main.rand.NextVector2Square(-30f, 30f), cirrus ? (int)CalamityDusts.Necroplasm : (int)CalamityDusts.Brimstone);
+                        Dust castFire = Dust.NewDustPerfect(heartSpawnPosition + Main.rand.NextVector2Square(-30f, 30f), permafrost ? (int)CalamityDusts.Necroplasm : (int)CalamityDusts.Brimstone);
                         castFire.velocity = Vector2.UnitY.RotatedByRandom(0.08f) * -Main.rand.NextFloat(3f, 4.45f);
                         castFire.scale = Main.rand.NextFloat(1.35f, 1.6f);
                         castFire.fadeIn = 1.25f;
@@ -3208,14 +3160,14 @@ namespace CalamityMod.NPCs.SupremeCalamitas
 
                 if (Main.netMode != NetmodeID.MultiplayerClient)
                 {
-                    if (cirrus)
+                    if (permafrost)
                     {
                         for (int x = 0; x < 5; x++)
                         {
-                            NPC.NewNPC(NPC.GetSource_FromAI(), spawnX + 50, tempSpawnY, ModContent.NPCType<Bumblefuck>());
+                            NPC.NewNPC(NPC.GetSource_FromAI(), spawnX + 50, tempSpawnY, ModContent.NPCType<Dragonfolly>());
                             spawnX += spawnXAdd;
 
-                            NPC.NewNPC(NPC.GetSource_FromAI(), spawnX2 - 50, tempSpawnY, ModContent.NPCType<Bumblefuck>());
+                            NPC.NewNPC(NPC.GetSource_FromAI(), spawnX2 - 50, tempSpawnY, ModContent.NPCType<Dragonfolly>());
                             spawnX2 -= spawnXAdd;
                             tempSpawnY += spawnYAdd;
                         }
@@ -3276,9 +3228,9 @@ namespace CalamityMod.NPCs.SupremeCalamitas
                 Vector2 leftDustPosition = Vector2.CatmullRom(leftOfCircle + Vector2.UnitY * 1000f, leftOfCircle, catastropheSpawnPosition, catastropheSpawnPosition + Vector2.UnitY * 1000f, castCompletion);
                 Vector2 rightDustPosition = Vector2.CatmullRom(rightOfCircle + Vector2.UnitY * 1000f, rightOfCircle, cataclysmSpawnPosition, cataclysmSpawnPosition + Vector2.UnitY * 1000f, castCompletion);
 
-                GlowOrbParticle orb = new GlowOrbParticle(leftDustPosition, Vector2.Zero, false, 20, 2.8f - attackCastDelay * 0.01f, cirrus ? Color.Pink : Color.Red, true, true);
+                GlowOrbParticle orb = new GlowOrbParticle(leftDustPosition, Vector2.Zero, false, 20, 2.8f - attackCastDelay * 0.01f, permafrost ? Color.Cyan : Color.Red, true, true);
                 GeneralParticleHandler.SpawnParticle(orb);
-                GlowOrbParticle orb2 = new GlowOrbParticle(rightDustPosition, Vector2.Zero, false, 20, 2.8f - attackCastDelay * 0.01f, cirrus ? Color.Pink : Color.Red, true, true);
+                GlowOrbParticle orb2 = new GlowOrbParticle(rightDustPosition, Vector2.Zero, false, 20, 2.8f - attackCastDelay * 0.01f, permafrost ? Color.Cyan : Color.Red, true, true);
                 GeneralParticleHandler.SpawnParticle(orb2);
             }
 
@@ -3338,19 +3290,20 @@ namespace CalamityMod.NPCs.SupremeCalamitas
                 if (!BossRushEvent.BossRushActive)
                 {
                     string key = "Mods.CalamityMod.Status.Boss.SCalBrothersText";
-                    if (cirrus)
-                        key = "Mods.CalamityMod.Status.Boss.CirrusDoGText";
+                    if (permafrost)
+                        key = "Mods.CalamityMod.Status.Boss.PermafrostDoGText";
                     else if (DownedBossSystem.downedCalamitas)
                         key += "Rematch";
 
-                    CalamityUtils.DisplayLocalizedText(key, cirrus ? cirrusTextColor : textColor);
+                    CalamityUtils.DisplayLocalizedText(key, permafrost ? permafrostTextColor : textColor);
                 }
 
                 if (Main.netMode != NetmodeID.MultiplayerClient)
                 {
                     bool broDirection = Main.rand.NextBool();
-                    CalamityUtils.SpawnBossBetter(catastropheSpawnPosition, cirrus ? ModContent.NPCType<DevourerofGodsHead>() : ModContent.NPCType<SupremeCatastrophe>(), null, broDirection == false ? 1 : -1);
-                    CalamityUtils.SpawnBossBetter(cataclysmSpawnPosition, cirrus ? ModContent.NPCType<DevourerofGodsHead>() : ModContent.NPCType<SupremeCataclysm>(), null, broDirection == true ? 1 : -1);
+                    CalamityUtils.SpawnBossBetter(catastropheSpawnPosition, permafrost ? ModContent.NPCType<DevourerofGodsHead>() : ModContent.NPCType<SupremeCatastrophe>(), null, broDirection == false ? 1 : -1);
+                    if (!permafrost)
+                        CalamityUtils.SpawnBossBetter(cataclysmSpawnPosition, ModContent.NPCType<SupremeCataclysm>(), null, broDirection == true ? 1 : -1);
                 }
 
                 SoundEngine.PlaySound(new SoundStyle("CalamityMod/Sounds/NPCKilled/RavagerDeath1") with { Pitch = -0.2f }, cataclysmSpawnPosition);
@@ -3428,7 +3381,7 @@ namespace CalamityMod.NPCs.SupremeCalamitas
         }
 
         #region Loot
-        public override void BossLoot(ref string name, ref int potionType)
+        public override void BossLoot(ref int potionType)
         {
             potionType = ModContent.ItemType<OmegaHealingPotion>();
         }
@@ -3447,7 +3400,7 @@ namespace CalamityMod.NPCs.SupremeCalamitas
 
             // Spawn the SCal NPC directly where the boss was
             if (!BossRushEvent.BossRushActive)
-                NPC.NewNPC(NPC.GetSource_FromAI(), (int)NPC.Center.X, (int)NPC.Center.Y + 12, cirrus ? ModContent.NPCType<Cirrus>() : ModContent.NPCType<BrimstoneWitch>());
+                NPC.NewNPC(NPC.GetSource_FromAI(), (int)NPC.Center.X, (int)NPC.Center.Y + 12, permafrost ? ModContent.NPCType<Archmage>() : ModContent.NPCType<BrimstoneWitch>());
 
             // Mark Calamitas as defeated
             DownedBossSystem.downedCalamitas = true;
@@ -3503,11 +3456,11 @@ namespace CalamityMod.NPCs.SupremeCalamitas
             // GFB Slurper Pole drops
             var GFBOnly = npcLoot.DefineConditionalDropSet(DropHelper.GFB);
             {
-                GFBOnly.Add(ModContent.ItemType<SlurperPole>(), hideLootReport: true);
+                GFBOnly.Add(DropHelper.PerPlayer(ModContent.ItemType<SlurperPole>()), hideLootReport: true);
             }
 
-            // Legendary seed pony on a stick upgrade          
-            npcLoot.Add(ItemDropRule.ByCondition(DropHelper.If(info => info.npc.type == ModContent.NPCType<SupremeCalamitas>() && info.npc.ModNPC<SupremeCalamitas>().cirrus, false), ModContent.ItemType<AlicornonaStick>()));
+            // Legendary seed Coldheart Icicle        
+            npcLoot.Add(ItemDropRule.ByCondition(DropHelper.If(info => info.npc.type == ModContent.NPCType<SupremeCalamitas>() && info.npc.ModNPC<SupremeCalamitas>().permafrost, false), ModContent.ItemType<ColdheartIcicle>()));
 
             // Lore
             npcLoot.AddConditionalPerPlayer(() => !DownedBossSystem.downedCalamitas, ModContent.ItemType<LoreCalamitas>(), desc: DropHelper.FirstKillText);
@@ -3556,7 +3509,9 @@ namespace CalamityMod.NPCs.SupremeCalamitas
 
             float _ = 0f;
             bool collidingWithShield = Collision.CheckAABBvLineCollision(target.TopLeft, target.Size, shieldTop, shieldBottom, 64f, ref _) && shieldOpacity > 0.55f;
-            return collidingWithShield || NPC.Hitbox.Intersects(target.Hitbox);
+            // CIT 16MAY2025: SCal must have contact damage set on the first frame to preserve difficulty mode stat scaling, sometimes leading to people getting hit if on top of her.
+            // Thus, also check if the arena has spawned, since that will not be true on the first frame.
+            return (collidingWithShield || NPC.Hitbox.Intersects(target.Hitbox)) && spawnArena;
         }
 
         public override void FindFrame(int frameHeight)
@@ -3587,19 +3542,6 @@ namespace CalamityMod.NPCs.SupremeCalamitas
                 NPC.frameCounter %= 6;
                 NPC.frame.Y = (int)NPC.frameCounter + (int)FrameType * 6;
             }
-            if (cirrus)
-            {
-                alicornFrameCounter++;
-                if (alicornFrameCounter > 6)
-                {
-                    alicornFrame++;
-                    alicornFrameCounter = 0;
-                }
-                if (alicornFrame > 14 || alicornFrame < 9)
-                {
-                    alicornFrame = 9;
-                }
-            }
         }
 
         public override Color? GetAlpha(Color drawColor) => willCharge ? Color.Lerp(Color.Red, drawColor, 0.7f) * NPC.Opacity * 0.45f : null;
@@ -3611,23 +3553,17 @@ namespace CalamityMod.NPCs.SupremeCalamitas
                 spriteEffects = SpriteEffects.FlipHorizontally;
 
             Texture2D texture2D15 = DownedBossSystem.downedCalamitas && !BossRushEvent.BossRushActive ? TextureAssets.Npc[Type].Value : HoodedTexture.Value;
-            Texture2D pony = ModContent.Request<Texture2D>("CalamityMod/Items/Mounts/AlicornMount_Front").Value;
-            bool inPhase2 = NPC.ai[0] >= 3f && (NPC.life > NPC.lifeMax * 0.01 || cirrus);
+            bool inPhase2 = NPC.ai[0] >= 3f && (NPC.life > NPC.lifeMax * 0.01 || permafrost);
 
-            if (cirrus)
-                texture2D15 = inPhase2 ? CirrusTexture2.Value : CirrusTexture.Value;
+            if (permafrost)
+                texture2D15 = PermafrostTexture.Value;
 
             Vector2 halfSizeTexture = new Vector2(texture2D15.Width / 2f, texture2D15.Height / Main.npcFrameCount[Type] / 2f);
-            Vector2 ponyOrigin = new Vector2(pony.Width / 2f, pony.Height / 30f);
             int afterimageAmt = 7;
 
             Rectangle frame = texture2D15.Frame(2, Main.npcFrameCount[Type], NPC.frame.Y / Main.npcFrameCount[Type], NPC.frame.Y % Main.npcFrameCount[Type]);
-            Rectangle ponyFrame = pony.Frame(1, 15, 0, alicornFrame);
-            Vector2 ponyPos = NPC.Center - screenPos;
-            ponyPos -= new Vector2(pony.Width / 2f, pony.Height / 15) * NPC.scale / 2f;
-            ponyPos += ponyOrigin * NPC.scale + new Vector2(-20, NPC.gfxOffY);
 
-            if (CalamityClientConfig.Instance.Afterimages && !(cirrus && NPC.ai[1] == 2f))
+            if (CalamityClientConfig.Instance.Afterimages && !(permafrost && NPC.ai[1] == 2f))
             {
                 for (int i = 1; i < afterimageAmt; i += 2)
                 {
@@ -3646,7 +3582,7 @@ namespace CalamityMod.NPCs.SupremeCalamitas
             drawLocation -= new Vector2(texture2D15.Width / 2f, texture2D15.Height / Main.npcFrameCount[Type]) * NPC.scale / 2f;
             drawLocation += halfSizeTexture * NPC.scale + new Vector2(0f, NPC.gfxOffY);
 
-            if (!(cirrus && NPC.ai[1] == 2f))
+            if (!(permafrost && NPC.ai[1] == 2f))
             {
                 if (inPhase2)
                 {
@@ -3655,7 +3591,7 @@ namespace CalamityMod.NPCs.SupremeCalamitas
                         drawLocation += Main.rand.NextVector2Circular(0.25f, 0.7f);
 
                     // And gain a flaming aura.
-                    Color auraColor = NPC.GetAlpha(cirrus ? Color.Pink : Color.Red) * 0.4f;
+                    Color auraColor = NPC.GetAlpha(permafrost ? Color.Cyan : Color.Red) * 0.4f;
                     for (int i = 0; i < 7; i++)
                     {
                         Vector2 rotationalDrawOffset = (MathHelper.TwoPi * i / 7f + Main.GlobalTimeWrappedHourly * 4f).ToRotationVector2();
@@ -3669,17 +3605,7 @@ namespace CalamityMod.NPCs.SupremeCalamitas
             if (!NPC.IsABestiaryIconDummy)
             {
                 DrawForcefield(spriteBatch);
-                if (cirrus)
-                {
-                    if (NPC.ai[1] == 2f)
-                    {
-                        spriteBatch.Draw(pony, ponyPos, ponyFrame, NPC.GetAlpha(drawColor), NPC.rotation, ponyOrigin, NPC.scale, spriteEffects, 0f);
-                    }
-                }
-                else
-                {
-                    DrawShield(spriteBatch);
-                }
+                DrawShield(spriteBatch);
             }
             return false;
         }
@@ -3734,7 +3660,7 @@ namespace CalamityMod.NPCs.SupremeCalamitas
             GameShaders.Misc["CalamityMod:SupremeShield"].UseImage1("Images/Misc/Perlin");
 
             Color forcefieldColor = Color.DarkViolet;
-            Color secondaryForcefieldColor = (cirrus ? Color.HotPink : Color.Red) * 1.4f;
+            Color secondaryForcefieldColor = (permafrost ? Color.Cyan : Color.Red) * 1.4f;
 
             if (!NPC.dontTakeDamage && willCharge && NPC.ai[1] != 2f)
             {
@@ -3813,7 +3739,7 @@ namespace CalamityMod.NPCs.SupremeCalamitas
 
             for (int k = 0; k < 5; k++)
             {
-                Dust.NewDust(NPC.position, NPC.width, NPC.height, cirrus ? (int)CalamityDusts.PurpleCosmilite : (int)CalamityDusts.Brimstone, hit.HitDirection, -1f, 0, default, 1f);
+                Dust.NewDust(NPC.position, NPC.width, NPC.height, permafrost ? DustID.IceGolem : (int)CalamityDusts.Brimstone, hit.HitDirection, -1f, 0, default, 1f);
             }
             if (NPC.life <= 0)
             {
@@ -3823,7 +3749,7 @@ namespace CalamityMod.NPCs.SupremeCalamitas
                 NPC.position.Y = NPC.position.Y - (NPC.height / 2);
                 for (int i = 0; i < 40; i++)
                 {
-                    int onHitDust = Dust.NewDust(NPC.position, NPC.width, NPC.height, cirrus ? (int)CalamityDusts.PurpleCosmilite : (int)CalamityDusts.Brimstone, 0f, 0f, 100, default, 2f);
+                    int onHitDust = Dust.NewDust(NPC.position, NPC.width, NPC.height, permafrost ? DustID.IceGolem : (int)CalamityDusts.Brimstone, 0f, 0f, 100, default, 2f);
                     Main.dust[onHitDust].velocity *= 3f;
                     if (Main.rand.NextBool())
                     {
@@ -3833,10 +3759,10 @@ namespace CalamityMod.NPCs.SupremeCalamitas
                 }
                 for (int j = 0; j < 70; j++)
                 {
-                    int onHitDust2 = Dust.NewDust(NPC.position, NPC.width, NPC.height, cirrus ? (int)CalamityDusts.PurpleCosmilite : (int)CalamityDusts.Brimstone, 0f, 0f, 100, default, 3f);
+                    int onHitDust2 = Dust.NewDust(NPC.position, NPC.width, NPC.height, permafrost ? DustID.IceGolem : (int)CalamityDusts.Brimstone, 0f, 0f, 100, default, 3f);
                     Main.dust[onHitDust2].noGravity = true;
                     Main.dust[onHitDust2].velocity *= 5f;
-                    onHitDust2 = Dust.NewDust(NPC.position, NPC.width, NPC.height, cirrus ? (int)CalamityDusts.PurpleCosmilite : (int)CalamityDusts.Brimstone, 0f, 0f, 100, default, 2f);
+                    onHitDust2 = Dust.NewDust(NPC.position, NPC.width, NPC.height, permafrost ? DustID.IceGolem : (int)CalamityDusts.Brimstone, 0f, 0f, 100, default, 2f);
                     Main.dust[onHitDust2].velocity *= 2f;
                 }
             }
@@ -3845,89 +3771,6 @@ namespace CalamityMod.NPCs.SupremeCalamitas
         public override void ApplyDifficultyAndPlayerScaling(int numPlayers, float balance, float bossAdjustment)
         {
             NPC.lifeMax = (int)(NPC.lifeMax * 0.8f * balance * bossAdjustment);
-            NPC.damage = (int)(NPC.damage * NPC.GetExpertDamageMultiplier());
-        }
-
-        public override void OnHitPlayer(Player target, Player.HurtInfo hurtInfo)
-        {
-            if (hurtInfo.Damage > 0)
-            {
-                target.AddBuff(ModContent.BuffType<VulnerabilityHex>(), 600);
-                InflictCirrusDebuffs(target);
-            }
-        }
-
-        public void InflictCirrusDebuffs(Player target)
-        {
-            if (cirrus)
-            {
-                switch (Main.rand.Next(MaxCirrusAlcohols))
-                {
-                    case 0:
-                        target.AddBuff(ModContent.BuffType<BloodyMaryBuff>(), MaxCirrusAlcoholDebuffDuration);
-                        break;
-                    case 1:
-                        target.AddBuff(ModContent.BuffType<CaribbeanRumBuff>(), MaxCirrusAlcoholDebuffDuration);
-                        break;
-                    case 2:
-                        target.AddBuff(ModContent.BuffType<CinnamonRollBuff>(), MaxCirrusAlcoholDebuffDuration);
-                        break;
-                    case 3:
-                        target.AddBuff(ModContent.BuffType<EverclearBuff>(), MaxCirrusAlcoholDebuffDuration);
-                        break;
-                    case 4:
-                        target.AddBuff(ModContent.BuffType<EvergreenGinBuff>(), MaxCirrusAlcoholDebuffDuration);
-                        break;
-                    case 5:
-                        target.AddBuff(ModContent.BuffType<CirrusVodkaBuff>(), MaxCirrusAlcoholDebuffDuration);
-                        break;
-                    case 6:
-                        target.AddBuff(ModContent.BuffType<FireballBuff>(), MaxCirrusAlcoholDebuffDuration);
-                        break;
-                    case 7:
-                        target.AddBuff(ModContent.BuffType<GrapeBeerBuff>(), MaxCirrusAlcoholDebuffDuration);
-                        break;
-                    case 8:
-                        target.AddBuff(ModContent.BuffType<MargaritaBuff>(), MaxCirrusAlcoholDebuffDuration);
-                        break;
-                    case 9:
-                        target.AddBuff(ModContent.BuffType<MoonshineBuff>(), MaxCirrusAlcoholDebuffDuration);
-                        break;
-                    case 10:
-                        target.AddBuff(ModContent.BuffType<MoscowMuleBuff>(), MaxCirrusAlcoholDebuffDuration);
-                        break;
-                    case 11:
-                        target.AddBuff(ModContent.BuffType<RedWineBuff>(), MaxCirrusAlcoholDebuffDuration);
-                        break;
-                    case 12:
-                        target.AddBuff(ModContent.BuffType<RumBuff>(), MaxCirrusAlcoholDebuffDuration);
-                        break;
-                    case 13:
-                        target.AddBuff(ModContent.BuffType<ScrewdriverBuff>(), MaxCirrusAlcoholDebuffDuration);
-                        break;
-                    case 14:
-                        target.AddBuff(ModContent.BuffType<StarBeamRyeBuff>(), MaxCirrusAlcoholDebuffDuration);
-                        break;
-                    case 15:
-                        target.AddBuff(ModContent.BuffType<TequilaBuff>(), MaxCirrusAlcoholDebuffDuration);
-                        break;
-                    case 16:
-                        target.AddBuff(ModContent.BuffType<TequilaSunriseBuff>(), MaxCirrusAlcoholDebuffDuration);
-                        break;
-                    case 17:
-                        target.AddBuff(ModContent.BuffType<VodkaBuff>(), MaxCirrusAlcoholDebuffDuration);
-                        break;
-                    case 18:
-                        target.AddBuff(ModContent.BuffType<WhiskeyBuff>(), MaxCirrusAlcoholDebuffDuration);
-                        break;
-                    case 19:
-                        target.AddBuff(ModContent.BuffType<WhiteWineBuff>(), MaxCirrusAlcoholDebuffDuration);
-                        break;
-                    case 20:
-                        target.AddBuff(ModContent.BuffType<OldFashionedBuff>(), MaxCirrusAlcoholDebuffDuration);
-                        break;
-                }
-            }
         }
     }
 }

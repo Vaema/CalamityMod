@@ -24,9 +24,9 @@ namespace CalamityMod.Items.Weapons.Magic
         {
             Item.width = 40;
             Item.height = 56;
-            Item.damage = 3900;
+            Item.damage = 4350;
             Item.DamageType = DamageClass.Magic;
-            Item.mana = 85;
+            Item.mana = 95;
             Item.useTime = 78;
             Item.useAnimation = 78;
             Item.useStyle = ItemUseStyleID.Shoot;
@@ -37,10 +37,13 @@ namespace CalamityMod.Items.Weapons.Magic
             Item.autoReuse = true;
             Item.shoot = ModContent.ProjectileType<PrimordialAncientProjectile>();
             Item.shootSpeed = 8f;
-            Item.rare = ModContent.RarityType<DarkBlue>();
+            Item.rare = ModContent.RarityType<CosmicPurple>();
         }
         public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)
         {
+            if (player.velocity.Length() <= 16)
+                player.velocity += -velocity.SafeNormalize(Vector2.UnitX) * 7f;
+
             bool MaxMana = player.statMana >= (player.statManaMax2 - ((int)(Item.mana * player.manaCost))) && !player.HasBuff(BuffID.ManaSickness);
             for (int i = -2; i <= 2; i++)
             {

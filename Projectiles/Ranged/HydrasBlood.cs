@@ -25,7 +25,6 @@ namespace CalamityMod.Projectiles.Ranged
             Projectile.MaxUpdates = 5;
             Projectile.penetrate = 1;
             Projectile.DamageType = DamageClass.Ranged;
-            Projectile.Calamity().pointBlankShotDuration = CalamityGlobalProjectile.DefaultPointBlankDuration;
         }
 
         public override bool? Colliding(Rectangle projHitbox, Rectangle targetHitbox) => Projectile.RotatingHitboxCollision(targetHitbox);

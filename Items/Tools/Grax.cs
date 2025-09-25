@@ -66,7 +66,7 @@ namespace CalamityMod.Items.Tools
                 AddIngredient<InfernaCutter>().
                 AddRecipeGroup("LunarHamaxe").
                 AddIngredient<UelibloomBar>(5).
-                AddTile(TileID.LunarCraftingStation).
+                AddTile(TileID.MythrilAnvil).
                 Register();
         }
 

@@ -50,8 +50,8 @@ namespace CalamityMod.Items.Weapons.Melee
                 AddIngredient(ItemID.Valor).
                 AddIngredient(ItemID.DarkShard).
                 AddIngredient(ItemID.LightShard).
-                AddIngredient(ItemID.SoulofNight, 7).
                 AddIngredient(ItemID.SoulofLight, 7).
+                AddIngredient(ItemID.SoulofNight, 7).
                 AddTile(TileID.Anvils).
                 Register();
         }

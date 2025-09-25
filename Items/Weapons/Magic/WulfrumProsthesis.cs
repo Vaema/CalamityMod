@@ -145,7 +145,6 @@ namespace CalamityMod.Items.Weapons.Magic
         {
             CreateRecipe().
                 AddIngredient<WulfrumMetalScrap>(10).
-                AddIngredient<EnergyCore>().
                 AddTile(TileID.Anvils).
                 Register();
         }

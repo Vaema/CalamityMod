@@ -46,9 +46,9 @@ namespace CalamityMod.Items.Accessories
         public override void AddRecipes()
         {
             CreateRecipe().
-                AddIngredient(ItemID.Chain, 2).
-                AddIngredient<WulfrumMetalScrap>(6).
+                AddIngredient<WulfrumMetalScrap>(5).
                 AddIngredient<EnergyCore>().
+                AddIngredient(ItemID.Chain, 2).
                 AddTile(TileID.Anvils).
                 Register();
         }
@@ -132,7 +132,7 @@ namespace CalamityMod.Items.Accessories
                 if (!Grappled)
                     return false;
 
-                if (!PlayerOnGround)
+                if (!PlayerOnGround || !obeyGravity)
                     return false;
 
                 if ((Player.Center - Main.projectile[Grapple].Center).Length() > SwingLength)
@@ -142,6 +142,8 @@ namespace CalamityMod.Items.Accessories
             }
         }
 
+        public bool obeyGravity => !(Player.miscEquips[4].type == ItemID.AntiGravityHook);
+        public bool strongerReel => Player.miscEquips[4].type == ItemID.StaticHook;
         public Vector2 CurrentPosition;
         public Vector2 OldPosition;
         public List<VerletSimulatedSegment> Segments;
@@ -280,7 +282,10 @@ namespace CalamityMod.Items.Accessories
             }
 
             hookCache = -1;
-
+            if (!obeyGravity) 
+            {
+                Player.gravity = -1f; //Disable player gravity with Anti-Grav hook
+            }
             if (Grappled)
             {
                 if ((Main.projectile[Grapple].Center - Player.Center).Length() > SwingLength + 80f)
@@ -299,7 +304,7 @@ namespace CalamityMod.Items.Accessories
 
         public void SimulateMovement(Projectile grapple)
         {
-            Segments = VerletSimulatedSegment.SimpleSimulation(Segments, SwingLength / SimulationResolution, 50, 0.3f * Player.gravDir);
+            Segments = VerletSimulatedSegment.SimpleSimulation(Segments, SwingLength / SimulationResolution, 50, (obeyGravity ? 0.3f * Player.gravDir : 0));
 
             Vector2 CurrentPosition;
 
@@ -313,40 +318,83 @@ namespace CalamityMod.Items.Accessories
             }
             if (!GrappleMovementDisabled)
             {
-                CurrentPosition = Segments[SimulationResolution].position;
-                Player.velocity = CurrentPosition - Player.Center;
-
-                //let the player swing themselves around if they are under the hook.
-                if (Player.gravDir * (Player.Center.Y - Segments[0].position.Y) > 0)
+                if (obeyGravity)
                 {
-                    float swing = 0;
 
-                    if (Math.Sign(Player.velocity.X) < 0)
+
+                    CurrentPosition = Segments[SimulationResolution].position;
+                    Player.velocity = CurrentPosition - Player.Center;
+
+                    //let the player swing themselves around if they are under the hook.
+                    if (Player.gravDir * (Player.Center.Y - Segments[0].position.Y) > 0)
                     {
-                        if (Player.controlLeft)
-                            swing -= 0.1f;
+                        float swing = 0;
 
-                        else if (Player.controlRight)
-                            swing += 0.1f;
+                        if (Math.Sign(Player.velocity.X) < 0)
+                        {
+                            if (Player.controlLeft)
+                                swing -= 0.1f;
+
+                            else if (Player.controlRight)
+                                swing += 0.1f;
+                        }
+
+                        else if (Math.Sign(Player.velocity.X) > 0)
+                        {
+                            if (Player.controlRight)
+                                swing += 0.1f;
+
+                            else if (Player.controlLeft)
+                                swing -= 0.1f;
+                        }
+
+                        Player.velocity.X += swing;
                     }
 
-                    else if (Math.Sign(Player.velocity.X) > 0)
+                    else if (Math.Abs(Player.Center.X - Segments[0].position.X) < 30f && Math.Abs(Player.velocity.X) < 1)
                     {
-                        if (Player.controlRight)
-                            swing += 0.1f;
-
-                        else if (Player.controlLeft)
-                            swing -= 0.1f;
+                        Player.velocity.X = Player.velocity.X == 0 ? 1.5f : 1.5f * Math.Sign(Player.velocity.X);
                     }
-
-                    Player.velocity.X += swing * (Player.miscEquips[4].type == ItemID.AntiGravityHook ? 1.75f : 1);
                 }
-
-                else if (Math.Abs(Player.Center.X - Segments[0].position.X) < 30f && Math.Abs(Player.velocity.X) < 1)
+                
+                else
                 {
-                    Player.velocity.X = Player.velocity.X == 0 ? 1.5f : 1.5f * Math.Sign(Player.velocity.X);
-                }
+                    if (Player.grappling[0] > -1)
+                    {
+                        var Hook = Main.projectile[Player.grappling[0]];
+                        if (Hook != null)
+                        {
+                            
+                            if (Player.controlRight)
+                                Player.velocity.X += 0.3f;
+                            else if (Player.controlLeft)
+                                Player.velocity.X -= 0.3f;
+                            Player.velocity -= Player.Center.DirectionTo(Hook.Center);
+                            var estimatedPos = Player.Center + Player.velocity;
+                            var estimatedDir = Hook.Center.DirectionTo(estimatedPos);
+                            var goalPos = Hook.Center + estimatedDir * SwingLength;
+                            var estimatedPosLocked = Hook.Center + Hook.Center.DirectionTo(Player.Center) * SwingLength;
+                            if (estimatedPosLocked.Distance(estimatedPos) < 2)
+                            {
+                                estimatedPos = estimatedPosLocked;
+                            }
+                            var dis = Hook.Center.Distance(estimatedPos);
+                            if (dis > SwingLength && dis < 1000f)
+                            {
+                                var dis2 = Math.Min(Player.Center.Distance(goalPos), SwingLength*3f);
+                                if (dis2 > 0)
+                                {
+                                    Player.velocity = Player.Center.DirectionTo(goalPos) * dis2;
+                                }
 
+                            }
+
+
+                            if (Player.velocity.Length() < 1.5f)
+                                Player.direction = Hook.Center.X > Player.Center.X ? 1 : -1;
+                        }
+                    }
+                }
             }
 
             if (Grappled)
@@ -376,7 +424,10 @@ namespace CalamityMod.Items.Accessories
                     bool playerCrossedSides = Math.Sign(Segments[SimulationResolution].oldPosition.X - Segments[0].position.X) != Math.Sign(Segments[SimulationResolution].position.X - Segments[0].position.X);
                     float swingSpeed = (Segments[SimulationResolution].oldPosition - Segments[SimulationResolution].position).Length();
                     if (swingSpeed > 6f && playerCrossedSides)
-                        SoundEngine.PlaySound(CommonCalamitySounds.LouderSwingWoosh with { Volume = CommonCalamitySounds.LouderSwingWoosh.Volume * (Math.Clamp((swingSpeed - 6f) / 12f, 0, 1)) }, Player.Center);
+                    {
+                        SoundStyle swing = new SoundStyle("CalamityMod/Sounds/Custom/LoudSwingWoosh") with { Volume = Math.Clamp((swingSpeed - 6f) / 12f, 0, 1) };
+                        SoundEngine.PlaySound(swing, Player.Center);
+                    }
                 }
             }
 
@@ -512,7 +563,7 @@ namespace CalamityMod.Items.Accessories
             }
             if (Grappled && triggersSet.Up)
             {
-                SwingLength -= (Player.miscEquips[4].type == ItemID.StaticHook ? StaticHookReelSpeed : ReelSpeed);
+                SwingLength -= (strongerReel ? StaticHookReelSpeed : ReelSpeed);
                 Player.controlUp = false; //This is required to stop the player from bouncing off platforms when falling down and reeling in. Also prevents gravity swapping while hooked.
             }
             if (triggersSet.Down) //Static Hook doesn't effect this speed because it would be faster than your fall speed and feel janky.
@@ -576,7 +627,7 @@ namespace CalamityMod.Items.Accessories
 
                         SoundEngine.PlaySound(WulfrumAcrobaticsPack.ReleaseSound, p.Center);
                         p.Kill();
-
+                        Player.grapCount = 0;
                     }
                 }
 

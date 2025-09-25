@@ -50,7 +50,7 @@ namespace CalamityMod.Items.Weapons.Magic
                 AddIngredient(ItemID.BubbleGun).
                 AddIngredient(ItemID.LunarBar, 5).
                 AddIngredient(ItemID.ShimmerBlock, 5).
-                AddTile(TileID.LunarCraftingStation).
+                AddTile(TileID.MythrilAnvil).
                 Register();
         }
     }

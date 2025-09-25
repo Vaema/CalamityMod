@@ -72,7 +72,7 @@ namespace CalamityMod.Items.PermanentBoosters
             CreateRecipe().
                 AddIngredient<RuinousSoul>(5).
                 AddIngredient<Necroplasm>(25).
-                AddTile(TileID.LunarCraftingStation).
+                AddTile(TileID.MythrilAnvil).
                 Register();
         }
     }

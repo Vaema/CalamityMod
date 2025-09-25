@@ -12,8 +12,8 @@ namespace CalamityMod.Items.Accessories
         {
             Item.width = 50;
             Item.height = 58;
-            Item.value = CalamityGlobalItem.RarityDarkBlueBuyPrice;
-            Item.rare = ModContent.RarityType<DarkBlue>();
+            Item.value = Item.buyPrice(platinum: 10); // Sold by Bandit
+            Item.rare = ModContent.RarityType<CosmicPurple>();
             Item.accessory = true;
         }
 

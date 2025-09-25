@@ -1,0 +1,56 @@
+﻿using CalamityMod.Systems;
+using Microsoft.Xna.Framework;
+using Terraria;
+using Terraria.ID;
+using Terraria.ModLoader;
+
+namespace CalamityMod.Tiles.SunkenSea
+{
+    public class AridSoil : ModTile
+    {
+        public override void SetStaticDefaults()
+        {
+            TileID.Sets.GeneralPlacementTiles[Type] = false;
+
+            Main.tileSolid[Type] = true;
+            Main.tileBlockLight[Type] = true;
+
+            CalamityUtils.MergeWithGeneral(Type);
+            CalamityUtils.MergeWithDesert(Type);
+
+            TileID.Sets.HasSlopeFrames[Type] = true;
+            TileID.Sets.ChecksForMerge[Type] = true;
+            TileID.Sets.CanBeDugByShovel[Type] = true;
+            Main.tileShine2[Type] = false;
+
+            DustType = DustID.Hive;
+            AddMapEntry(new Color(203, 123, 107));
+
+            //Sand merges
+            this.RegisterUniversalMerge(ModContent.TileType<PolypSand>(), "CalamityMod/Tiles/Merges/PolypSandMerge");
+            this.RegisterUniversalMerge(ModContent.TileType<Dunesand>(), "CalamityMod/Tiles/Merges/DunesandMerge");
+            this.RegisterUniversalMerge(ModContent.TileType<ScarletSeaGrassTile>(), "CalamityMod/Tiles/Merges/ScarletSeaGrassTile");
+            this.RegisterUniversalMerge(ModContent.TileType<EutrophicSand>(), "CalamityMod/Tiles/Merges/EutrophicSandMerge");
+            this.RegisterUniversalMerge(ModContent.TileType<VolcanicSand>(), "CalamityMod/Tiles/Merges/VolcanicSandMerge");
+            this.RegisterUniversalMerge(TileID.Sandstone, "CalamityMod/Tiles/Merges/SandstoneMerge");
+            this.RegisterUniversalMerge(TileID.Sand, "CalamityMod/Tiles/Merges/SandMerge");
+            this.RegisterUniversalMerge(TileID.HardenedSand, "CalamityMod/Tiles/Merges/HardenedSandMerge");
+
+            //Normal merges
+            this.RegisterUniversalMerge(TileID.Stone, "CalamityMod/Tiles/Merges/StoneMerge");
+            this.RegisterUniversalMerge(TileID.Dirt, "CalamityMod/Tiles/Merges/DirtMerge");
+            this.RegisterUniversalMerge(TileID.Ash, "CalamityMod/Tiles/Merges/AshMerge");
+            this.RegisterUniversalMerge(TileID.Mud, "CalamityMod/Tiles/Merges/MudMerge");
+        }
+
+        public override void NumDust(int i, int j, bool fail, ref int num)
+        {
+            num = fail ? 1 : 3;
+        }
+
+        public override bool TileFrame(int i, int j, ref bool resetFrame, ref bool noBreak)
+        {
+            return TileFramingSystem.BetterGemsparkFraming(i, j, resetFrame);
+        }
+    }
+}

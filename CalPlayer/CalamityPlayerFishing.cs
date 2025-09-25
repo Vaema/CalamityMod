@@ -3,12 +3,14 @@ using System.Collections.Generic;
 using System.Linq;
 using CalamityMod.Events;
 using CalamityMod.Items.Accessories;
+using CalamityMod.Items.Critters;
 using CalamityMod.Items.Fishing;
 using CalamityMod.Items.Fishing.AstralCatches;
 using CalamityMod.Items.Fishing.BrimstoneCragCatches;
 using CalamityMod.Items.Fishing.FishingRods;
 using CalamityMod.Items.Fishing.SulphurCatches;
 using CalamityMod.Items.Fishing.SunkenSeaCatches;
+using CalamityMod.Items.Materials;
 using CalamityMod.Items.Placeables.Abyss;
 using CalamityMod.Items.SummonItems;
 using CalamityMod.Items.Weapons.Melee;
@@ -24,6 +26,7 @@ using Terraria.DataStructures;
 using Terraria.ID;
 using Terraria.Localization;
 using Terraria.ModLoader;
+using Terraria.Utilities;
 
 namespace CalamityMod.CalPlayer
 {
@@ -167,6 +170,22 @@ namespace CalamityMod.CalPlayer
             if (canSulphurFish && bait == ModContent.ItemType<BloodwormItem>() && !BossRushEvent.BossRushActive)
             {
                 CalamityGlobalNPC.OldDukeSpawn(Player.whoAmI, ModContent.NPCType<OldDuke>(), bait);
+                itemDrop = -1;
+                return;
+            }
+
+            if (attempt.playerFishingConditions.PoleItemType == ModContent.ItemType<WulfrumRod>())
+            {
+                if (Main.rand.NextBool(5))
+                {
+                    itemDrop = ModContent.ItemType<WulfrumMetalScrap>();
+                    return;
+                }
+                if (Main.rand.NextBool(15))
+                {
+                    itemDrop = ModContent.ItemType<EnergyCore>();
+                    return;
+                }
             }
 
             // Ignore catches if it's junk
@@ -284,6 +303,13 @@ namespace CalamityMod.CalPlayer
                 if (Player.ZoneDesert && Main.rand.NextBool())
                     return;
 
+                int commonCatch = Utils.SelectRandom(Main.rand, new int[]
+                    {
+                        ModContent.ItemType<PrismaticGuppyItem>(),
+                        ModContent.ItemType<PrismaticGuppyPinkItem>(),
+                        ModContent.ItemType<PrismaticGuppyGreenItem>()
+                    });
+
                 if (attempt.legendary)
                 {
                     List<int> legendaryCatches =
@@ -315,7 +341,7 @@ namespace CalamityMod.CalPlayer
                 else if (attempt.uncommon || attempt.rare)
                     itemDrop = ModContent.ItemType<SunkenSailfish>();
                 else
-                    itemDrop = ModContent.ItemType<PrismaticGuppy>();
+                    itemDrop = commonCatch;
                 return;
             }
             // There is no complete fishing pool here, so most of it is vanilla default
@@ -361,7 +387,7 @@ namespace CalamityMod.CalPlayer
                 if (ZoneAbyss || ZoneSulphur)
                     canSulphurFish = true;
 
-                Item item = Player.ActiveItem();
+                Item item = Player.HeldItem;
                 if (!canSulphurFish || item.fishingPole <= 0 || item.holdStyle != 1)
                     fishingLevel = -1;
 
@@ -404,6 +430,8 @@ namespace CalamityMod.CalPlayer
                 if (fishList.Contains(fish.type))
                     fish.stack += Main.rand.Next(1, 3 + 1);
             }
+            if (fish.type == ModContent.ItemType<WulfrumMetalScrap>())
+                fish.stack = Main.rand.Next(1, 6);
         }
         #endregion
     }

@@ -297,7 +297,7 @@ namespace CalamityMod.Items.Weapons.Melee
                 AddIngredient<ArmoredShell>().
                 AddIngredient<TwistingNether>().
                 AddIngredient<DarkPlasma>().
-                AddTile(TileID.LunarCraftingStation).
+                AddTile(TileID.MythrilAnvil).
                 Register();
         }
     }

@@ -7,6 +7,7 @@ using Terraria;
 using Terraria.Audio;
 using Terraria.ID;
 using Terraria.ModLoader;
+using CalamityMod.Projectiles.Healing;
 
 namespace CalamityMod.Projectiles.Ranged
 {
@@ -195,19 +196,9 @@ namespace CalamityMod.Projectiles.Ranged
                 {
                     if (Projectile.Hitbox.Intersects(player.Hitbox))
                     {
-                        if (!Main.player[Projectile.owner].moonLeech)
+                        if (improvedHeal)
                         {
-                            int bonusHeal = Main.rand.NextBool(3) ? 5 : 3;
-                            int heal = improvedHeal ? bonusHeal : 2;
-
-                            if (Main.LocalPlayer.lifeSteal <= 0f)
-                            {
-                                Projectile.Kill();
-                                return;
-                            }
-
-                            Main.LocalPlayer.lifeSteal -= heal;
-                            player.HealPlayer(heal);
+                            BloodstoneHealOrb.Heal(player, 6);
                         }
 
                         Projectile.Kill();

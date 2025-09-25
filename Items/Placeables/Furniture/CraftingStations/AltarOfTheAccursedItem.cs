@@ -16,7 +16,7 @@ namespace CalamityMod.Items.Placeables.Furniture.CraftingStations
         {
             Item.DefaultToPlaceableTile(ModContent.TileType<SCalAltarLarge>());
             Item.value = Item.sellPrice(gold: 40);
-            Item.rare = ModContent.RarityType<Violet>();
+            Item.rare = ModContent.RarityType<BurnishedAuric>();
         }
 
         public override void ModifyResearchSorting(ref ContentSamples.CreativeHelper.ItemGroup itemGroup)
@@ -30,7 +30,8 @@ namespace CalamityMod.Items.Placeables.Furniture.CraftingStations
                 AddIngredient<BrimstoneSlag>(30).
                 AddIngredient<AuricBar>(5).
                 AddIngredient<CoreofCalamity>().
-                AddTile<CosmicAnvil>().
+                //Not Cosmic Anvil so if people *really* want do do Scal pre-moon lord it is possible.
+                AddTile(TileID.MythrilAnvil). 
                 Register();
         }
     }

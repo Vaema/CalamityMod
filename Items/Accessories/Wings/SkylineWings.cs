@@ -20,11 +20,6 @@ namespace CalamityMod.Items.Accessories.Wings
             Item.rare = ItemRarityID.Orange;
         }
 
-        public override void UpdateAccessory(Player player, bool hideVisual)
-        {
-            player.noFallDmg = true;
-        }
-
         public override void AddRecipes()
         {
             CreateRecipe().

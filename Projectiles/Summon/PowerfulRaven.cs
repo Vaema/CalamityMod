@@ -17,6 +17,7 @@ namespace CalamityMod.Projectiles.Summon
         public override void SetStaticDefaults()
         {
             Main.projFrames[Type] = 5;
+            Main.projPet[Type] = true;
             ProjectileID.Sets.MinionSacrificable[Type] = true;
             ProjectileID.Sets.MinionTargettingFeature[Type] = true;
         }
@@ -61,6 +62,7 @@ namespace CalamityMod.Projectiles.Summon
                     Projectile.timeLeft = 2;
                 }
             }
+            Projectile.MinionAntiClump();
 
             NPC potentialTarget = Projectile.Center.MinionHoming(DistanceToCheck, player);
 
@@ -148,5 +150,7 @@ namespace CalamityMod.Projectiles.Summon
             }
             Projectile.direction = Projectile.spriteDirection = (Projectile.velocity.X > 0).ToDirectionInt();
         }
+
+        public override bool MinionContactDamage() => true;
     }
 }

@@ -25,7 +25,7 @@ namespace CalamityMod.Projectiles.Boss
             Projectile.penetrate = 1;
             Projectile.timeLeft = 960;
 
-            if (CalamityWorld.LegendaryMode && CalamityWorld.revenge)
+            if (Main.zenithWorld)
                 Projectile.extraUpdates = 1;
         }
 

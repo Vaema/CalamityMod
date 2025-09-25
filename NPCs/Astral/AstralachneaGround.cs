@@ -33,12 +33,11 @@ namespace CalamityMod.NPCs.Astral
             NPC.height = 34;
             NPC.aiStyle = NPCAIStyleID.Fighter;
             NPC.damage = 55;
-            NPC.defense = 20;
-            NPC.DR_NERD(0.15f);
-            NPC.lifeMax = 630;
+            NPC.defense = 30;
+            NPC.lifeMax = 500;
             NPC.DeathSound = CommonCalamitySounds.AstralNPCDeathSound;
             NPC.knockBackResist = 0.38f;
-            NPC.value = Item.buyPrice(0, 0, 8, 0);
+            NPC.value = Item.buyPrice(silver: 8);
             NPC.timeLeft = NPC.activeTime * 2;
             AnimationType = NPCID.WallCreeper;
             Banner = ModContent.NPCType<AstralachneaWall>();
@@ -46,16 +45,12 @@ namespace CalamityMod.NPCs.Astral
             if (DownedBossSystem.downedAstrumAureus)
             {
                 NPC.damage = 90;
-                NPC.defense = 30;
+                NPC.defense = 40;
                 NPC.knockBackResist = 0.28f;
-                NPC.lifeMax = 945;
+                NPC.lifeMax = 750;
             }
             NPC.Calamity().VulnerableToHeat = true;
             NPC.Calamity().VulnerableToSickness = false;
-
-            // Scale stats in Expert and Master
-            CalamityGlobalNPC.AdjustExpertModeStatScaling(NPC);
-            CalamityGlobalNPC.AdjustMasterModeStatScaling(NPC);
         }
 
         public override void AI()
@@ -155,7 +150,7 @@ namespace CalamityMod.NPCs.Astral
         public override void OnHitPlayer(Player target, Player.HurtInfo hurtInfo)
         {
             if (hurtInfo.Damage > 0)
-                target.AddBuff(ModContent.BuffType<AstralInfectionDebuff>(), 75, true);
+                target.AddBuff(ModContent.BuffType<AstralInfectionDebuff>(), 180);
         }
 
         public override void ModifyNPCLoot(NPCLoot npcLoot) => AstralachneaWall.ModifyAstralachneaLoot(npcLoot);

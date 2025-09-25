@@ -13,6 +13,7 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.NPCs.Ravager
 {
+    [HasPierceResist]
     public class RavagerClawRight : ModNPC
     {
         public override LocalizedText DisplayName => CalamityUtils.GetText("NPCs.RavagerBody.DisplayName");
@@ -24,9 +25,9 @@ namespace CalamityMod.NPCs.Ravager
         public override void SetDefaults()
         {
             NPC.Calamity().canBreakPlayerDefense = true;
+            NPC.damage = 75; // 150
             NPC.lavaImmune = true;
             NPC.aiStyle = -1;
-            NPC.GetNPCDamage();
             NPC.width = 80;
             NPC.height = 40;
             NPC.defense = 40;
@@ -51,15 +52,10 @@ namespace CalamityMod.NPCs.Ravager
             }
             NPC.Calamity().VulnerableToSickness = false;
             NPC.Calamity().VulnerableToWater = true;
-
-            // Scale stats in Expert and Master
-            CalamityGlobalNPC.AdjustExpertModeStatScaling(NPC);
-            CalamityGlobalNPC.AdjustMasterModeStatScaling(NPC);
         }
 
         public override void AI()
         {
-            //Main.NewText(NPC.ai[0]);
             if (CalamityGlobalNPC.scavenger < 0 || !Main.npc[CalamityGlobalNPC.scavenger].active)
             {
                 if (Main.netMode != NetmodeID.MultiplayerClient)
@@ -314,11 +310,11 @@ namespace CalamityMod.NPCs.Ravager
             {
                 if (DownedBossSystem.downedProvidence)
                 {
-                    target.AddBuff(ModContent.BuffType<Laceration>(), 240, true);
+                    target.AddBuff(ModContent.BuffType<Laceration>(), 240);
                 }
                 else
                 {
-                    target.AddBuff(ModContent.BuffType<HeavyBleeding>(), 240, true);
+                    target.AddBuff(ModContent.BuffType<HeavyBleeding>(), 240);
                 }
             }
         }

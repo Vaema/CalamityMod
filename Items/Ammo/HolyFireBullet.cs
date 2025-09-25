@@ -10,18 +10,16 @@ namespace CalamityMod.Items.Ammo
     public class HolyFireBullet : ModItem, ILocalizedModType
     {
         public new string LocalizationCategory => "Items.Ammo";
-        internal const float ExplosionMultiplier = 0.275f;
         public static readonly SoundStyle Explosion = new("CalamityMod/Sounds/Item/HolyFireBulletExplosion") { PitchVariance = 0.2f, Volume = 0.6f };
         public override void SetStaticDefaults()
         {
             Item.ResearchUnlockCount = 99;
         }
-
         public override void SetDefaults()
         {
             Item.width = 22;
             Item.height = 22;
-            Item.damage = 20;
+            Item.damage = 19;
             Item.DamageType = DamageClass.Ranged;
             Item.maxStack = Item.CommonMaxStack;
             Item.consumable = true;
@@ -35,10 +33,10 @@ namespace CalamityMod.Items.Ammo
 
         public override void AddRecipes()
         {
-            CreateRecipe(100).
-                AddIngredient(ItemID.ExplodingBullet, 100).
+            CreateRecipe(333).
+                AddIngredient(ItemID.ExplodingBullet, 333).
                 AddIngredient<UnholyEssence>().
-                AddTile(TileID.LunarCraftingStation).
+                AddTile(TileID.MythrilAnvil).
                 Register();
         }
     }

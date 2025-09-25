@@ -25,18 +25,19 @@ namespace CalamityMod.Tiles.SunkenSea.Ambient
         }
         public override void ModifyLight(int i, int j, ref float r, ref float g, ref float b)
         {
-            r = 161f / 500f;
-            g = 183f / 500f;
-            b = 73f / 500f;
+            r = 0.322f;
+            g = 0.366f;
+            b = 0.146f;
         }
     }
+
     public class SmallWideCoral2 : SmallWideCoral
     {
         public override void ModifyLight(int i, int j, ref float r, ref float g, ref float b)
         {
-            r = 229f / 700f;
-            g = 137f / 700f;
-            b = 204f / 700f;
+            r = 0.327f;
+            g = 0.196f;
+            b = 0.291f;
         }
     }
 }

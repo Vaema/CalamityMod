@@ -48,7 +48,7 @@ namespace CalamityMod.Items.Weapons.Magic
                 AddRecipeGroup("AnyCopperBar", 20).
                 AddIngredient<EssenceofSunlight>(6).
                 AddIngredient<ArmoredShell>(3).
-                AddTile(TileID.LunarCraftingStation).
+                AddTile(TileID.MythrilAnvil).
                 Register();
         }
     }

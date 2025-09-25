@@ -1,4 +1,6 @@
-﻿using CalamityMod.Projectiles.Summon;
+﻿using CalamityMod.Buffs.Summon;
+using CalamityMod.Items.Weapons.Rogue;
+using CalamityMod.Projectiles.Summon;
 using CalamityMod.Rarities;
 using CalamityMod.Sounds;
 using Microsoft.Xna.Framework;
@@ -15,7 +17,11 @@ namespace CalamityMod.Items.Weapons.Summon
         public new string LocalizationCategory => "Items.Weapons.Summon";
         public const float ReboundRamDamageFactor = 2f;
 
-        public override void SetStaticDefaults() => ItemID.Sets.StaffMinionSlotsRequired[Type] = 5f;
+        public override void SetStaticDefaults()
+        {
+            ItemID.Sets.StaffMinionSlotsRequired[Type] = 5f;
+            ItemID.Sets.ShimmerTransformToItem[Type] = ModContent.ItemType<TheFinalDawn>();
+        }
 
         public override void SetDefaults()
         {
@@ -28,23 +34,19 @@ namespace CalamityMod.Items.Weapons.Summon
             Item.noMelee = true;
             Item.knockBack = 7f;
             Item.value = CalamityGlobalItem.RarityVioletBuyPrice;
-            Item.rare = ModContent.RarityType<Violet>();
+            Item.rare = ModContent.RarityType<BurnishedAuric>();
             Item.UseSound = CommonCalamitySounds.FlareSound;
             Item.autoReuse = true;
+            Item.buffType = ModContent.BuffType<FieryDraconidBuff>();
             Item.shoot = ModContent.ProjectileType<FieryDraconid>();
-            Item.shootSpeed = 10f;
             Item.DamageType = DamageClass.Summon;
         }
 
         public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)
         {
-            if (player.altFunctionUse != 2)
-            {
-                position = player.ClampedMouseWorld();
-                int dragon = Projectile.NewProjectile(source, position, Vector2.Zero, type, damage, knockback, player.whoAmI);
-                if (Main.projectile.IndexInRange(dragon))
-                    Main.projectile[dragon].originalDamage = Item.damage;
-            }
+            player.AddBuff(Item.buffType, 2);
+            var minion = Projectile.NewProjectileDirect(source, player.ClampedMouseWorld(), Vector2.Zero, type, damage, knockback, player.whoAmI);
+            minion.originalDamage = Item.damage;
             return false;
         }
     }

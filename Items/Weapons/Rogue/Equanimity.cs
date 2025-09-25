@@ -51,8 +51,8 @@ namespace CalamityMod.Items.Weapons.Rogue
                 AddIngredient<FishboneBoomerang>().
                 AddIngredient(ItemID.DarkShard).
                 AddIngredient(ItemID.LightShard).
-                AddIngredient(ItemID.SoulofNight, 7).
                 AddIngredient(ItemID.SoulofLight, 7).
+                AddIngredient(ItemID.SoulofNight, 7).
                 AddTile(TileID.Anvils).
                 Register();
         }

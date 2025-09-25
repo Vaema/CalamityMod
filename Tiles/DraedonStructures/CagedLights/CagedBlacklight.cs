@@ -9,21 +9,21 @@ using Terraria.DataStructures;
 using Terraria.Enums;
 using Terraria.ObjectData;
 using Terraria.Audio;
+using CalamityMod.Sounds;
 
 namespace CalamityMod.Tiles.DraedonStructures.CagedLights
 {
     public class CagedBlacklight : ModTile
     {
-        public static readonly SoundStyle MinePlatingSound = new("CalamityMod/Sounds/Custom/PlatingMine", 3);
-
         public override void SetStaticDefaults()
         {
             Main.tileLighted[Type] = true;
             Main.tileNoFail[Type] = true;
             Main.tileFrameImportant[Type] = true;
             Main.tileObsidianKill[Type] = false;
+            RegisterItemDrop(ModContent.ItemType<CagedBlacklightItem>());
 
-            HitSound = MinePlatingSound;
+            HitSound = CommonCalamitySounds.PlatingMine;
             DustType = 173;
 
             AddToArray(ref TileID.Sets.RoomNeeds.CountsAsTorch);
@@ -90,11 +90,6 @@ namespace CalamityMod.Tiles.DraedonStructures.CagedLights
                 g = 0f;
                 b = 0f;
             }
-        }
-
-        public override void KillMultiTile(int i, int j, int frameX, int frameY)
-        {
-            Item.NewItem(new EntitySource_TileBreak(i, j), i * 16, j * 16, 32, 48, ModContent.ItemType<CagedBlacklightItem>());
         }
     }
 }

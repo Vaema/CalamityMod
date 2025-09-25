@@ -20,7 +20,7 @@ namespace CalamityMod.Items.Placeables.FurnitureAncient
             CreateRecipe().
                 AddIngredient<BrimstoneSlag>(3).
                 AddIngredient(ItemID.Torch).
-                AddTile<AncientAltar>().
+                AddTile<AshenAltar>().
                 Register();
         }
     }

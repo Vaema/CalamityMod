@@ -30,9 +30,9 @@ namespace CalamityMod.Tiles
 
             // Various data sets to protect this tile from premature death
             TileID.Sets.PreventsTileRemovalIfOnTopOfIt[Type] = true;
+            TileID.Sets.PreventsTileHammeringIfOnTopOfIt[Type] = true;
             TileID.Sets.PreventsTileReplaceIfOnTopOfIt[Type] = true;
             TileID.Sets.PreventsSandfall[Type] = true;
-            // CalamityGlobalTile.PreventsAnchorTileChanges.Add(Type);
 
             // Object data
             TileObjectData.newTile.Width = 5;

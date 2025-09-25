@@ -5,9 +5,11 @@ using CalamityMod.NPCs.ExoMechs.Apollo;
 using CalamityMod.NPCs.ExoMechs.Ares;
 using CalamityMod.NPCs.ExoMechs.Artemis;
 using CalamityMod.NPCs.ExoMechs.Thanatos;
+using CalamityMod.Systems;
 using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.DataStructures;
+using Terraria.GameContent.Creative;
 using Terraria.GameContent.Events;
 using Terraria.ID;
 using Terraria.ModLoader;
@@ -52,10 +54,23 @@ namespace CalamityMod.World
         /// <summary> Evaluates to whether vanilla's "Legendary Mode" is enabled (Master Mode on For the Worthy). </summary>
         public static bool LegendaryMode => Main.getGoodWorld && ReflectMasterMode();
 
+        /// <summary>
+        /// Evaluates to whether "Malice Mode" is enabled (Death Mode on For the Worthy).<br/>
+        /// Note that the effects of this difficulty are unaffiliated with the removed Malice Mode.
+        /// </summary>
+        public static bool MaliceMode => Main.getGoodWorld && ReflectMasterMode() && revenge;
+
         // FTW automatically bumps difficulties up and has no proper check for Master since a world generated in Expert Mode will be classified as Master
         // Therefore gotta reflect!
         public static bool ReflectMasterMode()
         {
+            if (Main.GameModeInfo.IsJourneyMode)
+            {
+                CreativePowers.DifficultySliderPower power = CreativePowerManager.Instance.GetPower<CreativePowers.DifficultySliderPower>();
+                float level = (float)DifficultyModeSystem.journeySliderCacheField.GetValue(power);
+                return level == 1f;
+            }
+
             FieldInfo findInfo = typeof(Main).GetField("_currentGameModeInfo", BindingFlags.Static | BindingFlags.NonPublic);
             GameModeData data = (GameModeData)findInfo.GetValue(null);
             return data.IsMasterMode;
@@ -73,8 +88,6 @@ namespace CalamityMod.World
 
         /// <summary> If true, the Bandit has lived in this world. Used to ensure their spawn condition is not required on subsequent respawns. </summary>
         public static bool spawnedBandit = false;
-        /// <summary> If true, the Drunk Princess has lived in this world. Used to ensure her spawn condition is not required on subsequent respawns. </summary>
-        public static bool spawnedCirrus = false;
         /// <summary> If true, the Archmage has lived in a house in this world. Solely used as a condition for dialogue. </summary>
         public static bool foundHomePermafrost = false;
 

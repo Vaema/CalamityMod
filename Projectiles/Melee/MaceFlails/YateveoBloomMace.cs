@@ -1,4 +1,5 @@
 ﻿using CalamityMod.Items.Weapons.Melee;
+using CalamityMod.NPCs;
 using CalamityMod.Projectiles.BaseProjectiles;
 using Terraria;
 using Terraria.ID;
@@ -6,6 +7,7 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.Projectiles.Melee.MaceFlails
 {
+    [PierceResistException]
     public class YateveoBloomMace : BaseMaceFlailProjectile
     {
         public override int AssociatedItemID => ModContent.ItemType<YateveoBloom>();

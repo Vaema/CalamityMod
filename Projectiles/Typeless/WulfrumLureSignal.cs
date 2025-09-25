@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using CalamityMod.Items.Placeables.Furniture;
 using CalamityMod.Items.Tools;
 using CalamityMod.NPCs.AstrumDeus;
@@ -18,6 +19,14 @@ namespace CalamityMod.Projectiles.Typeless
     {
         public new string LocalizationCategory => "Projectiles.Typeless";
         public override string Texture => "CalamityMod/Projectiles/InvisibleProj";
+
+        public static List<int> LureSpawnPool => new List<int>()
+        {
+            ModContent.NPCType<WulfrumDrone>(),
+            ModContent.NPCType<WulfrumGyrator>(),
+            ModContent.NPCType<WulfrumHovercraft>(),
+            ModContent.NPCType<WulfrumRover>()
+        };
 
         public ref float Time => ref Projectile.ai[0];
 
@@ -77,7 +86,7 @@ namespace CalamityMod.Projectiles.Typeless
 
                     if (tries < 500)
                     {
-                        int npcToSpawn = Main.rand.NextBool() ? ModContent.NPCType<WulfrumDrone>() : Main.rand.NextBool() ? ModContent.NPCType<WulfrumHovercraft>() : ModContent.NPCType<WulfrumGyrator>();
+                        int npcToSpawn = LureSpawnPool[Main.rand.Next(LureSpawnPool.Count)];
                         int index = NPC.NewNPC(Projectile.GetSource_FromAI(), (int)spawnPosition.X, (int)spawnPosition.Y, npcToSpawn, Target: player.whoAmI);
 
                         for (int iy = 0; iy < 16; iy++)

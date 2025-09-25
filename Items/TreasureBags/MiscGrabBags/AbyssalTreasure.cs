@@ -1,4 +1,4 @@
-﻿using CalamityMod.Items.Placeables.FurnitureAbyss;
+﻿using CalamityMod.Items.Placeables.Furniture;
 using CalamityMod.Items.Potions;
 using Terraria;
 using Terraria.GameContent.ItemDropRules;
@@ -61,7 +61,7 @@ namespace CalamityMod.Items.TreasureBags.MiscGrabBags
 
             // Pots can normally contain hearts here... but we turned it into a grab bag (so... coins!)
             // 4-12/5-18 Biome Torches @ 12.43% (87/700)
-            var torches = DropHelper.NormalVsExpertQuantity(ModContent.ItemType<AbyssTorch>(), 1, 4, 12, 5, 18);
+            var torches = DropHelper.NormalVsExpertQuantity(ModContent.ItemType<KelpTorch>(), 1, 4, 12, 5, 18);
 
             // 10-20 Hellfire Arrows @ 12.43%
             var ammo = ItemDropRule.NotScalingWithLuck(ItemID.HellfireArrow, 1, 10, 20);

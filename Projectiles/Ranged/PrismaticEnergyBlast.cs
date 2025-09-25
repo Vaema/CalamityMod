@@ -73,7 +73,7 @@ namespace CalamityMod.Projectiles.Ranged
         public override float DetermineLaserLength()
         {
             if (Projectile.penetrate == 100)
-                return DetermineLaserLength_CollideWithTiles(8);
+                return DetermineLaserLength_CollideWithTiles();
             return LaserLength;
         }
 

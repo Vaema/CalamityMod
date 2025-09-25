@@ -5,6 +5,7 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria;
 using Terraria.DataStructures;
+using Terraria.ID;
 using Terraria.ModLoader;
 using Terraria.Utilities;
 
@@ -15,16 +16,14 @@ namespace CalamityMod.Projectiles.Summon
         public override int AssociatedProjectileTypeID => ModContent.ProjectileType<PerditionBeacon>();
         public override int AssociatedBuffTypeID => ModContent.BuffType<PerditionBuff>();
         public override ref bool AssociatedMinionBool => ref ModdedOwner.perditionBeacon;
-        public override float MinionSlots => 5f;
-
         public ref float AttackTime => ref Projectile.ai[0];
         public ref float AttackTimer => ref Projectile.ai[1];
         public ref float DownwardCrossFade => ref Projectile.localAI[1];
 
         public override void SetStaticDefaults()
         {
-            base.SetStaticDefaults();
             Main.projFrames[Type] = 16;
+            ProjectileID.Sets.MinionTargettingFeature[Type] = true;
         }
 
         public override void SetDefaults()
@@ -32,6 +31,10 @@ namespace CalamityMod.Projectiles.Summon
             base.SetDefaults();
             Projectile.width = 48;
             Projectile.height = 90;
+            Projectile.minion = false;
+            Projectile.sentry = true;
+            Projectile.minionSlots = 0;
+            Projectile.timeLeft = Projectile.SentryLifeTime;
         }
 
         public override void SetOwnerTarget()
@@ -111,6 +114,7 @@ namespace CalamityMod.Projectiles.Summon
 
         public override void OnSpawn(IEntitySource source)
         {
+            Main.player[Projectile.owner].UpdateMaxTurrets();
             // Release a burst of fire dust on spawn.
             if (Main.dedServ)
                 return;

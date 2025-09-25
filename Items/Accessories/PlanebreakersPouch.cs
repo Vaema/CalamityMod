@@ -19,7 +19,7 @@ namespace CalamityMod.Items.Accessories
             Item.height = 32;
             Item.value = CalamityGlobalItem.RarityDarkBlueBuyPrice;
             Item.accessory = true;
-            Item.rare = ModContent.RarityType<DarkBlue>();
+            Item.rare = ModContent.RarityType<CosmicPurple>();
         }
 
         public override void UpdateAccessory(Player player, bool hideVisual)
@@ -29,7 +29,7 @@ namespace CalamityMod.Items.Accessories
             player.magicQuiver = true;
             CalamityPlayer modPlayer = player.Calamity();
             modPlayer.deadshotBrooch = true;
-            modPlayer.rangedAmmoCost *= 0.8f;
+            modPlayer.ammoCost *= 0.8f;
         }
 
         public override void ModifyTooltips(List<TooltipLine> tooltips) => tooltips.IntegrateHotkey(CalamityKeybinds.AmmoCycleHotkey);

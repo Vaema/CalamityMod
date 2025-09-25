@@ -19,9 +19,9 @@ namespace CalamityMod.Effects
         internal static Effect AstralFogShader;
 
         //
-        // All below shaders created by Dominic Karma
+        // All below shaders created by Lucille Karma
         //
-        #region Dominic's Shaders
+        #region Lucille's Shaders
 
         // The Dance of Light's Blinding Light
         internal static Effect DanceOfLightBlindingShader;
@@ -50,7 +50,7 @@ namespace CalamityMod.Effects
         // Generic solid trail shader. Used by many things?
         internal static Effect FadingSolidTrailShader;
 
-        // Scarlet Devil main spear glowing trail. BEWARE: Is reused by many other items!
+        // Typical projectile javelin glowing trail. BEWARE: Is used by many items!
         internal static Effect ScarletDevilShader;
 
         // Yharon border flame pillar trail.
@@ -92,7 +92,7 @@ namespace CalamityMod.Effects
         // Was previously used by Dom's Bladecrest Oathsword. Appears to govern the swing animation.
         internal static Effect LocalLinearTransformationShader;
 
-        // UNUSED -- Probably leftover from Dominic's experiments with applying shaders to primitives (arbitrary GPU-rendered triangles)
+        // UNUSED -- Probably leftover from Lucille's experiments with applying shaders to primitives (arbitrary GPU-rendered triangles)
         internal static Effect BasicPrimitiveShader;
 
         // Artemis Ohio Beam. Also used by get fixed boi Nuclear Terror's "G-FUEL BEAM"
@@ -145,6 +145,12 @@ namespace CalamityMod.Effects
 
         // Used to render the results of Navier-Stokes fluid simulations.
         internal static Effect FluidShaders;
+
+        // Used by projectiles fired by the Sylvestaff.
+        internal static Effect SylvestaffProjectileShader;
+
+        // Used by the ribbons on the Sylvestaff.
+        internal static Effect SylvestaffRibbonShader;
         #endregion
 
         //
@@ -206,13 +212,31 @@ namespace CalamityMod.Effects
         internal static Effect TeslaTrailShader;
         #endregion
 
+        #region Doze's Shaders
+        internal static Effect FlipScreenShader;
+        #endregion
+
+        //
+        // All below shaders were created by fryzahh
+        //
+        #region fryzahh's Shaders
+        // A simple shader which distorts an image using a provided texture of choice. 
+        internal static Effect BasicTextureDistortionShader;
+
+        // The underwater rays seen at the top of the Sunken Sea Mod Menu.
+        internal static Effect UnderwaterRaysShader;
+        #endregion
+
+        internal static Asset<Effect> SunkenSeaMenuLogoWater;
+
         public override void PostSetupContent()
         {
             AssetRepository calAss = CalamityMod.Instance.Assets;
 
             // Shorthand to load shaders immediately.
             // Strings provided to LoadShader are the .xnb file paths.
-            Effect LoadShader(string path) => calAss.Request<Effect>($"{ShaderPath}{path}", AssetRequestMode.ImmediateLoad).Value;
+            Effect LoadShader(string path) => LoadShaderAsset(path).Value;
+            Asset<Effect> LoadShaderAsset(string path) => calAss.Request<Effect>($"{ShaderPath}{path}", AssetRequestMode.ImmediateLoad);
 
             //
             // Loading and registering each individual compiled shader for use.
@@ -222,7 +246,7 @@ namespace CalamityMod.Effects
             var astralPassReg = new AstralScreenShaderData(new Ref<Effect>(AstralFogShader), "AstralPass").UseColor(0.18f, 0.08f, 0.24f);
             RegisterSceneFilter(astralPassReg, "Astral", EffectPriority.VeryHigh);
 
-            #region Loading Dominic's Shaders
+            #region Loading Lucille's Shaders
 
             DanceOfLightBlindingShader = LoadShader("LightBurstShader");
             RegisterScreenShader(DanceOfLightBlindingShader, "BurstPass", "LightBurst");
@@ -345,6 +369,12 @@ namespace CalamityMod.Effects
 
             // This shader is not registered with the game but is invoked directly to render the results of fluid simulation.
             FluidShaders = LoadShader("FluidShaders");
+
+            SylvestaffProjectileShader = LoadShader("SylvestaffProjectileShader");
+            RegisterMiscShader(SylvestaffProjectileShader, "TrailPass", "SylvestaffProjectile");
+
+            SylvestaffRibbonShader = LoadShader("SylvestaffRibbonShader");
+            RegisterMiscShader(SylvestaffRibbonShader, "AutoloadPass", "SylvestaffRibbon");
             #endregion
 
             #region Loading Iban's Shaders
@@ -408,6 +438,21 @@ namespace CalamityMod.Effects
             TeslaTrailShader = LoadShader("TeslaTrail");
             RegisterMiscShader(TeslaTrailShader, "TrailPass", "TeslaTrail");
             #endregion
+
+            #region Loading Doze's Shaders
+            FlipScreenShader = LoadShader("ScreenShaders/FlipScreen");
+            RegisterScreenShader(FlipScreenShader, "FlipTheScreen", "FlipScreen",EffectPriority.VeryHigh);
+            #endregion
+
+            #region Loading fryzahh's Shaders
+            BasicTextureDistortionShader = LoadShader("BasicTextureDistortionShader");
+            RegisterMiscShader(BasicTextureDistortionShader, "DistortionPass", "BasicTextureDistortion");
+
+            UnderwaterRaysShader = LoadShader("UnderwaterRaysShader");
+            RegisterMiscShader(UnderwaterRaysShader, "UnderwaterRayPass", "UnderwaterRays");
+            #endregion
+
+            SunkenSeaMenuLogoWater = LoadShaderAsset("UI/SunkenSeaMenuLogoWater");
         }
 
         // Shorthand to register a loaded shader in Terraria's graphics engine

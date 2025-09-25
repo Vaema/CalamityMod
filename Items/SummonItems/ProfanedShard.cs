@@ -50,7 +50,7 @@ namespace CalamityMod.Items.SummonItems
             CreateRecipe().
                 AddIngredient(ItemID.LunarBar, 5).
                 AddIngredient<UnholyEssence>(25).
-                AddTile(TileID.LunarCraftingStation).
+                AddTile(TileID.MythrilAnvil).
                 Register();
         }
     }

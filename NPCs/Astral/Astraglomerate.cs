@@ -37,18 +37,17 @@ namespace CalamityMod.NPCs.Astral
             NPC.height = 62;
             NPC.aiStyle = -1;
             NPC.damage = 0;
-            NPC.defense = 15;
-            NPC.DR_NERD(0.15f);
+            NPC.defense = 30;
             NPC.lifeMax = 600;
             NPC.DeathSound = CommonCalamitySounds.AstralNPCDeathSound;
             NPC.knockBackResist = 0f;
-            NPC.value = Item.buyPrice(0, 0, 8, 0);
+            NPC.value = Item.buyPrice(silver: 8);
             Banner = NPC.type;
             BannerItem = ModContent.ItemType<AstraglomerateBanner>();
             if (DownedBossSystem.downedAstrumAureus)
             {
                 NPC.damage = 90;
-                NPC.defense = 25;
+                NPC.defense = 40;
                 NPC.lifeMax = 900;
             }
             NPC.Calamity().VulnerableToHeat = true;
@@ -58,10 +57,6 @@ namespace CalamityMod.NPCs.Astral
             {
                 NPC.scale = 3f;
             }
-
-            // Scale stats in Expert and Master
-            CalamityGlobalNPC.AdjustExpertModeStatScaling(NPC);
-            CalamityGlobalNPC.AdjustMasterModeStatScaling(NPC);
         }
 
         public override void SetBestiary(BestiaryDatabase database, BestiaryEntry bestiaryEntry)
@@ -151,12 +146,6 @@ namespace CalamityMod.NPCs.Astral
                 return 0.17f;
 
             return 0f;
-        }
-
-        public override void OnHitPlayer(Player target, Player.HurtInfo hurtInfo)
-        {
-            if (hurtInfo.Damage > 0)
-                target.AddBuff(ModContent.BuffType<AstralInfectionDebuff>(), 75, true);
         }
 
         public override void ModifyNPCLoot(NPCLoot npcLoot)

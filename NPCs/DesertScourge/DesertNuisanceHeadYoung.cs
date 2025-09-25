@@ -23,7 +23,7 @@ namespace CalamityMod.NPCs.DesertScourge
         private bool tailSpawned = false;
 
         public const float SegmentVelocity_Expert = 10f;
-        public const float SegmentVelocity_Master = 12f;
+        public const float SegmentVelocity_Death = 12f;
         public const float SegmentVelocity_GoodWorld = 16f;
         public const float SegmentVelocity_ZenithSeed = 18f;
 
@@ -45,7 +45,7 @@ namespace CalamityMod.NPCs.DesertScourge
         {
             NPC.BossBar = Main.BigBossProgressBar.NeverValid;
             NPC.Calamity().canBreakPlayerDefense = true;
-            NPC.GetNPCDamage();
+            NPC.damage = 25; // 40 (1.6x expert scaling)
 
             NPC.defense = 2;
             if (Main.getGoodWorld)
@@ -55,8 +55,8 @@ namespace CalamityMod.NPCs.DesertScourge
             NPC.height = 78;
 
             NPC.LifeMaxNERB(1300, 1560, 35000);
-            if (CalamityWorld.LegendaryMode && CalamityWorld.revenge)
-                NPC.lifeMax = 4000;
+            if (Main.getGoodWorld)
+                NPC.lifeMax *= 2;
             NPC.aiStyle = -1;
             AIType = -1;
             NPC.knockBackResist = 0f;
@@ -70,9 +70,6 @@ namespace CalamityMod.NPCs.DesertScourge
             NPC.Calamity().VulnerableToCold = true;
             NPC.Calamity().VulnerableToSickness = true;
             NPC.Calamity().VulnerableToWater = true;
-
-            // Scale HP in Master
-            CalamityGlobalNPC.AdjustMasterModeStatScaling(NPC, true);
 
             if (Main.zenithWorld)
                 NPC.scale *= 2;
@@ -106,17 +103,15 @@ namespace CalamityMod.NPCs.DesertScourge
 
         public override void AI()
         {
-            bool bossRush = BossRushEvent.BossRushActive;
-            bool expertMode = Main.expertMode || bossRush;
-            bool masterMode = Main.masterMode || bossRush;
-            bool revenge = CalamityWorld.revenge || bossRush;
-            bool death = CalamityWorld.death || bossRush;
+            bool expertMode = Main.expertMode || BossRushEvent.BossRushActive;
+            bool revenge = CalamityWorld.revenge || BossRushEvent.BossRushActive;
+            bool death = CalamityWorld.death || BossRushEvent.BossRushActive;
 
             // Become angry when the other Nuisance dies.
             bool getMad = (!NPC.AnyNPCs(ModContent.NPCType<DesertNuisanceHead>()) && revenge) || death;
 
             // Enrage
-            if (!Main.player[NPC.target].ZoneDesert && !bossRush)
+            if (!Main.player[NPC.target].ZoneDesert && !BossRushEvent.BossRushActive)
             {
                 if (biomeEnrageTimer > 0)
                     biomeEnrageTimer--;
@@ -124,24 +119,24 @@ namespace CalamityMod.NPCs.DesertScourge
             else
                 biomeEnrageTimer = CalamityGlobalNPC.biomeEnrageTimerMax;
 
-            bool biomeEnraged = biomeEnrageTimer <= 0 || bossRush;
+            bool biomeEnraged = biomeEnrageTimer <= 0;
 
-            float enrageScale = bossRush ? 1f : getMad ? 0.5f : 0f;
+            float enrageScale = getMad ? 0.5f : 0f;
             if (biomeEnraged)
             {
-                NPC.Calamity().CurrentlyEnraged = !bossRush;
+                NPC.Calamity().CurrentlyEnraged = true;
                 enrageScale += 2f;
             }
 
             // Percent life remaining.
             float lifeRatio = NPC.life / (float)NPC.lifeMax;
 
-            float speed = death ? 0.1f : 0.08f;
-            float turnSpeed = death ? 0.15f : 0.12f;
+            float speed = death ? 0.09f : 0.07f;
+            float turnSpeed = death ? 0.18f : 0.14f;
             speed += speed * 0.4f * (1f - lifeRatio);
             turnSpeed += turnSpeed * 0.4f * (1f - lifeRatio);
-            speed += 0.08f * enrageScale;
-            turnSpeed += 0.12f * enrageScale;
+            speed += 0.07f * enrageScale;
+            turnSpeed += 0.14f * enrageScale;
 
             if (Main.getGoodWorld)
             {
@@ -172,16 +167,10 @@ namespace CalamityMod.NPCs.DesertScourge
                     {
                         Vector2 projectileVelocity = (Main.player[NPC.target].Center - NPC.Center).SafeNormalize(Vector2.UnitY) * (revenge ? 10f : 8f);
                         int numProj = death ? 6 : getMad ? 4 : 3;
-                        int spread = masterMode ? 28 : getMad ? 22 : 20;
-                        if (masterMode)
-                        {
-                            numProj += 2;
-                            spread += 8;
-                        }
+                        int spread = death ? 28 : getMad ? 22 : 20;
 
                         float rotation = MathHelper.ToRadians(spread);
                         int type = ModContent.ProjectileType<DesertScourgeSpit>();
-                        int damage = NPC.GetProjectileDamage(type);
                         for (int i = 0; i < numProj; i++)
                         {
                             Vector2 perturbedSpeed = projectileVelocity.RotatedBy(MathHelper.Lerp(-rotation, rotation, i / (float)(numProj - 1)));
@@ -194,7 +183,7 @@ namespace CalamityMod.NPCs.DesertScourge
 
                             if (Main.netMode != NetmodeID.MultiplayerClient)
                             {
-                                int proj = Projectile.NewProjectile(NPC.GetSource_FromAI(), NPC.Center + perturbedSpeed.SafeNormalize(Vector2.UnitY) * 5f, perturbedSpeed, type, damage, 0f, Main.myPlayer);
+                                int proj = Projectile.NewProjectile(NPC.GetSource_FromAI(), NPC.Center + perturbedSpeed.SafeNormalize(Vector2.UnitY) * 5f, perturbedSpeed, type, DesertScourgeHead.SpitDamage, 0f, Main.myPlayer);
                                 Main.projectile[proj].aiStyle = -1;
                                 Main.projectile[proj].netUpdate = true;
                             }
@@ -318,10 +307,10 @@ namespace CalamityMod.NPCs.DesertScourge
 
             float maxChaseSpeed = Main.zenithWorld ? SegmentVelocity_ZenithSeed :
                 Main.getGoodWorld ? SegmentVelocity_GoodWorld :
-                masterMode ? SegmentVelocity_Master :
+                death ? SegmentVelocity_Death :
                 SegmentVelocity_Expert;
             maxChaseSpeed += maxChaseSpeed * 0.2f * (1f - lifeRatio);
-            if (masterMode)
+            if (death)
                 maxChaseSpeed += maxChaseSpeed * 0.2f * (1f - lifeRatio);
 
             if (Main.player[NPC.target].dead)
@@ -344,12 +333,6 @@ namespace CalamityMod.NPCs.DesertScourge
                 }
             }
 
-            if (CalamityWorld.LegendaryMode && CalamityWorld.revenge)
-            {
-                speed *= 1.5f;
-                turnSpeed *= 1.5f;
-            }
-
             Vector2 npcCenter = NPC.Center;
             float playerX = Main.player[NPC.target].Center.X;
             float targettingPosition = Main.player[NPC.target].Center.Y;
@@ -363,7 +346,7 @@ namespace CalamityMod.NPCs.DesertScourge
 
             if (!shouldFly)
             {
-                NPC.velocity.Y += 0.15f;
+                NPC.velocity.Y += 0.1f;
                 if (NPC.velocity.Y > maxChaseSpeed)
                     NPC.velocity.Y = maxChaseSpeed;
 
@@ -499,19 +482,6 @@ namespace CalamityMod.NPCs.DesertScourge
             if (NPC.Distance(destination) > (getMad ? 750f : 1000f))
                 NPC.velocity += (destination - NPC.Center).SafeNormalize(Vector2.UnitY) * turnSpeed;
 
-            // Calculate contact damage based on velocity
-            float minimalContactDamageVelocity = maxChaseSpeed * 0.25f;
-            float minimalDamageVelocity = maxChaseSpeed * 0.5f;
-            if (NPC.velocity.Length() <= minimalContactDamageVelocity)
-            {
-                NPC.damage = (int)Math.Round(NPC.defDamage * 0.5);
-            }
-            else
-            {
-                float velocityDamageScalar = MathHelper.Clamp((NPC.velocity.Length() - minimalContactDamageVelocity) / minimalDamageVelocity, 0f, 1f);
-                NPC.damage = (int)MathHelper.Lerp((float)Math.Round(NPC.defDamage * 0.5), NPC.defDamage, velocityDamageScalar);
-            }
-
             NPC.rotation = (float)Math.Atan2((double)NPC.velocity.Y, (double)NPC.velocity.X) + MathHelper.PiOver2;
 
             if (shouldFly)
@@ -644,13 +614,14 @@ namespace CalamityMod.NPCs.DesertScourge
         public override void ApplyDifficultyAndPlayerScaling(int numPlayers, float balance, float bossAdjustment)
         {
             NPC.lifeMax = (int)(NPC.lifeMax * 0.7f * balance);
+            NPC.damage = (int)(NPC.damage * 0.8f);
         }
 
         public override void OnHitPlayer(Player target, Player.HurtInfo hurtInfo)
         {
             if (hurtInfo.Damage > 0)
             {
-                target.AddBuff(BuffID.Bleeding, 180);
+                target.AddBuff(BuffID.Bleeding, 300);
                 NPC.ai[3] = 1f;
                 NPC.ForceNetUpdate();
             }

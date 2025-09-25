@@ -40,12 +40,11 @@ namespace CalamityMod.NPCs.NormalNPCs
             NPC.width = 160;
             NPC.height = 160;
             NPC.defense = 38;
-            NPC.DR_NERD(0.05f);
             NPC.lifeMax = 9000;
-            NPC.knockBackResist = 0.1f;
+            NPC.knockBackResist = 0f;
             AIType = -1;
             NPC.lavaImmune = true;
-            NPC.value = Item.buyPrice(0, 0, 75, 0);
+            NPC.value = Item.buyPrice(silver: 75);
             NPC.DeathSound = DeathSound;
             Banner = NPC.type;
             BannerItem = ModContent.ItemType<ScornEaterBanner>();
@@ -53,10 +52,6 @@ namespace CalamityMod.NPCs.NormalNPCs
             NPC.Calamity().VulnerableToCold = true;
             NPC.Calamity().VulnerableToSickness = false;
             NPC.Calamity().VulnerableToWater = true;
-
-            // Scale stats in Expert and Master
-            CalamityGlobalNPC.AdjustExpertModeStatScaling(NPC);
-            CalamityGlobalNPC.AdjustMasterModeStatScaling(NPC);
         }
 
         public override void SetBestiary(BestiaryDatabase database, BestiaryEntry bestiaryEntry)
@@ -79,8 +74,6 @@ namespace CalamityMod.NPCs.NormalNPCs
 
             if (NPC.velocity.Y == 0f)
             {
-                NPC.knockBackResist = 0f;
-
                 // Avoid cheap bullshit
                 NPC.damage = 0;
 
@@ -141,8 +134,6 @@ namespace CalamityMod.NPCs.NormalNPCs
             }
             else
             {
-                NPC.knockBackResist = 0.1f;
-
                 if (NPC.direction == 1 && NPC.velocity.X < 1f)
                 {
                     NPC.velocity.X += 0.1f;
@@ -203,7 +194,7 @@ namespace CalamityMod.NPCs.NormalNPCs
         public override void OnHitPlayer(Player target, Player.HurtInfo hurtInfo)
         {
             if (hurtInfo.Damage > 0)
-                target.AddBuff(ModContent.BuffType<HolyFlames>(), 120, true);
+                target.AddBuff(ModContent.BuffType<HolyFlames>(), 180);
         }
 
         public override void HitEffect(NPC.HitInfo hit)

@@ -152,7 +152,7 @@ namespace CalamityMod.Items.Accessories
                 AddIngredient<DubiousPlating>(15).
                 AddIngredient(ItemID.LunarBar, 10).
                 AddIngredient<GalacticaSingularity>(4).
-                AddTile(TileID.LunarCraftingStation).
+                AddTile(TileID.MythrilAnvil).
                 Register();
         }
     }

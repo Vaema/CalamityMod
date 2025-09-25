@@ -1,6 +1,7 @@
 ﻿using System;
 using CalamityMod.Buffs.DamageOverTime;
 using CalamityMod.Items.Weapons.Rogue;
+using CalamityMod.NPCs;
 using CalamityMod.Particles;
 using CalamityMod.Projectiles.Melee;
 using Microsoft.Xna.Framework;
@@ -11,6 +12,7 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.Projectiles.Rogue
 {
+    [PierceResistException]
     public class EradicatorProjectile : ModProjectile, ILocalizedModType
     {
         public new string LocalizationCategory => "Projectiles.Rogue";
@@ -38,7 +40,7 @@ namespace CalamityMod.Projectiles.Rogue
             Projectile.MaxUpdates = 2;
             Projectile.timeLeft = Lifetime;
             Projectile.usesLocalNPCImmunity = true;
-            Projectile.localNPCHitCooldown = 18;
+            Projectile.localNPCHitCooldown = 15 * Projectile.MaxUpdates;
             Projectile.DamageType = RogueDamageClass.Instance;
         }
 
@@ -115,10 +117,10 @@ namespace CalamityMod.Projectiles.Rogue
                 StealthStrikeGrind(spin);
             else
             {
-                // Fire lasers at up to 2 nearby targets every 8 frames for 40% damage.
-                // Stealth strike lasers have an intentionally lower ratio of 12%.
+                // Fire lasers at up to 2 nearby targets every 12 frames.
+                // Stealth strike lasers have an intentionally lower damage.
                 double laserDamageRatio = Projectile.Calamity().stealthStrike ? 0.15D : 0.4D;
-                float laserFrames = Projectile.MaxUpdates * 8f;
+                float laserFrames = Projectile.MaxUpdates * 12f;
                 CalamityUtils.MagnetSphereHitscan(Projectile, 300f, 6f, laserFrames, 2, ModContent.ProjectileType<NebulaShot>(), laserDamageRatio, true, Projectile.DamageType);
             }
         }
@@ -128,14 +130,14 @@ namespace CalamityMod.Projectiles.Rogue
             // Spin extra fast to visually shred the enemy.
             Projectile.rotation += spinDir * RotationIncrement * 0.8f;
 
-            // Randomly fire lasers while grinding. Each laser only does 12% damage.
+            // Randomly fire lasers while grinding.
             randomLaserCharge += Main.rand.NextFloat(0.09f, 0.14f);
             if (randomLaserCharge >= 1f)
             {
                 randomLaserCharge -= 1f;
                 Vector2 velocity = CalamityUtils.RandomVelocity(100f, 70f, 100f);
 
-                int laserDamage = (int)(Projectile.damage * 0.12D);
+                int laserDamage = (int)(Projectile.damage * 0.15D);
                 Projectile laser = Projectile.NewProjectileDirect(Projectile.GetSource_FromThis(), Projectile.Center, velocity, ModContent.ProjectileType<NebulaShot>(), laserDamage, 0f, Projectile.owner);
                 if (laser.whoAmI.WithinBounds(Main.maxProjectiles))
                 {
@@ -204,9 +206,7 @@ namespace CalamityMod.Projectiles.Rogue
 
         public override void OnHitPlayer(Player target, Player.HurtInfo info) => target.AddBuff(ModContent.BuffType<GodSlayerInferno>(), 180);
 
-        public override void ModifyHitNPC(NPC target, ref NPC.HitModifiers modifiers) => OnHit();
-
-        private void OnHit()
+        public override void ModifyHitNPC(NPC target, ref NPC.HitModifiers modifiers)
         {
             // Non-stealth strikes do not stick on hit.
             if (!Projectile.Calamity().stealthStrike)

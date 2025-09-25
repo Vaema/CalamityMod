@@ -20,14 +20,13 @@ namespace CalamityMod.Buffs.StatBuffs
             CalamityPlayer modPlayer = player.Calamity();
             if (modPlayer.aquaticHeartPrevious)
             {
-                modPlayer.aquaticHeartPower = true;
                 player.ignoreWater = NPC.downedBoss3;
                 player.accFlipper = true;
                 if (player.breath <= player.breathMax + 2 && !modPlayer.ZoneAbyss && NPC.downedBoss3)
                 {
                     player.breath = player.breathMax + 3;
                 }
-                if (Main.myPlayer == player.whoAmI && player.wet && NPC.downedBoss3)
+                if (Main.myPlayer == player.whoAmI && player.Calamity().countsAsAnyWet && NPC.downedBoss3)
                 {
                     player.AddBuff(ModContent.BuffType<AquaticHeartWaterSpeed>(), 360);
                 }

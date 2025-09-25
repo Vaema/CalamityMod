@@ -1,6 +1,4 @@
 AbyssalMirrorProjectile.DisplayName: Lumenyl Fluid
-AcidBarrelDrop.DisplayName: Barrel Acid Drop
-AcidShrapnel.DisplayName: Acidic Shrapnel
 AdamantiteThrowingAxeProjectile.DisplayName: Adamantite Throwing Axe
 AntlionSkewerProj.DisplayName: Antlion on a Stick
 AntlionSkewerSandBlast.DisplayName: Antlion Blast
@@ -40,7 +38,6 @@ CelestialReaperProjectile.DisplayName: Celestial Reaper
 CelestusMiniScythe.DisplayName: Celestus
 CelestusProj.DisplayName: Celestus
 CinquedeaProj.DisplayName: Cinquedea
-CircletMark.DisplayName: Tornado Mark
 CircletTornado.DisplayName: Tornado
 CobaltEnergy.DisplayName: Cobalt Energy
 CobaltKunaiProjectile.DisplayName: Cobalt Kunai
@@ -130,7 +127,6 @@ GleamingDaggerProj.DisplayName: Gleaming Dagger
 GodsParanoiaDart.DisplayName: God's Paranoia Dart
 GodsParanoiaProj.DisplayName: God's Paranoia
 GraveGrimreaverProjectile.DisplayName: Grave Grimreaver
-GreenDonkeyKongReference.DisplayName: Acidic Rain Barrel
 GrimreaverBat.DisplayName: Grim Bat
 GrimreaverSkull.DisplayName: Grim Skull
 HeavenfallenEnergy.DisplayName: Heavenfallen Energy
@@ -161,6 +157,7 @@ LeonidCometSmall.DisplayName: Leonid Comet
 LeonidProgenitorBombshell.DisplayName: Leonid Bombshell
 LeonidStar.DisplayName: Leonid Star
 LeviathanTooth.DisplayName: Leviathan Tooth
+LeviathanToothStealth.DisplayName: Leviathan Jaw
 LionfishProj.DisplayName: Lionfish
 LostSoulFriendly.DisplayName: Lost Soul
 LuminousShard.DisplayName: Stardust Shard
@@ -210,6 +207,8 @@ ProfanedPartisanSpear.DisplayName: Profaned Spear
 RadiantExplosion.DisplayName: Radiant Explosion
 RadiantStar2.DisplayName: Radiant Star
 RadiantStarKnife.DisplayName: Radiant Star
+RadiationBurst.DisplayName: Radiation Burst
+RadiationRain.DisplayName: Radiation Rain
 RealityRuptureLance.DisplayName: Lance of Reality
 RealityRuptureMini.DisplayName: Reality Shard
 RealityRuptureStealth.DisplayName: Ruptured Reality
@@ -217,14 +216,17 @@ ReaperProjectile.DisplayName: The Old Reaper
 ReboundingRainbowProj.DisplayName: Rebounding Rainbow
 ReboundingRainbowSplit.DisplayName: Rebounding Rainbow
 RefractionRotorProjectile.DisplayName: Prism Shuriken
+RefractionRotorSlashCreator.DisplayName: Refraction Rotor Slash Creator
+RefractionSlash.DisplayName: Refraction Slash
 RegulusEnergy.DisplayName: Regulus Energy
 RegulusRiotProj.DisplayName: Regulus Riot
 RotBallProjectile.DisplayName: Rot Ball
 SacrificeProjectile.DisplayName: Sacrificial Dagger
 SamsaraSlicerProjectile.DisplayName: Samsara Slicer
 SamsaraSlicerSmallDisk.DisplayName: Samsara Slicer
+SandDollarFrag.DisplayName: Sand Dollar Frag
 SandDollarProj.DisplayName: Sand Dollar
-SandDollarStealth.DisplayName: Sand Dollar
+SandDollarStealth.DisplayName: Sand Dollar Duststorm
 ScarletBlast.DisplayName: Scarlet Blast
 ScarletDevilBullet.DisplayName: Gungnir Bullet
 ScarletDevilProjectile.DisplayName: Spear the Gungnir
@@ -253,7 +255,6 @@ ShockTeslaAura.DisplayName: Electrifying Aura
 ShroomerangSpore.DisplayName: Infested Spore
 SkyBomberGas.DisplayName: Irradiated Cloud
 SkyfinNuke.DisplayName: Skyfin Nuke
-SkyStabberProj.DisplayName: Sky Stabber
 SludgeSplotchProj1.DisplayName: Sludge Splotch
 SludgeSplotchProj2.DisplayName: Sludge Splotch
 SnapClamProj.DisplayName: Snap Clam
@@ -267,6 +268,8 @@ SphereBladed.DisplayName: Bladed Sphere
 SphereBlue.DisplayName: Blue Thruster Sphere
 SphereSpiked.DisplayName: Spiked Sphere
 SphereYellow.DisplayName: Yellow Thruster Sphere
+SporeKnifeBud.DisplayName: Spore Knife Bud
+SporeKnifeProj.DisplayName: Spore Knife
 StealthNimbus.DisplayName: Nimbus
 StealthNimbusCloud.DisplayName: Nimbus
 StealthRain.DisplayName: Rain
@@ -319,9 +322,3 @@ WrathwingCinder.DisplayName: Wrathwing Eruption
 WrathwingFireball.DisplayName: Wrathwing Fireball
 WrathwingSpear.DisplayName: Wrathwing
 WulfrumKnifeProj.DisplayName: Wulfrum Knife
-RadiationBurst.DisplayName: Radiation Burst
-RadiationRain.DisplayName: Radiation Rain
-RefractionRotorSlashCreator.DisplayName: Refraction Rotor Slash Creator
-RefractionSlash.DisplayName: Refraction Slash
-SporeKnifeProj.DisplayName: Spore Knife
-SporeKnifeBud.DisplayName: Spore Knife Bud

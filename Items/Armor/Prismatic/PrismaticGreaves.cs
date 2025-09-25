@@ -3,6 +3,7 @@ using CalamityMod.Items.Placeables.Ores;
 using CalamityMod.Rarities;
 using Terraria;
 using Terraria.ID;
+using Terraria.Localization;
 using Terraria.ModLoader;
 
 namespace CalamityMod.Items.Armor.Prismatic
@@ -11,6 +12,14 @@ namespace CalamityMod.Items.Armor.Prismatic
     public class PrismaticGreaves : ModItem, ILocalizedModType
     {
         public new string LocalizationCategory => "Items.Armor.PostMoonLord";
+
+        public static float MagicDamageBoost = 0.1f;
+        public static int MagicCritBoost = 12;
+        public static float NonMagicDamageDecrease = 0.2f;
+        public static float FlightTimeBoost = 0.1f;
+        public static float JumpSpeedBoost = 0.1f;
+        public override LocalizedText Tooltip => base.Tooltip.WithFormatArgs(MagicDamageBoost.ToPercent(), MagicCritBoost, NonMagicDamageDecrease.ToPercent(), FlightTimeBoost.ToPercent(), JumpSpeedBoost.ToJumpSpeedPercent());
+
         public override void SetDefaults()
         {
             Item.width = 18;
@@ -25,11 +34,11 @@ namespace CalamityMod.Items.Armor.Prismatic
         public override void UpdateEquip(Player player)
         {
             player.Calamity().prismaticGreaves = true;
-            player.GetDamage<MagicDamageClass>() += 0.1f;
-            player.GetCritChance<MagicDamageClass>() += 12;
-            player.jumpSpeedBoost += 0.1f;
-            player.GetDamage<GenericDamageClass>() -= 0.2f;
-            player.GetDamage<MagicDamageClass>() += 0.2f;
+            player.GetDamage<MagicDamageClass>() += MagicDamageBoost;
+            player.GetCritChance<MagicDamageClass>() += MagicCritBoost;
+            player.jumpSpeedBoost += JumpSpeedBoost;
+            player.GetDamage<GenericDamageClass>() -= NonMagicDamageDecrease;
+            player.GetDamage<MagicDamageClass>() += NonMagicDamageDecrease;
         }
 
         public override void AddRecipes()
@@ -39,7 +48,7 @@ namespace CalamityMod.Items.Armor.Prismatic
                 AddIngredient<ExodiumCluster>(5).
                 AddIngredient<DivineGeode>(6).
                 AddIngredient(ItemID.Nanites, 300).
-                AddTile(TileID.LunarCraftingStation).
+                AddTile(TileID.MythrilAnvil).
                 Register();
         }
     }

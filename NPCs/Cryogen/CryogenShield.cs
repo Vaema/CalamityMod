@@ -24,11 +24,11 @@ namespace CalamityMod.NPCs.Cryogen
         public override void SetDefaults()
         {
             NPC.Calamity().canBreakPlayerDefense = true;
+            NPC.damage = 60; // 120
             NPC.aiStyle = -1;
             AIType = -1;
             NPC.noTileCollide = true;
             NPC.coldDamage = true;
-            NPC.GetNPCDamage();
             NPC.width = 216;
             NPC.height = 216;
             NPC.scale *= (CalamityWorld.death || BossRushEvent.BossRushActive || Main.getGoodWorld) ? 0.8f : 1f;
@@ -115,15 +115,9 @@ namespace CalamityMod.NPCs.Cryogen
             if (hurtInfo.Damage > 0)
             {
                 if (Main.zenithWorld)
-                {
-                    target.AddBuff(ModContent.BuffType<BrimstoneFlames>(), 120, true);
-                    target.AddBuff(ModContent.BuffType<VulnerabilityHex>(), 120, true);
-                }
+                    target.AddBuff(ModContent.BuffType<VulnerabilityHex>(), 180);
                 else
-                {
-                    target.AddBuff(BuffID.Frostburn, 240, true);
-                    target.AddBuff(BuffID.Chilled, 120, true);
-                }
+                    target.AddBuff(BuffID.Chilled, 120);
             }
         }
 

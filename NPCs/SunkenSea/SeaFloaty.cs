@@ -1,5 +1,8 @@
-﻿using System.IO;
+﻿using System.Collections.Generic;
+using System.IO;
 using CalamityMod.BiomeManagers;
+using CalamityMod.Enums;
+using CalamityMod.Items.Critters;
 using CalamityMod.Items.Placeables.Banners;
 using CalamityMod.Particles;
 using Microsoft.Xna.Framework;
@@ -11,9 +14,20 @@ using Terraria.ModLoader;
 using Terraria.ModLoader.Utilities;
 namespace CalamityMod.NPCs.SunkenSea
 {
-    public class SeaFloaty : ModNPC
+    public class SeaFloaty : SunkenSeaNPC
     {
         private bool hasBeenHit = false;
+
+        protected override List<int> PreyIDs => new List<int>();
+
+        protected override List<int> PredatorIDs => new List<int>()
+        {
+            ModContent.NPCType<Polyperil>(),
+            ModContent.NPCType<PolyperilTentacle>(),
+            ModContent.NPCType<Sharkoon>(),
+        };
+
+        protected override SunkenSeaBiomeFlags BiomeDesignation => SunkenSeaBiomeFlags.RadiantReefs;
 
         public override void SetStaticDefaults()
         {
@@ -23,25 +37,28 @@ namespace CalamityMod.NPCs.SunkenSea
                 SpriteDirection = -1
             };
             NPCID.Sets.NPCBestiaryDrawOffset[Type] = value;
+            NPCID.Sets.CountsAsCritter[Type] = true;
+            base.SetStaticDefaults();
         }
 
         public override void SetDefaults()
         {
+            base.SetDefaults();
             NPC.npcSlots = 0.5f;
             NPC.aiStyle = -1;
             AIType = -1;
-            NPC.damage = 5;
+            NPC.damage = 0;
             NPC.width = 44;
             NPC.height = 22;
             NPC.defense = 0;
-            NPC.lifeMax = 50;
+            NPC.lifeMax = 5;
             NPC.knockBackResist = 0.5f;
-            NPC.value = Item.buyPrice(0, 0, 0, 50);
             NPC.HitSound = SoundID.NPCHit1;
             NPC.DeathSound = SoundID.NPCDeath1;
+            NPC.chaseable = false;
             Banner = NPC.type;
             BannerItem = ModContent.ItemType<SeaFloatyBanner>();
-            SpawnModBiomes = new int[1] { ModContent.GetInstance<SunkenSeaBiome>().Type };
+            NPC.catchItem = ModContent.ItemType<SeaFloatyItem>();
         }
 
         public override void SetBestiary(BestiaryDatabase database, BestiaryEntry bestiaryEntry)
@@ -92,7 +109,7 @@ namespace CalamityMod.NPCs.SunkenSea
                 NPC.netUpdate = true;
             }
             // panic when it gets hit or the player is close enough to it
-            if ((NPC.justHit || Main.player[NPC.target].Distance(NPC.Center) < 320) && !hasBeenHit)
+            if ((NPC.justHit || CurrentPlayer != null || CurrentPredator != null) && !hasBeenHit)
             {
                 hasBeenHit = true;
                 NPC.noTileCollide = true;
@@ -148,6 +165,17 @@ namespace CalamityMod.NPCs.SunkenSea
                 }
             }
         }
+        protected override bool NPCSearchFilter(NPC n)
+        {
+            return NPC.HasSight(n.Center) && Vector2.DistanceSquared(NPC.Center, n.Center) < 360f * 360f && PredatorIDs.Contains(n.type);
+        }
+
+        protected override bool PlayerSearchFilter(Player p)
+        {
+            return NPC.HasSight(p.Center) && Vector2.DistanceSquared(NPC.Center, p.Center) < 360f * 360f;
+        }
+
+        public override bool CanBeHitByNPC(NPC attacker) => PredatorIDs.Contains(attacker.type);
 
         public override void FindFrame(int frameHeight)
         {

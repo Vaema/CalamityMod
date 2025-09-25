@@ -12,6 +12,10 @@ namespace CalamityMod.Items.Weapons.Rogue
     public class TheFinalDawn : RogueWeapon
     {
         public static readonly SoundStyle UseSound = new("CalamityMod/Sounds/Item/FinalDawnSlash");
+        public override void SetStaticDefaults()
+        {
+            ItemID.Sets.ShimmerTransformToItem[Type] = ModContent.ItemType<Wrathwing>();
+        }
         public override void SetDefaults()
         {
             Item.width = 78;
@@ -24,7 +28,7 @@ namespace CalamityMod.Items.Weapons.Rogue
             Item.knockBack = 4;
 
             Item.value = CalamityGlobalItem.RarityVioletBuyPrice;
-            Item.rare = RarityType<Violet>();
+            Item.rare = RarityType<BurnishedAuric>();
             Item.Calamity().donorItem = true;
 
             Item.autoReuse = false;

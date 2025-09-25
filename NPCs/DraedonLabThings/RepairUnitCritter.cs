@@ -124,7 +124,6 @@ namespace CalamityMod.NPCs.DraedonLabThings
                 Initialized = true;
             }
 
-            NPC.Calamity().ShouldFallThroughPlatforms = false;
             switch (CurrentState)
             {
                 case BehaviorState.WalkAround:
@@ -147,6 +146,7 @@ namespace CalamityMod.NPCs.DraedonLabThings
                 }
             }
         }
+        public override bool? CanFallThroughPlatforms() => CurrentState == BehaviorState.WalkOnWalls;
 
         public void WalkAroundOnGround()
         {
@@ -263,7 +263,6 @@ namespace CalamityMod.NPCs.DraedonLabThings
         {
             StuckCount = 0f;
             WantsToClimbOnSomeWall = false;
-            NPC.Calamity().ShouldFallThroughPlatforms = true;
 
             // Generate unusual movement patterns based on sines.
             float offsetAngle = CalamityUtils.AperiodicSin(Time / 360f, 0f, 1f) * 0.006f;

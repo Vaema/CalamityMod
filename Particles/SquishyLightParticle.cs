@@ -13,7 +13,6 @@ namespace CalamityMod.Particles
         public override bool UseCustomDraw => true;
         public override bool SetLifetime => true;
 
-
         public float Opacity;
         public float SquishStrenght;
         public float MaxSquish;

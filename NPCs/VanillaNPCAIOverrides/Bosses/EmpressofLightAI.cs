@@ -12,13 +12,33 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
 {
     public static class EmpressofLightAI
     {
+        // NOTE: This is applied to all difficulties, in CalamityPlayerHitHurt
+        public static float EverlastingRainbowTrailDamageMult = 0.75f;
+
+        // Vanilla values
+        public static float DashDamageMult = 1.5f; // 165
+        public static int PrismaticBoltDamage = 30; // 120
+        public static int EverlastingRainbowDamage = 30; // 120
+        public static int EtherealLanceDamage = 30; // 120
+        public static int SunDanceDamage = 35; // 140
+        public static int Phase2PrismaticBoltDamage = 35; // 140
+        public static int Phase2EverlastingRainbowDamage = 35; // 140
+        public static int Phase2EtherealLanceDamage = 35; // 140
+        public static int Phase2SunDanceDamage = 40; // 160
+
+        // Vanilla sets her defDamage to 184 (80 * 2 * 1.15) in Expert Mode
+        // However, some weird contraption in her Expert AI that knocks her base contact damage to the intended value of 110
+        // This hasn't been found anywhere so our solution for now is avoid using defDamage altogether
+        public static int ContactDamageCorrection = Main.masterMode ? 248 : 110;
+
+        public static int CalculateDamageForEnrage(this int damage) => NPC.ShouldEmpressBeEnraged() ? damage * 2 : damage;
+
         public static bool BuffedEmpressofLightAI(NPC npc, Mod mod)
         {
             CalamityGlobalNPC calamityGlobalNPC = npc.Calamity();
 
             // Difficulty bools.
-            bool bossRush = BossRushEvent.BossRushActive;
-            bool death = CalamityWorld.death || bossRush;
+            bool death = CalamityWorld.death || BossRushEvent.BossRushActive;
 
             // Rotation
             npc.rotation = npc.velocity.X * 0.005f;
@@ -34,6 +54,11 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
             bool phase2 = npc.AI_120_HallowBoss_IsInPhase2();
             bool phase3 = lifeRatio <= phase3LifeRatio;
 
+            int boltDamage = (phase2 ? Phase2PrismaticBoltDamage : PrismaticBoltDamage).CalculateDamageForEnrage();
+            int rainbowDamage = (phase2 ? Phase2EverlastingRainbowDamage : EverlastingRainbowDamage).CalculateDamageForEnrage();
+            int lanceDamage = (phase2 ? Phase2EtherealLanceDamage : EtherealLanceDamage).CalculateDamageForEnrage();
+            int sunDanceDamage = (phase2 ? Phase2SunDanceDamage : SunDanceDamage).CalculateDamageForEnrage();
+
             bool shouldBeInPhase2ButIsStillInPhase1 = lifeRatio <= phase2LifeRatio && !phase2;
             if (shouldBeInPhase2ButIsStillInPhase1)
                 calamityGlobalNPC.DR = 0.99f;
@@ -44,9 +69,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
             if (npc.life == npc.lifeMax && dayTimeEnrage && !npc.AI_120_HallowBoss_IsGenuinelyEnraged())
                 npc.ai[3] += 2f;
 
-            npc.Calamity().CurrentlyEnraged = !bossRush && dayTimeEnrage;
-
-            int projectileDamageMultiplier = dayTimeEnrage ? 2 : 1;
+            npc.Calamity().CurrentlyEnraged = !BossRushEvent.BossRushActive && dayTimeEnrage;
 
             Vector2 rainbowStreakDistance = new Vector2(-250f, -350f);
             Vector2 everlastingRainbowDistance = new Vector2(0f, -450f);
@@ -354,7 +377,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                     CalamityUtils.CalamityTargeting(npc, CalamityTargetingParameters.BossDefaults);
                     NPCAimedTarget targetData5 = npc.GetTargetData();
                     bool despawnFlag = false;
-                    if (npc.AI_120_HallowBoss_IsGenuinelyEnraged() && !bossRush)
+                    if (npc.AI_120_HallowBoss_IsGenuinelyEnraged() && !BossRushEvent.BossRushActive)
                     {
                         if (!Main.dayTime)
                             despawnFlag = true;
@@ -399,14 +422,14 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                     if (npc.ai[1] < 60f)
                         AI_120_HallowBoss_DoMagicEffect(npc.Center + randomStreakOffset, 1, Utils.GetLerpValue(0f, 60f, npc.ai[1], clamped: true), npc);
 
-                    int streakSpawnFrequency = CalamityWorld.LegendaryMode ? 1 : 2;
+                    int streakSpawnFrequency = Main.getGoodWorld ? 1 : 2;
                     if (phase3)
                         streakSpawnFrequency *= 2;
 
                     if ((int)npc.ai[1] % streakSpawnFrequency == 0 && npc.ai[1] < 60f)
                     {
                         int projectileType = ProjectileID.HallowBossRainbowStreak;
-                        int projectileDamage = npc.GetProjectileDamage(projectileType) * projectileDamageMultiplier;
+                        int projectileDamage = boltDamage;
 
                         float ai3 = npc.ai[1] / 60f;
                         Vector2 rainbowStreakVelocity = new Vector2(0f, death ? -10f : -8f).RotatedBy(MathHelper.PiOver2 * Main.rand.NextFloatDirection());
@@ -418,21 +441,10 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
 
                         if (Main.netMode != NetmodeID.MultiplayerClient)
                         {
-                            int proj = Projectile.NewProjectile(npc.GetSource_FromAI(), npc.Center + randomStreakOffset, rainbowStreakVelocity, projectileType, projectileDamage, 0f, Main.myPlayer, npc.target, ai3);
+                            Projectile.NewProjectile(npc.GetSource_FromAI(), npc.Center + randomStreakOffset, rainbowStreakVelocity, projectileType, projectileDamage, 0f, Main.myPlayer, npc.target, ai3);
                             if (phase3)
                             {
-                                int proj2 = Projectile.NewProjectile(npc.GetSource_FromAI(), npc.Center + randomStreakOffset, -rainbowStreakVelocity, projectileType, projectileDamage, 0f, Main.myPlayer, npc.target, 1f - ai3);
-                                if (Main.rand.NextBool(60) && CalamityWorld.LegendaryMode)
-                                {
-                                    Main.projectile[proj2].extraUpdates += 1;
-                                    Main.projectile[proj2].netUpdate = true;
-                                }
-                            }
-
-                            if (Main.rand.NextBool(60) && CalamityWorld.LegendaryMode)
-                            {
-                                Main.projectile[proj].extraUpdates += 1;
-                                Main.projectile[proj].netUpdate = true;
+                                Projectile.NewProjectile(npc.GetSource_FromAI(), npc.Center + randomStreakOffset, -rainbowStreakVelocity, projectileType, projectileDamage, 0f, Main.myPlayer, npc.target, 1f - ai3);
                             }
                         }
 
@@ -540,7 +552,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                             }
 
                             int projectileType = ProjectileID.FairyQueenLance;
-                            int projectileDamage = npc.GetProjectileDamage(projectileType) * projectileDamageMultiplier;
+                            int projectileDamage = lanceDamage;
 
                             Vector2 v3 = targetHoverPos - spawnLocation;
                             if (Main.netMode != NetmodeID.MultiplayerClient)
@@ -614,15 +626,15 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                     if (npc.ai[1] % 42f == 0f && npc.ai[1] < 42f)
                     {
                         float projRotation = MathHelper.TwoPi * Main.rand.NextFloat();
-                        float totalProjectiles = CalamityWorld.LegendaryMode ? 30f : death ? (dayTimeEnrage ? 22f : 15f) : (dayTimeEnrage ? 18f : 13f);
+                        float totalProjectiles = Main.getGoodWorld ? 30f : death ? (dayTimeEnrage ? 22f : 15f) : (dayTimeEnrage ? 18f : 13f);
                         int projIndex = 0;
                         bool inversePhase2SpreadPattern = Main.rand.NextBool();
                         for (float i = 0f; i < 1f; i += 1f / totalProjectiles)
                         {
                             int projectileType = ProjectileID.HallowBossLastingRainbow;
-                            int projectileDamage = npc.GetProjectileDamage(projectileType) * projectileDamageMultiplier;
+                            int projectileDamage = rainbowDamage;
                             int projectileType2 = ProjectileID.HallowBossRainbowStreak;
-                            int projectileDamage2 = npc.GetProjectileDamage(projectileType2) * projectileDamageMultiplier;
+                            int projectileDamage2 = boltDamage;
 
                             float projRotationMultiplier = i;
                             Vector2 spinningpoint = Vector2.UnitY.RotatedBy(MathHelper.PiOver2 + MathHelper.TwoPi * projRotationMultiplier + projRotation);
@@ -630,7 +642,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                             float initialVelocity = death ? 2f : 1.75f;
                             if (dayTimeEnrage && projIndex % 2 == 0)
                                 initialVelocity *= 2f;
-                            if (CalamityWorld.LegendaryMode)
+                            if (Main.getGoodWorld)
                                 initialVelocity *= 1.5f;
 
                             // Given that maxAddedVelocity = 2
@@ -676,7 +688,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                     npc.damage = 0;
 
                     // Increase durability.
-                    calamityGlobalNPC.DR = shouldBeInPhase2ButIsStillInPhase1 ? 0.99f : (bossRush ? 0.99f : 0.575f);
+                    calamityGlobalNPC.DR = shouldBeInPhase2ButIsStillInPhase1 ? 0.99f : 0.575f;
 
                     int totalSunDances = phase2 ? 2 : 3;
                     float sunDanceGateValue = dayTimeEnrage ? 35f : death ? 40f : 50f;
@@ -693,7 +705,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                     if (npc.ai[1] % sunDanceGateValue == 0f && npc.ai[1] < totalSunDancePhaseTime)
                     {
                         int projectileType = ProjectileID.FairyQueenSunDance;
-                        int projectileDamage = npc.GetProjectileDamage(projectileType) * projectileDamageMultiplier;
+                        int projectileDamage = sunDanceDamage;
 
                         int sunDanceExtension = (int)(npc.ai[1] / sunDanceGateValue);
                         int targetFloatDirection = (targetData2.Center.X > npc.Center.X) ? 1 : 0;
@@ -813,7 +825,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                             }
 
                             int projectileType = ProjectileID.FairyQueenLance;
-                            int projectileDamage = npc.GetProjectileDamage(projectileType) * projectileDamageMultiplier;
+                            int projectileDamage = lanceDamage;
 
                             for (float i = 0f; i <= 1f; i += 1f / totalProjectiles)
                             {
@@ -895,7 +907,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                         if ((npc.ai[1] - 1f) % rainbowStreakGateValue == 0f)
                         {
                             int projectileType = ProjectileID.HallowBossRainbowStreak;
-                            int projectileDamage = npc.GetProjectileDamage(projectileType) * projectileDamageMultiplier;
+                            int projectileDamage = boltDamage;
 
                             float ai3 = (npc.ai[1] - chargeGateValue - 1f) / chargeDuration;
                             Vector2 rainbowStreakVelocity = new Vector2(0f, death ? -5f : -4f).RotatedBy(MathHelper.PiOver2 * Main.rand.NextFloatDirection());
@@ -912,11 +924,8 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                             if (Main.netMode != NetmodeID.MultiplayerClient)
                             {
                                 int proj = Projectile.NewProjectile(npc.GetSource_FromAI(), npc.Center, rainbowStreakVelocity, projectileType, projectileDamage, 0f, Main.myPlayer, npc.target, ai3);
-                                if (Main.rand.NextBool(30) && CalamityWorld.LegendaryMode)
-                                {
+                                if (Main.getGoodWorld)
                                     Main.projectile[proj].extraUpdates += 1;
-                                    Main.projectile[proj].netUpdate = true;
-                                }
                             }
 
                             // Spawn extra homing Rainbow Streaks per player.
@@ -936,7 +945,8 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                         if (npc.ai[1] == chargeGateValue + chargeDuration)
                             npc.velocity *= 0.45f;
 
-                        npc.damage = (int)Math.Round(npc.defDamage * (dayTimeEnrage ? 3D : 1.5));
+                        // Unlike other temporary damage boosts from bosses, vanilla Empress AI increases damage as defDamage while dashing, so we don't need to account for it
+                        npc.damage = (int)Math.Round(ContactDamageCorrection.CalculateDamageForEnrage() * DashDamageMult);
                     }
                     else
                     {
@@ -1065,7 +1075,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                             }
 
                             int projectileType = ProjectileID.FairyQueenLance;
-                            int projectileDamage = npc.GetProjectileDamage(projectileType) * projectileDamageMultiplier;
+                            int projectileDamage = lanceDamage;
 
                             Vector2 v = straightLanceSpawnPredict - straightLanceSpawnDirection;
                             if (Main.netMode != NetmodeID.MultiplayerClient)
@@ -1142,26 +1152,20 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                     if ((int)npc.ai[1] % stationaryStreakSpawnFrequency == 0 && shouldSpawnStreaks)
                     {
                         int projectileType = ProjectileID.HallowBossRainbowStreak;
-                        int projectileDamage = npc.GetProjectileDamage(projectileType) * projectileDamageMultiplier;
+                        int projectileDamage = boltDamage;
 
                         Vector2 vector = new Vector2(0f, (death ? -24f : -22f) - (phase3 ? ((death ? 6f : 4f) * streakHomeTime) : 0f)).RotatedBy(MathHelper.TwoPi * streakHomeTime);
                         if (Main.netMode != NetmodeID.MultiplayerClient)
                         {
-                            int proj = Projectile.NewProjectile(npc.GetSource_FromAI(), npc.Center + projRandomOffset, vector, projectileType, projectileDamage, 0f, Main.myPlayer, npc.target, streakHomeTime);
+                            Projectile.NewProjectile(npc.GetSource_FromAI(), npc.Center + projRandomOffset, vector, projectileType, projectileDamage, 0f, Main.myPlayer, npc.target, streakHomeTime);
                             if (phase3)
                             {
                                 int proj2 = Projectile.NewProjectile(npc.GetSource_FromAI(), npc.Center + projRandomOffset, -vector, projectileType, projectileDamage, 0f, Main.myPlayer, npc.target, 1f - streakHomeTime);
-                                if (Main.rand.NextBool(15) && CalamityWorld.LegendaryMode)
+                                if (Main.getGoodWorld)
                                 {
                                     Main.projectile[proj2].extraUpdates += 1;
                                     Main.projectile[proj2].netUpdate = true;
                                 }
-                            }
-
-                            if (Main.rand.NextBool(15) && CalamityWorld.LegendaryMode)
-                            {
-                                Main.projectile[proj].extraUpdates += 1;
-                                Main.projectile[proj].netUpdate = true;
                             }
                         }
 
@@ -1211,7 +1215,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                     bool shouldDespawn = false;
                     if (!trueDespawnFlag)
                     {
-                        if (npc.AI_120_HallowBoss_IsGenuinelyEnraged() && !bossRush)
+                        if (npc.AI_120_HallowBoss_IsGenuinelyEnraged() && !BossRushEvent.BossRushActive)
                         {
                             if (!Main.dayTime)
                                 shouldDespawn = true;
@@ -1287,1054 +1291,6 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
 
             if (visible)
                 npc.alpha = Utils.Clamp(npc.alpha - 5, 0, 255);
-
-            Lighting.AddLight(npc.Center, Vector3.One * npc.Opacity);
-
-            return false;
-        }
-
-        public static bool VanillaEmpressofLightAI(NPC npc, Mod mod)
-        {
-            CalamityGlobalNPC calamityGlobalNPC = npc.Calamity();
-
-            Vector2 stopMovingLocation = new Vector2(-250f, -350f);
-            Vector2 stopMovingLocation3 = new Vector2(0f, -450f);
-            Vector2 stopMovingLocation4 = new Vector2(0f, -450f);
-            Vector2 stopMovingLocation5 = new Vector2(-80f, -500f);
-
-            // Rotation
-            npc.rotation = npc.velocity.X * 0.005f;
-
-            // Reset DR every frame
-            calamityGlobalNPC.DR = 0.15f;
-
-            bool phase2 = npc.AI_120_HallowBoss_IsInPhase2();
-            bool expertMode = Main.expertMode;
-            bool masterMode = Main.masterMode;
-            bool expertModePhase2 = phase2 && expertMode;
-            bool masterModePhase2 = phase2 && masterMode;
-            float phase2LifeRatio = masterMode ? 0.7f : expertMode ? 0.6f : 0.5f;
-            float phase3LifeRatio = masterMode ? 0.3f : 0.15f;
-            bool genuinePhase2 = npc.life / (float)npc.lifeMax <= phase2LifeRatio;
-            bool phase3 = npc.life / (float)npc.lifeMax <= phase3LifeRatio && expertMode;
-
-            bool shouldBeInPhase2ButIsStillInPhase1 = npc.life / (float)npc.lifeMax <= phase2LifeRatio && !phase2;
-            if (shouldBeInPhase2ButIsStillInPhase1)
-                calamityGlobalNPC.DR = 0.99f;
-
-            calamityGlobalNPC.CurrentlyIncreasingDefenseOrDR = shouldBeInPhase2ButIsStillInPhase1 || npc.ai[0] == 6f;
-
-            bool enraged = NPC.ShouldEmpressBeEnraged();
-            if (npc.life == npc.lifeMax && enraged && !npc.AI_120_HallowBoss_IsGenuinelyEnraged())
-                npc.ai[3] += 2f;
-
-            calamityGlobalNPC.CurrentlyEnraged = !BossRushEvent.BossRushActive && enraged;
-
-            int projectileDamageMultiplier = enraged ? 2 : 1;
-
-            bool becomeVisible = true;
-
-            float moveSpeed = masterMode ? 0.6f : expertMode ? 0.55f : 0.5f;
-            float desiredVelocity = masterMode ? 14.4f : expertMode ? 13.2f : 12f;
-            float stopMovingDistance = 40f;
-            float despawnDistance = 6400f;
-            int lanceDamage = npc.GetProjectileDamage(ProjectileID.FairyQueenLance);
-            int rainbowStreakDamage = npc.GetProjectileDamage(ProjectileID.HallowBossRainbowStreak);
-            int lastingRainbowDamage = npc.GetProjectileDamage(ProjectileID.HallowBossLastingRainbow);
-            int sunDanceDamage = npc.GetProjectileDamage(ProjectileID.FairyQueenSunDance);
-
-            lanceDamage *= projectileDamageMultiplier;
-            rainbowStreakDamage *= projectileDamageMultiplier;
-            lastingRainbowDamage *= projectileDamageMultiplier;
-            sunDanceDamage *= projectileDamageMultiplier;
-
-            if (enraged)
-                expertMode = true;
-
-            bool takeDamage = true;
-            int reducedAttackCooldown = 0;
-            if (phase2)
-                reducedAttackCooldown += 15;
-            if (expertMode)
-                reducedAttackCooldown += 5;
-
-            // Variables for dust visuals on spawn and in phase 3
-            float playSpawnSoundTime = 10f;
-            float stopSpawningDustTime = 150f;
-            float spawnTime = 180f;
-
-            // Do visual stuff in phase 3
-            float maxOpacity = phase3 ? 0.7f : 1f;
-            int minAlpha = 255 - (int)(255 * maxOpacity);
-            if (phase3)
-            {
-                if (calamityGlobalNPC.newAI[0] == playSpawnSoundTime)
-                    SoundEngine.PlaySound(SoundID.Item161, npc.Center);
-
-                if (calamityGlobalNPC.newAI[0] > playSpawnSoundTime && calamityGlobalNPC.newAI[0] < stopSpawningDustTime)
-                    CreateSpawnDust(npc, false);
-
-                calamityGlobalNPC.newAI[0] += 1f;
-                if (calamityGlobalNPC.newAI[0] >= stopSpawningDustTime)
-                {
-                    calamityGlobalNPC.newAI[0] = playSpawnSoundTime + 1f;
-                    npc.SyncExtraAI();
-                }
-            }
-
-            switch ((int)npc.ai[0])
-            {
-                case 0:
-
-                    // Avoid cheap bullshit.
-                    npc.damage = 0;
-
-                    if (npc.ai[1] == 0f)
-                    {
-                        npc.velocity = new Vector2(0f, 5f);
-                        if (Main.netMode != NetmodeID.MultiplayerClient)
-                            Projectile.NewProjectile(npc.GetSource_FromAI(), npc.Center + new Vector2(0f, -80f), Vector2.Zero, ProjectileID.HallowBossDeathAurora, 0, 0f, Main.myPlayer);
-                    }
-
-                    if (npc.ai[1] == playSpawnSoundTime)
-                        SoundEngine.PlaySound(SoundID.Item161, npc.Center);
-
-                    npc.velocity *= 0.95f;
-                    if (npc.ai[1] > playSpawnSoundTime && npc.ai[1] < stopSpawningDustTime)
-                        CreateSpawnDust(npc);
-
-                    npc.ai[1] += 1f;
-                    becomeVisible = false;
-                    takeDamage = false;
-                    npc.Opacity = MathHelper.Clamp(npc.ai[1] / spawnTime, 0f, 1f);
-                    if (npc.ai[1] >= spawnTime)
-                    {
-                        if (enraged && !npc.AI_120_HallowBoss_IsGenuinelyEnraged())
-                            npc.ai[3] += 2f;
-
-                        npc.ai[0] = 1f;
-                        npc.ai[1] = 0f;
-                        npc.netUpdate = true;
-                        CalamityUtils.CalamityTargeting(npc, CalamityTargetingParameters.BossDefaults);
-                    }
-
-                    break;
-
-                case 1:
-                    {
-                        // Avoid cheap bullshit.
-                        npc.damage = 0;
-
-                        float phaseTime = (phase2 ? 20f : 45f);
-                        if (masterMode)
-                            phaseTime /= 2f;
-                        if (Main.getGoodWorld)
-                            phaseTime /= 2f;
-                        if (phaseTime < 10f)
-                            phaseTime = 10f;
-
-                        if (npc.ai[1] <= 10f)
-                        {
-                            if (npc.ai[1] == 0f)
-                                CalamityUtils.CalamityTargeting(npc, CalamityTargetingParameters.BossDefaults);
-
-                            NPCAimedTarget targetData = npc.GetTargetData();
-                            if (targetData.Invalid)
-                            {
-                                npc.ai[0] = 13f;
-                                npc.ai[1] = 0f;
-                                npc.ai[2] += 1f;
-                                npc.velocity /= 4f;
-                                npc.netUpdate = true;
-                                break;
-                            }
-
-                            Vector2 center = targetData.Center;
-                            npc.DirectionTo(center);
-                            center += new Vector2(0f, -300f);
-                            if (npc.Distance(center) > 200f)
-                                center -= npc.DirectionTo(center) * 100f;
-
-                            Vector2 distanceFromTarget = center - npc.Center;
-                            float lerpValue = Utils.GetLerpValue(100f, 600f, distanceFromTarget.Length(), clamped: true);
-                            float movementVelocity = distanceFromTarget.Length();
-                            if (movementVelocity > 18f)
-                                movementVelocity = 18f;
-
-                            npc.velocity = Vector2.Lerp(distanceFromTarget.SafeNormalize(Vector2.Zero) * movementVelocity, distanceFromTarget / 6f, lerpValue);
-
-                            npc.netUpdate = true;
-                        }
-
-                        if (npc.velocity.Length() > 16f && npc.ai[1] > 10f)
-                            npc.velocity /= 2f;
-
-                        npc.velocity *= 0.92f;
-                        npc.ai[1] += 1f;
-                        if (!(npc.ai[1] >= phaseTime))
-                            break;
-
-                        int phaseIncrement = (int)npc.ai[2];
-                        int phase = 2;
-                        int phaseDivisor = 0;
-                        if (!phase2)
-                        {
-                            int num38 = phaseDivisor++;
-                            int num39 = phaseDivisor++;
-                            int num40 = phaseDivisor++;
-                            int num41 = phaseDivisor++;
-                            int num42 = phaseDivisor++;
-                            int num43 = phaseDivisor++;
-                            int num44 = phaseDivisor++;
-                            int num45 = phaseDivisor++;
-                            int num46 = phaseDivisor++;
-                            int num47 = phaseDivisor++;
-                            if (phaseIncrement % phaseDivisor == num38)
-                                phase = 2;
-
-                            if (phaseIncrement % phaseDivisor == num39)
-                                phase = 8;
-
-                            if (phaseIncrement % phaseDivisor == num40)
-                                phase = 6;
-
-                            if (phaseIncrement % phaseDivisor == num41)
-                                phase = 8;
-
-                            if (phaseIncrement % phaseDivisor == num42)
-                                phase = 5;
-
-                            if (phaseIncrement % phaseDivisor == num43)
-                                phase = 2;
-
-                            if (phaseIncrement % phaseDivisor == num44)
-                                phase = 8;
-
-                            if (phaseIncrement % phaseDivisor == num45)
-                                phase = 4;
-
-                            if (phaseIncrement % phaseDivisor == num46)
-                                phase = 8;
-
-                            if (phaseIncrement % phaseDivisor == num47)
-                                phase = 5;
-
-                            if (genuinePhase2)
-                                phase = 10;
-                        }
-
-                        if (phase2)
-                        {
-                            int num48 = phaseDivisor++;
-                            int num49 = phaseDivisor++;
-                            int num50 = phaseDivisor++;
-                            int num51 = -1;
-                            if (expertMode)
-                                num51 = phaseDivisor++;
-
-                            int num52 = phaseDivisor++;
-                            int num53 = phaseDivisor++;
-                            int num54 = phaseDivisor++;
-                            int num55 = phaseDivisor++;
-                            int num56 = phaseDivisor++;
-                            int num57 = phaseDivisor++;
-                            if (phaseIncrement % phaseDivisor == num48)
-                                phase = 7;
-
-                            if (phaseIncrement % phaseDivisor == num49)
-                                phase = phase3 ? 8 : 2;
-
-                            if (phaseIncrement % phaseDivisor == num50)
-                                phase = 8;
-
-                            if (phaseIncrement % phaseDivisor == num52)
-                                phase = 5;
-
-                            if (phaseIncrement % phaseDivisor == num53)
-                                phase = 2;
-
-                            if (phaseIncrement % phaseDivisor == num54)
-                                phase = phase3 ? 4 : 6;
-
-                            if (phaseIncrement % phaseDivisor == num54)
-                                phase = phase3 ? 7 : 6;
-
-                            if (phaseIncrement % phaseDivisor == num55)
-                                phase = 4;
-
-                            if (phaseIncrement % phaseDivisor == num56)
-                                phase = 8;
-
-                            if (phaseIncrement % phaseDivisor == num51)
-                                phase = 11;
-
-                            if (phaseIncrement % phaseDivisor == num57)
-                                phase = 12;
-                        }
-
-                        CalamityUtils.CalamityTargeting(npc, CalamityTargetingParameters.BossDefaults);
-                        NPCAimedTarget targetData2 = npc.GetTargetData();
-                        bool transitionToEnrage = false;
-                        if (npc.AI_120_HallowBoss_IsGenuinelyEnraged())
-                        {
-                            if (!Main.dayTime)
-                                transitionToEnrage = true;
-
-                            if (Main.dayTime && Main.time >= 53400D)
-                                transitionToEnrage = true;
-                        }
-
-                        if (targetData2.Invalid || npc.Distance(targetData2.Center) > despawnDistance || transitionToEnrage)
-                            phase = 13;
-
-                        if (phase == 8 && targetData2.Center.X > npc.Center.X)
-                            phase = 9;
-
-                        if (expertMode && phase != 5 && phase != 12)
-                            npc.velocity = npc.DirectionFrom(targetData2.Center).SafeNormalize(Vector2.Zero).RotatedBy(MathHelper.PiOver2 * (float)(targetData2.Center.X > npc.Center.X).ToDirectionInt()) * 20f;
-
-                        npc.ai[0] = phase;
-                        npc.ai[1] = 0f;
-
-                        int oneInXChance = masterMode ? 3 : 4;
-                        if (phase3)
-                            oneInXChance--;
-
-                        float numPhaseIncrements = expertMode ? (Main.rand.NextBool(oneInXChance) ? 2f : 1f) : 1f;
-                        npc.ai[2] += numPhaseIncrements;
-                        npc.netUpdate = true;
-
-                        break;
-                    }
-
-                case 2:
-                    {
-                        // Avoid cheap bullshit.
-                        npc.damage = 0;
-
-                        if (npc.ai[1] == 0f)
-                            SoundEngine.PlaySound(SoundID.Item164, npc.Center);
-
-                        float extraPhaseTime = (masterMode ? 30f : expertMode ? 60f : 90f) - (float)reducedAttackCooldown;
-                        Vector2 offset = new Vector2(-55f, -30f);
-                        NPCAimedTarget targetData11 = npc.GetTargetData();
-                        Vector2 targetCenter = (targetData11.Invalid ? npc.Center : targetData11.Center);
-                        if (npc.Distance(targetCenter + stopMovingLocation) > stopMovingDistance)
-                            npc.SimpleFlyMovement(npc.DirectionTo(targetCenter + stopMovingLocation).SafeNormalize(Vector2.Zero) * desiredVelocity, moveSpeed);
-
-                        if (npc.ai[1] < 60f)
-                            AI_120_HallowBoss_DoMagicEffect(npc.Center + offset, 1, Utils.GetLerpValue(0f, 60f, npc.ai[1], clamped: true), npc);
-
-                        int rainbowStreakGateValue = 3;
-                        if (expertMode)
-                            rainbowStreakGateValue = 2;
-                        if (phase3)
-                            rainbowStreakGateValue *= 2;
-
-                        if ((int)npc.ai[1] % rainbowStreakGateValue == 0 && npc.ai[1] < 60f)
-                        {
-                            float ai3 = npc.ai[1] / 60f;
-                            Vector2 rainbowStreakVelocity = new Vector2(0f, -6f - (masterMode ? (ai3 * 4f) : expertMode ? (ai3 * 2f) : 0f)).RotatedBy(MathHelper.PiOver2 * Main.rand.NextFloatDirection());
-                            if (expertModePhase2)
-                                rainbowStreakVelocity = new Vector2(0f, -10f - (masterMode ? (ai3 * 5f) : expertMode ? (ai3 * 2.5f) : 0f)).RotatedBy(MathHelper.TwoPi * Main.rand.NextFloat());
-
-                            if (Main.netMode != NetmodeID.MultiplayerClient)
-                            {
-                                Projectile.NewProjectile(npc.GetSource_FromAI(), npc.Center + offset, rainbowStreakVelocity, ProjectileID.HallowBossRainbowStreak, rainbowStreakDamage, 0f, Main.myPlayer, npc.target, ai3);
-                                if (phase3)
-                                    Projectile.NewProjectile(npc.GetSource_FromAI(), npc.Center + offset, -rainbowStreakVelocity, ProjectileID.HallowBossRainbowStreak, rainbowStreakDamage, 0f, Main.myPlayer, npc.target, 1f - ai3);
-                            }
-
-                            if (Main.netMode != NetmodeID.MultiplayerClient)
-                            {
-                                int num92 = (int)(npc.ai[1] / (float)rainbowStreakGateValue);
-                                for (int num93 = 0; num93 < Main.maxPlayers; num93++)
-                                {
-                                    if (npc.Boss_CanShootExtraAt(num93, num92 % 3, 3, 2400f))
-                                        Projectile.NewProjectile(npc.GetSource_FromAI(), npc.Center + offset, rainbowStreakVelocity, ProjectileID.HallowBossRainbowStreak, rainbowStreakDamage, 0f, Main.myPlayer, num93, ai3);
-                                }
-                            }
-                        }
-
-                        npc.ai[1] += 1f;
-                        if (npc.ai[1] >= 60f + extraPhaseTime)
-                        {
-                            npc.ai[0] = 1f;
-                            npc.ai[1] = 0f;
-                            npc.netUpdate = true;
-                        }
-
-                        break;
-                    }
-
-                /*case 3:
-                    {
-                        npc.ai[1] += 1f;
-                        NPCAimedTarget targetData8 = npc.GetTargetData();
-                        Vector2 vector23 = (targetData8.Invalid ? npc.Center : targetData8.Center);
-                        if (npc.Distance(vector23 + vector2) > num3)
-                            npc.SimpleFlyMovement(npc.DirectionTo(vector23 + vector2).SafeNormalize(Vector2.Zero) * num2, num);
-
-                        if ((int)npc.ai[1] % 180 == 0)
-                        {
-                            Vector2 vector24 = new Vector2(0f, -100f);
-                            Projectile.NewProjectile(npc.GetSource_FromAI(), targetData8.Center + vector24, Vector2.Zero, ProjectileID.HallowBossDeathAurora, num5, 0f, Main.myPlayer);
-                        }
-
-                        if (npc.ai[1] >= 120f)
-                        {
-                            npc.ai[0] = 1f;
-                            npc.ai[1] = 0f;
-                            npc.netUpdate = true;
-                        }
-
-                        break;
-                    }*/
-
-                case 4:
-                    {
-                        // Avoid cheap bullshit.
-                        npc.damage = 0;
-
-                        float extraPhaseTime = 20 - reducedAttackCooldown;
-
-                        if (npc.ai[1] == 0f)
-                            SoundEngine.PlaySound(SoundID.Item162, npc.Center);
-
-                        float lanceGateValue = masterMode ? 75f : 100f;
-                        if (npc.ai[1] >= 6f && npc.ai[1] < 54f)
-                        {
-                            AI_120_HallowBoss_DoMagicEffect(npc.Center + new Vector2(-55f, -20f), 2, Utils.GetLerpValue(0f, lanceGateValue, npc.ai[1], clamped: true), npc);
-                            AI_120_HallowBoss_DoMagicEffect(npc.Center + new Vector2(55f, -20f), 4, Utils.GetLerpValue(0f, lanceGateValue, npc.ai[1], clamped: true), npc);
-                        }
-
-                        NPCAimedTarget targetData = npc.GetTargetData();
-                        Vector2 targetLocation = (targetData.Invalid ? npc.Center : targetData.Center);
-                        if (npc.Distance(targetLocation + stopMovingLocation3) > stopMovingDistance)
-                            npc.SimpleFlyMovement(npc.DirectionTo(targetLocation + stopMovingLocation3).SafeNormalize(Vector2.Zero) * desiredVelocity, moveSpeed);
-
-                        int radialSpawnOffset = masterMode ? 6 : expertMode ? 5 : 4;
-                        int lanceSpawnGateValue = masterMode ? 3 : 4;
-                        if ((int)npc.ai[1] % lanceSpawnGateValue == 0 && npc.ai[1] < lanceGateValue)
-                        {
-                            int lanceAmount = phase3 ? 2 : 1;
-                            for (int i = 0; i < lanceAmount; i++)
-                            {
-                                int num85 = (int)npc.ai[1] / lanceSpawnGateValue;
-                                radialSpawnOffset += (masterMode ? 3 : 2) * i;
-                                Vector2 radialOffset = Vector2.UnitX.RotatedBy((float)Math.PI / (float)(radialSpawnOffset * 2) + (float)num85 * ((float)Math.PI / (float)radialSpawnOffset) + 0f);
-                                if (masterMode)
-                                    radialOffset.X += (radialOffset.X > 0f ? -0.5f : 0.5f);
-                                else if (!expertMode)
-                                    radialOffset.X += (radialOffset.X > 0f ? 0.5f : -0.5f);
-
-                                radialOffset = radialOffset.SafeNormalize(Vector2.UnitY);
-                                float lanceSpawnDistance = 300f;
-                                if (expertMode)
-                                    lanceSpawnDistance = 450f;
-
-                                Vector2 targetCenter = targetData.Center;
-                                if (npc.Distance(targetCenter) > 2400f)
-                                    continue;
-
-                                if (Vector2.Dot(targetData.Velocity.SafeNormalize(Vector2.UnitY), radialOffset) > 0f)
-                                    radialOffset *= -1f;
-
-                                int targetVelocityOffset = 90;
-                                Vector2 vector31 = targetCenter + targetData.Velocity * targetVelocityOffset;
-                                Vector2 vector32 = targetCenter + radialOffset * lanceSpawnDistance - targetData.Velocity * 30f;
-                                if (vector32.Distance(targetCenter) < lanceSpawnDistance)
-                                {
-                                    Vector2 vector33 = targetCenter - vector32;
-                                    if (vector33 == Vector2.Zero)
-                                        vector33 = radialOffset;
-
-                                    vector32 = targetCenter - vector33.SafeNormalize(Vector2.UnitY) * lanceSpawnDistance;
-                                }
-
-                                Vector2 v3 = vector31 - vector32;
-                                if (Main.netMode != NetmodeID.MultiplayerClient)
-                                    Projectile.NewProjectile(npc.GetSource_FromAI(), vector32, Vector2.Zero, ProjectileID.FairyQueenLance, lanceDamage, 0f, Main.myPlayer, v3.ToRotation(), npc.ai[1] / lanceGateValue);
-
-                                if (Main.netMode == NetmodeID.MultiplayerClient)
-                                    continue;
-
-                                int num88 = (int)(npc.ai[1] / (float)lanceSpawnGateValue);
-                                for (int num89 = 0; num89 < Main.maxPlayers; num89++)
-                                {
-                                    if (!npc.Boss_CanShootExtraAt(num89, num88 % 3, 3, 2400f))
-                                        continue;
-
-                                    Player player2 = Main.player[num89];
-                                    targetCenter = player2.Center;
-                                    if (Vector2.Dot(player2.velocity.SafeNormalize(Vector2.UnitY), radialOffset) > 0f)
-                                        radialOffset *= -1f;
-
-                                    Vector2 vector34 = targetCenter + player2.velocity * targetVelocityOffset;
-                                    vector32 = targetCenter + radialOffset * lanceSpawnDistance - player2.velocity * 30f;
-                                    if (vector32.Distance(targetCenter) < lanceSpawnDistance)
-                                    {
-                                        Vector2 vector35 = targetCenter - vector32;
-                                        if (vector35 == Vector2.Zero)
-                                            vector35 = radialOffset;
-
-                                        vector32 = targetCenter - vector35.SafeNormalize(Vector2.UnitY) * lanceSpawnDistance;
-                                    }
-
-                                    v3 = vector34 - vector32;
-                                    Projectile.NewProjectile(npc.GetSource_FromAI(), vector32, Vector2.Zero, ProjectileID.FairyQueenLance, lanceDamage, 0f, Main.myPlayer, v3.ToRotation(), npc.ai[1] / lanceGateValue);
-                                }
-                            }
-                        }
-
-                        npc.ai[1] += 1f;
-                        if (npc.ai[1] >= lanceGateValue + extraPhaseTime)
-                        {
-                            npc.ai[0] = 1f;
-                            npc.ai[1] = 0f;
-                            npc.netUpdate = true;
-                        }
-
-                        break;
-                    }
-
-                case 5:
-                    {
-                        // Avoid cheap bullshit.
-                        npc.damage = 0;
-
-                        if (npc.ai[1] == 0f)
-                            SoundEngine.PlaySound(SoundID.Item163, npc.Center);
-
-                        float extraPhaseTime = masterMode ? 22f : 30f;
-                        extraPhaseTime -= (float)reducedAttackCooldown;
-
-                        Vector2 offset = new Vector2(55f, -30f);
-                        Vector2 lastingRainbowInitialSpawnLocation = npc.Center + offset;
-
-                        float lastingRainbowGateValue = 42f;
-                        if (npc.ai[1] < lastingRainbowGateValue)
-                            AI_120_HallowBoss_DoMagicEffect(npc.Center + offset, 3, Utils.GetLerpValue(0f, lastingRainbowGateValue, npc.ai[1], clamped: true), npc);
-
-                        NPCAimedTarget targetData = npc.GetTargetData();
-                        Vector2 targetLocation = (targetData.Invalid ? npc.Center : targetData.Center);
-                        if (npc.Distance(targetLocation + stopMovingLocation4) > stopMovingDistance)
-                            npc.SimpleFlyMovement(npc.DirectionTo(targetLocation + stopMovingLocation4).SafeNormalize(Vector2.Zero) * desiredVelocity, moveSpeed);
-
-                        if ((int)npc.ai[1] % (int)lastingRainbowGateValue == 0 && npc.ai[1] < lastingRainbowGateValue)
-                        {
-                            float lastingRainbowRandomRotation = MathHelper.TwoPi * Main.rand.NextFloat();
-                            float numLastingRainbows = 13f;
-                            for (float i = 0f; i < 1f; i += 1f / numLastingRainbows)
-                            {
-                                float ai1 = i;
-                                Vector2 lastingRainbowVelocity = Vector2.UnitY.RotatedBy(MathHelper.PiOver2 + MathHelper.TwoPi * ai1 + lastingRainbowRandomRotation);
-                                Vector2 lastingRainbowSpawnLocation = lastingRainbowInitialSpawnLocation + lastingRainbowVelocity.RotatedBy(-MathHelper.PiOver2) * 30f;
-                                if (Main.netMode != NetmodeID.MultiplayerClient)
-                                    Projectile.NewProjectile(npc.GetSource_FromAI(), lastingRainbowSpawnLocation, lastingRainbowVelocity * (masterMode ? 10f : 8f), ProjectileID.HallowBossLastingRainbow, lastingRainbowDamage, 0f, Main.myPlayer, 0f, ai1);
-
-                                if (phase3)
-                                {
-                                    if (Main.netMode != NetmodeID.MultiplayerClient)
-                                        Projectile.NewProjectile(npc.GetSource_FromAI(), lastingRainbowSpawnLocation, lastingRainbowVelocity * (masterMode ? 12f : 10f), ProjectileID.HallowBossRainbowStreak, rainbowStreakDamage, 0f, Main.myPlayer, npc.target, ai1);
-                                }
-                            }
-                        }
-
-                        npc.ai[1] += 1f;
-                        if (npc.ai[1] >= lastingRainbowGateValue + extraPhaseTime)
-                        {
-                            npc.ai[0] = 1f;
-                            npc.ai[1] = 0f;
-                            npc.netUpdate = true;
-                        }
-
-                        break;
-                    }
-
-                case 6:
-                    {
-                        // Avoid cheap bullshit.
-                        npc.damage = 0;
-
-                        // Increase durability.
-                        calamityGlobalNPC.DR = shouldBeInPhase2ButIsStillInPhase1 ? 0.99f : (BossRushEvent.BossRushActive ? 0.99f : 0.575f);
-
-                        float extraPhaseTime = (masterMode ? 105 : expertMode ? 120 : 135) - reducedAttackCooldown;
-                        Vector2 offset = new Vector2(0f, -100f);
-                        Vector2 sunDanceSpawnLocation = npc.Center + offset;
-                        NPCAimedTarget targetData = npc.GetTargetData();
-                        Vector2 targetLocation = (targetData.Invalid ? npc.Center : targetData.Center);
-                        if (npc.Distance(targetLocation + stopMovingLocation5) > stopMovingDistance)
-                            npc.SimpleFlyMovement(npc.DirectionTo(targetLocation + stopMovingLocation5).SafeNormalize(Vector2.Zero) * desiredVelocity * 0.3f, moveSpeed * 0.7f);
-
-                        float phaseGateValue = masterMode ? 120f : 180f;
-                        int sunDanceGateValue = 60;
-                        if ((int)npc.ai[1] % sunDanceGateValue == 0 && npc.ai[1] < phaseGateValue)
-                        {
-                            int sunDanceSpawnOffset = (int)npc.ai[1] / sunDanceGateValue;
-                            int targetLocationX = ((targetData.Center.X > npc.Center.X) ? 1 : 0);
-                            float numSunDancePetals = masterMode ? 9f : expertMode ? 8f : 6f;
-                            float sunDanceIncrement = 1f / numSunDancePetals;
-                            for (float i = 0f; i < 1f; i += sunDanceIncrement)
-                            {
-                                float radialOffset = (i + sunDanceIncrement * 0.5f + (float)sunDanceSpawnOffset * sunDanceIncrement * 0.5f) % 1f;
-                                float ai = MathHelper.TwoPi * (radialOffset + (float)targetLocationX);
-                                if (Main.netMode != NetmodeID.MultiplayerClient)
-                                    Projectile.NewProjectile(npc.GetSource_FromAI(), sunDanceSpawnLocation, Vector2.Zero, ProjectileID.FairyQueenSunDance, sunDanceDamage, 0f, Main.myPlayer, ai, npc.whoAmI);
-                            }
-                        }
-
-                        npc.ai[1] += 1f;
-                        if (npc.ai[1] >= phaseGateValue + extraPhaseTime)
-                        {
-                            npc.ai[0] = 1f;
-                            npc.ai[1] = 0f;
-                            npc.netUpdate = true;
-                        }
-
-                        break;
-                    }
-
-                case 7:
-                    {
-                        // Avoid cheap bullshit.
-                        npc.damage = 0;
-
-                        float extraPhaseTime = masterMode ? 34f : expertMode ? 40f : 20f;
-                        float lanceGateValue = masterMode ? 34f : expertMode ? 40f : 60f;
-                        float totalLanceWalls = expertMode ? 6f : 4f;
-                        float lancePhaseTime = lanceGateValue * totalLanceWalls;
-
-                        extraPhaseTime -= (float)reducedAttackCooldown;
-                        NPCAimedTarget targetData = npc.GetTargetData();
-                        Vector2 vector25 = (targetData.Invalid ? npc.Center : targetData.Center);
-                        if (npc.Distance(vector25 + stopMovingLocation4) > stopMovingDistance)
-                            npc.SimpleFlyMovement(npc.DirectionTo(vector25 + stopMovingLocation4).SafeNormalize(Vector2.Zero) * desiredVelocity * 0.4f, moveSpeed);
-
-                        if ((float)(int)npc.ai[1] % lanceGateValue == 0f && npc.ai[1] < lancePhaseTime)
-                        {
-                            SoundEngine.PlaySound(SoundID.Item162, npc.Center);
-                            Main.rand.NextFloat();
-                            int lanceWallType = (int)npc.ai[1] / (int)lanceGateValue;
-                            float numLances = phase3 ? (masterMode ? 18f : 15f) : 13f;
-                            float distanceBetweenLances = phase3 ? (masterMode ? 125f : 135f) : 150f;
-                            float lanceWallLength = numLances * distanceBetweenLances;
-                            Vector2 lanceSpawnOffset = targetData.Center;
-                            if (npc.Distance(lanceSpawnOffset) <= 3200f)
-                            {
-                                Vector2 vector26 = Vector2.Zero;
-                                Vector2 lanceDirection = Vector2.UnitY;
-                                float num77 = 0.4f;
-                                float num78 = 1.4f;
-                                float num79 = 1f;
-                                if (expertMode)
-                                {
-                                    numLances += 5f;
-                                    distanceBetweenLances += 50f;
-                                    lanceWallLength *= (masterMode ? 0.75f : 0.5f);
-                                }
-
-                                switch (lanceWallType)
-                                {
-                                    case 0:
-                                        lanceSpawnOffset += new Vector2((0f - lanceWallLength) / 2f, 0f) * num79;
-                                        vector26 = new Vector2(0f, lanceWallLength);
-                                        lanceDirection = Vector2.UnitX;
-                                        break;
-                                    case 1:
-                                        lanceSpawnOffset += new Vector2(lanceWallLength / 2f, distanceBetweenLances / 2f) * num79;
-                                        vector26 = new Vector2(0f, lanceWallLength);
-                                        lanceDirection = -Vector2.UnitX;
-                                        break;
-                                    case 2:
-                                        lanceSpawnOffset += new Vector2(0f - lanceWallLength, 0f - lanceWallLength) * num77 * num79;
-                                        vector26 = new Vector2(lanceWallLength * num78, 0f);
-                                        lanceDirection = new Vector2(1f, 1f);
-                                        break;
-                                    case 3:
-                                        lanceSpawnOffset += new Vector2(lanceWallLength * num77 + distanceBetweenLances / 2f, (0f - lanceWallLength) * num77) * num79;
-                                        vector26 = new Vector2((0f - lanceWallLength) * num78, 0f);
-                                        lanceDirection = new Vector2(-1f, 1f);
-                                        break;
-                                    case 4:
-                                        lanceSpawnOffset += new Vector2(0f - lanceWallLength, lanceWallLength) * num77 * num79;
-                                        vector26 = new Vector2(lanceWallLength * num78, 0f);
-                                        lanceDirection = lanceSpawnOffset.DirectionTo(targetData.Center);
-                                        break;
-                                    case 5:
-                                        lanceSpawnOffset += new Vector2(lanceWallLength * num77 + distanceBetweenLances / 2f, lanceWallLength * num77) * num79;
-                                        vector26 = new Vector2((0f - lanceWallLength) * num78, 0f);
-                                        lanceDirection = lanceSpawnOffset.DirectionTo(targetData.Center);
-                                        break;
-                                }
-
-                                for (float lance = 0f; lance <= 1f; lance += 1f / numLances)
-                                {
-                                    Vector2 origin = lanceSpawnOffset + vector26 * (lance - 0.5f);
-                                    Vector2 lanceRotation = lanceDirection;
-                                    if (expertMode)
-                                    {
-                                        Vector2 predictionVector = targetData.Velocity * 20f * lance;
-                                        Vector2 value2 = origin.DirectionTo(targetData.Center + predictionVector);
-                                        lanceRotation = Vector2.Lerp(lanceDirection, value2, 0.75f).SafeNormalize(Vector2.UnitY);
-                                    }
-
-                                    float ai2 = lance;
-                                    if (Main.netMode != NetmodeID.MultiplayerClient)
-                                        Projectile.NewProjectile(npc.GetSource_FromAI(), origin, Vector2.Zero, ProjectileID.FairyQueenLance, lanceDamage, 0f, Main.myPlayer, lanceRotation.ToRotation(), ai2);
-                                }
-                            }
-                        }
-
-                        npc.ai[1] += 1f;
-                        if (npc.ai[1] >= lancePhaseTime + extraPhaseTime)
-                        {
-                            npc.ai[0] = 1f;
-                            npc.ai[1] = 0f;
-                            npc.netUpdate = true;
-                        }
-
-                        break;
-                    }
-
-                case 8:
-                case 9:
-                    {
-                        float extraPhaseTime = 20 - reducedAttackCooldown;
-                        float startDashTime = 40f;
-                        float playDashSoundTime = 20f;
-                        float endDashTime = phase3 ? 75f : 90f;
-                        int dashStartDistance = phase3 ? 750 : 550;
-                        int dashVelocity = phase3 ? 80 : 50;
-                        float dashAcceleration = phase3 ? 0.08f : 0.05f;
-
-                        int dashDirection = (npc.ai[0] != 8f ? 1 : -1);
-                        AI_120_HallowBoss_DoMagicEffect(npc.Center, 5, Utils.GetLerpValue(startDashTime, endDashTime, npc.ai[1], clamped: true), npc);
-
-                        if (npc.ai[1] <= startDashTime)
-                        {
-                            // Avoid cheap bullshit.
-                            npc.damage = 0;
-
-                            if (npc.ai[1] == playDashSoundTime)
-                                SoundEngine.PlaySound(SoundID.Item160, npc.Center);
-
-                            NPCAimedTarget targetData = npc.GetTargetData();
-                            Vector2 destination = (targetData.Invalid ? npc.Center : targetData.Center) + new Vector2(dashDirection * -dashStartDistance, 0f);
-                            npc.SimpleFlyMovement(npc.DirectionTo(destination).SafeNormalize(Vector2.Zero) * desiredVelocity, moveSpeed * 2f);
-                            if (npc.ai[1] == startDashTime)
-                                npc.velocity *= 0.3f;
-                        }
-                        else if (npc.ai[1] <= endDashTime)
-                        {
-                            npc.velocity = Vector2.Lerp(value2: new Vector2(dashDirection * dashVelocity, 0f), value1: npc.velocity, amount: dashAcceleration);
-                            if (npc.ai[1] == endDashTime)
-                                npc.velocity *= 0.7f;
-
-                            npc.damage = (int)Math.Round(npc.defDamage * (enraged ? 3D : 1.5));
-                        }
-                        else
-                        {
-                            // Avoid cheap bullshit.
-                            npc.damage = 0;
-
-                            npc.velocity *= 0.92f;
-                        }
-
-                        npc.ai[1] += 1f;
-                        if (npc.ai[1] >= endDashTime + extraPhaseTime)
-                        {
-                            npc.ai[0] = 1f;
-                            npc.ai[1] = 0f;
-                            npc.netUpdate = true;
-                        }
-
-                        break;
-                    }
-
-                case 10:
-                    {
-                        // Avoid cheap bullshit.
-                        npc.damage = 0;
-
-                        float extraPhaseTime = 20 - reducedAttackCooldown;
-                        if (npc.ai[1] == 0f)
-                            SoundEngine.PlaySound(SoundID.Item161, npc.Center);
-
-                        takeDamage = !(npc.ai[1] >= 30f) || !(npc.ai[1] <= 170f);
-                        npc.velocity *= 0.95f;
-                        if (npc.ai[1] == 90f)
-                        {
-                            if (npc.ai[3] == 0f)
-                                npc.ai[3] = 1f;
-
-                            if (npc.ai[3] == 2f)
-                                npc.ai[3] = 3f;
-
-                            npc.Center = npc.GetTargetData().Center + new Vector2(0f, -250f);
-                            npc.netUpdate = true;
-                        }
-
-                        npc.ai[1] += 1f;
-                        if (npc.ai[1] >= 180f + extraPhaseTime)
-                        {
-                            npc.ai[0] = 1f;
-                            npc.ai[1] = 0f;
-                            npc.ai[2] = 0f;
-                            npc.netUpdate = true;
-                        }
-
-                        break;
-                    }
-
-                case 11:
-                    {
-                        // Avoid cheap bullshit.
-                        npc.damage = 0;
-
-                        if (npc.ai[1] == 0f)
-                            SoundEngine.PlaySound(SoundID.Item162, npc.Center);
-
-                        float extraPhaseTime = 20 - reducedAttackCooldown;
-                        float lanceGateValue = masterMode ? 75f : 100f;
-                        if (npc.ai[1] >= 6f && npc.ai[1] < 54f)
-                        {
-                            AI_120_HallowBoss_DoMagicEffect(npc.Center + new Vector2(-55f, -20f), 2, Utils.GetLerpValue(0f, lanceGateValue, npc.ai[1], clamped: true), npc);
-                            AI_120_HallowBoss_DoMagicEffect(npc.Center + new Vector2(55f, -20f), 4, Utils.GetLerpValue(0f, lanceGateValue, npc.ai[1], clamped: true), npc);
-                        }
-
-                        NPCAimedTarget targetData = npc.GetTargetData();
-                        Vector2 targetLocation = (targetData.Invalid ? npc.Center : targetData.Center);
-                        if (npc.Distance(targetLocation + stopMovingLocation3) > stopMovingDistance)
-                            npc.SimpleFlyMovement(npc.DirectionTo(targetLocation + stopMovingLocation3).SafeNormalize(Vector2.Zero) * desiredVelocity, moveSpeed);
-
-                        if ((int)npc.ai[1] % 3 == 0 && npc.ai[1] < lanceGateValue)
-                        {
-                            int numLances = phase3 ? 2 : 1;
-                            for (int i = 0; i < numLances; i++)
-                            {
-                                // Spawn another lance in the opposite location
-                                bool oppositeLance = i == 1;
-
-                                Vector2 vector13 = oppositeLance ? targetData.Velocity : -targetData.Velocity;
-                                vector13.SafeNormalize(-Vector2.UnitY);
-                                float lanceSpawnOffset = 100f;
-                                Vector2 targetCenter = targetData.Center;
-                                if (npc.Distance(targetCenter) > 2400f)
-                                    continue;
-
-                                int targetVelocityOffset = 90;
-                                Vector2 vector14 = targetCenter + (oppositeLance ? -targetData.Velocity : targetData.Velocity) * targetVelocityOffset;
-                                Vector2 lanceSpawnLocation = targetCenter + vector13 * lanceSpawnOffset;
-                                if (lanceSpawnLocation.Distance(targetCenter) < lanceSpawnOffset)
-                                {
-                                    Vector2 vector16 = targetCenter - lanceSpawnLocation;
-                                    if (vector16 == Vector2.Zero)
-                                        vector16 = vector13;
-
-                                    lanceSpawnLocation = targetCenter - vector16.SafeNormalize(Vector2.UnitY) * lanceSpawnOffset;
-                                }
-
-                                Vector2 rotationVector = vector14 - lanceSpawnLocation;
-                                if (Main.netMode != NetmodeID.MultiplayerClient)
-                                    Projectile.NewProjectile(npc.GetSource_FromAI(), lanceSpawnLocation, Vector2.Zero, ProjectileID.FairyQueenLance, lanceDamage, 0f, Main.myPlayer, rotationVector.ToRotation(), npc.ai[1] / lanceGateValue);
-
-                                if (Main.netMode == NetmodeID.MultiplayerClient)
-                                    continue;
-
-                                int rotationIndex = (int)(npc.ai[1] / 3f);
-                                for (int l = 0; l < Main.maxPlayers; l++)
-                                {
-                                    if (!npc.Boss_CanShootExtraAt(l, rotationIndex % 3, 3, 2400f))
-                                        continue;
-
-                                    Player player = Main.player[l];
-                                    vector13 = oppositeLance ? player.velocity : -player.velocity;
-                                    vector13.SafeNormalize(-Vector2.UnitY);
-                                    lanceSpawnOffset = 100f;
-                                    targetCenter = player.Center;
-                                    targetVelocityOffset = 90;
-                                    Vector2 lanceDestination = targetCenter + (oppositeLance ? -player.velocity : player.velocity) * targetVelocityOffset;
-                                    lanceSpawnLocation = targetCenter + vector13 * lanceSpawnOffset;
-                                    if (lanceSpawnLocation.Distance(targetCenter) < lanceSpawnOffset)
-                                    {
-                                        Vector2 vector18 = targetCenter - lanceSpawnLocation;
-                                        if (vector18 == Vector2.Zero)
-                                            vector18 = vector13;
-
-                                        lanceSpawnLocation = targetCenter - vector18.SafeNormalize(Vector2.UnitY) * lanceSpawnOffset;
-                                    }
-
-                                    rotationVector = lanceDestination - lanceSpawnLocation;
-                                    Projectile.NewProjectile(npc.GetSource_FromAI(), lanceSpawnLocation, Vector2.Zero, ProjectileID.FairyQueenLance, lanceDamage, 0f, Main.myPlayer, rotationVector.ToRotation(), npc.ai[1] / lanceGateValue);
-                                }
-                            }
-                        }
-
-                        npc.ai[1] += 1f;
-                        if (npc.ai[1] >= lanceGateValue + extraPhaseTime)
-                        {
-                            npc.ai[0] = 1f;
-                            npc.ai[1] = 0f;
-                            npc.netUpdate = true;
-                        }
-
-                        break;
-                    }
-
-                case 12:
-                    {
-                        // Avoid cheap bullshit.
-                        npc.damage = 0;
-
-                        float extraPhaseTime = (masterMode ? 30f : expertMode ? 60f : 90f) - (float)reducedAttackCooldown;
-                        Vector2 offset = new Vector2(-55f, -30f);
-                        if (npc.ai[1] == 0f)
-                        {
-                            SoundEngine.PlaySound(SoundID.Item165, npc.Center);
-                            npc.velocity = new Vector2(0f, -12f);
-                        }
-
-                        npc.velocity *= 0.95f;
-                        bool shootRainbowStreaks = npc.ai[1] < 60f && npc.ai[1] >= 10f;
-                        if (shootRainbowStreaks)
-                            AI_120_HallowBoss_DoMagicEffect(npc.Center + offset, 1, Utils.GetLerpValue(0f, 60f, npc.ai[1], clamped: true), npc);
-
-                        int rainbowStreakGateValue = 6;
-                        if (expertMode)
-                            rainbowStreakGateValue = 4;
-                        if (phase3)
-                            rainbowStreakGateValue *= 2;
-
-                        float radialOffset = (npc.ai[1] - 10f) / 50f;
-                        if ((int)npc.ai[1] % rainbowStreakGateValue == 0 && shootRainbowStreaks)
-                        {
-                            Vector2 rainbowStreakVelocity = (rainbowStreakVelocity = new Vector2(0f, -20f - (phase3 ? ((masterMode ? 10f : 5f) * radialOffset) : 0f)).RotatedBy(MathHelper.TwoPi * radialOffset));
-                            if (Main.netMode != NetmodeID.MultiplayerClient)
-                            {
-                                Projectile.NewProjectile(npc.GetSource_FromAI(), npc.Center + offset, rainbowStreakVelocity, ProjectileID.HallowBossRainbowStreak, rainbowStreakDamage, 0f, Main.myPlayer, npc.target, radialOffset);
-                                if (phase3)
-                                    Projectile.NewProjectile(npc.GetSource_FromAI(), npc.Center + offset, -rainbowStreakVelocity, ProjectileID.HallowBossRainbowStreak, rainbowStreakDamage, 0f, Main.myPlayer, npc.target, 1f - radialOffset);
-                            }
-
-                            if (Main.netMode != NetmodeID.MultiplayerClient)
-                            {
-                                int num24 = (int)(npc.ai[1] % (float)rainbowStreakGateValue);
-                                for (int j = 0; j < Main.maxPlayers; j++)
-                                {
-                                    if (npc.Boss_CanShootExtraAt(j, num24 % 3, 3, 2400f))
-                                        Projectile.NewProjectile(npc.GetSource_FromAI(), npc.Center + offset, rainbowStreakVelocity, ProjectileID.HallowBossRainbowStreak, rainbowStreakDamage, 0f, Main.myPlayer, j, radialOffset);
-                                }
-                            }
-                        }
-
-                        npc.ai[1] += 1f;
-                        if (npc.ai[1] >= 60f + extraPhaseTime)
-                        {
-                            npc.ai[0] = 1f;
-                            npc.ai[1] = 0f;
-                            npc.netUpdate = true;
-                        }
-
-                        break;
-                    }
-
-                case 13:
-                    {
-                        // Avoid cheap bullshit.
-                        npc.damage = 0;
-
-                        if (npc.ai[1] == 0f)
-                        {
-                            SoundEngine.PlaySound(SoundID.Item165, npc.Center);
-                            npc.velocity = new Vector2(0f, -7f);
-                        }
-
-                        npc.velocity *= 0.95f;
-                        CalamityUtils.CalamityTargeting(npc, CalamityTargetingParameters.BossDefaults);
-                        NPCAimedTarget targetData = npc.GetTargetData();
-                        becomeVisible = false;
-                        bool turnInvisible = false;
-                        bool despawn = false;
-                        if (!turnInvisible)
-                        {
-                            if (npc.AI_120_HallowBoss_IsGenuinelyEnraged())
-                            {
-                                if (!Main.dayTime)
-                                    despawn = true;
-
-                                if (Main.dayTime && Main.time >= 53400D)
-                                    despawn = true;
-                            }
-
-                            turnInvisible = turnInvisible || despawn;
-                        }
-
-                        if (!turnInvisible)
-                        {
-                            bool noValidTarget = targetData.Invalid || npc.Distance(targetData.Center) > despawnDistance;
-                            turnInvisible = turnInvisible || noValidTarget;
-                        }
-
-                        npc.alpha = Utils.Clamp(npc.alpha + turnInvisible.ToDirectionInt() * 5, 0, 255);
-                        bool flag10 = npc.alpha == 0 || npc.alpha == 255;
-                        int totalDust = 5;
-                        for (int i = 0; i < totalDust; i++)
-                        {
-                            float num19 = MathHelper.Lerp(1.3f, 0.7f, npc.Opacity);
-                            Color newColor = Main.hslToRgb(Main.rand.NextFloat(), 1f, 0.5f);
-                            int num20 = Dust.NewDust(npc.position - npc.Size * 0.5f, npc.width * 2, npc.height * 2, DustID.RainbowMk2, 0f, 0f, 0, newColor);
-                            Main.dust[num20].position = npc.Center + Main.rand.NextVector2Circular(npc.width, npc.height);
-                            Main.dust[num20].velocity *= Main.rand.NextFloat() * 0.8f;
-                            Main.dust[num20].noGravity = true;
-                            Main.dust[num20].scale = 0.9f + Main.rand.NextFloat() * 1.2f;
-                            Main.dust[num20].fadeIn = 0.4f + Main.rand.NextFloat() * 1.2f * num19;
-                            Main.dust[num20].velocity += Vector2.UnitY * -2f;
-                            Main.dust[num20].scale = 0.35f;
-                            if (num20 != Main.maxDust)
-                            {
-                                Dust dust = Dust.CloneDust(num20);
-                                dust.scale /= 2f;
-                                dust.fadeIn *= 0.85f;
-                                dust.color = new Color(255, 255, 255, 255);
-                            }
-                        }
-
-                        npc.ai[1] += 1f;
-                        if (!(npc.ai[1] >= 20f && flag10))
-                            break;
-
-                        if (npc.alpha == 255)
-                        {
-                            npc.active = false;
-                            if (Main.netMode != NetmodeID.MultiplayerClient)
-                                NetMessage.SendData(MessageID.SyncNPC, -1, -1, null, npc.whoAmI);
-
-                            return false;
-                        }
-
-                        npc.ai[0] = 1f;
-                        npc.ai[1] = 0f;
-                        npc.netUpdate = true;
-                        break;
-                    }
-            }
-
-            npc.dontTakeDamage = !takeDamage;
-
-            if (phase3)
-                npc.defense = (int)Math.Round(npc.defDefense * 0.8);
-            else if (phase2)
-                npc.defense = (int)Math.Round(npc.defDefense * 1.2);
-            else
-                npc.defense = npc.defDefense;
-
-            if ((npc.localAI[0] += 1f) >= 44f)
-                npc.localAI[0] = 0f;
-
-            if (becomeVisible)
-                npc.alpha = Utils.Clamp(npc.alpha - 5, minAlpha, 255);
 
             Lighting.AddLight(npc.Center, Vector3.One * npc.Opacity);
 

@@ -153,13 +153,13 @@ namespace CalamityMod.Items.Accessories
                         }
                     }
 
-                    // If ranged, or any direct subclass thereof, display ranged ammo consumption
-                    if (dc == DamageClass.Ranged || dc.GetModifierInheritance(DamageClass.Ranged).Equals(StatInheritanceData.Full))
-                        stats2 += "\n" + this.GetLocalization("RangedStats").Format(TwoPlaces(100f * player.GetRangedAmmoCostReduction()));
+                    // If held item uses ammo, display ammo consumption
+                    if (heldItem.useAmmo > 0)
+                        stats2 += "\n" + this.GetLocalization("AmmoStats").Format(OnePlace(100f * player.GetAmmoCostReduction()));
 
-                    // If magic, or any direct subclass thereof, display mana stats
-                    if (dc == DamageClass.Magic || dc == DamageClass.MagicSummonHybrid || dc.GetModifierInheritance(DamageClass.Magic).Equals(StatInheritanceData.Full))
-                        stats2 += "\n" + this.GetLocalization("MagicStats").Format(TwoPlaces(100f * player.manaCost), player.manaRegen);
+                    // If held item uses mana, display mana stats
+                    if (heldItem.mana > 0)
+                        stats2 += "\n" + this.GetLocalization("ManaStats").Format(OnePlace(100f * player.manaCost), player.manaRegen);
 
                     // If summon, or any direct subclass thereof, AND NOT A WHIP, display minion/sentry slots
                     if (dc != DamageClass.SummonMeleeSpeed && (dc == DamageClass.Summon || dc.GetModifierInheritance(DamageClass.Summon).Equals(StatInheritanceData.Full)))
@@ -168,7 +168,7 @@ namespace CalamityMod.Items.Accessories
                     // If whip, show whip range
                     float whipRange = player.whipRangeMultiplier - 1f;
                     if (dc == DamageClass.SummonMeleeSpeed || dc.GetModifierInheritance(DamageClass.SummonMeleeSpeed).Equals(StatInheritanceData.Full))
-                        stats2 += "\n" + this.GetLocalization("WhipStats").Format(Sign(whipRange) + TwoPlaces(100f * whipRange));
+                        stats2 += "\n" + this.GetLocalization("WhipStats").Format(Sign(whipRange) + OnePlace(100f * whipRange));
 
                     // If throwing or rogue, display rogue stats.
                     float rogueVelocity = modPlayer.rogueVelocity - 1f;
@@ -178,7 +178,7 @@ namespace CalamityMod.Items.Accessories
                             (int)(100f * modPlayer.rogueStealthMax),
                             TwoPlaces(60f * player.GetStandingStealthRegen()),
                             TwoPlaces(60f * player.GetMovingStealthRegen()),
-                            Sign(rogueVelocity) + TwoPlaces(100f * rogueVelocity));
+                            Sign(rogueVelocity) + OnePlace(100f * rogueVelocity));
                     }
 
                     // If tool, add tool range
@@ -199,7 +199,7 @@ namespace CalamityMod.Items.Accessories
             }
             list.FindAndReplace("[ITEMS]", stats2);
 
-            float moveSpeedBoost = player.moveSpeed - 1f;
+            float moveSpeedBoost = CalamityServerConfig.Instance.FasterBaseSpeed ? (player.moveSpeed / BalancingConstants.DefaultMoveSpeedBoost) - 1f  : player.moveSpeed - 1f;
             float wingFlightTime = player.wingTimeMax;
             // Does not use NormalizedLuck. Presents the player's luck exactly as it is used by the game engine.
             // NormalizedLuck is only used in one place: the Wizard's luck report. Which is entirely obsoleted by this Meter.
@@ -223,7 +223,6 @@ namespace CalamityMod.Items.Accessories
             // Detailed Abyss stats only render if the player is in the Abyss.
             string stats4 = "\n" + (!modPlayer.ZoneAbyss ? this.GetLocalizedValue("AbyssStatsHidden") : this.GetLocalization("AbyssStats").Format(
                 player.GetCurrentAbyssLightLevel(),
-                TwoPlaces(modPlayer.abyssBreathLossStat),
                 TwoPlaces(modPlayer.abyssBreathLossRateStat),
                 modPlayer.abyssLifeLostAtZeroBreathStat,
                 modPlayer.abyssDefenseLossStat));

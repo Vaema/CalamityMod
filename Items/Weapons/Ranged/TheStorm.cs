@@ -1,4 +1,6 @@
-﻿using CalamityMod.Projectiles.Ranged;
+﻿using CalamityMod.Items.Weapons.Magic;
+using CalamityMod.Items.Weapons.Rogue;
+using CalamityMod.Projectiles.Ranged;
 using CalamityMod.Rarities;
 using Microsoft.Xna.Framework;
 using Terraria;
@@ -18,12 +20,13 @@ namespace CalamityMod.Items.Weapons.Ranged
         {
             ItemID.Sets.AnimatesAsSoul[Type] = true;
             Main.RegisterItemAnimation(Type, new DrawAnimationVertical(5, 9));
+            ItemID.Sets.ShimmerTransformToItem[Type] = ModContent.ItemType<Volterion>();
         }
         public override void SetDefaults()
         {
             Item.width = 54;
             Item.height = 90;
-            Item.damage = 23;
+            Item.damage = 40;
             Item.DamageType = DamageClass.Ranged;
             Item.useTime = 2;
             Item.useAnimation = 20;

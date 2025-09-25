@@ -18,7 +18,7 @@ namespace CalamityMod.Items.Weapons.Ranged
         {
             Item.width = 62;
             Item.height = 90;
-            Item.damage = 83;
+            Item.damage = 96;
             Item.DamageType = DamageClass.Ranged;
             Item.useTime = 15;
             Item.useAnimation = 30;
@@ -31,8 +31,7 @@ namespace CalamityMod.Items.Weapons.Ranged
             Item.shoot = ProjectileID.WoodenArrowFriendly;
             Item.shootSpeed = 12f;
             Item.useAmmo = AmmoID.Arrow;
-            Item.rare = ModContent.RarityType<DarkBlue>();
-            Item.Calamity().canFirePointBlankShots = true;
+            Item.rare = ModContent.RarityType<CosmicPurple>();
         }
 
         public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo spawnSource, Vector2 position, Vector2 velocity, int type, int damage, float knockback)
@@ -69,12 +68,9 @@ namespace CalamityMod.Items.Weapons.Ranged
                             newType = ModContent.ProjectileType<TorrentialArrow>();
                             break;
                     }
-                    int proj = Projectile.NewProjectile(spawnSource, source.X + offset.X, source.Y + offset.Y, velocity.X, velocity.Y, newType, (int)(damage * 2.3f), knockback, player.whoAmI);
+                    int proj = Projectile.NewProjectile(spawnSource, source.X + offset.X, source.Y + offset.Y, velocity.X, velocity.Y, newType, (int)(damage * 1.35f), knockback, player.whoAmI);
                     if (proj.WithinBounds(Main.maxProjectiles))
-                    {
-                        Main.projectile[proj].arrow = true;
                         Main.projectile[proj].extraUpdates += 1;
-                    }
                 }
                 else
                 {

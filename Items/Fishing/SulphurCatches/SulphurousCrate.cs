@@ -48,7 +48,7 @@ namespace CalamityMod.Items.Fishing.SulphurCatches
                 ModContent.ItemType<BrokenWaterFilter>(),
                 ModContent.ItemType<EffigyOfDecay>(),
                 ModContent.ItemType<RustyBeaconPrototype>(),
-                ModContent.ItemType<RustyMedallion>()
+                ModContent.ItemType<ScionsCurio>()
             ));
 
             itemLoot.AddBiomeCrateLootRules(false);

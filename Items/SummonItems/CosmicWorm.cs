@@ -54,7 +54,7 @@ namespace CalamityMod.Items.SummonItems
                 AddIngredient<ArmoredShell>().
                 AddIngredient<TwistingNether>().
                 AddIngredient<DarkPlasma>().
-                AddTile(TileID.LunarCraftingStation).
+                AddTile(TileID.MythrilAnvil).
                 Register()
                 .DisableDecraft();
 
@@ -63,9 +63,8 @@ namespace CalamityMod.Items.SummonItems
                 AddIngredient(ItemID.LunarBar, 40).
                 AddIngredient<GalacticaSingularity>(10).
                 AddIngredient<Necroplasm>(40).
-                AddTile(TileID.LunarCraftingStation).
-                Register()
-                .DisableDecraft();
+                AddTile(TileID.MythrilAnvil).
+                Register();
         }
     }
 }

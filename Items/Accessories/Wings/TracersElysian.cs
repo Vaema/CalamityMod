@@ -38,7 +38,7 @@ namespace CalamityMod.Items.Accessories.Wings
             Item.width = 36;
             Item.height = 32;
             Item.value = CalamityGlobalItem.RarityDarkBlueBuyPrice;
-            Item.rare = ModContent.RarityType<DarkBlue>();
+            Item.rare = ModContent.RarityType<CosmicPurple>();
         }
         public override void SaveData(TagCompound tag)
         {
@@ -113,7 +113,6 @@ namespace CalamityMod.Items.Accessories.Wings
                 modPlayer.angelTreads = true;
             }
             modPlayer.tracersDust = !hideVisual;
-            modPlayer.elysianWingsDust = !hideVisual;
             modPlayer.tracersElysian = true;
         }
 

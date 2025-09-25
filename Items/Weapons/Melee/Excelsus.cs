@@ -1,4 +1,5 @@
-﻿using CalamityMod.Projectiles.Melee;
+﻿using CalamityMod.Items.Weapons.Rogue;
+using CalamityMod.Projectiles.Melee;
 using CalamityMod.Rarities;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
@@ -12,21 +13,24 @@ namespace CalamityMod.Items.Weapons.Melee
     public class Excelsus : ModItem, ILocalizedModType
     {
         public new string LocalizationCategory => "Items.Weapons.Melee";
+        public override void SetStaticDefaults()
+        {
+            ItemID.Sets.ShimmerTransformToItem[Type] = ModContent.ItemType<TheObliterator>();
+        }
         public override void SetDefaults()
         {
             Item.width = 78;
             Item.height = 94;
-            Item.damage = 250;
+            Item.damage = 206;
             Item.DamageType = DamageClass.Melee;
-            Item.useAnimation = 15;
+            Item.useTime = Item.useAnimation = 15;
             Item.useStyle = ItemUseStyleID.Swing;
-            Item.useTime = 15;
             Item.useTurn = true;
             Item.knockBack = 8f;
             Item.UseSound = SoundID.Item1;
             Item.autoReuse = true;
             Item.value = CalamityGlobalItem.RarityDarkBlueBuyPrice;
-            Item.rare = ModContent.RarityType<DarkBlue>();
+            Item.rare = ModContent.RarityType<CosmicPurple>();
             Item.shoot = ModContent.ProjectileType<ExcelsusMain>();
             Item.shootSpeed = 12f;
         }
@@ -57,18 +61,6 @@ namespace CalamityMod.Items.Weapons.Melee
                 Projectile.NewProjectile(source, position.X, position.Y, SpeedX, SpeedY, type, damage, knockback, player.whoAmI);
             }
             return false;
-        }
-
-        public override void OnHitNPC(Player player, NPC target, NPC.HitInfo hit, int damageDone)
-        {
-            var source = player.GetSource_ItemUse(Item);
-            Projectile.NewProjectile(source, target.Center, Vector2.Zero, ModContent.ProjectileType<LaserFountain>(), 0, 0, player.whoAmI);
-        }
-
-        public override void OnHitPvp(Player player, Player target, Player.HurtInfo hurtInfo)
-        {
-            var source = player.GetSource_ItemUse(Item);
-            Projectile.NewProjectile(source, target.Center, Vector2.Zero, ModContent.ProjectileType<LaserFountain>(), 0, 0, player.whoAmI);
         }
     }
 }

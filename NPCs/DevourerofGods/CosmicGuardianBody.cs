@@ -13,6 +13,7 @@ using Terraria.Localization;
 using Terraria.ModLoader;
 namespace CalamityMod.NPCs.DevourerofGods
 {
+    [HasPierceResist]
     [LongDistanceNetSync(SyncWith = typeof(CosmicGuardianHead))]
     public class CosmicGuardianBody : ModNPC
     {
@@ -32,7 +33,7 @@ namespace CalamityMod.NPCs.DevourerofGods
 
         public override void SetDefaults()
         {
-            NPC.GetNPCDamage();
+            NPC.damage = 120; // 240
             NPC.width = 34;
             NPC.height = 34;
             NPC.defense = 60;
@@ -51,10 +52,6 @@ namespace CalamityMod.NPCs.DevourerofGods
             NPC.DeathSound = SoundID.NPCDeath14;
             NPC.netAlways = true;
             NPC.dontCountMe = true;
-
-            // Scale stats in Expert and Master
-            CalamityGlobalNPC.AdjustExpertModeStatScaling(NPC);
-            CalamityGlobalNPC.AdjustMasterModeStatScaling(NPC);
         }
 
         public override void SendExtraAI(BinaryWriter writer)
@@ -141,21 +138,6 @@ namespace CalamityMod.NPCs.DevourerofGods
                 NPC.position.X = NPC.position.X + targetX;
                 NPC.position.Y = NPC.position.Y + targetY;
             }
-
-            // Calculate contact damage based on velocity
-            float segmentVelocity = BossRushEvent.BossRushActive ? 30f : CalamityWorld.revenge ? 25f : 23f;
-            float minimalContactDamageVelocity = segmentVelocity * 0.25f;
-            float minimalDamageVelocity = segmentVelocity * 0.5f;
-            float bodyAndTailVelocity = (NPC.position - NPC.oldPosition).Length();
-            if (bodyAndTailVelocity <= minimalContactDamageVelocity)
-            {
-                NPC.damage = 0;
-            }
-            else
-            {
-                float velocityDamageScalar = MathHelper.Clamp((bodyAndTailVelocity - minimalContactDamageVelocity) / minimalDamageVelocity, 0f, 1f);
-                NPC.damage = (int)MathHelper.Lerp(0f, NPC.defDamage, velocityDamageScalar);
-            }
         }
 
         public override bool PreDraw(SpriteBatch spriteBatch, Vector2 screenPos, Color drawColor)
@@ -233,7 +215,7 @@ namespace CalamityMod.NPCs.DevourerofGods
         public override void OnHitPlayer(Player target, Player.HurtInfo hurtInfo)
         {
             if (hurtInfo.Damage > 0)
-                target.AddBuff(ModContent.BuffType<GodSlayerInferno>(), 80, true);
+                target.AddBuff(ModContent.BuffType<GodSlayerInferno>(), 120);
         }
     }
 }

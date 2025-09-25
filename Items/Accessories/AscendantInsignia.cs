@@ -41,7 +41,7 @@ namespace CalamityMod.Items.Accessories
                 AddIngredient<EffulgentFeather>(5).
                 AddIngredient<DivineGeode>(5).
                 AddIngredient(ItemID.SoulofFlight, 10).
-                AddTile(TileID.LunarCraftingStation).
+                AddTile(TileID.MythrilAnvil).
                 Register();
         }
     }

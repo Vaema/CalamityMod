@@ -14,6 +14,7 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.NPCs.CeaselessVoid
 {
+    [HasPierceResist]
     public class DarkEnergy : ModNPC
     {
         private bool start = true;
@@ -44,9 +45,9 @@ namespace CalamityMod.NPCs.CeaselessVoid
         public override void SetDefaults()
         {
             NPC.Calamity().canBreakPlayerDefense = true;
+            NPC.damage = 120; // 240
             NPC.aiStyle = -1;
             AIType = -1;
-            NPC.GetNPCDamage();
             NPC.dontTakeDamage = true;
             NPC.width = NPC.height = HitboxSize;
             NPC.defense = 50;
@@ -58,10 +59,6 @@ namespace CalamityMod.NPCs.CeaselessVoid
             NPC.HitSound = SoundID.NPCHit53;
             NPC.DeathSound = SoundID.NPCDeath44;
             NPC.Calamity().VulnerableToSickness = false;
-
-            // Scale stats in Expert and Master
-            CalamityGlobalNPC.AdjustExpertModeStatScaling(NPC);
-            CalamityGlobalNPC.AdjustMasterModeStatScaling(NPC);
         }
 
         public override void SetBestiary(BestiaryDatabase database, BestiaryEntry bestiaryEntry)
@@ -160,18 +157,14 @@ namespace CalamityMod.NPCs.CeaselessVoid
                 NPC.timeLeft = 1800;
 
             // Difficulty modes
-            bool bossRush = BossRushEvent.BossRushActive;
-            bool expertMode = Main.expertMode || bossRush;
-            bool revenge = CalamityWorld.revenge || bossRush;
-            bool death = CalamityWorld.death || bossRush;
-
-            // Gets how enraged Ceaseless Void is
-            float tileEnrageMult = Main.npc[CalamityGlobalNPC.voidBoss].ai[1];
+            bool expertMode = Main.expertMode || BossRushEvent.BossRushActive;
+            bool revenge = CalamityWorld.revenge || BossRushEvent.BossRushActive;
+            bool death = CalamityWorld.death || BossRushEvent.BossRushActive;
 
             // Distance from Ceaseless Void
-            double maxDistance = bossRush ? 1200D : death ? 1040D : revenge ? 960D : expertMode ? 880D : minMaxDistance;
+            double maxDistance = death ? 1040D : revenge ? 960D : expertMode ? 880D : minMaxDistance;
             double rateOfChangeIncrease = (maxDistance / minMaxDistance) - 1D;
-            double rateOfChange = (NPC.ai[1] * 0.5f) + 2D + (tileEnrageMult - 1f) + rateOfChangeIncrease;
+            double rateOfChange = (NPC.ai[1] * 0.5f) + 2D + rateOfChangeIncrease;
             if (NPC.Calamity().newAI[0] == 0f)
             {
                 distance += rateOfChange;
@@ -192,7 +185,7 @@ namespace CalamityMod.NPCs.CeaselessVoid
             }
 
             // Rotation velocity
-            float minRotationVelocity = 0.5f + tileEnrageMult - 1f;
+            float minRotationVelocity = 0.5f;
             float rotationVelocityIncrease = death ? 0.2f : revenge ? 0.15f : expertMode ? 0.1f : 0f;
             rotationVelocityIncrease += rotationVelocityIncrease * (NPC.ai[1] * 0.5f);
 
@@ -283,7 +276,7 @@ namespace CalamityMod.NPCs.CeaselessVoid
             if (Main.zenithWorld)
             {
                 if (hurtInfo.Damage > 0)
-                    target.AddBuff(BuffID.Obstructed, 30, true);
+                    target.AddBuff(BuffID.Blackout, 30, true);
             }
         }
 

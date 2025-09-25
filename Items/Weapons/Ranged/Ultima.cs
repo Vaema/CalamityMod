@@ -19,13 +19,13 @@ namespace CalamityMod.Items.Weapons.Ranged
         {
             Item.width = 44;
             Item.height = 58;
-            Item.damage = 150;
+            Item.damage = 115;
             Item.DamageType = DamageClass.Ranged;
             Item.useAnimation = Item.useTime = 8;
             Item.useStyle = ItemUseStyleID.Shoot;
             Item.noMelee = true;
             Item.knockBack = 2f;
-            Item.UseSound = SoundID.Item33;
+            Item.UseSound = SoundID.Item158;
             Item.autoReuse = true;
             Item.shoot = ModContent.ProjectileType<UltimaBowProjectile>();
             Item.shootSpeed = 18f;
@@ -35,9 +35,8 @@ namespace CalamityMod.Items.Weapons.Ranged
             Item.autoReuse = true;
             Item.noUseGraphic = true;
             Item.value = CalamityGlobalItem.RarityDarkBlueBuyPrice;
-            Item.rare = ModContent.RarityType<DarkBlue>();
+            Item.rare = ModContent.RarityType<CosmicPurple>();
             Item.Calamity().donorItem = true;
-            Item.Calamity().canFirePointBlankShots = true;
         }
 
         public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)
@@ -53,7 +52,6 @@ namespace CalamityMod.Items.Weapons.Ranged
                 AddIngredient(ItemID.PulseBow).
                 AddIngredient(ItemID.LaserRifle).
                 AddIngredient<TheStorm>().
-                AddIngredient<AstralBow>().
                 AddIngredient<CosmiliteBar>(8).
                 AddIngredient<DarksunFragment>(8).
                 AddIngredient<ExodiumCluster>(15).

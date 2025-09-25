@@ -1,0 +1,163 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Reflection;
+using CalamityMod.Balancing;
+using CalamityMod.Items.Accessories;
+using CalamityMod.Projectiles;
+using CalamityMod.Systems.Collections;
+using Terraria;
+using Terraria.ID;
+using Terraria.ModLoader;
+using Terraria.ModLoader.Core;
+using static Terraria.ModLoader.ModContent;
+
+namespace CalamityMod.NPCs
+{
+    public sealed class PierceResistNPC : GlobalNPC
+    {
+        private static HashSet<int> exemptProjectiles;
+        private static HashSet<int> pierceResistNPC;
+        private static HashSet<int> singleHitboxNPC;
+        private static Dictionary<int, bool> singleHitboxExemptProjectiles;
+
+        public override void Load()
+        {
+            exemptProjectiles = new();
+            pierceResistNPC = new();
+            singleHitboxNPC = new();
+            singleHitboxExemptProjectiles = new();
+        }
+
+        public override void Unload()
+        {
+            exemptProjectiles?.Clear();
+            exemptProjectiles = null;
+            pierceResistNPC?.Clear();
+            pierceResistNPC = null;
+            singleHitboxNPC?.Clear();
+            singleHitboxNPC = null;
+            singleHitboxExemptProjectiles?.Clear();
+            singleHitboxExemptProjectiles = null;
+        }
+
+        public override void SetStaticDefaults()
+        {
+            // Specific vanilla NPC's with pierce resistance
+            pierceResistNPC.Add(NPCID.EaterofWorldsHead);
+            pierceResistNPC.Add(NPCID.EaterofWorldsBody);
+            pierceResistNPC.Add(NPCID.EaterofWorldsTail);
+            pierceResistNPC.Add(NPCID.Creeper);
+            pierceResistNPC.Add(NPCID.TheDestroyer);
+            pierceResistNPC.Add(NPCID.TheDestroyerBody);
+            pierceResistNPC.Add(NPCID.TheDestroyerTail);
+
+            // Specific vanilla projectile exemptions
+            exemptProjectiles.Add(ProjectileID.Arkhalis);
+            exemptProjectiles.Add(ProjectileID.ChargedBlasterLaser);
+            exemptProjectiles.Add(ProjectileID.ClingerStaff);
+            exemptProjectiles.Add(ProjectileID.FinalFractal);
+            exemptProjectiles.Add(ProjectileID.FlyingKnife);
+            exemptProjectiles.Add(ProjectileID.LastPrismLaser);
+            exemptProjectiles.Add(ProjectileType<MarniteRepulsionHitbox>()); // Included here as it does not have a projectile
+            exemptProjectiles.Add(ProjectileID.MonkStaffT3);
+            exemptProjectiles.Add(ProjectileID.PiercingStarlight);
+            exemptProjectiles.Add(ProjectileID.Terragrim);
+
+            // Specific vanilla projectile single hitbox exemptions
+            singleHitboxExemptProjectiles[ProjectileID.NettleBurstEnd] = true;
+            singleHitboxExemptProjectiles[ProjectileID.NettleBurstLeft] = true;
+            singleHitboxExemptProjectiles[ProjectileID.NettleBurstRight] = true;
+            singleHitboxExemptProjectiles[ProjectileID.PrincessWeapon] = true;
+            singleHitboxExemptProjectiles[ProjectileID.ToxicCloud] = true;
+            singleHitboxExemptProjectiles[ProjectileID.ToxicCloud2] = true;
+            singleHitboxExemptProjectiles[ProjectileID.ToxicCloud3] = true;
+
+            var projectileTypes = AssemblyManager.GetLoadableTypes(CalamityMod.Instance.Code)
+                .Where(type => !type.IsAbstract && type.IsSubclassOf(typeof(ModProjectile)));
+
+            foreach (var type in projectileTypes)
+            {
+                try
+                {
+                    var pierceResistException = type.GetCustomAttribute<PierceResistExceptionAttribute>();
+                    if (pierceResistException == null)
+                        continue;
+
+                    var projectileTypeMethod = typeof(ModContent).GetMethod(nameof(ModContent.ProjectileType));
+                    var projectileTypeActualMethod = projectileTypeMethod.MakeGenericMethod(type);
+                    int projectileType = (int)projectileTypeActualMethod.Invoke(null, null);
+
+                    if (pierceResistException.OnlyForSingleHitbox)
+                    {
+                        singleHitboxExemptProjectiles[projectileType] = true;
+                        continue;
+                    }
+                    else
+                    {
+                        exemptProjectiles.Add(projectileType);
+                    }
+                }
+                catch (Exception e)
+                {
+                    CalamityMod.Instance.Logger.Error($"Exception thrown while evaluating type \"{type.Name}\": {e}");
+                }
+            }
+
+            var npcTypes = AssemblyManager.GetLoadableTypes(CalamityMod.Instance.Code)
+                .Where(type => !type.IsAbstract && type.IsSubclassOf(typeof(ModNPC)));
+
+            foreach (var type in npcTypes)
+            {
+                try
+                {
+                    var hasPierceResist = type.GetCustomAttribute<HasPierceResistAttribute>();
+                    if (hasPierceResist == null)
+                        continue;
+
+                    var npcTypeMethod = typeof(ModContent).GetMethod(nameof(ModContent.NPCType));
+                    var npcTypeActualMethod = npcTypeMethod.MakeGenericMethod(type);
+                    int npcType = (int)npcTypeActualMethod.Invoke(null, null);
+
+                    pierceResistNPC.Add(npcType);
+                    if (hasPierceResist.SingleHitbox)
+                        singleHitboxNPC.Add(npcType);
+                }
+                catch (Exception e)
+                {
+                    CalamityMod.Instance.Logger.Error($"Exception thrown while evaluating type \"{type.Name}\": {e}");
+                }
+            }
+        }
+
+        public override void ModifyHitByProjectile(NPC npc, Projectile projectile, ref NPC.HitModifiers modifiers)
+        {
+            // Skip if NPC does not have pierce resistance or projectile is exempt
+            if (!pierceResistNPC.Contains(npc.type) || exemptProjectiles.Contains(projectile.type))
+                return;
+
+            // Skip if the projectile is exempt on single hitboxes and the NPC is a single hitbox
+            if (singleHitboxExemptProjectiles.TryGetValue(projectile.type, out bool isSingleHitboxExempt) && isSingleHitboxExempt && singleHitboxNPC.Contains(npc.type))
+                return;
+
+            PierceResistGlobal(projectile, npc, ref modifiers);
+        }
+
+        // Generalized pierce resistance that stacks with all other resistances for some specific bosses defined in a list.
+        private void PierceResistGlobal(Projectile projectile, NPC npc, ref NPC.HitModifiers modifiers)
+        {
+            // Thanatos segments do not trigger pierce resistance if they are closed
+            if (CalamityNPCTypeSets.Thanatos.Contains(npc.type) && npc.GetGlobalNPC<CalamityGlobalNPC>().unbreakableDR)
+                return;
+
+            float damageReduction = projectile.Calamity().timesPierced * BalancingConstants.PierceResistHarshness;
+            if (damageReduction > BalancingConstants.PierceResistCap)
+                damageReduction = BalancingConstants.PierceResistCap;
+
+            modifiers.FinalDamage *= 1f - damageReduction;
+
+            if ((projectile.penetrate > 1 || projectile.penetrate == -1) && !projectile.CountsAsClass<SummonDamageClass>() && projectile.aiStyle != ProjAIStyleID.Flail && projectile.aiStyle != ProjAIStyleID.MechanicalPiranha && projectile.aiStyle != ProjAIStyleID.Yoyo)
+                projectile.Calamity().timesPierced++;
+        }
+    }
+}

@@ -17,18 +17,19 @@ namespace CalamityMod.Tiles.SunkenSea
         {
             Main.tileSolid[Type] = true;
             Main.tileBlockLight[Type] = true;
+            TileID.Sets.HasSlopeFrames[Type] = true;
 
             CalamityUtils.MergeWithGeneral(Type);
             CalamityUtils.MergeWithDesert(Type);
 
-            Main.tileShine[Type] = 1800;
+            Main.tileShine[Type] = 2500;
             Main.tileShine2[Type] = true;
 
             TileID.Sets.ChecksForMerge[Type] = true;
             TileID.Sets.CanBeDugByShovel[Type] = true;
 
-            DustType = 108;
-            AddMapEntry(new Color(61, 151, 194));
+            DustType = DustID.Titanium;
+            AddMapEntry(new Color(66, 162, 209));
 
             this.RegisterUniversalMerge(ModContent.TileType<EutrophicSand>(), "CalamityMod/Tiles/Merges/EutrophicSandMerge");
             this.RegisterUniversalMerge(ModContent.TileType<Navystone>(), "CalamityMod/Tiles/Merges/NavystoneMerge");
@@ -44,7 +45,7 @@ namespace CalamityMod.Tiles.SunkenSea
 
         public override bool TileFrame(int i, int j, ref bool resetFrame, ref bool noBreak)
         {
-            return TileFramingSystem.BrimstoneFraming(i, j, resetFrame);
+            return TileFramingSystem.BetterGemsparkFraming(i, j, resetFrame);
         }
 
         public override void RandomUpdate(int i, int j)
@@ -55,17 +56,6 @@ namespace CalamityMod.Tiles.SunkenSea
 
             if (!up.HasTile && !up2.HasTile && up.LiquidAmount > 0 && up2.LiquidAmount > 0 && !tile.LeftSlope && !tile.RightSlope && !tile.IsHalfBlock)
             {
-                //brain corals
-                if (WorldGen.genRand.NextBool(18))
-                {
-                    ushort[] BrainCorals = new ushort[] { (ushort)ModContent.TileType<BrainCoral>(), (ushort)ModContent.TileType<SmallBrainCoral>() };
-
-                    ushort newObject = Main.rand.Next(BrainCorals);
-
-                    WorldGen.PlaceObject(i, j - 1, newObject, true);
-                    NetMessage.SendObjectPlacement(-1, i, j - 1, newObject, 0, 0, -1, -1);
-                }
-
                 //tube corals
                 if (WorldGen.genRand.NextBool(8))
                 {
@@ -82,6 +72,20 @@ namespace CalamityMod.Tiles.SunkenSea
                 {
                     WorldGen.PlaceObject(i, j - 1, (ushort)ModContent.TileType<SeaAnemone>(), true);
                     NetMessage.SendObjectPlacement(-1, i, j - 1, (ushort)ModContent.TileType<SeaAnemone>(), 0, 0, -1, -1);
+                }
+            }
+
+            // Place sunken kelp
+            if (WorldGen.genRand.NextBool(2) && !up.HasTile && !up2.HasTile && up.LiquidAmount > 0 && up2.LiquidAmount > 0 && !tile.LeftSlope && !tile.RightSlope && !tile.IsHalfBlock)
+            {
+                up.TileType = (ushort)ModContent.TileType<SunkenKelp>();
+                up.HasTile = true;
+
+                WorldGen.SquareTileFrame(i, j - 1, true);
+
+                if (Main.dedServ)
+                {
+                    NetMessage.SendTileSquare(-1, i, j - 1, 3, TileChangeType.None);
                 }
             }
         }

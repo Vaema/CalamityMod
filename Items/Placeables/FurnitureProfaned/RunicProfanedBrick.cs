@@ -19,7 +19,7 @@ namespace CalamityMod.Items.Placeables.FurnitureProfaned
             CreateRecipe(5).
                 AddIngredient<ProfanedRock>(4).
                 AddIngredient<ProfanedCrystal>().
-                AddTile(TileID.LunarCraftingStation).
+                AddTile(TileID.AdamantiteForge).
                 Register();
             CreateRecipe().
                 AddIngredient<RunicProfanedBrickWall>(4).

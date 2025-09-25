@@ -1,8 +1,11 @@
 ﻿using CalamityMod.Buffs.StatDebuffs;
 using CalamityMod.Dusts;
+using CalamityMod.NPCs.OldDuke;
+using CalamityMod.Particles;
 using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.Audio;
+using Terraria.DataStructures;
 using Terraria.ID;
 using Terraria.ModLoader;
 
@@ -48,48 +51,33 @@ namespace CalamityMod.Projectiles.Boss
 
             Projectile.rotation += Projectile.velocity.X * 0.1f;
 
+            MediumMistParticle mist2 = new MediumMistParticle(Projectile.Center, Projectile.velocity, OldDuke.GlowColor, Color.DarkSlateBlue, Main.rand.NextFloat(1f), 200f);
+            mist2.AffectedByLight = true;
+
+            GeneralParticleHandler.SpawnParticle(new HeavySmokeParticle(Projectile.Center, (Projectile.velocity / 2) + new Vector2(Main.rand.NextFloat(-1f, 1f), Main.rand.NextFloat(-1f, 1f)), Color.DarkRed, 20, Main.rand.NextFloat(0.2f, 1f), 0.2f, MathHelper.ToRadians(Main.rand.NextFloat(-2f, 2f)), affectedByLight: true));
+            GeneralParticleHandler.SpawnParticle(mist2);
+
             int blood = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.Blood, 0f, 0f, 100, default, 1f);
             Main.dust[blood].noGravity = true;
             Main.dust[blood].velocity *= 0f;
+        }
 
-            int acid = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, (int)CalamityDusts.SulphurousSeaAcid, 0f, 0f, 100, default, 1f);
-            Main.dust[acid].noGravity = true;
-            Main.dust[acid].velocity *= 0f;
+        public override void OnSpawn(IEntitySource source)
+        {
+            for (int i = 0; i < 3; i++)
+            {
+                GeneralParticleHandler.SpawnParticle(new PointParticle(Projectile.Center + (Projectile.velocity * 2f), Projectile.velocity.RotatedBy(MathHelper.ToRadians(Main.rand.NextFloat(-20, 20))) * Main.rand.NextFloat(3f), true, 8, Main.rand.NextFloat(1f, 2f), Color.DarkRed.MultiplyRGBA(new Color(0.3f, 0.3f, 0.3f, 0.3f)), false, true));
+            }
         }
 
         public override void OnKill(int timeLeft)
         {
             SoundEngine.PlaySound(SoundID.NPCDeath12, Projectile.Center);
 
-            int dustAmt = 8;
-            for (int i = 0; i < dustAmt; i++)
+            for (int i = 0; i < 15; i++)
             {
-                Vector2 dustRotation = Vector2.Normalize(Projectile.velocity) * new Vector2((float)Projectile.width / 2f, (float)Projectile.height) * 0.75f;
-                dustRotation = dustRotation.RotatedBy((double)((float)(i - (dustAmt / 2 - 1)) * 6.28318548f / (float)dustAmt), default) + Projectile.Center;
-                Vector2 dustVel = dustRotation - Projectile.Center;
-                int blood = Dust.NewDust(dustRotation + dustVel, 0, 0, DustID.Blood, dustVel.X, dustVel.Y, 100, default, 1.2f);
-                Main.dust[blood].noGravity = true;
-                Main.dust[blood].noLight = true;
-                Main.dust[blood].velocity = dustVel;
+                GeneralParticleHandler.SpawnParticle(new PointParticle(Projectile.Center, new Vector2(Main.rand.NextFloat(10), 0).RotatedByRandom(MathHelper.TwoPi), true, 10, Main.rand.NextFloat(0.5f, 1.5f), Color.DarkRed, false, true));
             }
-
-            for (int d = 0; d < 6; d++)
-            {
-                int acid = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, (int)CalamityDusts.SulphurousSeaAcid, 0f, 0f, 100, default(Color), 3f);
-                Main.dust[acid].noGravity = true;
-                Main.dust[acid].velocity *= 5f;
-                acid = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, (int)CalamityDusts.SulphurousSeaAcid, 0f, 0f, 100, default(Color), 2f);
-                Main.dust[acid].velocity *= 2f;
-                Main.dust[acid].noGravity = true;
-            }
-        }
-
-        public override void OnHitPlayer(Player target, Player.HurtInfo info)
-        {
-            if (info.Damage <= 0)
-                return;
-
-            target.AddBuff(ModContent.BuffType<Irradiated>(), 180);
         }
 
         public override bool PreDraw(ref Color lightColor)

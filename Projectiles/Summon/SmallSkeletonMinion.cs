@@ -15,9 +15,10 @@ namespace CalamityMod.Projectiles.Summon
         public int Variant;
         public override void SetStaticDefaults()
         {
+            Main.projFrames[Type] = 7;
+            Main.projPet[Type] = true;
             ProjectileID.Sets.MinionSacrificable[Type] = true;
             ProjectileID.Sets.MinionTargettingFeature[Type] = true;
-            Main.projFrames[Type] = 7;
         }
 
         public override void SetDefaults()
@@ -171,6 +172,9 @@ namespace CalamityMod.Projectiles.Summon
             }
             return true;
         }
+
+        public override bool MinionContactDamage() => true;
+
         public override bool PreDraw(ref Color lightColor)
         {
             Rectangle frame = new Rectangle(Variant * Projectile.width, Projectile.frame * Projectile.height, Projectile.width, Projectile.height);

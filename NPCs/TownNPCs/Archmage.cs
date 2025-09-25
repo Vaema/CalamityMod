@@ -65,6 +65,9 @@ namespace CalamityMod.NPCs.TownNPCs
             NPC.DeathSound = SoundID.NPCDeath1;
             NPC.knockBackResist = 0.8f;
             AnimationType = NPCID.Guide;
+            NPC.Calamity().VulnerableToCold = false;
+            NPC.Calamity().VulnerableToHeat = true;
+            NPC.Calamity().VulnerableToSickness = true;
         }
 
         public override void SetBestiary(BestiaryDatabase database, BestiaryEntry bestiaryEntry)
@@ -84,7 +87,13 @@ namespace CalamityMod.NPCs.TownNPCs
             }
         }
 
-        public override bool CanTownNPCSpawn(int numTownNPCs) => DownedBossSystem.downedCryogen;
+        public override bool CanTownNPCSpawn(int numTownNPCs)
+        {
+            if (NPC.AnyNPCs(ModContent.NPCType<SupremeCalamitas.SupremeCalamitas>()) && Main.zenithWorld)
+                return false;
+
+            return DownedBossSystem.downedCryogen;
+        }
 
         public override List<string> SetNPCNameList() => new List<string>() { this.GetLocalizedValue("Name.Permafrost") };
 
@@ -146,25 +155,24 @@ namespace CalamityMod.NPCs.TownNPCs
         public override void AddShops()
         {
             NPCShop shop = new(Type);
-                shop.Add(ModContent.ItemType<FrostbiteBlaster>())
-                .Add(ModContent.ItemType<IcicleTrident>())
-                .Add(ModContent.ItemType<IceStar>())
-                .Add(ModContent.ItemType<ArcticBearPaw>(), Condition.DownedMechBossAll)
-                .Add(ModContent.ItemType<CryogenicStaff>(), Condition.DownedMechBossAll)
-                .Add(ModContent.ItemType<FrostyFlare>(), Condition.DownedMechBossAll)
-                .Add(ModContent.ItemType<Cryophobia>(), Condition.DownedMechBossAll)
-                .Add(ModContent.ItemType<AbsoluteZero>(), Condition.DownedEverscream, Condition.DownedSantaNK1, Condition.DownedIceQueen)
-                .Add(ModContent.ItemType<EternalBlizzard>(), Condition.DownedEverscream, Condition.DownedSantaNK1, Condition.DownedIceQueen)
-                .Add(ModContent.ItemType<WintersFury>(), Condition.DownedEverscream, Condition.DownedSantaNK1, Condition.DownedIceQueen)
-                .Add(ModContent.ItemType<HailstormBullet>(), Condition.DownedEverscream, Condition.DownedSantaNK1, Condition.DownedIceQueen)
-                .Add(ModContent.ItemType<IcicleArrow>(), Condition.DownedEverscream, Condition.DownedSantaNK1, Condition.DownedIceQueen)
-                .Add(ModContent.ItemType<PermafrostsConcoction>())
+                shop.Add<FrostbiteBlaster>()
+                .Add<IcicleTrident>()
+                .Add<IceStar>()
+                .Add<ArcticBearPaw>(Condition.DownedMechBossAll)
+                .Add<CryogenicStaff>(Condition.DownedMechBossAll)
+                .Add<FrostyFlare>(Condition.DownedMechBossAll)
+                .Add<Cryophobia>(Condition.DownedMechBossAll)
+                .Add<AbsoluteZero>(Condition.DownedEverscream, Condition.DownedSantaNK1, Condition.DownedIceQueen)
+                .Add<EternalBlizzard>(Condition.DownedEverscream, Condition.DownedSantaNK1, Condition.DownedIceQueen)
+                .Add<WintersFury>(Condition.DownedEverscream, Condition.DownedSantaNK1, Condition.DownedIceQueen)
+                .Add<HailstormBullet>(Condition.DownedEverscream, Condition.DownedSantaNK1, Condition.DownedIceQueen)
+                .Add<IcicleArrow>(Condition.DownedEverscream, Condition.DownedSantaNK1, Condition.DownedIceQueen)
+                .Add<PermafrostsConcoction>()
                 .Add(ItemID.SuperManaPotion)
-                .Add(ModContent.ItemType<DeliciousMeat>())
-                .AddWithCustomValue(ModContent.ItemType<Popo>(), Item.buyPrice(5))
-                .Add(ModContent.ItemType<FrigidMonolith>())
-                .Add(ModContent.ItemType<BloodRune>(), Condition.PlayerCarriesItem(ModContent.ItemType<IceBarrage>()))
-                .Add(ItemID.IceCream, Condition.HappyEnoughToSellPylons, Condition.InSnow)
+                .Add<DeliciousMeat>()
+                .Add<Popo>()
+                .Add<FrigidMonolith>()
+                .Add<BloodRune>(Condition.PlayerCarriesItem(ModContent.ItemType<IceBarrage>()))
                 .Register();
         }
 

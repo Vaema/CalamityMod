@@ -6,8 +6,12 @@ CalamityClientConfig: {
 		Graphics: Graphics Changes
 		UI: UI Changes
 		MeterPositions: Meter Positions
-		MusicEvents: In-Game Music Events
-		Multithreading: Multi-Threading
+		MusicToggles: Music Toggles
+	}
+
+	AbyssLayer3Alt: {
+		Label: "[i:CalamityModMusic/AbyssLayer3AltMusicBox] Abyss Layer 3 Alt"
+		Tooltip: Plays Calamity Mod OST - "R'lyehian Depths", while in the Thermal Vents layer of the Abyss.
 	}
 
 	AdrenalineMeterPosX: {
@@ -43,15 +47,6 @@ CalamityClientConfig: {
 			'''
 			Adds extra info to Calamity's boss health bar.
 			This displays either the boss's exact health or number of remaining parts or segments.
-			'''
-	}
-
-	CalamityArmorSetBonusDoubleTap: {
-		Label: "[i:CalamityMod/DesertProwlerHat] Calamity Armor Set Bonuses Can Use Vanilla Hotkey"
-		Tooltip:
-			'''
-			When enabled, allows Calamity armor set bonuses to be triggered by the vanilla double-tap DOWN hotkey (or UP depending on your settings).
-			Also allows vanilla armor set bonuses to be triggered by Calamity's armor set bonus hotkey.
 			'''
 	}
 
@@ -101,6 +96,15 @@ CalamityClientConfig: {
 		Tooltip: Plays Calamity Mod OST - "Scourge of the Universe (Eulogy for the Ego)", after the Devourer of Gods has been defeated.
 	}
 
+	DisableGravityScreenSwap: {
+		Label: Disable Gravity Screen Flip
+		Tooltip:
+			'''
+			Disables vanilla's screen-flipping from changing gravity, flipping the player instead.
+			Enable this if the screen-flipping is distracting or induces motion sickness.
+			'''
+	}
+
 	EnableVanillaTextureEdits: {
 		Label: "[i:Paintbrush] Enable Vanilla Texture Edits"
 		Tooltip:
@@ -123,14 +127,14 @@ CalamityClientConfig: {
 		Label: "[i:CalamityMod/BallAndChain] Enable Fast Falling"
 		Tooltip:
 			'''
-			When enabled, you can hold the DOWN key while in the air to accelerate downwards faster.
+			When enabled, you can hold the {$Key.DOWN} key while in the air to accelerate downwards faster.
 			This config does not increase your maximum falling speed, just how quickly you accelerate to it.
 			Calamity is balanced around this setting being enabled.
 			'''
 	}
 
 	FlightBar: {
-		Label: "[i:CalamityMod/DrewsWings] Display Flight Bar"
+		Label: "[i:AngelWings] Display Flight Bar"
 		Tooltip:
 			'''
 			Enables the Flight Bar UI, which shows the player's remaining wing flight time.
@@ -240,6 +244,21 @@ CalamityClientConfig: {
 			'''
 	}
 
+	SetBonusDoubleTap: {
+		Label: "[i:VortexHelmet] Allow Double Tap for Armor Set Bonuses"
+		Tooltip:
+			'''
+			Allows all armor set bonuses to be triggered by the vanilla double-tap {$Key.DOWN} hotkey (or {$Key.UP} depending on your settings).
+			Set to Auto to automatically turn off double-tap as long as Calamity's {$Keybinds.ArmorSetBonus.DisplayName} hotkey is bound.
+			'''
+
+		Options: {
+			On: Always On
+			Auto: Auto
+			Off: Always Off
+		}
+	}
+
 	ShopNewAlert: {
 		Label: "[i:GoldChest] New Shop Inventory Alerts"
 		Tooltip: Adds an icon that appears over Town NPCs when they have new items in their shops.
@@ -309,6 +328,17 @@ CalamityClientConfig: {
 			'''
 	}
 
+	StutterFix: {
+		Label: "[i:TrifoldMap] Enable Stutter Fix"
+		Tooltip:
+			'''
+			When enabled, upon entering a world, the entire world will be loaded at once.
+			This config causes Terraria to stop responding while the world is being loaded, do NOT close the game while this is occurring.
+			Once the game starts responding again, you will enter the world and be able to play without random stutters.
+			This config option is only recommended for players who can't stand random stutters while playing.
+			'''
+	}
+
 	SulphuricWaterMeterPosX: {
 		Label: "[i:LaserRuler] Sulphuric Water Poison Meter X Position"
 		Tooltip:
@@ -324,6 +354,25 @@ CalamityClientConfig: {
 			'''
 			The Y position of the Sulphuric Water Poison Meter, measured as a % of your screen height.
 			The meter can be dragged with the mouse if Lock Meter Positions is disabled.
+			'''
+	}
+
+	SunkenSeaBackgroundDistortion: {
+		Label: "[i:CalamityMod/SeaRemains] Sunken Sea Background Distortion"
+		Tooltip:
+			'''
+			Whether or not the Sunken Sea's custom backgrounds should have an additional distortion shader applied to them.
+			This will give the illusion of underwater distortion.
+			[c/FF232C:Note that this will ONLY work if your "Wave Quality" setting is turned off.]
+			'''
+	}
+
+	TextEffects: {
+		Label: "[i:LeinforsAccessory] Extra Text Effects"
+		Tooltip:
+			'''
+			When enabled, certain Calamity rarities will display extra visual effects within item names.
+			Disable if reduced visual clutter is desired.
 			'''
 	}
 
@@ -344,21 +393,6 @@ CalamityClientConfig: {
 	WikiStatusMessage: {
 		Label: "[i:Book] Wiki Status Message"
 		Tooltip: Enable or disable the status message promoting the Official Calamity Wiki that plays on world entry.
-	}
-
-	MultiThreadingType: {
-		Label: Sunken Sea Multi-Threading Option
-		Tooltip:
-			'''
-			Option 0 will disable worldgen multi-threading.
-			Option 1 will enable ReLogic's multi-threading.
-			Option 2 will enable custom multi-threading.
-			'''
-	}
-
-	SunkenSeaMultiThreading: {
-		Label: Sunken Sea Multi Threading
-		Tooltip: ""
 	}
 }
 
@@ -523,3 +557,5 @@ CalamityServerConfig: {
 			'''
 	}
 }
+
+SetBonusDoubleTapOptions.Tooltip: ""

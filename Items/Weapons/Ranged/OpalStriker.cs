@@ -27,7 +27,7 @@ namespace CalamityMod.Items.Weapons.Ranged
         {
             Item.width = 48;
             Item.height = 24;
-            Item.damage = 33;
+            Item.damage = 30;
             Item.DamageType = DamageClass.Ranged;
             Item.useAnimation = Item.useTime = AftershotCooldownFrames;
             Item.useStyle = ItemUseStyleID.Shoot;
@@ -41,7 +41,6 @@ namespace CalamityMod.Items.Weapons.Ranged
             Item.channel = true;
             Item.shoot = ModContent.ProjectileType<OpalStrikerHoldout>();
             Item.shootSpeed = 12f;
-            Item.Calamity().canFirePointBlankShots = true;
         }
 
         public override bool CanUseItem(Player player) => player.ownedProjectileCounts[Item.shoot] <= 0;

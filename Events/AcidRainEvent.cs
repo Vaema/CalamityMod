@@ -181,7 +181,7 @@ namespace CalamityMod.Events
         /// </summary>
         public static void TryStartEvent(bool forceRain = false)
         {
-            if (AcidRainEventIsOngoing || (!NPC.downedBoss1 && !Main.hardMode && !DownedBossSystem.downedAquaticScourge) || BossRushEvent.BossRushActive)
+            if (AcidRainEventIsOngoing || (!NPC.downedBoss1 && !Main.hardMode && !DownedBossSystem.downedAquaticScourge && !DownedBossSystem.downedPolterghast) || BossRushEvent.BossRushActive || Terraria.GameContent.Creative.CreativePowerManager.Instance.GetPower<Terraria.GameContent.Creative.CreativePowers.FreezeRainPower>().Enabled)
                 return;
 
             int playerCount = Main.CurrentFrameFlags.ActivePlayersCount;
@@ -243,7 +243,6 @@ namespace CalamityMod.Events
                     if (inNaturalSeaPosition && player.Calamity().ZoneSulphur)
                     {
                         // Makes rain pour at its maximum intensity (but only after an idiot meanders into the Sulphurous Sea)
-                        // You'll never catch me, Fabs, Not when I shift into MAXIMUM OVERDRIVE!!
                         HasStartedAcidicDownpour = true;
                         CalamityNetcode.SyncWorld();
                         break;

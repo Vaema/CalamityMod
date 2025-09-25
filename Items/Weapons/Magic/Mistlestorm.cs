@@ -62,7 +62,7 @@ namespace CalamityMod.Items.Weapons.Magic
                 AddIngredient(ItemID.LeafBlower).
                 AddIngredient<UelibloomBar>(5).
                 AddIngredient<DarkPlasma>(3).
-                AddTile(TileID.LunarCraftingStation).
+                AddTile(TileID.MythrilAnvil).
                 Register();
         }
     }

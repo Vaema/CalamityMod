@@ -1,5 +1,6 @@
 ﻿using CalamityMod.Buffs.DamageOverTime;
 using CalamityMod.Graphics.Primitives;
+using CalamityMod.NPCs;
 using CalamityMod.Particles;
 using CalamityMod.Projectiles.BaseProjectiles;
 using Microsoft.Xna.Framework;
@@ -15,6 +16,7 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.Projectiles.Melee
 {
+    [PierceResistException]
     public class PrismaticRay : BaseLaserbeamProjectile, ILocalizedModType
     {
         public new string LocalizationCategory => "Projectiles.Melee";
@@ -46,7 +48,7 @@ namespace CalamityMod.Projectiles.Melee
             Projectile.tileCollide = false;
             Projectile.timeLeft = 360;
             Projectile.usesLocalNPCImmunity = true;
-            Projectile.localNPCHitCooldown = 6;
+            Projectile.localNPCHitCooldown = 9;
             Projectile.hide = true;
         }
 
@@ -98,7 +100,7 @@ namespace CalamityMod.Projectiles.Melee
             if (HitSoundCooldown == 0)
             {
                 SoundEngine.PlaySound(HitSound, target.Center);
-                HitSoundCooldown = 10;
+                HitSoundCooldown = 9;
             }
         }
 

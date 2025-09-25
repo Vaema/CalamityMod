@@ -21,6 +21,7 @@ namespace CalamityMod.Tiles.Rubblemaker.SunkenSea
             Main.tileNoAttach[Type] = true;
             Main.tileSolidTop[Type] = true;
             TileObjectData.newTile.CopyFrom(TileObjectData.Style3x2);
+            TileObjectData.newTile.StyleMultiplier = 2;
             TileObjectData.newTile.AnchorBottom = new AnchorData(AnchorType.None, 0, 0);
             TileObjectData.newAlternate.CopyFrom(TileObjectData.newTile);
             TileObjectData.newAlternate.AnchorLeft = new AnchorData(AnchorType.SolidTile, 2, 0);
@@ -31,8 +32,8 @@ namespace CalamityMod.Tiles.Rubblemaker.SunkenSea
             TileObjectData.addTile(Type);
             DustType = 253;
             AddMapEntry(new Color(54, 69, 72));
-            RegisterItemDrop(ModContent.ItemType<HardenedEutrophicSand>());
-            FlexibleTileWand.RubblePlacementMedium.AddVariations(ModContent.ItemType<HardenedEutrophicSand>(), Type, 0);
+            RegisterItemDrop(ModContent.ItemType<Shellstone>());
+            FlexibleTileWand.RubblePlacementMedium.AddVariations(ModContent.ItemType<Shellstone>(), Type, 0);
 
             base.SetStaticDefaults();
         }

@@ -1,12 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using CalamityMod.Sounds;
 using CalamityMod.Systems;
 using CalamityMod.Tiles.Abyss.AbyssAmbient;
 using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Graphics;
-using ReLogic.Content;
 using Terraria;
-using Terraria.Audio;
 using Terraria.DataStructures;
 using Terraria.ID;
 using Terraria.ModLoader;
@@ -15,8 +11,6 @@ namespace CalamityMod.Tiles.Abyss
 {
     public class Voidstone : GlowMaskTile
     {
-        public static readonly SoundStyle MineSound = new("CalamityMod/Sounds/Custom/VoidstoneMine", 3) { Volume = 0.4f };
-
         public override string GlowMaskAsset => "CalamityMod/Tiles/Abyss/Voidstone_Glowmask";
         public GrayscaleTexture2D NoiseTexture;
 
@@ -26,13 +20,13 @@ namespace CalamityMod.Tiles.Abyss
 
             Main.tileSolid[Type] = true;
             Main.tileBlockLight[Type] = true;
-            Main.tileBrick[Type] = true; 
+            Main.tileBrick[Type] = true;
 
             CalamityUtils.MergeWithGeneral(Type);
             CalamityUtils.MergeWithAbyss(Type);
 
             TileID.Sets.ChecksForMerge[Type] = true;
-            HitSound = MineSound;
+            HitSound = CommonCalamitySounds.VoidstoneMine;
             MineResist = 15f;
             MinPick = 180;
             AddMapEntry(new Color(15, 15, 15));

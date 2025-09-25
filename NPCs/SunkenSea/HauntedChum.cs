@@ -17,15 +17,17 @@ namespace CalamityMod.NPCs.SunkenSea
 {
     public class HauntedChum : ModNPC
     {
-        public static Texture2D jawTexture;
+        public static Asset<Texture2D> jawTexture;
         public List<VerletSimulatedSegment> Segments;
+
+        public override void Load()
+        {
+            jawTexture = ModContent.Request<Texture2D>("CalamityMod/NPCs/SunkenSea/HauntedChumMouth");
+        }
+
         public override void SetStaticDefaults()
         {
             this.HideFromBestiary();
-            if (!Main.dedServ)
-            {
-                jawTexture = ModContent.Request<Texture2D>("CalamityMod/NPCs/SunkenSea/HauntedChumMouth", AssetRequestMode.ImmediateLoad).Value;
-            }
         }
         public override void SetDefaults()
         {
@@ -41,7 +43,7 @@ namespace CalamityMod.NPCs.SunkenSea
             NPC.DeathSound = SoundID.DD2_SkeletonDeath;
             NPC.noGravity = true;
             NPC.noTileCollide = true;
-            SpawnModBiomes = new int[1] { ModContent.GetInstance<SunkenSeaBiome>().Type };
+            SpawnModBiomes = new int[1] { ModContent.GetInstance<TimelessShoresBiome>().Type };
         }
 
         public override void AI()
@@ -301,11 +303,11 @@ namespace CalamityMod.NPCs.SunkenSea
             // Draw the chum itself and its jaw, rotated by localai[0]
             Texture2D texture = TextureAssets.Npc[Type].Value;
             Vector2 origin = new Vector2(texture.Width / 2, texture.Height / 2);
-            Vector2 jawOrigin = new Vector2(NPC.spriteDirection == 1 ? jawTexture.Width - 22 : 22, 4);
+            Vector2 jawOrigin = new Vector2(NPC.spriteDirection == 1 ? jawTexture.Value.Width - 22 : 22, 4);
             Vector2 npcOffset = NPC.Center - screenPos;
             npcOffset -= new Vector2(texture.Width, texture.Height) * NPC.scale / 2f;
             npcOffset += origin * NPC.scale + new Vector2(0f, NPC.gfxOffY);
-            spriteBatch.Draw(jawTexture, npcOffset + new Vector2(16 * -NPC.spriteDirection, 4), null, NPC.GetAlpha(drawColor), NPC.localAI[0] * NPC.spriteDirection, jawOrigin, NPC.scale, spriteEffects, 0f);
+            spriteBatch.Draw(jawTexture.Value, npcOffset + new Vector2(16 * -NPC.spriteDirection, 4), null, NPC.GetAlpha(drawColor), NPC.localAI[0] * NPC.spriteDirection, jawOrigin, NPC.scale, spriteEffects, 0f);
             spriteBatch.Draw(texture, npcOffset, null, NPC.GetAlpha(drawColor), NPC.rotation, origin, NPC.scale, spriteEffects, 0f);
 
             return false;

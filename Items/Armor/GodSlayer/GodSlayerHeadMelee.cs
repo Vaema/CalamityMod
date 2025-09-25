@@ -4,6 +4,7 @@ using CalamityMod.Items.Materials;
 using CalamityMod.Rarities;
 using CalamityMod.Tiles.Furniture.CraftingStations;
 using Terraria;
+using Terraria.Localization;
 using Terraria.ModLoader;
 
 namespace CalamityMod.Items.Armor.GodSlayer
@@ -13,35 +14,38 @@ namespace CalamityMod.Items.Armor.GodSlayer
     public class GodSlayerHeadMelee : ModItem, ILocalizedModType
     {
         public new string LocalizationCategory => "Items.Armor.PostMoonLord";
+
+        public static float MeleeDamageBoost = 0.1f;
+        public static int MeleeCritBoost = 5;
+        public static float MeleeSpeedBoost = 0.2f;
+        public override LocalizedText Tooltip => base.Tooltip.WithFormatArgs(MeleeDamageBoost.ToPercent(), MeleeCritBoost, MeleeSpeedBoost.ToPercent());
+
+        // Set Bonus
+        public static int SetBonusAggroBoost = 1000;
+        public static int SetBonusHurtDamageThreshold = 80;
+        public static int DartDamage => CalamityUtils.ScaleWithDifficulty(350);
+
         public override void SetDefaults()
         {
             Item.width = 18;
             Item.height = 18;
             Item.value = CalamityGlobalItem.RarityDarkBlueBuyPrice;
-            Item.defense = 48; //96
-            Item.rare = ModContent.RarityType<DarkBlue>();
+            Item.defense = 50; // 120
+            Item.rare = ModContent.RarityType<CosmicPurple>();
         }
 
-        public override bool IsArmorSet(Item head, Item body, Item legs)
-        {
-            return body.type == ModContent.ItemType<GodSlayerChestplate>() && legs.type == ModContent.ItemType<GodSlayerLeggings>();
-        }
+        public override bool IsArmorSet(Item head, Item body, Item legs) => body.type == ModContent.ItemType<GodSlayerChestplate>() && legs.type == ModContent.ItemType<GodSlayerLeggings>();
 
-        public override void ArmorSetShadows(Player player)
-        {
-            player.armorEffectDrawShadow = true;
-        }
+        public override void ArmorSetShadows(Player player) => player.armorEffectDrawShadow = true;
 
         public override void UpdateArmorSet(Player player)
         {
             var modPlayer = player.Calamity();
-            player.GetAttackSpeed<MeleeDamageClass>() += 0.2f;
             modPlayer.godSlayer = true;
             modPlayer.godSlayerDamage = true;
             var hotkey = CalamityKeybinds.GodSlayerDashHotKey.TooltipHotkeyString();
-            player.setBonus = this.GetLocalizedValue("SetBonus") + "\n" + CalamityUtils.GetTextFromModItem<GodSlayerChestplate>("CommonSetBonus").Format(hotkey, GodslayerArmorDash.GodslayerCooldown);
-            player.thorns += 2.5f;
-            player.aggro += 1000;
+            player.setBonus = this.GetLocalization("SetBonus").Format(SetBonusHurtDamageThreshold, hotkey, GodSlayerChestplate.DashCooldown.FramesToSeconds());
+            player.aggro += SetBonusAggroBoost;
 
             if (modPlayer.godSlayerDashHotKeyPressed || (player.dashDelay != 0 && modPlayer.LastUsedDashID == GodslayerArmorDash.ID))
             {
@@ -52,8 +56,9 @@ namespace CalamityMod.Items.Armor.GodSlayer
 
         public override void UpdateEquip(Player player)
         {
-            player.GetDamage<MeleeDamageClass>() += 0.14f;
-            player.GetCritChance<MeleeDamageClass>() += 7;
+            player.GetDamage<MeleeDamageClass>() += MeleeDamageBoost;
+            player.GetCritChance<MeleeDamageClass>() += MeleeCritBoost;
+            player.GetAttackSpeed<MeleeDamageClass>() += MeleeSpeedBoost;
         }
 
         public override void AddRecipes()

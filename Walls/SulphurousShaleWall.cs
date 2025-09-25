@@ -1,14 +1,16 @@
 ﻿using Microsoft.Xna.Framework;
 using Terraria;
-using Terraria.ID;
 using Terraria.ModLoader;
 
 namespace CalamityMod.Walls
 {
+    [LegacyName("SulphurousShaleWallSafe")]
     public class SulphurousShaleWall : ModWall
     {
+        public override string Texture => "CalamityMod/Walls/SulphurousShaleWall";
         public override void SetStaticDefaults()
         {
+            Main.wallHouse[Type] = true;
             DustType = 32;
             AddMapEntry(new Color(59, 40, 63));
         }

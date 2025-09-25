@@ -61,12 +61,12 @@ namespace CalamityMod.Items.DraedonMisc
                 int insertIndex = list.FindIndex(x => x.Name == "Tooltip2" && x.Mod == "Terraria");
                 if (insertIndex != -1)
                 {
-                    int meleeItem = ModContent.ItemType<GaussDagger>();
+                    int meleeItem = ModContent.ItemType<Auger>();
                     TooltipLine meleeDisplay = new TooltipLine(this.Mod, "CalamityMod:MeleeDisplay", $"[i:{meleeItem}] {CalamityUtils.GetItemName(meleeItem)}");
                     meleeDisplay.OverrideColor = new Color(236, 255, 31);
                     list.Insert(insertIndex + 1, meleeDisplay);
 
-                    int rangedItem = ModContent.ItemType<Taser>();
+                    int rangedItem = ModContent.ItemType<ShortCircuit>();
                     TooltipLine rangedDisplay = new TooltipLine(this.Mod, "CalamityMod:RangedDisplay", $"[i:{rangedItem}] {CalamityUtils.GetItemName(rangedItem)}");
                     rangedDisplay.OverrideColor = new Color(31, 242, 245);
                     list.Insert(insertIndex + 2, rangedDisplay);
@@ -76,12 +76,12 @@ namespace CalamityMod.Items.DraedonMisc
                     mageDisplay.OverrideColor = new Color(201, 41, 255);
                     list.Insert(insertIndex + 3, mageDisplay);
 
-                    int summonItem = ModContent.ItemType<StarSwallowerContainmentUnit>();
+                    int summonItem = ModContent.ItemType<AqueousHunterDrone>();
                     TooltipLine summonDisplay = new TooltipLine(this.Mod, "CalamityMod:SummonDisplay", $"[i:{summonItem}] {CalamityUtils.GetItemName(summonItem)}");
                     summonDisplay.OverrideColor = new Color(149, 243, 43);
                     list.Insert(insertIndex + 4, summonDisplay);
 
-                    int rogueItem = ModContent.ItemType<TrackingDisk>();
+                    int rogueItem = ModContent.ItemType<AerialTracker>();
                     TooltipLine rogueDisplay = new TooltipLine(this.Mod, "CalamityMod:RogueDisplay", $"[i:{rogueItem}] {CalamityUtils.GetItemName(rogueItem)}");
                     rogueDisplay.OverrideColor = new Color(255, 64, 31);
                     list.Insert(insertIndex + 5, rogueDisplay);

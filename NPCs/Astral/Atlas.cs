@@ -125,10 +125,9 @@ namespace CalamityMod.NPCs.Astral
             NPC.height = 88;
             NPC.damage = 70;
             NPC.defense = 40;
-            NPC.DR_NERD(0.15f);
             NPC.lifeMax = 1200;
             NPC.knockBackResist = 0.08f;
-            NPC.value = Item.buyPrice(0, 0, 50, 0);
+            NPC.value = Item.buyPrice(silver: 50);
             NPC.aiStyle = -1;
             NPC.DeathSound = DeathSound;
             NPC.rarity = 1;
@@ -154,10 +153,6 @@ namespace CalamityMod.NPCs.Astral
             NPC.Calamity().VulnerableToHeat = true;
             NPC.Calamity().VulnerableToSickness = false;
             SpawnModBiomes = new int[1] { ModContent.GetInstance<BiomeManagers.AstralInfectionBiome>().Type };
-
-            // Scale stats in Expert and Master
-            CalamityGlobalNPC.AdjustExpertModeStatScaling(NPC);
-            CalamityGlobalNPC.AdjustMasterModeStatScaling(NPC);
         }
 
         public override void SetBestiary(BestiaryDatabase database, BestiaryEntry bestiaryEntry)
@@ -651,7 +646,7 @@ namespace CalamityMod.NPCs.Astral
         public override void OnHitPlayer(Player target, Player.HurtInfo hurtInfo)
         {
             if (hurtInfo.Damage > 0)
-                target.AddBuff(ModContent.BuffType<AstralInfectionDebuff>(), 150, true);
+                target.AddBuff(ModContent.BuffType<AstralInfectionDebuff>(), 300);
         }
 
         public override void ModifyNPCLoot(NPCLoot npcLoot)

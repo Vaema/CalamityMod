@@ -80,7 +80,7 @@ namespace CalamityMod.Items.Weapons.Melee
                 AddIngredient(ItemID.SoulofNight, 30).
                 AddIngredient<ReaperTooth>(5).
                 AddIngredient<RuinousSoul>(3).
-                AddTile(TileID.LunarCraftingStation).
+                AddTile(TileID.MythrilAnvil).
                 Register();
         }
     }

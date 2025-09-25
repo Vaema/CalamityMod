@@ -2,6 +2,8 @@
 using System.IO;
 using CalamityMod.BiomeManagers;
 using CalamityMod.Buffs.DamageOverTime;
+using CalamityMod.Cooldowns;
+using CalamityMod.Items.Accessories;
 using CalamityMod.Items.Materials;
 using CalamityMod.Items.Placeables.Banners;
 using CalamityMod.World;
@@ -11,6 +13,7 @@ using ReLogic.Content;
 using Terraria;
 using Terraria.GameContent;
 using Terraria.GameContent.Bestiary;
+using Terraria.GameContent.ItemDropRules;
 using Terraria.ID;
 using Terraria.ModLoader;
 using Terraria.ModLoader.Utilities;
@@ -41,7 +44,7 @@ namespace CalamityMod.NPCs.Abyss
             NPC.lifeMax = 1000;
             NPC.aiStyle = -1;
             AIType = -1;
-            NPC.value = Item.buyPrice(0, 0, 10, 0);
+            NPC.value = Item.buyPrice(silver: 10);
             NPC.HitSound = SoundID.NPCHit1;
             NPC.DeathSound = SoundID.NPCDeath1;
             Banner = NPC.type;
@@ -51,10 +54,6 @@ namespace CalamityMod.NPCs.Abyss
             NPC.Calamity().VulnerableToElectricity = true;
             NPC.Calamity().VulnerableToWater = false;
             SpawnModBiomes = new int[1] { ModContent.GetInstance<AbyssLayer3Biome>().Type };
-
-            // Scale stats in Expert and Master
-            CalamityGlobalNPC.AdjustExpertModeStatScaling(NPC);
-            CalamityGlobalNPC.AdjustMasterModeStatScaling(NPC);
         }
 
         public override void SetBestiary(BestiaryDatabase database, BestiaryEntry bestiaryEntry)
@@ -248,14 +247,16 @@ namespace CalamityMod.NPCs.Abyss
         {
             if (hurtInfo.Damage > 0)
             {
-                target.AddBuff(ModContent.BuffType<CrushDepth>(), 180, true);
-                target.AddBuff(BuffID.Darkness, 180, true);
+                target.AddBuff(ModContent.BuffType<CrushDepth>(), 180);
+                target.AddBuff(BuffID.Darkness, 300);
             }
         }
 
         public override void ModifyNPCLoot(NPCLoot npcLoot)
         {
             var postLevi = npcLoot.DefineConditionalDropSet(DropHelper.PostLevi());
+            npcLoot.Add(ItemDropRule.NormalvsExpert(ItemID.Blindfold, 100, 50));
+            npcLoot.Add(ItemDropRule.NormalvsExpert(ModContent.ItemType<Items.Accessories.InkBomb>(), 10, 5));
             postLevi.Add(DropHelper.NormalVsExpertQuantity(ModContent.ItemType<DepthCells>(), 2, 2, 4, 3, 6));
         }
 

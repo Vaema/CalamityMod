@@ -1,6 +1,7 @@
 ﻿using CalamityMod.Items.Materials;
 using CalamityMod.Items.Placeables.Ores;
 using CalamityMod.Projectiles.Ranged;
+using CalamityMod.Rarities;
 using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.DataStructures;
@@ -23,8 +24,8 @@ namespace CalamityMod.Items.Weapons.Ranged
             Item.useStyle = ItemUseStyleID.Shoot;
             Item.noMelee = true;
             Item.knockBack = 15f;
-            Item.value = CalamityGlobalItem.RarityPurpleBuyPrice;
-            Item.rare = ItemRarityID.Purple;
+            Item.value = CalamityGlobalItem.RarityPureGreenBuyPrice;
+            Item.rare = ModContent.RarityType<PureGreen>();
             Item.UseSound = SoundID.Item92;
             Item.autoReuse = true;
             Item.shoot = ModContent.ProjectileType<PlasmaBlast>();
@@ -55,7 +56,7 @@ namespace CalamityMod.Items.Weapons.Ranged
                 AddIngredient<Lumenyl>(6).
                 AddIngredient<RuinousSoul>(4).
                 AddIngredient<ExodiumCluster>(12).
-                AddTile(TileID.LunarCraftingStation).
+                AddTile(TileID.MythrilAnvil).
                 Register();
         }
     }

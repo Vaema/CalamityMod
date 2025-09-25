@@ -163,11 +163,12 @@ namespace CalamityMod.Projectiles.Rogue
                             if (Projectile.velocity.Length() < storedStealthVel.Length())
                                 Projectile.velocity += Utils.DirectionTo(Projectile.Center, Owner.Center) * 0.1f;
                             Projectile.velocity *= 0.99f;
-                            if (time == 180) // Reset iframes when it starts to come back
+                            // CIT 26JUN2025: Removing its ability to deal damage again because it's overpowered
+                            /*if (time == 180)
                             {
                                 for (int i = 0; i < Main.maxNPCs; i++)
                                     Projectile.localNPCImmunity[i] = 0;
-                            }
+                            }*/
                             if (Projectile.timeLeft <= 240)
                             {
                                 impaleDist = Vector2.One; // This is so the projectile stops dealing damage
@@ -344,9 +345,9 @@ namespace CalamityMod.Projectiles.Rogue
                         searchedTarget.active = false;
                     }
 
-                    SoundStyle gfb = new("CalamityMod/Sounds/Item/HolyBurst");
-                    for (int i = 0; i < 7; i++)
-                        SoundEngine.PlaySound(gfb with { Volume = 1f, Pitch = 0.2f * i, MaxInstances = 7 }, Projectile.Center);
+                    SoundStyle gong = new("CalamityMod/Sounds/Custom/GFB/Jesus");
+                    for (int i = 0; i < 2; i++)
+                        SoundEngine.PlaySound(gong with { Volume = 1f, MaxInstances = 2 }, Projectile.Center);
                 }
                 else
                 {

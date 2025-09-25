@@ -24,7 +24,7 @@ namespace CalamityMod.Items.Potions
         {
             Item.DefaultToHealingPotion(24, 32, 300);
             Item.value = Item.sellPrice(gold: 1);
-            Item.rare = ModContent.RarityType<DarkBlue>();
+            Item.rare = ModContent.RarityType<CosmicPurple>();
         }
 
         public override void AddRecipes()

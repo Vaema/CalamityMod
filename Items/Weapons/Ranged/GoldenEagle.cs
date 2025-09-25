@@ -1,4 +1,6 @@
-﻿using Microsoft.Xna.Framework;
+﻿using CalamityMod.Items.Weapons.Magic;
+using CalamityMod.Items.Weapons.Rogue;
+using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.DataStructures;
 using Terraria.ID;
@@ -10,16 +12,19 @@ namespace CalamityMod.Items.Weapons.Ranged
     {
         public new string LocalizationCategory => "Items.Weapons.Ranged";
         private const float Spread = 0.0425f;
-
+        public override void SetStaticDefaults()
+        {
+            ItemID.Sets.ShimmerTransformToItem[Type] = ModContent.ItemType<RougeSlash>();
+        }
         public override void SetDefaults()
         {
             Item.width = 46;
             Item.height = 30;
-            Item.damage = 85;
+            Item.damage = 88;
             Item.DamageType = DamageClass.Ranged;
             Item.noMelee = true;
-            Item.useTime = 19;
-            Item.useAnimation = 19;
+            Item.useTime = 18;
+            Item.useAnimation = 18;
             Item.useStyle = ItemUseStyleID.Shoot;
             Item.knockBack = 3f;
             Item.value = CalamityGlobalItem.RarityPurpleBuyPrice;
@@ -29,7 +34,6 @@ namespace CalamityMod.Items.Weapons.Ranged
             Item.shoot = ProjectileID.Bullet;
             Item.shootSpeed = 20f;
             Item.useAmmo = AmmoID.Bullet;
-            Item.Calamity().canFirePointBlankShots = true;
         }
 
         public override Vector2? HoldoutOffset() => new Vector2(-5, 0);

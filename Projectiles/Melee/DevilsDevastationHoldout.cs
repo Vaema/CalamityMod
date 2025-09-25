@@ -4,6 +4,7 @@ using CalamityMod.Buffs.StatDebuffs;
 using CalamityMod.Cooldowns;
 using CalamityMod.Dusts;
 using CalamityMod.Items.Weapons.Melee;
+using CalamityMod.NPCs;
 using CalamityMod.Packets.Entities;
 using CalamityMod.Particles;
 using CalamityMod.Projectiles.BaseProjectiles;
@@ -23,6 +24,7 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.Projectiles.Melee
 {
+    [PierceResistException]
     public class DevilsDevastationHoldout : BaseCustomUseStyleProjectile, ILocalizedModType
     {
         public override int AssignedItemID => ModContent.ItemType<DevilsDevastation>();
@@ -62,6 +64,14 @@ namespace CalamityMod.Projectiles.Melee
             Projectile.localNPCHitCooldown = -1;
             Projectile.DamageType = TrueMeleeDamageClass.Instance;
         }
+        public override void OnSpawn(IEntitySource source)
+        {
+            base.OnSpawn(source);
+            // This is needed because EntitySource_ItemUse always sets Projectile.originalDamage to the item's damage,
+            // regardless of the value passed into the damage argument of NewProjectile.
+            // This results in continuous updating damage resetting the damage.
+            Projectile.originalDamage *= 15;
+        }
         public override void WhenSpawned()
         {
             IgnoreActiveAnimation = true;
@@ -95,6 +105,7 @@ namespace CalamityMod.Projectiles.Melee
                     Projectile.NewProjectileDirect(Projectile.GetSource_FromThis(), lastHitTarget.Center, vel.RotatedBy(MathHelper.ToRadians(45)), ModContent.ProjectileType<DevilsStrike>(), 0, 0f, Owner.whoAmI, 1, 0);
                 }
                 Projectile strike = Projectile.NewProjectileDirect(Projectile.GetSource_FromThis(), lastHitTarget.Center, Vector2.Zero, ModContent.ProjectileType<DirectStrike>(), (int)(Projectile.damage * 1.5f), 0f, Owner.whoAmI, lastHitTarget.whoAmI, 0);
+                strike.DamageType = DamageClass.Melee;
                 SoundStyle dieSound = new("CalamityMod/Sounds/Item/LanceofDestinyStrong");
                 SoundEngine.PlaySound(dieSound with { Volume = 0.9f, Pitch = 0.3f }, lastHitTarget.Center);
 

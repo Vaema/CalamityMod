@@ -27,11 +27,11 @@ namespace CalamityMod.NPCs.PlagueEnemies
             NPC.aiStyle = NPCAIStyleID.GiantTortoise;
             NPC.width = 46;
             NPC.height = 32;
-            NPC.defense = 32;
-            NPC.lifeMax = 1000;
+            NPC.defense = 50;
+            NPC.lifeMax = 1200;
             NPC.knockBackResist = 0.2f;
             AnimationType = NPCID.GiantTortoise;
-            NPC.value = Item.buyPrice(0, 0, 15, 0);
+            NPC.value = Item.buyPrice(silver: 15);
             NPC.HitSound = SoundID.NPCHit24;
             NPC.noGravity = false;
             Banner = NPC.type;
@@ -39,10 +39,6 @@ namespace CalamityMod.NPCs.PlagueEnemies
             NPC.Calamity().VulnerableToHeat = true;
             NPC.Calamity().VulnerableToCold = true;
             NPC.Calamity().VulnerableToSickness = false;
-
-            // Scale stats in Expert and Master
-            CalamityGlobalNPC.AdjustExpertModeStatScaling(NPC);
-            CalamityGlobalNPC.AdjustMasterModeStatScaling(NPC);
         }
 
         public override void SetBestiary(BestiaryDatabase database, BestiaryEntry bestiaryEntry)
@@ -94,7 +90,7 @@ namespace CalamityMod.NPCs.PlagueEnemies
         public override void OnHitPlayer(Player target, Player.HurtInfo hurtInfo)
         {
             if (hurtInfo.Damage > 0)
-                target.AddBuff(ModContent.BuffType<Plague>(), 90, true);
+                target.AddBuff(ModContent.BuffType<Plague>(), 180);
         }
 
         public override void ModifyNPCLoot(NPCLoot npcLoot) => npcLoot.Add(ModContent.ItemType<PlagueCellCanister>(), 1, 3, 4);

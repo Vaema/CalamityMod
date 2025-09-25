@@ -13,6 +13,7 @@ using Terraria.DataStructures;
 using Terraria.GameContent;
 using Terraria.ID;
 using Terraria.ModLoader;
+using Terraria.ModLoader.Utilities;
 using static CalamityMod.CalamityUtils;
 using static Terraria.ModLoader.ModContent;
 
@@ -24,13 +25,11 @@ namespace CalamityMod.NPCs.SunkenSea
 
         #region Static Fields
 
-        public static int IdleRandomMovementUnlikeliness = 250;
+        //public static int IdleRandomMovementUnlikeliness = 250;
         public static int IdleMinPathDistance = 200;
         public static int IdleMaxPathDistance = 400;
 
         public static int FleeTileAnticipationDistance = 64;
-        public static int FleeMinPathDistance = 80;
-        public static int FleeMaxPathDistance = 160;
 
         public static int ExplosionDistance = 80;
         public static int ExplosionRadius = 80;
@@ -148,6 +147,9 @@ namespace CalamityMod.NPCs.SunkenSea
             NPCType<Probesnout>(),
             NPCType<ProbesnoutGold>(),
             NPCType<SeaMinnow>(),
+            NPCType<AlphaSeaMinnow>(),
+            NPCType<SeaMinnowGold>(),
+            NPCType<AlphaSeaMinnowGold>(),
             NPCType<EutrophicRay>(),
         ];
 
@@ -191,7 +193,7 @@ namespace CalamityMod.NPCs.SunkenSea
 
             NPC.HitSound = SoundID.NPCHit1;
             NPC.DeathSound = SoundID.NPCDeath1;
-            NPC.value = Item.buyPrice(0, 0, 5, 0);
+            NPC.value = Item.buyPrice(silver: 5);
 
             NPC.Calamity().VulnerableToHeat = false;
             NPC.Calamity().VulnerableToSickness = true;
@@ -228,6 +230,14 @@ namespace CalamityMod.NPCs.SunkenSea
 
         public override void AI()
         {
+            if (pathfinding == null)
+            {
+                pathfinding = new PathfindingManager(NPC)
+                {
+                    Acceleration = 0.3f,
+                    MaxSpeed = 6f,
+                };
+            }
             CurrentBehavior?.Invoke();
 
             // Leans the Sharkoon towards the direction it's going.
@@ -243,18 +253,20 @@ namespace CalamityMod.NPCs.SunkenSea
             }
 
             // When it gets outside of water, it'll try to gravitate downards towards the water.
-            if (!NPC.wet && !IsExploding)
+            if (!NPC.wet && !IsExploding && CurrentBehavior != OutsideWaterBehavior)
                 CurrentBehavior = OutsideWaterBehavior;
 
-            // Reset any squish that is done to the Sharkoon.
+
+            // Reset any squish that is done to the Sharkoon, and clamps its upper limit to prevent it from becoming too tall
             if (ScaleSquish.Y > 1f)
+                ScaleSquish.Y = MathHelper.Clamp(ScaleSquish.Y, 1f, 1.5f);
                 ScaleSquish.Y = Math.Max(1f, ScaleSquish.Y - 0.025f);
         }
 
         private void IdlingBehavior()
         {
             // At random, the mob will choose a random nearby point and pathfind there.
-            pathfinding.DoPathfinding(new(NPC.Center, NPC.Center + Main.rand.NextVector2Unit() * 2000f, SunkenSeaTileValidity));
+            pathfinding.DoPathfinding(new(NPC.Center, NPC.Center + Main.rand.NextVector2Unit() * Main.rand.Next(IdleMinPathDistance, IdleMaxPathDistance), SunkenSeaTileValidity));
         }
 
         private void HuntingBehavior()
@@ -453,7 +465,9 @@ namespace CalamityMod.NPCs.SunkenSea
             }
         }
 
-        public override bool CanBeHitByNPC(NPC attacker) => attacker.type != Type;
+        public override bool CanBeHitByNPC(NPC attacker) => PredatorIDs.Contains(attacker.type);
+
+        public override bool CanHitNPC(NPC target) => PreyIDs.Contains(target.type);
 
         public override void OnHitByNPC(NPC attacker)
         {
@@ -514,6 +528,16 @@ namespace CalamityMod.NPCs.SunkenSea
                 SoundStyle boom = new("CalamityMod/Sounds/Custom/SharkoonBoom");
                 SoundEngine.PlaySound(boom with { Volume = 0.7f, PitchVariance = 0.15f }, NPC.Center);
             }
+        }
+
+        public override float SpawnChance(NPCSpawnInfo spawnInfo)
+        {
+            if (spawnInfo.Water && !spawnInfo.Player.Calamity().clamity)
+            {
+                if (spawnInfo.Player.Calamity().ZoneRadiantReefs)
+                    return SpawnCondition.CaveJellyfish.Chance * 0.2f;
+            }
+            return 0f;
         }
 
         #endregion

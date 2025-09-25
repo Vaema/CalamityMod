@@ -2,7 +2,6 @@
 using System.Linq;
 using System.Text;
 using CalamityMod.Balancing;
-using Microsoft.Xna.Framework.Input;
 using Terraria;
 using Terraria.DataStructures;
 using Terraria.ID;
@@ -57,7 +56,15 @@ namespace CalamityMod.Items.Accessories.Wings
             maxCanAscendMultiplier = RisingSpeedThreshold;
             maxAscentMultiplier = MaxAscentSpeed;
             constantAscend = BaseAscent;
+
+            AdditionalFlightMovement(player, ref ascentWhenFalling, ref ascentWhenRising, ref maxCanAscendMultiplier, ref maxAscentMultiplier, ref constantAscend);
         }
+
+        /// <summary>
+        /// Addition for any deviations in regular wing movement.<br/>
+        /// This is typically for UP boost or hovers.
+        /// </summary>
+        public virtual void AdditionalFlightMovement(Player player, ref float ascentWhenFalling, ref float ascentWhenRising, ref float maxCanAscendMultiplier, ref float maxAscentMultiplier, ref float constantAscend) { }
 
         public override void ModifyTooltips(List<TooltipLine> list)
         {
@@ -81,11 +88,11 @@ namespace CalamityMod.Items.Accessories.Wings
             sb.Append('\n');
             sb.Append(CalamityUtils.GetText($"Common.WingStats").Format(time.FramesToSeconds(), run.ToMph(), (MaxAscentSpeed * baseJumpSpeed).ToMph()));
             sb.Append('\n');
-            if (Main.keyState.IsKeyDown(Keys.LeftShift))
+            if (Main.keyState.PressingShift())
             {
                 sb.Append(CalamityUtils.GetText($"Common.WingStatsAcceleration").Format(rAcc.ToMphps(), BaseAscent.ToMphps(),
                 (BaseAscent + BonusAscentWhileRising).ToMphps(), (RisingSpeedThreshold * baseJumpSpeed).ToMph(),
-                (BaseAscent + BonusAscentWhileRising + BonusAscentWhileFalling).ToMphps()));
+                (BaseAscent + BonusAscentWhileFalling).ToMphps()));
                 if (hover)
                 {
                     sb.Append('\n');

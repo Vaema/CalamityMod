@@ -1,4 +1,5 @@
 ﻿using CalamityMod.Dusts;
+using CalamityMod.Sounds;
 using CalamityMod.Systems;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
@@ -11,7 +12,6 @@ namespace CalamityMod.Tiles.FurnitureWulfrum
 {
     public class RoundedAnodizedWulfrumPanels : ModTile
     {
-        public static readonly SoundStyle MinePlatingSound = new("CalamityMod/Sounds/Custom/PlatingMine", 3);
         private const short subsheetWidth = 216;
         private const short subsheetHeight = 72;
         public static int TypeCache;
@@ -25,7 +25,7 @@ namespace CalamityMod.Tiles.FurnitureWulfrum
             CalamityUtils.MergeWithGeneral(Type);
             CalamityUtils.MergeDecorativeTiles(Type);
 
-            HitSound = MinePlatingSound;
+            HitSound = CommonCalamitySounds.PlatingMine;
             AddMapEntry(new Color(164, 150, 125));
         }
 

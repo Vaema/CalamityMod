@@ -11,7 +11,6 @@ using Terraria.DataStructures;
 using Terraria.ID;
 using Terraria.Localization;
 using Terraria.ModLoader;
-using static Microsoft.Xna.Framework.Input.Keys;
 using static Terraria.ModLoader.ModContent;
 
 namespace CalamityMod.Items.Armor.Wulfrum
@@ -36,11 +35,16 @@ namespace CalamityMod.Items.Armor.Wulfrum
         public static readonly SoundStyle SetBreakSound = new("CalamityMod/Sounds/Custom/AbilitySounds/WulfrumBastionBreak");
         public static readonly SoundStyle SetBreakSoundSafe = new("CalamityMod/Sounds/Custom/AbilitySounds/WulfrumBastionBreakSafely");
 
-        public static int MinionSlotBoost = 1;
-        public static int BastionBuildTime = (int)(0.55f * 60);
-        public static int BastionTime = 30 * 60;
-        public static int TimeLostPerHit = 2 * 60;
-        public static int BastionCooldown = 20 * 60;
+        public static float SummonDamageBoost = 0.05f;
+        public override LocalizedText Tooltip => base.Tooltip.WithFormatArgs(SummonDamageBoost.ToPercent());
+
+        // Set Bonus
+        public static int BastionDefenseBoost = 12;
+        public static float BastionDRBoost = 0.1f;
+        public static int BastionBuildTime = CalamityUtils.SecondsToFrames(0.55f);
+        public static int BastionTime = CalamityUtils.SecondsToFrames(30);
+        public static int TimeLostPerHit = CalamityUtils.SecondsToFrames(2);
+        public static int BastionCooldown = CalamityUtils.SecondsToFrames(20);
 
         internal static Item DummyCannon = new Item(); //Used for the attack swap. Basically we force the player to hold a fake item.
 
@@ -58,8 +62,7 @@ namespace CalamityMod.Items.Armor.Wulfrum
                 EquipLoader.AddEquipTexture(Mod, "CalamityMod/Items/Armor/Wulfrum/WulfrumHat_FemaleHead", EquipType.Head, name: "WulfrumHatFemale");
             }
 
-            Terraria.On_Player.KeyDoubleTap += ActivateSetBonus;
-            Terraria.On_Main.DrawPendingMouseText += SpoofMouseItem;
+            On_Main.DrawPendingMouseText += SpoofMouseItem;
         }
 
         public override void Unload()
@@ -68,42 +71,15 @@ namespace CalamityMod.Items.Armor.Wulfrum
             DummyCannon = null;
         }
 
-        private void ActivateSetBonus(Terraria.On_Player.orig_KeyDoubleTap orig, Player player, int keyDir)
-        {
-            if (keyDir == (Main.ReversedUpDownArmorSetBonuses ? 1 : 0) && HasArmorSet(player) && !player.mount.Active)
-            {
-                //Only activate if no cooldown & available scrap.
-                if (player.Calamity().cooldowns.TryGetValue(WulfrumBastion.ID, out CooldownInstance cd))
-                {
-                    if (cd.timeLeft > BastionCooldown && cd.timeLeft < BastionCooldown + BastionTime - 60 * 3)
-                    {
-                        cd.timeLeft = BastionCooldown + 1;
-                        player.Calamity().SyncCooldownDictionary(false);
-                    }
-                }
-
-                else if (player.HasItem(ItemType<WulfrumMetalScrap>()))
-                {
-                    player.ConsumeItem(ItemType<WulfrumMetalScrap>());
-                    //I Thiiiinnnk there's no need to add mp syncing packets since cooldowns get auto synced right.
-                    player.AddCooldown(WulfrumBastion.ID, BastionCooldown + BastionTime);
-                    //Though do i need to sync that or is the player inventory auto synced?
-                    DummyCannon.SetDefaults(ItemType<WulfrumFusionCannon>());
-                }
-            }
-
-            orig(player, keyDir);
-        }
-
         //Replaces the tooltip of the armor set with the fusion cannon if the player holds shift
-        private void SpoofMouseItem(Terraria.On_Main.orig_DrawPendingMouseText orig)
+        private void SpoofMouseItem(On_Main.orig_DrawPendingMouseText orig)
         {
             var player = Main.LocalPlayer;
 
             if (DummyCannon.IsAir && !Main.gameMenu)
                 DummyCannon.SetDefaults(ItemType<WulfrumFusionCannon>());
 
-            if (IsPartOfSet(Main.HoverItem) && HasArmorSet(player) && Main.keyState.IsKeyDown(LeftShift))
+            if (IsPartOfSet(Main.HoverItem) && HasArmorSet(player) && Main.keyState.PressingShift())
             {
                 Main.HoverItem = DummyCannon.Clone();
                 Main.hoverItemName = DummyCannon.Name;
@@ -118,6 +94,7 @@ namespace CalamityMod.Items.Armor.Wulfrum
             Item.height = 18;
             Item.value = CalamityGlobalItem.RarityBlueBuyPrice;
             Item.rare = ItemRarityID.Blue;
+            Item.defense = 1;
         }
 
         public override bool IsArmorSet(Item head, Item body, Item legs) => body.type == ItemType<WulfrumJacket>() && legs.type == ItemType<WulfrumOveralls>();
@@ -133,8 +110,9 @@ namespace CalamityMod.Items.Armor.Wulfrum
 
             armorPlayer.wulfrumSet = true;
 
-            player.setBonus = this.GetLocalization("SetBonus").Format(MinionSlotBoost); //The cooler part of the set bonus happens in modifytooltips because i can't recolor it otherwise. Madge
-            player.maxMinions += MinionSlotBoost;
+            Color AbilityBriefColor = Color.Lerp(new Color(194, 255, 67), new Color(112, 244, 244), 0.5f + 0.5f * MathF.Sin(Main.GlobalTimeWrappedHourly * 3f));
+            player.setBonus = this.GetLocalization("SetBonus").Format(AbilityBriefColor.Hex3(), CalamityUtils.GetArmorSetBonusKey(), BastionTime.FramesToSeconds(), TimeLostPerHit.FramesToSeconds());
+
             if (PowerModeEngaged(player, out var cd))
             {
                 if (cd.timeLeft == BastionCooldown + BastionTime)
@@ -143,12 +121,13 @@ namespace CalamityMod.Items.Armor.Wulfrum
                 }
 
                 //Stats
-                player.statDefense += 13;
-                player.endurance += 0.05f; //10% Dr in total with the chestplate
+                player.statDefense += BastionDefenseBoost;
+                player.endurance += BastionDRBoost;
 
-                //Can't account for previous fullbody transformations but at this point, whatever.
+                //Can't account for previous fullbody transformations but at this point, whatever
+                bool transformed = player.Transformation().Type == ItemType<AbandonedWulfrumHelmet>();
                 Item headItem = player.armor[10].type != ItemID.None ? player.armor[10] : player.armor[0];
-                bool hatVisible = !transformationPlayer.transformationActive && headItem.type == ItemType<WulfrumHat>();
+                bool hatVisible = !transformed && headItem.type == ItemType<WulfrumHat>();
 
                 //Spawn the hat
                 if (cd.timeLeft == BastionCooldown + BastionTime - (int)(BastionBuildTime * 0.9f) && hatVisible)
@@ -159,11 +138,9 @@ namespace CalamityMod.Items.Armor.Wulfrum
 
                 //Visuals
                 if (cd.timeLeft < BastionCooldown + BastionTime - BastionBuildTime)
-                    player.GetModPlayer<WulfrumTransformationPlayer>().transformationActive = true;
-                else if (cd.timeLeft <= BastionCooldown + BastionTime - (int)(BastionBuildTime * 0.9f))
-                    player.GetModPlayer<WulfrumTransformationPlayer>().forceHelmetOn = true;
+                    player.Transformation().Type = ItemType<AbandonedWulfrumHelmet>();
 
-                //Swapping the arm.
+                //Swapping the arm
                 if (DummyCannon.IsAir)
                     DummyCannon.SetDefaults(ItemType<WulfrumFusionCannon>());
 
@@ -176,7 +153,7 @@ namespace CalamityMod.Items.Armor.Wulfrum
                     Main.mouseItem = DummyCannon;
                 }
 
-                //Slot 58 is the "fake" slot thats used for the item the player is holding in their mouse.
+                //Slot 58 is the "fake" slot thats used for the item the player is holding in their mouse
                 player.inventory[58] = DummyCannon;
                 player.selectedItem = 58;
             }
@@ -188,6 +165,9 @@ namespace CalamityMod.Items.Armor.Wulfrum
                     Main.mouseItem = new Item();
 
                 DummyCannon.TurnToAir();
+
+                if (player.Transformation().Type == ItemType<AbandonedWulfrumHelmet>() && player.Transformation().currentTransformation.IsForced)
+                    player.Transformation().currentTransformation.IsForced = false;
             }
         }
 
@@ -195,8 +175,8 @@ namespace CalamityMod.Items.Armor.Wulfrum
         {
             SoundEngine.PlaySound(SetActivationSound);
 
-            //Do'nt do the effect ifthe player is already using the wulfrum vanity lol.
-            bool transformedAlready = player.GetModPlayer<WulfrumTransformationPlayer>().transformationActive;
+            //Don't do the effect if the player is already using the wulfrum vanity lol
+            bool transformedAlready = player.Transformation().Type == ItemType<AbandonedWulfrumHelmet>();
 
             if (!transformedAlready)
             {
@@ -221,41 +201,7 @@ namespace CalamityMod.Items.Armor.Wulfrum
             GeneralParticleHandler.SpawnParticle(gun);
         }
 
-        public static void ModifySetTooltips(ModItem item, List<TooltipLine> tooltips)
-        {
-            if (HasArmorSet(Main.LocalPlayer))
-            {
-                int setBonusIndex = tooltips.FindIndex(x => x.Name == "SetBonus" && x.Mod == "Terraria");
-
-                if (setBonusIndex != -1)
-                {
-                    string dir = Language.GetTextValue(Main.ReversedUpDownArmorSetBonuses ? "Key.UP" : "Key.DOWN");
-                    TooltipLine setBonus1 = new TooltipLine(item.Mod, "CalamityMod:SetBonus1", CalamityUtils.GetTextFromModItem<WulfrumHat>("AbilityBrief").Format(dir));
-                    setBonus1.OverrideColor = Color.Lerp(new Color(194, 255, 67), new Color(112, 244, 244), 0.5f + 0.5f * (float)Math.Sin(Main.GlobalTimeWrappedHourly * 3f));
-                    tooltips.Insert(setBonusIndex + 1, setBonus1);
-
-                    int AmmoItem = ItemType<WulfrumMetalScrap>();
-                    string AmmoDisplay = $"[i:{AmmoItem}] {CalamityUtils.GetItemName(AmmoItem)}";
-                    TooltipLine setBonus2 = new TooltipLine(item.Mod, "CalamityMod:SetBonus2", CalamityUtils.GetTextFromModItem<WulfrumHat>("AbilityDescription").Format(AmmoDisplay));
-                    setBonus2.OverrideColor = new Color(110, 192, 93);
-                    tooltips.Insert(setBonusIndex + 2, setBonus2);
-
-                    if (!Main.keyState.IsKeyDown(LeftShift))
-                    {
-                        TooltipLine itemDisplay = new TooltipLine(item.Mod, "CalamityMod:ArmorItemDisplay", CalamityUtils.GetTextValueFromModItem<WulfrumHat>("ShiftToExpand"));
-                        itemDisplay.OverrideColor = new Color(190, 190, 190);
-                        tooltips.Add(itemDisplay);
-                    }
-                }
-
-            }
-        }
-        public override void ModifyTooltips(List<TooltipLine> tooltips) => ModifySetTooltips(this, tooltips);
-
-        public override void UpdateEquip(Player player)
-        {
-            player.GetDamage<SummonDamageClass>() += 0.1f;
-        }
+        public override void UpdateEquip(Player player) => player.GetDamage<SummonDamageClass>() += SummonDamageBoost;
 
         public override void AddRecipes()
         {
@@ -272,6 +218,10 @@ namespace CalamityMod.Items.Armor.Wulfrum
     public class WulfrumJacket : ModItem, ILocalizedModType
     {
         public new string LocalizationCategory => "Items.Armor.PreHardmode";
+
+        public static int MinionSlotBoost = 1;
+        public override LocalizedText Tooltip => base.Tooltip.WithFormatArgs(MinionSlotBoost);
+
         public override void SetStaticDefaults()
         {
             if (!Main.dedServ)
@@ -291,14 +241,12 @@ namespace CalamityMod.Items.Armor.Wulfrum
             Item.defense = 2;
         }
 
-        public override void ModifyTooltips(List<TooltipLine> tooltips) => WulfrumHat.ModifySetTooltips(this, tooltips);
-
-        public override void UpdateEquip(Player player) => player.endurance += 0.05f;
+        public override void UpdateEquip(Player player) => player.maxMinions += MinionSlotBoost;
 
         public override void AddRecipes()
         {
             CreateRecipe().
-                AddIngredient<WulfrumMetalScrap>(12).
+                AddIngredient<WulfrumMetalScrap>(10).
                 AddIngredient<EnergyCore>().
                 AddTile(TileID.Anvils).
                 Register();
@@ -310,6 +258,10 @@ namespace CalamityMod.Items.Armor.Wulfrum
     public class WulfrumOveralls : ModItem, ILocalizedModType
     {
         public new string LocalizationCategory => "Items.Armor.PreHardmode";
+
+        public static float SummonDamageBoost = 0.05f;
+        public override LocalizedText Tooltip => base.Tooltip.WithFormatArgs(SummonDamageBoost.ToPercent());
+
         public override void SetDefaults()
         {
             Item.width = 18;
@@ -324,11 +276,8 @@ namespace CalamityMod.Items.Armor.Wulfrum
                 ArmorIDs.Legs.Sets.HidesBottomSkin[equipSlot] = true;
             }
         }
-        public override void ModifyTooltips(List<TooltipLine> tooltips) => WulfrumHat.ModifySetTooltips(this, tooltips);
-        public override void UpdateEquip(Player player)
-        {
-            player.moveSpeed += 0.05f;
-        }
+
+        public override void UpdateEquip(Player player) => player.GetDamage<SummonDamageClass>() += SummonDamageBoost;
 
         public override void AddRecipes()
         {
@@ -343,10 +292,6 @@ namespace CalamityMod.Items.Armor.Wulfrum
 
     public class WulfrumArmorPlayer : ModPlayer
     {
-        public static int BastionShootDamage = 10;
-        public static float BastionShootSpeed = 18f;
-        public static int BastionShootTime = 10;
-
         public bool wulfrumSet = false;
 
         public override void ResetEffects()
@@ -365,7 +310,7 @@ namespace CalamityMod.Items.Armor.Wulfrum
             {
                 SetBonusEndEffect(true);
                 if (!Player.GetModPlayer<WulfrumTransformationPlayer>().vanityEquipped)
-                    Player.GetModPlayer<WulfrumTransformationPlayer>().transformationActive = false;
+                    Player.Transformation().currentTransformation = null;
             }
         }
 

@@ -40,7 +40,7 @@ namespace CalamityMod.Items.Weapons.Melee
                 AddIngredient<Lumenyl>(8).
                 AddIngredient<RuinousSoul>(5).
                 AddIngredient<ExodiumCluster>(15).
-                AddTile(TileID.LunarCraftingStation).
+                AddTile(TileID.MythrilAnvil).
                 Register();
         }
     }

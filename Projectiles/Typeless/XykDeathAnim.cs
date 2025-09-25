@@ -17,7 +17,7 @@ namespace CalamityMod.Projectiles.Typeless
         public new string LocalizationCategory => "Projectiles.Typeless";
         public ref float time => ref Projectile.ai[0];
         public int endTime = 25;
-        public override string Texture => "CalamityMod/Items/LabFinders/RedSeekingMechanism";
+        public override string Texture => "CalamityMod/Projectiles/InvisibleProj";
 
         public override void SetStaticDefaults()
         {
@@ -39,20 +39,7 @@ namespace CalamityMod.Projectiles.Typeless
         {
             Player Owner = Main.player[Projectile.owner];
             bool Orange = Owner.Calamity().XykVisualsOrange;
-            Color effectColor = Orange ? Color.Gold : Color.DodgerBlue;
-
-            float rate = Main.GlobalTimeWrappedHourly * 22;
-            List<Color> eColors = new List<Color>()
-                {
-                    Orange ? Color.OrangeRed : Color.DodgerBlue,
-                    Orange ? Color.Gold : Color.Cyan,
-                    Orange ? Color.Orange : Color.RoyalBlue
-                };
-
-            int colorIndex = (int)(rate / 2 % eColors.Count);
-            Color currentColor = eColors[colorIndex];
-            Color nextColor = eColors[(colorIndex + 1) % eColors.Count];
-            effectColor = Color.Lerp(currentColor, nextColor, rate % 2f > 1f ? 1f : rate % 1f);
+            Color effectColor = Owner.Calamity().XykFXColor;
 
             if (time == 0)
             {

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using CalamityMod.Fonts;
 using CalamityMod.NPCs.ExoMechs;
 using log4net;
 using Microsoft.Xna.Framework;
@@ -233,15 +234,6 @@ namespace CalamityMod.UI.DraedonSummoning
         } = new();
 
         /// <summary>
-        /// The font used for displaying dialog.
-        /// </summary>
-        public static DynamicSpriteFont DialogFont
-        {
-            get;
-            internal set;
-        }
-
-        /// <summary>
         /// The dialog hover sound.
         /// </summary>
         public static readonly SoundStyle DialogOptionHoverSound = new("CalamityMod/Sounds/Custom/Codebreaker/DialogOptionHover");
@@ -255,17 +247,6 @@ namespace CalamityMod.UI.DraedonSummoning
             new("CalamityMod/Sounds/Custom/Codebreaker/DraedonTalk2"),
             new("CalamityMod/Sounds/Custom/Codebreaker/DraedonTalk3")
         };
-
-        public override void OnModLoad()
-        {
-            if (Main.dedServ)
-                return;
-
-            if (Environment.OSVersion.Platform == PlatformID.Win32NT)
-                DialogFont = CalamityMod.Instance.Assets.Request<DynamicSpriteFont>("Fonts/CodebreakerDialog", AssetRequestMode.ImmediateLoad).Value;
-            else
-                DialogFont = FontAssets.MouseText.Value;
-        }
 
         public static void DisplayCommunicationPanel()
         {
@@ -433,7 +414,7 @@ namespace CalamityMod.UI.DraedonSummoning
 
                 Color textColor = Color.Cyan;
                 Color markerColor = Color.White;
-                Vector2 textArea = DialogFont.MeasureString(inquiry) * GeneralScale;
+                Vector2 textArea = FontAssetSystem.Fonts["CodebreakerDialog"].MeasureString(inquiry) * GeneralScale;
                 Rectangle textAreaRect = new((int)textTopLeft.X, (int)textTopLeft.Y, (int)(textArea.X * 0.9f), (int)textArea.Y);
                 Rectangle markerArea = Utils.CenteredRectangle(markerDrawPosition, markerTextureSize);
                 textAreaRect.Y = markerArea.Y;
@@ -514,7 +495,7 @@ namespace CalamityMod.UI.DraedonSummoning
                 Vector2 markerTextureOrigin = markerTexture.Size() * 0.5f;
                 Main.spriteBatch.Draw(markerTexture, markerDrawPosition, null, markerColor * opacity, 0f, markerTextureOrigin, markerScale, 0, 0f);
 
-                ChatManager.DrawColorCodedStringWithShadow(Main.spriteBatch, DialogFont, inquiry, textTopLeft, textColor * opacity, 0f, Vector2.Zero, Vector2.One * GeneralScale * 0.85f);
+                ChatManager.DrawColorCodedStringWithShadow(Main.spriteBatch, FontAssetSystem.Fonts["CodebreakerDialog"], inquiry, textTopLeft, textColor * opacity, 0f, Vector2.Zero, Vector2.One * GeneralScale * 0.85f);
                 textTopLeft.Y += verticalOffsetPerOption;
                 OptionsTextHeight += verticalOffsetPerOption;
             }
@@ -632,7 +613,7 @@ namespace CalamityMod.UI.DraedonSummoning
             foreach (var entry in dialogEntries)
             {
                 int lineIndex = 0;
-                foreach (string line in Utils.WordwrapString(entry.Dialog, DialogFont, 336, 1000, out _))
+                foreach (string line in Utils.WordwrapString(entry.Dialog, FontAssetSystem.Fonts["CodebreakerDialog"], 336, 1000, out _))
                 {
                     if (string.IsNullOrEmpty(line))
                         continue;
@@ -650,7 +631,7 @@ namespace CalamityMod.UI.DraedonSummoning
                         Vector2 anchorPoint = new(dialogArea.Center.X, markerDrawPosition.Y);
                         markerDrawPosition.X = anchorPoint.X + (anchorPoint.X - markerDrawPosition.X) - GeneralScale * 12f;
                         localTextTopLeft.X = anchorPoint.X + (anchorPoint.X - localTextTopLeft.X) - GeneralScale * 14f;
-                        localTextTopLeft.X -= DialogFont.MeasureString(line).X * DialogTextScale.X;
+                        localTextTopLeft.X -= FontAssetSystem.Fonts["CodebreakerDialog"].MeasureString(line).X * DialogTextScale.X;
                         localTextTopLeft.Y -= localTextOffsetY;
 
                         // Use a neutral grey-ish color if text is being said by the player.
@@ -664,7 +645,7 @@ namespace CalamityMod.UI.DraedonSummoning
                         Main.spriteBatch.Draw(markerTexture, markerDrawPosition, null, Color.White * dialogHistoryDrawInterpolant, 0f, markerTextureOrigin, markerScale, markerDirection, 0f);
 
                     // Draw the text itself.
-                    ChatManager.DrawColorCodedStringWithShadow(Main.spriteBatch, DialogFont, line, localTextTopLeft, dialogColor * dialogHistoryDrawInterpolant, 0f, Vector2.Zero, DialogTextScale);
+                    ChatManager.DrawColorCodedStringWithShadow(Main.spriteBatch, FontAssetSystem.Fonts["CodebreakerDialog"], line, localTextTopLeft, dialogColor * dialogHistoryDrawInterpolant, 0f, Vector2.Zero, DialogTextScale);
 
                     textTopLeft.Y += panelOffsetPerLine;
                     lineIndex++;

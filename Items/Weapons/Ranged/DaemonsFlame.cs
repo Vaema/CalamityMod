@@ -1,4 +1,6 @@
-﻿using CalamityMod.Projectiles.Ranged;
+﻿using CalamityMod.Items.Weapons.Magic;
+using CalamityMod.Items.Weapons.Rogue;
+using CalamityMod.Projectiles.Ranged;
 using CalamityMod.Rarities;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
@@ -12,11 +14,15 @@ namespace CalamityMod.Items.Weapons.Ranged
     public class DaemonsFlame : ModItem, ILocalizedModType
     {
         public new string LocalizationCategory => "Items.Weapons.Ranged";
+        public override void SetStaticDefaults()
+        {
+            ItemID.Sets.ShimmerTransformToItem[Type] = ModContent.ItemType<FatesReveal>();
+        }
         public override void SetDefaults()
         {
             Item.width = 62;
             Item.height = 128;
-            Item.damage = 150;
+            Item.damage = 162;
             Item.useTime = 12;
             Item.useAnimation = 12;
             Item.useStyle = ItemUseStyleID.Shoot;
@@ -33,7 +39,6 @@ namespace CalamityMod.Items.Weapons.Ranged
 
             Item.value = CalamityGlobalItem.RarityPureGreenBuyPrice;
             Item.rare = ModContent.RarityType<PureGreen>();
-            Item.Calamity().canFirePointBlankShots = true;
         }
 
         public override bool CanUseItem(Player player) => player.ownedProjectileCounts[Item.shoot] <= 0;

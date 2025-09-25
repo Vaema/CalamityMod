@@ -17,7 +17,7 @@ namespace CalamityMod.Items.Placeables.FurnitureStratus
             CreateRecipe().
                 AddIngredient<StratusBricks>(8).
                 AddRecipeGroup("IronBar", 2).
-                AddTile(TileID.LunarCraftingStation).
+                AddTile<Tiles.Furniture.CraftingStations.VoidCondenser>().
                 Register();
         }
     }

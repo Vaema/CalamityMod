@@ -935,6 +935,7 @@ namespace CalamityMod
             Main.tileLavaDeath[mt.Type] = !lavaImmune;
             Main.tileWaterDeath[mt.Type] = false;
             TileID.Sets.MultiTileSway[mt.Type] = true;
+            TileID.Sets.IsAMechanism[mt.Type] = true;
             TileObjectData.newTile.Width = 3;
             TileObjectData.newTile.Height = 3;
             TileObjectData.newTile.CoordinateHeights = new int[] { 16, 16, 16 };

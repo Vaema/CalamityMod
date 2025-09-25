@@ -3,6 +3,7 @@ using System.IO;
 using System.Runtime.CompilerServices;
 using CalamityMod.Dusts;
 using CalamityMod.Items.Weapons.Melee;
+using CalamityMod.NPCs;
 using CalamityMod.NPCs.PrimordialWyrm;
 using CalamityMod.Particles;
 using CalamityMod.Projectiles.BaseProjectiles;
@@ -17,6 +18,7 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.Projectiles.Melee
 {
+    [PierceResistException]
     public class GrandDadHoldout : BaseCustomUseStyleProjectile, ILocalizedModType
     {
         public override int AssignedItemID => ModContent.ItemType<GrandDad>();
@@ -38,6 +40,7 @@ namespace CalamityMod.Projectiles.Melee
         public int swingCount;
         public bool finalFlip = false;
         public bool swingSound = true;
+        public int armoredHits = 0;
 
         private NPC target => Main.npc[(int)Projectile.ai[0]];
 
@@ -102,6 +105,7 @@ namespace CalamityMod.Projectiles.Melee
                 swingCount++;
                 finalFlip = false;
                 swingSound = true;
+                armoredHits = 0;
             }
             else
             {
@@ -208,13 +212,11 @@ namespace CalamityMod.Projectiles.Melee
 
         public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
         {
-            if ((damageDone <= 2 || (target.life <= 0 && target.realLife == -1)) && Projectile.numHits > 0)
+            if ((target.life <= 0 && target.realLife == -1) && Projectile.numHits > 0)
                 Projectile.numHits -= 1;
+            if (damageDone <= 2)
+                armoredHits++;
 
-            SoundStyle fire = new("CalamityMod/Sounds/NPCHit/ThanatosHitOpen1");
-            SoundEngine.PlaySound(fire with { Volume = 0.75f, Pitch = -0.1f }, Projectile.Center);
-            SoundStyle fire2 = new("CalamityMod/Sounds/Item/FinalDawnSlash");
-            SoundEngine.PlaySound(fire2 with { Volume = 0.65f, Pitch = Main.rand.NextFloat(-0.2f, -0.3f) }, Projectile.Center);
             if (Main.zenithWorld && Projectile.numHits == 0 && target.type != ModContent.NPCType<PrimordialWyrmHead>() && Main.rand.NextBool(5))
             {
                 SoundStyle fire3 = new("CalamityMod/Sounds/Item/GFBScreams/Scream", 8);
@@ -223,12 +225,16 @@ namespace CalamityMod.Projectiles.Melee
             if (Projectile.numHits == 0)
             {
                 Owner.Calamity().GeneralScreenShakePower = 6.5f;
+                SoundStyle fire = new("CalamityMod/Sounds/NPCHit/ThanatosHitOpen1");
+                SoundEngine.PlaySound(fire with { Volume = 0.75f, Pitch = -0.1f }, Projectile.Center);
+                SoundStyle fire2 = new("CalamityMod/Sounds/Item/FinalDawnSlash");
+                SoundEngine.PlaySound(fire2 with { Volume = 0.65f, Pitch = Main.rand.NextFloat(-0.2f, -0.3f) }, Projectile.Center);
             }
 
             int heal = (int)(MathHelper.Clamp(20 - Projectile.numHits * 12, 1, 20));
             if (Projectile.numHits < 10)
             {
-                Owner.HealPlayer(heal);
+                Owner.DoLifestealDirect(target, heal, 0.5f);
             }
 
             if (target.CanBeMoved(true) || Main.zenithWorld || target.type == ModContent.NPCType<PrimordialWyrmHead>() || (DownedBossSystem.downedCalamitas && DownedBossSystem.downedExoMechs))
@@ -254,7 +260,9 @@ namespace CalamityMod.Projectiles.Melee
                 target.knockBackResist = 1;
 
                 // Apply tile collison damage (is bonus on GFB and even further is both final bosses are gone)
-                target.FlungNPC().ApplyCollisionDamage(target, Owner, Projectile.damage * (Main.zenithWorld ? (DownedBossSystem.downedCalamitas && DownedBossSystem.downedExoMechs ? 1000 : 77) : 3) * (rightClicked ? 3 : 1), launchVel * launchPower, 5f, true);
+                float damageMults = ((DownedBossSystem.downedCalamitas && DownedBossSystem.downedExoMechs) ? 5 : 1) * (Main.zenithWorld ? 77 : 1) * (rightClicked ? 3 : 1);
+                int damage = (int)(Projectile.damage * damageMults);
+                target.FlungNPC().ApplyCollisionDamage(target, Owner, damage, launchVel * launchPower, 5f, true);
             }
 
             if (Projectile.numHits < 3)
@@ -276,12 +284,15 @@ namespace CalamityMod.Projectiles.Melee
         public override void ModifyHitNPC(NPC target, ref NPC.HitModifiers modifiers)
         {
             if (Owner.Calamity().mouseRight)
-                modifiers.SourceDamage *= 0.0025f;
+            {
+                modifiers.SourceDamage *= 0;
+                modifiers.FinalDamage.Flat = 0.1f;
+            }
             else
             {
                 float minMult = 0.5f;
                 int hitsToMinMult = 15;
-                float damageMult = Utils.Remap(Projectile.numHits, 0, hitsToMinMult, 1, minMult, true);
+                float damageMult = Utils.Remap(Projectile.numHits - armoredHits, 0, hitsToMinMult, 1, minMult, true);
                 modifiers.SourceDamage *= damageMult;
             }
         }

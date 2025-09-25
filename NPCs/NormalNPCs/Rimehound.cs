@@ -1,7 +1,6 @@
 ﻿using System.IO;
 using CalamityMod.Items.Materials;
 using CalamityMod.Items.Placeables.Banners;
-using CalamityMod.NPCs.CalamityAIs.CalamityRegularEnemyAIs;
 using CalamityMod.World;
 using Terraria;
 using Terraria.Audio;
@@ -38,17 +37,17 @@ namespace CalamityMod.NPCs.NormalNPCs
             NPC.width = 56;
             NPC.height = 56;
             NPC.defense = 4;
-            NPC.lifeMax = 65;
+            NPC.lifeMax = 80;
             if (DownedBossSystem.downedCryogen)
             {
                 NPC.damage = 60;
                 NPC.defense = 10;
-                NPC.lifeMax = 1250;
+                NPC.lifeMax = 600;
             }
             NPC.knockBackResist = 0.3f;
             AnimationType = NPCID.Hellhound;
             AIType = -1;
-            NPC.value = Item.buyPrice(0, 0, 2, 0);
+            NPC.value = Item.buyPrice(silver: 2);
             NPC.HitSound = HitSound;
             NPC.DeathSound = SoundID.NPCDeath5;
             Banner = NPC.type;
@@ -57,10 +56,6 @@ namespace CalamityMod.NPCs.NormalNPCs
             NPC.Calamity().VulnerableToHeat = true;
             NPC.Calamity().VulnerableToCold = false;
             NPC.Calamity().VulnerableToSickness = true;
-
-            // Scale stats in Expert and Master
-            CalamityGlobalNPC.AdjustExpertModeStatScaling(NPC);
-            CalamityGlobalNPC.AdjustMasterModeStatScaling(NPC);
         }
 
         public override void SetBestiary(BestiaryDatabase database, BestiaryEntry bestiaryEntry)

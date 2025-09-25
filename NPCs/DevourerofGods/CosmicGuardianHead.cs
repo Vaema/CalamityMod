@@ -15,6 +15,7 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.NPCs.DevourerofGods
 {
+    [HasPierceResist]
     [LongDistanceNetSync]
     public class CosmicGuardianHead : ModNPC
     {
@@ -49,7 +50,7 @@ namespace CalamityMod.NPCs.DevourerofGods
         public override void SetDefaults()
         {
             NPC.Calamity().canBreakPlayerDefense = true;
-            NPC.GetNPCDamage();
+            NPC.damage = 180; // 360
             NPC.width = 64;
             NPC.height = 76;
             NPC.defense = 40;
@@ -64,10 +65,6 @@ namespace CalamityMod.NPCs.DevourerofGods
             NPC.HitSound = SoundID.NPCHit4;
             NPC.DeathSound = SoundID.NPCDeath14;
             NPC.netAlways = true;
-
-            // Scale stats in Expert and Master
-            CalamityGlobalNPC.AdjustExpertModeStatScaling(NPC);
-            CalamityGlobalNPC.AdjustMasterModeStatScaling(NPC);
         }
 
         public override void SetBestiary(BestiaryDatabase database, BestiaryEntry bestiaryEntry)
@@ -188,8 +185,8 @@ namespace CalamityMod.NPCs.DevourerofGods
             Vector2 segmentDirection = NPC.Center;
             float dogHeadX = Main.npc[CalamityGlobalNPC.DoGHead].position.X + (Main.npc[CalamityGlobalNPC.DoGHead].width / 2);
             float dogHeadY = Main.npc[CalamityGlobalNPC.DoGHead].position.Y + (Main.npc[CalamityGlobalNPC.DoGHead].height / 2);
-            float segmentVelocity = BossRushEvent.BossRushActive ? 30f : CalamityWorld.revenge ? 25f : 23f;
-            float velocityMult = BossRushEvent.BossRushActive ? 0.9f : CalamityWorld.revenge ? 0.75f : 0.23f;
+            float segmentVelocity = CalamityWorld.revenge ? 25f : 23f;
+            float velocityMult = CalamityWorld.revenge ? 0.75f : 0.23f;
             float maxDistanceFromDoGHead = 160f;
 
             if (increaseSpeedMore)
@@ -336,19 +333,6 @@ namespace CalamityMod.NPCs.DevourerofGods
                 }
             }
 
-            // Calculate contact damage based on velocity
-            float minimalContactDamageVelocity = segmentVelocity * 0.25f;
-            float minimalDamageVelocity = segmentVelocity * 0.5f;
-            if (NPC.velocity.Length() <= minimalContactDamageVelocity)
-            {
-                NPC.damage = (int)Math.Round(NPC.defDamage * 0.5);
-            }
-            else
-            {
-                float velocityDamageScalar = MathHelper.Clamp((NPC.velocity.Length() - minimalContactDamageVelocity) / minimalDamageVelocity, 0f, 1f);
-                NPC.damage = (int)MathHelper.Lerp((float)Math.Round(NPC.defDamage * 0.5), NPC.defDamage, velocityDamageScalar);
-            }
-
             NPC.rotation = (float)Math.Atan2(NPC.velocity.Y, NPC.velocity.X) + MathHelper.PiOver2;
         }
 
@@ -450,7 +434,7 @@ namespace CalamityMod.NPCs.DevourerofGods
         public override void OnHitPlayer(Player target, Player.HurtInfo hurtInfo)
         {
             if (hurtInfo.Damage > 0)
-                target.AddBuff(ModContent.BuffType<GodSlayerInferno>(), 120, true);
+                target.AddBuff(ModContent.BuffType<GodSlayerInferno>(), 240);
         }
     }
 }

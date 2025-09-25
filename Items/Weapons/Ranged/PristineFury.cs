@@ -1,4 +1,5 @@
-﻿using CalamityMod.Dusts;
+﻿using CalamityMod.Cooldowns;
+using CalamityMod.Dusts;
 using CalamityMod.Particles;
 using CalamityMod.Projectiles.Ranged;
 using CalamityMod.Rarities;
@@ -8,6 +9,7 @@ using Terraria;
 using Terraria.DataStructures;
 using Terraria.ID;
 using Terraria.ModLoader;
+using CalamityMod.CalPlayer;
 
 namespace CalamityMod.Items.Weapons.Ranged
 {
@@ -19,7 +21,7 @@ namespace CalamityMod.Items.Weapons.Ranged
         public bool Trail = true;
         public int shotCount = 0;
 
-        public static int boomTime = 60;
+        public static int boomTime = 6;
 
         public override Color? TooltipExtensionColor => new Color(255, 140, 0);
 
@@ -56,20 +58,40 @@ namespace CalamityMod.Items.Weapons.Ranged
 
         // Right click consumes ammo at the same rate but faster at spewing
         public override float UseTimeMultiplier(Player player) => player.altFunctionUse == 2 ? 0.5f : 1f;
-
+        public override void HoldItem(Player player)
+        {
+            int max = CalamityPlayer.FuryFuelMax;
+            if (player.Calamity().cooldowns.TryGetValue(FuryFuel.ID, out var cooldown))
+            {
+                cooldown.timeLeft = max - player.Calamity().furyFuel;
+            }
+            else
+            {
+                player.AddCooldown(FuryFuel.ID, max);
+            }
+        }
+        public override bool CanConsumeAmmo(Item ammo, Player player)
+        {
+            return (player.altFunctionUse != 2); // Right click doesn't use ammo, it's crystal powder not gel
+        }
         public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)
         {
             if (player.altFunctionUse == 2)
             {
-                Vector2 newVel = velocity.RotatedByRandom(MathHelper.ToRadians(5f));
-                Projectile.NewProjectile(source, position, newVel, ModContent.ProjectileType<PristineSecondary>(), (int) (damage * 0.7f), knockback, player.whoAmI); //.7x base damage
+                player.Calamity().furyRefuelTimer = -50;
+                if (player.Calamity().furyFuel > 0)
+                {
+                    Vector2 newVel = velocity.RotatedByRandom(MathHelper.ToRadians(5f));
+                    Projectile.NewProjectile(source, position, newVel, ModContent.ProjectileType<PristineSecondary>(), (int)(damage * 0.25f), knockback, player.whoAmI); //.25x base damage
 
-                Dust dust = Dust.NewDustPerfect(position + velocity * 3f + new Vector2(0, -3), ModContent.DustType<LightDust>(), velocity.RotatedBy(0.25f * player.direction).RotatedByRandom(0.35f) * Main.rand.NextFloat(0.5f, 2.5f), 0, default, Main.rand.NextFloat(0.4f, 0.8f));
-                dust.noGravity = true;
-                dust.color = Color.Orchid;
+                    Dust dust = Dust.NewDustPerfect(position + velocity * 3f + new Vector2(0, -3), ModContent.DustType<LightDust>(), velocity.RotatedBy(0.25f * player.direction).RotatedByRandom(0.35f) * Main.rand.NextFloat(0.5f, 2.5f), 0, default, Main.rand.NextFloat(0.4f, 0.8f));
+                    dust.noGravity = true;
+                    dust.color = Color.Orchid;
 
-                CritSpark spark = new CritSpark(position + velocity * 3f + new Vector2(0, -3), velocity.RotatedBy(0.25f * player.direction).RotatedByRandom(0.25f) * Main.rand.NextFloat(0.2f, 1.8f), Color.White, Color.Orchid, 0.9f, 18, 2f, 2.2f);
-                GeneralParticleHandler.SpawnParticle(spark);
+                    CritSpark spark = new CritSpark(position + velocity * 3f + new Vector2(0, -3), velocity.RotatedBy(0.25f * player.direction).RotatedByRandom(0.25f) * Main.rand.NextFloat(0.2f, 1.8f), Color.White, Color.Orchid, 0.9f, 18, 2f, 2.2f);
+                    GeneralParticleHandler.SpawnParticle(spark);
+                    player.Calamity().furyFuel -= 15;
+                }
             }
             else
             {

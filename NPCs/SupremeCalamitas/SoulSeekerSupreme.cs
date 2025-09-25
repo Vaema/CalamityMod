@@ -57,13 +57,13 @@ namespace CalamityMod.NPCs.SupremeCalamitas
 
         public override void SetDefaults()
         {
+            NPC.damage = 0; // No contact damage
             NPC.aiStyle = -1;
             AIType = -1;
             NPC.width = 40;
             NPC.height = 40;
             NPC.noGravity = true;
             NPC.noTileCollide = true;
-            NPC.damage = 0; // 0 contact damage, projectile damage is pulled from NPCStats
             NPC.defense = 60;
             NPC.DR_NERD(NormalDR);
             NPC.lifeMax = 28000;
@@ -144,7 +144,7 @@ namespace CalamityMod.NPCs.SupremeCalamitas
             NPC.spriteDirection = (Target.Center.X < NPC.Center.X).ToDirectionInt();
 
             timer++;
-            int shootRate = BossRushEvent.BossRushActive ? 120 : 180;
+            int shootRate = 180;
             if (timer > shootRate)
             {
                 foreach (NPC seeker in Main.ActiveNPCs)
@@ -162,10 +162,6 @@ namespace CalamityMod.NPCs.SupremeCalamitas
                 {
                     float targetDist = Vector2.Distance(Target.Center, NPC.Center);
                     int type = ModContent.ProjectileType<BrimstoneBarrage>();
-                    int damage = NPC.GetProjectileDamage(type);
-					if (BossRushEvent.BossRushActive)
-						damage /= 2;
-
                     float velocity = 5f;
                     float projectileVelocityToPass = velocity * 3f;
                     Vector2 shootVelocity = (Target.Center - NPC.Center).SafeNormalize(Vector2.UnitY) * velocity;
@@ -181,7 +177,7 @@ namespace CalamityMod.NPCs.SupremeCalamitas
                     }
                     else
                     {
-                        Projectile.NewProjectile(NPC.GetSource_FromAI(), NPC.Center, shootVelocity * 0.5f, type, damage, 1f, Main.myPlayer, 0f, 3f, projectileVelocityToPass);
+                        Projectile.NewProjectile(NPC.GetSource_FromAI(), NPC.Center, shootVelocity * 0.5f, type, SupremeCalamitas.DartDamage, 1f, Main.myPlayer, 0f, 3f, projectileVelocityToPass);
                         for (int i = 0; i < 5; i++)
                         {
                             Dust ShotDust = Dust.NewDustPerfect(NPC.Center, Main.rand.NextBool(3) ? 60 : 114);

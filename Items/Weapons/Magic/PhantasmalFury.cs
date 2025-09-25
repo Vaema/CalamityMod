@@ -22,9 +22,9 @@ namespace CalamityMod.Items.Weapons.Magic
         {
             Item.width = 62;
             Item.height = 60;
-            Item.damage = 197;
+            Item.damage = 190;
             Item.DamageType = DamageClass.Magic;
-            Item.mana = 60;
+            Item.mana = 80;
             Item.useTime = 3;
             Item.useAnimation = 45;
             Item.reuseDelay = 75;
@@ -62,7 +62,7 @@ namespace CalamityMod.Items.Weapons.Magic
                 AddIngredient(ItemID.SpectreStaff).
                 AddIngredient<RuinousSoul>(2).
                 AddIngredient<DarkPlasma>().
-                AddTile(TileID.LunarCraftingStation).
+                AddTile(TileID.MythrilAnvil).
                 Register();
         }
     }

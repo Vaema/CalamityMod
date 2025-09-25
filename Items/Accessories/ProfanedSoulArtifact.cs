@@ -106,7 +106,7 @@ namespace CalamityMod.Items.Accessories
                 AddIngredient<DivineGeode>(5).
                 AddIngredient<Havocplate>(25).
                 AddIngredient<ExodiumCluster>(25).
-                AddTile(TileID.DemonAltar).
+                AddTile(TileID.MythrilAnvil).
                 Register();
         }
 

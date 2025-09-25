@@ -10,6 +10,7 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.NPCs.SupremeCalamitas
 {
+    [HasPierceResist]
     public class BrimstoneHeart : ModNPC
     {
         public int ChainHeartIndex => (int)NPC.ai[0];

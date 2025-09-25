@@ -26,8 +26,8 @@ namespace CalamityMod.Items.Accessories
     public class WarbanneroftheRighteous : ModItem, ILocalizedModType
     {
         public new string LocalizationCategory => "Items.Accessories";
-        internal const float MaxBonus = 0.6f;
-        internal const float MaxDistance = 350f;
+        internal const float MaxBonus = 0.5f;
+        internal const float MaxDistance = 700f;
 
         public override void SetStaticDefaults()
         {
@@ -57,17 +57,13 @@ namespace CalamityMod.Items.Accessories
             }
 
             int maxValue = (int)(MaxBonus * 100);
-            float bonus = CalculateBonus(player) - 0.4f;
-            float displayBonus = (int)((bonus + 0.4f) * 100); // Should range from 0 to the maxValue
+            float bonus = CalculateBonus(player) - 0.3f;
+            float displayBonus = (int)((bonus + 0.3f) * 100); // Should range from 0 to the maxValue
 
             if (player.Calamity().cooldowns.TryGetValue(WarbanneroftheRighteousBuff.ID, out var cooldown))
-            {
                 cooldown.timeLeft = maxValue - (int)displayBonus;
-            }
             else
-            {
                 player.AddCooldown(WarbanneroftheRighteousBuff.ID, maxValue);
-            }
 
             if (bonus > 0)
                 player.GetDamage<GenericDamageClass>() += bonus;
@@ -83,10 +79,10 @@ namespace CalamityMod.Items.Accessories
             for (int index = 0; index < Main.npc.Length; index++)
             {
                 NPC nPC = Main.npc[index];
-                float generousHitboxWidth = Math.Max(nPC.Hitbox.Width / 2f, nPC.Hitbox.Height / 2f) + (100 + 80 * Utils.GetLerpValue(0, 200, Math.Max(nPC.Hitbox.Width / 2f, nPC.Hitbox.Height / 2f))); // Adds some room so max bonus isnt when you're ON the hitbox
+                float generousHitboxWidth = Math.Max(nPC.Hitbox.Width / 2f, nPC.Hitbox.Height / 2f) + 100; // Adds some room so max bonus isnt when you're ON the hitbox
                 float intensity = Utils.Remap(Utils.Distance(player.Center, nPC.Center), MaxDistance + generousHitboxWidth, generousHitboxWidth, 1, 3, true); // We have to have this seperate from bonus, otherwise all effected enemies take damage based on the closest enemy
 
-                if (Utils.Distance(nPC.Center, player.Center) < MaxDistance + generousHitboxWidth && (nPC.IsAnEnemy(true, true, false) || nPC.type == ModContent.NPCType<SuperDummyNPC>()) && nPC.CanBeChasedBy())
+                if (Utils.Distance(nPC.Center, player.Center) < MaxDistance + generousHitboxWidth && (nPC.IsAnEnemy(true, true, false) || nPC.type == ModContent.NPCType<SuperDummyNPC>()) && !nPC.dontTakeDamage)
                 {
                     float minDamageMult = 0.35f;
                     int maxTargets = 25;
@@ -98,16 +94,16 @@ namespace CalamityMod.Items.Accessories
                     {
                         modNPC.warbannerBurnDirection = Utils.DirectionTo(player.Center, nPC.Center);
                         modNPC.warbannerBurnMarked = true;
-                        modNPC.warbannerBurnTimer = 2;
+                        modNPC.warbannerBurnTimer = 180;
                     }
                     if (modNPC.warbannerBurnMarked)
                     {
                         modNPC.warbannerBurnIntensity = intensity;
                         modNPC.warbannerBurnDirection = Utils.DirectionTo(player.Center, nPC.Center);
-                        int burnDamage = (int)player.GetBestClassDamage().ApplyTo(47 * damageMult); // There is up to a 3x multiplier on this damage depending on distance from the enemy
+                        int burnDamage = (int)player.GetBestClassDamage().ApplyTo(45 * damageMult); // There is up to a 3x multiplier on this damage depending on distance from the enemy
                         modNPC.warbannerBurnDamage = burnDamage;
                         modNPC.warbannerBurnStacks++;
-                        modNPC.warbannerBurnTimer++;
+                        modNPC.warbannerBurnTimer = 180;
                         modNPC.warbannerBurnHideEffects = hideVisual;
                     }
                 }
@@ -121,7 +117,7 @@ namespace CalamityMod.Items.Accessories
             NPC closestTarget = player.Center.ClosestNPCAt(MaxDistance * 7); // extra range is to account for bonus range from massive targets
             if (closestTarget != null)
             {
-                float generousHitboxWidth = Math.Max(closestTarget.Hitbox.Width / 2f, closestTarget.Hitbox.Height / 2f) + (100 + 80 * Utils.GetLerpValue(0, 200, Math.Max(closestTarget.Hitbox.Width / 2f, closestTarget.Hitbox.Height / 2f))); // Adds some room so max bonus isnt when you're ON the hitbox
+                float generousHitboxWidth = Math.Max(closestTarget.Hitbox.Width / 2f, closestTarget.Hitbox.Height / 2f) + 100; // Adds some room so max bonus isnt when you're ON the hitbox
                 bonus = Utils.Remap(Utils.Distance(player.Center, closestTarget.Center), MaxDistance + generousHitboxWidth, generousHitboxWidth, 0, MaxBonus, true);
             }
             else

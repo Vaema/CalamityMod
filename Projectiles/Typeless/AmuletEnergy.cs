@@ -116,11 +116,11 @@ namespace CalamityMod.Projectiles.Typeless
                     float offsetPower = Utils.GetLerpValue(1, 5, Owner.velocity.Length(), true);
                     float sine = (float)Math.Sin((time * 0.1f) / MathHelper.Pi);
                     float sine2 = (float)Math.Sin((time * 0.04f) / MathHelper.Pi);
-                    Vector2 bonusMobility = (offsetPower > 0 ? ((Utils.DirectionTo(Projectile.Center, Owner.Center) * 50) * sine2).RotatedBy(0.8f * sine) * offsetPower : Vector2.Zero);
-                    Vector2 goalPosition = Owner.MountedCenter + bonusMobility + ((MathHelper.TwoPi * energyNumber) / Math.Max(Owner.ownedProjectileCounts[ModContent.ProjectileType<AmuletEnergy>()], 1)).ToRotationVector2().RotatedBy(Main.GlobalTimeWrappedHourly * 0.4f) * 80;
+                    Vector2 bonusMobility = (offsetPower > 0 ? ((Utils.DirectionTo(Projectile.Center, Owner.Center) * 90) * sine2).RotatedBy(0.8f * sine) * offsetPower : Vector2.Zero);
+                    Vector2 goalPosition = Owner.MountedCenter + bonusMobility + ((MathHelper.TwoPi * energyNumber) / Math.Max(Owner.ownedProjectileCounts[ModContent.ProjectileType<AmuletEnergy>()], 1)).ToRotationVector2().RotatedBy(Main.GlobalTimeWrappedHourly * 0.4f) * 20;
 
-                    bool outOfRange = Utils.Distance(Projectile.Center, goalPosition) > 100;
-                    if (Projectile.velocity.Length() < 5 && outOfRange)
+                    bool outOfRange = Utils.Distance(Projectile.Center, goalPosition) > 60;
+                    if (Projectile.velocity.Length() < 6 && outOfRange)
                         Projectile.velocity = Projectile.velocity * 0.995f + Utils.DirectionTo(Projectile.Center, goalPosition) * homingSpeed;
                     else if (outOfRange)
                         Projectile.velocity *= 0.985f;
@@ -211,7 +211,7 @@ namespace CalamityMod.Projectiles.Typeless
                 GeneralParticleHandler.SpawnParticle(fadeInfx);
             }
 
-            Projectile.scale = MathHelper.Lerp(Projectile.scale, spoke ? 1.4f : 1, 0.1f);
+            Projectile.scale = MathHelper.Lerp(Projectile.scale, spoke ? 0.9f : 0.5f, 0.1f);
             Projectile.rotation = Projectile.velocity.ToRotation() + MathHelper.PiOver2;
             time++;
         }
@@ -228,7 +228,7 @@ namespace CalamityMod.Projectiles.Typeless
                 {
                     float variance = Main.rand.NextFloat(-0.5f, 0.5f);
                     Vector2 vel = (Projectile.velocity.SafeNormalize(Vector2.UnitX) * 4).RotatedBy(variance) * Main.rand.NextFloat(0.3f, 1f) * (1 - Math.Abs(variance)) * 4;
-                    float scale = (Main.rand.NextFloat(1.5f, 1.7f) - Math.Abs(variance)) * 0.35f;
+                    float scale = (Main.rand.NextFloat(1.5f, 1.7f) - Math.Abs(variance)) * 0.35f * Projectile.scale;
 
                     Particle sparks = new CustomSpark(Projectile.Center + vel, vel, "CalamityMod/Particles/BloomCircle", false, Main.rand.Next(13, 16 + 1), scale, bColor * 0.7f, new Vector2(1f, 1), true, false, 0, false, shrinkSpeed: 0.25f);
                     GeneralParticleHandler.SpawnParticle(sparks);

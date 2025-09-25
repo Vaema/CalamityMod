@@ -24,11 +24,10 @@ namespace CalamityMod.Items.Weapons.Magic
         {
             Item.width = 78;
             Item.height = 78;
-            Item.damage = 235;
+            Item.damage = 215;
             Item.DamageType = DamageClass.Magic;
             Item.mana = 32;
-            Item.useTime = 29;
-            Item.useAnimation = 29;
+            Item.useTime = Item.useAnimation = 34;
             Item.useStyle = ItemUseStyleID.Shoot;
             Item.noMelee = true;
             Item.knockBack = 5f;
@@ -37,7 +36,7 @@ namespace CalamityMod.Items.Weapons.Magic
             Item.autoReuse = true;
             Item.shoot = ModContent.ProjectileType<ClimaxProj>();
             Item.shootSpeed = 12f;
-            Item.rare = ModContent.RarityType<DarkBlue>();
+            Item.rare = ModContent.RarityType<CosmicPurple>();
         }
 
         public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)

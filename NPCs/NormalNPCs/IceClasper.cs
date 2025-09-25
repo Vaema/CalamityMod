@@ -81,12 +81,12 @@ namespace CalamityMod.NPCs.NormalNPCs
             NPC.width = 50;
             NPC.height = 50;
             NPC.defense = 12;
-            NPC.lifeMax = 750;
+            NPC.lifeMax = 500;
             NPC.knockBackResist = 0.25f;
             NPC.noTileCollide = true;
             NPC.aiStyle = -1;
             AIType = -1;
-            NPC.value = Item.buyPrice(0, 0, 5, 0);
+            NPC.value = Item.buyPrice(silver: 5);
             NPC.HitSound = SoundID.NPCHit5;
             NPC.DeathSound = SoundID.NPCDeath7;
             NPC.rarity = 2;
@@ -96,10 +96,6 @@ namespace CalamityMod.NPCs.NormalNPCs
             NPC.Calamity().VulnerableToHeat = true;
             NPC.Calamity().VulnerableToCold = false;
             NPC.Calamity().VulnerableToSickness = false;
-
-            // Scale stats in Expert and Master
-            CalamityGlobalNPC.AdjustExpertModeStatScaling(NPC);
-            CalamityGlobalNPC.AdjustMasterModeStatScaling(NPC);
         }
 
         public override void SetBestiary(BestiaryDatabase database, BestiaryEntry bestiaryEntry)
@@ -293,8 +289,8 @@ namespace CalamityMod.NPCs.NormalNPCs
         {
             if (hurtInfo.Damage > 0)
             {
-                target.AddBuff(BuffID.Frostburn, 180, true);
-                target.AddBuff(BuffID.Chilled, 120, true);
+                target.AddBuff(BuffID.Frostburn, 240);
+                target.AddBuff(BuffID.Chilled, 120);
             }
         }
 
