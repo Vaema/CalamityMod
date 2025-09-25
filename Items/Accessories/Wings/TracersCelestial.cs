@@ -1,4 +1,5 @@
-﻿using System.IO;
+﻿using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using CalamityMod.CalPlayer;
 using Microsoft.Xna.Framework;
@@ -50,6 +51,12 @@ namespace CalamityMod.Items.Accessories.Wings
                     Item.wingSlot = -1;
             }
         }
+        public override void ModifyTooltips(List<TooltipLine> tooltips)
+        {
+            if (!toggleEnabled)
+                tooltips.RemoveAll(x => x.Name == "Tooltip0");
+            base.ModifyTooltips(tooltips);
+        }
         public override bool CanRightClick() => Main.keyState.PressingShift();
         public override void RightClick(Player player)
         {
@@ -80,7 +87,7 @@ namespace CalamityMod.Items.Accessories.Wings
         #endregion
         public override void UpdateAccessory(Player player, bool hideVisual)
         {
-            if (player.controlJump && player.wingTime > 0f && player.jump == 0 && player.velocity.Y != 0f && !hideVisual)
+            if (player.controlJump && player.wingTime > 0f && player.jump == 0 && player.velocity.Y != 0f && !hideVisual && toggleEnabled)
             {
                 int dustXOffset = 4;
                 if (player.direction == 1)

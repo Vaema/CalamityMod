@@ -1,4 +1,5 @@
-﻿using System.IO;
+﻿using System.Collections.Generic;
+using System.IO;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria;
@@ -48,6 +49,13 @@ namespace CalamityMod.Items.Accessories.Wings
                     Item.wingSlot = -1;
             }
         }
+        public override void ModifyTooltips(List<TooltipLine> tooltips)
+        {
+            if (!toggleEnabled)
+                tooltips.RemoveAll(x => x.Name == "Tooltip0");
+            base.ModifyTooltips(tooltips);
+        }
+
         public override bool CanRightClick() => Main.keyState.PressingShift();
         public override void RightClick(Player player)
         {

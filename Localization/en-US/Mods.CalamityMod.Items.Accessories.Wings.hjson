@@ -50,10 +50,10 @@ MOAB: {
 	DisplayName: MOAB
 	Tooltip:
 		'''
-		{$CommonItemTooltip.FlightAndSlowfall} when jetpack is enabled
-		Shift-<right> this item while in your inventory to toggle the jetpack
+		{$CommonItemTooltip.FlightAndSlowfall}
 		32% increased jump speed and allows auto-jump
 		Grants the player cloud, blizzard, and sandstorm mid-air jumps
+		[c/aaaaaa:Shift-<right> this item in your inventory to toggle the] [i:Jetpack] [c/aaaaaa:jetpack]
 		'The Mother Of All Balloons'
 		'''
 }
@@ -103,11 +103,11 @@ TracersCelestial: {
 	DisplayName: Celestial Tracers
 	Tooltip:
 		'''
-		{$CommonItemTooltip.FlightAndSlowfall} when it has wings
-		Shift-<right> this item while in your inventory to toggle the wings
+		{$CommonItemTooltip.FlightAndSlowfall}
 		24% increased running acceleration
 		Provides the effects of [i:CalamityMod/AngelTreads] Angel Treads
 		Provides immunity to lava
+		[c/aaaaaa:Shift-<right> this item in your inventory to toggle the] [i:AngelWings] [c/aaaaaa:wings]
 		'Ludicrous speed!'
 		'''
 }
@@ -116,11 +116,11 @@ TracersElysian: {
 	DisplayName: Elysian Tracers
 	Tooltip:
 		'''
-		{$CommonItemTooltip.FlightAndSlowfall} when it has wings
-		Shift-<right> this item while in your inventory to toggle the wings
+		{$CommonItemTooltip.FlightAndSlowfall}
 		36% increased running acceleration
 		Provides the effects of [i:CalamityMod/AngelTreads] Angel Treads
 		Provides immunity to lava
+		[c/aaaaaa:Shift-<right> this item in your inventory to toggle the] [i:AngelWings] [c/aaaaaa:wings]
 		'Ludicrous speed!'
 		'''
 }
@@ -129,11 +129,11 @@ TracersSeraph: {
 	DisplayName: Seraph Tracers
 	Tooltip:
 		'''
-		{$CommonItemTooltip.FlightAndSlowfall} when it has wings
-		Shift-<right> this item while in your inventory to toggle the wings
+		{$CommonItemTooltip.FlightAndSlowfall}
 		50% increased running acceleration
 		Provides the effects of [i:CalamityMod/AngelTreads] Angel Treads
 		Provides immunity to lava and damaging tiles, including [i:CalamityMod/AuricOre] Auric Ore
+		[c/aaaaaa:Shift-<right> this item in your inventory to toggle the] [i:AngelWings] [c/aaaaaa:wings]
 		'Taking speed EVEN FURTHER BEYOND!'
 		'''
 }
