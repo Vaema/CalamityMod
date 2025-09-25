@@ -1157,6 +1157,7 @@ namespace CalamityMod.NPCs
             {
                 shop.InsertBefore(ItemID.LesserHealingPotion, ItemID.Bottle)
                 .InsertAfter(ItemID.ManaPotion, ItemID.WormholePotion, Condition.HappyEnoughToSellPylons)
+                .InsertAfter(ItemID.Safe, ItemID.MusicBox)
                 .InsertAfter(ItemID.Flare, ItemID.Flare, hasFlareGunUpgrade)
                 .InsertAfter(ItemID.BlueFlare, ItemID.BlueFlare, hasFlareGunUpgrade)
                 .AddWithCustomValue(ItemID.AngelStatue, Item.buyPrice(gold: 5), Condition.NpcIsPresent(NPCType<Bandit>()));
