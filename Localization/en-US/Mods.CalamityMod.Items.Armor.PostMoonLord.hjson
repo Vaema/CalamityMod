@@ -9,7 +9,8 @@ AuricTeslaCuisses: {
 		'''
 		{$CommonItemTooltip.PercentIncreasedDamage} and {$CommonItemTooltip.PercentIncreasedCritChance@1}
 		{$CommonItemTooltip.PercentIncreasedMovementSpeed@2}
-		Magic carpet effect
+		Provides a magical flying carpet
+		[c/aaaaaa:Shift-<right> in your inventory to toggle] [i:FlyingCarpet] [c/aaaaaa:Flying Carpet's effect]
 		'''
 }
 

@@ -755,7 +755,7 @@ EtherealTalisman: {
 		+150 max mana and 10% decreased mana usage
 		Increases pickup range for mana stars
 		You automatically use mana potions when needed
-		[c/aaaaaa:Shift-<right> to toggle] [i:ManaFlower] [c/aaaaaa:Mana Flower's effect]
+		[c/aaaaaa:Shift-<right> in your inventory to toggle] [i:ManaFlower] [c/aaaaaa:Mana Flower's effect]
 		'''
 }
 
