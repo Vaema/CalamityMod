@@ -194,9 +194,9 @@ namespace CalamityMod.ILEditing
                 return;
             }
 
-            // Replace the Remix world check with a check for the config.
+            // Add an additional check for the config.
             cursor.Remove();
-            cursor.EmitDelegate<Func<bool>>(() => CalamityServerConfig.Instance.RemoveLavaDropsFromLavaSlimes);
+            cursor.EmitDelegate<Func<bool>>(() => CalamityServerConfig.Instance.RemoveLavaDropsFromLavaSlimes || Main.remixWorld);
         }
         #endregion
 
