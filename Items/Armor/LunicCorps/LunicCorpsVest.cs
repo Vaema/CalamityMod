@@ -14,7 +14,8 @@ namespace CalamityMod.Items.Armor.LunicCorps
 
         public static float RangedDamageBoost = 0.15f;
         public static int RangedCritBoost = 15; // NOTE: Tooltip shares this number with damage % as they're equal
-        public override LocalizedText Tooltip => base.Tooltip.WithFormatArgs(RangedDamageBoost.ToPercent());
+        public static float AmmoReduction = 0.75f;
+        public override LocalizedText Tooltip => base.Tooltip.WithFormatArgs(RangedDamageBoost.ToPercent(), (1f - AmmoReduction).ToPercent());
 
         public override void SetDefaults()
         {
@@ -28,6 +29,8 @@ namespace CalamityMod.Items.Armor.LunicCorps
 
         public override void UpdateEquip(Player player)
         {
+            var modPlayer = player.Calamity();
+            modPlayer.ammoCost *= AmmoReduction;
             player.GetDamage<RangedDamageClass>() += RangedDamageBoost;
             player.GetCritChance<RangedDamageClass>() += RangedCritBoost;
         }
