@@ -962,6 +962,10 @@ namespace CalamityMod.Systems
             // Enchanted Sword and Terragrim shimmer into each other
             convert[ItemID.EnchantedSword] = ItemID.Terragrim;
             convert[ItemID.Terragrim] = ItemID.EnchantedSword;
+
+            // Allow Cascade and Gray Zapinator to be obtained in Hardmode
+            convert[ItemID.HelFire] = ItemID.Cascade;
+            convert[ItemID.ZapinatorOrange] = ItemID.ZapinatorGray;
         }
         #endregion
 
@@ -1597,6 +1601,7 @@ namespace CalamityMod.Systems
             r.AddIngredient(ItemID.ChaosFish, 5);
             r.AddTile(TileID.MythrilAnvil);
             r.Register();
+            r.DisableDecraft();
 
             // Sergeant United Shield
             r = Recipe.Create(ItemID.BouncingShield);
