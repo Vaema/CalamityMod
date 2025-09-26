@@ -518,7 +518,11 @@ CalamityServerConfig: {
 
 	RemoveLavaDropsFromLavaSlimes: {
 		Label: "[i:LavaWaders] Remove Lava Drops From Lava Slimes"
-		Tooltip: When enabled, Lava Slimes will be replaced with a new Lava Slime that no longer drops lava.
+		Tooltip:
+			'''
+			When enabled, Lava Slimes will be prevented from dropping lava in Expert Mode.
+			Note that this config overrides the check for the Don't dig up seed.
+			'''
 	}
 
 	RemoveReforgeRNG: {

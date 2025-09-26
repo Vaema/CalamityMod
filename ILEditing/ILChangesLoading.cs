@@ -189,6 +189,7 @@ namespace CalamityMod.ILEditing
 
             // Removal of vanilla stupidity
             IL_Player.StatusFromNPC += RemoveExpertBrainRandomDebuffs;
+            IL_NPC.VanillaHitEffect += PreventLavaSlimeLavaDrop;
             IL_NPC.StrikeNPC_HitInfo_bool_bool += LetDetonatingBubblesTakeDamage;
             IL_Player.ItemCheck_EmitUseVisuals += MakeMagmaStoneFireGauntletDustToggleable;
             IL_Projectile.EmitEnchantmentVisualsAt += MakeMagmaStoneFireGauntletProjectileDustToggleable;
