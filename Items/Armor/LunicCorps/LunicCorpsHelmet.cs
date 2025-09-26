@@ -27,7 +27,8 @@ namespace CalamityMod.Items.Armor.LunicCorps
         public static readonly SoundStyle BreakSound = new("CalamityMod/Sounds/Custom/RoverDriveBreak") { Volume = 0.75f };
 
         public static float NonArrowDamageBoost = 0.15f;
-        public override LocalizedText Tooltip => base.Tooltip.WithFormatArgs(NonArrowDamageBoost.ToPercent());
+        public static float AmmoReduction = 0.75f;
+        public override LocalizedText Tooltip => base.Tooltip.WithFormatArgs(NonArrowDamageBoost.ToPercent(), (1f - AmmoReduction).ToPercent());
 
         // Set Bonus
         public static float SetBonusJumpSpeedBoost = 1f;
@@ -94,6 +95,8 @@ namespace CalamityMod.Items.Armor.LunicCorps
 
         public override void UpdateEquip(Player player)
         {
+            var modPlayer = player.Calamity();
+            modPlayer.ammoCost *= AmmoReduction;
             player.bulletDamage += NonArrowDamageBoost;
             player.specialistDamage += NonArrowDamageBoost;
             player.nightVision = true;

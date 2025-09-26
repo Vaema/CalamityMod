@@ -96,7 +96,7 @@ DaedalusHeadRanged: {
 	Tooltip:
 		'''
 		{$CommonItemTooltip.PercentIncreasedRangedDamage} and {$CommonItemTooltip.PercentIncreasedRangedCritChance@1}
-		20% chance to save ammo
+		{$Common.AmmoUseReduction@2}
 		'''
 	SetBonus: Getting hit causes you to emit a blast of crystal shards
 }
@@ -239,7 +239,7 @@ HydrothermicHeadRanged: {
 	Tooltip:
 		'''
 		{$CommonItemTooltip.PercentIncreasedRangedDamage} and {$CommonItemTooltip.PercentIncreasedRangedCritChance@1}
-		25% chance to save ammo
+		{$Common.AmmoUseReduction@2}
 		'''
 	SetBonus:
 		'''
@@ -301,6 +301,7 @@ LunicCorpsHelmet: {
 	DisplayName: Lunic Corps Helmet
 	Tooltip:
 		'''
+		{$Common.AmmoUseReduction@1}
 		Increases non-bow damage by {0}%
 		Improves vision and shows the location of enemies
 		'''
@@ -394,7 +395,7 @@ PlagueReaperMask: {
 	Tooltip:
 		'''
 		{$CommonItemTooltip.PercentIncreasedRangedDamage} and {$CommonItemTooltip.PercentIncreasedRangedCritChance@1}
-		25% chance to save ammo
+		{$Common.AmmoUseReduction@2}
 		'''
 	SetBonus:
 		'''
