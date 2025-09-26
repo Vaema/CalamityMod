@@ -15,25 +15,7 @@ namespace CalamityMod.Items.Accessories
     internal class CosmiliteBobber : ModItem, ILocalizedModType
     {
         public new string LocalizationCategory => "Items.Fishing";
-        public override string Texture => "CalamityMod/Projectiles/Typeless/DevourerofCodsBobber";
-        public static List<int> FishToEat = new List<int>()
-                    {
-                        ItemID.Bass,
-                        ItemID.AtlanticCod,
-                        ItemID.Flounder,
-                        ItemID.NeonTetra,
-                        ItemID.RedSnapper,
-                        ItemID.RockLobster,
-                        ItemID.Salmon,
-                        ItemID.Shrimp,
-                        ItemID.Trout,
-                        ItemID.Tuna,
-                        ModContent.ItemType<CharredLasher>(),
-                        ModContent.ItemType<CragBullhead>(),
-                        ModContent.ItemType<ProcyonidPrawn>(),
-                        ModContent.ItemType<TwinklingPollox>(),
-                        ModContent.ItemType<PlantyMush>()
-    };
+        public override string Texture => "CalamityMod/Projectiles/Typeless/DevourerofCodsBobber";      
         public override void SetDefaults()
         {
             Item.width = 9;
@@ -46,8 +28,6 @@ namespace CalamityMod.Items.Accessories
         public override void UpdateAccessory(Player player, bool hideVisual)
         {
             player.fishingSkill += 10;
-            player.accLavaFishing = true;
-            player.Calamity().SelectedFishingMinigame = CalamityPlayer.FishingMinigames.ScoriaBobber;
         }
         public override void AddRecipes()
         {

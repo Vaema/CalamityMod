@@ -3443,8 +3443,8 @@ namespace CalamityMod.Projectiles
                     }
 
 
-                case CalamityPlayer.FishingMinigames.CosmiliteBobber:
-                    var fishToEat = CosmiliteBobber.FishToEat;
+                case CalamityPlayer.FishingMinigames.DevourerofCods: //Technically not a fishing minigame, but the code is already all here
+                    var fishToEat = TheDevourerofCods.FishToEat;
                     if (projectile.ai[1] < -1)
                     {
                         //Coonsuming a fish provides/increases the player's food buffs.

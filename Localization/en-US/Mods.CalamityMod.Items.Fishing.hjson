@@ -365,6 +365,9 @@ TheDevourerofCods: {
 	Tooltip:
 		'''
 		Fires ten lines at once. Line never snaps and can fish from lava
+Hooked items stay hooked forever
+		Common fish are automatically consumed while fishing
+		Consuming fish allows a bobber to hook a new item and feeds the user
 		'The devourer was once just an Eater of Shoals'
 		'''
 }
@@ -419,7 +422,7 @@ NavystoneBobber: {
 
 CragsBobber: {
 	DisplayName: Charred Bobber
-	Tooltip: "Increases fishing power by 10"
+	Tooltip: Increases fishing power by 10
 }
 
 SkylineBobber: {
@@ -437,7 +440,7 @@ SkylineBobber: {
 
 CryonicBobber: {
 	DisplayName: Crystalline Bobber
-	Tooltip: "Increases fishing power by 10"
+	Tooltip: Increases fishing power by 10
 }
 
 PerennialBobber: {
@@ -468,7 +471,7 @@ ScoriaBobber: {
 
 UelibloomBobber: {
 	DisplayName: Blooming Bobber
-	Tooltip: "Increases fishing power by 10"
+	Tooltip: Increases fishing power by 10
 }
 
 CosmiliteBobber: {
@@ -476,10 +479,6 @@ CosmiliteBobber: {
 	Tooltip:
 		'''
 		Increases fishing power by 10
-		Provides a fishing minigame
-		Hooked items stay hooked forever
-		Common fish are automatically consumed while fishing
-		Consuming fish allows a bobber to hook a new item and feeds the user
 		[c/E7A7FF:'A FISH DOES NOT FEAR DEATH!']
 		'''
 }
