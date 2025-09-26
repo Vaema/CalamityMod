@@ -3045,7 +3045,7 @@ namespace CalamityMod.Projectiles
             //If hooking an NPC, this is set to the NPC ID but negative. Still need to find how this gets treated upon reeling in.
             switch (owner.Calamity().SelectedFishingMinigame)
             {
-                case CalamityPlayer.FishingMinigames.WulfrumRod:
+                case CalamityPlayer.FishingMinigames.ScrapBobber:
                     {
                         if (CatchTime < 0 || (isReelingIn == 1 && CaughtItemID > 0))
                         {
@@ -3156,7 +3156,7 @@ namespace CalamityMod.Projectiles
                     }
 
 
-                case CalamityPlayer.FishingMinigames.RiftReeler:
+                case CalamityPlayer.FishingMinigames.ScoriaBobber:
                     {
                         if (PersistentFishingData == -1)
                         {
@@ -3263,7 +3263,7 @@ namespace CalamityMod.Projectiles
                     }
 
 
-                case CalamityPlayer.FishingMinigames.FeralDoubleRod:
+                case CalamityPlayer.FishingMinigames.PerennialBobber:
                     if (projectile.ai[0] == 0)
                     {
                         if (projectile.wet) //Fishing in water
@@ -3324,7 +3324,7 @@ namespace CalamityMod.Projectiles
                     break;
 
 
-                case CalamityPlayer.FishingMinigames.NavyFishingRod:
+                case CalamityPlayer.FishingMinigames.NavystoneBobber:
                     {
                         if (CatchTime < 0 || (isReelingIn == 1 && CaughtItemID > 0))
                         {
@@ -3443,8 +3443,8 @@ namespace CalamityMod.Projectiles
                     }
 
 
-                case CalamityPlayer.FishingMinigames.TheDevourerOfCods:
-                    var fishToEat = TheDevourerofCods.FishToEat;
+                case CalamityPlayer.FishingMinigames.CosmiliteBobber:
+                    var fishToEat = CosmiliteBobber.FishToEat;
                     if (projectile.ai[1] < -1)
                     {
                         //Coonsuming a fish provides/increases the player's food buffs.
@@ -3489,7 +3489,7 @@ namespace CalamityMod.Projectiles
                     return false;
 
 
-                case CalamityPlayer.FishingMinigames.HeronRod:
+                case CalamityPlayer.FishingMinigames.SkylineBobber:
                     {
                         if (CatchTime < 0 || (isReelingIn == 1 && CaughtItemID > 0))
                         {

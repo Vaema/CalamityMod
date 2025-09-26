@@ -177,15 +177,15 @@ namespace CalamityMod.CalPlayer
         public enum FishingMinigames
         {
             None,
-            WulfrumRod,
-            NavyFishingRod,
-            HeronRod,
-            SlurperPole,
-            VerstaltiteFishingRod,
-            FeralDoubleRod,
-            RiftReeler,
-            EarlyBloomRod,
-            TheDevourerOfCods
+            ScrapBobber,
+            NavystoneBobber,
+            SkylineBobber,
+            CragsBobber,
+            CryonicBobber,
+            PerennialBobber,
+            ScoriaBobber,
+            UelibloomBobber,
+            CosmiliteBobber
         }
         public FishingMinigames SelectedFishingMinigame = FishingMinigames.None;
         public bool countsAsAnyWet => (Player.armor[0].type == ItemID.FishBowl || Player.wetCount > 0 || Player.wet || Player.honeyWet || Player.lavaWet);
