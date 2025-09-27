@@ -48,7 +48,7 @@ namespace CalamityMod.Projectiles.Summon
             // 3 slots provide 76 DoT.
             // [...]
             // 9 slots provide 240 DoT.
-            int sagePoisonDamage = (int)(50 * averageDamageMultiplier);
+            int sagePoisonDamage = (int)(SagePoison.debuffData.EnemyLostRegen * averageDamageMultiplier);
             target.AddBuff(ModContent.BuffType<SagePoison>(), 300);
             target.Calamity().sagePoisonDamage = sagePoisonDamage;
         }

@@ -6,6 +6,7 @@ using CalamityMod.Balancing;
 using CalamityMod.Buffs.DamageOverTime;
 using CalamityMod.Buffs.StatBuffs;
 using CalamityMod.Buffs.StatDebuffs;
+using CalamityMod.ChatTags;
 using CalamityMod.CustomRecipes;
 using CalamityMod.DataStructures;
 using CalamityMod.Items.Accessories;
@@ -288,119 +289,65 @@ namespace CalamityMod.Items
                 tooltips.Insert(++difficultyTooltipIndex, donorLine);
             }
 
+            var buffIdsInTooltip = new HashSet<int>();
 
-            //Last step in modifying tooltips: Finding and replacing instances of all the tooltips that should have them with item icons
-            //The debuffs in the tooltip that have been replaced. Used to display the ALT text
-            List<int> replacedDebuffs = new();
-            //the built in find and replace seems to just not work properly for this at times. This function does
-            void FindAndReplaceDebuff(List<TooltipLine> tooltips, string key, int debuffID)
+            foreach (var tooltip in tooltips)
             {
-                var replacevalue = CalamityUtils.EmbedDebuff(debuffID);
-                bool replaced = false;
-                foreach (var tooltip in tooltips)
+                // Parse the tags of each line of text to find our buff tags'
+                // snippets (since they store the buff IDs).
+                var snippets = ChatManager.ParseMessage(tooltip.Text, Color.White);
+                foreach (var snippet in snippets)
                 {
-                    if (tooltip.Text.Contains(key))
+                    if (snippet is CalamityBuffTagHandler.Snippet buffSnippet)
                     {
-                        replaced = true;
-                        tooltip.Text = tooltip.Text.Replace(key, replacevalue);
+                        buffIdsInTooltip.Add(buffSnippet.BuffId);
                     }
                 }
-                if (replaced)
-                {
-                    replacedDebuffs.Add(debuffID);
-                }
-            }
-            Dictionary<string, int> debuffKeys = new() {
-                {"[Astral Infection]", ModContent.BuffType<AstralInfectionDebuff>()},
-                {"[Auric Rebuke]", ModContent.BuffType<AuricRebuke>()},
-                {"[Banishing Fire]", ModContent.BuffType<BanishingFire>()},
-                {"[Brimstone Flames]", ModContent.BuffType<BrimstoneFlames>()},
-                {"[Burning Blood]", ModContent.BuffType<BurningBlood>()},
-                {"[Brain Rot]", ModContent.BuffType<BrainRot>()},
-                {"[Demonic Flames]", ModContent.BuffType<DemonicFlames>()},
-                {"[Elemental Mix]", ModContent.BuffType<ElementalMix>()},
-                {"[Crush Depth]", ModContent.BuffType<CrushDepth>()},
-                {"[Riptide]", ModContent.BuffType<RiptideDebuff>()},
-                {"[Dragonfire]", ModContent.BuffType<Dragonfire>()},
-                {"[God Slayer Inferno]", ModContent.BuffType<GodSlayerInferno>()},
-                {"[Heavy Bleeding]", ModContent.BuffType<HeavyBleeding>()},
-                {"[Holy Flames]", ModContent.BuffType<HolyFlames>()},
-                {"[Laceration]", ModContent.BuffType<Laceration>()},
-                {"[Mana Burn]", ModContent.BuffType<ManaBurn>()},
-                {"[Miracle Blight]", ModContent.BuffType<MiracleBlight>()},
-                {"[Nightwither]", ModContent.BuffType<Nightwither>()},
-                {"[Plague]", ModContent.BuffType<Plague>()},
-                {"[Sage Poison]", ModContent.BuffType<SagePoison>()},
-                {"[Shred]", ModContent.BuffType<Shred>()},
-                {"[Static Discharge]", ModContent.BuffType<StaticDischarge>()},
-                {"[Sulphuric Poisoning]", ModContent.BuffType<SulphuricPoisoning>()},
-                {"[True Vulnerability Hex]", ModContent.BuffType<TrueVulnerabilityHex>()},
-                {"[Vaporified]", ModContent.BuffType<Vaporfied>()},
-                {"[Vermillion Flux]", ModContent.BuffType<VermillionFlux>()},
-                {"[Voidfrost]", ModContent.BuffType<Voidfrost>()},
-                {"[Vulnerability Hex]", ModContent.BuffType<VulnerabilityHex>()},
-                {"[Regeneraga]", ModContent.BuffType<AbsorberRegen>()},
-                {"[Cosmic Freeze]", ModContent.BuffType<CosmicFreeze>()},
-                {"[Mushy]", ModContent.BuffType<Mushy>()},
-                {"[Reaver Rage]", ModContent.BuffType<ReaverRage>()},
-                {"[Absorber Affliction]", ModContent.BuffType<AbsorberAffliction>()},
-                {"[Armor Crunch]", ModContent.BuffType<ArmorCrunch>()},
-                {"[Crumbling]", ModContent.BuffType<Crumbling>()},
-                {"[Eutrophication]", ModContent.BuffType<Eutrophication>()},
-                {"[Galvanic Corrosion]", ModContent.BuffType<GalvanicCorrosion>()},
-                {"[Glacial State]", ModContent.BuffType<GlacialState>()},
-                {"[Hadopelagic Pressure]", ModContent.BuffType<HadopelagicPressure>()},
-                {"[Irradiated]", ModContent.BuffType<Irradiated>()},
-                {"[Marked for Death]", ModContent.BuffType<MarkedforDeath>()},
-                {"[Temporal Sadness]", ModContent.BuffType<TemporalSadness>()},
-                {"[Time Distortion]", ModContent.BuffType<TimeDistortion>()},
-                {"[Whispering Death]", ModContent.BuffType<WhisperingDeath>()},
-                {"[Daybroken]", ModContent.BuffType<Daybroken>()},
-                {"[Shadowflame]", ModContent.BuffType<Shadowflame>()},
-                {"[Potion Sickness]", BuffID.PotionSickness},
-                {"[Acid Venom]", BuffID.Venom},
-                {"[Betsy's Curse]", BuffID.BetsysCurse},
-                {"[Cursed Inferno]", BuffID.CursedInferno},
-                {"[Frostbite]", BuffID.Frostburn2},
-                {"[Frostburn]", BuffID.Frostburn},
-                {"[On Fire!]", BuffID.OnFire},
-                {"[Hellfire]", BuffID.OnFire3},
-                {"[Ichor]", BuffID.Ichor},
-                {"[Oiled]", BuffID.Oiled},
-                {"[Poisoned]", BuffID.Poisoned},
-                {"[Slimed]", BuffID.Slimed},
-                {"[Wet]", BuffID.Wet},
-                {"[Electrified]", BuffID.Electrified}
-            };
-            foreach (var debuff in debuffKeys)
-            {
-                FindAndReplaceDebuff(tooltips, debuff.Key, debuff.Value);
             }
 
-            if (replacedDebuffs.Count > 0)
+            if (buffIdsInTooltip.Count > 0)
             {
                 bool showTheTip = false;
                 bool foundDebuff = false;
-                for (var i = 0; i < replacedDebuffs.Count; i++)
+                foreach (int buffId in buffIdsInTooltip)
                 {
-                    if (CalamityUtils.GetTextValue("Buffs." + BuffID.Search.GetName(replacedDebuffs[i]) + ".ItemTooltip") == "")
+                    string tooltipKey = "";
+                    if (buffId < BuffID.Count)
+                    {
+                        tooltipKey = $"Mods.Terraria.Buffs.{BuffID.Search.GetName(buffId)}.ItemTooltip";
+                    }
+                    else
+                    {
+                        var modBuff = BuffLoader.GetBuff(buffId);
+                        tooltipKey = $"Mods.{modBuff.Mod.Name}.Buffs.{modBuff.Name}.ItemTooltip";
+                    }
+
+                    if (!Language.Exists(tooltipKey))
+                    {
                         continue;
+                    }
+
+                    var text = Language.GetTextValue(tooltipKey);
+                    if (string.IsNullOrWhiteSpace(text))
+                    {
+                        continue;
+                    }
+                    
                     foundDebuff = true;
-                    if (!CalamityKeybinds.ExpandDebuffInfo.Current)
+                    if (!PlayerInput.Triggers.Current.SmartCursor)
                     {
                         showTheTip = true;
                         break;
                     }
-                    tooltips.Insert(++lastTooltipIndex, new TooltipLine(Mod, "CalamityMod:AltExpandTooltip" + i, $"{CalamityUtils.EmbedDebuff(replacedDebuffs[i])}\n{CalamityUtils.GetTextValue("Buffs." + BuffID.Search.GetName(replacedDebuffs[i]).Replace("CalamityMod/", "") + ".ItemTooltip")}"));
+                    
+                    tooltips.Insert(++lastTooltipIndex, new TooltipLine(Mod, "CalamityMod:AltExpandTooltip" + buffId, $"[cbuff:{buffId}]\n{text}"));
                 }
+
                 if (showTheTip)
                 {
-                    if (CalamityKeybinds.ExpandDebuffInfo.GetAssignedKeys().Count > 0) {
-                        var str = CalamityKeybinds.ExpandDebuffInfo.GetAssignedKeys()[0];
-                        tooltips.Insert(++lastTooltipIndex, (new TooltipLine(Mod, "CalamityMod:AltExpandTooltip", CalamityUtils.GetTextValue("Misc.AltExpand").Replace("{0}", str)))); 
-                    } else
-                        tooltips.Insert(++lastTooltipIndex, (new TooltipLine(Mod, "CalamityMod:AltExpandTooltip", CalamityUtils.GetTextValue("Misc.AltExpandUnset"))));
-                    tooltips[lastTooltipIndex].OverrideColor = new Color(170, 170, 170);
+                    var str = PlayerInput.CurrentProfile.InputModes[InputMode.Keyboard].KeyStatus["SmartCursor"].First().ToString();
+                    tooltips.Insert(++lastTooltipIndex, (new TooltipLine(Mod, "CalamityMod:AltExpandTooltip", CalamityUtils.GetTextValue("Misc.AltExpand").Replace("{0}",str))));
+                    tooltips[lastTooltipIndex].OverrideColor = new Color(170,170,170);
                 }
                 else if (foundDebuff)
                 {
@@ -551,7 +498,7 @@ namespace CalamityMod.Items
             string CritTagTooltip(float crit) => (CalamityUtils.GetText($"Common.SummonTagCrit").Format((crit * 100).ToString("0.#")));
 
             Dictionary<int, SummonTag> TagByItem = new();
-            foreach (SummonTag tag1 in SummonTagDebuffDict.Dict.Values)
+            foreach (SummonTag tag1 in CalamityBuffSets.SummonTagDebuff.Values)
             {
                 if (tag1.TagItem > -1) TagByItem.Add(tag1.TagItem, tag1);
             }

@@ -1026,10 +1026,10 @@ namespace CalamityMod
                     item.CountsAsClass<ThrowingDamageClass>()
                 );
 
-                bool heldItemIsTool = (item.pick > 0 || item.axe > 0 || item.hammer > 0) && !BlacklistedWeaponsWithToolPowerList.Includes(item.type);
+                bool heldItemIsTool = (item.pick > 0 || item.axe > 0 || item.hammer > 0) && !CalamityItemSets.WeaponWithToolPowerAffectedBySummonPenalty[item.type];
                 bool heldItemCanBeUsed = item.useStyle != ItemUseStyleID.None;
                 bool heldItemIsAccessoryOrAmmo = item.accessory || item.ammo != AmmoID.None;
-                bool heldItemIsExcludedByModCall = DisabledSummonerNerfItemList.Includes(item.type);
+                bool heldItemIsExcludedByModCall = CalamityItemSets.ItemWhichDisablesSummonerNerf[item.type];
 
                 if (heldItemIsClassedWeapon && heldItemCanBeUsed && !heldItemIsTool && !heldItemIsAccessoryOrAmmo && !heldItemIsExcludedByModCall)
                     return true;

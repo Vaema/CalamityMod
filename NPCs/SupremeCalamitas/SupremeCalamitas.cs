@@ -204,7 +204,7 @@ namespace CalamityMod.NPCs.SupremeCalamitas
         public static readonly SoundStyle BrimstoneShotSound = new("CalamityMod/Sounds/Custom/SCalSounds/BrimstoneShoot");
         public static readonly SoundStyle BrotherHit = new("CalamityMod/Sounds/Custom/SCalSounds/BrothersHurt", 2);
         public static readonly SoundStyle BrotherDeath = new("CalamityMod/Sounds/Custom/SCalSounds/BrothersDeath", 2);
-        public static readonly SoundStyle CatastropheSwing = new("CalamityMod/Sounds/Custom/SCalSounds/CatastropheResonanceSlash1");
+        public static readonly SoundStyle CatastropheSwing = new("CalamityMod/Sounds/Custom/SCalSounds/CatastropheResonanceSlash");
         public static readonly SoundStyle BrimstoneBigShotSound = new("CalamityMod/Sounds/Custom/SCalSounds/BrimstoneBigShoot"); // DON'T YOU WANNA BE A [BIG SHOT]
         public static readonly SoundStyle DashSound = new("CalamityMod/Sounds/Custom/SCalSounds/SCalDash");
         public static readonly SoundStyle HellblastSound = new("CalamityMod/Sounds/Custom/SCalSounds/BrimstoneHellblastSound");
@@ -1593,7 +1593,7 @@ namespace CalamityMod.NPCs.SupremeCalamitas
                         {
                             int buffID = NPC.buffType[l];
 
-                            bool shouldHalveDuration = DebuffsList.Includes(buffID);
+                            bool shouldHalveDuration = CalamityBuffSets.IsDebuff[buffID];
 
                             if (shouldHalveDuration && NPC.buffTime[l] > 4)
                                 NPC.buffTime[l] = 4;

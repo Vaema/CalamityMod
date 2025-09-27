@@ -189,15 +189,12 @@ namespace CalamityMod.NPCs.CeaselessVoid
 
             Player player = Main.player[NPC.target];
 
-            // Speed enrage
-            bool moveVeryFast = Vector2.Distance(NPC.Center, player.Center) > 960f || (!player.ZoneDungeon && !BossRushEvent.BossRushActive && player.position.Y < Main.worldSurface * 16.0);
-
             // Despawn
-            if (!player.active || player.dead || Vector2.Distance(player.Center, NPC.Center) > 5600f)
+            if (!player.active || player.dead || Vector2.Distance(player.Center, NPC.Center) > 5600f || (player.position.Y < Main.worldSurface * 16.0 && !BossRushEvent.BossRushActive))
             {
                 NPC.TargetClosest(false);
                 player = Main.player[NPC.target];
-                if (!player.active || player.dead || Vector2.Distance(player.Center, NPC.Center) > 5600f)
+                if (!player.active || player.dead || Vector2.Distance(player.Center, NPC.Center) > 5600f || (player.position.Y < Main.worldSurface * 16.0 && !BossRushEvent.BossRushActive))
                 {
                     if (NPC.velocity.Y > 3f)
                         NPC.velocity.Y = 3f;
@@ -214,14 +211,13 @@ namespace CalamityMod.NPCs.CeaselessVoid
             else if (NPC.timeLeft < 1800)
                 NPC.timeLeft = 1800;
 
-            float tileEnrageMult = CalamityWorld.MaliceMode ? 1.5f : 1f;
-            NPC.Calamity().CurrentlyEnraged = tileEnrageMult > 1f && !BossRushEvent.BossRushActive;
+            float maliceBuffMult = CalamityWorld.MaliceMode ? 1.5f : 1f;
 
             // Set AI variable to be used by Dark Energies
-            NPC.ai[1] = tileEnrageMult;
+            NPC.ai[1] = maliceBuffMult;
 
             // Increase projectile fire rate based on number of nearby active tiles
-            float projectileFireRateMultiplier = MathHelper.Lerp(0.5f, 1.5f, 1f - ((tileEnrageMult - 1f) / 0.5f));
+            float projectileFireRateMultiplier = MathHelper.Lerp(0.5f, 1.5f, 1f - ((maliceBuffMult - 1f) / 0.5f));
 
             // Decides whether Ceaseless moves closer to its target or not
             float distanceRequiredToMove = CalamityWorld.LegendaryMode ? 300f : 720f;
@@ -531,8 +527,8 @@ namespace CalamityMod.NPCs.CeaselessVoid
             // Basic movement towards a location
             void Movement(bool succ)
             {
-                float velocity = moveVeryFast ? 25f : ((expertMode ? 7.5f : 6f) + (float)(death ? 2f * (1D - lifeRatio) : 0f)) * tileEnrageMult;
-                float acceleration = (moveVeryFast ? 0.75f : death ? 0.2f : expertMode ? 0.16f : 0.12f) + (float)(death ? 0.04f * (1D - lifeRatio) : 0f) * tileEnrageMult;
+                float velocity = ((expertMode ? 7.5f : 6f) + (float)(death ? 2f * (1D - lifeRatio) : 0f)) * maliceBuffMult;
+                float acceleration = (death ? 0.2f : expertMode ? 0.16f : 0.12f) + (float)(death ? 0.04f * (1D - lifeRatio) : 0f) * maliceBuffMult;
 
                 // Increase speed dramatically in succ phase
                 if (succ)
@@ -815,12 +811,8 @@ namespace CalamityMod.NPCs.CeaselessVoid
             if (NPC.soundDelay == 0 && NPC.life >= NPC.lifeMax * 0.05f)
             {
                 NPC.soundDelay = 8;
-                float pitchVar = 0;
-                if (Main.zenithWorld)
-                {
-                    pitchVar = Main.rand.Next(-60, 41) * 0.01f;
-                }
-                SoundEngine.PlaySound(CommonCalamitySounds.OtherwordlyHitSound with { Pitch = CommonCalamitySounds.OtherwordlyHitSound.Pitch + pitchVar }, NPC.Center);
+                float pitchVar = Main.zenithWorld ? 0.4f : 0;
+                SoundEngine.PlaySound(new SoundStyle("CalamityMod/Sounds/NPCHit/OtherworldlyHit") with { PitchVariance = pitchVar }, NPC.Center);
             }
 
             for (int k = 0; k < 5; k++)

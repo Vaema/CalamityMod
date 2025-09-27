@@ -35,7 +35,7 @@ namespace CalamityMod.Buffs.DamageOverTime
         public override void Update(NPC npc, ref int buffIndex)
         {
             npc.Calamity().vaporfied = true;
-            if ((EnemyImmunitiesList.Includes(npc.type) || npc.boss) && npc.Calamity().debuffResistanceTimer <= 0)
+            if ((CalamityNPCSets.ResistSlowingDebuffsAndOtherSpecialEffects[npc.type] || npc.boss) && npc.Calamity().debuffResistanceTimer <= 0)
                 npc.Calamity().debuffResistanceTimer = CalamityGlobalNPC.slowingDebuffResistanceMin +npc.buffTime[buffIndex];
         }
 

@@ -467,21 +467,6 @@ namespace CalamityMod.Items
                     }
                 }
             }
-            if (modPlayer.victideSet)
-            {
-                if ((item.CountsAsClass<RangedDamageClass>() || item.CountsAsClass<MeleeDamageClass>() || item.CountsAsClass<MagicDamageClass>() ||
-                    item.CountsAsClass<ThrowingDamageClass>() || item.CountsAsClass<SummonDamageClass>()) &&
-                    Main.rand.NextBool(10) && !item.channel)
-                {
-                    if (player.whoAmI == Main.myPlayer)
-                    {
-                        // Victide All-class Seashells: 200%, soft cap starts at 46 base damage
-                        int seashellDamage = CalamityUtils.DamageSoftCap(damage * 2, 46);
-
-                        Projectile.NewProjectile(playerSource, position, velocity * 1.25f, ModContent.ProjectileType<Seashell>(), seashellDamage, 1f, player.whoAmI);
-                    }
-                }
-            }
             if (modPlayer.prismaticRegalia)
             {
                 if (item.CountsAsClass<MagicDamageClass>() && Main.rand.NextBool(20) && !item.channel)
@@ -669,6 +654,11 @@ namespace CalamityMod.Items
                 if (item.type != ModContent.ItemType<EvilSmasher>())
                     player.Calamity().evilSmasherBoost = 0;
             }
+
+            if (player.Calamity().ChaosStone && item.mana == 0 && !player.ItemTimeIsZero)
+            {
+                player.manaRegenDelay = player.maxRegenDelay;
+            }
         }
 
         public override bool? UseItem(Item item, Player player)
@@ -693,11 +683,8 @@ namespace CalamityMod.Items
             {
                 // Temporarily disable Bloom Stone so that GetHealLife doesn't return 0
                 modPlayer.bloomStone = false;
-                modPlayer.bloomStoneTotalHeal = player.GetHealLife(item);
+                modPlayer.bloomStoneTotalHeal = modPlayer.bloomStoneHealPool = player.GetHealLife(item);
                 modPlayer.bloomStone = true;
-
-                modPlayer.bloomStoneHealInc = modPlayer.bloomStoneTotalHeal / 15;
-                modPlayer.bloomStoneHealTimer = (int)Math.Ceiling(modPlayer.bloomStoneTotalHeal / (double)modPlayer.bloomStoneHealInc) * 40;
             }
 
             // Staff/Axe of Regrowth growing Calamity grass
@@ -721,7 +708,6 @@ namespace CalamityMod.Items
                     return true;
                 }
             }
-
             return base.UseItem(item, player);
         }
 
@@ -809,6 +795,10 @@ namespace CalamityMod.Items
             if (PopupGUIManager.AnyGUIsActive)
                 return false;
 
+            // Can't use anything while burrowing
+            if (player.ownedProjectileCounts[ModContent.ProjectileType<VictideSpirit>()] > 0)
+                return false;
+
             if (player.ownedProjectileCounts[ModContent.ProjectileType<RelicOfDeliveranceSpear>()] > 0 &&
                 (item.damage > 0 || item.ammo != AmmoID.None))
             {
@@ -877,7 +867,7 @@ namespace CalamityMod.Items
             // Handle general use-item effects for the Gem Tech Armor.
             player.Calamity().GemTechState.OnItemUseEffects(item);
 
-            if (item.type == ItemID.MonkStaffT1 || AutoreusableSpearsList.Includes(item.type))
+            if (item.type == ItemID.MonkStaffT1 || CalamityItemSets.AutoreusableSpear[item.type])
             {
                 return player.ownedProjectileCounts[item.shoot] <= 0;
             }
@@ -1541,6 +1531,10 @@ namespace CalamityMod.Items
             if (player.Calamity().reaverExplore)
                 grabRange += 246;
 
+            // Victide utility set provides a lesser boost of 102 (2.625 + 6.375 = 9 tiles)
+            if (player.Calamity().victideSnailSet)
+                grabRange += 102;
+
             // Nebula boosters have greater pickup range while using Nebula Mantle.
             if (player.wingsLogic == (int)VanillaWingID.WingsNebula && ItemID.Sets.NebulaPickup[item.type])
                 grabRange *= 2;
@@ -1639,7 +1633,7 @@ namespace CalamityMod.Items
         #region PostUpdate
         public override void PostUpdate(Item item)
         {
-            if (ItemsForcedInsideWorldList.Includes(item.type))
+            if (CalamityItemSets.ItemForcedInsideWorld[item.type])
                 CalamityUtils.ForceItemIntoWorld(item);
         }
         #endregion

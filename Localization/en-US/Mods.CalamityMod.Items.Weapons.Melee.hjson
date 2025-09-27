@@ -644,7 +644,14 @@ GeliticBlade: {
 
 GildedProboscis: {
 	DisplayName: Gilded Proboscis
-	Tooltip: Heals the player on hit
+	Tooltip:
+		'''
+		Steals life proportional to the damage dealt to foes
+		<left> to charge up a precise thrust
+		The thrust begins weak, but becomes more powerful the longer it's held
+		<right> to dash forward with a mighty upstrike
+		The distance you dash depends on if you are moving with or against the dash
+		'''
 }
 
 GoldplumeSpear: {
@@ -770,7 +777,7 @@ Lacerator: {
 		Striking enemies conjures a bloody saw to shred them
 		The saw does more damage the more often the yoyo hits, and fades away when not striking enemies
 		Enemies touching the edge of the sawblade get blood orbs torn out of them
-		Picking up these blood orbs reduces the duration of [Potion Sickness]
+		Picking up these blood orbs reduces the duration of [cbuff:PotionSickness]
 		The direction of the saw's spin depends on which direction you originally threw the yoyo
 		[GFB]
 		'''
@@ -1343,7 +1350,7 @@ TheMutilator: {
 		'''
 		Striking enemies empowers The Mutilator, increasing its damage
 		At full charge, striking enemies causes a blood orb explosion
-		Picking up these blood orbs reduces the duration of [Potion Sickness]
+		Picking up these blood orbs reduces the duration of [cbuff:PotionSickness]
 		'''
 }
 

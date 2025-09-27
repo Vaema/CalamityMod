@@ -9,15 +9,15 @@ namespace CalamityMod.Buffs.DamageOverTime
     {
         public static DebuffData debuffData = new DebuffData()
         {
-            EnemyLostRegen = 50, //This is the base DoT before the scaling formula. Not used in the method, here for referece.
-            SicknessDebuffScaling = 1, //Unused in the method, but kept so other things can know this is a sickness debuff
+            EnemyLostRegen = 50,
             NPCLifeRegenMethod = SagePoisonPower
         };
         public static void SagePoisonPower(NPC npc, int buffType, ref int buffIndex, ref int damage)
         {
-            // npc.Calamity().sagePoisonDamage = 50 * (float)(Math.Pow(totalSageSpirits, 0.73D) + Math.Pow(totalSageSpirits, 1.1D)) * 0.5f
+            // The dot ia multipliplied by this before being applied:
+            // (float)(Math.Pow(totalSageSpirits, 0.9D) + Math.Pow(totalSageSpirits, 1.13D)) * 0.5f;
             // See SageNeedle.cs for details
-            int baseSagePoisonDoTValue = (int)npc.Calamity().ActiveSicknessDebuffMultiplier.ApplyTo(npc.Calamity().sagePoisonDamage);
+            int baseSagePoisonDoTValue = (int)npc.Calamity().ActiveTypelessDebuffMultiplier.ApplyTo(npc.Calamity().sagePoisonDamage);
             npc.Calamity().ApplyDPSDebuff(baseSagePoisonDoTValue, baseSagePoisonDoTValue / 5, ref npc.lifeRegen, ref damage);
         }
         public override void SetStaticDefaults()

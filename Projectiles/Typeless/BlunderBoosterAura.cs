@@ -66,23 +66,9 @@ namespace CalamityMod.Projectiles.Typeless
             }
         }
 
-        public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
-        {
-            target.AddBuff(ModContent.BuffType<VermillionFlux>(), 180);
-
-            if (target.knockBackResist <= 0f)
-                return;
-
-            // 12AUG2023: Ozzatron: TML was giving NaN knockback, probably due to 0 base knockback. Do not use hit.Knockback
-            if (CalamityGlobalNPC.ShouldAffectNPC(target))
-            {
-                float knockbackMultiplier = MathHelper.Clamp(1f - target.knockBackResist, 0f, 1f);
-                Vector2 trueKnockback = target.Center - Projectile.Center;
-                trueKnockback.Normalize();
-                target.velocity = trueKnockback * knockbackMultiplier;
-            }
-        }
-
+        public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone) => target.AddBuff(ModContent.BuffType<VermillionFlux>(), 180);
+        // CIT 2MAY2025: Replaced old manual knockback code with setting HitDirectionOverride
+        public override void ModifyHitNPC(NPC target, ref NPC.HitModifiers modifiers) => modifiers.HitDirectionOverride = (target.Center.X > Projectile.Center.X).ToDirectionInt();
         public override void OnHitPlayer(Player target, Player.HurtInfo info) => target.AddBuff(ModContent.BuffType<VermillionFlux>(), 180);
 
         public override bool PreDraw(ref Color lightColor)

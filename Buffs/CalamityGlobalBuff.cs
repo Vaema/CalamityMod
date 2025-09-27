@@ -16,14 +16,14 @@ namespace CalamityMod.Buffs
         {
             // Globally remove summon tag buff stacking
             // Other mods need to add to this list because we genuinely don't have any way to tell this
-            if (SummonTagBuffList.Includes(type) && buffIndex > 0)
+            if (CalamityBuffSets.IsSummonTagBuff[type] && buffIndex > 0)
             {
                 for (int i = buffIndex; i >= 0; i--)
                 {
                     if (player.buffTime[i] > 0)
                     {
                         int buffID = player.buffType[i];
-                        if (SummonTagBuffList.Includes(buffID) && buffID != type)
+                        if (CalamityBuffSets.IsSummonTagBuff[buffID] && buffID != type)
                         {
                             player.DelBuff(i);
                             break;
@@ -131,14 +131,14 @@ namespace CalamityMod.Buffs
         {
             // Globally remove summon tag debuff stacking, unless allowed in the SummonTag
             // Other mods need to add to this list because otherwise we can't tell which IsATag buff is actually for whips
-            if (SummonTagDebuffDict.TryGet(type, out var tag1) && !tag1.AllowsWhipStacking && buffIndex > 0)
+            if (CalamityBuffSets.SummonTagDebuff.TryGetValue(type, out var tag1) && !tag1.AllowsWhipStacking && buffIndex > 0)
             {
                 for (int i = buffIndex; i >= 0; i--)
                 {
                     if (npc.buffTime[i] > 0)
                     {
                         int buffID = npc.buffType[i];
-                        if (SummonTagDebuffDict.TryGet(buffID, out var tag2) && !tag2.AllowsWhipStacking && buffID != type)
+                        if (CalamityBuffSets.SummonTagDebuff.TryGetValue(buffID, out var tag2) && !tag2.AllowsWhipStacking && buffID != type)
                         {
                             npc.DelBuff(i);
                             break;
@@ -150,7 +150,7 @@ namespace CalamityMod.Buffs
             if (type == BuffID.Webbed)
             {
                 npc.Calamity().webbed = true;
-                if ((EnemyImmunitiesList.Includes(npc.type) || npc.boss) && npc.Calamity().debuffResistanceTimer <= 0)
+                if ((CalamityNPCSets.ResistSlowingDebuffsAndOtherSpecialEffects[npc.type] || npc.boss) && npc.Calamity().debuffResistanceTimer <= 0)
                     npc.Calamity().debuffResistanceTimer = CalamityGlobalNPC.slowingDebuffResistanceMin + npc.buffTime[buffIndex];
             }
             if (type == BuffID.Electrified)
