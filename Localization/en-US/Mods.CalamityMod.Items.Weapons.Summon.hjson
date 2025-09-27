@@ -752,8 +752,8 @@ VoidEaterMarionette: {
 	Tooltip:
 		'''
 		Contains the power to control a miniature Devourer
-		Repeated summons increase the length of the Devourer
-		The Devourer alternates between using [c/ff00ff:Faith Incinerator] and [c/ff00ff:Ultracosmic Maelstrom]
+		Repeated summons increase the length and power of the Devourer
+		The Devourer attacks with [c/ff00ff:Divinity Devourer], [c/ff00ff:Faith Incinerator] and [c/ff00ff:Ultracosmic Maelstrom]
 		'''
 }
 
