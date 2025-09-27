@@ -16,11 +16,11 @@ namespace CalamityMod.Items.Armor.Tarragon
 
         public static float RangedDamageBoost = 0.1f;
         public static int RangedCritBoost = 7;
-        public override LocalizedText Tooltip => base.Tooltip.WithFormatArgs(RangedDamageBoost.ToPercent(), RangedCritBoost);
+        public static float AmmoReduction = 0.75f;
+        public override LocalizedText Tooltip => base.Tooltip.WithFormatArgs(RangedDamageBoost.ToPercent(), RangedCritBoost, (1f - AmmoReduction).ToPercent());
 
         // Set Bonus
         public static int OnHitEffectCooldown = CalamityUtils.SecondsToFrames(1);
-        public static float SetBonusAmmoReduction = 0.75f;
         public static float LeafDamageRatio = 0.25f;
         public static int LeafDamageSoftcap = 150;
         public static float EnergyDamageRatio = 0.33f;
@@ -46,14 +46,15 @@ namespace CalamityMod.Items.Armor.Tarragon
         public override void UpdateArmorSet(Player player)
         {
             var modPlayer = player.Calamity();
-            modPlayer.ammoCost *= SetBonusAmmoReduction;
             modPlayer.tarraSet = true;
             modPlayer.tarraRanged = true;
-            player.setBonus = this.GetLocalization("SetBonus").Format((1f - SetBonusAmmoReduction).ToPercent());
+            player.setBonus = this.GetLocalizedValue("SetBonus");
         }
 
         public override void UpdateEquip(Player player)
         {
+            var modPlayer = player.Calamity();
+            modPlayer.ammoCost *= AmmoReduction;
             player.GetDamage<RangedDamageClass>() += RangedDamageBoost;
             player.GetCritChance<RangedDamageClass>() += RangedCritBoost;
         }

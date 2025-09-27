@@ -16,10 +16,13 @@ AuricTeslaCuisses: {
 
 AuricTeslaHeadRanged: {
 	DisplayName: Auric Tesla Hooded Facemask
-	Tooltip: "{$CommonItemTooltip.PercentIncreasedRangedDamage} and {$CommonItemTooltip.PercentIncreasedRangedCritChance@1}"
+	Tooltip:
+		'''
+		{$CommonItemTooltip.PercentIncreasedRangedDamage} and {$CommonItemTooltip.PercentIncreasedRangedCritChance@1}
+		{$Common.AmmoUseReduction@2}
+		'''
 	SetBonus:
 		'''
-		{$Common.AmmoUseReduction@0}
 		Ranged Tarragon, Bloodflare and God Slayer armor effects
 		Hold Shift to view these set bonus details and press Shift repeatedly to cycle through them
 		'''
@@ -219,11 +222,14 @@ BloodflareHeadMelee: {
 
 BloodflareHeadRanged: {
 	DisplayName: Bloodflare Horned Helm
-	Tooltip: "{$CommonItemTooltip.PercentIncreasedRangedDamageCritChance}"
+	Tooltip:
+		'''
+		{$CommonItemTooltip.PercentIncreasedRangedDamageCritChance}
+		{$Common.AmmoUseReduction@1}
+		'''
 	SetBonus: "{$BloodflareHeadRanged.SetBonusEffect}"
 	SetBonusEffect:
 		'''
-		{$Common.AmmoUseReduction@3}
 		{0} to unleash the lost souls of polterghast to destroy your enemies
 		This effect has a {1} second cooldown
 		Ranged weapons fire bloodsplosion orbs every {2} seconds
@@ -447,11 +453,14 @@ GodSlayerHeadMelee: {
 
 GodSlayerHeadRanged: {
 	DisplayName: God Slayer Helmet
-	Tooltip: "{$CommonItemTooltip.PercentIncreasedRangedDamage} and {$CommonItemTooltip.PercentIncreasedRangedCritChance@1}"
+	Tooltip:
+		'''
+		{$CommonItemTooltip.PercentIncreasedRangedDamage} and {$CommonItemTooltip.PercentIncreasedRangedCritChance@1}
+		{$Common.AmmoUseReduction@2}
+		'''
 	SetBonus: "{$GodSlayerHeadRanged.SetBonusEffect}"
 	SetBonusEffect:
 		'''
-		{$Common.AmmoUseReduction@3}
 		Ranged weapons fire a god killer shrapnel round every {0} seconds
 		{$GodSlayerChestplate.CommonSetBonus@1}
 		'''
@@ -670,11 +679,14 @@ TarragonHeadMelee: {
 
 TarragonHeadRanged: {
 	DisplayName: Tarragon Visage
-	Tooltip: "{$CommonItemTooltip.PercentIncreasedRangedDamage} and {$CommonItemTooltip.PercentIncreasedRangedCritChance@1}"
+	Tooltip:
+		'''
+		{$CommonItemTooltip.PercentIncreasedRangedDamage} and {$CommonItemTooltip.PercentIncreasedRangedCritChance@1}
+		{$Common.AmmoUseReduction@2}
+		'''
 	SetBonus: "{$TarragonHeadRanged.SetBonusEffect}"
 	SetBonusEffect:
 		'''
-		{$Common.AmmoUseReduction@0}
 		Ranged projectiles spawn homing life energy and leaves on enemy hits
 		{$TarragonBreastplate.CommonSetBonus}
 		'''
