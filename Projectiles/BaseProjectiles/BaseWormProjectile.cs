@@ -217,7 +217,6 @@ namespace CalamityMod.Projectiles.BaseProjectiles
                     Segments[i].velocity = Segments[i].Center.DirectionTo(aheadSeg.Center);
                     Segments[i].rotation = Segments[i].velocity.ToRotation() + MathHelper.PiOver2;
                     hasMoved = true;
-                    hasMoved = true;
                     break;
                 }
             }
