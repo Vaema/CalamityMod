@@ -1207,7 +1207,7 @@ namespace CalamityMod
             RegisterSummon(ItemType<CalamarisLament>(), BuffType<CalamarisLamentBuff>(), ProjectileType<CalamarisLamentMinion>());
             RegisterSummon(ItemType<GammaHeart>(), BuffType<GammaHydraBuff>(), ProjectileType<GammaHead>());
             RegisterSummon(ItemType<WarloksMoonFist>(), BuffType<MoonFistBuff>(), ProjectileType<MoonFist>());
-            RegisterSummon(ItemType<VoidEaterMarionette>(), BuffType<VoidEaterMarionetteBuff>(), ProjectileType<VoidEaterMarionetteBody>());
+            RegisterSummon(ItemType<VoidEaterMarionette>(), BuffType<VoidEaterMarionetteBuff>(), ProjectileType<VoidEaterMarionetteProjectile>());
             RegisterSummon(ItemType<CorvidHarbringerStaff>(), BuffType<CorvidHarbringerBuff>(), ProjectileType<PowerfulRaven>());
             RegisterSummon(ItemType<EndoHydraStaff>(), BuffType<EndoHydraBuff>(), ProjectileType<EndoHydraHead>());
             RegisterSummon(ItemType<CosmicViperEngine>(), BuffType<CosmicViperEngineBuff>(), ProjectileType<CosmicViperSummon>());
