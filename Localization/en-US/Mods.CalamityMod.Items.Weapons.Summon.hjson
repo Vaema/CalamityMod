@@ -487,6 +487,7 @@ IgneousExaltation: {
 		Summons an Igneous blade that orbits around you
 		When your minion slots are full, <left> again to launch all blades towards the cursor
 		This ability has a two-second cooldown that requires holding this item
+		Shift-<right> this item in your inventory to change the rotation direction
 		'''
 }
 
@@ -864,6 +865,7 @@ ViridVanguard: {
 		All weapons inflict Sage Poison, which becomes more powerful the more weapons are summoned
 		When all minion slots are full, <left> again to spin up a flurry of slashes aimed at your cursor
 		This ability has a five-second cooldown that requires holding this item
+		Shift-<right> this item in your inventory to change the rotation direction
 		'''
 }
 
