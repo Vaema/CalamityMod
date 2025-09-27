@@ -23,7 +23,8 @@ namespace CalamityMod.Items.Armor.Auric
 
         public static float RangedDamageBoost = 0.22f;
         public static int RangedCritBoost = 20;
-        public override LocalizedText Tooltip => base.Tooltip.WithFormatArgs(RangedDamageBoost.ToPercent(), RangedCritBoost);
+        public static float AmmoReduction = 0.7f;
+        public override LocalizedText Tooltip => base.Tooltip.WithFormatArgs(RangedDamageBoost.ToPercent(), RangedCritBoost, (1f - AmmoReduction).ToPercent());
 
         public override void SetDefaults()
         {
@@ -57,6 +58,8 @@ namespace CalamityMod.Items.Armor.Auric
 
         public override void UpdateEquip(Player player)
         {
+            var modPlayer = player.Calamity();
+            modPlayer.ammoCost *= AmmoReduction;
             player.GetDamage<RangedDamageClass>() += RangedDamageBoost;
             player.GetCritChance<RangedDamageClass>() += RangedCritBoost;
         }

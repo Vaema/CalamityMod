@@ -46,7 +46,7 @@ namespace CalamityMod.Projectiles.Summon
         {
             get
             {
-                return MathHelper.TwoPi * BladeIndex / CurrentViridCount + Owner.Calamity().ViridVanguardRotation;
+                return MathHelper.TwoPi * BladeIndex / CurrentViridCount + Owner.Calamity().ViridVanguardRotation * (Owner.Calamity().InvertExaltationLineRotationDirections ? -1 : 1);
             }
         }
 
@@ -225,7 +225,7 @@ namespace CalamityMod.Projectiles.Summon
                 ReturnToIdleState();
                 return;
             }
-            var offset = MathHelper.TwoPi * MathF.Floor(BladeIndex * 0.5f) / MathF.Ceiling(CurrentViridCount * 0.5f) + Owner.Calamity().ViridVanguardRotation;
+            var offset = MathHelper.TwoPi * MathF.Floor(BladeIndex * 0.5f) / MathF.Ceiling(CurrentViridCount * 0.5f) + Owner.Calamity().ViridVanguardRotation * (Owner.Calamity().InvertExaltationLineRotationDirections ? -1 : 1);
             Vector2 hoverDestination = Owner.Center + offset.ToRotationVector2() * 200f;
             Projectile.Center = Vector2.Lerp(Projectile.Center, hoverDestination, 0.04f).MoveTowards(hoverDestination, 32f);
             Projectile.velocity *= 0.8f;
@@ -425,7 +425,7 @@ namespace CalamityMod.Projectiles.Summon
         {
             Projectile.MaxUpdates = 2;
             float completion = AITimer / (ViridVanguard.ActiveAttackStartup * (float)Projectile.MaxUpdates);
-            Vector2 hoverDestination = Owner.Center + BladeAngleForPhripperZenith.ToRotationVector2() * MathHelper.Lerp(200f, 116f, completion);
+            Vector2 hoverDestination = Owner.Center + (BladeAngleForPhripperZenith * (Owner.Calamity().InvertExaltationLineRotationDirections ? -1 : 1)).ToRotationVector2() * MathHelper.Lerp(200f, 116f, completion);
 
             Projectile.Center = Vector2.Lerp(Projectile.Center, hoverDestination, 0.04f).MoveTowards(hoverDestination, MathHelper.Lerp(16f, 64f, completion));
             Projectile.velocity *= 0.8f;
@@ -471,7 +471,7 @@ namespace CalamityMod.Projectiles.Summon
             dotResult /= 2f;
             if (!ActiveAttacking)
             {
-                Vector2 hoverDestination = Owner.Center + BladeAngleForPhripperZenith.ToRotationVector2() * 116f;
+                Vector2 hoverDestination = Owner.Center + (BladeAngleForPhripperZenith * (Owner.Calamity().InvertExaltationLineRotationDirections ? -1 : 1)).ToRotationVector2() * 116f;
                 Projectile.Center = hoverDestination;
                 Projectile.velocity *= 0.8f;
 
@@ -488,7 +488,7 @@ namespace CalamityMod.Projectiles.Summon
                 float distance = Owner.Distance(StoredAttackMousePos);
                 float endSize = MathHelper.Clamp(distance * 0.25f, 164f, 300f);
                 Vector2 hoverCenter = Vector2.Lerp(Owner.Center, Owner.Center + Owner.Center.DirectionTo(StoredAttackMousePos) * (distance > 164 ? distance - endSize : 0), dotResult);
-                Vector2 finalHoverDestination = hoverCenter + BladeAngleForPhripperZenith.ToRotationVector2() * MathHelper.Lerp(116f, endSize, dotResult);
+                Vector2 finalHoverDestination = hoverCenter + (BladeAngleForPhripperZenith * (Owner.Calamity().InvertExaltationLineRotationDirections ? -1 : 1)).ToRotationVector2()  * MathHelper.Lerp(116f, endSize, dotResult);
                 Projectile.Center = finalHoverDestination;
                 Projectile.velocity *= 0.8f;
                 Projectile.rotation = Projectile.AngleFrom(hoverCenter) + MathHelper.PiOver2;
@@ -509,7 +509,7 @@ namespace CalamityMod.Projectiles.Summon
                 ActiveTimer = ViridVanguard.ActiveAttackCooldown;
                 completion = 1;
             }
-            Vector2 hoverDestination = Owner.Center + BladeAngleForPhripperZenith.ToRotationVector2() * MathHelper.Lerp(200f, 116f, completion);
+            Vector2 hoverDestination = Owner.Center + (BladeAngleForPhripperZenith * (Owner.Calamity().InvertExaltationLineRotationDirections ? -1 : 1)).ToRotationVector2() * MathHelper.Lerp(200f, 116f, completion);
             Projectile.Center = hoverDestination;
             Projectile.velocity *= 0.8f;
             Owner.Calamity().ViridVanguardRotationToAdd = MathHelper.Lerp(1, ViridVanguard.ActiveAttackCirclingSpeedMultiplier, completion) * ViridVanguard.IdleCirclingSpeed;
@@ -597,7 +597,7 @@ namespace CalamityMod.Projectiles.Summon
             Rectangle frame = texture.Frame(2, 1, DrawAsAxe ? 0 : 1, 0);
             Vector2 origin = frame.Size() * 0.5f;
             Vector2 drawPosition = Projectile.Center - Main.screenPosition;
-            SpriteEffects direction = Projectile.spriteDirection == 1 ? SpriteEffects.FlipHorizontally : SpriteEffects.None;
+            SpriteEffects direction = Projectile.spriteDirection == 1 ^ Owner.Calamity().InvertExaltationLineRotationDirections ? SpriteEffects.FlipHorizontally : SpriteEffects.None;
 
             // Draw the afterimage trail.
             TrailDrawer ??= new();
@@ -619,7 +619,7 @@ namespace CalamityMod.Projectiles.Summon
                 outlineOpacity = 0.75f;
             }
             var outlineTex = ViridVanguard.GetBladeOutlineTex();
-            var rotation = Projectile.rotation + (DrawAsAxe ? -0.2f : 0.2f);
+            var rotation = Projectile.rotation + (DrawAsAxe ^ Owner.Calamity().InvertExaltationLineRotationDirections ? -0.2f : 0.2f);
             Main.EntitySpriteDraw(outlineTex, drawPosition + new Vector2(2, 0) * outlineWidth, frame, outlineColor * outlineOpacity, rotation, origin, Projectile.scale, direction, 0);
             Main.EntitySpriteDraw(outlineTex, drawPosition + new Vector2(0, 2) * outlineWidth, frame, outlineColor * outlineOpacity, rotation, origin, Projectile.scale, direction, 0);
             Main.EntitySpriteDraw(outlineTex, drawPosition + new Vector2(-2, 0) * outlineWidth, frame, outlineColor * outlineOpacity, rotation, origin, Projectile.scale, direction, 0);

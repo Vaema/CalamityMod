@@ -1552,6 +1552,7 @@ namespace CalamityMod.CalPlayer
         public float ViridVanguardRotation = 0;
         public float ViridVanguardActiveCooldown = 0;
         public float ViridVanguardRotationToAdd = 0;
+        public bool InvertExaltationLineRotationDirections = false;
         public bool sageSpirit = false;
         public bool fleshBall = false;
         public bool eyeOfNight = false;

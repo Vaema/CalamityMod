@@ -12,7 +12,8 @@ namespace CalamityMod.Walls
         public override void SetStaticDefaults()
         {
             DustType = 22;
-            this.AddMapEntryWithWaterVisibility(new Color(147, 92, 63));
+            AddMapEntry(new Color(125, 85, 61));
+            this.AddMapEntryWithWaterVisibility(new Color(78, 76, 127));
         }
 
         public override void NumDust(int i, int j, bool fail, ref int num) => num = fail ? 1 : 3;

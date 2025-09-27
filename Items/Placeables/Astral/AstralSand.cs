@@ -13,8 +13,7 @@ namespace CalamityMod.Items.Placeables.Astral
             Item.ResearchUnlockCount = 100;
             ItemTrader.ChlorophyteExtractinator.AddOption_OneWay(Type, 1, ItemID.SandBlock, 1);
 
-            // +5 flat damage, equal to other sand variants
-            ItemID.Sets.SandgunAmmoProjectileData[Type] = new(ModContent.ProjectileType<AstralSandBallGun>(), 5);
+            ItemID.Sets.SandgunAmmoProjectileData[Type] = new(ModContent.ProjectileType<AstralSandBallGun>(), 0);
         }
 
         public override void SetDefaults()

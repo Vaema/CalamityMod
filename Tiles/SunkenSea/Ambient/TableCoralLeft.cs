@@ -27,7 +27,7 @@ namespace CalamityMod.Tiles.SunkenSea.Ambient
             TileObjectData.addTile(Type);
 
             DustType = 253;
-            AddMapEntry(new Color(54, 69, 72));
+            AddMapEntry(new Color(23, 56, 75));
         }
 
         public override void NumDust(int i, int j, bool fail, ref int num)
