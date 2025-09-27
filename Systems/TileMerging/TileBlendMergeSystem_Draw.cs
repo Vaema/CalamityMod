@@ -120,26 +120,30 @@ namespace CalamityMod.Systems
                 // Sliced Drawing
                 for (int i = 0; i < sliceLength; i++)
                 {
-                    var drawRect = sliceRects[i];
-                    drawRect.X += rect.X;
-                    drawRect.Y += rect.Y;
+                    // Calculate the source rectangle for the specific slice from the blend texture sheet
+                    var sourceSliceRect = sliceRects[i];
+                    sourceSliceRect.X += rect.X;
+                    sourceSliceRect.Y += rect.Y;
+
+                    // Calculate the destination position for the slice on the screen
+                    var destinationSlicePos = drawPos + sliceRects[i].Location.ToVector2();
 
                     var drawColorVec = (tileLight.ToVector3() + slices[i]) * 0.5f;
                     drawColorVec *= drawData.colorTint.ToVector3();
 
-                    // Tile is Actucated, Reduce brightness
+                    // Tile is Actuated, Reduce brightness
                     if (tile.IsActuated)
                     {
                         drawColorVec *= 0.4f;
                     }
 
-                    // Tile is shine
+                    // Tile is shining
                     if (shouldTileShine)
                     {
                         Main.shine(ref drawColorVec, tileType);
                     }
 
-                    Main.spriteBatch.Draw(texture, drawPos, rect, new Color(drawColorVec), rotation: 0.0f, origin: default, scale: 1.0f, SpriteEffects.None, layerDepth: 0.0f);
+                    Main.spriteBatch.Draw(texture, destinationSlicePos, sourceSliceRect, new Color(drawColorVec), 0f, Vector2.Zero, 1.0f, SpriteEffects.None, 0f);
                 }
             }
         }

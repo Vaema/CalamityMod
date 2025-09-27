@@ -17,7 +17,8 @@ namespace CalamityMod.Items.Armor.GodSlayer
 
         public static float RangedDamageBoost = 0.1f;
         public static int RangedCritBoost = 12;
-        public override LocalizedText Tooltip => base.Tooltip.WithFormatArgs(RangedDamageBoost.ToPercent(), RangedCritBoost);
+        public static float AmmoReduction = 0.7f;
+        public override LocalizedText Tooltip => base.Tooltip.WithFormatArgs(RangedDamageBoost.ToPercent(), RangedCritBoost, (1f - AmmoReduction).ToPercent());
 
         // Set Bonus
         public static int ShrapnelRoundCooldown = CalamityUtils.SecondsToFrames(2.5f);
@@ -54,6 +55,8 @@ namespace CalamityMod.Items.Armor.GodSlayer
 
         public override void UpdateEquip(Player player)
         {
+            var modPlayer = player.Calamity();
+            modPlayer.ammoCost *= AmmoReduction;
             player.GetDamage<RangedDamageClass>() += RangedDamageBoost;
             player.GetCritChance<RangedDamageClass>() += RangedCritBoost;
         }

@@ -16,7 +16,8 @@ namespace CalamityMod.Items.Armor.Tarragon
 
         public static float RangedDamageBoost = 0.1f;
         public static int RangedCritBoost = 7;
-        public override LocalizedText Tooltip => base.Tooltip.WithFormatArgs(RangedDamageBoost.ToPercent(), RangedCritBoost);
+        public static float AmmoReduction = 0.75f;
+        public override LocalizedText Tooltip => base.Tooltip.WithFormatArgs(RangedDamageBoost.ToPercent(), RangedCritBoost, (1f - AmmoReduction).ToPercent());
 
         // Set Bonus
         public static int OnHitEffectCooldown = CalamityUtils.SecondsToFrames(1);
@@ -52,6 +53,8 @@ namespace CalamityMod.Items.Armor.Tarragon
 
         public override void UpdateEquip(Player player)
         {
+            var modPlayer = player.Calamity();
+            modPlayer.ammoCost *= AmmoReduction;
             player.GetDamage<RangedDamageClass>() += RangedDamageBoost;
             player.GetCritChance<RangedDamageClass>() += RangedCritBoost;
         }

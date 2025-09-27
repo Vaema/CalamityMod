@@ -240,6 +240,10 @@ namespace CalamityMod.Items
             if (item.accessory)
                 CannotBeEnchanted = true;
 
+            // Music boxes are pre-boss and sold from the Merchant, so they should now use the blue rarity.
+            if (item.type == ItemID.MusicBox || item.createTile == TileID.MusicBoxes || ItemID.Sets.ShimmerTransformToItem[item.type] == ItemID.MusicBox)
+                item.rare = ItemRarityID.Blue;
+                
             // Modified Pearlwood items are now Light Red.
             if (item.type == ItemID.PearlwoodBow || item.type == ItemID.PearlwoodHammer || item.type == ItemID.PearlwoodSword)
                 item.rare = ItemRarityID.LightRed;

@@ -10,7 +10,7 @@ namespace CalamityMod.Walls
 
         public override void SetStaticDefaults()
         {
-            Main.wallHouse[Type] = false;
+            Main.wallHouse[Type] = true;
             DustType = 24;
 
             this.AddMapEntryWithWaterVisibility(new Color(74, 71, 84));

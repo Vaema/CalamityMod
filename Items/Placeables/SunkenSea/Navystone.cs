@@ -19,7 +19,7 @@ namespace CalamityMod.Items.Placeables.SunkenSea
         public override void AddRecipes()
         {
             CreateRecipe().
-                AddIngredient<NavystoneWallSafe>(4).
+                AddIngredient<NavystoneWall>(4).
                 AddTile(TileID.WorkBenches).
                 DisableDecraft().
                 Register();
