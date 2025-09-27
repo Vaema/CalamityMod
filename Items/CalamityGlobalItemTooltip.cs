@@ -386,7 +386,7 @@ namespace CalamityMod.Items
                     if (CalamityUtils.GetTextValue("Buffs." + BuffID.Search.GetName(replacedDebuffs[i]) + ".ItemTooltip") == "")
                         continue;
                     foundDebuff = true;
-                    if (!PlayerInput.Triggers.Current.SmartCursor)
+                    if (!CalamityKeybinds.ExpandDebuffInfo.Current)
                     {
                         showTheTip = true;
                         break;
@@ -395,9 +395,12 @@ namespace CalamityMod.Items
                 }
                 if (showTheTip)
                 {
-                    var str = PlayerInput.CurrentProfile.InputModes[InputMode.Keyboard].KeyStatus["SmartCursor"].First().ToString();
-                    tooltips.Insert(++lastTooltipIndex, (new TooltipLine(Mod, "CalamityMod:AltExpandTooltip", CalamityUtils.GetTextValue("Misc.AltExpand").Replace("{0}",str))));
-                    tooltips[lastTooltipIndex].OverrideColor = new Color(170,170,170);
+                    if (CalamityKeybinds.ExpandDebuffInfo.GetAssignedKeys().Count > 0) {
+                        var str = CalamityKeybinds.ExpandDebuffInfo.GetAssignedKeys()[0];
+                        tooltips.Insert(++lastTooltipIndex, (new TooltipLine(Mod, "CalamityMod:AltExpandTooltip", CalamityUtils.GetTextValue("Misc.AltExpand").Replace("{0}", str)))); 
+                    } else
+                        tooltips.Insert(++lastTooltipIndex, (new TooltipLine(Mod, "CalamityMod:AltExpandTooltip", CalamityUtils.GetTextValue("Misc.AltExpandUnset"))));
+                    tooltips[lastTooltipIndex].OverrideColor = new Color(170, 170, 170);
                 }
                 else if (foundDebuff)
                 {
