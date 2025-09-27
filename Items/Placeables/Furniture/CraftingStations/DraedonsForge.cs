@@ -13,7 +13,7 @@ namespace CalamityMod.Items.Placeables.Furniture.CraftingStations
         {
             Item.DefaultToPlaceableTile(ModContent.TileType<Tiles.Furniture.CraftingStations.DraedonsForge>());
             Item.value = Item.sellPrice(platinum: 4);
-            Item.rare = ModContent.RarityType<Violet>();
+            Item.rare = ModContent.RarityType<BurnishedAuric>();
         }
 
         public override void ModifyResearchSorting(ref ContentSamples.CreativeHelper.ItemGroup itemGroup)

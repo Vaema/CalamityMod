@@ -125,6 +125,8 @@ namespace CalamityMod.Projectiles.Summon
 
         #endregion
 
+        public override bool MinionContactDamage() => true;
+
         public override void OnSpawn(IEntitySource source) => IFrames = 30;
 
         // Prevent immediate death on tile collision, and slow down on tile collision.

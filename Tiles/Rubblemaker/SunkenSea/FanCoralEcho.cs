@@ -29,12 +29,6 @@ namespace CalamityMod.Tiles.Rubblemaker.SunkenSea
             base.SetStaticDefaults();
         }
 
-        public override void NearbyEffects(int i, int j, bool closer)
-        {
-            if (!Main.dedServ)
-                Main.SceneMetrics.ActiveFountainColor = SunkenSeaBurrowsWater.Type;
-        }
-
         public override void NumDust(int i, int j, bool fail, ref int num)
         {
             num = fail ? 1 : 3;
@@ -42,9 +36,9 @@ namespace CalamityMod.Tiles.Rubblemaker.SunkenSea
 
         public override void ModifyLight(int i, int j, ref float r, ref float g, ref float b)
         {
-            r = 225f / 255f;
-            g = 255f / 255f;
-            b = 255f / 255f;
+            r = 0.88f;
+            g = 1f;
+            b = 1f;
         }
     }
 }

@@ -16,6 +16,7 @@ namespace CalamityMod.Projectiles.Typeless
     {
         public new string LocalizationCategory => "Projectiles.Typeless";
         public Player Owner => Main.player[Projectile.owner];
+        public int EquippedHook => Owner.miscEquips[4].type;
 
         public HookState State
         {
@@ -117,7 +118,7 @@ namespace CalamityMod.Projectiles.Typeless
 
                 Point tilePos = Projectile.Center.ToTileCoordinates();
                 Tile tile = Main.tile[tilePos];
-                if (!tile.HasUnactuatedTile || !tile.CanTileBeLatchedOnTo(Owner.miscEquips[4].type == ItemID.SquirrelHook) || Owner.IsBlacklistedForGrappling(tilePos))
+                if (!tile.HasUnactuatedTile || !tile.CanTileBeLatchedOnTo(EquippedHook == ItemID.SquirrelHook) || Owner.IsBlacklistedForGrappling(tilePos))
                     State = HookState.Retracting;
 
                 Projectile.velocity = Vector2.Zero;
@@ -153,7 +154,7 @@ namespace CalamityMod.Projectiles.Typeless
 
                     Tile tile = Main.tile[tilePos];
 
-                    if (!tile.HasUnactuatedTile || !tile.CanTileBeLatchedOnTo(Owner.miscEquips[4].type == ItemID.SquirrelHook) || Owner.IsBlacklistedForGrappling(tilePos))
+                    if (!tile.HasUnactuatedTile || !tile.CanTileBeLatchedOnTo(EquippedHook == ItemID.SquirrelHook && Projectile.Distance(Owner.Center) > 96) || Owner.IsBlacklistedForGrappling(tilePos))
                         continue;
                     if (Main.myPlayer != Owner.whoAmI)
                         continue;
@@ -171,9 +172,15 @@ namespace CalamityMod.Projectiles.Typeless
         public void OnGrapple(Vector2 grapplePos, int x, int y)
         {
             WulfrumPackPlayer mp = Owner.GetModPlayer<WulfrumPackPlayer>();
-            //Clear previous grapple
-            if (mp.Grapple > -1 && Main.projectile[mp.Grapple].active && Main.projectile[mp.Grapple].ModProjectile is WulfrumHook hook && hook.State == WulfrumHook.HookState.Grappling)
-                Main.projectile[mp.Grapple].Kill();
+            //Clear all grapples
+            Owner.ClearGrapplingBlacklist();
+            Owner.grappling[0] = -1;
+            Owner.grapCount = 0;
+            for (int i = 0; i < 1000; i++)
+            {
+                if (Main.projectile[i].active && Main.projectile[i].owner == Owner.whoAmI && Main.projectile[i].aiStyle == 7 && !(Main.projectile[i].whoAmI == Projectile.whoAmI))
+                    Main.projectile[i].Kill();
+            }
 
             //Hook onto the tile
             Projectile.velocity = Vector2.Zero;
@@ -189,9 +196,8 @@ namespace CalamityMod.Projectiles.Typeless
             {
                 Owner.grappling[Owner.grapCount] = Projectile.whoAmI;
                 Owner.grapCount++;
-                //Owner.velocity = Vector2.Zero;
             }
-            if (Owner.miscEquips[4].type == ItemID.QueenSlimeHook)
+            if (EquippedHook == ItemID.QueenSlimeHook)
                 Owner.DoQueenSlimeHookTeleport(grapplePos + new Vector2(-(Owner.Center - Projectile.Center).Length() * 0.75f, 0).RotatedBy(Projectile.DirectionTo(Owner.Center).ToRotation()));
             mp.SwingLength = (Owner.Center - Projectile.Center).Length();
             mp.OldPosition = Owner.Center - Owner.velocity;
@@ -223,7 +229,27 @@ namespace CalamityMod.Projectiles.Typeless
 
         public Color PrimColorFunction(float completionRatio)
         {
-            return Color.Lerp(Color.DeepSkyBlue, Color.GreenYellow, (float)Math.Pow(completionRatio, 1.5D));
+            Color EndColor = Color.GreenYellow;
+
+            switch (EquippedHook)
+            {
+                case ItemID.AntiGravityHook:
+                    EndColor = Color.Aquamarine;
+                    break;
+                case ItemID.QueenSlimeHook:
+                    EndColor = Color.HotPink;
+                    break;
+                case ItemID.SquirrelHook:
+                    EndColor = Color.DarkOrange;
+                    break;
+                case ItemID.StaticHook:
+                    EndColor = Color.Silver;
+                    break;
+                default:
+                    break;
+            }
+
+            return Color.Lerp(Color.DeepSkyBlue, EndColor, (float)Math.Pow(completionRatio, 1.5D));
         }
 
         public override bool PreDraw(ref Color lightColor)

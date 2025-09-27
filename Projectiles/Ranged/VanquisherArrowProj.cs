@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using CalamityMod.Buffs.DamageOverTime;
 using CalamityMod.Dusts;
+using CalamityMod.Graphics.Metaballs;
 using CalamityMod.Items.Ammo;
 using CalamityMod.Particles;
 using CalamityMod.Projectiles.Typeless;
@@ -26,6 +27,8 @@ namespace CalamityMod.Projectiles.Ranged
         public float HomingTime = 0;
         public Color MainColor;
         public NPC targeted;
+        public int rotDir = 0;
+        public float rotSpeed = 0;
         public override void SetStaticDefaults()
         {
             ProjectileID.Sets.CultistIsResistantTo[Type] = true;
@@ -43,7 +46,6 @@ namespace CalamityMod.Projectiles.Ranged
             Projectile.penetrate = 2;
             Projectile.timeLeft = 600;
             Projectile.extraUpdates = 7;
-            Projectile.Calamity().pointBlankShotDuration = CalamityGlobalProjectile.DefaultPointBlankDuration;
             Projectile.usesLocalNPCImmunity = true;
             Projectile.localNPCHitCooldown = 15 * Projectile.extraUpdates;
         }
@@ -64,6 +66,8 @@ namespace CalamityMod.Projectiles.Ranged
 
             if (Time == 0)
             {
+                rotDir = (Main.rand.NextBool() ? -1 : 1);
+                rotSpeed = Main.rand.NextFloat(0.8f, 1.1f);
                 Projectile.scale = 0.014f;
                 Projectile.velocity = Projectile.velocity.SafeNormalize(Vector2.UnitX) * 7f;
                 ProjectileSpeed = 30;
@@ -96,41 +100,27 @@ namespace CalamityMod.Projectiles.Ranged
             {
                 Projectile.timeLeft++;
                 CalamityUtils.HomeInOnSelectedNPC(Projectile, targeted, true, 0.65f, 7, 0.98f, 0.95f, true);
-                //CalamityUtils.HomeInOnNPC(Projectile, true, 2000f, 12, 200f);
             }
             else if (Projectile.velocity.Length() < 7)
                 Projectile.velocity = Vector2.Lerp(Projectile.velocity, Projectile.velocity.SafeNormalize(Vector2.UnitX) * 7f, 0.04f);
             if (HomingTime > 1)
             {
                 HomingTime--;
-                Projectile.velocity = Projectile.velocity.RotatedByRandom(0.09f);
+                Projectile.velocity = Projectile.velocity.RotatedBy(0.2f * rotDir * rotSpeed * Utils.GetLerpValue(15, 5, HomingTime, true));
             }
 
             Time++;
         }
-
-        public override void PostDraw(Color lightColor)
-        {
-            //Color color = Color.White;
-            //Rectangle frame = new Rectangle(0, 0, Terraria.GameContent.TextureAssets.Projectile[Type].Value.Width, Terraria.GameContent.TextureAssets.Projectile[Type].Value.Height);
-            //Main.EntitySpriteDraw(ModContent.Request<Texture2D>("CalamityMod/Items/Ammo/VanquisherArrowGlow").Value, Projectile.Center - Main.screenPosition, frame, color, Projectile.rotation, Projectile.Size / 2, 1f, SpriteEffects.None, 0);
-        }
-
-        public override Color? GetAlpha(Color lightColor)
-        {
-            return lightColor;
-        }
-
         public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
         {
-            HomingTime = Main.rand.Next(10, 20 + 1) * Projectile.extraUpdates;
+            HomingTime = Main.rand.Next(12, 15 + 1) * Projectile.extraUpdates;
             target.AddBuff(ModContent.BuffType<GodSlayerInferno>(), 180);
         }
         public override void ModifyHitNPC(NPC target, ref NPC.HitModifiers modifiers)
         {
-            // First hit is 30% damage
+            // First hit is 40% damage
             // Second hit is 100% base damage, it is the "Slash Hit"
-            modifiers.SourceDamage *= (Projectile.numHits == 0 ? 0.3f : 1f);
+            modifiers.SourceDamage *= (Projectile.numHits == 0 ? 0.4f : 1f);
             if (Projectile.damage < 1)
                 Projectile.damage = 1;
         }

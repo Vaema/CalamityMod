@@ -70,7 +70,6 @@ namespace CalamityMod.NPCs.SunkenSea
             NPC.defense = 0;
             NPC.lifeMax = 20;
             NPC.knockBackResist = 0f;
-            NPC.value = Item.buyPrice(0, 0, 5, 0);
             NPC.lavaImmune = false;
             NPC.noGravity = false;
             NPC.noTileCollide = false;
@@ -78,6 +77,7 @@ namespace CalamityMod.NPCs.SunkenSea
             NPC.DeathSound = SoundID.NPCDeath1;
             NPC.GravityIgnoresLiquid = true;
             AIType = NPCID.Snail;
+            NPC.chaseable = false;
             //Banner = NPC.type;
             //BannerItem = ModContent.ItemType<SlugbunBanner>();
             NPC.catchItem = ModContent.ItemType<SlugbunItem>();
@@ -85,7 +85,6 @@ namespace CalamityMod.NPCs.SunkenSea
             NPC.Calamity().VulnerableToSickness = true;
             NPC.Calamity().VulnerableToElectricity = true;
             NPC.Calamity().VulnerableToWater = false;
-            SpawnModBiomes = new int[1] { ModContent.GetInstance<SunkenSeaBiome>().Type };
         }
 
         public override void ReceiveExtraAI(BinaryReader reader)
@@ -135,7 +134,6 @@ namespace CalamityMod.NPCs.SunkenSea
             {
                 CurrentSkin = (int)SlugSkin.Radiant;
                 NPC.rarity = 3;
-                NPC.value = 100000;
             }
             // Decide item..........................
             switch (CurrentSkin)
@@ -191,11 +189,6 @@ namespace CalamityMod.NPCs.SunkenSea
                         WorldGen.KillTile((int)NPC.position.X / 16, (int)NPC.position.Y / 16);
                     }
                 }
-            }
-            if (CurrentSkin == (int)SlugSkin.Radiant)
-            {
-                NPC.rarity = 3;
-                NPC.value = 100000;
             }
         }
 

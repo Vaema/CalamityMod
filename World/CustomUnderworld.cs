@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using CalamityMod.Tiles.Underworld;
 using CalamityMod.Schematics;
 using Microsoft.Xna.Framework;
 using ReLogic.Utilities;
@@ -7,6 +8,7 @@ using Terraria;
 using Terraria.DataStructures;
 using Terraria.GameContent.Generation;
 using Terraria.ID;
+using Terraria.ModLoader;
 using Terraria.WorldBuilding;
 using static CalamityMod.Schematics.SchematicManager;
 
@@ -1304,7 +1306,7 @@ namespace CalamityMod.World
             int pillarRightSize = 0;
             int topTileSectionSize = 10;
             int pillarTopTileSectionCutOff = pillarIndexStarY + topTileSectionSize;
-            ushort pillarTileID = Main.zenithWorld ? TileID.PoopBlock : TileID.StoneSlab;
+            ushort pillarTileID = Main.zenithWorld ? TileID.PoopBlock : (ushort)ModContent.TileType<Dreadstone>();
             ushort pillarWallID = Main.zenithWorld ? WallID.PoopWall : WallID.RocksUnsafe3;
 
             // Use the x tile index to find pillar locations
@@ -2183,6 +2185,7 @@ namespace CalamityMod.World
             for (int i = 0; i < contents.Count; i++)
             {
                 chest.item[i].SetDefaults(contents[i].Type);
+                chest.item[i].Prefix(-1);
                 chest.item[i].stack = contents[i].Stack;
             }
         }
@@ -2213,6 +2216,7 @@ namespace CalamityMod.World
             for (int i = 0; i < contents.Count; i++)
             {
                 chest.item[i].SetDefaults(contents[i].Type);
+                chest.item[i].Prefix(-1);
                 chest.item[i].stack = contents[i].Stack;
             }
         }

@@ -832,25 +832,6 @@ namespace CalamityMod
             return p.Calamity().tarraSet;
         });
 
-        internal const float TrasherEatDistance = 96f;
-        public static IItemDropRuleCondition AnglerFedToTrasherCondition = If((info) =>
-        {
-            bool trasherNearby = false;
-            foreach (NPC nearby in Main.ActiveNPCs)
-            {
-                if (nearby.type != ModContent.NPCType<Trasher>())
-                    continue;
-                if (info.npc.Distance(nearby.Center) < TrasherEatDistance)
-                {
-                    trasherNearby = true;
-                    break;
-                }
-            }
-            return trasherNearby;
-        });
-        // The text is a separate rule so it doesn't show up on the non-Trasher Fishing Rod drop which only occurs if the Angler is not fed to a Trasher
-        public static IItemDropRuleCondition TrasherText => CalamityConditions.TrasherTextCondition.ToDropCondition(ShowItemDropInUI.Always);
-
         // Remix seed drop rules
         public static IItemDropRuleCondition Remix => Condition.RemixWorld.ToDropCondition(ShowItemDropInUI.WhenConditionSatisfied);
         public static IItemDropRuleCondition NotRemix => Condition.NotRemixWorld.ToDropCondition(ShowItemDropInUI.WhenConditionSatisfied);

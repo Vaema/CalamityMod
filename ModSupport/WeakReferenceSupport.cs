@@ -2,14 +2,11 @@
 using System.Collections.Generic;
 using System.Linq;
 using CalamityMod.Buffs.Summon;
-using CalamityMod.Cooldowns;
 using CalamityMod.Events;
 using CalamityMod.Items;
-using CalamityMod.Items.Accessories;
 using CalamityMod.Items.Armor.Vanity;
 using CalamityMod.Items.LoreItems;
 using CalamityMod.Items.Materials;
-using CalamityMod.Items.PermanentBoosters;
 using CalamityMod.Items.Pets;
 using CalamityMod.Items.Placeables.Furniture.BossRelics;
 using CalamityMod.Items.Placeables.Furniture.DevPaintings;
@@ -17,16 +14,12 @@ using CalamityMod.Items.Placeables.Furniture.Trophies;
 using CalamityMod.Items.SummonItems;
 using CalamityMod.Items.SummonItems.Invasion;
 using CalamityMod.Items.Weapons.DraedonsArsenal;
-using CalamityMod.Items.Weapons.Magic;
-using CalamityMod.Items.Weapons.Ranged;
 using CalamityMod.Items.Weapons.Rogue;
 using CalamityMod.Items.Weapons.Summon;
 using CalamityMod.NPCs.AcidRain;
 using CalamityMod.NPCs.AquaticScourge;
-using CalamityMod.NPCs.Astral;
 using CalamityMod.NPCs.AstrumAureus;
 using CalamityMod.NPCs.AstrumDeus;
-using CalamityMod.NPCs.BrimstoneElemental;
 using CalamityMod.NPCs.Bumblebirb;
 using CalamityMod.NPCs.CalClone;
 using CalamityMod.NPCs.CeaselessVoid;
@@ -57,12 +50,10 @@ using CalamityMod.NPCs.SunkenSea;
 using CalamityMod.NPCs.SupremeCalamitas;
 using CalamityMod.NPCs.TownNPCs;
 using CalamityMod.NPCs.Yharon;
-using CalamityMod.Particles;
 using CalamityMod.Projectiles.DraedonsArsenal;
 using CalamityMod.Projectiles.Summon;
 using CalamityMod.Projectiles.Summon.Umbrella;
 using CalamityMod.Systems;
-using CalamityMod.UI;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria;
@@ -460,9 +451,11 @@ namespace CalamityMod
                 string entryName = "HiveMind";
                 BossChecklistProgressionValues.TryGetValue(entryName, out float order);
                 int type = NPCType<HiveMind>();
+                Func<bool> IsCorruption = () => !WorldGen.crimson || Main.drunkWorld;
                 List<int> collection = new List<int>() { ItemType<HiveMindRelic>(), ItemType<HiveMindTrophy>(), ItemType<HiveMindMask>(), ItemType<LoreHiveMind>(), ItemType<RottingEyeball>(), ItemType<ThankYouPainting>() };
                 AddBoss(bossChecklist, calamity, entryName, order, DownedHiveMind, type, new Dictionary<string, object>()
                 {
+                    ["availability"] = IsCorruption,
                     ["spawnInfo"] = GetSpawnInfo(entryName),
                     ["despawnMessage"] = GetDespawnMessage(entryName),
                     ["spawnItems"] = ItemType<Teratoma>(),
@@ -476,9 +469,11 @@ namespace CalamityMod
                 string entryName = "Perforators";
                 BossChecklistProgressionValues.TryGetValue(entryName, out float order);
                 int type = NPCType<PerforatorHive>();
+                Func<bool> IsCrimson = () => WorldGen.crimson || Main.drunkWorld;
                 List<int> collection = new List<int>() { ItemType<PerforatorsRelic>(), ItemType<PerforatorTrophy>(), ItemType<PerforatorMask>(), ItemType<LorePerforators>(), ItemType<BloodyVein>(), ItemType<ThankYouPainting>() };
                 AddBoss(bossChecklist, calamity, entryName, order, DownedPerforators, type, new Dictionary<string, object>()
                 {
+                    ["availability"] = IsCrimson,
                     ["displayName"] = GetDisplayName(entryName),
                     ["spawnInfo"] = GetSpawnInfo(entryName),
                     ["despawnMessage"] = GetDespawnMessage(entryName),
@@ -563,8 +558,8 @@ namespace CalamityMod
             {
                 string entryName = "BrimstoneElemental";
                 BossChecklistProgressionValues.TryGetValue(entryName, out float order);
-                int type = NPCType<BrimstoneElemental>();
-                List<int> collection = new List<int>() { ItemType<BrimstoneElementalRelic>(), ItemType<BrimstoneElementalTrophy>(), ItemType<BrimstoneWaifuMask>(), ItemType<LoreAzafure>(), ItemType<LoreBrimstoneElemental>(), ItemType<CharredRelic>(), ItemType<ThankYouPainting>() };
+                int type = NPCType<NPCs.BrimstoneElemental.BrimstoneElemental>();
+                List<int> collection = new List<int>() { ItemType<BrimstoneElementalRelic>(), ItemType<BrimstoneElementalTrophy>(), ItemType<BrimstoneElementalMask>(), ItemType<LoreAzafure>(), ItemType<LoreBrimstoneElemental>(), ItemType<CharredRelic>(), ItemType<ThankYouPainting>() };
                 AddBoss(bossChecklist, calamity, entryName, order, DownedBrimstoneElemental, type, new Dictionary<string, object>()
                 {
                     ["spawnInfo"] = GetSpawnInfo(entryName),
@@ -741,7 +736,7 @@ namespace CalamityMod
             {
                 string entryName = "Dragonfolly";
                 BossChecklistProgressionValues.TryGetValue(entryName, out float order);
-                int type = NPCType<Bumblefuck>();
+                int type = NPCType<Dragonfolly>();
                 List<int> collection = new List<int>() { ItemType<DragonfollyRelic>(), ItemType<DragonfollyTrophy>(), ItemType<BumblefuckMask>(), ItemType<LoreDragonfolly>(), ItemType<ThankYouPainting>() };
                 AddBoss(bossChecklist, calamity, entryName, order, DownedDragonfolly, type, new Dictionary<string, object>()
                 {
@@ -1172,7 +1167,7 @@ namespace CalamityMod
             RegisterSummon(ItemType<ScabRipper>(), BuffType<BabyBloodCrawlerBuff>(), ProjectileType<BabyBloodCrawler>());
             RegisterSummon(ItemType<CinderBlossomStaff>(), BuffType<CinderBlossomBuff>(), ProjectileType<CinderBlossom>());
             RegisterSummon(ItemType<DankStaff>(), BuffType<DankCreeperBuff>(), ProjectileType<DankCreeperMinion>());
-            RegisterSummon(ItemType<StarSwallowerContainmentUnit>(), BuffType<StarSwallowerBuff>(), ProjectileType<StarSwallowerSummon>());
+            RegisterSummon(ItemType<AqueousHunterDrone>(), BuffType<AqueousHunterDroneBuff>(), ProjectileType<AqueousHunterDroneSummon>());
             RegisterSummon(ItemType<HerringStaff>(), BuffType<Herring>(), ProjectileType<HerringMinion>());
             RegisterSummon(ItemType<EyeOfNight>(), BuffType<EyeOfNightBuff>(), ProjectileType<EyeOfNightSummon>());
             RegisterSummon(ItemType<FleshOfInfidelity>(), BuffType<FleshBallBuff>(), ProjectileType<FleshBallMinion>());
@@ -1340,8 +1335,8 @@ namespace CalamityMod
                 return tagData.ContainsKey("RevengeanceMode") && tagData.GetBool("RevengeanceMode") && !(tagData.ContainsKey("DeathMode") && tagData.GetBool("DeathMode"));
             };
             
-            RegisterWorldInfoIcon(luminance, "CalamityMod/UI/ModeIndicator/ModeIndicator_Death", "Mods.CalamityMod.UI.DeathEnabled", deathEnabled, 50);
-            RegisterWorldInfoIcon(luminance, "CalamityMod/UI/ModeIndicator/ModeIndicator_Rev", "Mods.CalamityMod.UI.RevengeanceEnabled", revengeanceEnabled, 50);
+            RegisterWorldInfoIcon(luminance, "CalamityMod/UI/ModeIndicator/ModeIndicator_Death", "Mods.CalamityMod.UI.Death", deathEnabled, 50);
+            RegisterWorldInfoIcon(luminance, "CalamityMod/UI/ModeIndicator/ModeIndicator_Rev", "Mods.CalamityMod.UI.Revengeance", revengeanceEnabled, 50);
         }
         #endregion
     }

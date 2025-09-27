@@ -4,7 +4,6 @@ using CalamityMod.Tiles.Furniture.DevPaintings;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
-using static Microsoft.Xna.Framework.Input.Keys;
 
 namespace CalamityMod.Items.Placeables.Furniture.DevPaintings
 {
@@ -24,7 +23,7 @@ namespace CalamityMod.Items.Placeables.Furniture.DevPaintings
 
         public override void ModifyTooltips(List<TooltipLine> tooltips)
         {
-            if (!Main.keyState.IsKeyDown(LeftShift))
+            if (!Main.keyState.PressingShift())
                 return;
 
             string tooltip = "";
@@ -51,13 +50,13 @@ namespace CalamityMod.Items.Placeables.Furniture.DevPaintings
 
         public static IList<string> devList = new List<string>()
         {
-            "Fabsol, the mod's founder and owner", // Fabsol gets a line to himself
 			"Altix",
-            "Angel",
             "apotofkoolaid",
             "AquaSG",
             "Atalya",
             "Ben-TK",
+            "Big E",
+            "CDMusic",
             "Cei",
             "CongratsIsTrash",
             "Cooper",
@@ -65,16 +64,15 @@ namespace CalamityMod.Items.Placeables.Furniture.DevPaintings
             "CrabBar",
             "Dandy",
             "Dia",
+            "Done",
             "dozezoze",
             "Eddie Spaghetti",
-            "enamoured",
             "ENNWAY",
             "Flowaria",
             "Fluffy",
             "fryzahh",
             "HaguriHat",
             "Heart Plus Up!",
-            "Hugekraken",
             "LordMetarex",
             "Memes",
             "Mercutio 'Merkalto' Takle",
@@ -88,10 +86,12 @@ namespace CalamityMod.Items.Placeables.Furniture.DevPaintings
             "Raesh",
             "Sagittariod",
             "Shade",
-            "SharZz",
             "Shayy",
             "Spider Prov",
             "StipulateVenus",
+            "Sunny",
+            "Tobias",
+            "Tomat",
             "Triangle",
             "TYESKI (Universe)",
             "Uncle Danny",
@@ -111,7 +111,6 @@ namespace CalamityMod.Items.Placeables.Furniture.DevPaintings
             "Blockaroz",
             "Boffin",
             "Bravioli",
-            "CDMusic",
             "Chetto",
             "Chill Dude",
             "Cobalion",
@@ -119,7 +118,6 @@ namespace CalamityMod.Items.Placeables.Furniture.DevPaintings
             "DarkTiny",
             "Demik",
             "DM Dokuro",
-            "Done",
             "Doog",
             "drh",
             "dwshin",
@@ -127,6 +125,7 @@ namespace CalamityMod.Items.Placeables.Furniture.DevPaintings
             "Earth",
             "EchoDuck",
             "Ein",
+            "enamoured",
             "Enreden",
             "Epsilon",
             "Fargowilta",
@@ -137,6 +136,7 @@ namespace CalamityMod.Items.Placeables.Furniture.DevPaintings
             "Graydee",
             "Grox the Great",
             "Hectique",
+            "Hugekraken",
             "Huggles",
             "Ian-1KV",
             "IbanPlay",
@@ -153,6 +153,7 @@ namespace CalamityMod.Items.Placeables.Furniture.DevPaintings
             "Lompl Allimath",
             "Lucille Karma",
             "MarieArk",
+            "Mihaii",
             "Minecat",
             "Mrrp",
             "Nao",
@@ -166,7 +167,6 @@ namespace CalamityMod.Items.Placeables.Furniture.DevPaintings
             "Phantasmal Deathray",
             "Phupperbat",
             "Pinkie Poss",
-            "pixlgray",
             "Poly",
             "Popo",
             "President Waluigi",
@@ -176,6 +176,7 @@ namespace CalamityMod.Items.Placeables.Furniture.DevPaintings
             "Runefield",
             "Sargassum",
             "sentri",
+            "SharZz",
             "Shucks",
             "Silver-Lord of Ash",
             "SixteenInMono",
@@ -190,7 +191,6 @@ namespace CalamityMod.Items.Placeables.Furniture.DevPaintings
             "ThousandFields",
             "TikiWiki",
             "Tinymanx",
-            "Tomat",
             "Trivaxy",
             "Uberransy",
             "Vaikyia",

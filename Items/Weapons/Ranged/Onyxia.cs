@@ -18,20 +18,19 @@ namespace CalamityMod.Items.Weapons.Ranged
         {
             Item.width = 84;
             Item.height = 34;
-            Item.damage = 100;
+            Item.damage = 90;
             Item.DamageType = DamageClass.Ranged;
             Item.useAnimation = Item.useTime = 10;
             Item.useStyle = ItemUseStyleID.Shoot;
             Item.noMelee = true;
             Item.knockBack = 4.5f;
             Item.value = CalamityGlobalItem.RarityDarkBlueBuyPrice;
-            Item.rare = ModContent.RarityType<DarkBlue>();
+            Item.rare = ModContent.RarityType<CosmicPurple>();
             Item.UseSound = SoundID.Item36;
             Item.autoReuse = true;
             Item.shoot = ProjectileID.BlackBolt;
             Item.shootSpeed = 28f;
             Item.useAmmo = AmmoID.Bullet;
-            Item.Calamity().canFirePointBlankShots = true;
         }
 
         public override Vector2? HoldoutOffset()

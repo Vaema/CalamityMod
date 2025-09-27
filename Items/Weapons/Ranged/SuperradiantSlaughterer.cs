@@ -1,4 +1,5 @@
-﻿using CalamityMod.Cooldowns;
+﻿using CalamityMod.CalPlayer.Dashes;
+using CalamityMod.Cooldowns;
 using CalamityMod.Items.Materials;
 using CalamityMod.Particles;
 using CalamityMod.Projectiles.Ranged;
@@ -21,8 +22,11 @@ namespace CalamityMod.Items.Weapons.Ranged
         public new string LocalizationCategory => "Items.Weapons.Ranged";
 
         public const float ShootSpeed = 24f;
-
         public const int DashCooldown = 360;
+
+        public bool hasDashed = false;
+        public int rightClickDelay = 0;
+        public static int doubleRightFrameWindow = 23;
 
         public override void ModifyTooltips(List<TooltipLine> tooltips)
         {
@@ -55,10 +59,10 @@ namespace CalamityMod.Items.Weapons.Ranged
         {
             Item.width = 84;
             Item.height = 46;
-            Item.damage = 127;
+            Item.damage = 97;
             Item.DamageType = DamageClass.Ranged;
-            Item.useTime = 30;
-            Item.useAnimation = 30;
+            Item.useTime = 10;
+            Item.useAnimation = 10;
             Item.useStyle = ItemUseStyleID.Shoot;
             Item.noMelee = true;
             Item.noUseGraphic = true;
@@ -69,19 +73,12 @@ namespace CalamityMod.Items.Weapons.Ranged
             Item.autoReuse = true;
             Item.shoot = ModContent.ProjectileType<SuperradiantSlaughtererHoldout>();
             Item.shootSpeed = ShootSpeed;
-            Item.Calamity().canFirePointBlankShots = true;
         }
 
         // Terraria seems to really dislike high crit values in SetDefaults
         public override void ModifyWeaponCrit(Player player, ref float crit) => crit += 21;
         public override bool AltFunctionUse(Player player) => true;
-        public override bool CanUseItem(Player player)
-        {
-            if (player.altFunctionUse == 2 && player.HasCooldown(SuperradiantSawBoost.ID))
-                return false;
-            else
-                return player.ownedProjectileCounts[Item.shoot] <= 0;
-        }
+        public override bool CanUseItem(Player player) => player.ownedProjectileCounts[Item.shoot] <= 0;
 
         public override void HoldItem(Player player)
         {
@@ -91,6 +88,11 @@ namespace CalamityMod.Items.Weapons.Ranged
             player.Calamity().mouseWorldListener = true;
             player.Calamity().rightClickListener = true;
 
+            if (rightClickDelay > 0)
+                rightClickDelay--;
+            if (!player.HasCooldown(SuperradiantSawBoost.ID))
+                hasDashed = false;
+            
             // Right-click channeling
             if (player.Calamity().mouseRight && CanUseItem(player) && !Main.mapFullscreen && !Main.blockMouse && !player.HasCooldown(SuperradiantSawBoost.ID))
             {
@@ -108,9 +110,24 @@ namespace CalamityMod.Items.Weapons.Ranged
 
         public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)
         {
-            // The holdout will initially double up when right clicking otherwise
+            // Handles allowing the dash
             if (player.altFunctionUse == 2)
+            {
+                bool doubleRightClick = rightClickDelay > 0 && !hasDashed;
+                bool canDash = doubleRightClick && player.Calamity().DashID != SuperradiantSawDash.ID;
+
+                // If you hit the right-click window, dash
+                if (canDash)
+                {
+                    hasDashed = true;
+                    player.Calamity().sBlasterDashActivated = true;
+                }
+
+                // Set the double right-click frames
+                rightClickDelay = doubleRightFrameWindow;
+                // The holdout will initially double up when right clicking otherwise
                 return false;
+            }
 
             // The holdout deals 2x base damage.
             Projectile.NewProjectile(source, position, velocity, Item.shoot, damage * 2, knockback, player.whoAmI);

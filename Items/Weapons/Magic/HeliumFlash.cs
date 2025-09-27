@@ -39,7 +39,7 @@ namespace CalamityMod.Items.Weapons.Magic
             Item.useStyle = ItemUseStyleID.Shoot;
 
             Item.value = CalamityGlobalItem.RarityVioletBuyPrice;
-            Item.rare = ModContent.RarityType<Violet>();
+            Item.rare = ModContent.RarityType<BurnishedAuric>();
 
             Item.shoot = ModContent.ProjectileType<HeliumFlashHoldout>();
             Item.shootSpeed = 15f;

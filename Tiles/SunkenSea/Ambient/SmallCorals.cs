@@ -10,45 +10,52 @@ namespace CalamityMod.Tiles.SunkenSea.Ambient
     {
         public override void SetStaticDefaults()
         {
-            Main.tileLighted[Type] = false;
-            Main.tileCut[Type] = false;
-            Main.tileSolid[Type] = false;
-            Main.tileNoAttach[Type] = true;
+            Main.tileLighted[Type] = true;
             Main.tileNoFail[Type] = true;
-            Main.tileLavaDeath[Type] = true;
-            Main.tileWaterDeath[Type] = false;
             Main.tileFrameImportant[Type] = true;
-            TileID.Sets.ReplaceTileBreakUp[Type] = true;
-            TileID.Sets.SwaysInWindBasic[Type] = false;
-            TileObjectData.newTile.CopyFrom(TileObjectData.Style1x2);
-            TileObjectData.addTile(Type);
+            Main.tileObsidianKill[Type] = true;
             AddMapEntry(new Color(178, 28, 153));
             DustType = DustID.Coralstone;
             HitSound = SoundID.Grass;
-
-            base.SetStaticDefaults();
         }
 
-        public override bool TileFrame(int i, int j, ref bool resetFrame, ref bool noBreak)
-		{
-			Tile tileBelow = Framing.GetTileSafely(i, j + 1);
-			int type = -1;
-
-			if (tileBelow.HasTile)
-				type = tileBelow.TileType;
-
-			if (type == ModContent.TileType<EutrophicSand>())
-				return true;
-
-			WorldGen.KillTile(i, j);
-
-			return true;
-		}
-
-        public override void SetDrawPositions(int i, int j, ref int width, ref int offsetY, ref int height, ref short tileFrameX, ref short tileFrameY)
+        public override void NumDust(int i, int j, bool fail, ref int num)
         {
-            offsetY = 0;
-            height = 16;
+            num = fail ? 1 : 3;
+        }
+
+        public override bool CanPlace(int i, int j)
+        {
+            Tile belowTile = Main.tile[i, j + 1];
+            Tile aboveTile = Main.tile[i, j - 1];
+            Tile rightTile = Main.tile[i + 1, j];
+            Tile leftTile = Main.tile[i - 1, j];
+
+            if ((belowTile.Slope == SlopeType.Solid && !belowTile.IsHalfBlock && belowTile.HasTile && belowTile.IsTileSolid()) ||
+                (aboveTile.Slope == SlopeType.Solid && !aboveTile.IsHalfBlock && aboveTile.HasTile && aboveTile.IsTileSolid()) ||
+                (rightTile.Slope == SlopeType.Solid && !rightTile.IsHalfBlock && rightTile.HasTile && rightTile.IsTileSolid()) ||
+                (leftTile.Slope == SlopeType.Solid && !leftTile.IsHalfBlock && leftTile.HasTile && leftTile.IsTileSolid()))
+                return true;
+
+            return false;
+        }
+        public override void PlaceInWorld(int i, int j, Item item)
+        {
+            Tile belowTile = Main.tile[i, j + 1];
+            Tile aboveTile = Main.tile[i, j - 1];
+            Tile rightTile = Main.tile[i + 1, j];
+            Tile leftTile = Main.tile[i - 1, j];
+
+            if (belowTile.Slope == SlopeType.Solid && !belowTile.IsHalfBlock && belowTile.HasTile && belowTile.IsTileSolid())
+                Main.tile[i, j].TileFrameY = 0;
+            else if (aboveTile.Slope == SlopeType.Solid && !aboveTile.IsHalfBlock && aboveTile.HasTile && aboveTile.IsTileSolid())
+                Main.tile[i, j].TileFrameY = 18;
+            else if (rightTile.Slope == SlopeType.Solid && !rightTile.IsHalfBlock && rightTile.HasTile && rightTile.IsTileSolid())
+                Main.tile[i, j].TileFrameY = 36;
+            else if (leftTile.Slope == SlopeType.Solid && !leftTile.IsHalfBlock && leftTile.HasTile && leftTile.IsTileSolid())
+                Main.tile[i, j].TileFrameY = 54;
+
+            Main.tile[i, j].TileFrameX = (short)(WorldGen.genRand.Next(18) * 18);
         }
     }
 }

@@ -2,6 +2,7 @@
 using CalamityMod.Items.Placeables.SunkenSea;
 using Terraria;
 using Terraria.ID;
+using Terraria.Localization;
 using Terraria.ModLoader;
 
 namespace CalamityMod.Items.Armor.Mollusk
@@ -10,6 +11,11 @@ namespace CalamityMod.Items.Armor.Mollusk
     public class MolluskShellplate : ModItem, ILocalizedModType
     {
         public new string LocalizationCategory => "Items.Armor.Hardmode";
+
+        public static float DamageBoost = 0.06f;
+        public static int CritBoost = 5;
+        public override LocalizedText Tooltip => base.Tooltip.WithFormatArgs(DamageBoost.ToPercent(), CritBoost);
+
         public override void SetDefaults()
         {
             Item.width = 30;
@@ -21,8 +27,8 @@ namespace CalamityMod.Items.Armor.Mollusk
 
         public override void UpdateEquip(Player player)
         {
-            player.GetDamage<GenericDamageClass>() += 0.06f;
-            player.GetCritChance<GenericDamageClass>() += 5;
+            player.GetDamage<GenericDamageClass>() += DamageBoost;
+            player.GetCritChance<GenericDamageClass>() += CritBoost;
             player.Calamity().molluskChest = true;
         }
 

@@ -26,7 +26,8 @@ namespace CalamityMod.Items.Weapons.Melee
             Item.width = 118;
             Item.height = 118;
 
-            Item.damage = 400;
+            Item.damage = 333;
+            Item.crit = 41;
             Item.useAnimation = Item.useTime = 45;
 
             Item.useStyle = ItemUseStyleID.Shoot;
@@ -41,10 +42,9 @@ namespace CalamityMod.Items.Weapons.Melee
             Item.channel = true;
 
             Item.value = CalamityGlobalItem.RarityDarkBlueBuyPrice;
-            Item.rare = ModContent.RarityType<DarkBlue>();
+            Item.rare = ModContent.RarityType<CosmicPurple>();
         }
         public override bool MeleePrefix() => true;
-        public override void ModifyWeaponCrit(Player player, ref float crit) => crit += 41;
         public override bool CanUseItem(Player player) => player.ownedProjectileCounts[ModContent.ProjectileType<DevilsDevastationHoldout>()] <= 0 && !player.Calamity().mouseRight;
         public override void HoldItem(Player player)
         {
@@ -76,7 +76,7 @@ namespace CalamityMod.Items.Weapons.Melee
             }
             if (player.Calamity().demonSwordKillMode && player.ownedProjectileCounts[ModContent.ProjectileType<DevilsDevastationHoldout>()] <= 0 && player.Calamity().killModeCooldown == KillMode.cooldownMax + KillMode.buffMax)
             {
-                Projectile blade = Projectile.NewProjectileDirect(player.GetSource_FromThis(), player.MountedCenter, Vector2.Zero, ModContent.ProjectileType<DevilsDevastationHoldout>(), Item.damage * 15, Item.knockBack, player.whoAmI, 0, throwCount); //This used to be 30x damage.
+                Projectile.NewProjectile(player.GetSource_ItemUse(Item), player.MountedCenter, Vector2.Zero, ModContent.ProjectileType<DevilsDevastationHoldout>(), Item.damage * 15, Item.knockBack, player.whoAmI, 0, throwCount); //This used to be 30x damage.
             }
         }
         public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)

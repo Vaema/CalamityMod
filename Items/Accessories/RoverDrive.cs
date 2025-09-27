@@ -11,6 +11,7 @@ using Terraria;
 using Terraria.Audio;
 using Terraria.Graphics.Effects;
 using Terraria.ID;
+using Terraria.Localization;
 using Terraria.ModLoader;
 
 namespace CalamityMod.Items.Accessories
@@ -25,10 +26,9 @@ namespace CalamityMod.Items.Accessories
         public static readonly SoundStyle BreakSound = new("CalamityMod/Sounds/Custom/RoverDriveBreak") { Volume = 0.75f };
 
         public static int ShieldDurabilityMax = 20;
-        public static int ShieldRechargeTime = CalamityUtils.SecondsToFrames(10);
-
-        // While active, Rover Drive gives 10 defense
-        public static int ShieldDefenseBoost = 10;
+        public static int ShieldRechargeDelay = CalamityUtils.SecondsToFrames(10);
+        public static int TotalShieldRechargeTime = CalamityUtils.SecondsToFrames(5);
+        public override LocalizedText Tooltip => base.Tooltip.WithFormatArgs(ShieldDurabilityMax, ShieldRechargeDelay.FramesToSeconds(), TotalShieldRechargeTime.FramesToSeconds());
 
         // Interface stuff.
         public int OwnerPlayer { get; set; }
@@ -78,9 +78,6 @@ namespace CalamityMod.Items.Accessories
 
             modPlayer.roverDrive = true;
             modPlayer.roverDriveShieldVisible = !hideVisual;
-
-            if (modPlayer.RoverDriveShieldDurability > 0)
-                player.statDefense += ShieldDefenseBoost;
         }
 
         // In vanity, provides a visual shield but no actual functionality

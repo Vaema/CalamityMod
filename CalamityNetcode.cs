@@ -215,6 +215,7 @@ namespace CalamityMod
         CooldownAddition,
         CooldownRemoval,
         SyncCooldownDictionary,
+        ExaltationDirection,
 
         // Syncs for specific bosses or entities
         SyncDestroyerLaserColor,

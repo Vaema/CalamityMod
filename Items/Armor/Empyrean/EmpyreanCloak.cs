@@ -1,6 +1,7 @@
 ﻿using CalamityMod.Items.Materials;
 using Terraria;
 using Terraria.ID;
+using Terraria.Localization;
 using Terraria.ModLoader;
 
 namespace CalamityMod.Items.Armor.Empyrean
@@ -10,6 +11,11 @@ namespace CalamityMod.Items.Armor.Empyrean
     public class EmpyreanCloak : ModItem, ILocalizedModType
     {
         public new string LocalizationCategory => "Items.Armor.PostMoonLord";
+
+        public static float RogueDamageBoost = 0.12f;
+        public static int RogueCritBoost = 8;
+        public override LocalizedText Tooltip => base.Tooltip.WithFormatArgs(RogueDamageBoost.ToPercent(), RogueCritBoost);
+
         public override void Load()
         {
             if (!Main.dedServ)
@@ -21,7 +27,6 @@ namespace CalamityMod.Items.Armor.Empyrean
 
         public override void SetStaticDefaults()
         {
-
             if (!Main.dedServ)
             {
                 var equipSlot = EquipLoader.GetEquipSlot(Mod, Name, EquipType.Body);
@@ -36,14 +41,13 @@ namespace CalamityMod.Items.Armor.Empyrean
             Item.height = 18;
             Item.value = CalamityGlobalItem.RarityRedBuyPrice;
             Item.rare = ItemRarityID.Red;
-            Item.defense = 27;
+            Item.defense = 24;
         }
 
         public override void UpdateEquip(Player player)
         {
-            player.statLifeMax2 += 20;
-            player.GetCritChance<ThrowingDamageClass>() += 7;
-            player.GetDamage<ThrowingDamageClass>() += 0.07f;
+            player.GetDamage<ThrowingDamageClass>() += RogueDamageBoost;
+            player.GetCritChance<ThrowingDamageClass>() += RogueCritBoost;
         }
 
         public override void AddRecipes()

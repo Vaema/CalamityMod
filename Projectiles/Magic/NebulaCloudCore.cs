@@ -12,7 +12,7 @@ namespace CalamityMod.Projectiles.Magic
     public class NebulaCloudCore : ModProjectile, ILocalizedModType
     {
         public new string LocalizationCategory => "Projectiles.Magic";
-        private const float IntendedVelocity = 4f;
+        private const float IntendedVelocity = 6f;
 
         public override void SetStaticDefaults()
         {
@@ -28,12 +28,12 @@ namespace CalamityMod.Projectiles.Magic
             Projectile.height = 32;
             Projectile.friendly = true;
             Projectile.alpha = 255;
-            Projectile.penetrate = 4;
+            Projectile.penetrate = 3;
             Projectile.ignoreWater = true;
             Projectile.DamageType = DamageClass.Magic;
             Projectile.MaxUpdates = 3;
             Projectile.usesLocalNPCImmunity = true;
-            Projectile.localNPCHitCooldown = 8 * Projectile.MaxUpdates; // 8 effective, 24 total
+            Projectile.localNPCHitCooldown = 10 * Projectile.MaxUpdates; // 10 effective, 30 total
         }
 
         public override void AI()
@@ -351,12 +351,10 @@ namespace CalamityMod.Projectiles.Magic
                 int totalProjectiles = Main.rand.Next(6, 9);
                 float radians = MathHelper.TwoPi / totalProjectiles;
                 int type = ModContent.ProjectileType<NebulaNova>();
-                float velocity = Main.rand.Next(70, 101) * 0.1f;
-                Vector2 spinningPoint = new Vector2(0f, -velocity);
                 for (int k = 0; k < totalProjectiles; k++)
                 {
-                    Vector2 velocity2 = spinningPoint.RotatedBy(radians * k);
-                    Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center + Utils.RandomVector2(Main.rand, -30f, 30f), velocity2, type, (int)(Projectile.damage * 0.5), Projectile.knockBack * 0.8f, Projectile.owner);
+                    Vector2 velocity = -Vector2.UnitY.RotatedBy(radians * k) * Main.rand.NextFloat(7f, 10f);
+                    Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center + Main.rand.NextVector2Circular(30f, 30f), velocity, type, (int)(Projectile.damage * 0.5), Projectile.knockBack * 0.8f, Projectile.owner);
                 }
             }
         }

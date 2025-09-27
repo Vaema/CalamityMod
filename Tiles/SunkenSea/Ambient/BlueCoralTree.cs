@@ -33,7 +33,6 @@ namespace CalamityMod.Tiles.SunkenSea.Ambient
 
         public override void ModifyLight(int i, int j, ref float r, ref float g, ref float b)
         {
-            // DON'T DO DIVISION HERE, I DON'T CARE ABOUT HOW EASY IT IS TO READ, IT'S DOING DIVISION CALCS EVERY FRAME
             r = 0.235f;
             g = 0.431f;
             b = 0.573f;

@@ -25,12 +25,10 @@ namespace CalamityMod.Projectiles.Boss
         {
             Projectile.width = 16;
             Projectile.height = 16;
-            if (CalamityWorld.LegendaryMode && CalamityWorld.revenge)
-                Projectile.scale = 2f;
             Projectile.hostile = true;
             Projectile.tileCollide = false;
             Projectile.penetrate = 1;
-            Projectile.timeLeft = (CalamityWorld.LegendaryMode && CalamityWorld.revenge) ? 900 : 600;
+            Projectile.timeLeft = 600;
             Projectile.aiStyle = ProjAIStyleID.Arrow;
             Projectile.alpha = 255;
         }
@@ -65,7 +63,7 @@ namespace CalamityMod.Projectiles.Boss
                 if (Projectile.alpha < 0)
                     Projectile.alpha = 0;
 
-                int sandyDust = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, (int)CalamityDusts.SulphurousSeaAcid, 0f, 0f, 100, default, 1f);
+                int sandyDust = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.YellowTorch, 0f, 0f, 100, default, 1f);
                 Main.dust[sandyDust].noGravity = true;
                 Main.dust[sandyDust].velocity *= 0f;
             }

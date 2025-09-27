@@ -26,7 +26,6 @@ namespace CalamityMod.Projectiles.Boss
 
         public override void SetDefaults()
         {
-            Projectile.Calamity().DealsDefenseDamage = true;
             Projectile.width = 64;
             Projectile.height = 66;
             Projectile.scale = 1.5f;
@@ -82,14 +81,14 @@ namespace CalamityMod.Projectiles.Boss
             float earlyTimeProjSpeed = Projectile.localAI[0] / 120f;
             if (earlyTimeProjSpeed > 1f)
                 earlyTimeProjSpeed = 1f;
-            distance += MathHelper.Lerp(1f, 9f, earlyTimeProjSpeed);
+            distance += MathHelper.Lerp(1f, 11f, earlyTimeProjSpeed);
 
             if (Projectile.timeLeft < 380)
             {
                 float longTimeProjSpeed = (Projectile.localAI[0] - 300f) / 240f;
                 if (longTimeProjSpeed > 1f)
                     longTimeProjSpeed = 1f;
-                distance += MathHelper.Lerp(1f, 9f, longTimeProjSpeed);
+                distance += MathHelper.Lerp(1f, 11f, longTimeProjSpeed);
             }
 
             double rad = MathHelper.ToRadians(Projectile.ai[1]);
@@ -216,10 +215,7 @@ namespace CalamityMod.Projectiles.Boss
             if (info.Damage <= 0)
                 return;
 
-            if (Projectile.ai[0] == 3f)
-                target.AddBuff(ModContent.BuffType<HolyFlames>(), 160);
-            else
-                target.AddBuff(ModContent.BuffType<Dragonfire>(), 60);
+            target.AddBuff(ModContent.BuffType<Dragonfire>(), 60);
         }
     }
 }

@@ -5,7 +5,9 @@ using CalamityMod.Buffs.DamageOverTime;
 using CalamityMod.Buffs.StatDebuffs;
 using CalamityMod.Dusts;
 using CalamityMod.Events;
+using CalamityMod.Fonts;
 using CalamityMod.Items.Accessories;
+using CalamityMod.Items.Accessories.Vanity;
 using CalamityMod.Items.Armor.Vanity;
 using CalamityMod.Items.LoreItems;
 using CalamityMod.Items.Materials;
@@ -154,6 +156,7 @@ namespace CalamityMod.NPCs.DevourerofGods
         // Sounds
         public static readonly SoundStyle SpawnSound = new("CalamityMod/Sounds/Custom/DevourerSpawn");
         public static readonly SoundStyle AttackSound = new("CalamityMod/Sounds/Custom/DevourerAttack");
+        public static readonly SoundStyle HitSound = new("CalamityMod/Sounds/NPCHit/OtherworldlyHit");
         public static readonly SoundStyle DeathAnimationSound = new("CalamityMod/Sounds/NPCKilled/DevourerDeath");
         public static readonly SoundStyle DeathExplosionSound = new("CalamityMod/Sounds/NPCKilled/DevourerDeathImpact");
         public static readonly SoundStyle DeathSegmentSound = new("CalamityMod/Sounds/NPCKilled/DevourerSegmentBreak", 4);
@@ -191,10 +194,13 @@ namespace CalamityMod.NPCs.DevourerofGods
             });
         }
 
+        public static int LaserWallDamage = 75; // 300
+        public static int FireballDamage = 60; // 240; Also applies to Legendary Mode Ichor Blob
+
         public override void SetDefaults()
         {
             NPC.Calamity().canBreakPlayerDefense = true;
-            NPC.GetNPCDamage();
+            NPC.damage = 250; // 500
             NPC.npcSlots = 5f;
             NPC.width = 104;
             NPC.height = 104;
@@ -205,7 +211,7 @@ namespace CalamityMod.NPCs.DevourerofGods
             AIType = -1;
             NPC.knockBackResist = 0f;
             NPC.boss = true;
-            NPC.value = Item.buyPrice(2, 0, 0, 0);
+            NPC.value = Item.buyPrice(platinum: 1, gold: 50);
             NPC.Opacity = 0f;
             NPC.behindTiles = true;
             NPC.noGravity = true;
@@ -215,9 +221,6 @@ namespace CalamityMod.NPCs.DevourerofGods
 
             if (Main.getGoodWorld)
                 NPC.scale *= 1.5f;
-
-            // Scale HP in Master
-            CalamityGlobalNPC.AdjustMasterModeStatScaling(NPC, true);
         }
 
         public override void BossHeadSlot(ref int index)
@@ -363,10 +366,9 @@ namespace CalamityMod.NPCs.DevourerofGods
             bool flyUpDuringLaserWalls = laserWallPhase == (int)LaserWallPhase.FireLaserWalls || (laserWallPhase == (int)LaserWallPhase.End && teleportTimer > 0);
             bool flies = NPC.ai[3] == 0f || flyUpDuringLaserWalls;
             Vector2 destination = flyUpDuringLaserWalls ? (player.Center - Vector2.UnitY * 480f) : player.Center;
-            bool bossRush = BossRushEvent.BossRushActive;
-            bool expertMode = Main.expertMode || bossRush;
-            bool revenge = CalamityWorld.revenge || bossRush;
-            bool death = CalamityWorld.death || bossRush;
+            bool expertMode = Main.expertMode || BossRushEvent.BossRushActive;
+            bool revenge = CalamityWorld.revenge || BossRushEvent.BossRushActive;
+            bool death = CalamityWorld.death || BossRushEvent.BossRushActive;
 
             // Percent life remaining
             float lifeRatio = NPC.life / (float)NPC.lifeMax;
@@ -401,14 +403,14 @@ namespace CalamityMod.NPCs.DevourerofGods
             extrapitch = Main.zenithWorld ? 0.3f : 0f;
 
             // Velocity variables
-            float segmentVelocity = bossRush ? 19f : death ? 17.5f : 16f;
+            float segmentVelocity = death ? 17.5f : 16f;
             if (expertMode)
                 segmentVelocity += 4f * (1f - lifeRatio);
 
-            float speed = bossRush ? 18f : death ? 16.5f : 15f;
-            float turnSpeed = bossRush ? 0.36f : death ? 0.33f : 0.3f;
-            float homingSpeed = bossRush ? 36f : death ? 30f : 24f;
-            float homingTurnSpeed = bossRush ? 0.48f : death ? 0.405f : 0.33f;
+            float speed = death ? 16.5f : 15f;
+            float turnSpeed = death ? 0.33f : 0.3f;
+            float homingSpeed = death ? 30f : 24f;
+            float homingTurnSpeed = death ? 0.405f : 0.33f;
 
             if (expertMode)
             {
@@ -418,7 +420,7 @@ namespace CalamityMod.NPCs.DevourerofGods
                 homingTurnSpeed += 0.15f * (1f - lifeRatio);
             }
 
-            float groundPhaseTurnSpeed = bossRush ? 0.3f : death ? 0.24f : 0.18f;
+            float groundPhaseTurnSpeed = death ? 0.24f : 0.18f;
 
             if (expertMode)
                 groundPhaseTurnSpeed += 0.1f * (1f - lifeRatio);
@@ -499,7 +501,7 @@ namespace CalamityMod.NPCs.DevourerofGods
             if (NPC.localAI[2] == timeWhenDoGShouldTeleportDuringPhase2Countdown + (death ? TimeBeforeTeleport_Death : CalamityWorld.revenge ? TimeBeforeTeleport_Revengeance : Main.expertMode ? TimeBeforeTeleport_Expert : TimeBeforeTeleport_Normal))
                 SpawnTeleportLocation(player, true);
             if (NPC.localAI[2] == timeWhenDoGShouldTeleportDuringPhase2Countdown)
-                Teleport(player, bossRush, death, revenge, expertMode, phase5);
+                Teleport(player, death, revenge, expertMode, phase5);
 
             // Just in case the projectile cap is reached and the teleport rift doesn't spawn.
             if (AwaitingPhase2Teleport && NPC.localAI[2] == 0f)
@@ -550,7 +552,7 @@ namespace CalamityMod.NPCs.DevourerofGods
                 }
 
                 // Dialogue the moment the second phase starts
-                if (NPC.localAI[2] == 60f && !bossRush)
+                if (NPC.localAI[2] == 60f && !BossRushEvent.BossRushActive)
                 {
                     string key = "Mods.CalamityMod.Status.Boss.EdgyBossText5";
                     Color messageColor = Color.Cyan;
@@ -621,7 +623,7 @@ namespace CalamityMod.NPCs.DevourerofGods
 
                         // Teleport
                         if (teleportTimer == 0)
-                            Teleport(player, bossRush, death, revenge, expertMode, phase5);
+                            Teleport(player, death, revenge, expertMode, phase5);
                     }
 
                     // Do the death animation once killed.
@@ -642,7 +644,7 @@ namespace CalamityMod.NPCs.DevourerofGods
                     }
 
                     // Laser walls
-                    float adjustedAlphaGateValue = AlphaGateValue - (bossRush ? 360f : death ? 180f : 0f);
+                    float adjustedAlphaGateValue = AlphaGateValue - (death ? 180f : 0f);
                     if (phase4 && !spawnedGuardians3 && postTeleportTimer <= 0)
                     {
                         if (laserWallPhase == (int)LaserWallPhase.SetUp)
@@ -668,7 +670,7 @@ namespace CalamityMod.NPCs.DevourerofGods
                             }
 
                             // Fire laser walls every X seconds after a laser wall phase ends
-                            float laserWallGateValue = LaserWallCooldown - (bossRush ? 360f : death ? 180f : 0f);
+                            float laserWallGateValue = LaserWallCooldown - (death ? 180f : 0f);
                             if (calamityGlobalNPC.newAI[3] >= laserWallGateValue)
                             {
                                 NPC.Opacity = 0f;
@@ -713,7 +715,7 @@ namespace CalamityMod.NPCs.DevourerofGods
                                     calamityGlobalNPC.newAI[3] = 0f;
 
                                     // Anger message
-                                    if (!bossRush)
+                                    if (!BossRushEvent.BossRushActive)
                                     {
                                         string key = "Mods.CalamityMod.Status.Boss.EdgyBossText6";
                                         Color messageColor = Color.Cyan;
@@ -751,10 +753,10 @@ namespace CalamityMod.NPCs.DevourerofGods
 
                     // Fireballs
                     // Check angle and distance to make sure it's realistic that they'd be fired
-                    if (NPC.Opacity >= 1f && (distanceFromTarget > 480f || (CalamityWorld.LegendaryMode && CalamityWorld.revenge)) && (player.Center - NPC.Center).SafeNormalize(Vector2.UnitY).ToRotation().AngleTowards(NPC.velocity.ToRotation(), MathHelper.PiOver4) == NPC.velocity.ToRotation())
+                    if (NPC.Opacity >= 1f && distanceFromTarget > 480f && (player.Center - NPC.Center).SafeNormalize(Vector2.UnitY).ToRotation().AngleTowards(NPC.velocity.ToRotation(), MathHelper.PiOver4) == NPC.velocity.ToRotation())
                     {
                         calamityGlobalNPC.newAI[0] += 1f;
-                        if (calamityGlobalNPC.newAI[0] >= ((CalamityWorld.LegendaryMode && CalamityWorld.revenge) ? 30f : 150f) && calamityGlobalNPC.newAI[0] % ((CalamityWorld.LegendaryMode && CalamityWorld.revenge) ? 30f : phase7 ? 30f : 60f) == 0f)
+                        if (calamityGlobalNPC.newAI[0] >= (Main.getGoodWorld ? 30f : 150f) && calamityGlobalNPC.newAI[0] % (Main.getGoodWorld ? 30f : phase7 ? 30f : 60f) == 0f)
                         {
                             float fireballSpeed = 8f;
                             Vector2 fireballVelocity = Vector2.Normalize(player.Center - NPC.Center) * fireballSpeed + NPC.velocity * 0.5f;
@@ -764,12 +766,12 @@ namespace CalamityMod.NPCs.DevourerofGods
                                 Dust.NewDust(NPC.Center, 52, 52, (int)CalamityDusts.PurpleCosmilite, dustVelocity.X, dustVelocity.Y);
 
                             int type = ModContent.ProjectileType<DoGFire>();
-                            int damage = NPC.GetProjectileDamage(type);
+                            int damage = FireballDamage;
 
                             if (Main.netMode != NetmodeID.MultiplayerClient)
                                 Projectile.NewProjectile(NPC.GetSource_FromAI(), NPC.Center, fireballVelocity, type, damage, 0f, Main.myPlayer);
 
-                            if (CalamityWorld.LegendaryMode && revenge)
+                            if (Main.zenithWorld)
                             {
                                 for (int l = 0; l < 8; l++)
                                 {
@@ -786,13 +788,12 @@ namespace CalamityMod.NPCs.DevourerofGods
 
                                 int numBlobs = 4;
                                 type = ModContent.ProjectileType<IchorBlob>();
-                                damage = 60;
 
                                 for (int i = 0; i < numBlobs; i++)
                                 {
                                     Vector2 blobVelocity = new Vector2(Main.rand.Next(-100, 101), Main.rand.Next(-100, 101));
                                     blobVelocity.Normalize();
-                                    blobVelocity *= Main.rand.Next(400, 801) * (bossRush ? 0.02f : 0.01f);
+                                    blobVelocity *= Main.rand.Next(400, 801) * 0.01f;
                                     blobVelocity *= Main.rand.NextFloat() + 1f;
 
                                     float blobVelocityYAdd = Math.Abs(blobVelocity.Y) * 0.5f;
@@ -812,7 +813,7 @@ namespace CalamityMod.NPCs.DevourerofGods
                     if (!spawnedGuardians3 && laserWallPhase == (int)LaserWallPhase.FireLaserWalls)
                     {
                         float spawnOffset = 1200f;
-                        float divisor = bossRush ? 100f : 150f;
+                        float divisor = 150f;
 
                         if (calamityGlobalNPC.newAI[1] % divisor == 0f)
                         {
@@ -821,7 +822,7 @@ namespace CalamityMod.NPCs.DevourerofGods
                             // Side walls
                             float targetPosY = player.position.Y;
                             int type = ModContent.ProjectileType<DoGDeath>();
-                            int damage = NPC.GetProjectileDamage(type);
+                            int damage = LaserWallDamage;
                             int halfTotalDiagonalShots = totalDiagonalShots / 2;
                             Vector2 start = default;
                             Vector2 velocity = default;
@@ -1112,7 +1113,7 @@ namespace CalamityMod.NPCs.DevourerofGods
                         speedCopy += Vector2.Distance(destination, NPC.Center) * 0.005f;
                         turnSpeedCopy += Vector2.Distance(destination, NPC.Center) * 0.00025f;
 
-                        if (CalamityWorld.LegendaryMode && revenge)
+                        if (Main.getGoodWorld)
                         {
                             if ((player.Center - NPC.Center).SafeNormalize(Vector2.UnitY).ToRotation().AngleTowards(NPC.velocity.ToRotation(), MathHelper.PiOver4) == NPC.velocity.ToRotation())
                                 speedCopy *= 2f;
@@ -1270,7 +1271,7 @@ namespace CalamityMod.NPCs.DevourerofGods
                         else if (increaseSpeed)
                             groundPhaseTurnSpeed *= 2f;
 
-                        if (CalamityWorld.LegendaryMode && revenge)
+                        if (Main.getGoodWorld)
                         {
                             if ((player.Center - NPC.Center).SafeNormalize(Vector2.UnitY).ToRotation().AngleTowards(NPC.velocity.ToRotation(), MathHelper.PiOver4) == NPC.velocity.ToRotation())
                                 segmentVelocity *= 2f;
@@ -1386,8 +1387,8 @@ namespace CalamityMod.NPCs.DevourerofGods
                         }
                         else
                         {
-                            double maximumSpeed1 = bossRush ? 0.52 : death ? 0.46 : 0.4;
-                            double maximumSpeed2 = bossRush ? 1.25 : death ? 1.125 : 1D;
+                            double maximumSpeed1 = death ? 0.46 : 0.4;
+                            double maximumSpeed2 = death ? 1.125 : 1D;
 
                             if (expertMode)
                             {
@@ -1533,7 +1534,7 @@ namespace CalamityMod.NPCs.DevourerofGods
                         if (revenge)
                             spawnDoGCountdown = 10;
 
-                        if (!bossRush)
+                        if (!BossRushEvent.BossRushActive)
                         {
                             string key = "Mods.CalamityMod.Status.Boss.EdgyBossText";
                             Color messageColor = Color.Cyan;
@@ -1582,8 +1583,8 @@ namespace CalamityMod.NPCs.DevourerofGods
                 }
 
                 // Laser barrage attack variables
-                float laserBarrageGateValue = bossRush ? 1080f : death ? 1320f : 1440f;
-                float laserBarrageShootGateValue = bossRush ? 160f : 240f;
+                float laserBarrageGateValue = death ? 1320f : 1440f;
+                float laserBarrageShootGateValue = 240f;
                 float laserBarragePhaseGateValue = laserBarrageGateValue - laserBarrageShootGateValue;
 
                 // Spawn segments
@@ -1635,7 +1636,7 @@ namespace CalamityMod.NPCs.DevourerofGods
 
                             // Side walls
                             int type = ModContent.ProjectileType<DoGDeath>();
-                            int damage = NPC.GetProjectileDamage(type);
+                            int damage = LaserWallDamage;
                             Vector2 start = default;
                             Vector2 velocity = default;
                             Vector2 aim = expertMode ? player.Center + player.velocity * 20f : Vector2.Zero;
@@ -1871,7 +1872,7 @@ namespace CalamityMod.NPCs.DevourerofGods
                         turnSpeedCopy += distanceFromTarget * 0.0001f * (1f - lifeRatio);
                     }
 
-                    if (CalamityWorld.LegendaryMode && revenge)
+                    if (Main.getGoodWorld)
                     {
                         if ((player.Center - NPC.Center).SafeNormalize(Vector2.UnitY).ToRotation().AngleTowards(NPC.velocity.ToRotation(), MathHelper.PiOver4) == NPC.velocity.ToRotation())
                             speedCopy *= 2f;
@@ -2015,7 +2016,7 @@ namespace CalamityMod.NPCs.DevourerofGods
                     else if (increaseSpeed)
                         groundPhaseTurnSpeed *= 2f;
 
-                    if (CalamityWorld.LegendaryMode && revenge)
+                    if (Main.getGoodWorld)
                     {
                         if ((player.Center - NPC.Center).SafeNormalize(Vector2.UnitY).ToRotation().AngleTowards(NPC.velocity.ToRotation(), MathHelper.PiOver4) == NPC.velocity.ToRotation())
                             segmentVelocity *= 2f;
@@ -2131,8 +2132,8 @@ namespace CalamityMod.NPCs.DevourerofGods
                     }
                     else
                     {
-                        double maximumSpeed1 = bossRush ? 0.52 : death ? 0.46 : 0.4;
-                        double maximumSpeed2 = bossRush ? 1.25 : death ? 1.125 : 1D;
+                        double maximumSpeed1 = death ? 0.46 : 0.4;
+                        double maximumSpeed2 = death ? 1.125 : 1D;
 
                         if (expertMode)
                         {
@@ -2266,19 +2267,6 @@ namespace CalamityMod.NPCs.DevourerofGods
             if (NPC.Distance(player.Center) > 2400f)
                 NPC.velocity += (player.Center - NPC.Center).SafeNormalize(Vector2.UnitY) * turnSpeed;
 
-            // Calculate contact damage based on velocity
-            float minimalContactDamageVelocity = segmentVelocity * 0.25f;
-            float minimalDamageVelocity = segmentVelocity * 0.5f;
-            if (NPC.velocity.Length() <= minimalContactDamageVelocity)
-            {
-                NPC.damage = (int)Math.Round(NPC.defDamage * 0.5);
-            }
-            else
-            {
-                float velocityDamageScalar = MathHelper.Clamp((NPC.velocity.Length() - minimalContactDamageVelocity) / minimalDamageVelocity, 0f, 1f);
-                NPC.damage = (int)MathHelper.Lerp((float)Math.Round(NPC.defDamage * 0.5), NPC.defDamage, velocityDamageScalar);
-            }
-
             if (NPC.life > Main.npc[(int)NPC.ai[0]].life)
                 NPC.life = Main.npc[(int)NPC.ai[0]].life;
         }
@@ -2313,7 +2301,7 @@ namespace CalamityMod.NPCs.DevourerofGods
             }
         }
 
-        private void Teleport(Player player, bool bossRush, bool death, bool revenge, bool expertMode, bool phase5)
+        private void Teleport(Player player, bool death, bool revenge, bool expertMode, bool phase5)
         {
             Vector2 newPosition = GetRiftLocation(true);
 
@@ -2325,13 +2313,13 @@ namespace CalamityMod.NPCs.DevourerofGods
                 if (Main.netMode != NetmodeID.MultiplayerClient)
                 {
                     int type = ModContent.ProjectileType<DoGFire>();
-                    int damage = NPC.GetProjectileDamage(type);
+                    int damage = FireballDamage;
                     float finalVelocity = 10f;
                     int totalSpreads = revenge ? 6 : 3;
                     float mult = revenge ? 1.5f : 3f;
                     for (int i = 0; i < totalSpreads; i++)
                     {
-                        int totalProjectiles = (CalamityWorld.LegendaryMode && revenge) ? 30 : bossRush ? 18 : 12;
+                        int totalProjectiles = Main.getGoodWorld ? 30 : 12;
                         float radians = MathHelper.TwoPi / totalProjectiles;
                         float newVelocity = finalVelocity - i * mult;
                         float velocityMult = 1f + ((finalVelocity - newVelocity) / (newVelocity * 2f) / 100f);
@@ -2351,7 +2339,7 @@ namespace CalamityMod.NPCs.DevourerofGods
 
             NPC.TargetClosest();
             NPC.position = newPosition;
-            float chargeVelocity = bossRush ? 30f : death ? 26f : revenge ? 24f : expertMode ? 22f : 20f;
+            float chargeVelocity = death ? 26f : revenge ? 24f : expertMode ? 22f : 20f;
             float maxChargeDistance = 1600f;
             postTeleportTimer = (int)Math.Round(maxChargeDistance / chargeVelocity);
             AwaitingPhase2Teleport = false;
@@ -2550,7 +2538,7 @@ namespace CalamityMod.NPCs.DevourerofGods
             return false;
         }
 
-        public override void BossLoot(ref string name, ref int potionType)
+        public override void BossLoot(ref int potionType)
         {
             potionType = ModContent.ItemType<CosmiliteBrick>();
         }
@@ -2603,9 +2591,6 @@ namespace CalamityMod.NPCs.DevourerofGods
             // Extraneous potions
             npcLoot.DefineConditionalDropSet(() => true).Add(DropHelper.PerPlayer(ModContent.ItemType<OmegaHealingPotion>(), 1, 5, 15), hideLootReport: true); // Healing Potions don't show up in the Bestiary
 
-            // Alicorn Mount
-            npcLoot.AddIf((info) => info.player.Calamity().cirrusVodka, ModContent.ItemType<PrincessSpiritinaBottle>());
-
             // Normal drops: Everything that would otherwise be in the bag
             var normalOnly = npcLoot.DefineNormalOnlyDropSet();
             {
@@ -2621,7 +2606,6 @@ namespace CalamityMod.NPCs.DevourerofGods
                 };
                 normalOnly.Add(DropHelper.CalamityStyle(DropHelper.NormalWeaponDropRateFraction, weapons));
                 normalOnly.Add(ModContent.ItemType<CosmicDischarge>(), 10);
-                normalOnly.Add(ModContent.ItemType<Norfleet>(), 10);
 
                 // Vanity
                 normalOnly.Add(ModContent.ItemType<DevourerofGodsMask>(), 7);
@@ -2752,7 +2736,7 @@ namespace CalamityMod.NPCs.DevourerofGods
             if (NPC.soundDelay == 0)
             {
                 NPC.soundDelay = 8;
-                SoundEngine.PlaySound(CommonCalamitySounds.OtherwordlyHitSound with { Pitch = CommonCalamitySounds.OtherwordlyHitSound.Pitch + extrapitch }, NPC.Center);
+                SoundEngine.PlaySound(HitSound with { Pitch = HitSound.Pitch + extrapitch }, NPC.Center);
             }
             if (NPC.life <= 0)
             {
@@ -2814,9 +2798,9 @@ namespace CalamityMod.NPCs.DevourerofGods
                 Rectangle location = new Rectangle((int)NPC.position.X, (int)NPC.position.Y, NPC.width, NPC.height);
 
                 // Speak in Wingdings if the Punch Card is equipped
-                if (target.Calamity().punchCard && DoGWingdings.Wingdings != null && System.Environment.OSVersion.Platform == PlatformID.Win32NT && !GameCulture.FromCultureName(GameCulture.CultureName.Chinese).IsActive && !GameCulture.FromCultureName(GameCulture.CultureName.Russian).IsActive)
+                if (target.Transformation().Type == ModContent.ItemType<PunchCard>() && FontAssetSystem.Fonts["Wingdings"] != null && System.Environment.OSVersion.Platform == PlatformID.Win32NT && !GameCulture.FromCultureName(GameCulture.CultureName.Chinese).IsActive && !GameCulture.FromCultureName(GameCulture.CultureName.Russian).IsActive)
                 {
-                    Vector2 vector = DoGWingdings.Wingdings.MeasureString(Language.GetTextValue(text));
+                    Vector2 vector = FontAssetSystem.Fonts["Wingdings"].MeasureString(Language.GetTextValue(text));
                     // This is how normal combat text spawn positioning is handled
                     float positionX = (float)location.X + (float)location.Width * 0.5f - vector.X * 0.5f + Main.rand.Next(-(int)((double)location.Width * 0.5), (int)((double)location.Width * 0.5) + 1);
                     float positionY = (float)location.Y + (float)location.Height * 0.25f - vector.Y * 0.5f + Main.rand.Next(-(int)((double)location.Height * 0.5), (int)((double)location.Height * 0.5) + 1);

@@ -31,7 +31,7 @@ namespace CalamityMod.Projectiles.Ranged
             Projectile.tileCollide = false;
             Projectile.alpha = 255;
             Projectile.MaxUpdates = 3;
-            Projectile.timeLeft = 600;
+            Projectile.timeLeft = 150 * Projectile.MaxUpdates;;
             Projectile.usesLocalNPCImmunity = true;
             Projectile.localNPCHitCooldown = Projectile.MaxUpdates * 11;
         }

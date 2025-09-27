@@ -1,4 +1,5 @@
 ﻿using System;
+using CalamityMod.Projectiles.Rogue;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria;
@@ -11,7 +12,7 @@ namespace CalamityMod.CalPlayer.DrawLayers
 {
     public class ForbiddenSignLayer : PlayerDrawLayer
     {
-        public override Position GetDefaultPosition() => new BeforeParent(PlayerDrawLayers.Skin);
+        public override Position GetDefaultPosition() => new BeforeParent(PlayerDrawLayers.ForbiddenSetRing);
 
         public override bool GetDefaultVisibility(PlayerDrawSet drawInfo)
         {
@@ -23,45 +24,37 @@ namespace CalamityMod.CalPlayer.DrawLayers
         protected override void Draw(ref PlayerDrawSet drawInfo)
         {
             Player drawPlayer = drawInfo.drawPlayer;
-            SpriteEffects spriteEffects;
-            if (drawPlayer.direction == 1)
-                spriteEffects = SpriteEffects.None;
-            else spriteEffects = SpriteEffects.FlipHorizontally;
-
-            if (drawPlayer.gravDir != 1f)
-                spriteEffects |= SpriteEffects.FlipVertically;
-
-            int dyeShader = 0;
-            if (drawPlayer.dye[1] != null)
-                dyeShader = drawPlayer.dye[1].dye;
-
-            Color baseColor = drawPlayer.GetImmuneAlphaPure(Lighting.GetColor((int)drawInfo.Center.X / 16, (int)drawInfo.Center.Y / 16, Color.White), drawInfo.shadow);
-            Color color = Color.Lerp(baseColor, Color.White, 0.7f);
+            Color color = Color.Lerp(drawInfo.colorArmorBody, Color.White, 0.7f);
             Texture2D texture = TextureAssets.Extra[ExtrasID.ForbiddenSign].Value;
             Texture2D glowmask = TextureAssets.GlowMask[GlowMaskID.ForbiddenSign].Value;
-            float offsetY = (float)Math.Sin(drawPlayer.miscCounter / 300f * MathHelper.TwoPi) * 6f;
-            float sinusoidalTime = (float)Math.Cos(drawPlayer.miscCounter / 75f * MathHelper.TwoPi);
-            Color afterimageColor = new Color(80, 70, 40, 0) * (sinusoidalTime * 0.5f + 0.5f) * 0.8f;
-            float gravCheckOffset = drawPlayer.gravDir != 1f ? -20f : 20f;
+            int offsetY = (int)(MathF.Sin(drawPlayer.miscCounter / 300f * MathHelper.TwoPi) * 6f);
+            float shadowMult = MathF.Cos(drawPlayer.miscCounter / 75f * MathHelper.TwoPi) * 4f;
+            Color afterimageColor = new Color(80, 70, 40, 0) * (shadowMult * 0.125f + 0.5f) * 0.8f;
 
-            Vector2 position = new Vector2(drawInfo.Center.X - drawPlayer.bodyFrame.Width / 2 + drawPlayer.width / 2, drawInfo.Center.Y + drawPlayer.height - drawPlayer.bodyFrame.Height + 4f) + drawPlayer.bodyPosition;
-            position += new Vector2(drawPlayer.bodyFrame.Width / 2, drawPlayer.bodyFrame.Height / 2) + new Vector2(-drawPlayer.direction * 10, offsetY - gravCheckOffset);
-            position -= Main.screenPosition + drawPlayer.Size * 0.5f;
+            if (drawPlayer.ownedProjectileCounts[ModContent.ProjectileType<CircletTornado>()] > 1)
+            {
+                offsetY = 0;
+                shadowMult = 2f;
+                afterimageColor = new Color(80, 70, 40, 0) * 0.3f;
+                color = color.MultiplyRGB(new Color(0.5f, 0.5f, 1f));
+            }
+
+            Vector2 drawPos = drawInfo.Position + drawPlayer.bodyPosition - Main.screenPosition;
+            drawPos += new Vector2(drawPlayer.width * 0.5f - drawPlayer.direction * 10f, drawPlayer.height - drawPlayer.bodyFrame.Height * 0.5f + 4f + drawPlayer.gravDir * (offsetY - 20f));
 
             // Draw the original sign.
-            DrawData drawData = new(texture, position, null, color, drawPlayer.bodyRotation, texture.Size() * 0.5f, 1f, spriteEffects, 0)
+            DrawData drawData = new(texture, drawPos, null, color, drawPlayer.bodyRotation, texture.Size() * 0.5f, 1f, drawInfo.playerEffect)
             {
-                shader = dyeShader
+                shader = drawInfo.cBody
             };
             drawInfo.DrawDataCache.Add(drawData);
 
             // Draw 4 semi-transparent copies.
-            float timeX4 = sinusoidalTime * 4f;
             Vector2 origin = texture.Size() * 0.5f;
             for (float i = 0f; i < 4f; i++)
             {
                 float angle = MathHelper.PiOver2 * i;
-                drawData = new(glowmask, position + angle.ToRotationVector2() * timeX4, null, afterimageColor, drawPlayer.bodyRotation, origin, 1f, spriteEffects, 0);
+                drawData = new(glowmask, drawPos + angle.ToRotationVector2() * shadowMult, null, afterimageColor, drawPlayer.bodyRotation, origin, 1f, drawInfo.playerEffect);
                 drawInfo.DrawDataCache.Add(drawData);
             }
         }

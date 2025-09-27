@@ -28,7 +28,7 @@ namespace CalamityMod.Items.Weapons.Ranged
             Item.channel = true;
             Item.knockBack = 8f;
             Item.value = CalamityGlobalItem.RarityVioletBuyPrice;
-            Item.rare = ModContent.RarityType<Violet>();
+            Item.rare = ModContent.RarityType<BurnishedAuric>();
             Item.autoReuse = true;
             Item.shoot = ModContent.ProjectileType<PrismEnergyBullet>();
             Item.shootSpeed = 11f;

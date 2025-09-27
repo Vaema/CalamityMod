@@ -1,4 +1,5 @@
 ﻿using CalamityMod.Items.Materials;
+using CalamityMod.Items.Weapons.Melee;
 using CalamityMod.Projectiles.Rogue;
 using Microsoft.Xna.Framework;
 using Terraria;
@@ -10,6 +11,10 @@ namespace CalamityMod.Items.Weapons.Rogue
 {
     public class RotBall : RogueWeapon
     {
+        public override void SetStaticDefaults()
+        {
+            ItemID.Sets.ShimmerTransformToItem[Type] = ModContent.ItemType<PerfectDark>();
+        }
         public override void SetDefaults()
         {
             Item.width = 30;
@@ -45,16 +50,6 @@ namespace CalamityMod.Items.Weapons.Rogue
                 return false;
             }
             return true;
-        }
-
-        public override void AddRecipes()
-        {
-            CreateRecipe().
-                AddIngredient(ItemID.DemoniteBar, 4).
-                AddIngredient<RottenMatter>(12).
-                AddIngredient(ItemID.RottenChunk, 4).
-                AddTile(TileID.DemonAltar).
-                Register();
         }
     }
 }

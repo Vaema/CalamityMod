@@ -19,30 +19,28 @@ namespace CalamityMod.Items.Weapons.Rogue
         {
             Item.width = 46;
             Item.height = 32;
+            Item.damage = 148;
+            Item.DamageType = RogueDamageClass.Instance;
+            Item.useTime = 4;
+            Item.useAnimation = 12;
+            Item.reuseDelay = 1;
+            Item.useLimitPerAnimation = 3;
+            Item.knockBack = 3f;
+
             Item.autoReuse = true;
             Item.noUseGraphic = true;
             Item.noMelee = true;
             Item.useStyle = ItemUseStyleID.Swing;
             Item.UseSound = SoundID.Item7;
-            Item.value = CalamityGlobalItem.RarityDarkBlueBuyPrice;
-
-            Item.damage = 200;
-            Item.useTime = 3;
-            Item.useAnimation = 21;
-            Item.reuseDelay = 1;
-            Item.useLimitPerAnimation = 7;
-            Item.knockBack = 3f;
             Item.shoot = ModContent.ProjectileType<HypothermiaShard>();
             Item.shootSpeed = 8f;
 
-            Item.rare = ModContent.RarityType<DarkBlue>();
-            Item.DamageType = RogueDamageClass.Instance;
+            Item.rare = ModContent.RarityType<CosmicPurple>();
+            Item.value = CalamityGlobalItem.RarityDarkBlueBuyPrice;
         }
 
         // Terraria seems to really dislike high crit values in SetDefaults
         public override void ModifyWeaponCrit(Player player, ref float crit) => crit += 16;
-
-        public override float StealthDamageMultiplier => 1.1f;
 
         public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)
         {
@@ -66,10 +64,9 @@ namespace CalamityMod.Items.Weapons.Rogue
 
             for (int i = 0; i < projAmt; ++i)
             {
-                float SpeedX = velocity.X + Main.rand.NextFloat(-2f, 2f);
-                float SpeedY = velocity.Y + Main.rand.NextFloat(-2f, 2f);
+                Vector2 shardVel = velocity.RotatedByRandom(MathHelper.Pi / 30f) * Main.rand.NextFloat(0.9f, 1.1f);
                 int texID = Main.rand.Next(4);
-                Projectile.NewProjectile(source, position, new Vector2(SpeedX, SpeedY), type, damage, knockback, player.whoAmI, texID, 0f);
+                Projectile.NewProjectile(source, position, shardVel, type, damage, knockback, player.whoAmI, texID);
             }
 
             return false;

@@ -12,13 +12,14 @@ namespace CalamityMod.Tiles.SunkenSea.Ambient
         public override void SetStaticDefaults()
         {
             Main.tileCut[Type] = true;
+            Main.tileLighted[Type] = true;
             Main.tileSolid[Type] = false;
             Main.tileNoFail[Type] = true;
             Main.tileNoAttach[Type] = true;
             Main.tileNoSunLight[Type] = false;
             TileID.Sets.IsVine[Type] = true;
             TileID.Sets.VineThreads[Type] = true;
-            AddMapEntry(new Color(96, 109, 154));
+            AddMapEntry(new Color(76, 133, 191));
             DustType = DustID.Grass;
             HitSound = SoundID.Grass;
         }
@@ -65,13 +66,13 @@ namespace CalamityMod.Tiles.SunkenSea.Ambient
             // Quite possibly some of the laggiest calculations I've ever seen
             float brightness = 0.9f;
             brightness *= (float)MathF.Sin(-j / 40f + Main.GameUpdateCount * 0.01f + i);
-            Color lilac = new Color(236, 194, 252);
-            Color mint = new Color(163, 252, 195);
+            Color lilac = new Color(126, 94, 252);
+            Color mint = new Color(96, 252, 186);
             Color value = Color.Lerp(lilac, mint, (MathF.Sin(j / 30f + Main.GameUpdateCount * 0.017f + -i / 40f) + 1f) / 2f);
             Color value1 = Color.Lerp(lilac, mint, (MathF.Sin((-j - 100) / 40f + Main.GameUpdateCount * 0.014f + i / 20f) + 1f) / 2f);
-            r = (value.R + value1.R) / 300f;
-            g = (value.G + value1.G) / 300f;
-            b = (value.B + value1.B) / 300f;
+            r = (value.R + value1.R) / 450f;
+            g = (value.G + value1.G) / 450f;
+            b = (value.B + value1.B) / 450f;
             r *= brightness;
             g *= brightness;
             b *= brightness;

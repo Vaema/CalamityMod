@@ -1,21 +1,19 @@
-﻿
-using Microsoft.Xna.Framework;
+﻿using Microsoft.Xna.Framework;
+using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
 namespace CalamityMod.Walls
 {
+    [LegacyName("HardenedAstralSandWallSafe")]
     public class HardenedAstralSandWall : ModWall
     {
-        /*public override bool Autoload(ref string name, ref string texture)
-        {
-            mod.AddWall("HardenedAstralSandWallUnsafe", this, texture);
-            return base.Autoload(ref name, ref texture);
-        }*/
+        public override string Texture => "CalamityMod/Walls/HardenedAstralSandWall";
 
         public override void SetStaticDefaults()
         {
             // TODO -- Change this dust to be one more befitting Hardened Astral Sand.
             DustType = DustID.Shadowflame;
+            Main.wallHouse[Type] = true;
 
             WallID.Sets.Conversion.HardenedSand[Type] = true;
 

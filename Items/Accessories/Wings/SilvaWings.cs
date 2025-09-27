@@ -29,7 +29,7 @@ namespace CalamityMod.Items.Accessories.Wings
             Item.width = 22;
             Item.height = 20;
             Item.value = CalamityGlobalItem.RarityDarkBlueBuyPrice;
-            Item.rare = ModContent.RarityType<DarkBlue>();
+            Item.rare = ModContent.RarityType<CosmicPurple>();
         }
 
         public override void UpdateAccessory(Player player, bool hideVisual)

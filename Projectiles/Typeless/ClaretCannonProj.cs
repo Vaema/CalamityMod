@@ -24,9 +24,9 @@ namespace CalamityMod.Projectiles.Typeless
             Projectile.friendly = true;
             Projectile.alpha = 0;
             Projectile.penetrate = 1;
-            Projectile.timeLeft = 600;
             Projectile.DamageType = AverageDamageClass.Instance;
-            Projectile.extraUpdates = 1;
+            Projectile.MaxUpdates = 2;
+            Projectile.timeLeft = 120 * Projectile.MaxUpdates;
             Projectile.aiStyle = 0;
         }
 

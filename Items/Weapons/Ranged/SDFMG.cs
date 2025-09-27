@@ -14,14 +14,15 @@ namespace CalamityMod.Items.Weapons.Ranged
     public class SDFMG : ModItem, ILocalizedModType
     {
         public new string LocalizationCategory => "Items.Weapons.Ranged";
+
+        private int ShotCounter = 0;
         public override void SetDefaults()
         {
             Item.width = 74;
             Item.height = 34;
-            Item.damage = 115;
+            Item.damage = 118;
             Item.DamageType = DamageClass.Ranged;
-            Item.useTime = 2;
-            Item.useAnimation = 2;
+            Item.useTime = Item.useAnimation = 3;
             Item.useStyle = ItemUseStyleID.Shoot;
             Item.noMelee = true;
             Item.knockBack = 2.75f;
@@ -31,21 +32,21 @@ namespace CalamityMod.Items.Weapons.Ranged
             Item.shoot = ProjectileID.PurificationPowder;
             Item.shootSpeed = 16f;
             Item.useAmmo = AmmoID.Bullet;
-            Item.rare = ModContent.RarityType<DarkBlue>();
-            Item.Calamity().canFirePointBlankShots = true;
+            Item.rare = ModContent.RarityType<CosmicPurple>();
         }
 
         // Terraria seems to really dislike high crit values in SetDefaults
         public override void ModifyWeaponCrit(Player player, ref float crit) => crit += 15;
-
         public override Vector2? HoldoutOffset() => new Vector2(-10, 0);
 
         public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)
         {
-            float SpeedX = velocity.X + Main.rand.Next(-5, 6) * 0.05f;
-            float SpeedY = velocity.Y + Main.rand.Next(-5, 6) * 0.05f;
-            if (Main.rand.NextBool(5))
+            float SpeedX = velocity.X + Main.rand.NextFloat(-0.25f, 0.25f);
+            float SpeedY = velocity.Y + Main.rand.NextFloat(-0.25f, 0.25f);
+            ShotCounter++;
+            if (ShotCounter >= 7)
             {
+                ShotCounter = 0;
                 Projectile.NewProjectile(source, position.X, position.Y, SpeedX, SpeedY, ModContent.ProjectileType<FishronRPG>(), damage, knockback, player.whoAmI);
             }
             Projectile.NewProjectile(source, position.X, position.Y, SpeedX, SpeedY, type, damage, knockback, player.whoAmI);

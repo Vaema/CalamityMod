@@ -32,7 +32,6 @@ namespace CalamityMod.NPCs.Other
             NPC.lifeMax = 50000;
             NPC.noGravity = true;
             NPC.noTileCollide = true;
-            NPC.value = 0f;
             NPC.HitSound = SoundID.NPCHit13;
             NPC.DeathSound = SoundID.NPCDeath1;
             NPC.knockBackResist = 0f;

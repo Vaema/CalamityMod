@@ -45,8 +45,8 @@ namespace CalamityMod.NPCs
         #region Load / Unload
         public override void Load()
         {
-            DrawingMiracleBlight = new bool[Main.maxNPCs];
-            DrawingPolarity = new bool[Main.maxNPCs];
+            DrawingMiracleBlight = new bool[Main.maxNPCs + 1];
+            DrawingPolarity = new bool[Main.maxNPCs + 1];
         }
 
         public override void Unload()
@@ -101,7 +101,7 @@ namespace CalamityMod.NPCs
                 return false;
 
             // Do not draw if the npc does not have miracle blight, or has the polarity effect.
-            if (calNPC.miracleBlight <= 0 || polNPC.CurPolarity > 0f)
+            if (!calNPC.miracleBlight || polNPC.CurPolarity > 0f)
                 return false;
 
             // Do not draw if the current player has the trippy effect.
@@ -121,7 +121,7 @@ namespace CalamityMod.NPCs
                 return false;
 
             // I don't know who would be using this while also inflicting miracle blight, but in that rare case, do not draw these.
-            if (calNPC.miracleBlight > 0)
+            if (calNPC.miracleBlight)
                 return false;
 
             // Do not draw if the npc doesn't have the polarity effect.

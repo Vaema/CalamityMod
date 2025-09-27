@@ -12,10 +12,6 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.RegularEnemies
 {
     public static class SlimeAI
     {
-        public const float SpikedSlimeSpikeBarrageGateValue = 30f;
-        public const float SpikedSlimeSpikeGateValue = 50f;
-        public const float SpikedSlimeSpikeTelegraphTime = 30f;
-
         public static void ChooseRandomItem(out int dropItem)
         {
             // Use a fallback of -1.
@@ -105,7 +101,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.RegularEnemies
             if (npc.type == NPCID.SpikedJungleSlime)
             {
                 projectileShootType = ProjectileID.JungleSpike;
-                projectileShootSpeedFactor *= 1.5f;
+                projectileShootSpeedFactor *= 0.6f;
             }
 
             ref float jumpDelay = ref npc.ai[0];
@@ -184,7 +180,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.RegularEnemies
                     if (Main.netMode != NetmodeID.MultiplayerClient && projectileShootCountdown <= 0f)
                     {
                         var source = npc.GetSource_FromAI();
-                        if (Main.expertMode && distanceFromTarget < 120f)
+                        if (distanceFromTarget < 120f)
                         {
                             for (int i = 0; i < 5; i++)
                             {
@@ -196,12 +192,12 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.RegularEnemies
                                 if (CalamityWorld.death)
                                     Main.projectile[proj].extraUpdates += 1;
 
-                                projectileShootCountdown = SpikedSlimeSpikeBarrageGateValue;
+                                projectileShootCountdown = 30f;
                             }
                         }
                         else
                         {
-                            Vector2 velocity = npc.SafeDirectionTo(Main.player[npc.target].Center - Vector2.UnitY * (npc.type == NPCID.SpikedJungleSlime ? 10f : 100f)) * projectileShootSpeedFactor * (CalamityWorld.death ? 3.25f : CalamityWorld.revenge ? 5.5f : 4.5f);
+                            Vector2 velocity = npc.SafeDirectionTo(Main.player[npc.target].Center - Vector2.UnitY * 100f) * projectileShootSpeedFactor * (CalamityWorld.death ? 3.25f : CalamityWorld.revenge ? 5.5f : 4.5f);
                             int proj = Projectile.NewProjectile(source, npc.Center, velocity, projectileShootType, 9, 0f, Main.myPlayer);
                             if (CalamityWorld.death)
                             {
@@ -209,43 +205,12 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.RegularEnemies
                                 Main.projectile[proj].timeLeft = 1200;
                             }
 
-                            projectileShootCountdown = SpikedSlimeSpikeGateValue;
+                            projectileShootCountdown = 50f;
                         }
                     }
                 }
                 else
-                    projectileShootCountdown = SpikedSlimeSpikeGateValue;
-
-                if (npc.type == NPCID.SpikedIceSlime)
-                {
-                    // Emit dust from center when about to shoot
-                    if (projectileShootCountdown <= SpikedSlimeSpikeTelegraphTime)
-                    {
-                        Dust dust = Dust.NewDustDirect(npc.position, npc.width, npc.height, 135, 0f, 0f, 100, default, 3f);
-                        dust.noGravity = true;
-                        dust.velocity *= 0f;
-                    }
-                }
-                else if (npc.type == NPCID.SpikedJungleSlime)
-                {
-                    // Emit dust from center when about to shoot
-                    if (projectileShootCountdown <= SpikedSlimeSpikeTelegraphTime)
-                    {
-                        Dust dust = Dust.NewDustDirect(npc.position, npc.width, npc.height, 61, 0f, 0f, 0, default, 3f);
-                        dust.noGravity = true;
-                        dust.velocity *= 0f;
-                    }
-                }
-                else if (npc.type == NPCID.SlimeSpiked)
-                {
-                    // Emit dust from center when about to shoot
-                    if (projectileShootCountdown <= SpikedSlimeSpikeTelegraphTime)
-                    {
-                        Dust dust = Dust.NewDustDirect(npc.position, npc.width, npc.height, 4, 0f, 0f, 0, new Color(78, 136, 255, 150), 1.5f);
-                        dust.noGravity = true;
-                        dust.velocity *= 0f;
-                    }
-                }
+                    projectileShootCountdown = 50f;
             }
 
             // Decrement the target reset counter.
@@ -407,7 +372,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.RegularEnemies
         {
             // Move up if tiles are hit on the Y axis.
             if (npc.collideY)
-                npc.velocity.Y = -(CalamityWorld.death ? 4f : CalamityWorld.revenge ? 3f : 2f);
+                npc.velocity.Y = -(CalamityWorld.death ? 4f : 3f);
 
             if (npc.velocity.Y < 0f && npc.ai[3] == npc.position.X)
             {
@@ -418,8 +383,8 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.RegularEnemies
             if (npc.velocity.Y > 0f)
                 npc.ai[3] = npc.position.X;
 
-            float riseSpeed = CalamityWorld.death ? 0.6f : CalamityWorld.revenge ? 0.55f : 0.5f;
-            float maxRiseSpeed = CalamityWorld.death ? 6f : CalamityWorld.revenge ? 5f : 4f;
+            float riseSpeed = CalamityWorld.death ? 0.6f : 0.55f;
+            float maxRiseSpeed = CalamityWorld.death ? 6f : 5f;
             if (isLavaSlime)
             {
                 riseSpeed += 0.2f;

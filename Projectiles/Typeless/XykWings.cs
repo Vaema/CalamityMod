@@ -26,7 +26,7 @@ namespace CalamityMod.Projectiles.Typeless
         public float backWingRot = 0;
         public int lastDir = 0;
         public float spawnFade = 0;
-        public float spawnFadePow => (Projectile.ai[1] == 5 ? 1 - (float)Math.Pow(spawnFade, 4) : (float)Math.Pow(spawnFade, 4));
+        public float spawnFadePow => (Projectile.ai[1] == 5 ? (float)Math.Pow(spawnFade, 1) : (float)Math.Pow(spawnFade, 4));
         public int deathFadeTimer = 0;
 
         public bool iAmTopWing = false;
@@ -157,7 +157,7 @@ namespace CalamityMod.Projectiles.Typeless
                 deathFadeTimer++;
 
                 int fadeTime = (BreakApart ? 90 : 20);
-                spawnFade = Utils.GetLerpValue(0, fadeTime, deathFadeTimer, true);
+                spawnFade = Utils.GetLerpValue(fadeTime, 0, deathFadeTimer, true);
                 Projectile.scale = intendedScale * spawnFadePow;
                 if (deathFadeTimer >= fadeTime)
                 {
@@ -166,107 +166,111 @@ namespace CalamityMod.Projectiles.Typeless
                 }
                 return;
             }
-
-            bool isFlying = Owner.controlJump;
-            bool isFalling = Owner.controlDown && !isFlying && Owner.velocity.Y > 0;
-            bool isUpBoosting = Owner.wingTime > 0 && Owner.controlJump && Owner.controlUp;
-            bool isHovering = Owner.wingTime > 0 && Owner.controlDown && Owner.controlJump && !isUpBoosting;
-            if (isFalling || timeFalling < 0)
-                timeFalling++;
-            else if (timeFalling > 0)
-                timeFalling -= 2;
-            float fallingLerp = (float)Math.Pow(Utils.GetLerpValue(0, 60, timeFalling, true), 3);
-            float topWingNum = (checkActiveWings() - 1);
-
-            float sine = (float)Math.Sin((time * 0.35f * (isFalling ? 3 : (isHovering || isUpBoosting) ? 3.2f : isFlying ? 2f : 1) + wingNum * ((isHovering || isUpBoosting) ? 3f : 2f)) / MathHelper.Pi);
-
-            if (Owner.dashDelay == -1 || isUpBoosting || isHovering || Owner.Calamity().adrenalineModeActive || Owner.Calamity().rageModeActive || isFalling && Owner.velocity.Y > 16)
-            {
-                dashfx = MathHelper.Lerp(dashfx, 1, 0.25f);
-                float bonusScale = 1;
-                if (Owner.Calamity().rageModeActive)
-                    bonusScale += 0.25f;
-                if (Owner.Calamity().adrenalineModeActive)
-                    bonusScale += 0.5f;
-                if (Projectile.scale < bonusScale)
-                    Projectile.scale = bonusScale;
-            }
             else
             {
-                dashfx = MathHelper.Lerp(dashfx, 0, 0.03f);
-                if (dashfx > 0)
-                    dashfx -= 0.01f;
-                else
-                    dashfx = 0;
-            }
+                bool isFlying = Owner.controlJump;
+                bool isFalling = Owner.controlDown && !isFlying && Owner.velocity.Y > 0;
+                bool isUpBoosting = Owner.wingTime > 0 && Owner.controlJump && Owner.controlUp;
+                bool isHovering = Owner.wingTime > 0 && Owner.controlDown && Owner.controlJump && !isUpBoosting;
+                if (isFalling || timeFalling < 0)
+                    timeFalling++;
+                else if (timeFalling > 0)
+                    timeFalling -= 3;
+                float fallingLerp = (float)Math.Pow(Utils.GetLerpValue(0, 40, timeFalling, true), 3);
+                float topWingNum = (checkActiveWings() - 1);
 
-            float flapSpeed = MathHelper.Lerp(0.06f * (isHovering ? 2.5f : isFlying ? 2f : 1), 0.55f * (isHovering ? 2.5f : isFlying ? 2f : 1), (float)Math.Pow(Utils.GetLerpValue(-1, 1, sine), 3));
+                float sine = (float)Math.Sin((time * 0.35f * (isFalling ? 3 : (isHovering || isUpBoosting) ? 3.2f : isFlying ? 2f : 1) + wingNum * ((isHovering || isUpBoosting) ? 3f : 2f)) / MathHelper.Pi);
 
-            wingFlapHeight = MathHelper.Lerp(wingFlapHeight, sine, flapSpeed) * spawnFadePow;
-
-            for (int i = -1; i <= 1; i += 2)
-            {
-                float dir = i * lastDir;
-                Vector2 flightMovement = Vector2.UnitY.RotatedBy(isFalling ? MathHelper.ToRadians(13) * dir * fallingLerp : 0) * (-15 * Projectile.scale + 10 * (isFalling ? 0.35f : isUpBoosting ? 5f : isHovering ? 1.5f : isFlying ? 2.5f : 1) * wingFlapHeight) * ((Owner.velocity.Y == 0) ? 0 : 1);
-                float wingPartDist = (1.6f / (checkActiveWings() + 1)) * wingNum * (isFalling ? 1 - 0.3f * fallingLerp : isHovering ? 0.5f : 1);
-                Vector2 destination = (playerCenterPoint - (Vector2.UnitX.RotatedBy(isFalling ? MathHelper.ToRadians(13) * dir * fallingLerp : 0) * (22 + 7 * wingFlapHeight * (i == -1 ? 0.5f : 1)) * Projectile.scale).RotatedBy((-0.8f + (isFalling ? 0.7f * fallingLerp : 0) + wingPartDist + (wingNum == topWingNum ? 0.1f : wingNum == 0 ? -0.1f : 0)) * dir) * dir + (Vector2.One * (isFlying ? 0 : 1)).RotatedBy((time * 0.12f + wingNum * 0.9f) * dir)) + flightMovement;
-                
-                float lerpSpeed = (1 + wingNum * (0.1f + 0.15f * fallingLerp));
-                float spawnDistance = 150;
-                if (i == 1)
-                    expectedWingPosition1 += ((destination + destination.DirectionFrom(playerCenterPoint) * Math.Max(1, spawnDistance * (1 - spawnFadePow))) - expectedWingPosition1) / lerpSpeed;
-                else
-                    expectedWingPosition2 += ((destination + (Vector2.UnitX * -6f * lastDir) + destination.DirectionFrom(playerCenterPoint) * Math.Max(1, spawnDistance * (1 - spawnFadePow))) - expectedWingPosition2) / lerpSpeed;
-            }
-            Projectile.Center = Owner.Center;
-
-            Projectile.rotation = expectedWingPosition1.DirectionFrom(playerCenterPoint).ToRotation() - MathHelper.PiOver2;
-            backWingRot = expectedWingPosition2.DirectionFrom(playerCenterPoint).ToRotation() - MathHelper.PiOver2;
-
-            if (wingNum == 0)
-                Lighting.AddLight(Owner.Center, Color.Lerp(drawColor, Color.White, 0.5f).ToVector3() * 1.1f * spawnFadePow);
-
-            if (dashfx > 0.3f && (wingNum == checkActiveWings() - 1 || wingNum == 0))
-            {
-                for (int i = -2; i <= 2; i += 1)
+                if (Owner.dashDelay == -1 || isUpBoosting || isHovering || Owner.Calamity().adrenalineModeActive || Owner.Calamity().rageModeActive || isFalling && Owner.velocity.Y > 16)
                 {
-                    if (i == 0)
-                        i++;
-
-                    bool front = i > 0;
-                    Vector2 pos1 = expectedWingPosition1 + (Projectile.rotation + MathHelper.PiOver2).ToRotationVector2() * (45 + 5 * wingNum) * (Projectile.scale + 0.15f);
-                    Vector2 pos2 = expectedWingPosition2 + (backWingRot + MathHelper.PiOver2).ToRotationVector2() * (15 + 3 * wingNum) * (Projectile.scale + 0.15f);
-
-                    if (Owner.Calamity().XykVisualsBlue)
-                    {
-                        bool circle = Main.rand.NextBool(3);
-                        Dust dust = Dust.NewDustPerfect(front ? pos1 : pos2, circle ? ModContent.DustType<SquashDustHollow>() : ModContent.DustType<SquashDust>(), Owner.velocity.RotatedByRandom(circle ? 0.5f : 0) * Main.rand.NextFloat(-0.5f, -0.2f) * dashfx);
-                        dust.scale = Main.rand.NextFloat(1.3f, 1.4f) * (front ? 1 : 0.6f) * dashfx * (circle ? 0.6f : 1f) * (float)Math.Pow(Projectile.scale, 0.4f);
-                        dust.noGravity = true;
-                        dust.color = drawColor;
-                        dust.noLightEmittence = true;
-                        dust.fadeIn = 1.5f * (circle ? 0 : 1f);
-                    }
+                    dashfx = MathHelper.Lerp(dashfx, 1, 0.25f);
+                    float bonusScale = 1;
+                    if (Owner.Calamity().rageModeActive)
+                        bonusScale += 0.25f;
+                    if (Owner.Calamity().adrenalineModeActive)
+                        bonusScale += 0.5f;
+                    if (Projectile.scale < bonusScale)
+                        Projectile.scale = bonusScale;
+                }
+                else
+                {
+                    dashfx = MathHelper.Lerp(dashfx, 0, 0.03f);
+                    if (dashfx > 0)
+                        dashfx -= 0.01f;
                     else
+                        dashfx = 0;
+                }
+
+                float flapSpeed = MathHelper.Lerp(0.06f * (isHovering ? 2.5f : isFlying ? 2f : 1), 0.55f * (isHovering ? 2.5f : isFlying ? 2f : 1), (float)Math.Pow(Utils.GetLerpValue(-1, 1, sine), 3));
+
+                wingFlapHeight = MathHelper.Lerp(wingFlapHeight, sine, flapSpeed) * spawnFadePow;
+
+                for (int i = -1; i <= 1; i += 2)
+                {
+                    float dir = i * lastDir;
+                    Vector2 flightMovement = Vector2.UnitY.RotatedBy(isFalling ? MathHelper.ToRadians(13) * dir * fallingLerp : 0) * (-15 * Projectile.scale + 10 * (isFalling ? 0.35f : isUpBoosting ? 5f : isHovering ? 1.5f : isFlying ? 2.5f : 1) * wingFlapHeight) * ((Owner.velocity.Y == 0) ? 0 : 1);
+                    float wingPartDist = (1.6f / (checkActiveWings() + 1)) * wingNum * (isFalling ? 1 - 0.3f * fallingLerp : isHovering ? 0.5f : 1);
+                    Vector2 destination = (playerCenterPoint - (Vector2.UnitX.RotatedBy(isFalling ? MathHelper.ToRadians(13) * dir * fallingLerp : 0) * (22 + 7 * wingFlapHeight * (i == -1 ? 0.5f : 1)) * Projectile.scale).RotatedBy((-0.8f + (isFalling ? 0.7f * fallingLerp : 0) + wingPartDist + (wingNum == topWingNum ? 0.1f : wingNum == 0 ? -0.1f : 0)) * dir) * dir + (Vector2.One * (isFlying ? 0 : 1)).RotatedBy((time * 0.12f + wingNum * 0.9f) * dir)) + flightMovement;
+
+                    float lerpSpeed = (1 + wingNum * (0.1f + 0.15f * fallingLerp) / (Owner.moveSpeed * 0.3f + 1));
+                    float spawnDistance = 150;
+                    if (i == 1)
+                        expectedWingPosition1 += ((destination + destination.DirectionFrom(playerCenterPoint) * Math.Max(1, spawnDistance * (1 - spawnFadePow))) - expectedWingPosition1) / lerpSpeed;
+                    else
+                        expectedWingPosition2 += ((destination + (Vector2.UnitX * -6f * lastDir) + destination.DirectionFrom(playerCenterPoint) * Math.Max(1, spawnDistance * (1 - spawnFadePow))) - expectedWingPosition2) / lerpSpeed;
+                }
+                Projectile.Center = Owner.Center;
+
+                Projectile.rotation = expectedWingPosition1.DirectionFrom(playerCenterPoint).ToRotation() - MathHelper.PiOver2;
+                backWingRot = expectedWingPosition2.DirectionFrom(playerCenterPoint).ToRotation() - MathHelper.PiOver2;
+
+                if (wingNum == 0)
+                    Lighting.AddLight(Owner.Center, Color.Lerp(drawColor, Color.White, 0.5f).ToVector3() * 1.1f * spawnFadePow);
+
+                if (dashfx > 0.3f && (wingNum == checkActiveWings() - 1 || wingNum == 0))
+                {
+                    for (int i = -2; i <= 2; i += 1)
                     {
-                        bool square = Main.rand.NextBool(3);
-                        Dust dust = Dust.NewDustPerfect(front ? pos1 : pos2, square ? ModContent.DustType<SquareDust>() : ModContent.DustType<SquashDust>(), Owner.velocity.RotatedByRandom(0.25f) * Main.rand.NextFloat(-0.5f, -0.2f) * dashfx);
-                        dust.scale = Main.rand.NextFloat(0.8f, 1f) * (front ? 1 : 0.6f) * dashfx * (square ? 1 : 1.5f) * (float)Math.Pow(Projectile.scale, 0.4f);
-                        dust.noGravity = true;
-                        dust.color = drawColor;
-                        dust.noLightEmittence = true;
-                        dust.fadeIn = 0.1f * (square ? 1 : 3f);
+                        if (i == 0)
+                            i++;
+
+                        bool front = i > 0;
+                        Vector2 pos1 = expectedWingPosition1 + (Projectile.rotation + MathHelper.PiOver2).ToRotationVector2() * (45 + 5 * wingNum) * (Projectile.scale + 0.15f);
+                        Vector2 pos2 = expectedWingPosition2 + (backWingRot + MathHelper.PiOver2).ToRotationVector2() * (15 + 3 * wingNum) * (Projectile.scale + 0.15f);
+
+                        if (Owner.Calamity().XykVisualsBlue)
+                        {
+                            bool circle = Main.rand.NextBool(3);
+                            Dust dust = Dust.NewDustPerfect(front ? pos1 : pos2, circle ? ModContent.DustType<SquashDustHollow>() : ModContent.DustType<SquashDust>(), Owner.velocity.RotatedByRandom(circle ? 0.5f : 0) * Main.rand.NextFloat(-0.5f, -0.2f) * dashfx);
+                            dust.scale = Main.rand.NextFloat(1.3f, 1.4f) * (front ? 1 : 0.6f) * dashfx * (circle ? 0.6f : 1f) * (float)Math.Pow(Projectile.scale, 0.4f);
+                            dust.noGravity = true;
+                            dust.color = drawColor;
+                            dust.noLightEmittence = true;
+                            dust.fadeIn = 1.5f * (circle ? 0 : 1f);
+                        }
+                        else
+                        {
+                            bool square = Main.rand.NextBool(3);
+                            Dust dust = Dust.NewDustPerfect(front ? pos1 : pos2, square ? ModContent.DustType<SquareDust>() : ModContent.DustType<SquashDust>(), Owner.velocity.RotatedByRandom(0.25f) * Main.rand.NextFloat(-0.5f, -0.2f) * dashfx);
+                            dust.scale = Main.rand.NextFloat(0.8f, 1f) * (front ? 1 : 0.6f) * dashfx * (square ? 1 : 1.5f) * (float)Math.Pow(Projectile.scale, 0.4f);
+                            dust.noGravity = true;
+                            dust.color = drawColor;
+                            dust.noLightEmittence = true;
+                            dust.fadeIn = 0.1f * (square ? 1 : 3f);
+                        }
                     }
                 }
-            }
 
-            time++;
+                time++;
+            }
         }
-        public override bool PreDraw(ref Color lightColor)
+        public override void PostDraw(Color lightColor)
         {
             if (!BreakApart)
                 lastDir = Owner.direction;
-
+        }
+        public override bool PreDraw(ref Color lightColor)
+        {
             float topWingNum = (checkActiveWings() - 1);
             float width = 1;
             float height = 1;
@@ -310,7 +314,6 @@ namespace CalamityMod.Projectiles.Typeless
             Main.EntitySpriteDraw(tex, expectedWingPosition1 - Main.screenPosition, null, Color.Lerp(drawColor, Color.White, dashfx) with { A = 0 } * spawnFadePow * MathHelper.Lerp(1, 0.6f, dashfx), Projectile.rotation, new Vector2(tex.Width * 0.5f, 0), scale, lastDir == 1 ? SpriteEffects.None : SpriteEffects.FlipHorizontally, 0);
 
             Main.EntitySpriteDraw(tex, expectedWingPosition2 - Main.screenPosition, null, Color.Lerp(drawColor, Color.White, dashfx) with { A = 0 } * spawnFadePow * MathHelper.Lerp(1, 0.6f, dashfx), backWingRot, new Vector2(tex.Width * 0.5f, 0), scaleBack, lastDir == -1 ? SpriteEffects.None : SpriteEffects.FlipHorizontally, 0);
-
             return false;
         }
         public int checkActiveWings()

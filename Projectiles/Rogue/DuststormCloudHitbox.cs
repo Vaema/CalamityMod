@@ -1,5 +1,6 @@
 ﻿using System;
 using CalamityMod.Items.Weapons.Rogue;
+using CalamityMod.NPCs;
 using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.Audio;
@@ -9,6 +10,7 @@ using Terraria.Utilities;
 
 namespace CalamityMod.Projectiles.Rogue
 {
+    [PierceResistExceptionAttribute(true)]
     public class DuststormCloudHitbox : ModProjectile, ILocalizedModType
     {
         public new string LocalizationCategory => "Projectiles.Rogue";
@@ -25,15 +27,15 @@ namespace CalamityMod.Projectiles.Rogue
             Projectile.timeLeft = DuststormInABottle.CloudLifetime;
             Projectile.DamageType = RogueDamageClass.Instance;
             Projectile.usesIDStaticNPCImmunity = true;
-            Projectile.idStaticNPCHitCooldown = 10;
+            Projectile.idStaticNPCHitCooldown = 12;
         }
 
         public override void AI()
         {
             if (Projectile.scale < (Projectile.ai[1] == 1 ? DuststormInABottle.MaxSizeStealth : DuststormInABottle.MaxSize))
             {
-                Projectile.scale += (Projectile.ai[1] == 1 ? DuststormInABottle.StealthGrowhRate : DuststormInABottle.GrowthRate);
-                Projectile.ExpandHitboxBy(1 + (Projectile.ai[1] == 1 ? DuststormInABottle.StealthGrowhRate : DuststormInABottle.GrowthRate));
+                Projectile.scale += Projectile.ai[1] == 1 ? DuststormInABottle.StealthGrowthRate : DuststormInABottle.GrowthRate;
+                Projectile.ExpandHitboxBy(1 + (Projectile.ai[1] == 1 ? DuststormInABottle.StealthGrowthRate : DuststormInABottle.GrowthRate));
             }
         }
 

@@ -16,6 +16,12 @@ namespace CalamityMod.Projectiles.Magic
 
         public override void OnKill(int timeLeft)
         {
+            foreach (Projectile p in Main.ActiveProjectiles)
+            {
+                if (p.type == ModContent.ProjectileType<KeelhaulGeyserBottom>() || p.type == ModContent.ProjectileType<KeelhaulGeyserTop>())
+                    p.Kill();
+            }
+
             Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center.X, Projectile.Center.Y - 80f, 0f, 0f, ModContent.ProjectileType<KeelhaulGeyserBottom>(), Projectile.damage, Projectile.knockBack, Projectile.owner, 0f, 0f);
             Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center.X, Projectile.Center.Y - 80f, 0f, 0f, ModContent.ProjectileType<KeelhaulGeyserTop>(), Projectile.damage, Projectile.knockBack, Projectile.owner, 0f, 0f);
         }

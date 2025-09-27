@@ -15,6 +15,7 @@ namespace CalamityMod.Projectiles.Summon
         public new string LocalizationCategory => "Projectiles.Summon";
         public override void SetStaticDefaults()
         {
+            Main.projPet[Type] = true;
             ProjectileID.Sets.MinionSacrificable[Type] = true;
             ProjectileID.Sets.MinionTargettingFeature[Type] = true;
         }
@@ -207,6 +208,8 @@ namespace CalamityMod.Projectiles.Summon
                 }
             }
         }
+
+        public override bool MinionContactDamage() => true;
 
         public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
         {

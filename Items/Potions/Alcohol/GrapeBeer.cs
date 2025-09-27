@@ -1,4 +1,5 @@
 ﻿using CalamityMod.Buffs.Alcohol;
+using CalamityMod.Items.Materials;
 using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.ID;
@@ -28,7 +29,7 @@ namespace CalamityMod.Items.Potions.Alcohol
         public override void SetDefaults()
         {
             Item.DefaultToHealingPotion(12, 28, 100);
-            // Cirrus overcharges: 10% sell value instead of 20%
+
             Item.value = Item.sellPrice(silver: 3);
             Item.rare = ItemRarityID.LightRed;
         }
@@ -36,6 +37,24 @@ namespace CalamityMod.Items.Potions.Alcohol
         public override void OnConsumeItem(Player player)
         {
             player.AddBuff(ModContent.BuffType<GrapeBeerBuff>(), CalamityUtils.SecondsToFrames(SecondDuration));
+        }
+
+        public override void AddRecipes()
+        {
+            CreateRecipe(10).
+                AddIngredient(ItemID.Bottle, 10).
+                AddIngredient(ItemID.Grapes).
+                AddIngredient<StarblightSoot>(5).
+                AddTile(TileID.Kegs).
+                Register();
+
+            CreateRecipe().
+                AddIngredient(ItemID.BottledWater).
+                AddIngredient<BloodOrb>(5).
+                AddIngredient<StarblightSoot>().
+                AddTile(TileID.AlchemyTable).
+                Register()
+                .DisableDecraft();
         }
     }
 }

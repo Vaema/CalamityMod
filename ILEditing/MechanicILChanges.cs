@@ -6,6 +6,7 @@ using CalamityMod.Buffs.DamageOverTime;
 using CalamityMod.CalPlayer;
 using CalamityMod.Cooldowns;
 using CalamityMod.DataStructures;
+using CalamityMod.Enums;
 using CalamityMod.Events;
 using CalamityMod.FluidSimulation;
 using CalamityMod.Items.Accessories;
@@ -32,6 +33,7 @@ using CalamityMod.Projectiles.Typeless;
 using CalamityMod.Systems;
 using CalamityMod.Tiles;
 using CalamityMod.Walls;
+using CalamityMod.Walls.UnsafeWalls;
 using CalamityMod.Waterfalls;
 using CalamityMod.World;
 using Microsoft.Xna.Framework;
@@ -79,7 +81,7 @@ namespace CalamityMod.ILEditing
         //private static readonly MethodInfo textureGetValueMethod = typeof(Asset<Texture2D>).GetMethod("get_Value", BindingFlags.Public | BindingFlags.Instance);
 
         #region Punch Card Spawning Command
-        private static void SpawnPunchCard(Terraria.On_Main.orig_DoUpdate_HandleChat orig)
+        private static void SpawnPunchCard(On_Main.orig_DoUpdate_HandleChat orig)
         {
             // Any of these conditions should result in normal behaviour
             if (!Main.drawingPlayerChat || Main.CurrentInputTextTakerOverride != null || Main.editSign || PlayerInput.UsingGamepad)
@@ -161,26 +163,7 @@ namespace CalamityMod.ILEditing
             // This will occur precisely when the player has no vanilla OR Calamity dash items equipped.
             cursor.Emit(OpCodes.Or);
 
-            //
-            // SHIELD OF CTHULHU
-            //
-
-            // Move to Shield of Cthulhu's code by finding its function call for iframes.
-            if (!cursor.TryGotoNext(MoveType.Before, i => i.MatchCall<Player>("GiveImmuneTimeForCollisionAttack")))
-            {
-                LogFailure("Vanilla Dash Fixes", "Could not locate function call for Shield of Cthulhu iframes.");
-                return;
-            }
-
-            if (!cursor.TryGotoPrev(MoveType.AfterLabel, i => i.MatchLdcI4(30)))
-            {
-                LogFailure("Vanilla Dash Fixes", "Could not locate amount of frames of dash cooldown applied on impact with Shield of Cthulhu.");
-                return;
-            }
-
-            // Remove the instruction and replace it with one which gives Calamity's (customizable) amount of dash cooldown.
-            cursor.Remove();
-            cursor.Emit(OpCodes.Ldc_I4, BalancingConstants.OnShieldBonkCooldown);
+            // CIT 22JUL2025: Shield of Cthulhu bonk is reimplemented in a separate On edit; removed the change made to it via this IL edit.
 
             //
             // SOLAR FLARE ARMOR
@@ -282,7 +265,7 @@ namespace CalamityMod.ILEditing
             cursor.Emit(OpCodes.Ldc_I4, 10 - BalancingConstants.ShieldOfCthulhuBonkNoCollideFrames);
         }
 
-        private static void ApplyDashKeybind(Terraria.On_Player.orig_DoCommonDashHandle orig, Player self, out int dir, out bool dashing, Player.DashStartAction dashStartAction)
+        private static void ApplyDashKeybind(On_Player.orig_DoCommonDashHandle orig, Player self, out int dir, out bool dashing, Player.DashStartAction dashStartAction)
         {
             // we feasting multiplayer bugs
             if (self.whoAmI != Main.myPlayer)
@@ -331,47 +314,78 @@ namespace CalamityMod.ILEditing
                 self.dashTime = 0;
             }
         }
-        #endregion
 
-        #region Allow Empress to Enrage in Boss Rush
-        private static bool AllowEmpressToEnrageInBossRush(Terraria.On_NPC.orig_ShouldEmpressBeEnraged orig)
+        private static void DisableDoubleTapOnConfig(On_Player.orig_KeyDoubleTap orig, Player self, int keyDir)
         {
-            if (BossRushEvent.BossRushActive)
-                return true;
+            if (self.whoAmI != Main.myPlayer)
+            {
+                orig(self, keyDir);
+                return;
+            }
 
-            return orig();
+            if ((CalamityKeybinds.ArmorSetBonusHotKey.GetAssignedKeys().Count != 0 && CalamityClientConfig.Instance.SetBonusDoubleTap == SetBonusDoubleTapOptions.Auto) || CalamityClientConfig.Instance.SetBonusDoubleTap == SetBonusDoubleTapOptions.Off)
+                return;
+
+            orig(self, keyDir);
         }
         #endregion
 
         #region Prevent Vanilla Bosses From Being Marked as Defeated in Boss Rush
-        private static void PreventVanillaBossDeathsInBossRush(On_NPC.orig_DoDeathEvents orig, NPC self, Player closestPlayer)
+        private static void PreventVanillaBossDeathsInBossRush(ILContext il)
         {
-            // Aside from setting the boss' downed bool, DoDeathEvents also handles the following tasks:
-            // Advancing Slime Rain, spawning Dungeon Spirits, advancing invasion kills, spawning Wall of Flesh's loot box, dropping boss potions and hearts, and sending the boss defeated message.
-            // The first three do not matter at all in Boss Rush. Wall of Flesh's loot box not spawning is also a positive, so that it doesn't clutter the Underworld.
-            // Dropping potions is worthless at this point, and Boss Rush is already a horribly balanced hellscape as is, so I'm not worried about hearts.
-            // As for the last one, well, if anyone actually notices that and cares about it, then I suppose we could make a more sophisticated IL edit.
-            if (BossRushEvent.BossRushActive)
+            // GOAL: Prevent vanilla boss defeated flags from getting set during Boss Rush.
+            // All of this is handled within a switch case directly in the DoDeathEvents function.
+            // Thus, the objective here is to add a branch past the entire switch case if it is Boss Rush.
+            var cursor = new ILCursor(il);
+
+            // Move to the point right before the switch case.
+            if (!cursor.TryGotoNext(MoveType.After, i => i.MatchCall<NPC>("SpawnOnPlayer")))
+            {
+                LogFailure("Prevent Vanilla Defeated Flags in Boss Rush", "Could not move to before the switch case.");
                 return;
+            }
 
-            orig(self, closestPlayer);
+            // Define a branch label, load the Boss Rush check, and create the branch if it is true.
+            var label = il.DefineLabel();
+            cursor.Emit(OpCodes.Ldsfld, typeof(BossRushEvent).GetField("BossRushActive"));
+            cursor.Emit(OpCodes.Brtrue, label);
+
+            // Move to after the switch case to place the label.
+            for (int i = 0; i < 2; i++)
+            {
+                if (!cursor.TryGotoNext(MoveType.After, i => i.MatchCall<NPC>("SpawnBoss")))
+                {
+                    LogFailure("Prevent Vanilla Defeated Flags in Boss Rush", "Could not move to after the switch case.");
+                    return;
+                }
+            }
+            if (!cursor.TryGotoNext(MoveType.AfterLabel, i => i.MatchLdarg0()))
+            {
+                LogFailure("Prevent Vanilla Defeated Flags in Boss Rush", "Could not move to after the switch case.");
+                return;
+            }
+            cursor.MarkLabel(label);
         }
-        #endregion Prevent Vanilla Bosses From Being Marked as Defeated in Boss Rush
+        #endregion
 
-        #region Enabling of Triggered NPC Platform Fallthrough
-        // Why this isn't a mechanism provided by TML itself or vanilla itself is beyond me.
-        private static void AllowTriggeredFallthrough(Terraria.On_NPC.orig_ApplyTileCollision orig, NPC self, bool fall, Vector2 cPosition, int cWidth, int cHeight)
+        #region Enabling of Fusion Feeder Sand Digging
+        private static void AllowFusionFeederToDigThroughSand(On_NPC.orig_ApplyTileCollision orig, NPC self, bool fall, Vector2 cPosition, int cWidth, int cHeight)
         {
             if (self.active && self.type == ModContent.NPCType<FusionFeeder>())
             {
                 self.velocity = Collision.AdvancedTileCollision(TileID.Sets.ForAdvancedCollision.ForSandshark, cPosition, self.velocity, cWidth, cHeight, fall, fall, 1);
                 return;
             }
-            var isNpcValid = self.TryGetGlobalNPC(out CalamityGlobalNPC npc); //why the fuck this errors is anybody's guess, it absolutely shouldn't and yet it does
-            if (isNpcValid && self.active && npc.ShouldFallThroughPlatforms)
-                fall = true;
-
             orig(self, fall, cPosition, cWidth, cHeight);
+        }
+        #endregion
+
+        #region Prevent Diabolists from Dropping Stuff in GFB Before Plantera
+        private static void PreventDiabolistLootLogic(On_NPC.orig_NPCLoot orig, NPC self)
+        {
+            if (self.type == NPCID.DiabolistWhite && Main.getGoodWorld && !NPC.downedPlantBoss)
+                return;
+            orig(self);
         }
         #endregion
 
@@ -398,7 +412,7 @@ namespace CalamityMod.ILEditing
             cursor.Emit(OpCodes.Ret);
         }
 
-        private static void AlterTownNPCSpawnRate(Terraria.On_Main.orig_UpdateTime_SpawnTownNPCs orig)
+        private static void AlterTownNPCSpawnRate(On_Main.orig_UpdateTime_SpawnTownNPCs orig)
         {
             double oldWorldRate = Main.desiredWorldTilesUpdateRate;
             Main.desiredWorldTilesUpdateRate *= CalamityServerConfig.Instance.TownNPCSpawnRateMultiplier;
@@ -483,7 +497,7 @@ namespace CalamityMod.ILEditing
         #endregion
 
         #region Custom Gate Door Logic
-        private static bool OpenDoor_LabDoorOverride(Terraria.On_WorldGen.orig_OpenDoor orig, int i, int j, int direction)
+        private static bool OpenDoor_LabDoorOverride(On_WorldGen.orig_OpenDoor orig, int i, int j, int direction)
         {
             Tile tile = Main.tile[i, j];
 
@@ -499,7 +513,7 @@ namespace CalamityMod.ILEditing
             return orig(i, j, direction);
         }
 
-        private static bool CloseDoor_LabDoorOverride(Terraria.On_WorldGen.orig_CloseDoor orig, int i, int j, bool forced)
+        private static bool CloseDoor_LabDoorOverride(On_WorldGen.orig_CloseDoor orig, int i, int j, bool forced)
         {
             Tile tile = Main.tile[i, j];
 
@@ -516,20 +530,8 @@ namespace CalamityMod.ILEditing
         }
         #endregion
 
-        #region Platform Collision Checks for Grounded Bosses
-        private static bool EnableCalamityBossPlatformCollision(Terraria.On_NPC.orig_Collision_DecideFallThroughPlatforms orig, NPC self)
-        {
-            if ((self.type == ModContent.NPCType<AstrumAureus>() || self.type == ModContent.NPCType<Crabulon>() || self.type == ModContent.NPCType<RavagerBody>() ||
-                self.type == ModContent.NPCType<RockPillar>() || self.type == ModContent.NPCType<FlamePillar>()) &&
-                self.target >= 0 && Main.player[self.target].position.Y > self.position.Y + self.height)
-                return true;
-
-            return orig(self);
-        }
-        #endregion
-
         #region Incorporate Enchantments in Item Names
-        private static string IncorporateEnchantmentInAffix(Terraria.On_Item.orig_AffixName orig, Item self)
+        private static string IncorporateEnchantmentInAffix(On_Item.orig_AffixName orig, Item self)
         {
             string result = orig(self);
 
@@ -545,7 +547,7 @@ namespace CalamityMod.ILEditing
         #endregion
 
         #region Apply Projectile Variables Upon Creation
-        private static int IncorporateExtraProjectileVariables(Terraria.On_Projectile.orig_NewProjectile_IEntitySource_float_float_float_float_int_int_float_int_float_float_float orig, IEntitySource spawnSource, float x, float y, float xSpeed, float ySpeed, int type, int damage, float knockback, int owner, float ai0, float ai1, float ai2)
+        private static int IncorporateExtraProjectileVariables(On_Projectile.orig_NewProjectile_IEntitySource_float_float_float_float_int_int_float_int_float_float_float orig, IEntitySource spawnSource, float x, float y, float xSpeed, float ySpeed, int type, int damage, float knockback, int owner, float ai0, float ai1, float ai2)
         {
             // This is unfortunately not something that can be done via SetDefaults since owner is set
             // after that method is called. Doing it directly when the projectile is spawned appears to be the only reasonable way.
@@ -613,7 +615,7 @@ namespace CalamityMod.ILEditing
         #endregion
 
         #region Apply Old Fashioned Damage to Miscellanous Hits
-        private static void ApplyOldFashionedDamageToMiscHits(Terraria.On_Player.orig_ApplyDamageToNPC orig, Player self, NPC npc, int damage, float knockback, int direction, bool crit = false, DamageClass? damageType = null, bool damageVariation = false)
+        private static void ApplyOldFashionedDamageToMiscHits(On_Player.orig_ApplyDamageToNPC orig, Player self, NPC npc, int damage, float knockback, int direction, bool crit = false, DamageClass? damageType = null, bool damageVariation = false)
         {
             if (self.Calamity().oldFashioned)
                 damage = (int)(damage * OldFashioned.DamageBoostMultiplier);
@@ -622,7 +624,7 @@ namespace CalamityMod.ILEditing
         #endregion
 
         #region Chaos Stone and Chalice of the Blood God
-        private static void ManaSicknessAndChaliceBufferHeal(ILContext il)
+        private static void ChaliceBufferHeal(ILContext il)
         {
             ILCursor cursor = new ILCursor(il);
 
@@ -670,36 +672,37 @@ namespace CalamityMod.ILEditing
                     }
                 }
             });
+        }
+        #endregion
 
-            //
-            // The following section enables Mana Burn for Chaos Stone by conditionally replacing Mana Sickness.
-            //
-
-            // Start by finding the vanilla code which applies Mana Sickness (buff ID 94).
-            if (!cursor.TryGotoNext(c => c.MatchLdcI4(BuffID.ManaSickness)))
+        #region Chaos Stone Mana Burn changes
+        private static bool AllowNegativeCheckMana(On_Player.orig_CheckMana_int_bool_bool orig,Player self, int amount, bool pay, bool blockQuickMana) {
+            if (self.Calamity().ChaosStone)
             {
-                LogFailure("Conditionally Replace Mana Sickness", "Could not locate the mana sickness buff ID.");
-                return;
+                if (pay)
+                    self.statMana -= amount;
+                if (self.statMana < -self.statManaMax2)
+                    self.statMana = -self.statManaMax2;
+                return true;
             }
+            return orig(self, amount, pay, blockQuickMana);
+        }
 
-            // Remove the constant buff ID.
-            cursor.Remove();
-
-            // Load the player onto the stack for use in the following delegate.
-            cursor.Emit(OpCodes.Ldarg_0);
-
-            // Emit code which checks for the Chaos Stone. If equipped, the player gets Mana Burn instead of Mana Sickness.
-            cursor.EmitDelegate<Func<Player, int>>(player =>
+        private static bool AllowNegativeCheckMana(On_Player.orig_CheckMana_Item_int_bool_bool orig, Player self, Item item, int amount, bool pay, bool blockQuickMana) {
+            if (self.Calamity().ChaosStone)
             {
-                if (!player.active || !player.Calamity().ChaosStone)
-                    return BuffID.ManaSickness;
-                return ModContent.BuffType<ManaBurn>();
-            });
+                if (pay)
+                    self.statMana -= item.mana;
+                if (self.statMana < -self.statManaMax2)
+                    self.statMana = -self.statManaMax2;
+                return true;
+            }
+            return orig(self, item, amount, pay, blockQuickMana);
         }
         #endregion
 
         #region Fire Cursor Effect for the Calamity Accessory
-        private static void UseCoolFireCursorEffect(Terraria.On_Main.orig_DrawCursor orig, Vector2 bonus, bool smart)
+        private static void UseCoolFireCursorEffect(On_Main.orig_DrawCursor orig, Vector2 bonus, bool smart)
         {
             Player player = Main.LocalPlayer;
 
@@ -911,7 +914,7 @@ namespace CalamityMod.ILEditing
         #endregion
 
         #region General Particle Rendering
-        private static void DrawFusableParticles(Terraria.On_Main.orig_SortDrawCacheWorms orig, Main self)
+        private static void DrawFusableParticles(On_Main.orig_SortDrawCacheWorms orig, Main self)
         {
             DeathAshParticle.DrawAll();
 
@@ -921,7 +924,7 @@ namespace CalamityMod.ILEditing
             orig(self);
         }
 
-        private static void DrawForegroundParticles(Terraria.On_Main.orig_DrawInfernoRings orig, Main self)
+        private static void DrawForegroundParticles(On_Main.orig_DrawInfernoRings orig, Main self)
         {
             GeneralParticleHandler.DrawAllParticles(Main.spriteBatch);
             orig(self);
@@ -1082,6 +1085,18 @@ namespace CalamityMod.ILEditing
         #region Lava Blocking
         private void BlockLavaDrawing(ILContext il)
         {
+            if (ModLoader.HasMod("LiquidSlopesPatch"))
+            {
+                BlockLavaDrawing_LiquidSlopesPatch(il);
+            }
+            else
+            {
+                BlockLavaDrawing_Vanilla(il);
+            }
+        }
+        
+        private void BlockLavaDrawing_Vanilla(ILContext il)
+        {
             //This edit to DrawNormalLiquids makes lavas in normal and white lighting draw with an alpha and with new textures
             //If the parameter for the waterstyle is more than the max waterstyles then its subtracted by the max water style count and thats the lava style ID
             ILCursor cursor = new ILCursor(il);
@@ -1125,6 +1140,61 @@ namespace CalamityMod.ILEditing
             cursor.EmitLdarg3();
             cursor.EmitLdloc2(); //Initiated Liquid Draw Cache (needed for the Type parameter)
             cursor.EmitLdfld(typeof(LiquidRenderer).GetNestedType("LiquidDrawCache", BindingFlags.NonPublic).GetRuntimeField("Type"));
+            cursor.EmitDelegate<Func<Texture2D, int, int, Texture2D>>((initialTexture, style, type) =>
+                (style >= LavaRenderingSystem.Instance.WaterStyleMaxCount + 1 && type == LiquidID.Lava)
+                    ? LavaRenderingSystem.Textures.liquid[style - LavaRenderingSystem.Instance.WaterStyleMaxCount - 1].Value
+                    : initialTexture
+            );
+        }
+
+        private void BlockLavaDrawing_LiquidSlopesPatch(ILContext il)
+        {
+            Assembly lspAsm = ModLoader.GetMod("LiquidSlopesPatch").Code;
+            Type liquidDrawCache = lspAsm.GetType("LiquidSlopesPatch.Common.RewrittenLiquidRenderer").GetNestedType("LiquidDrawCache");
+            
+            //This edit to DrawNormalLiquids makes lavas in normal and white lighting draw with an alpha and with new textures
+            //If the parameter for the waterstyle is more than the max waterstyles then its subtracted by the max water style count and thats the lava style ID
+            ILCursor cursor = new ILCursor(il);
+
+            //Continue if statement, basically
+            //if the liquid being drawn is lava and the water style is greater than the max water styles or if the liquid is water and less than the max water styles then the draw code is ran
+            //otherwise the loop/s are continued for the next liquid
+            if (!cursor.TryGotoNext(MoveType.After, i => i.MatchLdfld(liquidDrawCache, "IsVisible")))
+            {
+                LogFailure("Liquid Renderer Drawing", "Could not locate the IsVisible boolean check");
+                return;
+            }
+            cursor.EmitLdarg3();
+            cursor.EmitLdloc2(); //Initiated Liquid Draw Cache (needed for the Type parameter)
+            cursor.EmitLdfld(liquidDrawCache.GetField("Type"));
+            cursor.EmitDelegate<Func<bool, int, int, bool>>((IsVisible, style, type) => IsVisible && ((type == 1 && style >= LavaRenderingSystem.Instance.WaterStyleMaxCount + 1) || (type != 1 && style <= LavaRenderingSystem.Instance.WaterStyleMaxCount)));
+
+            //Lava alpha color, if the liquid drawn is lava, multiply num by the water alpha
+            if (!cursor.TryGotoNext(MoveType.Before, i => i.MatchLdloc(2), i => i.MatchLdfld(liquidDrawCache.GetField("Type")), i => i.MatchStloc(8)))
+            {
+                LogFailure("Liquid Renderer Drawing", "Could not locate creation of the local variable num2 (the liquid type holder variable)");
+                return;
+            }
+            cursor.EmitLdloc(8);
+            cursor.EmitLdloca(7);
+            cursor.EmitLdarg(4);
+            cursor.EmitDelegate((int num2, ref float num, float globalAlpha) =>
+            {
+                if (num2 == LiquidID.Lava)
+                {
+                    num *= globalAlpha;
+                }
+            });
+
+            //Conditionally replace the liquid texture whether the liquid is lava or water
+            if (!cursor.TryGotoNext(MoveType.After, i => i.MatchCallvirt(typeof(Asset<Texture2D>).GetMethod("get_Value", BindingFlags.Public | BindingFlags.Instance))))
+            {
+                LogFailure("Liquid Renderer Drawing", "Could not locate the Texture2D array of liquids");
+                return;
+            }
+            cursor.EmitLdarg3();
+            cursor.EmitLdloc2(); //Initiated Liquid Draw Cache (needed for the Type parameter)
+            cursor.EmitLdfld(liquidDrawCache.GetField("Type"));
             cursor.EmitDelegate<Func<Texture2D, int, int, Texture2D>>((initialTexture, style, type) =>
                 (style >= LavaRenderingSystem.Instance.WaterStyleMaxCount + 1 && type == LiquidID.Lava)
                     ? LavaRenderingSystem.Textures.liquid[style - LavaRenderingSystem.Instance.WaterStyleMaxCount - 1].Value
@@ -1386,6 +1456,18 @@ namespace CalamityMod.ILEditing
 
         private static void LiquidDrawColors(ILContext il)
         {
+            if (ModLoader.HasMod("LiquidSlopesPatch"))
+            {
+                LiquidDrawColors_LiquidSlopesPatch(il);
+            }
+            else
+            {
+                LiquidDrawColors_Vanilla(il);
+            }
+        }
+        
+        private static void LiquidDrawColors_Vanilla(ILContext il)
+        {
             ILCursor cursor = new ILCursor(il);
             if (!cursor.TryGotoNext(MoveType.Before, c => c.MatchLdarg2(), c => c.MatchLdloc3(), c => c.MatchLdloc(4), c => c.MatchCall<Main>("DrawTileInWater")))
             {
@@ -1398,6 +1480,37 @@ namespace CalamityMod.ILEditing
             cursor.Emit(OpCodes.Ldloc_2);
             cursor.Emit(OpCodes.Ldfld, typeof(LiquidRenderer).GetNestedType("LiquidDrawCache", BindingFlags.NonPublic).GetRuntimeField("Type"));
             cursor.Emit(OpCodes.Ldloca, 9);
+
+            cursor.EmitDelegate((int x, int y, int liquidType, ref VertexColors initialColor) =>
+            {
+                if (liquidType == LiquidID.Water)
+                {
+                    CalamityWaterLoader.DrawColorSetup(x, y, Main.waterStyle, ref initialColor);
+                }
+                else if (liquidType == LiquidID.Lava && ExternalMods.biomeLava == null)
+                {
+                    LavaStylesLoader.DrawColorSetup(x, y, LavaRenderingSystem.LavaStyle, ref initialColor);
+                }
+            });
+        }
+        
+        private static void LiquidDrawColors_LiquidSlopesPatch(ILContext il)
+        {
+            Assembly lspAsm = ModLoader.GetMod("LiquidSlopesPatch").Code;
+            Type liquidDrawCache = lspAsm.GetType("LiquidSlopesPatch.Common.RewrittenLiquidRenderer").GetNestedType("LiquidDrawCache");
+            
+            ILCursor cursor = new ILCursor(il);
+            if (!cursor.TryGotoNext(MoveType.Before, c => c.MatchLdarg2(), c => c.MatchLdloc(out _), c => c.MatchLdloc(out _), c => c.MatchCall<Main>("DrawTileInWater")))
+            {
+                LogFailure("Liquid Draw Colors (LSP)", "Could not locate the liquid vertex colors for drawing");
+                return;
+            }
+
+            cursor.Emit(OpCodes.Ldloc, 9);
+            cursor.Emit(OpCodes.Ldloc, 10);
+            cursor.Emit(OpCodes.Ldloc_2);
+            cursor.Emit(OpCodes.Ldfld, liquidDrawCache.GetField("Type"));
+            cursor.Emit(OpCodes.Ldloca, 11);
 
             cursor.EmitDelegate((int x, int y, int liquidType, ref VertexColors initialColor) =>
             {
@@ -1483,88 +1596,28 @@ namespace CalamityMod.ILEditing
         #endregion
 
         #region Statue Additions
-        /// <summary>
-        /// Change the following code sequence in Wiring.HitWireSingle
-        /// num8 = (int) Utils.SelectRandom<short>(Main.rand, new short[2]
-        /// {
-        ///     355,
-        ///     358
-        /// });
-        ///
-        /// to
-        ///
-        /// var arr = new short[2]
-        /// {
-        ///     355,
-        ///     358
-        /// });
-        /// arr = arr.ToList().Add(id).ToArray();
-        /// num8 = Utils.SelectRandom(Main.rand, arr);
-        ///
-        /// </summary>
-        /// <param name="il"></param>
         private static void AddTwinklersToStatue(ILContext il)
         {
-            // obtain a cursor positioned before the first instruction of the method
-            // the cursor is used for navigating and modifying the il
-            var c = new ILCursor(il);
+            // Allow Twinklers to be spawned by the Firefly Statue.
+            var cursor = new ILCursor(il);
 
-            // the exact location for this hook is very complex to search for due to the hook instructions not being unique, and buried deep in control flow
-            // switch statements are sometimes compiled to if-else chains, and debug builds litter the code with no-ops and redundant locals
-
-            // in general you want to search using structure and function rather than numerical constants which may change across different versions or compile settings
-            // using local variable indices is almost always a bad idea
-
-            // we can search for
-            // switch (*)
-            //   case 54:
-            //     Utils.SelectRandom *
-
-            // in general you'd want to look for a specific switch variable, or perhaps the containing switch (type) { case 105:
-            // but the generated IL is really variable and hard to match in this case
-
-            // we'll just use the fact that there are no other switch statements with case 54, followed by a SelectRandom
-
-            ILLabel[] targets = null;
-            while (c.TryGotoNext(i => i.MatchSwitch(out targets)))
+            // Move to the method which randomly selects an NPC for the Statue to spawn. This is the second call of the method in this function.
+            for (int i = 0; i < 2; i++)
             {
-                // some optimising compilers generate a sub so that all the switch cases start at 0
-                // ldc.i4.s 51
-                // sub
-                // switch
-                int offset = 0;
-                if (c.Prev.MatchSub() && c.Prev.Previous.MatchLdcI4(out offset))
+                if (!cursor.TryGotoNext(MoveType.Before, i => i.MatchCall(typeof(Utils), nameof(Utils.SelectRandom))))
                 {
-                    ;
+                    LogFailure("Add Twinkler to Firefly Statue", "Could not move to the SelectRandom method.");
+                    return;
                 }
-
-                // get the label for case 54: if it exists
-                int case54Index = 54 - offset;
-                if (case54Index < 0 || case54Index >= targets.Length || !(targets[case54Index] is ILLabel target))
-                {
-                    continue;
-                }
-
-                // move the cursor to case 54:
-                c.GotoLabel(target);
-                // there's lots of extra checks we could add here to make sure we're at the right spot, such as not encountering any branching instructions
-                c.GotoNext(i => i.MatchCall(typeof(Utils), nameof(Utils.SelectRandom)));
-
-                // goto next positions us before the instruction we searched for, so we can insert our array modifying code right here
-                c.EmitDelegate<Func<short[], short[]>>(arr =>
-                {
-                    // resize the array and add our custom firefly
-                    Array.Resize(ref arr, arr.Length + 1);
-                    arr[arr.Length - 1] = (short)ModContent.NPCType<Twinkler>();
-                    return arr;
-                });
-
-                // hook applied successfully
-                return;
             }
 
-            // couldn't find the right place to insert
-            throw new Exception("Hook location not found, switch(*) { case 54: ...");
+            // Emit a delegate which resizes the array and adds Twinkler to it.
+            cursor.EmitDelegate<Func<short[], short[]>>(arr =>
+            {
+                Array.Resize(ref arr, arr.Length + 1);
+                arr[arr.Length - 1] = (short)ModContent.NPCType<Twinkler>();
+                return arr;
+            });
         }
         #endregion
 
@@ -1624,7 +1677,7 @@ namespace CalamityMod.ILEditing
         /// <summary>
         /// Determines if the custom grapple movement should take place or not. Useful for hooks that only do movement tricks in some cases
         /// </summary>
-        private static void CustomGrappleMovementCheck(Terraria.On_Player.orig_GrappleMovement orig, Player self)
+        private static void CustomGrappleMovementCheck(On_Player.orig_GrappleMovement orig, Player self)
         {
             WulfrumPackPlayer mp = self.GetModPlayer<WulfrumPackPlayer>();
 
@@ -1637,7 +1690,7 @@ namespace CalamityMod.ILEditing
         /// <summary>
         /// This is called right before the game decides wether or not to update the players velocity based on "real" physics (aka not tongued or hooked or with a pulley)
         /// </summary>
-        private static void CustomGrapplePreDefaultMovement(Terraria.On_Player.orig_UpdatePettingAnimal orig, Player self)
+        private static void CustomGrapplePreDefaultMovement(On_Player.orig_UpdatePettingAnimal orig, Player self)
         {
             orig(self);
 
@@ -1661,7 +1714,7 @@ namespace CalamityMod.ILEditing
         /// Used before the player steps up a half tile. If we don't do that, players that are grappled but don't use hook movement won't be able to go over tiles.
         /// The hook cache is reset in PreUpdateMovement
         /// </summary>
-        private static void CustomGrapplePreStepUp(Terraria.On_Player.orig_SlopeDownMovement orig, Player self)
+        private static void CustomGrapplePreStepUp(On_Player.orig_SlopeDownMovement orig, Player self)
         {
             orig(self);
 
@@ -1675,9 +1728,9 @@ namespace CalamityMod.ILEditing
         }
 
         /// <summary>
-        /// This is done to put the hook if it was cacehd during the frame instruction.
+        /// This is done to put the hook if it was cached during the frame instruction.
         /// </summary>
-        private static void CustomGrapplePostFrame(Terraria.On_Player.orig_PlayerFrame orig, Player self)
+        private static void CustomGrapplePostFrame(On_Player.orig_PlayerFrame orig, Player self)
         {
             orig(self);
             WulfrumPackPlayer mp = self.GetModPlayer<WulfrumPackPlayer>();
@@ -1694,7 +1747,7 @@ namespace CalamityMod.ILEditing
 
         #region Find Calamity Item Dye Shader
 
-        internal static void FindCalamityItemDyeShader(Terraria.On_Player.orig_UpdateItemDye orig, Player self, bool isNotInVanitySlot, bool isSetToHidden, Item armorItem, Item dyeItem)
+        internal static void FindCalamityItemDyeShader(On_Player.orig_UpdateItemDye orig, Player self, bool isNotInVanitySlot, bool isSetToHidden, Item armorItem, Item dyeItem)
         {
             orig(self, isNotInVanitySlot, isSetToHidden, armorItem, dyeItem);
             if (armorItem.type == ModContent.ItemType<Calamity>())
@@ -1727,7 +1780,7 @@ namespace CalamityMod.ILEditing
         #endregion
 
         #region Custom world selection difficulties
-        internal static void GetDifficultyOverride(Terraria.GameContent.UI.Elements.On_AWorldListItem.orig_GetDifficulty orig, AWorldListItem self, out string expertText, out Color gameModeColor)
+        internal static void GetDifficultyOverride(On_AWorldListItem.orig_GetDifficulty orig, AWorldListItem self, out string expertText, out Color gameModeColor)
         {
             // Run the original code and pull out the original text and text color
             orig(self, out expertText, out gameModeColor);
@@ -1762,29 +1815,10 @@ namespace CalamityMod.ILEditing
         #endregion
 
         #region Shimmer effect edits
-        public static void ShimmerEffectEdits(Terraria.On_Item.orig_GetShimmered orig, Item self)
+        public static void ShimmerEffectEdits(On_Item.orig_GetShimmered orig, Item self)
         {
-            // Don't keep the original stack amount when shimmering Cirrus' Vodka into Crystal Heart Vodka
-            if (self.type == ModContent.ItemType<CirrusVodka>())
-            {
-                self.SetDefaults(ModContent.ItemType<CrystalHeartVodka>());
-                self.shimmered = true;
-                self.shimmerWet = true;
-                self.wet = true;
-                self.velocity *= 0.1f;
-                if (Main.netMode == 0)
-                {
-                    Item.ShimmerEffect(self.Center);
-                }
-                else
-                {
-                    NetMessage.SendData(146, -1, -1, null, 0, (int)self.Center.X, (int)self.Center.Y);
-                    NetMessage.SendData(145, -1, -1, null, self.whoAmI, 1f);
-                }
-                AchievementsHelper.NotifyProgressionEvent(27);
-            }
             // Make Plagued Containment Bricks turn into Plagued Nanodroids if shimmered before defeating Golem
-            else if (self.type == ModContent.ItemType<PlaguedContainmentBrick>())
+            if (self.type == ModContent.ItemType<PlaguedContainmentBrick>())
             {
                 if (NPC.downedGolemBoss)
                     orig(self);
@@ -1824,7 +1858,7 @@ namespace CalamityMod.ILEditing
 
         #region Block Abyss from Teleportation Potions
 
-        public static void TPOverride(Terraria.On_Player.orig_Teleport orig, Player self, Vector2 newPos, int Style = 0, int extraInfo = 0)
+        public static void TPOverride(On_Player.orig_Teleport orig, Player self, Vector2 newPos, int Style = 0, int extraInfo = 0)
         {
             // Grab the tile from where the potion wants to teleport
             Tile t = CalamityUtils.ParanoidTileRetrieval(newPos.ToTileCoordinates().X, newPos.ToTileCoordinates().Y);
@@ -1832,7 +1866,7 @@ namespace CalamityMod.ILEditing
             if (Style == 2)
             {
                 // Check if it's an Abyss wall
-                if (t.WallType == ModContent.WallType<SulphurousShaleWall>() || t.WallType == ModContent.WallType<AbyssGravelWall>() || t.WallType == ModContent.WallType<PyreMantleWall>() || t.WallType == ModContent.WallType<VoidstoneWallUnsafe>() || t.WallType == ModContent.WallType<HardenedSulphurousSandstoneWall>() || t.WallType == ModContent.WallType<SulphurousSandstoneWall>())
+                if (t.WallType == ModContent.WallType<UnsafeSulphurousShaleWall>() || t.WallType == ModContent.WallType<UnsafeAbyssGravelWall>() || t.WallType == ModContent.WallType<PyreMantleWall>() || t.WallType == ModContent.WallType<UnsafeVoidstoneWall>() || t.WallType == ModContent.WallType<HardenedSulphurousSandstoneWall>() || t.WallType == ModContent.WallType<UnsafeSulphurousSandstoneWall>())
                 {
                     // If an Abyss wall is detected, try to find another teleportation location
                     bool canSpawn = false;
@@ -1861,70 +1895,9 @@ namespace CalamityMod.ILEditing
                 // Potion of Return triggers Jared if used in the Abyss
                 if (Style == 8)
                 {
-                    if (t.WallType == ModContent.WallType<SulphurousShaleWall>() || t.WallType == ModContent.WallType<AbyssGravelWall>() || t.WallType == ModContent.WallType<PyreMantleWall>() || t.WallType == ModContent.WallType<VoidstoneWallUnsafe>() || t.WallType == ModContent.WallType<HardenedSulphurousSandstoneWall>() || t.WallType == ModContent.WallType<SulphurousSandstoneWall>())
+                    if (t.WallType == ModContent.WallType<UnsafeSulphurousShaleWall>() || t.WallType == ModContent.WallType<UnsafeAbyssGravelWall>() || t.WallType == ModContent.WallType<PyreMantleWall>() || t.WallType == ModContent.WallType<UnsafeVoidstoneWall>() || t.WallType == ModContent.WallType<HardenedSulphurousSandstoneWall>() || t.WallType == ModContent.WallType<UnsafeSulphurousSandstoneWall>())
                         self.AddBuff(BuffID.ChaosState, 2);
                 }
-            }
-        }
-        #endregion
-
-        #region Revengeance Master Mode Twins Shenanigans
-        public static void TripletsSpawnTextOverride(Terraria.On_NPC.orig_SpawnBoss orig, int x, int y, int type, int targetPlayerIndex)
-        {
-            if (CalamityWorld.death && type == NPCID.Retinazer)
-            {
-                int retinazerIndex = NPC.NewNPC(NPC.GetBossSpawnSource(targetPlayerIndex), x, y, type, 1);
-                if (retinazerIndex == 200)
-                {
-                    return;
-                }
-                Main.npc[retinazerIndex].target = targetPlayerIndex;
-                Main.npc[retinazerIndex].timeLeft *= 20;
-
-                if (Main.dedServ && retinazerIndex < 200)
-                {
-                    NetMessage.SendData(MessageID.SyncNPC, -1, -1, null, retinazerIndex);
-                }
-
-                AchievementsHelper.CheckMechaMayhem();
-
-                CalamityUtils.DisplayLocalizedText("Mods.CalamityMod.Status.Boss.TripletsBossText", new Color(175, 75, 255));
-                return;
-            }
-            else
-            {
-                orig(x, y, type, targetPlayerIndex);
-            }
-        }
-
-        public static void PreventFoveanatorDefeatMessageIfNotKilledLast(On_NPC.orig_DoDeathEvents_BeforeLoot orig, NPC self, Player closestPlayer)
-        {
-            if (CalamityWorld.death && self.type == ModContent.NPCType<Foveanator>() && (NPC.AnyNPCs(NPCID.Spazmatism) || NPC.AnyNPCs(NPCID.Retinazer)))
-            {
-                self.value = 0f;
-                self.boss = false;
-                return;
-            }
-            else
-            {
-                orig(self, closestPlayer);
-            }
-        }
-
-        public static void TripletsDefeatTextOverride(On_NPC.orig_DoDeathEvents_CelebrateBossDeath orig, NPC self, string typeName)
-        {
-            bool correctNPCType = self.type == NPCID.Retinazer || self.type == NPCID.Spazmatism || self.type == ModContent.NPCType<Foveanator>();
-            if (CalamityWorld.death && correctNPCType)
-            {
-                if (Main.netMode == NetmodeID.SinglePlayer)
-                    Main.NewText(Language.GetTextValue("Announcement.HasBeenDefeated_Plural", CalamityUtils.GetTextValue("Status.Boss.TripletsDefeatName")), 175, 75, 255);
-                else if (Main.dedServ)
-                    ChatHelper.BroadcastChatMessage(NetworkText.FromKey("Announcement.HasBeenDefeated_Plural", NetworkText.FromKey("Mods.CalamityMod.Status.Boss.TripletsDefeatName")), new Color(175, 75, 255));
-                return;
-            }
-            else
-            {
-                orig(self, typeName);
             }
         }
         #endregion
@@ -1993,7 +1966,7 @@ namespace CalamityMod.ILEditing
         #endregion
 
         #region Allow Cannons to use jellyfish
-        public static void AllowCannonJellyfishUse(Terraria.On_Player.orig_PlaceThing_CannonBall orig, Player self)
+        public static void AllowCannonJellyfishUse(On_Player.orig_PlaceThing_CannonBall orig, Player self)
         {
             // Check if the player is holding a jelly
             if (self.HeldItem.type == ModContent.ItemType<BabyCannonballJellyfishItem>())
@@ -2104,7 +2077,7 @@ namespace CalamityMod.ILEditing
         #endregion
 
         #region Add Stohne to the Jungle
-        public static void AddStohne(Terraria.GameContent.Biomes.On_JunglePass.orig_GenerateFinishingTouches orig, JunglePass self, GenerationProgress progress, int oldX, int oldY)
+        public static void AddStohne(On_JunglePass.orig_GenerateFinishingTouches orig, JunglePass self, GenerationProgress progress, int oldX, int oldY)
         {
             int anchorX = oldX;
             int anchorY = oldY;
@@ -2505,9 +2478,9 @@ namespace CalamityMod.ILEditing
                     {
                         colorType = (int)BabyGhostBell.JellyColor.Green;
                     }
-                    if (item.type == ModContent.ItemType<BabyGhostBellRedItem>())
+                    if (item.type == ModContent.ItemType<BabyGhostBellPinkItem>())
                     {
-                        colorType = (int)BabyGhostBell.JellyColor.Red;
+                        colorType = (int)BabyGhostBell.JellyColor.Pink;
                     }
                     if (item.type == ModContent.ItemType<BabyGhostBellRadiantItem>())
                     {
@@ -2648,7 +2621,7 @@ namespace CalamityMod.ILEditing
         #endregion
 
         #region Make Celestial Onion give the Master Mode slot
-        public static bool MasterModeCelestialOnionCheck(Terraria.On_Player.orig_IsItemSlotUnlockedAndUsable orig, Player self, int slot)
+        public static bool MasterModeCelestialOnionCheck(On_Player.orig_IsItemSlotUnlockedAndUsable orig, Player self, int slot)
         {
             if ((slot == 9 || slot == 19) && self.Calamity().extraAccessoryML && !Main.gameMenu)
             {

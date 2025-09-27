@@ -43,10 +43,7 @@ namespace CalamityMod.NPCs.SunkenSea
             NPC.DeathSound = SoundID.DD2_SkeletonDeath;
             NPC.noGravity = true;
             NPC.noTileCollide = true;
-            SpawnModBiomes = new int[1] { ModContent.GetInstance<SunkenSeaBiome>().Type };
-            // Scale stats in Expert and Master
-            CalamityGlobalNPC.AdjustExpertModeStatScaling(NPC);
-            CalamityGlobalNPC.AdjustMasterModeStatScaling(NPC);
+            SpawnModBiomes = new int[1] { ModContent.GetInstance<TimelessShoresBiome>().Type };
         }
 
         public override void AI()

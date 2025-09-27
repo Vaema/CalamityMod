@@ -31,7 +31,7 @@ namespace CalamityMod.NPCs.BrimstoneElemental
         {
             NPC.aiStyle = -1;
             AIType = -1;
-            NPC.damage = 0; // 0 contact damage, projectile damage values are pulled from NPCStats
+            NPC.damage = 0; // No contact damage
             NPC.width = 60;
             NPC.height = 60;
             NPC.defense = 0;
@@ -93,25 +93,18 @@ namespace CalamityMod.NPCs.BrimstoneElemental
             }
 
             // Variables for buffing the AI
-            bool bossRush = BossRushEvent.BossRushActive;
-            bool death = CalamityWorld.death || bossRush;
+            bool death = CalamityWorld.death || BossRushEvent.BossRushActive;
 
             // Percent life remaining for Brim
             float lifeRatio = Main.npc[CalamityGlobalNPC.brimstoneElemental].life / (float)Main.npc[CalamityGlobalNPC.brimstoneElemental].lifeMax;
 
             // Enraged Brim checks
-            bool biomeEnraged = Main.npc[CalamityGlobalNPC.brimstoneElemental].Calamity().newAI[3] <= 0f || bossRush;
-            float enrageScale = bossRush ? 1f : 0f;
-            if (biomeEnraged && (!Main.player[Main.npc[CalamityGlobalNPC.brimstoneElemental].target].ZoneUnderworldHeight || bossRush))
-            {
-                Main.npc[CalamityGlobalNPC.brimstoneElemental].Calamity().CurrentlyEnraged = !bossRush;
+            bool biomeEnraged = Main.npc[CalamityGlobalNPC.brimstoneElemental].Calamity().newAI[3] <= 0f;
+            float enrageScale = 0f;
+            if (biomeEnraged && !Main.player[Main.npc[CalamityGlobalNPC.brimstoneElemental].target].ZoneUnderworldHeight)
                 enrageScale += 1f;
-            }
-            if (biomeEnraged && (!Main.player[Main.npc[CalamityGlobalNPC.brimstoneElemental].target].Calamity().ZoneCalamity || bossRush))
-            {
-                Main.npc[CalamityGlobalNPC.brimstoneElemental].Calamity().CurrentlyEnraged = !bossRush;
+            if (biomeEnraged && !Main.player[Main.npc[CalamityGlobalNPC.brimstoneElemental].target].Calamity().ZoneCalamity)
                 enrageScale += 1f;
-            }
 
             // Brim phase checks
             bool brimIsAboutToTeleport = Main.npc[CalamityGlobalNPC.brimstoneElemental].ai[0] == 1f && Main.npc[CalamityGlobalNPC.brimstoneElemental].alpha == 0;
@@ -153,7 +146,7 @@ namespace CalamityMod.NPCs.BrimstoneElemental
                 {
                     float projectileVelocity = 5f;
                     int type = ModContent.ProjectileType<BrimstoneBarrage>();
-                    int damage = NPC.GetProjectileDamage(type);
+                    int damage = BrimstoneElemental.DartDamage;
                     Projectile.NewProjectile(NPC.GetSource_FromAI(), NPC.Center, Vector2.Normalize(Main.player[Main.npc[CalamityGlobalNPC.brimstoneElemental].target].Center - NPC.Center) * projectileVelocity, type, damage, 0f, Main.myPlayer, 1f, 0f, projectileVelocity * 3f);
                 }
             }
@@ -246,7 +239,7 @@ namespace CalamityMod.NPCs.BrimstoneElemental
             {
                 float projectileVelocity = 5f;
                 int type = ModContent.ProjectileType<BrimstoneHellfireball>();
-                int damage = NPC.GetProjectileDamage(type);
+                int damage = BrimstoneElemental.HellfireballDamage;
                 SoundEngine.PlaySound(BrimstoneElemental.HellfireballSound, NPC.Center);
                 Projectile.NewProjectile(NPC.GetSource_FromAI(), NPC.Center, Vector2.Normalize(Main.player[Main.npc[CalamityGlobalNPC.brimstoneElemental].target].Center - NPC.Center) * projectileVelocity, type, damage, 0f, Main.myPlayer, Main.player[Main.npc[CalamityGlobalNPC.brimstoneElemental].target].position.X, Main.player[Main.npc[CalamityGlobalNPC.brimstoneElemental].target].position.Y);
             }

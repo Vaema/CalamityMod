@@ -76,16 +76,18 @@ namespace CalamityMod.NPCs.SunkenSea
             NPC.damage = 15;
             NPC.defense = 3;
             NPC.knockBackResist = 0f;
+            NPC.value = Item.buyPrice(silver: 1);
             NPC.HitSound = Effects.StormlionEffects.Hit;
             NPC.DeathSound = Effects.StormlionEffects.Killed;
             NPC.noGravity = true;
             NPC.noTileCollide = true; // Custom tile collision
 
+            SpawnModBiomes = new int[1] { ModContent.GetInstance<TimelessShoresBiome>().Type };
+
             AIState = Mode.Idle;
             attackFeedback = 1;
             headRot = -MathHelper.PiOver2;
 
-            SpawnModBiomes = new int[1] { ModContent.GetInstance<SunkenSeaBiome>().Type };
             //Banner = NPC.type;
             //BannerItem = ModContent.ItemType<StormlionSentryBanner>();
         }
@@ -171,7 +173,7 @@ namespace CalamityMod.NPCs.SunkenSea
                 {
                     SoundEngine.PlaySound(Effects.StormlionEffects.Attack with { Volume = 1f, Pitch = Main.rand.NextFloat(-0.1f, 0.1f) }, NPC.Center);
 
-                    Projectile.NewProjectile(NPC.GetSource_FromThis(), attackPosition, (headRot.ToRotationVector2() * 12), ModContent.ProjectileType<StormlionSentryBullet>(), NPC.damage, 0f, Main.myPlayer);
+                    Projectile.NewProjectile(NPC.GetSource_FromThis(), attackPosition, (headRot.ToRotationVector2() * 12), ModContent.ProjectileType<StormlionSentryBullet>(), 15, 0f, Main.myPlayer);
                     for (int i = 0; i <= 12; i++)
                     {
                         float variance = Main.rand.NextFloat(-0.6f, 0.6f);
@@ -230,7 +232,7 @@ namespace CalamityMod.NPCs.SunkenSea
                     if (time % 2 == 0)
                     {
                         SoundEngine.PlaySound(Effects.StormlionEffects.Attack with { Volume = 0.2f, Pitch = 0.4f * sine, MaxInstances = 30 }, NPC.Center);
-                        Projectile proj = Projectile.NewProjectileDirect(NPC.GetSource_FromThis(), attackPosition, (headRot.ToRotationVector2() * 6), ModContent.ProjectileType<StormlionSentryBullet>(), NPC.damage * target.statLifeMax2, 0f, Main.myPlayer);
+                        Projectile proj = Projectile.NewProjectileDirect(NPC.GetSource_FromThis(), attackPosition, (headRot.ToRotationVector2() * 6), ModContent.ProjectileType<StormlionSentryBullet>(), 15 * target.statLifeMax2, 0f, Main.myPlayer);
                         proj.friendly = true;
                         proj.hostile = false;
                     }
@@ -294,7 +296,7 @@ namespace CalamityMod.NPCs.SunkenSea
         {
             if (spawnInfo.Player.Calamity().ZoneTimelessShores && !spawnInfo.Water && !spawnInfo.Player.Calamity().clamity)
             {
-                return SpawnCondition.Cavern.Chance * 0.5f;
+                return SpawnCondition.Cavern.Chance * 0.7f;
             }
             return 0f;
         }

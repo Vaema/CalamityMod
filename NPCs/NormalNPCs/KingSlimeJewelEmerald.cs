@@ -36,7 +36,7 @@ namespace CalamityMod.NPCs.NormalNPCs
         {
             NPC.aiStyle = -1;
             AIType = -1;
-            NPC.GetNPCDamage();
+            NPC.damage = 24; // 72 (Death exlusive)
             NPC.width = 32;
             NPC.height = 32;
             NPC.defense = 15;

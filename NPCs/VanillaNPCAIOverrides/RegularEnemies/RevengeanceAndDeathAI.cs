@@ -6790,15 +6790,8 @@ PrepareToShoot:
 
                 int projType = ProjectileID.SandBallFalling;
 
-                // 2 to 3 in Rev, 3 to 5 in Death, if FTW is also enabled, 8 to 13 (random chance for 10x the amount)
-                int projAmt = CalamityWorld.revenge ? Main.rand.Next(CalamityWorld.death ? 3 : 2, CalamityWorld.death ? 6 : 4) : 1;
-                if (Main.getGoodWorld)
-                {
-                    projAmt = Main.rand.Next(8, 14);
-                    if (Main.rand.NextBool(1000) || Main.zenithWorld)
-                        projAmt = Main.rand.Next(80, 131);
-                }
-
+                // In FTW, can fire 8 sand balls (100 in stupid meme seed)
+                int projAmt = Main.zenithWorld ? 100 : Main.getGoodWorld ? 8 : 1;
                 for (int i = 0; i < projAmt; i++)
                 {
                     // Adjust the velocity to make it a shotgun-like spread
@@ -9685,13 +9678,8 @@ PrepareToShoot:
             if (npc.ai[0] != -1f)
             {
                 npc.TargetClosest(true);
-                float acceleration = Main.masterMode ? 0.25f : Main.expertMode ? 0.2f : 0.1f;
-                float velocity = Main.masterMode ? 6f : Main.expertMode ? 5f : 3f;
-                if (CalamityWorld.death)
-                {
-                    acceleration *= 1.25f;
-                    velocity *= 1.25f;
-                }
+                float acceleration = CalamityWorld.death ? 0.25f : Main.expertMode ? 0.2f : 0.1f;
+                float velocity = CalamityWorld.death ? 6.25f : Main.expertMode ? 5f : 3f;
 
                 // Simple movement AI. You shouldn't need any help from comments to parse this.
                 if (npc.Center.X < Main.player[npc.target].position.X)

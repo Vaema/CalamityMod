@@ -29,6 +29,7 @@ namespace CalamityMod.Items.Accessories
         {
             OldDukeScalesPlayer modPlayer = player.GetModPlayer<OldDukeScalesPlayer>();
             modPlayer.OldDukeScalesOn = true;
+            player.noKnockback = true;
         }
     }
 

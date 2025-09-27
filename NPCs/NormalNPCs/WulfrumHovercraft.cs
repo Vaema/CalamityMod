@@ -79,7 +79,7 @@ namespace CalamityMod.NPCs.NormalNPCs
             NPC.height = 38;
             NPC.defense = 4;
             NPC.lifeMax = 25;
-            NPC.value = Item.buyPrice(0, 0, 1, 0);
+            NPC.value = Item.buyPrice(silver: 1);
             NPC.HitSound = WulfrumAmplifier.Hit;
             NPC.DeathSound = CommonCalamitySounds.WulfrumNPCDeathSound;
             NPC.noGravity = true;
@@ -88,10 +88,6 @@ namespace CalamityMod.NPCs.NormalNPCs
             BannerItem = ModContent.ItemType<WulfrumHovercraftBanner>();
             NPC.Calamity().VulnerableToSickness = false;
             NPC.Calamity().VulnerableToElectricity = true;
-
-            // Scale stats in Expert and Master
-            CalamityGlobalNPC.AdjustExpertModeStatScaling(NPC);
-            CalamityGlobalNPC.AdjustMasterModeStatScaling(NPC);
         }
 
         public override void SetBestiary(BestiaryDatabase database, BestiaryEntry bestiaryEntry)
@@ -321,8 +317,8 @@ namespace CalamityMod.NPCs.NormalNPCs
                         }
                     }
                 }
-                //Become a spark piñata in Legendary
-                if (CalamityWorld.LegendaryMode && Supercharged)
+                //Become a spark piñata in FTW
+                if (Main.getGoodWorld && Supercharged)
                 {
                     for (int Sparks = Main.rand.Next(2, 5); Sparks > 0; Sparks--)
                     {

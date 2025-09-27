@@ -65,7 +65,7 @@ namespace CalamityMod.NPCs.DevourerofGods
         public override void SetDefaults()
         {
             NPC.Calamity().canBreakPlayerDefense = true;
-            NPC.GetNPCDamage();
+            NPC.damage = 100; // 200
             NPC.npcSlots = 5f;
             NPC.width = 66;
             NPC.height = 66;
@@ -87,9 +87,6 @@ namespace CalamityMod.NPCs.DevourerofGods
 
             if (Main.getGoodWorld)
                 NPC.scale *= 1.5f;
-
-            // Scale HP in Master
-            CalamityGlobalNPC.AdjustMasterModeStatScaling(NPC, true);
         }
 
         public override void BossHeadSlot(ref int index)
@@ -160,9 +157,8 @@ namespace CalamityMod.NPCs.DevourerofGods
             float lifeRatio = NPC.life / (float)NPC.lifeMax;
 
             bool phase2 = lifeRatio < 0.6f;
-            bool bossRush = BossRushEvent.BossRushActive;
-            bool expertMode = Main.expertMode || bossRush;
-            bool death = CalamityWorld.death || bossRush;
+            bool expertMode = Main.expertMode || BossRushEvent.BossRushActive;
+            bool death = CalamityWorld.death || BossRushEvent.BossRushActive;
 
             if (phase2)
             {
@@ -277,7 +273,6 @@ namespace CalamityMod.NPCs.DevourerofGods
             segmentDirection.Y = (int)(segmentDirection.Y / 16f) * 16;
             playerXDist -= segmentDirection.X;
             playerYDist -= segmentDirection.Y;
-            float playerDistance = (float)System.Math.Sqrt(playerXDist * playerXDist + playerYDist * playerYDist);
             if (NPC.ai[1] > 0f && NPC.ai[1] < Main.npc.Length)
             {
                 try
@@ -290,7 +285,7 @@ namespace CalamityMod.NPCs.DevourerofGods
                 {
                 }
                 NPC.rotation = (float)System.Math.Atan2(playerYDist, playerXDist) + MathHelper.PiOver2;
-                playerDistance = (float)System.Math.Sqrt(playerXDist * playerXDist + playerYDist * playerYDist);
+                float playerDistance = (float)System.Math.Sqrt(playerXDist * playerXDist + playerYDist * playerYDist);
                 int segmentWidth = NPC.width;
                 playerDistance = (playerDistance - segmentWidth) / playerDistance;
                 playerXDist *= playerDistance;
@@ -306,25 +301,11 @@ namespace CalamityMod.NPCs.DevourerofGods
             }
 
             // Velocity variables
-            float segmentVelocity = bossRush ? 19f : death ? 17.5f : 16f;
+            float segmentVelocity = death ? 17.5f : 16f;
             if (expertMode)
                 segmentVelocity += 4f * (1f - lifeRatio);
             if (Main.getGoodWorld)
                 segmentVelocity *= 1.1f;
-
-            // Calculate contact damage based on velocity
-            float minimalContactDamageVelocity = segmentVelocity * 0.25f;
-            float minimalDamageVelocity = segmentVelocity * 0.5f;
-            float bodyAndTailVelocity = (NPC.position - NPC.oldPosition).Length();
-            if (bodyAndTailVelocity <= minimalContactDamageVelocity)
-            {
-                NPC.damage = 0;
-            }
-            else
-            {
-                float velocityDamageScalar = MathHelper.Clamp((bodyAndTailVelocity - minimalContactDamageVelocity) / minimalDamageVelocity, 0f, 1f);
-                NPC.damage = (int)MathHelper.Lerp(0f, NPC.defDamage, velocityDamageScalar);
-            }
         }
 
         public override bool PreDraw(SpriteBatch spriteBatch, Vector2 screenPos, Color drawColor)
@@ -404,7 +385,7 @@ namespace CalamityMod.NPCs.DevourerofGods
             {
                 NPC.soundDelay = 8;
                 float extrapitch = Main.zenithWorld ? 0.3f : 0f;
-                SoundEngine.PlaySound(CommonCalamitySounds.OtherwordlyHitSound with { Pitch = CommonCalamitySounds.OtherwordlyHitSound.Pitch + extrapitch }, NPC.Center);
+                SoundEngine.PlaySound(DevourerofGodsHead.HitSound with { Pitch = DevourerofGodsHead.HitSound.Pitch + extrapitch }, NPC.Center);
             }
             if (NPC.life <= 0)
             {
@@ -475,7 +456,6 @@ namespace CalamityMod.NPCs.DevourerofGods
         public override void ApplyDifficultyAndPlayerScaling(int numPlayers, float balance, float bossAdjustment)
         {
             NPC.lifeMax = (int)(NPC.lifeMax * 0.8f * balance * bossAdjustment);
-            NPC.damage = (int)(NPC.damage * NPC.GetExpertDamageMultiplier());
         }
 
         public override void OnHitPlayer(Player target, Player.HurtInfo hurtInfo)

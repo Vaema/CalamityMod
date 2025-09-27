@@ -70,7 +70,8 @@ namespace CalamityMod.NPCs.SunkenSea
         protected override List<int> PredatorIDs => new List<int>()
         {
             ModContent.NPCType<SandProwler>(),
-            ModContent.NPCType<SandProwlerNested>()
+            ModContent.NPCType<SandProwlerNested>(),
+            ModContent.NPCType<GhostBell>()
         };
 
         protected override SunkenSeaBiomeFlags BiomeDesignation => SunkenSeaBiomeFlags.PolypForest;
@@ -101,6 +102,7 @@ namespace CalamityMod.NPCs.SunkenSea
 
         public override void SetDefaults()
         {
+            base.SetDefaults();
             NPC.npcSlots = 0.1f;
             NPC.noGravity = true;
             NPC.damage = 0;
@@ -120,16 +122,10 @@ namespace CalamityMod.NPCs.SunkenSea
             NPC.Calamity().VulnerableToSickness = false;
             NPC.Calamity().VulnerableToElectricity = true;
             NPC.Calamity().VulnerableToWater = false;
-            SpawnModBiomes = new int[1] { ModContent.GetInstance<SunkenSeaBiome>().Type };
         }
 
         public override void OnSpawn(IEntitySource source)
         {
-            pathfinding = new PathfindingManager(NPC)
-            {
-                Acceleration = 0.5f,
-                MaxSpeed = 4f,
-            };
             // Panaseas released by the player do not randomize when spawned
             if (source is EntitySource_Parent parentSource && parentSource.Entity is Player)
             {
@@ -181,6 +177,14 @@ namespace CalamityMod.NPCs.SunkenSea
 
         public override void AI()
         {
+            if (pathfinding == null)
+            {
+                pathfinding = new PathfindingManager(NPC)
+                {
+                    Acceleration = 0.5f,
+                    MaxSpeed = 4f,
+                };
+            }
             // Reset polyp index in case the polyp dies
             if (PolypIndex > -1)
             {
@@ -227,11 +231,6 @@ namespace CalamityMod.NPCs.SunkenSea
             if (Variant == (int)FishColor.Gold)
             {
                 NPC.ProduceGoldCritterDust();
-            }
-            if (Variant == (int)FishColor.Gold || Variant == (int)FishColor.Radiant)
-            {
-                NPC.rarity = 3;
-                NPC.value = 100000;
             }
         }
 
@@ -335,7 +334,7 @@ namespace CalamityMod.NPCs.SunkenSea
         {
             if (CurrentBehavior == (int)PhaseType.Idle)
             {
-                pathfinding.ClearResults();
+                pathfinding?.ClearResults();
                 CurrentBehavior = (int)PhaseType.Flee;
                 AlertPolyp();
             }

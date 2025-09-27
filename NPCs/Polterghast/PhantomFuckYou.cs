@@ -23,18 +23,19 @@ namespace CalamityMod.NPCs.Polterghast
             NPCID.Sets.TrailingMode[Type] = 1;
         }
 
+        public static int MineDamage = 70; // 280
+
         public override void SetDefaults()
         {
+            NPC.damage = 0; // No contact damage
             NPC.aiStyle = -1;
             AIType = -1;
             NPC.width = 30;
             NPC.height = 30;
             NPC.defense = 45;
-            NPC.DR_NERD(0.1f);
             NPC.noGravity = true;
             NPC.noTileCollide = true;
             NPC.chaseable = false;
-            NPC.damage = 0; // 0 contact damage, projectile damage is pulled from NPCStats
             NPC.lifeMax = 20000;
             NPC.HitSound = SoundID.NPCHit36;
             NPC.DeathSound = SoundID.NPCDeath39;
@@ -98,7 +99,7 @@ namespace CalamityMod.NPCs.Polterghast
             direction *= 0.5f;
             NPC.rotation = direction.ToRotation();
 
-            if (!chargePhase || (CalamityWorld.LegendaryMode && CalamityWorld.revenge))
+            if (!chargePhase || Main.getGoodWorld)
             {
                 NPC.ai[2] += 1f;
                 float shootMineGateValue = 150f;
@@ -110,10 +111,9 @@ namespace CalamityMod.NPCs.Polterghast
                     if (Main.netMode != NetmodeID.MultiplayerClient)
                     {
                         int type = ModContent.ProjectileType<PhantomMine>();
-                        int damage = NPC.GetProjectileDamage(type);
                         float maxVelocity = 8f * tileEnrageMult;
                         float acceleration = 1.15f + (tileEnrageMult - 1f) * 0.15f;
-                        Projectile.NewProjectile(NPC.GetSource_FromAI(), NPC.Center, direction, type, damage, 1f, NPC.target, maxVelocity, acceleration);
+                        Projectile.NewProjectile(NPC.GetSource_FromAI(), NPC.Center, direction, type, MineDamage, 1f, NPC.target, maxVelocity, acceleration);
                     }
                     NPC.ai[2] = 0f;
                 }

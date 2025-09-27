@@ -89,7 +89,9 @@ namespace CalamityMod.Projectiles.Typeless
 
         public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
         {
-            target.AddBuff(ModContent.BuffType<BrimstoneFlames>(), 90);
+            //Doze - I gave all parry accessories long debuff infliction times due to the lack of weapons that inflict debuffs for a decent time, and the scarcity of using the parry
+            //Most common vanilla debuffs have a way to inflict them for 15, 20, or even 30 seconds
+            target.AddBuff(ModContent.BuffType<BrimstoneFlames>(), CalamityUtils.SecondsToFrames(15));
         }
 
         public override void OnKill(int timeLeft)

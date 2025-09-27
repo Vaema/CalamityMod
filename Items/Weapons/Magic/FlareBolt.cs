@@ -57,9 +57,8 @@ namespace CalamityMod.Items.Weapons.Magic
         public override void AddRecipes()
         {
             CreateRecipe().
-                AddIngredient(ItemID.HellstoneBar, 6).
-                AddIngredient(ItemID.Obsidian, 9).
-                AddIngredient(ItemID.Fireblossom, 2).
+                AddIngredient(ItemID.HellstoneBar, 10).
+                AddIngredient(ItemID.Fireblossom, 5).
                 AddIngredient(ItemID.Ruby).
                 AddTile(TileID.Bookcases).
                 Register();

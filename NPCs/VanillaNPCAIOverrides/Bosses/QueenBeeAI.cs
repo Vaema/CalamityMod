@@ -15,6 +15,13 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
 {
     public static class QueenBeeAI
     {
+        // Vanilla values
+        public static int StingerDamage = 11; // 44; Also applies to GFB stinger replacements
+
+        // Death exclusive
+        public static int BeenadeDamage = 15; // 90
+        public static int BeenadeBeeDamage = 12; // 72
+
         public static bool BuffedQueenBeeAI(NPC npc, Mod mod)
         {
             CalamityGlobalNPC calamityGlobalNPC = npc.Calamity();
@@ -23,10 +30,9 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
             if (npc.target < 0 || npc.target == Main.maxPlayers || Main.player[npc.target].dead || !Main.player[npc.target].active)
                 CalamityUtils.CalamityTargeting(npc, CalamityTargetingParameters.BossDefaults);
 
-            bool bossRush = BossRushEvent.BossRushActive;
-            bool death = CalamityWorld.death || bossRush;
+            bool death = CalamityWorld.death || BossRushEvent.BossRushActive;
 
-            bool enrage = true;
+            bool enrage = !BossRushEvent.BossRushActive;
             int targetTileX = (int)Main.player[npc.target].Center.X / 16;
             int targetTileY = (int)Main.player[npc.target].Center.Y / 16;
 
@@ -36,22 +42,19 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
 
             float maxEnrageScale = 2f;
             float enrageScale = death ? 0.5f : 0f;
-            if (((npc.position.Y / 16f) < Main.worldSurface && enrage) || bossRush)
+            if ((npc.position.Y / 16f) < Main.worldSurface && enrage)
             {
-                calamityGlobalNPC.CurrentlyEnraged = !bossRush;
-                enrageScale += 0.5f;
+                calamityGlobalNPC.CurrentlyEnraged = true;
+                enrageScale += 1f;
             }
-            if (!Main.player[npc.target].ZoneJungle || bossRush)
+            if (!Main.player[npc.target].ZoneJungle && enrage)
             {
-                calamityGlobalNPC.CurrentlyEnraged = !bossRush;
-                enrageScale += 0.5f;
+                calamityGlobalNPC.CurrentlyEnraged = true;
+                enrageScale += 1f;
             }
 
             if (Main.getGoodWorld)
-                enrageScale += ((CalamityWorld.LegendaryMode && CalamityWorld.revenge) ? 1f : 0.5f);
-
-            if (bossRush)
-                enrageScale = 2f;
+                enrageScale += 0.5f;
 
             if (enrageScale > maxEnrageScale)
                 enrageScale = maxEnrageScale;
@@ -141,12 +144,10 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
             bool immuneToSlowingDebuffs = npc.ai[0] == 0f;
             npc.buffImmune[ModContent.BuffType<GlacialState>()] = immuneToSlowingDebuffs;
             npc.buffImmune[ModContent.BuffType<TemporalSadness>()] = immuneToSlowingDebuffs;
-            npc.buffImmune[ModContent.BuffType<KamiFlu>()] = immuneToSlowingDebuffs;
             npc.buffImmune[ModContent.BuffType<Eutrophication>()] = immuneToSlowingDebuffs;
             npc.buffImmune[ModContent.BuffType<TimeDistortion>()] = immuneToSlowingDebuffs;
             npc.buffImmune[ModContent.BuffType<GalvanicCorrosion>()] = immuneToSlowingDebuffs;
             npc.buffImmune[ModContent.BuffType<Vaporfied>()] = immuneToSlowingDebuffs;
-            npc.buffImmune[BuffID.Slow] = immuneToSlowingDebuffs;
             npc.buffImmune[BuffID.Webbed] = immuneToSlowingDebuffs;
 
             // Always start in enemy spawning phase
@@ -252,9 +253,9 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                 if (death)
                     chargeAmt = phase6 ? 1 : phase5 ? 3 : phase4 ? 2 : 1;
 
-                int masterModeChargeLimit = death ? (phase5 ? 2 : 1) : (phase5 ? 3 : 2);
-                if (death && chargeAmt > masterModeChargeLimit)
-                    chargeAmt = masterModeChargeLimit;
+                int deathChargeLimit = phase5 ? 3 : 2;
+                if (death && chargeAmt > deathChargeLimit)
+                    chargeAmt = deathChargeLimit;
 
                 // Switch to a random phase if chargeAmt has been exceeded
                 if (npc.ai[1] > (2 * chargeAmt) && npc.ai[1] % 2f == 0f)
@@ -747,7 +748,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                         Vector2 stingerVelocity = new Vector2(stingerTargetX, stingerTargetY);
                         int type = Main.zenithWorld ? (phase3 ? ModContent.ProjectileType<PlagueStingerGoliathV2>() : ProjectileID.FlamingWood) : ProjectileID.QueenBeeStinger;
 
-                        int projectile = Projectile.NewProjectile(npc.GetSource_FromAI(), stingerSpawnLocation, stingerVelocity, type, Main.zenithWorld ? 25 : npc.GetProjectileDamage(type), 0f, Main.myPlayer, 0f, (Main.zenithWorld && phase3) ? Main.player[npc.target].position.Y : 0f);
+                        int projectile = Projectile.NewProjectile(npc.GetSource_FromAI(), stingerSpawnLocation, stingerVelocity, type, StingerDamage, 0f, Main.myPlayer, 0f, (Main.zenithWorld && phase3) ? Main.player[npc.target].position.Y : 0f);
                         Main.projectile[projectile].timeLeft = 1200;
                         Main.projectile[projectile].extraUpdates = 1;
 
@@ -756,7 +757,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                             int numExtraStingers = death ? (phase6 ? 4 : 2) : (phase6 ? 2 : 1);
                             for (int i = 0; i < numExtraStingers; i++)
                             {
-                                projectile = Projectile.NewProjectile(npc.GetSource_FromAI(), stingerSpawnLocation + Main.rand.NextVector2CircularEdge(16f, 16f) * (i + 1), stingerVelocity * MathHelper.Lerp(0.75f, 1f, i / (float)numExtraStingers), type, Main.zenithWorld ? 25 : npc.GetProjectileDamage(type), 0f, Main.myPlayer, 0f, (Main.zenithWorld && phase3) ? Main.player[npc.target].position.Y : 0f);
+                                projectile = Projectile.NewProjectile(npc.GetSource_FromAI(), stingerSpawnLocation + Main.rand.NextVector2CircularEdge(16f, 16f) * (i + 1), stingerVelocity * MathHelper.Lerp(0.75f, 1f, i / (float)numExtraStingers), type, StingerDamage, 0f, Main.myPlayer, 0f, (Main.zenithWorld && phase3) ? Main.player[npc.target].position.Y : 0f);
                                 Main.projectile[projectile].timeLeft = 1200;
                                 Main.projectile[projectile].extraUpdates = 1;
                             }
@@ -879,7 +880,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                                 if (i % 2f != 0f)
                                     perturbedSpeed *= 0.8f;
 
-                                int projectile = Projectile.NewProjectile(npc.GetSource_FromAI(), stingerSpawnLocation + perturbedSpeed.SafeNormalize(Vector2.UnitY) * 10f, perturbedSpeed, type, Main.zenithWorld ? 25 : npc.GetProjectileDamage(type), 0f, Main.myPlayer, 0f, Main.player[npc.target].position.Y);
+                                int projectile = Projectile.NewProjectile(npc.GetSource_FromAI(), stingerSpawnLocation + perturbedSpeed.SafeNormalize(Vector2.UnitY) * 10f, perturbedSpeed, type, StingerDamage, 0f, Main.myPlayer, 0f, Main.player[npc.target].position.Y);
                                 Main.projectile[projectile].timeLeft = 1200;
                                 Main.projectile[projectile].extraUpdates = 1;
 
@@ -950,589 +951,13 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                     Vector2 beenadeSpawnLocation = npc.Center + new Vector2(20f * npc.direction, -40f);
                     SoundEngine.PlaySound(SoundID.Item76, beenadeSpawnLocation);
                     int type = ModContent.ProjectileType<QueenBeenade>();
-                    int damage = npc.GetProjectileDamage(type);
                     if (Main.netMode != NetmodeID.MultiplayerClient)
-                        Projectile.NewProjectile(npc.GetSource_FromAI(), beenadeSpawnLocation, Vector2.UnitX * 6f * npc.direction, type, damage, 0f, Main.myPlayer);
+                        Projectile.NewProjectile(npc.GetSource_FromAI(), beenadeSpawnLocation, Vector2.UnitX * 6f * npc.direction, type, BeenadeDamage, 0f, Main.myPlayer);
                 }
             }
 
             if (Main.dedServ)
                 npc.ForceNetUpdate();
-
-            return false;
-        }
-
-        public static bool VanillaQueenBeeAI(NPC npc, Mod mod)
-        {
-            if (Main.expertMode)
-            {
-                int num643 = (int)(20f * (1f - (float)npc.life / (float)npc.lifeMax));
-                npc.defense = npc.defDefense + num643;
-            }
-
-            if (npc.target < 0 || npc.target == Main.maxPlayers || Main.player[npc.target].dead || !Main.player[npc.target].active)
-                CalamityUtils.CalamityTargeting(npc, CalamityTargetingParameters.BossDefaults);
-
-            bool enrage = true;
-            int targetTileX = (int)Main.player[npc.target].Center.X / 16;
-            int targetTileY = (int)Main.player[npc.target].Center.Y / 16;
-
-            Tile tile = Framing.GetTileSafely(targetTileX, targetTileY);
-            if (tile.WallType == WallID.HiveUnsafe)
-                enrage = false;
-
-            bool dead4 = Main.player[npc.target].dead;
-            float num644 = 0f;
-            if ((double)(npc.position.Y / 16f) < Main.worldSurface && enrage)
-                num644 += 1f;
-
-            if (!Main.player[npc.target].ZoneJungle)
-                num644 += 1f;
-
-            npc.Calamity().CurrentlyEnraged = num644 > 0f;
-
-            if (Main.getGoodWorld)
-                num644 += 0.5f;
-
-            float num645 = Vector2.Distance(npc.Center, Main.player[npc.target].Center);
-            if (npc.ai[0] != 5f)
-            {
-                if (npc.timeLeft < 60)
-                    npc.timeLeft = 60;
-
-                if (num645 > 3000f)
-                {
-                    npc.ai[0] = 4f;
-                    npc.netUpdate = true;
-                }
-            }
-
-            if (dead4)
-            {
-                npc.ai[0] = 5f;
-                npc.netUpdate = true;
-            }
-
-            if (npc.ai[0] == 5f)
-            {
-                // Avoid cheap bullshit
-                npc.damage = 0;
-
-                npc.velocity.Y *= 0.98f;
-                if (npc.velocity.X < 0f)
-                    npc.direction = -1;
-                else
-                    npc.direction = 1;
-
-                npc.spriteDirection = npc.direction;
-                if (npc.position.X < (float)(Main.maxTilesX * 8))
-                {
-                    if (npc.velocity.X > 0f)
-                        npc.velocity.X *= 0.98f;
-                    else
-                        npc.localAI[0] = 1f;
-
-                    npc.velocity.X -= 0.08f;
-                }
-                else
-                {
-                    if (npc.velocity.X < 0f)
-                        npc.velocity.X *= 0.98f;
-                    else
-                        npc.localAI[0] = 1f;
-
-                    npc.velocity.X += 0.08f;
-                }
-
-                npc.EncourageDespawn(10);
-            }
-            else if (npc.ai[0] == -1f)
-            {
-                if (Main.netMode == NetmodeID.MultiplayerClient)
-                    return false;
-
-                float num646 = npc.ai[1];
-                int num647;
-                do
-                {
-                    num647 = Main.rand.Next(3);
-                    switch (num647)
-                    {
-                        case 1:
-                            num647 = 2;
-                            break;
-                        case 2:
-                            num647 = 3;
-                            break;
-                    }
-                }
-                while ((float)num647 == num646);
-
-                CalamityUtils.CalamityTargeting(npc, CalamityTargetingParameters.BossDefaults);
-                npc.ai[0] = num647;
-                npc.ai[1] = 0f;
-                npc.ai[2] = 0f;
-                npc.netUpdate = true;
-            }
-            else if (npc.ai[0] == 0f)
-            {
-                // Charging distance from player
-                int chargeDistanceX = Main.masterMode ? 425 : 600;
-                if (Main.expertMode)
-                {
-                    int chargeDistanceReduction = Main.masterMode ? 25 : 50;
-                    if ((double)npc.life < (double)npc.lifeMax * 0.1)
-                        chargeDistanceX -= chargeDistanceReduction * 6;
-                    else if ((double)npc.life < (double)npc.lifeMax * 0.25)
-                        chargeDistanceX -= chargeDistanceReduction * 3;
-                    else if ((double)npc.life < (double)npc.lifeMax * 0.5)
-                        chargeDistanceX -= chargeDistanceReduction * 2;
-                    else if ((double)npc.life < (double)npc.lifeMax * 0.75)
-                        chargeDistanceX -= chargeDistanceReduction;
-                }
-                chargeDistanceX -= (int)(100f * num644);
-
-                int num648 = Main.masterMode ? 1 : 2;
-                if (Main.expertMode)
-                {
-                    if (npc.life < npc.lifeMax / 2 && !Main.masterMode)
-                        num648++;
-
-                    if (npc.life < npc.lifeMax / 3)
-                        num648++;
-
-                    if (npc.life < npc.lifeMax / 5)
-                        num648++;
-                }
-
-                num648 += (int)(1f * num644);
-                if (npc.ai[1] > (float)(2 * num648) && npc.ai[1] % 2f == 0f)
-                {
-                    npc.ai[0] = -1f;
-                    npc.ai[1] = 0f;
-                    npc.ai[2] = 0f;
-                    npc.netUpdate = true;
-                    return false;
-                }
-
-                if (npc.ai[1] % 2f == 0f)
-                {
-                    // Avoid cheap bullshit
-                    npc.damage = 0;
-                    
-                    float chargeDistanceY = 20f;
-                    chargeDistanceY += 20f * num644;
-
-                    float distanceFromTargetX = Math.Abs(npc.Center.X - Main.player[npc.target].Center.X);
-                    float distanceFromTargetY = Math.Abs(npc.Center.Y - Main.player[npc.target].Center.Y);
-                    if (distanceFromTargetY < chargeDistanceY && distanceFromTargetX >= chargeDistanceX)
-                    {
-                        // Set damage
-                        npc.damage = npc.defDamage;
-
-                        npc.localAI[0] = 1f;
-                        npc.ai[1] += 1f;
-                        npc.ai[2] = 0f;
-                        npc.netUpdate = true;
-                        float num650 = 12f;
-                        if (Main.expertMode)
-                        {
-                            num650 = Main.masterMode ? 20f : 16f;
-                            float chargeVelocityIncrease = Main.masterMode ? 1.5f : 2f;
-                            if ((double)npc.life < (double)npc.lifeMax * 0.75)
-                                num650 += chargeVelocityIncrease;
-
-                            if ((double)npc.life < (double)npc.lifeMax * 0.5)
-                                num650 += chargeVelocityIncrease;
-
-                            if ((double)npc.life < (double)npc.lifeMax * 0.25)
-                                num650 += chargeVelocityIncrease;
-
-                            if ((double)npc.life < (double)npc.lifeMax * 0.1)
-                                num650 += chargeVelocityIncrease;
-                        }
-
-                        num650 += 7f * num644;
-                        Vector2 vector82 = npc.Center;
-                        float num651 = Main.player[npc.target].Center.X - vector82.X;
-                        float num652 = Main.player[npc.target].Center.Y - vector82.Y;
-                        float num653 = (float)Math.Sqrt(num651 * num651 + num652 * num652);
-                        num653 = num650 / num653;
-                        npc.velocity.X = num651 * num653;
-                        npc.velocity.Y = num652 * num653;
-
-                        float playerLocation = npc.Center.X - Main.player[npc.target].Center.X;
-                        npc.direction = playerLocation < 0 ? 1 : -1;
-                        npc.spriteDirection = npc.direction;
-
-                        SoundEngine.PlaySound(SoundID.Zombie125, npc.Center);
-
-                        return false;
-                    }
-
-                    npc.localAI[0] = 0f;
-                    float num654 = Main.masterMode ? 16f : 12f;
-                    float num655 = Main.masterMode ? 0.3f : 0.15f;
-                    if (Main.expertMode)
-                    {
-                        float chargeLineUpVelocityIncrease = Main.masterMode ? 0.5f : 1f;
-                        float chargeLineUpAccelerationIncrease = Main.masterMode ? 0.025f : 0.05f;
-                        if ((double)npc.life < (double)npc.lifeMax * 0.75)
-                        {
-                            num654 += chargeLineUpVelocityIncrease;
-                            num655 += chargeLineUpAccelerationIncrease;
-                        }
-
-                        if ((double)npc.life < (double)npc.lifeMax * 0.5)
-                        {
-                            num654 += chargeLineUpVelocityIncrease;
-                            num655 += chargeLineUpAccelerationIncrease;
-                        }
-
-                        if ((double)npc.life < (double)npc.lifeMax * 0.25)
-                        {
-                            num654 += chargeLineUpVelocityIncrease * 2f;
-                            num655 += chargeLineUpAccelerationIncrease;
-                        }
-
-                        if ((double)npc.life < (double)npc.lifeMax * 0.1)
-                        {
-                            num654 += chargeLineUpVelocityIncrease * 2f;
-                            num655 += chargeLineUpAccelerationIncrease * 2f;
-                        }
-                    }
-
-                    num654 += 3f * num644;
-                    num655 += 0.5f * num644;
-
-                    // Velocity calculations
-                    if (npc.Center.Y < Main.player[npc.target].Center.Y - chargeDistanceY)
-                        npc.velocity.Y += num655;
-                    else if (npc.Center.Y > Main.player[npc.target].Center.Y + chargeDistanceY)
-                        npc.velocity.Y -= num655;
-                    else
-                        npc.velocity.Y *= 0.7f;
-
-                    if (npc.velocity.Y < -num654)
-                        npc.velocity.Y = -num654;
-                    if (npc.velocity.Y > num654)
-                        npc.velocity.Y = num654;
-
-                    float distanceXMax = 100f;
-                    float distanceXMin = 20f;
-                    if (distanceFromTargetX > chargeDistanceX + distanceXMax)
-                        npc.velocity.X += 0.15f * npc.direction;
-                    else if (distanceFromTargetX < chargeDistanceX + distanceXMin)
-                        npc.velocity.X -= 0.15f * npc.direction;
-                    else
-                        npc.velocity.X *= 0.7f;
-
-                    if (npc.velocity.X < -16f)
-                        npc.velocity.X = -16f;
-                    if (npc.velocity.X > 16f)
-                        npc.velocity.X = 16f;
-
-                    // Face the correct direction
-                    float playerLocation2 = npc.Center.X - Main.player[npc.target].Center.X;
-                    npc.direction = playerLocation2 < 0 ? 1 : -1;
-                    npc.spriteDirection = npc.direction;
-
-                    return false;
-                }
-
-                // Set damage
-                npc.damage = npc.defDamage;
-
-                if (npc.velocity.X < 0f)
-                    npc.direction = -1;
-                else
-                    npc.direction = 1;
-
-                npc.spriteDirection = npc.direction;
-
-                int num657 = 1;
-                if (npc.Center.X < Main.player[npc.target].Center.X)
-                    num657 = -1;
-
-                bool flag34 = false;
-                if (npc.direction == num657 && Math.Abs(npc.Center.X - Main.player[npc.target].Center.X) > (float)chargeDistanceX)
-                {
-                    npc.ai[2] = 1f;
-                    flag34 = true;
-                }
-
-                if (Math.Abs(npc.Center.Y - Main.player[npc.target].Center.Y) > (float)chargeDistanceX * 1.5f)
-                {
-                    npc.ai[2] = 1f;
-                    flag34 = true;
-                }
-
-                if (num644 > 0f && flag34)
-                    npc.velocity *= 0.5f;
-
-                if (npc.ai[2] == 1f)
-                {
-                    // Avoid cheap bullshit
-                    npc.damage = 0;
-
-                    float playerLocation = npc.Center.X - Main.player[npc.target].Center.X;
-                    npc.direction = playerLocation < 0 ? 1 : -1;
-                    npc.spriteDirection = npc.direction;
-
-                    npc.localAI[0] = 0f;
-
-                    npc.velocity *= (Main.masterMode ? 0.8f : 0.9f);
-                    float num658 = Main.masterMode ? 0.2f : 0.1f;
-                    if (Main.expertMode)
-                    {
-                        float velocityMultiplier = Main.masterMode ? 0.925f : 0.9f;
-                        float velocityGateValueIncrease = Main.masterMode ? 0.025f : 0.05f;
-                        if (npc.life < npc.lifeMax / 2)
-                        {
-                            npc.velocity *= velocityMultiplier;
-                            num658 += velocityGateValueIncrease;
-                        }
-
-                        if (npc.life < npc.lifeMax / 3)
-                        {
-                            npc.velocity *= velocityMultiplier;
-                            num658 += velocityGateValueIncrease;
-                        }
-
-                        if (npc.life < npc.lifeMax / 5)
-                        {
-                            npc.velocity *= velocityMultiplier;
-                            num658 += velocityGateValueIncrease;
-                        }
-                    }
-
-                    if (num644 > 0f)
-                        npc.velocity *= 0.7f;
-
-                    if (Math.Abs(npc.velocity.X) + Math.Abs(npc.velocity.Y) < num658)
-                    {
-                        npc.ai[2] = 0f;
-                        npc.ai[1] += 1f;
-                        npc.netUpdate = true;
-                    }
-                }
-                else
-                    npc.localAI[0] = 1f;
-            }
-            else if (npc.ai[0] == 2f)
-            {
-                // Avoid cheap bullshit
-                npc.damage = 0;
-
-                float playerLocation = npc.Center.X - Main.player[npc.target].Center.X;
-                npc.direction = playerLocation < 0 ? 1 : -1;
-                npc.spriteDirection = npc.direction;
-
-                float num659 = Main.masterMode ? 14f : 12f;
-                float num660 = 0.14f;
-                if (Main.expertMode)
-                    num660 = Main.masterMode ? 0.3f : 0.2f;
-
-                bool canHitTarget = Collision.CanHit(npc.Center, 1, 1, Main.player[npc.target].position, Main.player[npc.target].width, Main.player[npc.target].height);
-                float distanceAboveTarget = !canHitTarget ? 0f : 320f;
-                Vector2 hoverDestination = Main.player[npc.target].Center - Vector2.UnitY * distanceAboveTarget;
-                Vector2 idealVelocity = npc.SafeDirectionTo(hoverDestination) * num659;
-
-                if (Vector2.Distance(npc.Center, hoverDestination) < 200f && canHitTarget)
-                {
-                    npc.ai[0] = 1f;
-                    npc.ai[1] = 0f;
-                    npc.netUpdate = true;
-                    return false;
-                }
-
-                npc.SimpleFlyMovement(idealVelocity, num660);
-            }
-            else if (npc.ai[0] == 1f)
-            {
-                // Avoid cheap bullshit
-                npc.damage = 0;
-
-                npc.localAI[0] = 0f;
-
-                float num672 = Main.masterMode ? 16f : 14f;
-                float num673 = Main.masterMode ? 0.15f : 0.1f;
-
-                Vector2 beeSpawnLocation = new Vector2(npc.Center.X + (Main.rand.Next(20) * npc.direction), npc.position.Y + npc.height * 0.8f);
-                Vector2 beeSpawnCollisionLocation = new Vector2(beeSpawnLocation.X, beeSpawnLocation.Y - 30f);
-                bool canHitTarget = Collision.CanHit(beeSpawnCollisionLocation, 1, 1, Main.player[npc.target].position, Main.player[npc.target].width, Main.player[npc.target].height);
-                Vector2 hoverDestination = Main.player[npc.target].Center - Vector2.UnitY * (!canHitTarget ? 0f : 320f);
-                Vector2 idealVelocity = npc.SafeDirectionTo(hoverDestination) * num672;
-
-                npc.ai[1] += (Main.masterMode ? 2f : 1f);
-                if (Main.expertMode)
-                {
-                    int num667 = 0;
-                    for (int num668 = 0; num668 < Main.maxPlayers; num668++)
-                    {
-                        if (Main.player[num668].active && !Main.player[num668].dead && (npc.Center - Main.player[num668].Center).Length() < 1000f)
-                            num667++;
-                    }
-
-                    npc.ai[1] += num667 / 2;
-                    float beeTimerIncrease = Main.masterMode ? 0.125f : 0.25f;
-                    if ((double)npc.life < (double)npc.lifeMax * 0.75)
-                        npc.ai[1] += beeTimerIncrease;
-
-                    if ((double)npc.life < (double)npc.lifeMax * 0.5)
-                        npc.ai[1] += beeTimerIncrease;
-
-                    if ((double)npc.life < (double)npc.lifeMax * 0.25)
-                        npc.ai[1] += beeTimerIncrease;
-
-                    if ((double)npc.life < (double)npc.lifeMax * 0.1)
-                        npc.ai[1] += beeTimerIncrease;
-                }
-
-                bool flag35 = false;
-                int num669 = (int)(40f - 18f * num644);
-                if (npc.ai[1] > (float)num669)
-                {
-                    npc.ai[1] = 0f;
-                    npc.ai[2]++;
-                    flag35 = true;
-                }
-
-                if (Collision.CanHit(beeSpawnLocation, 1, 1, Main.player[npc.target].position, Main.player[npc.target].width, Main.player[npc.target].height) && flag35)
-                {
-                    SoundEngine.PlaySound(SoundID.NPCHit18, npc.Center);
-                    if (Main.netMode != NetmodeID.MultiplayerClient)
-                    {
-                        int num670 = Main.rand.Next(NPCID.Bee, NPCID.BeeSmall + 1);
-                        int num671 = NPC.NewNPC(npc.GetSource_FromAI(), (int)beeSpawnLocation.X, (int)beeSpawnLocation.Y, num670);
-                        Vector2 beeVelocity = (Main.player[npc.target].Center - npc.Center).SafeNormalize(Vector2.UnitY);
-                        Main.npc[num671].velocity = beeVelocity;
-                        Main.npc[num671].velocity *= 5f;
-                        Main.npc[num671].CanBeReplacedByOtherNPCs = true;
-                        Main.npc[num671].localAI[0] = 60f;
-                        Main.npc[num671].netUpdate = true;
-                    }
-                }
-
-                // Velocity calculations if target is too far away
-                if (Vector2.Distance(beeSpawnLocation, hoverDestination) > 400f || !canHitTarget)
-                    npc.SimpleFlyMovement(idealVelocity, num673);
-                else
-                    npc.velocity *= (Main.masterMode ? 0.8f : 0.9f);
-
-                float playerLocation = npc.Center.X - Main.player[npc.target].Center.X;
-                npc.direction = playerLocation < 0 ? 1 : -1;
-                npc.spriteDirection = npc.direction;
-
-                float maxBees = Main.masterMode ? 8f : 5f;
-                if (npc.ai[2] > maxBees)
-                {
-                    npc.ai[0] = -1f;
-                    npc.ai[1] = 1f;
-                    npc.netUpdate = true;
-                }
-            }
-            else if (npc.ai[0] == 3f)
-            {
-                // Avoid cheap bullshit
-                npc.damage = 0;
-
-                float playerLocation = npc.Center.X - Main.player[npc.target].Center.X;
-                npc.direction = playerLocation < 0 ? 1 : -1;
-                npc.spriteDirection = npc.direction;
-
-                float num674 = 12f;
-                float num675 = 0.1f;
-                if (Main.expertMode)
-                {
-                    num675 = Main.masterMode ? 0.2f : 0.15f;
-                    num674 = Main.masterMode ? 16f : 14f;
-                }
-                num675 += 0.2f * num644;
-                num674 += 6f * num644;
-
-                Vector2 stingerSpawnLocation = new Vector2(npc.Center.X + (Main.rand.Next(20) * npc.direction), npc.position.Y + npc.height * 0.8f);
-                bool canHitTarget = Collision.CanHit(new Vector2(stingerSpawnLocation.X, stingerSpawnLocation.Y - 30f), 1, 1, Main.player[npc.target].position, Main.player[npc.target].width, Main.player[npc.target].height);
-                Vector2 hoverDestination = Main.player[npc.target].Center - Vector2.UnitY * (!canHitTarget ? 0f : 300f);
-                Vector2 idealVelocity = npc.SafeDirectionTo(hoverDestination) * num674;
-
-                npc.ai[1] += 1f;
-                int num679 = 40;
-                if (Main.masterMode)
-                    num679 = (((double)npc.life < (double)npc.lifeMax * 0.1) ? 10 : ((npc.life < npc.lifeMax / 3) ? 15 : ((npc.life >= npc.lifeMax / 2) ? 25 : 20)));
-                else if (Main.expertMode)
-                    num679 = (((double)npc.life < (double)npc.lifeMax * 0.1) ? 15 : ((npc.life < npc.lifeMax / 3) ? 25 : ((npc.life >= npc.lifeMax / 2) ? 35 : 30)));
-
-                num679 -= (int)((Main.masterMode ? 3f : 5f) * num644);
-                if (npc.ai[1] % (float)num679 == (float)(num679 - 1) && npc.position.Y + (float)npc.height < Main.player[npc.target].position.Y && Collision.CanHit(stingerSpawnLocation, 1, 1, Main.player[npc.target].position, Main.player[npc.target].width, Main.player[npc.target].height))
-                {
-                    SoundEngine.PlaySound(SoundID.Item17, npc.Center);
-                    if (Main.netMode != NetmodeID.MultiplayerClient)
-                    {
-                        float num680 = Main.masterMode ? 11f : 8f;
-                        float stingerVelocityIncrease = Main.masterMode ? 1f : 2f;
-                        if (Main.expertMode)
-                            num680 += stingerVelocityIncrease;
-
-                        if (Main.expertMode && (double)npc.life < (double)npc.lifeMax * 0.1)
-                            num680 += stingerVelocityIncrease * 1.5f;
-
-                        num680 += 7f * num644;
-                        int num681 = (int)(12f - 5f * num644);
-                        int num682 = (int)(6f - 2f * num644);
-                        if (num681 < 1)
-                            num681 = 1;
-
-                        if (num682 < 1)
-                            num682 = 1;
-
-                        float num683 = Main.player[npc.target].Center.X - stingerSpawnLocation.X + (float)Main.rand.Next(-num681, num681 + 1);
-                        float num684 = Main.player[npc.target].Center.Y - stingerSpawnLocation.Y + (float)Main.rand.Next(-num682, num682 + 1);
-                        float num685 = (float)Math.Sqrt(num683 * num683 + num684 * num684);
-                        num685 = num680 / num685;
-                        num683 *= num685;
-                        num684 *= num685;
-                        int type = ProjectileID.QueenBeeStinger;
-                        int num688 = Projectile.NewProjectile(npc.GetSource_FromAI(), stingerSpawnLocation.X, stingerSpawnLocation.Y, num683, num684, type, npc.GetProjectileDamage(type), 0f, Main.myPlayer);
-                        Main.projectile[num688].timeLeft = 300;
-                    }
-                }
-
-                if (Vector2.Distance(stingerSpawnLocation, hoverDestination) > 40f || !canHitTarget)
-                    npc.SimpleFlyMovement(idealVelocity, num675);
-
-                float num689 = Main.masterMode ? 16f : 20f;
-                num689 -= 5f * num644;
-                if (npc.ai[1] > (float)num679 * num689)
-                {
-                    npc.ai[0] = -1f;
-                    npc.ai[1] = 3f;
-                    npc.netUpdate = true;
-                }
-            }
-            else if (npc.ai[0] == 4f)
-            {
-                // Avoid cheap bullshit
-                npc.damage = 0;
-
-                npc.localAI[0] = 1f;
-                float num690 = 14f;
-                float num691 = 14f;
-                Vector2 vector88 = (Main.player[npc.target].Center - npc.Center).SafeNormalize(Vector2.UnitY);
-                vector88 *= num690;
-                npc.velocity = (npc.velocity * num691 + vector88) / (num691 + 1f);
-                if (npc.velocity.X < 0f)
-                    npc.direction = -1;
-                else
-                    npc.direction = 1;
-
-                npc.spriteDirection = npc.direction;
-                if (num645 < 2000f)
-                {
-                    npc.ai[0] = -1f;
-                    npc.localAI[0] = 0f;
-                }
-            }
 
             return false;
         }

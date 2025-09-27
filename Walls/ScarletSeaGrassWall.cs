@@ -16,13 +16,12 @@ namespace CalamityMod.Walls
 
         public override void SetStaticDefaults()
         {
-            // 18APR2025: Ozzatron: guessed a red dust for scarlet sea grass
             DustType = DustID.CrimsonPlants;
 
             WallID.Sets.Conversion.Grass[Type] = true;
 
-            AddMapEntry(new Color(103, 24, 24));
-            this.AddMapEntryWithWaterVisibility(new Color(89, 49, 108));
+            AddMapEntry(new Color(144, 33, 33));
+            this.AddMapEntryWithWaterVisibility(new Color(96, 53, 116));
             if (!Main.dedServ)
             {
                 leafTexture = ModContent.Request<Texture2D>("CalamityMod/Walls/ScarletSeaGrassWall_Leaves");

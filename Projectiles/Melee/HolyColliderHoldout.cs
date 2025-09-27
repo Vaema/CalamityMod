@@ -5,6 +5,7 @@ using CalamityMod.Items.Weapons.Melee;
 using CalamityMod.NPCs;
 using CalamityMod.Particles;
 using CalamityMod.Projectiles.BaseProjectiles;
+using CalamityMod.Projectiles.Boss;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using ReLogic.Content;
@@ -333,10 +334,29 @@ namespace CalamityMod.Projectiles.Melee
                             for (int x = 0; x < Main.maxProjectiles; x++)
                             {
                                 Projectile projectile = Main.projectile[x];
-                                if (Vector2.Distance(Owner.Center + (new Vector2(100, 0).RotatedBy(FinalRotation + MathHelper.ToRadians(-45))), projectile.Center) <= 100 && projectile.active && projectile.type == ModContent.ProjectileType<HolyColliderHolyFire>())
+                                bool isProviProj = (projectile.type == ModContent.ProjectileType<HolyFire>() ||
+                                    projectile.type == ModContent.ProjectileType<HolyFire2>() ||
+                                    projectile.type == ModContent.ProjectileType<HolyFlare>() ||
+                                    projectile.type == ModContent.ProjectileType<HolyBomb>() ||
+                                    projectile.type == ModContent.ProjectileType<HolyBlast>());
+                                bool isAFireball = (projectile.active && projectile.type == ModContent.ProjectileType<HolyColliderHolyFire>() && projectile.ai[0] != 10) || isProviProj;
+                                if (Vector2.Distance(Owner.Center + (new Vector2(60, 0).RotatedBy(FinalRotation + MathHelper.ToRadians(-45))), projectile.Center) <= 150 + Math.Max(projectile.width, projectile.height) && projectile.active && isAFireball)
                                 {
-                                    projectile.ai[2] = 5;
-                                    projectile.owner = Owner.whoAmI;
+                                    if (isProviProj)
+                                    {
+                                        Projectile proj = Projectile.NewProjectileDirect(Projectile.GetSource_FromThis(), projectile.Center, (Owner.Center - Owner.Calamity().mouseWorld).SafeNormalize(Vector2.UnitY) * -2.5f, ModContent.ProjectileType<HolyColliderHolyFire>(), (int)((Projectile.damage * 0.1) + projectile.damage), Projectile.knockBack, Projectile.owner, 0, 15, 5);
+                                        Particle orb2 = new CustomPulse(projectile.Center, Vector2.Zero, Color.Goldenrod, "CalamityMod/Particles/BloomRing", new Vector2(1, 1), Main.rand.NextFloat(-10, 10), 0, 0.8f, 11);
+                                        GeneralParticleHandler.SpawnParticle(orb2);
+                                        if (projectile.type == ModContent.ProjectileType<HolyBlast>())
+                                            projectile.active = false;
+                                        else
+                                            projectile.Kill();
+                                    }
+                                    else
+                                    {
+                                        projectile.ai[2] = 5;
+                                        projectile.owner = Owner.whoAmI;
+                                    }
                                 }
                             }
                         }
@@ -345,7 +365,8 @@ namespace CalamityMod.Projectiles.Melee
                             for (int x = 0; x < Main.maxProjectiles; x++)
                             {
                                 Projectile projectile = Main.projectile[x];
-                                if (Vector2.Distance(Owner.Center + (new Vector2(100, 0).RotatedBy(FinalRotation + MathHelper.ToRadians(-45))), projectile.Center) <= 100 && projectile.active && projectile.type == ModContent.ProjectileType<HolyColliderHolyFire>() && projectile.ai[0] != 10)
+                                bool isAFireball = (projectile.active && projectile.type == ModContent.ProjectileType<HolyColliderHolyFire>() && projectile.ai[0] != 10);
+                                if (Vector2.Distance(Owner.Center + (new Vector2(60, 0).RotatedBy(FinalRotation + MathHelper.ToRadians(-45))), projectile.Center) <= 150 && isAFireball)
                                 {
                                     Vector2 launch = (Owner.Center - Owner.Calamity().mouseWorld).SafeNormalize(Vector2.UnitY) * -2.5f;
                                     projectile.velocity += launch;
@@ -411,7 +432,7 @@ namespace CalamityMod.Projectiles.Melee
                     }
                     for (int i = 0; i < 4; i++)
                     {
-                        Projectile.NewProjectileDirect(Projectile.GetSource_FromThis(), target.Center, (new Vector2(0, -35).RotatedBy(MathHelper.ToRadians(45f))).RotatedBy(MathHelper.ToRadians(90f) * i), ModContent.ProjectileType<HolyColliderHolyFire>(), (int)(Projectile.damage * 0.1), Projectile.knockBack, Projectile.owner, 0, target.whoAmI);
+                        Projectile.NewProjectileDirect(Projectile.GetSource_FromThis(), target.Center, (new Vector2(0, -35).RotatedBy(MathHelper.ToRadians(45f))).RotatedBy(MathHelper.ToRadians(90f) * i), ModContent.ProjectileType<HolyColliderHolyFire>(), (int)(Projectile.damage * 0.1), Projectile.knockBack, Projectile.owner, 0);
                     }
                 }
             }

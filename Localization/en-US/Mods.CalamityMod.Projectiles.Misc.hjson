@@ -8,7 +8,11 @@ AnomalysNanogunHoldout.DisplayName: The Anomaly's Nanogun
 AnomalysNanogunMPFBBoom.DisplayName: MPFB Explosion
 AnomalysNanogunMPFBDevastator.DisplayName: MPFB Devastator
 AnomalysNanogunPlasmaBeam.DisplayName: Plasma Beam
-GatlingLaserShot.DisplayName: Gatling Laser
+AqueousHunterDroneSummon.DisplayName: Plasma Shrimp
+AugerHoldout.DisplayName: P-GSS Auger
+AugerSlash.DisplayName: Auger Slash
+AugerPull.DisplayName: Auger Pull
+CountermeasurePalmBlast.DisplayName: Palm Blast
 GaussEnergy.DisplayName: Gauss Energy
 GaussFlux.DisplayName: Gauss Flux
 GaussPistolShot.DisplayName: Gauss Shot
@@ -37,6 +41,7 @@ PulseRifleShot.DisplayName: Pulse Bolt
 PulseTurret.DisplayName: Pulse Turret
 PulseTurretShot.DisplayName: Pulse Bolt
 ShortCircuitHook.DisplayName: Short Circuit Hook
+ShrimpPlasmaMissile.DisplayName: Plasma Shrimp Missile
 SnakeEyesSummon.DisplayName: Snake Eyes
 SnakeEyesProjectile.DisplayName: Inescapable Bolt
 StarSwallowerAcid.DisplayName: Acid
@@ -46,10 +51,13 @@ SystemBaneProjectile.DisplayName: System Bane
 TeslaCannonShot.DisplayName: Tesla Beam
 UnstableMatter.DisplayName: Unstable Matter
 VoltageStream.DisplayName: Voltage Stream
+VulcanProjectile.DisplayName: Vulcan Shot
+VulcanSpear.DisplayName: Vulcanite Lance
 WavePounderBoom.DisplayName: Explosion
 WavePounderProjectile.DisplayName: Wave Pounder
 // Environmental
 AcidDrop.DisplayName: Acid
+BarrelCactusProjectile.DisplayName: Barrel Cactus
 BrimstoneGeyser.DisplayName: Smoke
 GeyserTelegraph.DisplayName: Geyser
 HotSteam.DisplayName: Steam

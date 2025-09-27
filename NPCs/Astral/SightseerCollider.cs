@@ -40,30 +40,25 @@ namespace CalamityMod.NPCs.Astral
             NPC.width = 48;
             NPC.height = 40;
             NPC.damage = 38;
-            NPC.defense = 16;
-            NPC.DR_NERD(0.15f);
-            NPC.lifeMax = 390;
+            NPC.defense = 28;
+            NPC.lifeMax = 320;
             NPC.DeathSound = CommonCalamitySounds.AstralNPCDeathSound;
             NPC.noGravity = true;
             NPC.knockBackResist = 0.58f;
-            NPC.value = Item.buyPrice(0, 0, 5, 0);
+            NPC.value = Item.buyPrice(silver: 5);
             NPC.aiStyle = -1;
             Banner = NPC.type;
             BannerItem = ModContent.ItemType<SightseerColliderBanner>();
             if (DownedBossSystem.downedAstrumAureus)
             {
                 NPC.damage = 58;
-                NPC.defense = 26;
+                NPC.defense = 38;
                 NPC.knockBackResist = 0.48f;
-                NPC.lifeMax = 585;
+                NPC.lifeMax = 480;
             }
             NPC.Calamity().VulnerableToHeat = true;
             NPC.Calamity().VulnerableToSickness = false;
             SpawnModBiomes = new int[1] { ModContent.GetInstance<BiomeManagers.AstralInfectionBiome>().Type };
-
-            // Scale stats in Expert and Master
-            CalamityGlobalNPC.AdjustExpertModeStatScaling(NPC);
-            CalamityGlobalNPC.AdjustMasterModeStatScaling(NPC);
         }
 
         public override void SetBestiary(BestiaryDatabase database, BestiaryEntry bestiaryEntry)

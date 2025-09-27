@@ -48,7 +48,7 @@ namespace CalamityMod.Projectiles.Melee
             Projectile.timeLeft = 102;
             Projectile.scale = Scale;
             Projectile.usesIDStaticNPCImmunity = true;
-            Projectile.idStaticNPCHitCooldown = 10;
+            Projectile.idStaticNPCHitCooldown = 20;
             Projectile.hide = true;
         }
 

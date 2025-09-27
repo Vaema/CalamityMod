@@ -1,3 +1,4 @@
+DashKey: Press {0} while facing a direction
 DodgeInfo:
 	'''
 	Grants the ability to dodge attacks
@@ -14,7 +15,7 @@ AddedTooltip: {
 		Enrages outside the Ocean
 		'''
 	SlimeGun: Slimed enemies take more damage from fire-based debuffs
-	FleshKnucklesLine: Max life increased by 45
+	FleshKnucklesLine: Max life increased by 25
 	RodofDiscord: Teleportation is disabled while Chaos State is active
 	Pwnhammer:
 		'''
@@ -27,7 +28,6 @@ AddedTooltip: {
 		This grants +1.5 HP/s life regen and accelerates natural life regen
 		Life drain stacks based on the number of enemies being hit
 		'''
-	WarmthPotion: Greatly reduces the duration of Chilled, Frozen, and Glacial State
 	HandWarmer: Provides a regeneration boost while wearing the Snow armor
 	GoldenFishingRod: Its fishing line will never break
 	// Step Stool
@@ -46,12 +46,9 @@ AddedTooltip: {
 	FairyBoots:
 		'''
 		Fairies can spawn at any time on the surface and spawn far more frequently
-		Nearby fairies grant +2 HP/s life regen, 10 defense and 10% movement speed
+		Nearby fairies grant +2 HP/s life regen, 6 defense and 10% movement speed
 		Fairies are immune to damage and will no longer flee
 		'''
-	MoonStone: Reduces the damage of the Nightwither debuff
-	SunStone: Reduces the damage of the Daybroken debuff
-	CelestialStone: Reduces the damage of the Nightwither and Daybroken debuffs
 	ArcaneFlower: 5% increased magic damage
 	RifleScope: The scope effect can be toggled with visibility
 	FeatherfallPotion: Disables all airborne flight recovery
@@ -59,29 +56,6 @@ AddedTooltip: {
 	YoyoGlove: Secondary yoyos will do 50% less damage
 	DefensePrefix: +{0}% damage reduction
 	LuckyPrefix: +0.05 luck
-	/*
-	Armor
-	*/
-	CopperHelmet: 5% increased damage
-	CopperChainmail: 3% increased critical strike chance
-	CopperGreaves: 5% increased movement speed
-	TinHelmet: 3% increased critical strike chance
-	TinChainmail: +0.5 HP/s life regen
-	TinGreaves: 5% increased movement speed
-	IronPieces: Increases damage reduction by 3%
-	LeadPieces: Increases damage reduction by 2%
-	SilverHelmet: 5% increased critical strike chance
-	SilverChainmail: +1 HP/s life regen
-	SilverGreaves: 8% increased movement speed
-	TungstenHelmet: 7% increased damage
-	TungstenChainmail: +0.5 HP/s life regen
-	TungstenGreaves: 8% increased movement speed
-	GoldHelmet: 5% increased damage
-	GoldChainmail: Increases damage reduction by 5%
-	GoldGreaves: 10% increased movement speed
-	PlatinumHelmet: 6% increased damage
-	PlatinumChainmail: 3% increased critical strike chance
-	PlatinumGreaves: 10% increased movement speed
 	CrimsonBreastplate: +1 HP/s life regen
 	CrimsonOtherPieces: +0.5 HP/s life regen
 	Picksaw: Can mine Scoria Ore located in the Abyss
@@ -99,7 +73,7 @@ EditedTooltip: {
 	BloodySpine:
 		'''
 		Summons the Brain of Cthulhu when used in the Crimson
-		Enrages outside the Underground Crimson
+		Despawns outside the Crimson
 		'''
 	ClothierVoodooDoll:
 		'''
@@ -118,31 +92,19 @@ EditedTooltip: {
 		Summons the Golem when used at the Lihzahrd Altar
 		Enrages outside the Jungle Temple
 		'''
-	MechanicalEye:
-		'''
-		Summons The Twins when used during nighttime
-		Enrages during the day
-		'''
+	MechanicalEye: Summons The Twins when used during nighttime
 	MechanicalSkull:
 		'''
 		Summons Skeletron Prime when used during nighttime
 		Enrages during the day
 		'''
-	MechanicalWorm:
-		'''
-		Summons The Destroyer when used during nighttime
-		Enrages during the day
-		'''
+	MechanicalWorm: Summons The Destroyer when used during nighttime
 	QueenSlimeCrystal: Summons Queen Slime when used in the Hallow
-	SuspiciousLookingEye:
-		'''
-		Summons the Eye of Cthulhu when used during nighttime
-		Enrages during the day
-		'''
+	SuspiciousLookingEye: Summons the Eye of Cthulhu when used during nighttime
 	WormFood:
 		'''
 		Summons the Eater of Worlds when used in the Corruption
-		Enrages outside the Underground Corruption
+		Despawns outside the Corruption
 		'''
 	MasterExclusive: Master or Revengeance
 	// Sparkle Slime Balloon
@@ -170,7 +132,6 @@ EditedTooltip: {
 	// Arcane Crystal
 	AegisCrystal: Permanently boosts natural life regeneration
 	ArcheryPotion: 20% increased arrow speed and 5% increased arrow damage
-	IronskinPotion: Increase defense by {0}
 	// Aerial Bane
 	DD2BetsyBow: Shoots a tight spread of 6 splitting arrows
 	AleSake:
@@ -198,13 +159,12 @@ EditedTooltip: {
 	// Soaring Insignia
 	EmpressFlightBooster1: Increases wing flight time by 33%
 	EmpressFlightBooster2: Increases movement and jump speed by 10% and acceleration by 1.25x
-	RifleScope1: Increase view range for guns (Right click to zoom out)
+	RifleScope1: Increase view range for guns (<right> to zoom out)
 	RifleScope2: The scope effect can be toggled with visibility
 	SniperScope: 12% increased ranged critical strike chance
 	MagicQuiver: Increases arrow damage by 5% and greatly increases arrow speed
 	MoltenQuiver1: Increases arrow damage by 7% and greatly increases arrow speed
 	MoltenQuiver2: Lights wooden arrows ablaze and all arrows inflict Hellfire
-	MagicPowerPotion: 10% increased magic damage
 	MagicHat: 6% increased magic critical strike chance
 	PowerGlove: 10% increased melee speed, does not stack with downgrades
 	BerserkerGlove: 10% increased true melee damage
@@ -219,8 +179,6 @@ EditedTooltip: {
 		14% increased melee damage
 		14% increased melee speed, does not stack with downgrades
 		'''
-	ObsidianSkullLine: Grants immunity to the Burning and On Fire! debuffs
-	LavaWaders: Grants immunity to the Burning and On Fire! debuffs, and 7 seconds of immunity to lava
 	Gi: 10% increased movement and jump speed
 	GoldPickaxe: Can mine Demonite, Crimtane, Meteorite, Sea Prisms, and Sea Prism Crystals
 	FlaskofCursedFlames: Melee, Whip, and Rogue attacks inflict enemies with cursed flames
@@ -284,8 +242,8 @@ EditedTooltip: {
 		Provides 32% increased jump speed and increased fall speed
 		Provides a gravitational boost jump, which recharges whenever gravity is flipped
 		Slightly improves wingless air movement speed
-		Press UP to change gravity
-		Press DOWN to fall faster
+		Press {$Key.UP} to change gravity
+		Press {$Key.DOWN} to fall faster
 		'''
 }
 
@@ -294,8 +252,7 @@ BuffDescription: {
 	Banner: You have increased damage and defense against the following:
 	BeetleMight: Melee damage and speed increase by {0}% and {1}% respectively
 	ChaosState: Rod of Discord teleports are disabled
-	LeafCrystal: Emits powerful life pulses at nearby enemies
-	WarmthExtra: Reduced durations of Chilled, Frozen, and Glacial State
+	Rabies: Decreased life regen, Causes status effects
 	WeaponImbueConfetti: All attacks cause confetti to appear
 	WeaponImbueCursedFlames: Melee, Whip, and Rogue attacks inflict enemies with cursed flames
 	WeaponImbueFire: Melee, Whip, and Rogue attacks set enemies on fire
@@ -339,7 +296,6 @@ DemolitionistChat: {
 DryadChat: {
 	DarksunEclipse: There's a dark solar energy emanating from the moths that appear during this time. What's up with moths getting stronger as you do too?
 	Hardmode: That starborne illness sits upon this land like a blister. Do even more vile forces of corruption exist in worlds beyond?
-	DrunkPrincessShroom: "{0} put me up to this."
 	Mushroom: I'm not here for any reason! Just picking up mushrooms for uh, later use.
 	SulphurSea: My Goddess is resting deep below this sea. If you may excuse me, I wish to pay my respects to her alone.
 }
@@ -377,7 +333,6 @@ MechanicChat: {
 	MoonLordDefeated: What do you mean your traps aren't making the cut? Don't look at me!
 	Eclipse: Um... should my nightlight be on?
 	AcidRain: Maybe I should've waterproofed my gadgets... They're starting to corrode.
-	DrunkPrincess: Well, I like {0}, but I, ah... I have my eyes on someone else.
 }
 
 MerchantChat: {
@@ -407,7 +362,6 @@ PainterChat: {
 }
 
 PartyGirlChat: {
-	DrunkPrincess: I have a feeling we're going to have absolutely fantastic parties with {0} around!
 	Eclipse1: I think my light display is turning into an accidental bug zapper. At least the monsters are enjoying it.
 	Eclipse2: Ooh! I love parties where everyone wears a scary costume!
 }
@@ -415,7 +369,6 @@ PartyGirlChat: {
 PirateChat: {
 	PreLeviathan: Aye, I've heard of a mythical creature in the oceans, singing with an alluring voice. Careful when yer fishin out there.
 	WetScourgeDefeated: I have to thank ye again for takin' care of that sea serpent. Or was that another one...
-	DrunkPrincess: Twenty-nine bottles of beer on the wall...
 	SeaKing: I remember legends about that {0}. He ain't quite how the stories make him out to be though.
 	Ocean: Now this is a scene that I can admire any time! I feel like something is watching me though.
 	SulphurSea1: It ain't much of a sight, but there's still life living in these waters.
@@ -442,18 +395,12 @@ SteampunkerChat: {
 
 StylistChat: {
 	Hardmode: Please don't catch space lice. Or {0} lice. Or just lice in general.
-	DrunkPrincess1: "{0} is always trying to brighten my mood... even though, deep down, I know she's sad..."
-	DrunkPrincess2: Sometimes I catch {0} sneaking up from behind me.
-	DrunkPrincess3: "{0} has been smiling more often lately, even without alcohol. I think I can thank you for that, at least somewhat."
 	ProfanedSoulCrystal1: They look so cute and yet, I can feel their immense power just by being near them. What are you?
 	ProfanedSoulCrystal2: I hate to break it to you, but you don't have hair to cut or style, hun.
 	ProfanedDonuts: Aww, they're so cute, do they have names?
 }
 
-TavernkeepChat: {
-	FullMoon: Care for a little Moonshine?
-	DrunkPrincess: Sheesh, {0} is a little cruel, isn't she? I never claimed to be an expert on anything but ale!
-}
+TavernkeepChat.FullMoon: Care for a little Moonshine?
 
 TaxCollectorChat: {
 	DoGDefeated: Devourer of what, you said? Devourer of Funds, if its payroll is anything to go by!
@@ -463,12 +410,7 @@ TaxCollectorChat: {
 	Has100Plat: BAH! Doesn't seem like I'll ever be able to quarrel with the debts of the town again!
 }
 
-TravellingMerchantChat.DrunkPrincessMerchant: Tell {0} I'll take up her offer and meet with her at the back of {1}'s house.
-
-TruffleChat: {
-	Normal: I don't feel very safe; I think there's pigs following me around and it frightens me.
-	DrunkPrincess: Sometimes, {0} just looks at me funny and I'm not sure how I feel about that.
-}
+TruffleChat.Normal: I don't feel very safe; I think there's pigs following me around and it frightens me.
 
 WitchDoctorChat: {
 	BloodMoon: This is as good a time as any to pick up the best ingredients for potions.

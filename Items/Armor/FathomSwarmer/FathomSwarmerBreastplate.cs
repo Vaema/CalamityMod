@@ -2,6 +2,7 @@
 using CalamityMod.Items.Placeables.Abyss;
 using Terraria;
 using Terraria.ID;
+using Terraria.Localization;
 using Terraria.ModLoader;
 
 namespace CalamityMod.Items.Armor.FathomSwarmer
@@ -10,9 +11,13 @@ namespace CalamityMod.Items.Armor.FathomSwarmer
     public class FathomSwarmerBreastplate : ModItem, ILocalizedModType
     {
         public new string LocalizationCategory => "Items.Armor.Hardmode";
+
+        public static int MinionSlotBoost = 1;
+        public static float SummonDamageBoost = 0.1f;
+        public override LocalizedText Tooltip => base.Tooltip.WithFormatArgs(MinionSlotBoost, SummonDamageBoost.ToPercent());
+
         public override void SetStaticDefaults()
         {
-
             if (Main.dedServ)
                 return;
 
@@ -33,9 +38,8 @@ namespace CalamityMod.Items.Armor.FathomSwarmer
 
         public override void UpdateEquip(Player player)
         {
-            player.GetDamage<SummonDamageClass>() += 0.1f;
-            player.endurance += 0.06f;
-            player.maxMinions += 1;
+            player.maxMinions += MinionSlotBoost;
+            player.GetDamage<SummonDamageClass>() += SummonDamageBoost;
             player.Calamity().fathomSwarmerBreastplate = true;
         }
 

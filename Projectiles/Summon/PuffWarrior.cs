@@ -30,6 +30,7 @@ namespace CalamityMod.Projectiles.Summon
         public override void SetStaticDefaults()
         {
             Main.projFrames[Type] = 10;
+            Main.projPet[Type] = true;
             ProjectileID.Sets.MinionSacrificable[Type] = true;
             ProjectileID.Sets.MinionTargettingFeature[Type] = true;
         }
@@ -198,6 +199,8 @@ namespace CalamityMod.Projectiles.Summon
                 Projectile.netUpdate = true;
             }
         }
+
+        public override bool MinionContactDamage() => true;
 
         public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
         {

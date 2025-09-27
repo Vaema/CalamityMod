@@ -34,12 +34,12 @@ namespace CalamityMod.Items.Accessories
         public override void UpdateAccessory(Player player, bool hideVisual)
         {
             CalamityPlayer modPlayer = player.Calamity();
-            modPlayer.cloudWaifu = true;
+            modPlayer.cloudElemental = true;
             if (player.whoAmI == Main.myPlayer)
             {
-                if (player.FindBuffIndex(ModContent.BuffType<CloudyWaifu>()) == -1)
+                if (player.FindBuffIndex(ModContent.BuffType<CloudElemental>()) == -1)
                 {
-                    player.AddBuff(ModContent.BuffType<CloudyWaifu>(), 3600, true);
+                    player.AddBuff(ModContent.BuffType<CloudElemental>(), 3600, true);
                 }
                 if (player.ownedProjectileCounts[ModContent.ProjectileType<CloudElementalMinion>()] < 1)
                 {
@@ -55,12 +55,12 @@ namespace CalamityMod.Items.Accessories
         public override void UpdateVanity(Player player)
         {
             CalamityPlayer modPlayer = player.Calamity();
-            modPlayer.cloudWaifuVanity = true;
+            modPlayer.cloudElementalVanity = true;
             if (player.whoAmI == Main.myPlayer)
             {
-                if (player.FindBuffIndex(ModContent.BuffType<CloudyWaifu>()) == -1)
+                if (player.FindBuffIndex(ModContent.BuffType<CloudElemental>()) == -1)
                 {
-                    player.AddBuff(ModContent.BuffType<CloudyWaifu>(), 3600, true);
+                    player.AddBuff(ModContent.BuffType<CloudElemental>(), 3600, true);
                 }
                 if (player.ownedProjectileCounts[ModContent.ProjectileType<CloudElementalMinion>()] < 1)
                 {

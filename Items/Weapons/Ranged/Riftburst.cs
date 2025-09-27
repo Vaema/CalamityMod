@@ -19,9 +19,8 @@ namespace CalamityMod.Items.Weapons.Ranged
         {
             Item.width = 48;
             Item.height = 82;
-            Item.damage = 122;
-            Item.useTime = 12;
-            Item.useAnimation = 12;
+            Item.damage = 91;
+            Item.useTime = Item.useAnimation = 12;
             Item.useStyle = ItemUseStyleID.Shoot;
             Item.knockBack = 3f;
             Item.value = CalamityGlobalItem.RarityDarkBlueBuyPrice;
@@ -34,8 +33,7 @@ namespace CalamityMod.Items.Weapons.Ranged
             Item.shoot = ModContent.ProjectileType<RiftburstBow>();
             Item.shootSpeed = 20f;
             Item.useAmmo = AmmoID.Arrow;
-            Item.rare = ModContent.RarityType<DarkBlue>();
-            Item.Calamity().canFirePointBlankShots = true;
+            Item.rare = ModContent.RarityType<CosmicPurple>();
         }
 
         public override bool CanUseItem(Player player) => player.ownedProjectileCounts[Item.shoot] <= 0;

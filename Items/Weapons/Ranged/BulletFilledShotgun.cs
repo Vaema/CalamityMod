@@ -23,7 +23,7 @@ namespace CalamityMod.Items.Weapons.Ranged
             Item.useAnimation = Item.useTime = 75;
             Item.knockBack = 0.25f;
             Item.shoot = ModContent.ProjectileType<BouncingShotgunPellet>();
-            Item.shootSpeed = 9f;
+            Item.shootSpeed = 18f;
 
             Item.useAmmo = AmmoID.Bullet;
             Item.UseSound = SoundID.Item38;
@@ -34,7 +34,6 @@ namespace CalamityMod.Items.Weapons.Ranged
             Item.value = CalamityGlobalItem.RarityOrangeBuyPrice;
             Item.rare = ItemRarityID.Orange;
             Item.Calamity().donorItem = true;
-            Item.Calamity().canFirePointBlankShots = true;
         }
 
         public override Vector2? HoldoutOffset() => new Vector2(-7, 0);
@@ -47,7 +46,8 @@ namespace CalamityMod.Items.Weapons.Ranged
         public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)
         {
             type = Item.shoot;
-            int bulletAmt = 30;
+            position += player.itemRotation.ToRotationVector2() * player.direction * 48f;
+            int bulletAmt = 40;
             for (int i = 0; i < bulletAmt; i++)
             {
                 float newSpeedX = velocity.X + Main.rand.NextFloat(-15f, 15f);

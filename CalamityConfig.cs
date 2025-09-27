@@ -1,6 +1,7 @@
 ﻿using System.ComponentModel;
 using System.Reflection;
 using System.Runtime.Serialization;
+using CalamityMod.Enums;
 using CalamityMod.UI;
 using CalamityMod.UI.DraedonsArsenal;
 using CalamityMod.UI.Rippers;
@@ -27,42 +28,16 @@ namespace CalamityMod
             ParticleLimit = (int)Utils.Clamp(ParticleLimit, MinParticleLimit, MaxParticleLimit);
         }
 
-        internal static void SaveConfig()
-        {
-            // There is no current way to manually save a mod configuration file in tModLoader.
-            // The method which saves mod config files is private in ConfigManager, so reflection is used to invoke it.
-            try
-            {
-                MethodInfo saveMethodInfo = typeof(ConfigManager).GetMethod("Save", BindingFlags.Static | BindingFlags.NonPublic);
-                if (saveMethodInfo is not null)
-                    saveMethodInfo.Invoke(null, [Instance]);
-                else
-                    CalamityMod.Instance.Logger.Error("TML ConfigManager.Save reflection failed. Method signature has changed. Notify Calamity Devs if you see this in your log.");
-            }
-            catch
-            {
-                CalamityMod.Instance.Logger.Error("An error occurred while manually saving Calamity mod configuration. This may be due to a complex mod conflict. It is safe to ignore this error.");
-            }
-        }
-
-        #region Multi-Threading Settings
-        [Header("Multithreading")]
-
-        [BackgroundColor(192, 54, 64, 192)]
-        [SliderColor(224, 165, 56, 128)]
-        [Range(0f, 2f)]
-        [DefaultValue(0f)]
-        [Increment(1f)]
-        [DrawTicks]
-        public float SunkenSeaMultiThreading { get; set; } 
-        #endregion
-
         #region Graphics Changes
         [Header("Graphics")]
         
         [BackgroundColor(192, 54, 64, 192)]
         [DefaultValue(false)]
         public bool DisableGravityScreenSwap { get; set; }
+
+        [BackgroundColor(192, 54, 64, 192)]
+        [DefaultValue(true)]
+        public bool TextEffects { get; set; }
 
         [BackgroundColor(192, 54, 64, 192)]
         [DefaultValue(true)]
@@ -262,24 +237,20 @@ namespace CalamityMod
         public float FlightBarPosY { get; set; }
         #endregion
 
-        #region Music Events
-        [Header("MusicEvents")]
+        #region Music Toggles
+        [Header("MusicToggles")]
 
         [BackgroundColor(192, 54, 64, 192)]
         [DefaultValue(true)]
-        public bool Interlude1 { get; set; }
-
-        [BackgroundColor(192, 54, 64, 192)]
-        [DefaultValue(true)]
-        public bool Interlude2 { get; set; }
-
-        [BackgroundColor(192, 54, 64, 192)]
-        [DefaultValue(true)]
-        public bool Interlude3 { get; set; }
+        public bool Interludes { get; set; }
 
         [BackgroundColor(192, 54, 64, 192)]
         [DefaultValue(true)]
         public bool DevourerofGodsEulogy { get; set; }
+
+        [BackgroundColor(192, 54, 64, 192)]
+        [DefaultValue(false)]
+        public bool AbyssLayer3Alt { get; set; }
 
         #endregion
 
@@ -291,8 +262,10 @@ namespace CalamityMod
         public bool FasterFallHotkey { get; set; }
 
         [BackgroundColor(192, 54, 64, 192)]
-        [DefaultValue(true)]
-        public bool CalamityArmorSetBonusDoubleTap { get; set; }
+        [SliderColor(224, 165, 56, 128)]
+        [DrawTicks]
+        [DefaultValue(SetBonusDoubleTapOptions.Auto)]
+        public SetBonusDoubleTapOptions SetBonusDoubleTap { get; set; }
 
         [BackgroundColor(192, 54, 64, 192)]
         [DefaultValue(false)]

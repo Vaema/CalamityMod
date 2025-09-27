@@ -29,7 +29,6 @@ namespace CalamityMod.Items.Weapons.Ranged
             Item.shoot = ModContent.ProjectileType<AstrealArrow>();
             Item.shootSpeed = 4f;
             Item.useAmmo = AmmoID.Arrow;
-            Item.Calamity().canFirePointBlankShots = true;
         }
 
         public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)
@@ -45,6 +44,13 @@ namespace CalamityMod.Items.Weapons.Ranged
             float aiVar = Main.rand.Next(4);
 
             Projectile.NewProjectile(source, position, velocity, type, damage, knockback, player.whoAmI, aiVar);
+            return false;
+        }
+
+        public override bool CanConsumeAmmo(Item ammo, Player player)
+        {
+            if (Main.rand.Next(0, 100) < 67)
+                return true;
             return false;
         }
 

@@ -1,4 +1,5 @@
 ﻿using System;
+using CalamityMod.Projectiles.Typeless;
 using CalamityMod.Systems;
 using CalamityMod.Tiles.Abyss.AbyssAmbient;
 using CalamityMod.Tiles.SunkenSea.Ambient;
@@ -6,6 +7,7 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria;
 using Terraria.DataStructures;
+using Terraria.GameContent.Metadata;
 using Terraria.ID;
 using Terraria.ModLoader;
 
@@ -22,6 +24,7 @@ namespace CalamityMod.Tiles.SunkenSea
             TileID.Sets.GeneralPlacementTiles[Type] = false;
 
             Main.tileSolid[Type] = true;
+            Main.tileLighted[Type] = true;
             Main.tileBlockLight[Type] = false;
 
             CalamityUtils.MergeWithGeneral(Type);
@@ -32,7 +35,16 @@ namespace CalamityMod.Tiles.SunkenSea
             TileID.Sets.CanBeDugByShovel[Type] = true;
 
             DustType = DustID.Hive;
-            AddMapEntry(new Color(187, 43, 44));
+            AddMapEntry(new Color(216, 50, 50));
+
+            Main.tileSand[Type] = true;
+            TileMaterials.SetForTileId(Type, TileMaterials._materialsByName["Sand"]);
+            TileID.Sets.Suffocate[Type] = true;
+            TileID.Sets.CanBeDugByShovel[Type] = true;
+            TileID.Sets.Conversion.Sand[Type] = true;
+            TileID.Sets.ForAdvancedCollision.ForSandshark[Type] = true;
+            TileID.Sets.Falling[Type] = true;
+            TileID.Sets.FallingBlockProjectile[Type] = new TileID.Sets.FallingBlockProjectileInfo(ModContent.ProjectileType<PolypSandBallFalling>(), 15);
 
             this.RegisterUniversalMerge(ModContent.TileType<Shellstone>(), "CalamityMod/Tiles/Merges/ShellstoneMerge");
             this.RegisterUniversalMerge(TileID.Sandstone, "CalamityMod/Tiles/Merges/SandstoneMerge");
@@ -94,15 +106,9 @@ namespace CalamityMod.Tiles.SunkenSea
         }
         public override void ModifyLight(int i, int j, ref float r, ref float g, ref float b)
         {
-            float brightness = 0.7f;
-            brightness *= (float)MathF.Sin(-i / 40f + Main.GameUpdateCount * 0.01f + j);
-            brightness += 0.5f;
-            r = 187f / 255f;
-            g = 43f / 255f;
-            b = 44f / 255f;
-            r *= brightness;
-            g *= brightness;
-            b *= brightness;
+            r = 0.3f;
+            g = 0f;
+            b = 0.1f;
         }
         public override void RandomUpdate(int i, int j)
         {

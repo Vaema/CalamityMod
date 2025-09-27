@@ -48,8 +48,8 @@ BabyGhostBellRadiantItem: {
 	Tooltip: ""
 }
 
-BabyGhostBellRedItem: {
-	DisplayName: Red Baby Ghost Bell
+BabyGhostBellPinkItem: {
+	DisplayName: Pink Baby Ghost Bell
 	Tooltip: ""
 }
 
@@ -80,11 +80,6 @@ PearlpodBlackItem: {
 
 PearlpodItem: {
 	DisplayName: White Pearlpod
-	Tooltip: ""
-}
-
-PearlpodGoldItem: {
-	DisplayName: "{$NPCs.PearlpodGold.DisplayName}"
 	Tooltip: ""
 }
 
@@ -165,6 +160,11 @@ ProbesnoutItem: {
 
 RepairUnitItem: {
 	DisplayName: "{$NPCs.RepairUnitCritter.DisplayName}"
+	Tooltip: ""
+}
+
+SeaFloatyItem: {
+	DisplayName: "{$NPCs.SeaFloaty.DisplayName}"
 	Tooltip: ""
 }
 
@@ -383,18 +383,13 @@ VoodooDemonVoodooDoll: {
 ExhumeShortTooltip:
 	'''
 	[c/C61B40:'Ah, are you curious what I saw within this item?']
-	[c/BABABA:Press "Left Shift" to listen]
+	[c/BABABA:Hold Shift to listen]
 	'''
 LegendaryShortTooltip:
 	'''
 	[c/FF6F00:Tales of legends past radiate around you...]
-	[c/BABABA:Press "Left Shift" to listen closer]
+	[c/BABABA:Hold Shift to listen closer]
 	'''
-
-AlicornonaStick: {
-	DisplayName: Alicorn on a Stick
-	Tooltip: "'Congratulations, you're winner! Here's my head on a stick.'"
-}
 
 BallAndChain: {
 	DisplayName: Ball and Chain
@@ -412,6 +407,22 @@ BrimstoneLocus: {
 		[c/C61B40:'Not only can I enhance your equipment with potent magic,]
 		[c/C61B40:I can also transcend some of your weaponry to entirely new forms.]
 		[c/C61B40:Such items are revealed while this item is in your inventory.']
+		'''
+}
+
+ColdheartIcicle: {
+	DisplayName: Coldheart Icicle
+	Tooltip: "'N(ice) work'"
+}
+
+DisgustingMeat: {
+	DisplayName: Disgusting Meat
+	Tooltip:
+		'''
+		Debug item, spawn and use to remove permanent upgrades
+		<left> will remove health and mana upgrades, use with no Calamity upgrades to remove vanilla upgrades
+		<right> will remove rage and adrenaline upgrades, plus other miscellaneous boosters
+		Removed boosters will be vomited out of you as items
 		'''
 }
 
@@ -503,6 +514,7 @@ SuperDummy: {
 		Creates a super dummy
 		Regenerates 1 million life per second
 		Will not die when taking damage over time from debuffs
-		Right click to kill all super dummies
+		<right> to kill all super dummies
+		Can only spawn 50 super dummies at once
 		'''
 }

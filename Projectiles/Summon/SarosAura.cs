@@ -31,7 +31,7 @@ namespace CalamityMod.Projectiles.Summon
 
         public override void SetDefaults()
         {
-            Projectile.minionSlots = 8f;
+            Projectile.minionSlots = 6f;
             Projectile.penetrate = -1;
 
             Projectile.width = Projectile.height = 132;
@@ -127,8 +127,6 @@ namespace CalamityMod.Projectiles.Summon
                 Projectile.netUpdate = true;
             }
         }
-
-        public override bool? CanDamage() => false;
 
         #endregion
     }

@@ -31,8 +31,7 @@ namespace CalamityMod.NPCs.PlaguebringerGoliath
 
         public override void SetDefaults()
         {
-            NPC.Calamity().canBreakPlayerDefense = true;
-            NPC.GetNPCDamage();
+            NPC.damage = 70; // 140
             NPC.width = 22;
             NPC.height = 22;
             NPC.defense = 20;
@@ -46,18 +45,13 @@ namespace CalamityMod.NPCs.PlaguebringerGoliath
             NPC.noTileCollide = true;
             NPC.Calamity().VulnerableToSickness = false;
             NPC.Calamity().VulnerableToElectricity = true;
-
-            // Scale stats in Expert and Master
-            CalamityGlobalNPC.AdjustExpertModeStatScaling(NPC);
-            CalamityGlobalNPC.AdjustMasterModeStatScaling(NPC);
         }
 
         public override void AI()
         {
-            bool bossRush = BossRushEvent.BossRushActive;
-            bool death = CalamityWorld.death || bossRush;
-            bool revenge = CalamityWorld.revenge || bossRush;
-            bool expertMode = Main.expertMode || bossRush;
+            bool death = CalamityWorld.death || BossRushEvent.BossRushActive;
+            bool revenge = CalamityWorld.revenge || BossRushEvent.BossRushActive;
+            bool expertMode = Main.expertMode || BossRushEvent.BossRushActive;
 
             Lighting.AddLight(NPC.Center, 0.015f, 0.1f, 0f);
 
@@ -112,7 +106,7 @@ namespace CalamityMod.NPCs.PlaguebringerGoliath
             {
                 NPC.localAI[1] += 1f;
                 float timeBeforeExploding = 480f + NPC.ai[3] * 2f;
-                float homingDuration = (bossRush ? 430f : death ? 340f : revenge ? 290f : expertMode ? 240f : 150f) + NPC.ai[3] * 2f;
+                float homingDuration = (death ? 340f : revenge ? 290f : expertMode ? 240f : 150f) + NPC.ai[3] * 2f;
                 if (NPC.localAI[1] == timeBeforeExploding)
                 {
                     CheckDead();
@@ -134,7 +128,7 @@ namespace CalamityMod.NPCs.PlaguebringerGoliath
                 {
                     NPC.noTileCollide = false;
 
-                    if (NPC.velocity.Length() < (bossRush ? 25f : 20f))
+                    if (NPC.velocity.Length() < 20f)
                         NPC.velocity *= 1.01f;
 
                     if (Collision.SolidCollision(NPC.position, NPC.width, NPC.height))
@@ -266,7 +260,7 @@ namespace CalamityMod.NPCs.PlaguebringerGoliath
                     target.AddBuff(BuffID.Poisoned, 240);
                     target.AddBuff(BuffID.Venom, 240);
                 }
-                target.AddBuff(ModContent.BuffType<Plague>(), 180);
+                target.AddBuff(ModContent.BuffType<Plague>(), 120);
             }
         }
 

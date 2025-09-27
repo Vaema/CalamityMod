@@ -43,7 +43,6 @@ namespace CalamityMod.Projectiles.Ranged
             Projectile.penetrate = -1; // Can hit many enemies. Will explode extremely soon after hitting the first, though.
             Projectile.usesLocalNPCImmunity = true;
             Projectile.localNPCHitCooldown = -1;
-            Projectile.Calamity().pointBlankShotDuration = CalamityGlobalProjectile.DefaultPointBlankDuration;
         }
 
         public override bool? CanDamage() => (Projectile.timeLeft < Lifetime - 4) ? null : false;
@@ -167,7 +166,7 @@ namespace CalamityMod.Projectiles.Ranged
 
         public override bool PreDraw(ref Color lightColor)
         {
-            GameShaders.Misc["CalamityMod:TrailStreak"].SetShaderTexture(ModContent.Request<Texture2D>("CalamityMod/ExtraTextures/Trails/FabstaffStreak"));
+            GameShaders.Misc["CalamityMod:TrailStreak"].SetShaderTexture(ModContent.Request<Texture2D>("CalamityMod/ExtraTextures/Trails/SylvestaffStreak"));
             Vector2 overallOffset = Projectile.Size * 0.5f;
             overallOffset += Projectile.velocity * 1.4f;
             int numPoints = 92;

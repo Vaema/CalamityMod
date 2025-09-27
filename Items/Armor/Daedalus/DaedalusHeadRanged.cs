@@ -2,6 +2,7 @@
 using CalamityMod.Items.Materials;
 using Terraria;
 using Terraria.ID;
+using Terraria.Localization;
 using Terraria.ModLoader;
 
 namespace CalamityMod.Items.Armor.Daedalus
@@ -11,19 +12,25 @@ namespace CalamityMod.Items.Armor.Daedalus
     public class DaedalusHeadRanged : ModItem, ILocalizedModType
     {
         public new string LocalizationCategory => "Items.Armor.Hardmode";
+
+        public static float RangedDamageBoost = 0.13f;
+        public static int RangedCritBoost = 7;
+        public static float AmmoReduction = 0.8f;
+        public override LocalizedText Tooltip => base.Tooltip.WithFormatArgs(RangedDamageBoost.ToPercent(), RangedCritBoost, (1f - AmmoReduction).ToPercent());
+
+        // Set Bonus
+        public static int ShardDamage => CalamityUtils.ScaleWithDifficulty(30);
+
         public override void SetDefaults()
         {
             Item.width = 18;
             Item.height = 18;
             Item.value = CalamityGlobalItem.RarityPinkBuyPrice;
             Item.rare = ItemRarityID.Pink;
-            Item.defense = 9; //39
+            Item.defense = 9; // 43
         }
 
-        public override bool IsArmorSet(Item head, Item body, Item legs)
-        {
-            return body.type == ModContent.ItemType<DaedalusBreastplate>() && legs.type == ModContent.ItemType<DaedalusLeggings>();
-        }
+        public override bool IsArmorSet(Item head, Item body, Item legs) => body.type == ModContent.ItemType<DaedalusBreastplate>() && legs.type == ModContent.ItemType<DaedalusLeggings>();
 
         public override void ArmorSetShadows(Player player)
         {
@@ -36,14 +43,14 @@ namespace CalamityMod.Items.Armor.Daedalus
             player.setBonus = this.GetLocalizedValue("SetBonus");
             var modPlayer = player.Calamity();
             modPlayer.daedalusShard = true;
-            player.GetDamage<RangedDamageClass>() += 0.05f;
         }
 
         public override void UpdateEquip(Player player)
         {
-            player.ammoCost80 = true;
-            player.GetDamage<RangedDamageClass>() += 0.13f;
-            player.GetCritChance<RangedDamageClass>() += 7;
+            var modPlayer = player.Calamity();
+            modPlayer.ammoCost *= AmmoReduction;
+            player.GetDamage<RangedDamageClass>() += RangedDamageBoost;
+            player.GetCritChance<RangedDamageClass>() += RangedCritBoost;
         }
 
         public override void AddRecipes()

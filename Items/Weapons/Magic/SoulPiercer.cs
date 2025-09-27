@@ -22,7 +22,7 @@ namespace CalamityMod.Items.Weapons.Magic
         {
             Item.width = 64;
             Item.height = 64;
-            Item.damage = 310;
+            Item.damage = 235;
             Item.DamageType = DamageClass.Magic;
             Item.mana = 19;
             Item.useAnimation = Item.useTime = 25;
@@ -34,7 +34,7 @@ namespace CalamityMod.Items.Weapons.Magic
             Item.autoReuse = true;
             Item.shoot = ModContent.ProjectileType<SoulPiercerBeam>();
             Item.shootSpeed = 6f;
-            Item.rare = ModContent.RarityType<DarkBlue>();
+            Item.rare = ModContent.RarityType<CosmicPurple>();
         }
 
         public override void PostDrawInWorld(SpriteBatch spriteBatch, Color lightColor, Color alphaColor, float rotation, float scale, int whoAmI)

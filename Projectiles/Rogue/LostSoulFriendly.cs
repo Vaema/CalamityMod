@@ -27,7 +27,6 @@ namespace CalamityMod.Projectiles.Rogue
             Projectile.DamageType = RogueDamageClass.Instance;
             Projectile.extraUpdates = 1;
             Projectile.alpha = 150;
-            Projectile.Calamity().pointBlankShotDuration = CalamityGlobalProjectile.DefaultPointBlankDuration;
         }
 
         public override bool? CanHitNPC(NPC target) => (Projectile.timeLeft < 210 || Projectile.ai[0] == 2f) && target.CanBeChasedBy(Projectile);
@@ -54,7 +53,7 @@ namespace CalamityMod.Projectiles.Rogue
         // Reduce damage of projectiles if more than the cap are active
         public override void ModifyHitNPC(NPC target, ref NPC.HitModifiers modifiers)
         {
-            if (!Projectile.CountsAsClass<ThrowingDamageClass>())
+            if (Projectile.DamageType == DamageClass.Generic)
             {
                 int cap = 10;
                 float capDamageFactor = 0.05f;

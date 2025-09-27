@@ -61,7 +61,7 @@ namespace CalamityMod.Items.DraedonMisc
                 int insertIndex = list.FindIndex(x => x.Name == "Tooltip2" && x.Mod == "Terraria");
                 if (insertIndex != -1)
                 {
-                    int meleeItem = ModContent.ItemType<GaussDagger>();
+                    int meleeItem = ModContent.ItemType<Auger>();
                     TooltipLine meleeDisplay = new TooltipLine(this.Mod, "CalamityMod:MeleeDisplay", $"[i:{meleeItem}] {CalamityUtils.GetItemName(meleeItem)}");
                     meleeDisplay.OverrideColor = new Color(236, 255, 31);
                     list.Insert(insertIndex + 1, meleeDisplay);
@@ -76,7 +76,7 @@ namespace CalamityMod.Items.DraedonMisc
                     mageDisplay.OverrideColor = new Color(201, 41, 255);
                     list.Insert(insertIndex + 3, mageDisplay);
 
-                    int summonItem = ModContent.ItemType<StarSwallowerContainmentUnit>();
+                    int summonItem = ModContent.ItemType<AqueousHunterDrone>();
                     TooltipLine summonDisplay = new TooltipLine(this.Mod, "CalamityMod:SummonDisplay", $"[i:{summonItem}] {CalamityUtils.GetItemName(summonItem)}");
                     summonDisplay.OverrideColor = new Color(149, 243, 43);
                     list.Insert(insertIndex + 4, summonDisplay);

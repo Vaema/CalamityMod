@@ -27,7 +27,7 @@ namespace CalamityMod.Items.DraedonMisc
             Item.consumable = true;
             Item.useStyle = ItemUseStyleID.Swing;
             Item.useAnimation = Item.useTime = 15;
-            Item.rare = ModContent.RarityType<Violet>();
+            Item.rare = ModContent.RarityType<BurnishedAuric>();
         }
 
         public override void ModifyTooltips(List<TooltipLine> tooltips) => CalamityGlobalItem.InsertKnowledgeTooltip(tooltips, 5, true);

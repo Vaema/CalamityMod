@@ -23,12 +23,10 @@ namespace CalamityMod.Items.Weapons.DraedonsArsenal
 
         public override void SetDefaults()
         {
-            CalamityGlobalItem modItem = Item.Calamity();
-
             Item.width = 100;
             Item.height = 32;
             Item.DamageType = DamageClass.Ranged;
-            Item.damage = 720;
+            Item.damage = 530;
             Item.useAnimation = Item.useTime = 55;
             Item.knockBack = 0.25f;
             Item.shoot = ModContent.ProjectileType<PulseRifleShot>();
@@ -40,7 +38,7 @@ namespace CalamityMod.Items.Weapons.DraedonsArsenal
             Item.noMelee = true;
 
             Item.value = CalamityGlobalItem.RarityDarkBlueBuyPrice;
-            Item.rare = ModContent.RarityType<DarkBlue>();
+            Item.rare = ModContent.RarityType<CosmicPurple>();
         }
 
         public override void PostDrawInWorld(SpriteBatch spriteBatch, Color lightColor, Color alphaColor, float rotation, float scale, int whoAmI)

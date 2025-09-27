@@ -16,7 +16,7 @@ namespace CalamityMod.NPCs.HiveMind
         public override void SetDefaults()
         {
             NPC.Calamity().canBreakPlayerDefense = true;
-            NPC.GetNPCDamage();
+            NPC.damage = 24; // 48
             NPC.width = 70;
             NPC.height = 70;
             NPC.defense = 6;
@@ -25,14 +25,14 @@ namespace CalamityMod.NPCs.HiveMind
             if (BossRushEvent.BossRushActive)
                 NPC.lifeMax = 2000;
             if (Main.getGoodWorld)
-                NPC.lifeMax *= 4;
-
-            if ((CalamityWorld.LegendaryMode && CalamityWorld.revenge))
+            {
+                NPC.lifeMax *= 3;
                 NPC.reflectsProjectiles = true;
+            }
 
             NPC.aiStyle = -1;
             AIType = -1;
-            NPC.knockBackResist = BossRushEvent.BossRushActive ? 0f : 0.3f;
+            NPC.knockBackResist = 0.3f;
             NPC.noGravity = true;
             NPC.noTileCollide = true;
             NPC.HitSound = SoundID.NPCHit1;
@@ -40,10 +40,6 @@ namespace CalamityMod.NPCs.HiveMind
             NPC.Calamity().VulnerableToHeat = true;
             NPC.Calamity().VulnerableToCold = true;
             NPC.Calamity().VulnerableToSickness = true;
-
-            // Scale stats in Expert and Master
-            CalamityGlobalNPC.AdjustExpertModeStatScaling(NPC);
-            CalamityGlobalNPC.AdjustMasterModeStatScaling(NPC);
         }
 
         public override void SetBestiary(BestiaryDatabase database, BestiaryEntry bestiaryEntry)
@@ -65,11 +61,9 @@ namespace CalamityMod.NPCs.HiveMind
             if (NPC.target < 0 || NPC.target == Main.maxPlayers || Main.player[NPC.target].dead || !Main.player[NPC.target].active)
                 NPC.TargetClosest();
 
-            bool masterMode = Main.masterMode;
+            bool death = CalamityWorld.death;
             bool revenge = CalamityWorld.revenge;
-            float speed = masterMode ? 15f : revenge ? 13f : 11f;
-            if (BossRushEvent.BossRushActive)
-                speed = 18f;
+            float speed = death ? 15f : revenge ? 13f : 11f;
 
             if (NPC.ai[1] < 90f)
                 NPC.ai[1] += 1f;
@@ -126,7 +120,7 @@ namespace CalamityMod.NPCs.HiveMind
             if (hurtInfo.Damage < 0)
                 return;
 
-            target.AddBuff(ModContent.BuffType<BrainRot>(), 180);
+            target.AddBuff(ModContent.BuffType<BrainRot>(), 120);
         }
 
         public override void HitEffect(NPC.HitInfo hit)
@@ -157,8 +151,7 @@ namespace CalamityMod.NPCs.HiveMind
             if ((Main.expertMode || BossRushEvent.BossRushActive) && Main.netMode != NetmodeID.MultiplayerClient)
             {
                 int type = ModContent.ProjectileType<ShadeNimbusHostile>();
-                int damage = NPC.GetProjectileDamage(type);
-                Projectile.NewProjectile(NPC.GetSource_FromAI(), NPC.Center, Vector2.Zero, type, damage, 0f, Main.myPlayer);
+                Projectile.NewProjectile(NPC.GetSource_FromAI(), NPC.Center, Vector2.Zero, type, HiveMind.ShaderainDamage, 0f, Main.myPlayer);
             }
         }
     }

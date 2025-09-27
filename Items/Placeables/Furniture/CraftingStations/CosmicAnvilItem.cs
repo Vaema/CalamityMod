@@ -14,8 +14,8 @@ namespace CalamityMod.Items.Placeables.Furniture.CraftingStations
         public override void SetDefaults()
         {
             Item.DefaultToPlaceableTile(ModContent.TileType<CosmicAnvil>());
-            Item.value = Item.sellPrice(gold: 60);
-            Item.rare = ModContent.RarityType<DarkBlue>();
+            Item.value = Item.sellPrice(gold: 50);
+            Item.rare = ModContent.RarityType<CosmicPurple>();
         }
 
         public override void ModifyResearchSorting(ref ContentSamples.CreativeHelper.ItemGroup itemGroup)

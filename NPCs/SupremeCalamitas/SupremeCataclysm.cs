@@ -74,10 +74,12 @@ namespace CalamityMod.NPCs.SupremeCalamitas
             }
         }
 
+        public static int FistDamage = 100; // 400
+
         public override void SetDefaults()
         {
             NPC.BossBar = Main.BigBossProgressBar.NeverValid;
-            NPC.damage = 0; // 0 contact damage, projectile damage is pulled from NPCStats
+            NPC.damage = 0; // No contact damage
             NPC.npcSlots = 5f;
             NPC.width = 120;
             NPC.height = 120;
@@ -94,9 +96,6 @@ namespace CalamityMod.NPCs.SupremeCalamitas
             NPC.Calamity().VulnerableToHeat = false;
             NPC.Calamity().VulnerableToCold = true;
             NPC.localAI[1] = 500;
-
-            // Scale HP in Master
-            CalamityGlobalNPC.AdjustMasterModeStatScaling(NPC, true);
         }
 
         public override void SetBestiary(BestiaryDatabase database, BestiaryEntry bestiaryEntry)
@@ -181,13 +180,12 @@ namespace CalamityMod.NPCs.SupremeCalamitas
             }
 
             // Difficulty modes
-            bool bossRush = BossRushEvent.BossRushActive;
-            bool death = CalamityWorld.death || bossRush;
-            bool revenge = CalamityWorld.revenge || bossRush;
-            bool expertMode = Main.expertMode || bossRush;
+            bool death = CalamityWorld.death || BossRushEvent.BossRushActive;
+            bool revenge = CalamityWorld.revenge || BossRushEvent.BossRushActive;
+            bool expertMode = Main.expertMode || BossRushEvent.BossRushActive;
 
             // Increase DR if the target leaves SCal's arena.
-            NPC.Calamity().DR = SupremeCataclysm.NormalBrothersDR;
+            NPC.Calamity().DR = NormalBrothersDR;
             if (Main.npc[CalamityGlobalNPC.SCal].ModNPC<SupremeCalamitas>().IsTargetOutsideOfArena)
                 NPC.Calamity().DR = SupremeCalamitas.enragedDR;
 
@@ -326,7 +324,7 @@ namespace CalamityMod.NPCs.SupremeCalamitas
             else if (BigAttackTimer > PreBigAttackPause)
             {
                 // Shoot fists.
-                float fireRate = BossRushEvent.BossRushActive ? 2f : MathHelper.Lerp(1.5f, 2f, 1f - totalLifeRatio) * (broIsAlive == false ? death ? 1.32f : 1.1f : 1);
+                float fireRate = MathHelper.Lerp(1.5f, 2f, 1f - totalLifeRatio) * (!broIsAlive ? death ? 1.32f : 1.1f : 1);
                 
                 PunchCounter += fireRate;
                 if (PunchCounter >= PunchCounterLimit)
@@ -339,9 +337,7 @@ namespace CalamityMod.NPCs.SupremeCalamitas
                     if (Main.zenithWorld)
                         type = ModContent.ProjectileType<SupremeCatastropheSlash>();
 
-                    int damage = NPC.GetProjectileDamage(type);
-                    if (bossRush)
-                        damage /= 2;
+                    int damage = Main.zenithWorld ? SupremeCatastrophe.SlashDamage : FistDamage;
                     
                     if (Main.netMode != NetmodeID.MultiplayerClient)
                     {
@@ -391,9 +387,9 @@ namespace CalamityMod.NPCs.SupremeCalamitas
             else
             {
                 // Shoot fists.
-                float fireRate = BossRushEvent.BossRushActive ? 2.8f : MathHelper.Lerp(2.5f, 3f, 1f - totalLifeRatio);
+                float fireRate = MathHelper.Lerp(2.5f, 3f, 1f - totalLifeRatio);
                 if (broIsAlive == false)
-                    fireRate = BossRushEvent.BossRushActive ? 3.5f + (29 - BigAttackLimit) * 0.45f : MathHelper.Lerp(3f, (4f + (29 - BigAttackLimit) * 0.45f), 1f - totalLifeRatio) * 1.2f;
+                    fireRate = MathHelper.Lerp(3f, (4f + (29 - BigAttackLimit) * 0.45f), 1f - totalLifeRatio) * 1.2f;
                 if (Phase2 && BigAttackLimit == 0)
                     fireRate = 1;
 
@@ -407,9 +403,7 @@ namespace CalamityMod.NPCs.SupremeCalamitas
                     if (Main.zenithWorld)
                         type = ModContent.ProjectileType<SupremeCatastropheSlash>();
 
-                    int damage = NPC.GetProjectileDamage(type);
-                    if (bossRush)
-                        damage /= 2;
+                    int damage = Main.zenithWorld ? SupremeCatastrophe.SlashDamage : FistDamage;
                     Vector2 fistSpawnPosition = NPC.Center + Vector2.UnitX * 74f * NPC.direction;
 
                     if ((broIsAlive == false ? BigAttackLimit <= 3 && BigAttackLimit > 0 : BigAttackLimit == 1) && death)
@@ -423,7 +417,7 @@ namespace CalamityMod.NPCs.SupremeCalamitas
                     {
                         if (Main.netMode != NetmodeID.MultiplayerClient)
                         {
-                            Projectile.NewProjectile(NPC.GetSource_FromAI(), fistSpawnPosition, NPC.DirectionTo(Target.Center) * 9.5f, ModContent.ProjectileType<SupremeCataclysmFist>(), damage, 0f, Main.myPlayer, 0f, PunchingFromRight.ToInt(), 3);
+                            Projectile.NewProjectile(NPC.GetSource_FromAI(), fistSpawnPosition, NPC.DirectionTo(Target.Center) * 9.5f, ModContent.ProjectileType<SupremeCataclysmFist>(), FistDamage, 0f, Main.myPlayer, 0f, PunchingFromRight.ToInt(), 3);
                         }
                         SoundEngine.PlaySound(SupremeCalamitas.BrimstoneShotSound with { Volume = 1.8f, Pitch = 0.5f }, NPC.Center);
                         SoundStyle charge = new("CalamityMod/Sounds/Item/ScorchedEarthShot", 3);

@@ -93,6 +93,7 @@ namespace CalamityMod.NPCs.SunkenSea
 
         public override void SetDefaults()
         {
+            base.SetDefaults();
             NPC.damage = 50;
             NPC.width = 30;
             NPC.height = 24; 
@@ -101,13 +102,14 @@ namespace CalamityMod.NPCs.SunkenSea
             NPC.aiStyle = -1;
             AIType = -1;
             NPC.knockBackResist = 0f;
-            NPC.value = Item.buyPrice(0, 0, 20, 0);
+            NPC.value = Item.buyPrice(silver: 20);
             NPC.behindTiles = true;
             NPC.noGravity = true;
             NPC.noTileCollide = true;
             NPC.HitSound = SoundID.NPCHit1;
             NPC.DeathSound = SoundID.NPCDeath1;
             NPC.netAlways = true;
+            NPC.chaseable = false;
             Banner = NPC.type;
             BannerItem = ModContent.ItemType<SeaSerpentBanner>();
             NPC.Calamity().VulnerableToHeat = false;
@@ -116,7 +118,6 @@ namespace CalamityMod.NPCs.SunkenSea
             NPC.Calamity().VulnerableToWater = false;
             NPC.waterMovementSpeed = 1;
             NPC.GravityIgnoresLiquid = true;
-            SpawnModBiomes = new int[1] { ModContent.GetInstance<SunkenSeaBiome>().Type };
         }
 
         public override void SetBestiary(BestiaryDatabase database, BestiaryEntry bestiaryEntry)
@@ -459,7 +460,7 @@ namespace CalamityMod.NPCs.SunkenSea
             bool shouldDespawn = true;
             for (int i = 0; i < Main.maxNPCs; i++)
             {
-                if (Main.npc[i].active && Main.npc[i].type == ModContent.NPCType<SandProwler>())
+                if (Main.npc[i].active && Main.npc[i].type == ModContent.NPCType<SandProwler>() && Main.npc[i].ai[3] == 0)
                 {
                     shouldDespawn = false;
                     break;
@@ -599,6 +600,24 @@ namespace CalamityMod.NPCs.SunkenSea
         public override bool CanHitNPC(NPC target)
         {
             return IsHead;
+        }
+
+        public override void OnHitByProjectile(Projectile projectile, NPC.HitInfo hit, int damageDone)
+        {
+            PlayerHurt();
+        }
+
+        public override void OnHitByItem(Player player, Item item, NPC.HitInfo hit, int damageDone)
+        {
+            PlayerHurt();
+        }
+
+        public void PlayerHurt()
+        {
+            if (IsHead)
+                NPC.chaseable = true;
+            else
+                Main.npc[NPC.realLife].chaseable = true;
         }
 
         public override void ModifyNPCLoot(NPCLoot npcLoot) => DefineSandProwlerLoot(npcLoot);

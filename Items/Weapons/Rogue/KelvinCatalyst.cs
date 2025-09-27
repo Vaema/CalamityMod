@@ -44,7 +44,7 @@ namespace CalamityMod.Items.Weapons.Rogue
         public override void AddRecipes()
         {
             CreateRecipe().
-                AddIngredient<IceStar>(100).
+                AddIngredient<IceStar>().
                 AddIngredient<Avalanche>().
                 AddIngredient<HoarfrostBow>().
                 AddIngredient<Icebreaker>().

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using CalamityMod.Buffs.StatBuffs;
 using CalamityMod.Buffs.StatDebuffs;
 using CalamityMod.Particles;
+using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria;
@@ -37,10 +38,10 @@ namespace CalamityMod.Projectiles.Magic
             Projectile.DamageType = DamageClass.Magic;
             Projectile.tileCollide = false;
             Projectile.penetrate = -1;
-            Projectile.extraUpdates = 6;
+            Projectile.extraUpdates = 8;
             Projectile.timeLeft = 430;
             Projectile.usesLocalNPCImmunity = true;
-            Projectile.localNPCHitCooldown = 40 * Projectile.extraUpdates;
+            Projectile.localNPCHitCooldown = -1;
         }
         public override void AI()
         {
@@ -71,7 +72,7 @@ namespace CalamityMod.Projectiles.Magic
                         if (buffList[playerIndex] == false)
                         {
                             buffList[playerIndex] = true;
-                            player.AddBuff(ModContent.BuffType<AeolianEarthBuff>(), 840);
+                            player.AddBuff(ModContent.BuffType<AeolianEarthBuff>(), 1080);
 
                             int Dusts = 8;
                             float radians = MathHelper.TwoPi / Dusts;
@@ -190,7 +191,6 @@ namespace CalamityMod.Projectiles.Magic
                     GeneralParticleHandler.SpawnParticle(SandCloud);
                 }
 
-
                 Dust dust2 = Dust.NewDustPerfect(Projectile.Center + new Vector2(25, 25).RotatedByRandom(100) * Main.rand.NextFloat(0.1f, 1.3f) * Projectile.scale, Main.rand.NextBool(5) ? 86 : 287, -Projectile.velocity * Main.rand.NextFloat(0.1f, 1.3f));
                 dust2.noGravity = true;
                 dust2.scale = Main.rand.NextFloat(0.4f, 0.7f);
@@ -203,48 +203,81 @@ namespace CalamityMod.Projectiles.Magic
         }
         public override void ModifyHitNPC(NPC target, ref NPC.HitModifiers modifiers)
         {
-            modifiers.SourceDamage *= 0.05f;
+            float minMult = 0.25f;
+            int hitsToMinMult = 6;
+            float damageMult = Utils.Remap(Projectile.numHits, 0, hitsToMinMult, 1, minMult, true);
+            if (Projectile.numHits == 0)
+            {
+                damageMult += 0.5f;
+                for (int i = 0; i < 3; i++)
+                    SoundEngine.PlaySound(SoundID.DD2_MonkStaffGroundImpact with { Volume = 0.9f, Pitch = -0.4f + i * 0.25f, MaxInstances = 9 }, Projectile.Center);
+                for (int i = 0; i < 6; i++)
+                {
+                    float range = Main.rand.NextFloat(-0.3f, 0.3f);
+                    float power = 1 - Math.Abs(range);
+                    Vector2 vel = Projectile.Center.DirectionTo(target.Center).RotatedBy(range) * Main.rand.NextFloat(35, 40) * power;
+                    MediumMistParticle SandCloud = new MediumMistParticle(Projectile.Center, vel, Color.Peru, Color.PeachPuff, Main.rand.NextFloat(1.7f, 2.3f), 120f, Main.rand.NextFloat(0.03f, -0.03f));
+                    GeneralParticleHandler.SpawnParticle(SandCloud);
+                    for (int b = 0; b < 5; b++)
+                    {
+                        Color clr = Color.Lerp((Main.rand.NextBool() ? Color.Peru : Color.PeachPuff), Color.Black, Main.rand.NextFloat(0.25f, 0.45f));
+                        Particle sand = new CustomSpark(Projectile.Center, vel.RotatedByRandom(0.4f) * Main.rand.NextFloat(0.4f, 0.9f) * power, "CalamityMod/Particles/SmallSmoke", false, Main.rand.Next(25, 35 + 1), Projectile.scale * Main.rand.NextFloat(0.08f, 0.14f) * 7, clr, new Vector2(1, Main.rand.NextFloat(0.2f, 2f)), false, extraRotation: Main.rand.NextFloat(-4, 4), spin: Main.rand.NextFloat(-0.8f, 0.8f), affectedByLight: true);
+                        GeneralParticleHandler.SpawnParticle(sand);
+                    }
+                }
+            }
 
-            if (Projectile.numHits > 0)
-                Projectile.damage = (int)(Projectile.damage * 0.95f);
-            if (Projectile.damage < 1)
-                Projectile.damage = 1;
+            modifiers.SourceDamage *= damageMult * 0.03f;
         }
         public override void OnKill(int timeLeft)
         {
             Lighting.AddLight(Projectile.Center, Color.Purple.ToVector3() * 2);
             if (Projectile.ai[1] == 1)
             {
-                Particle orb = new CustomPulse(Projectile.Center, Vector2.Zero, Color.Purple, "CalamityMod/Particles/LargeBloom", new Vector2(1, 1), Main.rand.NextFloat(-10, 10), 0f, 0.82f, 11);
+                Player Owner = Main.player[Projectile.owner];
+                Owner.Calamity().GeneralScreenShakePower = 8f;
+
+                Particle orb = new CustomPulse(Projectile.Center, Vector2.Zero, Color.Purple, "CalamityMod/Particles/LargeBloom", new Vector2(1, 1), Main.rand.NextFloat(-10, 10), 0.2f * 2f, 0.6f * 2.5f, 17);
                 GeneralParticleHandler.SpawnParticle(orb);
-                Particle orb2 = new CustomPulse(Projectile.Center, Vector2.Zero, Color.White, "CalamityMod/Particles/LargeBloom", new Vector2(1, 1), Main.rand.NextFloat(-10, 10), 0f, 0.74f, 11);
+                Particle orb2 = new CustomPulse(Projectile.Center, Vector2.Zero, Color.White, "CalamityMod/Particles/LargeBloom", new Vector2(1, 1), Main.rand.NextFloat(-10, 10), 0.1f * 2f, 0.5f * 2.5f, 17);
                 GeneralParticleHandler.SpawnParticle(orb2);
 
                 Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center, Vector2.Zero, ModContent.ProjectileType<PrimordialAncientExplosion>(), Projectile.damage, Projectile.knockBack * 1.5f, Projectile.owner);
                 SoundStyle explo = new("CalamityMod/Sounds/Item/MineralMortarExplode");
                 SoundEngine.PlaySound(explo with { Volume = 0.9f }, Projectile.Center);
+                SoundStyle explo2 = new("CalamityMod/Sounds/Item/EarthMeteor");
+                SoundEngine.PlaySound(explo2 with { Volume = 0.9f, Pitch = -0.3f }, Projectile.Center);
 
                 Particle bolt2 = new CustomPulse(Projectile.Center, Vector2.Zero, Color.Lerp(Color.Purple, Color.White, 0.5f) * 0.55f, "CalamityMod/Particles/BloomRing", Vector2.One, Main.rand.NextFloat(-10f, 10f), 0f, 2.56f * 2.3f, 18);
                 GeneralParticleHandler.SpawnParticle(bolt2);
 
-                Particle bolt3 = new CustomPulse(Projectile.Center, Vector2.Zero, Color.Peru * 0.55f, "CalamityMod/Particles/FlameExplosion", Vector2.One, Main.rand.NextFloat(-10f, 10f), 0f, 0.3f, 30);
+                Particle bolt3 = new CustomPulse(Projectile.Center, Vector2.Zero, Color.Peru * 0.55f, "CalamityMod/Particles/SmokeExplosion", Vector2.One, Main.rand.NextFloat(-10f, 10f), 0f, 0.4f, 23);
                 GeneralParticleHandler.SpawnParticle(bolt3);
 
-                Particle bolt4 = new CustomPulse(Projectile.Center, Vector2.Zero, Color.PeachPuff * 0.55f, "CalamityMod/Particles/FlameExplosion", Vector2.One, Main.rand.NextFloat(-10f, 10f), 0f, 0.3f * 1.35f, 30);
+                Particle bolt4 = new CustomPulse(Projectile.Center, Vector2.Zero, Color.PeachPuff * 0.55f, "CalamityMod/Particles/SmokeExplosion", Vector2.One, Main.rand.NextFloat(-10f, 10f), 0f, 0.4f * 1.35f, 18);
                 GeneralParticleHandler.SpawnParticle(bolt4);
 
                 for (int i = 0; i < 140; i++)
                 {
-                    Dust dust = Dust.NewDustPerfect(Projectile.Center, Main.rand.NextBool(5) ? 86 : 287, new Vector2(21, 21).RotatedByRandom(100) * Main.rand.NextFloat(0.1f, 1.3f));
-                    dust.noGravity = false;
-                    dust.scale = Main.rand.NextFloat(0.8f, 1.3f);
-                    if (dust.type == 86)
+                    if (Main.rand.NextBool(5))
                     {
-                        dust.noGravity = true;
-                        dust.fadeIn = 0.5f;
-                        dust.velocity *= 2;
+                        Dust dust = Dust.NewDustPerfect(Projectile.Center, Main.rand.NextBool(5) ? 86 : 287, new Vector2(21, 21).RotatedByRandom(100) * Main.rand.NextFloat(0.1f, 1.3f));
+                        dust.noGravity = false;
+                        dust.scale = Main.rand.NextFloat(0.8f, 1.3f);
+                        if (dust.type == 86)
+                        {
+                            dust.noGravity = true;
+                            dust.fadeIn = 0.5f;
+                            dust.velocity *= 2;
+                        }
+                        dust.alpha = 100;
                     }
-                    dust.alpha = 100;
+                    else
+                    {
+                        Color clr = Color.Lerp((Main.rand.NextBool() ? Color.Peru : Color.PeachPuff), Color.Black, Main.rand.NextFloat(0.25f, 0.45f));
+                        Particle sand = new CustomSpark(Projectile.Center, (Vector2.One * Main.rand.NextFloat(9, 33)).RotatedByRandom(MathHelper.TwoPi), "CalamityMod/Particles/SmallSmoke", true, Main.rand.Next(25, 55 + 1), Projectile.scale * Main.rand.NextFloat(0.08f, 0.14f) * 23, clr, new Vector2(1, Main.rand.NextFloat(0.2f, 2f)), false, extraRotation: Main.rand.NextFloat(-4, 4), spin: Main.rand.NextFloat(-0.8f, 0.8f), affectedByLight: true);
+                        GeneralParticleHandler.SpawnParticle(sand);
+                    }
                 }
                 for (int i = 0; i < 30; i++)
                 {

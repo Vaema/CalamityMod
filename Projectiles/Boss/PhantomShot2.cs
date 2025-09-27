@@ -67,13 +67,5 @@ namespace CalamityMod.Projectiles.Boss
         {
             return new Color(250, 100, 100, Projectile.alpha);
         }
-
-        public override void OnHitPlayer(Player target, Player.HurtInfo info)
-        {
-            if (info.Damage <= 0)
-                return;
-
-            target.AddBuff(ModContent.BuffType<WhisperingDeath>(), 120);
-        }
     }
 }

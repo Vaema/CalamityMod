@@ -1,4 +1,5 @@
-﻿using CalamityMod.Items.Materials;
+﻿using CalamityMod.Buffs.Summon;
+using CalamityMod.Items.Materials;
 using CalamityMod.Projectiles.Summon;
 using Microsoft.Xna.Framework;
 using Terraria;
@@ -28,6 +29,7 @@ namespace CalamityMod.Items.Weapons.Summon
             Item.value = CalamityGlobalItem.RarityPurpleBuyPrice;
             Item.rare = ItemRarityID.Purple;
             Item.UseSound = SoundID.Item44;
+            Item.buffType = ModContent.BuffType<FlowersOfMortalityBuff>();
             Item.shoot = ModContent.ProjectileType<FlowersOfMortalityPetal>();
             Item.shootSpeed = 10f;
         }
@@ -36,6 +38,7 @@ namespace CalamityMod.Items.Weapons.Summon
 
         public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)
         {
+            player.AddBuff(Item.buffType, 2);
             CalamityUtils.KillShootProjectiles(false, type, player);
             for (int i = 0; i < 5; i++)
             {

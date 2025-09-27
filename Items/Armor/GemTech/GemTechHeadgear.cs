@@ -8,7 +8,6 @@ using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
-using static Microsoft.Xna.Framework.Input.Keys;
 using static Terraria.ModLoader.ModContent;
 
 namespace CalamityMod.Items.Armor.GemTech
@@ -29,6 +28,7 @@ namespace CalamityMod.Items.Armor.GemTech
         public const float MeleeSpeedBoost = 0.26f;
 
         public const int MaxFlechettes = 8;
+        public static float RangedAmmoReduction = 0.7f;
         public const float RangedDamageBoost = 0.5f;
         public const float RangedCritBoost = 0.16f;
 
@@ -61,14 +61,12 @@ namespace CalamityMod.Items.Armor.GemTech
             Item.height = 32;
             Item.defense = 14;
             Item.value = CalamityGlobalItem.RarityVioletBuyPrice;
-            Item.rare = RarityType<Violet>();
+            Item.rare = RarityType<BurnishedAuric>();
             Item.Calamity().donorItem = true;
         }
 
-        public override bool IsArmorSet(Item head, Item body, Item legs)
-        {
-            return body.type == ItemType<GemTechBodyArmor>() && legs.type == ItemType<GemTechSchynbaulds>();
-        }
+        public override bool IsArmorSet(Item head, Item body, Item legs) => body.type == ItemType<GemTechBodyArmor>() && legs.type == ItemType<GemTechSchynbaulds>();
+
         public static bool HasArmorSet(Player player) => player.armor[0].type == ItemType<GemTechHeadgear>() && player.armor[1].type == ItemType<GemTechBodyArmor>() && player.armor[2].type == ItemType<GemTechSchynbaulds>();
 
         public override void UpdateArmorSet(Player player)
@@ -80,7 +78,8 @@ namespace CalamityMod.Items.Armor.GemTech
             if (player.Calamity().GemTechState.IsYellowGemActive)
                 player.GetAttackSpeed<MeleeDamageClass>() += MeleeSpeedBoost;
 
-            player.setBonus = "Mucho Texto"; //Replaced below
+            Color AbilityBriefColor = Color.Lerp(Color.White, Main.DiscoColor, 0.3f);
+            player.setBonus = this.GetLocalization("AbilityBrief").Format(AbilityBriefColor.Hex3()); // Added below
         }
 
         public static void ModifySetTooltips(ModItem item, List<TooltipLine> tooltips)
@@ -91,24 +90,22 @@ namespace CalamityMod.Items.Armor.GemTech
 
                 if (setBonusIndex != -1)
                 {
-                    tooltips[setBonusIndex].Text = CalamityUtils.GetTextValueFromModItem<GemTechHeadgear>("AbilityBrief");
-                    tooltips[setBonusIndex].OverrideColor = Color.Lerp(Color.White, Main.DiscoColor, 0.3f);
-
-                    if (!Main.keyState.IsKeyDown(LeftShift))
+                    if (!Main.keyState.PressingShift())
                     {
+                        setBonusIndex++;
                         TooltipLine briefDescription = new TooltipLine(item.Mod, "CalamityMod:SetBonus1", CalamityUtils.GetTextValueFromModItem<GemTechHeadgear>("AbilityDescription"));
                         briefDescription.OverrideColor = Color.Lerp(Color.White, Main.DiscoColor, 0.5f);
-                        tooltips.Insert(setBonusIndex + 1, briefDescription);
+                        tooltips.Insert(setBonusIndex, briefDescription);
 
-                        TooltipLine itemDisplay = new TooltipLine(item.Mod, "CalamityMod:ExpandedDisplay", CalamityUtils.GetTextValue("Misc.ShiftToExpand"));
-                        itemDisplay.OverrideColor = new Color(190, 190, 190);
-                        tooltips.Add(itemDisplay);
+                        setBonusIndex++;
+                        TooltipLine holdShiftIndicator = new TooltipLine(item.Mod, IHoldShiftTooltipItem.ExtensionIndicatorTooltipID, CalamityUtils.GetTextValue("Misc.ShiftToExpand"));
+                        holdShiftIndicator.OverrideColor = IHoldShiftTooltipItem.DefaultExtensionIndicatorColor;
+                        tooltips.Insert(setBonusIndex, holdShiftIndicator);
                     }
-
                     else
                     {
                         setBonusIndex++;
-                        TooltipLine largerDescription = new TooltipLine(item.Mod, "CalamityMod:SetBonus1", CalamityUtils.GetTextFromModItem<GemTechHeadgear>("GeneralGemInfo").Format(GemBreakDamageLowerBound, GemDamage, GemRegenTime / 60));
+                        TooltipLine largerDescription = new TooltipLine(item.Mod, "CalamityMod:SetBonus1", CalamityUtils.GetTextFromModItem<GemTechHeadgear>("GeneralGemInfo").Format(GemBreakDamageLowerBound, GemDamage, GemRegenTime.FramesToSeconds()));
                         largerDescription.OverrideColor = Color.Lerp(Color.White, Main.DiscoColor, 0.5f);
                         tooltips.Insert(setBonusIndex, largerDescription);
 
@@ -138,15 +135,12 @@ namespace CalamityMod.Items.Armor.GemTech
                         tooltips.Insert(setBonusIndex, purpleGemTooltip);
 
                         setBonusIndex++;
-                        string pinkLifeRegenString = (0.5f * BaseGemLifeRegenBoost).ToString("n1");
-                        TooltipLine pinkGemTooltip = new TooltipLine(item.Mod, "CalamityMod:SetBonus7", CalamityUtils.GetTextFromModItem<GemTechHeadgear>("PinkGemInfo").Format(BaseGemDefenseBoost, pinkLifeRegenString));
+                        TooltipLine pinkGemTooltip = new TooltipLine(item.Mod, "CalamityMod:SetBonus7", CalamityUtils.GetTextFromModItem<GemTechHeadgear>("PinkGemInfo").Format(BaseGemDefenseBoost, BaseGemLifeRegenBoost.ToRegenPerSecond()));
                         pinkGemTooltip.OverrideColor = new Color(255, 115, 206);
                         tooltips.Insert(setBonusIndex, pinkGemTooltip);
 
                         setBonusIndex++;
-                        string baseLifeRegenString = (0.5f * AllGemsWeaponUseLifeRegenBoost).ToString("n1");
-                        string multiclassLifeRegenString = (0.5f * AllGemsMultiWeaponUseLifeRegenBoost).ToString("n1");
-                        TooltipLine liferegenTooltip = new TooltipLine(item.Mod, "CalamityMod:SetBonus8", CalamityUtils.GetTextFromModItem<GemTechHeadgear>("GemBonusInfo").Format(baseLifeRegenString, AllGemsLifeRegenBoostTime / 60, multiclassLifeRegenString, AllGemsMultiWeaponLifeRegenBoostTime / 60f));
+                        TooltipLine liferegenTooltip = new TooltipLine(item.Mod, "CalamityMod:SetBonus8", CalamityUtils.GetTextFromModItem<GemTechHeadgear>("GemBonusInfo").Format(AllGemsWeaponUseLifeRegenBoost.ToRegenPerSecond(), AllGemsLifeRegenBoostTime.FramesToSeconds(), AllGemsMultiWeaponUseLifeRegenBoost.ToRegenPerSecond(), AllGemsMultiWeaponLifeRegenBoostTime.FramesToSeconds()));
                         liferegenTooltip.OverrideColor = new Color(230, 230, 230);
                         tooltips.Insert(setBonusIndex, liferegenTooltip);
                     }

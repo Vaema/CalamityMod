@@ -126,7 +126,11 @@ AstralBlaster: {
 
 AstrealDefeat: {
 	DisplayName: Astreal Defeat
-	Tooltip: All arrows are converted to Astreal Arrows that emit flames as they travel
+	Tooltip:
+		'''
+		All arrows are converted to Astreal Arrows that emit flames as they travel
+		33% chance to save ammo
+		'''
 }
 
 Auralis: {
@@ -210,6 +214,7 @@ BlossomFlux: {
 		'''
 		Fires a stream of leaves
 		Press <right> to fire a spore orb that explodes into a cloud of spore gas
+		50% chance to save ammo
 		'''
 	LegendaryText:
 		'''
@@ -232,6 +237,7 @@ BulletFilledShotgun: {
 	Tooltip:
 		'''
 		Fires a massive spread of bouncing bullets
+		Bullets attempt to bounce towards enemies after bouncing twice
 		Consumes five bullets per-use
 		'Aim? What's that?'
 		'''
@@ -281,7 +287,7 @@ ClockworkBow: {
 	DisplayName: Clockwork Bow
 	Tooltip:
 		'''
-		Hold left click to load up to six precision bolts
+		Hold <left> to load up to six precision bolts
 		The more precision bolts are loaded, the harder they hit
 		'''
 }
@@ -397,15 +403,6 @@ DeepcoreGK2: {
 		'''
 }
 
-DodusHandcannon: {
-	DisplayName: Dodu's Handcannon
-	Tooltip:
-		'''
-		Fires high explosive peanut shells, literally
-		'The power of the nut rests in your hands'
-		'''
-}
-
 DragonsBreath: {
 	DisplayName: Dragon's Breath
 	Tooltip:
@@ -461,9 +458,11 @@ FirestormCannon: {
 	DisplayName: Firestorm Cannon
 	Tooltip:
 		'''
-		Releases a constant stream of weaponized flares
-		Press <right> to fire a condensed spread of flares
+		Fires a rapid barrage of flares that builds up a searing heat in the weapon
+		Firing for too long overheats the weapon, leaving it unusable for a short period
+		Press <right> to put away the weapon, which preserves its heat
 		70% chance to save ammo
+		'What could go wrong?'
 		'''
 }
 
@@ -565,7 +564,7 @@ HalleysInferno: {
 		Press <right> to zoom out
 		Uses gel for ammo
 		50% chance to save ammo
-		'Halley came sooner than expected'
+		'Halley arrived sooner than expected'
 		'''
 }
 
@@ -641,6 +640,7 @@ Infinity: {
 		'''
 		Fires a twin stream of energy bolts that split
 		Press <right> to fire a barrage of normal bullets
+		80% chance to save ammo
 		'They say infinity is neverending, yet you hold it in your hands'
 		'''
 }
@@ -679,6 +679,17 @@ LunarianBow: {
 		'''
 		Fires two arrows at once
 		Converts wooden arrows into sliding energy bolts
+		'''
+}
+
+M1Garand: {
+	DisplayName: M1 Garand
+	Tooltip:
+		'''
+		Shots fired only inherit the damage of the bullet used
+		Fires 8 bullets before ejecting the rifle's cartridge
+		Bullets which ricochet off coins can ricochet off cartridges too
+		'Mind your thumb'
 		'''
 }
 
@@ -944,7 +955,7 @@ PolarisParrotfish: {
 		'''
 		Rapidly fires an array of colorful star shots
 		Firing speed increases the closer you are to an enemy
-		Right click to give the little girl some attention
+		<right> to give the little girl some attention
 		'She is a happy girl'
 		'''
 }
@@ -1039,8 +1050,9 @@ ScorchedEarth: {
 	DisplayName: Scorched Earth
 	Tooltip:
 		'''
-		Fires a burst of four fuel-air rockets which explode into cluster bombs
-		Each burst consumes two rockets each
+		Fires a burst of four heat seeking missiles that rapidly accelerate after a short delay
+		All rockets explode into napalm cluster bombs on impact
+		50% chance to save ammo
 		'Burns your targets to a fine crisp'
 		'''
 }
@@ -1121,6 +1133,7 @@ Shredder: {
 		'''
 		Fires a barrage of energy bolts that split and bounce
 		Press <right> to fire a barrage of normal bullets instead
+		60% chance to save ammo
 		'The myth, the legend, the weapon that drops more frames than any other'
 		'''
 }
@@ -1162,8 +1175,13 @@ SpectralstormCannon: {
 	DisplayName: Spectralstorm Cannon
 	Tooltip:
 		'''
-		Fires a storm of lost souls and flares
+		Fires a barrage of spectral flares that builds up a searing heat in the weapon
+		While cooling down, heat-seeking phantoms are continuously released
+		Firing for too long overheats the weapon, leaving it unusable for a short period
+		However, triggering overheat releases a powerful burst of souls and resets heat
+		Press <right> to put away the weapon, which preserves its heat
 		70% chance to save ammo
+		'Ectoplasmic blast rated visor mandatory'
 		'''
 }
 
@@ -1248,17 +1266,14 @@ SuperradiantSlaughterer: {
 	MainInfo:
 		'''
 		Hold <left> to rev up an elemental buzzsaw that deals close-range damage
-		Release <left> to fire the buzzsaw to pierce through and lacerate foes
-		Fired buzzsaws bounce off tiles and return to the player after winding down
-		When returning, the saws release extra homing bolts depending on the number of enemy and tile hits
-		Revving up the saws increases their damage and allows them to pierce more enemies
+		Release <left> to fire the buzzsaw which bounces off tiles, releasing homing bolts when returning depending on hits
+		Revving up the saw increases its damage and allows it to pierce more enemies
 		'''
 	AltInfo:
 		'''
-		Press <right> to eject a lingering buzzsaw towards the cursor that fires homing bolts
-		Using this ability rapidly propels you in the direction you are moving
-		This ability has a {0} second cooldown
-		During this cooldown, buzzsaws home to the cursor and constantly release homing bolts while returning
+		Press <right> to eject a lingering buzzsaw towards the cursor on a {0} second cooldown
+		Double <right> to rapidly propel yourself in the direction you are moving
+		During the cooldown, buzzsaws home to the cursor and constantly release homing bolts while returning
 		'''
 }
 

@@ -2,7 +2,6 @@
 using System.Linq;
 using System.Text;
 using CalamityMod.Balancing;
-using Microsoft.Xna.Framework.Input;
 using Terraria;
 using Terraria.DataStructures;
 using Terraria.ID;
@@ -51,6 +50,7 @@ namespace CalamityMod.Items.Accessories.Wings
 
         public override void VerticalWingSpeeds(Player player, ref float ascentWhenFalling, ref float ascentWhenRising, ref float maxCanAscendMultiplier, ref float maxAscentMultiplier, ref float constantAscend)
         {
+            if (Item.wingSlot == -1) return;
             ascentWhenFalling = BonusAscentWhileFalling;
             ascentWhenRising = BonusAscentWhileRising;
             maxCanAscendMultiplier = RisingSpeedThreshold;
@@ -68,7 +68,15 @@ namespace CalamityMod.Items.Accessories.Wings
 
         public override void ModifyTooltips(List<TooltipLine> list)
         {
-            WingStats stats = ArmorIDs.Wing.Sets.Stats[Item.wingSlot];
+            if (Item.wingSlot == -1) return;
+            WingStats stats = new();
+            if (Item.type == ModContent.ItemType<TracersCelestial>())
+                stats = ArmorIDs.Wing.Sets.Stats[TracersCelestial.wingSlot];
+            else if (Item.type == ModContent.ItemType<TracersElysian>())
+                stats = ArmorIDs.Wing.Sets.Stats[TracersElysian.wingSlot];
+            else if (Item.type == ModContent.ItemType<TracersSeraph>())
+                stats = ArmorIDs.Wing.Sets.Stats[TracersSeraph.wingSlot];
+            else stats = ArmorIDs.Wing.Sets.Stats[Item.wingSlot];
             int time = stats.FlyTime;
             float run = stats.AccRunSpeedOverride;
             float rAcc = stats.AccRunAccelerationMult * 0.08f;
@@ -80,7 +88,7 @@ namespace CalamityMod.Items.Accessories.Wings
             sb.Append('\n');
             sb.Append(CalamityUtils.GetText($"Common.WingStats").Format(time.FramesToSeconds(), run.ToMph(), (MaxAscentSpeed * baseJumpSpeed).ToMph()));
             sb.Append('\n');
-            if (Main.keyState.IsKeyDown(Keys.LeftShift))
+            if (Main.keyState.PressingShift())
             {
                 sb.Append(CalamityUtils.GetText($"Common.WingStatsAcceleration").Format(rAcc.ToMphps(), BaseAscent.ToMphps(),
                 (BaseAscent + BonusAscentWhileRising).ToMphps(), (RisingSpeedThreshold * baseJumpSpeed).ToMph(),

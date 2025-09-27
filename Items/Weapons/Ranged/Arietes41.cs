@@ -20,7 +20,7 @@ namespace CalamityMod.Items.Weapons.Ranged
             Item.width = 56;
             Item.height = 30;
             Item.scale = 0.85f;
-            Item.damage = 95;
+            Item.damage = 77;
             Item.DamageType = DamageClass.Ranged;
             Item.useTime = 13;
             Item.useAnimation = 13;
@@ -34,12 +34,10 @@ namespace CalamityMod.Items.Weapons.Ranged
             Item.shootSpeed = 13f;
             Item.shoot = ProjectileID.PurificationPowder;
             Item.useAmmo = AmmoID.Bullet;
-            Item.Calamity().canFirePointBlankShots = true;
         }
         public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)
         {
             float itemRotation = player.compositeFrontArm.rotation + MathHelper.PiOver2 * player.gravDir;
-
             Vector2 itemPosition = player.MountedCenter + itemRotation.ToRotationVector2() * 7f;
 
             // Shock bullet
@@ -51,8 +49,7 @@ namespace CalamityMod.Items.Weapons.Ranged
                     GeneralParticleHandler.SpawnParticle(spark);
                 }
                 Projectile shockShot = Projectile.NewProjectileDirect(source, itemPosition + velocity.RotatedBy(-0.6 * player.direction) + velocity * 1.65f, velocity, type, damage, knockback, player.whoAmI);
-                CalamityGlobalProjectile cgp = shockShot.Calamity();
-                cgp.shockBullet = true;
+                shockShot.Calamity().shockBullet = true;
             }
             // Life bullet
             if (swapType)
@@ -63,8 +60,7 @@ namespace CalamityMod.Items.Weapons.Ranged
                     GeneralParticleHandler.SpawnParticle(spark);
                 }
                 Projectile lifeShot = Projectile.NewProjectileDirect(source, itemPosition + velocity.RotatedBy(-0.6 * player.direction) - velocity * 0.65f, velocity, type, damage, knockback, player.whoAmI);
-                CalamityGlobalProjectile cgp = lifeShot.Calamity();
-                cgp.lifeBullet = true;
+                lifeShot.Calamity().lifeBullet = true;
             }
 
             swapType = !swapType;

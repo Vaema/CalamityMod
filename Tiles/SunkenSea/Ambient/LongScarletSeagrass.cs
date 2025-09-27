@@ -42,21 +42,6 @@ namespace CalamityMod.Tiles.SunkenSea.Ambient
             height = 48;
         }
 
-        public override void ModifyLight(int i, int j, ref float r, ref float g, ref float b)
-        {
-            float brightness = 0.7f;
-            float declareThisHereToPreventRunningTheSameCalculationMultipleTimes = Main.GameUpdateCount * 0.01f;
-            brightness *= (float)MathF.Sin(-j / 8f + declareThisHereToPreventRunningTheSameCalculationMultipleTimes + i);
-            brightness *= (float)MathF.Sin(-i / 8f + declareThisHereToPreventRunningTheSameCalculationMultipleTimes + j);
-            brightness += 0.4f;
-            brightness = MathHelper.Clamp(brightness, 0.1f, 0.5f);
-            r = 0.733f;
-            g = 0.169f;
-            b = 0.173f;
-            r *= brightness;
-            g *= brightness;
-            b *= brightness;
-        }
         public override void AnimateTile(ref int frame, ref int frameCounter)
         {
             if (++frameCounter >= 12)

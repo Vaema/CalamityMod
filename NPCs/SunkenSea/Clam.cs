@@ -47,6 +47,8 @@ namespace CalamityMod.NPCs.SunkenSea
 
         public ref float ShellRotation => ref NPC.localAI[0];
 
+        public int originalDamage;
+
         #region Textures
 
         public static Asset<Texture2D> bottomJawTex;
@@ -84,11 +86,10 @@ namespace CalamityMod.NPCs.SunkenSea
 
         public override void SetDefaults()
         {
-            NPC.damage = Main.hardMode ? 60 : 30;
+            originalDamage = NPC.damage = Main.hardMode ? 60 : 30;
             NPC.width = 50;
             NPC.height = 30;
             NPC.defense = 9999;
-            NPC.DR_NERD(0.25f);
             NPC.lifeMax = Main.hardMode ? 300 : 150;
             if (Main.expertMode)
             {
@@ -96,7 +97,7 @@ namespace CalamityMod.NPCs.SunkenSea
             }
             NPC.aiStyle = -1;
             AIType = -1;
-            NPC.value = Main.hardMode ? Item.buyPrice(0, 0, 5, 0) : Item.buyPrice(0, 0, 1, 0);
+            NPC.value = Main.hardMode ? Item.buyPrice(silver: 5) : Item.buyPrice(silver: 1);
             NPC.HitSound = SoundID.NPCHit4;
             NPC.knockBackResist = 0;
             Banner = NPC.type;
@@ -106,11 +107,7 @@ namespace CalamityMod.NPCs.SunkenSea
             NPC.Calamity().VulnerableToSickness = true;
             NPC.Calamity().VulnerableToElectricity = true;
             NPC.Calamity().VulnerableToWater = false;
-            SpawnModBiomes = new int[1] { ModContent.GetInstance<SunkenSeaBiome>().Type };
-
-            // Scale stats in Expert and Master
-            CalamityGlobalNPC.AdjustExpertModeStatScaling(NPC);
-            CalamityGlobalNPC.AdjustMasterModeStatScaling(NPC);
+            SpawnModBiomes = new int[3] { ModContent.GetInstance<RadiantReefsBiome>().Type, ModContent.GetInstance<GleamingBurrowsBiome>().Type, ModContent.GetInstance<ClamDenBiome>().Type };
         }
 
         public override void SetBestiary(BestiaryDatabase database, BestiaryEntry bestiaryEntry)
@@ -164,6 +161,8 @@ namespace CalamityMod.NPCs.SunkenSea
             {
                 case (int)PhaseType.Idle:
                     {
+                        NPC.damage = 0;
+                        NPC.chaseable = false;
                         NPC.velocity.X *= 0.9f;
                         if (ShellRotation > 0)
                         {
@@ -206,16 +205,14 @@ namespace CalamityMod.NPCs.SunkenSea
                                 }
                                 break;
                         }
-                        // If it aggro'd, decrease kb resist and defense since it's no longer stuck in the ground
-                        if (CurrentPhase == (int)PhaseType.Attacking)
-                        {
-                            NPC.knockBackResist = 0.05f;
-                            NPC.defense = Main.hardMode ? 15 : 6;
-                        }
                     }
                     break;
                 case (int)PhaseType.Attacking:
                     {
+                        NPC.damage = 0;
+                        NPC.knockBackResist = 0.05f;
+                        NPC.defense = Main.hardMode ? 15 : 6;
+                        NPC.chaseable = true;
                         Timer++;
                         if (NPC.velocity.Y == 0)
                         {
@@ -231,6 +228,8 @@ namespace CalamityMod.NPCs.SunkenSea
                         }
                         else
                         {
+                            NPC.damage = originalDamage;
+
                             if (NPC.velocity.Y < 0)
                             {
                                 ShellRotation += 0.065f;
@@ -247,7 +246,6 @@ namespace CalamityMod.NPCs.SunkenSea
                                 ShellRotation = 0;
                         }
 
-
                         // Squirt
                         if (Timer > Main.rand.Next(220, 260) && NPC.HasSight(Target.Center) && ShellRotation == 0)
                         {
@@ -259,6 +257,8 @@ namespace CalamityMod.NPCs.SunkenSea
                     break;
                 case (int)PhaseType.Squirt:
                     {
+                        NPC.damage = 0;
+                        NPC.chaseable = true;
                         // Slow down. Once the clam is rested, start incrementing Timer
                         if (NPC.velocity.Y == 0)
                         {
@@ -300,6 +300,7 @@ namespace CalamityMod.NPCs.SunkenSea
                         // Fire the projectile
                         if (Timer == (endClose - 5))
                         {
+                            NPC.damage = originalDamage;
                             Vector2 velocity = NPC.SafeDirectionTo(Target.Center, Vector2.UnitY) * 5;
 
                             // If the player is on the other side of the clam, flip the jet so that it doesn't fire backwards
@@ -308,7 +309,7 @@ namespace CalamityMod.NPCs.SunkenSea
 
                             if (Main.netMode != NetmodeID.MultiplayerClient)
                             {
-                                Projectile.NewProjectile(NPC.GetSource_FromThis(), NPC.Center, velocity, ModContent.ProjectileType<ClamBubbleBlast>(), NPC.damage / 2, 1);
+                                Projectile.NewProjectile(NPC.GetSource_FromThis(), NPC.Center, velocity, ModContent.ProjectileType<ClamBubbleBlast>(), Main.hardMode ? 30 : 15, 1);
                             }
                             for (int i = 0; i < 9; i++)
                             {
@@ -330,6 +331,9 @@ namespace CalamityMod.NPCs.SunkenSea
                 break;
                 case (int)PhaseType.Pod:
                     {
+                        NPC.damage = 0;
+
+                        NPC.chaseable = true;
                         NPC pod = Main.npc[(int)NPC.localAI[2] - 1];
                         // If the Pearlpod is invalid, go back to idling
                         if (pod == null || !pod.active || pod.life < 0 || pod.ModNPC == null || pod.ModNPC is not Pearlpod)

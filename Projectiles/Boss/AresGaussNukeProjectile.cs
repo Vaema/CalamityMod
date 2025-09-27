@@ -39,7 +39,7 @@ namespace CalamityMod.Projectiles.Boss
             CooldownSlot = ImmunityCooldownID.Bosses;
             Projectile.timeLeft = timeLeft;
 
-            if (Main.getGoodWorld)
+            if (Main.zenithWorld)
                 Projectile.extraUpdates = 1;
         }
 
@@ -72,10 +72,9 @@ namespace CalamityMod.Projectiles.Boss
             Projectile.rotation = (float)Math.Atan2(Projectile.velocity.Y, Projectile.velocity.X) - MathHelper.PiOver2;
 
             // Difficulty modes
-            bool bossRush = BossRushEvent.BossRushActive;
-            bool death = CalamityWorld.death || bossRush;
-            bool revenge = CalamityWorld.revenge || bossRush;
-            bool expertMode = Main.expertMode || bossRush;
+            bool death = CalamityWorld.death || BossRushEvent.BossRushActive;
+            bool revenge = CalamityWorld.revenge || BossRushEvent.BossRushActive;
+            bool expertMode = Main.expertMode || BossRushEvent.BossRushActive;
 
             // Spawn effects
             if (Projectile.localAI[0] == 0f)
@@ -101,7 +100,7 @@ namespace CalamityMod.Projectiles.Boss
                 // Gauss sparks
                 if (Main.myPlayer == Projectile.owner)
                 {
-                    int totalProjectiles = bossRush ? 18 : 12;
+                    int totalProjectiles = 12;
                     float radians = MathHelper.TwoPi / totalProjectiles;
                     int type = ModContent.ProjectileType<AresGaussNukeProjectileSpark>();
                     float velocity = Projectile.velocity.Length();
@@ -112,7 +111,7 @@ namespace CalamityMod.Projectiles.Boss
                     for (int k = 0; k < totalProjectiles; k++)
                     {
                         Vector2 velocity2 = spinningPoint.RotatedBy(radians * k);
-                        Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center, velocity2 + Vector2.Normalize(Projectile.velocity) * -6f, type, (int)Math.Round(Projectile.damage * 0.5), 0f, Main.myPlayer);
+                        Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center, velocity2 + Vector2.Normalize(Projectile.velocity) * -6f, type, AresGaussNuke.SparkDamage, 0f, Main.myPlayer);
                     }
                 }
             }
@@ -124,8 +123,15 @@ namespace CalamityMod.Projectiles.Boss
             int target = Player.FindClosest(Projectile.Center, 1, 1);
             Vector2 distanceFromTarget = Main.player[target].Center - Projectile.Center;
 
+            // Instant explode upon collision with the target
+            if (CalamityUtils.CircularHitboxCollision(Projectile.Center, 45f, Main.player[target].Hitbox))
+            {
+                Projectile.Kill();
+                return;
+            }
+
             // Set AI to stop homing, start accelerating
-            float stopHomingDistance = bossRush ? 260f : death ? 280f : revenge ? 290f : expertMode ? 300f : 320f;
+            float stopHomingDistance = death ? 280f : revenge ? 290f : expertMode ? 300f : 320f;
             if ((distanceFromTarget.Length() < stopHomingDistance && Projectile.ai[0] != -1f) || Projectile.ai[0] == 1f)
             {
                 Projectile.ai[0] = 1f;
@@ -138,7 +144,7 @@ namespace CalamityMod.Projectiles.Boss
 
             // Home in on target
             float scaleFactor = Projectile.velocity.Length();
-            float inertia = bossRush ? 6f : death ? 8f : revenge ? 9f : expertMode ? 10f : 12f;
+            float inertia = death ? 8f : revenge ? 9f : expertMode ? 10f : 12f;
             distanceFromTarget.Normalize();
             distanceFromTarget *= scaleFactor;
             Projectile.velocity = (Projectile.velocity * inertia + distanceFromTarget) / (inertia + 1f);
@@ -176,10 +182,8 @@ namespace CalamityMod.Projectiles.Boss
             Main.EntitySpriteDraw(ModContent.Request<Texture2D>("CalamityMod/Projectiles/Boss/AresGaussNukeProjectileGlow").Value, Projectile.Center - Main.screenPosition, new Microsoft.Xna.Framework.Rectangle?(new Rectangle(0, drawStart, texture.Width, height)), Color.White, Projectile.rotation, origin, Projectile.scale, SpriteEffects.None, 0);
         }
 
-        public override bool? Colliding(Rectangle projHitbox, Rectangle targetHitbox) => CalamityUtils.CircularHitboxCollision(Projectile.Center, 45f, targetHitbox);
-
-        // Explodes on contact
-        public override void ModifyHitPlayer(Player target, ref Player.HurtModifiers modifiers) => Projectile.Kill();
+        // Does not do damage by itself, only through the explosion
+        public override bool? CanDamage() => false;
 
         public override void OnKill(int timeLeft)
         {
@@ -201,7 +205,7 @@ namespace CalamityMod.Projectiles.Boss
                 // Explosion waves
                 for (int i = 0; i < 3; i++)
                 {
-                    Projectile explosion = Projectile.NewProjectileDirect(Projectile.GetSource_FromThis(), Projectile.Center, Vector2.Zero, ModContent.ProjectileType<AresGaussNukeProjectileBoom>(), Projectile.damage, 0f, Main.myPlayer);
+                    Projectile explosion = Projectile.NewProjectileDirect(Projectile.GetSource_FromThis(), Projectile.Center, Vector2.Zero, ModContent.ProjectileType<AresGaussNukeProjectileBoom>(), i == 2 ? Projectile.damage : 0, 0f, Main.myPlayer);
                     if (explosion.whoAmI.WithinBounds(Main.maxProjectiles))
                     {
                         // Make the max explosion radius decrease over time, creating a ring effect.
