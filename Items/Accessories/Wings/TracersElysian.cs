@@ -116,7 +116,7 @@ namespace CalamityMod.Items.Accessories.Wings
             player.buffImmune[BuffID.OnFire] = true;
             player.noFallDmg = true;
             player.socialShadowRocketBoots = true;
-            if (!toggleEnabled) //Only applies if tracers are plucked
+            if (!toggleEnabled) //Both these effects just boost flight time, but we don't want Tracers to boost it's own flight time when functioning as wings. All other Angel Tread effects are covered above.
             {
                 player.rocketBoots = player.vanityRocketBoots = 1;
                 modPlayer.angelTreads = true;
