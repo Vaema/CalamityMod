@@ -1,6 +1,7 @@
 ﻿using CalamityMod.DataStructures;
 using Terraria;
 using Terraria.ID;
+using Terraria.Localization;
 using Terraria.ModLoader;
 
 namespace CalamityMod.Buffs.DamageOverTime
@@ -36,5 +37,12 @@ namespace CalamityMod.Buffs.DamageOverTime
         {
             npc.Calamity().banishingFire = true;
         }
+    }
+    public class BanishingFireIconItem : ModItem
+    {
+        private string BuffName = "BanishingFire";
+        public override string Texture => $"CalamityMod/Buffs/DamageOverTime/{BuffName}";
+        public override LocalizedText DisplayName => CalamityUtils.GetText($"Buffs.{BuffName}.DisplayName");
+        public override LocalizedText Tooltip => CalamityUtils.GetText($"Buffs.{BuffName}.ItemTooltip");
     }
 }

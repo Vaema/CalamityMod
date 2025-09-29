@@ -2,6 +2,7 @@
 using CalamityMod.Systems.Collections;
 using Terraria;
 using Terraria.ID;
+using Terraria.Localization;
 using Terraria.ModLoader;
 
 namespace CalamityMod.Buffs.StatDebuffs
@@ -22,5 +23,12 @@ namespace CalamityMod.Buffs.StatDebuffs
             if ((CalamityNPCSets.ResistSlowingDebuffsAndOtherSpecialEffects[npc.type] || npc.boss) && npc.Calamity().debuffResistanceTimer <= 0)
                 npc.Calamity().debuffResistanceTimer = CalamityGlobalNPC.slowingDebuffResistanceMin + npc.buffTime[buffIndex];
         }
+    }
+    public class TimeDistortionIconItem : ModItem
+    {
+        private string BuffName = "TimeDistortion";
+        public override string Texture => $"CalamityMod/Buffs/StatDebuffs/{BuffName}";
+        public override LocalizedText DisplayName => CalamityUtils.GetText($"Buffs.{BuffName}.DisplayName");
+        public override LocalizedText Tooltip => CalamityUtils.GetText($"Buffs.{BuffName}.ItemTooltip");
     }
 }
