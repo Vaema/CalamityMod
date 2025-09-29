@@ -10,6 +10,8 @@ using CalamityMod.Tiles.Ores;
 using CalamityMod.Tiles.SunkenSea;
 using Terraria;
 using Terraria.ModLoader;
+using CalamityMod.Walls;
+using Terraria.ID;
 
 namespace CalamityMod.Systems
 {
@@ -27,7 +29,7 @@ namespace CalamityMod.Systems
         public static int ArsenalLabTiles = 0;
         public static int AbyssTiles = 0;
         public static int FloralParadiseTiles = 0;
-
+        public static int UndergroundTiles = 0;
         public static int Layer1Tiles = 0;
         public static int Layer2Tiles = 0;
         public static int Layer3Tiles = 0;
@@ -46,6 +48,7 @@ namespace CalamityMod.Systems
             SulphurTiles = 0;
             AbyssTiles = 0;
             ArsenalLabTiles = 0;
+            UndergroundTiles = 0;
 
             Layer1Tiles = 0;
             Layer2Tiles = 0;
@@ -58,15 +61,16 @@ namespace CalamityMod.Systems
         {
             BrimstoneCragTiles = tileCounts[ModContent.TileType<InfernalSuevite>()] + tileCounts[ModContent.TileType<BrimstoneSlag>()];
             SunkenSeaTiles = tileCounts[ModContent.TileType<EutrophicSand>()] + tileCounts[ModContent.TileType<HardenedEutrophicSand>()] + tileCounts[ModContent.TileType<Navystone>()] + tileCounts[ModContent.TileType<Limestone>()] + tileCounts[ModContent.TileType<PolypSand>()] + tileCounts[ModContent.TileType<Dunesand>()] + tileCounts[ModContent.TileType<Runestone>()] + tileCounts[ModContent.TileType<Shellstone>()];
-            SunkenSeaShoresTiles = tileCounts[ModContent.TileType<Runestone>()] + tileCounts[ModContent.TileType<Dunesand>()];
-            SunkenSeaPolypTiles = tileCounts[ModContent.TileType<Limestone>()] + tileCounts[ModContent.TileType<PolypSand>()];
+            SunkenSeaShoresTiles = tileCounts[ModContent.TileType<Runestone>()] + tileCounts[ModContent.TileType<Dunesand>()] + tileCounts[ModContent.TileType<AridSoil>()];
+            SunkenSeaPolypTiles = tileCounts[ModContent.TileType<Limestone>()] + tileCounts[ModContent.TileType<PolypSand>()] + tileCounts[ModContent.TileType<ScarletSeaGrassTile>()];
             SunkenSeaReefsTiles = tileCounts[ModContent.TileType<Shellstone>()] + tileCounts[ModContent.TileType<EutrophicSand>()] + tileCounts[ModContent.TileType<YellowCoral>()] + tileCounts[ModContent.TileType<OrangeCoral>()] + tileCounts[ModContent.TileType<CyanCoral>()] + tileCounts[ModContent.TileType<LimeCoral>()] + tileCounts[ModContent.TileType<MagentaCoral>()];
-            SunkenSeaBurrowsTiles = tileCounts[ModContent.TileType<Navystone>()] + tileCounts[ModContent.TileType<HardenedEutrophicSand>()];
+            SunkenSeaBurrowsTiles = tileCounts[ModContent.TileType<Navystone>()] + tileCounts[ModContent.TileType<HardenedEutrophicSand>()] + tileCounts[ModContent.TileType<WhitePearlPile>()] + tileCounts[ModContent.TileType<BlackPearlPile>()] + tileCounts[ModContent.TileType<PinkPearlPile>()] + tileCounts[ModContent.TileType<SeaPrism>()];
             SunkenSeaBasaltTiles = tileCounts[ModContent.TileType<Basalt>()] + tileCounts[ModContent.TileType<VolcanicSand>()];
             AbyssTiles = tileCounts[ModContent.TileType<AbyssGravel>()] + tileCounts[ModContent.TileType<Voidstone>()];
             SulphurTiles = tileCounts[ModContent.TileType<SulphurousSand>()] + tileCounts[ModContent.TileType<SulphurousSandstone>()] + tileCounts[ModContent.TileType<HardenedSulphurousSandstone>()];
             FloralParadiseTiles = tileCounts[ModContent.TileType<AlgalSlate>()] + tileCounts[ModContent.TileType<PeatMoss>()] + tileCounts[ModContent.TileType<Peat>()];
             ArsenalLabTiles = tileCounts[ModContent.TileType<LaboratoryPanels>()] + tileCounts[ModContent.TileType<LaboratoryPlating>()] + tileCounts[ModContent.TileType<HazardChevronPanels>()];
+            UndergroundTiles = tileCounts[TileID.Stone];
 
             Layer1Tiles = tileCounts[ModContent.TileType<SulphurousShale>()];
             Layer2Tiles = tileCounts[ModContent.TileType<AbyssGravel>()] + tileCounts[ModContent.TileType<PlantyMush>()];

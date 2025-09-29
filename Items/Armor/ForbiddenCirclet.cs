@@ -21,6 +21,7 @@ namespace CalamityMod.Items.Armor
 
         // Set Bonus
         public static float SetBonusRogueStealth = 0.4f;
+        public static int TagDuration = CalamityUtils.SecondsToFrames(10);
         public static int StormManaCost = 60;
         public static int StormCooldown = 45;
         public static int StormDamage = 60;
@@ -44,19 +45,11 @@ namespace CalamityMod.Items.Armor
 
         public static void tagOnHit(NPC npc, Projectile projectile, NPC.HitInfo hit, int damageDone)
         {
-
             if (Main.rand.NextBool(5))
             {
-                float xVector = Main.rand.Next(-35, 36) * 0.02f;
-                float yVector = Main.rand.Next(-35, 36) * 0.02f;
-                xVector *= 10f;
-                yVector *= 10f;
-
                 int damage = (int)Main.player[projectile.owner].GetBestClassDamage().ApplyTo(damageDone * summonTag.MultiplicativeTagDamage) + summonTag.FlatTagDamage;
-                Projectile.NewProjectile(projectile.GetSource_OnHit(npc), npc.Center.X, npc.Center.Y, xVector, yVector, ModContent.ProjectileType<ForbiddenCircletEater>(), damage, 3, projectile.owner);
-
+                Projectile.NewProjectile(projectile.GetSource_OnHit(npc), npc.Center, Main.rand.NextVector2Circular(5f, 5f), ModContent.ProjectileType<ForbiddenCircletEater>(), damage, 3, projectile.owner);
             }
-                
         }
 
         public override void SetStaticDefaults()
@@ -96,14 +89,6 @@ namespace CalamityMod.Items.Armor
             modPlayer.wearingRogueArmor = true;
         }
 
-        public string FormatHotkeyWithVanillaSupport(string hotkey)
-        {
-            if (hotkey == CalamityUtils.GetText("Misc.HotkeyNotBound").Value)
-            {
-                return CalamityUtils.GetText("Common.VanillaArmorSetBonus").Format(Language.GetTextValue(Main.ReversedUpDownArmorSetBonuses ? "Key.UP" : "Key.DOWN"));
-            }
-            return CalamityUtils.GetText("Common.CalamityArmorSetBonus").Format(hotkey);
-        }
         public override void UpdateEquip(Player player)
         {
             player.GetDamage<SummonDamageClass>() += SummonDamageBoost;

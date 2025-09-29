@@ -56,11 +56,9 @@ namespace CalamityMod.NPCs.Yharon
         private int invincibilityCounter = 0;
         private int fastChargeTelegraphTime = 120;
 
-        private const float ai2GateValue = 0.55f;
-        public const int Phase2InvincibilityTime = 300;
-
-        public static float normalDR = 0.22f;
-        public static float EnragedDR = 0.9f;
+        private const float AI2GateValue = 0.55f;
+        private const int Phase2InvincibilityTime = 300;
+        private const float EnragedDR = 0.9f;
 
         public static readonly SoundStyle RoarSound = new("CalamityMod/Sounds/Custom/Yharon/YharonRoar");
         public static readonly SoundStyle ShortRoarSound = new("CalamityMod/Sounds/Custom/Yharon/YharonRoarShort");
@@ -99,18 +97,18 @@ namespace CalamityMod.NPCs.Yharon
             }
         }
 
-        public static int FlareDamage = 72; // 288; FlareBomb, FlareDust, FlareDust2
-        public static int FireballDamage = 72; // 288
-        public static int TornadoDamage = 90; // 360; Flarenado, Infernado, Infernado2
+        public static int FlareDamage = 66; // 264; FlareBomb, FlareDust, FlareDust2
+        public static int FireballDamage = 66; // 264
+        public static int TornadoDamage = 85; // 340; Flarenado, Infernado, Infernado2
         public static int BordernadoDamage = 125; // 500; SkyFlareRevenge
 
         // GFB exclusive
-        public static int VortexDamage = 90; // 360
+        public static int VortexDamage = 85; // 340
 
         public override void SetDefaults()
         {
             NPC.Calamity().canBreakPlayerDefense = true;
-            NPC.damage = 220; // 440
+            NPC.damage = 210; // 420
             NPC.npcSlots = 50f;
             NPC.width = 200;
             NPC.height = 200;
@@ -121,7 +119,6 @@ namespace CalamityMod.NPCs.Yharon
             AIType = -1;
             NPC.value = Item.buyPrice(platinum: 2, gold: 50);
             NPC.boss = true;
-            NPC.DR_NERD(normalDR);
 
             NPC.noGravity = true;
             NPC.noTileCollide = true;
@@ -226,7 +223,7 @@ namespace CalamityMod.NPCs.Yharon
             float phase2GateValue = revenge ? 0.9f : expertMode ? 0.85f : 0.8f;
             bool phase2Check = death || lifeRatio <= phase2GateValue;
             bool phase3Check = lifeRatio <= (death ? 0.8f : revenge ? 0.75f : expertMode ? 0.7f : 0.65f);
-            bool phase4Check = lifeRatio <= ai2GateValue;
+            bool phase4Check = lifeRatio <= AI2GateValue;
             bool phase1Change = NPC.ai[0] > -1f;
             bool phase2Change = NPC.ai[0] > 5f;
             bool phase3Change = NPC.ai[0] > 12f;
@@ -371,12 +368,12 @@ namespace CalamityMod.NPCs.Yharon
                 enraged = false;
                 if (Main.netMode != NetmodeID.MultiplayerClient)
                 {
-                    safeBox.X = (int)(player.Center.X - (Main.zenithWorld ? 1500f : CalamityWorld.LegendaryMode ? 1000f : revenge ? 3000f : 3500f));
+                    safeBox.X = (int)(player.Center.X - (Main.zenithWorld ? 1500f : Main.getGoodWorld ? 1000f : revenge ? 3000f : 3500f));
                     safeBox.Y = (int)Main.topWorld;
-                    safeBox.Width = Main.zenithWorld ? 3000 : CalamityWorld.LegendaryMode ? 2000 : revenge ? 6000 : 7000;
+                    safeBox.Width = Main.zenithWorld ? 3000 : Main.getGoodWorld ? 2000 : revenge ? 6000 : 7000;
                     safeBox.Height = Main.maxTilesY * 16;
-                    Projectile.NewProjectile(NPC.GetSource_FromAI(), player.Center.X + (Main.zenithWorld ? 1500f : CalamityWorld.LegendaryMode ? 1000f : revenge ? 3000f : 3500f), player.Center.Y + 100f, 0f, 0f, ModContent.ProjectileType<SkyFlareRevenge>(), 0, 0f, Main.myPlayer);
-                    Projectile.NewProjectile(NPC.GetSource_FromAI(), player.Center.X - (Main.zenithWorld ? 1500f : CalamityWorld.LegendaryMode ? 1000f : revenge ? 3000f : 3500f), player.Center.Y + 100f, 0f, 0f, ModContent.ProjectileType<SkyFlareRevenge>(), 0, 0f, Main.myPlayer);
+                    Projectile.NewProjectile(NPC.GetSource_FromAI(), player.Center.X + (Main.zenithWorld ? 1500f : Main.getGoodWorld ? 1000f : revenge ? 3000f : 3500f), player.Center.Y + 100f, 0f, 0f, ModContent.ProjectileType<SkyFlareRevenge>(), 0, 0f, Main.myPlayer);
+                    Projectile.NewProjectile(NPC.GetSource_FromAI(), player.Center.X - (Main.zenithWorld ? 1500f : Main.getGoodWorld ? 1000f : revenge ? 3000f : 3500f), player.Center.Y + 100f, 0f, 0f, ModContent.ProjectileType<SkyFlareRevenge>(), 0, 0f, Main.myPlayer);
                 }
 
                 // Force Yharon to send a sync packet so that the arena gets sent immediately
@@ -398,13 +395,13 @@ namespace CalamityMod.NPCs.Yharon
                     protectionBoost = false;
             }
 
-            if (CalamityWorld.LegendaryMode)
+            if (Main.getGoodWorld)
                 phaseSwitchTimer /= 2;
 
             // Set DR based on protection boost (aka enrage)
             bool chargeTelegraph = (NPC.ai[0] == 0f || NPC.ai[0] == 6f || NPC.ai[0] == 13f) && NPC.localAI[1] > 0f;
             bool bulletHell = NPC.ai[0] == 8f || NPC.ai[0] == 15f;
-            calamityGlobalNPC.DR = protectionBoost ? EnragedDR : normalDR;
+            calamityGlobalNPC.DR = protectionBoost ? EnragedDR : 0f;
             calamityGlobalNPC.CurrentlyIncreasingDefenseOrDR = protectionBoost;
 
             // Increased DR during phase transitions
@@ -412,17 +409,17 @@ namespace CalamityMod.NPCs.Yharon
             {
                 if (phase3Change)
                 {
-                    calamityGlobalNPC.DR = phase4Check ? 0.7f : normalDR;
+                    calamityGlobalNPC.DR = phase4Check ? 0.7f : 0f;
                     calamityGlobalNPC.CurrentlyIncreasingDefenseOrDR = phase4Check;
                 }
                 else if (phase2Change)
                 {
-                    calamityGlobalNPC.DR = phase3Check ? 0.7f : normalDR;
+                    calamityGlobalNPC.DR = phase3Check ? 0.7f : 0f;
                     calamityGlobalNPC.CurrentlyIncreasingDefenseOrDR = phase3Check;
                 }
                 else if (phase1Change)
                 {
-                    calamityGlobalNPC.DR = phase2Check ? 0.7f : normalDR;
+                    calamityGlobalNPC.DR = phase2Check ? 0.7f : 0f;
                     calamityGlobalNPC.CurrentlyIncreasingDefenseOrDR = phase2Check;
                 }
             }
@@ -1718,7 +1715,7 @@ namespace CalamityMod.NPCs.Yharon
             // Set DR based on protection boost (aka enrage)
             bool bulletHell = NPC.ai[0] == 5f;
             NPC.dontTakeDamage = bulletHell;
-            calamityGlobalNPC.DR = protectionBoost ? EnragedDR : normalDR;
+            calamityGlobalNPC.DR = protectionBoost ? EnragedDR : 0f;
             calamityGlobalNPC.CurrentlyIncreasingDefenseOrDR = protectionBoost;
 
             // Increased DR during phase transitions
@@ -1728,21 +1725,21 @@ namespace CalamityMod.NPCs.Yharon
                 {
                     case 1:
 
-                        calamityGlobalNPC.DR = phase2 ? 0.7f : normalDR;
+                        calamityGlobalNPC.DR = phase2 ? 0.7f : 0f;
                         calamityGlobalNPC.CurrentlyIncreasingDefenseOrDR = phase2;
 
                         break;
 
                     case 2:
 
-                        calamityGlobalNPC.DR = phase3 ? 0.7f : normalDR;
+                        calamityGlobalNPC.DR = phase3 ? 0.7f : 0f;
                         calamityGlobalNPC.CurrentlyIncreasingDefenseOrDR = phase3;
 
                         break;
 
                     case 3:
 
-                        calamityGlobalNPC.DR = phase4 ? 0.7f : normalDR;
+                        calamityGlobalNPC.DR = phase4 ? 0.7f : 0f;
                         calamityGlobalNPC.CurrentlyIncreasingDefenseOrDR = phase4;
 
                         break;
@@ -1770,7 +1767,7 @@ namespace CalamityMod.NPCs.Yharon
 
             float fireballBreathTimer = 60f;
             float fireballBreathPhaseTimer = fireballBreathTimer + 80f;
-            float fireballBreathPhaseVelocity = expertMode ? 32f : 30f;
+            float fireballBreathPhaseVelocity = expertMode ? 28f : 25f;
 
             float splittingFireballBreathTimer = 40f;
             float splittingFireballBreathPhaseVelocity = 22f;
@@ -1796,7 +1793,7 @@ namespace CalamityMod.NPCs.Yharon
             }
 
             float flareSpawnDecelerationTimer = death ? 75f : 90f;
-            int flareSpawnPhaseTimerReduction = revenge ? (int)(flareSpawnDecelerationTimer * (ai2GateValue - lifeRatio)) : 0;
+            int flareSpawnPhaseTimerReduction = revenge ? (int)(flareSpawnDecelerationTimer * (AI2GateValue - lifeRatio)) : 0;
             float flareSpawnPhaseTimer = (death ? 150f : 180f) - flareSpawnPhaseTimerReduction;
 
             float teleportPhaseTimer = 45f;
@@ -1811,7 +1808,7 @@ namespace CalamityMod.NPCs.Yharon
                 chargeSpeed *= velocityMult;
             }
 
-            if (CalamityWorld.LegendaryMode)
+            if (Main.getGoodWorld)
                 phaseSwitchTimer *= 0.5f;
 
             if (NPC.ai[0] == 0f)
@@ -2254,9 +2251,6 @@ namespace CalamityMod.NPCs.Yharon
                         int type = ModContent.ProjectileType<FlareDust2>();
                         Projectile.NewProjectile(NPC.GetSource_FromAI(), position, projectileVelocity, type, FlareDamage, 0f, Main.myPlayer);
                     }
-
-                    if (Math.Abs(targetData.Center.X - NPC.Center.X) > 700f && Math.Abs(NPC.velocity.X) < chargeSpeed)
-                        NPC.velocity.X += Math.Sign(NPC.velocity.X) * 0.5f;
                 }
 
                 if (NPC.ai[1] >= fireballBreathPhaseTimer)

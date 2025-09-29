@@ -1,4 +1,5 @@
-﻿using CalamityMod.Projectiles.Summon;
+﻿using CalamityMod.Buffs.Summon;
+using CalamityMod.Projectiles.Summon;
 using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.DataStructures;
@@ -26,21 +27,15 @@ namespace CalamityMod.Items.Weapons.Summon
             Item.mana = 10;
             Item.damage = 28;
             Item.useAnimation = Item.useTime = 25;
+            Item.buffType = ModContent.BuffType<AncientMineralSharkBuff>();
             Item.shoot = ModContent.ProjectileType<ApexShark>();
-            Item.shootSpeed = 12f;
         }
 
         public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)
         {
-            if (player.altFunctionUse != 2)
-            {
-                Vector2 vector2 = player.RotatedRelativePoint(player.MountedCenter, true);
-                vector2.X = Main.mouseX + Main.screenPosition.X;
-                vector2.Y = Main.mouseY + Main.screenPosition.Y;
-                int p = Projectile.NewProjectile(source, vector2, Vector2.Zero, ModContent.ProjectileType<ApexShark>(), damage, knockback, player.whoAmI);
-                if (Main.projectile.IndexInRange(p))
-                    Main.projectile[p].originalDamage = Item.damage;
-            }
+            player.AddBuff(Item.buffType, 2);
+            var minion = Projectile.NewProjectileDirect(source, player.ClampedMouseWorld(), Vector2.Zero, ModContent.ProjectileType<ApexShark>(), damage, knockback, player.whoAmI);
+            minion.originalDamage = Item.damage;
             return false;
         }
 

@@ -20,7 +20,7 @@ namespace CalamityMod.Items.Accessories
 
         public override void UpdateAccessory(Player player, bool hideVisual)
         {
-            player.pickSpeed -= 0.3f;
+            player.pickSpeed -= 0.25f;
             player.Calamity().aPowder = true;
             player.Calamity().fallingBlockProtection = true;
             player.Calamity().trapProtection = true;

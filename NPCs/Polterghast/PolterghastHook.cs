@@ -32,7 +32,7 @@ namespace CalamityMod.NPCs.Polterghast
             }
         }
 
-        public static int ShotDamage = 60; // 240
+        public static int ShotDamage = 55; // 220
 
         public override void SetDefaults()
         {
@@ -96,7 +96,7 @@ namespace CalamityMod.NPCs.Polterghast
             }
 
             float chargePhaseGateValue = 480f;
-            if (CalamityWorld.LegendaryMode)
+            if (Main.getGoodWorld)
                 chargePhaseGateValue *= 0.5f;
 
             bool chargePhase = Main.npc[CalamityGlobalNPC.ghostBoss].Calamity().newAI[0] >= chargePhaseGateValue - 60f;
@@ -152,7 +152,7 @@ namespace CalamityMod.NPCs.Polterghast
                 NPC.ai[2] += 1f;
                 if (NPC.ai[3] == 0f)
                 {
-                    if (NPC.ai[2] > ((CalamityWorld.LegendaryMode) ? 12f : 120f))
+                    if (NPC.ai[2] > (Main.getGoodWorld ? 40f : 120f))
                     {
                         NPC.ai[2] = 0f;
                         NPC.ai[3] = 1f;
@@ -184,7 +184,7 @@ namespace CalamityMod.NPCs.Polterghast
         private void Movement(bool phase2, bool expertMode, bool revenge, bool death, bool speedBoost, bool despawnBoost, float lifeRatio, float tileEnrageMult, Player player)
         {
             float chargePhaseGateValue = 480f;
-            if (CalamityWorld.LegendaryMode)
+            if (Main.getGoodWorld)
                 chargePhaseGateValue *= 0.5f;
 
             float colorChangeTime = 180f;
@@ -326,7 +326,7 @@ namespace CalamityMod.NPCs.Polterghast
             Color lightRed = new Color(255, 100, 100, 255);
 
             float chargePhaseGateValue = 480f;
-            if (CalamityWorld.LegendaryMode)
+            if (Main.getGoodWorld)
                 chargePhaseGateValue *= 0.5f;
 
             float timeToReachFullColor = 120f;

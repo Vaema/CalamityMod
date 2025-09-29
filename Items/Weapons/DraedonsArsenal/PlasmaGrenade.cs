@@ -26,7 +26,7 @@ namespace CalamityMod.Items.Weapons.DraedonsArsenal
 
             Item.width = 22;
             Item.height = 28;
-            Item.damage = 950;
+            Item.damage = 860;
             Item.noMelee = true;
             Item.noUseGraphic = true;
             Item.consumable = false;
@@ -45,10 +45,9 @@ namespace CalamityMod.Items.Weapons.DraedonsArsenal
 
             modItem.UsesCharge = true;
             modItem.MaxCharge = 250f;
-            modItem.ChargePerUse = 0.25f;
+            modItem.ChargePerUse = 0.2f;
         }
 
-        public override float StealthDamageMultiplier => 0.90f;
         public override float StealthVelocityMultiplier => 1.2f;
         public override float StealthKnockbackMultiplier => 1.5f;
 

@@ -15,18 +15,12 @@ namespace CalamityMod.Items.Armor.Vanity
             Item.width = 18;
             Item.height = 18;
             Item.vanity = true;
-            Item.value = Item.buyPrice(gold: 8); // Sold by Clothier
+            Item.value = Item.buyPrice(gold: 10); // Sold by Clothier
             Item.rare = ItemRarityID.Blue;
         }
 
-        public override bool IsArmorSet(Item head, Item body, Item legs)
-        {
-            return body.type == ModContent.ItemType<GodSlayerChestplate>() && legs.type == ModContent.ItemType<GodSlayerLeggings>();
-        }
+        public override bool IsArmorSet(Item head, Item body, Item legs) => body.type == ModContent.ItemType<GodSlayerChestplate>() && legs.type == ModContent.ItemType<GodSlayerLeggings>();
 
-        public override void ArmorSetShadows(Player player)
-        {
-            player.armorEffectDrawShadow = true;
-        }
+        public override void ArmorSetShadows(Player player) => player.armorEffectDrawShadow = true;
     }
 }

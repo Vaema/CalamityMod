@@ -181,6 +181,25 @@ namespace CalamityMod.ILEditing
         }
         #endregion
 
+        #region Prevent Lava Slime Dropping Lava
+        private static void PreventLavaSlimeLavaDrop(ILContext il)
+        {
+            // Disable Lava Slimes dropping lava if its respective config is enabled.
+            var cursor = new ILCursor(il);
+
+            // Go to the check for Remix world.
+            if (!cursor.TryGotoNext(MoveType.Before, i => i.MatchLdsfld<Main>("remixWorld")))
+            {
+                LogFailure("Prevent Lava Slime Dropping Lava", "Could not find the check for Remix World.");
+                return;
+            }
+
+            // Add an additional check for the config.
+            cursor.Remove();
+            cursor.EmitDelegate<Func<bool>>(() => CalamityServerConfig.Instance.RemoveLavaDropsFromLavaSlimes || Main.remixWorld);
+        }
+        #endregion
+
         #region Disable Detonating Bubble StrikeNPC Hardcoded Override
         private static void LetDetonatingBubblesTakeDamage(ILContext il)
         {
@@ -240,34 +259,6 @@ namespace CalamityMod.ILEditing
             cursor.Emit(OpCodes.Ldc_I4, TileID.HellstoneBrick); // This won't actually do anything since the ID is above Meteorite's and thus unreachable
         }
         #endregion
-
-        #region Make Windy Day Music Play Less Often
-        private static void MakeWindyDayMusicPlayLessOften(ILContext il)
-        {
-            // Make windy day theme only play when the wind speed is over 0.5f instead of 0.4f and make it stop when the wind dies down to below 0.44f instead of 0.34f.
-            var cursor = new ILCursor(il);
-
-            FieldInfo _minWindField = typeof(Main).GetField("_minWind", BindingFlags.NonPublic | BindingFlags.Static);
-
-            if (!cursor.TryGotoNext(MoveType.Before, i => i.MatchLdsfld(_minWindField))) // The min wind speed check that stops the windy day theme when the wind dies down enough.
-            {
-                LogFailure("Make Windy Day Music Play Less Often", "Could not locate the _minWind variable.");
-                return;
-            }
-            cursor.Remove();
-            cursor.Emit(OpCodes.Ldc_R4, 0.44f); // Change to 0.44f.
-
-            FieldInfo _maxWindField = typeof(Main).GetField("_maxWind", BindingFlags.NonPublic | BindingFlags.Static);
-
-            if (!cursor.TryGotoNext(MoveType.Before, i => i.MatchLdsfld(_maxWindField))) // The max wind speed check that causes the windy day theme to play.
-            {
-                LogFailure("Make Windy Day Music Play Less Often", "Could not locate the _maxWind variable.");
-                return;
-            }
-            cursor.Remove();
-            cursor.Emit(OpCodes.Ldc_R4, 0.5f); // Change to 0.5f.
-        }
-        #endregion Make Windy Day Music Play Less Often
 
         #region Change Blood Moon Max HP Requirements
         private static void BloodMoonsRequire200MaxLife(ILContext il)

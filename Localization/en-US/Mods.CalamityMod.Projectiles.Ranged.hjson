@@ -175,7 +175,6 @@ RicoshotCoin.DisplayName: Ricoshot Coin
 RocketFire.DisplayName: Fire
 RubberMortarRoundProj.DisplayName: Rubber Mortar
 SandblasterBullet.DisplayName: Sandstorm
-ScorchedEarthBlast.DisplayName: Earth Scorcher
 ScorchedEarthClusterBomb.DisplayName: Cluster Bomb
 ScorchedEarthRocket.DisplayName: Rocket
 ScorpioRocket.DisplayName: Nano Missile
@@ -262,3 +261,5 @@ LeviatitanMeteor.DisplayName: Leviatitan Meteor
 LeviatitanExplosion.DisplayName: Leviatitan Explosion
 SulphuricDrop.DisplayName: Sulphuric Drop
 AcidRocket.DisplayName: Acid Rocket
+M1GarandBulletCasing.DisplayName: M1 Garand Bullet Casing
+M1GarandEmptyClip.DisplayName: M1 Garand Empty Clip

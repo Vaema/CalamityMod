@@ -1,6 +1,6 @@
 ﻿using System;
 using CalamityMod.Enums;
-using CalamityMod.Items.Accessories;
+using CalamityMod.Items.Armor.Plaguebringer;
 using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.DataStructures;
@@ -61,12 +61,12 @@ namespace CalamityMod.CalPlayer.Dashes
             if (player.velocity.X != 0f)
                 hitDirection = Math.Sign(player.velocity.X);
             hitContext.HitDirection = hitDirection;
-            hitContext.PlayerImmunityFrames = AsgardsValor.ShieldSlamIFrames;
+            hitContext.PlayerImmunityFrames = PlaguebringerVisor.PlagueDashIFrames;
 
             // Define damage parameters.
             hitContext.damageClass = DamageClass.Summon;
-            hitContext.BaseDamage = 50;
-            hitContext.BaseKnockback = 3f;
+            hitContext.BaseDamage = PlaguebringerVisor.PlagueDashDamage;
+            hitContext.BaseKnockback = PlaguebringerVisor.PlagueDashKnockback;
         }
     }
 }

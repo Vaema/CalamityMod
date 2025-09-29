@@ -13,7 +13,9 @@ using CalamityMod.Events;
 using CalamityMod.ExtraTextures;
 using CalamityMod.Items.Accessories;
 using CalamityMod.Items.Ammo;
+using CalamityMod.Items.Fishing.FishingRods;
 using CalamityMod.Items.Armor.Daedalus;
+using CalamityMod.Items.Armor.Reaver;
 using CalamityMod.Items.Potions.Alcohol;
 using CalamityMod.Items.VanillaArmorChanges;
 using CalamityMod.NPCs;
@@ -192,21 +194,6 @@ namespace CalamityMod.Projectiles
         /// </summary>
         public int timesPierced = 0;
 
-        /// <summary>
-        /// If this projectile uses point-blank damage, this gets set to <see cref="DefaultPointBlankDuration"/>, then is decremented every frame.<br/>
-        /// If it reaches 0, this projectile can no longer deal point-blank damage.
-        /// </summary>
-        public int pointBlankShotDuration = 0;
-        /// <summary>
-        /// If this projectile uses point-blank damage, this value is incremented on every update by the distance the projectile traveled on that update.<br/>
-        /// If it exceeds <see cref="PointBlankShotDistanceLimit"/>, this projectile can no longer deal point-blank damage.
-        /// </summary>
-        public float pointBlankShotDistanceTravelled = 0f;
-        /// <summary> Constant variable which stores how many frames a projectile is allowed to deal point-blank damage. </summary>
-        public const int DefaultPointBlankDuration = 18;
-        /// <summary> Constant variable which stores the maximum distance a projectile can travel to deal point-blank damage, in pixels. </summary>
-        public const float PointBlankShotDistanceLimit = 240f; // 15 tiles
-
         // Empress of Light variables
         private const float EmpressRainbowStreakSpreadOutCutoff = 140f;
         private const int EmpressLastingRainbowTotalDuration = 660;
@@ -378,6 +365,8 @@ namespace CalamityMod.Projectiles
         #region Pre AI
         public override bool PreAI(Projectile projectile)
         {
+            if (projectile.bobber && projectile.type != ModContent.ProjectileType<VictideBobber>() && RunFishingMinigames(projectile))
+                return false;
             #region Vanilla Summons AI Changes
 
             //
@@ -405,12 +394,6 @@ namespace CalamityMod.Projectiles
                 return HoundiusShootiusFireballAI.DoHoundiusShootiusFireballAI(projectile);
 
             #endregion
-
-            if (!Main.player[projectile.owner].ActiveItem().IsAir && !Main.player[projectile.owner].ActiveItem().Calamity().canFirePointBlankShots)
-                pointBlankShotDuration = 0;
-
-            if (pointBlankShotDuration > 0)
-                pointBlankShotDuration--;
 
             // Reduce secondary yoyo damage if the player has Yoyo Glove
             // Brief behavior documentation of yoyo AI: ai[0, 1] are the x, y co-ords and localAI[0] is the airtime in frames
@@ -450,10 +433,6 @@ namespace CalamityMod.Projectiles
                 if (projectile.ai[0] == -1)
                     projectile.Kill();
             }
-
-            // Chlorophyte Crystal AI rework.
-            if (projectile.type == ProjectileID.CrystalLeaf)
-                return ChlorophyteCrystalAI.DoChlorophyteCrystalAI(projectile);
 
             if (projectile.minion && ExplosiveEnchantCountdown > 0)
             {
@@ -2186,7 +2165,7 @@ namespace CalamityMod.Projectiles
                         if (projectile.velocity.Y > 16f)
                             projectile.velocity.Y = 16f;
 
-                        if (CalamityWorld.LegendaryMode && projectile.velocity.Length() > 4f)
+                        if (Main.getGoodWorld && projectile.velocity.Length() > 4f)
                             projectile.velocity *= 0.985f;
 
                         return false;
@@ -2870,6 +2849,727 @@ namespace CalamityMod.Projectiles
             }
 
             return true;
+        }
+        #endregion
+
+        #region Fishing Minigames
+        // All these fields are exclusively used for fishing minigames, so I declared them in this region for organization
+        /// <summary>
+        /// Reel state of bobber.<br/>
+        /// ai[0] in bobber AI.
+        /// </summary>
+        private float isReelingIn = 0;
+        /// <summary>
+        /// How long you have to catch a fish when bitten.<br/>
+        /// ai[1] in bobber AI.
+        /// </summary>
+        private float CatchTime = 0;
+        /// <summary>
+        /// How long until a fish bites.<br/>
+        /// LocalAI[1] in bobber AI.
+        /// </summary>
+        private float TimerToCatch = 0;
+        /// <summary> Item ID of hooked item for fishing minigames. </summary>
+        public int CaughtItemID = -1;
+        /// <summary> What this does depends on the fishing minigame. Used to store data between updates. </summary>
+        public float PersistentFishingData = -1;
+        /// <summary> <inheritdoc cref="PersistentFishingData"/> </summary>
+        public Vector2 PersistentFishingDataVector2 = Vector2.Zero;
+        public bool RunFishingMinigames(Projectile projectile)
+        {
+            var owner = Main.player[projectile.owner];
+            var cplayer = owner.Calamity();
+
+            //Make sure Victide Snail actually fishes when using a minigame rod
+            foreach (var item in Main.ActiveProjectiles)
+            {
+                if (item.type == ModContent.ProjectileType<VictideSeaSnail>() && item.owner == projectile.owner)
+                    item.ModProjectile<VictideSeaSnail>().PlayerFishingTimer = 600;
+            }
+            #region Utilities
+            void SmallSplashAtOffset(Vector2 offset)
+            {
+                int num = Dust.NewDust(new Vector2(projectile.position.X - 6f, projectile.position.Y - 10f) + offset, projectile.width + 12, 24, Dust.dustWater());
+                Main.dust[num].velocity.Y -= 4f;
+                Main.dust[num].velocity.X *= 2.5f;
+                Main.dust[num].scale = 0.8f;
+                Main.dust[num].alpha = 100;
+                Main.dust[num].noGravity = true;
+            }
+            void SmallDustAtOffset(Vector2 offset, int dustID)
+            {
+                int num = Dust.NewDust(new Vector2(projectile.position.X - 6f, projectile.position.Y - 10f) + offset, projectile.width + 12, 24, dustID);
+                Main.dust[num].velocity.Y -= 4f;
+                Main.dust[num].velocity.X *= 2.5f;
+                Main.dust[num].scale = 0.8f;
+                Main.dust[num].alpha = 100;
+                Main.dust[num].noGravity = true;
+            }
+            void Splash()
+            {
+                for (int i = 0; i < 100; i++)
+                {
+                    int num = Dust.NewDust(new Vector2(projectile.position.X - 6f, projectile.position.Y - 10f), projectile.width + 12, 24, Dust.dustWater());
+                    Main.dust[num].velocity.Y -= 4f;
+                    Main.dust[num].velocity.X *= 2.5f;
+                    Main.dust[num].scale = 0.8f;
+                    Main.dust[num].alpha = 100;
+                    Main.dust[num].noGravity = true;
+                }
+
+                SoundEngine.PlaySound(SoundID.SplashWeak, projectile.Center);
+            }
+            void ReelTheBobberChecks()
+            {
+                if (projectile.localAI[1] == 1)
+                {
+                    if (Main.netMode != NetmodeID.MultiplayerClient)
+                    {
+                        NPC.SpawnOnPlayer(owner.whoAmI, 370);
+                    }
+                    projectile.ai[0] = 2f;
+                }
+                else if (projectile.localAI[1] < 1)
+                {
+                    Point point = default(Point);
+                    point = new Point((int)projectile.position.X, (int)projectile.position.Y);
+                    int num = (int)(0f - projectile.localAI[1]);
+                    if (num == 618)
+                    {
+                        point.Y += 64;
+                    }
+                    if (Main.netMode == NetmodeID.MultiplayerClient)
+                    {
+                        NetMessage.SendData(MessageID.FishOutNPC, -1, -1, null, point.X / 16, point.Y / 16, num);
+                    }
+                    else
+                    {
+                        if (num == 682)
+                        {
+                            NPC.unlockedSlimeRedSpawn = true;
+                        }
+                        NPC.NewNPC(new EntitySource_FishedOut(owner), point.X, point.Y, num);
+                        projectile.ai[0] = 2f;
+                        WorldGen.CheckAchievement_RealEstateAndTownSlimes();
+                    }
+                }
+                else if (Main.rand.NextBool(7) && !owner.accFishingLine)
+                {
+                    projectile.ai[0] = 2f;
+                    projectile.ai[1] = 0;
+                    projectile.localAI[1] = 0;
+                }
+                else
+                {
+                    projectile.ai[1] = projectile.localAI[1];
+                }
+                projectile.netUpdate = true;
+            }
+
+            Vector2 GetWaterLine()
+            {
+                Vector2 FoundWaterline = projectile.Center;
+                var tilePos = projectile.Center.ToTileCoordinates();
+                if (Main.tile[tilePos.X, tilePos.Y].LiquidAmount > 0)
+                {
+                    for (var i = 0; i < 1000; i++)
+                    {
+                        if (i <= 0 || i >= Main.maxTilesY || Main.tile[tilePos.X, tilePos.Y - i].LiquidAmount > 0)
+                            continue;
+                        FoundWaterline.Y = (tilePos.Y - i + 1) * 16f;
+                        FoundWaterline.Y += (1 - Main.tile[tilePos.X, tilePos.Y - i + 1].LiquidAmount / 255f) * 16f;
+                        break;
+                    }
+                }
+                else
+                {
+                    for (var i = 0; i < 1000; i++)
+                    {
+                        if (i <= 0 || i >= Main.maxTilesY || Main.tile[tilePos.X, tilePos.Y + i].LiquidAmount == 0)
+                            continue;
+                        FoundWaterline.Y = (tilePos.Y + i) * 16f;
+                        FoundWaterline.Y += (1 - Main.tile[tilePos.X, tilePos.Y + i].LiquidAmount / 255f) * 16f;
+                        break;
+                    }
+                }
+                return FoundWaterline;
+            }
+            #endregion
+            //Doze's notes on bobber AI
+
+            //ai[0] - Bobber state. 0: thrown/idle/bitten, 1: reeling in, 2: snapped
+            //ai[1] - Amount of time to reel in the bobber once a bite happens. Is negative and counts up
+            //When reeled in, this becomes the value of localAI[1] (ID of item/NPC)
+            //At 0, the bobber is just floating waiting for a bite
+            //localAI[1] - The timer for fish to try and bite the hook. When it exceeds 660, it resets to 0.
+            //If ai[1] is not 0, this is set to the item ID of the hooked item/NPC
+            //If hooking an NPC, this is set to the NPC ID but negative. Still need to find how this gets treated upon reeling in.
+            switch (owner.Calamity().SelectedFishingMinigame)
+            {
+                case CalamityPlayer.FishingMinigames.WulfrumRod:
+                    {
+                        if (CatchTime < 0 || (isReelingIn == 1 && CaughtItemID > 0))
+                        {
+                            owner.Calamity().ShouldHideControls = true;
+                        }
+                        if (isReelingIn != projectile.ai[0])
+                            return false;
+
+                        if (CatchTime < 0)
+                            CatchTime++;
+                        if (projectile.wet || (projectile.lavaWet && owner.accLavaFishing) || projectile.honeyWet)
+                            TimerToCatch++;
+                        var speedup = Math.Min(owner.Calamity().consecutiveCaughtFish * 5, 25);
+                        var totalTime = 60 - speedup;
+                        if (TimerToCatch + 90 >= 160 - owner.HeldItem.fishingPole && CatchTime >= 0)
+                        {
+                            if (PersistentFishingData == 0)
+                                PersistentFishingData = Main.rand.NextBool() ? 1 : -1;
+                            var timer = TimerToCatch - 160 - owner.HeldItem.fishingPole;
+                            SmallSplashAtOffset(new Vector2(200 * PersistentFishingData * (timer / 90f), 0));
+                        }
+                        if (TimerToCatch >= 160 - owner.HeldItem.fishingPole && CatchTime >= 0)
+                        {
+                            PersistentFishingData = 0;
+                            projectile.FishingCheck();
+                            if (projectile.ai[1] < 0)
+                            {
+                                CatchTime = -totalTime * 4;
+                                CaughtItemID = (int)projectile.localAI[1];
+                            }
+                            TimerToCatch = 0;
+                        }
+                        if (CatchTime < 0 && CatchTime % totalTime == 0)
+                        {
+                            Splash();
+                            PersistentFishingData = Main.rand.Next(0, 4);
+                            var particle = new CustomSpark(projectile.Center, Vector2.UnitX.RotatedBy(PersistentFishingData * MathHelper.PiOver2) * 10, "CalamityMod/Particles/HighResHollowCircleHardEdgeAlt", false, 45 - speedup, 0.04f, Color.Blue, new(1, 2), shrinkSpeed: -0.2f);
+                            GeneralParticleHandler.SpawnParticle(particle);
+                        }
+                        if (CatchTime < 0 && CatchTime % totalTime == -15)
+                        {
+                            var playerDir = -1;
+                            if (owner.Calamity().pressedUp)
+                            {
+                                playerDir = 3;
+                            }
+                            if (owner.Calamity().pressedLeft)
+                            {
+                                playerDir = 2;
+                            }
+                            if (owner.Calamity().pressedDown)
+                            {
+                                playerDir = 1;
+                            }
+                            if (owner.Calamity().pressedRight)
+                            {
+                                playerDir = 0;
+                            }
+                            if (playerDir == PersistentFishingData)
+                            {
+
+                            }
+                            else
+                            {
+
+                                if (playerDir >= 0)
+                                {
+                                    var particle = new CustomSpark(projectile.Center, Vector2.UnitX.RotatedBy(playerDir * MathHelper.PiOver2) * 10, "CalamityMod/Particles/HighResHollowCircleHardEdgeAlt", false, 15, 0.04f, Color.Red, new(1, 2), shrinkSpeed: -0.2f);
+                                    GeneralParticleHandler.SpawnParticle(particle);
+                                }
+                                else
+                                {
+                                    var particle = new CustomSpark(projectile.Center, Vector2.Zero, "CalamityMod/Particles/HighResHollowCircleHardEdge", false, 15, 0.06f, Color.Red, Vector2.One);
+                                    GeneralParticleHandler.SpawnParticle(particle);
+                                }
+                                TimerToCatch = 0;
+                                CatchTime = 0;
+                                CaughtItemID = -1;
+                                PersistentFishingData = 0;
+                                owner.Calamity().consecutiveCaughtFish = 0;
+                            }
+                        }
+                        if (CatchTime == -1)
+                        {
+                            projectile.localAI[1] = CaughtItemID;
+                            ReelTheBobberChecks();
+                            owner.Calamity().consecutiveCaughtFish++;
+                            if (projectile.ai[0] == 2)
+                                return false;
+                            isReelingIn = 1;
+                            CatchTime = (float)CaughtItemID;
+                            TimerToCatch = 0;
+                        }
+                        if (projectile.ai[0] == 0)
+                        {
+
+
+                            projectile.ai[1] = CatchTime;
+                            projectile.localAI[1] = TimerToCatch;
+                            if (CaughtItemID != -1 && isReelingIn == 0)
+                            {
+                                projectile.localAI[1] = 0;
+                                projectile.ai[1] = 0;
+                            }
+                            projectile.ai[0] = isReelingIn;
+                        }
+                        return false;
+                    }
+
+
+                case CalamityPlayer.FishingMinigames.RiftReeler:
+                    {
+                        if (PersistentFishingData == -1)
+                        {
+                            PersistentFishingData = 1;
+                            TimerToCatch = 300;
+                        }
+                        var Waterline = GetWaterLine();
+                        if (Waterline.Y >= projectile.Center.Y)
+                        {
+                            TimerToCatch = 300;
+                            projectile.velocity.Y += 0.4f;
+                        }
+                        else if (projectile.ai[0] == 0)
+                        {
+                            owner.Calamity().ShouldHideControls = true;
+                            if (owner.Calamity().pressedUp)
+                                projectile.velocity.Y -= 0.125f;
+                            if (owner.Calamity().pressedDown)
+                                projectile.velocity.Y += 0.125f;
+                            if (owner.Calamity().pressedLeft)
+                                projectile.velocity.X -= 0.125f;
+                            if (owner.Calamity().pressedRight)
+                                projectile.velocity.X += 0.125f;
+                        }
+                        projectile.velocity *= 0.975f;
+
+                        if (Waterline.Y <= projectile.Center.Y && projectile.ai[0] == 0 && !(projectile.lavaWet && !owner.accLavaFishing))
+                        {
+                            TimerToCatch -= Main.rand.Next(1, 5);
+                            if (TimerToCatch <= 0)
+                            {
+                                projectile.FishingCheck();
+                                if (projectile.ai[1] < 0)
+                                {
+
+                                    CaughtItemID = (int)projectile.localAI[1];
+                                    projectile.ai[1] = 0;
+                                    projectile.localAI[1] = 0;
+                                    for (var i = 0; i < 1000; i++)
+                                    {
+                                        var vectorToCheck = projectile.Center + new Vector2(Main.rand.Next(-200, 201), Main.rand.Next(-200, 201));
+                                        var tileCoordsToCheck = vectorToCheck.ToSafeTileCoordinates();
+                                        if (new Rectangle((int)Main.screenPosition.X, (int)Main.screenPosition.Y, Main.screenWidth, Main.screenHeight).Contains((int)vectorToCheck.X, (int)vectorToCheck.Y) && !Main.tile[tileCoordsToCheck.X, tileCoordsToCheck.Y].IsTileSolid() && Main.tile[tileCoordsToCheck.X, tileCoordsToCheck.Y].LiquidAmount > 0)
+                                        {
+                                            if (projectile.localAI[2] >= 1)
+                                            {
+                                                int customSonarText = (int)(projectile.localAI[2] - 1);
+                                                if (Main.popupText[customSonarText].sonar)
+                                                {
+                                                    Main.popupText[customSonarText].position = vectorToCheck - FontAssets.MouseText.Value.MeasureString(Main.popupText[customSonarText].name) / 2f;
+                                                }
+                                            }
+                                            PersistentFishingDataVector2 = vectorToCheck;
+                                            TimerToCatch = 600;
+                                            break;
+                                        }
+                                    }
+                                }
+                            }
+                            if (PersistentFishingDataVector2 != Vector2.Zero)
+                            {
+                                Dust.NewDustPerfect(PersistentFishingDataVector2, DustID.Smoke);
+                                if (Main.rand.NextBool(3))
+                                {
+                                    Dust.NewDustPerfect(PersistentFishingDataVector2, DustID.Torch);
+                                }
+                                var particle = new HeavySmokeParticle(PersistentFishingDataVector2, Vector2.One.RotatedByRandom(6.28) * Main.rand.NextFloat(1f, 4f), Color.Lerp(Color.DarkOrange, Color.DarkGray, Main.rand.NextFloat()), 15, 0.2f, 1);
+                                GeneralParticleHandler.SpawnParticle(particle);
+                            }
+
+                            //When in lava, give the bobber a particle over it to show its location
+                            if (projectile.lavaWet)
+                            {
+                                var particle = new CustomSpark(projectile.Center, Vector2.Zero, "CalamityMod/Particles/HighResHollowCircleHardEdge", false, 2, 0.01f, Color.DarkGray, Vector2.One);
+                                GeneralParticleHandler.SpawnParticle(particle);
+                            }
+                            List<(Vector2, int)> validRifts = new();
+
+                            foreach (var item in Main.ActiveProjectiles)
+                            {
+                                if (item.bobber && projectile.type != ModContent.ProjectileType<VictideBobber>() && item.owner == projectile.owner && item.ai[0] == 0 && item.Calamity().PersistentFishingDataVector2 != Vector2.Zero)
+                                {
+                                    validRifts.Add((item.Calamity().PersistentFishingDataVector2, item.whoAmI));
+                                }
+                            }
+                            foreach (var item in validRifts)
+                            {
+                                if (projectile.Distance(item.Item1) < 16)
+                                {
+                                    projectile.localAI[1] = Main.projectile[item.Item2].Calamity().CaughtItemID;
+                                    ReelTheBobberChecks();
+                                    if (projectile.ai[0] < 2)
+                                        projectile.ai[0] = 1;
+                                    Main.projectile[item.Item2].Calamity().PersistentFishingDataVector2 = PersistentFishingDataVector2;
+                                    Main.projectile[item.Item2].Calamity().CaughtItemID = CaughtItemID;
+                                    break;
+                                }
+
+                            }
+                        }
+                        if (projectile.ai[0] == 0)
+                            return true;
+                        break;
+                    }
+
+
+                case CalamityPlayer.FishingMinigames.FeralDoubleRod:
+                    if (projectile.ai[0] == 0)
+                    {
+                        if (projectile.wet) //Fishing in water
+                        {
+
+                            projectile.extraUpdates = 0;
+                            if (cplayer.mouseRight && projectile.ai[1] == 0)
+                            {
+                                projectile.localAI[1] += 2;
+                                owner.lifeRegenCount -= 60; // -0.5 health per tick
+                            }
+                        }
+                        else //Attached to an enemy
+                        {
+                            if (PersistentFishingData >= 0 && Main.npc[(int)PersistentFishingData].active && projectile.Distance(Main.npc[(int)PersistentFishingData].Center + PersistentFishingDataVector2) < 128)
+                            {
+                                projectile.Center = Main.npc[(int)PersistentFishingData].Center + PersistentFishingDataVector2;
+                                projectile.velocity = Vector2.Zero;
+                                if (cplayer.mouseRight && projectile.ai[1] == 0 && owner.miscCounter % 10 == 0)
+                                {
+                                    owner.lifeRegenCount -= 600; // -5 health per 10 ticks
+                                    var projID = Projectile.NewProjectile(projectile.GetSource_FromThis(), Main.npc[(int)PersistentFishingData].Center, Vector2.Zero, ModContent.ProjectileType<DirectStrike>(), (int)owner.GetBestClassDamage().ApplyTo(owner.HeldItem.fishingPole + owner.fishingSkill + owner.ChooseAmmo(owner.HeldItem).bait), 0f, owner.whoAmI, Main.npc[(int)PersistentFishingData].whoAmI);
+                                    if (Main.projectile.IndexInRange(projID))
+                                    {
+                                        Main.projectile[projID].ArmorPenetration = 100; //This should ignore almost all armor
+                                    }
+                                }
+                                projectile.timeLeft++;
+
+                                projectile.extraUpdates = 0;
+                                return true;
+                            }
+                            else if (PersistentFishingData >= 0)
+                            {
+                                PersistentFishingData = -1;
+                                projectile.velocity.Y -= 3;
+                            }
+                            foreach (var item in Main.ActiveNPCs)
+                            {
+                                if (item.friendly || item.dontTakeDamage)
+                                    continue;
+                                if (projectile.Colliding(projectile.Hitbox, item.Hitbox))
+                                {
+                                    PersistentFishingDataVector2 = projectile.Center - item.Center;
+                                    PersistentFishingData = item.whoAmI;
+                                    break;
+                                }
+                            }
+                            if (PersistentFishingData == -1)
+                                projectile.extraUpdates = 1;
+                            else
+                                projectile.extraUpdates = 0;
+
+                        }
+                    }
+                    else if (projectile.ai[0] == 1)
+                        projectile.extraUpdates = 3;
+                    break;
+
+
+                case CalamityPlayer.FishingMinigames.NavyFishingRod:
+                    {
+                        if (CatchTime < 0 || (isReelingIn == 1 && CaughtItemID > 0))
+                        {
+                            owner.Calamity().ShouldHideControls = true;
+                        }
+                        if (isReelingIn != projectile.ai[0])
+                            return false;
+                        var waterline = GetWaterLine();
+                        var AdjustedOwnerWaterline = waterline;
+                        if (AdjustedOwnerWaterline.Y < owner.Center.Y)
+                            AdjustedOwnerWaterline.Y = owner.Center.Y;
+                        if (AdjustedOwnerWaterline.Y >= projectile.Center.Y)
+                        {
+                            projectile.velocity.Y += 0.4f;
+                        }
+                        else
+                        {
+                            projectile.velocity.Y -= 0.1f;
+                        }
+                        projectile.velocity *= 0.975f;
+                        if (CatchTime < 0)
+                            CatchTime++;
+                        if (projectile.wet || (projectile.lavaWet && owner.accLavaFishing) || projectile.honeyWet)
+                            TimerToCatch++;
+                        var speedup = 15;
+                        var totalTime = 60 - speedup;
+                        if (TimerToCatch + 90 >= 300 && CatchTime >= 0)
+                        {
+                            if (PersistentFishingData == 0)
+                                PersistentFishingData = Main.rand.NextBool() ? 1 : -1;
+                            var timer = TimerToCatch - 300;
+                            SmallSplashAtOffset(new Vector2(200 * PersistentFishingData * (timer / 90f), 0));
+
+                            SmallDustAtOffset(new Vector2(200 * PersistentFishingData * (timer / 90f), 0), DustID.BlueCrystalShard);
+                        }
+                        if (TimerToCatch >= 300 && CatchTime >= 0)
+                        {
+                            PersistentFishingData = 0;
+                            projectile.FishingCheck();
+                            if (projectile.ai[1] < 0)
+                            {
+                                CatchTime = -totalTime * 4;
+                                CaughtItemID = (int)projectile.localAI[1];
+                            }
+                            TimerToCatch = 0;
+                        }
+                        if (CatchTime < 0 && CatchTime % totalTime == 0)
+                        {
+                            Splash();
+                            PersistentFishingData = Main.rand.Next(0, 2);
+                            var particle = new CustomSpark(projectile.Center, Vector2.UnitX.RotatedBy(PersistentFishingData * MathHelper.Pi) * 10, "CalamityMod/Particles/HighResHollowCircleHardEdgeAlt", false, 45 - speedup, 0.04f, Color.Blue, new(1, 2), shrinkSpeed: -0.2f);
+                            GeneralParticleHandler.SpawnParticle(particle);
+                        }
+                        if (CatchTime < 0 && CatchTime % totalTime == -15)
+                        {
+                            var playerDir = -1;
+                            if (owner.Calamity().pressedLeft)
+                            {
+                                playerDir = 1;
+                            }
+                            if (owner.Calamity().pressedRight)
+                            {
+                                playerDir = 0;
+                            }
+                            if (playerDir == PersistentFishingData)
+                            {
+
+                            }
+                            else
+                            {
+
+                                if (playerDir >= 0)
+                                {
+                                    var particle = new CustomSpark(projectile.Center, Vector2.UnitX.RotatedBy(playerDir * MathHelper.Pi) * 10, "CalamityMod/Particles/HighResHollowCircleHardEdgeAlt", false, 15, 0.04f, Color.Red, new(1, 2), shrinkSpeed: -0.2f);
+                                    GeneralParticleHandler.SpawnParticle(particle);
+                                }
+                                else
+                                {
+                                    var particle = new CustomSpark(projectile.Center, Vector2.Zero, "CalamityMod/Particles/HighResHollowCircleHardEdge", false, 15, 0.06f, Color.Red, Vector2.One);
+                                    GeneralParticleHandler.SpawnParticle(particle);
+                                }
+                                TimerToCatch = 0;
+                                CatchTime = 0;
+                                CaughtItemID = -1;
+                                PersistentFishingData = 0;
+                                owner.Calamity().consecutiveCaughtFish = 0;
+                            }
+                        }
+                        if (CatchTime == -1)
+                        {
+                            projectile.localAI[1] = CaughtItemID;
+                            ReelTheBobberChecks();
+                            owner.Calamity().consecutiveCaughtFish++;
+                            if (projectile.ai[0] == 2)
+                                return false;
+                            isReelingIn = 1;
+                            CatchTime = (float)CaughtItemID;
+                            TimerToCatch = 0;
+                        }
+                        if (projectile.ai[0] == 0)
+                        {
+
+
+                            projectile.ai[1] = CatchTime;
+                            projectile.localAI[1] = TimerToCatch;
+                            if (CaughtItemID != -1 && isReelingIn == 0)
+                            {
+                                projectile.localAI[1] = 0;
+                                projectile.ai[1] = 0;
+                            }
+                            projectile.ai[0] = isReelingIn;
+                        }
+                        if (projectile.ai[0] == 0)
+                            return true;
+                        break;
+                    }
+
+
+                case CalamityPlayer.FishingMinigames.TheDevourerOfCods:
+                    var fishToEat = TheDevourerofCods.FishToEat;
+                    if (projectile.ai[1] < -1)
+                    {
+                        //Coonsuming a fish provides/increases the player's food buffs.
+                        if (fishToEat.Contains((int)projectile.localAI[1]))
+                        {
+                            projectile.ai[1] = 0;
+                            projectile.localAI[1] = 0;
+                            SoundEngine.PlaySound(SoundID.Item2, projectile.Center);
+                            //If the player doesn't have Ex. Stuffed, either give them Plenty Satisfied or inrease existing Plenty Satisfied duration
+                            if (!owner.HasBuff(BuffID.WellFed3))
+                            {
+
+                                if (owner.HasBuff(BuffID.WellFed2))
+                                {
+                                    var bIndex = owner.FindBuffIndex(BuffID.WellFed2);
+                                    if (owner.buffTime[bIndex] < CalamityUtils.MinutesToFrames(24)) 
+                                    {
+                                        owner.buffTime[bIndex] += 300;
+                                    }
+                                }
+                                else
+                                {
+
+                                    owner.AddBuff(BuffID.WellFed2, 300);
+                                }
+                            }
+                            else //If the player DOES have Ex. Stuffed, increase the duration of it
+                            {
+                                var bIndex = owner.FindBuffIndex(BuffID.WellFed3);
+                                if (owner.buffTime[bIndex] < CalamityUtils.MinutesToFrames(24)) //Requires fishing once per day if you'd like to keep free ExStuffed forever
+                                {
+                                    owner.buffTime[bIndex] += 300;
+                                }
+                            }
+                        }
+                        else //If the hooked item isn't consumable, make it stay hooked forever.
+                        {
+                            projectile.ai[1] = -30;
+                        }
+                    }
+
+                    return false;
+
+
+                case CalamityPlayer.FishingMinigames.HeronRod:
+                    {
+                        if (CatchTime < 0 || (isReelingIn == 1 && CaughtItemID > 0))
+                        {
+                            owner.Calamity().ShouldHideControls = true;
+                        }
+                        if (PersistentFishingData == -1)
+                        {
+                            PersistentFishingData = 1;
+                            TimerToCatch = 300;
+                        }
+                        var Waterline = GetWaterLine();
+                        if (Waterline.Y >= projectile.Center.Y)
+                        {
+                            projectile.velocity.Y += 0.4f;
+                        }
+                        else if (projectile.ai[0] <= 0)
+                        {
+                            projectile.velocity.Y -= 0.1f;
+                        }
+                        if (projectile.ai[0] <= 1)
+                        {
+                            owner.Calamity().ShouldHideControls = true;
+                        }
+                        projectile.velocity *= 0.975f;
+                        if (projectile.wet)
+                            projectile.velocity *= 0.99f;
+
+                        //When in lava, give the bobber a particle over it to show its location
+                        if (projectile.lavaWet)
+                        {
+                            var particle = new CustomSpark(projectile.Center, Vector2.Zero, "CalamityMod/Particles/HighResHollowCircleHardEdge", false, 2, 0.01f, Color.DarkGray, Vector2.One);
+                            GeneralParticleHandler.SpawnParticle(particle);
+                        }
+                        if (projectile.ai[0] == 0)
+                        {
+
+                            if (owner.Calamity().pressedUp && projectile.velocity.Y < 0)
+                                projectile.velocity.Y -= 0.3f;
+                            if (owner.Calamity().pressedUp && Waterline.Y < projectile.Center.Y)
+                                projectile.velocity.Y -= 0.3f;
+                            if (owner.Calamity().pressedDown)
+                                projectile.velocity.Y += 0.25f;
+                            if (owner.Calamity().pressedLeft)
+                                projectile.velocity.X -= 0.25f;
+                            if (owner.Calamity().pressedRight)
+                                projectile.velocity.X += 0.25f;
+                            if (Waterline.Y <= projectile.Center.Y - 8)
+                                TimerToCatch -= Main.rand.Next(1, 5);
+                            if (TimerToCatch <= 0)
+                            {
+                                projectile.FishingCheck();
+                                if (projectile.ai[1] < 0 && !(projectile.lavaWet && !owner.accLavaFishing))
+                                {
+
+                                    CaughtItemID = (int)projectile.localAI[1];
+                                    projectile.ai[1] = 0;
+                                    projectile.localAI[1] = 0;
+                                    for (var i = 0; i < 1000; i++)
+                                    {
+                                        var vectorToCheck = Waterline + new Vector2(Main.rand.Next(-200, 201), Main.rand.Next(-200, 32));
+                                        var tileCoordsToCheck = vectorToCheck.ToSafeTileCoordinates();
+                                        if (new Rectangle((int)Main.screenPosition.X, (int)Main.screenPosition.Y, Main.screenWidth, Main.screenHeight).Contains((int)vectorToCheck.X, (int)vectorToCheck.Y) && !Main.tile[tileCoordsToCheck.X, tileCoordsToCheck.Y].IsTileSolid() && Main.tile[tileCoordsToCheck.X, tileCoordsToCheck.Y].LiquidAmount == 0)
+                                        {
+                                            if (projectile.localAI[2] >= 1)
+                                            {
+                                                int customSonarText = (int)(projectile.localAI[2] - 1);
+                                                if (Main.popupText[customSonarText].sonar)
+                                                {
+                                                    Main.popupText[customSonarText].position = vectorToCheck - FontAssets.MouseText.Value.MeasureString(Main.popupText[customSonarText].name) / 2f;
+                                                }
+                                            }
+                                            PersistentFishingDataVector2 = vectorToCheck;
+                                            TimerToCatch = 600;
+                                            break;
+                                        }
+                                    }
+                                }
+                            }
+                            if (PersistentFishingDataVector2 != Vector2.Zero && owner.miscCounter % 15 == 0)
+                            {
+
+                                var particle = new CustomSpark(PersistentFishingDataVector2, Vector2.Zero, "CalamityMod/Particles/HighResHollowCircleHardEdge", false, 25, 0.02f, Color.Green, Vector2.One);
+                                GeneralParticleHandler.SpawnParticle(particle);
+                            }
+                            List<(Vector2, int)> validRifts = new();
+
+                            foreach (var item in Main.ActiveProjectiles)
+                            {
+                                if (item.bobber && projectile.type != ModContent.ProjectileType<VictideBobber>() && item.owner == projectile.owner && item.ai[0] == 0 && item.Calamity().PersistentFishingDataVector2 != Vector2.Zero)
+                                {
+                                    validRifts.Add((item.Calamity().PersistentFishingDataVector2, item.whoAmI));
+                                }
+                            }
+                            foreach (var item in validRifts)
+                            {
+                                if (projectile.Distance(item.Item1) < 16)
+                                {
+                                    projectile.localAI[1] = Main.projectile[item.Item2].Calamity().CaughtItemID;
+                                    projectile.ai[0] = -1;
+                                    Main.projectile[item.Item2].Calamity().PersistentFishingDataVector2 = PersistentFishingDataVector2;
+                                    Main.projectile[item.Item2].Calamity().CaughtItemID = CaughtItemID;
+                                    break;
+                                }
+
+                            }
+                        }
+                        if (projectile.ai[0] == -1 && (Waterline.Y <= projectile.Center.Y || projectile.velocity.Length() < 0.5f))
+                        {
+                            ReelTheBobberChecks();
+                            if (projectile.ai[0] < 2)
+                                projectile.ai[0] = 1;
+                        }
+                        if (projectile.ai[0] == 0)
+                            return true;
+                        break;
+                    }
+
+            }
+            return false;
         }
         #endregion
 
@@ -3653,12 +4353,6 @@ namespace CalamityMod.Projectiles
                     Projectile.NewProjectile(projectile.GetSource_FromThis(), projectile.Center, Vector2.Zero, ProjectileType<BloomStoneFlower>(), 0, 0f, projectile.owner, projectile.whoAmI);
             }
 
-            // CIT 29JUN2024: Moved from PreAI to PostAI so that it is called every update instead of every frame.
-            // This makes the distance traveled increment more accurately for projectiles with extra updates, as previously projectiles with extra updates
-            // would add the distance traveled for the whole frame on the first update, making the distance checking much choppier.
-            if (pointBlankShotDistanceTravelled < PointBlankShotDistanceLimit)
-                pointBlankShotDistanceTravelled += projectile.velocity.Length();
-
             // optimization to remove conversion X/Y loop for irrelevant projectiles
             bool isConversionProjectile = projectile.type == ProjectileID.PurificationPowder
                 || projectile.type == ProjectileID.VilePowder
@@ -3760,7 +4454,7 @@ namespace CalamityMod.Projectiles
         {
             float mult = 1f;
             if (player.Calamity().reaverSpeed)
-                mult += 0.5f;
+                mult += ReaverHeadMobility.SetBonusHookBoost;
             if (player.Calamity().tungstenArmorHookBoost)
                 mult += TungstenArmorSetChange.HookBoost;
             if (player.Calamity().bloomStone)
@@ -3776,7 +4470,7 @@ namespace CalamityMod.Projectiles
         {
             float mult = 1f;
             if (player.Calamity().reaverSpeed)
-                mult += 0.5f;
+                mult += ReaverHeadMobility.SetBonusHookBoost;
             if (player.Calamity().tungstenArmorHookBoost)
                 mult += TungstenArmorSetChange.HookBoost;
             if (player.Calamity().bloomStone)
@@ -4223,13 +4917,6 @@ namespace CalamityMod.Projectiles
                 SpriteEffects spriteEffects = projectile.spriteDirection == -1 ? SpriteEffects.FlipHorizontally : SpriteEffects.None;
 
                 Main.spriteBatch.Draw(tex, projectile.Center - Main.screenPosition + new Vector2(0f, projectile.gfxOffY), frame, projectile.GetAlpha(lightColor), projectile.rotation, origin, projectile.scale, spriteEffects, 0f);
-                shouldDrawBool = false;
-            }
-
-            // Chlorophyte Crystal AI rework.
-            if (projectile.type == ProjectileID.CrystalLeaf)
-            {
-                ChlorophyteCrystalAI.DoChlorophyteCrystalDrawing(projectile);
                 shouldDrawBool = false;
             }
 

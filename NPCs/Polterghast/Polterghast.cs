@@ -105,10 +105,10 @@ namespace CalamityMod.NPCs.Polterghast
 
         public static float Phase2ContactDamageMult = 1.25f; // 300
         public static float Phase3ContactDamageMult = 1.5f; // 360
-        public static int BlueShotDamage = 65; // 260
-        public static int BlueBlastDamage = 70; // 280
-        public static int RedShotDamage = 70; // 280
-        public static int RedBlastDamage = 75; // 300
+        public static int BlueShotDamage = 60; // 240
+        public static int BlueBlastDamage = 65; // 260
+        public static int RedShotDamage = 65; // 260
+        public static int RedBlastDamage = 70; // 280
 
         public override void SetDefaults()
         {
@@ -130,7 +130,6 @@ namespace CalamityMod.NPCs.Polterghast
             NPC.netAlways = true;
             NPC.HitSound = HitSound;
             NPC.DeathSound = SoundID.NPCDeath39;
-            NPC.Calamity().VulnerableToSickness = false;
         }
 
         public override void SetBestiary(BestiaryDatabase database, BestiaryEntry bestiaryEntry)
@@ -225,7 +224,7 @@ namespace CalamityMod.NPCs.Polterghast
             // Velocity and acceleration
             calamityGlobalNPC.newAI[0] += 1f;
             float chargePhaseGateValue = 480f;
-            if (CalamityWorld.LegendaryMode)
+            if (Main.getGoodWorld)
                 chargePhaseGateValue *= 0.5f;
 
             bool chargePhase = calamityGlobalNPC.newAI[0] >= chargePhaseGateValue;
@@ -1103,7 +1102,7 @@ namespace CalamityMod.NPCs.Polterghast
             }
 
             float chargePhaseGateValue = 480f;
-            if (CalamityWorld.LegendaryMode)
+            if (Main.getGoodWorld)
                 chargePhaseGateValue *= 0.5f;
 
             float timeToReachFullColor = 120f;

@@ -520,11 +520,6 @@ RadiatorBuff: {
 	Description: Radioactive but adorable
 }
 
-ReaverOrbBuff: {
-	DisplayName: Reaver Orb
-	Description: The reaver orb will light your way
-}
-
 SparksBuff: {
 	DisplayName: Sparks
 	Description: Eats butterflies
@@ -1139,6 +1134,11 @@ AquaticStar: {
 	Description: The aquatic star will protect you
 }
 
+AqueousHunterDroneBuff: {
+	DisplayName: Aqueous Hunter Drone Buff
+	Description: Unfortunately incapable of producing fried rice
+}
+
 AstralProbeBuff: {
 	DisplayName: Astral Probe
 	Description: The astral probe will protect you
@@ -1204,11 +1204,6 @@ CloudElemental: {
 	Description: The Cloud Elemental will protect you
 }
 
-GlacialEmbraceBuff: {
-	DisplayName: Glacial Embrace
-	Description: The magic of the ancient ice castle will aid you
-}
-
 Corroslime: {
 	DisplayName: Corroslime
 	Description: The corroslime will protect you
@@ -1262,11 +1257,6 @@ DazzlingStabberBuff: {
 DemonshadeSetDevilBuff: {
 	DisplayName: Red Devil
 	Description: The red devil will protect you
-}
-
-LegionofCelestiaBuff: {
-	DisplayName: Celestial Axe
-	Description: If only it was this good at chopping trees...
 }
 
 EndoCooperBuff: {
@@ -1339,6 +1329,11 @@ GastricAberrationBuff: {
 	Description: The aquatic aberration will protect you
 }
 
+GlacialEmbraceBuff: {
+	DisplayName: Glacial Embrace
+	Description: The magic of the ancient ice castle will aid you
+}
+
 HauntedDishesBuff: {
 	DisplayName: Haunted Dishes
 	Description: The haunted dishes will protect you
@@ -1387,6 +1382,11 @@ KalandraMirrorBuff: {
 KingofConstellationsBuff: {
 	DisplayName: Celestial Dragons
 	Description: The celestial dragons will protect you
+}
+
+LegionofCelestiaBuff: {
+	DisplayName: Celestial Axe
+	Description: If only it was this good at chopping trees...
 }
 
 LiliesOfFinalityBuff: {

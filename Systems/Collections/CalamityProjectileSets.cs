@@ -43,7 +43,7 @@ namespace CalamityMod.Systems.Collections
 
         /// <summary>
         /// If <see langword="true"/> for a projectile type, then that projectile is considered a friendly bee.<br/>
-        /// Used to allow the projectile to inflict Plague while wearing the Plaguebringer Carapace.<br/>
+        /// Used to allow the projectile to inflict Plague while wearing the Plaguebringer armor.<br/>
         /// Defaults to <see langword="false"/>.
         /// </summary>
         public static bool[] IsFriendlyBeeProjectile = Factory.CreateBoolSet(ProjectileID.GiantBee, ProjectileID.Bee, ProjectileID.Wasp, ProjectileType<PlaguenadeBee>(),

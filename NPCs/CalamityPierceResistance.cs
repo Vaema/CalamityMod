@@ -62,7 +62,6 @@ namespace CalamityMod.NPCs
             exemptProjectiles.Add(ProjectileType<MarniteRepulsionHitbox>()); // Included here as it does not have a projectile
             exemptProjectiles.Add(ProjectileID.MonkStaffT3);
             exemptProjectiles.Add(ProjectileID.PiercingStarlight);
-            exemptProjectiles.Add(ProjectileID.SandnadoFriendly);
             exemptProjectiles.Add(ProjectileID.Terragrim);
 
             // Specific vanilla projectile single hitbox exemptions

@@ -22,8 +22,8 @@ namespace CalamityMod.Items.Weapons.Rogue
             Item.useStyle = ItemUseStyleID.Swing;
             Item.knockBack = 12f;
             Item.autoReuse = true;
-            Item.value = CalamityGlobalItem.RarityPinkBuyPrice;
-            Item.rare = ItemRarityID.Pink;
+            Item.value = CalamityGlobalItem.RarityLightPurpleBuyPrice;
+            Item.rare = ItemRarityID.LightPurple;
             Item.shoot = ModContent.ProjectileType<ExorcismProj>();
             Item.shootSpeed = 6f;
             Item.DamageType = RogueDamageClass.Instance;

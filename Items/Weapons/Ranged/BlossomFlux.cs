@@ -35,7 +35,6 @@ namespace CalamityMod.Items.Weapons.Ranged
 
             Item.value = CalamityGlobalItem.RarityLimeBuyPrice;
             Item.rare = ItemRarityID.Lime;
-            Item.Calamity().canFirePointBlankShots = true;
         }
 
         public override bool AltFunctionUse(Player player)
@@ -70,6 +69,13 @@ namespace CalamityMod.Items.Weapons.Ranged
             {
                 Projectile.NewProjectile(source, position, velocity, ModContent.ProjectileType<LeafArrow>(), damage, knockback, player.whoAmI);
             }
+            return false;
+        }
+
+        public override bool CanConsumeAmmo(Item ammo, Player player)
+        {
+            if (Main.rand.Next(0, 100) < 50)
+                return true;
             return false;
         }
     }

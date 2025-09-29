@@ -119,7 +119,7 @@ namespace CalamityMod.NPCs.CeaselessVoid
                 if (NPC.Opacity > 1f)
                     NPC.Opacity = 1f;
 
-                NPC.scale = MathHelper.Lerp(0.05f, CalamityWorld.LegendaryMode ? 0.5f : 1f, NPC.Opacity);
+                NPC.scale = MathHelper.Lerp(0.05f, Main.getGoodWorld ? 0.5f : 1f, NPC.Opacity);
             }
             else
             {
@@ -161,13 +161,10 @@ namespace CalamityMod.NPCs.CeaselessVoid
             bool revenge = CalamityWorld.revenge || BossRushEvent.BossRushActive;
             bool death = CalamityWorld.death || BossRushEvent.BossRushActive;
 
-            // Gets how enraged Ceaseless Void is
-            float tileEnrageMult = Main.npc[CalamityGlobalNPC.voidBoss].ai[1];
-
             // Distance from Ceaseless Void
             double maxDistance = death ? 1040D : revenge ? 960D : expertMode ? 880D : minMaxDistance;
             double rateOfChangeIncrease = (maxDistance / minMaxDistance) - 1D;
-            double rateOfChange = (NPC.ai[1] * 0.5f) + 2D + (tileEnrageMult - 1f) + rateOfChangeIncrease;
+            double rateOfChange = (NPC.ai[1] * 0.5f) + 2D + rateOfChangeIncrease;
             if (NPC.Calamity().newAI[0] == 0f)
             {
                 distance += rateOfChange;
@@ -188,7 +185,7 @@ namespace CalamityMod.NPCs.CeaselessVoid
             }
 
             // Rotation velocity
-            float minRotationVelocity = 0.5f + tileEnrageMult - 1f;
+            float minRotationVelocity = 0.5f;
             float rotationVelocityIncrease = death ? 0.2f : revenge ? 0.15f : expertMode ? 0.1f : 0f;
             rotationVelocityIncrease += rotationVelocityIncrease * (NPC.ai[1] * 0.5f);
 

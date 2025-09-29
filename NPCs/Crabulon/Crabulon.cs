@@ -97,7 +97,7 @@ namespace CalamityMod.NPCs.Crabulon
             NPC.Calamity().VulnerableToCold = true;
             NPC.Calamity().VulnerableToSickness = true;
 
-            if (CalamityWorld.LegendaryMode)
+            if (Main.getGoodWorld)
             {
                 NPC.scale *= 1.5f;
                 NPC.defense += 12;
@@ -257,7 +257,7 @@ namespace CalamityMod.NPCs.Crabulon
                     walkingVelocity += 0.75f;
                 if (phase4)
                     walkingVelocity += 1f;
-                if (CalamityWorld.LegendaryMode)
+                if (Main.getGoodWorld)
                     walkingVelocity *= 2f;
 
                 bool shouldWalkSlower = false;
@@ -684,7 +684,7 @@ namespace CalamityMod.NPCs.Crabulon
                             center = player.Center;
 
                         center.Y -= 320f + Math.Abs(player.Center.Y - NPC.Center.Y);
-                        center.X += Math.Abs(player.Center.X - NPC.Center.X) * ((player.Center.X - NPC.Center.X > 0f) ? 1 : -1);
+                        center.X += Math.Abs(player.Center.X - NPC.Center.X) * ((player.Center.X > NPC.Center.X) ? 1 : -1);
 
                         NPC.ai[2] = 1f;
                         NPC.ai[3] = NPC.Bottom.Y;
@@ -694,6 +694,7 @@ namespace CalamityMod.NPCs.Crabulon
                         NPC.velocity = center - NPC.Center;
                         NPC.velocity = NPC.velocity.SafeNormalize(Vector2.Zero);
                         NPC.velocity *= leapVelocity;
+                        NPC.velocity.X *= 0.6f;
 
                         float velocityMinY = -leapVelocity;
                         if (NPC.velocity.Y > velocityMinY)
@@ -703,7 +704,7 @@ namespace CalamityMod.NPCs.Crabulon
                     }
                     else
                     {
-                        float mushroomFireRate = death ? 20f : 10f;
+                        float mushroomFireRate = 15f;
                         if (NPC.ai[1] % mushroomFireRate == 0f)
                         {
                             SoundEngine.PlaySound(SoundID.Item42, NPC.Center);
@@ -753,10 +754,10 @@ namespace CalamityMod.NPCs.Crabulon
                                 Vector2 initialSpawnLocation = NPC.Bottom - new Vector2(0f, 8f);
 
                                 for (int i = 0; i < numProj; i++)
-                                    Projectile.NewProjectile(NPC.GetSource_FromAI(), initialSpawnLocation + new Vector2(Main.rand.Next(0, 81), Main.rand.Next(-20, 1)), initialVelocity - ((i / (float)numProj) * initialVelocity), type, MushroomShotDamage, 0f, Main.myPlayer);
+                                    Projectile.NewProjectile(NPC.GetSource_FromAI(), initialSpawnLocation + new Vector2(Main.rand.Next(0, 81), Main.rand.Next(-20, 1)), initialVelocity - (i / (float)numProj * initialVelocity), type, MushroomShotDamage, 0f, Main.myPlayer);
 
                                 for (int i = 0; i < numProj; i++)
-                                    Projectile.NewProjectile(NPC.GetSource_FromAI(), initialSpawnLocation - new Vector2(Main.rand.Next(0, 81), Main.rand.Next(-20, 1)), -(initialVelocity - ((i / (float)numProj) * initialVelocity)), type, MushroomShotDamage, 0f, Main.myPlayer);
+                                    Projectile.NewProjectile(NPC.GetSource_FromAI(), initialSpawnLocation + new Vector2(Main.rand.Next(-81, 0), Main.rand.Next(-20, 1)), -(initialVelocity - (i / (float)numProj * initialVelocity)), type, MushroomShotDamage, 0f, Main.myPlayer);
                             }
 
                             for (int j = (int)NPC.position.X - 20; j < (int)NPC.position.X + NPC.width + 40; j += 20)
@@ -949,7 +950,7 @@ namespace CalamityMod.NPCs.Crabulon
             {
                 if (Main.netMode != NetmodeID.MultiplayerClient)
                 {
-                    int crabShroomSpawnFreq = (int)(NPC.lifeMax * (CalamityWorld.LegendaryMode ? 0.02 : 0.05));
+                    int crabShroomSpawnFreq = (int)(NPC.lifeMax * (Main.getGoodWorld ? 0.02 : 0.05));
                     if ((NPC.life + crabShroomSpawnFreq) < NPC.localAI[0])
                     {
                         NPC.localAI[0] = NPC.life;
@@ -961,8 +962,8 @@ namespace CalamityMod.NPCs.Crabulon
                             int npcType = ModContent.NPCType<CrabShroom>();
                             int crabShroom = NPC.NewNPC(NPC.GetSource_FromAI(), x, y, npcType);
                             Main.npc[crabShroom].SetDefaults(npcType);
-                            Main.npc[crabShroom].velocity.X = Main.rand.Next(-50, 51) * (CalamityWorld.LegendaryMode ? 0.2f : 0.1f);
-                            Main.npc[crabShroom].velocity.Y = Main.rand.Next(-50, -31) * (CalamityWorld.LegendaryMode ? 0.2f : 0.1f);
+                            Main.npc[crabShroom].velocity.X = Main.rand.Next(-50, 51) * (Main.getGoodWorld ? 0.2f : 0.1f);
+                            Main.npc[crabShroom].velocity.Y = Main.rand.Next(-50, -31) * (Main.getGoodWorld ? 0.2f : 0.1f);
                             if (Main.dedServ && crabShroom < Main.maxNPCs)
                                 NetMessage.SendData(MessageID.SyncNPC, -1, -1, null, crabShroom);
                         }

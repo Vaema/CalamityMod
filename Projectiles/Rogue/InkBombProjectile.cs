@@ -1,4 +1,4 @@
-﻿using CalamityMod.Items.Potions.Alcohol;
+﻿using CalamityMod.Items.Accessories;
 using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.Audio;
@@ -53,7 +53,7 @@ namespace CalamityMod.Projectiles.Rogue
             SoundEngine.PlaySound(SoundID.NPCHit25, Projectile.Center);
             for (int i = 0; i < 4; i++)
             {
-                int damage = (int)player.GetTotalDamage<RogueDamageClass>().ApplyTo(32);
+                int damage = (int)player.GetTotalDamage<RogueDamageClass>().ApplyTo(InkBomb.InkDamage);
 
                 int inkID = Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center, Main.rand.NextVector2Circular(2f, 2f), ModContent.ProjectileType<InkCloud>(), damage, 7, Projectile.owner, Main.rand.Next(3) + 1);
                 Main.projectile[inkID].timeLeft += Main.rand.Next(-15, 15 + 1);

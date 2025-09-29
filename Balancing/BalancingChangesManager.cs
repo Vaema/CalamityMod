@@ -31,8 +31,8 @@ namespace CalamityMod.Balancing
 
         // Balancing changes in this method are sorted based on place in progression, NPC name (from A-Z), and strength of resistance in ascending order, in that level of priority.
         // For ease of change, changes that are not exclusive to one specific weapon are not bundled into one line if they share the same resistance factor.
-        // To give an example of this, Thanatos having a 50% resist to Chicken Cannon and Prismatic Breaker should be two distinct lines with a 0.5x factor instead of hamfisting them all
-        // into one single resist that may have to be split later.
+        // To give an example of this, Thanatos having a 50% resist to Chicken Cannon and Rancor should be two distinct lines with a 0.5x factor instead of hamfisting them all into
+        // one single resist that may have to be split later.
         public override void SetStaticDefaults()
         {
             // Dirty shorthand for true melee resists, because they're super common and other class resists aren't.
@@ -51,6 +51,9 @@ namespace CalamityMod.Balancing
 
             bool HiveBeeFilter(Projectile p) =>
                 p.type == ProjectileType<BasicPlagueBee>() && Main.player[p.owner].ActiveItem().type == ItemType<TheHive>();
+
+            bool EradicatorLaserFilter(Projectile p) =>
+                p.type == ProjectileType<NebulaShot>() && p.DamageType == RogueDamageClass.Instance;
 
             NPCSpecificBalancingChanges = new List<NPCBalancingChange>();
 
@@ -172,9 +175,6 @@ namespace CalamityMod.Balancing
 
             // 35% resist to Flying Dragon.
             NPCSpecificBalancingChanges.AddRange(Bundle(CalamityNPCTypeSets.Ravager, Do(new ProjectileResistBalancingRule(0.65f, ProjectileID.DD2SquireSonicBoom))));
-
-            // 25% resist to Lucrecia.
-            NPCSpecificBalancingChanges.AddRange(Bundle(CalamityNPCTypeSets.Ravager, Do(new ProjectileResistBalancingRule(0.75f, ProjectileType<DNA>()))));
 
             // 20% resist to Aurora Blazer.
             NPCSpecificBalancingChanges.AddRange(Bundle(CalamityNPCTypeSets.Ravager, Do(new ProjectileResistBalancingRule(0.8f, ProjectileType<AuroraFire>()))));
@@ -327,17 +327,11 @@ namespace CalamityMod.Balancing
             // 25% resist to Aetherflux Cannon.
             NPCSpecificBalancingChanges.AddRange(Bundle(CalamityNPCTypeSets.Ares, Do(new ProjectileResistBalancingRule(0.75f, ProjectileType<PhasedGodRay>()))));
 
-            // 25% resist to Prismatic Breaker's deathray.
-            NPCSpecificBalancingChanges.AddRange(Bundle(CalamityNPCTypeSets.Ares, Do(new ProjectileResistBalancingRule(0.75f, ProjectileType<PrismaticRay>()))));
-
             // 20% resist to the Spin Throw part of the Ark of the Cosmos' combo.
             NPCSpecificBalancingChanges.AddRange(Bundle(CalamityNPCTypeSets.Ares, Do(new ProjectileSpecificRequirementBalancingRule(0.8f, AotCThrowCombo))));
 
             // 20% resist to Dragon Rage projectiles.
             NPCSpecificBalancingChanges.AddRange(Bundle(CalamityNPCTypeSets.Ares, Do(new ProjectileSpecificRequirementBalancingRule(0.8f, DragonRageFilter))));
-
-            // 20% resist to Eclipse's Fall.
-            NPCSpecificBalancingChanges.AddRange(Bundle(CalamityNPCTypeSets.Ares, Do(new ProjectileResistBalancingRule(0.8f, ProjectileType<EclipsesSmol>(), ProjectileType<EclipsesFallMain>()))));
 
             // 20% resist to Rancor.
             NPCSpecificBalancingChanges.AddRange(Bundle(CalamityNPCTypeSets.Ares, Do(new ProjectileResistBalancingRule(0.8f, ProjectileType<RancorLaserbeam>()))));
@@ -372,9 +366,6 @@ namespace CalamityMod.Balancing
             // 50% resist to Chicken Cannon.
             NPCSpecificBalancingChanges.AddRange(Bundle(CalamityNPCTypeSets.Thanatos, Do(new ProjectileResistBalancingRule(0.5f, ProjectileType<ChickenExplosion>()))));
 
-            // 50% resist to Omicron's beam.
-            NPCSpecificBalancingChanges.AddRange(Bundle(CalamityNPCTypeSets.Thanatos, Do(new ProjectileResistBalancingRule(0.5f, ProjectileType<OmicronBeam>()))));
-
             // 50% resist to Rancor.
             NPCSpecificBalancingChanges.AddRange(Bundle(CalamityNPCTypeSets.Thanatos, Do(new ProjectileResistBalancingRule(0.5f, ProjectileType<RancorLaserbeam>()))));
 
@@ -384,20 +375,14 @@ namespace CalamityMod.Balancing
             // 50% resist to Yharim's Crystal.
             NPCSpecificBalancingChanges.AddRange(Bundle(CalamityNPCTypeSets.Thanatos, Do(new ProjectileResistBalancingRule(0.5f, ProjectileType<YharimsCrystalBeam>()))));
 
-            // 45% resist to Prismatic Breaker's deathray.
-            NPCSpecificBalancingChanges.AddRange(Bundle(CalamityNPCTypeSets.Thanatos, Do(new ProjectileResistBalancingRule(0.55f, ProjectileType<PrismaticRay>()))));
-
             // 45% resist to Wrathwing's stealth strike fireballs.
             NPCSpecificBalancingChanges.AddRange(Bundle(CalamityNPCTypeSets.Thanatos, Do(new ProjectileResistBalancingRule(0.55f, ProjectileType<WrathwingCinder>()))));
 
-            // 30% resist to Eclipse's Fall.
-            NPCSpecificBalancingChanges.AddRange(Bundle(CalamityNPCTypeSets.Thanatos, Do(new ProjectileResistBalancingRule(0.7f, ProjectileType<EclipsesFallMain>()))));
+            // 40% resist to Omicron's beam.
+            NPCSpecificBalancingChanges.AddRange(Bundle(CalamityNPCTypeSets.Thanatos, Do(new ProjectileResistBalancingRule(0.6f, ProjectileType<OmicronBeam>()))));
 
-            // 30% resist to Sirius.
-            NPCSpecificBalancingChanges.AddRange(Bundle(CalamityNPCTypeSets.Thanatos, Do(new ProjectileResistBalancingRule(0.7f, ProjectileType<SiriusExplosion>()))));
-
-            // 30% resist to Ultima's rays.
-            NPCSpecificBalancingChanges.AddRange(Bundle(CalamityNPCTypeSets.Thanatos, Do(new ProjectileResistBalancingRule(0.7f, ProjectileType<UltimaRay>()))));
+            // 35% resist to Prismatic Breaker's deathray.
+            NPCSpecificBalancingChanges.AddRange(Bundle(CalamityNPCTypeSets.Thanatos, Do(new ProjectileResistBalancingRule(0.65f, ProjectileType<PrismaticRay>()))));
 
             // 30% resist to Dragon Scales and The Wand's tornadoes.
             NPCSpecificBalancingChanges.AddRange(Bundle(CalamityNPCTypeSets.Thanatos, Do(new ProjectileResistBalancingRule(0.7f, ProjectileType<InfernadoFriendly>(), ProjectileType<DragonScalesInfernado>()))));
@@ -411,23 +396,17 @@ namespace CalamityMod.Balancing
             // 25% resist to Gael's Greatsword's big skulls.
             NPCSpecificBalancingChanges.AddRange(Bundle(CalamityNPCTypeSets.Thanatos, Do(new ProjectileSpecificRequirementBalancingRule(0.75f, BigGaelsSkullFilter))));
 
-            // 25% resist to Mirror of Kalandra's Paradoxica minion.
-            NPCSpecificBalancingChanges.AddRange(Bundle(CalamityNPCTypeSets.Thanatos, Do(new ProjectileResistBalancingRule(0.75f, ProjectileType<Paradoxica>()))));
-
             // 25% resist to Zenith.
             NPCSpecificBalancingChanges.AddRange(Bundle(CalamityNPCTypeSets.Thanatos, Do(new ProjectileResistBalancingRule(0.75f, ProjectileID.FinalFractal))));
-
-            // 20% resist to The Anomaly's Nanogun's bomb explosions.
-            NPCSpecificBalancingChanges.AddRange(Bundle(CalamityNPCTypeSets.Thanatos, Do(new ProjectileResistBalancingRule(0.8f, ProjectileType<AnomalysNanogunMPFBBoom>()))));
 
             // 20% resist to Ariane's aura (Lilies of Finality).
             NPCSpecificBalancingChanges.AddRange(Bundle(CalamityNPCTypeSets.Thanatos, Do(new ProjectileResistBalancingRule(0.8f, ProjectileType<LiliesOfFinalityAoE>()))));
 
             // 20% resist to Eradicator's beams.
-            NPCSpecificBalancingChanges.AddRange(Bundle(CalamityNPCTypeSets.Thanatos, Do(new ProjectileResistBalancingRule(0.8f, ProjectileType<NebulaShot>()))));
+            NPCSpecificBalancingChanges.AddRange(Bundle(CalamityNPCTypeSets.Thanatos, Do(new ProjectileSpecificRequirementBalancingRule(0.8f, EradicatorLaserFilter))));
 
-            // 20% resist to Plasma Grenade and Dynamic Pursuer's explosions.
-            NPCSpecificBalancingChanges.AddRange(Bundle(CalamityNPCTypeSets.Thanatos, Do(new ProjectileResistBalancingRule(0.8f, ProjectileType<PlasmaGrenadeProjectile>(), ProjectileType<PlasmaGrenadeSmallExplosion>(), ProjectileType<MassivePlasmaExplosion>()))));
+            // 20% resist to Mirror of Kalandra's Paradoxica minion.
+            NPCSpecificBalancingChanges.AddRange(Bundle(CalamityNPCTypeSets.Thanatos, Do(new ProjectileResistBalancingRule(0.8f, ProjectileType<Paradoxica>()))));
 
             // 20% resist to Voltaic Climax / Void Vortex hitscan beams.
             NPCSpecificBalancingChanges.AddRange(Bundle(CalamityNPCTypeSets.Thanatos, Do(new ProjectileResistBalancingRule(0.8f, ProjectileType<ClimaxBeam>()))));
@@ -437,6 +416,9 @@ namespace CalamityMod.Balancing
 
             // 15% resist to Gruesome Eminence.
             NPCSpecificBalancingChanges.AddRange(Bundle(CalamityNPCTypeSets.Thanatos, Do(new ProjectileResistBalancingRule(0.85f, ProjectileType<SpiritCongregation>()))));
+
+            // 15% resist to Ultima's rays.
+            NPCSpecificBalancingChanges.AddRange(Bundle(CalamityNPCTypeSets.Thanatos, Do(new ProjectileResistBalancingRule(0.85f, ProjectileType<UltimaRay>()))));
             #endregion
 
             #region Supreme Calamitas: Brimstone Hearts
@@ -448,9 +430,6 @@ namespace CalamityMod.Balancing
 
             // 30% resist to Surge Driver's alt click comets.
             NPCSpecificBalancingChanges.Add(new NPCBalancingChange(NPCType<BrimstoneHeart>(), new ProjectileResistBalancingRule(0.7f, ProjectileType<PrismComet>())));
-
-            // 20% resist to Executioner's Blade stealth strikes.
-            NPCSpecificBalancingChanges.Add(new NPCBalancingChange(NPCType<BrimstoneHeart>(), new ProjectileResistBalancingRule(0.8f, ProjectileType<ExecutionersBladeStealthProj>())));
             #endregion
 
             #region Supreme Calamitas: Soul Seekers

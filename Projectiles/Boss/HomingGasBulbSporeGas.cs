@@ -40,7 +40,7 @@ namespace CalamityMod.Projectiles.Boss
         public override void AI()
         {
             Projectile.ai[1] += 1f;
-            if (Projectile.ai[1] > (CalamityWorld.LegendaryMode ? 600f : 900f))
+            if (Projectile.ai[1] > (Main.getGoodWorld ? 600f : 900f))
             {
                 Projectile.localAI[0] += 10f;
             }
@@ -57,7 +57,7 @@ namespace CalamityMod.Projectiles.Boss
             Projectile.rotation += Projectile.velocity.X * 0.02f;
             Projectile.rotation += Projectile.direction * 0.002f;
 
-            if (Projectile.velocity.Length() > (CalamityWorld.LegendaryMode ? 2f : 0.5f))
+            if (Projectile.velocity.Length() > (Main.getGoodWorld ? 2f : 0.5f))
                 Projectile.velocity *= 0.985f;
 
             if (Projectile.timeLeft <= 40)
@@ -99,7 +99,7 @@ namespace CalamityMod.Projectiles.Boss
             if (info.Damage <= 0)
                 return;
 
-            if (Projectile.ai[1] <= (CalamityWorld.LegendaryMode ? 600f : 900f) && Projectile.ai[1] > 120f)
+            if (Projectile.ai[1] <= (Main.getGoodWorld ? 600f : 900f) && Projectile.ai[1] > 120f)
                 target.AddBuff(BuffID.Poisoned, 240);
         }
     }

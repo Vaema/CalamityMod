@@ -10,6 +10,7 @@ using CalamityMod.Tiles.AstralDesert;
 using CalamityMod.Tiles.AstralSnow;
 using CalamityMod.Tiles.Ores;
 using CalamityMod.Walls;
+using CalamityMod.Walls.UnsafeWalls;
 using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.Audio;
@@ -775,33 +776,33 @@ namespace CalamityMod.World
 
                 if (Main.tile[x, y] != null)
                 {
-                    if (wallType != WallID.None && wallType != ModContent.WallType<AstralGrassWall>() && wallType != ModContent.WallType<HardenedAstralSandWall>() &&
-                    wallType != ModContent.WallType<AstralSandstoneWall>() && wallType != ModContent.WallType<AstralStoneWall>() &&
-                    wallType != ModContent.WallType<AstralDirtWall>() && wallType != ModContent.WallType<AstralSnowWall>() &&
-                    wallType != ModContent.WallType<CelestialRemainsWall>() && wallType != ModContent.WallType<AstralIceWall>() &&
+                    if (wallType != WallID.None && wallType != ModContent.WallType<UnsafeAstralGrassWall>() && wallType != ModContent.WallType<UnsafeHardenedAstralSandWall>() &&
+                    wallType != ModContent.WallType<UnsafeAstralSandstoneWall>() && wallType != ModContent.WallType<UnsafeAstralStoneWall>() &&
+                    wallType != ModContent.WallType<UnsafeAstralDirtWall>() && wallType != ModContent.WallType<UnsafeAstralSnowWall>() &&
+                    wallType != ModContent.WallType<CelestialRemainsWall>() && wallType != ModContent.WallType<UnsafeAstralIceWall>() &&
                     wallType != ModContent.WallType<AstralMonolithWall>())
                     {
                         if (WallID.Sets.Conversion.Grass[wallType])
                         {
-                            Main.tile[x, y].WallType = (ushort)ModContent.WallType<AstralGrassWall>();
+                            Main.tile[x, y].WallType = (ushort)ModContent.WallType<UnsafeAstralGrassWall>();
                             WorldGen.SquareWallFrame(x, y, true);
                             NetMessage.SendTileSquare(-1, x, y, 1);
                         }
                         else if (WallID.Sets.Conversion.HardenedSand[wallType])
                         {
-                            Main.tile[x, y].WallType = (ushort)ModContent.WallType<HardenedAstralSandWall>();
+                            Main.tile[x, y].WallType = (ushort)ModContent.WallType<UnsafeHardenedAstralSandWall>();
                             WorldGen.SquareWallFrame(x, y, true);
                             NetMessage.SendTileSquare(-1, x, y, 1);
                         }
                         else if (WallID.Sets.Conversion.Sandstone[wallType])
                         {
-                            Main.tile[x, y].WallType = (ushort)ModContent.WallType<AstralSandstoneWall>();
+                            Main.tile[x, y].WallType = (ushort)ModContent.WallType<UnsafeAstralSandstoneWall>();
                             WorldGen.SquareWallFrame(x, y, true);
                             NetMessage.SendTileSquare(-1, x, y, 1);
                         }
                         else if (WallID.Sets.Conversion.Stone[wallType])
                         {
-                            Main.tile[x, y].WallType = (ushort)ModContent.WallType<AstralStoneWall>();
+                            Main.tile[x, y].WallType = (ushort)ModContent.WallType<UnsafeAstralStoneWall>();
                             WorldGen.SquareWallFrame(x, y, true);
                             NetMessage.SendTileSquare(-1, x, y, 1);
                         }
@@ -816,12 +817,12 @@ namespace CalamityMod.World
                                 case WallID.DirtUnsafe4:
                                 case WallID.Cave6Unsafe:
                                 case WallID.Dirt:
-                                    Main.tile[x, y].WallType = (ushort)ModContent.WallType<AstralDirtWall>();
+                                    Main.tile[x, y].WallType = (ushort)ModContent.WallType<UnsafeAstralDirtWall>();
                                     WorldGen.SquareWallFrame(x, y, true);
                                     NetMessage.SendTileSquare(-1, x, y, 1);
                                     break;
                                 case WallID.SnowWallUnsafe:
-                                    Main.tile[x, y].WallType = (ushort)ModContent.WallType<AstralSnowWall>();
+                                    Main.tile[x, y].WallType = (ushort)ModContent.WallType<UnsafeAstralSnowWall>();
                                     WorldGen.SquareWallFrame(x, y, true);
                                     NetMessage.SendTileSquare(-1, x, y, 1);
                                     break;
@@ -831,7 +832,7 @@ namespace CalamityMod.World
                                     NetMessage.SendTileSquare(-1, x, y, 1);
                                     break;
                                 case WallID.IceUnsafe:
-                                    Main.tile[x, y].WallType = (ushort)ModContent.WallType<AstralIceWall>();
+                                    Main.tile[x, y].WallType = (ushort)ModContent.WallType<UnsafeAstralIceWall>();
                                     WorldGen.SquareWallFrame(x, y, true);
                                     NetMessage.SendTileSquare(-1, x, y, 1);
                                     break;
@@ -1174,11 +1175,11 @@ namespace CalamityMod.World
                 #region WALL
                 if (Main.tile[x, y] != null)
                 {
-                    if (wallType == ModContent.WallType<AstralDirtWall>())
+                    if (wallType == ModContent.WallType<UnsafeAstralDirtWall>())
                     {
                         Main.tile[x, y].WallType = WallID.DirtUnsafe;
                     }
-                    else if (wallType == ModContent.WallType<AstralSnowWall>() || wallType == ModContent.WallType<AstralSnowWallSafe>())
+                    else if (wallType == ModContent.WallType<AstralSnowWall>() || wallType == ModContent.WallType<UnsafeAstralSnowWall>())
                     {
                         Main.tile[x, y].WallType = WallID.SnowWallUnsafe;
                     }
@@ -1186,7 +1187,7 @@ namespace CalamityMod.World
                     {
                         Main.tile[x, y].WallType = WallID.DesertFossil;
                     }
-                    else if (wallType == ModContent.WallType<AstralGrassWall>())
+                    else if (wallType == ModContent.WallType<UnsafeAstralGrassWall>())
                     {
                         switch (convert)
                         {
@@ -1204,15 +1205,15 @@ namespace CalamityMod.World
                                 break;
                         }
                     }
-                    else if (wallType == ModContent.WallType<AstralIceWall>())
+                    else if (wallType == ModContent.WallType<UnsafeAstralIceWall>())
                     {
                         Main.tile[x, y].WallType = WallID.IceUnsafe;
                     }
                     else if (wallType == ModContent.WallType<AstralMonolithWall>())
                     {
-                        Main.tile[x, y].WallType = WallID.LivingWood;
+                        Main.tile[x, y].WallType = WallID.LivingWoodUnsafe;
                     }
-                    else if (wallType == ModContent.WallType<AstralStoneWall>())
+                    else if (wallType == ModContent.WallType<UnsafeAstralStoneWall>())
                     {
                         switch (convert)
                         {

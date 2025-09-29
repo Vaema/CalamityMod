@@ -466,7 +466,7 @@ namespace CalamityMod.NPCs.Perforator
 
         public static int GetMediumPerforatorSegmentsCount()
         {
-            return CalamityWorld.LegendaryMode ? 20 : (CalamityWorld.death || BossRushEvent.BossRushActive) ? 14 : CalamityWorld.revenge ? 13 : Main.expertMode ? 12 : 10;
+            return Main.getGoodWorld ? 20 : (CalamityWorld.death || BossRushEvent.BossRushActive) ? 14 : CalamityWorld.revenge ? 13 : Main.expertMode ? 12 : 10;
         }
 
         public override bool PreDraw(SpriteBatch spriteBatch, Vector2 screenPos, Color drawColor)

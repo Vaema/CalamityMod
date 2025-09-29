@@ -488,11 +488,7 @@ ExaltedOathblade: {
 
 Excelsus: {
 	DisplayName: Excelsus
-	Tooltip:
-		'''
-		Fires a spread of spinning blades
-		Summons laser fountains on hit
-		'''
+	Tooltip: Fires a spread of spinning blades
 }
 
 Exoblade: {
@@ -804,8 +800,10 @@ Lucrecia: {
 	DisplayName: Lucrecia
 	Tooltip:
 		'''
-		Fires a DNA chain
-		Finesse
+		[c/9370db:Fires a spiraling darklight shard when swung]
+		[c/837ce4:Hits with the blade itself build energy]
+		[c/7489ee:Energy is lost over time but briefly stops depleting after reaching its maximum]
+		[c/6495f7:Press <right> with maximum energy to fire a double helix comet]
 		'''
 }
 

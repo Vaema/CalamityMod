@@ -1,4 +1,5 @@
-﻿using CalamityMod.Items.Materials;
+﻿using CalamityMod.CalPlayer;
+using CalamityMod.Items.Materials;
 using CalamityMod.Projectiles.Typeless;
 using Microsoft.Xna.Framework;
 using Terraria;
@@ -23,12 +24,35 @@ namespace CalamityMod.Items.Fishing.FishingRods
             Item.shootSpeed = 10f;
             Item.shoot = ModContent.ProjectileType<WulfrumBobber>();
             Item.value = CalamityGlobalItem.RarityBlueBuyPrice;
+            Item.accessory = true;
+        }
+
+        public override bool AllowPrefix(int pre)
+        {
+            if (pre == 0) 
+                return true;
+            return false;
+        }
+
+        public override bool CanReforge()
+        {
+            return false;
+        }
+        public override void HoldItem(Player player)
+        {
+            if (player.Calamity().SelectedFishingMinigame == CalamityPlayer.FishingMinigames.None)
+                player.Calamity().SelectedFishingMinigame = CalamityPlayer.FishingMinigames.WulfrumRod;
+        }
+
+        public override void UpdateEquip(Player player)
+        {
+            player.Calamity().SelectedFishingMinigame = CalamityPlayer.FishingMinigames.WulfrumRod;
         }
 
         public override void ModifyFishingLine(Projectile bobber, ref Vector2 lineOriginOffset, ref Color lineColor)
         {
             lineOriginOffset = new Vector2(35f, -27f);
-            lineColor = new Color(200, 200, 200, 100);
+            lineColor = Color.Lerp(Color.GreenYellow, Color.DeepSkyBlue, Main.player[bobber.owner].Calamity().consecutiveCaughtFish / 5f);
         }
 
         public override void AddRecipes()

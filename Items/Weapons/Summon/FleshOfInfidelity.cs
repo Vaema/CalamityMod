@@ -1,4 +1,4 @@
-﻿using CalamityMod.Items.Materials;
+﻿using CalamityMod.Buffs.Summon;
 using CalamityMod.Items.Weapons.Rogue;
 using CalamityMod.Projectiles.Summon;
 using Microsoft.Xna.Framework;
@@ -22,6 +22,7 @@ namespace CalamityMod.Items.Weapons.Summon
             Item.height = 42;
             Item.damage = 20;
             Item.DamageType = DamageClass.Summon;
+            Item.buffType = ModContent.BuffType<FleshBallBuff>();
             Item.shoot = ModContent.ProjectileType<FleshBallMinion>();
             Item.knockBack = 1f;
 
@@ -37,7 +38,9 @@ namespace CalamityMod.Items.Weapons.Summon
 
         public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)
         {
-            Projectile.NewProjectile(source, player.ClampedMouseWorld(), Vector2.UnitY * -1f, type, damage, knockback, player.whoAmI);
+            player.AddBuff(Item.buffType, 2);
+            var minion = Projectile.NewProjectileDirect(source, player.ClampedMouseWorld(), Vector2.UnitY * -1f, type, damage, knockback, player.whoAmI);
+            minion.originalDamage = Item.damage;
             return false;
         }
     }

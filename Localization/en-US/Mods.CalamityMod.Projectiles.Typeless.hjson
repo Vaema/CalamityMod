@@ -31,7 +31,6 @@ BossRushEndEffectThing.DisplayName: Boss Rush End Effect Thing
 BossRushFailureEffectThing.DisplayName: Boss Rush Failure Effect Thing
 BossRushTierAnimation.DisplayName: Boss Rush Tier Animation
 ChaoticGeyser.DisplayName: Chaotic Geyser
-ChlorophyteLifePulse.DisplayName: Life Pulse
 ChronoClock.DisplayName: Chrono Clock
 ClaretCannonProj.DisplayName: Claret Round
 CoralBubble.DisplayName: Bubble
@@ -110,7 +109,6 @@ ProtolithBangleProjectile.DisplayName: Marble Shatter
 PscTransformAnimation.DisplayName: Psc Transform Animation
 PscTransformRocks.DisplayName: Psc Transform Rocks
 PuddleSplash.DisplayName: Puddle Splash
-ReaverOrb.DisplayName: Reaver Orb
 ReaverThornBase.DisplayName: Thorn
 RedLabSeeker.DisplayName: Seeking Mechanism
 RelicGuard.DisplayName: Relic Guard
@@ -165,3 +163,13 @@ XykDeathAnim.DisplayName: Xyk Death Animation
 XykWings.DisplayName: Xyk Wings
 BatholithBangleProjectile.DisplayName: Batholith Bangle Projectile
 ScionsCurioMini.DisplayName: Scions Curio Mini
+BlackPearlFalling.DisplayName: Black Pearl Falling
+DunesandBallFalling.DisplayName: Dunesand Ball Falling
+EutrophicSandBallFalling.DisplayName: Eutrophic Sand Ball Falling
+PinkPearlFalling.DisplayName: Pink Pearl Falling
+PolypSandBallFalling.DisplayName: Polyp Sand Ball Falling
+VolcanicSandBallFalling.DisplayName: Volcanic Sand Ball Falling
+WhitePearlFalling.DisplayName: White Pearl Falling
+DuneSandBallGun.DisplayName: Dunesandball
+PolypSandBallGun.DisplayName: Polyp Sandball
+VolcanicSandBallGun.DisplayName: Volcanic Sandball

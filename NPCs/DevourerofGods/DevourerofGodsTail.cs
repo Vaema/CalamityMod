@@ -85,7 +85,7 @@ namespace CalamityMod.NPCs.DevourerofGods
             NPC.takenDamageMultiplier = 1.25f;
             NPC.dontCountMe = true;
 
-            if (CalamityWorld.LegendaryMode)
+            if (Main.getGoodWorld)
                 NPC.scale *= 1.5f;
         }
 
@@ -304,7 +304,7 @@ namespace CalamityMod.NPCs.DevourerofGods
             float segmentVelocity = death ? 17.5f : 16f;
             if (expertMode)
                 segmentVelocity += 4f * (1f - lifeRatio);
-            if (CalamityWorld.LegendaryMode)
+            if (Main.getGoodWorld)
                 segmentVelocity *= 1.1f;
         }
 

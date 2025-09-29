@@ -145,6 +145,93 @@ namespace CalamityMod.World
         }
         #endregion
 
+        #region Tunnel Tools
+        public static void CreateTunnel(int startX, int startY, int endX, int endY, int width = 6, int tileType = TileID.Dirt)
+        {
+            int dx = endX - startX;
+            int dy = endY - startY;
+            int steps = Math.Max(Math.Abs(dx), Math.Abs(dy));
+
+            for (int i = 0; i <= steps; i++)
+            {
+                float t = (float)i / steps;
+                int x = (int)(startX + dx * t);
+                int y = (int)(startY + dy * t);
+
+                // Draw a small circular path
+                for (int xi = -width; xi <= width; xi++)
+                {
+                    for (int yi = -width; yi <= width; yi++)
+                    {
+                        if (xi * xi + yi * yi <= width * width)
+                        {
+                            int tileX = x + xi;
+                            int tileY = y + yi;
+
+                            if (WorldGen.InWorld(tileX, tileY))
+                            {
+                                Tile tTile = Main.tile[tileX, tileY];
+                                tTile.HasTile = true;
+                                tTile.TileType = (ushort)tileType;
+                                WorldGen.SquareTileFrame(tileX, tileY);
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        public static void ClearTunnel(int startX, int startY, int endX, int endY, int width = 3, int wallType = WallID.Dirt, int liquidType = LiquidID.Water, bool liquidOn = true, bool wallOn = true)
+        {
+            int dx = endX - startX;
+            int dy = endY - startY;
+            int steps = Math.Max(Math.Abs(dx), Math.Abs(dy));
+
+            for (int i = 0; i <= steps; i++)
+            {
+                float t = (float)i / steps;
+                int x = (int)(startX + dx * t);
+                int y = (int)(startY + dy * t);
+
+                for (int xi = -width; xi <= width; xi++)
+                {
+                    for (int yi = -width; yi <= width; yi++)
+                    {
+                        if (xi * xi + yi * yi <= width * width)
+                        {
+                            int tileX = x + xi;
+                            int tileY = y + yi;
+
+                            if (WorldGen.InWorld(tileX, tileY))
+                            {
+                                Tile tTile = Main.tile[tileX, tileY];
+                                tTile.HasTile = false;
+                                if (wallOn)
+                                {
+                                    tTile.WallType = (ushort)wallType;
+                                }
+
+                                tTile.LiquidAmount = 0;
+
+                                WorldGen.SquareWallFrame(tileX, tileY);
+
+                                // Optional: Add liquid with low chance
+                                if (liquidOn)
+                                {
+                                    if (WorldGen.genRand.NextBool(10))
+                                    {
+                                        tTile.LiquidAmount = 100;
+                                        tTile.LiquidType = liquidType;
+                                        WorldGen.SquareTileFrame(tileX, tileY);
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        #endregion
+
         #region Chasm Generator
         public static void ChasmGenerator(int i, int j, int steps, bool ocean = false)
         {

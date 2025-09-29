@@ -8,61 +8,62 @@ using Terraria.Audio;
 using Terraria.DataStructures;
 using Terraria.ID;
 using Terraria.ModLoader;
+using static Terraria.ModLoader.ModContent;
 
 namespace CalamityMod.Items.Weapons.Ranged
 {
     public class ScorchedEarth : ModItem, ILocalizedModType
     {
         public new string LocalizationCategory => "Items.Weapons.Ranged";
-        public static readonly SoundStyle ShootSound = new("CalamityMod/Sounds/Item/ScorchedEarthShot", 3);
+        public static readonly SoundStyle RocketShoot = new("CalamityMod/Sounds/Item/ScorpioShot") { Volume = 0.45f };
 
-        private int counter = 0;
+        public static int OriginalUseTime = 60;
+        public static int TimeBetweenBursts = 10;
+        public static int ProjectilesPerBurst = 4;
         public override void SetDefaults()
         {
-            Item.width = 104;
-            Item.height = 44;
             Item.damage = 500;
             Item.DamageType = DamageClass.Ranged;
-            Item.useTime = 8;
-            Item.useAnimation = 32; // 4 shots in just over half a second
-            Item.reuseDelay = 60; // 1 second recharge
-            Item.useLimitPerAnimation = 4;
-            Item.useStyle = ItemUseStyleID.Shoot;
+            Item.useAnimation = Item.useTime = OriginalUseTime;
+            Item.shoot = ProjectileType<ScorchedEarthHoldout>();
+            Item.shootSpeed = 15f;
+            Item.knockBack = 6.5f;
+
+            Item.width = 104;
+            Item.height = 44;
             Item.noMelee = true;
-            Item.knockBack = 8.7f;
+            Item.channel = true;
+            Item.noUseGraphic = true;
+            Item.useAmmo = AmmoID.Rocket;
             Item.value = CalamityGlobalItem.RarityDarkBlueBuyPrice;
             Item.rare = ModContent.RarityType<CosmicPurple>();
-            Item.autoReuse = true;
-            Item.shootSpeed = 12.6f;
-            Item.shoot = ModContent.ProjectileType<ScorchedEarthRocket>();
-            Item.useAmmo = AmmoID.Rocket;
+            Item.useStyle = ItemUseStyleID.Shoot;
+            Item.UseSound = new SoundStyle("CalamityMod/Sounds/Item/DudFire") with { Volume = .4f, Pitch = -.9f, PitchVariance = 0.1f };
             Item.Calamity().donorItem = true;
         }
 
-        // Consume two ammo per fire
-        public override bool CanConsumeAmmo(Item ammo, Player player) => counter % 2 == 0;
+        public override bool CanUseItem(Player player) => player.ownedProjectileCounts[Item.shoot] == 0;
 
-        public override Vector2? HoldoutOffset() => new Vector2(-30, 0);
+        // Spawning the holdout won't consume ammo.
+        public override bool CanConsumeAmmo(Item ammo, Player player) => player.ownedProjectileCounts[Item.shoot] != 0;
+
+        // Makes the rotation of the mouse around the player sync in multiplayer.
+        public override void HoldItem(Player player) => player.Calamity().mouseRotationListener = true;
 
         public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)
         {
-            Projectile.NewProjectile(source, position, velocity, ModContent.ProjectileType<ScorchedEarthRocket>(), damage, knockback, player.whoAmI);
+            Projectile holdout = Projectile.NewProjectileDirect(source, player.MountedCenter, Vector2.Zero, ProjectileType<ScorchedEarthHoldout>(), 0, 0f, player.whoAmI, -30);
 
-            if (counter == 0)
-            {
-                SoundEngine.PlaySound(ShootSound, position);
-            }
+            // We set the rotation to the direction to the mouse so the first frame doesn't appear bugged out.
+            holdout.velocity = (player.Calamity().mouseWorld - player.MountedCenter).SafeNormalize(Vector2.Zero);
 
-            counter++;
-            if (counter == 4)
-                counter = 0;
             return false;
         }
 
         public override void AddRecipes()
         {
             CreateRecipe().
-                AddIngredient<BlissfulBombardier>().
+                AddIngredient<Scorpio>().
                 AddRecipeGroup("AnyAdamantiteBar", 15).
                 AddIngredient<DarksunFragment>(10).
                 AddIngredient(ItemID.FragmentSolar, 50).
