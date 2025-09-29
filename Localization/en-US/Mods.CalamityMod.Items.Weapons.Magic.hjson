@@ -948,6 +948,24 @@ UndinesRetribution: {
 	Tooltip: Casts a swarm of homing spears
 }
 
+UnstableCastersGauntlet: {
+	DisplayName: Unstable Caster's Gauntlet
+	Tooltip:
+		'''
+		<left> to fire piercing needles
+		<right> to summon 6 sigils, each representing a primordial element
+		Hold <left> with sigils available to consume random sigils, each unleashing an attack
+		Ordo sigils always land critical strikes and pierce infinitely
+		Perditio sigils pierce and ignore 25 points of enemy defense
+		Ignis sigils inflict Daybroken
+		Aqua sigils inflict Crush Depth
+		Aer sigils boast impeccable knockback
+		Terra sigils split into sharp rocks
+		All actions require sufficient Vis to use
+		Vis is restored over time
+		'''
+}
+
 ValkyrieRay: {
 	DisplayName: Valkyrie Ray
 	Tooltip: Casts a devastating ray of holy power

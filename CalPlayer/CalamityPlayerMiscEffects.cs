@@ -419,6 +419,22 @@ namespace CalamityMod.CalPlayer
                 lucreciaEnergyPaused = false;
             }
 
+
+            if (Player.HeldItem.type == ModContent.ItemType<UnstableCastersGauntlet>() && unstableCastersGauntletVis < 100)
+            {
+
+                unstableCastersGauntletVisTimer++;
+                // Gain 0.1% charge once every 8 ticks
+                if (unstableCastersGauntletVisTimer >= 8)
+                {
+                    unstableCastersGauntletVis += 0.1f;
+                    unstableCastersGauntletVisTimer = 0;
+                }
+
+            }
+            if (unstableCastersGauntletVis >= 100)
+                unstableCastersGauntletVis = 100;
+
             if (lAmbergris)
             {
                 if (dashStart)
