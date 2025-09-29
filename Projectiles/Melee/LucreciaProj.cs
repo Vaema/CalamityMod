@@ -31,6 +31,7 @@ namespace CalamityMod.Projectiles.Melee
         public override int swingTime { get; set; }
         public override bool AlternateSwings { get => base.AlternateSwings; set => base.AlternateSwings = value; }
         public override float lineCollisionLength => 82;
+        public override Color AfterImageColor => Color.CornflowerBlue with { A = 0 };
 
         // Boolshit
         public bool helixFired = false;
