@@ -1409,9 +1409,9 @@ MagicHatBuff: {
 	Description: The hat carries your soul, bound by a contract
 }
 
-Mechworm: {
-	DisplayName: Mechworm
-	Description: The mechworm will protect you
+VoidEaterMarionetteBuff: {
+	DisplayName: Void Eater Marionette
+	Description: The power to control the Devourer is yours
 }
 
 MidnightSunBuff: {

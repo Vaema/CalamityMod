@@ -323,9 +323,13 @@ namespace CalamityMod.Projectiles.BaseProjectiles
                 player.direction = -1;
                 Projectile.spriteDirection = -1 * (int)player.gravDir;
             }
-            if (AlternateSwings && player.GetModPlayer<BaseSwordHoldoutPlayer>().swingNum % 2 == 0)
+            if (AlternateSwings && player.GetModPlayer<BaseSwordHoldoutPlayer>().swingNum % 2 == 1)
             {
                 Projectile.spriteDirection *= -1;
+            }
+            if (AlternateSwings)
+            {
+                player.GetModPlayer<BaseSwordHoldoutPlayer>().swingNum++;
             }
             swingTime = Main.player[Projectile.owner].HeldItem.useTime;
             Spawn(source);
@@ -387,6 +391,10 @@ namespace CalamityMod.Projectiles.BaseProjectiles
                     player.direction = -1;
                     Projectile.spriteDirection = -1 * (int)player.gravDir;
                 }
+                if (AlternateSwings && player.GetModPlayer<BaseSwordHoldoutPlayer>().swingNum % 2 == 1)
+                {
+                    Projectile.spriteDirection *= -1;
+                }
             }
             if (Projectile.spriteDirection == -1)
             {
@@ -407,10 +415,12 @@ namespace CalamityMod.Projectiles.BaseProjectiles
             {
                 SoundEngine.PlaySound((SoundStyle)UseSound,player.Center);
             }
-            var angle2 = (AlternateSwings && (modplayer.swingNum % 2 == 1 ? false : true) ? SwingFunction() : SwingFunction());
+            var angle2 = (AlternateSwings && modplayer.swingNum % 2 == 1 ? SwingFunction() : SwingFunction());
             Projectile.Center = armCenter - (angle * OffsetDistance * (1 + (Projectile.scale - 1) * 0.75f)).RotatedBy(Projectile.spriteDirection * angle2);
             Projectile.rotation = angle.RotatedBy(Projectile.spriteDirection * angle2).ToRotation() + adust;
             AdditionalAI();
+            if (!Projectile.active)
+                return;
             oldPlayerOffset = Projectile.Center - player.Center;
             player.itemTime = ExistsTime + 2 - timer;
             player.itemAnimation = ExistsTime + 2 - timer;

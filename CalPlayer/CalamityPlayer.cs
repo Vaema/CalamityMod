@@ -1431,8 +1431,7 @@ namespace CalamityMod.CalPlayer
         #region Minion
         public bool wDroid = false;
         public bool resButterfly = false;
-        /// <summary> Staff of the Mechworm. </summary>
-        public bool mWorm = false;
+        public bool hasVoidEaterMarionette = false;
         public bool IceClasperBool = false;
         public bool magicHat = false;
         public bool herring = false;
@@ -2614,7 +2613,7 @@ namespace CalamityMod.CalPlayer
             #region Minion Reset Effects
             wDroid = false;
             resButterfly = false;
-            mWorm = false;
+            hasVoidEaterMarionette = false;
             IceClasperBool = false;
             magicHat = false;
             herring = false;

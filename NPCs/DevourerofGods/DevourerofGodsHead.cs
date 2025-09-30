@@ -51,6 +51,8 @@ namespace CalamityMod.NPCs.DevourerofGods
     [LongDistanceNetSync]
     public class DevourerofGodsHead : ModNPC
     {
+        public static Color SpecialMoveColor => Color.Lerp(Color.Fuchsia, Color.Cyan, MathHelper.SmoothStep(0,1,(MathF.Sin(Main.GlobalTimeWrappedHourly*2)+1) * 0.5f));
+
         public static int phase1IconIndex;
         public static int phase2IconIndex;
 
@@ -2552,12 +2554,12 @@ namespace CalamityMod.NPCs.DevourerofGods
                 // Weapons
                 int[] weapons = new int[]
                 {
-                    ModContent.ItemType<Excelsus>(),
+                    ModContent.ItemType<MawOfInfinity>(),
                     ModContent.ItemType<TheObliterator>(),
-                    ModContent.ItemType<Deathwind>(),
-                    ModContent.ItemType<DeathhailStaff>(),
-                    ModContent.ItemType<StaffoftheMechworm>(),
-                    ModContent.ItemType<Eradicator>()
+                    ModContent.ItemType<ThreadOfEradication>(),
+                    ModContent.ItemType<HyperdeathRiftScepter>(),
+                    ModContent.ItemType<VoidEaterMarionette>(),
+                    ModContent.ItemType<DimensionTearingDisk>()
                 };
                 normalOnly.Add(DropHelper.CalamityStyle(DropHelper.NormalWeaponDropRateFraction, weapons));
                 normalOnly.Add(ModContent.ItemType<CosmicDischarge>(), 10);

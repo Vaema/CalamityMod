@@ -40,6 +40,8 @@ namespace CalamityMod.Projectiles.Boss
             Projectile.extraUpdates = 1;
             Projectile.penetrate = -1;
             Projectile.timeLeft = 300;
+            Projectile.usesIDStaticNPCImmunity = true;
+            Projectile.idStaticNPCHitCooldown = 15;
             CooldownSlot = ImmunityCooldownID.Bosses;
         }
 
@@ -58,7 +60,7 @@ namespace CalamityMod.Projectiles.Boss
                 {
                     Vector2 dustSpawnPosition = Projectile.Center + Main.rand.NextVector2Circular(6f, 6f);
                     Vector2 dustVelocity = Projectile.velocity * -1.2f;
-                    float dustScale = Main.rand.NextFloat(0.6f, 0.8f);
+                    float dustScale = Main.rand.NextFloat(0.6f, 0.8f) * Projectile.scale;
                     Color dustColor = Color.Lerp(Color.White, IsAPassiveFireball ? Color.SkyBlue : Color.Purple, Main.rand.NextFloat(0.5f, 1f));
 
                     Dust dust = Dust.NewDustDirect(dustSpawnPosition, 1, 1, DustID.TintableDustLighted, dustVelocity.X, dustVelocity.Y, 0, dustColor, dustScale);
@@ -73,8 +75,8 @@ namespace CalamityMod.Projectiles.Boss
                 for (int i = 0; i < 3; i++)
                 {
                     Vector2 smokeVelocity = -Projectile.velocity * 0.7f + Main.rand.NextVector2Circular(1f, 1f) * 0.65f;
-                    int smokeLifetime = Main.rand.Next(20, 30);
-                    float smokeScale = Main.rand.NextFloat(0.25f, 0.45f);
+                    int smokeLifetime = Main.rand.Next(10, 15) * (Projectile.friendly ? 1 : 2);
+                    float smokeScale = Main.rand.NextFloat(0.25f, 0.45f) * Projectile.scale;
                     float smokeOpacity = Main.rand.NextFloat(0.7f, 0.9f);
                     Color flameColor = Color.Lerp(Color.White, IsAPassiveFireball ? Color.SkyBlue : Color.Purple, Main.rand.NextFloat(0.5f, 1f));
 

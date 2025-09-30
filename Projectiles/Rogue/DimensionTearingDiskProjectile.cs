@@ -4,6 +4,7 @@ using CalamityMod.Items.Weapons.Rogue;
 using CalamityMod.NPCs;
 using CalamityMod.Particles;
 using CalamityMod.Projectiles.Melee;
+using CalamityMod.Projectiles.Typeless;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria;
@@ -13,16 +14,17 @@ using Terraria.ModLoader;
 namespace CalamityMod.Projectiles.Rogue
 {
     [PierceResistException]
-    public class EradicatorProjectile : ModProjectile, ILocalizedModType
+    public class DimensionTearingDiskProjectile : ModProjectile, ILocalizedModType
     {
         public new string LocalizationCategory => "Projectiles.Rogue";
-        public override string Texture => "CalamityMod/Items/Weapons/Rogue/Eradicator";
+        public override string Texture => "CalamityMod/Items/Weapons/Rogue/DimensionTearingDisk";
         private static float RotationIncrement = 0.15f;
         private static int Lifetime = 350;
         public static int StealthExtraLifetime = 240; // 1 extra update means this is double what you'd expect for 2 seconds
         private static int ReboundTime = 60;
 
         private float randomLaserCharge = 0f;
+        private Vector2 dir = Vector2.Zero;
 
         public override void SetStaticDefaults()
         {
@@ -40,71 +42,33 @@ namespace CalamityMod.Projectiles.Rogue
             Projectile.MaxUpdates = 2;
             Projectile.timeLeft = Lifetime;
             Projectile.usesLocalNPCImmunity = true;
-            Projectile.localNPCHitCooldown = 15 * Projectile.MaxUpdates;
+            Projectile.localNPCHitCooldown = -1;
             Projectile.DamageType = RogueDamageClass.Instance;
         }
 
         public override void AI()
         {
-            //
-            // Boomerang AI copied from Nanoblack Reaper
-            //
-
-            // On the frame the disc begins returning, send a net update.
-            if (Projectile.timeLeft == Lifetime - ReboundTime)
-                Projectile.netUpdate = true;
+            if (dir == Vector2.Zero)
+                dir = Projectile.velocity.SafeNormalize(Vector2.Zero);
 
             // The disc runs its returning AI if it has existed longer than ReboundTime frames.
-            if (Projectile.timeLeft <= Lifetime - ReboundTime)
+            if (Projectile.ai[0] != 1f)
             {
-                float returnSpeed = Eradicator.Speed * 1.3f;
-                float acceleration = 0.25f;
-                Player owner = Main.player[Projectile.owner];
 
-                // Delete the disc if it's excessively far away.
-                Vector2 playerCenter = owner.Center;
-                float xDist = playerCenter.X - Projectile.Center.X;
-                float yDist = playerCenter.Y - Projectile.Center.Y;
-                float dist = (float)Math.Sqrt(xDist * xDist + yDist * yDist);
-                if (dist > 3000f)
-                    Projectile.Kill();
-
-                dist = returnSpeed / dist;
-                xDist *= dist;
-                yDist *= dist;
-
-                // Home back in on the player.
-                if (Projectile.velocity.X < xDist)
+                // On the frame the disc begins returning, send a net update.
+                if (Projectile.timeLeft == Lifetime - ReboundTime)
                 {
-                    Projectile.velocity.X = Projectile.velocity.X + acceleration;
-                    if (Projectile.velocity.X < 0f && xDist > 0f)
-                        Projectile.velocity.X += acceleration;
+                    Projectile.ResetLocalNPCHitImmunity();
+                    Projectile.netUpdate = true;
                 }
-                else if (Projectile.velocity.X > xDist)
-                {
-                    Projectile.velocity.X = Projectile.velocity.X - acceleration;
-                    if (Projectile.velocity.X > 0f && xDist < 0f)
-                        Projectile.velocity.X -= acceleration;
-                }
-                if (Projectile.velocity.Y < yDist)
-                {
-                    Projectile.velocity.Y = Projectile.velocity.Y + acceleration;
-                    if (Projectile.velocity.Y < 0f && yDist > 0f)
-                        Projectile.velocity.Y += acceleration;
-                }
-                else if (Projectile.velocity.Y > yDist)
-                {
-                    Projectile.velocity.Y = Projectile.velocity.Y - acceleration;
-                    if (Projectile.velocity.Y > 0f && yDist < 0f)
-                        Projectile.velocity.Y -= acceleration;
-                }
-
-                // Delete the projectile if it touches its owner.
-                if (Main.myPlayer == Projectile.owner)
-                    if (Projectile.Hitbox.Intersects(owner.Hitbox))
-                        Projectile.Kill();
+                Projectile.velocity = Vector2.Lerp(dir, Projectile.DirectionTo(Main.player[Projectile.owner].Center).SafeNormalize(Vector2.Zero), (Lifetime - Projectile.timeLeft) / (ReboundTime * 1.75f));
+                Projectile.velocity *= Projectile.Calamity().stealthStrike ? 40f : 25f;
             }
-
+            if (Projectile.timeLeft < Lifetime - ReboundTime)
+            {
+                if (Projectile.Distance(Main.player[Projectile.owner].Center) < 32)
+                    Projectile.Kill();
+            }
             // Lighting.
             Lighting.AddLight(Projectile.Center, 0.35f, 0f, 0.25f);
 
@@ -115,18 +79,53 @@ namespace CalamityMod.Projectiles.Rogue
             // If attached to something (this only occurs for stealth strikes), do the buzzsaw grind and spam lasers everywhere.
             if (Projectile.ai[0] == 1f)
                 StealthStrikeGrind(spin);
-            else
+            else if (Projectile.timeLeft == Lifetime - ReboundTime)
             {
-                // Fire lasers at up to 2 nearby targets every 12 frames.
-                // Stealth strike lasers have an intentionally lower damage.
-                double laserDamageRatio = Projectile.Calamity().stealthStrike ? 0.15D : 0.4D;
-                float laserFrames = Projectile.MaxUpdates * 12f;
-                CalamityUtils.MagnetSphereHitscan(Projectile, 300f, 6f, laserFrames, 2, ModContent.ProjectileType<NebulaShot>(), laserDamageRatio, true, Projectile.DamageType);
+                NPC npc = null;
+                float maxDist = 1000;
+                foreach (var item in Main.ActiveNPCs)
+                {
+                    if (!item.CanBeChasedBy())
+                        continue;
+                    var dist = item.Distance(Projectile.Center);
+                    if (dist < maxDist)
+                    {
+                        maxDist = dist;
+                        npc = item;
+                    }
+                }
+                if (npc != null)
+                {
+                    int laserDamage = (int)(Projectile.damage * 0.75f);
+                    Projectile laser = Projectile.NewProjectileDirect(Projectile.GetSource_FromThis(), Projectile.Center, Projectile.DirectionTo(npc.Center), ModContent.ProjectileType<FriendlyLaserWallBeam>(), laserDamage, 0f, Projectile.owner, -1.5f);
+                    if (laser.whoAmI.WithinBounds(Main.maxProjectiles))
+                    {
+                        laser.DamageType = RogueDamageClass.Instance;
+                        laser.scale *= 0.5f;
+                    }
+
+                    for (int i = 0; i < 8; i++)
+                    {
+                        int sparkLifetime = Main.rand.Next(14, 21);
+                        float sparkScale = Main.rand.NextFloat(0.8f, 1f) + 1f * 0.05f;
+                        Color sparkColor = Color.Lerp(Color.Fuchsia, Color.AliceBlue, Main.rand.NextFloat(0.5f));
+                        sparkColor = Color.Lerp(sparkColor, Color.Cyan, Main.rand.NextFloat());
+
+                        if (Main.rand.NextBool(5))
+                            sparkScale *= 1.4f;
+
+                        Vector2 sparkVelocity = Projectile.DirectionTo(npc.Center).RotatedByRandom(MathHelper.TwoPi) * 5;
+                        SparkParticle spark = new SparkParticle(Projectile.Center, sparkVelocity, false, sparkLifetime, sparkScale, sparkColor);
+                        GeneralParticleHandler.SpawnParticle(spark);
+                    }
+                }
             }
         }
 
         private void StealthStrikeGrind(float spinDir)
         {
+            if (Projectile.timeLeft % 15 * Projectile.MaxUpdates == 0)
+                Projectile.ResetLocalNPCHitImmunity();
             // Spin extra fast to visually shred the enemy.
             Projectile.rotation += spinDir * RotationIncrement * 0.8f;
 
@@ -135,19 +134,13 @@ namespace CalamityMod.Projectiles.Rogue
             if (randomLaserCharge >= 1f)
             {
                 randomLaserCharge -= 1f;
-                Vector2 velocity = CalamityUtils.RandomVelocity(100f, 70f, 100f);
+                Vector2 velocity = Vector2.UnitX.RotatedBy(Projectile.timeLeft / 120f * MathHelper.TwoPi);
 
-                int laserDamage = (int)(Projectile.damage * 0.15D);
-                Projectile laser = Projectile.NewProjectileDirect(Projectile.GetSource_FromThis(), Projectile.Center, velocity, ModContent.ProjectileType<NebulaShot>(), laserDamage, 0f, Projectile.owner);
+                int laserDamage = (int)(Projectile.damage * 0.15f);
+                Projectile laser = Projectile.NewProjectileDirect(Projectile.GetSource_FromThis(), Projectile.Center, velocity, ModContent.ProjectileType<FriendlyLaserWallBeam>(), laserDamage, 0f, Projectile.owner, 1.5f,0,2);
                 if (laser.whoAmI.WithinBounds(Main.maxProjectiles))
                 {
                     laser.DamageType = RogueDamageClass.Instance;
-                    laser.aiStyle = Main.rand.NextBool() ? ProjAIStyleID.Arrow : -1;
-                    laser.penetrate = -1;
-                    laser.usesLocalNPCImmunity = true;
-
-                    // This projectile has a hefty amount of extra updates, which will influence the hit cooldown.
-                    laser.localNPCHitCooldown = 120;
                 }
             }
 
@@ -215,6 +208,7 @@ namespace CalamityMod.Projectiles.Rogue
             // On the first frame of impact, slow down massively so it'll effectively stay stuck to an enemy.
             if (Projectile.ai[0] == 0f && Projectile.ai[1] == 0f)
             {
+                Projectile.timeLeft = StealthExtraLifetime;
                 Projectile.velocity *= 0.1f;
 
                 // Provide a fixed amount of grind time so that DPS can't vary wildly.
@@ -234,7 +228,7 @@ namespace CalamityMod.Projectiles.Rogue
         public override void PostDraw(Color lightColor)
         {
             Vector2 origin = new Vector2(31f, 29f);
-            Main.EntitySpriteDraw(ModContent.Request<Texture2D>("CalamityMod/Items/Weapons/Rogue/EradicatorGlow").Value, Projectile.Center - Main.screenPosition, null, Color.White, Projectile.rotation, origin, 1f, SpriteEffects.None, 0);
+            Main.EntitySpriteDraw(ModContent.Request<Texture2D>("CalamityMod/Items/Weapons/Rogue/DimensionTearingDiskGlow").Value, Projectile.Center - Main.screenPosition, null, Color.White, Projectile.rotation, origin, 1f, SpriteEffects.None, 0);
         }
     }
 }
