@@ -25,9 +25,7 @@ namespace CalamityMod.Items.Weapons.Summon
 
         public override void ModifyTooltips(List<TooltipLine> tooltips)
         {
-            tooltips.FindAndReplace("ff00ff", Utils.Hex3(DevourerofGodsHead.SpecialMoveColor));
-            tooltips.FindAndReplace("ff00ff", Utils.Hex3(DevourerofGodsHead.SpecialMoveColor));
-            tooltips.FindAndReplace("ff00ff", Utils.Hex3(DevourerofGodsHead.SpecialMoveColor));
+            tooltips.FindAndReplaceAll("ff00ff", Utils.Hex3(DevourerofGodsHead.SpecialMoveColor));
         }
         public override void SetStaticDefaults()
         {

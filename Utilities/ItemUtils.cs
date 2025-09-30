@@ -275,6 +275,28 @@ namespace CalamityMod
             if (line != null)
                 line.Text = line.Text.Replace(replacedKey, newKey);
         }
+        /// <summary>
+        /// Shortcut for finding all of a specific string in the tooltip and replacing it with a new string<br/>
+        /// Typically used for dynamic tooltip updating. Consider overriding Tooltip or using String.Format for applying constants.
+        /// </summary>
+        /// <param name="tooltips">The tooltip list provided to a <b>ModifyTooltips</b> TML hook.</param>
+        /// <param name="replacedKey">The key to be replaced.</param>
+        /// <param name="replacedKey">The new key.</param>
+        public static void FindAndReplaceAll(this List<TooltipLine> tooltips, string replacedKey, string newKey)
+        {
+            foreach (TooltipLine line in tooltips)
+            {
+                if (!line.Text.Contains(replacedKey))
+                    continue;
+                //loops only 100 times at max per tooltip line to prevent any infinite loops
+                for (var i = 0; i < 100; i++)
+                {
+                    line.Text = line.Text.Replace(replacedKey, newKey);
+                    if (!line.Text.Contains(replacedKey))
+                        break;
+                }
+            }
+        }
 
         /// <summary>
         /// Shortcut for automatically placing one keybind within a tooltip. Requires the "[KEY]" string to be replaced.

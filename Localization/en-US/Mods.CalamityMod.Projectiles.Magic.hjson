@@ -53,6 +53,7 @@ DarkSparkBeam.DisplayName: Dark Spark Beam
 DarkSparkPrism.DisplayName: Dark Crystal
 HyperdeathRiftScepterBeam.DisplayName: Hypderdeath Rift Ripper
 DeathValleyDusterProjectile.DisplayName: Death Valley Duster
+DeathhailBeam.DisplayName: Deathhail Beam
 EelDrop.DisplayName: Acid Eel Drop
 EidolicWailSoundwave.DisplayName: Eidolic Wail
 EldritchTentacle.DisplayName: Eldritch Tentacle
@@ -261,4 +262,3 @@ WyvernFeatherPurple.DisplayName: Feather
 WyvernProjectile.DisplayName: Wyvern
 YharimsCrystalBeam.DisplayName: Yharim's Beam
 YharimsCrystalPrism.DisplayName: Yermes Christal
-DeathhailBeam.DisplayName: Deathhail Beam

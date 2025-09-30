@@ -23,7 +23,7 @@ namespace CalamityMod.Items.Weapons.Melee
         {
             tooltips.FindAndReplace("[GFB]", this.GetLocalizedValue(Main.zenithWorld ? "TooltipGFB" : "TooltipNormal"));
             if (!Main.zenithWorld)
-                tooltips.FindAndReplace("ff00ff", Utils.Hex3(DevourerofGodsHead.SpecialMoveColor));
+                tooltips.FindAndReplaceAll("ff00ff", Utils.Hex3(DevourerofGodsHead.SpecialMoveColor));
         }
 
         public override void SetStaticDefaults()
