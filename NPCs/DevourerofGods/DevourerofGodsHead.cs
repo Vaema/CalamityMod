@@ -520,7 +520,6 @@ namespace CalamityMod.NPCs.DevourerofGods
                     }
                 }
                 else
-                    Main.NewText(NPC.Distance(destination));
                     speed *= 5;
                 if (NPC.ai[3] == 0)
                     phaseLimit += 600;
