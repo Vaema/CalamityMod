@@ -63,7 +63,6 @@ namespace CalamityMod.NPCs.SunkenSea
             NPC.HitSound = SoundID.NPCHit38;
             NPC.DeathSound = SoundID.NPCDeath1;
             NPC.GravityIgnoresLiquid = true;
-            AIType = NPCID.Snail;
             //Banner = NPC.type;
             //BannerItem = ModContent.ItemType<PearlpodBanner>();
             NPC.catchItem = ItemType;

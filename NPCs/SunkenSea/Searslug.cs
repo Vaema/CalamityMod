@@ -47,7 +47,6 @@ namespace CalamityMod.NPCs.SunkenSea
         {
             base.SetDefaults();
             NPC.aiStyle = NPCAIStyleID.Snail;
-            AIType = NPCID.Snail;
             NPC.damage = 0;
             NPC.width = 56;
             NPC.height = 42;

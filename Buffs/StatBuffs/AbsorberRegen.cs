@@ -21,4 +21,11 @@ namespace CalamityMod.Buffs.StatBuffs
             player.Calamity().AbsorberRegen = true;
         }
     }
+    public class AbsorberRegenIconItem : ModItem
+    {
+        private string BuffName = "AbsorberRegen";
+        public override string Texture => $"CalamityMod/Buffs/StatBuffs/{BuffName}";
+        public override LocalizedText DisplayName => CalamityUtils.GetText($"Buffs.{BuffName}.DisplayName");
+        public override LocalizedText Tooltip => CalamityUtils.GetText($"Buffs.{BuffName}.ItemTooltip");
+    }
 }

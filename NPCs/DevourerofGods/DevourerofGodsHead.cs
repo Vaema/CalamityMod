@@ -577,15 +577,7 @@ namespace CalamityMod.NPCs.DevourerofGods
             float timeWhenDoGShouldTeleportDuringPhase2Countdown = 61f;
             if (NPC.localAI[2] == timeWhenDoGShouldTeleportDuringPhase2Countdown + (death ? TimeBeforeTeleport_Death : CalamityWorld.revenge ? TimeBeforeTeleport_Revengeance : Main.expertMode ? TimeBeforeTeleport_Expert : TimeBeforeTeleport_Normal))
                 SpawnTeleportLocation(player, true);
-/*
-if (NPC.localAI[2] == timeWhenDoGShouldTeleportDuringPhase2Countdown + 115)
-                SoundEngine.PlaySound(RiftBuildingSound with { Volume = 1.7f }, player.position);
-            if (NPC.localAI[2] == timeWhenDoGShouldTeleportDuringPhase2Countdown + 30)
-            {
-                Particle pulse = new DirectionalPulseRing(GetRiftLocationSafe(), Vector2.Zero, Color.Orchid, new Vector2(2f, 2f), Main.rand.NextFloat(12f, 25f), 6f, 0f, 30);
-                GeneralParticleHandler.SpawnParticle(pulse);
-            }
-*/
+
             if (NPC.localAI[2] == timeWhenDoGShouldTeleportDuringPhase2Countdown)
                 Teleport(player, death, revenge, expertMode, phase5);
 
@@ -713,14 +705,6 @@ if (NPC.localAI[2] == timeWhenDoGShouldTeleportDuringPhase2Countdown + 115)
                     if (teleportTimer > 0)
                     {
                         teleportTimer--;
-                        /*if (teleportTimer == 115)
-                            SoundEngine.PlaySound(RiftBuildingSound with { Volume = 1.7f }, player.position);
-                        if (teleportTimer == 30)
-                        {
-
-                            Particle pulse = new DirectionalPulseRing(GetRiftLocationSafe(), Vector2.Zero, Color.Orchid, new Vector2(2f, 2f), Main.rand.NextFloat(12f, 25f), 6f, 0f, 30);
-                            GeneralParticleHandler.SpawnParticle(pulse);
-                        }*/
                         // Teleport
                         if (teleportTimer == 0)
                             Teleport(player, death, revenge, expertMode, phase5);

@@ -182,6 +182,8 @@ namespace CalamityMod.Projectiles.BaseProjectiles
         /// </summary>
         public virtual float lineCollisionLength { get; set; } = 0;
 
+        public virtual Color AfterImageColor { get; set; } = Color.White;
+
         #endregion
 
         #region Fields
@@ -451,11 +453,11 @@ namespace CalamityMod.Projectiles.BaseProjectiles
                     var col = Projectile.Opacity * (i / (float)AfterImageLength) * 0.1f;
                     if (Projectile.spriteDirection == 1)
                     {
-                        Main.EntitySpriteDraw(texture, oldProjectilePos[i] - Main.screenPosition, null, Color.White * col, oldProjectileRot[i], texture.Size() / 2, oldScale[i], SpriteEffects.None, 0);
+                        Main.EntitySpriteDraw(texture, oldProjectilePos[i] - Main.screenPosition, null, AfterImageColor * col, oldProjectileRot[i], texture.Size() / 2, oldScale[i], SpriteEffects.None, 0);
                     }
                     else
                     {
-                        Main.EntitySpriteDraw(texture, oldProjectilePos[i] - Main.screenPosition, null, Color.White * col, oldProjectileRot[i], texture.Size() / 2, oldScale[i], SpriteEffects.FlipHorizontally, 0);
+                        Main.EntitySpriteDraw(texture, oldProjectilePos[i] - Main.screenPosition, null, AfterImageColor * col, oldProjectileRot[i], texture.Size() / 2, oldScale[i], SpriteEffects.FlipHorizontally, 0);
                     }
                 }
             }

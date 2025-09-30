@@ -27,7 +27,8 @@ namespace CalamityMod.DataStructures
                 BuffID.Frostburn2, DebuffData.Frostbite,
                 BuffID.Poisoned, DebuffData.Poisoned,
                 BuffID.Venom, DebuffData.AcidVenom,
-                BuffID.Electrified, DebuffData.Electrified
+                BuffID.Electrified, DebuffData.Electrified,
+                BuffID.Oiled, DebuffData.Oiled
             );
     }
     public class DebuffData

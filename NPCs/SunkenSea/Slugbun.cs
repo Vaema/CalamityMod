@@ -76,7 +76,6 @@ namespace CalamityMod.NPCs.SunkenSea
             NPC.HitSound = SoundID.NPCHit1;
             NPC.DeathSound = SoundID.NPCDeath1;
             NPC.GravityIgnoresLiquid = true;
-            AIType = NPCID.Snail;
             NPC.chaseable = false;
             //Banner = NPC.type;
             //BannerItem = ModContent.ItemType<SlugbunBanner>();

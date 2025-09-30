@@ -3,6 +3,10 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using CalamityMod.Balancing;
+using CalamityMod.Buffs.DamageOverTime;
+using CalamityMod.Buffs.StatBuffs;
+using CalamityMod.Buffs.StatDebuffs;
+using CalamityMod.ChatTags;
 using CalamityMod.CustomRecipes;
 using CalamityMod.DataStructures;
 using CalamityMod.Items.Accessories;
@@ -23,6 +27,7 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria;
 using Terraria.DataStructures;
+using Terraria.GameInput;
 using Terraria.ID;
 using Terraria.Localization;
 using Terraria.ModLoader;
@@ -274,6 +279,76 @@ namespace CalamityMod.Items
                 string coloredText = CalamityUtils.ColorMessage(donorText.Value, CalamityUtils.DonatorItemColor);
                 TooltipLine donorLine = new TooltipLine(Mod, "CalamityMod:DonorItem", coloredText);
                 tooltips.Insert(++difficultyTooltipIndex, donorLine);
+            }
+
+            var buffIdsInTooltip = new HashSet<int>();
+
+            foreach (var tooltip in tooltips)
+            {
+                // Parse the tags of each line of text to find our buff tags'
+                // snippets (since they store the buff IDs).
+                var snippets = ChatManager.ParseMessage(tooltip.Text, Color.White);
+                foreach (var snippet in snippets)
+                {
+                    if (snippet is CalamityBuffTagHandler.Snippet buffSnippet)
+                    {
+                        buffIdsInTooltip.Add(buffSnippet.BuffId);
+                    }
+                }
+            }
+
+            if (buffIdsInTooltip.Count > 0)
+            {
+                bool showTheTip = false;
+                bool foundDebuff = false;
+                foreach (int buffId in buffIdsInTooltip)
+                {
+                    string tooltipKey = "";
+                    if (buffId < BuffID.Count)
+                    {
+                        tooltipKey = $"Mods.Terraria.Buffs.{BuffID.Search.GetName(buffId)}.ItemTooltip";
+                    }
+                    else
+                    {
+                        var modBuff = BuffLoader.GetBuff(buffId);
+                        tooltipKey = $"Mods.{modBuff.Mod.Name}.Buffs.{modBuff.Name}.ItemTooltip";
+                    }
+
+                    if (!Language.Exists(tooltipKey))
+                    {
+                        continue;
+                    }
+
+                    var text = Language.GetTextValue(tooltipKey);
+                    if (string.IsNullOrWhiteSpace(text))
+                    {
+                        continue;
+                    }
+                    
+                    foundDebuff = true;
+                    if (!PlayerInput.Triggers.Current.SmartCursor)
+                    {
+                        showTheTip = true;
+                        break;
+                    }
+                    
+                    tooltips.Insert(++lastTooltipIndex, new TooltipLine(Mod, "CalamityMod:AltExpandTooltip" + buffId, $"[cbuff:{buffId}]\n{text}"));
+                }
+
+                if (showTheTip)
+                {
+                    var str = PlayerInput.CurrentProfile.InputModes[InputMode.Keyboard].KeyStatus["SmartCursor"].First().ToString();
+                    tooltips.Insert(++lastTooltipIndex, (new TooltipLine(Mod, "CalamityMod:AltExpandTooltip", CalamityUtils.GetTextValue("Misc.AltExpand").Replace("{0}",str))));
+                    tooltips[lastTooltipIndex].OverrideColor = new Color(170,170,170);
+                }
+                else if (foundDebuff)
+                {
+                    foreach (var item1 in tooltips)
+                    {
+                        if (item1.Name.Contains("Tooltip") && !item1.Name.Contains("AltExpandTooltip"))
+                            item1.Hide();
+                    }
+                }
             }
         }
         #endregion
