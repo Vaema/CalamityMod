@@ -278,12 +278,8 @@ namespace CalamityMod
                 { ModContent.NPCType<OldDukeToothBall>(), sulphur },
                 { ModContent.NPCType<SulphurousSharkron>(), sulphur },
 
-                { ModContent.NPCType<DevourerofGodsHead>(), immuneToEverything },
                 { ModContent.NPCType<DevourerofGodsBody>(), immuneToEverything },
                 { ModContent.NPCType<DevourerofGodsTail>(), immuneToEverything },
-                { ModContent.NPCType<CosmicGuardianHead>(), immuneToEverything },
-                { ModContent.NPCType<CosmicGuardianBody>(), immuneToEverything },
-                { ModContent.NPCType<CosmicGuardianTail>(), immuneToEverything },
 
                 { ModContent.NPCType<Yharon>(), new(GeneralImmunityStatus.None, new int[] { BuffID.OnFire, ModContent.BuffType<Dragonfire>() }) },
 

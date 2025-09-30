@@ -194,6 +194,10 @@ namespace CalamityMod.CalPlayer
         public FishingMinigames SelectedFishingMinigame = FishingMinigames.None;
         public bool countsAsAnyWet => (Player.armor[0].type == ItemID.FishBowl || Player.wetCount > 0 || Player.wet || Player.honeyWet || Player.lavaWet);
 
+        public CombatText subtitletext = null;
+        public Color[] subtitleColors = new Color[] { Color.White, Color.White };
+        public int DoGHeadHitCounter = 0;
+
         public StatModifier TypelessDebuffMultiplier = new();
         public StatModifier HeatDebuffMultiplier = new();
         public StatModifier ColdDebuffMultiplier = new();
@@ -2011,6 +2015,10 @@ namespace CalamityMod.CalPlayer
         #region ResetEffects
         public override void ResetEffects()
         {
+            if (!areThereAnyDamnBosses)
+            {
+                DoGHeadHitCounter = 0;
+            }
             ViridVanguardActiveAttackerThisFrame = Main.projectile.Any(x => x.active && x.type == ModContent.ProjectileType<ViridVanguardBlade>() && x.owner == Player.whoAmI && x.ModProjectile<ViridVanguardBlade>().CurrentState == ViridVanguardBlade.ViridVanguardAIState.PhotonRipperZenithSlashes);
             ViridVanguardRotation = MathHelper.WrapAngle(ViridVanguardRotation + ViridVanguardRotationToAdd);
             ViridVanguardRotationToAdd = ViridVanguard.IdleCirclingSpeed;
@@ -4512,6 +4520,20 @@ namespace CalamityMod.CalPlayer
 
         public override void PostUpdate()
         {
+
+            if (subtitletext != null)
+            {
+                if (!subtitletext.active)
+                {
+                    subtitletext = null;
+                }
+                else
+                {
+                    subtitletext.position = Player.Center + new Vector2(-FontAssets.CombatText[subtitletext.crit ? 1 : 0].Value.MeasureString(subtitletext.text).X * 0.5f, 64);
+                    subtitletext.color = Color.Lerp(subtitleColors[1], subtitleColors[0], subtitletext.lifeTime / 120f);
+                }
+            }
+
             #region Managing time control
             if (Main.netMode != NetmodeID.Server && Player == Main.LocalPlayer)
             {

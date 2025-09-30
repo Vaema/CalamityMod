@@ -1,5 +1,6 @@
 ﻿using System;
 using CalamityMod.Projectiles.BaseProjectiles;
+using CalamityMod.Projectiles.Boss;
 using CalamityMod.Projectiles.Melee;
 using CalamityMod.Rarities;
 using CalamityMod.Systems.Collections;
@@ -68,8 +69,8 @@ namespace CalamityMod.Items.Weapons.Melee
                 if (reflectTimer <= 50)
                 {
 
-                    float coneLength = 80f;
-                    float maximumAngle = 0.8f;
+                    float coneLength = 96f;
+                    float maximumAngle = 1f;
                     float coneRotation = player.DirectionTo(Main.MouseWorld).ToRotation();
                     var shardCount = 0;
                     foreach (var proj in Main.projectile)
@@ -81,19 +82,45 @@ namespace CalamityMod.Items.Weapons.Melee
                     }
                     foreach (var proj in Main.ActiveProjectiles)
                     {
-                        if (proj.hostile && proj.damage > 0 && proj.Hitbox.IntersectsConeSlowMoreAccurate(player.Center, coneLength, coneRotation, maximumAngle))
+                        if (proj.type == ModContent.ProjectileType<DoGLaserWalls>() && proj.ModProjectile<DoGLaserWalls>().time >= 29)
                         {
                             if (shardCount > 0)
                             {
                                 SoundEngine.PlaySound(SeekingScorcher.LightShatterSound, player.Center);
-                                SoundEngine.PlaySound(SoundID.DD2_WitherBeastDeath,player.Center);
+                                SoundEngine.PlaySound(SoundID.DD2_WitherBeastDeath, player.Center);
                             }
                             if (shardCount >= 10)
                             {
                                 player.SetImmuneTimeForAllTypes(player.longInvince ? 60 : 30);
                             }
-                                proj.Calamity().multiplicativeDR += shardCount / 10f;
-                                proj.Calamity().multiplicativeDRTimer = 60;
+                            proj.Calamity().multiplicativeDR += shardCount / 10f;
+                            proj.Calamity().multiplicativeDRTimer = 60;
+                            foreach (var proj2 in Main.projectile)
+                            {
+                                if (proj2.active && proj2.type == ModContent.ProjectileType<MirrorBlast>() && proj2.owner == player.whoAmI && (proj2.ModProjectile as MirrorBlast).isShard)
+                                {
+                                    proj2.damage = (int)(proj2.damage * (shardCount >= 10 ? 3f : 2f));
+                                    (proj2.ModProjectile as MirrorBlast).shardShield = 0;
+                                    (proj2.ModProjectile as MirrorBlast).shardNum = 11;
+                                    proj2.netUpdate = true;
+                                }
+                            }
+                            reflectTimer = 0;
+                            return;
+                        } else
+                        if (proj.hostile && proj.damage > 0 && proj.Hitbox.IntersectsConeSlowMoreAccurate(player.Center, coneLength, coneRotation, maximumAngle))
+                        {
+                            if (shardCount > 0)
+                            {
+                                SoundEngine.PlaySound(SeekingScorcher.LightShatterSound, player.Center);
+                                SoundEngine.PlaySound(SoundID.DD2_WitherBeastDeath, player.Center);
+                            }
+                            if (shardCount >= 10)
+                            {
+                                player.SetImmuneTimeForAllTypes(player.longInvince ? 60 : 30);
+                            }
+                            proj.Calamity().multiplicativeDR += shardCount / 10f;
+                            proj.Calamity().multiplicativeDRTimer = 60;
                             foreach (var proj2 in Main.projectile)
                             {
                                 if (proj2.active && proj2.type == ModContent.ProjectileType<MirrorBlast>() && proj2.owner == player.whoAmI && (proj2.ModProjectile as MirrorBlast).isShard)

@@ -1,10 +1,11 @@
-﻿using Microsoft.Xna.Framework;
+﻿using CalamityMod.NPCs.DevourerofGods;
+using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.Graphics.Effects;
 using Terraria.Graphics.Shaders;
 using Terraria.ModLoader;
 
-namespace CalamityMod.NPCs.DevourerofGods
+namespace CalamityMod.Skies
 {
     public class DoGScreenShaderData : ScreenShaderData
     {
@@ -17,13 +18,13 @@ namespace CalamityMod.NPCs.DevourerofGods
 
         private void UpdateDoGIndex()
         {
-            int DoGType = ModContent.NPCType<DevourerofGodsHead>();
+            var DoGType = ModContent.NPCType<DevourerofGodsHead>();
             if (DoGIndex >= 0 && Main.npc[DoGIndex].active && Main.npc[DoGIndex].type == DoGType)
             {
                 return;
             }
             DoGIndex = -1;
-            foreach (NPC n in Main.ActiveNPCs)
+            foreach (var n in Main.ActiveNPCs)
             {
                 if (n.type == DoGType)
                 {
@@ -54,6 +55,8 @@ namespace CalamityMod.NPCs.DevourerofGods
             {
                 UseTargetPosition(Main.LocalPlayer.Center);
             }
+
+            UseColor(DoGSky.DoGSkyColor);
             base.Apply();
         }
     }
