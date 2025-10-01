@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using CalamityMod.Items.Placeables;
+using CalamityMod.Projectiles.Typeless;
 using CalamityMod.Systems;
 using CalamityMod.Tiles.SunkenSea.Ambient;
 using Microsoft.Xna.Framework;
@@ -33,7 +34,16 @@ namespace CalamityMod.Tiles.SunkenSea
             TileID.Sets.CanBeDugByShovel[Type] = true;
 
             DustType = DustID.Titanium;
-            AddMapEntry(new Color(163, 194, 212));
+            AddMapEntry(new Color(157, 183, 206));
+
+            Main.tileSand[Type] = true;
+            TileMaterials.SetForTileId(Type, TileMaterials._materialsByName["Sand"]);
+            TileID.Sets.Suffocate[Type] = true;
+            TileID.Sets.CanBeDugByShovel[Type] = true;
+            TileID.Sets.Conversion.Sand[Type] = true;
+            TileID.Sets.ForAdvancedCollision.ForSandshark[Type] = true;
+            TileID.Sets.Falling[Type] = true;
+            TileID.Sets.FallingBlockProjectile[Type] = new TileID.Sets.FallingBlockProjectileInfo(ModContent.ProjectileType<EutrophicSandBallFalling>(), 5);
 
             this.RegisterUniversalMerge(ModContent.TileType<EutrophicSand>(), "CalamityMod/Tiles/Merges/EutrophicSandMerge");
             this.RegisterUniversalMerge(ModContent.TileType<Navystone>(), "CalamityMod/Tiles/Merges/NavystoneMerge");

@@ -13,7 +13,7 @@ namespace CalamityMod.Items.Placeables.Walls
             Item.ResearchUnlockCount = 400;
         }
 
-        public override void SetDefaults() => Item.DefaultToPlaceableWall(ModContent.WallType<WallTiles.AstralIceWallSafe>());
+        public override void SetDefaults() => Item.DefaultToPlaceableWall(ModContent.WallType<WallTiles.AstralIceWall>());
 
         public override void AddRecipes()
         {

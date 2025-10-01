@@ -314,6 +314,7 @@ namespace CalamityMod.DataStructures
 
             if (IsGreenGemActive)
             {
+                Owner.Calamity().ammoCost *= GemTechHeadgear.RangedAmmoReduction;
                 Owner.GetCritChance<RangedDamageClass>() += (int)(GemTechHeadgear.RangedCritBoost * 100f);
                 Owner.GetDamage<RangedDamageClass>() += GemTechHeadgear.RangedDamageBoost;
             }

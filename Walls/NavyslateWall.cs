@@ -6,6 +6,7 @@ using Terraria;
 using Terraria.ModLoader;
 namespace CalamityMod.Walls
 {
+    [LegacyName("EutrophicSandWall")]
     public class NavyslateWall : ModWall, IVisibleThroughWater
     {
         int IVisibleThroughWater.WaterMapEntry { get; set; }

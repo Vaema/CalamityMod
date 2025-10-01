@@ -48,9 +48,8 @@ namespace CalamityMod.Projectiles.Magic
 
         public override void KillHoldoutLogic()
         {
-            // Only times out if at the final frame (post-firing resting time)
-            bool noMana = !Owner.CheckMana(Owner.ActiveItem()) && Projectile.frame == 14;
-            if (HeldItem.type != Owner.ActiveItem().type || noMana)
+            // Override typical CantUseHoldout such that the weapon typically runs through the use animation while not channeled
+            if (HeldItem.type != Owner.ActiveItem().type || Owner.dead || !Owner.active)
             {
                 Projectile.Kill();
                 Projectile.netUpdate = true;
@@ -76,7 +75,7 @@ namespace CalamityMod.Projectiles.Magic
                 // Subtract a flat 42 from the use time because the firing animation consists of 14 frames at 20 FPS
                 if (Projectile.frameCounter >= MathHelper.Clamp(Owner.ActiveItem().useAnimation - 42, 0f, Owner.ActiveItem().useAnimation))
                 {
-                    if (Owner.CantUseHoldout())
+                    if (Owner.CantUseHoldout() || !Owner.CheckMana(Owner.ActiveItem()))
                         Projectile.Kill();
 
                     Projectile.frame = 0;

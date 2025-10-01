@@ -15,7 +15,7 @@ namespace CalamityMod.Items.Weapons.Summon
 
         public override void SetStaticDefaults()
         {
-            ItemID.Sets.ShimmerTransformToItem[Type] = ModContent.ItemType<StaffoftheMechworm>();
+            ItemID.Sets.ShimmerTransformToItem[Type] = ModContent.ItemType<VoidEaterMarionette>();
             ItemID.Sets.StaffMinionSlotsRequired[Type] = 4f;
         }
 

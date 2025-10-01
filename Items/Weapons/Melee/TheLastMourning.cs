@@ -35,8 +35,7 @@ namespace CalamityMod.Items.Weapons.Melee
 
         public override void OnHitNPC(Player player, NPC target, NPC.HitInfo hit, int damageDone)
         {
-            bool isDoGSegment = target.type == ModContent.NPCType<DevourerofGodsBody>() || target.type == ModContent.NPCType<CosmicGuardianBody>();
-            if (!isDoGSegment || Main.rand.NextBool(3))
+            if (target.type != ModContent.NPCType<DevourerofGodsBody>() || Main.rand.NextBool(3))
             {
                 CalamityPlayer.HorsemansBladeOnHit(player, target.whoAmI, Item.damage, Item.knockBack, 0, ModContent.ProjectileType<MourningSkull>());
                 CalamityPlayer.HorsemansBladeOnHit(player, target.whoAmI, Item.damage, Item.knockBack, 1);

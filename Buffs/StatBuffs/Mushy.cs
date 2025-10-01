@@ -43,4 +43,11 @@ namespace CalamityMod.Buffs.StatBuffs
             }
         }
     }
+    public class MushyIconItem : ModItem
+    {
+        private string BuffName = "Mushy";
+        public override string Texture => $"CalamityMod/Buffs/StatBuffs/{BuffName}";
+        public override LocalizedText DisplayName => CalamityUtils.GetText($"Buffs.{BuffName}.DisplayName");
+        public override LocalizedText Tooltip => CalamityUtils.GetText($"Buffs.{BuffName}.ItemTooltip");
+    }
 }

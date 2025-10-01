@@ -241,11 +241,12 @@ namespace CalamityMod.Systems
                     progress.Message = Language.GetOrRegister("Mods.CalamityMod.UI.PolypForest").Value;
                     SunkenSea.PlaceGleamingBurrows(sunkenSeaX, sunkenSeaY + (Main.maxTilesY / 4) - 50);
                     SunkenSea.PlaceClamDen(sunkenSeaX, sunkenSeaY + 630);
+                    SunkenSea.PlaceGleamingBurrowsGeodes(sunkenSeaX, sunkenSeaY + (Main.maxTilesY / 4) - 50);
                     progress.Message = Language.GetOrRegister("Mods.CalamityMod.UI.GleamingBurrows").Value;
                     SunkenSea.PlaceTimelessShores(sunkenSeaX, sunkenSeaY);
-                    SunkenSea.PlaceSunkenSeaAmbience();
-                    SunkenSea.BasaltGullyLavaCleanup(sunkenSeaX, sunkenSeaY + (Main.maxTilesY / 4));
                     progress.Message = Language.GetOrRegister("Mods.CalamityMod.UI.BasaltGully").Value;
+                    //SunkenSea.BasaltGullyLavaCleanup(sunkenSeaX, sunkenSeaY + (Main.maxTilesY / 4));
+                    SunkenSea.PlaceSunkenSeaAmbience();
                 }));
             }
 
@@ -528,20 +529,6 @@ namespace CalamityMod.Systems
                         {
                             chest.item[0].SetDefaults(ModContent.ItemType<Kylie>());
                             chest.item[0].Prefix(-1);
-                        }
-                    }
-
-                    // Fix vanilla's stupidity with Gold Chests being able to have Meteorite Bars in them near the Underworld
-                    if (isGoldChest)
-                    {
-                        for (int inventoryIndex = 0; inventoryIndex < 40; inventoryIndex++)
-                        {
-                            if (chest.item[inventoryIndex].type == ItemID.MeteoriteBar)
-                            {
-                                int oldStack = chest.item[inventoryIndex].stack;
-                                chest.item[inventoryIndex].SetDefaults(WorldGen.genRand.NextBool() ? ItemID.PlatinumBar : ItemID.GoldBar);
-                                chest.item[inventoryIndex].stack = oldStack;
-                            }
                         }
                     }
 

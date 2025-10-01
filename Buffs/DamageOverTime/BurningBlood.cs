@@ -4,6 +4,7 @@ using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.DataStructures;
 using Terraria.ID;
+using Terraria.Localization;
 using Terraria.ModLoader;
 
 namespace CalamityMod.Buffs.DamageOverTime
@@ -74,5 +75,12 @@ namespace CalamityMod.Buffs.DamageOverTime
             }
             Lighting.AddLight(npc.Center, 0.08f, 0f, 0f);
         }
+    }
+    public class BurningBloodIconItem : ModItem
+    {
+        private string BuffName = "BurningBlood";
+        public override string Texture => $"CalamityMod/Buffs/DamageOverTime/{BuffName}";
+        public override LocalizedText DisplayName => CalamityUtils.GetText($"Buffs.{BuffName}.DisplayName");
+        public override LocalizedText Tooltip => CalamityUtils.GetText($"Buffs.{BuffName}.ItemTooltip");
     }
 }

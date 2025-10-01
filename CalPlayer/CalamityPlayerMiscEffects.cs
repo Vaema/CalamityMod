@@ -3769,7 +3769,7 @@ namespace CalamityMod.CalPlayer
 
             if ((warped || caribbeanRum) && !Player.slowFall && !Player.mount.Active)
             {
-                float velocityYMultiplier = (warped && Main.getGoodWorld) ? 1.02f : 1.01f;
+                float velocityYMultiplier = 1.01f;
                 Player.velocity.Y *= velocityYMultiplier;
             }
 

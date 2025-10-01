@@ -4,6 +4,7 @@ using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.DataStructures;
 using Terraria.ID;
+using Terraria.Localization;
 using Terraria.ModLoader;
 
 namespace CalamityMod.Buffs.StatDebuffs
@@ -69,5 +70,12 @@ namespace CalamityMod.Buffs.StatDebuffs
                 }
             }
         }
+    }
+    public class EutrophicationIconItem : ModItem
+    {
+        private string BuffName = "Eutrophication";
+        public override string Texture => $"CalamityMod/Buffs/StatDebuffs/{BuffName}";
+        public override LocalizedText DisplayName => CalamityUtils.GetText($"Buffs.{BuffName}.DisplayName");
+        public override LocalizedText Tooltip => CalamityUtils.GetText($"Buffs.{BuffName}.ItemTooltip");
     }
 }

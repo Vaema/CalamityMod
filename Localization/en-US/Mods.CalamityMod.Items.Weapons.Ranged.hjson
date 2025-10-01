@@ -115,7 +115,7 @@ ArterialAssault: {
 		'''
 		Fires a group of 5 homing blood arrows
 		These blood arrows burst into blood orbs upon striking an enemy
-		Picking up these blood orbs reduces the duration of [Potion Sickness]
+		Picking up these blood orbs reduces the duration of [cbuff:PotionSickness]
 		'''
 }
 
@@ -126,7 +126,11 @@ AstralBlaster: {
 
 AstrealDefeat: {
 	DisplayName: Astreal Defeat
-	Tooltip: All arrows are converted to Astreal Arrows that emit flames as they travel
+	Tooltip:
+		'''
+		All arrows are converted to Astreal Arrows that emit flames as they travel
+		33% chance to save ammo
+		'''
 }
 
 Auralis: {
@@ -198,7 +202,7 @@ BloodBoiler: {
 	Tooltip:
 		'''
 		Fires twin streams of bloodfire that returns to you
-		Retuning bloodfire reduces [Potion Sickness] if it struck an enemy
+		Retuning bloodfire reduces [cbuff:PotionSickness] if it struck an enemy
 		Uses your health as ammo
 		20% chance to save health
 		'''
@@ -210,6 +214,7 @@ BlossomFlux: {
 		'''
 		Fires a stream of leaves
 		Press <right> to fire a spore orb that explodes into a cloud of spore gas
+		50% chance to save ammo
 		'''
 	LegendaryText:
 		'''
@@ -379,13 +384,13 @@ DeadSunsWind: {
 		'''
 }
 
-Deathwind: {
-	DisplayName: Deathwind
+ThreadOfEradication: {
+	DisplayName: Thread of Eradication
 	Tooltip:
 		'''
-		Fires a spread of 4 arrows
-		Wooden arrows are converted into nebula arrows
-		Nebula arrows deal more damage and inflict god slayer inferno
+		Charges up [c/ff00ff:God's Bane Doombeam]
+		Channelling the weapon causes it to charge up [c/ff00ff:Hyperdeath Rift] instead
+		While charging [c/ff00ff:Hyperdeath Rift], the bow's turning speed is slowed down
 		'''
 }
 
@@ -635,6 +640,7 @@ Infinity: {
 		'''
 		Fires a twin stream of energy bolts that split
 		Press <right> to fire a barrage of normal bullets
+		80% chance to save ammo
 		'They say infinity is neverending, yet you hold it in your hands'
 		'''
 }
@@ -1127,6 +1133,7 @@ Shredder: {
 		'''
 		Fires a barrage of energy bolts that split and bounce
 		Press <right> to fire a barrage of normal bullets instead
+		60% chance to save ammo
 		'The myth, the legend, the weapon that drops more frames than any other'
 		'''
 }

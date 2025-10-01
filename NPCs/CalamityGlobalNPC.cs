@@ -6110,13 +6110,6 @@ namespace CalamityMod.NPCs
                     pool[NPCID.ChaosElemental] = SpawnCondition.Cavern.Chance * 0.125f;
             }
 
-            // Replace vanilla Lava Slimes with Calamity Lava Slimes to avoid annoying lava drops
-            if (spawnInfo.Player.ZoneUnderworldHeight && !calamityBiomeZone && CalamityServerConfig.Instance.RemoveLavaDropsFromLavaSlimes && Main.expertMode)
-            {
-                pool.Add(NPCType<LavaSlimeNoLavaDrop>(), SpawnCondition.Underworld.Chance);
-                pool.Remove(NPCID.LavaSlime);
-            }
-
             // Spawn Green Jellyfish in prehm and Blue Jellyfish in hardmode
             if (spawnInfo.Player.ZoneRockLayerHeight && spawnInfo.Water && !calamityBiomeZone)
             {
@@ -7115,6 +7108,10 @@ namespace CalamityMod.NPCs
                 // Only draw the NPC if told to by the miracle blight drawer.
                 if (MiracleBlightRenderer.ValidToDraw(npc))
                     return MiracleBlightRenderer.ActuallyDoPreDraw;
+
+                // Only draw DoG's death animation when told to by the renderer.
+                if (DoGDeathAnimationRenderer.ValidToDraw(npc))
+                    return DoGDeathAnimationRenderer.ActuallyDoPreDraw;
             }
 
             if (Main.zenithWorld)

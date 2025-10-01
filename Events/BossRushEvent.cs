@@ -373,7 +373,7 @@ namespace CalamityMod.Events
 
                     SoundEngine.PlaySound(DevourerofGodsHead.SpawnSound, player.Center);
                     NPC.SpawnOnPlayer(ClosestPlayerToWorldCenter, type);
-                }, usesSpecialSound: true, permittedNPCs: new int[] { ModContent.NPCType<DevourerofGodsBody>(), ModContent.NPCType<DevourerofGodsTail>(), ModContent.NPCType<CosmicGuardianHead>(), ModContent.NPCType<CosmicGuardianBody>(), ModContent.NPCType<CosmicGuardianTail>() }),
+                }, usesSpecialSound: true, permittedNPCs: new int[] { ModContent.NPCType<DevourerofGodsBody>(), ModContent.NPCType<DevourerofGodsTail>() }),
 
                 new Boss(ModContent.NPCType<Yharon>(), spawnContext: type =>
                 {

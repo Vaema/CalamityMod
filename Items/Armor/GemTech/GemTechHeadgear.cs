@@ -28,6 +28,7 @@ namespace CalamityMod.Items.Armor.GemTech
         public const float MeleeSpeedBoost = 0.26f;
 
         public const int MaxFlechettes = 8;
+        public static float RangedAmmoReduction = 0.7f;
         public const float RangedDamageBoost = 0.5f;
         public const float RangedCritBoost = 0.16f;
 

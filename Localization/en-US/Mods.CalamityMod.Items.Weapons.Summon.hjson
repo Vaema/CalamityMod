@@ -293,7 +293,7 @@ DragonbloodDisgorger: {
 		'''
 		Summons a skeletal dragon and her two children
 		Baby spits burst into blood orbs upon hitting an enemy
-		Picking up these blood orbs reduces the duration of [Potion Sickness]
+		Picking up these blood orbs reduces the duration of [cbuff:PotionSickness]
 		Requires 6 minion slots to be summoned
 		There can only be one family at a time
 		'''
@@ -487,6 +487,7 @@ IgneousExaltation: {
 		Summons an Igneous blade that orbits around you
 		When your minion slots are full, <left> again to launch all blades towards the cursor
 		This ability has a two-second cooldown that requires holding this item
+		Shift-<right> this item in your inventory to change the rotation direction
 		'''
 }
 
@@ -746,9 +747,16 @@ StaffOfNecrosteocytes: {
 		'''
 }
 
-StaffoftheMechworm: {
-	DisplayName: Staff of the Mechworm
-	Tooltip: Summons an aerial mechworm to fight for you
+VoidEaterMarionette: {
+	DisplayName: Void Eater Marionette
+	Tooltip:
+		'''
+		Contains the power to control a miniature Devourer
+		Repeated summons increase the length and power of the Devourer
+		The Devourer attacks with [c/ff00ff:Divinity Devourer], [c/ff00ff:Faith Incinerator] and [c/ff00ff:Ultracosmic Maelstrom]
+		Can play fetch with dropped items 
+		Shift-<right> this item in your inventory when the Devourer has been spawned to prioritize fetching
+		'''
 }
 
 StarspawnHelixStaff: {
@@ -864,6 +872,7 @@ ViridVanguard: {
 		All weapons inflict Sage Poison, which becomes more powerful the more weapons are summoned
 		When all minion slots are full, <left> again to spin up a flurry of slashes aimed at your cursor
 		This ability has a five-second cooldown that requires holding this item
+		Shift-<right> this item in your inventory to change the rotation direction
 		'''
 }
 

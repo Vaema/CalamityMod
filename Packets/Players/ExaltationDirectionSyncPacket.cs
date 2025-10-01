@@ -1,0 +1,45 @@
+﻿using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using CalamityMod.CalPlayer;
+using Terraria;
+using Terraria.ID;
+using Terraria.ModLoader;
+
+namespace CalamityMod.Packets
+{
+    public sealed class ExaltationDirectionSyncPacket : CalamityPacket
+    {
+        public static ExaltationDirectionSyncPacket Instance { get; private set; }
+
+        public override byte MessageType => (byte)CalamityModMessageType.ExaltationDirection;
+
+        public static void Send(CalamityPlayer playerToSync, int toClient = -1, int ignoreClient = -1)
+        {
+            if (playerToSync is null)
+                return;
+
+            var packet = Instance.CreateBasePacket();
+            packet.WriteWhoAmI(playerToSync);
+            packet.Write(playerToSync.InvertExaltationLineRotationDirections);
+            packet.Send(toClient, ignoreClient);
+        }
+
+        public override void HandlePacket(in BinaryReader packet, int sender)
+        {
+            var player = packet.ReadCalamityPlayer();
+            var invertDir = packet.ReadBoolean();
+
+            if (player is null)
+                return;
+
+            player.InvertExaltationLineRotationDirections = invertDir;
+
+            if (Main.dedServ)
+                Send(player, ignoreClient: sender);
+        }
+    }
+}
