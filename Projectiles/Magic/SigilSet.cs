@@ -14,6 +14,8 @@ namespace CalamityMod.Projectiles.Magic
     {
         public new string LocalizationCategory => "Projectiles.Magic";
         public ref float FadeoutFlag => ref Projectile.ai[2];
+        private const float RuneLerpTime = 22f;
+        private const float RuneDelayTime = 3f;
         private const float StartRadius = 240f;
         private const float BaseRadius = 150f;
         private const float GhostFlashDuration = 22f;
