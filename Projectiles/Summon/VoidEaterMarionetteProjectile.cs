@@ -177,9 +177,10 @@ namespace CalamityMod.Projectiles.Summon
             NPC target = Projectile.Center.MinionHoming(CurrentAttack != AttackState.Idle ? 999999f : 2800f, Owner);
             SegmentRigidity = 0.1f;
             Projectile.extraUpdates = 1;
-            if (Owner.miscCounter % 10 == 0 && (CurrentAttack == AttackState.Idle || (FocusOnFetching && CurrentAttack != AttackState.UltracosmicMaelstrom && CurrentAttack != AttackState.PlayingFetch)))
+            if (Owner.miscCounter % 10 == 0 && (CurrentAttack == AttackState.Idle || (FocusOnFetching && CurrentAttack != AttackState.UltracosmicMaelstrom)))
             {
                 float SearchDistance = CalamityUtils.TilesToPixels(50);
+                AiTimer = -1;
                 foreach (var item in Main.ActiveItems)
                 {
                     if (item.noGrabDelay == 0 && !item.beingGrabbed && Owner.CanPullItem(item, Owner.ItemSpace(item)))
@@ -195,6 +196,8 @@ namespace CalamityMod.Projectiles.Summon
                 {
                     CurrentAttack = AttackState.PlayingFetch;
                 }
+                else if (CurrentAttack == AttackState.PlayingFetch)
+                    CurrentAttack = AttackState.Idle;
             }
 
             switch (CurrentAttack)
