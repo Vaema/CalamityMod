@@ -240,6 +240,7 @@ namespace CalamityMod
                     projectile.velocity = projectile.velocity * inertia + moveToNPC * homingVelocity;
                 else
                     projectile.velocity *= overspeedReduction;
+                projectile.Calamity().HomingTarget = targetedNPC.whoAmI;
             }
             if (targetedNPC == null && projectile.velocity.Length() < maxSpeed && accelerate)
                 projectile.velocity *= 1.0055f;
