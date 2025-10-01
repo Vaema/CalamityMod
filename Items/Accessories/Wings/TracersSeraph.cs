@@ -130,8 +130,8 @@ namespace CalamityMod.Items.Accessories.Wings
         {
             CreateRecipe().
                 AddIngredient<TracersElysian>().
-                AddIngredient<WingsofRebirth>().
                 AddIngredient<AuricBar>(5).
+                AddIngredient<AscendantSpiritEssence>(3).
                 AddTile<CosmicAnvil>().
                 Register();
         }

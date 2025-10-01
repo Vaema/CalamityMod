@@ -13,7 +13,6 @@ RecipeGroup: {
 	LunarPickaxe: "{$LegacyMisc.37} Lunar Pickaxe"
 	LunarHamaxe: "{$LegacyMisc.37} Lunar Hamaxe"
 	AnyQuiver: "{$LegacyMisc.37} Quiver"
-	AnyWings: "{$LegacyMisc.37} Wings"
 }
 
 // Status

@@ -30,7 +30,7 @@ namespace CalamityMod.Items.Accessories.Wings
         public static int wingSlot = 0;
         public override void SetStaticDefaults()
         {
-            ArmorIDs.Wing.Sets.Stats[Item.wingSlot] = new WingStats(220, 10f, 2.7f);
+            ArmorIDs.Wing.Sets.Stats[Item.wingSlot] = new WingStats(200, 10f, 2.7f);
             wingSlot = Item.wingSlot;
         }
 
@@ -39,8 +39,8 @@ namespace CalamityMod.Items.Accessories.Wings
             base.SetDefaults();
             Item.width = 36;
             Item.height = 32;
-            Item.value = CalamityGlobalItem.RarityDarkBlueBuyPrice;
-            Item.rare = ModContent.RarityType<CosmicPurple>();
+            Item.value = CalamityGlobalItem.RarityPureGreenBuyPrice;
+            Item.rare = ModContent.RarityType<PureGreen>();
         }
         #region Toggleable Wings
         bool toggleEnabled
@@ -129,10 +129,10 @@ namespace CalamityMod.Items.Accessories.Wings
         {
             CreateRecipe().
                 AddIngredient<TracersCelestial>().
-                AddIngredient<ElysianWings>().
-                AddIngredient<CosmiliteBar>(5).
-                AddIngredient<AscendantSpiritEssence>(4).
-                AddTile<CosmicAnvil>().
+                AddIngredient<ArmoredShell>(3).
+                AddIngredient<TwistingNether>(3).
+                AddIngredient<DarkPlasma>(3).
+                AddTile(TileID.LunarCraftingStation).
                 Register();
         }
     }
