@@ -8,7 +8,7 @@ using CalamityMod.Items.Materials;
 
 namespace CalamityMod.Items.Weapons.Magic
 {
-    public class UnstableCastersGauntlet : ModItem, ILocalizedModType
+    public class UnstableCastersGauntlet : ModItem, ILocalizedModType, IHoldShiftTooltipItem
     {
         public static int UseTime = 20;
         public new string LocalizationCategory => "Items.Weapons.Magic";
@@ -17,7 +17,7 @@ namespace CalamityMod.Items.Weapons.Magic
         {
             Item.width = 62;
             Item.height = 60;
-            Item.damage = 100;
+            Item.damage = 240;
             Item.DamageType = DamageClass.Magic;
             Item.mana = 0;
             Item.useAnimation = Item.useTime = UseTime;
@@ -28,6 +28,7 @@ namespace CalamityMod.Items.Weapons.Magic
             Item.knockBack = 3f;
             Item.value = CalamityGlobalItem.RarityRedBuyPrice;
             Item.rare = ItemRarityID.Red;
+            Item.Calamity().donorItem = true;
             Item.autoReuse = true;
             Item.shoot = ModContent.ProjectileType<UnstableCastersGauntletHoldout>();
             Item.shootSpeed = 15f;

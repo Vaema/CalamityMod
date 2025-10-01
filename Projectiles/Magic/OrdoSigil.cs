@@ -47,6 +47,8 @@ namespace CalamityMod.Projectiles.Magic
                     SoundEngine.PlaySound(new("CalamityMod/Sounds/Item/OntologicalDespoilerLargeShot") { Volume = 0.5f, PitchVariance = 0.1f }, Projectile.Center);
 
                     Player owner = Main.player[Projectile.owner];
+
+                    owner.Calamity().GeneralScreenShakePower = 3f;
                     Vector2 targetDirection = Projectile.Center.DirectionTo(Main.MouseWorld).SafeNormalize(Vector2.UnitX);
 
                     spawnedProjectile = true;

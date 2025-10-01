@@ -4,13 +4,15 @@ using Microsoft.Xna.Framework;
 using System;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria.Audio;
+using Terraria.ID;
+using CalamityMod.Particles;
 
 namespace CalamityMod.Projectiles.Magic
 {
-    public class TerraSigil : ModProjectile
+    public class WarpSigil : ModProjectile
     {
         private bool spawnedProjectile = false;
-
+        private bool spawnedIntroParticle = false;
         public override void SetDefaults()
         {
             Projectile.width = Projectile.height = 74;
@@ -42,18 +44,14 @@ namespace CalamityMod.Projectiles.Magic
             {
                 Projectile.localAI[0]++;
 
-                if (Projectile.localAI[0] >= 35 && !spawnedProjectile)
+                if (Projectile.localAI[0] >= 25 && !spawnedProjectile)
                 {
-                    SoundEngine.PlaySound(new("CalamityMod/Sounds/Custom/Providence/ProvidenceHolyBlastShoot") { Volume = 0.45f, PitchVariance = 0.1f }, Projectile.Center);
-
-                    Player owner = Main.player[Projectile.owner];
-                    Vector2 targetDirection = Projectile.Center.DirectionTo(Main.MouseWorld).SafeNormalize(Vector2.UnitX);
-
+                    // ai[1] and ai[2] will inherit this sigil's position and timeLeft as its own
+                    Projectile.NewProjectile(Projectile.GetSource_FromThis(), Main.MouseWorld, Vector2.Zero, ModContent.ProjectileType<WarpSigilShotCreator>(), Projectile.damage, Projectile.knockBack, Projectile.owner, 0, Projectile.whoAmI, Projectile.timeLeft);
                     spawnedProjectile = true;
-                    Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center, targetDirection * 32f, ModContent.ProjectileType<TerraSigilLargeRock>(), Projectile.damage * 2, Projectile.knockBack, Projectile.owner);
                 }
 
-                if (Projectile.localAI[0] >= 50)
+                if (Projectile.localAI[0] >= 70)
                 {
                     Projectile.Kill();
                 }
@@ -61,7 +59,6 @@ namespace CalamityMod.Projectiles.Magic
 
             else
             {
-                Projectile.scale = parent.scale;
                 Projectile.rotation = 0;
                 Projectile.alpha = parent.alpha;
             }
@@ -70,6 +67,13 @@ namespace CalamityMod.Projectiles.Magic
             {
                 Projectile.timeLeft = parent.timeLeft;
             }
+
+            if (!spawnedIntroParticle)
+                for (int j = 0; j < 13; j++)
+                {
+                    spawnedIntroParticle = true;
+                    GeneralParticleHandler.SpawnParticle(new SquishyLightParticle(Projectile.Center, new Vector2(Main.rand.NextFloat(3f, 7f), 0f).RotatedByRandom(MathHelper.TwoPi), Projectile.scale * Main.rand.NextFloat(0.25f, 0.55f), Main.rand.NextBool() ? Color.Magenta : Color.White, Main.rand.Next(10, 19), 1f, 0f, 1f));
+                }
         }
 
         public override bool PreDraw(ref Color lightColor)
@@ -86,18 +90,18 @@ namespace CalamityMod.Projectiles.Magic
             {
                 float animationTime = Projectile.localAI[0];
 
-                if (animationTime <= 24)
+                if (animationTime <= 18)
                 {
-                    maskOpacity = Utils.GetLerpValue(0f, 24f, animationTime, clamped: true);
+                    maskOpacity = Utils.GetLerpValue(0f, 18f, animationTime, clamped: true);
                 }
                 else
                 {
                     maskOpacity = 1f;
                 }
 
-                if (animationTime >= 35)
+                if (animationTime >= 55)
                 {
-                    float scaleFactor = Utils.GetLerpValue(35f, 50f, animationTime, clamped: true);
+                    float scaleFactor = Utils.GetLerpValue(55f, 70f, animationTime, clamped: true);
                     finalScale = MathHelper.Lerp(Projectile.scale, 0f, scaleFactor);
                     alphaOpacity = MathHelper.Lerp(alphaOpacity, 0f, scaleFactor);
                 }

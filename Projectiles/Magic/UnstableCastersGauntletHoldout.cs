@@ -20,8 +20,8 @@ namespace CalamityMod.Projectiles.Magic
         public ref float shootingTimer => ref Projectile.ai[0];
 
         private float currentRecoilRotation;
-        private float RecoilRotationAmount = 0.22f;
-        private float RotationResolveSpeed = 0.22f;
+        private float RecoilRotationAmount = 0.24f;
+        private float RotationResolveSpeed = 0.24f;
 
         // Normal weapon usetime is 20. This is used throughout the AI to make the holdout's components scale with attack speed.
         public float speedModifier => HeldItem.useTime / 20f;
@@ -64,7 +64,8 @@ namespace CalamityMod.Projectiles.Magic
                                 proj.type == ModContent.ProjectileType<TerraSigil>() ||
                                 proj.type == ModContent.ProjectileType<AerSigil>() ||
                                 proj.type == ModContent.ProjectileType<OrdoSigil>() ||
-                                proj.type == ModContent.ProjectileType<PerditoSigil>())
+                                proj.type == ModContent.ProjectileType<PerditoSigil>() ||
+                                proj.type == ModContent.ProjectileType<WarpSigil>())
                             {
                                 // Make sure sigil isn't already consumed
                                 if (proj.ai[2] <= 0)
@@ -83,7 +84,13 @@ namespace CalamityMod.Projectiles.Magic
 
                         // Start fadeout
                         chosenSigil.ai[2] = 1.0f;
-                        shootingTimer = 0f;
+
+                        // Less delay than normal
+                        if (chosenSigil.type == ModContent.ProjectileType<WarpSigil>())
+                            shootingTimer = (HeldItem.useTime * 1.65f);
+                        else
+                            shootingTimer = 0f;
+
                     }
                 }
 
@@ -113,16 +120,15 @@ namespace CalamityMod.Projectiles.Magic
                         dust.velocity *= 0.5f;
                         dust.fadeIn = 0.5f;
                         dust.scale *= 0.4f;
-                        
+
                         Lighting.AddLight(GunTipPosition, 0.4f * Color.DarkMagenta.ToVector3());
                     }
                 }
             }
-        
 
 
             // -- NEEDLES --
-            else
+            else if (Owner.altFunctionUse == 0)
             {
                 int needleFireRate = (int)(12 * speedModifier);
                 if (shootingTimer >= needleFireRate)
@@ -157,7 +163,7 @@ namespace CalamityMod.Projectiles.Magic
 
 
             // -- SIGIL SPAWNING --
-            if (Owner.altFunctionUse == 2 && calPlayer.unstableCastersGauntletVis >= 6f)
+            if (Owner.altFunctionUse == 2 && calPlayer.unstableCastersGauntletVis >= 6f && Owner.ownedProjectileCounts[ModContent.ProjectileType<SigilSet>()] <= 0)
             {
                 float sigilFireRate = HeldItem.useTime * 4f;
 
@@ -172,6 +178,106 @@ namespace CalamityMod.Projectiles.Magic
                 }
             }
 
+            // Warp Sigil Spawning
+            else if (Owner.altFunctionUse == 2 && Owner.ownedProjectileCounts[ModContent.ProjectileType<SigilSet>()] == 1)
+            {
+                int parentType = ModContent.ProjectileType<SigilSet>();
+                Projectile thisParent = null;
+
+                // Find parent
+                foreach (Projectile p in Main.ActiveProjectiles)
+                {
+                    if (p.type == parentType && p.owner == Projectile.owner)
+                    {
+                        thisParent = p;
+                        break;
+                    }
+                }
+
+                if (thisParent != null)
+                {
+
+                    int maxSigils = 6;
+                    bool[] slotIsOccupied = new bool[maxSigils];
+                    int nonConsumedSigils = 0;
+
+                    int[] sigilVariants = new int[]
+                    {
+                        ModContent.ProjectileType<IgnisSigil>(),
+                        ModContent.ProjectileType<AquaSigil>(),
+                        ModContent.ProjectileType<TerraSigil>(),
+                        ModContent.ProjectileType<AerSigil>(),
+                        ModContent.ProjectileType<OrdoSigil>(),
+                        ModContent.ProjectileType<PerditoSigil>(),
+                        ModContent.ProjectileType<WarpSigil>()
+                    };
+
+                    for (int i = 0; i < Main.maxProjectiles; i++)
+                    {
+                        Projectile proj = Main.projectile[i];
+                        // Check if projectile is active, belongs to this player, and is a child of this SigilSet
+                        if (proj.active && proj.owner == Projectile.owner && proj.ai[0] == thisParent.identity)
+                        {
+                            // Check if it's a type of sigil
+                            bool isASigil = false;
+                            foreach (int sigilType in sigilVariants)
+                            {
+                                if (proj.type == sigilType)
+                                {
+                                    isASigil = true;
+                                    break;
+                                }
+                            }
+
+                            if (isASigil)
+                            {
+                                // Use the sigil's index to mark as occupied
+                                int sigilIndex = (int)proj.ai[1];
+                                if (sigilIndex >= 0 && sigilIndex < maxSigils)
+                                {
+                                    slotIsOccupied[sigilIndex] = true;
+                                }
+
+                                if (proj.ai[2] <= 0)
+                                {
+                                    nonConsumedSigils++;
+                                }
+                            }
+                        }
+                    }
+
+                    List<int> availableIndices = new List<int>();
+
+                    for (int i = 0; i < maxSigils; i++)
+                    {
+                        if (!slotIsOccupied[i])
+                        {
+                            availableIndices.Add(i);
+                        }
+                    }
+
+                    int emptySlots = availableIndices.Count;
+
+                    if (emptySlots > 0 && nonConsumedSigils > 0)
+                    {
+                        // Check if the player has enough vis
+                        if (calPlayer.unstableCastersGauntletVis >= 6f)
+                        {
+                            calPlayer.unstableCastersGauntletVis -= 6f;
+
+                            SoundEngine.PlaySound(SoundID.DD2_EtherianPortalOpen with { Volume = 0.6f }, Projectile.Center);
+
+                            // Spawn Warp Sigils for each empty slot
+                            foreach (int sigilIndex in availableIndices)
+                            {
+                                Projectile.NewProjectile(Projectile.GetSource_FromThis(), thisParent.Center, Vector2.Zero, ModContent.ProjectileType<WarpSigil>(), Projectile.damage, Projectile.knockBack, Projectile.owner, thisParent.identity, sigilIndex);
+                            }
+
+                            shootingTimer = 0f;
+                        }
+                    }
+                }
+            }
 
             // -- RECOIL -- 
             ExtraFrontArmRotation = currentRecoilRotation;
