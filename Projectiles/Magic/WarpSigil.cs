@@ -72,7 +72,7 @@ namespace CalamityMod.Projectiles.Magic
                 for (int j = 0; j < 13; j++)
                 {
                     spawnedIntroParticle = true;
-                    GeneralParticleHandler.SpawnParticle(new SquishyLightParticle(Projectile.Center, new Vector2(Main.rand.NextFloat(3f, 7f), 0f).RotatedByRandom(MathHelper.TwoPi), Projectile.scale * Main.rand.NextFloat(0.25f, 0.55f), Main.rand.NextBool() ? Color.Magenta : Color.White, Main.rand.Next(10, 19), 1f, 0f, 1f));
+                    GeneralParticleHandler.SpawnParticle(new SquishyLightParticle(Projectile.Center, new Vector2(Main.rand.NextFloat(3f, 7f), 0f).RotatedByRandom(MathHelper.TwoPi), Projectile.scale * Main.rand.NextFloat(0.2f, 0.475f), Main.rand.NextBool() ? Color.Magenta : Color.White, Main.rand.Next(12, 24), 1f, 0f, 1f));
                 }
         }
 
