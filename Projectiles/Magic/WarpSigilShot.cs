@@ -95,6 +95,7 @@ namespace CalamityMod.Projectiles.Magic
 
         }
 
+        // Standard trail drawing logic
         private float WidthFunction(float completionRatio) => MathHelper.Lerp(0f, MathHelper.Lerp(32f, 0f, completionRatio), MathF.Pow(completionRatio, 1f / 2.5f));
 
         private Color ColorFunction(float completionRatio)

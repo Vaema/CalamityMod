@@ -49,8 +49,6 @@ namespace CalamityMod.Projectiles.Magic
             Asset<Texture2D> ghostTexture = ModContent.Request<Texture2D>("CalamityMod/Projectiles/Magic/TerraSigilLargeRockGhost");
 
             Color drawColor = Projectile.GetAlpha(lightColor);
-
-            // NORMAL draw logic
             Main.EntitySpriteDraw(texture, Projectile.Center - Main.screenPosition, texture.Frame(1, Main.projFrames[Type], 0, Projectile.frame), drawColor, Projectile.rotation, texture.Size() * 0.5f, Projectile.scale, SpriteEffects.None, 0);
 
             // Only apply the glow effect during the first 8 frames
@@ -99,7 +97,7 @@ namespace CalamityMod.Projectiles.Magic
             {
                 if (Main.rand.NextBool())
                 {
-                    Dust dust = Dust.NewDustPerfect(Projectile.Center, Main.rand.NextBool(6) ? ModContent.DustType<TerraSigilDust>() : 262, new Vector2(5, 5).RotatedByRandom(100) * Main.rand.NextFloat(0.1f, 0.8f)); // Reduced velocity
+                    Dust dust = Dust.NewDustPerfect(Projectile.Center, Main.rand.NextBool(6) ? ModContent.DustType<TerraSigilDust>() : 262, new Vector2(5, 5).RotatedByRandom(100) * Main.rand.NextFloat(0.1f, 0.8f));
                     dust.noGravity = false;
                     dust.scale = Main.rand.NextFloat(0.85f, 1.25f);
                     dust.noGravity = true;

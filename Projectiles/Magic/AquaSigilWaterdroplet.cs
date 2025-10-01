@@ -56,6 +56,7 @@ namespace CalamityMod.Projectiles.Magic
             Projectile.velocity.Y = Projectile.velocity.Y + 0.35f;
         }
 
+        // Standard trail drawing logic
         private float WidthFunction(float completionRatio) => MathHelper.Lerp(0f, MathHelper.Lerp(Projectile.scale * 48f, 0f, completionRatio), MathF.Pow(completionRatio, 1f / 2.5f));
         private Color ColorFunction(float completionRatio)
         {

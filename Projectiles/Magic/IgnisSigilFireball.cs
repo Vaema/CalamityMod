@@ -103,6 +103,7 @@ namespace CalamityMod.Projectiles.Magic
             Projectile.penetrate = -1;
         }
 
+        // Standard trail drawing logic
         private float WidthFunction(float completionRatio) => MathHelper.Lerp(0f, MathHelper.Lerp(Projectile.scale * 132f, 0f, completionRatio), MathF.Pow(completionRatio, 1f / 2.5f));
         private Color ColorFunction(float completionRatio)
         {
