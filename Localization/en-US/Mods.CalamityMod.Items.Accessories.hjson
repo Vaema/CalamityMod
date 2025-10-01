@@ -1112,7 +1112,7 @@ ManaPolarizer: {
 	DisplayName: Mana Polarizer
 	Tooltip:
 		'''
-		Increases max mana by 50
+		Increases maximum mana by 50
 		Provides life regeneration and magic damage that scales based on how much mana you have
 		Lower mana means more life regeneration, but less magic damage
 		These scale from -2 to 2 HP/sec, and 5% to 15% damage
@@ -1144,9 +1144,12 @@ MoonstoneCrown: {
 	DisplayName: Moonstone Crown
 	Tooltip:
 		'''
-		15% increased rogue projectile velocity
-		Stealth strikes release lunar flares on enemy hits
-		Rogue projectiles summon homing moon sigils as they travel
+		+70 max mana
+		Summons a Lunar Sigil every 2 seconds, up to a maximum of 10
+		Each Lunar Sigil increases magic damage by 2% and reduces mana cost by 1%
+		Having 5 sigils increases mana regeneration by +5 MP/s
+		Having 10 sigils increases magic critical strike chance by 10% and all magic attacks inflict Nightwither
+		Running out of mana removes 5 sigils
 		'''
 }
 

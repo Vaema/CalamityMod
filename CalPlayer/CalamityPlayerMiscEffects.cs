@@ -74,6 +74,7 @@ using CalamityMod.World;
 using Microsoft.CodeAnalysis;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using Mono.Cecil;
 using ReLogic.Content;
 using Terraria;
 using Terraria.Audio;
@@ -1962,6 +1963,46 @@ namespace CalamityMod.CalPlayer
                 if (Player.velocity.Length() < 6)
                     hookPullVisuals = 0;
             }
+            if (featherCrown && !moonCrown)
+            {
+                int SpawnTimer = 120;
+                int MaxSigils = 4;
+                if (mageCrownTimer >= SpawnTimer)
+                {
+                    if (mageCrownCount <= MaxSigils)
+                    {
+                        Main.NewText(mageCrownCount);
+                        mageCrownCount += 1;
+                        float start = 360f / mageCrownCount;
+                        Projectile.NewProjectile(Player.GetSource_FromThis(), new Vector2((int)(Player.Center.X + (Math.Sin(0 * start) * 300)), (int)(Player.Center.Y + (Math.Cos(0 * start) * 300))), Vector2.Zero, ModContent.ProjectileType<SpectralFeather>(), 0, 0, Player.whoAmI, 0, mageCrownCount);
+                    }
+                    mageCrownTimer = 0;
+                }
+                else if (!Player.dead)
+                {
+                    mageCrownTimer++;
+                }
+            }
+            if (moonCrown)
+            {
+                int SpawnTimer = 120;
+                int MaxSigils = 9; //Starts at 0, so cap is 10
+                if (mageCrownTimer >= SpawnTimer)
+                {
+                    if (mageCrownCount <= MaxSigils)
+                    {
+                        Main.NewText(mageCrownCount);
+                        mageCrownCount += 1;
+                        float start = 360f / mageCrownCount;
+                        Projectile.NewProjectile(Player.GetSource_FromThis(), new Vector2((int)(Player.Center.X + (Math.Sin(0 * start) * 300)), (int)(Player.Center.Y + (Math.Cos(0 * start) * 300))), Vector2.Zero, ModContent.ProjectileType<MoonSigil>(), 0, 0, Player.whoAmI, 0, mageCrownCount);
+                    }
+                    mageCrownTimer = 0;
+                }
+                else if (!Player.dead)
+                {
+                    mageCrownTimer++;
+                }
+            }
 
             if (unstableGraniteCore)
             {
@@ -2157,8 +2198,6 @@ namespace CalamityMod.CalPlayer
                 silvaMageCooldown--;
             if (scuttlerCooldown > 0)
                 scuttlerCooldown--;
-            if (rogueCrownCooldown > 0)
-                rogueCrownCooldown--;
             if (spectralVeilImmunity > 0)
                 spectralVeilImmunity--;
             if (jetPackDash > 0)
@@ -4500,7 +4539,6 @@ namespace CalamityMod.CalPlayer
             }
         }
         #endregion
-
 
         #region Energy Shields
         private void EnergyShields()

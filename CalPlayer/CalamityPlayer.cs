@@ -1032,7 +1032,8 @@ namespace CalamityMod.CalPlayer
         public bool eclipseMirror = false;
         public bool featherCrown = false;
         public bool moonCrown = false;
-        public int rogueCrownCooldown = 0;
+        public int mageCrownTimer = 0;
+        public int mageCrownCount = 0;
         public bool dragonScales = false;
         public bool gloveOfPrecision = false;
         public bool gloveOfRecklessness = false;
@@ -2937,7 +2938,7 @@ namespace CalamityMod.CalPlayer
             andromedaCripple = 0;
             theBeeCooldown = 0;
             scuttlerCooldown = 0;
-            rogueCrownCooldown = 0;
+            mageCrownTimer = 0;
             wingProjectileCooldown = 0;
             hallowedRuneCooldown = 0;
             sulphurBubbleCooldown = 0;
@@ -5730,6 +5731,20 @@ namespace CalamityMod.CalPlayer
                     if (fleshTotemManaStorage >= FleshTotem.manaStorageMax)
                     {
                         fleshTotemManaStorage = FleshTotem.manaStorageMax;
+                    }
+                }
+            }
+            //For when the player runs out of mana
+            if (Player.statMana <= manaConsumed || Player.statMana <= 6)
+            {
+                if (moonCrown && mageCrownCount > 0)
+                {
+                    SoundStyle fire = new("CalamityMod/Sounds/Item/CursedDaggerThrow");
+                    SoundEngine.PlaySound(fire with { Volume = 0.9f, Pitch = 0.9f, PitchVariance = 0.2f, MaxInstances = -1 }, Player.Center);
+                    mageCrownCount -= 5;
+                    if (mageCrownCount < 0)
+                    {
+                        mageCrownCount = 0;
                     }
                 }
             }

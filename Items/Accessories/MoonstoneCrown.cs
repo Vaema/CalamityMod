@@ -10,12 +10,9 @@ namespace CalamityMod.Items.Accessories
     public class MoonstoneCrown : ModItem, ILocalizedModType
     {
         public new string LocalizationCategory => "Items.Accessories";
-        // Base damage of lunar flares on stealth strikes. Increased by rogue damage stats, but not stealth damage.
-        internal static int BaseDamage = 75;
 
         public override void SetStaticDefaults()
         {
-
             if (!Main.dedServ)
             {
                 int equipSlot = EquipLoader.GetEquipSlot(Mod, Name, EquipType.Face);
@@ -35,8 +32,18 @@ namespace CalamityMod.Items.Accessories
         public override void UpdateAccessory(Player player, bool hideVisual)
         {
             CalamityPlayer modPlayer = player.Calamity();
-            modPlayer.rogueVelocity += 0.15f;
             modPlayer.moonCrown = true;
+            player.statManaMax2 += 70;
+            player.GetDamage<MagicDamageClass>() += (0.02f * modPlayer.mageCrownCount); //2% per moon sigil, up to 20%
+            player.manaCost -= (0.01f * modPlayer.mageCrownCount); //1% per moon sigil, up to 10%
+            if (modPlayer.mageCrownCount >= 4) //I know this looks weird but the count starts at 0
+            {
+                player.manaRegenBonus += 10;
+            }
+            if (modPlayer.mageCrownCount == 9)
+            {
+                player.GetCritChance<MagicDamageClass>() += 10;
+            }
         }
 
         public override void AddRecipes()

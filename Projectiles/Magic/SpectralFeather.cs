@@ -7,16 +7,17 @@ using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
 
-namespace CalamityMod.Projectiles.Rogue
+namespace CalamityMod.Projectiles.Magic
 {
-    public class MoonSigil : ModProjectile, ILocalizedModType
+    public class SpectralFeather : ModProjectile, ILocalizedModType
     {
-        public new string LocalizationCategory => "Projectiles.Rogue";
+        public new string LocalizationCategory => "Projectiles.Magic";
+        public override string Texture => "CalamityMod/Projectiles/Magic/StickyFeather";
         public override void SetDefaults()
         {
-            Projectile.width = 20;
-            Projectile.height = 20;
-            Projectile.scale = 0.9f;
+            Projectile.width = 10;
+            Projectile.height = 10;
+            Projectile.scale = 0.8f;
             Projectile.friendly = true;
             Projectile.penetrate = -1;
             Projectile.ignoreWater = true;
@@ -28,12 +29,13 @@ namespace CalamityMod.Projectiles.Rogue
 
         public override void AI()
         {
-            bool isActive = Projectile.type == ModContent.ProjectileType<MoonSigil>();
+            bool isActive = Projectile.type == ModContent.ProjectileType<SpectralFeather>();
             Player player = Main.player[Projectile.owner];
             CalamityPlayer modPlayer = player.Calamity();
-            if (!modPlayer.moonCrown)
+            if (!modPlayer.featherCrown)
             {
                 Projectile.active = false;
+                modPlayer.mageCrownTimer = 0;
                 modPlayer.mageCrownCount = 0;
                 return;
             }
@@ -41,9 +43,9 @@ namespace CalamityMod.Projectiles.Rogue
             {
                 if (player.dead)
                 {
-                    modPlayer.moonCrown = false;
+                    modPlayer.featherCrown = false;
                 }
-                if (modPlayer.moonCrown)
+                if (modPlayer.featherCrown)
                 {
                     Projectile.timeLeft = 2;
                 }
@@ -56,26 +58,26 @@ namespace CalamityMod.Projectiles.Rogue
             {
                 Projectile.Kill();
             }
-            int sigils = 0;
-            int sigilAmt = 0;
+            int feathers = 0;
+            int featherAmt = 0;
             for (int i = 0; i < Main.maxProjectiles; i++)
             {
                 if (Main.projectile[i].active && Main.projectile[i].owner == Projectile.owner && Main.projectile[i].type == Projectile.type)
                 {
                     if (Main.projectile[i] == Projectile)
                     {
-                        sigils = sigilAmt;
+                        feathers = featherAmt;
                     }
-                    sigilAmt++;
+                    featherAmt++;
                 }
             }
-            float f = ((float)sigils / (float)sigilAmt + player.miscCounterNormalized * 2f) * ((float)Math.PI * 2f);
-            float num = 24f + (float)sigilAmt * 4.5f;
+            float f = ((float)feathers / (float)featherAmt + player.miscCounterNormalized * 2f) * ((float)Math.PI * 2f);
+            float num = 18f + (float)featherAmt;
             Vector2 vector = player.position - player.oldPosition;
             base.Projectile.Center += vector;
             Vector2 vector2 = f.ToRotationVector2();
             Projectile.localAI[0] = vector2.Y;
-            Vector2 value = (player.Center + new Vector2(0f, 5f)) + vector2 * new Vector2(1f, 0.05f) * num;
+            Vector2 value = (player.Center + new Vector2(0f, -25f)) + vector2 * new Vector2(1f, 0.05f) * num;
             base.Projectile.Center = value;
 
             if (!Projectile.FinalExtraUpdate())
@@ -131,30 +133,14 @@ namespace CalamityMod.Projectiles.Rogue
             Texture2D texture = ModContent.Request<Texture2D>(Texture).Value;
             Player player = Main.player[Projectile.owner];
             CalamityPlayer modPlayer = player.Calamity();
-            if (modPlayer.mageCrownCount >= 10)
+            if (modPlayer.mageCrownCount == 5)
             {
                 for (int i = 0; i < 6; i++)
                 {
-                    Main.spriteBatch.Draw(texture, Projectile.Center - Main.screenPosition, null, (Color.Teal * 0.5f) with { A = 0 }, Projectile.rotation, texture.Size() * 0.5f, Projectile.scale * 1.1f, SpriteEffects.None, 0f);
+                    Main.spriteBatch.Draw(texture, Projectile.Center - Main.screenPosition, null, (Color.Teal * 0.5f) with { A = 0 }, Projectile.rotation, texture.Size() * 0.5f, Projectile.scale * 1.01f, SpriteEffects.None, 0f);
                 }
             }
             Main.EntitySpriteDraw(texture, Projectile.Center - Main.screenPosition, null, lightColor, Projectile.rotation, texture.Size() * 0.5f, Projectile.scale * 0.9f, SpriteEffects.None, 0);
-            Main.spriteBatch.Draw
-            (
-                texture,
-                new Vector2
-                (
-                    Projectile.position.X - Main.screenPosition.X + Projectile.width * 0.5f,
-                    Projectile.position.Y - Main.screenPosition.Y + Projectile.height - 20 * 0.5f
-                ),
-                new Rectangle(0, 0, 20, 20),
-                Color.White,
-                Projectile.rotation,
-                new Vector2(10, 10),
-                Projectile.scale * 0.9f,
-                SpriteEffects.None,
-                0f
-            );
             return false;
         }
         public override bool? CanDamage() => false;

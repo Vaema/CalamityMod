@@ -696,6 +696,16 @@ namespace CalamityMod.Items
                 }
             }
 
+            //Mana Potion interactions
+            if (item.healMana > 0)
+            {
+                //If mana potion used, kill 
+                if (modPlayer.moonCrown || modPlayer.featherCrown)
+                {
+                    //modPlayer.mageCrownCount = 0;
+                }
+            }
+
             // Staff/Axe of Regrowth growing Calamity grass
             if (item.type == ItemID.StaffofRegrowth || item.type == ItemID.AcornAxe)
             {
