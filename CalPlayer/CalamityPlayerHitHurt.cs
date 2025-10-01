@@ -2527,6 +2527,10 @@ namespace CalamityMod.CalPlayer
             if (silverMedkit && hurtInfo.Damage >= SilverArmorSetChange.SetBonusMinimumDamageToHeal)
                 silverMedkitTimer = SilverArmorSetChange.SetBonusHealTime;
 
+            //This goes before the canTriggerEffects check on purpose to match Honeycomb
+            if (dAmulet)
+                Player.AddBuff(BuffID.Honey, 300, false);
+
             // Handle hit effects from the gem tech armor set.
             Player.Calamity().GemTechState.PlayerOnHitEffects((int)hurtInfo.Damage);
 
@@ -2565,7 +2569,7 @@ namespace CalamityMod.CalPlayer
                     Projectile.NewProjectile(source, Player.Center.X, Player.Center.Y, 0f, 0f, ModContent.ProjectileType<HideOfAstrumDeusExplosion>(), blazeDamage, 5f, Player.whoAmI, 0f, 1f);
                 }
                 // TODO -- Make Deific Amulet and Rampart of Deities' retaliation effects way cooler
-                // In the meantime, gave them homing astral stars instead of the lame falling stars.
+                // In the meantime, gave them homing astral star bees instead of the lame falling stars.
                 // This also serves to make the Honeycomb in Sweetheart Necklace make sense
                 if (dAmulet)
                 {
@@ -2573,17 +2577,19 @@ namespace CalamityMod.CalPlayer
                     int projAmount = (rampartOfDeities ? 12 : 6);
                     for (int n = 0; n < projAmount; n++)
                     {
-                        int deificProjDamage = (int)Player.GetBestClassDamage().ApplyTo(DeificAmulet.StarDamage);
+                        int deificProjDamage = (int)(Player.GetBestClassDamage().ApplyTo(DeificAmulet.StarDamage) * (Player.strongBees ? 0.85f : 1f));
 
-                        Projectile onHitProj = Main.projectile[Projectile.NewProjectile(source, Player.Center, new Vector2(0,-15).RotatedBy(MathHelper.TwoPi/projAmount*n), ModContent.ProjectileType<AstralStar>(), deificProjDamage, 4f, Player.whoAmI)];
+                        Projectile onHitProj = Main.projectile[Projectile.NewProjectile(source, Player.Center, new Vector2(0,-15 * (rampartOfDeities && n % 2 == 0 ? 0.75f: 1.25f)).RotatedBy(MathHelper.TwoPi/projAmount*n), ModContent.ProjectileType<AstralStar>(), deificProjDamage, 4f, Player.whoAmI)];
                         if (onHitProj.whoAmI.WithinBounds(Main.maxProjectiles))
                         {
                             onHitProj.DamageType = DamageClass.Generic;
                             onHitProj.usesLocalNPCImmunity = true;
-                            onHitProj.localNPCHitCooldown = 5;
+                            onHitProj.localNPCHitCooldown = 30;
                             onHitProj.tileCollide = false;
                             onHitProj.extraUpdates = 1;
-                            onHitProj.Calamity().conditionalHomingRange = 500f;
+                            onHitProj.Calamity().conditionalHomingRange = 600f;
+                            if (Player.strongBees)
+                                onHitProj.penetrate += 1;
                         }
                     }
                 }
