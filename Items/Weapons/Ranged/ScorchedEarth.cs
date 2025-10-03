@@ -22,7 +22,7 @@ namespace CalamityMod.Items.Weapons.Ranged
         public static int ProjectilesPerBurst = 4;
         public override void SetDefaults()
         {
-            Item.damage = 500;
+            Item.damage = 550;
             Item.DamageType = DamageClass.Ranged;
             Item.useAnimation = Item.useTime = OriginalUseTime;
             Item.shoot = ProjectileType<ScorchedEarthHoldout>();
