@@ -133,10 +133,10 @@ namespace CalamityMod.Projectiles.Magic
                 int needleFireRate = (int)(12 * speedModifier);
                 if (shootingTimer >= needleFireRate)
                 {
-                    if (calPlayer.unstableCastersGauntletVis >= 0.3f)
+                    if (calPlayer.unstableCastersGauntletVis >= 0.6f)
                     {
                         // Consume vis
-                        calPlayer.unstableCastersGauntletVis -= 0.3f;
+                        calPlayer.unstableCastersGauntletVis -= 0.6f;
 
                         Projectile.velocity *= Main.rand.NextFloat(0.97f, 1.04f);
 
@@ -150,7 +150,7 @@ namespace CalamityMod.Projectiles.Magic
                         GeneralParticleHandler.SpawnParticle(shootPulse);
 
                         // Spawn needle
-                        Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center, (Projectile.velocity * 35f).RotatedBy(Main.rand.NextFloat(-0.07f, 0.07f)), ModContent.ProjectileType<VisNeedle>(), Projectile.damage, Projectile.knockBack, Projectile.owner);
+                        Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center, (Projectile.velocity * 35f).RotatedBy(Main.rand.NextFloat(-0.07f, 0.07f)), ModContent.ProjectileType<VisNeedle>(), Projectile.damage * (int) 0.8f, Projectile.knockBack, Projectile.owner);
                         shootingTimer = 0f;
                     }
                     else
@@ -163,13 +163,13 @@ namespace CalamityMod.Projectiles.Magic
 
 
             // -- SIGIL SPAWNING --
-            if (Owner.altFunctionUse == 2 && calPlayer.unstableCastersGauntletVis >= 6f && Owner.ownedProjectileCounts[ModContent.ProjectileType<SigilSet>()] <= 0)
+            if (Owner.altFunctionUse == 2 && calPlayer.unstableCastersGauntletVis >= 12f && Owner.ownedProjectileCounts[ModContent.ProjectileType<SigilSet>()] <= 0)
             {
                 float sigilFireRate = HeldItem.useTime * 4f;
 
                 if (Owner.ownedProjectileCounts[ModContent.ProjectileType<SigilSet>()] <= 0 || shootingTimer >= sigilFireRate)
                 {
-                    calPlayer.unstableCastersGauntletVis -= 6f;
+                    calPlayer.unstableCastersGauntletVis -= 12f;
 
                     SoundEngine.PlaySound(new("CalamityMod/Sounds/Item/MagicRockSound") { Volume = 0.4f, PitchVariance = 0.05f }, Projectile.Center);
 
@@ -261,9 +261,9 @@ namespace CalamityMod.Projectiles.Magic
                     if (emptySlots > 0 && nonConsumedSigils > 0)
                     {
                         // Check if the player has enough vis
-                        if (calPlayer.unstableCastersGauntletVis >= 6f)
+                        if (calPlayer.unstableCastersGauntletVis >= 12f)
                         {
-                            calPlayer.unstableCastersGauntletVis -= 6f;
+                            calPlayer.unstableCastersGauntletVis -= 12f;
 
                             SoundEngine.PlaySound(SoundID.DD2_EtherianPortalOpen with { Volume = 0.6f }, Projectile.Center);
 

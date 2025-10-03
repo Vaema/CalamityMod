@@ -424,8 +424,8 @@ namespace CalamityMod.CalPlayer
             {
 
                 unstableCastersGauntletVisTimer++;
-                // Gain 0.1% charge once every 8 ticks
-                if (unstableCastersGauntletVisTimer >= 8)
+                // Gain 0.1% charge once every 4 ticks
+                if (unstableCastersGauntletVisTimer >= 4)
                 {
                     unstableCastersGauntletVis += 0.1f;
                     unstableCastersGauntletVisTimer = 0;
