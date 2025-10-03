@@ -39,9 +39,9 @@ namespace CalamityMod.Projectiles.Ranged
         public Vector2 recoilDirection;
         public bool setVel = true;
         public float glowIntensity = 1;
-        public Color c1 = new Color(164, 47, 160);
-        public Color c2 = new Color(227, 97, 72);
-        public Color c3 = new Color(193, 255, 146);
+        public Color c1 = new Color(146, 255, 211);
+        public Color c2 = new Color(222, 225, 146);
+        public Color c3 = new Color(255, 233, 146);
         public Color shiftColor;
         public ref float starburstCooldown => ref Projectile.ai[2];
         public bool naildriver => ((starburstTimer <= starburstPerfectTime + perfectLeniancy) && (starburstTimer >= starburstPerfectTime - perfectLeniancy)); // if within perfect frame window

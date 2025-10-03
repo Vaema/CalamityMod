@@ -44,9 +44,9 @@ namespace CalamityMod.Items.Weapons.Ranged
             float rate = (Main.GlobalTimeWrappedHourly * 3);
             List<Color> eColors = new List<Color>()
             {
-                new Color(164, 47, 160),
-                new Color(227, 97, 72),
-                new Color(193, 255, 146)
+                new Color(146, 255, 211),
+                new Color(222, 225, 146),
+                new Color(255, 233, 146)
             };
             int colorIndex = (int)(rate / 2 % eColors.Count);
             Color currentColor = eColors[colorIndex];

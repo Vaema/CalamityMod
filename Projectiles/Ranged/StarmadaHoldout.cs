@@ -51,6 +51,7 @@ namespace CalamityMod.Projectiles.Ranged
         public Color shiftColor;
         public Vector2 gunBackPosition;
         public int gunPower = 1;
+        public int lastGunPower = 1;
         public SlotId AudSlot1;
         public SlotId AudSlot2;
         public bool failedChain = false;
@@ -108,7 +109,7 @@ namespace CalamityMod.Projectiles.Ranged
                 AudSlot1 = SoundEngine.PlaySound(blast1 with { Volume = 0.8f, Pitch = 0f, MaxInstances = 8 }, Projectile.Center);
                 SoundStyle blast2 = new("CalamityMod/Sounds/Item/StarfleetStarburst");
                 AudSlot2 = SoundEngine.PlaySound(blast2 with { Volume = 0.6f, Pitch = -0.2f + gunPower * 0.2f, MaxInstances = 8 }, Projectile.Center);
-
+                lastGunPower = gunPower;
                 starburstTimer++;
             }
             if (starburstTimer > 0)
@@ -285,10 +286,10 @@ namespace CalamityMod.Projectiles.Ranged
             setVel = true;
 
             Vector2 blastCenter = GunTipPosition + Projectile.velocity * 10;
-            float blastSize = 140 + 15 * gunPower;
+            float blastSize = 140 + 15 * lastGunPower;
             float minMultiplier = 0.1f;
             int hitsToMinMult = 8;
-            int damage = (int)(Projectile.damage * (1 + gunPower * 0.5f));
+            int damage = (int)(Projectile.damage * (1 + lastGunPower * 0.5f));
             Projectile blast = Projectile.NewProjectileDirect(Owner.GetSource_FromThis(), blastCenter, Vector2.Zero, ModContent.ProjectileType<BasicBurst>(), damage, -45, Owner.whoAmI, blastSize, minMultiplier, hitsToMinMult);
             blast.timeLeft = 15;
 
@@ -306,7 +307,7 @@ namespace CalamityMod.Projectiles.Ranged
             }*/
 
 
-            float gunPowerMult = MathHelper.Lerp(gunPower, 1, 0.7f);
+            float gunPowerMult = MathHelper.Lerp(lastGunPower, 1, 0.7f);
             for (int i = 0; i < 20; i++)
             {
                 float dist = Main.rand.NextFloat(1, 4);
@@ -320,7 +321,7 @@ namespace CalamityMod.Projectiles.Ranged
                 Particle stars = new VelChangingSpark(GunTipPosition, startVel * gunPowerMult, startVel.RotatedBy(rot * 5) * gunPowerMult, "CalamityMod/Particles/PulseStar", Main.rand.Next(25, 45 + 1), Main.rand.NextFloat(0.1f, 0.35f) * gunPowerMult, GetRandomColor(), new Vector2(1f, 1f), shrinkSpeed: Main.rand.NextFloat(0.02f, 0.06f), lerpRate: 0.02f, glowCenter: true);
                 GeneralParticleHandler.SpawnParticle(stars);
             }
-            if (gunPower == 3)
+            if (lastGunPower == 3)
             {
                 int parts2 = 45;
                 for (int i = 0; i < parts2; i++)
@@ -339,7 +340,7 @@ namespace CalamityMod.Projectiles.Ranged
 
                 }
             }
-            if (gunPower >= 2)
+            if (lastGunPower >= 2)
             {
                 int parts = 85;
                 for (int i = 0; i < parts; i++)

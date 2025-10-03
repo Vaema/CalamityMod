@@ -16,9 +16,9 @@ namespace CalamityMod.Projectiles.Ranged
         public new string LocalizationCategory => "Projectiles.Ranged";
         public override string Texture => "CalamityMod/Projectiles/InvisibleProj";
         public int time = 0;
-        public Color c1 = new Color(164, 47, 160);
-        public Color c2 = new Color(227, 97, 72);
-        public Color c3 = new Color(193, 255, 146);
+        public Color c1 = new Color(146, 255, 211);
+        public Color c2 = new Color(222, 225, 146);
+        public Color c3 = new Color(255, 233, 146);
         public Color shiftColor;
         public Player Owner => Main.player[Projectile.owner];
         public override void SetDefaults()
@@ -53,7 +53,7 @@ namespace CalamityMod.Projectiles.Ranged
 
             if (time > 5 && time % 2 == 0)
             {
-                Particle trail = new CustomSpark(Projectile.Center - Projectile.velocity.SafeNormalize(Vector2.UnitX) * 28, Projectile.velocity, "CalamityMod/Particles/DualTrail", false, 15, 0.11f, shiftColor, new Vector2(0.9f, 1.1f), shrinkSpeed: 0.5f);
+                Particle trail = new CustomSpark(Projectile.Center - Projectile.velocity.SafeNormalize(Vector2.UnitX) * 28, Projectile.velocity, "CalamityMod/Particles/DualTrail", false, 15, 0.11f, shiftColor * 0.6f, new Vector2(0.9f, 1.1f), shrinkSpeed: 0.5f);
                 GeneralParticleHandler.SpawnParticle(trail);
 
                 if (time > 18)
@@ -93,9 +93,9 @@ namespace CalamityMod.Projectiles.Ranged
             for (int i = 0; i < 5; i++)
             {
                 Vector2 offset = (MathHelper.TwoPi * i / 5).ToRotationVector2().RotatedBy(Projectile.rotation + MathHelper.Pi);
-                for (int t = 0; t < 3; t++)
-                    Main.EntitySpriteDraw(tex2, drawPosition, null, shiftColor with { A = 0 }, offset.ToRotation(), new Vector2(tex2.Width * 0.5f, 0), new Vector2((2.3f + t * 0.03f) * (i == 2 ? 1.8f : i == 3 ? 1.8f : 1), (1.1f + t * 0.03f) * (i == 2 ? 0.75f : i == 3 ? 0.75f : 1)) * Projectile.scale * Owner.gravDir * 0.3f, SpriteEffects.FlipVertically);
-                Main.EntitySpriteDraw(tex2, drawPosition, null, Color.White with { A = 0 }, offset.ToRotation(), new Vector2(tex2.Width * 0.5f, 0), new Vector2(1.5f, 0.7f) * Projectile.scale * Owner.gravDir * 0.3f, SpriteEffects.FlipVertically);
+                for (int t = 0; t < 2; t++)
+                    Main.EntitySpriteDraw(tex2, drawPosition, null, shiftColor with { A = 0 } * 0.4f, offset.ToRotation(), new Vector2(tex2.Width * 0.5f, 0), new Vector2((2.3f + t * 0.03f) * (i == 2 ? 1.8f : i == 3 ? 1.8f : 1), (1.1f + t * 0.03f) * (i == 2 ? 0.75f : i == 3 ? 0.75f : 1)) * Projectile.scale * Owner.gravDir * 0.3f, SpriteEffects.FlipVertically);
+                Main.EntitySpriteDraw(tex2, drawPosition, null, Color.White with { A = 0 } * 0.4f, offset.ToRotation(), new Vector2(tex2.Width * 0.5f, 0), new Vector2(1.5f, 0.7f) * Projectile.scale * Owner.gravDir * 0.3f, SpriteEffects.FlipVertically);
             }
             return false;
         }
