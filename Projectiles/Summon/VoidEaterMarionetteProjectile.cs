@@ -25,7 +25,7 @@ namespace CalamityMod.Projectiles.Summon
         public float BlueFireballDamageMult => Projectile.minionSlots * 1.1f;
         public static int EffectiveBlueFireIframes => 10;
 
-        public float PurpleFireballDamageMult => Projectile.minionSlots * 1.33f;
+        public float PurpleFireballDamageMult => Projectile.minionSlots * 1.1f;
         public static int EffectivePurpleFireIframes => 10;
 
         #endregion
