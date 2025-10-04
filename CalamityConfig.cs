@@ -55,6 +55,10 @@ namespace CalamityMod
         [DefaultValue(true)]
         public bool SunkenSeaBackgroundDistortion { get; set; }
 
+        [BackgroundColor(192, 54, 64, 192)]
+        [DefaultValue(true)]
+        public bool FancyBackgroundVisuals { get; set; }
+
         private const int MinParticleLimit = 500;
         private const int MaxParticleLimit = 10000;
 
@@ -242,15 +246,7 @@ namespace CalamityMod
 
         [BackgroundColor(192, 54, 64, 192)]
         [DefaultValue(true)]
-        public bool Interlude1 { get; set; }
-
-        [BackgroundColor(192, 54, 64, 192)]
-        [DefaultValue(true)]
-        public bool Interlude2 { get; set; }
-
-        [BackgroundColor(192, 54, 64, 192)]
-        [DefaultValue(true)]
-        public bool Interlude3 { get; set; }
+        public bool Interludes { get; set; }
 
         [BackgroundColor(192, 54, 64, 192)]
         [DefaultValue(true)]

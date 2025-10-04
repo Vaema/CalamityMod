@@ -273,11 +273,13 @@ namespace CalamityMod.Projectiles
         /// <summary>
         /// Custom update priority.<br/>
         /// Calamity sorts projectiles by their update priority to fix otherwise absurdly difficult to resolve visual bugs on certain weapons.<br/>
-        /// Examples include Mechworm segments detaching or Rancor's laser beam being offset from the magic circle.
+        /// Examples include Void Eater Marionette segments detaching or Rancor's laser beam being offset from the magic circle.
         /// </summary>
         public float UpdatePriority = 0f;
 
         public int BloodstoneOrbValue = 0;
+
+        public int HomingTarget = -1;
 
         #region On Spawn
         public override void OnSpawn(Projectile projectile, IEntitySource source)
@@ -367,6 +369,8 @@ namespace CalamityMod.Projectiles
         {
             if (projectile.bobber && projectile.type != ModContent.ProjectileType<VictideBobber>() && RunFishingMinigames(projectile))
                 return false;
+            //Reset the Homing Target immediately before AI can re-set it on applicable projectiles
+            HomingTarget = -1;
             #region Vanilla Summons AI Changes
 
             //
@@ -4731,6 +4735,13 @@ namespace CalamityMod.Projectiles
                 return false;
             }
             return true;
+        }
+
+        public override bool? CanHitNPC(Projectile projectile, NPC target)
+        {
+            if (target.Calamity().IsArmored() && HomingTarget > -1 && HomingTarget != target.whoAmI)
+                return false;
+            return null;
         }
         #endregion
 

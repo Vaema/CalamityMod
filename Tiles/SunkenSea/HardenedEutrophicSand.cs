@@ -29,7 +29,7 @@ namespace CalamityMod.Tiles.SunkenSea
             TileID.Sets.CanBeDugByShovel[Type] = true;
 
             DustType = DustID.Titanium;
-            AddMapEntry(new Color(61, 151, 194));
+            AddMapEntry(new Color(66, 162, 209));
 
             this.RegisterUniversalMerge(ModContent.TileType<EutrophicSand>(), "CalamityMod/Tiles/Merges/EutrophicSandMerge");
             this.RegisterUniversalMerge(ModContent.TileType<Navystone>(), "CalamityMod/Tiles/Merges/NavystoneMerge");
@@ -56,17 +56,6 @@ namespace CalamityMod.Tiles.SunkenSea
 
             if (!up.HasTile && !up2.HasTile && up.LiquidAmount > 0 && up2.LiquidAmount > 0 && !tile.LeftSlope && !tile.RightSlope && !tile.IsHalfBlock)
             {
-                //brain corals
-                if (WorldGen.genRand.NextBool(18))
-                {
-                    ushort[] BrainCorals = new ushort[] { (ushort)ModContent.TileType<BrainCoral>(), (ushort)ModContent.TileType<SmallBrainCoral>() };
-
-                    ushort newObject = Main.rand.Next(BrainCorals);
-
-                    WorldGen.PlaceObject(i, j - 1, newObject, true);
-                    NetMessage.SendObjectPlacement(-1, i, j - 1, newObject, 0, 0, -1, -1);
-                }
-
                 //tube corals
                 if (WorldGen.genRand.NextBool(8))
                 {

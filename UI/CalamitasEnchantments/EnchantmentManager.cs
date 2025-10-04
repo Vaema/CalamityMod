@@ -319,7 +319,7 @@ namespace CalamityMod.UI.CalamitasEnchants
             {
                 [ModContent.ItemType<TheCommunity>()] = ModContent.ItemType<ShatteredCommunity>(),
                 [ModContent.ItemType<EntropysVigil>()] = ModContent.ItemType<CindersOfLament>(),
-                [ModContent.ItemType<StaffoftheMechworm>()] = ModContent.ItemType<Metastasis>(),
+                [ModContent.ItemType<VoidEaterMarionette>()] = ModContent.ItemType<Metastasis>(),
                 [ModContent.ItemType<GhastlyVisage>()] = ModContent.ItemType<GruesomeEminence>(),
                 [ModContent.ItemType<BurningSea>()] = ModContent.ItemType<Rancor>()
             };

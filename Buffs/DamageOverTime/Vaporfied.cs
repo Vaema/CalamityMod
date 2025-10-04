@@ -5,6 +5,7 @@ using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.DataStructures;
 using Terraria.ID;
+using Terraria.Localization;
 using Terraria.ModLoader;
 
 namespace CalamityMod.Buffs.DamageOverTime
@@ -93,5 +94,12 @@ namespace CalamityMod.Buffs.DamageOverTime
                 }
             }
         }
+    }
+    public class VaporfiedIconItem : ModItem
+    {
+        private string BuffName = "Vaporfied";
+        public override string Texture => $"CalamityMod/Buffs/DamageOverTime/{BuffName}";
+        public override LocalizedText DisplayName => CalamityUtils.GetText($"Buffs.{BuffName}.DisplayName");
+        public override LocalizedText Tooltip => CalamityUtils.GetText($"Buffs.{BuffName}.ItemTooltip");
     }
 }

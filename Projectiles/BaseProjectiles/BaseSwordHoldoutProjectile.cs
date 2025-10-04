@@ -182,6 +182,8 @@ namespace CalamityMod.Projectiles.BaseProjectiles
         /// </summary>
         public virtual float lineCollisionLength { get; set; } = 0;
 
+        public virtual Color AfterImageColor { get; set; } = Color.White;
+
         #endregion
 
         #region Fields
@@ -321,9 +323,13 @@ namespace CalamityMod.Projectiles.BaseProjectiles
                 player.direction = -1;
                 Projectile.spriteDirection = -1 * (int)player.gravDir;
             }
-            if (AlternateSwings && player.GetModPlayer<BaseSwordHoldoutPlayer>().swingNum % 2 == 0)
+            if (AlternateSwings && player.GetModPlayer<BaseSwordHoldoutPlayer>().swingNum % 2 == 1)
             {
                 Projectile.spriteDirection *= -1;
+            }
+            if (AlternateSwings)
+            {
+                player.GetModPlayer<BaseSwordHoldoutPlayer>().swingNum++;
             }
             swingTime = Main.player[Projectile.owner].HeldItem.useTime;
             Spawn(source);
@@ -385,6 +391,10 @@ namespace CalamityMod.Projectiles.BaseProjectiles
                     player.direction = -1;
                     Projectile.spriteDirection = -1 * (int)player.gravDir;
                 }
+                if (AlternateSwings && player.GetModPlayer<BaseSwordHoldoutPlayer>().swingNum % 2 == 1)
+                {
+                    Projectile.spriteDirection *= -1;
+                }
             }
             if (Projectile.spriteDirection == -1)
             {
@@ -405,10 +415,12 @@ namespace CalamityMod.Projectiles.BaseProjectiles
             {
                 SoundEngine.PlaySound((SoundStyle)UseSound,player.Center);
             }
-            var angle2 = (AlternateSwings && (modplayer.swingNum % 2 == 1 ? false : true) ? SwingFunction() : SwingFunction());
+            var angle2 = (AlternateSwings && modplayer.swingNum % 2 == 1 ? SwingFunction() : SwingFunction());
             Projectile.Center = armCenter - (angle * OffsetDistance * (1 + (Projectile.scale - 1) * 0.75f)).RotatedBy(Projectile.spriteDirection * angle2);
             Projectile.rotation = angle.RotatedBy(Projectile.spriteDirection * angle2).ToRotation() + adust;
             AdditionalAI();
+            if (!Projectile.active)
+                return;
             oldPlayerOffset = Projectile.Center - player.Center;
             player.itemTime = ExistsTime + 2 - timer;
             player.itemAnimation = ExistsTime + 2 - timer;
@@ -441,11 +453,11 @@ namespace CalamityMod.Projectiles.BaseProjectiles
                     var col = Projectile.Opacity * (i / (float)AfterImageLength) * 0.1f;
                     if (Projectile.spriteDirection == 1)
                     {
-                        Main.EntitySpriteDraw(texture, oldProjectilePos[i] - Main.screenPosition, null, Color.White * col, oldProjectileRot[i], texture.Size() / 2, oldScale[i], SpriteEffects.None, 0);
+                        Main.EntitySpriteDraw(texture, oldProjectilePos[i] - Main.screenPosition, null, AfterImageColor * col, oldProjectileRot[i], texture.Size() / 2, oldScale[i], SpriteEffects.None, 0);
                     }
                     else
                     {
-                        Main.EntitySpriteDraw(texture, oldProjectilePos[i] - Main.screenPosition, null, Color.White * col, oldProjectileRot[i], texture.Size() / 2, oldScale[i], SpriteEffects.FlipHorizontally, 0);
+                        Main.EntitySpriteDraw(texture, oldProjectilePos[i] - Main.screenPosition, null, AfterImageColor * col, oldProjectileRot[i], texture.Size() / 2, oldScale[i], SpriteEffects.FlipHorizontally, 0);
                     }
                 }
             }

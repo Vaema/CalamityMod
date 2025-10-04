@@ -1,4 +1,4 @@
-using CalamityMod.Projectiles.BaseProjectiles;
+﻿using CalamityMod.Projectiles.BaseProjectiles;
 using CalamityMod.Projectiles.Melee;
 using CalamityMod.Items.Weapons.Ranged;
 using CalamityMod.Items.Weapons.Rogue;

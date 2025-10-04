@@ -46,6 +46,7 @@ namespace CalamityMod.Items.Weapons.Ranged
         public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)
         {
             type = Item.shoot;
+            position += player.itemRotation.ToRotationVector2() * player.direction * 48f;
             int bulletAmt = 40;
             for (int i = 0; i < bulletAmt; i++)
             {

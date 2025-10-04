@@ -15,22 +15,16 @@ namespace CalamityMod.Tiles.SunkenSea
             Main.tileSolid[Type] = true;
             Main.tileBlockLight[Type] = true;
 
-            Main.tileBlendAll[Type] = true;
             CalamityUtils.MergeWithGeneral(Type);
             CalamityUtils.MergeWithDesert(Type);
 
             TileID.Sets.HasSlopeFrames[Type] = true;
             TileID.Sets.ChecksForMerge[Type] = true;
             TileID.Sets.CanBeDugByShovel[Type] = true;
-            Main.tileShine2[Type] = true;
+            Main.tileShine2[Type] = false;
 
             DustType = DustID.Hive;
-            AddMapEntry(new Color(171, 101, 87));
-
-            //Stone merges
-            this.RegisterUniversalMerge(ModContent.TileType<Shellstone>(), "CalamityMod/Tiles/Merges/ShellstoneMerge");
-            this.RegisterUniversalMerge(ModContent.TileType<Navystone>(), "CalamityMod/Tiles/Merges/NavystoneMerge");
-            this.RegisterUniversalMerge(ModContent.TileType<Runestone>(), "CalamityMod/Tiles/Merges/RunestoneMerge");
+            AddMapEntry(new Color(203, 123, 107));
 
             //Sand merges
             this.RegisterUniversalMerge(ModContent.TileType<PolypSand>(), "CalamityMod/Tiles/Merges/PolypSandMerge");

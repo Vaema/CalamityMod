@@ -2,6 +2,7 @@
 using CalamityMod.Items.Weapons.Magic;
 using CalamityMod.Items.Weapons.Ranged;
 using CalamityMod.Items.Weapons.Rogue;
+using CalamityMod.NPCs.DevourerofGods;
 using CalamityMod.Projectiles.Melee.Yoyos;
 using CalamityMod.Rarities;
 using Terraria;
@@ -18,13 +19,19 @@ namespace CalamityMod.Items.Weapons.Melee
         public static float Reach = 720f;
         public static float Speed = 54f;
         public override LocalizedText Tooltip => base.Tooltip.WithFormatArgs(Reach.ToTiles(), Speed);
+        public override void ModifyTooltips(List<TooltipLine> tooltips)
+        {
+            tooltips.FindAndReplace("[GFB]", this.GetLocalizedValue(Main.zenithWorld ? "TooltipGFB" : "TooltipNormal"));
+            if (!Main.zenithWorld)
+                tooltips.FindAndReplaceAll("ff00ff", Utils.Hex3(DevourerofGodsHead.SpecialMoveColor));
+        }
 
         public override void SetStaticDefaults()
         {
             ItemID.Sets.Yoyo[Type] = true;
             ItemID.Sets.GamepadExtraRange[Type] = 15;
             ItemID.Sets.GamepadSmartQuickReach[Type] = true;
-            ItemID.Sets.ShimmerTransformToItem[Type] = ModContent.ItemType<Deathwind>();
+            ItemID.Sets.ShimmerTransformToItem[Type] = ModContent.ItemType<ThreadOfEradication>();
         }
 
         public override void SetDefaults()
@@ -32,7 +39,7 @@ namespace CalamityMod.Items.Weapons.Melee
             Item.width = 42;
             Item.height = 40;
             Item.DamageType = DamageClass.MeleeNoSpeed;
-            Item.damage = 200;
+            Item.damage = 475;
             Item.knockBack = 7.5f;
             Item.useTime = 20;
             Item.useAnimation = 20;
@@ -50,6 +57,7 @@ namespace CalamityMod.Items.Weapons.Melee
             Item.value = CalamityGlobalItem.RarityDarkBlueBuyPrice;
             Item.rare = ModContent.RarityType<CosmicPurple>();
         }
-        public override void ModifyTooltips(List<TooltipLine> list) => list.FindAndReplace("[GFB]", this.GetLocalizedValue(Main.zenithWorld ? "TooltipGFB" : "TooltipNormal"));
+
+        public override bool CanUseItem(Player player) => player.ownedProjectileCounts[Item.shoot] <= 0;
     }
 }

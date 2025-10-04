@@ -20,10 +20,12 @@ namespace CalamityMod.UI.DialogueDisplay
         }
         public override bool? UseItem(Player player)
         {
-            if (DialogueDisplayUI.Dialogues.ContainsKey("OceanBlue"))
-                DialogueDisplaySystem.ProgressDialogue("OceanBlue");
+            int slot = DialogueDisplaySystem.GetSlot("OceanBlue");
+
+            if (slot != -1)
+                DialogueDisplaySystem.ProgressDialogue(slot);
             else
-                DialogueDisplaySystem.StartDialogue("OceanBlue", Main.npc.First(n => n.active), -1, effects: new WhisperingPearlEffects());
+                DialogueDisplaySystem.StartDialogue("OceanBlue", player.Center, 0, -1, effects: new WhisperingPearlEffects());
 
             return true;
         }

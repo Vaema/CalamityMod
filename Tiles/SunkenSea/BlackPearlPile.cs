@@ -1,10 +1,12 @@
 ﻿using System;
+using CalamityMod.Projectiles.Typeless;
 using CalamityMod.Sounds;
 using CalamityMod.Systems;
 using CalamityMod.Tiles.Abyss;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria;
+using Terraria.GameContent.Metadata;
 using Terraria.ID;
 using Terraria.ModLoader;
 
@@ -29,9 +31,11 @@ namespace CalamityMod.Tiles.SunkenSea
             TileID.Sets.ChecksForMerge[Type] = true;
             HitSound = CommonCalamitySounds.VoidstoneMine;
             DustType = DustID.Lead;
-            AddMapEntry(new Color(29, 33, 38));
+            AddMapEntry(new Color(48, 55, 63));
 
             TileID.Sets.CanBeDugByShovel[Type] = true;
+            TileID.Sets.Falling[Type] = true;
+            TileID.Sets.FallingBlockProjectile[Type] = new TileID.Sets.FallingBlockProjectileInfo(ModContent.ProjectileType<BlackPearlFalling>(), 15);
 
             //Stone merges
             this.RegisterUniversalMerge(ModContent.TileType<Shellstone>(), "CalamityMod/Tiles/Merges/ShellstoneMerge");

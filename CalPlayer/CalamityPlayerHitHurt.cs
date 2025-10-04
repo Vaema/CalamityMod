@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Linq;
 using CalamityMod.Balancing;
 using CalamityMod.Buffs.Cooldowns;
@@ -36,6 +36,7 @@ using CalamityMod.Items.Weapons.Melee;
 using CalamityMod.Items.Weapons.Rogue;
 using CalamityMod.NPCs;
 using CalamityMod.NPCs.Cryogen;
+using CalamityMod.NPCs.DevourerofGods;
 using CalamityMod.NPCs.Other;
 using CalamityMod.NPCs.ProfanedGuardians;
 using CalamityMod.NPCs.Providence;
@@ -509,6 +510,24 @@ namespace CalamityMod.CalPlayer
             if (NorfleetCounter > 3 && NorfleetCounter < 1000)
                 damageSource = PlayerDeathReason.ByCustomReason(CalamityUtils.GetText("Status.Death.Norfleet").ToNetworkText(Player.name));
             NorfleetCounter = 0;
+
+            if (damageSource.TryGetCausingEntity(out var Entity) && Entity is NPC && (Entity as NPC).type == ModContent.NPCType<DevourerofGodsHead>())
+            {
+                var npc = Main.npc[damageSource.SourceNPCIndex];
+                if (npc.ai[3] < 2) //Divinity Devourer
+                {
+                    damageSource = PlayerDeathReason.ByCustomReason(CalamityUtils.GetText("Status.Death.DivinityDevourer"+Main.rand.Next(1,4)).ToNetworkText(Player.name));
+                }
+                else if (npc.ai[3] >= 3)
+                    if (npc.life > npc.lifeMax / 4) //Dimensional Drive
+                    {
+                        damageSource = PlayerDeathReason.ByCustomReason(CalamityUtils.GetText("Status.Death.DimensionalDrive").ToNetworkText(Player.name));
+                    }
+                    else //Ultracosmic Maelstrom
+                    {
+                        damageSource = PlayerDeathReason.ByCustomReason(CalamityUtils.GetText("Status.Death.UltracosmicMaelstrom" + Main.rand.Next(1, 3)).ToNetworkText(Player.name));
+                    }
+            }
 
             if (NPC.AnyNPCs(ModContent.NPCType<SupremeCalamitas>()))
             {
@@ -2546,7 +2565,8 @@ namespace CalamityMod.CalPlayer
                     Projectile.NewProjectile(source, Player.Center.X, Player.Center.Y, 0f, 0f, ModContent.ProjectileType<HideOfAstrumDeusExplosion>(), blazeDamage, 5f, Player.whoAmI, 0f, 1f);
                 }
                 // TODO -- Make Deific Amulet and Rampart of Deities' retaliation effects way cooler
-                // In the meantime, gave them homing astral bombers instead of the lame falling stars
+                // In the meantime, gave them homing astral stars instead of the lame falling stars.
+                // This also serves to make the Honeycomb in Sweetheart Necklace make sense
                 if (dAmulet)
                 {
                     var source = Player.GetSource_Accessory(FindAccessory(ModContent.ItemType<DeificAmulet>()));

@@ -55,6 +55,22 @@ namespace CalamityMod
                 return backgroundMatrix;
             }
         }
+        /// <summary>
+        /// Gets the texture for the passed string and stores it in the referenced field
+        /// If the texture is already stored in the field, it will not request it again.
+        /// Use this instead of requesting every frame.
+        /// </summary>
+        /// <param name="textureAsset"></param>
+        /// <param name="texture"></param>
+        /// <returns></returns>
+        public static Asset<Texture2D> GetTextureEfficient(ref Asset<Texture2D> textureAsset, string texture)
+        {
+            if (textureAsset is null)
+            {
+                textureAsset = ModContent.Request<Texture2D>(texture);
+            }
+            return textureAsset;
+        }
 
         #region Projectile Afterimages
         /// <summary>
@@ -269,12 +285,27 @@ namespace CalamityMod
         /// <param name="scale"></param>
         /// <param name="wantedScale"></param>
         /// <param name="drawOffset"></param>
-        public static void DrawInventoryCustomScale(SpriteBatch spriteBatch, Texture2D texture, Vector2 position, Rectangle frame, Color drawColor, Color itemColor, Vector2 origin, float scale, float wantedScale = 1f, Vector2 drawOffset = default)
+        public static void DrawInventoryCustomScale(SpriteBatch spriteBatch, Texture2D texture, Vector2 position, Rectangle frame, Color drawColor, Color itemColor, Vector2 origin, float scale, float wantedScale = 1f, Vector2 drawOffset = default, SpriteEffects spriteEffects = SpriteEffects.None, float rotation = 0f)
         {
             wantedScale = Math.Max(scale, wantedScale * Main.inventoryScale);
             float scaleDifference = wantedScale - scale;
             position += drawOffset * wantedScale;
-            spriteBatch.Draw(texture, position, frame, drawColor, 0f, origin, wantedScale, SpriteEffects.None, 0);
+            if (itemColor == Color.Transparent) itemColor = Color.White;
+            spriteBatch.Draw(texture, position, frame, itemColor.MultiplyRGB(drawColor), 0f, origin, wantedScale, SpriteEffects.None, 0);
+        }
+
+        static Asset<Texture2D> ItemDotTexture;
+        /// <summary>
+        /// Draws an enabled/disabled dot at the bottom right of the item's sprite
+        /// Used for effects that are enabled/disabled
+        /// </summary>
+        /// <param name="itemPosition"></param>
+        /// <param name="enabled"></param>
+        public static void DrawInventoryDot(SpriteBatch spriteBatch, Vector2 itemPosition, Vector2 dotOffset, bool enabled)
+        {
+            var tex = CalamityUtils.GetTextureEfficient(ref ItemDotTexture, "Terraria/Images/Extra_20").Value;
+            var dotFrame = tex.Frame(1,4, frameY: enabled ? 1 : 2);
+            spriteBatch.Draw(tex, itemPosition + dotOffset, dotFrame, Color.White, 0, dotFrame.Size() * 0.5f, Main.inventoryScale, SpriteEffects.None, 0);
         }
 
         /// <summary>

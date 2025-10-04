@@ -1361,7 +1361,8 @@ namespace CalamityMod.Items
             // Queen Bee
             shimmerTransmute[ItemID.BeeKeeper] = ItemID.BeesKnees;
             shimmerTransmute[ItemID.BeesKnees] = ItemID.BeeGun;
-            shimmerTransmute[ItemID.BeeGun] = ItemID.BeeKeeper;
+            shimmerTransmute[ItemID.BeeGun] = ModContent.ItemType<HardenedHoneycomb>();
+            shimmerTransmute[ModContent.ItemType<HardenedHoneycomb>()] = ItemID.BeeKeeper;
 
             // Deerclops
             shimmerTransmute[ItemID.LucyTheAxe] = ItemID.PewMaticHorn;

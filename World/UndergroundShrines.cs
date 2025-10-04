@@ -47,8 +47,7 @@ namespace CalamityMod.World
             }
             if (tile.TileType == TileType<Tiles.SunkenSea.Navystone>() ||
             tile.TileType == TileType<Tiles.SunkenSea.EutrophicSand>() ||
-            tile.WallType == WallType<NavystoneWall>() ||
-            tile.WallType == WallType<EutrophicSandWall>())
+            tile.WallType == WallType<NavystoneWall>())
             {
                 return true;
             }

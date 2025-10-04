@@ -130,7 +130,6 @@ namespace CalamityMod.NPCs.Polterghast
             NPC.netAlways = true;
             NPC.HitSound = HitSound;
             NPC.DeathSound = SoundID.NPCDeath39;
-            NPC.Calamity().VulnerableToSickness = false;
         }
 
         public override void SetBestiary(BestiaryDatabase database, BestiaryEntry bestiaryEntry)

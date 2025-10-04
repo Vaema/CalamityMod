@@ -3784,7 +3784,7 @@ namespace CalamityMod.CalPlayer
 
             if ((warped || caribbeanRum) && !Player.slowFall && !Player.mount.Active)
             {
-                float velocityYMultiplier = (warped && Main.getGoodWorld) ? 1.02f : 1.01f;
+                float velocityYMultiplier = 1.01f;
                 Player.velocity.Y *= velocityYMultiplier;
             }
 
@@ -4045,7 +4045,9 @@ namespace CalamityMod.CalPlayer
                 if (Player.whoAmI == Main.myPlayer)
                 {
                     var source = Player.GetSource_Accessory(FindAccessory(ModContent.ItemType<ProfanedSoulArtifact>()));
-                    if (Player.FindBuffIndex(ModContent.BuffType<ProfanedSoulGuardians>()) == -1)
+                    if (Player.HasBuff(ModContent.BuffType<ProfanedSoulGuardians>()))
+                        Player.buffTime[Player.FindBuffIndex(ModContent.BuffType<ProfanedSoulGuardians>())] = 3600;
+                    else
                         Player.AddBuff(ModContent.BuffType<ProfanedSoulGuardians>(), 3600, true);
 
                     pSoulGuardians = true;

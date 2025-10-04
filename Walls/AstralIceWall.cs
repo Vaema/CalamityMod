@@ -1,20 +1,17 @@
-﻿
-using Microsoft.Xna.Framework;
+﻿using Microsoft.Xna.Framework;
+using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
 namespace CalamityMod.Walls
 {
+    [LegacyName("AstralIceWallSafe")]
     public class AstralIceWall : ModWall
     {
-        /*public override bool Autoload(ref string name, ref string texture)
-        {
-            mod.AddWall("AstralIceWallUnsafe", this, texture);
-            return base.Autoload(ref name, ref texture);
-        }*/
 
         public override void SetStaticDefaults()
         {
             // TODO -- Change this dust to be one more befitting Astral Ice.
+            Main.wallHouse[Type] = true;
             DustType = DustID.Shadowflame;
             WallID.Sets.Conversion.Ice[Type] = true;
             AddMapEntry(new Color(83, 76, 92));
