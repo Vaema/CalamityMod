@@ -314,6 +314,12 @@ namespace CalamityMod.NPCs
         /// does NOT include the head
         /// </summary>
         public abstract List<string> SegmentTextures { get; }
+
+        /// <summary>
+        /// A list of all glow textures for the segments to draw with
+        /// DOES include the head
+        /// </summary>
+        public virtual List<string?> GlowTextures { get; }
         /// <summary>
         /// The type of the worm hitbox NPC
         /// Make sure that NPC is a child of BaseWormHitboxNPC!
@@ -366,6 +372,27 @@ namespace CalamityMod.NPCs
         /// Use SegmentTextureAssets to get the data stored here.
         /// </summary>
         private List<Asset<Texture2D>> internalTexAssets = new List<Asset<Texture2D>>();
+        /// <summary>
+        /// The textures for each glow type of this worm. Works like getting a texture from TextureAssets
+        /// </summary>
+        public List<Asset<Texture2D>> GlowTextureAssets
+        {
+            get
+            {
+                if (internalGlowAssets.Count == 0)
+                    for (var i = 0; i < GlowTextures.Count; i++)
+                    {
+                        internalGlowAssets.Add(ModContent.Request<Texture2D>(GlowTextures[i]));
+                    }
+                return internalGlowAssets;
+            }
+        }
+
+        /// <summary>
+        /// Internal list that stores the glow textureassets.
+        /// Use SegmentTextureAssets to get the data stored here.
+        /// </summary>
+        private List<Asset<Texture2D>> internalGlowAssets = new List<Asset<Texture2D>>();
 
         public enum SegmentFollowLogic
         {
@@ -560,7 +587,9 @@ namespace CalamityMod.NPCs
             {
                 DrawSegment(spriteBatch, screenPos, drawColor, Segments[i]);
             }
-            spriteBatch.Draw(TextureAssets.Npc[Type].Value, NPC.Center - Main.screenPosition, null, drawColor, NPC.rotation, TextureAssets.Npc[Type].Value.Size() / 2, NPC.scale, SpriteEffects.None, 1);
+            spriteBatch.Draw(TextureAssets.Npc[Type].Value, NPC.Center - Main.screenPosition, null, drawColor* NPC.Opacity, NPC.rotation, TextureAssets.Npc[Type].Value.Size() / 2, NPC.scale, SpriteEffects.None, 1);
+            if (GlowTextures.Count > 0 && GlowTextures[0] is not null)
+                spriteBatch.Draw(GlowTextureAssets[0].Value, NPC.Center - Main.screenPosition, null, Color.White * NPC.Opacity, NPC.rotation, GlowTextureAssets[0].Size() / 2, NPC.scale, SpriteEffects.None, 1);
             return false;
         }
 
@@ -573,6 +602,12 @@ namespace CalamityMod.NPCs
             }
             var tex = SegmentTextureAssets[segment.segmentType].Value;
             spriteBatch.Draw(tex, segment.Center - Main.screenPosition, null, color * segment.Opacity, segment.rotation, tex.Size() / 2 + (SegmentTypeDrawOffsets[segment.segmentType]), NPC.scale, SpriteEffects.None, 1);
+            if (!GlowTextures.IndexInRange(segment.segmentType+1) || GlowTextures[segment.segmentType+1] is null)
+            {
+                return;
+            }
+            tex = GlowTextureAssets[segment.segmentType+1].Value;
+            spriteBatch.Draw(tex, segment.Center - Main.screenPosition, null, Color.White * segment.Opacity, segment.rotation, tex.Size() / 2 + (SegmentTypeDrawOffsets[segment.segmentType]), NPC.scale, SpriteEffects.None, 1);
         }
         #endregion
     }

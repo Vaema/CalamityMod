@@ -31,7 +31,7 @@ namespace CalamityMod.Items.Weapons.Ranged
         {
             Item.width = 40;
             Item.height = 82;
-            Item.damage = 4650;
+            Item.damage = 4375;
             Item.DamageType = DamageClass.Ranged;
             Item.useTime = 45;
             Item.useAnimation = 45;
@@ -41,7 +41,7 @@ namespace CalamityMod.Items.Weapons.Ranged
             Item.value = CalamityGlobalItem.RarityDarkBlueBuyPrice;
             Item.rare = ModContent.RarityType<CosmicPurple>();
             Item.autoReuse = true;
-            Item.shoot = ModContent.ProjectileType<DWArrow>();
+            Item.shoot = ModContent.ProjectileType<FriendlyLaserWallBeam>();
             Item.shootSpeed = 20f;
             Item.useAmmo = AmmoID.Arrow;
             Item.channel = true;
@@ -88,7 +88,7 @@ namespace CalamityMod.Items.Weapons.Ranged
             }
             else
             {
-                player.itemRotation += MathHelper.Clamp(MathHelper.WrapAngle(player.DirectionTo(player.Calamity().mouseWorld).ToRotation() - player.itemRotation), -0.04f, 0.04f);
+                player.itemRotation += MathHelper.Clamp(MathHelper.WrapAngle(player.DirectionTo(player.Calamity().mouseWorld).ToRotation() - player.itemRotation), -0.045f, 0.045f);
                 if (player.itemTime == 60)
                 {
 

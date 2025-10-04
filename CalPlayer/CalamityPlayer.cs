@@ -297,6 +297,8 @@ namespace CalamityMod.CalPlayer
         public bool lucreciaEnergyPaused = false;
         public bool lucreciaEnergyMaxSFXPlayed = false;
         private int lucreciaParticleTimer = 0;
+        public float unstableCastersGauntletVis = 0;
+        public int unstableCastersGauntletVisTimer = 0;
         public int PhotoAudioCooldown = 0;
         public int PhotoTimer = 90;
         /// <summary> Cooldown variable used to add a delay between Anahita's Arpeggio uses. </summary>

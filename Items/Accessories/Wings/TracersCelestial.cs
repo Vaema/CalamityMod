@@ -125,7 +125,7 @@ namespace CalamityMod.Items.Accessories.Wings
         {
             CreateRecipe().
                 AddIngredient<AngelTreads>().
-                AddRecipeGroup("AnyWings").
+                AddIngredient(ItemID.SoulofFlight,20).
                 AddIngredient(ItemID.LunarBar, 5).
                 AddTile(TileID.LunarCraftingStation).
                 Register();

@@ -28,7 +28,7 @@ namespace CalamityMod.Items.Weapons.Rogue
             Item.DamageType = RogueDamageClass.Instance;
             Item.useTime = Item.useAnimation = 24;
             Item.knockBack = 7f;
-            Item.damage = 1300;
+            Item.damage = 725;
             Item.noMelee = true;
             Item.noUseGraphic = true;
             Item.autoReuse = true;
@@ -44,8 +44,6 @@ namespace CalamityMod.Items.Weapons.Rogue
         { 
             tooltips.FindAndReplaceAll("ff00ff", Utils.Hex3(DevourerofGodsHead.SpecialMoveColor));
         }
-
-        public override float StealthDamageMultiplier => 1f;
 
         public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)
         {

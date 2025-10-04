@@ -52,11 +52,4 @@ namespace CalamityMod.Buffs.StatDebuffs
             }
         }
     }
-    public class AbsorberAfflictionIconItem : ModItem
-    {
-        private string BuffName = "AbsorberAffliction";
-        public override string Texture => $"CalamityMod/Buffs/StatDebuffs/{BuffName}";
-        public override LocalizedText DisplayName => CalamityUtils.GetText($"Buffs.{BuffName}.DisplayName");
-        public override LocalizedText Tooltip => CalamityUtils.GetText($"Buffs.{BuffName}.ItemTooltip");
-    }
 }

@@ -28,11 +28,4 @@ namespace CalamityMod.Buffs.StatDebuffs
             buffIndex--;
         }
     }
-    public class GlacialStateIconItem : ModItem
-    {
-        private string BuffName = "GlacialState";
-        public override string Texture => $"CalamityMod/Buffs/StatDebuffs/{BuffName}";
-        public override LocalizedText DisplayName => CalamityUtils.GetText($"Buffs.{BuffName}.DisplayName");
-        public override LocalizedText Tooltip => CalamityUtils.GetText($"Buffs.{BuffName}.ItemTooltip");
-    }
 }

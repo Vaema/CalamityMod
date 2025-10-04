@@ -83,11 +83,4 @@ namespace CalamityMod.Buffs.DamageOverTime
             dust.alpha = 10;
         }
     }
-    public class VoidfrostIconItem : ModItem
-    {
-        private string BuffName = "Voidfrost";
-        public override string Texture => $"CalamityMod/Buffs/DamageOverTime/{BuffName}";
-        public override LocalizedText DisplayName => CalamityUtils.GetText($"Buffs.{BuffName}.DisplayName");
-        public override LocalizedText Tooltip => CalamityUtils.GetText($"Buffs.{BuffName}.ItemTooltip");
-    }
 }

@@ -25,7 +25,7 @@ namespace CalamityMod.Projectiles.Summon
         public float BlueFireballDamageMult => Projectile.minionSlots * 1.1f;
         public static int EffectiveBlueFireIframes => 10;
 
-        public float PurpleFireballDamageMult => Projectile.minionSlots * 1.33f;
+        public float PurpleFireballDamageMult => Projectile.minionSlots * 1.1f;
         public static int EffectivePurpleFireIframes => 10;
 
         #endregion
@@ -39,13 +39,13 @@ namespace CalamityMod.Projectiles.Summon
             "CalamityMod/Projectiles/Summon/VoidEaterMarionetteTail"
         };
 
-        public override int SegmentCount => (int)(Projectile.minionSlots * 2);
+        public override int SegmentCount => (int)(Projectile.minionSlots);
 
         public override List<float> SegmentTypePositionOffsets => new()
         {
-            25, //Head
-            16, //Body 
-            18 //Tail
+            54, //Head
+            38, //Body 
+            52 //Tail
         };
 
         public override void SetStaticDefaults()
@@ -107,6 +107,7 @@ namespace CalamityMod.Projectiles.Summon
         public Vector2 ExitPortalLocation = Vector2.Zero;
         bool TightHoming = false;
         public bool FocusOnFetching = false;
+        public float JawOpeningAmount = 0;
 
         public override void SendExtraAI(BinaryWriter writer)
         {
@@ -177,12 +178,13 @@ namespace CalamityMod.Projectiles.Summon
             NPC target = Projectile.Center.MinionHoming(CurrentAttack != AttackState.Idle ? 999999f : 2800f, Owner);
             SegmentRigidity = 0.1f;
             Projectile.extraUpdates = 1;
-            if (Owner.miscCounter % 10 == 0 && (CurrentAttack == AttackState.Idle || (FocusOnFetching && CurrentAttack != AttackState.UltracosmicMaelstrom && CurrentAttack != AttackState.PlayingFetch)))
+            if (Owner.miscCounter % 10 == 0 && (CurrentAttack == AttackState.Idle || (FocusOnFetching && CurrentAttack != AttackState.UltracosmicMaelstrom)))
             {
                 float SearchDistance = CalamityUtils.TilesToPixels(50);
+                AiTimer = -1;
                 foreach (var item in Main.ActiveItems)
                 {
-                    if (item.noGrabDelay == 0 && !item.beingGrabbed && Owner.CanPullItem(item, Owner.ItemSpace(item)))
+                    if (item.noGrabDelay == 0 && !item.beingGrabbed && Owner.CanPullItem(item, Owner.ItemSpace(item)) && !item.IsACoin)
                     {
                         var dis = item.Distance(Projectile.Center);
                         if (dis > SearchDistance)
@@ -195,6 +197,8 @@ namespace CalamityMod.Projectiles.Summon
                 {
                     CurrentAttack = AttackState.PlayingFetch;
                 }
+                else if (CurrentAttack == AttackState.PlayingFetch)
+                    CurrentAttack = AttackState.Idle;
             }
 
             switch (CurrentAttack)
@@ -230,6 +234,7 @@ namespace CalamityMod.Projectiles.Summon
                             CurrentAttack = AttackState.DivinityDevourer;
                             AiTimer = 0;
                         }
+                        JawOpeningAmount = MathHelper.Lerp(JawOpeningAmount,0, 0.1f);
                         break;
 
                     }
@@ -250,6 +255,7 @@ namespace CalamityMod.Projectiles.Summon
                             TightHoming = true;
                         if (TightHoming)
                         {
+                            JawOpeningAmount = MathHelper.Lerp(JawOpeningAmount, 0.75f, 0.1f);
                             turnspeed = 0.2f;
                             var dot = Vector2.Dot(Projectile.velocity.SafeNormalize(Vector2.Zero), Projectile.DirectionTo(target.Center));
                             if (dot < 0f && targetDistance < 200)
@@ -257,7 +263,8 @@ namespace CalamityMod.Projectiles.Summon
                                 TightHoming = false;
                                 turnspeed = 0;
                             }
-                        }
+                        } else
+                            JawOpeningAmount = MathHelper.Lerp(JawOpeningAmount, 0f, 0.25f);
                         if (targetDistance > 0)
 
                             Projectile.velocity = Projectile.velocity.ToRotation().AngleLerp(Projectile.DirectionTo(target.Center).ToRotation(), turnspeed).ToRotationVector2() * MathF.Min(Projectile.velocity.Length() + 1, 22f);
@@ -299,8 +306,11 @@ namespace CalamityMod.Projectiles.Summon
                             TightHoming = false;
                         else if (target.Hitbox.Intersects(Projectile.Hitbox))
                             TightHoming = true;
+
+                        JawOpeningAmount = MathHelper.Lerp(JawOpeningAmount, 0, 0.1f);
                         if (Vector2.Dot(Projectile.velocity.SafeNormalize(Vector2.Zero), targetDir) > 0.8f && AiTimer % 30 == 0)
                         {
+                            JawOpeningAmount = 0.75f;
                             if (Main.myPlayer == Projectile.owner)
                             {
                                 for (int i = 0; i < 3; i++)
@@ -340,13 +350,13 @@ namespace CalamityMod.Projectiles.Summon
                         {
                             targetPos = target.Center;
                         }
-                        SegmentRigidity = 0.5f;
+                        if (AiTimer > 0)
+                            JawOpeningAmount = 0.5f;
                         float lastSegmentOpacity = Segments[Segments.Count - 1].Opacity;
                         if (AiTimer == 0 && lastSegmentOpacity > 0 && EntrancePortalLocation == Vector2.Zero)
                         {
                             Projectile.velocity = Projectile.velocity.SafeNormalize(Vector2.Zero) * 16;
                             EntrancePortalLocation = Projectile.Center + Projectile.velocity * 10;
-                            //SpawnRiftProjectileAt(EntrancePortalLocation);
                         }
                         if (Projectile.Distance(EntrancePortalLocation) <= 32 && AiTimer <= strikes && Projectile.Opacity > 0)
                         {
@@ -418,24 +428,29 @@ namespace CalamityMod.Projectiles.Summon
                 case AttackState.PlayingFetch:
                     {
                         var item = Main.item[AiTimer];
+                        var dir = Projectile.Center.DirectionTo(item.Center);
+                        var holdingSpot = Projectile.Center + (Projectile.rotation-MathHelper.PiOver2).ToRotationVector2() * 35;
                         if (!item.active || item.beingGrabbed || !Owner.CanPullItem(item, Owner.ItemSpace(item)))
                         {
                             AiTimer = 0;
                             CurrentAttack = AttackState.Idle;
                             break;
                         }
-                        float dis = item.Distance(Projectile.Center);
-                        if (dis < 32)
+                        float dis = MathHelper.Min(item.Distance(holdingSpot), item.Distance(Projectile.Center));
+                        if (dis < 36)
                         {
 
-                            Projectile.velocity += Projectile.DirectionTo(Owner.Center);
-                            Projectile.velocity *= 0.9f;
-                            item.Center = Projectile.Center + Projectile.velocity.SafeNormalize(Vector2.UnitX) * 8f;
+                            Projectile.velocity += Projectile.DirectionTo(Owner.Center) * 0.5f;
+                            Projectile.velocity *= 0.95f;
+                            item.Center = holdingSpot;
+                            item.velocity = Vector2.Zero;
+                            JawOpeningAmount = MathHelper.Lerp(JawOpeningAmount, 0, 0.25f);
                         }
                         else
                         {
-                            Projectile.velocity += Projectile.DirectionTo(item.Center);
-                            Projectile.velocity *= 0.9f;
+                            Projectile.velocity += Projectile.DirectionTo(item.Center) * 0.5f;
+                            Projectile.velocity *= 0.95f;
+                            JawOpeningAmount = MathF.Max(0,MathHelper.Lerp(1,0,dis / 240f));
                         }
                         Projectile.rotation = Projectile.velocity.ToRotation() + MathHelper.PiOver2;
                         break;
@@ -476,22 +491,80 @@ namespace CalamityMod.Projectiles.Summon
         public void SpawnRiftProjectileAt(Vector2 position)
         {
             if (Main.myPlayer == Projectile.owner)
-                Projectile.NewProjectile(Projectile.GetSource_FromThis(), position, Vector2.Zero, ModContent.ProjectileType<DoGWeaponTeleportRift>(), 0, 0, Projectile.owner);
+                Projectile.NewProjectile(Projectile.GetSource_FromThis(), position, Vector2.Zero, ModContent.ProjectileType<DoGWeaponTeleportRift>(), 0, 0, Projectile.owner,0,0.375f);
         }
+
+        public override bool PreDraw(ref Color lightColor)
+        {
+            for (int i = Segments.Count - 1; i >= 0; i--)
+            {
+                DrawSegment(ref lightColor, Segments[i]);
+            }
+            var jawTex = CalamityUtils.GetTextureEfficient(ref Jaws, "CalamityMod/Projectiles/Summon/VoidEaterMarionetteJaw").Value;
+            var jawGlowTex = CalamityUtils.GetTextureEfficient(ref JawGlow, "CalamityMod/Projectiles/Summon/VoidEaterMarionetteJawGlow").Value;
+            Main.spriteBatch.Draw(TextureAssets.Projectile[Type].Value, Projectile.Center - Main.screenPosition, null, lightColor * Projectile.Opacity, Projectile.rotation, TextureAssets.Projectile[Type].Value.Size() / 2, Projectile.scale, SpriteEffects.None, 1);
+            
+            //This draws the jaws at the desired opening amount. The jaw glow doesn't draw during Divinity Devourer as that's the pink attack and this glow is blue
+            Vector2 jawOffset = new Vector2(10, -18);
+            Main.spriteBatch.Draw(jawTex, Projectile.Center - jawOffset.RotatedBy(Projectile.rotation) - Main.screenPosition, null, lightColor * Projectile.Opacity, Projectile.rotation - JawOpeningAmount, jawTex.Size() / 2 - jawOffset, Projectile.scale, SpriteEffects.None, 1);
+            if (CurrentAttack != AttackState.DivinityDevourer)
+                Main.spriteBatch.Draw(jawGlowTex, Projectile.Center - jawOffset.RotatedBy(Projectile.rotation) - Main.screenPosition, null, Color.White * Projectile.Opacity, Projectile.rotation - JawOpeningAmount, jawTex.Size() / 2 - jawOffset, Projectile.scale, SpriteEffects.None, 1);
+            jawOffset.X *= -1;
+            Main.spriteBatch.Draw(jawTex, Projectile.Center - jawOffset.RotatedBy(Projectile.rotation) - Main.screenPosition, null, lightColor * Projectile.Opacity, Projectile.rotation + JawOpeningAmount, jawTex.Size() / 2 - jawOffset, Projectile.scale, SpriteEffects.FlipHorizontally, 1);
+            if (CurrentAttack != AttackState.DivinityDevourer)
+                Main.spriteBatch.Draw(jawGlowTex, Projectile.Center - jawOffset.RotatedBy(Projectile.rotation) - Main.screenPosition, null, Color.White * Projectile.Opacity, Projectile.rotation + JawOpeningAmount, jawTex.Size() / 2 - jawOffset, Projectile.scale, SpriteEffects.FlipHorizontally, 1);
+
+            return false;
+        }
+        void DrawSegmentGlow(BaseWormSegment segment)
+        {
+            var color = Lighting.GetColor(segment.Center.ToTileCoordinates());
+            //pink glows don't glow during Faith Incinerator while blue glows don't glow during divinity devourer
+            if (!SegmentTextureAssetsGlow.IndexInRange(segment.segmentType) || (segment.segmentType == 0 && CurrentAttack == AttackState.FaithIncinerator) || (segment.segmentType == 1 && CurrentAttack == AttackState.DivinityDevourer))
+            {
+                return;
+            }
+            var tex = SegmentTextureAssetsGlow[segment.segmentType].Value;
+            Main.spriteBatch.Draw(tex, segment.Center - Main.screenPosition, null, Color.White * segment.Opacity, segment.rotation, tex.Size() / 2 + (SegmentTypeDrawOffsets[segment.segmentType]), Projectile.scale, SpriteEffects.None, 1);
+        }
+        public List<Asset<Texture2D>> SegmentTextureAssetsGlow
+        {
+            get
+            {
+                if (internalTexAssetsGlow.Count == 0)
+                    for (var i = 0; i < SegmentTextures.Count; i++)
+                    {
+                        internalTexAssetsGlow.Add(ModContent.Request<Texture2D>(SegmentTextures[i] + "Glow"));
+                        if (SegmentTypeDrawOffsets.Count <= i)
+                        {
+                            SegmentTypeDrawOffsets.Add(Vector2.Zero);
+                        }
+                    }
+                return internalTexAssetsGlow;
+            }
+        }
+        private List<Asset<Texture2D>> internalTexAssetsGlow = new List<Asset<Texture2D>>();
 
         private Asset<Texture2D> GlowTexAsset;
         private Asset<Texture2D> Jaws;
+        private Asset<Texture2D> JawGlow;
+        private Asset<Texture2D> DoGJaws;
         public override void PostDraw(Color lightColor)
         {
-            Vector2 origin = new Vector2(10f, 10f);
-            Main.EntitySpriteDraw(CalamityUtils.GetTextureEfficient(ref GlowTexAsset, GlowTexture).Value, Projectile.Center - Main.screenPosition, null, Color.White, Projectile.rotation, CalamityUtils.GetTextureEfficient(ref GlowTexAsset, GlowTexture).Size() *0.5f, Projectile.scale, SpriteEffects.None, 0);
+            for (int i = Segments.Count - 1; i >= 0; i--)
+            {
+                DrawSegmentGlow(Segments[i]);
+            }
+            //Faith Incinerator doesn't use this glow as it's the blue attack and this glow is pink
+            if (CurrentAttack != AttackState.FaithIncinerator)
+                Main.EntitySpriteDraw(CalamityUtils.GetTextureEfficient(ref GlowTexAsset, GlowTexture).Value, Projectile.Center - Main.screenPosition, null, Color.White * Projectile.Opacity, Projectile.rotation, CalamityUtils.GetTextureEfficient(ref GlowTexAsset, GlowTexture).Size() *0.5f, Projectile.scale, SpriteEffects.None, 0);
 
             if (Projectile.Opacity > 0 && CurrentAttack == AttackState.UltracosmicMaelstrom && AiTimer > 0)
             {
-                var tex = CalamityUtils.GetTextureEfficient(ref Jaws,"CalamityMod/Particles/Jaws").Value;
+                var tex = CalamityUtils.GetTextureEfficient(ref DoGJaws, "CalamityMod/Particles/Jaws").Value;
                 Main.spriteBatch.SetBlendState(BlendState.Additive);
-                Main.spriteBatch.Draw(tex, Projectile.Center + Projectile.velocity.SafeNormalize(Vector2.Zero) * 32f - Main.screenPosition, null, Color.Fuchsia, Projectile.velocity.ToRotation() + MathHelper.PiOver2, tex.Size() * 0.5f, 0.33f, SpriteEffects.None, 0);
-                Main.spriteBatch.Draw(tex, Projectile.Center + Projectile.velocity.SafeNormalize(Vector2.Zero) * 32f - Main.screenPosition, null, Color.Aqua, Projectile.velocity.ToRotation() + MathHelper.PiOver2, tex.Size() * 0.5f, 0.25f, SpriteEffects.None, 0);
+                Main.spriteBatch.Draw(tex, Projectile.Center + Projectile.velocity.SafeNormalize(Vector2.Zero) * 12 - Main.screenPosition, null, Color.Fuchsia, Projectile.velocity.ToRotation() + MathHelper.PiOver2, tex.Size() * 0.5f, 0.7f, SpriteEffects.None, 0);
+                Main.spriteBatch.Draw(tex, Projectile.Center + Projectile.velocity.SafeNormalize(Vector2.Zero) * 12 - Main.screenPosition, null, Color.Aqua, Projectile.velocity.ToRotation() + MathHelper.PiOver2, tex.Size() * 0.5f, 0.6f, SpriteEffects.None, 0);
                 Main.spriteBatch.SetBlendState(BlendState.AlphaBlend);
             }
         }

@@ -31,11 +31,4 @@ namespace CalamityMod.Buffs.StatDebuffs
             player.Calamity().armorCrunch = true;
         }
     }
-    public class ArmorCrunchIconItem : ModItem
-    {
-        private string BuffName = "ArmorCrunch";
-        public override string Texture => $"CalamityMod/Buffs/StatDebuffs/{BuffName}";
-        public override LocalizedText DisplayName => CalamityUtils.GetText($"Buffs.{BuffName}.DisplayName");
-        public override LocalizedText Tooltip => CalamityUtils.GetText($"Buffs.{BuffName}.ItemTooltip");
-    }
 }
