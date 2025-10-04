@@ -4,7 +4,7 @@ AstralBreastplate: {
 		'''
 		{$CommonItemTooltip.IncreasesMaxManaBy}
 		{$CommonItemTooltip.PercentIncreasedDamage@1}
-		{$Common.AmmoUseReduction@2}
+		{$CommonItemTooltip.PercentChanceToSaveAmmo@2}
 		'''
 }
 
@@ -96,7 +96,7 @@ DaedalusHeadRanged: {
 	Tooltip:
 		'''
 		{$CommonItemTooltip.PercentIncreasedRangedDamage} and {$CommonItemTooltip.PercentIncreasedRangedCritChance@1}
-		{$Common.AmmoUseReduction@2}
+		{$CommonItemTooltip.PercentChanceToSaveAmmo@2}
 		'''
 	SetBonus: Getting hit causes you to emit a blast of crystal shards
 }
@@ -239,7 +239,7 @@ HydrothermicHeadRanged: {
 	Tooltip:
 		'''
 		{$CommonItemTooltip.PercentIncreasedRangedDamage} and {$CommonItemTooltip.PercentIncreasedRangedCritChance@1}
-		{$Common.AmmoUseReduction@2}
+		{$CommonItemTooltip.PercentChanceToSaveAmmo@2}
 		'''
 	SetBonus:
 		'''
@@ -321,7 +321,7 @@ LunicCorpsVest: {
 	Tooltip:
 		'''
 		{$CommonItemTooltip.PercentIncreasedRangedDamageCritChance}
-		{$Common.AmmoUseReduction@1}
+		{$CommonItemTooltip.PercentChanceToSaveAmmo@1}
 		'''
 }
 
@@ -398,7 +398,7 @@ PlagueReaperMask: {
 	Tooltip:
 		'''
 		{$CommonItemTooltip.PercentIncreasedRangedDamage} and {$CommonItemTooltip.PercentIncreasedRangedCritChance@1}
-		{$Common.AmmoUseReduction@2}
+		{$CommonItemTooltip.PercentChanceToSaveAmmo@2}
 		'''
 	SetBonus:
 		'''
