@@ -72,11 +72,4 @@ namespace CalamityMod.Buffs.DamageOverTime
             }
         }
     }
-    public class BrimstoneFlamesIconItem : ModItem
-    {
-        private string BuffName = "BrimstoneFlames";
-        public override string Texture => $"CalamityMod/Buffs/DamageOverTime/{BuffName}";
-        public override LocalizedText DisplayName => CalamityUtils.GetText($"Buffs.{BuffName}.DisplayName");
-        public override LocalizedText Tooltip => CalamityUtils.GetText($"Buffs.{BuffName}.ItemTooltip");
-    }
 }

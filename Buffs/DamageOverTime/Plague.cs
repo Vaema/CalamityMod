@@ -85,11 +85,4 @@ namespace CalamityMod.Buffs.DamageOverTime
             Lighting.AddLight(npc.position, 0.07f, 0.15f, 0.01f);
         }
     }
-    public class PlagueIconItem : ModItem
-    {
-        private string BuffName = "Plague";
-        public override string Texture => $"CalamityMod/Buffs/DamageOverTime/{BuffName}";
-        public override LocalizedText DisplayName => CalamityUtils.GetText($"Buffs.{BuffName}.DisplayName");
-        public override LocalizedText Tooltip => CalamityUtils.GetText($"Buffs.{BuffName}.ItemTooltip");
-    }
 }

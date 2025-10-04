@@ -79,11 +79,4 @@ namespace CalamityMod.Buffs.DamageOverTime
             Lighting.AddLight(npc.position, 0.25f, 0.25f, 0.1f);
         }
     }
-    public class HolyFlamesIconItem : ModItem
-    {
-        private string BuffName = "HolyFlames";
-        public override string Texture => $"CalamityMod/Buffs/DamageOverTime/{BuffName}";
-        public override LocalizedText DisplayName => CalamityUtils.GetText($"Buffs.{BuffName}.DisplayName");
-        public override LocalizedText Tooltip => CalamityUtils.GetText($"Buffs.{BuffName}.ItemTooltip");
-    }
 }

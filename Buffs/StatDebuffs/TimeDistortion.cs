@@ -24,11 +24,4 @@ namespace CalamityMod.Buffs.StatDebuffs
                 npc.Calamity().debuffResistanceTimer = CalamityGlobalNPC.slowingDebuffResistanceMin + npc.buffTime[buffIndex];
         }
     }
-    public class TimeDistortionIconItem : ModItem
-    {
-        private string BuffName = "TimeDistortion";
-        public override string Texture => $"CalamityMod/Buffs/StatDebuffs/{BuffName}";
-        public override LocalizedText DisplayName => CalamityUtils.GetText($"Buffs.{BuffName}.DisplayName");
-        public override LocalizedText Tooltip => CalamityUtils.GetText($"Buffs.{BuffName}.ItemTooltip");
-    }
 }
