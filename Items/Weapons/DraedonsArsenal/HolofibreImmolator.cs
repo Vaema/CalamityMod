@@ -18,6 +18,10 @@ namespace CalamityMod.Items.Weapons.DraedonsArsenal
     {
         public new string LocalizationCategory => "Items.Weapons.DraedonsArsenal";
         public static readonly SoundStyle PlasmaSound = new("CalamityMod/Sounds/Item/PlasmaSmall");
+        public override void SetStaticDefaults()
+        {
+            ItemID.Sets.IsRangedSpecialistWeapon[Type] = true;
+        }
         public override void SetDefaults()
         {
             CalamityGlobalItem modItem = Item.Calamity();
