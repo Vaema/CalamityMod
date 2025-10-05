@@ -258,7 +258,7 @@ namespace CalamityMod.Projectiles.Rogue
                 Vector2 spawnPos = Projectile.Center;
                 Particle blastRing = new CustomPulse(spawnPos, Vector2.Zero, c1, "CalamityMod/Particles/FlameExplosion", Vector2.One, Main.rand.NextFloat(-10, 10), 0.07f, scale, 10);
                 GeneralParticleHandler.SpawnParticle(blastRing);
-                Particle blastRing2 = new CustomPulse(spawnPos, Vector2.Zero, c1 * 0.5f, "CalamityMod/Particles/HighResHollowCircleHardEdge", Vector2.One, Main.rand.NextFloat(-10, 10), 0.07f, scale * 2.75f, 11);
+                Particle blastRing2 = new CustomPulse(spawnPos, Vector2.Zero, c1 * 0.33f, "CalamityMod/Particles/HighResHollowCircleHardEdge", Vector2.One, Main.rand.NextFloat(-10, 10), 0.07f, scale * 1.66f, 11);
                 GeneralParticleHandler.SpawnParticle(blastRing2);
                 for (int k = 0; k < 8; k++)
                 {
