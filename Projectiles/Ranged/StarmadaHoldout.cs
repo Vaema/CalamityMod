@@ -4,16 +4,13 @@ using CalamityMod.Dusts;
 using CalamityMod.Items.Weapons.Ranged;
 using CalamityMod.Particles;
 using CalamityMod.Projectiles.BaseProjectiles;
-using CalamityMod.Projectiles.Rogue;
 using CalamityMod.Projectiles.Typeless;
-using log4net.Appender;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using ReLogic.Utilities;
 using Terraria;
 using Terraria.Audio;
 using Terraria.ModLoader;
-using static System.Net.Mime.MediaTypeNames;
 using static Terraria.ModLoader.ModContent;
 
 namespace CalamityMod.Projectiles.Ranged
@@ -87,7 +84,7 @@ namespace CalamityMod.Projectiles.Ranged
             if (lastUseTime == 0 || doingNothing)
                 lastUseTime = Owner.HeldItem.useAnimation;
             if (!doingNothing)
-                Owner.itemTime = Owner.itemAnimation = 2;
+                Owner.itemTime = Owner.itemAnimation = 5;
 
             glowIntensity = MathHelper.Lerp(glowIntensity, (float)Math.Pow(Utils.GetLerpValue(recoilTimerMax, 0, shootingCooldown, true), 5), 0.2f);
             attackVisualMult = MathHelper.Lerp(attackVisualMult, (float)Math.Pow(Math.Min(Utils.GetLerpValue(0, starburstPerfectTime - 1, starburstTimer, true), 2) + (gunPower - 1) * 0.25f, 1) * glowIntensity, 0.2f);
@@ -99,16 +96,25 @@ namespace CalamityMod.Projectiles.Ranged
                 Projectile.Kill();
                 return;
             }
-            bool leftShootChecks = Main.mouseLeft && !Main.mapFullscreen && !Owner.mouseInterface && shootingCooldown == 0;
+            bool hasAmmo = Owner.PickAmmo(HeldItem, out _, out _, out _, out _, out _, true);
+            bool leftShootChecks = (Main.mouseLeft && !Main.mapFullscreen && !Owner.mouseInterface && shootingCooldown == 0) && hasAmmo;
             bool rightShootChecks = Owner.Calamity().mouseRight && !Main.mapFullscreen && !Owner.mouseInterface && starburstCooldown == 0 && starburstTimer == 0;
+            
+            if (Main.mouseLeft && !hasAmmo && shake < 0.1f)
+            {
+                shake = 0.8f;
+                SoundStyle click = new("CalamityMod/Sounds/Item/DudFire");
+                SoundEngine.PlaySound(click with { Volume = .6f, Pitch = -.2f}, Projectile.Center);
+            }
+
             if (leftShootChecks)
                 FireShotgun();
             if (rightShootChecks)
             {
                 SoundStyle blast1 = new("CalamityMod/Sounds/Item/StarfleetStarburst");
-                AudSlot1 = SoundEngine.PlaySound(blast1 with { Volume = 0.8f, Pitch = 0f, MaxInstances = 8 }, Projectile.Center);
+                AudSlot1 = SoundEngine.PlaySound(blast1 with { Volume = 0.7f + gunPower * 0.1f, Pitch = 0f, MaxInstances = 8 }, Projectile.Center);
                 SoundStyle blast2 = new("CalamityMod/Sounds/Item/StarfleetStarburst");
-                AudSlot2 = SoundEngine.PlaySound(blast2 with { Volume = 0.6f, Pitch = -0.2f + gunPower * 0.2f, MaxInstances = 8 }, Projectile.Center);
+                AudSlot2 = SoundEngine.PlaySound(blast2 with { Volume = 0.5f + gunPower * 0.1f, Pitch = -0.2f + gunPower * 0.2f, MaxInstances = 8 }, Projectile.Center);
                 lastGunPower = gunPower;
                 starburstTimer++;
             }
@@ -137,15 +143,18 @@ namespace CalamityMod.Projectiles.Ranged
             }
             if (shootingCooldown > 0)
             {
-                if (SoundEngine.TryGetActiveSound(AudSlot1, out var s1) && s1.IsPlaying && failedChain)
+                if (lastGunPower != gunPower)
                 {
-                    s1.Pitch = MathHelper.Lerp(s1.Pitch, -0.7f, 0.05f);
-                    s1.Volume = MathHelper.Lerp(s1.Volume, 0.2f, 0.05f);
-                }
-                if (SoundEngine.TryGetActiveSound(AudSlot2, out var s2) && s2.IsPlaying && failedChain)
-                {
-                    s2.Pitch = MathHelper.Lerp(s2.Pitch, -0.7f, 0.05f);
-                    s2.Volume = MathHelper.Lerp(s2.Volume, 0.2f, 0.05f);
+                    if (SoundEngine.TryGetActiveSound(AudSlot1, out var s1) && s1.IsPlaying && failedChain)
+                    {
+                        s1.Pitch = MathHelper.Lerp(s1.Pitch, -0.7f, 0.07f);
+                        s1.Volume = MathHelper.Lerp(s1.Volume, 0.2f, 0.07f);
+                    }
+                    if (SoundEngine.TryGetActiveSound(AudSlot2, out var s2) && s2.IsPlaying && failedChain)
+                    {
+                        s2.Pitch = MathHelper.Lerp(s2.Pitch, -0.7f, 0.07f);
+                        s2.Volume = MathHelper.Lerp(s2.Volume, 0.2f, 0.07f);
+                    }
                 }
                 shootingCooldown--;
             }
@@ -292,20 +301,6 @@ namespace CalamityMod.Projectiles.Ranged
             int damage = (int)(Projectile.damage * (1 + lastGunPower * 0.5f));
             Projectile blast = Projectile.NewProjectileDirect(Owner.GetSource_FromThis(), blastCenter, Vector2.Zero, ModContent.ProjectileType<BasicBurst>(), damage, -45, Owner.whoAmI, blastSize, minMultiplier, hitsToMinMult);
             blast.timeLeft = 15;
-
-            /*for (int x = 0; x < Main.maxProjectiles; x++)
-            {
-                Projectile projectile = Main.projectile[x];
-                if (projectile.active && projectile.type == ModContent.ProjectileType<StarmadaHitProj>() && projectile.localAI[2] == 1 && GunTipPosition.Distance(projectile.Center) <= 200)
-                {
-                    projectile.localAI[2] = 5;
-                    float dist = Utils.GetLerpValue(160, 60, projectile.Center.Distance(GunTipPosition), true);
-                    Vector2 vel = Vector2.Lerp(projectile.Center.DirectionFrom(Owner.Center), Projectile.velocity, dist);
-                    projectile.velocity = vel * 12;
-                    projectile.timeLeft = 300;
-                }
-            }*/
-
 
             float gunPowerMult = MathHelper.Lerp(lastGunPower, 1, 0.7f);
             for (int i = 0; i < 20; i++)

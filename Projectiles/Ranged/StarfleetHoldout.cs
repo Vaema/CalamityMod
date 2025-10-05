@@ -74,7 +74,7 @@ namespace CalamityMod.Projectiles.Ranged
             if (lastUseTime == 0 || doingNothing)
                 lastUseTime = Owner.HeldItem.useAnimation;
             if (!doingNothing)
-                Owner.itemTime = Owner.itemAnimation = 2;
+                Owner.itemTime = Owner.itemAnimation = 5;
 
             glowIntensity = MathHelper.Lerp(glowIntensity, (float)Math.Pow(Utils.GetLerpValue(recoilTimerMax, 0, shootingCooldown, true), 5), 0.2f);
             
@@ -83,8 +83,16 @@ namespace CalamityMod.Projectiles.Ranged
                 Projectile.Kill();
                 return;
             }
-            bool leftShootChecks = Main.mouseLeft && !Main.mapFullscreen && !Owner.mouseInterface && shootingCooldown == 0;
+            bool hasAmmo = Owner.PickAmmo(HeldItem, out _, out _, out _, out _, out _, true);
+            bool leftShootChecks = (Main.mouseLeft && !Main.mapFullscreen && !Owner.mouseInterface && shootingCooldown == 0) && hasAmmo;
             bool rightShootChecks = Owner.Calamity().mouseRight && !Main.mapFullscreen && !Owner.mouseInterface && starburstCooldown == 0 && starburstTimer == 0;
+
+            if (Main.mouseLeft && !hasAmmo && OffsetLengthFromArm >= 24.5f)
+            {
+                OffsetLengthFromArm -= 8;
+                SoundStyle click = new("CalamityMod/Sounds/Item/DudFire");
+                SoundEngine.PlaySound(click with { Volume = .6f, Pitch = -.2f }, Projectile.Center);
+            }
             if (leftShootChecks)
                 FireShotgun();
             if (rightShootChecks)

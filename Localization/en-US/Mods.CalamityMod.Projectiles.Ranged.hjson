@@ -212,6 +212,8 @@ SputterComet.DisplayName: Sputter Comet
 SputterCometBig.DisplayName: Sputter Comet
 SpykerProj.DisplayName: Spyker
 StarfleetStar.DisplayName: Starfleet Star
+StarmadaHitProj.DisplayName: Starmada
+StarmadaStar.DisplayName: Starmada Star
 StarmageddonBinaryStarCenter.DisplayName: Starmageddon Binary Star Center
 StarmageddonStar.DisplayName: Starmageddon Star
 StarmageddonStar2.DisplayName: Starmageddon Star
@@ -263,5 +265,3 @@ AcidRocket.DisplayName: Acid Rocket
 M1GarandBulletCasing.DisplayName: M1 Garand Bullet Casing
 M1GarandEmptyClip.DisplayName: M1 Garand Empty Clip
 M1GarandShot.DisplayName: .30-06 Round
-StarmadaHitProj.DisplayName: Starmada
-StarmadaStar.DisplayName: Starmada Star

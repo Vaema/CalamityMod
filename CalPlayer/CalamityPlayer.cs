@@ -5216,6 +5216,13 @@ namespace CalamityMod.CalPlayer
         private void NOULOL()
         {
             Player.ResetEffects();
+            for (int j = 0; j < 1000; j++)
+            {
+                if (!Main.projectile[j].active || Main.projectile[j].owner != Player.whoAmI)
+                    continue;
+
+                Player.ownedProjectileCounts[Main.projectile[j].type]++;
+            }
             Player.head = -1;
             Player.body = -1;
             Player.legs = -1;
