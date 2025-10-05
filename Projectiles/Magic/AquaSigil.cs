@@ -7,8 +7,9 @@ using Terraria.Audio;
 
 namespace CalamityMod.Projectiles.Magic
 {
-    public class AquaSigil : ModProjectile
+    public class AquaSigil : ModProjectile, ILocalizedModType
     {
+        public new string LocalizationCategory => "Projectiles.Magic";
         private bool spawnedProjectile = false;
         public override void SetDefaults()
         {

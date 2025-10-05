@@ -17,6 +17,7 @@ namespace CalamityMod.Projectiles.Magic
 {
     public class VisNeedle : ModProjectile, ILocalizedModType
     {
+        public new string LocalizationCategory => "Projectiles.Magic";
         public override void SetStaticDefaults()
         {
             ProjectileID.Sets.TrailCacheLength[Type] = 10;

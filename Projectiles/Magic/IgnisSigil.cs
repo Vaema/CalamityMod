@@ -8,8 +8,9 @@ using Terraria.ID;
 
 namespace CalamityMod.Projectiles.Magic
 {
-    public class IgnisSigil : ModProjectile
+    public class IgnisSigil : ModProjectile, ILocalizedModType
     {
+        public new string LocalizationCategory => "Projectiles.Magic";
         private bool spawnedProjectile = false;
         public override void SetDefaults()
         {

@@ -7,8 +7,9 @@ using CalamityMod.Projectiles.Ranged;
 
 namespace CalamityMod.Projectiles.Magic
 {
-    public class PerditoSigil : ModProjectile
+    public class PerditoSigil : ModProjectile, ILocalizedModType
     {
+        public new string LocalizationCategory => "Projectiles.Magic";
         private bool spawnedProjectile = false;
         public override void SetDefaults()
         {
