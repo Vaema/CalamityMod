@@ -88,6 +88,12 @@ namespace CalamityMod.Projectiles.Rogue
             Color nextColor = eColors[(colorIndex + 1) % eColors.Count];
             mainColor = Color.Lerp(currentColor, nextColor, rate % 2f > 1f ? 1f : rate % 1f);
 
+            // Progress through squash n stretch anim on hit
+            if (progress >= 0f && progress < 1f)
+            {
+                progress += 0.08f;
+            }
+
             // When an NPC is hit by the bomb, stick to it.
             if (stuck)
             {
@@ -296,8 +302,6 @@ namespace CalamityMod.Projectiles.Rogue
 
             if (progress >= 0f)
             {
-                progress += 0.02f;
-
                 float stretchFactorX, stretchFactorY;
 
                 if (progress < 0.5f) // Stretch
