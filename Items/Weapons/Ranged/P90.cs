@@ -5,6 +5,7 @@ using Terraria;
 using Terraria.Audio;
 using Terraria.DataStructures;
 using Terraria.ID;
+using Terraria.Localization;
 using Terraria.ModLoader;
 
 namespace CalamityMod.Items.Weapons.Ranged
@@ -12,6 +13,9 @@ namespace CalamityMod.Items.Weapons.Ranged
     public class P90 : ModItem, ILocalizedModType
     {
         public new string LocalizationCategory => "Items.Weapons.Ranged";
+
+        public static int AmmoSavedPercent = 75;
+        public override LocalizedText Tooltip => base.Tooltip.WithFormatArgs(AmmoSavedPercent);
 
         public bool fireShot = true;
         public override void SetDefaults()
@@ -43,6 +47,6 @@ namespace CalamityMod.Items.Weapons.Ranged
             return false;
         }
 
-        public override bool CanConsumeAmmo(Item ammo, Player player) => fireShot && Main.rand.NextFloat() < 0.25f;
+        public override bool CanConsumeAmmo(Item ammo, Player player) => fireShot && Main.rand.Next(100) >= AmmoSavedPercent;
     }
 }

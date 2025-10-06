@@ -48,7 +48,6 @@ namespace CalamityMod.Items.Weapons.DraedonsArsenal
         }
 
         public override bool CanUseItem(Player player) => player.ownedProjectileCounts[Item.shoot] <= 0;
-        public override bool CanConsumeAmmo(Item ammo, Player player) => false;
         public override void HoldItem(Player player) => player.Calamity().mouseWorldListener = true;
         public override void PostDrawInWorld(SpriteBatch spriteBatch, Color lightColor, Color alphaColor, float rotation, float scale, int whoAmI)
         {

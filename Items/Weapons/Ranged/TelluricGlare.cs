@@ -8,6 +8,7 @@ using Terraria;
 using Terraria.Audio;
 using Terraria.DataStructures;
 using Terraria.ID;
+using Terraria.Localization;
 using Terraria.ModLoader;
 
 namespace CalamityMod.Items.Weapons.Ranged
@@ -18,6 +19,10 @@ namespace CalamityMod.Items.Weapons.Ranged
         public int shots = 0;
         public int frame = 0;
         public int frameCounter = 0;
+
+        public static int AmmoSavedPercent = 75;
+        public override LocalizedText Tooltip => base.Tooltip.WithFormatArgs(AmmoSavedPercent);
+
         public override void SetStaticDefaults()
         {
             Main.RegisterItemAnimation(Type, new DrawAnimationVertical(3, 5));
@@ -47,7 +52,7 @@ namespace CalamityMod.Items.Weapons.Ranged
             Item.useAmmo = AmmoID.Arrow;
         }
         public override Vector2? HoldoutOffset() => new Vector2(-14f, 0f);
-        public override bool CanConsumeAmmo(Item ammo, Player player) => Main.rand.NextFloat() < 0.25f;
+        public override bool CanConsumeAmmo(Item ammo, Player player) => Main.rand.Next(100) >= AmmoSavedPercent;
         public override bool PreDrawInInventory(SpriteBatch spriteBatch, Vector2 position, Rectangle frameI, Color drawColor, Color itemColor, Vector2 origin, float scale)
         {
             Texture2D texture;

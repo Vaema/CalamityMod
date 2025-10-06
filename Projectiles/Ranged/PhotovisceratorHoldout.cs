@@ -150,7 +150,7 @@ namespace CalamityMod.Projectiles.Ranged
                 Sound3.Pitch = 0 - (PhotoTimer * 0.002f);
 
             // Consume ammo and retrieve projectile stats; has a chance to not consume ammo
-            Owner.PickAmmo(Owner.ActiveItem(), out _, out float shootSpeed, out int damage, out float knockback, out _, Main.rand.NextFloat() <= AmmoNotConsumeChance);
+            Owner.PickAmmo(Owner.ActiveItem(), out _, out float shootSpeed, out int damage, out float knockback, out _, Main.rand.Next(100) >= AmmoSavedPercent);
 
             var source = Projectile.GetSource_FromThis();
             Vector2 position = armPosition + Projectile.velocity * 55f - verticalOffset * 10f;

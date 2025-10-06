@@ -8,6 +8,7 @@ using Terraria;
 using Terraria.Audio;
 using Terraria.DataStructures;
 using Terraria.ID;
+using Terraria.Localization;
 using Terraria.ModLoader;
 
 namespace CalamityMod.Items.Weapons.Ranged
@@ -17,6 +18,9 @@ namespace CalamityMod.Items.Weapons.Ranged
         public new string LocalizationCategory => "Items.Weapons.Ranged";
         public static readonly Color blueColor = new Color(0, 77, 255);
         public static readonly Color greenColor = new Color(0, 255, 77);
+
+        public static int AmmoSavedPercent = 50;
+        public override LocalizedText Tooltip => base.Tooltip.WithFormatArgs(AmmoSavedPercent);
 
         public override void SetDefaults()
         {
@@ -60,7 +64,7 @@ namespace CalamityMod.Items.Weapons.Ranged
 
         public override void HoldItem(Player player) => player.scope = true;
 
-        public override bool CanConsumeAmmo(Item ammo, Player player) => Main.rand.Next(100) >= 50;
+        public override bool CanConsumeAmmo(Item ammo, Player player) => Main.rand.Next(100) >= AmmoSavedPercent;
 
         public override void AddRecipes()
         {

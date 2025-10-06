@@ -47,7 +47,7 @@ namespace CalamityMod.Projectiles.Ranged
                 if (ShotCooldown == 0)
                 {
                     SoundEngine.PlaySound(SoundID.Item34, Projectile.Center);
-                    Owner.PickAmmo(Owner.ActiveItem(), out _, out float shootSpeed, out int damage, out float knockback, out _, Main.rand.NextFloat() < 0.70f);
+                    Owner.PickAmmo(Owner.ActiveItem(), out _, out float shootSpeed, out int damage, out float knockback, out _);
                     for (int i = 0; i < 2; i++)
                     {
                         Projectile.NewProjectile(Projectile.GetSource_FromThis(), GunTipPosition, (Projectile.velocity * 10).RotatedByRandom(0.12f), ModContent.ProjectileType<ChromaticFire>(), damage, knockback, Projectile.owner);
