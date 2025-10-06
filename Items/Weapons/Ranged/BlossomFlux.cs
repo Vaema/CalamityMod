@@ -3,7 +3,6 @@ using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.DataStructures;
 using Terraria.ID;
-using Terraria.Localization;
 using Terraria.ModLoader;
 
 namespace CalamityMod.Items.Weapons.Ranged
@@ -11,9 +10,6 @@ namespace CalamityMod.Items.Weapons.Ranged
     public class BlossomFlux : LegendaryItem, ILocalizedModType
     {
         public new string LocalizationCategory => "Items.Weapons.Ranged";
-
-        public static int AmmoSavedPercent = 50;
-        public override LocalizedText Tooltip => base.Tooltip.WithFormatArgs(AmmoSavedPercent);
 
         public override Color? TooltipExtensionColor => new Color(109, 161, 84);
         public override void SetStaticDefaults()
@@ -37,6 +33,7 @@ namespace CalamityMod.Items.Weapons.Ranged
             Item.shoot = ModContent.ProjectileType<LeafArrow>();
             Item.shootSpeed = 10f;
             Item.useAmmo = AmmoID.Arrow;
+            Item.consumeAmmoOnFirstShotOnly = true;
 
             Item.value = CalamityGlobalItem.RarityLimeBuyPrice;
             Item.rare = ItemRarityID.Lime;
@@ -50,12 +47,14 @@ namespace CalamityMod.Items.Weapons.Ranged
             {
                 Item.useTime = 25;
                 Item.useAnimation = 25;
+                Item.useLimitPerAnimation = 1;
                 Item.UseSound = SoundID.Item77;
             }
             else
             {
                 Item.useTime = 3;
                 Item.useAnimation = 15;
+                Item.useLimitPerAnimation = 5;
                 Item.UseSound = SoundID.Item5;
             }
             return base.CanUseItem(player);
@@ -73,7 +72,5 @@ namespace CalamityMod.Items.Weapons.Ranged
             }
             return false;
         }
-
-        public override bool CanConsumeAmmo(Item ammo, Player player) => Main.rand.Next(100) >= AmmoSavedPercent;
     }
 }

@@ -2,7 +2,6 @@
 using Terraria;
 using Terraria.DataStructures;
 using Terraria.ID;
-using Terraria.Localization;
 using Terraria.ModLoader;
 
 namespace CalamityMod.Items.Weapons.Ranged
@@ -11,9 +10,6 @@ namespace CalamityMod.Items.Weapons.Ranged
     public class ConferenceCall : ModItem, ILocalizedModType
     {
         public new string LocalizationCategory => "Items.Weapons.Ranged";
-
-        public static int AmmoSavedPercent = 50;
-        public override LocalizedText Tooltip => base.Tooltip.WithFormatArgs(AmmoSavedPercent);
 
         public override void SetDefaults()
         {
@@ -36,8 +32,6 @@ namespace CalamityMod.Items.Weapons.Ranged
         }
 
         public override Vector2? HoldoutOffset() => new Vector2(-10, 0);
-
-        public override bool CanConsumeAmmo(Item ammo, Player player) => Main.rand.Next(100) >= AmmoSavedPercent;
 
         public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)
         {

@@ -7,7 +7,6 @@ AcesHigh: {
 		Spades pierce enemies
 		Diamonds violently explode 
 		Clubs split into three
-		{$CommonItemTooltip.PercentChanceToSaveAmmo}
 		'''
 }
 
@@ -126,11 +125,7 @@ AstralBlaster: {
 
 AstrealDefeat: {
 	DisplayName: Astreal Defeat
-	Tooltip:
-		'''
-		All arrows are converted to Astreal Arrows that emit flames as they travel
-		{$CommonItemTooltip.PercentChanceToSaveAmmo}
-		'''
+	Tooltip: All arrows are converted to Astreal Arrows that emit flames as they travel
 }
 
 Auralis: {
@@ -143,7 +138,6 @@ Auralis: {
 		Standing still for 5 or more seconds while using the scope ability will summon an aurora
 		The aurora reduces the damage of the next projectile hit by 100 
 		This effect lasts up to 20 seconds and has a 30 second cooldown
-		{$CommonItemTooltip.PercentChanceToSaveAmmo}
 		'''
 }
 
@@ -214,7 +208,6 @@ BlossomFlux: {
 		'''
 		Fires a stream of leaves
 		Press <right> to fire a spore orb that explodes into a cloud of spore gas
-		{$CommonItemTooltip.PercentChanceToSaveAmmo}
 		'''
 	LegendaryText:
 		'''
@@ -307,7 +300,6 @@ ConferenceCall: {
 	Tooltip:
 		'''
 		Fires a tight spread of bullets that call more bullets from the sky
-		{$CommonItemTooltip.PercentChanceToSaveAmmo}
 		[c/768EE6:@everyone]
 		'''
 }
@@ -563,7 +555,6 @@ HalleysInferno: {
 		Fires a burst of intensely concentrated lunar fire jets
 		Press <right> to zoom out
 		Uses gel for ammo
-		{$CommonItemTooltip.PercentChanceToSaveAmmo}
 		'Halley arrived sooner than expected'
 		'''
 }
@@ -1133,7 +1124,6 @@ Shredder: {
 		'''
 		Fires a barrage of energy bolts that split and bounce
 		Press <right> to fire a barrage of normal bullets instead
-		{$CommonItemTooltip.PercentChanceToSaveAmmo}
 		'The myth, the legend, the weapon that drops more frames than any other'
 		'''
 }
@@ -1316,7 +1306,6 @@ TelluricGlare: {
 		Rapidly fires volleys of arrows
 		Every other arrow is converted into radiant greatarrows which pierce but quicky dissapear after striking
 		Wooden arrows are converted into more powerful greatarrows that deal increased damage
-		{$CommonItemTooltip.PercentChanceToSaveAmmo}
 		'''
 }
 
@@ -1379,7 +1368,6 @@ TheStorm: {
 		'''
 		Fires a spread of homing lightning bolts and arrows from the sky
 		Converts wooden arrows into powerful electric beams
-		{$CommonItemTooltip.PercentChanceToSaveAmmo}
 		'''
 }
 
@@ -1426,7 +1414,6 @@ UniversalGenesis: {
 		'''
 		Fires a spread of bullets from the gun and a flurry of stars to rain down on the cursor
 		Converts musket balls into starcaller shots that summon additional stars on enemy hits
-		{$CommonItemTooltip.PercentChanceToSaveAmmo}
 		'Let the starry sky fall upon your enemies'
 		'''
 }

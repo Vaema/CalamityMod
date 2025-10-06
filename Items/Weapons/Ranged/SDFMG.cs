@@ -16,7 +16,7 @@ namespace CalamityMod.Items.Weapons.Ranged
     {
         public new string LocalizationCategory => "Items.Weapons.Ranged";
 
-        public static int AmmoSavedPercent = 50;
+        public static int AmmoSavedPercent = 66;
         public override LocalizedText Tooltip => base.Tooltip.WithFormatArgs(AmmoSavedPercent);
 
         private int ShotCounter = 0;

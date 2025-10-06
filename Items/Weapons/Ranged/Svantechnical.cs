@@ -18,7 +18,7 @@ namespace CalamityMod.Items.Weapons.Ranged
         public new string LocalizationCategory => "Items.Weapons.Ranged";
         public int SineCounter = 0;
 
-        public static int AmmoSavedPercent = 90;
+        public static int AmmoSavedPercent = 80;
         public override LocalizedText Tooltip => base.Tooltip.WithFormatArgs(AmmoSavedPercent);
 
         public override void SetStaticDefaults()
@@ -32,7 +32,8 @@ namespace CalamityMod.Items.Weapons.Ranged
             Item.damage = 232;
             Item.DamageType = DamageClass.Ranged;
             Item.useTime = 1;
-            Item.useAnimation = 3;
+            Item.useAnimation = 4;
+            Item.useLimitPerAnimation = 4;
             Item.useStyle = ItemUseStyleID.Shoot;
             Item.noMelee = true;
             Item.knockBack = 3.5f;
@@ -46,6 +47,7 @@ namespace CalamityMod.Items.Weapons.Ranged
             Item.shootSpeed = 6f;
             Item.shoot = ProjectileID.PurificationPowder;
             Item.useAmmo = AmmoID.Bullet;
+            Item.consumeAmmoOnLastShotOnly = true;
         }
 
         public override Vector2? HoldoutOffset() => new Vector2(-5, 0);
@@ -78,7 +80,7 @@ namespace CalamityMod.Items.Weapons.Ranged
             return false;
         }
 
-        public override bool CanConsumeAmmo(Item ammo, Player player) => Main.rand.Next(100) >= AmmoSavedPercent && SineCounter % 4 == 0;
+        public override bool CanConsumeAmmo(Item ammo, Player player) => Main.rand.Next(100) >= AmmoSavedPercent;
 
         public override void AddRecipes()
         {

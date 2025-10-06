@@ -4,7 +4,6 @@ using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.DataStructures;
 using Terraria.ID;
-using Terraria.Localization;
 using Terraria.ModLoader;
 
 namespace CalamityMod.Items.Weapons.Ranged
@@ -12,9 +11,6 @@ namespace CalamityMod.Items.Weapons.Ranged
     public class AstrealDefeat : ModItem, ILocalizedModType
     {
         public new string LocalizationCategory => "Items.Weapons.Ranged";
-
-        public static int AmmoSavedPercent = 33;
-        public override LocalizedText Tooltip => base.Tooltip.WithFormatArgs(AmmoSavedPercent);
 
         public override void SetDefaults()
         {
@@ -24,6 +20,7 @@ namespace CalamityMod.Items.Weapons.Ranged
             Item.DamageType = DamageClass.Ranged;
             Item.useTime = 4;
             Item.useAnimation = 20;
+            Item.useLimitPerAnimation = 5;
             Item.useStyle = ItemUseStyleID.Shoot;
             Item.noMelee = true;
             Item.knockBack = 5.5f;
@@ -34,6 +31,7 @@ namespace CalamityMod.Items.Weapons.Ranged
             Item.shoot = ModContent.ProjectileType<AstrealArrow>();
             Item.shootSpeed = 4f;
             Item.useAmmo = AmmoID.Arrow;
+            Item.consumeAmmoOnLastShotOnly = true;
         }
 
         public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)
@@ -50,8 +48,6 @@ namespace CalamityMod.Items.Weapons.Ranged
             Projectile.NewProjectile(source, position, velocity, type, damage, knockback, player.whoAmI, aiVar);
             return false;
         }
-
-        public override bool CanConsumeAmmo(Item ammo, Player player) => Main.rand.Next(100) >= AmmoSavedPercent;
 
         public override void AddRecipes()
         {

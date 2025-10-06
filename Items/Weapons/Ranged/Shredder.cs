@@ -4,7 +4,6 @@ using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.DataStructures;
 using Terraria.ID;
-using Terraria.Localization;
 using Terraria.ModLoader;
 using System;
 
@@ -13,9 +12,6 @@ namespace CalamityMod.Items.Weapons.Ranged
     public class Shredder : ModItem, ILocalizedModType
     {
         public new string LocalizationCategory => "Items.Weapons.Ranged";
-
-        public static int AmmoSavedPercent = 60;
-        public override LocalizedText Tooltip => base.Tooltip.WithFormatArgs(AmmoSavedPercent);
 
         public override void SetStaticDefaults()
         {
@@ -42,6 +38,7 @@ namespace CalamityMod.Items.Weapons.Ranged
             Item.shoot = ProjectileID.Bullet;
             Item.shootSpeed = 5f;
             Item.useAmmo = AmmoID.Bullet;
+            Item.consumeAmmoOnLastShotOnly = true;
         }
 
         public override Vector2? HoldoutOffset() => new Vector2(-5, 0);
@@ -59,7 +56,6 @@ namespace CalamityMod.Items.Weapons.Ranged
             }
             return false;
         }
-        public override bool CanConsumeAmmo(Item ammo, Player player) => Main.rand.Next(100) >= AmmoSavedPercent;
 
         public override void AddRecipes()
         {

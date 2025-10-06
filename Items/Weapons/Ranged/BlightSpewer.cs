@@ -17,7 +17,7 @@ namespace CalamityMod.Items.Weapons.Ranged
 
         public static readonly SoundStyle Nanomachines = new("CalamityMod/Sounds/Item/NanoSwarm") { PitchVariance = 0.45f, Volume = 0.4f };
 
-        public static int AmmoSavedPercent = 50;
+        public static int AmmoSavedPercent = 33;
         public override LocalizedText Tooltip => base.Tooltip.WithFormatArgs(AmmoSavedPercent);
 
         public override void SetDefaults()

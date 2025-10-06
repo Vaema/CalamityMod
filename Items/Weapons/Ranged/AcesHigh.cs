@@ -7,7 +7,6 @@ using CalamityMod.Tiles.Furniture.CraftingStations;
 using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.ID;
-using Terraria.Localization;
 using Terraria.ModLoader;
 
 namespace CalamityMod.Items.Weapons.Ranged
@@ -16,9 +15,6 @@ namespace CalamityMod.Items.Weapons.Ranged
     {
         public int shots = 0;
         public new string LocalizationCategory => "Items.Weapons.Ranged";
-
-        public static int AmmoSavedPercent = 80;
-        public override LocalizedText Tooltip => base.Tooltip.WithFormatArgs(AmmoSavedPercent);
 
         public override void SetDefaults()
         {
@@ -43,11 +39,10 @@ namespace CalamityMod.Items.Weapons.Ranged
             Item.shootSpeed = 24f;
             Item.shoot = ModContent.ProjectileType<CardHeart>();
             Item.useAmmo = AmmoID.Bullet;
+            Item.consumeAmmoOnLastShotOnly = true;
         }
 
         public override Vector2? HoldoutOffset() => new Vector2(-5, 0);
-
-        public override bool CanConsumeAmmo(Item ammo, Player player) => Main.rand.Next(100) >= AmmoSavedPercent;
 
         public override void AddRecipes()
         {

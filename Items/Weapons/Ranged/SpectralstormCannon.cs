@@ -13,7 +13,7 @@ namespace CalamityMod.Items.Weapons.Ranged
     {
         public new string LocalizationCategory => "Items.Weapons.Ranged";
 
-        public static int AmmoSavedPercent = 70;
+        public static int AmmoSavedPercent = 33;
         public override LocalizedText Tooltip => base.Tooltip.WithFormatArgs(AmmoSavedPercent);
 
         // This is intentionally stored on the item instead of the holdout to prevent swapping items to instantly reset the heat
