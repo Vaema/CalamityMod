@@ -181,9 +181,9 @@ namespace CalamityMod.NPCs
                     break;
 
                 // Armored Skeleton
-                // Beam Sword @ 5% (0.67% in Vanilla)
+                // Beam Sword @ 3.33% (0.67% in Vanilla)
                 case NPCID.ArmoredSkeleton:
-                    npcLoot.ChangeDropRate(ItemID.BeamSword, 1, 20);
+                    npcLoot.ChangeDropRate(ItemID.BeamSword, 1, 30);
                     break;
 
                 // Black Recluse
