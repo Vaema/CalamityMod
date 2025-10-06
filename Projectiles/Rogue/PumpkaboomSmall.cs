@@ -20,7 +20,7 @@ namespace CalamityMod.Projectiles.Rogue
     public class PumpkaboomSmall : ModProjectile, ILocalizedModType
     {
         public new string LocalizationCategory => "Projectiles.Rogue";
-        public override string Texture => "CalamityMod/Projectiles/Rogue/PumpkaboomSmallUnlit";
+        public override string Texture => "CalamityMod/Items/Weapons/Rogue/Pumpkaboom";
         public ref float time => ref Projectile.ai[0];
         public ref float skipExplosionSound => ref Projectile.ai[1];
         public Player Owner => Main.player[Projectile.owner];

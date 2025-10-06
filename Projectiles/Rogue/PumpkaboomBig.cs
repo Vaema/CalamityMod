@@ -21,7 +21,7 @@ namespace CalamityMod.Projectiles.Rogue
     public class PumpkaboomBig : ModProjectile, ILocalizedModType
     {
         public new string LocalizationCategory => "Projectiles.Rogue";
-        public override string Texture => "CalamityMod/Projectiles/Rogue/PumpkaboomUnlit";
+        public override string Texture => "CalamityMod/Projectiles/Rogue/PumpkaboomBig";
         public ref float time => ref Projectile.ai[0];
         public ref float skipExplosionSound => ref Projectile.ai[1];
         public Player Owner => Main.player[Projectile.owner];
