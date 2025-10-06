@@ -717,7 +717,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
 
             // Phase HP ratios
             float phase2LifeRatio = death ? 0.85f : 0.7f;
-            float finalPhaseLifeRatio = death ? 0.3f : 0.15f;
+            float finalPhaseLifeRatio = death ? 0.4f : 0.25f;
 
             // Movement variables
             float phase1MaxSpeedIncrease = death ? 2.25f : 4.5f;
