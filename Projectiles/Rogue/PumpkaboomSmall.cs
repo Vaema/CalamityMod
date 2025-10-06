@@ -100,7 +100,11 @@ namespace CalamityMod.Projectiles.Rogue
                 {
                     Projectile.Kill();
                 }
-                return;
+                if (Projectile.timeLeft == 109)
+                {
+                    SoundEngine.PlaySound(new SoundStyle("CalamityMod/Sounds/Item/PumpkaboomNormalTicking") with { Pitch = 0f, Volume = 1f, MaxInstances = 4 }, Projectile.Center);
+                }
+                return;  
             }
 
             if (flung)
@@ -199,7 +203,6 @@ namespace CalamityMod.Projectiles.Rogue
         {
             SoundStyle w = new("CalamityMod/Sounds/Item/WulfrumScrewdriverThud");
             SoundEngine.PlaySound(w with { Volume = 0.7f, Pitch = 0f, MaxInstances = 6 }, Projectile.Center);
-            SoundEngine.PlaySound(new SoundStyle("CalamityMod/Sounds/Item/PumpkaboomNormalTicking") with { Pitch = 0f, Volume = 1f, MaxInstances = 4 }, Projectile.Center);
 
             stuck = true;
             stuckNPC = target.whoAmI;
