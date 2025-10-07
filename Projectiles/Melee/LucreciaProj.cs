@@ -128,6 +128,7 @@ namespace CalamityMod.Projectiles.Melee
                         playedAlternateThrustStartupWhoosh = true;
                     }
 
+                    // Every 8 ticks during this part of startup, release a sparkle.
                     if (StartupCompletion > 0.12f && StartupCompletion < 0.44f)
                     {
                         if (timer % 8 == 0)
@@ -254,8 +255,7 @@ namespace CalamityMod.Projectiles.Melee
                     var eased = MathF.Pow(upPhase, 2.6f);
                     Projectile.scale = baseScale * MathHelper.Lerp(0.8f, 1.4f, eased);
 
-                    // Every 8 ticks, release a particle
-
+                    // Every 5 ticks during swing, release a particle
                     if (t > 0.05f && t < 0.5f)
                     {
                         if (timer % 5 == 0)
