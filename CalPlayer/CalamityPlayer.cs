@@ -800,6 +800,7 @@ namespace CalamityMod.CalPlayer
         public bool badgeOfBravery = false;
         public bool WarbanneroftheRighteous = false;
         public bool warbannerGlow = false;
+        public float warbannerDamageMult = 0;
         public bool tesla = false;
         public bool teslaVisuals = true;
         public bool cryogenSoul = false;

@@ -4026,9 +4026,6 @@ namespace CalamityMod.CalPlayer
                 Player.npcTypeNoAggro[ModContent.NPCType<GammaSlime>()] = true;
             }
 
-            if (dArtifact)
-                Player.GetDamage<GenericDamageClass>() *= 1.2f;
-
             if (trippy)
                 Player.GetDamage<GenericDamageClass>() += OddMushroom.DamageBoost;
 
@@ -4474,6 +4471,15 @@ namespace CalamityMod.CalPlayer
 
             // Gem Tech stats based on gems.
             GemTechState.ProvideGemBoosts();
+
+            // Add any multiplicative damage bonuses here
+            float multiplicativeDamage = 1;
+            if (dArtifact)
+                multiplicativeDamage += 0.2f;
+            if (WarbanneroftheRighteous)
+                multiplicativeDamage += warbannerDamageMult;
+            if (multiplicativeDamage != 1)
+                Player.GetDamage<GenericDamageClass>() *= multiplicativeDamage;
         }
         #endregion
 
