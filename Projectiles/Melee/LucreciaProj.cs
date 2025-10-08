@@ -32,7 +32,6 @@ namespace CalamityMod.Projectiles.Melee
         public override int swingTime { get; set; }
         public override bool AlternateSwings { get => base.AlternateSwings; set => base.AlternateSwings = value; }
         public override float lineCollisionLength => 82;
-        public override Color AfterImageColor => Color.CornflowerBlue with { A = 0 };
 
         public bool helixFired = false;
         public bool gotEnergyThisSwing = false;
@@ -113,6 +112,7 @@ namespace CalamityMod.Projectiles.Melee
         public override void AdditionalAI()
         {
             Player player = Main.player[Projectile.owner];
+            var modplayer = player.GetModPlayer<BaseSwordHoldoutPlayer>();
 
             if (IsAlternateThrust)
             {
@@ -137,6 +137,8 @@ namespace CalamityMod.Projectiles.Melee
                             Particle sparkle = new CritSpark(pos, new Vector2(7f, 0).RotatedBy(Projectile.rotation), Color.Lerp(Color.CornflowerBlue, Color.MediumPurple, Main.rand.NextFloat()), Color.White * 0.33f, 1.2f, 12, 0.3f, 1.2f);
                             GeneralParticleHandler.SpawnParticle(sparkle);
                         }
+                        Particle smear = new CircularSmearVFX(player.Center, Color.CornflowerBlue * 0.25f, Projectile.rotation, Projectile.scale * 1.25f);
+                        GeneralParticleHandler.SpawnParticle(smear);
                     }
 
                     // Easing on spin
@@ -214,8 +216,6 @@ namespace CalamityMod.Projectiles.Melee
             {
                 if (inStartup)
                 {
-                    AfterImageLength = 0;
-
                     Projectile.Opacity += 0.01f; // Fade in
                     gotEnergyThisSwing = false;
                     helixFired = false;
@@ -224,8 +224,6 @@ namespace CalamityMod.Projectiles.Melee
 
                 else if (inCooldown)
                 {
-                    AfterImageLength = 0;
-
                     helixFired = false;
                     Projectile.Opacity -= 0.09f;
                     Projectile.scale = baseScale * MathHelper.Lerp(0.85f, 0.625f, CooldownCompletion);
@@ -237,6 +235,13 @@ namespace CalamityMod.Projectiles.Melee
                     {
                         helixFired = true;
                         var mousePosition = Main.MouseWorld;
+
+                        // Smear fx on swing
+                        Vector2 shootDir = player.Center.DirectionTo(mousePosition) * 10f;
+                        int dir = -Math.Sign(mousePosition.X);
+                        Particle swipe = new CustomSpark(player.Center - shootDir * 4, shootDir.RotatedBy(0.075f * (dir * (modplayer.swingNum % 2 == 0 ? 1 : -1))) * 1.22f, "CalamityMod/Particles/VerticalSmearLarge", false, (int)(14 / player.GetAttackSpeed(DamageClass.Melee)), 0.3f, modplayer.swingNum % 2 == 0 ? Color.CornflowerBlue * 0.85f : Color.MediumPurple * 0.8f, new Vector2(1.1f, 1.3f), true, false, 0, false, false);
+                        GeneralParticleHandler.SpawnParticle(swipe);
+
                         var fireDirection = Vector2.Normalize(mousePosition - player.Center);
                         var helixSpeed = 12f;
                         var helixVelocity = fireDirection * helixSpeed;
@@ -245,8 +250,6 @@ namespace CalamityMod.Projectiles.Melee
                         SoundStyle projectile = new("CalamityMod/Sounds/Item/LucreciaBoltFire");
                         SoundEngine.PlaySound(projectile with { Volume = 0.8f, Pitch = Main.rand.NextFloat(-0.06f, 0.1f) }, Projectile.Center);
                     }
-
-                    AfterImageLength = 30;
 
                     var t = MathHelper.Clamp(SwingCompletion, 0f, 1f);
                     var parabola = 1f - MathF.Pow(t - 0.5f, 2f) * 4f;
@@ -324,7 +327,7 @@ namespace CalamityMod.Projectiles.Melee
                 Vector2 spinningPoint = Vector2.Normalize(new Vector2(-1f, -1f)).RotatedByRandom(100);
 
                 var modplayer = player.GetModPlayer<BaseSwordHoldoutPlayer>();
-                Color useColor = modplayer.swingNum == 1 ? Color.CornflowerBlue : Color.MediumPurple; // Alternate each swing
+                Color useColor = modplayer.swingNum % 2 == 0 ? Color.CornflowerBlue : Color.MediumPurple; // Alternate each swing
 
                 for (int k = 0; k < points; k++)
                 {
