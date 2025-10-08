@@ -52,7 +52,6 @@ namespace CalamityMod.Items.Weapons.Ranged
 
         public override Vector2? HoldoutOffset() => new Vector2(-5, 0);
         public override bool AltFunctionUse(Player player) => true;
-        public override void HoldItem(Player player) => player.scope = false;
 
         public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)
         {
