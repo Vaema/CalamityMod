@@ -147,7 +147,6 @@ namespace CalamityMod.Projectiles
                 { ProjectileID.FairyQueenRangedItemShot, Do(PiercingExact(7), ExtraUpdatesExact(1))  }, // Eventide Convert
                 { ProjectileID.FlaironBubble, Do(ExtraUpdatesExact(1), TimeLeftExact(150), DefaultIDStaticIFrames) },
                 { ProjectileID.Flamarang, Do(ExtraUpdatesExact(2), DefaultIDStaticIFrames) },
-                { ProjectileID.Flames, Do(IDStaticIFrames(5)) }, // Flamethrower AND Elf Melter flames
                 { ProjectileID.FlamingJack, Do(ExtraUpdatesExact(1), DefaultIDStaticIFrames) },
                 { ProjectileID.FlowerPetal, Do(MaxUpdatesExact(4), LocalIFrames(10)) }, // Orichalcum armor
                 { ProjectileID.FlyingKnife, Do(ExtraUpdatesExact(1), DefaultIDStaticIFrames) },
@@ -187,7 +186,6 @@ namespace CalamityMod.Projectiles
                 { ProjectileID.PalladiumChainsaw, standardChainsawTweaks },
                 { ProjectileID.PalladiumDrill, standardDrillTweaks },
                 { ProjectileID.PartyBullet, Do(ExtraUpdatesDelta(+2), DefaultIDStaticIFrames) },
-                { ProjectileID.PoisonFang, Do(LocalIFrames(10)) },
                 { ProjectileID.PurpleCounterweight, counterweightTweaks },
                 { ProjectileID.QueenSlimeGelAttack, Do(NoPiercing) },
                 { ProjectileID.QueenSlimeMinionPinkBall, Do(NoPiercing) },
@@ -211,7 +209,6 @@ namespace CalamityMod.Projectiles
                 { ProjectileID.Trimarang, Do(ExtraUpdatesExact(1), DefaultIDStaticIFrames) },
                 { ProjectileID.TrueNightsEdge, Do(PiercingExact(4)) },
                 { ProjectileID.VenomBullet, Do(ExtraUpdatesDelta(+2), DefaultIDStaticIFrames) },
-                { ProjectileID.VenomFang, Do(LocalIFrames(10)) },
                 { ProjectileID.VenomSpider, Do( ExtraUpdatesExact(2), LocalIFrames(45)) }, //Spider Staff spiders. It has Venom, Dangerous, and Jumping spiders.
                 { ProjectileID.VortexDrill, standardDrillTweaks },
                 { ProjectileID.Wasp, Do(PiercingExact(2)) },
