@@ -89,8 +89,8 @@ namespace CalamityMod.Items
                 { ItemID.CrimsonYoyo, Do(AutoReuse, DamageExact(20)) }, // Artery
                 { ItemID.CrystalBullet, Do(DamageExact(6)) },
                 { ItemID.CrystalDart, Do(DamageExact(20)) },
-                { ItemID.CrystalSerpent, Do(DamageExact(45)) },
                 { ItemID.CrystalStorm, Do(DamageExact(40)) },
+                { ItemID.CrystalVileShard, Do(DamageExact(35)) },
                 { ItemID.CursedArrow, Do(DamageExact(14)) },
                 { ItemID.CursedDart, Do(DamageExact(25)) },
                 { ItemID.Cutlass, Do(UseRatio(0.9f), DamageExact(90)) },
@@ -107,7 +107,6 @@ namespace CalamityMod.Items
                 { ItemID.DemonBow, Do(DamageExact(12), AutoReuse) },
                 { ItemID.DemonScythe, Do(AutoReuse, DamageExact(28)) },
                 { ItemID.DyeTradersScimitar, Do(AutoReuse, UseTurn, DamageExact(24)) }, // Exotic Scimitar
-                { ItemID.ElectrosphereLauncher, Do(DamageExact(44)) },
                 { ItemID.ElfMelter, Do(ShootSpeedDelta(+5f)) },
                 { ItemID.EmeraldStaff, Do(DamageExact(27)) },
                 { ItemID.EmpressBlade, Do(AutoReuse, DamageExact(50), UseExact(20)) }, // Terraprisma
