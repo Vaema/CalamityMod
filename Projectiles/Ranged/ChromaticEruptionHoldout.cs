@@ -2,9 +2,11 @@
 using CalamityMod.Items.Weapons.Ranged;
 using CalamityMod.Projectiles.BaseProjectiles;
 using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
 using Terraria;
 using Terraria.Audio;
 using Terraria.DataStructures;
+using Terraria.GameContent;
 using Terraria.ID;
 using Terraria.ModLoader;
 
@@ -13,6 +15,7 @@ namespace CalamityMod.Projectiles.Ranged
     public class ChromaticEruptionHoldout : BaseGunHoldoutProjectile
     {
         public override int AssociatedItemID => ModContent.ItemType<ChromaticEruption>();
+        public override string Texture => "CalamityMod/Projectiles/Ranged/ChromaticEruptionHoldout";
         public override float MaxOffsetLengthFromArm => 40f;
         public override float OffsetXUpwards => -10f;
         public override float BaseOffsetY => -12f;
@@ -94,5 +97,15 @@ namespace CalamityMod.Projectiles.Ranged
         public override void SendExtraAIHoldout(BinaryWriter writer) => writer.Write(FireBlobs);
 
         public override void ReceiveExtraAIHoldout(BinaryReader reader) => FireBlobs = reader.ReadInt32();
+        public override void PostDraw(Color lightColor)
+        {
+            Texture2D texture = TextureAssets.Projectile[Type].Value;
+            Vector2 origin = texture.Size() * 0.5f;
+            SpriteEffects spriteEffects = SpriteEffects.None;
+            if (Projectile.spriteDirection == -1)
+                spriteEffects = SpriteEffects.FlipVertically;
+
+            Main.EntitySpriteDraw(ModContent.Request<Texture2D>("CalamityMod/Projectiles/Ranged/ChromaticEruptionHoldoutGlow").Value, Projectile.Center - Main.screenPosition, new Microsoft.Xna.Framework.Rectangle?(new Rectangle(0, 0, texture.Width, texture.Height)), Color.White, Projectile.rotation, origin, Projectile.scale, spriteEffects, 0);
+        }
     }
 }
