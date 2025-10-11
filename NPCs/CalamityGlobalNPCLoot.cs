@@ -303,9 +303,9 @@ namespace CalamityMod.NPCs
                 #region Ice
 
                 // Ice Bat
-                // Frosty Bat Bottle @ 10%
+                // Frosty Bat Bottle @ 7.14%
                 case NPCID.IceBat:
-                    npcLoot.Add(ModContent.ItemType<FrostyBatBottle>(), 10);
+                    npcLoot.Add(ModContent.ItemType<FrostyBatBottle>(), 14);
                     break;
 
                 // Undead Viking, Armored Viking
