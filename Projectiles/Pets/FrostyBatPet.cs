@@ -74,7 +74,7 @@ namespace CalamityMod.Projectiles.Pets
             if (dashingTimer > 0)
             {
                 float velPower = (float)Math.Pow(Owner.velocity.Length(), 0.75f) * 35;
-                goalPosition = Owner.Center + dashDirection * (200 + velPower) * dashIntensity;
+                goalPosition = Owner.Center + dashDirection * (250 + velPower) * dashIntensity;
 
                 float opacity = Utils.GetLerpValue(6, 12, Projectile.velocity.Length(), true) * 0.25f + 0.05f;
                 Particle iceMist = new CustomSpark(Projectile.Center - Projectile.velocity.SafeNormalize(Vector2.UnitX) * 14f, Vector2.One.RotatedByRandom(MathHelper.TwoPi) * Main.rand.NextFloat(0.3f, 1f) + Projectile.velocity * Main.rand.NextFloat(0.2f, 0.8f), "CalamityMod/Particles/BloomCircle", false, 22, Main.rand.NextFloat(0.3f, 0.55f), effectColor * opacity, new Vector2(1f, 1.3f), true, true, glowOpacity: opacity, extraRotation: Main.rand.NextFloat(0, MathHelper.TwoPi), spin: Main.rand.NextFloat(-0.1f, 0.1f));
@@ -89,7 +89,9 @@ namespace CalamityMod.Projectiles.Pets
             Projectile.rotation = Projectile.velocity.X * 0.035f;
 
             // Emit light.
-            Lighting.AddLight(Projectile.Center, effectColor.ToVector3() * (0.3f + 0.3f * dashIntensity));
+            float tileCollideMult = !Collision.SolidCollision(Projectile.Center, 2, 2) ? 1 : (dashingTimer > 0 ? Math.Max(Utils.GetLerpValue(dashLength * 0.8f, dashLength, dashingTimer, true), 0.15f) : 1);
+            if (tileCollideMult > 0)
+                Lighting.AddLight(Projectile.Center, effectColor.ToVector3() * (0.65f + 0.5f * dashIntensity) * tileCollideMult);
 
             if (Main.rand.NextBool(15 / (dashingTimer != 0 ? 3 : 1)))
             {

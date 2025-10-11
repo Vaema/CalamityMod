@@ -67,7 +67,7 @@ namespace CalamityMod.Projectiles.Pets
             Projectile.rotation = Projectile.velocity.X * 0.035f;
 
             // Emit light.
-            Lighting.AddLight(Projectile.Center, Color.Lerp(effectColor, Color.White, 0.5f).ToVector3() * 1.05f);
+            Lighting.AddLight(Projectile.Center, Color.Lerp(effectColor, Color.White, 0.6f).ToVector3() * 0.9f);
 
             float speedMult = Utils.GetLerpValue(4, 8, Owner.velocity.Length(), true);
             if (Main.rand.NextBool((int)(20 - 15 * speedMult)))
