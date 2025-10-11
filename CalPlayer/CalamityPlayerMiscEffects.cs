@@ -404,8 +404,8 @@ namespace CalamityMod.CalPlayer
                 else // Decrementing
                 {
                     lucreciaEnergyMaxSFXPlayed = false;
-                    // Once every 8 ticks
-                    if (lucreciaEnergyTimer >= 8)
+                    // Once every 20 ticks
+                    if (lucreciaEnergyTimer >= 20)
                     {
                         lucreciaEnergy--;
                         lucreciaEnergyTimer = 0;
