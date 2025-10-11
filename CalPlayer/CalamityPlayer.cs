@@ -82,6 +82,7 @@ using Terraria.ModLoader.IO;
 using Terraria.Net;
 using static Terraria.Main;
 using static Terraria.ModLoader.ModContent;
+using CalamityMod.Items.Pets;
 
 namespace CalamityMod.CalPlayer
 {
@@ -547,6 +548,8 @@ namespace CalamityMod.CalPlayer
         public bool pineapplePet = false;
         public bool eidolonSnailPet = false;
         public bool lordePet = false;
+        public bool frostyBat = false;
+        public bool toastyBat = false;
         #endregion
 
         #region Rage
@@ -1567,8 +1570,6 @@ namespace CalamityMod.CalPlayer
         public bool KalandraMirror = false;
         public bool StellarTorus = false;
         public bool LiliesOfFinalityBool = false;
-        public bool FlarebatBool = false;
-        public bool FrostbatBool = false;
         public bool AmphibiansGuitarBool = false;
         #endregion
 
@@ -2128,6 +2129,8 @@ namespace CalamityMod.CalPlayer
             pineapplePet = false;
             eidolonSnailPet = false;
             lordePet = false;
+            frostyBat = false;
+            toastyBat = false;
 
             onyxExcavator = false;
             rimehound = false;
@@ -2734,8 +2737,6 @@ namespace CalamityMod.CalPlayer
             KalandraMirror = false;
             StellarTorus = false;
             LiliesOfFinalityBool = false;
-            FlarebatBool = false;
-            FrostbatBool = false;
             AmphibiansGuitarBool = false;
             #endregion
 

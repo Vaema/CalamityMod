@@ -303,9 +303,9 @@ namespace CalamityMod.NPCs
                 #region Ice
 
                 // Ice Bat
-                // Frostbat Staff @ 6.67%
+                // Frosty Bat Bottle @ 10%
                 case NPCID.IceBat:
-                    npcLoot.Add(ModContent.ItemType<FrostbatStaff>(), 15);
+                    npcLoot.Add(ModContent.ItemType<FrostyBatBottle>(), 10);
                     break;
 
                 // Undead Viking, Armored Viking
@@ -635,10 +635,10 @@ namespace CalamityMod.NPCs
                 #region Hell
 
                 // Hellbat
-                // Flarebat Staff @ 4%
+                // Toasty Bat Bottle @ 3.33%
                 // Magma Stone @ 1.33% (0.67% in Vanilla)
                 case NPCID.Hellbat:
-                    npcLoot.Add(ModContent.ItemType<FlarebatStaff>(), 25);
+                    npcLoot.Add(ModContent.ItemType<ToastyBatBottle>(), 30);
                     npcLoot.ChangeDropRate(ItemID.MagmaStone, 1, 75);
                     break;
 
