@@ -188,7 +188,7 @@ namespace CalamityMod.CalPlayer
         /// <summary>
         /// Used for Halley's Inferno to generate starbursts
         /// </summary>
-        public int HalleyHitCooldown = 0;
+        public float HalleyAccuracyCounter = 0;
         public float StarburstSpawnFrameCounter = 0;
         /// <summary>
         /// A cooldown for losing Starbursts over time, reset by holding Stratus items or having Sirius spawned
@@ -2063,14 +2063,12 @@ namespace CalamityMod.CalPlayer
             noLifeRegen = false;
 
             //Stratus Starburst amount management
-            if (HalleyHitCooldown > 0)
-            {
-                if (HalleyHitCooldown > 650)
-                    HalleyHitCooldown = 650;
-                StarburstSpawnFrameCounter += MathF.Pow(HalleyHitCooldown* 0.01f, 0.5f) * 0.03f;
-                HalleyHitCooldown--;
-            }
-            if (StarburstSpawnFrameCounter >= 1)
+
+            if (HalleyAccuracyCounter > HalleysInferno.MaxAccuracy)
+                HalleyAccuracyCounter = HalleysInferno.MaxAccuracy;
+            if (HalleyAccuracyCounter < 0)
+                HalleyAccuracyCounter = 0;
+            while (StarburstSpawnFrameCounter >= 1)
             {
                 StratusStarburst++;
                 StarburstSpawnFrameCounter--;

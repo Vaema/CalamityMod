@@ -1,4 +1,6 @@
-﻿using CalamityMod.Buffs.DamageOverTime;
+﻿using System;
+using System.Linq;
+using CalamityMod.Buffs.DamageOverTime;
 using CalamityMod.Items.Weapons.Ranged;
 using CalamityMod.Particles;
 using Microsoft.Xna.Framework;
@@ -73,6 +75,11 @@ namespace CalamityMod.Projectiles.Ranged
 
             if (Projectile.FinalExtraUpdate())
                 Lighting.AddLight(Projectile.Center, Color.MediumBlue.ToVector3() * 0.4f);
+
+            if (Projectile.timeLeft == 1 && Projectile.ai[1] < 1)
+            {
+                Main.player[Projectile.owner].Calamity().HalleyAccuracyCounter -= HalleysInferno.LostAccuracyPerMiss;
+            }
         }
 
         public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
@@ -89,7 +96,15 @@ namespace CalamityMod.Projectiles.Ranged
                 dust.velocity = Projectile.velocity.RotatedByRandom(0.5f) * Main.rand.NextFloat(0.2f, 2.1f);
                 dust.noGravity = true;
             }
-            Main.player[Projectile.owner].Calamity().HalleyHitCooldown += 15;
+            Projectile.ai[1] = 1;
+            //Main.player[Projectile.owner].Calamity().HalleyHitCooldown += 15;
+            if (Projectile.penetrate == 5)
+            {
+                var cplay = Main.player[Projectile.owner].Calamity();
+                cplay.HalleyAccuracyCounter++;
+                cplay.HalleyAccuracyCounter = MathF.Min(HalleysInferno.MaxAccuracy, cplay.HalleyAccuracyCounter);
+                Main.player[Projectile.owner].Calamity().StarburstSpawnFrameCounter += cplay.HalleyAccuracyCounter / HalleysInferno.MaxAccuracy * HalleysInferno.MaxStarburstPerComet;
+            }
         }
 
         public override void OnHitPlayer(Player target, Player.HurtInfo info)
