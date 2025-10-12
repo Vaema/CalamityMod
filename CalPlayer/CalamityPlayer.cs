@@ -4621,6 +4621,21 @@ namespace CalamityMod.CalPlayer
         public override void PostUpdate()
         {
 
+            for (var i = 0; i < StarburstEntities.Count; i++)
+            {
+                StarburstEntity star = StarburstEntities[i];
+                star.AI(Player, i);
+                star.UpdatePosition();
+                star.UpdateAnimation();
+                var safeStarLooper = star.MergeChildren.ToList();
+                foreach (var ministar in safeStarLooper)
+                {
+                    ministar.AI(Player, i);
+                    ministar.UpdatePosition();
+                    ministar.UpdateAnimation();
+                }
+            }
+
             if (subtitletext != null)
             {
                 if (!subtitletext.active)
@@ -4764,24 +4779,6 @@ namespace CalamityMod.CalPlayer
             #endregion
 
             Player.oldVelocity = Player.velocity; // Apparently this value is not updated on its own, so we do it
-        }
-
-        public override void PostUpdate()
-        {
-            for (var i = 0; i < StarburstEntities.Count; i++)
-            {
-                StarburstEntity star = StarburstEntities[i];
-                star.AI(Player,i);
-                star.UpdatePosition();
-                star.UpdateAnimation();
-                var safeStarLooper = star.MergeChildren.ToList();
-                foreach (var ministar in safeStarLooper)
-                {
-                    ministar.AI(Player, i);
-                    ministar.UpdatePosition();
-                    ministar.UpdateAnimation();
-                }
-            }
         }
         #endregion
 

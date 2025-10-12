@@ -1,9 +1,8 @@
-﻿using System.Linq;
+﻿using CalamityMod.Buffs.Summon;
 using CalamityMod.Items.Materials;
 using CalamityMod.Items.Placeables.Ores;
 using CalamityMod.Projectiles.Summon;
 using CalamityMod.Rarities;
-using log4net.Util;
 using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.DataStructures;
@@ -54,10 +53,11 @@ namespace CalamityMod.Items.Weapons.Summon
                 if (sirius != null)
                 {
                     sirius.ai[1]++;
-                    
+
                 }
                 return false;
-            } else
+            }
+            else
                 return true;
         }
 
