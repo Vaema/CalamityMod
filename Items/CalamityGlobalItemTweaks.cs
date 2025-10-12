@@ -1393,22 +1393,20 @@ namespace CalamityMod.Items
             shimmerTransmute[ItemID.StaffofEarth] = ItemID.EyeoftheGolem;
 
             // Duke Fishron
-            shimmerTransmute[ItemID.FishronWings] = ItemID.Flairon;
             shimmerTransmute[ItemID.Flairon] = ItemID.Tsunami;
             shimmerTransmute[ItemID.Tsunami] = ItemID.BubbleGun;
             shimmerTransmute[ItemID.BubbleGun] = ItemID.RazorbladeTyphoon;
             shimmerTransmute[ItemID.RazorbladeTyphoon] = ItemID.TempestStaff;
             shimmerTransmute[ItemID.TempestStaff] = ModContent.ItemType<DukesDecapitator>();
-            shimmerTransmute[ModContent.ItemType<DukesDecapitator>()] = ItemID.FishronWings;
+            shimmerTransmute[ModContent.ItemType<DukesDecapitator>()] = ItemID.Flairon;
 
             // Empress of Light (Yes these are actually the IDs)
-            shimmerTransmute[ItemID.RainbowWings] = ItemID.PiercingStarlight;
             shimmerTransmute[ItemID.PiercingStarlight] = ItemID.FairyQueenRangedItem;
             shimmerTransmute[ItemID.FairyQueenRangedItem] = ItemID.FairyQueenMagicItem;
             shimmerTransmute[ItemID.FairyQueenMagicItem] = ItemID.SparkleGuitar;
             shimmerTransmute[ItemID.SparkleGuitar] = ItemID.RainbowWhip;
             shimmerTransmute[ItemID.RainbowWhip] = ItemID.EmpressBlade;
-            shimmerTransmute[ItemID.EmpressBlade] = ItemID.RainbowWings;
+            shimmerTransmute[ItemID.EmpressBlade] = ItemID.PiercingStarlight;
 
             // Moon Lord
             shimmerTransmute[ItemID.Meowmere] = ItemID.StarWrath;
