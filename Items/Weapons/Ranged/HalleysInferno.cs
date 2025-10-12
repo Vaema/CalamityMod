@@ -42,6 +42,7 @@ namespace CalamityMod.Items.Weapons.Ranged
             Item.autoReuse = true;
 
             Item.useAmmo = AmmoID.Gel;
+            Item.consumeAmmoOnFirstShotOnly = true;
             Item.shootSpeed = 12f;
             Item.shoot = ModContent.ProjectileType<HalleysInfernoHoldout>();
 

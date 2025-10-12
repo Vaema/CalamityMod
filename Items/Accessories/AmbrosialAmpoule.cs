@@ -24,12 +24,13 @@ namespace CalamityMod.Items.Accessories
         {
             CalamityPlayer modPlayer = player.Calamity();
             player.statLifeMax2 += 50;
+            if (!player.HasBuff(BuffID.Honey))
+                player.AddBuff(BuffID.Honey, 2);
 
             // bool left in for abyss light purposes and life regen effects
             modPlayer.aAmpoule = true;
 
-            // Inherits all effects of Honey Dew and Living Dew (except standing regen is not honey exclusive anymore)
-            modPlayer.alwaysHoneyRegen = true;
+            // Inherits all effects of Honey Dew and Living Dew
             modPlayer.honeyDewHalveDebuffs = true;
             modPlayer.livingDewHalveDebuffs = true;
 
@@ -43,7 +44,7 @@ namespace CalamityMod.Items.Accessories
             var player = Main.LocalPlayer;
             if (player != null)
             {
-                list.FindAndReplace("[REGEN]", (player.Calamity().ambrosialAmpouleRegen + player.Calamity().alwaysHoneyRegenAmount).ToString("0.##"));
+                list.FindAndReplace("[REGEN]", player.Calamity().radiantOozeRegen.ToString("0.##"));
             }
         }
 

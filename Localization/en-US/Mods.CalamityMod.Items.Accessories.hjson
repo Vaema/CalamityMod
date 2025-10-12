@@ -105,8 +105,8 @@ AmbrosialAmpoule: {
 	Tooltip:
 		'''
 		+50 max life
-		Grants +2 to +6 HP/s life regen based on missing health
-		Standing still grants +1.5 HP/s life regen and +1 HP/s life regen when inflicted with a damage debuff
+		Grants +2 to +5 HP/s life regen based on missing health
+		Grants the Honey buff
 		Current boost: +[REGEN] HP/s
 		Fire and sickness debuff durations are halved
 		You emit yellow light if visibility is enabled
@@ -151,10 +151,11 @@ AngelTreads: {
 	DisplayName: Angel Treads
 	Tooltip:
 		'''
-		36% increased running acceleration
-		Increased flight time and grants rocket flight
-		Provides water walking and extra mobility on ice
-		Grants immunity to On Fire! and temporary immunity to lava
+		Allows flight, super fast running, and extra mobility on ice
+		{0}% increased movement speed and {1}% increased flight time
+		Provides the ability to walk on water, honey & lava
+		Grants immunity to fire blocks and {2} seconds of immunity to lava
+		Reduces damage from touching lava
 		'Extreme speed!'
 		'''
 }
@@ -205,7 +206,7 @@ ArchaicPowder: {
 	DisplayName: Archaic Powder
 	Tooltip:
 		'''
-		Increases mining speed by 30%
+		Increases mining speed by 25%
 		Provides immunity to damage from falling blocks and dart traps
 		65% resistance to all damage from traps
 		Does not stack with downgrades
@@ -228,15 +229,7 @@ AsgardianAegis: {
 		'''
 		Allows the ability to dash, empowered by a cosmic inferno
 		This dash can ram through enemies without taking damage
-		Grants immunity to knockback and fire blocks, as well as multiple debuffs
-		'''
-	HoldShiftTooltip:
-		'''
-		  On Fire!, Hellfire, Burning, Chilled, Frozen, Frostburn, Frostbite, Weak,
-		  Broken Armor, Bleeding, Poisoned, Acid Venom, Sulphuric Poisoning, Slow, Confused,
-		  Silenced, Cursed, Darkness, Webbed, Mighty Wind, Stoned, Armor Crunch, Blackout,
-		  Brain Rot, Burning Blood, Heavy Bleeding, Laceration, Cursed Inferno, Brimstone Flames,
-		  Shadowflame, Daybroken, Nightwither, Holy Flames, Voidfrost, God Slayer Inferno
+		Grants immunity to knockback
 		'''
 }
 
@@ -246,13 +239,7 @@ AsgardsValor: {
 		'''
 		Allows the ability to ram dash
 		This dash can ram through enemies without taking damage
-		Grants immunity to knockback and fire blocks, as well as multiple debuffs
-		'''
-	HoldShiftTooltip:
-		'''
-		  On Fire!, Hellfire, Chilled, Frozen, Frostburn, Frostbite, Weak,
-		  Broken Armor, Bleeding, Poisoned, Slow, Confused, Silenced, Cursed,
-		  Darkness, Mighty Wind, Stoned, Brimstone Flames, Burning
+		Grants immunity to knockback
 		'''
 }
 
@@ -437,7 +424,7 @@ CoinofDeceit: {
 	DisplayName: Coin of Deceit
 	Tooltip:
 		'''
-		Stealth strikes only expend 85% of your max stealth
+		Stealth strikes only expend 90% of your max stealth
 		6% increased rogue crit chance
 		'''
 }
@@ -496,7 +483,6 @@ CrownJewel: {
 		'''
 		+1 HP/s life regen
 		You gain an additional +1.5 HP/s life regen while afflicted with any debuff
-		Massively boosts natural life regen while afflicted with any debuff
 		'''
 }
 
@@ -587,10 +573,11 @@ DeificAmulet: {
 	DisplayName: Deific Amulet
 	Tooltip:
 		'''
-		Causes stars to fall and increases length of invincibility after taking damage
-		Grants bonus invincibility frames based on your missing health
-		This effect scales from 10 frames at full HP to 40 frames at 25% or less HP
+		Releases a burst of homing star-bees[TOGGLE] and drenches you in [cbuff:Honey] after taking damage
+		Increases the length of invincibility, with it increasing even more when at low health
+		[c/aaaaaa:Shift-<right> this item in your inventory to toggle] [i:PanicNecklace] [c/aaaaaa:Panic Necklace's effect]
 		'''
+	ToggleEffect: ", increases movement speed,"
 }
 
 DepthCharm: {
@@ -734,14 +721,9 @@ ElysianAegis: {
 		'''
 		Allows the ability to dash, empowered by holy fire
 		This dash can ram through enemies without taking damage
-		Grants immunity to knockback, fire blocks, as well as multiple debuffs
+		Grants immunity to knockback
+		'Blessed by the Profaned Flame'
 		'''
-	HoldShiftTooltip:
-		'''
-		  On Fire!, Hellfire, Cursed Inferno, Shadowflame, Daybroken,
-		  Holy Flames, Brimstone Flames, Burning
-		'''
-	FlavorTooltip: "'Blessed by the Profaned Flame'"
 }
 
 EnchantedPearl: {
@@ -770,7 +752,8 @@ EtherealTalisman: {
 		15% increased magic damage, 5% increased magic critical strike chance
 		+150 max mana and 10% decreased mana usage
 		Increases pickup range for mana stars
-		You automatically use mana potions when needed if visibility is on
+		You automatically use mana potions when needed
+		[c/aaaaaa:Shift-<right> in your inventory to toggle] [i:ManaFlower] [c/aaaaaa:Mana Flower's effect]
 		'''
 }
 
@@ -971,10 +954,9 @@ HideofAstrumDeus: {
 	DisplayName: Hide of Astrum Deus
 	Tooltip:
 		'''
-		Taking damage or inflicting true melee strikes drops an immense amount of astral stars from the sky
-		Taking damage temporarily increases true melee damage by 30%
+		True melee strikes drops astral stars from the sky
+		Releases an explosion and temporarily increases true melee damage by 30% when damaged
 		Boost duration scales with the amount of damage you took, up to 10 seconds
-		Attackers take damage and are inflicted with Astral Infection
 		Nullifies the Astral Infection debuff
 		'''
 }
@@ -984,8 +966,7 @@ HoneyDew: {
 	Tooltip:
 		'''
 		+10 max life
-		Grants +1 HP/s life regen, and +1 HP/s life regen when inflicted with a damaging debuff
-		Standing still in Honey grants +1.5 HP/s life regen
+		Grants the Honey buff
 		Sickness debuff durations are halved
 		'''
 }
@@ -1015,7 +996,6 @@ InfectedJewel: {
 		'''
 		Passively grants +1 HP/s life regen
 		Grants 12 defense and +2 HP/s life regen while afflicted with any debuff
-		Massively boosts natural life regen while afflicted with any debuff
 		Granted defense fades away quickly when not afflicted with any debuffs
 		Each debuff beyond the first grants 4 additional defense
 		Nullifies the Astral Infection debuff
@@ -1027,7 +1007,6 @@ InkBomb: {
 	DisplayName: Ink Bomb
 	Tooltip:
 		'''
-		+10 maximum stealth
 		Stealth generates 7% faster
 		Throws several ink bombs when hit that explode into ink and confuse enemies
 		Gain a lot of stealth when struck
@@ -1107,8 +1086,7 @@ LivingDew: {
 	Tooltip:
 		'''
 		+25 max life
-		Grants +1 HP/s life regen and an additional 1 HP/s life regen when inflicted with a damaging debuff
-		Standing still in Honey grants +1.5 HP/s life regen
+		Grants the Honey buff
 		Fire and sickness debuff durations are halved
 		'''
 }
@@ -1286,7 +1264,6 @@ OrnateShield: {
 		'''
 		Allows the ability to dash
 		This dash can ram through enemies without taking damage
-		Grants immunity to Chilled, Frostburn, Frostbite, and Frozen
 		'''
 }
 
@@ -1429,11 +1406,11 @@ Radiance: {
 		'''
 	HoldShiftTooltip:
 		'''
-		[c/CDF69C:Grants +2 to +6 HP/s life regen based on missing health]
+		[c/CDF69C:Grants +2 to +5 HP/s life regen based on missing health]
 		[c/CDF69C:Recover an additional 6 HP/s while inflicted with a debuff]
 		[c/CDF69C:This eventually slows to 1.33 HP/s when debuffed for an extended time period]
-		[c/CDF69C:Standing still provides +2 HP/s life regen and faster natural regen recovery]
-		[c/CDF69C:+15 defense and faster natural regen recovery while afflicted with any debuff]
+		[c/CDF69C:Grants the Honey buff]
+		[c/CDF69C:Grants 15 defense while afflicted with any debuff]
 		[c/CDF69C:Each additional debuff grants 5 defense, which slowly decays while not debuffed]
 		[c/CDF69C:Weak damaging debuffs are harmless and halves the duration of most other debuffs]
 		'''
@@ -1443,7 +1420,7 @@ RadiantOoze: {
 	DisplayName: Radiant Ooze
 	Tooltip:
 		'''
-		Grants +2 to +6 HP/s life regen based on missing health
+		Grants +2 to +5 HP/s life regen based on missing health
 		Current boost: +[REGEN] HP/s
 		You emit yellow light if visibility is enabled
 		'''
@@ -1458,14 +1435,14 @@ RampartofDeities: {
 	DisplayName: Rampart of Deities
 	Tooltip:
 		'''
-		Causes stars to fall and increases length of invincibility after taking damage
-		Grants bonus invincibility frames based on your missing health
-		This effect scales from 10 frames at full HP to 40 frames at 25% or less HP
-		Being struck for over 200 damage grants 30 additional invincibility frames
 		Grants immunity to knockback
-		Puts a shell around the owner when below 50% life that reduces damage by 25%
-		Absorbs 25% of damage done to players on your team when above 25% life
+		Releases a blast of homing star-bees[TOGGLE] and drenches you in [cbuff:Honey] after taking damage
+		Increases the length of invincibility, with it increasing even more when at low health or taking high damage attacks
+		Reduces damage taken by 25% when below 50% life
+		Absorbs 25% of damage done to players on your team when you are above 25% life
+		[c/aaaaaa:Shift-<right> this item in your inventory to toggle] [i:PanicNecklace] [c/aaaaaa:Panic Necklace's effect]
 		'''
+	ToggleEffect: ", increases movement speed,"
 }
 
 RareElementalinaBottle: {
@@ -1491,9 +1468,9 @@ Regenerator: {
 	DisplayName: Regenerator
 	Tooltip:
 		'''
-		Your health cannot exceed 50% of its maximum
+		Your health cannot exceed {0}% of its maximum
 		Increases length of invincibility after taking damage
-		Provides powerful special life regen to heal you for 8.5 HP/s
+		Provides powerful special life regen to heal you for {1} HP/s
 		All normal life regen is negated and converted into damage 
 		Current damage boost: [DAMAGE]%
 		'''
@@ -1528,9 +1505,9 @@ RoverDrive: {
 	DisplayName: Rover Drive
 	Tooltip:
 		'''
-		Gain a barrier with 20 health
+		Gain a barrier with {0} health
 		[ADREN]
-		If depleted, the barrier's health regenerates after not receiving damage for 10 seconds
+		The barrier will regenerate {1} seconds after being hit, taking {2} seconds to completely regenerate
 		Getting hit resets the timer
 		Can also be scrapped at an extractinator
 		'''
@@ -1581,7 +1558,7 @@ ScuttlersJewel: {
 	DisplayName: Scuttler's Jewel
 	Tooltip:
 		'''
-		Stealth strike projectiles spawn a jewel spike when destroyed
+		Stealth strike projectiles spawn a jewel spike on hit or when destroyed
 		Can also be broken down at an extractinator
 		'''
 }
@@ -1757,8 +1734,10 @@ StatisNinjaBelt: {
 		Provides a high-speed dash
 		10% increased movement speed, 32% increased jump speed, allows auto-jump, and negates fall damage
 		Increases movement acceleration and deceleration by 1.6x
-		Grants the ability to swim, climb walls, and dodge attacks
+		Grants the ability to swim[TOGGLE] and dodge attacks
+		[c/aaaaaa:Shift-<right> this item in your inventory to toggle the] [i:ClimbingClaws] [c/aaaaaa:Climbing Claws]
 		'''
+	ToggleEffect: ", climb walls,"
 	HoldShiftTooltip: "{$Common.DodgeInformation}"
 }
 
@@ -1769,9 +1748,11 @@ StatisVoidSash: {
 		Provides a high-speed dash
 		20% increased movement speed, 32% increased jump speed, allows auto-jump, and negates fall damage
 		Increases movement acceleration and deceleration by 1.85x
-		Grants the ability to swim, climb walls, and dodge attacks
+		Grants the ability to swim[TOGGLE] and dodge attacks
 		Visual effects are reduced if visibility is disabled
+		[c/aaaaaa:Shift-<right> this item in your inventory to toggle the] [i:ClimbingClaws] [c/aaaaaa:Climbing Claws]
 		'''
+	ToggleEffect: ", climb walls,"
 	HoldShiftTooltip: "{$Common.DodgeInformation}"
 }
 
@@ -1972,10 +1953,10 @@ TheSponge: {
 	Tooltip:
 		'''
 		Grants immunity to knockback
-		Gain a barrier with 120 health
-		The barrier grants 10% damage reduction while active
+		Gain a barrier with {0} health
+		The barrier grants {1}% damage reduction while active
 		[ADREN]
-		The barrier will regenerate 8 seconds after being hit, taking 10 seconds to completely regenerate
+		The barrier will regenerate {2} seconds after being hit, taking {3} seconds to completely regenerate
 		Getting hit resets the timer
 		'''
 	ShieldAdren: Halved Adrenaline loss if all damage is absorbed
@@ -2092,8 +2073,8 @@ WarbanneroftheRighteous: {
 	DisplayName: Warbanner of the Righteous
 	Tooltip:
 		'''
-		Grants a scaling damage boost based on how close you are to enemies
-		Maximum damage boost is 20%, minimum damage boost is -30%
+		Multiplies all damage based on how close you are to enemies
+		Maximum damage boost is 15%, minimum damage boost is -15%
 		Emit a blazing aura that burns and repels nearby enemies
 		Enemies take increasing damage the closer they are to you and the longer they are near you
 		Effects are transparent and silent if visibility is disabled

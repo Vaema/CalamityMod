@@ -136,7 +136,7 @@ namespace CalamityMod.Projectiles.Ranged
                     SoundEngine.PlaySound(SoundID.Item11 with { Volume = 0.8f }, Owner.Center);
                     if (Main.myPlayer == Projectile.owner)
                     {
-                        Owner.PickAmmo(HeldItem, out _, out _, out _, out _, out _, Main.rand.Next(100) >= 70);
+                        Owner.PickAmmo(HeldItem, out _, out _, out _, out _, out _);
                         Vector2 velocity = Projectile.velocity.RotatedByRandom(MathHelper.Pi * 0.015f * (1f + firingLerp * 0.25f)) * Owner.ActiveItem().shootSpeed;
                         Projectile.NewProjectile(Projectile.GetSource_FromThis(), GunTipPosition, velocity, ModContent.ProjectileType<SpectralFlare>(), Projectile.damage, Projectile.knockBack, Projectile.owner);
                     }

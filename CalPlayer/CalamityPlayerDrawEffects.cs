@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using CalamityMod.Buffs.DamageOverTime;
 using CalamityMod.Buffs.StatBuffs;
 using CalamityMod.Buffs.StatDebuffs;
@@ -8,6 +9,7 @@ using CalamityMod.DataStructures;
 using CalamityMod.Dusts;
 using CalamityMod.Items.Weapons.Magic;
 using CalamityMod.Items.Weapons.Ranged;
+using CalamityMod.NPCs.DevourerofGods;
 using CalamityMod.Particles;
 using CalamityMod.Projectiles.Magic;
 using CalamityMod.Projectiles.Ranged;
@@ -110,6 +112,73 @@ namespace CalamityMod.CalPlayer
                     Main.spriteBatch.Draw(tex, Player.Center + new Vector2(0, Player.gfxOffY) - Main.screenPosition, null, color * opacity, 0, tex.Size() * 0.5f, size / tex.Width, SpriteEffects.None, 1);
                 });
             }
+            //DoG Boss Cursor
+            DevourerofGodsHead DoG = null;
+            foreach (var item in Main.ActiveNPCs)
+            {
+                if (item.type == ModContent.NPCType<DevourerofGodsHead>()) {
+                    DoG = item.ModNPC<DevourerofGodsHead>();
+                    break;
+                }
+            }
+            if (DoG != null && Main.mapStyle != 2)
+            {
+                Rectangle screen = new((int)Main.screenPosition.X, (int)Main.screenPosition.Y, Main.screenWidth, Main.screenHeight);
+                var rift = DoG.GetRiftLocation();
+                if (rift != Vector2.Zero && !Main.zenithWorld)
+                {
+                    var dist = Player.Distance(rift);
+                    var tex = ModContent.Request<Texture2D>("Terraria/Images/Extra_173").Value;
+                    float scale = 1f;
+                    Main.spriteBatch.Draw(tex, Player.Center + Player.DirectionTo(rift) * 196 * Math.Min(dist / 2400f, 2) - Main.screenPosition, null, Color.White * 0.9f * Math.Clamp(MathHelper.Lerp(0, 1, (dist - 300) / 600), 0, 1), 0, tex.Size() / 2f, scale * 0.9f, SpriteEffects.FlipHorizontally, 0);
+                }
+                else
+                {
+                    var dis = Player.Distance(DoG.NPC.Center);
+                    if ((DoG.NPC.ai[3] < 3 || !DoG.Phase2Started) && DoG.NPC.Opacity > 0.5f && !DoG.Dying)
+                    {
+                        string phase1IconPath = "CalamityMod/NPCs/DevourerofGods/DevourerofGodsHead_Head_Boss";
+                        string phase2IconPath = "CalamityMod/NPCs/DevourerofGods/DevourerofGodsHead_P2_Head_Boss";
+                        var tex = ModContent.Request<Texture2D>((DoG.Phase2Started && DoG.NPC.localAI[2] < 300) ? phase2IconPath : phase1IconPath).Value;
+                        Main.spriteBatch.Draw(tex, Player.Center + Player.DirectionTo(DoG.NPC.Center) * 196 * Math.Min(dis / 2400f, 2) - Main.screenPosition, null, Color.White * 0.9f * Math.Clamp(MathHelper.Lerp(0, 1, (dis - 600) / 300), 0, 1), DoG.NPC.rotation, tex.Size() / 2f, 1, SpriteEffects.None, 0);
+                    }
+                }
+                
+            }
+
+            //Charge animation for Thread of Eradication
+            if (Player.HeldItem.type == ModContent.ItemType<ThreadOfEradication>() && !Player.ItemTimeIsZero && drawInfo.shadow == 0f)
+            {
+                var color = Color.Fuchsia;
+                float scale = (1 - (Player.itemTime - 7) / 50f) * 0.2f;
+                if (Player.itemTime < 7)
+                {
+                    scale = ((Player.itemTime) / 7f) * 0.2f;
+                }
+                if (Player.itemTime > 60)
+                {
+                    scale = (1 - (Player.itemTime - 70) / 110f) * 0.5f;
+                    if (Player.itemTime < 70)
+                    {
+                        scale = ((Player.itemTime - 60) / 10f) * 0.5f;
+                    }
+                    color = Color.Cyan;
+                }
+
+                if (CalamityClientConfig.Instance.Photosensitivity)
+                    color = color * 0.2f;
+                var bloomTex = ModContent.Request<Texture2D>("CalamityMod/Particles/BloomCircle").Value;
+                var circleTex = ModContent.Request<Texture2D>("CalamityMod/ExtraTextures/BasicCircle").Value;
+                Main.spriteBatch.SafeBegin(SpriteSortMode.Deferred, BatchSetting.Additive, null, Main.GameViewMatrix.TransformationMatrix, () =>
+                {
+                    Main.spriteBatch.Draw(bloomTex, Player.Center + (Vector2.UnitX * Player.direction).RotatedBy(Player.itemRotation) * (48 + scale * 96) - Main.screenPosition, null, color, 0, bloomTex.Size() * 0.5f, scale * 2.0f, SpriteEffects.None, 0);
+                    Main.spriteBatch.Draw(bloomTex, Player.Center + (Vector2.UnitX * Player.direction).RotatedBy(Player.itemRotation) * (48 + scale * 96) - Main.screenPosition, null, color, 0, bloomTex.Size() * 0.5f, scale * 2.0f, SpriteEffects.None, 0);
+                });
+                for (var i = 0; i < 5; i++)
+                Main.spriteBatch.Draw(circleTex, Player.Center + (Vector2.UnitX * Player.direction).RotatedBy(Player.itemRotation) * (48 + scale * 96) - Main.screenPosition, null, Color.Black * ((i+1)/5f) * ( CalamityClientConfig.Instance.Photosensitivity ? 0.2f : 1f), 0, circleTex.Size() * 0.5f, scale* 2.2f * (0.5f + 0.5f * (1- (i)/5f)), SpriteEffects.None, 0);
+                //GeneralParticleHandler.SpawnParticle(new DirectionalPulseRing(player.Center + Vector2.UnitX.RotatedBy(player.itemRotation) * (48 + scale*96), Vector2.Zero, Color.Cyan, Vector2.One, 0, scale, scale, 3));
+            }
+
             // Dust modifications while high.
             if (calamityPlayer.trippy)
             {
@@ -285,9 +354,8 @@ namespace CalamityMod.CalPlayer
             if (calamityPlayer.crushDepth && drawInfo.shadow == 0f)
                 CrushDepth.DrawEffects(drawInfo);
 
-            // Daybroken's visual effects are reduced if the player resists it
             if (calamityPlayer.daybroken && drawInfo.shadow == 0f)
-                Daybroken.DrawEffects(drawInfo, reducedDaybrokenDamage);
+                Daybroken.DrawEffects(drawInfo);
 
             if (calamityPlayer.demonicFlames && drawInfo.shadow == 0f)
                 DemonicFlames.DrawEffects(drawInfo);
@@ -328,8 +396,8 @@ namespace CalamityMod.CalPlayer
             if (calamityPlayer.mushy && drawInfo.shadow == 0f)
                 Mushy.DrawEffects(drawInfo);
 
-            if (calamityPlayer.nightwither && drawInfo.shadow == 0f) // Looks weaker if you have Moon Stone equipped
-                Nightwither.DrawEffects(drawInfo, reducedNightwitherDamage);
+            if (calamityPlayer.nightwither && drawInfo.shadow == 0f)
+                Nightwither.DrawEffects(drawInfo);
 
             if (calamityPlayer.plague && drawInfo.shadow == 0f)
                 Plague.DrawEffects(drawInfo);

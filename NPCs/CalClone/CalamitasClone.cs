@@ -69,7 +69,7 @@ namespace CalamityMod.NPCs.CalClone
         public override void SetDefaults()
         {
             NPC.Calamity().canBreakPlayerDefense = true;
-            NPC.damage = 60; // 120
+            NPC.damage = 70; // 140
             NPC.npcSlots = 14f;
             NPC.width = 120;
             NPC.height = 120;
@@ -204,7 +204,7 @@ namespace CalamityMod.NPCs.CalClone
                         SoundEngine.PlaySound(SoundID.Item109, NPC.Center);
                         calamityGlobalNPC.newAI[2] = 2f;
 
-                        if (CalamityWorld.MaliceMode)
+                        if (Main.zenithWorld)
                             calamityGlobalNPC.newAI[3] = 0f;
 
                         SpawnDust();
@@ -228,7 +228,7 @@ namespace CalamityMod.NPCs.CalClone
                         SoundEngine.PlaySound(SoundID.Item109, NPC.Center);
                         calamityGlobalNPC.newAI[2] = 1f;
 
-                        if (CalamityWorld.MaliceMode)
+                        if (Main.zenithWorld)
                             calamityGlobalNPC.newAI[3] = 0f;
 
                         SpawnDust();
@@ -379,7 +379,7 @@ namespace CalamityMod.NPCs.CalClone
                 baseVelocity += 1.5f * (1f - lifeRatio);
                 baseAcceleration += 0.03f * (1f - lifeRatio);
             }
-            if (CalamityWorld.LegendaryMode)
+            if (Main.getGoodWorld)
             {
                 baseVelocity *= 1.15f;
                 baseAcceleration *= 1.15f;
@@ -447,7 +447,7 @@ namespace CalamityMod.NPCs.CalClone
                             if (Main.zenithWorld)
                                 type = ModContent.ProjectileType<SCalBrimstoneGigablast>();
 
-                            float gigaBlastFrequency = CalamityWorld.LegendaryMode ? 120f : expertMode ? 180f : 240f;
+                            float gigaBlastFrequency = Main.getGoodWorld ? 120f : expertMode ? 180f : 240f;
                             float projSpeed = 5f;
                             if (calamityGlobalNPC.newAI[3] <= 300f)
                             {
@@ -585,7 +585,7 @@ namespace CalamityMod.NPCs.CalClone
 
                 return;
             }
-            else if (CalamityWorld.MaliceMode)
+            else if (Main.zenithWorld)
             {
                 if (calamityGlobalNPC.newAI[3] < 900f)
                     calamityGlobalNPC.newAI[3] += 1f;
@@ -667,8 +667,7 @@ namespace CalamityMod.NPCs.CalClone
 
                         float projectileVelocity = expertMode ? 14f : 12.5f;
                         int type = ModContent.ProjectileType<BrimstoneHellfireball>();
-                        bool shootPredictiveShot = CalamityWorld.MaliceMode && Main.rand.NextBool();
-                        Vector2 predictionVector = shootPredictiveShot ? player.velocity * 20f : Vector2.Zero;
+                        Vector2 predictionVector = Main.getGoodWorld ? player.velocity * 20f : Vector2.Zero;
                         Vector2 fireballVelocity = Vector2.Normalize(player.Center + predictionVector - NPC.Center) * projectileVelocity;
                         Vector2 offset = Vector2.Normalize(fireballVelocity) * 40f;
                         int proj = Projectile.NewProjectile(NPC.GetSource_FromAI(), NPC.Center + offset, fireballVelocity, type, HellfireballDamage, 0f, Main.myPlayer, player.position.X, player.position.Y);
@@ -773,7 +772,7 @@ namespace CalamityMod.NPCs.CalClone
                     if (Main.netMode != NetmodeID.MultiplayerClient && death && phase3 && NPC.ai[2] % (phase4 ? 6f : 10f) == 0f)
                     {
                         int type = ModContent.ProjectileType<BrimstoneHellblast>();
-                        Vector2 fireballVelocity = CalamityWorld.LegendaryMode ? Main.rand.NextVector2CircularEdge(0.02f, 0.02f) : NPC.velocity * 0.01f;
+                        Vector2 fireballVelocity = Main.getGoodWorld ? Main.rand.NextVector2CircularEdge(0.02f, 0.02f) : NPC.velocity * 0.01f;
                         Projectile.NewProjectile(NPC.GetSource_FromAI(), NPC.Center, fireballVelocity, type, HellblastDamage, 0f, Main.myPlayer, 1f, 0f);
                     }
                 }
@@ -895,7 +894,7 @@ namespace CalamityMod.NPCs.CalClone
                 // Equipment
                 normalOnly.Add(DropHelper.PerPlayer(ModContent.ItemType<VoidofCalamity>()));
                 normalOnly.Add(ModContent.ItemType<ChaosStone>(), DropHelper.NormalWeaponDropRateFraction);
-                normalOnly.Add(ModContent.ItemType<Regenerator>(), 10);
+                normalOnly.Add(ModContent.ItemType<Regenerator>(), DropHelper.NormalWeaponDropRateFraction);
 
                 // Materials
                 normalOnly.Add(ModContent.ItemType<EssenceofHavoc>(), 1, 8, 10);

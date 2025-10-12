@@ -51,7 +51,8 @@ namespace CalamityMod.Backgrounds
                     for (int j = 0; j < drawLimitY; j++)
                     {
                         Point pos = drawPoint + new Point(i, j);
-                        if (Main.tile[pos.X, pos.Y].Slope != SlopeType.Solid)
+                        if (!Main.tile[pos.X, pos.Y].HasTile &&
+                            Main.tile[pos.X, pos.Y].WallType == 0)
                             Lighting.AddLight(pos.X, pos.Y, TorchID.White, 0.1f);
                     }
                 }
@@ -67,8 +68,8 @@ namespace CalamityMod.Backgrounds
                     {
                         Point pos = drawPoint + new Point(i, j);
                         if (!Main.tile[pos.X, pos.Y].HasTile &&
-    Main.tile[pos.X, pos.Y].WallType == 0 &&
-    Main.tile[pos.X, pos.Y].LiquidAmount == 0)
+                            Main.tile[pos.X, pos.Y].WallType == 0 &&
+                            Main.tile[pos.X, pos.Y].LiquidAmount == 0)
                             Lighting.AddLight(pos.X, pos.Y, TorchID.White, 0.2f);
                     }
                 }
@@ -100,8 +101,27 @@ namespace CalamityMod.Backgrounds
                     {
                         Point pos = drawPoint + new Point(i, j);
                         if (!Main.tile[pos.X, pos.Y].HasTile &&
-                        Main.tile[pos.X, pos.Y].WallType == 0)
+                            Main.tile[pos.X, pos.Y].WallType == 0)
                             Lighting.AddLight(pos.X, pos.Y, TorchID.White, 0.2f);
+                    }
+                }
+            }
+            if (!Main.dedServ && (Main.LocalPlayer.InModBiome(ModContent.GetInstance<BiomeManagers.BasaltGullyBiome>())))
+            {
+                int drawLimitX = Main.screenWidth / 16;
+                int drawLimitY = Main.screenHeight / 16;
+                Point drawPoint = (Main.screenPosition / 16).ToPoint();
+                for (int i = 0; i < drawLimitX; i++)
+                {
+                    for (int j = 0; j < drawLimitY; j++)
+                    {
+                        Point pos = drawPoint + new Point(i, j);
+                        if (pos.Y >= Main.maxTilesY - 450)
+                        {
+                            if (!Main.tile[pos.X, pos.Y].HasTile &&
+                                Main.tile[pos.X, pos.Y].WallType == 0)
+                                Lighting.AddLight(pos.X, pos.Y, TorchID.Red, 0.6f);
+                            }
                     }
                 }
             }

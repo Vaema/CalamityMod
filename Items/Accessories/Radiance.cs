@@ -35,12 +35,13 @@ namespace CalamityMod.Items.Accessories
         {
             CalamityPlayer modPlayer = player.Calamity();
             player.statLifeMax2 += 70;
+            if (!player.HasBuff(BuffID.Honey))
+                player.AddBuff(BuffID.Honey, 2);
 
             // Abyss light, debuff near-immunity, life regen effects, and massively enhances debuff halving
             modPlayer.purity = true;
 
             // Inherits effects from Honey Dew and Living Dew
-            modPlayer.alwaysHoneyRegen = true;
             modPlayer.honeyDewHalveDebuffs = true;
             modPlayer.livingDewHalveDebuffs = true;
 
@@ -55,7 +56,7 @@ namespace CalamityMod.Items.Accessories
             var player = Main.LocalPlayer;
             if (player != null)
             {
-                list.FindAndReplace("[REGEN]", (player.Calamity().purityRegen + player.Calamity().alwaysHoneyRegenAmount).ToString("0.##"));
+                list.FindAndReplace("[REGEN]", player.Calamity().purityRegen.ToString("0.##"));
                 list.FindAndReplace("[DEFENSE]", player.Calamity().jewelBonusDefense.ToString());
             }
         }

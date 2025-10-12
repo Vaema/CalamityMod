@@ -25,6 +25,7 @@ namespace CalamityMod.Items.Weapons.Summon
             Item.useAnimation = Item.useTime = 10;
             Item.mana = 10;
             Item.knockBack = 10f;
+            Item.buffType = ModContent.BuffType<SiriusBuff>();
             Item.shoot = ModContent.ProjectileType<SiriusMinion>();
             Item.DamageType = DamageClass.Summon;
             Item.useStyle = ItemUseStyleID.Swing;

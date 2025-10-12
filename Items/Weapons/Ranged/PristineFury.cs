@@ -70,10 +70,8 @@ namespace CalamityMod.Items.Weapons.Ranged
                 player.AddCooldown(FuryFuel.ID, max);
             }
         }
-        public override bool CanConsumeAmmo(Item ammo, Player player)
-        {
-            return (player.altFunctionUse != 2); // Right click doesn't use ammo, it's crystal powder not gel
-        }
+        public override bool CanConsumeAmmo(Item ammo, Player player) => player.altFunctionUse != 2; // Right click doesn't use ammo, it's crystal powder not gel
+
         public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)
         {
             if (player.altFunctionUse == 2)

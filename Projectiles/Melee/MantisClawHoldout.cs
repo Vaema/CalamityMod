@@ -28,6 +28,7 @@ namespace CalamityMod.Projectiles.Melee
 
         public float ClawOpenness = MathHelper.ToRadians(80);
         public float BubbleSize = 0f;
+        public int m2KillTimer = 0;
         public new string LocalizationCategory => "Projectiles.Melee";
         public override string Texture => "CalamityMod/Items/Weapons/Melee/MantisClaws";
 
@@ -48,10 +49,15 @@ namespace CalamityMod.Projectiles.Melee
 
                     if (BubbleSize < 0.05f)
                     {
-                        Projectile.scale -= 0.1f;
-
-                        if (Projectile.scale < 0.1f)
+                        if (Projectile.scale > 0 && m2KillTimer <= 10)
+                            Projectile.scale -= 0.1f;
+                        if (Projectile.scale < 0.1f && m2KillTimer <= 0)
                             Projectile.active = false;
+                        else
+                        {
+                            Owner.altFunctionUse = 2;
+                            m2KillTimer--;
+                        }
                     }
                 }
                 else
@@ -67,6 +73,7 @@ namespace CalamityMod.Projectiles.Melee
             if (BubbleSize != 0f)
             {
                 Owner.Calamity().mouseWorldListener = true;
+                m2KillTimer = 20;
 
                 // 14NOV2024: Ozzatron: clamped mouse position unnecessary, only used for direction
                 Projectile.NewProjectile(Projectile.GetSource_FromThis(), Owner.Center + new Vector2(20, 0).RotatedBy(Projectile.rotation), 

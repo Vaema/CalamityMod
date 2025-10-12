@@ -1,6 +1,9 @@
 ﻿using System.IO;
 using CalamityMod.BiomeManagers;
 using CalamityMod.Dusts;
+using CalamityMod.Items.Accessories;
+using CalamityMod.Items.Materials;
+using CalamityMod.NPCs.NormalNPCs;
 using CalamityMod.Particles;
 using CalamityMod.Projectiles.Enemy;
 using Microsoft.Xna.Framework;
@@ -215,6 +218,10 @@ namespace CalamityMod.NPCs.SunkenSea
 
             spriteBatch.Draw(tex, NPC.Center - screenPos, frame, drawColor, NPC.rotation, frame.Size() / 2f, NPC.scale, NPC.spriteDirection == 1 ? SpriteEffects.FlipHorizontally : SpriteEffects.None, 0f);
             return false;
+        }
+        public override void ModifyNPCLoot(NPCLoot npcLoot)
+        {
+            npcLoot.Add(ModContent.ItemType<WillOWisp>(), 1, 1, 2);
         }
     }
 }

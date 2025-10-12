@@ -88,8 +88,8 @@ namespace CalamityMod.NPCs.ExoMechs.Ares
             }
         }
 
-        public static int LaserDamage = 85; // 340
-        public static int BeamDamage = 110; // 440
+        public static int LaserDamage = 80; // 320
+        public static int BeamDamage = 105; // 420
 
         public override void SetDefaults()
         {

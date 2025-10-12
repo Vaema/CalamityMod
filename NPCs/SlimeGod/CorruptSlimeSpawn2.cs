@@ -26,11 +26,9 @@ namespace CalamityMod.NPCs.SlimeGod
             NPC.damage = 20; // 40
             NPC.width = 40;
             NPC.height = 30;
-            if (CalamityWorld.LegendaryMode)
-                NPC.scale = 2f;
 
             NPC.defense = 4;
-            NPC.lifeMax = BossRushEvent.BossRushActive ? 5000 : CalamityWorld.LegendaryMode ? 180 : 90;
+            NPC.lifeMax = BossRushEvent.BossRushActive ? 5000 : 90;
             NPC.knockBackResist = 0.9f;
             AnimationType = NPCID.CorruptSlime;
             NPC.lavaImmune = false;

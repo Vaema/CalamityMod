@@ -13,7 +13,6 @@ RecipeGroup: {
 	LunarPickaxe: "{$LegacyMisc.37} Lunar Pickaxe"
 	LunarHamaxe: "{$LegacyMisc.37} Lunar Hamaxe"
 	AnyQuiver: "{$LegacyMisc.37} Quiver"
-	AnyWings: "{$LegacyMisc.37} Wings"
 }
 
 // Status
@@ -41,6 +40,8 @@ Tier4KnowledgeTooltip: The Underworld schematic must be deciphered first
 Tier5KnowledgeTooltip: The Ice biome schematic must be deciphered first
 // Other CombatText uses and Item Messages
 ShiftToExpand: Hold Shift to see an expanded description
+AltExpand: Hold {0} to see buff information
+AltExpandUnset: Set a keybind to see debuff information
 LearnedSchematic: You learned how to create new things!
 CragmawVibeCheck: Vibe check.
 AutocannonHot: OUCH! HOT!
@@ -118,8 +119,6 @@ SwineSecret37: Let me know when it's 7 PM, I've got to tweak something before so
 SwineSecret38: Thank Xeroc I don't have any of that 'Pathfinding' garbage, whatever the hell that is.
 SwineSecret39: If you think the Sulphur Sea smells bad, just wait til' you're near a nohitter!
 SwineSecret40: Did you know there's 40 of these damn things?
-// Point Blank
-PointBlank: Does extra damage to enemies shot at point-blank range
 // Charge
 Charge: Current Charge: {0}%
 //GFB Rogue Keys

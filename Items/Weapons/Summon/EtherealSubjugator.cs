@@ -1,4 +1,5 @@
-﻿using CalamityMod.Items.Weapons.Rogue;
+﻿using CalamityMod.Buffs.Summon;
+using CalamityMod.Items.Weapons.Rogue;
 using CalamityMod.Projectiles.Summon;
 using CalamityMod.Rarities;
 using Microsoft.Xna.Framework;
@@ -21,8 +22,9 @@ namespace CalamityMod.Items.Weapons.Summon
         {
             Item.width = 66;
             Item.height = 70;
-            Item.damage = 200;
+            Item.damage = 175;
             Item.DamageType = DamageClass.Summon;
+            Item.buffType = ModContent.BuffType<Phantom>();
             Item.shoot = ModContent.ProjectileType<PhantomGuy>();
             Item.knockBack = 1f;
 
@@ -42,7 +44,9 @@ namespace CalamityMod.Items.Weapons.Summon
 
         public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)
         {
-            Projectile.NewProjectile(source, player.ClampedMouseWorld(), Main.rand.NextVector2CircularEdge(5f, 5f), type, damage, knockback, player.whoAmI);
+            player.AddBuff(Item.buffType, 2);
+            var minion = Projectile.NewProjectileDirect(source, player.ClampedMouseWorld(), Main.rand.NextVector2CircularEdge(5f, 5f), type, damage, knockback, player.whoAmI);
+            minion.originalDamage = Item.damage;
             return false;
         }
     }

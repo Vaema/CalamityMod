@@ -2,6 +2,7 @@
 using System.Diagnostics;
 using System.Security.Cryptography;
 using CalamityMod.NPCs;
+using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using ReLogic.Content;
 using Terraria;
@@ -26,7 +27,8 @@ namespace CalamityMod.DataStructures
                 BuffID.Frostburn2, DebuffData.Frostbite,
                 BuffID.Poisoned, DebuffData.Poisoned,
                 BuffID.Venom, DebuffData.AcidVenom,
-                BuffID.Electrified, DebuffData.Electrified
+                BuffID.Electrified, DebuffData.Electrified,
+                BuffID.Oiled, DebuffData.Oiled
             );
     }
     public class DebuffData
@@ -182,6 +184,21 @@ namespace CalamityMod.DataStructures
             output *= 1 + (Modifer.Multiplicative-1) * scaling;
             output.Base = Modifer.Base * scaling;
             output.Flat = Modifer.Flat * scaling;
+            return output;
+        }
+        /// <summary>
+        /// Applies a scaling amount to a StatModifier but ensures all changes end up positive
+        /// </summary>
+        /// <param name="Modifer"></param>
+        /// <param name="scaling"></param>
+        /// <returns></returns>
+        public static StatModifier ForceModifierPositiveWithScaling(StatModifier Modifer, float scaling)
+        {
+            StatModifier output = new();
+            output += MathHelper.Max((Modifer.Additive - 1) * scaling,0);
+            output *= MathHelper.Max(1 + (Modifer.Multiplicative - 1) * scaling,1);
+            output.Base = MathHelper.Max(Modifer.Base * scaling,0);
+            output.Flat = MathHelper.Max(Modifer.Flat * scaling, 0);
             return output;
         }
 

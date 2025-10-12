@@ -3,6 +3,10 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using CalamityMod.Balancing;
+using CalamityMod.Buffs.DamageOverTime;
+using CalamityMod.Buffs.StatBuffs;
+using CalamityMod.Buffs.StatDebuffs;
+using CalamityMod.ChatTags;
 using CalamityMod.CustomRecipes;
 using CalamityMod.DataStructures;
 using CalamityMod.Items.Accessories;
@@ -23,6 +27,7 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria;
 using Terraria.DataStructures;
+using Terraria.GameInput;
 using Terraria.ID;
 using Terraria.Localization;
 using Terraria.ModLoader;
@@ -144,14 +149,6 @@ namespace CalamityMod.Items
 
             // Modify all vanilla tooltips before appending mod mechanics (if any).
             ModifyVanillaTooltips(item, tooltips);
-
-            // Adds "Does extra damage to enemies shot at point-blank range" to weapons capable of it.
-            if (canFirePointBlankShots)
-            {
-                LocalizedText lineText = CalamityUtils.GetText("Misc.PointBlank");
-                TooltipLine line = new TooltipLine(Mod, "CalamityMod:PointBlankTooltip", lineText.Value);
-                tooltips.Insert(++lastTooltipIndex, line);
-            }
 
             // If an item has an enchantment, show its prefix in the first tooltip line and append its description to the tooltip list.
             EnchantmentTooltips(item, tooltips);
@@ -282,6 +279,76 @@ namespace CalamityMod.Items
                 string coloredText = CalamityUtils.ColorMessage(donorText.Value, CalamityUtils.DonatorItemColor);
                 TooltipLine donorLine = new TooltipLine(Mod, "CalamityMod:DonorItem", coloredText);
                 tooltips.Insert(++difficultyTooltipIndex, donorLine);
+            }
+
+            var buffIdsInTooltip = new HashSet<int>();
+
+            foreach (var tooltip in tooltips)
+            {
+                // Parse the tags of each line of text to find our buff tags'
+                // snippets (since they store the buff IDs).
+                var snippets = ChatManager.ParseMessage(tooltip.Text, Color.White);
+                foreach (var snippet in snippets)
+                {
+                    if (snippet is CalamityBuffTagHandler.Snippet buffSnippet)
+                    {
+                        buffIdsInTooltip.Add(buffSnippet.BuffId);
+                    }
+                }
+            }
+
+            if (buffIdsInTooltip.Count > 0)
+            {
+                bool showTheTip = false;
+                bool foundDebuff = false;
+                foreach (int buffId in buffIdsInTooltip)
+                {
+                    string tooltipKey = "";
+                    if (buffId < BuffID.Count)
+                    {
+                        tooltipKey = $"Mods.Terraria.Buffs.{BuffID.Search.GetName(buffId)}.ItemTooltip";
+                    }
+                    else
+                    {
+                        var modBuff = BuffLoader.GetBuff(buffId);
+                        tooltipKey = $"Mods.{modBuff.Mod.Name}.Buffs.{modBuff.Name}.ItemTooltip";
+                    }
+
+                    if (!Language.Exists(tooltipKey))
+                    {
+                        continue;
+                    }
+
+                    var text = Language.GetTextValue(tooltipKey);
+                    if (string.IsNullOrWhiteSpace(text))
+                    {
+                        continue;
+                    }
+                    
+                    foundDebuff = true;
+                    if (!PlayerInput.Triggers.Current.SmartCursor)
+                    {
+                        showTheTip = true;
+                        break;
+                    }
+                    
+                    tooltips.Insert(++lastTooltipIndex, new TooltipLine(Mod, "CalamityMod:AltExpandTooltip" + buffId, $"[cbuff:{buffId}]\n{text}"));
+                }
+
+                if (showTheTip)
+                {
+                    var str = PlayerInput.CurrentProfile.InputModes[InputMode.Keyboard].KeyStatus["SmartCursor"].First().ToString();
+                    tooltips.Insert(++lastTooltipIndex, (new TooltipLine(Mod, "CalamityMod:AltExpandTooltip", CalamityUtils.GetTextValue("Misc.AltExpand").Replace("{0}",str))));
+                    tooltips[lastTooltipIndex].OverrideColor = new Color(170,170,170);
+                }
+                else if (foundDebuff)
+                {
+                    foreach (var item1 in tooltips)
+                    {
+                        if (item1.Name.Contains("Tooltip") && !item1.Name.Contains("AltExpandTooltip"))
+                            item1.Hide();
+                    }
+                }
             }
         }
         #endregion
@@ -572,10 +639,6 @@ namespace CalamityMod.Items
             if (CalamityServerConfig.Instance.EarlyHardmodeProgressionRework && (item.type == ItemID.Pwnhammer || item.type == ItemID.Hammush))
                 EditTooltipByNum(0, (line) => line.Text += AddedTooltip("Pwnhammer"));
 
-            // Warmth Potion reduces debuff durations
-            if (item.type == ItemID.WarmthPotion)
-                EditTooltipByNum(0, (line) => line.Text += AddedTooltip("WarmthPotion"));
-
             // Nerfed Archery Potion tooltip
             if (item.type == ItemID.ArcheryPotion)
                 EditTooltipByNum(0, (line) => line.Text = EditedTooltip("ArcheryPotion"));
@@ -803,27 +866,15 @@ namespace CalamityMod.Items
             if (item.type == ItemID.FairyBoots)
                 EditTooltipByNum(2, (line) => line.Text += AddedTooltip("FairyBoots"));
 
-            // Reduced Nightwither and Daybroken damage, and melee speed removal.
+            // Melee speed removal.
             if (item.type == ItemID.MoonStone)
-            {
-                EditTooltipByNum(2, (line) => line.Text += AddedTooltip("MoonStone"));
                 EditTooltipByNum(1, (line) => line.Text = EditedTooltip("SunMoonStones"));
-            }
             if (item.type == ItemID.SunStone)
-            {
-                EditTooltipByNum(2, (line) => line.Text += AddedTooltip("SunStone"));
                 EditTooltipByNum(1, (line) => line.Text = EditedTooltip("SunMoonStones"));
-            }
             if (item.type == ItemID.CelestialStone)
-            {
-                EditTooltipByNum(2, (line) => line.Text += AddedTooltip("CelestialStone"));
                 EditTooltipByNum(0, (line) => line.Text = EditedTooltip("CelestialStoneShell"));
-            }
             if (item.type == ItemID.CelestialShell)
-            {
-                EditTooltipByNum(4, (line) => line.Text += AddedTooltip("CelestialStone"));
                 EditTooltipByNum(2, (line) => line.Text = EditedTooltip("CelestialStoneShell"));
-            }
 
             // Mana Flower tinker buffs.
             if (item.type == ItemID.MagnetFlower)
@@ -952,21 +1003,6 @@ namespace CalamityMod.Items
                 EditTooltipByNum(0, (line) => line.Text = EditedTooltip("FireGauntlet1"));
                 EditTooltipByNum(1, (line) => line.Text = EditedTooltip("FireGauntlet2") + AddedTooltip("TitanGloveLine"));
             }
-
-            // On Fire! debuff immunities
-            if (item.type == ItemID.ObsidianSkull || item.type == ItemID.ObsidianSkullRose || item.type == ItemID.MoltenCharm)
-                EditTooltipByNum(0, (line) => line.Text = EditedTooltip("ObsidianSkullLine"));
-
-            if (item.type == ItemID.ObsidianHorseshoe || item.type == ItemID.ObsidianShield || item.type == ItemID.ObsidianWaterWalkingBoots || item.type == ItemID.LavaSkull || item.type == ItemID.MoltenSkullRose)
-                EditTooltipByNum(1, (line) => line.Text = EditedTooltip("ObsidianSkullLine"));
-
-            if (item.type == ItemID.LavaWaders)
-                EditTooltipByNum(1, (line) => line.Text = EditedTooltip("LavaWaders"));
-
-            if (item.type == ItemID.TerrasparkBoots)
-                EditTooltipByNum(3, (line) => line.Text = EditedTooltip("LavaWaders"));
-
-            // Ozzatron 23NOV2023: Removed tooltip edits for Magma Skull and Molten Skull Rose, as they were invalid after vanilla tooltip changes.
 
             // Yoyo Glove/Bag apply a 0.5x damage multiplier on the second yoyo
             if (item.type == ItemID.YoyoBag || item.type == ItemID.YoYoGlove)
@@ -1131,10 +1167,8 @@ namespace CalamityMod.Items
 
             // Non-consumable boss summon items
             #region Vanilla Boss Summon Non-consumable Tooltips
-            if (item.type == ItemID.SlimeCrown || item.type == ItemID.SuspiciousLookingEye || item.type == ItemID.BloodMoonStarter || item.type == ItemID.GoblinBattleStandard ||
-                item.type == ItemID.WormFood || item.type == ItemID.BloodySpine || item.type == ItemID.Abeemination || item.type == ItemID.DeerThing || item.type == ItemID.QueenSlimeCrystal ||
-                item.type == ItemID.PirateMap || item.type == ItemID.SnowGlobe || item.type == ItemID.MechanicalEye || item.type == ItemID.MechanicalWorm || item.type == ItemID.MechanicalSkull ||
-                item.type == ItemID.NaughtyPresent || item.type == ItemID.PumpkinMoonMedallion || item.type == ItemID.SolarTablet || item.type == ItemID.SolarTablet || item.type == ItemID.CelestialSigil)
+            if (item.type == ItemID.SlimeCrown || item.type == ItemID.SuspiciousLookingEye || item.type == ItemID.WormFood || item.type == ItemID.BloodySpine || item.type == ItemID.Abeemination || item.type == ItemID.DeerThing
+                || item.type == ItemID.QueenSlimeCrystal || item.type == ItemID.MechanicalEye || item.type == ItemID.MechanicalWorm || item.type == ItemID.MechanicalSkull || item.type == ItemID.CelestialSigil)
                 EditTooltipByNum(0, (line) => line.Text += "\n" + CalamityUtils.GetTextValue("Common.NotConsumable"));
             #endregion
 
@@ -1719,7 +1753,10 @@ namespace CalamityMod.Items
                 return false;
             }
 
-            if (line.Name == "ItemName" && line.Mod == "Terraria" && item.type == ModContent.ItemType<Orderbringer>())
+            // Rainbow effect originally made for Orderbringer because it used to have a special rarity
+            // But why did it have one in the first place??
+            // Might be used for Miracle stuff later or something idk
+            /*if (line.Name == "ItemName" && line.Mod == "Terraria" && item.type == ModContent.ItemType<Orderbringer>())
             {
                 Color rarityColor = Color.White;
                 Vector2 basePosition = new Vector2(line.X, line.Y);
@@ -1775,7 +1812,7 @@ namespace CalamityMod.Items
                 ChatManager.DrawColorCodedStringWithShadow(Main.spriteBatch, line.Font, line.Text, shake + basePosition, rarityColor, line.Rotation, line.Origin, line.BaseScale, line.MaxWidth, line.Spread);
 
                 return false;
-            }
+            }*/
             return true;
         }
         #endregion

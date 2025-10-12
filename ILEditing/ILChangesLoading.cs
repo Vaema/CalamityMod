@@ -66,6 +66,7 @@ namespace CalamityMod.ILEditing
             IL_Main.UpdateTime += PermitNighttimeTownNPCSpawning;
             On_Main.UpdateTime_SpawnTownNPCs += AlterTownNPCSpawnRate;
             IL_NPC.DoDeathEvents += PreventVanillaBossDeathsInBossRush;
+            On_NPC.NPCLoot += PreventDiabolistLootLogic;
             IL_Player.CollectTaxes += MakeTaxCollectorUseful;
 
             // Mechanics / features
@@ -188,6 +189,7 @@ namespace CalamityMod.ILEditing
 
             // Removal of vanilla stupidity
             IL_Player.StatusFromNPC += RemoveExpertBrainRandomDebuffs;
+            IL_NPC.VanillaHitEffect += PreventLavaSlimeLavaDrop;
             IL_NPC.StrikeNPC_HitInfo_bool_bool += LetDetonatingBubblesTakeDamage;
             IL_Player.ItemCheck_EmitUseVisuals += MakeMagmaStoneFireGauntletDustToggleable;
             IL_Projectile.EmitEnchantmentVisualsAt += MakeMagmaStoneFireGauntletProjectileDustToggleable;
@@ -201,7 +203,6 @@ namespace CalamityMod.ILEditing
             On_Player.ItemCheck_CheckFishingBobbers += PreventVictideBobberFromJamming;
 
             IL_Projectile.CanExplodeTile += MakeMeteoriteExplodable;
-            IL_Main.UpdateWindyDayState += MakeWindyDayMusicPlayLessOften;
             IL_Main.UpdateTime_StartNight += BloodMoonsRequire200MaxLife;
             IL_WorldGen.AttemptFossilShattering += PreventFossilShattering;
             On_Player.GetPickaxeDamage += RemoveHellforgePickaxeRequirement;

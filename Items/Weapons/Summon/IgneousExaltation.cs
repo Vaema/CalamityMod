@@ -1,9 +1,12 @@
-﻿using CalamityMod.Items.Materials;
+﻿using CalamityMod.Buffs.Summon;
+using CalamityMod.Items.Materials;
+using CalamityMod.Packets;
 using CalamityMod.Projectiles.Summon;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria;
 using Terraria.DataStructures;
+using Terraria.GameContent;
 using Terraria.ID;
 using Terraria.ModLoader;
 
@@ -36,7 +39,6 @@ namespace CalamityMod.Items.Weapons.Summon
         public override void SetStaticDefaults()
         {
             Item.staff[Type] = true;
-            ItemID.Sets.ItemsThatAllowRepeatedRightClick[Type] = true;
         }
 
         public override void SetDefaults()
@@ -53,18 +55,38 @@ namespace CalamityMod.Items.Weapons.Summon
             Item.rare = ItemRarityID.Pink;
             Item.UseSound = SoundID.Item71;
             Item.autoReuse = true;
+            Item.buffType = ModContent.BuffType<IgneousExaltationBuff>();
             Item.shoot = ModContent.ProjectileType<IgneousBlade>();
             Item.shootSpeed = 10f;
             Item.DamageType = DamageClass.Summon;
         }
 
-        public override bool AltFunctionUse(Player player)
+        public override bool CanRightClick()
         {
-            return player.ownedProjectileCounts[Item.shoot] > 0;
+            if (!Main.keyState.PressingShift())
+                return false;
+            return true;
         }
+        public override void RightClick(Player player)
+        {
+            Main.LocalPlayer.Calamity().InvertExaltationLineRotationDirections = !Main.LocalPlayer.Calamity().InvertExaltationLineRotationDirections;
+            if (Main.netMode != NetmodeID.SinglePlayer)
+                ExaltationDirectionSyncPacket.Send(Main.LocalPlayer.Calamity());
+        }
+
+        public override bool ConsumeItem(Player player) => false;
+
         public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)
         {
-            if (player.altFunctionUse == 2)
+            float totalSlots = 0f;
+            foreach (Projectile p in Main.ActiveProjectiles)
+            {
+                if (p.minion && p.owner == player.whoAmI)
+                {
+                    totalSlots += p.minionSlots;
+                }
+            }
+            if (totalSlots >= player.maxMinions)
             {
                 foreach (Projectile pro in Main.ActiveProjectiles)
                 {
@@ -77,12 +99,9 @@ namespace CalamityMod.Items.Weapons.Summon
             }
             else
             {
-
-                int p = Projectile.NewProjectile(source, position, velocity, type, damage, knockback, player.whoAmI, 0f, 1f);
-                if (Main.projectile.IndexInRange(p))
-                {
-                    Main.projectile[p].originalDamage = Item.damage;
-                }
+                player.AddBuff(Item.buffType, 2);
+                var minion = Projectile.NewProjectileDirect(source, position, velocity, type, damage, knockback, player.whoAmI, 0f, 1f);
+                minion.originalDamage = Item.damage;
 
                 int bladeIndex = 0;
                 foreach (Projectile pro in Main.ActiveProjectiles)
@@ -91,11 +110,30 @@ namespace CalamityMod.Items.Weapons.Summon
                     {
                         pro.ModProjectile<IgneousBlade>().BladeIndex = bladeIndex++;
                         pro.ModProjectile<IgneousBlade>().AITimer = -ChargeCooldown;
+                        pro.ModProjectile<IgneousBlade>().DistanceTimer = -IgneousExaltation.ChargeCooldown;
                         pro.ModProjectile<IgneousBlade>().CurrentState = IgneousBlade.AIState.CircleOwner;
                         pro.netUpdate = true;
                     }
                 }
             }
+            return false;
+        }
+        public override bool PreDrawInInventory(SpriteBatch spriteBatch, Vector2 position, Rectangle frame, Color drawColor, Color itemColor, Vector2 origin, float scale)
+        {
+            var tex = TextureAssets.Item[Type].Value;
+            CalamityUtils.DrawInventoryCustomScale(
+                spriteBatch,
+                tex,
+                position,
+                frame,
+                drawColor,
+                itemColor,
+                origin,
+                scale,
+                wantedScale: 0.75f,
+                spriteEffects: Main.LocalPlayer.Calamity().InvertExaltationLineRotationDirections ? SpriteEffects.FlipHorizontally : SpriteEffects.None,
+                rotation: Main.LocalPlayer.Calamity().InvertExaltationLineRotationDirections ? MathHelper.PiOver2 : 0
+            );
             return false;
         }
 

@@ -25,6 +25,7 @@ using Terraria.IO;
 using Terraria.ModLoader;
 using Terraria.Utilities;
 using Terraria.WorldBuilding;
+using CalamityMod.World;
 
 namespace CalamityMod.World
 {
@@ -316,83 +317,6 @@ namespace CalamityMod.World
                 }
             }
         }
-        public static void CreateTunnel(int startX, int startY, int endX, int endY, int width = 6, int tileType = TileID.Hive)
-        {
-            int dx = endX - startX;
-            int dy = endY - startY;
-            int steps = Math.Max(Math.Abs(dx), Math.Abs(dy));
-
-            for (int i = 0; i <= steps; i++)
-            {
-                float t = (float)i / steps;
-                int x = (int)(startX + dx * t);
-                int y = (int)(startY + dy * t);
-
-                // Draw a small circular path
-                for (int xi = -width; xi <= width; xi++)
-                {
-                    for (int yi = -width; yi <= width; yi++)
-                    {
-                        if (xi * xi + yi * yi <= width * width)
-                        {
-                            int tileX = x + xi;
-                            int tileY = y + yi;
-
-                            if (WorldGen.InWorld(tileX, tileY))
-                            {
-                                Tile tTile = Main.tile[tileX, tileY];
-                                tTile.HasTile = true;
-                                tTile.TileType = (ushort)tileType;
-                                WorldGen.SquareTileFrame(tileX, tileY);
-                            }
-                        }
-                    }
-                }
-            }
-        }
-        public static void ClearTunnel(int startX, int startY, int endX, int endY, int width = 3)
-        {
-            int dx = endX - startX;
-            int dy = endY - startY;
-            int steps = Math.Max(Math.Abs(dx), Math.Abs(dy));
-
-            for (int i = 0; i <= steps; i++)
-            {
-                float t = (float)i / steps;
-                int x = (int)(startX + dx * t);
-                int y = (int)(startY + dy * t);
-
-                for (int xi = -width; xi <= width; xi++)
-                {
-                    for (int yi = -width; yi <= width; yi++)
-                    {
-                        if (xi * xi + yi * yi <= width * width)
-                        {
-                            int tileX = x + xi;
-                            int tileY = y + yi;
-
-                            if (WorldGen.InWorld(tileX, tileY))
-                            {
-                                Tile tTile = Main.tile[tileX, tileY];
-                                tTile.HasTile = false;
-                                tTile.WallType = (ushort)ModContent.WallType<GiantHiveWall>();
-                                tTile.LiquidAmount = 0;
-
-                                WorldGen.SquareWallFrame(tileX, tileY);
-
-                                // Optional: Add honey with low chance
-                                if (WorldGen.genRand.NextBool(10))
-                                {
-                                    tTile.LiquidAmount = 100;
-                                    tTile.LiquidType = LiquidID.Honey;
-                                    WorldGen.SquareTileFrame(tileX, tileY);
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        }
         public static void CreateHexagon(int centerX, int centerY, int hexagonSize, int tileType, bool doWalls = false)
         {
             int halfHexagonSize = hexagonSize / 2;
@@ -600,9 +524,9 @@ namespace CalamityMod.World
                         int hexRadius = WorldGen.genRand.Next(30, 45);
                         CreateGiantHiveHexagon(newX, newY - 15, hexRadius - 1, TileID.Hive, true);
                         CreateHexagon(newX, newY - 15, hexRadius, TileID.Hive);
-                        ClearTunnel(x, y + 30, newX, newY, 5);
-                        CreateTunnel(x, y + 30, newX, newY);
-                        ClearTunnel(x, y + 30, newX, newY, 3);
+                        MiscWorldgenRoutines.ClearTunnel(x, y + 30, newX, newY, 5, 0, 2, true, true);
+                        MiscWorldgenRoutines.CreateTunnel(x, y + 30, newX, newY, 6, TileID.Hive);
+                        MiscWorldgenRoutines.ClearTunnel(x, y + 30, newX, newY, 3, (ushort)ModContent.WallType<GiantHiveWall>(), 2, true, true);
                         GiantHiveWallHexagon(newX, newY - 10, WorldGen.genRand.Next(19, 26));
 
                         // Place honey chest in this cell with a small chance

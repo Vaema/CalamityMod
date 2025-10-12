@@ -197,7 +197,7 @@ namespace CalamityMod.Items.Weapons.Summon
         public override void AddRecipes()
         {
             CreateRecipe().
-                AddIngredient<Excelsus>().
+                AddIngredient<MawOfInfinity>().
                 AddIngredient<CosmicViperEngine>().
                 AddIngredient(ItemID.WingsVortex).
                 AddIngredient<ShadowspecBar>(5).

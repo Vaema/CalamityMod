@@ -1,4 +1,7 @@
-﻿using CalamityMod.CalPlayer;
+﻿using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+using CalamityMod.CalPlayer;
 using CalamityMod.Items.Materials;
 using CalamityMod.Rarities;
 using CalamityMod.Tiles.Furniture.CraftingStations;
@@ -10,6 +13,7 @@ using Terraria.GameContent;
 using Terraria.Graphics.Shaders;
 using Terraria.ID;
 using Terraria.ModLoader;
+using Terraria.ModLoader.IO;
 
 namespace CalamityMod.Items.Accessories.Wings
 {
@@ -23,20 +27,70 @@ namespace CalamityMod.Items.Accessories.Wings
         public override float MaxAscentSpeed => 2.7f;
         public override float BaseAscent => 0.135f;
 
-        public override void SetStaticDefaults() => ArmorIDs.Wing.Sets.Stats[Item.wingSlot] = new WingStats(220, 10f, 2.7f);
+        public static int wingSlot = 0;
+        public override void SetStaticDefaults()
+        {
+            ArmorIDs.Wing.Sets.Stats[Item.wingSlot] = new WingStats(200, 10f, 2.7f);
+            wingSlot = Item.wingSlot;
+        }
 
         public override void SetDefaults()
         {
             base.SetDefaults();
             Item.width = 36;
             Item.height = 32;
-            Item.value = CalamityGlobalItem.RarityDarkBlueBuyPrice;
-            Item.rare = ModContent.RarityType<CosmicPurple>();
+            Item.value = CalamityGlobalItem.RarityPureGreenBuyPrice;
+            Item.rare = ModContent.RarityType<PureGreen>();
         }
-
+        #region Toggleable Wings
+        bool toggleEnabled
+        {
+            get { return Item.wingSlot != -1; }
+            set
+            {
+                if (value)
+                    Item.wingSlot = wingSlot;
+                else
+                    Item.wingSlot = -1;
+            }
+        }
+        public override void ModifyTooltips(List<TooltipLine> tooltips)
+        {
+            if (!toggleEnabled)
+                tooltips.RemoveAll(x => x.Name == "Tooltip0");
+            base.ModifyTooltips(tooltips);
+        }
+        public override bool CanRightClick() => Main.keyState.PressingShift();
+        public override void RightClick(Player player)
+        {
+            toggleEnabled = !toggleEnabled;
+            Item.NetStateChanged();
+        }
+        public override bool ConsumeItem(Player player) => false;
+        public override void SaveData(TagCompound tag)
+        {
+            tag.Add("toggleEffect", toggleEnabled);
+        }
+        public override void LoadData(TagCompound tag)
+        {
+            toggleEnabled = tag.GetBool("toggleEffect");
+        }
+        public override void NetSend(BinaryWriter writer)
+        {
+            writer.Write(toggleEnabled);
+        }
+        public override void NetReceive(BinaryReader reader)
+        {
+            toggleEnabled = reader.ReadBoolean();
+        }
+        public override void PostDrawInInventory(SpriteBatch spriteBatch, Vector2 position, Rectangle frame, Color drawColor, Color itemColor, Vector2 origin, float scale)
+        {
+            CalamityUtils.DrawInventoryDot(spriteBatch, position, new Vector2(16, 16) * Main.inventoryScale, toggleEnabled);
+        }
+        #endregion
         public override void UpdateAccessory(Player player, bool hideVisual)
         {
-            if (player.controlJump && player.wingTime > 0f && player.jump == 0 && player.velocity.Y != 0f && !hideVisual)
+            if (player.controlJump && player.wingTime > 0f && player.jump == 0 && player.velocity.Y != 0f && !hideVisual && toggleEnabled)
             {
                 int dustXOffset = 4;
                 if (player.direction == 1)
@@ -60,7 +114,14 @@ namespace CalamityMod.Items.Accessories.Wings
             player.fireWalk = true;
             player.lavaImmune = true;
             player.buffImmune[BuffID.OnFire] = true;
-            modPlayer.tracersDust = !hideVisual;
+            player.noFallDmg = true;
+            player.socialShadowRocketBoots = true;
+            if (!toggleEnabled) //Both these effects just boost flight time, but we don't want Tracers to boost it's own flight time when functioning as wings. All other Angel Tread effects are covered above.
+            {
+                player.rocketBoots = player.vanityRocketBoots = 1;
+                modPlayer.angelTreads = true;
+            }
+            modPlayer.tracersDust = !hideVisual && toggleEnabled;
             modPlayer.tracersElysian = true;
         }
 
@@ -68,28 +129,11 @@ namespace CalamityMod.Items.Accessories.Wings
         {
             CreateRecipe().
                 AddIngredient<TracersCelestial>().
-                AddIngredient<ElysianWings>().
-                AddIngredient<CosmiliteBar>(5).
-                AddIngredient<AscendantSpiritEssence>(4).
-                AddTile<CosmicAnvil>().
+                AddIngredient<ArmoredShell>(3).
+                AddIngredient<TwistingNether>(3).
+                AddIngredient<DarkPlasma>(3).
+                AddTile(TileID.LunarCraftingStation).
                 Register();
-        }
-
-        public override bool PreDrawInInventory(SpriteBatch spriteBatch, Vector2 position, Rectangle frame, Color drawColor, Color itemColor, Vector2 origin, float scale)
-        {
-            CalamityUtils.DrawInventoryCustomScale(
-                spriteBatch,
-                texture: TextureAssets.Item[Type].Value,
-                position,
-                frame,
-                drawColor,
-                itemColor,
-                origin,
-                scale,
-                wantedScale: 0.9f,
-                drawOffset: new(1f, 0f)
-            );
-            return false;
         }
     }
 }

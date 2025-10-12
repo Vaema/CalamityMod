@@ -15,6 +15,7 @@ namespace CalamityMod.Items.Weapons.Ranged
     public class UniversalGenesis : ModItem, ILocalizedModType
     {
         public new string LocalizationCategory => "Items.Weapons.Ranged";
+
         public override void SetDefaults()
         {
             Item.width = 158;
@@ -27,7 +28,6 @@ namespace CalamityMod.Items.Weapons.Ranged
             Item.shoot = ProjectileID.Bullet;
             Item.shootSpeed = 20f;
             Item.autoReuse = true;
-            Item.Calamity().canFirePointBlankShots = true;
 
             Item.noMelee = true;
             Item.UseSound = SoundID.Item38;
@@ -35,7 +35,6 @@ namespace CalamityMod.Items.Weapons.Ranged
             Item.value = CalamityGlobalItem.RarityDarkBlueBuyPrice;
             Item.rare = ModContent.RarityType<CosmicPurple>();
             Item.Calamity().donorItem = true;
-            Item.Calamity().canFirePointBlankShots = true;
         }
 
         public override Vector2? HoldoutOffset() => new Vector2(-50f, -8f);
@@ -77,8 +76,6 @@ namespace CalamityMod.Items.Weapons.Ranged
             }
             return false;
         }
-
-        public override bool CanConsumeAmmo(Item ammo, Player player) => Main.rand.NextBool();
 
         public override void AddRecipes()
         {

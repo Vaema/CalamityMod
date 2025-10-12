@@ -8,6 +8,9 @@ namespace CalamityMod.Items.Accessories
     public class InkBomb : ModItem, ILocalizedModType
     {
         public new string LocalizationCategory => "Items.Accessories";
+
+        public static int InkDamage => CalamityUtils.ScaleWithDifficulty(16);
+
         public override void SetDefaults()
         {
             Item.width = 22;
@@ -21,9 +24,8 @@ namespace CalamityMod.Items.Accessories
         {
             CalamityPlayer modPlayer = player.Calamity();
             modPlayer.inkBomb = true;
-            modPlayer.rogueStealthMax += 0.1f;
-            player.Calamity().stealthGenStandstill += 0.07f;
-            player.Calamity().stealthGenMoving += 0.07f;
+            modPlayer.stealthGenStandstill += 0.07f;
+            modPlayer.stealthGenMoving += 0.07f;
         }
     }
 }

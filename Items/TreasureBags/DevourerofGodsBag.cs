@@ -76,15 +76,14 @@ namespace CalamityMod.Items.TreasureBags
             // Weapons
             itemLoot.Add(DropHelper.CalamityStyle(DropHelper.BagWeaponDropRateFraction, new int[]
             {
-                ModContent.ItemType<Excelsus>(),
+                ModContent.ItemType<MawOfInfinity>(),
                 ModContent.ItemType<TheObliterator>(),
-                ModContent.ItemType<Deathwind>(),
-                ModContent.ItemType<DeathhailStaff>(),
-                ModContent.ItemType<StaffoftheMechworm>(),
-                ModContent.ItemType<Eradicator>()
+                ModContent.ItemType<ThreadOfEradication>(),
+                ModContent.ItemType<HyperdeathRiftScepter>(),
+                ModContent.ItemType<VoidEaterMarionette>(),
+                ModContent.ItemType<DimensionTearingDisk>()
             }));
             itemLoot.Add(ModContent.ItemType<CosmicDischarge>(), 10);
-            itemLoot.Add(ModContent.ItemType<Norfleet>(), 10);
 
             // Equipment
             itemLoot.Add(ModContent.ItemType<NebulousCore>());

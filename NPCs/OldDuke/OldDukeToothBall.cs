@@ -21,7 +21,7 @@ namespace CalamityMod.NPCs.OldDuke
             this.HideFromBestiary();
         }
 
-        public static int ToothDamage = 60; // 240
+        public static int ToothDamage = 55; // 220
         public static int CloudDamage = 70; // 280
 
         public override void SetDefaults()

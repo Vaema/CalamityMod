@@ -4,6 +4,7 @@ using CalamityMod.Items.Placeables;
 using CalamityMod.Rarities;
 using Terraria;
 using Terraria.ID;
+using Terraria.Localization;
 using Terraria.ModLoader;
 
 namespace CalamityMod.Items.Armor.OmegaBlue
@@ -12,6 +13,12 @@ namespace CalamityMod.Items.Armor.OmegaBlue
     public class OmegaBlueChestplate : ModItem, ILocalizedModType
     {
         public new string LocalizationCategory => "Items.Armor.PostMoonLord";
+
+        public static float AmmoReduction = 0.75f;
+        public static float DamageBoost = 0.18f;
+        public static int CritBoost = 12;
+        public override LocalizedText Tooltip => base.Tooltip.WithFormatArgs(DamageBoost.ToPercent(), CritBoost, (1f - AmmoReduction).ToPercent());
+
         public override void SetStaticDefaults()
         {
             if (Main.dedServ)
@@ -35,8 +42,9 @@ namespace CalamityMod.Items.Armor.OmegaBlue
         public override void UpdateEquip(Player player)
         {
             var modPlayer = player.Calamity();
-            player.GetDamage<GenericDamageClass>() += 0.12f;
-            player.GetCritChance<GenericDamageClass>() += 8;
+            player.GetDamage<GenericDamageClass>() += DamageBoost;
+            player.GetCritChance<GenericDamageClass>() += CritBoost;
+            modPlayer.ammoCost *= AmmoReduction;
             modPlayer.omegaBlueChestplate = true;
             modPlayer.noLifeRegen = true;
         }

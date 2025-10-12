@@ -99,8 +99,6 @@ namespace CalamityMod.NPCs.SunkenSea
                                BiomeDesignation.HasFlag(flag))
                 .Select(flag => SunkenSeaBiomeCorrespondentDict.Dict[flag].BiomeType)
                 .ToArray();
-
-            Banner = Type;
         }
 
         public override void SetBestiary(BestiaryDatabase database, BestiaryEntry bestiaryEntry)

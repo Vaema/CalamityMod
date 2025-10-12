@@ -4,6 +4,7 @@ using CalamityMod.Buffs.DamageOverTime;
 using CalamityMod.Buffs.StatDebuffs;
 using CalamityMod.Dusts;
 using CalamityMod.Events;
+using CalamityMod.Graphics.Renderers.CalamityRenderers;
 using CalamityMod.Projectiles.Boss;
 using CalamityMod.Projectiles.Melee.Yoyos;
 using CalamityMod.World;
@@ -27,7 +28,7 @@ namespace CalamityMod.NPCs.DevourerofGods
 
         public override void Load()
         {
-            string phase2IconPath = "CalamityMod/NPCs/DevourerofGods/DevourerofGodsBodyS_Head_Boss";
+            string phase2IconPath = "CalamityMod/NPCs/DevourerofGods/DevourerofGodsBody_P2_Head_Boss";
             phase2IconIndex = CalamityMod.Instance.AddBossHeadTexture(phase2IconPath, -1);
         }
 
@@ -41,9 +42,9 @@ namespace CalamityMod.NPCs.DevourerofGods
         public int SegmentIndex;
 
         public static Asset<Texture2D> Texture_Glow;
-        public static Asset<Texture2D> Phase2Texture;
-        public static Asset<Texture2D> Phase2Texture_Glow;
-        public static Asset<Texture2D> Phase2Texture_Glow2;
+        public static Asset<Texture2D> TextureP2;
+        public static Asset<Texture2D> TextureP2_Glow_Purple;
+        public static Asset<Texture2D> TextureP2_Glow_Cyan;
 
         public override LocalizedText DisplayName => CalamityUtils.GetText("NPCs.DevourerofGodsHead.DisplayName");
 
@@ -52,16 +53,15 @@ namespace CalamityMod.NPCs.DevourerofGods
             this.HideFromBestiary();
             if (!Main.dedServ)
             {
-                Texture_Glow = ModContent.Request<Texture2D>(Texture + "Glow", AssetRequestMode.AsyncLoad);
-                Phase2Texture = ModContent.Request<Texture2D>(Texture + "S", AssetRequestMode.AsyncLoad);
-                Phase2Texture_Glow = ModContent.Request<Texture2D>(Texture + "SGlow", AssetRequestMode.AsyncLoad);
-                Phase2Texture_Glow2 = ModContent.Request<Texture2D>(Texture + "SGlow2", AssetRequestMode.AsyncLoad);
+                Texture_Glow = ModContent.Request<Texture2D>(Texture + "_Glow", AssetRequestMode.AsyncLoad);
+                TextureP2 = ModContent.Request<Texture2D>(Texture + "_P2", AssetRequestMode.AsyncLoad);
+                TextureP2_Glow_Purple = ModContent.Request<Texture2D>(Texture + "_P2_Glow_Purple", AssetRequestMode.AsyncLoad);
+                TextureP2_Glow_Cyan = ModContent.Request<Texture2D>(Texture + "_P2_Glow_Cyan", AssetRequestMode.AsyncLoad);
             }
         }
 
         public override void SetDefaults()
         {
-            NPC.Calamity().canBreakPlayerDefense = true;
             NPC.damage = 120; // 240
             NPC.npcSlots = 5f;
             NPC.width = 56;
@@ -74,7 +74,7 @@ namespace CalamityMod.NPCs.DevourerofGods
                 global.unbreakableDR = true;
                 NPC.chaseable = false;
             }
-            NPC.LifeMaxNERB(887500, 1065000, 1500000); // Phase 1 is 355000, Phase 2 is 532500
+            NPC.LifeMaxNERB(760000, 910000, 1500000);
             NPC.aiStyle = -1;
             AIType = -1;
             NPC.knockBackResist = 0f;
@@ -89,7 +89,7 @@ namespace CalamityMod.NPCs.DevourerofGods
             NPC.BossBar = Main.BigBossProgressBar.NeverValid;
             NPC.dontCountMe = true;
 
-            if (CalamityWorld.LegendaryMode)
+            if (Main.zenithWorld)
                 NPC.scale *= 1.5f;
         }
 
@@ -97,7 +97,7 @@ namespace CalamityMod.NPCs.DevourerofGods
         {
             NPC head = CalamityGlobalNPC.DoGHead >= 0 ? Main.npc[CalamityGlobalNPC.DoGHead] : null;
             DevourerofGodsHead modNPC = head?.ModNPC<DevourerofGodsHead>() ?? null;
-            if (head is null || modNPC.AwaitingPhase2Teleport || !modNPC.Phase2Started)
+            if (head is null || modNPC.AwaitingPhase2Teleport || !modNPC.Phase2Started || NPC.Opacity < 0.1f)
             {
                 index = -1;
                 return;
@@ -149,19 +149,20 @@ namespace CalamityMod.NPCs.DevourerofGods
             if (NPC.ai[2] > 0f)
                 NPC.realLife = (int)NPC.ai[2];
 
-            if (NPC.life > Main.npc[(int)NPC.ai[1]].life)
-                NPC.life = Main.npc[(int)NPC.ai[1]].life;
+            NPC.life = Main.npc[(int)NPC.ai[2]].life;
+            NPC.lifeMax = Main.npc[(int)NPC.ai[2]].lifeMax;NPC.life = NPC.lifeMax;
 
             // Percent life remaining
-            float lifeRatio = NPC.life / (float)NPC.lifeMax;
+            float lifeRatio = Main.npc[(int)NPC.ai[2]].life / (float)Main.npc[(int)NPC.ai[2]].lifeMax;
 
-            bool phase2 = lifeRatio < 0.6f;
+            bool phase2 = lifeRatio < 0.65f;
             bool expertMode = Main.expertMode || BossRushEvent.BossRushActive;
             bool revenge = CalamityWorld.revenge || BossRushEvent.BossRushActive;
             bool death = CalamityWorld.death || BossRushEvent.BossRushActive;
 
-            if (phase2)
+            if (phase2 && !phase2Started && Main.npc[(int)NPC.ai[2]].localAI[2] <= 60)
             {
+
                 phase2Started = true;
 
                 // Once before DoG spawns, set new size
@@ -264,14 +265,14 @@ namespace CalamityMod.NPCs.DevourerofGods
 
             // Decide segment offset stuff.
             NPC.rotation = directionToNextSegment.ToRotation() + MathHelper.PiOver2;
-            NPC.Center = aheadSegment.Center - directionToNextSegment.SafeNormalize(Vector2.Zero) * NPC.scale * NPC.width;
+            NPC.Center = aheadSegment.Center - directionToNextSegment.SafeNormalize(Vector2.Zero) * NPC.scale * (phase2Started ? 80 : NPC.width );
             NPC.spriteDirection = (directionToNextSegment.X > 0).ToDirectionInt();
 
             // Velocity variables
             float segmentVelocity = death ? 17.5f : 16f;
             if (expertMode)
                 segmentVelocity += 4f * (1f - lifeRatio);
-            if (CalamityWorld.LegendaryMode)
+            if (Main.getGoodWorld)
                 segmentVelocity *= 1.1f;
         }
 
@@ -282,22 +283,12 @@ namespace CalamityMod.NPCs.DevourerofGods
             if (Main.npc[NPC.realLife].type != ModContent.NPCType<DevourerofGodsHead>())
                 return true;
 
-            float disintegrationFactor = Main.npc[NPC.realLife].ModNPC<DevourerofGodsHead>().DeathAnimationTimer / 640f;
-            if (disintegrationFactor > 0f)
-            {
-                spriteBatch.EnterShaderRegion();
-                GameShaders.Misc["CalamityMod:DoGDisintegration"].UseOpacity(disintegrationFactor);
-                GameShaders.Misc["CalamityMod:DoGDisintegration"].UseSaturation(NPC.whoAmI);
-                GameShaders.Misc["CalamityMod:DoGDisintegration"].UseImage1("Images/Misc/Perlin");
-                GameShaders.Misc["CalamityMod:DoGDisintegration"].Apply();
-            }
-
             SpriteEffects spriteEffects = SpriteEffects.None;
             if (NPC.spriteDirection == 1)
                 spriteEffects = SpriteEffects.FlipHorizontally;
 
             bool useOtherTextures = phase2Started && Main.npc[(int)NPC.ai[2]].localAI[2] <= 60f;
-            Texture2D texture2D15 = useOtherTextures ? Phase2Texture.Value : TextureAssets.Npc[Type].Value;
+            Texture2D texture2D15 = useOtherTextures ? TextureP2.Value : TextureAssets.Npc[Type].Value;
             Vector2 halfSizeTexture = new Vector2(texture2D15.Width / 2, texture2D15.Height / 2);
 
             Vector2 drawLocation = NPC.Center - screenPos;
@@ -305,24 +296,20 @@ namespace CalamityMod.NPCs.DevourerofGods
             drawLocation += halfSizeTexture * NPC.scale + new Vector2(0f, NPC.gfxOffY);
             spriteBatch.Draw(texture2D15, drawLocation, NPC.frame, NPC.GetAlpha(drawColor), NPC.rotation, halfSizeTexture, NPC.scale, spriteEffects, 0f);
 
-            if (!NPC.dontTakeDamage)
+            if (!Main.npc[(int)NPC.ai[2]].ModNPC<DevourerofGodsHead>().isInPassiveState && NPC.Opacity > 0.25f && useOtherTextures)
             {
-                if (useOtherTextures)
-                {
-                    texture2D15 = Phase2Texture_Glow.Value;
-                    Color glowmaskColor = Color.Lerp(Color.White, Color.Fuchsia, 0.5f);
+                texture2D15 = TextureP2_Glow_Purple.Value;
+                Color glowmaskColor = Color.Lerp(Color.White, Color.Fuchsia, 0.5f);
 
-                    spriteBatch.Draw(texture2D15, drawLocation, NPC.frame, glowmaskColor, NPC.rotation, halfSizeTexture, NPC.scale, spriteEffects, 0f);
-                }
-
-                texture2D15 = useOtherTextures ? Phase2Texture_Glow2.Value : Texture_Glow.Value;
+                spriteBatch.Draw(texture2D15, drawLocation, NPC.frame, glowmaskColor, NPC.rotation, halfSizeTexture, NPC.scale, spriteEffects, 0f);
+            }
+            if ((!Main.npc[(int)NPC.ai[2]].ModNPC<DevourerofGodsHead>().isInAgressiveState || !useOtherTextures) && NPC.Opacity > 0.25f)
+            {
+                texture2D15 = useOtherTextures ? TextureP2_Glow_Cyan.Value : Texture_Glow.Value;
                 Color glowmaskColor2 = Color.Lerp(Color.White, Color.Cyan, 0.5f);
 
                 spriteBatch.Draw(texture2D15, drawLocation, NPC.frame, glowmaskColor2, NPC.rotation, halfSizeTexture, NPC.scale, spriteEffects, 0f);
             }
-
-            if (disintegrationFactor > 0f)
-                spriteBatch.ExitShaderRegion();
 
             return false;
         }
@@ -420,15 +407,6 @@ namespace CalamityMod.NPCs.DevourerofGods
         public override void ApplyDifficultyAndPlayerScaling(int numPlayers, float balance, float bossAdjustment)
         {
             NPC.lifeMax = (int)(NPC.lifeMax * 0.8f * balance * bossAdjustment);
-        }
-
-        public override void OnHitPlayer(Player target, Player.HurtInfo hurtInfo)
-        {
-            if (hurtInfo.Damage > 0)
-            {
-                target.AddBuff(ModContent.BuffType<GodSlayerInferno>(), 180);
-                target.AddBuff(ModContent.BuffType<WhisperingDeath>(), 480);
-            }
         }
     }
 }

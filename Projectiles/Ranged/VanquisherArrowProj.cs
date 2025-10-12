@@ -46,7 +46,6 @@ namespace CalamityMod.Projectiles.Ranged
             Projectile.penetrate = 2;
             Projectile.timeLeft = 600;
             Projectile.extraUpdates = 7;
-            Projectile.Calamity().pointBlankShotDuration = CalamityGlobalProjectile.DefaultPointBlankDuration;
             Projectile.usesLocalNPCImmunity = true;
             Projectile.localNPCHitCooldown = 15 * Projectile.extraUpdates;
         }
@@ -148,7 +147,7 @@ namespace CalamityMod.Projectiles.Ranged
 
                 SoundStyle onKill = new("CalamityMod/Sounds/Item/ScorpioHit");
                 SoundEngine.PlaySound(onKill with { Volume = 0.25f, Pitch = 0.1f, PitchVariance = 0.3f }, Projectile.Center);
-                SoundEngine.PlaySound(SoundID.DD2_FlameburstTowerShot with { Volume = 0.8f, Pitch = -0.5f, PitchVariance = 0.3f }, Projectile.Center);
+                SoundEngine.PlaySound(SoundID.DD2_FlameburstTowerShot with { Volume = 0.4f, Pitch = -0.4f, PitchVariance = 0.3f }, Projectile.Center);
             }
         }
         public override bool PreDraw(ref Color lightColor)
