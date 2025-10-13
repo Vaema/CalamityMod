@@ -431,6 +431,51 @@ namespace CalamityMod.CalPlayer
                 lucreciaEnergyPaused = false;
             }
 
+            if (Player.HeldItem.type == ModContent.ItemType<StarburstShiv>() && starburstShivElementalMastery > 0)
+            {
+                if (starburstShivElementalMastery == StarburstShiv.MaxEnergy && !starburstShivElementalMasteryPaused)
+                {
+                    starburstShivElementalMasteryPaused = true;
+                    starburstShivElementalMasteryTimer = 0;
+                }
+
+                starburstShivElementalMasteryTimer++;
+
+                // If the mastery is at max, pause for 180 ticks
+                if (starburstShivElementalMasteryPaused)
+                {
+                    if (starburstShivElementalMasteryTimer >= 1 && !starburstShivElementalMasteryMaxSFXPlayed)
+                    {
+                        SoundEngine.PlaySound(SoundID.Item79 with { Volume = 1.6f, Pitch = 0.4f }, Player.Center);
+                        starburstShivElementalMasteryMaxSFXPlayed = true;
+
+                    }
+                    // If the pause is Done, resume decrementing.
+                    if (starburstShivElementalMasteryTimer >= 180)
+                    {
+                        starburstShivElementalMasteryPaused = false;
+                        starburstShivElementalMasteryTimer = 0;
+                        starburstShivElementalMastery--;
+                    }
+                }
+                else // Decrementing
+                {
+                    starburstShivElementalMasteryMaxSFXPlayed = false;
+                    // Once every 8 ticks
+                    if (starburstShivElementalMasteryTimer >= 8)
+                    {
+                        starburstShivElementalMastery--;
+                        starburstShivElementalMasteryTimer = 0;
+                    }
+                }
+            }
+            else
+            {
+                // Reset the timer and pause state if the player isn't holding the weapon.
+                starburstShivElementalMasteryTimer = 0;
+                starburstShivElementalMasteryPaused = false;
+            }
+
 
             if (Player.HeldItem.type == ModContent.ItemType<UnstableCastersGauntlet>() && unstableCastersGauntletVis < 100)
             {

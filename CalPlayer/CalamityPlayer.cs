@@ -298,6 +298,10 @@ namespace CalamityMod.CalPlayer
         public bool lucreciaEnergyPaused = false;
         public bool lucreciaEnergyMaxSFXPlayed = false;
         private int lucreciaParticleTimer = 0;
+        public int starburstShivElementalMastery = 0;
+        public int starburstShivElementalMasteryTimer = 0;
+        public bool starburstShivElementalMasteryPaused = false;
+        public bool starburstShivElementalMasteryMaxSFXPlayed = false;
         public float unstableCastersGauntletVis = 0;
         public int unstableCastersGauntletVisTimer = 0;
         public int PhotoAudioCooldown = 0;
@@ -3264,6 +3268,7 @@ namespace CalamityMod.CalPlayer
             flareGunOverheat = 0;
             hellbornShots = 0;
             lucreciaEnergy = 0;
+            starburstShivElementalMastery = 0;
             garandShots = 0;
             searedPanCounter = 0;
             searedPanTimer = 0;
