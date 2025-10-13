@@ -37,8 +37,8 @@ namespace CalamityMod.Items.Weapons.Ranged
             Item.shoot = ModContent.ProjectileType<StarmadaStar>();
             Item.shootSpeed = 12f;
             Item.useAmmo = AmmoID.FallenStar;
-            Item.rare = ModContent.RarityType<CosmicPurple>();
-            Item.value = CalamityGlobalItem.RarityDarkBlueBuyPrice;
+            Item.rare = ModContent.RarityType<BurnishedAuric>();
+            Item.value = CalamityGlobalItem.RarityVioletBuyPrice;
         }
         // Holdout projectile is spawned when holding the item, so using the item does nothing
         public override bool CanUseItem(Player player) => false;
