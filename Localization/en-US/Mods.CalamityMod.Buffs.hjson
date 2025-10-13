@@ -1664,6 +1664,6 @@ FrostyBatBuff: {
 }
 
 ToastyBatBuff: {
-	DisplayName: Fiery Bat Friend
+	DisplayName: Toasty Bat Friend
 	Description: A fiery bat flutters at your shoulder
 }
