@@ -12,6 +12,7 @@ namespace CalamityMod.Items.Weapons.Ranged
     public class Shredder : ModItem, ILocalizedModType
     {
         public new string LocalizationCategory => "Items.Weapons.Ranged";
+
         public override void SetStaticDefaults()
         {
             ItemID.Sets.ItemsThatAllowRepeatedRightClick[Type] = true;
@@ -37,6 +38,7 @@ namespace CalamityMod.Items.Weapons.Ranged
             Item.shoot = ProjectileID.Bullet;
             Item.shootSpeed = 5f;
             Item.useAmmo = AmmoID.Bullet;
+            Item.consumeAmmoOnLastShotOnly = true;
         }
 
         public override Vector2? HoldoutOffset() => new Vector2(-5, 0);
@@ -53,12 +55,6 @@ namespace CalamityMod.Items.Weapons.Ranged
                 Projectile.NewProjectile(source, newPosition, (velocity * Main.rand.NextFloat(0.9f, 1.1f)).RotatedByRandom(0.2f), shotType, damage, knockback, player.whoAmI);
             }
             return false;
-        }
-        public override bool CanConsumeAmmo(Item ammo, Player player)
-        {
-            if (Main.rand.Next(0, 100) < 60)
-                return false;
-            return true;
         }
 
         public override void AddRecipes()

@@ -9,8 +9,9 @@ using CalamityMod.Particles;
 
 namespace CalamityMod.Projectiles.Magic
 {
-    public class WarpSigil : ModProjectile
+    public class WarpSigil : ModProjectile, ILocalizedModType
     {
+        public new string LocalizationCategory => "Projectiles.Magic";
         private bool spawnedProjectile = false;
         private bool spawnedIntroParticle = false;
         public override void SetDefaults()

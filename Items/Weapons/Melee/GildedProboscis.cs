@@ -22,13 +22,13 @@ namespace CalamityMod.Items.Weapons.Melee
             ItemID.Sets.ShimmerTransformToItem[Type] = ModContent.ItemType<GoldenEagle>();
             base.SetStaticDefaults();
         }
-
+        public override bool SizeModifiers => false;
         public override void SetDefaults()
         {
             Item.width = 66;
             Item.height = 66;
-            Item.damage = 4000;
-            Item.DamageType = TrueMeleeDamageClass.Instance;
+            Item.damage = 2090;
+            Item.DamageType = TrueMeleeNoSpeedDamageClass.Instance;
             Item.useAnimation = Item.useTime = 65;
             Item.useStyle = ItemUseStyleID.Shoot;
             Item.knockBack = 15f;
@@ -40,7 +40,6 @@ namespace CalamityMod.Items.Weapons.Melee
             ItemID.Sets.ItemsThatAllowRepeatedRightClick[Type] = true;
             base.SetDefaults();
         }
-
         public override bool AltFunctionUse(Player player)
         {
             return true;

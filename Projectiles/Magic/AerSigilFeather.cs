@@ -7,8 +7,9 @@ using System;
 namespace CalamityMod.Projectiles.Magic
 {
     // This projectile is intended to be a simple VFX projectile.
-    public class AerSigilFeather : ModProjectile
+    public class AerSigilFeather : ModProjectile, ILocalizedModType
     {
+        public new string LocalizationCategory => "Projectiles.Magic";
         private float extraRotation = 0;
         private float intervalModifier = 1f;
         private bool randomized = false;

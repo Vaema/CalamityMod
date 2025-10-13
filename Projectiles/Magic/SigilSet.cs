@@ -12,6 +12,7 @@ namespace CalamityMod.Projectiles.Magic
 {
     public class SigilSet : ModProjectile, ILocalizedModType
     {
+        public new string LocalizationCategory => "Projectiles.Magic";
         public ref float FadeoutFlag => ref Projectile.ai[2];
         private const float RuneLerpTime = 22f;
         private const float RuneDelayTime = 3f;

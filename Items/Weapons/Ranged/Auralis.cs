@@ -60,8 +60,6 @@ namespace CalamityMod.Items.Weapons.Ranged
 
         public override void HoldItem(Player player) => player.scope = true;
 
-        public override bool CanConsumeAmmo(Item ammo, Player player) => Main.rand.Next(100) >= 50;
-
         public override void AddRecipes()
         {
             CreateRecipe().

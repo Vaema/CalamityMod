@@ -9,8 +9,9 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.Projectiles.Magic
 {
-    public class WarpSigilShotCreator : ModProjectile
+    public class WarpSigilShotCreator : ModProjectile, ILocalizedModType
     {
+        public new string LocalizationCategory => "Projectiles.Magic";
         public override string Texture => "CalamityMod/Projectiles/InvisibleProj";
 
         public ref float FiringTimer => ref Projectile.ai[0];

@@ -48,7 +48,7 @@ namespace CalamityMod.Projectiles.Ranged
             revSpeed = Utils.Remap(revFrames, 0, maxFrames - 120, 1, 20, true);
             if (shootingTimer >= initialFireTime && revFrames < maxFrames && secondShot)
             {
-                Owner.PickAmmo(Owner.ActiveItem(), out int bulletAMMO, out float SpeedNoUse, out int bulletDamage, out float kBackNoUse, out _, !Main.rand.NextBool(4));
+                Owner.PickAmmo(Owner.ActiveItem(), out int bulletAMMO, out float SpeedNoUse, out int bulletDamage, out float kBackNoUse, out _);
                 
                 SoundStyle fire = new("CalamityMod/Sounds/Item/GunShotSmallAlt");
                 SoundEngine.PlaySound(fire with { Volume = 0.7f, Pitch = -0.1f + revSpeed * 0.01f }, Projectile.Center);
@@ -72,7 +72,7 @@ namespace CalamityMod.Projectiles.Ranged
             }
             if (shootingTimer >= 60 && revFrames < maxFrames)
             {
-                Owner.PickAmmo(Owner.ActiveItem(), out int bulletAMMO, out float SpeedNoUse, out int bulletDamage, out float kBackNoUse, out _, !Main.rand.NextBool(4));
+                Owner.PickAmmo(Owner.ActiveItem(), out int bulletAMMO, out float SpeedNoUse, out int bulletDamage, out float kBackNoUse, out _);
                 Vector2 shootVelocity = Projectile.velocity.SafeNormalize(Vector2.UnitY) * 19;
                 float spread = 0.045f * Utils.GetLerpValue(0, maxFrames, revFrames, true);
                 Projectile.NewProjectile(Projectile.GetSource_FromThis(), GunTipPosition, (shootVelocity).RotatedByRandom(spread).RotatedByRandom(0.04f), bulletAMMO, Projectile.damage / 2, Projectile.knockBack, Projectile.owner);

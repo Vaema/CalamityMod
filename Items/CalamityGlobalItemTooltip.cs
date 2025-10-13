@@ -3,9 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using CalamityMod.Balancing;
-using CalamityMod.Buffs.DamageOverTime;
-using CalamityMod.Buffs.StatBuffs;
-using CalamityMod.Buffs.StatDebuffs;
 using CalamityMod.ChatTags;
 using CalamityMod.CustomRecipes;
 using CalamityMod.DataStructures;
@@ -1753,7 +1750,112 @@ namespace CalamityMod.Items
                 return false;
             }
 
-            if (line.Name == "ItemName" && line.Mod == "Terraria" && item.type == ModContent.ItemType<Orderbringer>())
+            if (line.Mod == "Terraria" && item.type == ModContent.ItemType<OntologicalDespoiler>() && (line.Name == "Tooltip1" || line.Name == "Tooltip2" || line.Name == "Tooltip4" || line.Name == "Tooltip5" || line.Name == "Tooltip7"))
+            {
+                Color rarityColor = Color.Black;
+                Vector2 basePosition = new Vector2(line.X, line.Y);
+                Vector2 backScale = line.BaseScale;
+                Player Owner = Main.LocalPlayer;
+                if (Owner is null)
+                    return false;
+
+                float sine = (float)Math.Sin(Main.GlobalTimeWrappedHourly * 5 / MathHelper.Pi);
+                int draws = 20;
+                Color usedColor = Color.White;
+                if (line.Name == "Tooltip1" || line.Name == "Tooltip4" || line.Name == "Tooltip7") // Give the shifting color to the lines that need it
+                {
+                    float rate = (Main.GlobalTimeWrappedHourly * 3);
+                    List<Color> eColors = new List<Color>()
+                    {
+                        Owner.shirtColor,
+                        Color.Lerp(Owner.shirtColor, Color.Black, 0.15f),
+                        Color.Lerp(Owner.shirtColor, Color.White, 0.05f),
+                        Color.Lerp(Owner.shirtColor, Color.White, 0.25f)
+                    };
+                    int colorIndex = (int)(rate / 2 % eColors.Count);
+                    Color currentColor = eColors[colorIndex];
+                    Color nextColor = eColors[(colorIndex + 1) % eColors.Count];
+                    usedColor = Color.Lerp(currentColor, nextColor, rate % 2f >= 1f ? 1f : rate % 1f);
+                    if (Owner.shirtColor == Color.White)
+                        usedColor = new Color(Main.DiscoR, Main.DiscoG, Main.DiscoB);
+                }
+
+                if (line.Name == "Tooltip5") // Shaky black outline
+                {
+                    for (int i = 0; i < 4; i++)
+                    {
+                        Vector2 shake = Main.rand.NextVector2Circular(5, 5);
+                        Vector2 backPosition = basePosition + shake;
+                        ChatManager.DrawColorCodedStringWithShadow(Main.spriteBatch, line.Font, line.Text, backPosition, rarityColor, line.Rotation, line.Origin, backScale, line.MaxWidth, line.Spread);
+                    }
+                }
+                if (line.Name == "Tooltip2" || line.Name == "Tooltip5") // Negative lines (inverted colors)
+                {
+                    for (int i = 0; i < draws; i++)
+                    {
+                        Color clr = (line.Name == "Tooltip5") ? Color.Lerp(Color.White, Color.Black, sine) : Color.White;
+                        Vector2 backPosition = basePosition + (MathHelper.TwoPi * i / draws).ToRotationVector2() * (1.5f + 0.2f * sine);
+                        ChatManager.DrawColorCodedStringWithShadow(Main.spriteBatch, line.Font, line.Text, backPosition, clr with { A = 0 }, line.Rotation, line.Origin, backScale, line.MaxWidth, line.Spread);
+                    }
+                    Color clr2 = (line.Name == "Tooltip5") ? Color.Lerp(Color.Black, Color.White, sine) : Color.Black;
+                    ChatManager.DrawColorCodedString(Main.spriteBatch, line.Font, line.Text, basePosition, clr2, line.Rotation, line.Origin, backScale);
+                    return false;
+
+                }
+                else if (line.Name == "Tooltip4") // Double outline
+                {
+                    for (int i = 0; i < draws; i++)
+                    {
+                        Vector2 backPosition = basePosition + (MathHelper.TwoPi * i / draws).ToRotationVector2() * (4.5f + 0.2f * sine);
+                        ChatManager.DrawColorCodedStringWithShadow(Main.spriteBatch, line.Font, line.Text, backPosition, usedColor with { A = 0 }, line.Rotation, line.Origin, backScale, line.MaxWidth, line.Spread);
+                    }
+                    for (int i = 0; i < draws; i++)
+                    {
+                        Vector2 backPosition = basePosition + (MathHelper.TwoPi * i / draws).ToRotationVector2() * (2.5f + 0.2f * sine);
+                        ChatManager.DrawColorCodedString(Main.spriteBatch, line.Font, line.Text, backPosition, Color.Black, line.Rotation, line.Origin, backScale);
+                    }
+
+                    ChatManager.DrawColorCodedString(Main.spriteBatch, line.Font, line.Text, basePosition, Color.White, line.Rotation, line.Origin, backScale);
+                    return false;
+                }
+                if (line.Name == "Tooltip7") // Dark horizon thing
+                {
+                    Texture2D texture = ModContent.Request<Texture2D>("CalamityMod/Particles/Light").Value;
+
+                    Vector2 drawPosition = basePosition;
+                    Color drawColor = Color.Black;
+                    Vector2 rotationPoint = texture.Size() * 0.5f;
+                    for (int i = 0; i < 6; i++)
+                    {
+                        int length = line.Text.Length;
+                        Main.EntitySpriteDraw(texture, basePosition + Vector2.UnitX * length * 4 + Vector2.UnitY * 10 + Vector2.UnitX * (i % 2 == 0 ? -7 * i : 7 * i), null, usedColor with { A = 0 }, (MathHelper.PiOver2), rotationPoint, new Vector2(0.9f - 0.085f * i, 1 + 2.7f * i * 1f) * 0.7f * Main.rand.NextFloat(0.95f, 1f), SpriteEffects.None);
+                        Main.EntitySpriteDraw(texture, basePosition + Vector2.UnitX * length * 4 + Vector2.UnitY * 10 + Vector2.UnitX * (i % 2 == 0 ? -7 * i : 7 * i), null, drawColor, (MathHelper.PiOver2), rotationPoint, new Vector2(0.9f - 0.05f * i, 1 + 4.5f * i * 1f) * 0.55f * Main.rand.NextFloat(0.95f, 1f), SpriteEffects.None);
+                    }
+
+                    for (int i = 0; i < draws; i++)
+                    {
+                        Vector2 backPosition = basePosition + (MathHelper.TwoPi * i / draws).ToRotationVector2() * (1.5f);
+                        ChatManager.DrawColorCodedString(Main.spriteBatch, line.Font, line.Text, backPosition, usedColor with { A = 0 } * 0.6f, line.Rotation, line.Origin, backScale);
+                    }
+                    ChatManager.DrawColorCodedString(Main.spriteBatch, line.Font, line.Text, basePosition, Color.Black, line.Rotation, line.Origin, backScale);
+                    return false;
+                }
+                if (line.Name == "Tooltip1")
+                {
+                    ChatManager.DrawColorCodedStringWithShadow(Main.spriteBatch, line.Font, line.Text, basePosition, usedColor, line.Rotation, line.Origin, backScale, line.MaxWidth, line.Spread);
+                    return false;
+                }
+
+                // Draw the front text as usual as a backup just in case.
+                ChatManager.DrawColorCodedStringWithShadow(Main.spriteBatch, line.Font, line.Text, basePosition, Color.White, line.Rotation, line.Origin, line.BaseScale, line.MaxWidth, line.Spread);
+
+                return false;
+            }
+
+            // Rainbow effect originally made for Orderbringer because it used to have a special rarity
+            // But why did it have one in the first place??
+            // Might be used for Miracle stuff later or something idk
+            /*if (line.Name == "ItemName" && line.Mod == "Terraria" && item.type == ModContent.ItemType<Orderbringer>())
             {
                 Color rarityColor = Color.White;
                 Vector2 basePosition = new Vector2(line.X, line.Y);
@@ -1809,7 +1911,7 @@ namespace CalamityMod.Items
                 ChatManager.DrawColorCodedStringWithShadow(Main.spriteBatch, line.Font, line.Text, shake + basePosition, rarityColor, line.Rotation, line.Origin, line.BaseScale, line.MaxWidth, line.Spread);
 
                 return false;
-            }
+            }*/
             return true;
         }
         #endregion
