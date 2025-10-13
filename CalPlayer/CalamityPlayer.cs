@@ -297,6 +297,8 @@ namespace CalamityMod.CalPlayer
         public bool lucreciaEnergyPaused = false;
         public bool lucreciaEnergyMaxSFXPlayed = false;
         private int lucreciaParticleTimer = 0;
+        public float unstableCastersGauntletVis = 0;
+        public int unstableCastersGauntletVisTimer = 0;
         public int PhotoAudioCooldown = 0;
         public int PhotoTimer = 90;
         /// <summary> Cooldown variable used to add a delay between Anahita's Arpeggio uses. </summary>
@@ -798,6 +800,7 @@ namespace CalamityMod.CalPlayer
         public bool badgeOfBravery = false;
         public bool WarbanneroftheRighteous = false;
         public bool warbannerGlow = false;
+        public float warbannerDamageMult = 0;
         public bool tesla = false;
         public bool teslaVisuals = true;
         public bool cryogenSoul = false;

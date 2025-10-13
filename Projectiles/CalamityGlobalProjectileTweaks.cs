@@ -131,8 +131,6 @@ namespace CalamityMod.Projectiles
                 { ProjectileID.CobaltDrill, standardDrillTweaks },
                 { ProjectileID.CobaltNaginata, Do(TrueMelee, LocalIFrames(9)) },
                 { ProjectileID.CrystalBullet, Do(ExtraUpdatesDelta(+2), DefaultIDStaticIFrames) },
-                { ProjectileID.CrystalVileShardHead, Do(LocalIFrames(23)) },
-                { ProjectileID.CrystalVileShardShaft, Do(LocalIFrames(23)) },
                 { ProjectileID.CursedBullet, Do(ExtraUpdatesDelta(+2), DefaultIDStaticIFrames) },
                 { ProjectileID.ClusterRocketI, Do(LocalIFrames(15)) },
                 { ProjectileID.ClusterFragmentsI, Do(IDStaticIFrames(15)) },
@@ -144,13 +142,11 @@ namespace CalamityMod.Projectiles
                 { ProjectileID.DD2SquireSonicBoom, Do(PiercingExact(3), DefaultIDStaticIFrames) }, // Flying Dragon
                 { ProjectileID.DeadlySphere, Do(LocalIFrames(30)) },
                 { ProjectileID.EmeraldBolt, Do(NoPiercing) },
-                { ProjectileID.EmpressBlade, Do(LocalIFrames(30)) }, // Terraprisma
                 { ProjectileID.EnchantedBoomerang, Do(ExtraUpdatesExact(1), DefaultIDStaticIFrames) },
                 { ProjectileID.ExplosiveBullet, Do(ExtraUpdatesDelta(+2), IDStaticIFrames(5)) }, // Has an exception in Vanilla iframe code, uses 5 iframes
                 { ProjectileID.FairyQueenRangedItemShot, Do(PiercingExact(7), ExtraUpdatesExact(1))  }, // Eventide Convert
                 { ProjectileID.FlaironBubble, Do(ExtraUpdatesExact(1), TimeLeftExact(150), DefaultIDStaticIFrames) },
                 { ProjectileID.Flamarang, Do(ExtraUpdatesExact(2), DefaultIDStaticIFrames) },
-                { ProjectileID.Flames, Do(IDStaticIFrames(5)) }, // Flamethrower AND Elf Melter flames
                 { ProjectileID.FlamingJack, Do(ExtraUpdatesExact(1), DefaultIDStaticIFrames) },
                 { ProjectileID.FlowerPetal, Do(MaxUpdatesExact(4), LocalIFrames(10)) }, // Orichalcum armor
                 { ProjectileID.FlyingKnife, Do(ExtraUpdatesExact(1), DefaultIDStaticIFrames) },
@@ -190,7 +186,6 @@ namespace CalamityMod.Projectiles
                 { ProjectileID.PalladiumChainsaw, standardChainsawTweaks },
                 { ProjectileID.PalladiumDrill, standardDrillTweaks },
                 { ProjectileID.PartyBullet, Do(ExtraUpdatesDelta(+2), DefaultIDStaticIFrames) },
-                { ProjectileID.PoisonFang, Do(LocalIFrames(10)) },
                 { ProjectileID.PurpleCounterweight, counterweightTweaks },
                 { ProjectileID.QueenSlimeGelAttack, Do(NoPiercing) },
                 { ProjectileID.QueenSlimeMinionPinkBall, Do(NoPiercing) },
@@ -214,7 +209,6 @@ namespace CalamityMod.Projectiles
                 { ProjectileID.Trimarang, Do(ExtraUpdatesExact(1), DefaultIDStaticIFrames) },
                 { ProjectileID.TrueNightsEdge, Do(PiercingExact(4)) },
                 { ProjectileID.VenomBullet, Do(ExtraUpdatesDelta(+2), DefaultIDStaticIFrames) },
-                { ProjectileID.VenomFang, Do(LocalIFrames(10)) },
                 { ProjectileID.VenomSpider, Do( ExtraUpdatesExact(2), LocalIFrames(45)) }, //Spider Staff spiders. It has Venom, Dangerous, and Jumping spiders.
                 { ProjectileID.VortexDrill, standardDrillTweaks },
                 { ProjectileID.Wasp, Do(PiercingExact(2)) },
@@ -341,6 +335,8 @@ namespace CalamityMod.Projectiles
                 { ProjectileID.CrystalPulse2, defaultIFrames },
                 { ProjectileID.CrystalShard, defaultIFrames },
                 { ProjectileID.CrystalStorm, defaultIFrames },
+                { ProjectileID.CrystalVileShardHead, defaultIFrames },
+                { ProjectileID.CrystalVileShardShaft, defaultIFrames },
                 { ProjectileID.CursedArrow, defaultIFrames },
                 { ProjectileID.CursedDart, defaultIFrames },
                 { ProjectileID.CursedDartFlame, defaultIFrames },

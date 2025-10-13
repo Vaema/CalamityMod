@@ -71,11 +71,4 @@ namespace CalamityMod.Buffs.DamageOverTime
             }
         }
     }
-    public class BrainRotIconItem : ModItem
-    {
-        private string BuffName = "BrainRot";
-        public override string Texture => $"CalamityMod/Buffs/DamageOverTime/{BuffName}";
-        public override LocalizedText DisplayName => CalamityUtils.GetText($"Buffs.{BuffName}.DisplayName");
-        public override LocalizedText Tooltip => CalamityUtils.GetText($"Buffs.{BuffName}.ItemTooltip");
-    }
 }

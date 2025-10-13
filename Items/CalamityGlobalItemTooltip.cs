@@ -1753,7 +1753,10 @@ namespace CalamityMod.Items
                 return false;
             }
 
-            if (line.Name == "ItemName" && line.Mod == "Terraria" && item.type == ModContent.ItemType<Orderbringer>())
+            // Rainbow effect originally made for Orderbringer because it used to have a special rarity
+            // But why did it have one in the first place??
+            // Might be used for Miracle stuff later or something idk
+            /*if (line.Name == "ItemName" && line.Mod == "Terraria" && item.type == ModContent.ItemType<Orderbringer>())
             {
                 Color rarityColor = Color.White;
                 Vector2 basePosition = new Vector2(line.X, line.Y);
@@ -1809,7 +1812,7 @@ namespace CalamityMod.Items
                 ChatManager.DrawColorCodedStringWithShadow(Main.spriteBatch, line.Font, line.Text, shake + basePosition, rarityColor, line.Rotation, line.Origin, line.BaseScale, line.MaxWidth, line.Spread);
 
                 return false;
-            }
+            }*/
             return true;
         }
         #endregion

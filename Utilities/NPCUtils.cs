@@ -1135,7 +1135,7 @@ namespace CalamityMod
             SoundEngine.PlaySound(spawnSound, player.Center);
 
             // SP or SERVER: Spawn Boss Immediately
-            // This will ensure NPC to be spawned only once on Item.UseItem
+            // This will ensure the NPC is spawned only once on Item.UseItem
             if (Main.netMode != NetmodeID.MultiplayerClient)
             {
                 int spawnedNPCIdx = NPC.NewNPC(new EntitySource_BossSpawn(target: player), worldX, worldY, npcType, Start: 1);
@@ -1156,6 +1156,9 @@ namespace CalamityMod
 
                 return npc;
             }
+            // MP CLIENT: send syncing net message instead
+            else
+                NetMessage.SendData(MessageID.SpawnBossUseLicenseStartEvent, -1, -1, null, player.whoAmI, npcType);
 
             return null;
         }

@@ -69,6 +69,9 @@ namespace CalamityMod.Projectiles.Ranged
             if (muzzleFlashTimer > 0f)
                 muzzleFlashTimer -= 1f;
 
+            if (shouldPing)
+                pingAnimationTimer += 3;
+
             switch (CurrentState)
             {
                 // Normal Firing State
@@ -147,7 +150,7 @@ namespace CalamityMod.Projectiles.Ranged
 
                             // Shot starts from slightly behind the tip
                             Vector2 offsetPos = GunTipPosition - Projectile.velocity.SafeNormalize(Vector2.UnitY) * 18f;
-                            Projectile.NewProjectile(Projectile.GetSource_FromThis(), offsetPos, velocity, ModContent.ProjectileType<NitroShot>(), Projectile.damage, Projectile.knockBack, Projectile.owner);
+                            Projectile.NewProjectile(Projectile.GetSource_FromThis(), offsetPos, velocity, ModContent.ProjectileType<M1GarandShot>(), Projectile.damage, Projectile.knockBack, Projectile.owner);
                         }
                         else
                         {
@@ -262,8 +265,6 @@ namespace CalamityMod.Projectiles.Ranged
             // PING!
             if (shouldPing)
             {
-                pingAnimationTimer++;
-
                 if (pingAnimationTimer <= PingAnimationDuration)
                 {
                     Texture2D pingTexture = ModContent.Request<Texture2D>("CalamityMod/Projectiles/Ranged/M1GarandPingText").Value;

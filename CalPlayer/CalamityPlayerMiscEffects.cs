@@ -405,8 +405,8 @@ namespace CalamityMod.CalPlayer
                 else // Decrementing
                 {
                     lucreciaEnergyMaxSFXPlayed = false;
-                    // Once every 8 ticks
-                    if (lucreciaEnergyTimer >= 8)
+                    // Once every 20 ticks
+                    if (lucreciaEnergyTimer >= 20)
                     {
                         lucreciaEnergy--;
                         lucreciaEnergyTimer = 0;
@@ -419,6 +419,22 @@ namespace CalamityMod.CalPlayer
                 lucreciaEnergyTimer = 0;
                 lucreciaEnergyPaused = false;
             }
+
+
+            if (Player.HeldItem.type == ModContent.ItemType<UnstableCastersGauntlet>() && unstableCastersGauntletVis < 100)
+            {
+
+                unstableCastersGauntletVisTimer++;
+                // Gain 0.1% charge once every 4 ticks
+                if (unstableCastersGauntletVisTimer >= 4)
+                {
+                    unstableCastersGauntletVis += 0.1f;
+                    unstableCastersGauntletVisTimer = 0;
+                }
+
+            }
+            if (unstableCastersGauntletVis >= 100)
+                unstableCastersGauntletVis = 100;
 
             if (lAmbergris)
             {
@@ -4049,9 +4065,6 @@ namespace CalamityMod.CalPlayer
                 Player.npcTypeNoAggro[ModContent.NPCType<GammaSlime>()] = true;
             }
 
-            if (dArtifact)
-                Player.GetDamage<GenericDamageClass>() *= 1.2f;
-
             if (trippy)
                 Player.GetDamage<GenericDamageClass>() += OddMushroom.DamageBoost;
 
@@ -4497,6 +4510,15 @@ namespace CalamityMod.CalPlayer
 
             // Gem Tech stats based on gems.
             GemTechState.ProvideGemBoosts();
+
+            // Add any multiplicative damage bonuses here
+            float multiplicativeDamage = 1;
+            if (dArtifact)
+                multiplicativeDamage += 0.2f;
+            if (WarbanneroftheRighteous)
+                multiplicativeDamage += warbannerDamageMult;
+            if (multiplicativeDamage != 1)
+                Player.GetDamage<GenericDamageClass>() *= multiplicativeDamage;
         }
         #endregion
 
