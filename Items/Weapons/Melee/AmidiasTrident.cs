@@ -27,9 +27,9 @@ namespace CalamityMod.Items.Weapons.Melee
             Item.DamageType = DamageClass.Melee;
             Item.noMelee = true;
             Item.noUseGraphic = true;
-            Item.useAnimation = 35;
+            Item.useAnimation = 45;
             Item.useStyle = ItemUseStyleID.Shoot;
-            Item.useTime = 35;
+            Item.useTime = 45;
             Item.knockBack = 4.5f;
             Item.autoReuse = true;
             Item.value = CalamityGlobalItem.RarityGreenBuyPrice;
