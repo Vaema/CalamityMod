@@ -136,6 +136,7 @@ namespace CalamityMod.Projectiles.Ranged
 
                             int type = Utils.SelectRandom(Main.rand,
                             [
+                                ModContent.ProjectileType<StarfleetStar>(),
                                 ModContent.ProjectileType<AstralStar>(),
                                 ProjectileID.StarCannonStar,
                                 ProjectileID.Starfury
