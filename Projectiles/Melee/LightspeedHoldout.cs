@@ -28,7 +28,7 @@ namespace CalamityMod.Projectiles.Melee
         public int time = 0;
 
         // Sprite visuals
-        public Vector2 innateOffset = new(23f, -5f);
+        public Vector2 innateOffset = new(23f, -0.1f);
         public Vector2 handPos;
         public float bladeRot = 0;
 
@@ -133,7 +133,7 @@ namespace CalamityMod.Projectiles.Melee
                 if (Owner.direction == -1)
                 {
                     actualInnateOffset.X += 1f;
-                    actualInnateOffset.Y += 10f;
+                    actualInnateOffset.Y += 2f;
                 }
 
                 handPos = Owner.GetFrontHandPosition(CompositeArmStretchAmount.Full, compositeArmRotation) + actualInnateOffset.RotatedBy(baseArmRotation);
@@ -221,8 +221,8 @@ namespace CalamityMod.Projectiles.Melee
             float offset = Main.rand.NextFloat(-MathHelper.ToRadians(10f), MathHelper.ToRadians(6f));
             Vector2 stabDir = toMouse.RotatedBy(offset);
 
-            Vector2 stabOrigin = Owner.MountedCenter;
-            Vector2 stabTip = stabOrigin + stabDir * 100f;
+            Vector2 stabOrigin = Projectile.Center;
+            Vector2 stabTip = stabOrigin + stabDir * 62f;
 
             for (int i = 0; i < 4; i++)
             {
@@ -233,18 +233,20 @@ namespace CalamityMod.Projectiles.Melee
                 GeneralParticleHandler.SpawnParticle(spark);
             }
 
-            Particle afterImage = new CustomSpark(Projectile.Center + (stabDir * 10f) + Main.rand.NextVector2Circular(4f, 11f), (Projectile.rotation - MathHelper.PiOver2).ToRotationVector2(), new("CalamityMod/Items/Weapons/Melee/Lightspeed"), false, Main.rand.Next(5,9), Projectile.scale * 0.9f, Color.White * Main.rand.NextFloat(0.6f, 0.85f), new Vector2(1, 1), true, false, flipHorizontal: Owner.direction == -1 ? true : false);
+            Particle afterImage = new CustomSpark(Projectile.Center + (stabDir * 10f) + Main.rand.NextVector2Circular(4f, 11f), (Projectile.rotation - MathHelper.PiOver2).ToRotationVector2(), new("CalamityMod/Items/Weapons/Melee/Lightspeed"), false, Main.rand.Next(5,9), Projectile.scale * Main.rand.NextFloat(0.9f, 1.02f), Color.White * Main.rand.NextFloat(0.66f, 0.825f), new Vector2(1, 1), true, false, flipHorizontal: Owner.direction == -1 ? true : false);
             GeneralParticleHandler.SpawnParticle(afterImage);
 
             // Make blade randomly vibrate
-            bladeRot = Main.rand.NextFloat(-0.2f, 0.2f) * Owner.direction;
-            Projectile.scale *= Main.rand.NextFloat(0.85f, 1.05f);
-            Projectile.Center += stabDir + Main.rand.NextVector2Circular(9f, 1f);
+            bladeRot = Main.rand.NextFloat(-0.12f, 0.3f) * Owner.direction;
+            Projectile.scale *= Main.rand.NextFloat(0.75f, 1f);
+            Projectile.Center += stabDir + Main.rand.NextVector2Circular(7f, 1.5f);
+            Projectile.Opacity = 0.925f;
 
+            Owner.itemRotation += bladeRot * 0.1f;
             // Make arm randomly vibrate
             if (Main.rand.NextBool())
             {
-                Owner.SetCompositeArmFront(true, Main.rand.NextBool() ? CompositeArmStretchAmount.ThreeQuarters : CompositeArmStretchAmount.Quarter, Owner.itemRotation + Main.rand.NextFloat(-0.22f, 0.22f));
+                Owner.SetCompositeArmFront(true, Main.rand.NextBool() ? CompositeArmStretchAmount.ThreeQuarters : CompositeArmStretchAmount.Quarter, Owner.itemRotation);
             }
 
             stabSoundTimer++;
@@ -289,7 +291,7 @@ namespace CalamityMod.Projectiles.Melee
                     float t = MathHelper.Clamp(elapsed / duration, 0f, 1f);
                     float eased = MathF.Pow(t, 1.2f);
 
-                    AltSpinRotation = eased * (4f * MathHelper.Pi);
+                    AltSpinRotation = eased * (4f * MathHelper.Pi * 0.7175f);
                     float orbitalAngle = AltSpinRotation * initialDirectionForThisAnim + (initialDirectionForThisAnim == -1 ? MathHelper.Pi : 0);
                     float orbitRadius = 40f;
 
@@ -325,6 +327,9 @@ namespace CalamityMod.Projectiles.Melee
                     Owner.RemoveAllGrapplingHooks();
 
                     SoundEngine.PlaySound(Exoblade.DashSound, Owner.Center);
+
+                    SoundStyle otherSound = new("CalamityMod/Sounds/Item/OmicronBeam");
+                    SoundEngine.PlaySound(otherSound with { Volume = 0.6f, Pitch = Main.rand.NextFloat(0.2f, 0.25f) }, Projectile.Center);
 
                     Owner.immune = true;
                     Owner.immuneNoBlink = true;
@@ -379,7 +384,7 @@ namespace CalamityMod.Projectiles.Melee
 
             SpriteEffects spriteEffects = Owner.direction == 1 ? SpriteEffects.None : SpriteEffects.FlipHorizontally;
             lightColor = Color.White; // Fullbright
-            Main.EntitySpriteDraw(texture, Projectile.Center - Main.screenPosition, frame, lightColor, Projectile.rotation, origin, Projectile.scale, spriteEffects, 0);
+            Main.EntitySpriteDraw(texture, Projectile.Center - Main.screenPosition, frame, lightColor * Projectile.Opacity, Projectile.rotation, origin, Projectile.scale, spriteEffects, 0);
 
             DrawPierceTrail();
 
