@@ -2411,7 +2411,7 @@ PrepareToShoot:
                     Projectile.NewProjectile(npc.GetSource_FromAI(), mouth, velocity, ProjectileID.WebSpit, 18, 0f, Main.myPlayer);
                 }
             }
-            else
+            else if (npcType == NPCID.BlackRecluse || npcType == NPCID.BlackRecluseWall || npc.type == NPCID.JungleCreeper || npc.type == NPCID.JungleCreeperWall || prehardmodeSpiders)
                 npc.localAI[0] = 0f;
 
             if (npcType == NPCID.IceGolem)
