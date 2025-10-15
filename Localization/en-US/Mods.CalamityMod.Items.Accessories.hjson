@@ -1845,6 +1845,7 @@ SupremeBaitTackleBoxFishingStation: {
 		Increases fishing power by 50
 		Fishing line will never break and decreases chance of bait consumption
 		Allows fishing in lava
+		'''
 }
 
 TeslasAmulet: {
