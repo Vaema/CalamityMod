@@ -1,11 +1,7 @@
 ﻿using CalamityMod.Cooldowns;
 using CalamityMod.Items.Materials;
-using CalamityMod.Projectiles.BaseProjectiles;
 using CalamityMod.Projectiles.DraedonsArsenal;
 using CalamityMod.Projectiles.Melee;
-using CalamityMod.Projectiles.Melee.Shortswords;
-using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Graphics;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
@@ -13,7 +9,7 @@ using Terraria.ModLoader;
 namespace CalamityMod.Items.Weapons.Melee
 {
     [LegacyName("ElementalShortsword", "ElementalShiv")]
-    public class StarburstShiv : ModItem, ILocalizedModType
+    public class Lightspeed : ModItem, ILocalizedModType
     {
         public new string LocalizationCategory => "Items.Weapons.Melee";
 
@@ -24,15 +20,14 @@ namespace CalamityMod.Items.Weapons.Melee
             Item.width = 74;
             Item.height = 94;
             Item.useStyle = ItemUseStyleID.Shoot;
-            Item.damage = 183;
-            Item.DamageType = DamageClass.Melee;
+            Item.damage = 196;
+            Item.DamageType = TrueMeleeDamageClass.Instance;
             Item.useAnimation = Item.useTime = 20;
             Item.shootSpeed = 10f;
-            Item.knockBack = 9f;
+            Item.knockBack = 2f;
             Item.value = CalamityGlobalItem.RarityPurpleBuyPrice;
             Item.rare = ItemRarityID.Purple;
-            Item.shoot = ModContent.ProjectileType<StarburstShivHoldout>();
-
+            Item.shoot = ModContent.ProjectileType<LightspeedHoldout>();
 
             Item.noMelee = true;
             Item.noUseGraphic = true;
@@ -47,12 +42,11 @@ namespace CalamityMod.Items.Weapons.Melee
             return true;
         }
 
-
         public override void HoldItem(Player player)
         {
             if (player.Calamity().cooldowns.TryGetValue(ElementalMastery.ID, out var cooldown))
             {
-                cooldown.timeLeft = player.Calamity().starburstShivElementalMastery;
+                cooldown.timeLeft = player.Calamity().elementalMastery;
             }
             else
             {

@@ -17,13 +17,13 @@ namespace CalamityMod.Cooldowns
 {
     public class ElementalMastery : CooldownHandler
     {
-        private float AdjustedCompletion => instance.timeLeft / (float) StarburstShiv.MaxEnergy;
+        private float AdjustedCompletion => instance.timeLeft / (float) Lightspeed.MaxEnergy;
         private Color TextColor => Color.AliceBlue;
         private Color TextBorderColor = Color.AntiqueWhite;
 
         public static new string ID => "ElementalMastery";
         public override bool CanTickDown => false;
-        public override bool ShouldDisplay => instance.player.HeldItem.type == ItemType<StarburstShiv>();
+        public override bool ShouldDisplay => instance.player.HeldItem.type == ItemType<Lightspeed>();
         public override LocalizedText DisplayName => CalamityUtils.GetText($"UI.Cooldowns.{ID}");
         public override string Texture => $"CalamityMod/Cooldowns/{ID}";
         public override string OutlineTexture => $"CalamityMod/Cooldowns/{ID}Outline";
