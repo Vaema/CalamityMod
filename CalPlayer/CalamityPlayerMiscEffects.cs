@@ -426,9 +426,10 @@ namespace CalamityMod.CalPlayer
             }
             else
             {
-                // Reset the timer and pause state if the player isn't holding the weapon.
+                // Reset all energy variables when not holding the weapon
                 lucreciaEnergyTimer = 0;
                 lucreciaEnergyPaused = false;
+                lucreciaEnergy = 0;
             }
 
             if (Player.HeldItem.type == ModContent.ItemType<Lightspeed>() && elementalMastery > 0)
@@ -471,9 +472,10 @@ namespace CalamityMod.CalPlayer
             }
             else
             {
-                // Reset the timer and pause state if the player isn't holding the weapon.
+                // Reset all EM variables when not holding the weapon
                 elementalMasteryTimer = 0;
                 elementalMasteryPaused = false;
+                elementalMastery = 0;
             }
 
 
