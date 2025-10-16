@@ -211,7 +211,7 @@ namespace CalamityMod.ILEditing
 
             On_Player.GetAnglerReward += ImproveAnglerRewards;
             On_Player.GetAnglerReward_Bait += ImproveAnglerBaitReward;
-
+            On_Player.GetAnglerReward_Money += ImproveAnglerMoneyReward;
 
 
             IL_Player.TileInteractionsUse += RemovePowerCellPlanteraLock;

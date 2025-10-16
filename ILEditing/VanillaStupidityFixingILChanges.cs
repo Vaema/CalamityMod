@@ -469,6 +469,39 @@ namespace CalamityMod.ILEditing
             rewardItems.Add(bait);
         }
 
+        private static void ImproveAnglerMoneyReward(On_Player.orig_GetAnglerReward_Money orig, Player self, List<Item> rewardItems, IEntitySource source, int questsDone, float rarityReduction, ref GetItemSettings anglerRewardSettings)
+        {
+            // Improves the logic for giving money to the player from Angler quests.
+            // This is accomplished via a higher starting amount, reduced variance, and not truncating off Silver Coins if giving Gold Coins.
+            // This entirely replaces the vanilla logic.
+
+            int moneyDrop = (questsDone + 70) / 2; // Vanilla uses 50
+            moneyDrop = (int)(moneyDrop * Main.rand.NextFloat(1f, 2f)); // Vanilla is 0.75x-3x
+            moneyDrop = (int)(moneyDrop * 1.5f); // Vanilla then arbitrarily multiplies the value by 1.5x
+            if (Main.hardMode)
+                moneyDrop *= 2;
+            if (Main.expertMode)
+                moneyDrop *= 2;
+            if (moneyDrop > 1000)
+                moneyDrop = 1000; // Vanilla has a cap of 10 Gold Coins, or 1000 Silver Coins.
+
+            // moneyDrop now contains the number of SILVER Coins to drop.
+            // Determine the number of Gold Coins to drop, if any.
+            if (moneyDrop >= 100)
+            {
+                int goldDrop = moneyDrop / 100;
+                Item gold = new Item();
+                gold.SetDefaults(ItemID.GoldCoin);
+                gold.stack = goldDrop;
+                rewardItems.Add(gold);
+            }
+            // Now the Silver Coins to drop.
+            int silverDrop = moneyDrop % 100;
+            Item silver = new Item();
+            silver.SetDefaults(ItemID.SilverCoin);
+            silver.stack = silverDrop;
+            rewardItems.Add(silver);
+        }
 
         private static void ImproveAnglerRewards(On_Player.orig_GetAnglerReward orig, Player self, NPC angler, int questItemType)
         {
