@@ -543,9 +543,6 @@ namespace CalamityMod.ILEditing
                     item = new Item();
                     item.SetDefaults(ItemID.FishCostumeFinskirt);
                     rewardItems.Add(item);
-                    item = new Item();
-                    item.SetDefaults(ModContent.ItemType<SandyAnglingKit>());
-                    rewardItems.Add(item);
                     break;
 
                 case 8:
@@ -593,9 +590,6 @@ namespace CalamityMod.ILEditing
                     rewardItems.Add(item);
                     item = new Item();
                     item.SetDefaults(ItemID.MermaidTail);
-                    rewardItems.Add(item);
-                    item = new Item();
-                    item.SetDefaults(ModContent.ItemType<SandyAnglingKit>());
                     rewardItems.Add(item);
                     break;
 
@@ -703,14 +697,6 @@ namespace CalamityMod.ILEditing
             }
 
             // RANDOM DROPS
-
-            // Angling Kits
-            if (Main.rand.NextBool((int)(12f * rarityReduction)) && questsDone > 30)
-            {
-                item = new Item();
-                item.SetDefaults(Main.hardMode ? ModContent.ItemType<BleachedAnglingKit>() : ModContent.ItemType<SandyAnglingKit>());
-                rewardItems.Add(item);
-            }
 
             // Golden Fishing Rod
             if (Main.rand.NextBool((int)(500f * rarityReduction)) && questsDone > 30)

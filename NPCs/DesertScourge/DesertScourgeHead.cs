@@ -997,9 +997,6 @@ namespace CalamityMod.NPCs.DesertScourge
                 // Equipment
                 normalOnly.Add(DropHelper.PerPlayer(ModContent.ItemType<OceanCrest>()));
                 normalOnly.Add(ModContent.ItemType<SandCloak>(), DropHelper.NormalWeaponDropRateFraction);
-
-                // Fishing
-                normalOnly.Add(ModContent.ItemType<SandyAnglingKit>());
             }
 
             // Trophy (always directly from boss, never in bag)
