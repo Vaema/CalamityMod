@@ -63,7 +63,6 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
             bool useNewGatlingAttackVariant = addSporeGasBlastToGatlingAttack && death;
             bool phase2 = lifeRatio <= phase2LifeRatio;
             bool phase3 = lifeRatio < 0.35f;
-            bool vomitFreeTentacles = lifeRatio < 0.25f && death;
             bool phase4 = lifeRatio < 0.2f;
 
             npc.damage = (int)Math.Round(ContactDamageCorrection * (phase2 ? Phase2ContactDamageMult : 1f));
@@ -174,8 +173,8 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
 
             if (death)
             {
-                velocity += velocity * 0.35f * (1f - lifeRatio);
-                acceleration += acceleration * 0.35f * (1f - lifeRatio);
+                velocity += velocity * 0.35f * ((1f - lifeRatio) / 2);
+                acceleration += acceleration * 0.35f * ((1f - lifeRatio) / 2);
                 if (phase2)
                 {
                     float aggressionScale = (phase2LifeRatio - lifeRatio) / phase2LifeRatio;
@@ -407,13 +406,13 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                     npc.ai[3] -= timeToDecelerateDecrement;
                     if (npc.ai[3] <= StopChargeGateValue)
                     {
-                        bool canChargeAgain = phase4 ? true : phase3 ? Main.rand.NextBool() : false;
+                        bool canChargeAgain = phase4 || (phase3 && Main.rand.NextBool());
                         bool chargeAgain = canChargeAgain && death && calamityGlobalNPC.newAI[2] == 0f;
                         npc.ai[3] = chargeAgain ? -2f : 0f;
                         calamityGlobalNPC.newAI[2] = (death && calamityGlobalNPC.newAI[2] == 0f && chargeAgain) ? 1f : 0f;
                         npc.SyncExtraAI();
 
-                        if (!vomitFreeTentacles && !secondCharge)
+                        if (!secondCharge)
                         {
                             // Spawn a few tentacles
                             if (Main.netMode != NetmodeID.MultiplayerClient)
@@ -563,7 +562,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                     maxDistanceFromHooks += 150f;
                 if (death)
                 {
-                    maxDistanceFromHooks += maxDistanceFromHooks * 0.2f * (1f - lifeRatio);
+                    maxDistanceFromHooks += maxDistanceFromHooks * 0.2f * ((1f - lifeRatio) / 2);
                     maxDistanceFromHooks += 200f;
                 }
 
@@ -647,7 +646,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                     if (Main.getGoodWorld)
                         npc.localAI[1] += 1f;
 
-                    float shootProjectileGateValue = death ? 30f : 60f;
+                    float shootProjectileGateValue = death ? 40f : 60f;
                     if (npc.localAI[1] >= shootProjectileGateValue)
                     {
                         npc.localAI[1] = 0f;
@@ -723,7 +722,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                     if (npc.localAI[0] == 1f)
                     {
                         npc.localAI[0] = 2f;
-                        int totalTentacles = death ? 12 : 8;
+                        int totalTentacles = death ? 11 : 8;
                         if (Main.getGoodWorld)
                             totalTentacles *= 2;
 
@@ -799,9 +798,6 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                         int type = ProjectileID.PoisonSeedPlantera;
                         int damage = PoisonSeedDamage;
                         float rotation = MathHelper.ToRadians(spread);
-                        bool vomitTentacles = vomitFreeTentacles && NPC.CountNPCS(ModContent.NPCType<PlanterasFreeTentacle>()) < maxTentaclesAfterFirstTentaclePhase;
-                        if (vomitTentacles)
-                            SoundEngine.PlaySound(SoundID.NPCDeath11, npc.Center);
 
                         for (int i = 0; i < numProj; i++)
                         {
@@ -817,7 +813,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                             Vector2 perturbedSpeed = projectileVelocity.RotatedBy(MathHelper.Lerp(-rotation, rotation, i / (float)(numProj - 1)));
                             Vector2 spawnOffset = npc.Center + perturbedSpeed * 50f;
 
-                            int dustType = (shootPinkSeed && !vomitTentacles) ? 73 : 74;
+                            int dustType = shootPinkSeed ? 73 : 74;
                             Vector2 dustVelocity = perturbedSpeed * projectileSpeed;
                             for (int k = 0; k < 5; k++)
                             {
@@ -827,17 +823,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                             }
 
                             if (Main.netMode != NetmodeID.MultiplayerClient)
-                            {
-                                if (vomitTentacles)
-                                {
-                                    int tentacle = NPC.NewNPC(npc.GetSource_FromAI(), (int)spawnOffset.X, (int)spawnOffset.Y, ModContent.NPCType<PlanterasFreeTentacle>(), 0, 120f, projectileSpeed);
-                                    Main.npc[tentacle].velocity.X = (perturbedSpeed * projectileSpeed * 0.5f).X;
-                                    Main.npc[tentacle].velocity.Y = (perturbedSpeed * projectileSpeed * 0.5f).Y;
-                                    Main.npc[tentacle].netUpdate = true;
-                                }
-                                else
-                                    Projectile.NewProjectile(npc.GetSource_FromAI(), spawnOffset, perturbedSpeed * projectileSpeed * 0.5f, type, damage, 0f, Main.myPlayer, 0f, 0f, projectileSpeed);
-                            }
+                                Projectile.NewProjectile(npc.GetSource_FromAI(), spawnOffset, perturbedSpeed * projectileSpeed * 0.5f, type, damage, 0f, Main.myPlayer, 0f, 0f, projectileSpeed);
                         }
 
                         if (death)
@@ -943,7 +929,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                         if (phase2)
                         {
                             int spore = NPC.NewNPC(npc.GetSource_FromAI(), (int)npc.Center.X, (int)npc.Center.Y, NPCID.Spore, npc.whoAmI);
-                            float sporeSpeed = death ? 9f : 6f;
+                            float sporeSpeed = death ? 8f : 6f;
                             Vector2 sporeVelocity = (Main.player[npc.target].Center - npc.Center).SafeNormalize(Vector2.UnitY) * sporeSpeed;
                             Main.npc[spore].velocity.X = sporeVelocity.X;
                             Main.npc[spore].velocity.Y = sporeVelocity.Y;
@@ -1003,7 +989,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                     npc.localAI[0] = 0f;
 
                 // Timer dictating whether to pick a new location or not
-                float moveBoost = death ? 6f * (1f - lifeRatio) : 2f * (1f - lifeRatio);
+                float moveBoost = death ? 4f * (1f - lifeRatio) : 2f * (1f - lifeRatio);
                 npc.localAI[0] -= 1f + moveBoost;
                 if (enrage)
                     npc.localAI[0] -= 6f;
@@ -1072,7 +1058,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
             if (npc.ai[0] > 0f && npc.ai[1] > 0f)
             {
                 // Hook movement velocity
-                float velocityBoost = death ? 9f * (1f - lifeRatio) : 3f * (1f - lifeRatio);
+                float velocityBoost = death ? 6f * (1f - lifeRatio) : 3f * (1f - lifeRatio);
                 float velocity = 7f + velocityBoost;
                 if (enrage)
                     velocity *= 2f;
@@ -1193,7 +1179,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
             }
 
             // Velocity and acceleration
-            float tentacleAcceleration = death ? 2.4f : 1.6f;
+            float tentacleAcceleration = 1.6f;
             float extendedDistanceFromPlantera = Math.Abs(npc.ai[0] + npc.ai[1]) / maxOffset;
             float tentacleDistance = MathHelper.Lerp(50f, 100f + (extendedDistanceFromPlantera * 300f), npc.localAI[0] / extendTime);
             float deceleration = (death ? 0.5f : 0.8f) / (1f + extendedDistanceFromPlantera);

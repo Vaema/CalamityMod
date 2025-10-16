@@ -92,7 +92,7 @@ namespace CalamityMod.Systems.Collections
                 NPCType<Brimling>(), NPCType<CrabShroom>(), NPCType<DankCreeper>(),
                 NPCType<HiveBlob>(), NPCType<DarkHeart>(), NPCType<DesertNuisanceBody>(), NPCType<DesertNuisanceHead>(), NPCType<DesertNuisanceTail>(),
                 NPCType<DesertNuisanceBodyYoung>(), NPCType<DesertNuisanceHeadYoung>(), NPCType<DesertNuisanceTailYoung>(), NPCType<PolterPhantom>(), NPCType<PhantomFuckYou>(),
-                NPCType<KingSlimeJewelEmerald>(), NPCType<KingSlimeJewelRuby>(), NPCType<KingSlimeJewelSapphire>(), NPCType<PlanterasFreeTentacle>(), NPCType<PlagueHomingMissile>(),
+                NPCType<KingSlimeJewelRuby>(), NPCType<PlanterasFreeTentacle>(), NPCType<PlagueHomingMissile>(),
                 NPCType<PlagueMine>(), NPCType<ProfanedRocks>(), NPCType<ProvSpawnDefense>(), NPCType<ProvSpawnOffense>(), NPCType<ProvSpawnHealer>(), NPCType<RockPillar>(),
                 NPCType<FlamePillar>(), NPCType<CosmicMine>(), NPCType<CosmicLantern>(), NPCType<ProfanedGuardianDefender>(), NPCType<ProfanedGuardianHealer>(), NPCType<CorruptSlimeSpawn>(),
                 NPCType<CorruptSlimeSpawn2>(), NPCType<CrimsonSlimeSpawn>(), NPCType<CrimsonSlimeSpawn2>(), NPCType<PerforatorHeadLarge>(), NPCType<PerforatorBodyLarge>(),
@@ -189,8 +189,8 @@ namespace CalamityMod.Systems.Collections
         /// Also used to prevent weapon pulling effects and Anarchy Blade's ability to instantly kill enemies that are below 50% health.<br/>
         /// Defaults to <see langword="false"/>.
         /// </summary>
-        public static bool[] ResistSlowingDebuffsAndOtherSpecialEffects = Factory.CreateBoolSet(NPCID.KingSlime, NPCType<KingSlimeJewelRuby>(), NPCType<KingSlimeJewelSapphire>(),
-                NPCType<KingSlimeJewelEmerald>(), NPCID.EyeofCthulhu, NPCID.EaterofWorldsHead, NPCID.EaterofWorldsBody, NPCID.EaterofWorldsTail, NPCID.BrainofCthulhu, NPCID.Creeper,
+        public static bool[] ResistSlowingDebuffsAndOtherSpecialEffects = Factory.CreateBoolSet(NPCID.KingSlime, NPCType<KingSlimeJewelRuby>(),
+                NPCID.EyeofCthulhu, NPCID.EaterofWorldsHead, NPCID.EaterofWorldsBody, NPCID.EaterofWorldsTail, NPCID.BrainofCthulhu, NPCID.Creeper,
                 NPCID.QueenBee, NPCID.Deerclops, NPCID.SkeletronHead, NPCID.SkeletronHand, NPCID.WallofFlesh, NPCID.WallofFleshEye, NPCID.PirateShipCannon, NPCID.QueenSlimeBoss,
                 NPCID.Probe, NPCID.Retinazer, NPCID.Spazmatism, NPCID.SkeletronPrime, NPCID.PrimeCannon, NPCID.PrimeSaw, NPCID.PrimeLaser, NPCID.PrimeVice, NPCID.Plantera,
                 NPCID.PlanterasTentacle, NPCType<PlanterasFreeTentacle>(), NPCID.Everscream, NPCID.SantaNK1, NPCID.IceQueen, NPCID.MourningWood, NPCID.Pumpking, NPCID.Mothron,
@@ -230,8 +230,6 @@ namespace CalamityMod.Systems.Collections
             { NPCID.RainbowSlime, 30000 },
             { NPCID.Pinky, 15000 },
             { NPCType<KingSlimeJewelRuby>(), 21000 },
-            { NPCType<KingSlimeJewelSapphire>(), 18000 },
-            { NPCType<KingSlimeJewelEmerald>(), 24000 },
             { NPCID.EyeofCthulhu, 450000 }, // 30 seconds
             { NPCID.ServantofCthulhu, 6000 },
             { NPCID.EaterofWorldsHead, 10000 }, // 30 seconds + immunity timer at start

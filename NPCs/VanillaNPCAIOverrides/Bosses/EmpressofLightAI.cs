@@ -741,7 +741,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                     bool expertAttack = calamityGlobalNPC.newAI[2] == 0f;
 
                     int numLanceWalls = expertAttack ? 6 : 4;
-                    float lanceWallSpawnGateValue = expertAttack ? 36f : 54f;
+                    float lanceWallSpawnGateValue = expertAttack ? (death ? 42f : 36f) : 54f;
                     if (dayTimeEnrage)
                         lanceWallSpawnGateValue -= expertAttack ? 4f : 6f;
 
@@ -769,7 +769,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                             float lanceWallSizeMult = 1.4f;
                             totalProjectiles += 5f;
                             lanceSpacing += 50f;
-                            lanceWallSize *= (death ? 0.75f : 0.5f);
+                            lanceWallSize *= (death ? 0.7f : 0.5f);
                             float direction = 1f;
 
                             int randomLanceWallType;
@@ -1023,7 +1023,6 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
 
                 // Spawn Ethereal Lances ahead of the target.
                 case 11:
-
                     // Avoid cheap bullshit.
                     npc.damage = 0;
 
