@@ -436,6 +436,40 @@ namespace CalamityMod.ILEditing
         #endregion Color Blighted Gel
 
         #region Improve Angler Quest Rewards
+        private static void ImproveAnglerBaitReward(On_Player.orig_GetAnglerReward_Bait orig, Player self, List<Item> rewardItems, IEntitySource source, int questsDone, float rarityReduction, ref GetItemSettings anglerRewardSettings)
+        {
+            // Improves the bait reward given for Angler quests in three ways:
+            // 1. Makes bait reward be guaranteed.
+            // 2. Adds the ability for Grand Marquis Bait to be dropped.
+            // 3. Increases the amount of bait dropped.
+            // This entirely replaces the vanilla logic.
+
+            Item bait = new Item();
+            if (Main.rand.NextBool((int)(15f * rarityReduction)))
+                bait.SetDefaults(ModContent.ItemType<GrandMarquisBait>());
+            else if (Main.rand.NextBool((int)(10f * rarityReduction)))
+                bait.SetDefaults(ItemID.MasterBait);
+            else if (Main.rand.NextBool((int)(5f * rarityReduction)))
+                bait.SetDefaults(ItemID.JourneymanBait);
+            else
+                bait.SetDefaults(ItemID.ApprenticeBait);
+
+            bait.stack = 2;
+            if (Main.rand.Next(10) <= questsDone)
+                bait.stack++;
+            if (Main.rand.Next(20) <= questsDone)
+                bait.stack++;
+            if (Main.rand.Next(30) <= questsDone)
+                bait.stack++;
+            if (Main.rand.Next(40) <= questsDone)
+                bait.stack++;
+            if (Main.rand.Next(50) <= questsDone)
+                bait.stack++;
+
+            rewardItems.Add(bait);
+        }
+
+
         private static void ImproveAnglerRewards(On_Player.orig_GetAnglerReward orig, Player self, NPC angler, int questItemType)
         {
             orig(self, angler, questItemType);
@@ -457,152 +491,6 @@ namespace CalamityMod.ILEditing
             Item item = new Item();
 
             // GUARANTEED REWARDS
-
-            // BAIT
-            switch (questsDone)
-            {
-                case 0:
-                case 1:
-                case 2:
-                case 3:
-                case 4:
-                    item = new Item();
-                    item.SetDefaults(ItemID.Stinkbug);
-                    item.stack = Main.rand.Next(2, 6);
-                    break;
-
-                case 5:
-                case 6:
-                case 7:
-                case 8:
-                case 9:
-                    item = new Item();
-                    item.SetDefaults(ItemID.ApprenticeBait);
-                    item.stack = Main.rand.Next(2, 6);
-                    break;
-
-                case 10:
-                case 11:
-                case 12:
-                case 13:
-                case 14:
-                case 15:
-                    item = new Item();
-                    item.SetDefaults(Main.rand.NextBool() ? ItemID.Worm : ItemID.Maggot);
-                    item.stack = Main.rand.Next(2, 6);
-                    break;
-
-                case 16:
-                case 17:
-                case 18:
-                case 19:
-                case 20:
-                    item = new Item();
-                    item.SetDefaults(ItemID.JourneymanBait);
-                    item.stack = Main.rand.Next(2, 6);
-                    break;
-
-                case 21:
-                case 22:
-                case 23:
-                case 24:
-                case 25:
-                case 26:
-                    item = new Item();
-                    item.SetDefaults(Main.rand.NextBool() ? ItemID.EnchantedNightcrawler : ItemID.Buggy);
-                    item.stack = Main.rand.Next(2, 6);
-                    break;
-
-                case 27:
-                case 28:
-                case 29:
-                case 30:
-                    item = new Item();
-                    item.SetDefaults(ItemID.MasterBait);
-                    item.stack = Main.rand.Next(2, 6);
-                    break;
-
-                default:
-                    item = new Item();
-                    item.SetDefaults(ModContent.ItemType<GrandMarquisBait>());
-                    item.stack = Main.rand.Next(2, 6);
-                    break;
-            }
-
-            item.position = self.Center;
-            Item item2 = self.GetItem(self.whoAmI, item, anglerRewardSettings);
-            rewardItems.Add(item2);
-
-            // COINS
-            switch (questsDone)
-            {
-                case 0:
-                case 1:
-                case 2:
-                case 3:
-                case 4:
-                    item = new Item();
-                    item.SetDefaults(ItemID.GoldCoin);
-                    break;
-
-                case 5:
-                case 6:
-                case 7:
-                case 8:
-                case 9:
-                    item = new Item();
-                    item.SetDefaults(ItemID.GoldCoin);
-                    item.stack = 2;
-                    item = new Item();
-                    item.SetDefaults(ItemID.SilverCoin);
-                    item.stack = 50;
-                    break;
-
-                case 10:
-                case 11:
-                case 12:
-                case 13:
-                case 14:
-                    item = new Item();
-                    item.SetDefaults(ItemID.GoldCoin);
-                    item.stack = 4;
-                    break;
-
-                case 15:
-                case 16:
-                case 17:
-                case 18:
-                case 19:
-                    item = new Item();
-                    item.SetDefaults(ItemID.GoldCoin);
-                    item.stack = 6;
-                    break;
-
-                case 20:
-                case 21:
-                case 22:
-                case 23:
-                case 24:
-                case 25:
-                case 26:
-                case 27:
-                case 28:
-                case 29:
-                    item = new Item();
-                    item.SetDefaults(ItemID.GoldCoin);
-                    item.stack = 8;
-                    break;
-
-                default:
-                    item = new Item();
-                    item.SetDefaults(ItemID.GoldCoin);
-                    item.stack = 10;
-                    break;
-            }
-
-            item.position = self.Center;
-            item2 = self.GetItem(self.whoAmI, item, anglerRewardSettings);
-            rewardItems.Add(item2);
 
             // PRIMARY ITEMS
             switch (questsDone)
