@@ -74,9 +74,6 @@ namespace CalamityMod.NPCs.CalClone
             NPC.width = 120;
             NPC.height = 120;
 
-            if (CalamityWorld.death || BossRushEvent.BossRushActive)
-                NPC.scale *= 0.8f;
-
             NPC.defense = 25;
             NPC.value = Item.buyPrice(gold: 15);
             NPC.LifeMaxNERB(39000, 46875, 520000);
