@@ -1858,7 +1858,6 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                             if (trueEyeSphereDirection.HasNaNs())
                                 trueEyeSphereDirection = Vector2.UnitY * -1f;
 
-                            float spreadVelocity = 4f;
                             trueEyeSphereDirection *= 4f;
                             int proj = Projectile.NewProjectile(npc.GetSource_FromAI(), npc.Center.X + freeEyeRotation.X, npc.Center.Y + freeEyeRotation.Y, trueEyeSphereDirection.X, trueEyeSphereDirection.Y, type, 0, 0f, Main.myPlayer, 30f, npc.whoAmI);
                             Main.projectile[proj].timeLeft = 1200;

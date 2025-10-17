@@ -23,12 +23,12 @@ namespace CalamityMod.Projectiles.Typeless
         public override string Texture => "CalamityMod/Projectiles/InvisibleProj";
         public Player Owner => Main.player[Projectile.owner];
 
-        public static Asset<Texture2D> GlowTexture;
+        public static Asset<Texture2D> SpiritGlow;
 
         public ref float SubmergedTimer => ref Projectile.ai[0];
         public ref float DustCounter => ref Projectile.ai[1];
 
-        public override void Load() => GlowTexture = ModContent.Request<Texture2D>("CalamityMod/Particles/BloomCircle");
+        public override void Load() => SpiritGlow = ModContent.Request<Texture2D>("CalamityMod/Particles/BloomCircle");
 
         public override void SetStaticDefaults()
         {
@@ -289,7 +289,7 @@ namespace CalamityMod.Projectiles.Typeless
             if (Projectile.timeLeft < 180)
             {
                 Main.spriteBatch.EnterShaderRegion(BlendState.Additive);
-                Texture2D glow = GlowTexture.Value;
+                Texture2D glow = SpiritGlow.Value;
                 Vector2 drawPos = Projectile.Center + Vector2.UnitY * Projectile.gfxOffY - Main.screenPosition;
                 Color glowColor = new Color(255, 170, 204) * (0.2f * MathF.Sin(Projectile.timeLeft * MathHelper.Pi * 0.25f) + Utils.Remap(Projectile.timeLeft, 180f, 0f, 0.2f, 0.6f, true));
                 Main.EntitySpriteDraw(glow, drawPos, null, glowColor, Projectile.rotation, glow.Size() * 0.5f, new Vector2(0.6f, 0.5f), SpriteEffects.None);

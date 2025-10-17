@@ -998,7 +998,6 @@ namespace CalamityMod.NPCs
             #endregion
 
             
-            bool hasModHotOil = false;
             //Apply DoT Debuffs
             for (var index = 0; index < npc.buffType.Count(); index++)
             {
@@ -1007,8 +1006,6 @@ namespace CalamityMod.NPCs
                 if (debuffData == null || debuffData == DebuffData.Oiled) //Oiled is done after
                     continue;
                 debuffData.NPCLifeRegenMethod(npc, type, ref index,ref damage);
-                if (debuffData.HeatDebuffScaling > 0)
-                    hasModHotOil = true;
             }
             //Oiled comes after so that we can detect if they have a heat debuff in the above loop
             bool hasVanillaOil = npc.onFrostBurn || npc.onFrostBurn2 || npc.onFire || npc.onFire2 || npc.onFire3 || npc.shadowFlame;
@@ -6872,13 +6869,13 @@ namespace CalamityMod.NPCs
 
                     // Draw the glowmasks.
                     int frameCounter = (int)npc.frameCounter / 4;
-                    Rectangle frame = TextureAssets.Extra[106].Value.Frame(1, 8);
+                    Rectangle frame = TextureAssets.Extra[ExtrasID.GolemLights4].Value.Frame(1, 8);
                     frame.Y += frame.Height * 2 * frameCounter + npc.frame.Y;
                     Rectangle glowFrame = frame;
-                    spriteBatch.Draw(TextureAssets.Extra[106].Value, eyesDrawPosition, glowFrame, eyeColor, 0f, glowFrame.Size() * 0.5f, npc.scale, SpriteEffects.None, 0f);
+                    spriteBatch.Draw(TextureAssets.Extra[ExtrasID.GolemLights4].Value, eyesDrawPosition, glowFrame, eyeColor, 0f, glowFrame.Size() * 0.5f, npc.scale, SpriteEffects.None, 0f);
                     frame = npc.frame;
                     Rectangle glowFrame2 = frame;
-                    spriteBatch.Draw(TextureAssets.Extra[107].Value, eyesDrawPosition, glowFrame2, eyeColor, 0f, glowFrame2.Size() * 0.5f, npc.scale, SpriteEffects.None, 0f);
+                    spriteBatch.Draw(TextureAssets.Extra[ExtrasID.GolemLights5].Value, eyesDrawPosition, glowFrame2, eyeColor, 0f, glowFrame2.Size() * 0.5f, npc.scale, SpriteEffects.None, 0f);
 
                     // Draw the sparkle telegraphs for the laser spread attack if applicable.
                     if (npc.ai[0] == 3f && npc.ai[1] <= 60f)
