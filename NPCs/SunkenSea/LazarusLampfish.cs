@@ -24,8 +24,6 @@ using Terraria.ModLoader;
 using Terraria.ModLoader.Utilities;
 namespace CalamityMod.NPCs.SunkenSea
 {
-    [LegacyName("Blinded Angler")]
-
     public class LazarusLampfish : SunkenSeaNPC
     {
         public enum PhaseType
