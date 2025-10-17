@@ -3076,19 +3076,6 @@ namespace CalamityMod.NPCs
         }
         #endregion
 
-        #region Boss Head Slot
-        public override void BossHeadSlot(NPC npc, ref int index)
-        {
-            if (npc.type == NPCID.DukeFishron && (CalamityWorld.death || BossRushEvent.BossRushActive))
-            {
-                float lifeRatio = npc.life / (float)npc.lifeMax;
-                float mapIconVanishValue = 0.3f;
-                if (lifeRatio < mapIconVanishValue || lifeRatio > 0.9f)
-                    index = -1;
-            }
-        }
-        #endregion
-
         #region Pre AI
         public override bool PreAI(NPC npc)
         {
