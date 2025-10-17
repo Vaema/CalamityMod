@@ -638,10 +638,12 @@ namespace CalamityMod.NPCs.SupremeCalamitas
                     baseSize *= new Vector4(1,1.15f,startFourthAttack ? 0.75f : 0.25f,1.15f);
                 if (NPC.AnyNPCs(ModContent.NPCType<SoulSeekerSupreme>()))
                 {
-                    baseSize *= new Vector4(1.5f, 0.75f, 1.5f, 0.75f);
+                    baseSize *= new Vector4(1.5f, 0.85f, 1.5f, 0.85f);
                 }
+                if (cataclysmAlive || catastropheAlive)
+                    baseSize *= new Vector4(0.85f, 1.33f, 0.85f, 1.33f);
                 if (lifeRatio <= 0.01f)
-                    baseSize *= 10;
+                    baseSize = new Vector4(400f, 500f, 73f, 500f);
                 return baseSize;
             }
 
@@ -652,7 +654,7 @@ namespace CalamityMod.NPCs.SupremeCalamitas
                 {
                     ArenaWallSystem.ActiveBoxes.Add(new() { position = new Vector2(spawnX + (death ? 1000 : 1250), spawnY + (death ? 1000 : 1250)), boxDimensions = GetArenaSize() * 2, borderThickness = 2000, RemovalCondition = () => !(Main.npc[NPC.whoAmI].active) || Main.npc[NPC.whoAmI].type != Type });
                 }
-                ArenaWallSystem.ActiveBoxes[0].NewDimensions = Vector4.Lerp(ArenaWallSystem.ActiveBoxes[0].boxDimensions, GetArenaSize(), startFourthAttack ? 0.05f : 0.1f);
+                ArenaWallSystem.ActiveBoxes[0].NewDimensions = Vector4.Lerp(ArenaWallSystem.ActiveBoxes[0].boxDimensions, GetArenaSize(), lifeRatio <= 0.01f ? 0.02f : startFourthAttack ? 0.05f : 0.1f);
                 ArenaWallSystem.ActiveBoxes[0].borderColor = permafrost ? Color.LightBlue : Color.Lerp(Color.Crimson, Color.IndianRed, (MathF.Sin(Main.GlobalTimeWrappedHourly) + 1) * 0.25f);
             } 
             /*else
@@ -1989,9 +1991,10 @@ namespace CalamityMod.NPCs.SupremeCalamitas
                         NPC.netUpdate = true;
                         if (!teleport)
                         {
-                            Dust.QuickDustLine(NPC.Center, player.Center + new Vector2(0, -155), 500f, permafrost ? Color.Cyan : Color.Red);
+                            Vector2 goalPos = new Vector2(spawnX + (death ? 1000 : 1250), spawnY + (death ? 1000 : 1250)); // player.Center + new Vector2(0, -175)
+                            Dust.QuickDustLine(NPC.Center, goalPos + new Vector2(0,-20), 500f, permafrost ? Color.Cyan : Color.Red);
                             NPC.velocity = Vector2.Zero;
-                            NPC.Center = player.Center + new Vector2(0, -175);
+                            NPC.Center = goalPos;
                             Particle pulse = new DirectionalPulseRing(NPC.Center, Vector2.Zero, Color.Red, new Vector2(1f, 1f), 0, 0.1f, 5f, 15);
                             GeneralParticleHandler.SpawnParticle(pulse);
                             for (int x = 0; x < Main.maxProjectiles; x++)

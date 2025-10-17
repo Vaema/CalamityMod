@@ -50,6 +50,8 @@ namespace CalamityMod.NPCs.CalClone
                 baseSize *= 1.25f;
             if (NPC.AnyNPCs(ModContent.NPCType<SoulSeeker>()))
                 baseSize *= new Vector4(1.5f, 0.75f, 1.5f, 0.75f);
+            if (!CalamityWorld.death)
+                baseSize *= 1.25f;
             return baseSize + new Vector4(-22, 0 ,22,0);
         }
         public override void SetStaticDefaults()
@@ -258,7 +260,7 @@ namespace CalamityMod.NPCs.CalClone
                 NPC.dontTakeDamage = true;
 
             //arena on death mode
-            if (death)
+            if (revenge)
             {
                 if (ArenaWallSystem.ActiveBoxes.Count < 1)
                 {
