@@ -32,6 +32,7 @@ using CalamityMod.Projectiles.Summon;
 using CalamityMod.Projectiles.Typeless;
 using CalamityMod.Projectiles.VanillaProjectileOverrides;
 using CalamityMod.Systems.Collections;
+using CalamityMod.Systems.Mechanic;
 using CalamityMod.Tiles.Abyss;
 using CalamityMod.Tiles.Astral;
 using CalamityMod.Tiles.AstralDesert;
@@ -123,7 +124,14 @@ namespace CalamityMod.Projectiles
         public bool showArcFlash = true;
         /// <summary> Cooldown variable for Arc Flash Ring's lightning. Primarily used for lingering projectiles and minions. </summary>
         public int arcFlashCooldown = 0;
-
+        /// <summary>
+        /// The location of this projectile in an arena box, used for maintaining this when the arena box moves.
+        /// </summary>
+        public Vector2 arenaBoxPosition = Vector2.Zero;
+        /// <summary>
+        /// Which Box this projectile is attached to
+        /// </summary>
+        public ArenaWallSystem.Box arenaBox = null;
         /// <summary>
         /// If true, adds a brimstone trail to the projectile, and makes it inflict Brimstone Flames.<br/>
         /// Used by Animosity.

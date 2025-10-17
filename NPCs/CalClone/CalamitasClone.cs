@@ -1,4 +1,5 @@
-﻿using System.IO;
+﻿using System;
+using System.IO;
 using CalamityMod.Buffs.DamageOverTime;
 using CalamityMod.Dusts;
 using CalamityMod.Events;
@@ -16,12 +17,12 @@ using CalamityMod.Items.Weapons.Ranged;
 using CalamityMod.Items.Weapons.Summon;
 using CalamityMod.NPCs.TownNPCs;
 using CalamityMod.Projectiles.Boss;
+using CalamityMod.Systems.Mechanic;
 using CalamityMod.World;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using ReLogic.Content;
 using ReLogic.Utilities;
-using System;
 using Terraria;
 using Terraria.Audio;
 using Terraria.GameContent;
@@ -42,6 +43,15 @@ namespace CalamityMod.NPCs.CalClone
         public static readonly SoundStyle ChargeSound = new("CalamityMod/Sounds/Custom/CalamitasClone/CalCloneDash", 3);
         public SlotId BulletHellWarnSlot;
 
+        public static Vector4 GetArenaSize(bool brothersActive = false)
+        {
+            var baseSize = new Vector4(1600, 800, 0, 800);
+            if (brothersActive)
+                baseSize *= 1.25f;
+            if (NPC.AnyNPCs(ModContent.NPCType<SoulSeeker>()))
+                baseSize *= new Vector4(1.5f, 0.75f, 1.5f, 0.75f);
+            return baseSize + new Vector4(-22, 0 ,22,0);
+        }
         public override void SetStaticDefaults()
         {
             Main.npcFrameCount[Type] = 6;
@@ -129,7 +139,6 @@ namespace CalamityMod.NPCs.CalClone
             int frame = (int)NPC.frameCounter;
             NPC.frame.Y = frame * frameHeight;
         }
-
         public override void AI()
         {
             CalamityGlobalNPC calamityGlobalNPC = NPC.Calamity();
@@ -247,6 +256,17 @@ namespace CalamityMod.NPCs.CalClone
 
             if (brotherAlive)
                 NPC.dontTakeDamage = true;
+
+            //arena on death mode
+            if (death)
+            {
+                if (ArenaWallSystem.ActiveBoxes.Count < 1)
+                {
+                    ArenaWallSystem.ActiveBoxes.Add(new() { position = Main.player[NPC.FindClosestPlayer()].Center, boxDimensions = new Vector4(2000), borderThickness = 2000, RemovalCondition = () => !(Main.npc[NPC.whoAmI].active) || Main.npc[NPC.whoAmI].type != Type });
+                }
+                ArenaWallSystem.ActiveBoxes[0].NewDimensions = Vector4.Lerp(ArenaWallSystem.ActiveBoxes[0].boxDimensions, GetArenaSize(brotherAlive), lifeRatio > 0.8f ? 0.1f : 0.05f);
+                ArenaWallSystem.ActiveBoxes[0].borderColor = Color.Lerp(Color.Crimson, Color.IndianRed, (MathF.Sin(Main.GlobalTimeWrappedHourly) + 1) * 0.25f);
+            }
 
             void SpawnDust()
             {

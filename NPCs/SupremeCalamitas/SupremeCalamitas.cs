@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using CalamityMod.Buffs.Alcohol;
 using CalamityMod.Buffs.DamageOverTime;
 using CalamityMod.Dusts;
 using CalamityMod.Events;
@@ -25,13 +24,16 @@ using CalamityMod.Items.Weapons.Rogue;
 using CalamityMod.Items.Weapons.Summon;
 using CalamityMod.NPCs.Bumblebirb;
 using CalamityMod.NPCs.DevourerofGods;
-using CalamityMod.NPCs.Providence;
 using CalamityMod.NPCs.TownNPCs;
+using CalamityMod.Particles;
 using CalamityMod.Projectiles.Boss;
+using CalamityMod.Systems.Collections;
+using CalamityMod.Systems.Mechanic;
 using CalamityMod.World;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using ReLogic.Content;
+using ReLogic.Utilities;
 using Terraria;
 using Terraria.Audio;
 using Terraria.GameContent;
@@ -40,12 +42,6 @@ using Terraria.GameContent.ItemDropRules;
 using Terraria.Graphics.Shaders;
 using Terraria.ID;
 using Terraria.ModLoader;
-using ReLogic.Utilities;
-using CalamityMod.Projectiles.Ranged;
-using Steamworks;
-using CalamityMod.Particles;
-using Terraria.Utilities.Terraria.Utilities;
-using CalamityMod.Systems.Collections;
 
 namespace CalamityMod.NPCs.SupremeCalamitas
 {
@@ -226,7 +222,7 @@ namespace CalamityMod.NPCs.SupremeCalamitas
             string hoodedIconPath = "CalamityMod/NPCs/SupremeCalamitas/HoodedHeadIcon";
             string hoodlessIconPath = "CalamityMod/NPCs/SupremeCalamitas/HoodlessHeadIcon";
             string permafrostIconPath = "CalamityMod/NPCs/TownNPCs/Archmage_Head";
-            
+
             hoodedHeadIconIndex = CalamityMod.Instance.AddBossHeadTexture(hoodedIconPath, -1);
             hoodlessHeadIconIndex = CalamityMod.Instance.AddBossHeadTexture(hoodlessIconPath, -1);
             permafrostHeadIconIndex = CalamityMod.Instance.AddBossHeadTexture(permafrostIconPath, -1);
@@ -621,37 +617,7 @@ namespace CalamityMod.NPCs.SupremeCalamitas
                     int safeBoxTilesX = (int)(safeBox.X + (float)(safeBox.Width / 2)) / 16;
                     int safeBoxTilesY = (int)(safeBox.Y + (float)(safeBox.Height / 2)) / 16;
                     int safeBoxTileWidth = safeBox.Width / 2 / 16 + 1;
-                    for (int i = safeBoxTilesX - safeBoxTileWidth; i <= safeBoxTilesX + safeBoxTileWidth; i++)
-                    {
-                        for (int j = safeBoxTilesY - safeBoxTileWidth; j <= safeBoxTilesY + safeBoxTileWidth; j++)
-                        {
-                            if (!WorldGen.InWorld(i, j, 2))
-                                continue;
-
-                            int xoffset = 0;
-                            int yoffset = 0;
-                            int maxoffset = 3;
-                            if (zenithAI)
-                            {
-                                xoffset += Main.rand.Next(-maxoffset, maxoffset + 1);
-                                yoffset += Main.rand.Next(-maxoffset, maxoffset + 1);
-                            }
-
-                            if ((i == safeBoxTilesX - safeBoxTileWidth || i == safeBoxTilesX + safeBoxTileWidth || j == safeBoxTilesY - safeBoxTileWidth || j == safeBoxTilesY + safeBoxTileWidth) && !Main.tile[i + xoffset, j + yoffset].HasTile)
-                            {
-                                Main.tile[i + xoffset, j + yoffset].TileType = (ushort)ModContent.TileType<Tiles.ArenaTile>();
-                                Main.tile[i + xoffset, j + yoffset].Get<TileWallWireStateData>().HasTile = true;
-                            }
-                            if (Main.dedServ)
-                            {
-                                NetMessage.SendTileSquare(-1, i + xoffset, j + yoffset, 1, TileChangeType.None);
-                            }
-                            else
-                            {
-                                WorldGen.SquareTileFrame(i + xoffset, j + yoffset, true);
-                            }
-                        }
-                    }
+                    
 
                     if (initialRitualPosition == Vector2.Zero)
                     {
@@ -665,9 +631,42 @@ namespace CalamityMod.NPCs.SupremeCalamitas
                     NPC.netUpdate = true;
                 }
             }
+            Vector4 GetArenaSize(bool brothersActive = false)
+            {
+                var baseSize = death ? new Vector4(1000) : new Vector4(1250);
+                if (wormAlive)
+                    baseSize *= new Vector4(1,1.15f,startFourthAttack ? 0.75f : 0.25f,1.15f);
+                if (NPC.AnyNPCs(ModContent.NPCType<SoulSeekerSupreme>()))
+                {
+                    baseSize *= new Vector4(1.5f, 0.75f, 1.5f, 0.75f);
+                }
+                if (lifeRatio <= 0.01f)
+                    baseSize *= 10;
+                return baseSize;
+            }
+
+            //arena
+            if (lifeRatio > 0.01f)
+            {
+                if (ArenaWallSystem.ActiveBoxes.Count < 1)
+                {
+                    ArenaWallSystem.ActiveBoxes.Add(new() { position = new Vector2(spawnX + (death ? 1000 : 1250), spawnY + (death ? 1000 : 1250)), boxDimensions = GetArenaSize() * 2, borderThickness = 2000, RemovalCondition = () => !(Main.npc[NPC.whoAmI].active) || Main.npc[NPC.whoAmI].type != Type });
+                }
+                ArenaWallSystem.ActiveBoxes[0].NewDimensions = Vector4.Lerp(ArenaWallSystem.ActiveBoxes[0].boxDimensions, GetArenaSize(), startFourthAttack ? 0.05f : 0.1f);
+                ArenaWallSystem.ActiveBoxes[0].borderColor = permafrost ? Color.LightBlue : Color.Lerp(Color.Crimson, Color.IndianRed, (MathF.Sin(Main.GlobalTimeWrappedHourly) + 1) * 0.25f);
+            } else
+            {
+                if (ArenaWallSystem.ActiveBoxes.Count > 0)
+                {
+                    var box = ArenaWallSystem.ActiveBoxes[0];
+                    box.NewDimensions = Vector4.Lerp(ArenaWallSystem.ActiveBoxes[0].boxDimensions, new Vector4(3000), 0.01f);
+                    if (box.NewDimensions.X >= 2000)
+                        ArenaWallSystem.ActiveBoxes.Remove(box);
+                }
+            }
             #endregion
             #region Enrage and DR
-            if (spawnArena && !player.Hitbox.Intersects(safeBox))
+            if (ArenaWallSystem.ActiveBoxes.Count > 0 && !Collision.CheckAABBvAABBCollision(ArenaWallSystem.ActiveBoxes[0].TopLeft, ArenaWallSystem.ActiveBoxes[0].Size, player.position, player.Size))
             {
                 float projectileVelocityMultCap = 2f;
                 uDieLul = MathHelper.Clamp(uDieLul * 1.01f, 1f, projectileVelocityMultCap);
@@ -1589,7 +1588,7 @@ namespace CalamityMod.NPCs.SupremeCalamitas
                     else // Scal gives up
                     {
                         // Clear Debuffs DOESNT WORK YET
-                        for (int l = 0; l < NPC.maxBuffs ; ++l)
+                        for (int l = 0; l < NPC.maxBuffs; ++l)
                         {
                             int buffID = NPC.buffType[l];
 
@@ -2025,7 +2024,7 @@ namespace CalamityMod.NPCs.SupremeCalamitas
                         NPC.velocity *= 0.85f;
                         return;
                     }
-                    
+
                 }
             }
 
@@ -2223,7 +2222,7 @@ namespace CalamityMod.NPCs.SupremeCalamitas
                                     NPC.netUpdate = true;
                                 }
                             }
-                            else if ((randomShot == 1 && canFireSplitingFireball) ||  fireFireblastFirst) // Firing gigablast while hovering above pre laugh
+                            else if ((randomShot == 1 && canFireSplitingFireball) || fireFireblastFirst) // Firing gigablast while hovering above pre laugh
                             {
                                 canFireSplitingFireball = false;
                                 randomShot = fireblast;
@@ -2788,7 +2787,7 @@ namespace CalamityMod.NPCs.SupremeCalamitas
                                     NPC.netUpdate = true;
                                 }
                             }
-                            else if ((randomShot == 1 && canFireSplitingFireball) ||  fireFireblastFirst) // Gigablast while floating post laugh
+                            else if ((randomShot == 1 && canFireSplitingFireball) || fireFireblastFirst) // Gigablast while floating post laugh
                             {
                                 SoundEngine.PlaySound(BrimstoneShotSound, NPC.Center);
                                 if (NPC.ai[2] > 1)

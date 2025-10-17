@@ -91,6 +91,7 @@ namespace CalamityMod.ILEditing
             On_Player.PlaceThing_CannonBall += AllowCannonJellyfishUse;
             On_Player.ItemCheck_ReleaseCritter += ReleaseCritterVariant;
             On_Player.IsItemSlotUnlockedAndUsable += MasterModeCelestialOnionCheck;
+            On_Projectile.AI_007_GrapplingHooks += AllowHooksToGrabArenabox;
 
             // Mana Burn (Chaos Stone) and Chalice of the Blood God
             IL_Player.ApplyLifeAndOrMana += ChaliceBufferHeal;

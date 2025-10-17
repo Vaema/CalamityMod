@@ -31,6 +31,7 @@ using CalamityMod.Projectiles;
 using CalamityMod.Projectiles.Ranged;
 using CalamityMod.Projectiles.Typeless;
 using CalamityMod.Systems;
+using CalamityMod.Systems.Mechanic;
 using CalamityMod.Tiles;
 using CalamityMod.Walls;
 using CalamityMod.Walls.UnsafeWalls;
@@ -2628,6 +2629,68 @@ namespace CalamityMod.ILEditing
                 return true;
             }
             return orig(self, slot);
+        }
+        #endregion
+
+        #region Allow Grappling Hooks to grab arena walls
+        public static void AllowHooksToGrabArenabox(On_Projectile.orig_AI_007_GrapplingHooks orig, Projectile self)
+        {
+            if (Main.player[self.owner].dead || Main.player[self.owner].stoned || Main.player[self.owner].webbed || Main.player[self.owner].frozen)
+            {
+                self.Kill();
+                return;
+            }
+            static bool Vector2PointCollision(Vector2 position, Vector2 size, Vector2 point)
+            {
+                return (point.X >= position.X && point.X <= position.X + size.X && point.Y >= position.Y && point.Y <= position.Y + size.Y);
+            }
+
+            bool intersectingWall = false;
+            if (self.Calamity().arenaBox is not null)
+            {
+                var box = self.Calamity().arenaBox;
+                if (ArenaWallSystem.ActiveBoxes.Contains(box))
+                {
+                    self.Center = box.TopLeft + box.Size * self.Calamity().arenaBoxPosition;
+                }
+                else
+                {
+                    self.Calamity().arenaBox = null;
+                }
+            }
+            if (ArenaWallSystem.ActiveBoxes.Count > 0)
+            {
+                foreach (var box in ArenaWallSystem.ActiveBoxes)
+                {
+                    if (!Vector2PointCollision(box.TopLeft, box.Size, self.Center) && Vector2PointCollision(box.TopLeft - new Vector2(box.borderThickness), box.Size + new Vector2(box.borderThickness) * 2, self.Center))
+                    {
+                        if (self.ai[0] == 0)
+                        {
+                            if (Main.myPlayer == self.owner)
+                            {
+                                if (self.type == ProjectileID.QueenSlimeHook)
+                                {
+                                    Main.player[self.owner].DoQueenSlimeHookTeleport(self.Center);
+                                }
+                                NetMessage.SendData(MessageID.PlayerControls, -1, -1, null, self.owner);
+                            }
+                            self.ai[0] = 2;
+                            self.velocity = Vector2.Zero;
+                            self.Calamity().arenaBoxPosition = new Vector2(Utils.Remap(self.Center.X, box.TopLeft.X, box.BottomRight.X, 0, 1, false), Utils.Remap(self.Center.Y, box.TopLeft.Y, box.BottomRight.Y, 0, 1, false));
+                            self.Calamity().arenaBox = box;
+                        }
+                        self.rotation = self.DirectionFrom(Main.player[self.owner].Center).ToRotation() + MathHelper.PiOver2;
+                        intersectingWall = true;
+                        if (Main.player[self.owner].grapCount < 10)
+                        {
+                            Main.player[self.owner].grappling[Main.player[self.owner].grapCount] = self.whoAmI;
+                            Main.player[self.owner].grapCount++;
+                        }
+                    }
+                }
+            }
+            if (!intersectingWall)
+                orig(self);
         }
         #endregion
     }
