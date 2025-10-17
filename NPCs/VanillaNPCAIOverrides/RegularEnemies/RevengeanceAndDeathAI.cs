@@ -4318,25 +4318,9 @@ PrepareToShoot:
             bool wormHead = npc.type == NPCID.GiantWormHead || npc.type == NPCID.BoneSerpentHead || npc.type == NPCID.DiggerHead || npc.type == NPCID.LeechHead || npc.type == NPCID.DuneSplicerHead || (!Main.player[npc.target].ZoneUndergroundDesert && npc.type == NPCID.TombCrawlerHead);
             float acceleration = npc.type == NPCID.TombCrawlerHead ? 0.1f : 0.2f;
 
-            bool isSplittingNPC = (npc.type >= NPCID.DiggerHead && npc.type <= NPCID.DiggerTail) || (npc.type >= NPCID.SeekerHead && npc.type <= NPCID.SeekerTail) || (npc.type >= NPCID.DuneSplicerHead && npc.type <= NPCID.DuneSplicerTail);
-
-            bool isSplittingNPCHead = npc.type == NPCID.DiggerHead || npc.type == NPCID.SeekerHead || npc.type == NPCID.DuneSplicerHead;
-
-            bool isSplittingNPCBody = npc.type == NPCID.DiggerBody || npc.type == NPCID.SeekerBody || npc.type == NPCID.DuneSplicerBody;
-
-            bool isSplittingNPCTail = npc.type == NPCID.DiggerTail || npc.type == NPCID.SeekerTail || npc.type == NPCID.DuneSplicerTail;
-
-            if (isSplittingNPC)
-            {
-                npc.realLife = -1;
-            }
-            else
-            {
-                npc.defense = (int)Math.Round(npc.defDefense * 1.3);
-
-                if (npc.ai[3] > 0f)
-                    npc.realLife = (int)npc.ai[3];
-            }
+            npc.defense = (int)Math.Round(npc.defDefense * 1.3);
+            if (npc.ai[3] > 0f)
+                npc.realLife = (int)npc.ai[3];
 
             if (npc.target < 0 || npc.target == Main.maxPlayers || Main.player[npc.target].dead || (wormHead && (double)Main.player[npc.target].position.Y < Main.worldSurface * 16.0))
             {
@@ -4467,15 +4451,12 @@ PrepareToShoot:
                         currentBloodEel = bloodEelSegment;
                     }
                 }
-                else if ((isSplittingNPCHead || isSplittingNPCBody || npc.type == NPCID.GiantWormHead || npc.type == NPCID.GiantWormBody || npc.type == NPCID.DevourerHead || npc.type == NPCID.DevourerBody || npc.type == NPCID.BoneSerpentHead || npc.type == NPCID.BoneSerpentBody || npc.type == NPCID.LeechHead || npc.type == NPCID.LeechBody) && npc.ai[0] == 0f)
+                else if ((npc.type == NPCID.GiantWormHead || npc.type == NPCID.GiantWormBody || npc.type == NPCID.DevourerHead || npc.type == NPCID.DevourerBody || npc.type == NPCID.BoneSerpentHead || npc.type == NPCID.BoneSerpentBody || npc.type == NPCID.LeechHead || npc.type == NPCID.LeechBody) && npc.ai[0] == 0f)
                 {
-                    if (isSplittingNPCHead || npc.type == NPCID.GiantWormHead || npc.type == NPCID.DevourerHead || npc.type == NPCID.BoneSerpentHead || npc.type == NPCID.LeechHead)
+                    if (npc.type == NPCID.GiantWormHead || npc.type == NPCID.DevourerHead || npc.type == NPCID.BoneSerpentHead || npc.type == NPCID.LeechHead)
                     {
-                        if (!isSplittingNPCHead)
-                        {
-                            npc.ai[3] = (float)npc.whoAmI;
-                            npc.realLife = npc.whoAmI;
-                        }
+                        npc.ai[3] = (float)npc.whoAmI;
+                        npc.realLife = npc.whoAmI;
 
                         switch (npc.type)
                         {
@@ -4504,7 +4485,7 @@ PrepareToShoot:
 
                         npc.ai[0] = (float)NPC.NewNPC(npc.GetSource_FromAI(), (int)(npc.position.X + (float)(npc.width / 2)), (int)(npc.position.Y + (float)npc.height), npc.type + 1, npc.whoAmI, 0f, 0f, 0f, 0f, 255);
                     }
-                    else if ((isSplittingNPCBody || npc.type == NPCID.GiantWormBody || npc.type == NPCID.DevourerBody || npc.type == NPCID.BoneSerpentBody || npc.type == NPCID.LeechBody) && npc.ai[2] > 0f)
+                    else if ((npc.type == NPCID.GiantWormBody || npc.type == NPCID.DevourerBody || npc.type == NPCID.BoneSerpentBody || npc.type == NPCID.LeechBody) && npc.ai[2] > 0f)
                     {
                         npc.ai[0] = (float)NPC.NewNPC(npc.GetSource_FromAI(), (int)(npc.position.X + (float)(npc.width / 2)), (int)(npc.position.Y + (float)npc.height), npc.type, npc.whoAmI, 0f, 0f, 0f, 0f, 255);
                     }
@@ -4513,89 +4494,31 @@ PrepareToShoot:
                         npc.ai[0] = (float)NPC.NewNPC(npc.GetSource_FromAI(), (int)(npc.position.X + (float)(npc.width / 2)), (int)(npc.position.Y + (float)npc.height), npc.type + 1, npc.whoAmI, 0f, 0f, 0f, 0f, 255);
                     }
 
-                    if (!isSplittingNPC)
-                    {
-                        Main.npc[(int)npc.ai[0]].ai[3] = npc.ai[3];
-                        Main.npc[(int)npc.ai[0]].realLife = npc.realLife;
-                    }
+                    Main.npc[(int)npc.ai[0]].ai[3] = npc.ai[3];
+                    Main.npc[(int)npc.ai[0]].realLife = npc.realLife;
                     Main.npc[(int)npc.ai[0]].ai[1] = (float)npc.whoAmI;
                     Main.npc[(int)npc.ai[0]].ai[2] = npc.ai[2] - 1f;
                     npc.netUpdate = true;
                 }
 
-                if (!isSplittingNPC)
+                if (npc.ai[1] > 0f && npc.ai[1] < (float)Main.npc.Length)
                 {
-                    if (npc.ai[1] > 0f && npc.ai[1] < (float)Main.npc.Length)
+                    if (!Main.npc[(int)npc.ai[1]].active || Main.npc[(int)npc.ai[1]].aiStyle != npc.aiStyle)
                     {
-                        if (!Main.npc[(int)npc.ai[1]].active || Main.npc[(int)npc.ai[1]].aiStyle != npc.aiStyle)
-                        {
-                            npc.life = 0;
-                            npc.HitEffect(0, 10.0);
-                            npc.active = false;
-                            NetMessage.SendData(MessageID.DamageNPC, -1, -1, null, npc.whoAmI, -1f, 0f, 0f, 0, 0, 0);
-                        }
-                    }
-                    if (npc.ai[0] > 0f && npc.ai[0] < (float)Main.npc.Length)
-                    {
-                        if (!Main.npc[(int)npc.ai[0]].active || Main.npc[(int)npc.ai[0]].aiStyle != npc.aiStyle)
-                        {
-                            npc.life = 0;
-                            npc.HitEffect(0, 10.0);
-                            npc.active = false;
-                            NetMessage.SendData(MessageID.DamageNPC, -1, -1, null, npc.whoAmI, -1f, 0f, 0f, 0, 0, 0);
-                        }
+                        npc.life = 0;
+                        npc.HitEffect(0, 10.0);
+                        npc.active = false;
+                        NetMessage.SendData(MessageID.DamageNPC, -1, -1, null, npc.whoAmI, -1f, 0f, 0f, 0, 0, 0);
                     }
                 }
-                else
+                if (npc.ai[0] > 0f && npc.ai[0] < (float)Main.npc.Length)
                 {
-                    if (!Main.npc[(int)npc.ai[1]].active && !Main.npc[(int)npc.ai[0]].active)
+                    if (!Main.npc[(int)npc.ai[0]].active || Main.npc[(int)npc.ai[0]].aiStyle != npc.aiStyle)
                     {
                         npc.life = 0;
                         npc.HitEffect(0, 10.0);
-                        npc.checkDead();
                         npc.active = false;
                         NetMessage.SendData(MessageID.DamageNPC, -1, -1, null, npc.whoAmI, -1f, 0f, 0f, 0, 0, 0);
-                    }
-                    if (isSplittingNPCHead && !Main.npc[(int)npc.ai[0]].active)
-                    {
-                        npc.life = 0;
-                        npc.HitEffect(0, 10.0);
-                        npc.checkDead();
-                        npc.active = false;
-                        NetMessage.SendData(MessageID.DamageNPC, -1, -1, null, npc.whoAmI, -1f, 0f, 0f, 0, 0, 0);
-                    }
-                    if (isSplittingNPCTail && !Main.npc[(int)npc.ai[1]].active)
-                    {
-                        npc.life = 0;
-                        npc.HitEffect(0, 10.0);
-                        npc.checkDead();
-                        npc.active = false;
-                        NetMessage.SendData(MessageID.DamageNPC, -1, -1, null, npc.whoAmI, -1f, 0f, 0f, 0, 0, 0);
-                    }
-                    if (isSplittingNPCBody && (!Main.npc[(int)npc.ai[1]].active || Main.npc[(int)npc.ai[1]].aiStyle != npc.aiStyle))
-                    {
-                        npc.type = npc.type - 1;
-                        int whoAmI = npc.whoAmI;
-                        float currentHealthAmt = (float)npc.life / (float)npc.lifeMax;
-                        float newSegment = npc.ai[0];
-                        npc.SetDefaultsKeepPlayerInteraction(npc.type);
-                        npc.life = (int)((float)npc.lifeMax * currentHealthAmt);
-                        npc.ai[0] = newSegment;
-                        npc.TargetClosest(true);
-                        npc.netUpdate = true;
-                        npc.whoAmI = whoAmI;
-                    }
-                    if (isSplittingNPCBody && (!Main.npc[(int)npc.ai[0]].active || Main.npc[(int)npc.ai[0]].aiStyle != npc.aiStyle))
-                    {
-                        int whoAmI2 = npc.whoAmI;
-                        float currentHealthAmt2 = (float)npc.life / (float)npc.lifeMax;
-                        float newSegment = npc.ai[1];
-                        npc.SetDefaultsKeepPlayerInteraction(npc.type);
-                        npc.life = (int)((float)npc.lifeMax * currentHealthAmt2);
-                        npc.ai[1] = newSegment;
-                        npc.TargetClosest(true);
-                        npc.netUpdate = true;
-                        npc.whoAmI = whoAmI2;
                     }
                 }
 
@@ -4667,7 +4590,7 @@ PrepareToShoot:
                 }
             }
 
-            if (!flying && (isSplittingNPCHead || npc.type == NPCID.GiantWormHead || npc.type == NPCID.DevourerHead || npc.type == NPCID.BoneSerpentHead || npc.type == NPCID.LeechHead || npc.type == NPCID.TombCrawlerHead))
+            if (!flying && (npc.type == NPCID.GiantWormHead || npc.type == NPCID.DevourerHead || npc.type == NPCID.BoneSerpentHead || npc.type == NPCID.LeechHead || npc.type == NPCID.TombCrawlerHead))
             {
                 Rectangle rectangle = new Rectangle((int)npc.position.X, (int)npc.position.Y, npc.width, npc.height);
                 int noFlyZone = 1000;

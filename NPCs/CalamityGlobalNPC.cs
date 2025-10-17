@@ -1411,11 +1411,6 @@ namespace CalamityMod.NPCs
         #region Revengeance and Death Mode Stat Changes
         private void RevDeathStatChanges(NPC npc, Mod mod)
         {
-            if (CalamityNPCSets.DeathModeSplittingWorm[npc.type] && CalamityWorld.death)
-            {
-                npc.lifeMax = (int)Math.Round(npc.lifeMax * 0.15);
-            }
-
             if (npc.type == NPCID.Mothron)
             {
                 npc.scale *= 1.25f;
@@ -3713,21 +3708,6 @@ namespace CalamityMod.NPCs
                             case NPCID.BloodEelBody:
                             case NPCID.BloodEelTail:
                                 return RevengeanceAndDeathAI.BuffedWormAI(npc, Mod);
-
-                            // Death Mode splitting worms.
-                            case NPCID.DiggerHead:
-                            case NPCID.DiggerBody:
-                            case NPCID.DiggerTail:
-                            case NPCID.SeekerHead:
-                            case NPCID.SeekerBody:
-                            case NPCID.SeekerTail:
-                            case NPCID.DuneSplicerHead:
-                            case NPCID.DuneSplicerBody:
-                            case NPCID.DuneSplicerTail:
-                                if (CalamityWorld.death)
-                                    return RevengeanceAndDeathAI.BuffedWormAI(npc, Mod);
-                                else
-                                    return true;
                         }
                         break;
 
@@ -7552,26 +7532,6 @@ namespace CalamityMod.NPCs
                     bool brainIsInPhase2 = Main.npc[NPC.crimsonBoss].ai[0] < 0f;
                     if (brainIsInPhase2)
                         return false;
-                }
-            }
-
-            if (CalamityWorld.death)
-            {
-                switch (npc.type)
-                {
-                    case NPCID.DiggerHead:
-                    case NPCID.DiggerBody:
-                    case NPCID.DiggerTail:
-                    case NPCID.SeekerHead:
-                    case NPCID.SeekerBody:
-                    case NPCID.SeekerTail:
-                    case NPCID.DuneSplicerHead:
-                    case NPCID.DuneSplicerBody:
-                    case NPCID.DuneSplicerTail:
-                        return true;
-
-                    default:
-                        break;
                 }
             }
 

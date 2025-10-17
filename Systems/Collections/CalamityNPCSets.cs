@@ -176,14 +176,6 @@ namespace CalamityMod.Systems.Collections
                 NPCID.Butcher, NPCID.CreatureFromTheDeep, NPCID.Fritz, NPCID.Nailhead, NPCID.Psycho, NPCID.DeadlySphere, NPCID.DrManFly, NPCID.ThePossessed, NPCID.Mothron,
                 NPCID.MothronEgg, NPCID.MothronSpawn);
 
-        // TODO: This set should really also handle the actual splitting behavior and loot, but unsure of the best way to do that looking at what we have right now
-        /// <summary>
-        /// If <see langword="true"/> for an NPC type, then that NPC is part of a worm which splits in Death Mode. Solely used to reduce their max health to 15% of its standard value.<br/>
-        /// Defaults to <see langword="false"/>.
-        /// </summary>
-        public static bool[] DeathModeSplittingWorm = Factory.CreateBoolSet(NPCID.DuneSplicerHead, NPCID.DuneSplicerBody, NPCID.DuneSplicerTail,
-                NPCID.DiggerHead, NPCID.DiggerBody, NPCID.DiggerTail, NPCID.SeekerHead, NPCID.SeekerBody, NPCID.SeekerTail);
-
         /// <summary>
         /// If <see langword="true"/> for an NPC type, then the NPC will receive a 30 second global cooldown to slowing debuffs after being inflicted by one.<br/>
         /// Also used to prevent weapon pulling effects and Anarchy Blade's ability to instantly kill enemies that are below 50% health.<br/>

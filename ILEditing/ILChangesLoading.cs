@@ -220,10 +220,6 @@ namespace CalamityMod.ILEditing
             On_Main.DrawPlayerChatBubbles += UI_Unflip_Start;
             On_Main.DrawInterface += UI_Unflip_End;
 
-            // Fix vanilla bugs exposed by Calamity mechanics
-            IL_NPC.NPCLoot += FixSplittingWormBannerDrops;
-            On_NPC.PlayerInteraction += FixSplittingWormInteraction;
-
             // Fix vanilla not accounting for spritebatch modification in held projectile drawing
             On_PlayerDrawLayers.DrawHeldProj += FixHeldProjectileBlendState;
 
