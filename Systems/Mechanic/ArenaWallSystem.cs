@@ -58,12 +58,30 @@ namespace CalamityMod.Systems.Mechanic
             {
                 oldData = new Box() { borderColor = borderColor, borderThickness = borderThickness, boxDimensions = boxDimensions, position = position };
             }
-            public bool Contains(Player player)
+            public bool Contains(Vector2 Position, Vector2 size)
             {
-                return Collision.CheckAABBvAABBCollision(TopLeft - new Vector2(borderThickness * 0.5f), Size + new Vector2(borderThickness), player.TopLeft, player.Size);
+                return Collision.CheckAABBvAABBCollision(TopLeft - new Vector2(borderThickness * 0.5f), Size + new Vector2(borderThickness), Position, size);
             }
 
             public bool ShouldEffectPlayer(Player player) => Collision.CheckAABBvAABBCollision(TopLeft - new Vector2(borderThickness + 300), Size + new Vector2(borderThickness + 300)*2, player.TopLeft, player.Size);
+            public bool InnerEffect(Vector2 Position, Vector2 size) => Collision.CheckAABBvAABBCollision(TopLeft - new Vector2(borderThickness)*0.5f, Size + new Vector2(borderThickness), Position, size);
+
+            public bool PointInWall(Vector2 pos)
+            {
+                static bool Vector2PointCollision(Vector2 position, Vector2 size, Vector2 point)
+                {
+                    return (point.X >= position.X && point.X <= position.X + size.X && point.Y >= position.Y && point.Y <= position.Y + size.Y);
+                }
+                return !Vector2PointCollision(TopLeft, Size, pos) && Vector2PointCollision(TopLeft - new Vector2(borderThickness), Size + new Vector2(borderThickness) * 2, pos);
+            }
+
+            public bool Vector2PairInWall(Vector2 pos, Vector2 size)
+            {
+                return Collision.CheckAABBvAABBCollision(TopLeft - new Vector2(borderThickness), new Vector2(size.X + borderThickness * 2, borderThickness), pos, size)
+                    || Collision.CheckAABBvAABBCollision(TopRight + new Vector2(0, -borderThickness), new Vector2(borderThickness, size.Y + borderThickness * 2), pos, size)
+                    || Collision.CheckAABBvAABBCollision(BottomLeft + new Vector2(-borderThickness, 0), new Vector2(size.X + borderThickness * 2, borderThickness), pos, size)
+                    || Collision.CheckAABBvAABBCollision(TopLeft - new Vector2(borderThickness), new Vector2(borderThickness, size.Y + borderThickness * 2), pos, size);
+            }
         }
         public override void PostDrawTiles() //Later all of this method should be stored in the box instance for more customizability.
         {
@@ -160,7 +178,7 @@ namespace CalamityMod.Systems.Mechanic
             {
                 if (box.ShouldEffectPlayer(Player))
                 {
-                    if (box.Contains(Player))
+                    if (box.Contains(Player.position,Player.Size))
                         ContainPlayerLogic(box);
                 }
             }

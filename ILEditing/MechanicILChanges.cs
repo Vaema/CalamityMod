@@ -677,7 +677,7 @@ namespace CalamityMod.ILEditing
         #endregion
 
         #region Chaos Stone Mana Burn changes
-        private static bool AllowNegativeCheckMana(On_Player.orig_CheckMana_int_bool_bool orig,Player self, int amount, bool pay, bool blockQuickMana) {
+        private static bool AllowNegativeCheckMana(On_Player.orig_CheckMana_int_bool_bool orig, Player self, int amount, bool pay, bool blockQuickMana) {
             if (self.Calamity().ChaosStone)
             {
                 if (pay)
@@ -1095,7 +1095,7 @@ namespace CalamityMod.ILEditing
                 BlockLavaDrawing_Vanilla(il);
             }
         }
-        
+
         private void BlockLavaDrawing_Vanilla(ILContext il)
         {
             //This edit to DrawNormalLiquids makes lavas in normal and white lighting draw with an alpha and with new textures
@@ -1152,7 +1152,7 @@ namespace CalamityMod.ILEditing
         {
             Assembly lspAsm = ModLoader.GetMod("LiquidSlopesPatch").Code;
             Type liquidDrawCache = lspAsm.GetType("LiquidSlopesPatch.Common.RewrittenLiquidRenderer").GetNestedType("LiquidDrawCache");
-            
+
             //This edit to DrawNormalLiquids makes lavas in normal and white lighting draw with an alpha and with new textures
             //If the parameter for the waterstyle is more than the max waterstyles then its subtracted by the max water style count and thats the lava style ID
             ILCursor cursor = new ILCursor(il);
@@ -1466,7 +1466,7 @@ namespace CalamityMod.ILEditing
                 LiquidDrawColors_Vanilla(il);
             }
         }
-        
+
         private static void LiquidDrawColors_Vanilla(ILContext il)
         {
             ILCursor cursor = new ILCursor(il);
@@ -1494,12 +1494,12 @@ namespace CalamityMod.ILEditing
                 }
             });
         }
-        
+
         private static void LiquidDrawColors_LiquidSlopesPatch(ILContext il)
         {
             Assembly lspAsm = ModLoader.GetMod("LiquidSlopesPatch").Code;
             Type liquidDrawCache = lspAsm.GetType("LiquidSlopesPatch.Common.RewrittenLiquidRenderer").GetNestedType("LiquidDrawCache");
-            
+
             ILCursor cursor = new ILCursor(il);
             if (!cursor.TryGotoNext(MoveType.Before, c => c.MatchLdarg2(), c => c.MatchLdloc(out _), c => c.MatchLdloc(out _), c => c.MatchCall<Main>("DrawTileInWater")))
             {
@@ -2691,6 +2691,77 @@ namespace CalamityMod.ILEditing
             }
             if (!intersectingWall)
                 orig(self);
+        }
+        #endregion
+
+        #region Arena Collision for other things
+
+        private bool ArenaCollision_Vector2_int_int_bool(On_Collision.orig_SolidCollision_Vector2_int_int_bool orig, Vector2 Position, int Width, int Height, bool acceptTopSurfaces)
+        {
+            if (ArenaWallSystem.ActiveBoxes.Count > 0)
+            {
+                foreach (var item in ArenaWallSystem.ActiveBoxes)
+                {
+                    if (item.Vector2PairInWall(Position, new(Width, Height)))
+                        return true;
+                }
+            }
+            return orig(Position, Width, Height, acceptTopSurfaces);
+        }
+
+        private bool ArenaCollision_Vector2_int_int(On_Collision.orig_SolidCollision_Vector2_int_int orig, Vector2 Position, int Width, int Height)
+        {
+            if (ArenaWallSystem.ActiveBoxes.Count > 0)
+            {
+                foreach (var item in ArenaWallSystem.ActiveBoxes)
+                {
+                    if (item.Vector2PairInWall(Position, new(Width, Height)))
+                        return true;
+                }
+            }
+            return orig(Position, Width, Height);
+        }
+
+
+        private Vector2 ArenaCollision_TileCollision(On_Collision.orig_TileCollision orig, Vector2 Position, Vector2 Velocity, int Width, int Height, bool fallThrough, bool fall2, int gravDir)
+        {
+            Velocity = orig(Position, Velocity, Width, Height, fallThrough, fall2, gravDir);
+            if (ArenaWallSystem.ActiveBoxes.Count > 0)
+            {
+                foreach (var item in ArenaWallSystem.ActiveBoxes)
+                {
+                    if (item.InnerEffect(Position,new Vector2(Width,Height)))
+                    Velocity = ArenaCollisionLogic(item, Position, Width, Height, Velocity);
+                }
+            }
+            return Velocity;
+        }
+
+        Vector2 ArenaCollisionLogic(ArenaWallSystem.Box box, Vector2 Position, int Width, int Height, Vector2 Velocity)
+        {
+            var originalVelocity = Velocity;
+            var originalTopLeft = Position;
+            var originalBottomRight = Position + new Vector2(Height, Width);
+            Position += originalVelocity;
+
+            if (Position.X < box.TopLeft.X)
+            {
+                Velocity.X = box.TopLeft.X - originalTopLeft.X;
+            }
+            if (Position.X + Width > box.BottomRight.X)
+            {
+                Velocity.X = box.BottomRight.X - originalBottomRight.X;
+            }
+            if (Position.Y < box.TopLeft.Y)
+            {
+                Velocity.Y = box.TopLeft.Y - originalTopLeft.Y;
+            }
+
+            if (Position.Y + Height > box.BottomRight.Y)
+            {
+                Velocity.Y = box.BottomRight.Y - originalBottomRight.Y;
+            }
+            return Velocity;
         }
         #endregion
     }

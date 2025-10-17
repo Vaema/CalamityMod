@@ -645,8 +645,8 @@ namespace CalamityMod.NPCs.SupremeCalamitas
                 return baseSize;
             }
 
-            //arena
-            if (lifeRatio > 0.01f)
+            //Commented out code is for deleting arena in Acceptance if needed
+            //if (lifeRatio > 0.01f)
             {
                 if (ArenaWallSystem.ActiveBoxes.Count < 1)
                 {
@@ -654,7 +654,8 @@ namespace CalamityMod.NPCs.SupremeCalamitas
                 }
                 ArenaWallSystem.ActiveBoxes[0].NewDimensions = Vector4.Lerp(ArenaWallSystem.ActiveBoxes[0].boxDimensions, GetArenaSize(), startFourthAttack ? 0.05f : 0.1f);
                 ArenaWallSystem.ActiveBoxes[0].borderColor = permafrost ? Color.LightBlue : Color.Lerp(Color.Crimson, Color.IndianRed, (MathF.Sin(Main.GlobalTimeWrappedHourly) + 1) * 0.25f);
-            } else
+            } 
+            /*else
             {
                 if (ArenaWallSystem.ActiveBoxes.Count > 0)
                 {
@@ -663,7 +664,7 @@ namespace CalamityMod.NPCs.SupremeCalamitas
                     if (box.NewDimensions.X >= 2000)
                         ArenaWallSystem.ActiveBoxes.Remove(box);
                 }
-            }
+            }*/
             #endregion
             #region Enrage and DR
             if (ArenaWallSystem.ActiveBoxes.Count > 0 && !Collision.CheckAABBvAABBCollision(ArenaWallSystem.ActiveBoxes[0].TopLeft, ArenaWallSystem.ActiveBoxes[0].Size, player.position, player.Size))

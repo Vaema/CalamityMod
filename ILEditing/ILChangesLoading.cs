@@ -92,6 +92,9 @@ namespace CalamityMod.ILEditing
             On_Player.ItemCheck_ReleaseCritter += ReleaseCritterVariant;
             On_Player.IsItemSlotUnlockedAndUsable += MasterModeCelestialOnionCheck;
             On_Projectile.AI_007_GrapplingHooks += AllowHooksToGrabArenabox;
+            On_Collision.SolidCollision_Vector2_int_int += ArenaCollision_Vector2_int_int;
+            On_Collision.SolidCollision_Vector2_int_int_bool += ArenaCollision_Vector2_int_int_bool;
+            On_Collision.TileCollision += ArenaCollision_TileCollision;
 
             // Mana Burn (Chaos Stone) and Chalice of the Blood God
             IL_Player.ApplyLifeAndOrMana += ChaliceBufferHeal;
