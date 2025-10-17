@@ -100,8 +100,8 @@ namespace CalamityMod.NPCs.SunkenSea
             NPC.Calamity().VulnerableToSickness = true;
             NPC.Calamity().VulnerableToCold = true;
             NPC.Calamity().VulnerableToWater = true;
-            //Banner = NPC.type;
-            //BannerItem = ModContent.ItemType<PodobooKoiBanner>();
+            Banner = NPC.type;
+            BannerItem = ModContent.ItemType<PodobooKoiBanner>();
         }
 
         public override void SetBestiary(BestiaryDatabase database, BestiaryEntry bestiaryEntry)

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using CalamityMod.BiomeManagers;
 using CalamityMod.DataStructures;
 using CalamityMod.Graphics.Primitives;
+using CalamityMod.Items.Placeables.Banners;
 using CalamityMod.Particles;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
@@ -44,6 +45,8 @@ namespace CalamityMod.NPCs.SunkenSea
             NPC.noGravity = true;
             NPC.noTileCollide = true;
             SpawnModBiomes = new int[1] { ModContent.GetInstance<TimelessShoresBiome>().Type };
+            Banner = NPC.type;
+            BannerItem = ModContent.ItemType<HauntedChumBanner>();
         }
 
         public override void AI()

@@ -96,8 +96,8 @@ namespace CalamityMod.NPCs.SunkenSea
             NPC.DeathSound = SoundID.NPCDeath1;
             NPC.chaseable = false;
             NPC.netAlways = true;
-            Banner = NPC.type;
-            BannerItem = ModContent.ItemType<SeaSerpentBanner>();
+            Banner = ModContent.NPCType<SandProwler>();
+            BannerItem = ModContent.ItemType<SandProwlerBanner>();
             NPC.Calamity().VulnerableToHeat = false;
             NPC.Calamity().VulnerableToSickness = true;
             NPC.Calamity().VulnerableToElectricity = true;

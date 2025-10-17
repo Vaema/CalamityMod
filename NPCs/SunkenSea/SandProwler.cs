@@ -111,7 +111,7 @@ namespace CalamityMod.NPCs.SunkenSea
             NPC.netAlways = true;
             NPC.chaseable = false;
             Banner = NPC.type;
-            BannerItem = ModContent.ItemType<SeaSerpentBanner>();
+            BannerItem = ModContent.ItemType<SandProwlerBanner>();
             NPC.Calamity().VulnerableToHeat = false;
             NPC.Calamity().VulnerableToSickness = true;
             NPC.Calamity().VulnerableToElectricity = true;

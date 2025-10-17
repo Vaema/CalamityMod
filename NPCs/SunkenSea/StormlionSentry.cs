@@ -3,6 +3,7 @@ using System.IO;
 using CalamityMod.BiomeManagers;
 using CalamityMod.Dusts;
 using CalamityMod.Items.Materials;
+using CalamityMod.Items.Placeables.Banners;
 using CalamityMod.Items.Weapons.Summon;
 using CalamityMod.Projectiles.Enemy;
 using CalamityMod.Projectiles.Magic;
@@ -88,8 +89,8 @@ namespace CalamityMod.NPCs.SunkenSea
             attackFeedback = 1;
             headRot = -MathHelper.PiOver2;
 
-            //Banner = NPC.type;
-            //BannerItem = ModContent.ItemType<StormlionSentryBanner>();
+            Banner = NPC.type;
+            BannerItem = ModContent.ItemType<StormlionSentryBanner>();
         }
 
         public override void SendExtraAI(BinaryWriter writer)

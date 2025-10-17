@@ -73,8 +73,8 @@ namespace CalamityMod.NPCs.SunkenSea
             NPC.HitSound = SoundID.NPCHit1;
             NPC.DeathSound = SoundID.NPCDeath1;
             NPC.knockBackResist = 0.15f;
-            //Banner = NPC.type;
-            //BannerItem = ModContent.ItemType<KelpieSeadragonBanner>();
+            Banner = NPC.type;
+            BannerItem = ModContent.ItemType<KelpieSeadragonBanner>();
             NPC.chaseable = false;
             NPC.Calamity().VulnerableToHeat = false;
             NPC.Calamity().VulnerableToSickness = true;
