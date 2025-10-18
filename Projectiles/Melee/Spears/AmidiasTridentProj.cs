@@ -11,6 +11,7 @@ using CalamityMod.Particles;
 using Terraria.Audio;
 using Terraria.ID;
 using System;
+using Terraria.DataStructures;
 
 namespace CalamityMod.Projectiles.Melee.Spears
 {
@@ -48,6 +49,7 @@ namespace CalamityMod.Projectiles.Melee.Spears
         }
         public override void UseStyle()
         {
+            glow = MathHelper.Lerp(glow, 0f, 0.12f);
             Owner.direction = Math.Sign(Owner.Calamity().mouseWorld.X - Owner.Center.X);
 
             switch (Owner.altFunctionUse)
@@ -68,8 +70,13 @@ namespace CalamityMod.Projectiles.Melee.Spears
                                 SoundEngine.PlaySound(SoundID.Item1, Owner.Center);
                                 for (int i = 0; i < 6; i++)
                                 {
-                                    CustomSpark p = new CustomSpark(Projectile.Center + new Vector2(20, Main.rand.NextFloat(-10, 10)).RotatedBy(rot), Owner.DirectionTo(AbsolutePosition) * 10, "CalamityMod/Particles/ThinEndedLine", false, 5, 1f, Color.CadetBlue.MultiplyRGBA(new(1f, 1f, 1f, 0.5f)), new Vector2(0.2f, 1.2f));
+                                    CustomSpark p = new CustomSpark(Projectile.Center + new Vector2(20, Main.rand.NextFloat(-30, 30)).RotatedBy(rot), Owner.DirectionTo(AbsolutePosition) * 10, "CalamityMod/Particles/ThinEndedLine", false, 5, 1f, Color.CadetBlue.MultiplyRGBA(new(1f, 1f, 1f, 1f)), new Vector2(0.2f, 1.2f));
                                     GeneralParticleHandler.SpawnParticle(p);
+                                }
+                                if (!Main.dedServ)
+                                {
+                                    Projectile.NewProjectile(new EntitySource_Parent(Projectile), Projectile.Center + new Vector2(50, 0).RotatedBy(Projectile.rotation + MathHelper.ToRadians(-135f)),
+                                        (Projectile.rotation + MathHelper.ToRadians(-135f)).ToRotationVector2() * 30f, ModContent.ProjectileType<AmidiasTridentBoltProj>(), AmidiasTrident.BaseAttackProjectileDamage, 2f, Projectile.owner);
                                 }
                             }
                             Projectile.ai[0] = MathHelper.Lerp(Projectile.ai[0], 92, 0.3f);
@@ -78,7 +85,6 @@ namespace CalamityMod.Projectiles.Melee.Spears
                         else
                         {
                             Projectile.damage = 0;
-                            glow = MathHelper.Lerp(glow, 0f, 0.12f);
                             if (AnimationProgress % 7 < 4)
                             {
                                 Projectile.ai[0] = MathHelper.Lerp(Projectile.ai[0], 10, 0.3f);
@@ -106,8 +112,11 @@ namespace CalamityMod.Projectiles.Melee.Spears
         {
             Asset<Texture2D> tex = ModContent.Request<Texture2D>("CalamityMod/Particles/GlowBlade");
 
-            int f = (int)(tex.Height() * glow);
-            Main.EntitySpriteDraw(tex.Value, Projectile.Center - Main.screenPosition + new Vector2(-60 + (f * 0.03f), 0).RotatedBy(rot) + new Vector2(0f, Owner.gfxOffY), new Rectangle(0, 0, tex.Width(), f), Color.DeepSkyBlue.MultiplyRGBA(new(glow, glow, glow, 0f)), rot + MathHelper.PiOver2, new Vector2(tex.Width() / 2, tex.Height()), new Vector2(0.03f), SpriteEffects.None);
+            for (int i = 0; i < 5; i++)
+            {
+                int f = (int)(tex.Height() * glow);
+                Main.EntitySpriteDraw(tex.Value, Projectile.Center - Main.screenPosition + new Vector2(-60 + (f * 0.03f), 0).RotatedBy(rot) + new Vector2(0f, Owner.gfxOffY), new Rectangle(0, 0, tex.Width(), f), Color.DeepSkyBlue.MultiplyRGBA(new(glow, glow, glow, 0f)), rot + MathHelper.PiOver2, new Vector2(tex.Width() / 2, tex.Height()), new Vector2(0.03f), SpriteEffects.None);
+            }
 
             return base.PreDraw(ref lightColor);
         }
