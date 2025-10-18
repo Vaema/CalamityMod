@@ -474,7 +474,7 @@ namespace CalamityMod.Tiles
                     npc = NPCType<GildedAxolotl>(); // NOT YET IMPLEMENTED. Banner sprite is already on the mastersheet and associated with this case/position.
                     break; */
                 /* case 133:
-                    npc = NPCType<Grubolt>(); // NOT YET IMPLEMENTED. Banner sprite is already on the mastersheet and associated with this case/position.
+                    npc = NPCType<Grubbolt>(); // NOT YET IMPLEMENTED. Banner sprite is already on the mastersheet and associated with this case/position.
                     break; */
                 case 134:
                     npc = NPCType<HauntedChum>();
