@@ -896,8 +896,8 @@ namespace CalamityMod.NPCs.CalClone
                     // Lines converge inward
                     if (Main.rand.NextBool(3))
                     {
-                        Vector2 dustVel2 = (Vector2.UnitX).RotatedByRandom(100) * Main.rand.NextFloat(23f, 27f);
-                        Dust dust2 = Dust.NewDustPerfect(NPC.Center + dustVel2.SafeNormalize(Vector2.UnitX) * 360, ModContent.DustType<SquashDust>(), -dustVel2 * 1.2f, 0, default, Main.rand.NextFloat(1.3f, 2.2f));
+                        Vector2 dustVel2 = (Vector2.UnitX).RotatedByRandom(100) * Main.rand.NextFloat(23f, 28f);
+                        Dust dust2 = Dust.NewDustPerfect(NPC.Center + dustVel2.SafeNormalize(Vector2.UnitX) * 420, ModContent.DustType<SquashDust>(), -dustVel2 * 1.2f, 0, default, Main.rand.NextFloat(1.4f, 2.35f));
                         dust2.noGravity = true;
                         dust2.fadeIn = 0.8f;
                         dust2.color = Color.Crimson;
