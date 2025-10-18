@@ -17,6 +17,7 @@ using CalamityMod.Items.Weapons.Melee;
 using CalamityMod.Items.Weapons.Ranged;
 using CalamityMod.Items.Weapons.Summon;
 using CalamityMod.NPCs.TownNPCs;
+using CalamityMod.Particles;
 using CalamityMod.Projectiles.Boss;
 using CalamityMod.Systems.Mechanic;
 using CalamityMod.World;
@@ -825,7 +826,7 @@ namespace CalamityMod.NPCs.CalClone
                 NPC.ai[1] = 3f;
                 NPC.netUpdate = true;
             }
-            else if (NPC.ai[1] == 3f)
+            else if (NPC.ai[1] == 3f) // Dashing time
             {
                 // Set damage
                 NPC.damage = NPC.defDamage;
@@ -846,6 +847,7 @@ namespace CalamityMod.NPCs.CalClone
                 }
                 else
                 {
+
                     NPC.rotation = (float)Math.Atan2(NPC.velocity.Y, NPC.velocity.X) - MathHelper.PiOver2;
 
                     // Leave behind slow hellblasts in Death Mode
@@ -878,15 +880,33 @@ namespace CalamityMod.NPCs.CalClone
                     NPC.ai[1] = 4f;
                 }
             }
+
+            // Prepare dash
             else
             {
-                // Avoid cheap bullshit
                 NPC.damage = 0;
 
                 NPC.ai[2] += 1f;
-                if (NPC.ai[2] >= (phase4 ? 15f : 30f))
+                float telegraphDuration = phase4 ? 15f : 30f;
+
+
+                float startTelegraphTime = phase4 ? -25f : -10f; // Start 40 frames before dash
+                if (NPC.ai[2] >= startTelegraphTime && NPC.ai[2] < telegraphDuration && Main.netMode != NetmodeID.MultiplayerClient)
                 {
-                    NPC.ai[1] = 2f;
+                    // Lines converge inward
+                    if (Main.rand.NextBool(3))
+                    {
+                        Vector2 dustVel2 = (Vector2.UnitX).RotatedByRandom(100) * Main.rand.NextFloat(23f, 27f);
+                        Dust dust2 = Dust.NewDustPerfect(NPC.Center + dustVel2.SafeNormalize(Vector2.UnitX) * 360, ModContent.DustType<SquashDust>(), -dustVel2 * 1.2f, 0, default, Main.rand.NextFloat(1.3f, 2.2f));
+                        dust2.noGravity = true;
+                        dust2.fadeIn = 0.8f;
+                        dust2.color = Color.Crimson;
+                    }
+                }
+
+                if (NPC.ai[2] >= telegraphDuration)
+                {
+                    NPC.ai[1] = 2f; // Start dash
                     NPC.ai[2] = 0f;
                     if (death)
                         NPC.localAI[0] = 1f;
@@ -906,7 +926,11 @@ namespace CalamityMod.NPCs.CalClone
             Vector2 origin = new Vector2((float)(texture.Width / 2), (float)(texture.Height / Main.npcFrameCount[Type] / 2));
             Color white = Color.White;
             float colorLerpAmt = 0.5f;
-            int afterimageAmt = 7;
+            int afterimageAmt = 6;
+
+            bool death = CalamityWorld.death || BossRushEvent.BossRushActive;
+            float lifeRatio = NPC.life / (float)NPC.lifeMax;
+            bool phase4 = lifeRatio <= 0.1f && death;
 
             if (CalamityClientConfig.Instance.Afterimages)
             {
@@ -949,8 +973,33 @@ namespace CalamityMod.NPCs.CalClone
                 }
             }
 
-            spriteBatch.Draw(texture, npcOffset, NPC.frame, color, NPC.rotation, origin, NPC.scale, spriteEffects, 0f);
+            if (NPC.ai[1] == 4f)
+            {
+                // Same logic as in AI
+                float telegraphDuration = phase4 ? 15f : 30f;
+                float startTelegraphTime = phase4 ? -25f : -10f;
 
+                float glowTimeElapsed = NPC.ai[2] - startTelegraphTime;
+                float timeForMaxGlow = telegraphDuration - startTelegraphTime;
+
+                float lifeFadeIn = Utils.GetLerpValue(0, timeForMaxGlow, glowTimeElapsed, true);
+
+                float glowSine = (float)Math.Sin(Main.GlobalTimeWrappedHourly * 10f); // Period of full pulse
+                float pulse = MathHelper.Lerp(0.7f, 1f, glowSine); // Least protruding to most protruding
+                float finalGlowIntensity = pulse * lifeFadeIn;
+
+                // Create 20 visual copies of calclone that draw behind to create a glowy outline effect
+                for (int i = 0; i < 20; i++)
+                {
+                    float rotationOffset = (MathHelper.TwoPi * i / 15);
+                    Vector2 glowOffset = rotationOffset.ToRotationVector2() * (3f + glowSine * 1f) * finalGlowIntensity;
+
+                    // Use the drawPosition variable that incorporates the screen offset
+                    Main.spriteBatch.Draw(texture, NPC.Center - screenPos + glowOffset, NPC.frame, Color.Red with { A = 150 } * finalGlowIntensity, NPC.rotation, origin, NPC.scale, spriteEffects, 0f);
+                }
+            }
+
+            spriteBatch.Draw(texture, npcOffset, NPC.frame, color, NPC.rotation, origin, NPC.scale, spriteEffects, 0f);
             return false;
         }
 
