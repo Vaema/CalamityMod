@@ -1,9 +1,11 @@
 ﻿using System;
 using CalamityMod.DataStructures;
+using CalamityMod.ExtraTextures;
 using CalamityMod.Items.Weapons.Magic;
 using CalamityMod.Items.Weapons.Rogue;
 using CalamityMod.Particles;
 using CalamityMod.Projectiles.Rogue;
+using CalamityMod.Projectiles.Typeless;
 using CalamityMod.Sounds;
 using Microsoft.Xna.Framework;
 using Terraria;
@@ -42,14 +44,14 @@ namespace CalamityMod.Buffs.DamageOverTime
 
             for (int i = 0; i < 5; i++)
             {
-                float rot = orig.AngleTo(npc.Center) + MathHelper.PiOver2;
-                if (orig == Vector2.Zero)
+                float rot = Main.rand.NextFloat(MathHelper.TwoPi) + MathHelper.PiOver2;
+                if (orig != Vector2.Zero)
                 {
-                    rot = Main.rand.NextFloat(MathHelper.TwoPi) + MathHelper.PiOver2;
+                    rot = orig.AngleTo(npc.Center) + MathHelper.PiOver2;
                 }
 
                 GeneralParticleHandler.SpawnParticle(new CustomPulse(
-                    npc.Center, (rot - MathHelper.PiOver2).ToRotationVector2() * 6f, Color.Lerp(BaseColor, LightColor, sc * 3f), "CalamityMod/Particles/ForwardSmear", new Vector2(Main.rand.NextFloat(0.03f, 0.2f), 0.2f),
+                    npc.Center, (rot - MathHelper.PiOver2).ToRotationVector2() * 6f, Color.Lerp(BaseColor, LightColor, sc * 3f), "CalamityMod/Particles/ForwardSmear", new Vector2(Main.rand.NextFloat(0.015f, 0.1f), 0.1f),
                     rot, sc, sc * 2f, 8
                     ));
             }
@@ -60,11 +62,14 @@ namespace CalamityMod.Buffs.DamageOverTime
             {
                 foreach (NPC npc2 in Main.npc)
                 {
-                    if (npc2.active && !npc2.friendly && !npc2.isLikeATownNPC)
+                    if (npc2 != npc)
                     {
-                        if (npc2.Distance(npc.Center) < range)
+                        if (npc2.active && !npc2.friendly && !npc2.isLikeATownNPC)
                         {
-                            Apply(npc2, npc.Center);
+                            if (npc2.Distance(npc.Center) < range)
+                            {
+                                Apply(npc2, npc.Center);
+                            }
                         }
                     }
                 }
@@ -88,25 +93,23 @@ namespace CalamityMod.Buffs.DamageOverTime
 
         public override void Update(NPC npc, ref int buffIndex)
         {
+            npc.buffTime[buffIndex] = Math.Min(npc.buffTime[buffIndex], 10 * FramesPerStack);
+
             npc.GetGlobalNPC<SeaKingsAssuranceNPC>().assuredStacks = (int)Math.Ceiling((double)(npc.buffTime[buffIndex] / FramesPerStack));
-
-            if (npc.buffTime[buffIndex] >= FramesPerStack * 5)
-            {
-                DamageEffect(npc, FinalDamageAmount);
-
-                npc.DelBuff(buffIndex);
-                buffIndex--;
-            }
         }
 
         void DamageEffect(NPC npc, int damageAmount)
         {
+            Projectile.NewProjectileDirect(new EntitySource_Buff(npc, ModContent.BuffType<SeaKingsAssurance>(), 
+                npc.FindBuffIndex(ModContent.BuffType<SeaKingsAssurance>())), npc.Center, Vector2.Zero, ModContent.ProjectileType<DirectStrike>(),
+                FinalDamageAmount, 0f, ai0: npc.whoAmI);
+
             npc.SimpleStrikeNPC(damageAmount, 0);
 
             for (int i = 0; i < 5; i++)
             {
                 GeneralParticleHandler.SpawnParticle(new CustomPulse(
-                    npc.Center, Vector2.Zero, BaseColor, "CalamityMod/Particles/ShineExplosion2", new Vector2(Main.rand.NextFloat(0.2f, 0.3f), Main.rand.NextFloat(0.1f, 0.15f)),
+                    npc.Center, Vector2.Zero, LightColor, "CalamityMod/Particles/ShineExplosion2", new Vector2(Main.rand.NextFloat(0.2f, 0.3f), Main.rand.NextFloat(0.1f, 0.15f)),
                     0f, 0.2f, 0.8f, 6
                     ));
             }
@@ -124,10 +127,6 @@ namespace CalamityMod.Buffs.DamageOverTime
         }
         public override void DrawEffects(NPC npc, ref Color drawColor)
         {
-            if (assuredStacks > 0)
-            {
-                drawColor = Color.Lerp(drawColor, Color.CadetBlue, (float)assuredStacks / 6f);
-            }
             base.DrawEffects(npc, ref drawColor);
         }
     }

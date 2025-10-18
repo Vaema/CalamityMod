@@ -12,6 +12,7 @@ using Terraria.Audio;
 using Terraria.ID;
 using System;
 using Terraria.DataStructures;
+using CalamityMod.Buffs.DamageOverTime;
 
 namespace CalamityMod.Projectiles.Melee.Spears
 {
@@ -41,6 +42,12 @@ namespace CalamityMod.Projectiles.Melee.Spears
         {
             Vector2 cen = Projectile.Center + new Vector2(45, 0).RotatedBy(rot);
             hitbox = new Rectangle((int)cen.X - 40, (int)cen.Y - 40, 80, 80);
+
+            if (Owner.altFunctionUse == 2)
+            {
+                cen = Owner.Center;
+                hitbox = new Rectangle((int)cen.X - 80, (int)cen.Y - 80, 160, 160);
+            }
         }
         public override void WhenSpawned()
         {
@@ -55,6 +62,61 @@ namespace CalamityMod.Projectiles.Melee.Spears
             switch (Owner.altFunctionUse)
             {
                 case 2: // Alt attack
+                    Projectile.localNPCHitCooldown = 4;
+
+                    if (AnimationProgress <= 0)
+                        Projectile.ai[0] = 20;
+
+                    if (AnimationProgress < 20)
+                    {
+                        Projectile.damage = AmidiasTrident.SecondaryAttackMeleeDamage;
+                        if (AnimationProgress == 1)
+                        {
+                            SoundStyle soundStyle = new SoundStyle("CalamityMod/Sounds/Item/AmidiasTrident_Spin");
+                            soundStyle.MaxInstances = 5;
+                            SoundEngine.PlaySound(soundStyle, Owner.Center);
+                        }
+                        if (AnimationProgress % 2 == 0)
+                        {
+                            for (int i = 0; i < 3; i++)
+                            GeneralParticleHandler.SpawnParticle(new CustomPulse(Owner.Center, Vector2.Zero, SeaKingsAssurance.BaseColor,
+                                "CalamityMod/Particles/CircularSmearFire3", new Vector2(Owner.direction, 1), Projectile.rotation, 0.8f, 1.2f, 6));
+                        }
+
+                        glow = MathHelper.Lerp(glow, Projectile.ai[0] * 0.05f / 3f, 0.2f);
+                        rot += MathHelper.ToRadians(Projectile.ai[0] * 0.8f * Owner.direction);
+                        if (AnimationProgress < 5)
+                            Projectile.ai[0] = MathHelper.Lerp(Projectile.ai[0], 60, 0.2f);
+                        else if (AnimationProgress >= 10)
+                            Projectile.ai[0] = MathHelper.Lerp(Projectile.ai[0], 20, 0.2f);
+                        else
+                            Projectile.ai[0] = MathHelper.Lerp(Projectile.ai[0], 40, 0.2f);
+                    }
+                    else
+                    {
+                        Projectile.damage = 0;
+                        if (AnimationProgress == 20)
+                        {
+                            for (int i = 0; i < 5; i++)
+                            {
+                                GeneralParticleHandler.SpawnParticle(new CustomPulse(
+                                    Owner.Center, Vector2.Zero, SeaKingsAssurance.LightColor, "CalamityMod/Particles/ShineExplosion2", new Vector2(Main.rand.NextFloat(0.2f, 0.3f), Main.rand.NextFloat(0.1f, 0.15f)),
+                                    0f, 0.6f, 1.2f, 6
+                                    ));
+                            }
+
+                            SoundStyle soundStyle = new SoundStyle("CalamityMod/Sounds/Item/AmidiasTrident_Raise");
+                            soundStyle.MaxInstances = 5;
+                            SoundEngine.PlaySound(soundStyle, Owner.Center);
+                            glow = 1.5f;
+                            rot = -MathHelper.PiOver2;
+                        }
+
+                        Projectile.ai[0] = MathHelper.Lerp(Projectile.ai[0], 60, 0.3f);
+                    }
+
+                    Projectile.rotation = rot + MathHelper.ToRadians(135f);
+                    AbsolutePosition = Owner.Center + new Vector2(Projectile.ai[0], 0).RotatedBy(rot);
                     break;
                 
 
@@ -67,7 +129,10 @@ namespace CalamityMod.Projectiles.Melee.Spears
                             Projectile.damage = AmidiasTrident.BaseAttackMeleeDamage;
                             if (AnimationProgress % 7 == 1)
                             {
-                                SoundEngine.PlaySound(SoundID.Item1, Owner.Center);
+                                SoundStyle soundStyle = new SoundStyle("CalamityMod/Sounds/Item/AmidiasTrident_Stab" + Main.rand.Next(1, 3).ToString());
+                                soundStyle.MaxInstances = 5;
+                                soundStyle.PitchVariance = 0.2f;
+                                SoundEngine.PlaySound(soundStyle.WithPitchOffset(0.2f), Owner.Center);
                                 for (int i = 0; i < 6; i++)
                                 {
                                     CustomSpark p = new CustomSpark(Projectile.Center + new Vector2(20, Main.rand.NextFloat(-30, 30)).RotatedBy(rot), Owner.DirectionTo(AbsolutePosition) * 10, "CalamityMod/Particles/ThinEndedLine", false, 5, 1f, Color.CadetBlue.MultiplyRGBA(new(1f, 1f, 1f, 1f)), new Vector2(0.2f, 1.2f));
