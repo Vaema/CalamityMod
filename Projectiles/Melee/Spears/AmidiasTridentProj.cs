@@ -75,8 +75,10 @@ namespace CalamityMod.Projectiles.Melee.Spears
                                 }
                                 if (!Main.dedServ)
                                 {
-                                    Projectile.NewProjectile(new EntitySource_Parent(Projectile), Projectile.Center + new Vector2(50, 0).RotatedBy(Projectile.rotation + MathHelper.ToRadians(-135f)),
-                                        (Projectile.rotation + MathHelper.ToRadians(-135f)).ToRotationVector2() * 30f, ModContent.ProjectileType<AmidiasTridentBoltProj>(), AmidiasTrident.BaseAttackProjectileDamage, 2f, Projectile.owner);
+                                    Lighting.AddLight(Projectile.Center, new Vector3(0.2f, 0.45f, 1f));
+                                    Vector2 vel = (Projectile.rotation + MathHelper.ToRadians(-135f)).ToRotationVector2() * 30f;
+                                    Projectile.NewProjectile(new EntitySource_Parent(Projectile), Projectile.Center + new Vector2(-30, 0).RotatedBy(Projectile.rotation + MathHelper.ToRadians(-135f)),
+                                        vel, ModContent.ProjectileType<AmidiasTridentBoltProj>(), AmidiasTrident.BaseAttackProjectileDamage, 2f, Projectile.owner);
                                 }
                             }
                             Projectile.ai[0] = MathHelper.Lerp(Projectile.ai[0], 92, 0.3f);

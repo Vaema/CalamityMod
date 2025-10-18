@@ -1667,3 +1667,8 @@ ForbiddenStealthSummonTagBuff: {
 	DisplayName: Forbidden Stealth Summon Tag Buff
 	Description: If you're seeing this, something went horribly wrong
 }
+
+SeaKingsAssurance: {
+	DisplayName: Sea Kings Assurance
+	Description: Mods.CalamityMod.Buffs.SeaKingsAssurance.Description
+}
