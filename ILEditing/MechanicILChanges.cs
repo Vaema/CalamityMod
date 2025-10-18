@@ -2674,6 +2674,7 @@ namespace CalamityMod.ILEditing
                                 }
                                 NetMessage.SendData(MessageID.PlayerControls, -1, -1, null, self.owner);
                             }
+                            SoundEngine.PlaySound(SoundID.DD2_EtherianPortalSpawnEnemy with {Volume = 0.75f }, self.Center);
                             self.ai[0] = 2;
                             self.velocity = Vector2.Zero;
                             self.Calamity().arenaBoxPosition = new Vector2(Utils.Remap(self.Center.X, box.TopLeft.X, box.BottomRight.X, 0, 1, false), Utils.Remap(self.Center.Y, box.TopLeft.Y, box.BottomRight.Y, 0, 1, false));
@@ -2726,12 +2727,16 @@ namespace CalamityMod.ILEditing
         private Vector2 ArenaCollision_TileCollision(On_Collision.orig_TileCollision orig, Vector2 Position, Vector2 Velocity, int Width, int Height, bool fallThrough, bool fall2, int gravDir)
         {
             Velocity = orig(Position, Velocity, Width, Height, fallThrough, fall2, gravDir);
-            if (ArenaWallSystem.ActiveBoxes.Count > 0)
+            if (ArenaWallSystem.ActiveBoxes.Count > 0 && Velocity != Vector2.Zero)
             {
                 foreach (var item in ArenaWallSystem.ActiveBoxes)
                 {
+                    var oldVel = Velocity;
                     if (item.InnerEffect(Position,new Vector2(Width,Height)))
                     Velocity = ArenaCollisionLogic(item, Position, Width, Height, Velocity);
+                    var dif = (oldVel - Velocity).Length();
+                    //if (dif > 8)
+                       // SoundEngine.PlaySound(SoundID.DD2_EtherianPortalSpawnEnemy with {Volume = dif / 32f }  , Position);
                 }
             }
             return Velocity;

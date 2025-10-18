@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using CalamityMod.Buffs.DamageOverTime;
 using CalamityMod.Dusts;
 using CalamityMod.Events;
 using CalamityMod.Items;
@@ -60,6 +59,11 @@ namespace CalamityMod.NPCs.SupremeCalamitas
             PunchHandCast = 6,
             Count = 7
         }
+
+        public static Color GriefColor => Color.Crimson;
+        public static Color LamentColor => Color.RoyalBlue;
+        public static Color EpiphanyColor => new Color(219, 75, 2);
+        public static Color AcceptanceColor => Color.Gray;
 
         public const int BulletHellDuration = 900;
         public const int SecondBulletHellEndValue = BulletHellDuration * 2;
@@ -132,6 +136,8 @@ namespace CalamityMod.NPCs.SupremeCalamitas
         public float forcefieldPureVisualScale = 1;
         public float rotateToPlayer = 0;
         public float rotateAwayPlayer = 0;
+
+        public float colorCompletion = 1;
 
         public FrameAnimationType FrameType
         {
@@ -617,7 +623,7 @@ namespace CalamityMod.NPCs.SupremeCalamitas
                     int safeBoxTilesX = (int)(safeBox.X + (float)(safeBox.Width / 2)) / 16;
                     int safeBoxTilesY = (int)(safeBox.Y + (float)(safeBox.Height / 2)) / 16;
                     int safeBoxTileWidth = safeBox.Width / 2 / 16 + 1;
-                    
+
 
                     if (initialRitualPosition == Vector2.Zero)
                     {
@@ -635,7 +641,7 @@ namespace CalamityMod.NPCs.SupremeCalamitas
             {
                 var baseSize = death ? new Vector4(1000) : new Vector4(1250);
                 if (wormAlive)
-                    baseSize *= new Vector4(1,1.15f,startFourthAttack ? 0.75f : 0.25f,1.15f);
+                    baseSize *= new Vector4(1, 1.15f, startFourthAttack ? 0.75f : 0.25f, 1.15f);
                 if (NPC.AnyNPCs(ModContent.NPCType<SoulSeekerSupreme>()))
                 {
                     baseSize *= new Vector4(1.5f, 0.85f, 1.5f, 0.85f);
@@ -647,26 +653,90 @@ namespace CalamityMod.NPCs.SupremeCalamitas
                 return baseSize;
             }
 
-            //Commented out code is for deleting arena in Acceptance if needed
-            //if (lifeRatio > 0.01f)
+            Color GetArenaColor(out Color oldColor)
             {
-                if (ArenaWallSystem.ActiveBoxes.Count < 1)
+                var c = GriefColor;
+                oldColor = GriefColor;
+                if (startFifthAttack && gettingTired5 && (giveUpCounter < 1160 || hasDoneDeathAnim))
                 {
-                    ArenaWallSystem.ActiveBoxes.Add(new() { position = new Vector2(spawnX + (death ? 1000 : 1250), spawnY + (death ? 1000 : 1250)), boxDimensions = GetArenaSize() * 2, borderThickness = 2000, RemovalCondition = () => !(Main.npc[NPC.whoAmI].active) || Main.npc[NPC.whoAmI].type != Type });
+                    c = AcceptanceColor;
+                    oldColor = EpiphanyColor;
                 }
-                ArenaWallSystem.ActiveBoxes[0].NewDimensions = Vector4.Lerp(ArenaWallSystem.ActiveBoxes[0].boxDimensions, GetArenaSize(), lifeRatio <= 0.01f ? 0.02f : startFourthAttack ? 0.05f : 0.1f);
-                ArenaWallSystem.ActiveBoxes[0].borderColor = permafrost ? Color.LightBlue : Color.Lerp(Color.Crimson, Color.IndianRed, (MathF.Sin(Main.GlobalTimeWrappedHourly) + 1) * 0.25f);
-            } 
-            /*else
+                else if (lifeRatio <= 0.3f)
+                {
+                    c = EpiphanyColor;
+                    oldColor = LamentColor;
+                }
+                else if (lifeRatio <= 0.5f)
+                    c = LamentColor;
+                return c;
+                c = permafrost ? Color.LightBlue : Color.Lerp(Color.Crimson, Color.IndianRed, (MathF.Sin(Main.GlobalTimeWrappedHourly) + 1) * 0.25f);
+            }
+
+            void UpdateArena(ArenaWallSystem.Box box)
             {
-                if (ArenaWallSystem.ActiveBoxes.Count > 0)
+                if (startFifthAttack && gettingTired5 && (giveUpCounter < 1160 || hasDoneDeathAnim))
+                    return;
+                for (var i2 = 0; i2 < box.Size.Y / 400f; i2++)
                 {
-                    var box = ArenaWallSystem.ActiveBoxes[0];
-                    box.NewDimensions = Vector4.Lerp(ArenaWallSystem.ActiveBoxes[0].boxDimensions, new Vector4(3000), 0.01f);
-                    if (box.NewDimensions.X >= 2000)
-                        ArenaWallSystem.ActiveBoxes.Remove(box);
+                    var p = Vector2.Lerp(box.BottomRight, box.TopRight, Main.rand.NextFloat());
+                    Dust.NewDustPerfect(p, DustID.Clentaminator_Red, p.DirectionFrom(box.Center) * Main.rand.NextFloat(0, 5), Scale: Main.rand.NextFloat(0.1f, 1f), newColor: box.borderColor);
+
+                    p = Vector2.Lerp(box.TopLeft, box.BottomLeft, Main.rand.NextFloat());
+                    Dust.NewDustPerfect(p, DustID.Clentaminator_Red, p.DirectionFrom(box.Center) * Main.rand.NextFloat(0, 5), Scale: Main.rand.NextFloat(0.1f, 1f), newColor: box.borderColor);
+
                 }
-            }*/
+                for (var i2 = 0; i2 < box.Size.X / 400f; i2++)
+                {
+                    var p = Vector2.Lerp(box.TopLeft, box.TopRight, Main.rand.NextFloat());
+                    Dust.NewDustPerfect(p, DustID.Clentaminator_Red, p.DirectionFrom(box.Center) * Main.rand.NextFloat(0, 5), Scale: Main.rand.NextFloat(0.1f, 1f), newColor: box.borderColor);
+                    p = Vector2.Lerp(box.BottomRight, box.BottomLeft, Main.rand.NextFloat());
+                    Dust.NewDustPerfect(p, DustID.Clentaminator_Red, p.DirectionFrom(box.Center) * Main.rand.NextFloat(0, 5), Scale: Main.rand.NextFloat(0.1f, 1f), newColor: box.borderColor);
+                }
+            }
+
+            void DrawArena(ArenaWallSystem.Box box)
+            {
+
+                var color = Color.Black * 0.75f;
+                //Inside Fill
+                box.DrawBoxWithOffset(box.borderThickness * 0.5f, box.borderThickness, Color.Black * 0.75f);
+                //Inner Border
+                box.DrawBoxWithOffset(4, 8, box.borderColor);
+                //Inner Border Clones
+                float amount = 4;
+                float totalDistance = 64f;
+                for (var i = Main.GlobalTimeWrappedHourly % 1; i < amount; i++)
+                {
+                    box.DrawBoxWithOffset(totalDistance * (i / amount) + 4, 4, box.borderColor * (1 - i / amount));
+                }
+                //Outer Border
+                box.DrawBoxWithOffset(box.borderThickness - 4, 4, box.borderColor);
+            }
+
+            if (ArenaWallSystem.ActiveBoxes.Count < 1)
+            {
+                ArenaWallSystem.ActiveBoxes.Add(new()
+                {
+                    position = new Vector2(spawnX + (death ? 1000 : 1250), spawnY + (death ? 1000 : 1250)),
+                    boxDimensions = GetArenaSize() * 2,
+                    borderThickness = 2000,
+                    RemovalCondition = () => !(Main.npc[NPC.whoAmI].active) || Main.npc[NPC.whoAmI].type != Type,
+                    UpdateBox = UpdateArena,
+                    DrawBox = DrawArena,
+                }
+                );
+            }
+            ArenaWallSystem.ActiveBoxes[0].NewDimensions = Vector4.Lerp(ArenaWallSystem.ActiveBoxes[0].boxDimensions, GetArenaSize(), lifeRatio <= 0.01f ? 0.02f : startFourthAttack ? 0.05f : 0.1f);
+            var color = GetArenaColor(out Color oldColor);
+            if (colorCompletion > 1.1f && color != ArenaWallSystem.ActiveBoxes[0].borderColor)
+                colorCompletion = 0;
+            if (colorCompletion < 1)
+                ArenaWallSystem.ActiveBoxes[0].borderColor = Color.Lerp(oldColor, color, colorCompletion);
+            else
+                ArenaWallSystem.ActiveBoxes[0].borderColor = color;
+            colorCompletion += 0.003f;
+
             #endregion
             #region Enrage and DR
             if (ArenaWallSystem.ActiveBoxes.Count > 0 && !Collision.CheckAABBvAABBCollision(ArenaWallSystem.ActiveBoxes[0].TopLeft, ArenaWallSystem.ActiveBoxes[0].Size, player.position, player.Size))
@@ -1992,7 +2062,7 @@ namespace CalamityMod.NPCs.SupremeCalamitas
                         if (!teleport)
                         {
                             Vector2 goalPos = new Vector2(spawnX + (death ? 1000 : 1250), spawnY + (death ? 1000 : 1250)); // player.Center + new Vector2(0, -175)
-                            Dust.QuickDustLine(NPC.Center, goalPos + new Vector2(0,-20), 500f, permafrost ? Color.Cyan : Color.Red);
+                            Dust.QuickDustLine(NPC.Center, goalPos + new Vector2(0, -20), 500f, permafrost ? Color.Cyan : Color.Red);
                             NPC.velocity = Vector2.Zero;
                             NPC.Center = goalPos;
                             Particle pulse = new DirectionalPulseRing(NPC.Center, Vector2.Zero, Color.Red, new Vector2(1f, 1f), 0, 0.1f, 5f, 15);

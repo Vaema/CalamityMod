@@ -43,6 +43,44 @@ namespace CalamityMod.NPCs.CalClone
         public static readonly SoundStyle ChargeSound = new("CalamityMod/Sounds/Custom/CalamitasClone/CalCloneDash", 3);
         public SlotId BulletHellWarnSlot;
 
+        void UpdateArena(ArenaWallSystem.Box box)
+        {
+            for (var i2 = 0; i2 < box.Size.Y / 400f; i2++)
+            {
+                var p = Vector2.Lerp(box.BottomRight, box.TopRight, Main.rand.NextFloat());
+                Dust.NewDustPerfect(p, DustID.Clentaminator_Red, p.DirectionFrom(box.Center) * Main.rand.NextFloat(0, 5), Scale: Main.rand.NextFloat(0.1f, 1f), newColor: Color.Crimson);
+
+                p = Vector2.Lerp(box.TopLeft, box.BottomLeft, Main.rand.NextFloat());
+                Dust.NewDustPerfect(p, DustID.Clentaminator_Red, p.DirectionFrom(box.Center) * Main.rand.NextFloat(0, 5), Scale: Main.rand.NextFloat(0.1f, 1f), newColor: Color.Crimson);
+
+            }
+            for (var i2 = 0; i2 < box.Size.X / 400f; i2++)
+            {
+                var p = Vector2.Lerp(box.TopLeft, box.TopRight, Main.rand.NextFloat());
+                Dust.NewDustPerfect(p, DustID.Clentaminator_Red, p.DirectionFrom(box.Center) * Main.rand.NextFloat(0, 5), Scale: Main.rand.NextFloat(0.1f, 1f), newColor: Color.Crimson);
+                p = Vector2.Lerp(box.BottomRight, box.BottomLeft, Main.rand.NextFloat());
+                Dust.NewDustPerfect(p, DustID.Clentaminator_Red, p.DirectionFrom(box.Center) * Main.rand.NextFloat(0, 5), Scale: Main.rand.NextFloat(0.1f, 1f), newColor: Color.Crimson);
+            }
+        }
+
+        void DrawArena(ArenaWallSystem.Box box)
+        {
+
+            var color = Color.Black * 0.75f;
+            //Inside Fill
+            box.DrawBoxWithOffset(box.borderThickness * 0.5f, box.borderThickness, Color.Black * 0.75f);
+            //Inner Border
+            box.DrawBoxWithOffset(4, 8, box.borderColor);
+            //Inner Border Clones
+            float amount = 4;
+            float totalDistance = 64f;
+            for (var i = Main.GlobalTimeWrappedHourly % 1; i < amount; i++)
+            {
+                box.DrawBoxWithOffset(totalDistance * (i / amount) + 4, 4, box.borderColor * (1 - i / amount));
+            }
+            //Outer Border
+            box.DrawBoxWithOffset(box.borderThickness - 4, 4, box.borderColor);
+        }
         public static Vector4 GetArenaSize(bool brothersActive = false)
         {
             var baseSize = new Vector4(1600, 800, 0, 800);
@@ -264,7 +302,15 @@ namespace CalamityMod.NPCs.CalClone
             {
                 if (ArenaWallSystem.ActiveBoxes.Count < 1)
                 {
-                    ArenaWallSystem.ActiveBoxes.Add(new() { position = Main.player[NPC.FindClosestPlayer()].Center, boxDimensions = new Vector4(2000), borderThickness = 2000, RemovalCondition = () => !(Main.npc[NPC.whoAmI].active) || Main.npc[NPC.whoAmI].type != Type });
+                    ArenaWallSystem.ActiveBoxes.Add(new()
+                    {
+                        position = Main.player[NPC.FindClosestPlayer()].Center,
+                        boxDimensions = new Vector4(2000),
+                        borderThickness = 2000,
+                        RemovalCondition = () => !(Main.npc[NPC.whoAmI].active) || Main.npc[NPC.whoAmI].type != Type,
+                        UpdateBox = UpdateArena,
+                        DrawBox = DrawArena
+                    });
                 }
                 ArenaWallSystem.ActiveBoxes[0].NewDimensions = Vector4.Lerp(ArenaWallSystem.ActiveBoxes[0].boxDimensions, GetArenaSize(brotherAlive), lifeRatio > 0.8f ? 0.1f : 0.05f);
                 ArenaWallSystem.ActiveBoxes[0].borderColor = Color.Lerp(Color.Crimson, Color.IndianRed, (MathF.Sin(Main.GlobalTimeWrappedHourly) + 1) * 0.25f);

@@ -54,6 +54,19 @@ namespace CalamityMod.Systems.Mechanic
 
             public Box oldData = null;
 
+            public Action<Box> DrawBox = null;
+
+            public Action<Box> UpdateBox = null;
+
+            public void DrawBoxWithOffset(float Offset, float Thickness, Color color)
+            {
+
+                CalamityUtils.DrawLineBetter(Main.spriteBatch, TopLeft + new Vector2(-(Offset + Thickness * 0.5f), -Offset), TopRight + new Vector2((Offset + Thickness * 0.5f), -Offset), color, Thickness);
+                CalamityUtils.DrawLineBetter(Main.spriteBatch, BottomLeft + new Vector2(-(Offset + Thickness * 0.5f), Offset), BottomRight + new Vector2((Offset + Thickness * 0.5f), Offset), color, Thickness);
+                CalamityUtils.DrawLineBetter(Main.spriteBatch, TopLeft + new Vector2(-Offset, -(Offset - Thickness * 0.5f)), BottomLeft + new Vector2(-Offset, (Offset - Thickness * 0.5f)), color, Thickness);
+                CalamityUtils.DrawLineBetter(Main.spriteBatch, BottomRight + new Vector2(Offset, (Offset - Thickness * 0.5f)), TopRight + new Vector2(Offset, -(Offset - Thickness * 0.5f)), color, Thickness);
+            }
+
             public void SetOldData()
             {
                 oldData = new Box() { borderColor = borderColor, borderThickness = borderThickness, boxDimensions = boxDimensions, position = position };
@@ -85,14 +98,7 @@ namespace CalamityMod.Systems.Mechanic
         }
         public override void PostDrawTiles() //Later all of this method should be stored in the box instance for more customizability.
         {
-            void DrawBoxWithOffset(Box box, float Offset, float Thickness, Color color)
-            {
-
-                CalamityUtils.DrawLineBetter(Main.spriteBatch, box.TopLeft + new Vector2( -(Offset + Thickness * 0.5f), -Offset), box.TopRight + new Vector2((Offset + Thickness * 0.5f), -Offset), color, Thickness);
-                CalamityUtils.DrawLineBetter(Main.spriteBatch, box.BottomLeft + new Vector2(-(Offset + Thickness * 0.5f), Offset), box.BottomRight + new Vector2((Offset + Thickness * 0.5f), Offset), color, Thickness);
-                CalamityUtils.DrawLineBetter(Main.spriteBatch, box.TopLeft + new Vector2(-Offset, -(Offset - Thickness * 0.5f)), box.BottomLeft + new Vector2(-Offset, (Offset - Thickness * 0.5f)), color, Thickness);
-                CalamityUtils.DrawLineBetter(Main.spriteBatch, box.BottomRight + new Vector2(Offset, (Offset - Thickness * 0.5f)), box.TopRight + new Vector2(Offset, -(Offset - Thickness * 0.5f)), color, Thickness);
-            }
+            
 
             Main.spriteBatch.Begin(
                 SpriteSortMode.Deferred,
@@ -105,21 +111,18 @@ namespace CalamityMod.Systems.Mechanic
             );
             foreach (var box in ActiveBoxes)
             {
-
-                var color = Color.Black * 0.75f;
-                //Inside Fill
-                DrawBoxWithOffset(box, box.borderThickness * 0.5f, box.borderThickness, Color.Black * 0.75f);
-                //Inner Border
-                DrawBoxWithOffset(box, 4, 8, box.borderColor);
-                //Inner Border Clones
-                float amount = 4;
-                float totalDistance = 64f;
-                for (var i = Main.GlobalTimeWrappedHourly % 1; i < amount; i++)
+                if (box.DrawBox is not null)
+                    box.DrawBox(box);
+                else
                 {
-                    DrawBoxWithOffset(box, totalDistance * (i / amount) + 4, 4, box.borderColor * (1-i / amount));
+                    var color = Color.Black * 0.75f;
+                    //Inside Fill
+                    box.DrawBoxWithOffset(box.borderThickness * 0.5f, box.borderThickness, Color.Black * 0.75f);
+                    //Inner Border
+                    box.DrawBoxWithOffset(4, 8, box.borderColor);
+                    //Outer Border
+                    box.DrawBoxWithOffset(box.borderThickness - 4, 4, box.borderColor);
                 }
-                //Outer Border
-                DrawBoxWithOffset(box, box.borderThickness-4, 4, box.borderColor);
             }
             Main.spriteBatch.End();
         }
@@ -145,24 +148,8 @@ namespace CalamityMod.Systems.Mechanic
                 {
                     box.position = box.NewPosition;
                 }
-
-                //These VFX need to become per-box eventually.
-                for (var i2 = 0; i2 < box.Size.Y / 400f; i2++)
-                {
-                    var p = Vector2.Lerp(box.BottomRight, box.TopRight, Main.rand.NextFloat());
-                    Dust.NewDustPerfect(p, DustID.Clentaminator_Red, p.DirectionFrom(box.Center) * Main.rand.NextFloat(0, 5), Scale: Main.rand.NextFloat(0.1f, 1f), newColor: Color.Crimson);
-
-                    p = Vector2.Lerp(box.TopLeft, box.BottomLeft, Main.rand.NextFloat());
-                    Dust.NewDustPerfect(p, DustID.Clentaminator_Red, p.DirectionFrom(box.Center) * Main.rand.NextFloat(0, 5), Scale: Main.rand.NextFloat(0.1f, 1f), newColor: Color.Crimson);
-
-                }
-                for (var i2 = 0; i2 < box.Size.X / 400f; i2++)
-                {
-                    var p = Vector2.Lerp(box.TopLeft, box.TopRight, Main.rand.NextFloat());
-                    Dust.NewDustPerfect(p, DustID.Clentaminator_Red, p.DirectionFrom(box.Center) * Main.rand.NextFloat(0, 5), Scale: Main.rand.NextFloat(0.1f, 1f), newColor: Color.Crimson);
-                    p = Vector2.Lerp(box.BottomRight, box.BottomLeft, Main.rand.NextFloat());
-                    Dust.NewDustPerfect(p, DustID.Clentaminator_Red, p.DirectionFrom(box.Center) * Main.rand.NextFloat(0, 5), Scale: Main.rand.NextFloat(0.1f, 1f),newColor: Color.Crimson);
-                }
+                if (box.UpdateBox != null)
+                    box.UpdateBox(box);
             }
         }
     }
@@ -282,6 +269,7 @@ namespace CalamityMod.Systems.Mechanic
             if (Player.Right.X > box.BottomRight.X)
             {
                 Player.velocity.X = box.BottomRight.X - originalBottomRight.X;
+                Dust.NewDustPerfect(Player.Right, DustID.Smoke);
                 if (Player.controlRight)
                 {
                     Player.slideDir = 1;
