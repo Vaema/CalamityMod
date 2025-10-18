@@ -4645,7 +4645,12 @@ namespace CalamityMod.Projectiles
                     target.Calamity().hyperiusMarked = false;
                 }
             }
-
+            // Crystal Darts reset iframes on bouncing off an enemy
+            if (projectile.type == ProjectileID.CrystalDart)
+            {
+                projectile.ResetLocalNPCHitImmunity();
+                projectile.localNPCImmunity[target.whoAmI] = -1;
+            }
             // Implementation of shared static iframes.
             // If this projectile does not use static iframes, or is not registered to share them, then do nothing.
             if (!projectile.usesIDStaticNPCImmunity || CalamityProjectileSets.SharedIDStaticIFrames[projectile.type] == -1)
@@ -4742,6 +4747,18 @@ namespace CalamityMod.Projectiles
             if (target.Calamity().IsArmored() && HomingTarget > -1 && HomingTarget != target.whoAmI)
                 return false;
             return null;
+        }
+        #endregion
+
+        #region TileCollide
+        public override bool OnTileCollide(Projectile projectile, Vector2 oldVelocity)
+        {
+            //Crystal Darts use -1 local that needs to reset whenever they bounce
+            if (projectile.type == ProjectileID.CrystalDart)
+            {
+                projectile.ResetLocalNPCHitImmunity();
+            }
+            return base.OnTileCollide(projectile, oldVelocity);
         }
         #endregion
 
