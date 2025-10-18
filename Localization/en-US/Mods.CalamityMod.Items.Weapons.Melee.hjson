@@ -42,7 +42,12 @@ AirSpinner: {
 
 AmidiasTrident: {
 	DisplayName: Amidias' Trident
-	Tooltip: Shoots homing whirlpools
+	Tooltip:
+        '''
+        [c/CCE9FF:Striking enemies inflicts] [c/28A3FF:Sea King's Assurance], [c/CCE9FF:which can stack up to eight]
+        Right click to spin the trident then thrust into the air, expending all nearby stacks of Sea King's Assurance
+        Secondary attack deals more damage for every stack applied
+        '''
 }
 
 AnarchyBlade: {

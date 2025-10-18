@@ -1,19 +1,24 @@
 ﻿using System;
+using System.Diagnostics;
 using CalamityMod.DataStructures;
 using CalamityMod.ExtraTextures;
 using CalamityMod.Items.Weapons.Magic;
 using CalamityMod.Items.Weapons.Rogue;
+using CalamityMod.NPCs;
 using CalamityMod.Particles;
 using CalamityMod.Projectiles.Rogue;
 using CalamityMod.Projectiles.Typeless;
 using CalamityMod.Sounds;
 using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
+using ReLogic.Content;
 using Terraria;
 using Terraria.Audio;
 using Terraria.DataStructures;
 using Terraria.ID;
 using Terraria.Localization;
 using Terraria.ModLoader;
+using Terraria.Utilities;
 
 namespace CalamityMod.Buffs.DamageOverTime
 {
@@ -36,6 +41,9 @@ namespace CalamityMod.Buffs.DamageOverTime
             {
                 npc.AddBuff(ModContent.BuffType<SeaKingsAssurance>(), FramesPerStack);
             }
+
+            npc.GetGlobalNPC<SeaKingsAssuranceNPC>().StackGlow = 1f;
+            npc.GetGlobalNPC<SeaKingsAssuranceNPC>().StackScale = 1.2f;
 
             SoundStyle style = new SoundStyle("CalamityMod/Sounds/Item/WaterSplash1");
             SoundEngine.PlaySound(style.WithPitchOffset(1f + ((float)stacks / 6f)).WithVolumeScale(0.2f));
@@ -82,7 +90,6 @@ namespace CalamityMod.Buffs.DamageOverTime
         /// it will count as one stack.
         /// </summary>
         public static int FramesPerStack => 60;
-        public static int FinalDamageAmount => 60;
         public static SoundStyle ImpactSound => new SoundStyle("CalamityMod/Sounds/Item/WaterSplash1");
         public override void SetStaticDefaults()
         {
@@ -97,37 +104,79 @@ namespace CalamityMod.Buffs.DamageOverTime
 
             npc.GetGlobalNPC<SeaKingsAssuranceNPC>().assuredStacks = (int)Math.Ceiling((double)(npc.buffTime[buffIndex] / FramesPerStack));
         }
-
-        void DamageEffect(NPC npc, int damageAmount)
-        {
-            Projectile.NewProjectileDirect(new EntitySource_Buff(npc, ModContent.BuffType<SeaKingsAssurance>(), 
-                npc.FindBuffIndex(ModContent.BuffType<SeaKingsAssurance>())), npc.Center, Vector2.Zero, ModContent.ProjectileType<DirectStrike>(),
-                FinalDamageAmount, 0f, ai0: npc.whoAmI);
-
-            npc.SimpleStrikeNPC(damageAmount, 0);
-
-            for (int i = 0; i < 5; i++)
-            {
-                GeneralParticleHandler.SpawnParticle(new CustomPulse(
-                    npc.Center, Vector2.Zero, LightColor, "CalamityMod/Particles/ShineExplosion2", new Vector2(Main.rand.NextFloat(0.2f, 0.3f), Main.rand.NextFloat(0.1f, 0.15f)),
-                    0f, 0.2f, 0.8f, 6
-                    ));
-            }
-        }
     }
 
     public class SeaKingsAssuranceNPC : GlobalNPC
     {
+        public static readonly Asset<Texture2D> Stacks = ModContent.Request<Texture2D>("CalamityMod/ExtraTextures/AmidiasTrident_Stacks");
+
         public override bool InstancePerEntity => true;
         public int assuredStacks = 0;
+        public int StackFrame = 0;
+        public float StackRotation = 0f;
+        public float StackScale = 0f;
+        public float StackGlow = 0f;
         public override void ResetEffects(NPC npc)
         {
+            if (assuredStacks == 0)
+            {
+                StackScale *= 0.5f;
+            }
+            else
+            {
+                StackScale = MathHelper.Lerp(StackScale, 1f, 0.2f);
+            }
+            StackGlow *= 0.7f;
             assuredStacks = 0;
             base.ResetEffects(npc);
         }
         public override void DrawEffects(NPC npc, ref Color drawColor)
         {
             base.DrawEffects(npc, ref drawColor);
+        }
+        public override void UpdateLifeRegen(NPC npc, ref int damage)
+        {
+        }
+        public override void PostDraw(NPC npc, SpriteBatch spriteBatch, Vector2 screenPos, Color drawColor)
+        {
+            StackFrame = 0;
+            if (assuredStacks > 5) StackFrame = 1;
+            if (assuredStacks > 8) StackFrame = 2;
+
+            Rectangle frame = Stacks.Frame(3, 1, StackFrame);
+
+            if (StackFrame == 2)
+            {
+                StackRotation = MathHelper.Lerp(StackRotation, MathHelper.Pi, 0.2f);
+            }
+            else
+            {
+                StackRotation = MathHelper.Lerp(StackRotation, 0f, 0.1f);
+            }
+
+            float offset = -28;
+
+            for (int b = 0; b < CalamityGlobalNPC.moddedDebuffTextureList.Count; b++)
+            {
+                if (CalamityGlobalNPC.moddedDebuffTextureList[b].Item2.Invoke(npc))
+                {
+                    offset = -48;
+                }
+            }
+
+            if (StackScale > 0.2f && assuredStacks > 2)
+            {
+                spriteBatch.Draw(Stacks.Value, npc.Top - Main.screenPosition + new Vector2(0, offset), frame, Color.White, StackRotation, frame.Size() / 2f, StackScale, SpriteEffects.None, 0f);
+
+                for (int i = 0; i < 4; i++)
+                {
+                    spriteBatch.Draw(Stacks.Value, npc.Top - Main.screenPosition + new Vector2(0, offset), frame, Color.White.MultiplyRGBA(new(StackGlow, StackGlow, StackGlow, 0f)), StackRotation, frame.Size() / 2f, StackScale, SpriteEffects.None, 0f);
+                }
+            }
+            else
+            {
+                StackRotation = 0f;
+            }
         }
     }
 }

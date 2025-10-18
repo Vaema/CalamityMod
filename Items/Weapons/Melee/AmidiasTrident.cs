@@ -14,10 +14,22 @@ namespace CalamityMod.Items.Weapons.Melee
             ItemID.Sets.Spears[Type] = true;
         }
 
+        /// <summary>
+        /// The damage dealt in melee range when using attack 1.
+        /// </summary>
         public static readonly int BaseAttackMeleeDamage = 20;
+        /// <summary>
+        /// The damage dealt by the long-range projectiles shot by attack 1.
+        /// </summary>
         public static readonly int BaseAttackProjectileDamage = 10;
+        /// <summary>
+        /// Secondary attack spin damage. In melee range only.
+        /// </summary>
         public static readonly int SecondaryAttackMeleeDamage = 25;
-        public static readonly int SecondaryAttackProjectileDamage = 15;
+        /// <summary>
+        /// Secondary attack proc effect damage. Multiplied by the number of stacks of Sea King's Assurance the enemy taking damage has.
+        /// </summary>
+        public static readonly int SecondaryAttackProjectileDamage = 20;
 
         public override void SetDefaults()
         {
@@ -41,6 +53,5 @@ namespace CalamityMod.Items.Weapons.Melee
         {
             return true;
         }
-
     }
 }

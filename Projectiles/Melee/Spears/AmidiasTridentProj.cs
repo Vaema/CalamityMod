@@ -13,6 +13,7 @@ using Terraria.ID;
 using System;
 using Terraria.DataStructures;
 using CalamityMod.Buffs.DamageOverTime;
+using CalamityMod.Projectiles.Typeless;
 
 namespace CalamityMod.Projectiles.Melee.Spears
 {
@@ -97,13 +98,7 @@ namespace CalamityMod.Projectiles.Melee.Spears
                         Projectile.damage = 0;
                         if (AnimationProgress == 20)
                         {
-                            for (int i = 0; i < 5; i++)
-                            {
-                                GeneralParticleHandler.SpawnParticle(new CustomPulse(
-                                    Owner.Center, Vector2.Zero, SeaKingsAssurance.LightColor, "CalamityMod/Particles/ShineExplosion2", new Vector2(Main.rand.NextFloat(0.2f, 0.3f), Main.rand.NextFloat(0.1f, 0.15f)),
-                                    0f, 0.6f, 1.2f, 6
-                                    ));
-                            }
+                            ExpendStacks();
 
                             SoundStyle soundStyle = new SoundStyle("CalamityMod/Sounds/Item/AmidiasTrident_Raise");
                             soundStyle.MaxInstances = 5;
@@ -171,6 +166,49 @@ namespace CalamityMod.Projectiles.Melee.Spears
                     Projectile.rotation = rot + MathHelper.ToRadians(135f);
                     AbsolutePosition = Owner.Center + new Vector2(Projectile.ai[0], 0).RotatedBy(rot);
                     break;
+            }
+        }
+        public void ExpendStacks()
+        {
+            foreach (NPC npc2 in Main.npc)
+            {
+                if (npc2.active && !npc2.friendly && !npc2.isLikeATownNPC)
+                {
+                    if (npc2.Distance(Owner.Center) < 200)
+                    {
+                        if (npc2.HasBuff(ModContent.BuffType<SeaKingsAssurance>()))
+                        {
+                            int stacks = (int)Math.Ceiling((double)npc2.buffTime[npc2.FindBuffIndex(ModContent.BuffType<SeaKingsAssurance>())] / SeaKingsAssurance.FramesPerStack);
+
+                            DamageEffect(npc2, stacks);
+
+                            npc2.DelBuff(npc2.FindBuffIndex(ModContent.BuffType<SeaKingsAssurance>()));
+                        }
+                    }
+                }
+            }
+
+            for (int i = 0; i < 5; i++)
+            {
+                GeneralParticleHandler.SpawnParticle(new CustomPulse(
+                    Owner.Center, Vector2.Zero, SeaKingsAssurance.LightColor, "CalamityMod/Particles/ShineExplosion2", new Vector2(Main.rand.NextFloat(0.2f, 0.3f), Main.rand.NextFloat(0.1f, 0.15f)),
+                    0f, 0.6f, 1.2f, 6
+                    ));
+            }
+        }
+
+        void DamageEffect(NPC npc, int stacks)
+        {
+            Projectile.NewProjectileDirect(new EntitySource_Buff(npc, ModContent.BuffType<SeaKingsAssurance>(),
+                npc.FindBuffIndex(ModContent.BuffType<SeaKingsAssurance>())), npc.Center, Vector2.Zero, ModContent.ProjectileType<DirectStrike>(),
+                AmidiasTrident.SecondaryAttackProjectileDamage * stacks, 0f, ai0: npc.whoAmI);
+
+            for (int i = 0; i < 5; i++)
+            {
+                GeneralParticleHandler.SpawnParticle(new CustomPulse(
+                    npc.Center, Vector2.Zero, SeaKingsAssurance.LightColor, "CalamityMod/Particles/ShineExplosion2", new Vector2(Main.rand.NextFloat(0.2f, 0.3f), Main.rand.NextFloat(0.1f, 0.15f)),
+                    0f, 0.2f, 0.8f, 6
+                    ));
             }
         }
         public static readonly Asset<Texture2D> StabTexture = ModContent.Request<Texture2D>("CalamityMod/Particles/LargeSpark");
