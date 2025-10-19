@@ -45,6 +45,7 @@ namespace CalamityMod.Graphics.Metaballs
                     Size *= SizeScaling;
             }
         }
+        public override bool IgnoreFPS => true;
         public static List<Particle> Particles
         {
             get;

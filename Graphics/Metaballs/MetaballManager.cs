@@ -35,6 +35,17 @@ namespace CalamityMod.Graphics.Metaballs
                 metaball.ClearInstances();
         }
 
+        public override void PostUpdateEverything()
+        {
+
+            var activeMetaballs = metaballs.Where(m => m.AnythingToDraw);
+            foreach (Metaball metaball in activeMetaballs)
+            {
+                if (metaball.IgnoreFPS)
+                    metaball.Update();
+            }
+        }
+
         private void PrepareMetaballTargets()
         {
             // Get a list of all metaballs currently in use.
@@ -51,7 +62,7 @@ namespace CalamityMod.Graphics.Metaballs
             foreach (Metaball metaball in activeMetaballs)
             {
                 // Update the metaball collection.
-                if (!Main.gamePaused)
+                if (!Main.gamePaused && !metaball.IgnoreFPS)
                     metaball.Update();
 
                 // Prepare the sprite batch in accordance to the needs of the metaball instance. By default this does nothing, 

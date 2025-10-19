@@ -45,6 +45,10 @@ namespace CalamityMod.Graphics.Metaballs
         {
             get;
         }
+        /// <summary>
+        /// Whether the metaball runs Update based on the draw cycle or the game update cycle
+        /// </summary>
+        public virtual bool IgnoreFPS => false;
 
         /// <summary>
         /// Whether the layer overlay contents from <see cref="Layers"/> should be fixed to the screen.<br></br>
