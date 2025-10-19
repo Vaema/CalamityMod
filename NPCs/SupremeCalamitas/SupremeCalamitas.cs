@@ -649,7 +649,9 @@ namespace CalamityMod.NPCs.SupremeCalamitas
                 if (cataclysmAlive || catastropheAlive)
                     baseSize *= new Vector4(0.85f, 1.33f, 0.85f, 1.33f);
                 if (lifeRatio <= 0.01f)
-                    baseSize = new Vector4(400f, 500f, 73f, 500f);
+                    baseSize = (Main.zenithWorld && !permafrost) ? new Vector4(22f, 22f, 22f, 22f) : new Vector4(400f, 500f, 73f, 500f);
+                else if (Main.zenithWorld && lifeRatio <= 0.08f && !wormAlive && !permafrost) // gfb
+                    baseSize *= MathHelper.Lerp(0.22f, 1f, lifeRatio * 12.5f); // Scale down the lower health scal has
                 return baseSize;
             }
 
