@@ -3,6 +3,7 @@ using System.IO;
 using CalamityMod.Buffs.DamageOverTime;
 using CalamityMod.Dusts;
 using CalamityMod.Events;
+using CalamityMod.Graphics.Metaballs;
 using CalamityMod.Items.Accessories;
 using CalamityMod.Items.Armor.Vanity;
 using CalamityMod.Items.LoreItems;
@@ -45,21 +46,23 @@ namespace CalamityMod.NPCs.CalClone
 
         void UpdateArena(ArenaWallSystem.Box box)
         {
+            if (box.borderColor == Color.Gray || box.oldData.borderColor == Color.Gray)
+                return;
             for (var i2 = 0; i2 < box.Size.Y / 400f; i2++)
             {
                 var p = Vector2.Lerp(box.BottomRight, box.TopRight, Main.rand.NextFloat());
-                Dust.NewDustPerfect(p, DustID.Clentaminator_Red, p.DirectionFrom(box.Center) * Main.rand.NextFloat(0, 5), Scale: Main.rand.NextFloat(0.1f, 1f), newColor: Color.Crimson);
+                Dust.NewDustPerfect(p, DustID.Clentaminator_Red, p.DirectionFrom(box.Center) * Main.rand.NextFloat(0, 5), Scale: Main.rand.NextFloat(0.1f, 1f), newColor: box.borderColor);
 
                 p = Vector2.Lerp(box.TopLeft, box.BottomLeft, Main.rand.NextFloat());
-                Dust.NewDustPerfect(p, DustID.Clentaminator_Red, p.DirectionFrom(box.Center) * Main.rand.NextFloat(0, 5), Scale: Main.rand.NextFloat(0.1f, 1f), newColor: Color.Crimson);
+                Dust.NewDustPerfect(p, DustID.Clentaminator_Red, p.DirectionFrom(box.Center) * Main.rand.NextFloat(0, 5), Scale: Main.rand.NextFloat(0.1f, 1f), newColor: box.borderColor);
 
             }
             for (var i2 = 0; i2 < box.Size.X / 400f; i2++)
             {
                 var p = Vector2.Lerp(box.TopLeft, box.TopRight, Main.rand.NextFloat());
-                Dust.NewDustPerfect(p, DustID.Clentaminator_Red, p.DirectionFrom(box.Center) * Main.rand.NextFloat(0, 5), Scale: Main.rand.NextFloat(0.1f, 1f), newColor: Color.Crimson);
+                Dust.NewDustPerfect(p, DustID.Clentaminator_Red, p.DirectionFrom(box.Center) * Main.rand.NextFloat(0, 5), Scale: Main.rand.NextFloat(0.1f, 1f), newColor: box.borderColor);
                 p = Vector2.Lerp(box.BottomRight, box.BottomLeft, Main.rand.NextFloat());
-                Dust.NewDustPerfect(p, DustID.Clentaminator_Red, p.DirectionFrom(box.Center) * Main.rand.NextFloat(0, 5), Scale: Main.rand.NextFloat(0.1f, 1f), newColor: Color.Crimson);
+                Dust.NewDustPerfect(p, DustID.Clentaminator_Red, p.DirectionFrom(box.Center) * Main.rand.NextFloat(0, 5), Scale: Main.rand.NextFloat(0.1f, 1f), newColor: box.borderColor);
             }
         }
 
@@ -313,7 +316,19 @@ namespace CalamityMod.NPCs.CalClone
                     });
                 }
                 ArenaWallSystem.ActiveBoxes[0].NewDimensions = Vector4.Lerp(ArenaWallSystem.ActiveBoxes[0].boxDimensions, GetArenaSize(brotherAlive), lifeRatio > 0.8f ? 0.1f : 0.05f);
-                ArenaWallSystem.ActiveBoxes[0].borderColor = Color.Lerp(Color.Crimson, Color.IndianRed, (MathF.Sin(Main.GlobalTimeWrappedHourly) + 1) * 0.25f);
+                if (ArenaWallSystem.ActiveBoxes[0].oldData is not null)
+                    ArenaWallSystem.ActiveBoxes[0].oldData.borderColor = Color.White;
+                if (brotherAlive)
+                    ArenaWallSystem.ActiveBoxes[0].borderColor = Color.Lerp(ArenaWallSystem.ActiveBoxes[0].borderColor, Color.Lerp(new Color(0, 255, 255), new Color(255, 0, 229), (MathF.Sin(Main.GlobalTimeWrappedHourly * 0.5f) + 1) * 0.5f), 0.03f);
+                else if (NPC.AnyNPCs(ModContent.NPCType<SoulSeeker>()))
+                    ArenaWallSystem.ActiveBoxes[0].borderColor = Color.Lerp(ArenaWallSystem.ActiveBoxes[0].borderColor, Color.Lerp(Color.Crimson, new Color(255, 106, 0), (MathF.Sin(Main.GlobalTimeWrappedHourly * 0.5f) + 1) * 0.5f), 0.03f);
+                else if (NPC.dontTakeDamage)
+                {
+                    ArenaWallSystem.ActiveBoxes[0].borderColor = Color.Lerp(ArenaWallSystem.ActiveBoxes[0].borderColor, Color.Gray, 0.1f);
+                    ArenaWallSystem.ActiveBoxes[0].oldData.borderColor = Color.Gray;
+                }
+                else
+                    ArenaWallSystem.ActiveBoxes[0].borderColor = Color.Lerp(ArenaWallSystem.ActiveBoxes[0].borderColor, Color.Lerp(Color.Crimson, Color.IndianRed, (MathF.Sin(Main.GlobalTimeWrappedHourly * 0.5f) + 1) * 0.25f), 0.03f);
             }
 
             void SpawnDust()
@@ -507,10 +522,10 @@ namespace CalamityMod.NPCs.CalClone
                     {
                         if (calamityGlobalNPC.newAI[2] == 2f)
                         {
-                            int type = ModContent.ProjectileType<SCalBrimstoneFireblast>();
+                            int type = ModContent.ProjectileType<CloneFireblast>();
                             int damage = FireblastDamage;
                             if (Main.zenithWorld)
-                                type = ModContent.ProjectileType<SCalBrimstoneGigablast>();
+                                type = ModContent.ProjectileType<CloneGigablast>();
 
                             float gigaBlastFrequency = Main.getGoodWorld ? 120f : expertMode ? 180f : 240f;
                             float projSpeed = 5f;
@@ -540,7 +555,7 @@ namespace CalamityMod.NPCs.CalClone
 
                         if (Main.netMode != NetmodeID.MultiplayerClient)
                         {
-                            int type = ModContent.ProjectileType<BrimstoneHellblast2>();
+                            int type = ModContent.ProjectileType<CloneHellblast>();
                             int damage = HellblastDamage;
                             float projSpeed = 4f;
                             // Blasts aimed directly at the player's horizontal position, does not spawn during the second bullet hell
@@ -632,12 +647,12 @@ namespace CalamityMod.NPCs.CalClone
                         Projectile projectile = Main.projectile[x];
                         if (projectile.active)
                         {
-                            if (projectile.type == ModContent.ProjectileType<BrimstoneHellblast2>() || projectile.type == ModContent.ProjectileType<BrimstoneBarrage>())
+                            if (projectile.type == ModContent.ProjectileType<CloneHellblast>() || projectile.type == ModContent.ProjectileType<CloneBarrage>())
                             {
                                 if (projectile.timeLeft > 60)
                                     projectile.timeLeft = 60;
                             }
-                            else if (projectile.type == ModContent.ProjectileType<SCalBrimstoneFireblast>())
+                            else if (projectile.type == ModContent.ProjectileType<CloneFireblast>())
                             {
                                 projectile.ai[2] = 1f;
 
@@ -665,7 +680,7 @@ namespace CalamityMod.NPCs.CalClone
 
                     if (Main.netMode != NetmodeID.MultiplayerClient)
                     {
-                        int type = ModContent.ProjectileType<BrimstoneHellblast2>();
+                        int type = ModContent.ProjectileType<CloneHellblast>();
                         int damage = HellblastDamage;
                         float projSpeed = 4f;
                         if (calamityGlobalNPC.newAI[3] % (hellblastGateValue * 6f) == 0f)
@@ -731,7 +746,7 @@ namespace CalamityMod.NPCs.CalClone
                         SoundEngine.PlaySound(BrimstoneElemental.BrimstoneElemental.HellfireballSound, NPC.Center);
 
                         float projectileVelocity = expertMode ? 14f : 12.5f;
-                        int type = ModContent.ProjectileType<BrimstoneHellfireball>();
+                        int type = ModContent.ProjectileType<CloneHellfireball>();
                         Vector2 predictionVector = Main.getGoodWorld ? player.velocity * 20f : Vector2.Zero;
                         Vector2 fireballVelocity = Vector2.Normalize(player.Center + predictionVector - NPC.Center) * projectileVelocity;
                         Vector2 offset = Vector2.Normalize(fireballVelocity) * 40f;
@@ -760,14 +775,14 @@ namespace CalamityMod.NPCs.CalClone
                         NPC.localAI[1] = 0f;
 
                         float projectileVelocity = expertMode ? 12.5f : 11f;
-                        int type = ModContent.ProjectileType<BrimstoneHellblast>();
+                        int type = ModContent.ProjectileType<CloneHellblast>();
                         int damage = HellblastDamage;
                         Vector2 fireballVelocity = Vector2.Normalize(player.Center - NPC.Center) * projectileVelocity;
                         Vector2 offset = Vector2.Normalize(fireballVelocity) * 40f;
 
                         if (!Collision.CanHit(NPC.position, NPC.width, NPC.height, player.position, player.width, player.height))
                         {
-                            type = ModContent.ProjectileType<BrimstoneHellfireball>();
+                            type = ModContent.ProjectileType<CloneHellfireball>();
                             Projectile.NewProjectile(NPC.GetSource_FromAI(), NPC.Center + offset, fireballVelocity, type, HellfireballDamage, 0f, Main.myPlayer, player.position.X, player.position.Y);
                         }
                         else
@@ -836,7 +851,7 @@ namespace CalamityMod.NPCs.CalClone
                     // Leave behind slow hellblasts in Death Mode
                     if (Main.netMode != NetmodeID.MultiplayerClient && death && phase3 && NPC.ai[2] % (phase4 ? 6f : 10f) == 0f)
                     {
-                        int type = ModContent.ProjectileType<BrimstoneHellblast>();
+                        int type = ModContent.ProjectileType<CloneHellblast>();
                         Vector2 fireballVelocity = Main.getGoodWorld ? Main.rand.NextVector2CircularEdge(0.02f, 0.02f) : NPC.velocity * 0.01f;
                         Projectile.NewProjectile(NPC.GetSource_FromAI(), NPC.Center, fireballVelocity, type, HellblastDamage, 0f, Main.myPlayer, 1f, 0f);
                     }

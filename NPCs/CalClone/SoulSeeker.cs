@@ -113,7 +113,7 @@ namespace CalamityMod.NPCs.CalClone
                     for (int d = 0; d < 3; d++)
                         Dust.NewDust(NPC.position, NPC.width, NPC.height, (int)CalamityDusts.Brimstone, 0f, 0f, 100, default, 2f);
 
-                    int type = ModContent.ProjectileType<BrimstoneBarrage>();
+                    int type = ModContent.ProjectileType<CloneBarrage>();
                     Projectile.NewProjectile(NPC.GetSource_FromAI(), NPC.Center, velocity, type, CalamitasClone.DartDamage, 1f, parent.target, 1f, 0f, projectileSpeed * 2f);
                 }
                 timer = 0;

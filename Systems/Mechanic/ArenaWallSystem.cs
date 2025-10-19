@@ -69,7 +69,14 @@ namespace CalamityMod.Systems.Mechanic
 
             public void SetOldData()
             {
-                oldData = new Box() { borderColor = borderColor, borderThickness = borderThickness, boxDimensions = boxDimensions, position = position };
+                if (oldData == null)
+                    oldData = new Box() { borderColor = borderColor, borderThickness = borderThickness, boxDimensions = boxDimensions, position = position };
+                else
+                {
+                    oldData.borderThickness = borderThickness;
+                    oldData.boxDimensions = boxDimensions;
+                    oldData.position = position;
+                }
             }
             public bool Contains(Vector2 Position, Vector2 size)
             {

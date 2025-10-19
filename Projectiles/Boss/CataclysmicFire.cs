@@ -1,6 +1,7 @@
 ﻿using System;
 using CalamityMod.Buffs.DamageOverTime;
 using CalamityMod.Dusts;
+using CalamityMod.Graphics.Metaballs;
 using CalamityMod.Particles;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
@@ -10,7 +11,7 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.Projectiles.Boss
 {
-    public class BrimstoneFire : ModProjectile, ILocalizedModType
+    public class CataclysmicFire : ModProjectile, ILocalizedModType
     {
         public new string LocalizationCategory => "Projectiles.Boss";
         public override string Texture => "CalamityMod/Projectiles/FireProj";
@@ -53,6 +54,13 @@ namespace CalamityMod.Projectiles.Boss
                 MistType = Main.rand.Next(3);
 
             Lighting.AddLight(Projectile.Center, 0.75f, 0.15f, 0.15f);
+
+            float timeRatio = Utils.GetLerpValue(0f, Lifetime, Time);
+            float fireSize = Utils.Remap(timeRatio, 0.2f, 0.5f, 0.25f, 1f);
+            var p = CataclysmMetaball.SpawnParticle(Projectile.Center, Vector2.Zero, Terraria.GameContent.TextureAssets.Projectile[Type].Width() * fireSize);// Main.rand.NextVector2Circular(2, 2), 64f);//
+            p.rotation = Main.rand.NextFloat(MathHelper.TwoPi);
+            p.TextureToUse = Terraria.GameContent.TextureAssets.Projectile[Type].Value;
+            p.SizeScaling = 0.5f;
         }
 
         // Keeping the flames in place when hitting a block
@@ -100,6 +108,7 @@ namespace CalamityMod.Projectiles.Boss
 
         public override bool PreDraw(ref Color lightColor)
         {
+            return false;
             Texture2D fire = Terraria.GameContent.TextureAssets.Projectile[Type].Value;
             Texture2D mist = ModContent.Request<Texture2D>("CalamityMod/Particles/MediumMist").Value;
 
