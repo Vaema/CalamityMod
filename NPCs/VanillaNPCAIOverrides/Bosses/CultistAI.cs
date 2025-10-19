@@ -894,10 +894,9 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                             playerDirection = new Vector2(npc.direction, 0f);
 
                         Vector2 ancientLightShootDirection = npc.Center;
-                        float scaleFactor = death ? 6f : 4f;
+                        float scaleFactor = death ? 5f : 4f;
 
-                        float ancientLightSpread = MathHelper.ToRadians(80f);
-                        int ancientLightInc = 0;
+                        float ancientLightSpread = MathHelper.ToRadians(CalamityWorld.death ? 90f : 80f);
                         float totalAncientLights = death ?  9 : 7;
                         float adjustTotal = totalAncientLights - 1;
                         for (var i = 0; i < totalAncientLights; i++)
@@ -905,7 +904,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                             var shotgunscalar = Math.Abs(i - (adjustTotal * 0.5f)) / (adjustTotal * 0.5f);
                             float angleOffset = ancientLightSpread * (i / adjustTotal) - ancientLightSpread * 0.5f;
                             Vector2 ancientLightSpeed = playerDirection.RotatedBy(angleOffset) * scaleFactor * (0.75f + 1.5f * shotgunscalar);
-                            float ai = (Main.rand.NextFloat() - 0.5f) * 0.3f * MathHelper.TwoPi / 60f;
+                            float ai = (Main.rand.NextFloat() - 0.5f) * 0.2f * MathHelper.TwoPi / 60f;
                             int ancientLightProj = NPC.NewNPC(npc.GetSource_FromAI(), (int)ancientLightShootDirection.X, (int)ancientLightShootDirection.Y + 7, NPCID.AncientLight, 0, 0f, ai, ancientLightSpeed.X, ancientLightSpeed.Y);
                             Main.npc[ancientLightProj].velocity = ancientLightSpeed;
                         }
@@ -963,7 +962,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                 }
 
                 npc.ai[1] += 1f;
-                if (npc.ai[1] >= 240f)
+                if (npc.ai[1] >= 195f)
                 {
                     npc.ai[0] = 0f;
                     npc.ai[1] = 0f;
