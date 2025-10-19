@@ -85,7 +85,7 @@ namespace CalamityMod.NPCs.CalClone
             //Outer Border
             box.DrawBoxWithOffset(box.borderThickness - 4, 4, box.borderColor);
         }
-        public static Vector4 GetArenaSize(bool brothersActive = false)
+        public static Vector4 GetArenaSize(bool brothersActive = false, float lifeRatio = 0, bool inBulletHell = false)
         {
             var baseSize = new Vector4(1600, 800, 0, 800);
             if (brothersActive)
@@ -94,6 +94,9 @@ namespace CalamityMod.NPCs.CalClone
                 baseSize *= new Vector4(1.5f, 0.75f, 1.5f, 0.75f);
             if (!CalamityWorld.death)
                 baseSize *= 1.25f;
+            if (lifeRatio < 0.1f && !inBulletHell)
+                baseSize *= MathHelper.Lerp(Main.getGoodWorld ? 0.22f : 0.4f, 1f, lifeRatio * 10f); // Scale down the lower health calclone has. Much lower bound on FTW.
+
             return baseSize + new Vector4(-22, 0 ,22,0);
         }
         public override void SetStaticDefaults()
@@ -301,6 +304,8 @@ namespace CalamityMod.NPCs.CalClone
             if (brotherAlive)
                 NPC.dontTakeDamage = true;
 
+            bool inBulletHell = calamityGlobalNPC.newAI[2] > 0f;
+
             //arena on death mode
             if (revenge)
             {
@@ -316,7 +321,7 @@ namespace CalamityMod.NPCs.CalClone
                         DrawBox = DrawArena
                     });
                 }
-                ArenaWallSystem.ActiveBoxes[0].NewDimensions = Vector4.Lerp(ArenaWallSystem.ActiveBoxes[0].boxDimensions, GetArenaSize(brotherAlive), lifeRatio > 0.8f ? 0.1f : 0.05f);
+                ArenaWallSystem.ActiveBoxes[0].NewDimensions = Vector4.Lerp(ArenaWallSystem.ActiveBoxes[0].boxDimensions, GetArenaSize(brotherAlive, lifeRatio, inBulletHell), lifeRatio > 0.8f ? 0.1f : 0.05f);
                 if (ArenaWallSystem.ActiveBoxes[0].oldData is not null)
                     ArenaWallSystem.ActiveBoxes[0].oldData.borderColor = Color.White;
                 if (brotherAlive)
@@ -855,7 +860,7 @@ namespace CalamityMod.NPCs.CalClone
                     {
                         int type = ModContent.ProjectileType<CloneHellblast>();
                         Vector2 fireballVelocity = Main.getGoodWorld ? Main.rand.NextVector2CircularEdge(0.02f, 0.02f) : NPC.velocity * 0.01f;
-                        Projectile.NewProjectile(NPC.GetSource_FromAI(), NPC.Center, fireballVelocity, type, HellblastDamage, 0f, Main.myPlayer, 1f, 0f);
+                        Projectile.NewProjectile(NPC.GetSource_FromAI(), NPC.Center, fireballVelocity, type, HellblastDamage, 0f, Main.myPlayer, 1f, 0f, 2f); // ai[2] is used here to distinguish acceleration in its ai
                     }
                 }
 

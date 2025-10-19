@@ -37,7 +37,7 @@ namespace CalamityMod.Projectiles.Boss
             Projectile.ignoreWater = true;
             Projectile.tileCollide = false;
             Projectile.penetrate = -1;
-            Projectile.timeLeft = 255;
+            Projectile.timeLeft = 400;
             CooldownSlot = ImmunityCooldownID.Bosses;
         }
 
@@ -84,14 +84,16 @@ namespace CalamityMod.Projectiles.Boss
             if (Projectile.timeLeft < 51)
                 Projectile.Opacity -= 0.02f;
 
-            if (Projectile.ai[2] == 0f)
+            if (Projectile.ai[2] == 0f || Projectile.ai[2] == 2f) // Will only enter this loop once. 
             {
-                Projectile.ai[2] = 1f;
+                if (Projectile.ai[2] == 0f)
+                    Projectile.ai[2] = 1f;
+
                 SoundEngine.PlaySound(SoundID.Item20, Projectile.Center);
             }
 
-            if (Projectile.velocity.Length() < 9f)
-                Projectile.velocity *= 1.03f;
+            if (Projectile.velocity.Length() < (Projectile.ai[2] == 2f ? 9.5f : 5.3f)) // Hellblasts in phase 4 have faster accel and higher max velocity
+                Projectile.velocity *= Projectile.ai[2] == 2f ? 1.033f : 1.0125f;
 
             if (Projectile.velocity.X < 0f)
             {
