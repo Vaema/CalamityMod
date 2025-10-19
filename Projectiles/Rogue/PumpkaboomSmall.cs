@@ -29,7 +29,8 @@ namespace CalamityMod.Projectiles.Rogue
         public float charge = 0;
         public bool hasReachedFullCharge = false;
         public bool hasStoppedHolding = false;
-        public bool doneHitting = false;
+        public float midAirRot = 0;
+        public int initialCastDirection = 0;
 
         public bool stuck = false;
         public int stuckNPC = -1;
@@ -115,13 +116,19 @@ namespace CalamityMod.Projectiles.Rogue
 
             if (flung)
             {
+                if (initialCastDirection == 0)
+                    initialCastDirection = Owner.direction;
+
                 // stuckNPC index
                 Projectile.localAI[0]++;
                 Projectile.localAI[1] = 5; // The item can be used again once flung.
 
-                Projectile.velocity.Y += 0.15f;
+                Projectile.velocity.Y += 0.22f;
 
-                Projectile.rotation = Projectile.velocity.ToRotation() + MathHelper.PiOver2;
+                if (!stuck)
+                    midAirRot += 0.06f * initialCastDirection;
+
+                Projectile.rotation = Projectile.velocity.ToRotation() + MathHelper.PiOver2 + midAirRot;
             }
 
             // While in hand
@@ -218,7 +225,7 @@ namespace CalamityMod.Projectiles.Rogue
 
             Projectile.velocity = Vector2.Zero;
             Projectile.tileCollide = false;
-            Projectile.rotation = Projectile.oldVelocity.ToRotation() + MathHelper.PiOver2;
+            Projectile.rotation = Projectile.oldVelocity.ToRotation() + MathHelper.PiOver2 + midAirRot;
             Projectile.ai[1] = Projectile.rotation;
 
             hasDealtDamage = true;
