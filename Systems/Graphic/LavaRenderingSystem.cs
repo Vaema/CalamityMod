@@ -760,13 +760,8 @@ namespace CalamityMod.Systems
             int num34 = -1;
             int num45 = -1;
             float num47 = 0f;
-            float num48 = 99999f;
-            float num49 = 99999f;
             int num50 = -1;
             int num2 = -1;
-            Rectangle value = default(Rectangle);
-            Rectangle value2 = default(Rectangle);
-            Vector2 origin = default(Vector2);
             for (int i = 0; i < currentMax; i++)
             {
                 if (waterfalls[i].type != 1)

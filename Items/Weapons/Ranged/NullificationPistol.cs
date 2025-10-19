@@ -43,17 +43,16 @@ namespace CalamityMod.Items.Weapons.Ranged
         public override bool AltFunctionUse(Player player) => true;
         public override float UseSpeedMultiplier(Player player)
         {
-
             if (player.altFunctionUse == 2)
-                return 1.3f;
+                return 1.3f - (float)(1 - Math.Pow(Utils.GetLerpValue(0, shotType ? 0.175f : 0.25f, mult, true), 2.5f));
 
             if (Main.zenithWorld)
                 return 3 * (shotType ? 0.7f : 1);
 
             if (!shotType)
-                return 1.5f - mult;
+                return 1.5f - ((mult > 0.25f) ? mult : 0);
 
-            return 1f - mult;
+            return 1f - ((mult > 0.175f) ? mult : 0);
         }
         public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)
         {
@@ -75,7 +74,8 @@ namespace CalamityMod.Items.Weapons.Ranged
             {
                 for (int i = 0; i < 3; i++)
                     Projectile.NewProjectile(source, position, velocity, ModContent.ProjectileType<NullShot>(), damage / 3, 0, player.whoAmI, 0, 0, i);
-                Projectile.NewProjectile(source, position, velocity, ModContent.ProjectileType<NullFlash>(), damage / 2, 0, player.whoAmI, 0, 0);
+                if (mult < 0.175f)
+                    Projectile.NewProjectile(source, position, velocity, ModContent.ProjectileType<NullFlash>(), damage, 0, player.whoAmI, 0, 0);
                 if (mult < 0.35f)
                     mult += 0.013f;
             }
@@ -83,14 +83,27 @@ namespace CalamityMod.Items.Weapons.Ranged
             {
                 Projectile aBeam = Projectile.NewProjectileDirect(source, position, velocity, ModContent.ProjectileType<NullShot>(), (int)(damage * 0.7f), 0, player.whoAmI, 0, 5);
                 aBeam.penetrate = 1;
-                Projectile.NewProjectile(source, position, velocity, ModContent.ProjectileType<NullFlash>(), damage / 2, 0, player.whoAmI, 0, 5);
+                if (mult < 0.25f)
+                    Projectile.NewProjectile(source, position, velocity, ModContent.ProjectileType<NullFlash>(), (int)(damage * 0.75f), 0, player.whoAmI, 0, 5);
                 if (mult < 0.5f)
                     mult += 0.013f;
             }
             if (player.altFunctionUse != 2)
             {
                 SoundStyle fire = new("CalamityMod/Sounds/Item/NullShot");
-                SoundEngine.PlaySound(fire with { Volume = 0.7f, Pitch = Main.rand.NextFloat(0f, 0.2f) + (!shotType ? 0.3f : 0) }, position);
+                SoundEngine.PlaySound(fire with { Volume = 0.7f, Pitch = Main.rand.NextFloat(0f, 0.2f) + (!shotType ? 0.3f : 0) - (shotType ? ((mult > 0.25f) ? mult : 0) : ((mult > 0.175f) ? mult : 0)) }, position);
+
+                if (mult >= (shotType ? 0.175f : 0.25f))
+                {
+                    for (int i = 0; i < 18; i++)
+                    {
+                        Dust dust = Dust.NewDustPerfect(position + velocity * 8, ModContent.DustType<UnstableDust>(), (velocity).RotatedByRandom(0.5) * Main.rand.NextFloat(0.4f, 1f));
+                        dust.noGravity = !Main.rand.NextBool(4);
+                        dust.scale = Main.rand.NextFloat(1.2f, 1.8f);
+                        dust.color = Main.rand.NextBool() ? Color.White : (Main.rand.NextBool() ? Color.Orchid : Color.Turquoise);
+                        dust.fadeIn = 7.5f;
+                    }
+                }
             }
             return false;
         }

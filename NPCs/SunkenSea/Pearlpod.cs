@@ -63,8 +63,8 @@ namespace CalamityMod.NPCs.SunkenSea
             NPC.HitSound = SoundID.NPCHit38;
             NPC.DeathSound = SoundID.NPCDeath1;
             NPC.GravityIgnoresLiquid = true;
-            //Banner = NPC.type;
-            //BannerItem = ModContent.ItemType<PearlpodBanner>();
+            Banner = NPC.type;
+            BannerItem = ModContent.ItemType<PearlpodBanner>();
             NPC.catchItem = ItemType;
             NPC.Calamity().VulnerableToHeat = false;
             NPC.Calamity().VulnerableToSickness = true;
@@ -371,6 +371,11 @@ namespace CalamityMod.NPCs.SunkenSea
             base.SetStaticDefaults();
             Main.npcFrameCount[Type] = 4;
         }
+        public override void SetDefaults()
+        {
+            Banner = ModContent.NPCType<PearlpodWhite>();
+            BannerItem = ModContent.ItemType<PearlpodBanner>();
+        }
         public override float SpawnRate => 0.6f;
         public override int ItemType => ModContent.ItemType<PearlpodItem>();
     }
@@ -382,7 +387,11 @@ namespace CalamityMod.NPCs.SunkenSea
             this.HideFromBestiary();
             Main.npcFrameCount[Type] = 4;
         }
-
+        public override void SetDefaults()
+        {
+            Banner = ModContent.NPCType<PearlpodWhite>();
+            BannerItem = ModContent.ItemType<PearlpodBanner>();
+        }
         public override float SpawnRate => 0.05f;
         public override int ItemType => ModContent.ItemType<PearlpodPinkItem>();
     }
@@ -393,6 +402,11 @@ namespace CalamityMod.NPCs.SunkenSea
             base.SetStaticDefaults();
             this.HideFromBestiary();
             Main.npcFrameCount[Type] = 4;
+        }
+        public override void SetDefaults()
+        {
+            Banner = ModContent.NPCType<PearlpodWhite>();
+            BannerItem = ModContent.ItemType<PearlpodBanner>();
         }
         public override float SpawnRate => 0.2f;
         public override int ItemType => ModContent.ItemType<PearlpodBlackItem>();

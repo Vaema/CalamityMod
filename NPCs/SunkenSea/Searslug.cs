@@ -60,8 +60,8 @@ namespace CalamityMod.NPCs.SunkenSea
             NPC.DeathSound = SoundID.NPCDeath1;
             NPC.GravityIgnoresLiquid = true;
             NPC.chaseable = false;
-            //Banner = NPC.type;
-            //BannerItem = ModContent.ItemType<SearslugBanner>();
+            Banner = NPC.type;
+            BannerItem = ModContent.ItemType<SearslugBanner>();
             NPC.catchItem = ModContent.ItemType<SearslugItem>();
             NPC.Calamity().VulnerableToHeat = false;
             NPC.Calamity().VulnerableToCold = true;

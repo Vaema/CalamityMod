@@ -241,7 +241,7 @@ namespace CalamityMod.World
             }
 
             // Honey chests
-            Vector2 honeyChestLocation = default;
+            //Vector2 honeyChestLocation = default;
             //for (int l = 0; l < maxAttempts; l++)
             //{
             //    Vector2 newStructureLocation = larvaLocation;

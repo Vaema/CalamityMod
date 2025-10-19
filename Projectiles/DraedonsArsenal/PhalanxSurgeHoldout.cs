@@ -17,7 +17,6 @@ namespace CalamityMod.Projectiles.DraedonsArsenal
         public new string LocalizationCategory => "Projectiles.Misc";
         public override int AssociatedItemID => ModContent.ItemType<PhalanxSurge>();
 
-        public Player Owner => Main.player[Projectile.owner];
         public float offsetBase = 30;
         public override float MaxOffsetLengthFromArm => doingChargeAttack ? 100f : offsetBase;
         public override float RecoilResolveSpeed => doingChargeAttack ? 2f : (shootingTimer < 0) ? 0.2f : 0.1f;

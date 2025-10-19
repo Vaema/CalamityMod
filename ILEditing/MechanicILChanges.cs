@@ -1831,7 +1831,7 @@ namespace CalamityMod.ILEditing
                         droids.velocity = -self.velocity.RotatedByRandom(MathHelper.Pi / 20f) * 2f;
                         droids.netUpdate = true;
                         droids.shimmerTransparency = 1f;
-                        NetMessage.SendData(146, -1, -1, null, 2, droids.whoAmI);
+                        NetMessage.SendData(MessageID.ShimmerActions, -1, -1, null, 2, droids.whoAmI);
                     }
 
                     self.TurnToAir();
@@ -1844,8 +1844,8 @@ namespace CalamityMod.ILEditing
                     }
                     else
                     {
-                        NetMessage.SendData(146, -1, -1, null, 0, (int)self.Center.X, (int)self.Center.Y);
-                        NetMessage.SendData(145, -1, -1, null, self.whoAmI, 1f);
+                        NetMessage.SendData(MessageID.ShimmerActions, -1, -1, null, 0, (int)self.Center.X, (int)self.Center.Y);
+                        NetMessage.SendData(MessageID.SyncItemsWithShimmer, -1, -1, null, self.whoAmI, 1f);
                     }
                 }
             }

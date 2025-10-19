@@ -265,20 +265,17 @@ namespace CalamityMod.Projectiles.BaseProjectiles
         public override void ModifyDamageHitbox(ref Rectangle hitbox)
         {
             Vector2 cen = Projectile.Center + new Vector2(HitboxOutset, 0).RotatedBy(FinalRotation + HitboxRotationOffset);
-
             hitbox = new Rectangle((int)cen.X - (int)(HitboxSize.X / 2), (int)cen.Y - (int)(HitboxSize.Y / 2), (int)HitboxSize.X, (int)HitboxSize.Y);
 
-            if (false) // Turn this on to show the hitbox, useful for testing if it's working how you want
-            {
-                Particle blastRing = new CustomPulse(hitbox.TopLeft(), Vector2.Zero, Color.Red, "CalamityMod/Particles/LargeBloom", Vector2.One, Main.rand.NextFloat(-10, 10), 0.2f, 0.2f, 4);
-                GeneralParticleHandler.SpawnParticle(blastRing);
-                Particle blastRing2 = new CustomPulse(hitbox.TopRight(), Vector2.Zero, Color.Gold, "CalamityMod/Particles/LargeBloom", Vector2.One, Main.rand.NextFloat(-10, 10), 0.2f, 0.2f, 4);
-                GeneralParticleHandler.SpawnParticle(blastRing2);
-                Particle blastRing3 = new CustomPulse(hitbox.BottomLeft(), Vector2.Zero, Color.Green, "CalamityMod/Particles/LargeBloom", Vector2.One, Main.rand.NextFloat(-10, 10), 0.2f, 0.2f, 4);
-                GeneralParticleHandler.SpawnParticle(blastRing3);
-                Particle blastRing4 = new CustomPulse(hitbox.BottomRight(), Vector2.Zero, Color.Cyan, "CalamityMod/Particles/LargeBloom", Vector2.One, Main.rand.NextFloat(-10, 10), 0.2f, 0.2f, 4);
-                GeneralParticleHandler.SpawnParticle(blastRing4);
-            }
+            // Turn this on to show the hitbox, useful for testing if it's working how you want
+            /*Particle blastRing = new CustomPulse(hitbox.TopLeft(), Vector2.Zero, Color.Red, "CalamityMod/Particles/LargeBloom", Vector2.One, Main.rand.NextFloat(-10, 10), 0.2f, 0.2f, 4);
+            GeneralParticleHandler.SpawnParticle(blastRing);
+            Particle blastRing2 = new CustomPulse(hitbox.TopRight(), Vector2.Zero, Color.Gold, "CalamityMod/Particles/LargeBloom", Vector2.One, Main.rand.NextFloat(-10, 10), 0.2f, 0.2f, 4);
+            GeneralParticleHandler.SpawnParticle(blastRing2);
+            Particle blastRing3 = new CustomPulse(hitbox.BottomLeft(), Vector2.Zero, Color.Green, "CalamityMod/Particles/LargeBloom", Vector2.One, Main.rand.NextFloat(-10, 10), 0.2f, 0.2f, 4);
+            GeneralParticleHandler.SpawnParticle(blastRing3);
+            Particle blastRing4 = new CustomPulse(hitbox.BottomRight(), Vector2.Zero, Color.Cyan, "CalamityMod/Particles/LargeBloom", Vector2.One, Main.rand.NextFloat(-10, 10), 0.2f, 0.2f, 4);
+            GeneralParticleHandler.SpawnParticle(blastRing4);*/
             base.ModifyDamageHitbox(ref hitbox);
         }
 

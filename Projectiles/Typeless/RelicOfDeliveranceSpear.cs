@@ -49,7 +49,6 @@ namespace CalamityMod.Projectiles.Typeless
         public bool inTiles = false;
         public float respawnMult = 0;
 
-        int postHitTimer = 0;
         public Color bColor = Color.White;
         public SlotId digSoundSlot;
         public int digFXCooldown = 0;

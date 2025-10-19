@@ -18,7 +18,6 @@ namespace CalamityMod.Projectiles.DraedonsArsenal
         public new string LocalizationCategory => "Projectiles.Misc";
         public override int AssociatedItemID => ModContent.ItemType<Nidhogg>();
 
-        public Player Owner => Main.player[Projectile.owner];
         public float offsetBase = 30;
         public override float MaxOffsetLengthFromArm => offsetBase;
         public override float RecoilResolveSpeed => (shootingTimer < 0) ? 0.02f : 0.1f;

@@ -95,8 +95,8 @@ namespace CalamityMod.NPCs.SunkenSea
             NPC.HitSound = SoundID.NPCHit1;
             NPC.DeathSound = SoundID.NPCDeath1;
             NPC.knockBackResist = 0.1f;
-            //Banner = NPC.type;
-            //BannerItem = ModContent.ItemType<LazarusLampfishBanner>(); LegacyName this to the BlindedAngler banner when it exists
+            Banner = NPC.type;
+            BannerItem = ModContent.ItemType<LazarusLampfishBanner>();
             NPC.chaseable = false;
             NPC.Calamity().VulnerableToHeat = false;
             NPC.Calamity().VulnerableToSickness = true;

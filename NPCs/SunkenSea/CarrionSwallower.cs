@@ -3,6 +3,7 @@ using CalamityMod.BiomeManagers;
 using CalamityMod.Dusts;
 using CalamityMod.Items.Accessories;
 using CalamityMod.Items.Materials;
+using CalamityMod.Items.Placeables.Banners;
 using CalamityMod.NPCs.NormalNPCs;
 using CalamityMod.Particles;
 using CalamityMod.Projectiles.Enemy;
@@ -44,8 +45,8 @@ namespace CalamityMod.NPCs.SunkenSea
             NPC.DeathSound = SoundID.DD2_SkeletonDeath;
             NPC.noGravity = true;
             SpawnModBiomes = new int[1] { ModContent.GetInstance<TimelessShoresBiome>().Type };
-            //Banner = NPC.type;
-            //BannerItem = ModContent.ItemType<CarrionSwallowerBanner>();
+            Banner = NPC.type;
+            BannerItem = ModContent.ItemType<CarrionSwallowerBanner>();
         }
 
         public override void SendExtraAI(BinaryWriter writer)

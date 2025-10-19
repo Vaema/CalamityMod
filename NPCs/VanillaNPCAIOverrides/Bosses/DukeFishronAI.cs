@@ -24,7 +24,6 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
 
             // Variables
             bool death = CalamityWorld.death || BossRushEvent.BossRushActive;
-            bool deathModeSurprise = lifeRatio >= 0.9f && death;
             bool phase2 = lifeRatio < (death ? 0.6f : 0.7f);
             bool phase3 = lifeRatio < (death ? 0.3f : 0.4f);
             bool phase4 = lifeRatio < (death ? 0.1f : 0.2f);
@@ -86,7 +85,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                 idlePhaseAcceleration *= 1.05f;
                 idlePhaseVelocity *= 1.08f;
                 chargeTime -= 1;
-                chargeVelocity *= 1.13f;
+                chargeVelocity *= 1.1f;
             }
 
             if (Main.getGoodWorld)
@@ -181,18 +180,15 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
 
             if (death)
             {
-                idlePhaseTimer -= 6;
-                idlePhaseAcceleration *= 1.2f;
-                idlePhaseVelocity *= 1.2f;
-                chargeTime -= 4;
-                chargeVelocity += 3f;
+                chargeTime -= 2;
+                chargeVelocity += 1f;
             }
 
             if (Main.getGoodWorld)
                 chargeTime += Main.rand.Next(5, 66);
 
             // Spawn cthulhunadoes in phase 3
-            if (phase3AI && ((!phase4 && !deathModeSurprise) || Main.getGoodWorld))
+            if (phase3AI && ((!phase4) || Main.getGoodWorld))
             {
                 calamityGlobalNPC.newAI[0] += 1f;
                 float timeGateValue = 600f;
@@ -215,7 +211,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                 npc.rotation = 0f;
                 if (Main.netMode != NetmodeID.MultiplayerClient)
                 {
-                    npc.ai[0] = deathModeSurprise ? 9f : -1f;
+                    npc.ai[0] = -1f;
                     npc.netUpdate = true;
                 }
             }
@@ -414,7 +410,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                         if (enrage)
                             npc.ai[2] = sharknadoPhaseTimer - 40;
                         else if (death)
-                            npc.ai[2] = sharknadoPhaseTimer - 60;
+                            npc.ai[2] = sharknadoPhaseTimer - 40;
                     }
 
                     // Go to phase 2
@@ -906,10 +902,6 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                         }
                     }
 
-                    // Go back to normalcy after dropping below 90% HP
-                    if (!deathModeSurprise && !phase3)
-                        phase3AttackPicker = 3;
-
                     // Set velocity for charge
                     if (phase3AttackPicker == 1)
                     {
@@ -975,21 +967,6 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                     Main.dust[phase3ChargeDust].noLight = true;
                     Main.dust[phase3ChargeDust].velocity /= 4f;
                     Main.dust[phase3ChargeDust].velocity -= npc.velocity;
-                }
-
-                // Spawn bubbles during charge in Master Mode (these bubbles have special behavior that makes them float upward, doing no damage, before returning to their normal behavior)
-                if (death && phase4)
-                {
-                    if (npc.ai[2] % (bubbleBelchPhaseDivisor * 2) == 0f)
-                    {
-                        SoundEngine.PlaySound(SoundID.NPCDeath19, npc.Center);
-
-                        if (Main.netMode != NetmodeID.MultiplayerClient)
-                        {
-                            Vector2 bubbleSpawnDirection = Vector2.Normalize(player.Center - npc.Center) * (npc.width + 20) / 2f + npc.Center;
-                            NPC.NewNPC(npc.GetSource_FromAI(), (int)bubbleSpawnDirection.X, (int)bubbleSpawnDirection.Y + 45, NPCID.DetonatingBubble, 0, 0f, -60f);
-                        }
-                    }
                 }
 
                 npc.ai[2] += 1f;

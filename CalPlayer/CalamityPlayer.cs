@@ -82,6 +82,7 @@ using Terraria.ModLoader.IO;
 using Terraria.Net;
 using static Terraria.Main;
 using static Terraria.ModLoader.ModContent;
+using CalamityMod.Items.Pets;
 
 namespace CalamityMod.CalPlayer
 {
@@ -297,6 +298,10 @@ namespace CalamityMod.CalPlayer
         public bool lucreciaEnergyPaused = false;
         public bool lucreciaEnergyMaxSFXPlayed = false;
         private int lucreciaParticleTimer = 0;
+        public int elementalMastery = 0;
+        public int elementalMasteryTimer = 0;
+        public bool elementalMasteryPaused = false;
+        public bool elementalMasterySFXPlayed = false;
         public float unstableCastersGauntletVis = 0;
         public int unstableCastersGauntletVisTimer = 0;
         public int PhotoAudioCooldown = 0;
@@ -547,6 +552,8 @@ namespace CalamityMod.CalPlayer
         public bool pineapplePet = false;
         public bool eidolonSnailPet = false;
         public bool lordePet = false;
+        public bool frostyBat = false;
+        public bool toastyBat = false;
         #endregion
 
         #region Rage
@@ -1567,8 +1574,6 @@ namespace CalamityMod.CalPlayer
         public bool KalandraMirror = false;
         public bool StellarTorus = false;
         public bool LiliesOfFinalityBool = false;
-        public bool FlarebatBool = false;
-        public bool FrostbatBool = false;
         public bool AmphibiansGuitarBool = false;
         #endregion
 
@@ -2128,6 +2133,8 @@ namespace CalamityMod.CalPlayer
             pineapplePet = false;
             eidolonSnailPet = false;
             lordePet = false;
+            frostyBat = false;
+            toastyBat = false;
 
             onyxExcavator = false;
             rimehound = false;
@@ -2734,8 +2741,6 @@ namespace CalamityMod.CalPlayer
             KalandraMirror = false;
             StellarTorus = false;
             LiliesOfFinalityBool = false;
-            FlarebatBool = false;
-            FrostbatBool = false;
             AmphibiansGuitarBool = false;
             #endregion
 
@@ -3263,6 +3268,7 @@ namespace CalamityMod.CalPlayer
             flareGunOverheat = 0;
             hellbornShots = 0;
             lucreciaEnergy = 0;
+            elementalMastery = 0;
             garandShots = 0;
             searedPanCounter = 0;
             searedPanTimer = 0;
@@ -5217,6 +5223,13 @@ namespace CalamityMod.CalPlayer
         private void NOULOL()
         {
             Player.ResetEffects();
+            for (int j = 0; j < 1000; j++)
+            {
+                if (!Main.projectile[j].active || Main.projectile[j].owner != Player.whoAmI)
+                    continue;
+
+                Player.ownedProjectileCounts[Main.projectile[j].type]++;
+            }
             Player.head = -1;
             Player.body = -1;
             Player.legs = -1;

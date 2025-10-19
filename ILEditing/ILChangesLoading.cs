@@ -207,7 +207,10 @@ namespace CalamityMod.ILEditing
             IL_WorldGen.AttemptFossilShattering += PreventFossilShattering;
             On_Player.GetPickaxeDamage += RemoveHellforgePickaxeRequirement;
             IL_Player.Update += PreventUFODismountInWater;
-            On_Player.GetAnglerReward += ImproveAnglerRewards;
+
+            On_Player.GetAnglerReward_MainReward += AddMoreGuaranteedAnglerRewards;
+            On_Player.GetAnglerReward_Bait += ImproveAnglerBaitReward;
+            On_Player.GetAnglerReward_Money += ImproveAnglerMoneyReward;
 
             IL_Player.TileInteractionsUse += RemovePowerCellPlanteraLock;
             On_Player.ItemCheck_CheckCanUse += RemoveUseLocks;
@@ -219,10 +222,6 @@ namespace CalamityMod.ILEditing
             On_PlayerInput.SetZoom_MouseInWorld += GravityMouse;
             On_Main.DrawPlayerChatBubbles += UI_Unflip_Start;
             On_Main.DrawInterface += UI_Unflip_End;
-
-            // Fix vanilla bugs exposed by Calamity mechanics
-            IL_NPC.NPCLoot += FixSplittingWormBannerDrops;
-            On_NPC.PlayerInteraction += FixSplittingWormInteraction;
 
             // Fix vanilla not accounting for spritebatch modification in held projectile drawing
             On_PlayerDrawLayers.DrawHeldProj += FixHeldProjectileBlendState;

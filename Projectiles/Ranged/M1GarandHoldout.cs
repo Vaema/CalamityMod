@@ -39,7 +39,7 @@ namespace CalamityMod.Projectiles.Ranged
 
         // Muzzle flash textures
         public static Asset<Texture2D> MuzzleFlash;
-        public static Asset<Texture2D> GlowTexture;
+        public static Asset<Texture2D> HoldoutGlow;
 
         public static readonly SoundStyle FireSound = new("CalamityMod/Sounds/Item/WulfrumBlunderbussFire") { PitchVariance = 0.1f }; 
         public static readonly SoundStyle PingSound = new("CalamityMod/Sounds/Item/M1GarandPing");
@@ -48,7 +48,7 @@ namespace CalamityMod.Projectiles.Ranged
         public override void Load()
         {
             MuzzleFlash = ModContent.Request<Texture2D>("CalamityMod/Projectiles/Ranged/M1GarandMuzzleFlash", AssetRequestMode.ImmediateLoad);
-            GlowTexture = ModContent.Request<Texture2D>("CalamityMod/Projectiles/Ranged/M1GarandHoldoutGlow", AssetRequestMode.ImmediateLoad);
+            HoldoutGlow = ModContent.Request<Texture2D>("CalamityMod/Projectiles/Ranged/M1GarandHoldoutGlow", AssetRequestMode.ImmediateLoad);
         }
 
         public override void SetStaticDefaults() => Main.projFrames[Type] = 6;
@@ -267,7 +267,7 @@ namespace CalamityMod.Projectiles.Ranged
             {
                 if (pingAnimationTimer <= PingAnimationDuration)
                 {
-                    Texture2D pingTexture = ModContent.Request<Texture2D>("CalamityMod/Projectiles/Ranged/M1GarandPingText").Value;
+                    Texture2D pingTexture = Main.zenithWorld ? ModContent.Request<Texture2D>("CalamityMod/Particles/MammothParticle").Value :  ModContent.Request<Texture2D>("CalamityMod/Projectiles/Ranged/M1GarandPingText").Value;
                     Vector2 origin = pingTexture.Size() * 0.5f;
                     Vector2 pingDrawPosition;
 
@@ -344,7 +344,7 @@ namespace CalamityMod.Projectiles.Ranged
         {
             Texture2D texture = TextureAssets.Projectile[Type].Value;
             Rectangle frame = texture.Frame(verticalFrames: Main.projFrames[Type], frameY: Math.Clamp(Projectile.frame, 0, Main.projFrames[Type] - 1));
-            Texture2D glowTexture = GlowTexture.Value;
+            Texture2D glowTexture = HoldoutGlow.Value;
 
             Vector2 drawPosition = Projectile.Center - Main.screenPosition;
             float drawRotation = Projectile.rotation + (Projectile.spriteDirection == -1 ? MathHelper.Pi : 0f);

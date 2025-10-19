@@ -25,6 +25,7 @@ using Terraria.ID;
 using Terraria.ModLoader;
 using Terraria.ModLoader.Utilities;
 using Terraria.Utilities;
+using CalamityMod.Items.Placeables.Banners;
 
 namespace CalamityMod.NPCs.SunkenSea
 {
@@ -290,8 +291,8 @@ namespace CalamityMod.NPCs.SunkenSea
             NPC.HitSound = SoundID.NPCHit38;
             NPC.DeathSound = SoundID.NPCDeath1;
             NPC.knockBackResist = 0.15f;
-            //Banner = NPC.type;
-            //BannerItem = ModContent.ItemType<ScavengerBanner>();
+            Banner = NPC.type;
+            BannerItem = ModContent.ItemType<ScavengerBanner>();
             NPC.chaseable = false;
             NPC.Calamity().VulnerableToHeat = false;
             NPC.Calamity().VulnerableToSickness = true;

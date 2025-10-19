@@ -9,7 +9,6 @@ namespace CalamityMod.Projectiles.Rogue
     public class SamsaraSlicerSmallDisk : ModProjectile, ILocalizedModType
     {
         public new string LocalizationCategory => "Projectiles.Rogue";
-        private double rotation = 0;
         public Projectile Parent = null;
         public override void SetStaticDefaults()
         {

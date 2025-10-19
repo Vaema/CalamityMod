@@ -1,4 +1,5 @@
 ﻿using CalamityMod.Enums;
+using CalamityMod.Items.Placeables.Banners;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using ReLogic.Content;
@@ -68,8 +69,8 @@ namespace CalamityMod.NPCs.SunkenSea
             NPC.HitSound = SoundID.NPCHit1;
             NPC.DeathSound = SoundID.NPCDeath1;
             NPC.value = Item.buyPrice(silver: 5);
-            // Banner = NPC.type;
-            // BannerItem = ModContent.ItemType<PolyperilBanner>();
+            Banner = NPC.type;
+            BannerItem = ModContent.ItemType<PolyperilBanner>();
 
             NPC.Calamity().VulnerableToHeat = false;
             NPC.Calamity().VulnerableToSickness = false;

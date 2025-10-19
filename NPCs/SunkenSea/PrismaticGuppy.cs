@@ -180,8 +180,8 @@ namespace CalamityMod.NPCs.SunkenSea
             AIType = -1;
             NPC.HitSound = SoundID.NPCHit1;
             NPC.DeathSound = SoundID.NPCDeath1;
-            //Banner = NPC.type;
-            //BannerItem = ModContent.ItemType<PrismaticGuppyBanner>();
+            Banner = NPC.type;
+            BannerItem = ModContent.ItemType<PrismaticGuppyBanner>();
             NPC.chaseable = false;
             NPC.catchItem = (short)ModContent.ItemType<PrismaticGuppyBlueItem>();
         }
