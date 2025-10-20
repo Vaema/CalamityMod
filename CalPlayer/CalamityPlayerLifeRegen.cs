@@ -198,6 +198,8 @@ namespace CalamityMod.CalPlayer
                 if (CalamityBuffSets.AlcoholStrength.TryGetValue(buff, out int level))
                     alcoholPoisonLevel += level;
             }
+            if (Player.Calamity().ivDrip) // +1 stack of poisoning while IV Drip is equipped
+                alcoholPoisonLevel++;
             if (vodka)
                 totalNegativeLifeRegen += Vodka.RegenLoss;
             if (redWine)
