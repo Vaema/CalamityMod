@@ -17,6 +17,7 @@ namespace CalamityMod.Projectiles.Melee
 {
     class AmidiasTridentBoltProj : ModProjectile, ILocalizedModType
     {
+        public override string LocalizationCategory => "Projectiles.Melee";
         public override string Texture => "CalamityMod/Particles/VerticalSmear";
         public override void SetDefaults()
         {

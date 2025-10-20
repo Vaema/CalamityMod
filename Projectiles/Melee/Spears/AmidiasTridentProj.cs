@@ -210,6 +210,18 @@ namespace CalamityMod.Projectiles.Melee.Spears
                     0f, 0.2f, 0.8f, 6
                     ));
             }
+
+            for (int i = 0; i < 5; i++)
+            {
+                float rot = Main.rand.NextFloat(MathHelper.TwoPi) + MathHelper.PiOver2;
+                float sc = 0.3f;
+
+                GeneralParticleHandler.SpawnParticle(new CustomPulse(
+                    npc.Center, (rot - MathHelper.PiOver2).ToRotationVector2() * 6f, Color.Lerp(SeaKingsAssurance.BaseColor, SeaKingsAssurance.LightColor, sc * 3f), "CalamityMod/Particles/ForwardSmear", new Vector2(Main.rand.NextFloat(0.015f, 0.1f), 0.1f),
+                    rot, sc, sc * 2f, 8
+                    ));
+            }
+
         }
         public static readonly Asset<Texture2D> StabTexture = ModContent.Request<Texture2D>("CalamityMod/Particles/LargeSpark");
         public static readonly Asset<Texture2D> SwingTexture = ModContent.Request<Texture2D>("CalamityMod/Particles/CircularSmearFire3");
