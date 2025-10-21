@@ -142,6 +142,16 @@ namespace CalamityMod.NPCs.SunkenSea
                     Dust.NewDust(NPC.position, NPC.width, NPC.height, DustID.Coralstone, hit.HitDirection, -1f, 0, default, 1f);
                 }
             }
+            if (Color < 3)
+            {
+                string goreName = Color switch
+                {
+                    1 => "PolyperilBlue",
+                    2 => "PolyperilGreen",
+                    _ => "PolyperilPink"
+                };
+                CalamityUtils.SpawnGores(NPC, goreName, 1);
+            }
         }
 
         public override bool CanBeHitByNPC(NPC attacker)

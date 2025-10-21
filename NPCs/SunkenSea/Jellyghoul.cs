@@ -181,6 +181,7 @@ namespace CalamityMod.NPCs.SunkenSea
                     Dust.NewDust(NPC.position, NPC.width, NPC.height, DustID.SpectreStaff, hit.HitDirection, -1f, 0, Color.DarkGray * 0.2f, 1f);
                 }
             }
+            CalamityUtils.SpawnGores(NPC, "Jellyghoul", 2);
         }
 
         public override void OnKill()

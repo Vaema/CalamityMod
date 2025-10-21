@@ -881,6 +881,39 @@ namespace CalamityMod
             npc.position -= npc.netOffset;
         }
 
+        /// <summary>
+        /// Spawns gores. Automatically accounts for multiplayer.
+        /// </summary>
+        /// <param name="entity">The Entity in question. Usuaully used for NPCs but also applicable for other Entities.</param>
+        /// <param name="suffix">The name of the gore.</param>
+        /// <param name="variants">How many variants there are, defaults to 1.</param>
+        /// <param name="startFrom">What number should the variant names start counting from? A default of -1 means the first gore has no number, while the rest start from 2 and increment by 1.</param>
+        /// <param name="deathCheck">Check if the entity in question is a dead NPC. Defaults to true.</param>
+        public static void SpawnGores(Entity entity, string suffix, int variants = 1, int startFrom = -1, bool deathCheck = true)
+        {
+            if (!Main.dedServ)
+            {
+                bool isADeadNPC = true;
+                if (entity is NPC n && deathCheck)
+                {
+                    if (n.life > 0)
+                        isADeadNPC = false;
+                }
+                if (isADeadNPC)
+                {
+                    for (int i = 0; i < variants; i++)
+                    {
+                        int? idx = startFrom == -1 ? null : startFrom;
+                        if (i > 0)
+                        {
+                            idx = startFrom == -1 ? (i + 1) : (idx + i + 1);
+                        }
+                        Gore.NewGore(entity.GetSource_Death(), entity.position, entity.velocity, CalamityMod.Instance.Find<ModGore>(suffix + idx).Type, 1f);
+                    }
+                }
+            }
+        }
+
         public static NPCShop AddWithCustomValue(this NPCShop shop, int itemType, int customValue, params Condition[] conditions)
         {
             var item = new Item(itemType)

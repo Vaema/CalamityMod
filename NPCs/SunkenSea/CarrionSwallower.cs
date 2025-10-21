@@ -224,5 +224,10 @@ namespace CalamityMod.NPCs.SunkenSea
         {
             npcLoot.Add(ModContent.ItemType<WillOWisp>(), 1, 1, 2);
         }
+
+        public override void HitEffect(NPC.HitInfo hit)
+        {
+            CalamityUtils.SpawnGores(NPC, "CarrionSwallower", 2);
+        }
     }
 }

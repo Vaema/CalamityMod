@@ -920,6 +920,7 @@ namespace CalamityMod.NPCs.SunkenSea
                     Dust.NewDust(NPC.position, NPC.width, NPC.height, DustID.Blood, hit.HitDirection, -1f, 0, Color.DarkGray * 0.2f, 1f);
                 }
             }
+            CalamityUtils.SpawnGores(NPC, "Scavenger", 3);
         }
 
         public override bool PreDraw(SpriteBatch spriteBatch, Vector2 screenPos, Color drawColor)

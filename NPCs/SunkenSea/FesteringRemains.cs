@@ -158,6 +158,7 @@ namespace CalamityMod.NPCs.SunkenSea
             {
                 SoundEngine.PlaySound(SoundID.DD2_SkeletonHurt with { Volume = 0.8f, Pitch = 1.2f }, NPC.position);
             }
+            CalamityUtils.SpawnGores(NPC, "FesteringRemains", 1);
         }
 
         public override bool PreDraw(SpriteBatch spriteBatch, Vector2 screenPos, Color drawColor)
