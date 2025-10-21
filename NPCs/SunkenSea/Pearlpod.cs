@@ -65,8 +65,6 @@ namespace CalamityMod.NPCs.SunkenSea
             NPC.HitSound = SoundID.NPCHit38;
             NPC.DeathSound = SoundID.NPCDeath1;
             NPC.GravityIgnoresLiquid = true;
-            Banner = NPC.type;
-            BannerItem = ModContent.ItemType<PearlpodBanner>();
             NPC.catchItem = ItemType;
             NPC.Calamity().VulnerableToHeat = false;
             NPC.Calamity().VulnerableToSickness = true;
@@ -376,6 +374,7 @@ namespace CalamityMod.NPCs.SunkenSea
         }
         public override void SetDefaults()
         {
+            base.SetDefaults();
             Banner = ModContent.NPCType<PearlpodWhite>();
             BannerItem = ModContent.ItemType<PearlpodBanner>();
         }
@@ -394,6 +393,7 @@ namespace CalamityMod.NPCs.SunkenSea
         }
         public override void SetDefaults()
         {
+            base.SetDefaults();
             Banner = ModContent.NPCType<PearlpodWhite>();
             BannerItem = ModContent.ItemType<PearlpodBanner>();
         }
@@ -412,6 +412,7 @@ namespace CalamityMod.NPCs.SunkenSea
         }
         public override void SetDefaults()
         {
+            base.SetDefaults();
             Banner = ModContent.NPCType<PearlpodWhite>();
             BannerItem = ModContent.ItemType<PearlpodBanner>();
         }
