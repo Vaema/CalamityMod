@@ -70,7 +70,6 @@ namespace CalamityMod.Projectiles.Melee.Spears
 
                     if (AnimationProgress < 20)
                     {
-                        Projectile.damage = AmidiasTrident.SecondaryAttackMeleeDamage;
                         if (AnimationProgress == 1)
                         {
                             SoundStyle soundStyle = new SoundStyle("CalamityMod/Sounds/Item/AmidiasTrident_Spin");
@@ -95,7 +94,6 @@ namespace CalamityMod.Projectiles.Melee.Spears
                     }
                     else
                     {
-                        Projectile.damage = 0;
                         if (AnimationProgress == 20)
                         {
                             ExpendStacks();
@@ -121,7 +119,6 @@ namespace CalamityMod.Projectiles.Melee.Spears
                         rot = Owner.DirectionTo(Owner.Calamity().mouseWorld).ToRotation();
                         if (AnimationProgress % 7 < 2)
                         {
-                            Projectile.damage = AmidiasTrident.BaseAttackMeleeDamage;
                             if (AnimationProgress % 7 == 1)
                             {
                                 SoundStyle soundStyle = new SoundStyle("CalamityMod/Sounds/Item/AmidiasTrident_Stab" + Main.rand.Next(1, 3).ToString());
@@ -133,12 +130,12 @@ namespace CalamityMod.Projectiles.Melee.Spears
                                     CustomSpark p = new CustomSpark(Projectile.Center + new Vector2(20, Main.rand.NextFloat(-30, 30)).RotatedBy(rot), Owner.DirectionTo(AbsolutePosition) * 10, "CalamityMod/Particles/ThinEndedLine", false, 5, 1f, Color.CadetBlue.MultiplyRGBA(new(1f, 1f, 1f, 1f)), new Vector2(0.2f, 1.2f));
                                     GeneralParticleHandler.SpawnParticle(p);
                                 }
-                                if (!Main.dedServ)
+                                if (Main.myPlayer == Projectile.owner)
                                 {
                                     Lighting.AddLight(Projectile.Center, new Vector3(0.2f, 0.45f, 1f));
                                     Vector2 vel = (Projectile.rotation + MathHelper.ToRadians(-135f)).ToRotationVector2() * 30f;
                                     Projectile.NewProjectile(new EntitySource_Parent(Projectile), Projectile.Center + new Vector2(-30, 0).RotatedBy(Projectile.rotation + MathHelper.ToRadians(-135f)),
-                                        vel, ModContent.ProjectileType<AmidiasTridentBoltProj>(), AmidiasTrident.BaseAttackProjectileDamage, 2f, Projectile.owner);
+                                        vel, ModContent.ProjectileType<AmidiasTridentBoltProj>(), (int)(Projectile.damage * AmidiasTrident.BaseAttackProjectileMult), Projectile.knockBack / 2, Projectile.owner);
                                 }
                             }
                             Projectile.ai[0] = MathHelper.Lerp(Projectile.ai[0], 92, 0.3f);
@@ -146,7 +143,6 @@ namespace CalamityMod.Projectiles.Melee.Spears
                         }
                         else
                         {
-                            Projectile.damage = 0;
                             if (AnimationProgress % 7 < 4)
                             {
                                 Projectile.ai[0] = MathHelper.Lerp(Projectile.ai[0], 10, 0.3f);
@@ -168,7 +164,15 @@ namespace CalamityMod.Projectiles.Melee.Spears
                     break;
             }
         }
-        public void ExpendStacks()
+
+        public override bool? CanDamage() => (Owner.altFunctionUse == 0 && AnimationProgress < 21 && AnimationProgress % 7 < 2) || (Owner.altFunctionUse == 2 && AnimationProgress < 20);
+        public override void ModifyHitNPC(NPC target, ref NPC.HitModifiers modifiers)
+        {
+            if (Owner.altFunctionUse == 2 && AnimationProgress < 20)
+                modifiers.SourceDamage *= AmidiasTrident.SecondaryAttackMeleeMult;
+        }
+
+        private void ExpendStacks()
         {
             foreach (NPC npc2 in Main.npc)
             {
@@ -197,11 +201,11 @@ namespace CalamityMod.Projectiles.Melee.Spears
             }
         }
 
-        void DamageEffect(NPC npc, int stacks)
+        private static void DamageEffect(NPC npc, int stacks)
         {
             Projectile.NewProjectileDirect(new EntitySource_Buff(npc, ModContent.BuffType<SeaKingsAssurance>(),
                 npc.FindBuffIndex(ModContent.BuffType<SeaKingsAssurance>())), npc.Center, Vector2.Zero, ModContent.ProjectileType<DirectStrike>(),
-                AmidiasTrident.SecondaryAttackProjectileDamage * stacks, 0f, ai0: npc.whoAmI);
+                AmidiasTrident.SecondaryAttackBlastBaseDamage * stacks, 0f, ai0: npc.whoAmI);
 
             for (int i = 0; i < 5; i++)
             {
@@ -223,6 +227,7 @@ namespace CalamityMod.Projectiles.Melee.Spears
             }
 
         }
+
         public static readonly Asset<Texture2D> StabTexture = ModContent.Request<Texture2D>("CalamityMod/Particles/LargeSpark");
         public static readonly Asset<Texture2D> SwingTexture = ModContent.Request<Texture2D>("CalamityMod/Particles/CircularSmearFire3");
         public override bool PreDraw(ref Color lightColor)

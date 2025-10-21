@@ -15,27 +15,23 @@ namespace CalamityMod.Items.Weapons.Melee
         }
 
         /// <summary>
-        /// The damage dealt in melee range when using attack 1.
+        /// The damage multiplier for the primary use's long-range projectiles.
         /// </summary>
-        public static readonly int BaseAttackMeleeDamage = 20;
+        public static readonly float BaseAttackProjectileMult = 0.5f;
         /// <summary>
-        /// The damage dealt by the long-range projectiles shot by attack 1.
+        /// The damage multiplier for the secondary attack.
         /// </summary>
-        public static readonly int BaseAttackProjectileDamage = 10;
-        /// <summary>
-        /// Secondary attack spin damage. In melee range only.
-        /// </summary>
-        public static readonly int SecondaryAttackMeleeDamage = 25;
+        public static readonly float SecondaryAttackMeleeMult = 1.25f;
         /// <summary>
         /// Secondary attack proc effect damage. Multiplied by the number of stacks of Sea King's Assurance the enemy taking damage has.
         /// </summary>
-        public static readonly int SecondaryAttackProjectileDamage = 20;
+        public static readonly int SecondaryAttackBlastBaseDamage = 20;
 
         public override void SetDefaults()
         {
             Item.width = 44;
             Item.height = 44;
-            Item.damage = 12;
+            Item.damage = 20;
             Item.DamageType = DamageClass.Melee;
             Item.noMelee = true;
             Item.noUseGraphic = true;
