@@ -9,7 +9,7 @@ using Terraria.ID;
 using Terraria.ModLoader;
 namespace CalamityMod.Projectiles.Boss
 {
-    public class CloneExplosion : ModProjectile, ILocalizedModType
+    public class CalamitousExplosion : ModProjectile, ILocalizedModType
     {
         public new string LocalizationCategory => "Projectiles.Boss";
         public override string Texture => "CalamityMod/Projectiles/InvisibleProj";
@@ -78,28 +78,6 @@ namespace CalamityMod.Projectiles.Boss
             }
             projTimer *= 0.7f;
             Projectile.ai[0] += 4f;
-            int timerCounter = 0;
-            while ((float)timerCounter < projTimer)
-            {
-                /*float rando1 = (float)Main.rand.Next(-10, 11);
-                float rando2 = (float)Main.rand.Next(-10, 11);
-                float rando3 = (float)Main.rand.Next(3, 9);
-                float randoAdjuster = (float)Math.Sqrt((double)(rando1 * rando1 + rando2 * rando2));
-                randoAdjuster = rando3 / randoAdjuster;
-                rando1 *= randoAdjuster;
-                rando2 *= randoAdjuster;
-                int brimDust = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, (int)CalamityDusts.Brimstone, 0f, 0f, 100, default, 1.5f);
-                Main.dust[brimDust].noGravity = true;
-                Main.dust[brimDust].position.X = Projectile.Center.X;
-                Main.dust[brimDust].position.Y = Projectile.Center.Y;
-                Dust expr_149DF_cp_0 = Main.dust[brimDust];
-                expr_149DF_cp_0.position.X += (float)Main.rand.Next(-10, 11);
-                Dust expr_14A09_cp_0 = Main.dust[brimDust];
-                expr_14A09_cp_0.position.Y += (float)Main.rand.Next(-10, 11);
-                Main.dust[brimDust].velocity.X = rando1;
-                Main.dust[brimDust].velocity.Y = rando2;*/
-                timerCounter++;
-            }
                 var p = CalamitasMetaball.SpawnParticle(Projectile.Center, Main.rand.NextVector2CircularEdge(4, 4), 32f);
                 p.SizeScaling = 0.96f;
 

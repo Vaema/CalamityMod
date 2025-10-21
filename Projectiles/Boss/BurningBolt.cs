@@ -1,20 +1,15 @@
-﻿using System.IO;
-using CalamityMod.Buffs.DamageOverTime;
-using CalamityMod.Dusts;
-using CalamityMod.Events;
+﻿using CalamityMod.Buffs.DamageOverTime;
 using CalamityMod.Graphics.Metaballs;
 using CalamityMod.NPCs;
-using CalamityMod.NPCs.CalClone;
 using CalamityMod.NPCs.SupremeCalamitas;
 using CalamityMod.Particles;
-using CalamityMod.World;
 using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
 namespace CalamityMod.Projectiles.Boss
 {
-    public class CloneBarrage : ModProjectile, ILocalizedModType
+    public class BurningBolt : ModProjectile, ILocalizedModType
     {
         public new string LocalizationCategory => "Projectiles.Boss";
         public int time = 0;
@@ -86,29 +81,6 @@ namespace CalamityMod.Projectiles.Boss
                 }
             }
 
-            // This only runs for SCal projectiles.
-            if (Projectile.ai[1] == 2f || (Projectile.ai[1] == 4f && time > 10))
-            {
-                if (targetDist < 1400f)
-                {
-                    SparkParticle orb = new SparkParticle(Projectile.Center - Projectile.velocity * 0.5f, -Projectile.velocity * Main.rand.NextFloat(0.1f, 0.6f), false, (int)MathHelper.Clamp(9 * Utils.GetLerpValue(630, 690, Projectile.timeLeft), 2, 9), 1.1f, (Main.rand.NextBool() ? Color.Red : Color.Lerp(Color.Red, Color.Magenta, 0.5f)) * Projectile.Opacity * 0.85f);
-                    GeneralParticleHandler.SpawnParticle(orb);
-                }
-            }
-            // This only runs for SCal seekers and Sepulcher projectiles.
-            if (Projectile.ai[1] == 3f)
-            {
-                if (Projectile.timeLeft > 600)
-                    Projectile.velocity *= 1.015f;
-
-                Projectile.scale = 0.85f;
-
-                Dust trailDust = Dust.NewDustPerfect(Projectile.Center + Main.rand.NextVector2Circular(4, 4), 182);
-                trailDust.noGravity = true;
-                trailDust.velocity = (-Projectile.velocity * 0.5f) * Main.rand.NextFloat(0.1f, 0.9f);
-                trailDust.scale = Main.rand.NextFloat(0.2f, 0.6f);
-            }
-
             Lighting.AddLight(Projectile.Center, 0.75f * Projectile.Opacity, 0f, 0f);
             time++;
 
@@ -126,32 +98,11 @@ namespace CalamityMod.Projectiles.Boss
         {
             if (info.Damage <= 0 || Projectile.Opacity != 1f)
                 return;
-
-            if (Projectile.ai[0] == 0f || Main.zenithWorld)
-                target.AddBuff(ModContent.BuffType<VulnerabilityHex>(), 180);
-            else
                 target.AddBuff(ModContent.BuffType<BrimstoneFlames>(), 120);
         }
 
         public override bool PreDraw(ref Color lightColor)
         {
-            return false;
-            lightColor.R = (byte)(255 * Projectile.Opacity);
-
-            if (CalamityGlobalNPC.SCal != -1 && NPC.AnyNPCs(ModContent.NPCType<SupremeCalamitas>()) == true)
-            {
-                if (Main.npc[CalamityGlobalNPC.SCal].active)
-                {
-                    if (Main.npc[CalamityGlobalNPC.SCal].ModNPC<SupremeCalamitas>().permafrost)
-                    {
-                        lightColor.G = (byte)(255 * Projectile.Opacity);
-                        lightColor.B = (byte)(255 * Projectile.Opacity);
-                        lightColor.R = 0;
-                    }
-                }
-            }
-
-            CalamityUtils.DrawAfterimagesCentered(Projectile, ProjectileID.Sets.TrailingMode[Type], lightColor, 1);
             return false;
         }
         public override bool? Colliding(Rectangle projHitbox, Rectangle targetHitbox) => CalamityUtils.CircularHitboxCollision(Projectile.Center, 10 * Projectile.scale, targetHitbox);

@@ -16,7 +16,7 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.Projectiles.Boss
 {
-    public class CloneHellblast : ModProjectile, ILocalizedModType
+    public class CalamitousDart : ModProjectile, ILocalizedModType
     {
 
         public override string Texture => "CalamityMod/Projectiles/InvisibleProj";
@@ -84,13 +84,6 @@ namespace CalamityMod.Projectiles.Boss
             if (Projectile.timeLeft < 51)
                 Projectile.Opacity -= 0.02f;
 
-            if (Projectile.ai[2] == 0f || Projectile.ai[2] == 2f) // Will only enter this loop once. 
-            {
-                if (Projectile.ai[2] == 0f)
-                    Projectile.ai[2] = 1f;
-
-                SoundEngine.PlaySound(SoundID.Item20, Projectile.Center);
-            }
 
             if (Projectile.velocity.Length() < (Projectile.ai[2] == 2f ? 9.5f : 5.3f)) // Hellblasts in phase 4 have faster accel and higher max velocity
                 Projectile.velocity *= Projectile.ai[2] == 2f ? 1.033f : 1.0125f;
@@ -126,52 +119,6 @@ namespace CalamityMod.Projectiles.Boss
         public override bool PreDraw(ref Color lightColor)
         {
             return false;
-            //CalamityUtils.DrawAfterimagesCentered(Projectile, ProjectileID.Sets.TrailingMode[Type], lightColor, 1);
-            var dir = Projectile.rotation.ToRotationVector2();
-            if (Projectile.spriteDirection == -1)
-                dir = dir.RotatedBy(MathHelper.Pi);
-
-            Vector2 GetPoint(float dist, float rot = 0, float scaleMult = 1, bool useDir = true)
-            {
-                if (!useDir)
-                {
-
-                    return Projectile.Center + Vector2.UnitX.RotatedBy(rot) * dist * scaleMult;
-                }
-                return Projectile.Center + dir.RotatedBy(rot) * dist * scaleMult;
-            }
-            var tex = ModContent.Request<Texture2D>("CalamityMod/Particles/Blood").Value;
-            Main.spriteBatch.Draw(tex, Projectile.Center - Main.screenPosition, tex.Frame(), Color.Crimson, Projectile.rotation + MathHelper.PiOver2, tex.Size() * 0.5f, 0.4f * Projectile.scale, Microsoft.Xna.Framework.Graphics.SpriteEffects.None, 0);
-
-            Main.spriteBatch.Draw(tex, Projectile.Center - Main.screenPosition, tex.Frame(), Color.Black, Projectile.rotation + MathHelper.PiOver2, tex.Size() * 0.5f, 0.35f * Projectile.scale, Microsoft.Xna.Framework.Graphics.SpriteEffects.None, 0);
-            Main.spriteBatch.Draw(tex, Projectile.Center + dir*14 - Main.screenPosition, null, Color.Crimson, Projectile.rotation + MathHelper.PiOver2, tex.Size() * 0.5f, 0.15f*Projectile.scale, Microsoft.Xna.Framework.Graphics.SpriteEffects.None,0);
-            return false;
-            for (var i = 0; i < 0; i++)
-            {
-                float scaleMult = (1 - i / 3f);
-                //scaleMult *= 0.5f;
-                for (var inv = -1; inv <= 1; inv += 2)
-                {
-                    CalamityUtils.DrawLineBetter(Main.spriteBatch, GetPoint(30, 0, scaleMult), GetPoint(30, MathHelper.PiOver2*inv, scaleMult), Color.Red * scaleMult, 4);
-                    CalamityUtils.DrawLineBetter(Main.spriteBatch, GetPoint(-30, 0, scaleMult), GetPoint(30, MathHelper.PiOver2 * inv, scaleMult), Color.Red * scaleMult, 4);
-                    /*CalamityUtils.DrawLineBetter(Main.spriteBatch, GetPoint(30, 0, scaleMult), GetPoint(28, 0.6f*inv, scaleMult), Color.Red * scaleMult, 4);
-                    CalamityUtils.DrawLineBetter(Main.spriteBatch, GetPoint(28, 0.6f*inv, scaleMult), GetPoint(26, MathHelper.PiOver2 * inv, scaleMult), Color.Red * scaleMult, 4);
-                    CalamityUtils.DrawLineBetter(Main.spriteBatch, GetPoint(-32, -0.5f * inv, scaleMult), GetPoint(26, MathHelper.PiOver2 * inv, scaleMult), Color.Red * scaleMult, 4);
-                    CalamityUtils.DrawLineBetter(Main.spriteBatch, GetPoint(-32, -0.5f * inv, scaleMult), GetPoint(-48, 0, scaleMult), Color.Red * scaleMult, 4);*/
-                }
-            }
-            
-            for (var i = 0; i < 10; i++)
-            {
-                CalamityUtils.DrawLineBetter(Main.spriteBatch, GetPoint(30, 0, 1, false) - new Vector2(15 * MathF.Sin(Main.GlobalTimeWrappedHourly+i) + 15) * Projectile.spriteDirection, GetPoint(30, MathHelper.PiOver2, 1, false) - new Vector2(15 * MathF.Sin(Main.GlobalTimeWrappedHourly+i) + 15) * Projectile.spriteDirection, Color.Red * 0.25f, 4);
-                //CalamityUtils.DrawLineBetter(Main.spriteBatch, GetPoint(30, 0) + new Vector2(15 * MathF.Sin(Main.GlobalTimeWrappedHourly + i) + 15).RotatedBy(MathHelper.PiOver2) * Projectile.spriteDirection, GetPoint(30, -MathHelper.PiOver2) + new Vector2(15 * MathF.Sin(Main.GlobalTimeWrappedHourly + i) + 15).RotatedBy(MathHelper.PiOver2) * Projectile.spriteDirection, Color.Red * 0.25f, 4);
-            }
-            for (var i = 0; i < 10; i+=2)
-            {
-                //CalamityUtils.DrawLineBetter(Main.spriteBatch, GetPoint(30, 0) - new Vector2(15 * MathF.Sin(Main.GlobalTimeWrappedHourly + i) + 15) * Projectile.spriteDirection, GetPoint(30, MathHelper.PiOver2) - new Vector2(15 * MathF.Sin(Main.GlobalTimeWrappedHourly + i) + 15) * Projectile.spriteDirection, Color.Red * 0.25f, 4);
-                CalamityUtils.DrawLineBetter(Main.spriteBatch, GetPoint(30, 0,1,false) + new Vector2(15 * MathF.Sin(Main.GlobalTimeWrappedHourly + i) + 15).RotatedBy(MathHelper.PiOver2) * Projectile.spriteDirection, GetPoint(30, -MathHelper.PiOver2, 1, false) + new Vector2(15 * MathF.Sin(Main.GlobalTimeWrappedHourly + i) + 15).RotatedBy(MathHelper.PiOver2) * Projectile.spriteDirection, Color.Red * 0.25f, 4);
-            }
-            return false;
         }
 
         public override bool CanHitPlayer(Player target) => Projectile.timeLeft >= 51;
@@ -181,7 +128,7 @@ namespace CalamityMod.Projectiles.Boss
             if (info.Damage <= 0 || Projectile.timeLeft < 51)
                 return;
 
-            if (Projectile.ai[0] == 0f || Main.zenithWorld)
+            if (Main.zenithWorld)
                 target.AddBuff(ModContent.BuffType<VulnerabilityHex>(), 180);
             else
                 target.AddBuff(ModContent.BuffType<BrimstoneFlames>(), 120);
@@ -189,7 +136,6 @@ namespace CalamityMod.Projectiles.Boss
 
         public override void OnKill(int timeLeft)
         {
-            SoundEngine.PlaySound(SoundID.Item20, Projectile.Center);
             for (int dust = 0; dust <= 5; dust++)
             {
                 Dust.NewDust(Projectile.position + Projectile.velocity, Projectile.width, Projectile.height, (int)CalamityDusts.Brimstone, 0f, 0f);

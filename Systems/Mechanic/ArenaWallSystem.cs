@@ -57,6 +57,10 @@ namespace CalamityMod.Systems.Mechanic
             public Action<Box> DrawBox = null;
 
             public Action<Box> UpdateBox = null;
+            /// <summary>
+            /// The despawn logic to kill this box. Make sure at some point to call ArenaWallSystem.ActiveBoxes.Remove(Box)!
+            /// </summary>
+            public Action<Box> DespawnAction = (box) => ActiveBoxes.Remove(box);
 
             public void DrawBoxWithOffset(float Offset, float Thickness, Color color)
             {
@@ -141,8 +145,9 @@ namespace CalamityMod.Systems.Mechanic
                 var box = ActiveBoxes[i];
                 if (box.RemovalCondition())
                 {
-                    ActiveBoxes.Remove(box);
-                    i--;
+                    box.DespawnAction(box);
+                    if (!ActiveBoxes.Contains(box))
+                        i--;
                     continue;
                 }
 

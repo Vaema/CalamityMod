@@ -1,13 +1,14 @@
 ﻿using CalamityMod.Buffs.DamageOverTime;
 using CalamityMod.Dusts;
 using CalamityMod.Graphics.Metaballs;
+using CalamityMod.World;
 using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
 namespace CalamityMod.Projectiles.Boss
 {
-    public class CatastrophicBall : ModProjectile, ILocalizedModType
+    public class CatastrophicCinder : ModProjectile, ILocalizedModType
     {
         public new string LocalizationCategory => "Projectiles.Boss";
         public override void SetDefaults()
@@ -15,7 +16,7 @@ namespace CalamityMod.Projectiles.Boss
             Projectile.width = 16;
             Projectile.height = 16;
             Projectile.hostile = true;
-            Projectile.penetrate = 1;
+            Projectile.penetrate = CalamityWorld.death ? 4 : 3;
             Projectile.timeLeft = 300;
             CooldownSlot = ImmunityCooldownID.Bosses;
         }
@@ -34,6 +35,19 @@ namespace CalamityMod.Projectiles.Boss
             Projectile.Opacity = 0;
         }
 
+        public override bool OnTileCollide(Vector2 oldVelocity)
+        {
+            for (var i = 0; i < 10; i++)
+            {
+                var p = CatastropheMetaball.SpawnParticle(Projectile.Center + Projectile.velocity, Main.rand.NextVector2Circular(4, 4), 16);
+                p.SizeScaling = 0.9f;
+            }
+            if (Projectile.velocity.Y != oldVelocity.Y)
+                Projectile.velocity.Y = -oldVelocity.Y;
+            if (Projectile.velocity.X != oldVelocity.X)
+                Projectile.velocity.X = -oldVelocity.X;
+            return Projectile.penetrate-- == 0;
+        }
         public override void OnHitPlayer(Player target, Player.HurtInfo info)
         {
             if (info.Damage <= 0)

@@ -11,7 +11,7 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.Projectiles.Boss
 {
-    public class CataclysmicFire : ModProjectile, ILocalizedModType
+    public class CataclysmicFlame : ModProjectile, ILocalizedModType
     {
         public new string LocalizationCategory => "Projectiles.Boss";
         public override string Texture => "CalamityMod/Projectiles/FireProj";
@@ -29,6 +29,7 @@ namespace CalamityMod.Projectiles.Boss
             Projectile.penetrate = -1;
             Projectile.MaxUpdates = 3;
             Projectile.timeLeft = Lifetime;
+            Projectile.tileCollide = false;
             CooldownSlot = ImmunityCooldownID.Bosses;
         }
 
@@ -54,7 +55,8 @@ namespace CalamityMod.Projectiles.Boss
                 MistType = Main.rand.Next(3);
 
             Lighting.AddLight(Projectile.Center, 0.75f, 0.15f, 0.15f);
-
+            if (Projectile.timeLeft > Lifetime - 10)
+                return;
             float timeRatio = Utils.GetLerpValue(0f, Lifetime, Time);
             float fireSize = Utils.Remap(timeRatio, 0.2f, 0.5f, 0.25f, 1f);
             var p = CataclysmMetaball.SpawnParticle(Projectile.Center, Vector2.Zero, Terraria.GameContent.TextureAssets.Projectile[Type].Width() * fireSize);// Main.rand.NextVector2Circular(2, 2), 64f);//

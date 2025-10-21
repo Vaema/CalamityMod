@@ -9,7 +9,7 @@ using Terraria.ID;
 using Terraria.ModLoader;
 namespace CalamityMod.Projectiles.Boss
 {
-    public class CloneHellfireball : ModProjectile, ILocalizedModType
+    public class CalamitousFireball : ModProjectile, ILocalizedModType
     {
         public new string LocalizationCategory => "Projectiles.Boss";
 
@@ -64,10 +64,10 @@ namespace CalamityMod.Projectiles.Boss
 
             Lighting.AddLight(Projectile.Center, 0.5f, 0f, 0f);
 
-            int brimDust = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, (int)CalamityDusts.Brimstone, 0f, 0f, 170, default, 1.1f);
-            Main.dust[brimDust].noGravity = true;
-            Main.dust[brimDust].velocity *= 0.5f;
-            Main.dust[brimDust].velocity += Projectile.velocity * 0.1f;
+            var brimDust = Dust.NewDustPerfect(Projectile.Center + Main.rand.NextVector2Circular(32,32), (int)CalamityDusts.Brimstone, null, 170, default, 1.1f);
+            brimDust.noGravity = true;
+            brimDust.velocity *= 0.5f;
+            brimDust.velocity += Projectile.velocity * 0.1f;
             for (var i = 0; i < 1; i++)
             {
                 CalamitasMetaball.SpawnParticle(Projectile.Center + Projectile.velocity, Main.rand.NextVector2Circular(2, 2), 64f);
@@ -82,7 +82,7 @@ namespace CalamityMod.Projectiles.Boss
         public override void OnKill(int timeLeft)
         {
             if (Projectile.owner == Main.myPlayer)
-                Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center, Vector2.Zero, ModContent.ProjectileType<CloneExplosion>(), Projectile.damage, Projectile.knockBack, Projectile.owner);
+                Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center, Vector2.Zero, ModContent.ProjectileType<CalamitousExplosion>(), Projectile.damage, Projectile.knockBack, Projectile.owner);
         }
 
         public override void OnHitPlayer(Player target, Player.HurtInfo info)

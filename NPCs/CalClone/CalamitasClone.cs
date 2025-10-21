@@ -94,7 +94,7 @@ namespace CalamityMod.NPCs.CalClone
                 baseSize *= new Vector4(1.5f, 0.75f, 1.5f, 0.75f);
             if (!CalamityWorld.death)
                 baseSize *= 1.25f;
-            if (lifeRatio < 0.1f && !inBulletHell)
+            if (lifeRatio < 0.1f && !inBulletHell && CalamityWorld.death)
                 baseSize *= MathHelper.Lerp(Main.getGoodWorld ? 0.22f : 0.4f, 1f, lifeRatio * 10f); // Scale down the lower health calclone has. Much lower bound on FTW.
 
             return baseSize + new Vector4(-22, 0 ,22,0);
@@ -318,7 +318,13 @@ namespace CalamityMod.NPCs.CalClone
                         borderThickness = 2000,
                         RemovalCondition = () => !(Main.npc[NPC.whoAmI].active) || Main.npc[NPC.whoAmI].type != Type,
                         UpdateBox = UpdateArena,
-                        DrawBox = DrawArena
+                        DrawBox = DrawArena,
+                        DespawnAction = (box) =>
+                        {
+                            box.boxDimensions += new Vector4(64);
+                            if (box.Size.X > 5000)
+                                ArenaWallSystem.ActiveBoxes.Remove(box);
+                        }
                     });
                 }
                 ArenaWallSystem.ActiveBoxes[0].NewDimensions = Vector4.Lerp(ArenaWallSystem.ActiveBoxes[0].boxDimensions, GetArenaSize(brotherAlive, lifeRatio, inBulletHell), lifeRatio > 0.8f ? 0.1f : 0.05f);
@@ -528,10 +534,10 @@ namespace CalamityMod.NPCs.CalClone
                     {
                         if (calamityGlobalNPC.newAI[2] == 2f)
                         {
-                            int type = ModContent.ProjectileType<CloneFireblast>();
+                            int type = ModContent.ProjectileType<BurningFireblast>();
                             int damage = FireblastDamage;
                             if (Main.zenithWorld)
-                                type = ModContent.ProjectileType<CloneGigablast>();
+                                type = ModContent.ProjectileType<BurningGigablast>();
 
                             float gigaBlastFrequency = Main.getGoodWorld ? 120f : expertMode ? 180f : 240f;
                             float projSpeed = 5f;
@@ -561,7 +567,7 @@ namespace CalamityMod.NPCs.CalClone
 
                         if (Main.netMode != NetmodeID.MultiplayerClient)
                         {
-                            int type = ModContent.ProjectileType<CloneHellblast>();
+                            int type = ModContent.ProjectileType<CalamitousDart>();
                             int damage = HellblastDamage;
                             float projSpeed = 4f;
                             // Blasts aimed directly at the player's horizontal position, does not spawn during the second bullet hell
@@ -653,12 +659,12 @@ namespace CalamityMod.NPCs.CalClone
                         Projectile projectile = Main.projectile[x];
                         if (projectile.active)
                         {
-                            if (projectile.type == ModContent.ProjectileType<CloneHellblast>() || projectile.type == ModContent.ProjectileType<CloneBarrage>())
+                            if (projectile.type == ModContent.ProjectileType<CalamitousDart>() || projectile.type == ModContent.ProjectileType<BurningBolt>())
                             {
                                 if (projectile.timeLeft > 60)
                                     projectile.timeLeft = 60;
                             }
-                            else if (projectile.type == ModContent.ProjectileType<CloneFireblast>())
+                            else if (projectile.type == ModContent.ProjectileType<BurningFireblast>())
                             {
                                 projectile.ai[2] = 1f;
 
@@ -686,7 +692,7 @@ namespace CalamityMod.NPCs.CalClone
 
                     if (Main.netMode != NetmodeID.MultiplayerClient)
                     {
-                        int type = ModContent.ProjectileType<CloneHellblast>();
+                        int type = ModContent.ProjectileType<CalamitousDart>();
                         int damage = HellblastDamage;
                         float projSpeed = 4f;
                         if (calamityGlobalNPC.newAI[3] % (hellblastGateValue * 6f) == 0f)
@@ -752,7 +758,7 @@ namespace CalamityMod.NPCs.CalClone
                         SoundEngine.PlaySound(BrimstoneElemental.BrimstoneElemental.HellfireballSound, NPC.Center);
 
                         float projectileVelocity = expertMode ? 14f : 12.5f;
-                        int type = ModContent.ProjectileType<CloneHellfireball>();
+                        int type = ModContent.ProjectileType<CalamitousFireball>();
                         Vector2 predictionVector = Main.getGoodWorld ? player.velocity * 20f : Vector2.Zero;
                         Vector2 fireballVelocity = Vector2.Normalize(player.Center + predictionVector - NPC.Center) * projectileVelocity;
                         Vector2 offset = Vector2.Normalize(fireballVelocity) * 40f;
@@ -781,19 +787,20 @@ namespace CalamityMod.NPCs.CalClone
                         NPC.localAI[1] = 0f;
 
                         float projectileVelocity = expertMode ? 12.5f : 11f;
-                        int type = ModContent.ProjectileType<CloneHellblast>();
+                        int type = ModContent.ProjectileType<CalamitousDart>();
                         int damage = HellblastDamage;
                         Vector2 fireballVelocity = Vector2.Normalize(player.Center - NPC.Center) * projectileVelocity;
                         Vector2 offset = Vector2.Normalize(fireballVelocity) * 40f;
 
                         if (!Collision.CanHit(NPC.position, NPC.width, NPC.height, player.position, player.width, player.height))
                         {
-                            type = ModContent.ProjectileType<CloneHellfireball>();
+                            type = ModContent.ProjectileType<CalamitousFireball>();
                             Projectile.NewProjectile(NPC.GetSource_FromAI(), NPC.Center + offset, fireballVelocity, type, HellfireballDamage, 0f, Main.myPlayer, player.position.X, player.position.Y);
                         }
                         else
                         {
                             Projectile.NewProjectile(NPC.GetSource_FromAI(), NPC.Center + offset, fireballVelocity, type, damage, 0f, Main.myPlayer, 1f);
+                            SoundEngine.PlaySound(SoundID.Item20, NPC.Center);
                         }
                     }
                 }
@@ -858,7 +865,7 @@ namespace CalamityMod.NPCs.CalClone
                     // Leave behind slow hellblasts in Death Mode
                     if (Main.netMode != NetmodeID.MultiplayerClient && death && phase4 && NPC.ai[2] % 6f == 0f)
                     {
-                        int type = ModContent.ProjectileType<CloneHellblast>();
+                        int type = ModContent.ProjectileType<CalamitousDart>();
                         Vector2 fireballVelocity = Main.getGoodWorld ? Main.rand.NextVector2CircularEdge(0.02f, 0.02f) : NPC.velocity * 0.01f;
                         Projectile.NewProjectile(NPC.GetSource_FromAI(), NPC.Center, fireballVelocity, type, HellblastDamage, 0f, Main.myPlayer, 1f, 0f, 2f); // ai[2] is used here to distinguish acceleration in its ai
                     }
