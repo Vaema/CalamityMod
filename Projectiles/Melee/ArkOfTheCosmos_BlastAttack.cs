@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO;
+using CalamityMod.Graphics.Metaballs;
 using CalamityMod.Items.Weapons.Melee;
 using CalamityMod.Particles;
 using CalamityMod.Sounds;
@@ -7,6 +8,7 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria;
 using Terraria.Audio;
+using Terraria.GameContent;
 using Terraria.ID;
 using Terraria.ModLoader;
 using static CalamityMod.CalamityUtils;
@@ -17,7 +19,6 @@ namespace CalamityMod.Projectiles.Melee
     public class ArkoftheCosmosBlast : ModProjectile, ILocalizedModType
     {
         public new string LocalizationCategory => "Projectiles.Melee";
-        public override string Texture => "CalamityMod/Projectiles/Melee/RendingScissorsRight"; //Yes this is AotE sprite, but it gets changed in predraw anyways
 
         private bool initialized = false;
         public ref float Charge => ref Projectile.ai[0];
@@ -101,11 +102,29 @@ namespace CalamityMod.Projectiles.Melee
 
             HandleParticles();
 
+            if (StitchProgress == 0)
+            {
+
+                var p = BigRipMetaball.SpawnParticle(Projectile.Center + Projectile.velocity * MathHelper.Lerp(0f, ThrustDisplaceRatio() * 242f, 0.5f), Vector2.Zero, 242f);
+                p.SizeScaling = 0f;
+                p.TextureToUse = TextureAssets.Projectile[Type].Value;
+                p.rotation = Projectile.velocity.ToRotation() + MathHelper.PiOver2;
+                p.Scale = new Vector2(0.25f * ThrustDisplaceRatio(), 1f * ThrustDisplaceRatio());
+            }
+            if (SnapTimer == 5)
+                SoundEngine.PlaySound(CommonCalamitySounds.MeatySlashSound with { Pitch = -0.5f, Volume = 0.5f, MaxInstances = 2}, Projectile.Center);
             //Spawn particles when the line appears
             if (HoldTimer == 1)
             {
+
+                var p = BigRipMetaball.SpawnParticle(Projectile.Center + Projectile.velocity * MathHelper.Lerp(0f, ThrustDisplaceRatio() * 242f, 0.5f), Vector2.Zero, 242f);
+                p.SizeScaling = 0.925f;
+                p.TextureToUse = TextureAssets.Projectile[Type].Value;
+                p.rotation = Projectile.velocity.ToRotation() + MathHelper.PiOver2;
+                p.Scale = new Vector2(0.25f * ThrustDisplaceRatio(), 1f * ThrustDisplaceRatio());
+
                 // Feel the power
-                SoundEngine.PlaySound(CommonCalamitySounds.MeatySlashSound, Projectile.Center);
+                SoundEngine.PlaySound(CommonCalamitySounds.SwiftSliceSound with {Pitch = 0f, MaxInstances = 2}, Projectile.Center);
                 if (Main.LocalPlayer.Calamity().GeneralScreenShakePower < 7.5f)
                     Main.LocalPlayer.Calamity().GeneralScreenShakePower = 7.5f;
 
@@ -163,7 +182,7 @@ namespace CalamityMod.Projectiles.Melee
             else if (HoldProgress <= 0.4f)
             {
                 PolarStar.Time = 0;
-                PolarStar.Position = scissorPosition;
+                PolarStar.Position = scissorPosition + Projectile.velocity * SnapProgress * 150;
                 PolarStar.Scale = Projectile.scale * 2f;
             }
 
@@ -229,12 +248,6 @@ namespace CalamityMod.Projectiles.Melee
             Main.spriteBatch.End();
             Main.spriteBatch.Begin(SpriteSortMode.Immediate, BlendState.Additive, Main.DefaultSamplerState, DepthStencilState.None, Main.Rasterizer, null, Main.GameViewMatrix.TransformationMatrix);
 
-            Texture2D sliceTex = Request<Texture2D>("CalamityMod/Particles/BloomLine").Value;
-            Color sliceColor = Color.Lerp(Color.OrangeRed, Color.White, SnapProgress);
-            float rot = Projectile.rotation + MathHelper.PiOver2;
-            Vector2 sliceScale = new Vector2(0.2f * (1 - SnapProgress), ThrustDisplaceRatio() * 242f);
-            Main.EntitySpriteDraw(sliceTex, Projectile.Center - Main.screenPosition, null, sliceColor, rot, new Vector2(sliceTex.Width / 2f, sliceTex.Height), sliceScale, 0f, 0);
-
             //Draw the scissors
             if (HoldProgress <= 0.4f)
             {
@@ -255,48 +268,6 @@ namespace CalamityMod.Projectiles.Melee
 
                 Main.EntitySpriteDraw(backBlade, drawPosition, null, drawColorBack, drawRotationBack, drawOriginBack, Projectile.scale, 0f, 0);
                 Main.EntitySpriteDraw(frontBlade, drawPosition, null, drawColor * opacity, drawRotation, drawOrigin, Projectile.scale, 0f, 0);
-            }
-
-            //Draw the rip
-            if (HoldProgress > 0)
-            {
-                Texture2D lineTex = Request<Texture2D>("CalamityMod/Particles/ThinEndedLine").Value;
-
-                Vector2 Shake = HoldProgress > 0.2f ? Vector2.Zero : Vector2.One.RotatedByRandom(MathHelper.TwoPi) * (1 - HoldProgress * 5f) * 0.5f;
-                float raise = (float)Math.Sin(HoldProgress * MathHelper.PiOver2);
-
-                Vector2 origin = new Vector2(lineTex.Width / 2f, lineTex.Height);
-                float ripWidth = StitchProgress < 0.75f ? 0.4f : (1 - (StitchProgress - 0.75f) * 4f) * 0.2f;
-                Vector2 scale = new Vector2(ripWidth, (ThrustDisplaceRatio() * 242f) / lineTex.Height);
-                float lineOpacity = StitchProgress < 0.75f ? 1f : 1 - (StitchProgress - 0.75f) * 4f;
-
-                Main.EntitySpriteDraw(lineTex, Projectile.Center - Main.screenPosition + Shake, null, Color.Lerp(Color.White, Color.OrangeRed * 0.7f, raise) * lineOpacity, rot, origin, scale, SpriteEffects.None, 0);
-
-                //Draw the stitches
-                if (StitchProgress > 0)
-                {
-                    for (int i = 0; i < CurrentStitches; i++)
-                    {
-
-                        float positionAlongLine = (ThrustDisplaceRatio() * 242f / (float)maxStitches * 0.5f) + MathHelper.Lerp(0f, ThrustDisplaceRatio() * 242f, i / (float)maxStitches);
-                        Vector2 stitchCenter = Projectile.Center + Projectile.velocity * positionAlongLine;
-
-                        rot = Projectile.rotation + MathHelper.PiOver2 + StitchRotations[i];
-                        origin = new Vector2(lineTex.Width / 2f, lineTex.Height / 2f);
-
-                        float stitchLength = (float)Math.Sin(i / (float)(maxStitches - 1) * MathHelper.Pi) * 0.5f + 0.5f;
-                        float stitchScale = (1f + (float)Math.Sin(MathHelper.Clamp(StitchLifetimes[i] / 7f, 0f, 1f) * MathHelper.Pi) * 0.3f) * 0.85f;
-                        if (CurrentStitches == maxStitches)
-                        {
-                            stitchScale *= 1 - ((StitchTimer - (MaxTime - SnapTime - HoldTime * 0.5f) * 0.3f) / (MaxTime - SnapTime - HoldTime * 0.5f) * 0.7f) * 0.8f;
-                        }
-                        scale = new Vector2(0.2f, stitchLength) * stitchScale;
-
-                        Color stitchColor = Color.Lerp(Color.White, Color.CornflowerBlue * 0.7f, (float)Math.Sin(MathHelper.Clamp(StitchLifetimes[i] / 7f, 0f, 1f) * MathHelper.PiOver2));
-
-                        Main.EntitySpriteDraw(lineTex, stitchCenter - Main.screenPosition + Shake, null, stitchColor, rot, origin, scale, SpriteEffects.None, 0);
-                    }
-                }
             }
 
             Main.spriteBatch.End();
