@@ -1658,6 +1658,11 @@ ForbiddenStealthSummonTagBuff: {
 	Description: If you're seeing this, something went horribly wrong
 }
 
+SeaKingsAssurance: {
+	DisplayName: Sea Kings Assurance
+	Description: If you're seeing this, something assuredly went horribly wrong
+}
+
 FrostyBatBuff: {
 	DisplayName: Frosty Bat Friend
 	Description: A frosty bat flits about
