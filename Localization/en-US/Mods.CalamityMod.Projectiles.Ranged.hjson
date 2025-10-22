@@ -114,6 +114,9 @@ KarasawaShot.DisplayName: Karasawa Shot
 LeafArrow.DisplayName: Leaf Arrow
 LunarBolt.DisplayName: Bolt
 LuxorsGiftRanged.DisplayName: Luxor's Ranged
+M1GarandBulletCasing.DisplayName: M1 Garand Bullet Casing
+M1GarandEmptyClip.DisplayName: M1 Garand Empty Clip
+M1GarandShot.DisplayName: .30-06 Round
 MagnaShot.DisplayName: Magna Bolt
 MagnomalyAura.DisplayName: Magnomaly Aura
 MagnomalyBeam.DisplayName: Beam
@@ -262,6 +265,3 @@ LeviatitanMeteor.DisplayName: Leviatitan Meteor
 LeviatitanExplosion.DisplayName: Leviatitan Explosion
 SulphuricDrop.DisplayName: Sulphuric Drop
 AcidRocket.DisplayName: Acid Rocket
-M1GarandBulletCasing.DisplayName: M1 Garand Bullet Casing
-M1GarandEmptyClip.DisplayName: M1 Garand Empty Clip
-M1GarandShot.DisplayName: .30-06 Round
