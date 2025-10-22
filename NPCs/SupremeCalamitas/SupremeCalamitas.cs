@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using CalamityMod.Dusts;
 using CalamityMod.Events;
+using CalamityMod.Graphics.Metaballs;
 using CalamityMod.Items;
 using CalamityMod.Items.Accessories;
 using CalamityMod.Items.Armor.Vanity;
@@ -184,8 +185,6 @@ namespace CalamityMod.NPCs.SupremeCalamitas
         public Vector2 catastropheSpawnPosition;
         public Vector2 initialRitualPosition;
         public Rectangle safeBox = default;
-
-        public bool IsTargetOutsideOfArena => !Main.player[NPC.target].Hitbox.Intersects(safeBox);
 
         public static int hoodedHeadIconIndex;
         public static int hoodedHeadIconP2Index;
@@ -594,7 +593,7 @@ namespace CalamityMod.NPCs.SupremeCalamitas
             #endregion
             #region ArenaCreation
 
-            // Create the arena on the first frame. This does not run client-side.
+            // Set the variables on the first frame. This does not run client-side.
             // If this is done on the server, a sync must be performed so that the arena box is
             // known to the clients. Not doing this results in significant desyncs in regards to things like DR.
             if (!spawnArena)
@@ -657,6 +656,11 @@ namespace CalamityMod.NPCs.SupremeCalamitas
 
             Color GetArenaColor(out Color oldColor)
             {
+                if (permafrost)
+                {
+                    oldColor = Color.LightBlue;
+                    return Color.LightBlue;
+                }
                 var c = GriefColor;
                 oldColor = GriefColor;
                 if (startFifthAttack && gettingTired5 && (giveUpCounter < 1160 || hasDoneDeathAnim))
@@ -672,48 +676,68 @@ namespace CalamityMod.NPCs.SupremeCalamitas
                 else if (lifeRatio <= 0.5f)
                     c = LamentColor;
                 return c;
-                c = permafrost ? Color.LightBlue : Color.Lerp(Color.Crimson, Color.IndianRed, (MathF.Sin(Main.GlobalTimeWrappedHourly) + 1) * 0.25f);
             }
 
             void UpdateArena(ArenaWallSystem.Box box)
             {
-                if (startFifthAttack && gettingTired5 && (giveUpCounter < 1160 || hasDoneDeathAnim))
-                    return;
-                for (var i2 = 0; i2 < box.Size.Y / 400f; i2++)
-                {
-                    var p = Vector2.Lerp(box.BottomRight, box.TopRight, Main.rand.NextFloat());
-                    Dust.NewDustPerfect(p, DustID.Clentaminator_Red, p.DirectionFrom(box.Center) * Main.rand.NextFloat(0, 5), Scale: Main.rand.NextFloat(0.1f, 1f), newColor: box.borderColor);
+                var x = 1f/TextureAssets.MagicPixel.Height();
+                var p = ScalArenaMetaball.SpawnParticle((box.TopLeft + box.BottomLeft) * 0.5f - new Vector2(box.borderThickness*0.5f + 2,0), Vector2.Zero, 1);
+                p.SizeScaling = 0;
+                p.TextureToUse = TextureAssets.MagicPixel.Value;
+                p.Scale = new Vector2(box.borderThickness-6, box.borderThickness*2 + box.Size.Y-4);
+                p.Scale.Y *= x;
+                
+                p = ScalArenaMetaball.SpawnParticle((box.TopRight + box.BottomRight) * 0.5f + new Vector2(box.borderThickness * 0.5f + 2, 0), Vector2.Zero, 1);
+                p.SizeScaling = 0;
+                p.TextureToUse = TextureAssets.MagicPixel.Value;
+                p.Scale = new Vector2(box.borderThickness - 6, box.borderThickness * 2 + box.Size.Y - 4);
+                p.Scale.Y *= x;
 
-                    p = Vector2.Lerp(box.TopLeft, box.BottomLeft, Main.rand.NextFloat());
-                    Dust.NewDustPerfect(p, DustID.Clentaminator_Red, p.DirectionFrom(box.Center) * Main.rand.NextFloat(0, 5), Scale: Main.rand.NextFloat(0.1f, 1f), newColor: box.borderColor);
+                p = ScalArenaMetaball.SpawnParticle((box.TopRight + box.TopLeft) * 0.5f - new Vector2(0,box.borderThickness * 0.5f + 2), Vector2.Zero, 1);
+                p.SizeScaling = 0;
+                p.TextureToUse = TextureAssets.MagicPixel.Value;
+                p.Scale = new Vector2(box.borderThickness * 2 + box.Size.X - 4, box.borderThickness - 6);
+                p.Scale.Y *= x;
+
+                p = ScalArenaMetaball.SpawnParticle((box.BottomLeft + box.BottomRight) * 0.5f + new Vector2(0, box.borderThickness * 0.5f + 2), Vector2.Zero, 1);
+                p.SizeScaling = 0;
+                p.TextureToUse = TextureAssets.MagicPixel.Value;
+                p.Scale = new Vector2(box.borderThickness * 2 + box.Size.X - 4, box.borderThickness - 6);
+                p.Scale.Y *= x;
+
+                for (var i2 = 0; i2 < box.Size.Y / 100f; i2++)
+                {
+                    var point = Vector2.Lerp(box.BottomRight, box.TopRight, Main.rand.NextFloat());
+
+                    p = ScalArenaMetaball.SpawnParticle(point + Vector2.UnitX * 8, Vector2.Zero, 16f);
+                    p.SizeScaling = 0.95f;
+
+                    point = Vector2.Lerp(box.TopLeft, box.BottomLeft, Main.rand.NextFloat());
+                    p = ScalArenaMetaball.SpawnParticle(point + Vector2.UnitX * -8, Vector2.Zero, 16f);
+                    p.SizeScaling = 0.95f;
 
                 }
-                for (var i2 = 0; i2 < box.Size.X / 400f; i2++)
+                for (var i2 = 0; i2 < box.Size.X / 100f; i2++)
                 {
-                    var p = Vector2.Lerp(box.TopLeft, box.TopRight, Main.rand.NextFloat());
-                    Dust.NewDustPerfect(p, DustID.Clentaminator_Red, p.DirectionFrom(box.Center) * Main.rand.NextFloat(0, 5), Scale: Main.rand.NextFloat(0.1f, 1f), newColor: box.borderColor);
-                    p = Vector2.Lerp(box.BottomRight, box.BottomLeft, Main.rand.NextFloat());
-                    Dust.NewDustPerfect(p, DustID.Clentaminator_Red, p.DirectionFrom(box.Center) * Main.rand.NextFloat(0, 5), Scale: Main.rand.NextFloat(0.1f, 1f), newColor: box.borderColor);
+                    var point = Vector2.Lerp(box.TopLeft, box.TopRight, Main.rand.NextFloat());
+                    p = ScalArenaMetaball.SpawnParticle(point + Vector2.UnitY * -8, Vector2.Zero, 16f);
+                    p.SizeScaling = 0.95f;
+                    point = Vector2.Lerp(box.BottomRight, box.BottomLeft, Main.rand.NextFloat());
+                    p = ScalArenaMetaball.SpawnParticle(point + Vector2.UnitY * 8, Vector2.Zero, 16f);
+                    p.SizeScaling = 0.95f;
                 }
             }
 
             void DrawArena(ArenaWallSystem.Box box)
             {
 
-                var color = Color.Black * 0.75f;
+                var color = Color.Black * 0.15f;
                 //Inside Fill
-                box.DrawBoxWithOffset(box.borderThickness * 0.5f, box.borderThickness, Color.Black * 0.75f);
+                box.DrawBoxWithOffset(box.borderThickness * 0.5f, box.borderThickness, Color.Black * 0.15f);
                 //Inner Border
-                box.DrawBoxWithOffset(4, 8, box.borderColor);
-                //Inner Border Clones
-                float amount = 4;
-                float totalDistance = 64f;
-                for (var i = Main.GlobalTimeWrappedHourly % 1; i < amount; i++)
-                {
-                    box.DrawBoxWithOffset(totalDistance * (i / amount) + 4, 4, box.borderColor * (1 - i / amount));
-                }
+                box.DrawBoxWithOffset(4, 2, box.borderColor * 0.15f);
                 //Outer Border
-                box.DrawBoxWithOffset(box.borderThickness - 4, 4, box.borderColor);
+                box.DrawBoxWithOffset(box.borderThickness - 2, 2, box.borderColor);
             }
 
             if (ArenaWallSystem.ActiveBoxes.Count < 1)
@@ -726,6 +750,14 @@ namespace CalamityMod.NPCs.SupremeCalamitas
                     RemovalCondition = () => !(Main.npc[NPC.whoAmI].active) || Main.npc[NPC.whoAmI].type != Type,
                     UpdateBox = UpdateArena,
                     DrawBox = DrawArena,
+                    DespawnAction = (box) =>
+                    {
+                        box.borderThickness *= 0.9f;
+                        if (box.borderThickness < 4)
+                            ArenaWallSystem.ActiveBoxes.Remove(box);
+                        else
+                            UpdateArena(box);
+                    }
                 }
                 );
             }
@@ -746,18 +778,19 @@ namespace CalamityMod.NPCs.SupremeCalamitas
                 float projectileVelocityMultCap = 2f;
                 uDieLul = MathHelper.Clamp(uDieLul * 1.01f, 1f, projectileVelocityMultCap);
                 protectionBoost = true;
+                NPC.Calamity().CurrentlyEnraged = true;
             }
             else
             {
                 uDieLul = MathHelper.Clamp(uDieLul * 0.99f, 1f, 2f);
                 protectionBoost = false;
+                NPC.Calamity().CurrentlyEnraged = false;
             }
-            NPC.Calamity().CurrentlyEnraged = !player.Hitbox.Intersects(safeBox);
 
             // Permafrost fucks mounts if you exit his arena.
             if (permafrost)
             {
-                if (!player.Hitbox.Intersects(safeBox) && player.mount.Active)
+                if (NPC.Calamity().CurrentlyEnraged && player.mount.Active)
                 {
                     player.ResetEffects();
                     player.head = -1;

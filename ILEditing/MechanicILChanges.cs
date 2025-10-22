@@ -2680,12 +2680,16 @@ namespace CalamityMod.ILEditing
                             self.Calamity().arenaBoxPosition = new Vector2(Utils.Remap(self.Center.X, box.TopLeft.X, box.BottomRight.X, 0, 1, false), Utils.Remap(self.Center.Y, box.TopLeft.Y, box.BottomRight.Y, 0, 1, false));
                             self.Calamity().arenaBox = box;
                         }
-                        self.rotation = self.DirectionFrom(Main.player[self.owner].Center).ToRotation() + MathHelper.PiOver2;
-                        intersectingWall = true;
-                        if (Main.player[self.owner].grapCount < 10)
+                        if (self.ai[0] == 2) //don't run this if the hook is returning!
                         {
-                            Main.player[self.owner].grappling[Main.player[self.owner].grapCount] = self.whoAmI;
-                            Main.player[self.owner].grapCount++;
+                            self.rotation = self.DirectionFrom(Main.player[self.owner].Center).ToRotation() + MathHelper.PiOver2;
+                            intersectingWall = true;
+
+                            if (Main.player[self.owner].grapCount < 10)
+                            {
+                                Main.player[self.owner].grappling[Main.player[self.owner].grapCount] = self.whoAmI;
+                                Main.player[self.owner].grapCount++;
+                            }
                         }
                     }
                 }

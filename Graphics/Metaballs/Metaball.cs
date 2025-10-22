@@ -45,6 +45,12 @@ namespace CalamityMod.Graphics.Metaballs
         {
             get;
         }
+
+        /// <summary>
+        /// Colors for the layers to draw with. Defaults to white when unset.
+        /// </summary>
+        public virtual List<Vector4> LayerColors { get; set; } = [];
+
         /// <summary>
         /// Whether the metaball runs Update based on the draw cycle or the game update cycle
         /// </summary>
@@ -105,6 +111,7 @@ namespace CalamityMod.Graphics.Metaballs
             metaballShader.Parameters["layerOffset"]?.SetValue(layerScrollOffset);
             metaballShader.Parameters["edgeColor"]?.SetValue(EdgeColor.ToVector4());
             metaballShader.Parameters["singleFrameScreenOffset"]?.SetValue((Main.screenLastPosition - Main.screenPosition) / screenSize);
+            metaballShader.Parameters["layerColor"]?.SetValue(LayerColors.Count() > layerIndex ? LayerColors[layerIndex] : Color.White.ToVector4());
 
             // Supply the metaball's layer texture to the graphics device so that the shader can read it.
             gd.Textures[1] = layerTexture;
