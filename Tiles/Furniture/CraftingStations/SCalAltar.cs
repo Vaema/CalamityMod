@@ -92,7 +92,7 @@ namespace CalamityMod.Tiles.Furniture.CraftingStations
             Main.LocalPlayer.cursorItemIconEnabled = true;
 
             // Checks if the player has the Ruler lines or Ruler grid toggled
-            if (Main.LocalPlayer.builderAccStatus[0] == 0 || Main.LocalPlayer.builderAccStatus[1] == 0)
+            if (Main.LocalPlayer.builderAccStatus[0] == 0 || (Main.LocalPlayer.builderAccStatus[1] == 0 && Main.LocalPlayer.rulerGrid))
             {
                 // Don't spawn the arena visual if one already exists or if SCal is alive or spawning
                 if (CalamityUtils.AnyProjectiles(ModContent.ProjectileType<SCalAltarArenaVisual>()) ||
