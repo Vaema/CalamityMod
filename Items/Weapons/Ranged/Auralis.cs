@@ -33,7 +33,7 @@ namespace CalamityMod.Items.Weapons.Ranged
 
             Item.useStyle = ItemUseStyleID.Shoot;
             Item.noMelee = true;
-            Item.UseSound = new SoundStyle("CalamityMod/Sounds/Item/PlasmaBlast");
+            Item.UseSound = new SoundStyle("CalamityMod/Sounds/Item/StarfleetStar");
             Item.value = CalamityGlobalItem.RarityTurquoiseBuyPrice;
             Item.rare = ModContent.RarityType<Turquoise>();
             Item.Calamity().donorItem = true;

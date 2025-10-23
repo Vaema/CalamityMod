@@ -28,8 +28,6 @@ namespace CalamityMod.NPCs.Polterghast
         public override void SetDefaults()
         {
             NPC.damage = 0; // No contact damage
-            NPC.aiStyle = -1;
-            AIType = -1;
             NPC.width = 30;
             NPC.height = 30;
             NPC.defense = 45;
@@ -37,6 +35,7 @@ namespace CalamityMod.NPCs.Polterghast
             NPC.noTileCollide = true;
             NPC.chaseable = false;
             NPC.lifeMax = 20000;
+            NPC.dontTakeDamage = true;
             NPC.HitSound = SoundID.NPCHit36;
             NPC.DeathSound = SoundID.NPCDeath39;
             NPC.Calamity().VulnerableToSickness = false;

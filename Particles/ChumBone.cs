@@ -14,11 +14,10 @@ namespace CalamityMod.Particles
         public override bool UseCustomDraw => true;
         public override bool SetLifetime => true;
 
-        private bool direction;
-        private bool variant;
+        private bool TexVariant;
         public static string Texture2 => "CalamityMod/Particles/ChumBone2";
 
-        public ChumBone(Vector2 position, Vector2 velocity, Color color, float rotation, float scale, int lifeTime, bool variant, bool direction)
+        public ChumBone(Vector2 position, Vector2 velocity, Color color, float rotation, float scale, int lifeTime, bool variant)
         {
             Position = position;
             Velocity = velocity;
@@ -26,6 +25,7 @@ namespace CalamityMod.Particles
             Lifetime = lifeTime;
             Rotation = rotation;
             Color = color;
+            TexVariant = variant;
         }
 
         public override void Update()
@@ -54,8 +54,8 @@ namespace CalamityMod.Particles
 
         public override void CustomDraw(SpriteBatch spriteBatch)
         {
-            Texture2D tex = variant ? ModContent.Request<Texture2D>(Texture2).Value : ModContent.Request<Texture2D>(Texture).Value;            
-            SpriteEffects spriteDir = direction ? SpriteEffects.None : SpriteEffects.FlipHorizontally;
+            Texture2D tex = TexVariant ? ModContent.Request<Texture2D>(Texture2).Value : ModContent.Request<Texture2D>(Texture).Value;            
+            SpriteEffects spriteDir = SpriteEffects.FlipHorizontally;
             spriteBatch.Draw(tex, Position - Main.screenPosition, null, Lighting.GetColor(Position.ToTileCoordinates()), Rotation, new Vector2(tex.Width / 2, tex.Height), Scale, spriteDir, 0);
         }
     }

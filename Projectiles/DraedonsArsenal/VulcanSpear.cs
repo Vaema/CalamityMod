@@ -20,7 +20,7 @@ namespace CalamityMod.Projectiles.DraedonsArsenal
         public bool canStick = true;
         public int stuckTimer = 420;
         public Vector2 placementCenter;
-        Vector2 placementVelocity;
+
         public override void SetDefaults()
         {
             Projectile.width = Projectile.height = 35;

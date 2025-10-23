@@ -1547,7 +1547,7 @@ namespace CalamityMod.World
                         if (caveNoiseMap * caveNoiseMap > caveCreationThreshold)
                         {
                             t.HasTile = false;
-                            t.LiquidType = 1;
+                            t.LiquidType = LiquidID.Lava;
                         }
 
                         float horizontalOffsetNoiseWallsinner = CalamityUtils.PerlinNoise2D(X / 80, Y / 80, 5, unchecked(cavePerlinSeedWalls + 1)) * 0.01f;
@@ -1630,7 +1630,7 @@ namespace CalamityMod.World
                         //get rid of water
                         if (Main.tile[X, Y].LiquidType == LiquidID.Water)
                         {
-                            t.LiquidType = 1;
+                            t.LiquidType = LiquidID.Lava;
                         }
 
                         //get rid of obsidian blocks
@@ -1694,12 +1694,9 @@ namespace CalamityMod.World
                     //Timeless Shores ambiant tiles
                     if (Main.tile[X, Y].TileType == ModContent.TileType<Dunesand>())
                     {
-                        int Rand3() => WorldGen.genRand.Next(3);
-                        int MediumShorePileVariants = Rand3();
-                        int Rand6() => WorldGen.genRand.Next(6);
-                        int DriftwoodVariants = Rand6();
-                        int Rand9() => WorldGen.genRand.Next(9);
-                        int ShorePileVariants = Rand9();
+                        int MediumShorePileVariants = WorldGen.genRand.Next(3);
+                        int DriftwoodVariants = WorldGen.genRand.Next(6);
+                        int ShorePileVariants = WorldGen.genRand.Next(9);
                         //Driftwood Ambiance
                         if (WorldGen.genRand.NextBool(100))
                         {
@@ -1749,8 +1746,7 @@ namespace CalamityMod.World
 
                     if (Main.tile[X, Y].TileType == ModContent.TileType<Runestone>())
                     {
-                        int Rand6() => WorldGen.genRand.Next(6);
-                        int DriftwoodVariants = Rand6();
+                        int DriftwoodVariants = WorldGen.genRand.Next(6);
                         //Driftwood Ambiance
                         if (WorldGen.genRand.NextBool(80))
                         {
@@ -1771,8 +1767,7 @@ namespace CalamityMod.World
                     //gleaming burrows ambient tiles
                     if (Main.tile[X, Y].TileType == ModContent.TileType<HardenedEutrophicSand>())
                     {
-                        int Rand6() => WorldGen.genRand.Next(6);
-                        int NavystonePileVariants = Rand6();
+                        int NavystonePileVariants = WorldGen.genRand.Next(6);
                         //brain coral
                         if (WorldGen.genRand.NextBool(30))
                         {
@@ -1883,11 +1878,9 @@ namespace CalamityMod.World
                     }
                     if (Main.tile[X, Y].TileType == ModContent.TileType<Navystone>())
                     {
-                        int Rand3() => WorldGen.genRand.Next(3);
                         int TableCoralVariants = WorldGen.genRand.Next(3);
                         int SpeleothemsVariants = WorldGen.genRand.Next(3);
-                        int Rand6() => WorldGen.genRand.Next(6);
-                        int NavystonePileVariants = Rand6();
+                        int NavystonePileVariants = WorldGen.genRand.Next(6);
 
                         if (WorldGen.genRand.NextBool(30) && !Main.tile[X + 1, Y].HasTile)
                         {
@@ -1970,14 +1963,9 @@ namespace CalamityMod.World
                     }
                     if (Main.tile[X, Y].TileType == ModContent.TileType<ScarletSeaGrassTile>())
                     {
-                        int Rand8() => WorldGen.genRand.Next(8);
-                        int BranchCoralVariants = Rand8();
-
-                        int Rand4() => WorldGen.genRand.Next(4);
-                        int WideScarletSeagrassVariants = Rand4();
-
-                        int Rand6() => WorldGen.genRand.Next(6);
-                        int DriftwoodVariants = Rand6();
+                        int BranchCoralVariants = WorldGen.genRand.Next(8);
+                        int WideScarletSeagrassVariants = WorldGen.genRand.Next(4);
+                        int DriftwoodVariants = WorldGen.genRand.Next(6);
 
                         //BranchCoralsOnSand
                         if (WorldGen.genRand.NextBool(25))
@@ -2078,8 +2066,7 @@ namespace CalamityMod.World
                             }));
                         }
 
-                        int Rand6() => WorldGen.genRand.Next(6);
-                        int DriftwoodVariants = Rand6();
+                        int DriftwoodVariants = WorldGen.genRand.Next(6);
                         //Driftwood Ambiance
                         if (WorldGen.genRand.NextBool(30))
                         {

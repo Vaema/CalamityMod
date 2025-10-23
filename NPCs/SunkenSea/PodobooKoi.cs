@@ -100,8 +100,8 @@ namespace CalamityMod.NPCs.SunkenSea
             NPC.Calamity().VulnerableToSickness = true;
             NPC.Calamity().VulnerableToCold = true;
             NPC.Calamity().VulnerableToWater = true;
-            //Banner = NPC.type;
-            //BannerItem = ModContent.ItemType<PodobooKoiBanner>();
+            Banner = NPC.type;
+            BannerItem = ModContent.ItemType<PodobooKoiBanner>();
         }
 
         public override void SetBestiary(BestiaryDatabase database, BestiaryEntry bestiaryEntry)
@@ -534,6 +534,14 @@ namespace CalamityMod.NPCs.SunkenSea
             {
                 Dust.NewDust(NPC.position, NPC.width, NPC.height, DustID.Lava, hit.HitDirection, -1f, 0, default, 1f);
             }
+            string goreName = (VariantType)CurrentVariant switch
+            {
+                VariantType.Comet => "PodobooKoiComet",
+                VariantType.Oranda => "PodobooKoiOranda",
+                VariantType.BubbleEye => "PodobooKoiBubbleEyed",
+                _ => "PodobooKoi"
+            };
+            CalamityUtils.SpawnGores(NPC, goreName, 2);
         }
         public override bool CanBeHitByNPC(NPC attacker) => PredatorIDs.Contains(attacker.type);
 

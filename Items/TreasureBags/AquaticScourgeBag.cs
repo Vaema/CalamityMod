@@ -80,9 +80,6 @@ namespace CalamityMod.Items.TreasureBags
             // Vanity
             itemLoot.Add(ModContent.ItemType<AquaticScourgeMask>(), 7);
             itemLoot.Add(ModContent.ItemType<ThankYouPainting>(), ThankYouPainting.DropInt);
-
-            // Fishing
-            itemLoot.Add(ModContent.ItemType<BleachedAnglingKit>());
         }
     }
 }

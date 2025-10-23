@@ -19,7 +19,6 @@ namespace CalamityMod.Projectiles.Melee.Yoyos
         public override LocalizedText DisplayName => CalamityUtils.GetItemName<TheMicrowave>();
         public const int MaxUpdates = 3;
         private const float Radius = 100f;
-        private SlotId mmmmmm;
         private bool spawnedAura = false;
         public int soundCooldown = 0;
 

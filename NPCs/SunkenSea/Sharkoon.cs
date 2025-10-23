@@ -454,13 +454,11 @@ namespace CalamityMod.NPCs.SunkenSea
             {
                 if (CanExplode)
                 {
-                    for (int i = 0; i < 4; i++)
-                        Gore.NewGoreDirect(NPC.GetSource_Death(), NPC.Center, new Vector2(hit.HitDirection, -1f), Mod.Find<ModGore>($"{Name}{i + 1}").Type); 
+                    SpawnGores(NPC, "Sharkoon", 6);
                 }
                 else
                 {
-                    for (int i = 0; i < 2; i++)
-                        Gore.NewGoreDirect(NPC.GetSource_Death(), NPC.Center, new Vector2(hit.HitDirection, -1f), Mod.Find<ModGore>($"{Name}Small{i + 1}").Type);
+                    SpawnGores(NPC, "SharkoonSmall", 2);
                 }
             }
         }

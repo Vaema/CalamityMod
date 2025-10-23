@@ -22,9 +22,6 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
         public static float SpinDamageMult = 1.3f; // 91
         public static int SkullDamage = 17; // 68; Also applies to crossbones
 
-        // Rev+ exclusive
-        public static int ShadowflameDamage = 20; // 80
-
         public static bool BuffedSkeletronAI(NPC npc, Mod mod)
         {
             CalamityGlobalNPC calamityGlobalNPC = npc.Calamity();
@@ -39,8 +36,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
             float phase3LifeRatio = death ? 0.9f : 0.7f;
             float respawnHandsLifeRatio = 0.5f;
             float phase4LifeRatio = death ? 0.4f : 0.3f;
-            float useSkullSpreadsAfterChargeLifeRatio = death ? 0.3f : 0.2f;
-            float phase5LifeRatio = death ? 0.2f : 0.1f;
+            float phase5LifeRatio = death ? 0.15f : 0.1f;
 
             // Begin firing spreads of skulls phase
             bool phase2 = lifeRatio < phase2LifeRatio;
@@ -53,9 +49,6 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
 
             // Fire giant cursed skull projectiles (yes, these curse you if you get hit) during charge attack and hands fire skulls phase
             bool phase4 = lifeRatio < phase4LifeRatio;
-
-            // Self-explanatory
-            bool useSkullSpreadsAfterCharge = lifeRatio < useSkullSpreadsAfterChargeLifeRatio;
 
             // Rapid teleport and charge, stop using idle phase
             bool phase5 = lifeRatio < phase5LifeRatio;
@@ -209,7 +202,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
             }
 
             if (death)
-                headSpinVelocityMult *= 1.2f;
+                headSpinVelocityMult *= 1.08f; // Very volatile value
 
             // Velocity used to move Skeletron away from the target before charging
             float moveAwayVelocity = headSpinVelocityMult;
@@ -351,9 +344,9 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
             }
 
             // Skull shooting
-            if ((handsDead || death) && npc.ai[1] == 0f && !phase4)
+            if ((handsDead) && npc.ai[1] == 0f && !phase4)
             {
-                float skullProjFrequency = phase2 ? (48f - (death ? 17.5f * (1f - lifeRatio) : 0f)) : 60f;
+                float skullProjFrequency = phase2 ? (48f - (death ? 10f * (1f - lifeRatio) : 0f)) : 60f;
                 if (Main.getGoodWorld)
                     skullProjFrequency *= 0.8f;
                 skullProjFrequency = (float)Math.Ceiling(skullProjFrequency);
@@ -365,7 +358,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                     float skullProjTargetY = Main.player[npc.target].Center.Y - skullFiringPos.Y;
                     if (Collision.CanHit(skullFiringPos, 1, 1, Main.player[npc.target].position, Main.player[npc.target].width, Main.player[npc.target].height))
                     {
-                        float skullProjSpeed = phase2 ? (5f + (death ? 3f * (1f - lifeRatio) : 0f)) : 4f;
+                        float skullProjSpeed = phase2 ? (5f + (death ? 1f * (1f - lifeRatio) : 0f)) : 4f;
                         int spread2 = 50;
                         Vector2 skullProjDirection = new Vector2(skullProjTargetX + Main.rand.Next(-spread2, spread2 + 1) * 0.01f, skullProjTargetY + Main.rand.Next(-spread2, spread2 + 1) * 0.01f).SafeNormalize(Vector2.UnitY);
                         skullProjDirection *= skullProjSpeed;
@@ -404,7 +397,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                 if (npc.localAI[1] > chargePhaseGateValue)
                     npc.localAI[1] = chargePhaseGateValue;
 
-                float forcedMoveAwayTime = death ? 15f : 45f;
+                float forcedMoveAwayTime = death ? 30f : 45f;
                 float canChargeDistance = 320f; // 20 tile distance
                 bool hasMovedForcedDistance = npc.localAI[2] >= forcedMoveAwayTime;
                 bool canCharge = Vector2.Distance(Main.player[npc.target].Center, npc.Center) >= canChargeDistance;
@@ -582,28 +575,6 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                 if (calamityGlobalNPC.newAI[1] == 2f)
                     SoundEngine.PlaySound(phase3 ? SoundID.ForceRoarPitched : SoundID.ForceRoar, npc.Center);
 
-                // Shoot shadowflames (giant cursed skull projectiles) while charging in phase 4
-                if (phase4 && Collision.CanHit(npc.Center, 1, 1, Main.player[npc.target].position, Main.player[npc.target].width, Main.player[npc.target].height))
-                {
-                    float shadowFlameGateValue = 20f;
-                    int shadowFlameLimit = death ? 3 : 2;
-                    if (calamityGlobalNPC.newAI[1] % shadowFlameGateValue == 0f && calamityGlobalNPC.newAI[1] < shadowFlameGateValue * shadowFlameLimit)
-                    {
-                        // Spawn projectiles
-                        if (Main.netMode != NetmodeID.MultiplayerClient)
-                        {
-                            if (Vector2.Distance(Main.player[npc.target].Center, npc.Center) > 240f)
-                            {
-                                float shadowFlameProjectileSpeed = death ? 6f : 4f;
-                                Vector2 initialProjectileVelocity = npc.Center.DirectionTo(Main.player[npc.target].Center) * shadowFlameProjectileSpeed;
-                                int type = ProjectileID.Shadowflames;
-                                int shadowFlameProjectile = Projectile.NewProjectile(npc.GetSource_FromAI(), npc.Center, initialProjectileVelocity, type, ShadowflameDamage, 0f, Main.myPlayer, 0f, 1f);
-                                Main.projectile[shadowFlameProjectile].timeLeft = 600;
-                            }
-                        }
-                    }
-                }
-
                 // Reset telegraph timer to create color fade
                 if (npc.localAI[1] > 0f)
                 {
@@ -639,31 +610,6 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                                         NetMessage.SendData(MessageID.SyncNPC, -1, -1, null, headXAcceleration);
 
                                     break;
-                                }
-                            }
-                        }
-                    }
-
-                    if (useSkullSpreadsAfterCharge && !disableSkullsAfterCharge && Collision.CanHit(npc.Center, 1, 1, Main.player[npc.target].position, Main.player[npc.target].width, Main.player[npc.target].height))
-                    {
-                        // Spawn projectiles
-                        if (Main.netMode != NetmodeID.MultiplayerClient)
-                        {
-                            int chargeSkullAmt = death ? 5 : 3;
-                            int chargeSkullSpread = death ? 80 : 60;
-                            float rotation = MathHelper.ToRadians(chargeSkullSpread);
-                            float skullProjSpeed = phase5 ? (6f + (death ? 2f * ((phase5LifeRatio - lifeRatio) / phase5LifeRatio) : 0f)) : 4f;
-                            Vector2 initialProjectileVelocity = npc.Center.DirectionTo(Main.player[npc.target].Center) * skullProjSpeed;
-                            int type = ProjectileID.Skull;
-                            for (int k = 0; k < chargeSkullAmt + 1; k++)
-                            {
-                                Vector2 perturbedSpeed = initialProjectileVelocity.RotatedBy(MathHelper.Lerp(-rotation, rotation, k / (float)(chargeSkullAmt - 1)));
-                                int proj = Projectile.NewProjectile(npc.GetSource_FromAI(), npc.Center - perturbedSpeed.SafeNormalize(Vector2.UnitY) * 5f, perturbedSpeed, type, SkullDamage, 0f, Main.myPlayer, -1f);
-                                Main.projectile[proj].timeLeft = 600;
-                                if (death)
-                                {
-                                    int proj2 = Projectile.NewProjectile(npc.GetSource_FromAI(), npc.Center - perturbedSpeed.SafeNormalize(Vector2.UnitY) * 5f, perturbedSpeed, type, SkullDamage, 0f, Main.myPlayer, -2f);
-                                    Main.projectile[proj2].timeLeft = 600;
                                 }
                             }
                         }

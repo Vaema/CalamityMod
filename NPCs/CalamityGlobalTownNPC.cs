@@ -190,6 +190,7 @@ namespace CalamityMod.NPCs
             "Gol D. Roger", // <@!256228859110752257> (xtra3678)
             "Yarrim", // <@!290061123137306624> (borb9834)
             "Hector Barbossa", // <@!615704209303797790> (thatrockisfullamagic)
+            "Blunderbeard", // <@!1039460813490102293> (parmiigianoreggiano)
         };
         private static readonly string[] PrincessNames =
         {
@@ -350,7 +351,6 @@ namespace CalamityMod.NPCs
             "Lucerne", // <@!271954788676141066> (lord_lucerne)
             "Milo", // <@!401849201597874179> (maskedmilo)
             "Octo", // <@!796112889353994281> (octolinggrimm)
-            "Chease", // <@!1039460813490102293> (parmiigianoreggiano)
         };
         private static readonly string[] TownCatSiameseNames = null;
         private static readonly string[] TownCatBlackNames =

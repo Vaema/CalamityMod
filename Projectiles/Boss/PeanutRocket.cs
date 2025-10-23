@@ -9,7 +9,6 @@ namespace CalamityMod.Projectiles.Boss
     public class PeanutRocket : ModProjectile, ILocalizedModType
     {
         public new string LocalizationCategory => "Projectiles.Boss";
-        public override string Texture => "CalamityMod/Projectiles/Ranged/HighExplosivePeanutShell";
 
         public override void SetStaticDefaults()
         {
