@@ -45,7 +45,6 @@ namespace CalamityMod.Prefixes.VanillaPrefixChanges
             }
         }
 
-        [Autoload(Side = ModSide.Client)]
         public sealed class VanillaPrefixChangeTooltipModify : GlobalItem
         {
             public override bool InstancePerEntity => false;
