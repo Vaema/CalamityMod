@@ -18,7 +18,7 @@ namespace CalamityMod.Prefixes
 
         public override void ModifyValue(ref float valueMult)
         {
-            valueMult = VanillaPrefixChange.RarityPlusOne;
+            valueMult = VanillaPrefixChange.RarityPlusOneButClosestToTierTwo;
         }
 
         public LocalizedText LifeRegenTooltip => CalamityUtils.GetText($"{LocalizationCategory}.LifeRegenTooltip");
@@ -49,7 +49,7 @@ namespace CalamityMod.Prefixes
 
         public override void ModifyValue(ref float valueMult)
         {
-            valueMult = VanillaPrefixChange.RarityPlusOne;
+            valueMult = VanillaPrefixChange.RarityPlusOneButClosestToTierTwo;
         }
 
         public LocalizedText LifeBoostTooltip => CalamityUtils.GetText($"{LocalizationCategory}.MaxLifeBoostTooltip");

@@ -17,12 +17,13 @@ namespace CalamityMod.Prefixes.VanillaPrefixChanges
         public const float RarityKeep = 1.0f;
         public const float RarityMinusOne = 0.95f - 0.001f;
         public const float RarityMinusTwo = 0.8f - 0.001f;
+        public const float RarityPlusOneButClosestToTierTwo = 1.199f;
 
         public abstract IEnumerator<IVanillaPrefixStat> PopulateStats();
 
         public virtual void ModifyValue(ref float valueMult)
         {
-            valueMult = RarityPlusOne;
+            valueMult = RarityPlusOneButClosestToTierTwo;
         }
 
         public virtual void PostApplyEffects(Player player) { }

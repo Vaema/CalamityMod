@@ -33,7 +33,7 @@ namespace CalamityMod.Prefixes
         {
             //float extraValue = 1f + (2.5f * stealthGenBonus);
             //valueMult *= extraValue;
-            valueMult = VanillaPrefixChange.RarityPlusOne;
+            valueMult = VanillaPrefixChange.RarityPlusOneButClosestToTierTwo;
         }
 
         // Extra tooltip for new modifier stats
