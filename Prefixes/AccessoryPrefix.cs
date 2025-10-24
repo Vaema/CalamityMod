@@ -33,7 +33,7 @@ namespace CalamityMod.Prefixes
 
         public static int GetLifeRegenAmount()
         {
-            return 2;
+            return 1;
         }
     }
 
