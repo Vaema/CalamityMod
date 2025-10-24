@@ -4,10 +4,8 @@ using System.Linq;
 using System.Text;
 using CalamityMod.Buffs.DamageOverTime;
 using CalamityMod.DataStructures;
-using CalamityMod.Systems.Collections;
 using CalamityMod.UI.CalamitasEnchants;
 using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Input;
 using Terraria;
 using Terraria.Audio;
 using Terraria.GameContent.Prefixes;
@@ -66,7 +64,7 @@ namespace CalamityMod
                 int[][] accessoryReforgeTiers = new int[][]
                 {
                     /* 0 */ new int[] { PrefixID.Hard, PrefixID.Jagged, PrefixID.Brisk, PrefixID.Wild },
-                    /* 1 */ new int[] { PrefixID.Guarding, PrefixID.Spiked, PrefixID.Precise, PrefixID.Fleeting, PrefixID.Rash, GetCalPrefix("Cloaked") },
+                    /* 1 */ new int[] { PrefixID.Guarding, PrefixID.Spiked, PrefixID.Precise, PrefixID.Fleeting, PrefixID.Rash },
                     /* 2 */ new int[] { PrefixID.Armored, PrefixID.Angry, PrefixID.Hasty2, PrefixID.Intrepid, PrefixID.Arcane },
                     /* 3 */ new int[] { PrefixID.Warding, PrefixID.Menacing, PrefixID.Lucky, PrefixID.Quick2, PrefixID.Violent, GetCalPrefix("Silent") },
                 };
@@ -327,7 +325,7 @@ namespace CalamityMod
         public static Color GetDebuffTooltipNameColor(int debuffId)
         {
             var color = TypelessDebuffColor;
-            
+
             if (debuffId == ModContent.BuffType<VulnerabilityHex>() || debuffId == ModContent.BuffType<TrueVulnerabilityHex>())
             {
                 color = Color.Lerp(VulnHexDebuffColor, FireDebuffColor, (MathF.Sin(Main.GlobalTimeWrappedHourly * 2) + 1) / 4f);
@@ -352,20 +350,20 @@ namespace CalamityMod
 
                 float totalWeight = 0;
                 Vector4 normalColor = new();
-                
+
                 foreach (var item in weights)
                 {
                     totalWeight += item.Item2;
                     // ReSharper disable once PossiblyImpureMethodCallOnReadonlyVariable
                     normalColor += item.Item1.ToVector4() * item.Item2;
                 }
-                
+
                 if (totalWeight < 1)
                 {
                     normalColor += TypelessDebuffColor.ToVector4() * (1 - totalWeight);
                     totalWeight += (1 - totalWeight);
                 }
-                
+
                 if (totalWeight != 0)
                 {
                     normalColor /= totalWeight;
