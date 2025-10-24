@@ -6,6 +6,7 @@ using CalamityMod.Buffs.StatDebuffs;
 using CalamityMod.CalPlayer;
 using CalamityMod.Enums;
 using CalamityMod.Events;
+using CalamityMod.ExtraJumps;
 using CalamityMod.Items.Accessories;
 using CalamityMod.Items.Ammo;
 using CalamityMod.Items.Armor.Bloodflare;
@@ -27,9 +28,7 @@ using CalamityMod.Packets;
 using CalamityMod.Particles;
 using CalamityMod.Projectiles.Healing;
 using CalamityMod.Projectiles.Magic;
-using CalamityMod.Projectiles.Melee;
 using CalamityMod.Projectiles.Ranged;
-using CalamityMod.Projectiles.Rogue;
 using CalamityMod.Projectiles.Summon;
 using CalamityMod.Projectiles.Typeless;
 using CalamityMod.Rarities;
@@ -38,7 +37,6 @@ using CalamityMod.Tiles.Furniture.CraftingStations;
 using CalamityMod.UI;
 using CalamityMod.UI.CalamitasEnchants;
 using CalamityMod.World;
-using CalamityMod.ExtraJumps;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria;
@@ -243,7 +241,7 @@ namespace CalamityMod.Items
             // Music boxes are pre-boss and sold from the Merchant, so they should now use the blue rarity.
             if (item.type == ItemID.MusicBox || item.createTile == TileID.MusicBoxes || ItemID.Sets.ShimmerTransformToItem[item.type] == ItemID.MusicBox)
                 item.rare = ItemRarityID.Blue;
-                
+
             // Modified Pearlwood items are now Light Red.
             if (item.type == ItemID.PearlwoodBow || item.type == ItemID.PearlwoodHammer || item.type == ItemID.PearlwoodSword)
                 item.rare = ItemRarityID.LightRed;
@@ -1274,8 +1272,8 @@ namespace CalamityMod.Items
             if (item.type == ItemID.ArcaneFlower)
                 player.GetDamage<MagicDamageClass>() += 0.05f;
 
-            
-            if (item.type == ItemID.EyeoftheGolem) 
+
+            if (item.type == ItemID.EyeoftheGolem)
             {
                 player.Calamity().critDamage += 0.2f;
             }
@@ -1384,10 +1382,12 @@ namespace CalamityMod.Items
             if (item.type == ItemID.GravityGlobe)
             {
                 player.GetJumpState<GravityJump>().Enable();
-                if (player.Calamity().justChangedGravity) {
+                if (player.Calamity().justChangedGravity)
+                {
                     player.GetJumpState<GravityJump>().Available = true;
                 }
-                if (player.wingsLogic <= 0 && player.velocity.Y != 0 && player.maxRunSpeed < 8) {
+                if (player.wingsLogic <= 0 && player.velocity.Y != 0 && player.maxRunSpeed < 8)
+                {
                     player.maxRunSpeed = 5f;
                 }
                 player.jumpSpeedBoost += 1.6f;
@@ -1698,11 +1698,22 @@ namespace CalamityMod.Items
                 return keepPrefix ? prefix : 0;
             }
 
-            if (!CalamityServerConfig.Instance.RemoveReforgeRNG || Main.gameMenu || storedPrefix == -1)
+            if (Main.gameMenu)
                 return -1;
 
-            // Pick a prefix using the new system.
-            return CalamityUtils.GetReworkedReforge(item, rand, storedPrefix);
+            if (item.accessory)
+            {
+                return CalamityUtils.GetAccessoryReforge(item, rand, storedPrefix);
+            }
+            else
+            {
+                if (CalamityServerConfig.Instance.RemoveReforgeRNG && storedPrefix != -1)
+                {
+                    return CalamityUtils.GetReworkedReforge(item, rand, storedPrefix);
+                }
+            }
+
+            return -1;
         }
 
         public override void PostReforge(Item item)

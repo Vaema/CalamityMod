@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using CalamityMod.Buffs.DamageOverTime;
 using CalamityMod.DataStructures;
+using CalamityMod.Prefixes;
 using CalamityMod.UI.CalamitasEnchants;
 using Microsoft.Xna.Framework;
 using Terraria;
@@ -44,6 +45,29 @@ namespace CalamityMod
         #endregion
 
         #region Reforging Algorithm
+        internal static int GetAccessoryReforge(Item item, UnifiedRandom rand, int currentPrefix)
+        {
+            if (CalamityServerConfig.Instance.SimplifyAccessoryReforge)
+            {
+                var pool = new HashSet<int>()
+                {
+                    PrefixID.Warding,
+                    PrefixID.Menacing,
+                    PrefixID.Lucky,
+                    PrefixID.Quick2,
+                    PrefixID.Violent,
+                    PrefixID.Arcane,
+                    ModContent.PrefixType<Silent>(),
+                    ModContent.PrefixType<Invigorating>(),
+                    ModContent.PrefixType<Dauntless>()
+                };
+
+                pool.Remove(currentPrefix);
+                return pool.ElementAt(rand.Next(0, pool.Count));
+            }
+            return -1; // Do Nothing if Config is off
+        }
+
         internal static int GetReworkedReforge(Item item, UnifiedRandom rand, int currentPrefix)
         {
             CalamityMod mod = CalamityMod.Instance;

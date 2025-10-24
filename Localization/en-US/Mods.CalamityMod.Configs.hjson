@@ -545,6 +545,15 @@ CalamityServerConfig: {
 			'''
 	}
 
+	SimplifyAccessoryReforge: {
+		Label: "[i:Autohammer] Simplify Accessory Reforge"
+		Tooltip:
+			'''
+			Simplify Accessory Reforging by only allow following prefixes to be appeared:
+			          - Warding, Menacing, Lucky, Quick, Violent, Arcane, Silent, Invigorating, Dauntless
+			'''
+	}
+
 	TownNPCSpawnRateMultiplier: {
 		Label: "[i:GuideVoodooDoll] Town NPC Spawn Rate Multiplier"
 		Tooltip:

@@ -1,5 +1,4 @@
 ﻿using System.ComponentModel;
-using System.Reflection;
 using System.Runtime.Serialization;
 using CalamityMod.Enums;
 using CalamityMod.UI;
@@ -8,7 +7,6 @@ using CalamityMod.UI.Rippers;
 using CalamityMod.UI.SulphurousWaterMeter;
 using Terraria;
 using Terraria.Localization;
-using Terraria.ModLoader;
 using Terraria.ModLoader.Config;
 
 namespace CalamityMod
@@ -30,7 +28,7 @@ namespace CalamityMod
 
         #region Graphics Changes
         [Header("Graphics")]
-        
+
         [BackgroundColor(192, 54, 64, 192)]
         [DefaultValue(false)]
         public bool DisableGravityScreenSwap { get; set; }
@@ -305,6 +303,11 @@ namespace CalamityMod
 
         [Header("Gameplay")]
         #region General Gameplay Changes
+
+        [BackgroundColor(192, 54, 64, 192)]
+        [DefaultValue(true)]
+        public bool SimplifyAccessoryReforge { get; set; }
+
         [BackgroundColor(192, 54, 64, 192)]
         [DefaultValue(true)]
         public bool RemoveReforgeRNG { get; set; }
