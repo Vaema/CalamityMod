@@ -46,7 +46,6 @@ namespace CalamityMod.ILEditing
             IL_Main.DoDraw += CustomDoDrawChanges;
             On_Main.DrawCursor += UseCoolFireCursorEffect;
             On_Main.SortDrawCacheWorms += DrawFusableParticles;
-            On_Main.DrawInfernoRings += DrawForegroundParticles;
             On_TileDrawing.Draw += ClearTilePings;
             On_CommonCode.ModifyItemDropFromNPC += ColorBlightedGel;
             On_MoonlordDeathDrama.RequestLight += DisableFlashesWithPhotosensitivityConfig;

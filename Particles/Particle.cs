@@ -1,4 +1,6 @@
-﻿using Microsoft.Xna.Framework;
+﻿using System.Collections.Generic;
+using CalamityMod.Enums;
+using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 
 namespace CalamityMod.Particles
@@ -54,12 +56,20 @@ namespace CalamityMod.Particles
         /// </summary>
         public bool AffectedByLight = false;
 
+        /// <summary>
+        /// The "layer" or point at which you'd like your particle to draw in Terraria's internal draw order.
+        /// <br>Defaults to <see cref="GeneralDrawLayer.AfterEverything"/>.</br>
+        /// </summary>
+        public GeneralDrawLayer DrawLayer = GeneralDrawLayer.AfterEverything;
+
         public virtual int FrameVariants => 1;
         public int Variant = 0;
+
         public virtual string Texture => "";
 
         /// <summary>
-        /// Whether or not your particle should be drawn slightly pixelated to match Terraria's pixel size.
+        /// Whether or not your particle should be drawn with a pixelated effect to match Terraria's pixel size.
+        /// <br>Defaults to false.</br>
         /// </summary>
         public virtual bool Pixelate => false;
 
@@ -95,6 +105,5 @@ namespace CalamityMod.Particles
         /// Removes the particle from the handler
         /// </summary>
         public void Kill() => GeneralParticleHandler.RemoveParticle(this);
-
     }
 }

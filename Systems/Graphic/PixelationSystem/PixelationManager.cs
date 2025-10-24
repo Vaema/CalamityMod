@@ -1,0 +1,311 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using CalamityMod.Enums;
+using CalamityMod.Graphics;
+using CalamityMod.Items.Ammo;
+using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
+using Terraria;
+using Terraria.ModLoader;
+
+namespace CalamityMod.Systems.Graphic.PixelationSystem
+{
+    public class PixelationManager : ModSystem
+    {
+        private static Dictionary<BlendState, ManagedRenderTarget> PixelTargets_BeforeTiles;
+        private static Dictionary<BlendState, ManagedRenderTarget> PixelTargets_BeforeNPCs;
+        private static Dictionary<BlendState, ManagedRenderTarget> PixelTargets_AfterNPCs;
+        private static Dictionary<BlendState, ManagedRenderTarget> PixelTargets_BeforeProjectiles;
+        private static Dictionary<BlendState, ManagedRenderTarget> PixelTargets_AfterProjectiles;
+        private static Dictionary<BlendState, ManagedRenderTarget> PixelTargets_AfterPlayers;
+        private static Dictionary<BlendState, ManagedRenderTarget> PixelTargets_AfterDusts;
+        private static Dictionary<BlendState, ManagedRenderTarget> PixelTargets_AfterEverything;
+
+        private static List<PixelatedDrawer> ActivePixelatedDrawers_BeforeTiles;
+        private static List<PixelatedDrawer> ActivePixelatedDrawers_BeforeNPCs;
+        private static List<PixelatedDrawer> ActivePixelatedDrawers_AfterNPCs;
+        private static List<PixelatedDrawer> ActivePixelatedDrawers_BeforeProjectiles;
+        private static List<PixelatedDrawer> ActivePixelatedDrawers_AfterProjectiles;
+        private static List<PixelatedDrawer> ActivePixelatedDrawers_AfterPlayers;
+        private static List<PixelatedDrawer> ActivePixelatedDrawers_AfterDusts;
+        private static List<PixelatedDrawer> ActivePixelatedDrawers_AfterEverything;
+
+        /// <summary>
+        /// The resolution ratio at which pixelated drawers should draw.<br/>
+        /// <c>0.5f</c> will draw at half resolution, <c>0.25f</c> will draw at quarter resolution, etc.
+        /// </summary>
+        internal const float PixelationResolution = 0.5f;
+
+        /// <summary>
+        /// The transformation matrix used by <see cref="PixelationManager"/> to draw pixelated assets.
+        /// </summary>
+        internal static Matrix PixelationMatrix
+        {
+            get
+            {
+                return Main.GameViewMatrix.TransformationMatrix
+                   * Matrix.CreateScale(PixelationResolution / Main.GameViewMatrix.Zoom.X, PixelationResolution / Main.GameViewMatrix.Zoom.Y, 1f)
+                   * Matrix.CreateTranslation(Main.GameViewMatrix.Translation.X * PixelationResolution, Main.GameViewMatrix.Translation.Y * PixelationResolution, 0f);
+            }
+        }
+
+        /// <summary>
+        /// Creates a render target at a ratio of the screen's current dimensions based on <see cref="PixelationResolution"/>.
+        /// </summary>
+        internal static RenderTarget2D CreatePixelTarget(int width, int height) => new(Main.graphics.GraphicsDevice, (int)(width * PixelationResolution), (int)(height * PixelationResolution));
+
+        public override void OnModLoad()
+        {
+            if (Main.dedServ)
+                return;
+
+            PixelTargets_BeforeTiles = [];
+            PixelTargets_BeforeNPCs = [];
+            PixelTargets_AfterNPCs = [];
+            PixelTargets_BeforeProjectiles = [];
+            PixelTargets_AfterProjectiles = [];
+            PixelTargets_AfterPlayers = [];
+            PixelTargets_AfterDusts = [];
+            PixelTargets_AfterEverything = [];
+
+            ActivePixelatedDrawers_BeforeTiles = [];
+            ActivePixelatedDrawers_BeforeNPCs = [];
+            ActivePixelatedDrawers_AfterNPCs = [];
+            ActivePixelatedDrawers_BeforeProjectiles = [];
+            ActivePixelatedDrawers_AfterProjectiles = [];
+            ActivePixelatedDrawers_AfterPlayers = [];
+            ActivePixelatedDrawers_AfterDusts = [];
+            ActivePixelatedDrawers_AfterEverything = [];
+
+            RenderTargetManager.RenderTargetUpdateLoopEvent += PrepareTargets;
+            On_Main.DrawBackgroundBlackFill += DrawPixelated_BeforeTiles;
+            On_Main.DrawNPCs += DrawPixelated_NPCs;
+            On_Main.DrawProjectiles += DrawPixelated_Projectiles;
+            On_Main.DrawPlayers_AfterProjectiles += DrawPixelated_AfterPlayers;
+            On_Main.DrawDust += DrawPixelated_AfterDusts;
+            On_Main.DrawInfernoRings += DrawPixelated_AfterEverything;
+        }
+
+        public override void OnModUnload()
+        {
+            if (Main.dedServ)
+                return;
+
+            PixelTargets_BeforeTiles = null;
+            PixelTargets_BeforeNPCs = null;
+            PixelTargets_AfterNPCs = null;
+            PixelTargets_BeforeProjectiles = null;
+            PixelTargets_AfterProjectiles = null;
+            PixelTargets_AfterPlayers = null;
+            PixelTargets_AfterDusts = null;
+            PixelTargets_AfterEverything = null;
+
+            ActivePixelatedDrawers_BeforeTiles = null;
+            ActivePixelatedDrawers_BeforeNPCs = null;
+            ActivePixelatedDrawers_AfterNPCs = null;
+            ActivePixelatedDrawers_BeforeProjectiles = null;
+            ActivePixelatedDrawers_AfterProjectiles = null;
+            ActivePixelatedDrawers_AfterPlayers = null;
+            ActivePixelatedDrawers_AfterDusts = null;
+            ActivePixelatedDrawers_AfterEverything = null;
+        }
+
+        public override void OnWorldUnload()
+        {
+            if (Main.dedServ)
+                return;
+
+            ActivePixelatedDrawers_BeforeTiles = null;
+            ActivePixelatedDrawers_BeforeNPCs = null;
+            ActivePixelatedDrawers_AfterNPCs = null;
+            ActivePixelatedDrawers_BeforeProjectiles = null;
+            ActivePixelatedDrawers_AfterProjectiles = null;
+            ActivePixelatedDrawers_AfterPlayers = null;
+            ActivePixelatedDrawers_AfterDusts = null;
+            ActivePixelatedDrawers_AfterEverything = null;
+        }
+
+
+        /// <summary>
+        /// Queues a <see cref="PixelatedDrawer"/> instance to draw pixelated assets.
+        /// </summary>
+        /// <param name="drawAction">All relevant drawing code should be written here.</param>
+        /// <param name="drawLayer">The layer at which you'd like these assets to be drawn on. <br><b>e.g.</b> <see cref="GeneralDrawLayer.BeforeProjectiles"/> will make all drawn assets render behind all projectiles.</br></param>
+        /// <param name="defaultBlendState">The default <see cref="BlendState"/> that your pixelated assets will be rendered in.
+        /// <br>Leave as null to render them using <see cref="BlendState.AlphaBlend"/>.</br></param>
+        public static void AddPixelatedDrawer(Action<Matrix> drawAction, GeneralDrawLayer drawLayer, BlendState defaultBlendState = null)
+        {
+            if (Main.dedServ || Main.gameMenu)
+                return;
+
+            BlendState blendState = defaultBlendState ?? BlendState.AlphaBlend;
+
+            // Check if the associated render target for this drawer exists and create it if necessary.
+            VerifyTargetExistence(drawLayer, blendState);
+
+            PixelatedDrawer drawer = new(drawAction, drawLayer, blendState);
+            ReturnAssociatedDrawerCollection(drawLayer).Add(drawer);
+        }
+
+        private static void PrepareTargets()
+        {
+            if (!Main.gameMenu && !Main.dedServ)
+            {
+                // Draw all collections to their respctive render targets.
+                DrawCollectionsToTarget(PixelTargets_BeforeTiles, PixelationMatrix, ActivePixelatedDrawers_BeforeTiles);
+                DrawCollectionsToTarget(PixelTargets_BeforeNPCs, PixelationMatrix, ActivePixelatedDrawers_BeforeNPCs);
+                DrawCollectionsToTarget(PixelTargets_AfterNPCs, PixelationMatrix, ActivePixelatedDrawers_AfterNPCs);
+                DrawCollectionsToTarget(PixelTargets_BeforeProjectiles, PixelationMatrix, ActivePixelatedDrawers_BeforeProjectiles);
+                DrawCollectionsToTarget(PixelTargets_AfterProjectiles, PixelationMatrix, ActivePixelatedDrawers_AfterProjectiles);
+                DrawCollectionsToTarget(PixelTargets_AfterPlayers, PixelationMatrix, ActivePixelatedDrawers_AfterPlayers);
+                DrawCollectionsToTarget(PixelTargets_AfterDusts, PixelationMatrix, ActivePixelatedDrawers_AfterDusts);
+                DrawCollectionsToTarget(PixelTargets_AfterEverything, PixelationMatrix, ActivePixelatedDrawers_AfterEverything);
+
+                Main.graphics.GraphicsDevice.SetRenderTarget(null);
+            }
+        }
+
+        private static void DrawPixelated_BeforeTiles(On_Main.orig_DrawBackgroundBlackFill orig, Main self)
+        {
+            DrawPixelatedTargets(PixelTargets_BeforeTiles);
+            orig(self);
+        }
+
+        private static void DrawPixelated_NPCs(On_Main.orig_DrawNPCs orig, Main self, bool behindTiles)
+        {
+            if (!behindTiles)
+                DrawPixelatedTargets(PixelTargets_BeforeNPCs);
+
+            orig(self, behindTiles);
+
+            if (!behindTiles)
+                DrawPixelatedTargets(PixelTargets_AfterNPCs);
+        }
+
+        private static void DrawPixelated_Projectiles(On_Main.orig_DrawProjectiles orig, Main self)
+        {
+            DrawPixelatedTargets(PixelTargets_BeforeProjectiles);
+            orig(self);
+            DrawPixelatedTargets(PixelTargets_AfterProjectiles);
+        }
+
+        private static void DrawPixelated_AfterPlayers(On_Main.orig_DrawPlayers_AfterProjectiles orig, Main self)
+        {
+            orig(self);
+            DrawPixelatedTargets(PixelTargets_AfterPlayers);
+        }
+
+        private static void DrawPixelated_AfterDusts(On_Main.orig_DrawDust orig, Main self)
+        {
+            orig(self);
+            DrawPixelatedTargets(PixelTargets_AfterDusts);
+        }
+
+        private static void DrawPixelated_AfterEverything(On_Main.orig_DrawInfernoRings orig, Main self)
+        {
+            orig(self);
+            DrawPixelatedTargets(PixelTargets_AfterEverything);
+        }
+
+        private static void DrawCollectionsToTarget(Dictionary<BlendState, ManagedRenderTarget> targetCollection, Matrix pixelationMatrix, List<PixelatedDrawer> drawerCollection)
+        {
+            foreach (var blendStateTargetPair in targetCollection)
+            {
+                blendStateTargetPair.Value.SwapTo();
+
+                Main.spriteBatch.Begin(default, blendStateTargetPair.Key, SamplerState.LinearClamp, default, default, null, pixelationMatrix);
+
+                // Select only drawers who match this target's BlendState.
+                var drawersByBlendState = drawerCollection.Where(d => d.DefaultBlendState == blendStateTargetPair.Key).ToList();
+                if (drawersByBlendState.Count > 0)
+                {
+                    foreach (PixelatedDrawer drawer in drawersByBlendState)
+                        drawer.DrawAction.Invoke(pixelationMatrix);
+                }
+
+                Main.spriteBatch.End();
+            }
+
+            drawerCollection.Clear();
+        }
+
+        private static void DrawPixelatedTargets(Dictionary<BlendState, ManagedRenderTarget> targetCollection)
+        {
+            Main.spriteBatch.SafeAction(() =>
+            {
+                foreach (var keyValuePair in targetCollection)
+                {
+                    Main.spriteBatch.TryEnd();
+                    Main.spriteBatch.TryBegin(SpriteSortMode.Deferred, keyValuePair.Key, Main.DefaultSamplerState, default, default, null, Main.GameViewMatrix.TransformationMatrix);
+
+                    float targetScale = 1f / PixelationResolution;
+                    Main.spriteBatch.Draw(keyValuePair.Value, Vector2.Zero, null, Color.White, 0f, Vector2.Zero, targetScale, SpriteEffects.None, 0f);
+                }
+            });
+        }
+
+        private static List<PixelatedDrawer> ReturnAssociatedDrawerCollection(GeneralDrawLayer drawLayer)
+        {
+            List<PixelatedDrawer> drawerCollection = drawLayer switch
+            {
+                GeneralDrawLayer.BeforeTiles => ActivePixelatedDrawers_BeforeTiles,
+                GeneralDrawLayer.BeforeNPCs => ActivePixelatedDrawers_BeforeNPCs,
+                GeneralDrawLayer.AfterNPCs => ActivePixelatedDrawers_AfterNPCs,
+                GeneralDrawLayer.BeforeProjectiles => ActivePixelatedDrawers_BeforeProjectiles,
+                GeneralDrawLayer.AfterProjectiles => ActivePixelatedDrawers_AfterProjectiles,
+                GeneralDrawLayer.AfterPlayers => ActivePixelatedDrawers_AfterPlayers,
+                GeneralDrawLayer.AfterDusts => ActivePixelatedDrawers_AfterDusts,
+                _ => ActivePixelatedDrawers_AfterEverything,
+            };
+
+            return drawerCollection;
+        }
+
+        private static void VerifyTargetExistence(GeneralDrawLayer drawLayer, BlendState blendState)
+        {
+            switch (drawLayer)
+            {
+                case GeneralDrawLayer.BeforeTiles:
+                    if (!PixelTargets_BeforeTiles.ContainsKey(blendState))
+                        Main.QueueMainThreadAction(() => PixelTargets_BeforeTiles[blendState] = new(true, CreatePixelTarget));
+                    break;
+
+                case GeneralDrawLayer.BeforeNPCs:
+                    if (!PixelTargets_BeforeNPCs.ContainsKey(blendState))
+                        Main.QueueMainThreadAction(() => PixelTargets_BeforeNPCs[blendState] = new(true, CreatePixelTarget));
+                    break;
+
+                case GeneralDrawLayer.AfterNPCs:
+                    if (!PixelTargets_AfterNPCs.ContainsKey(blendState))
+                        Main.QueueMainThreadAction(() => PixelTargets_AfterNPCs[blendState] = new(true, CreatePixelTarget));
+                    break;
+
+                case GeneralDrawLayer.BeforeProjectiles:
+                    if (!PixelTargets_BeforeProjectiles.ContainsKey(blendState))
+                        Main.QueueMainThreadAction(() => PixelTargets_BeforeProjectiles[blendState] = new(true, CreatePixelTarget));
+                    break;
+
+                case GeneralDrawLayer.AfterProjectiles:
+                    if (!PixelTargets_AfterProjectiles.ContainsKey(blendState))
+                        Main.QueueMainThreadAction(() => PixelTargets_AfterProjectiles[blendState] = new(true, CreatePixelTarget));
+                    break;
+
+                case GeneralDrawLayer.AfterPlayers:
+                    if (!PixelTargets_AfterPlayers.ContainsKey(blendState))
+                        Main.QueueMainThreadAction(() => PixelTargets_AfterPlayers[blendState] = new(true, CreatePixelTarget));
+                    break;
+
+                case GeneralDrawLayer.AfterDusts:
+                    if (!PixelTargets_AfterDusts.ContainsKey(blendState))
+                        Main.QueueMainThreadAction(() => PixelTargets_AfterDusts[blendState] = new(true, CreatePixelTarget));
+                    break;
+
+                case GeneralDrawLayer.AfterEverything:
+                    if (!PixelTargets_AfterEverything.ContainsKey(blendState))
+                        Main.QueueMainThreadAction(() => PixelTargets_AfterEverything[blendState] = new(true, CreatePixelTarget));
+                    break;
+            }
+        }
+    }
+}

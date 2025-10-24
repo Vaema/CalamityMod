@@ -31,6 +31,7 @@ using CalamityMod.Projectiles;
 using CalamityMod.Projectiles.Ranged;
 using CalamityMod.Projectiles.Typeless;
 using CalamityMod.Systems;
+using CalamityMod.Systems.Graphic.PixelationSystem;
 using CalamityMod.Tiles;
 using CalamityMod.Walls;
 using CalamityMod.Waterfalls;
@@ -923,11 +924,6 @@ namespace CalamityMod.ILEditing
             orig(self);
         }
 
-        private static void DrawForegroundParticles(On_Main.orig_DrawInfernoRings orig, Main self)
-        {
-            GeneralParticleHandler.DrawAllParticles(Main.spriteBatch);
-            orig(self);
-        }
         #endregion
 
         #region Disable Moon Lord Style Flashes With Photosensitivity Config
