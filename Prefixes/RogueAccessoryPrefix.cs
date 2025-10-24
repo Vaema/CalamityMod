@@ -1,19 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using Terraria;
-using Terraria.ID;
 using Terraria.Localization;
 using Terraria.ModLoader;
 
 namespace CalamityMod.Prefixes
 {
-    [LegacyName("CloakedPrefix", "QuietPrefix")]
-    public class Cloaked : RogueAccessoryPrefix
-    {
-        public override float stealthGenBonus => 0.04f;
-    }
-
-    [LegacyName("SilentPrefix", "CamouflagedPrefix")]
+    [LegacyName("CloakedPrefix", "QuietPrefix", "SilentPrefix", "CamouflagedPrefix")]
     public class Silent : RogueAccessoryPrefix
     {
         public override float stealthGenBonus => 0.08f;
