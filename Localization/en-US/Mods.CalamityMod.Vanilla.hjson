@@ -69,13 +69,13 @@ PrefixTooltip: {
 		-{2}% mana cost
 		'''
 	ArmorPenStat: +{0} armor penetration
-	CritStat: +{0} critical strike chance
+	CritStat: +{0}% critical strike chance
 	DamageStat: +{0}% damage
 	DefenseStat: +{0} defense
 	DRStat: +{0}% damage reduction
 	LuckStat: +{0} luck
 	MeleeSpeedStat: +{0}% melee speed
-	SpeedStat: +{0} movement speed
+	SpeedStat: +{0}% movement speed
 }
 
 EditedTooltip: {
