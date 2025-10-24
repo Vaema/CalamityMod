@@ -156,7 +156,7 @@ namespace CalamityMod.Items
             string[] rougeKey = new string[] { CalamityUtils.GetTextValue($"Misc.GFBRougeUppercase"), CalamityUtils.GetTextValue($"Misc.GFBRougeLowercase") };
             for (int n = 0; n < rogueKey.Length; n++)
             {
-                if (Main.zenithWorld && rogueKey[n]!="")
+                if (Main.zenithWorld && rogueKey[n] != "")
                 {
                     tooltips.FindAndReplace(rogueKey[n], rougeKey[n]);
                 }
@@ -321,22 +321,22 @@ namespace CalamityMod.Items
                     {
                         continue;
                     }
-                    
+
                     foundDebuff = true;
                     if (!PlayerInput.Triggers.Current.SmartCursor)
                     {
                         showTheTip = true;
                         break;
                     }
-                    
+
                     tooltips.Insert(++lastTooltipIndex, new TooltipLine(Mod, "CalamityMod:AltExpandTooltip" + buffId, $"[cbuff:{buffId}]\n{text}"));
                 }
 
                 if (showTheTip)
                 {
                     var str = PlayerInput.CurrentProfile.InputModes[InputMode.Keyboard].KeyStatus["SmartCursor"].First().ToString();
-                    tooltips.Insert(++lastTooltipIndex, (new TooltipLine(Mod, "CalamityMod:AltExpandTooltip", CalamityUtils.GetTextValue("Misc.AltExpand").Replace("{0}",str))));
-                    tooltips[lastTooltipIndex].OverrideColor = new Color(170,170,170);
+                    tooltips.Insert(++lastTooltipIndex, (new TooltipLine(Mod, "CalamityMod:AltExpandTooltip", CalamityUtils.GetTextValue("Misc.AltExpand").Replace("{0}", str))));
+                    tooltips[lastTooltipIndex].OverrideColor = new Color(170, 170, 170);
                 }
                 else if (foundDebuff)
                 {
@@ -1280,7 +1280,7 @@ namespace CalamityMod.Items
                 }
                 else
                     sb.Append($"[c/B8B8B8:{CalamityUtils.GetTextValue("UI.HoldShiftTooltipExtensionIndicator")}]");
-                
+
                 if (extraKey != null)
                 {
                     sb.Append('\n');
@@ -1518,32 +1518,6 @@ namespace CalamityMod.Items
             // Beyond this point all code only applies to accessories. Skip it all if the item is not an accessory.
             if (!item.accessory)
                 return;
-
-            // Display the stat changes to vanilla prefixes
-            #region Accessory Prefix Rebalance Tooltips
-
-            // Turns a number into a string of increased DR.
-            string DRString(float percent) => "\n" + GetAddedTooltip("DefensePrefix").Format(percent.ToString());
-
-            switch (item.prefix)
-            {
-                case PrefixID.Hard:
-                    EditTooltipByName("PrefixAccDefense", (line) => line.Text += DRString(0.25f));
-                    return;
-                case PrefixID.Guarding:
-                    EditTooltipByName("PrefixAccDefense", (line) => line.Text += DRString(0.5f));
-                    return;
-                case PrefixID.Armored:
-                    EditTooltipByName("PrefixAccDefense", (line) => line.Text += DRString(0.75f));
-                    return;
-                case PrefixID.Warding:
-                    EditTooltipByName("PrefixAccDefense", (line) => line.Text += DRString(1f));
-                    return;
-                case PrefixID.Lucky:
-                    EditTooltipByName("PrefixAccCritChance", (line) => line.Text += AddedTooltip("LuckyPrefix"));
-                    return;
-            }
-            #endregion
         }
         #endregion
 
