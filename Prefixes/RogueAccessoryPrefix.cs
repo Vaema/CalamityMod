@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using CalamityMod.Prefixes.VanillaPrefixChanges;
 using Terraria;
 using Terraria.Localization;
 using Terraria.ModLoader;
@@ -28,11 +29,11 @@ namespace CalamityMod.Prefixes
             player.Calamity().accStealthGenBoost += stealthGenBonus;
         }
 
-        // Changing value based on prefix tier (rarity is set automatically around value multiplier)
         public override void ModifyValue(ref float valueMult)
         {
-            float extraValue = 1f + (2.5f * stealthGenBonus);
-            valueMult *= extraValue;
+            //float extraValue = 1f + (2.5f * stealthGenBonus);
+            //valueMult *= extraValue;
+            valueMult = VanillaPrefixChange.RarityPlusOne;
         }
 
         // Extra tooltip for new modifier stats

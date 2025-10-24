@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using MonoMod.Cil;
 using Terraria;
+using Terraria.ID;
 using Terraria.ModLoader;
 
 namespace CalamityMod.Prefixes.VanillaPrefixChanges
@@ -21,6 +23,45 @@ namespace CalamityMod.Prefixes.VanillaPrefixChanges
             });
 
             On_Player.GrantPrefixBenefits += OnGrantBenefits;
+            IL_Item.Prefix += IL_Item_Prefix;
+        }
+
+        private void IL_Item_Prefix(ILContext il)
+        {
+            var cursor = new ILCursor(il);
+            if (!cursor.TryGotoNext(x => x.MatchCallOrCallvirt<ModPrefix>(nameof(ModPrefix.ModifyValue))))
+            {
+                return;
+            }
+
+            if (!cursor.Prev.MatchLdloca(out var multLocaIdx))
+            {
+                return;
+            }
+
+            if (!cursor.TryGotoPrev(x => x.MatchLdsfld<PrefixID>(nameof(PrefixID.Count))))
+            {
+                return;
+            }
+
+            if (!cursor.Prev.MatchLdloc(out var prefixLocaIdx))
+            {
+                return;
+            }
+
+            cursor.GotoPrev(MoveType.AfterLabel);
+            cursor.EmitLdloc(prefixLocaIdx);
+            cursor.EmitLdloca(multLocaIdx);
+            cursor.EmitDelegate((int prefixID, ref float value) =>
+            {
+                if (!PrefixReworkEnabled)
+                    return;
+
+                if (PrefixChanges.TryGetValue(prefixID, out var prefixChange))
+                {
+                    prefixChange.ModifyValue(ref value);
+                }
+            });
         }
 
         private void OnGrantBenefits(On_Player.orig_GrantPrefixBenefits orig, Player self, Item item)
@@ -51,6 +92,9 @@ namespace CalamityMod.Prefixes.VanillaPrefixChanges
 
             public override void ModifyTooltips(Item item, List<TooltipLine> tooltips)
             {
+                if (!PrefixReworkEnabled)
+                    return;
+
                 if (!PrefixChanges.TryGetValue(item.prefix, out var change))
                     return;
 

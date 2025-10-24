@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using CalamityMod.Prefixes.VanillaPrefixChanges;
 using Terraria;
 using Terraria.Localization;
 using Terraria.ModLoader;
@@ -13,6 +14,11 @@ namespace CalamityMod.Prefixes
         public override void ApplyAccessoryEffects(Player player)
         {
             player.lifeRegen += GetLifeRegenAmount();
+        }
+
+        public override void ModifyValue(ref float valueMult)
+        {
+            valueMult = VanillaPrefixChange.RarityPlusOne;
         }
 
         public LocalizedText LifeRegenTooltip => CalamityUtils.GetText($"{LocalizationCategory}.LifeRegenTooltip");
@@ -39,6 +45,11 @@ namespace CalamityMod.Prefixes
         public override void ApplyAccessoryEffects(Player player)
         {
             player.statLifeMax2 += GetHealthBoostAmount();
+        }
+
+        public override void ModifyValue(ref float valueMult)
+        {
+            valueMult = VanillaPrefixChange.RarityPlusOne;
         }
 
         public LocalizedText LifeBoostTooltip => CalamityUtils.GetText($"{LocalizationCategory}.MaxLifeBoostTooltip");

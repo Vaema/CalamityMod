@@ -12,9 +12,19 @@ namespace CalamityMod.Prefixes.VanillaPrefixChanges
         public abstract int TargetPrefix { get; }
         public abstract string TargetTooltipName { get; }
 
+        public const float RarityPlusTwo = 1.2f + 0.001f; // Precision Errors...
+        public const float RarityPlusOne = 1.05f + 0.001f;
+        public const float RarityKeep = 1.0f;
+        public const float RarityMinusOne = 0.95f - 0.001f;
+        public const float RarityMinusTwo = 0.8f - 0.001f;
+
         public abstract IEnumerator<IVanillaPrefixStat> PopulateStats();
 
-        public virtual void ModifyValue(ref float valueMult) { }
+        public virtual void ModifyValue(ref float valueMult)
+        {
+            valueMult = RarityPlusOne;
+        }
+
         public virtual void PostApplyEffects(Player player) { }
         public virtual void PostModifyTooltip(TooltipLine line) { }
 
