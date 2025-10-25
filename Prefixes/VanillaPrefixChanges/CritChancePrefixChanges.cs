@@ -13,7 +13,7 @@ namespace CalamityMod.Prefixes.VanillaPrefixChanges
 
         public override IEnumerator<IVanillaPrefixStat> PopulateStats()
         {
-            yield return new PrefixCritChanceStat(0.02f);
+            yield return new PrefixCritChanceStat(2);
 
             if (NPC.downedMoonlord)
             {
@@ -37,7 +37,7 @@ namespace CalamityMod.Prefixes.VanillaPrefixChanges
 
         public override IEnumerator<IVanillaPrefixStat> PopulateStats()
         {
-            yield return new PrefixCritChanceStat(0.04f);
+            yield return new PrefixCritChanceStat(4);
         }
 
         public override void PostModifyTooltip(TooltipLine line)

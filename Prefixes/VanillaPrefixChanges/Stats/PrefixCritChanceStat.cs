@@ -3,9 +3,9 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.Prefixes.VanillaPrefixChanges.Stats
 {
-    public struct PrefixCritChanceStat(float critChanceBonus) : IVanillaPrefixStat
+    public struct PrefixCritChanceStat(int critChanceBonus) : IVanillaPrefixStat
     {
-        public float CritChanceBonus = critChanceBonus;
+        public int CritChanceBonus = critChanceBonus;
 
         public readonly void ApplyEffects(Player player)
         {

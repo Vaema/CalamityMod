@@ -40,7 +40,7 @@ namespace CalamityMod.Prefixes.VanillaPrefixChanges
         public override IEnumerator<IVanillaPrefixStat> PopulateStats()
         {
             yield return new PrefixDamageStat(0.02f);
-            yield return new PrefixCritChanceStat(0.02f);
+            yield return new PrefixCritChanceStat(2);
         }
     }
 
