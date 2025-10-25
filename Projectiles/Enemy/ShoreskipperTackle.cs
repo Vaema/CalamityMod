@@ -20,10 +20,10 @@ namespace CalamityMod.Projectiles.Enemy
             Projectile.friendly = false;
             Projectile.ignoreWater = false;
             Projectile.tileCollide = false;
-            Projectile.timeLeft = 360;
+            Projectile.timeLeft = 120;
             Projectile.penetrate = 1;
             Projectile.usesLocalNPCImmunity = true;
-            Projectile.localNPCHitCooldown = -1; // Only hit once.
+            Projectile.localNPCHitCooldown = -1;
         }
 
         public override void AI()
@@ -58,7 +58,6 @@ namespace CalamityMod.Projectiles.Enemy
 
         public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
         {
-            // Optional: add visual feedback
             Dust.NewDust(target.position, target.width, target.height, DustID.Water, 0f, -2f, 0, default, 1f);
         }
     }

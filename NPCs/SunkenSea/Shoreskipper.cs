@@ -34,10 +34,17 @@ namespace CalamityMod.NPCs.SunkenSea
 
         public NPC Target;
         public bool spawnedTackleHitbox = false;
+        public bool notLandedFromWater = false;
+        public override bool? CanFallThroughPlatforms()
+        {
+            // Fall to try to reach target
+            if (CurrentPhase == 2 && Target.Top.Y > NPC.Bottom.Y)
+                return true;
 
-        #region SunkenSeaNPC Implementation
+            return false;
+        }
 
-        // Can only do harm to its own species.
+        // Can only do harm to its own species
         protected override List<int> PreyIDs =>
         [
             NPCType<Shoreskipper>(),
@@ -53,12 +60,11 @@ namespace CalamityMod.NPCs.SunkenSea
 
         public override bool CanHitPlayer(Player target, ref int cooldownSlot) => false;
 
-        // Player can hit Shoreskippers.
+        // Player can hit shoreskippers
         public override bool? CanBeHitByItem(Player player, Item item) => true;
         public override bool? CanBeHitByProjectile(Projectile projectile) => true;
 
         protected override SunkenSeaBiomeFlags BiomeDesignation => SunkenSeaBiomeFlags.TimelessShores;
-        #endregion
 
         public override void SetStaticDefaults()
         {
@@ -97,59 +103,83 @@ namespace CalamityMod.NPCs.SunkenSea
         }
         protected override void OnPreyDetection(NPC prey)
         {
-            if (prey.active && NPC.HasSight(prey.Center))
+            if (prey.active && NPC.HasSight(prey.Center) && (Target == null || !Target.active))
             {
                 ChangePhase((int)PhaseType.Rawr);
                 Target = prey;
             }
         }
 
+        // Check for if their melee hitbox exists as to not spawn multiple at once
+        private bool HasActiveTackle()
+        {
+            int tackleType = ProjectileType<ShoreskipperTackle>();
+            for (int i = 0; i < Main.maxProjectiles; i++)
+            {
+                Projectile proj = Main.projectile[i];
+                if (proj.active && proj.type == tackleType && proj.ai[0] == NPC.whoAmI)
+                    return true;
+            }
+            return false;
+        }
+
         public override void AI()
         {
             NPC.Calamity().newAI[1]++;
             NPC.TargetClosest(false);
-            Lighting.AddLight(NPC.Center, 0.5f, 0.2f, 0);
             if (NPC.direction == 0)
             {
                 NPC.direction = Main.rand.NextBool().ToDirectionInt();
             }
+            int frameHeight = TextureAssets.Npc[Type].Value.Height / Main.npcFrameCount[Type];
+
+            if (NPC.velocity.Y == 0 && NPC.oldVelocity.Y != 0f && notLandedFromWater) // Do not maintain velocity from skipping on water
+            {
+                NPC.velocity.X = 0f;
+                notLandedFromWater = false;
+            }
+
+            if (NPC.velocity.X > 2.5f && NPC.oldVelocity.X > 2.5f && NPC.velocity.Y == 0) // In case of knockback jank
+                NPC.velocity.X = 0f;
+
             switch (CurrentPhase)
             {
-                // IDLE AND ROAR LOGIC PLACEHOLDER. TAKEN FROM ANOTHER SSO NPC
                 case (int)PhaseType.Idle:
                     {
-                        // Flip direction and slow down if it's still moving from a previous cycle
-                        if (Timer == 0 && Main.rand.NextBool())
-                        {
-                            NPC.direction *= -1;
-                            NPC.velocity.X *= 0.9f;
-                        }
-                        // Move horizontally in short bursts
-                        else if (Timer >= Main.rand.Next(30, 90) && NPC.velocity.Y == 0 && Math.Abs(NPC.velocity.X) < 1 && NPC.ai[2] == 0)
+                        int frameDuration = 10;
+                        int currentFrameIndex = (int)(NPC.frameCounter / frameDuration) % Main.npcFrameCount[Type];
+                        // If it's the third frame
+                        bool isAllowedToMove = NPC.frame.Y / frameHeight == 2;
+
+                        // Move horizontally in short bursts
+                        if (Timer >= 10 && NPC.velocity.Y == 0 && Math.Abs(NPC.velocity.X) < 1 && NPC.ai[2] == 0 && isAllowedToMove)
                         {
                             NPC.ai[2] = 1;
-                            NPC.velocity.X = Main.rand.NextFloat(2, 4) * Main.rand.NextBool().ToDirectionInt();
+                            NPC.velocity.X = Main.rand.NextFloat(1.75f, 2.5f) * Main.rand.NextBool().ToDirectionInt();
+                            if (Main.rand.NextBool(4))
+                                SoundEngine.PlaySound(new("CalamityMod/Sounds/Custom/ShoreskipperGrunt", 2) { Volume = 0.8f, PitchVariance = 0.15f }, NPC.Center);
                         }
 
-                        // Increment the timer before the burst ends
+                        // Increment the timer before the slide ends
                         if (NPC.ai[2] == 1)
                         {
                             NPC.ai[3]++;
                         }
-                        // Slowdown after a burst
+
+                        // Slow down quickly after sliding
                         else if (NPC.ai[2] == 2 && NPC.velocity.Y == 0)
                         {
-                            NPC.velocity.X *= 0.9f;
+                            NPC.velocity.X *= 0.835f;
                             NPC.ai[3]++;
                         }
 
                         // Handle movement states
                         if (NPC.ai[3] > Main.rand.Next(20, 40))
                         {
-                            // If the slug is moving, enter slowdown
+                            // If moving, enter slowdown
                             if (NPC.ai[2] == 1)
                                 NPC.ai[2] = 2;
-                            // If the slug is in slowdown, reset
+                            // If in slowdown, reset
                             else if (NPC.ai[2] == 2)
                                 ChangePhase((int)PhaseType.Idle);
                             NPC.ai[3] = 0;
@@ -159,6 +189,7 @@ namespace CalamityMod.NPCs.SunkenSea
                     }
                     break;
 
+                    // PLACEHOLDER FROM SEARSLUG!!!
                 case (int)PhaseType.Rawr:
                     {
                         int roar = 40;
@@ -168,7 +199,7 @@ namespace CalamityMod.NPCs.SunkenSea
                         // Roar in place with a lil jump
                         if (Timer == roar)
                         {
-                            SoundEngine.PlaySound(SoundID.Zombie7 with { Pitch = 0.7f }, NPC.Center);
+                            SoundEngine.PlaySound(new("CalamityMod/Sounds/Custom/ShoreskipperSighting") { Volume = 1f, Pitch = -0.1f, PitchVariance = 0.12f }, NPC.Center);
                             if (NPC.velocity.Y == 0)
                             {
                                 NPC.velocity.Y = -3;
@@ -179,9 +210,10 @@ namespace CalamityMod.NPCs.SunkenSea
                         if (Timer > startAI)
                             ChangePhase((int)PhaseType.Jumps);
 
-                        if (!Target.active || (Target.Distance(NPC.Center) > 700 && !NPC.HasSight(Target.Center)) && NPC.velocity.Y == 0) // If target it dead/out of range and if this shoreskipper is grounded
+                        if ((!Target.active || Target == null || (Target.Distance(NPC.Center) > 580 && !NPC.HasSight(Target.Center)) || Target.Distance(NPC.Center) > 700) && NPC.velocity.Y == 0) // If target it dead/out of range and if this shoreskipper is grounded
                         {
-                            NPC.velocity.X = 0f;
+                            NPC.velocity.X *= 0.33f;
+                            Target = null;
                             ChangePhase((int)PhaseType.Idle);
                         }
                     }
@@ -192,27 +224,46 @@ namespace CalamityMod.NPCs.SunkenSea
                         // Hops toward the target
                         int jumpHeight = Target.Bottom.Y < NPC.Top.Y ? 6 : 4;
 
-                        if (NPC.oldVelocity.Y != 0 && NPC.velocity.Y == 0)
-                            spawnedTackleHitbox = false;
-
-                        if (NPC.velocity.Y == 0 && !spawnedTackleHitbox)
+                        // Reset hitbox status when grounded or right after exiting water
+                        if (NPC.oldVelocity.Y != 0 && NPC.velocity.Y == 0 || (NPC.Calamity().newAI[1] == 1f))
                         {
-                            NPC.velocity.Y = -jumpHeight;
-                            NPC.velocity.X = NPC.DirectionTo(Target.Center).X.DirectionalSign() * 4;
-                            NPC.ai[2]++;
+                            spawnedTackleHitbox = false;
+                            NPC.velocity.X = 0;
+                        }
 
+                        // Keep facing target while on the ground/water
+                        if (NPC.velocity.Y == 0 || NPC.wet)
+                            NPC.direction = NPC.DirectionTo(Target.Center).X.DirectionalSign();
+
+                        // Check if the shoreskipper landed
+                        bool isGrounded = NPC.velocity.Y == 0;
+
+                        // Jump at the target on the 4th frame
+                        bool isAtJumpFrame = NPC.frame.Y / frameHeight == 3;
+
+                        if ((!spawnedTackleHitbox && (isGrounded && isAtJumpFrame)) || (NPC.Calamity().newAI[1] == 1f && HasActiveTackle() == false)) // Latter check for spawning hitbox through skipping on water
+                        {
+                            if (isGrounded)               
+                                NPC.velocity.Y = -jumpHeight;
+
+                            // Face and chase after target
+                            NPC.velocity.X = NPC.DirectionTo(Target.Center).X.DirectionalSign() * 4;
+
+                            // Spawn hitbox while jumping
                             if (Main.netMode != NetmodeID.MultiplayerClient)
                             {
-                                Projectile.NewProjectile(NPC.GetSource_FromAI(), NPC.Center, Vector2.Zero, ProjectileType<ShoreskipperTackle>(), NPC.damage, 6f, Main.myPlayer, NPC.whoAmI);
+                                Projectile.NewProjectile(NPC.GetSource_FromAI(), NPC.Center, Vector2.Zero, ProjectileType<ShoreskipperTackle>(), (int) (NPC.damage * Main.rand.NextFloat(0.7f, 1.4f)), Main.rand.Next(3, 7), Main.myPlayer, NPC.whoAmI);
+                                if (Main.rand.NextBool())
+                                    SoundEngine.PlaySound(new("CalamityMod/Sounds/Custom/ShoreskipperGrunt", 2) { Volume = 1f, PitchVariance = 0.15f }, NPC.Center);
+
                                 spawnedTackleHitbox = true;
                             }
                         }
 
-                        NPC.direction = NPC.velocity.X.DirectionalSign();
-
-                        if (!Target.active || (Target.Distance(NPC.Center) > 700 && !NPC.HasSight(Target.Center)) && NPC.velocity.Y == 0) // If target it dead/out of range and if this shoreskipper is grounded
+                        if ((!Target.active || Target == null || (Target.Distance(NPC.Center) > 580 && !NPC.HasSight(Target.Center)) || Target.Distance(NPC.Center) > 700) && NPC.velocity.Y == 0) // If target it dead/out of range and if this shoreskipper is grounded
                         {
                             NPC.velocity.X = 0f;
+                            Target = null;
                             ChangePhase((int)PhaseType.Idle);
                         }
                     }
@@ -222,19 +273,54 @@ namespace CalamityMod.NPCs.SunkenSea
             NPC.StepUpBlocks();
             NPC.spriteDirection = NPC.direction;
 
-            // Bounce on water
+            // In / on top of water
             if (NPC.wet)
             {
-                // Never fall below the surface
-                NPC.velocity.Y = MathHelper.Min(NPC.velocity.Y - 0.2f, -4);
+                // If it's the first frame being wet or every 120 ticks, decide a new direction
+                if (NPC.Calamity().newAI[0] == 0f || Timer % 120 == 0)
+                {
+                    int newWaterDirection = NPC.direction;
+                    if (Target != null && Target.active)
+                    {
+                        newWaterDirection = NPC.DirectionTo(Target.Center).X.DirectionalSign();
+                    }
+                    else
+                    {
+                        if (Main.rand.NextBool())
+                            newWaterDirection *= -1;
+                    }
 
-                // Gain speed quickly while skipping on shores (writing on fire)
-                float waterAcceleration = 0.2f;
+                    NPC.Calamity().newAI[0] = newWaterDirection;
+                    NPC.Calamity().newAI[1] = 0f; // Gets reset 1 frane after exiting water
+
+                }
+
+                NPC.direction = (int)NPC.Calamity().newAI[0];
+
+                // Try not to fall below the surface
+                NPC.velocity.Y = MathHelper.Min(NPC.velocity.Y - 0.2f, -4);
+                notLandedFromWater = true; // It is in water.
+
+                // Gain speed quickly while skipping on shores
+                float waterAcceleration = 2.5f;
                 NPC.velocity.X += NPC.direction * waterAcceleration;
-                float maxWaterSpeed = 6f;
+
+                float maxWaterSpeed = 8f;
 
                 NPC.velocity.X = MathHelper.Clamp(NPC.velocity.X, -maxWaterSpeed, maxWaterSpeed);
             }
+
+            else
+            {
+                // Reset the water direction AI slot when the NPC leaves the water
+                NPC.Calamity().newAI[0] = 0f;
+
+                if (NPC.Calamity().newAI[1] == 0f) // Just got out of water
+                {
+                    NPC.Calamity().newAI[1] = 1f; // Will spawn a hitbox if aggroed
+                }
+            }
+
             Timer++;
         }
 
@@ -247,6 +333,10 @@ namespace CalamityMod.NPCs.SunkenSea
             if (resetai3)
                 NPC.ai[3] = 0;
             NPC.netUpdate = true;
+
+            // Reset anim progress
+            NPC.frame.Y = 0;
+            NPC.frameCounter = 0;
         }
 
         public override float SpawnChance(NPCSpawnInfo spawnInfo)
@@ -254,7 +344,7 @@ namespace CalamityMod.NPCs.SunkenSea
             if (!spawnInfo.Player.Calamity().clamity)
             {
                 if (spawnInfo.Player.Calamity().ZoneTimelessShores)
-                    return SpawnCondition.Cavern.Chance * 0.9f;
+                    return SpawnCondition.Cavern.Chance * 0.85f;
             }
             return 0f;
         }
@@ -262,8 +352,23 @@ namespace CalamityMod.NPCs.SunkenSea
         // FX
         public override void FindFrame(int frameHeight)
         {
+            bool isMidAir = NPC.velocity.Y != 0 && !NPC.wet;
+            int currentFrameIndex = NPC.frame.Y / frameHeight;
+
+            if (CurrentPhase == (int)PhaseType.Rawr)
+            {
+                NPC.frame.Y = 0;
+                return;
+            }
+
+            if (isMidAir && NPC.frame.Y >= frameHeight * 4)
+            {
+                NPC.frame.Y = frameHeight * 4; // Cannot progress from last airborne frame until grounded again
+                return;
+            }
+
             NPC.frameCounter++;
-            if (NPC.frameCounter > 8)
+            if (NPC.frameCounter > (CurrentPhase == (int)PhaseType.Jumps ? 5 : 8)) // Progress faster when trying to attack
             {
                 NPC.frameCounter = 0;
                 NPC.frame.Y += frameHeight;
@@ -278,7 +383,12 @@ namespace CalamityMod.NPCs.SunkenSea
         {
             for (int k = 0; k < 5; k++)
             {
-                Dust.NewDust(NPC.position, NPC.width, NPC.height, DustID.Water, hit.HitDirection, -1f, 0, default, 1f);
+                Dust.NewDust(NPC.position, NPC.width, NPC.height, DustID.Water, hit.HitDirection, -1f, 0, default, 1.3f);
+            }
+
+            for (int k = 0; k < 6; k++)
+            {
+                Dust.NewDust(NPC.position, NPC.width, NPC.height, DustID.Coralstone, hit.HitDirection, -3f, 0, default, 1f);
             }
         }
 
