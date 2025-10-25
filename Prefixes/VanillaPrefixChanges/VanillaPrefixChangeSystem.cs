@@ -87,7 +87,7 @@ namespace CalamityMod.Prefixes.VanillaPrefixChanges
             }
             else
             {
-                PrefixLoader.ApplyAccessoryEffects(self, item);
+                orig(self, item);
             }
         }
 
