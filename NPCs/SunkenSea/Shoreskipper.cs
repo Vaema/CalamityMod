@@ -133,7 +133,7 @@ namespace CalamityMod.NPCs.SunkenSea
             }
             int frameHeight = TextureAssets.Npc[Type].Value.Height / Main.npcFrameCount[Type];
 
-            if (NPC.velocity.Y == 0 && NPC.oldVelocity.Y != 0f && notLandedFromWater) // Do not maintain velocity from skipping on water
+            if (NPC.velocity.Y == 0 && NPC.oldVelocity.Y != 0f && notLandedFromWater && !NPC.wet) // Do not maintain velocity from skipping on water
             {
                 NPC.velocity.X = 0f;
                 notLandedFromWater = false;
@@ -141,6 +141,12 @@ namespace CalamityMod.NPCs.SunkenSea
 
             if (NPC.velocity.X > 2.5f && NPC.oldVelocity.X > 2.5f && NPC.velocity.Y == 0) // In case of knockback jank
                 NPC.velocity.X = 0f;
+
+            if (notLandedFromWater && !NPC.wet && NPC.velocity.Length() > 6.5f && Timer % 4 == 0) // When skipping on water at high enough velocity, spawns a ring to exaggerate the speed
+            {
+                Particle shootPulse = new DirectionalPulseRing(NPC.Center, -NPC.velocity * 0.33f, Color.DeepSkyBlue * 0.6f, new Vector2(0.5f, 1f), NPC.rotation, 0.12f, 0.24f, 18);
+                GeneralParticleHandler.SpawnParticle(shootPulse);
+            }
 
             switch (CurrentPhase)
             {
@@ -210,7 +216,7 @@ namespace CalamityMod.NPCs.SunkenSea
                         if (Timer > startAI)
                             ChangePhase((int)PhaseType.Jumps);
 
-                        if ((!Target.active || Target == null || (Target.Distance(NPC.Center) > 580 && !NPC.HasSight(Target.Center)) || Target.Distance(NPC.Center) > 700) && NPC.velocity.Y == 0) // If target it dead/out of range and if this shoreskipper is grounded
+                        if ((!Target.active || Target == null || (Target.Distance(NPC.Center) > 580 && !NPC.HasSight(Target.Center)) || Target.Distance(NPC.Center) > 700) && (NPC.velocity.Y == 0 || NPC.wet)) // If target it dead/out of range and if this shoreskipper isnt midair
                         {
                             NPC.velocity.X *= 0.33f;
                             Target = null;
@@ -260,7 +266,7 @@ namespace CalamityMod.NPCs.SunkenSea
                             }
                         }
 
-                        if ((!Target.active || Target == null || (Target.Distance(NPC.Center) > 580 && !NPC.HasSight(Target.Center)) || Target.Distance(NPC.Center) > 700) && NPC.velocity.Y == 0) // If target it dead/out of range and if this shoreskipper is grounded
+                        if ((!Target.active || Target == null || (Target.Distance(NPC.Center) > 580 && !NPC.HasSight(Target.Center)) || Target.Distance(NPC.Center) > 700) && (NPC.velocity.Y == 0 || NPC.wet)) // If target it dead/out of range and if this shoreskipper isnt midair
                         {
                             NPC.velocity.X = 0f;
                             Target = null;
@@ -276,38 +282,27 @@ namespace CalamityMod.NPCs.SunkenSea
             // In / on top of water
             if (NPC.wet)
             {
-                // If it's the first frame being wet or every 120 ticks, decide a new direction
                 if (NPC.Calamity().newAI[0] == 0f || Timer % 120 == 0)
                 {
                     int newWaterDirection = NPC.direction;
                     if (Target != null && Target.active)
-                    {
                         newWaterDirection = NPC.DirectionTo(Target.Center).X.DirectionalSign();
-                    }
-                    else
-                    {
-                        if (Main.rand.NextBool())
-                            newWaterDirection *= -1;
-                    }
+                    else if (Main.rand.NextBool(3))
+                        newWaterDirection *= -1;
 
                     NPC.Calamity().newAI[0] = newWaterDirection;
-                    NPC.Calamity().newAI[1] = 0f; // Gets reset 1 frane after exiting water
-
+                    NPC.Calamity().newAI[1] = 0f;
                 }
 
                 NPC.direction = (int)NPC.Calamity().newAI[0];
+                NPC.velocity.Y = MathHelper.Min(NPC.velocity.Y - 0.2f, -4);
+                notLandedFromWater = true;
 
-                // Try not to fall below the surface
-                NPC.velocity.Y = MathHelper.Min(NPC.velocity.Y - 0.2f, -4);
-                notLandedFromWater = true; // It is in water.
-
-                // Gain speed quickly while skipping on shores
-                float waterAcceleration = 2.5f;
-                NPC.velocity.X += NPC.direction * waterAcceleration;
-
-                float maxWaterSpeed = 8f;
-
-                NPC.velocity.X = MathHelper.Clamp(NPC.velocity.X, -maxWaterSpeed, maxWaterSpeed);
+                float waterAcceleration = 2.75f;
+                // Accelerate up to the cap of 12
+                if (Math.Abs(NPC.velocity.X) < 12f)
+                    NPC.velocity.X += NPC.direction * waterAcceleration;
+                NPC.velocity.X = MathHelper.Clamp(NPC.velocity.X, -12f, 12f);
             }
 
             else
@@ -388,7 +383,7 @@ namespace CalamityMod.NPCs.SunkenSea
 
             for (int k = 0; k < 6; k++)
             {
-                Dust.NewDust(NPC.position, NPC.width, NPC.height, DustID.Coralstone, hit.HitDirection, -3f, 0, default, 1f);
+                Dust.NewDust(NPC.position, NPC.width, NPC.height, DustID.Coralstone, hit.HitDirection, -3f, 0, default, 0.9f);
             }
         }
 
