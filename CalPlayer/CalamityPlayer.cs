@@ -112,8 +112,6 @@ namespace CalamityMod.CalPlayer
         public static int chaosStateDuration = 900;
         /// <summary> Constant variable used for how long Chaos State is inflicted by Normality Relocator while a boss is alive. </summary>
         public static int chaosStateDuration_NR = 1200;
-        /// <summary> Stores the positions of the player within the previous 4 frames. Used for drawing trail effects. </summary>
-        public Vector2[] OldPositions = new Vector2[4];
         public double contactDamageReduction = 0D;
         public double projectileDamageReduction = 0D;
         public int hellbornShots = 0;
@@ -340,20 +338,17 @@ namespace CalamityMod.CalPlayer
         public bool despoilerNerf = false;
         /// <summary> Variable used to trigger Molten Amputator's stealth effect on right-click. </summary>
         public int amputatorBuff = 0;
-        /// <summary> Variables used to track the fuel of Pristine Fury right click </summary>
+        /// <summary> Variable used to track the current fuel amount for Pristine Fury's right-click. </summary>
         public int furyFuel = 1800;
         public const int FuryFuelMax = 1800;
         public float furyRefuelTimer = 0;
-        /// <summary> Variable used to track if Auger can do a big slash </summary>
+        /// <summary> Variable used to track if Auger can do its big slash attack. </summary>
         public bool buffedAuger = false;
 
         public int rOfResilienceCooldown = 0;
         public int rOfResilienceEffect = 0;
         public int rOfResilienceOrbitOffset = 0;
-        /// <summary>
-        /// Variable which tracks how many shots Norfleet has fired. Used to determine when to recharge.<br/>
-        /// Also used to trigger its "cheater" easter egg when attempting to fire more than 3 consecutive shots.
-        /// </summary>
+        /// <summary> Variable which tracks how many shots Norfleet has fired. Used to determine when to recharge. </summary>
         public int NorfleetCounter = 0;
         public int hideOfDeusMeleeBoostTimer = 0;
         /// <summary>
@@ -938,7 +933,7 @@ namespace CalamityMod.CalPlayer
         public bool angelTreads = false;
         /// <summary> Counter variable used for automatically re-engaging Vortex armor's stealth with Vortex Booster. </summary>
         public int vortexBoosterStealthDelay = 0;
-        /// <summary> Makes Flesh Knuckles and its upgrades increase the player's max health by 45. </summary>
+        /// <summary> Makes Flesh Knuckles and its upgrades increase the player's max health. </summary>
         public bool fleshKnuckles = false;
         public bool ironBoots = false;
         public bool depthCharm = false;
@@ -1299,7 +1294,6 @@ namespace CalamityMod.CalPlayer
         public bool demonicFlames = false;
         public bool godSlayerInferno = false;
         public bool astralInfection = false;
-        /// <summary> Plague debuff. </summary>
         public bool plague = false;
         public bool holyFlames = false;
         public bool holyInferno = false;
@@ -1325,9 +1319,7 @@ namespace CalamityMod.CalPlayer
         public bool nightwither = false;
         public bool voidfrost = false;
         public bool eutrophication = false;
-        /// <summary> Frozen Lungs debuff. </summary>
         public bool frozenLungs = false;
-        /// <summary> Searing Lava debuff. </summary>
         public bool searingLava = false;
         public bool vaporfied = false;
         public bool banishingFire = false;

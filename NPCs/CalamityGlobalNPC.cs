@@ -115,7 +115,7 @@ namespace CalamityMod.NPCs
 
         /// <summary>
         /// Overrides the normal DR math and uses custom DR reductions for each debuff, registered separately.<br/>
-        /// Used primarily by post-Moon Lord bosses.
+        /// Current only used by Old Duke.
         /// </summary>
         public bool customDR = false;
         public Dictionary<int, float> flatDRReductions = new Dictionary<int, float>();
@@ -359,7 +359,8 @@ namespace CalamityMod.NPCs
         public int hyperiusDamage = 0;
         public static int hyperiusOverflowTime = 100;
         public int hyperiusOverflowTimer = hyperiusOverflowTime;
-        public static float hyperiusLifePercentThreshold = 0.07f; // The % of max life the damage stacks must reach before they start to overflow
+        /// <summary> Constant variable representing the % of max health Hyperius Bullet's damage stacks must reach before they start to overflow. </summary>
+        public const float hyperiusLifePercentThreshold = 0.07f;
         public int hyperiusFxTimer = 0;
 
         /// <summary>
@@ -407,8 +408,6 @@ namespace CalamityMod.NPCs
         /// <summary> If greater than 0, makes this NPC constantly spawn heart gores. </summary>
         public int ladHearts = 0;
         public bool relicOfResilienceWeakness = false;
-        /// <summary> Cooldown variable for spawning Gauss Dagger's gauss flux projectiles. </summary>
-        public int GaussFluxTimer = 0;
         public bool sagePoison = false;
         public int sagePoisonDamage = 0;
         public bool vulnerabilityHex = false;
@@ -665,7 +664,6 @@ namespace CalamityMod.NPCs
             myClone.sulphurPoison = sulphurPoison;
             myClone.ladHearts = ladHearts;
             myClone.relicOfResilienceWeakness = relicOfResilienceWeakness;
-            myClone.GaussFluxTimer = GaussFluxTimer;
             myClone.sagePoison = sagePoison;
             myClone.sagePoisonDamage = sagePoisonDamage;
             myClone.vulnerabilityHex = vulnerabilityHex;
@@ -836,8 +834,6 @@ namespace CalamityMod.NPCs
             snapClamDebuff = false;
             sulphurPoison = false;
             sagePoison = false;
-            if (GaussFluxTimer > 0)
-                GaussFluxTimer--;
             if (ladHearts > 0)
                 ladHearts--;
             banishingFire = false;

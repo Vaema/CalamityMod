@@ -178,7 +178,7 @@ namespace CalamityMod.Projectiles
         public bool betterLifeBullet2 = false;
         /// <summary>
         /// If set to a value greater than 0, causes this projectile to gain homing with a range equal to the value in pixels.<br/>
-        /// Used by Arterial Assault.
+        /// Used by Arterial Assault, Deific Amulet's stars, and certain sand projectiles from the Sand Gun.
         /// </summary>
         public float conditionalHomingRange = 0f;
 

@@ -105,16 +105,6 @@ namespace CalamityMod.CalPlayer
             if (fearmongerRegenFrames > 0)
                 fearmongerRegenFrames--;
 
-            // Go through the old positions for the player.
-            for (int i = Player.Calamity().OldPositions.Length - 1; i > 0; i--)
-            {
-                if (OldPositions[i - 1] == Vector2.Zero)
-                    OldPositions[i - 1] = Player.position;
-
-                OldPositions[i] = OldPositions[i - 1];
-            }
-            OldPositions[0] = Player.position;
-
             // Tile effects for touching tiles
             HandleTileEffects();
 
