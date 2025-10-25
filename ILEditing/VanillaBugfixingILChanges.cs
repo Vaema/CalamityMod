@@ -1,5 +1,4 @@
-﻿using System;
-using CalamityMod.NPCs;
+﻿using CalamityMod.Systems.Collections;
 using Microsoft.Xna.Framework.Graphics;
 using Mono.Cecil.Cil;
 using MonoMod.Cil;
@@ -7,6 +6,7 @@ using Terraria;
 using Terraria.DataStructures;
 using Terraria.Graphics.Renderers;
 using Terraria.ID;
+using Terraria.ModLoader;
 
 namespace CalamityMod.ILEditing
 {
@@ -44,7 +44,7 @@ namespace CalamityMod.ILEditing
 
             // Initialize a flag variable whether truffle worm was used.
             il.Method.Body.Variables.Add(new VariableDefinition(il.Module.TypeSystem.Boolean));
-            byte truffleWormUsed = (byte) (il.Method.Body.Variables.Count - 1);
+            byte truffleWormUsed = (byte)(il.Method.Body.Variables.Count - 1);
             cursor.Emit(OpCodes.Ldc_I4_0);
             cursor.Emit(OpCodes.Stloc_S, truffleWormUsed);
 
@@ -83,5 +83,28 @@ namespace CalamityMod.ILEditing
             cursor.MarkLabel(loopEnd);
         }
         #endregion
+
+        private void EnsureCheckDeadOnSegments(ILContext il)
+        {
+            var cursor = new ILCursor(il);
+            if (!cursor.TryGotoNext(MoveType.After,
+                i => i.MatchLdfld<NPC>(nameof(NPC.realLife)),
+                i => i.MatchLdelemRef(),
+                i => i.MatchCallOrCallvirt<NPC>(nameof(NPC.checkDead))
+                ))
+            {
+                LogFailure("EnsureCheckDeadOnSegments", "Could not locate the checkDead instruction sets");
+                return;
+            }
+
+            cursor.EmitLdarg0();
+            cursor.EmitDelegate((NPC npc) =>
+            {
+                if (npc.life <= 0 && CalamityNPCSets.DoCheckDeadRegardlessRealLife[npc.type])
+                {
+                    NPCLoader.CheckDead(npc);
+                }
+            });
+        }
     }
 }

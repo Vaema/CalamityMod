@@ -204,6 +204,11 @@ namespace CalamityMod.Systems.Collections
                 NPCType<EidolonWyrmHead>(), NPCType<NuclearTerror>(), NPCType<OldDukeToothBall>(), NPCType<SulphurousSharkron>(), NPCType<SupremeCataclysm>(), NPCType<SupremeCatastrophe>(), NPCType<SoulSeekerSupreme>());
 
         /// <summary>
+        /// If <see langword="true"/> for an NPC type, <see cref="ModNPC.CheckDead"/> or <see cref="GlobalNPC.CheckDead(NPC)"/> will be called on this NPC even if <see cref="NPC.realLife"/> is set.
+        /// </summary>
+        public static bool[] DoCheckDeadRegardlessRealLife = Factory.CreateBoolSet(NPCType<DevourerofGodsBody>(), NPCType<DevourerofGodsTail>());
+
+        /// <summary>
         /// Associates an NPC type with the base value of their max health in Boss Rush.<br/>
         /// If an NPC type is not a key in this dictionary, then it will use its standard max health value.
         /// </summary>
