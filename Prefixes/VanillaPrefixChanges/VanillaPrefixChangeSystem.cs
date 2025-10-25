@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using CalamityMod.ILEditing;
 using MonoMod.Cil;
 using Terraria;
 using Terraria.ID;
@@ -23,35 +24,39 @@ namespace CalamityMod.Prefixes.VanillaPrefixChanges
             });
 
             On_Player.GrantPrefixBenefits += OnGrantBenefits;
-            IL_Item.Prefix += IL_Item_Prefix;
+            IL_Item.Prefix += VanillaPrefixValueOverride;
         }
 
-        private void IL_Item_Prefix(ILContext il)
+        private void VanillaPrefixValueOverride(ILContext il)
         {
             var cursor = new ILCursor(il);
             if (!cursor.TryGotoNext(x => x.MatchCallOrCallvirt<ModPrefix>(nameof(ModPrefix.ModifyValue))))
             {
+                ILChanges.LogFailure("Vanilla Prefix Override", "Unable to locate callvirt (ModPrefix.ModifyValue)");
                 return;
             }
 
             if (!cursor.Prev.MatchLdloca(out var multLocaIdx))
             {
+                ILChanges.LogFailure("Vanilla Prefix Override", "Unable to locate Ldloca (mult)");
                 return;
             }
 
             if (!cursor.TryGotoPrev(x => x.MatchLdsfld<PrefixID>(nameof(PrefixID.Count))))
             {
+                ILChanges.LogFailure("Vanilla Prefix Override", "Unable to locate Ldsfld (PrefixID.Count)");
                 return;
             }
 
             if (!cursor.Prev.MatchLdloc(out var prefixLocaIdx))
             {
+                ILChanges.LogFailure("Vanilla Prefix Override", "Unable to locate Ldloc (prefix)");
                 return;
             }
 
-            cursor.GotoPrev(MoveType.AfterLabel);
-            cursor.EmitLdloc(prefixLocaIdx);
-            cursor.EmitLdloca(multLocaIdx);
+            cursor.GotoPrev(MoveType.AfterLabel); // Emit next to label
+            cursor.EmitLdloc(prefixLocaIdx); // push prefixID
+            cursor.EmitLdloca(multLocaIdx); // push &valueMult
             cursor.EmitDelegate((int prefixID, ref float value) =>
             {
                 if (!PrefixReworkEnabled)
