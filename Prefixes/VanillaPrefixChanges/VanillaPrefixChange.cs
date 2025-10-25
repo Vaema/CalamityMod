@@ -62,9 +62,9 @@ namespace CalamityMod.Prefixes.VanillaPrefixChanges
             return GetStatTooltip("DRStat").Format(DR.ToPercent());
         }
 
-        public static string GetLuckString(float luckP)
+        public static string GetLuckString(float luckBonus)
         {
-            return GetStatTooltip("LuckStat").Format(luckP.ToPercent());
+            return GetStatTooltip("LuckStat").Format(luckBonus);
         }
 
         public static string GetMeleeSpeedString(float meleeSpeedP)

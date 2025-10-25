@@ -2,7 +2,6 @@
 using CalamityMod.Prefixes.VanillaPrefixChanges.Stats;
 using Terraria;
 using Terraria.ID;
-using Terraria.ModLoader;
 
 namespace CalamityMod.Prefixes.VanillaPrefixChanges
 {
@@ -38,11 +37,7 @@ namespace CalamityMod.Prefixes.VanillaPrefixChanges
         public override IEnumerator<IVanillaPrefixStat> PopulateStats()
         {
             yield return new PrefixCritChanceStat(4);
-        }
-
-        public override void PostModifyTooltip(TooltipLine line)
-        {
-            line.Text += "\n" + GetLuckyPrefixAddedTooltip().Value;
+            yield return new PrefixLuckStat(0.05f);
         }
     }
 }
