@@ -84,6 +84,7 @@ namespace CalamityMod.ILEditing
         }
         #endregion
 
+        #region Fix Vanilla does not call CheckDead when NPC has realLife
         private void EnsureCheckDeadOnSegments(ILContext il)
         {
             var cursor = new ILCursor(il);
@@ -106,5 +107,6 @@ namespace CalamityMod.ILEditing
                 }
             });
         }
+        #endregion
     }
 }
