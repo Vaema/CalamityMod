@@ -42,9 +42,9 @@ namespace CalamityMod.Prefixes.VanillaPrefixChanges
             return GetStatTooltip("ArmorPenStat").Format(armorPen);
         }
 
-        public static string GetCritChanceString(float critP)
+        public static string GetCritChanceString(int critChance)
         {
-            return GetStatTooltip("CritStat").Format(critP.ToPercent());
+            return GetStatTooltip("CritStat").Format(critChance);
         }
 
         public static string GetDamageString(float damageP)
