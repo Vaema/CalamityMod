@@ -962,8 +962,8 @@ namespace CalamityMod.NPCs.Polterghast
                     sulfSeaBoostMessage = "Mods.CalamityMod.Status.Progression.AprilFools2"; // Goddamn boomer duke moments
                 }
 
-                CalamityUtils.DisplayLocalizedText(key, messageColor);
-                CalamityUtils.DisplayLocalizedText(sulfSeaBoostMessage, sulfSeaBoostColor);
+                CalamityUtils.BroadcastLocalizedText(key, messageColor);
+                CalamityUtils.BroadcastLocalizedText(sulfSeaBoostMessage, sulfSeaBoostColor);
             }
 
             // Mark Polterghast as dead

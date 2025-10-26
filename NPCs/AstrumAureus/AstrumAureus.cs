@@ -1344,8 +1344,8 @@ namespace CalamityMod.NPCs.AstrumAureus
                 string key2 = "Mods.CalamityMod.Status.Progression.AureusBossText2";
                 Color messageColor = Color.Gold;
 
-                CalamityUtils.DisplayLocalizedText(key, messageColor);
-                CalamityUtils.DisplayLocalizedText(key2, messageColor);
+                CalamityUtils.BroadcastLocalizedText(key, messageColor);
+                CalamityUtils.BroadcastLocalizedText(key2, messageColor);
             }
 
             // Drop an Astral Meteor if applicable

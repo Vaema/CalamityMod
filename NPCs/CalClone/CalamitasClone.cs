@@ -177,7 +177,7 @@ namespace CalamityMod.NPCs.CalClone
 
                 string key = "Mods.CalamityMod.Status.Boss.CalamitasBossText3";
                 Color messageColor = Color.Orange;
-                CalamityUtils.DisplayLocalizedText(key, messageColor);
+                CalamityUtils.BroadcastLocalizedText(key, messageColor);
 
                 calamityGlobalNPC.newAI[1] = 1f;
             }
@@ -216,7 +216,7 @@ namespace CalamityMod.NPCs.CalClone
 
                         string key = "Mods.CalamityMod.Status.Boss.CalamitasBossText2";
                         Color messageColor = Color.Orange;
-                        CalamityUtils.DisplayLocalizedText(key, messageColor);
+                        CalamityUtils.BroadcastLocalizedText(key, messageColor);
 
                         SpawnDust();
                     }

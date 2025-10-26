@@ -51,7 +51,7 @@ namespace CalamityMod.Items.PermanentBoosters
                 {
                     string key = "Mods.CalamityMod.Misc.TaintedCloudberryText";
                     Color messageColor = Color.Turquoise;
-                    CalamityUtils.DisplayLocalizedText(key, messageColor);
+                    CalamityUtils.BroadcastLocalizedText(key, messageColor);
                     return null;
                 }
 

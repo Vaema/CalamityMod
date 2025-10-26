@@ -724,7 +724,7 @@ namespace CalamityMod.NPCs.AquaticScourge
                 string sulfSeaBoostKey = "Mods.CalamityMod.Status.Progression.WetWormBossText";
                 Color sulfSeaBoostColor = AcidRainEvent.TextColor;
 
-                CalamityUtils.DisplayLocalizedText(sulfSeaBoostKey, sulfSeaBoostColor);
+                CalamityUtils.BroadcastLocalizedText(sulfSeaBoostKey, sulfSeaBoostColor);
 
                 // Set a timer for acid rain to start after 10 seconds
                 AcidRainEvent.CountdownUntilForcedAcidRain = 601;

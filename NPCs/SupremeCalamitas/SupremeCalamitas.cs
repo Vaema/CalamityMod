@@ -496,7 +496,7 @@ namespace CalamityMod.NPCs.SupremeCalamitas
                         key = "Mods.CalamityMod.Status.Boss.PermafrostSummonText";
                     else if (DownedBossSystem.downedCalamitas)
                         key += "Rematch";
-                    CalamityUtils.DisplayLocalizedText(key, permafrost ? permafrostTextColor : textColor);
+                    CalamityUtils.BroadcastLocalizedText(key, permafrost ? permafrostTextColor : textColor);
                 }
                 startText = true;
             }
@@ -1015,7 +1015,7 @@ namespace CalamityMod.NPCs.SupremeCalamitas
                     else if (DownedBossSystem.downedCalamitas)
                         key += "Rematch";
 
-                    CalamityUtils.DisplayLocalizedText(key, permafrost ? permafrostTextColor : textColor);
+                    CalamityUtils.BroadcastLocalizedText(key, permafrost ? permafrostTextColor : textColor);
                 }
 
                 startSecondAttack = true;
@@ -1140,7 +1140,7 @@ namespace CalamityMod.NPCs.SupremeCalamitas
                     else if (DownedBossSystem.downedCalamitas)
                         key += "Rematch";
 
-                    CalamityUtils.DisplayLocalizedText(key, permafrost ? permafrostTextColor : textColor);
+                    CalamityUtils.BroadcastLocalizedText(key, permafrost ? permafrostTextColor : textColor);
                 }
 
                 startThirdAttack = true;
@@ -1346,7 +1346,7 @@ namespace CalamityMod.NPCs.SupremeCalamitas
                     else if (DownedBossSystem.downedCalamitas)
                         key += "Rematch";
 
-                    CalamityUtils.DisplayLocalizedText(key, permafrost ? permafrostTextColor : textColor);
+                    CalamityUtils.BroadcastLocalizedText(key, permafrost ? permafrostTextColor : textColor);
                 }
 
                 startFourthAttack = true;
@@ -1494,7 +1494,7 @@ namespace CalamityMod.NPCs.SupremeCalamitas
                     if (DownedBossSystem.downedCalamitas && !permafrost)
                         key += "Rematch";
 
-                    CalamityUtils.DisplayLocalizedText(key, permafrost ? permafrostTextColor : textColor);
+                    CalamityUtils.BroadcastLocalizedText(key, permafrost ? permafrostTextColor : textColor);
                 }
 
                 startFifthAttack = true;
@@ -1555,7 +1555,7 @@ namespace CalamityMod.NPCs.SupremeCalamitas
                             if (giveUpCounter == 1)
                             {
                                 NPC.velocity = Vector2.Zero;
-                                CalamityUtils.DisplayLocalizedText("Mods.CalamityMod.Status.Boss.PermafrostGiveUpText", permafrostTextColor);
+                                CalamityUtils.BroadcastLocalizedText("Mods.CalamityMod.Status.Boss.PermafrostGiveUpText", permafrostTextColor);
                                 Dust.QuickDustLine(NPC.Center, initialRitualPosition, 500f, Color.Cyan);
                                 NPC.Center = initialRitualPosition;
                                 giveUpCounter--;
@@ -1726,15 +1726,15 @@ namespace CalamityMod.NPCs.SupremeCalamitas
                             }
                             else if (giveUpCounter == 900 && !BossRushEvent.BossRushActive)
                             {
-                                CalamityUtils.DisplayLocalizedText("Mods.CalamityMod.Status.Boss.SCalAcceptanceText1", textColor);
+                                CalamityUtils.BroadcastLocalizedText("Mods.CalamityMod.Status.Boss.SCalAcceptanceText1", textColor);
                             }
                             else if (giveUpCounter == 600 && !BossRushEvent.BossRushActive)
                             {
-                                CalamityUtils.DisplayLocalizedText("Mods.CalamityMod.Status.Boss.SCalAcceptanceText2", textColor);
+                                CalamityUtils.BroadcastLocalizedText("Mods.CalamityMod.Status.Boss.SCalAcceptanceText2", textColor);
                             }
                             else if (giveUpCounter == 300 && !BossRushEvent.BossRushActive)
                             {
-                                CalamityUtils.DisplayLocalizedText("Mods.CalamityMod.Status.Boss.SCalAcceptanceText3", textColor);
+                                CalamityUtils.BroadcastLocalizedText("Mods.CalamityMod.Status.Boss.SCalAcceptanceText3", textColor);
                             }
 
                             if (giveUpCounter <= 0)
@@ -1800,7 +1800,7 @@ namespace CalamityMod.NPCs.SupremeCalamitas
                         else if (DownedBossSystem.downedCalamitas)
                             key += "Rematch";
 
-                        CalamityUtils.DisplayLocalizedText(key, permafrost ? permafrostTextColor : textColor);
+                        CalamityUtils.BroadcastLocalizedText(key, permafrost ? permafrostTextColor : textColor);
                     }
 
                     gettingTired5 = true;
@@ -1814,7 +1814,7 @@ namespace CalamityMod.NPCs.SupremeCalamitas
                         if (DownedBossSystem.downedCalamitas)
                             key += "Rematch";
 
-                        CalamityUtils.DisplayLocalizedText(key, textColor);
+                        CalamityUtils.BroadcastLocalizedText(key, textColor);
                     }
 
                     gettingTired4 = true;
@@ -1828,7 +1828,7 @@ namespace CalamityMod.NPCs.SupremeCalamitas
                         if (DownedBossSystem.downedCalamitas)
                             key += "Rematch";
 
-                        CalamityUtils.DisplayLocalizedText(key, textColor);
+                        CalamityUtils.BroadcastLocalizedText(key, textColor);
                     }
 
                     gettingTired3 = true;
@@ -1844,7 +1844,7 @@ namespace CalamityMod.NPCs.SupremeCalamitas
                         else if (DownedBossSystem.downedCalamitas)
                             key += "Rematch";
 
-                        CalamityUtils.DisplayLocalizedText(key, permafrost ? permafrostTextColor : textColor);
+                        CalamityUtils.BroadcastLocalizedText(key, permafrost ? permafrostTextColor : textColor);
                     }
 
                     gettingTired2 = true;
@@ -1915,7 +1915,7 @@ namespace CalamityMod.NPCs.SupremeCalamitas
                     else if (DownedBossSystem.downedCalamitas)
                         key += "Rematch";
 
-                    CalamityUtils.DisplayLocalizedText(key, permafrost ? permafrostTextColor : textColor);
+                    CalamityUtils.BroadcastLocalizedText(key, permafrost ? permafrostTextColor : textColor);
                 }
 
                 halfLife = true;
@@ -1933,7 +1933,7 @@ namespace CalamityMod.NPCs.SupremeCalamitas
                         else if (DownedBossSystem.downedCalamitas)
                             key += "Rematch";
 
-                        CalamityUtils.DisplayLocalizedText(key, permafrost ? permafrostTextColor : textColor);
+                        CalamityUtils.BroadcastLocalizedText(key, permafrost ? permafrostTextColor : textColor);
                     }
 
                     if (Main.netMode != NetmodeID.MultiplayerClient)
@@ -3137,7 +3137,7 @@ namespace CalamityMod.NPCs.SupremeCalamitas
                     if (DownedBossSystem.downedCalamitas && !permafrost)
                         key += "Rematch";
 
-                    CalamityUtils.DisplayLocalizedText(key, permafrost ? permafrostTextColor : textColor);
+                    CalamityUtils.BroadcastLocalizedText(key, permafrost ? permafrostTextColor : textColor);
                 }
 
                 foreach (Vector2 heartSpawnPosition in heartSpawnPositions)
@@ -3295,7 +3295,7 @@ namespace CalamityMod.NPCs.SupremeCalamitas
                     else if (DownedBossSystem.downedCalamitas)
                         key += "Rematch";
 
-                    CalamityUtils.DisplayLocalizedText(key, permafrost ? permafrostTextColor : textColor);
+                    CalamityUtils.BroadcastLocalizedText(key, permafrost ? permafrostTextColor : textColor);
                 }
 
                 if (Main.netMode != NetmodeID.MultiplayerClient)

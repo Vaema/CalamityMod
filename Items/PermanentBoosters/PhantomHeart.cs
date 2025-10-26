@@ -49,7 +49,7 @@ namespace CalamityMod.Items.PermanentBoosters
                 {
                     string key = "Mods.CalamityMod.Misc.PhantomHeartText";
                     Color messageColor = Color.Pink;
-                    CalamityUtils.DisplayLocalizedText(key, messageColor);
+                    CalamityUtils.BroadcastLocalizedText(key, messageColor);
                     return null;
                 }
 

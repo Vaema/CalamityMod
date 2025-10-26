@@ -98,7 +98,7 @@ namespace CalamityMod.Systems
             {
                 string key = Main.zenithWorld ? "Mods.CalamityMod.Status.Boss.AprilFoolsGFB" : "Mods.CalamityMod.Status.Boss.AprilFools";
                 Color messageColor = Color.Crimson;
-                CalamityUtils.DisplayLocalizedText(key, messageColor);
+                CalamityUtils.BroadcastLocalizedText(key, messageColor);
             }
 
             // Disable sandstorms if the Desert Scourge is still alive and Hardmode hasn't begun.

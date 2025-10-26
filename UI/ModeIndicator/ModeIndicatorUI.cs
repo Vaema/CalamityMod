@@ -395,7 +395,7 @@ namespace CalamityMod.UI.ModeIndicator
                 return;
 
             // This has to be put before difficulties change as to not disrupt GetCurrentDifficulty
-            DisplayFormattedText("Mods.CalamityMod.UI.DifficultySwitch", Color.White, Main.getGoodWorld ? GetCurrentDifficulty.FTWTextColor.Hex3() : GetCurrentDifficulty.ChatTextColor.Hex3(), Main.getGoodWorld ? GetCurrentDifficulty.FTWName : GetCurrentDifficulty.Name
+            BroadcastFormattedText("Mods.CalamityMod.UI.DifficultySwitch", Color.White, Main.getGoodWorld ? GetCurrentDifficulty.FTWTextColor.Hex3() : GetCurrentDifficulty.ChatTextColor.Hex3(), Main.getGoodWorld ? GetCurrentDifficulty.FTWName : GetCurrentDifficulty.Name
             , Main.getGoodWorld ? mode.FTWTextColor.Hex3() :mode.ChatTextColor.Hex3(), Main.getGoodWorld ? mode.FTWName :mode.Name);
 
             // Todo, maybe in the future having a way to have multiple difficulty options on the same tier that can coexist, and it works in branching pathes? Not very necessary for cal & addons.

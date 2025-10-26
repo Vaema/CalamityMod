@@ -1637,7 +1637,7 @@ namespace CalamityMod.NPCs.Yharon
                 string key = "Mods.CalamityMod.Status.Boss.FlameText";
                 Color messageColor = Color.Orange;
 
-                CalamityUtils.DisplayLocalizedText(key, messageColor);
+                CalamityUtils.BroadcastLocalizedText(key, messageColor);
             }
 
             int setDamage = contactDamage;
@@ -3031,7 +3031,7 @@ namespace CalamityMod.NPCs.Yharon
 
                 string key = "Mods.CalamityMod.Status.Progression.AuricOreText";
                 Color messageColor = Color.Gold;
-                CalamityUtils.DisplayLocalizedText(key, messageColor);
+                CalamityUtils.BroadcastLocalizedText(key, messageColor);
             }
 
             // Mark Yharon as dead
