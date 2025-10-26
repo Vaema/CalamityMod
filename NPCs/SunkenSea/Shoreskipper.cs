@@ -13,9 +13,11 @@ using Terraria.DataStructures;
 using Terraria.GameContent;
 using Terraria.ID;
 using Terraria.ModLoader;
+using Terraria.GameContent.Bestiary;
 using Terraria.ModLoader.Utilities;
 using static CalamityMod.CalamityUtils;
 using static Terraria.ModLoader.ModContent;
+using CalamityMod.BiomeManagers;
 
 namespace CalamityMod.NPCs.SunkenSea
 {
@@ -24,27 +26,25 @@ namespace CalamityMod.NPCs.SunkenSea
         public enum PhaseType
         {
             Idle = 0,
-            Rawr = 1,
+            Roar = 1,
             Jumps = 2,
         }
 
         public ref float CurrentPhase => ref NPC.ai[0];
 
         public ref float Timer => ref NPC.ai[1];
-
-        public NPC Target;
+        public NPC Target; // Chosen target (can only be other shoreskippers)
         public bool spawnedTackleHitbox = false;
-        public bool notLandedFromWater = false;
+        public bool notLandedFromWater = false; // When in water or just got out of water but not yet landed on solid ground
         public override bool? CanFallThroughPlatforms()
         {
             // Fall to try to reach target
-            if (CurrentPhase == 2 && Target.Top.Y > NPC.Bottom.Y)
+            if (CurrentPhase == (int)PhaseType.Jumps && Target.Top.Y > NPC.Bottom.Y)
                 return true;
 
             return false;
         }
 
-        // Can only do harm to its own species
         protected override List<int> PreyIDs =>
         [
             NPCType<Shoreskipper>(),
@@ -94,6 +94,16 @@ namespace CalamityMod.NPCs.SunkenSea
             NPC.Calamity().VulnerableToElectricity = false;
             NPC.Calamity().VulnerableToHeat = true;
             NPC.Calamity().VulnerableToWater = false;
+
+            SpawnModBiomes = new int[1] { ModContent.GetInstance<TimelessShoresBiome>().Type };
+        }
+
+        public override void SetBestiary(BestiaryDatabase database, BestiaryEntry bestiaryEntry)
+        {
+            bestiaryEntry.Info.AddRange(new IBestiaryInfoElement[]
+            {
+                new FlavorTextBestiaryInfoElement("Mods.CalamityMod.Bestiary.Shoreskipper")
+            });
         }
 
         protected override bool NPCSearchFilter(NPC n)
@@ -105,7 +115,7 @@ namespace CalamityMod.NPCs.SunkenSea
         {
             if (prey.active && NPC.HasSight(prey.Center) && (Target == null || !Target.active))
             {
-                ChangePhase((int)PhaseType.Rawr);
+                ChangePhase((int)PhaseType.Roar);
                 Target = prey;
             }
         }
@@ -143,10 +153,8 @@ namespace CalamityMod.NPCs.SunkenSea
                 NPC.velocity.X = 0f;
 
             if (notLandedFromWater && !NPC.wet && NPC.velocity.Length() > 6.5f && Timer % 4 == 0) // When skipping on water at high enough velocity, spawns a ring to exaggerate the speed
-            {
-                Particle shootPulse = new DirectionalPulseRing(NPC.Center, -NPC.velocity * 0.33f, Color.DeepSkyBlue * 0.6f, new Vector2(0.5f, 1f), NPC.rotation, 0.12f, 0.24f, 18);
-                GeneralParticleHandler.SpawnParticle(shootPulse);
-            }
+                GeneralParticleHandler.SpawnParticle(new DirectionalPulseRing(NPC.Center, -NPC.velocity * 0.33f, Color.DeepSkyBlue * 0.65f, new Vector2(0.5f, 1f), NPC.rotation, 0.12f, 0.24f, 18));
+            
 
             switch (CurrentPhase)
             {
@@ -163,7 +171,7 @@ namespace CalamityMod.NPCs.SunkenSea
                             NPC.ai[2] = 1;
                             NPC.velocity.X = Main.rand.NextFloat(1.75f, 2.5f) * Main.rand.NextBool().ToDirectionInt();
                             if (Main.rand.NextBool(4))
-                                SoundEngine.PlaySound(new("CalamityMod/Sounds/Custom/ShoreskipperGrunt", 2) { Volume = 0.8f, PitchVariance = 0.15f }, NPC.Center);
+                                SoundEngine.PlaySound(new("CalamityMod/Sounds/Custom/ShoreskipperGrunt", 2) { Volume = 0.9f, PitchVariance = 0.15f }, NPC.Center);
                         }
 
                         // Increment the timer before the slide ends
@@ -195,24 +203,28 @@ namespace CalamityMod.NPCs.SunkenSea
                     }
                     break;
 
-                    // PLACEHOLDER FROM SEARSLUG!!!
-                case (int)PhaseType.Rawr:
+                    // Straight from Leerslug with little changes. Not sure what else to change?
+                case (int)PhaseType.Roar:
                     {
-                        int roar = 40;
-                        int startAI = 70;
+                        int roar = 20;
+                        int startAI = 35;
                         NPC.velocity.X *= 0.9f;
 
                         // Roar in place with a lil jump
                         if (Timer == roar)
                         {
-                            SoundEngine.PlaySound(new("CalamityMod/Sounds/Custom/ShoreskipperSighting") { Volume = 1f, Pitch = -0.1f, PitchVariance = 0.12f }, NPC.Center);
+                            SoundEngine.PlaySound(new("CalamityMod/Sounds/Custom/ShoreskipperSighting") { Volume = 0.85f, Pitch = -0.1f, PitchVariance = 0.1f }, NPC.Center);
                             if (NPC.velocity.Y == 0)
                             {
-                                NPC.velocity.Y = -3;
+                                NPC.velocity.Y = -2.5f;
                             }
                         }
 
                         NPC.direction = NPC.DirectionTo(Target.Center).X.DirectionalSign();
+
+                        if (Timer <= startAI && Timer >= roar && Timer % 5 == 0)
+                            GeneralParticleHandler.SpawnParticle(new DirectionalPulseRing(NPC.Center + new Vector2((NPC.direction == 1 ? 28f : -28f), 0), Vector2.Zero, Color.Gray * 0.55f, new Vector2(1f, 1f), NPC.rotation, 0.05f, 0.6f, 16));
+
                         if (Timer > startAI)
                             ChangePhase((int)PhaseType.Jumps);
 
@@ -338,8 +350,10 @@ namespace CalamityMod.NPCs.SunkenSea
         {
             if (!spawnInfo.Player.Calamity().clamity)
             {
-                if (spawnInfo.Player.Calamity().ZoneTimelessShores)
-                    return SpawnCondition.Cavern.Chance * 0.85f;
+                if (spawnInfo.Player.Calamity().ZoneTimelessShores && !spawnInfo.Water)
+                    return SpawnCondition.Cavern.Chance * 0.8f;
+                else if (spawnInfo.Player.Calamity().ZoneTimelessShores && spawnInfo.Water)
+                    return SpawnCondition.Cavern.Chance * 0.45f;
             }
             return 0f;
         }
@@ -350,7 +364,7 @@ namespace CalamityMod.NPCs.SunkenSea
             bool isMidAir = NPC.velocity.Y != 0 && !NPC.wet;
             int currentFrameIndex = NPC.frame.Y / frameHeight;
 
-            if (CurrentPhase == (int)PhaseType.Rawr)
+            if (CurrentPhase == (int)PhaseType.Roar)
             {
                 NPC.frame.Y = 0;
                 return;
@@ -363,7 +377,7 @@ namespace CalamityMod.NPCs.SunkenSea
             }
 
             NPC.frameCounter++;
-            if (NPC.frameCounter > (CurrentPhase == (int)PhaseType.Jumps ? 5 : 8)) // Progress faster when trying to attack
+            if (NPC.frameCounter > (CurrentPhase == (int)PhaseType.Jumps ? 5 : 8)) // Progress faster when in jump phase
             {
                 NPC.frameCounter = 0;
                 NPC.frame.Y += frameHeight;
@@ -376,14 +390,14 @@ namespace CalamityMod.NPCs.SunkenSea
 
         public override void HitEffect(NPC.HitInfo hit)
         {
-            for (int k = 0; k < 5; k++)
+            for (int k = 0; k < 6; k++)
             {
                 Dust.NewDust(NPC.position, NPC.width, NPC.height, DustID.Water, hit.HitDirection, -1f, 0, default, 1.3f);
             }
 
             for (int k = 0; k < 6; k++)
             {
-                Dust.NewDust(NPC.position, NPC.width, NPC.height, DustID.Coralstone, hit.HitDirection, -3f, 0, default, 0.9f);
+                Dust.NewDust(NPC.position, NPC.width, NPC.height, DustID.BloodWater, hit.HitDirection, -3f, 0, default, 0.9f);
             }
         }
 
