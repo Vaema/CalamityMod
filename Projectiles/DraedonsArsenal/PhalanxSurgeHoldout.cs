@@ -256,7 +256,7 @@ namespace CalamityMod.Projectiles.DraedonsArsenal
                 skewer.timeLeft = (didDash ? 25 : 10);
                 SoundStyle sound = new("CalamityMod/Sounds/Item/PhalanxSurgeChargeShoot");
                 SoundEngine.PlaySound(sound with { Volume = 0.9f }, Projectile.Center);
-                Owner.Calamity().GeneralScreenShakePower = 6f;
+                Owner.SetScreenshake(6f);
 
                 float mult = didDash ? 2 : 1;
                 for (int i = 0; i < 20 * mult; i++)

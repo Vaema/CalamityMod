@@ -670,8 +670,7 @@ namespace CalamityMod.NPCs.AstrumAureus
                     if (Main.zenithWorld)
                     {
                         float screenShakePower = 16 * Utils.GetLerpValue(1300f, 0f, NPC.Distance(Main.LocalPlayer.Center), true);
-                        if (Main.LocalPlayer.Calamity().GeneralScreenShakePower < screenShakePower)
-                            Main.LocalPlayer.Calamity().GeneralScreenShakePower = screenShakePower;
+                        Main.LocalPlayer.SetScreenshake(screenShakePower);
                     }
 
                     // Stomp and jump again, if stomped twice then reset and set AI to next phase (Teleport or Idle)

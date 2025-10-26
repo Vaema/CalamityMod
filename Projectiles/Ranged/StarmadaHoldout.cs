@@ -240,9 +240,9 @@ namespace CalamityMod.Projectiles.Ranged
             recoilTimerMax = cooldown;
             shootingCooldown = cooldown;
             recoilDirection = -Projectile.velocity;
-            Owner.Calamity().GeneralScreenShakePower = (naildriver ? 9 + gunPower : scattershot ? 8 : 5);
-            OffsetLengthFromArm = (naildriver ? 0 : scattershot ? 7 : 15);
-            frontRecoil = (naildriver ? -25 : scattershot ? -18 : -10);
+            Owner.SetScreenshake(naildriver ? 9 + gunPower : scattershot ? 8 : 5);
+            OffsetLengthFromArm = naildriver ? 0 : scattershot ? 7 : 15;
+            frontRecoil = naildriver ? -25 : scattershot ? -18 : -10;
 
             float gunPowerMult = MathHelper.Lerp(gunPower, 1, 0.7f);
 
@@ -283,8 +283,7 @@ namespace CalamityMod.Projectiles.Ranged
         }
         public void FireStarburst()
         {
-            if (Owner.Calamity().GeneralScreenShakePower < 8)
-                Owner.Calamity().GeneralScreenShakePower = 8;
+            Owner.SetScreenshake(8f);
             recoilDirection = -Projectile.velocity;
             if (recoilIntensity < 19)
                 recoilIntensity = 19;

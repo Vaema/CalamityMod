@@ -153,7 +153,7 @@ namespace CalamityMod.Projectiles.DraedonsArsenal
                 SoundStyle sound = new("CalamityMod/Sounds/Item/NidhoggBigShot");
                 for (int i = 0; i < 2; i++)
                     SoundEngine.PlaySound(sound with { Volume = 0.9f, MaxInstances = 2, Pitch = (i == 0 ? -0.4f : 0) }, Projectile.Center);
-                Owner.Calamity().GeneralScreenShakePower = 8f;
+                Owner.SetScreenshake(8f);
 
                 for (int i = 0; i < 40; i++)
                 {

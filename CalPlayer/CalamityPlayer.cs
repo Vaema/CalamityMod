@@ -155,7 +155,8 @@ namespace CalamityMod.CalPlayer
         public float blazingMouseAuraFade = 0f;
         /// <summary>
         /// General variable used for controlling the strength of screenshake this player is experiencing. Measured in pixels of offset that can be applied to the screen.<br/>
-        /// When setting this, be sure to only set it if its current value is less than the value to set, to prevent overriding an ongoing stronger screenshake with a weaker one.
+        /// When setting this, be sure to only set it if its current value is less than the value to set, to prevent overriding an ongoing stronger screenshake with a weaker one.<br/>
+        /// A helper method exists which can automatically do this for you, <see cref="CalamityUtils.SetScreenshake"/>.
         /// </summary>
         public float GeneralScreenShakePower = 0f;
         /// <summary> Set to true when this player receives the Brimstone Locus from speaking to the Brimstone Witch for the first time. </summary>
@@ -3600,7 +3601,7 @@ namespace CalamityMod.CalPlayer
                     //Furthermore, Enumerable#Any is lightweight and returns immediately if a single object matches it's predicate
                     if (!Player.HasCooldown(ParryCooldown.ID) || Player.ownedProjectileCounts[ProjectileType<BlazingStarHeal>()] == 0)
                     {
-                        GeneralScreenShakePower = 3.5f;
+                        Player.SetScreenshake(3.5f);
                         blazingCoreParry = 30;
                         SoundEngine.PlaySound(BlazingCore.ParryActivateSound, Player.Center);
                         var mySourceIsIMadeItUp = Player.GetSource_FromThis();
@@ -3614,14 +3615,14 @@ namespace CalamityMod.CalPlayer
                 {
                     if (!Player.HasCooldown(ParryCooldown.ID) || Player.ownedProjectileCounts[ProjectileType<FlameLickedBarrage>()] == 0)
                     {
-                        GeneralScreenShakePower = 2.5f;
+                        Player.SetScreenshake(2.5f);
                         SoundEngine.PlaySound(ProfanedGuardianDefender.RockShieldSpawnSound, Player.Center);
                         flameLickedShellParry = FlameLickedShell.flameLickedParry;
                     }
                 }
                 else if (shieldOfTheOcean && shieldOfTheOceanParry == 0)
                 {
-                    GeneralScreenShakePower = 2f;
+                    Player.SetScreenshake(2f);
                     SoundEngine.PlaySound(ShieldoftheOcean.TriggerSound, Player.Center);
                     shieldOfTheOceanParry = ShieldoftheOcean.ParryTime;
                 }

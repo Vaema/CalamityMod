@@ -90,8 +90,8 @@ namespace CalamityMod.Projectiles.Typeless
                 doneAttack = true;
                 storedTime = time;
                 Projectile.ForceNetUpdate();
-                if (Main.LocalPlayer.Calamity().GeneralScreenShakePower < Projectile.ai[2] && Main.LocalPlayer.Distance(Projectile.Center) < 1600)
-                    Main.LocalPlayer.Calamity().GeneralScreenShakePower = Projectile.ai[2];
+                if (Main.LocalPlayer.Distance(Projectile.Center) < 1600)
+                    Main.LocalPlayer.SetScreenshake(Projectile.ai[2]);
             }
             float endTime = storedTime + 10;
             if (time >= endTime && doneAttack)

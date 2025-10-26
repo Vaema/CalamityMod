@@ -49,7 +49,7 @@ namespace CalamityMod.Projectiles.Magic
 
                     Player owner = Main.player[Projectile.owner];
 
-                    owner.Calamity().GeneralScreenShakePower = 3f;
+                    owner.SetScreenshake(3f);
                     Vector2 targetDirection = Projectile.Center.DirectionTo(Main.MouseWorld).SafeNormalize(Vector2.UnitX);
 
                     spawnedProjectile = true;

@@ -74,7 +74,7 @@ namespace CalamityMod.Projectiles.Ranged
                         float charge2KB = Projectile.knockBack * 3f;
                         if (Main.myPlayer == Projectile.owner)
                             Projectile.NewProjectile(Projectile.GetSource_FromThis(), GunTipPosition, shootVelocity, ModContent.ProjectileType<NovaChargedShot>(), charge2Damage, charge2KB, Projectile.owner);
-                        Owner.Calamity().GeneralScreenShakePower = 6.5f;
+                        Owner.SetScreenshake(6.5f);
                         for (int i = 0; i <= 45; i++)
                         {
                             Dust dust = Dust.NewDustPerfect(GunTipPosition - Projectile.velocity * 15, ModContent.DustType<SquashDust>(), shootVelocity.RotatedByRandom(MathHelper.ToRadians(15f)) * Main.rand.NextFloat(0.6f, 1.9f), 0, default, Main.rand.NextFloat(2f, 3.3f));

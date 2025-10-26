@@ -73,7 +73,7 @@ namespace CalamityMod.Projectiles.Rogue
             CrackParticle crack2 = new CrackParticle(Projectile.Center, vel2, Color.Plum, new Vector2(1f, 1f), 0, Scale2, Scale2 - 0.5f, Main.rand.Next(27, 32));
             GeneralParticleHandler.SpawnParticle(crack2);
             Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center, Projectile.velocity * 0f, ModContent.ProjectileType<SpearofDestinyStealthExplosion>(), Projectile.damage / 2, Projectile.knockBack * 2, Projectile.owner, 0f);
-            Main.player[Projectile.owner].Calamity().GeneralScreenShakePower = 8;
+            Main.player[Projectile.owner].SetScreenshake(8f);
         }
         public override bool PreDraw(ref Color lightColor)
         {

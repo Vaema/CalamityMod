@@ -109,8 +109,7 @@ namespace CalamityMod.NPCs.SunkenSea
                 NPC.ai[1]++;
 
                 float screenShakePower = 2 * Utils.GetLerpValue(500f, 0f, NPC.Distance(Main.LocalPlayer.Center), true);
-                if (Main.LocalPlayer.Calamity().GeneralScreenShakePower < screenShakePower)
-                    Main.LocalPlayer.Calamity().GeneralScreenShakePower = screenShakePower;
+                Main.LocalPlayer.SetScreenshake(screenShakePower);
 
                 // After 1 second, stop shaking and set the scream on cooldown
                 if (NPC.ai[1] > 60)

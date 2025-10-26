@@ -425,7 +425,7 @@ namespace CalamityMod.Projectiles.DraedonsArsenal
                 SoundStyle aud = new("CalamityMod/Sounds/Item/MittHit");
                 for (int i = 0; i < 2; i++)
                     SoundEngine.PlaySound(aud with { Volume = 0.8f, Pitch = 0, MaxInstances = 2 }, Projectile.Center);
-                Owner.Calamity().GeneralScreenShakePower = 8f;
+                Owner.SetScreenshake(8f);
             }
             else
             {

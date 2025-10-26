@@ -513,8 +513,7 @@ Continue:
                     }
                 }
                 float screenShakePower = 20 * Utils.GetLerpValue(1300f, 0f, NPC.Distance(Main.LocalPlayer.Center), true);
-                if (Main.LocalPlayer.Calamity().GeneralScreenShakePower < screenShakePower)
-                    Main.LocalPlayer.Calamity().GeneralScreenShakePower = screenShakePower;
+                Main.LocalPlayer.SetScreenshake(screenShakePower);
             }
             else if (DeathrayTime >= 630f)
             {

@@ -91,7 +91,7 @@ namespace CalamityMod.Projectiles.Rogue
             }
             if (time == jawSlamTime)
             {
-                Owner.Calamity().GeneralScreenShakePower = 5f;
+                Owner.SetScreenshake(5f);
                 Owner.Calamity().ConsumeStealthByAttacking();
                 SoundStyle crunch = new("CalamityMod/Sounds/NPCKilled/PerfSmallDeath");
                 for (int i = 0; i < 3; i++)

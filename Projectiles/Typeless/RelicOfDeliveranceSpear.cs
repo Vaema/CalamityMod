@@ -250,7 +250,7 @@ namespace CalamityMod.Projectiles.Typeless
                                 SoundEngine.PlaySound(sound3 with { Volume = 0.7f, Pitch = 0.4f, MaxInstances = 3 }, Projectile.Center);
                         }
                         if (driftPower > 1)
-                            Owner.Calamity().GeneralScreenShakePower = (driftPower == 2 ? 6 : 9);
+                            Owner.SetScreenshake(driftPower == 2 ? 6 : 9);
                         else if (driftBadMult > 0.15f)
                             driftBadMult -= 0.15f;
                             

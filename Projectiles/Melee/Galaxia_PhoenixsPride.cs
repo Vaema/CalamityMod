@@ -99,8 +99,7 @@ namespace CalamityMod.Projectiles.Melee
                 else if (CurrentState == 0f)
                 {
                     CurrentState = 1f;
-                    if (Main.LocalPlayer.Calamity().GeneralScreenShakePower < 3)
-                        Main.LocalPlayer.Calamity().GeneralScreenShakePower = 3;
+                    Main.LocalPlayer.SetScreenshake(3f);
 
                     SoundEngine.PlaySound(SoundID.Item80, Projectile.Center);
                     // 14NOV2024: Ozzatron: clamped mouse position unnecessary, only used for direction

@@ -5127,8 +5127,7 @@ namespace CalamityMod.NPCs
             if (SharkIDs.Contains(npc.type) && target.name == "Rebecca" && Main.zenithWorld)
             {
                 SoundEngine.PlaySound(AresGaussNuke.NukeExplosionSound, target.Center);
-                if (Main.LocalPlayer.Calamity().GeneralScreenShakePower < 12f)
-                    Main.LocalPlayer.Calamity().GeneralScreenShakePower = 12f;
+                Main.LocalPlayer.SetScreenshake(12f);
 
                 target.KillMe(PlayerDeathReason.ByCustomReason(CalamityUtils.GetText("Status.Death.Rebecca").ToNetworkText(target.name)), 1000.0, 0);
                 modifiers.SourceDamage *= target.statLifeMax2 * Main.rand.NextFloat(3f, 6f);

@@ -86,7 +86,7 @@ namespace CalamityMod.Projectiles.Ranged
 
             if (revFrames >= maxFrames && !isTired || (Owner.Calamity().mouseRight && revFrames > 2 ))
             {
-                Owner.Calamity().GeneralScreenShakePower = 6.5f;
+                Owner.SetScreenshake(6.5f);
                 OffsetLengthFromArm -= 35f;
                 cooldownTimer = (int)MathHelper.Lerp((int)(Utils.Remap(revFrames, 0, 350, 40, 180, true)), 180, 0.7f);
                 SoundStyle bigShot = new("CalamityMod/Sounds/Custom/Perforator/PerfHiveIchorShoot");

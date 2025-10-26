@@ -102,8 +102,7 @@ namespace CalamityMod.Projectiles.Magic
                 {
                     FlashTimer = 4f;
                     FireSoundSlot = SoundEngine.PlaySound(FireSound, GunTipPosition);
-                    if (Owner.Calamity().GeneralScreenShakePower < 3f)
-                        Owner.Calamity().GeneralScreenShakePower = 3f;
+                    Owner.SetScreenshake(3f);
 
                     // Start from slightly behind the tip
                     Vector2 offsetPos = GunTipPosition - Projectile.velocity.SafeNormalize(Vector2.UnitY) * 18f;

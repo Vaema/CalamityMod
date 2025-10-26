@@ -115,11 +115,8 @@ namespace CalamityMod.Projectiles.Melee
                         if (screw.AlreadyBazinged > 2)
                             SoundEngine.PlaySound(WulfrumScrewdriver.FunnyUltrablingSound, Projectile.Center);
 
-
                         if (Main.myPlayer == proj.owner)
-                        {
-                            Owner.Calamity().GeneralScreenShakePower = 6f;
-                        }
+                            Owner.SetScreenshake(6f);
 
                         return;
                     }
@@ -188,7 +185,7 @@ namespace CalamityMod.Projectiles.Melee
             //Dust
             for (int k = 0; k < 4; k++)
             {
-                Dust.NewDustPerfect(Projectile.Center + Projectile.velocity * 70f, 16, Projectile.velocity.RotatedByRandom(0.2f) * Main.rand.NextFloat(6), 0, default, Main.rand.NextFloat(0.7f, 1f));
+                Dust.NewDustPerfect(Projectile.Center + Projectile.velocity * 70f, DustID.Cloud, Projectile.velocity.RotatedByRandom(0.2f) * Main.rand.NextFloat(6), 0, default, Main.rand.NextFloat(0.7f, 1f));
             }
 
 

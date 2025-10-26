@@ -70,7 +70,7 @@ namespace CalamityMod.Projectiles.Ranged
                             }
                         }
                         OffsetLengthFromArm -= 25f;
-                        Owner.Calamity().GeneralScreenShakePower = 5f;
+                        Owner.SetScreenshake(5f);
 
                         for (int i = 0; i < 2; i++)
                         {

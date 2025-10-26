@@ -97,7 +97,7 @@ namespace CalamityMod.Projectiles.Rogue
             }
             if (time % 10 * Projectile.MaxUpdates == 0)
             {
-                Owner.Calamity().GeneralScreenShakePower = 1.5f;
+                Owner.SetScreenshake(1.5f);
             }
 
             if (Projectile.ai[2] > 0 && time == 30)

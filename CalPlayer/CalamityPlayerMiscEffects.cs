@@ -1913,7 +1913,7 @@ namespace CalamityMod.CalPlayer
                         SoundStyle sound = new("CalamityMod/Sounds/NPCHit/ExoHit3");
                         SoundEngine.PlaySound(sound with { Volume = 0.6f * power, Pitch = Main.rand.NextFloat(0.6f, 0.8f) }, playerFeet);
 
-                        Player.Calamity().GeneralScreenShakePower = 4 * scaledPower;
+                        Player.SetScreenshake(4 * scaledPower);
                         fallingBootVelCheckTimer = 0;
                     }
                 }

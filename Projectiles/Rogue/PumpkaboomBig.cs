@@ -300,7 +300,7 @@ namespace CalamityMod.Projectiles.Rogue
             {
                 SoundEngine.PlaySound(new SoundStyle("CalamityMod/Sounds/Custom/PumpkinExplode1") with { Pitch = 0f, Volume = 0.75f }, Projectile.Center);
                 SoundEngine.PlaySound(new SoundStyle("CalamityMod/Sounds/Item/FlakKrakenShoot") with { Pitch = 0f, Volume = 0.6f }, Projectile.Center);
-                Owner.Calamity().GeneralScreenShakePower = 5f;
+                Owner.SetScreenshake(5f);
 
                 Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center, Vector2.Zero, ModContent.ProjectileType<PumpkaboomBoomBig>(), Projectile.damage * 2, Projectile.knockBack * 2, Projectile.owner, 0);
 
@@ -319,7 +319,7 @@ namespace CalamityMod.Projectiles.Rogue
                 for (int k = 0; k < 30; k++)
                 {
                     Vector2 velocity = new Vector2(10, 10).RotatedByRandom(100) * Main.rand.NextFloat(0.3f, 1.2f);
-                    Dust dust2 = Dust.NewDustPerfect(Projectile.Center + velocity, 259, velocity);
+                    Dust dust2 = Dust.NewDustPerfect(Projectile.Center + velocity, DustID.SolarFlare, velocity);
                     dust2.scale = Main.rand.NextFloat(1.15f, 1.45f);
                     dust2.noGravity = true;
                 }

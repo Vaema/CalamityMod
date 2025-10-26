@@ -125,8 +125,7 @@ namespace CalamityMod.Projectiles.Melee
 
                 // Feel the power
                 SoundEngine.PlaySound(CommonCalamitySounds.SwiftSliceSound with {Pitch = 0f, MaxInstances = 2}, Projectile.Center);
-                if (Main.LocalPlayer.Calamity().GeneralScreenShakePower < 7.5f)
-                    Main.LocalPlayer.Calamity().GeneralScreenShakePower = 7.5f;
+                Main.LocalPlayer.SetScreenshake(7.5f);
 
                 // Feel the particles
                 for (int i = 0; i < 20; i++)

@@ -108,7 +108,7 @@ namespace CalamityMod.Projectiles.Boss
             SoundEngine.PlaySound(SpawnSound, Projectile.Center);
 
             // Make a sudden screen shake.
-            Main.LocalPlayer.Calamity().GeneralScreenShakePower = Utils.GetLerpValue(3400f, 1560f, Main.LocalPlayer.Distance(Projectile.Center), true) * 16f;
+            Main.LocalPlayer.SetScreenshake(Utils.GetLerpValue(3400f, 1560f, Main.LocalPlayer.Distance(Projectile.Center), true) * 16f);
 
             // Generate a dust explosion at the ritual's position.
             for (int i = 0; i < 90; i++)

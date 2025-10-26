@@ -77,7 +77,7 @@ namespace CalamityMod.Projectiles.Magic
                         SoundEngine.PlaySound(fire2 with { Pitch = -0.3f, Volume = 0.5f }, Projectile.Center);
 
                         // Vipers can apparently have 33 teeth or something like that
-                        Owner.Calamity().GeneralScreenShakePower = 4f;
+                        Owner.SetScreenshake(4f);
                         for (int i = 0; i < 33; i++)
                         {
                             Projectile.NewProjectile(Projectile.GetSource_FromThis(), GunTipPosition, (shootVelocity * 2).RotatedByRandom(0.5f) * Main.rand.NextFloat(0.8f, 1.2f), ModContent.ProjectileType<VitriolicViperFang>(), Projectile.damage / 10, Projectile.knockBack, Projectile.owner, 0);

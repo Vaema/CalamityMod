@@ -157,7 +157,7 @@ namespace CalamityMod.Projectiles.Melee
             Player Owner = Main.player[Projectile.owner];
             if (isLaunched && Projectile.scale > 0.2f)
             {
-                Owner.Calamity().GeneralScreenShakePower = 9f;
+                Owner.SetScreenshake(9f);
 
                 SoundStyle sound = new("CalamityMod/Sounds/Item/HolyColliderProjectileHit");
                 SoundEngine.PlaySound(sound with { Volume = 1f }, Projectile.Center);

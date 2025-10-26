@@ -150,7 +150,7 @@ namespace CalamityMod.Projectiles.Rogue
                 Projectile.numHits = 0;
                 damageFrame = true;
                 doDamage = true;
-                Owner.Calamity().GeneralScreenShakePower = 14.5f;
+                Owner.SetScreenshake(14.5f);
 
                 for (int i = 0; i < 55; i++)
                 {
