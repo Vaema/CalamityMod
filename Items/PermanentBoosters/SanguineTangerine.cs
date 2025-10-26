@@ -48,9 +48,12 @@ namespace CalamityMod.Items.PermanentBoosters
                 player.itemTime = Item.useTime;
                 if (modPlayer.sTangerine)
                 {
-                    string key = "Mods.CalamityMod.Misc.SanguineTangerineText";
-                    Color messageColor = Color.Orange;
-                    CalamityUtils.BroadcastLocalizedText(key, messageColor);
+                    if (player.whoAmI == Main.myPlayer)
+                    {
+                        string key = "Mods.CalamityMod.Misc.SanguineTangerineText";
+                        Color messageColor = Color.Orange;
+                        Main.NewText(Language.GetTextValue(key), messageColor);
+                    }
                     return null;
                 }
 

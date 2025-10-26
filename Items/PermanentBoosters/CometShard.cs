@@ -46,9 +46,12 @@ namespace CalamityMod.Items.PermanentBoosters
                 player.itemTime = Item.useTime;
                 if (modPlayer.cShard)
                 {
-                    string key = "Mods.CalamityMod.Misc.CometShardText";
-                    Color messageColor = Color.SkyBlue;
-                    CalamityUtils.BroadcastLocalizedText(key, messageColor);
+                    if (player.whoAmI == Main.myPlayer)
+                    {
+                        string key = "Mods.CalamityMod.Misc.CometShardText";
+                        Color messageColor = Color.SkyBlue;
+                        Main.NewText(Language.GetTextValue(key), messageColor);
+                    }
                     return null;
                 }
 

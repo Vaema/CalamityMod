@@ -50,9 +50,12 @@ namespace CalamityMod.Items.PermanentBoosters
                 player.itemTime = Item.useTime;
                 if (modPlayer.sStrawberry)
                 {
-                    string key = "Mods.CalamityMod.Misc.SacredStrawberryText";
-                    Color messageColor = Color.SpringGreen;
-                    CalamityUtils.BroadcastLocalizedText(key, messageColor);
+                    if (player.whoAmI == Main.myPlayer)
+                    {
+                        string key = "Mods.CalamityMod.Misc.SacredStrawberryText";
+                        Color messageColor = Color.SpringGreen;
+                        Main.NewText(Language.GetTextValue(key), messageColor);
+                    }
                     return null;
                 }
 

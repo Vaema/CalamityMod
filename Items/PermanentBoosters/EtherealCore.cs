@@ -46,9 +46,12 @@ namespace CalamityMod.Items.PermanentBoosters
                 player.itemTime = Item.useTime;
                 if (modPlayer.eCore)
                 {
-                    string key = "Mods.CalamityMod.Misc.EtherealCoreText";
-                    Color messageColor = Color.MediumVioletRed;
-                    CalamityUtils.BroadcastLocalizedText(key, messageColor);
+                    if (player.whoAmI == Main.myPlayer)
+                    {
+                        string key = "Mods.CalamityMod.Misc.EtherealCoreText";
+                        Color messageColor = Color.MediumVioletRed;
+                        Main.NewText(Language.GetTextValue(key), messageColor);
+                    }
                     return null;
                 }
 

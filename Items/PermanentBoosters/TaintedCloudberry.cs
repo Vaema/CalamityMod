@@ -49,9 +49,12 @@ namespace CalamityMod.Items.PermanentBoosters
                 player.itemTime = Item.useTime;
                 if (modPlayer.tCloudberry)
                 {
-                    string key = "Mods.CalamityMod.Misc.TaintedCloudberryText";
-                    Color messageColor = Color.Turquoise;
-                    CalamityUtils.BroadcastLocalizedText(key, messageColor);
+                    if (player.whoAmI == Main.myPlayer)
+                    {
+                        string key = "Mods.CalamityMod.Misc.TaintedCloudberryText";
+                        Color messageColor = Color.Turquoise;
+                        Main.NewText(Language.GetTextValue(key), messageColor);
+                    }
                     return null;
                 }
 
