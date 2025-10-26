@@ -841,7 +841,7 @@ IceShieldBuff: {
 Mushy: {
 	DisplayName: Mushy
 	Description: Increased defense by {0} and life regen by {1} HP/s
-	ItemTooltip: Increases defese and life regeneration
+	ItemTooltip: Increases defense and life regeneration
 }
 
 PhantomicEmpowerment: {
@@ -1659,7 +1659,7 @@ ForbiddenStealthSummonTagBuff: {
 }
 
 SeaKingsAssurance: {
-	DisplayName: Sea Kings Assurance
+	DisplayName: Sea King's Assurance
 	Description: If you're seeing this, something assuredly went horribly wrong
 }
 
