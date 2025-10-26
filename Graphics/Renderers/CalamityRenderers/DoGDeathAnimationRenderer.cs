@@ -1,33 +1,14 @@
 ﻿using CalamityMod.NPCs;
-using CalamityMod.NPCs.DevourerofGods;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria;
 using Terraria.Graphics.Shaders;
 using Terraria.ID;
-using Terraria.ModLoader;
 
 namespace CalamityMod.Graphics.Renderers.CalamityRenderers
 {
     public class DoGDeathAnimationRenderer : BaseRenderer
     {
-        private static DevourerofGodsHead DoGHead
-        {
-            get
-            {
-                if (!Main.npc.IndexInRange(CalamityGlobalNPC.DoGHead))
-                    return null;
-
-                if (Main.npc[CalamityGlobalNPC.DoGHead].type != ModContent.NPCType<DevourerofGodsHead>())
-                    return null;
-
-                if (Main.npc[CalamityGlobalNPC.DoGHead].ModNPC is not null && Main.npc[CalamityGlobalNPC.DoGHead].ModNPC is DevourerofGodsHead dogHead)
-                    return dogHead;
-
-                return null;
-            }
-        }
-
         /// <summary>
         /// Used to determine whether the npc should return true in predraw or not, for exclusively drawing to the drawer target.
         /// </summary>
@@ -39,7 +20,7 @@ namespace CalamityMod.Graphics.Renderers.CalamityRenderers
 
         public override DrawLayer Layer => DrawLayer.NPC;
 
-        public override bool ShouldDraw => !Main.gameMenu && CalamityGlobalNPC.DoGHead != -1 && Main.npc[CalamityGlobalNPC.DoGHead].active && DoGHead.DeathAnimationTimer > 0;
+        public override bool ShouldDraw => !Main.gameMenu && CalamityDrawParameterNPC.DoGDeathAnimationTimer > 0;
 
         public static bool ValidToDraw(NPC npc)
         {
@@ -47,16 +28,7 @@ namespace CalamityMod.Graphics.Renderers.CalamityRenderers
             if (!npc.active || npc.type <= NPCID.None)
                 return false;
 
-            // Don't consider any other NPCs besides the DoG NPCs valid.
-            if (npc.type != ModContent.NPCType<DevourerofGodsHead>() && npc.type != ModContent.NPCType<DevourerofGodsBody>() && npc.type != ModContent.NPCType<DevourerofGodsTail>())
-                return false;
-
-            // Don't draw if DoG's Head cannot be found active.
-            if (DoGHead is null)
-                return false;
-
-            // Don't draw if DoG hasn't started it's death animation yet.
-            if (DoGHead.DeathAnimationTimer <= 0)
+            if (!CalamityDrawParameterNPC.DrawingDoGDeathAnimation[npc.whoAmI])
                 return false;
 
             return true;
@@ -87,13 +59,9 @@ namespace CalamityMod.Graphics.Renderers.CalamityRenderers
         public override void DrawTarget(SpriteBatch spriteBatch)
         {
             var disintegrationShader = GameShaders.Misc["CalamityMod:DoGDisintegration"].Shader;
-            NPC npc = DoGHead.NPC;
-            if (npc == null || !npc.active)
-                return;
-
             Vector2 screenSize = new(Main.screenWidth, Main.screenHeight);
             Vector2 worldPosition = Main.screenPosition / MainTarget.Size;
-            float disintegrationProgress = DoGHead.DeathAnimationTimer / 600f;
+            float disintegrationProgress = CalamityDrawParameterNPC.DoGDeathAnimationTimer / 600f;
 
             disintegrationShader.Parameters["disintegrationProgress"].SetValue(disintegrationProgress);
             disintegrationShader.Parameters["disintegrationScale"].SetValue(1.75f);
