@@ -77,7 +77,7 @@ namespace CalamityMod.Items.PermanentBoosters
         public override void ModifyTooltips(List<TooltipLine> list)
         {
             if (HasConsumedBefore(Main.LocalPlayer))
-                list.AddConsumedTooltip();
+                list.AddConsumedTooltip("Tooltip0");
         }
     }
 }
