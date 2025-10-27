@@ -43,7 +43,7 @@ namespace CalamityMod.Items.PermanentBoosters
 
         public override bool CanUseItem(Player player)
         {
-            if (player.ConsumedLifeFruit == Player.LifeFruitMax)
+            if (player.ConsumedLifeFruit != Player.LifeFruitMax)
             {
                 return false;
             }

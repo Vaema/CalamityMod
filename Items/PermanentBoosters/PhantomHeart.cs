@@ -39,7 +39,7 @@ namespace CalamityMod.Items.PermanentBoosters
 
         public override bool CanUseItem(Player player)
         {
-            if (player.ConsumedManaCrystals == Player.ManaCrystalMax)
+            if (player.ConsumedManaCrystals != Player.ManaCrystalMax)
             {
                 return false;
             }
