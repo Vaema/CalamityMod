@@ -334,6 +334,19 @@ namespace CalamityMod
             tooltips.FindAndReplace("[KEY]", finalKey);
         }
 
+        /// <summary>
+        /// Shortcut method for adding "You have already consumed this item" tooltip
+        /// </summary>
+        /// <param name="tooltips"></param>
+        /// <param name="tooltipSearchKey"></param>
+        public static void AddConsumedTooltip(this List<TooltipLine> tooltips, string tooltipSearchKey = "Tooltip1")
+        {
+            TooltipLine line = tooltips.FirstOrDefault(x => x.Mod == "Terraria" && x.Name == tooltipSearchKey);
+
+            if (line != null)
+                line.Text += "\n" + GetTextValue("Misc.GenericConsumedText");
+        }
+
         public static Color FireDebuffColor => new(253, 107, 2);
         public static Color SicknessDebuffColor => new(136, 198, 10);
         public static Color WaterDebuffColor => new(105, 147, 255);

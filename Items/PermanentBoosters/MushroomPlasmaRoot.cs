@@ -1,4 +1,5 @@
-﻿using CalamityMod.Balancing;
+﻿using System.Collections.Generic;
+using CalamityMod.Balancing;
 using CalamityMod.CalPlayer;
 using Terraria;
 using Terraria.ID;
@@ -25,7 +26,18 @@ namespace CalamityMod.Items.PermanentBoosters
             Item.SetRevExclusive();
         }
 
-        public override bool CanUseItem(Player player) => !player.Calamity().rageBoostOne;
+        public static bool HasConsumedBefore(Player player) => player.Calamity().rageBoostOne;
+
+        public override bool CanUseItem(Player player)
+        {
+            if (HasConsumedBefore(player))
+            {
+                // Refuse Text can be added on here
+                return false;
+            }
+
+            return true;
+        }
 
         public override bool? UseItem(Player player)
         {
@@ -36,6 +48,12 @@ namespace CalamityMod.Items.PermanentBoosters
                 modPlayer.rageBoostOne = true;
             }
             return true;
+        }
+
+        public override void ModifyTooltips(List<TooltipLine> list)
+        {
+            if (HasConsumedBefore(Main.LocalPlayer))
+                list.AddConsumedTooltip();
         }
     }
 }
