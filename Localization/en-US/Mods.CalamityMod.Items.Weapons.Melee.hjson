@@ -1491,10 +1491,16 @@ UrchinMace: {
 
 VanishingPoint: {
 	DisplayName: Vanishing Point
-	Tooltip:
+	Tooltip: "[GFB]"
+	TooltipNormal:
 		'''
 		Fires a lance beam that splits multiple times as it travels
 		'Rend the cosmos asunder!'
+		'''
+	TooltipGFB:
+		'''
+		Fires a lance beam that splits, like, a LOT. Way more than it ever should.
+		'Rend the projectile limit asunder!'
 		'''
 }
 
