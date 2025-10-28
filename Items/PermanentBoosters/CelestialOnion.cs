@@ -1,7 +1,9 @@
 ﻿using System.Collections.Generic;
 using CalamityMod.CalPlayer;
+using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.ID;
+using Terraria.Localization;
 using Terraria.ModLoader;
 
 namespace CalamityMod.Items.PermanentBoosters
@@ -32,7 +34,12 @@ namespace CalamityMod.Items.PermanentBoosters
         {
             if (HasConsumedBefore(player))
             {
-                // Refuse Text can be added on here
+                if (player.whoAmI == Main.myPlayer)
+                {
+                    string key = "Mods.CalamityMod.Misc.CelestialOnionText";
+                    Color messageColor = Color.LightSlateGray;
+                    Main.NewText(Language.GetTextValue(key), messageColor);
+                }
                 return false;
             }
 
