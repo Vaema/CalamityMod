@@ -6,8 +6,9 @@ using static Terraria.ModLoader.ModContent;
 
 namespace CalamityMod.Projectiles.Enemy
 {
-    public class ShoreskipperTackle : ModProjectile
+    public class ShoreskipperTackle : ModProjectile, ILocalizedModType
     {
+        public new string LocalizationCategory => "Projectiles.Enemy";
         public override string Texture => "CalamityMod/Projectiles/InvisibleProj";
 
         private NPC OwnerNPC => Main.npc[(int)Projectile.ai[0]];

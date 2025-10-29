@@ -53,18 +53,25 @@ namespace CalamityMod.NPCs.SunkenSea
         [
             NPCType<Shoreskipper>(),
         ];
+        protected override SunkenSeaBiomeFlags BiomeDesignation => SunkenSeaBiomeFlags.TimelessShores;
+        
 
         public override bool CanBeHitByNPC(NPC attacker) => true;
-
         public override bool CanHitNPC(NPC target) => target.type == NPC.type;
-
         public override bool CanHitPlayer(Player target, ref int cooldownSlot) => false;
-
-        // Player can hit shoreskippers
         public override bool? CanBeHitByItem(Player player, Item item) => true;
         public override bool? CanBeHitByProjectile(Projectile projectile) => true;
 
-        protected override SunkenSeaBiomeFlags BiomeDesignation => SunkenSeaBiomeFlags.TimelessShores;
+        // If not a Shoreskipper tackle, nullify knockback
+        public override void ModifyHitByProjectile(Projectile projectile, ref NPC.HitModifiers modifiers)
+        {
+            if (projectile.type != ProjectileType<ShoreskipperTackle>())
+                projectile.knockBack = 0f;
+        }
+        public override void ModifyHitByItem(Player player, Item item, ref NPC.HitModifiers modifiers) => modifiers.DisableKnockback();
+        public override void ModifyHitNPC(NPC target, ref NPC.HitModifiers modifiers) => modifiers.DisableKnockback();
+
+
 
         public override void SetStaticDefaults()
         {
@@ -180,9 +187,6 @@ namespace CalamityMod.NPCs.SunkenSea
                 NPC.velocity.X = 0f;
                 notLandedFromWater = false;
             }
-
-            if (NPC.velocity.X > 2.5f && NPC.oldVelocity.X > 2.5f && NPC.velocity.Y == 0) // In case of knockback jank
-                NPC.velocity.X = 0f;
 
             if (notLandedFromWater && !NPC.wet && NPC.velocity.Length() > 6.5f && Timer % 4 == 0) // When skipping on water at high enough velocity, spawns a ring to exaggerate the speed
                 GeneralParticleHandler.SpawnParticle(new DirectionalPulseRing(NPC.Center, -NPC.velocity * 0.33f, Color.DeepSkyBlue * 0.65f, new Vector2(0.5f, 1f), NPC.rotation, 0.12f, 0.24f, 18));
@@ -424,15 +428,21 @@ namespace CalamityMod.NPCs.SunkenSea
         {
             for (int k = 0; k < 6; k++)
             {
-                Dust.NewDust(NPC.position, NPC.width, NPC.height, DustID.Water, hit.HitDirection, -1f, 0, default, 1.3f);
+                GeneralParticleHandler.SpawnParticle(new GenericBubbleParticle(NPC.Center, new Vector2(Main.rand.NextFloat(3f, 7f) * hit.HitDirection, Main.rand.NextFloat(-5f, 5f)).RotatedByRandom(1), Main.rand.NextFloat(0.22f, 0.52f), NPC.rotation, Main.rand.Next(7, 11)));
             }
 
             for (int k = 0; k < 6; k++)
             {
-                Dust.NewDust(NPC.position, NPC.width, NPC.height, DustID.BloodWater, hit.HitDirection, -3f, 0, default, 0.9f);
+                Dust.NewDust(NPC.position, NPC.width, NPC.height, DustID.BloodWater, hit.HitDirection, -3f, 0, default, 0.8f);
             }
         }
-
+        public override void OnKill()
+        {
+            for (int k = 0; k < 10; k++)
+            {
+                GeneralParticleHandler.SpawnParticle(new GenericBubbleParticle(NPC.Center, new Vector2(Main.rand.NextFloat(3.25f, 8.5f), Main.rand.NextFloat(-5f, 5f)).RotatedByRandom(MathHelper.TwoPi), Main.rand.NextFloat(0.26f, 0.62f), NPC.rotation, Main.rand.Next(8, 13)));
+            }
+        }
         public override bool PreDraw(SpriteBatch spriteBatch, Vector2 screenPos, Color drawColor)
         {
             if (NPC.IsABestiaryIconDummy)
