@@ -156,6 +156,11 @@ namespace CalamityMod.Systems.Mechanic
                     box.UpdateBox(box);
             }
         }
+
+        public override void OnWorldUnload()
+        {
+            ActiveBoxes = [];
+        }
     }
 
     public class ArenaWallPlayer : ModPlayer

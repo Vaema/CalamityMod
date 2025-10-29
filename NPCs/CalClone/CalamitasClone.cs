@@ -45,6 +45,7 @@ namespace CalamityMod.NPCs.CalClone
         public static readonly SoundStyle ChargeSound = new("CalamityMod/Sounds/Custom/CalamitasClone/CalCloneDash", 3);
         public SlotId BulletHellWarnSlot;
 
+        public ArenaWallSystem.Box ArenaBox = null;
         void UpdateArena(ArenaWallSystem.Box box)
         {
             if (box.borderColor == Color.Gray || box.oldData.borderColor == Color.Gray)
@@ -309,9 +310,9 @@ namespace CalamityMod.NPCs.CalClone
             //arena on death mode
             if (revenge)
             {
-                if (ArenaWallSystem.ActiveBoxes.Count < 1)
+                if (ArenaBox is null)
                 {
-                    ArenaWallSystem.ActiveBoxes.Add(new()
+                    ArenaBox = new()
                     {
                         position = Main.player[NPC.FindClosestPlayer()].Center,
                         boxDimensions = new Vector4(2000),
@@ -325,22 +326,23 @@ namespace CalamityMod.NPCs.CalClone
                             if (box.Size.X > 5000)
                                 ArenaWallSystem.ActiveBoxes.Remove(box);
                         }
-                    });
+                    };
+                    ArenaWallSystem.ActiveBoxes.Add(ArenaBox);
                 }
-                ArenaWallSystem.ActiveBoxes[0].NewDimensions = Vector4.Lerp(ArenaWallSystem.ActiveBoxes[0].boxDimensions, GetArenaSize(brotherAlive, lifeRatio, inBulletHell), lifeRatio > 0.9f ? 0.1f : 0.025f);
-                if (ArenaWallSystem.ActiveBoxes[0].oldData is not null)
-                    ArenaWallSystem.ActiveBoxes[0].oldData.borderColor = Color.White;
+                ArenaBox.NewDimensions = Vector4.Lerp(ArenaBox.boxDimensions, GetArenaSize(brotherAlive, lifeRatio, inBulletHell), lifeRatio > 0.9f ? 0.1f : 0.025f);
+                if (ArenaBox.oldData is not null)
+                    ArenaBox.oldData.borderColor = Color.White;
                 if (brotherAlive)
-                    ArenaWallSystem.ActiveBoxes[0].borderColor = Color.Lerp(ArenaWallSystem.ActiveBoxes[0].borderColor, Color.Lerp(new Color(0, 255, 255), new Color(255, 0, 229), (MathF.Sin(Main.GlobalTimeWrappedHourly * 0.5f) + 1) * 0.5f), 0.03f);
+                    ArenaBox.borderColor = Color.Lerp(ArenaBox.borderColor, Color.Lerp(new Color(0, 255, 255), new Color(255, 0, 229), (MathF.Sin(Main.GlobalTimeWrappedHourly * 0.5f) + 1) * 0.5f), 0.03f);
                 else if (NPC.AnyNPCs(ModContent.NPCType<SoulSeeker>()))
-                    ArenaWallSystem.ActiveBoxes[0].borderColor = Color.Lerp(ArenaWallSystem.ActiveBoxes[0].borderColor, Color.Lerp(Color.Crimson, new Color(255, 106, 0), (MathF.Sin(Main.GlobalTimeWrappedHourly * 0.5f) + 1) * 0.5f), 0.03f);
+                    ArenaBox.borderColor = Color.Lerp(ArenaBox.borderColor, Color.Lerp(Color.Crimson, new Color(255, 106, 0), (MathF.Sin(Main.GlobalTimeWrappedHourly * 0.5f) + 1) * 0.5f), 0.03f);
                 else if (NPC.dontTakeDamage)
                 {
-                    ArenaWallSystem.ActiveBoxes[0].borderColor = Color.Lerp(ArenaWallSystem.ActiveBoxes[0].borderColor, Color.Gray, 0.1f);
-                    ArenaWallSystem.ActiveBoxes[0].oldData.borderColor = Color.Gray;
+                    ArenaBox.borderColor = Color.Lerp(ArenaBox.borderColor, Color.Gray, 0.1f);
+                    ArenaBox.oldData.borderColor = Color.Gray;
                 }
                 else
-                    ArenaWallSystem.ActiveBoxes[0].borderColor = Color.Lerp(ArenaWallSystem.ActiveBoxes[0].borderColor, Color.Lerp(Color.Crimson, Color.IndianRed, (MathF.Sin(Main.GlobalTimeWrappedHourly * 0.5f) + 1) * 0.25f), 0.03f);
+                    ArenaBox.borderColor = Color.Lerp(ArenaBox.borderColor, Color.Lerp(Color.Crimson, Color.IndianRed, (MathF.Sin(Main.GlobalTimeWrappedHourly * 0.5f) + 1) * 0.25f), 0.03f);
             }
 
             void SpawnDust()

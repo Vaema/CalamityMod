@@ -140,6 +140,8 @@ namespace CalamityMod.NPCs.SupremeCalamitas
 
         public float colorCompletion = 1;
 
+        public ArenaWallSystem.Box ArenaBox = null;
+
         public FrameAnimationType FrameType
         {
             get => (FrameAnimationType)(int)NPC.localAI[2];
@@ -740,9 +742,9 @@ namespace CalamityMod.NPCs.SupremeCalamitas
                 box.DrawBoxWithOffset(box.borderThickness - 2, 2, box.borderColor);
             }
 
-            if (ArenaWallSystem.ActiveBoxes.Count < 1)
+            if (ArenaBox is null)
             {
-                ArenaWallSystem.ActiveBoxes.Add(new()
+                ArenaBox = new()
                 {
                     position = new Vector2(spawnX + (death ? 1000 : 1250), spawnY + (death ? 1000 : 1250)),
                     boxDimensions = GetArenaSize() * 2,
@@ -758,22 +760,22 @@ namespace CalamityMod.NPCs.SupremeCalamitas
                         else
                             UpdateArena(box);
                     }
-                }
-                );
+                };
+                ArenaWallSystem.ActiveBoxes.Add(ArenaBox);
             }
-            ArenaWallSystem.ActiveBoxes[0].NewDimensions = Vector4.Lerp(ArenaWallSystem.ActiveBoxes[0].boxDimensions, GetArenaSize(), lifeRatio <= 0.01f ? 0.02f : startFourthAttack ? 0.05f : 0.1f);
+            ArenaBox.NewDimensions = Vector4.Lerp(ArenaBox.boxDimensions, GetArenaSize(), lifeRatio <= 0.01f ? 0.02f : startFourthAttack ? 0.05f : 0.1f);
             var color = GetArenaColor(out Color oldColor);
-            if (colorCompletion > 1.1f && color != ArenaWallSystem.ActiveBoxes[0].borderColor)
+            if (colorCompletion > 1.1f && color != ArenaBox.borderColor)
                 colorCompletion = 0;
             if (colorCompletion < 1)
-                ArenaWallSystem.ActiveBoxes[0].borderColor = Color.Lerp(oldColor, color, colorCompletion);
+                ArenaBox.borderColor = Color.Lerp(oldColor, color, colorCompletion);
             else
-                ArenaWallSystem.ActiveBoxes[0].borderColor = color;
+                ArenaBox.borderColor = color;
             colorCompletion += 0.003f;
 
             #endregion
             #region Enrage and DR
-            if (ArenaWallSystem.ActiveBoxes.Count > 0 && !Collision.CheckAABBvAABBCollision(ArenaWallSystem.ActiveBoxes[0].TopLeft, ArenaWallSystem.ActiveBoxes[0].Size, player.position, player.Size))
+            if (ArenaWallSystem.ActiveBoxes.Count > 0 && !Collision.CheckAABBvAABBCollision(ArenaBox.TopLeft, ArenaBox.Size, player.position, player.Size))
             {
                 float projectileVelocityMultCap = 2f;
                 uDieLul = MathHelper.Clamp(uDieLul * 1.01f, 1f, projectileVelocityMultCap);

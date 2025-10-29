@@ -84,7 +84,7 @@ namespace CalamityMod.Graphics.Metaballs
         }
         public override MetaballDrawLayer DrawContext => MetaballDrawLayer.BeforeNPCs;
 
-        public override Color EdgeColor => ArenaWallSystem.ActiveBoxes.Count > 0 ? ArenaWallSystem.ActiveBoxes[0].borderColor : Color.DarkGray;
+        public override Color EdgeColor => CalamityGlobalNPC.SCal >= 0 && Main.npc[CalamityGlobalNPC.SCal].ModNPC<SupremeCalamitas>().ArenaBox is not null ? Main.npc[CalamityGlobalNPC.SCal].ModNPC<SupremeCalamitas>().ArenaBox.borderColor : SupremeCalamitas.AcceptanceColor;
 
         public override void Update()
         {
