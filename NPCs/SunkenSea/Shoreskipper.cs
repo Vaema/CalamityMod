@@ -33,18 +33,11 @@ namespace CalamityMod.NPCs.SunkenSea
         public ref float CurrentPhase => ref NPC.ai[0];
 
         public ref float Timer => ref NPC.ai[1];
-        public NPC Target; // Chosen target (can only be other shoreskippers)
         public bool spawnedTackleHitbox = false;
         public bool notLandedFromWater = false; // When in water or just got out of water but not yet landed on solid ground
-        public override bool? CanFallThroughPlatforms()
-        {
-            // Fall to try to reach target
-            if (CurrentPhase == (int)PhaseType.Jumps && Target.Top.Y > NPC.Bottom.Y)
-                return true;
+        public NPC Target; // Chosen target (can only be other shoreskippers)
 
-            return false;
-        }
-
+        #region SunkenSea Fields 
         protected override List<int> PreyIDs =>
         [
             NPCType<Shoreskipper>(),
@@ -54,7 +47,22 @@ namespace CalamityMod.NPCs.SunkenSea
             NPCType<Shoreskipper>(),
         ];
         protected override SunkenSeaBiomeFlags BiomeDesignation => SunkenSeaBiomeFlags.TimelessShores;
-        
+
+        protected override bool NPCSearchFilter(NPC n)
+        {
+            // Only consider same-type NPCs within 450 pixels
+            return n.active && n.type == Type && Vector2.DistanceSquared(NPC.Center, n.Center) < 450f * 450f;
+        }
+        protected override void OnPreyDetection(NPC prey)
+        {
+            if (prey.active && NPC.HasSight(prey.Center) && (Target == null || !Target.active))
+            {
+                ChangePhase((int)PhaseType.Roar);
+                Target = prey;
+            }
+        }
+        #endregion
+
 
         public override bool CanBeHitByNPC(NPC attacker) => true;
         public override bool CanHitNPC(NPC target) => target.type == NPC.type;
@@ -71,40 +79,7 @@ namespace CalamityMod.NPCs.SunkenSea
         public override void ModifyHitByItem(Player player, Item item, ref NPC.HitModifiers modifiers) => modifiers.DisableKnockback();
         public override void ModifyHitNPC(NPC target, ref NPC.HitModifiers modifiers) => modifiers.DisableKnockback();
 
-
-
-        public override void SetStaticDefaults()
-        {
-            Main.npcFrameCount[Type] = 7;
-            Main.npcCatchable[Type] = true;
-        }
-        public override void SetDefaults()
-        {
-            NPC.aiStyle = -1;
-            NPC.damage = 15;
-            NPC.width = 64;
-            NPC.height = 32;
-            NPC.defense = 4;
-            NPC.lifeMax = 80;
-            NPC.noGravity = false;
-            NPC.noTileCollide = false;
-            NPC.HitSound = SoundID.NPCHit1;
-            NPC.DeathSound = SoundID.NPCDeath9;
-            NPC.GravityIgnoresLiquid = true;
-
-            NPC.value = Item.buyPrice(silver: 1);
-
-            Banner = NPC.type;
-            BannerItem = ModContent.ItemType<ShoreskipperBanner>();
-
-            NPC.Calamity().VulnerableToSickness = true;
-            NPC.Calamity().VulnerableToElectricity = false;
-            NPC.Calamity().VulnerableToHeat = true;
-            NPC.Calamity().VulnerableToWater = false;
-
-            SpawnModBiomes = new int[1] { ModContent.GetInstance<TimelessShoresBiome>().Type };
-        }
-
+        #region Syncing 
         public override void SendExtraAI(BinaryWriter writer)
         {
             writer.Write(NPC.ai[0]);
@@ -136,6 +111,40 @@ namespace CalamityMod.NPCs.SunkenSea
             else
                 Target = null;
         }
+        #endregion
+
+        public override void SetStaticDefaults()
+        {
+            Main.npcFrameCount[Type] = 7;
+            Main.npcCatchable[Type] = true;
+        }
+
+        public override void SetDefaults()
+        {
+            NPC.aiStyle = -1;
+            NPC.damage = 15;
+            NPC.width = 64;
+            NPC.height = 32;
+            NPC.defense = 4;
+            NPC.lifeMax = 80;
+            NPC.noGravity = false;
+            NPC.noTileCollide = false;
+            NPC.HitSound = SoundID.NPCHit1;
+            NPC.DeathSound = SoundID.NPCDeath9;
+            NPC.GravityIgnoresLiquid = true;
+
+            NPC.value = Item.buyPrice(silver: 1);
+
+            Banner = NPC.type;
+            BannerItem = ModContent.ItemType<ShoreskipperBanner>();
+
+            NPC.Calamity().VulnerableToSickness = true;
+            NPC.Calamity().VulnerableToElectricity = false;
+            NPC.Calamity().VulnerableToHeat = true;
+            NPC.Calamity().VulnerableToWater = false;
+
+            SpawnModBiomes = new int[1] { ModContent.GetInstance<TimelessShoresBiome>().Type };
+        }
 
         public override void SetBestiary(BestiaryDatabase database, BestiaryEntry bestiaryEntry)
         {
@@ -144,23 +153,16 @@ namespace CalamityMod.NPCs.SunkenSea
                 new FlavorTextBestiaryInfoElement("Mods.CalamityMod.Bestiary.Shoreskipper")
             });
         }
+        public override bool? CanFallThroughPlatforms()
+        {
+            // Fall to try to reach target
+            if (CurrentPhase == (int)PhaseType.Jumps && Target.Top.Y > NPC.Bottom.Y)
+                return true;
 
-        protected override bool NPCSearchFilter(NPC n)
-        {
-            // Only consider same-type NPCs within 450 pixels
-            return n.active && n.type == Type && Vector2.DistanceSquared(NPC.Center, n.Center) < 450f * 450f;
-        }
-        protected override void OnPreyDetection(NPC prey)
-        {
-            if (prey.active && NPC.HasSight(prey.Center) && (Target == null || !Target.active))
-            {
-                ChangePhase((int)PhaseType.Roar);
-                Target = prey;
-            }
+            return false;
         }
 
-        // Check for if their melee hitbox exists as to not spawn multiple at once
-        private bool HasActiveTackle()
+        private bool HasActiveTackle() // Check for if their melee hitbox exists as to not spawn multiple at once
         {
             int tackleType = ProjectileType<ShoreskipperTackle>();
             for (int i = 0; i < Main.maxProjectiles; i++)
@@ -174,13 +176,15 @@ namespace CalamityMod.NPCs.SunkenSea
 
         public override void AI()
         {
-            NPC.Calamity().newAI[1]++;
+            NPC.Calamity().newAI[1]++; // Mark as out of water 
             NPC.TargetClosest(false);
+
             if (NPC.direction == 0)
             {
                 NPC.direction = Main.rand.NextBool().ToDirectionInt();
             }
             int frameHeight = TextureAssets.Npc[Type].Value.Height / Main.npcFrameCount[Type];
+
 
             if (NPC.velocity.Y == 0 && NPC.oldVelocity.Y != 0f && notLandedFromWater && !NPC.wet) // Do not maintain velocity from skipping on water
             {
@@ -188,7 +192,7 @@ namespace CalamityMod.NPCs.SunkenSea
                 notLandedFromWater = false;
             }
 
-            if (notLandedFromWater && !NPC.wet && NPC.velocity.Length() > 6.5f && Timer % 4 == 0) // When skipping on water at high enough velocity, spawns a ring to exaggerate the speed
+            if (notLandedFromWater && !NPC.wet && NPC.velocity.Length() > 6.5f && Timer % 4 == 0) // When skipping on water at high enough velocity, spawns trailing rings
                 GeneralParticleHandler.SpawnParticle(new DirectionalPulseRing(NPC.Center, -NPC.velocity * 0.33f, Color.DeepSkyBlue * 0.65f, new Vector2(0.5f, 1f), NPC.rotation, 0.12f, 0.24f, 18));
             
 
@@ -239,7 +243,7 @@ namespace CalamityMod.NPCs.SunkenSea
                     }
                     break;
 
-                    // Straight from Leerslug with little changes. Not sure what else to change?
+                    // Based off of Leerslug's initial detection phase.
                 case (int)PhaseType.Roar:
                     {
                         int roar = 20;
@@ -295,7 +299,7 @@ namespace CalamityMod.NPCs.SunkenSea
                         // Jump at the target on the 4th frame
                         bool isAtJumpFrame = NPC.frame.Y / frameHeight == 3;
 
-                        if ((!spawnedTackleHitbox && (isGrounded && isAtJumpFrame)) || (NPC.Calamity().newAI[1] == 1f && HasActiveTackle() == false)) // Latter check for spawning hitbox through skipping on water
+                        if ((!spawnedTackleHitbox && (isGrounded && isAtJumpFrame)) || (NPC.Calamity().newAI[1] == 1f && HasActiveTackle() == false)) // Latter set of conditions allows spawning a hitbox while skipping on water
                         {
                             if (isGrounded)               
                                 NPC.velocity.Y = -jumpHeight;
@@ -394,7 +398,7 @@ namespace CalamityMod.NPCs.SunkenSea
             return 0f;
         }
 
-        // FX
+        #region FX + Drawing
         public override void FindFrame(int frameHeight)
         {
             bool isMidAir = NPC.velocity.Y != 0 && !NPC.wet;
@@ -436,6 +440,7 @@ namespace CalamityMod.NPCs.SunkenSea
                 Dust.NewDust(NPC.position, NPC.width, NPC.height, DustID.BloodWater, hit.HitDirection, -3f, 0, default, 0.8f);
             }
         }
+
         public override void OnKill()
         {
             for (int k = 0; k < 10; k++)
@@ -443,6 +448,7 @@ namespace CalamityMod.NPCs.SunkenSea
                 GeneralParticleHandler.SpawnParticle(new GenericBubbleParticle(NPC.Center, new Vector2(Main.rand.NextFloat(3.25f, 8.5f), Main.rand.NextFloat(-5f, 5f)).RotatedByRandom(MathHelper.TwoPi), Main.rand.NextFloat(0.26f, 0.62f), NPC.rotation, Main.rand.Next(8, 13)));
             }
         }
+
         public override bool PreDraw(SpriteBatch spriteBatch, Vector2 screenPos, Color drawColor)
         {
             if (NPC.IsABestiaryIconDummy)
@@ -454,5 +460,6 @@ namespace CalamityMod.NPCs.SunkenSea
 
             return false;
         }
+        #endregion
     }
 }
