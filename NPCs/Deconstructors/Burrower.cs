@@ -499,30 +499,65 @@ namespace CalamityMod.NPCs.Deconstructors
                     }
             }
         }
+        public override void HitEffect(NPC.HitInfo hit)
+        {
+            if (NPC.life <= 0)
+            {
+
+                Gore.NewGore(NPC.GetSource_Death(), NPC.Center, NPC.velocity, Mod.Find<ModGore>("DeconstructorMK1_Head").Type, NPC.scale);
+                Gore.NewGore(NPC.GetSource_Death(), NPC.Center, NPC.velocity, Mod.Find<ModGore>("DeconstructorMK1_Head2").Type, NPC.scale);
+                foreach (var item in Segments)
+                {
+                    switch (item.segmentType)
+                    {
+                        case 0:
+                            Gore.NewGore(NPC.GetSource_Death(), item.Center, NPC.velocity, Mod.Find<ModGore>("DeconstructorMK1_Body").Type, NPC.scale);
+                            Gore.NewGore(NPC.GetSource_Death(), item.Center, NPC.velocity, Mod.Find<ModGore>("DeconstructorMK1_Body2").Type, NPC.scale);
+                            break;
+
+                        case 1:
+                            Gore.NewGore(NPC.GetSource_Death(), item.Center, NPC.velocity, Mod.Find<ModGore>("DeconstructorMK1_BodyAlt_1").Type, NPC.scale);
+                            Gore.NewGore(NPC.GetSource_Death(), item.Center, NPC.velocity, Mod.Find<ModGore>("DeconstructorMK1_BodyAlt_2").Type, NPC.scale);
+                            break;
+
+                        case 2:
+                            Gore.NewGore(NPC.GetSource_Death(), item.Center, NPC.velocity, Mod.Find<ModGore>("DeconstructorMK1_BodyAlt2_1").Type, NPC.scale);
+                            Gore.NewGore(NPC.GetSource_Death(), item.Center, NPC.velocity, Mod.Find<ModGore>("DeconstructorMK1_BodyAlt2_2").Type, NPC.scale);
+                            break;
+
+                        case 3:
+                            Gore.NewGore(NPC.GetSource_Death(), item.Center, NPC.velocity, Mod.Find<ModGore>("DeconstructorMK1_Tail").Type, NPC.scale);
+                            break;
+                    }
+                }
+            }
+        }
+
+
         public override void ModifyNPCLoot(NPCLoot npcLoot)
         {
             npcLoot.Add(ModContent.ItemType<MysteriousCircuitry>(), 1, 4, 8);
             npcLoot.Add(ModContent.ItemType<DubiousPlating>(), 1, 4, 8);
-            npcLoot.Add(ItemID.CopperOre, 2, 6, 12);
-            npcLoot.Add(ItemID.TinOre, 2, 6, 12);
-            npcLoot.Add(ItemID.IronOre, 2, 4, 8);
-            npcLoot.Add(ItemID.LeadOre, 2, 4, 8);
-            npcLoot.Add(ItemID.SilverOre, 3, 4, 8);
-            npcLoot.Add(ItemID.TungstenOre, 3, 4, 8);
-            npcLoot.Add(ItemID.GoldOre, 4, 4, 8);
-            npcLoot.Add(ItemID.PlatinumOre, 4, 4, 8);
-            npcLoot.Add(ItemID.DemoniteOre, 5, 4, 8);
-            npcLoot.Add(ItemID.CrimtaneOre, 5, 4, 8);
+            npcLoot.Add(ItemID.CopperOre, 2, 6, 32);
+            npcLoot.Add(ItemID.TinOre, 2, 6, 32);
+            npcLoot.Add(ItemID.IronOre, 2, 6, 32);
+            npcLoot.Add(ItemID.LeadOre, 2, 6, 32);
+            npcLoot.Add(ItemID.SilverOre, 3, 6, 32);
+            npcLoot.Add(ItemID.TungstenOre, 3, 6, 32);
+            npcLoot.Add(ItemID.GoldOre, 4, 6, 32);
+            npcLoot.Add(ItemID.PlatinumOre, 4, 6, 23);
+            npcLoot.Add(ItemID.DemoniteOre, 5, 6, 32);
+            npcLoot.Add(ItemID.CrimtaneOre, 5, 6, 32);
 
             var condition = npcLoot.DefineConditionalDropSet(DropHelper.PostPlant());
-            condition.Add(ItemID.CobaltOre, 2, 6, 12,true);
-            condition.Add(ItemID.PalladiumOre, 2, 6, 12);
-            condition.Add(ItemID.MythrilOre, 3, 6, 12);
-            condition.Add(ItemID.OrichalcumOre, 3, 6, 12);
-            condition.Add(ItemID.AdamantiteOre, 4, 6, 12);
-            condition.Add(ItemID.TitaniumOre, 4, 6, 12);
-            condition.Add(ModContent.ItemType<Items.Placeables.Ores.HallowedOre>(), 5, 6, 12);
-            condition.Add(ModContent.ItemType<Items.Placeables.Ores.PerennialOre>(), 5, 6, 12);
+            condition.Add(ItemID.CobaltOre, 2, 6, 32,true);
+            condition.Add(ItemID.PalladiumOre, 2, 6, 32);
+            condition.Add(ItemID.MythrilOre, 3, 6, 32);
+            condition.Add(ItemID.OrichalcumOre, 3, 6, 32);
+            condition.Add(ItemID.AdamantiteOre, 4, 6, 32);
+            condition.Add(ItemID.TitaniumOre, 4, 6, 32);
+            condition.Add(ModContent.ItemType<Items.Placeables.Ores.HallowedOre>(), 5, 6, 32);
+            condition.Add(ModContent.ItemType<Items.Placeables.Ores.PerennialOre>(), 5, 6, 32);
         }
 
         public override float SpawnChance(NPCSpawnInfo spawnInfo)
