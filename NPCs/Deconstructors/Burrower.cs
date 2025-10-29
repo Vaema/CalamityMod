@@ -3,10 +3,12 @@ using System.Collections.Generic;
 using System.Linq;
 using CalamityMod.Buffs.DamageOverTime;
 using CalamityMod.Effects;
+using CalamityMod.Items.Accessories;
 using CalamityMod.Items.Materials;
 using CalamityMod.Items.Weapons.Summon;
 using CalamityMod.NPCs.ExoMechs.Thanatos;
 using CalamityMod.Particles;
+using CalamityMod.Projectiles.Typeless;
 using CalamityMod.Sounds;
 using CalamityMod.Systems;
 using CalamityMod.Tiles.Ores;
@@ -33,12 +35,12 @@ namespace CalamityMod.NPCs.Deconstructors
             NPC.value = Item.buyPrice(0, 2, 0, 0);
 
             NPC.HitSound = ThanatosHead.ThanatosHitSoundClosed;
-            NPC.DeathSound = CommonCalamitySounds.ExoDeathSound;
+            NPC.DeathSound = CommonCalamitySounds.WulfrumNPCDeathSound;
             NPC.knockBackResist = 0f;
             NPC.behindTiles = true;
             NPC.noTileCollide = true;
             NPC.netAlways = true;
-            NPC.Calamity().DR = 0.5f;
+            NPC.SuperArmor = true;
             NPC.Calamity().VulnerableToElectricity = true;
             NPC.Calamity().VulnerableToCold = false;
             NPC.Calamity().VulnerableToHeat = false;
@@ -76,9 +78,6 @@ namespace CalamityMod.NPCs.Deconstructors
             "CalamityMod/NPCs/Deconstructors/DeconstructorMK1BodyAlt1Glow",
             "CalamityMod/NPCs/Deconstructors/DeconstructorMK1BodyAlt2Glow"
         };
-
-
-        public static SoundStyle ChargeSound => new("CalamityMod/Sounds/Custom/DeconstructorCharge") { Volume = 2f };
         public override int SegmentCount => 10;
 
         public override List<float> SegmentTypePositionOffsets => new()
@@ -506,14 +505,24 @@ namespace CalamityMod.NPCs.Deconstructors
             npcLoot.Add(ModContent.ItemType<DubiousPlating>(), 1, 4, 8);
             npcLoot.Add(ItemID.CopperOre, 2, 6, 12);
             npcLoot.Add(ItemID.TinOre, 2, 6, 12);
-            npcLoot.Add(ItemID.IronOre, 4, 4, 8);
-            npcLoot.Add(ItemID.LeadOre, 4, 4, 8);
-            npcLoot.Add(ItemID.SilverOre, 6, 4, 8);
-            npcLoot.Add(ItemID.TungstenOre, 6, 4, 8);
-            npcLoot.Add(ItemID.GoldOre, 8, 4, 8);
-            npcLoot.Add(ItemID.PlatinumOre, 8, 4, 8);
-            npcLoot.Add(ItemID.DemoniteOre, 10, 4, 8);
-            npcLoot.Add(ItemID.CrimtaneOre, 10, 4, 8);
+            npcLoot.Add(ItemID.IronOre, 2, 4, 8);
+            npcLoot.Add(ItemID.LeadOre, 2, 4, 8);
+            npcLoot.Add(ItemID.SilverOre, 3, 4, 8);
+            npcLoot.Add(ItemID.TungstenOre, 3, 4, 8);
+            npcLoot.Add(ItemID.GoldOre, 4, 4, 8);
+            npcLoot.Add(ItemID.PlatinumOre, 4, 4, 8);
+            npcLoot.Add(ItemID.DemoniteOre, 5, 4, 8);
+            npcLoot.Add(ItemID.CrimtaneOre, 5, 4, 8);
+
+            var condition = npcLoot.DefineConditionalDropSet(DropHelper.PostPlant());
+            condition.Add(ItemID.CobaltOre, 2, 6, 12,true);
+            condition.Add(ItemID.PalladiumOre, 2, 6, 12);
+            condition.Add(ItemID.MythrilOre, 3, 6, 12);
+            condition.Add(ItemID.OrichalcumOre, 3, 6, 12);
+            condition.Add(ItemID.AdamantiteOre, 4, 6, 12);
+            condition.Add(ItemID.TitaniumOre, 4, 6, 12);
+            condition.Add(ModContent.ItemType<Items.Placeables.Ores.HallowedOre>(), 5, 6, 12);
+            condition.Add(ModContent.ItemType<Items.Placeables.Ores.PerennialOre>(), 5, 6, 12);
         }
 
         public override float SpawnChance(NPCSpawnInfo spawnInfo)
@@ -522,7 +531,7 @@ namespace CalamityMod.NPCs.Deconstructors
             {
                 return 0f;
             }
-            return SpawnCondition.Cavern.Chance * 1f;
+            return SpawnCondition.Cavern.Chance * (Main.projectile.Any(x=> x.active && x.type == ModContent.ProjectileType<WulfrumLureSignal>()) ? 5f : 0.1f);
         }
     }
 }
