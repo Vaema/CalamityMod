@@ -324,7 +324,8 @@ namespace CalamityMod.NPCs.CalClone
                         {
                             box.boxDimensions += new Vector4(64);
                             if (box.Size.X > 5000)
-                                ArenaWallSystem.ActiveBoxes.Remove(box);
+                                return true;
+                            return false;
                         }
                     };
                     ArenaWallSystem.ActiveBoxes.Add(ArenaBox);

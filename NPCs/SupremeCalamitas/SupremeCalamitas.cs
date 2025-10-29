@@ -756,9 +756,9 @@ namespace CalamityMod.NPCs.SupremeCalamitas
                     {
                         box.borderThickness *= 0.9f;
                         if (box.borderThickness < 4)
-                            ArenaWallSystem.ActiveBoxes.Remove(box);
-                        else
-                            UpdateArena(box);
+                            return true;
+                        UpdateArena(box);
+                        return false;
                     }
                 };
                 ArenaWallSystem.ActiveBoxes.Add(ArenaBox);
