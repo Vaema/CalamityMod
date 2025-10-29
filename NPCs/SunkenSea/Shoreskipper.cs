@@ -98,6 +98,38 @@ namespace CalamityMod.NPCs.SunkenSea
             SpawnModBiomes = new int[1] { ModContent.GetInstance<TimelessShoresBiome>().Type };
         }
 
+        public override void SendExtraAI(BinaryWriter writer)
+        {
+            writer.Write(NPC.ai[0]);
+            writer.Write(NPC.ai[1]);
+            writer.Write(NPC.ai[2]);
+            writer.Write(NPC.ai[3]);
+            writer.Write(NPC.Calamity().newAI[0]);
+            writer.Write(NPC.Calamity().newAI[1]);
+            writer.Write(spawnedTackleHitbox);
+            writer.Write(notLandedFromWater);
+
+            int targetWhoAmI = Target == null || !Target.active ? -1 : Target.whoAmI;
+            writer.Write(targetWhoAmI);
+        }
+        public override void ReceiveExtraAI(BinaryReader reader)
+        {
+            NPC.ai[0] = reader.ReadSingle();
+            NPC.ai[1] = reader.ReadSingle();
+            NPC.ai[2] = reader.ReadSingle();
+            NPC.ai[3] = reader.ReadSingle();
+            NPC.Calamity().newAI[0] = reader.ReadSingle();
+            NPC.Calamity().newAI[1] = reader.ReadSingle();
+            spawnedTackleHitbox = reader.ReadBoolean();
+            notLandedFromWater = reader.ReadBoolean();
+
+            int targetWhoAmI = reader.ReadInt32();
+            if (targetWhoAmI >= 0 && targetWhoAmI < Main.maxNPCs)
+                Target = Main.npc[targetWhoAmI];
+            else
+                Target = null;
+        }
+
         public override void SetBestiary(BestiaryDatabase database, BestiaryEntry bestiaryEntry)
         {
             bestiaryEntry.Info.AddRange(new IBestiaryInfoElement[]
