@@ -327,7 +327,7 @@ namespace CalamityMod.NPCs.CalClone
                         }
                     });
                 }
-                ArenaWallSystem.ActiveBoxes[0].NewDimensions = Vector4.Lerp(ArenaWallSystem.ActiveBoxes[0].boxDimensions, GetArenaSize(brotherAlive, lifeRatio, inBulletHell), lifeRatio > 0.8f ? 0.1f : 0.05f);
+                ArenaWallSystem.ActiveBoxes[0].NewDimensions = Vector4.Lerp(ArenaWallSystem.ActiveBoxes[0].boxDimensions, GetArenaSize(brotherAlive, lifeRatio, inBulletHell), lifeRatio > 0.9f ? 0.1f : 0.025f);
                 if (ArenaWallSystem.ActiveBoxes[0].oldData is not null)
                     ArenaWallSystem.ActiveBoxes[0].oldData.borderColor = Color.White;
                 if (brotherAlive)
