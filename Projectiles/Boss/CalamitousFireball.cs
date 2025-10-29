@@ -2,9 +2,7 @@
 using CalamityMod.Dusts;
 using CalamityMod.Graphics.Metaballs;
 using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Graphics;
 using Terraria;
-using Terraria.Audio;
 using Terraria.ID;
 using Terraria.ModLoader;
 namespace CalamityMod.Projectiles.Boss
@@ -64,7 +62,7 @@ namespace CalamityMod.Projectiles.Boss
 
             Lighting.AddLight(Projectile.Center, 0.5f, 0f, 0f);
 
-            var brimDust = Dust.NewDustPerfect(Projectile.Center + Main.rand.NextVector2Circular(32,32), (int)CalamityDusts.Brimstone, null, 170, default, 1.1f);
+            var brimDust = Dust.NewDustPerfect(Projectile.Center + Main.rand.NextVector2Circular(32, 32), (int)CalamityDusts.Brimstone, null, 170, default, 1.1f);
             brimDust.noGravity = true;
             brimDust.velocity *= 0.5f;
             brimDust.velocity += Projectile.velocity * 0.1f;

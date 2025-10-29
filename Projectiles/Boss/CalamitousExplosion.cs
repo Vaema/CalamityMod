@@ -1,7 +1,5 @@
-﻿using System;
-using System.IO;
+﻿using System.IO;
 using CalamityMod.Buffs.DamageOverTime;
-using CalamityMod.Dusts;
 using CalamityMod.Graphics.Metaballs;
 using Terraria;
 using Terraria.Audio;
@@ -78,8 +76,8 @@ namespace CalamityMod.Projectiles.Boss
             }
             projTimer *= 0.7f;
             Projectile.ai[0] += 4f;
-                var p = CalamitasMetaball.SpawnParticle(Projectile.Center, Main.rand.NextVector2CircularEdge(4, 4), 32f);
-                p.SizeScaling = 0.96f;
+            var p = CalamitasMetaball.SpawnParticle(Projectile.Center, Main.rand.NextVector2CircularEdge(4, 4), 32f);
+            p.SizeScaling = 0.96f;
 
             p = CalamitasMetaball.SpawnParticle(Projectile.Center, Main.rand.NextVector2CircularEdge(3, 3), 40f);
             p.SizeScaling = 0.96f;

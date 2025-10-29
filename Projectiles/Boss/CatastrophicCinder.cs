@@ -1,5 +1,4 @@
 ﻿using CalamityMod.Buffs.DamageOverTime;
-using CalamityMod.Dusts;
 using CalamityMod.Graphics.Metaballs;
 using CalamityMod.World;
 using Microsoft.Xna.Framework;
@@ -27,7 +26,7 @@ namespace CalamityMod.Projectiles.Boss
 
             Lighting.AddLight(Projectile.Center, 0.25f, 0f, 0f);
 
-            var p = CatastropheMetaball.SpawnParticle(Projectile.Center + Projectile.velocity, -Projectile.velocity, Terraria.GameContent.TextureAssets.Projectile[Type].Width() * 2);// Main.rand.NextVector2Circular(2, 2), 64f);//
+            var p = CatastropheMetaball.SpawnParticle(Projectile.Center + Projectile.velocity, -Projectile.velocity, Terraria.GameContent.TextureAssets.Projectile[Type].Width() * 2);
             p.rotation = Projectile.rotation;
             p.TextureToUse = Terraria.GameContent.TextureAssets.Projectile[Type].Value;
             p.SizeScaling = 0.5f;

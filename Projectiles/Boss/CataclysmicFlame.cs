@@ -59,7 +59,7 @@ namespace CalamityMod.Projectiles.Boss
                 return;
             float timeRatio = Utils.GetLerpValue(0f, Lifetime, Time);
             float fireSize = Utils.Remap(timeRatio, 0.2f, 0.5f, 0.25f, 1f);
-            var p = CataclysmMetaball.SpawnParticle(Projectile.Center, Vector2.Zero, Terraria.GameContent.TextureAssets.Projectile[Type].Width() * fireSize);// Main.rand.NextVector2Circular(2, 2), 64f);//
+            var p = CataclysmMetaball.SpawnParticle(Projectile.Center, Vector2.Zero, Terraria.GameContent.TextureAssets.Projectile[Type].Width() * fireSize);
             p.rotation = Main.rand.NextFloat(MathHelper.TwoPi);
             p.TextureToUse = Terraria.GameContent.TextureAssets.Projectile[Type].Value;
             p.SizeScaling = 0.5f;

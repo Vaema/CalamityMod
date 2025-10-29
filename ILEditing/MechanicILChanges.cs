@@ -2739,8 +2739,6 @@ namespace CalamityMod.ILEditing
                     if (item.InnerEffect(Position,new Vector2(Width,Height)))
                     Velocity = ArenaCollisionLogic(item, Position, Width, Height, Velocity);
                     var dif = (oldVel - Velocity).Length();
-                    //if (dif > 8)
-                       // SoundEngine.PlaySound(SoundID.DD2_EtherianPortalSpawnEnemy with {Volume = dif / 32f }  , Position);
                 }
             }
             return Velocity;

@@ -2,15 +2,10 @@
 using CalamityMod.Buffs.DamageOverTime;
 using CalamityMod.Dusts;
 using CalamityMod.Graphics.Metaballs;
-using CalamityMod.NPCs;
-using CalamityMod.NPCs.SupremeCalamitas;
 using CalamityMod.Particles;
-using CalamityMod.World;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using Steamworks;
 using Terraria;
-using Terraria.Audio;
 using Terraria.ID;
 using Terraria.ModLoader;
 
@@ -104,10 +99,9 @@ namespace CalamityMod.Projectiles.Boss
             if (Projectile.spriteDirection == -1)
                 dir = dir.RotatedBy(MathHelper.Pi);
             var spot = Vector2.Lerp(Projectile.Center + dir.RotatedBy(MathHelper.PiOver2) * 26, Projectile.Center + dir.RotatedBy(-MathHelper.PiOver2) * 26, Main.rand.NextFloat());
-            //Dust.NewDustPerfect(spot, DustID.Clentaminator_Red, Vector2.Zero, newColor: Color.Crimson, Scale: 0.75f).noGravity = true;
             for (var i = 0; i < 1; i++)
             {
-                var p = CalamitasMetaball.SpawnParticle(Projectile.Center + Projectile.velocity * 2, Vector2.Zero, 40);// Main.rand.NextVector2Circular(2, 2), 64f);//
+                var p = CalamitasMetaball.SpawnParticle(Projectile.Center + Projectile.velocity * 2, Vector2.Zero, 40);
                 p.rotation = Projectile.rotation + MathHelper.PiOver2;
                 p.TextureToUse = ModContent.Request<Texture2D>("CalamityMod/Particles/PointParticle").Value;
                 p.SizeScaling = 0.65f;

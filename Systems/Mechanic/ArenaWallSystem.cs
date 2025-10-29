@@ -1,16 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using CalamityMod.Graphics.Primitives;
-using CalamityMod.Items;
-using CalamityMod.NPCs.NormalNPCs;
-using CalamityMod.Projectiles.Magic;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria;
-using Terraria.Graphics.Effects;
 using Terraria.Graphics.Shaders;
 using Terraria.ID;
 using Terraria.ModLoader;
@@ -42,7 +34,7 @@ namespace CalamityMod.Systems.Mechanic
             public float DistanceLeft => boxDimensions.W;
 
             public Vector2 TopLeft => position + new Vector2(-DistanceLeft, -DistanceUp);
-            public Vector2 TopRight => position + new Vector2( DistanceRight, -DistanceUp);
+            public Vector2 TopRight => position + new Vector2(DistanceRight, -DistanceUp);
             public Vector2 BottomLeft => position + new Vector2(-DistanceLeft, DistanceDown);
             public Vector2 BottomRight => position + new Vector2(DistanceRight, DistanceDown);
 
@@ -87,8 +79,8 @@ namespace CalamityMod.Systems.Mechanic
                 return Collision.CheckAABBvAABBCollision(TopLeft - new Vector2(borderThickness * 0.5f), Size + new Vector2(borderThickness), Position, size);
             }
 
-            public bool ShouldEffectPlayer(Player player) => Collision.CheckAABBvAABBCollision(TopLeft - new Vector2(borderThickness + 300), Size + new Vector2(borderThickness + 300)*2, player.TopLeft, player.Size);
-            public bool InnerEffect(Vector2 Position, Vector2 size) => Collision.CheckAABBvAABBCollision(TopLeft - new Vector2(borderThickness)*0.5f, Size + new Vector2(borderThickness), Position, size);
+            public bool ShouldEffectPlayer(Player player) => Collision.CheckAABBvAABBCollision(TopLeft - new Vector2(borderThickness + 300), Size + new Vector2(borderThickness + 300) * 2, player.TopLeft, player.Size);
+            public bool InnerEffect(Vector2 Position, Vector2 size) => Collision.CheckAABBvAABBCollision(TopLeft - new Vector2(borderThickness) * 0.5f, Size + new Vector2(borderThickness), Position, size);
 
             public bool PointInWall(Vector2 pos)
             {
@@ -107,9 +99,9 @@ namespace CalamityMod.Systems.Mechanic
                     || Collision.CheckAABBvAABBCollision(TopLeft - new Vector2(borderThickness), new Vector2(borderThickness, size.Y + borderThickness * 2), pos, size);
             }
         }
-        public override void PostDrawTiles() //Later all of this method should be stored in the box instance for more customizability.
+        public override void PostDrawTiles()
         {
-            
+
 
             Main.spriteBatch.Begin(
                 SpriteSortMode.Deferred,
@@ -177,7 +169,7 @@ namespace CalamityMod.Systems.Mechanic
             {
                 if (box.ShouldEffectPlayer(Player))
                 {
-                    if (box.Contains(Player.position,Player.Size))
+                    if (box.Contains(Player.position, Player.Size))
                         ContainPlayerLogic(box);
                 }
             }
@@ -295,8 +287,8 @@ namespace CalamityMod.Systems.Mechanic
                 if (Player.velocity.Y == 0)
                     Player.velocity.Y += 0.001f;
                 touchingSides.Y = Utils.Remap(Player.Center.X, box.TopLeft.X, box.BottomRight.X, 0, 1, true);
-            } 
-            
+            }
+
             if (Player.BottomRight.Y > box.BottomRight.Y)
             {
                 Player.velocity.Y = box.BottomRight.Y - originalBottomRight.Y;

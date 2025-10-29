@@ -1,8 +1,5 @@
 ﻿using CalamityMod.Buffs.DamageOverTime;
 using CalamityMod.Graphics.Metaballs;
-using CalamityMod.NPCs;
-using CalamityMod.NPCs.SupremeCalamitas;
-using CalamityMod.Particles;
 using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.ID;
@@ -98,7 +95,7 @@ namespace CalamityMod.Projectiles.Boss
         {
             if (info.Damage <= 0 || Projectile.Opacity != 1f)
                 return;
-                target.AddBuff(ModContent.BuffType<BrimstoneFlames>(), 120);
+            target.AddBuff(ModContent.BuffType<BrimstoneFlames>(), 120);
         }
 
         public override bool PreDraw(ref Color lightColor)
