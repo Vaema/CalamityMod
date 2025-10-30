@@ -18,6 +18,7 @@ using Terraria.ModLoader.Utilities;
 using static CalamityMod.CalamityUtils;
 using static Terraria.ModLoader.ModContent;
 using CalamityMod.BiomeManagers;
+using CalamityMod.Items.Critters;
 
 namespace CalamityMod.NPCs.SunkenSea
 {
@@ -133,10 +134,10 @@ namespace CalamityMod.NPCs.SunkenSea
             NPC.DeathSound = SoundID.NPCDeath9;
             NPC.GravityIgnoresLiquid = true;
 
-            NPC.value = Item.buyPrice(silver: 1);
-
             Banner = NPC.type;
             BannerItem = ModContent.ItemType<ShoreskipperBanner>();
+
+            NPC.catchItem = (short)ModContent.ItemType<ShoreskipperItem>();
 
             NPC.Calamity().VulnerableToSickness = true;
             NPC.Calamity().VulnerableToElectricity = false;
