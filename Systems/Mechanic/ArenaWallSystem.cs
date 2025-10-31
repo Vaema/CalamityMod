@@ -54,6 +54,7 @@ namespace CalamityMod.Systems.Mechanic
             /// </summary>
             public Func<Box,bool> DespawnAction = (box) => true;
 
+            public bool PullPlayerWhenSizeChanged => false;
             public void DrawBoxWithOffset(float Offset, float Thickness, Color color)
             {
 
@@ -185,7 +186,7 @@ namespace CalamityMod.Systems.Mechanic
 
         void ContainPlayerLogic(ArenaWallSystem.Box box)
         {
-            if (box.oldData is not null && false)
+            if (box.oldData is not null && box.PullPlayerWhenSizeChanged)
             {
                 if (touchingSides.X > 0)
                 {
