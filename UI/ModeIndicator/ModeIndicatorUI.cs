@@ -442,7 +442,7 @@ namespace CalamityMod.UI.ModeIndicator
 
             SoundEngine.PlaySound(mode.ActivationSound);
 
-            if (broadcast)
+            if (Main.netMode != NetmodeID.SinglePlayer && broadcast)
             {
                 SwitchToDifficultyPacket.Send(mode);
             }
