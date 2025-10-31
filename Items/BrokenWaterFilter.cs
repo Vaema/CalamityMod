@@ -10,7 +10,6 @@ namespace CalamityMod.Items
 {
     public class BrokenWaterFilter : ModItem, ILocalizedModType
     {
-        public static bool state = false;
         public new string LocalizationCategory => "Items.Misc";
         public override void SetDefaults()
         {
@@ -103,7 +102,7 @@ namespace CalamityMod.Items
         public override void ModifyTooltips(List<TooltipLine> tooltips)
         {
             string text;
-            if (state == true)
+            if (Enabled)
                 text = GetTextValue("Items.Misc.SpawnBlockersOn");
             else
                 text = GetTextValue("Items.Misc.SpawnBlockersOff");
