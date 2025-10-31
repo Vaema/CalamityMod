@@ -211,25 +211,6 @@ namespace CalamityMod.NPCs.Deconstructors
             MainTimer++;
             UpdateSegments();
         }
-
-        public static List<int> OreTypes => new()
-        {
-            TileID.Copper, TileID.Tin,
-            TileID.Iron, TileID.Lead,
-            TileID.Silver, TileID.Tungsten,
-            TileID.Gold, TileID.Platinum,
-            TileID.Demonite,TileID.Crimtane, 
-            ModContent.TileType<AerialiteOre>(),
-            TileID.Cobalt, TileID.Palladium,
-            TileID.Mythril,TileID.Orichalcum,
-            TileID.Adamantite,TileID.Titanium,
-            ModContent.TileType<CryonicOre>(),
-            ModContent.TileType<PerennialOre>(),
-            ModContent.TileType<HallowedOre>(),
-            ModContent.TileType<AuricOre>(),
-            ModContent.TileType<AstralOre>(),
-            ModContent.TileType<UelibloomOre>()
-        };
         public List<List<Point>> FindOreVeins()
         {
             List<List<Point>> oreVeins = new();
@@ -255,7 +236,7 @@ namespace CalamityMod.NPCs.Deconstructors
                     var tile = Main.tile[start];
 
                     //This uses a flood fill to check for the ore vein
-                    if (tile.HasTile && OreTypes.Contains(tile.TileType))
+                    if (tile.HasTile && TileID.Sets.Ore[tile.TileType])
                     {
                         List<Point> vein = new();
                         Queue<Point> queue = new();
@@ -274,7 +255,7 @@ namespace CalamityMod.NPCs.Deconstructors
                                     continue;
 
                                 var neighborTile = Main.tile[neighbor];
-                                if (neighborTile.HasTile && OreTypes.Contains(neighborTile.TileType))
+                                if (neighborTile.HasTile && TileID.Sets.Ore[neighborTile.TileType])
                                 {
                                     queue.Enqueue(neighbor);
                                     visited.Add(neighbor);
@@ -545,7 +526,7 @@ namespace CalamityMod.NPCs.Deconstructors
             npcLoot.Add(ItemID.SilverOre, 3, 6, 32);
             npcLoot.Add(ItemID.TungstenOre, 3, 6, 32);
             npcLoot.Add(ItemID.GoldOre, 4, 6, 32);
-            npcLoot.Add(ItemID.PlatinumOre, 4, 6, 23);
+            npcLoot.Add(ItemID.PlatinumOre, 4, 6, 32);
             npcLoot.Add(ItemID.DemoniteOre, 5, 6, 32);
             npcLoot.Add(ItemID.CrimtaneOre, 5, 6, 32);
 

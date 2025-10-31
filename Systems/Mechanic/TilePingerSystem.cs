@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using CalamityMod.Effects;
+using CalamityMod.Graphics.Metaballs;
 using CalamityMod.Items.Tools;
 using CalamityMod.NPCs.Deconstructors;
 using Microsoft.Xna.Framework;
@@ -130,10 +131,10 @@ namespace CalamityMod.Systems
                     if (tileLight.B < 200 * brightness) tileLight.B = (byte)(200 * brightness);
                     returnColor = tileLight;
                 } else
-                     if (effect is zBurrowerPingTileEffect b && effect.Active && effect.ShouldRegisterTile(i, j))
+                     if (effect is BurrowerPingTileEffect b && effect.Active && effect.ShouldRegisterTile(i, j))
                 {
-                    float distanceFromCenter = (new Point(i, j).ToWorldCoordinates() - zBurrowerPingTileEffect.PingCenter).Length();
-                    float currentExpansion = MathHelper.Clamp(zBurrowerPingTileEffect.PingProgress * zBurrowerPingTileEffect.MaxPingLife / (float)zBurrowerPingTileEffect.MaxPingTravelTime, 0f, 1f) * zBurrowerPingTileEffect.MaxPingRadius;
+                    float distanceFromCenter = (new Point(i, j).ToWorldCoordinates() - BurrowerPingTileEffect.PingCenter).Length();
+                    float currentExpansion = MathHelper.Clamp(BurrowerPingTileEffect.PingProgress * BurrowerPingTileEffect.MaxPingLife / (float)BurrowerPingTileEffect.MaxPingTravelTime, 0f, 1f) * BurrowerPingTileEffect.MaxPingRadius;
 
                     if (distanceFromCenter - 8 > currentExpansion)
                         return returnColor;
@@ -149,7 +150,7 @@ namespace CalamityMod.Systems
                         brightness *= 1 - (distanceFromCenter - currentExpansion + 8f) / 16f;
 
                     //Fade away with the effect
-                    brightness *= 1 - Math.Max(zBurrowerPingTileEffect.PingProgress - 0.9f, 0) / (0.1f);
+                    brightness *= 1 - Math.Max(BurrowerPingTileEffect.PingProgress - 0.9f, 0) / (0.1f);
 
                     if (tileLight.R < 200 * brightness) tileLight.R = (byte)(200 * brightness);
                     if (tileLight.G < 200 * brightness) tileLight.G = (byte)(200 * brightness);
@@ -434,8 +435,14 @@ namespace CalamityMod.Systems
     }
 
 
-    public class zBurrowerPingTileEffect : IPingedTileEffect, ILoadable
+    public class BurrowerPingTileEffect : ModType, IPingedTileEffect
     {
+
+        protected override void Register()
+        {
+            ModTypeLookup<BurrowerPingTileEffect>.Register(this);
+        }
+
         internal static Texture2D emptyFrame;
         public const int MaxPingLife = 60;
         public const int MaxPingTravelTime = 10;
@@ -445,7 +452,7 @@ namespace CalamityMod.Systems
         public static Vector2 PingCenter = Vector2.Zero;
         public static int PingTimer = 0;
         public static float PingProgress => (MaxPingLife - PingTimer) / (float)MaxPingLife;
-
+        
         public bool Active => PingTimer > 0;
 
         public BlendState BlendState => BlendState.Additive;
@@ -512,13 +519,13 @@ namespace CalamityMod.Systems
             effect.Parameters["tilePosition"].SetValue(pos.ToVector2() * 16f);
         }
 
-        public static bool Connected(Point pos, int displaceX, int displaceY) => Main.IsTileSpelunkable(pos.X + displaceX, pos.Y + displaceY) && Main.tile[pos].TileType == Main.tile[pos.X + displaceX, pos.Y + displaceY].TileType;
+        public static bool Connected(Point pos, int displaceX, int displaceY) => TileID.Sets.Ore[Main.tile[pos.X + displaceX, pos.Y + displaceY].TileType] && Main.tile[pos].TileType == Main.tile[pos.X + displaceX, pos.Y + displaceY].TileType;
 
         public bool ShouldRegisterTile(int x, int y)
         {
             if (!Main.tile[x, y].HasTile)
                 return false;
-            return Burrower.OreTypes.Contains(Main.tile[x, y].TileType);
+            return TileID.Sets.Ore[Main.tile[x, y].TileType];
         }
 
         public void DrawTile(Point pos)
@@ -534,14 +541,12 @@ namespace CalamityMod.Systems
             }
         }
 
-        public void Load(Mod mod)
+        public override void SetupContent()
         {
             if (Main.dedServ)
                 return;
 
             TilePingerSystem.tileEffects.Add("BurrowerPing", this);
         }
-
-        public void Unload() { }
     }
 }
