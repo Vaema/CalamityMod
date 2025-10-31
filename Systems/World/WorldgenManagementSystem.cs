@@ -668,12 +668,6 @@ namespace CalamityMod.Systems
                     }
                 }
             }
-
-            // Save the set of ores that got generated
-            OreTypes[0] = (ushort)GenVars.copper;
-            OreTypes[1] = (ushort)GenVars.iron;
-            OreTypes[2] = (ushort)GenVars.silver;
-            OreTypes[3] = (ushort)GenVars.gold;
         }
         #endregion
     }

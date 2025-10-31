@@ -34,11 +34,6 @@ namespace CalamityMod.World
         /// Worlds created before the Draedon Update will not lock specific Draedon's Arsenal recipes behind Schematics.
         /// </summary>
         public static bool IsWorldAfterDraedonUpdate = false;
-        /// <summary>
-        /// Stores the pre-Hardmode ore types that this world generated with.<br/>
-        /// Is not actually used for any world gen tasks, and is only used to change the item sprite of the Suspicious Scrap item.
-        /// </summary>
-        public static ushort[] OreTypes = new ushort[4];
 
         // Modes
         /// <summary> If true, the world is in Revengeance Mode. </summary>
