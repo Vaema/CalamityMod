@@ -1,9 +1,9 @@
-﻿using Terraria;
+﻿using System.Collections.Generic;
+using System.IO;
+using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
-using Microsoft.Xna.Framework.Graphics;
-using Microsoft.Xna.Framework;
-using System.Collections.Generic;
+using Terraria.ModLoader.IO;
 using static CalamityMod.CalamityUtils;
 
 namespace CalamityMod.Items
@@ -25,17 +25,40 @@ namespace CalamityMod.Items
             itemGroup = (ContentSamples.CreativeHelper.ItemGroup)CalamityResearchSorting.SpawnPrevention;
         }
 
+        #region Toggle Feature
+
+        public bool Enabled = true;
+
+        public override ModItem Clone(Item item)
+        {
+            var clone = (BrokenWaterFilter)base.Clone(item);
+            clone.Enabled = Enabled;
+            return clone;
+        }
+
+        public override void SaveData(TagCompound tag) => tag.Add("blockerEnabled", Enabled);
+
+        public override void LoadData(TagCompound tag) => Enabled = tag.GetBool("blockerEnabled");
+
+        public override void NetSend(BinaryWriter writer) => writer.Write(Enabled);
+
+        public override void NetReceive(BinaryReader reader) => Enabled = reader.ReadBoolean();
+
         public override bool CanRightClick() => true;
+
+        public override bool ConsumeItem(Player player) => false;
 
         public override void RightClick(Player player)
         {
-            if (player.Calamity().noStupidNaturalARSpawns == true)
-                player.Calamity().noStupidNaturalARSpawns = false;
-            else
-                player.Calamity().noStupidNaturalARSpawns = true;
-            state = player.Calamity().noStupidNaturalARSpawns;
+            Enabled = !Enabled;
+            Item.NetStateChanged();
+        }
 
-            Item.RestoreConsumedItemByRightClick();
+        #endregion
+
+        public override void UpdateInventory(Player player)
+        {
+            player.Calamity().noStupidNaturalARSpawns |= Enabled;
         }
 
         /*
