@@ -13,7 +13,7 @@ using Terraria.ID;
 using Terraria.ModLoader;
 namespace CalamityMod.Projectiles.Summon
 {
-    public class VengefulSunBeam : ModProjectile, ILocalizedModType, IPixelatedPrimitiveRenderer
+    public class SunSpiritBeam : ModProjectile, ILocalizedModType, IPixelatedPrimitiveRenderer
     {
         public new string LocalizationCategory => "Projectiles.Summon";
         public override string Texture => "CalamityMod/Projectiles/InvisibleProj";
@@ -33,10 +33,6 @@ namespace CalamityMod.Projectiles.Summon
             Projectile.timeLeft = 180;
             Projectile.DamageType = DamageClass.Summon;
             Projectile.MaxUpdates = 2;
-            Projectile.tileCollide = false;
-            Projectile.penetrate = 1;
-            Projectile.usesLocalNPCImmunity = true;
-            Projectile.localNPCHitCooldown = 0; //has a custom iframe counter
             Projectile.stopsDealingDamageAfterPenetrateHits = true;
         }
 
@@ -48,25 +44,12 @@ namespace CalamityMod.Projectiles.Summon
 
         public override void AI()
         {
-            if (Projectile.ai[0] > 1)
-            {
-                Projectile.ai[0]--;
-                Projectile.timeLeft = 120;
-            }
-            if (Projectile.ai[0] > 0)
-            {
-                var target = Projectile.FindTargetWithinRange(640);
-                if (target != null)
-                {
-                    Projectile.Calamity().HomingTarget = target.whoAmI;
-                    Projectile.velocity = Projectile.velocity.ToRotation().AngleLerp(Projectile.DirectionTo(target.Center).ToRotation(), 0.5f*(1-Projectile.ai[0]/120f)).ToRotationVector2() * Projectile.velocity.Length();
-                }
-            }
+            Projectile.rotation = Projectile.velocity.ToRotation();
+
             if (Projectile.damage <= 0)
             {
-                Projectile.ai[0] = 0;
                 Projectile.velocity = Projectile.velocity.SafeNormalize(Vector2.Zero) * 4;
-                Projectile.timeLeft = (int)MathHelper.Min(8, Projectile.timeLeft);
+                Projectile.timeLeft = (int)MathHelper.Min(8,Projectile.timeLeft);
             }
         }
 
@@ -76,34 +59,17 @@ namespace CalamityMod.Projectiles.Summon
             {
                 Vector2 dustVelocity = Main.rand.NextVector2Circular(1f, 1f) * 6f;
                 float dustScale = Main.rand.NextFloat(3f, 5f);
-                Color dustColor = Color.Lerp(Color.OrangeRed, Color.Gold, Main.rand.NextFloat(0.5f, 1f));
+                Color dustColor = Color.Lerp(Color.Yellow, Color.Gold, Main.rand.NextFloat(0.5f, 1f));
 
                 Dust dust = Dust.NewDustDirect(Projectile.Center, 1, 1, DustID.TintableDustLighted, dustVelocity.X, dustVelocity.Y, 0, dustColor, dustScale);
                 dust.noGravity = true;
                 dust.noLight = false;
                 dust.noLightEmittence = false;
             }
-            if (Projectile.ai[0] > 0)
-                return;
-            for (var i = -1; i <= 1; i+=2)
-            {
-                var randomVel = Projectile.velocity.RotatedByRandom(MathHelper.TwoPi);
-                var p = Projectile.NewProjectileDirect(Projectile.GetSource_FromThis(),Projectile.Center- randomVel * 3, randomVel, Type,Projectile.damage,Projectile.knockBack,Projectile.owner, 120);
-                p.penetrate = 1;
-                p.scale = 0.75f;
-            }
-            Projectile.damage = 0;
-            Projectile.timeLeft = 10;
-            Projectile.netUpdate = true;
         }
 
         public override void OnKill(int timeLeft)
         {
-        }
-
-        public override bool? CanDamage()
-        {
-            return Projectile.ai[0] <= 90;
         }
 
         public override bool PreDraw(ref Color lightColor) => false;
@@ -124,14 +90,14 @@ namespace CalamityMod.Projectiles.Summon
             // Pulse inwards and outwards over time.
             float pulseInterpolant = MathF.Cos(MathHelper.Pi * completion - Main.GlobalTimeWrappedHourly * 20f) * 0.5f + 0.5f;
             float additionalPulseWidth = MathHelper.Lerp(0f, 12f, pulseInterpolant);
-            return (width + additionalPulseWidth) * positions.Count() / (float)ProjectileID.Sets.TrailCacheLength[Type];
+            return  (width + additionalPulseWidth ) * positions.Count() / (float)ProjectileID.Sets.TrailCacheLength[Type] ;
         }
 
         public Color FireColorFunction(float completion)
         {
             Color mainColor = Color.Gold * 1.3f;
             Color endColor = Color.Lerp(mainColor, Color.Transparent, Utils.GetLerpValue(0.8f, 1f, completion, true));
-            return Color.Lerp(mainColor, endColor, completion);
+            return Color.Lerp(mainColor, endColor, completion) * Projectile.Opacity;
         }
 
         public float FireCoreWidthFunction(float completion)
@@ -141,20 +107,21 @@ namespace CalamityMod.Projectiles.Summon
             float curveRatio = 0.25f;
             var positions = Projectile.oldPos.ToList();
             positions.RemoveAll(x => x == Vector2.Zero);
+            //completion *= positions.Count() / (float)ProjectileID.Sets.TrailCacheLength[Type];
 
             if (completion < curveRatio)
                 width = MathF.Sin(completion / curveRatio * MathHelper.PiOver2) * maxBodyWidth + curveRatio;
             else
                 width = Utils.Remap(completion, curveRatio, 1f, maxBodyWidth, 0f);
-            return width * positions.Count() / (float)ProjectileID.Sets.TrailCacheLength[Type];
+            return  width * positions.Count() / (float)ProjectileID.Sets.TrailCacheLength[Type];
         }
 
         public Color FireCoreColorFunction(float completion)
         {
-            Color mainColor = Color.OrangeRed;
+            Color mainColor = Color.Gold;
             Color tipColor = Color.Lerp(mainColor, Color.Transparent, Utils.GetLerpValue(0.8f, 1f, completion, true));
             Color fullBodyColor = Color.Lerp(mainColor, tipColor, completion);
-            return Color.Lerp(fullBodyColor, Color.White, 0.175f);
+            return Color.Lerp(fullBodyColor, Color.White, 0.175f) * Projectile.Opacity;
         }
 
         public void RenderPixelatedPrimitives(SpriteBatch spriteBatch, PixelationPrimitiveLayer layer)
