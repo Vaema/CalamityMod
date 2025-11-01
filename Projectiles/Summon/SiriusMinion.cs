@@ -208,13 +208,8 @@ namespace CalamityMod.Projectiles.Summon
                             for (var i = 0; i < 2; i++)
                             {
                                 Vector2 velocity = Projectile.Center.DirectionTo(target.Center) * 10;
-                                float damageMod = 20;
-                                var a = Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center + velocity, velocity, ModContent.ProjectileType<SiriusBeam>(), (int)(Projectile.damage * damageMod), Projectile.knockBack, Projectile.owner, 1);
-                                if (Main.projectile.IndexInRange(a))
-                                {
-                                    Main.projectile[a].extraUpdates = 30;
-                                    Main.projectile[a].penetrate = -1;
-                                }
+                                float damageMod = 40;
+                                Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center + velocity, velocity, ModContent.ProjectileType<SiriusQuazar>(), (int)(Projectile.damage * damageMod), Projectile.knockBack, Projectile.owner, 1);
                             }
                         moddedOwner.StratusStarburst -= 50;
                         Projectile.ai[2] = 0;
