@@ -91,6 +91,7 @@ namespace CalamityMod.Items.Placeables.Furniture.DevPaintings
             "StipulateVenus",
             "Sunny",
             "Tobias",
+            "_tofu",
             "Tomat",
             "Triangle",
             "TYESKI (Universe)",
