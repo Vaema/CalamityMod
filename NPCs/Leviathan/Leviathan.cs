@@ -819,7 +819,7 @@ namespace CalamityMod.NPCs.Leviathan
                 if (!Main.LocalPlayer.dead && Main.LocalPlayer.active)
                     SoundEngine.PlaySound(CommonCalamitySounds.WyrmScreamSound, Main.LocalPlayer.Center);
 
-                CalamityUtils.DisplayLocalizedText(key, messageColor);
+                CalamityUtils.BroadcastLocalizedText(key, messageColor);
             }
 
             // Mark Anahita & Leviathan as dead

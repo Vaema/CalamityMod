@@ -1,12 +1,12 @@
 ﻿using System;
-using Microsoft.Xna.Framework.Graphics;
-using Terraria.DataStructures;
-using Terraria;
-using Terraria.ModLoader;
-using Microsoft.Xna.Framework;
-using Terraria.GameContent.Drawing;
 using System.Reflection;
+using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
+using Terraria;
+using Terraria.DataStructures;
+using Terraria.GameContent.Drawing;
 using Terraria.ID;
+using Terraria.ModLoader;
 
 namespace CalamityMod.Systems
 {
@@ -57,6 +57,13 @@ namespace CalamityMod.Systems
             if (tileLight.R <= 0 && tileLight.G <= 0 && tileLight.B <= 0)
                 return;
 
+            var refLength = tile.Get<TileBlendingRefLengthData>().GetLength();
+            if (refLength <= 0)
+                return;
+
+            if (!TryGetBlendingRefData(tileX, tileY, out var blendRefs))
+                return;
+
             // Generic Drawing Parameter
             Vector2 drawPos = new Vector2(tileX * 16, tileY * 16) - screenPosition + screenOffset;
             var tileRandomFrame = Math.Clamp(tile.TileFrameNumber, 0, 2);
@@ -69,11 +76,10 @@ namespace CalamityMod.Systems
             var sliceRects = Array.Empty<Rectangle>();
             var sliceState = SliceState.None;
             var shouldTileShine = ShouldTileShine(tileType, (short)(drawData.tileFrameX + drawData.addFrX));
-
-            var blendingData = tile.Get<TileBlendingData>(); // Since we are not editing the value, we can just copy the values from here
-            for (int idx = 0; idx < TileBlendingData.Length; idx++)
+            foreach (var blendRef in blendRefs)
             {
-                blendingData.Get(idx, out var sheetIdx, out var data);
+                var sheetIdx = blendRef.SheetIndex;
+                var data = blendRef.BlendData;
 
                 // Break here as standard for TileBlendingData is 0->Count fill, so further fields should be also Invalid
                 if (sheetIdx == TileBlendTextureLoader.EmptySlot)

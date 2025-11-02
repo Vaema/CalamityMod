@@ -37,7 +37,7 @@ namespace CalamityMod.Projectiles.Typeless
         public override void AI()
         {
             if (Projectile.timeLeft == 20)
-                Owner.Calamity().GeneralScreenShakePower = 200;
+                Owner.SetScreenshake(200f);
             if (Projectile.timeLeft <= 20)
             {
                 if (Projectile.ai[0] % 4 == 0)

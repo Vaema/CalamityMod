@@ -45,9 +45,9 @@ namespace CalamityMod.Projectiles.Melee
             Projectile.DamageType = DamageClass.MeleeNoSpeed;
             Projectile.ignoreWater = true;
             Projectile.tileCollide = true;
-            Projectile.penetrate = 1;
+            Projectile.penetrate = -1;
             Projectile.extraUpdates = 1;
-            Projectile.alpha = 255;
+            Projectile.alpha = 0;
             Projectile.timeLeft = 420;
             Projectile.usesLocalNPCImmunity = true;
             Projectile.localNPCHitCooldown = Projectile.MaxUpdates * 12;
@@ -74,6 +74,17 @@ namespace CalamityMod.Projectiles.Melee
                 }
                 Projectile.localAI[0] = 1f;
             }
+
+            if (Projectile.ai[1] > 0)
+            {
+                Projectile.damage = 0;
+                // Reduce opacity over time
+                Projectile.Opacity -= 0.04f;
+                if (Projectile.Opacity <= 0f)
+                {
+                    Projectile.Kill();
+                }
+            }
         }
 
 
@@ -89,6 +100,9 @@ namespace CalamityMod.Projectiles.Melee
                 dust2.noGravity = true;
                 dust2.color = Color.Lerp(Color.MediumPurple, Color.CornflowerBlue, Main.rand.NextFloat(0f, 1f));
             }
+            
+            // Flag set for fading out
+            Projectile.ai[1] = 1f;
         }
 
         public override void OnKill(int timeLeft)
@@ -111,11 +125,17 @@ namespace CalamityMod.Projectiles.Melee
         {
             Color baseColor = Color.Lerp(Color.MediumPurple, Color.CornflowerBlue, completionRatio);
 
-            return baseColor * 0.2f;
+            return baseColor * 0.2f * Projectile.Opacity;
+        }
+
+        public Color MiniTrailColor(float completionRatio)
+        {
+            Color baseColor = Color.Lerp(Color.MediumPurple, Color.CornflowerBlue, completionRatio);
+
+            return baseColor * Projectile.Opacity;
         }
 
         public float MiniTrailWidth(float completionRatio) => TrailWidth(completionRatio) * 5.5f;
-        public Color MiniTrailColor(float completionRatio) => Color.Lerp(Color.MediumPurple, Color.CornflowerBlue, completionRatio);
 
         public override bool PreDraw(ref Color lightColor)
         {

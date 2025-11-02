@@ -141,8 +141,8 @@ namespace CalamityMod.Items.Weapons.Melee
                     Projectile.NewProjectile(source, player.Center + angle.ToRotationVector2() * 90f, velocity, ProjectileType<ArkoftheCosmosBlast>(), (int)(damage * BlastDamageMultiplier), 0, player.whoAmI, Charge);
                     Charge = 0;
 
-                    // If the parry holdout has existed for very few frames and hasn't parried something, just delete it.
-                    if (parrier is not null && parrier.timeLeft > ArkoftheCosmosParryHoldout.MaxTime - DoubleRightClickFrames && parrier.ai[1] <= 0f)
+                    // If the parry holdout has existed for very few frames, just delete it.
+                    if (parrier is not null && parrier.timeLeft > ArkoftheCosmosParryHoldout.MaxTime - DoubleRightClickFrames)
                     {
                         parrier.active = false;
                         parrier.netUpdate = true;

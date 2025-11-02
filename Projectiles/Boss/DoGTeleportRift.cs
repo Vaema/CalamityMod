@@ -1,6 +1,4 @@
-﻿using System;
-using System.IO;
-using CalamityMod.Dusts;
+﻿using System.IO;
 using CalamityMod.Effects;
 using CalamityMod.Graphics.Metaballs;
 using CalamityMod.Particles;
@@ -9,7 +7,6 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria;
 using Terraria.Audio;
-using Terraria.ID;
 using Terraria.ModLoader;
 
 namespace CalamityMod.Projectiles.Boss
@@ -134,6 +131,7 @@ namespace CalamityMod.Projectiles.Boss
                 CrackExposure = MathHelper.Lerp(CrackExposure, MaxExposure, 0.075f);
                 Projectile.Opacity = MathHelper.Clamp(Projectile.Opacity + 0.05f, 0f, 1f);
                 Projectile.scale = MathHelper.Clamp(Projectile.scale + 0.02f, 0f, 1f);
+                Projectile.ForceNetUpdate();
             }
 
             // Post-explosion, slowly fade out.
@@ -205,7 +203,7 @@ namespace CalamityMod.Projectiles.Boss
                     CustomPulse plasmaExplosion = new(Projectile.Center, Vector2.Zero, DoGSky.DoGTwlight * 0.8f * brightnessMultiplier, "CalamityMod/Particles/PlasmaExplosion", Vector2.One, Main.rand.NextFloat(MathHelper.TwoPi), 0f, 1.25f + i * 0.05f, 45);
                     GeneralParticleHandler.SpawnParticle(plasmaExplosion);
                 }
-                
+
                 CustomPulse shineExplosion = new(Projectile.Center, Vector2.Zero, DoGSky.DoGTwlight * brightnessMultiplier, "CalamityMod/Particles/ShineExplosion1", Vector2.One, Main.rand.NextFloat(MathHelper.TwoPi), 0f, 0.75f, 45);
                 GeneralParticleHandler.SpawnParticle(shineExplosion);
                 CustomPulse shineExplosion2 = new(Projectile.Center, Vector2.Zero, Color.White * 0.6f * brightnessMultiplier, "CalamityMod/Particles/ShineExplosion2", Vector2.One, Main.rand.NextFloat(MathHelper.TwoPi), 0f, 0.5f, 45);

@@ -232,7 +232,7 @@ namespace CalamityMod.Projectiles.Magic
                 SoundStyle fire2 = new("CalamityMod/Sounds/Item/LanceofDestinyStrong");
                 SoundEngine.PlaySound(fire2 with { Volume = 0.4f, Pitch = (manaPower >= 1 ? 0.8f : 0.6f) }, Projectile.Center);
 
-                Owner.Calamity().GeneralScreenShakePower = 6f * manaPower;
+                Owner.SetScreenshake(6f * manaPower);
                 int maxProj = (int)(manaPower * 24 * (manaPower >= 1 ? 1 : 0.5f));
                 for (int i = 0; i < maxProj; i++)
                 {

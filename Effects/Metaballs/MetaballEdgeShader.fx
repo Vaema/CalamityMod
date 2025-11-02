@@ -6,6 +6,7 @@ float2 layerSize;
 float2 layerOffset;
 float4 edgeColor;
 float2 singleFrameScreenOffset;
+float4 layerColor;
 
 // The usage of these two methods seemingly prevents imprecision problems for some reason.
 float2 convertToScreenCoords(float2 coords)
@@ -43,8 +44,8 @@ float4 PixelShaderFunction(float4 sampleColor : COLOR0, float2 coords : TEXCOORD
     float conditionOpacityFactor = 1 - saturate(leftHasNoAlpha + rightHasNoAlpha + topHasNoAlpha + bottomHasNoAlpha);
     
     // Calculate layer colors.
-    float4 layerColor = tex2D(overlayTexture, (coords + layerOffset + singleFrameScreenOffset) * screenSize / layerSize);
-    float4 defaultColor = layerColor * tex2D(metaballContents, coords) * sampleColor;
+    float4 layerCalcedColor = tex2D(overlayTexture, (coords + layerOffset + singleFrameScreenOffset) * screenSize / layerSize);
+    float4 defaultColor = layerCalcedColor * tex2D(metaballContents, coords) * sampleColor * layerColor;
     
     // Lastly, use the aforementioned condition to switch between the colors. If conditionOpacityFactor is 1, the default color is
     // zeroed out and the edge is toggled, and vice versa.

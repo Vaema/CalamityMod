@@ -15,7 +15,8 @@ namespace CalamityMod.Systems
                 return;
 
             var tile = Main.tile[i, j];
-            tile.Get<TileBlendingData>().Clear();
+            tile.Get<TileBlendingRefLengthData>().Clear();
+            RemoveBlendingRefData(i, j);
 
             if (!tile.HasTile) // Is this even possible? But I'm doing this for sanity check anyways
                 return;
@@ -23,18 +24,27 @@ namespace CalamityMod.Systems
             var blendDataUniqueIndex = 0;
             var blendSidesReg = PopulateBlendSidesReg(i, j, tile.TileType);
 
-            CalculateSides(i, j, in blendSidesReg);
-
-            foreach (var pair in blendSidesReg)
+            var regCount = blendSidesReg.Count;
+            if (regCount > 0)
             {
-                var blendTextureSlot = pair.Key;
-                var sideFlags = pair.Value;
+                CalculateSides(i, j, in blendSidesReg);
 
-                if (sideFlags != BlendSideFlags.None)
+                var tileBlendingRefs = new TileBlendingRef[regCount];
+
+                foreach (var pair in blendSidesReg)
                 {
-                    tile.Get<TileBlendingData>().Set(blendDataUniqueIndex, (byte)blendTextureSlot, (byte)sideFlags);
-                    blendDataUniqueIndex++;
+                    var blendTextureSlot = pair.Key;
+                    var sideFlags = pair.Value;
+
+                    if (sideFlags != BlendSideFlags.None)
+                    {
+                        tileBlendingRefs[blendDataUniqueIndex] = new TileBlendingRef((ushort)blendTextureSlot, (byte)sideFlags);
+                        blendDataUniqueIndex++;
+                    }
                 }
+
+                tile.Get<TileBlendingRefLengthData>().SetLength(regCount);
+                SetBlendingRefData(i, j, tileBlendingRefs);
             }
         }
 
@@ -382,7 +392,7 @@ namespace CalamityMod.Systems
                 tile = default;
                 type = -1;
                 return false;
-            }     
+            }
 
             tile = Main.tile[i, j];
             if (!tile.HasTile)

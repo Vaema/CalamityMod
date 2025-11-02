@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using System.Linq;
 using CalamityMod.CalPlayer;
 using CalamityMod.Items.Materials;
 using Microsoft.Xna.Framework;
@@ -38,7 +37,28 @@ namespace CalamityMod.Items.PermanentBoosters
             Item.rare = ItemRarityID.LightPurple;
         }
 
-        public override bool CanUseItem(Player player) => player.ConsumedLifeFruit == Player.LifeFruitMax;
+        public static bool HasConsumedBefore(Player player) => player.Calamity().sTangerine;
+
+        public override bool CanUseItem(Player player)
+        {
+            if (player.ConsumedLifeFruit != Player.LifeFruitMax)
+            {
+                return false;
+            }
+
+            if (HasConsumedBefore(player))
+            {
+                if (player.whoAmI == Main.myPlayer)
+                {
+                    string key = "Mods.CalamityMod.Misc.SanguineTangerineText";
+                    Color messageColor = Color.Orange;
+                    Main.NewText(Language.GetTextValue(key), messageColor);
+                }
+                return false;
+            }
+
+            return true;
+        }
 
         public override bool? UseItem(Player player)
         {
@@ -48,9 +68,6 @@ namespace CalamityMod.Items.PermanentBoosters
                 player.itemTime = Item.useTime;
                 if (modPlayer.sTangerine)
                 {
-                    string key = "Mods.CalamityMod.Misc.SanguineTangerineText";
-                    Color messageColor = Color.Orange;
-                    CalamityUtils.DisplayLocalizedText(key, messageColor);
                     return null;
                 }
 
@@ -62,10 +79,8 @@ namespace CalamityMod.Items.PermanentBoosters
 
         public override void ModifyTooltips(List<TooltipLine> list)
         {
-            TooltipLine line = list.FirstOrDefault(x => x.Mod == "Terraria" && x.Name == "Tooltip1");
-
-            if (line != null && Main.LocalPlayer.Calamity().sTangerine)
-                line.Text += "\n" + CalamityUtils.GetTextValue("Misc.GenericConsumedText");
+            if (HasConsumedBefore(Main.LocalPlayer))
+                list.AddConsumedTooltip();
         }
 
         public override void AddRecipes()

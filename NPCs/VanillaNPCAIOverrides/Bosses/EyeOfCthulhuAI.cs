@@ -162,7 +162,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                         if (!Main.player[npc.target].dead)
                             npc.ai[3] += 1f;
 
-                        float servantSpawnGateValue = death ? 10f : 40f;
+                        float servantSpawnGateValue = death ? 15f : 40f;
                         if (Main.getGoodWorld)
                             servantSpawnGateValue *= 0.8f;
 
@@ -173,7 +173,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
 
                             Vector2 servantSpawnVelocity = npc.SafeDirectionTo(Main.player[npc.target].Center) * servantAndProjectileVelocity;
                             Vector2 servantSpawnCenter = npc.Center + servantSpawnVelocity.SafeNormalize(Vector2.UnitY) * ProjectileOffset;
-                            int maxServants = 4;
+                            int maxServants = 3;
                             bool spawnServant = NPC.CountNPCS(NPCID.ServantofCthulhu) < maxServants;
                             if (spawnServant)
                                 SoundEngine.PlaySound(SoundID.NPCHit1, servantSpawnCenter);
@@ -300,7 +300,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                 npc.ai[1] += phaseChangeRate;
                 if (npc.ai[1] % servantSpawnGateValue == 0f)
                 {
-                    float servantVelocity = death ? 11.3f : 5.65f;
+                    float servantVelocity = death ? 9.3f : 5.65f;
                     Vector2 servantSpawnVelocity = Main.rand.NextVector2CircularEdge(servantVelocity, servantVelocity);
                     if (Main.getGoodWorld)
                         servantSpawnVelocity *= 3f;
@@ -414,7 +414,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                             {
                                 int type = ProjectileID.BloodNautilusShot;
                                 int numProj = 3;
-                                int spread = 10;
+                                int spread = 18;
                                 float rotation = MathHelper.ToRadians(spread);
                                 for (int i = 0; i < numProj; i++)
                                 {

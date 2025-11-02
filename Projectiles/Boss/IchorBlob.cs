@@ -168,7 +168,11 @@ namespace CalamityMod.Projectiles.Boss
 
         public override bool OnTileCollide(Vector2 oldVelocity) => false;
 
-        public override bool? Colliding(Rectangle projHitbox, Rectangle targetHitbox) => CalamityUtils.CircularHitboxCollision(Projectile.Center, 16f, targetHitbox);
+        public override bool? Colliding(Rectangle projHitbox, Rectangle targetHitbox)
+        {
+            Vector2 centerPos = Projectile.frame >= 2 ? Projectile.Bottom - Vector2.UnitY * 16f : Projectile.Center;
+            return CalamityUtils.CircularHitboxCollision(centerPos, 16f, targetHitbox);
+        }
 
         public override bool CanHitPlayer(Player target) => Projectile.localAI[1] <= 900f && Projectile.localAI[1] > 120f;
 

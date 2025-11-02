@@ -292,8 +292,7 @@ namespace CalamityMod.NPCs.NormalNPCs
                         if (Main.zenithWorld)
                         {
                             var screenShakePower = 2 * Utils.GetLerpValue(1300f, 0f, npc.Distance(Main.LocalPlayer.Center), true);
-                            if (Main.LocalPlayer.Calamity().GeneralScreenShakePower < screenShakePower)
-                                Main.LocalPlayer.Calamity().GeneralScreenShakePower = screenShakePower;
+                            Main.LocalPlayer.SetScreenshake(screenShakePower);
                         }
                     }
                     if (npc.type == ModContent.NPCType<Bohldohr>())

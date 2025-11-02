@@ -1,10 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Terraria;
-using Terraria.DataStructures;
 
 namespace CalamityMod.Systems
 {
@@ -36,55 +31,55 @@ namespace CalamityMod.Systems
         AllSide = 0b1111_1111,
 
         // Special Shapes
-        Shape_AllSide         = AllSide,
-        ShapeCorner_UpLeft    = UpLeft,
-        ShapeCorner_UpRight   = UpRight,
-        ShapeCorner_DownLeft  = DownLeft,
+        Shape_AllSide = AllSide,
+        ShapeCorner_UpLeft = UpLeft,
+        ShapeCorner_UpRight = UpRight,
+        ShapeCorner_DownLeft = DownLeft,
         ShapeCorner_DownRight = DownRight,
 
         // I Shapes
 
-        ShapeI_Up          = Up | UpLeft | UpRight,
-        ShapeI_Up_End      = Up,
-        ShapeI_Up_LeftEnd  = Up | UpRight,
+        ShapeI_Up = Up | UpLeft | UpRight,
+        ShapeI_Up_End = Up,
+        ShapeI_Up_LeftEnd = Up | UpRight,
         ShapeI_Up_RightEnd = Up | UpLeft,
 
-        ShapeI_Down          = Down | DownLeft | DownRight,
-        ShapeI_Down_End      = Down,
-        ShapeI_Down_LeftEnd  = Down | DownRight,
+        ShapeI_Down = Down | DownLeft | DownRight,
+        ShapeI_Down_End = Down,
+        ShapeI_Down_LeftEnd = Down | DownRight,
         ShapeI_Down_RightEnd = Down | DownLeft,
 
-        ShapeI_Left         = Left | UpLeft | DownLeft,
-        ShapeI_Left_End     = Left,
-        ShapeI_Left_UpEnd   = Left | DownLeft,
+        ShapeI_Left = Left | UpLeft | DownLeft,
+        ShapeI_Left_End = Left,
+        ShapeI_Left_UpEnd = Left | DownLeft,
         ShapeI_Left_DownEnd = Left | UpLeft,
 
-        ShapeI_Right         = Right | UpRight | DownRight,
-        ShapeI_Right_End     = Right,
-        ShapeI_Right_UpEnd   = Right | DownRight,
+        ShapeI_Right = Right | UpRight | DownRight,
+        ShapeI_Right_End = Right,
+        ShapeI_Right_UpEnd = Right | DownRight,
         ShapeI_Right_DownEnd = Right | UpRight,
 
         // L Shapes
 
-        ShapeL_UpLeft          = ShapeI_Up | ShapeI_Left,
-        ShapeL_UpLeft_End      = ShapeI_Up_End | ShapeI_Left_End | UpLeft,
+        ShapeL_UpLeft = ShapeI_Up | ShapeI_Left,
+        ShapeL_UpLeft_End = ShapeI_Up_End | ShapeI_Left_End | UpLeft,
         ShapeL_UpLeft_RightEnd = ShapeI_Up_RightEnd | ShapeI_Left,
-        ShapeL_UpLeft_DownEnd  = ShapeI_Up | ShapeI_Left_DownEnd,
+        ShapeL_UpLeft_DownEnd = ShapeI_Up | ShapeI_Left_DownEnd,
 
-        ShapeL_UpRight         = ShapeI_Up | ShapeI_Right,
-        ShapeL_UpRight_End     = ShapeI_Up_End | ShapeI_Right_End | UpRight,
+        ShapeL_UpRight = ShapeI_Up | ShapeI_Right,
+        ShapeL_UpRight_End = ShapeI_Up_End | ShapeI_Right_End | UpRight,
         ShapeL_UpRight_LeftEnd = ShapeI_Up_End | ShapeI_Right,
         ShapeL_UpRight_DownEnd = ShapeI_Up | ShapeI_Right_End,
 
-        ShapeL_DownLeft          = ShapeI_Down | ShapeI_Left,
-        ShapeL_DownLeft_End      = ShapeI_Down_End | ShapeI_Left_End | DownLeft,
+        ShapeL_DownLeft = ShapeI_Down | ShapeI_Left,
+        ShapeL_DownLeft_End = ShapeI_Down_End | ShapeI_Left_End | DownLeft,
         ShapeL_DownLeft_RightEnd = ShapeI_Down_End | ShapeI_Left,
-        ShapeL_DownLeft_UpEnd    = ShapeI_Down | ShapeI_Left_End,
+        ShapeL_DownLeft_UpEnd = ShapeI_Down | ShapeI_Left_End,
 
-        ShapeL_DownRight         = ShapeI_Down | ShapeI_Right,
-        ShapeL_DownRight_End     = ShapeI_Down_End | ShapeI_Right_End | DownRight,
+        ShapeL_DownRight = ShapeI_Down | ShapeI_Right,
+        ShapeL_DownRight_End = ShapeI_Down_End | ShapeI_Right_End | DownRight,
         ShapeL_DownRight_LeftEnd = ShapeI_Down_End | ShapeI_Right,
-        ShapeL_DownRight_UpEnd   = ShapeI_Down | ShapeI_Right_End,
+        ShapeL_DownRight_UpEnd = ShapeI_Down | ShapeI_Right_End,
 
         // U Shapes
 
@@ -109,72 +104,34 @@ namespace CalamityMod.Systems
         ShapeU_RightEmpty_DownEnd = ShapeI_Up | ShapeI_Down_End | ShapeI_Left,
     }
 
-    public struct TileBlendingData : ITileData
+    public struct TileBlendingRef(ushort sheetIdx, byte blendData)
     {
-        public const int Length = 8;
+        public ushort SheetIndex = sheetIdx;
+        public byte BlendData = blendData;
+    }
 
-        private ulong SheetIndexPacked; // 8 bytes
-        private ulong DataPacked; // 8 bytes
+    public struct TileBlendingRefLengthData : ITileData
+    {
+        public const int MaxLength = 8;
+
+        private byte DataLength;
 
         public void Clear()
         {
-            for (int i = 0; i<Length; i++)
-            {
-                SetData(i, 0);
-                SetSheetIndex(i, TileBlendTextureLoader.EmptySlot);
-            }
+            DataLength = 0b0000_0000;
         }
 
-        public void SetData(int idx, byte data)
+        public void SetLength(int length)
         {
-            if (idx < 0 || idx >= Length)
-                throw new IndexOutOfRangeException();
+            if (length < 0 || length > byte.MaxValue)
+                throw new ArgumentOutOfRangeException(nameof(length));
 
-            var shift = idx * 8;
-            ulong value = ((ulong)data) << shift;
-            ulong mask = ((ulong)0xFF) << shift;
-            DataPacked = (DataPacked ^ (mask & DataPacked)) | value;
+            DataLength = (byte)length;
         }
 
-        public readonly byte GetData(int idx)
+        public readonly int GetLength()
         {
-            if (idx < 0 || idx >= Length)
-                throw new IndexOutOfRangeException();
-
-            var shift = idx * 8;
-            return (byte)((DataPacked >> shift) & 0xFF);
-        }
-
-        public void SetSheetIndex(int idx, byte sheetIdx)
-        {
-            if (idx < 0 || idx >= Length)
-                throw new IndexOutOfRangeException();
-
-            var shift = idx * 8;
-            ulong value = ((ulong)sheetIdx) << shift;
-            ulong mask = ((ulong)0xFF) << shift;
-            SheetIndexPacked = (SheetIndexPacked ^ (mask & SheetIndexPacked)) | value;
-        }
-
-        public readonly byte GetSheetIndex(int idx)
-        {
-            if (idx < 0 || idx >= Length)
-                throw new IndexOutOfRangeException();
-
-            var shift = idx * 8;
-            return (byte)((SheetIndexPacked >> shift) & 0xFF);
-        }
-
-        public void Set(int idx, byte sheetIdx, byte data)
-        {
-            SetSheetIndex(idx, sheetIdx);
-            SetData(idx, data);
-        }
-
-        public readonly void Get(int idx, out byte sheetIdx, out byte data)
-        {
-            sheetIdx = GetSheetIndex(idx);
-            data = GetData(idx);
+            return DataLength;
         }
     }
 }

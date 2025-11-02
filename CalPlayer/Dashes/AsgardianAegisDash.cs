@@ -75,7 +75,7 @@ namespace CalamityMod.CalPlayer.Dashes
                 return;
             if (!PostHit)
             {
-                player.Calamity().GeneralScreenShakePower = 5f;
+                player.SetScreenshake(5f);
                 PostHit = true;
             }
 

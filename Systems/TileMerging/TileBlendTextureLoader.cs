@@ -1,12 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Graphics;
-using Terraria;
-using Terraria.DataStructures;
 using Terraria.ModLoader;
 
 namespace CalamityMod.Systems
@@ -15,7 +9,7 @@ namespace CalamityMod.Systems
     {
         internal const int EmptySlot = 0;
         internal const int StartingIndex = 1;
-        internal const int MaxCount = 255;
+        internal const int MaxCount = ushort.MaxValue;
 
         internal static TileBlendTexture[] Registry { get; private set; }
         internal static IEnumerable<TileBlendTexture> AllTextures => Registry?.Where(tex => tex is not null);

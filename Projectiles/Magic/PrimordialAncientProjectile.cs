@@ -235,7 +235,7 @@ namespace CalamityMod.Projectiles.Magic
             if (Projectile.ai[1] == 1)
             {
                 Player Owner = Main.player[Projectile.owner];
-                Owner.Calamity().GeneralScreenShakePower = 8f;
+                Owner.SetScreenshake(8f);
 
                 Particle orb = new CustomPulse(Projectile.Center, Vector2.Zero, Color.Purple, "CalamityMod/Particles/LargeBloom", new Vector2(1, 1), Main.rand.NextFloat(-10, 10), 0.2f * 2f, 0.6f * 2.5f, 17);
                 GeneralParticleHandler.SpawnParticle(orb);

@@ -70,7 +70,7 @@ namespace CalamityMod.CalPlayer.Dashes
                 return;
             if (!PostHit)
             {
-                player.Calamity().GeneralScreenShakePower = 3.5f;
+                player.SetScreenshake(3.5f);
                 PostHit = true;
             }
             float particleScale = Main.rand.NextFloat(0.45f, 0.55f);

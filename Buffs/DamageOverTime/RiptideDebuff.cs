@@ -31,7 +31,7 @@ namespace CalamityMod.Buffs.DamageOverTime
 
         public override void Update(NPC npc, ref int buffIndex)
         {
-                npc.Calamity().riptide = true;
+            npc.Calamity().riptide = true;
         }
 
         internal static void DrawEffects(PlayerDrawSet drawInfo)
@@ -72,12 +72,5 @@ namespace CalamityMod.Buffs.DamageOverTime
                 bubble.type = Main.rand.NextBool(3) ? 412 : 411;
             }
         }
-    }
-    public class RiptideDebuffIconItem : ModItem
-    {
-        private string BuffName = "RiptideDebuff";
-        public override string Texture => $"CalamityMod/Buffs/DamageOverTime/{BuffName}";
-        public override LocalizedText DisplayName => CalamityUtils.GetText($"Buffs.{BuffName}.DisplayName");
-        public override LocalizedText Tooltip => CalamityUtils.GetText($"Buffs.{BuffName}.ItemTooltip");
     }
 }

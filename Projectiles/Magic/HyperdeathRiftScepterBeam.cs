@@ -80,9 +80,8 @@ namespace CalamityMod.Projectiles.Magic
                 storedTime = time;
                 Projectile.ForceNetUpdate();
 
-
-                if (Main.LocalPlayer.Calamity().GeneralScreenShakePower < 3 && Main.LocalPlayer.Distance(Projectile.Center) < 1600)
-                    Main.LocalPlayer.Calamity().GeneralScreenShakePower = 3;
+                if (Main.LocalPlayer.Distance(Projectile.Center) < 1600)
+                    Main.LocalPlayer.SetScreenshake(3f);
             }
             float endTime = storedTime + 10;
             if (time >= endTime && doneAttack)

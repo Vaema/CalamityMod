@@ -17,7 +17,6 @@ namespace CalamityMod.Projectiles.DraedonsArsenal
         public new string LocalizationCategory => "Projectiles.Misc";
         public override int AssociatedItemID => ModContent.ItemType<PhalanxSurge>();
 
-        public Player Owner => Main.player[Projectile.owner];
         public float offsetBase = 30;
         public override float MaxOffsetLengthFromArm => doingChargeAttack ? 100f : offsetBase;
         public override float RecoilResolveSpeed => doingChargeAttack ? 2f : (shootingTimer < 0) ? 0.2f : 0.1f;
@@ -257,7 +256,7 @@ namespace CalamityMod.Projectiles.DraedonsArsenal
                 skewer.timeLeft = (didDash ? 25 : 10);
                 SoundStyle sound = new("CalamityMod/Sounds/Item/PhalanxSurgeChargeShoot");
                 SoundEngine.PlaySound(sound with { Volume = 0.9f }, Projectile.Center);
-                Owner.Calamity().GeneralScreenShakePower = 6f;
+                Owner.SetScreenshake(6f);
 
                 float mult = didDash ? 2 : 1;
                 for (int i = 0; i < 20 * mult; i++)

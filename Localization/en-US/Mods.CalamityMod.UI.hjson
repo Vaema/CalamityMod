@@ -9,6 +9,7 @@ Nanomachines: Nanomachines
 Rage: Rage
 Flight: "{0} Flight Remaining"
 Charge: Current Charge
+Vis: Current Vis
 DefenseDamage: Defense Damage
 SulphurousWater: Sulphuric Poisoning
 Stealth: Stealth
@@ -106,6 +107,7 @@ Cooldowns: {
 	DivingPlatesBroken: Abyssal Diving Suit Broken Plates
 	DSOCritCooldown: Extra Critical Strike Chance
 	ParryCooldown: Parry Ability Cooldown
+	ElementalMastery: Elemental Mastery
 	FleshTotem: Contact Damage Halving Cooldown
 	FuryFuel: Crystal Powder
 	GaelsRage: Gael's Greatsword Rage Cooldown

@@ -157,7 +157,7 @@ namespace CalamityMod.Projectiles.Ranged
             {
                 Projectile.NewProjectileDirect(Projectile.GetSource_FromThis(), GunTipPosition, shootDirection * projSpeed * velocityMultiplier, ProjectileType<NukeOfBliss>(), damage, knockback, Projectile.owner, rocketType);
                 PostFireCooldown = Owner.itemAnimationMax;
-                Owner.Calamity().GeneralScreenShakePower = 5f;
+                Owner.SetScreenshake(5f);
             }
 
             // Inside here go all the things that dedicated servers shouldn't spend resources on.

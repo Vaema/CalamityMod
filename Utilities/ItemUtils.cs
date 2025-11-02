@@ -4,10 +4,9 @@ using System.Linq;
 using System.Text;
 using CalamityMod.Buffs.DamageOverTime;
 using CalamityMod.DataStructures;
-using CalamityMod.Systems.Collections;
+using CalamityMod.Prefixes;
 using CalamityMod.UI.CalamitasEnchants;
 using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Input;
 using Terraria;
 using Terraria.Audio;
 using Terraria.GameContent.Prefixes;
@@ -46,6 +45,29 @@ namespace CalamityMod
         #endregion
 
         #region Reforging Algorithm
+        internal static int GetAccessoryReforge(Item item, UnifiedRandom rand, int currentPrefix)
+        {
+            if (CalamityServerConfig.Instance.SimplifyAccessoryReforge)
+            {
+                var pool = new HashSet<int>()
+                {
+                    PrefixID.Warding,
+                    PrefixID.Menacing,
+                    PrefixID.Lucky,
+                    PrefixID.Quick2,
+                    PrefixID.Violent,
+                    PrefixID.Arcane,
+                    ModContent.PrefixType<Silent>(),
+                    ModContent.PrefixType<Invigorating>(),
+                    ModContent.PrefixType<Dauntless>()
+                };
+
+                pool.Remove(currentPrefix);
+                return pool.ElementAt(rand.Next(0, pool.Count));
+            }
+            return -1; // Do Nothing if Config is off
+        }
+
         internal static int GetReworkedReforge(Item item, UnifiedRandom rand, int currentPrefix)
         {
             CalamityMod mod = CalamityMod.Instance;
@@ -66,7 +88,7 @@ namespace CalamityMod
                 int[][] accessoryReforgeTiers = new int[][]
                 {
                     /* 0 */ new int[] { PrefixID.Hard, PrefixID.Jagged, PrefixID.Brisk, PrefixID.Wild },
-                    /* 1 */ new int[] { PrefixID.Guarding, PrefixID.Spiked, PrefixID.Precise, PrefixID.Fleeting, PrefixID.Rash, GetCalPrefix("Cloaked") },
+                    /* 1 */ new int[] { PrefixID.Guarding, PrefixID.Spiked, PrefixID.Precise, PrefixID.Fleeting, PrefixID.Rash },
                     /* 2 */ new int[] { PrefixID.Armored, PrefixID.Angry, PrefixID.Hasty2, PrefixID.Intrepid, PrefixID.Arcane },
                     /* 3 */ new int[] { PrefixID.Warding, PrefixID.Menacing, PrefixID.Lucky, PrefixID.Quick2, PrefixID.Violent, GetCalPrefix("Silent") },
                 };
@@ -312,6 +334,19 @@ namespace CalamityMod
             tooltips.FindAndReplace("[KEY]", finalKey);
         }
 
+        /// <summary>
+        /// Shortcut method for adding "You have already consumed this item" tooltip
+        /// </summary>
+        /// <param name="tooltips"></param>
+        /// <param name="tooltipSearchKey"></param>
+        public static void AddConsumedTooltip(this List<TooltipLine> tooltips, string tooltipSearchKey = "Tooltip1")
+        {
+            TooltipLine line = tooltips.FirstOrDefault(x => x.Mod == "Terraria" && x.Name == tooltipSearchKey);
+
+            if (line != null)
+                line.Text += "\n" + GetTextValue("Misc.GenericConsumedText");
+        }
+
         public static Color FireDebuffColor => new(253, 107, 2);
         public static Color SicknessDebuffColor => new(136, 198, 10);
         public static Color WaterDebuffColor => new(105, 147, 255);
@@ -327,7 +362,7 @@ namespace CalamityMod
         public static Color GetDebuffTooltipNameColor(int debuffId)
         {
             var color = TypelessDebuffColor;
-            
+
             if (debuffId == ModContent.BuffType<VulnerabilityHex>() || debuffId == ModContent.BuffType<TrueVulnerabilityHex>())
             {
                 color = Color.Lerp(VulnHexDebuffColor, FireDebuffColor, (MathF.Sin(Main.GlobalTimeWrappedHourly * 2) + 1) / 4f);
@@ -352,20 +387,20 @@ namespace CalamityMod
 
                 float totalWeight = 0;
                 Vector4 normalColor = new();
-                
+
                 foreach (var item in weights)
                 {
                     totalWeight += item.Item2;
                     // ReSharper disable once PossiblyImpureMethodCallOnReadonlyVariable
                     normalColor += item.Item1.ToVector4() * item.Item2;
                 }
-                
+
                 if (totalWeight < 1)
                 {
                     normalColor += TypelessDebuffColor.ToVector4() * (1 - totalWeight);
                     totalWeight += (1 - totalWeight);
                 }
-                
+
                 if (totalWeight != 0)
                 {
                     normalColor /= totalWeight;

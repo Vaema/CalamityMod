@@ -195,7 +195,7 @@ namespace CalamityMod.Projectiles.Melee
 
             if (Owner.Calamity().mouseRight)
             {
-                Owner.Calamity().GeneralScreenShakePower = 1.2f;
+                Owner.SetScreenshake(1.2f);
 
                 SoundStyle fire3 = new("CalamityMod/Sounds/Item/DampExplosion");
                 SoundEngine.PlaySound(fire3 with { Volume = 0.35f, Pitch = 0.7f }, Projectile.Center);

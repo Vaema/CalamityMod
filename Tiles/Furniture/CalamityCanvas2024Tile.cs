@@ -82,7 +82,7 @@ namespace CalamityMod.Tiles.Furniture
             Tile t = Main.tile[i, j];
             Texture2D texture = TextureAssets.Tile[Type].Value;
             TECanvasPainting cube = CalamityUtils.FindTileEntity<TECanvasPainting>(i, j, 1, 1);
-            float baseDimension = 80; // 5 * 16
+
             Vector2 pos = new Vector2(i * 16, j * 16) + CalamityUtils.TileDrawOffset;
             if (cube != null && t.TileFrameX == 0)
             {

@@ -124,8 +124,6 @@ namespace CalamityMod.Projectiles.Rogue
 
         private void StealthStrikeGrind(float spinDir)
         {
-            if (Projectile.timeLeft % 15 * Projectile.MaxUpdates == 0)
-                Projectile.ResetLocalNPCHitImmunity();
             // Spin extra fast to visually shred the enemy.
             Projectile.rotation += spinDir * RotationIncrement * 0.8f;
 
@@ -136,7 +134,7 @@ namespace CalamityMod.Projectiles.Rogue
                 randomLaserCharge -= 1f;
                 Vector2 velocity = Vector2.UnitX.RotatedBy(Projectile.timeLeft / 120f * MathHelper.TwoPi);
 
-                int laserDamage = (int)(Projectile.damage * 0.15f);
+                int laserDamage = (int)(Projectile.damage * 0.2f);
                 Projectile laser = Projectile.NewProjectileDirect(Projectile.GetSource_FromThis(), Projectile.Center, velocity, ModContent.ProjectileType<FriendlyLaserWallBeam>(), laserDamage, 0f, Projectile.owner, 1.5f,0,2);
                 if (laser.whoAmI.WithinBounds(Main.maxProjectiles))
                 {

@@ -31,6 +31,7 @@ using CalamityMod.Projectiles;
 using CalamityMod.Projectiles.Ranged;
 using CalamityMod.Projectiles.Typeless;
 using CalamityMod.Systems;
+using CalamityMod.Systems.Mechanic;
 using CalamityMod.Tiles;
 using CalamityMod.Walls;
 using CalamityMod.Walls.UnsafeWalls;
@@ -676,7 +677,7 @@ namespace CalamityMod.ILEditing
         #endregion
 
         #region Chaos Stone Mana Burn changes
-        private static bool AllowNegativeCheckMana(On_Player.orig_CheckMana_int_bool_bool orig,Player self, int amount, bool pay, bool blockQuickMana) {
+        private static bool AllowNegativeCheckMana(On_Player.orig_CheckMana_int_bool_bool orig, Player self, int amount, bool pay, bool blockQuickMana) {
             if (self.Calamity().ChaosStone)
             {
                 if (pay)
@@ -1094,7 +1095,7 @@ namespace CalamityMod.ILEditing
                 BlockLavaDrawing_Vanilla(il);
             }
         }
-        
+
         private void BlockLavaDrawing_Vanilla(ILContext il)
         {
             //This edit to DrawNormalLiquids makes lavas in normal and white lighting draw with an alpha and with new textures
@@ -1151,7 +1152,7 @@ namespace CalamityMod.ILEditing
         {
             Assembly lspAsm = ModLoader.GetMod("LiquidSlopesPatch").Code;
             Type liquidDrawCache = lspAsm.GetType("LiquidSlopesPatch.Common.RewrittenLiquidRenderer").GetNestedType("LiquidDrawCache");
-            
+
             //This edit to DrawNormalLiquids makes lavas in normal and white lighting draw with an alpha and with new textures
             //If the parameter for the waterstyle is more than the max waterstyles then its subtracted by the max water style count and thats the lava style ID
             ILCursor cursor = new ILCursor(il);
@@ -1465,7 +1466,7 @@ namespace CalamityMod.ILEditing
                 LiquidDrawColors_Vanilla(il);
             }
         }
-        
+
         private static void LiquidDrawColors_Vanilla(ILContext il)
         {
             ILCursor cursor = new ILCursor(il);
@@ -1493,12 +1494,12 @@ namespace CalamityMod.ILEditing
                 }
             });
         }
-        
+
         private static void LiquidDrawColors_LiquidSlopesPatch(ILContext il)
         {
             Assembly lspAsm = ModLoader.GetMod("LiquidSlopesPatch").Code;
             Type liquidDrawCache = lspAsm.GetType("LiquidSlopesPatch.Common.RewrittenLiquidRenderer").GetNestedType("LiquidDrawCache");
-            
+
             ILCursor cursor = new ILCursor(il);
             if (!cursor.TryGotoNext(MoveType.Before, c => c.MatchLdarg2(), c => c.MatchLdloc(out _), c => c.MatchLdloc(out _), c => c.MatchCall<Main>("DrawTileInWater")))
             {
@@ -1831,7 +1832,7 @@ namespace CalamityMod.ILEditing
                         droids.velocity = -self.velocity.RotatedByRandom(MathHelper.Pi / 20f) * 2f;
                         droids.netUpdate = true;
                         droids.shimmerTransparency = 1f;
-                        NetMessage.SendData(146, -1, -1, null, 2, droids.whoAmI);
+                        NetMessage.SendData(MessageID.ShimmerActions, -1, -1, null, 2, droids.whoAmI);
                     }
 
                     self.TurnToAir();
@@ -1844,8 +1845,8 @@ namespace CalamityMod.ILEditing
                     }
                     else
                     {
-                        NetMessage.SendData(146, -1, -1, null, 0, (int)self.Center.X, (int)self.Center.Y);
-                        NetMessage.SendData(145, -1, -1, null, self.whoAmI, 1f);
+                        NetMessage.SendData(MessageID.ShimmerActions, -1, -1, null, 0, (int)self.Center.X, (int)self.Center.Y);
+                        NetMessage.SendData(MessageID.SyncItemsWithShimmer, -1, -1, null, self.whoAmI, 1f);
                     }
                 }
             }
@@ -2628,6 +2629,146 @@ namespace CalamityMod.ILEditing
                 return true;
             }
             return orig(self, slot);
+        }
+        #endregion
+
+        #region Allow Grappling Hooks to grab arena walls
+        public static void AllowHooksToGrabArenabox(On_Projectile.orig_AI_007_GrapplingHooks orig, Projectile self)
+        {
+            if (Main.player[self.owner].dead || Main.player[self.owner].stoned || Main.player[self.owner].webbed || Main.player[self.owner].frozen)
+            {
+                self.Kill();
+                return;
+            }
+            static bool Vector2PointCollision(Vector2 position, Vector2 size, Vector2 point)
+            {
+                return (point.X >= position.X && point.X <= position.X + size.X && point.Y >= position.Y && point.Y <= position.Y + size.Y);
+            }
+
+            bool intersectingWall = false;
+            if (self.Calamity().arenaBox is not null)
+            {
+                var box = self.Calamity().arenaBox;
+                if (ArenaWallSystem.ActiveBoxes.Contains(box))
+                {
+                    self.Center = box.TopLeft + box.Size * self.Calamity().arenaBoxPosition;
+                }
+                else
+                {
+                    self.Calamity().arenaBox = null;
+                }
+            }
+            if (ArenaWallSystem.ActiveBoxes.Count > 0)
+            {
+                foreach (var box in ArenaWallSystem.ActiveBoxes)
+                {
+                    if (!Vector2PointCollision(box.TopLeft, box.Size, self.Center) && Vector2PointCollision(box.TopLeft - new Vector2(box.borderThickness), box.Size + new Vector2(box.borderThickness) * 2, self.Center))
+                    {
+                        if (self.ai[0] == 0)
+                        {
+                            if (Main.myPlayer == self.owner)
+                            {
+                                if (self.type == ProjectileID.QueenSlimeHook)
+                                {
+                                    Main.player[self.owner].DoQueenSlimeHookTeleport(self.Center);
+                                }
+                                NetMessage.SendData(MessageID.PlayerControls, -1, -1, null, self.owner);
+                            }
+                            SoundEngine.PlaySound(SoundID.DD2_EtherianPortalSpawnEnemy with {Volume = 0.75f }, self.Center);
+                            self.ai[0] = 2;
+                            self.velocity = Vector2.Zero;
+                            self.Calamity().arenaBoxPosition = new Vector2(Utils.Remap(self.Center.X, box.TopLeft.X, box.BottomRight.X, 0, 1, false), Utils.Remap(self.Center.Y, box.TopLeft.Y, box.BottomRight.Y, 0, 1, false));
+                            self.Calamity().arenaBox = box;
+                        }
+                        if (self.ai[0] == 2) //don't run this if the hook is returning!
+                        {
+                            self.rotation = self.DirectionFrom(Main.player[self.owner].Center).ToRotation() + MathHelper.PiOver2;
+                            intersectingWall = true;
+
+                            if (Main.player[self.owner].grapCount < 10)
+                            {
+                                Main.player[self.owner].grappling[Main.player[self.owner].grapCount] = self.whoAmI;
+                                Main.player[self.owner].grapCount++;
+                            }
+                        }
+                    }
+                }
+            }
+            if (!intersectingWall)
+                orig(self);
+        }
+        #endregion
+
+        #region Arena Collision for other things
+
+        private bool ArenaCollision_Vector2_int_int_bool(On_Collision.orig_SolidCollision_Vector2_int_int_bool orig, Vector2 Position, int Width, int Height, bool acceptTopSurfaces)
+        {
+            if (ArenaWallSystem.ActiveBoxes.Count > 0)
+            {
+                foreach (var item in ArenaWallSystem.ActiveBoxes)
+                {
+                    if (item.Vector2PairInWall(Position, new(Width, Height)))
+                        return true;
+                }
+            }
+            return orig(Position, Width, Height, acceptTopSurfaces);
+        }
+
+        private bool ArenaCollision_Vector2_int_int(On_Collision.orig_SolidCollision_Vector2_int_int orig, Vector2 Position, int Width, int Height)
+        {
+            if (ArenaWallSystem.ActiveBoxes.Count > 0)
+            {
+                foreach (var item in ArenaWallSystem.ActiveBoxes)
+                {
+                    if (item.Vector2PairInWall(Position, new(Width, Height)))
+                        return true;
+                }
+            }
+            return orig(Position, Width, Height);
+        }
+
+
+        private Vector2 ArenaCollision_TileCollision(On_Collision.orig_TileCollision orig, Vector2 Position, Vector2 Velocity, int Width, int Height, bool fallThrough, bool fall2, int gravDir)
+        {
+            Velocity = orig(Position, Velocity, Width, Height, fallThrough, fall2, gravDir);
+            if (ArenaWallSystem.ActiveBoxes.Count > 0 && Velocity != Vector2.Zero)
+            {
+                foreach (var item in ArenaWallSystem.ActiveBoxes)
+                {
+                    var oldVel = Velocity;
+                    if (item.InnerEffect(Position,new Vector2(Width,Height)))
+                    Velocity = ArenaCollisionLogic(item, Position, Width, Height, Velocity);
+                    var dif = (oldVel - Velocity).Length();
+                }
+            }
+            return Velocity;
+        }
+
+        Vector2 ArenaCollisionLogic(ArenaWallSystem.Box box, Vector2 Position, int Width, int Height, Vector2 Velocity)
+        {
+            var originalVelocity = Velocity;
+            var originalTopLeft = Position;
+            var originalBottomRight = Position + new Vector2(Height, Width);
+            Position += originalVelocity;
+
+            if (Position.X < box.TopLeft.X)
+            {
+                Velocity.X = box.TopLeft.X - originalTopLeft.X;
+            }
+            if (Position.X + Width > box.BottomRight.X)
+            {
+                Velocity.X = box.BottomRight.X - originalBottomRight.X;
+            }
+            if (Position.Y < box.TopLeft.Y)
+            {
+                Velocity.Y = box.TopLeft.Y - originalTopLeft.Y;
+            }
+
+            if (Position.Y + Height > box.BottomRight.Y)
+            {
+                Velocity.Y = box.BottomRight.Y - originalBottomRight.Y;
+            }
+            return Velocity;
         }
         #endregion
     }

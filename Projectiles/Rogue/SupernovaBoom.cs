@@ -130,7 +130,7 @@ namespace CalamityMod.Projectiles.Rogue
                 }
 
                 Projectile.velocity = Vector2.Zero;
-                Owner.Calamity().GeneralScreenShakePower = 5f;
+                Owner.SetScreenshake(5f);
 
                 int points = 5;
                 float radians = MathHelper.TwoPi / points;

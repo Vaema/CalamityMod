@@ -31,7 +31,7 @@ namespace CalamityMod.Items.Weapons.Ranged
         {
             Item.width = 40;
             Item.height = 82;
-            Item.damage = 4650;
+            Item.damage = 4375;
             Item.DamageType = DamageClass.Ranged;
             Item.useTime = 45;
             Item.useAnimation = 45;
@@ -41,7 +41,7 @@ namespace CalamityMod.Items.Weapons.Ranged
             Item.value = CalamityGlobalItem.RarityDarkBlueBuyPrice;
             Item.rare = ModContent.RarityType<CosmicPurple>();
             Item.autoReuse = true;
-            Item.shoot = ModContent.ProjectileType<DWArrow>();
+            Item.shoot = ModContent.ProjectileType<FriendlyLaserWallBeam>();
             Item.shootSpeed = 20f;
             Item.useAmmo = AmmoID.Arrow;
             Item.channel = true;
@@ -77,8 +77,8 @@ namespace CalamityMod.Items.Weapons.Ranged
                     else
                     {
 
-                        if (Main.LocalPlayer.Calamity().GeneralScreenShakePower < 2 && Main.LocalPlayer.Distance(player.Center) < 1600)
-                            Main.LocalPlayer.Calamity().GeneralScreenShakePower = 2;
+                        if (Main.LocalPlayer.Distance(player.Center) < 1600)
+                            Main.LocalPlayer.SetScreenshake(2f);
                         if (Main.myPlayer == player.whoAmI)
                         {
                             Projectile.NewProjectile(Item.GetSource_FromThis(), player.Center + Vector2.UnitX.RotatedBy(player.itemRotation) * 2016, Vector2.UnitX.RotatedBy(player.itemRotation), ModContent.ProjectileType<FriendlyLaserWallBeam>(), storedDMG, storedKB, player.whoAmI, -1, 1);
@@ -88,12 +88,12 @@ namespace CalamityMod.Items.Weapons.Ranged
             }
             else
             {
-                player.itemRotation += MathHelper.Clamp(MathHelper.WrapAngle(player.DirectionTo(player.Calamity().mouseWorld).ToRotation() - player.itemRotation), -0.04f, 0.04f);
+                player.itemRotation += MathHelper.Clamp(MathHelper.WrapAngle(player.DirectionTo(player.Calamity().mouseWorld).ToRotation() - player.itemRotation), -0.045f, 0.045f);
                 if (player.itemTime == 60)
                 {
 
-                    if (Main.LocalPlayer.Calamity().GeneralScreenShakePower < 5 && Main.LocalPlayer.Distance(player.Center) < 1600)
-                        Main.LocalPlayer.Calamity().GeneralScreenShakePower = 5;
+                    if (Main.LocalPlayer.Distance(player.Center) < 1600)
+                        Main.LocalPlayer.SetScreenshake(5f);
                     if (Main.myPlayer == player.whoAmI)
                     {
                         int p = Projectile.NewProjectile(Item.GetSource_FromThis(), player.Center + Vector2.UnitX.RotatedBy(player.itemRotation) * 2016, Vector2.UnitX.RotatedBy(player.itemRotation), ModContent.ProjectileType<FriendlyLaserWallBeam>(), storedDMG*4, storedKB, player.whoAmI,-0.25f,1);

@@ -45,11 +45,4 @@ namespace CalamityMod.Buffs.DamageOverTime
             }
         }
     }
-    public class ShadowflameIconItem : ModItem
-    {
-        private string BuffName = "Shadowflame";
-        public override string Texture => $"CalamityMod/Buffs/DamageOverTime/{BuffName}";
-        public override LocalizedText DisplayName => CalamityUtils.GetText($"Buffs.{BuffName}.DisplayName");
-        public override LocalizedText Tooltip => CalamityUtils.GetText($"Buffs.{BuffName}.ItemTooltip");
-    }
 }

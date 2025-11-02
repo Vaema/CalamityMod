@@ -43,7 +43,7 @@ namespace CalamityMod.Items.SummonItems
         {
             string key = "Mods.CalamityMod.Status.Boss.DoGSpawn";
             Color messageColor = Color.Cyan;
-            CalamityUtils.DisplayLocalizedText(key, messageColor);
+            CalamityUtils.BroadcastLocalizedText(key, messageColor);
             var subtitle = Main.combatText[CombatText.NewText(player.Hitbox, messageColor, Language.GetTextValue(key), true)];
             player.Calamity().subtitletext = subtitle;
             player.Calamity().subtitleColors = new Color[] { Color.Cyan, Color.Fuchsia };

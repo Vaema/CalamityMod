@@ -692,9 +692,6 @@ namespace CalamityMod.NPCs.AquaticScourge
                 normalOnly.Add(DropHelper.PerPlayer(ModContent.ItemType<AquaticEmblem>()));
                 normalOnly.Add(ModContent.ItemType<CorrosiveSpine>(), DropHelper.NormalWeaponDropRateFraction);
                 normalOnly.Add(ModContent.ItemType<SeasSearing>(), 10);
-
-                // Fishing
-                normalOnly.Add(ModContent.ItemType<BleachedAnglingKit>());
             }
 
             npcLoot.DefineConditionalDropSet(() => true).Add(DropHelper.PerPlayer(ItemID.GreaterHealingPotion, 1, 5, 15), hideLootReport: true); // Healing Potions don't show up in the Bestiary
@@ -727,7 +724,7 @@ namespace CalamityMod.NPCs.AquaticScourge
                 string sulfSeaBoostKey = "Mods.CalamityMod.Status.Progression.WetWormBossText";
                 Color sulfSeaBoostColor = AcidRainEvent.TextColor;
 
-                CalamityUtils.DisplayLocalizedText(sulfSeaBoostKey, sulfSeaBoostColor);
+                CalamityUtils.BroadcastLocalizedText(sulfSeaBoostKey, sulfSeaBoostColor);
 
                 // Set a timer for acid rain to start after 10 seconds
                 AcidRainEvent.CountdownUntilForcedAcidRain = 601;

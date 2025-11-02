@@ -126,7 +126,7 @@ namespace CalamityMod.Projectiles.Ranged
 
             if (explode)
             {
-                Owner.Calamity().GeneralScreenShakePower = 8.5f;
+                Owner.SetScreenshake(8.5f);
                 float power = 1.5f;
 
                 for (int i = 0; i < 55; i++)

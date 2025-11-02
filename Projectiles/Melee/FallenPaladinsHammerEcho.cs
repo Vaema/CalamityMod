@@ -112,7 +112,7 @@ namespace CalamityMod.Projectiles.Melee
 
             else
                 SoundEngine.PlaySound(SlamHamSound, Projectile.Center);
-            Main.player[Projectile.owner].Calamity().GeneralScreenShakePower = 5;
+            Main.player[Projectile.owner].SetScreenshake(5f);
 
             Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center, Projectile.velocity * 0.001f, ModContent.ProjectileType<FallenBlast>(), Projectile.damage / 2, Projectile.knockBack, Projectile.owner, 0f);
 

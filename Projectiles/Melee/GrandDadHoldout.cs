@@ -224,7 +224,7 @@ namespace CalamityMod.Projectiles.Melee
             }
             if (Projectile.numHits == 0)
             {
-                Owner.Calamity().GeneralScreenShakePower = 6.5f;
+                Owner.SetScreenshake(6.5f);
                 SoundStyle fire = new("CalamityMod/Sounds/NPCHit/ThanatosHitOpen1");
                 SoundEngine.PlaySound(fire with { Volume = 0.75f, Pitch = -0.1f }, Projectile.Center);
                 SoundStyle fire2 = new("CalamityMod/Sounds/Item/FinalDawnSlash");
