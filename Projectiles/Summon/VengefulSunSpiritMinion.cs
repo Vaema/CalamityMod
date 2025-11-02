@@ -82,7 +82,7 @@ namespace CalamityMod.Projectiles.Summon
             #endregion
 
             #region Positioning
-            Projectile.Center = player.Center + Vector2.UnitY * (player.gfxOffY + player.gravDir * -16f);
+            Projectile.Center = player.Center + Vector2.UnitY * (player.gfxOffY + player.gravDir * -80f);
             #endregion
 
             Lighting.AddLight(Projectile.Center, (255 - Projectile.alpha) * 0.25f / 255f, (255 - Projectile.alpha) * 0.25f / 255f, (255 - Projectile.alpha) * 0f / 255f);
@@ -106,7 +106,7 @@ namespace CalamityMod.Projectiles.Summon
                 float shootSpeed = 15f;
                 Vector2 source = Projectile.Center;
                 var velocity = CalamityUtils.CalculatePredictiveAimToTargetMaxUpdates(Projectile.Center, target, shootSpeed, 2);
-                Projectile beam = Projectile.NewProjectileDirect(Projectile.GetSource_FromThis(), Projectile.Center - velocity, velocity, ModContent.ProjectileType<VengefulSunBeam>(), (int)(Projectile.damage * (0.75f + Projectile.minionSlots * 0.25f)), Projectile.knockBack, Projectile.owner);
+                Projectile beam = Projectile.NewProjectileDirect(Projectile.GetSource_FromThis(), Projectile.Center - velocity, velocity, ModContent.ProjectileType<VengefulSunBeam>(), (int)(Projectile.damage * (0.75f + Projectile.minionSlots * 0.25f)), Projectile.knockBack, Projectile.owner, ai1: (Projectile.minionSlots - 1) / 9f);
                 beam.DamageType = DamageClass.Summon;
                 Projectile.ai[1] += 60f / (0.75f + Projectile.minionSlots * 0.25f);
             }
@@ -114,27 +114,62 @@ namespace CalamityMod.Projectiles.Summon
 
         public override bool? CanDamage() => false;
 
+        private static Texture2D AllWhiteVersion = null;
+        public static Texture2D GetWhiteTex()
+        {
+            if (AllWhiteVersion == null)
+            {
+                var texture = TextureAssets.Projectile[ModContent.ProjectileType<VengefulSunSpiritMinion>()].Value;
+                AllWhiteVersion = new Texture2D(Main.graphics.GraphicsDevice, texture.Width, texture.Height);
+
+                var BaseArray = new Color[AllWhiteVersion.Width * AllWhiteVersion.Height];
+                var ColorArray = new Color[AllWhiteVersion.Width * AllWhiteVersion.Height];
+                texture.GetData(BaseArray);
+                for (var i = 0; i < BaseArray.Length; i++)
+                {
+                    ColorArray[i] = new Color(255, 255, 255) * (((float)BaseArray[i].A) / 255f);
+                }
+                AllWhiteVersion.SetData(ColorArray);
+            }
+            return AllWhiteVersion;
+        }
         public static Asset<Texture2D> circle;
         public override bool PreDraw(ref Color lightColor)
         {
+            AllWhiteVersion = null;
             var spTex = TextureAssets.Projectile[Type].Value;
+            var whiteTex = GetWhiteTex();
             var ciTex = CalamityUtils.GetTextureEfficient(ref circle, "CalamityMod/ExtraTextures/GreyscaleOpenCircleButBigger").Value;
 
-            Main.spriteBatch.Draw(spTex,Projectile.Center-Main.screenPosition,null,Color.White,Main.GlobalTimeWrappedHourly,spTex.Size()*0.5f, 0.75f,SpriteEffects.None,0);
+            float completion = (Projectile.minionSlots-1) / 9f;
+            var color = Color.Lerp(Color.Yellow, Color.DarkOrange, completion);
+            if (completion >= 1)
+                color = Color.LightBlue;
+
+            for (float i = 0; i < MathHelper.TwoPi; i += MathHelper.PiOver2)
+            {
+                Main.spriteBatch.Draw(whiteTex, Projectile.Center - Main.screenPosition + new Vector2(MathHelper.Min(2, completion * 2.2f), 0).RotatedBy(i), null, color, Main.GlobalTimeWrappedHourly, spTex.Size() * 0.5f, 0.75f, SpriteEffects.None, 0);
+            }
+            Main.spriteBatch.Draw(spTex, Projectile.Center - Main.screenPosition, null, Color.White, Main.GlobalTimeWrappedHourly, spTex.Size() * 0.5f, 0.75f, SpriteEffects.None, 0);
+            Main.spriteBatch.Draw(whiteTex, Projectile.Center - Main.screenPosition, null, Color.Black * completion, Main.GlobalTimeWrappedHourly, spTex.Size() * 0.5f, 0.75f, SpriteEffects.None, 0);
             Main.spriteBatch.SafeBegin(SpriteSortMode.Deferred, BatchSetting.Additive, null, Main.GameViewMatrix.TransformationMatrix, () =>
             {
-                Main.EntitySpriteDraw(ciTex, Projectile.Center - Main.screenPosition, null, Color.Gold, Main.GlobalTimeWrappedHourly, ciTex.Size() * 0.5f, 0.075f, SpriteEffects.None);
+                color = Color.Lerp(Color.Yellow, Color.OrangeRed, completion);
+                if (completion >= 1)
+                    color = Color.LightBlue;
+                //Main.EntitySpriteDraw(ciTex, Projectile.Center - Main.screenPosition, null, color, Main.GlobalTimeWrappedHourly, ciTex.Size() * 0.5f, 0.075f, SpriteEffects.None);
 
-                float count = MathHelper.Min(Projectile.minionSlots * 2, 20);
+                float count = MathHelper.Min((Projectile.minionSlots-1) * 2, 40);
                 for (var i = 0; i < count; i++)
                 {
                     var comp = (i / count);
                     var offset = ((Main.mouseTextColor - 190) / 64f) * 8;
                     if (i % 2 == 0)
                         offset = 8 - offset;
-                    CalamityUtils.DrawLineBetter(Main.spriteBatch, Projectile.Center + new Vector2(26 + offset, 0).RotatedBy(MathHelper.TwoPi * comp - Main.GlobalTimeWrappedHourly), Projectile.Center + new Vector2(40 + offset, 0).RotatedBy(MathHelper.TwoPi * comp - Main.GlobalTimeWrappedHourly),  i % 2 == 0 ? Color.OrangeRed : Color.Gold, 2f);
+                    CalamityUtils.DrawLineBetter(Main.spriteBatch, Projectile.Center + new Vector2(26 + offset, 0).RotatedBy(MathHelper.TwoPi * comp - Main.GlobalTimeWrappedHourly), Projectile.Center + new Vector2(40 + offset, 0).RotatedBy(MathHelper.TwoPi * comp - Main.GlobalTimeWrappedHourly),  color, 1f);
                 }
             });
+
             return false;
         }
     }

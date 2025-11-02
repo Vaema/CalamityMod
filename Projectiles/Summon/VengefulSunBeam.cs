@@ -81,14 +81,14 @@ namespace CalamityMod.Projectiles.Summon
                 Dust dust = Dust.NewDustDirect(Projectile.Center, 1, 1, DustID.TintableDustLighted, dustVelocity.X, dustVelocity.Y, 0, dustColor, dustScale);
                 dust.noGravity = true;
                 dust.noLight = false;
-                dust.noLightEmittence = false;
+                dust.noLightEmittence = true;
             }
             if (Projectile.ai[0] > 0)
                 return;
             for (var i = -1; i <= 1; i+=2)
             {
                 var randomVel = Projectile.velocity.RotatedByRandom(MathHelper.TwoPi);
-                var p = Projectile.NewProjectileDirect(Projectile.GetSource_FromThis(),Projectile.Center- randomVel * 3, randomVel, Type,Projectile.damage,Projectile.knockBack,Projectile.owner, 120);
+                var p = Projectile.NewProjectileDirect(Projectile.GetSource_FromThis(),Projectile.Center- randomVel * 3, randomVel, Type,Projectile.damage,Projectile.knockBack,Projectile.owner, 120, Projectile.ai[1]);
                 p.penetrate = 1;
                 p.scale = 0.75f;
             }
@@ -129,7 +129,10 @@ namespace CalamityMod.Projectiles.Summon
 
         public Color FireColorFunction(float completion)
         {
-            Color mainColor = Color.Gold * 1.3f;
+            Color mainColor = Color.Lerp(Color.Yellow, Color.OrangeRed, Projectile.ai[1]);
+            if (Projectile.ai[1] >= 1)
+                mainColor = Color.LightBlue;
+            mainColor *= 1.3f;
             Color endColor = Color.Lerp(mainColor, Color.Transparent, Utils.GetLerpValue(0.8f, 1f, completion, true));
             return Color.Lerp(mainColor, endColor, completion);
         }
@@ -137,7 +140,7 @@ namespace CalamityMod.Projectiles.Summon
         public float FireCoreWidthFunction(float completion)
         {
             float width;
-            float maxBodyWidth = Projectile.scale * 16;
+            float maxBodyWidth = Projectile.scale * 24;
             float curveRatio = 0.25f;
             var positions = Projectile.oldPos.ToList();
             positions.RemoveAll(x => x == Vector2.Zero);
@@ -151,10 +154,11 @@ namespace CalamityMod.Projectiles.Summon
 
         public Color FireCoreColorFunction(float completion)
         {
-            Color mainColor = Color.OrangeRed;
+            Color mainColor = Color.Black;
+            mainColor = Color.Lerp(mainColor, Color.Gold, 1 - Projectile.ai[1]);
             Color tipColor = Color.Lerp(mainColor, Color.Transparent, Utils.GetLerpValue(0.8f, 1f, completion, true));
             Color fullBodyColor = Color.Lerp(mainColor, tipColor, completion);
-            return Color.Lerp(fullBodyColor, Color.White, 0.175f);
+            return fullBodyColor;
         }
 
         public void RenderPixelatedPrimitives(SpriteBatch spriteBatch, PixelationPrimitiveLayer layer)

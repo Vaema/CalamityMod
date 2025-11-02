@@ -64,7 +64,7 @@ namespace CalamityMod.Projectiles.Summon
                 Dust dust = Dust.NewDustDirect(Projectile.Center, 1, 1, DustID.TintableDustLighted, dustVelocity.X, dustVelocity.Y, 0, dustColor, dustScale);
                 dust.noGravity = true;
                 dust.noLight = false;
-                dust.noLightEmittence = false;
+                dust.noLightEmittence = true;
             }
         }
 

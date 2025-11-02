@@ -82,7 +82,7 @@ namespace CalamityMod.Projectiles.Summon
             #endregion
 
             #region Positioning
-            Projectile.Center = player.Center + Vector2.UnitY * (player.gfxOffY + player.gravDir * -16f);
+            Projectile.Center = player.Center + Vector2.UnitY * (player.gfxOffY + player.gravDir * -80f);
             #endregion
 
             Lighting.AddLight(Projectile.Center, (255 - Projectile.alpha) * 0.25f / 255f, (255 - Projectile.alpha) * 0.25f / 255f, (255 - Projectile.alpha) * 0f / 255f);
@@ -117,6 +117,29 @@ namespace CalamityMod.Projectiles.Summon
         public static Asset<Texture2D> circle;
         public override bool PreDraw(ref Color lightColor)
         {
+
+            //Vengeful Sun Drawing
+            var spTex = TextureAssets.Projectile[Type].Value;
+            var ciTex = CalamityUtils.GetTextureEfficient(ref circle, "CalamityMod/ExtraTextures/GreyscaleOpenCircleButBigger").Value;
+
+            Main.spriteBatch.Draw(spTex, Projectile.Center - Main.screenPosition, null, Color.White, Main.GlobalTimeWrappedHourly, spTex.Size() * 0.5f, 0.75f, SpriteEffects.None, 0);
+            Main.spriteBatch.SafeBegin(SpriteSortMode.Deferred, BatchSetting.Additive, null, Main.GameViewMatrix.TransformationMatrix, () =>
+            {
+                //Main.EntitySpriteDraw(ciTex, Projectile.Center - Main.screenPosition, null, Color.Gold, Main.GlobalTimeWrappedHourly, ciTex.Size() * 0.5f, 0.075f, SpriteEffects.None);
+
+                float count = MathHelper.Min(Projectile.minionSlots * 2, 40);
+                for (var i = 0; i < count; i++)
+                {
+                    var comp = (i / count);
+                    var offset = ((Main.mouseTextColor - 190) / 64f) * 8;
+                    if (i % 2 == 0)
+                        offset = 8 - offset;
+                    CalamityUtils.DrawLineBetter(Main.spriteBatch, Projectile.Center + new Vector2(20 + offset, 0).RotatedBy(MathHelper.TwoPi * comp - Main.GlobalTimeWrappedHourly), Projectile.Center + new Vector2(34 + offset, 0).RotatedBy(MathHelper.TwoPi * comp - Main.GlobalTimeWrappedHourly), i % 2 == 3 ? Color.OrangeRed : Color.Gold, 2f);
+                }
+            });
+
+            //Old sun spirit drawing
+            /*
             var spTex = TextureAssets.Projectile[Type].Value;
             var ciTex = CalamityUtils.GetTextureEfficient(ref circle, "CalamityMod/Particles/BloomRingThinLarge").Value;
 
@@ -132,7 +155,7 @@ namespace CalamityMod.Projectiles.Summon
                         offset = 1 - offset;
                     Main.EntitySpriteDraw(ciTex, Projectile.Center - Main.screenPosition, null, Color.Lerp(Color.Gold, Color.OrangeRed, i / (4f)), Main.GlobalTimeWrappedHourly, ciTex.Size() * 0.5f, 0.02f + 0.0025f * offset + 0.005f * i, SpriteEffects.None);
                 }
-            });
+            });*/
             return false;
         }
     }
