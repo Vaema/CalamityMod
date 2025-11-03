@@ -12,11 +12,16 @@ using CalamityMod.Items.Weapons.Melee;
 using Terraria.GameContent;
 using CalamityMod.Systems;
 using Microsoft.Xna.Framework.Graphics;
+using ReLogic.Content;
 
 namespace CalamityMod.Tiles.SunkenSea
 {
     public class MediumSeaPrismCrystal : ModTile
     {
+        private static Asset<Texture2D> DefaultCrystals;
+        private static Asset<Texture2D> PurpleCrystals;
+        private static Asset<Texture2D> GreenCrystals;
+
         public override void SetStaticDefaults()
         {
             Main.tileLighted[Type] = true;
@@ -63,6 +68,10 @@ namespace CalamityMod.Tiles.SunkenSea
             TileObjectData.newAlternate.Origin = new Point16(0, 0);
             TileObjectData.addAlternate(24);
             TileObjectData.addTile(Type);
+
+            DefaultCrystals = ModContent.Request<Texture2D>("CalamityMod/Tiles/SunkenSea/MediumSeaPrismCrystal_Blue");
+            PurpleCrystals = ModContent.Request<Texture2D>("CalamityMod/Tiles/SunkenSea/MediumSeaPrismCrystal_Purple");
+            GreenCrystals = ModContent.Request<Texture2D>("CalamityMod/Tiles/SunkenSea/MediumSeaPrismCrystal_Green");
         }
 
         public override void NumDust(int i, int j, bool fail, ref int num)
@@ -92,15 +101,9 @@ namespace CalamityMod.Tiles.SunkenSea
             b = blended.Z;
         }
 
-        private static float GetFade1(int i, int j)
-        {
-            return (MathF.Sin(Main.GlobalTimeWrappedHourly * 0.2f) + 1f) / 2f;
-        }
+        private static float GetFade1(int i, int j) => (MathF.Sin(Main.GlobalTimeWrappedHourly * 0.2f) + 1f) / 2f;
 
-        private static float GetFade2(int i, int j)
-        {
-            return (MathF.Sin(Main.GlobalTimeWrappedHourly * 0.1f + i * 0.08f - j * 0.05f) + 1f) / 2f;
-        }
+        private static float GetFade2(int i, int j) => (MathF.Sin(Main.GlobalTimeWrappedHourly * 0.1f + i * 0.08f - j * 0.05f) + 1f) / 2f;
 
         public override void PostDraw(int i, int j, SpriteBatch spriteBatch)
         {
@@ -110,14 +113,9 @@ namespace CalamityMod.Tiles.SunkenSea
 
             Rectangle sourceRect = new Rectangle(tile.TileFrameX, tile.TileFrameY, 16, 16);
 
-            Texture2D baseTex = ModContent.Request<Texture2D>("CalamityMod/Tiles/SunkenSea/MediumSeaPrismCrystal_Blue").Value;
-            spriteBatch.Draw(baseTex, position, sourceRect, Lighting.GetColor(i, j) * 1.5f);
-
-            Texture2D tex1 = ModContent.Request<Texture2D>("CalamityMod/Tiles/SunkenSea/MediumSeaPrismCrystal_Purple").Value;
-            Texture2D tex2 = ModContent.Request<Texture2D>("CalamityMod/Tiles/SunkenSea/MediumSeaPrismCrystal_Green").Value;
-
-            spriteBatch.Draw(tex1, position, sourceRect, Lighting.GetColor(i, j) * 1.5f * GetFade1(i, j));
-            spriteBatch.Draw(tex2, position, sourceRect, Lighting.GetColor(i, j) * 1.5f * GetFade2(i, j));
+            spriteBatch.Draw(DefaultCrystals.Value, position, sourceRect, Lighting.GetColor(i, j) * 1.5f);
+            spriteBatch.Draw(PurpleCrystals.Value, position, sourceRect, Lighting.GetColor(i, j) * 1.5f * GetFade1(i, j));
+            spriteBatch.Draw(GreenCrystals.Value, position, sourceRect, Lighting.GetColor(i, j) * 1.5f * GetFade2(i, j));
         }
         public override void KillMultiTile(int i, int j, int frameX, int frameY)
         {
