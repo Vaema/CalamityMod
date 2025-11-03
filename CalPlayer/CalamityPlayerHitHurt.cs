@@ -844,12 +844,6 @@ namespace CalamityMod.CalPlayer
             if (npc.Calamity().temporalSadness)
                 contactDamageReduction += 0.5;
 
-            if (eskimoSet)
-            {
-                if (npc.coldDamage)
-                    contactDamageReduction += 0.1;
-            }
-
             if (trinketOfChiBuff)
                 contactDamageReduction += 0.08;
 
