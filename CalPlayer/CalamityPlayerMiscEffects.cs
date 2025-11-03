@@ -938,7 +938,7 @@ namespace CalamityMod.CalPlayer
 
                 // Ores below here
                 // Seraph Tracers give immunity to block contact effects
-                if (!tracersSeraph)
+                if (!seraphTracers)
                 {
                     // Astral Ore inflicts Astral Infection briefly on contact
                     if (tile.TileType == astralOreID)
@@ -953,7 +953,7 @@ namespace CalamityMod.CalPlayer
                 // Auric Rejection causes an electrical explosion that yeets the player a considerable distance
                 // CIT 17AUG2024: Despite providing full invulnerability, Silva armor revive intentionally does not prevent Auric rejection's yeeting.
                 // 25FEB2025 Ozzatron: Added external bool to control Auric Rejection immunity from the ore.
-                bool rejectionImmunity = auricSet || tracersSeraph || Player.creativeGodMode || externalAuricRejectionImmunity;
+                bool rejectionImmunity = auricSet || seraphTracers || Player.creativeGodMode || externalAuricRejectionImmunity;
                 bool oreRejection = (tile.TileType == auricOreID) && !rejectionImmunity;
 
                 // Repulsers always perform this effect because they are player-placed tiles made for this exact purpose

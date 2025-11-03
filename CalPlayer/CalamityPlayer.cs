@@ -885,9 +885,9 @@ namespace CalamityMod.CalPlayer
         public bool sGlyph = false;
         public bool sRegen = false;
         public bool tracersDust = false;
-        public bool tracersCelestial = false;
-        public bool tracersElysian = false;
-        public bool tracersSeraph = false;
+        public bool moonWalkers = false;
+        public bool voidStriders = false;
+        public bool seraphTracers = false;
         public bool frostFlare = false;
         public bool evolution = false;
         public int evolutionLifeRegenCounter = 0;
@@ -2325,9 +2325,9 @@ namespace CalamityMod.CalPlayer
             hallowedRegen = false;
             hallowedPower = false;
             tracersDust = false;
-            tracersCelestial = false;
-            tracersElysian = false;
-            tracersSeraph = false;
+            moonWalkers = false;
+            voidStriders = false;
+            seraphTracers = false;
             ursaSergeant = false;
             ursaSergeantVisual = false;
             scuttlersJewel = false;

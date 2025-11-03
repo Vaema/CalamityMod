@@ -3,7 +3,6 @@ using System.IO;
 using System.Linq;
 using CalamityMod.CalPlayer;
 using CalamityMod.Items.Materials;
-using CalamityMod.Projectiles.Melee;
 using CalamityMod.Rarities;
 using CalamityMod.Tiles.Furniture.CraftingStations;
 using Microsoft.Xna.Framework;
@@ -19,29 +18,29 @@ using Terraria.ModLoader.IO;
 namespace CalamityMod.Items.Accessories.Wings
 {
     [AutoloadEquip(EquipType.Wings)]
-    [LegacyName("CelestialTracers")]
-    public class TracersSeraph : BaseWings
+    [LegacyName("ElysianTracers", "TracersElysian")]
+    public class VoidStriders : BaseWings
     {
-        public override float BonusAscentWhileFalling => 0.95f;
-        public override float BonusAscentWhileRising => 0.16f;
-        public override float RisingSpeedThreshold => 1.2f;
-        public override float MaxAscentSpeed => 2.9f;
-        public override float BaseAscent => 0.145f;
+        public override float BonusAscentWhileFalling => 0.85f;
+        public override float BonusAscentWhileRising => 0.15f;
+        public override float RisingSpeedThreshold => 1.1f;
+        public override float MaxAscentSpeed => 2.7f;
+        public override float BaseAscent => 0.135f;
 
         public static int wingSlot = 0;
-
         public override void SetStaticDefaults()
         {
-            ArmorIDs.Wing.Sets.Stats[Item.wingSlot] = new WingStats(250, 11f, 2.8f);
+            ArmorIDs.Wing.Sets.Stats[Item.wingSlot] = new WingStats(200, 10f, 2.7f);
             wingSlot = Item.wingSlot;
         }
+
         public override void SetDefaults()
         {
             base.SetDefaults();
             Item.width = 36;
             Item.height = 32;
-            Item.value = CalamityGlobalItem.RarityVioletBuyPrice;
-            Item.rare = ModContent.RarityType<BurnishedAuric>();
+            Item.value = CalamityGlobalItem.RarityPureGreenBuyPrice;
+            Item.rare = ModContent.RarityType<PureGreen>();
         }
         #region Toggleable Wings
         bool toggleEnabled
@@ -86,10 +85,13 @@ namespace CalamityMod.Items.Accessories.Wings
         }
         public override void PostDrawInInventory(SpriteBatch spriteBatch, Vector2 position, Rectangle frame, Color drawColor, Color itemColor, Vector2 origin, float scale)
         {
+            Item.SetNameOverride(CalamityUtils.GetTextValue($"Items.Accessories.Wings.VoidStriders.{(toggleEnabled ? "DisplayName" : "TreadsName")}"));
             CalamityUtils.DrawInventoryDot(spriteBatch, position, new Vector2(16, 16) * Main.inventoryScale, toggleEnabled);
         }
+        public override void UpdateInventory(Player player)
+        {
+        }
         #endregion
-
         public override void UpdateAccessory(Player player, bool hideVisual)
         {
             if (player.controlJump && player.wingTime > 0f && player.jump == 0 && player.velocity.Y != 0f && !hideVisual && toggleEnabled)
@@ -99,7 +101,7 @@ namespace CalamityMod.Items.Accessories.Wings
                 {
                     dustXOffset = -40;
                 }
-                int flightDust = Dust.NewDust(new Vector2(player.position.X + (float)(player.width / 2) + (float)dustXOffset, player.position.Y + (float)(player.height / 2) - 15f), 30, 30, DustID.GemDiamond, 0f, 0f, 100, default, 2.4f);
+                int flightDust = Dust.NewDust(new Vector2(player.position.X + (float)(player.width / 2) + (float)dustXOffset, player.position.Y + (float)(player.height / 2) - 15f), 30, 30, Main.rand.NextBool() ? 206 : 173, 0f, 0f, 100, default, 2.4f);
                 Main.dust[flightDust].noGravity = true;
                 Main.dust[flightDust].velocity *= 0.3f;
                 if (Main.rand.NextBool(10))
@@ -109,30 +111,32 @@ namespace CalamityMod.Items.Accessories.Wings
                 Main.dust[flightDust].shader = GameShaders.Armor.GetSecondaryShader(player.cWings, player);
             }
             CalamityPlayer modPlayer = player.Calamity();
-            player.accRunSpeed = 9f;
-            player.moveSpeed += 0.18f;
+            player.accRunSpeed = 8.5f;
+            player.moveSpeed += 0.16f;
             player.iceSkate = true;
             player.waterWalk = true;
             player.fireWalk = true;
             player.lavaImmune = true;
             player.buffImmune[BuffID.OnFire] = true;
             player.noFallDmg = true;
+            player.socialShadowRocketBoots = true;
             if (!toggleEnabled) //Both these effects just boost flight time, but we don't want Tracers to boost it's own flight time when functioning as wings. All other Angel Tread effects are covered above.
             {
-                player.rocketBoots = player.vanityRocketBoots = 2;
+                player.rocketBoots = player.vanityRocketBoots = 1;
                 modPlayer.angelTreads = true;
             }
             modPlayer.tracersDust = !hideVisual && toggleEnabled;
-            modPlayer.tracersSeraph = true; // Grants immunity to Auric Rejection and other walk-on-block effects
+            modPlayer.voidStriders = true;
         }
 
         public override void AddRecipes()
         {
             CreateRecipe().
-                AddIngredient<TracersElysian>().
-                AddIngredient<AuricBar>(5).
-                AddIngredient<AscendantSpiritEssence>(3).
-                AddTile<CosmicAnvil>().
+                AddIngredient<MoonWalkers>().
+                AddIngredient<ArmoredShell>(3).
+                AddIngredient<TwistingNether>(3).
+                AddIngredient<DarkPlasma>(3).
+                AddTile(TileID.LunarCraftingStation).
                 Register();
         }
     }

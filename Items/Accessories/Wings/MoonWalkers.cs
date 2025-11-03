@@ -15,8 +15,8 @@ using Terraria.ModLoader.IO;
 namespace CalamityMod.Items.Accessories.Wings
 {
     [AutoloadEquip(EquipType.Wings, EquipType.Shoes)]
-    [LegacyName("InfinityBoots", "SeraphTracers")]
-    public class TracersCelestial : BaseWings
+    [LegacyName("InfinityBoots", "TracersCelestial")]
+    public class MoonWalkers : BaseWings
     {
         public override float BonusAscentWhileFalling => 0.75f;
         public override float BonusAscentWhileRising => 0.15f;
@@ -82,7 +82,11 @@ namespace CalamityMod.Items.Accessories.Wings
         }
         public override void PostDrawInInventory(SpriteBatch spriteBatch, Vector2 position, Rectangle frame, Color drawColor, Color itemColor, Vector2 origin, float scale)
         {
+            Item.SetNameOverride(CalamityUtils.GetTextValue($"Items.Accessories.Wings.MoonWalkers.{(toggleEnabled ? "DisplayName" : "TreadsName")}"));
             CalamityUtils.DrawInventoryDot(spriteBatch, position, new Vector2(16, 16) * Main.inventoryScale, toggleEnabled);
+        }
+        public override void UpdateInventory(Player player)
+        {
         }
         #endregion
         public override void UpdateAccessory(Player player, bool hideVisual)
@@ -118,7 +122,7 @@ namespace CalamityMod.Items.Accessories.Wings
                 modPlayer.angelTreads = true;
             }
             modPlayer.tracersDust = !hideVisual && toggleEnabled;
-            modPlayer.tracersCelestial = true;
+            modPlayer.moonWalkers = true;
         }
 
         public override void AddRecipes()
