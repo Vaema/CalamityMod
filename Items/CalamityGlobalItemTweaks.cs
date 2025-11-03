@@ -239,7 +239,7 @@ namespace CalamityMod.Items
                 { ItemID.SpectreStaff, Do(DamageExact(72)) },
                 { ItemID.SpiritFlame, Do(UseExact(20), ManaExact(11), ShootSpeedExact(2f)) },
                 { ItemID.StaffofEarth, Do(DamageExact(150)) },
-                { ItemID.StarCannon, Do(DamageExact(25), UseExact(15)) },
+                { ItemID.StarCannon, Do(UseExact(18)) },
                 { ItemID.StardustDragonStaff, Do(DamageExact(20), UseExact(19)) },
                 { ItemID.StormTigerStaff, Do(DamageExact(49), UseExact(20)) }, // Desert Tiger Staff
                 { ItemID.StylistKilLaKillScissorsIWish, Do(AutoReuse, UseTurn, DamageExact(21)) }, // Stylish Scissors
