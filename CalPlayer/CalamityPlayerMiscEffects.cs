@@ -3983,8 +3983,7 @@ namespace CalamityMod.CalPlayer
 
             if (abyssalDivingSuit && !Player.IsUnderwater())
             {
-                float moveSpeedLoss = (3 - abyssalDivingSuitPlateHits) * 0.2f;
-                Player.moveSpeed -= moveSpeedLoss;
+                Player.moveSpeed -= 0.6f;
             }
 
             if (godSlayerThrowing)

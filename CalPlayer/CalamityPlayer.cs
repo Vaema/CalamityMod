@@ -827,8 +827,6 @@ namespace CalamityMod.CalPlayer
         public bool nuclearFuelRod = false;
         public bool nebulousCore = false;
         public bool deepDiver = false;
-        public bool abyssalDivingSuitPlates = false;
-        public int abyssalDivingSuitPlateHits = 0;
         public bool aquaticHeartWaterBuff = false;
         public bool aquaticHeartIce = false;
         public bool ilSpark = false;
@@ -2132,8 +2130,6 @@ namespace CalamityMod.CalPlayer
             miniOldDuke = false;
             miniOldDukeVanity = false;
 
-            abyssalDivingSuitPlates = false;
-
             aquaticHeartWaterBuff = false;
             aquaticHeartIce = false;
 
@@ -2986,7 +2982,6 @@ namespace CalamityMod.CalPlayer
             clamity = false;
             NOU = false;
             snowmanNoseless = false;
-            abyssalDivingSuitPlateHits = 0;
             sulphurPoison = false;
             nightwither = false;
             voidfrost = false;
@@ -3035,7 +3030,6 @@ namespace CalamityMod.CalPlayer
             rimehound = false;
             crysthamyr = false;
             ExoChair = false;
-            abyssalDivingSuitPlates = false;
             aquaticHeartWaterBuff = false;
             aquaticHeartIce = false;
             trinketOfChiBuff = false;
@@ -4184,25 +4178,7 @@ namespace CalamityMod.CalPlayer
             }
 
             if (abyssalDivingSuit)
-            {
                 Player.AddBuff(BuffType<AbyssalDivingSuitBuff>(), 60, true);
-                if (Player.whoAmI == Main.myPlayer && !Player.HasCooldown(DivingPlatesBroken.ID))
-                    Player.AddBuff(BuffType<AbyssalDivingSuitPlates>(), 2);
-
-                if (Player.whoAmI == Main.myPlayer && Player.active && abyssalDivingSuitPlateHits < 3)
-                {
-                    if (!Player.HasCooldown(DivingPlatesBreaking.ID))
-                    {
-                        CooldownInstance plates = Player.AddCooldown(DivingPlatesBreaking.ID, 3);
-                        plates.timeLeft = abyssalDivingSuitPlateHits;
-                    }
-                    else
-                    {
-                        CooldownInstance plates = cooldowns[DivingPlatesBreaking.ID];
-                        plates.timeLeft = abyssalDivingSuitPlateHits;
-                    }
-                }
-            }
 
             if (aquaticHeart)
                 Player.AddBuff(BuffType<AquaticHeartBuff>(), 60, true);

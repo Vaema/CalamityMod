@@ -853,9 +853,6 @@ namespace CalamityMod.CalPlayer
             if (trinketOfChiBuff)
                 contactDamageReduction += 0.08;
 
-            if (abyssalDivingSuitPlates)
-                contactDamageReduction += AbyssalDivingSuit.PlatesAllDamageReduction - abyssalDivingSuitPlateHits * AbyssalDivingSuit.PlatesHitDecay;
-
             if (aquaticHeartIce)
                 contactDamageReduction += AquaticHeart.IceShieldAllDamageReduction;
 
@@ -1115,9 +1112,6 @@ namespace CalamityMod.CalPlayer
 
             if (trinketOfChiBuff)
                 projectileDamageReduction += 0.08;
-
-            if (abyssalDivingSuitPlates)
-                projectileDamageReduction += AbyssalDivingSuit.PlatesAllDamageReduction - abyssalDivingSuitPlateHits * AbyssalDivingSuit.PlatesHitDecay;
 
             if (aquaticHeartIce)
                 projectileDamageReduction += AquaticHeart.IceShieldAllDamageReduction;
@@ -2367,46 +2361,6 @@ namespace CalamityMod.CalPlayer
                         }
                     }
                     tortShellPostHit = 180;
-                }
-
-                if (abyssalDivingSuitPlates && hurtInfo.Damage > 50)
-                {
-                    if (abyssalDivingSuitPlateHits < 3)
-                        abyssalDivingSuitPlateHits++;
-
-                    bool plateCDExists = cooldowns.TryGetValue(DivingPlatesBreaking.ID, out CooldownInstance plateDurability);
-                    if (plateCDExists)
-                        plateDurability.timeLeft = abyssalDivingSuitPlateHits;
-
-                    if (abyssalDivingSuitPlateHits >= 3)
-                    {
-                        SoundEngine.PlaySound(SoundID.NPCDeath14, Player.Center);
-
-                        if (plateCDExists)
-                            cooldowns.Remove(DivingPlatesBreaking.ID);
-
-                        Player.AddCooldown(DivingPlatesBroken.ID, 10830);
-
-                        for (int d = 0; d < 20; d++)
-                        {
-                            Dust dust = Dust.NewDustDirect(Player.position, Player.width, Player.height, DustID.Smoke, 0f, 0f, 100, default, 2f);
-                            dust.velocity *= 3f;
-                            if (Main.rand.NextBool())
-                            {
-                                dust.scale = 0.5f;
-                                dust.fadeIn = 1f + Main.rand.Next(10) * 0.1f;
-                            }
-                        }
-
-                        for (int d = 0; d < 35; d++)
-                        {
-                            Dust fire = Dust.NewDustDirect(Player.position, Player.width, Player.height, DustID.Torch, 0f, 0f, 100, default, 3f);
-                            fire.noGravity = true;
-                            fire.velocity *= 5f;
-                            fire = Dust.NewDustDirect(Player.position, Player.width, Player.height, DustID.Torch, 0f, 0f, 100, default, 2f);
-                            fire.velocity *= 2f;
-                        }
-                    }
                 }
 
                 if (aquaticHeartIce)
