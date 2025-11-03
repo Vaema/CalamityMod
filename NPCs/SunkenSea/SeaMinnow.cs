@@ -23,12 +23,14 @@ namespace CalamityMod.NPCs.SunkenSea
         public Vector2 randomPathPoint;
         protected override List<int> PreyIDs => new List<int>();
 
-        protected override List<int> PredatorIDs => new List<int>() {
+        protected override List<int> PredatorIDs => new List<int>() 
+        {
             ModContent.NPCType<Sharkoon>(),
             ModContent.NPCType<Polyperil>(),
             ModContent.NPCType<PolyperilTentacle>(),
             ModContent.NPCType<LazarusLampfish>(),
-            ModContent.NPCType<GhostBell>()
+            ModContent.NPCType<GhostBell>(),
+            ModContent.NPCType<GildedAxolotl>()
         };
         protected override SunkenSeaBiomeFlags BiomeDesignation => SunkenSeaBiomeFlags.RadiantReefs | SunkenSeaBiomeFlags.GleamingBurrows;
 

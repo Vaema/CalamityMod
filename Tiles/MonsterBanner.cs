@@ -470,9 +470,9 @@ namespace CalamityMod.Tiles
                 case 131:
                     npc = NPCType<CarrionSwallower>();
                     break;
-                /* case 132:
-                    npc = NPCType<GildedAxolotl>(); // NOT YET IMPLEMENTED. Banner sprite is already on the mastersheet and associated with this case/position.
-                    break; */
+                case 132:
+                    npc = NPCType<GildedAxolotl>();
+                    break;
                 /* case 133:
                     npc = NPCType<Grubbolt>(); // NOT YET IMPLEMENTED. Banner sprite is already on the mastersheet and associated with this case/position.
                     break; */

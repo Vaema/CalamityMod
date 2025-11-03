@@ -43,6 +43,7 @@ namespace CalamityMod.NPCs.SunkenSea
             ModContent.NPCType<SandProwlerNested>(),
             ModContent.NPCType<PrismaticGuppy>(),
             ModContent.NPCType<KelpieSeadragon>(),
+            ModContent.NPCType<GildedAxolotl>()
         };
 
         protected override List<int> PreyIDs => new List<int>();
