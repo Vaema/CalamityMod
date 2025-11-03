@@ -844,9 +844,6 @@ namespace CalamityMod.CalPlayer
             if (npc.Calamity().temporalSadness)
                 contactDamageReduction += 0.5;
 
-            if (trinketOfChiBuff)
-                contactDamageReduction += 0.08;
-
             if (aquaticHeartIce)
                 contactDamageReduction += AquaticHeart.IceShieldAllDamageReduction;
 
@@ -1103,9 +1100,6 @@ namespace CalamityMod.CalPlayer
                 if (proj.type == projTypeJustHitBy)
                     projectileDamageReduction += 0.25;
             }
-
-            if (trinketOfChiBuff)
-                projectileDamageReduction += 0.08;
 
             if (aquaticHeartIce)
                 projectileDamageReduction += AquaticHeart.IceShieldAllDamageReduction;

@@ -1331,7 +1331,6 @@ namespace CalamityMod.CalPlayer
         #endregion
 
         #region Buff
-        public bool trinketOfChiBuff = false;
         public bool sandsWindBuff = false;
         public bool aeolianEarthBuff = false;
         public int chiBuffTimer = 0;
@@ -2533,7 +2532,6 @@ namespace CalamityMod.CalPlayer
             WaterDebuffMultiplier = new();
             ElectricDebuffMultiplier = new();
 
-            trinketOfChiBuff = false;
             sandsWindBuff = false;
             aeolianEarthBuff = false;
             corrEffigy = false;
@@ -3032,7 +3030,6 @@ namespace CalamityMod.CalPlayer
             ExoChair = false;
             aquaticHeartWaterBuff = false;
             aquaticHeartIce = false;
-            trinketOfChiBuff = false;
             sandsWindBuff = false;
             aeolianEarthBuff = false;
             chiBuffTimer = 0;
