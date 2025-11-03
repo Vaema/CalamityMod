@@ -2768,6 +2768,7 @@ namespace CalamityMod.CalPlayer
             if (encased)
             {
                 Player.statDefense += PermafrostsConcoction.EncasedDefenseBoost;
+                Player.endurance += PermafrostsConcoction.EncasedDamageReductionBoost;
                 Player.frozen = true;
                 Player.velocity.X = 0f;
                 Player.velocity.Y = -0.4f; // Should negate gravity

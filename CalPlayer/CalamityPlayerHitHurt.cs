@@ -847,9 +847,6 @@ namespace CalamityMod.CalPlayer
             if (aquaticHeartIce)
                 contactDamageReduction += AquaticHeart.IceShieldAllDamageReduction;
 
-            if (encased)
-                contactDamageReduction += PermafrostsConcoction.EncasedAllDamageReduction;
-
             if (Player.ownedProjectileCounts[ModContent.ProjectileType<EnergyShell>()] > 0 && Player.ActiveItem().type == ModContent.ItemType<LionHeart>())
                 contactDamageReduction += 0.5;
 
@@ -1103,9 +1100,6 @@ namespace CalamityMod.CalPlayer
 
             if (aquaticHeartIce)
                 projectileDamageReduction += AquaticHeart.IceShieldAllDamageReduction;
-
-            if (encased)
-                projectileDamageReduction += PermafrostsConcoction.EncasedAllDamageReduction;
 
             if (Player.ownedProjectileCounts[ModContent.ProjectileType<EnergyShell>()] > 0 && Player.ActiveItem().type == ModContent.ItemType<LionHeart>())
                 projectileDamageReduction += 0.5;

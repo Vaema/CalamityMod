@@ -573,4 +573,9 @@ CalamityServerConfig: {
 	}
 }
 
-SetBonusDoubleTapOptions.Tooltip: ""
+SetBonusDoubleTapOptions: {
+	Tooltip: ""
+	On.Tooltip: ""
+	Auto.Tooltip: ""
+	Off.Tooltip: ""
+}
