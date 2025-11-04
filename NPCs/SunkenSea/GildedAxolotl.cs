@@ -182,17 +182,18 @@ namespace CalamityMod.NPCs.SunkenSea
                 };
             }
 
+            // Find nearby players
             NPC.TargetClosest(false);
             Player nearestPlayer = null;
-            float nearestPlayerDistance = float.MaxValue;
+            float nearestPlayerDistance = 10000f;
 
-            // Find all players within range, buff them, and find the nearest player holding an item of interest
             float detectionRange = 700f;
-            float buffRange = 440f;
+            float buffRange = 290f;
 
             Player nearestPlayerForVisuals = null;
-            float nearestPlayerDistanceForVisuals = float.MaxValue;
+            float nearestPlayerDistanceForVisuals = 10000f;
 
+            // Handle aura buff for any nearby player
             for (int i = 0; i < Main.maxPlayers; i++)
             {
                 Player p = Main.player[i];
@@ -207,11 +208,9 @@ namespace CalamityMod.NPCs.SunkenSea
                     nearestPlayerDistanceForVisuals = distance;
                 }
 
-                // Handle aura buff for any nearby player
                 if (distance < buffRange)
                 {
-                    p.AddBuff(ModContent.BuffType<PinkJellyRegen>(), 60, true);
-                    // todo: add a looping sound while in the aura
+                    p.AddBuff(ModContent.BuffType<FortunesFavor>(), 60, true);
                 }
 
                 // Track the nearest player holding a target item
@@ -222,6 +221,21 @@ namespace CalamityMod.NPCs.SunkenSea
                         nearestPlayer = p;
                         nearestPlayerDistance = distance;
                     }
+                }
+            }
+
+            // Allow NPCs to be buffed while in the aura, including this npc.
+            for (int i = 0; i < Main.maxNPCs; i++)
+            {
+                NPC targetNPC = Main.npc[i];
+                if (!targetNPC.active)
+                    continue;
+
+                float distance = Vector2.Distance(NPC.Center, targetNPC.Center);
+
+                if (distance < buffRange)
+                {
+                    targetNPC.AddBuff(ModContent.BuffType<FortunesFavor>(), 60, true);
                 }
             }
 
