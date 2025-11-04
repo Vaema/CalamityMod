@@ -12,11 +12,8 @@ using Terraria.Audio;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria.GameContent;
 using CalamityMod.Particles;
-using CalamityMod.Graphics.Metaballs;
-using ReLogic.Content;
 using CalamityMod.Enums;
 using System.Collections.Generic;
-using CalamityMod.Utilities;
 using CalamityMod.Buffs.StatBuffs;
 using System;
 using CalamityMod.Dusts;
@@ -65,6 +62,10 @@ namespace CalamityMod.NPCs.SunkenSea
         public override bool CanBeHitByNPC(NPC attacker) => PredatorIDs.Contains(attacker.type);
         public override bool CanHitNPC(NPC target) => PreyIDs.Contains(target.type);
         public override bool CanHitPlayer(Player target, ref int cooldownSlot) => false;
+
+        public static readonly SoundStyle noticedBaitSound = new("CalamityMod/Sounds/Custom/GildedAxolotlNeuronActivation");
+        public static readonly SoundStyle ambientNoise = new("CalamityMod/Sounds/Custom/GildedAxolotlVocalStim", 2);
+        public static readonly SoundStyle alert = new("CalamityMod/Sounds/Custom/GildedAxolotlAlert");
 
         #region SunkenSea Fields
 
@@ -289,7 +290,6 @@ namespace CalamityMod.NPCs.SunkenSea
                 {
                     if (NoticeHeldItemSoundTimer <= 0)
                     {
-                        SoundStyle noticedBaitSound = new("CalamityMod/Sounds/Custom/GildedAxolotlNeuronActivation");
                         SoundEngine.PlaySound(noticedBaitSound with { Volume = 0.7f, Pitch = 0.1f, PitchVariance = 0.1f }, NPC.Center);
                         NoticeHeldItemSoundTimer = NoticeHeldItemSoundCooldown;
                     }
@@ -370,7 +370,6 @@ namespace CalamityMod.NPCs.SunkenSea
 
             if (Main.rand.NextBool(300) && PassiveSoundTimer <= 0)
             {
-                SoundStyle ambientNoise = new("CalamityMod/Sounds/Custom/GildedAxolotlVocalStim", 2);
                 SoundEngine.PlaySound(ambientNoise with { Volume = 0.66f, Pitch = 0.1f, PitchVariance = 0.15f }, NPC.Center);
                 PassiveSoundTimer = PassiveSoundCooldown;
             }
@@ -410,7 +409,6 @@ namespace CalamityMod.NPCs.SunkenSea
 
             if (FleeTimer <= 0)
             {
-                SoundStyle alert = new("CalamityMod/Sounds/Custom/GildedAxolotlAlert");
                 SoundEngine.PlaySound(alert with { Volume = 0.9f, PitchVariance = 0.1f }, NPC.Center);
 
                 if (!Main.dedServ)
@@ -471,7 +469,6 @@ namespace CalamityMod.NPCs.SunkenSea
 
             if (Main.rand.NextBool(300) && PassiveSoundTimer <= 0)
             {
-                SoundStyle ambientNoise = new("CalamityMod/Sounds/Custom/GildedAxolotlVocalStim", 2);
                 SoundEngine.PlaySound(ambientNoise with { Volume = 0.66f, Pitch = 0.1f, PitchVariance = 0.15f }, NPC.Center);
                 PassiveSoundTimer = PassiveSoundCooldown;
             }
