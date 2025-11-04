@@ -99,7 +99,7 @@ namespace CalamityMod.Projectiles.Magic
         public override bool? CanHitNPC(NPC target)
         {
             if (canDamage)
-                return true;
+                return null;
             return false;
         }
         public override bool CanHitPlayer(Player target)
