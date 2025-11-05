@@ -101,14 +101,14 @@ namespace CalamityMod.Items
                 { ItemID.DD2BetsyBow, Do(DamageExact(42)) }, // Aerial Bane's ridiculous multiplier is removed, so this compensates for that
                 { ItemID.DD2SquireBetsySword, Do(UseMeleeSpeed, DamageExact(150)) }, // Flying Dragon
                 { ItemID.DD2SquireDemonSword, Do(DamageExact(110), UseExact(25)) }, // Brand of the Inferno
-                { ItemID.DeadlySphereStaff, Do(UseExact(20), DamageExact(50)) },
+                { ItemID.DeadlySphereStaff, Do(DamageExact(50)) },
                 { ItemID.DeathSickle, Do(UseMeleeSpeed, DamageExact(70), ShootSpeedExact(15f)) },
                 { ItemID.DemonBow, Do(DamageExact(12)) },
                 { ItemID.DemonScythe, Do(DamageExact(28)) },
                 { ItemID.DyeTradersScimitar, Do(UseTurn, DamageExact(24)) }, // Exotic Scimitar
                 { ItemID.ElfMelter, Do(ShootSpeedDelta(+5f)) },
                 { ItemID.EmeraldStaff, Do(DamageExact(27)) },
-                { ItemID.EmpressBlade, Do(DamageExact(50), UseExact(20)) }, // Terraprisma
+                { ItemID.EmpressBlade, Do(DamageExact(50)) }, // Terraprisma
                 { ItemID.EnchantedBoomerang, Do(DamageExact(24)) },
                 { ItemID.EnchantedSword, Do(UseMeleeSpeed, DamageExact(30), ShootSpeedExact(15f)) },
                 { ItemID.EndlessMusketPouch, Do(DamageExact(8)) },
@@ -135,14 +135,14 @@ namespace CalamityMod.Items
                 { ItemID.Handgun, Do(UseExact(20)) },
                 { ItemID.HighVelocityBullet, Do(DamageExact(13)) },
                 { ItemID.HiveFive, Do(DamageExact(27)) },
-                { ItemID.HornetStaff, Do(DamageExact(18), UseExact(30)) },
+                { ItemID.HornetStaff, Do(DamageExact(18)) },
                 { ItemID.IceBlade, Do(UseMeleeSpeed) },
                 { ItemID.IceBoomerang, Do(UseExact(25), ShootSpeedExact(9)) },
                 { ItemID.IceRod, Do(UseExact(6), ShootSpeedExact(20)) },
                 { ItemID.IceSickle, Do(UseMeleeSpeed, DamageExact(75), ShootSpeedExact(20f)) },
                 { ItemID.IchorArrow, Do(DamageExact(13)) },
                 { ItemID.IchorBullet, Do(DamageExact(11)) },
-                { ItemID.ImpStaff, Do(UseExact(30), DamageExact(25)) },
+                { ItemID.ImpStaff, Do(DamageExact(25)) },
                 { ItemID.InfernoFork, Do(DamageExact(83), ShootSpeedExact(11)) },
                 { ItemID.InfluxWaver, Do(UseMeleeSpeed, DamageExact(80), UseExact(25)) },
                 { ItemID.IronShortsword, Do(TrueMelee, DamageExact(10)) },
@@ -170,7 +170,7 @@ namespace CalamityMod.Items
                 { ItemID.MonkStaffT2, Do(TrueMelee, DamageExact(90)) }, // Ghastly Glaive
                 { ItemID.MonkStaffT3, Do(DamageExact(225)) }, // Sky Dragon's Fury
                 { ItemID.MoonlordBullet, Do(DamageExact(17)) }, // Luminite Bullet
-                { ItemID.MoonlordTurretStaff, Do(DamageExact(50), UseExact(15)) }, // Lunar Portal Staff
+                { ItemID.MoonlordTurretStaff, Do(DamageExact(50)) }, // Lunar Portal Staff
                 { ItemID.Muramasa, Do(CritDelta(+10)) },
                 { ItemID.MushroomSpear, Do(TrueMelee, UseRatio(0.8f), DamageExact(100)) },
                 { ItemID.Musket, Do(DamageExact(22)) },
@@ -202,11 +202,11 @@ namespace CalamityMod.Items
                 { ItemID.PurpleClubberfish, Do(UseTurn, KnockbackExact(10f)) },
                 { ItemID.PurplePhaseblade, phaseblade },
                 { ItemID.PurplePhasesaber, phasesaber },
-                { ItemID.PygmyStaff, Do(UseExact(20), DamageExact(63)) },
+                { ItemID.PygmyStaff, Do(DamageExact(63)) },
                 { ItemID.RainbowGun, Do(DamageExact(60), ManaExact(40)) },
                 { ItemID.RainbowRod, Do(DamageExact(40), ManaExact(13), KnockbackExact(8f)) },
                 { ItemID.Rally, Do(DamageExact(18)) },
-                { ItemID.RavenStaff, Do(UseExact(20), DamageExact(36)) },
+                { ItemID.RavenStaff, Do(DamageExact(36)) },
                 { ItemID.RazorbladeTyphoon, Do(DamageExact(103)) },
                 { ItemID.Razorpine, Do(DamageExact(40)) },
                 { ItemID.RedPhaseblade, phaseblade },
@@ -229,7 +229,7 @@ namespace CalamityMod.Items
                 { ItemID.SilverShortsword, Do(TrueMelee, DamageExact(14)) },
                 { ItemID.SkyFracture, Do(DamageExact(46)) },
                 { ItemID.SlapHand, Do(UseTurn, DamageExact(120)) },
-                { ItemID.Smolstar, Do(DamageExact(9), UseExact(25)) }, // Blade Staff
+                { ItemID.Smolstar, Do(DamageExact(9)) }, // Blade Staff
                 { ItemID.SniperRifle, Do(DamageExact(200), UseExact(40)) },
                 { ItemID.SolarEruption, Do(DamageExact(122)) },
                 { ItemID.SoulDrain, Do(DamageExact(38)) }, // Life Drain
@@ -239,8 +239,8 @@ namespace CalamityMod.Items
                 { ItemID.SpiritFlame, Do(UseExact(20), ManaExact(11), ShootSpeedExact(2f)) },
                 { ItemID.StaffofEarth, Do(DamageExact(150)) },
                 { ItemID.StarCannon, Do(UseExact(18)) },
-                { ItemID.StardustDragonStaff, Do(DamageExact(20), UseExact(19)) },
-                { ItemID.StormTigerStaff, Do(DamageExact(49), UseExact(20)) }, // Desert Tiger Staff
+                { ItemID.StardustDragonStaff, Do(DamageExact(20)) },
+                { ItemID.StormTigerStaff, Do(DamageExact(49)) }, // Desert Tiger Staff
                 { ItemID.StylistKilLaKillScissorsIWish, Do(UseTurn, DamageExact(21)) }, // Stylish Scissors
                 { ItemID.Stynger, Do(DamageExact(75)) },
                 { ItemID.SuperStarCannon, Do(DamageExact(55)) },
@@ -420,32 +420,7 @@ namespace CalamityMod.Items
                 { ItemID.VortexChainsaw, trueMeleeNoSpeed },
                 #endregion
 
-                #region CATEGORY 5: Summoner Quality of Life
-                { ItemID.BabyBirdStaff, Do(UseExact(35)) }, // Finch Staff
-                { ItemID.DD2BallistraTowerT2Popper, Do(UseExact(25)) }, // Ballista Tier 2
-                { ItemID.DD2BallistraTowerT3Popper, Do(UseExact(20)) }, // Ballista Tier 3
-                { ItemID.DD2ExplosiveTrapT2Popper, Do(UseExact(25)) }, // Explosive Trap Tier 2
-                { ItemID.DD2ExplosiveTrapT3Popper, Do(UseExact(20)) }, // Explosive Trap Tier 3
-                { ItemID.DD2FlameburstTowerT2Popper, Do(UseExact(25)) }, // Flameburst Tier 2
-                { ItemID.DD2FlameburstTowerT3Popper, Do(UseExact(20)) }, // Flameburst Tier 3
-                { ItemID.DD2LightningAuraT2Popper, Do(UseExact(25)) }, // Lightning Aura Tier 2
-                { ItemID.DD2LightningAuraT3Popper, Do(UseExact(20)) }, // Lightning Aura Tier 3
-                { ItemID.FlinxStaff, Do(UseExact(35)) },
-                { ItemID.OpticStaff, Do(UseExact(25)) },
-                { ItemID.PirateStaff, Do(UseExact(25)) },
-                { ItemID.QueenSpiderStaff, Do(UseExact(25)) },
-                { ItemID.RainbowCrystalStaff, Do(UseExact(15)) },
-                { ItemID.SanguineStaff, Do(UseExact(25)) },
-                { ItemID.SlimeStaff, Do(UseExact(30)) },
-                { ItemID.SpiderStaff, Do(UseExact(25)) },
-                { ItemID.StaffoftheFrostHydra, Do(UseExact(20)) },
-                { ItemID.StardustCellStaff, Do(UseExact(20)) },
-                { ItemID.TempestStaff, Do(UseExact(20)) },
-                { ItemID.VampireFrogStaff, Do(UseExact(30)) },
-                { ItemID.XenoStaff, Do(UseExact(20)) },
-                #endregion
-
-                #region CATEGORY 6: UseTurn
+                #region CATEGORY 5: UseTurn
                 { ItemID.BladeofGrass, Do(UseTurn) },
                 { ItemID.BloodButcherer, Do(UseTurn) },
                 { ItemID.BorealWoodSword, Do(UseTurn) },
@@ -468,7 +443,7 @@ namespace CalamityMod.Items
                 { ItemID.WoodenSword, Do(UseTurn) },
                 #endregion
 
-                #region CATEGORY 7: Summoning Item Quality of Life
+                #region CATEGORY 6: Summoning Item Quality of Life
                 { ItemID.Abeemination, nonConsumableBossSummon },
                 { ItemID.BloodySpine, nonConsumableBossSummon },
                 { ItemID.CelestialSigil, nonConsumableBossSummon },
@@ -483,7 +458,7 @@ namespace CalamityMod.Items
                 { ItemID.WormFood, nonConsumableBossSummon },
                 #endregion
 
-                #region CATEGORY 8: Sell Prices
+                #region CATEGORY 7: Sell Prices
                 { ItemID.EncumberingStone, Do(Worthless) },
                 { ItemID.FlareGun, Do(Value(Item.sellPrice(silver: 10))) },
                 { ItemID.GlowingMushroom, Do(Worthless) },
