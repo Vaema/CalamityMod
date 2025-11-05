@@ -833,27 +833,27 @@ namespace CalamityMod.CalPlayer
 
             // Can't have any cooldowns here because dodges grrrrr....
             if (fleshTotem && !Player.HasCooldown(Cooldowns.FleshTotem.ID) && TotalEnergyShielding <= 0)
-                contactDamageReduction += 0.5;
+                modifiers.FinalDamage *= 0.5f;
 
             if (tarragonCloak && tarraMelee && !Player.HasCooldown(Cooldowns.TarragonCloak.ID))
-                contactDamageReduction += TarragonHeadMelee.CloakContactDamageReduction;
+                modifiers.FinalDamage *= (1f - TarragonHeadMelee.CloakContactDamageReduction);
 
             if (bloodflareMelee && bloodflareFrenzy && !Player.HasCooldown(BloodflareFrenzy.ID))
-                contactDamageReduction += BloodflareHeadMelee.FrenzyContactDamageReduction;
+                modifiers.FinalDamage *= (1f - BloodflareHeadMelee.FrenzyContactDamageReduction);
 
             if (npc.Calamity().temporalSadness)
-                contactDamageReduction += 0.5;
+                modifiers.FinalDamage *= 0.5f;
 
             if (aquaticHeartIce)
-                contactDamageReduction += AquaticHeart.IceShieldAllDamageReduction;
+                modifiers.FinalDamage *= (1f - AquaticHeart.IceShieldAllDamageReduction);
 
             if (Player.ownedProjectileCounts[ModContent.ProjectileType<EnergyShell>()] > 0 && Player.ActiveItem().type == ModContent.ItemType<LionHeart>())
-                contactDamageReduction += 0.5;
+                modifiers.FinalDamage *= 0.5f;
 
             bool lifeAndShieldCondition = Player.statLife >= Player.statLifeMax2 && (!HasAnyEnergyShield || TotalEnergyShielding >= TotalMaxShieldDurability);
             if (theBee && theBeeCooldown <= 0 && lifeAndShieldCondition)
             {
-                contactDamageReduction += 0.5;
+                modifiers.FinalDamage *= 0.5f;
                 shouldTriggerBeeCooldown = true;
             }
 
@@ -868,46 +868,7 @@ namespace CalamityMod.CalPlayer
                 // If the shield never breaks, you never lose full Adrenaline, meaning you keep the DR forever and are functionally immortal.
                 // This intentionally gives Adrenaline much-needed anti-synergy with energy shields, because they make gaining Adrenaline much safer.
                 if ((fullAdrenWithoutDH || usingNanomachinesWithDH) && TotalEnergyShielding <= 0)
-                    contactDamageReduction += this.GetAdrenalineDR();
-            }
-
-            if (vHex)
-                contactDamageReduction -= 0.1;
-
-            if (irradiated)
-                contactDamageReduction -= 0.1;
-
-            if (corrEffigy)
-                contactDamageReduction -= CorruptionEffigy.DamageReductionLoss;
-
-            // 10% is converted to 9%, 25% is converted to 20%, 50% is converted to 33%, 75% is converted to 43%, 100% is converted to 50%
-            if (contactDamageReduction > 0D)
-            {
-                if (armorCrunch)
-                    contactDamageReduction *= (double)ArmorCrunch.MultiplicativeDamageReductionPlayer;
-                if (crumble)
-                    contactDamageReduction *= (double)Crumbling.MultiplicativeDamageReductionPlayer;
-
-                // Contact damage reduction is reduced by DR Damage, which itself is proportional to defense damage
-                // In FTW, as defense damage is uncapped, DR damage is also uncapped.
-                int currentDefense = Player.GetCurrentDefense(false);
-                if (totalDefenseDamage > 0 && currentDefense > 0)
-                {
-                    double drDamageRatio = CurrentDefenseDamage / (double)currentDefense;
-                    if (!Main.getGoodWorld && drDamageRatio > 1D)
-                        drDamageRatio = 1D;
-
-                    contactDamageReduction *= 1D - drDamageRatio;
-                    if (!Main.getGoodWorld && contactDamageReduction < 0D)
-                        contactDamageReduction = 0D;
-                }
-
-                // Scale with base damage reduction
-                if (Player.endurance > 0)
-                    contactDamageReduction *= 1f - Player.endurance;
-
-                contactDamageReduction = 1D / (1D + contactDamageReduction);
-                modifiers.SourceDamage *= (float)contactDamageReduction;
+                    modifiers.IncomingDamageMultiplier *= (1f - this.GetAdrenalineDR());
             }
 
             if (Main.hardMode && Main.expertMode)
@@ -1007,7 +968,7 @@ namespace CalamityMod.CalPlayer
                 Projectile pro = Main.projectile.AsEnumerable().Where(projectile => projectile.friendly && projectile.owner == Player.whoAmI && projectile.type == ModContent.ProjectileType<Projectiles.Summon.PhantomicShield>()).First();
                 phantomicBulwarkCooldown = 1800; // 30 second cooldown
                 pro.Kill();
-                projectileDamageReduction += 0.2;
+                modifiers.FinalDamage *= 0.8f;
             }
 
             if (trueVHex)
@@ -1095,19 +1056,19 @@ namespace CalamityMod.CalPlayer
             if (evolution)
             {
                 if (proj.type == projTypeJustHitBy)
-                    projectileDamageReduction += 0.25;
+                    modifiers.FinalDamage *= 0.75f;
             }
 
             if (aquaticHeartIce)
-                projectileDamageReduction += AquaticHeart.IceShieldAllDamageReduction;
+                modifiers.FinalDamage *= (1f - AquaticHeart.IceShieldAllDamageReduction);
 
             if (Player.ownedProjectileCounts[ModContent.ProjectileType<EnergyShell>()] > 0 && Player.ActiveItem().type == ModContent.ItemType<LionHeart>())
-                projectileDamageReduction += 0.5;
+                modifiers.FinalDamage *= 0.5f;
 
             bool lifeAndShieldCondition = Player.statLife >= Player.statLifeMax2 && (!HasAnyEnergyShield || TotalEnergyShielding >= TotalMaxShieldDurability);
             if (theBee && theBeeCooldown <= 0 && lifeAndShieldCondition)
             {
-                projectileDamageReduction += 0.5;
+                modifiers.FinalDamage *= 0.5f;
                 shouldTriggerBeeCooldown = true;
             }
 
@@ -1122,7 +1083,7 @@ namespace CalamityMod.CalPlayer
                 // If the shield never breaks, you never lose full Adrenaline, meaning you keep the DR forever and are functionally immortal.
                 // This intentionally gives Adrenaline much-needed anti-synergy with energy shields, because they make gaining Adrenaline much safer.
                 if ((fullAdrenWithoutDH || usingNanomachinesWithDH) && TotalEnergyShielding <= 0)
-                    projectileDamageReduction += this.GetAdrenalineDR();
+                    modifiers.IncomingDamageMultiplier *= (1f - this.GetAdrenalineDR());
             }
 
             // Damage reduction from Shield of the High Ruler if facing the projectile that just hit.
@@ -1134,52 +1095,13 @@ namespace CalamityMod.CalPlayer
                 if (Player.direction == 1)
                 {
                     if (projectileRight)
-                        projectileDamageReduction += 0.15;
+                        modifiers.FinalDamage *= 0.85f;
                 }
                 else
                 {
                     if (projectileLeft)
-                        projectileDamageReduction += 0.15;
+                        modifiers.FinalDamage *= 0.85f;
                 }
-            }
-
-            if (vHex)
-                projectileDamageReduction -= 0.1;
-
-            if (irradiated)
-                projectileDamageReduction -= 0.1;
-
-            if (corrEffigy)
-                projectileDamageReduction -= CorruptionEffigy.DamageReductionLoss;
-
-            // 10% is converted to 9%, 25% is converted to 20%, 50% is converted to 33%, 75% is converted to 43%, 100% is converted to 50%
-            if (projectileDamageReduction > 0D)
-            {
-                if (armorCrunch)
-                    projectileDamageReduction *= (double)ArmorCrunch.MultiplicativeDamageReductionPlayer;
-                if (crumble)
-                    projectileDamageReduction *= (double)Crumbling.MultiplicativeDamageReductionPlayer;
-
-                // Projectile damage reduction is reduced by DR Damage, which itself is proportional to defense damage
-                int currentDefense = Player.GetCurrentDefense(false);
-                if (totalDefenseDamage > 0 && currentDefense > 0)
-                {
-                    double drDamageRatio = CurrentDefenseDamage / (double)currentDefense;
-                    if (drDamageRatio > 1D)
-                        drDamageRatio = 1D;
-
-                    projectileDamageReduction *= 1D - drDamageRatio;
-
-                    if (projectileDamageReduction < 0D)
-                        projectileDamageReduction = 0D;
-                }
-
-                // Scale with base damage reduction
-                if (Player.endurance > 0)
-                    projectileDamageReduction *= 1f - Player.endurance;
-
-                projectileDamageReduction = 1D / (1D + projectileDamageReduction);
-                modifiers.SourceDamage *= (float)projectileDamageReduction;
             }
         }
         #endregion

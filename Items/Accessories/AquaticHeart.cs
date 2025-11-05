@@ -13,7 +13,7 @@ namespace CalamityMod.Items.Accessories
         public new string LocalizationCategory => "Items.Accessories";
 
         public static float WaterSpeedBoost = 0.15f;
-        public static double IceShieldAllDamageReduction = 0.2D;
+        public static float IceShieldAllDamageReduction = 0.2f;
 
         public override string AssetPath => "CalamityMod/Items/Accessories/";
         public override (EquipType, string, string)[] EquipSlots =>
