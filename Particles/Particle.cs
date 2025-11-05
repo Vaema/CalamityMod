@@ -1,5 +1,4 @@
-﻿using System.Collections.Generic;
-using CalamityMod.Enums;
+﻿using CalamityMod.Enums;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 
@@ -77,6 +76,12 @@ namespace CalamityMod.Particles
         /// Set this to true to disable default particle drawing, thus calling Particle.CustomDraw() instead.
         /// </summary>
         public virtual bool UseCustomDraw => false;
+
+        /// <summary>
+        /// Override and set this to true to disable automatic drawing for all instances of this particle entirely.
+        /// <br>Drawing of this particle must be done from a <see cref="ParticleAutoDrawingOverride"/> class.</br>
+        /// </summary>
+        public virtual bool OverrideAutomaticDrawing => false;
 
         /// <summary>
         /// Use this method if you want to handle the particle drawing yourself. Only called if Particle.UseCustomDraw is set to true.

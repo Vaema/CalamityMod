@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using CalamityMod.Enums;
 using CalamityMod.Graphics;
-using CalamityMod.Items.Ammo;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria;
@@ -116,14 +115,14 @@ namespace CalamityMod.Systems.Graphic.PixelationSystem
             if (Main.dedServ)
                 return;
 
-            ActivePixelatedDrawers_BeforeTiles = null;
-            ActivePixelatedDrawers_BeforeNPCs = null;
-            ActivePixelatedDrawers_AfterNPCs = null;
-            ActivePixelatedDrawers_BeforeProjectiles = null;
-            ActivePixelatedDrawers_AfterProjectiles = null;
-            ActivePixelatedDrawers_AfterPlayers = null;
-            ActivePixelatedDrawers_AfterDusts = null;
-            ActivePixelatedDrawers_AfterEverything = null;
+            ActivePixelatedDrawers_BeforeTiles.Clear();
+            ActivePixelatedDrawers_BeforeNPCs.Clear();
+            ActivePixelatedDrawers_AfterNPCs.Clear();
+            ActivePixelatedDrawers_BeforeProjectiles.Clear();
+            ActivePixelatedDrawers_AfterProjectiles.Clear();
+            ActivePixelatedDrawers_AfterPlayers.Clear();
+            ActivePixelatedDrawers_AfterDusts.Clear();
+            ActivePixelatedDrawers_AfterEverything.Clear();
         }
 
 
