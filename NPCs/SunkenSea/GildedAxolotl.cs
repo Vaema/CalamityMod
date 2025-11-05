@@ -59,6 +59,9 @@ namespace CalamityMod.NPCs.SunkenSea
         public int NoticeHeldItemSoundTimer = 0;
 
         public bool PathfindToPlayer = false;
+
+        public float auraFade = 0;
+
         public override bool CanBeHitByNPC(NPC attacker) => PredatorIDs.Contains(attacker.type);
         public override bool CanHitNPC(NPC target) => PreyIDs.Contains(target.type);
         public override bool CanHitPlayer(Player target, ref int cooldownSlot) => false;
@@ -151,6 +154,7 @@ namespace CalamityMod.NPCs.SunkenSea
             NPC.ai[1] = reader.ReadSingle(); // Anim state
             NPC.ai[2] = reader.ReadSingle(); // Ground movement timer
             targetPoint = reader.ReadVector2(); // For pathfinding points
+            auraFade = reader.ReadSingle();
         }
 
         public override void SendExtraAI(BinaryWriter writer)
@@ -159,6 +163,7 @@ namespace CalamityMod.NPCs.SunkenSea
             writer.Write(NPC.ai[1]); // Anim state
             writer.Write(NPC.ai[2]); // Ground movement timer
             writer.WriteVector2(targetPoint); // For pathfinding points
+            writer.Write(auraFade);
         }
 
         #endregion
@@ -225,6 +230,12 @@ namespace CalamityMod.NPCs.SunkenSea
                 }
             }
 
+            // Handle aura vfx
+            float distanceForVisual = nearestPlayerForVisuals != null ? nearestPlayerDistanceForVisuals : buffRange;
+            float maxDistance = buffRange * 1.5f;
+            float minDistance = 120f;
+            auraFade = Utils.GetLerpValue(maxDistance, minDistance, distanceForVisual, clamped: true);
+
             // Allow NPCs to be buffed while in the aura, including this npc.
             for (int i = 0; i < Main.maxNPCs; i++)
             {
@@ -240,36 +251,17 @@ namespace CalamityMod.NPCs.SunkenSea
                 }
             }
 
-            // Handle aura vfx
-            float distanceForVisual = nearestPlayerForVisuals != null ? nearestPlayerDistanceForVisuals : buffRange * 2f;
-            float maxDistance = buffRange;
-            float minDistance = 90f;
-            float auraVisibility = Utils.GetLerpValue(maxDistance, minDistance, distanceForVisual, clamped: true);
-
-            if (auraVisibility > 0f)
+            if (auraFade > 0f)
             {
                 float pulse = 0.6f + 0.25f * (float)Math.Sin(Main.GlobalTimeWrappedHourly * 2.5f);
-                int baseAlpha = (int)(255f * (1f - auraVisibility * pulse));
+                int baseAlpha = (int)(255f * (1f - auraFade * 0.5f * pulse));
+                if (baseAlpha < 0) baseAlpha = 0;
+                if (baseAlpha > 255) baseAlpha = 255;
+
 
                 int innerDustCount = Main.rand.Next(0, 2);
 
-                // Outer ring
-                for (int i = 0; i < 2; i++)
-                {
-                    float areaSize = 275f;
-                    Vector2 spawnSpot = NPC.Center + Main.rand.NextVector2CircularEdge(areaSize, areaSize);
-
-                    Dust dust = Dust.NewDustPerfect(spawnSpot, ModContent.DustType<LightDust>());
-                    dust.scale = Main.rand.NextFloat(0.95f, 1.8f);
-                    dust.noGravity = true;
-                    dust.alpha = baseAlpha;
-                    dust.color = Main.rand.NextBool(3) ? Color.Goldenrod : Color.Gold;
-
-                    Vector2 velocityDir = NPC.DirectionTo(spawnSpot) * Main.rand.NextFloat(1.5f, 3.5f) * auraVisibility * pulse;
-                    dust.velocity = velocityDir.RotatedByRandom(0.4f);
-                }
-
-                // Inner ring
+                // Spawn dust that gains visibility near the axolotl
                 for (int i = 0; i < innerDustCount; i++)
                 {
                     float areaSize = 255f;
@@ -279,7 +271,9 @@ namespace CalamityMod.NPCs.SunkenSea
                     dust.scale = Main.rand.NextFloat(0.6f, 1.1f);
                     dust.noGravity = true;
                     dust.alpha = baseAlpha;
-                    dust.color = Main.rand.NextBool(2) ? Color.PaleGoldenrod : Color.Gold;
+                    dust.color = (Main.rand.NextBool(2) ? Color.Silver : Color.Gold) * 2f;
+                    dust.noLight = true;
+                    dust.noLightEmittence = true;
                     dust.velocity *= 0.05f;
                 }
             }
@@ -309,7 +303,7 @@ namespace CalamityMod.NPCs.SunkenSea
                 PathfindToPlayer = false;
             }
 
-            Lighting.AddLight(NPC.Center, Color.Gold.ToVector3() * 0.4f);
+            Lighting.AddLight(NPC.Center, Color.Gold.ToVector3() * (auraFade * 0.8f));
 
             if (NPC.wet)
             {
@@ -531,7 +525,7 @@ namespace CalamityMod.NPCs.SunkenSea
         {
             if (spawnInfo.Player.Calamity().ZoneRadiantReefs && !spawnInfo.Player.Calamity().clamity)
             {
-                return SpawnCondition.Cavern.Chance * 0.2f;
+                return SpawnCondition.Cavern.Chance * 0.1777f;
             }
             return 0f;
         }
@@ -558,6 +552,14 @@ namespace CalamityMod.NPCs.SunkenSea
             if (NPC.IsABestiaryIconDummy)
                 return true;
 
+            // Draw aura circle behind the axolotl
+            float auraOpacity = auraFade * 0.4f;
+            if (auraOpacity > 0f)
+            {
+                Texture2D auraTexture = ModContent.Request<Texture2D>("CalamityMod/Particles/BloomCircle").Value;
+                Main.EntitySpriteDraw(auraTexture, NPC.Center - screenPos, null, (Color.Gold * auraOpacity) with { A = 0 }, NPC.rotation, auraTexture.Size() * 0.5f, 7.77f, SpriteEffects.None, 0);
+            }
+
             Texture2D tex = TextureAssets.Npc[NPC.type].Value;
             Vector2 origin = new Vector2(tex.Width / 4, tex.Height / (Main.npcFrameCount[Type] * 2));
 
@@ -566,7 +568,17 @@ namespace CalamityMod.NPCs.SunkenSea
 
             Rectangle frame = tex.Frame(2, Main.npcFrameCount[Type], (int)Animation, NPC.frame.Y / NPC.height);
 
-            spriteBatch.Draw(tex, drawPos, frame, NPC.GetAlpha(drawColor), NPC.rotation, origin, NPC.scale, NPC.spriteDirection == 1 ? SpriteEffects.FlipHorizontally : SpriteEffects.None, 0);
+            // Draw backglow that scales with auraFade
+            if (auraFade > 0f)
+            {
+                float glowScale = NPC.scale * (1f + (0.0777f * auraFade));
+                float pulse = 0.8f + 0.15f * (float)Math.Sin(Main.GlobalTimeWrappedHourly * 10f);
+                Color glowColor = (Color.Gold * auraFade * pulse) with { A = 0 };
+
+                spriteBatch.Draw(tex, drawPos, frame, glowColor, NPC.rotation, origin, glowScale, NPC.spriteDirection == 1 ? SpriteEffects.FlipHorizontally : SpriteEffects.None, 0f);
+            }
+
+            spriteBatch.Draw(tex, drawPos, frame, NPC.GetAlpha(drawColor * (1f + auraFade * 3)), NPC.rotation, origin, NPC.scale, NPC.spriteDirection == 1 ? SpriteEffects.FlipHorizontally : SpriteEffects.None, 0);
             return false;
         }
     }

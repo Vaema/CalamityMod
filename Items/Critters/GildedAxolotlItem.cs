@@ -20,7 +20,7 @@ namespace CalamityMod.Items.Critters
         public override void SetDefaults()
         {
             Item.DefaultToCapturedCritter(ModContent.NPCType<GildedAxolotl>());
-            Item.value = Item.sellPrice(silver: 30);
+            Item.value = Item.sellPrice(gold: 1);
             Item.rare = ItemRarityID.Green;
         }
     }
