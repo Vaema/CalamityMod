@@ -112,6 +112,7 @@ namespace CalamityMod.NPCs.SunkenSea
             base.SetStaticDefaults();
             Main.npcFrameCount[Type] = 7;
             NPCID.Sets.CountsAsCritter[Type] = true;
+            Main.npcCatchable[Type] = true;
         }
 
         public override void SetDefaults()
@@ -137,6 +138,8 @@ namespace CalamityMod.NPCs.SunkenSea
 
             Banner = NPC.type;
             BannerItem = ModContent.ItemType<GildedAxolotlBanner>();
+
+            NPC.catchItem = ModContent.ItemType<GildedAxolotlItem>();
 
             NPC.Calamity().VulnerableToSickness = false;
             NPC.Calamity().VulnerableToElectricity = false;
@@ -251,6 +254,7 @@ namespace CalamityMod.NPCs.SunkenSea
                 }
             }
 
+            // Handle dust which dynamically changes alpha based on distance and time
             if (auraFade > 0f)
             {
                 float pulse = 0.6f + 0.25f * (float)Math.Sin(Main.GlobalTimeWrappedHourly * 2.5f);
@@ -261,7 +265,6 @@ namespace CalamityMod.NPCs.SunkenSea
 
                 int innerDustCount = Main.rand.Next(0, 2);
 
-                // Spawn dust that gains visibility near the axolotl
                 for (int i = 0; i < innerDustCount; i++)
                 {
                     float areaSize = 255f;
@@ -278,6 +281,7 @@ namespace CalamityMod.NPCs.SunkenSea
                 }
             }
 
+            // When detecting a player holding of one of the Axolotl's prey
             if (nearestPlayer != null)
             {
                 if (CurrentBehavior == (float)PhaseType.Idle)
@@ -303,7 +307,7 @@ namespace CalamityMod.NPCs.SunkenSea
                 PathfindToPlayer = false;
             }
 
-            Lighting.AddLight(NPC.Center, Color.Gold.ToVector3() * (auraFade * 0.8f));
+            Lighting.AddLight(NPC.Center, Color.Gold.ToVector3() * (auraFade * 0.8f)); // Passively emit light based on auraFade
 
             if (NPC.wet)
             {
@@ -362,7 +366,7 @@ namespace CalamityMod.NPCs.SunkenSea
             // Always pathfind to a random point when idling
             pathfinding.DoPathfinding(new(NPC.Center, NPC.Center + Main.rand.NextVector2Unit() * Main.rand.NextFloat(IdleMinPathDistance, IdleMaxPathDistance), SunkenSeaTileValidity));
 
-            if (Main.rand.NextBool(300) && PassiveSoundTimer <= 0)
+            if (Main.rand.NextBool(300) && PassiveSoundTimer <= 0) // Randomly emit a noise
             {
                 SoundEngine.PlaySound(ambientNoise with { Volume = 0.66f, Pitch = 0.1f, PitchVariance = 0.15f }, NPC.Center);
                 PassiveSoundTimer = PassiveSoundCooldown;
@@ -401,7 +405,7 @@ namespace CalamityMod.NPCs.SunkenSea
                 return;
             }
 
-            if (FleeTimer <= 0)
+            if (FleeTimer <= 0) // Specifically for VFX and SFX when fleeing
             {
                 SoundEngine.PlaySound(alert with { Volume = 0.9f, PitchVariance = 0.1f }, NPC.Center);
 
@@ -416,7 +420,7 @@ namespace CalamityMod.NPCs.SunkenSea
 
             pathfinding.MaxSpeed = FleeMaxSpeed;
 
-            // Try to find a safe point from pred
+            // Try to find a safe point from predator
             float distanceFromAvoided = Vector2.Distance(NPC.Center, CurrentPredator.Center);
             Vector2 runDirection = NPC.DirectionFrom(CurrentPredator.Center);
             targetPoint = NPC.Center + runDirection * Utils.Remap(distanceFromAvoided, 0f, 960f, 80f, 3200f);
@@ -454,20 +458,20 @@ namespace CalamityMod.NPCs.SunkenSea
                     GroundMovementTimer--;
             }
 
-            if (Math.Abs(NPC.velocity.X) > 0.01f)
+            if (Math.Abs(NPC.velocity.X) > 0.01f) // Face chosen direction while moving
             {
                 int dir = NPC.velocity.X.DirectionalSign();
                 if (dir != 0)
                     NPC.spriteDirection = NPC.direction = dir;
             }
 
-            if (Main.rand.NextBool(300) && PassiveSoundTimer <= 0)
+            if (Main.rand.NextBool(300) && PassiveSoundTimer <= 0) // Randomly emit a noise
             {
                 SoundEngine.PlaySound(ambientNoise with { Volume = 0.66f, Pitch = 0.1f, PitchVariance = 0.15f }, NPC.Center);
                 PassiveSoundTimer = PassiveSoundCooldown;
             }
 
-            NPC.rotation = 0f;
+            NPC.rotation = 0f; // Rotation not needed when not in water
         }
 
         protected override void OnPredatorDetection(NPC predator)
@@ -560,6 +564,7 @@ namespace CalamityMod.NPCs.SunkenSea
                 Main.EntitySpriteDraw(auraTexture, NPC.Center - screenPos, null, (Color.Gold * auraOpacity) with { A = 0 }, NPC.rotation, auraTexture.Size() * 0.5f, 7.77f, SpriteEffects.None, 0);
             }
 
+            // Main NPC drawing
             Texture2D tex = TextureAssets.Npc[NPC.type].Value;
             Vector2 origin = new Vector2(tex.Width / 4, tex.Height / (Main.npcFrameCount[Type] * 2));
 
