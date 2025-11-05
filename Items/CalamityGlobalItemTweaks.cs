@@ -31,7 +31,7 @@ namespace CalamityMod.Items
             // Various shorthands for items which receive very simple changes, or are repeated multiple times.
             IItemTweak[] trueMelee = Do(TrueMelee);
             IItemTweak[] trueMeleeNoSpeed = Do(TrueMeleeNoSpeed);
-            IItemTweak[] nonConsumableBossSummon = Do(MaxStack(1), NotConsumable, UseTimeExact(10));
+            IItemTweak[] nonConsumableBossSummon = Do(MaxStack(1), NotConsumable);
             IItemTweak[] phaseblade = Do(UseTurn, DamageExact(36));
             IItemTweak[] phasesaber = Do(DamageExact(132));
 
@@ -470,22 +470,15 @@ namespace CalamityMod.Items
 
                 #region CATEGORY 7: Summoning Item Quality of Life
                 { ItemID.Abeemination, nonConsumableBossSummon },
-                { ItemID.BloodMoonStarter, Do(UseTimeExact(10))}, // Bloody Tear
                 { ItemID.BloodySpine, nonConsumableBossSummon },
                 { ItemID.CelestialSigil, nonConsumableBossSummon },
                 { ItemID.DeerThing, nonConsumableBossSummon },
-                { ItemID.GoblinBattleStandard, Do(UseTimeExact(10)) },
                 { ItemID.MechanicalEye, nonConsumableBossSummon },
                 { ItemID.MechanicalSkull, nonConsumableBossSummon },
                 { ItemID.MechanicalWorm, nonConsumableBossSummon },
                 { ItemID.MechdusaSummon, nonConsumableBossSummon }, // Ocram's Razor
-                { ItemID.NaughtyPresent, Do(UseTimeExact(10)) },
-                { ItemID.PirateMap, Do(UseTimeExact(10)) },
-                { ItemID.PumpkinMoonMedallion, Do(UseTimeExact(10)) },
                 { ItemID.QueenSlimeCrystal, nonConsumableBossSummon }, // Gelatin Crystal
                 { ItemID.SlimeCrown, nonConsumableBossSummon },
-                { ItemID.SnowGlobe, Do(UseTimeExact(10)) },
-                { ItemID.SolarTablet, Do(UseTimeExact(10)) },
                 { ItemID.SuspiciousLookingEye, nonConsumableBossSummon },
                 { ItemID.WormFood, nonConsumableBossSummon },
                 #endregion
