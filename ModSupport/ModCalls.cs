@@ -663,12 +663,17 @@ namespace CalamityMod
         #endregion
 
         #region Other Player Stats
-        public static int GetLightStrength(Player p) => p?.GetCurrentAbyssLightLevel() ?? 0;
-
-        public static void AddAbyssLightStrength(Player p, int add)
+        public static float GetDarknessIntensity(Player p)
         {
             if (p != null)
-                p.Calamity().externalAbyssLight += add;
+                return p.Calamity().darknessIntensity;
+            return 0;
+        }
+
+        public static void AddAbyssLightStrength(Player p, float add)
+        {
+            if (p != null)
+                p.Calamity().abyssDarkness -= add;
         }
 
         public static void AddBreathTick(Player p, float add)
@@ -1206,11 +1211,14 @@ namespace CalamityMod
                 case "GetAbyssLight":
                 case "GetAbyssLightLevel":
                 case "GetAbyssLightStrength":
+                case "GetDarkness":
+                case "GetAbyssDarkness":
+                case "GetDarknessIntensity":
                     if (args.Length < 2)
                         return new ArgumentNullException("ERROR: Must specify a Player object (or int index of a Player).");
                     if (!isValidPlayerArg(args[1]))
                         return new ArgumentException("ERROR: The argument to \"GetLightStrength\" must be a Player or an int.");
-                    return GetLightStrength(castPlayer(args[1]));
+                    return GetDarknessIntensity(castPlayer(args[1]));
 
                 case "AddLight":
                 case "AddLightLevel":

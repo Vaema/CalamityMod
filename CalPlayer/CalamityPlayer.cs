@@ -13,6 +13,7 @@ using CalamityMod.DataStructures;
 using CalamityMod.Dusts;
 using CalamityMod.Events;
 using CalamityMod.FluidSimulation;
+using CalamityMod.Graphics;
 using CalamityMod.Items;
 using CalamityMod.Items.Accessories;
 using CalamityMod.Items.Accessories.Vanity;
@@ -222,7 +223,6 @@ namespace CalamityMod.CalPlayer
         #endregion
 
         #region External variables -- Not used by Calamity, only via Mod.Call or reflection
-        public int externalAbyssLight = 0;
         public float externalBreathTickBoost = 0f;
         public float externalFlightTimeMultBoost = 0f;
 
@@ -709,6 +709,12 @@ namespace CalamityMod.CalPlayer
         public int abyssLifeLostAtZeroBreathStat = 0;
         /// <summary> The amount which defense is reduced while in the Abyss. </summary>
         public int abyssDefenseLossStat = 0;
+
+        //These stats are for the abyss darkness system.
+        public float abyssDarkness = 0f;
+        public float abyssPlayerGlowMultiplier = 1f;
+        public float abyssFlashlightWidthMultiplier = 1f;
+        public float darknessIntensity = 0;
         #endregion
 
         #region Permanent Buff
@@ -2068,7 +2074,6 @@ namespace CalamityMod.CalPlayer
 
             DashID = string.Empty;
 
-            externalAbyssLight = 0;
             externalBreathTickBoost = 0f;
             externalFlightTimeMultBoost = 0f;
             externalRageEnabled = externalAdrenalineEnabled = null;
@@ -2796,6 +2801,14 @@ namespace CalamityMod.CalPlayer
             disablePerfCystSpawns = false;
             disableVoodooSpawns = false;
 
+
+            #region Abyss
+            abyssDarkness = 0;
+            abyssPlayerGlowMultiplier = 1;
+            abyssFlashlightWidthMultiplier = 1;
+            darknessIntensity = 0;
+            #endregion
+
             EnchantHeldItemEffects(Player, Player.Calamity(), Player.ActiveItem());
         }
         #endregion
@@ -2924,7 +2937,6 @@ namespace CalamityMod.CalPlayer
             rOfResilienceEffect = 0;
             demonSwordKillMode = false;
 
-            externalAbyssLight = 0;
             externalBreathTickBoost = 0f;
             externalFlightTimeMultBoost = 0f;
             externalColdImmunity = externalHeatImmunity = false;
@@ -4526,7 +4538,16 @@ namespace CalamityMod.CalPlayer
 
         public override void PostUpdate()
         {
+            if (ZoneAbyss && Main.netMode != NetmodeID.Server)
+            {
+                //Main aura
+                EnhancedDarknessSystem.lights.Add(new() { center = Player.Center, rotation = 0, scale = 4 * abyssPlayerGlowMultiplier, texture = ModContent.Request<Texture2D>("CalamityMod/Particles/BloomCircle") });
+                
+                //Flashlight
+                EnhancedDarknessSystem.lights.Add(new() { center = Player.Center + Player.DirectionTo(mouseWorld) * 750f, rotation = Player.DirectionTo(Main.MouseWorld).ToRotation() - MathHelper.PiOver2, vectorScale = new Vector2(0.75f * abyssFlashlightWidthMultiplier, 0.75f), texture = Request<Texture2D>("CalamityMod/Particles/BloomLineFade") });
+            }
 
+    
             if (subtitletext != null)
             {
                 if (!subtitletext.active)

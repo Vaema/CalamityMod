@@ -1821,10 +1821,10 @@ StatMeter: {
 	MiscStats: Aggro: {0} | Luck: {1}%
 	AbyssStats:
 		'''
-		Abyss Light Strength: {0}
-		Breath Loss Rate: {1}
-		Life Lost Per Tick at Zero Breath: {2}
-		Defense Lost From Pressure: {3}
+		Abyss Darkness: {0} | Player Glow: {1}x | Flashlight: {2}x
+		Breath Loss Rate: {3}
+		Life Lost Per Tick at Zero Breath: {4}
+		Defense Lost From Pressure: {5}
 		'''
 	AbyssStatsHidden: Abyss stats are only displayed while in the Abyss
 }

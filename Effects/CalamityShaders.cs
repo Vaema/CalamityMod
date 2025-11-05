@@ -213,6 +213,11 @@ namespace CalamityMod.Effects
         #endregion
 
         #region Doze's Shaders
+        /// <summary>
+        /// The shader used for Abyss's custom light system.
+        /// Basically works by turning textures into an opacity mask
+        /// </summary>
+        internal static Effect DozeLightingShader;
         internal static Effect FlipScreenShader;
         #endregion
 
@@ -456,6 +461,9 @@ namespace CalamityMod.Effects
             #endregion
 
             #region Loading Doze's Shaders
+            DozeLightingShader = LoadShader("DozeLightingShader");
+            RegisterMiscShader(DozeLightingShader, "ShadowPass", "DozeLightingShader");
+
             FlipScreenShader = LoadShader("ScreenShaders/FlipScreen");
             RegisterScreenShader(FlipScreenShader, "FlipTheScreen", "FlipScreen",EffectPriority.VeryHigh);
             #endregion

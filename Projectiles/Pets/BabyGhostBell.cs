@@ -1,4 +1,6 @@
 ﻿using CalamityMod.CalPlayer;
+using CalamityMod.Graphics;
+using Microsoft.Xna.Framework.Graphics;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
@@ -46,6 +48,7 @@ namespace CalamityMod.Projectiles.Pets
             underwater = Collision.DrownCollision(player.position, player.width, player.height, player.gravDir);
             if (underwater)
             {
+                EnhancedDarknessSystem.lights.Add(new() { center = Projectile.Center, rotation = 0, scale = 3, texture = ModContent.Request<Texture2D>("CalamityMod/Particles/BloomCircle") });
                 Lighting.AddLight(Projectile.Center, 0.3f, 0.9f, 1.5f);
             }
             else

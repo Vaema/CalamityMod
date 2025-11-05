@@ -36,28 +36,7 @@ namespace CalamityMod.Systems
                         {
                             float signusLifeRatio = 1f - (Main.npc[CalamityGlobalNPC.signus].life / Main.npc[CalamityGlobalNPC.signus].lifeMax);
 
-                            // Reduce the power of Signus darkness based on your light level.
                             float multiplier = 1f;
-                            switch (Main.LocalPlayer.GetCurrentAbyssLightLevel())
-                            {
-                                case 0:
-                                    break;
-                                case 1:
-                                case 2:
-                                    multiplier = 0.75f;
-                                    break;
-                                case 3:
-                                case 4:
-                                    multiplier = 0.5f;
-                                    break;
-                                case 5:
-                                case 6:
-                                    multiplier = 0.25f;
-                                    break;
-                                default:
-                                    multiplier = 0f;
-                                    break;
-                            }
 
                             // Total darkness
                             float signusDarkness = signusLifeRatio * multiplier;
