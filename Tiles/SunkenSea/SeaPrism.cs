@@ -5,7 +5,6 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using ReLogic.Content;
 using Terraria;
-
 using Terraria.ID;
 using Terraria.ModLoader;
 
@@ -93,61 +92,7 @@ namespace CalamityMod.Tiles.SunkenSea
 
         internal static float GetFade2(int i, int j) => (MathF.Sin(Main.GlobalTimeWrappedHourly * 0.1f + i * 0.08f - j * 0.05f) + 1f) / 2f;
 
-        public override bool PreDraw(int i, int j, SpriteBatch spriteBatch)
-        {
-            /*
-            Tile tile = Framing.GetTileSafely(i, j);
-            Vector2 offScreen = Main.drawToScreen ? Vector2.Zero : new Vector2(Main.offScreenRange);
-            Vector2 position = new Vector2(i * 16, j * 16) - Main.screenPosition + offScreen;
-
-            int frameX = tile.TileFrameX + (i % 8 * subsheetWidth);
-            int frameY = tile.TileFrameY + (j % 8 * subsheetHeight);
-
-            Rectangle sourceRect = new Rectangle(frameX, frameY, 16, 16);
-            Color light = Lighting.GetColor(i, j) * 1.5f;
-
-            spriteBatch.Draw(Blue.Value, position, sourceRect, light);
-            spriteBatch.Draw(Purple.Value, position, sourceRect, light * GetFade1(i, j));
-            spriteBatch.Draw(Green.Value, position, sourceRect, light * GetFade2(i, j));
-            */
-            return false;
-        }
-
-        public override void PostDraw(int i, int j, SpriteBatch spriteBatch)
-        {
-            Tile tile = Framing.GetTileSafely(i, j);
-            Vector2 offScreen = Main.drawToScreen ? Vector2.Zero : new Vector2(Main.offScreenRange);
-            Vector2 position = new Vector2(i * 16, j * 16) - Main.screenPosition + offScreen;
-            int frameX = tile.TileFrameX + (i % 8 * subsheetWidth);
-            int frameY = tile.TileFrameY + (j % 8 * subsheetHeight);
-
-            Rectangle sourceRect = new Rectangle(frameX, frameY, 16, 16);
-
-            //Vector2 glintDir = new Vector2(1f, -1f);
-            //glintDir.Normalize();
-
-            //Vector2 screenPos = position;
-
-            float projection = (position.X / 2f) - (position.Y / 2f); //Vector2.Dot(screenPos, glintDir);
-
-            // this sets the length between the glints diagonally 
-            float screenDiagonalLength = (Main.screenWidth / 2f) - (Main.screenHeight / 2f);//Vector2.Dot(new Vector2(Main.screenWidth, Main.screenHeight), glintDir);
-            float[] beamCenters =
-            [
-              screenDiagonalLength * 0.05f, // upper glint
-              screenDiagonalLength * 0.5f,  // middle glint
-              screenDiagonalLength * 1.05f  // lower glint
-            ];
-
-            foreach (float bc in beamCenters)
-            {
-                float dist = Math.Abs(projection - bc);
-                float strength = MathHelper.Clamp(1f - dist / 100f, 0f, 1f);
-
-                if (strength > 0f)
-                    spriteBatch.Draw(Glint.Value, position, sourceRect, Color.White * strength, 0f, Vector2.Zero, 1f, SpriteEffects.None, 0f);
-            }
-        }
+        public override bool PreDraw(int i, int j, SpriteBatch spriteBatch) => false;
     }
 
     public class SeaPrismShaderDrawing : ModSystem
@@ -204,6 +149,7 @@ namespace CalamityMod.Tiles.SunkenSea
             shader.Parameters["time"].SetValue(Main.GlobalTimeWrappedHourly);
             shader.Parameters["screenOffset"].SetValue(Main.screenPosition);
             shader.Parameters["offscreenOffset"].SetValue(offscreenPosition);
+            shader.Parameters["diagonalScreenLength"].SetValue((Main.screenWidth / 2f) - (Main.screenHeight / 2f));
 
             Main.spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, Main.DefaultSamplerState, DepthStencilState.None, Main.Rasterizer, shader, Main.Transform);
 
