@@ -347,7 +347,6 @@ namespace CalamityMod.Tiles.SunkenSea
         }
     }
 
-
     public class SeaPrismShaderDrawing : ModSystem
     {
         public override void OnModLoad()
@@ -356,7 +355,7 @@ namespace CalamityMod.Tiles.SunkenSea
             On_Main.DrawWalls += DrawSeaPrismWalls;
         }
 
-        private void GetScreenDrawArea(Vector2 screenPosition, Vector2 offSet, out int firstTileX, out int lastTileX, out int firstTileY, out int lastTileY)
+        private static void GetScreenDrawArea(Vector2 screenPosition, Vector2 offSet, out int firstTileX, out int lastTileX, out int firstTileY, out int lastTileY)
         {
             firstTileX = (int)((screenPosition.X - offSet.X) / 16f - 1f);
             lastTileX = (int)((screenPosition.X + (float)Main.screenWidth + offSet.X) / 16f) + 2;
