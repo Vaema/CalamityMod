@@ -7,6 +7,7 @@ float time;
 float2 screenOffset;
 float2 offscreenOffset;
 float diagonalScreenLength;
+bool doGlint;
 
 float4 PixelShaderFunction(float4 sampleColor : COLOR0, float2 coords : TEXCOORD0, float4 screenPos : VPOS) : COLOR
 {
@@ -28,32 +29,34 @@ float4 PixelShaderFunction(float4 sampleColor : COLOR0, float2 coords : TEXCOORD
     result.rgb = lerp(result.rgb, greenColor.rgb, greenColor.a * fade1);
     result.rgb = lerp(result.rgb, purpleColor.rgb, purpleColor.a * fade2);
     
-    // Calculate glint effect
-    float2 projPos = screenPos.xy - offscreenOffset;
-    float projection = (screenPos.x / 2.0) - (screenPos.y / 2.0);
+    if(doGlint)
+    {
+        // Calculate glint effect
+        float2 projPos = screenPos.xy - offscreenOffset;
+        float projection = (screenPos.x / 2.0) - (screenPos.y / 2.0);
 
-    // Define glint beam centers
-    float beamCenter1 = diagonalScreenLength * 0.05;
-    float beamCenter2 = diagonalScreenLength * 0.5;
-    float beamCenter3 = diagonalScreenLength * 1.05;
+        // Define glint beam centers
+        float beamCenter1 = diagonalScreenLength * 0.05;
+        float beamCenter2 = diagonalScreenLength * 0.5;
+        float beamCenter3 = diagonalScreenLength * 1.05;
     
-    // Calculate glint strength for each beam
-    float dist1 = abs(projection - beamCenter1);
-    float dist2 = abs(projection - beamCenter2);
-    float dist3 = abs(projection - beamCenter3);
+        // Calculate glint strength for each beam
+        float dist1 = abs(projection - beamCenter1);
+        float dist2 = abs(projection - beamCenter2);
+        float dist3 = abs(projection - beamCenter3);
     
-    float strength1 = saturate(1.0 - dist1 / 100.0);
-    float strength2 = saturate(1.0 - dist2 / 100.0);
-    float strength3 = saturate(1.0 - dist3 / 100.0);
+        float strength1 = saturate(1.0 - dist1 / 100.0);
+        float strength2 = saturate(1.0 - dist2 / 100.0);
+        float strength3 = saturate(1.0 - dist3 / 100.0);
     
-    float totalGlintStrength = max(strength1, max(strength2, strength3));
+        float totalGlintStrength = max(strength1, max(strength2, strength3));
     
-    // Apply glint
-    result.rgb = lerp(result.rgb, glintColor.rgb, glintColor.a * totalGlintStrength);
+        // Apply glint
+        result.rgb = lerp(result.rgb, glintColor.rgb, glintColor.a * totalGlintStrength);
     
-    //Additive Blend Version (VERY BRIGHT)
-    //result.rgb = lerp(result.rgb, result.rgb + glintColor.rgb, glintColor.a * totalGlintStrength);
-        
+        //Additive Blend Version (VERY BRIGHT)
+        //result.rgb = lerp(result.rgb, result.rgb + glintColor.rgb, glintColor.a * totalGlintStrength);
+    }
     return result * sampleColor;
 }
 
