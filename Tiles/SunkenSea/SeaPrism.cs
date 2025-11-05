@@ -1,14 +1,11 @@
 ﻿using System;
-using CalamityMod.Items.Weapons.Ranged;
+using CalamityMod.Effects;
 using CalamityMod.Systems;
-using Microsoft.CodeAnalysis.Text;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using ReLogic.Content;
 using Terraria;
-using Terraria.DataStructures;
-using Terraria.GameContent;
-using Terraria.GameContent.Drawing;
+
 using Terraria.ID;
 using Terraria.ModLoader;
 
@@ -22,7 +19,7 @@ namespace CalamityMod.Tiles.SunkenSea
         internal static Asset<Texture2D> Blue;
         internal static Asset<Texture2D> Purple;
         internal static Asset<Texture2D> Green;
-        private static Asset<Texture2D> Glint;
+        internal static Asset<Texture2D> Glint;
 
         public override void SetStaticDefaults()
         {
@@ -186,10 +183,31 @@ namespace CalamityMod.Tiles.SunkenSea
 
         private void DrawSeaPrisms(On_Main.orig_DrawTiles orig, Main self, bool solidLayer, bool forRenderTargets, bool intoRenderTargets, int waterStyleOverride)
         {
+            if(!solidLayer)
+            {
+                orig(self, solidLayer, forRenderTargets, intoRenderTargets, waterStyleOverride);
+                return;
+            }
+
+            Vector2 offscreenPosition = Main.drawToScreen ? Vector2.Zero : new Vector2(Main.offScreenRange);
+
+            Main.spriteBatch.End();
+
+            Main.instance.GraphicsDevice.Textures[1] = SeaPrism.Green.Value;
+            Main.instance.GraphicsDevice.SamplerStates[1] = SamplerState.LinearClamp;
+            Main.instance.GraphicsDevice.Textures[2] = SeaPrism.Purple.Value;
+            Main.instance.GraphicsDevice.SamplerStates[2] = SamplerState.LinearClamp;
+            Main.instance.GraphicsDevice.Textures[3] = SeaPrism.Glint.Value;
+            Main.instance.GraphicsDevice.SamplerStates[3] = SamplerState.LinearClamp;
+
+            Effect shader = CalamityShaders.SeaPrismColorBlendingShader;
+            shader.Parameters["time"].SetValue(Main.GlobalTimeWrappedHourly);
+            shader.Parameters["screenOffset"].SetValue(Main.screenPosition);
+            shader.Parameters["offscreenOffset"].SetValue(offscreenPosition);
+
+            Main.spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, Main.DefaultSamplerState, DepthStencilState.None, Main.Rasterizer, shader, Main.Transform);
+
             Vector2 unscaledPosition = Main.Camera.UnscaledPosition;
-            Vector2 offscreenPosition = Vector2.Zero;
-            if (!Main.drawToScreen)
-                offscreenPosition = new Vector2(Main.offScreenRange);
 
             GetScreenDrawArea(unscaledPosition, offscreenPosition + (Main.Camera.UnscaledPosition - Main.Camera.ScaledPosition), out var firstTileX, out var lastTileX, out var firstTileY, out var lastTileY);
 
@@ -209,6 +227,7 @@ namespace CalamityMod.Tiles.SunkenSea
                         continue;
 
                     Vector2 position = new Vector2(x * 16, y * 16) - Main.screenPosition + offscreenPosition;
+
                     int frameX = tile.TileFrameX + (x % 8 * SeaPrism.subsheetWidth);
                     int frameY = tile.TileFrameY + (y % 8 * SeaPrism.subsheetHeight);
 
@@ -216,10 +235,16 @@ namespace CalamityMod.Tiles.SunkenSea
                     Color light = Lighting.GetColor(x, y) * 1.5f;
 
                     Main.spriteBatch.Draw(SeaPrism.Blue.Value, position, sourceRect, light);
-                    Main.spriteBatch.Draw(SeaPrism.Purple.Value, position, sourceRect, light * SeaPrism.GetFade1(x, y));
-                    Main.spriteBatch.Draw(SeaPrism.Green.Value, position, sourceRect, light * SeaPrism.GetFade2(x, y));
                 }
             }
+
+            Main.spriteBatch.End();
+
+            Main.instance.GraphicsDevice.Textures[1] = null;
+            Main.instance.GraphicsDevice.Textures[2] = null;
+            Main.instance.GraphicsDevice.Textures[3] = null;
+
+            Main.spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, Main.DefaultSamplerState, DepthStencilState.None, Main.Rasterizer, null, Main.Transform);
 
             orig(self, solidLayer, forRenderTargets, intoRenderTargets, waterStyleOverride);
         }
