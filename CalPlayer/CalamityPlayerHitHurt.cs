@@ -841,9 +841,6 @@ namespace CalamityMod.CalPlayer
             if (bloodflareMelee && bloodflareFrenzy && !Player.HasCooldown(BloodflareFrenzy.ID))
                 modifiers.FinalDamage *= (1f - BloodflareHeadMelee.FrenzyContactDamageReduction);
 
-            if (npc.Calamity().temporalSadness)
-                modifiers.FinalDamage *= 0.5f;
-
             if (aquaticHeartIce)
                 modifiers.FinalDamage *= (1f - AquaticHeart.IceShieldAllDamageReduction);
 
