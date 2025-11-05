@@ -26,7 +26,7 @@ namespace CalamityMod.Items.Weapons.Summon
 
             Item.buffType = ModContent.BuffType<SarosPossessionBuff>();
             Item.shoot = ModContent.ProjectileType<SarosAura>();
-            Item.useAnimation = Item.useTime = 10;
+            Item.useAnimation = Item.useTime = 24;
             Item.DamageType = DamageClass.Summon;
             Item.useStyle = ItemUseStyleID.Swing;
             Item.UseSound = SoundID.DD2_BetsyFlameBreath;

@@ -938,7 +938,7 @@ namespace CalamityMod.CalPlayer
 
                 // Ores below here
                 // Seraph Tracers give immunity to block contact effects
-                if (!tracersSeraph)
+                if (!seraphTracers)
                 {
                     // Astral Ore inflicts Astral Infection briefly on contact
                     if (tile.TileType == astralOreID)
@@ -953,7 +953,7 @@ namespace CalamityMod.CalPlayer
                 // Auric Rejection causes an electrical explosion that yeets the player a considerable distance
                 // CIT 17AUG2024: Despite providing full invulnerability, Silva armor revive intentionally does not prevent Auric rejection's yeeting.
                 // 25FEB2025 Ozzatron: Added external bool to control Auric Rejection immunity from the ore.
-                bool rejectionImmunity = auricSet || tracersSeraph || Player.creativeGodMode || externalAuricRejectionImmunity;
+                bool rejectionImmunity = auricSet || seraphTracers || Player.creativeGodMode || externalAuricRejectionImmunity;
                 bool oreRejection = (tile.TileType == auricOreID) && !rejectionImmunity;
 
                 // Repulsers always perform this effect because they are player-placed tiles made for this exact purpose
@@ -2734,6 +2734,7 @@ namespace CalamityMod.CalPlayer
             }
             if (aquaticHeartIce)
             {
+                Player.endurance += AquaticHeart.IceShieldDamageReductionBoost;
                 light[0] += 0.35f;
                 light[1] += 1f;
                 light[2] += 1.25f;
@@ -2768,6 +2769,7 @@ namespace CalamityMod.CalPlayer
             if (encased)
             {
                 Player.statDefense += PermafrostsConcoction.EncasedDefenseBoost;
+                Player.endurance += PermafrostsConcoction.EncasedDamageReductionBoost;
                 Player.frozen = true;
                 Player.velocity.X = 0f;
                 Player.velocity.Y = -0.4f; // Should negate gravity
@@ -3983,8 +3985,7 @@ namespace CalamityMod.CalPlayer
 
             if (abyssalDivingSuit && !Player.IsUnderwater())
             {
-                float moveSpeedLoss = (3 - abyssalDivingSuitPlateHits) * 0.2f;
-                Player.moveSpeed -= moveSpeedLoss;
+                Player.moveSpeed -= 0.6f;
             }
 
             if (godSlayerThrowing)

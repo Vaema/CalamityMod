@@ -61,6 +61,7 @@ namespace CalamityMod.NPCs.SupremeCalamitas
             Count = 7
         }
 
+        public static Color CurrentColor => CalamityGlobalNPC.SCal >= 0 && Main.npc[CalamityGlobalNPC.SCal].active && Main.npc[CalamityGlobalNPC.SCal].ModNPC<SupremeCalamitas>().ArenaBox is not null ? Main.npc[CalamityGlobalNPC.SCal].ModNPC<SupremeCalamitas>().ArenaBox.borderColor : SupremeCalamitas.AcceptanceColor;
         public static Color GriefColor => Color.Crimson;
         public static Color LamentColor => Color.RoyalBlue;
         public static Color EpiphanyColor => new Color(219, 75, 2);

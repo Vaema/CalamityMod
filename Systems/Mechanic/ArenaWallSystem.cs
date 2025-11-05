@@ -43,6 +43,7 @@ namespace CalamityMod.Systems.Mechanic
             public Vector2 Size => new Vector2(DistanceLeft + DistanceRight, DistanceUp + DistanceDown);
 
             public Vector4 Hitbox => new Vector4(TopLeft.X, TopLeft.Y, Size.X, Size.Y);
+            public Rectangle HitboxRectangle => new Rectangle((int)TopLeft.X, (int)TopLeft.Y, (int)Size.X, (int)Size.Y);
 
             public Box oldData = null;
 

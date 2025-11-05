@@ -213,7 +213,15 @@ namespace CalamityMod.Effects
         #endregion
 
         #region Doze's Shaders
+        /// <summary>
+        /// Flips the screen. Used for Gravity Globe.
+        /// </summary>
         internal static Effect FlipScreenShader;
+        /// <summary>
+        /// Distorts a texture towards the center based on a provided noisemap. Meant to emulate the Terraria Otherworld barrier effects.
+        /// Opacity is the intensity of this distortion, and Saturation is the speed the noisemap moves at.
+        /// </summary>
+        internal static Effect OtherworldBarrierDistortionShader;
         #endregion
 
         //
@@ -462,6 +470,9 @@ namespace CalamityMod.Effects
             #region Loading Doze's Shaders
             FlipScreenShader = LoadShader("ScreenShaders/FlipScreen");
             RegisterScreenShader(FlipScreenShader, "FlipTheScreen", "FlipScreen",EffectPriority.VeryHigh);
+
+            OtherworldBarrierDistortionShader = LoadShader("OtherworldBarrierDistortion");
+            RegisterMiscShader(OtherworldBarrierDistortionShader, "DistortionPass", "OtherworldBarrierDistortion");
             #endregion
 
             #region Loading fryzahh's Shaders
