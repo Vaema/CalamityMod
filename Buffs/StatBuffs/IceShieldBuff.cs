@@ -7,7 +7,7 @@ namespace CalamityMod.Buffs.StatBuffs
 {
     public class IceShieldBuff : ModBuff
     {
-        public override LocalizedText Description => base.Description.WithFormatArgs(AquaticHeart.IceShieldAllDamageReduction.ToPercent());
+        public override LocalizedText Description => base.Description.WithFormatArgs(AquaticHeart.IceShieldDamageReductionBoost.ToPercent());
 
         public override void SetStaticDefaults()
         {

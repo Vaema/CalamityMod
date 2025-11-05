@@ -2734,6 +2734,7 @@ namespace CalamityMod.CalPlayer
             }
             if (aquaticHeartIce)
             {
+                Player.endurance += AquaticHeart.IceShieldDamageReductionBoost;
                 light[0] += 0.35f;
                 light[1] += 1f;
                 light[2] += 1.25f;

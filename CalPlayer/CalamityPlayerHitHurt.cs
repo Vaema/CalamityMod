@@ -841,9 +841,6 @@ namespace CalamityMod.CalPlayer
             if (bloodflareMelee && bloodflareFrenzy && !Player.HasCooldown(BloodflareFrenzy.ID))
                 modifiers.FinalDamage *= (1f - BloodflareHeadMelee.FrenzyContactDamageReduction);
 
-            if (aquaticHeartIce)
-                modifiers.FinalDamage *= (1f - AquaticHeart.IceShieldAllDamageReduction);
-
             if (Player.ownedProjectileCounts[ModContent.ProjectileType<EnergyShell>()] > 0 && Player.ActiveItem().type == ModContent.ItemType<LionHeart>())
                 modifiers.FinalDamage *= 0.5f;
 
@@ -1055,9 +1052,6 @@ namespace CalamityMod.CalPlayer
                 if (proj.type == projTypeJustHitBy)
                     modifiers.FinalDamage *= 0.75f;
             }
-
-            if (aquaticHeartIce)
-                modifiers.FinalDamage *= (1f - AquaticHeart.IceShieldAllDamageReduction);
 
             if (Player.ownedProjectileCounts[ModContent.ProjectileType<EnergyShell>()] > 0 && Player.ActiveItem().type == ModContent.ItemType<LionHeart>())
                 modifiers.FinalDamage *= 0.5f;
