@@ -24,7 +24,7 @@ namespace CalamityMod.Items.Weapons.DraedonsArsenal
             Item.DamageType = DamageClass.Summon;
             Item.sentry = true;
             Item.mana = 10;
-            Item.useAnimation = Item.useTime = 24;
+            Item.useAnimation = Item.useTime = 30;
             Item.knockBack = 0.25f;
             Item.shoot = ModContent.ProjectileType<PulseTurret>();
             Item.shootSpeed = 1f;

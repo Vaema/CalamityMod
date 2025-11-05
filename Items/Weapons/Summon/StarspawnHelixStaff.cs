@@ -27,7 +27,7 @@ namespace CalamityMod.Items.Weapons.Summon
 
             Item.buffType = ModContent.BuffType<AstralProbeBuff>();
             Item.shoot = ModContent.ProjectileType<AstralProbeSummon>();
-            Item.useAnimation = Item.useTime = 20;
+            Item.useAnimation = Item.useTime = 36;
             Item.DamageType = DamageClass.Summon;
             Item.useStyle = ItemUseStyleID.Swing;
             Item.UseSound = SoundID.Item44;

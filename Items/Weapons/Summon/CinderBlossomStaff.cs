@@ -20,7 +20,7 @@ namespace CalamityMod.Items.Weapons.Summon
             Item.mana = 10;
             Item.buffType = ModContent.BuffType<CinderBlossomBuff>();
             Item.shoot = ModContent.ProjectileType<CinderBlossom>();
-            Item.useAnimation = Item.useTime = 30;
+            Item.useAnimation = Item.useTime = 36;
 
             Item.DamageType = DamageClass.Summon;
             Item.useStyle = ItemUseStyleID.Swing;
