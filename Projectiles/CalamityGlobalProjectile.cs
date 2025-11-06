@@ -32,6 +32,7 @@ using CalamityMod.Projectiles.Summon;
 using CalamityMod.Projectiles.Typeless;
 using CalamityMod.Projectiles.VanillaProjectileOverrides;
 using CalamityMod.Systems.Collections;
+using CalamityMod.Systems.Mechanic;
 using CalamityMod.Tiles.Abyss;
 using CalamityMod.Tiles.Astral;
 using CalamityMod.Tiles.AstralDesert;
@@ -123,7 +124,14 @@ namespace CalamityMod.Projectiles
         public bool showArcFlash = true;
         /// <summary> Cooldown variable for Arc Flash Ring's lightning. Primarily used for lingering projectiles and minions. </summary>
         public int arcFlashCooldown = 0;
-
+        /// <summary>
+        /// The location of this projectile in an arena box, used for maintaining this when the arena box moves.
+        /// </summary>
+        public Vector2 arenaBoxPosition = Vector2.Zero;
+        /// <summary>
+        /// Which Box this projectile is attached to
+        /// </summary>
+        public ArenaWallSystem.Box arenaBox = null;
         /// <summary>
         /// If true, adds a brimstone trail to the projectile, and makes it inflict Brimstone Flames.<br/>
         /// Used by Animosity.
@@ -178,7 +186,7 @@ namespace CalamityMod.Projectiles
         public bool betterLifeBullet2 = false;
         /// <summary>
         /// If set to a value greater than 0, causes this projectile to gain homing with a range equal to the value in pixels.<br/>
-        /// Used by Arterial Assault.
+        /// Used by Arterial Assault, Deific Amulet's stars, and certain sand projectiles from the Sand Gun.
         /// </summary>
         public float conditionalHomingRange = 0f;
 
@@ -448,7 +456,7 @@ namespace CalamityMod.Projectiles
                     if (Main.rand.NextBool(24))
                         SoundEngine.PlaySound(SoundID.DD2_BetsyFireballShot, projectile.Center);
 
-                    Dust fire = Dust.NewDustPerfect(projectile.Center + Main.rand.NextVector2Circular(projectile.width, projectile.height) * 0.42f, 267);
+                    Dust fire = Dust.NewDustPerfect(projectile.Center + Main.rand.NextVector2Circular(projectile.width, projectile.height) * 0.42f, DustID.RainbowMk2);
                     fire.color = Color.Lerp(Color.Orange, Color.Red, Main.rand.NextFloat(0.45f, 1f));
                     fire.scale = Main.rand.NextFloat(1.4f, 1.65f);
                     fire.fadeIn = 0.5f;
@@ -1444,7 +1452,7 @@ namespace CalamityMod.Projectiles
                     {
                         float x2 = projectile.position.X - projectile.velocity.X / (float)totalDust * (float)i;
                         float y2 = projectile.position.Y - projectile.velocity.Y / (float)totalDust * (float)i;
-                        int dust = Dust.NewDust(new Vector2(x2, y2), 1, 1, 75);
+                        int dust = Dust.NewDust(new Vector2(x2, y2), 1, 1, DustID.CursedTorch);
                         Main.dust[dust].alpha = projectile.alpha;
                         Main.dust[dust].position.X = x2;
                         Main.dust[dust].position.Y = y2;
@@ -2061,14 +2069,14 @@ namespace CalamityMod.Projectiles
                         projectile.rotation = projectile.velocity.ToRotation();
                         for (int dustIndex = 0; dustIndex < 5; dustIndex++)
                         {
-                            Dust dust = Dust.NewDustPerfect(projectile.Center + Main.rand.NextVector2Circular(24f, 24f), 16, projectile.velocity * MathHelper.Lerp(0.2f, 0.7f, Main.rand.NextFloat()));
+                            Dust dust = Dust.NewDustPerfect(projectile.Center + Main.rand.NextVector2Circular(24f, 24f), DustID.Cloud, projectile.velocity * MathHelper.Lerp(0.2f, 0.7f, Main.rand.NextFloat()));
                             dust.velocity += Main.rand.NextVector2Circular(0.5f, 0.5f);
                             dust.scale = 0.8f + Main.rand.NextFloat() * 0.5f;
                         }
 
                         for (int dustIndex = 0; dustIndex < 5; dustIndex++)
                         {
-                            Dust dust = Dust.NewDustPerfect(projectile.Center + Main.rand.NextVector2Circular(24f, 24f), 16, Main.rand.NextVector2Circular(2f, 2f) + projectile.velocity * MathHelper.Lerp(0.2f, 0.5f, Main.rand.NextFloat()));
+                            Dust dust = Dust.NewDustPerfect(projectile.Center + Main.rand.NextVector2Circular(24f, 24f), DustID.Cloud, Main.rand.NextVector2Circular(2f, 2f) + projectile.velocity * MathHelper.Lerp(0.2f, 0.5f, Main.rand.NextFloat()));
                             dust.velocity += Main.rand.NextVector2Circular(0.5f, 0.5f);
                             dust.scale = 0.8f + Main.rand.NextFloat() * 0.5f;
                             dust.fadeIn = 1f;
@@ -4254,7 +4262,7 @@ namespace CalamityMod.Projectiles
 
                         for (int i = 0; i < 2; ++i)
                         {
-                            Dust dust = Dust.NewDustPerfect(projectile.Center + projectile.velocity, 261, -projectile.velocity * Main.rand.NextFloat(0.1f, 0.9f));
+                            Dust dust = Dust.NewDustPerfect(projectile.Center + projectile.velocity, DustID.AncientLight, -projectile.velocity * Main.rand.NextFloat(0.1f, 0.9f));
                             dust.noGravity = true;
                             dust.scale = Main.rand.NextFloat(0.65f, 0.9f);
                             dust.alpha = 100;
@@ -4277,7 +4285,7 @@ namespace CalamityMod.Projectiles
 
                         for (int i = 0; i < 3; ++i)
                         {
-                            Dust dust = Dust.NewDustPerfect(projectile.Center + spawnOffset, 278, projectile.velocity * Main.rand.NextFloat(0.05f, 0.2f));
+                            Dust dust = Dust.NewDustPerfect(projectile.Center + spawnOffset, DustID.FireworksRGB, projectile.velocity * Main.rand.NextFloat(0.05f, 0.2f));
                             dust.noGravity = true;
                             dust.scale = Main.rand.NextFloat(0.35f, 0.45f);
                             dust.color = color;
@@ -4306,7 +4314,7 @@ namespace CalamityMod.Projectiles
 
                         for (int i = 0; i < 3; ++i)
                         {
-                            Dust dust = Dust.NewDustPerfect(projectile.Center + spawnOffset, 278, projectile.velocity * Main.rand.NextFloat(0.05f, 0.2f));
+                            Dust dust = Dust.NewDustPerfect(projectile.Center + spawnOffset, DustID.FireworksRGB, projectile.velocity * Main.rand.NextFloat(0.05f, 0.2f));
                             dust.noGravity = true;
                             dust.scale = Main.rand.NextFloat(0.35f, 0.45f);
                             dust.color = color;
@@ -4645,7 +4653,12 @@ namespace CalamityMod.Projectiles
                     target.Calamity().hyperiusMarked = false;
                 }
             }
-
+            // Crystal Darts reset iframes on bouncing off an enemy
+            if (projectile.type == ProjectileID.CrystalDart)
+            {
+                projectile.ResetLocalNPCHitImmunity();
+                projectile.localNPCImmunity[target.whoAmI] = -1;
+            }
             // Implementation of shared static iframes.
             // If this projectile does not use static iframes, or is not registered to share them, then do nothing.
             if (!projectile.usesIDStaticNPCImmunity || CalamityProjectileSets.SharedIDStaticIFrames[projectile.type] == -1)
@@ -4742,6 +4755,18 @@ namespace CalamityMod.Projectiles
             if (target.Calamity().IsArmored() && HomingTarget > -1 && HomingTarget != target.whoAmI)
                 return false;
             return null;
+        }
+        #endregion
+
+        #region TileCollide
+        public override bool OnTileCollide(Projectile projectile, Vector2 oldVelocity)
+        {
+            //Crystal Darts use -1 local that needs to reset whenever they bounce
+            if (projectile.type == ProjectileID.CrystalDart)
+            {
+                projectile.ResetLocalNPCHitImmunity();
+            }
+            return base.OnTileCollide(projectile, oldVelocity);
         }
         #endregion
 
@@ -4875,7 +4900,7 @@ namespace CalamityMod.Projectiles
                 if (projectile.spriteDirection == -1)
                     spriteEffects = SpriteEffects.FlipHorizontally;
 
-                Main.EntitySpriteDraw(TextureAssets.Extra[98].Value, projectile.Center - Main.screenPosition + new Vector2(0f, projectile.gfxOffY) - projectile.velocity * projectile.scale * 0.5f, null, projectile.GetAlpha(new Color(vector41.X, vector41.Y, vector41.Z, vector41.W)), projectile.rotation + MathHelper.PiOver2, TextureAssets.Extra[98].Value.Size() / 2f, projectile.scale * 0.9f, spriteEffects);
+                Main.EntitySpriteDraw(TextureAssets.Extra[ExtrasID.SharpTears].Value, projectile.Center - Main.screenPosition + new Vector2(0f, projectile.gfxOffY) - projectile.velocity * projectile.scale * 0.5f, null, projectile.GetAlpha(new Color(vector41.X, vector41.Y, vector41.Z, vector41.W)), projectile.rotation + MathHelper.PiOver2, TextureAssets.Extra[ExtrasID.SharpTears].Value.Size() / 2f, projectile.scale * 0.9f, spriteEffects);
                 Color color49 = projectile.GetAlpha(Color.White) * Utils.Remap(projectile.ai[0], 0f, killGateValue, 0.5f, 0f);
                 color49.A = 0;
 

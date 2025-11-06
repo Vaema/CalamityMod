@@ -81,7 +81,7 @@ namespace CalamityMod.Projectiles.Ranged
         public override void ModifyHitNPC(NPC target, ref NPC.HitModifiers modifiers)
         {
             Player Owner = Main.player[Projectile.owner];
-            Owner.Calamity().GeneralScreenShakePower = 7.5f;
+            Owner.SetScreenshake(7.5f);
             SoundStyle fire = new("CalamityMod/Sounds/Item/ScorpioNukeHit");
             SoundEngine.PlaySound(fire with { Volume = 0.75f, Pitch = 0.6f, PitchVariance = 0.2f }, Projectile.Center);
         }

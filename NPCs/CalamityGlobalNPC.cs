@@ -115,7 +115,7 @@ namespace CalamityMod.NPCs
 
         /// <summary>
         /// Overrides the normal DR math and uses custom DR reductions for each debuff, registered separately.<br/>
-        /// Used primarily by post-Moon Lord bosses.
+        /// Current only used by Old Duke.
         /// </summary>
         public bool customDR = false;
         public Dictionary<int, float> flatDRReductions = new Dictionary<int, float>();
@@ -359,7 +359,8 @@ namespace CalamityMod.NPCs
         public int hyperiusDamage = 0;
         public static int hyperiusOverflowTime = 100;
         public int hyperiusOverflowTimer = hyperiusOverflowTime;
-        public static float hyperiusLifePercentThreshold = 0.07f; // The % of max life the damage stacks must reach before they start to overflow
+        /// <summary> Constant variable representing the % of max health Hyperius Bullet's damage stacks must reach before they start to overflow. </summary>
+        public const float hyperiusLifePercentThreshold = 0.07f;
         public int hyperiusFxTimer = 0;
 
         /// <summary>
@@ -407,8 +408,6 @@ namespace CalamityMod.NPCs
         /// <summary> If greater than 0, makes this NPC constantly spawn heart gores. </summary>
         public int ladHearts = 0;
         public bool relicOfResilienceWeakness = false;
-        /// <summary> Cooldown variable for spawning Gauss Dagger's gauss flux projectiles. </summary>
-        public int GaussFluxTimer = 0;
         public bool sagePoison = false;
         public int sagePoisonDamage = 0;
         public bool vulnerabilityHex = false;
@@ -665,7 +664,6 @@ namespace CalamityMod.NPCs
             myClone.sulphurPoison = sulphurPoison;
             myClone.ladHearts = ladHearts;
             myClone.relicOfResilienceWeakness = relicOfResilienceWeakness;
-            myClone.GaussFluxTimer = GaussFluxTimer;
             myClone.sagePoison = sagePoison;
             myClone.sagePoisonDamage = sagePoisonDamage;
             myClone.vulnerabilityHex = vulnerabilityHex;
@@ -836,8 +834,6 @@ namespace CalamityMod.NPCs
             snapClamDebuff = false;
             sulphurPoison = false;
             sagePoison = false;
-            if (GaussFluxTimer > 0)
-                GaussFluxTimer--;
             if (ladHearts > 0)
                 ladHearts--;
             banishingFire = false;
@@ -998,7 +994,6 @@ namespace CalamityMod.NPCs
             #endregion
 
             
-            bool hasModHotOil = false;
             //Apply DoT Debuffs
             for (var index = 0; index < npc.buffType.Count(); index++)
             {
@@ -1007,8 +1002,6 @@ namespace CalamityMod.NPCs
                 if (debuffData == null || debuffData == DebuffData.Oiled) //Oiled is done after
                     continue;
                 debuffData.NPCLifeRegenMethod(npc, type, ref index,ref damage);
-                if (debuffData.HeatDebuffScaling > 0)
-                    hasModHotOil = true;
             }
             //Oiled comes after so that we can detect if they have a heat debuff in the above loop
             bool hasVanillaOil = npc.onFrostBurn || npc.onFrostBurn2 || npc.onFire || npc.onFire2 || npc.onFire3 || npc.shadowFlame;
@@ -1411,11 +1404,6 @@ namespace CalamityMod.NPCs
         #region Revengeance and Death Mode Stat Changes
         private void RevDeathStatChanges(NPC npc, Mod mod)
         {
-            if (CalamityNPCSets.DeathModeSplittingWorm[npc.type] && CalamityWorld.death)
-            {
-                npc.lifeMax = (int)Math.Round(npc.lifeMax * 0.15);
-            }
-
             if (npc.type == NPCID.Mothron)
             {
                 npc.scale *= 1.25f;
@@ -3076,19 +3064,6 @@ namespace CalamityMod.NPCs
         }
         #endregion
 
-        #region Boss Head Slot
-        public override void BossHeadSlot(NPC npc, ref int index)
-        {
-            if (npc.type == NPCID.DukeFishron && (CalamityWorld.death || BossRushEvent.BossRushActive))
-            {
-                float lifeRatio = npc.life / (float)npc.lifeMax;
-                float mapIconVanishValue = 0.3f;
-                if (lifeRatio < mapIconVanishValue || lifeRatio > 0.9f)
-                    index = -1;
-            }
-        }
-        #endregion
-
         #region Pre AI
         public override bool PreAI(NPC npc)
         {
@@ -3726,21 +3701,6 @@ namespace CalamityMod.NPCs
                             case NPCID.BloodEelBody:
                             case NPCID.BloodEelTail:
                                 return RevengeanceAndDeathAI.BuffedWormAI(npc, Mod);
-
-                            // Death Mode splitting worms.
-                            case NPCID.DiggerHead:
-                            case NPCID.DiggerBody:
-                            case NPCID.DiggerTail:
-                            case NPCID.SeekerHead:
-                            case NPCID.SeekerBody:
-                            case NPCID.SeekerTail:
-                            case NPCID.DuneSplicerHead:
-                            case NPCID.DuneSplicerBody:
-                            case NPCID.DuneSplicerTail:
-                                if (CalamityWorld.death)
-                                    return RevengeanceAndDeathAI.BuffedWormAI(npc, Mod);
-                                else
-                                    return true;
                         }
                         break;
 
@@ -5167,8 +5127,7 @@ namespace CalamityMod.NPCs
             if (SharkIDs.Contains(npc.type) && target.name == "Rebecca" && Main.zenithWorld)
             {
                 SoundEngine.PlaySound(AresGaussNuke.NukeExplosionSound, target.Center);
-                if (Main.LocalPlayer.Calamity().GeneralScreenShakePower < 12f)
-                    Main.LocalPlayer.Calamity().GeneralScreenShakePower = 12f;
+                Main.LocalPlayer.SetScreenshake(12f);
 
                 target.KillMe(PlayerDeathReason.ByCustomReason(CalamityUtils.GetText("Status.Death.Rebecca").ToNetworkText(target.name)), 1000.0, 0);
                 modifiers.SourceDamage *= target.statLifeMax2 * Main.rand.NextFloat(3f, 6f);
@@ -6603,9 +6562,6 @@ namespace CalamityMod.NPCs
             if (Main.LocalPlayer.Calamity().trippy || (npc.type == NPCID.KingSlime && Main.zenithWorld))
                 return new Color(Main.DiscoR, Main.DiscoG, Main.DiscoB, Main.DiscoR);
 
-            if (npc.type == NPCID.KingSlime && CalamityWorld.death)
-                return NPC.AnyNPCs(NPCType<KingSlimeJewelSapphire>()) ? Color.Lerp(new Color(0, 0, 150, npc.alpha), new Color(125, 125, 255, npc.alpha), (float)Math.Sin(Main.GlobalTimeWrappedHourly) / 2f + 0.5f) : null;
-
             if (npc.type == NPCID.QueenBee && Main.zenithWorld)
             {
                 if (npc.life / (float)npc.lifeMax < 0.5f)
@@ -6908,13 +6864,13 @@ namespace CalamityMod.NPCs
 
                     // Draw the glowmasks.
                     int frameCounter = (int)npc.frameCounter / 4;
-                    Rectangle frame = TextureAssets.Extra[106].Value.Frame(1, 8);
+                    Rectangle frame = TextureAssets.Extra[ExtrasID.GolemLights4].Value.Frame(1, 8);
                     frame.Y += frame.Height * 2 * frameCounter + npc.frame.Y;
                     Rectangle glowFrame = frame;
-                    spriteBatch.Draw(TextureAssets.Extra[106].Value, eyesDrawPosition, glowFrame, eyeColor, 0f, glowFrame.Size() * 0.5f, npc.scale, SpriteEffects.None, 0f);
+                    spriteBatch.Draw(TextureAssets.Extra[ExtrasID.GolemLights4].Value, eyesDrawPosition, glowFrame, eyeColor, 0f, glowFrame.Size() * 0.5f, npc.scale, SpriteEffects.None, 0f);
                     frame = npc.frame;
                     Rectangle glowFrame2 = frame;
-                    spriteBatch.Draw(TextureAssets.Extra[107].Value, eyesDrawPosition, glowFrame2, eyeColor, 0f, glowFrame2.Size() * 0.5f, npc.scale, SpriteEffects.None, 0f);
+                    spriteBatch.Draw(TextureAssets.Extra[ExtrasID.GolemLights5].Value, eyesDrawPosition, glowFrame2, eyeColor, 0f, glowFrame2.Size() * 0.5f, npc.scale, SpriteEffects.None, 0f);
 
                     // Draw the sparkle telegraphs for the laser spread attack if applicable.
                     if (npc.ai[0] == 3f && npc.ai[1] <= 60f)
@@ -7568,26 +7524,6 @@ namespace CalamityMod.NPCs
                     bool brainIsInPhase2 = Main.npc[NPC.crimsonBoss].ai[0] < 0f;
                     if (brainIsInPhase2)
                         return false;
-                }
-            }
-
-            if (CalamityWorld.death)
-            {
-                switch (npc.type)
-                {
-                    case NPCID.DiggerHead:
-                    case NPCID.DiggerBody:
-                    case NPCID.DiggerTail:
-                    case NPCID.SeekerHead:
-                    case NPCID.SeekerBody:
-                    case NPCID.SeekerTail:
-                    case NPCID.DuneSplicerHead:
-                    case NPCID.DuneSplicerBody:
-                    case NPCID.DuneSplicerTail:
-                        return true;
-
-                    default:
-                        break;
                 }
             }
 

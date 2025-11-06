@@ -101,10 +101,9 @@ namespace CalamityMod.Projectiles.BaseProjectiles
         /// </summary>
         public bool KeepRefreshingLifetime { get; set; } = true;
         /// <summary>
-        /// Whether the holdout will set <see cref="Player.itemTime"/> when out
-        /// Disable this when you want the player to be able to swap items while the holdout is out
+        /// If the holdout should constantly set Owner.itemTime and Owner.itemAnimation as 2.
         /// </summary>
-        public bool ForcePlayerItemTime { get; set; } = true;
+        public bool SetUsage { get; set; } = true;
 
         /// <summary>
         /// The current offset length from the arm of the holdout.<br/>
@@ -221,7 +220,7 @@ namespace CalamityMod.Projectiles.BaseProjectiles
             Owner.ChangeDir(direction);
 
             Owner.heldProj = Projectile.whoAmI;
-            if (ForcePlayerItemTime)
+            if (SetUsage)
                 Owner.itemTime = Owner.itemAnimation = 2;
             Owner.itemRotation = (Projectile.velocity * Projectile.direction).ToRotation();
 

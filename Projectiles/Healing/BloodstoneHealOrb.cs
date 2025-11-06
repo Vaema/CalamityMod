@@ -1,4 +1,5 @@
 ﻿using System;
+using CalamityMod.Graphics.Metaballs;
 using CalamityMod.Particles;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
@@ -22,8 +23,8 @@ namespace CalamityMod.Projectiles.Healing
 
         public override void SetDefaults()
         {
-            Projectile.width = 8;
-            Projectile.height = 8;
+            Projectile.width = 16;
+            Projectile.height = 16;
             Projectile.ignoreWater = true;
             Projectile.alpha = 255;
             Projectile.penetrate = 1;
@@ -35,20 +36,11 @@ namespace CalamityMod.Projectiles.Healing
 
         public override void AI()
         {
-                float particleSize = 0.9f + 0.15f * (float)Math.Cos(Main.GlobalTimeWrappedHourly % 60f * MathHelper.TwoPi);
-                if (Projectile.timeLeft <= 60) //Shrinks to nothing when projectile is nearing death
-                {
-                    particleSize *= Projectile.timeLeft / 60f;
-                }
-                particleSize *= 8f;
-                Particle beam3 = new CustomSpark(Projectile.Center + Projectile.Size / 2f, -Projectile.velocity * 0.1f, "CalamityMod/Particles/PearlParticleGlow", false, 10, 0.05f * particleSize, Color.DarkRed, new Vector2(0.5f, 1), false, false, 0, false, false, 0f);
-                GeneralParticleHandler.SpawnParticle(beam3);
 
-                if (false && Main.rand.NextBool(8))
-                {
-                    Particle beam4 = new CustomSpark(Projectile.Center + Projectile.Size / 2f, Projectile.velocity * 0.1f, "CalamityMod/Particles/WaterFoam", false, 5, 0.01f * particleSize, Color.Red, new Vector2(1f, 1), true, false, Main.rand.NextFloat(-10, 10), false, false, 0f);
-                    GeneralParticleHandler.SpawnParticle(beam4);
-                }
+            var p = BloodMetaball.SpawnParticle(Projectile.Center + Projectile.velocity, Main.rand.NextVector2Circular(-0.5f, -0.5f), Projectile.width);
+            p.SizeScaling = 0.75f;
+            p.ShrinkDelay = 1;
+
             Projectile.scale = MathHelper.Lerp(1, 1, 0.65f);
             float maxDistance = 200f;
             if (spawnCooldown > 0)

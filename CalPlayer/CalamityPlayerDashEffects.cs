@@ -144,7 +144,7 @@ namespace CalamityMod.CalPlayer
 
                 // Handle mid-dash effects.
                 UsedDash.MidDashEffects(Player, ref dashSpeed, ref dashSpeedDecelerationFactor, ref runSpeedDecelerationFactor);
-                int VerticalOmnidashCap = DashID == GodslayerArmorDash.ID ? 120 : 25;
+                int VerticalOmnidashCap = DashID == GodslayerArmorDash.ID ? 75 : 25;
                 if (UsedDash.IsOmnidirectional && VerticalOmnidashTimer < VerticalOmnidashCap)
                 {
                     VerticalOmnidashTimer++;

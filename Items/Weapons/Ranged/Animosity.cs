@@ -94,7 +94,7 @@ namespace CalamityMod.Items.Weapons.Ranged
 
             if (player.altFunctionUse == 2)
             {
-                player.Calamity().GeneralScreenShakePower = 2f;
+                player.SetScreenshake(2f);
                 SoundEngine.PlaySound(ShootAndReloadSound with { PitchVariance = 0.3f }, position);
 
                 if (Main.zenithWorld) // Why only shotgun full of hate, why not Hexagun too? (See AnimosityBullet for more)

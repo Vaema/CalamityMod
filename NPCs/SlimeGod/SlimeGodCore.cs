@@ -328,7 +328,7 @@ namespace CalamityMod.NPCs.SlimeGod
                             string key = "Mods.CalamityMod.Status.Boss.SlimeGodRun";
                             Color messageColor = Color.Magenta;
 
-                            CalamityUtils.DisplayLocalizedText(key, messageColor);
+                            CalamityUtils.BroadcastLocalizedText(key, messageColor);
                         }
 
                         // Set Slime God to have interacted with all players

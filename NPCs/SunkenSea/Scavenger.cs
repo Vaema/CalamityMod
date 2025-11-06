@@ -25,6 +25,7 @@ using Terraria.ID;
 using Terraria.ModLoader;
 using Terraria.ModLoader.Utilities;
 using Terraria.Utilities;
+using CalamityMod.Items.Placeables.Banners;
 
 namespace CalamityMod.NPCs.SunkenSea
 {
@@ -290,8 +291,8 @@ namespace CalamityMod.NPCs.SunkenSea
             NPC.HitSound = SoundID.NPCHit38;
             NPC.DeathSound = SoundID.NPCDeath1;
             NPC.knockBackResist = 0.15f;
-            //Banner = NPC.type;
-            //BannerItem = ModContent.ItemType<ScavengerBanner>();
+            Banner = NPC.type;
+            BannerItem = ModContent.ItemType<ScavengerBanner>();
             NPC.chaseable = false;
             NPC.Calamity().VulnerableToHeat = false;
             NPC.Calamity().VulnerableToSickness = true;
@@ -919,6 +920,7 @@ namespace CalamityMod.NPCs.SunkenSea
                     Dust.NewDust(NPC.position, NPC.width, NPC.height, DustID.Blood, hit.HitDirection, -1f, 0, Color.DarkGray * 0.2f, 1f);
                 }
             }
+            CalamityUtils.SpawnGores(NPC, "Scavenger", 3);
         }
 
         public override bool PreDraw(SpriteBatch spriteBatch, Vector2 screenPos, Color drawColor)

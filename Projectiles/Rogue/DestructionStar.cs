@@ -220,7 +220,7 @@ namespace CalamityMod.Projectiles.Rogue
                 dust.scale = Main.rand.NextFloat(0.8f, 1.2f);
                 dust.color = Color.LightGreen;
             }
-            Owner.Calamity().GeneralScreenShakePower = 6f * (big ? 2.5f : 1f);
+            Owner.SetScreenshake(6f * (big ? 2.5f : 1f));
         }
 
         public override bool PreDraw(ref Color lightColor)

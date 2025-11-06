@@ -21,7 +21,7 @@ namespace CalamityMod.Items.Weapons.Summon
         {
             Item.width = Item.height = 62;
             Item.damage = 150;
-            Item.useAnimation = Item.useTime = 10;
+            Item.useAnimation = Item.useTime = 24;
             Item.mana = 10;
             Item.knockBack = 10f;
             Item.buffType = ModContent.BuffType<SiriusBuff>();

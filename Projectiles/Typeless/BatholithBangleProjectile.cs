@@ -80,7 +80,7 @@ namespace CalamityMod.Projectiles.Typeless
                 float visMult = (visual ? 1 : 0.6f);
                 if (visual)
                 {
-                    Owner.Calamity().GeneralScreenShakePower = 5f;
+                    Owner.SetScreenshake(5f);
 
                     Particle spark = new CustomSpark(Projectile.Center, Vector2.Zero, "CalamityMod/Particles/BloomCircle", false, 12, 1.35f, clr3, Projectile.scale * new Vector2(2.5f, 1.3f), true, true, shrinkSpeed: 1.25f, extraRotation: MathHelper.PiOver2);
                     GeneralParticleHandler.SpawnParticle(spark);

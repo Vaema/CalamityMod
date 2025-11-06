@@ -151,17 +151,11 @@ namespace CalamityMod.Projectiles.Damageable
             }
             if (wasHit && Life > 0)
             {
-                if (HitSound != null)
-                {
-                    SoundEngine.PlaySound(HitSound, Projectile.Center);
-                }
+                SoundEngine.PlaySound(HitSound, Projectile.Center);
             }
             else if (Life <= 0)
             {
-                if (DeathSound != null)
-                {
-                    SoundEngine.PlaySound(DeathSound, Projectile.Center);
-                }
+                SoundEngine.PlaySound(DeathSound, Projectile.Center);
                 DamageKillEffect();
                 Projectile.Kill();
             }

@@ -636,7 +636,7 @@ namespace CalamityMod.NPCs.DevourerofGods
                     if (ctid < Main.maxCombatText)
                         player.Calamity().subtitletext = Main.combatText[ctid];
                     player.Calamity().subtitleColors = new Color[] { Color.Cyan, Color.Fuchsia };
-                    CalamityUtils.DisplayLocalizedText(key, messageColor);
+                    CalamityUtils.BroadcastLocalizedText(key, messageColor);
                 }
             }
 
@@ -810,7 +810,7 @@ namespace CalamityMod.NPCs.DevourerofGods
                                         if (ctid < Main.maxCombatText)
                                             player.Calamity().subtitletext = Main.combatText[ctid];
                                         player.Calamity().subtitleColors = new Color[] { Color.Cyan, Color.Fuchsia };
-                                        CalamityUtils.DisplayLocalizedText(key, messageColor);
+                                        CalamityUtils.BroadcastLocalizedText(key, messageColor);
                                     }
 
                                     spawnedGuardians3 = true;
@@ -1467,7 +1467,7 @@ namespace CalamityMod.NPCs.DevourerofGods
                             if (ctid < Main.maxCombatText)
                                 player.Calamity().subtitletext = Main.combatText[ctid];
                             player.Calamity().subtitleColors = new Color[] { Color.Cyan, Color.Fuchsia };
-                            CalamityUtils.DisplayLocalizedText(key, messageColor);
+                            CalamityUtils.BroadcastLocalizedText(key, messageColor);
                         }
 
                         NPC.TargetClosest();
@@ -2520,9 +2520,9 @@ namespace CalamityMod.NPCs.DevourerofGods
                 string key3 = "Mods.CalamityMod.Status.Progression.DargonBossText";
                 Color messageColor3 = Color.Yellow;
 
-                CalamityUtils.DisplayLocalizedText(key, messageColor);
-                CalamityUtils.DisplayLocalizedText(key2, messageColor2);
-                CalamityUtils.DisplayLocalizedText(key3, messageColor3);
+                CalamityUtils.BroadcastLocalizedText(key, messageColor);
+                CalamityUtils.BroadcastLocalizedText(key2, messageColor2);
+                CalamityUtils.BroadcastLocalizedText(key3, messageColor3);
             }
 
             // Mark DoG as dead

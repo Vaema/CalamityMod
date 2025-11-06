@@ -95,8 +95,8 @@ namespace CalamityMod.NPCs.SunkenSea
             NPC.HitSound = SoundID.NPCHit1;
             NPC.DeathSound = SoundID.NPCDeath1;
             NPC.knockBackResist = 0.1f;
-            //Banner = NPC.type;
-            //BannerItem = ModContent.ItemType<LazarusLampfishBanner>(); LegacyName this to the BlindedAngler banner when it exists
+            Banner = NPC.type;
+            BannerItem = ModContent.ItemType<LazarusLampfishBanner>();
             NPC.chaseable = false;
             NPC.Calamity().VulnerableToHeat = false;
             NPC.Calamity().VulnerableToSickness = true;
@@ -376,6 +376,7 @@ namespace CalamityMod.NPCs.SunkenSea
                     Dust.NewDust(NPC.position, NPC.width, NPC.height, DustID.BlueCrystalShard, hit.HitDirection, -1f, 0, default, 1f);
                 }
             }
+            CalamityUtils.SpawnGores(NPC, "LazarusLampfish", 3);
         }
 
         public override bool PreDraw(SpriteBatch spriteBatch, Vector2 screenPos, Color drawColor)

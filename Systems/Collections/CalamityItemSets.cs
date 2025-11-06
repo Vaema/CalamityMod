@@ -29,15 +29,6 @@ namespace CalamityMod.Systems.Collections
         public static IdDictionary Search = IdDictionary.Create<ItemID, int>();
 
         /// <summary>
-        /// If <see langword="true"/> for an item type, allows the item to always be used as long as only one of its <see cref="Item.shoot"/> projectile exists.<br/>
-        /// Used to give specific vanilla spears pseudo-autoswing.<br/>
-        /// Defaults to <see langword="false"/>.
-        /// </summary>
-        public static bool[] AutoreusableSpear = Factory.CreateBoolSet(ItemID.AdamantiteGlaive, ItemID.ChlorophytePartisan, ItemID.CobaltNaginata, ItemID.DarkLance, ItemID.MonkStaffT2,
-                ItemID.Gungnir, ItemID.MushroomSpear, ItemID.MythrilHalberd, ItemID.NorthPole, ItemID.ObsidianSwordfish, ItemID.OrichalcumHalberd, ItemID.PalladiumPike, ItemID.Spear,
-                ItemID.Swordfish, ItemID.TheRottedFork, ItemID.TitaniumTrident, ItemID.Trident, ItemID.ThunderSpear);
-
-        /// <summary>
         /// If <see langword="true"/> for an item type, prevents an item from removing Calamity's summon damage penalty mechanic despite having tool power.<br/>
         /// Defaults to <see langword="false"/>.
         /// </summary>

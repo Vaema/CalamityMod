@@ -218,7 +218,7 @@ namespace CalamityMod.Projectiles.Ranged
                         else
                         {
                             Projectile.NewProjectile(Projectile.GetSource_FromThis(), GunTipPosition, shootVelocity * 0.6f, ModContent.ProjectileType<OntologicalDespoilerBeam>(), charge2DamageNeg, Projectile.knockBack * 3, Projectile.owner);
-                            Owner.Calamity().GeneralScreenShakePower = 12f;
+                            Owner.SetScreenshake(12f);
                             SoundEngine.PlaySound(OntologicalDespoiler.BigShot2 with { Pitch = 0.2f }, Projectile.Center);
                             SoundEngine.PlaySound(OntologicalDespoiler.BigShot with { Pitch = -0.3f }, Projectile.Center);
                         }

@@ -320,7 +320,7 @@ namespace CalamityMod.Projectiles.Rogue
                     SoundEngine.PlaySound(sound with { Volume = 0.7f, Pitch = Main.rand.NextFloat(0.15f, 0.25f) }, Projectile.Center);
                     SoundStyle sound2 = new("CalamityMod/Sounds/NPCHit/ExoHit3");
                     SoundEngine.PlaySound(sound2 with { Volume = 0.5f, Pitch = Main.rand.NextFloat(-0.1f, 0f) }, Projectile.Center);
-                    Owner.Calamity().GeneralScreenShakePower = 5.5f;
+                    Owner.SetScreenshake(5.5f);
                     Projectile.timeLeft = 300;
                     targeted = target;
                     impaleDist = (Projectile.Center - targeted.Center);
@@ -351,7 +351,7 @@ namespace CalamityMod.Projectiles.Rogue
                 }
                 else
                 {
-                    Owner.Calamity().GeneralScreenShakePower = 7f;
+                    Owner.SetScreenshake(7f);
                     SoundStyle soundBurst = new("CalamityMod/Sounds/Item/HolyBurst");
                     for (int i = 0; i < 3; i++)
                         SoundEngine.PlaySound(soundBurst with { Volume = 0.8f, Pitch = 0.2f * i, MaxInstances = 3 }, Projectile.Center);

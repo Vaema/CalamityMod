@@ -148,7 +148,7 @@ namespace CalamityMod.Projectiles.DraedonsArsenal
             if (Projectile.scale > 1)
             {
                 Player Owner = Main.player[Projectile.owner];
-                Owner.Calamity().GeneralScreenShakePower = 2.5f;
+                Owner.SetScreenshake(2.5f);
             }
         }
         public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)

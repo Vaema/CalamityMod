@@ -152,7 +152,7 @@ namespace CalamityMod.Projectiles.Typeless
                 }
             }
 
-            Owner.Calamity().GeneralScreenShakePower = 4f;
+            Owner.SetScreenshake(4f);
 
             Projectile.NewProjectile(Projectile.GetSource_FromThis(), target.Center, Vector2.Zero, ModContent.ProjectileType<PauldronExplosion>(), Projectile.damage / 5, 0, Projectile.owner);
         }

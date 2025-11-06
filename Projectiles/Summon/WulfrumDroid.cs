@@ -98,7 +98,7 @@ namespace CalamityMod.Projectiles.Summon
 
         public override void SetStaticDefaults()
         {
-            Main.projFrames[Type] = 12;
+            Main.projFrames[Type] = 24;
             Main.projPet[Type] = true;
             ProjectileID.Sets.MinionSacrificable[Type] = true;
             ProjectileID.Sets.MinionTargettingFeature[Type] = true;
@@ -106,8 +106,8 @@ namespace CalamityMod.Projectiles.Summon
 
         public override void SetDefaults()
         {
-            Projectile.width = 26;
-            Projectile.height = 32;
+            Projectile.width = 86;
+            Projectile.height = 44;
             Projectile.netImportant = true;
             Projectile.friendly = true;
             Projectile.ignoreWater = true;
@@ -201,22 +201,29 @@ namespace CalamityMod.Projectiles.Summon
             bool buffMode = BuffModeBuffer <= 0;
 
             //Do frame stuff i guess
-            Projectile.frame = Projectile.frame % (Main.projFrames[Type] / 2);
-
             Projectile.frameCounter++;
-            if (Projectile.frameCounter > 8)
-            {
-                Projectile.frame++;
-                Projectile.frameCounter = 0;
-            }
-            if (Projectile.frame >= Main.projFrames[Type] / 2)
-            {
-                Projectile.frame = 0;
-            }
-
             if (buffMode)
-                Projectile.frame += Main.projFrames[Type] / 2;
-
+            {
+                Projectile.frame = (int)MathHelper.Clamp(Projectile.frame, 8, 15);
+                if (Projectile.frameCounter >= 6)
+                {
+                    Projectile.frame++;
+                    Projectile.frameCounter = 0;
+                }
+                if (Projectile.frame > 15)
+                    Projectile.frame = 8;
+            }
+            else
+            {
+                Projectile.frame = (int)MathHelper.Clamp(Projectile.frame, 0, 7);
+                if (Projectile.frameCounter >= 6)
+                {
+                    Projectile.frame++;
+                    Projectile.frameCounter = 0;
+                }
+                if (Projectile.frame > 7)
+                    Projectile.frame = 0;
+            }
 
             //Buff stuff
             player.AddBuff(ModContent.BuffType<WulfrumDroidBuff>(), 3600);
@@ -424,23 +431,30 @@ namespace CalamityMod.Projectiles.Summon
             Projectile.rotation = Projectile.velocity.X * 0.05f;
             Projectile.spriteDirection = Projectile.direction = Math.Sign(Projectile.velocity.X);
 
-            if (!buffMode)
+            if (!buffMode && targetCache != null)
                 ChargeUpAndFire(targetCache);
         }
 
         public void ChargeUpAndFire(NPC targetCache)
         {
-            //Decrease the timer by a random number
-            ShootTimer -= Main.rand.Next(1, 4);
-
-
-            if (ShootTimer <= 0)
+            if (ShootTimer <= 20)
             {
-                ShootTimer = ShootDelay;
-                Projectile.netUpdate = true;
+                Projectile.frame = (int)Utils.Remap(ShootTimer, 20, 4, 20, 23);
+                ShootTimer -= 2;
 
-                //Don't shoot if no target.
-                if (targetCache == null)
+                // If the target is lost or player is switching to defense mode then immediately reset the delay and do not shoot
+                if (ShootTimer <= 0 || targetCache == null || BuffModeBuffer < 15)
+                {
+                    ShootTimer = ShootDelay;
+                    Projectile.frame = 0;
+                    Projectile.netUpdate = true;
+                    return;
+                }
+
+                Projectile.rotation = Utils.Remap(ShootTimer, 18, 4, Projectile.AngleTo(targetCache.Center) + (Projectile.direction == 1 ? 0 : Projectile.Center.Y < targetCache.Center.Y ? -MathHelper.Pi : MathHelper.Pi), Projectile.rotation);
+
+                // Shoot at this exact time (the remaining timer is used to finish the firing animation)
+                if (ShootTimer != 18)
                     return;
 
                 NuzzleFlashTime = 20f;
@@ -451,7 +465,6 @@ namespace CalamityMod.Projectiles.Summon
                 velocity *= 10f;
                 Projectile.velocity += velocity * -0.3f;
 
-
                 if (Main.myPlayer == Projectile.owner)
                 {
                     int bolt = Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center, velocity, ModContent.ProjectileType<WulfrumEnergyBurst>(), Projectile.damage, Projectile.knockBack, Projectile.owner);
@@ -459,6 +472,34 @@ namespace CalamityMod.Projectiles.Summon
                     Main.projectile[bolt].netUpdate = true;
                     Projectile.netUpdate = true;
                 }
+            }
+            else if (ShootTimer <= 36)
+            {
+                // From this point on, decrease the timer by a consistent number for the animation
+                Projectile.frame = (int)Utils.Remap(ShootTimer, 36, 20, 16, 20);
+                ShootTimer -= 2;
+
+                // If the target is lost or player is switching to defense mode then de-transition immediately
+                if (targetCache == null || BuffModeBuffer < 15)
+                {
+                    ShootTimer = ShootDelay;
+                    Projectile.frame -= 16;
+                    Projectile.netUpdate = true;
+                    return;
+                }
+
+                Projectile.rotation = Utils.Remap(ShootTimer, 34, 20, Projectile.rotation, Projectile.AngleTo(targetCache.Center) + (Projectile.direction == 1 ? 0 : Projectile.Center.Y < targetCache.Center.Y ? -MathHelper.Pi : MathHelper.Pi));
+
+                if (ShootTimer < 20)
+                    ShootTimer = 20;
+            }
+            else
+            {
+                //Decrease the timer by a random number
+                ShootTimer -= Main.rand.Next(1, 4);
+
+                if (ShootTimer < 36)
+                    ShootTimer = 36;
             }
         }
 

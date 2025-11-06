@@ -303,9 +303,9 @@ namespace CalamityMod.NPCs
                 #region Ice
 
                 // Ice Bat
-                // Frostbat Staff @ 6.67%
+                // Frosty Bat Bottle @ 7.14%
                 case NPCID.IceBat:
-                    npcLoot.Add(ModContent.ItemType<FrostbatStaff>(), 15);
+                    npcLoot.Add(ModContent.ItemType<FrostyBatBottle>(), 14);
                     break;
 
                 // Undead Viking, Armored Viking
@@ -635,10 +635,10 @@ namespace CalamityMod.NPCs
                 #region Hell
 
                 // Hellbat
-                // Flarebat Staff @ 4%
+                // Toasty Bat Bottle @ 3.33%
                 // Magma Stone @ 1.33% (0.67% in Vanilla)
                 case NPCID.Hellbat:
-                    npcLoot.Add(ModContent.ItemType<FlarebatStaff>(), 25);
+                    npcLoot.Add(ModContent.ItemType<ToastyBatBottle>(), 30);
                     npcLoot.ChangeDropRate(ItemID.MagmaStone, 1, 75);
                     break;
 
@@ -1945,14 +1945,6 @@ namespace CalamityMod.NPCs
             if (AcidRainEvent.AcidRainEventIsOngoing)
                 AcidRainEvent.OnEnemyKill(npc);
 
-            // Stop Death Mode splitting worms from dropping excessive loot
-            if (CalamityWorld.death && !SplittingWormLootBlockWrapper(npc, Mod))
-                DropHelper.BlockEverything();
-
-            // Correctly increment bestiary entries for splitting worms
-            if (npc.AnyInteractions())
-                SplittingWormBestiaryUpdate(npc);
-
             // Determine whether this NPC is the second Twin killed in a fight, regardless of which Twin it is.
             bool lastTwinStanding = false;
             if (npc.type == NPCID.Retinazer)
@@ -2001,7 +1993,7 @@ namespace CalamityMod.NPCs
                             World.Abyss.UnlockAllAbyssChests();
                         }
                         string keysk = "Mods.CalamityMod.Status.Progression.SkeletronAbyssChestNotification";
-                        CalamityUtils.DisplayLocalizedText(keysk, new Color(76, 181, 76));
+                        CalamityUtils.BroadcastLocalizedText(keysk, new Color(76, 181, 76));
                     }
                     break;
 
@@ -2017,7 +2009,7 @@ namespace CalamityMod.NPCs
 
                         string key2 = "Mods.CalamityMod.Status.Progression.UglyBossText";
                         Color messageColor2 = Color.Aquamarine;
-                        CalamityUtils.DisplayLocalizedText(key2, messageColor2);
+                        CalamityUtils.BroadcastLocalizedText(key2, messageColor2);
                     }
                     break;
 
@@ -2077,8 +2069,8 @@ namespace CalamityMod.NPCs
                         // TODO -- this should probably be moved to a thread like Aureus meteor
                         CalamityUtils.SpawnOre(ModContent.TileType<PerennialOre>(), 12E-05, 0.65f, 0.85f, 5, 10, TileID.Dirt, TileID.Stone);
 
-                        CalamityUtils.DisplayLocalizedText(key, messageColor);
-                        CalamityUtils.DisplayLocalizedText(key2, messageColor2);
+                        CalamityUtils.BroadcastLocalizedText(key, messageColor);
+                        CalamityUtils.BroadcastLocalizedText(key2, messageColor2);
                     }
                     break;
 
@@ -2111,7 +2103,7 @@ namespace CalamityMod.NPCs
                         string key3 = "Mods.CalamityMod.Status.Progression.BabyBossText";
                         Color messageColor3 = Color.Lime;
 
-                        CalamityUtils.DisplayLocalizedText(key3, messageColor3);
+                        CalamityUtils.BroadcastLocalizedText(key3, messageColor3);
                     }
                     break;
 
@@ -2166,9 +2158,9 @@ namespace CalamityMod.NPCs
                         // Spawn Exodium planetoids and send messages about Providence, Exodium, and Necroplasm if ML has not been killed yet
                         if (!NPC.downedMoonlord)
                         {
-                            CalamityUtils.DisplayLocalizedText(key5, messageColor5);
-                            CalamityUtils.DisplayLocalizedText(key6, messageColor6);
-                            CalamityUtils.DisplayLocalizedText(key7, messageColor7);
+                            CalamityUtils.BroadcastLocalizedText(key5, messageColor5);
+                            CalamityUtils.BroadcastLocalizedText(key6, messageColor6);
+                            CalamityUtils.BroadcastLocalizedText(key7, messageColor7);
                         }
                     }
                     break;
@@ -2186,7 +2178,7 @@ namespace CalamityMod.NPCs
                 Color messageColor = new Color(50, 255, 130);
                 CalamityUtils.SpawnOre(TileID.Mythril, 12E-05, 0.55f, 0.8f, 3, 8);
                 CalamityUtils.SpawnOre(TileID.Orichalcum, 12E-05, 0.55f, 0.8f, 3, 8);
-                CalamityUtils.DisplayLocalizedText(key, messageColor);
+                CalamityUtils.BroadcastLocalizedText(key, messageColor);
             }
             else if ((!NPC.downedMechBoss1 && !NPC.downedMechBoss2) || (!NPC.downedMechBoss2 && !NPC.downedMechBoss3) || (!NPC.downedMechBoss3 && !NPC.downedMechBoss1))
             {
@@ -2194,131 +2186,15 @@ namespace CalamityMod.NPCs
                 Color messageColor = new Color(50, 255, 130);
                 CalamityUtils.SpawnOre(TileID.Adamantite, 12E-05, 0.65f, 0.9f, 3, 8);
                 CalamityUtils.SpawnOre(TileID.Titanium, 12E-05, 0.65f, 0.9f, 3, 8);
-                CalamityUtils.DisplayLocalizedText(key, messageColor);
+                CalamityUtils.BroadcastLocalizedText(key, messageColor);
             }
             else
             {
                 string key = "Mods.CalamityMod.Status.Progression.HardmodeOreTier4Text";
                 Color messageColor = new Color(50, 255, 130);
                 CalamityUtils.SpawnOre(ModContent.TileType<HallowedOre>(), 17E-05, 0.55f, 0.9f, 8, 14, TileID.Pearlstone, TileID.HallowHardenedSand, TileID.HallowSandstone, TileID.HallowedIce);
-                CalamityUtils.DisplayLocalizedText(key, messageColor);
+                CalamityUtils.BroadcastLocalizedText(key, messageColor);
             }
-        }
-        #endregion
-
-        #region Splitting Worm Loot
-        internal static void SplittingWormBroadcastInteractionWrapper(NPC npc, int player)
-        {
-            if (!CalamityWorld.death)
-                return;
-
-            switch (npc.type)
-            {
-                case NPCID.DiggerHead:
-                case NPCID.DiggerBody:
-                case NPCID.DiggerTail:
-                    SplittingWormBroadcastInteraction(npc, player, NPCID.DiggerHead, NPCID.DiggerBody, NPCID.DiggerTail);
-                    return;
-                case NPCID.SeekerHead:
-                case NPCID.SeekerBody:
-                case NPCID.SeekerTail:
-                    SplittingWormBroadcastInteraction(npc, player, NPCID.SeekerHead, NPCID.SeekerBody, NPCID.SeekerTail);
-                    return;
-                case NPCID.DuneSplicerHead:
-                case NPCID.DuneSplicerBody:
-                case NPCID.DuneSplicerTail:
-                    SplittingWormBroadcastInteraction(npc, player, NPCID.DuneSplicerHead, NPCID.DuneSplicerBody, NPCID.DuneSplicerTail);
-                    return;
-            }
-        }
-
-        internal static void SplittingWormBroadcastInteraction(NPC npc, int player, int head, int body, int tail)
-        {
-            foreach (NPC n in Main.ActiveNPCs)
-            {
-                if (n.whoAmI != npc.whoAmI && (n.type == head || n.type == body || n.type == tail))
-                {
-                    n.ApplyInteraction(player);
-                }
-            }
-        }
-
-        internal static void SplittingWormBestiaryUpdate(NPC npc)
-        {
-            if (!CalamityWorld.death)
-                return;
-
-            switch (npc.type)
-            {
-                case NPCID.DiggerBody:
-                case NPCID.DiggerTail:
-                    NPC diggerHead = new();
-                    diggerHead.SetDefaults(NPCID.DiggerHead);
-                    Main.BestiaryTracker.Kills.RegisterKill(diggerHead);
-                    return;
-                case NPCID.SeekerBody:
-                case NPCID.SeekerTail:
-                    NPC seekerHead = new();
-                    seekerHead.SetDefaults(NPCID.SeekerHead);
-                    Main.BestiaryTracker.Kills.RegisterKill(seekerHead);
-                    return;
-                case NPCID.DuneSplicerBody:
-                case NPCID.DuneSplicerTail:
-                    NPC duneSplicerHead = new();
-                    duneSplicerHead.SetDefaults(NPCID.DuneSplicerHead);
-                    Main.BestiaryTracker.Kills.RegisterKill(duneSplicerHead);
-                    return;
-            }
-        }
-
-        internal static bool SplittingWormLootBlockWrapper(NPC npc, Mod mod)
-        {
-            if (!CalamityWorld.death)
-                return true;
-
-            switch (npc.type)
-            {
-                case NPCID.DiggerHead:
-                case NPCID.DiggerBody:
-                case NPCID.DiggerTail:
-                    return SplittingWormLoot(npc, mod, 0);
-                case NPCID.SeekerHead:
-                case NPCID.SeekerBody:
-                case NPCID.SeekerTail:
-                    return SplittingWormLoot(npc, mod, 1);
-                case NPCID.DuneSplicerHead:
-                case NPCID.DuneSplicerBody:
-                case NPCID.DuneSplicerTail:
-                    return SplittingWormLoot(npc, mod, 2);
-                default:
-                    return true;
-            }
-        }
-
-        internal static bool SplittingWormLoot(NPC npc, Mod mod, int wormType)
-        {
-            switch (wormType)
-            {
-                case 0: return CheckSegments(NPCID.DiggerHead, NPCID.DiggerBody, NPCID.DiggerTail);
-                case 1: return CheckSegments(NPCID.SeekerHead, NPCID.SeekerBody, NPCID.SeekerTail);
-                case 2: return CheckSegments(NPCID.DuneSplicerHead, NPCID.DuneSplicerBody, NPCID.DuneSplicerTail);
-                default:
-                    break;
-            }
-
-            bool CheckSegments(int head, int body, int tail)
-            {
-                foreach (NPC n in Main.ActiveNPCs)
-                {
-                    if (n.whoAmI != npc.whoAmI && (n.type == head || n.type == body || n.type == tail))
-                    {
-                        return false;
-                    }
-                }
-                return true;
-            }
-
-            return true;
         }
         #endregion
     }

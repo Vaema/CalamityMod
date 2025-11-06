@@ -435,7 +435,7 @@ namespace CalamityMod.Systems
                     CalamityUtils.SpawnOre(TileID.Cobalt, 12E-05, 0.45f, 0.7f, 3, 8);
                     CalamityUtils.SpawnOre(TileID.Palladium, 12E-05, 0.45f, 0.7f, 3, 8);
 
-                    CalamityUtils.DisplayLocalizedText(key, messageColor);
+                    CalamityUtils.BroadcastLocalizedText(key, messageColor);
                 });
 
                 // Disable gen pass if Early Hardmode Rework is disabled.
@@ -668,12 +668,6 @@ namespace CalamityMod.Systems
                     }
                 }
             }
-
-            // Save the set of ores that got generated
-            OreTypes[0] = (ushort)GenVars.copperBar;
-            OreTypes[1] = (ushort)GenVars.ironBar;
-            OreTypes[2] = (ushort)GenVars.silverBar;
-            OreTypes[3] = (ushort)GenVars.goldBar;
         }
         #endregion
     }

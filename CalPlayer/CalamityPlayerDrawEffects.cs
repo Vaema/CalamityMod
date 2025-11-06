@@ -267,7 +267,7 @@ namespace CalamityMod.CalPlayer
             }
 
             #region Flight Visuals
-            // Celestial Tracers, Elysian Tracers, Seraph Tracers
+            // Moon Walkers, Void Striders, Seraph Tracers
             if (calamityPlayer.tracersDust && drawInfo.shadow == 0f)
             {
                 if (!Player.StandingStill() && !Player.mount.Active)

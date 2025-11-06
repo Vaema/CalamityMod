@@ -314,7 +314,7 @@ namespace CalamityMod.Projectiles.Rogue
                     Particle pulse2 = new CustomSpark(Projectile.Center, -Projectile.velocity.SafeNormalize(Vector2.UnitX) * 2.5f, "CalamityMod/Particles/HollowCircleSoftEdge", false, 14, 0.175f * finalHitMult, c2 * 0.7f, new Vector2(2.5f, 2f), extraRotation: MathHelper.ToRadians(90), shrinkSpeed: 0.9f);
                     GeneralParticleHandler.SpawnParticle(pulse2);
 
-                    Owner.Calamity().GeneralScreenShakePower = 3;
+                    Owner.SetScreenshake(3f);
                 }
                 else // If there's no targets other than the currently hit one or the projectile is out of bounces, deal the final stronger blow.
                 {
@@ -349,7 +349,7 @@ namespace CalamityMod.Projectiles.Rogue
                     giveStealth = false;
                 }
 
-                Owner.Calamity().GeneralScreenShakePower = charge * (hasReachedFullCharge ? 1.2f : 0.8f) * finalHitMult;
+                Owner.SetScreenshake(charge * (hasReachedFullCharge ? 1.2f : 0.8f) * finalHitMult);
 
                 for (int i = 0; i <= 12 * finalHitMult; i++)
                 {

@@ -79,7 +79,7 @@ namespace CalamityMod.Projectiles.Magic
             if (revFrames >= 150 && !isOnCooldown)
             {
                 revSpeed = 4;
-                Owner.Calamity().GeneralScreenShakePower = 3.5f;
+                Owner.SetScreenshake(3.5f);
                 OffsetLengthFromArm -= 35f;
                 cooldownTimer = 60;
                 SoundStyle bigShot = new("CalamityMod/Sounds/Custom/ProfanedGuardians/GuardianRay");

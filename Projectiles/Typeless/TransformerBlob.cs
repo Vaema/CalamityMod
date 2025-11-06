@@ -142,7 +142,7 @@ namespace CalamityMod.Projectiles.Typeless
                 {
                     Projectile.netUpdate = true;
                     if (visuals)
-                        Owner.Calamity().GeneralScreenShakePower = 3.5f;
+                        Owner.SetScreenshake(3.5f);
                     Projectile.numHits = 0;
                     Projectile.velocity = Utils.DirectionTo(Owner.Center, Owner.Calamity().mouseWorld) * 12;
                     Projectile.extraUpdates = 8;

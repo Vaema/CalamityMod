@@ -33,7 +33,7 @@ namespace CalamityMod.Waters
         {
             Vector3 outputColor = new Vector3(r, g, b);
 
-            if (tile.TileType != RustyChestTile.Type)
+            if (tile.TileType != RustyChestTile.TileType)
             {
                 CalamityUtils.SunkenSeaWaterLighting(i, j, WaterGlowColor, ref outputColor.X, ref outputColor.Y, ref outputColor.Z);
             }

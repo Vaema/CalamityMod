@@ -1,4 +1,5 @@
-﻿using CalamityMod.CalPlayer;
+﻿using System.Collections.Generic;
+using CalamityMod.CalPlayer;
 using CalamityMod.Rarities;
 using Terraria;
 using Terraria.ID;
@@ -31,7 +32,18 @@ namespace CalamityMod.Items.PermanentBoosters
             Item.Calamity().devItem = true;
         }
 
-        public override bool CanUseItem(Player player) => !player.Calamity().nimbleBounderBoost;
+        public static bool HasConsumedBefore(Player player) => player.Calamity().nimbleBounderBoost;
+
+        public override bool CanUseItem(Player player)
+        {
+            if (HasConsumedBefore(player))
+            {
+                // Refuse Text can be added on here
+                return false;
+            }
+
+            return true;
+        }
 
         public override bool? UseItem(Player player)
         {
@@ -48,6 +60,12 @@ namespace CalamityMod.Items.PermanentBoosters
         public override void PostUpdate()
         {
             Lighting.AddLight((int)((Item.position.X + Item.width / 2) / 16f), (int)((Item.position.Y + Item.height / 2) / 16f), 0.51f, 0.14f, 0.57f);
+        }
+
+        public override void ModifyTooltips(List<TooltipLine> list)
+        {
+            if (HasConsumedBefore(Main.LocalPlayer))
+                list.AddConsumedTooltip();
         }
     }
 }

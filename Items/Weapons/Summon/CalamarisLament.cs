@@ -44,7 +44,7 @@ namespace CalamityMod.Items.Weapons.Summon
             Item.damage = 110;
             Item.DamageType = DamageClass.Summon;
             Item.mana = 10;
-            Item.useAnimation = Item.useTime = 10;
+            Item.useAnimation = Item.useTime = 24;
             Item.knockBack = 0.25f;
             Item.buffType = ModContent.BuffType<CalamarisLamentBuff>();
             Item.shoot = ModContent.ProjectileType<CalamarisLamentMinion>();

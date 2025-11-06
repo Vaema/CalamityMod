@@ -134,7 +134,7 @@ namespace CalamityMod.Projectiles.Melee
                         if (timer % 8 == 0)
                         {
                             Vector2 pos = player.Center + Projectile.rotation.ToRotationVector2() * 60f;
-                            Particle sparkle = new CritSpark(pos, new Vector2(7f, 0).RotatedBy(Projectile.rotation), Color.Lerp(Color.CornflowerBlue, Color.MediumPurple, Main.rand.NextFloat()), Color.White * 0.33f, 1.2f, 12, 0.3f, 1.2f);
+                            Particle sparkle = new CritSpark(pos, new Vector2(7f, 0).RotatedBy(Projectile.rotation), Color.Lerp(Color.CornflowerBlue, Color.MediumPurple, Main.rand.NextFloat(1f)), Color.White * 0.33f, 1.2f, 12, 0.3f, 1.2f);
                             GeneralParticleHandler.SpawnParticle(sparkle);
                         }
                         Particle smear = new CircularSmearVFX(player.Center, Color.CornflowerBlue * 0.25f, Projectile.rotation, Projectile.scale * 1.25f);
@@ -171,7 +171,7 @@ namespace CalamityMod.Projectiles.Melee
                 {
                     // Thrust forward
                     OffsetDistance = (int)MathHelper.Lerp(34, 78, SwingCompletion);
-                    Main.player[Projectile.owner].Calamity().GeneralScreenShakePower = 3.5f;
+                    Main.player[Projectile.owner].SetScreenshake(3.5f);
 
                     // Scaling adjustments
                     var t = MathHelper.Clamp(SwingCompletion, 0f, 1f);

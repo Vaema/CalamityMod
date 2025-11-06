@@ -201,7 +201,7 @@ namespace CalamityMod.World
                             string key = "Mods.CalamityMod.Status.Progression.AstralText";
                             Color messageColor = Color.Gold;
 
-                            CalamityUtils.DisplayLocalizedText(key, messageColor);
+                            CalamityUtils.BroadcastLocalizedText(key, messageColor);
                             break;
                         }
                         break;

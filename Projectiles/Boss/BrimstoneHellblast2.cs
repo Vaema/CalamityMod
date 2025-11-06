@@ -41,7 +41,7 @@ namespace CalamityMod.Projectiles.Boss
             if (Projectile.ai[0] == 2f && (Main.expertMode || BossRushEvent.BossRushActive) && Projectile.timeLeft < 1260)
             {
                 if (Projectile.velocity.Length() < 10f)
-                    Projectile.velocity *= 1.005f;
+                    Projectile.velocity *= 1.002f;
             }
 
             Projectile.frameCounter++;

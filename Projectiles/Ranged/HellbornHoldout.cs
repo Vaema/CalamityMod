@@ -135,7 +135,7 @@ namespace CalamityMod.Projectiles.Ranged
                 {
                     if (Owner.Calamity().hellbornShots > 0)
                     {
-                        Owner.Calamity().GeneralScreenShakePower = 5f;
+                        Owner.SetScreenshake(5f);
                         OffsetLengthFromArm -= 35f;
                         cooldownTimer = Owner.itemAnimationMax * 2;
                         Owner.Calamity().hellbornShots--;

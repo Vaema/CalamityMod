@@ -284,8 +284,7 @@ namespace CalamityMod.Projectiles.Magic
         {
             SoundEngine.PlaySound(SoundID.Item105, Projectile.Center);
             float screenshake = GetSoulEffects((int)Projectile.ai[0]) == SoulType.Light ? 5f : 3.5f;
-            if (Main.LocalPlayer.Calamity().GeneralScreenShakePower < screenshake)
-                Main.LocalPlayer.Calamity().GeneralScreenShakePower = screenshake;
+            Main.LocalPlayer.SetScreenshake(screenshake);
 
             if (Projectile.owner == Main.myPlayer)
             {

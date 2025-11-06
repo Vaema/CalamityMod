@@ -18,7 +18,7 @@ namespace CalamityMod.Items.Weapons.Summon
             Item.DamageType = DamageClass.Summon;
             Item.sentry = true;
             Item.mana = 10;
-            Item.useAnimation = Item.useTime = 35;
+            Item.useAnimation = Item.useTime = 30;
             Item.knockBack = 0.25f;
             Item.shoot = ModContent.ProjectileType<PolypLauncherSentry>();
             Item.shootSpeed = 10f;

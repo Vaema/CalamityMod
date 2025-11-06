@@ -60,7 +60,7 @@ namespace CalamityMod.Waters
                 GeneralParticleHandler.SpawnParticle(acidFoam);
             }
 
-            if (tile.TileType != RustyChestTile.Type)
+            if (tile.TileType != RustyChestTile.TileType)
             {
                 if (Main.dayTime && !Main.raining)
                 {
