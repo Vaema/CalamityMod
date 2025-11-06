@@ -21,6 +21,7 @@ using Microsoft.Xna.Framework.Graphics;
 using Terraria;
 using Terraria.DataStructures;
 using Terraria.GameContent;
+using Terraria.Graphics.Shaders;
 using Terraria.ID;
 using Terraria.ModLoader;
 
@@ -103,14 +104,25 @@ namespace CalamityMod.CalPlayer
 
                 Texture2D tex = ModContent.Request<Texture2D>("CalamityMod/Particles/HighResFoggyCircleHardEdge").Value;
                 var color = Color.Lerp(Color.DeepSkyBlue, Color.LightSkyBlue, (StratusStarburst / (float)MaxStratusStarburst));
-                var opacity = 0.75f * MathHelper.Min(MathHelper.Min(Starshield / 30f, 1f),(3600-Starshield)/30f);
-                float size = 64 + 32 * (StratusStarburst/(float)MaxStratusStarburst);
+                var opacity = MathHelper.Min(MathHelper.Min(Starshield / 30f, 1f),(3600-Starshield)/30f);
+                float size = 96 + 32 * (StratusStarburst/(float)MaxStratusStarburst);
 
-                var matrix = Main.GameViewMatrix.TransformationMatrix;
-                Main.spriteBatch.SafeBegin(SpriteSortMode.Immediate, BatchSetting.Additive, null, matrix, () =>
-                {
-                    Main.spriteBatch.Draw(tex, Player.Center + new Vector2(0, Player.gfxOffY) - Main.screenPosition, null, color * opacity, 0, tex.Size() * 0.5f, size / tex.Width, SpriteEffects.None, 1);
-                });
+                Texture2D telegraphBase = StratusBlackHole.GetTransparentBloomTex();
+                Main.EntitySpriteDraw(telegraphBase, Player.Center + new Vector2(0, Player.gfxOffY) - Main.screenPosition, null, Color.DarkSlateBlue * 0.75f * opacity, 0, telegraphBase.Size() / 2f, size * 1.5f * opacity / telegraphBase.Width, 0, 0);
+                
+                Main.spriteBatch.EnterShaderRegion();
+
+                GameShaders.Misc["CalamityMod:OtherworldBarrierDistortion"].UseOpacity(0.8f);
+                GameShaders.Misc["CalamityMod:OtherworldBarrierDistortion"].UseSaturation(0.1f);
+                GameShaders.Misc["CalamityMod:OtherworldBarrierDistortion"].SetShaderTexture(ModContent.Request<Texture2D>("CalamityMod/ExtraTextures/GreyscaleGradients/VoidGashes"), 1);
+                GameShaders.Misc["CalamityMod:OtherworldBarrierDistortion"].Apply();
+
+                tex = ModContent.Request<Texture2D>("CalamityMod/Particles/SmallBloomRing").Value;
+                Main.spriteBatch.Draw(tex, Player.Center + new Vector2(0, Player.gfxOffY) - Main.screenPosition, null, Color.DarkSlateBlue * opacity * 0.5f, 0, tex.Size() * 0.5f, size * 0.75f / tex.Width * opacity, SpriteEffects.None, 1);
+                
+                Main.spriteBatch.Draw(tex, Player.Center + new Vector2(0, Player.gfxOffY) - Main.screenPosition, null, color * opacity * 0.75f, 0, tex.Size() * 0.5f, size / tex.Width * opacity, SpriteEffects.None, 1);
+                Main.spriteBatch.ExitShaderRegion();
+
             }
             //DoG Boss Cursor
             DevourerofGodsHead DoG = null;

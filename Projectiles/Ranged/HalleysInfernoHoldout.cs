@@ -41,7 +41,7 @@ namespace CalamityMod.Projectiles.Ranged
 
         public override void HoldoutAI()
         {
-            ForcePlayerItemTime = false;
+            SetUsage = false;
             if (Halley.type != ModContent.ItemType<HalleysInferno>())
             {
                 Projectile.Kill();
