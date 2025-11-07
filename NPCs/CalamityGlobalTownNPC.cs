@@ -279,6 +279,7 @@ namespace CalamityMod.NPCs
             "Syethas", // <@!325413275066171393> (cosmicstariight)
             "Nextdoor Psycho", // <@!173261518572486656> (nextdoorpsycho)
             "Mike Cyclops", // <@!702327497475227741> (seichoseicho)
+            "Derin", // <@!466703979695308820> (god_15)
         };
         private static readonly string[] ZoologistNames =
         {
