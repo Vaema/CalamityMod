@@ -100,7 +100,6 @@ namespace CalamityMod.Items
                 { ItemID.DayBreak, Do(DamageExact(125), UseExact(22)) },
                 { ItemID.DD2BetsyBow, Do(DamageExact(42)) }, // Aerial Bane's ridiculous multiplier is removed, so this compensates for that
                 { ItemID.DD2SquireBetsySword, Do(UseMeleeSpeed, DamageExact(150)) }, // Flying Dragon
-                { ItemID.DD2SquireDemonSword, Do(DamageExact(110), UseExact(25)) }, // Brand of the Inferno
                 { ItemID.DeadlySphereStaff, Do(DamageExact(50)) },
                 { ItemID.DeathSickle, Do(UseMeleeSpeed, DamageExact(70), ShootSpeedExact(15f)) },
                 { ItemID.DemonBow, Do(DamageExact(12)) },
