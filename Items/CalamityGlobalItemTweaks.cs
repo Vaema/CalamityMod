@@ -118,7 +118,7 @@ namespace CalamityMod.Items
                 { ItemID.Flamarang, Do(DamageExact(37)) },
                 { ItemID.Flamelash, Do(DamageExact(36), ManaExact(18)) },
                 { ItemID.Flamethrower, Do(DamageExact(21), ShootSpeedDelta(+3f)) },
-                { ItemID.FlowerofFire, Do(ManaExact(7), UseRatio(0.88f), DamageRatio(0.7f)) }, // Uses ratios due to remix seed
+                { ItemID.FlowerofFire, Do(ManaExact(7), DamageRatio(0.78f)) }, // Uses ratios due to remix seed
                 { ItemID.FlowerofFrost, Do(ManaExact(7), UseExact(22), DamageExact(70), ShootSpeedExact(14)) },
                 { ItemID.FlyingKnife, Do(DamageExact(53)) },
                 { ItemID.Frostbrand, Do(UseMeleeSpeed, DamageExact(88)) },
