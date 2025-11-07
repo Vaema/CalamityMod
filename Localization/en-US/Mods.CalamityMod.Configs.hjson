@@ -572,5 +572,3 @@ CalamityServerConfig: {
 			'''
 	}
 }
-
-SetBonusDoubleTapOptions.Tooltip: ""
