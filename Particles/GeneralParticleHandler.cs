@@ -12,7 +12,8 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.Particles
 {
-    // IMPORTANT CREDITS:
+    // Important credits for Spirit and Luminance:
+    #region CREDITS
 
     // 06JAN2022: Iban
     // This particle system was inspired by spirit mod's own particle system, with permission granted by Yuyutsu. Love you spirit mod! -Iban
@@ -34,6 +35,7 @@ namespace CalamityMod.Particles
     //
     // The above copyright notice and this permission notice shall be included in all
     // copies or substantial portions of the Software.
+    #endregion
 
     [Autoload(Side = ModSide.Client)]
     public sealed class GeneralParticleHandler : ModSystem
@@ -63,6 +65,7 @@ namespace CalamityMod.Particles
         private static List<Particle> activeParticles;
         private static List<Particle> particlesToKill;
         private static Dictionary<GeneralDrawLayer, Queue<Particle>> particlesToSpawnNextFrame;
+        private static Dictionary<GeneralDrawLayer, Queue<Particle>> particlesToSpawnNextFrame_Pixelated;
         private static Dictionary<BlendState, List<Particle>> particlesToDraw;
         private static Dictionary<BlendState, List<Particle>> particlesToDraw_Pixelated;
         #endregion
@@ -121,6 +124,7 @@ namespace CalamityMod.Particles
             activeParticles = [];
             particlesToKill = [];
             particlesToSpawnNextFrame = [];
+            particlesToSpawnNextFrame_Pixelated = [];
             particlesToDraw = [];
             particlesToDraw_Pixelated = [];
 
@@ -143,6 +147,7 @@ namespace CalamityMod.Particles
             activeParticles = null;
             particlesToKill = null;
             particlesToSpawnNextFrame = null;
+            particlesToSpawnNextFrame_Pixelated = null;
             particlesToDraw = null;
             particlesToDraw_Pixelated = null;
         }
@@ -152,6 +157,7 @@ namespace CalamityMod.Particles
             activeParticles.Clear();
             particlesToKill.Clear();
             particlesToSpawnNextFrame.Clear();
+            particlesToSpawnNextFrame_Pixelated.Clear();
             particlesToDraw.Clear();
             particlesToDraw_Pixelated.Clear();
         }
@@ -161,7 +167,7 @@ namespace CalamityMod.Particles
         /// Spawns the particle instance provided into the world. If the particle limit is reached but the particle is marked as important, it will try to replace a non important particle.
         /// </summary>
         /// <param name="manualDrawLayerOverride">Only set this to a non-null value if you'd like to manually override the draw layer of the particle instance you are spawning.</param>
-        public static void SpawnParticle(Particle particle, GeneralDrawLayer? manualDrawLayerOverride = null)
+        public static void SpawnParticle(Particle particle, bool pixelate = false, GeneralDrawLayer? manualDrawLayerOverride = null)
         {
             // Don't queue particles if the game is paused.
             // This precedent is established with how Dust instances are created.
@@ -172,6 +178,7 @@ namespace CalamityMod.Particles
             if (activeParticles.Count >= CalamityClientConfig.Instance.ParticleLimit && !particle.Important)
                 return;
 
+            particle.Pixelate = pixelate;
             if (manualDrawLayerOverride.HasValue)
                 particle.DrawLayer = manualDrawLayerOverride.Value;
 
@@ -186,7 +193,7 @@ namespace CalamityMod.Particles
         /// another particle type.</br>
         /// <br>The single frame buffer ensures the overall particle update loop isn't altered prematurely from within the loop itself.</br>
         /// </summary>
-        public static void QueueParticleForNextFrame(Particle particle, GeneralDrawLayer? manualDrawLayerOverride = null)
+        public static void QueueParticleForNextFrame(Particle particle, bool pixelate = false, GeneralDrawLayer? manualDrawLayerOverride = null)
         {
             // Don't queue particles if the game is paused.
             // This precedent is established with how Dust instances are created.
@@ -194,12 +201,19 @@ namespace CalamityMod.Particles
             if (Main.gamePaused || Main.dedServ || activeParticles == null)
                 return;
 
-            // Get the correct draw layer to spawn this particle on.
             GeneralDrawLayer actualDrawLayer = manualDrawLayerOverride ?? particle.DrawLayer;
-            if (!particlesToSpawnNextFrame.ContainsKey(actualDrawLayer))
-                particlesToSpawnNextFrame[actualDrawLayer] = [];
-
-            particlesToSpawnNextFrame[actualDrawLayer].Enqueue(particle);
+            if (pixelate)
+            {
+                if (!particlesToSpawnNextFrame_Pixelated.ContainsKey(actualDrawLayer))
+                    particlesToSpawnNextFrame_Pixelated[actualDrawLayer] = [];
+                particlesToSpawnNextFrame_Pixelated[actualDrawLayer].Enqueue(particle);
+            }
+            else
+            {
+                if (!particlesToSpawnNextFrame.ContainsKey(actualDrawLayer))
+                    particlesToSpawnNextFrame[actualDrawLayer] = [];
+                particlesToSpawnNextFrame[actualDrawLayer].Enqueue(particle);
+            }
         }
 
         /// <summary>
@@ -207,11 +221,29 @@ namespace CalamityMod.Particles
         /// </summary>
         public static void RemoveParticle(Particle particle)
         {
-            if (Main.dedServ)
-                return;
+            if (!Main.dedServ)
+                particlesToKill.Add(particle);
+        }
 
-            particlesToKill.Add(particle);
-            RemoveFromAssociatedDrawCollection(particle);
+        /// <summary>
+        /// Removes all active particle instances in the world of a specified type.
+        /// </summary>
+        public static void RemoveParticlesOfType<T>() where T : Particle
+        {
+            foreach (Particle particle in activeParticles)
+            {
+                if (particle.GetType() == typeof(T))
+                    particlesToKill.Add(particle);
+            }
+        }
+
+        /// <summary>
+        /// Removes ALL active particle instances in the world.
+        /// </summary>
+        public static void RemoveAllParticles()
+        {
+            foreach (Particle particle in activeParticles)
+                particlesToKill.Add(particle);
         }
 
         /// <summary>
@@ -244,10 +276,16 @@ namespace CalamityMod.Particles
                 return;
 
             // Spawn queued particles.
-            foreach (var keyValuePair in particlesToSpawnNextFrame)
+            foreach (var collectionsByDrawLayer in particlesToSpawnNextFrame)
             {
-                while (keyValuePair.Value.Count > 0)
-                    SpawnParticle(keyValuePair.Value.Dequeue(), keyValuePair.Key);
+                while (collectionsByDrawLayer.Value.Count > 0)
+                    SpawnParticle(collectionsByDrawLayer.Value.Dequeue(), false, collectionsByDrawLayer.Key);
+            }
+
+            foreach (var collectionsByDrawLayer in particlesToSpawnNextFrame_Pixelated)
+            {
+                while (collectionsByDrawLayer.Value.Count > 0)
+                    SpawnParticle(collectionsByDrawLayer.Value.Dequeue(), true, collectionsByDrawLayer.Key);
             }
 
             // Update all particle instances in the world.
