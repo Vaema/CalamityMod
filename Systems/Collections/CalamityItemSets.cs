@@ -58,13 +58,13 @@ namespace CalamityMod.Systems.Collections
                 ItemID.SonarPotion, ItemID.CratePotion, ItemID.AnglerTackleBag, ItemID.HighTestFishingLine, ItemID.TackleBox, ItemID.AnglerEarring, ItemID.FishermansGuide, ItemID.WeatherRadio,
                 ItemID.Sextant, ItemID.AnglerHat, ItemID.AnglerVest, ItemID.AnglerPants, ItemID.GoldenBugNet, ItemID.FishronWings, ItemID.Flairon, ItemID.Tsunami, ItemID.BubbleGun,
                 ItemID.RazorbladeTyphoon, ItemID.TempestStaff, ItemID.FishronBossBag, ItemID.Coral, ItemID.Seashell, ItemID.Starfish, ItemID.SoulofSight, ItemID.GreaterHealingPotion,
-                ItemID.SuperHealingPotion, ItemType<SubmarineShocker>(), ItemType<Barinautical>(), ItemType<Downpour>(), ItemType<DeepseaStaff>(), ItemType<ScourgeoftheSeas>(),
+                ItemID.SuperHealingPotion, ItemID.SoulofFlight, ItemType<SubmarineShocker>(), ItemType<Barinautical>(), ItemType<Downpour>(), ItemType<DeepseaStaff>(), ItemType<ScourgeoftheSeas>(),
                 ItemType<InsidiousImpaler>(), ItemType<SepticSkewer>(), ItemType<FetidEmesis>(), ItemType<VitriolicViper>(), ItemType<CadaverousCarrion>(), ItemType<ToxicantTwister>(),
                 ItemType<OldDukeScales>(), ItemType<Greentide>(), ItemType<Leviatitan>(), ItemType<Atlantis>(), ItemType<AnahitasArpeggio>(), ItemType<Whitewater>(), ItemType<LeviathanTeeth>(),
                 ItemType<GastricBelcherStaff>(), ItemType<PearlofEnthrallment>(), ItemType<AquaticScourgeBag>(), ItemType<OldDukeBag>(), ItemType<LeviathanBag>(), ItemType<OldDukeMask>(),
                 ItemType<LeviathanMask>(), ItemType<AquaticScourgeMask>(), ItemType<OldDukeTrophy>(), ItemType<LeviathanTrophy>(), ItemType<AquaticScourgeTrophy>(), ItemType<LoreAquaticScourge>(),
                 ItemType<LoreLeviathanAnahita>(), ItemType<LoreSulphurSea>(), ItemType<LoreAbyss>(), ItemType<LoreOldDuke>(), ItemType<PearlShard>(), ItemType<AeroStone>(), ItemType<TheCommunity>(),
-                ItemType<DukesDecapitator>(), ItemType<SulphurousSand>());
+                ItemType<DukesDecapitator>(), ItemType<SulphurousSand>(), ItemType<EssenceofSunlight>());
 
         /// <summary>
         /// If <see langword="true"/> for an item type, prevents this rogue weapon from triggering Venerated Locket's clone projectile effect when used.<br/>
