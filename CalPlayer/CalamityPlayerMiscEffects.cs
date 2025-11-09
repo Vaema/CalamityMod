@@ -5222,28 +5222,13 @@ namespace CalamityMod.CalPlayer
         #region Potion Handling
         private void HandlePotions()
         {
-            // Hadal Stew
-            if (potionTimer > 0)
-                potionTimer--;
-            if (potionTimer > 0 && Player.potionDelay == 0)
-                Player.potionDelay = potionTimer;
-            if (potionTimer == 1)
-            {
-                // Reduced duration than normal
-                int duration = HadalStew.SicknessDuration;
-                if (Player.pStone)
-                    duration = (int)(duration * 0.75);
-                Player.ClearBuff(BuffID.PotionSickness);
-                Player.AddBuff(BuffID.PotionSickness, duration);
-            }
-
             if (PlayerInput.Triggers.JustPressed.QuickBuff)
             {
                 for (int i = 0; i < Main.InventorySlotsTotal; ++i)
                 {
                     Item item = Player.inventory[i];
 
-                    if (Player.potionDelay > 0 || potionTimer > 0)
+                    if (Player.potionDelay > 0)
                         break;
                     if (item is null || item.stack <= 0)
                         continue;

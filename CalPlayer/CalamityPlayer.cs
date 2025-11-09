@@ -114,8 +114,6 @@ namespace CalamityMod.CalPlayer
         public int garandShots = 0;
         public int searedPanCounter = 0;
         public int searedPanTimer = 0;
-        /// <summary> Used to get around the hardcoded Potion Sickness duration to allow Hadal Stew's reduced duration. </summary>
-        public int potionTimer = 0;
         /// <summary> If set to true, prevents all player dashes. Used by Ball and Chain, and Stygian Shield. </summary>
         public bool blockAllDashes = false;
         /// <summary> Used by Flamsteed Ring to reset the player's hitbox size after dismounting. </summary>
@@ -3259,7 +3257,6 @@ namespace CalamityMod.CalPlayer
             garandShots = 0;
             searedPanCounter = 0;
             searedPanTimer = 0;
-            potionTimer = 0;
             persecutedEnchantSummonTimer = 0;
             momentumCapacitorTime = 0;
             momentumCapacitorBoost = 0f;
