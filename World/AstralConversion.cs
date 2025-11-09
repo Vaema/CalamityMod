@@ -1,12 +1,10 @@
-﻿using CalamityMod.Systems.Collections;
-using CalamityMod.Tiles.Astral;
+﻿using CalamityMod.Tiles.Astral;
 using CalamityMod.Tiles.AstralDesert;
 using CalamityMod.Tiles.AstralSnow;
 using CalamityMod.Tiles.FurnitureMonolith;
 using CalamityMod.Tiles.Ores;
 using CalamityMod.Walls;
 using CalamityMod.Walls.UnsafeWalls;
-using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
