@@ -11,9 +11,9 @@ namespace CalamityMod.Dusts
 {
     public class LightDust : ModDust
     {
-        public static Asset<Texture2D> SolidCircle;
+        public static Asset<Texture2D> SolidCircle { get; private set; }
 
-        public static Asset<Texture2D> BloomCircle;
+        public static Asset<Texture2D> BloomCircle { get; private set; }
 
         public override void Load()
         {
@@ -47,15 +47,12 @@ namespace CalamityMod.Dusts
 
         public override bool PreDraw(Dust dust)
         {
-            Vector2 dustCenter = dust.position + new Vector2(0.25f, 0.25f);
-
             // Glow Orb
-            Main.EntitySpriteDraw(BloomCircle.Value, dustCenter - Main.screenPosition, null, dust.color with { A = 0 } * Utils.GetLerpValue(255, 0, dust.alpha), dust.rotation, BloomCircle.Size() * 0.5f, dust.scale * 0.1f, SpriteEffects.None, 0);
+            Main.spriteBatch.Draw(BloomCircle.Value, dust.position - Main.screenPosition, null, dust.color with { A = 0 } * Utils.GetLerpValue(255, 0, dust.alpha), dust.rotation, BloomCircle.Size() * 0.5f, dust.scale * 0.1f, SpriteEffects.None, 0);
             if (dust.alpha < 1)
-                Main.EntitySpriteDraw(BloomCircle.Value, dustCenter - Main.screenPosition, null, dust.color with { A = 0 } * 0.85f * Utils.GetLerpValue(255, 0, dust.alpha), dust.rotation, BloomCircle.Size() * 0.5f, dust.scale * 0.04f, SpriteEffects.None, 0);
+                Main.spriteBatch.Draw(BloomCircle.Value, dust.position - Main.screenPosition, null, dust.color with { A = 0 } * 0.85f * Utils.GetLerpValue(255, 0, dust.alpha), dust.rotation, BloomCircle.Size() * 0.5f, dust.scale * 0.04f, SpriteEffects.None, 0);
             if (!dust.noLight)
-                Main.EntitySpriteDraw(SolidCircle.Value, dustCenter - Main.screenPosition, null, Color.Lerp(dust.color, Color.White, 0.3f) with { A = 0 } * Utils.GetLerpValue(255, 0, dust.alpha), dust.rotation, SolidCircle.Size() * 0.5f, dust.scale * 0.075f, SpriteEffects.None, 0);
-
+                Main.spriteBatch.Draw(SolidCircle.Value, dust.position - Main.screenPosition, null, Color.Lerp(dust.color, Color.White, 0.3f) with { A = 0 } * Utils.GetLerpValue(255, 0, dust.alpha), dust.rotation, SolidCircle.Size() * 0.5f, dust.scale * 0.075f, SpriteEffects.None, 0);
             return false;
         }
     }
@@ -72,14 +69,12 @@ namespace CalamityMod.Dusts
 
         private static void DrawPixelated(Dust dust)
         {
-            Vector2 dustCenter = dust.position + new Vector2(0.25f, 0.25f);
-
             // Glow Orb
-            Main.spriteBatch.Draw(BloomCircle.Value, dustCenter - Main.screenPosition, null, dust.color with { A = 0 } * Utils.GetLerpValue(255, 0, dust.alpha), dust.rotation, BloomCircle.Size() * 0.5f, dust.scale * 0.1f, SpriteEffects.None, 0);
+            Main.spriteBatch.Draw(BloomCircle.Value, dust.position - Main.screenPosition, null, dust.color with { A = 0 } * Utils.GetLerpValue(255, 0, dust.alpha), dust.rotation, BloomCircle.Size() * 0.5f, dust.scale * 0.1f, SpriteEffects.None, 0);
             if (dust.alpha < 1)
-                Main.spriteBatch.Draw(BloomCircle.Value, dustCenter - Main.screenPosition, null, dust.color with { A = 0 } * 0.85f * Utils.GetLerpValue(255, 0, dust.alpha), dust.rotation, BloomCircle.Size() * 0.5f, dust.scale * 0.04f, SpriteEffects.None, 0);
+                Main.spriteBatch.Draw(BloomCircle.Value, dust.position - Main.screenPosition, null, dust.color with { A = 0 } * 0.85f * Utils.GetLerpValue(255, 0, dust.alpha), dust.rotation, BloomCircle.Size() * 0.5f, dust.scale * 0.04f, SpriteEffects.None, 0);
             if (!dust.noLight)
-                Main.spriteBatch.Draw(SolidCircle.Value, dustCenter - Main.screenPosition, null, Color.Lerp(dust.color, Color.White, 0.3f) with { A = 0 } * Utils.GetLerpValue(255, 0, dust.alpha), dust.rotation, SolidCircle.Size() * 0.5f, dust.scale * 0.075f, SpriteEffects.None, 0);
+                Main.spriteBatch.Draw(SolidCircle.Value, dust.position - Main.screenPosition, null, Color.Lerp(dust.color, Color.White, 0.3f) with { A = 0 } * Utils.GetLerpValue(255, 0, dust.alpha), dust.rotation, SolidCircle.Size() * 0.5f, dust.scale * 0.075f, SpriteEffects.None, 0);
         }
     }
 }

@@ -57,15 +57,13 @@ namespace CalamityMod.Particles
         /// </summary>
         internal static Dictionary<int, Texture2D> particleTexturesByIDs;
 
-        /// <summary>
-        /// All <see cref="ParticleAutoDrawingOverride"/> types defined across all mods, identified by the type of the particle the drawers target.
-        /// </summary>
-        internal static Dictionary<Type, ParticleAutoDrawingOverride> particleAutoDrawingOverrides;
+        private static Dictionary<Type, ParticleAutoDrawingOverride> particleAutoDrawingOverrides;
 
         private static List<Particle> activeParticles;
         private static List<Particle> particlesToKill;
         private static Dictionary<GeneralDrawLayer, Queue<Particle>> particlesToSpawnNextFrame;
         private static Dictionary<GeneralDrawLayer, Queue<Particle>> particlesToSpawnNextFrame_Pixelated;
+
         private static Dictionary<BlendState, List<Particle>> particlesToDraw;
         private static Dictionary<BlendState, List<Particle>> particlesToDraw_Pixelated;
         #endregion
@@ -166,6 +164,7 @@ namespace CalamityMod.Particles
         /// <summary>
         /// Spawns the particle instance provided into the world. If the particle limit is reached but the particle is marked as important, it will try to replace a non important particle.
         /// </summary>
+        /// <param name="pixelate">Set to true to force the particle being spawned to be drawn pixelated.</param>
         /// <param name="manualDrawLayerOverride">Only set this to a non-null value if you'd like to manually override the draw layer of the particle instance you are spawning.</param>
         public static void SpawnParticle(Particle particle, bool pixelate = false, GeneralDrawLayer? manualDrawLayerOverride = null)
         {

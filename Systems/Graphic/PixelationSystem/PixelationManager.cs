@@ -213,7 +213,7 @@ namespace CalamityMod.Systems.Graphic.PixelationSystem
             {
                 blendStateTargetPair.Value.SwapTo();
 
-                Main.spriteBatch.Begin(default, blendStateTargetPair.Key, SamplerState.LinearClamp, default, default, null, pixelationMatrix);
+                Main.spriteBatch.Begin(default, blendStateTargetPair.Key, Main.DefaultSamplerState, DepthStencilState.None, Main.Rasterizer, null, pixelationMatrix);
 
                 // Select only drawers who match this target's BlendState.
                 var drawersByBlendState = drawerCollection.Where(d => d.DefaultBlendState == blendStateTargetPair.Key).ToList();
@@ -236,7 +236,7 @@ namespace CalamityMod.Systems.Graphic.PixelationSystem
                 foreach (var keyValuePair in targetCollection)
                 {
                     Main.spriteBatch.TryEnd();
-                    Main.spriteBatch.TryBegin(SpriteSortMode.Deferred, keyValuePair.Key, Main.DefaultSamplerState, default, default, null, Main.GameViewMatrix.TransformationMatrix);
+                    Main.spriteBatch.TryBegin(default, keyValuePair.Key, SamplerState.PointClamp, DepthStencilState.None, Main.Rasterizer, null, Main.GameViewMatrix.TransformationMatrix);
 
                     float targetScale = 1f / PixelationResolution;
                     Main.spriteBatch.Draw(keyValuePair.Value, Vector2.Zero, null, Color.White, 0f, Vector2.Zero, targetScale, SpriteEffects.None, 0f);
