@@ -89,6 +89,14 @@ namespace CalamityMod.World
             WallLoader.RegisterSimpleConversion(WallID.HardenedSand, Type, HardenedSandWallType);
             WallLoader.RegisterSimpleConversion(WallID.DesertFossil, Type, FossilWallType);
             WallLoader.RegisterSimpleConversion(WallID.LivingWoodUnsafe, Type, WoodWallType);
+
+            // Evil solutions cleanse back certain common/abundant Astral tiles
+            TileLoader.RegisterConversion(DirtType, BiomeConversionID.Corruption, TileID.Dirt);
+            TileLoader.RegisterConversion(DirtType, BiomeConversionID.Crimson, TileID.Dirt);
+            TileLoader.RegisterConversion(DirtType, BiomeConversionID.Hallow, TileID.Dirt);
+            TileLoader.RegisterConversion(SnowType, BiomeConversionID.Corruption, TileID.SnowBlock);
+            TileLoader.RegisterConversion(SnowType, BiomeConversionID.Crimson, TileID.SnowBlock);
+            TileLoader.RegisterConversion(SnowType, BiomeConversionID.Hallow, TileID.SnowBlock);
         }
     }
 }

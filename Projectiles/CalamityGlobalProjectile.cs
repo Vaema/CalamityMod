@@ -4365,24 +4365,11 @@ namespace CalamityMod.Projectiles
                     Projectile.NewProjectile(projectile.GetSource_FromThis(), projectile.Center, Vector2.Zero, ProjectileType<BloomStoneFlower>(), 0, 0f, projectile.owner, projectile.whoAmI);
             }
 
-            // optimization to remove conversion X/Y loop for irrelevant projectiles
-            bool isConversionProjectile = projectile.type == ProjectileID.PurificationPowder
-                || projectile.type == ProjectileID.VilePowder
-                || projectile.type == ProjectileID.ViciousPowder
-                || projectile.type == ProjectileID.PureSpray
-                || projectile.type == ProjectileID.CorruptSpray
-                || projectile.type == ProjectileID.CrimsonSpray
-                || projectile.type == ProjectileID.HallowSpray
-                || projectile.type == ProjectileID.Fertilizer;
-            if (!isConversionProjectile)
-                return;
-
-            if (projectile.owner == Main.myPlayer/* && Main.netMode != NetmodeID.MultiplayerClient*/)
+            // Fertilizer
+            if (projectile.type == ProjectileID.Fertilizer && projectile.owner == Main.myPlayer/* && Main.netMode != NetmodeID.MultiplayerClient*/)
             {
                 int x = (int)(projectile.Center.X / 16f);
                 int y = (int)(projectile.Center.Y / 16f);
-
-                bool isPowder = projectile.type == ProjectileID.PurificationPowder || projectile.type == ProjectileID.VilePowder || projectile.type == ProjectileID.ViciousPowder;
 
                 if (!WorldGen.InWorld(x, y, 3))
                     return;
@@ -4391,47 +4378,27 @@ namespace CalamityMod.Projectiles
                 {
                     for (int j = y - 1; j <= y + 1; j++)
                     {
-                        if (projectile.type == ProjectileID.Fertilizer)
-                        {
-                            Tile tile = Main.tile[i, j];
+                        Tile tile = Main.tile[i, j];
 
-                            if (tile.TileType == ModContent.TileType<AstralTreeSapling>() || tile.TileType == ModContent.TileType<AstralSnowTreeSapling>())
-                            {
-                                bool isPlayerNear = WorldGen.PlayerLOS(i, j);
-                                bool success = WorldGen.GrowTree(i, j);
-                                if (success && isPlayerNear)
-                                    WorldGen.TreeGrowFXCheck(i, j);
-                            }
-                            else if (tile.TileType == ModContent.TileType<AstralPalmSapling>() || tile.TileType == ModContent.TileType<AcidWoodTreeSapling>())
-                            {
-                                bool isPlayerNear = WorldGen.PlayerLOS(i, j);
-                                bool success = WorldGen.GrowPalmTree(i, j);
-                                if (success && isPlayerNear)
-                                    WorldGen.TreeGrowFXCheck(i, j);
-                            }
-                            else if (tile.TileType == ModContent.TileType<SpineSapling>())
-                            {
-                                bool isPlayerNear = WorldGen.PlayerLOS(i, j);
-                                if (isPlayerNear && Main.tile[i, j + 1].TileType != ModContent.TileType<SpineSapling>())
-                                    SpineTree.Spawn(i, j, 22, 28, true);
-                            }
-                        }
-
-                        if (projectile.type == ProjectileID.PureSpray || projectile.type == ProjectileID.PurificationPowder)
+                        if (tile.TileType == ModContent.TileType<AstralTreeSapling>() || tile.TileType == ModContent.TileType<AstralSnowTreeSapling>())
                         {
-                            AstralBiome.ConvertFromAstral(i, j, ConvertType.Pure, !isPowder);
+                            bool isPlayerNear = WorldGen.PlayerLOS(i, j);
+                            bool success = WorldGen.GrowTree(i, j);
+                            if (success && isPlayerNear)
+                                WorldGen.TreeGrowFXCheck(i, j);
                         }
-                        if (projectile.type == ProjectileID.CorruptSpray || projectile.type == ProjectileID.VilePowder)
+                        else if (tile.TileType == ModContent.TileType<AstralPalmSapling>() || tile.TileType == ModContent.TileType<AcidWoodTreeSapling>())
                         {
-                            AstralBiome.ConvertFromAstral(i, j, ConvertType.Corrupt, !isPowder);
+                            bool isPlayerNear = WorldGen.PlayerLOS(i, j);
+                            bool success = WorldGen.GrowPalmTree(i, j);
+                            if (success && isPlayerNear)
+                                WorldGen.TreeGrowFXCheck(i, j);
                         }
-                        if (projectile.type == ProjectileID.CrimsonSpray || projectile.type == ProjectileID.ViciousPowder)
+                        else if (tile.TileType == ModContent.TileType<SpineSapling>())
                         {
-                            AstralBiome.ConvertFromAstral(i, j, ConvertType.Crimson, !isPowder);
-                        }
-                        if (projectile.type == ProjectileID.HallowSpray)
-                        {
-                            AstralBiome.ConvertFromAstral(i, j, ConvertType.Hallow);
+                            bool isPlayerNear = WorldGen.PlayerLOS(i, j);
+                            if (isPlayerNear && Main.tile[i, j + 1].TileType != ModContent.TileType<SpineSapling>())
+                                SpineTree.Spawn(i, j, 22, 28, true);
                         }
                         NetMessage.SendTileSquare(-1, i, j, 1, 1);
                     }
@@ -5231,15 +5198,6 @@ namespace CalamityMod.Projectiles
                             modPlayer.scuttlerCooldown = 30;
                         }
                     }
-
-                    if (projectile.type == ProjectileID.UnholyWater)
-                        Projectile.NewProjectile(projectile.GetSource_FromThis(), projectile.Center, Vector2.Zero, ProjectileType<WaterConvertor>(), 0, 0f, projectile.owner, 1f);
-
-                    if (projectile.type == ProjectileID.BloodWater)
-                        Projectile.NewProjectile(projectile.GetSource_FromThis(), projectile.Center, Vector2.Zero, ProjectileType<WaterConvertor>(), 0, 0f, projectile.owner, 2f);
-
-                    if (projectile.type == ProjectileID.HolyWater)
-                        Projectile.NewProjectile(projectile.GetSource_FromThis(), projectile.Center, Vector2.Zero, ProjectileType<WaterConvertor>(), 0, 0f, projectile.owner, 3f);
                 }
             }
         }
