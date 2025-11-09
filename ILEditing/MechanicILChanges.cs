@@ -1746,16 +1746,6 @@ namespace CalamityMod.ILEditing
         }
         #endregion
 
-        #region Find Calamity Item Dye Shader
-
-        internal static void FindCalamityItemDyeShader(On_Player.orig_UpdateItemDye orig, Player self, bool isNotInVanitySlot, bool isSetToHidden, Item armorItem, Item dyeItem)
-        {
-            orig(self, isNotInVanitySlot, isSetToHidden, armorItem, dyeItem);
-            if (armorItem.type == ModContent.ItemType<Calamity>())
-                self.Calamity().CalamityFireDyeShader = GameShaders.Armor.GetShaderFromItemId(dyeItem.type);
-        }
-        #endregion
-
         #region Scopes Require Visibility to Zoom
         private static void ScopesRequireVisibilityToZoom(ILContext il)
         {
