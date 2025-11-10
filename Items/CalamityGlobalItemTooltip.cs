@@ -929,17 +929,9 @@ namespace CalamityMod.Items
             if (item.type == ItemID.ReconScope)
                 EditTooltipByNum(0, (line) => line.Text += AddedTooltip("RifleScope"));
 
-
-            // Magic Quiver
-            if (item.type == ItemID.MagicQuiver)
-                EditTooltipByNum(0, (line) => line.Text = EditedTooltip("MagicQuiver"));
-
             // Molten Quiver
             if (item.type == ItemID.MoltenQuiver)
-            {
-                EditTooltipByNum(0, (line) => line.Text = EditedTooltip("MoltenQuiver1"));
-                EditTooltipByNum(2, (line) => line.Text = EditedTooltip("MoltenQuiver2"));
-            }
+                EditTooltipByNum(2, (line) => line.Text = EditedTooltip("MoltenQuiver"));
 
             // Magic Power Potion nerf
             if (item.type == ItemID.MagicPowerPotion)

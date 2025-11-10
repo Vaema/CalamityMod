@@ -1280,12 +1280,6 @@ namespace CalamityMod.Items
                 player.Calamity().critDamage += 0.2f;
             }
 
-            if (item.type == ItemID.MagicQuiver)
-                player.arrowDamage -= 0.05f;
-
-            if (item.type == ItemID.MoltenQuiver)
-                player.arrowDamage -= 0.03f;
-
             if (item.type == ItemID.FireGauntlet)
             {
                 player.GetDamage<MeleeDamageClass>() += 0.02f;
