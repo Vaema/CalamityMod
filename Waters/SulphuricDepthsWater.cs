@@ -48,7 +48,7 @@ namespace CalamityMod.Waters
         {
             Vector3 outputColor = new Vector3(r, g, b);
 
-            if (tile.TileType != RustyChestTile.Type)
+            if (tile.TileType != RustyChestTile.TileType)
             {
                 outputColor = Vector3.Lerp(outputColor, Color.MediumSeaGreen.ToVector3(), 0.18f);
             }

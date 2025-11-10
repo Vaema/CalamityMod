@@ -94,13 +94,13 @@ namespace CalamityMod.Projectiles.Typeless
 
             float currentShakePower = MathHelper.Lerp(0.2f, 8f, Utils.GetLerpValue(Lifetime * 0.725f, Lifetime, Time, true));
             currentShakePower *= 1f - Utils.GetLerpValue(1000f, 3100f, Main.LocalPlayer.Distance(Projectile.Center), true);
-            Main.LocalPlayer.Calamity().GeneralScreenShakePower = currentShakePower;
+            Main.LocalPlayer.SetScreenshake(currentShakePower);
         }
 
         public void CreateEffectsHandler()
         {
             SoundEngine.PlaySound(BossRushEvent.StartBuildupSound, Main.LocalPlayer.Center);
-            Main.LocalPlayer.Calamity().GeneralScreenShakePower = 16f;
+            Main.LocalPlayer.SetScreenshake(16f);
             if (Main.myPlayer == Projectile.owner)
                 Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center, Vector2.Zero, ModContent.ProjectileType<BossRushEffectThing>(), 0, 0f, Projectile.owner);
         }

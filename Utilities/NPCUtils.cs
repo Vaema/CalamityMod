@@ -6,7 +6,6 @@ using CalamityMod.CalPlayer;
 using CalamityMod.DataStructures;
 using CalamityMod.Enums;
 using CalamityMod.Events;
-using CalamityMod.Items.Potions.Alcohol;
 using CalamityMod.NPCs;
 using CalamityMod.NPCs.NormalNPCs;
 using CalamityMod.NPCs.OldDuke;
@@ -15,7 +14,6 @@ using CalamityMod.NPCs.SlimeGod;
 using CalamityMod.NPCs.SunkenSea;
 using CalamityMod.NPCs.Yharon;
 using CalamityMod.Packets;
-using CalamityMod.Projectiles.Boss;
 using CalamityMod.World;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
@@ -411,7 +409,7 @@ namespace CalamityMod
             // change the options on the spot to valid default / intended default parameters.
             if (options == default)
                 options = new CalamityTargetingParameters();
-            
+
             float distance = 0f;
             // float realDist = 0f; // Defined but not used by vanilla. Commented out here.
             bool anyTargetAvailable = false;
@@ -526,7 +524,7 @@ namespace CalamityMod
             else
             {
                 bool shouldFaceTarget = options.faceTarget;
-                
+
                 // Sanitize targeted player index
                 if (npc.target < 0 || npc.target >= Main.maxPlayers)
                     npc.target = 0;
@@ -679,7 +677,7 @@ namespace CalamityMod
 
                 if (angle <= wantedHalfCone)
                 {
-                    angle = wantedHalfCone; 
+                    angle = wantedHalfCone;
                     distance = checkDist; // We are within the cone. Now npcs are further narrowed down by distance
                     closestTarget = npc;
                 }
@@ -881,6 +879,39 @@ namespace CalamityMod
             npc.position -= npc.netOffset;
         }
 
+        /// <summary>
+        /// Spawns gores. Automatically accounts for multiplayer.
+        /// </summary>
+        /// <param name="entity">The Entity in question. Usuaully used for NPCs but also applicable for other Entities.</param>
+        /// <param name="suffix">The name of the gore.</param>
+        /// <param name="variants">How many variants there are, defaults to 1.</param>
+        /// <param name="startFrom">What number should the variant names start counting from? A default of -1 means the first gore has no number, while the rest start from 2 and increment by 1.</param>
+        /// <param name="deathCheck">Check if the entity in question is a dead NPC. Defaults to true.</param>
+        public static void SpawnGores(Entity entity, string suffix, int variants = 1, int startFrom = -1, bool deathCheck = true)
+        {
+            if (!Main.dedServ)
+            {
+                bool isADeadNPC = true;
+                if (entity is NPC n && deathCheck)
+                {
+                    if (n.life > 0)
+                        isADeadNPC = false;
+                }
+                if (isADeadNPC)
+                {
+                    for (int i = 0; i < variants; i++)
+                    {
+                        int? idx = startFrom == -1 ? null : startFrom;
+                        if (i > 0)
+                        {
+                            idx = startFrom == -1 ? (i + 1) : (idx + i + 1);
+                        }
+                        Gore.NewGore(entity.GetSource_Death(), entity.position, entity.velocity, CalamityMod.Instance.Find<ModGore>(suffix + idx).Type, 1f);
+                    }
+                }
+            }
+        }
+
         public static NPCShop AddWithCustomValue(this NPCShop shop, int itemType, int customValue, params Condition[] conditions)
         {
             var item = new Item(itemType)
@@ -957,7 +988,7 @@ namespace CalamityMod
                 // If two are passed in, alternate between them
                 // If more are passed in, each iteration must correspond to a texture
                 Texture2D toUse = bodyTextures.Length == 1 ? bodyTextures[0] : bodyTextures.Length == 2 ? (i % 2 == 0 ? bodyTextures[0] : bodyTextures[1]) : bodyTextures[i - 1];
-                spriteBatch.Draw(toUse, npc.position + new Vector2(startX + bodyOffset, MathF.Sin((wormTimer + offset * i) * animationSpeed) * range + startY), toUse.Frame(1, 1, 0, 0), npc.GetAlpha(drawColor), npc.rotation - MathHelper.PiOver2 - MathF.Cos((wormTimer + offset * i) * animationSpeed) * MathHelper.PiOver4 * rotationStrength, toUse.Size () / 2, npc.scale, fx, 0f);
+                spriteBatch.Draw(toUse, npc.position + new Vector2(startX + bodyOffset, MathF.Sin((wormTimer + offset * i) * animationSpeed) * range + startY), toUse.Frame(1, 1, 0, 0), npc.GetAlpha(drawColor), npc.rotation - MathHelper.PiOver2 - MathF.Cos((wormTimer + offset * i) * animationSpeed) * MathHelper.PiOver4 * rotationStrength, toUse.Size() / 2, npc.scale, fx, 0f);
             }
             // Draw the head
             spriteBatch.Draw(headTexture, npc.position + new Vector2(startX + headOffset, MathF.Sin((wormTimer - headSpeedOffset) * animationSpeed) * range + startY), npc.frame, npc.GetAlpha(drawColor), npc.rotation - MathHelper.PiOver2 - MathF.Cos((wormTimer - headSpeedOffset) * animationSpeed) * MathHelper.PiOver4 * rotationStrength, new Vector2(headTexture.Width * 0.5f, headTexture.Height), npc.scale, fx, 0f);
@@ -1013,7 +1044,7 @@ namespace CalamityMod
                             break;
                         }
                     }
-                    
+
                     tileIndexFound = null;
                 }
             }
@@ -1134,10 +1165,13 @@ namespace CalamityMod
         {
             SoundEngine.PlaySound(spawnSound, player.Center);
 
-            // SP or SERVER: Spawn Boss Immediately
-            // This will ensure NPC to be spawned only once on Item.UseItem
-            if (Main.netMode != NetmodeID.MultiplayerClient)
+            // This will ensure the NPC is spawned only once on Item.UseItem
+            if (player.whoAmI != Main.myPlayer)
+                return null;
+
+            if (Main.netMode == NetmodeID.SinglePlayer)
             {
+                // SP: Spawn Boss Immediately
                 int spawnedNPCIdx = NPC.NewNPC(new EntitySource_BossSpawn(target: player), worldX, worldY, npcType, Start: 1);
 
                 // 200 is invalid Index
@@ -1147,16 +1181,13 @@ namespace CalamityMod
                 BossAwakenMessage(spawnedNPCIdx);
                 NPC npc = Main.npc[spawnedNPCIdx];
                 npc.timeLeft *= 20;
-                
-                // Server Exclusive: Sync NPC Data
-                if (Main.dedServ)
-                {
-                    NetMessage.SendData(MessageID.SyncNPC, -1, -1, null, spawnedNPCIdx);
-                }
-
                 return npc;
             }
-
+            else
+            {
+                // MP CLIENT: send syncing net message instead
+                SpawnBossOnPositionPacket.Send(worldX, worldY, npcType, player);
+            }
             return null;
         }
 

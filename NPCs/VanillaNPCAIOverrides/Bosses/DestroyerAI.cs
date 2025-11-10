@@ -17,7 +17,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
     public static class DestroyerAI
     {
         public const float DRIncreaseTime = 600f;
-        public const float DeathModeLaserBreathGateValue = 600f;
+        public const float DeathModeLaserBreathGateValue = 800f;
         public const float LaserTelegraphTime = 120f;
         public const float SparkTelegraphTime = 30f;
         public const float FlightPhaseGateValue = 900f;
@@ -197,19 +197,19 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
             int noFlyZoneBoxHeight = death ? 1500 : 1800;
 
             // Speed and movement variables
-            float speed = death ? 0.2f : 0.1f;
-            float turnSpeed = death ? 0.3f : 0.15f;
+            float speed = death ? 0.12f : 0.1f;
+            float turnSpeed = death ? 0.18f : 0.15f;
 
             // Max velocity
-            float segmentVelocity = flyAtTarget ? (death ? 22.5f : 15f) : (death ? 30f : 20f);
+            float segmentVelocity = flyAtTarget ? 15f : 20f;
 
             // Increase velocity based on distance
             float velocityMultiplier = increaseSpeedMore ? 2f : increaseSpeed ? 1.5f : 1f;
             noFlyZoneBoxHeight -= death ? 400 : (int)(400f * (1f - lifeRatio));
 
-            float segmentVelocityBoost = death ? (flyAtTarget ? 4.5f : 6f) * (1f - lifeRatio) : (flyAtTarget ? 3f : 4f) * (1f - lifeRatio);
-            float speedBoost = death ? (flyAtTarget ? 0.1125f : 0.15f) * (1f - lifeRatio) : (flyAtTarget ? 0.075f : 0.1f) * (1f - lifeRatio);
-            float turnSpeedBoost = death ? 0.18f * (1f - lifeRatio) : 0.12f * (1f - lifeRatio);
+            float segmentVelocityBoost = death ? (flyAtTarget ? 4f : 5.25f) * (1f - lifeRatio) : (flyAtTarget ? 3f : 4f) * (1f - lifeRatio);
+            float speedBoost = death ? (flyAtTarget ? 0.10f : 0.135f) * (1f - lifeRatio) : (flyAtTarget ? 0.075f : 0.1f) * (1f - lifeRatio);
+            float turnSpeedBoost = death ? 0.15f * (1f - lifeRatio) : 0.12f * (1f - lifeRatio);
 
             segmentVelocity += segmentVelocityBoost;
             speed += speedBoost;
@@ -237,45 +237,6 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
             }
 
             bool probeLaunched = npc.ai[2] == 1f;
-            if (npc.type == NPCID.TheDestroyerBody)
-            {
-                // Regenerate Probes in Death Mode if the number of Probes is less than 40 and the number of living NPCs is less than the segment count + 40 (this limit is here just in case)
-                if (death && probeLaunched)
-                {
-                    npc.localAI[2] += 1f;
-                    if (npc.localAI[2] >= 600f)
-                    {
-                        int maxProbes = 40;
-                        bool regenerateProbeSegment = NPC.CountNPCS(NPCID.Probe) < maxProbes;
-                        if (regenerateProbeSegment)
-                        {
-                            int maxNPCs = totalSegments + maxProbes;
-                            int numNPCs = 0;
-                            for (int i = 0; i < Main.maxNPCs; i++)
-                            {
-                                if (Main.npc[i].active)
-                                {
-                                    numNPCs++;
-                                    if (numNPCs >= maxNPCs)
-                                    {
-                                        regenerateProbeSegment = false;
-                                        break;
-                                    }
-                                }
-                            }
-                        }
-
-                        if (regenerateProbeSegment)
-                        {
-                            npc.ai[2] = 0f;
-                            npc.netUpdate = true;
-                        }
-
-                        npc.localAI[2] = 0f;
-                        npc.SyncVanillaLocalAI();
-                    }
-                }
-            }
 
             if (npc.type == NPCID.TheDestroyer)
             {
@@ -299,76 +260,6 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                         Main.npc[index].Calamity().newAI[0] = -90f - Main.npc[index].ai[0] * (death ? 8f : 3f); // This controls the delay between laser shots
                         NetMessage.SendData(MessageID.SyncNPC, -1, -1, null, segment);
                         index = segment;
-                    }
-                }
-
-                // Laser breath in Death Mode
-                if (spitLaserSpreads)
-                {
-                    // Set laser color and type
-                    if (calamityGlobalNPC.destroyerLaserColor == -1)
-                    {
-                        calamityGlobalNPC.destroyerLaserColor = phase3 ? 3 : phase2 ? 2 : 1;
-                        npc.SyncDestroyerLaserColor();
-                    }
-
-                    float laserBreathGateValue = DeathModeLaserBreathGateValue;
-                    if (calamityGlobalNPC.newAI[0] < laserBreathGateValue)
-                        calamityGlobalNPC.newAI[0] += 1f;
-
-                    if (Main.netMode != NetmodeID.MultiplayerClient)
-                    {
-                        // Sync newAI every 20 frames for the new telegraph
-                        if (calamityGlobalNPC.newAI[0] % 20f == 10f)
-                            npc.SyncExtraAI();
-                    }
-
-                    if ((player.Center - npc.Center).SafeNormalize(Vector2.UnitY).ToRotation().AngleTowards(npc.velocity.ToRotation(), MathHelper.PiOver4) == npc.velocity.ToRotation() &&
-                        calamityGlobalNPC.newAI[0] >= laserBreathGateValue && Vector2.Distance(npc.Center, player.Center) > 480f &&
-                        Collision.CanHit(npc.position, npc.width, npc.height, player.position, player.width, player.height))
-                    {
-                        if (calamityGlobalNPC.newAI[0] % 30f == 0f)
-                        {
-                            float velocity = death ? 5.333f : 5f;
-                            int type = ProjectileID.DeathLaser;
-                            switch (calamityGlobalNPC.destroyerLaserColor)
-                            {
-                                default:
-                                case 0:
-                                    break;
-
-                                case 1:
-                                    type = ModContent.ProjectileType<DestroyerCursedLaser>();
-                                    break;
-
-                                case 2:
-                                    type = ModContent.ProjectileType<DestroyerElectricLaser>();
-                                    break;
-                            }
-
-                            if (Main.netMode != NetmodeID.MultiplayerClient)
-                            {
-                                Vector2 projectileVelocity = (player.Center - npc.Center).SafeNormalize(Vector2.UnitY) * velocity;
-                                int numProj = calamityGlobalNPC.newAI[0] % 60f == 0f ? (death ? 9 : 7) : (death ? 6 : 4);
-                                int spread = death ? 38 : 26;
-                                float rotation = MathHelper.ToRadians(spread);
-                                for (int i = 0; i < numProj; i++)
-                                {
-                                    Vector2 perturbedSpeed = projectileVelocity.RotatedBy(MathHelper.Lerp(-rotation, rotation, i / (float)(numProj - 1)));
-                                    int proj = Projectile.NewProjectile(npc.GetSource_FromAI(), npc.Center + perturbedSpeed.SafeNormalize(Vector2.UnitY) * 100f, perturbedSpeed, type, LaserDamage.CalculateMechDamage(), 0f, Main.myPlayer, 1f, 0f);
-                                    Main.projectile[proj].timeLeft = 1200;
-                                }
-                            }
-                        }
-
-                        calamityGlobalNPC.newAI[0] += 1f;
-                        if (calamityGlobalNPC.newAI[0] > laserBreathGateValue + 60f)
-                        {
-                            calamityGlobalNPC.newAI[0] = 0f;
-                            calamityGlobalNPC.destroyerLaserColor = -1;
-                            npc.SyncDestroyerLaserColor();
-                            npc.SyncExtraAI();
-                        }
                     }
                 }
             }
@@ -406,7 +297,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                 }
 
                 // Laser rate of fire
-                float shootProjectileTime = death ? (phase5 ? 180f : phase4 ? 270f : 360f) : 450f;
+                float shootProjectileTime = death ? (phase5 ? 350f : phase4 ? 400f : 450f) : 450f;
                 if (ableToFireLaser)
                     calamityGlobalNPC.newAI[0] += 1f;
 
@@ -655,7 +546,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                     }
                     else if (npc.type == NPCID.TheDestroyerBody)
                     {
-                        float shootProjectileTime = (CalamityWorld.death || BossRushEvent.BossRushActive) ? 270f : 450f;
+                        float shootProjectileTime = (CalamityWorld.death || BossRushEvent.BossRushActive) ? 400f : 450f;
                         float telegraphGateValue = shootProjectileTime - LaserTelegraphTime;
                         if (calamityGlobalNPC.newAI[0] > telegraphGateValue)
                         {
@@ -986,7 +877,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
             if (targetData.Type == NPCTargetType.Player)
                 targetDead = Main.player[npc.target].dead;
 
-            float velocity = death ? 8.4f : 7.2f;
+            float velocity = death ? 8.15f : 7.2f;
             float acceleration = death ? 0.07f : 0.06f;
             float deceleration = 1f - acceleration;
 
@@ -1096,7 +987,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                 if (targetData.Type != 0 && Collision.CanHit(npc.position, npc.width, npc.height, targetData.Position, targetData.Width, targetData.Height))
                 {
                     int type = ProjectileID.PinkLaser;
-                    int totalProjectiles = death ? 3 : 1;
+                    int totalProjectiles = 1;
                     Vector2 projectileVelocity = (targetData.Center - npc.Center).SafeNormalize(Vector2.UnitY) * velocity;
                     if (NPC.IsMechQueenUp)
                     {

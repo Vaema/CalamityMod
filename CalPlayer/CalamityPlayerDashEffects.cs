@@ -66,6 +66,17 @@ namespace CalamityMod.CalPlayer
             if (Player.whoAmI != Main.myPlayer)
                 return;
 
+            if ((HasCustomDash && Player.dashDelay < 0 && UsedDash.dashTime < UsedDash.dashStartup))
+            {
+                UsedDash.DashStartupEffects(Player);
+                UsedDash.dashTime++;
+                return;
+            } else if (HasCustomDash && UsedDash.dashStartup > 0 && Player.dashDelay < 0 && UsedDash.dashTime == UsedDash.dashStartup )
+            {
+                if (DoADash(UsedDash.CalculateDashSpeed(Player),true))
+                    UsedDash.OnDashEffects(Player);
+            }
+
             var source = new ProjectileSource_PlayerDashHit(Player);
 
             // Handle collision slam-through effects.
@@ -102,6 +113,7 @@ namespace CalamityMod.CalPlayer
                         }
                     }
                 }
+                UsedDash.dashTime++;
             }
 
             if (Player.dashDelay > 0)
@@ -132,7 +144,7 @@ namespace CalamityMod.CalPlayer
 
                 // Handle mid-dash effects.
                 UsedDash.MidDashEffects(Player, ref dashSpeed, ref dashSpeedDecelerationFactor, ref runSpeedDecelerationFactor);
-                int VerticalOmnidashCap = DashID == GodslayerArmorDash.ID ? 120 : 25;
+                int VerticalOmnidashCap = DashID == GodslayerArmorDash.ID ? 75 : 25;
                 if (UsedDash.IsOmnidirectional && VerticalOmnidashTimer < VerticalOmnidashCap)
                 {
                     VerticalOmnidashTimer++;
@@ -187,7 +199,8 @@ namespace CalamityMod.CalPlayer
                     }
 
                     // Dash delay depends on the type of dash used.
-                    Player.dashDelay = dashDelayToApply;
+                    if (!(HasCustomDash && UsedDash.dashStartup > 0 && Player.dashDelay < 0 && UsedDash.dashTime <= UsedDash.dashStartup+10))
+                        Player.dashDelay = dashDelayToApply;
 
                     if (UsedDash.IsOmnidirectional)
                     {
@@ -223,12 +236,16 @@ namespace CalamityMod.CalPlayer
             // Handle first-frame effects.
             else if (HasCustomDash && !Player.mount.Active)
             {
+                UsedDash.dashTime = 0;
                 if (DoADash(UsedDash.CalculateDashSpeed(Player)))
-                    UsedDash.OnDashEffects(Player);
+                    if (UsedDash.dashStartup <= 0)
+                        UsedDash.OnDashEffects(Player);
+                    else
+                        UsedDash.OnDashStartupEffects(Player);
             }
         }
 
-        public bool HandleHorizontalDash(out DashDirection direction)
+        public bool HandleHorizontalDash(out DashDirection direction, bool forceDash = false)
         {
             direction = DashDirection.Directionless;
             bool dashWasExecuted = false;
@@ -236,7 +253,7 @@ namespace CalamityMod.CalPlayer
             // If the manual hotkey is bound, standard Terraria dashes cannot be triggered by double tapping.
             var manualDashHotkeys = CalamityKeybinds.DashHotkey.GetAssignedKeys();
             bool manualHotkeyBound = (manualDashHotkeys?.Count ?? 0) > 0;
-            bool pressedManualHotkey = manualHotkeyBound && CalamityKeybinds.DashHotkey.JustPressed;
+            bool pressedManualHotkey = manualHotkeyBound && (CalamityKeybinds.DashHotkey.JustPressed || forceDash);
 
             int dashDirectionToUse = 0;
 
@@ -418,9 +435,9 @@ namespace CalamityMod.CalPlayer
             return justDashed;
         }
 
-        public bool DoADash(float dashSpeed)
+        public bool DoADash(float dashSpeed, bool forceDash = false)
         {
-            bool justDashed;
+            bool justDashed = forceDash;
             bool omnidirectionalDash = UsedDash?.IsOmnidirectional ?? false;
             DashDirection direction;
 
@@ -434,7 +451,14 @@ namespace CalamityMod.CalPlayer
             else if (omnidirectionalDash)
                 justDashed = HandleOmnidirectionalDash(out direction);
             else
-                justDashed = HandleHorizontalDash(out direction);
+                justDashed = HandleHorizontalDash(out direction, forceDash);
+
+            if (justDashed && !forceDash && UsedDash.dashStartup > 0)
+            {
+                Player.timeSinceLastDashStarted = 0;
+                Player.dashDelay = -1;
+                return justDashed;
+            }
 
             // Make dash movements happen if ready.
             if (justDashed)

@@ -1,12 +1,12 @@
 ﻿using System;
-using Microsoft.Xna.Framework.Graphics;
-using Terraria.DataStructures;
-using Terraria;
-using Terraria.ModLoader;
-using Microsoft.Xna.Framework;
-using Terraria.GameContent.Drawing;
 using System.Reflection;
+using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
+using Terraria;
+using Terraria.DataStructures;
+using Terraria.GameContent.Drawing;
 using Terraria.ID;
+using Terraria.ModLoader;
 
 namespace CalamityMod.Systems
 {
@@ -57,6 +57,13 @@ namespace CalamityMod.Systems
             if (tileLight.R <= 0 && tileLight.G <= 0 && tileLight.B <= 0)
                 return;
 
+            var refLength = tile.Get<TileBlendingRefLengthData>().GetLength();
+            if (refLength <= 0)
+                return;
+
+            if (!TryGetBlendingRefData(tileX, tileY, out var blendRefs))
+                return;
+
             // Generic Drawing Parameter
             Vector2 drawPos = new Vector2(tileX * 16, tileY * 16) - screenPosition + screenOffset;
             var tileRandomFrame = Math.Clamp(tile.TileFrameNumber, 0, 2);
@@ -69,11 +76,10 @@ namespace CalamityMod.Systems
             var sliceRects = Array.Empty<Rectangle>();
             var sliceState = SliceState.None;
             var shouldTileShine = ShouldTileShine(tileType, (short)(drawData.tileFrameX + drawData.addFrX));
-
-            var blendingData = tile.Get<TileBlendingData>(); // Since we are not editing the value, we can just copy the values from here
-            for (int idx = 0; idx < TileBlendingData.Length; idx++)
+            foreach (var blendRef in blendRefs)
             {
-                blendingData.Get(idx, out var sheetIdx, out var data);
+                var sheetIdx = blendRef.SheetIndex;
+                var data = blendRef.BlendData;
 
                 // Break here as standard for TileBlendingData is 0->Count fill, so further fields should be also Invalid
                 if (sheetIdx == TileBlendTextureLoader.EmptySlot)
@@ -120,26 +126,30 @@ namespace CalamityMod.Systems
                 // Sliced Drawing
                 for (int i = 0; i < sliceLength; i++)
                 {
-                    var drawRect = sliceRects[i];
-                    drawRect.X += rect.X;
-                    drawRect.Y += rect.Y;
+                    // Calculate the source rectangle for the specific slice from the blend texture sheet
+                    var sourceSliceRect = sliceRects[i];
+                    sourceSliceRect.X += rect.X;
+                    sourceSliceRect.Y += rect.Y;
+
+                    // Calculate the destination position for the slice on the screen
+                    var destinationSlicePos = drawPos + sliceRects[i].Location.ToVector2();
 
                     var drawColorVec = (tileLight.ToVector3() + slices[i]) * 0.5f;
                     drawColorVec *= drawData.colorTint.ToVector3();
 
-                    // Tile is Actucated, Reduce brightness
+                    // Tile is Actuated, Reduce brightness
                     if (tile.IsActuated)
                     {
                         drawColorVec *= 0.4f;
                     }
 
-                    // Tile is shine
+                    // Tile is shining
                     if (shouldTileShine)
                     {
                         Main.shine(ref drawColorVec, tileType);
                     }
 
-                    Main.spriteBatch.Draw(texture, drawPos, rect, new Color(drawColorVec), rotation: 0.0f, origin: default, scale: 1.0f, SpriteEffects.None, layerDepth: 0.0f);
+                    Main.spriteBatch.Draw(texture, destinationSlicePos, sourceSliceRect, new Color(drawColorVec), 0f, Vector2.Zero, 1.0f, SpriteEffects.None, 0f);
                 }
             }
         }

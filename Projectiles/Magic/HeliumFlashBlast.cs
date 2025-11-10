@@ -78,7 +78,7 @@ namespace CalamityMod.Projectiles.Magic
             }
             if (currentFrame == 19)
             {
-                Owner.Calamity().GeneralScreenShakePower = 8f;
+                Owner.SetScreenshake(8f);
                 SoundEngine.PlaySound(new SoundStyle("CalamityMod/Sounds/Item/HeliumFlashExplodeNoMetal") { Volume = 1f }, Projectile.Center);
                 for (int i = 0; i < 12; i++)
                 {

@@ -356,11 +356,7 @@ namespace CalamityMod.NPCs.SunkenSea
             {
                 Dust.NewDust(NPC.position, NPC.width, NPC.height, DustID.Blood, hit.HitDirection, -1f, 0, default, 1f);
             }
-            if (NPC.life <= 0)
-            {
-                for (int i = 0; i < 4; i++)
-                    Gore.NewGoreDirect(NPC.GetSource_Death(), NPC.Center, new Vector2(hit.HitDirection, -1f), Mod.Find<ModGore>($"{Name}{i + 1}").Type);
-            }
+            SpawnGores(NPC, "Probesnout", 4);
         }
 
         public override bool CanBeHitByNPC(NPC attacker) => PredatorIDs.Contains(attacker.type);
@@ -411,6 +407,7 @@ namespace CalamityMod.NPCs.SunkenSea
         {
             base.SetDefaults();
 
+            Banner = Type;
             BannerItem = ItemType<ProbesnoutBanner>();
 
             NPC.lifeMax = 5;
@@ -481,11 +478,6 @@ namespace CalamityMod.NPCs.SunkenSea
             for (int k = 0; k < 25; k++)
             {
                 Dust.NewDust(NPC.position, NPC.width, NPC.height, DustID.GoldCritter, hit.HitDirection, -1f, 0, default, 1f);
-            }
-            if (NPC.life <= 0)
-            {
-                for (int i = 0; i < 4; i++)
-                    Gore.NewGoreDirect(NPC.GetSource_Death(), NPC.Center, new Vector2(hit.HitDirection, -1f), Mod.Find<ModGore>($"{Name}{i + 1}").Type);
             }
         }
 

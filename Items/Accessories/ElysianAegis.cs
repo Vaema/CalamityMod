@@ -10,7 +10,7 @@ using Terraria.ModLoader;
 namespace CalamityMod.Items.Accessories
 {
     [AutoloadEquip(EquipType.Shield)]
-    public class ElysianAegis : ModItem, ILocalizedModType, IHoldShiftTooltipItem
+    public class ElysianAegis : ModItem, ILocalizedModType
     {
         public new string LocalizationCategory => "Items.Accessories";
         public bool HasFlavorTooltip => true;
@@ -36,23 +36,9 @@ namespace CalamityMod.Items.Accessories
         public override void UpdateAccessory(Player player, bool hideVisual)
         {
             CalamityPlayer modPlayer = player.Calamity();
-
-            // Elysian Aegis ram dash
             modPlayer.DashID = ElysianAegisDash.ID;
             player.dashType = 0;
-
-            // Vaguely inherited Ankh Shield effects I guess
             player.noKnockback = true;
-            player.fireWalk = true;
-
-            // Debuff immunities
-            player.buffImmune[BuffID.OnFire] = true;
-            player.buffImmune[BuffID.OnFire3] = true;
-            player.buffImmune[BuffID.CursedInferno] = true;
-            player.buffImmune[BuffID.ShadowFlame] = true;
-            player.buffImmune[ModContent.BuffType<BrimstoneFlames>()] = true;
-            player.buffImmune[ModContent.BuffType<Daybroken>()] = true;
-            player.buffImmune[ModContent.BuffType<HolyFlames>()] = true;
         }
     }
 }

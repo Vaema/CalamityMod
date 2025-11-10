@@ -30,8 +30,6 @@ namespace CalamityMod.Projectiles.Ranged
             if (Utils.Distance(target.Center, Projectile.Center) <= Projectile.width)
             {
                 Player Owner = Main.player[Projectile.owner];
-                target.AddBuff(BuffID.Confused, 180);
-
                 Vector2 launchVel = Utils.DirectionTo(Owner.Center, Projectile.Center);
                 target.MoveNPC(launchVel, 5, false);
 

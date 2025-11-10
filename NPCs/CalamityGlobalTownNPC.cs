@@ -91,6 +91,7 @@ namespace CalamityMod.NPCs
             "Joeseph Jostar",
             "Storm Havik", // <@!1013452363178197072> (fishnotduck)
             "Magorfis Splunt the Greater Finklejim", // <@!147490809334333440> (eidolbyssus)
+            "Perrin", // <@!253764551139393537> (easyperrin)
         };
         private static readonly string[] CyborgNames =
         {
@@ -190,6 +191,7 @@ namespace CalamityMod.NPCs
             "Gol D. Roger", // <@!256228859110752257> (xtra3678)
             "Yarrim", // <@!290061123137306624> (borb9834)
             "Hector Barbossa", // <@!615704209303797790> (thatrockisfullamagic)
+            "Blunderbeard", // <@!1039460813490102293> (parmiigianoreggiano)
         };
         private static readonly string[] PrincessNames =
         {
@@ -277,6 +279,7 @@ namespace CalamityMod.NPCs
             "Syethas", // <@!325413275066171393> (cosmicstariight)
             "Nextdoor Psycho", // <@!173261518572486656> (nextdoorpsycho)
             "Mike Cyclops", // <@!702327497475227741> (seichoseicho)
+            "Derin", // <@!466703979695308820> (god_15)
         };
         private static readonly string[] ZoologistNames =
         {
@@ -350,7 +353,6 @@ namespace CalamityMod.NPCs
             "Lucerne", // <@!271954788676141066> (lord_lucerne)
             "Milo", // <@!401849201597874179> (maskedmilo)
             "Octo", // <@!796112889353994281> (octolinggrimm)
-            "Chease", // <@!1039460813490102293> (parmiigianoreggiano)
         };
         private static readonly string[] TownCatSiameseNames = null;
         private static readonly string[] TownCatBlackNames =
@@ -1157,6 +1159,7 @@ namespace CalamityMod.NPCs
             {
                 shop.InsertBefore(ItemID.LesserHealingPotion, ItemID.Bottle)
                 .InsertAfter(ItemID.ManaPotion, ItemID.WormholePotion, Condition.HappyEnoughToSellPylons)
+                .InsertAfter(ItemID.Safe, ItemID.MusicBox)
                 .InsertAfter(ItemID.Flare, ItemID.Flare, hasFlareGunUpgrade)
                 .InsertAfter(ItemID.BlueFlare, ItemID.BlueFlare, hasFlareGunUpgrade)
                 .AddWithCustomValue(ItemID.AngelStatue, Item.buyPrice(gold: 5), Condition.NpcIsPresent(NPCType<Bandit>()));

@@ -123,7 +123,7 @@ namespace CalamityMod.NPCs.DesertScourge
 
         public override void BossHeadSlot(ref int index)
         {
-            if ((NPC.AnyNPCs(ModContent.NPCType<DesertNuisanceHead>()) || NPC.AnyNPCs(ModContent.NPCType<DesertNuisanceHeadYoung>())) && !CalamityWorld.death)
+            if ((NPC.AnyNPCs(ModContent.NPCType<DesertNuisanceHead>()) || NPC.AnyNPCs(ModContent.NPCType<DesertNuisanceHeadYoung>())))
                 index = -1;
         }
 
@@ -167,7 +167,7 @@ namespace CalamityMod.NPCs.DesertScourge
             bool death = CalamityWorld.death || BossRushEvent.BossRushActive;
 
             // Check for Nuisances
-            bool hide = (NPC.AnyNPCs(ModContent.NPCType<DesertNuisanceHead>()) || NPC.AnyNPCs(ModContent.NPCType<DesertNuisanceHeadYoung>())) && !death;
+            bool hide = (NPC.AnyNPCs(ModContent.NPCType<DesertNuisanceHead>()) || NPC.AnyNPCs(ModContent.NPCType<DesertNuisanceHeadYoung>()));
             if (hide)
             {
                 NPC.Calamity().newAI[0] = 0f;
@@ -940,8 +940,8 @@ namespace CalamityMod.NPCs.DesertScourge
                 string key2 = "Mods.CalamityMod.Status.Progression.SandstormTrigger";
                 Color messageColor2 = Color.PaleGoldenrod;
 
-                CalamityUtils.DisplayLocalizedText(key, messageColor);
-                CalamityUtils.DisplayLocalizedText(key2, messageColor2);
+                CalamityUtils.BroadcastLocalizedText(key, messageColor);
+                CalamityUtils.BroadcastLocalizedText(key2, messageColor2);
 
                 if (!Terraria.GameContent.Events.Sandstorm.Happening)
                     CalamityWorld.StartSandstorm();
@@ -997,9 +997,6 @@ namespace CalamityMod.NPCs.DesertScourge
                 // Equipment
                 normalOnly.Add(DropHelper.PerPlayer(ModContent.ItemType<OceanCrest>()));
                 normalOnly.Add(ModContent.ItemType<SandCloak>(), DropHelper.NormalWeaponDropRateFraction);
-
-                // Fishing
-                normalOnly.Add(ModContent.ItemType<SandyAnglingKit>());
             }
 
             // Trophy (always directly from boss, never in bag)

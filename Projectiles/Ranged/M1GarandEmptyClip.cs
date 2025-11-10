@@ -19,6 +19,7 @@ namespace CalamityMod.Projectiles.Ranged
 
         public static float UsedCoinGrabRangeMultiplier = 5f;
         public static float ClipTossForce = 7.33f;
+        public float midAirRot = 0f;
 
         public static float MaxIntraClipRicoshotDistance = 1000f;
 
@@ -88,7 +89,9 @@ namespace CalamityMod.Projectiles.Ranged
                 d.noGravity = true;
             }
 
-            Projectile.rotation = Projectile.velocity.X * 0.5f;
+
+            midAirRot += 0.05f;
+            Projectile.rotation = Projectile.velocity.X * 0.5f + midAirRot;
 
             if (Projectile.FinalExtraUpdate())
             {

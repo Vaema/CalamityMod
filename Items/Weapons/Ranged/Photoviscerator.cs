@@ -9,6 +9,7 @@ using Terraria;
 using Terraria.Audio;
 using Terraria.DataStructures;
 using Terraria.ID;
+using Terraria.Localization;
 using Terraria.ModLoader;
 
 namespace CalamityMod.Items.Weapons.Ranged
@@ -20,8 +21,9 @@ namespace CalamityMod.Items.Weapons.Ranged
         public new string LocalizationCategory => "Items.Weapons.Ranged";
 
         // Left-click stats
-        public static float AmmoNotConsumeChance = 0.95f;
+        public static int AmmoSavedPercent = 95;
         public static int LightBombCooldown = 10;
+        public override LocalizedText Tooltip => base.Tooltip.WithFormatArgs(AmmoSavedPercent);
 
         // Right-click stats
         public static float RightClickVelocityMult = 2.5f;

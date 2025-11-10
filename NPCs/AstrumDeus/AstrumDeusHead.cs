@@ -941,7 +941,7 @@ namespace CalamityMod.NPCs.AstrumDeus
             {
                 string key = "Mods.CalamityMod.Status.Progression.AstralBossText";
                 Color messageColor = Color.Gold;
-                CalamityUtils.DisplayLocalizedText(key, messageColor);
+                CalamityUtils.BroadcastLocalizedText(key, messageColor);
             }
 
             // Mark Astrum Deus as dead

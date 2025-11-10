@@ -193,7 +193,7 @@ namespace CalamityMod.Projectiles.Ranged
                     SoundEngine.PlaySound(fire with { Volume = 0.9f }, Projectile.Center);
                 }
 
-                Owner.Calamity().GeneralScreenShakePower = 9.5f;
+                Owner.SetScreenshake(9.5f);
 
                 var info = new CalamityUtils.RocketBehaviorInfo((int)RocketID)
                 {

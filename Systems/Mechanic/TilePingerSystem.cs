@@ -1,6 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
+using CalamityMod.Effects;
+using CalamityMod.Graphics.Metaballs;
 using CalamityMod.Items.Tools;
+using CalamityMod.NPCs.Deconstructors;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria;
@@ -122,6 +125,32 @@ namespace CalamityMod.Systems
 
                     //Fade away with the effect
                     brightness *= 1 - Math.Max(WulfrumPingTileEffect.PingProgress - 0.9f, 0) / (0.1f);
+
+                    if (tileLight.R < 200 * brightness) tileLight.R = (byte)(200 * brightness);
+                    if (tileLight.G < 200 * brightness) tileLight.G = (byte)(200 * brightness);
+                    if (tileLight.B < 200 * brightness) tileLight.B = (byte)(200 * brightness);
+                    returnColor = tileLight;
+                } else
+                     if (effect is BurrowerPingTileEffect b && effect.Active && effect.ShouldRegisterTile(i, j))
+                {
+                    float distanceFromCenter = (new Point(i, j).ToWorldCoordinates() - BurrowerPingTileEffect.PingCenter).Length();
+                    float currentExpansion = MathHelper.Clamp(BurrowerPingTileEffect.PingProgress * BurrowerPingTileEffect.MaxPingLife / (float)BurrowerPingTileEffect.MaxPingTravelTime, 0f, 1f) * BurrowerPingTileEffect.MaxPingRadius;
+
+                    if (distanceFromCenter - 8 > currentExpansion)
+                        return returnColor;
+
+                    float brightness = 1f;
+                    Tile tile = Framing.GetTileSafely(i, j);
+                    //Counteracts slopes and half tiles being too bright
+                    if (tile.Slope != SlopeType.Solid || tile.IsHalfBlock)
+                        brightness = 0.64f;
+
+                    //Fade on the edges
+                    if (distanceFromCenter + 8 > currentExpansion)
+                        brightness *= 1 - (distanceFromCenter - currentExpansion + 8f) / 16f;
+
+                    //Fade away with the effect
+                    brightness *= 1 - Math.Max(BurrowerPingTileEffect.PingProgress - 0.9f, 0) / (0.1f);
 
                     if (tileLight.R < 200 * brightness) tileLight.R = (byte)(200 * brightness);
                     if (tileLight.G < 200 * brightness) tileLight.G = (byte)(200 * brightness);
@@ -403,5 +432,121 @@ namespace CalamityMod.Systems
         }
 
         public void Unload() { }
+    }
+
+
+    public class BurrowerPingTileEffect : ModType, IPingedTileEffect
+    {
+
+        protected override void Register()
+        {
+            ModTypeLookup<BurrowerPingTileEffect>.Register(this);
+        }
+
+        internal static Texture2D emptyFrame;
+        public const int MaxPingLife = 60;
+        public const int MaxPingTravelTime = 10;
+        const float PingWaveThickness = 50f;
+
+        public const float MaxPingRadius = 160;
+        public static Vector2 PingCenter = Vector2.Zero;
+        public static int PingTimer = 0;
+        public static float PingProgress => (MaxPingLife - PingTimer) / (float)MaxPingLife;
+        
+        public bool Active => PingTimer > 0;
+
+        public BlendState BlendState => BlendState.Additive;
+
+        public bool TryAddPing(Vector2 position, Player pinger)
+        {
+            if (Active)
+            { 
+                PingCenter = position;
+                PingTimer = Math.Max(PingTimer, MaxPingLife-MaxPingTravelTime);
+                return false;
+            }
+            PingCenter = position;
+            PingTimer = MaxPingLife;
+            return true;
+        }
+
+
+        public Effect SetupEffect()
+        {
+            if (emptyFrame == null)
+                emptyFrame = ModContent.Request<Texture2D>("CalamityMod/Projectiles/InvisibleProj").Value;
+
+            Effect tileEffect = Filters.Scene["CalamityMod:WulfrumTilePing"].GetShader().Shader;
+            tileEffect.Parameters["pingCenter"].SetValue(PingCenter);
+            tileEffect.Parameters["pingRadius"].SetValue(MaxPingRadius);
+            tileEffect.Parameters["pingWaveThickness"].SetValue(PingWaveThickness);
+            tileEffect.Parameters["pingProgress"].SetValue(PingProgress);
+            tileEffect.Parameters["pingTravelTime"].SetValue(MaxPingTravelTime / (float)MaxPingLife);
+            tileEffect.Parameters["pingFadePoint"].SetValue(0.9f);
+            tileEffect.Parameters["edgeBlendStrength"].SetValue(1f);
+            tileEffect.Parameters["edgeBlendOutLength"].SetValue(6f);
+            tileEffect.Parameters["tileEdgeBlendStrenght"].SetValue(2f);
+
+            tileEffect.Parameters["waveColor"].SetValue(ArsenalEffects.ArsenalGaussColor.ToVector4());
+            tileEffect.Parameters["baseTintColor"].SetValue(Color.Orange.ToVector4() * 0.5f);
+            tileEffect.Parameters["scanlineColor"].SetValue(ArsenalEffects.ArsenalLaserColor.ToVector4() * 1f);
+            tileEffect.Parameters["tileEdgeColor"].SetValue(ArsenalEffects.ArsenalGaussColor.ToVector3());
+            tileEffect.Parameters["Resolution"].SetValue(8f);
+
+            tileEffect.Parameters["time"].SetValue(Main.GameUpdateCount);
+            Vector4[] scanLines = new Vector4[]
+            {
+                new Vector4(0f, 4f, 0.1f, 0.5f),
+                new Vector4(1f, 4f, 0.1f, 0.5f),
+                new Vector4(37f, 60f, 0.4f, 1f),
+                new Vector4(2f, 6f, -0.2f, 0.3f),
+                new Vector4(0f, 4f, 0.1f, 0.5f), //vertical start
+                new Vector4(1f, 4f, 0.1f, 0.5f),
+                new Vector4(2f, 6f, -0.2f, 0.3f)
+            };
+
+            tileEffect.Parameters["ScanLines"].SetValue(scanLines);
+            tileEffect.Parameters["ScanLinesCount"].SetValue(scanLines.Length);
+            tileEffect.Parameters["verticalScanLinesIndex"].SetValue(4);
+
+            return tileEffect;
+        }
+
+        public void PerTileSetup(Point pos, ref Effect effect)
+        {
+            //Up, left, right, down.
+            effect.Parameters["cardinalConnections"].SetValue(new bool[] { Connected(pos, 0, -1), Connected(pos, -1, 0), Connected(pos, 1, 0), Connected(pos, 0, 1) });
+            effect.Parameters["tilePosition"].SetValue(pos.ToVector2() * 16f);
+        }
+
+        public static bool Connected(Point pos, int displaceX, int displaceY) => TileID.Sets.Ore[Main.tile[pos.X + displaceX, pos.Y + displaceY].TileType] && Main.tile[pos].TileType == Main.tile[pos.X + displaceX, pos.Y + displaceY].TileType;
+
+        public bool ShouldRegisterTile(int x, int y)
+        {
+            if (!Main.tile[x, y].HasTile)
+                return false;
+            return TileID.Sets.Ore[Main.tile[x, y].TileType];
+        }
+
+        public void DrawTile(Point pos)
+        {
+            Main.spriteBatch.Draw(emptyFrame, pos.ToWorldCoordinates() - Main.screenPosition, null, Color.White, 0, new Vector2(emptyFrame.Width / 2f, emptyFrame.Height / 2f), 16f, 0, 0);
+        }
+
+        public void UpdateEffect()
+        {
+            if (PingTimer > 0)
+            {
+                PingTimer--;
+            }
+        }
+
+        public override void SetupContent()
+        {
+            if (Main.dedServ)
+                return;
+
+            TilePingerSystem.tileEffects.Add("BurrowerPing", this);
+        }
     }
 }

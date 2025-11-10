@@ -1,27 +1,12 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Diagnostics.CodeAnalysis;
 using System.IO;
-using System.Linq;
 using System.Reflection;
-using System.Runtime.InteropServices.JavaScript;
-using CalamityMod.Events;
-using CalamityMod.Items;
-using CalamityMod.Items.Potions.Alcohol;
-using CalamityMod.NPCs;
-using CalamityMod.NPCs.NormalNPCs;
-using CalamityMod.NPCs.Providence;
-using CalamityMod.NPCs.TownNPCs;
 using CalamityMod.Packets;
-using CalamityMod.Systems;
-using CalamityMod.TileEntities;
-using CalamityMod.World;
 using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.DataStructures;
 using Terraria.ID;
 using Terraria.ModLoader;
-using Terraria.ModLoader.Core;
 
 namespace CalamityMod
 {
@@ -215,6 +200,7 @@ namespace CalamityMod
         CooldownAddition,
         CooldownRemoval,
         SyncCooldownDictionary,
+        ExaltationDirection,
 
         // Syncs for specific bosses or entities
         SyncDestroyerLaserColor,
@@ -271,11 +257,12 @@ namespace CalamityMod
 
         // World state sync
         SyncDifficulties,
+        SwitchToDifficulty,
 
         // Music events
         MusicEventSyncRequest,
         MusicEventSyncResponse,
-        
+
         // Bandit Reforge Refund
         BanditStolenMoneySync,
         WantToRefundReforges,

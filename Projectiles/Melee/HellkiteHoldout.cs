@@ -358,7 +358,7 @@ namespace CalamityMod.Projectiles.Melee
                 if (Projectile.numHits == 0)
                 {
                     SoundEngine.PlaySound(Hellkite.HitSoundSmall with { Volume = 0.85f, PitchVariance = 0.25f }, Projectile.Center);
-                    Owner.Calamity().GeneralScreenShakePower = 4.5f;
+                    Owner.SetScreenshake(4.5f);
                 }
                 for (int i = 0; i < MathHelper.Clamp(8 - Projectile.numHits * 2, 2, 8); i++)
                 {
@@ -376,7 +376,7 @@ namespace CalamityMod.Projectiles.Melee
                 if (Projectile.numHits == 0)
                 {
                     SoundEngine.PlaySound(Hellkite.HitSoundBig with { Volume = 1f }, Projectile.Center);
-                    Owner.Calamity().GeneralScreenShakePower = 8.5f * GFBMulti;
+                    Owner.SetScreenshake(8.5f * GFBMulti);
                     bool photos = CalamityClientConfig.Instance.Photosensitivity;
 
                     if (!photos)

@@ -211,7 +211,8 @@ namespace CalamityMod
                 // Home in on the target.
                 Vector2 homeDirection = (destination - projectile.Center).SafeNormalize(Vector2.UnitY);
                 projectile.velocity = (projectile.velocity * inertia + homeDirection * homingVelocity) / (inertia + 1f);
-            }
+                projectile.Calamity().HomingTarget = index;
+    }
             else
             {
                 // Set amount of extra updates to default amount.
@@ -239,6 +240,7 @@ namespace CalamityMod
                     projectile.velocity = projectile.velocity * inertia + moveToNPC * homingVelocity;
                 else
                     projectile.velocity *= overspeedReduction;
+                projectile.Calamity().HomingTarget = targetedNPC.whoAmI;
             }
             if (targetedNPC == null && projectile.velocity.Length() < maxSpeed && accelerate)
                 projectile.velocity *= 1.0055f;

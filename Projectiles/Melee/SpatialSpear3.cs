@@ -35,6 +35,7 @@ namespace CalamityMod.Projectiles.Melee
             Projectile.DamageType = DamageClass.Melee;
             Projectile.penetrate = 2;
             Projectile.timeLeft = TimeLeft;
+            Projectile.tileCollide = !Main.zenithWorld;
             Projectile.usesIDStaticNPCImmunity = true;
             Projectile.idStaticNPCHitCooldown = 10;
         }
@@ -86,13 +87,12 @@ namespace CalamityMod.Projectiles.Melee
                 Projectile.localAI[0] = 0f;
                 int numProj = 2;
                 float rotation = MathHelper.ToRadians(20);
-                float velocity = 16f;
                 if (Projectile.owner == Main.myPlayer)
                 {
                     for (int i = 0; i < numProj; i++)
                     {
-                        Vector2 perturbedSpeed = Projectile.velocity.SafeNormalize(Vector2.UnitY).RotatedBy(MathHelper.Lerp(-rotation, rotation, i / (float)(numProj - 1)));
-                        Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center, perturbedSpeed * velocity, ModContent.ProjectileType<SpatialSpear4>(), (int)(Projectile.damage * 0.8), Projectile.knockBack * 0.5f, Projectile.owner);
+                        Vector2 perturbedSpeed = Projectile.velocity.RotatedBy(MathHelper.Lerp(-rotation, rotation, i / (float)(numProj - 1)));
+                        Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center, perturbedSpeed, ModContent.ProjectileType<SpatialSpear4>(), (int)(Projectile.damage * 0.8), Projectile.knockBack * 0.5f, Projectile.owner);
                     }
                 }
             }

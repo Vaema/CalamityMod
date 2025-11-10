@@ -37,7 +37,7 @@ namespace CalamityMod.Projectiles.Summon
                 if (projectileCounts <= 1f)
                     projectileCounts = 1f;
 
-                return MathHelper.TwoPi * BladeIndex / projectileCounts + AITimer / 10f;
+                return MathHelper.WrapAngle(MathHelper.TwoPi * BladeIndex / projectileCounts + MathHelper.TwoPi * (Owner.miscCounter % 60 / 60f)) * (Owner.Calamity().InvertExaltationLineRotationDirections ? -1 : 1);
             }
         }
 
@@ -51,6 +51,8 @@ namespace CalamityMod.Projectiles.Summon
 
         public ref float AITimer => ref Projectile.ai[1];
 
+        public ref float DistanceTimer => ref Projectile.ai[2];
+
         public ref float BladeGleamInterpolant => ref Projectile.localAI[0];
 
         public Vector2 ChargeTargetPos = Vector2.Zero;
@@ -61,10 +63,12 @@ namespace CalamityMod.Projectiles.Summon
             ProjectileID.Sets.MinionSacrificable[Type] = true;
             ProjectileID.Sets.TrailingMode[Type] = 2;
             ProjectileID.Sets.TrailCacheLength[Type] = 45;
+            ProjectileID.Sets.MinionTargettingFeature[Type] = true;
         }
 
         public override void SetDefaults()
         {
+            ProjectileID.Sets.MinionTargettingFeature[Type] = true;
 
             Projectile.width = 84;
             Projectile.height = 84;
@@ -108,7 +112,6 @@ namespace CalamityMod.Projectiles.Summon
             if (BladeGleamInterpolant <= 0.02f)
                 BladeGleamInterpolant = 0f;
 
-            NPC potentialTarget = Projectile.Center.MinionHoming(ViridVanguard.MaxTargetingDistance, Owner);
             switch (CurrentState)
             {
                 case AIState.CircleOwner:
@@ -126,14 +129,23 @@ namespace CalamityMod.Projectiles.Summon
                     LaunchAtTargetPos();
                     break;
             }
-
-            AITimer++;
+            if (CurrentState == AIState.CircleOwner)
+            {
+                if (Owner.HeldItem.type == ModContent.ItemType<IgneousExaltation>())
+                    AITimer++;
+                else
+                    AITimer--;
+                AITimer = MathHelper.Clamp(AITimer, -IgneousExaltation.ChargeCooldown, 0);
+            }
+            else
+                AITimer++;
+            DistanceTimer++;
         }
 
         public void CircleOwner()
         {
-            Vector2 hoverDestination = Owner.Center + BladeHoverOffsetAngle.ToRotationVector2() * (AITimer < 0 ? MathHelper.Lerp(200, 100, 1 - (-AITimer) / IgneousExaltation.ChargeCooldown) : 100f);
-            Projectile.Center = Vector2.Lerp(Projectile.Center, hoverDestination, 0.04f).MoveTowards(hoverDestination, 20f);
+            Vector2 hoverDestination = Owner.Center + BladeHoverOffsetAngle.ToRotationVector2() * (DistanceTimer < 0 ? MathHelper.Lerp(200, 100, 1 - (-DistanceTimer) / IgneousExaltation.ChargeCooldown) : 100f);
+            Projectile.Center = Vector2.Lerp(Projectile.Center, hoverDestination, 0.04f).MoveTowards(hoverDestination, 24f);
             Projectile.velocity *= 0.8f;
 
             // Teleport to the owner if sufficiently far away.
@@ -162,6 +174,7 @@ namespace CalamityMod.Projectiles.Summon
             {
                 Projectile.damage = Projectile.originalDamage;
                 AITimer = -IgneousExaltation.ChargeCooldown;
+                DistanceTimer = -IgneousExaltation.ChargeCooldown;
                 CurrentState = AIState.CircleOwner;
                 Projectile.penetrate = -1;
             }
@@ -217,7 +230,7 @@ namespace CalamityMod.Projectiles.Summon
             Rectangle frame = texture.Frame(1, Main.projFrames[Type], 0, Projectile.frame);
             Vector2 origin = frame.Size() * 0.5f;
             Vector2 drawPosition = Projectile.Center - Main.screenPosition;
-            SpriteEffects direction = Projectile.spriteDirection == 1 ? SpriteEffects.FlipHorizontally : SpriteEffects.None;
+            SpriteEffects direction = Projectile.spriteDirection == 1 ^ Owner.Calamity().InvertExaltationLineRotationDirections ? SpriteEffects.FlipHorizontally : SpriteEffects.None;
 
 
             // Draw the afterimage trail.
@@ -239,11 +252,12 @@ namespace CalamityMod.Projectiles.Summon
                 outlineOpacity = 0.75f;
             }
             var outlineTex = IgneousExaltation.GetBladeOutlineTex();
-            Main.EntitySpriteDraw(outlineTex, drawPosition + new Vector2(2, 0) * outlineWidth, frame, new Color(166, 46, 61) * outlineOpacity, Projectile.rotation - MathHelper.PiOver4, origin, Projectile.scale, direction, 0);
-            Main.EntitySpriteDraw(outlineTex, drawPosition + new Vector2(0, 2) * outlineWidth, frame, new Color(166, 46, 61) * outlineOpacity, Projectile.rotation - MathHelper.PiOver4, origin, Projectile.scale, direction, 0);
-            Main.EntitySpriteDraw(outlineTex, drawPosition + new Vector2(-2, 0) * outlineWidth, frame, new Color(166, 46, 61) * outlineOpacity, Projectile.rotation - MathHelper.PiOver4, origin, Projectile.scale, direction, 0);
-            Main.EntitySpriteDraw(outlineTex, drawPosition + new Vector2(0, -2) * outlineWidth, frame, new Color(166, 46, 61) * outlineOpacity, Projectile.rotation - MathHelper.PiOver4, origin, Projectile.scale, direction, 0);
-            Main.EntitySpriteDraw(texture, drawPosition, frame, Projectile.GetAlpha(lightColor), Projectile.rotation - MathHelper.PiOver4, origin, Projectile.scale, direction, 0);
+            float rotation = Projectile.rotation - MathHelper.PiOver4 * (Owner.Calamity().InvertExaltationLineRotationDirections ? -1 : 1);
+            Main.EntitySpriteDraw(outlineTex, drawPosition + new Vector2(2, 0) * outlineWidth, frame, new Color(166, 46, 61) * outlineOpacity, rotation, origin, Projectile.scale, direction, 0);
+            Main.EntitySpriteDraw(outlineTex, drawPosition + new Vector2(0, 2) * outlineWidth, frame, new Color(166, 46, 61) * outlineOpacity, rotation, origin, Projectile.scale, direction, 0);
+            Main.EntitySpriteDraw(outlineTex, drawPosition + new Vector2(-2, 0) * outlineWidth, frame, new Color(166, 46, 61) * outlineOpacity, rotation, origin, Projectile.scale, direction, 0);
+            Main.EntitySpriteDraw(outlineTex, drawPosition + new Vector2(0, -2) * outlineWidth, frame, new Color(166, 46, 61) * outlineOpacity, rotation, origin, Projectile.scale, direction, 0);
+            Main.EntitySpriteDraw(texture, drawPosition, frame, Projectile.GetAlpha(lightColor), rotation, origin, Projectile.scale, direction, 0);
 
             // Draw the gleam at the tip of the blade.
             Texture2D shineTex = ModContent.Request<Texture2D>("CalamityMod/Particles/HalfStar").Value;

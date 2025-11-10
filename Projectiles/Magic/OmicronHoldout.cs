@@ -106,7 +106,7 @@ namespace CalamityMod.Projectiles.Magic
                     GeneralParticleHandler.SpawnParticle(pulse2);
                 }
 
-                Owner.Calamity().GeneralScreenShakePower = 6.5f;
+                Owner.SetScreenshake(6.5f);
                 Projectile.NewProjectile(Projectile.GetSource_FromThis(), GunTipPosition, firingVelocity3, ModContent.ProjectileType<OmicronBeam>(), Projectile.damage * 32, Projectile.knockBack, Projectile.owner, 0, 0);
 
                 for (int i = 0; i < 8; i++)

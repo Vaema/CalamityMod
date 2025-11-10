@@ -11,6 +11,7 @@ using CalamityMod.Tiles;
 using CalamityMod.Tiles.Abyss;
 using CalamityMod.Tiles.Crags;
 using CalamityMod.Tiles.SunkenSea;
+using CalamityMod.Tiles.SunkenSea.Ambient;
 using CalamityMod.Walls;
 using CalamityMod.World;
 using Microsoft.Xna.Framework;
@@ -97,7 +98,7 @@ namespace CalamityMod.Systems
             {
                 string key = Main.zenithWorld ? "Mods.CalamityMod.Status.Boss.AprilFoolsGFB" : "Mods.CalamityMod.Status.Boss.AprilFools";
                 Color messageColor = Color.Crimson;
-                CalamityUtils.DisplayLocalizedText(key, messageColor);
+                CalamityUtils.BroadcastLocalizedText(key, messageColor);
             }
 
             // Disable sandstorms if the Desert Scourge is still alive and Hardmode hasn't begun.
@@ -386,6 +387,9 @@ namespace CalamityMod.Systems
 
                                         if (tileType == TileType<Voidstone>())
                                             tileType2 = TileType<LumenylCrystals>();
+
+                                        if (tileType == TileType<Shellstone>())
+                                            tileType2 = TileType<SmallCorals>();
 
                                         bool canPlaceBasedOnAttached = true;
                                         if (tileType2 == TileType<SeaPrismCrystals>() && !isSunkenSeaTile)

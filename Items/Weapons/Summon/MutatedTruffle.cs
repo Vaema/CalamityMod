@@ -41,13 +41,13 @@ namespace CalamityMod.Items.Weapons.Summon
         {
             Item.width = 24;
             Item.height = 26;
-            Item.damage = 275;
+            Item.damage = 250;
             Item.DamageType = DamageClass.Summon;
             Item.buffType = ModContent.BuffType<MutatedTruffleBuff>();
             Item.shoot = ModContent.ProjectileType<MutatedTruffleMinion>();
             Item.knockBack = 5f;
 
-            Item.useAnimation = Item.useTime = 10;
+            Item.useAnimation = Item.useTime = 24;
             Item.mana = 10;
             Item.noMelee = true;
             Item.useStyle = ItemUseStyleID.HoldUp;

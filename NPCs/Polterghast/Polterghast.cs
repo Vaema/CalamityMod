@@ -130,7 +130,6 @@ namespace CalamityMod.NPCs.Polterghast
             NPC.netAlways = true;
             NPC.HitSound = HitSound;
             NPC.DeathSound = SoundID.NPCDeath39;
-            NPC.Calamity().VulnerableToSickness = false;
         }
 
         public override void SetBestiary(BestiaryDatabase database, BestiaryEntry bestiaryEntry)
@@ -963,8 +962,8 @@ namespace CalamityMod.NPCs.Polterghast
                     sulfSeaBoostMessage = "Mods.CalamityMod.Status.Progression.AprilFools2"; // Goddamn boomer duke moments
                 }
 
-                CalamityUtils.DisplayLocalizedText(key, messageColor);
-                CalamityUtils.DisplayLocalizedText(sulfSeaBoostMessage, sulfSeaBoostColor);
+                CalamityUtils.BroadcastLocalizedText(key, messageColor);
+                CalamityUtils.BroadcastLocalizedText(sulfSeaBoostMessage, sulfSeaBoostColor);
             }
 
             // Mark Polterghast as dead

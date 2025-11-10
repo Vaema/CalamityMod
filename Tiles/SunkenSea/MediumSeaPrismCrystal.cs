@@ -32,7 +32,7 @@ namespace CalamityMod.Tiles.SunkenSea
             MinPick = 55;
 
             AddToArray(ref TileID.Sets.RoomNeeds.CountsAsTorch);
-            AddMapEntry(new Color(48, 201, 214), CalamityUtils.GetItemName<PrismShard>());
+            AddMapEntry(new Color(53, 136, 207), CalamityUtils.GetItemName<PrismShard>());
 
             // Attach to ground
             TileObjectData.newTile.CopyFrom(TileObjectData.Style2x2);

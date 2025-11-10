@@ -12,8 +12,7 @@ namespace CalamityMod.Items.Placeables.Abyss
             Item.ResearchUnlockCount = 100;
             ItemID.Sets.ShimmerTransformToItem[Type] = ModContent.ItemType<SulphurousShale>();
 
-            // +5 flat damage, equal to other sand variants
-            ItemID.Sets.SandgunAmmoProjectileData[Type] = new(ModContent.ProjectileType<SulphurousSandBallGun>(), 5);
+            ItemID.Sets.SandgunAmmoProjectileData[Type] = new(ModContent.ProjectileType<SulphurousSandBallGun>(), 0);
         }
 
         public override void SetDefaults()

@@ -1317,7 +1317,7 @@ namespace CalamityMod.NPCs.HiveMind
                 Color messageColor = Color.Cyan;
                 AerialiteOreGen.Enchant();
 
-                CalamityUtils.DisplayLocalizedText(key, messageColor);
+                CalamityUtils.BroadcastLocalizedText(key, messageColor);
             }
 
             // Mark The Hive Mind as dead

@@ -104,7 +104,7 @@ namespace CalamityMod.Projectiles.DraedonsArsenal
                 }
 
                 // Make it POWERFUL
-                Owner.Calamity().GeneralScreenShakePower = MPFBScreenShakePower;
+                Owner.SetScreenshake(MPFBScreenShakePower);
                 float playerSpeed = Owner.velocity.Length();
                 Vector2 pushback = Projectile.velocity.SafeNormalize(Vector2.UnitX) * -MPFBPushback;
                 Vector2 newPlayerVelocity = Owner.velocity + pushback;

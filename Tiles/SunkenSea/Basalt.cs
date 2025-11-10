@@ -1,4 +1,6 @@
-﻿using CalamityMod.Systems;
+﻿using System;
+using CalamityMod.Systems;
+using CalamityMod.Tiles.SunkenSea.Ambient;
 using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.ID;
@@ -15,7 +17,6 @@ namespace CalamityMod.Tiles.SunkenSea
             Main.tileSolid[Type] = true;
             Main.tileBlockLight[Type] = true;
             Main.tileShine2[Type] = false;
-            Main.tileBlendAll[Type] = true;
 
             CalamityUtils.MergeWithGeneral(Type);
             CalamityUtils.MergeWithDesert(Type);
@@ -23,7 +24,7 @@ namespace CalamityMod.Tiles.SunkenSea
             DustType = DustID.Ash;
             HitSound = SoundID.Tink;
 
-            AddMapEntry(new Color(58, 55, 70));
+            AddMapEntry(new Color(77, 75, 86));
 
             MinPick = 110;
 
@@ -54,6 +55,12 @@ namespace CalamityMod.Tiles.SunkenSea
         {
             return TileFramingSystem.BetterGemsparkFraming(i, j, resetFrame);
         }
-
+        public override void RandomUpdate(int i, int j)
+        {
+                Dust dust;
+                dust = Main.dust[Dust.NewDust(new Vector2(i * 16f, j * 16f), 16, 16, DustID.Smoke, 0f, -1.9069767f, 195, new Color(255, 255, 255), 1f)];
+                dust.noGravity = false;
+                dust.fadeIn = 1.4209302f;
+        }
     }
 }

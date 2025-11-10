@@ -219,11 +219,9 @@ namespace CalamityMod.Projectiles.Melee
 
             if (Projectile.numHits == 0)
             {
-                Owner.Calamity().GeneralScreenShakePower = 5f;
-
+                Owner.SetScreenshake(5f);
                 SoundStyle swing = new("CalamityMod/Sounds/Item/DemonSwordStrongImpact");
                 SoundEngine.PlaySound(swing with { Volume = 0.95f, Pitch = Main.rand.NextFloat(-0.1f, 0.1f) }, Projectile.Center);
-
             }
         }
         public override void ModifyHitNPC(NPC target, ref NPC.HitModifiers modifiers)

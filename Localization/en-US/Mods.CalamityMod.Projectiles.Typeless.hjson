@@ -151,7 +151,6 @@ VictideSpirit.DisplayName: Bubbly Spirit
 VoidFieldGenerator.DisplayName: Void Field Generator
 WarbannerDamage.DisplayName: The Unmatched Power of the Sun
 WarbannerLight.DisplayName: Warbanner Light
-WaterConvertor.DisplayName: Water Convertor
 WhiteLabSeeker.DisplayName: Seeking Mechanism
 WulfrumBobber.DisplayName: Wulfrum Bobber
 WulfrumDiggingTurtleProjectile.DisplayName: Digging Turtle
@@ -163,3 +162,13 @@ XykDeathAnim.DisplayName: Xyk Death Animation
 XykWings.DisplayName: Xyk Wings
 BatholithBangleProjectile.DisplayName: Batholith Bangle Projectile
 ScionsCurioMini.DisplayName: Scions Curio Mini
+BlackPearlFalling.DisplayName: Black Pearl Falling
+DunesandBallFalling.DisplayName: Dunesand Ball Falling
+EutrophicSandBallFalling.DisplayName: Eutrophic Sand Ball Falling
+PinkPearlFalling.DisplayName: Pink Pearl Falling
+PolypSandBallFalling.DisplayName: Polyp Sand Ball Falling
+VolcanicSandBallFalling.DisplayName: Volcanic Sand Ball Falling
+WhitePearlFalling.DisplayName: White Pearl Falling
+DuneSandBallGun.DisplayName: Dunesandball
+PolypSandBallGun.DisplayName: Polyp Sandball
+VolcanicSandBallGun.DisplayName: Volcanic Sandball

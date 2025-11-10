@@ -14,9 +14,10 @@ namespace CalamityMod.Items.Armor.OmegaBlue
     {
         public new string LocalizationCategory => "Items.Armor.PostMoonLord";
 
+        public static float AmmoReduction = 0.75f;
         public static float DamageBoost = 0.18f;
         public static int CritBoost = 12;
-        public override LocalizedText Tooltip => base.Tooltip.WithFormatArgs(DamageBoost.ToPercent(), CritBoost);
+        public override LocalizedText Tooltip => base.Tooltip.WithFormatArgs(DamageBoost.ToPercent(), CritBoost, (1f - AmmoReduction).ToPercent());
 
         public override void SetStaticDefaults()
         {
@@ -43,6 +44,7 @@ namespace CalamityMod.Items.Armor.OmegaBlue
             var modPlayer = player.Calamity();
             player.GetDamage<GenericDamageClass>() += DamageBoost;
             player.GetCritChance<GenericDamageClass>() += CritBoost;
+            modPlayer.ammoCost *= AmmoReduction;
             modPlayer.omegaBlueChestplate = true;
             modPlayer.noLifeRegen = true;
         }

@@ -24,7 +24,7 @@ namespace CalamityMod.Items.Armor.Bloodflare
         public static int HitsToActivateFrenzy = 15;
         public static float FrenzyMeleeDamageBoost = 0.25f;
         public static int FrenzyMeleeCritBoost = 25; // NOTE: Tooltip shares this number with damage % as they're equal
-        public static double FrenzyContactDamageReduction = 0.5D;
+        public static float FrenzyContactDamageReduction = 0.5f;
         public static int FrenzyDuration = CalamityUtils.SecondsToFrames(5);
         public static int FrenzyCooldown = CalamityUtils.SecondsToFrames(30);
 

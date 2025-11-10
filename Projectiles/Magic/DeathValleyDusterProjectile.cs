@@ -158,7 +158,7 @@ namespace CalamityMod.Projectiles.Magic
             if (Projectile.numHits == 0)
             {
                 Player Owner = Main.player[Projectile.owner];
-                Owner.Calamity().GeneralScreenShakePower = 3.5f;
+                Owner.SetScreenshake(3.5f);
                 damageMult += 0.5f;
                 for (int i = 0; i < 3; i++)
                     SoundEngine.PlaySound(SoundID.DD2_MonkStaffGroundImpact with { Volume = 0.9f, Pitch = -0.4f + i * 0.25f, MaxInstances = 3 }, Projectile.Center);

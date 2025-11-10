@@ -72,7 +72,7 @@ namespace CalamityMod.Items.Weapons.Rogue
         public override void AddRecipes()
         {
             CreateRecipe().
-                AddIngredient<Eradicator>().
+                AddIngredient<DimensionTearingDisk>().
                 AddIngredient<AerialTracker>().
                 AddIngredient<AuricBar>(5).
                 AddTile<CosmicAnvil>().

@@ -50,6 +50,7 @@ namespace CalamityMod.Items.Accessories.Wings
 
         public override void VerticalWingSpeeds(Player player, ref float ascentWhenFalling, ref float ascentWhenRising, ref float maxCanAscendMultiplier, ref float maxAscentMultiplier, ref float constantAscend)
         {
+            if (Item.wingSlot == -1) return;
             ascentWhenFalling = BonusAscentWhileFalling;
             ascentWhenRising = BonusAscentWhileRising;
             maxCanAscendMultiplier = RisingSpeedThreshold;
@@ -67,7 +68,15 @@ namespace CalamityMod.Items.Accessories.Wings
 
         public override void ModifyTooltips(List<TooltipLine> list)
         {
-            WingStats stats = ArmorIDs.Wing.Sets.Stats[Item.wingSlot];
+            if (Item.wingSlot == -1) return;
+            WingStats stats = new();
+            if (Item.type == ModContent.ItemType<MoonWalkers>())
+                stats = ArmorIDs.Wing.Sets.Stats[MoonWalkers.wingSlot];
+            else if (Item.type == ModContent.ItemType<VoidStriders>())
+                stats = ArmorIDs.Wing.Sets.Stats[VoidStriders.wingSlot];
+            else if (Item.type == ModContent.ItemType<SeraphTracers>())
+                stats = ArmorIDs.Wing.Sets.Stats[SeraphTracers.wingSlot];
+            else stats = ArmorIDs.Wing.Sets.Stats[Item.wingSlot];
             int time = stats.FlyTime;
             float run = stats.AccRunSpeedOverride;
             float rAcc = stats.AccRunAccelerationMult * 0.08f;

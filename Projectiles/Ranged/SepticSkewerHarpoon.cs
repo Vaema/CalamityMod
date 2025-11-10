@@ -207,7 +207,7 @@ namespace CalamityMod.Projectiles.Ranged
                                 GeneralParticleHandler.SpawnParticle(orb7);
                             }
 
-                            Owner.Calamity().GeneralScreenShakePower = 8.5f;
+                            Owner.SetScreenshake(8.5f);
                         }
 
                         SoundStyle die = new("CalamityMod/Sounds/NPCKilled/PerfLargeDeath");

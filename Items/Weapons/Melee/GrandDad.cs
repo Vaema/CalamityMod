@@ -81,8 +81,7 @@ namespace CalamityMod.Items.Weapons.Melee
             {
                 time = 0;
                 float power = Utils.GetLerpValue(35, 75, highestSpeed, true) * 2;
-                if (Main.LocalPlayer.Calamity().GeneralScreenShakePower < 3.5f * power)
-                    Main.LocalPlayer.Calamity().GeneralScreenShakePower = 3.5f * power;
+                Main.LocalPlayer.SetScreenshake(3.5f * power);
                 if (power > 0.25f)
                 {
                     float blastSize = 150 * power;

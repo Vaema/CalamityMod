@@ -26,9 +26,6 @@ AbyssalDivingSuit: {
 		'''
 		Transforms the holder into an armored diver:
 		Increases max movement speed and acceleration while underwater, but reduces it outside of water
-		The suit's armored plates increase damage reduction by 15%
-		Wearing this suit grants 15% damage reduction for hits under 50 damage
-		The suit can absorb up to 3 hits over 50 damage, and will take 3 minutes to regenerate
 		Grants the ability to swim, extends underwater breathing, emits light underwater, and improves mobility on ice
 		Provides a moderate amount of light, reduces breath loss, and reduces damage caused by drowning in the abyss
 		Abyss creatures are less likely to see you, mitigates the abyss' defense reduction, and lets you sink faster in liquids
@@ -206,7 +203,7 @@ ArchaicPowder: {
 	DisplayName: Archaic Powder
 	Tooltip:
 		'''
-		Increases mining speed by 30%
+		Increases mining speed by 25%
 		Provides immunity to damage from falling blocks and dart traps
 		65% resistance to all damage from traps
 		Does not stack with downgrades
@@ -229,15 +226,7 @@ AsgardianAegis: {
 		'''
 		Allows the ability to dash, empowered by a cosmic inferno
 		This dash can ram through enemies without taking damage
-		Grants immunity to knockback and fire blocks, as well as multiple debuffs
-		'''
-	HoldShiftTooltip:
-		'''
-		  On Fire!, Hellfire, Burning, Chilled, Frozen, Frostburn, Frostbite, Weak,
-		  Broken Armor, Bleeding, Poisoned, Acid Venom, Sulphuric Poisoning, Slow, Confused,
-		  Silenced, Cursed, Darkness, Webbed, Mighty Wind, Stoned, Armor Crunch, Blackout,
-		  Brain Rot, Burning Blood, Heavy Bleeding, Laceration, Cursed Inferno, Brimstone Flames,
-		  Shadowflame, Daybroken, Nightwither, Holy Flames, Voidfrost, God Slayer Inferno
+		Grants immunity to knockback
 		'''
 }
 
@@ -247,13 +236,7 @@ AsgardsValor: {
 		'''
 		Allows the ability to ram dash
 		This dash can ram through enemies without taking damage
-		Grants immunity to knockback and fire blocks, as well as multiple debuffs
-		'''
-	HoldShiftTooltip:
-		'''
-		  On Fire!, Hellfire, Chilled, Frozen, Frostburn, Frostbite, Weak,
-		  Broken Armor, Bleeding, Poisoned, Slow, Confused, Silenced, Cursed,
-		  Darkness, Mighty Wind, Stoned, Brimstone Flames, Burning
+		Grants immunity to knockback
 		'''
 }
 
@@ -438,7 +421,7 @@ CoinofDeceit: {
 	DisplayName: Coin of Deceit
 	Tooltip:
 		'''
-		Stealth strikes only expend 85% of your max stealth
+		Stealth strikes only expend 90% of your max stealth
 		6% increased rogue crit chance
 		'''
 }
@@ -587,10 +570,11 @@ DeificAmulet: {
 	DisplayName: Deific Amulet
 	Tooltip:
 		'''
-		Causes stars to fall and increases length of invincibility after taking damage
-		Grants bonus invincibility frames based on your missing health
-		This effect scales from 10 frames at full HP to 40 frames at 25% or less HP
+		Releases a burst of homing star-bees[TOGGLE] and drenches you in [cbuff:Honey] after taking damage
+		Increases the length of invincibility, with it increasing even more when at low health
+		[c/aaaaaa:Shift-<right> this item in your inventory to toggle] [i:PanicNecklace] [c/aaaaaa:Panic Necklace's effect]
 		'''
+	ToggleEffect: ", increases movement speed,"
 }
 
 DepthCharm: {
@@ -734,14 +718,9 @@ ElysianAegis: {
 		'''
 		Allows the ability to dash, empowered by holy fire
 		This dash can ram through enemies without taking damage
-		Grants immunity to knockback, fire blocks, as well as multiple debuffs
+		Grants immunity to knockback
+		'Blessed by the Profaned Flame'
 		'''
-	HoldShiftTooltip:
-		'''
-		  On Fire!, Hellfire, Cursed Inferno, Shadowflame, Daybroken,
-		  Holy Flames, Brimstone Flames, Burning
-		'''
-	FlavorTooltip: "'Blessed by the Profaned Flame'"
 }
 
 EnchantedPearl: {
@@ -770,7 +749,8 @@ EtherealTalisman: {
 		15% increased magic damage, 5% increased magic critical strike chance
 		+150 max mana and 10% decreased mana usage
 		Increases pickup range for mana stars
-		You automatically use mana potions when needed if visibility is on
+		You automatically use mana potions when needed
+		[c/aaaaaa:Shift-<right> in your inventory to toggle] [i:ManaFlower] [c/aaaaaa:Mana Flower's effect]
 		'''
 }
 
@@ -1281,7 +1261,6 @@ OrnateShield: {
 		'''
 		Allows the ability to dash
 		This dash can ram through enemies without taking damage
-		Grants immunity to Chilled, Frostburn, Frostbite, and Frozen
 		'''
 }
 
@@ -1453,14 +1432,14 @@ RampartofDeities: {
 	DisplayName: Rampart of Deities
 	Tooltip:
 		'''
-		Causes stars to fall and increases length of invincibility after taking damage
-		Grants bonus invincibility frames based on your missing health
-		This effect scales from 10 frames at full HP to 40 frames at 25% or less HP
-		Being struck for over 200 damage grants 30 additional invincibility frames
 		Grants immunity to knockback
-		Puts a shell around the owner when below 50% life that reduces damage by 25%
-		Absorbs 25% of damage done to players on your team when above 25% life
+		Releases a blast of homing star-bees[TOGGLE] and drenches you in [cbuff:Honey] after taking damage
+		Increases the length of invincibility, with it increasing even more when at low health or taking high damage attacks
+		Reduces damage taken by 25% when below 50% life
+		Absorbs 25% of damage done to players on your team when you are above 25% life
+		[c/aaaaaa:Shift-<right> this item in your inventory to toggle] [i:PanicNecklace] [c/aaaaaa:Panic Necklace's effect]
 		'''
+	ToggleEffect: ", increases movement speed,"
 }
 
 RareElementalinaBottle: {
@@ -1576,7 +1555,7 @@ ScuttlersJewel: {
 	DisplayName: Scuttler's Jewel
 	Tooltip:
 		'''
-		Stealth strike projectiles spawn a jewel spike when destroyed
+		Stealth strike projectiles spawn a jewel spike on hit or when destroyed
 		Can also be broken down at an extractinator
 		'''
 }
@@ -1752,8 +1731,10 @@ StatisNinjaBelt: {
 		Provides a high-speed dash
 		10% increased movement speed, 32% increased jump speed, allows auto-jump, and negates fall damage
 		Increases movement acceleration and deceleration by 1.6x
-		Grants the ability to swim, climb walls, and dodge attacks
+		Grants the ability to swim[TOGGLE] and dodge attacks
+		[c/aaaaaa:Shift-<right> this item in your inventory to toggle the] [i:ClimbingClaws] [c/aaaaaa:Climbing Claws]
 		'''
+	ToggleEffect: ", climb walls,"
 	HoldShiftTooltip: "{$Common.DodgeInformation}"
 }
 
@@ -1764,9 +1745,11 @@ StatisVoidSash: {
 		Provides a high-speed dash
 		20% increased movement speed, 32% increased jump speed, allows auto-jump, and negates fall damage
 		Increases movement acceleration and deceleration by 1.85x
-		Grants the ability to swim, climb walls, and dodge attacks
+		Grants the ability to swim[TOGGLE] and dodge attacks
 		Visual effects are reduced if visibility is disabled
+		[c/aaaaaa:Shift-<right> this item in your inventory to toggle the] [i:ClimbingClaws] [c/aaaaaa:Climbing Claws]
 		'''
+	ToggleEffect: ", climb walls,"
 	HoldShiftTooltip: "{$Common.DodgeInformation}"
 }
 
@@ -1858,7 +1841,7 @@ SupremeBaitTackleBoxFishingStation: {
 		'''
 		Increases fishing power by 50
 		Fishing line will never break and decreases chance of bait consumption
-		Allows fishing in lava and detects hooked fish
+		Allows fishing in lava
 		'''
 }
 
@@ -2087,8 +2070,8 @@ WarbanneroftheRighteous: {
 	DisplayName: Warbanner of the Righteous
 	Tooltip:
 		'''
-		Grants a scaling damage boost based on how close you are to enemies
-		Maximum damage boost is 20%, minimum damage boost is -30%
+		Multiplies all damage based on how close you are to enemies
+		Maximum damage boost is 15%, minimum damage boost is -15%
 		Emit a blazing aura that burns and repels nearby enemies
 		Enemies take increasing damage the closer they are to you and the longer they are near you
 		Effects are transparent and silent if visibility is disabled

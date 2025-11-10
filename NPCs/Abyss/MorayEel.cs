@@ -113,7 +113,7 @@ namespace CalamityMod.NPCs.Abyss
 
         public override void ModifyNPCLoot(NPCLoot npcLoot)
         {
-            npcLoot.Add(ItemID.Flipper, 8);
+            npcLoot.Add(ItemID.Flipper, 15);
         }
 
         public override void HitEffect(NPC.HitInfo hit)

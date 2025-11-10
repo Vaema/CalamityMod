@@ -328,8 +328,6 @@ namespace CalamityMod
 
             // Enemies
             EnemyRedirect(NPCType<KingSlimeJewelRuby>(), "Crown Jewels");
-            EnemyRedirect(NPCType<KingSlimeJewelSapphire>(), "Crown Jewels");
-            EnemyRedirect(NPCType<KingSlimeJewelEmerald>(), "Crown Jewels");
             EnemyRedirect(NPCType<OldDukeToothBall>(), "Tooth Ball (Old Duke)");
             EnemyRedirect(NPCType<CalamitasEnchantDemon>(), "Enchantment");
             EnemyRedirect(NPCType<LeviathanStart>(), "%3F%3F%3F");
@@ -1167,7 +1165,7 @@ namespace CalamityMod
             RegisterSummon(ItemType<ScabRipper>(), BuffType<BabyBloodCrawlerBuff>(), ProjectileType<BabyBloodCrawler>());
             RegisterSummon(ItemType<CinderBlossomStaff>(), BuffType<CinderBlossomBuff>(), ProjectileType<CinderBlossom>());
             RegisterSummon(ItemType<DankStaff>(), BuffType<DankCreeperBuff>(), ProjectileType<DankCreeperMinion>());
-            RegisterSummon(ItemType<StarSwallowerContainmentUnit>(), BuffType<StarSwallowerBuff>(), ProjectileType<StarSwallowerSummon>());
+            RegisterSummon(ItemType<AqueousHunterDrone>(), BuffType<AqueousHunterDroneBuff>(), ProjectileType<AqueousHunterDroneSummon>());
             RegisterSummon(ItemType<HerringStaff>(), BuffType<Herring>(), ProjectileType<HerringMinion>());
             RegisterSummon(ItemType<EyeOfNight>(), BuffType<EyeOfNightBuff>(), ProjectileType<EyeOfNightSummon>());
             RegisterSummon(ItemType<FleshOfInfidelity>(), BuffType<FleshBallBuff>(), ProjectileType<FleshBallMinion>());
@@ -1207,7 +1205,7 @@ namespace CalamityMod
             RegisterSummon(ItemType<CalamarisLament>(), BuffType<CalamarisLamentBuff>(), ProjectileType<CalamarisLamentMinion>());
             RegisterSummon(ItemType<GammaHeart>(), BuffType<GammaHydraBuff>(), ProjectileType<GammaHead>());
             RegisterSummon(ItemType<WarloksMoonFist>(), BuffType<MoonFistBuff>(), ProjectileType<MoonFist>());
-            RegisterSummon(ItemType<StaffoftheMechworm>(), BuffType<Mechworm>(), ProjectileType<MechwormBody>());
+            RegisterSummon(ItemType<VoidEaterMarionette>(), BuffType<VoidEaterMarionetteBuff>(), ProjectileType<VoidEaterMarionetteProjectile>());
             RegisterSummon(ItemType<CorvidHarbringerStaff>(), BuffType<CorvidHarbringerBuff>(), ProjectileType<PowerfulRaven>());
             RegisterSummon(ItemType<EndoHydraStaff>(), BuffType<EndoHydraBuff>(), ProjectileType<EndoHydraHead>());
             RegisterSummon(ItemType<CosmicViperEngine>(), BuffType<CosmicViperEngineBuff>(), ProjectileType<CosmicViperSummon>());
@@ -1335,8 +1333,8 @@ namespace CalamityMod
                 return tagData.ContainsKey("RevengeanceMode") && tagData.GetBool("RevengeanceMode") && !(tagData.ContainsKey("DeathMode") && tagData.GetBool("DeathMode"));
             };
             
-            RegisterWorldInfoIcon(luminance, "CalamityMod/UI/ModeIndicator/ModeIndicator_Death", "Mods.CalamityMod.UI.DeathEnabled", deathEnabled, 50);
-            RegisterWorldInfoIcon(luminance, "CalamityMod/UI/ModeIndicator/ModeIndicator_Rev", "Mods.CalamityMod.UI.RevengeanceEnabled", revengeanceEnabled, 50);
+            RegisterWorldInfoIcon(luminance, "CalamityMod/UI/ModeIndicator/ModeIndicator_Death", "Mods.CalamityMod.UI.Death", deathEnabled, 50);
+            RegisterWorldInfoIcon(luminance, "CalamityMod/UI/ModeIndicator/ModeIndicator_Rev", "Mods.CalamityMod.UI.Revengeance", revengeanceEnabled, 50);
         }
         #endregion
     }

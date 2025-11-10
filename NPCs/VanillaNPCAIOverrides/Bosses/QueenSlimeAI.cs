@@ -565,7 +565,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                                     if (phase5)
                                     {
                                         numProj = 15;
-                                        destination *= 0.75f;
+                                        destination *= 0.65f;
                                         for (int i = 0; i < numProj; i++)
                                         {
                                             Vector2 perturbedSpeed = destination.RotatedBy(MathHelper.Lerp(-rotation, rotation, i / (float)(numProj - 1)));
@@ -731,8 +731,6 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                         if (Main.netMode != NetmodeID.MultiplayerClient)
                         {
                             int numGelProjectiles = phase4 ? Main.rand.Next(9, 12) : phase2 ? Main.rand.Next(6, 9) : 12;
-                            if (phase5)
-                                numGelProjectiles += 6;
                             if (Main.getGoodWorld)
                                 numGelProjectiles = 15;
 
@@ -926,8 +924,8 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
             npc.noTileCollide = true;
             npc.noGravity = true;
 
-            float flyVelocity = death ? 21f : 16f;
-            float flyAcceleration = death ? 0.18f : 0.12f;
+            float flyVelocity = death ? 19f : 16f;
+            float flyAcceleration = death ? 0.15f : 0.12f;
             float flyDistanceY = death ? 350f : 450f;
 
             Vector2 desiredVelocity = npc.Center;

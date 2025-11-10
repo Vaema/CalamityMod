@@ -240,7 +240,7 @@ namespace CalamityMod.Systems.Collections
                 "Cole",
                 "Colin",
                 "Colin V",
-                "Commmander Frostbite",
+                "Commander Frostbite",
                 "Conner",
                 "Coolguystorm YT",
                 "Corn M. Cobb",

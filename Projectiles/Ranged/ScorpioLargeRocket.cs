@@ -202,7 +202,7 @@ namespace CalamityMod.Projectiles.Ranged
         public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
         {
             if (Projectile.numHits < 1)
-                Main.player[Projectile.owner].Calamity().GeneralScreenShakePower = 6f;
+                Main.player[Projectile.owner].SetScreenshake(6f);
         }
 
         public float TrailWidthFunction(float completionRatio) => Utils.Remap(completionRatio, 0f, 0.8f, 15f, 0f);

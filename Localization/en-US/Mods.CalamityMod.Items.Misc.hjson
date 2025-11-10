@@ -316,8 +316,8 @@ TaintedCloudberry: {
 }
 
 // Spawn Blockers
-SpawnBlockersOn: Currently enabled
-SpawnBlockersOff: Currently disabled
+SpawnBlockersOn: Spawns are currently disabled
+SpawnBlockersOff: Spawns are currently enabled
 
 AntiCystOintment: {
 	DisplayName: Anti-Cyst Ointment
@@ -390,15 +390,6 @@ LegendaryShortTooltip:
 	[c/FF6F00:Tales of legends past radiate around you...]
 	[c/BABABA:Hold Shift to listen closer]
 	'''
-
-BallAndChain: {
-	DisplayName: Ball and Chain
-	Tooltip:
-		'''
-		Favorite this item to disable any dashes granted by equipment
-		'So heavy...'
-		'''
-}
 
 BrimstoneLocus: {
 	DisplayName: Brimstone Locus

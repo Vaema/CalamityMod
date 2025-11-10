@@ -969,7 +969,7 @@ namespace CalamityMod.NPCs.Cryogen
                     {
                         string key = Main.zenithWorld ? "Mods.CalamityMod.Status.Boss.PyrogenBossText" : "Mods.CalamityMod.Status.Boss.CryogenBossText";
                         Color messageColor = Main.zenithWorld ? Color.Orange : Color.Cyan;
-                        CalamityUtils.DisplayLocalizedText(key, messageColor);
+                        CalamityUtils.BroadcastLocalizedText(key, messageColor);
                     }
                 }
             }
@@ -1430,7 +1430,7 @@ namespace CalamityMod.NPCs.Cryogen
                     tileTypes.Add(TileID.JungleGrass);
                 CalamityUtils.SpawnOre(ModContent.TileType<CryonicOre>(), 16E-05, 0.45f, 0.7f, 6, 11, tileTypes);
 
-                CalamityUtils.DisplayLocalizedText(key, Color.LightSkyBlue);
+                CalamityUtils.BroadcastLocalizedText(key, Color.LightSkyBlue);
             }
 
             // Mark Cryogen as dead

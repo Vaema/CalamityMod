@@ -177,7 +177,7 @@ namespace CalamityMod.Projectiles.Magic
             if (Projectile.ai[1] == 1)
             {
                 Player Owner = Main.player[Projectile.owner];
-                Owner.Calamity().GeneralScreenShakePower = 5f;
+                Owner.SetScreenshake(5f);
 
                 Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center, Vector2.Zero, ModContent.ProjectileType<PrimordialEarthExplosion>(), (int)(Projectile.damage * 2.5f), 0, Projectile.owner);
                 SoundStyle explo = new("CalamityMod/Sounds/Item/MagicRockImpact");

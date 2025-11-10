@@ -1339,7 +1339,7 @@ namespace CalamityMod.NPCs.Providence
                         string key = "Mods.CalamityMod.Status.Boss.ProfanedBossText";
                         Color messageColor = Color.Orange;
 
-                        CalamityUtils.DisplayLocalizedText(key, messageColor);
+                        CalamityUtils.BroadcastLocalizedText(key, messageColor);
                     }
 
                     // Inflict Icarus Folly
@@ -1964,8 +1964,8 @@ namespace CalamityMod.NPCs.Providence
 
                 CalamityUtils.SpawnOre(ModContent.TileType<UelibloomOre>(), 17E-05, 0.55f, 0.9f, 8, 14, TileID.Mud);
 
-                CalamityUtils.DisplayLocalizedText(key2, messageColor2);
-                CalamityUtils.DisplayLocalizedText(key3, messageColor3);
+                CalamityUtils.BroadcastLocalizedText(key2, messageColor2);
+                CalamityUtils.BroadcastLocalizedText(key3, messageColor3);
             }
 
             if (challenge)

@@ -62,7 +62,7 @@ namespace CalamityMod.Items.Weapons.Ranged
                 SoundStyle fire = new("CalamityMod/Sounds/Item/GunShotMid");
                 SoundEngine.PlaySound(fire with { Volume = 0.7f, Pitch = Main.rand.NextFloat(0.7f, 0.8f) }, position);
                 if (pulled)
-                    player.Calamity().GeneralScreenShakePower = 5.5f;
+                    player.SetScreenshake(5.5f);
             }
             else
             {

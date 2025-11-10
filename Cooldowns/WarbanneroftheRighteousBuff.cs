@@ -36,14 +36,14 @@ namespace CalamityMod.Cooldowns
         {
             base.DrawExpanded(spriteBatch, position, opacity, scale);
 
-            CalamityUtils.DrawBorderStringEightWay(spriteBatch, FontAssets.MouseText.Value, (-instance.timeLeft + 20).ToString() + "%", position + TextPosition, TextColor, TextBorderColor);
+            CalamityUtils.DrawBorderStringEightWay(spriteBatch, FontAssets.MouseText.Value, (-instance.timeLeft + 15).ToString() + "%", position + TextPosition, TextColor, TextBorderColor);
         }
 
         public override void DrawCompact(SpriteBatch spriteBatch, Vector2 position, float opacity, float scale)
         {
             base.DrawCompact(spriteBatch, position, opacity, scale);
 
-            CalamityUtils.DrawBorderStringEightWay(spriteBatch, FontAssets.MouseText.Value, (-instance.timeLeft + 20).ToString() + "%", position + TextPosition, TextColor, TextBorderColor);
+            CalamityUtils.DrawBorderStringEightWay(spriteBatch, FontAssets.MouseText.Value, (-instance.timeLeft + 15).ToString() + "%", position + TextPosition, TextColor, TextBorderColor);
         }
     }
 }

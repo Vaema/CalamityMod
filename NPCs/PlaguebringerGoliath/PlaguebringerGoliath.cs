@@ -199,7 +199,7 @@ namespace CalamityMod.NPCs.PlaguebringerGoliath
             {
                 string key = "Mods.CalamityMod.Status.Boss.PlagueBossText";
                 Color messageColor = Color.Lime;
-                CalamityUtils.DisplayLocalizedText(key, messageColor);
+                CalamityUtils.BroadcastLocalizedText(key, messageColor);
                 SoundEngine.PlaySound(NukeWarningSound, NPC.Center);
 
                 halfLife = true;

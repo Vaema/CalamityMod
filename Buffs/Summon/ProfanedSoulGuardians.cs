@@ -1,4 +1,5 @@
 ﻿using CalamityMod.CalPlayer;
+using CalamityMod.Projectiles.Summon;
 using Terraria;
 using Terraria.ModLoader;
 
@@ -15,7 +16,7 @@ namespace CalamityMod.Buffs.Summon
         public override void Update(Player player, ref int buffIndex)
         {
             CalamityPlayer modPlayer = player.Calamity();
-            if (!modPlayer.pSoulGuardians || modPlayer.profanedCrystalBuffs)
+            if (player.ownedProjectileCounts[ModContent.ProjectileType<MiniGuardianAttack>()] <= 0 || modPlayer.profanedCrystalBuffs)
             {
                 player.DelBuff(buffIndex);
                 buffIndex--;

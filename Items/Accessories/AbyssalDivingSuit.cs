@@ -11,9 +11,6 @@ namespace CalamityMod.Items.Accessories
     {
         public new string LocalizationCategory => "Items.Accessories";
 
-        public static double PlatesAllDamageReduction = 0.15D;
-        public static double PlatesHitDecay = 0.03D;
-
         public override string AssetPath => "CalamityMod/Items/Accessories/";
         public override (EquipType, string, string)[] EquipSlots =>
         [

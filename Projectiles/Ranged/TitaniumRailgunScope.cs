@@ -107,7 +107,7 @@ namespace CalamityMod.Projectiles.Ranged
 
                     // Apply some recoil to the player
                     Owner.velocity += direction * (ChargePercent * -5f);
-                    Owner.Calamity().GeneralScreenShakePower = 4f * ChargePercent;
+                    Owner.SetScreenshake(4f * ChargePercent);
 
                     // Spawn the laser
                     int shotDamage = (int)(Projectile.damage * ChargePercent);

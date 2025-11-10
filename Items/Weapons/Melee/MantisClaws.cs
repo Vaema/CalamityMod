@@ -29,5 +29,6 @@ namespace CalamityMod.Items.Weapons.Melee
         }
 
         public override bool AltFunctionUse(Player player) => true;
+        public override bool MeleePrefix() => true;
     }
 }

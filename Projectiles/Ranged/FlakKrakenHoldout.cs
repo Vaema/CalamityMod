@@ -105,7 +105,7 @@ namespace CalamityMod.Projectiles.Ranged
                         // By decreasing the offset length of the gun from the arms, we give an effect of recoil.
                         OffsetLengthFromArm = 10f;
 
-                        Owner.Calamity().GeneralScreenShakePower = 3.5f;
+                        Owner.SetScreenshake(3.5f);
 
                         Particle shootPulse = new DirectionalPulseRing(GunTipPosition,
                             Vector2.Zero,

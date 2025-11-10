@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using CalamityMod.Enums;
 using CalamityMod.Items.Accessories;
+using CalamityMod.Items.Fishing;
 using CalamityMod.Items.Materials;
 using CalamityMod.Items.PermanentBoosters;
 using CalamityMod.Items.Placeables.Furniture.DevPaintings;
@@ -279,23 +280,18 @@ namespace CalamityMod.Items
                     loot.AddHardmodeOresToCrates(HardmodeCrateType.Mythril);
                     break;
 
-                // Non-crafted underground Gold Chest loot @ 20%; Individually 5%
                 case ItemID.GoldenCrate:
-                    loot.Add(new OneFromOptionsNotScaledWithLuckDropRule(5, 1,
-                    ItemID.FlareGun,
-                    ItemID.Mace,
-                    ItemID.BandofRegeneration,
-                    ItemID.ShoeSpikes)); // Climbing Claws is in Wooden/Pearlwood (vanilla) in case you're curious
+                    RemoveBaitFromGoldenCrates(loot);
+                    loot.Add(NewGoldenCrateBaitRule);
+                    loot.Add(UndergroundChestLootRule);
                     break;
 
                 case ItemID.GoldenCrateHard:
                     RemoveHardmodeOresFromStandardCrates(loot);
                     loot.AddHardmodeOresToCrates(HardmodeCrateType.Titanium);
-                    loot.Add(new OneFromOptionsNotScaledWithLuckDropRule(5, 1,
-                    ItemID.FlareGun,
-                    ItemID.Mace,
-                    ItemID.BandofRegeneration,
-                    ItemID.ShoeSpikes));
+                    RemoveBaitFromGoldenCrates(loot);
+                    loot.Add(NewGoldenCrateBaitRule);
+                    loot.Add(UndergroundChestLootRule);
                     break;
 
                 case ItemID.CorruptFishingCrateHard:
@@ -538,6 +534,33 @@ namespace CalamityMod.Items
                 }
             }
         }
+
+        private static void RemoveBaitFromGoldenCrates(ItemLoot loot)
+        {
+            List<IItemDropRule> rules = loot.Get(false);
+            IItemDropRule toRemove = null;
+
+            foreach (IItemDropRule rule in rules)
+                if (rule is CommonDrop c && c.itemId == ItemID.MasterBait)
+                    toRemove = c;
+
+            if (toRemove is not null)
+                loot.Remove(toRemove);
+        }
+
+        // Replaced bait rules for Golden/Titanium Crates
+        // Vanilla: 3-7 Master Bait @ 66.67%
+        // Calamity: 3-7 Master Bait @ 33.33% OR 3-7 Grand Marquis Bait @ 16.67%
+        private static IItemDropRule NewGoldenCrateBaitRule => ItemDropRule.SequentialRulesNotScalingWithLuck(2,
+                ItemDropRule.NotScalingWithLuck(ModContent.ItemType<GrandMarquisBait>(), 3, 3, 7),
+                ItemDropRule.NotScalingWithLuck(ItemID.MasterBait, 1, 3, 7));
+
+        // Non-crafted underground Gold Chest loot for Golden/Titanium Crates @ 20%; Individually 5%
+        private static IItemDropRule UndergroundChestLootRule => new OneFromOptionsNotScaledWithLuckDropRule(5, 1,
+                ItemID.FlareGun,
+                ItemID.Mace,
+                ItemID.BandofRegeneration,
+                ItemID.ShoeSpikes); // Climbing Claws is in Wooden/Pearlwood (vanilla) in case you're curious
         #endregion
 
         #region Goodie Bag Bat Hook

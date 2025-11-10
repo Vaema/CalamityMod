@@ -19,7 +19,7 @@ namespace CalamityMod.Tiles.SunkenSea.Ambient
             Main.tileNoSunLight[Type] = false;
             TileID.Sets.IsVine[Type] = true;
             TileID.Sets.VineThreads[Type] = true;
-            AddMapEntry(new Color(96, 109, 154));
+            AddMapEntry(new Color(76, 133, 191));
             DustType = DustID.Grass;
             HitSound = SoundID.Grass;
         }

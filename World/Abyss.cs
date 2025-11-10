@@ -18,6 +18,7 @@ using CalamityMod.Tiles.Abyss.AbyssAmbient;
 using CalamityMod.Tiles.FurnitureVoid;
 using CalamityMod.Tiles.Ores;
 using CalamityMod.Walls;
+using CalamityMod.Walls.UnsafeWalls;
 using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.DataStructures;
@@ -91,13 +92,13 @@ namespace CalamityMod.World
                                 if (Y <= rockLayer - (int)((y - 200) * 0.6f))
                                 {
                                     tile.TileType = (ushort)ModContent.TileType<Voidstone>();
-                                    tile.WallType = (ushort)ModContent.WallType<VoidstoneWallUnsafe>();
+                                    tile.WallType = (ushort)ModContent.WallType<UnsafeVoidstoneWall>();
                                 }
                                 //layer 3-4 dithering transition
                                 else if (Y <= rockLayer - (int)((y - 200) * 0.59f) && WorldGen.genRand.NextBool(2))
                                 {
                                     tile.TileType = (ushort)ModContent.TileType<Voidstone>();
-                                    tile.WallType = (ushort)ModContent.WallType<VoidstoneWallUnsafe>();
+                                    tile.WallType = (ushort)ModContent.WallType<UnsafeVoidstoneWall>();
                                 }
                                 //layer 3
                                 else if (Y <= rockLayer - (int)((y - 200) * 0.4f))
@@ -115,7 +116,7 @@ namespace CalamityMod.World
                                 else if (Y <= rockLayer - (int)((y - 200) * 0.2f))
                                 {
                                     tile.TileType = (ushort)ModContent.TileType<AbyssGravel>();
-                                    tile.WallType = (ushort)ModContent.WallType<AbyssGravelWall>();
+                                    tile.WallType = (ushort)ModContent.WallType<UnsafeAbyssGravelWall>();
                                 }
                                 //layer 1-2 dithering transition
                                 else if (Y <= rockLayer - (int)((y - 200) * 0.19f))
@@ -123,19 +124,19 @@ namespace CalamityMod.World
                                     if (WorldGen.genRand.NextBool(2))
                                     {
                                         tile.TileType = (ushort)ModContent.TileType<AbyssGravel>();
-                                        tile.WallType = (ushort)ModContent.WallType<AbyssGravelWall>();
+                                        tile.WallType = (ushort)ModContent.WallType<UnsafeAbyssGravelWall>();
                                     }
                                     else
                                     {
                                         tile.TileType = (ushort)ModContent.TileType<SulphurousShale>();
-                                        tile.WallType = (ushort)ModContent.WallType<SulphurousShaleWall>();
+                                        tile.WallType = (ushort)ModContent.WallType<UnsafeSulphurousShaleWall>();
                                     }
                                 }
                                 //layer 1
                                 else
                                 {
                                     tile.TileType = (ushort)ModContent.TileType<SulphurousShale>();
-                                    tile.WallType = (ushort)ModContent.WallType<SulphurousShaleWall>();
+                                    tile.WallType = (ushort)ModContent.WallType<UnsafeSulphurousShaleWall>();
                                 }
                             }
                             //basically places smaller clusters everywhere else?
@@ -147,13 +148,13 @@ namespace CalamityMod.World
                                 if (Y <= rockLayer - (int)((y - 200) * 0.6f))
                                 {
                                     tile.TileType = (ushort)ModContent.TileType<Voidstone>();
-                                    tile.WallType = (ushort)ModContent.WallType<VoidstoneWallUnsafe>();
+                                    tile.WallType = (ushort)ModContent.WallType<UnsafeVoidstoneWall>();
                                 }
                                 //layer 3-4 dithering transition
                                 else if (Y <= rockLayer - (int)((y - 200) * 0.59f) && WorldGen.genRand.NextBool(2))
                                 {
                                     tile.TileType = (ushort)ModContent.TileType<Voidstone>();
-                                    tile.WallType = (ushort)ModContent.WallType<VoidstoneWallUnsafe>();
+                                    tile.WallType = (ushort)ModContent.WallType<UnsafeVoidstoneWall>();
                                 }
                                 //layer 3
                                 else if (Y <= rockLayer - (int)((y - 200) * 0.4f))
@@ -171,7 +172,7 @@ namespace CalamityMod.World
                                 else if (Y <= rockLayer - (int)((y - 200) * 0.2f))
                                 {
                                     tile.TileType = (ushort)ModContent.TileType<AbyssGravel>();
-                                    tile.WallType = (ushort)ModContent.WallType<AbyssGravelWall>();
+                                    tile.WallType = (ushort)ModContent.WallType<UnsafeAbyssGravelWall>();
                                 }
                                 //layer 1-2 dithering transition
                                 else if (Y <= rockLayer - (int)((y - 200) * 0.19f))
@@ -179,19 +180,19 @@ namespace CalamityMod.World
                                     if (WorldGen.genRand.NextBool(2))
                                     {
                                         tile.TileType = (ushort)ModContent.TileType<AbyssGravel>();
-                                        tile.WallType = (ushort)ModContent.WallType<AbyssGravelWall>();
+                                        tile.WallType = (ushort)ModContent.WallType<UnsafeAbyssGravelWall>();
                                     }
                                     else
                                     {
                                         tile.TileType = (ushort)ModContent.TileType<SulphurousShale>();
-                                        tile.WallType = (ushort)ModContent.WallType<SulphurousShaleWall>();
+                                        tile.WallType = (ushort)ModContent.WallType<UnsafeSulphurousShaleWall>();
                                     }
                                 }
                                 //layer 1
                                 else
                                 {
                                     tile.TileType = (ushort)ModContent.TileType<SulphurousShale>();
-                                    tile.WallType = (ushort)ModContent.WallType<SulphurousShaleWall>();
+                                    tile.WallType = (ushort)ModContent.WallType<UnsafeSulphurousShaleWall>();
                                 }
                             }
                         }
@@ -207,13 +208,13 @@ namespace CalamityMod.World
                                 if (Y > (rockLayer + y * 0.270))
                                 {
                                     tile.TileType = (ushort)ModContent.TileType<Voidstone>();
-                                    tile.WallType = (ushort)ModContent.WallType<VoidstoneWallUnsafe>();
+                                    tile.WallType = (ushort)ModContent.WallType<UnsafeVoidstoneWall>();
                                 }
                                 //layer 3-4 dithering transition
                                 else if (Y > (rockLayer + y * 0.268) && WorldGen.genRand.NextBool(2))
                                 {
                                     tile.TileType = (ushort)ModContent.TileType<Voidstone>();
-                                    tile.WallType = (ushort)ModContent.WallType<VoidstoneWallUnsafe>();
+                                    tile.WallType = (ushort)ModContent.WallType<UnsafeVoidstoneWall>();
                                 }
                                 //layer 3
                                 else if (Y > (rockLayer + y * 0.145))
@@ -233,19 +234,19 @@ namespace CalamityMod.World
                                     if (WorldGen.genRand.NextBool(2))
                                     {
                                         tile.TileType = (ushort)ModContent.TileType<AbyssGravel>();
-                                        tile.WallType = (ushort)ModContent.WallType<AbyssGravelWall>();
+                                        tile.WallType = (ushort)ModContent.WallType<UnsafeAbyssGravelWall>();
                                     }
                                     else
                                     {
                                         tile.TileType = (ushort)ModContent.TileType<SulphurousShale>();
-                                        tile.WallType = (ushort)ModContent.WallType<SulphurousShaleWall>();
+                                        tile.WallType = (ushort)ModContent.WallType<UnsafeSulphurousShaleWall>();
                                     }
                                 }
                                 //layer 1
                                 else if (Y <= rockLayer - 10)
                                 {
                                     tile.TileType = (ushort)ModContent.TileType<SulphurousShale>();
-                                    tile.WallType = (ushort)ModContent.WallType<SulphurousShaleWall>();
+                                    tile.WallType = (ushort)ModContent.WallType<UnsafeSulphurousShaleWall>();
                                 }
                                 //layer 2 (default block for the abyss)
                                 else
@@ -263,13 +264,13 @@ namespace CalamityMod.World
                                 if (Y > (rockLayer + y * 0.270))
                                 {
                                     tile.TileType = (ushort)ModContent.TileType<Voidstone>();
-                                    tile.WallType = (ushort)ModContent.WallType<VoidstoneWallUnsafe>();
+                                    tile.WallType = (ushort)ModContent.WallType<UnsafeVoidstoneWall>();
                                 }
                                 //layer 3-4 dithering transition
                                 else if (Y > (rockLayer + y * 0.268) && WorldGen.genRand.NextBool(2))
                                 {
                                     tile.TileType = (ushort)ModContent.TileType<Voidstone>();
-                                    tile.WallType = (ushort)ModContent.WallType<VoidstoneWallUnsafe>();
+                                    tile.WallType = (ushort)ModContent.WallType<UnsafeVoidstoneWall>();
                                 }
                                 //layer 3
                                 else if (Y > (rockLayer + y * 0.145))
@@ -289,19 +290,19 @@ namespace CalamityMod.World
                                     if (WorldGen.genRand.NextBool(2))
                                     {
                                         tile.TileType = (ushort)ModContent.TileType<AbyssGravel>();
-                                        tile.WallType = (ushort)ModContent.WallType<AbyssGravelWall>();
+                                        tile.WallType = (ushort)ModContent.WallType<UnsafeAbyssGravelWall>();
                                     }
                                     else
                                     {
                                         tile.TileType = (ushort)ModContent.TileType<SulphurousShale>();
-                                        tile.WallType = (ushort)ModContent.WallType<SulphurousShaleWall>();
+                                        tile.WallType = (ushort)ModContent.WallType<UnsafeSulphurousShaleWall>();
                                     }
                                 }
                                 //layer 1
                                 else if (Y <= rockLayer - 10)
                                 {
                                     tile.TileType = (ushort)ModContent.TileType<SulphurousShale>();
-                                    tile.WallType = (ushort)ModContent.WallType<SulphurousShaleWall>();
+                                    tile.WallType = (ushort)ModContent.WallType<UnsafeSulphurousShaleWall>();
                                 }
                                 //layer 2 (default block for the abyss)
                                 else

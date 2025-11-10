@@ -175,7 +175,7 @@ namespace CalamityMod.Projectiles.DraedonsArsenal
             {
                 Vector2 spearPos = GunTipPosition + Projectile.velocity.RotatedBy(MathHelper.PiOver2 * Projectile.direction) * 12 - Projectile.velocity * 8;
                 Vector2 shootVelocity = Projectile.velocity.SafeNormalize(Vector2.UnitX).RotatedByRandom(0f) * 6f;
-                Owner.Calamity().GeneralScreenShakePower = 3.5f;
+                Owner.SetScreenshake(3.5f);
                 OffsetLengthFromArm -= 16;
                 SoundStyle sound = new("CalamityMod/Sounds/Item/GunShotHeavy");
                 SoundEngine.PlaySound(sound with { Volume = 0.8f, Pitch = 0.8f }, Projectile.Center);
@@ -183,7 +183,7 @@ namespace CalamityMod.Projectiles.DraedonsArsenal
             }
             else
             {
-                Owner.Calamity().GeneralScreenShakePower = 1f;
+                Owner.SetScreenshake(1f);
                 OffsetLengthFromArm -= 7;
                 SoundStyle sound = new("CalamityMod/Sounds/Item/VulcanShot");
                 SoundEngine.PlaySound(sound with { Volume = 0.6f, Pitch = Main.rand.NextFloat(-0.1f, 0), MaxInstances = 1 }, Projectile.Center);

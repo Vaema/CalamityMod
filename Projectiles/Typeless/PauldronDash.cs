@@ -80,7 +80,9 @@ namespace CalamityMod.Projectiles.Typeless
             if (visuals)
             {
                 int dir = MathF.Sign(aimVel.X);
-                Vector2 safeVel = aimVel.SafeNormalize(Vector2.UnitX);
+                if (dir == 0)
+                    dir = Owner.direction;
+                Vector2 safeVel = aimVel.SafeNormalize(Vector2.UnitX * dir);
                 float sparkscale2 = 0.35f * Math.Max(fxFade, 0.5f);
                 for (int i = -1; i <= 1; i += 2)
                 {
@@ -100,7 +102,7 @@ namespace CalamityMod.Projectiles.Typeless
                 }
             }
 
-            if (Owner.dead || (!isAlive && fxFade < 0.1f) || Owner.velocity == Vector2.Zero)
+            if (Owner.dead || (!isAlive && fxFade < 0.1f) || (Owner.velocity == Vector2.Zero && Owner.dashDelay != -1))
                 Projectile.Kill();
         }
         public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
@@ -150,7 +152,7 @@ namespace CalamityMod.Projectiles.Typeless
                 }
             }
 
-            Owner.Calamity().GeneralScreenShakePower = 4f;
+            Owner.SetScreenshake(4f);
 
             Projectile.NewProjectile(Projectile.GetSource_FromThis(), target.Center, Vector2.Zero, ModContent.ProjectileType<PauldronExplosion>(), Projectile.damage / 5, 0, Projectile.owner);
         }

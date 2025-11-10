@@ -1,6 +1,7 @@
 ﻿using CalamityMod.NPCs;
 using CalamityMod.Systems.Collections;
 using Terraria;
+using Terraria.Localization;
 using Terraria.ModLoader;
 
 namespace CalamityMod.Buffs.StatDebuffs
