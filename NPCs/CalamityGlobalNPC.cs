@@ -5182,8 +5182,6 @@ namespace CalamityMod.NPCs
             Player player = Main.player[projectile.owner];
             CalamityPlayer modPlayer = player.Calamity();
 
-            MakeTownNPCsTakeMoreDamage(npc, projectile, Mod, ref modifiers);
-
             if (IsArmored()) //Hide combat text so we can draw our own for armored NPCs
             {
                 modifiers.HideCombatText();
