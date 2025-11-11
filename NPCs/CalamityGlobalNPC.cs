@@ -5088,6 +5088,14 @@ namespace CalamityMod.NPCs
                         break;
                 }
             }
+
+            // GFB Brain and its Creepers can inflict literally any buff in the game
+            // Yes this includes pets, light pets, mounts, whip tags, endgame debuffs, anything!
+            if ((npc.type == NPCID.BrainofCthulhu || npc.type == NPCID.Creeper) && Main.zenithWorld)
+            {
+                int buffType = Main.rand.Next(BuffLoader.BuffCount);
+                target.AddBuff(buffType, Main.rand.Next(300, 601));
+            }
         }
         #endregion
 
