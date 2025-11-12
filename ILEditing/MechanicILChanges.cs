@@ -1086,18 +1086,6 @@ namespace CalamityMod.ILEditing
         #region Lava Blocking
         private void BlockLavaDrawing(ILContext il)
         {
-            if (ModLoader.HasMod("LiquidSlopesPatch"))
-            {
-                BlockLavaDrawing_LiquidSlopesPatch(il);
-            }
-            else
-            {
-                BlockLavaDrawing_Vanilla(il);
-            }
-        }
-
-        private void BlockLavaDrawing_Vanilla(ILContext il)
-        {
             //This edit to DrawNormalLiquids makes lavas in normal and white lighting draw with an alpha and with new textures
             //If the parameter for the waterstyle is more than the max waterstyles then its subtracted by the max water style count and thats the lava style ID
             ILCursor cursor = new ILCursor(il);
@@ -1147,62 +1135,6 @@ namespace CalamityMod.ILEditing
                     : initialTexture
             );
         }
-
-        private void BlockLavaDrawing_LiquidSlopesPatch(ILContext il)
-        {
-            Assembly lspAsm = ModLoader.GetMod("LiquidSlopesPatch").Code;
-            Type liquidDrawCache = lspAsm.GetType("LiquidSlopesPatch.Common.RewrittenLiquidRenderer").GetNestedType("LiquidDrawCache");
-
-            //This edit to DrawNormalLiquids makes lavas in normal and white lighting draw with an alpha and with new textures
-            //If the parameter for the waterstyle is more than the max waterstyles then its subtracted by the max water style count and thats the lava style ID
-            ILCursor cursor = new ILCursor(il);
-
-            //Continue if statement, basically
-            //if the liquid being drawn is lava and the water style is greater than the max water styles or if the liquid is water and less than the max water styles then the draw code is ran
-            //otherwise the loop/s are continued for the next liquid
-            if (!cursor.TryGotoNext(MoveType.After, i => i.MatchLdfld(liquidDrawCache, "IsVisible")))
-            {
-                LogFailure("Liquid Renderer Drawing", "Could not locate the IsVisible boolean check");
-                return;
-            }
-            cursor.EmitLdarg3();
-            cursor.EmitLdloc2(); //Initiated Liquid Draw Cache (needed for the Type parameter)
-            cursor.EmitLdfld(liquidDrawCache.GetField("Type"));
-            cursor.EmitDelegate<Func<bool, int, int, bool>>((IsVisible, style, type) => IsVisible && ((type == 1 && style >= LavaRenderingSystem.Instance.WaterStyleMaxCount + 1) || (type != 1 && style <= LavaRenderingSystem.Instance.WaterStyleMaxCount)));
-
-            //Lava alpha color, if the liquid drawn is lava, multiply num by the water alpha
-            if (!cursor.TryGotoNext(MoveType.Before, i => i.MatchLdloc(2), i => i.MatchLdfld(liquidDrawCache.GetField("Type")), i => i.MatchStloc(8)))
-            {
-                LogFailure("Liquid Renderer Drawing", "Could not locate creation of the local variable num2 (the liquid type holder variable)");
-                return;
-            }
-            cursor.EmitLdloc(8);
-            cursor.EmitLdloca(7);
-            cursor.EmitLdarg(4);
-            cursor.EmitDelegate((int num2, ref float num, float globalAlpha) =>
-            {
-                if (num2 == LiquidID.Lava)
-                {
-                    num *= globalAlpha;
-                }
-            });
-
-            //Conditionally replace the liquid texture whether the liquid is lava or water
-            if (!cursor.TryGotoNext(MoveType.After, i => i.MatchCallvirt(typeof(Asset<Texture2D>).GetMethod("get_Value", BindingFlags.Public | BindingFlags.Instance))))
-            {
-                LogFailure("Liquid Renderer Drawing", "Could not locate the Texture2D array of liquids");
-                return;
-            }
-            cursor.EmitLdarg3();
-            cursor.EmitLdloc2(); //Initiated Liquid Draw Cache (needed for the Type parameter)
-            cursor.EmitLdfld(liquidDrawCache.GetField("Type"));
-            cursor.EmitDelegate<Func<Texture2D, int, int, Texture2D>>((initialTexture, style, type) =>
-                (style >= LavaRenderingSystem.Instance.WaterStyleMaxCount + 1 && type == LiquidID.Lava)
-                    ? LavaRenderingSystem.Textures.liquid[style - LavaRenderingSystem.Instance.WaterStyleMaxCount - 1].Value
-                    : initialTexture
-            );
-        }
-
         private void BlockLavaDrawingForSlopes(On_TileDrawing.orig_DrawTile_LiquidBehindTile orig, TileDrawing self, bool solidLayer, bool inFrontOfPlayers, int waterStyleOverride, Vector2 screenPosition, Vector2 screenOffset, int tileX, int tileY, Tile tileCache)
         {
             if (tileCache.LiquidType == LiquidID.Lava)
@@ -1457,18 +1389,6 @@ namespace CalamityMod.ILEditing
 
         private static void LiquidDrawColors(ILContext il)
         {
-            if (ModLoader.HasMod("LiquidSlopesPatch"))
-            {
-                LiquidDrawColors_LiquidSlopesPatch(il);
-            }
-            else
-            {
-                LiquidDrawColors_Vanilla(il);
-            }
-        }
-
-        private static void LiquidDrawColors_Vanilla(ILContext il)
-        {
             ILCursor cursor = new ILCursor(il);
             if (!cursor.TryGotoNext(MoveType.Before, c => c.MatchLdarg2(), c => c.MatchLdloc(9), c => c.MatchLdloc(10), c => c.MatchCall<Main>("DrawTileInWater")))
             {
@@ -1480,37 +1400,6 @@ namespace CalamityMod.ILEditing
             cursor.Emit(OpCodes.Ldloc, 10);
             cursor.Emit(OpCodes.Ldloc_2);
             cursor.Emit(OpCodes.Ldfld, typeof(LiquidRenderer).GetNestedType("LiquidDrawCache", BindingFlags.Public).GetRuntimeField("Type"));
-            cursor.Emit(OpCodes.Ldloca, 11);
-
-            cursor.EmitDelegate((int x, int y, int liquidType, ref VertexColors initialColor) =>
-            {
-                if (liquidType == LiquidID.Water)
-                {
-                    CalamityWaterLoader.DrawColorSetup(x, y, Main.waterStyle, ref initialColor);
-                }
-                else if (liquidType == LiquidID.Lava && ExternalMods.biomeLava == null)
-                {
-                    LavaStylesLoader.DrawColorSetup(x, y, LavaRenderingSystem.LavaStyle, ref initialColor);
-                }
-            });
-        }
-
-        private static void LiquidDrawColors_LiquidSlopesPatch(ILContext il)
-        {
-            Assembly lspAsm = ModLoader.GetMod("LiquidSlopesPatch").Code;
-            Type liquidDrawCache = lspAsm.GetType("LiquidSlopesPatch.Common.RewrittenLiquidRenderer").GetNestedType("LiquidDrawCache");
-
-            ILCursor cursor = new ILCursor(il);
-            if (!cursor.TryGotoNext(MoveType.Before, c => c.MatchLdarg2(), c => c.MatchLdloc(out _), c => c.MatchLdloc(out _), c => c.MatchCall<Main>("DrawTileInWater")))
-            {
-                LogFailure("Liquid Draw Colors (LSP)", "Could not locate the liquid vertex colors for drawing");
-                return;
-            }
-
-            cursor.Emit(OpCodes.Ldloc, 9);
-            cursor.Emit(OpCodes.Ldloc, 10);
-            cursor.Emit(OpCodes.Ldloc_2);
-            cursor.Emit(OpCodes.Ldfld, liquidDrawCache.GetField("Type"));
             cursor.Emit(OpCodes.Ldloca, 11);
 
             cursor.EmitDelegate((int x, int y, int liquidType, ref VertexColors initialColor) =>
