@@ -252,17 +252,17 @@ namespace CalamityMod.Projectiles.Boss
             }
 
             // Draw the crack.
-            Asset<Effect> crackShader = CalamityShaders.DoGRealityCrackShader;
+            Effect crackShader = CalamityShaders.DoGRealityCrackShader.Value;
             float crackOpcity = (AIState == 1f) ? Projectile.Opacity * 0.1f : 0.1f;
             Color darkerPixelColor = FakeRift ? Color.White : DoGSky.DoGTwlight;
 
-            crackShader.Value.Parameters["opacityCutoffValue"].SetValue(CrackExposure);
-            crackShader.Value.Parameters["fadeoutPower"].SetValue(1f);
-            crackShader.Value.Parameters["overallOpacity"].SetValue(crackOpcity * brightnessMultiplier);
-            crackShader.Value.Parameters["minBrightnessValue"].SetValue(0.75f);
-            crackShader.Value.Parameters["darkerPixelColor"].SetValue(darkerPixelColor.ToVector3());
-            crackShader.Value.Parameters["brighterPixelColor"].SetValue(Color.White.ToVector3());
-            Main.spriteBatch.SafeBegin(SpriteSortMode.Immediate, BatchSetting.Additive, crackShader.Value, Main.GameViewMatrix.TransformationMatrix, () =>
+            crackShader.Parameters["opacityCutoffValue"].SetValue(CrackExposure);
+            crackShader.Parameters["fadeoutPower"].SetValue(1f);
+            crackShader.Parameters["overallOpacity"].SetValue(crackOpcity * brightnessMultiplier);
+            crackShader.Parameters["minBrightnessValue"].SetValue(0.75f);
+            crackShader.Parameters["darkerPixelColor"].SetValue(darkerPixelColor.ToVector3());
+            crackShader.Parameters["brighterPixelColor"].SetValue(Color.White.ToVector3());
+            Main.spriteBatch.SafeBegin(SpriteSortMode.Immediate, BatchSetting.Additive, crackShader, Main.GameViewMatrix.TransformationMatrix, () =>
             {
                 int crackCount = FakeRift ? 1 : 3;
                 for (int i = 0; i < crackCount; i++)
