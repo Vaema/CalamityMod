@@ -10,8 +10,6 @@ namespace CalamityMod.Items.Potions.Alcohol
     {
         public new string LocalizationCategory => "Items.Potions";
 
-        public static float DamageBoost = 0.5f;
-
         public override void SetStaticDefaults()
         {
             Item.ResearchUnlockCount = 20;
