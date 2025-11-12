@@ -5,9 +5,9 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.Tiles.Rubblemaker.SunkenSea
 {
-    public class DriftwoodMastEcho : DriftwoodMast
+    public class LargeDriftwoodWreckageEcho : LargeDriftwoodWreckage
     {
-        public override string Texture => "CalamityMod/Tiles/SunkenSea/Ambient/DriftwoodMast";
+        public override string Texture => "CalamityMod/Tiles/SunkenSea/Ambient/LargeDriftwoodWreckage";
         public override void SetStaticDefaults()
         {
             base.SetStaticDefaults();

@@ -14,19 +14,16 @@ namespace CalamityMod.Tiles.SunkenSea.Ambient
         {
             Main.tileFrameImportant[Type] = true;
             Main.tileSolid[Type] = false;
-            TileObjectData.newTile.CopyFrom(TileObjectData.Style3x4);
+            TileObjectData.newTile.CopyFrom(TileObjectData.Style3x2);
 
+            TileObjectData.newTile.Width = 3;
+            TileObjectData.newTile.Height = 4;
+            TileObjectData.newTile.Origin = new(0, 3);
             TileObjectData.newTile.CoordinateHeights = new[] { 16, 16, 16, 16 };
             TileObjectData.newTile.CoordinateWidth = 16;
             TileObjectData.newTile.CoordinatePadding = 2;        
 
             TileObjectData.newTile.AnchorBottom = new AnchorData(AnchorType.SolidTile, 3, 0);
-            TileObjectData.newTile.Origin = new Point16(1, 3);  
-
-            TileObjectData.newTile.StyleHorizontal = true;
-            TileObjectData.newTile.StyleWrapLimit = 6;
-            TileObjectData.newTile.RandomStyleRange = 6;
-
             TileObjectData.newTile.DrawYOffset = 2;
 
             TileObjectData.addTile(Type);

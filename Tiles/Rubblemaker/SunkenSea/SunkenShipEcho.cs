@@ -5,14 +5,14 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.Tiles.Rubblemaker.SunkenSea
 {
-    public class DriftwoodMastEcho : DriftwoodMast
+    public class SunkenShipEcho : SunkenShip
     {
-        public override string Texture => "CalamityMod/Tiles/SunkenSea/Ambient/DriftwoodMast";
+        public override string Texture => "CalamityMod/Tiles/SunkenSea/Ambient/SunkenShip";
         public override void SetStaticDefaults()
         {
             base.SetStaticDefaults();
             RegisterItemDrop(ModContent.ItemType<Driftwood>(), Type);
-            FlexibleTileWand.RubblePlacementLarge.AddVariations(ModContent.ItemType<Driftwood>(), Type, 0, 1, 2, 3, 4, 5);
+            FlexibleTileWand.RubblePlacementLarge.AddVariations(ModContent.ItemType<Driftwood>(), Type, 0);
         }
     }
 }
