@@ -67,16 +67,16 @@ namespace CalamityMod.Graphics.Metaballs
             if (FixedToScreen)
                 layerScrollOffset = Vector2.Zero;
 
-            metaballShader.Parameters["layerSize"]?.SetValue(DoGVisualsManager.DistortionForegroundContentsTarget.Target.Size());
-            metaballShader.Parameters["screenSize"]?.SetValue(screenSize);
-            metaballShader.Parameters["layerOffset"]?.SetValue(layerScrollOffset);
-            metaballShader.Parameters["edgeColor"]?.SetValue(EdgeColor.ToVector4());
-            metaballShader.Parameters["singleFrameScreenOffset"]?.SetValue((Main.screenLastPosition - Main.screenPosition) / screenSize);
+            metaballShader.Value.Parameters["layerSize"]?.SetValue(DoGVisualsManager.DistortionForegroundContentsTarget.Target.Size());
+            metaballShader.Value.Parameters["screenSize"]?.SetValue(screenSize);
+            metaballShader.Value.Parameters["layerOffset"]?.SetValue(layerScrollOffset);
+            metaballShader.Value.Parameters["edgeColor"]?.SetValue(EdgeColor.ToVector4());
+            metaballShader.Value.Parameters["singleFrameScreenOffset"]?.SetValue((Main.screenLastPosition - Main.screenPosition) / screenSize);
 
             gd.Textures[1] = DoGVisualsManager.DistortionForegroundContentsTarget;
             gd.SamplerStates[1] = SamplerState.LinearWrap;
 
-            metaballShader.CurrentTechnique.Passes[0].Apply();
+            metaballShader.Value.CurrentTechnique.Passes[0].Apply();
         }
 
         public override void DrawInstances()

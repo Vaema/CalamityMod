@@ -290,7 +290,7 @@ namespace CalamityMod.Skies
 
         private void DrawDistortionWinds(SpriteBatch spriteBatch)
         {
-            Effect shader = CalamityShaders.DoGDistortionWindsShader;
+            Effect shader = CalamityShaders.DoGDistortionWindsShader.Value;
             Texture2D windsTexture = ModContent.Request<Texture2D>("CalamityMod/ExtraTextures/GreyscaleGradients/Neurons2").Value;
             Texture2D highlightsTexture = ModContent.Request<Texture2D>("CalamityMod/ExtraTextures/GreyscaleGradients/SharpNoise").Value;
             Texture2D distortionTexture = ModContent.Request<Texture2D>("CalamityMod/ExtraTextures/GreyscaleGradients/MeltyNoise").Value;
@@ -329,7 +329,7 @@ namespace CalamityMod.Skies
 
         private void DrawRollingBackgroundFog(SpriteBatch spriteBatch)
         {
-            Effect shader = CalamityShaders.DoGBackgroundFogShader;
+            Effect shader = CalamityShaders.DoGBackgroundFogShader.Value;
             Texture2D cloudsTexture = ModContent.Request<Texture2D>("CalamityMod/ExtraTextures/GreyscaleGradients/RealisticClouds").Value;
             Texture2D erosionTexture = ModContent.Request<Texture2D>("CalamityMod/ExtraTextures/GreyscaleGradients/HarshNoise").Value;
 
@@ -365,7 +365,7 @@ namespace CalamityMod.Skies
             if (RealityCracks == null || RealityCracks.Count == 0)
                 return;
 
-            Effect shader = CalamityShaders.DoGRiftAuraShader;
+            Effect shader = CalamityShaders.DoGRiftAuraShader.Value;
             Texture2D riftAuraTexture = ModContent.Request<Texture2D>("CalamityMod/ExtraTextures/GreyscaleGradients/Smudges").Value;
             Texture2D distortionTexture = ModContent.Request<Texture2D>("CalamityMod/ExtraTextures/GreyscaleGradients/Swirls").Value;
 
@@ -399,7 +399,7 @@ namespace CalamityMod.Skies
             if (RealityCracks == null || RealityCracks.Count == 0)
                 return;
 
-            Effect shader = CalamityShaders.DoGRealityCrackShader;
+            Effect shader = CalamityShaders.DoGRealityCrackShader.Value;
             Texture2D cracksTexture = ModContent.Request<Texture2D>("CalamityMod/ExtraTextures/CrackedGlass_Glowing").Value;
 
             Vector2 screenSize = new(Main.screenWidth, Main.screenHeight);
@@ -432,15 +432,15 @@ namespace CalamityMod.Skies
 
             Vector2 screenSize = new(Main.screenWidth, Main.screenHeight);
 
-            metaballShader.Parameters["layerSize"]?.SetValue(distortionRiftContents.Size());
-            metaballShader.Parameters["screenSize"]?.SetValue(screenSize);
-            metaballShader.Parameters["layerOffset"]?.SetValue(Vector2.Zero);
-            metaballShader.Parameters["edgeColor"]?.SetValue(Color.Lerp(Color.Lerp(DoGSkyColor, Color.White, 0.6f), Color.Black, 0.15f).ToVector4());
+            metaballShader.Value.Parameters["layerSize"]?.SetValue(distortionRiftContents.Size());
+            metaballShader.Value.Parameters["screenSize"]?.SetValue(screenSize);
+            metaballShader.Value.Parameters["layerOffset"]?.SetValue(Vector2.Zero);
+            metaballShader.Value.Parameters["edgeColor"]?.SetValue(Color.Lerp(Color.Lerp(DoGSkyColor, Color.White, 0.6f), Color.Black, 0.15f).ToVector4());
 
             Main.instance.GraphicsDevice.Textures[1] = distortionRiftContents;
             Main.instance.GraphicsDevice.SamplerStates[1] = SamplerState.LinearWrap;
 
-            metaballShader.CurrentTechnique.Passes[0].Apply();
+            metaballShader.Value.CurrentTechnique.Passes[0].Apply();
             spriteBatch.Draw(distortionRift, new Rectangle(0, 0, Main.screenWidth, Main.screenHeight), Color.White);
         }
 
