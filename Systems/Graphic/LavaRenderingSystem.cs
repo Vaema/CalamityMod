@@ -100,7 +100,7 @@ namespace CalamityMod.Systems
             Stopwatch stopwatch = new Stopwatch();
             stopwatch.Start();
             Vector2 drawOffset = (Vector2)(Main.drawToScreen ? Vector2.Zero : new Vector2((float)Main.offScreenRange, (float)Main.offScreenRange)) - Main.screenPosition;
-            if (bg)
+            if (bg && !LiquidEdgeRenderer.Active)
             {
                 DrawLiquidBehindTiles(lavaStyle);
             }
