@@ -4829,8 +4829,6 @@ namespace CalamityMod.Projectiles
 
         public override bool PreDraw(Projectile projectile, ref Color lightColor)
         {
-            // This is used so that projectiles with specific PreDraws can still have Odd Mushroom clone drawing.
-            // If Odd Mushroom clone drawing is done manually due to using a different texture, just return false instead of setting this.
             bool shouldDrawBool = true;
 
             #region Vanilla Summons Drawing Changes
