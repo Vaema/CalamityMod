@@ -105,7 +105,7 @@ namespace CalamityMod.Particles
                             particleAutoDrawingOverrides.Add(particleType, drawer);
                         else
                             throw new Exception($"The Particle of name \"{drawer.TargetParticleTypeName}\" used in {drawer.GetType().Name} could not be found! " +
-                                $"Please ensure the Paricle's internal name is spelt correctly and is prefixed by its home mod's internal name.");
+                                $"Please ensure the Particle's internal name is spelt correctly and is prefixed by its home mod's internal name.");
                     }
                 }
             }
@@ -372,18 +372,47 @@ namespace CalamityMod.Particles
 
         private static void DrawParticleInstance(Particle particle)
         {
-            if (particle.UseCustomDraw)
+            int drawIterations = Main.LocalPlayer.Calamity().trippy ? 4 : 1;
+            for (int i = 0; i < drawIterations; i++)
             {
-                particle.CustomDraw(Main.spriteBatch);
-            }
-            else
-            {
-                Color lightColor = particle.Color;
-                if (particle.AffectedByLight)
-                    lightColor = particle.Color.MultiplyRGB(Lighting.GetColor((particle.Position / 16).ToPoint()));
+                // If you have shrooms, manually spoof the position of the particle for each clone location
+                Vector2 positionSpoof = particle.Position;
+                Vector2 positionDiff = positionSpoof - Main.LocalPlayer.Center;
+                switch (i)
+                {
+                    case 0:
+                        break;
+                    case 1:
+                        particle.Position = Main.LocalPlayer.Center - positionDiff;
+                        break;
+                    case 2:
+                        particle.Position = Main.LocalPlayer.Center - Vector2.UnitY * positionDiff.Y + Vector2.UnitX * positionDiff.X;
+                        break;
+                    case 3:
+                        particle.Position = Main.LocalPlayer.Center - Vector2.UnitX * positionDiff.X + Vector2.UnitY * positionDiff.Y;
+                        break;
+                }
 
-                Rectangle frame = particleTexturesByIDs[particle.Type].Frame(1, particle.FrameVariants, 0, particle.Variant);
-                Main.spriteBatch.Draw(particleTexturesByIDs[particle.Type], particle.Position - Main.screenPosition, frame, lightColor, particle.Rotation, frame.Size() * 0.5f, particle.Scale, SpriteEffects.None, 0f);
+                if (Main.LocalPlayer.Calamity().trippy)
+                    particle.Color = Main.DiscoColor;
+
+                // The actual drawing step
+                if (particle.UseCustomDraw)
+                {
+                    particle.CustomDraw(Main.spriteBatch);
+                }
+                else
+                {
+                    Color lightColor = particle.Color;
+                    if (particle.AffectedByLight)
+                        lightColor = particle.Color.MultiplyRGB(Lighting.GetColor((particle.Position / 16).ToPoint()));
+
+                    Rectangle frame = particleTexturesByIDs[particle.Type].Frame(1, particle.FrameVariants, 0, particle.Variant);
+                    Main.spriteBatch.Draw(particleTexturesByIDs[particle.Type], particle.Position - Main.screenPosition, frame, lightColor, particle.Rotation, frame.Size() * 0.5f, particle.Scale, SpriteEffects.None, 0f);
+                }
+
+                // Since the switch case directly modifies the particle position, this resets it to the proper location
+                particle.Position = positionSpoof;
             }
         }
 
