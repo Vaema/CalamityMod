@@ -338,9 +338,6 @@ namespace CalamityMod.Projectiles
 
             if (source is EntitySource_OnHit e)
             {
-                // Nerf Orichalcum armor's set bonus petal damage by 11%
-                if (e.Context == "SetBonus_Orichalcum")
-                    projectile.damage = (int)(projectile.damage * 0.889f);
                 // Nerf Spectre armor's set bonus soul damage by 50%
                 if (e.Context == "SetBonus_GhostHurt")
                     projectile.damage /= 2;
