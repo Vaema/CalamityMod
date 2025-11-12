@@ -215,7 +215,7 @@ namespace CalamityMod.Systems.Graphic
 
         private void DrawDistortionClouds_Background()
         {
-            Effect rollingCloudsShader = CalamityShaders.DoGBackgroundFogShader;
+            Asset<Effect> rollingCloudsShader = CalamityShaders.DoGBackgroundFogShader;
             Texture2D cloudsTexture = ModContent.Request<Texture2D>("CalamityMod/ExtraTextures/GreyscaleGradients/RealisticClouds").Value;
             Texture2D distortionTexture = ModContent.Request<Texture2D>("CalamityMod/ExtraTextures/GreyscaleGradients/Neurons2").Value;
             Texture2D erosionTexture = ModContent.Request<Texture2D>("CalamityMod/ExtraTextures/GreyscaleGradients/HarshNoise").Value;
@@ -224,20 +224,20 @@ namespace CalamityMod.Systems.Graphic
             Color darkPixelColor = Color.Lerp(Color.Lerp(Color.Black, Color.DarkGray, 0.3f), Color.Black, BackgroundLightningFill * 0.8f);
             Color brightPixelColor = Color.Lerp(Color.Lerp(Color.Black, DoGSky.DoGSkyColor, 0.6f), Color.Black, BackgroundLightningFill * 0.8f);
 
-            rollingCloudsShader.Parameters["time"].SetValue(Main.GlobalTimeWrappedHourly);
-            rollingCloudsShader.Parameters["overallOpacity"].SetValue(1f);
-            rollingCloudsShader.Parameters["distortionStrength"].SetValue(0.24f);
-            rollingCloudsShader.Parameters["mainNoiseTextureScale"].SetValue(2f);
-            rollingCloudsShader.Parameters["distortionTextureScale"].SetValue(0.8f);
-            rollingCloudsShader.Parameters["erosionTextureScale"].SetValue(0.26f);
-            rollingCloudsShader.Parameters["erosionMin"].SetValue(0.06f);
-            rollingCloudsShader.Parameters["gradientPrecision"].SetValue(20f);
+            rollingCloudsShader.Value.Parameters["time"].SetValue(Main.GlobalTimeWrappedHourly);
+            rollingCloudsShader.Value.Parameters["overallOpacity"].SetValue(1f);
+            rollingCloudsShader.Value.Parameters["distortionStrength"].SetValue(0.24f);
+            rollingCloudsShader.Value.Parameters["mainNoiseTextureScale"].SetValue(2f);
+            rollingCloudsShader.Value.Parameters["distortionTextureScale"].SetValue(0.8f);
+            rollingCloudsShader.Value.Parameters["erosionTextureScale"].SetValue(0.26f);
+            rollingCloudsShader.Value.Parameters["erosionMin"].SetValue(0.06f);
+            rollingCloudsShader.Value.Parameters["gradientPrecision"].SetValue(20f);
 
-            rollingCloudsShader.Parameters["pixelationFactor"].SetValue(screenSize * 0.5f);
-            rollingCloudsShader.Parameters["worldOffset"].SetValue(Main.screenPosition / cloudsTexture.Size() * 0.001f);
+            rollingCloudsShader.Value.Parameters["pixelationFactor"].SetValue(screenSize * 0.5f);
+            rollingCloudsShader.Value.Parameters["worldOffset"].SetValue(Main.screenPosition / cloudsTexture.Size() * 0.001f);
 
-            rollingCloudsShader.Parameters["darkerPixelColor"].SetValue(darkPixelColor.ToVector3());
-            rollingCloudsShader.Parameters["brighterPixelColor"].SetValue(brightPixelColor.ToVector3());
+            rollingCloudsShader.Value.Parameters["darkerPixelColor"].SetValue(darkPixelColor.ToVector3());
+            rollingCloudsShader.Value.Parameters["brighterPixelColor"].SetValue(brightPixelColor.ToVector3());
 
             Main.instance.GraphicsDevice.Textures[1] = distortionTexture;
             Main.instance.GraphicsDevice.SamplerStates[1] = SamplerState.LinearWrap;
@@ -245,7 +245,7 @@ namespace CalamityMod.Systems.Graphic
             Main.instance.GraphicsDevice.Textures[2] = erosionTexture;
             Main.instance.GraphicsDevice.SamplerStates[2] = SamplerState.LinearWrap;
 
-            rollingCloudsShader.CurrentTechnique.Passes[0].Apply();
+            rollingCloudsShader.Value.CurrentTechnique.Passes[0].Apply();
             Main.spriteBatch.Draw(cloudsTexture, new Rectangle(0, 0, Main.screenWidth, Main.screenHeight), Color.White);
         }
         #endregion  
@@ -272,7 +272,7 @@ namespace CalamityMod.Systems.Graphic
 
         private void DrawDistortionWinds_Foreground()
         {
-            Effect windsShader = CalamityShaders.DoGDistortionWindsShader;
+            Asset<Effect> windsShader = CalamityShaders.DoGDistortionWindsShader;
 
             Vector2 screenSize = new(Main.screenWidth, Main.screenHeight);
             Texture2D windsTexture = ModContent.Request<Texture2D>("CalamityMod/ExtraTextures/GreyscaleGradients/Neurons2").Value;
@@ -280,21 +280,21 @@ namespace CalamityMod.Systems.Graphic
             Texture2D distortionTexture = ModContent.Request<Texture2D>("CalamityMod/ExtraTextures/GreyscaleGradients/MeltyNoise").Value;
             Texture2D erosionTexture = ModContent.Request<Texture2D>("CalamityMod/ExtraTextures/GreyscaleGradients/Pebbles").Value;
 
-            windsShader.Parameters["time"].SetValue(Main.GlobalTimeWrappedHourly * 1.075f);
-            windsShader.Parameters["overallOpacity"].SetValue(0.8f);
-            windsShader.Parameters["distortionStrength"].SetValue(0.3f);
-            windsShader.Parameters["mainNoiseTextureScale"].SetValue(1.6f);
-            windsShader.Parameters["distortionTextureScale"].SetValue(1.76f);
-            windsShader.Parameters["erosionTextureScale"].SetValue(2f);
-            windsShader.Parameters["erosionMin"].SetValue(0.5f);
-            windsShader.Parameters["gradientPrecision"].SetValue(20f);
+            windsShader.Value.Parameters["time"].SetValue(Main.GlobalTimeWrappedHourly * 1.075f);
+            windsShader.Value.Parameters["overallOpacity"].SetValue(0.8f);
+            windsShader.Value.Parameters["distortionStrength"].SetValue(0.3f);
+            windsShader.Value.Parameters["mainNoiseTextureScale"].SetValue(1.6f);
+            windsShader.Value.Parameters["distortionTextureScale"].SetValue(1.76f);
+            windsShader.Value.Parameters["erosionTextureScale"].SetValue(2f);
+            windsShader.Value.Parameters["erosionMin"].SetValue(0.5f);
+            windsShader.Value.Parameters["gradientPrecision"].SetValue(20f);
 
-            windsShader.Parameters["pixelationFactor"].SetValue(screenSize * 0.5f);
-            windsShader.Parameters["worldOffset"].SetValue(Main.screenPosition / windsTexture.Size() * 0.025f);
+            windsShader.Value.Parameters["pixelationFactor"].SetValue(screenSize * 0.5f);
+            windsShader.Value.Parameters["worldOffset"].SetValue(Main.screenPosition / windsTexture.Size() * 0.025f);
 
-            windsShader.Parameters["darkerPixelColor"].SetValue(Color.Lerp(Color.DarkGray, Color.Black, 0.64f).ToVector3());
-            windsShader.Parameters["brighterPixelColor"].SetValue(Color.Lerp(Color.DarkGray, Color.Black, 0.32f).ToVector3());
-            windsShader.Parameters["highlightsColor"].SetValue(Color.Fuchsia.ToVector3());
+            windsShader.Value.Parameters["darkerPixelColor"].SetValue(Color.Lerp(Color.DarkGray, Color.Black, 0.64f).ToVector3());
+            windsShader.Value.Parameters["brighterPixelColor"].SetValue(Color.Lerp(Color.DarkGray, Color.Black, 0.32f).ToVector3());
+            windsShader.Value.Parameters["highlightsColor"].SetValue(Color.Fuchsia.ToVector3());
 
             Main.instance.GraphicsDevice.Textures[1] = highlightsTexture;
             Main.instance.GraphicsDevice.SamplerStates[1] = SamplerState.PointWrap;
@@ -306,44 +306,44 @@ namespace CalamityMod.Systems.Graphic
             Main.instance.GraphicsDevice.SamplerStates[3] = SamplerState.LinearWrap;
 
             // Fuchsia highlights.
-            windsShader.CurrentTechnique.Passes[0].Apply();
+            windsShader.Value.CurrentTechnique.Passes[0].Apply();
             Main.spriteBatch.Draw(windsTexture, new Rectangle(0, 0, Main.screenWidth, Main.screenHeight), Color.White);
 
-            windsShader.Parameters["time"].SetValue(Main.GlobalTimeWrappedHourly * 0.8f);
-            windsShader.Parameters["overallOpacity"].SetValue(0.7f);
-            windsShader.Parameters["distortionStrength"].SetValue(0.6f);
-            windsShader.Parameters["mainNoiseTextureScale"].SetValue(1.24f);
-            windsShader.Parameters["distortionTextureScale"].SetValue(0.46f);
-            windsShader.Parameters["erosionTextureScale"].SetValue(3f);
-            windsShader.Parameters["erosionMin"].SetValue(0.75f);
-            windsShader.Parameters["highlightsColor"].SetValue(new Color(0, 221, 250).ToVector3());
+            windsShader.Value.Parameters["time"].SetValue(Main.GlobalTimeWrappedHourly * 0.8f);
+            windsShader.Value.Parameters["overallOpacity"].SetValue(0.7f);
+            windsShader.Value.Parameters["distortionStrength"].SetValue(0.6f);
+            windsShader.Value.Parameters["mainNoiseTextureScale"].SetValue(1.24f);
+            windsShader.Value.Parameters["distortionTextureScale"].SetValue(0.46f);
+            windsShader.Value.Parameters["erosionTextureScale"].SetValue(3f);
+            windsShader.Value.Parameters["erosionMin"].SetValue(0.75f);
+            windsShader.Value.Parameters["highlightsColor"].SetValue(new Color(0, 221, 250).ToVector3());
 
             // Cyan highlights.
-            windsShader.CurrentTechnique.Passes[0].Apply();
+            windsShader.Value.CurrentTechnique.Passes[0].Apply();
             Main.spriteBatch.Draw(windsTexture, new Rectangle(0, 0, Main.screenWidth, Main.screenHeight), Color.White);
         }
 
         private void DrawDistortionClouds_Foreground()
         {
-            Effect rollingCloudsShader = CalamityShaders.DoGBackgroundFogShader;
+            Asset<Effect> rollingCloudsShader = CalamityShaders.DoGBackgroundFogShader;
             Texture2D cloudsTexture = ModContent.Request<Texture2D>("CalamityMod/ExtraTextures/GreyscaleGradients/RealisticClouds").Value;
             Texture2D erosionTexture = ModContent.Request<Texture2D>("CalamityMod/ExtraTextures/GreyscaleGradients/HarshNoise").Value;
             Vector2 screenSize = new(Main.screenWidth, Main.screenHeight);
 
-            rollingCloudsShader.Parameters["time"].SetValue(Main.GlobalTimeWrappedHourly * 2f);
-            rollingCloudsShader.Parameters["overallOpacity"].SetValue(1f);
-            rollingCloudsShader.Parameters["distortionStrength"].SetValue(0.12f);
-            rollingCloudsShader.Parameters["mainNoiseTextureScale"].SetValue(1f);
-            rollingCloudsShader.Parameters["distortionTextureScale"].SetValue(0.8f);
-            rollingCloudsShader.Parameters["erosionTextureScale"].SetValue(0.26f);
-            rollingCloudsShader.Parameters["erosionMin"].SetValue(0.06f);
-            rollingCloudsShader.Parameters["gradientPrecision"].SetValue(20f);
+            rollingCloudsShader.Value.Parameters["time"].SetValue(Main.GlobalTimeWrappedHourly * 2f);
+            rollingCloudsShader.Value.Parameters["overallOpacity"].SetValue(1f);
+            rollingCloudsShader.Value.Parameters["distortionStrength"].SetValue(0.12f);
+            rollingCloudsShader.Value.Parameters["mainNoiseTextureScale"].SetValue(1f);
+            rollingCloudsShader.Value.Parameters["distortionTextureScale"].SetValue(0.8f);
+            rollingCloudsShader.Value.Parameters["erosionTextureScale"].SetValue(0.26f);
+            rollingCloudsShader.Value.Parameters["erosionMin"].SetValue(0.06f);
+            rollingCloudsShader.Value.Parameters["gradientPrecision"].SetValue(20f);
 
-            rollingCloudsShader.Parameters["pixelationFactor"].SetValue(screenSize * 0.5f);
-            rollingCloudsShader.Parameters["worldOffset"].SetValue(Main.screenPosition / cloudsTexture.Size() * 0.025f);
+            rollingCloudsShader.Value.Parameters["pixelationFactor"].SetValue(screenSize * 0.5f);
+            rollingCloudsShader.Value.Parameters["worldOffset"].SetValue(Main.screenPosition / cloudsTexture.Size() * 0.025f);
 
-            rollingCloudsShader.Parameters["darkerPixelColor"].SetValue(Color.Lerp(Color.Black, new(0, 221, 250), 0.25f).ToVector3());
-            rollingCloudsShader.Parameters["brighterPixelColor"].SetValue(Color.Lerp(Color.Black, Color.Fuchsia, 0.25f).ToVector3());
+            rollingCloudsShader.Value.Parameters["darkerPixelColor"].SetValue(Color.Lerp(Color.Black, new(0, 221, 250), 0.25f).ToVector3());
+            rollingCloudsShader.Value.Parameters["brighterPixelColor"].SetValue(Color.Lerp(Color.Black, Color.Fuchsia, 0.25f).ToVector3());
 
             Main.instance.GraphicsDevice.Textures[1] = cloudsTexture;
             Main.instance.GraphicsDevice.SamplerStates[1] = SamplerState.LinearWrap;
@@ -351,7 +351,7 @@ namespace CalamityMod.Systems.Graphic
             Main.instance.GraphicsDevice.Textures[2] = erosionTexture;
             Main.instance.GraphicsDevice.SamplerStates[2] = SamplerState.LinearWrap;
 
-            rollingCloudsShader.CurrentTechnique.Passes[0].Apply();
+            rollingCloudsShader.Value.CurrentTechnique.Passes[0].Apply();
             Main.spriteBatch.Draw(cloudsTexture, new Rectangle(0, 0, Main.screenWidth, Main.screenHeight), Color.White);
         }
         #endregion
