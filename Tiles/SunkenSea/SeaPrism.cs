@@ -385,7 +385,7 @@ namespace CalamityMod.Tiles.SunkenSea
 
             Main.spriteBatch.End();
 
-            Effect shader = CalamityShaders.SeaPrismColorBlendingShader;
+            Effect shader = CalamityShaders.SeaPrismColorBlendingShader.Value;
             shader.Parameters["time"].SetValue(Main.GlobalTimeWrappedHourly);
             shader.Parameters["screenOffset"].SetValue(Main.screenPosition);
             shader.Parameters["offscreenOffset"].SetValue(offscreenPosition);
@@ -531,7 +531,7 @@ namespace CalamityMod.Tiles.SunkenSea
             Main.instance.GraphicsDevice.SamplerStates[2] = SamplerState.LinearClamp;
             Main.instance.GraphicsDevice.Textures[3] = null;
 
-            Effect shader = CalamityShaders.SeaPrismColorBlendingShader;
+            Effect shader = CalamityShaders.SeaPrismColorBlendingShader.Value;
             shader.Parameters["time"].SetValue(Main.GlobalTimeWrappedHourly);
             shader.Parameters["screenOffset"].SetValue(Main.screenPosition);
             shader.Parameters["offscreenOffset"].SetValue(offscreenPosition);

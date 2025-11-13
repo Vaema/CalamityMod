@@ -252,7 +252,7 @@ namespace CalamityMod.Effects
         #endregion
 
         #region Big E's Shaders
-        internal static Effect SeaPrismColorBlendingShader;
+        internal static Asset<Effect> SeaPrismColorBlendingShader;
         #endregion
 
         internal static Asset<Effect> SunkenSeaMenuLogoWater;
@@ -497,13 +497,12 @@ namespace CalamityMod.Effects
             RegisterMiscShader(DoGRiftAuraShader, "DoGRiftAuraPass", "DoGRiftAura");
             #endregion
 
-            SunkenSeaMenuLogoWater = LoadShader("UI/SunkenSeaMenuLogoWater");
             #region Loading Big E's Shaders
             SeaPrismColorBlendingShader = LoadShader("SeaPrismColorBlending");
             RegisterMiscShader(SeaPrismColorBlendingShader, "SeaPrismBlendingPass", "SeaPrismColorBlending");
             #endregion
 
-            SunkenSeaMenuLogoWater = LoadShaderAsset("UI/SunkenSeaMenuLogoWater");
+            SunkenSeaMenuLogoWater = LoadShader("UI/SunkenSeaMenuLogoWater");
         }
 
         // Shorthand to register a loaded shader in Terraria's graphics engine
