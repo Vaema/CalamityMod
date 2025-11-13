@@ -383,6 +383,7 @@ namespace CalamityMod.Tiles.SunkenSea
         {
             Vector2 offscreenPosition = Main.drawToScreen ? Vector2.Zero : new Vector2(Main.offScreenRange);
 
+            Main.tileBatch.End();
             Main.spriteBatch.End();
 
             Effect shader = CalamityShaders.SeaPrismColorBlendingShader.Value;
@@ -515,6 +516,7 @@ namespace CalamityMod.Tiles.SunkenSea
             Main.instance.GraphicsDevice.Textures[3] = null;
 
             Main.spriteBatch.Begin();
+            Main.tileBatch.Begin();
 
             orig(self, solidLayer, forRenderTargets, intoRenderTargets, waterStyleOverride);
         }
@@ -523,6 +525,7 @@ namespace CalamityMod.Tiles.SunkenSea
         {
             Vector2 offscreenPosition = Main.drawToScreen ? Vector2.Zero : new Vector2(Main.offScreenRange);
 
+            Main.tileBatch.End();
             Main.spriteBatch.End();
 
             Main.instance.GraphicsDevice.Textures[1] = SeaPrismWall.GlowMaskGreen.Texture;
@@ -583,6 +586,7 @@ namespace CalamityMod.Tiles.SunkenSea
             Main.instance.GraphicsDevice.Textures[3] = null;
 
             Main.spriteBatch.Begin();
+            Main.tileBatch.Begin();
 
             orig(self);
         }
