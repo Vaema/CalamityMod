@@ -10,7 +10,7 @@ namespace CalamityMod.Graphics
     /// </summary>
     public class RenderTargetManager : ModSystem
     {
-        internal static List<ManagedRenderTarget> ManagedTargets = [];
+        internal static List<ManagedRenderTarget> ManagedTargets { get; } = [];
 
         public delegate void RenderTargetUpdateDelegate();
 
@@ -41,9 +41,6 @@ namespace CalamityMod.Graphics
 
         internal static void DisposeOfTargets()
         {
-            if (ManagedTargets is null)
-                return;
-
             Main.QueueMainThreadAction(() =>
             {
                 foreach (ManagedRenderTarget target in ManagedTargets)
@@ -74,19 +71,17 @@ namespace CalamityMod.Graphics
         private void HandleTargetUpdateLoop(GameTime obj)
         {
             // Auto-disposal of targets that havent been used in a while, to stop them hogging GPU memory.
-            if (ManagedTargets != null)
+            foreach (ManagedRenderTarget target in ManagedTargets)
             {
-                foreach (ManagedRenderTarget target in ManagedTargets)
-                {
-                    if (target == null || target.IsDisposed || !target.ShouldAutoDispose)
-                        continue;
+                if (target == null || target.IsDisposed || !target.ShouldAutoDispose)
+                    continue;
 
-                    if (target.TimeSinceLastAccessed >= TimeBeforeAutoDispose)
-                        target.Dispose();
-                    else
-                        target.TimeSinceLastAccessed++;
-                }
+                if (target.TimeSinceLastAccessed >= TimeBeforeAutoDispose)
+                    target.Dispose();
+                else
+                    target.TimeSinceLastAccessed++;
             }
+
             RenderTargetUpdateLoopEvent?.Invoke();
         }
     }
