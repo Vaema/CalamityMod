@@ -155,11 +155,11 @@ GreenwaveLoach: {
 
 MoltenFishron: {
 	DisplayName: Molten Fishron
-	Tooltip: 
-        '''
-        Instead of honking it makes crisp wheezing noises 
-        Or maybe it actually is wheezing due to being taken out of lava
-        '''
+	Tooltip:
+		'''
+		Instead of honking it makes crisp wheezing noises 
+		Or maybe it actually is wheezing due to being taken out of lava
+		'''
 }
 
 PrismCrate: {
@@ -218,11 +218,11 @@ SparklingEmpress: {
 
 SpecularSturgeon: {
 	DisplayName: Specular Sturgeon
-	Tooltip: 
-        '''
-        A deep-dwelling fish that can live for many generations
-        Needless to say, it's old!
-        '''
+	Tooltip:
+		'''
+		A deep-dwelling fish that can live for many generations
+		Needless to say, it's old!
+		'''
 }
 
 Squidoom: {
