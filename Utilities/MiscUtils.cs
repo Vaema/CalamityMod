@@ -306,6 +306,12 @@ namespace CalamityMod
 
         public static List<string> GetAssignedKeysOrEmpty(this ModKeybind keybind, InputMode mode = InputMode.Keyboard)
         {
+            if (keybind == null)
+                return [];
+
+            if (Main.dedServ) // Server does not have key assigned
+                return [];
+
             try
             {
                 return keybind.GetAssignedKeys(mode);
