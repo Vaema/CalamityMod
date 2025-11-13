@@ -440,6 +440,7 @@ namespace CalamityMod.NPCs.SunkenSea
             {
                 Dust.NewDust(NPC.position, NPC.width, NPC.height, DustID.BloodWater, hit.HitDirection, -3f, 0, default, 0.8f);
             }
+            SpawnGores(NPC, "Shoreskipper", 2);
         }
 
         public override void OnKill()
