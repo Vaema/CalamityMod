@@ -25,7 +25,15 @@ namespace CalamityMod.Systems
 
             public override bool TileFrame(int i, int j, int type, ref bool resetFrame, ref bool noBreak)
             {
-                TileBlendMergeSystem.TileFrame(i, j, type);
+                // Tomat: Naive way to address tile frame logic running on
+                // multiple threads resulting in cryptic errors due to
+                // SetBlendingRefData/_TileBlendingRefs not being threadsafe.
+                // A more correct fix would be to lock or use a thread-safe
+                // hashmap, but we don't actually create any scenarios aside
+                // from worldgen where this would be ran on multiple threads.
+                if (!WorldGen.generatingWorld)
+                    TileBlendMergeSystem.TileFrame(i, j, type);
+
                 return base.TileFrame(i, j, type, ref resetFrame, ref noBreak);
             }
         }

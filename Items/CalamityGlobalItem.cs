@@ -874,10 +874,6 @@ namespace CalamityMod.Items
             // Handle general use-item effects for the Gem Tech Armor.
             player.Calamity().GemTechState.OnItemUseEffects(item);
 
-            if (item.type == ItemID.MonkStaffT1 || CalamityItemSets.AutoreusableSpear[item.type])
-            {
-                return player.ownedProjectileCounts[item.shoot] <= 0;
-            }
             if (item.type == ItemID.RodofDiscord)
             {
                 if (player.chaosState)
@@ -1283,12 +1279,6 @@ namespace CalamityMod.Items
                 player.GetCritChance<RangedDamageClass>() += 2; //Total 12% crit
                 player.Calamity().critDamage += 0.2f;
             }
-
-            if (item.type == ItemID.MagicQuiver)
-                player.arrowDamage -= 0.05f;
-
-            if (item.type == ItemID.MoltenQuiver)
-                player.arrowDamage -= 0.03f;
 
             if (item.type == ItemID.FireGauntlet)
             {

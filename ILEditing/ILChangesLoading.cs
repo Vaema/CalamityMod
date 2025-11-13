@@ -82,7 +82,6 @@ namespace CalamityMod.ILEditing
             On_Projectile.NewProjectile_IEntitySource_float_float_float_float_int_int_float_int_float_float_float += IncorporateExtraProjectileVariables;
             On_Player.ApplyDamageToNPC += ApplyOldFashionedDamageToMiscHits;
             IL_Wiring.HitWireSingle += AddTwinklersToStatue;
-            On_Player.UpdateItemDye += FindCalamityItemDyeShader;
             On_AWorldListItem.GetDifficulty += GetDifficultyOverride;
             On_Item.GetShimmered += ShimmerEffectEdits;
             On_Player.Teleport += TPOverride;

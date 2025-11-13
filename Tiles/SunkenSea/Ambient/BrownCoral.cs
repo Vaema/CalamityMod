@@ -5,8 +5,6 @@ using Terraria.ObjectData;
 using Terraria.DataStructures;
 using Terraria.Enums;
 using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Graphics;
-using Humanizer;
 
 namespace CalamityMod.Tiles.SunkenSea.Ambient
 {
@@ -17,9 +15,10 @@ namespace CalamityMod.Tiles.SunkenSea.Ambient
             Main.tileFrameImportant[Type] = true;
             Main.tileSolid[Type] = false;
             Main.tileLighted[Type] = true;
+            TileObjectData.newTile.UsesCustomCanPlace = true;
             TileObjectData.newTile.Width = 2;
             TileObjectData.newTile.Height = 3;
-            TileObjectData.newTile.Origin = new Point16(1, 2);
+            TileObjectData.newTile.Origin = new Point16(0, 2);
             TileObjectData.newTile.CoordinateHeights = new int[] { 16, 16, 16 };
             TileObjectData.newTile.StyleWrapLimit = 36;
             TileObjectData.newTile.AnchorBottom = new AnchorData(AnchorType.SolidTile | AnchorType.SolidWithTop | AnchorType.SolidSide, TileObjectData.newTile.Width, 0);
@@ -47,9 +46,10 @@ namespace CalamityMod.Tiles.SunkenSea.Ambient
             Main.tileFrameImportant[Type] = true;
             Main.tileSolid[Type] = false;
             Main.tileLighted[Type] = true;
+            TileObjectData.newTile.UsesCustomCanPlace = true;
             TileObjectData.newTile.Width = 4;
             TileObjectData.newTile.Height = 4;
-            TileObjectData.newTile.Origin = new Point16(2, 3);
+            TileObjectData.newTile.Origin = new Point16(1, 3);
             TileObjectData.newTile.CoordinateHeights = new int[] { 16, 16, 16, 16 };
             TileObjectData.newTile.StyleWrapLimit = 36;
             TileObjectData.newTile.AnchorBottom = new AnchorData(AnchorType.SolidTile | AnchorType.SolidWithTop | AnchorType.SolidSide, TileObjectData.newTile.Width, 0);

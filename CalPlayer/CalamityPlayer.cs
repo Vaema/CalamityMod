@@ -114,8 +114,6 @@ namespace CalamityMod.CalPlayer
         public int garandShots = 0;
         public int searedPanCounter = 0;
         public int searedPanTimer = 0;
-        /// <summary> Used to get around the hardcoded Potion Sickness duration to allow Hadal Stew's reduced duration. </summary>
-        public int potionTimer = 0;
         /// <summary> If set to true, prevents all player dashes. Used by Ball and Chain, and Stygian Shield. </summary>
         public bool blockAllDashes = false;
         /// <summary> Used by Flamsteed Ring to reset the player's hitbox size after dismounting. </summary>
@@ -1402,11 +1400,6 @@ namespace CalamityMod.CalPlayer
         public bool yellowCandle = false;
         /// <summary> If true, the player has consumed Odd Mushroom. Controls drawing its rainbow fake clones of NPCs and projectiles. </summary>
         public bool trippy = false;
-        /// <summary>
-        /// Used to control the number and position of Odd Mushroom's fake clones. There are three levels of severity.<br/>
-        /// The first draws 4 clones in diagonals. The second draws 12 clones, 4 on diagonals and the other 8 surrounding them. The third draws 16 clones, arranged entirely around the player.
-        /// </summary>
-        public int trippyLevel = 1;
         public bool amidiasBlessing = false;
         public bool bloodfinBoost = false;
         public int bloodfinTimer = 30;
@@ -3098,7 +3091,6 @@ namespace CalamityMod.CalPlayer
             pinkCandleHealFraction = 0D;
             yellowCandle = false;
             trippy = false;
-            trippyLevel = 1;
             amidiasBlessing = false;
             bloodfinBoost = false;
             bloodfinTimer = 0;
@@ -3259,7 +3251,6 @@ namespace CalamityMod.CalPlayer
             garandShots = 0;
             searedPanCounter = 0;
             searedPanTimer = 0;
-            potionTimer = 0;
             persecutedEnchantSummonTimer = 0;
             momentumCapacitorTime = 0;
             momentumCapacitorBoost = 0f;
