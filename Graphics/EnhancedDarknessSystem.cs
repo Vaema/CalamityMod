@@ -1,11 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Reflection;
-using CalamityMod.World;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using ReLogic.Content;
 using Terraria;
+using Terraria.Graphics.Effects;
 using Terraria.Graphics.Light;
 using Terraria.Graphics.Shaders;
 using Terraria.ModLoader;
@@ -27,11 +26,37 @@ namespace CalamityMod.Graphics
         public static List<LightSource> lights = new();
         public override void OnModLoad()
         {
-            On_Main.DrawInterface += DrawShadows;
+            On_OverlayManager.Draw += DrawShadowOverlay;
             On_LightingEngine.UpdateLightDecay += AdjustTransmissiveness;
             RenderTargetManager.RenderTargetUpdateLoopEvent += PrepareTargets;
             rt = new ManagedRenderTarget(true, ManagedRenderTarget.CreateScreenSizedTarget);
         }
+
+        private void DrawShadowOverlay(On_OverlayManager.orig_Draw orig, OverlayManager self, SpriteBatch spriteBatch, RenderLayers layer, bool beginSpriteBatch)
+        {
+            orig(self, spriteBatch, layer, beginSpriteBatch);
+
+            //This ensures that the shadows only draw
+            //  - In the world
+            //  - Right before UI is drawn (and right before the hideUI check), as that's where RenderLayers.All is drawn
+            //  - 
+            if (Main.gameMenu || layer != RenderLayers.All || Main.LocalPlayer.Calamity().darknessIntensity <= 0)
+                return;
+            var mp = Main.LocalPlayer.Calamity();
+
+            var gd = Main.graphics.GraphicsDevice;
+            Main.spriteBatch.SafeBegin(SpriteSortMode.Immediate, BatchSetting.AlphaBlend, null, Main.GameViewMatrix.TransformationMatrix, () =>
+            {
+                Main.spriteBatch.EnterShaderRegion();
+                var shader = GameShaders.Misc["CalamityMod:DozeLightingShader"];
+                var abyssDarkness = Utils.Remap(Main.LocalPlayer.Center.Y, (float)Main.rockLayer * 16f, Main.UnderworldLayer * 16f, 0, 3, true);
+                shader.UseOpacity(mp.darknessIntensity);
+                shader.Apply();
+                Main.spriteBatch.Draw(rt, Main.screenLastPosition - Main.screenPosition, Color.White);
+                Main.spriteBatch.ExitShaderRegion();
+            });
+        }
+
 
         private void AdjustTransmissiveness(On_LightingEngine.orig_UpdateLightDecay orig, LightingEngine self)
         {
@@ -69,23 +94,6 @@ namespace CalamityMod.Graphics
         }
         private void DrawShadows(On_Main.orig_DrawInterface orig, Main self, GameTime gameTime)
         {
-            var mp = Main.LocalPlayer.Calamity();
-            if (mp.darknessIntensity <= 0)
-            {
-                orig(self, gameTime);
-                return;
-            }
-            var gd = Main.graphics.GraphicsDevice;
-            Main.spriteBatch.Begin(SpriteSortMode.Immediate, BlendState.AlphaBlend, SamplerState.PointWrap, DepthStencilState.None, Main.Rasterizer, null, Main.GameViewMatrix.TransformationMatrix);
-            Main.spriteBatch.EnterShaderRegion();
-            var shader = GameShaders.Misc["CalamityMod:DozeLightingShader"];
-            var abyssDarkness = Utils.Remap(Main.LocalPlayer.Center.Y, (float)Main.rockLayer * 16f, Main.UnderworldLayer * 16f, 0, 3, true);
-            shader.UseOpacity(mp.darknessIntensity);
-            shader.Apply();
-            Main.spriteBatch.Draw(rt, Main.screenLastPosition - Main.screenPosition, Color.White);
-            Main.spriteBatch.ExitShaderRegion();
-            Main.spriteBatch.End();
-            orig(self, gameTime);
         }
 
         public override void OnWorldUnload()

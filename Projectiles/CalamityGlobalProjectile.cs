@@ -54,6 +54,7 @@ using Terraria.Utilities;
 using Terraria.WorldBuilding;
 using static Terraria.ModLoader.ModContent;
 using NanotechProjectile = CalamityMod.Projectiles.Typeless.Nanotech;
+using CalamityMod.Graphics;
 
 namespace CalamityMod.Projectiles
 {
@@ -375,6 +376,9 @@ namespace CalamityMod.Projectiles
         #region Pre AI
         public override bool PreAI(Projectile projectile)
         {
+            if (ProjectileID.Sets.LightPet[projectile.type])
+                EnhancedDarknessSystem.lights.Add(new() { center = projectile.Center, texture = ModContent.Request<Texture2D>("CalamityMod/Particles/BloomCircle"), scale = 1 });
+
             if (projectile.bobber && projectile.type != ModContent.ProjectileType<VictideBobber>() && RunFishingMinigames(projectile))
                 return false;
             //Reset the Homing Target immediately before AI can re-set it on applicable projectiles
