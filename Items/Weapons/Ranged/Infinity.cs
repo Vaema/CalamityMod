@@ -72,6 +72,11 @@ namespace CalamityMod.Items.Weapons.Ranged
                 Particle spark2 = new LineParticle(position + Main.rand.NextVector2Circular(6, 6), (velocity * 4).RotatedByRandom(0.2f) * Main.rand.NextFloat(0.8f, 1.2f), false, Main.rand.Next(15, 25 + 1), Main.rand.NextFloat(1.5f, 2f), new Color(229, 49, 39));
                 GeneralParticleHandler.SpawnParticle(spark2);
             }
+
+            // Reset altFunctionUse to zero to prevent blank frame appear between shots on Alt-fire
+            if (player.itemAnimation <= 1)
+                player.altFunctionUse = 0;
+
             return false;
         }
 

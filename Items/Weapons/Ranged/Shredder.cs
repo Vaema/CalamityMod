@@ -1,11 +1,9 @@
-﻿using CalamityMod.Items.Materials;
-using CalamityMod.Projectiles.Ranged;
+﻿using CalamityMod.Projectiles.Ranged;
 using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.DataStructures;
 using Terraria.ID;
 using Terraria.ModLoader;
-using System;
 
 namespace CalamityMod.Items.Weapons.Ranged
 {
@@ -54,6 +52,11 @@ namespace CalamityMod.Items.Weapons.Ranged
             {
                 Projectile.NewProjectile(source, newPosition, (velocity * Main.rand.NextFloat(0.9f, 1.1f)).RotatedByRandom(0.2f), shotType, damage, knockback, player.whoAmI);
             }
+
+            // Reset altFunctionUse to zero to prevent blank frame appear between shots on Alt-fire
+            if (player.itemAnimation <= 1)
+                player.altFunctionUse = 0;
+
             return false;
         }
 
