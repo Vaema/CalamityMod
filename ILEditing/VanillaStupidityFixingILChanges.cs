@@ -777,7 +777,7 @@ namespace CalamityMod.ILEditing
         private static void DelayGravity(On_Player.orig_UpdateControlHolds orig, Player Player)
         {
             var cplay = Player.Calamity();
-            if (CalamityKeybinds.SwitchGravityHotkey.GetAssignedKeys().Count != 0 && (Player.gravControl || Player.gravControl2) && !Player.mount.Active)
+            if (CalamityKeybinds.SwitchGravityHotkey.GetAssignedKeysOrEmpty().Count != 0 && (Player.gravControl || Player.gravControl2) && !Player.mount.Active)
             {
                 if (Player.controlUp && Player.releaseUp)
                 {
