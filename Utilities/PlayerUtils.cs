@@ -316,6 +316,19 @@ namespace CalamityMod
             }
             return ConditionMet;
         }
+
+        /// <summary>
+        /// Disables the default wing flap sound from vanilla; this is to stop custom wings playing this sound when they shouldnt
+        /// This must be called each update (eg, in the wings item UpdateAccessory method)
+        /// </summary>
+        /// <param name="player">The Player to disable the sound on</param>
+        public static void DisableWingFlapSound(this Player player)
+        {
+            // vanilla plays a flap sound for all wings barring a few hardcoded exceptions
+            // the flapSound flag is used to see if the sound *has been* played, so we set it to true here to prevent it from playing 
+            player.flapSound = true;
+        }
+
         #endregion
 
         #region Location and Biomes
