@@ -4074,9 +4074,6 @@ namespace CalamityMod.CalPlayer
                 Player.npcTypeNoAggro[ModContent.NPCType<GammaSlime>()] = true;
             }
 
-            if (trippy)
-                Player.GetDamage<GenericDamageClass>() += OddMushroom.DamageBoost;
-
             if (eArtifact)
             {
                 Player.manaCost -= 0.25f;

@@ -679,7 +679,7 @@ namespace CalamityMod.Items
                 EditTooltipByNum(0, (line) => line.Text += AddedTooltip("PortableStool"));
 
             // Replace the double tap line if double tap dash is overridden
-            if ((item.type == ItemID.EoCShield || item.type == ItemID.Tabi) && CalamityKeybinds.DashHotkey.GetAssignedKeys().Count != 0)
+            if ((item.type == ItemID.EoCShield || item.type == ItemID.Tabi) && CalamityKeybinds.DashHotkey.GetAssignedKeysOrEmpty().Count != 0)
                 EditTooltipByNum(1, (line) => line.Text = CalamityUtils.GetText("Vanilla.DashKey").Format(CalamityKeybinds.DashHotkey.TooltipHotkeyString()));
             #endregion
 
@@ -929,17 +929,9 @@ namespace CalamityMod.Items
             if (item.type == ItemID.ReconScope)
                 EditTooltipByNum(0, (line) => line.Text += AddedTooltip("RifleScope"));
 
-
-            // Magic Quiver
-            if (item.type == ItemID.MagicQuiver)
-                EditTooltipByNum(0, (line) => line.Text = EditedTooltip("MagicQuiver"));
-
             // Molten Quiver
             if (item.type == ItemID.MoltenQuiver)
-            {
-                EditTooltipByNum(0, (line) => line.Text = EditedTooltip("MoltenQuiver1"));
-                EditTooltipByNum(2, (line) => line.Text = EditedTooltip("MoltenQuiver2"));
-            }
+                EditTooltipByNum(2, (line) => line.Text = EditedTooltip("MoltenQuiver"));
 
             // Magic Power Potion nerf
             if (item.type == ItemID.MagicPowerPotion)

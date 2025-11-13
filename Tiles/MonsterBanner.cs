@@ -518,9 +518,9 @@ namespace CalamityMod.Tiles
                 case 147:
                     npc = NPCType<Searslug>();
                     break;
-                /* case 148:
-                    npc = NPCType<Shoreskipper>(); // NOT YET IMPLEMENTED. Banner sprite is already on the mastersheet and associated with this case/position.
-                    break; */
+                case 148:
+                    npc = NPCType<Shoreskipper>();
+                    break;
                 case 149:
                     npc = NPCType<Slugbun>();
                     break;

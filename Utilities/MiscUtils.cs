@@ -6,8 +6,10 @@ using Microsoft.Xna.Framework.Audio;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria;
 using Terraria.Chat;
+using Terraria.GameInput;
 using Terraria.ID;
 using Terraria.Localization;
+using Terraria.ModLoader;
 
 namespace CalamityMod
 {
@@ -300,6 +302,24 @@ namespace CalamityMod
             }
 
             return morseState[(int)((morseState.Count - 1) * completion)];
+        }
+
+        public static List<string> GetAssignedKeysOrEmpty(this ModKeybind keybind, InputMode mode = InputMode.Keyboard)
+        {
+            if (keybind == null)
+                return [];
+
+            if (Main.dedServ) // Server does not have key assigned
+                return [];
+
+            try
+            {
+                return keybind.GetAssignedKeys(mode);
+            }
+            catch
+            {
+                return [];
+            }
         }
     }
 }

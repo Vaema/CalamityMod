@@ -1090,12 +1090,6 @@ namespace CalamityMod.NPCs
                 npc.dontTakeDamageFromHostiles = true;
         }
 
-        public void MakeTownNPCsTakeMoreDamage(NPC npc, Projectile projectile, Mod mod, ref NPC.HitModifiers modifiers)
-        {
-            if (npc.townNPC && projectile.hostile)
-                modifiers.SourceDamage *= 2f;
-        }
-
         // Does not affect Dryad's Bane
         // See CalamityGlobalNPC: UpdateLifeRegen
         public override void BuffTownNPC(ref float damageMult, ref int defense)
