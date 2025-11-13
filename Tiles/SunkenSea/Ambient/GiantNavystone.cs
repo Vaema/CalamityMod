@@ -1,4 +1,4 @@
-using Terraria;
+﻿using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
 using Terraria.ObjectData;
@@ -15,7 +15,8 @@ namespace CalamityMod.Tiles.SunkenSea.Ambient
 		{
 			Main.tileFrameImportant[Type] = true;
 			Main.tileSolid[Type] = false;
-			TileObjectData.newTile.Width = 5;
+            TileObjectData.newTile.UsesCustomCanPlace = true;
+            TileObjectData.newTile.Width = 5;
 			TileObjectData.newTile.Height = 5;
 			TileObjectData.newTile.Origin = new Point16(2, 4);
 			TileObjectData.newTile.CoordinateHeights = new int[] { 16, 16, 16, 16, 16 };
@@ -37,7 +38,8 @@ namespace CalamityMod.Tiles.SunkenSea.Ambient
 		{
 			Main.tileFrameImportant[Type] = true;
 			Main.tileSolid[Type] = false;
-			TileObjectData.newTile.Width = 5;
+            TileObjectData.newTile.UsesCustomCanPlace = true;
+            TileObjectData.newTile.Width = 5;
 			TileObjectData.newTile.Height = 4;
 			TileObjectData.newTile.Origin = new Point16(2, 3);
 			TileObjectData.newTile.CoordinateHeights = new int[] { 16, 16, 16, 16 };

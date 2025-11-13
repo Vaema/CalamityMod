@@ -100,7 +100,6 @@ namespace CalamityMod.Items
                 { ItemID.DayBreak, Do(DamageExact(125), UseExact(22)) },
                 { ItemID.DD2BetsyBow, Do(DamageExact(42)) }, // Aerial Bane's ridiculous multiplier is removed, so this compensates for that
                 { ItemID.DD2SquireBetsySword, Do(UseMeleeSpeed, DamageExact(150)) }, // Flying Dragon
-                { ItemID.DD2SquireDemonSword, Do(DamageExact(110), UseExact(25)) }, // Brand of the Inferno
                 { ItemID.DeadlySphereStaff, Do(DamageExact(50)) },
                 { ItemID.DeathSickle, Do(UseMeleeSpeed, DamageExact(70), ShootSpeedExact(15f)) },
                 { ItemID.DemonBow, Do(DamageExact(12)) },
@@ -112,14 +111,14 @@ namespace CalamityMod.Items
                 { ItemID.EnchantedBoomerang, Do(DamageExact(24)) },
                 { ItemID.EnchantedSword, Do(UseMeleeSpeed, DamageExact(30), ShootSpeedExact(15f)) },
                 { ItemID.EndlessMusketPouch, Do(DamageExact(8)) },
-                { ItemID.Excalibur, Do(TrueMelee, DamageExact(205), UseExact(24)) },
+                { ItemID.Excalibur, Do(TrueMelee, DamageExact(170)) },
                 { ItemID.FairyQueenMagicItem, Do(DamageExact(54)) }, // Nightglow
                 { ItemID.FalconBlade, Do(UseTurn, UseExact(13)) },
                 { ItemID.FireworksLauncher, Do(DamageExact(50), UseExact(25)) }, // Celebration
                 { ItemID.Flamarang, Do(DamageExact(37)) },
                 { ItemID.Flamelash, Do(DamageExact(36), ManaExact(18)) },
                 { ItemID.Flamethrower, Do(DamageExact(21), ShootSpeedDelta(+3f)) },
-                { ItemID.FlowerofFire, Do(ManaExact(7), UseRatio(0.88f), DamageRatio(0.7f)) }, // Uses ratios due to remix seed
+                { ItemID.FlowerofFire, Do(ManaExact(7), DamageRatio(0.78f)) }, // Uses ratios due to remix seed
                 { ItemID.FlowerofFrost, Do(ManaExact(7), UseExact(22), DamageExact(70), ShootSpeedExact(14)) },
                 { ItemID.FlyingKnife, Do(DamageExact(53)) },
                 { ItemID.Frostbrand, Do(UseMeleeSpeed, DamageExact(88)) },

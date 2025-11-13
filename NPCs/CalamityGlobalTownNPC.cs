@@ -279,6 +279,7 @@ namespace CalamityMod.NPCs
             "Syethas", // <@!325413275066171393> (cosmicstariight)
             "Nextdoor Psycho", // <@!173261518572486656> (nextdoorpsycho)
             "Mike Cyclops", // <@!702327497475227741> (seichoseicho)
+            "Derin", // <@!466703979695308820> (god_15)
         };
         private static readonly string[] ZoologistNames =
         {
@@ -352,6 +353,7 @@ namespace CalamityMod.NPCs
             "Lucerne", // <@!271954788676141066> (lord_lucerne)
             "Milo", // <@!401849201597874179> (maskedmilo)
             "Octo", // <@!796112889353994281> (octolinggrimm)
+            "Hognar the Wicked", // <@!766511001356468237> (xzier_tengal)
         };
         private static readonly string[] TownCatSiameseNames = null;
         private static readonly string[] TownCatBlackNames =
@@ -1087,12 +1089,6 @@ namespace CalamityMod.NPCs
             // Make Bound Town NPCs take no damage
             if (CalamityNPCTypeSets.BoundTownNPC[npc.type])
                 npc.dontTakeDamageFromHostiles = true;
-        }
-
-        public void MakeTownNPCsTakeMoreDamage(NPC npc, Projectile projectile, Mod mod, ref NPC.HitModifiers modifiers)
-        {
-            if (npc.townNPC && projectile.hostile)
-                modifiers.SourceDamage *= 2f;
         }
 
         // Does not affect Dryad's Bane

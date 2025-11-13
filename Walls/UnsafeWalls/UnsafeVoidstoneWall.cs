@@ -9,6 +9,7 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.Walls.UnsafeWalls
 {
+    [LegacyName("VoidstoneWallUnsafe")]
     public class UnsafeVoidstoneWall : ModWall
     {
         internal static FramedMaskTexture GlowMask;

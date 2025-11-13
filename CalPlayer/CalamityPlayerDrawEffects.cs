@@ -191,11 +191,12 @@ namespace CalamityMod.CalPlayer
                 //GeneralParticleHandler.SpawnParticle(new DirectionalPulseRing(player.Center + Vector2.UnitX.RotatedBy(player.itemRotation) * (48 + scale*96), Vector2.Zero, Color.Cyan, Vector2.One, 0, scale, scale, 3));
             }
 
-            // Dust modifications while high.
+            // Drawing for Odd Mushroom's clone effects
             if (calamityPlayer.trippy)
             {
                 if (Main.myPlayer == Player.whoAmI)
                 {
+                    // Dust
                     Rectangle screenArea = new Rectangle((int)Main.screenPosition.X - 500, (int)Main.screenPosition.Y - 50, Main.screenWidth + 1000, Main.screenHeight + 100);
                     int dustDrawn = 0;
                     float maxShroomDust = Main.maxDustToDraw / 2;
@@ -239,12 +240,112 @@ namespace CalamityMod.CalPlayer
                             }
                         }
                     }
+
+                    // NPCs
+                    foreach (NPC n in Main.ActiveNPCs)
+                    {
+                        Color rainbow = new Color(Main.DiscoR, Main.DiscoG, Main.DiscoB, Main.DiscoR);
+                        Color alphaColor = n.GetAlpha(rainbow);
+                        float RGBMult = 0.99f;
+                        alphaColor.R = (byte)(alphaColor.R * RGBMult);
+                        alphaColor.G = (byte)(alphaColor.G * RGBMult);
+                        alphaColor.B = (byte)(alphaColor.B * RGBMult);
+                        alphaColor.A = (byte)(alphaColor.A * RGBMult);
+
+                        for (int i = 0; i < 4; i++)
+                        {
+                            Vector2 position = n.position;
+                            float distanceFromTargetX = Math.Abs(n.Center.X - Main.LocalPlayer.Center.X);
+                            float distanceFromTargetY = Math.Abs(n.Center.Y - Main.LocalPlayer.Center.Y);
+
+                            switch (i)
+                            {
+                                case 0:
+                                    position.X = Main.LocalPlayer.Center.X - distanceFromTargetX;
+                                    position.Y = Main.LocalPlayer.Center.Y - distanceFromTargetY;
+                                    break;
+
+                                case 1:
+                                    position.X = Main.LocalPlayer.Center.X + distanceFromTargetX;
+                                    position.Y = Main.LocalPlayer.Center.Y - distanceFromTargetY;
+                                    break;
+
+                                case 2:
+                                    position.X = Main.LocalPlayer.Center.X + distanceFromTargetX;
+                                    position.Y = Main.LocalPlayer.Center.Y + distanceFromTargetY;
+                                    break;
+
+                                case 3:
+                                    position.X = Main.LocalPlayer.Center.X - distanceFromTargetX;
+                                    position.Y = Main.LocalPlayer.Center.Y + distanceFromTargetY;
+                                    break;
+
+                                default:
+                                    break;
+                            }
+
+                            Vector2 posDiff = n.Center - position;
+                            Main.instance.DrawNPCDirect(Main.spriteBatch, n, n.behindTiles, Main.screenPosition + posDiff);
+                        }
+                    }
+
+                    // Projectiles
+                    foreach (Projectile p in Main.ActiveProjectiles)
+                    {
+                        Texture2D texture = TextureAssets.Projectile[p.type].Value;
+                        Color rainbow = new Color(Main.DiscoR, Main.DiscoG, Main.DiscoB, Main.DiscoR);
+                        Color alphaColor = p.GetAlpha(rainbow);
+                        float RGBMult = 0.99f;
+                        alphaColor.R = (byte)(alphaColor.R * RGBMult);
+                        alphaColor.G = (byte)(alphaColor.G * RGBMult);
+                        alphaColor.B = (byte)(alphaColor.B * RGBMult);
+                        alphaColor.A = (byte)(alphaColor.A * RGBMult);
+
+                        Vector2 storedProjPos = p.Center;
+                        for (int i = 0; i < 4; i++)
+                        {
+                            Vector2 position = p.position;
+                            float distanceFromTargetX = Math.Abs(p.Center.X - Main.LocalPlayer.Center.X);
+                            float distanceFromTargetY = Math.Abs(p.Center.Y - Main.LocalPlayer.Center.Y);
+
+                            switch (i)
+                            {
+                                case 0:
+                                    position.X = Main.LocalPlayer.Center.X - distanceFromTargetX;
+                                    position.Y = Main.LocalPlayer.Center.Y - distanceFromTargetY;
+                                    break;
+
+                                case 1:
+                                    position.X = Main.LocalPlayer.Center.X + distanceFromTargetX;
+                                    position.Y = Main.LocalPlayer.Center.Y - distanceFromTargetY;
+                                    break;
+
+                                case 2:
+                                    position.X = Main.LocalPlayer.Center.X + distanceFromTargetX;
+                                    position.Y = Main.LocalPlayer.Center.Y + distanceFromTargetY;
+                                    break;
+
+                                case 3:
+                                    position.X = Main.LocalPlayer.Center.X - distanceFromTargetX;
+                                    position.Y = Main.LocalPlayer.Center.Y + distanceFromTargetY;
+                                    break;
+
+                                default:
+                                    break;
+                            }
+
+                            // Unfortunately unlike NPCs, there is no public function for drawing a projectile with a position parameter to spoof.
+                            // So we have to spoof it by directly changing the projectile's position, then resetting it at the end.
+                            p.Center = position;
+                            Main.instance.DrawProjDirect(p);
+                        }
+
+                        p.Center = storedProjPos;
+                    }
                 }
             }
-            else // This is such a stupid way to reset this but you can't just put it in ResetEffects
+            else
             {
-                calamityPlayer.trippyLevel = 1;
-
                 // Mana Burn VFX disabled when hih
                 if (Player.statMana < 0)
                 {

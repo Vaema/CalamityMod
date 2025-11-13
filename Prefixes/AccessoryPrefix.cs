@@ -63,9 +63,7 @@ namespace CalamityMod.Prefixes
 
         public static int GetHealthBoostAmount()
         {
-            if (NPC.downedMoonlord) return 20;
-            if (Main.hardMode) return 15;
-            return 10;
+            return 15;
         }
     }
 }

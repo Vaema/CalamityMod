@@ -119,7 +119,8 @@ namespace CalamityMod.Items.BaseItems
             else
             {
                 TransformationAccessory trans = self.Transformation().currentTransformation = self.Transformation().previousTransformation;
-                EquipTransformation(trans, self, Mod);
+                if (trans is not null)
+                    EquipTransformation(trans, self, Mod);
             }
         }
 
