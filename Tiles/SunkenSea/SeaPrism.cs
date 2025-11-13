@@ -511,10 +511,6 @@ namespace CalamityMod.Tiles.SunkenSea
 
             Main.spriteBatch.End();
 
-            Main.instance.GraphicsDevice.Textures[1] = null;
-            Main.instance.GraphicsDevice.Textures[2] = null;
-            Main.instance.GraphicsDevice.Textures[3] = null;
-
             Main.spriteBatch.Begin();
             Main.tileBatch.Begin();
 
@@ -580,10 +576,6 @@ namespace CalamityMod.Tiles.SunkenSea
             }
 
             Main.spriteBatch.End();
-
-            Main.instance.GraphicsDevice.Textures[1] = null;
-            Main.instance.GraphicsDevice.Textures[2] = null;
-            Main.instance.GraphicsDevice.Textures[3] = null;
 
             Main.spriteBatch.Begin();
             Main.tileBatch.Begin();
