@@ -251,6 +251,10 @@ namespace CalamityMod.Effects
         internal static Asset<Effect> DoGRiftAuraShader;
         #endregion
 
+        #region Big E's Shaders
+        internal static Asset<Effect> SeaPrismColorBlendingShader;
+        #endregion
+
         internal static Asset<Effect> SunkenSeaMenuLogoWater;
 
         public override void PostSetupContent()
@@ -491,6 +495,11 @@ namespace CalamityMod.Effects
 
             DoGRiftAuraShader = LoadShader("DoGRiftAuraShader");
             RegisterMiscShader(DoGRiftAuraShader, "DoGRiftAuraPass", "DoGRiftAura");
+            #endregion
+
+            #region Loading Big E's Shaders
+            SeaPrismColorBlendingShader = LoadShader("SeaPrismColorBlending");
+            RegisterMiscShader(SeaPrismColorBlendingShader, "SeaPrismBlendingPass", "SeaPrismColorBlending");
             #endregion
 
             SunkenSeaMenuLogoWater = LoadShader("UI/SunkenSeaMenuLogoWater");
