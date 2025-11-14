@@ -2,7 +2,6 @@
 using System.Linq;
 using System.Reflection;
 using CalamityMod.Balancing;
-using CalamityMod.Buffs.DamageOverTime;
 using CalamityMod.CalPlayer;
 using CalamityMod.Cooldowns;
 using CalamityMod.DataStructures;
@@ -19,11 +18,7 @@ using CalamityMod.Items.Potions.Alcohol;
 using CalamityMod.NPCs;
 using CalamityMod.NPCs.Abyss;
 using CalamityMod.NPCs.Astral;
-using CalamityMod.NPCs.AstrumAureus;
-using CalamityMod.NPCs.Crabulon;
 using CalamityMod.NPCs.DraedonLabThings;
-using CalamityMod.NPCs.NormalNPCs;
-using CalamityMod.NPCs.Ravager;
 using CalamityMod.NPCs.SunkenSea;
 using CalamityMod.Packets;
 using CalamityMod.Particles;
@@ -36,7 +31,6 @@ using CalamityMod.Tiles;
 using CalamityMod.Walls;
 using CalamityMod.Walls.UnsafeWalls;
 using CalamityMod.Waterfalls;
-using CalamityMod.World;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Mono.Cecil.Cil;
@@ -44,10 +38,8 @@ using MonoMod.Cil;
 using ReLogic.Content;
 using Terraria;
 using Terraria.Audio;
-using Terraria.Chat;
 using Terraria.DataStructures;
 using Terraria.GameContent;
-using Terraria.GameContent.Achievements;
 using Terraria.GameContent.Biomes;
 using Terraria.GameContent.Drawing;
 using Terraria.GameContent.Events;
@@ -306,7 +298,7 @@ namespace CalamityMod.ILEditing
                 return;
             }
 
-            if (CalamityKeybinds.DashHotkey.GetAssignedKeys().Count == 0)
+            if (CalamityKeybinds.DashHotkey.GetAssignedKeysOrEmpty().Count == 0)
                 orig(self, out dir, out dashing, dashStartAction);
             else
             {
@@ -324,7 +316,7 @@ namespace CalamityMod.ILEditing
                 return;
             }
 
-            if ((CalamityKeybinds.ArmorSetBonusHotKey.GetAssignedKeys().Count != 0 && CalamityClientConfig.Instance.SetBonusDoubleTap == SetBonusDoubleTapOptions.Auto) || CalamityClientConfig.Instance.SetBonusDoubleTap == SetBonusDoubleTapOptions.Off)
+            if ((CalamityKeybinds.ArmorSetBonusHotKey.GetAssignedKeysOrEmpty().Count != 0 && CalamityClientConfig.Instance.SetBonusDoubleTap == SetBonusDoubleTapOptions.Auto) || CalamityClientConfig.Instance.SetBonusDoubleTap == SetBonusDoubleTapOptions.Off)
                 return;
 
             orig(self, keyDir);
@@ -677,7 +669,8 @@ namespace CalamityMod.ILEditing
         #endregion
 
         #region Chaos Stone Mana Burn changes
-        private static bool AllowNegativeCheckMana(On_Player.orig_CheckMana_int_bool_bool orig, Player self, int amount, bool pay, bool blockQuickMana) {
+        private static bool AllowNegativeCheckMana(On_Player.orig_CheckMana_int_bool_bool orig, Player self, int amount, bool pay, bool blockQuickMana)
+        {
             if (self.Calamity().ChaosStone)
             {
                 if (pay)
@@ -689,7 +682,8 @@ namespace CalamityMod.ILEditing
             return orig(self, amount, pay, blockQuickMana);
         }
 
-        private static bool AllowNegativeCheckMana(On_Player.orig_CheckMana_Item_int_bool_bool orig, Player self, Item item, int amount, bool pay, bool blockQuickMana) {
+        private static bool AllowNegativeCheckMana(On_Player.orig_CheckMana_Item_int_bool_bool orig, Player self, Item item, int amount, bool pay, bool blockQuickMana)
+        {
             if (self.Calamity().ChaosStone)
             {
                 if (pay)
@@ -960,7 +954,8 @@ namespace CalamityMod.ILEditing
                 LogFailure("DoDraw Lava", "Could not locate the drawing of Background Waters");
                 return;
             }
-            cursor.EmitDelegate(() => {
+            cursor.EmitDelegate(() =>
+            {
                 LavaRenderingSystem.Instance.DrawLavas(isBackground: true);
             });
             if (!cursor.TryGotoNext(MoveType.After, i => i.MatchLdsfld<Main>("drawToScreen"), i => i.MatchBrfalse(out _), i => i.MatchLdarg0(), i => i.MatchLdcI4(0), i => i.MatchCall<Main>("DrawWaters")))
@@ -968,7 +963,8 @@ namespace CalamityMod.ILEditing
                 LogFailure("DoDraw Lava", "Could not locate the drawing of Waters");
                 return;
             }
-            cursor.EmitDelegate(() => {
+            cursor.EmitDelegate(() =>
+            {
                 LavaRenderingSystem.Instance.DrawLavas();
             });
         }
@@ -981,7 +977,8 @@ namespace CalamityMod.ILEditing
                 LogFailure("Render Lava", "Could not locate the drawing of Waters");
                 return;
             }
-            cursor.EmitDelegate(() => {
+            cursor.EmitDelegate(() =>
+            {
                 LavaRenderingSystem.Instance.DrawLavas();
             });
         }
@@ -994,7 +991,8 @@ namespace CalamityMod.ILEditing
                 LogFailure("Render Lava Backgroumds", "Could not locate the drawing of Background Waters");
                 return;
             }
-            cursor.EmitDelegate(() => {
+            cursor.EmitDelegate(() =>
+            {
                 LavaRenderingSystem.Instance.DrawLavas(isBackground: true);
             });
         }
@@ -1007,7 +1005,8 @@ namespace CalamityMod.ILEditing
                 LogFailure("Draw lavas to captures", "Could not locate the saving of water alphas");
                 return;
             }
-            cursor.EmitDelegate(() => {
+            cursor.EmitDelegate(() =>
+            {
                 LavaRenderingSystem.LavaAlpha.CopyTo(LavaRenderingSystem.AlphaSave, 0);
             });
             if (!cursor.TryGotoNext(MoveType.Before, i => i.MatchLdcI4(0), i => i.MatchStloc(34), i => i.MatchBr(out _), i => i.MatchLdloc(34), i => i.MatchLdcI4(1), i => i.MatchBeq(out _)))
@@ -1016,7 +1015,8 @@ namespace CalamityMod.ILEditing
                 return;
             }
             cursor.EmitLdloc(8);
-            cursor.EmitDelegate((CaptureBiome biome) => {
+            cursor.EmitDelegate((CaptureBiome biome) =>
+            {
                 for (int i = 0; i < 1; i++)
                 {
                     LavaRenderingSystem.LavaAlpha[i] = ((i == LavaRenderingSystem.LavaStyle) ? 1f : 0f);
@@ -1027,7 +1027,8 @@ namespace CalamityMod.ILEditing
                 LogFailure("Draw lavas to captures", "Could not locate the background of liquid capture drawing");
                 return;
             }
-            cursor.EmitDelegate(() => {
+            cursor.EmitDelegate(() =>
+            {
                 LavaRenderingSystem.Instance.DrawLiquid(bg: true, LavaRenderingSystem.LavaStyle);
             });
             if (!cursor.TryGotoNext(MoveType.After, i => i.MatchLdarg0(), i => i.MatchLdcI4(1), i => i.MatchLdsfld<Main>("bloodMoon"), i => i.MatchBrtrue(out _), i => i.MatchLdloc(8), i => i.MatchLdfld<CaptureBiome>("WaterStyle"), i => i.MatchBr(out _), i => i.MatchLdcI4(9), i => i.MatchLdcR4(1), i => i.MatchLdcI4(1), i => i.MatchCall<Main>("DrawLiquid")))
@@ -1035,7 +1036,8 @@ namespace CalamityMod.ILEditing
                 LogFailure("Draw lavas to captures", "Could not locate the second background of liquid capture drawing");
                 return;
             }
-            cursor.EmitDelegate(() => {
+            cursor.EmitDelegate(() =>
+            {
                 LavaRenderingSystem.Instance.DrawLiquid(bg: true, LavaRenderingSystem.LavaStyle);
             });
             if (!cursor.TryGotoNext(MoveType.After, i => i.MatchLdarg0(), i => i.MatchLdcI4(0), i => i.MatchLdsfld<Main>("waterStyle"), i => i.MatchLdcR4(1), i => i.MatchLdcI4(1), i => i.MatchCall<Main>("DrawLiquid")))
@@ -1043,7 +1045,8 @@ namespace CalamityMod.ILEditing
                 LogFailure("Draw lavas to captures", "Could not locate the liquid capture drawing");
                 return;
             }
-            cursor.EmitDelegate(() => {
+            cursor.EmitDelegate(() =>
+            {
                 LavaRenderingSystem.Instance.DrawLiquid(bg: false, LavaRenderingSystem.LavaStyle);
             });
             if (!cursor.TryGotoNext(MoveType.After, i => i.MatchLdarg0(), i => i.MatchLdcI4(0), i => i.MatchLdloc(8), i => i.MatchLdfld<CaptureBiome>("WaterStyle"), i => i.MatchLdcR4(1), i => i.MatchLdcI4(1), i => i.MatchCall<Main>("DrawLiquid")))
@@ -1051,7 +1054,8 @@ namespace CalamityMod.ILEditing
                 LogFailure("Draw lavas to captures", "Could not locate the second liquid capture drawing");
                 return;
             }
-            cursor.EmitDelegate(() => {
+            cursor.EmitDelegate(() =>
+            {
                 LavaRenderingSystem.Instance.DrawLiquid(bg: false, LavaRenderingSystem.LavaStyle);
             });
             if (!cursor.TryGotoNext(MoveType.After, i => i.MatchLdloc2(), i => i.MatchStsfld<Main>("liquidAlpha")))
@@ -1059,7 +1063,8 @@ namespace CalamityMod.ILEditing
                 LogFailure("Draw lavas to captures", "Could not locate water style value returner");
                 return;
             }
-            cursor.EmitDelegate(() => {
+            cursor.EmitDelegate(() =>
+            {
                 LavaRenderingSystem.AlphaSave.CopyTo(LavaRenderingSystem.LavaAlpha, 0);
             });
         }
@@ -1077,7 +1082,8 @@ namespace CalamityMod.ILEditing
             cursor.EmitLdloc(13);
             cursor.EmitLdloc(14);
             cursor.EmitLdloc(15);
-            cursor.EmitDelegate((Vector2 unscaledPosition, Vector2 vector, int j, int i, Tile tile) => {
+            cursor.EmitDelegate((Vector2 unscaledPosition, Vector2 vector, int j, int i, Tile tile) =>
+            {
                 LavaRenderingSystem.Instance.DrawTile_LiquidBehindTile(solidLayer: false, inFrontOfPlayers: false, -1, unscaledPosition, vector, j, i, tile);
             });
         }
@@ -1198,7 +1204,8 @@ namespace CalamityMod.ILEditing
             }
             cursor.EmitLdloc(12);
             cursor.EmitLdloc(11);
-            cursor.EmitDelegate((int i, int j) => {
+            cursor.EmitDelegate((int i, int j) =>
+            {
                 return Main.tile[i, j].LiquidType == LiquidID.Lava;
             });
             cursor.EmitBrtrue(target);
@@ -2546,7 +2553,7 @@ namespace CalamityMod.ILEditing
                                 }
                                 NetMessage.SendData(MessageID.PlayerControls, -1, -1, null, self.owner);
                             }
-                            SoundEngine.PlaySound(SoundID.DD2_EtherianPortalSpawnEnemy with {Volume = 0.75f }, self.Center);
+                            SoundEngine.PlaySound(SoundID.DD2_EtherianPortalSpawnEnemy with { Volume = 0.75f }, self.Center);
                             self.ai[0] = 2;
                             self.velocity = Vector2.Zero;
                             self.Calamity().arenaBoxPosition = new Vector2(Utils.Remap(self.Center.X, box.TopLeft.X, box.BottomRight.X, 0, 1, false), Utils.Remap(self.Center.Y, box.TopLeft.Y, box.BottomRight.Y, 0, 1, false));
@@ -2608,8 +2615,8 @@ namespace CalamityMod.ILEditing
                 foreach (var item in ArenaWallSystem.ActiveBoxes)
                 {
                     var oldVel = Velocity;
-                    if (item.InnerEffect(Position,new Vector2(Width,Height)))
-                    Velocity = ArenaCollisionLogic(item, Position, Width, Height, Velocity);
+                    if (item.InnerEffect(Position, new Vector2(Width, Height)))
+                        Velocity = ArenaCollisionLogic(item, Position, Width, Height, Velocity);
                     var dif = (oldVel - Velocity).Length();
                 }
             }

@@ -269,7 +269,7 @@ namespace CalamityMod
             if (Main.dedServ || mhk is null)
                 return "";
 
-            List<string> keys = mhk.GetAssignedKeys();
+            List<string> keys = mhk.GetAssignedKeysOrEmpty();
             if (keys.Count == 0)
                 return GetText("Misc.HotkeyNotBound").Value;
             else
