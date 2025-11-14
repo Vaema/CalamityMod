@@ -99,30 +99,40 @@ namespace CalamityMod.CalPlayer
                     }
                 });
             }
+
             if (Starshield > 0 && drawInfo.shadow == 0)
             {
-
-                Texture2D tex = ModContent.Request<Texture2D>("CalamityMod/Particles/HighResFoggyCircleHardEdge").Value;
                 var color = Color.Lerp(Color.DeepSkyBlue, Color.LightSkyBlue, (StratusStarburst / (float)MaxStratusStarburst));
-                var opacity = MathHelper.Min(MathHelper.Min(Starshield / 30f, 1f),(3600-Starshield)/30f);
-                float size = 96 + 32 * (StratusStarburst/(float)MaxStratusStarburst);
+                var opacity = MathHelper.Min(MathHelper.Min(Starshield / 30f, 1f), (3600 - Starshield) / 30f);
+                float size = 72 + 32 * (StratusStarburst / (float)MaxStratusStarburst);
+
+                Vector2 drawPosition = Player.Center + new Vector2(0, Player.gfxOffY) - Main.screenPosition;
+                #region AoE
+                //Draw the bloom circle
 
                 Texture2D telegraphBase = StratusBlackHole.GetTransparentBloomTex();
-                Main.EntitySpriteDraw(telegraphBase, Player.Center + new Vector2(0, Player.gfxOffY) - Main.screenPosition, null, Color.DarkSlateBlue * 0.75f * opacity, 0, telegraphBase.Size() / 2f, size * 1.5f * opacity / telegraphBase.Width, 0, 0);
-                
+                //Main.EntitySpriteDraw(telegraphBase, drawPosition, null, Color.DarkSlateBlue * opacity, 0, telegraphBase.Size() / 2f, size * 1.5f * opacity / telegraphBase.Width, 0, 0);
+
+                //Draw the inner particles
                 Main.spriteBatch.EnterShaderRegion();
-
-                GameShaders.Misc["CalamityMod:OtherworldBarrierDistortion"].UseOpacity(0.8f);
-                GameShaders.Misc["CalamityMod:OtherworldBarrierDistortion"].UseSaturation(0.1f);
-                GameShaders.Misc["CalamityMod:OtherworldBarrierDistortion"].SetShaderTexture(ModContent.Request<Texture2D>("CalamityMod/ExtraTextures/GreyscaleGradients/VoidGashes"), 1);
+                GameShaders.Misc["CalamityMod:OtherworldBarrierDistortion"].UseOpacity(0.25f);
+                GameShaders.Misc["CalamityMod:OtherworldBarrierDistortion"].UseSaturation(0.2f);
+                GameShaders.Misc["CalamityMod:OtherworldBarrierDistortion"].SetShaderTexture(ModContent.Request<Texture2D>("CalamityMod/ExtraTextures/GreyscaleGradients/MeltyNoiseHighContrast"), 1);
                 GameShaders.Misc["CalamityMod:OtherworldBarrierDistortion"].Apply();
-
-                tex = ModContent.Request<Texture2D>("CalamityMod/Particles/SmallBloomRing").Value;
-                Main.spriteBatch.Draw(tex, Player.Center + new Vector2(0, Player.gfxOffY) - Main.screenPosition, null, Color.DarkSlateBlue * opacity * 0.5f, 0, tex.Size() * 0.5f, size * 0.75f / tex.Width * opacity, SpriteEffects.None, 1);
-                
-                Main.spriteBatch.Draw(tex, Player.Center + new Vector2(0, Player.gfxOffY) - Main.screenPosition, null, color * opacity * 0.75f, 0, tex.Size() * 0.5f, size / tex.Width * opacity, SpriteEffects.None, 1);
+                //telegraphBase = ModContent.Request<Texture2D>("CalamityMod/Particles/BloomCircle").Value;
+                Main.EntitySpriteDraw(telegraphBase, drawPosition, null, Color.DarkSlateBlue * opacity, 0, telegraphBase.Size() / 2f, size * 1.5f * opacity / telegraphBase.Width, 0, 0);
                 Main.spriteBatch.ExitShaderRegion();
 
+                //Draw the outer particles
+                Main.spriteBatch.EnterShaderRegion();
+                GameShaders.Misc["CalamityMod:OtherworldBarrierDistortion"].UseOpacity(0.15f);
+                GameShaders.Misc["CalamityMod:OtherworldBarrierDistortion"].UseSaturation(0.1f);
+                GameShaders.Misc["CalamityMod:OtherworldBarrierDistortion"].SetShaderTexture(ModContent.Request<Texture2D>("CalamityMod/ExtraTextures/GreyscaleGradients/Neurons"), 1);
+                GameShaders.Misc["CalamityMod:OtherworldBarrierDistortion"].Apply();
+                telegraphBase = ModContent.Request<Texture2D>("CalamityMod/Particles/HighResFoggyCircleHardEdge").Value;
+                Main.EntitySpriteDraw(telegraphBase, drawPosition, null, Color.SkyBlue * opacity * 0.75f, 0, telegraphBase.Size() / 2f, size * opacity / telegraphBase.Width, 0, 0);
+                Main.spriteBatch.ExitShaderRegion();
+                #endregion
             }
             //DoG Boss Cursor
             DevourerofGodsHead DoG = null;
@@ -155,7 +165,7 @@ namespace CalamityMod.CalPlayer
                         Main.spriteBatch.Draw(tex, Player.Center + Player.DirectionTo(DoG.NPC.Center) * 196 * Math.Min(dis / 2400f, 2) - Main.screenPosition, null, Color.White * 0.9f * Math.Clamp(MathHelper.Lerp(0, 1, (dis - 600) / 300), 0, 1), DoG.NPC.rotation, tex.Size() / 2f, 1, SpriteEffects.None, 0);
                     }
                 }
-                
+
             }
 
             //Charge animation for Thread of Eradication
@@ -187,7 +197,7 @@ namespace CalamityMod.CalPlayer
                     Main.spriteBatch.Draw(bloomTex, Player.Center + (Vector2.UnitX * Player.direction).RotatedBy(Player.itemRotation) * (48 + scale * 96) - Main.screenPosition, null, color, 0, bloomTex.Size() * 0.5f, scale * 2.0f, SpriteEffects.None, 0);
                 });
                 for (var i = 0; i < 5; i++)
-                Main.spriteBatch.Draw(circleTex, Player.Center + (Vector2.UnitX * Player.direction).RotatedBy(Player.itemRotation) * (48 + scale * 96) - Main.screenPosition, null, Color.Black * ((i+1)/5f) * ( CalamityClientConfig.Instance.Photosensitivity ? 0.2f : 1f), 0, circleTex.Size() * 0.5f, scale* 2.2f * (0.5f + 0.5f * (1- (i)/5f)), SpriteEffects.None, 0);
+                    Main.spriteBatch.Draw(circleTex, Player.Center + (Vector2.UnitX * Player.direction).RotatedBy(Player.itemRotation) * (48 + scale * 96) - Main.screenPosition, null, Color.Black * ((i + 1) / 5f) * (CalamityClientConfig.Instance.Photosensitivity ? 0.2f : 1f), 0, circleTex.Size() * 0.5f, scale * 2.2f * (0.5f + 0.5f * (1 - (i) / 5f)), SpriteEffects.None, 0);
                 //GeneralParticleHandler.SpawnParticle(new DirectionalPulseRing(player.Center + Vector2.UnitX.RotatedBy(player.itemRotation) * (48 + scale*96), Vector2.Zero, Color.Cyan, Vector2.One, 0, scale, scale, 3));
             }
 

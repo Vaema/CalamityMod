@@ -52,8 +52,9 @@ namespace CalamityMod.Projectiles.Summon
             // Move towards the target.
             if (target != null && Projectile.localNPCImmunity[target.whoAmI] <= 0)
             {
-                Projectile.velocity = Vector2.Lerp(Projectile.velocity, (target.Center - Projectile.Center).SafeNormalize(Vector2.Zero) * 10f, 0.05f);
+                Projectile.velocity = Vector2.Lerp(Projectile.velocity, (target.Center - Projectile.Center).SafeNormalize(Vector2.Zero) * (Projectile.timeLeft < 300 ? 24f : 10f), 0.05f);
                 Projectile.netUpdate = true;
+                Projectile.Calamity().HomingTarget = target.whoAmI;
             }
             Projectile.rotation = Projectile.velocity.ToRotation();
 
