@@ -102,10 +102,6 @@ namespace CalamityMod.CalPlayer
 
             switch (item.type)
             {
-                case ItemID.DeathSickle:
-                    target.AddBuff(BuffType<WhisperingDeath>(), 120);
-                    break;
-
                 case ItemID.InfluxWaver:
                     target.AddBuff(BuffID.Electrified, 300);
                     break;
@@ -274,10 +270,6 @@ namespace CalamityMod.CalPlayer
 
                 case ProjectileID.GolemFist:
                     target.AddBuff(BuffType<ArmorCrunch>(), 180);
-                    break;
-
-                case ProjectileID.DeathSickle:
-                    target.AddBuff(BuffType<WhisperingDeath>(), 60);
                     break;
 
                 case ProjectileID.ButchersChainsaw:

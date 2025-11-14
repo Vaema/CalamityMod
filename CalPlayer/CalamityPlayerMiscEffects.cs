@@ -4370,10 +4370,6 @@ namespace CalamityMod.CalPlayer
                 Player.GetCritChance<MeleeDamageClass>() += 10;
             }
 
-
-            if (Player.portableStoolInfo.IsInUse)
-                Player.GetCritChance(DamageClass.Generic) += 5;
-
             // Amalgam boosts
             if (Main.myPlayer == Player.whoAmI)
             {
