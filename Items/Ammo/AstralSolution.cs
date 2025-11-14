@@ -20,10 +20,5 @@ namespace CalamityMod.Items.Ammo
         {
             itemGroup = ContentSamples.CreativeHelper.ItemGroup.Solutions;
         }
-
-        public override bool CanConsumeAmmo(Item ammo, Player player)
-        {
-            return !(player.itemAnimation < player.ActiveItem().useAnimation - 3);
-        }
     }
 }

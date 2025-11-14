@@ -269,7 +269,7 @@ namespace CalamityMod
             if (Main.dedServ || mhk is null)
                 return "";
 
-            List<string> keys = mhk.GetAssignedKeys();
+            List<string> keys = mhk.GetAssignedKeysOrEmpty();
             if (keys.Count == 0)
                 return GetText("Misc.HotkeyNotBound").Value;
             else
@@ -709,7 +709,7 @@ namespace CalamityMod
                     showsOver = true;
             }
             //Fail if you have potion sickness
-            if (player.potionDelay > 0 || player.Calamity().potionTimer > 0)
+            if (player.potionDelay > 0)
                 showsOver = true;
 
             if (!showsOver)

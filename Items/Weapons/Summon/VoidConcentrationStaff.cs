@@ -32,7 +32,7 @@ namespace CalamityMod.Items.Weapons.Summon
             Item.mana = 10;
             Item.damage = 105;
             Item.knockBack = 4f;
-            Item.useAnimation = Item.useTime = 15; // 14 because of useStyle 1
+            Item.useAnimation = Item.useTime = 24;
             Item.buffType = ModContent.BuffType<VoidConcentrationBuff>();
             Item.shoot = ModContent.ProjectileType<VoidConcentrationAura>();
             Item.value = CalamityGlobalItem.RarityTurquoiseBuyPrice;

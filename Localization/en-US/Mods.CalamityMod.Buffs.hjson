@@ -96,7 +96,7 @@ TequilaSunriseBuff: {
 
 Trippy: {
 	DisplayName: Trippy
-	Description: You see the world for what it truly is... and you also have a {0}% increase to all damage
+	Description: You see the world for what it truly is...
 }
 
 VodkaBuff: {
@@ -690,11 +690,6 @@ AbsorberRegen: {
 AbyssalDivingSuitBuff: {
 	DisplayName: Abyssal Diving Suit
 	Description: You are made of metal
-}
-
-AbyssalDivingSuitPlates: {
-	DisplayName: Abyssal Diving Suit Plates
-	Description: "{0}% increased damage reduction"
 }
 
 AbyssalMadness: {

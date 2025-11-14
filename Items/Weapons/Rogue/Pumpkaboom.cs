@@ -32,8 +32,6 @@ namespace CalamityMod.Items.Weapons.Rogue
             Item.DamageType = RogueDamageClass.Instance;
         }
 
-        public override float StealthDamageMultiplier => 1f;
-
         public override bool CanUseItem(Player player)
         {
             for (int x = 0; x < Main.maxProjectiles; x++)

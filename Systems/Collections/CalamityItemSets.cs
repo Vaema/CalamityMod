@@ -29,15 +29,6 @@ namespace CalamityMod.Systems.Collections
         public static IdDictionary Search = IdDictionary.Create<ItemID, int>();
 
         /// <summary>
-        /// If <see langword="true"/> for an item type, allows the item to always be used as long as only one of its <see cref="Item.shoot"/> projectile exists.<br/>
-        /// Used to give specific vanilla spears pseudo-autoswing.<br/>
-        /// Defaults to <see langword="false"/>.
-        /// </summary>
-        public static bool[] AutoreusableSpear = Factory.CreateBoolSet(ItemID.AdamantiteGlaive, ItemID.ChlorophytePartisan, ItemID.CobaltNaginata, ItemID.DarkLance, ItemID.MonkStaffT2,
-                ItemID.Gungnir, ItemID.MushroomSpear, ItemID.MythrilHalberd, ItemID.NorthPole, ItemID.ObsidianSwordfish, ItemID.OrichalcumHalberd, ItemID.PalladiumPike, ItemID.Spear,
-                ItemID.Swordfish, ItemID.TheRottedFork, ItemID.TitaniumTrident, ItemID.Trident, ItemID.ThunderSpear);
-
-        /// <summary>
         /// If <see langword="true"/> for an item type, prevents an item from removing Calamity's summon damage penalty mechanic despite having tool power.<br/>
         /// Defaults to <see langword="false"/>.
         /// </summary>
@@ -67,13 +58,13 @@ namespace CalamityMod.Systems.Collections
                 ItemID.SonarPotion, ItemID.CratePotion, ItemID.AnglerTackleBag, ItemID.HighTestFishingLine, ItemID.TackleBox, ItemID.AnglerEarring, ItemID.FishermansGuide, ItemID.WeatherRadio,
                 ItemID.Sextant, ItemID.AnglerHat, ItemID.AnglerVest, ItemID.AnglerPants, ItemID.GoldenBugNet, ItemID.FishronWings, ItemID.Flairon, ItemID.Tsunami, ItemID.BubbleGun,
                 ItemID.RazorbladeTyphoon, ItemID.TempestStaff, ItemID.FishronBossBag, ItemID.Coral, ItemID.Seashell, ItemID.Starfish, ItemID.SoulofSight, ItemID.GreaterHealingPotion,
-                ItemID.SuperHealingPotion, ItemType<SubmarineShocker>(), ItemType<Barinautical>(), ItemType<Downpour>(), ItemType<DeepseaStaff>(), ItemType<ScourgeoftheSeas>(),
+                ItemID.SuperHealingPotion, ItemID.SoulofFlight, ItemType<SubmarineShocker>(), ItemType<Barinautical>(), ItemType<Downpour>(), ItemType<DeepseaStaff>(), ItemType<ScourgeoftheSeas>(),
                 ItemType<InsidiousImpaler>(), ItemType<SepticSkewer>(), ItemType<FetidEmesis>(), ItemType<VitriolicViper>(), ItemType<CadaverousCarrion>(), ItemType<ToxicantTwister>(),
                 ItemType<OldDukeScales>(), ItemType<Greentide>(), ItemType<Leviatitan>(), ItemType<Atlantis>(), ItemType<AnahitasArpeggio>(), ItemType<Whitewater>(), ItemType<LeviathanTeeth>(),
                 ItemType<GastricBelcherStaff>(), ItemType<PearlofEnthrallment>(), ItemType<AquaticScourgeBag>(), ItemType<OldDukeBag>(), ItemType<LeviathanBag>(), ItemType<OldDukeMask>(),
                 ItemType<LeviathanMask>(), ItemType<AquaticScourgeMask>(), ItemType<OldDukeTrophy>(), ItemType<LeviathanTrophy>(), ItemType<AquaticScourgeTrophy>(), ItemType<LoreAquaticScourge>(),
                 ItemType<LoreLeviathanAnahita>(), ItemType<LoreSulphurSea>(), ItemType<LoreAbyss>(), ItemType<LoreOldDuke>(), ItemType<PearlShard>(), ItemType<AeroStone>(), ItemType<TheCommunity>(),
-                ItemType<DukesDecapitator>(), ItemType<SulphurousSand>());
+                ItemType<DukesDecapitator>(), ItemType<SulphurousSand>(), ItemType<EssenceofSunlight>());
 
         /// <summary>
         /// If <see langword="true"/> for an item type, prevents this rogue weapon from triggering Venerated Locket's clone projectile effect when used.<br/>

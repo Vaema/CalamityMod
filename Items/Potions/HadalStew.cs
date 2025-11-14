@@ -45,17 +45,9 @@ namespace CalamityMod.Items.Potions
             list.FindAndReplace("[S]", duration);
         }
 
-        public override bool CanUseItem(Player player)
-        {
-            return player.potionDelay <= 0 && player.Calamity().potionTimer <= 0;
-        }
+        public override void ModifyPotionDelay(Player player, ref int baseDelay) => baseDelay -= CalamityUtils.SecondsToFrames(60) - SicknessDuration;
 
-        public override void OnConsumeItem(Player player)
-        {
-            player.AddBuff(BuffType, BuffDuration);
-            // fixes hardcoded potion sickness duration from quick heal (see CalamityPlayerMiscEffects.cs)
-            player.Calamity().potionTimer = 2;
-        }
+        public override void OnConsumeItem(Player player) => player.AddBuff(BuffType, BuffDuration);
 
         public override void AddRecipes()
         {

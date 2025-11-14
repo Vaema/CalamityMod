@@ -13,6 +13,7 @@ using Terraria.GameContent.Liquid;
 using Terraria.GameContent.UI.Elements;
 using Terraria.GameContent.UI.States;
 using Terraria.GameInput;
+using Terraria.Graphics.CameraModifiers;
 using Terraria.Graphics.Light;
 using Terraria.Map;
 using Terraria.ModLoader;
@@ -82,7 +83,6 @@ namespace CalamityMod.ILEditing
             On_Projectile.NewProjectile_IEntitySource_float_float_float_float_int_int_float_int_float_float_float += IncorporateExtraProjectileVariables;
             On_Player.ApplyDamageToNPC += ApplyOldFashionedDamageToMiscHits;
             IL_Wiring.HitWireSingle += AddTwinklersToStatue;
-            On_Player.UpdateItemDye += FindCalamityItemDyeShader;
             On_AWorldListItem.GetDifficulty += GetDifficultyOverride;
             On_Item.GetShimmered += ShimmerEffectEdits;
             On_Player.Teleport += TPOverride;
@@ -188,6 +188,7 @@ namespace CalamityMod.ILEditing
             IL_Player.StatusFromNPC += RemoveExpertBrainRandomDebuffs;
             IL_NPC.VanillaHitEffect += PreventLavaSlimeLavaDrop;
             IL_NPC.StrikeNPC_HitInfo_bool_bool += LetDetonatingBubblesTakeDamage;
+            IL_PunchCameraModifier.Update += PunchCameraUsesScreenshakeConfig;
             IL_Player.ItemCheck_EmitUseVisuals += MakeMagmaStoneFireGauntletDustToggleable;
             IL_Projectile.EmitEnchantmentVisualsAt += MakeMagmaStoneFireGauntletProjectileDustToggleable;
             IL_Sandstorm.HasSufficientWind += DecreaseSandstormWindSpeedRequirement;

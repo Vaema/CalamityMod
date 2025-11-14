@@ -5,6 +5,7 @@ using CalamityMod.Particles;
 using CalamityMod.Skies;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using ReLogic.Content;
 using Terraria;
 using Terraria.Audio;
 using Terraria.ModLoader;
@@ -251,7 +252,7 @@ namespace CalamityMod.Projectiles.Boss
             }
 
             // Draw the crack.
-            Effect crackShader = CalamityShaders.DoGRealityCrackShader;
+            Effect crackShader = CalamityShaders.DoGRealityCrackShader.Value;
             float crackOpcity = (AIState == 1f) ? Projectile.Opacity * 0.1f : 0.1f;
             Color darkerPixelColor = FakeRift ? Color.White : DoGSky.DoGTwlight;
 

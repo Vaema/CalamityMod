@@ -215,7 +215,7 @@ namespace CalamityMod.Systems.Graphic
 
         private void DrawDistortionClouds_Background()
         {
-            Effect rollingCloudsShader = CalamityShaders.DoGBackgroundFogShader;
+            Effect rollingCloudsShader = CalamityShaders.DoGBackgroundFogShader.Value;
             Texture2D cloudsTexture = ModContent.Request<Texture2D>("CalamityMod/ExtraTextures/GreyscaleGradients/RealisticClouds").Value;
             Texture2D distortionTexture = ModContent.Request<Texture2D>("CalamityMod/ExtraTextures/GreyscaleGradients/Neurons2").Value;
             Texture2D erosionTexture = ModContent.Request<Texture2D>("CalamityMod/ExtraTextures/GreyscaleGradients/HarshNoise").Value;
@@ -272,7 +272,7 @@ namespace CalamityMod.Systems.Graphic
 
         private void DrawDistortionWinds_Foreground()
         {
-            Effect windsShader = CalamityShaders.DoGDistortionWindsShader;
+            Effect windsShader = CalamityShaders.DoGDistortionWindsShader.Value;
 
             Vector2 screenSize = new(Main.screenWidth, Main.screenHeight);
             Texture2D windsTexture = ModContent.Request<Texture2D>("CalamityMod/ExtraTextures/GreyscaleGradients/Neurons2").Value;
@@ -325,7 +325,7 @@ namespace CalamityMod.Systems.Graphic
 
         private void DrawDistortionClouds_Foreground()
         {
-            Effect rollingCloudsShader = CalamityShaders.DoGBackgroundFogShader;
+            Effect rollingCloudsShader = CalamityShaders.DoGBackgroundFogShader.Value;
             Texture2D cloudsTexture = ModContent.Request<Texture2D>("CalamityMod/ExtraTextures/GreyscaleGradients/RealisticClouds").Value;
             Texture2D erosionTexture = ModContent.Request<Texture2D>("CalamityMod/ExtraTextures/GreyscaleGradients/HarshNoise").Value;
             Vector2 screenSize = new(Main.screenWidth, Main.screenHeight);

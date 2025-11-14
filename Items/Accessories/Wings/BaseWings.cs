@@ -70,12 +70,12 @@ namespace CalamityMod.Items.Accessories.Wings
         {
             if (Item.wingSlot == -1) return;
             WingStats stats = new();
-            if (Item.type == ModContent.ItemType<TracersCelestial>())
-                stats = ArmorIDs.Wing.Sets.Stats[TracersCelestial.wingSlot];
-            else if (Item.type == ModContent.ItemType<TracersElysian>())
-                stats = ArmorIDs.Wing.Sets.Stats[TracersElysian.wingSlot];
-            else if (Item.type == ModContent.ItemType<TracersSeraph>())
-                stats = ArmorIDs.Wing.Sets.Stats[TracersSeraph.wingSlot];
+            if (Item.type == ModContent.ItemType<MoonWalkers>())
+                stats = ArmorIDs.Wing.Sets.Stats[MoonWalkers.wingSlot];
+            else if (Item.type == ModContent.ItemType<VoidStriders>())
+                stats = ArmorIDs.Wing.Sets.Stats[VoidStriders.wingSlot];
+            else if (Item.type == ModContent.ItemType<SeraphTracers>())
+                stats = ArmorIDs.Wing.Sets.Stats[SeraphTracers.wingSlot];
             else stats = ArmorIDs.Wing.Sets.Stats[Item.wingSlot];
             int time = stats.FlyTime;
             float run = stats.AccRunSpeedOverride;

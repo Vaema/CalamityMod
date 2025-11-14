@@ -22,7 +22,7 @@ namespace CalamityMod.Items.Weapons.Summon
             Item.height = 20;
             Item.mana = 10;
             Item.damage = 8;
-            Item.useAnimation = Item.useTime = 34;
+            Item.useAnimation = Item.useTime = 30;
             Item.useStyle = ItemUseStyleID.HoldUp;
             Item.noMelee = true;
             Item.knockBack = 0.5f;
