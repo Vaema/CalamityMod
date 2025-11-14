@@ -14,39 +14,36 @@ namespace CalamityMod.Items.VanillaArmorChanges
 
         public override string ArmorSetName => "MonkTier3";
 
+        public static float SetBonusRogueStealth = 0.95f;
+
         public override void UpdateSetBonusText(ref string setBonusText)
         {
-            setBonusText += $"\n{CalamityUtils.GetTextValue($"Vanilla.Armor.SetBonus.{ArmorSetName}")}";
+            setBonusText = CalamityUtils.GetText($"Vanilla.Armor.SetBonus.{ArmorSetName}").Format(SetBonusRogueStealth.ToStealth()) + "\n" + setBonusText;
         }
 
         public override void ApplyHeadPieceEffect(Player player)
         {
-            player.GetDamage<SummonDamageClass>() -= 0.1f; // Decrease both damage boosts to 10%.
             player.GetDamage<MeleeDamageClass>() -= 0.2f;
-            player.GetDamage<RogueDamageClass>() += 0.1f; // Replace melee damage with rogue damage.
+            player.GetDamage<RogueDamageClass>() += 0.2f; // Replace melee damage with rogue damage.
         }
 
         public override void ApplyBodyPieceEffect(Player player) 
         {
-            player.GetDamage<SummonDamageClass>() -= 0.1f; // Decrease summon damage boost to 10%.
-            player.GetAttackSpeed<MeleeDamageClass>() -= 0.2f; // Replace melee speed with rogue velocity, and decrease to 15%.
-            player.Calamity().rogueVelocity += 0.15f;
-            player.GetCritChance<MeleeDamageClass>() -= 5; // Replace melee crit with rogue crit.
-            player.GetCritChance<RogueDamageClass>() += 5;
+            player.GetAttackSpeed<MeleeDamageClass>() -= 0.2f; 
+            player.Calamity().rogueVelocity += 0.2f; // Replace melee speed with rogue velocity.
+            player.GetCritChance<MeleeDamageClass>() -= 5;
+            player.GetCritChance<RogueDamageClass>() += 5; // Replace melee crit with rogue crit.
         }
 
         public override void ApplyLegPieceEffect(Player player)
         {
-            player.GetDamage<SummonDamageClass>() -= 0.1f; // Decrease summon damage boost to 10%.
-            player.GetCritChance<MeleeDamageClass>() -= 20; // Replace melee crit chance with rogue, and decrease to 10%.
-            player.GetCritChance<RogueDamageClass>() += 10;
+            player.GetCritChance<MeleeDamageClass>() -= 20;
+            player.GetCritChance<RogueDamageClass>() += 20; // Replace melee crit chance with rogue.
         }
 
         public override void ApplyArmorSetBonus(Player player)
         {
-            player.GetDamage<SummonDamageClass>() += 0.2f; // Re-add 20% of the 30% lost summon damage, and the rest of the rogue damage.
-            player.GetDamage<RogueDamageClass>() += 0.1f;
-            player.Calamity().rogueStealthMax += 1f; // Give rogue stealth.
+            player.Calamity().rogueStealthMax += SetBonusRogueStealth; // Give rogue stealth.
             player.Calamity().wearingRogueArmor = true;
         }
     }

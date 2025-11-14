@@ -121,17 +121,9 @@ EditedTooltip: {
 		Summons the Eater of Worlds when used in the Corruption
 		Despawns outside the Corruption
 		'''
-	MasterExclusive: Master or Revengeance
-	// Sparkle Slime Balloon
-	GelBalloon:
-		'''
-		Throws a mixture of slime and sparkling crystals
-		Slimed enemies take more damage from fire-based debuffs
-		'''
-	// Ancient Manipulator
-	LunarCraftingStation: Used to craft items from Lunar Fragments, Luminite, and Astral Bars
-	AnkhShield1: Grants immunity to knockback
-	AnkhShield2: Grants immunity to most debuffs, including Mighty Wind
+	/*
+	Life Regen
+	*/
 	Campfires: Life regen is increased by 0.5 HP/s when near a campfire
 	HeartLantern: Grants +1 HP/s life regeneration when placed nearby
 	BottledHoney:
@@ -144,8 +136,26 @@ EditedTooltip: {
 	CharmofMyths: Grants +1 HP/s life regeneration and reduces the cooldown of healing potions by 25%
 	RegenerationPotion: Provides +2 HP/s life regeneration
 	HamBat: Defeating enemies temporarily grants +3 HP/s life regen
-	// Arcane Crystal
+	// Vital Crystal
 	AegisCrystal: Permanently boosts natural life regeneration
+	SquireGreatHelm: Increases your max number of sentries by 1 and grants +2 HP/s life regen
+	// Valhalla Knight's Breastplate
+	SquireAltShirt: 30% increased summon damage and grants +4 HP/s life regen
+	SolarFlarePieces: Grants +1 HP/s life regeneration
+	/*
+	Others
+	*/
+	MasterExclusive: Master or Revengeance
+	// Sparkle Slime Balloon
+	GelBalloon:
+		'''
+		Throws a mixture of slime and sparkling crystals
+		Slimed enemies take more damage from fire-based debuffs
+		'''
+	// Ancient Manipulator
+	LunarCraftingStation: Used to craft items from Lunar Fragments, Luminite, and Astral Bars
+	AnkhShield1: Grants immunity to knockback
+	AnkhShield2: Grants immunity to most debuffs, including Mighty Wind
 	ArcheryPotion: 20% increased arrow speed and 5% increased arrow damage
 	// Aerial Bane
 	DD2BetsyBow: Shoots a tight spread of 6 splitting arrows
@@ -202,54 +212,6 @@ EditedTooltip: {
 	FlaskofParty: All attacks cause confetti to appear
 	FlaskofPoison: Melee, Whip, and Rogue attacks poison enemies
 	FlaskofVenom: Melee, Whip, and Rogue attacks inflict Acid Venom on enemies
-	SolarFlarePieces: Grants +1 HP/s life regeneration
-	/*
-	OOA sets
-	*/
-	SquireGreatHelm: Increases your max number of sentries by 1 and grants +0.5 HP/s life regen
-	SquirePlating: 5% increased summon damage and 15% increased melee damage
-	SquireGreaves:
-		'''
-		5% increased summon damage and melee critical strike chance
-		15% increased movement speed
-		'''
-	MonkBrows: Increases your max number of sentries by 1 and increases rogue velocity by 10%
-	MonkShirt: 5% increased summon and rogue damage
-	MonkPants1: 5% increased summon damage and rogue critical strike chance
-	MonkPants2: 20% increased movement speed
-	// Valhalla Knight
-	SquireAltHead: Increases your max number of sentries by 2 and increases summon and melee damage by 15%
-	SquireAltShirt: 15% increased summon damage and grants +1 HP/s life regen
-	SquireAltPants: 10% increased summon damage
-	HuntressJerkin:
-		'''
-		10% increased summon damage and 5% increased ranged damage and critical strike chance
-		10% chance to not consume ammo
-		'''
-	HuntressPants: 5% increased summon damage and 20% increased movement speed
-	ApprenticeHat: Increases your max number of sentries by 1, 5% increased magic damage and 10% reduced mana cost
-	ApprenticeRobe: 10% increased summon and magic damage
-	ApprenticeTrousers:
-		'''
-		5% increased summon damage and magic critical strike chance
-		20% increased movement speed
-		'''
-	// Shinobi Infiltrator
-	MonkAltHead:
-		'''
-		Increases your max number of sentries by 2
-		10% increased summon and rogue damage
-		'''
-	MonkAltShirt0: 10% increased summon damage and 15% increased rogue velocity
-	MonkAltShirt1: 5% increased rogue critical strike chance
-	MonkAltPants: 10% increased summon damage and rogue critical strike chance
-	// Red Riding
-	HuntressAltShirt: 10% increased summon and ranged damage and 20% chance to not consume ammo
-	HuntressAltPants: 20% increased summon damage and 5% increased ranged critical strike chance
-	// Dark Artist
-	ApprenticeAltHead: 10% increased summon & magic damage
-	ApprenticeAltShirt: 15% increased summon damage and 10% increased magic damage
-	ApprenticeAltPants: 10% increased summon damage
 	GravityGlobe:
 		'''
 		Provides 32% increased jump speed and increased fall speed
@@ -258,6 +220,14 @@ EditedTooltip: {
 		Press {$Key.UP} to change gravity
 		Press {$Key.DOWN} to fall faster
 		'''
+	MonkBrows: Increases your max number of sentries by 1 and increases rogue velocity by 20%
+	MonkShirt: 20% increased summon and rogue damage
+	MonkPants: 15% increased rogue critical strike chance and 20% increased movement speed
+	// Shinobi Infiltrator
+	MonkAltHead: Increases your max number of sentries by 2 and increases summon & rogue damage by 20%
+	MonkAltShirt0: 20% increased summon damage and rogue velocity
+	MonkAltShirt1: 5% increased rogue critical strike chance
+	MonkAltPants: 20% increased summon damage and rogue critical strike chance
 }
 
 // Buff Descriptions

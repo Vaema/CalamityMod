@@ -594,8 +594,17 @@ namespace CalamityMod.Items
             if (item.type == ItemID.HamBat)
                 EditTooltipByNum(1, (line) => line.Text = EditedTooltip("HamBat"));
 
-            if (item.type == ItemID.AegisCrystal)
+            if (item.type == ItemID.AegisCrystal) // Vital Crystal
                 EditTooltipByNum(0, (line) => line.Text = EditedTooltip("AegisCrystal"));
+
+            if (item.type == ItemID.SquireGreatHelm)
+                EditTooltipByNum(0, (line) => line.Text = EditedTooltip("SquireGreatHelm"));
+
+            if (item.type == ItemID.SquireAltShirt) // Valhalla Knight's Breastplate
+                EditTooltipByNum(0, (line) => line.Text = EditedTooltip("SquireAltShirt"));
+
+            if (item.type == ItemID.SolarFlareHelmet || item.type == ItemID.SolarFlareBreastplate || item.type == ItemID.SolarFlareLeggings)
+                EditTooltipByNum(1, (line) => line.Text = EditedTooltip("SolarFlarePieces"));
             #endregion
 
             // Numerous random tooltip edits which don't fit into another category
@@ -1073,8 +1082,6 @@ namespace CalamityMod.Items
             // Solar Flare
             if (item.type == ItemID.SolarFlareHelmet)
                 EditTooltipByNum(0, (line) => line.Text = line.Text.Replace("26%", "20%"));
-            if (item.type == ItemID.SolarFlareHelmet || item.type == ItemID.SolarFlareBreastplate || item.type == ItemID.SolarFlareLeggings)
-                EditTooltipByNum(1, (line) => line.Text = EditedTooltip("SolarFlarePieces"));
 
             // Vortex
             if (item.type == ItemID.VortexHelmet)
@@ -1086,47 +1093,14 @@ namespace CalamityMod.Items
 
             // DD2 armor tooltip edits
             #region DD2 Armor
-            // Reduce DD2 armor piece bonuses because they're overpowered, and clarify life regen boosts
-            // Squire armor
-            if (item.type == ItemID.SquireGreatHelm)
-                EditTooltipByNum(0, (line) => line.Text = EditedTooltip("SquireGreatHelm"));
-            if (item.type == ItemID.SquirePlating)
-                EditTooltipByNum(0, (line) => line.Text = EditedTooltip("SquirePlating"));
-            if (item.type == ItemID.SquireGreaves)
-                EditTooltipByNum(0, (line) => line.Text = EditedTooltip("SquireGreaves"));
-
+            // Tweaks into Rogue
             // Monk armor
             if (item.type == ItemID.MonkBrows)
                 EditTooltipByNum(0, (line) => line.Text = EditedTooltip("MonkBrows"));
             if (item.type == ItemID.MonkShirt)
                 EditTooltipByNum(0, (line) => line.Text = EditedTooltip("MonkShirt"));
             if (item.type == ItemID.MonkPants)
-            {
-                EditTooltipByNum(0, (line) => line.Text = EditedTooltip("MonkPants1"));
-                EditTooltipByNum(1, (line) => line.Text = EditedTooltip("MonkPants2"));
-            }
-
-            // Huntress armor
-            if (item.type == ItemID.HuntressJerkin)
-                EditTooltipByNum(0, (line) => line.Text = EditedTooltip("HuntressJerkin"));
-            if (item.type == ItemID.HuntressPants)
-                EditTooltipByNum(0, (line) => line.Text = EditedTooltip("HuntressPants"));
-
-            // Apprentice armor
-            if (item.type == ItemID.ApprenticeHat)
-                EditTooltipByNum(0, (line) => line.Text = EditedTooltip("ApprenticeHat"));
-            if (item.type == ItemID.ApprenticeRobe)
-                EditTooltipByNum(0, (line) => line.Text = EditedTooltip("ApprenticeRobe"));
-            if (item.type == ItemID.ApprenticeTrousers)
-                EditTooltipByNum(0, (line) => line.Text = EditedTooltip("ApprenticeTrousers"));
-
-            // Valhalla Knight armor
-            if (item.type == ItemID.SquireAltHead)
-                EditTooltipByNum(0, (line) => line.Text = EditedTooltip("SquireAltHead"));
-            if (item.type == ItemID.SquireAltShirt)
-                EditTooltipByNum(0, (line) => line.Text = EditedTooltip("SquireAltShirt"));
-            if (item.type == ItemID.SquireAltPants)
-                EditTooltipByNum(0, (line) => line.Text = EditedTooltip("SquireAltPants"));
+                EditTooltipByNum(1, (line) => line.Text = EditedTooltip("MonkPants"));
 
             // Shinobi Infiltrator armor
             if (item.type == ItemID.MonkAltHead)
@@ -1138,20 +1112,6 @@ namespace CalamityMod.Items
             }
             if (item.type == ItemID.MonkAltPants)
                 EditTooltipByNum(0, (line) => line.Text = EditedTooltip("MonkAltPants"));
-
-            // Red Riding armor
-            if (item.type == ItemID.HuntressAltShirt)
-                EditTooltipByNum(0, (line) => line.Text = EditedTooltip("HuntressAltShirt"));
-            if (item.type == ItemID.HuntressAltPants)
-                EditTooltipByNum(0, (line) => line.Text = EditedTooltip("HuntressAltPants"));
-
-            // Dark Artist armor
-            if (item.type == ItemID.ApprenticeAltHead)
-                EditTooltipByNum(1, (line) => line.Text = EditedTooltip("ApprenticeAltHead"));
-            if (item.type == ItemID.ApprenticeAltShirt)
-                EditTooltipByNum(0, (line) => line.Text = EditedTooltip("ApprenticeAltShirt"));
-            if (item.type == ItemID.ApprenticeAltPants)
-                EditTooltipByNum(0, (line) => line.Text = EditedTooltip("ApprenticeAltPants"));
             #endregion
 
             // Non-consumable boss summon items
