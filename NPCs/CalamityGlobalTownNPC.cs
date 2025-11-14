@@ -42,25 +42,27 @@ namespace CalamityMod.NPCs
         {
             get
             {
-                // 15 silver per NPC, max of 7 platinum 50 gold.
-                if (DownedBossSystem.downedDoG)
-                    return 15f;
-
                 // 10 silver per NPC, max of 5 platinum.
-                if (NPC.downedMoonlord)
+                if (DownedBossSystem.downedDoG)
                     return 10f;
 
-                // 4 silver per NPC, max of 2 platinum.
+                // 8 silver per NPC, max of 4 platinum.
+                if (NPC.downedMoonlord)
+                    return 8f;
+
+                // 2 silver per NPC, max of 1 platinum.
                 if (NPC.downedPlantBoss)
-                    return 4f;
+                    return 2f;
 
                 return 1f;
             }
         }
 
-        public static int TotalTaxesPerNPC => (int)(Item.buyPrice(0, 0, 1, 0) * TaxYieldFactor);
+        // Vanilla: 50 copper
+        public static int TotalTaxesPerNPC => (int)(Item.buyPrice(silver: 1) * TaxYieldFactor);
 
-        public static int TaxesToCollectLimit => (int)(Item.buyPrice(0, 50, 0, 0) * TaxYieldFactor);
+        // Vanilla: 25 gold
+        public static int TaxesToCollectLimit => (int)(Item.buyPrice(gold: 50) * TaxYieldFactor);
 
         #region Town NPC Patreon Name Sets
         private static readonly string[] AnglerNames =
