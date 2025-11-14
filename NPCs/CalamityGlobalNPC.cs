@@ -5847,7 +5847,7 @@ namespace CalamityMod.NPCs
                 maxSpawns = (int)(maxSpawns * 1.5f);
             }
 
-            if (CalamityWorld.death && Main.bloodMoon)
+            if (CalamityWorld.death && Main.bloodMoon && player.position.Y < Main.worldSurface * 16.0)
             {
                 spawnRate = (int)(spawnRate * 0.25);
                 maxSpawns = (int)(maxSpawns * 5f);
