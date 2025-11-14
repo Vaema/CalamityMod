@@ -57,8 +57,7 @@ AddedTooltip: {
 		Graveyards have various new item sales and recipes
 		'''
 	FeatherfallPotion: Disables all airborne flight recovery
-	CrimsonBreastplate: +1 HP/s life regen
-	CrimsonOtherPieces: +0.5 HP/s life regen
+	CrimsonArmorPieces: +0.5 HP/s life regen
 	Picksaw: Can mine Scoria Ore located in the Abyss
 }
 

@@ -864,13 +864,8 @@ namespace CalamityMod.Items
             // Crimson
             if (item.type == ItemID.CrimsonHelmet || item.type == ItemID.CrimsonScalemail || item.type == ItemID.CrimsonGreaves)
             {
-                EditTooltipByNum(0, (line) =>
-                {
-                    string newTooltip = line.Text.Replace("3%", "6%");
-                    // Chest piece has 2 regen instead of 1
-                    newTooltip += item.type == ItemID.CrimsonScalemail ? AddedTooltip("CrimsonBreastplate") : AddedTooltip("CrimsonOtherPieces");
-                    line.Text = newTooltip;
-                });
+                EditTooltipByNum(0, (line) => line.Text = line.Text.Replace("3%", "6%"));
+                EditTooltipByNum(0, (line) => line.Text += AddedTooltip("CrimsonArmorPieces"));
             }
 
             // Meteor
