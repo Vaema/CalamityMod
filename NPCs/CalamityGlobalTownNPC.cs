@@ -42,19 +42,15 @@ namespace CalamityMod.NPCs
         {
             get
             {
-                // Max of 20 platinum.
-                if (DownedBossSystem.downedYharon)
-                    return 40f;
-
-                // Max of 10 platinum.
+                // 15 silver per NPC, max of 7 platinum 50 gold.
                 if (DownedBossSystem.downedDoG)
-                    return 20f;
+                    return 15f;
 
-                // Max of 5 platinum.
+                // 10 silver per NPC, max of 5 platinum.
                 if (NPC.downedMoonlord)
                     return 10f;
 
-                // Max of 2 platinum.
+                // 4 silver per NPC, max of 2 platinum.
                 if (NPC.downedPlantBoss)
                     return 4f;
 
@@ -62,7 +58,7 @@ namespace CalamityMod.NPCs
             }
         }
 
-        public static int TotalTaxesPerNPC => (int)(Item.buyPrice(0, 0, 1, 50) * TaxYieldFactor);
+        public static int TotalTaxesPerNPC => (int)(Item.buyPrice(0, 0, 1, 0) * TaxYieldFactor);
 
         public static int TaxesToCollectLimit => (int)(Item.buyPrice(0, 50, 0, 0) * TaxYieldFactor);
 
