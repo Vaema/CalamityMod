@@ -13,6 +13,7 @@ using Terraria.GameContent.Liquid;
 using Terraria.GameContent.UI.Elements;
 using Terraria.GameContent.UI.States;
 using Terraria.GameInput;
+using Terraria.Graphics.CameraModifiers;
 using Terraria.Graphics.Light;
 using Terraria.Map;
 using Terraria.ModLoader;
@@ -195,6 +196,7 @@ namespace CalamityMod.ILEditing
             IL_Player.StatusFromNPC += RemoveExpertBrainRandomDebuffs;
             IL_NPC.VanillaHitEffect += PreventLavaSlimeLavaDrop;
             IL_NPC.StrikeNPC_HitInfo_bool_bool += LetDetonatingBubblesTakeDamage;
+            IL_PunchCameraModifier.Update += PunchCameraUsesScreenshakeConfig;
             IL_Player.ItemCheck_EmitUseVisuals += MakeMagmaStoneFireGauntletDustToggleable;
             IL_Projectile.EmitEnchantmentVisualsAt += MakeMagmaStoneFireGauntletProjectileDustToggleable;
             IL_Sandstorm.HasSufficientWind += DecreaseSandstormWindSpeedRequirement;

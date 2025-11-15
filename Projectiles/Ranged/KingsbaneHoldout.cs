@@ -80,7 +80,7 @@ namespace CalamityMod.Projectiles.Ranged
             Vector2 shootVelocity = Projectile.velocity.SafeNormalize(Vector2.UnitY) * 15;
 
             int bulletAMMO = ProjectileID.Bullet;
-            Owner.PickAmmo(Owner.ActiveItem(), out bulletAMMO, out float SpeedNoUse, out int bulletDamage, out float kBackNoUse, out int _);
+            Owner.PickAmmo(Owner.HeldItem, out bulletAMMO, out float SpeedNoUse, out int bulletDamage, out float kBackNoUse, out int _);
 
             // Fire Auric Bullets if the owner stops channeling or otherwise cannot use the weapon.
             if (Owner.CantUseHoldout() || discharging)

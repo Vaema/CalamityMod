@@ -82,8 +82,8 @@ namespace CalamityMod.Projectiles.Ranged
                     SoundEngine.PlaySound(SoundID.Item92, Projectile.Center);
 
                     float shootSpeed = 12f;
-                    int damage = player.GetWeaponDamage(player.ActiveItem());
-                    float knockBack = player.ActiveItem().knockBack;
+                    int damage = player.GetWeaponDamage(player.HeldItem);
+                    float knockBack = player.HeldItem.knockBack;
 
                     Projectile.velocity = Main.screenPosition - playerPosition;
                     Projectile.velocity.X += Main.mouseX;

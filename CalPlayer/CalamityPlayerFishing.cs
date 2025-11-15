@@ -159,6 +159,10 @@ namespace CalamityMod.CalPlayer
                     else
                         itemDrop = ModContent.ItemType<CragBullhead>();
                 }
+                if (ZoneBasaltGully)
+                {
+                    itemDrop = ModContent.ItemType<MoltenFishron>();
+                }
                 return;
             }
 
@@ -303,12 +307,13 @@ namespace CalamityMod.CalPlayer
                 if (Player.ZoneDesert && Main.rand.NextBool())
                     return;
 
-                int commonCatch = Utils.SelectRandom(Main.rand, new int[]
-                    {
-                        ModContent.ItemType<PrismaticGuppyItem>(),
-                        ModContent.ItemType<PrismaticGuppyPinkItem>(),
-                        ModContent.ItemType<PrismaticGuppyGreenItem>()
-                    });
+                int commonCatch = ModContent.ItemType<CoralskinFoolfish>();
+                if (ZonePolypForest)
+                    commonCatch = ModContent.ItemType<GleamingCucumber>();
+                else if (ZoneGleamingBurrows)
+                    commonCatch = ModContent.ItemType<SpecularSturgeon>();
+                else if (ZoneTimelessShores)
+                    commonCatch = ModContent.ItemType<Squidoom>();
 
                 if (attempt.legendary)
                 {

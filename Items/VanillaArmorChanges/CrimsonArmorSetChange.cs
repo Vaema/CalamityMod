@@ -16,7 +16,6 @@ namespace CalamityMod.Items.VanillaArmorChanges
 
         public const float ArmorPieceDamage = 0.06f;
         public const int ArmorPieceLifeRegen = 1;
-        public const int ChestPieceBonusLifeRegen = 1;
 
         // Set bonus clarification
         public override void UpdateSetBonusText(ref string setBonusText)
@@ -35,11 +34,7 @@ namespace CalamityMod.Items.VanillaArmorChanges
 
         public override void ApplyHeadPieceEffect(Player player) => ApplyAnyPieceEffect(player);
 
-        public override void ApplyBodyPieceEffect(Player player)
-        {
-            ApplyAnyPieceEffect(player);
-            player.lifeRegen += ChestPieceBonusLifeRegen;
-        }
+        public override void ApplyBodyPieceEffect(Player player) => ApplyAnyPieceEffect(player);
 
         public override void ApplyLegPieceEffect(Player player) => ApplyAnyPieceEffect(player);
     }

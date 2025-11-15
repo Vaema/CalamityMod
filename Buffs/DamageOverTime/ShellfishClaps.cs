@@ -32,7 +32,7 @@ namespace CalamityMod.Buffs.DamageOverTime
                 }
             }
 
-            Item heldItem = Main.player[owner].ActiveItem();
+            Item heldItem = Main.player[owner].HeldItem;
             int totalDamage = (int)Main.player[owner].GetTotalDamage<SummonDamageClass>().ApplyTo(debuffData.EnemyLostRegen);
 
             if (CalamityUtils.ShouldTriggerSummonPenalty(Main.player[owner], heldItem))

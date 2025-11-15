@@ -2,7 +2,6 @@
 using System.Linq;
 using System.Reflection;
 using CalamityMod.Balancing;
-using CalamityMod.Buffs.DamageOverTime;
 using CalamityMod.CalPlayer;
 using CalamityMod.Cooldowns;
 using CalamityMod.DataStructures;
@@ -22,11 +21,7 @@ using CalamityMod.Items.Potions.Alcohol;
 using CalamityMod.NPCs;
 using CalamityMod.NPCs.Abyss;
 using CalamityMod.NPCs.Astral;
-using CalamityMod.NPCs.AstrumAureus;
-using CalamityMod.NPCs.Crabulon;
 using CalamityMod.NPCs.DraedonLabThings;
-using CalamityMod.NPCs.NormalNPCs;
-using CalamityMod.NPCs.Ravager;
 using CalamityMod.NPCs.SunkenSea;
 using CalamityMod.Packets;
 using CalamityMod.Particles;
@@ -40,7 +35,6 @@ using CalamityMod.Tiles;
 using CalamityMod.Walls;
 using CalamityMod.Walls.UnsafeWalls;
 using CalamityMod.Waterfalls;
-using CalamityMod.World;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Mono.Cecil.Cil;
@@ -48,10 +42,8 @@ using MonoMod.Cil;
 using ReLogic.Content;
 using Terraria;
 using Terraria.Audio;
-using Terraria.Chat;
 using Terraria.DataStructures;
 using Terraria.GameContent;
-using Terraria.GameContent.Achievements;
 using Terraria.GameContent.Biomes;
 using Terraria.GameContent.Drawing;
 using Terraria.GameContent.Events;
@@ -310,7 +302,7 @@ namespace CalamityMod.ILEditing
                 return;
             }
 
-            if (CalamityKeybinds.DashHotkey.GetAssignedKeys().Count == 0)
+            if (CalamityKeybinds.DashHotkey.GetAssignedKeysOrEmpty().Count == 0)
                 orig(self, out dir, out dashing, dashStartAction);
             else
             {
@@ -328,7 +320,7 @@ namespace CalamityMod.ILEditing
                 return;
             }
 
-            if ((CalamityKeybinds.ArmorSetBonusHotKey.GetAssignedKeys().Count != 0 && CalamityClientConfig.Instance.SetBonusDoubleTap == SetBonusDoubleTapOptions.Auto) || CalamityClientConfig.Instance.SetBonusDoubleTap == SetBonusDoubleTapOptions.Off)
+            if ((CalamityKeybinds.ArmorSetBonusHotKey.GetAssignedKeysOrEmpty().Count != 0 && CalamityClientConfig.Instance.SetBonusDoubleTap == SetBonusDoubleTapOptions.Auto) || CalamityClientConfig.Instance.SetBonusDoubleTap == SetBonusDoubleTapOptions.Off)
                 return;
 
             orig(self, keyDir);
@@ -603,7 +595,7 @@ namespace CalamityMod.ILEditing
             // This only applies to minions spawned by weapon uses, preventing other minions such as Luxor's Gift from exploding
             if (projectile.minion && spawnSource is EntitySource_ItemUse useSource && useSource.Item is Item weapon && weapon.useAnimation > 0)
             {
-                CalamityPlayer.EnchantHeldItemEffects(player, player.Calamity(), player.ActiveItem());
+                CalamityPlayer.EnchantHeldItemEffects(player, player.Calamity(), player.HeldItem);
                 if (player.Calamity().explosiveMinionsEnchant)
                     calProj.ExplosiveEnchantCountdown = CalamityGlobalProjectile.ExplosiveEnchantTime;
             }
@@ -681,7 +673,8 @@ namespace CalamityMod.ILEditing
         #endregion
 
         #region Chaos Stone Mana Burn changes
-        private static bool AllowNegativeCheckMana(On_Player.orig_CheckMana_int_bool_bool orig, Player self, int amount, bool pay, bool blockQuickMana) {
+        private static bool AllowNegativeCheckMana(On_Player.orig_CheckMana_int_bool_bool orig, Player self, int amount, bool pay, bool blockQuickMana)
+        {
             if (self.Calamity().ChaosStone)
             {
                 if (pay)
@@ -693,7 +686,8 @@ namespace CalamityMod.ILEditing
             return orig(self, amount, pay, blockQuickMana);
         }
 
-        private static bool AllowNegativeCheckMana(On_Player.orig_CheckMana_Item_int_bool_bool orig, Player self, Item item, int amount, bool pay, bool blockQuickMana) {
+        private static bool AllowNegativeCheckMana(On_Player.orig_CheckMana_Item_int_bool_bool orig, Player self, Item item, int amount, bool pay, bool blockQuickMana)
+        {
             if (self.Calamity().ChaosStone)
             {
                 if (pay)
@@ -1035,7 +1029,8 @@ namespace CalamityMod.ILEditing
                 LogFailure("DoDraw Lava", "Could not locate the drawing of Background Waters");
                 return;
             }
-            cursor.EmitDelegate(() => {
+            cursor.EmitDelegate(() =>
+            {
                 LavaRenderingSystem.Instance.DrawLavas(isBackground: true);
             });
             if (!cursor.TryGotoNext(MoveType.After, i => i.MatchLdsfld<Main>("drawToScreen"), i => i.MatchBrfalse(out _), i => i.MatchLdarg0(), i => i.MatchLdcI4(0), i => i.MatchCall<Main>("DrawWaters")))
@@ -1043,7 +1038,8 @@ namespace CalamityMod.ILEditing
                 LogFailure("DoDraw Lava", "Could not locate the drawing of Waters");
                 return;
             }
-            cursor.EmitDelegate(() => {
+            cursor.EmitDelegate(() =>
+            {
                 LavaRenderingSystem.Instance.DrawLavas();
             });
         }
@@ -1056,7 +1052,8 @@ namespace CalamityMod.ILEditing
                 LogFailure("Render Lava", "Could not locate the drawing of Waters");
                 return;
             }
-            cursor.EmitDelegate(() => {
+            cursor.EmitDelegate(() =>
+            {
                 LavaRenderingSystem.Instance.DrawLavas();
             });
         }
@@ -1069,7 +1066,8 @@ namespace CalamityMod.ILEditing
                 LogFailure("Render Lava Backgroumds", "Could not locate the drawing of Background Waters");
                 return;
             }
-            cursor.EmitDelegate(() => {
+            cursor.EmitDelegate(() =>
+            {
                 LavaRenderingSystem.Instance.DrawLavas(isBackground: true);
             });
         }
@@ -1082,7 +1080,8 @@ namespace CalamityMod.ILEditing
                 LogFailure("Draw lavas to captures", "Could not locate the saving of water alphas");
                 return;
             }
-            cursor.EmitDelegate(() => {
+            cursor.EmitDelegate(() =>
+            {
                 LavaRenderingSystem.LavaAlpha.CopyTo(LavaRenderingSystem.AlphaSave, 0);
             });
             if (!cursor.TryGotoNext(MoveType.Before, i => i.MatchLdcI4(0), i => i.MatchStloc(34), i => i.MatchBr(out _), i => i.MatchLdloc(34), i => i.MatchLdcI4(1), i => i.MatchBeq(out _)))
@@ -1091,7 +1090,8 @@ namespace CalamityMod.ILEditing
                 return;
             }
             cursor.EmitLdloc(8);
-            cursor.EmitDelegate((CaptureBiome biome) => {
+            cursor.EmitDelegate((CaptureBiome biome) =>
+            {
                 for (int i = 0; i < 1; i++)
                 {
                     LavaRenderingSystem.LavaAlpha[i] = ((i == LavaRenderingSystem.LavaStyle) ? 1f : 0f);
@@ -1102,7 +1102,8 @@ namespace CalamityMod.ILEditing
                 LogFailure("Draw lavas to captures", "Could not locate the background of liquid capture drawing");
                 return;
             }
-            cursor.EmitDelegate(() => {
+            cursor.EmitDelegate(() =>
+            {
                 LavaRenderingSystem.Instance.DrawLiquid(bg: true, LavaRenderingSystem.LavaStyle);
             });
             if (!cursor.TryGotoNext(MoveType.After, i => i.MatchLdarg0(), i => i.MatchLdcI4(1), i => i.MatchLdsfld<Main>("bloodMoon"), i => i.MatchBrtrue(out _), i => i.MatchLdloc(8), i => i.MatchLdfld<CaptureBiome>("WaterStyle"), i => i.MatchBr(out _), i => i.MatchLdcI4(9), i => i.MatchLdcR4(1), i => i.MatchLdcI4(1), i => i.MatchCall<Main>("DrawLiquid")))
@@ -1110,7 +1111,8 @@ namespace CalamityMod.ILEditing
                 LogFailure("Draw lavas to captures", "Could not locate the second background of liquid capture drawing");
                 return;
             }
-            cursor.EmitDelegate(() => {
+            cursor.EmitDelegate(() =>
+            {
                 LavaRenderingSystem.Instance.DrawLiquid(bg: true, LavaRenderingSystem.LavaStyle);
             });
             if (!cursor.TryGotoNext(MoveType.After, i => i.MatchLdarg0(), i => i.MatchLdcI4(0), i => i.MatchLdsfld<Main>("waterStyle"), i => i.MatchLdcR4(1), i => i.MatchLdcI4(1), i => i.MatchCall<Main>("DrawLiquid")))
@@ -1118,7 +1120,8 @@ namespace CalamityMod.ILEditing
                 LogFailure("Draw lavas to captures", "Could not locate the liquid capture drawing");
                 return;
             }
-            cursor.EmitDelegate(() => {
+            cursor.EmitDelegate(() =>
+            {
                 LavaRenderingSystem.Instance.DrawLiquid(bg: false, LavaRenderingSystem.LavaStyle);
             });
             if (!cursor.TryGotoNext(MoveType.After, i => i.MatchLdarg0(), i => i.MatchLdcI4(0), i => i.MatchLdloc(8), i => i.MatchLdfld<CaptureBiome>("WaterStyle"), i => i.MatchLdcR4(1), i => i.MatchLdcI4(1), i => i.MatchCall<Main>("DrawLiquid")))
@@ -1126,7 +1129,8 @@ namespace CalamityMod.ILEditing
                 LogFailure("Draw lavas to captures", "Could not locate the second liquid capture drawing");
                 return;
             }
-            cursor.EmitDelegate(() => {
+            cursor.EmitDelegate(() =>
+            {
                 LavaRenderingSystem.Instance.DrawLiquid(bg: false, LavaRenderingSystem.LavaStyle);
             });
             if (!cursor.TryGotoNext(MoveType.After, i => i.MatchLdloc2(), i => i.MatchStsfld<Main>("liquidAlpha")))
@@ -1134,7 +1138,8 @@ namespace CalamityMod.ILEditing
                 LogFailure("Draw lavas to captures", "Could not locate water style value returner");
                 return;
             }
-            cursor.EmitDelegate(() => {
+            cursor.EmitDelegate(() =>
+            {
                 LavaRenderingSystem.AlphaSave.CopyTo(LavaRenderingSystem.LavaAlpha, 0);
             });
         }
@@ -1142,17 +1147,18 @@ namespace CalamityMod.ILEditing
         private void AddTileLiquidDrawing(ILContext il)
         {
             ILCursor cursor = new ILCursor(il);
-            if (!cursor.TryGotoNext(MoveType.After, i => i.MatchLdarg0(), i => i.MatchLdarg1(), i => i.MatchLdcI4(0), i => i.MatchLdarg(out _), i => i.MatchLdloc1(), i => i.MatchLdloc2(), i => i.MatchLdloc(12), i => i.MatchLdloc(13), i => i.MatchLdloc(14), i => i.MatchCall<TileDrawing>("DrawTile_LiquidBehindTile")))
+            if (!cursor.TryGotoNext(MoveType.After, i => i.MatchLdarg0(), i => i.MatchLdarg1(), i => i.MatchLdcI4(0), i => i.MatchLdarg(out _), i => i.MatchLdloc1(), i => i.MatchLdloc2(), i => i.MatchLdloc(13), i => i.MatchLdloc(14), i => i.MatchLdloc(15), i => i.MatchCall<TileDrawing>("DrawTile_LiquidBehindTile")))
             {
                 LogFailure("Tile Lava Drawing", "Could not locate the drawing of Liquid Behind Tile drawing");
                 return;
             }
             cursor.EmitLdloc1();
             cursor.EmitLdloc2();
-            cursor.EmitLdloc(12);
             cursor.EmitLdloc(13);
             cursor.EmitLdloc(14);
-            cursor.EmitDelegate((Vector2 unscaledPosition, Vector2 vector, int j, int i, Tile tile) => {
+            cursor.EmitLdloc(15);
+            cursor.EmitDelegate((Vector2 unscaledPosition, Vector2 vector, int j, int i, Tile tile) =>
+            {
                 LavaRenderingSystem.Instance.DrawTile_LiquidBehindTile(solidLayer: false, inFrontOfPlayers: false, -1, unscaledPosition, vector, j, i, tile);
             });
         }
@@ -1161,18 +1167,6 @@ namespace CalamityMod.ILEditing
         #region Lava Blocking
         private void BlockLavaDrawing(ILContext il)
         {
-            if (ModLoader.HasMod("LiquidSlopesPatch"))
-            {
-                BlockLavaDrawing_LiquidSlopesPatch(il);
-            }
-            else
-            {
-                BlockLavaDrawing_Vanilla(il);
-            }
-        }
-
-        private void BlockLavaDrawing_Vanilla(ILContext il)
-        {
             //This edit to DrawNormalLiquids makes lavas in normal and white lighting draw with an alpha and with new textures
             //If the parameter for the waterstyle is more than the max waterstyles then its subtracted by the max water style count and thats the lava style ID
             ILCursor cursor = new ILCursor(il);
@@ -1180,18 +1174,18 @@ namespace CalamityMod.ILEditing
             //Continue if statement, basically
             //if the liquid being drawn is lava and the water style is greater than the max water styles or if the liquid is water and less than the max water styles then the draw code is ran
             //otherwise the loop/s are continued for the next liquid
-            if (!cursor.TryGotoNext(MoveType.After, i => i.MatchStloc(4), i => i.MatchBr(out _), i => i.MatchLdloc(2), i => i.MatchLdfld(typeof(LiquidRenderer).GetNestedType("LiquidDrawCache", BindingFlags.NonPublic), "IsVisible")))
+            if (!cursor.TryGotoNext(MoveType.After, i => i.MatchStloc(4), i => i.MatchBr(out _), i => i.MatchLdloc(2), i => i.MatchLdfld(typeof(LiquidRenderer).GetNestedType("LiquidDrawCache", BindingFlags.Public), "IsVisible")))
             {
                 LogFailure("Liquid Renderer Drawing", "Could not locate the IsVisible boolean check");
                 return;
             }
             cursor.EmitLdarg3();
             cursor.EmitLdloc2(); //Initiated Liquid Draw Cache (needed for the Type parameter)
-            cursor.EmitLdfld(typeof(LiquidRenderer).GetNestedType("LiquidDrawCache", BindingFlags.NonPublic).GetRuntimeField("Type"));
+            cursor.EmitLdfld(typeof(LiquidRenderer).GetNestedType("LiquidDrawCache", BindingFlags.Public).GetRuntimeField("Type"));
             cursor.EmitDelegate<Func<bool, int, int, bool>>((IsVisible, style, type) => IsVisible && ((type == 1 && style >= LavaRenderingSystem.Instance.WaterStyleMaxCount + 1) || (type != 1 && style <= LavaRenderingSystem.Instance.WaterStyleMaxCount)));
 
             //Lava alpha color, if the liquid drawn is lava, multiply num by the water alpha
-            if (!cursor.TryGotoNext(MoveType.Before, i => i.MatchLdloc(2), i => i.MatchLdfld(typeof(LiquidRenderer).GetNestedType("LiquidDrawCache", BindingFlags.NonPublic).GetRuntimeField("Type")), i => i.MatchStloc(8)))
+            if (!cursor.TryGotoNext(MoveType.Before, i => i.MatchLdloc(2), i => i.MatchLdfld(typeof(LiquidRenderer).GetNestedType("LiquidDrawCache", BindingFlags.Public).GetRuntimeField("Type")), i => i.MatchStloc(8)))
             {
                 LogFailure("Liquid Renderer Drawing", "Could not locate creation of the local variable num2 (the liquid type holder variable)");
                 return;
@@ -1215,69 +1209,13 @@ namespace CalamityMod.ILEditing
             }
             cursor.EmitLdarg3();
             cursor.EmitLdloc2(); //Initiated Liquid Draw Cache (needed for the Type parameter)
-            cursor.EmitLdfld(typeof(LiquidRenderer).GetNestedType("LiquidDrawCache", BindingFlags.NonPublic).GetRuntimeField("Type"));
+            cursor.EmitLdfld(typeof(LiquidRenderer).GetNestedType("LiquidDrawCache", BindingFlags.Public).GetRuntimeField("Type"));
             cursor.EmitDelegate<Func<Texture2D, int, int, Texture2D>>((initialTexture, style, type) =>
                 (style >= LavaRenderingSystem.Instance.WaterStyleMaxCount + 1 && type == LiquidID.Lava)
                     ? LavaRenderingSystem.Textures.liquid[style - LavaRenderingSystem.Instance.WaterStyleMaxCount - 1].Value
                     : initialTexture
             );
         }
-
-        private void BlockLavaDrawing_LiquidSlopesPatch(ILContext il)
-        {
-            Assembly lspAsm = ModLoader.GetMod("LiquidSlopesPatch").Code;
-            Type liquidDrawCache = lspAsm.GetType("LiquidSlopesPatch.Common.RewrittenLiquidRenderer").GetNestedType("LiquidDrawCache");
-
-            //This edit to DrawNormalLiquids makes lavas in normal and white lighting draw with an alpha and with new textures
-            //If the parameter for the waterstyle is more than the max waterstyles then its subtracted by the max water style count and thats the lava style ID
-            ILCursor cursor = new ILCursor(il);
-
-            //Continue if statement, basically
-            //if the liquid being drawn is lava and the water style is greater than the max water styles or if the liquid is water and less than the max water styles then the draw code is ran
-            //otherwise the loop/s are continued for the next liquid
-            if (!cursor.TryGotoNext(MoveType.After, i => i.MatchLdfld(liquidDrawCache, "IsVisible")))
-            {
-                LogFailure("Liquid Renderer Drawing", "Could not locate the IsVisible boolean check");
-                return;
-            }
-            cursor.EmitLdarg3();
-            cursor.EmitLdloc2(); //Initiated Liquid Draw Cache (needed for the Type parameter)
-            cursor.EmitLdfld(liquidDrawCache.GetField("Type"));
-            cursor.EmitDelegate<Func<bool, int, int, bool>>((IsVisible, style, type) => IsVisible && ((type == 1 && style >= LavaRenderingSystem.Instance.WaterStyleMaxCount + 1) || (type != 1 && style <= LavaRenderingSystem.Instance.WaterStyleMaxCount)));
-
-            //Lava alpha color, if the liquid drawn is lava, multiply num by the water alpha
-            if (!cursor.TryGotoNext(MoveType.Before, i => i.MatchLdloc(2), i => i.MatchLdfld(liquidDrawCache.GetField("Type")), i => i.MatchStloc(8)))
-            {
-                LogFailure("Liquid Renderer Drawing", "Could not locate creation of the local variable num2 (the liquid type holder variable)");
-                return;
-            }
-            cursor.EmitLdloc(8);
-            cursor.EmitLdloca(7);
-            cursor.EmitLdarg(4);
-            cursor.EmitDelegate((int num2, ref float num, float globalAlpha) =>
-            {
-                if (num2 == LiquidID.Lava)
-                {
-                    num *= globalAlpha;
-                }
-            });
-
-            //Conditionally replace the liquid texture whether the liquid is lava or water
-            if (!cursor.TryGotoNext(MoveType.After, i => i.MatchCallvirt(typeof(Asset<Texture2D>).GetMethod("get_Value", BindingFlags.Public | BindingFlags.Instance))))
-            {
-                LogFailure("Liquid Renderer Drawing", "Could not locate the Texture2D array of liquids");
-                return;
-            }
-            cursor.EmitLdarg3();
-            cursor.EmitLdloc2(); //Initiated Liquid Draw Cache (needed for the Type parameter)
-            cursor.EmitLdfld(liquidDrawCache.GetField("Type"));
-            cursor.EmitDelegate<Func<Texture2D, int, int, Texture2D>>((initialTexture, style, type) =>
-                (style >= LavaRenderingSystem.Instance.WaterStyleMaxCount + 1 && type == LiquidID.Lava)
-                    ? LavaRenderingSystem.Textures.liquid[style - LavaRenderingSystem.Instance.WaterStyleMaxCount - 1].Value
-                    : initialTexture
-            );
-        }
-
         private void BlockLavaDrawingForSlopes(On_TileDrawing.orig_DrawTile_LiquidBehindTile orig, TileDrawing self, bool solidLayer, bool inFrontOfPlayers, int waterStyleOverride, Vector2 screenPosition, Vector2 screenOffset, int tileX, int tileY, Tile tileCache)
         {
             if (tileCache.LiquidType == LiquidID.Lava)
@@ -1341,7 +1279,8 @@ namespace CalamityMod.ILEditing
             }
             cursor.EmitLdloc(12);
             cursor.EmitLdloc(11);
-            cursor.EmitDelegate((int i, int j) => {
+            cursor.EmitDelegate((int i, int j) =>
+            {
                 return Main.tile[i, j].LiquidType == LiquidID.Lava;
             });
             cursor.EmitBrtrue(target);
@@ -1517,14 +1456,7 @@ namespace CalamityMod.ILEditing
                 float g = 0.33f;
                 float b = 0.11f;
                 LavaStylesLoader.ModifyLightSetup(x, y, LavaRenderingSystem.LavaStyle, ref r, ref g, ref b);
-                if (!(r == 0 && g == 0 && b == 0))
-                {
-                    float r8;
-                    float num3 = (r8 = (r + (float)(270 - Main.mouseTextColor) / 900f) * 0.4f);
-                    float g8 = num3 * g;
-                    float b8 = num3 * b;
-                    Lighting.AddLight(x, y, r8, g8, b8);
-                }
+                Lighting.AddLight(x, y, r, g, b);
                 return;
             }
             orig.Invoke(waterfallType, x, y);
@@ -1532,60 +1464,17 @@ namespace CalamityMod.ILEditing
 
         private static void LiquidDrawColors(ILContext il)
         {
-            if (ModLoader.HasMod("LiquidSlopesPatch"))
-            {
-                LiquidDrawColors_LiquidSlopesPatch(il);
-            }
-            else
-            {
-                LiquidDrawColors_Vanilla(il);
-            }
-        }
-
-        private static void LiquidDrawColors_Vanilla(ILContext il)
-        {
             ILCursor cursor = new ILCursor(il);
-            if (!cursor.TryGotoNext(MoveType.Before, c => c.MatchLdarg2(), c => c.MatchLdloc3(), c => c.MatchLdloc(4), c => c.MatchCall<Main>("DrawTileInWater")))
+            if (!cursor.TryGotoNext(MoveType.Before, c => c.MatchLdarg2(), c => c.MatchLdloc(9), c => c.MatchLdloc(10), c => c.MatchCall<Main>("DrawTileInWater")))
             {
                 LogFailure("Liquid Draw Colors", "Could not locate the liquid vertex colors for drawing");
-                return;
-            }
-
-            cursor.Emit(OpCodes.Ldloc_3);
-            cursor.Emit(OpCodes.Ldloc, 4);
-            cursor.Emit(OpCodes.Ldloc_2);
-            cursor.Emit(OpCodes.Ldfld, typeof(LiquidRenderer).GetNestedType("LiquidDrawCache", BindingFlags.NonPublic).GetRuntimeField("Type"));
-            cursor.Emit(OpCodes.Ldloca, 9);
-
-            cursor.EmitDelegate((int x, int y, int liquidType, ref VertexColors initialColor) =>
-            {
-                if (liquidType == LiquidID.Water)
-                {
-                    CalamityWaterLoader.DrawColorSetup(x, y, Main.waterStyle, ref initialColor);
-                }
-                else if (liquidType == LiquidID.Lava && ExternalMods.biomeLava == null)
-                {
-                    LavaStylesLoader.DrawColorSetup(x, y, LavaRenderingSystem.LavaStyle, ref initialColor);
-                }
-            });
-        }
-
-        private static void LiquidDrawColors_LiquidSlopesPatch(ILContext il)
-        {
-            Assembly lspAsm = ModLoader.GetMod("LiquidSlopesPatch").Code;
-            Type liquidDrawCache = lspAsm.GetType("LiquidSlopesPatch.Common.RewrittenLiquidRenderer").GetNestedType("LiquidDrawCache");
-
-            ILCursor cursor = new ILCursor(il);
-            if (!cursor.TryGotoNext(MoveType.Before, c => c.MatchLdarg2(), c => c.MatchLdloc(out _), c => c.MatchLdloc(out _), c => c.MatchCall<Main>("DrawTileInWater")))
-            {
-                LogFailure("Liquid Draw Colors (LSP)", "Could not locate the liquid vertex colors for drawing");
                 return;
             }
 
             cursor.Emit(OpCodes.Ldloc, 9);
             cursor.Emit(OpCodes.Ldloc, 10);
             cursor.Emit(OpCodes.Ldloc_2);
-            cursor.Emit(OpCodes.Ldfld, liquidDrawCache.GetField("Type"));
+            cursor.Emit(OpCodes.Ldfld, typeof(LiquidRenderer).GetNestedType("LiquidDrawCache", BindingFlags.Public).GetRuntimeField("Type"));
             cursor.Emit(OpCodes.Ldloca, 11);
 
             cursor.EmitDelegate((int x, int y, int liquidType, ref VertexColors initialColor) =>
@@ -2739,7 +2628,7 @@ namespace CalamityMod.ILEditing
                                 }
                                 NetMessage.SendData(MessageID.PlayerControls, -1, -1, null, self.owner);
                             }
-                            SoundEngine.PlaySound(SoundID.DD2_EtherianPortalSpawnEnemy with {Volume = 0.75f }, self.Center);
+                            SoundEngine.PlaySound(SoundID.DD2_EtherianPortalSpawnEnemy with { Volume = 0.75f }, self.Center);
                             self.ai[0] = 2;
                             self.velocity = Vector2.Zero;
                             self.Calamity().arenaBoxPosition = new Vector2(Utils.Remap(self.Center.X, box.TopLeft.X, box.BottomRight.X, 0, 1, false), Utils.Remap(self.Center.Y, box.TopLeft.Y, box.BottomRight.Y, 0, 1, false));
@@ -2801,8 +2690,8 @@ namespace CalamityMod.ILEditing
                 foreach (var item in ArenaWallSystem.ActiveBoxes)
                 {
                     var oldVel = Velocity;
-                    if (item.InnerEffect(Position,new Vector2(Width,Height)))
-                    Velocity = ArenaCollisionLogic(item, Position, Width, Height, Velocity);
+                    if (item.InnerEffect(Position, new Vector2(Width, Height)))
+                        Velocity = ArenaCollisionLogic(item, Position, Width, Height, Velocity);
                     var dif = (oldVel - Velocity).Length();
                 }
             }

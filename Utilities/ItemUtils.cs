@@ -269,7 +269,7 @@ namespace CalamityMod
             if (Main.dedServ || mhk is null)
                 return "";
 
-            List<string> keys = mhk.GetAssignedKeys();
+            List<string> keys = mhk.GetAssignedKeysOrEmpty();
             if (keys.Count == 0)
                 return GetText("Misc.HotkeyNotBound").Value;
             else
@@ -505,7 +505,7 @@ namespace CalamityMod
         public static Rectangle FixSwingHitbox(float hitboxWidth, float hitboxHeight)
         {
             Player player = Main.LocalPlayer;
-            Item item = player.ActiveItem();
+            Item item = player.HeldItem;
             float hitbox_X, hitbox_Y;
             float mountOffsetY = player.mount.PlayerOffsetHitbox;
 

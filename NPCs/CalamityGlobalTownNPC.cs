@@ -42,29 +42,27 @@ namespace CalamityMod.NPCs
         {
             get
             {
-                // Max of 20 platinum.
-                if (DownedBossSystem.downedYharon)
-                    return 40f;
-
-                // Max of 10 platinum.
+                // 10 silver per NPC, max of 5 platinum.
                 if (DownedBossSystem.downedDoG)
-                    return 20f;
-
-                // Max of 5 platinum.
-                if (NPC.downedMoonlord)
                     return 10f;
 
-                // Max of 2 platinum.
+                // 8 silver per NPC, max of 4 platinum.
+                if (NPC.downedMoonlord)
+                    return 8f;
+
+                // 2 silver per NPC, max of 1 platinum.
                 if (NPC.downedPlantBoss)
-                    return 4f;
+                    return 2f;
 
                 return 1f;
             }
         }
 
-        public static int TotalTaxesPerNPC => (int)(Item.buyPrice(0, 0, 1, 50) * TaxYieldFactor);
+        // Vanilla: 50 copper
+        public static int TotalTaxesPerNPC => (int)(Item.buyPrice(silver: 1) * TaxYieldFactor);
 
-        public static int TaxesToCollectLimit => (int)(Item.buyPrice(0, 50, 0, 0) * TaxYieldFactor);
+        // Vanilla: 25 gold
+        public static int TaxesToCollectLimit => (int)(Item.buyPrice(gold: 50) * TaxYieldFactor);
 
         #region Town NPC Patreon Name Sets
         private static readonly string[] AnglerNames =
@@ -353,6 +351,7 @@ namespace CalamityMod.NPCs
             "Lucerne", // <@!271954788676141066> (lord_lucerne)
             "Milo", // <@!401849201597874179> (maskedmilo)
             "Octo", // <@!796112889353994281> (octolinggrimm)
+            "Hognar the Wicked", // <@!766511001356468237> (xzier_tengal)
         };
         private static readonly string[] TownCatSiameseNames = null;
         private static readonly string[] TownCatBlackNames =
@@ -1088,12 +1087,6 @@ namespace CalamityMod.NPCs
             // Make Bound Town NPCs take no damage
             if (CalamityNPCTypeSets.BoundTownNPC[npc.type])
                 npc.dontTakeDamageFromHostiles = true;
-        }
-
-        public void MakeTownNPCsTakeMoreDamage(NPC npc, Projectile projectile, Mod mod, ref NPC.HitModifiers modifiers)
-        {
-            if (npc.townNPC && projectile.hostile)
-                modifiers.SourceDamage *= 2f;
         }
 
         // Does not affect Dryad's Bane

@@ -70,7 +70,7 @@ namespace CalamityMod.Items.Weapons.Ranged
 
             if (player.Calamity().mouseRight && player.whoAmI == Main.myPlayer && !Main.mapFullscreen && !Main.blockMouse && player.Calamity().despoilerNerf)
             {
-                Projectile holdout2 = Projectile.NewProjectileDirect(source, player.Center, Vector2.Zero, Item.shoot, player.ActiveItem().damage, 0f, player.whoAmI, 0, 0, 10 + (shotType ? 5 : 0));
+                Projectile holdout2 = Projectile.NewProjectileDirect(source, player.Center, Vector2.Zero, Item.shoot, player.HeldItem.damage, 0f, player.whoAmI, 0, 0, 10 + (shotType ? 5 : 0));
                 holdout2.velocity = (player.Calamity().mouseWorld - player.MountedCenter).SafeNormalize(Vector2.Zero);
                 SoundStyle fire = new("CalamityMod/Sounds/Item/DudFire");
                 SoundEngine.PlaySound(fire with { Volume = 0.7f, Pitch = -0.5f + (shotType ? 0.5f : 0) }, player.Center);

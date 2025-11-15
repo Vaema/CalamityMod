@@ -334,13 +334,14 @@ namespace CalamityMod.Projectiles
                 // Nerf Cursed Dart flame damage by 50%
                 if (parent.type == ProjectileID.CursedDart && projectile.type == ProjectileID.CursedDartFlame)
                     projectile.damage /= 2;
+
+                // Nerf Chlorophyte armor's set bonus crystal damage by 30%
+                if (parent.type == ProjectileID.CrystalLeaf && projectile.type == ProjectileID.CrystalLeafShot)
+                    projectile.damage = (int)(projectile.damage * 0.7f);
             }
 
             if (source is EntitySource_OnHit e)
             {
-                // Nerf Orichalcum armor's set bonus petal damage by 11%
-                if (e.Context == "SetBonus_Orichalcum")
-                    projectile.damage = (int)(projectile.damage * 0.889f);
                 // Nerf Spectre armor's set bonus soul damage by 50%
                 if (e.Context == "SetBonus_GhostHurt")
                     projectile.damage /= 2;
@@ -3670,7 +3671,7 @@ namespace CalamityMod.Projectiles
                 {
                     if (projectile.timeLeft > 570) //all of these have a time left of 600 or 660
                     {
-                        if (player.ActiveItem().type == ItemID.BeesKnees)
+                        if (player.HeldItem.type == ItemID.BeesKnees)
                             projectile.DamageType = DamageClass.Ranged;
                     }
                 }
@@ -4829,8 +4830,6 @@ namespace CalamityMod.Projectiles
 
         public override bool PreDraw(Projectile projectile, ref Color lightColor)
         {
-            // This is used so that projectiles with specific PreDraws can still have Odd Mushroom clone drawing.
-            // If Odd Mushroom clone drawing is done manually due to using a different texture, just return false instead of setting this.
             bool shouldDrawBool = true;
 
             #region Vanilla Summons Drawing Changes
@@ -4885,8 +4884,6 @@ namespace CalamityMod.Projectiles
                 Texture2D crossbone = TextureAssets.Projectile[ProjectileID.BoneGloveProj].Value;
 
                 Main.spriteBatch.Draw(crossbone, projectile.Center - Main.screenPosition, null, projectile.GetAlpha(lightColor), projectile.rotation, crossbone.Size() / 2f, projectile.scale, projectile.spriteDirection == -1 ? SpriteEffects.FlipHorizontally : SpriteEffects.None, 0f);
-                if (Main.LocalPlayer.Calamity().trippy)
-                    OddMushroomProjectileDrawing(projectile, crossbone);
                 return false;
             }
 
@@ -4905,8 +4902,6 @@ namespace CalamityMod.Projectiles
                         spriteEffects = SpriteEffects.FlipHorizontally;
 
                     Main.spriteBatch.Draw(texture, projectile.Center - Main.screenPosition + new Vector2(0f, projectile.gfxOffY), rectangle, projectile.GetAlpha(lightColor), projectile.rotation, origin, projectile.scale, spriteEffects, 0f);
-                    if (Main.LocalPlayer.Calamity().trippy)
-                        OddMushroomProjectileDrawing(projectile, texture);
                     return false;
                 }
             }
@@ -4923,9 +4918,6 @@ namespace CalamityMod.Projectiles
                 shouldDrawBool = false;
             }
 
-            if (Main.LocalPlayer.Calamity().trippy)
-                OddMushroomProjectileDrawing(projectile);
-
             if (Main.zenithWorld)
             {
                 if (NPC.AnyNPCs(NPCType<NPCs.CeaselessVoid.CeaselessVoid>()))
@@ -4938,134 +4930,6 @@ namespace CalamityMod.Projectiles
             }
 
             return shouldDrawBool;
-        }
-
-        private static void OddMushroomProjectileDrawing(Projectile projectile, Texture2D? tex = null)
-        {
-            Texture2D texture = tex ?? TextureAssets.Projectile[projectile.type].Value;
-
-            SpriteEffects spriteEffects = SpriteEffects.None;
-            if (projectile.spriteDirection == -1)
-                spriteEffects = SpriteEffects.FlipHorizontally;
-
-            Color rainbow = new Color(Main.DiscoR, Main.DiscoG, Main.DiscoB, Main.DiscoR);
-            Color alphaColor = projectile.GetAlpha(rainbow);
-            float RGBMult = 0.99f;
-            alphaColor.R = (byte)(alphaColor.R * RGBMult);
-            alphaColor.G = (byte)(alphaColor.G * RGBMult);
-            alphaColor.B = (byte)(alphaColor.B * RGBMult);
-            alphaColor.A = (byte)(alphaColor.A * RGBMult);
-            int totalAfterimages = Main.LocalPlayer.Calamity().trippyLevel == 3 ? 16 : (Main.LocalPlayer.Calamity().trippyLevel == 2 ? 12 : 4);
-            for (int i = 0; i < totalAfterimages; i++)
-            {
-                Vector2 position = projectile.position;
-                float distanceFromTargetX = Math.Abs(projectile.Center.X - Main.LocalPlayer.Center.X);
-                float distanceFromTargetY = Math.Abs(projectile.Center.Y - Main.LocalPlayer.Center.Y);
-
-                float smallDistanceMult = 0.48f;
-                float largeDistanceMult = 1.33f;
-                bool whatTheFuck = Main.LocalPlayer.Calamity().trippyLevel == 3;
-
-                switch (i)
-                {
-                    case 0:
-                        position.X = Main.LocalPlayer.Center.X - distanceFromTargetX;
-                        position.Y = Main.LocalPlayer.Center.Y - distanceFromTargetY;
-                        break;
-
-                    case 1:
-                        position.X = Main.LocalPlayer.Center.X + distanceFromTargetX;
-                        position.Y = Main.LocalPlayer.Center.Y - distanceFromTargetY;
-                        break;
-
-                    case 2:
-                        position.X = Main.LocalPlayer.Center.X + distanceFromTargetX;
-                        position.Y = Main.LocalPlayer.Center.Y + distanceFromTargetY;
-                        break;
-
-                    case 3:
-                        position.X = Main.LocalPlayer.Center.X - distanceFromTargetX;
-                        position.Y = Main.LocalPlayer.Center.Y + distanceFromTargetY;
-                        break;
-
-                    case 4: // 1 o'clock position
-                        position.X = Main.LocalPlayer.Center.X + (distanceFromTargetX * (whatTheFuck ? 1f : smallDistanceMult));
-                        position.Y = Main.LocalPlayer.Center.Y - (distanceFromTargetY * (whatTheFuck ? 0f : largeDistanceMult));
-                        break;
-
-                    case 5: // 4 o'clock position
-                        position.X = Main.LocalPlayer.Center.X + (distanceFromTargetX * (whatTheFuck ? 0f : largeDistanceMult));
-                        position.Y = Main.LocalPlayer.Center.Y + (distanceFromTargetY * (whatTheFuck ? 1f : smallDistanceMult));
-                        break;
-
-                    case 6: // 7 o'clock position
-                        position.X = Main.LocalPlayer.Center.X - (distanceFromTargetX * (whatTheFuck ? 1f : smallDistanceMult));
-                        position.Y = Main.LocalPlayer.Center.Y + (distanceFromTargetY * (whatTheFuck ? 0f : largeDistanceMult));
-                        break;
-
-                    case 7: // 10 o'clock position
-                        position.X = Main.LocalPlayer.Center.X - (distanceFromTargetX * (whatTheFuck ? 0f : largeDistanceMult));
-                        position.Y = Main.LocalPlayer.Center.Y - (distanceFromTargetY * (whatTheFuck ? 1f : smallDistanceMult));
-                        break;
-
-                    case 8: // 11 o'clock position
-                        position.X = Main.LocalPlayer.Center.X - (distanceFromTargetX * (whatTheFuck ? 0f : smallDistanceMult));
-                        position.Y = Main.LocalPlayer.Center.Y - (distanceFromTargetY * (whatTheFuck ? 0.5f : largeDistanceMult));
-                        break;
-
-                    case 9: // 2 o'clock position
-                        position.X = Main.LocalPlayer.Center.X + (distanceFromTargetX * (whatTheFuck ? 0.5f : largeDistanceMult));
-                        position.Y = Main.LocalPlayer.Center.Y - (distanceFromTargetY * (whatTheFuck ? 0f : smallDistanceMult));
-                        break;
-
-                    case 10: // 5 o'clock position
-                        position.X = Main.LocalPlayer.Center.X + (distanceFromTargetX * (whatTheFuck ? 0f : smallDistanceMult));
-                        position.Y = Main.LocalPlayer.Center.Y + (distanceFromTargetY * (whatTheFuck ? 0.5f : largeDistanceMult));
-                        break;
-
-                    case 11: // 8 o'clock position
-                        position.X = Main.LocalPlayer.Center.X - (distanceFromTargetX * (whatTheFuck ? 0.5f : largeDistanceMult));
-                        position.Y = Main.LocalPlayer.Center.Y + (distanceFromTargetY * (whatTheFuck ? 0f : smallDistanceMult));
-                        break;
-
-                    case 12:
-                        position.X = Main.LocalPlayer.Center.X - distanceFromTargetX * 0.5f;
-                        position.Y = Main.LocalPlayer.Center.Y - distanceFromTargetY * 0.5f;
-                        break;
-
-                    case 13:
-                        position.X = Main.LocalPlayer.Center.X + distanceFromTargetX * 0.5f;
-                        position.Y = Main.LocalPlayer.Center.Y - distanceFromTargetY * 0.5f;
-                        break;
-
-                    case 14:
-                        position.X = Main.LocalPlayer.Center.X + distanceFromTargetX * 0.5f;
-                        position.Y = Main.LocalPlayer.Center.Y + distanceFromTargetY * 0.5f;
-                        break;
-
-                    case 15:
-                        position.X = Main.LocalPlayer.Center.X - distanceFromTargetX * 0.5f;
-                        position.Y = Main.LocalPlayer.Center.Y + distanceFromTargetY * 0.5f;
-                        break;
-
-                    default:
-                        break;
-                }
-
-                position.X -= projectile.width / 2;
-                position.Y -= projectile.height / 2;
-
-                int frameHeight = texture.Height / Main.projFrames[projectile.type];
-                int currentframeHeight = frameHeight * projectile.frame;
-                Rectangle frame = new Rectangle(0, currentframeHeight, texture.Width, frameHeight);
-
-                Vector2 halfSize = frame.Size() / 2;
-
-                Main.spriteBatch.Draw(texture,
-                    new Vector2(position.X - Main.screenPosition.X + (float)(projectile.width / 2) - (float)TextureAssets.Projectile[projectile.type].Width() * projectile.scale / 2f + halfSize.X * projectile.scale,
-                    position.Y - Main.screenPosition.Y + (float)projectile.height - (float)TextureAssets.Projectile[projectile.type].Height() * projectile.scale / (float)Main.projFrames[projectile.type] + 4f + halfSize.Y * projectile.scale + projectile.gfxOffY),
-                    frame, alphaColor, projectile.rotation, halfSize, projectile.scale, spriteEffects, 0f);
-            }
         }
         #endregion
 

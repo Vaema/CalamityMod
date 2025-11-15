@@ -70,7 +70,7 @@ namespace CalamityMod.Projectiles.Magic
                 return;
             }
 
-            if (HeldItem.type != Owner.ActiveItem().type)
+            if (HeldItem.type != Owner.HeldItem.type)
             {
                 if (manaPower > 0)
                     shootingTimer = -75;
