@@ -72,9 +72,12 @@ namespace CalamityMod.Projectiles.DraedonsArsenal
                     SoundEngine.PlaySound(sound with { Volume = 0.7f, Pitch = 0.3f }, Projectile.Center);
 
                     Vector2 shootVelocity = Projectile.velocity.SafeNormalize(Vector2.UnitY) * BulletSpeed;
-                    int charge2Damage = (int)(Projectile.damage * 2.5f);
-                    float charge2KB = Projectile.knockBack * 3f;
-                    Projectile.NewProjectile(Projectile.GetSource_FromThis(), GunTipPosition, shootVelocity * 2, ModContent.ProjectileType<ImmolationArrow>(), charge2Damage, charge2KB, Projectile.owner);
+                    if (Main.myPlayer == Projectile.owner)
+                    {
+                        int charge2Damage = (int)(Projectile.damage * 2.5f);
+                        float charge2KB = Projectile.knockBack * 3f;
+                        Projectile.NewProjectile(Projectile.GetSource_FromThis(), GunTipPosition, shootVelocity * 2, ModContent.ProjectileType<ImmolationArrow>(), charge2Damage, charge2KB, Projectile.owner);
+                    }
 
                     for (int i = 0; i <= 25; i++)
                     {
@@ -92,10 +95,13 @@ namespace CalamityMod.Projectiles.DraedonsArsenal
                     SoundEngine.PlaySound(sound with { Volume = 0.7f, Pitch = Main.rand.NextFloat(-0.1f, 0.1f) }, Projectile.Center);
 
                     Vector2 shootVelocity = Projectile.velocity.SafeNormalize(Vector2.UnitY) * BulletSpeed;
-                    for (int i = 0; i < 3; i++)
+                    if (Main.myPlayer == Projectile.owner)
                     {
-                        Vector2 fireVec = shootVelocity.RotatedBy((i == 0 ? 0.4f : i == 2 ? -0.4f : 0) * Utils.GetLerpValue(chargeMax * 1.1f, 0, CurrentChargingFrames, true));
-                        Projectile.NewProjectile(Projectile.GetSource_FromThis(), GunTipPosition, fireVec * MathHelper.Clamp((2 * (Utils.GetLerpValue(0, chargeMax, CurrentChargingFrames, true))), 0.5f, 2), ModContent.ProjectileType<ImmolationSpray>(), Projectile.damage, Projectile.knockBack, Projectile.owner);
+                        for (int i = 0; i < 3; i++)
+                        {
+                            Vector2 fireVec = shootVelocity.RotatedBy((i == 0 ? 0.4f : i == 2 ? -0.4f : 0) * Utils.GetLerpValue(chargeMax * 1.1f, 0, CurrentChargingFrames, true));
+                            Projectile.NewProjectile(Projectile.GetSource_FromThis(), GunTipPosition, fireVec * MathHelper.Clamp((2 * (Utils.GetLerpValue(0, chargeMax, CurrentChargingFrames, true))), 0.5f, 2), ModContent.ProjectileType<ImmolationSpray>(), Projectile.damage, Projectile.knockBack, Projectile.owner);
+                        }
                     }
                     for (int i = 0; i <= 4; i++)
                     {

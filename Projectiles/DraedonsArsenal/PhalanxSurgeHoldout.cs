@@ -250,10 +250,13 @@ namespace CalamityMod.Projectiles.DraedonsArsenal
                 Owner.AddCooldown(ArsenalPower.ID, 300);
 
                 Vector2 shootVelocity = Projectile.velocity.SafeNormalize(Vector2.UnitY);
-                int chargeDamage = (int)(Projectile.damage * (35 + (didDash ? 10 : 0))); // Used to be 50x - 60x, skewed the damage way too much to the lance even with it being the special
-                float chargeKB = Projectile.knockBack * 3f;
-                Projectile skewer = Projectile.NewProjectileDirect(Projectile.GetSource_FromThis(), GunTipPosition, shootVelocity * 2, ModContent.ProjectileType<PhalanxSurgeLance>(), chargeDamage, chargeKB, Projectile.owner,0,0, (didDash ? 5 : 0));
-                skewer.timeLeft = (didDash ? 25 : 10);
+                if (Main.myPlayer == Projectile.owner)
+                {
+                    int chargeDamage = (int)(Projectile.damage * (35 + (didDash ? 10 : 0))); // Used to be 50x - 60x, skewed the damage way too much to the lance even with it being the special
+                    float chargeKB = Projectile.knockBack * 3f;
+                    Projectile skewer = Projectile.NewProjectileDirect(Projectile.GetSource_FromThis(), GunTipPosition, shootVelocity * 2, ModContent.ProjectileType<PhalanxSurgeLance>(), chargeDamage, chargeKB, Projectile.owner, 0, 0, (didDash ? 5 : 0));
+                    skewer.timeLeft = didDash ? 25 : 10;
+                }
                 SoundStyle sound = new("CalamityMod/Sounds/Item/PhalanxSurgeChargeShoot");
                 SoundEngine.PlaySound(sound with { Volume = 0.9f }, Projectile.Center);
                 Owner.SetScreenshake(6f);
@@ -266,9 +269,8 @@ namespace CalamityMod.Projectiles.DraedonsArsenal
                     dust.color = Effects.ArsenalEffects.ArsenalLaserColor;
                     dust.alpha = 100;
                 }
-
                 
-                shootingTimer = (didDash ? -25 : -10);
+                shootingTimer = didDash ? -25 : -10;
             }
             else
             {
@@ -277,22 +279,25 @@ namespace CalamityMod.Projectiles.DraedonsArsenal
                 SoundEngine.PlaySound(sound with { Volume = 0.7f, Pitch = Main.rand.NextFloat(-0.1f, 0.1f) }, Projectile.Center);
 
                 Vector2 shootVelocity = Projectile.velocity.SafeNormalize(Vector2.UnitY) * 6f;
-                float angle1 = MathHelper.ToRadians(2f);
-                int projType = ModContent.ProjectileType<PhalanxSurgeLaser>();
-                for (int i = 0; i < 2; i++)
+                if (Main.myPlayer == Projectile.owner)
                 {
-                    Vector2 corVel1 = shootVelocity.RotatedBy(angle1 * 1.25f) * 0.8f;
-                    Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center - shootVelocity * 2, corVel1, projType, Projectile.damage, Projectile.knockBack, Projectile.owner, 1);
-                    Vector2 corVel2 = shootVelocity.RotatedBy(angle1 * 0.75f);
-                    Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center - shootVelocity * 10, corVel2, projType, Projectile.damage, Projectile.knockBack, Projectile.owner, 0.65f);
-                    angle1 *= -1;
-                }
-                float angle2 = MathHelper.ToRadians(5f);
-                for (int i = 0; i < 2; i++)
-                {
-                    Vector2 corVel3 = shootVelocity.RotatedBy(angle2) * 0.9f;
-                    Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center - shootVelocity * 4, corVel3, projType, Projectile.damage, Projectile.knockBack, Projectile.owner, 0.8f);
-                    angle2 *= -1;
+                    float angle1 = MathHelper.ToRadians(2f);
+                    int projType = ModContent.ProjectileType<PhalanxSurgeLaser>();
+                    for (int i = 0; i < 2; i++)
+                    {
+                        Vector2 corVel1 = shootVelocity.RotatedBy(angle1 * 1.25f) * 0.8f;
+                        Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center - shootVelocity * 2, corVel1, projType, Projectile.damage, Projectile.knockBack, Projectile.owner, 1);
+                        Vector2 corVel2 = shootVelocity.RotatedBy(angle1 * 0.75f);
+                        Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center - shootVelocity * 10, corVel2, projType, Projectile.damage, Projectile.knockBack, Projectile.owner, 0.65f);
+                        angle1 *= -1;
+                    }
+                    float angle2 = MathHelper.ToRadians(5f);
+                    for (int i = 0; i < 2; i++)
+                    {
+                        Vector2 corVel3 = shootVelocity.RotatedBy(angle2) * 0.9f;
+                        Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center - shootVelocity * 4, corVel3, projType, Projectile.damage, Projectile.knockBack, Projectile.owner, 0.8f);
+                        angle2 *= -1;
+                    }
                 }
 
                 for (int i = 0; i < 9; i++)

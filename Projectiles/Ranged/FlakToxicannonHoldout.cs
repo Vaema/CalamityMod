@@ -77,20 +77,23 @@ namespace CalamityMod.Projectiles.Ranged
                         break;
                 }
 
-                // 15NOV2024: Ozzatron: manually clamp flak explosion distance
-                float flakDist = MathHelper.Clamp(ownerToMouse.Length(), 0f, 960f);
+                if (Main.myPlayer == Projectile.owner)
+                {
+                    // 15NOV2024: Ozzatron: manually clamp flak explosion distance
+                    float flakDist = MathHelper.Clamp(ownerToMouse.Length(), 0f, 960f);
 
-                // Spawns the projectile.
-                Projectile.NewProjectile(
-                    Projectile.GetSource_FromThis(),
-                    GunTipPosition,
-                    direction * itemShootSpeed,
-                    ProjectileType<FlakToxicannonProjectile>(),
-                    itemDamage,
-                    itemKnockback,
-                    Projectile.owner,
-                    rocketTypeShot,
-                    flakDist);
+                    // Spawns the projectile.
+                    Projectile.NewProjectile(
+                        Projectile.GetSource_FromThis(),
+                        GunTipPosition,
+                        direction * itemShootSpeed,
+                        ProjectileType<FlakToxicannonProjectile>(),
+                        itemDamage,
+                        itemKnockback,
+                        Projectile.owner,
+                        rocketTypeShot,
+                        flakDist);
+                }
 
                 // Applies the knockback to the player.
                 Owner.velocity += ownerToMouse.SafeNormalize(Vector2.UnitY) * -OwnerKnockbackStrength;

@@ -50,7 +50,7 @@ namespace CalamityMod.Projectiles.Ranged
                         WeldSoundSlot = SoundEngine.PlaySound(DragonsBreath.WeldingShoot, Projectile.Center);
                     }
 
-                    if (weldingTimer % 2 == 0)
+                    if (weldingTimer % 2 == 0 && Main.myPlayer == Projectile.owner)
                         Projectile.NewProjectile(Projectile.GetSource_FromThis(), GunTipPosition, Projectile.velocity.SafeNormalize(Vector2.UnitX) * 5, ModContent.ProjectileType<DragonsBreathFlames>(), Projectile.damage / 2, Projectile.knockBack, Projectile.owner, 1, weldingTimer, (Time % 15 < 10 ? 18 : 0));
 
                     weldingTimer--;
@@ -67,7 +67,8 @@ namespace CalamityMod.Projectiles.Ranged
                     SoundStyle bigShot = new("CalamityMod/Sounds/Item/DudFire");
                     SoundEngine.PlaySound(bigShot with { PitchVariance = 0.15f, Volume = 0.75f }, Projectile.Center);
 
-                    Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center, (Projectile.velocity.SafeNormalize(Vector2.UnitX) * 6).RotatedBy(-2.3f * Projectile.direction), ModContent.ProjectileType<DragonsBreathMag>(), Main.zenithWorld ? 250000 : 1, Projectile.knockBack, Projectile.owner, 1);
+                    if (Main.myPlayer == Projectile.owner)
+                        Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center, (Projectile.velocity.SafeNormalize(Vector2.UnitX) * 6).RotatedBy(-2.3f * Projectile.direction), ModContent.ProjectileType<DragonsBreathMag>(), Main.zenithWorld ? 250000 : 1, Projectile.knockBack, Projectile.owner, 1);
                     hasLaunchedMag = true;
                 }
             }
