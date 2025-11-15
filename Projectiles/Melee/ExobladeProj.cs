@@ -223,8 +223,8 @@ namespace CalamityMod.Projectiles.Melee
         {
             float _ = 0f;
             Vector2 start = Projectile.Center;
-            Vector2 end = start + SwordDirection * BladeLength * Projectile.scale;
-            return Collision.CheckAABBvLineCollision(targetHitbox.TopLeft(), targetHitbox.Size(), start, end, Projectile.scale * 30f, ref _);
+            Vector2 end = start + SwordDirection * (BladeLength + 50) * Projectile.scale; // Has an additional offset so that the hitbox to match the vfx
+            return Collision.CheckAABBvLineCollision(targetHitbox.TopLeft(), targetHitbox.Size(), start, end, State == SwingState.BonkDash ? Projectile.scale * 45 : Projectile.scale * 30f, ref _);
         }
 
         public void InitializationEffects(bool startInitialization)
@@ -447,7 +447,7 @@ namespace CalamityMod.Projectiles.Melee
             {
                 float progress = MathHelper.Lerp(Progression, TrailEndProgression, i / 40f);
 
-                result.Add(DirectionAtProgressScuffed(progress) * (BladeLength - 20f) * Projectile.scale);
+                result.Add(DirectionAtProgressScuffed(progress) * (BladeLength - 6f) * Projectile.scale);
             }
 
             return result;
