@@ -14,6 +14,7 @@ using CalamityMod.NPCs.SlimeGod;
 using CalamityMod.NPCs.SunkenSea;
 using CalamityMod.NPCs.Yharon;
 using CalamityMod.Packets;
+using CalamityMod.Systems.Collections;
 using CalamityMod.World;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
@@ -266,8 +267,10 @@ namespace CalamityMod
             // do not generate rage.
             if (npc.lifeMax <= BalancingConstants.TinyHealthThreshold || ((npc.defDamage <= BalancingConstants.TinyDamageThreshold && checkDamage) && npc.lifeMax <= BalancingConstants.NoContactDamageHealthThreshold))
                 return false;
-            // Also explicitly exclude dummies and anything with a ridiculous health pool (dummies from Fargo's for example).
-            if (npc.type == NPCID.TargetDummy || npc.type == NPCType<SuperDummyNPC>() || npc.lifeMax > BalancingConstants.UnreasonableHealthThreshold)
+
+            // Exclude NPCs that specified to not be counted as enemy
+            // This includes: TargetDummy, SuperDummy by Default
+            if (CalamityNPCSets.DontCountAsEnemy[npc.type])
                 return false;
 
             // Anything else is considered a valid enemy target.

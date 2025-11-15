@@ -209,6 +209,11 @@ namespace CalamityMod.Systems.Collections
         public static bool[] DoCheckDeadRegardlessRealLife = Factory.CreateBoolSet(NPCType<DevourerofGodsBody>(), NPCType<DevourerofGodsTail>());
 
         /// <summary>
+        /// If <see langword="true"/> for an NPC type, <see cref="CalamityUtils.IsAnEnemy(NPC, bool, bool, bool)"/> Does not count specified NPC as Enemy
+        /// </summary>
+        public static bool[] DontCountAsEnemy = Factory.CreateBoolSet(NPCID.TargetDummy, NPCType<SuperDummyNPC>());
+
+        /// <summary>
         /// Associates an NPC type with the base value of their max health in Boss Rush.<br/>
         /// If an NPC type is not a key in this dictionary, then it will use its standard max health value.
         /// </summary>
