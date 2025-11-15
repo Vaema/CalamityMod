@@ -1502,6 +1502,7 @@ namespace CalamityMod.CalPlayer
         public bool providenceStabber = false;
         public bool seashineSwordBuff = false;
         public bool saros = false;
+        public int sarosEclipseBeamUsage = 0;
         /// <summary> Fuel Cell Bundle. </summary>
         public bool plaguebringerMK2 = false;
         public bool igneousExaltation = false;
@@ -2679,6 +2680,10 @@ namespace CalamityMod.CalPlayer
             voidAuraDamage = false;
             voidConcentrationAura = false;
             saros = false;
+            if (sarosEclipseBeamUsage > 300)
+                sarosEclipseBeamUsage = 300;
+            if (sarosEclipseBeamUsage > 0 && Player.ownedProjectileCounts[ModContent.ProjectileType<SarosEclipseBeam>()] <= 0)
+                sarosEclipseBeamUsage--;
             virili = false;
             frostBlossom = false;
             cinderBlossom = false;

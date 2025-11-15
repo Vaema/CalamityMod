@@ -2,6 +2,7 @@
 using CalamityMod.Buffs.Summon;
 using CalamityMod.Items.Materials;
 using CalamityMod.Projectiles.Summon;
+using CalamityMod.Tiles.Furniture.CraftingStations;
 using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.DataStructures;
@@ -17,7 +18,7 @@ namespace CalamityMod.Items.Weapons.Summon
         {
             Item.width = 44;
             Item.height = 48;
-            Item.damage = 80;
+            Item.damage = 60;
             Item.mana = 10;
             Item.useAnimation = Item.useTime = 24;
             Item.useStyle = ItemUseStyleID.Swing;
@@ -29,17 +30,12 @@ namespace CalamityMod.Items.Weapons.Summon
             Item.buffType = ModContent.BuffType<SarosPossessionBuff>();
             Item.shoot = ModContent.ProjectileType<SarosAura>();
             Item.DamageType = DamageClass.Summon;
+            Item.channel = true;
         }
 
         public override bool CanUseItem(Player player)
         {
-            float minionSlotsAvailable = player.maxMinions;
-            foreach (var item in Main.ActiveProjectiles)
-            {
-                if (item.owner == player.whoAmI)
-                    minionSlotsAvailable -= item.minionSlots;
-            }
-            return minionSlotsAvailable >= 1 || player.altFunctionUse == 2;
+            return player.ownedProjectileCounts[ModContent.ProjectileType<SarosEclipseBeam>()] <= 0;
         }
 
         public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)
@@ -50,6 +46,9 @@ namespace CalamityMod.Items.Weapons.Summon
                 p.ai[0]++;
                 p.netUpdate = true;
                 return false;
+            } else
+            {
+                player.channel = false;
             }
             player.AddBuff(Item.buffType, 2);
             return true;
@@ -58,9 +57,10 @@ namespace CalamityMod.Items.Weapons.Summon
         public override void AddRecipes()
         {
             CreateRecipe().
-                AddIngredient(ItemID.SandstoneBrick, 20).
-                AddIngredient<StormlionMandible>(2).
-                AddTile(TileID.Anvils).
+                AddIngredient<Sirius>().
+                AddIngredient<AuricBar>(5).
+                AddIngredient<DarksunFragment>(15).
+                AddTile<CosmicAnvil>().
                 Register();
         }
     }

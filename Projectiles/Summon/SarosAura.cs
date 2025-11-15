@@ -60,6 +60,11 @@ namespace CalamityMod.Projectiles.Summon
                     Projectile.minionSlots++;
                     minionSlotsAvaliable--;
                     MinionSlotsToAdd--;
+                    player.channel = false;
+                }
+                if (MinionSlotsToAdd > 0)
+                {
+                    Projectile.NewProjectileDirect(Projectile.GetSource_FromThis(), Projectile.Center, Vector2.Zero, ModContent.ProjectileType<SarosEclipseBeam>(), Projectile.damage * (int)Projectile.minionSlots, Projectile.knockBack, Projectile.owner);
                 }
                 MinionSlotsToAdd = 0;
             }
@@ -101,16 +106,19 @@ namespace CalamityMod.Projectiles.Summon
                 }
                 else
                 {
-                    int damage = (int)(Projectile.damage * (0.8f + Projectile.minionSlots * 0.2f));
-                    float shootSpeed = 15f;
-                    Vector2 source = Projectile.Center;
-                    for (var i = 0; i < 3; i++)
+                    if (player.ownedProjectileCounts[ModContent.ProjectileType<SarosEclipseBeam>()] <= 0)
                     {
-                        var velocity = Vector2.UnitX.RotatedByRandom(MathHelper.TwoPi) * shootSpeed;
-                        Projectile beam = Projectile.NewProjectileDirect(Projectile.GetSource_FromThis(), Projectile.Center - velocity, velocity, ModContent.ProjectileType<SarosSunfire>(), damage, Projectile.knockBack, Projectile.owner, 120, ai1: (Projectile.minionSlots - 1) / 9f);
-                        beam.DamageType = DamageClass.Summon;
+                        int damage = (int)(Projectile.damage * (0.8f + Projectile.minionSlots * 0.2f));
+                        float shootSpeed = 15f;
+                        Vector2 source = Projectile.Center;
+                        for (var i = 0; i < 3; i++)
+                        {
+                            var velocity = Vector2.UnitX.RotatedByRandom(MathHelper.TwoPi) * shootSpeed;
+                            Projectile beam = Projectile.NewProjectileDirect(Projectile.GetSource_FromThis(), Projectile.Center - velocity, velocity, ModContent.ProjectileType<SarosSunfire>(), damage, Projectile.knockBack, Projectile.owner, 120, ai1: (Projectile.minionSlots - 1) / 9f);
+                            beam.DamageType = DamageClass.Summon;
+                        }
+                        Projectile.ai[1] += 60f / (0.8f + Projectile.minionSlots * 0.2f);
                     }
-                    Projectile.ai[1] += 60f / (0.8f + Projectile.minionSlots * 0.2f);
                 }
 
             }

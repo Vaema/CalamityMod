@@ -60,7 +60,7 @@ namespace CalamityMod.Items.Weapons.Summon
         {
             CreateRecipe().
                 AddIngredient<SunSpiritStaff>().
-                AddIngredient<EssenceofSunlight>(5).
+                AddIngredient(ItemID.MoonStone).
                 AddIngredient(ItemID.SoulofFright, 3).
                 AddIngredient(ItemID.SoulofMight, 3).
                 AddIngredient(ItemID.SoulofSight, 3).

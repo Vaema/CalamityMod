@@ -18,7 +18,7 @@ namespace CalamityMod.Projectiles.Summon
 
         public override void SetStaticDefaults()
         {
-            ProjectileID.Sets.TrailCacheLength[Type] = 20;
+            ProjectileID.Sets.TrailCacheLength[Type] = 8;
             ProjectileID.Sets.TrailingMode[Type] = 2;
             ProjectileID.Sets.MinionShot[Type] = true;
         }
@@ -40,7 +40,6 @@ namespace CalamityMod.Projectiles.Summon
 
         public override void OnSpawn(IEntitySource source)
         {
-            ProjectileID.Sets.TrailCacheLength[Type] = 8;
             SoundEngine.PlaySound(SoundID.Item20, Projectile.Center);
         }
 
