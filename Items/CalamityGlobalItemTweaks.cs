@@ -74,7 +74,7 @@ namespace CalamityMod.Items
                 { ItemID.ChainGun, Do(DamageExact(35)) },
                 { ItemID.ChainKnife, Do(DamageRatio(1.34f)) },  // Uses ratios due to remix seed
                 { ItemID.ChlorophyteClaymore, Do(UseMeleeSpeed, DamageExact(180), UseExact(45), ShootSpeedExact(22f)) },
-                { ItemID.ChlorophytePartisan, Do(UseMeleeSpeed, DamageExact(98)) },
+                { ItemID.ChlorophytePartisan, Do(UseMeleeSpeed, DamageExact(95)) },
                 { ItemID.ChlorophyteSaber, Do(UseMeleeSpeed, DamageExact(92), UseExact(10)) },
                 { ItemID.ChristmasTreeSword, Do(UseTurn, UseMeleeSpeed, DamageExact(80), UseExact(30)) },
                 { ItemID.ClingerStaff, Do(DamageExact(63)) },
@@ -101,7 +101,7 @@ namespace CalamityMod.Items
                 { ItemID.DD2BetsyBow, Do(DamageExact(42)) }, // Aerial Bane's ridiculous multiplier is removed, so this compensates for that
                 { ItemID.DD2SquireBetsySword, Do(UseMeleeSpeed, DamageExact(150)) }, // Flying Dragon
                 { ItemID.DeadlySphereStaff, Do(DamageExact(50)) },
-                { ItemID.DeathSickle, Do(UseMeleeSpeed, DamageExact(70), ShootSpeedExact(15f)) },
+                { ItemID.DeathSickle, Do(UseMeleeSpeed, DamageExact(65), ShootSpeedExact(15f)) },
                 { ItemID.DemonBow, Do(DamageExact(12)) },
                 { ItemID.DemonScythe, Do(DamageExact(28)) },
                 { ItemID.DyeTradersScimitar, Do(UseTurn, DamageExact(24)) }, // Exotic Scimitar
@@ -129,7 +129,7 @@ namespace CalamityMod.Items
                 { ItemID.GreenPhaseblade, phaseblade },
                 { ItemID.GreenPhasesaber, phasesaber },
                 { ItemID.GrenadeLauncher, Do(DamageExact(105)) },
-                { ItemID.Gungnir, Do(TrueMelee, DamageExact(132), ShootSpeedExact(7f)) },
+                { ItemID.Gungnir, Do(TrueMelee, DamageExact(130), ShootSpeedExact(7f)) },
                 { ItemID.HallowedRepeater, Do(UseExact(12)) },
                 { ItemID.Handgun, Do(UseExact(20)) },
                 { ItemID.HighVelocityBullet, Do(DamageExact(13)) },

@@ -307,7 +307,7 @@ namespace CalamityMod.NPCs.CalClone
 
             bool inBulletHell = calamityGlobalNPC.newAI[2] > 0f;
 
-            //arena on death mode
+            //arena in rev+
             if (revenge)
             {
                 if (ArenaBox is null)
@@ -486,7 +486,7 @@ namespace CalamityMod.NPCs.CalClone
                 xPos = -1;
 
             // How far Cal Clone should be from the target
-            float averageDistance = 500f;
+            float averageDistance = 400f;
             float chargeDistance = phase4 ? 300f : 400f;
 
             // This is where Cal Clone should be
