@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using CalamityMod.Effects;
+using CalamityMod.Enums;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria;
@@ -33,7 +34,7 @@ namespace CalamityMod.Graphics.Metaballs
         /// <summary>
         /// The draw layer in which metaballs should be drawn.
         /// </summary>
-        public abstract MetaballDrawLayer DrawContext
+        public abstract GeneralDrawLayer DrawLayer
         {
             get;
         }

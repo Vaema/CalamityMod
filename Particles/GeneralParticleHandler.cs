@@ -57,15 +57,16 @@ namespace CalamityMod.Particles
         /// </summary>
         internal static Dictionary<int, Texture2D> particleTexturesByIDs;
 
-        private static Dictionary<Type, ParticleAutoDrawingOverride> particleAutoDrawingOverrides;
-
+        // Collections for tracking particles active in the world.
         private static List<Particle> activeParticles;
         private static List<Particle> particlesToKill;
         private static Dictionary<GeneralDrawLayer, Queue<Particle>> particlesToSpawnNextFrame;
         private static Dictionary<GeneralDrawLayer, Queue<Particle>> particlesToSpawnNextFrame_Pixelated;
 
+        // Collections for correctly organizing active prticles for drawing.
         private static Dictionary<BlendState, List<Particle>> particlesToDraw;
         private static Dictionary<BlendState, List<Particle>> particlesToDraw_Pixelated;
+        private static Dictionary<Effect, List<Particle>> particlesToDraw_CustomShader;
         #endregion
 
         #region Loading and Unloading
@@ -93,22 +94,6 @@ namespace CalamityMod.Particles
                     texturePath = instance.Texture;
                 particleTexturesByIDs[ID] = ModContent.Request<Texture2D>(texturePath, AssetRequestMode.ImmediateLoad).Value;
             });
-
-            foreach (Mod mod in ModLoader.Mods)
-            {
-                var drawers = mod.GetContent().Where(c => c is ParticleAutoDrawingOverride).Select(c => c as ParticleAutoDrawingOverride);
-                foreach (var drawer in drawers)
-                {
-                    if (drawer.TargetParticleTypeName != "")
-                    {
-                        if (particleTypesByNames.TryGetValue(drawer.TargetParticleTypeName, out Type particleType))
-                            particleAutoDrawingOverrides.Add(particleType, drawer);
-                        else
-                            throw new Exception($"The Particle of name \"{drawer.TargetParticleTypeName}\" used in {drawer.GetType().Name} could not be found! " +
-                                $"Please ensure the Particle's internal name is spelt correctly and is prefixed by its home mod's internal name.");
-                    }
-                }
-            }
         }
 
         public override void Load()
@@ -117,21 +102,14 @@ namespace CalamityMod.Particles
             particleIDsByTypes = [];
             particleTexturesByIDs = [];
 
-            particleAutoDrawingOverrides = [];
-
             activeParticles = [];
             particlesToKill = [];
             particlesToSpawnNextFrame = [];
             particlesToSpawnNextFrame_Pixelated = [];
+
             particlesToDraw = [];
             particlesToDraw_Pixelated = [];
-
-            On_Main.DrawBackgroundBlackFill += DrawParticles_BeforeTiles;
-            On_Main.DrawNPCs += DrawParticles_NPCs;
-            On_Main.DrawProjectiles += DrawParticles_Projectiles;
-            On_Main.DrawPlayers_AfterProjectiles += DrawParticles_AfterPlayers;
-            On_Main.DrawDust += DrawParticles_AfterDusts;
-            On_Main.DrawInfernoRings += DrawParticles_AfterEverything;
+            particlesToDraw_CustomShader = [];
         }
 
         public override void Unload()
@@ -140,14 +118,14 @@ namespace CalamityMod.Particles
             particleIDsByTypes = null;
             particleTexturesByIDs = null;
 
-            particleAutoDrawingOverrides = null;
-
             activeParticles = null;
             particlesToKill = null;
             particlesToSpawnNextFrame = null;
             particlesToSpawnNextFrame_Pixelated = null;
+
             particlesToDraw = null;
             particlesToDraw_Pixelated = null;
+            particlesToDraw_CustomShader = null;
         }
 
         public override void OnWorldUnload()
@@ -156,8 +134,10 @@ namespace CalamityMod.Particles
             particlesToKill.Clear();
             particlesToSpawnNextFrame.Clear();
             particlesToSpawnNextFrame_Pixelated.Clear();
+
             particlesToDraw.Clear();
             particlesToDraw_Pixelated.Clear();
+            particlesToDraw_CustomShader.Clear();
         }
         #endregion
 
@@ -312,62 +292,14 @@ namespace CalamityMod.Particles
             particlesToKill.Clear();
         }
 
-        private static void DrawParticles_BeforeTiles(On_Main.orig_DrawBackgroundBlackFill orig, Main self)
+        internal static void DrawParticleCollectionsAtSpecificLayer(GeneralDrawLayer drawLayer)
         {
-            Main.spriteBatch.End();
-            DrawParticleCollectionsAtSpecificLayer(GeneralDrawLayer.BeforeTiles);
-            Main.spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, Main.DefaultSamplerState, DepthStencilState.None, Main.Rasterizer, null, Main.GameViewMatrix.TransformationMatrix);
+            if (Main.dedServ)
+                return;
 
-            orig(self);
-        }
-
-        private static void DrawParticles_NPCs(On_Main.orig_DrawNPCs orig, Main self, bool behindTiles)
-        {
-            if (!behindTiles)
-            {
-                Main.spriteBatch.End();
-                DrawParticleCollectionsAtSpecificLayer(GeneralDrawLayer.BeforeNPCs);
-                Main.spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, Main.DefaultSamplerState, DepthStencilState.None, Main.Rasterizer, null, Main.GameViewMatrix.TransformationMatrix);
-            }
-
-            orig(self, behindTiles);
-
-            if (!behindTiles)
-            {
-                Main.spriteBatch.End();
-                DrawParticleCollectionsAtSpecificLayer(GeneralDrawLayer.AfterNPCs);
-                Main.spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, Main.DefaultSamplerState, DepthStencilState.None, Main.Rasterizer, null, Main.GameViewMatrix.TransformationMatrix);
-            }
-        }
-
-        private static void DrawParticles_Projectiles(On_Main.orig_DrawProjectiles orig, Main self)
-        {
-            DrawParticleCollectionsAtSpecificLayer(GeneralDrawLayer.BeforeProjectiles);
-
-            orig(self);
-
-            DrawParticleCollectionsAtSpecificLayer(GeneralDrawLayer.AfterProjectiles);
-        }
-
-        private static void DrawParticles_AfterPlayers(On_Main.orig_DrawPlayers_AfterProjectiles orig, Main self)
-        {
-            orig(self);
-            DrawParticleCollectionsAtSpecificLayer(GeneralDrawLayer.AfterPlayers);
-        }
-
-        private static void DrawParticles_AfterDusts(On_Main.orig_DrawDust orig, Main self)
-        {
-            orig(self);
-            DrawParticleCollectionsAtSpecificLayer(GeneralDrawLayer.AfterDusts);
-        }
-
-        private static void DrawParticles_AfterEverything(On_Main.orig_DrawInfernoRings orig, Main self)
-        {
-            orig(self);
-
-            Main.spriteBatch.End();
-            DrawParticleCollectionsAtSpecificLayer(GeneralDrawLayer.AfterEverything);
-            Main.spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, Main.DefaultSamplerState, DepthStencilState.None, Main.Rasterizer, null, Main.Transform);
+            DrawParticleCollection(particlesToDraw, drawLayer);
+            DrawParticleCollection(particlesToDraw_Pixelated, drawLayer, true);
+            DrawParticlesWithShaders(drawLayer);
         }
 
         private static void DrawParticleInstance(Particle particle)
@@ -454,35 +386,27 @@ namespace CalamityMod.Particles
             }
         }
 
-        private static void DrawParticleCollectionsAtSpecificLayer(GeneralDrawLayer drawLayer)
+        private static void DrawParticlesWithShaders(GeneralDrawLayer drawLayer)
         {
-            if (Main.dedServ)
-                return;
-
-            DrawParticleCollection(particlesToDraw, drawLayer);
-            DrawParticleCollection(particlesToDraw_Pixelated, drawLayer, true);
-
-            foreach (ParticleAutoDrawingOverride drawer in particleAutoDrawingOverrides.Values)
+            foreach (var keyValuePair in particlesToDraw_CustomShader)
             {
-                if (!drawer.ShouldDrawParticles)
-                    return;
-
-                foreach (var keyValuePair in drawer.ActiveParticleInstances)
+                // If there's nothing to be drawn, remove the effect from the dictionary and return.
+                if (keyValuePair.Value.Count == 0)
                 {
-                    if (keyValuePair.Value.Count == 0)
-                        return;
-
-                    if (drawer.DrawLayerOverride.HasValue)
-                    {
-                        if (drawer.DrawLayerOverride.Value == drawLayer)
-                            drawer.DrawAllParticles(Main.spriteBatch, keyValuePair.Value);
-                    }
-                    else
-                    {
-                        if (keyValuePair.Key == drawLayer)
-                            drawer.DrawAllParticles(Main.spriteBatch, keyValuePair.Value);
-                    }
+                    particlesToDraw_CustomShader.Remove(keyValuePair.Key);
+                    return;
                 }
+
+                Main.spriteBatch.Begin(SpriteSortMode.Immediate, BlendState.AlphaBlend, SamplerState.LinearClamp, DepthStencilState.None, RasterizerState.CullNone, keyValuePair.Key, Main.GameViewMatrix.TransformationMatrix);
+
+                var particlesAtDrawLayer = keyValuePair.Value.Where(p => p.DrawLayer == drawLayer);
+                foreach (Particle particle in particlesAtDrawLayer)
+                {
+                    particle.PrepareCustomShader(keyValuePair.Key);
+                    DrawParticleInstance(particle);
+                }
+
+                Main.spriteBatch.End();
             }
         }
 
@@ -536,11 +460,11 @@ namespace CalamityMod.Particles
 
         private static void AddToAssociatedDrawCollection(Particle particle)
         {
-            if (particle.OverrideAutomaticDrawing && particleAutoDrawingOverrides[particle.GetType()].ShouldDrawParticles)
+            if (particle.CustomShader != null)
             {
-                if (!particleAutoDrawingOverrides[particle.GetType()].ActiveParticleInstances.ContainsKey(particle.DrawLayer))
-                    particleAutoDrawingOverrides[particle.GetType()].ActiveParticleInstances[particle.DrawLayer] = [];
-                particleAutoDrawingOverrides[particle.GetType()].ActiveParticleInstances[particle.DrawLayer].Add(particle);
+                if (!particlesToDraw_CustomShader.ContainsKey(particle.CustomShader))
+                    particlesToDraw_CustomShader[particle.CustomShader] = [];
+                particlesToDraw_CustomShader[particle.CustomShader].Add(particle);
             }
             else
             {
@@ -550,8 +474,8 @@ namespace CalamityMod.Particles
 
         private static void RemoveFromAssociatedDrawCollection(Particle particle)
         {
-            if (particle.OverrideAutomaticDrawing)
-                particleAutoDrawingOverrides[particle.GetType()].ActiveParticleInstances[particle.DrawLayer].Remove(particle);
+            if (particle.CustomShader != null)
+                particlesToDraw_CustomShader[particle.CustomShader].Remove(particle);
             else
                 ReturnAssociatedDrawCollection(particle).Remove(particle);
         }

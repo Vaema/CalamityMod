@@ -75,9 +75,14 @@ namespace CalamityMod.Particles
 
         /// <summary>
         /// The "layer" or point at which you'd like your particle to draw in Terraria's internal draw order.
-        /// <br>Defaults to <see cref="GeneralDrawLayer.AfterEverything"/>.</br>
+        /// <br>Defaults to <see cref="GeneralDrawLayer.AfterDusts"/>.</br>
         /// </summary>
-        public GeneralDrawLayer DrawLayer = GeneralDrawLayer.AfterEverything;
+        public GeneralDrawLayer DrawLayer = GeneralDrawLayer.AfterDusts;
+
+        /// <summary>
+        /// An 0-1 interpolant representing how close this particle is from its <see cref="Lifetime"/>.
+        /// </summary>
+        public float LifetimeCompletion => Lifetime != 0 ? Time / (float)Lifetime : 0;
 
         /// <summary>
         /// The path to this particle's autoloaded texture.
@@ -91,11 +96,6 @@ namespace CalamityMod.Particles
         /// The maximum amount of frames this particle's spritesheet has vertically.
         /// </summary>
         public virtual int FrameVariants => 1;
-
-        /// <summary>
-        /// An 0-1 interpolant representing how close this particle is from its <see cref="Lifetime"/>.
-        /// </summary>
-        public float LifetimeCompletion => Lifetime != 0 ? Time / (float)Lifetime : 0;
 
         /// <summary>
         /// Set this to true if you NEED the particle to render even if the particle cap is reached.
@@ -123,10 +123,10 @@ namespace CalamityMod.Particles
         public virtual bool UseCustomDraw => false;
 
         /// <summary>
-        /// Override and set this to true to disable automatic drawing for all instances of this particle entirely.
-        /// <br>Drawing of this particle must be done from a <see cref="ParticleAutoDrawingOverride"/> class.</br>
+        /// An optional shader parameter for this paricle to be drawn with.
+        /// Use <see cref="PrepareCustomShader(Effect)"/> to set shader parameters accordingly.
         /// </summary>
-        public virtual bool OverrideAutomaticDrawing => false;
+        public virtual Effect CustomShader => null;
 
         /// <summary>
         /// Use this method if you want to handle the particle drawing yourself. Only called if <b><see cref="UseCustomDraw"/></b> is set to true.
@@ -138,6 +138,11 @@ namespace CalamityMod.Particles
         /// </summary>
         /// <param name="basePosition">The base position of the particle set.</param>
         public virtual void CustomDraw(SpriteBatch spriteBatch, Vector2 basePosition) { }
+
+        /// <summary>
+        /// Use this method if you're using a custom shader effect with this particle type to set shader parameters accordingly.
+        /// </summary>
+        public virtual void PrepareCustomShader(Effect shader) { }
 
         /// <summary>
         /// Called every frame in <see cref="GeneralParticleHandler.Update"/>.

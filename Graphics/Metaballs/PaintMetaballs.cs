@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using CalamityMod.Effects;
+using CalamityMod.Enums;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria;
@@ -64,7 +65,7 @@ namespace CalamityMod.Graphics.Metaballs
 
         public override bool AnythingToDraw => Particles.Any();
 
-        public override MetaballDrawLayer DrawContext => MetaballDrawLayer.AfterProjectiles;
+        public override GeneralDrawLayer DrawLayer => GeneralDrawLayer.AfterProjectiles;
 
         public override IEnumerable<Texture2D> Layers
         {

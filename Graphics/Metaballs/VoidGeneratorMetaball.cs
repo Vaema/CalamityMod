@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using CalamityMod.Enums;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria;
@@ -26,7 +27,7 @@ namespace CalamityMod.Graphics.Metaballs
             }
         }
 
-        public override MetaballDrawLayer DrawContext => MetaballDrawLayer.BeforeProjectiles;
+        public override GeneralDrawLayer DrawLayer => GeneralDrawLayer.BeforeProjectiles;
 
         public override Color EdgeColor => Color.Lerp(Color.Purple, Color.Black, 0.75f);
 

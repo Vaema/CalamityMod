@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using CalamityMod.Effects;
+using CalamityMod.Enums;
 using CalamityMod.Projectiles.Boss;
 using CalamityMod.Systems.Graphic;
 using Microsoft.Xna.Framework;
@@ -33,7 +34,7 @@ namespace CalamityMod.Graphics.Metaballs
 
         public static List<DistortionParticle> Particles { get; private set; } = [];
 
-        public override MetaballDrawLayer DrawContext => MetaballDrawLayer.AfterProjectiles;
+        public override GeneralDrawLayer DrawLayer => GeneralDrawLayer.AfterProjectiles;
 
         public override bool AnythingToDraw => Particles.Count > 0 || CalamityUtils.AnyProjectiles(ModContent.ProjectileType<DoGRiftCrack>());
 

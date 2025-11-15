@@ -12,7 +12,8 @@ namespace CalamityMod.Systems.Graphic.PixelationSystem
 {
     public class PixelationManager : ModSystem
     {
-        private static Dictionary<BlendState, ManagedRenderTarget> PixelTargets_BeforeTiles;
+        private static Dictionary<BlendState, ManagedRenderTarget> PixelTargets_BeforeAllTiles;
+        private static Dictionary<BlendState, ManagedRenderTarget> PixelTargets_BeforeSolidTiles;
         private static Dictionary<BlendState, ManagedRenderTarget> PixelTargets_BeforeNPCs;
         private static Dictionary<BlendState, ManagedRenderTarget> PixelTargets_AfterNPCs;
         private static Dictionary<BlendState, ManagedRenderTarget> PixelTargets_BeforeProjectiles;
@@ -21,7 +22,8 @@ namespace CalamityMod.Systems.Graphic.PixelationSystem
         private static Dictionary<BlendState, ManagedRenderTarget> PixelTargets_AfterDusts;
         private static Dictionary<BlendState, ManagedRenderTarget> PixelTargets_AfterEverything;
 
-        private static List<PixelatedDrawer> ActivePixelatedDrawers_BeforeTiles;
+        private static List<PixelatedDrawer> ActivePixelatedDrawers_BeforeAllTiles;
+        private static List<PixelatedDrawer> ActivePixelatedDrawers_BeforeSolidTiles;
         private static List<PixelatedDrawer> ActivePixelatedDrawers_BeforeNPCs;
         private static List<PixelatedDrawer> ActivePixelatedDrawers_AfterNPCs;
         private static List<PixelatedDrawer> ActivePixelatedDrawers_BeforeProjectiles;
@@ -54,12 +56,13 @@ namespace CalamityMod.Systems.Graphic.PixelationSystem
         /// </summary>
         internal static RenderTarget2D CreatePixelTarget(int width, int height) => new(Main.graphics.GraphicsDevice, (int)(width * PixelationResolution), (int)(height * PixelationResolution));
 
-        public override void OnModLoad()
+        public override void Load()
         {
             if (Main.dedServ)
                 return;
 
-            PixelTargets_BeforeTiles = [];
+            PixelTargets_BeforeAllTiles = [];
+            PixelTargets_BeforeSolidTiles = [];
             PixelTargets_BeforeNPCs = [];
             PixelTargets_AfterNPCs = [];
             PixelTargets_BeforeProjectiles = [];
@@ -68,7 +71,8 @@ namespace CalamityMod.Systems.Graphic.PixelationSystem
             PixelTargets_AfterDusts = [];
             PixelTargets_AfterEverything = [];
 
-            ActivePixelatedDrawers_BeforeTiles = [];
+            ActivePixelatedDrawers_BeforeAllTiles = [];
+            ActivePixelatedDrawers_BeforeSolidTiles = [];
             ActivePixelatedDrawers_BeforeNPCs = [];
             ActivePixelatedDrawers_AfterNPCs = [];
             ActivePixelatedDrawers_BeforeProjectiles = [];
@@ -78,20 +82,15 @@ namespace CalamityMod.Systems.Graphic.PixelationSystem
             ActivePixelatedDrawers_AfterEverything = [];
 
             RenderTargetManager.RenderTargetUpdateLoopEvent += PrepareTargets;
-            On_Main.DrawBackgroundBlackFill += DrawPixelated_BeforeTiles;
-            On_Main.DrawNPCs += DrawPixelated_NPCs;
-            On_Main.DrawProjectiles += DrawPixelated_Projectiles;
-            On_Main.DrawPlayers_AfterProjectiles += DrawPixelated_AfterPlayers;
-            On_Main.DrawDust += DrawPixelated_AfterDusts;
-            On_Main.DrawInfernoRings += DrawPixelated_AfterEverything;
         }
 
-        public override void OnModUnload()
+        public override void Unload()
         {
             if (Main.dedServ)
                 return;
 
-            PixelTargets_BeforeTiles = null;
+            PixelTargets_BeforeAllTiles = null;
+            PixelTargets_BeforeSolidTiles = null;
             PixelTargets_BeforeNPCs = null;
             PixelTargets_AfterNPCs = null;
             PixelTargets_BeforeProjectiles = null;
@@ -100,7 +99,8 @@ namespace CalamityMod.Systems.Graphic.PixelationSystem
             PixelTargets_AfterDusts = null;
             PixelTargets_AfterEverything = null;
 
-            ActivePixelatedDrawers_BeforeTiles = null;
+            ActivePixelatedDrawers_BeforeAllTiles = null;
+            ActivePixelatedDrawers_BeforeSolidTiles = null;
             ActivePixelatedDrawers_BeforeNPCs = null;
             ActivePixelatedDrawers_AfterNPCs = null;
             ActivePixelatedDrawers_BeforeProjectiles = null;
@@ -115,7 +115,8 @@ namespace CalamityMod.Systems.Graphic.PixelationSystem
             if (Main.dedServ)
                 return;
 
-            ActivePixelatedDrawers_BeforeTiles.Clear();
+            ActivePixelatedDrawers_BeforeAllTiles.Clear();
+            ActivePixelatedDrawers_BeforeSolidTiles.Clear();
             ActivePixelatedDrawers_BeforeNPCs.Clear();
             ActivePixelatedDrawers_AfterNPCs.Clear();
             ActivePixelatedDrawers_BeforeProjectiles.Clear();
@@ -152,7 +153,8 @@ namespace CalamityMod.Systems.Graphic.PixelationSystem
             if (!Main.gameMenu && !Main.dedServ)
             {
                 // Draw all collections to their respctive render targets.
-                DrawCollectionsToTarget(PixelTargets_BeforeTiles, PixelationMatrix, ActivePixelatedDrawers_BeforeTiles);
+                DrawCollectionsToTarget(PixelTargets_BeforeAllTiles, PixelationMatrix, ActivePixelatedDrawers_BeforeAllTiles);
+                DrawCollectionsToTarget(PixelTargets_BeforeSolidTiles, PixelationMatrix, ActivePixelatedDrawers_BeforeSolidTiles);
                 DrawCollectionsToTarget(PixelTargets_BeforeNPCs, PixelationMatrix, ActivePixelatedDrawers_BeforeNPCs);
                 DrawCollectionsToTarget(PixelTargets_AfterNPCs, PixelationMatrix, ActivePixelatedDrawers_AfterNPCs);
                 DrawCollectionsToTarget(PixelTargets_BeforeProjectiles, PixelationMatrix, ActivePixelatedDrawers_BeforeProjectiles);
@@ -164,49 +166,7 @@ namespace CalamityMod.Systems.Graphic.PixelationSystem
                 Main.graphics.GraphicsDevice.SetRenderTarget(null);
             }
         }
-
-        private static void DrawPixelated_BeforeTiles(On_Main.orig_DrawBackgroundBlackFill orig, Main self)
-        {
-            DrawPixelatedTargets(PixelTargets_BeforeTiles);
-            orig(self);
-        }
-
-        private static void DrawPixelated_NPCs(On_Main.orig_DrawNPCs orig, Main self, bool behindTiles)
-        {
-            if (!behindTiles)
-                DrawPixelatedTargets(PixelTargets_BeforeNPCs);
-
-            orig(self, behindTiles);
-
-            if (!behindTiles)
-                DrawPixelatedTargets(PixelTargets_AfterNPCs);
-        }
-
-        private static void DrawPixelated_Projectiles(On_Main.orig_DrawProjectiles orig, Main self)
-        {
-            DrawPixelatedTargets(PixelTargets_BeforeProjectiles);
-            orig(self);
-            DrawPixelatedTargets(PixelTargets_AfterProjectiles);
-        }
-
-        private static void DrawPixelated_AfterPlayers(On_Main.orig_DrawPlayers_AfterProjectiles orig, Main self)
-        {
-            orig(self);
-            DrawPixelatedTargets(PixelTargets_AfterPlayers);
-        }
-
-        private static void DrawPixelated_AfterDusts(On_Main.orig_DrawDust orig, Main self)
-        {
-            orig(self);
-            DrawPixelatedTargets(PixelTargets_AfterDusts);
-        }
-
-        private static void DrawPixelated_AfterEverything(On_Main.orig_DrawInfernoRings orig, Main self)
-        {
-            orig(self);
-            DrawPixelatedTargets(PixelTargets_AfterEverything);
-        }
-
+   
         private static void DrawCollectionsToTarget(Dictionary<BlendState, ManagedRenderTarget> targetCollection, Matrix pixelationMatrix, List<PixelatedDrawer> drawerCollection)
         {
             foreach (var blendStateTargetPair in targetCollection)
@@ -229,8 +189,9 @@ namespace CalamityMod.Systems.Graphic.PixelationSystem
             drawerCollection.Clear();
         }
 
-        private static void DrawPixelatedTargets(Dictionary<BlendState, ManagedRenderTarget> targetCollection)
+        internal static void DrawPixelatedTargets(GeneralDrawLayer drawLayer)
         {
+            var targetCollection = ReturnAssociatedTargetCollection(drawLayer);
             Main.spriteBatch.SafeAction(() =>
             {
                 foreach (var keyValuePair in targetCollection)
@@ -248,7 +209,8 @@ namespace CalamityMod.Systems.Graphic.PixelationSystem
         {
             List<PixelatedDrawer> drawerCollection = drawLayer switch
             {
-                GeneralDrawLayer.BeforeTiles => ActivePixelatedDrawers_BeforeTiles,
+                GeneralDrawLayer.BeforeAllTiles => ActivePixelatedDrawers_BeforeAllTiles,
+                GeneralDrawLayer.BeforeSolidTiles => ActivePixelatedDrawers_BeforeSolidTiles,
                 GeneralDrawLayer.BeforeNPCs => ActivePixelatedDrawers_BeforeNPCs,
                 GeneralDrawLayer.AfterNPCs => ActivePixelatedDrawers_AfterNPCs,
                 GeneralDrawLayer.BeforeProjectiles => ActivePixelatedDrawers_BeforeProjectiles,
@@ -261,13 +223,36 @@ namespace CalamityMod.Systems.Graphic.PixelationSystem
             return drawerCollection;
         }
 
+        private static Dictionary<BlendState, ManagedRenderTarget> ReturnAssociatedTargetCollection(GeneralDrawLayer drawLayer)
+        {
+            Dictionary<BlendState, ManagedRenderTarget> targetCollection = drawLayer switch
+            {
+                GeneralDrawLayer.BeforeAllTiles => PixelTargets_BeforeAllTiles,
+                GeneralDrawLayer.BeforeSolidTiles => PixelTargets_BeforeSolidTiles,
+                GeneralDrawLayer.BeforeNPCs => PixelTargets_BeforeNPCs,
+                GeneralDrawLayer.AfterNPCs => PixelTargets_AfterNPCs,
+                GeneralDrawLayer.BeforeProjectiles => PixelTargets_BeforeProjectiles,
+                GeneralDrawLayer.AfterProjectiles => PixelTargets_AfterProjectiles,
+                GeneralDrawLayer.AfterPlayers => PixelTargets_AfterPlayers,
+                GeneralDrawLayer.AfterDusts => PixelTargets_AfterDusts,
+                _ => PixelTargets_AfterEverything,
+            };
+
+            return targetCollection;
+        }
+
         private static void VerifyTargetExistence(GeneralDrawLayer drawLayer, BlendState blendState)
         {
             switch (drawLayer)
             {
-                case GeneralDrawLayer.BeforeTiles:
-                    if (!PixelTargets_BeforeTiles.ContainsKey(blendState))
-                        Main.QueueMainThreadAction(() => PixelTargets_BeforeTiles[blendState] = new(true, CreatePixelTarget));
+                case GeneralDrawLayer.BeforeAllTiles:
+                    if (!PixelTargets_BeforeAllTiles.ContainsKey(blendState))
+                        Main.QueueMainThreadAction(() => PixelTargets_BeforeAllTiles[blendState] = new(true, CreatePixelTarget));
+                    break;
+
+                case GeneralDrawLayer.BeforeSolidTiles:
+                    if (!PixelTargets_BeforeSolidTiles.ContainsKey(blendState))
+                        Main.QueueMainThreadAction(() => PixelTargets_BeforeSolidTiles[blendState] = new(true, CreatePixelTarget));
                     break;
 
                 case GeneralDrawLayer.BeforeNPCs:

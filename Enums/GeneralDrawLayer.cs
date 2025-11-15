@@ -1,20 +1,21 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace CalamityMod.Enums
 {
+    /// <summary>
+    /// A general collection of points in Terraria's overall draw order that graphical systems in the mod draw to.
+    /// </summary>
+    [Flags]
     public enum GeneralDrawLayer
     {
-        BeforeTiles,
-        BeforeNPCs,
-        AfterNPCs,
-        BeforeProjectiles,
-        AfterProjectiles,
-        AfterPlayers,
-        AfterDusts,
-        AfterEverything,
+        BeforeAllTiles = 0,
+        BeforeSolidTiles = 1,
+        BeforeNPCs = 2,
+        AfterNPCs = 4,
+        BeforeProjectiles = 8,
+        AfterProjectiles = 16,
+        AfterPlayers = 32,
+        AfterDusts = 64,
+        AfterEverything = 128,
     }
 }
