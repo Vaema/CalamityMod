@@ -14,7 +14,7 @@ namespace CalamityMod.Items.VanillaArmorChanges
 
         public override string ArmorSetName => "MonkTier3";
 
-        public static float SetBonusRogueStealth = 0.95f;
+        public static float SetBonusRogueStealth = 1f;
 
         public override void UpdateSetBonusText(ref string setBonusText)
         {
@@ -38,7 +38,8 @@ namespace CalamityMod.Items.VanillaArmorChanges
         public override void ApplyLegPieceEffect(Player player)
         {
             player.GetCritChance<MeleeDamageClass>() -= 20;
-            player.GetCritChance<RogueDamageClass>() += 20; // Replace melee crit chance with rogue.
+            player.GetCritChance<RogueDamageClass>() += 10; // Replace melee crit with rogue crit.
+            player.GetDamage<SummonDamageClass>() -= 0.1f; // Small nerf to summon damage.
         }
 
         public override void ApplyArmorSetBonus(Player player)
