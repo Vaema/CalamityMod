@@ -613,7 +613,7 @@ namespace CalamityMod.Items
             // Prevent Mana Stars from being picked up while wielding Ion Blaster or Apoctosis Array
             if (item.type == ItemID.Star || item.type == ItemID.SoulCake || item.type == ItemID.SugarPlum)
             {
-                if (player.ActiveItem().type == ItemType<IonBlaster>() || player.ActiveItem().type == ItemType<ApoctosisArray>())
+                if (player.HeldItem.type == ItemType<IonBlaster>() || player.HeldItem.type == ItemType<ApoctosisArray>())
                     return false;
             }
             return base.CanPickup(item, player);
@@ -724,7 +724,7 @@ namespace CalamityMod.Items
             {
                 return false;
             }
-            if (player.ActiveItem().type == ItemType<VoidConcentrationStaff>() && player.ownedProjectileCounts[ProjectileType<VoidConcentrationBlackhole>()] == 0)
+            if (player.HeldItem.type == ItemType<VoidConcentrationStaff>() && player.ownedProjectileCounts[ProjectileType<VoidConcentrationBlackhole>()] == 0)
             {
                 foreach (Projectile p in Main.ActiveProjectiles)
                 {
@@ -739,7 +739,7 @@ namespace CalamityMod.Items
                 }
                 return false;
             }
-            if (player.ActiveItem().type == ItemType<GlacialEmbrace>())
+            if (player.HeldItem.type == ItemType<GlacialEmbrace>())
             {
                 bool canContinue = true;
                 int count = 0;
@@ -769,7 +769,7 @@ namespace CalamityMod.Items
                         float angleVariance = MathHelper.TwoPi / pointyThingyAmount;
                         float angle = 0f;
 
-                        var source = player.GetSource_ItemUse(player.ActiveItem());
+                        var source = player.GetSource_ItemUse(player.HeldItem);
                         for (int i = 0; i < pointyThingyAmount; i++)
                         {
                             if (Main.projectile.Length == Main.maxProjectiles)

@@ -59,7 +59,7 @@ namespace CalamityMod.Projectiles.Ranged
 
         public override void KillHoldoutLogic()
         {
-            if (HeldItem.type != Owner.ActiveItem().type || Owner.dead || !Owner.active)
+            if (HeldItem.type != Owner.HeldItem.type || Owner.dead || !Owner.active)
             {
                 Projectile.Kill();
                 Projectile.netUpdate = true;
@@ -90,7 +90,7 @@ namespace CalamityMod.Projectiles.Ranged
                     // End animation early
                     NoSawOnHoldout = true;
                     OffsetLengthFromArm -= 16f;
-                    Projectile.timeLeft = Owner.ActiveItem().useAnimation;
+                    Projectile.timeLeft = Owner.HeldItem.useAnimation;
                     KeepRefreshingLifetime = false;
                     Idle?.Stop();
 
@@ -119,7 +119,7 @@ namespace CalamityMod.Projectiles.Ranged
                 Idle?.Stop();
 
                 Projectile.ai[1] = 1f;
-                Projectile.timeLeft = Owner.ActiveItem().useAnimation;
+                Projectile.timeLeft = Owner.HeldItem.useAnimation;
                 SoundStyle ShootSound = new("CalamityMod/Sounds/Item/SawShot", 2) { PitchVariance = 0.1f, Volume = 0.4f + SawPower * 0.5f };
                 SoundEngine.PlaySound(ShootSound, GunTipPosition);
 

@@ -36,7 +36,7 @@ namespace CalamityMod.Projectiles.Magic
 
         public override void KillHoldoutLogic()
         {
-            if (HeldItem.type != Owner.ActiveItem().type || Owner.dead)
+            if (HeldItem.type != Owner.HeldItem.type || Owner.dead)
                 Projectile.Kill();
             if (Owner.CantUseHoldout() && !hasLetGo)
                 postFireTimer = cooldownTime;

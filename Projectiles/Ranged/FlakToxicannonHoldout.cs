@@ -54,7 +54,7 @@ namespace CalamityMod.Projectiles.Ranged
 
                 // Every time we shoot we use ammo.
                 // With this method we also use the item's stats, like the shoot speed, or the type of ammo it was used.
-                Owner.PickAmmo(Owner.ActiveItem(), out _, out float itemShootSpeed, out int itemDamage, out float itemKnockback, out int rocketTypeShot);
+                Owner.PickAmmo(Owner.HeldItem, out _, out float itemShootSpeed, out int itemDamage, out float itemKnockback, out int rocketTypeShot);
 
                 // Decides the color of the effects depending on the type of rocket used.
                 switch (rocketTypeShot)

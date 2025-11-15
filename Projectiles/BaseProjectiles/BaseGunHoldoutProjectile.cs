@@ -172,7 +172,7 @@ namespace CalamityMod.Projectiles.BaseProjectiles
         {
             // Multiplayer null-checking.
             Owner ??= Main.player[Projectile.owner];
-            HeldItem ??= Owner.ActiveItem();
+            HeldItem ??= Owner.HeldItem;
 
             KillHoldoutLogic();
             ManageHoldout();

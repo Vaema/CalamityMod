@@ -99,7 +99,7 @@ namespace CalamityMod.Projectiles.DraedonsArsenal
                 return;
             }
 
-            if (HeldItem.type != Owner.ActiveItem().type)
+            if (HeldItem.type != Owner.HeldItem.type)
             {
                 StopSounds();
                 Projectile.Kill();

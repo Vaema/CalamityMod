@@ -591,7 +591,7 @@ namespace CalamityMod.ILEditing
             // This only applies to minions spawned by weapon uses, preventing other minions such as Luxor's Gift from exploding
             if (projectile.minion && spawnSource is EntitySource_ItemUse useSource && useSource.Item is Item weapon && weapon.useAnimation > 0)
             {
-                CalamityPlayer.EnchantHeldItemEffects(player, player.Calamity(), player.ActiveItem());
+                CalamityPlayer.EnchantHeldItemEffects(player, player.Calamity(), player.HeldItem);
                 if (player.Calamity().explosiveMinionsEnchant)
                     calProj.ExplosiveEnchantCountdown = CalamityGlobalProjectile.ExplosiveEnchantTime;
             }

@@ -76,7 +76,7 @@ namespace CalamityMod.Projectiles.Ranged
                 // If the time reaches Item.useTime, it'll shoot the projectile, fire and reset the timer.
                 if (fireTimer >= Owner.itemTimeMax && Main.myPlayer == Projectile.owner)
                 {
-                    Owner.PickAmmo(Owner.ActiveItem(), out _, out float shootSpeed, out int damage, out float knockback, out _);
+                    Owner.PickAmmo(Owner.HeldItem, out _, out float shootSpeed, out int damage, out float knockback, out _);
 
                     for (int i = 0; i < 3; i++)
                         Projectile.NewProjectile(Projectile.GetSource_FromThis(), GunTipPosition, Projectile.velocity.SafeNormalize(Vector2.UnitX).RotatedByRandom(0.15f * i * 0.5f) * shootSpeed * (i == 0 ? 0.5f : i == 1 ? 0.7f : 1) * Main.rand.NextFloat(0.8f, 1f), ModContent.ProjectileType<DragonsBreathFlames>(), damage, knockback, Projectile.owner);

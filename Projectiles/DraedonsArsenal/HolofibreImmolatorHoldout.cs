@@ -33,7 +33,7 @@ namespace CalamityMod.Projectiles.DraedonsArsenal
 
         public override void KillHoldoutLogic()
         {
-            if (Owner.CantUseHoldout(false) || HeldItem.type != Owner.ActiveItem().type)
+            if (Owner.CantUseHoldout(false) || HeldItem.type != Owner.HeldItem.type)
                 Projectile.Kill();
         }
         public override void OnSpawn(IEntitySource source)
@@ -48,7 +48,7 @@ namespace CalamityMod.Projectiles.DraedonsArsenal
 
         public override void HoldoutAI()
         {
-            CalamityGlobalItem modItem = Owner.ActiveItem().Calamity();
+            CalamityGlobalItem modItem = Owner.HeldItem.Calamity();
             Vector2 mountedCenter = Owner.MountedCenter;
             Vector2 ownerToMouse = Owner.Calamity().mouseWorld - mountedCenter;
             if (SoundEngine.TryGetActiveSound(ChargeSlot, out var ChargeSound) && ChargeSound.IsPlaying)

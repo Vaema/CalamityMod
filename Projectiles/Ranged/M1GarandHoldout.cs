@@ -63,7 +63,7 @@ namespace CalamityMod.Projectiles.Ranged
         public override void KillHoldoutLogic()
         {
             // Only allow the projectile to kill if we're not reloading
-            if (CurrentState == 0 && HeldItem.type != Owner.ActiveItem().type)
+            if (CurrentState == 0 && HeldItem.type != Owner.HeldItem.type)
             {
                 Projectile.Kill();
                 Projectile.netUpdate = true;
@@ -90,7 +90,7 @@ namespace CalamityMod.Projectiles.Ranged
                     if (Projectile.frame == 5)
                     {
                         Projectile.frameCounter++;
-                        if (Projectile.frameCounter >= MathHelper.Clamp(Owner.ActiveItem().useAnimation - 18, 0f, Owner.ActiveItem().useAnimation))
+                        if (Projectile.frameCounter >= MathHelper.Clamp(Owner.HeldItem.useAnimation - 18, 0f, Owner.HeldItem.useAnimation))
                         {
                             if (Owner.CantUseHoldout())
                             {

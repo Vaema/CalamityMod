@@ -396,11 +396,11 @@ namespace CalamityMod
         // TODO -- Wrong. This should return false for weapons which emit true melee projectiles e.g. Arkhalis
         public static bool HoldingProjectileMeleeWeapon(this Player player)
         {
-            Item item = player.ActiveItem();
+            Item item = player.HeldItem;
             return item.CountsAsClass<MeleeDamageClass>() && item.shoot != ProjectileID.None;
         }
 
-        public static bool HoldingTrueMeleeWeapon(this Player player) => player.ActiveItem().IsTrueMelee();
+        public static bool HoldingTrueMeleeWeapon(this Player player) => player.HeldItem.IsTrueMelee();
 
         public static bool InventoryHas(this Player player, params int[] items)
         {

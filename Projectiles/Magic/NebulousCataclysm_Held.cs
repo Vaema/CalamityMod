@@ -88,12 +88,12 @@ namespace CalamityMod.Projectiles.Magic
 
                     int projectileType = ModContent.ProjectileType<NebulaCloudCore>();
                     float coreVelocity = 8f;
-                    int weaponDamage = Owner.GetWeaponDamage(Owner.ActiveItem());
-                    float weaponKnockback = Owner.ActiveItem().knockBack;
+                    int weaponDamage = Owner.GetWeaponDamage(Owner.HeldItem);
+                    float weaponKnockback = Owner.HeldItem.knockBack;
                     if (weaponInUse)
                     {
-                        weaponKnockback = Owner.GetWeaponKnockback(Owner.ActiveItem(), weaponKnockback);
-                        float scaleFactor = Owner.ActiveItem().shootSpeed * Projectile.scale;
+                        weaponKnockback = Owner.GetWeaponKnockback(Owner.HeldItem, weaponKnockback);
+                        float scaleFactor = Owner.HeldItem.shootSpeed * Projectile.scale;
                         Vector2 projectileSpawnPosition = Owner.RotatedRelativePoint(Owner.MountedCenter, true);
                         Vector2 projectileDestination = Main.screenPosition + new Vector2(Main.mouseX, Main.mouseY) - projectileSpawnPosition;
 

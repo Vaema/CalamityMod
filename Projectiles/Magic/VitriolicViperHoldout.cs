@@ -39,7 +39,7 @@ namespace CalamityMod.Projectiles.Magic
 
         public override void KillHoldoutLogic()
         {
-            if (Owner.CantUseHoldout(false) || HeldItem.type != Owner.ActiveItem().type)
+            if (Owner.CantUseHoldout(false) || HeldItem.type != Owner.HeldItem.type)
                 Projectile.Kill();
         }
 

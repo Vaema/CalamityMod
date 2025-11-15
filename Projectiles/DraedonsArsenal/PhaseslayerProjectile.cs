@@ -41,7 +41,7 @@ namespace CalamityMod.Projectiles.DraedonsArsenal
         {
             get
             {
-                CalamityGlobalItem swordItem = Main.player[Projectile.owner].ActiveItem().Calamity();
+                CalamityGlobalItem swordItem = Main.player[Projectile.owner].HeldItem.Calamity();
                 return swordItem.ChargeRatio < Phaseslayer.SizeChargeThreshold;
             }
         }
@@ -92,7 +92,7 @@ namespace CalamityMod.Projectiles.DraedonsArsenal
         public override void AI()
         {
             Player player = Main.player[Projectile.owner];
-            CalamityGlobalItem modItem = player.ActiveItem().Calamity();
+            CalamityGlobalItem modItem = player.HeldItem.Calamity();
 
             // Angles are wrapped to be 0 to 2pi instead of -pi to pi for convenience with absolute values.
             float rotationAdjusted = MathHelper.WrapAngle(Projectile.rotation) + MathHelper.Pi;
@@ -130,7 +130,7 @@ namespace CalamityMod.Projectiles.DraedonsArsenal
             if (Main.myPlayer == player.whoAmI)
             {
                 // In addition to typical channel cancellation criteria, the sword fizzles out if it runs out of charge.
-                Item playerItem = player.ActiveItem();
+                Item playerItem = player.HeldItem;
                 bool hasCharge = modItem.Charge > 0f;
                 if (!player.CantUseHoldout() && playerItem.type == ModContent.ItemType<Phaseslayer>() && hasCharge)
                 {
@@ -205,7 +205,7 @@ namespace CalamityMod.Projectiles.DraedonsArsenal
             float speedDamageScalar = MathF.Log(AngularDamageFactor / StandardSwingSpeed + 3f, 3f);
 
             // Get the underlying sword item's current damage. This takes into account the player's stats and the sword's current charge.
-            int damageWithChargeAndStats = player.GetWeaponDamage(player.ActiveItem());
+            int damageWithChargeAndStats = player.GetWeaponDamage(player.HeldItem);
             float sizeDamageScalar = IsSmall ? Phaseslayer.SmallDamageMultiplier : 1f;
             Projectile.damage = (int)(damageWithChargeAndStats * speedDamageScalar * sizeDamageScalar);
         }

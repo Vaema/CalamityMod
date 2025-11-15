@@ -344,7 +344,7 @@ namespace CalamityMod.Projectiles.Melee
                 float rotationAngle = MathHelper.PiOver4 * 0.3f * ((Timer - beamShootStart) / beamShootPeriod);
                 int boltDamage = (int)(Projectile.damage * Exoblade.NotTrueMeleeDamagePenalty);
                 Vector2 boltVelocity = Projectile.velocity.RotatedByRandom(MathHelper.PiOver4 * 0.3);
-                boltVelocity *= Owner.ActiveItem().shootSpeed;
+                boltVelocity *= Owner.HeldItem.shootSpeed;
 
                 Projectile.NewProjectile(Projectile.GetSource_FromAI(), Projectile.Center + boltVelocity * 5f, boltVelocity, ModContent.ProjectileType<Exobeam>(), boltDamage, Projectile.knockBack / 3f, Projectile.owner);
             }
@@ -589,8 +589,8 @@ namespace CalamityMod.Projectiles.Melee
 
         public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
         {
-            ItemLoader.OnHitNPC(Owner.ActiveItem(), Owner, target, hit, damageDone);
-            NPCLoader.OnHitByItem(target, Owner, Owner.ActiveItem(), hit, damageDone);
+            ItemLoader.OnHitNPC(Owner.HeldItem, Owner, target, hit, damageDone);
+            NPCLoader.OnHitByItem(target, Owner, Owner.HeldItem, hit, damageDone);
             PlayerLoader.OnHitNPC(Owner, target, hit, damageDone);
 
             if (State == SwingState.BonkDash)

@@ -167,7 +167,7 @@ namespace CalamityMod.Projectiles.Magic
         /// </summary>
         private void FireAwesomeMagicRays()
         {
-            Item heldItem = Owner.ActiveItem();
+            Item heldItem = Owner.HeldItem;
             if (heldItem is null)
                 return;
 

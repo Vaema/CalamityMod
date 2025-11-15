@@ -38,7 +38,7 @@ namespace CalamityMod.Projectiles.Magic
         {
             base.KillHoldoutLogic();
             bool actuallyShoot = DeployedFrames >= (HeldItem?.useAnimation ?? NanoPurge.UseTime);
-            bool manaOK = !actuallyShoot || Owner.CheckMana(Owner.ActiveItem());
+            bool manaOK = !actuallyShoot || Owner.CheckMana(Owner.HeldItem);
             if (!manaOK)
                 Projectile.Kill();
         }
@@ -68,7 +68,7 @@ namespace CalamityMod.Projectiles.Magic
                 // Update the animation.
                 Projectile.frame = (Projectile.frame + 1) % Main.projFrames[Type];
 
-                bool manaCostPaid = Owner.CheckMana(Owner.ActiveItem(), -1, true, false);
+                bool manaCostPaid = Owner.CheckMana(Owner.HeldItem, -1, true, false);
                 if (manaCostPaid)
                 {
                     postShotFade = 1;

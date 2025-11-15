@@ -3667,7 +3667,7 @@ namespace CalamityMod.Projectiles
                 {
                     if (projectile.timeLeft > 570) //all of these have a time left of 600 or 660
                     {
-                        if (player.ActiveItem().type == ItemID.BeesKnees)
+                        if (player.HeldItem.type == ItemID.BeesKnees)
                             projectile.DamageType = DamageClass.Ranged;
                     }
                 }

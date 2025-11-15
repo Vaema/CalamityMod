@@ -36,13 +36,13 @@ namespace CalamityMod.Projectiles.Magic
         public Color color2 = Color.Orange;
         public override void KillHoldoutLogic()
         {
-            if (!isOnCooldown && (Owner.CantUseHoldout(false) || HeldItem.type != Owner.ActiveItem().type))
+            if (!isOnCooldown && (Owner.CantUseHoldout(false) || HeldItem.type != Owner.HeldItem.type))
                 Projectile.Kill();
         }
 
         public override void HoldoutAI()
         {
-            if (!isOnCooldown && (Owner.CantUseHoldout() || HeldItem.type != Owner.ActiveItem().type))
+            if (!isOnCooldown && (Owner.CantUseHoldout() || HeldItem.type != Owner.HeldItem.type))
                 cooldownTimer = (int)(Utils.Remap(revFrames, 0, 350, 40, 120, true));
             if (isOnCooldown)
             {
