@@ -373,13 +373,13 @@ namespace CalamityMod.Projectiles.Melee
             // Do the dash.
             else
             {
-                float rotationStrenght = MathHelper.PiOver4 * 0.05f * (float)Math.Pow(LungeProgression, 3);
+                float rotationStrength = MathHelper.PiOver4 * 0.05f * (float)Math.Pow(LungeProgression, 3);
                 float currentRotation = Projectile.velocity.ToRotation();
 
                 // 14NOV2024: Ozzatron: clamped mouse position unnecessary, only used for direction
                 float idealRotation = Owner.MountedCenter.DirectionTo(Owner.Calamity().mouseWorld).ToRotation();
 
-                Projectile.velocity = currentRotation.AngleTowards(idealRotation, rotationStrenght).ToRotationVector2();
+                Projectile.velocity = currentRotation.AngleTowards(idealRotation, rotationStrength).ToRotationVector2();
 
                 Owner.fallStart = (int)(Owner.position.Y / 16f);
 
@@ -575,6 +575,8 @@ namespace CalamityMod.Projectiles.Melee
                     rotation += MathHelper.PiOver2;
                     origin.X = texture.Width;
                 }
+
+                Projectile.scale = MathHelper.Lerp(1f, 0.22f, MathF.Pow(LungeProgression, 7));
 
                 Main.EntitySpriteDraw(texture, drawPosition, null, Color.White, rotation, origin, Projectile.scale, direction, 0);
 
