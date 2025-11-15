@@ -15,7 +15,7 @@ namespace CalamityMod.Items.Accessories
         public const int FireProjectiles = 2;
         public const float FireAngleSpread = 120;
         public int FireCountdown = 0;
-        public static int VoidExploDamage = 50;
+        public static int VoidExploDamage = 40;
 
         public override void SetDefaults()
         {
