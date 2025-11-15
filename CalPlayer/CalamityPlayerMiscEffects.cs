@@ -452,8 +452,8 @@ namespace CalamityMod.CalPlayer
                 else // Decrementing
                 {
                     elementalMasterySFXPlayed = false;
-                    // Once every 20 ticks
-                    if (elementalMasteryTimer >= 20)
+                    // Once every 30 ticks
+                    if (elementalMasteryTimer >= 30)
                     {
                         elementalMastery--;
                         elementalMasteryTimer = 0;
