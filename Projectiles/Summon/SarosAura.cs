@@ -1,7 +1,5 @@
-﻿using System;
-using CalamityMod.Buffs.Summon;
+﻿using CalamityMod.Buffs.Summon;
 using CalamityMod.CalPlayer;
-using CalamityMod.Items.Potions.Alcohol;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using ReLogic.Content;
@@ -88,12 +86,12 @@ namespace CalamityMod.Projectiles.Summon
 
             Lighting.AddLight(Projectile.Center, (255 - Projectile.alpha) * 0.25f / 255f, (255 - Projectile.alpha) * 0.25f / 255f, (255 - Projectile.alpha) * 0f / 255f);
 
-            NPC target = GetTargetInRange(3200);
+            NPC target = GetTargetInRange(1600);
 
             if (target is null)
                 return;
 
-            
+
             if (Projectile.owner == Main.myPlayer)
             {
 
@@ -103,7 +101,7 @@ namespace CalamityMod.Projectiles.Summon
                 }
                 else
                 {
-                    int damage = (int)(Projectile.damage * (0.75f + Projectile.minionSlots * 0.25f));
+                    int damage = (int)(Projectile.damage * (0.8f + Projectile.minionSlots * 0.2f));
                     float shootSpeed = 15f;
                     Vector2 source = Projectile.Center;
                     for (var i = 0; i < 3; i++)
@@ -112,7 +110,7 @@ namespace CalamityMod.Projectiles.Summon
                         Projectile beam = Projectile.NewProjectileDirect(Projectile.GetSource_FromThis(), Projectile.Center - velocity, velocity, ModContent.ProjectileType<SarosSunfire>(), damage, Projectile.knockBack, Projectile.owner, 120, ai1: (Projectile.minionSlots - 1) / 9f);
                         beam.DamageType = DamageClass.Summon;
                     }
-                    Projectile.ai[1] += 60f / (0.75f + Projectile.minionSlots * 0.25f);
+                    Projectile.ai[1] += 60f / (0.8f + Projectile.minionSlots * 0.2f);
                 }
 
             }
@@ -121,17 +119,18 @@ namespace CalamityMod.Projectiles.Summon
         NPC GetTargetInRange(float range)
         {
             var player = Main.player[Projectile.owner];
-            if (player.HasMinionAttackTargetNPC && Main.npc[player.MinionAttackTargetNPC].CanBeChasedBy(this) && Projectile.IsInRangeOfMeOrMyOwner(Main.npc[player.MinionAttackTargetNPC], range, out var _, out var _, out var _))
+            if (player.HasMinionAttackTargetNPC && Main.npc[player.MinionAttackTargetNPC].CanBeChasedBy() && Projectile.IsInRangeOfMeOrMyOwner(Main.npc[player.MinionAttackTargetNPC], range, out var _, out var _, out var _))
             {
                 return Main.npc[player.MinionAttackTargetNPC];
-            } else
+            }
+            else
             {
                 NPC gotTarget = null;
                 float currentDistance = range;
-                for (int i = 0; i < Main.npc.Length; i++)
+                foreach (var npc in Main.ActiveNPCs)
                 {
-                    NPC npc = Main.npc[i];
-                    if (npc.CanBeChasedBy(this) && Projectile.IsInRangeOfMeOrMyOwner(npc, range, out var myDistance, out var _, out var _) && myDistance < currentDistance)
+                    var myDistance = npc.Distance(Projectile.Center);
+                    if (npc.CanBeChasedBy() && myDistance < currentDistance)
                     {
                         currentDistance = myDistance;
                         gotTarget = npc;
@@ -155,7 +154,7 @@ namespace CalamityMod.Projectiles.Summon
             {
                 //Main.EntitySpriteDraw(ciTex, Projectile.Center - Main.screenPosition, null, Color.Gold, Main.GlobalTimeWrappedHourly, ciTex.Size() * 0.5f, 0.075f, SpriteEffects.None);
 
-                float count =  (int)((Projectile.minionSlots - 1) / 3) * 2 + 1;
+                float count = (int)((Projectile.minionSlots - 1) / 3) * 2 + 2;
                 for (var i = 0; i < count; i++)
                 {
                     var comp = (i / count);

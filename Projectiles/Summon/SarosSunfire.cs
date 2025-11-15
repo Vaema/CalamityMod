@@ -60,14 +60,7 @@ namespace CalamityMod.Projectiles.Summon
             }
             else
             {
-                target = null;
-                int targ = -1;
-                Projectile.Minion_FindTargetInRange(5000, ref targ, false, (ent, num) =>
-                {
-                    return (ent is NPC && Projectile.localNPCImmunity[(ent as NPC).whoAmI] <= 0);
-                });
-                if (targ != -1)
-                    target = Main.npc[targ];
+                target = GetTargetInRange(2000);
             }
 
             if (Projectile.damage <= 0)
@@ -77,9 +70,42 @@ namespace CalamityMod.Projectiles.Summon
                 Projectile.timeLeft = (int)MathHelper.Min(8, Projectile.timeLeft);
             }
         }
+        NPC GetTargetInRange(float range)
+        {
+            var player = Main.player[Projectile.owner];
+            if (player.HasMinionAttackTargetNPC && Main.npc[player.MinionAttackTargetNPC].CanBeChasedBy() && Projectile.localNPCImmunity[player.MinionAttackTargetNPC] <= 0 && Projectile.IsInRangeOfMeOrMyOwner(Main.npc[player.MinionAttackTargetNPC], range, out var _, out var _, out var _))
+            {
+                return Main.npc[player.MinionAttackTargetNPC];
+            }
+            else
+            {
+                NPC gotTarget = null;
+                float currentDistance = range;
+                foreach (var npc in Main.ActiveNPCs)
+                {
+                    if (Projectile.localNPCImmunity[npc.whoAmI] > 0)
+                        continue;
+                    var myDistance = npc.Distance(Projectile.Center);
+                    
+                    if (npc.CanBeChasedBy() && myDistance < currentDistance)
+                    {
+                        currentDistance = myDistance;
+                        gotTarget = npc;
+                    }
+                }
+                return gotTarget;
+            }
+        }
 
+        public override bool? CanHitNPC(NPC target)
+        {
+            if (target != this.target)
+                return false;
+            return null;
+        }
         public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
         {
+            Projectile.damage = (int)(Projectile.damage * 0.75f);
             for (int i = 0; i < 12; i++)
             {
                 Vector2 dustVelocity = Main.rand.NextVector2Circular(1f, 1f) * 6f;
