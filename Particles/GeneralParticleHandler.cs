@@ -47,12 +47,6 @@ namespace CalamityMod.Particles
         internal static Dictionary<Type, int> particleIDsByTypes;
 
         /// <summary>
-        /// All <see cref="Particle"/> types defined across all mods, identified by a string for each respective particle which follows the following format: 
-        /// <br><c>{Particle's Home Mod's Internal Name}.{Particle's Internal Name}</c></br>
-        /// </summary>
-        internal static Dictionary<string, Type> particleTypesByNames;
-
-        /// <summary>
         /// The individual, autoloaded textures of each particle type defined across all mods, identified by the ID of the respective particle.
         /// </summary>
         internal static Dictionary<int, Texture2D> particleTexturesByIDs;
@@ -78,9 +72,6 @@ namespace CalamityMod.Particles
                 int ID = particleIDsByTypes.Count; //Get the ID of the particle
                 particleIDsByTypes[type] = ID;
 
-                string registrationName = string.Concat(type.FullName.AsSpan(0, type.FullName.IndexOf('.')), ".", type.Name);
-                particleTypesByNames[registrationName] = type;
-
                 // Flow: 2024/09/17
                 // 'UnintializedObject' is allowed to use here as it's only read for Texture string Property
                 // But do NOT EVER use it's instance as they are literally Uninitialized.
@@ -98,7 +89,6 @@ namespace CalamityMod.Particles
 
         public override void Load()
         {
-            particleTypesByNames = [];
             particleIDsByTypes = [];
             particleTexturesByIDs = [];
 
@@ -114,7 +104,6 @@ namespace CalamityMod.Particles
 
         public override void Unload()
         {
-            particleTypesByNames = null;
             particleIDsByTypes = null;
             particleTexturesByIDs = null;
 
@@ -172,6 +161,8 @@ namespace CalamityMod.Particles
         /// another particle type.</br>
         /// <br>The single frame buffer ensures the overall particle update loop isn't altered prematurely from within the loop itself.</br>
         /// </summary>
+        /// <param name="pixelate">Set to true to force the particle being spawned to be drawn pixelated.</param>
+        /// <param name="manualDrawLayerOverride">Only set this to a non-null value if you'd like to manually override the draw layer of the particle instance you are spawning.</param>
         public static void QueueParticleForNextFrame(Particle particle, bool pixelate = false, GeneralDrawLayer? manualDrawLayerOverride = null)
         {
             // Don't queue particles if the game is paused.
@@ -209,6 +200,9 @@ namespace CalamityMod.Particles
         /// </summary>
         public static void RemoveParticlesOfType<T>() where T : Particle
         {
+            if (Main.dedServ || activeParticles is null || activeParticles.Count == 0)
+                return;
+
             foreach (Particle particle in activeParticles)
             {
                 if (particle.GetType() == typeof(T))
@@ -221,6 +215,9 @@ namespace CalamityMod.Particles
         /// </summary>
         public static void RemoveAllParticles()
         {
+            if (Main.dedServ || activeParticles is null || activeParticles.Count == 0)
+                return;
+
             foreach (Particle particle in activeParticles)
                 particlesToKill.Add(particle);
         }
