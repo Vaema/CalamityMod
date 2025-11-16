@@ -262,8 +262,8 @@ namespace CalamityMod.Items
             if (item.type == ItemID.Zenith)
                 item.rare = RarityType<BurnishedAuric>();
 
-            // Make most expert items no longer expert because they drop in all modes now.
-            switch (item.type)
+            // CIT 16OCT2025: Following overwhelming dev vote, Expert+ drops are NOT available in Classic
+            /*switch (item.type)
             {
                 case ItemID.RoyalGel:
                 case ItemID.EoCShield:
@@ -288,7 +288,7 @@ namespace CalamityMod.Items
                 case ItemID.LongRainbowTrailWings:
                     item.expert = false;
                     break;
-            }
+            }*/
 
             // Allow Souls to be used as ammo for SHPC.
             if (item.type == ItemID.SoulofLight || item.type == ItemID.SoulofNight || item.type == ItemID.SoulofFlight || item.type == ItemID.SoulofMight || item.type == ItemID.SoulofSight || item.type == ItemID.SoulofFright)

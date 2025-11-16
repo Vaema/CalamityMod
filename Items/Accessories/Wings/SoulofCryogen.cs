@@ -29,6 +29,7 @@ namespace CalamityMod.Items.Accessories.Wings
             Item.height = 26;
             Item.value = CalamityGlobalItem.RarityPinkBuyPrice;
             Item.rare = ItemRarityID.Pink;
+            Item.expert = true;
         }
 
         public override void Update(ref float gravity, ref float maxFallSpeed)
