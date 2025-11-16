@@ -754,7 +754,8 @@ namespace CalamityMod.NPCs.SlimeGod
                 normalOnly.Add(ModContent.ItemType<ThankYouPainting>(), ThankYouPainting.DropInt);
 
                 // Equipment
-                normalOnly.Add(ModContent.ItemType<ManaPolarizer>());
+                // 16NOV2025: Ozzatron: item has been chosen as the "Expert gatekept" item for this Calamity boss
+                // normalOnly.Add(ModContent.ItemType<ManaPolarizer>());
             }
 
             npcLoot.Add(ModContent.ItemType<SlimeGodTrophy>(), 10);

@@ -3542,7 +3542,8 @@ namespace CalamityMod.NPCs.SupremeCalamitas
                 normalOnly.Add(DropHelper.PerPlayer(ModContent.ItemType<AshesofAnnihilation>(), 1, 25, 30));
 
                 // Equipment
-                normalOnly.Add(DropHelper.PerPlayer(ModContent.ItemType<Calamity>()));
+                // 16NOV2025: Ozzatron: item has been chosen as the "Expert gatekept" item for this Calamity boss
+                // normalOnly.Add(DropHelper.PerPlayer(ModContent.ItemType<Calamity>()));
 
                 // SCal vanity set (This drops all at once, or not at all)
                 var scalVanitySet = ItemDropRule.Common(ModContent.ItemType<AshenHorns>(), 7);

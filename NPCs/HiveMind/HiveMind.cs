@@ -1350,7 +1350,8 @@ namespace CalamityMod.NPCs.HiveMind
 
                 // Equipment
                 normalOnly.Add(ModContent.ItemType<FilthyGlove>(), DropHelper.NormalWeaponDropRateFraction);
-                normalOnly.Add(DropHelper.PerPlayer(ModContent.ItemType<RottenBrain>()));
+                // 16NOV2025: Ozzatron: item has been chosen as the "Expert gatekept" item for this Calamity boss
+                // normalOnly.Add(DropHelper.PerPlayer(ModContent.ItemType<RottenBrain>()));
 
                 // Vanity
                 normalOnly.Add(ModContent.ItemType<HiveMindMask>(), 7);

@@ -1248,7 +1248,8 @@ namespace CalamityMod.NPCs.Bumblebirb
                 normalOnly.Add(ModContent.ItemType<EffulgentFeather>(), 1, 25, 30);
 
                 // Equipment
-                normalOnly.Add(DropHelper.PerPlayer(ModContent.ItemType<DynamoStemCells>()));
+                // 16NOV2025: Ozzatron: item has been chosen as the "Expert gatekept" item for this Calamity boss
+                // normalOnly.Add(DropHelper.PerPlayer(ModContent.ItemType<DynamoStemCells>()));
                 normalOnly.Add(ModContent.ItemType<FollyFeed>(), DropHelper.NormalWeaponDropRateFraction);
 
                 // Vanity
