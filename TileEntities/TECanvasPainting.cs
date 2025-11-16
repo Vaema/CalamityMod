@@ -1,5 +1,5 @@
 ﻿using CalamityMod.Packets;
-using CalamityMod.Tiles.Furniture;
+using CalamityMod.Tiles.Furniture.Paintings;
 using Microsoft.Xna.Framework;
 using System.IO;
 using Terraria;

@@ -1,5 +1,4 @@
-﻿using CalamityMod.Items.Placeables.Furniture.DevPaintings;
-using Microsoft.Xna.Framework;
+﻿using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.DataStructures;
 using Terraria.ID;
@@ -7,7 +6,7 @@ using Terraria.Localization;
 using Terraria.ModLoader;
 using Terraria.ObjectData;
 
-namespace CalamityMod.Tiles.Furniture.DevPaintings
+namespace CalamityMod.Tiles.Furniture.Paintings
 {
     public class ThankYouPaintingTile : ModTile
     {
