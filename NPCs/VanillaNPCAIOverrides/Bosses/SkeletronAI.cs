@@ -1062,46 +1062,55 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
             }
         }
 
-        public static void RevengeanceDungeonGuardianAI(NPC npc)
+        public class DungeonGuardianAI : VanillaAIOverride
         {
-            Player target = Main.player[npc.target];
-            if (npc.ai[1] != 3f)
+            public override bool AI(Mod mod)
             {
-                Vector2 targetVector = target.Center - npc.Center;
-                float targetDist = targetVector.Length();
-                targetDist = 12f / targetDist;
-                npc.velocity.X = targetVector.X * targetDist;
-                npc.velocity.Y = targetVector.Y * targetDist;
-                if (Main.netMode != NetmodeID.MultiplayerClient)
+                return true;
+            }
+
+            public override void PostAI(Mod mod)
+            {
+                Player target = Main.player[NPC.target];
+                if (NPC.ai[1] != 3f)
                 {
-                    if (npc.localAI[1]++ % 60f == 59f)
+                    Vector2 targetVector = target.Center - NPC.Center;
+                    float targetDist = targetVector.Length();
+                    targetDist = 12f / targetDist;
+                    NPC.velocity.X = targetVector.X * targetDist;
+                    NPC.velocity.Y = targetVector.Y * targetDist;
+                    if (Main.netMode != NetmodeID.MultiplayerClient)
                     {
-                        Vector2 source = npc.Center;
-                        if (Collision.CanHit(source, 1, 1, target.Center, target.width, target.height))
+                        if (NPC.localAI[1]++ % 60f == 59f)
                         {
-                            float speed = 5f;
-                            float xDist = target.Center.X - source.X + Main.rand.Next(-20, 21);
-                            float yDist = target.Center.Y - source.Y + Main.rand.Next(-20, 21);
-                            Vector2 velocity = new Vector2(xDist, yDist);
-                            float distTarget = velocity.Length();
-                            distTarget = speed / distTarget;
-                            velocity.X *= distTarget;
-                            velocity.Y *= distTarget;
-                            Vector2 offset = new Vector2(velocity.X * 1f + Main.rand.Next(-50, 51) * 0.01f, velocity.Y * 1f + Main.rand.Next(-50, 51) * 0.01f).SafeNormalize(Vector2.UnitY);
-                            offset *= speed;
-                            offset += npc.velocity;
-                            velocity.X = offset.X;
-                            velocity.Y = offset.Y;
-                            int damage = 2500;
-                            int projType = ProjectileID.Skull;
-                            source += offset * 5f;
-                            int skull = Projectile.NewProjectile(npc.GetSource_FromAI(), source, velocity, projType, damage, 0f, Main.myPlayer, -1f);
-                            Main.projectile[skull].timeLeft = 600;
-                            Main.projectile[skull].tileCollide = false;
+                            Vector2 source = NPC.Center;
+                            if (Collision.CanHit(source, 1, 1, target.Center, target.width, target.height))
+                            {
+                                float speed = 5f;
+                                float xDist = target.Center.X - source.X + Main.rand.Next(-20, 21);
+                                float yDist = target.Center.Y - source.Y + Main.rand.Next(-20, 21);
+                                Vector2 velocity = new Vector2(xDist, yDist);
+                                float distTarget = velocity.Length();
+                                distTarget = speed / distTarget;
+                                velocity.X *= distTarget;
+                                velocity.Y *= distTarget;
+                                Vector2 offset = new Vector2(velocity.X * 1f + Main.rand.Next(-50, 51) * 0.01f, velocity.Y * 1f + Main.rand.Next(-50, 51) * 0.01f).SafeNormalize(Vector2.UnitY);
+                                offset *= speed;
+                                offset += NPC.velocity;
+                                velocity.X = offset.X;
+                                velocity.Y = offset.Y;
+                                int damage = 2500;
+                                int projType = ProjectileID.Skull;
+                                source += offset * 5f;
+                                int skull = Projectile.NewProjectile(NPC.GetSource_FromAI(), source, velocity, projType, damage, 0f, Main.myPlayer, -1f);
+                                Main.projectile[skull].timeLeft = 600;
+                                Main.projectile[skull].tileCollide = false;
+                            }
                         }
                     }
                 }
             }
         }
+
     }
 }
