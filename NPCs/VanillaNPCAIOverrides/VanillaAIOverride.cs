@@ -25,5 +25,14 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides
         {
 
         }
+
+        /// <summary>
+        /// This Method should be Implemented If we added our custom field to AI Overrides
+        /// </summary>
+        /// <returns></returns>
+        public virtual VanillaAIOverride Clone()
+        {
+            return (VanillaAIOverride)this.MemberwiseClone();
+        }
     }
 }
