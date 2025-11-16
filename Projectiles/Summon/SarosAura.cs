@@ -162,7 +162,7 @@ namespace CalamityMod.Projectiles.Summon
                 int count = (int)((Projectile.minionSlots - 1) / 3) * 2 + 2;
                 for (var i = 0; i < count; i++)
                 {
-                    var comp = (i / count);
+                    var comp = (i / (float)count);
                     var offset = ((Main.mouseTextColor - 190) / 64f) * 8;
                     if (i % 2 == 0)
                         offset = 8 - offset;
