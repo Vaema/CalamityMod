@@ -1,18 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
-using CalamityMod.NPCs;
+using CalamityMod.Enums;
 using CalamityMod.NPCs.SupremeCalamitas;
-using CalamityMod.Systems.Mechanic;
-using CalamityMod.World;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using ReLogic.Content;
 using Terraria;
 using Terraria.ModLoader;
-using static CalamityMod.Graphics.Metaballs.StreamGougeMetaball;
-using static CalamityMod.Systems.LavaRenderingSystem;
 
 namespace CalamityMod.Graphics.Metaballs
 {
@@ -82,7 +77,7 @@ namespace CalamityMod.Graphics.Metaballs
             WavyLineLayer = ModContent.Request<Texture2D>($"CalamityMod/Graphics/Metaballs/ScalArenaLayerWave", AssetRequestMode.ImmediateLoad).Value;
 
         }
-        public override MetaballDrawLayer DrawContext => MetaballDrawLayer.BeforeNPCs;
+        public override GeneralDrawLayer DrawLayer => GeneralDrawLayer.BeforeNPCs;
 
         public override Color EdgeColor => SupremeCalamitas.CurrentColor;
 

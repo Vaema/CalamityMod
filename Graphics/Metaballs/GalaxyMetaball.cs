@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using CalamityMod.Enums;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using ReLogic.Content;
@@ -56,7 +57,7 @@ namespace CalamityMod.Graphics.Metaballs
             }
         }
 
-        public override MetaballDrawLayer DrawContext => MetaballDrawLayer.BeforeNPCs;
+        public override GeneralDrawLayer DrawLayer => GeneralDrawLayer.BeforeNPCs;
 
         public override Color EdgeColor => Color.Lerp(Color.DarkBlue, Color.Black, 0.75f);
 

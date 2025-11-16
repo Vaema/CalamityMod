@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using CalamityMod.Enums;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria;
@@ -10,6 +11,10 @@ namespace CalamityMod.Graphics.Primitives
     public class PrimitivePixelationSystem : ModSystem
     {
         #region Fields/Properties
+        private static ManagedRenderTarget PixelationTarget_BeforeAllTiles;
+
+        private static ManagedRenderTarget PixelationTarget_BeforeSolidTiles;
+
         private static ManagedRenderTarget PixelationTarget_BeforeNPCs;
 
         private static ManagedRenderTarget PixelationTarget_AfterNPCs;
@@ -19,6 +24,10 @@ namespace CalamityMod.Graphics.Primitives
         private static ManagedRenderTarget PixelationTarget_AfterProjectiles;
 
         private static ManagedRenderTarget PixelationTarget_AfterPlayers;
+
+        private static ManagedRenderTarget PixelationTarget_AfterDusts;
+
+        private static ManagedRenderTarget PixelationTarget_AfterEverything;
 
         private static RenderTarget2D CreatePixelTarget(int width, int height) => new(Main.instance.GraphicsDevice, width / 2, height / 2);
 
@@ -35,22 +44,38 @@ namespace CalamityMod.Graphics.Primitives
         #region Loading
         public override void Load()
         {
-            On_Main.CheckMonoliths += DrawToTargets;
-            On_Main.DoDraw_DrawNPCsOverTiles += DrawTarget_NPCs;
-            On_Main.DrawProjectiles += DrawTarget_Projectiles;
-            On_Main.DrawPlayers_AfterProjectiles += DrawTarget_Players;
+            if (Main.dedServ)
+                return;
 
-            PixelationTarget_BeforeNPCs = new(true, CreatePixelTarget);
-            PixelationTarget_AfterNPCs = new(true, CreatePixelTarget);
-            PixelationTarget_BeforeProjectiles = new(true, CreatePixelTarget);
-            PixelationTarget_AfterProjectiles = new(true, CreatePixelTarget);
-            PixelationTarget_AfterPlayers = new(true, CreatePixelTarget);
+            Main.QueueMainThreadAction(() =>
+            {
+                PixelationTarget_BeforeAllTiles = new(true, CreatePixelTarget);
+                PixelationTarget_BeforeSolidTiles = new(true, CreatePixelTarget);
+                PixelationTarget_BeforeNPCs = new(true, CreatePixelTarget);
+                PixelationTarget_AfterNPCs = new(true, CreatePixelTarget);
+                PixelationTarget_BeforeProjectiles = new(true, CreatePixelTarget);
+                PixelationTarget_AfterProjectiles = new(true, CreatePixelTarget);
+                PixelationTarget_AfterPlayers = new(true, CreatePixelTarget);
+                PixelationTarget_AfterDusts = new(true, CreatePixelTarget);
+                PixelationTarget_AfterEverything = new(true, CreatePixelTarget);
+            });
+
+            On_Main.CheckMonoliths += DrawToTargets;
+            //On_Main.DrawBackgroundBlackFill += DrawTarget_BeforeAllTiles;
+            //On_Main.DoDraw_Tiles_Solid += DrawTarget_BeforeSolidTiles;
+            //On_Main.DoDraw_DrawNPCsOverTiles += DrawTarget_NPCs;
+            //On_Main.DrawProjectiles += DrawTarget_Projectiles;
+            //On_Main.DrawPlayers_AfterProjectiles += DrawTarget_Players;
+            //On_Main.DrawDust += DrawTarget_AfterDusts;
+            //On_Main.DrawInfernoRings += DrawTarget_AfterEverything;
         }
 
         public override void Unload()
         {
+            if (Main.dedServ)
+                return;
+
             On_Main.CheckMonoliths -= DrawToTargets;
-            On_Main.DoDraw_DrawNPCsOverTiles -= DrawTarget_NPCs;
         }
         #endregion
 
@@ -63,11 +88,15 @@ namespace CalamityMod.Graphics.Primitives
                 return;
             }
 
+            var beforeAllTiles = new List<IPixelatedPrimitiveRenderer>();
+            var beforeSolidTiles = new List<IPixelatedPrimitiveRenderer>();
             var beforeNPCs = new List<IPixelatedPrimitiveRenderer>();
             var afterNPCs = new List<IPixelatedPrimitiveRenderer>();
             var beforeProjectiles = new List<IPixelatedPrimitiveRenderer>();
             var afterProjectiles = new List<IPixelatedPrimitiveRenderer>();
             var afterPlayers = new List<IPixelatedPrimitiveRenderer>();
+            var afterDusts = new List<IPixelatedPrimitiveRenderer>();
+            var afterEverything = new List<IPixelatedPrimitiveRenderer>();
 
             // Check every active projectile.
             foreach (Projectile projectile in Main.ActiveProjectiles)
@@ -75,14 +104,24 @@ namespace CalamityMod.Graphics.Primitives
                 // If the projectile is active, a mod projectile, and uses the interface, add it to the list of primitives to draw this frame.
                 if (projectile.ModProjectile != null && projectile.ModProjectile is IPixelatedPrimitiveRenderer pixelPrimitiveProjectile)
                 {
-                    if (pixelPrimitiveProjectile.LayerToRenderTo.HasFlag(PixelationPrimitiveLayer.BeforeNPCs))
+                    if (pixelPrimitiveProjectile.LayerToRenderTo.HasFlag(GeneralDrawLayer.BeforeAllTiles))
+                        beforeAllTiles.Add(pixelPrimitiveProjectile);
+                    if (pixelPrimitiveProjectile.LayerToRenderTo.HasFlag(GeneralDrawLayer.BeforeSolidTiles))
+                        beforeSolidTiles.Add(pixelPrimitiveProjectile);
+                    if (pixelPrimitiveProjectile.LayerToRenderTo.HasFlag(GeneralDrawLayer.BeforeNPCs))
                         beforeNPCs.Add(pixelPrimitiveProjectile);
-                    if (pixelPrimitiveProjectile.LayerToRenderTo.HasFlag(PixelationPrimitiveLayer.AfterNPCs))
+                    if (pixelPrimitiveProjectile.LayerToRenderTo.HasFlag(GeneralDrawLayer.AfterNPCs))
                         afterNPCs.Add(pixelPrimitiveProjectile);
-                    if (pixelPrimitiveProjectile.LayerToRenderTo.HasFlag(PixelationPrimitiveLayer.BeforeProjectiles))
+                    if (pixelPrimitiveProjectile.LayerToRenderTo.HasFlag(GeneralDrawLayer.BeforeProjectiles))
                         beforeProjectiles.Add(pixelPrimitiveProjectile);
-                    if (pixelPrimitiveProjectile.LayerToRenderTo.HasFlag(PixelationPrimitiveLayer.AfterPlayers))
+                    if (pixelPrimitiveProjectile.LayerToRenderTo.HasFlag(GeneralDrawLayer.AfterProjectiles))
+                        afterProjectiles.Add(pixelPrimitiveProjectile);
+                    if (pixelPrimitiveProjectile.LayerToRenderTo.HasFlag(GeneralDrawLayer.AfterPlayers))
                         afterPlayers.Add(pixelPrimitiveProjectile);
+                    if (pixelPrimitiveProjectile.LayerToRenderTo.HasFlag(GeneralDrawLayer.AfterDusts))
+                        afterDusts.Add(pixelPrimitiveProjectile);
+                    if (pixelPrimitiveProjectile.LayerToRenderTo.HasFlag(GeneralDrawLayer.AfterEverything))
+                        afterEverything.Add(pixelPrimitiveProjectile);
                 }
             }
 
@@ -92,24 +131,38 @@ namespace CalamityMod.Graphics.Primitives
                 // If the NPC is active, a mod NPC, and uses the interface, add it to the list of primitives to draw this frame.
                 if (npc.ModNPC != null && npc.ModNPC is IPixelatedPrimitiveRenderer pixelPrimitiveNPC)
                 {
-                    if (pixelPrimitiveNPC.LayerToRenderTo.HasFlag(PixelationPrimitiveLayer.BeforeNPCs))
+                    if (pixelPrimitiveNPC.LayerToRenderTo.HasFlag(GeneralDrawLayer.BeforeAllTiles))
+                        beforeAllTiles.Add(pixelPrimitiveNPC);
+                    if (pixelPrimitiveNPC.LayerToRenderTo.HasFlag(GeneralDrawLayer.BeforeSolidTiles))
+                        beforeSolidTiles.Add(pixelPrimitiveNPC);
+                    if (pixelPrimitiveNPC.LayerToRenderTo.HasFlag(GeneralDrawLayer.BeforeNPCs))
                         beforeNPCs.Add(pixelPrimitiveNPC);
-                    if (pixelPrimitiveNPC.LayerToRenderTo.HasFlag(PixelationPrimitiveLayer.AfterNPCs))
+                    if (pixelPrimitiveNPC.LayerToRenderTo.HasFlag(GeneralDrawLayer.AfterNPCs))
                         afterNPCs.Add(pixelPrimitiveNPC);
-                    if (pixelPrimitiveNPC.LayerToRenderTo.HasFlag(PixelationPrimitiveLayer.BeforeProjectiles))
+                    if (pixelPrimitiveNPC.LayerToRenderTo.HasFlag(GeneralDrawLayer.BeforeProjectiles))
                         beforeProjectiles.Add(pixelPrimitiveNPC);
-                    if (pixelPrimitiveNPC.LayerToRenderTo.HasFlag(PixelationPrimitiveLayer.AfterPlayers))
+                    if (pixelPrimitiveNPC.LayerToRenderTo.HasFlag(GeneralDrawLayer.AfterProjectiles))
+                        afterProjectiles.Add(pixelPrimitiveNPC);
+                    if (pixelPrimitiveNPC.LayerToRenderTo.HasFlag(GeneralDrawLayer.AfterPlayers))
                         afterPlayers.Add(pixelPrimitiveNPC);
+                    if (pixelPrimitiveNPC.LayerToRenderTo.HasFlag(GeneralDrawLayer.AfterDusts))
+                        afterDusts.Add(pixelPrimitiveNPC);
+                    if (pixelPrimitiveNPC.LayerToRenderTo.HasFlag(GeneralDrawLayer.AfterEverything))
+                        afterEverything.Add(pixelPrimitiveNPC);
                 }
             }
 
             CurrentlyRendering = true;
 
-            DrawPrimsToRenderTarget(PixelationTarget_BeforeNPCs, PixelationPrimitiveLayer.BeforeNPCs, beforeNPCs);
-            DrawPrimsToRenderTarget(PixelationTarget_AfterNPCs, PixelationPrimitiveLayer.AfterNPCs, afterNPCs);
-            DrawPrimsToRenderTarget(PixelationTarget_BeforeProjectiles, PixelationPrimitiveLayer.BeforeProjectiles, beforeProjectiles);
-            DrawPrimsToRenderTarget(PixelationTarget_AfterProjectiles, PixelationPrimitiveLayer.AfterProjectiles, afterProjectiles);
-            DrawPrimsToRenderTarget(PixelationTarget_AfterPlayers, PixelationPrimitiveLayer.AfterPlayers, afterPlayers);
+            DrawPrimsToRenderTarget(PixelationTarget_BeforeAllTiles, GeneralDrawLayer.BeforeAllTiles, beforeAllTiles);
+            DrawPrimsToRenderTarget(PixelationTarget_BeforeSolidTiles, GeneralDrawLayer.BeforeSolidTiles, beforeSolidTiles);
+            DrawPrimsToRenderTarget(PixelationTarget_BeforeNPCs, GeneralDrawLayer.BeforeNPCs, beforeNPCs);
+            DrawPrimsToRenderTarget(PixelationTarget_AfterNPCs, GeneralDrawLayer.AfterNPCs, afterNPCs);
+            DrawPrimsToRenderTarget(PixelationTarget_BeforeProjectiles, GeneralDrawLayer.BeforeProjectiles, beforeProjectiles);
+            DrawPrimsToRenderTarget(PixelationTarget_AfterProjectiles, GeneralDrawLayer.AfterProjectiles, afterProjectiles);
+            DrawPrimsToRenderTarget(PixelationTarget_AfterPlayers, GeneralDrawLayer.AfterPlayers, afterPlayers);
+            DrawPrimsToRenderTarget(PixelationTarget_AfterDusts, GeneralDrawLayer.AfterDusts, afterDusts);
+            DrawPrimsToRenderTarget(PixelationTarget_AfterEverything, GeneralDrawLayer.AfterEverything, afterEverything);
 
             Main.instance.GraphicsDevice.SetRenderTarget(null);
 
@@ -117,7 +170,7 @@ namespace CalamityMod.Graphics.Primitives
             orig();
         }
 
-        private static void DrawPrimsToRenderTarget(RenderTarget2D renderTarget, PixelationPrimitiveLayer layer, List<IPixelatedPrimitiveRenderer> pixelPrimitives)
+        private static void DrawPrimsToRenderTarget(RenderTarget2D renderTarget, GeneralDrawLayer layer, List<IPixelatedPrimitiveRenderer> pixelPrimitives)
         {
             // Swap to the target regardless, in order to clear any leftover content from last frame. Not doing this results in the final frame lingering once it stops rendering.
             renderTarget.SwapTo();
@@ -135,31 +188,31 @@ namespace CalamityMod.Graphics.Primitives
         #endregion
 
         #region Target Drawing
-        private void DrawTarget_NPCs(On_Main.orig_DoDraw_DrawNPCsOverTiles orig, Main self)
+        internal static void DrawTargetScaled(GeneralDrawLayer drawLayer, bool startSpritebatch = true)
         {
-            DrawTargetScaled(PixelationTarget_BeforeNPCs);
-            orig(self);
-            DrawTargetScaled(PixelationTarget_AfterNPCs);
+            if (startSpritebatch)
+                Main.spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, SamplerState.PointClamp, DepthStencilState.None, Main.Rasterizer, null, Main.GameViewMatrix.TransformationMatrix);
+            
+            Main.spriteBatch.Draw(ReturnAssociatedRenderTarget(drawLayer), Vector2.Zero, null, Color.White, 0f, Vector2.Zero, 2f, SpriteEffects.None, 0f);
+            
+            if (startSpritebatch)
+                Main.spriteBatch.End();
         }
 
-        private void DrawTarget_Projectiles(On_Main.orig_DrawProjectiles orig, Main self)
+        private static RenderTarget2D ReturnAssociatedRenderTarget(GeneralDrawLayer drawLayer)
         {
-            DrawTargetScaled(PixelationTarget_BeforeProjectiles);
-            orig(self);
-            DrawTargetScaled(PixelationTarget_AfterProjectiles);
-        }
-
-        private void DrawTarget_Players(On_Main.orig_DrawPlayers_AfterProjectiles orig, Main self)
-        {
-            orig(self);
-            DrawTargetScaled(PixelationTarget_AfterPlayers);
-        }
-
-        private static void DrawTargetScaled(ManagedRenderTarget target)
-        {
-            Main.spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, SamplerState.PointClamp, DepthStencilState.None, Main.Rasterizer, null, Main.GameViewMatrix.TransformationMatrix);
-            Main.spriteBatch.Draw(target, Vector2.Zero, null, Color.White, 0f, Vector2.Zero, 2f, SpriteEffects.None, 0f);
-            Main.spriteBatch.End();
+            return drawLayer switch
+            {
+                GeneralDrawLayer.BeforeAllTiles => PixelationTarget_BeforeAllTiles,
+                GeneralDrawLayer.BeforeSolidTiles => PixelationTarget_BeforeSolidTiles,
+                GeneralDrawLayer.BeforeNPCs => PixelationTarget_BeforeNPCs,
+                GeneralDrawLayer.AfterNPCs => PixelationTarget_AfterNPCs,
+                GeneralDrawLayer.BeforeProjectiles => PixelationTarget_BeforeProjectiles,
+                GeneralDrawLayer.AfterProjectiles => PixelationTarget_AfterProjectiles,
+                GeneralDrawLayer.AfterPlayers => PixelationTarget_AfterPlayers,
+                GeneralDrawLayer.AfterDusts => PixelationTarget_AfterDusts,
+                _ => PixelationTarget_AfterEverything
+            };
         }
         #endregion
     }
