@@ -60,7 +60,7 @@ namespace CalamityMod.Particles
         // Collections for correctly organizing active prticles for drawing.
         private static Dictionary<BlendState, List<Particle>> particlesToDraw;
         private static Dictionary<BlendState, List<Particle>> particlesToDraw_Pixelated;
-        private static Dictionary<Effect, List<Particle>> particlesToDraw_CustomShader;
+        private static Dictionary<Effect, Dictionary<BlendState, List<Particle>>> particlesToDraw_CustomShader;
         #endregion
 
         #region Loading and Unloading
@@ -151,7 +151,7 @@ namespace CalamityMod.Particles
                 particle.DrawLayer = manualDrawLayerOverride.Value;
 
             activeParticles.Add(particle);
-            AddToAssociatedDrawCollection(particle);
+            ReturnAssociatedDrawCollection(particle).Add(particle);
             particle.Type = particleIDsByTypes[particle.GetType()];
         }
 
@@ -280,7 +280,7 @@ namespace CalamityMod.Particles
             {
                 if ((particle.Time >= particle.Lifetime && particle.SetLifetime) || particlesToKill.Contains(particle))
                 {
-                    RemoveFromAssociatedDrawCollection(particle);
+                    ReturnAssociatedDrawCollection(particle).Remove(particle); 
                     return true;
                 }
                 return false;
@@ -385,32 +385,56 @@ namespace CalamityMod.Particles
 
         private static void DrawParticlesWithShaders(GeneralDrawLayer drawLayer)
         {
-            foreach (var keyValuePair in particlesToDraw_CustomShader)
+            foreach (var shaderDrawCollectionPair in particlesToDraw_CustomShader)
             {
-                // If there's nothing to be drawn, remove the effect from the dictionary and return.
-                if (keyValuePair.Value.Count == 0)
+                foreach (var blendStateParticleListPair in shaderDrawCollectionPair.Value)
                 {
-                    particlesToDraw_CustomShader.Remove(keyValuePair.Key);
-                    return;
+                    if (blendStateParticleListPair.Value.Count == 0)
+                        return;
+
+                    Main.spriteBatch.Begin(SpriteSortMode.Immediate, blendStateParticleListPair.Key, SamplerState.LinearClamp, DepthStencilState.None, RasterizerState.CullNone, shaderDrawCollectionPair.Key, Main.GameViewMatrix.TransformationMatrix);
+
+                    var particlesAtDrawLayer = blendStateParticleListPair.Value.Where(p => p.DrawLayer == drawLayer);
+                    foreach (Particle particle in particlesAtDrawLayer)
+                    {
+                        particle.PrepareCustomShader(shaderDrawCollectionPair.Key);
+                        DrawParticleInstance(particle);
+                    }
+
+                    Main.spriteBatch.End();
                 }
-
-                Main.spriteBatch.Begin(SpriteSortMode.Immediate, BlendState.AlphaBlend, SamplerState.LinearClamp, DepthStencilState.None, RasterizerState.CullNone, keyValuePair.Key, Main.GameViewMatrix.TransformationMatrix);
-
-                var particlesAtDrawLayer = keyValuePair.Value.Where(p => p.DrawLayer == drawLayer);
-                foreach (Particle particle in particlesAtDrawLayer)
-                {
-                    particle.PrepareCustomShader(keyValuePair.Key);
-                    DrawParticleInstance(particle);
-                }
-
-                Main.spriteBatch.End();
             }
         }
 
         private static List<Particle> ReturnAssociatedDrawCollection(Particle particle)
         {
+            // Particles with custom shaders.
+            if (particle.CustomShader != null)
+            {
+                if (!particlesToDraw_CustomShader.ContainsKey(particle.CustomShader))
+                    particlesToDraw_CustomShader[particle.CustomShader] = [];
+
+                if (particle.UseAdditiveBlend)
+                {
+                    if (!particlesToDraw_CustomShader[particle.CustomShader].ContainsKey(BlendState.Additive))
+                        particlesToDraw_CustomShader[particle.CustomShader][BlendState.Additive] = [];
+                    return particlesToDraw_CustomShader[particle.CustomShader][BlendState.Additive];
+                }
+                else if (particle.UseHalfTransparency)
+                {
+                    if (!particlesToDraw_CustomShader[particle.CustomShader].ContainsKey(BlendState.NonPremultiplied))
+                        particlesToDraw_CustomShader[particle.CustomShader][BlendState.NonPremultiplied] = [];
+                    return particlesToDraw_CustomShader[particle.CustomShader][BlendState.NonPremultiplied];
+                }
+                else
+                {
+                    if (!particlesToDraw_CustomShader[particle.CustomShader].ContainsKey(BlendState.AlphaBlend))
+                        particlesToDraw_CustomShader[particle.CustomShader][BlendState.AlphaBlend] = [];
+                    return particlesToDraw_CustomShader[particle.CustomShader][BlendState.AlphaBlend];
+                }
+            }
             // Pixelated particles.
-            if (particle.Pixelate)
+            else if (particle.Pixelate)
             {
                 if (particle.UseAdditiveBlend)
                 {
@@ -453,28 +477,6 @@ namespace CalamityMod.Particles
                     return particlesToDraw[BlendState.AlphaBlend];
                 }
             }
-        }
-
-        private static void AddToAssociatedDrawCollection(Particle particle)
-        {
-            if (particle.CustomShader != null)
-            {
-                if (!particlesToDraw_CustomShader.ContainsKey(particle.CustomShader))
-                    particlesToDraw_CustomShader[particle.CustomShader] = [];
-                particlesToDraw_CustomShader[particle.CustomShader].Add(particle);
-            }
-            else
-            {
-                ReturnAssociatedDrawCollection(particle).Add(particle);
-            }
-        }
-
-        private static void RemoveFromAssociatedDrawCollection(Particle particle)
-        {
-            if (particle.CustomShader != null)
-                particlesToDraw_CustomShader[particle.CustomShader].Remove(particle);
-            else
-                ReturnAssociatedDrawCollection(particle).Remove(particle);
         }
     }
 }
