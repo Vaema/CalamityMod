@@ -157,7 +157,6 @@ namespace CalamityMod.Projectiles.Summon
                 color = Color.Lerp(Color.Yellow, Color.OrangeRed, completion);
                 if (completion >= 1)
                     color = Color.LightBlue;
-                //Main.EntitySpriteDraw(ciTex, Projectile.Center - Main.screenPosition, null, color, Main.GlobalTimeWrappedHourly, ciTex.Size() * 0.5f, 0.075f, SpriteEffects.None);
 
                 float count = MathHelper.Min((Projectile.minionSlots-1) * 2, 40);
                 for (var i = 0; i < count; i++)

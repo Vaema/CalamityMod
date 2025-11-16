@@ -153,16 +153,13 @@ namespace CalamityMod.Projectiles.Summon
         public static Asset<Texture2D> circle;
         public override bool PreDraw(ref Color lightColor)
         {
-
-            //Vengeful Sun Drawing
+            //Sigil
             var spTex = TextureAssets.Projectile[Type].Value;
-
             Main.spriteBatch.Draw(spTex, Projectile.Center - Main.screenPosition, null, Color.White, Main.GlobalTimeWrappedHourly, spTex.Size() * 0.5f, 0.75f, SpriteEffects.None, 0);
+            //Sunlines
             Main.spriteBatch.SafeBegin(SpriteSortMode.Deferred, BatchSetting.Additive, null, Main.GameViewMatrix.TransformationMatrix, () =>
             {
-                //Main.EntitySpriteDraw(ciTex, Projectile.Center - Main.screenPosition, null, Color.Gold, Main.GlobalTimeWrappedHourly, ciTex.Size() * 0.5f, 0.075f, SpriteEffects.None);
-
-                float count = (int)((Projectile.minionSlots - 1) / 3) * 2 + 2;
+                int count = (int)((Projectile.minionSlots - 1) / 3) * 2 + 2;
                 for (var i = 0; i < count; i++)
                 {
                     var comp = (i / count);
@@ -171,18 +168,10 @@ namespace CalamityMod.Projectiles.Summon
                         offset = 8 - offset;
                     CalamityUtils.DrawLineBetter(Main.spriteBatch, Projectile.Center + new Vector2(20 + offset, 0).RotatedBy(MathHelper.TwoPi * comp - Main.GlobalTimeWrappedHourly), Projectile.Center + new Vector2(34 + offset, 0).RotatedBy(MathHelper.TwoPi * comp - Main.GlobalTimeWrappedHourly), i % 2 == 3 ? Color.OrangeRed : Color.Gold, 2f);
                 }
-            });
 
-            //Old sun spirit drawing
-            /*
-            var spTex = TextureAssets.Projectile[Type].Value;
-            var ciTex = CalamityUtils.GetTextureEfficient(ref circle, "CalamityMod/Particles/BloomRingThinLarge").Value;
-            */
-            var ciTex = CalamityUtils.GetTextureEfficient(ref circle, "CalamityMod/Particles/BloomRingThinLarge").Value;
-            //Main.spriteBatch.Draw(spTex, Projectile.Center - Main.screenPosition, null, Color.White, Main.GlobalTimeWrappedHourly, spTex.Size() * 0.5f, 0.75f, SpriteEffects.None, 0);
-            Main.spriteBatch.SafeBegin(SpriteSortMode.Deferred, BatchSetting.Additive, null, Main.GameViewMatrix.TransformationMatrix, () =>
-            {
-                int count = (int)MathHelper.Min((1 + (Projectile.minionSlots - 1) % 3), 10);
+                //Circles
+                var ciTex = CalamityUtils.GetTextureEfficient(ref circle, "CalamityMod/Particles/BloomRingThinLarge").Value;
+                count = (int)MathHelper.Min((1 + (Projectile.minionSlots - 1) % 3), 10);
                 for (var i = 0; i < count && i < 5; i++)
                 {
                     var comp = (i / (count));

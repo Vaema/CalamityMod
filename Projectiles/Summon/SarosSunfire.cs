@@ -118,10 +118,6 @@ namespace CalamityMod.Projectiles.Summon
             }
         }
 
-        public override void OnKill(int timeLeft)
-        {
-        }
-
         public override bool? CanDamage()
         {
             return Projectile.ai[0] <= 90;
@@ -129,6 +125,7 @@ namespace CalamityMod.Projectiles.Summon
 
         public override bool PreDraw(ref Color lightColor) => false;
 
+        //Prim trail based off Fryzahh's work on Faith Incinerator
         public float FireWidthFunction(float completion)
         {
             float width;
@@ -136,7 +133,6 @@ namespace CalamityMod.Projectiles.Summon
             float curveRatio = 0.2f;
             var positions = Projectile.oldPos.ToList();
             positions.RemoveAll(x => x == Vector2.Zero);
-            // Crop the tip of the trail into a conic shape.
             if (completion < curveRatio)
                 width = MathF.Pow(completion / curveRatio, 0.5f) * maxBodyWidth;
             else
@@ -172,16 +168,15 @@ namespace CalamityMod.Projectiles.Summon
         public Color FireCoreColorFunction(float completion)
         {
             Color mainColor = new Color(255, 191, 73);
-            return mainColor;// Color.Lerp(mainColor, Color.Transparent, completion);
+            return mainColor;
         }
 
         public void RenderPixelatedPrimitives(SpriteBatch spriteBatch, PixelationPrimitiveLayer layer)
         {
-            // Render the main trail for the body for the flame.
+            //Flame body
             GameShaders.Misc["CalamityMod:ImpFlameTrail"].SetShaderTexture(ModContent.Request<Texture2D>("CalamityMod/ExtraTextures/Trails/ScarletDevilStreak"));
             PrimitiveRenderer.RenderTrail(Projectile.oldPos, new(FireWidthFunction, FireColorFunction, (_) => Projectile.Size * 0.5f, true, true, GameShaders.Misc["CalamityMod:ImpFlameTrail"]), Projectile.oldPos.Length + 32);
-
-            // Render a smaller, pure white trail in the same position to represent the glowing core of the flame.
+            //Flame core
             Vector2[] fireCoreLength = Projectile.oldPos.Take(8).ToArray();
             GameShaders.Misc["CalamityMod:ImpFlameTrail"].SetShaderTexture(ModContent.Request<Texture2D>("CalamityMod/ExtraTextures/Trails/SylvestaffStreak"));
             PrimitiveRenderer.RenderTrail(fireCoreLength, new(FireCoreWidthFunction, FireCoreColorFunction, (_) => Projectile.Size * 0.5f, true, true, GameShaders.Misc["CalamityMod:ImpFlameTrail"]), fireCoreLength.Length + 24);

@@ -16,11 +16,10 @@ namespace CalamityMod.Projectiles.Summon
     {
         public new string LocalizationCategory => "Projectiles.Summon";
         public override string Texture => "CalamityMod/Projectiles/InvisibleProj";
+        Player Owner => Main.player[Projectile.owner];
 
         public override void SetStaticDefaults()
         {
-            ProjectileID.Sets.TrailCacheLength[Type] = 20;
-            ProjectileID.Sets.TrailingMode[Type] = 2;
             ProjectileID.Sets.MinionShot[Type] = true;
         }
 
@@ -42,15 +41,13 @@ namespace CalamityMod.Projectiles.Summon
         Vector2 SarosPos => Owner.Center + Vector2.UnitY * (Owner.gfxOffY + Owner.gravDir * -24f);
         public override void OnSpawn(IEntitySource source)
         {
-            SoundEngine.PlaySound(SoundID.Item20, Projectile.Center);
+            SoundEngine.PlaySound(SoundID.DD2_BetsyFlameBreath with { Volume = 0.5f, SoundLimitBehavior = SoundLimitBehavior.IgnoreNew }, Owner.Center);
             Projectile.rotation = SarosPos.DirectionTo(Owner.Calamity().mouseWorld).ToRotation();
         }
-
-        Player Owner => Main.player[Projectile.owner];
-
-
         public override void AI()
         {
+            if (Owner.miscCounter % 10 == 0)
+                SoundEngine.PlaySound(SoundID.DD2_BetsyFlameBreath with {Volume = 0.1f }, Owner.Center);
             Projectile.rotation = Projectile.rotation.AngleLerp(SarosPos.DirectionTo(Owner.Calamity().mouseWorld).ToRotation(), 0.1f);
             Projectile.Center = SarosPos + Projectile.rotation.ToRotationVector2() * Utils.Remap(Projectile.timeLeft,5,10,1600,0);
             if (Projectile.timeLeft == 5 && Owner.channel)
@@ -108,21 +105,18 @@ namespace CalamityMod.Projectiles.Summon
 
         public void RenderPixelatedPrimitives(SpriteBatch spriteBatch, PixelationPrimitiveLayer layer)
         {
-            Vector2[] pos = [SarosPos, Projectile.Center];
             List<Vector2> posList = [];
+            //For the prim to render properly I need to divide the distance between the positions into a couple points. Just using start and end doesn't render.
             for (var i = 0; i <= 10; i++)
             {
                 posList.Add(Vector2.Lerp(SarosPos, Projectile.Center, i / 10f));
             }
-            pos = posList.ToArray();
-            // Render the main trail for the body for the flame.
+            var pos = posList.ToArray();
+
             GameShaders.Misc["CalamityMod:ImpFlameTrail"].SetShaderTexture(ModContent.Request<Texture2D>("CalamityMod/ExtraTextures/Trails/ScarletDevilStreak"));
             PrimitiveRenderer.RenderTrail(pos, new(FireWidthFunction, FireColorFunction, null, true, true, GameShaders.Misc["CalamityMod:ImpFlameTrail"]), pos.Length+32);
-
-            // Render a smaller, pure white trail in the same position to represent the glowing core of the flame.
-            Vector2[] fireCoreLength = pos;
             GameShaders.Misc["CalamityMod:ImpFlameTrail"].SetShaderTexture(ModContent.Request<Texture2D>("CalamityMod/ExtraTextures/Trails/SylvestaffStreak"));
-            PrimitiveRenderer.RenderTrail(fireCoreLength, new(FireCoreWidthFunction, FireCoreColorFunction, null, true, true, GameShaders.Misc["CalamityMod:ImpFlameTrail"]), pos.Length+24);
+            PrimitiveRenderer.RenderTrail(pos, new(FireCoreWidthFunction, FireCoreColorFunction, null, true, true, GameShaders.Misc["CalamityMod:ImpFlameTrail"]), pos.Length+24);
         }
     }
 }
