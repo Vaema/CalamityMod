@@ -9,7 +9,15 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides
     {
         public NPC NPC { get; set; }
 
-        public abstract bool AI(Mod mod);
+        public virtual bool AI(Mod mod)
+        {
+            return true;
+        }
+
+        public virtual void PostAI(Mod mod)
+        {
+
+        }
 
         public virtual void SendExtraAI(BitWriter bitWriter, BinaryWriter binaryWriter)
         {

@@ -56,6 +56,7 @@ using CalamityMod.NPCs.SunkenSea;
 using CalamityMod.NPCs.SupremeCalamitas;
 using CalamityMod.NPCs.VanillaNPCAIOverrides;
 using CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses;
+using CalamityMod.NPCs.VanillaNPCAIOverrides.MiniBosses;
 using CalamityMod.NPCs.VanillaNPCAIOverrides.RegularEnemies;
 using CalamityMod.Packets;
 using CalamityMod.Particles;
@@ -1283,7 +1284,172 @@ namespace CalamityMod.NPCs
             VulnerabilitiesAndResistances(npc);
 
             BoundNPCSafety(Mod, npc);
+
+            AIOverride = GetVanillaAIOverrideToApply(npc);
+
+            if (AIOverride != null)
+                AIOverride.NPC = npc;
         }
+
+        #region Vanilla AI Override Rule
+        public static VanillaAIOverride GetVanillaAIOverrideToApply(NPC npc)
+        {
+            // Completely override the shitty AI and replace it
+            if (npc.type == NPCID.BloodNautilus)
+                return new DreadnautilusAI();
+
+            // Adult Wyrm Ancient Doom
+            if (npc.type == NPCID.AncientDoom)
+            {
+                if (Main.npc[(int)npc.ai[0]].type == NPCType<PrimordialWyrmHead>())
+                    return new CultistAI.AncientDoomAI();
+            }
+
+            // Zenith seed Specifics
+            if (Main.zenithWorld)
+            {
+                if (npc.type == NPCID.QueenBee)
+                    return new QueenBeeAI();
+            }
+
+            // Death Mode Specifics
+            if (CalamityWorld.death)
+            {
+                if (npc.type == NPCID.DetonatingBubble)
+                    return new DukeFishronAI.DetonatingBubbleAI();
+            }
+
+            #region Rev+ Mode Boss/Miniboss AI Overrides
+
+            if (CalamityWorld.revenge || BossRushEvent.BossRushActive)
+            {
+                switch (npc.type)
+                {
+                    case NPCID.KingSlime:
+                        return new KingSlimeAI();
+
+                    case NPCID.EyeofCthulhu:
+                        return new EyeOfCthulhuAI();
+
+                    case NPCID.EaterofWorldsHead or NPCID.EaterofWorldsBody or NPCID.EaterofWorldsTail:
+                        return new EaterOfWorldsAI();
+
+                    case NPCID.BrainofCthulhu:
+                        return new BrainOfCthulhuAI();
+                    case NPCID.Creeper:
+                        return new BrainOfCthulhuAI.CreeperAI();
+
+                    case NPCID.QueenBee:
+                        return new QueenBeeAI();
+
+                    case NPCID.SkeletronHead:
+                        return new SkeletronAI();
+                    case NPCID.SkeletronHand:
+                        return new SkeletronAI.SkeletronHandAI();
+
+                    case NPCID.Deerclops:
+                        return new DeerclopsAI();
+
+                    case NPCID.WallofFlesh:
+                        return new WallOfFleshAI();
+                    case NPCID.WallofFleshEye:
+                        return new WallOfFleshAI.EyeAI();
+
+                    case NPCID.QueenSlimeBoss:
+                        return new QueenSlimeAI();
+                    case NPCID.QueenSlimeMinionBlue:
+                        return new QueenSlimeAI.CrystalSlimeAI();
+                    case NPCID.QueenSlimeMinionPink:
+                        return new QueenSlimeAI.BouncySlimeAI();
+
+                    case NPCID.TheDestroyer or NPCID.TheDestroyerBody or NPCID.TheDestroyerTail:
+                        return new DestroyerAI();
+                    case NPCID.Probe:
+                        return new DestroyerAI.ProbeAI();
+
+                    case NPCID.Retinazer:
+                        return new TwinsAI.RetinazerAI();
+                    case NPCID.Spazmatism:
+                        return new TwinsAI.SpazmatismAI();
+
+                    case NPCID.SkeletronPrime:
+                        return new SkeletronPrimeAI();
+                    case NPCID.PrimeLaser:
+                        return new SkeletronPrimeAI.PrimeLaserAI();
+                    case NPCID.PrimeCannon:
+                        return new SkeletronPrimeAI.PrimeCannonAI();
+                    case NPCID.PrimeVice:
+                        return new SkeletronPrimeAI.PrimeViceAI();
+                    case NPCID.PrimeSaw:
+                        return new SkeletronPrimeAI.PrimeSawAI();
+
+                    case NPCID.Plantera:
+                        return new PlanteraAI();
+                    case NPCID.PlanterasHook:
+                        return new PlanteraAI.HookAI();
+                    case NPCID.PlanterasTentacle:
+                        return new PlanteraAI.TentacleAI();
+
+                    case NPCID.HallowBoss:
+                        return new EmpressofLightAI();
+
+                    case NPCID.Golem:
+                        return new GolemAI();
+                    case NPCID.GolemFistLeft or NPCID.GolemFistRight:
+                        return new GolemAI.FistAI();
+                    case NPCID.GolemHead:
+                        return new GolemAI.HeadAI();
+                    case NPCID.GolemHeadFree:
+                        return new GolemAI.HeadFreeAI();
+
+                    case NPCID.DukeFishron:
+                        return new DukeFishronAI();
+
+                    case NPCID.Pumpking when DownedBossSystem.downedDoG:
+                        return new PumpkingAI();
+
+                    case NPCID.PumpkingBlade when DownedBossSystem.downedDoG:
+                        return new PumpkingAI.BladeAI();
+
+                    case NPCID.IceQueen when DownedBossSystem.downedDoG:
+                        return new IceQueenAI();
+
+                    case NPCID.Mothron when DownedBossSystem.downedDoG:
+                        return new MothronAI();
+
+                    case NPCID.CultistBoss or NPCID.CultistBossClone:
+                        return new CultistAI();
+                    case NPCID.AncientLight:
+                        return new CultistAI.AncientLightAI();
+                    case NPCID.AncientDoom:
+                        return new CultistAI.AncientDoomAI();
+
+                    case NPCID.MoonLordCore:
+                    case NPCID.MoonLordHand:
+                    case NPCID.MoonLordHead:
+                    case NPCID.MoonLordFreeEye:
+                    case NPCID.MoonLordLeechBlob:
+                        return new MoonLordAI();
+                };
+            }
+
+            #endregion
+
+            #region Rev+ AI Override Per AiStyle
+
+            if (CalamityWorld.revenge)
+            {
+                switch (npc.aiStyle)
+                {
+
+                }
+            }
+
+            #endregion
+
+            return null;
+        }
+        #endregion
 
         public override bool? CanFallThroughPlatforms(NPC npc)
         {
@@ -3158,65 +3324,7 @@ namespace CalamityMod.NPCs
             if (NPC.LunarApocalypseIsUp)
                 PillarEventProgressionEdit(npc);
 
-            // Adult Wyrm Ancient Doom
-            if (npc.type == NPCID.AncientDoom)
-            {
-                if (Main.npc[(int)npc.ai[0]].type == NPCType<PrimordialWyrmHead>())
-                    return CultistAI.BuffedAncientDoomAI(npc, Mod);
-            }
 
-            // Completely override the shitty AI and replace it
-            if (npc.type == NPCID.BloodNautilus)
-                return DreadnautilusAI.BuffedDreadnautilusAI(npc, Mod);
-
-            // Decrease the projectile velocities of several fighter enemies and make them better to fight in general
-            // Also limit the amount of times Vortex Larvae and Hornets can evolve
-            if (npc.type == NPCID.IceGolem || npc.type == NPCID.Eyezor || npc.type == NPCID.VortexRifleman ||
-                npc.type == NPCID.TacticalSkeleton || npc.type == NPCID.Nailhead || npc.type == NPCID.WallCreeper ||
-                npc.type == NPCID.BloodCrawler || npc.type == NPCID.BlackRecluse || npc.type == NPCID.JungleCreeper ||
-                npc.type == NPCID.BoneLee || npc.type == NPCID.VortexLarva || npc.type == NPCID.VortexHornet ||
-                npc.type == NPCID.VortexHornetQueen)
-            {
-                return RevengeanceAndDeathAI.BuffedFighterAI(npc, Mod);
-            }
-
-            // More telegraphs
-            if (npc.type == NPCID.Harpy || npc.type == NPCID.Demon || npc.type == NPCID.VoodooDemon ||
-                npc.type == NPCID.RedDevil)
-            {
-                return RevengeanceAndDeathAI.BuffedBatAI(npc, Mod);
-            }
-
-            // Casters hold their hands up for longer before firing in all modes
-            if (npc.type == NPCID.FireImp || npc.type == NPCID.DarkCaster || npc.type == NPCID.Tim ||
-                npc.type == NPCID.RuneWizard || (npc.type >= NPCID.RaggedCaster && npc.type <= NPCID.DiabolistWhite) ||
-                npc.type == NPCID.DesertDjinn || npc.type == NPCID.GoblinSorcerer)
-            {
-                return RevengeanceAndDeathAI.BuffedCasterAI(npc, Mod);
-            }
-
-            // Antlion telegraph
-            if (npc.type == NPCID.Antlion)
-                return RevengeanceAndDeathAI.BuffedAntlionAI(npc, Mod);
-
-            // Corruptor and Blood Squid telegraphs
-            if (npc.type == NPCID.Corruptor || npc.type == NPCID.BloodSquid)
-                return RevengeanceAndDeathAI.BuffedFlyingAI(npc, Mod);
-
-            // Ichor Sticker and Ice Elemental telegraphs
-            if (npc.type == NPCID.IchorSticker || npc.type == NPCID.IceElemental)
-                return RevengeanceAndDeathAI.BuffedHoveringAI(npc, Mod);
-
-            // Fungi Bulb telegraphs
-            if (npc.type == NPCID.FungiBulb || npc.type == NPCID.GiantFungiBulb)
-                return RevengeanceAndDeathAI.BuffedPlantAI(npc, Mod);
-
-            // Spider web spit telegraph
-            if (npc.type == NPCID.WallCreeperWall || npc.type == NPCID.BloodCrawlerWall || npc.type == NPCID.BlackRecluseWall ||
-                npc.type == NPCID.JungleCreeperWall)
-            {
-                return RevengeanceAndDeathAI.BuffedSpiderAI(npc, Mod);
-            }
 
             // Servant of Cthulhu light
             if (npc.type == NPCID.ServantofCthulhu)
@@ -3254,157 +3362,9 @@ namespace CalamityMod.NPCs
                 }
             }
 
-            if (Main.zenithWorld)
-            {
-                if (npc.type == NPCID.QueenBee)
-                    return QueenBeeAI.BuffedQueenBeeAI(npc, Mod);
-            }
-
-            if (CalamityWorld.death)
-            {
-                if (npc.type == NPCID.DetonatingBubble)
-                    return DukeFishronAI.BuffedDetonatingBubbleAI(npc, Mod);
-            }
-
             if (CalamityWorld.revenge || BossRushEvent.BossRushActive)
             {
-                switch (npc.type)
-                {
-                    case NPCID.KingSlime:
-                        return KingSlimeAI.BuffedKingSlimeAI(npc, Mod);
 
-                    case NPCID.EyeofCthulhu:
-                        return EyeOfCthulhuAI.BuffedEyeofCthulhuAI(npc, Mod);
-
-                    case NPCID.EaterofWorldsHead:
-                    case NPCID.EaterofWorldsBody:
-                    case NPCID.EaterofWorldsTail:
-                        return EaterOfWorldsAI.BuffedEaterofWorldsAI(npc, Mod);
-
-                    case NPCID.BrainofCthulhu:
-                        return BrainOfCthulhuAI.BuffedBrainofCthulhuAI(npc, Mod);
-                    case NPCID.Creeper:
-                        return BrainOfCthulhuAI.BuffedCreeperAI(npc, Mod);
-
-                    case NPCID.QueenBee:
-                        return QueenBeeAI.BuffedQueenBeeAI(npc, Mod);
-
-                    case NPCID.SkeletronHand:
-                        return SkeletronAI.BuffedSkeletronHandAI(npc, Mod);
-                    case NPCID.SkeletronHead:
-                        return SkeletronAI.BuffedSkeletronAI(npc, Mod);
-
-                    case NPCID.Deerclops:
-                        return DeerclopsAI.BuffedDeerclopsAI(npc, Mod);
-
-                    case NPCID.WallofFlesh:
-                        return WallOfFleshAI.BuffedWallofFleshAI(npc, Mod);
-                    case NPCID.WallofFleshEye:
-                        return WallOfFleshAI.BuffedWallofFleshEyeAI(npc, Mod);
-
-                    case NPCID.QueenSlimeBoss:
-                        return QueenSlimeAI.BuffedQueenSlimeAI(npc, Mod);
-                    case NPCID.QueenSlimeMinionBlue:
-                        return QueenSlimeAI.BuffedQueenSlimeCrystalSlimeAI(npc, Mod);
-                    case NPCID.QueenSlimeMinionPink:
-                        return QueenSlimeAI.BuffedQueenSlimeBouncySlimeAI(npc, Mod);
-
-                    case NPCID.TheDestroyer:
-                    case NPCID.TheDestroyerBody:
-                    case NPCID.TheDestroyerTail:
-                        return DestroyerAI.BuffedDestroyerAI(npc, Mod);
-                    case NPCID.Probe:
-                        return DestroyerAI.BuffedProbeAI(npc, Mod);
-
-                    case NPCID.Retinazer:
-                        return TwinsAI.BuffedRetinazerAI(npc, Mod);
-                    case NPCID.Spazmatism:
-                        return TwinsAI.BuffedSpazmatismAI(npc, Mod);
-
-                    case NPCID.SkeletronPrime:
-                        return SkeletronPrimeAI.BuffedSkeletronPrimeAI(npc, Mod);
-                    case NPCID.PrimeLaser:
-                        return SkeletronPrimeAI.BuffedPrimeLaserAI(npc, Mod);
-                    case NPCID.PrimeCannon:
-                        return SkeletronPrimeAI.BuffedPrimeCannonAI(npc, Mod);
-                    case NPCID.PrimeVice:
-                        return SkeletronPrimeAI.BuffedPrimeViceAI(npc, Mod);
-                    case NPCID.PrimeSaw:
-                        return SkeletronPrimeAI.BuffedPrimeSawAI(npc, Mod);
-
-                    case NPCID.Plantera:
-                        return PlanteraAI.BuffedPlanteraAI(npc, Mod);
-                    case NPCID.PlanterasHook:
-                        return PlanteraAI.BuffedPlanterasHookAI(npc, Mod);
-                    case NPCID.PlanterasTentacle:
-                        return PlanteraAI.BuffedPlanterasTentacleAI(npc, Mod);
-
-                    case NPCID.HallowBoss:
-                        return EmpressofLightAI.BuffedEmpressofLightAI(npc, Mod);
-
-                    case NPCID.Golem:
-                        return GolemAI.BuffedGolemAI(npc, Mod);
-                    case NPCID.GolemFistLeft:
-                    case NPCID.GolemFistRight:
-                        return GolemAI.BuffedGolemFistAI(npc, Mod);
-                    case NPCID.GolemHead:
-                        return GolemAI.BuffedGolemHeadAI(npc, Mod);
-                    case NPCID.GolemHeadFree:
-                        return GolemAI.BuffedGolemHeadFreeAI(npc, Mod);
-
-                    case NPCID.DukeFishron:
-                        return DukeFishronAI.BuffedDukeFishronAI(npc, Mod);
-
-                    case NPCID.Pumpking:
-                        if (DownedBossSystem.downedDoG)
-                        {
-                            return CalamityGlobalAI.BuffedPumpkingAI(npc);
-                        }
-
-                        break;
-
-                    case NPCID.PumpkingBlade:
-                        if (DownedBossSystem.downedDoG)
-                        {
-                            return CalamityGlobalAI.BuffedPumpkingBladeAI(npc);
-                        }
-
-                        break;
-
-                    case NPCID.IceQueen:
-                        if (DownedBossSystem.downedDoG)
-                        {
-                            return CalamityGlobalAI.BuffedIceQueenAI(npc);
-                        }
-
-                        break;
-
-                    case NPCID.Mothron:
-                        if (DownedBossSystem.downedDoG)
-                        {
-                            return CalamityGlobalAI.BuffedMothronAI(npc);
-                        }
-
-                        break;
-
-                    case NPCID.CultistBoss:
-                    case NPCID.CultistBossClone:
-                        return CultistAI.BuffedCultistAI(npc, Mod);
-                    case NPCID.AncientLight:
-                        return CultistAI.BuffedAncientLightAI(npc, Mod);
-                    case NPCID.AncientDoom:
-                        return CultistAI.BuffedAncientDoomAI(npc, Mod);
-
-                    case NPCID.MoonLordCore:
-                    case NPCID.MoonLordHand:
-                    case NPCID.MoonLordHead:
-                    case NPCID.MoonLordFreeEye:
-                    case NPCID.MoonLordLeechBlob:
-                        return MoonLordAI.BuffedMoonLordAI(npc, Mod);
-
-                    default:
-                        break;
-                }
             }
 
             if (CalamityWorld.revenge)
