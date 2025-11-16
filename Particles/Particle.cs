@@ -32,29 +32,14 @@ namespace CalamityMod.Particles
         /// </summary>
         public Vector2 Position;
 
-        /// <summary>
-        /// The velocity of the particle.
-        /// </summary>
         public Vector2 Velocity;
 
-        /// <summary>
-        /// The point from which this particle's texture should be drawn from. 
-        /// </summary>
         public Vector2 Origin;
 
-        /// <summary>
-        /// The color of the particle.
-        /// </summary>
         public Color Color;
 
-        /// <summary>
-        /// The current rotation of the particle in radians.
-        /// </summary>
         public float Rotation;
 
-        /// <summary>
-        /// The scale of the particle.
-        /// </summary>
         public float Scale;
 
         /// <summary>
