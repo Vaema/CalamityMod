@@ -124,7 +124,7 @@ namespace CalamityMod.Items.BaseItems
             }
         }
 
-        private void Reset(Player p)
+        private static void Reset(Player p)
         {
             p.Transformation().previousHighest = p.Transformation().currentHighest;
             p.Transformation().currentHighest = -1;
