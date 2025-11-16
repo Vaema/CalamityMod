@@ -836,11 +836,11 @@ public sealed class CalamityVanillaAIOverrideNPC : GlobalNPC
         NetIDLookup.Clear();
 
         int uniqueID = 1;
-        foreach (var type in ReflectionHelper.GetEveryModsTypes().OrderBy(t => t.FullName))
+        ReflectionHelper.IterateCalamityTypesSorted<VanillaAIOverride>(action: type =>
         {
             NetIDLookup[type] = uniqueID;
             uniqueID++;
-        }
+        });
     }
 
     public override void SetDefaults(NPC npc)
