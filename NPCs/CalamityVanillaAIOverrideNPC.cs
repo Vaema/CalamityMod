@@ -277,7 +277,7 @@ public sealed class CalamityVanillaAIOverrideNPC : GlobalNPC
                     break;
 
                 case NPCAIStyleID.Fighter:
-                    if (npc.type == NPCType<Stormlion>() ||
+                    if (npc.type == NPCType<Stormlion>() || npc.type == NPCType<BucketZombie>() ||
                         npc.type == NPCType<AstralachneaGround>() || npc.type == NPCType<RenegadeWarlock>())
                     {
                         return new RevengeanceAndDeathAI.FighterAI();
