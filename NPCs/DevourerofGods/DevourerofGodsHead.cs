@@ -2570,7 +2570,8 @@ namespace CalamityMod.NPCs.DevourerofGods
                 normalOnly.Add(ModContent.ItemType<CosmiliteBrick>(), 1, 150, 250);
 
                 // Equipment
-                normalOnly.Add(DropHelper.PerPlayer(ModContent.ItemType<NebulousCore>()));
+                // 16NOV2025: Ozzatron: item has been chosen as the "Expert gatekept" item for this Calamity boss
+                // normalOnly.Add(DropHelper.PerPlayer(ModContent.ItemType<NebulousCore>()));
             }
 
             // Relic

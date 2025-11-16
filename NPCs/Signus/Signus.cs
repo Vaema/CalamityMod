@@ -924,7 +924,8 @@ namespace CalamityMod.NPCs.Signus
                 normalOnly.Add(DropHelper.PerPlayer(ModContent.ItemType<TwistingNether>(), 1, 10, 12));
 
                 // Equipment
-                normalOnly.Add(DropHelper.PerPlayer(ModContent.ItemType<SpectralVeil>()));
+                // 16NOV2025: Ozzatron: item has been chosen as the "Expert gatekept" item for this Calamity boss
+                // normalOnly.Add(DropHelper.PerPlayer(ModContent.ItemType<SpectralVeil>()));
 
                 // Vanity
                 normalOnly.Add(ModContent.ItemType<SignusMask>(), 7);

@@ -897,7 +897,8 @@ namespace CalamityMod.NPCs.BrimstoneElemental
                     ModContent.ItemType<RoseStone>(),
                 };
                 normalOnly.Add(DropHelper.CalamityStyle(DropHelper.NormalWeaponDropRateFraction, accs));
-                normalOnly.Add(DropHelper.PerPlayer(ModContent.ItemType<FlameLickedShell>()));
+                // 16NOV2025: Ozzatron: item has been chosen as the "Expert gatekept" item for this Calamity boss
+                // normalOnly.Add(DropHelper.PerPlayer(ModContent.ItemType<FlameLickedShell>()));
 
                 // Vanity
                 normalOnly.Add(ModContent.ItemType<BrimstoneElementalMask>(), 7);
