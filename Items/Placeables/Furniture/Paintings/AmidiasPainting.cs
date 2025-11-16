@@ -13,7 +13,7 @@ namespace CalamityMod.Items.Placeables.Furniture.Paintings
             Item.DefaultToPlaceableTile(ModContent.TileType<AmidiasPaintingTile>());
             Item.width = 52;
             Item.height = 34;
-            Item.value = Item.sellPrice(silver: 40);
+            Item.value = Item.buyPrice(gold: 1);
         }
     }
 }
