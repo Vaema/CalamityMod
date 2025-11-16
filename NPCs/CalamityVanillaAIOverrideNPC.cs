@@ -836,7 +836,7 @@ public sealed class CalamityVanillaAIOverrideNPC : GlobalNPC
         NetIDLookup.Clear();
 
         int uniqueID = 1;
-        ReflectionHelper.IterateCalamityTypesSorted<VanillaAIOverride>(action: type =>
+        ReflectionHelper.IterateEveryModsTypes<VanillaAIOverride>(action: type =>
         {
             NetIDLookup[type] = uniqueID;
             uniqueID++;
@@ -917,7 +917,7 @@ public sealed class CalamityVanillaAIOverrideNPC : GlobalNPC
         }
         else if (netID != 0)
         {
-            CalamityMod.Instance.Logger.Error($"Client AIOverride type is different from Server! [{localNetID} <-> {netID}]. Restored with Default Instance!");
+            CalamityMod.Instance.Logger.Warn($"Client AIOverride type is different from Server! [{localNetID} <-> {netID}]. Restored with Default Instance!");
             AIOverride = GetNewInstanceFromNetID(netID, npc);
             AIOverride?.ReceiveExtraAI(bitReader, binaryReader);
         }
