@@ -31,6 +31,8 @@ public sealed class CalamityVanillaAIOverrideNPC : GlobalNPC
 
     public static Dictionary<Type, int> NetIDLookup = [];
 
+    public const int InvalidNetID = 0;
+
     #region Clone Logic
     public override bool InstancePerEntity => true;
 
@@ -58,6 +60,9 @@ public sealed class CalamityVanillaAIOverrideNPC : GlobalNPC
             return null;
 
         if (npc.whoAmI < 0 || npc.whoAmI >= Main.maxNPCs)
+            return null;
+
+        if (!npc.active)
             return null;
 
         // Completely override the shitty AI and replace it
@@ -868,18 +873,28 @@ public sealed class CalamityVanillaAIOverrideNPC : GlobalNPC
         AIOverride?.PostAI(Mod);
     }
 
+    #endregion
+
+    #region Networking
+
     public static int GetNetID(VanillaAIOverride aiOverride)
     {
         if (aiOverride == null)
-            return 0;
+            return InvalidNetID;
 
         if (!NetIDLookup.TryGetValue(aiOverride.GetType(), out var netID))
-            return 0;
+            return InvalidNetID;
 
         return netID;
     }
 
-    public static VanillaAIOverride GetNewInstanceFromNetID(int netID, NPC ownerNPC)
+    public static bool TryGetNetID(VanillaAIOverride aIOverride, out int netID)
+    {
+        netID = GetNetID(aIOverride);
+        return netID != InvalidNetID;
+    }
+
+    public static VanillaAIOverride GetNewInstanceOrNullFromNetID(int netID, NPC ownerNPC)
     {
         var type = NetIDLookup.FirstOrDefault(kv => kv.Value == netID).Key;
 
@@ -896,31 +911,35 @@ public sealed class CalamityVanillaAIOverrideNPC : GlobalNPC
 
     public override void SendExtraAI(NPC npc, BitWriter bitWriter, BinaryWriter binaryWriter)
     {
-        if (AIOverride != null && NetIDLookup.TryGetValue(AIOverride.GetType(), out int netID))
+        // OnKill or any similar hooks are not reliable for checking these.
+        // As SetDefaults being called on deactivated/dead NPC before ReceiveExtraAI, Prevent Sending ExtraAI is only clean way to do.
+        if (!npc.active || npc.life <= 0)
         {
-            binaryWriter.Write7BitEncodedInt(netID);
-            AIOverride.SendExtraAI(bitWriter, binaryWriter);
+            AIOverride = null;
+            binaryWriter.Write7BitEncodedInt(InvalidNetID);
+            return;
         }
-        else
+
+        if (!TryGetNetID(AIOverride, out var netID))
         {
-            binaryWriter.Write((byte)0);
+            binaryWriter.Write7BitEncodedInt(InvalidNetID);
+            return;
         }
+
+        binaryWriter.Write7BitEncodedInt(netID);
+        AIOverride.SendExtraAI(bitWriter, binaryWriter);
     }
 
     public override void ReceiveExtraAI(NPC npc, BitReader bitReader, BinaryReader binaryReader)
     {
-        var netID = binaryReader.Read7BitEncodedInt();
+        var remoteNetID = binaryReader.Read7BitEncodedInt();
         var localNetID = GetNetID(AIOverride);
-        if (localNetID == netID)
+        if (localNetID != remoteNetID)
         {
-            AIOverride?.ReceiveExtraAI(bitReader, binaryReader);
+            AIOverride = GetNewInstanceOrNullFromNetID(remoteNetID, npc);
         }
-        else if (netID != 0)
-        {
-            CalamityMod.Instance.Logger.Warn($"Client AIOverride type is different from Server! [{localNetID} <-> {netID}]. Restored with Default Instance!");
-            AIOverride = GetNewInstanceFromNetID(netID, npc);
-            AIOverride?.ReceiveExtraAI(bitReader, binaryReader);
-        }
+
+        AIOverride?.ReceiveExtraAI(bitReader, binaryReader);
     }
 
     #endregion
