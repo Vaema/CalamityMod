@@ -1438,12 +1438,12 @@ namespace CalamityMod.CalPlayer
         public bool brittleStar = false;
         public bool aquaticStar = false;
         /// <summary> Sun Spirit Staff. </summary>
-        public bool SP = false;
+        public bool sunSpirit = false;
         public bool dCreeper = false;
         public bool eAxe = false;
         public bool endoCooper = false;
         /// <summary> Vengeful Sun Staff. </summary>
-        public bool SPG = false;
+        public bool vengefulSunMinion = false;
         public bool sirius = false;
         /// <summary> Yharon's Kindle Staff. </summary>
         public bool aChicken = false;
@@ -1502,6 +1502,7 @@ namespace CalamityMod.CalPlayer
         public bool providenceStabber = false;
         public bool seashineSwordBuff = false;
         public bool saros = false;
+        public int sarosEclipseBeamUsage = 0;
         /// <summary> Fuel Cell Bundle. </summary>
         public bool plaguebringerMK2 = false;
         public bool igneousExaltation = false;
@@ -2612,7 +2613,7 @@ namespace CalamityMod.CalPlayer
             aSlime = false;
             brittleStar = false;
             aquaticStar = false;
-            SP = false;
+            sunSpirit = false;
             dCreeper = false;
             eAxe = false;
             endoCooper = false;
@@ -2620,7 +2621,7 @@ namespace CalamityMod.CalPlayer
             gastricBelcher = false;
             hauntedDishes = false;
             stormjaw = false;
-            SPG = false;
+            vengefulSunMinion = false;
             sirius = false;
             aChicken = false;
             cLamp = false;
@@ -2679,6 +2680,10 @@ namespace CalamityMod.CalPlayer
             voidAuraDamage = false;
             voidConcentrationAura = false;
             saros = false;
+            if (sarosEclipseBeamUsage > 300)
+                sarosEclipseBeamUsage = 300;
+            if (sarosEclipseBeamUsage > 0 && Player.ownedProjectileCounts[ModContent.ProjectileType<SarosEclipseBeam>()] <= 0)
+                sarosEclipseBeamUsage--;
             virili = false;
             frostBlossom = false;
             cinderBlossom = false;

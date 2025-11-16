@@ -1,4 +1,5 @@
-﻿using CalamityMod.Buffs.Summon;
+﻿using System.Net.Http.Headers;
+using CalamityMod.Buffs.Summon;
 using CalamityMod.CalPlayer;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
@@ -9,7 +10,7 @@ using Terraria.ID;
 using Terraria.ModLoader;
 namespace CalamityMod.Projectiles.Summon
 {
-    public class SarosAura : ModProjectile, ILocalizedModType
+    public class SunSpiritMinion : ModProjectile, ILocalizedModType
     {
         public new string LocalizationCategory => "Projectiles.Summon";
         public override void SetStaticDefaults()
@@ -43,7 +44,7 @@ namespace CalamityMod.Projectiles.Summon
         {
             Player player = Main.player[Projectile.owner];
             CalamityPlayer modPlayer = player.Calamity();
-            player.AddBuff(ModContent.BuffType<SarosPossessionBuff>(), 3600);
+            player.AddBuff(ModContent.BuffType<SolarSpirit>(), 3600);
 
             #region Add Minion Slots
             if (MinionSlotsToAdd > 0)
@@ -60,25 +61,20 @@ namespace CalamityMod.Projectiles.Summon
                     Projectile.minionSlots++;
                     minionSlotsAvaliable--;
                     MinionSlotsToAdd--;
-                    player.channel = false;
-                }
-                if (MinionSlotsToAdd > 0)
-                {
-                    Projectile.NewProjectileDirect(Projectile.GetSource_FromThis(), Projectile.Center, Vector2.Zero, ModContent.ProjectileType<SarosEclipseBeam>(), Projectile.damage * (int)Projectile.minionSlots, Projectile.knockBack, Projectile.owner);
                 }
                 MinionSlotsToAdd = 0;
             }
             #endregion
 
             #region Checking alive
-            bool correctMinion = Projectile.type == ModContent.ProjectileType<SarosAura>();
+            bool correctMinion = Projectile.type == ModContent.ProjectileType<SunSpiritMinion>();
             if (correctMinion)
             {
                 if (player.dead)
                 {
                     modPlayer.sunSpirit = false;
                 }
-                if (modPlayer.saros)
+                if (modPlayer.sunSpirit)
                 {
                     Projectile.timeLeft = 2;
                 }
@@ -86,65 +82,33 @@ namespace CalamityMod.Projectiles.Summon
             #endregion
 
             #region Positioning
-            Projectile.Center = player.Center + Vector2.UnitY * (player.gfxOffY + player.gravDir * -24f);
+            Projectile.Center = player.Center + Vector2.UnitY * (player.gfxOffY + player.gravDir * -80f);
             #endregion
 
             Lighting.AddLight(Projectile.Center, (255 - Projectile.alpha) * 0.25f / 255f, (255 - Projectile.alpha) * 0.25f / 255f, (255 - Projectile.alpha) * 0f / 255f);
 
-            NPC target = GetTargetInRange(1600);
-
-            if (target is null)
+            NPC target = null;
+            int targetID = -1;
+            Projectile.Minion_FindTargetInRange(800, ref targetID, false);
+            if (targetID < 0)
                 return;
+            
+            target = Main.npc[targetID];
 
 
             if (Projectile.owner == Main.myPlayer)
             {
-
                 if (Projectile.ai[1] > 0f)
                 {
                     Projectile.ai[1] -= 1f;
+                    return;
                 }
-                else
-                {
-                    if (player.ownedProjectileCounts[ModContent.ProjectileType<SarosEclipseBeam>()] <= 0)
-                    {
-                        int damage = (int)(Projectile.damage * (0.8f + Projectile.minionSlots * 0.2f));
-                        float shootSpeed = 15f;
-                        Vector2 source = Projectile.Center;
-                        for (var i = 0; i < 3; i++)
-                        {
-                            var velocity = Vector2.UnitX.RotatedByRandom(MathHelper.TwoPi) * shootSpeed;
-                            Projectile beam = Projectile.NewProjectileDirect(Projectile.GetSource_FromThis(), Projectile.Center - velocity, velocity, ModContent.ProjectileType<SarosSunfire>(), damage, Projectile.knockBack, Projectile.owner, 120, ai1: (Projectile.minionSlots - 1) / 9f);
-                            beam.DamageType = DamageClass.Summon;
-                        }
-                        Projectile.ai[1] += 60f / (0.8f + Projectile.minionSlots * 0.2f);
-                    }
-                }
-
-            }
-        }
-
-        NPC GetTargetInRange(float range)
-        {
-            var player = Main.player[Projectile.owner];
-            if (player.HasMinionAttackTargetNPC && Main.npc[player.MinionAttackTargetNPC].CanBeChasedBy() && Projectile.IsInRangeOfMeOrMyOwner(Main.npc[player.MinionAttackTargetNPC], range, out var _, out var _, out var _))
-            {
-                return Main.npc[player.MinionAttackTargetNPC];
-            }
-            else
-            {
-                NPC gotTarget = null;
-                float currentDistance = range;
-                foreach (var npc in Main.ActiveNPCs)
-                {
-                    var myDistance = npc.Distance(Projectile.Center);
-                    if (npc.CanBeChasedBy() && myDistance < currentDistance)
-                    {
-                        currentDistance = myDistance;
-                        gotTarget = npc;
-                    }
-                }
-                return gotTarget;
+                float shootSpeed = 15f;
+                Vector2 source = Projectile.Center;
+                var velocity = CalamityUtils.CalculatePredictiveAimToTargetMaxUpdates(Projectile.Center, target, shootSpeed, 2);
+                Projectile beam = Projectile.NewProjectileDirect(Projectile.GetSource_FromThis(), Projectile.Center - velocity, velocity, ModContent.ProjectileType<SunSpiritBeam>(), Projectile.damage, Projectile.knockBack, Projectile.owner);
+                beam.DamageType = DamageClass.Summon;
+                Projectile.ai[1] += 50f / Projectile.minionSlots;
             }
         }
 
@@ -153,13 +117,13 @@ namespace CalamityMod.Projectiles.Summon
         public static Asset<Texture2D> circle;
         public override bool PreDraw(ref Color lightColor)
         {
-            //Sigil
             var spTex = TextureAssets.Projectile[Type].Value;
+            var ciTex = CalamityUtils.GetTextureEfficient(ref circle, "CalamityMod/ExtraTextures/GreyscaleOpenCircleButBigger").Value;
+
             Main.spriteBatch.Draw(spTex, Projectile.Center - Main.screenPosition, null, Color.White, Main.GlobalTimeWrappedHourly, spTex.Size() * 0.5f, 0.75f, SpriteEffects.None, 0);
-            //Sunlines
             Main.spriteBatch.SafeBegin(SpriteSortMode.Deferred, BatchSetting.Additive, null, Main.GameViewMatrix.TransformationMatrix, () =>
             {
-                int count = (int)((Projectile.minionSlots - 1) / 3) * 2 + 2;
+                float count = MathHelper.Min(Projectile.minionSlots * 2, 40);
                 for (var i = 0; i < count; i++)
                 {
                     var comp = (i / count);
@@ -167,18 +131,6 @@ namespace CalamityMod.Projectiles.Summon
                     if (i % 2 == 0)
                         offset = 8 - offset;
                     CalamityUtils.DrawLineBetter(Main.spriteBatch, Projectile.Center + new Vector2(20 + offset, 0).RotatedBy(MathHelper.TwoPi * comp - Main.GlobalTimeWrappedHourly), Projectile.Center + new Vector2(34 + offset, 0).RotatedBy(MathHelper.TwoPi * comp - Main.GlobalTimeWrappedHourly), i % 2 == 3 ? Color.OrangeRed : Color.Gold, 2f);
-                }
-
-                //Circles
-                var ciTex = CalamityUtils.GetTextureEfficient(ref circle, "CalamityMod/Particles/BloomRingThinLarge").Value;
-                count = (int)MathHelper.Min((1 + (Projectile.minionSlots - 1) % 3), 10);
-                for (var i = 0; i < count && i < 5; i++)
-                {
-                    var comp = (i / (count));
-                    var offset = ((Main.mouseTextColor - 190) / 64f);
-                    if (i % 2 == 0)
-                        offset = 1 - offset;
-                    Main.EntitySpriteDraw(ciTex, Projectile.Center - Main.screenPosition, null, Color.Lerp(Color.Gold, Color.OrangeRed, i / (4f)), Main.GlobalTimeWrappedHourly, ciTex.Size() * 0.5f, 0.0225f + 0.0025f * offset + 0.005f * i, SpriteEffects.None);
                 }
             });
             return false;
