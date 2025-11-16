@@ -1,4 +1,7 @@
-﻿using System.IO;
+﻿using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
 using CalamityMod.Events;
 using CalamityMod.NPCs.AcidRain;
 using CalamityMod.NPCs.Astral;
@@ -25,6 +28,8 @@ public sealed class CalamityVanillaAIOverrideNPC : GlobalNPC
     /// Specify the AI Override to work with. This handles AI, SendExtraAI and ReceiveExtraAI in instaned manner.
     /// </summary>
     public VanillaAIOverride AIOverride = null;
+
+    public static Dictionary<Type, int> NetIDLookup = [];
 
     #region Clone Logic
     public override bool InstancePerEntity => true;
@@ -826,6 +831,18 @@ public sealed class CalamityVanillaAIOverrideNPC : GlobalNPC
     }
     #endregion
 
+    public override void SetStaticDefaults()
+    {
+        NetIDLookup.Clear();
+
+        int uniqueID = 1;
+        foreach (var type in ReflectionHelper.GetEveryModsTypes().OrderBy(t => t.FullName))
+        {
+            NetIDLookup[type] = uniqueID;
+            uniqueID++;
+        }
+    }
+
     public override void SetDefaults(NPC npc)
     {
         AIOverride = GetVanillaAIOverrideToApply(npc);
@@ -851,14 +868,59 @@ public sealed class CalamityVanillaAIOverrideNPC : GlobalNPC
         AIOverride?.PostAI(Mod);
     }
 
+    public static int GetNetID(VanillaAIOverride aiOverride)
+    {
+        if (aiOverride == null)
+            return 0;
+
+        if (!NetIDLookup.TryGetValue(aiOverride.GetType(), out var netID))
+            return 0;
+
+        return netID;
+    }
+
+    public static VanillaAIOverride GetNewInstanceFromNetID(int netID, NPC ownerNPC)
+    {
+        var type = NetIDLookup.FirstOrDefault(kv => kv.Value == netID).Key;
+
+        if (type == null)
+            return null;
+
+        var instance = (VanillaAIOverride)Activator.CreateInstance(type);
+        if (instance == null)
+            return null;
+
+        instance.NPC = ownerNPC;
+        return instance;
+    }
+
     public override void SendExtraAI(NPC npc, BitWriter bitWriter, BinaryWriter binaryWriter)
     {
-        AIOverride?.SendExtraAI(bitWriter, binaryWriter);
+        if (AIOverride != null && NetIDLookup.TryGetValue(AIOverride.GetType(), out int netID))
+        {
+            binaryWriter.Write7BitEncodedInt(netID);
+            AIOverride.SendExtraAI(bitWriter, binaryWriter);
+        }
+        else
+        {
+            binaryWriter.Write((byte)0);
+        }
     }
 
     public override void ReceiveExtraAI(NPC npc, BitReader bitReader, BinaryReader binaryReader)
     {
-        AIOverride?.ReceiveExtraAI(bitReader, binaryReader);
+        var netID = binaryReader.Read7BitEncodedInt();
+        var localNetID = GetNetID(AIOverride);
+        if (localNetID == netID)
+        {
+            AIOverride?.ReceiveExtraAI(bitReader, binaryReader);
+        }
+        else if (netID != 0)
+        {
+            CalamityMod.Instance.Logger.Error($"Client AIOverride type is different from Server! [{localNetID} <-> {netID}]. Restored with Default Instance!");
+            AIOverride = GetNewInstanceFromNetID(netID, npc);
+            AIOverride?.ReceiveExtraAI(bitReader, binaryReader);
+        }
     }
 
     #endregion
