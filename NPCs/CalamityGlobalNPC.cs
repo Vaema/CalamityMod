@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Reflection;
 using CalamityMod.Balancing;
@@ -8,7 +9,6 @@ using CalamityMod.Buffs;
 using CalamityMod.Buffs.DamageOverTime;
 using CalamityMod.Buffs.StatBuffs;
 using CalamityMod.Buffs.StatDebuffs;
-using CalamityMod.Buffs.Summon.Whips;
 using CalamityMod.CalPlayer;
 using CalamityMod.DataStructures;
 using CalamityMod.Dusts;
@@ -20,10 +20,8 @@ using CalamityMod.Items;
 using CalamityMod.Items.Accessories;
 using CalamityMod.Items.Accessories.Vanity;
 using CalamityMod.Items.Armor.PlagueReaper;
-using CalamityMod.Items.Potions.Alcohol;
 using CalamityMod.Items.Tools;
 using CalamityMod.Items.Weapons.Melee;
-using CalamityMod.Items.Weapons.Typeless;
 using CalamityMod.NPCs.Abyss;
 using CalamityMod.NPCs.AcidRain;
 using CalamityMod.NPCs.AquaticScourge;
@@ -56,16 +54,15 @@ using CalamityMod.NPCs.SlimeGod;
 using CalamityMod.NPCs.StormWeaver;
 using CalamityMod.NPCs.SunkenSea;
 using CalamityMod.NPCs.SupremeCalamitas;
+using CalamityMod.NPCs.VanillaNPCAIOverrides;
 using CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses;
 using CalamityMod.NPCs.VanillaNPCAIOverrides.RegularEnemies;
 using CalamityMod.Packets;
 using CalamityMod.Particles;
-using CalamityMod.Projectiles;
 using CalamityMod.Projectiles.Magic;
 using CalamityMod.Projectiles.Melee;
 using CalamityMod.Projectiles.Ranged;
 using CalamityMod.Projectiles.Rogue;
-using CalamityMod.Projectiles.Summon;
 using CalamityMod.Projectiles.Typeless;
 using CalamityMod.Systems;
 using CalamityMod.Systems.Collections;
@@ -90,6 +87,7 @@ using Terraria.GameContent.Events;
 using Terraria.Graphics.Shaders;
 using Terraria.ID;
 using Terraria.ModLoader;
+using Terraria.ModLoader.IO;
 using Terraria.ModLoader.Utilities;
 using Terraria.UI.Chat;
 using Terraria.Utilities;
@@ -267,7 +265,13 @@ namespace CalamityMod.NPCs
         /// </summary>
         public bool ProvidesProximityRage = true;
 
+        /// <summary>
+        /// Specify the AI Override to work with. This handles AI, SendExtraAI and ReceiveExtraAI in instaned manner.
+        /// </summary>
+        public VanillaAIOverride AIOverride = null;
+
         // NewAI
+        // TODO: This should be deprecated at some point.
         internal const int maxAIMod = 4;
         public float[] newAI = new float[maxAIMod];
         public int AITimer = 0;
@@ -993,7 +997,7 @@ namespace CalamityMod.NPCs
             }
             #endregion
 
-            
+
             //Apply DoT Debuffs
             for (var index = 0; index < npc.buffType.Count(); index++)
             {
@@ -1001,7 +1005,7 @@ namespace CalamityMod.NPCs
                 var debuffData = BuffDatasets.DebuffDataset[type];
                 if (debuffData == null || debuffData == DebuffData.Oiled) //Oiled is done after
                     continue;
-                debuffData.NPCLifeRegenMethod(npc, type, ref index,ref damage);
+                debuffData.NPCLifeRegenMethod(npc, type, ref index, ref damage);
             }
             //Oiled comes after so that we can detect if they have a heat debuff in the above loop
             bool hasVanillaOil = npc.onFrostBurn || npc.onFrostBurn2 || npc.onFire || npc.onFire2 || npc.onFire3 || npc.shadowFlame;
@@ -1287,6 +1291,18 @@ namespace CalamityMod.NPCs
             if (npc.type == NPCID.GolemHeadFree && (CalamityWorld.revenge || BossRushEvent.BossRushActive))
                 return true;
             return base.CanFallThroughPlatforms(npc);
+        }
+        #endregion
+
+        #region ExtraAI
+        public override void SendExtraAI(NPC npc, BitWriter bitWriter, BinaryWriter binaryWriter)
+        {
+            AIOverride?.SendExtraAI(bitWriter, binaryWriter);
+        }
+
+        public override void ReceiveExtraAI(NPC npc, BitReader bitReader, BinaryReader binaryReader)
+        {
+            AIOverride?.ReceiveExtraAI(bitReader, binaryReader);
         }
         #endregion
 
@@ -4556,7 +4572,7 @@ namespace CalamityMod.NPCs
                     npc.ai[3] = 0f;
             }
 
-            
+
 
             if (warbannerBurnTimer > 0)
                 warbannerBurnTimer--;
@@ -5768,7 +5784,7 @@ namespace CalamityMod.NPCs
                                     dustLinger.scale = Main.rand.NextFloat(0.8f, 1f) * 1.5f;
                                     dustLinger.fadeIn = Main.rand.NextFloat(0.6f, 1f) * 4;
                                     dustLinger.color = Color.Lerp(color1, color2, Utils.GetLerpValue(0, maxDusts, i));
-                                    
+
                                     lastDustPos = currentDustPos;
                                 }
 
@@ -6014,7 +6030,7 @@ namespace CalamityMod.NPCs
 
                 Tile aboveSpawnTile = CalamityUtils.ParanoidTileRetrieval(checkPositionX, checkPositionY - 1);
 
-               if (aboveSpawnTile.LiquidAmount < 255 || aboveSpawnTile.LiquidType != LiquidID.Lava || Collision.SolidCollision((checkPosition - new Vector2(2f, 2f)).ToWorldCoordinates(), 4, 4) || player.nearbyActiveNPCs >= maxSpawnCount || !Main.rand.NextBool(spawnRate))
+                if (aboveSpawnTile.LiquidAmount < 255 || aboveSpawnTile.LiquidType != LiquidID.Lava || Collision.SolidCollision((checkPosition - new Vector2(2f, 2f)).ToWorldCoordinates(), 4, 4) || player.nearbyActiveNPCs >= maxSpawnCount || !Main.rand.NextBool(spawnRate))
                     continue;
 
                 WeightedRandom<int> pool = new WeightedRandom<int>();
@@ -6335,7 +6351,7 @@ namespace CalamityMod.NPCs
             if (demonicFlames)
                 DemonicFlames.DrawEffects(npc, ref drawColor);
 
-            if (burningBlood )
+            if (burningBlood)
                 BurningBlood.DrawEffects(npc, ref drawColor);
 
             if (brainRot)
@@ -6375,7 +6391,7 @@ namespace CalamityMod.NPCs
 
             if (heavyBleeding)
                 HeavyBleeding.DrawEffects(npc, ref drawColor);
-            
+
             if (hyperiusFxTimer > 0)
             {
                 float rate = (Main.GlobalTimeWrappedHourly * 5);
@@ -6457,10 +6473,10 @@ namespace CalamityMod.NPCs
 
             if (riptide)
                 RiptideDebuff.DrawEffects(npc, ref drawColor);
-            
+
             if (somaShredStacks > 0 && !Main.dedServ)
                 Shred.DrawEffects(npc, this, ref drawColor);
-            
+
             if (sulphurPoison)
                 SulphuricPoisoning.DrawEffects(npc, ref drawColor);
 
@@ -6755,7 +6771,7 @@ namespace CalamityMod.NPCs
                     float drawPosX = totalLength >= 80f ? 40f : (float)(totalLength / 2);
 
                     // The height of a single frame of the npc
-                    float npcHeight = (npc.height * npc.scale)/2;//(float)(TextureAssets.Npc[npc.type].Value.Height / Main.npcFrameCount[npc.type] / 2) * npc.scale;
+                    float npcHeight = (npc.height * npc.scale) / 2;//(float)(TextureAssets.Npc[npc.type].Value.Height / Main.npcFrameCount[npc.type] / 2) * npc.scale;
 
                     // Offset the debuff display based on the npc's graphical offset, and 16 units, to create some space between the sprite and the display
                     float drawPosY = npcHeight + npc.gfxOffY + 32f;
