@@ -15,13 +15,13 @@ namespace CalamityMod.Projectiles.Ranged
     public class HeavenlyGaleProj : BaseIdleHoldoutProjectile, ILocalizedModType
     {
         public new string LocalizationCategory => "Projectiles.Ranged";
-        public bool OwnerCanShoot => Owner.HasAmmo(Owner.ActiveItem()) && !Owner.noItems && !Owner.CCed;
+        public bool OwnerCanShoot => Owner.HasAmmo(Owner.HeldItem) && !Owner.noItems && !Owner.CCed;
 
         public float StringReelbackInterpolant
         {
             get
             {
-                int duration = Owner.ActiveItem().useAnimation;
+                int duration = Owner.HeldItem.useAnimation;
                 float time = duration - ShootDelay;
                 float firstHalf = Utils.GetLerpValue(8f, 0f, time, true);
                 float secondHalf = Utils.GetLerpValue(8f, duration * 0.6f, time, true);
@@ -65,12 +65,12 @@ namespace CalamityMod.Projectiles.Ranged
             if (Main.myPlayer == Projectile.owner && OwnerCanShoot && activatingShoot)
             {
                 SoundEngine.PlaySound(HeavenlyGale.FireSound, Projectile.Center);
-                ShootDelay = Owner.ActiveItem().useAnimation;
+                ShootDelay = Owner.HeldItem.useAnimation;
                 Projectile.netUpdate = true;
             }
 
             // Update damage based on current ranged damage stat, since this projectile exists regardless of if it's being fired.
-            Projectile.damage = Owner.ActiveItem() is null ? 0 : Owner.GetWeaponDamage(Owner.ActiveItem());
+            Projectile.damage = Owner.HeldItem is null ? 0 : Owner.GetWeaponDamage(Owner.HeldItem);
 
             UpdateProjectileHeldVariables(armPosition);
             ManipulatePlayerVariables();
@@ -78,7 +78,7 @@ namespace CalamityMod.Projectiles.Ranged
             // Fire arrows.
             if (ShootDelay > 0f && Projectile.FinalExtraUpdate())
             {
-                float shootCompletionRatio = 1f - ShootDelay / (Owner.ActiveItem().useAnimation - 1f);
+                float shootCompletionRatio = 1f - ShootDelay / (Owner.HeldItem.useAnimation - 1f);
                 float bowAngularOffset = (float)Math.Sin(MathHelper.TwoPi * shootCompletionRatio) * 0.4f;
                 float damageFactor = Utils.Remap(ChargeTimer, 0f, HeavenlyGale.MaxChargeTime, 1f, HeavenlyGale.MaxChargeDamageBoost);
 
@@ -96,9 +96,9 @@ namespace CalamityMod.Projectiles.Ranged
                     // Update the tip position for one frame.
                     tipPosition = armPosition + arrowDirection * Projectile.width * 0.45f;
 
-                    if (Main.myPlayer == Projectile.owner && Owner.HasAmmo(Owner.ActiveItem()))
+                    if (Main.myPlayer == Projectile.owner && Owner.HasAmmo(Owner.HeldItem))
                     {
-                        Item heldItem = Owner.ActiveItem();
+                        Item heldItem = Owner.HeldItem;
                         Owner.PickAmmo(heldItem, out int projectileType, out float shootSpeed, out int damage, out float knockback, out _);
                         damage = (int)(damage * damageFactor);
                         projectileType = ModContent.ProjectileType<ExoCrystalArrow>();

@@ -36,7 +36,7 @@ namespace CalamityMod.Items.Accessories
 
             Item heldItem = null;
             if (player.selectedItem >= 0 && player.selectedItem < Main.InventorySlotsTotal)
-                heldItem = player.ActiveItem();
+                heldItem = player.HeldItem;
 
             static string OnePlace(float f) => f.ToString("n1");
             static string TwoPlaces(float f) => f.ToString("n2");

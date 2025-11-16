@@ -102,10 +102,6 @@ namespace CalamityMod.CalPlayer
 
             switch (item.type)
             {
-                case ItemID.DeathSickle:
-                    target.AddBuff(BuffType<WhisperingDeath>(), 120);
-                    break;
-
                 case ItemID.InfluxWaver:
                     target.AddBuff(BuffID.Electrified, 300);
                     break;
@@ -274,10 +270,6 @@ namespace CalamityMod.CalPlayer
 
                 case ProjectileID.GolemFist:
                     target.AddBuff(BuffType<ArmorCrunch>(), 180);
-                    break;
-
-                case ProjectileID.DeathSickle:
-                    target.AddBuff(BuffType<WhisperingDeath>(), 60);
                     break;
 
                 case ProjectileID.ButchersChainsaw:
@@ -762,7 +754,7 @@ namespace CalamityMod.CalPlayer
         private void MeleeOnHit(Projectile proj, CalamityGlobalProjectile modProj, Vector2 position, bool crit, bool npcCheck, bool targetIsDummy)
         {
             var source = proj.GetSource_FromThis();
-            Item heldItem = Player.ActiveItem();
+            Item heldItem = Player.HeldItem;
 
             if (proj.IsTrueMelee())
             {
@@ -1338,7 +1330,7 @@ namespace CalamityMod.CalPlayer
                 if (bloodflareThrowing && proj.CountsAsClass<ThrowingDamageClass>() && crit)
                     Projectile.NewProjectile(proj.GetSource_OnHit(target), proj.Center, proj.velocity.SafeNormalize(Vector2.Zero) * Math.Min(((proj.velocity.Length() * proj.MaxUpdates) / 4f), 4f) * Main.rand.NextFloat(0.75f, 1.25f), ModContent.ProjectileType<BloodstoneHealOrb>(), 4, 0f, proj.owner);
 
-                if (proj.CountsAsClass<MagicDamageClass>() && Player.ActiveItem().CountsAsClass<MagicDamageClass>())
+                if (proj.CountsAsClass<MagicDamageClass>() && Player.HeldItem.CountsAsClass<MagicDamageClass>())
                 {
                     if (manaOverloader)
                     {
@@ -1413,7 +1405,7 @@ namespace CalamityMod.CalPlayer
             Vector2 velocity = Main.npc[targetIdx].DirectionFrom(spawnPos);
             velocity *= speed;
 
-            var source = player.GetSource_ItemUse(player.ActiveItem());
+            var source = player.GetSource_ItemUse(player.HeldItem);
             int projectile = Projectile.NewProjectile(source, spawnPos, velocity, type, damage, knockback, player.whoAmI, targetIdx, 0f);
             Main.projectile[projectile].extraUpdates += extraUpdateAmt;
         }

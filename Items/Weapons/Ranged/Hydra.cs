@@ -54,7 +54,7 @@ namespace CalamityMod.Items.Weapons.Ranged
         public override void UpdateInventory(Player player)
         {
             //Spawn heads while holding
-            if (player.ActiveItem() == Item && player.ownedProjectileCounts[HeadID] < MaximumHeadCount)
+            if (player.HeldItem == Item && player.ownedProjectileCounts[HeadID] < MaximumHeadCount)
             {
                 HeadSpawnTimer++;
                 if (HeadSpawnTimer >= TimeToSpawnHead * 60)
@@ -65,7 +65,7 @@ namespace CalamityMod.Items.Weapons.Ranged
                     head.OriginalCritChance = Item.crit;
                 }
             }
-            else if (player.ActiveItem().type != Item.type || player.dead || !player.active)
+            else if (player.HeldItem.type != Item.type || player.dead || !player.active)
             {
                 foreach (Projectile p in Main.ActiveProjectiles)
                 {

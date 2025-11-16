@@ -67,13 +67,13 @@ namespace CalamityMod.Items.Accessories
                             }
                         }
                     }
-                    if (player.ActiveItem() != null && !player.ActiveItem().IsAir && player.ActiveItem().stack > 0)
+                    if (player.HeldItem != null && !player.HeldItem.IsAir && player.HeldItem.stack > 0)
                     {
-                        bool summon = player.ActiveItem().CountsAsClass<SummonDamageClass>();
-                        bool rogue = player.ActiveItem().CountsAsClass<ThrowingDamageClass>();
-                        bool melee = player.ActiveItem().CountsAsClass<MeleeDamageClass>();
-                        bool ranged = player.ActiveItem().CountsAsClass<RangedDamageClass>();
-                        bool magic = player.ActiveItem().CountsAsClass<MagicDamageClass>();
+                        bool summon = player.HeldItem.CountsAsClass<SummonDamageClass>();
+                        bool rogue = player.HeldItem.CountsAsClass<ThrowingDamageClass>();
+                        bool melee = player.HeldItem.CountsAsClass<MeleeDamageClass>();
+                        bool ranged = player.HeldItem.CountsAsClass<RangedDamageClass>();
+                        bool magic = player.HeldItem.CountsAsClass<MagicDamageClass>();
                         if (summon)
                         {
                             player.GetKnockback<SummonDamageClass>() += 0.1f;

@@ -275,8 +275,8 @@ namespace CalamityMod.CalPlayer
         public int arsenalCooldown = 0;
         public int killModeCooldown = 0;
         public bool demonSwordKillMode = false;
-        public bool exaltedKillMode => (demonSwordKillMode && Player.ActiveItem().type == ItemType<ExaltedOathblade>());
-        public bool devilsDevastationKillMode => (demonSwordKillMode && Player.ActiveItem().type == ItemType<DevilsDevastation>());
+        public bool exaltedKillMode => (demonSwordKillMode && Player.HeldItem.type == ItemType<ExaltedOathblade>());
+        public bool devilsDevastationKillMode => (demonSwordKillMode && Player.HeldItem.type == ItemType<DevilsDevastation>());
         /// <summary>
         /// Tracks Dragoon Drizzlefish's "gel feed" mechanic in Get fixed boi.<br/>
         /// Consuming Gel adds 1 to this counter, up to a maximum of 6, and using the weapon has a random chance to decrement the counter.<br/>
@@ -1438,12 +1438,12 @@ namespace CalamityMod.CalPlayer
         public bool brittleStar = false;
         public bool aquaticStar = false;
         /// <summary> Sun Spirit Staff. </summary>
-        public bool SP = false;
+        public bool sunSpirit = false;
         public bool dCreeper = false;
         public bool eAxe = false;
         public bool endoCooper = false;
         /// <summary> Vengeful Sun Staff. </summary>
-        public bool SPG = false;
+        public bool vengefulSunMinion = false;
         public bool sirius = false;
         /// <summary> Yharon's Kindle Staff. </summary>
         public bool aChicken = false;
@@ -1502,6 +1502,7 @@ namespace CalamityMod.CalPlayer
         public bool providenceStabber = false;
         public bool seashineSwordBuff = false;
         public bool saros = false;
+        public int sarosEclipseBeamUsage = 0;
         /// <summary> Fuel Cell Bundle. </summary>
         public bool plaguebringerMK2 = false;
         public bool igneousExaltation = false;
@@ -2612,7 +2613,7 @@ namespace CalamityMod.CalPlayer
             aSlime = false;
             brittleStar = false;
             aquaticStar = false;
-            SP = false;
+            sunSpirit = false;
             dCreeper = false;
             eAxe = false;
             endoCooper = false;
@@ -2620,7 +2621,7 @@ namespace CalamityMod.CalPlayer
             gastricBelcher = false;
             hauntedDishes = false;
             stormjaw = false;
-            SPG = false;
+            vengefulSunMinion = false;
             sirius = false;
             aChicken = false;
             cLamp = false;
@@ -2679,6 +2680,10 @@ namespace CalamityMod.CalPlayer
             voidAuraDamage = false;
             voidConcentrationAura = false;
             saros = false;
+            if (sarosEclipseBeamUsage > 300)
+                sarosEclipseBeamUsage = 300;
+            if (sarosEclipseBeamUsage > 0 && Player.ownedProjectileCounts[ModContent.ProjectileType<SarosEclipseBeam>()] <= 0)
+                sarosEclipseBeamUsage--;
             virili = false;
             frostBlossom = false;
             cinderBlossom = false;
@@ -2783,7 +2788,7 @@ namespace CalamityMod.CalPlayer
             disablePerfCystSpawns = false;
             disableVoodooSpawns = false;
 
-            EnchantHeldItemEffects(Player, Player.Calamity(), Player.ActiveItem());
+            EnchantHeldItemEffects(Player, Player.Calamity(), Player.HeldItem);
         }
         #endregion
 
@@ -3634,7 +3639,7 @@ namespace CalamityMod.CalPlayer
 
             if (Player.Calamity().SpeedBlasterDashStarted || (Player.dashDelay != 0 && (Player.Calamity().LastUsedDashID == SuperradiantSawDash.ID || Player.Calamity().LastUsedDashID == SpeedBlasterDash.ID)))
             {
-                Player.Calamity().DeferredDashID = Player.ActiveItem().type == ItemType<SuperradiantSlaughterer>() ? SuperradiantSawDash.ID : SpeedBlasterDash.ID;
+                Player.Calamity().DeferredDashID = Player.HeldItem.type == ItemType<SuperradiantSlaughterer>() ? SuperradiantSawDash.ID : SpeedBlasterDash.ID;
                 Player.dash = 0;
             }
 
@@ -3642,7 +3647,7 @@ namespace CalamityMod.CalPlayer
             if (CalamityKeybinds.RageHotKey.JustPressed)
             {
                 // Gael's Greatsword replaces Rage Mode with an uber skull attack
-                if (!(Player.HasCooldown(Cooldowns.GaelsRage.ID)) && Player.ActiveItem().type == ItemType<GaelsGreatsword>() && rage > 0f)
+                if (!(Player.HasCooldown(Cooldowns.GaelsRage.ID)) && Player.HeldItem.type == ItemType<GaelsGreatsword>() && rage > 0f)
                 {
                     SoundEngine.PlaySound(SilvaArmor.DispelSound, Player.Center);
 
@@ -3661,7 +3666,7 @@ namespace CalamityMod.CalPlayer
                     }
 
                     // https://github.com/tModLoader/tModLoader/wiki/IEntitySource#detailed-list
-                    var source = Player.GetSource_ItemUse(Player.ActiveItem(), GaelsGreatsword.SkullsplosionEntitySourceContext);
+                    var source = Player.GetSource_ItemUse(Player.HeldItem, GaelsGreatsword.SkullsplosionEntitySourceContext);
                     float rageRatio = rage / rageMax;
                     float baseDamage = rageRatio * GaelsGreatsword.SkullsplosionDamageMultiplier * GaelsGreatsword.BaseDamage;
                     int damage = (int)Player.GetTotalDamage<MeleeDamageClass>().ApplyTo(baseDamage);
@@ -5212,7 +5217,7 @@ namespace CalamityMod.CalPlayer
         #region Anomaly's Nanogun Kill Sound
         public override void Kill(double damage, int hitDirection, bool pvp, PlayerDeathReason damageSource)
         {
-            if (Player.whoAmI == Main.myPlayer && Player.ActiveItem().type == ItemType<TheAnomalysNanogun>())
+            if (Player.whoAmI == Main.myPlayer && Player.HeldItem.type == ItemType<TheAnomalysNanogun>())
             {
                 if (Main.rand.NextBool(20))
                     SoundEngine.PlaySound(IjiDeathSound, Player.Center);
@@ -5384,7 +5389,7 @@ namespace CalamityMod.CalPlayer
             // This doesn't trigger stealth strike effects (ConsumeStealthStrike instead of StealthStrike)
             // so non-rogue weapons can't call lasers down from the sky and such.
             // Using any item which deals no damage or is a tool doesn't consume stealth.
-            Item it = Player.ActiveItem();
+            Item it = Player.HeldItem;
             bool hasDamage = it.damage > 0;
             bool hasHitboxes = !it.noMelee || it.shoot > ProjectileID.None;
             bool isPickaxe = it.pick > 0;
@@ -5432,7 +5437,7 @@ namespace CalamityMod.CalPlayer
                 return;
 
             // Hovering over an item will adjust the stealth bonus dynamically so that you see the correct damage for an item you put your cursor on.
-            Item it = !Main.HoverItem.IsAir ? Main.HoverItem : Player.ActiveItem();
+            Item it = !Main.HoverItem.IsAir ? Main.HoverItem : Player.HeldItem;
 
             // The potential damage bonus from stealth is a complex equation based on the item's use time,
             // the player's averaged-together stealth generation stats, and max stealth.
@@ -5579,7 +5584,7 @@ namespace CalamityMod.CalPlayer
 
         internal void rollBabSpears(int randAmt, bool chaseable)
         {
-            var source = Player.GetSource_ItemUse(Player.ActiveItem());
+            var source = Player.GetSource_ItemUse(Player.HeldItem);
             if (Player.whoAmI == Main.myPlayer && !endoCooper && randAmt > 0 && Main.rand.NextBool(randAmt) && chaseable)
             {
                 int spearsFired = 0;

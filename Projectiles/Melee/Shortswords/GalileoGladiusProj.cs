@@ -80,7 +80,7 @@ namespace CalamityMod.Projectiles.Melee.Shortswords
                 var source = player.GetSource_FromThis();
                 if (player.Calamity().galileoCooldown <= 0)
                 {
-                    int damage = player.GetWeaponDamage(player.ActiveItem()) * 2;
+                    int damage = player.GetWeaponDamage(player.HeldItem) * 2;
                     CalamityUtils.ProjectileRain(source, player.Center, 400f, 100f, 500f, 800f, 25f, ModContent.ProjectileType<GalileosPlanet>(), damage, 15f, player.whoAmI);
                     player.Calamity().galileoCooldown = 15;
                 }

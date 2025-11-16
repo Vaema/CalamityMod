@@ -69,7 +69,7 @@ namespace CalamityMod.Projectiles.Melee
         {
             if (EndLag == 0) //Initialization
             {
-                EndLag = (float)Math.Max(Owner.ActiveItem().useTime - MaxTime, 1);
+                EndLag = (float)Math.Max(Owner.HeldItem.useTime - MaxTime, 1);
                 // 15NOV2024: Ozzatron: clamped mouse position unnecessary, only used for direction
                 TrueDirection = (Owner.Calamity().mouseWorld - Owner.MountedCenter).SafeNormalize(Vector2.Zero).ToRotation(); //Store this for the screw hit
                 Projectile.velocity = (Owner.Calamity().mouseWorld - Owner.MountedCenter).SafeNormalize(Vector2.Zero).RotatedByRandom(MathHelper.PiOver4 * 0.15f);

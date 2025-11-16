@@ -1,7 +1,7 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Threading;
-using CalamityMod.BiomeManagers;
 using CalamityMod.Buffs.DamageOverTime;
 using CalamityMod.Dusts;
 using CalamityMod.Events;
@@ -10,7 +10,7 @@ using CalamityMod.Items.Armor.Vanity;
 using CalamityMod.Items.LoreItems;
 using CalamityMod.Items.Mounts;
 using CalamityMod.Items.Placeables.Furniture.BossRelics;
-using CalamityMod.Items.Placeables.Furniture.DevPaintings;
+using CalamityMod.Items.Placeables.Furniture.Paintings;
 using CalamityMod.Items.Placeables.Furniture.Trophies;
 using CalamityMod.Items.Potions;
 using CalamityMod.Items.TreasureBags;
@@ -25,7 +25,6 @@ using CalamityMod.World;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using ReLogic.Content;
-using System;
 using Terraria;
 using Terraria.Audio;
 using Terraria.GameContent;
@@ -60,6 +59,8 @@ namespace CalamityMod.NPCs.AstrumAureus
         private bool stomping = false;
         public int slimeProjCounter = 0;
         public int slimePhase = 0;
+
+        public RevengeanceAndDeathAI.MimicAI ZenithSeedMimicAI;
 
         public override void SetStaticDefaults()
         {
@@ -117,6 +118,9 @@ namespace CalamityMod.NPCs.AstrumAureus
                 NPC.scale = 0.7f;
             if (Main.zenithWorld)
                 NPC.scale = 1.5f;
+
+            ZenithSeedMimicAI = new RevengeanceAndDeathAI.MimicAI();
+            ZenithSeedMimicAI.NPC = NPC;
         }
 
         public override void SetBestiary(BestiaryDatabase database, BestiaryEntry bestiaryEntry)
@@ -300,7 +304,7 @@ namespace CalamityMod.NPCs.AstrumAureus
                         slimePhase = 1;
                     }
                 }
-                RevengeanceAndDeathAI.BuffedMimicAI(NPC, Mod);
+                ZenithSeedMimicAI.AI(Mod);
                 NPC.noGravity = false;
                 NPC.noTileCollide = false;
                 return;

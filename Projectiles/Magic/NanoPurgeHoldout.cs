@@ -38,7 +38,7 @@ namespace CalamityMod.Projectiles.Magic
         {
             base.KillHoldoutLogic();
             bool actuallyShoot = DeployedFrames >= (HeldItem?.useAnimation ?? NanoPurge.UseTime);
-            bool manaOK = !actuallyShoot || Owner.CheckMana(Owner.ActiveItem());
+            bool manaOK = !actuallyShoot || Owner.CheckMana(Owner.HeldItem);
             if (!manaOK)
                 Projectile.Kill();
         }
@@ -68,26 +68,29 @@ namespace CalamityMod.Projectiles.Magic
                 // Update the animation.
                 Projectile.frame = (Projectile.frame + 1) % Main.projFrames[Type];
 
-                bool manaCostPaid = Owner.CheckMana(Owner.ActiveItem(), -1, true, false);
+                bool manaCostPaid = Owner.CheckMana(Owner.HeldItem, -1, true, false);
                 if (manaCostPaid)
                 {
                     postShotFade = 1;
                     SoundEngine.PlaySound(SoundID.Item91, Projectile.Center);
 
-                    int projID = ModContent.ProjectileType<NanoPurgeLaser>();
-                    float shootSpeed = HeldItem.shootSpeed;
-                    float inaccuracyRatio = 0.045f;
-                    Vector2 shootDirection = Projectile.velocity.SafeNormalize(Vector2.UnitY);
-                    Vector2 perp = shootDirection.RotatedBy(MathHelper.PiOver2);
-
-                    // Fire a pair of lasers, one with a negative offset, one with a positive offset.
-                    for (int i = -1; i <= 1; i += 2)
+                    if (Main.myPlayer == Projectile.owner)
                     {
-                        Vector2 spread = Main.rand.NextVector2CircularEdge(shootSpeed, shootSpeed);
-                        Vector2 shootVelocity = shootDirection * shootSpeed + inaccuracyRatio * spread;
-                        Vector2 splitBarrelPos = GunTipPosition + i * LaserOffsetByAnimationFrame[Projectile.frame] * perp;
-                        Projectile.NewProjectile(Projectile.GetSource_FromThis(), splitBarrelPos, shootVelocity, projID, Projectile.damage, Projectile.knockBack, Projectile.owner);
-                        SpawnFiringDust(splitBarrelPos, shootVelocity);
+                        int projID = ModContent.ProjectileType<NanoPurgeLaser>();
+                        float shootSpeed = HeldItem.shootSpeed;
+                        float inaccuracyRatio = 0.045f;
+                        Vector2 shootDirection = Projectile.velocity.SafeNormalize(Vector2.UnitY);
+                        Vector2 perp = shootDirection.RotatedBy(MathHelper.PiOver2);
+
+                        // Fire a pair of lasers, one with a negative offset, one with a positive offset.
+                        for (int i = -1; i <= 1; i += 2)
+                        {
+                            Vector2 spread = Main.rand.NextVector2CircularEdge(shootSpeed, shootSpeed);
+                            Vector2 shootVelocity = shootDirection * shootSpeed + inaccuracyRatio * spread;
+                            Vector2 splitBarrelPos = GunTipPosition + i * LaserOffsetByAnimationFrame[Projectile.frame] * perp;
+                            Projectile.NewProjectile(Projectile.GetSource_FromThis(), splitBarrelPos, shootVelocity, projID, Projectile.damage, Projectile.knockBack, Projectile.owner);
+                            SpawnFiringDust(splitBarrelPos, shootVelocity);
+                        }
                     }
                 }
             }

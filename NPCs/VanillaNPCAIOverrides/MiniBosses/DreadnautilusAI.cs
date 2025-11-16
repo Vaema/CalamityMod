@@ -7,11 +7,11 @@ using Terraria.DataStructures;
 using Terraria.ID;
 using Terraria.ModLoader;
 
-namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
+namespace CalamityMod.NPCs.VanillaNPCAIOverrides.MiniBosses
 {
-    public static class DreadnautilusAI
+    public class DreadnautilusAI : VanillaAIOverride
     {
-        public static bool BuffedDreadnautilusAI(NPC npc, Mod mod)
+        public override bool AI(Mod mod)
         {
             // Death Mode bool
             bool death = CalamityWorld.death;
@@ -29,102 +29,102 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
             int maxBloodSquids = death ? 3 : 2;
 
             // Spawn effect
-            if (npc.localAI[0] == 0f)
+            if (NPC.localAI[0] == 0f)
             {
-                npc.localAI[0] = 1f;
-                npc.alpha = 255;
+                NPC.localAI[0] = 1f;
+                NPC.alpha = 255;
                 if (Main.netMode != NetmodeID.MultiplayerClient)
                 {
-                    npc.ai[0] = -1f;
-                    npc.netUpdate = true;
+                    NPC.ai[0] = -1f;
+                    NPC.netUpdate = true;
                 }
             }
 
             // Create dust
-            if (npc.ai[0] != -1f && Main.rand.NextBool(4))
+            if (NPC.ai[0] != -1f && Main.rand.NextBool(4))
             {
-                npc.position += npc.netOffset;
-                Dust dust = Dust.NewDustDirect(npc.position + new Vector2(5f), npc.width - 10, npc.height - 10, DustID.Blood);
+                NPC.position += NPC.netOffset;
+                Dust dust = Dust.NewDustDirect(NPC.position + new Vector2(5f), NPC.width - 10, NPC.height - 10, DustID.Blood);
                 dust.velocity *= 0.5f;
                 if (dust.velocity.Y < 0f)
                     dust.velocity.Y *= -1f;
 
                 dust.alpha = 120;
                 dust.scale = 1f + Main.rand.NextFloat() * 0.4f;
-                dust.velocity += npc.velocity * 0.3f;
-                npc.position -= npc.netOffset;
+                dust.velocity += NPC.velocity * 0.3f;
+                NPC.position -= NPC.netOffset;
             }
 
             // Get a target
-            if (npc.target == Main.maxPlayers)
+            if (NPC.target == Main.maxPlayers)
             {
-                npc.TargetClosest();
-                npc.ai[2] = npc.direction;
+                NPC.TargetClosest();
+                NPC.ai[2] = NPC.direction;
             }
 
             // Get a new target if the current target is dead or too far away
-            if (Main.player[npc.target].dead || Vector2.Distance(Main.player[npc.target].Center, npc.Center) > 2000f)
-                npc.TargetClosest();
+            if (Main.player[NPC.target].dead || Vector2.Distance(Main.player[NPC.target].Center, NPC.Center) > 2000f)
+                NPC.TargetClosest();
 
             // Set to despawn
-            NPCAimedTarget nPCAimedTarget = npc.GetTargetData();
+            NPCAimedTarget nPCAimedTarget = NPC.GetTargetData();
             if (Main.dayTime || !Main.bloodMoon)
                 nPCAimedTarget = default(NPCAimedTarget);
 
             // Attacks and shit
             int attackType = -1;
-            switch ((int)npc.ai[0])
+            switch ((int)NPC.ai[0])
             {
                 // Spawn effects
                 case -1:
                     {
-                        npc.velocity *= 0.98f;
-                        int spawnFaceDirection = Math.Sign(nPCAimedTarget.Center.X - npc.Center.X);
+                        NPC.velocity *= 0.98f;
+                        int spawnFaceDirection = Math.Sign(nPCAimedTarget.Center.X - NPC.Center.X);
                         if (spawnFaceDirection != 0)
                         {
-                            npc.direction = spawnFaceDirection;
-                            npc.spriteDirection = -npc.direction;
+                            NPC.direction = spawnFaceDirection;
+                            NPC.spriteDirection = -NPC.direction;
                         }
 
-                        if (npc.localAI[1] == 0f && npc.alpha < 100)
+                        if (NPC.localAI[1] == 0f && NPC.alpha < 100)
                         {
-                            npc.localAI[1] = 1f;
+                            NPC.localAI[1] = 1f;
                             int dustAmt = 36;
                             for (int l = 0; l < dustAmt; l++)
                             {
-                                npc.position += npc.netOffset;
-                                Vector2 dustRotation = (Vector2.Normalize(npc.velocity) * new Vector2(npc.width / 2f, npc.height) * 0.75f * 0.5f).RotatedBy((l - (dustAmt / 2 - 1)) * ((float)Math.PI * 2f) / dustAmt) + npc.Center;
-                                Vector2 dustVelocity = dustRotation - npc.Center;
+                                NPC.position += NPC.netOffset;
+                                Vector2 dustRotation = (Vector2.Normalize(NPC.velocity) * new Vector2(NPC.width / 2f, NPC.height) * 0.75f * 0.5f).RotatedBy((l - (dustAmt / 2 - 1)) * ((float)Math.PI * 2f) / dustAmt) + NPC.Center;
+                                Vector2 dustVelocity = dustRotation - NPC.Center;
                                 int spawnDustBlood = Dust.NewDust(dustRotation + dustVelocity, 0, 0, DustID.Blood, dustVelocity.X * 2f, dustVelocity.Y * 2f, 100, default, 1.4f);
                                 Main.dust[spawnDustBlood].noGravity = true;
                                 Main.dust[spawnDustBlood].velocity = Vector2.Normalize(dustVelocity) * 3f;
-                                npc.position -= npc.netOffset;
+                                NPC.position -= NPC.netOffset;
                             }
                         }
 
-                        if (npc.ai[2] > 5f)
+                        if (NPC.ai[2] > 5f)
                         {
-                            npc.velocity.Y = -2.5f;
-                            npc.alpha -= 10;
-                            if (Collision.SolidCollision(npc.position, npc.width, npc.height))
+                            NPC.velocity.Y = -2.5f;
+                            NPC.alpha -= 10;
+                            if (Collision.SolidCollision(NPC.position, NPC.width, NPC.height))
                             {
-                                npc.alpha += 15;
-                                if (npc.alpha > 150)
-                                    npc.alpha = 150;
+                                NPC.alpha += 15;
+                                if (NPC.alpha > 150)
+                                    NPC.alpha = 150;
                             }
 
-                            if (npc.alpha < 0)
-                                npc.alpha = 0;
+                            if (NPC.alpha < 0)
+                                NPC.alpha = 0;
                         }
 
-                        npc.ai[2] += 1f;
-                        if (npc.ai[2] >= 50f)
+                        NPC.ai[2] += 1f;
+                        if (NPC.ai[2] >= 50f)
                         {
-                            npc.ai[0] = 0f;
-                            npc.ai[1] = 0f;
-                            npc.ai[2] = 0f;
-                            npc.ai[3] = 0f;
-                            npc.netUpdate = true;
+                            NPC.ai[0] = 0f;
+                            NPC.ai[1] = 0f;
+                            NPC.ai[2] = 0f;
+                            NPC.ai[3] = 0f;
+                            NPC.netUpdate = true;
                         }
 
                         break;
@@ -133,42 +133,42 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                 // Get in position for an attack and then choose an attack type
                 case 0:
                     {
-                        Vector2 destination = nPCAimedTarget.Center + new Vector2((0f - npc.ai[2]) * 500f, -300f);
-                        if (npc.Center.Distance(destination) > 50f)
+                        Vector2 destination = nPCAimedTarget.Center + new Vector2((0f - NPC.ai[2]) * 500f, -300f);
+                        if (NPC.Center.Distance(destination) > 50f)
                         {
-                            Vector2 desiredVelocity = npc.DirectionTo(destination) * goToAttackPositionVelocity;
-                            npc.SimpleFlyMovement(desiredVelocity, goToAttackPositionAcceleration);
+                            Vector2 desiredVelocity = NPC.DirectionTo(destination) * goToAttackPositionVelocity;
+                            NPC.SimpleFlyMovement(desiredVelocity, goToAttackPositionAcceleration);
                         }
 
-                        npc.direction = (npc.Center.X < nPCAimedTarget.Center.X) ? 1 : (-1);
-                        float faceTargetDirection = npc.Center.DirectionTo(nPCAimedTarget.Center).ToRotation() - 213f / 452f * npc.spriteDirection;
-                        if (npc.spriteDirection == -1)
+                        NPC.direction = (NPC.Center.X < nPCAimedTarget.Center.X) ? 1 : (-1);
+                        float faceTargetDirection = NPC.Center.DirectionTo(nPCAimedTarget.Center).ToRotation() - 213f / 452f * NPC.spriteDirection;
+                        if (NPC.spriteDirection == -1)
                             faceTargetDirection += (float)Math.PI;
 
-                        if (npc.spriteDirection != npc.direction)
+                        if (NPC.spriteDirection != NPC.direction)
                         {
-                            npc.spriteDirection = npc.direction;
-                            npc.rotation = 0f - npc.rotation;
+                            NPC.spriteDirection = NPC.direction;
+                            NPC.rotation = 0f - NPC.rotation;
                             faceTargetDirection = 0f - faceTargetDirection;
                         }
 
-                        npc.rotation = npc.rotation.AngleTowards(faceTargetDirection, 0.02f);
-                        npc.ai[1] += 1f;
-                        if (npc.ai[1] > phaseSwitchPhaseTime)
+                        NPC.rotation = NPC.rotation.AngleTowards(faceTargetDirection, 0.02f);
+                        NPC.ai[1] += 1f;
+                        if (NPC.ai[1] > phaseSwitchPhaseTime)
                         {
-                            int attackPicker = (int)npc.ai[3];
+                            int attackPicker = (int)NPC.ai[3];
                             if (attackPicker % 7 == 3 && NPC.CountNPCS(NPCID.BloodSquid) < maxBloodSquids)
                             {
                                 attackType = 3;
                             }
                             else if (attackPicker % 2 == 0)
                             {
-                                SoundEngine.PlaySound(SoundID.Item170, npc.Center);
+                                SoundEngine.PlaySound(SoundID.Item170, NPC.Center);
                                 attackType = 2;
                             }
                             else
                             {
-                                SoundEngine.PlaySound(SoundID.Item170, npc.Center);
+                                SoundEngine.PlaySound(SoundID.Item170, NPC.Center);
                                 attackType = 1;
                             }
                         }
@@ -179,28 +179,28 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                 // Dash
                 case 1:
                     {
-                        npc.direction = (!(npc.Center.X < nPCAimedTarget.Center.X)) ? 1 : (-1);
-                        float chargeFaceDirection = npc.Center.DirectionFrom(nPCAimedTarget.Center).ToRotation() - 213f / 452f * npc.spriteDirection;
-                        if (npc.spriteDirection == -1)
+                        NPC.direction = (!(NPC.Center.X < nPCAimedTarget.Center.X)) ? 1 : (-1);
+                        float chargeFaceDirection = NPC.Center.DirectionFrom(nPCAimedTarget.Center).ToRotation() - 213f / 452f * NPC.spriteDirection;
+                        if (NPC.spriteDirection == -1)
                             chargeFaceDirection += (float)Math.PI;
 
-                        bool shouldStartCharge = npc.ai[1] < dashChargeUpPhaseTime;
-                        if (npc.spriteDirection != npc.direction && shouldStartCharge)
+                        bool shouldStartCharge = NPC.ai[1] < dashChargeUpPhaseTime;
+                        if (NPC.spriteDirection != NPC.direction && shouldStartCharge)
                         {
-                            npc.spriteDirection = npc.direction;
-                            npc.rotation = 0f - npc.rotation;
+                            NPC.spriteDirection = NPC.direction;
+                            NPC.rotation = 0f - NPC.rotation;
                             chargeFaceDirection = 0f - chargeFaceDirection;
                         }
 
-                        if (npc.ai[1] < dashChargeUpPhaseTime)
+                        if (NPC.ai[1] < dashChargeUpPhaseTime)
                         {
-                            if (npc.ai[1] == dashChargeUpPhaseTime - 1f)
-                                SoundEngine.PlaySound(SoundID.Item172, npc.Center);
+                            if (NPC.ai[1] == dashChargeUpPhaseTime - 1f)
+                                SoundEngine.PlaySound(SoundID.Item172, NPC.Center);
 
-                            npc.velocity *= 0.95f;
-                            npc.rotation = npc.rotation.AngleLerp(chargeFaceDirection, 0.02f);
-                            npc.position += npc.netOffset;
-                            npc.BloodNautilus_GetMouthPositionAndRotation(out Vector2 mouthPosition4, out Vector2 mouthDirection4);
+                            NPC.velocity *= 0.95f;
+                            NPC.rotation = NPC.rotation.AngleLerp(chargeFaceDirection, 0.02f);
+                            NPC.position += NPC.netOffset;
+                            NPC.BloodNautilus_GetMouthPositionAndRotation(out Vector2 mouthPosition4, out Vector2 mouthDirection4);
                             Dust chargeUpDust = Dust.NewDustDirect(mouthPosition4 + mouthDirection4 * 60f - new Vector2(40f), 80, 80, DustID.Cloud, 0f, 0f, 150, Color.Transparent, 0.6f);
                             chargeUpDust.fadeIn = 1f;
                             chargeUpDust.velocity = chargeUpDust.position.DirectionTo(mouthPosition4 + Main.rand.NextVector2Circular(15f, 15f)) * chargeUpDust.velocity.Length();
@@ -209,21 +209,21 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                             chargeUpDust.fadeIn = 1.5f;
                             chargeUpDust.velocity = chargeUpDust.position.DirectionTo(mouthPosition4 + Main.rand.NextVector2Circular(15f, 15f)) * (chargeUpDust.velocity.Length() + 5f);
                             chargeUpDust.noGravity = true;
-                            npc.position -= npc.netOffset;
+                            NPC.position -= NPC.netOffset;
                         }
-                        else if (npc.ai[1] < dashChargeUpPhaseTime + dashPhaseTime)
+                        else if (NPC.ai[1] < dashChargeUpPhaseTime + dashPhaseTime)
                         {
-                            npc.position += npc.netOffset;
-                            npc.rotation = npc.rotation.AngleLerp(chargeFaceDirection, 0.07f);
-                            npc.BloodNautilus_GetMouthPositionAndRotation(out Vector2 mouthPosition5, out Vector2 mouthDirection5);
+                            NPC.position += NPC.netOffset;
+                            NPC.rotation = NPC.rotation.AngleLerp(chargeFaceDirection, 0.07f);
+                            NPC.BloodNautilus_GetMouthPositionAndRotation(out Vector2 mouthPosition5, out Vector2 mouthDirection5);
 
                             // Dash directly towards the target until within 15 tiles of the target, and then continue in the same direction for 18 frames (15 frames in Death Mode)
-                            if (npc.ai[1] < dashChargeUpPhaseTime + dashPhaseTime * 0.9f)
+                            if (NPC.ai[1] < dashChargeUpPhaseTime + dashPhaseTime * 0.9f)
                             {
-                                if (npc.Center.Distance(nPCAimedTarget.Center) > 240f || npc.ai[1] == dashChargeUpPhaseTime)
-                                    npc.velocity = mouthDirection5 * -(death ? 20f : 16f) + npc.Center.DirectionTo(nPCAimedTarget.Center) * 2f;
+                                if (NPC.Center.Distance(nPCAimedTarget.Center) > 240f || NPC.ai[1] == dashChargeUpPhaseTime)
+                                    NPC.velocity = mouthDirection5 * -(death ? 20f : 16f) + NPC.Center.DirectionTo(nPCAimedTarget.Center) * 2f;
                                 else
-                                    npc.ai[1] = dashChargeUpPhaseTime + dashPhaseTime * 0.9f;
+                                    NPC.ai[1] = dashChargeUpPhaseTime + dashPhaseTime * 0.9f;
                             }
 
                             for (int m = 0; m < 4; m++)
@@ -236,11 +236,11 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                                 chargeBloodDust.position -= mouthDirection5 * 100f;
                             }
 
-                            npc.position -= npc.netOffset;
+                            NPC.position -= NPC.netOffset;
                         }
 
-                        npc.ai[1] += 1f;
-                        if (npc.ai[1] >= dashChargeUpPhaseTime + dashPhaseTime)
+                        NPC.ai[1] += 1f;
+                        if (NPC.ai[1] >= dashChargeUpPhaseTime + dashPhaseTime)
                             attackType = 0;
 
                         break;
@@ -249,24 +249,24 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                 // Spit 3 spreads of blood projectiles
                 case 2:
                     {
-                        npc.direction = (npc.Center.X < nPCAimedTarget.Center.X) ? 1 : (-1);
-                        float bloodProjFaceDirection = npc.Center.DirectionTo(nPCAimedTarget.Center).ToRotation() - 213f / 452f * npc.spriteDirection;
-                        if (npc.spriteDirection == -1)
+                        NPC.direction = (NPC.Center.X < nPCAimedTarget.Center.X) ? 1 : (-1);
+                        float bloodProjFaceDirection = NPC.Center.DirectionTo(nPCAimedTarget.Center).ToRotation() - 213f / 452f * NPC.spriteDirection;
+                        if (NPC.spriteDirection == -1)
                             bloodProjFaceDirection += (float)Math.PI;
 
-                        if (npc.spriteDirection != npc.direction)
+                        if (NPC.spriteDirection != NPC.direction)
                         {
-                            npc.spriteDirection = npc.direction;
-                            npc.rotation = 0f - npc.rotation;
+                            NPC.spriteDirection = NPC.direction;
+                            NPC.rotation = 0f - NPC.rotation;
                             bloodProjFaceDirection = 0f - bloodProjFaceDirection;
                         }
 
-                        npc.rotation = npc.rotation.AngleLerp(bloodProjFaceDirection, 0.2f);
-                        if (npc.ai[1] < bloodSpitChargeUpPhaseTime)
+                        NPC.rotation = NPC.rotation.AngleLerp(bloodProjFaceDirection, 0.2f);
+                        if (NPC.ai[1] < bloodSpitChargeUpPhaseTime)
                         {
-                            npc.position += npc.netOffset;
-                            npc.velocity *= 0.95f;
-                            npc.BloodNautilus_GetMouthPositionAndRotation(out Vector2 mouthPosition2, out Vector2 mouthDirection2);
+                            NPC.position += NPC.netOffset;
+                            NPC.velocity *= 0.95f;
+                            NPC.BloodNautilus_GetMouthPositionAndRotation(out Vector2 mouthPosition2, out Vector2 mouthDirection2);
                             if (!Main.rand.NextBool(4))
                             {
                                 Dust bloodProjChargeUpDust = Dust.NewDustDirect(mouthPosition2 + mouthDirection2 * 60f - new Vector2(60f), 120, 120, DustID.Cloud, 0f, 0f, 150, Color.Transparent, 0.6f);
@@ -279,14 +279,14 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                                 bloodProjChargeUpDust.noGravity = true;
                             }
 
-                            npc.position -= npc.netOffset;
+                            NPC.position -= NPC.netOffset;
                         }
-                        else if (npc.ai[1] < bloodSpitChargeUpPhaseTime + bloodSpitPhaseTime)
+                        else if (NPC.ai[1] < bloodSpitChargeUpPhaseTime + bloodSpitPhaseTime)
                         {
-                            npc.position += npc.netOffset;
-                            npc.velocity *= 0.9f;
-                            float bloodProjShootTimer = (npc.ai[1] - bloodSpitChargeUpPhaseTime) % (bloodSpitPhaseTime / numBloodSpitVolleys);
-                            npc.BloodNautilus_GetMouthPositionAndRotation(out Vector2 mouthPosition3, out Vector2 mouthDirection3);
+                            NPC.position += NPC.netOffset;
+                            NPC.velocity *= 0.9f;
+                            float bloodProjShootTimer = (NPC.ai[1] - bloodSpitChargeUpPhaseTime) % (bloodSpitPhaseTime / numBloodSpitVolleys);
+                            NPC.BloodNautilus_GetMouthPositionAndRotation(out Vector2 mouthPosition3, out Vector2 mouthDirection3);
                             if (bloodProjShootTimer < bloodSpitPhaseTime / numBloodSpitVolleys * 0.8f)
                             {
                                 for (int i = 0; i < 5; i++)
@@ -304,7 +304,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                             if ((int)bloodProjShootTimer == 0)
                             {
                                 // Recoil away with each spit
-                                npc.velocity += mouthDirection3 * -8f;
+                                NPC.velocity += mouthDirection3 * -8f;
 
                                 // Spawn dust with each spit
                                 for (int j = 0; j < 20; j++)
@@ -324,20 +324,20 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                                     int spread = death ? 35 : 30;
                                     float rotation = MathHelper.ToRadians(spread);
                                     Vector2 initialProjectileVelocity = mouthDirection3 * 10f;
-                                    int damage = npc.GetAttackDamage_ForProjectiles(30f, 25f);
+                                    int damage = NPC.GetAttackDamage_ForProjectiles(30f, 25f);
                                     for (int k = 0; k < projectileAmt + 1; k++)
                                     {
                                         Vector2 perturbedSpeed = initialProjectileVelocity.RotatedBy(MathHelper.Lerp(-rotation, rotation, k / (float)(projectileAmt - 1)));
-                                        Projectile.NewProjectile(npc.GetSource_FromAI(), mouthPosition3 - mouthDirection3 * 5f, initialProjectileVelocity + perturbedSpeed, ProjectileID.BloodNautilusShot, damage, 0f, Main.myPlayer);
+                                        Projectile.NewProjectile(NPC.GetSource_FromAI(), mouthPosition3 - mouthDirection3 * 5f, initialProjectileVelocity + perturbedSpeed, ProjectileID.BloodNautilusShot, damage, 0f, Main.myPlayer);
                                     }
                                 }
                             }
 
-                            npc.position -= npc.netOffset;
+                            NPC.position -= NPC.netOffset;
                         }
 
-                        npc.ai[1] += 1f;
-                        if (npc.ai[1] >= bloodSpitChargeUpPhaseTime + bloodSpitPhaseTime)
+                        NPC.ai[1] += 1f;
+                        if (NPC.ai[1] >= bloodSpitChargeUpPhaseTime + bloodSpitPhaseTime)
                             attackType = 0;
 
                         break;
@@ -346,35 +346,35 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                 // Spawn Blood Squids
                 case 3:
                     {
-                        npc.direction = (npc.Center.X < nPCAimedTarget.Center.X) ? 1 : (-1);
+                        NPC.direction = (NPC.Center.X < nPCAimedTarget.Center.X) ? 1 : (-1);
                         float targetAngle = 0f;
-                        npc.spriteDirection = npc.direction;
-                        if (npc.ai[1] < bloodSquidPhaseTime)
+                        NPC.spriteDirection = NPC.direction;
+                        if (NPC.ai[1] < bloodSquidPhaseTime)
                         {
-                            npc.position += npc.netOffset;
-                            float bloodSquidVelClamp = MathHelper.Clamp(1f - npc.ai[1] / bloodSquidPhaseTime * 1.5f, 0f, 1f);
-                            npc.velocity = Vector2.Lerp(value2: new Vector2(0f, bloodSquidVelClamp * -1.5f), value1: npc.velocity, amount: 0.03f);
-                            npc.velocity = Vector2.Zero;
-                            npc.rotation = npc.rotation.AngleLerp(targetAngle, 0.02f);
-                            npc.BloodNautilus_GetMouthPositionAndRotation(out Vector2 _, out Vector2 _);
-                            float t = npc.ai[1] / bloodSquidPhaseTime;
+                            NPC.position += NPC.netOffset;
+                            float bloodSquidVelClamp = MathHelper.Clamp(1f - NPC.ai[1] / bloodSquidPhaseTime * 1.5f, 0f, 1f);
+                            NPC.velocity = Vector2.Lerp(value2: new Vector2(0f, bloodSquidVelClamp * -1.5f), value1: NPC.velocity, amount: 0.03f);
+                            NPC.velocity = Vector2.Zero;
+                            NPC.rotation = NPC.rotation.AngleLerp(targetAngle, 0.02f);
+                            NPC.BloodNautilus_GetMouthPositionAndRotation(out Vector2 _, out Vector2 _);
+                            float t = NPC.ai[1] / bloodSquidPhaseTime;
                             float scaleFactor2 = Utils.GetLerpValue(0f, 0.5f, t) * Utils.GetLerpValue(1f, 0.5f, t);
-                            Lighting.AddLight(npc.Center, new Vector3(1f, 0.5f, 0.5f) * scaleFactor2);
+                            Lighting.AddLight(NPC.Center, new Vector3(1f, 0.5f, 0.5f) * scaleFactor2);
                             if (!Main.rand.NextBool(3))
                             {
-                                Dust bloodSquidSpawnDust = Dust.NewDustDirect(npc.Center - new Vector2(6f), 12, 12, DustID.Blood, 0f, 0f, 60, Color.Transparent, 1.4f);
-                                bloodSquidSpawnDust.position += new Vector2(npc.spriteDirection * 12, 12f);
+                                Dust bloodSquidSpawnDust = Dust.NewDustDirect(NPC.Center - new Vector2(6f), 12, 12, DustID.Blood, 0f, 0f, 60, Color.Transparent, 1.4f);
+                                bloodSquidSpawnDust.position += new Vector2(NPC.spriteDirection * 12, 12f);
                                 bloodSquidSpawnDust.velocity *= 0.1f;
                             }
 
-                            npc.position -= npc.netOffset;
+                            NPC.position -= NPC.netOffset;
                         }
 
-                        if (npc.ai[1] == 10f || (death && npc.ai[1] == 20f) || npc.ai[1] == 30f)
-                            BloodNautilus_CallForHelp(npc);
+                        if (NPC.ai[1] == 10f || (death && NPC.ai[1] == 20f) || NPC.ai[1] == 30f)
+                            BloodNautilus_CallForHelp(NPC);
 
-                        npc.ai[1] += 1f;
-                        if (npc.ai[1] >= bloodSquidPhaseTime)
+                        NPC.ai[1] += 1f;
+                        if (NPC.ai[1] >= bloodSquidPhaseTime)
                             attackType = 0;
 
                         break;
@@ -384,19 +384,19 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
             // Set AI arrays for the next attack
             if (attackType != -1)
             {
-                npc.ai[0] = attackType;
-                npc.ai[1] = 0f;
-                npc.ai[2] = 0f;
-                npc.netUpdate = true;
-                npc.TargetClosest();
+                NPC.ai[0] = attackType;
+                NPC.ai[1] = 0f;
+                NPC.ai[2] = 0f;
+                NPC.netUpdate = true;
+                NPC.TargetClosest();
                 if (attackType == 0)
-                    npc.ai[2] = npc.direction;
+                    NPC.ai[2] = NPC.direction;
                 else
-                    npc.ai[3] += 1f;
+                    NPC.ai[3] += 1f;
             }
 
             // Always set this to false because it's fucking stupid
-            npc.reflectsProjectiles = false;
+            NPC.reflectsProjectiles = false;
 
             return false;
         }

@@ -129,15 +129,15 @@ namespace CalamityMod.Projectiles.Melee
 
         public override void AI()
         {
-            CalamityPlayer.EnchantHeldItemEffects(Owner, Owner.Calamity(), Owner.ActiveItem());
-            if (!Owner.Calamity().bladeArmEnchant || Owner.ActiveItem().type != SwordItemID || Owner.CCed || !Owner.active || Owner.dead)
+            CalamityPlayer.EnchantHeldItemEffects(Owner, Owner.Calamity(), Owner.HeldItem);
+            if (!Owner.Calamity().bladeArmEnchant || Owner.HeldItem.type != SwordItemID || Owner.CCed || !Owner.active || Owner.dead)
             {
                 Projectile.Kill();
                 return;
             }
 
             if (Owner.itemAnimationMax == 0)
-                Owner.itemAnimationMax = (int)(Owner.ActiveItem().useAnimation * Owner.GetAttackSpeed<MeleeDamageClass>());
+                Owner.itemAnimationMax = (int)(Owner.HeldItem.useAnimation * Owner.GetAttackSpeed<MeleeDamageClass>());
 
             float swingOffsetAngle = MathHelper.SmoothStep(-1.87f, 3.79f, AttackCompletionRatio);
 
@@ -289,8 +289,8 @@ namespace CalamityMod.Projectiles.Melee
 
         public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
         {
-            ItemLoader.OnHitNPC(Owner.ActiveItem(), Owner, target, hit, damageDone);
-            NPCLoader.OnHitByItem(target, Owner, Owner.ActiveItem(), hit, damageDone);
+            ItemLoader.OnHitNPC(Owner.HeldItem, Owner, target, hit, damageDone);
+            NPCLoader.OnHitByItem(target, Owner, Owner.HeldItem, hit, damageDone);
             PlayerLoader.OnHitNPC(Owner, target, hit, damageDone);
         }
     }

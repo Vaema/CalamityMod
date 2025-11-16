@@ -24,6 +24,7 @@ namespace CalamityMod.Projectiles.Boss
 
         public new string LocalizationCategory => "Projectiles.Boss";
         public override string Texture => "CalamityMod/Projectiles/InvisibleProj";
+        public static readonly SoundStyle SpawnSound = new("CalamityMod/Sounds/Custom/DoGFireball");
 
         public override void SetStaticDefaults()
         {
@@ -48,7 +49,7 @@ namespace CalamityMod.Projectiles.Boss
         public override void OnSpawn(IEntitySource source)
         {
             if (IsAPassiveFireball)
-                SoundEngine.PlaySound(SoundID.Item20, Projectile.Center);
+                SoundEngine.PlaySound(SpawnSound, Projectile.Center);
         }
 
         public override void AI()
