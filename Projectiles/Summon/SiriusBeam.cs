@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Linq;
 using CalamityMod.Buffs.DamageOverTime;
+using CalamityMod.Enums;
 using CalamityMod.Graphics.Primitives;
 using CalamityMod.Particles;
 using Microsoft.Xna.Framework;
@@ -133,7 +134,7 @@ namespace CalamityMod.Projectiles.Summon
             return Color.Lerp(fullBodyColor, Color.White, 0.175f) * Projectile.Opacity;
         }
 
-        public void RenderPixelatedPrimitives(SpriteBatch spriteBatch, PixelationPrimitiveLayer layer)
+        public void RenderPixelatedPrimitives(SpriteBatch spriteBatch, GeneralDrawLayer layer)
         {
             // Render the main trail for the body for the flame.
             GameShaders.Misc["CalamityMod:ImpFlameTrail"].SetShaderTexture(ModContent.Request<Texture2D>("CalamityMod/ExtraTextures/Trails/ScarletDevilStreak"));

@@ -32,7 +32,7 @@ namespace CalamityMod.Projectiles.Ranged
 
         public Player Owner => Main.player[Projectile.owner];
 
-        public Item Halley => Owner.ActiveItem();
+        public Item Halley => Owner.HeldItem;
         public override void KillHoldoutLogic()
         {
             if ((Owner.CantUseHoldout(false) || Halley.type != ModContent.ItemType<HalleysInferno>()))
