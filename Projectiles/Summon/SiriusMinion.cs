@@ -5,6 +5,7 @@ using CalamityMod.CalPlayer;
 using CalamityMod.DataStructures;
 using CalamityMod.Items.Weapons.Summon;
 using CalamityMod.Particles;
+using CalamityMod.Systems.Graphic.PixelationSystem;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using rail;
@@ -82,7 +83,7 @@ namespace CalamityMod.Projectiles.Summon
                 TimerForShooting++;
 
             // Makes the star oscillate.
-            Projectile.scale = MathHelper.Lerp(0.27f,0.29f, (1+MathF.Sin((Projectile.frameCounter* 0.01f))*0.5f));
+            Projectile.scale = MathHelper.Lerp(0.3f,0.33f, (1+MathF.Sin((Projectile.frameCounter* 0.01f))*0.5f));
             Projectile.frameCounter++;
             if (Projectile.frameCounter > 31415)
                 Projectile.frameCounter = 0;
@@ -99,12 +100,12 @@ namespace CalamityMod.Projectiles.Summon
                 if (SlotRequirement > 0 && Projectile.minionSlots < SlotRequirement)
                     return;
                 offset.X *= Projectile.spriteDirection;
-                var star = new BloomParticle(SiriusPos + offset * Projectile.scale - (Owner.oldVelocity * Math.Clamp(offset.Length() * 0.001f,0,1) ), Vector2.Zero, Color.SkyBlue * ((Owner.miscCounter + flashOffset) % flashMod < 5 ? 0.75f : 1f), SiriusScale * intensity, SiriusScale * intensity, 2, false);
-                var star2 = new CustomSpark(SiriusPos + offset * Projectile.scale - (Owner.oldVelocity * Math.Clamp(offset.Length() * 0.001f, 0, 1)), Vector2.UnitX.RotatedBy(MathHelper.Pi * (Owner.miscCounter/300f)) * 0.1f, "CalamityMod/Particles/Sparkle", false, 2, 5*SiriusScale * intensity, Color.SkyBlue, Vector2.One);
-                GeneralParticleHandler.SpawnParticle(star); 
-                GeneralParticleHandler.SpawnParticle(star2);
+                var star = new BloomParticle(SiriusPos + offset * Projectile.scale - (Owner.oldVelocity * Math.Clamp(offset.Length() * 0.001f,0,1) ), Vector2.Zero, Color.SkyBlue * ((Owner.miscCounter + flashOffset) % flashMod < 5 ? 0.75f : 1f), 2*SiriusScale * intensity, 2*SiriusScale * intensity, 2, false);
+                var star2 = new CustomSpark(SiriusPos + offset * Projectile.scale - (Owner.oldVelocity * Math.Clamp(offset.Length() * 0.001f, 0, 1)), Vector2.UnitX.RotatedBy(MathHelper.Pi * (Owner.miscCounter/300f)) * 0.1f, "CalamityMod/Particles/Sparkle", false, 2, 10*SiriusScale * intensity, Color.SkyBlue, Vector2.One);
+                GeneralParticleHandler.SpawnParticle(star,true,Enums.GeneralDrawLayer.AfterProjectiles); 
+                GeneralParticleHandler.SpawnParticle(star2, true, Enums.GeneralDrawLayer.AfterProjectiles);
             }
-            SpawnStar(0,new Vector2(0f, 0f), 2f, 0,300); //Sirius
+            SpawnStar(0,new Vector2(0f, 0f), 1.5f, 0,300); //Sirius
             SpawnStar(2, new Vector2(-118f, 217f), 0.75f, 40); //bottom
             SpawnStar(3, new Vector2(-67f, 272f), 0.75f, 120); //bakc foot
             SpawnStar(4,new Vector2(119f,32f),0.75f,5); //Front foot
@@ -235,9 +236,9 @@ namespace CalamityMod.Projectiles.Summon
                 point1.X *= Projectile.spriteDirection;
                 point2.X *= Projectile.spriteDirection;
                 var color = Color.SkyBlue * 0.75f * ((MathF.Sin(Main.GlobalTimeWrappedHourly) + 1) * 0.25f + 0.5f);
-                CalamityUtils.DrawLineBetter(Main.spriteBatch, SiriusPos+point1 * Projectile.scale - (Owner.oldVelocity * Math.Clamp(point1.Length() * 0.001f, 0, 1)), SiriusPos+point2* Projectile.scale - (Owner.oldVelocity * Math.Clamp(point2.Length() * 0.001f, 0, 1)), color, 1.5f);
+                CalamityUtils.DrawLineBetter(Main.spriteBatch, SiriusPos+point1 * Projectile.scale - (Owner.oldVelocity * Math.Clamp(point1.Length() * 0.001f, 0, 1)), SiriusPos+point2* Projectile.scale - (Owner.oldVelocity * Math.Clamp(point2.Length() * 0.001f, 0, 1)), color, 2f);
             }
-            Main.spriteBatch.SafeBegin(SpriteSortMode.Immediate, BatchSetting.Additive, null, Main.GameViewMatrix.TransformationMatrix, () =>
+            PixelationManager.AddPixelatedDrawer(drawLayer: Enums.GeneralDrawLayer.AfterProjectiles, drawAction: (matrix) =>
             {
                 ConnectStars(4, new Vector2(0f, 0f), new Vector2(119f, 32f)); //Sirius - Front Foot
                 ConnectStars(2, new Vector2(0f, 0f), new Vector2(-118f, 217f)); //Sirius - Bottom

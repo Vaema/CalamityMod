@@ -49,8 +49,8 @@ namespace CalamityMod.Projectiles.Melee
 
             if (Projectile.FinalExtraUpdate())
             {
-                GeneralParticleHandler.SpawnParticle(new BloomParticle(Projectile.Center, Vector2.Zero, Color.SkyBlue, 0.45f, 0.45f, 2, false));
-                GeneralParticleHandler.SpawnParticle(new CustomSpark(Projectile.Center, Vector2.UnitX.RotatedBy(Projectile.rotation) * 0.1f, "CalamityMod/Projectiles/Melee/CrescentMoonProj", false, 2, 1f, Color.White, Vector2.One, false));
+                GeneralParticleHandler.SpawnParticle(new BloomParticle(Projectile.Center, Vector2.Zero, Color.SkyBlue, 0.65f, 0.65f, 2, false),true,Enums.GeneralDrawLayer.AfterProjectiles);
+                GeneralParticleHandler.SpawnParticle(new CustomSpark(Projectile.Center, Vector2.UnitX.RotatedBy(Projectile.rotation) * 0.1f, "CalamityMod/Projectiles/Melee/CrescentMoonProj", false, 2, 1f, Color.White, Vector2.One, false), false, Enums.GeneralDrawLayer.AfterProjectiles);
             }
                 
             Projectile.velocity *= 0.965f;
