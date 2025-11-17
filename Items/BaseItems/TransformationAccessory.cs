@@ -90,8 +90,8 @@ namespace CalamityMod.Items.BaseItems
 
         internal TransformationAccessory currentTransformation = null;
         internal TransformationAccessory previousTransformation = null;
-        int previousHighest = -1;
-        int currentHighest = -1;
+        internal int previousHighest = -1;
+        internal int currentHighest = -1;
 
         public int Type 
         { 
@@ -124,10 +124,10 @@ namespace CalamityMod.Items.BaseItems
             }
         }
 
-        private void Reset(Player p)
+        private static void Reset(Player p)
         {
-            previousHighest = currentHighest;
-            currentHighest = -1;
+            p.Transformation().previousHighest = p.Transformation().currentHighest;
+            p.Transformation().currentHighest = -1;
 
             if (p.Transformation().currentTransformation != null && !p.Transformation().currentTransformation.IsForced)
             {
@@ -139,17 +139,17 @@ namespace CalamityMod.Items.BaseItems
         private void SetTransformationItem(On_Player.orig_UpdateVisibleAccessory orig, Player self, int itemSlot, Item item, bool modded)
         {
             orig(self, itemSlot, item, modded);
-            
+
             if (self.Transformation().currentTransformation == null || !self.Transformation().currentTransformation.IsForced)
             {
                 if (item.ModItem is TransformationAccessory transformation && transformation.ShouldTransform.Invoke(self) && (currentTransformation == null || transformation.Priority >= currentTransformation.Priority))
                     self.Transformation().currentTransformation = transformation;
             }
 
-            if (currentHighest < itemSlot)
-                currentHighest = itemSlot;
+            if (self.Transformation().currentHighest < itemSlot)
+                self.Transformation().currentHighest = itemSlot;
 
-            if (self.Transformation().currentTransformation != null && itemSlot == previousHighest) // last item slot, can set equip slots to our transformation if one is equipped
+            if (self.Transformation().currentTransformation != null && itemSlot == self.Transformation().previousHighest) // last item slot, can set equip slots to our transformation if one is equipped
             {
                 TransformationAccessory trans = self.Transformation().currentTransformation;
                 EquipTransformation(trans, self, Mod);

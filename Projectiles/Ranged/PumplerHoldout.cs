@@ -88,7 +88,7 @@ namespace CalamityMod.Projectiles.Ranged
                 // Frame 1 effects: Initialize the shoot speed
                 if (FramesToLoadNextPumpkin == 0f)
                 {
-                    FramesToLoadNextPumpkin = Owner.ActiveItem().useAnimation;
+                    FramesToLoadNextPumpkin = Owner.HeldItem.useAnimation;
                 }
                 // Actually make progress towards loading more arrows. Also, make smoke come out eventually perhaps
                 ++CurrentChargingFrames;
@@ -149,7 +149,7 @@ namespace CalamityMod.Projectiles.Ranged
             }
             SoundEngine.PlaySound(SoundID.Item96);//play the sound
             SmokeBurst(tipPosition);
-            FramesToLoadNextPumpkin = Owner.ActiveItem().useAnimation; //reset the reload time
+            FramesToLoadNextPumpkin = Owner.HeldItem.useAnimation; //reset the reload time
             PumpkinsCharge = 0; //Unload the barrel
             if (!IsOverfilled)
                 Overfilled = 1f; //Make the shoot anim play
@@ -161,7 +161,7 @@ namespace CalamityMod.Projectiles.Ranged
             if (Main.myPlayer != Projectile.owner)
                 return;
 
-            Item heldItem = Owner.ActiveItem();
+            Item heldItem = Owner.HeldItem;
             int projectileType = ModContent.ProjectileType<PumplerGrenade>();
             int PumpkinDamage = heldItem is null ? 0 : Owner.GetWeaponDamage(heldItem);
             float shootSpeed = heldItem.shootSpeed * 1.5f;

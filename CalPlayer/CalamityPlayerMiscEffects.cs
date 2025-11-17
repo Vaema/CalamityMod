@@ -188,7 +188,7 @@ namespace CalamityMod.CalPlayer
                 }
             }
 
-            if (Player.ActiveItem().type != ModContent.ItemType<SaharaSlicers>())
+            if (Player.HeldItem.type != ModContent.ItemType<SaharaSlicers>())
                 saharaSlicersBolts = 0;
 
             if (Player.whoAmI == Main.myPlayer && Player.HeldItem.type == ModContent.ItemType<Starfleet>() && (Player.ownedProjectileCounts[ModContent.ProjectileType<StarfleetHoldout>()] == 0) && !Player.dead)
@@ -203,7 +203,7 @@ namespace CalamityMod.CalPlayer
             }
 
             // De-equipping Gael's Greatsword deletes all rage.
-            if (Player.ActiveItem().type == ModContent.ItemType<GaelsGreatsword>())
+            if (Player.HeldItem.type == ModContent.ItemType<GaelsGreatsword>())
                 heldGaelsLastFrame = true;
             else if (heldGaelsLastFrame)
             {
@@ -452,8 +452,8 @@ namespace CalamityMod.CalPlayer
                 else // Decrementing
                 {
                     elementalMasterySFXPlayed = false;
-                    // Once every 20 ticks
-                    if (elementalMasteryTimer >= 20)
+                    // Once every 30 ticks
+                    if (elementalMasteryTimer >= 30)
                     {
                         elementalMastery--;
                         elementalMasteryTimer = 0;
@@ -1160,7 +1160,7 @@ namespace CalamityMod.CalPlayer
                 DoGCartSegments = new DoGCartSegment[DoGCartSegments.Length];
 
             // Dust on hand when holding the phosphorescent gauntlet.
-            if (Player.ActiveItem().type == ModContent.ItemType<PhosphorescentGauntlet>())
+            if (Player.HeldItem.type == ModContent.ItemType<PhosphorescentGauntlet>())
                 PhosphorescentGauntletPunches.GenerateDustOnOwnerHand(Player);
 
             if (stealthUIAlpha > 0f && (rogueStealth <= 0f || rogueStealthMax <= 0f))
@@ -2807,7 +2807,7 @@ namespace CalamityMod.CalPlayer
             }
 
             // Vortex Armor nerf
-            if (Player.vortexStealthActive && Player.ActiveItem().type != ItemID.PsychoKnife)
+            if (Player.vortexStealthActive && Player.HeldItem.type != ItemID.PsychoKnife)
             {
                 Player.GetDamage<RangedDamageClass>() -= (1f - Player.stealth) * 0.4f; // Change 80 to 40
                 Player.GetCritChance<RangedDamageClass>() -= (int)((1f - Player.stealth) * 5f); // Change 20 to 15
@@ -2982,7 +2982,7 @@ namespace CalamityMod.CalPlayer
             }
 
             bool hasKillMode = cooldowns.TryGetValue(KillMode.ID, out CooldownInstance killModeCD);
-            if (hasKillMode && killModeCD.timeLeft > KillMode.cooldownMax && !(Player.ActiveItem().type == ModContent.ItemType<ForbiddenOathblade>() || Player.ActiveItem().type == ModContent.ItemType<ExaltedOathblade>() || Player.ActiveItem().type == ModContent.ItemType<DevilsDevastation>()))
+            if (hasKillMode && killModeCD.timeLeft > KillMode.cooldownMax && !(Player.HeldItem.type == ModContent.ItemType<ForbiddenOathblade>() || Player.HeldItem.type == ModContent.ItemType<ExaltedOathblade>() || Player.HeldItem.type == ModContent.ItemType<DevilsDevastation>()))
             {
                 killModeCD.timeLeft = KillMode.cooldownMax - 1;
                 Player.Calamity().killModeCooldown = KillMode.cooldownMax - 1;
@@ -3342,7 +3342,7 @@ namespace CalamityMod.CalPlayer
             else
                 aquaticBoost = AquaticBoostMax;
 
-            if (Player.ActiveItem().type == ModContent.ItemType<Auralis>() && Player.StandingStill(0.1f))
+            if (Player.HeldItem.type == ModContent.ItemType<Auralis>() && Player.StandingStill(0.1f))
             {
                 if (auralisStealthCounter < 300f)
                     auralisStealthCounter++;
@@ -3696,22 +3696,22 @@ namespace CalamityMod.CalPlayer
                 }
             }
 
-            if (CalamityItemSets.FishingPoleThatNeverBreaks[Player.ActiveItem().type])
+            if (CalamityItemSets.FishingPoleThatNeverBreaks[Player.HeldItem.type])
                 Player.accFishingLine = true;
 
             if (planarSpeedBoost != 0)
             {
-                if (Player.ActiveItem().type != ModContent.ItemType<PridefulHuntersPlanarRipper>())
+                if (Player.HeldItem.type != ModContent.ItemType<PridefulHuntersPlanarRipper>())
                     planarSpeedBoost = 0;
             }
             if (evilSmasherBoost > 0)
             {
-                if (Player.ActiveItem().type != ModContent.ItemType<EvilSmasher>())
+                if (Player.HeldItem.type != ModContent.ItemType<EvilSmasher>())
                     evilSmasherBoost = 0;
             }
             if (searedPanCounter > 0)
             {
-                if (Player.ActiveItem().type != ModContent.ItemType<SearedPan>())
+                if (Player.HeldItem.type != ModContent.ItemType<SearedPan>())
                 {
                     searedPanCounter = 0;
                     searedPanTimer = 0;
@@ -4369,10 +4369,6 @@ namespace CalamityMod.CalPlayer
                 Player.GetDamage<MeleeDamageClass>() += 0.1f;
                 Player.GetCritChance<MeleeDamageClass>() += 10;
             }
-
-
-            if (Player.portableStoolInfo.IsInUse)
-                Player.GetCritChance(DamageClass.Generic) += 5;
 
             // Amalgam boosts
             if (Main.myPlayer == Player.whoAmI)

@@ -14,6 +14,7 @@ using CalamityMod.Items.Placeables.Astral;
 using CalamityMod.Items.Placeables.Crags;
 using CalamityMod.Items.Placeables.Furniture;
 using CalamityMod.Items.Placeables.Furniture.Fountains;
+using CalamityMod.Items.Placeables.Furniture.Paintings;
 using CalamityMod.Items.Potions;
 using CalamityMod.Items.Potions.Alcohol;
 using CalamityMod.Items.SummonItems.Invasion;
@@ -42,29 +43,27 @@ namespace CalamityMod.NPCs
         {
             get
             {
-                // Max of 20 platinum.
-                if (DownedBossSystem.downedYharon)
-                    return 40f;
-
-                // Max of 10 platinum.
+                // 10 silver per NPC, max of 5 platinum.
                 if (DownedBossSystem.downedDoG)
-                    return 20f;
-
-                // Max of 5 platinum.
-                if (NPC.downedMoonlord)
                     return 10f;
 
-                // Max of 2 platinum.
+                // 8 silver per NPC, max of 4 platinum.
+                if (NPC.downedMoonlord)
+                    return 8f;
+
+                // 2 silver per NPC, max of 1 platinum.
                 if (NPC.downedPlantBoss)
-                    return 4f;
+                    return 2f;
 
                 return 1f;
             }
         }
 
-        public static int TotalTaxesPerNPC => (int)(Item.buyPrice(0, 0, 1, 50) * TaxYieldFactor);
+        // Vanilla: 50 copper
+        public static int TotalTaxesPerNPC => (int)(Item.buyPrice(silver: 1) * TaxYieldFactor);
 
-        public static int TaxesToCollectLimit => (int)(Item.buyPrice(0, 50, 0, 0) * TaxYieldFactor);
+        // Vanilla: 25 gold
+        public static int TaxesToCollectLimit => (int)(Item.buyPrice(gold: 50) * TaxYieldFactor);
 
         #region Town NPC Patreon Name Sets
         private static readonly string[] AnglerNames =
@@ -353,13 +352,13 @@ namespace CalamityMod.NPCs
             "Lucerne", // <@!271954788676141066> (lord_lucerne)
             "Milo", // <@!401849201597874179> (maskedmilo)
             "Octo", // <@!796112889353994281> (octolinggrimm)
-            "Hognar the Wicked", // <@!766511001356468237> (xzier_tengal)
         };
         private static readonly string[] TownCatSiameseNames = null;
         private static readonly string[] TownCatBlackNames =
         {
             "Bear", // <@!183424826407518208> (lilac_vrt_olligoci)
             "Storm", // <@!620383533516718085> (airwaveslr)
+            "Hognar the Wicked", // <@!766511001356468237> (xzier_tengal)
         };
         private static readonly string[] TownCatOrangeTabbyNames =
         {
@@ -372,6 +371,7 @@ namespace CalamityMod.NPCs
         private static readonly string[] TownCatSilverNames =
         {
             "Archie", // <@!303022375191183360> (jackshiz)
+            "Hognar the Wicked", // <@!766511001356468237> (xzier_tengal)
         };
         private static readonly string[] TownCatWhiteNames = null;
 
@@ -1237,7 +1237,8 @@ namespace CalamityMod.NPCs
 
             if (type == NPCID.Painter)
             {
-                shop.AddWithCustomValue(ItemID.PainterPaintballGun, Item.buyPrice(gold: 15));
+                shop.AddWithCustomValue(ItemID.PainterPaintballGun, Item.buyPrice(gold: 15))
+                .Add(ItemType<AmidiasPainting>(), CalamityConditions.InSunken, Condition.NpcIsPresent(NPCType<SeaKing>()));
             }
 
             if (type == NPCID.Steampunker)

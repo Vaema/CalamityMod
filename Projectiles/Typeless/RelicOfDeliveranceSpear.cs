@@ -116,12 +116,12 @@ namespace CalamityMod.Projectiles.Typeless
             }
 
             // Immediately die if the Owner is not holding the spear
-            if (Owner.ActiveItem() == null)
+            if (Owner.HeldItem == null)
             {
                 KillProj();
                 return;
             }
-            if (Owner.ActiveItem().type != ModContent.ItemType<RelicOfDeliverance>())
+            if (Owner.HeldItem.type != ModContent.ItemType<RelicOfDeliverance>())
             {
                 KillProj();
                 return;

@@ -9,7 +9,7 @@ using CalamityMod.Items.Armor.Vanity;
 using CalamityMod.Items.LoreItems;
 using CalamityMod.Items.Materials;
 using CalamityMod.Items.Placeables.Furniture.BossRelics;
-using CalamityMod.Items.Placeables.Furniture.DevPaintings;
+using CalamityMod.Items.Placeables.Furniture.Paintings;
 using CalamityMod.Items.Placeables.Furniture.Trophies;
 using CalamityMod.Items.TreasureBags;
 using CalamityMod.Items.Weapons.Magic;
@@ -307,7 +307,7 @@ namespace CalamityMod.NPCs.CalClone
 
             bool inBulletHell = calamityGlobalNPC.newAI[2] > 0f;
 
-            //arena on death mode
+            //arena in rev+
             if (revenge)
             {
                 if (ArenaBox is null)
@@ -486,7 +486,7 @@ namespace CalamityMod.NPCs.CalClone
                 xPos = -1;
 
             // How far Cal Clone should be from the target
-            float averageDistance = 500f;
+            float averageDistance = 400f;
             float chargeDistance = phase4 ? 300f : 400f;
 
             // This is where Cal Clone should be
@@ -1036,7 +1036,8 @@ namespace CalamityMod.NPCs.CalClone
                 normalOnly.Add(DropHelper.CalamityStyle(DropHelper.NormalWeaponDropRateFraction, items));
 
                 // Equipment
-                normalOnly.Add(DropHelper.PerPlayer(ModContent.ItemType<VoidofCalamity>()));
+                // 16NOV2025: Ozzatron: item has been chosen as the "Expert gatekept" item for this Calamity boss
+                // normalOnly.Add(DropHelper.PerPlayer(ModContent.ItemType<VoidofCalamity>()));
                 normalOnly.Add(ModContent.ItemType<ChaosStone>(), DropHelper.NormalWeaponDropRateFraction);
                 normalOnly.Add(ModContent.ItemType<Regenerator>(), DropHelper.NormalWeaponDropRateFraction);
 

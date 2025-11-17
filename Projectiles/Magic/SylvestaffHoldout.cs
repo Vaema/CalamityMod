@@ -2,6 +2,7 @@
 using CalamityMod.Graphics.Primitives;
 using CalamityMod.Items.Weapons.Magic;
 using CalamityMod.Physics;
+using CalamityMod.Enums;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria;
@@ -14,7 +15,7 @@ namespace CalamityMod.Projectiles.Magic
 {
     public class SylvestaffHoldout : ModProjectile, IPixelatedPrimitiveRenderer
     {
-        public PixelationPrimitiveLayer LayerToRenderTo => PixelationPrimitiveLayer.BeforeProjectiles | PixelationPrimitiveLayer.AfterPlayers;
+        public GeneralDrawLayer LayerToRenderTo => GeneralDrawLayer.BeforeProjectiles | GeneralDrawLayer.AfterPlayers;
 
         public override LocalizedText DisplayName => CalamityUtils.GetItemName<Sylvestaff>();
 
@@ -167,7 +168,7 @@ namespace CalamityMod.Projectiles.Magic
         /// </summary>
         private void FireAwesomeMagicRays()
         {
-            Item heldItem = Owner.ActiveItem();
+            Item heldItem = Owner.HeldItem;
             if (heldItem is null)
                 return;
 
@@ -186,9 +187,9 @@ namespace CalamityMod.Projectiles.Magic
             }
         }
 
-        public void RenderPixelatedPrimitives(SpriteBatch spriteBatch, PixelationPrimitiveLayer layer)
+        public void RenderPixelatedPrimitives(SpriteBatch spriteBatch, GeneralDrawLayer layer)
         {
-            bool backLayer = layer == PixelationPrimitiveLayer.BeforeProjectiles;
+            bool backLayer = layer == GeneralDrawLayer.BeforeProjectiles;
             RenderRibbon(LeftRibbon, -1, backLayer);
             RenderRibbon(RightRibbon, 1, backLayer);
         }

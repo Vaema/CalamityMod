@@ -223,8 +223,8 @@ namespace CalamityMod.Projectiles.Melee
         {
             float _ = 0f;
             Vector2 start = Projectile.Center;
-            Vector2 end = start + SwordDirection * BladeLength * Projectile.scale;
-            return Collision.CheckAABBvLineCollision(targetHitbox.TopLeft(), targetHitbox.Size(), start, end, Projectile.scale * 30f, ref _);
+            Vector2 end = start + SwordDirection * (BladeLength + 50) * Projectile.scale; // Has an additional offset so that the hitbox to match the vfx
+            return Collision.CheckAABBvLineCollision(targetHitbox.TopLeft(), targetHitbox.Size(), start, end, State == SwingState.BonkDash ? Projectile.scale * 45 : Projectile.scale * 30f, ref _);
         }
 
         public void InitializationEffects(bool startInitialization)
@@ -344,7 +344,7 @@ namespace CalamityMod.Projectiles.Melee
                 float rotationAngle = MathHelper.PiOver4 * 0.3f * ((Timer - beamShootStart) / beamShootPeriod);
                 int boltDamage = (int)(Projectile.damage * Exoblade.NotTrueMeleeDamagePenalty);
                 Vector2 boltVelocity = Projectile.velocity.RotatedByRandom(MathHelper.PiOver4 * 0.3);
-                boltVelocity *= Owner.ActiveItem().shootSpeed;
+                boltVelocity *= Owner.HeldItem.shootSpeed;
 
                 Projectile.NewProjectile(Projectile.GetSource_FromAI(), Projectile.Center + boltVelocity * 5f, boltVelocity, ModContent.ProjectileType<Exobeam>(), boltDamage, Projectile.knockBack / 3f, Projectile.owner);
             }
@@ -373,13 +373,13 @@ namespace CalamityMod.Projectiles.Melee
             // Do the dash.
             else
             {
-                float rotationStrenght = MathHelper.PiOver4 * 0.05f * (float)Math.Pow(LungeProgression, 3);
+                float rotationStrength = MathHelper.PiOver4 * 0.05f * (float)Math.Pow(LungeProgression, 3);
                 float currentRotation = Projectile.velocity.ToRotation();
 
                 // 14NOV2024: Ozzatron: clamped mouse position unnecessary, only used for direction
                 float idealRotation = Owner.MountedCenter.DirectionTo(Owner.Calamity().mouseWorld).ToRotation();
 
-                Projectile.velocity = currentRotation.AngleTowards(idealRotation, rotationStrenght).ToRotationVector2();
+                Projectile.velocity = currentRotation.AngleTowards(idealRotation, rotationStrength).ToRotationVector2();
 
                 Owner.fallStart = (int)(Owner.position.Y / 16f);
 
@@ -447,7 +447,7 @@ namespace CalamityMod.Projectiles.Melee
             {
                 float progress = MathHelper.Lerp(Progression, TrailEndProgression, i / 40f);
 
-                result.Add(DirectionAtProgressScuffed(progress) * (BladeLength - 20f) * Projectile.scale);
+                result.Add(DirectionAtProgressScuffed(progress) * (BladeLength - 6f) * Projectile.scale);
             }
 
             return result;
@@ -576,6 +576,8 @@ namespace CalamityMod.Projectiles.Melee
                     origin.X = texture.Width;
                 }
 
+                Projectile.scale = MathHelper.Lerp(1f, 0.22f, MathF.Pow(LungeProgression, 7));
+
                 Main.EntitySpriteDraw(texture, drawPosition, null, Color.White, rotation, origin, Projectile.scale, direction, 0);
 
                 float energyPower = Utils.GetLerpValue(0f, 0.32f, Progression, true) * Utils.GetLerpValue(1f, 0.85f, Progression, true);
@@ -589,8 +591,8 @@ namespace CalamityMod.Projectiles.Melee
 
         public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
         {
-            ItemLoader.OnHitNPC(Owner.ActiveItem(), Owner, target, hit, damageDone);
-            NPCLoader.OnHitByItem(target, Owner, Owner.ActiveItem(), hit, damageDone);
+            ItemLoader.OnHitNPC(Owner.HeldItem, Owner, target, hit, damageDone);
+            NPCLoader.OnHitByItem(target, Owner, Owner.HeldItem, hit, damageDone);
             PlayerLoader.OnHitNPC(Owner, target, hit, damageDone);
 
             if (State == SwingState.BonkDash)

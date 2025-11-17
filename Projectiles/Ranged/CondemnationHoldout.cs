@@ -68,7 +68,7 @@ namespace CalamityMod.Projectiles.Ranged
 
             // If no arrows are loaded, spawn a bit of dust to indicate it's not ready yet.
             // Spawn the same dust if the max number of arrows have been loaded or the player ran out of ammos to load.
-            if (ArrowsLoaded <= 0f || ArrowsLoaded >= Condemnation.MaxLoadedArrows || !Owner.HasAmmo(Owner.ActiveItem()))
+            if (ArrowsLoaded <= 0f || ArrowsLoaded >= Condemnation.MaxLoadedArrows || !Owner.HasAmmo(Owner.HeldItem))
                 SpawnCannotLoadArrowsDust(GunTipPosition);
 
             if (Owner.HasAmmo(HeldItem))

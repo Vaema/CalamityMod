@@ -39,12 +39,12 @@ namespace CalamityMod.Projectiles.Ranged
                 Projectile.Kill();
 
             // Can't shoot on frame 1 as it can't use ammo yet
-            else if (ShootCountdown < 0f && Owner.HasAmmo(Owner.ActiveItem()))
+            else if (ShootCountdown < 0f && Owner.HasAmmo(Owner.HeldItem))
             {
                 if (Main.myPlayer == Projectile.owner)
                 {
                     ShootProjectiles(armPosition);
-                    ShootCountdown = Owner.ActiveItem().useAnimation - 1;
+                    ShootCountdown = Owner.HeldItem.useAnimation - 1;
                     Projectile.netUpdate = true;
                 }
 
@@ -58,7 +58,7 @@ namespace CalamityMod.Projectiles.Ranged
             if (Main.myPlayer != Projectile.owner)
                 return;
 
-            Item heldItem = Owner.ActiveItem();
+            Item heldItem = Owner.HeldItem;
             Owner.PickAmmo(heldItem, out int projectileType, out float shootSpeed, out int damage, out float knockback, out _);
             damage *= 4;
             shootSpeed = heldItem.shootSpeed * Projectile.scale * 0.64f;

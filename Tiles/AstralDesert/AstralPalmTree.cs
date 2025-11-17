@@ -75,7 +75,7 @@ namespace CalamityMod.Tiles.AstralDesert
             // 33% chance to drop extra fruit when using Feller of Evergreens
             Vector2 worldPosition = new Vector2(x, y).ToWorldCoordinates();
             Player nearestPlayer = Main.player[Player.FindClosest(worldPosition, 16, 16)];
-            if (nearestPlayer.active && nearestPlayer.ActiveItem().type == ModContent.ItemType<FellerofEvergreens>() && WorldGen.genRand.NextBool(3))
+            if (nearestPlayer.active && nearestPlayer.HeldItem.type == ModContent.ItemType<FellerofEvergreens>() && WorldGen.genRand.NextBool(3))
             {
                 int treeDropItemType = WorldGen.genRand.NextBool() ? (WorldGen.genRand.NextBool() ? ItemID.Coconut : ItemID.Banana)
                     : (WorldGen.genRand.NextBool() ? ModContent.ItemType<Barberry>() : ModContent.ItemType<Lotus>());

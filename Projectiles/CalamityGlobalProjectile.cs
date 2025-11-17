@@ -334,6 +334,10 @@ namespace CalamityMod.Projectiles
                 // Nerf Cursed Dart flame damage by 50%
                 if (parent.type == ProjectileID.CursedDart && projectile.type == ProjectileID.CursedDartFlame)
                     projectile.damage /= 2;
+
+                // Nerf Chlorophyte armor's set bonus crystal damage by 30%
+                if (parent.type == ProjectileID.CrystalLeaf && projectile.type == ProjectileID.CrystalLeafShot)
+                    projectile.damage = (int)(projectile.damage * 0.7f);
             }
 
             if (source is EntitySource_OnHit e)
@@ -3667,7 +3671,7 @@ namespace CalamityMod.Projectiles
                 {
                     if (projectile.timeLeft > 570) //all of these have a time left of 600 or 660
                     {
-                        if (player.ActiveItem().type == ItemID.BeesKnees)
+                        if (player.HeldItem.type == ItemID.BeesKnees)
                             projectile.DamageType = DamageClass.Ranged;
                     }
                 }

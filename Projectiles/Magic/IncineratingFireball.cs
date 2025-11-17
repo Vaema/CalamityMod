@@ -56,7 +56,7 @@ namespace CalamityMod.Projectiles.Magic
             if (TriggeredBurnOut)
                 Owner.Calamity().burningSeaBurnOut = BurningSea.BurnOutReuseDelay;
 
-            bool canUseMana = Owner.CheckMana(Owner.ActiveItem());
+            bool canUseMana = Owner.CheckMana(Owner.HeldItem);
             // Use different behavior depending on if the player is channeling or not.
             if (Owner.CantUseHoldout() || !canUseMana || Projectile.timeLeft <= (int)BurningSea.FizzleOutTime)
             {
@@ -101,7 +101,7 @@ namespace CalamityMod.Projectiles.Magic
 
                 // Consume mana periodically.
                 if (Timer % 15 == 0f)
-                    Owner.CheckMana(Owner.ActiveItem(), -1, true);
+                    Owner.CheckMana(Owner.HeldItem, -1, true);
 
                 // Spawn little spark effects around the fireball when fully charged.
                 if (Timer > BurningSea.ChargeTime && Timer < BurningSea.BurnOutTime)

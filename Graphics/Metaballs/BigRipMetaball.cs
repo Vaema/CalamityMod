@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using CalamityMod.Enums;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using ReLogic.Content;
@@ -77,7 +78,7 @@ namespace CalamityMod.Graphics.Metaballs
             // Load the layer asset wrapper.
             LayerAsset = ModContent.Request<Texture2D>($"CalamityMod/Graphics/Metaballs/BigRipLayer", AssetRequestMode.ImmediateLoad);
         }
-        public override MetaballDrawLayer DrawContext => MetaballDrawLayer.BeforeProjectiles;
+        public override GeneralDrawLayer DrawLayer => GeneralDrawLayer.BeforeProjectiles;
 
         public override Color EdgeColor => new Color(239, 111, 85) * 0.5f;
 

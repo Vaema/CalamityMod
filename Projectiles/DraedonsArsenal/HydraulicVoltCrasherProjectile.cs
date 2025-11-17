@@ -62,7 +62,7 @@ namespace CalamityMod.Projectiles.DraedonsArsenal
             if (Main.myPlayer == Owner.whoAmI)
             {
                 // Get the projectile owner's held item. If it's not a modded item, stop now to prevent weird errors.
-                Item heldItem = Owner.ActiveItem();
+                Item heldItem = Owner.HeldItem;
                 if (heldItem.type < ItemID.Count)
                 {
                     Projectile.Kill();

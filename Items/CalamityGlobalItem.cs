@@ -262,8 +262,8 @@ namespace CalamityMod.Items
             if (item.type == ItemID.Zenith)
                 item.rare = RarityType<BurnishedAuric>();
 
-            // Make most expert items no longer expert because they drop in all modes now.
-            switch (item.type)
+            // CIT 16OCT2025: Following overwhelming dev vote, Expert+ drops are NOT available in Classic
+            /*switch (item.type)
             {
                 case ItemID.RoyalGel:
                 case ItemID.EoCShield:
@@ -288,7 +288,7 @@ namespace CalamityMod.Items
                 case ItemID.LongRainbowTrailWings:
                     item.expert = false;
                     break;
-            }
+            }*/
 
             // Allow Souls to be used as ammo for SHPC.
             if (item.type == ItemID.SoulofLight || item.type == ItemID.SoulofNight || item.type == ItemID.SoulofFlight || item.type == ItemID.SoulofMight || item.type == ItemID.SoulofSight || item.type == ItemID.SoulofFright)
@@ -613,7 +613,7 @@ namespace CalamityMod.Items
             // Prevent Mana Stars from being picked up while wielding Ion Blaster or Apoctosis Array
             if (item.type == ItemID.Star || item.type == ItemID.SoulCake || item.type == ItemID.SugarPlum)
             {
-                if (player.ActiveItem().type == ItemType<IonBlaster>() || player.ActiveItem().type == ItemType<ApoctosisArray>())
+                if (player.HeldItem.type == ItemType<IonBlaster>() || player.HeldItem.type == ItemType<ApoctosisArray>())
                     return false;
             }
             return base.CanPickup(item, player);
@@ -724,7 +724,7 @@ namespace CalamityMod.Items
             {
                 return false;
             }
-            if (player.ActiveItem().type == ItemType<VoidConcentrationStaff>() && player.ownedProjectileCounts[ProjectileType<VoidConcentrationBlackhole>()] == 0)
+            if (player.HeldItem.type == ItemType<VoidConcentrationStaff>() && player.ownedProjectileCounts[ProjectileType<VoidConcentrationBlackhole>()] == 0)
             {
                 foreach (Projectile p in Main.ActiveProjectiles)
                 {
@@ -739,7 +739,7 @@ namespace CalamityMod.Items
                 }
                 return false;
             }
-            if (player.ActiveItem().type == ItemType<GlacialEmbrace>())
+            if (player.HeldItem.type == ItemType<GlacialEmbrace>())
             {
                 bool canContinue = true;
                 int count = 0;
@@ -769,7 +769,7 @@ namespace CalamityMod.Items
                         float angleVariance = MathHelper.TwoPi / pointyThingyAmount;
                         float angle = 0f;
 
-                        var source = player.GetSource_ItemUse(player.ActiveItem());
+                        var source = player.GetSource_ItemUse(player.HeldItem);
                         for (int i = 0; i < pointyThingyAmount; i++)
                         {
                             if (Main.projectile.Length == Main.maxProjectiles)
@@ -1009,18 +1009,6 @@ namespace CalamityMod.Items
                 return "MagicHat";
             if (head.type == ItemID.CrystalNinjaHelmet && body.type == ItemID.CrystalNinjaChestplate && legs.type == ItemID.CrystalNinjaLeggings)
                 return "CrystalAssassin";
-            if (head.type == ItemID.SquireGreatHelm && body.type == ItemID.SquirePlating && legs.type == ItemID.SquireGreaves)
-                return "SquireTier2";
-            if (head.type == ItemID.HuntressWig && body.type == ItemID.HuntressJerkin && legs.type == ItemID.HuntressPants)
-                return "HuntressTier2";
-            if (head.type == ItemID.ApprenticeHat && body.type == ItemID.ApprenticeRobe && legs.type == ItemID.ApprenticeTrousers)
-                return "ApprenticeTier2";
-            if (head.type == ItemID.SquireAltHead && body.type == ItemID.SquireAltShirt && legs.type == ItemID.SquireAltPants)
-                return "SquireTier3";
-            if (head.type == ItemID.HuntressAltHead && body.type == ItemID.HuntressAltShirt && legs.type == ItemID.HuntressAltPants)
-                return "HuntressTier3";
-            if (head.type == ItemID.ApprenticeAltHead && body.type == ItemID.ApprenticeAltShirt && legs.type == ItemID.ApprenticeAltPants)
-                return "ApprenticeTier3";
             if (head.type == ItemID.SpectreHood && body.type == ItemID.SpectreRobe && legs.type == ItemID.SpectrePants)
                 return "SpectreHealing";
             if (head.type == ItemID.SolarFlareHelmet && body.type == ItemID.SolarFlareBreastplate && legs.type == ItemID.SolarFlareLeggings)
@@ -1049,44 +1037,6 @@ namespace CalamityMod.Items
                 modPlayer.DashID = string.Empty;
                 modPlayer.rogueStealthMax += 0.9f;
                 modPlayer.wearingRogueArmor = true;
-            }
-            else if (set == "SquireTier2")
-            {
-                player.lifeRegen += 3;
-                player.GetDamage<SummonDamageClass>() += 0.15f;
-                player.GetCritChance<MeleeDamageClass>() += 10;
-                player.setBonus += $"\n{CalamityUtils.GetTextValue("Vanilla.Armor.SetBonus.SquireTier2")}";
-            }
-            else if (set == "HuntressTier2")
-            {
-                player.GetDamage<SummonDamageClass>() += 0.1f;
-                player.GetDamage<RangedDamageClass>() += 0.1f;
-                player.setBonus += $"\n{CalamityUtils.GetTextValue("Vanilla.Armor.SetBonus.HuntressTier2")}";
-            }
-            else if (set == "ApprenticeTier2")
-            {
-                player.GetDamage<SummonDamageClass>() += 0.1f;
-                player.GetCritChance<MagicDamageClass>() += 10;
-                player.setBonus += $"\n{CalamityUtils.GetTextValue("Vanilla.Armor.SetBonus.ApprenticeTier2")}";
-            }
-            else if (set == "SquireTier3")
-            {
-                player.lifeRegen += 6;
-                player.GetDamage<SummonDamageClass>() += 0.1f;
-                player.GetCritChance<MeleeDamageClass>() += 15;
-                player.setBonus += $"\n{CalamityUtils.GetTextValue("Vanilla.Armor.SetBonus.SquireTier3")}";
-            }
-            else if (set == "HuntressTier3")
-            {
-                player.GetDamage<SummonDamageClass>() += 0.1f;
-                player.GetDamage<RangedDamageClass>() += 0.1f;
-                player.setBonus += $"\n{CalamityUtils.GetTextValue("Vanilla.Armor.SetBonus.HuntressTier3")}";
-            }
-            else if (set == "ApprenticeTier3")
-            {
-                player.GetDamage<SummonDamageClass>() += 0.15f;
-                player.GetCritChance<MagicDamageClass>() += 15;
-                player.setBonus += $"\n{CalamityUtils.GetTextValue("Vanilla.Armor.SetBonus.ApprenticeTier3")}";
             }
             else if (set == "SpectreHealing")
             {
@@ -1151,35 +1101,30 @@ namespace CalamityMod.Items
                     player.GetAttackSpeed<MeleeDamageClass>() += 0.05f;
                     break;
 
-                case ItemID.SquireGreatHelm:
-                    player.lifeRegen -= 3;
-                    break;
-                case ItemID.SquirePlating:
-                    player.GetDamage<SummonDamageClass>() -= 0.1f;
-                    break;
                 case ItemID.SquireGreaves:
-                    player.GetDamage<SummonDamageClass>() -= 0.1f;
-                    player.GetCritChance<MeleeDamageClass>() -= 10;
+                    player.GetDamage<SummonDamageClass>() -= 0.05f;
+                    break;
+
+                case ItemID.HuntressWig:
+                    player.GetCritChance<RangedDamageClass>() += 5;
                     break;
 
                 case ItemID.HuntressJerkin:
-                    player.GetDamage<SummonDamageClass>() -= 0.1f;
-                    player.GetDamage<RangedDamageClass>() -= 0.15f;
-                    player.GetCritChance<RangedDamageClass>() += 5;
-                    break;
-                case ItemID.HuntressPants:
+                    player.GetDamage<RangedDamageClass>() -= 0.05f;
                     player.GetDamage<SummonDamageClass>() -= 0.05f;
                     break;
 
                 case ItemID.ApprenticeHat:
-                    player.GetDamage<MagicDamageClass>() -= 0.05f;
+                    player.GetDamage<MagicDamageClass>() -= 0.1f;
                     break;
+
                 case ItemID.ApprenticeRobe:
-                    player.GetDamage<SummonDamageClass>() -= 0.1f;
-                    break;
-                case ItemID.ApprenticeTrousers:
                     player.GetDamage<SummonDamageClass>() -= 0.05f;
-                    player.GetCritChance<MagicDamageClass>() -= 15;
+                    player.GetDamage<MagicDamageClass>() += 0.05f;
+                    break;
+
+                case ItemID.ApprenticeTrousers:
+                    player.GetCritChance<MagicDamageClass>() -= 5;
                     break;
 
                 case ItemID.ShroomiteBreastplate:
@@ -1191,34 +1136,36 @@ namespace CalamityMod.Items
                     player.GetDamage<MeleeDamageClass>() += 0.05f;
                     player.GetDamage<SummonDamageClass>() += 0.05f;
                     break;
+
                 case ItemID.SquireAltShirt:
-                    player.lifeRegen -= 6;
-                    player.GetDamage<SummonDamageClass>() -= 0.15f;
-                    break;
-                case ItemID.SquireAltPants:
                     player.GetDamage<SummonDamageClass>() -= 0.1f;
-                    player.GetCritChance<MeleeDamageClass>() -= 20;
+                    break;
+
+                case ItemID.SquireAltPants:
+                    player.GetCritChance<MeleeDamageClass>() -= 5;
+                    player.GetDamage<SummonDamageClass>() -= 0.05f;
                     break;
 
                 case ItemID.HuntressAltShirt:
-                    player.GetDamage<SummonDamageClass>() -= 0.15f;
-                    player.GetDamage<RangedDamageClass>() -= 0.15f;
+                    player.GetDamage<RangedDamageClass>() -= 0.05f;
+                    player.GetDamage<SummonDamageClass>() -= 0.05f;
                     break;
+
                 case ItemID.HuntressAltPants:
                     player.GetDamage<SummonDamageClass>() -= 0.05f;
-                    player.GetCritChance<RangedDamageClass>() -= 5;
                     break;
 
                 case ItemID.ApprenticeAltHead:
                     player.GetDamage<MagicDamageClass>() -= 0.05f;
                     player.GetDamage<SummonDamageClass>() -= 0.05f;
                     break;
+
                 case ItemID.ApprenticeAltShirt:
-                    player.GetDamage<SummonDamageClass>() -= 0.1f;
+                    player.GetDamage<SummonDamageClass>() -= 0.05f;
                     break;
+
                 case ItemID.ApprenticeAltPants:
-                    player.GetDamage<SummonDamageClass>() -= 0.1f;
-                    player.GetCritChance<MagicDamageClass>() -= 25;
+                    player.GetCritChance<MagicDamageClass>() -= 10;
                     break;
 
                 case ItemID.SolarFlareHelmet:

@@ -246,14 +246,17 @@ namespace CalamityMod.Projectiles.Ranged
 
             float gunPowerMult = MathHelper.Lerp(gunPower, 1, 0.7f);
 
-            int baseShotCount = 7;
-            for (int i = 0; i < baseShotCount + gunPower; i++)
+            if (Main.myPlayer == Projectile.owner)
             {
-                float randomVel = Main.rand.NextFloat(0.8f, 1f);
-                float damageMult = ((naildriver || scattershot) ? 1.75f : 1f) / baseShotCount;
-                float spread = (i == 0 ? 0f : naildriver ? 0.06f : scattershot ? 0.9f : 0.25f) * MathHelper.Lerp(gunPower, 1, 0.75f);
-                Projectile shotgun = Projectile.NewProjectileDirect(Projectile.GetSource_FromThis(), GunTipPosition, randomVel * Projectile.velocity.RotatedByRandom(spread) * 8, ModContent.ProjectileType<StarmadaStar>(), (int)(Projectile.damage * damageMult), Projectile.knockBack, Projectile.owner, 0, 0, Main.rand.Next(0, 300 + 1));
-                shotgun.extraUpdates = naildriver ? 9 : scattershot ? 7 : 3;
+                int baseShotCount = 7;
+                for (int i = 0; i < baseShotCount + gunPower; i++)
+                {
+                    float randomVel = Main.rand.NextFloat(0.8f, 1f);
+                    float damageMult = ((naildriver || scattershot) ? 1.75f : 1f) / baseShotCount;
+                    float spread = (i == 0 ? 0f : naildriver ? 0.06f : scattershot ? 0.9f : 0.25f) * MathHelper.Lerp(gunPower, 1, 0.75f);
+                    Projectile shotgun = Projectile.NewProjectileDirect(Projectile.GetSource_FromThis(), GunTipPosition, randomVel * Projectile.velocity.RotatedByRandom(spread) * 8, ProjectileType<StarmadaStar>(), (int)(Projectile.damage * damageMult), Projectile.knockBack, Projectile.owner, 0, 0, Main.rand.Next(0, 300 + 1));
+                    shotgun.extraUpdates = naildriver ? 9 : scattershot ? 7 : 3;
+                }
             }
             for (int i = 0; i < (int)(25 * gunPowerMult); i++)
             {
@@ -293,13 +296,16 @@ namespace CalamityMod.Projectiles.Ranged
                 starburstCooldown = extendedCooldown;
             setVel = true;
 
-            Vector2 blastCenter = GunTipPosition + Projectile.velocity * 10;
-            float blastSize = 140 + 15 * lastGunPower;
-            float minMultiplier = 0.1f;
-            int hitsToMinMult = 8;
-            int damage = (int)(Projectile.damage * (1 + lastGunPower * 0.5f));
-            Projectile blast = Projectile.NewProjectileDirect(Owner.GetSource_FromThis(), blastCenter, Vector2.Zero, ModContent.ProjectileType<BasicBurst>(), damage, -45, Owner.whoAmI, blastSize, minMultiplier, hitsToMinMult);
-            blast.timeLeft = 15;
+            if (Main.myPlayer == Projectile.owner)
+            {
+                Vector2 blastCenter = GunTipPosition + Projectile.velocity * 10;
+                float blastSize = 140 + 15 * lastGunPower;
+                float minMultiplier = 0.1f;
+                int hitsToMinMult = 8;
+                int damage = (int)(Projectile.damage * (1 + lastGunPower * 0.5f));
+                Projectile blast = Projectile.NewProjectileDirect(Owner.GetSource_FromThis(), blastCenter, Vector2.Zero, ProjectileType<BasicBurst>(), damage, -45, Owner.whoAmI, blastSize, minMultiplier, hitsToMinMult);
+                blast.timeLeft = 15;
+            }
 
             float gunPowerMult = MathHelper.Lerp(lastGunPower, 1, 0.7f);
             for (int i = 0; i < 20; i++)

@@ -702,7 +702,7 @@ namespace CalamityMod.CalPlayer
                 return;
 
             Player drawPlayer = drawInfo.drawPlayer;
-            Item item = drawPlayer.ActiveItem();
+            Item item = drawPlayer.HeldItem;
 
             if (!drawPlayer.frozen &&
                 (item.IsAir || item.type > ItemID.None) &&

@@ -67,17 +67,17 @@ namespace CalamityMod.DataStructures
             // Calculate the gem that should be lost.
             // The accessory check is to catch the edge-case of the Shield of Cthulhu
             // having melee damage for some godforsaken reason.
-            if (!Owner.ActiveItem().IsAir && !Owner.ActiveItem().accessory)
+            if (!Owner.HeldItem.IsAir && !Owner.HeldItem.accessory)
             {
-                if (Owner.ActiveItem().CountsAsClass<MeleeDamageClass>())
+                if (Owner.HeldItem.CountsAsClass<MeleeDamageClass>())
                     GemThatShouldBeLost = GemTechArmorGemType.Melee;
-                if (Owner.ActiveItem().CountsAsClass<RangedDamageClass>())
+                if (Owner.HeldItem.CountsAsClass<RangedDamageClass>())
                     GemThatShouldBeLost = GemTechArmorGemType.Ranged;
-                if (Owner.ActiveItem().CountsAsClass<MagicDamageClass>())
+                if (Owner.HeldItem.CountsAsClass<MagicDamageClass>())
                     GemThatShouldBeLost = GemTechArmorGemType.Magic;
-                if (Owner.ActiveItem().CountsAsClass<SummonDamageClass>())
+                if (Owner.HeldItem.CountsAsClass<SummonDamageClass>())
                     GemThatShouldBeLost = GemTechArmorGemType.Summoner;
-                if (Owner.ActiveItem().CountsAsClass<ThrowingDamageClass>())
+                if (Owner.HeldItem.CountsAsClass<ThrowingDamageClass>())
                     GemThatShouldBeLost = GemTechArmorGemType.Rogue;
             }
 
@@ -128,7 +128,7 @@ namespace CalamityMod.DataStructures
                 MeleeCrystalCountdown--;
 
                 // Make the crystal fire countdown go down faster if holding a true melee item.
-                if (Owner.ActiveItem().IsTrueMelee())
+                if (Owner.HeldItem.IsTrueMelee())
                     MeleeCrystalCountdown--;
 
                 // Ensure the crystal cooldown does not go below 0 due to the second decrement.
@@ -153,7 +153,7 @@ namespace CalamityMod.DataStructures
             for (int i = 0; i < 14; i++)
             {
                 Vector2 shootVelocity = Main.rand.NextVector2Unit() * Main.rand.NextFloat(0.5f, 3.25f);
-                Projectile.NewProjectile(Owner.GetSource_ItemUse(Owner.ActiveItem()), target.Center, shootVelocity, ModContent.ProjectileType<GemTechYellowShard>(), damage, 0f, OwnerIndex);
+                Projectile.NewProjectile(Owner.GetSource_ItemUse(Owner.HeldItem), target.Center, shootVelocity, ModContent.ProjectileType<GemTechYellowShard>(), damage, 0f, OwnerIndex);
             }
 
             MeleeCrystalCountdown = GemTechHeadgear.MeleeShardDelay;
@@ -173,7 +173,7 @@ namespace CalamityMod.DataStructures
                 shootVelocity = shootVelocity.SafeNormalize(Vector2.UnitY) * 6f;
 
             spawnPosition -= shootVelocity.SafeNormalize(Vector2.Zero) * Main.rand.NextFloat(15f, 50f);
-            Projectile.NewProjectile(Owner.GetSource_ItemUse(Owner.ActiveItem()), spawnPosition, shootVelocity, ModContent.ProjectileType<GemTechGreenFlechette>(), damage, 0f, OwnerIndex);
+            Projectile.NewProjectile(Owner.GetSource_ItemUse(Owner.HeldItem), spawnPosition, shootVelocity, ModContent.ProjectileType<GemTechGreenFlechette>(), damage, 0f, OwnerIndex);
         }
 
         public void OnItemUseEffects(Item item)
@@ -277,7 +277,7 @@ namespace CalamityMod.DataStructures
                 gemDamage = CalamityUtils.DamageSoftCap(gemDamage, GemTechHeadgear.GemDamageSoftcapThreshold);
 
                 if (Main.myPlayer == OwnerIndex)
-                    Projectile.NewProjectile(Owner.GetSource_ItemUse(Owner.ActiveItem()), gemPosition, Vector2.Zero, ModContent.ProjectileType<GemTechArmorGem>(), gemDamage, 0f, OwnerIndex, 0f, (int)GemThatShouldBeLost);
+                    Projectile.NewProjectile(Owner.GetSource_ItemUse(Owner.HeldItem), gemPosition, Vector2.Zero, ModContent.ProjectileType<GemTechArmorGem>(), gemDamage, 0f, OwnerIndex, 0f, (int)GemThatShouldBeLost);
             }
         }
 
@@ -349,7 +349,7 @@ namespace CalamityMod.DataStructures
                     Owner.lifeRegen += GemTechHeadgear.AllGemsWeaponUseLifeRegenBoost;
             }
 
-            if (!Owner.ActiveItem().IsAir && !Owner.ActiveItem().CountsAsClass<MagicDamageClass>())
+            if (!Owner.HeldItem.IsAir && !Owner.HeldItem.CountsAsClass<MagicDamageClass>())
                 Owner.manaRegen += GemTechHeadgear.NonMagicItemManaRegenBoost;
         }
 
