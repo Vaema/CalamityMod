@@ -81,7 +81,7 @@ namespace CalamityMod.Systems.Graphic.PixelationSystem
             ActivePixelatedDrawers_AfterDusts = [];
             ActivePixelatedDrawers_AfterEverything = [];
 
-            RenderTargetManager.RenderTargetUpdateLoopEvent += PrepareTargets;
+            On_Main.CheckMonoliths += PrepareTargets;
         }
 
         public override void Unload()
@@ -148,7 +148,7 @@ namespace CalamityMod.Systems.Graphic.PixelationSystem
             ReturnAssociatedDrawerCollection(drawLayer).Add(drawer);
         }
 
-        private static void PrepareTargets()
+        private static void PrepareTargets(On_Main.orig_CheckMonoliths orig)
         {
             if (!Main.gameMenu && !Main.dedServ)
             {
@@ -165,6 +165,8 @@ namespace CalamityMod.Systems.Graphic.PixelationSystem
 
                 Main.graphics.GraphicsDevice.SetRenderTarget(null);
             }
+
+            orig();
         }
    
         private static void DrawCollectionsToTarget(Dictionary<BlendState, ManagedRenderTarget> targetCollection, Matrix pixelationMatrix, List<PixelatedDrawer> drawerCollection)
