@@ -50,7 +50,7 @@ namespace CalamityMod.Items.Placeables.Furniture.Paintings
 
         public static IList<string> devList = new List<string>()
         {
-			"Altix",
+			"Altixal",
             "apotofkoolaid",
             "AquaSG",
             "Atalya",
