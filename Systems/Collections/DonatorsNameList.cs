@@ -618,7 +618,7 @@ namespace CalamityMod.Systems.Collections
                 "Shadoku",
                 "SharZz",
                 "Shaun",
-                "Shay", // There were two "Shay"s on the old list
+                //"Shayy", // Removed from circulation as the user in question committed acts undeserving of recognition
                 "sherk",
                 "Shifter",
                 "Shiny",
