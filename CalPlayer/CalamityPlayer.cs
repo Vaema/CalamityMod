@@ -112,8 +112,6 @@ namespace CalamityMod.CalPlayer
         public double projectileDamageReduction = 0D;
         public int hellbornShots = 0;
         public int garandShots = 0;
-        public int searedPanCounter = 0;
-        public int searedPanTimer = 0;
         /// <summary> If set to true, prevents all player dashes. Used by Ball and Chain, and Stygian Shield. </summary>
         public bool blockAllDashes = false;
         /// <summary> Used by Flamsteed Ring to reset the player's hitbox size after dismounting. </summary>
@@ -3249,8 +3247,6 @@ namespace CalamityMod.CalPlayer
             lucreciaEnergy = 0;
             elementalMastery = 0;
             garandShots = 0;
-            searedPanCounter = 0;
-            searedPanTimer = 0;
             persecutedEnchantSummonTimer = 0;
             momentumCapacitorTime = 0;
             momentumCapacitorBoost = 0f;
