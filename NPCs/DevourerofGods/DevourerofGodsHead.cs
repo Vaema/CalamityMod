@@ -2799,32 +2799,11 @@ namespace CalamityMod.NPCs.DevourerofGods
                             text = headHitKeys[Main.rand.Next(0, 4)]; //DogHead1-4
                     }
                 }
-                // Speak in Wingdings if the Punch Card is equipped
-                if (target.Transformation().Type == ModContent.ItemType<PunchCard>() && FontAssetSystem.Fonts["Wingdings"] != null && System.Environment.OSVersion.Platform == PlatformID.Win32NT && !GameCulture.FromCultureName(GameCulture.CultureName.Chinese).IsActive && !GameCulture.FromCultureName(GameCulture.CultureName.Russian).IsActive)
-                {
-                    Vector2 vector = FontAssetSystem.Fonts["Wingdings"].MeasureString(Language.GetTextValue(text));
-                    // This is how normal combat text spawn positioning is handled
-                    float positionX = (float)location.X + (float)location.Width * 0.5f - vector.X * 0.5f + Main.rand.Next(-(int)((double)location.Width * 0.5), (int)((double)location.Width * 0.5) + 1);
-                    float positionY = (float)location.Y + (float)location.Height * 0.25f - vector.Y * 0.5f + Main.rand.Next(-(int)((double)location.Height * 0.5), (int)((double)location.Height * 0.5) + 1);
-                    if (target.gravDir == -1f)
-                    {
-                        positionY = (float)location.Y + (float)location.Height * 0.75f + vector.Y * 0.5f;
-                    }
-                    // Spawn a projectile that mimmicks combat text behaviour
-                    Projectile proj = Projectile.NewProjectileDirect(NPC.GetSource_FromThis(), new Vector2(positionX, positionY), new Vector2((float)Main.rand.Next(-25, 26) * 0.05f, -14f * target.gravDir), ModContent.ProjectileType<DoGWingdings>(), 0, 0, -1, -1);
-                    proj.rotation = proj.velocity.X < 0 ? -0.06f : 0.06f;
 
-                    // Pass the spoken dialogue into it
-                    DoGWingdings wingdings = proj.ModProjectile<DoGWingdings>();
-                    wingdings.dialogue = Language.GetTextValue(text);
-                }
-                else
-                {
-                    var ctid = CombatText.NewText(location, messageColor, Language.GetTextValue(text), true);
-                    if (ctid < Main.maxCombatText)
-                        target.Calamity().subtitletext = Main.combatText[ctid];
-                    target.Calamity().subtitleColors = new Color[] { Color.Cyan, Color.Fuchsia };
-                }
+                var ctid = CombatText.NewText(location, messageColor, Language.GetTextValue(text), true);
+                if (ctid < Main.maxCombatText)
+                    target.Calamity().subtitletext = Main.combatText[ctid];
+                target.Calamity().subtitleColors = new Color[] { Color.Cyan, Color.Fuchsia };
                 target.Calamity().dogTextCooldown = 60;
             }
              target.Calamity().DoGHeadHitCounter++;

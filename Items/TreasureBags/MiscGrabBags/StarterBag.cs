@@ -113,16 +113,6 @@ namespace CalamityMod.Items.TreasureBags.MiscGrabBags
 
             itemLoot.AddIf(getsGhostBracelet, ModContent.ItemType<GhostBracelet>());
 
-            // Shayy dev item
-            // Name specific: "Shayy"
-            static bool getsPunchCard(DropAttemptInfo info)
-            {
-                string playerName = info.player.name;
-                return playerName == "Shayy";
-            }
-
-            itemLoot.AddIf(getsPunchCard, ModContent.ItemType<PunchCard>());
-
             // Xyk dev item
             // Name specific: "Xyk"
             static bool getsXyksBlessing(DropAttemptInfo info)

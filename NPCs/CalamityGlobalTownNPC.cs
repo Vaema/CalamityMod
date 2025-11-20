@@ -1317,25 +1317,6 @@ namespace CalamityMod.NPCs
                 shop.Add<OddMushroom>();
             }
         }
-
-        public override void ModifyActiveShop(NPC npc, string shopName, Item[] items)
-        {
-            // TODO: Uses a hardcoded string since dedicated names are currently hardcoded strings
-            // Will need to be changed if dedicated names are localized in the future
-            if (npc.type == NPCID.SkeletonMerchant && npc.GivenName == "Sans Undertale")
-            {
-                int index = 0;
-                for (int i = 0; i < Chest.maxItems; i++)
-                {
-                    if (items[i] == null)
-                    {
-                        index = i;
-                        break;
-                    }
-                }
-                items[index] = new Item(ItemType<PunchCard>());
-            }
-        }
         #endregion
     }
 }

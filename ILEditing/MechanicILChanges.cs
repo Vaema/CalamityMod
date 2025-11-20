@@ -77,42 +77,6 @@ namespace CalamityMod.ILEditing
 
         //private static readonly MethodInfo textureGetValueMethod = typeof(Asset<Texture2D>).GetMethod("get_Value", BindingFlags.Public | BindingFlags.Instance);
 
-        #region Punch Card Spawning Command
-        private static void SpawnPunchCard(On_Main.orig_DoUpdate_HandleChat orig)
-        {
-            // Any of these conditions should result in normal behaviour
-            if (!Main.drawingPlayerChat || Main.CurrentInputTextTakerOverride != null || Main.editSign || PlayerInput.UsingGamepad)
-            {
-                orig();
-                return;
-            }
-
-            // Allow only one pick up of the card this way per player (also don't give it to dead people)
-            Player player = Main.LocalPlayer;
-            if (player.Calamity().spawnedPunchCard || player.dead || !player.active)
-            {
-                orig();
-                return;
-            }
-
-            // Find 2 specific sets of text from the live chat box (as the player is typing)
-            // Gives the item to you and abruptly shuts the chat box down if both parts are found
-            string text = Main.chatText.ToLower();
-            string prefix = "Items.Accessories.PunchCard.SpawnText";
-            if ((text.Contains(CalamityUtils.GetTextValue($"{prefix}1")) || text.Contains(CalamityUtils.GetTextValue($"{prefix}1Alt"))) && text.Contains(CalamityUtils.GetTextValue($"{prefix}2")))
-            {
-                player.QuickSpawnItem(Player.GetSource_None(), ModContent.ItemType<PunchCard>(), 1);
-                player.Calamity().spawnedPunchCard = true;
-                Main.chatText = "";
-                Main.ClosePlayerChat();
-                Main.chatRelease = false;
-                SoundEngine.PlaySound(SoundID.MenuClose);
-                return;
-            }
-            orig();
-        }
-        #endregion
-
         #region Dash Fixes and Improvements
         private static void MakeShieldSlamIFramesConsistent(ILContext il)
         {

@@ -95,7 +95,6 @@ namespace CalamityMod.ILEditing
             On_Item.GetShimmered += ShimmerEffectEdits;
             On_Player.Teleport += TPOverride;
             On_TileDrawing.DrawSingleTile += GlowMaskTileRender;
-            On_Main.DoUpdate_HandleChat += SpawnPunchCard;
             On_Player.PlaceThing_CannonBall += AllowCannonJellyfishUse;
             On_Player.ItemCheck_ReleaseCritter += ReleaseCritterVariant;
             On_Player.IsItemSlotUnlockedAndUsable += MasterModeCelestialOnionCheck;
