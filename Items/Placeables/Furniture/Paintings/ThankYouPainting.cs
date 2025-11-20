@@ -85,7 +85,6 @@ namespace CalamityMod.Items.Placeables.Furniture.Paintings
             "Raesh",
             "Sagittariod",
             "Shade",
-            "Shayy",
             "Spider Prov",
             "StipulateVenus",
             "Sunny",
