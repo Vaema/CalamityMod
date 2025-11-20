@@ -101,7 +101,6 @@ namespace CalamityMod.Systems.Collections
                 "Salted Warlock",
                 "schmoovi",
                 "Sharktank6",
-                "Shayy", // Current dev. Listed as "Shay" on Patreon.
                 "SirChaos189",
                 "SkeletonHunter96",
                 "Taelishe",
