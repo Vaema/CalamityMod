@@ -4748,8 +4748,9 @@ namespace CalamityMod.Projectiles
             {
                 if (projectile.ModProjectile is null || (projectile.ModProjectile != null && projectile.ModProjectile.CanHitPlayer(Main.LocalPlayer) && (projectile.ModProjectile.CanDamage() ?? true)))
                 {
-                    Color mainColor = Color.Lerp(Color.Crimson with { A = 0 }, Color.OrangeRed with { A = 0 }, ((Main.GlobalTimeWrappedHourly * 2) % 1f));
-                    return mainColor;
+                    Color mainColor = Color.Lerp(Color.Crimson with { A = 0 }, Color.OrangeRed with { A = 0 }, (Main.GlobalTimeWrappedHourly * 2) % 1f);
+                    Color actualDisplayColor = new Color(Math.Max(mainColor.R, lightColor.R), Math.Max(mainColor.G, lightColor.G), Math.Max(mainColor.B, lightColor.B));
+                    return actualDisplayColor;
                 }
             }
 
