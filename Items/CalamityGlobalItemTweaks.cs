@@ -1260,9 +1260,6 @@ namespace CalamityMod.Items
             shimmerTransmute[ModContent.ItemType<RelicOfResilience>()] = ModContent.ItemType<RelicOfConvergence>();
             shimmerTransmute[ModContent.ItemType<RelicOfConvergence>()] = ModContent.ItemType<RelicOfDeliverance>();
 
-            //Calamity Permanent Upgrades
-            shimmerTransmute[ItemID.FrogLeg] = ModContent.ItemType<NimbleBounder>();
-
 
             // -- Vanilla Boss Shimmer Drop Cycles --
             // These cycles follow the order of: Melee Weapons A to Z -> Ranged Weapons A to Z -> Magic Weapons A to Z -> Summon Weapons A to Z -> Rogue Weapons A to Z (Based off of their in-game names)

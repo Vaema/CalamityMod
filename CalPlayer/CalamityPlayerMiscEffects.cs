@@ -2710,13 +2710,6 @@ namespace CalamityMod.CalPlayer
                 Player.jumpSpeedBoost += TheAbsorber.JumpSpeedBoost;
             }
 
-            // Nimble Bounder bonus
-            if (nimbleBounderBoost)
-            {
-                Player.moveSpeed += NimbleBounder.MoveSpeedBoost;
-                Player.jumpSpeedBoost += NimbleBounder.JumpSpeedBoost;
-            }
-
             // Affliction bonus
             if (affliction || afflicted)
             {
