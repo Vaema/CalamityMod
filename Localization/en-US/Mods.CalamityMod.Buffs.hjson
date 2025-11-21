@@ -1667,3 +1667,8 @@ ToastyBatBuff: {
 	DisplayName: Toasty Bat Friend
 	Description: A fiery bat flutters at your shoulder
 }
+
+EnchantedBladeStaffBuff: {
+	DisplayName: Enchanted Blade Staff Buff
+	Description: Mods.CalamityMod.Buffs.EnchantedBladeStaffBuff.Description
+}

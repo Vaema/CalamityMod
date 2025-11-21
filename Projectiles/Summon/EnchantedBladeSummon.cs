@@ -93,6 +93,9 @@ namespace CalamityMod.Projectiles.Summon
                 return;
             }
 
+            if (Projectile.DistanceSQ(IdlePosition) > 3000f * 3000f)
+                Projectile.Center = Owner.Center;
+
             if (Projectile.DistanceSQ(IdlePosition) < 80f * 80f)
                 CurrentState = IdleState;
 
