@@ -366,12 +366,8 @@ namespace CalamityMod.CalPlayer
         public int dragonRageHits = 0;
         /// <summary> Cooldown variable for Dragon Rage's fireball spawning to prevent spamming projectiles when hitting multiple enemies simultaneously. </summary>
         public int dragonRageCooldown = 0;
-        public const float AquaticBoostMax = 10000f;
-        /// <summary>
-        /// Counter variable which controls Aquatic Emblem's stat boosts while underwater.<br/>
-        /// This counter starts at <see cref="AquaticBoostMax"/>, and is decremented by 2 for every frame the player remains underwater, reaching maximum boosts when it hits 0.
-        /// </summary>
-        public float aquaticBoost = 0f;
+        /// <summary> Counter variable which controls Aquatic Emblem's stat boosts while underwater. </summary>
+        public float aquaticBoost = 0;
         public int galileoCooldown = 0;
         /// <summary> Used to track Prideful Hunter's Planar Ripper's movement speed boost, along with its visual effects. </summary>
         public int planarSpeedBoost = 0;
@@ -800,7 +796,6 @@ namespace CalamityMod.CalPlayer
         public bool ascendantInsignia = false;
         public int ascendantInsigniaBuffTime = 0;
         public int ascendantInsigniaCooldown = 0;
-        public bool ascendantTrail = false;
         /// <summary> Used to toggle dust spawned while swinging, through accessory visibility. </summary>
         public bool magmaStoneVisuals = true;
         public bool eGauntlet = false;
@@ -2021,7 +2016,7 @@ namespace CalamityMod.CalPlayer
                 percentMaxLifeIncrease += 25;
 
             if (affliction || afflicted)
-                percentMaxLifeIncrease += 10;
+                percentMaxLifeIncrease += Affliction.MaxLifeBoostPercent;
 
             if (community)
                 percentMaxLifeIncrease += (int)(TheCommunity.CalculatePower() * TheCommunity.HealthMultiplier);
@@ -2237,7 +2232,6 @@ namespace CalamityMod.CalPlayer
             teslaVisuals = true;
             cryogenSoul = false;
             ascendantInsignia = false;
-            ascendantTrail = false;
             magmaStoneVisuals = true;
             eGauntlet = false;
             eGauntletVisuals = true;
@@ -3239,7 +3233,6 @@ namespace CalamityMod.CalPlayer
             CurrentlyViewedHologramText = string.Empty;
             #endregion
 
-            ascendantTrail = false;
             evilSmasherBoost = 0;
             burningSeaBurnOut = 0;
             flareGunOverheat = 0;
@@ -3311,8 +3304,8 @@ namespace CalamityMod.CalPlayer
                 var source = Player.GetSource_Accessory(FindAccessory(ItemType<AscendantInsignia>()));
                 Projectile.NewProjectile(source, Player.Center - Vector2.UnitY * 45f, Vector2.Zero, ProjectileType<AscendantAura>(), 0, 0f);
                 SoundEngine.PlaySound(new SoundStyle("CalamityMod/Sounds/Item/AscendantActivate"));
-                ascendantInsigniaCooldown = 2400;
-                ascendantInsigniaBuffTime = 240; //4 seconds
+                ascendantInsigniaCooldown = AscendantInsignia.AbilityCooldown;
+                ascendantInsigniaBuffTime = AscendantInsignia.AbilityDuration;
             }
 
             int numOfBlobs = Player.ownedProjectileCounts[ProjectileType<TransformerBlob>()];
@@ -3391,8 +3384,7 @@ namespace CalamityMod.CalPlayer
             }
             if (CalamityKeybinds.AngelicAllianceHotKey.JustPressed && angelicAlliance && Main.myPlayer == Player.whoAmI && !divineBless && !Player.HasCooldown(Cooldowns.DivineBless.ID))
             {
-                int seconds = CalamityUtils.SecondsToFrames(15f);
-                Player.AddBuff(BuffType<Buffs.StatBuffs.DivineBless>(), seconds, false);
+                Player.AddBuff(BuffType<Buffs.StatBuffs.DivineBless>(), AngelicAlliance.DivineBlessDuration, false);
                 SoundEngine.PlaySound(AngelicAlliance.ActivationSound, Player.Center);
 
                 // Spawn an archangel for every minion you have
@@ -3414,7 +3406,7 @@ namespace CalamityMod.CalPlayer
                     float start = 360f / angelAmt;
 
                     Projectile.NewProjectile(source, new Vector2((int)(Player.Center.X + (Math.Sin(projIndex * start) * 300)), (int)(Player.Center.Y + (Math.Cos(projIndex * start) * 300))), Vector2.Zero, ProjectileType<AngelicAllianceArchangel>(), proj.damage / 10, proj.knockBack / 10f, Player.whoAmI, Main.rand.Next(180), projIndex * start);
-                    Player.HealPlayer(2);
+                    Player.HealPlayer(AngelicAlliance.HealPerAngelSpawned);
                 }
             }
             if (CalamityKeybinds.SpectralVeilHotKey.JustPressed && spectralVeil && Main.myPlayer == Player.whoAmI && rogueStealth >= rogueStealthMax * 0.25f &&
@@ -4557,7 +4549,7 @@ namespace CalamityMod.CalPlayer
                     (CobaltSet ? CobaltArmorSetChange.SpeedBoostSetBonusPercentage * 0.01f : 0f) +
                     (silvaSet ? SilvaArmor.AccelerationBoost : 0f) +
                     (getSandCloakAccelBoost ? 0.75f : 0f) +
-                    (ascendantInsignia ? 0.25f : 0f) + // Added to Soaring Insignia's 1.25x multiplier to get 1.5x
+                    (ascendantInsignia ? (AscendantInsignia.AccelerationBoost - 0.25f) : 0f) + // Subtracted 0.25 provided by Soaring Insignia
                     (statisNinjaBelt ? 0.6f : 0f) +
                     (statisVoidSash ? 0.85f : 0f) +
                     (blueCandle ? WeightlessCandle.AccelerationBoost : 0f) +

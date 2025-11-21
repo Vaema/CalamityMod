@@ -2713,9 +2713,9 @@ namespace CalamityMod.CalPlayer
             // Affliction bonus
             if (affliction || afflicted)
             {
-                Player.endurance += 0.07f;
-                Player.statDefense += 9;
-                Player.GetDamage<GenericDamageClass>() += 0.1f;
+                Player.endurance += Affliction.DamageReductionBoost;
+                Player.statDefense += Affliction.DefenseBoost;
+                Player.GetDamage<GenericDamageClass>() += Affliction.DamageBoost;
             }
 
             float[] light = new float[3];
@@ -2938,8 +2938,8 @@ namespace CalamityMod.CalPlayer
             if (!ascendantInsignia && ascendantInsigniaBuffTime > 0)
             {
                 ascendantInsigniaBuffTime = 0;
-                ascendantInsigniaCooldown = 2400;
-                Player.AddCooldown(AscendEffect.ID, 2400);
+                ascendantInsigniaCooldown = AscendantInsignia.AbilityCooldown;
+                Player.AddCooldown(AscendEffect.ID, AscendantInsignia.AbilityCooldown);
             }
 
             if (!brimflameSet && brimflameFrenzy)
@@ -3306,15 +3306,14 @@ namespace CalamityMod.CalPlayer
             // Aquatic Emblem bonus
             if (aquaticEmblem)
             {
-                if (countsAsAnyWet && !Player.lavaWet && !Player.honeyWet &&
-                    !Player.mount.Active)
+                if (countsAsAnyWet && !Player.lavaWet && !Player.honeyWet && !Player.mount.Active)
                 {
-                    if (aquaticBoost > 0f)
+                    if (aquaticBoost < AquaticEmblem.TimeToReachMaxBoost)
                     {
-                        aquaticBoost -= 2f;
-                        if (aquaticBoost <= 0f)
+                        aquaticBoost++;
+                        if (aquaticBoost > AquaticEmblem.TimeToReachMaxBoost)
                         {
-                            aquaticBoost = 0f;
+                            aquaticBoost = AquaticEmblem.TimeToReachMaxBoost;
                             if (Main.netMode == NetmodeID.MultiplayerClient)
                                 NetMessage.SendData(MessageID.PlayerStealth, -1, -1, null, Player.whoAmI, 0f, 0f, 0f, 0, 0, 0);
                         }
@@ -3322,18 +3321,18 @@ namespace CalamityMod.CalPlayer
                 }
                 else
                 {
-                    aquaticBoost += 2f;
-                    if (aquaticBoost > AquaticBoostMax)
-                        aquaticBoost = AquaticBoostMax;
+                    aquaticBoost--;
+                    if (aquaticBoost <= 0f)
+                        aquaticBoost = 0f;
                     if (Player.mount.Active)
-                        aquaticBoost = AquaticBoostMax;
+                        aquaticBoost = 0f;
                 }
 
-                Player.statDefense += (int)((1f - aquaticBoost * 0.0001f) * 20f);
-                Player.moveSpeed -= (1f - aquaticBoost * 0.0001f) * 0.1f;
+                Player.statDefense += (int)Utils.Remap(aquaticBoost, 0, AquaticEmblem.TimeToReachMaxBoost, 0, AquaticEmblem.MaxDefenseBoost);
+                Player.moveSpeed -= Utils.Remap(aquaticBoost, 0, AquaticEmblem.TimeToReachMaxBoost, 0, AquaticEmblem.MaxMoveSpeedReduction);
             }
             else
-                aquaticBoost = AquaticBoostMax;
+                aquaticBoost = 0f;
 
             if (Player.HeldItem.type == ModContent.ItemType<Auralis>() && Player.StandingStill(0.1f))
             {
@@ -3712,8 +3711,7 @@ namespace CalamityMod.CalPlayer
                 (soaring ? SoaringPotion.FlightBoost : 0D) +
                 (prismaticGreaves ? PrismaticGreaves.FlightTimeBoost : 0D) +
                 (plagueReaper ? PlagueReaperMask.SetBonusFlightTimeBoost : 0D) +
-                (ascendantInsignia ? 0.17 : 0D) + // Added to soaring insignia's flight to get 50%
-                (Player.empressBrooch ? 0.33 : 0D) +
+                (ascendantInsignia ? AscendantInsignia.FlightTimeBoost : Player.empressBrooch ? 0.33D : 0D) +
                 externalFlightTimeMultBoost;
 
             if (community)
@@ -3957,10 +3955,9 @@ namespace CalamityMod.CalPlayer
 
             if (ascendantInsignia && ascendantInsigniaBuffTime > 0)
             {
-                ascendantTrail = true;
                 infiniteFlight = true;
                 if (ascendantInsigniaBuffTime == 1)
-                    Player.AddCooldown(AscendEffect.ID, 2400);
+                    Player.AddCooldown(AscendEffect.ID, AscendantInsignia.AbilityCooldown);
                 ascendantInsigniaBuffTime--;
             }
 
@@ -4336,7 +4333,7 @@ namespace CalamityMod.CalPlayer
                     angelicActivate = -1;
 
                 if (angelicActivate == 1)
-                    Player.AddCooldown(Cooldowns.DivineBless.ID, CalamityUtils.SecondsToFrames(60));
+                    Player.AddCooldown(Cooldowns.DivineBless.ID, AngelicAlliance.DivineBlessCooldown);
             }
 
             if (theBee && Player.statLife >= Player.statLifeMax2 && (!HasAnyEnergyShield || TotalEnergyShielding >= TotalMaxShieldDurability))

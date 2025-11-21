@@ -117,8 +117,8 @@ namespace CalamityMod.CalPlayer
             ApplyDoTDebuff(crushDepth, 18, purity);
             ApplyDoTDebuff(astralInfection, 24, infectedJewel || hideOfDeus || purity);
             ApplyDoTDebuff(shadowflame, 30, purity);
-            ApplyDoTDebuff(brimstoneFlames, abaddon ? 15 : 30, purity);
-            ApplyDoTDebuff(plague, alchFlask ? 15 : 30, purity);
+            ApplyDoTDebuff(brimstoneFlames, (int)MathF.Round(30 * (abaddon ? (1f - Abaddon.BrimstoneFlamesReduction) : 1f)), purity);
+            ApplyDoTDebuff(plague, (int)MathF.Round(30 * (abaddon ? (1f - AlchemicalFlask.PlagueReduction) : 1f)), purity);
             ApplyDoTDebuff(vHex, 30); // Has other effects
             ApplyDoTDebuff(searingLava, 30);
             ApplyDoTDebuff(demonicFlames, 33, purity); // Never inflicted on the player
@@ -320,7 +320,7 @@ namespace CalamityMod.CalPlayer
 
             if (divineBless)
             {
-                if (Player.whoAmI == Main.myPlayer && Player.miscCounter % 15 == 0) // Flat 4 health per second
+                if (Player.whoAmI == Main.myPlayer && Player.miscCounter % AngelicAlliance.DivineBlessFramesPerHeal == 0) // Flat 4 health per second
                 {
                     if (!noLifeRegen)
                         Player.HealPlayer(1, HealTextType.None);
@@ -368,7 +368,7 @@ namespace CalamityMod.CalPlayer
             {
                 float missingLifeRatio = (Player.statLifeMax2 - Player.statLife) / (float)Player.statLifeMax2;
                 //Ambrosial Ampule and ooze give between 2 and 5 hp/s
-                int lifeRegenToGive = (int)Math.Round(MathHelper.Lerp(4f, 10f, missingLifeRatio));//Rounding is needed for it to ever actually give +5 hp/s, as the integer conversion would otherwise floor it.
+                int lifeRegenToGive = (int)Math.Round(MathHelper.Lerp(RadiantOoze.MinRegenBoost, RadiantOoze.MaxRegenBoost, missingLifeRatio));//Rounding is needed for it to ever actually give +5 hp/s, as the integer conversion would otherwise floor it.
                 Player.lifeRegen += lifeRegenToGive; 
                 radiantOozeRegen += lifeRegenToGive / 2f;
                 purityRegen += lifeRegenToGive / 2f;
@@ -574,7 +574,7 @@ namespace CalamityMod.CalPlayer
                 Player.lifeRegen += HallowedRune.RegenBoost;
 
             if (affliction || afflicted)
-                Player.lifeRegen += 1;
+                Player.lifeRegen += Affliction.RegenBoost;
 
             if (trinketOfChi || chiRegen)
                 Player.lifeRegen += 2;
