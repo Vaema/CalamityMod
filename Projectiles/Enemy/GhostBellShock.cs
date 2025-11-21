@@ -132,8 +132,8 @@ namespace CalamityMod.Projectiles.Enemy
             int boltPoints = 12; // How many times can a bolt bend
             int minimumBolts = 6; // Minimum number of bolts
             int maximumBolts = 12; // Maximum number of bolts
-            int minimumSplits = 0; // Minimum number of split bolts
-            int maximumSplits = 2; // Maximum number of split bolts
+            //int minimumSplits = 0; // Minimum number of split bolts
+            //int maximumSplits = 2; // Maximum number of split bolts
             points.Clear();
             bolts.Clear();
             jellyBolts.Clear();

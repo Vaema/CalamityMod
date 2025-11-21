@@ -97,7 +97,7 @@ namespace CalamityMod.Projectiles.Magic
 
                 // Makes the music notes appear to orbit around the player
                 float baseRotationSpeed = Main.zenithWorld ? 0.857142f : 1f;
-                float rotationSpeed = baseRotationSpeed * (60f / Owner.ActiveItem().useTime);
+                float rotationSpeed = baseRotationSpeed * (60f / Owner.HeldItem.useTime);
                 Projectile.Center = Owner.Center + new Vector2(80, 0).RotatedBy(MathHelper.ToRadians(Timer * rotationSpeed));
 
                 // If the player stops using the weapon or does not have enough mana, switch to fade away mode

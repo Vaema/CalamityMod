@@ -410,39 +410,10 @@ namespace CalamityMod.Systems
                 ItemID.RichGravestone5
             });
             AnyTombstone = RecipeGroup.RegisterGroup("AnyTombstone", group);
-
-            // Wings for Celestial Tracers
-            AnyWings = RecipeGroup.RegisterGroup("AnyWings", GetValidWingsForTracers());
         }
         #endregion
 
         #region Automatic Recipe Groups
-        private static RecipeGroup GetValidWingsForTracers()
-        {
-            List<int> wingIds = new List<int>();
-            // List of wings that can't be used to craft Celestial Tracers, includes tracers themselves, specific wing ingredients, and non-traditional wings
-            List<int> excludedWings = new List<int>
-            {
-                ItemType<TracersSeraph>(),
-                ItemType<TracersElysian>(),
-                ItemType<TracersCelestial>(),
-                ItemType<SoulofCryogen>(),
-                ItemType<ElysianWings>(),
-                ItemType<WingsofRebirth>(),
-                ItemType<MOAB>(),
-                ItemID.Jetpack
-            };
-            foreach (var i in ContentSamples.ItemsByType)
-            {
-                Item item = i.Value;
-                if (item.wingSlot > -1 && !excludedWings.Contains(item.type))
-                {
-                    wingIds.Add(item.type);
-                }
-            }
-            return new RecipeGroup(() => CalamityUtils.GetTextValue("Misc.RecipeGroup.AnyWings"), [.. wingIds]);
-        }
-
         private static RecipeGroup GetFoodItems()
         {
             List<int> foodIds = new List<int>();
@@ -1136,21 +1107,35 @@ namespace CalamityMod.Systems
             r.DisableDecraft();
 
             r = Recipe.Create(ItemID.CookedFish);
-            r.AddIngredient<PrismaticGuppyBlueItem>();
+            r.AddIngredient<CoralskinFoolfish>();
             r.AddTile(TileID.CookingPots);
             r.Register();
             r.SortAfterFirstRecipesOf(ItemID.CookedFish);
             r.DisableDecraft();
 
             r = Recipe.Create(ItemID.CookedFish);
-            r.AddIngredient<PrismaticGuppyGreenItem>();
+            r.AddIngredient<GleamingCucumber>();
             r.AddTile(TileID.CookingPots);
             r.Register();
             r.SortAfterFirstRecipesOf(ItemID.CookedFish);
             r.DisableDecraft();
 
             r = Recipe.Create(ItemID.CookedFish);
-            r.AddIngredient<PrismaticGuppyPinkItem>();
+            r.AddIngredient<MoltenFishron>();
+            r.AddTile(TileID.CookingPots);
+            r.Register();
+            r.SortAfterFirstRecipesOf(ItemID.CookedFish);
+            r.DisableDecraft();
+
+            r = Recipe.Create(ItemID.CookedFish);
+            r.AddIngredient<SpecularSturgeon>();
+            r.AddTile(TileID.CookingPots);
+            r.Register();
+            r.SortAfterFirstRecipesOf(ItemID.CookedFish);
+            r.DisableDecraft();
+
+            r = Recipe.Create(ItemID.CookedFish);
+            r.AddIngredient<Squidoom>();
             r.AddTile(TileID.CookingPots);
             r.Register();
             r.SortAfterFirstRecipesOf(ItemID.CookedFish);

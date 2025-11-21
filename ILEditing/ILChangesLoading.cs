@@ -1,12 +1,8 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Numerics;
 using System.Reflection;
 using CalamityMod.Graphics.Renderers.CalamityRenderers;
-using CalamityMod.Items.Weapons.Summon;
 using CalamityMod.Tiles.DraedonStructures;
 using CalamityMod.Tiles.FurnitureExo;
-using MonoMod.RuntimeDetour;
 using Terraria;
 using Terraria.DataStructures;
 using Terraria.GameContent;
@@ -17,6 +13,7 @@ using Terraria.GameContent.Liquid;
 using Terraria.GameContent.UI.Elements;
 using Terraria.GameContent.UI.States;
 using Terraria.GameInput;
+using Terraria.Graphics.CameraModifiers;
 using Terraria.Graphics.Light;
 using Terraria.Map;
 using Terraria.ModLoader;
@@ -46,7 +43,6 @@ namespace CalamityMod.ILEditing
             IL_Main.DoDraw += CustomDoDrawChanges;
             On_Main.DrawCursor += UseCoolFireCursorEffect;
             On_Main.SortDrawCacheWorms += DrawFusableParticles;
-            On_Main.DrawInfernoRings += DrawForegroundParticles;
             On_TileDrawing.Draw += ClearTilePings;
             On_CommonCode.ModifyItemDropFromNPC += ColorBlightedGel;
             On_MoonlordDeathDrama.RequestLight += DisableFlashesWithPhotosensitivityConfig;
@@ -61,6 +57,15 @@ namespace CalamityMod.ILEditing
             IL_TileDrawing.DrawSingleTile += DisableCullingForTreeAndCactus;
             IL_TileDrawing.DrawTrees += DrawTreeGlowMask;
             On_TileDrawing.DrawBasicTile += DrawTreeTrunkAndCactusGlowMask;
+
+            // Graphics (GeneralDrawLayer detours)
+            On_Main.DrawBackgroundBlackFill += GeneralDrawLayer_DrawToLayer_BeforeAllTiles;
+            On_Main.DoDraw_Tiles_Solid += GeneralDrawLayer_DrawToLayer_BeforeSolidTiles;
+            On_Main.DoDraw_DrawNPCsOverTiles += GeneralDrawLayer_DrawToLayer_NPCs;
+            On_Main.DrawProjectiles += GeneralDrawLayer_DrawToLayer_Projectiles;
+            On_Main.DrawPlayers_AfterProjectiles += GeneralDrawLayer_DrawToLayer_AfterPlayers;
+            On_Main.DrawDust += GeneralDrawLayer_DrawToLayer_AfterDusts;
+            On_Main.DrawInfernoRings += GeneralDrawLayer_DrawToLayer_AfterEverything;
 
             // NPC behavior
             IL_Main.UpdateTime += PermitNighttimeTownNPCSpawning;
@@ -86,15 +91,17 @@ namespace CalamityMod.ILEditing
             On_Projectile.NewProjectile_IEntitySource_float_float_float_float_int_int_float_int_float_float_float += IncorporateExtraProjectileVariables;
             On_Player.ApplyDamageToNPC += ApplyOldFashionedDamageToMiscHits;
             IL_Wiring.HitWireSingle += AddTwinklersToStatue;
-            On_Player.UpdateItemDye += FindCalamityItemDyeShader;
             On_AWorldListItem.GetDifficulty += GetDifficultyOverride;
             On_Item.GetShimmered += ShimmerEffectEdits;
             On_Player.Teleport += TPOverride;
             On_TileDrawing.DrawSingleTile += GlowMaskTileRender;
-            On_Main.DoUpdate_HandleChat += SpawnPunchCard;
             On_Player.PlaceThing_CannonBall += AllowCannonJellyfishUse;
             On_Player.ItemCheck_ReleaseCritter += ReleaseCritterVariant;
             On_Player.IsItemSlotUnlockedAndUsable += MasterModeCelestialOnionCheck;
+            On_Projectile.AI_007_GrapplingHooks += AllowHooksToGrabArenabox;
+            On_Collision.SolidCollision_Vector2_int_int += ArenaCollision_Vector2_int_int;
+            On_Collision.SolidCollision_Vector2_int_int_bool += ArenaCollision_Vector2_int_int_bool;
+            On_Collision.TileCollision += ArenaCollision_TileCollision;
 
             // Mana Burn (Chaos Stone) and Chalice of the Blood God
             IL_Player.ApplyLifeAndOrMana += ChaliceBufferHeal;
@@ -168,9 +175,6 @@ namespace CalamityMod.ILEditing
             IL_Player.UpdateManaRegen += UpdateManaRegenBalancingChanges;
             IL_Player.Update += ManaRegenDelayAdjustment;
 
-            // Item prefix changes
-            On_Player.GrantPrefixBenefits += PrefixChanges;
-
             // Debuff balancing
             IL_Projectile.StatusPlayer += RemoveFrozenInflictionFromDeerclopsIceSpikes;
 
@@ -191,6 +195,7 @@ namespace CalamityMod.ILEditing
             IL_Player.StatusFromNPC += RemoveExpertBrainRandomDebuffs;
             IL_NPC.VanillaHitEffect += PreventLavaSlimeLavaDrop;
             IL_NPC.StrikeNPC_HitInfo_bool_bool += LetDetonatingBubblesTakeDamage;
+            IL_PunchCameraModifier.Update += PunchCameraUsesScreenshakeConfig;
             IL_Player.ItemCheck_EmitUseVisuals += MakeMagmaStoneFireGauntletDustToggleable;
             IL_Projectile.EmitEnchantmentVisualsAt += MakeMagmaStoneFireGauntletProjectileDustToggleable;
             IL_Sandstorm.HasSufficientWind += DecreaseSandstormWindSpeedRequirement;
@@ -207,31 +212,33 @@ namespace CalamityMod.ILEditing
             IL_WorldGen.AttemptFossilShattering += PreventFossilShattering;
             On_Player.GetPickaxeDamage += RemoveHellforgePickaxeRequirement;
             IL_Player.Update += PreventUFODismountInWater;
-            On_Player.GetAnglerReward += ImproveAnglerRewards;
+
+            On_Player.GetAnglerReward_MainReward += AddMoreGuaranteedAnglerRewards;
+            On_Player.GetAnglerReward_Bait += ImproveAnglerBaitReward;
+            On_Player.GetAnglerReward_Money += ImproveAnglerMoneyReward;
 
             IL_Player.TileInteractionsUse += RemovePowerCellPlanteraLock;
             On_Player.ItemCheck_CheckCanUse += RemoveUseLocks;
             On_Player.ItemCheck_UseEventItems += ApplyCelestialSigilChanges;
             IL_Main.DrawInfoAccs += RemoveDamageConditionFromRadar;
             //On_ShopHelper.ApplyNpcRelationshipEffect += AllowMultipleLikedNPCs;
-        
+
             On_Player.UpdateControlHolds += DelayGravity;
             On_PlayerInput.SetZoom_MouseInWorld += GravityMouse;
             On_Main.DrawPlayerChatBubbles += UI_Unflip_Start;
             On_Main.DrawInterface += UI_Unflip_End;
-
-            // Fix vanilla bugs exposed by Calamity mechanics
-            IL_NPC.NPCLoot += FixSplittingWormBannerDrops;
-            On_NPC.PlayerInteraction += FixSplittingWormInteraction;
 
             // Fix vanilla not accounting for spritebatch modification in held projectile drawing
             On_PlayerDrawLayers.DrawHeldProj += FixHeldProjectileBlendState;
 
             // Fix vanilla not accounting for multiple bobbers when fishing with truffle worm
             IL_Player.ItemCheck_CheckFishingBobbers += FixTruffleWormFishing;
-            
+
             // Allow specified walls to be visible through water on the map
             IL_MapHelper.CreateMapTile += UseVisibleThroughWaterMapTile;
+
+            // Fix vanilla behaviour of not calling CheckDead for NPCs that realLife is set
+            IL_NPC.StrikeNPC_HitInfo_bool_bool += EnsureCheckDeadOnSegments;
 
             //Additional detours that are in their own item files given they are only relevant to these specific items:
             //Rover drive detours on Player.DrawInfernoRings to draw its shield

@@ -16,6 +16,7 @@ using Terraria.GameContent.Bestiary;
 using Terraria.ID;
 using Terraria.ModLoader;
 using Terraria.ModLoader.Utilities;
+using static Terraria.GameContent.Animations.IL_Actions.NPCs;
 
 namespace CalamityMod.NPCs.SunkenSea
 {
@@ -180,8 +181,8 @@ namespace CalamityMod.NPCs.SunkenSea
             AIType = -1;
             NPC.HitSound = SoundID.NPCHit1;
             NPC.DeathSound = SoundID.NPCDeath1;
-            //Banner = NPC.type;
-            //BannerItem = ModContent.ItemType<PrismaticGuppyBanner>();
+            Banner = NPC.type;
+            BannerItem = ModContent.ItemType<PrismaticGuppyBanner>();
             NPC.chaseable = false;
             NPC.catchItem = (short)ModContent.ItemType<PrismaticGuppyBlueItem>();
         }
@@ -703,6 +704,16 @@ namespace CalamityMod.NPCs.SunkenSea
             for (int k = 0; k < 5; k++)
             {
                 Dust.NewDust(NPC.position, NPC.width, NPC.height, dustType, hit.HitDirection, -1f, 0, default, 1f);
+            }
+            if (CurrentColor < (int)FishColor.Gold)
+            {
+                string goreName = CurrentColor switch
+                {
+                    (int)FishColor.Pink => "PrismaticGuppyPink",
+                    (int)FishColor.Green => "PrismaticGuppyGreen",
+                    _ => "PrismaticGuppyBlue",
+                };
+                CalamityUtils.SpawnGores(NPC, goreName, 3);
             }
         }
 

@@ -16,6 +16,7 @@ namespace CalamityMod.Tiles.SunkenSea.Ambient
             Main.tileFrameImportant[Type] = true;
             Main.tileSolid[Type] = false;
             Main.tileLighted[Type] = true;
+            TileObjectData.newTile.UsesCustomCanPlace = true;
             TileObjectData.newTile.Width = 3;
             TileObjectData.newTile.Height = 4;
             TileObjectData.newTile.Origin = new Point16(1, 3);

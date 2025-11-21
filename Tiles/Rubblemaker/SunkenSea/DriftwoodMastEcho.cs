@@ -11,9 +11,8 @@ namespace CalamityMod.Tiles.Rubblemaker.SunkenSea
         public override void SetStaticDefaults()
         {
             base.SetStaticDefaults();
-            RegisterItemDrop(ModContent.ItemType<Driftwood>(), Type, 0);
-            // TODO: Most of these currently don't work
-            //FlexibleTileWand.RubblePlacementLarge.AddVariations(ModContent.ItemType<Driftwood>(), Type, 0);
+            RegisterItemDrop(ModContent.ItemType<Driftwood>(), Type);
+            FlexibleTileWand.RubblePlacementLarge.AddVariations(ModContent.ItemType<Driftwood>(), Type, 0, 1, 2, 3, 4, 5);
         }
     }
 }

@@ -7,8 +7,6 @@ namespace CalamityMod.Buffs.Alcohol
 {
     public class Trippy : ModBuff
     {
-        public override LocalizedText Description => base.Description.WithFormatArgs(OddMushroom.DamageBoost.ToPercent());
-
         public override void SetStaticDefaults()
         {
             Main.debuff[Type] = false;

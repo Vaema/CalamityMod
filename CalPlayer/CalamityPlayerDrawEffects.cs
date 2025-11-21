@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using CalamityMod.Buffs.DamageOverTime;
 using CalamityMod.Buffs.StatBuffs;
 using CalamityMod.Buffs.StatDebuffs;
@@ -7,6 +8,7 @@ using CalamityMod.CalPlayer.DrawLayers;
 using CalamityMod.Dusts;
 using CalamityMod.Items.Weapons.Magic;
 using CalamityMod.Items.Weapons.Ranged;
+using CalamityMod.NPCs.DevourerofGods;
 using CalamityMod.Particles;
 using CalamityMod.Projectiles.Typeless;
 using CalamityMod.Systems.Collections;
@@ -65,11 +67,79 @@ namespace CalamityMod.CalPlayer
 
             CalamityPlayer calamityPlayer = Player.Calamity();
 
-            // Dust modifications while high.
+            //DoG Boss Cursor
+            DevourerofGodsHead DoG = null;
+            foreach (var item in Main.ActiveNPCs)
+            {
+                if (item.type == ModContent.NPCType<DevourerofGodsHead>()) {
+                    DoG = item.ModNPC<DevourerofGodsHead>();
+                    break;
+                }
+            }
+            if (DoG != null && Main.mapStyle != 2)
+            {
+                Rectangle screen = new((int)Main.screenPosition.X, (int)Main.screenPosition.Y, Main.screenWidth, Main.screenHeight);
+                var rift = DoG.GetRiftLocation();
+                if (rift != Vector2.Zero && !Main.zenithWorld)
+                {
+                    var dist = Player.Distance(rift);
+                    var tex = ModContent.Request<Texture2D>("Terraria/Images/Extra_173").Value;
+                    float scale = 1f;
+                    Main.spriteBatch.Draw(tex, Player.Center + Player.DirectionTo(rift) * 196 * Math.Min(dist / 2400f, 2) - Main.screenPosition, null, Color.White * 0.9f * Math.Clamp(MathHelper.Lerp(0, 1, (dist - 300) / 600), 0, 1), 0, tex.Size() / 2f, scale * 0.9f, SpriteEffects.FlipHorizontally, 0);
+                }
+                else
+                {
+                    var dis = Player.Distance(DoG.NPC.Center);
+                    if ((DoG.NPC.ai[3] < 3 || !DoG.Phase2Started) && DoG.NPC.Opacity > 0.5f && !DoG.Dying)
+                    {
+                        string phase1IconPath = "CalamityMod/NPCs/DevourerofGods/DevourerofGodsHead_Head_Boss";
+                        string phase2IconPath = "CalamityMod/NPCs/DevourerofGods/DevourerofGodsHead_P2_Head_Boss";
+                        var tex = ModContent.Request<Texture2D>((DoG.Phase2Started && DoG.NPC.localAI[2] < 300) ? phase2IconPath : phase1IconPath).Value;
+                        Main.spriteBatch.Draw(tex, Player.Center + Player.DirectionTo(DoG.NPC.Center) * 196 * Math.Min(dis / 2400f, 2) - Main.screenPosition, null, Color.White * 0.9f * Math.Clamp(MathHelper.Lerp(0, 1, (dis - 600) / 300), 0, 1), DoG.NPC.rotation, tex.Size() / 2f, 1, SpriteEffects.None, 0);
+                    }
+                }
+                
+            }
+
+            //Charge animation for Thread of Eradication
+            if (Player.HeldItem.type == ModContent.ItemType<ThreadOfEradication>() && !Player.ItemTimeIsZero && drawInfo.shadow == 0f)
+            {
+                var color = Color.Fuchsia;
+                float scale = (1 - (Player.itemTime - 7) / 50f) * 0.2f;
+                if (Player.itemTime < 7)
+                {
+                    scale = ((Player.itemTime) / 7f) * 0.2f;
+                }
+                if (Player.itemTime > 60)
+                {
+                    scale = (1 - (Player.itemTime - 70) / 110f) * 0.5f;
+                    if (Player.itemTime < 70)
+                    {
+                        scale = ((Player.itemTime - 60) / 10f) * 0.5f;
+                    }
+                    color = Color.Cyan;
+                }
+
+                if (CalamityClientConfig.Instance.Photosensitivity)
+                    color = color * 0.2f;
+                var bloomTex = ModContent.Request<Texture2D>("CalamityMod/Particles/BloomCircle").Value;
+                var circleTex = ModContent.Request<Texture2D>("CalamityMod/ExtraTextures/BasicCircle").Value;
+                Main.spriteBatch.SafeBegin(SpriteSortMode.Deferred, BatchSetting.Additive, null, Main.GameViewMatrix.TransformationMatrix, () =>
+                {
+                    Main.spriteBatch.Draw(bloomTex, Player.Center + (Vector2.UnitX * Player.direction).RotatedBy(Player.itemRotation) * (48 + scale * 96) - Main.screenPosition, null, color, 0, bloomTex.Size() * 0.5f, scale * 2.0f, SpriteEffects.None, 0);
+                    Main.spriteBatch.Draw(bloomTex, Player.Center + (Vector2.UnitX * Player.direction).RotatedBy(Player.itemRotation) * (48 + scale * 96) - Main.screenPosition, null, color, 0, bloomTex.Size() * 0.5f, scale * 2.0f, SpriteEffects.None, 0);
+                });
+                for (var i = 0; i < 5; i++)
+                Main.spriteBatch.Draw(circleTex, Player.Center + (Vector2.UnitX * Player.direction).RotatedBy(Player.itemRotation) * (48 + scale * 96) - Main.screenPosition, null, Color.Black * ((i+1)/5f) * ( CalamityClientConfig.Instance.Photosensitivity ? 0.2f : 1f), 0, circleTex.Size() * 0.5f, scale* 2.2f * (0.5f + 0.5f * (1- (i)/5f)), SpriteEffects.None, 0);
+                //GeneralParticleHandler.SpawnParticle(new DirectionalPulseRing(player.Center + Vector2.UnitX.RotatedBy(player.itemRotation) * (48 + scale*96), Vector2.Zero, Color.Cyan, Vector2.One, 0, scale, scale, 3));
+            }
+
+            // Drawing for Odd Mushroom's clone effects
             if (calamityPlayer.trippy)
             {
                 if (Main.myPlayer == Player.whoAmI)
                 {
+                    // Dust
                     Rectangle screenArea = new Rectangle((int)Main.screenPosition.X - 500, (int)Main.screenPosition.Y - 50, Main.screenWidth + 1000, Main.screenHeight + 100);
                     int dustDrawn = 0;
                     float maxShroomDust = Main.maxDustToDraw / 2;
@@ -113,12 +183,112 @@ namespace CalamityMod.CalPlayer
                             }
                         }
                     }
+
+                    // NPCs
+                    foreach (NPC n in Main.ActiveNPCs)
+                    {
+                        Color rainbow = new Color(Main.DiscoR, Main.DiscoG, Main.DiscoB, Main.DiscoR);
+                        Color alphaColor = n.GetAlpha(rainbow);
+                        float RGBMult = 0.99f;
+                        alphaColor.R = (byte)(alphaColor.R * RGBMult);
+                        alphaColor.G = (byte)(alphaColor.G * RGBMult);
+                        alphaColor.B = (byte)(alphaColor.B * RGBMult);
+                        alphaColor.A = (byte)(alphaColor.A * RGBMult);
+
+                        for (int i = 0; i < 4; i++)
+                        {
+                            Vector2 position = n.position;
+                            float distanceFromTargetX = Math.Abs(n.Center.X - Main.LocalPlayer.Center.X);
+                            float distanceFromTargetY = Math.Abs(n.Center.Y - Main.LocalPlayer.Center.Y);
+
+                            switch (i)
+                            {
+                                case 0:
+                                    position.X = Main.LocalPlayer.Center.X - distanceFromTargetX;
+                                    position.Y = Main.LocalPlayer.Center.Y - distanceFromTargetY;
+                                    break;
+
+                                case 1:
+                                    position.X = Main.LocalPlayer.Center.X + distanceFromTargetX;
+                                    position.Y = Main.LocalPlayer.Center.Y - distanceFromTargetY;
+                                    break;
+
+                                case 2:
+                                    position.X = Main.LocalPlayer.Center.X + distanceFromTargetX;
+                                    position.Y = Main.LocalPlayer.Center.Y + distanceFromTargetY;
+                                    break;
+
+                                case 3:
+                                    position.X = Main.LocalPlayer.Center.X - distanceFromTargetX;
+                                    position.Y = Main.LocalPlayer.Center.Y + distanceFromTargetY;
+                                    break;
+
+                                default:
+                                    break;
+                            }
+
+                            Vector2 posDiff = n.Center - position;
+                            Main.instance.DrawNPCDirect(Main.spriteBatch, n, n.behindTiles, Main.screenPosition + posDiff);
+                        }
+                    }
+
+                    // Projectiles
+                    foreach (Projectile p in Main.ActiveProjectiles)
+                    {
+                        Texture2D texture = TextureAssets.Projectile[p.type].Value;
+                        Color rainbow = new Color(Main.DiscoR, Main.DiscoG, Main.DiscoB, Main.DiscoR);
+                        Color alphaColor = p.GetAlpha(rainbow);
+                        float RGBMult = 0.99f;
+                        alphaColor.R = (byte)(alphaColor.R * RGBMult);
+                        alphaColor.G = (byte)(alphaColor.G * RGBMult);
+                        alphaColor.B = (byte)(alphaColor.B * RGBMult);
+                        alphaColor.A = (byte)(alphaColor.A * RGBMult);
+
+                        Vector2 storedProjPos = p.Center;
+                        for (int i = 0; i < 4; i++)
+                        {
+                            Vector2 position = p.position;
+                            float distanceFromTargetX = Math.Abs(p.Center.X - Main.LocalPlayer.Center.X);
+                            float distanceFromTargetY = Math.Abs(p.Center.Y - Main.LocalPlayer.Center.Y);
+
+                            switch (i)
+                            {
+                                case 0:
+                                    position.X = Main.LocalPlayer.Center.X - distanceFromTargetX;
+                                    position.Y = Main.LocalPlayer.Center.Y - distanceFromTargetY;
+                                    break;
+
+                                case 1:
+                                    position.X = Main.LocalPlayer.Center.X + distanceFromTargetX;
+                                    position.Y = Main.LocalPlayer.Center.Y - distanceFromTargetY;
+                                    break;
+
+                                case 2:
+                                    position.X = Main.LocalPlayer.Center.X + distanceFromTargetX;
+                                    position.Y = Main.LocalPlayer.Center.Y + distanceFromTargetY;
+                                    break;
+
+                                case 3:
+                                    position.X = Main.LocalPlayer.Center.X - distanceFromTargetX;
+                                    position.Y = Main.LocalPlayer.Center.Y + distanceFromTargetY;
+                                    break;
+
+                                default:
+                                    break;
+                            }
+
+                            // Unfortunately unlike NPCs, there is no public function for drawing a projectile with a position parameter to spoof.
+                            // So we have to spoof it by directly changing the projectile's position, then resetting it at the end.
+                            p.Center = position;
+                            Main.instance.DrawProjDirect(p);
+                        }
+
+                        p.Center = storedProjPos;
+                    }
                 }
             }
-            else // This is such a stupid way to reset this but you can't just put it in ResetEffects
+            else
             {
-                calamityPlayer.trippyLevel = 1;
-
                 // Mana Burn VFX disabled when hih
                 if (Player.statMana < 0)
                 {
@@ -153,7 +323,7 @@ namespace CalamityMod.CalPlayer
             }
 
             #region Flight Visuals
-            // Celestial Tracers, Elysian Tracers, Seraph Tracers
+            // Moon Walkers, Void Striders, Seraph Tracers
             if (calamityPlayer.tracersDust && drawInfo.shadow == 0f)
             {
                 if (!Player.StandingStill() && !Player.mount.Active)
@@ -465,7 +635,7 @@ namespace CalamityMod.CalPlayer
                 return;
 
             Player drawPlayer = drawInfo.drawPlayer;
-            Item item = drawPlayer.ActiveItem();
+            Item item = drawPlayer.HeldItem;
 
             if (!drawPlayer.frozen &&
                 (item.IsAir || item.type > ItemID.None) &&

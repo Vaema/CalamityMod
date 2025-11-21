@@ -26,14 +26,14 @@ namespace CalamityMod.Projectiles.DraedonsArsenal
         public override string Texture => "CalamityMod/Items/Weapons/DraedonsArsenal/Phaseslayer";
 
         // The "average" or "expected" swing speed which the sword's damage balance is based off of.
-        // This is rotation EVERY FRAME. The "average" swing speed is 360 degrees in one second, aka pi/30 radians per frame.
-        public const float StandardSwingSpeed = MathHelper.Pi / 30f;
+        // This is rotation EVERY FRAME. The "average" swing speed is 180 degrees in one second, aka pi/60 radians per frame.
+        public const float StandardSwingSpeed = MathHelper.Pi / 60f;
 
         // How quickly the sword's damage updates to reflect its current speed. Higher values make it change damage more quickly.
         public const float DamageUpdateResponsiveness = 0.08f;
 
         public const int SwordBeamCooldown = 15;
-        public const float SwordBeamDamageMultiplier = 0.15f;
+        public const float SwordBeamDamageMultiplier = 0.2f;
         private const float MaximumMouseRange = 360f;
         private const float ProjCenterOffset = 36f;
 
@@ -41,7 +41,7 @@ namespace CalamityMod.Projectiles.DraedonsArsenal
         {
             get
             {
-                CalamityGlobalItem swordItem = Main.player[Projectile.owner].ActiveItem().Calamity();
+                CalamityGlobalItem swordItem = Main.player[Projectile.owner].HeldItem.Calamity();
                 return swordItem.ChargeRatio < Phaseslayer.SizeChargeThreshold;
             }
         }
@@ -80,7 +80,7 @@ namespace CalamityMod.Projectiles.DraedonsArsenal
 
             Projectile.penetrate = -1;
             Projectile.usesLocalNPCImmunity = true;
-            Projectile.localNPCHitCooldown = 13;
+            Projectile.localNPCHitCooldown = 10;
         }
 
         // Vanilla Terraria doesn't sync projectile rotation, but it does sync velocity.
@@ -92,7 +92,7 @@ namespace CalamityMod.Projectiles.DraedonsArsenal
         public override void AI()
         {
             Player player = Main.player[Projectile.owner];
-            CalamityGlobalItem modItem = player.ActiveItem().Calamity();
+            CalamityGlobalItem modItem = player.HeldItem.Calamity();
 
             // Angles are wrapped to be 0 to 2pi instead of -pi to pi for convenience with absolute values.
             float rotationAdjusted = MathHelper.WrapAngle(Projectile.rotation) + MathHelper.Pi;
@@ -130,7 +130,7 @@ namespace CalamityMod.Projectiles.DraedonsArsenal
             if (Main.myPlayer == player.whoAmI)
             {
                 // In addition to typical channel cancellation criteria, the sword fizzles out if it runs out of charge.
-                Item playerItem = player.ActiveItem();
+                Item playerItem = player.HeldItem;
                 bool hasCharge = modItem.Charge > 0f;
                 if (!player.CantUseHoldout() && playerItem.type == ModContent.ItemType<Phaseslayer>() && hasCharge)
                 {
@@ -141,7 +141,7 @@ namespace CalamityMod.Projectiles.DraedonsArsenal
 
                     // This formula ensures that the sword has a sudden and extremely harsh responsiveness penalty when the mouse is close to the player.
                     // Otherwise it controls perfectly fine.
-                    float aimResponsiveness = 0.035f + 0.3f * (float)Math.Pow(distRatio, 1D/3);
+                    float aimResponsiveness = 0.035f + 0.3f * MathF.Pow(distRatio, 1 / 3f);
 
                     // Update the sword's angle with the responsiveness determined by mouse position.
                     // Also flag for netcode sync if applicable (this is the only way the sword can rotate in multiplayer).
@@ -195,17 +195,17 @@ namespace CalamityMod.Projectiles.DraedonsArsenal
             // Update the rolling "blade angular momentum" average by gently lerping in the newest data point.
             AngularDamageFactor = MathHelper.Lerp(AngularDamageFactor, deltaAngle, DamageUpdateResponsiveness);
 
-            // 0x   expected speed gives you  53.5% damage.
-            // 1x   expected speed gives you 100.0% damage.
-            // 1.5x expected speed gives you 116.6% damage.
-            // 2x   expected speed gives you 130.6% damage.
-            // 3x   expected speed gives you 153.5% damage.
-            // 4x   expected speed gives you 171.7% damage.
-            // 5x   expected speed gives you 187.0% damage.
-            float speedDamageScalar = 0.166f + (float)Math.Log(AngularDamageFactor / StandardSwingSpeed + 1.5f, 3f);
+            // 0x   expected speed gives you 100.0% damage.
+            // 1x   expected speed gives you 126.2% damage.
+            // 1.5x expected speed gives you 136.9% damage.
+            // 2x   expected speed gives you 146.5% damage.
+            // 3x   expected speed gives you 163.1% damage.
+            // 4x   expected speed gives you 177.1% damage.
+            // 5x   expected speed gives you 189.3% damage.
+            float speedDamageScalar = MathF.Log(AngularDamageFactor / StandardSwingSpeed + 3f, 3f);
 
             // Get the underlying sword item's current damage. This takes into account the player's stats and the sword's current charge.
-            int damageWithChargeAndStats = player.GetWeaponDamage(player.ActiveItem());
+            int damageWithChargeAndStats = player.GetWeaponDamage(player.HeldItem);
             float sizeDamageScalar = IsSmall ? Phaseslayer.SmallDamageMultiplier : 1f;
             Projectile.damage = (int)(damageWithChargeAndStats * speedDamageScalar * sizeDamageScalar);
         }
@@ -278,8 +278,8 @@ namespace CalamityMod.Projectiles.DraedonsArsenal
             float deltaAngle = Math.Abs(averageRotation - (MathHelper.WrapAngle(Projectile.rotation) + MathHelper.Pi));
             float opacity = Projectile.Opacity;
             opacity *= Utils.GetLerpValue(StandardSwingSpeed * 0.7f, StandardSwingSpeed, AngularDamageFactor, true);
-            opacity *= (float)Math.Pow(Utils.GetLerpValue(1f, 0.45f, completionRatio, true), 4D);
-            opacity *= (float)Math.Pow(Utils.GetLerpValue(0.9f, 1.1f, deltaAngle, true), 2D);
+            opacity *= MathF.Pow(Utils.GetLerpValue(1f, 0.45f, completionRatio, true), 4f);
+            opacity *= MathF.Pow(Utils.GetLerpValue(0.9f, 1.1f, deltaAngle, true), 2f);
 
             float rotationAdjusted = MathHelper.WrapAngle(Projectile.rotation) + MathHelper.Pi;
             float oldRotationAdjusted = MathHelper.WrapAngle(Projectile.oldRot[1]) + MathHelper.Pi;

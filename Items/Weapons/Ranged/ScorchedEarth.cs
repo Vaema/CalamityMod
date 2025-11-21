@@ -7,6 +7,7 @@ using Terraria;
 using Terraria.Audio;
 using Terraria.DataStructures;
 using Terraria.ID;
+using Terraria.Localization;
 using Terraria.ModLoader;
 using static Terraria.ModLoader.ModContent;
 
@@ -17,12 +18,15 @@ namespace CalamityMod.Items.Weapons.Ranged
         public new string LocalizationCategory => "Items.Weapons.Ranged";
         public static readonly SoundStyle RocketShoot = new("CalamityMod/Sounds/Item/ScorpioShot") { Volume = 0.45f };
 
+        public static int AmmoSavedPercent = 50;
+        public override LocalizedText Tooltip => base.Tooltip.WithFormatArgs(AmmoSavedPercent);
+
         public static int OriginalUseTime = 60;
         public static int TimeBetweenBursts = 10;
         public static int ProjectilesPerBurst = 4;
         public override void SetDefaults()
         {
-            Item.damage = 500;
+            Item.damage = 550;
             Item.DamageType = DamageClass.Ranged;
             Item.useAnimation = Item.useTime = OriginalUseTime;
             Item.shoot = ProjectileType<ScorchedEarthHoldout>();
@@ -45,7 +49,7 @@ namespace CalamityMod.Items.Weapons.Ranged
         public override bool CanUseItem(Player player) => player.ownedProjectileCounts[Item.shoot] == 0;
 
         // Spawning the holdout won't consume ammo.
-        public override bool CanConsumeAmmo(Item ammo, Player player) => player.ownedProjectileCounts[Item.shoot] != 0;
+        public override bool CanConsumeAmmo(Item ammo, Player player) => player.ownedProjectileCounts[Item.shoot] > 0 && Main.rand.Next(100) >= AmmoSavedPercent;
 
         // Makes the rotation of the mouse around the player sync in multiplayer.
         public override void HoldItem(Player player) => player.Calamity().mouseRotationListener = true;
@@ -56,7 +60,6 @@ namespace CalamityMod.Items.Weapons.Ranged
 
             // We set the rotation to the direction to the mouse so the first frame doesn't appear bugged out.
             holdout.velocity = (player.Calamity().mouseWorld - player.MountedCenter).SafeNormalize(Vector2.Zero);
-
             return false;
         }
 

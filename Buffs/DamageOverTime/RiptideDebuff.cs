@@ -3,6 +3,7 @@ using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.DataStructures;
 using Terraria.ID;
+using Terraria.Localization;
 using Terraria.ModLoader;
 
 namespace CalamityMod.Buffs.DamageOverTime
@@ -30,7 +31,7 @@ namespace CalamityMod.Buffs.DamageOverTime
 
         public override void Update(NPC npc, ref int buffIndex)
         {
-                npc.Calamity().riptide = true;
+            npc.Calamity().riptide = true;
         }
 
         internal static void DrawEffects(PlayerDrawSet drawInfo)

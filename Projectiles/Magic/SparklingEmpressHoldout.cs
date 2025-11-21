@@ -36,7 +36,7 @@ namespace CalamityMod.Projectiles.Magic
 
         public override void KillHoldoutLogic()
         {
-            if (HeldItem.type != Owner.ActiveItem().type || Owner.dead)
+            if (HeldItem.type != Owner.HeldItem.type || Owner.dead)
                 Projectile.Kill();
             if (Owner.CantUseHoldout() && !hasLetGo)
                 postFireTimer = cooldownTime;
@@ -172,9 +172,12 @@ namespace CalamityMod.Projectiles.Magic
         public void Shoot()
         {
             Vector2 shootDirection = Projectile.velocity.SafeNormalize(Vector2.Zero);
-            Vector2 firingVelocity = (shootDirection * 4);
-            for (int k = 0; k < (int)(GfbMult); k++)
-                Projectile.NewProjectile(Projectile.GetSource_FromThis(), GunTipPosition + firingVelocity * 5, firingVelocity.RotatedByRandom(Main.zenithWorld ? GfbMult * 0.08f : 0), ModContent.ProjectileType<SparklingLaser>(), Projectile.damage, Projectile.knockBack, Projectile.owner, 0, 0);
+            if (Main.myPlayer == Projectile.owner)
+            {
+                Vector2 firingVelocity = (shootDirection * 4);
+                for (int k = 0; k < (int)(GfbMult); k++)
+                    Projectile.NewProjectile(Projectile.GetSource_FromThis(), GunTipPosition + firingVelocity * 5, firingVelocity.RotatedByRandom(Main.zenithWorld ? GfbMult * 0.08f : 0), ModContent.ProjectileType<SparklingLaser>(), Projectile.damage, Projectile.knockBack, Projectile.owner, 0, 0);
+            }
 
             for (int k = 0; k < 4; k++)
             {

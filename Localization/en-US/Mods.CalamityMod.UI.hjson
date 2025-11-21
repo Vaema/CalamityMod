@@ -9,6 +9,7 @@ Nanomachines: Nanomachines
 Rage: Rage
 Flight: "{0} Flight Remaining"
 Charge: Current Charge
+Vis: Current Vis
 DefenseDamage: Defense Damage
 SulphurousWater: Sulphuric Poisoning
 Stealth: Stealth
@@ -102,16 +103,15 @@ Cooldowns: {
 	BubblyBurrowCooldown: Bubbly Burrow Cooldown
 	ChaosState: Teleportation Cooldown
 	DivineBless: Divine Bless Cooldown
-	DivingPlatesBreaking: Abyssal Diving Suit Plates Durability
-	DivingPlatesBroken: Abyssal Diving Suit Broken Plates
 	DSOCritCooldown: Extra Critical Strike Chance
 	ParryCooldown: Parry Ability Cooldown
+	ElementalMastery: Elemental Mastery
 	FleshTotem: Contact Damage Halving Cooldown
 	FuryFuel: Crystal Powder
 	GaelsRage: Gael's Greatsword Rage Cooldown
 	BandCooldown: Band Cooldown
 	GlobalDodge: Dodge Cooldown
-	GodSlayerDash: God Slayer Dash Cooldown
+	GodSlayerDash: Dimensional Drive Cooldown
 	HellbornShots: Hellborn Shots
 	HolyProtection: Holy Protection
 	InkBomb: Ink Bomb Cooldown
@@ -611,13 +611,13 @@ Disenchant: Disenchant
 BetterUnderworld: Creating a smoother Underworld
 BetterShimmer: Placing shimmer in a sane location
 UnderworldStructures: Remnants of an Azafurian and Demonic war
-UnderworldPillars: Constructing Underworld pillars
 UnderworldTreesAndGrass: Growing Underworld flora
 UnderworldGeyserTraps: Adding an Underworld minefield
 ShimmerShrine: Excavating an ancient shimmer well
 EvilIslandCorrupt: Adding a putrid floating island
 EvilIslandCrimson: Adding a grotesque floating island
 AstralChest: Placing an astral chest
+LivingMahoganyTree: Growing a giant jungle tree
 BetterJungleTemple: Building a bigger jungle temple
 JungleTempleAltar: Placing the Lihzahrd altar
 GiantBeehive: Building a giant beehive

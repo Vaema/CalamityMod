@@ -31,7 +31,7 @@ namespace CalamityMod.Items.Weapons.Summon
             Item.damage = 43; 
             Item.knockBack = 2f;
             Item.autoReuse = true;
-            Item.useAnimation = Item.useTime = 15;
+            Item.useAnimation = Item.useTime = 24;
             Item.buffType = ModContent.BuffType<DazzlingStabberBuff>();
             Item.shoot = ModContent.ProjectileType<DazzlingStabber>();
 

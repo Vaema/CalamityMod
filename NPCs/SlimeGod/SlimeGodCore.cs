@@ -9,7 +9,7 @@ using CalamityMod.Items.Armor.Vanity;
 using CalamityMod.Items.LoreItems;
 using CalamityMod.Items.Materials;
 using CalamityMod.Items.Placeables.Furniture.BossRelics;
-using CalamityMod.Items.Placeables.Furniture.DevPaintings;
+using CalamityMod.Items.Placeables.Furniture.Paintings;
 using CalamityMod.Items.Placeables.Furniture.Trophies;
 using CalamityMod.Items.Potions;
 using CalamityMod.Items.TreasureBags;
@@ -328,7 +328,7 @@ namespace CalamityMod.NPCs.SlimeGod
                             string key = "Mods.CalamityMod.Status.Boss.SlimeGodRun";
                             Color messageColor = Color.Magenta;
 
-                            CalamityUtils.DisplayLocalizedText(key, messageColor);
+                            CalamityUtils.BroadcastLocalizedText(key, messageColor);
                         }
 
                         // Set Slime God to have interacted with all players
@@ -754,7 +754,8 @@ namespace CalamityMod.NPCs.SlimeGod
                 normalOnly.Add(ModContent.ItemType<ThankYouPainting>(), ThankYouPainting.DropInt);
 
                 // Equipment
-                normalOnly.Add(ModContent.ItemType<ManaPolarizer>());
+                // 16NOV2025: Ozzatron: item has been chosen as the "Expert gatekept" item for this Calamity boss
+                // normalOnly.Add(ModContent.ItemType<ManaPolarizer>());
             }
 
             npcLoot.Add(ModContent.ItemType<SlimeGodTrophy>(), 10);

@@ -90,8 +90,8 @@ namespace CalamityMod.Projectiles.Melee
                 else
                 {
                     float velocityScale = 1f;
-                    if (Owner.ActiveItem().shoot == Projectile.type)
-                        velocityScale = Owner.ActiveItem().shootSpeed * Projectile.scale;
+                    if (Owner.HeldItem.shoot == Projectile.type)
+                        velocityScale = Owner.HeldItem.shootSpeed * Projectile.scale;
 
                     // 14NOV2024: Ozzatron: clamped mouse position unnecessary, only used for direction
                     Vector2 slashDirection = Main.MouseWorld - Owner.RotatedRelativePoint(Owner.MountedCenter, true);

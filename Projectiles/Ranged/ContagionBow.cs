@@ -89,7 +89,7 @@ namespace CalamityMod.Projectiles.Ranged
                 {
                     if (!player.CantUseHoldout())
                     {
-                        float speed = player.ActiveItem().shootSpeed * Projectile.scale;
+                        float speed = player.HeldItem.shootSpeed * Projectile.scale;
                         Vector2 spawnPos = vector;
                         Vector2 direction = Main.screenPosition + new Vector2((float)Main.mouseX, (float)Main.mouseY) - spawnPos;
                         if (player.gravDir == -1f)

@@ -77,7 +77,7 @@ namespace CalamityMod.Projectiles.Ranged
                 timeToFire = true;
             }
 
-            bool canFire = !player.CantUseHoldout() && player.HasAmmo(player.ActiveItem());
+            bool canFire = !player.CantUseHoldout() && player.HasAmmo(player.HeldItem);
 
             if (Projectile.soundDelay <= 0 && canFire)
             {
@@ -92,13 +92,13 @@ namespace CalamityMod.Projectiles.Ranged
                 {
                     int type = ProjectileID.WoodenArrowFriendly; //Gets changed below anyways
                     float scaleFactor = 18f;
-                    int damage = player.GetWeaponDamage(player.ActiveItem());
-                    float knockBack = player.ActiveItem().knockBack;
+                    int damage = player.GetWeaponDamage(player.HeldItem);
+                    float knockBack = player.HeldItem.knockBack;
 
-                    player.PickAmmo(player.ActiveItem(), out type, out scaleFactor, out damage, out knockBack, out _);
+                    player.PickAmmo(player.HeldItem, out type, out scaleFactor, out damage, out knockBack, out _);
 
                     type = ModContent.ProjectileType<DrataliornusFlame>();
-                    knockBack = player.GetWeaponKnockback(player.ActiveItem(), knockBack);
+                    knockBack = player.GetWeaponKnockback(player.HeldItem, knockBack);
 
                     Vector2 playerPosition = player.RotatedRelativePoint(player.MountedCenter, true);
                     Projectile.velocity = Main.screenPosition - playerPosition;

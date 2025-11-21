@@ -117,7 +117,7 @@ namespace CalamityMod.Projectiles.Ranged
                 return;
 
             // Immediately killed if ammo is out            
-            if (!Owner.HasAmmo(Owner.ActiveItem()))
+            if (!Owner.HasAmmo(Owner.HeldItem))
             {
                 Projectile.Kill();
                 return;
@@ -150,7 +150,7 @@ namespace CalamityMod.Projectiles.Ranged
                 Sound3.Pitch = 0 - (PhotoTimer * 0.002f);
 
             // Consume ammo and retrieve projectile stats; has a chance to not consume ammo
-            Owner.PickAmmo(Owner.ActiveItem(), out _, out float shootSpeed, out int damage, out float knockback, out _, Main.rand.NextFloat() <= AmmoNotConsumeChance);
+            Owner.PickAmmo(Owner.HeldItem, out _, out float shootSpeed, out int damage, out float knockback, out _, Main.rand.Next(100) < AmmoSavedPercent);
 
             var source = Projectile.GetSource_FromThis();
             Vector2 position = armPosition + Projectile.velocity * 55f - verticalOffset * 10f;
@@ -193,7 +193,7 @@ namespace CalamityMod.Projectiles.Ranged
             Projectile.NewProjectile(source, position, velocity.RotatedByRandom(0.005f), ProjectileType<ExoFire>(), (int)(damage * (1 - PhotoTimer / 59.9f)), knockback, Projectile.owner, Main.rand.NextFloat(0f, 3f));
 
             // Shoots light bombs every once in a while, rate of which equals to the item's use time
-            if (ShootTimer >= Owner.ActiveItem().useTime * 10 && PhotoTimer == 0)
+            if (ShootTimer >= Owner.HeldItem.useTime * 10 && PhotoTimer == 0)
             {
                 ShootTimer = 0f;
 
@@ -212,11 +212,11 @@ namespace CalamityMod.Projectiles.Ranged
         public void RightClickAttack(Vector2 armPosition, Vector2 verticalOffset)
         {
             // Multiplied by the ratio of attack speed gained from modifiers
-            ShootTimer = (RightClickCooldown * Owner.ActiveItem().useTime / (float)LightBombCooldown) - 1f;
+            ShootTimer = (RightClickCooldown * Owner.HeldItem.useTime / (float)LightBombCooldown) - 1f;
             ForcedLifespan = ShootTimer;
 
             // Consume ammo and retrieve projectile stats
-            Owner.PickAmmo(Owner.ActiveItem(), out _, out float shootSpeed, out int damage, out float knockback, out _);
+            Owner.PickAmmo(Owner.HeldItem, out _, out float shootSpeed, out int damage, out float knockback, out _);
 
             var source = Projectile.GetSource_FromThis();
             Vector2 position = armPosition + Projectile.velocity * 55f - verticalOffset * 10f;

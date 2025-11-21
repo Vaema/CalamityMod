@@ -10,6 +10,7 @@ namespace CalamityMod.Items.Weapons.Ranged
     public class ConferenceCall : ModItem, ILocalizedModType
     {
         public new string LocalizationCategory => "Items.Weapons.Ranged";
+
         public override void SetDefaults()
         {
             Item.width = 66;
@@ -30,17 +31,7 @@ namespace CalamityMod.Items.Weapons.Ranged
             Item.useAmmo = AmmoID.Bullet;
         }
 
-        public override Vector2? HoldoutOffset()
-        {
-            return new Vector2(-10, 0);
-        }
-
-        public override bool CanConsumeAmmo(Item ammo, Player player)
-        {
-            if (Main.rand.Next(0, 100) < 50)
-                return false;
-            return true;
-        }
+        public override Vector2? HoldoutOffset() => new Vector2(-10, 0);
 
         public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)
         {

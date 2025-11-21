@@ -3,6 +3,7 @@ using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using CalamityMod.DataStructures;
+using CalamityMod.Enums;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria;
@@ -28,7 +29,7 @@ namespace CalamityMod.Graphics.Renderers.CalamityRenderers
 
         private static List<IDyeableShaderRenderer> RenderersToDrawThisFrame;
 
-        public override DrawLayer Layer => DrawLayer.Player;
+        public override GeneralDrawLayer Layer => GeneralDrawLayer.AfterPlayers;
 
         // This ignores MainTarget, and handles its own targets, so always call the draw methods.
         public override bool ShouldDraw => true;

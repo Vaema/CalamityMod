@@ -219,7 +219,7 @@ namespace CalamityMod.Projectiles.Melee
                         {
                             if (fancySwing) // Call down the bolt
                             {
-                                Owner.Calamity().GeneralScreenShakePower = 3f;
+                                Owner.SetScreenshake(3f);
                                 SoundStyle sound = new("CalamityMod/Sounds/Item/SkytideBolt");
                                 SoundEngine.PlaySound(sound with { Volume = 0.8f }, Projectile.Center);
                                 Projectile proj = Projectile.NewProjectileDirect(Projectile.GetSource_FromThis(), Owner.Center + new Vector2(0, -600), new Vector2(0, 10), ModContent.ProjectileType<DragoonBigBolt>(), (int)(Projectile.damage * 9), Projectile.knockBack, Projectile.owner, 0, 0.5f);
@@ -229,7 +229,7 @@ namespace CalamityMod.Projectiles.Melee
                             }
                             else if (redirected) // Redirect the bolt
                             {
-                                Owner.Calamity().GeneralScreenShakePower = 4.5f;
+                                Owner.SetScreenshake(4.5f);
                                 SoundStyle fire = new("CalamityMod/Sounds/Item/SkytideBolt");
                                 SoundEngine.PlaySound(fire with { Volume = 1f, Pitch = -0.2f }, Projectile.Center);
                                 SoundStyle fire2 = new("CalamityMod/Sounds/Item/AuricBulletHit");

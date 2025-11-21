@@ -101,7 +101,6 @@ namespace CalamityMod.Systems.Collections
                 "Salted Warlock",
                 "schmoovi",
                 "Sharktank6",
-                "Shayy", // Current dev. Listed as "Shay" on Patreon.
                 "SirChaos189",
                 "SkeletonHunter96",
                 "Taelishe",
@@ -240,7 +239,7 @@ namespace CalamityMod.Systems.Collections
                 "Cole",
                 "Colin",
                 "Colin V",
-                "Commmander Frostbite",
+                "Commander Frostbite",
                 "Conner",
                 "Coolguystorm YT",
                 "Corn M. Cobb",
@@ -619,7 +618,7 @@ namespace CalamityMod.Systems.Collections
                 "Shadoku",
                 "SharZz",
                 "Shaun",
-                "Shay", // There were two "Shay"s on the old list
+                //"Shayy", // Removed from circulation as the user in question committed acts undeserving of recognition
                 "sherk",
                 "Shifter",
                 "Shiny",

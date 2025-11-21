@@ -9,7 +9,7 @@ using CalamityMod.Items.Accessories;
 using CalamityMod.Items.Armor.Vanity;
 using CalamityMod.Items.LoreItems;
 using CalamityMod.Items.Placeables.Furniture.BossRelics;
-using CalamityMod.Items.Placeables.Furniture.DevPaintings;
+using CalamityMod.Items.Placeables.Furniture.Paintings;
 using CalamityMod.Items.Placeables.Furniture.Trophies;
 using CalamityMod.Items.Potions;
 using CalamityMod.Items.TreasureBags;
@@ -384,8 +384,7 @@ namespace CalamityMod.NPCs.OldDuke
                 if (Main.zenithWorld)
                 {
                     float screenShakePower = 10 * Utils.GetLerpValue(800f, 0f, NPC.Distance(Main.LocalPlayer.Center), true);
-                    if (Main.LocalPlayer.Calamity().GeneralScreenShakePower < screenShakePower)
-                        Main.LocalPlayer.Calamity().GeneralScreenShakePower = screenShakePower;
+                    Main.LocalPlayer.SetScreenshake(screenShakePower);
 
                     if (calamityGlobalNPC.newAI[0] == exhaustionGateValue)
                         SoundEngine.PlaySound(SoundID.NPCDeath64 with { Pitch = SoundID.NPCDeath64.Pitch - 0.9f, Volume = SoundID.NPCDeath64.Volume + 0.4f }, player.Center); // fart
@@ -2099,7 +2098,8 @@ namespace CalamityMod.NPCs.OldDuke
                 normalOnly.Add(ModContent.ItemType<TheOldReaper>(), 10);
 
                 // Equipment
-                normalOnly.Add(DropHelper.PerPlayer(ModContent.ItemType<OldDukeScales>()));
+                // 16NOV2025: Ozzatron: item has been chosen as the "Expert gatekept" item for this Calamity boss
+                // normalOnly.Add(DropHelper.PerPlayer(ModContent.ItemType<OldDukeScales>()));
 
                 // Vanity
                 normalOnly.Add(ModContent.ItemType<OldDukeMask>(), 7);

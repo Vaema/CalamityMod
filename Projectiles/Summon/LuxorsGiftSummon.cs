@@ -14,7 +14,6 @@ namespace CalamityMod.Projectiles.Summon
     public class LuxorsGiftSummon : ModProjectile, ILocalizedModType
     {
         public new string LocalizationCategory => "Projectiles.Summon";
-        private int dust = 3;
         public NPC targeted;
         public int attackTime = 0;
         public override void SetStaticDefaults()
@@ -57,7 +56,7 @@ namespace CalamityMod.Projectiles.Summon
             {
                 bool sparkly = Main.rand.NextBool(3);
                 Vector2 dustVel = -(Projectile.rotation - MathHelper.PiOver2).ToRotationVector2().RotatedByRandom(0.5f) * Main.rand.NextFloat(0.8f, 1.3f);
-                Dust dust = Dust.NewDustPerfect(Projectile.Center + Main.rand.NextVector2Circular(8, 8), sparkly ? 278 : ModContent.DustType<LightDust>(), dustVel * Main.rand.NextFloat(0.5f, 1.2f));
+                Dust dust = Dust.NewDustPerfect(Projectile.Center + Main.rand.NextVector2Circular(8, 8), sparkly ? DustID.FireworksRGB : ModContent.DustType<LightDust>(), dustVel * Main.rand.NextFloat(0.5f, 1.2f));
                 dust.noGravity = !sparkly;
                 dust.scale = Main.rand.NextFloat(0.45f, 0.6f) * (sparkly ? 1.6f : 1);
                 dust.color = Color.Lime;

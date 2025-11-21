@@ -47,7 +47,6 @@ namespace CalamityMod.NPCs.SunkenSea
         {
             base.SetDefaults();
             NPC.aiStyle = NPCAIStyleID.Snail;
-            AIType = NPCID.Snail;
             NPC.damage = 0;
             NPC.width = 56;
             NPC.height = 42;
@@ -61,8 +60,8 @@ namespace CalamityMod.NPCs.SunkenSea
             NPC.DeathSound = SoundID.NPCDeath1;
             NPC.GravityIgnoresLiquid = true;
             NPC.chaseable = false;
-            //Banner = NPC.type;
-            //BannerItem = ModContent.ItemType<SearslugBanner>();
+            Banner = NPC.type;
+            BannerItem = ModContent.ItemType<SearslugBanner>();
             NPC.catchItem = ModContent.ItemType<SearslugItem>();
             NPC.Calamity().VulnerableToHeat = false;
             NPC.Calamity().VulnerableToCold = true;
@@ -163,6 +162,7 @@ namespace CalamityMod.NPCs.SunkenSea
             {
                 Dust.NewDust(NPC.position, NPC.width, NPC.height, DustID.LavaMoss, hit.HitDirection, -1f, 0, default, 1f);
             }
+            CalamityUtils.SpawnGores(NPC, "Searslug", 2);
         }
 
         public override bool PreDraw(SpriteBatch spriteBatch, Vector2 screenPos, Color drawColor)

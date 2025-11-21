@@ -1,9 +1,12 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using CalamityMod.Buffs.DamageOverTime;
+using CalamityMod.DataStructures;
+using CalamityMod.Prefixes;
 using CalamityMod.UI.CalamitasEnchants;
 using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Input;
 using Terraria;
 using Terraria.Audio;
 using Terraria.GameContent.Prefixes;
@@ -42,6 +45,29 @@ namespace CalamityMod
         #endregion
 
         #region Reforging Algorithm
+        internal static int GetAccessoryReforge(Item item, UnifiedRandom rand, int currentPrefix)
+        {
+            if (CalamityServerConfig.Instance.SimplifyAccessoryReforge)
+            {
+                var pool = new HashSet<int>()
+                {
+                    PrefixID.Warding,
+                    PrefixID.Menacing,
+                    PrefixID.Lucky,
+                    PrefixID.Quick2,
+                    PrefixID.Violent,
+                    PrefixID.Arcane,
+                    ModContent.PrefixType<Silent>(),
+                    ModContent.PrefixType<Invigorating>(),
+                    ModContent.PrefixType<Dauntless>()
+                };
+
+                pool.Remove(currentPrefix);
+                return pool.ElementAt(rand.Next(0, pool.Count));
+            }
+            return -1; // Do Nothing if Config is off
+        }
+
         internal static int GetReworkedReforge(Item item, UnifiedRandom rand, int currentPrefix)
         {
             CalamityMod mod = CalamityMod.Instance;
@@ -62,7 +88,7 @@ namespace CalamityMod
                 int[][] accessoryReforgeTiers = new int[][]
                 {
                     /* 0 */ new int[] { PrefixID.Hard, PrefixID.Jagged, PrefixID.Brisk, PrefixID.Wild },
-                    /* 1 */ new int[] { PrefixID.Guarding, PrefixID.Spiked, PrefixID.Precise, PrefixID.Fleeting, PrefixID.Rash, GetCalPrefix("Cloaked") },
+                    /* 1 */ new int[] { PrefixID.Guarding, PrefixID.Spiked, PrefixID.Precise, PrefixID.Fleeting, PrefixID.Rash },
                     /* 2 */ new int[] { PrefixID.Armored, PrefixID.Angry, PrefixID.Hasty2, PrefixID.Intrepid, PrefixID.Arcane },
                     /* 3 */ new int[] { PrefixID.Warding, PrefixID.Menacing, PrefixID.Lucky, PrefixID.Quick2, PrefixID.Violent, GetCalPrefix("Silent") },
                 };
@@ -243,7 +269,7 @@ namespace CalamityMod
             if (Main.dedServ || mhk is null)
                 return "";
 
-            List<string> keys = mhk.GetAssignedKeys();
+            List<string> keys = mhk.GetAssignedKeysOrEmpty();
             if (keys.Count == 0)
                 return GetText("Misc.HotkeyNotBound").Value;
             else
@@ -271,6 +297,28 @@ namespace CalamityMod
             if (line != null)
                 line.Text = line.Text.Replace(replacedKey, newKey);
         }
+        /// <summary>
+        /// Shortcut for finding all of a specific string in the tooltip and replacing it with a new string<br/>
+        /// Typically used for dynamic tooltip updating. Consider overriding Tooltip or using String.Format for applying constants.
+        /// </summary>
+        /// <param name="tooltips">The tooltip list provided to a <b>ModifyTooltips</b> TML hook.</param>
+        /// <param name="replacedKey">The key to be replaced.</param>
+        /// <param name="replacedKey">The new key.</param>
+        public static void FindAndReplaceAll(this List<TooltipLine> tooltips, string replacedKey, string newKey)
+        {
+            foreach (TooltipLine line in tooltips)
+            {
+                if (!line.Text.Contains(replacedKey))
+                    continue;
+                //loops only 100 times at max per tooltip line to prevent any infinite loops
+                for (var i = 0; i < 100; i++)
+                {
+                    line.Text = line.Text.Replace(replacedKey, newKey);
+                    if (!line.Text.Contains(replacedKey))
+                        break;
+                }
+            }
+        }
 
         /// <summary>
         /// Shortcut for automatically placing one keybind within a tooltip. Requires the "[KEY]" string to be replaced.
@@ -284,6 +332,83 @@ namespace CalamityMod
 
             string finalKey = mhk.TooltipHotkeyString();
             tooltips.FindAndReplace("[KEY]", finalKey);
+        }
+
+        /// <summary>
+        /// Shortcut method for adding "You have already consumed this item" tooltip
+        /// </summary>
+        /// <param name="tooltips"></param>
+        /// <param name="tooltipSearchKey"></param>
+        public static void AddConsumedTooltip(this List<TooltipLine> tooltips, string tooltipSearchKey = "Tooltip1")
+        {
+            TooltipLine line = tooltips.FirstOrDefault(x => x.Mod == "Terraria" && x.Name == tooltipSearchKey);
+
+            if (line != null)
+                line.Text += "\n" + GetTextValue("Misc.GenericConsumedText");
+        }
+
+        public static Color FireDebuffColor => new(253, 107, 2);
+        public static Color SicknessDebuffColor => new(136, 198, 10);
+        public static Color WaterDebuffColor => new(105, 147, 255);
+        public static Color ColdDebuffColor => new(159, 230, 252);
+        public static Color ElectricDebuffColor => new(255, 245, 0);
+        public static Color BuffColor => new(255, 105, 237);
+        public static Color TypelessDebuffColor => new(230, 202, 250);
+        public static Color VulnHexDebuffColor => new(196, 35, 43);
+        public static Color MiracleBlightDebuffColor => Main.DiscoColor;
+
+        private static readonly Dictionary<int, List<(Color, float)>> debuffColorWeightsCache = [];
+
+        public static Color GetDebuffTooltipNameColor(int debuffId)
+        {
+            var color = TypelessDebuffColor;
+
+            if (debuffId == ModContent.BuffType<VulnerabilityHex>() || debuffId == ModContent.BuffType<TrueVulnerabilityHex>())
+            {
+                color = Color.Lerp(VulnHexDebuffColor, FireDebuffColor, (MathF.Sin(Main.GlobalTimeWrappedHourly * 2) + 1) / 4f);
+            }
+            else if (debuffId == ModContent.BuffType<MiracleBlight>())
+            {
+                color = MiracleBlightDebuffColor;
+            }
+            else if (BuffDatasets.DebuffDataset[debuffId] is not null)
+            {
+                if (!debuffColorWeightsCache.TryGetValue(debuffId, out var weights))
+                {
+                    weights =
+                    [
+                        (SicknessDebuffColor, BuffDatasets.DebuffDataset[debuffId].SicknessDebuffScaling),
+                        (FireDebuffColor, BuffDatasets.DebuffDataset[debuffId].HeatDebuffScaling),
+                        (WaterDebuffColor, BuffDatasets.DebuffDataset[debuffId].WaterDebuffScaling),
+                        (ElectricDebuffColor, BuffDatasets.DebuffDataset[debuffId].ElectricDebuffScaling),
+                        (ColdDebuffColor, BuffDatasets.DebuffDataset[debuffId].ColdDebuffScaling),
+                    ];
+                }
+
+                float totalWeight = 0;
+                Vector4 normalColor = new();
+
+                foreach (var item in weights)
+                {
+                    totalWeight += item.Item2;
+                    // ReSharper disable once PossiblyImpureMethodCallOnReadonlyVariable
+                    normalColor += item.Item1.ToVector4() * item.Item2;
+                }
+
+                if (totalWeight < 1)
+                {
+                    normalColor += TypelessDebuffColor.ToVector4() * (1 - totalWeight);
+                    totalWeight += (1 - totalWeight);
+                }
+
+                if (totalWeight != 0)
+                {
+                    normalColor /= totalWeight;
+                    color = new Color(normalColor);
+                }
+            }
+
+            return color;
         }
 
         private const float WorldInsertionOffset = 15f;
@@ -380,7 +505,7 @@ namespace CalamityMod
         public static Rectangle FixSwingHitbox(float hitboxWidth, float hitboxHeight)
         {
             Player player = Main.LocalPlayer;
-            Item item = player.ActiveItem();
+            Item item = player.HeldItem;
             float hitbox_X, hitbox_Y;
             float mountOffsetY = player.mount.PlayerOffsetHitbox;
 
@@ -584,7 +709,7 @@ namespace CalamityMod
                     showsOver = true;
             }
             //Fail if you have potion sickness
-            if (player.potionDelay > 0 || player.Calamity().potionTimer > 0)
+            if (player.potionDelay > 0)
                 showsOver = true;
 
             if (!showsOver)

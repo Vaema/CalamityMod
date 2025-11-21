@@ -10,7 +10,7 @@ using CalamityMod.Items.LoreItems;
 using CalamityMod.Items.Materials;
 using CalamityMod.Items.Mounts;
 using CalamityMod.Items.Placeables.Furniture.BossRelics;
-using CalamityMod.Items.Placeables.Furniture.DevPaintings;
+using CalamityMod.Items.Placeables.Furniture.Paintings;
 using CalamityMod.Items.Placeables.Furniture.Trophies;
 using CalamityMod.Items.Potions;
 using CalamityMod.Items.TreasureBags;
@@ -899,7 +899,7 @@ namespace CalamityMod.NPCs.ExoMechs.Ares
 
                             // Draedon comments on how foolish it is to run
                             if (Main.netMode != NetmodeID.MultiplayerClient)
-                                CalamityUtils.DisplayLocalizedText("Mods.CalamityMod.Status.Boss.DraedonAresEnrageText", Draedon.TextColor);
+                                CalamityUtils.BroadcastLocalizedText("Mods.CalamityMod.Status.Boss.DraedonAresEnrageText", Draedon.TextColor);
 
                             // Enrage
                             EnragedState = (float)Enraged.Yes;
@@ -1650,7 +1650,8 @@ namespace CalamityMod.NPCs.ExoMechs.Ares
 
                 // Equipment
                 normalOnly.Add(ModContent.ItemType<ExoThrone>());
-                normalOnly.Add(ModContent.ItemType<DraedonsHeart>());
+                // 16NOV2025: Ozzatron: item has been chosen as the "Expert gatekept" item for this Calamity boss
+                // normalOnly.Add(ModContent.ItemType<DraedonsHeart>());
 
                 // Vanity
                 // Higher chance due to how the drops work

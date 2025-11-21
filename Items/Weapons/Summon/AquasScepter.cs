@@ -27,8 +27,7 @@ namespace CalamityMod.Items.Weapons.Summon
             Item.mana = 50;
             Item.DamageType = DamageClass.Summon;
             Item.sentry = true;
-            Item.useTime = 30;
-            Item.useAnimation = 30;
+            Item.useTime = Item.useAnimation = 30;
             Item.useStyle = ItemUseStyleID.Swing;
             Item.knockBack = 6;
             Item.value = CalamityGlobalItem.RarityTurquoiseBuyPrice;

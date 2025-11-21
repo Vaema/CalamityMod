@@ -138,7 +138,7 @@ namespace CalamityMod.Projectiles.Ranged
             // Projectile shooting.
             if (shootThisFrame && Main.myPlayer == Projectile.owner)
             {
-                Item freedomStar = player.ActiveItem();
+                Item freedomStar = player.HeldItem;
 
                 // This grabs the weapon's current damage, taking current charge level into account.
                 int currentDamage = player.GetWeaponDamage(freedomStar);

@@ -80,7 +80,7 @@ namespace CalamityMod.Projectiles.Ranged
             Vector2 shootVelocity = Projectile.velocity.SafeNormalize(Vector2.UnitY) * 15;
 
             int bulletAMMO = ProjectileID.Bullet;
-            Owner.PickAmmo(Owner.ActiveItem(), out bulletAMMO, out float SpeedNoUse, out int bulletDamage, out float kBackNoUse, out int _);
+            Owner.PickAmmo(Owner.HeldItem, out bulletAMMO, out float SpeedNoUse, out int bulletDamage, out float kBackNoUse, out int _);
 
             // Fire Auric Bullets if the owner stops channeling or otherwise cannot use the weapon.
             if (Owner.CantUseHoldout() || discharging)
@@ -95,7 +95,7 @@ namespace CalamityMod.Projectiles.Ranged
                     Dust dust3 = Dust.NewDustPerfect(tipPosition - Projectile.velocity * 5, Main.rand.NextBool(4) ? 169 : 162, (Projectile.velocity * Main.rand.NextFloat(4f, 15.5f)).RotatedByRandom(0.3f));
                     dust3.noGravity = true;
                     dust3.scale = Main.rand.NextFloat(1.3f, 2.2f);
-                    Owner.Calamity().GeneralScreenShakePower = 1.85f;
+                    Owner.SetScreenshake(1.85f);
                     //recoil
                     Owner.velocity += -Projectile.velocity * fullRevShots * (Main.zenithWorld ? 0.028f : 0.013f);
                     Projectile.NewProjectile(Projectile.GetSource_FromThis(), tipPosition + Projectile.velocity * 5 + Main.rand.NextVector2Circular(7, 7), shootVelocity.RotatedByRandom(MathHelper.ToRadians(4f)), ModContent.ProjectileType<AuricBullet>(), (int)(Projectile.damage), Projectile.knockBack, Projectile.owner);

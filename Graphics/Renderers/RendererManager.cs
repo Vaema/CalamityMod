@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using CalamityMod.Enums;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria;
@@ -24,16 +25,8 @@ namespace CalamityMod.Graphics.Renderers
             if (Main.dedServ)
                 return;
 
-            Main.QueueMainThreadAction(() =>
-            {
-                // This hooks here, because doing it any sooner causes the screen position to be a frame behind.
-                On_Main.CheckMonoliths += DrawToTargets;
-                On_Main.DrawNPCs += DrawNPCRenderers;
-                On_Main.DrawProjectiles += DrawProjectileRenderers;
-                On_Main.DrawPlayers_AfterProjectiles += DrawPlayerRenderers;
-                On_Main.DrawBackgroundBlackFill += DrawBeforeTileRenderers;
-                On_Main.DrawInfernoRings += DrawAfterEverythingRenderers;
-            });
+            // This hooks here, because doing it any sooner causes the screen position to be a frame behind.
+            Main.QueueMainThreadAction(() => On_Main.CheckMonoliths += DrawToTargets);
         }
 
         public override void Unload()
@@ -43,24 +36,13 @@ namespace CalamityMod.Graphics.Renderers
 
             // Clear the cached renderers, so they can be readded on mod loading when initialized.
             Renderers.Clear();
-
-            Main.QueueMainThreadAction(() =>
-            {
-                // Supposed to be auto-unloaded, but considering TMods poor track record with actually doing this, manually unload them.
-                On_Main.CheckMonoliths -= DrawToTargets;
-                On_Main.DrawNPCs -= DrawNPCRenderers;
-                On_Main.DrawProjectiles -= DrawProjectileRenderers;
-                On_Main.DrawPlayers_AfterProjectiles -= DrawPlayerRenderers;
-                On_Main.DrawBackgroundBlackFill -= DrawBeforeTileRenderers;
-                On_Main.DrawInfernoRings -= DrawAfterEverythingRenderers;
-            });
         }
         #endregion
 
         #region Updating
         public override void PreUpdateEntities()
         {
-            if (Main.netMode is NetmodeID.Server)
+            if (Main.dedServ)
                 return;
 
             foreach (var renderer in Renderers)
@@ -69,7 +51,7 @@ namespace CalamityMod.Graphics.Renderers
 
         public override void PostUpdateEverything()
         {
-            if (Main.netMode is NetmodeID.Server)
+            if (Main.dedServ)
                 return;
 
             foreach (var renderer in Renderers)
@@ -78,6 +60,17 @@ namespace CalamityMod.Graphics.Renderers
         #endregion
 
         #region Drawing
+        internal static void DrawRendererAtLayer(GeneralDrawLayer drawLayer)
+        {
+            Main.spriteBatch.Begin(SpriteSortMode.Immediate, BlendState.AlphaBlend, Main.DefaultSamplerState, DepthStencilState.None, RasterizerState.CullCounterClockwise);
+
+            var renderers = Renderers.Where(renderer => renderer.ShouldDraw && renderer.Layer == drawLayer);
+            foreach (var renderer in renderers)
+                renderer.DrawTarget(Main.spriteBatch);
+
+            Main.spriteBatch.End();
+        }
+
         private void DrawToTargets(On_Main.orig_CheckMonoliths orig)
         {
             orig();
@@ -105,82 +98,6 @@ namespace CalamityMod.Graphics.Renderers
             }
 
             Main.instance.GraphicsDevice.SetRenderTarget(null);
-        }
-
-        private void DrawNPCRenderers(On_Main.orig_DrawNPCs orig, Main self, bool behindTiles)
-        {
-            orig(self, behindTiles);
-
-            if (behindTiles)
-                return;
-
-            var renderers = Renderers.Where(renderer => renderer.ShouldDraw && renderer.Layer is DrawLayer.NPC);
-
-            Main.spriteBatch.End();
-            Main.spriteBatch.Begin(SpriteSortMode.Immediate, BlendState.AlphaBlend, Main.DefaultSamplerState, DepthStencilState.None, RasterizerState.CullCounterClockwise);
-
-            foreach (var renderer in renderers)
-                renderer.DrawTarget(Main.spriteBatch);
-
-            Main.spriteBatch.ExitShaderRegion();
-        }
-
-        private void DrawProjectileRenderers(On_Main.orig_DrawProjectiles orig, Main self)
-        {
-            orig(self);
-
-            var renderers = Renderers.Where(renderer => renderer.ShouldDraw && renderer.Layer is DrawLayer.Projectile);
-
-            Main.spriteBatch.Begin(SpriteSortMode.Immediate, BlendState.AlphaBlend, Main.DefaultSamplerState, DepthStencilState.None, RasterizerState.CullCounterClockwise);
-
-            foreach (var renderer in renderers)
-                renderer.DrawTarget(Main.spriteBatch);
-
-            Main.spriteBatch.End();
-        }
-
-        private void DrawPlayerRenderers(On_Main.orig_DrawPlayers_AfterProjectiles orig, Main self)
-        {
-            orig(self);
-
-            var renderers = Renderers.Where(renderer => renderer.ShouldDraw && renderer.Layer is DrawLayer.Player);
-
-            Main.spriteBatch.Begin(SpriteSortMode.Immediate, BlendState.AlphaBlend, Main.DefaultSamplerState, DepthStencilState.None, RasterizerState.CullCounterClockwise);
-
-            foreach (var renderer in renderers)
-                renderer.DrawTarget(Main.spriteBatch);
-
-            Main.spriteBatch.End();
-        }
-
-        private void DrawBeforeTileRenderers(On_Main.orig_DrawBackgroundBlackFill orig, Main self)
-        {
-            var renderers = Renderers.Where(renderer => renderer.ShouldDraw && renderer.Layer is DrawLayer.BeforeTiles);
-
-            Main.spriteBatch.End();
-            Main.spriteBatch.Begin(SpriteSortMode.Immediate, BlendState.AlphaBlend, Main.DefaultSamplerState, DepthStencilState.None, RasterizerState.CullCounterClockwise);
-
-            foreach (var renderer in renderers)
-                renderer.DrawTarget(Main.spriteBatch);
-
-            Main.spriteBatch.End();
-            Main.spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, Main.DefaultSamplerState, DepthStencilState.None, RasterizerState.CullCounterClockwise, null, Main.Transform);
-
-            orig(self);
-        }
-
-        private void DrawAfterEverythingRenderers(On_Main.orig_DrawInfernoRings orig, Main self)
-        {
-            var renderers = Renderers.Where(renderer => renderer.ShouldDraw && renderer.Layer is DrawLayer.AfterEverything);
-
-            Main.spriteBatch.End();
-            Main.spriteBatch.Begin(SpriteSortMode.Immediate, BlendState.AlphaBlend, Main.DefaultSamplerState, DepthStencilState.None, RasterizerState.CullCounterClockwise);
-            foreach (var renderer in renderers)
-                renderer.DrawTarget(Main.spriteBatch);
-
-            Main.spriteBatch.End();
-            Main.spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, Main.DefaultSamplerState, DepthStencilState.None, RasterizerState.CullCounterClockwise, null, Main.Transform);
-            orig(self);
         }
         #endregion
     }

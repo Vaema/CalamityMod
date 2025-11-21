@@ -2,6 +2,7 @@
 using CalamityMod.Graphics.Primitives;
 using CalamityMod.Items.Weapons.Melee;
 using CalamityMod.Particles;
+using CalamityMod.Enums;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using System;
@@ -81,7 +82,7 @@ namespace CalamityMod.Projectiles.Melee
 
         public float WidthFunction(float completionRatio) => MathF.Max(50f * Scale * (MathF.Pow(1f - completionRatio, 2) * 2.75f), 0.35f);
         public Color ColorFunction(float completionRatio) => Color.Orange * (completionRatio > 0.1f ? 1f : completionRatio * 10f);
-        public void RenderPixelatedPrimitives(SpriteBatch spritebatch, PixelationPrimitiveLayer layer)
+        public void RenderPixelatedPrimitives(SpriteBatch spritebatch, GeneralDrawLayer layer)
         {
             GameShaders.Misc["CalamityMod:Bordernado"].UseSaturation(-0.2f);
             GameShaders.Misc["CalamityMod:Bordernado"].UseOpacity(fadeOut);

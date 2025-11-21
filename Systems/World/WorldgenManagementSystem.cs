@@ -67,9 +67,6 @@ namespace CalamityMod.Systems
                     progress.Message = Language.GetOrRegister("Mods.CalamityMod.UI.UnderworldStructures").Value;
                     CustomUnderworld.NewUnderworldStructures();
 
-                    progress.Message = Language.GetOrRegister("Mods.CalamityMod.UI.UnderworldPillars").Value;
-                    CustomUnderworld.NewUnderworldPillars();
-
                     progress.Message = Language.GetOrRegister("Mods.CalamityMod.UI.UnderworldTreesAndGrass").Value;
                     CustomUnderworld.AshTreesAndGrass();
 
@@ -104,6 +101,24 @@ namespace CalamityMod.Systems
                 {
                     progress.Message = Language.GetOrRegister("Mods.CalamityMod.UI.AstralChest").Value;
                     AstralChestGeneration.PlaceAstralChest();
+                }));
+            }
+
+            // Generate a large Living Mahogany tree on the surface of the jungle (or anywhere in Drunk world)
+            int livingTreeIndex = tasks.FindIndex(genpass => genpass.Name.Equals("Living Trees"));
+            if (livingTreeIndex != -1)
+            {
+                tasks.Insert(livingTreeIndex + 1, new PassLegacy("Living Mahogany Tree", (progress, config) =>
+                {
+                    progress.Message = Language.GetOrRegister("Mods.CalamityMod.UI.LivingMahoganyTree").Value;
+                    int attempts = 0;
+                    while (attempts < 1000)
+                    {
+                        attempts++;
+                        Point origin = WorldGen.RandomWorldPoint((int)Main.worldSurface + 25, 100, Main.maxTilesY - (int)Main.worldSurface - 125, 100);
+                        if (GiantHive.GrowLivingJungleTree(origin, GenVars.structures))
+                            break;
+                    }
                 }));
             }
 
@@ -162,7 +177,7 @@ namespace CalamityMod.Systems
                     while (attempts < 1000)
                     {
                         attempts++;
-                        Point origin = WorldGen.RandomWorldPoint((int)Main.worldSurface + 25, 20, Main.maxTilesY - (int)Main.worldSurface - 125, 20);
+                        Point origin = WorldGen.RandomWorldPoint((int)Main.worldSurface + 25, 100, Main.maxTilesY - (int)Main.UnderworldLayer + 125, 100);
                         if (GiantHive.CanPlaceGiantHive(origin, GenVars.structures))
                             break;
                     }
@@ -435,7 +450,7 @@ namespace CalamityMod.Systems
                     CalamityUtils.SpawnOre(TileID.Cobalt, 12E-05, 0.45f, 0.7f, 3, 8);
                     CalamityUtils.SpawnOre(TileID.Palladium, 12E-05, 0.45f, 0.7f, 3, 8);
 
-                    CalamityUtils.DisplayLocalizedText(key, messageColor);
+                    CalamityUtils.BroadcastLocalizedText(key, messageColor);
                 });
 
                 // Disable gen pass if Early Hardmode Rework is disabled.
@@ -668,12 +683,6 @@ namespace CalamityMod.Systems
                     }
                 }
             }
-
-            // Save the set of ores that got generated
-            OreTypes[0] = (ushort)GenVars.copperBar;
-            OreTypes[1] = (ushort)GenVars.ironBar;
-            OreTypes[2] = (ushort)GenVars.silverBar;
-            OreTypes[3] = (ushort)GenVars.goldBar;
         }
         #endregion
     }

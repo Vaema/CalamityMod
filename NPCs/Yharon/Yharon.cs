@@ -9,7 +9,7 @@ using CalamityMod.Items.LoreItems;
 using CalamityMod.Items.Materials;
 using CalamityMod.Items.Pets;
 using CalamityMod.Items.Placeables.Furniture.BossRelics;
-using CalamityMod.Items.Placeables.Furniture.DevPaintings;
+using CalamityMod.Items.Placeables.Furniture.Paintings;
 using CalamityMod.Items.Placeables.Furniture.Trophies;
 using CalamityMod.Items.Potions;
 using CalamityMod.Items.SummonItems;
@@ -1637,7 +1637,7 @@ namespace CalamityMod.NPCs.Yharon
                 string key = "Mods.CalamityMod.Status.Boss.FlameText";
                 Color messageColor = Color.Orange;
 
-                CalamityUtils.DisplayLocalizedText(key, messageColor);
+                CalamityUtils.BroadcastLocalizedText(key, messageColor);
             }
 
             int setDamage = contactDamage;
@@ -2987,7 +2987,8 @@ namespace CalamityMod.NPCs.Yharon
                 normalOnly.Add(DropHelper.PerPlayer(ModContent.ItemType<YharonSoulFragment>(), 1, 35, 40));
 
                 // Equipment
-                normalOnly.Add(DropHelper.PerPlayer(ModContent.ItemType<YharimsGift>()));
+                // 16NOV2025: Ozzatron: item has been chosen as the "Expert gatekept" item for this Calamity boss
+                // normalOnly.Add(DropHelper.PerPlayer(ModContent.ItemType<YharimsGift>()));
                 normalOnly.Add(DropHelper.PerPlayer(ModContent.ItemType<WingsofRebirth>()));
             }
 
@@ -3031,7 +3032,7 @@ namespace CalamityMod.NPCs.Yharon
 
                 string key = "Mods.CalamityMod.Status.Progression.AuricOreText";
                 Color messageColor = Color.Gold;
-                CalamityUtils.DisplayLocalizedText(key, messageColor);
+                CalamityUtils.BroadcastLocalizedText(key, messageColor);
             }
 
             // Mark Yharon as dead

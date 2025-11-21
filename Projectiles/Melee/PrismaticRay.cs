@@ -85,9 +85,7 @@ namespace CalamityMod.Projectiles.Melee
         public override void ExtraBehavior()
         {
             Projectile.rotation = Projectile.velocity.ToRotation();
-
-            if (Owner.Calamity().GeneralScreenShakePower < 3f)
-                Owner.Calamity().GeneralScreenShakePower = 3f;
+            Owner.SetScreenshake(3f);
 
             if (HitSoundCooldown > 0)
                 HitSoundCooldown--;

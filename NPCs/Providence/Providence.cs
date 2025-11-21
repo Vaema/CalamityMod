@@ -14,7 +14,7 @@ using CalamityMod.Items.Dyes;
 using CalamityMod.Items.LoreItems;
 using CalamityMod.Items.Materials;
 using CalamityMod.Items.Placeables.Furniture.BossRelics;
-using CalamityMod.Items.Placeables.Furniture.DevPaintings;
+using CalamityMod.Items.Placeables.Furniture.Paintings;
 using CalamityMod.Items.Placeables.Furniture.Trophies;
 using CalamityMod.Items.Potions;
 using CalamityMod.Items.SummonItems;
@@ -1339,7 +1339,7 @@ namespace CalamityMod.NPCs.Providence
                         string key = "Mods.CalamityMod.Status.Boss.ProfanedBossText";
                         Color messageColor = Color.Orange;
 
-                        CalamityUtils.DisplayLocalizedText(key, messageColor);
+                        CalamityUtils.BroadcastLocalizedText(key, messageColor);
                     }
 
                     // Inflict Icarus Folly
@@ -1964,8 +1964,8 @@ namespace CalamityMod.NPCs.Providence
 
                 CalamityUtils.SpawnOre(ModContent.TileType<UelibloomOre>(), 17E-05, 0.55f, 0.9f, 8, 14, TileID.Mud);
 
-                CalamityUtils.DisplayLocalizedText(key2, messageColor2);
-                CalamityUtils.DisplayLocalizedText(key3, messageColor3);
+                CalamityUtils.BroadcastLocalizedText(key2, messageColor2);
+                CalamityUtils.BroadcastLocalizedText(key3, messageColor3);
             }
 
             if (challenge)
@@ -2028,7 +2028,8 @@ namespace CalamityMod.NPCs.Providence
                 normalOnly.Add(ModContent.ItemType<PristineFury>(), 10);
 
                 // Equipment
-                normalOnly.Add(DropHelper.PerPlayer(ModContent.ItemType<BlazingCore>()));
+                // 16NOV2025: Ozzatron: item has been chosen as the "Expert gatekept" item for this Calamity boss
+                // normalOnly.Add(DropHelper.PerPlayer(ModContent.ItemType<BlazingCore>()));
 
                 // Materials
                 normalOnly.Add(ModContent.ItemType<DivineGeode>(), 1, 50, 60);

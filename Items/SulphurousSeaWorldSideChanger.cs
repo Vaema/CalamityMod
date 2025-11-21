@@ -43,7 +43,7 @@ namespace CalamityMod.Items
             {
                 Abyss.AtLeftSideOfWorld = true;
             }
-            CalamityUtils.DisplayLocalizedText(key, AcidRainEvent.TextColor);
+            CalamityUtils.BroadcastLocalizedText(key, AcidRainEvent.TextColor);
             return true;
         }
     }

@@ -100,7 +100,7 @@ namespace CalamityMod.Systems
             Stopwatch stopwatch = new Stopwatch();
             stopwatch.Start();
             Vector2 drawOffset = (Vector2)(Main.drawToScreen ? Vector2.Zero : new Vector2((float)Main.offScreenRange, (float)Main.offScreenRange)) - Main.screenPosition;
-            if (bg)
+            if (bg && !LiquidEdgeRenderer.Active)
             {
                 DrawLiquidBehindTiles(lavaStyle);
             }
@@ -760,13 +760,8 @@ namespace CalamityMod.Systems
             int num34 = -1;
             int num45 = -1;
             float num47 = 0f;
-            float num48 = 99999f;
-            float num49 = 99999f;
             int num50 = -1;
             int num2 = -1;
-            Rectangle value = default(Rectangle);
-            Rectangle value2 = default(Rectangle);
-            Vector2 origin = default(Vector2);
             for (int i = 0; i < currentMax; i++)
             {
                 if (waterfalls[i].type != 1)
@@ -916,11 +911,11 @@ namespace CalamityMod.Systems
                         int num39 = 2;
                         if (num25 == 1)
                         {
-                            DrawLavafall(num4, num5, num6, alpha, new Vector2((float)(num5 * 16 - 16), (float)(num6 * 16 + 16 - num39)) - Main.screenPosition, new Rectangle(num14, 24, 32, 16 - num38 - num39), color5, (SpriteEffects)1);
+                            DrawLavafall(num4, num5, num6, alpha, new Vector2((float)(num5 * 16 - 16), (float)(num6 * 16 + 16 - num39)) - Main.screenPosition, new Rectangle(num14, 24, 32, 16 - num38 - num39), (SpriteEffects)1);
                         }
                         else
                         {
-                            DrawLavafall(num4, num5, num6, alpha, new Vector2((float)(num5 * 16), (float)(num6 * 16 + 16 - num39)) - Main.screenPosition, new Rectangle(num14, 24, 32, 16 - num38 - num39), color5, (SpriteEffects)0);
+                            DrawLavafall(num4, num5, num6, alpha, new Vector2((float)(num5 * 16), (float)(num6 * 16 + 16 - num39)) - Main.screenPosition, new Rectangle(num14, 24, 32, 16 - num38 - num39), (SpriteEffects)0);
                         }
                     }
                     if (num7 == 0 && num24 != 0 && num8 == 1 && num9 != num10)
@@ -930,11 +925,11 @@ namespace CalamityMod.Systems
                         color5 = Color.White;
                         if (num9 == 1)
                         {
-                            DrawLavafall(num4, num5, num6, alpha, new Vector2((float)(num5 * 16 - 16), (float)(num6 * 16 + 16)) - Main.screenPosition, new Rectangle(num14, 24, 32, 16 - num38), color5, (SpriteEffects)1);
+                            DrawLavafall(num4, num5, num6, alpha, new Vector2((float)(num5 * 16 - 16), (float)(num6 * 16 + 16)) - Main.screenPosition, new Rectangle(num14, 24, 32, 16 - num38), (SpriteEffects)1);
                         }
                         else
                         {
-                            DrawLavafall(num4, num5, num6, alpha, new Vector2((float)(num5 * 16 - 16), (float)(num6 * 16 + 16)) - Main.screenPosition, new Rectangle(num14, 24, 32, 16 - num38), color5, (SpriteEffects)1);
+                            DrawLavafall(num4, num5, num6, alpha, new Vector2((float)(num5 * 16 - 16), (float)(num6 * 16 + 16)) - Main.screenPosition, new Rectangle(num14, 24, 32, 16 - num38), (SpriteEffects)1);
                         }
                     }
                     if (num11 != 0 && num26 == 0 && num27 == 1)
@@ -943,16 +938,16 @@ namespace CalamityMod.Systems
                         {
                             if (num13 != num4)
                             {
-                                DrawLavafall(num4, num5, num6, alpha, new Vector2((float)(num5 * 16), (float)(num6 * 16 + num3 + 8)) - Main.screenPosition, new Rectangle(num14, 0, 16, 16 - num38 - 8), color4, (SpriteEffects)1);
+                                DrawLavafall(num4, num5, num6, alpha, new Vector2((float)(num5 * 16), (float)(num6 * 16 + num3 + 8)) - Main.screenPosition, new Rectangle(num14, 0, 16, 16 - num38 - 8), (SpriteEffects)1);
                             }
                             else
                             {
-                                DrawLavafall(num4, num5, num6, alpha, new Vector2((float)(num5 * 16), (float)(num6 * 16 + num3 + 8)) - Main.screenPosition, new Rectangle(num14, 0, 16, 16 - num38 - 8), color5, (SpriteEffects)1);
+                                DrawLavafall(num4, num5, num6, alpha, new Vector2((float)(num5 * 16), (float)(num6 * 16 + num3 + 8)) - Main.screenPosition, new Rectangle(num14, 0, 16, 16 - num38 - 8), (SpriteEffects)1);
                             }
                         }
                         else
                         {
-                            DrawLavafall(num4, num5, num6, alpha, new Vector2((float)(num5 * 16), (float)(num6 * 16 + num3 + 8)) - Main.screenPosition, new Rectangle(num14, 0, 16, 16 - num38 - 8), color5, (SpriteEffects)0);
+                            DrawLavafall(num4, num5, num6, alpha, new Vector2((float)(num5 * 16), (float)(num6 * 16 + num3 + 8)) - Main.screenPosition, new Rectangle(num14, 0, 16, 16 - num38 - 8), (SpriteEffects)0);
                         }
                     }
                     if (num3 == 8 && num8 == 1 && num11 == 0)
@@ -961,20 +956,20 @@ namespace CalamityMod.Systems
                         {
                             if (num13 != num4)
                             {
-                                DrawLavafall(num13, num5, num6, alpha, new Vector2((float)(num5 * 16), (float)(num6 * 16)) - Main.screenPosition, new Rectangle(num14, 24, 32, 8), color4, (SpriteEffects)0);
+                                DrawLavafall(num13, num5, num6, alpha, new Vector2((float)(num5 * 16), (float)(num6 * 16)) - Main.screenPosition, new Rectangle(num14, 24, 32, 8), (SpriteEffects)0);
                             }
                             else
                             {
-                                DrawLavafall(num4, num5, num6, alpha, new Vector2((float)(num5 * 16), (float)(num6 * 16)) - Main.screenPosition, new Rectangle(num14, 24, 32, 8), color5, (SpriteEffects)0);
+                                DrawLavafall(num4, num5, num6, alpha, new Vector2((float)(num5 * 16), (float)(num6 * 16)) - Main.screenPosition, new Rectangle(num14, 24, 32, 8), (SpriteEffects)0);
                             }
                         }
                         else if (num13 != num4)
                         {
-                            DrawLavafall(num13, num5, num6, alpha, new Vector2((float)(num5 * 16 - 16), (float)(num6 * 16)) - Main.screenPosition, new Rectangle(num14, 24, 32, 8), color4, (SpriteEffects)1);
+                            DrawLavafall(num13, num5, num6, alpha, new Vector2((float)(num5 * 16 - 16), (float)(num6 * 16)) - Main.screenPosition, new Rectangle(num14, 24, 32, 8), (SpriteEffects)1);
                         }
                         else
                         {
-                            DrawLavafall(num4, num5, num6, alpha, new Vector2((float)(num5 * 16 - 16), (float)(num6 * 16)) - Main.screenPosition, new Rectangle(num14, 24, 32, 8), color5, (SpriteEffects)1);
+                            DrawLavafall(num4, num5, num6, alpha, new Vector2((float)(num5 * 16 - 16), (float)(num6 * 16)) - Main.screenPosition, new Rectangle(num14, 24, 32, 8), (SpriteEffects)1);
                         }
                     }
                     if (num24 != 0 && num7 == 0)
@@ -983,20 +978,20 @@ namespace CalamityMod.Systems
                         {
                             if (num13 != num4)
                             {
-                                DrawLavafall(num13, num5, num6, alpha, new Vector2((float)(num5 * 16 - 16), (float)(num6 * 16)) - Main.screenPosition, new Rectangle(num14, 24, 32, 16 - num38), color4, (SpriteEffects)1);
+                                DrawLavafall(num13, num5, num6, alpha, new Vector2((float)(num5 * 16 - 16), (float)(num6 * 16)) - Main.screenPosition, new Rectangle(num14, 24, 32, 16 - num38), (SpriteEffects)1);
                             }
                             else
                             {
-                                DrawLavafall(num4, num5, num6, alpha, new Vector2((float)(num5 * 16 - 16), (float)(num6 * 16)) - Main.screenPosition, new Rectangle(num14, 24, 32, 16 - num38), color5, (SpriteEffects)1);
+                                DrawLavafall(num4, num5, num6, alpha, new Vector2((float)(num5 * 16 - 16), (float)(num6 * 16)) - Main.screenPosition, new Rectangle(num14, 24, 32, 16 - num38), (SpriteEffects)1);
                             }
                         }
                         else if (num13 != num4)
                         {
-                            DrawLavafall(num13, num5, num6, alpha, new Vector2((float)(num5 * 16), (float)(num6 * 16)) - Main.screenPosition, new Rectangle(num14, 24, 32, 16 - num38), color4, (SpriteEffects)0);
+                            DrawLavafall(num13, num5, num6, alpha, new Vector2((float)(num5 * 16), (float)(num6 * 16)) - Main.screenPosition, new Rectangle(num14, 24, 32, 16 - num38), (SpriteEffects)0);
                         }
                         else
                         {
-                            DrawLavafall(num4, num5, num6, alpha, new Vector2((float)(num5 * 16), (float)(num6 * 16)) - Main.screenPosition, new Rectangle(num14, 24, 32, 16 - num38), color5, (SpriteEffects)0);
+                            DrawLavafall(num4, num5, num6, alpha, new Vector2((float)(num5 * 16), (float)(num6 * 16)) - Main.screenPosition, new Rectangle(num14, 24, 32, 16 - num38), (SpriteEffects)0);
                         }
                     }
                     if (num27 == 1 && num24 == 0 && num11 == 0)
@@ -1005,28 +1000,28 @@ namespace CalamityMod.Systems
                         {
                             if (num8 == 0)
                             {
-                                DrawLavafall(num4, num5, num6, alpha, new Vector2((float)(num5 * 16), (float)(num6 * 16 + num3)) - Main.screenPosition, new Rectangle(num14, 0, 16, 16 - num38), color5, (SpriteEffects)0);
+                                DrawLavafall(num4, num5, num6, alpha, new Vector2((float)(num5 * 16), (float)(num6 * 16 + num3)) - Main.screenPosition, new Rectangle(num14, 0, 16, 16 - num38), (SpriteEffects)0);
                             }
                             else if (num13 != num4)
                             {
-                                DrawLavafall(num13, num5, num6, alpha, new Vector2((float)(num5 * 16), (float)(num6 * 16)) - Main.screenPosition, new Rectangle(num14, 24, 32, 16 - num38), color4, (SpriteEffects)0);
+                                DrawLavafall(num13, num5, num6, alpha, new Vector2((float)(num5 * 16), (float)(num6 * 16)) - Main.screenPosition, new Rectangle(num14, 24, 32, 16 - num38), (SpriteEffects)0);
                             }
                             else
                             {
-                                DrawLavafall(num4, num5, num6, alpha, new Vector2((float)(num5 * 16), (float)(num6 * 16)) - Main.screenPosition, new Rectangle(num14, 24, 32, 16 - num38), color5, (SpriteEffects)0);
+                                DrawLavafall(num4, num5, num6, alpha, new Vector2((float)(num5 * 16), (float)(num6 * 16)) - Main.screenPosition, new Rectangle(num14, 24, 32, 16 - num38), (SpriteEffects)0);
                             }
                         }
                         else if (num8 == 0)
                         {
-                            DrawLavafall(num4, num5, num6, alpha, new Vector2((float)(num5 * 16), (float)(num6 * 16 + num3)) - Main.screenPosition, new Rectangle(num14, 0, 16, 16 - num38), color5, (SpriteEffects)1);
+                            DrawLavafall(num4, num5, num6, alpha, new Vector2((float)(num5 * 16), (float)(num6 * 16 + num3)) - Main.screenPosition, new Rectangle(num14, 0, 16, 16 - num38), (SpriteEffects)1);
                         }
                         else if (num13 != num4)
                         {
-                            DrawLavafall(num13, num5, num6, alpha, new Vector2((float)(num5 * 16 - 16), (float)(num6 * 16)) - Main.screenPosition, new Rectangle(num14, 24, 32, 16 - num38), color4, (SpriteEffects)1);
+                            DrawLavafall(num13, num5, num6, alpha, new Vector2((float)(num5 * 16 - 16), (float)(num6 * 16)) - Main.screenPosition, new Rectangle(num14, 24, 32, 16 - num38), (SpriteEffects)1);
                         }
                         else
                         {
-                            DrawLavafall(num4, num5, num6, alpha, new Vector2((float)(num5 * 16 - 16), (float)(num6 * 16)) - Main.screenPosition, new Rectangle(num14, 24, 32, 16 - num38), color5, (SpriteEffects)1);
+                            DrawLavafall(num4, num5, num6, alpha, new Vector2((float)(num5 * 16 - 16), (float)(num6 * 16)) - Main.screenPosition, new Rectangle(num14, 24, 32, 16 - num38), (SpriteEffects)1);
                         }
                     }
                     else
@@ -1050,7 +1045,7 @@ namespace CalamityMod.Systems
                                         {
                                             num46 = 4;
                                         }
-                                        DrawLavafall(num4, num5, num6, alpha, new Vector2((float)(num5 * 16 + num43), (float)(num6 * 16 + num3 + num46)) - Main.screenPosition, new Rectangle(16 + num14 + num44, 0, 2, 16 - num3), color5, (SpriteEffects)1);
+                                        DrawLavafall(num4, num5, num6, alpha, new Vector2((float)(num5 * 16 + num43), (float)(num6 * 16 + num3 + num46)) - Main.screenPosition, new Rectangle(16 + num14 + num44, 0, 2, 16 - num3), (SpriteEffects)1);
                                     }
                                 }
                                 else
@@ -1064,7 +1059,7 @@ namespace CalamityMod.Systems
                                     {
                                         height2 = 8;
                                     }
-                                    DrawLavafall(num4, num5, num6, alpha, new Vector2((float)(num5 * 16), (float)(num6 * 16 + num3)) - Main.screenPosition, new Rectangle(16 + num14, 0, 16, height2), color5, (SpriteEffects)1);
+                                    DrawLavafall(num4, num5, num6, alpha, new Vector2((float)(num5 * 16), (float)(num6 * 16 + num3)) - Main.screenPosition, new Rectangle(16 + num14, 0, 16, height2), (SpriteEffects)1);
                                 }
                                 break;
                             case -1:
@@ -1084,7 +1079,7 @@ namespace CalamityMod.Systems
                                         {
                                             num42 = 4;
                                         }
-                                        DrawLavafall(num4, num5, num6, alpha, new Vector2((float)(num5 * 16 + num40), (float)(num6 * 16 + num3 + num42)) - Main.screenPosition, new Rectangle(16 + num14 + num41, 0, 2, 16 - num3), color5, (SpriteEffects)1);
+                                        DrawLavafall(num4, num5, num6, alpha, new Vector2((float)(num5 * 16 + num40), (float)(num6 * 16 + num3 + num42)) - Main.screenPosition, new Rectangle(16 + num14 + num41, 0, 2, 16 - num3), (SpriteEffects)1);
                                     }
                                 }
                                 else
@@ -1098,7 +1093,7 @@ namespace CalamityMod.Systems
                                     {
                                         height = 8;
                                     }
-                                    DrawLavafall(num4, num5, num6, alpha, new Vector2((float)(num5 * 16), (float)(num6 * 16 + num3)) - Main.screenPosition, new Rectangle(16 + num14, 0, 16, height), color5, (SpriteEffects)0);
+                                    DrawLavafall(num4, num5, num6, alpha, new Vector2((float)(num5 * 16), (float)(num6 * 16 + num3)) - Main.screenPosition, new Rectangle(16 + num14, 0, 16, height), (SpriteEffects)0);
                                 }
                                 break;
                             case 0:
@@ -1106,7 +1101,7 @@ namespace CalamityMod.Systems
                                 {
                                     if (Main.tile[num5, num6].LiquidAmount <= 0 || Main.tile[num5, num6].IsHalfBlock)
                                     {
-                                        DrawLavafall(num4, num5, num6, alpha, new Vector2((float)(num5 * 16), (float)(num6 * 16 + num3)) - Main.screenPosition, new Rectangle(16 + num14, 0, 16, 16), color5, (SpriteEffects)0);
+                                        DrawLavafall(num4, num5, num6, alpha, new Vector2((float)(num5 * 16), (float)(num6 * 16 + num3)) - Main.screenPosition, new Rectangle(16 + num14, 0, 16, 16), (SpriteEffects)0);
                                     }
                                     k = 1000;
                                 }
@@ -1143,10 +1138,10 @@ namespace CalamityMod.Systems
             Main.tileSolid[546] = true;
         }
 
-        private void DrawLavafall(int waterfallType, int x, int y, float opacity, Vector2 position, Rectangle sourceRect, Color color, SpriteEffects effects)
+        private void DrawLavafall(int waterfallType, int x, int y, float opacity, Vector2 position, Rectangle sourceRect, SpriteEffects effects)
         {
             Texture2D value = Textures.fall[waterfallType].Value;
-            Main.spriteBatch.Draw(value, position, (Rectangle?)sourceRect, color, 0f, default, 1f, effects, 0f);
+            Main.spriteBatch.Draw(value, position, (Rectangle?)sourceRect, Lighting.GetColor(x, y) * opacity, 0f, default, 1f, effects, 0f);
         }
 
         private static float GetLavafallAlpha(float Alpha, int maxSteps, int y, int s, Tile tileCache)

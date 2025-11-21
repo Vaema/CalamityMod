@@ -24,6 +24,17 @@ namespace CalamityMod
         }
 
         /// <summary>
+        /// Sets a player's screenshake value. Automatically checks to ensure it will not override a stronger screenshake.
+        /// </summary>
+        /// <param name="player">The player to add screenshake to.</param>
+        /// <param name="value">The intensity of the screenshake.</param>
+        public static void SetScreenshake(this Player player, float value)
+        {
+            if (player.Calamity().GeneralScreenShakePower < value)
+                player.Calamity().GeneralScreenShakePower = value;
+        }
+
+        /// <summary>
         /// Adds screenshake to the local player, using the given position and range to determine whether the player is able to see the screenshake.
         /// </summary>
         /// <param name="position">The center of the screenshake, where it is most intense.</param>

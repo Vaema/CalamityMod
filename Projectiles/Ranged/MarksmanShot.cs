@@ -193,7 +193,7 @@ namespace CalamityMod.Projectiles.Ranged
             SoundEngine.PlaySound(RicoshotCoin.BlingHitSound, struckCoin.Center);
 
             // Apply a little screenshake
-            Main.player[Projectile.owner].Calamity().GeneralScreenShakePower = 5;
+            Main.player[Projectile.owner].SetScreenshake(5f);
 
             // Kill the struck coin immediately after marking it as having been struck.
             struckCoin.localAI[0] = NumRicochets;

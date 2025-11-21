@@ -94,7 +94,6 @@ namespace CalamityMod.Projectiles.Summon
 
         public void ApplyMinionBuffs()
         {
-            // Maintain or remove the Mechworm buff from the owner.
             Owner.AddBuff(ModContent.BuffType<MoonFistBuff>(), 3600);
             if (Owner.dead)
                 Owner.Calamity().MoonFist = false;

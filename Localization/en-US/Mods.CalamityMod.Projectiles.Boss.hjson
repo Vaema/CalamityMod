@@ -36,6 +36,14 @@ BrimstoneTargetRay.DisplayName: Brimstone Target Ray
 BrimstoneWave.DisplayName: Brimstone Flame Skull
 BrokenApolloLens.DisplayName: Lens
 BrokenArtemisLens.DisplayName: Lens
+BurningBolt.DisplayName: Burning Bolt
+BurningFireblast.DisplayName: Burning Fireblast
+BurningGigablast.DisplayName: Burning Gigablast
+CalamitousDart.DisplayName: Calamitous Dart
+CalamitousExplosion.DisplayName: Calamitous Explosion
+CalamitousFireball.DisplayName: Calamitous Fireball
+CataclysmicFlame.DisplayName: Cataclysmic Flame
+CatastrophicCinder.DisplayName: Catastrophic Cinder
 CrimulanSpike.DisplayName: Crimulan Spike
 CursedFire.DisplayName: Eye Fire
 DarkEnergyBall.DisplayName: Dark Energy
@@ -51,9 +59,12 @@ DoGBeam.DisplayName: Portal Laser
 DoGBeamPortal.DisplayName: Beam Portal
 DoGDeath.DisplayName: Death Beam
 DoGDeathBoom.DisplayName: Cosmic Explosion
-DoGFire.DisplayName: Death Fire
+DoGFire.DisplayName: Faith Incinerator
+DoGLaserWalls.DisplayName: God's Bane Doombeam Array
+DoGLaserWallsBigBeam.DisplayName: Hyperdeath Rift Ripper
 DoGP1EndPortal.DisplayName: Portal
-DoGTeleportRift.DisplayName: Rift
+DoGRiftCrack.DisplayName: DoG Distortion Crack
+DoGTeleportRift.DisplayName: DoG Distortion Rift
 DoGWingdings.DisplayName: Ramblings of Wing DoGster
 DraedonSummonLaser.DisplayName: Giant Fuck-off Deathray of Doom
 DyingSun.DisplayName: Dying Sun
@@ -124,8 +135,6 @@ ProfanedSpear.DisplayName: Profaned Spear
 ProvidenceCrystal.DisplayName: Holy Crystal
 ProvidenceCrystalShard.DisplayName: Holy Crystal Shard
 ProvidenceHolyRay.DisplayName: Holy Ray
-QueenBeenade.DisplayName: Queen Beenade
-QueenBeenadeBee.DisplayName: Queen Beenade Bee
 RavagerBlast.DisplayName: Ravaging Laser
 RavagerBlaster.DisplayName: Ravager Blaster
 RavagerFlame.DisplayName: Blue Flame
@@ -166,3 +175,5 @@ WaterSpear.DisplayName: Water Spear
 YharonBulletHellVortex.DisplayName: Bullet Hell Vortex
 YharonFireball.DisplayName: Dragon Fireball
 YharonFireball2.DisplayName: Dragon Fireball
+FriendlyLaserWallBeam.DisplayName: God's Bane Doombeam
+HyperdeathRiftScepterBeam.DisplayName: Hyperdeath Rift Scepter Beam

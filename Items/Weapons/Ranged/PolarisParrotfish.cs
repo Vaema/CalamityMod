@@ -58,7 +58,7 @@ namespace CalamityMod.Items.Weapons.Ranged
                     Happy = false;
                     player.itemTime = 200;
                     player.itemAnimation = 200;
-                    player.Calamity().GeneralScreenShakePower = 26f;
+                    player.SetScreenshake(26f);
                     player.AddBuff(BuffID.Obstructed, 600);
                     Main.NewText(CalamityUtils.GetTextValue("Misc.Polaris0"), 255, 0, 0);
                     SoundEngine.PlaySound(Squeak with { Pitch = -1f }, player.Center);

@@ -1,5 +1,4 @@
 ﻿using System.ComponentModel;
-using System.Reflection;
 using System.Runtime.Serialization;
 using CalamityMod.Enums;
 using CalamityMod.UI;
@@ -8,7 +7,6 @@ using CalamityMod.UI.Rippers;
 using CalamityMod.UI.SulphurousWaterMeter;
 using Terraria;
 using Terraria.Localization;
-using Terraria.ModLoader;
 using Terraria.ModLoader.Config;
 
 namespace CalamityMod
@@ -30,7 +28,7 @@ namespace CalamityMod
 
         #region Graphics Changes
         [Header("Graphics")]
-        
+
         [BackgroundColor(192, 54, 64, 192)]
         [DefaultValue(false)]
         public bool DisableGravityScreenSwap { get; set; }
@@ -54,6 +52,10 @@ namespace CalamityMod
         [BackgroundColor(192, 54, 64, 192)]
         [DefaultValue(true)]
         public bool SunkenSeaBackgroundDistortion { get; set; }
+
+        [BackgroundColor(192, 54, 64, 192)]
+        [DefaultValue(true)]
+        public bool FancyBackgroundVisuals { get; set; }
 
         private const int MinParticleLimit = 500;
         private const int MaxParticleLimit = 10000;
@@ -106,12 +108,8 @@ namespace CalamityMod
         public bool DebuffDisplay { get; set; }
 
         [BackgroundColor(192, 54, 64, 192)]
-        [SliderColor(224, 165, 56, 128)]
-        [Range(0f, 2f)]
-        [DefaultValue(2f)]
-        [Increment(1f)]
-        [DrawTicks]
-        public float CooldownDisplay { get; set; }
+        [DefaultValue(CooldownDisplayOptions.Full)]
+        public CooldownDisplayOptions CooldownDisplay { get; set; }
 
         [BackgroundColor(192, 54, 64, 192)]
         [DefaultValue(true)]
@@ -262,8 +260,6 @@ namespace CalamityMod
         public bool FasterFallHotkey { get; set; }
 
         [BackgroundColor(192, 54, 64, 192)]
-        [SliderColor(224, 165, 56, 128)]
-        [DrawTicks]
         [DefaultValue(SetBonusDoubleTapOptions.Auto)]
         public SetBonusDoubleTapOptions SetBonusDoubleTap { get; set; }
 
@@ -301,6 +297,11 @@ namespace CalamityMod
 
         [Header("Gameplay")]
         #region General Gameplay Changes
+
+        [BackgroundColor(192, 54, 64, 192)]
+        [DefaultValue(true)]
+        public bool SimplifyAccessoryReforge { get; set; }
+
         [BackgroundColor(192, 54, 64, 192)]
         [DefaultValue(true)]
         public bool RemoveReforgeRNG { get; set; }

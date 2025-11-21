@@ -239,8 +239,11 @@ namespace CalamityMod.Projectiles.Melee
             if ((useAnim > 0 || DrawUnconditionally) && Owner.ItemAnimationActive)
             {
                 Asset<Texture2D> tex = ModContent.Request<Texture2D>(Texture);
+                Asset<Texture2D> swoosh = ModContent.Request<Texture2D>("CalamityMod/Particles/CircularSmearSmokey");
 
                 float r = FlipAsSword ? MathHelper.ToRadians(90) : 0f;
+
+                Main.EntitySpriteDraw(swoosh.Value, Owner.Center - Main.screenPosition, null, Color.Turquoise with { A = 0 } * (float)Math.Pow(fadeIn, 3), Projectile.rotation + MathHelper.PiOver4 * Owner.direction + RotationOffset * 1.75f, swoosh.Size() * 0.5f, Projectile.scale * 2f, spriteEffects != SpriteEffects.None ? spriteEffects : (FlipAsSword ? SpriteEffects.FlipHorizontally : SpriteEffects.None));
 
                 for (int i = 0; i < 25; i++)
                 {

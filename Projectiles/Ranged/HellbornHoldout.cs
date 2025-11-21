@@ -111,7 +111,7 @@ namespace CalamityMod.Projectiles.Ranged
                             for (int i = 0; i < 2; i++)
                             {
                                 Vector2 dustPos = Projectile.Center + (i * MathHelper.Pi + drawRot * 0.25f + MathHelper.PiOver2).ToRotationVector2().RotatedByRandom(0.5f) * 35f * fade;
-                                Dust dust = Dust.NewDustPerfect(dustPos, 278, (i * MathHelper.Pi + (drawRot * Projectile.direction) * 0.25f * Math.Sign(Projectile.velocity.X)).ToRotationVector2().RotatedBy(MathHelper.ToRadians(180f) * (Projectile.direction == 1 ? 0 : 1)) * -3f * Main.rand.NextFloat(0.5f, 1f) * fade);
+                                Dust dust = Dust.NewDustPerfect(dustPos, DustID.FireworksRGB, (i * MathHelper.Pi + (drawRot * Projectile.direction) * 0.25f * Math.Sign(Projectile.velocity.X)).ToRotationVector2().RotatedBy(MathHelper.ToRadians(180f) * (Projectile.direction == 1 ? 0 : 1)) * -3f * Main.rand.NextFloat(0.5f, 1f) * fade);
                                 dust.noGravity = true;
                                 dust.scale = Main.rand.NextFloat(0.42f, 0.62f);
                                 dust.color = Color.Lerp(Color.Orange, Color.Red, Main.rand.NextFloat(0f, 1f));
@@ -123,7 +123,7 @@ namespace CalamityMod.Projectiles.Ranged
                             for (int i = 0; i < 3; i++)
                             {
                                 Vector2 dustPos = Projectile.Center + (i * MathHelper.Pi + drawRot * 0.5f + MathHelper.PiOver2).ToRotationVector2().RotatedByRandom(0.5f) * 87f * fade;
-                                Dust dust = Dust.NewDustPerfect(dustPos, 267, (i * MathHelper.Pi + (drawRot * Projectile.direction) * 0.5f * Math.Sign(Projectile.velocity.X)).ToRotationVector2().RotatedBy(MathHelper.ToRadians(180f) * (Projectile.direction == 1 ? 0 : 1)) * -7f * Main.rand.NextFloat(0.5f, 1f) * fade);
+                                Dust dust = Dust.NewDustPerfect(dustPos, DustID.RainbowMk2, (i * MathHelper.Pi + (drawRot * Projectile.direction) * 0.5f * Math.Sign(Projectile.velocity.X)).ToRotationVector2().RotatedBy(MathHelper.ToRadians(180f) * (Projectile.direction == 1 ? 0 : 1)) * -7f * Main.rand.NextFloat(0.5f, 1f) * fade);
                                 dust.noGravity = true;
                                 dust.scale = Main.rand.NextFloat(0.62f, 0.82f);
                                 dust.color = Color.Lerp(Color.Orange, Color.Red, Main.rand.NextFloat(0f, 1f));
@@ -135,7 +135,7 @@ namespace CalamityMod.Projectiles.Ranged
                 {
                     if (Owner.Calamity().hellbornShots > 0)
                     {
-                        Owner.Calamity().GeneralScreenShakePower = 5f;
+                        Owner.SetScreenshake(5f);
                         OffsetLengthFromArm -= 35f;
                         cooldownTimer = Owner.itemAnimationMax * 2;
                         Owner.Calamity().hellbornShots--;
@@ -146,16 +146,19 @@ namespace CalamityMod.Projectiles.Ranged
 
                         Owner.velocity += shootVelocity * -0.68f;
 
-                        Projectile.NewProjectile(Projectile.GetSource_FromThis(), GunTipPosition, shootVelocity, ModContent.ProjectileType<HellbornProj>(), Projectile.damage, 0, Projectile.owner);
-                        Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center, -shootVelocity.RotatedBy(0.75f * Projectile.direction) * 1f, ModContent.ProjectileType<HellbornShell>(), 0, 0, Projectile.owner);
+                        if (Main.myPlayer == Projectile.owner)
+                        {
+                            Projectile.NewProjectile(Projectile.GetSource_FromThis(), GunTipPosition, shootVelocity, ModContent.ProjectileType<HellbornProj>(), Projectile.damage, 0, Projectile.owner);
+                            Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center, -shootVelocity.RotatedBy(0.75f * Projectile.direction) * 1f, ModContent.ProjectileType<HellbornShell>(), 0, 0, Projectile.owner);
+                        }
 
                         for (int i = 0; i <= 13; i++)
                         {
-                            Dust dust = Dust.NewDustPerfect(GunTipPosition, 303, shootVelocity.RotatedByRandom(0.5f) * Main.rand.NextFloat(0.2f, 1.5f), 80, default, Main.rand.NextFloat(0.4f, 1.3f));
+                            Dust dust = Dust.NewDustPerfect(GunTipPosition, DustID.SteampunkSteam, shootVelocity.RotatedByRandom(0.5f) * Main.rand.NextFloat(0.2f, 1.5f), 80, default, Main.rand.NextFloat(0.4f, 1.3f));
                             dust.noGravity = false;
                             dust.color = Color.White;
 
-                            Dust dust2 = Dust.NewDustPerfect(GunTipPosition, 278, shootVelocity.RotatedByRandom(0.5f) * Main.rand.NextFloat(0.1f, 1f));
+                            Dust dust2 = Dust.NewDustPerfect(GunTipPosition, DustID.FireworksRGB, shootVelocity.RotatedByRandom(0.5f) * Main.rand.NextFloat(0.1f, 1f));
                             dust2.noGravity = true;
                             dust2.scale = Main.rand.NextFloat(0.52f, 0.72f);
                             dust2.color = Color.Lerp(Color.Orange, Color.Red, Main.rand.NextFloat(0f, 1f));

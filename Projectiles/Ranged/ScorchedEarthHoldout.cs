@@ -67,11 +67,12 @@ namespace CalamityMod.Projectiles.Ranged
 
             // Every time we shoot we use ammo.
             // With this method we also use the item's stats, like the shoot speed, or the type of ammo it was used.
-            Owner.PickAmmo(item, out _, out float projSpeed, out int damage, out float knockback, out int rocketType, Main.rand.Next(100) > 50); // 50% ammo conservation
+            Owner.PickAmmo(item, out _, out float projSpeed, out int damage, out float knockback, out int rocketType);
 
             // Spawns the projectile.
             Vector2 shootVelocity = Projectile.velocity.SafeNormalize(Vector2.UnitY) * 12;
-            Projectile.NewProjectile(Projectile.GetSource_FromThis(), GunTipPosition, shootVelocity.RotatedByRandom(MathHelper.ToRadians(10f)), ModContent.ProjectileType<ScorchedEarthRocket>(), damage, knockback, Projectile.owner, rocketType);
+            if (Main.myPlayer == Projectile.owner)
+                Projectile.NewProjectile(Projectile.GetSource_FromThis(), GunTipPosition, shootVelocity.RotatedByRandom(MathHelper.ToRadians(10f)), ModContent.ProjectileType<ScorchedEarthRocket>(), damage, knockback, Projectile.owner, rocketType);
 
             // Inside here go all the things that dedicated servers shouldn't spend resources on.
             // Like visuals and sounds.

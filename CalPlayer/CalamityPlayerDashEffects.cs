@@ -1,6 +1,5 @@
 ﻿using System;
 using CalamityMod.Balancing;
-using CalamityMod.Buffs.StatDebuffs;
 using CalamityMod.CalPlayer.Dashes;
 using CalamityMod.EntitySources;
 using CalamityMod.Enums;
@@ -71,9 +70,10 @@ namespace CalamityMod.CalPlayer
                 UsedDash.DashStartupEffects(Player);
                 UsedDash.dashTime++;
                 return;
-            } else if (HasCustomDash && UsedDash.dashStartup > 0 && Player.dashDelay < 0 && UsedDash.dashTime == UsedDash.dashStartup )
+            }
+            else if (HasCustomDash && UsedDash.dashStartup > 0 && Player.dashDelay < 0 && UsedDash.dashTime == UsedDash.dashStartup)
             {
-                if (DoADash(UsedDash.CalculateDashSpeed(Player),true))
+                if (DoADash(UsedDash.CalculateDashSpeed(Player), true))
                     UsedDash.OnDashEffects(Player);
             }
 
@@ -102,7 +102,7 @@ namespace CalamityMod.CalPlayer
 
                             // Duplicated from the way TML edits vanilla ram dash damage (and Shield of Cthulhu)
                             int dashDamage = (int)Player.GetTotalDamage(hitContext.damageClass).ApplyTo(hitContext.BaseDamage);
-                            
+
                             Projectile ram = Projectile.NewProjectileDirect(Player.GetSource_FromThis(), n.Center, Vector2.Zero, ModContent.ProjectileType<DirectStrike>(), dashDamage, 0f, Player.whoAmI, n.whoAmI);
                             ram.DamageType = hitContext.damageClass;
 
@@ -144,7 +144,7 @@ namespace CalamityMod.CalPlayer
 
                 // Handle mid-dash effects.
                 UsedDash.MidDashEffects(Player, ref dashSpeed, ref dashSpeedDecelerationFactor, ref runSpeedDecelerationFactor);
-                int VerticalOmnidashCap = DashID == GodslayerArmorDash.ID ? 120 : 25;
+                int VerticalOmnidashCap = DashID == GodslayerArmorDash.ID ? 75 : 25;
                 if (UsedDash.IsOmnidirectional && VerticalOmnidashTimer < VerticalOmnidashCap)
                 {
                     VerticalOmnidashTimer++;
@@ -199,7 +199,7 @@ namespace CalamityMod.CalPlayer
                     }
 
                     // Dash delay depends on the type of dash used.
-                    if (!(HasCustomDash && UsedDash.dashStartup > 0 && Player.dashDelay < 0 && UsedDash.dashTime <= UsedDash.dashStartup+10))
+                    if (!(HasCustomDash && UsedDash.dashStartup > 0 && Player.dashDelay < 0 && UsedDash.dashTime <= UsedDash.dashStartup + 10))
                         Player.dashDelay = dashDelayToApply;
 
                     if (UsedDash.IsOmnidirectional)
@@ -251,7 +251,7 @@ namespace CalamityMod.CalPlayer
             bool dashWasExecuted = false;
 
             // If the manual hotkey is bound, standard Terraria dashes cannot be triggered by double tapping.
-            var manualDashHotkeys = CalamityKeybinds.DashHotkey.GetAssignedKeys();
+            var manualDashHotkeys = CalamityKeybinds.DashHotkey.GetAssignedKeysOrEmpty();
             bool manualHotkeyBound = (manualDashHotkeys?.Count ?? 0) > 0;
             bool pressedManualHotkey = manualHotkeyBound && (CalamityKeybinds.DashHotkey.JustPressed || forceDash);
 
@@ -595,7 +595,7 @@ namespace CalamityMod.CalPlayer
                     if (myRect.Intersects(npcHitbox) && (n.noTileCollide || Collision.CanHit(Player.position, Player.width, Player.height, n.position, n.width, n.height)))
                     {
                         int hitDirection = Math.Sign(Player.velocity.X);
-                        
+
                         // Use the player's facing direction as a fallback if they are not making any horizontal movement.
                         if (hitDirection == 0)
                             hitDirection = Player.direction;

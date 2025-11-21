@@ -73,14 +73,14 @@ namespace CalamityMod.NPCs
                 string key = "Mods.CalamityMod.Status.Boss.GhostBossText2";
                 Color messageColor = Color.Cyan;
 
-                CalamityUtils.DisplayLocalizedText(key, messageColor);
+                CalamityUtils.BroadcastLocalizedText(key, messageColor);
             }
             else if (ghostKillCount == 20)
             {
                 string key = "Mods.CalamityMod.Status.Boss.GhostBossText3";
                 Color messageColor = Color.Cyan;
 
-                CalamityUtils.DisplayLocalizedText(key, messageColor);
+                CalamityUtils.BroadcastLocalizedText(key, messageColor);
             }
 
             if (ghostKillCount >= 30 && Main.netMode != NetmodeID.MultiplayerClient)
@@ -119,14 +119,14 @@ namespace CalamityMod.NPCs
                 string key = "Mods.CalamityMod.Status.Boss.SandSharkText";
                 Color messageColor = Color.Goldenrod;
 
-                CalamityUtils.DisplayLocalizedText(key, messageColor);
+                CalamityUtils.BroadcastLocalizedText(key, messageColor);
             }
             else if (sharkKillCount == 8)
             {
                 string key = "Mods.CalamityMod.Status.Boss.SandSharkText2";
                 Color messageColor = Color.Goldenrod;
 
-                CalamityUtils.DisplayLocalizedText(key, messageColor);
+                CalamityUtils.BroadcastLocalizedText(key, messageColor);
             }
             if (sharkKillCount >= 10 && Main.netMode != NetmodeID.MultiplayerClient)
             {

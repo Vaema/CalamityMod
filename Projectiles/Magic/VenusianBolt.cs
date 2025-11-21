@@ -84,7 +84,7 @@ namespace CalamityMod.Projectiles.Magic
             Player Owner = Main.player[Projectile.owner];
             if (Projectile.owner == Main.myPlayer && explode)
             {
-                Owner.Calamity().GeneralScreenShakePower = 3.5f;
+                Owner.SetScreenshake(3.5f);
                 SoundEngine.PlaySound(SoundID.DD2_ExplosiveTrapExplode with { Volume = 1f, Pitch = -0.5f }, Projectile.Center);
                 SoundEngine.PlaySound(SoundID.Item74 with { Volume = 0.7f, Pitch = 1f }, Projectile.Center);
                 for (int i = 0; i < 6; i++)

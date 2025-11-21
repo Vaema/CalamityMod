@@ -36,7 +36,7 @@ namespace CalamityMod.Projectiles.Magic
         {
             base.KillHoldoutLogic();
             bool actuallyShoot = DeployedFrames >= (HeldItem?.useAnimation ?? AetherfluxCannon.UseTime);
-            bool manaOK = !actuallyShoot || Owner.CheckMana(Owner.ActiveItem());
+            bool manaOK = !actuallyShoot || Owner.CheckMana(Owner.HeldItem);
             if (!manaOK)
                 Projectile.Kill();
         }
@@ -74,7 +74,7 @@ namespace CalamityMod.Projectiles.Magic
             {
                 LastShootAttemptTime = DeployedFrames;
                 bool actuallyShoot = DeployedFrames >= itemUseTime;
-                bool manaOK = !actuallyShoot || Owner.CheckMana(Owner.ActiveItem(), -1, true, false);
+                bool manaOK = !actuallyShoot || Owner.CheckMana(Owner.HeldItem, -1, true, false);
                 if (manaOK)
                 {
                     if (actuallyShoot)

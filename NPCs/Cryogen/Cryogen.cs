@@ -10,7 +10,7 @@ using CalamityMod.Items.Armor.Vanity;
 using CalamityMod.Items.LoreItems;
 using CalamityMod.Items.Materials;
 using CalamityMod.Items.Placeables.Furniture.BossRelics;
-using CalamityMod.Items.Placeables.Furniture.DevPaintings;
+using CalamityMod.Items.Placeables.Furniture.Paintings;
 using CalamityMod.Items.Placeables.Furniture.Trophies;
 using CalamityMod.Items.TreasureBags;
 using CalamityMod.Items.Weapons.Magic;
@@ -969,7 +969,7 @@ namespace CalamityMod.NPCs.Cryogen
                     {
                         string key = Main.zenithWorld ? "Mods.CalamityMod.Status.Boss.PyrogenBossText" : "Mods.CalamityMod.Status.Boss.CryogenBossText";
                         Color messageColor = Main.zenithWorld ? Color.Orange : Color.Cyan;
-                        CalamityUtils.DisplayLocalizedText(key, messageColor);
+                        CalamityUtils.BroadcastLocalizedText(key, messageColor);
                     }
                 }
             }
@@ -1381,7 +1381,8 @@ namespace CalamityMod.NPCs.Cryogen
                 normalOnly.Add(ModContent.ItemType<EssenceofEleum>(), 1, 8, 10);
 
                 // Equipment
-                normalOnly.Add(DropHelper.PerPlayer(ModContent.ItemType<SoulofCryogen>()));
+                // 16NOV2025: Ozzatron: item has been chosen as the "Expert gatekept" item for this Calamity boss
+                // normalOnly.Add(DropHelper.PerPlayer(ModContent.ItemType<SoulofCryogen>()));
                 normalOnly.Add(ModContent.ItemType<CryoStone>(), DropHelper.NormalWeaponDropRateFraction);
                 normalOnly.Add(ModContent.ItemType<FrostFlare>(), DropHelper.NormalWeaponDropRateFraction);
             }
@@ -1430,7 +1431,7 @@ namespace CalamityMod.NPCs.Cryogen
                     tileTypes.Add(TileID.JungleGrass);
                 CalamityUtils.SpawnOre(ModContent.TileType<CryonicOre>(), 16E-05, 0.45f, 0.7f, 6, 11, tileTypes);
 
-                CalamityUtils.DisplayLocalizedText(key, Color.LightSkyBlue);
+                CalamityUtils.BroadcastLocalizedText(key, Color.LightSkyBlue);
             }
 
             // Mark Cryogen as dead

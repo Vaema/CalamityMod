@@ -30,7 +30,7 @@ namespace CalamityMod.Projectiles.Magic
 
         public override void KillHoldoutLogic()
         {
-            if (Owner.CantUseHoldout(false) || HeldItem.type != Owner.ActiveItem().type)
+            if (Owner.CantUseHoldout(false) || HeldItem.type != Owner.HeldItem.type)
                 Projectile.Kill();
         }
 
@@ -56,7 +56,7 @@ namespace CalamityMod.Projectiles.Magic
 
                 if (Projectile.ai[1] != 1f)
                 {
-                    Projectile.timeLeft = (FullyCharged ? HeliumFlash.AftershotCooldownFrames * 3 : (int)(HeliumFlash.AftershotCooldownFrames * 1.5f));
+                    Projectile.timeLeft = FullyCharged ? HeliumFlash.AftershotCooldownFrames * 3 : (int)(HeliumFlash.AftershotCooldownFrames * 1.5f);
 
                     ChargeSound?.Stop();
 
@@ -67,7 +67,8 @@ namespace CalamityMod.Projectiles.Magic
                         OffsetLengthFromArm -= 25;
                         SoundEngine.PlaySound(HeliumFlash.ChargeFire, Projectile.Center);
 
-                        Projectile.NewProjectile(Projectile.GetSource_FromThis(), GunTipPosition, shootVelocity, ModContent.ProjectileType<VolatileStarcore>(), Projectile.damage, Projectile.knockBack, Projectile.owner, 0);
+                        if (Main.myPlayer == Projectile.owner)
+                            Projectile.NewProjectile(Projectile.GetSource_FromThis(), GunTipPosition, shootVelocity, ModContent.ProjectileType<VolatileStarcore>(), Projectile.damage, Projectile.knockBack, Projectile.owner, 0);
                         
                         Particle pulse = new CustomPulse(GunTipPosition, Vector2.Zero, Color.OrangeRed, "CalamityMod/Particles/ShatteredExplosion", Vector2.One, Main.rand.NextFloat(-10f, 10f), 0f, 0.05f, 14);
                         GeneralParticleHandler.SpawnParticle(pulse);

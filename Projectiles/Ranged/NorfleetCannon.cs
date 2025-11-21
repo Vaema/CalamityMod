@@ -51,7 +51,7 @@ namespace CalamityMod.Projectiles.Ranged
 
         public override void AI()
         {
-            Item heldItem = Owner.ActiveItem();
+            Item heldItem = Owner.HeldItem;
 
             if (Owner.dead || Owner is null)
                 Projectile.Kill();

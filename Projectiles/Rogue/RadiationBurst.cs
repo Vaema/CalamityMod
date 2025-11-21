@@ -81,7 +81,7 @@ namespace CalamityMod.Projectiles.Rogue
                 Particle orb2 = new CustomPulse(Projectile.Center, Vector2.Zero, Color.White, "CalamityMod/Particles/LargeBloom", new Vector2(1, 1), Main.rand.NextFloat(-10, 10), 1f, 0.2f, 32);
                 GeneralParticleHandler.SpawnParticle(orb2);
 
-                Owner.Calamity().GeneralScreenShakePower = 3.5f;
+                Owner.SetScreenshake(3.5f);
             }
             time++;
         }

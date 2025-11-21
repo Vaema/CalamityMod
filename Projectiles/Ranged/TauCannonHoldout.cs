@@ -9,6 +9,7 @@ using ReLogic.Content;
 using ReLogic.Utilities;
 using Terraria;
 using Terraria.Audio;
+using Terraria.ID;
 using static Terraria.ModLoader.ModContent;
 
 namespace CalamityMod.Projectiles.Ranged
@@ -92,7 +93,7 @@ namespace CalamityMod.Projectiles.Ranged
 
         public override void HoldoutAI()
         {
-            CalamityGlobalItem modItem = Owner.ActiveItem().Calamity();
+            CalamityGlobalItem modItem = Owner.HeldItem.Calamity();
 
             if (Owner.CantUseHoldout() && KeepRefreshingLifetime)
             {
@@ -255,7 +256,7 @@ namespace CalamityMod.Projectiles.Ranged
                     float randomRadius = Utils.Remap(Timer, 0f, TimePerCharge * 3f, 5f, 15f);
                     Dust orbDust = Dust.NewDustPerfect(
                         GunTipPosition + Main.rand.NextVector2Circular(randomRadius, randomRadius),
-                        278,
+                        DustID.FireworksRGB,
                         -Vector2.UnitY.RotatedByRandom(100) * Main.rand.NextFloat(2f, 5f) * Utils.Remap(Timer, 0f, TimePerCharge * 3f, 1f, 5f),
                         Scale: Main.rand.NextFloat(0.3f, 0.9f));
                     orbDust.noGravity = true;
@@ -299,13 +300,14 @@ namespace CalamityMod.Projectiles.Ranged
                 AIState.Level3 => 36,
                 AIState.Level2 => 24,
                 AIState.Level1 => 12,
+                _ => 0
             };
 
             for (int i = 0; i < dustAmount; i++)
             {
                 float angle = MathHelper.TwoPi / dustAmount * i;
                 Vector2 velocity = angle.ToRotationVector2() * 8f;
-                Dust chargeDust = Dust.NewDustPerfect(GunTipPosition, 267, velocity, Scale: Utils.Remap(dustAmount, 10f, 30f, 1.5f, 2.2f));
+                Dust chargeDust = Dust.NewDustPerfect(GunTipPosition, DustID.RainbowMk2, velocity, Scale: Utils.Remap(dustAmount, 10f, 30f, 1.5f, 2.2f));
                 chargeDust.noGravity = true;
                 chargeDust.noLight = true;
                 chargeDust.noLightEmittence = true;
@@ -328,6 +330,7 @@ namespace CalamityMod.Projectiles.Ranged
                 AIState.Level3 => ChargeLV2Sound,
                 AIState.Level2 => ChargeLV1Sound,
                 AIState.Level1 => ChargeLV1Sound,
+                _ => ChargeLV1Sound
             };
 
             SoundEngine.PlaySound(chargeSound, GunTipPosition);

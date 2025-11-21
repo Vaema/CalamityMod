@@ -8,7 +8,7 @@ using CalamityMod.Items.Armor.Vanity;
 using CalamityMod.Items.LoreItems;
 using CalamityMod.Items.Placeables.Abyss;
 using CalamityMod.Items.Placeables.Furniture.BossRelics;
-using CalamityMod.Items.Placeables.Furniture.DevPaintings;
+using CalamityMod.Items.Placeables.Furniture.Paintings;
 using CalamityMod.Items.Placeables.Furniture.Trophies;
 using CalamityMod.Items.TreasureBags;
 using CalamityMod.Items.TreasureBags.MiscGrabBags;
@@ -689,12 +689,10 @@ namespace CalamityMod.NPCs.AquaticScourge
                 normalOnly.Add(ModContent.ItemType<ThankYouPainting>(), ThankYouPainting.DropInt);
 
                 // Equipment
-                normalOnly.Add(DropHelper.PerPlayer(ModContent.ItemType<AquaticEmblem>()));
+                // 16NOV2025: Ozzatron: item has been chosen as the "Expert gatekept" item for this Calamity boss
+                // normalOnly.Add(DropHelper.PerPlayer(ModContent.ItemType<AquaticEmblem>()));
                 normalOnly.Add(ModContent.ItemType<CorrosiveSpine>(), DropHelper.NormalWeaponDropRateFraction);
                 normalOnly.Add(ModContent.ItemType<SeasSearing>(), 10);
-
-                // Fishing
-                normalOnly.Add(ModContent.ItemType<BleachedAnglingKit>());
             }
 
             npcLoot.DefineConditionalDropSet(() => true).Add(DropHelper.PerPlayer(ItemID.GreaterHealingPotion, 1, 5, 15), hideLootReport: true); // Healing Potions don't show up in the Bestiary
@@ -727,7 +725,7 @@ namespace CalamityMod.NPCs.AquaticScourge
                 string sulfSeaBoostKey = "Mods.CalamityMod.Status.Progression.WetWormBossText";
                 Color sulfSeaBoostColor = AcidRainEvent.TextColor;
 
-                CalamityUtils.DisplayLocalizedText(sulfSeaBoostKey, sulfSeaBoostColor);
+                CalamityUtils.BroadcastLocalizedText(sulfSeaBoostKey, sulfSeaBoostColor);
 
                 // Set a timer for acid rain to start after 10 seconds
                 AcidRainEvent.CountdownUntilForcedAcidRain = 601;

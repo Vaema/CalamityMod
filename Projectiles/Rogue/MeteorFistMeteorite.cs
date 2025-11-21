@@ -55,8 +55,7 @@ namespace CalamityMod.Projectiles.Rogue
 
         public override void OnKill(int timeLeft)
         {
-            if (Main.LocalPlayer.Calamity().GeneralScreenShakePower < 3f)
-                Main.LocalPlayer.Calamity().GeneralScreenShakePower = 3f;
+            Main.LocalPlayer.SetScreenshake(3f);
             SoundEngine.PlaySound(new SoundStyle("CalamityMod/Sounds/Item/HellbornImpact"), Projectile.Center);
 
             Projectile.ExpandHitboxBy(300);

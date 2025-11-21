@@ -99,8 +99,9 @@ TarragonWings: {
 		'''
 }
 
-TracersCelestial: {
-	DisplayName: Celestial Tracers
+MoonWalkers: {
+	DisplayName: Moon Walkers
+	TreadsName: Moon Boots
 	Tooltip:
 		'''
 		{$CommonItemTooltip.FlightAndSlowfall}
@@ -108,12 +109,13 @@ TracersCelestial: {
 		Provides the effects of [i:CalamityMod/AngelTreads] Angel Treads
 		Provides immunity to lava
 		[c/aaaaaa:Shift-<right> this item in your inventory to toggle the] [i:AngelWings] [c/aaaaaa:wings]
-		'Ludicrous speed!'
+		'Hee hee!'
 		'''
 }
 
-TracersElysian: {
-	DisplayName: Elysian Tracers
+VoidStriders: {
+	DisplayName: Void Striders
+	TreadsName: Void Kicks
 	Tooltip:
 		'''
 		{$CommonItemTooltip.FlightAndSlowfall}
@@ -125,8 +127,9 @@ TracersElysian: {
 		'''
 }
 
-TracersSeraph: {
+SeraphTracers: {
 	DisplayName: Seraph Tracers
+	TreadsName: Seraph Treads
 	Tooltip:
 		'''
 		{$CommonItemTooltip.FlightAndSlowfall}

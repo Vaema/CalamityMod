@@ -680,16 +680,16 @@ namespace CalamityMod
             return shader;
         }
 
-        public static void EnterShaderRegion(this SpriteBatch spriteBatch, BlendState newBlendState = null, Effect effect = null)
+        public static void EnterShaderRegion(this SpriteBatch spriteBatch, BlendState newBlendState = null, Effect effect = null, Matrix? matrix = null)
         {
             spriteBatch.End();
-            spriteBatch.Begin(SpriteSortMode.Immediate, newBlendState ?? BlendState.AlphaBlend, Main.DefaultSamplerState, DepthStencilState.None, Main.Rasterizer, effect, Main.GameViewMatrix.TransformationMatrix);
+            spriteBatch.Begin(SpriteSortMode.Immediate, newBlendState ?? BlendState.AlphaBlend, Main.DefaultSamplerState, DepthStencilState.None, Main.Rasterizer, effect, matrix ?? Main.GameViewMatrix.TransformationMatrix);
         }
 
-        public static void ExitShaderRegion(this SpriteBatch spriteBatch)
+        public static void ExitShaderRegion(this SpriteBatch spriteBatch, Matrix? matrix = null)
         {
             spriteBatch.End();
-            spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, Main.DefaultSamplerState, DepthStencilState.None, Main.Rasterizer, null, Main.GameViewMatrix.TransformationMatrix);
+            spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, Main.DefaultSamplerState, DepthStencilState.None, Main.Rasterizer, null, matrix ?? Main.GameViewMatrix.TransformationMatrix);
         }
 
         /// <summary>
@@ -834,6 +834,27 @@ namespace CalamityMod
 
             Main.instance.GraphicsDevice.SetRenderTarget(target);
             Main.instance.GraphicsDevice.Clear(flushColor ?? Color.Transparent);
+        }
+
+        /// <summary>
+        /// Draws a series of lines between a list of vector positions in sequential order.
+        /// </summary>
+        /// <param name="pointList"></param>
+        /// <param name="lineColor"></param>
+        /// <param name="useTileColor"></param>
+        /// <param name="scaleMod"></param>
+        public static void DrawLineBetweenPoints(List<Vector2> pointList, Color lineColor, bool useTileColor = false, float scaleMod = 1f)
+        {
+            for (int i = 0; i < pointList.Count - 1; i++)
+            {
+
+                Color color = lineColor;
+                if (useTileColor)
+                    color = Lighting.GetColor(pointList[i].ToTileCoordinates(), lineColor);
+
+
+                Main.spriteBatch.DrawLineBetter(pointList[i], pointList[i + 1], color, scaleMod);
+            }
         }
     }
 }

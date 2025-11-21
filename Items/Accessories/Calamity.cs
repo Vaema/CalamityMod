@@ -4,6 +4,7 @@ using Microsoft.Xna.Framework.Graphics;
 using Terraria;
 using Terraria.DataStructures;
 using Terraria.GameContent;
+using Terraria.Graphics.Shaders;
 using Terraria.ID;
 using Terraria.ModLoader;
 
@@ -32,6 +33,7 @@ namespace CalamityMod.Items.Accessories
             Item.rare = ModContent.RarityType<BurnishedAuric>();
             Item.value = CalamityGlobalItem.RarityVioletBuyPrice;
             Item.accessory = true;
+            Item.expert = true;
         }
 
         public override void UpdateVanity(Player player)
@@ -45,6 +47,8 @@ namespace CalamityMod.Items.Accessories
             player.Calamity().blazingCursorDamage = true;
             player.Calamity().blazingCursorVisuals = true;
         }
+
+        public override void UpdateItemDye(Player player, int dye, bool hideVisual) => player.Calamity().CalamityFireDyeShader = GameShaders.Armor.GetSecondaryShader(dye, player);
 
         public override void UpdateEquip(Player player) => player.Calamity().blazingCursorVisuals = true;
 

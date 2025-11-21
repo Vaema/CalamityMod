@@ -51,7 +51,7 @@ namespace CalamityMod.Projectiles.Melee
         }
         public override void AI()
         {
-            if (Owner is null || Owner.dead || Owner.ActiveItem().type != ModContent.ItemType<StygianShield>())
+            if (Owner is null || Owner.dead || Owner.HeldItem.type != ModContent.ItemType<StygianShield>())
                 Projectile.Kill();
             
             Owner.heldProj = Projectile.whoAmI;

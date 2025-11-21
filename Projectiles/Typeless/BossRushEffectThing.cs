@@ -39,7 +39,7 @@ namespace CalamityMod.Projectiles.Typeless
 
             float currentShakePower = MathHelper.Lerp(8f, 12f, Utils.GetLerpValue(BossRushEvent.StartEffectTotalTime * 0.6f, BossRushEvent.StartEffectTotalTime, Time, true));
             currentShakePower *= 1f - Utils.GetLerpValue(1500f, 3700f, Main.LocalPlayer.Distance(Projectile.Center), true);
-            Main.LocalPlayer.Calamity().GeneralScreenShakePower = currentShakePower;
+            Main.LocalPlayer.SetScreenshake(currentShakePower);
 
             Time++;
         }

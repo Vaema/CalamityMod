@@ -95,7 +95,7 @@ EpidemicShredderProjectile.DisplayName: Epidemic Shredder
 EquanimityDarkShard.DisplayName: Dark Shard
 EquanimityLightShard.DisplayName: Light Shard
 EquanimityProj.DisplayName: Equanimity
-EradicatorProjectile.DisplayName: Eradicator
+DimensionTearingDiskProjectile.DisplayName: Dimension-Tearing Disk
 ExecutionersBladeProj.DisplayName: Executioner's Blade
 ExecutionersBladeStealthProj.DisplayName: Executioner's Blade
 ExorcismProj.DisplayName: Exorcism
@@ -181,13 +181,11 @@ NanoblackSplit.DisplayName: Nanoblack Blade
 NanoblackStealthSplit.DisplayName: Nanoblack Afterimage
 NastyChollaBol.DisplayName: Nasty Cholla
 NastyChollaNeedle.DisplayName: Cactus Needle
-NiceCock.DisplayName: Kitchen Fire
 NightsGazeProjectile.DisplayName: Night's Gaze
 NightsGazeSpark.DisplayName: Night's Gaze Spark
 NightsGazeStar.DisplayName: Night's Gaze Star
 OrichalcumSpikedGemstoneProjectile.DisplayName: Orichalcum Gemstone
 PalladiumJavelinProjectile.DisplayName: Palladium Javelin
-PanSpark.DisplayName: Pan Spark
 PartisanExplosion.DisplayName: Profaned Explosion
 PenumbraBomb.DisplayName: Penumbra Bomb
 PenumbraSoul.DisplayName: Penumbra Soul
@@ -204,6 +202,10 @@ PrismRocket.DisplayName: Prism Rocket
 PrismShurikenBlade.DisplayName: Refraction Blade
 ProfanedPartisanProj.DisplayName: Profaned Partisan
 ProfanedPartisanSpear.DisplayName: Profaned Spear
+PumpkaboomSmall.DisplayName: Small Pumpkaboom
+PumpkaboomBoomSmall.DisplayName: Pump-kaboom!
+PumpkaboomBig.DisplayName: Big Pumpkaboom
+PumpkaboomBoomBig.DisplayName: Pump-KABOOM!!
 RadiantExplosion.DisplayName: Radiant Explosion
 RadiantStar2.DisplayName: Radiant Star
 RadiantStarKnife.DisplayName: Radiant Star
@@ -238,7 +240,6 @@ SeafoamBubble.DisplayName: Seafoam Bubble
 SealedSingularityBlackhole.DisplayName: Sealed Blackhole
 SealedSingularityGore.DisplayName: Sealed Singularity Fragment
 SealedSingularityProj.DisplayName: Sealed Singularity
-SearedPanProjectile.DisplayName: Pan
 SeraphimAngelicLight.DisplayName: Light Orb
 SeraphimAngelicLight2.DisplayName: Light Orb
 SeraphimBeamLarge.DisplayName: Holy Beam

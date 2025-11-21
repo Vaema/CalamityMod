@@ -119,7 +119,7 @@ namespace CalamityMod.Projectiles.Magic
                 if (potentialTarget != null && Time % SubsumingVortex.VortexReleaseRate == SubsumingVortex.VortexReleaseRate - 1 && Time < SubsumingVortex.LargeVortexChargeupTime && !HasBeenReleased)
                 {
                     // CheckMana returns true if the mana cost can be paid..
-                    bool allowContinuedUse = Owner.CheckMana(Owner.ActiveItem(), -1, true, false);
+                    bool allowContinuedUse = Owner.CheckMana(Owner.HeldItem, -1, true, false);
                     bool vortexStillInUse = Owner.Calamity().mouseRight && allowContinuedUse && !Owner.noItems && !Owner.CCed;
                     if (vortexStillInUse)
                     {

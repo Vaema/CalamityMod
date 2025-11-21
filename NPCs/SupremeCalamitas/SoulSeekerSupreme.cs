@@ -130,7 +130,7 @@ namespace CalamityMod.NPCs.SupremeCalamitas
 
             // Increase DR if the target leaves SCal's arena.
             NPC.Calamity().DR = NormalDR;
-            if (SCal.ModNPC<SupremeCalamitas>().IsTargetOutsideOfArena)
+            if (SCal.ModNPC<SupremeCalamitas>().protectionBoost)
                 NPC.Calamity().DR = SupremeCalamitas.enragedDR;
 
             // Get a target

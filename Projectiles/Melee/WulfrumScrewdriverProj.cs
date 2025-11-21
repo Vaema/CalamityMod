@@ -69,7 +69,7 @@ namespace CalamityMod.Projectiles.Melee
         {
             if (EndLag == 0) //Initialization
             {
-                EndLag = (float)Math.Max(Owner.ActiveItem().useTime - MaxTime, 1);
+                EndLag = (float)Math.Max(Owner.HeldItem.useTime - MaxTime, 1);
                 // 15NOV2024: Ozzatron: clamped mouse position unnecessary, only used for direction
                 TrueDirection = (Owner.Calamity().mouseWorld - Owner.MountedCenter).SafeNormalize(Vector2.Zero).ToRotation(); //Store this for the screw hit
                 Projectile.velocity = (Owner.Calamity().mouseWorld - Owner.MountedCenter).SafeNormalize(Vector2.Zero).RotatedByRandom(MathHelper.PiOver4 * 0.15f);
@@ -115,11 +115,8 @@ namespace CalamityMod.Projectiles.Melee
                         if (screw.AlreadyBazinged > 2)
                             SoundEngine.PlaySound(WulfrumScrewdriver.FunnyUltrablingSound, Projectile.Center);
 
-
                         if (Main.myPlayer == proj.owner)
-                        {
-                            Owner.Calamity().GeneralScreenShakePower = 6f;
-                        }
+                            Owner.SetScreenshake(6f);
 
                         return;
                     }
@@ -188,7 +185,7 @@ namespace CalamityMod.Projectiles.Melee
             //Dust
             for (int k = 0; k < 4; k++)
             {
-                Dust.NewDustPerfect(Projectile.Center + Projectile.velocity * 70f, 16, Projectile.velocity.RotatedByRandom(0.2f) * Main.rand.NextFloat(6), 0, default, Main.rand.NextFloat(0.7f, 1f));
+                Dust.NewDustPerfect(Projectile.Center + Projectile.velocity * 70f, DustID.Cloud, Projectile.velocity.RotatedByRandom(0.2f) * Main.rand.NextFloat(6), 0, default, Main.rand.NextFloat(0.7f, 1f));
             }
 
 

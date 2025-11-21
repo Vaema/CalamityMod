@@ -1521,7 +1521,7 @@ namespace CalamityMod.Projectiles.Summon
             else
             {
                 owner.Calamity().profanedCrystalAnim = -1;
-                owner.Calamity().GeneralScreenShakePower = 5f;
+                owner.SetScreenshake(5f);
                 DetermineTransformationEligibility(owner);
                 if (!Main.dedServ)
                 {
