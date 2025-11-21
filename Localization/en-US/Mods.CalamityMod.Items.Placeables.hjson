@@ -3986,11 +3986,6 @@ VolcanicSand: {
 
 // End of Sunken Sea
 
-Dreadstone: {
-	DisplayName: Dreadstone
-	Tooltip: ""
-}
-
 UelibloomBrick: {
 	DisplayName: Uelibloom Brick
 	Tooltip: ""

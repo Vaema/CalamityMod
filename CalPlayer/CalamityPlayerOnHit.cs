@@ -202,11 +202,11 @@ namespace CalamityMod.CalPlayer
 
             // Arc Flash Ring lightning strike (Remember to change the one for projectile hits if applicable when you change this one!)
             // This one has a lot less limits than the projectile one, but that's because vanilla broadsword code is limiting (wow so surprising)
-            bool spawnChance = (Main.rand.Next(0, 100) < 6);
+            bool spawnChance = (Main.rand.Next(100) < ArcFlashRing.LightningSpawnPercent);
             if (arcFlashRing && spawnChance)
             {
                 var source = item.GetSource_FromThis();
-                int damage = (int)(((hit.Damage * 4f) * (hit.Crit ? 0.5f : 1)) / (Player.Calamity().adrenalineModeActive ? Player.Calamity().GetAdrenalineDamage() + 1 : 1)); // 400% damage (uneffected by crits and adrenaline)
+                int damage = (int)(((hit.Damage * ArcFlashRing.LightningDamageMult) * (hit.Crit ? 0.5f : 1)) / (Player.Calamity().adrenalineModeActive ? Player.Calamity().GetAdrenalineDamage() + 1 : 1)); // 400% damage (uneffected by crits and adrenaline)
 
                 Projectile bolt = Projectile.NewProjectileDirect(source, target.Center, Vector2.Zero, ProjectileType<FlashBolt>(), damage, 0f, Player.whoAmI, target.whoAmI);
                 bolt.DamageType = hit.DamageType;
@@ -1216,18 +1216,15 @@ namespace CalamityMod.CalPlayer
                     target.AddBuff(BuffType<AstralInfectionDebuff>(), TitanHeartMask.OnHitDebuffDuration);
                 }
             }
-            if (summon)
+            if (summon && !whip)
             {
-                if (pSoulArtifact && !profanedCrystal)
+                if (profanedCrystal && (DownedBossSystem.downedCalamitas && DownedBossSystem.downedExoMechs))
+                    target.AddBuff(BuffType<HolyFlames>(), 600);
+                else if (pSoulArtifact)
                     target.AddBuff(BuffType<HolyFlames>(), 300);
 
-                if (profanedCrystal && (DownedBossSystem.downedCalamitas && DownedBossSystem.downedExoMechs))
-                {
-                    target.AddBuff(BuffType<HolyFlames>(), 600);
-                }
-
                 if (divineBless)
-                    target.AddBuff(BuffType<BanishingFire>(), 60);
+                    target.AddBuff(BuffType<BanishingFire>(), AngelicAlliance.BanishingFireDuration);
 
                 if (shadowMinions)
                     target.AddBuff(BuffID.ShadowFlame, 180);
@@ -1256,8 +1253,6 @@ namespace CalamityMod.CalPlayer
                 target.AddBuff(BuffType<VermillionFlux>(), 120);
                 target.AddBuff(BuffType<CrushDepth>(), 120);
             }
-            if (voidOfExtinction)
-                CalamityUtils.Inflict246DebuffsNPC(target, BuffType<BrimstoneFlames>());
             if (frostFlare)
                 CalamityUtils.Inflict246DebuffsNPC(target, BuffID.Frostburn2);
             if (omegaBlueChestplate)

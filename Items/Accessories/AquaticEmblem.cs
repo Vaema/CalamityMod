@@ -1,6 +1,7 @@
 ﻿using CalamityMod.CalPlayer;
 using Terraria;
 using Terraria.ID;
+using Terraria.Localization;
 using Terraria.ModLoader;
 
 namespace CalamityMod.Items.Accessories
@@ -8,6 +9,12 @@ namespace CalamityMod.Items.Accessories
     public class AquaticEmblem : ModItem, ILocalizedModType
     {
         public new string LocalizationCategory => "Items.Accessories";
+
+        public static int MaxDefenseBoost = 20;
+        public static float MaxMoveSpeedReduction = 0.1f;
+        public static int TimeToReachMaxBoost = CalamityUtils.SecondsToFrames(10);
+        public override LocalizedText Tooltip => base.Tooltip.WithFormatArgs(TimeToReachMaxBoost.FramesToSeconds(), MaxDefenseBoost, MaxMoveSpeedReduction.ToPercent());
+
         public override void SetDefaults()
         {
             Item.width = 18;

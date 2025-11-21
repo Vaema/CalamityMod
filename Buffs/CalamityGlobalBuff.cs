@@ -204,10 +204,6 @@ namespace CalamityMod.Buffs
                     tip = CalamityUtils.GetTextValue("Vanilla.BuffDescription.ChaosState");
                     break;
 
-                case BuffID.IceBarrier:
-                    tip = tip.Replace("25", "15");
-                    break;
-
                 case BuffID.MagicPower:
                     tip = tip.Replace("20", "10");
                     break;
