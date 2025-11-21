@@ -548,7 +548,7 @@ namespace CalamityMod.NPCs.Deconstructors
             npcLoot.Add(ItemID.CrimtaneOre, 5, 6, 32);
 
             var condition = npcLoot.DefineConditionalDropSet(DropHelper.PostPlant());
-            condition.Add(ItemID.CobaltOre, 2, 6, 32,true);
+            condition.Add(ItemID.CobaltOre, 2, 6, 32);
             condition.Add(ItemID.PalladiumOre, 2, 6, 32);
             condition.Add(ItemID.MythrilOre, 3, 6, 32);
             condition.Add(ItemID.OrichalcumOre, 3, 6, 32);
