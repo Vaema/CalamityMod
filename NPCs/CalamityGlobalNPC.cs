@@ -358,6 +358,10 @@ namespace CalamityMod.NPCs
         public const float hyperiusLifePercentThreshold = 0.07f;
         public int hyperiusFxTimer = 0;
 
+        public int glaiveShredTimer = 0;
+
+        public int blazingStarShredTimer = 0;
+
         /// <summary>
         /// Tracks the strength of Calamity's cursor effect; increments by 2 on every frame.<br/>
         /// If this value reaches <see cref="cursorFocusMax"/>, the enemy is afflicted with True Vulnerability Hex.
@@ -1047,6 +1051,29 @@ namespace CalamityMod.NPCs
             {
                 manaBurnPeak = 0;
                 playerManaBurnIntensity = 0;
+            }
+            //This is at the end to make sure the dmg check for particle creations runs properly
+            if (glaiveShredTimer > 0 || blazingStarShredTimer > 0)
+            {
+                int dmg = 0;
+                if (glaiveShredTimer > 0)
+                {
+                    dmg += 120; // 60 DPS
+                    glaiveShredTimer--;
+                }
+                if (blazingStarShredTimer > 0)
+                {
+                    dmg += 480; // 240 DPS
+                    blazingStarShredTimer--;
+                }
+                npc.lifeRegenCount -= dmg;
+                if (damage < dmg/12) // 1/6th of the DPS dealt by Glaive Shred shows up as the indicator, unless another debuff does more per tick
+                    damage = dmg/12;
+
+                if (-120 * damage >= npc.lifeRegenCount)
+                {
+                    GeneralParticleHandler.SpawnParticle(new CustomSpark(npc.Center, new Vector2(1, 0).RotatedByRandom(7), "CalamityMod/Particles/TrientCircularSmear", false, 15, 0.4f + 0.1f * npc.width / 16f, Color.White, new Vector2(0.5f, 1f)));
+                }
             }
         }
 
