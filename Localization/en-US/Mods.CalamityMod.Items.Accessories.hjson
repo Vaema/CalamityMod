@@ -135,11 +135,11 @@ AngelicAlliance: {
 		Call upon the force of heaven to empower your attacks and minions
 		Courage, Enlightenment, Bliss. United in Judgement
 		+{0} max minions, {1}% increased summon damage, and {2}% increased damage to all other classes
-		+{3} HP/s life regen while airborne using wings
-		Press [KEY] to grace yourself in divinity for {4} seconds, granting [cbuff:CalamityMod/DivineBless]
-		While Divine Bless is active, for every minion you have, an archangel shall be summoned to aid you in combat
-		Each spawned angel will instantly restore {5} HP
-		All minion attacks inflict [cbuff:CalamityMod/BanishingFire], and you are granted a flat {6} HP/s regen
+		+{3} HP/s life regen while flight time is partially or fully expended
+		Press [KEY] to grace yourself with the [cbuff:CalamityMod/DivineBless] buff for {4} seconds
+		While active, an archangel is summoned for every minion you have
+		Archangels vaporize foes with heavenly light and each restore {5} HP upon spawning
+		Minion attacks inflict [cbuff:CalamityMod/BanishingFire], and you gain a flat {6} HP/s regen
 		This effect has a cooldown of {7} minute
 		'''
 }

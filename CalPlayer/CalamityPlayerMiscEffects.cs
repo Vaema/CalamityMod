@@ -2995,7 +2995,7 @@ namespace CalamityMod.CalPlayer
             {
                 divineBless = false;
                 Player.ClearBuff(ModContent.BuffType<Buffs.StatBuffs.DivineBless>());
-                Player.AddCooldown(Cooldowns.DivineBless.ID, CalamityUtils.SecondsToFrames(60));
+                Player.AddCooldown(Cooldowns.DivineBless.ID, AngelicAlliance.DivineBlessCooldown);
             }
 
             // Armageddon's Dodge Disable feature puts Shadow Dodge/Holy Protection on permanent cooldown
