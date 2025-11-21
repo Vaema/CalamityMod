@@ -161,10 +161,7 @@ namespace CalamityMod
             // If that point is reached, it is removed from the list of points to follow.
             bool nextPointReached = nextPoint.Move.FollowPath(nextPoint.Position.ToWorldCoordinates());
             if (nextPointReached)
-            {
-                Main.NewText(lastSuccessfulTask.Result[0].Move.RegistrationName);
                 lastSuccessfulTask.Result.RemoveAt(0);
-            }
 
             // If the previous successful found path has been followed to its endpoint, delete the task.
             if (lastSuccessfulTask.Result.Count == 0)
