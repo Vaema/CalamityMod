@@ -1,11 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Threading;
 using System.Threading.Tasks;
+using CalamityMod.DataStructures;
+using CalamityMod.Pathfinding;
+using CalamityMod.Pathfinding.Movements;
 using Microsoft.Xna.Framework;
 using Terraria;
-using Terraria.ID;
 using static CalamityMod.CalamityUtils;
 
 namespace CalamityMod
@@ -17,6 +18,7 @@ namespace CalamityMod
         internal static readonly Func<Point, Point, float> DefaultDistanceFunction = OctileDistance;
         internal static readonly Func<Point, Point, float> DefaultHeuristic = OctileDistance;
 
+        internal readonly IPathfinder Pathfinder;
         internal readonly Vector2 Start;
         internal readonly Vector2 End;
         internal readonly Func<Point, bool> TileValidity;
@@ -24,12 +26,14 @@ namespace CalamityMod
         internal readonly Func<Point, Point, float> Heuristic;
 
         public PathfindingParameters(
+            IPathfinder pathfinder,
             Vector2 start,
             Vector2 end,
             Func<Point, bool> tileValidity = null,
             Func<Point, Point, float> distanceFunction = null,
             Func<Point, Point, float> heuristic = null)
         {
+            Pathfinder = pathfinder;
             Start = start;
             End = end;
             TileValidity = tileValidity;
@@ -44,33 +48,31 @@ namespace CalamityMod
     /// Creates a new PathfindingManager for the selected entity.<br />
     /// Entities should only ever need one PathfindingManager for their lifetime, but more can be created.
     /// </summary>
-    /// <param name="e">The entity to pathfind for.</param>
-    public class PathfindingManager(Entity e)
+    /// <param name="p">The entity to pathfind for.</param>
+    public class PathfindingManager(IPathfinder p)
     {
-        public List<Vector2> Path { get => lastSuccessfulTask?.Result ?? []; }
-        
+        public List<Vector2> Path
+        {
+            get
+            {
+                if (lastSuccessfulTask == null)
+                    return [];
+                else if (lastSuccessfulTask.Result == null)
+                    return [];
+                else
+                {
+                    var path = new List<Vector2>();
+                    foreach (var node in lastSuccessfulTask.Result)
+                        path.Add(node.Position.ToWorldCoordinates());
+                    return path;
+                }
+            }
+        }
+
         /// <summary>
         /// The entity which this PathfindingManager manages. This cannot be changed after creation.
         /// </summary>
-        internal readonly Entity entity = e;
-
-        /// <summary>
-        /// The acceleration this PathfindingManager will impart to its Entity when making it follow a found path.<br />
-        /// This has no impact on the Entity's other behaviors, AI, etc.
-        /// </summary>
-        internal float Acceleration { get; set; } = 0.2f;
-
-        /// <summary>
-        /// The maximum speed this PathfindingManager allow its Entity to move at when making it follow a found path.<br />
-        /// This has no impact on the Entity's other behaviors, AI, etc.
-        /// </summary>
-        internal float MaxSpeed { get; set; } = 4f;
-
-        /// <summary>
-        /// The minimum distance this PathdingManager requires its Entity to reach from its target point before the point is marked as "reached".<br />
-        /// This has no impact on the Entity's other behaviors, AI, etc.
-        /// </summary>
-        internal float MinimumPointDistance { get; set; } = 48f;
+        internal readonly IPathfinder pathfinder = p;
 
         /// <summary>
         /// The last completed pathfinding task that this manager has performed.<br />
@@ -86,22 +88,6 @@ namespace CalamityMod
         /// Accessing <see cref="PathfindingTask.Result"/> before execution has completed will result in the calling thread being blocked until execution is complete.
         /// </summary>
         private PathfindingTask currentTask;
-
-        /// <summary>
-        /// You may override the path-following behavior imposed on the Entity by the PathfindingManager by providing a Func here.
-        /// <br /><br />
-        /// This Func should return <see langword="true"/> when the entity has reached its target point, and <see langword="false"/> otherwise.<br/>
-        /// </summary>
-        public Func<Vector2, bool> CustomFollowPath { get; set; }
-
-        /// <summary>
-        /// You may override the idling behavior imposed on the Entity by the PathfindingManager by providing an Action here.
-        /// <br /><br />
-        /// This Action has no parameters and no return value, and can do basically anything you want.
-        /// <br />
-        /// It will usually only run for a frame or two while the PathfindingManager is finding the next path to take.
-        /// </summary>
-        public Action CustomIdleBehavior { get; set; }
 
         /// <summary>
         /// Finds a path based on the specified parameters and assigns it to this manager's entity.<br/>
@@ -125,7 +111,7 @@ namespace CalamityMod
             {
                 // Case 2A: We don't care about the previous pathfinding task. We have changed our goals.
                 // In order to trigger this behavior, you must set forceNewTask to true, and provide a different end goal position.
-                bool sameEndPosition = parameters.End.ToTileCoordinates() == currentTask.work.End.Position;
+                bool sameEndPosition = parameters.End.ToTileCoordinates() == currentTask.work.End;
                 bool forceNewPathAttempt = forceNewTask && !sameEndPosition;
 
                 if (forceNewPathAttempt)
@@ -166,16 +152,19 @@ namespace CalamityMod
         {
             if (lastSuccessfulTask is null)
             {
-                IdleBehavior();
+                pathfinder.AwaitingPathBehavior();
                 return;
             }
 
-            Vector2 nextPoint = lastSuccessfulTask.Result[0];
+            PathfindingNode nextPoint = lastSuccessfulTask.Result[0];
 
             // If that point is reached, it is removed from the list of points to follow.
-            bool nextPointReached = FollowPath(nextPoint);
+            bool nextPointReached = nextPoint.Move.FollowPath(nextPoint.Position.ToWorldCoordinates());
             if (nextPointReached)
+            {
+                Main.NewText(lastSuccessfulTask.Result[0].Move.RegistrationName);
                 lastSuccessfulTask.Result.RemoveAt(0);
+            }
 
             // If the previous successful found path has been followed to its endpoint, delete the task.
             if (lastSuccessfulTask.Result.Count == 0)
@@ -190,51 +179,6 @@ namespace CalamityMod
         {
             FindPath(parameters, forceNewTask);
             PathfindingBehavior();
-        }
-
-        private bool DefaultFollowPath(Vector2 nextPoint)
-        {
-            // Accelerate to the target point.
-            entity.velocity += (nextPoint - entity.Center).SafeNormalize(Vector2.Zero) * Acceleration;
-
-            // Cap the speed if MaxSpeed has been surpassed.
-            if (entity.velocity.LengthSquared() > MaxSpeed * MaxSpeed)
-                entity.velocity = entity.velocity.SafeNormalize(Vector2.UnitY) * MaxSpeed;
-
-            // If the entity is within 48 pixels of its target point, consider the point reached.
-            if (Vector2.DistanceSquared(entity.Center, nextPoint) < MinimumPointDistance * MinimumPointDistance)
-                return true;
-
-            // Otherwise, continue following.
-            return false;
-        }
-
-        /// <summary>
-        /// Defines how this entity should move to the next point. Contains a default implementation with basic acceleration towards the next point.<br/>
-        /// This method should return <see langword="true"/> when the entity has reached its target point, and <see langword="false"/> otherwise.<br/>
-        /// <br/>
-        /// The target point is specified by <paramref name="nextPoint"/> - usually index 0 in the <see cref="Paths"/> task result.
-        /// <br /><br />
-        /// The behavior of this function can be completely overridden by providing a CustomFollowPath Func.
-        /// </summary>
-        /// <param name="nextPoint">The next point in the path that this PathfindingManager has made.</param>
-        /// <returns>Whether or not the destination has been reached.</returns>
-        public bool FollowPath(Vector2 nextPoint) => CustomFollowPath?.Invoke(nextPoint) ?? DefaultFollowPath(nextPoint);
-
-        private static readonly float DefaultSlowdown = 0.95f;
-        private void DefaultIdleBehavior() => entity.velocity *= DefaultSlowdown;
-
-        /// <summary>
-        /// Defines how this entity should behave while there is no current path to follow.<br/>
-        /// By default, decelerates to a stop using the DefaultSlowdown value.<br />
-        /// This behavior will usually only run for a frame or two while the PathfindingManager is finding the next path to take.
-        /// </summary>
-        public void IdleBehavior()
-        {
-            if (CustomIdleBehavior is not null)
-                CustomIdleBehavior();
-            else
-                DefaultIdleBehavior();
         }
 
         public void ClearResults()
@@ -253,7 +197,7 @@ namespace CalamityMod
             /// <summary>
             /// The result of this pathfinding task.
             /// </summary>
-            internal List<Vector2> Result { get => _task.Task.Result; }
+            internal List<PathfindingNode> Result { get => _task.Task.Result; }
 
             /// <summary>
             /// Whether this pathfinding task has completed running.
@@ -266,7 +210,7 @@ namespace CalamityMod
             internal bool Running { get; private set; } = false;
 
             // Interal task representation of the work.
-            internal readonly TaskCompletionSource<List<Vector2>> _task = new();
+            internal readonly TaskCompletionSource<List<PathfindingNode>> _task = new();
 
             // Internal containing object for the actual work.
             internal readonly PathfindingWork work = new(parameters);
@@ -294,118 +238,6 @@ namespace CalamityMod
         #region Pathfinding Work Record
 
         /// <summary>
-        /// A <see cref="HeapDict{TKey, TValue}"/> is a Dictionary-like data structure 
-        /// that also keeps its entries in a binary-heap ordered by <see cref="TValue"/> (The priority).<br/>
-        /// This allows for O(log n) retrievals of the <see cref="TKey"/> with the lowest <see cref="TValue"/>
-        /// (Thanks to the MinHeap/PriorityQueue structure) and O(1) lookups of any element (Thanks to the Dictionary structure).<br/>
-        /// This data structure is specially useful for graph algorithms where getting the minimum element is a constant process, like A*.<br/>
-        /// It essentially combines a <see cref="PriorityQueue{TElement, TPriority}"/> and a <see cref="Dictionary{TKey, TValue}"/> into one data structure.
-        /// </summary>
-        /// <typeparam name="TKey"></typeparam>
-        /// <typeparam name="TValue"></typeparam>
-        public class HeapDict<TKey, TValue> where TValue : IComparable<TValue>
-        {
-            private readonly Dictionary<TKey, int> _indexMap = [];
-            private readonly List<(TKey Key, TValue Value)> _heap = [];
-
-            public int Count => _heap.Count;
-
-            public void Add(TKey key, TValue value)
-            {
-                if (_indexMap.TryGetValue(key, out int index))
-                {
-                    TValue oldValue = _heap[index].Value;
-                    _heap[index] = (key, value);
-
-                    int cmp = value.CompareTo(oldValue);
-                    if (cmp < 0)
-                        HeapifyUp(index);
-                    else if (cmp > 0)
-                        HeapifyDown(index);
-                }
-                else
-                {
-                    _heap.Add((key, value));
-                    index = _heap.Count - 1;
-                    _indexMap[key] = index;
-                    HeapifyUp(index);
-                }
-            }
-
-            public (TKey, TValue) PopMin()
-            {
-                if (_heap.Count == 0)
-                    throw new InvalidOperationException("Heap is empty");
-
-                var min = _heap[0];
-                var last = _heap[^1];
-                _heap[0] = last;
-                _indexMap[last.Key] = 0;
-                _heap.RemoveAt(_heap.Count - 1);
-                _indexMap.Remove(min.Key);
-                if (_heap.Count > 0)
-                    HeapifyDown(0);
-
-                return min;
-            }
-
-            public (TKey, TValue) PeekMin()
-            {
-                if (_heap.Count == 0)
-                    throw new InvalidOperationException("Heap is empty");
-
-                return _heap[0];
-            }
-
-            private void HeapifyUp(int index)
-            {
-                while (index > 0)
-                {
-                    int parent = (index - 1) / 2;
-                    if (_heap[index].Value.CompareTo(_heap[parent].Value) >= 0)
-                        break;
-
-                    Swap(index, parent);
-                    index = parent;
-                }
-            }
-
-            private void HeapifyDown(int index)
-            {
-                int lastIndex = _heap.Count - 1;
-                while (true)
-                {
-                    int left = 2 * index + 1;
-                    int right = 2 * index + 2;
-                    int smallest = index;
-
-                    if (left <= lastIndex && _heap[left].Value.CompareTo(_heap[smallest].Value) < 0)
-                        smallest = left;
-
-                    if (right <= lastIndex && _heap[right].Value.CompareTo(_heap[smallest].Value) < 0)
-                        smallest = right;
-
-                    if (smallest == index)
-                        break;
-
-                    Swap(index, smallest);
-                    index = smallest;
-                }
-            }
-
-            private void Swap(int i, int j)
-            {
-                (_heap[i], _heap[j]) = (_heap[j], _heap[i]);
-                _indexMap[_heap[i].Key] = i;
-                _indexMap[_heap[j].Key] = j;
-            }
-
-            public bool ContainsKey(TKey key) => _indexMap.ContainsKey(key);
-
-            public TValue GetValue(TKey key) => _heap[_indexMap[key]].Value;
-        }
-
-        /// <summary>
         /// Represents the working computation for a <see cref="PathfindingTask"/>.
         /// </summary>
         /// <remarks>
@@ -421,28 +253,13 @@ namespace CalamityMod
         /// - <see cref="Heuristic"/>: A function that estimates the cost from a given point to the end point. Defaults to <see cref="OctileDistance"/>.<br/>
         /// </para>
         /// </remarks>
-        private record PathfindingWork(PathfindingNode Start, PathfindingNode End, Func<Point, bool> TileValidity, Func<Point, Point, float> DistanceFunction, Func<Point, Point, float> Heuristic)
+        private record PathfindingWork(IPathfinder Pathfinder, Point Start, Point End, Func<Point, bool> TileValidity, Func<Point, Point, float> DistanceFunction, Func<Point, Point, float> Heuristic)
         {
             public PathfindingWork(
-                Point start,
-                Point end,
-                float minimalPointDistance,
-                Func<Point, bool> tileValidity = null,
-                Func<Point, Point, float> distanceFunction = null,
-                Func<Point, Point, float> heuristic = null) : this(
-                    new PathfindingNode(start),
-                    new PathfindingNode(end),
-                    tileValidity ?? PathfindingParameters.DefaultTileValidity,
-                    distanceFunction ?? PathfindingParameters.DefaultDistanceFunction,
-                    heuristic ?? PathfindingParameters.DefaultHeuristic
-                )
-            {
-            }
-
-            public PathfindingWork(
                 PathfindingParameters p) : this(
-                    new PathfindingNode(p.Start.ToTileCoordinates()),
-                    new PathfindingNode(p.End.ToTileCoordinates()),
+                    p.Pathfinder,
+                    p.Start.ToTileCoordinates(),
+                    p.End.ToTileCoordinates(),
                     p.TileValidity ?? PathfindingParameters.DefaultTileValidity,
                     p.DistanceFunction ?? PathfindingParameters.DefaultDistanceFunction,
                     p.Heuristic ?? PathfindingParameters.DefaultHeuristic
@@ -457,10 +274,10 @@ namespace CalamityMod
             /// <returns>
             /// A list of <see cref="Vector2"/> positions representing the path from start to end, or <see langword="null"/> if no path is found.
             /// </returns>
-            internal List<Vector2> CalculatePath()
+            internal List<PathfindingNode> CalculatePath()
             {
                 // Trying to pathfind to a solid tile would be a waste of resources, we don't even consider pathfinding to it.
-                Tile endTile = ParanoidTileRetrieval(End.Position.X, End.Position.Y);
+                Tile endTile = ParanoidTileRetrieval(End.X, End.Y);
                 if (endTile.IsTileSolid())
                     return null;
 
@@ -468,8 +285,12 @@ namespace CalamityMod
                 var explored = new HashSet<PathfindingNode>();
 
                 // At first, we only know the starting node.
-                (Start.Distance, Start.Total) = (0, Heuristic.Invoke(Start.Position, End.Position));
-                candidates.Add(Start, Start.Total);
+                foreach (var movement in Pathfinder.Movements)
+                {
+                    var start = new PathfindingNode(Start, movement);
+                    (start.Distance, start.Total) = (0f, Heuristic.Invoke(start.Position, End));
+                    candidates.Add(start, start.Total);
+                }
 
                 while (candidates.Count > 0)
                 {
@@ -477,7 +298,7 @@ namespace CalamityMod
                     var current = candidates.PeekMin().Item1;
 
                     // Check if we've reached the goal.
-                    if (current.Position == End.Position)
+                    if (current.Position == End)
                         return current.ReconstructPath();
 
                     // Add the current node to the set of explored nodes so we don't have to check it again,
@@ -485,7 +306,7 @@ namespace CalamityMod
                     candidates.PopMin();
                     explored.Add(current);
 
-                    foreach (var neighbor in current.GetNeighbors())
+                    foreach (var neighbor in current.GetNeighborSteps(Pathfinder))
                     {
                         // If the node has already been explored or is not a valid neighbor, we can skip it.
                         if (explored.Contains(neighbor) || Main.tile[neighbor.Position].IsTileSolid() || !TileValidity.Invoke(neighbor.Position))
@@ -499,7 +320,7 @@ namespace CalamityMod
 
                         neighbor.Parent = current;
                         neighbor.Distance = newDistance;
-                        neighbor.Total = newDistance + Heuristic.Invoke(neighbor.Position, End.Position);
+                        neighbor.Total = newDistance + Heuristic.Invoke(neighbor.Position, End) + neighbor.Move.Cost.Invoke(current.Position, neighbor.Position);
 
                         // We put it on our heap of candidates.
                         // If the node was already on our heap of candidates, it updates its priority.
@@ -508,7 +329,7 @@ namespace CalamityMod
                 }
 
                 // If we ran out of candidates and no path was found, we return null.
-                return null; 
+                return null;
             }
         }
         #endregion
@@ -517,48 +338,41 @@ namespace CalamityMod
         /// <summary>
         /// Represents a node in a pathfinding algorithm, containing position, cost, and parent information.
         /// </summary>
-        private class PathfindingNode(Point position)
+        public class PathfindingNode(Point position, IMovement move)
         {
             internal Point Position { get; set; } = position;
             internal float Distance { get; set; } = float.MaxValue; // Cost from start to this node.
             internal float Total { get; set; } = float.MaxValue; // Total cost.
+            internal IMovement Move { get; set; } = move;
             internal PathfindingNode Parent { get; set; }
 
             public override bool Equals(object obj)
             {
                 if (obj is PathfindingNode other)
-                    return Position == other.Position;
+                    return Position == other.Position && Move.RegistrationName.Equals(other.Move.RegistrationName);
                 return false;
             }
 
-            public override int GetHashCode() => Position.GetHashCode();
+            public override int GetHashCode() => Position.GetHashCode() ^ Move.RegistrationName.GetHashCode();
 
-            internal List<PathfindingNode> GetNeighbors()
+            internal IEnumerable<PathfindingNode> GetNeighborSteps(IPathfinder pathfinder)
             {
-                var neighbors = new List<PathfindingNode>(Directions.Count);
-
-                int nodeX = Position.X;
-                int nodeY = Position.Y;
-
-                foreach (var direction in Directions)
+                foreach (var movement in pathfinder.Movements)
                 {
-                    int newX = nodeX + (int)direction.X;
-                    int newY = nodeY + (int)direction.Y;
-
-                    if (WorldGen.InWorld(newX, newY))
-                        neighbors.Add(new PathfindingNode(new Point(newX, newY)));
+                    foreach (var neighbor in movement.GetDestinations(Position))
+                    {
+                        yield return new PathfindingNode(neighbor, movement);
+                    }
                 }
-
-                return neighbors;
             }
 
-            internal List<Vector2> ReconstructPath()
+            internal List<PathfindingNode> ReconstructPath()
             {
-                var path = new List<Vector2>();
+                var path = new List<PathfindingNode>();
                 var current = this;
                 while (current != null)
                 {
-                    path.Add(current.Position.ToWorldCoordinates());
+                    path.Add(current);
                     current = current.Parent;
                 }
                 path.Reverse();
@@ -622,7 +436,7 @@ namespace CalamityMod
             Rectangle hitbox = entity.Hitbox;
             hitbox.Location = new Point(position.X - hitbox.Width / 2, position.Y - hitbox.Height / 2);
             hitbox.Inflate(fluffX, fluffY);
-            
+
             int startX = (int)MathF.Floor(hitbox.Left / 16);
             int endX = (int)Math.Floor((hitbox.Right - float.Epsilon) / 16);
             int startY = (int)MathF.Floor(hitbox.Top / 16);

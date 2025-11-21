@@ -125,11 +125,9 @@ namespace CalamityMod.NPCs.SunkenSea
         {
             if (pathfinding == null)
             {
-                pathfinding = new PathfindingManager(NPC)
-                {
-                    Acceleration = 0.5f,
-                    MaxSpeed = 4f,
-                };
+                pathfinding = new PathfindingManager(this);
+                Acceleration = 0.5f;
+                MaxSpeed = 4f;
             }
             if (NPC.ai[3] <= 0)
             {
@@ -171,7 +169,7 @@ namespace CalamityMod.NPCs.SunkenSea
         public void IdleBehavior()
         {
             // At random, the mob will choose a random nearby point and pathfind there.
-            pathfinding.DoPathfinding(new(NPC.Center, NPC.Center + Main.rand.NextVector2Unit() * Main.rand.Next(IdleMinPathDistance, IdleMaxPathDistance), LavaTileValidityLenient));
+            pathfinding.DoPathfinding(new(this, NPC.Center, NPC.Center + Main.rand.NextVector2Unit() * Main.rand.Next(IdleMinPathDistance, IdleMaxPathDistance), LavaTileValidityLenient));
         }
 
         /// <summary>
@@ -194,29 +192,29 @@ namespace CalamityMod.NPCs.SunkenSea
             if (CurrentPredator == null)
             {
                 CurrentBehavior = (int)PhaseType.Idle;
-                pathfinding.MaxSpeed = 4;
+                MaxSpeed = 4;
                 return;
             }
 
-            pathfinding.MaxSpeed = 8;
+            MaxSpeed = 8;
 
             // While it doesn't have any obstacles in front of it, run away in a straight line.
             // Try to manuever if there are any obstacles.
             if (!Main.tile[(NPC.Center + NPC.DirectionFrom(CurrentPredator.Center) * FleeTileAnticipationDistance).ToTileCoordinates()].IsTileSolid())
             {
-                NPC.velocity += NPC.DirectionFrom(CurrentPredator.Center) * pathfinding.Acceleration;
+                NPC.velocity += NPC.DirectionFrom(CurrentPredator.Center) * Acceleration;
                 pathfinding.ClearResults();
 
                 // Cap the speed if MaxSpeed has been surpassed.
-                if (NPC.velocity.LengthSquared() > pathfinding.MaxSpeed * pathfinding.MaxSpeed)
-                    NPC.velocity = Vector2.Normalize(NPC.velocity) * pathfinding.MaxSpeed;
+                if (NPC.velocity.LengthSquared() > MaxSpeed * MaxSpeed)
+                    NPC.velocity = Vector2.Normalize(NPC.velocity) * MaxSpeed;
             }
             else
             {
                 float distanceFromAvoided = Vector2.Distance(NPC.Center, CurrentPredator.Center);
                 randomPathPoint = NPC.Center + Main.rand.NextVector2Unit() * Utils.Remap(distanceFromAvoided, 0f, 960f, 80f, 3200f);
                 NPC.netUpdate = true;
-                pathfinding.DoPathfinding(new(NPC.Center, randomPathPoint, LavaTileValidityLenient));
+                pathfinding.DoPathfinding(new(this, NPC.Center, randomPathPoint, LavaTileValidityLenient));
             }
         }
 
@@ -224,13 +222,13 @@ namespace CalamityMod.NPCs.SunkenSea
         {
             if (CurrentPrey == null)
             {
-                pathfinding.MaxSpeed = 4;
+                MaxSpeed = 4;
                 CurrentBehavior = (int)PhaseType.Idle;
                 pathfinding.ClearResults();
                 return;
             }
-            pathfinding.MaxSpeed = 8;
-            pathfinding.DoPathfinding(new(NPC.Center, CurrentPrey.Center, LavaTileValidityLenient));
+            MaxSpeed = 8;
+            pathfinding.DoPathfinding(new(this, NPC.Center, CurrentPrey.Center, LavaTileValidityLenient));
         }
 
         public void HostileBehavior()
@@ -238,7 +236,7 @@ namespace CalamityMod.NPCs.SunkenSea
             // Reset
             if (CurrentPlayer == null || !NPC.HasSight(CurrentPlayer.Center))
             {
-                pathfinding.MaxSpeed = 4;
+                MaxSpeed = 4;
                 CurrentBehavior = (int)PhaseType.Idle;
                 NPC.ai[2] = 0;
                 pathfinding.ClearResults();
@@ -277,7 +275,7 @@ namespace CalamityMod.NPCs.SunkenSea
                 // Go to the location if not close enough, otherwise slow down
                 if (NPC.Distance(destination) > distNeeded)
                 {
-                    pathfinding.DoPathfinding(new(NPC.Center, destination));
+                    pathfinding.DoPathfinding(new(this, NPC.Center, destination));
                 }
                 else
                 {
@@ -292,8 +290,8 @@ namespace CalamityMod.NPCs.SunkenSea
                 {
                     NPC.velocity.Y = 4;
                 }
-                pathfinding.MaxSpeed = 6;
-                pathfinding.DoPathfinding(new(NPC.Center, CurrentPlayer.Center, LavaTileValidityLenient));
+                MaxSpeed = 6;
+                pathfinding.DoPathfinding(new(this, NPC.Center, CurrentPlayer.Center, LavaTileValidityLenient));
                 // Mark the fish as currently trying to chase the player
                 NPC.Calamity().newAI[0] = 1;
             }
@@ -365,7 +363,7 @@ namespace CalamityMod.NPCs.SunkenSea
             // Air attack, shoot projectiles at the player in arches
             else if (useAirAI)
             {
-                pathfinding.MaxSpeed = 4;
+                MaxSpeed = 4;
                 ShootTimer--;
 
                 if (ShootTimer <= -40)

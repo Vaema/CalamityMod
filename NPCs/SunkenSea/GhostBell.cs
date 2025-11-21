@@ -159,13 +159,10 @@ namespace CalamityMod.NPCs.SunkenSea
         {
             if (pathfinding == null)
             {
-                pathfinding = new PathfindingManager(NPC)
-                {
-                    Acceleration = 0.1f,
-                    MaxSpeed = 1f,
-                };
+                pathfinding = new PathfindingManager(this);
+                Acceleration = 0.1f;
+                MaxSpeed = 1f;
             }
-
             CreateTentacles();
             NPC.ai[2]++;
 
@@ -253,7 +250,7 @@ namespace CalamityMod.NPCs.SunkenSea
             // Move towards target
             else if (target != null)
             {
-                pathfinding.DoPathfinding(new PathfindingParameters(NPC.Center, target.Center, SunkenSeaTileValiditySizeless));
+                pathfinding.DoPathfinding(new PathfindingParameters(this, NPC.Center, target.Center, SunkenSeaTileValiditySizeless));
                 if (pathfinding.Path.Count > 0)
                 if (pathfinding.Path[^1].Distance(target.Center) > 300)
                 {

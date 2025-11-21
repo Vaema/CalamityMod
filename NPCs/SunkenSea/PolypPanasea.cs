@@ -180,11 +180,9 @@ namespace CalamityMod.NPCs.SunkenSea
         {
             if (pathfinding == null)
             {
-                pathfinding = new PathfindingManager(NPC)
-                {
-                    Acceleration = 0.5f,
-                    MaxSpeed = 4f,
-                };
+                pathfinding = new PathfindingManager(this);
+                Acceleration = 0.5f;
+                MaxSpeed = 4f;
             }
             // Reset polyp index in case the polyp dies
             if (PolypIndex > -1)
@@ -238,7 +236,7 @@ namespace CalamityMod.NPCs.SunkenSea
         public void IdleBehavior()
         {
             // At random, the mob will choose a random nearby point and pathfind there.
-            pathfinding.DoPathfinding(new(NPC.Center, NPC.Center + Main.rand.NextVector2Unit() * Main.rand.Next(100, IdleMaxPathDistance), SunkenSeaTileValidity));
+            pathfinding.DoPathfinding(new(this, NPC.Center, NPC.Center + Main.rand.NextVector2Unit() * Main.rand.Next(100, IdleMaxPathDistance), SunkenSeaTileValidity));
         }
         public void HideBehavior()
         {
@@ -253,10 +251,10 @@ namespace CalamityMod.NPCs.SunkenSea
 
             // Become invincible while hiding
             NPC.dontTakeDamage = true;
-            pathfinding.MaxSpeed = 2;
+            MaxSpeed = 2;
 
             // At random, the mob will choose a random nearby point and pathfind there.
-            pathfinding.DoPathfinding(new(NPC.Center, Main.npc[PolypIndex].Center + Main.rand.NextVector2Unit() * Main.rand.Next(20, 30), SunkenSeaTileValidity));
+            pathfinding.DoPathfinding(new(this, NPC.Center, Main.npc[PolypIndex].Center + Main.rand.NextVector2Unit() * Main.rand.Next(20, 30), SunkenSeaTileValidity));
         }
 
         public void FleeBehavior()
@@ -265,18 +263,18 @@ namespace CalamityMod.NPCs.SunkenSea
             if (CurrentPredator == null && PolypIndex <= -1)
             {
                 CurrentBehavior = (int)PhaseType.Idle;
-                pathfinding.MaxSpeed = 4;
+                MaxSpeed = 4;
                 return;
             }
 
-            pathfinding.MaxSpeed = 6;
+            MaxSpeed = 6;
 
             // If a polyp is found, try to run into it
             if (PolypIndex > -1)
             {
                 NPC.netUpdate = true;
                 Vector2 polypPos = Main.npc[PolypIndex].position;
-                pathfinding.DoPathfinding(new(NPC.Center, polypPos, SunkenSeaTileValidity));
+                pathfinding.DoPathfinding(new(this, NPC.Center, polypPos, SunkenSeaTileValidity));
 
                 if (NPC.Distance(Main.npc[PolypIndex].Center) < 50)
                 {
@@ -288,19 +286,19 @@ namespace CalamityMod.NPCs.SunkenSea
             // Try to manuever if there are any obstacles.
             else if (!Main.tile[(NPC.Center + NPC.DirectionFrom(CurrentPredator.Center) * FleeTileAnticipationDistance).ToTileCoordinates()].IsTileSolid())
             {
-                NPC.velocity += NPC.DirectionFrom(CurrentPredator.Center) * pathfinding.Acceleration;
+                NPC.velocity += NPC.DirectionFrom(CurrentPredator.Center) * Acceleration;
                 pathfinding.ClearResults();
 
                 // Cap the speed if MaxSpeed has been surpassed.
-                if (NPC.velocity.LengthSquared() > pathfinding.MaxSpeed * pathfinding.MaxSpeed)
-                    NPC.velocity = Vector2.Normalize(NPC.velocity) * pathfinding.MaxSpeed;
+                if (NPC.velocity.LengthSquared() > MaxSpeed * MaxSpeed)
+                    NPC.velocity = Vector2.Normalize(NPC.velocity) * MaxSpeed;
             }
             else
             {
                 float distanceFromAvoided = Vector2.Distance(NPC.Center, CurrentPredator.Center);
                 randomPathPoint = NPC.Center + Main.rand.NextVector2Unit() * Utils.Remap(distanceFromAvoided, 0f, 960f, 80f, 3200f);
                 NPC.netUpdate = true;
-                pathfinding.DoPathfinding(new(NPC.Center, randomPathPoint, SunkenSeaTileValidity));
+                pathfinding.DoPathfinding(new(this, NPC.Center, randomPathPoint, SunkenSeaTileValidity));
             }
         }
 

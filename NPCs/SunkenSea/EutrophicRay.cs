@@ -114,11 +114,9 @@ namespace CalamityMod.NPCs.SunkenSea
 
         public override void OnSpawn(IEntitySource source)
         {
-            pathfinding = new PathfindingManager(NPC)
-            {
-                MaxSpeed = 4.85f,
-                Acceleration = 0.5f
-            };
+            pathfinding = new PathfindingManager(this);
+            MaxSpeed = 4.85f;
+            Acceleration = 0.5f;
             CurrentBehavior = IdleBehavior;
         }
 
@@ -127,11 +125,9 @@ namespace CalamityMod.NPCs.SunkenSea
         {
             if (pathfinding == null)
             {
-                pathfinding = new PathfindingManager(NPC)
-                {
-                    MaxSpeed = 4.85f,
-                    Acceleration = 0.5f
-                };
+                pathfinding = new PathfindingManager(this);
+                MaxSpeed = 4.85f;
+                Acceleration = 0.5f;
             }
             CurrentBehavior?.Invoke();
 
@@ -160,7 +156,7 @@ namespace CalamityMod.NPCs.SunkenSea
             if (newBehavior == OutOfWaterBehavior)
                 NPC.noGravity = false;
 
-            pathfinding.MaxSpeed = newBehavior == FleeBehavior ? 6.5f : 5f;
+            MaxSpeed = newBehavior == FleeBehavior ? 6.5f : 5f;
         }
 
         private void IdleBehavior()
@@ -175,7 +171,7 @@ namespace CalamityMod.NPCs.SunkenSea
 
                 NPC.velocity *= 0.98f;
             }
-            pathfinding.DoPathfinding(new(NPC.Center, NPC.Center + Main.rand.NextVector2Unit() * Main.rand.NextFloat(200f, 800f), SunkenSeaTileValidity));
+            pathfinding.DoPathfinding(new(this, NPC.Center, NPC.Center + Main.rand.NextVector2Unit() * Main.rand.NextFloat(200f, 800f), SunkenSeaTileValidity));
         }
         private void AttackBehavior()
         {
@@ -237,19 +233,19 @@ namespace CalamityMod.NPCs.SunkenSea
             // Flee in a straight line if possible, otherwise pathfind away from the attacker.
             if (!Main.tile[(NPC.Center + NPC.DirectionFrom(AvoidedEntity.Center) * 64f).ToTileCoordinates()].IsTileSolid())
             {
-                NPC.velocity += NPC.DirectionFrom(AvoidedEntity.Center) * pathfinding.Acceleration;
+                NPC.velocity += NPC.DirectionFrom(AvoidedEntity.Center) * Acceleration;
                 pathfinding.ClearResults();
 
                 // Cap the speed if MaxSpeed has been surpassed.
-                if (NPC.velocity.LengthSquared() > pathfinding.MaxSpeed * pathfinding.MaxSpeed)
-                    NPC.velocity = Vector2.Normalize(NPC.velocity) * pathfinding.MaxSpeed;
+                if (NPC.velocity.LengthSquared() > MaxSpeed * MaxSpeed)
+                    NPC.velocity = Vector2.Normalize(NPC.velocity) * MaxSpeed;
             }
             else
             {
                 float distanceFromAvoided = Vector2.Distance(NPC.Center, AvoidedEntity.Center);
                 Vector2 pathPoint = NPC.Center + Main.rand.NextVector2Unit() * Utils.Remap(distanceFromAvoided, 0f, 960f, 80f, 3200f);
                 NPC.netUpdate = true;
-                pathfinding.DoPathfinding(new(NPC.Center, pathPoint, SunkenSeaTileValidity));
+                pathfinding.DoPathfinding(new(this, NPC.Center, pathPoint, SunkenSeaTileValidity));
             }
         }
         private void OutOfWaterBehavior()
