@@ -70,7 +70,7 @@ namespace CalamityMod.Items.Weapons.Rogue
                 AddIngredient<Glaive>().
                 AddIngredient(ItemID.HellstoneBar, 5).
                 AddIngredient<EssenceofHavoc>(10).
-                AddTile(TileID.Anvils).
+                AddTile(TileID.MythrilAnvil).
                 Register();
         }
     }
