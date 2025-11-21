@@ -4,6 +4,7 @@ using CalamityMod.NPCs.AcidRain;
 using CalamityMod.NPCs.AquaticScourge;
 using CalamityMod.NPCs.Astral;
 using CalamityMod.NPCs.Crags;
+using CalamityMod.NPCs.Deconstructors;
 using CalamityMod.NPCs.DraedonLabThings;
 using CalamityMod.NPCs.Leviathan;
 using CalamityMod.NPCs.NormalNPCs;
@@ -306,7 +307,7 @@ namespace CalamityMod.Tiles
                     npc = NPCType<Horse>();
                     break;
                 case 77:
-                    npc = NPCType<ArmoredDiggerHead>();
+                    npc = NPCType<Burrower>();
                     break;
                 case 78:
                     npc = NPCType<Melter>();
