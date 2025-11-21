@@ -67,9 +67,6 @@ namespace CalamityMod.Systems
                     progress.Message = Language.GetOrRegister("Mods.CalamityMod.UI.UnderworldStructures").Value;
                     CustomUnderworld.NewUnderworldStructures();
 
-                    progress.Message = Language.GetOrRegister("Mods.CalamityMod.UI.UnderworldPillars").Value;
-                    CustomUnderworld.NewUnderworldPillars();
-
                     progress.Message = Language.GetOrRegister("Mods.CalamityMod.UI.UnderworldTreesAndGrass").Value;
                     CustomUnderworld.AshTreesAndGrass();
 
