@@ -4454,6 +4454,30 @@ namespace CalamityMod.CalPlayer
                 Lighting.AddLight(Player.Center, Light * (0.55f + (oceanCrestTimer * 0.0035f)));
             }
 
+            if (rampartOfDeities)
+            {
+                // Ice Barrier buff inherited from Frozen Turtle Shell
+                if (Player.statLife <= Player.statLifeMax2 * 0.5)
+                    Player.AddBuff(BuffID.IceBarrier, 5);
+
+                // Paladin's Shield application
+                if (Player.statLife > Player.statLifeMax2 * 0.25f)
+                {
+                    Player.hasPaladinShield = true;
+                    if (Player.whoAmI != Main.myPlayer && Player.miscCounter % 10 == 0)
+                    {
+                        var localPlayer = Main.LocalPlayer;
+                        if (localPlayer.team == Player.team && Player.team != 0)
+                        {
+                            float teamPlayerXDist = Player.position.X - localPlayer.position.X;
+                            float teamPlayerYDist = Player.position.Y - localPlayer.position.Y;
+                            if ((float)Math.Sqrt(teamPlayerXDist * teamPlayerXDist + teamPlayerYDist * teamPlayerYDist) < 800f)
+                                localPlayer.AddBuff(BuffID.PaladinsShield, 20);
+                        }
+                    }
+                }
+            }
+
             // True melee damage from various vanilla equipment placed here.
 
             // Titan Glove and ALL upgrades.
