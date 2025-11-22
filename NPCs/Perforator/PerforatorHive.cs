@@ -686,7 +686,8 @@ namespace CalamityMod.NPCs.Perforator
 
                 // Equipment
                 normalOnly.Add(ModContent.ItemType<BloodstainedGlove>(), DropHelper.NormalWeaponDropRateFraction);
-                normalOnly.Add(DropHelper.PerPlayer(ModContent.ItemType<BloodyWormTooth>()));
+                // 16NOV2025: Ozzatron: item has been chosen as the "Expert gatekept" item for this Calamity boss
+                // normalOnly.Add(DropHelper.PerPlayer(ModContent.ItemType<BloodyWormTooth>()));
 
                 // Vanity
                 normalOnly.Add(ModContent.ItemType<PerforatorMask>(), 7);

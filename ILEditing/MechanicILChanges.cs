@@ -8,6 +8,9 @@ using CalamityMod.DataStructures;
 using CalamityMod.Enums;
 using CalamityMod.Events;
 using CalamityMod.FluidSimulation;
+using CalamityMod.Graphics.Metaballs;
+using CalamityMod.Graphics.Primitives;
+using CalamityMod.Graphics.Renderers;
 using CalamityMod.Items.Accessories;
 using CalamityMod.Items.Accessories.Vanity;
 using CalamityMod.Items.Armor.Wulfrum;
@@ -26,6 +29,7 @@ using CalamityMod.Projectiles;
 using CalamityMod.Projectiles.Ranged;
 using CalamityMod.Projectiles.Typeless;
 using CalamityMod.Systems;
+using CalamityMod.Systems.Graphic.PixelationSystem;
 using CalamityMod.Systems.Mechanic;
 using CalamityMod.Tiles;
 using CalamityMod.Walls;
@@ -72,42 +76,6 @@ namespace CalamityMod.ILEditing
         private static Action VanillaSpawnTownNPCs;
 
         //private static readonly MethodInfo textureGetValueMethod = typeof(Asset<Texture2D>).GetMethod("get_Value", BindingFlags.Public | BindingFlags.Instance);
-
-        #region Punch Card Spawning Command
-        private static void SpawnPunchCard(On_Main.orig_DoUpdate_HandleChat orig)
-        {
-            // Any of these conditions should result in normal behaviour
-            if (!Main.drawingPlayerChat || Main.CurrentInputTextTakerOverride != null || Main.editSign || PlayerInput.UsingGamepad)
-            {
-                orig();
-                return;
-            }
-
-            // Allow only one pick up of the card this way per player (also don't give it to dead people)
-            Player player = Main.LocalPlayer;
-            if (player.Calamity().spawnedPunchCard || player.dead || !player.active)
-            {
-                orig();
-                return;
-            }
-
-            // Find 2 specific sets of text from the live chat box (as the player is typing)
-            // Gives the item to you and abruptly shuts the chat box down if both parts are found
-            string text = Main.chatText.ToLower();
-            string prefix = "Items.Accessories.PunchCard.SpawnText";
-            if ((text.Contains(CalamityUtils.GetTextValue($"{prefix}1")) || text.Contains(CalamityUtils.GetTextValue($"{prefix}1Alt"))) && text.Contains(CalamityUtils.GetTextValue($"{prefix}2")))
-            {
-                player.QuickSpawnItem(Player.GetSource_None(), ModContent.ItemType<PunchCard>(), 1);
-                player.Calamity().spawnedPunchCard = true;
-                Main.chatText = "";
-                Main.ClosePlayerChat();
-                Main.chatRelease = false;
-                SoundEngine.PlaySound(SoundID.MenuClose);
-                return;
-            }
-            orig();
-        }
-        #endregion
 
         #region Dash Fixes and Improvements
         private static void MakeShieldSlamIFramesConsistent(ILContext il)
@@ -908,6 +876,82 @@ namespace CalamityMod.ILEditing
         }
         #endregion
 
+        #region GeneralDrawLayer Systems Drawing
+        private static void GeneralDrawLayer_DrawForSupportedSystems(GeneralDrawLayer drawLayer)
+        {
+            Main.spriteBatch.SafeAction(() =>
+            {
+                Main.spriteBatch.TryEnd();
+                GeneralParticleHandler.DrawParticleCollectionsAtSpecificLayer(drawLayer);
+            });
+
+            Main.spriteBatch.SafeAction(() =>
+            {
+                Main.spriteBatch.TryEnd();
+                Main.spriteBatch.TryBegin(SpriteSortMode.Immediate, BlendState.AlphaBlend, SamplerState.PointWrap, DepthStencilState.None, Main.Rasterizer, null, Main.GameViewMatrix.TransformationMatrix);
+                MetaballManager.DrawMetaballs(drawLayer);
+            });
+
+            Main.spriteBatch.SafeAction(() =>
+            {
+                Main.spriteBatch.TryEnd();
+                PrimitivePixelationSystem.DrawTargetScaled(drawLayer);
+            });
+
+            PixelationManager.DrawPixelatedTargets(drawLayer);
+
+            Main.spriteBatch.SafeAction(() =>
+            {
+                Main.spriteBatch.TryEnd();
+                RendererManager.DrawRendererAtLayer(drawLayer);
+            });
+        }
+
+        private static void GeneralDrawLayer_DrawToLayer_BeforeAllTiles(On_Main.orig_DrawBackgroundBlackFill orig, Main self)
+        {
+            GeneralDrawLayer_DrawForSupportedSystems(GeneralDrawLayer.BeforeAllTiles);
+            orig(self);
+        }
+
+        private static void GeneralDrawLayer_DrawToLayer_BeforeSolidTiles(On_Main.orig_DoDraw_Tiles_Solid orig, Main self)
+        {
+            GeneralDrawLayer_DrawForSupportedSystems(GeneralDrawLayer.BeforeSolidTiles);
+            orig(self);
+        }
+
+        private static void GeneralDrawLayer_DrawToLayer_NPCs(On_Main.orig_DoDraw_DrawNPCsOverTiles orig, Main self)
+        {
+            GeneralDrawLayer_DrawForSupportedSystems(GeneralDrawLayer.BeforeNPCs);
+            orig(self);
+            GeneralDrawLayer_DrawForSupportedSystems(GeneralDrawLayer.AfterNPCs);
+        }
+
+        private static void GeneralDrawLayer_DrawToLayer_Projectiles(On_Main.orig_DrawProjectiles orig, Main self)
+        {
+            GeneralDrawLayer_DrawForSupportedSystems(GeneralDrawLayer.BeforeProjectiles);
+            orig(self);
+            GeneralDrawLayer_DrawForSupportedSystems(GeneralDrawLayer.AfterProjectiles);
+        }
+
+        private static void GeneralDrawLayer_DrawToLayer_AfterPlayers(On_Main.orig_DrawPlayers_AfterProjectiles orig, Main self)
+        {
+            orig(self);
+            GeneralDrawLayer_DrawForSupportedSystems(GeneralDrawLayer.AfterPlayers);
+        }
+
+        private static void GeneralDrawLayer_DrawToLayer_AfterDusts(On_Main.orig_DrawDust orig, Main self)
+        {
+            orig(self);
+            GeneralDrawLayer_DrawForSupportedSystems(GeneralDrawLayer.AfterDusts);
+        }
+
+        private static void GeneralDrawLayer_DrawToLayer_AfterEverything(On_Main.orig_DrawInfernoRings orig, Main self)
+        {
+            orig(self);
+            GeneralDrawLayer_DrawForSupportedSystems(GeneralDrawLayer.AfterEverything);
+        }
+        #endregion
+
         #region General Particle Rendering
         private static void DrawFusableParticles(On_Main.orig_SortDrawCacheWorms orig, Main self)
         {
@@ -919,11 +963,6 @@ namespace CalamityMod.ILEditing
             orig(self);
         }
 
-        private static void DrawForegroundParticles(On_Main.orig_DrawInfernoRings orig, Main self)
-        {
-            GeneralParticleHandler.DrawAllParticles(Main.spriteBatch);
-            orig(self);
-        }
         #endregion
 
         #region Disable Moon Lord Style Flashes With Photosensitivity Config

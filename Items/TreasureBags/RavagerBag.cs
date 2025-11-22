@@ -76,10 +76,8 @@ namespace CalamityMod.Items.TreasureBags
             itemLoot.Add(ModContent.ItemType<CorpusAvertor>(), 20);
 
             // Equipment
-            itemLoot.Add(ItemDropRule.OneFromOptionsNotScalingWithLuck(1,
-                ModContent.ItemType<BloodPact>(),
-                ModContent.ItemType<FleshTotem>()
-            ));
+            itemLoot.Add(ModContent.ItemType<BloodPact>());
+            itemLoot.Add(ModContent.ItemType<FleshTotem>(), 2);
             itemLoot.AddIf(() => DownedBossSystem.downedProvidence, ModContent.ItemType<BloodflareCore>());
             itemLoot.AddRevBagAccessories();
             itemLoot.AddIf((info) => CalamityWorld.revenge && !info.player.Calamity().rageBoostTwo, ModContent.ItemType<InfernalBlood>());

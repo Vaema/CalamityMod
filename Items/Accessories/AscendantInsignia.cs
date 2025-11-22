@@ -7,6 +7,7 @@ using CalamityMod.Items.Placeables.Ores;
 using CalamityMod.Rarities;
 using Terraria;
 using Terraria.ID;
+using Terraria.Localization;
 using Terraria.ModLoader;
 
 namespace CalamityMod.Items.Accessories
@@ -15,6 +16,16 @@ namespace CalamityMod.Items.Accessories
     public class AscendantInsignia : ModItem, ILocalizedModType
     {
         public new string LocalizationCategory => "Items.Accessories";
+
+        // These values override Soaring Insignia's
+        public static double FlightTimeBoost = 0.5D; 
+        public static float MoveSpeedBoost = 0.15f;
+        public static float JumpSpeedBoost = 0.75f; // NOTE: Tooltip shares this number with move speed % as they're equal
+        public static float AccelerationBoost = 0.5f;
+        public static int AbilityDuration = CalamityUtils.SecondsToFrames(4);
+        public static int AbilityCooldown = CalamityUtils.SecondsToFrames(40);
+        public override LocalizedText Tooltip => base.Tooltip.WithFormatArgs(FlightTimeBoost.ToPercent(), MoveSpeedBoost.ToPercent(), (1f + AccelerationBoost).Round(), AbilityDuration.FramesToSeconds(), AbilityCooldown.FramesToSeconds());
+
         public override void ModifyTooltips(List<TooltipLine> list) => list.IntegrateHotkey(CalamityKeybinds.AscendantInsigniaHotKey);
         public override void SetDefaults()
         {
@@ -23,6 +34,7 @@ namespace CalamityMod.Items.Accessories
             Item.value = CalamityGlobalItem.RarityPureGreenBuyPrice;
             Item.accessory = true;
             Item.rare = ModContent.RarityType<PureGreen>();
+            Item.expert = true;
         }
 
         public override void UpdateAccessory(Player player, bool hideVisual)
@@ -30,8 +42,8 @@ namespace CalamityMod.Items.Accessories
             CalamityPlayer modPlayer = player.Calamity();
             modPlayer.ascendantInsignia = true;
             player.empressBrooch = true;
-            player.moveSpeed += 0.05f;
-            player.jumpSpeedBoost += 0.25f;
+            player.moveSpeed += MoveSpeedBoost;
+            player.jumpSpeedBoost += JumpSpeedBoost - 0.5f;
         }
 
         public override void AddRecipes()

@@ -2987,7 +2987,8 @@ namespace CalamityMod.NPCs.Yharon
                 normalOnly.Add(DropHelper.PerPlayer(ModContent.ItemType<YharonSoulFragment>(), 1, 35, 40));
 
                 // Equipment
-                normalOnly.Add(DropHelper.PerPlayer(ModContent.ItemType<YharimsGift>()));
+                // 16NOV2025: Ozzatron: item has been chosen as the "Expert gatekept" item for this Calamity boss
+                // normalOnly.Add(DropHelper.PerPlayer(ModContent.ItemType<YharimsGift>()));
                 normalOnly.Add(DropHelper.PerPlayer(ModContent.ItemType<WingsofRebirth>()));
             }
 

@@ -31,8 +31,21 @@ namespace CalamityMod.World
 {
     public class GiantHive
     {
-        public static bool GrowLivingJungleTree(Point origin)
+        public static bool GrowLivingJungleTree(Point origin, StructureMap structures)
         {
+            if (!structures.CanPlace(new Rectangle(origin.X - 50, origin.Y - 50, 100, 100)))
+                return false;
+
+            if (TooCloseToImportantLocations(origin))
+                return false;
+
+            Ref<int> ref1 = new Ref<int>(0);
+            Ref<int> ref2 = new Ref<int>(0);
+            Ref<int> ref3 = new Ref<int>(0);
+            WorldUtils.Gen(origin, new Shapes.Circle(15), Actions.Chain(new Modifiers.IsSolid(), new Actions.Scanner(ref1), new Modifiers.OnlyTiles(TileID.JungleGrass, TileID.Mud), new Actions.Scanner(ref2), new Modifiers.OnlyTiles(TileID.JungleGrass), new Actions.Scanner(ref3)));
+            if ((ref2.Value / (float)ref1.Value < 0.75f || ref3.Value < 2) && !WorldGen.drunkWorldGen)
+                return false;
+
             int treeHeight = (int)Main.worldSurface - (Main.maxTilesY / 10); //start here to not touch floating islands
             bool validHeightFound = false;
             int attempts = 0;
@@ -219,8 +232,6 @@ namespace CalamityMod.World
                     }
                 }
             }
-
-            GrowLivingJungleTree(new Point(origin.X, origin.Y));
 
             CreateStandForLarva(larvaLocation);
 

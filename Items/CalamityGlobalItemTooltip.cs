@@ -369,8 +369,6 @@ namespace CalamityMod.Items
                 nameLine.OverrideColor = ShatteredCommunity.GetRarityColor();
             if (item.type == ModContent.ItemType<Ozzathoth>())
                 nameLine.OverrideColor = ShatteredCommunity.GetRarityColor();
-            if (item.type == ModContent.ItemType<NimbleBounder>())
-                nameLine.OverrideColor = CalamityUtils.ColorSwap(new Color(132, 37, 147), new Color(0, 255, 0), 5f); //alternates purple and neon green
             if (item.type == ModContent.ItemType<ProfanedSoulCrystal>())
                 nameLine.OverrideColor = CalamityUtils.ColorSwap(new Color(255, 166, 0), new Color(25, 250, 25), 6f); //alternates between emerald green and amber (BanditHueh)
             if (item.type == ModContent.ItemType<TemporalUmbrella>())

@@ -33,7 +33,6 @@ namespace CalamityMod.Items
                     TryDropBoosterItem(player, ref calPlayer.adrenalineBoostOne, ModContent.ItemType<ElectrolyteGelPack>());
                     TryDropBoosterItem(player, ref calPlayer.adrenalineBoostTwo, ModContent.ItemType<StarlightFuelCell>());
                     TryDropBoosterItem(player, ref calPlayer.adrenalineBoostThree, ModContent.ItemType<Ectoheart>());
-                    TryDropBoosterItem(player, ref calPlayer.nimbleBounderBoost, ModContent.ItemType<NimbleBounder>());
                 }
                 else
                 {

@@ -2,6 +2,7 @@
 using System.Linq;
 using CalamityMod.Graphics.Primitives;
 using CalamityMod.Particles;
+using CalamityMod.Enums;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria;
@@ -22,7 +23,7 @@ namespace CalamityMod.Projectiles.Magic
 
         public override string Texture => "CalamityMod/Projectiles/InvisibleProj";
 
-        public PixelationPrimitiveLayer LayerToRenderTo => PixelationPrimitiveLayer.BeforeProjectiles;
+        public GeneralDrawLayer LayerToRenderTo => GeneralDrawLayer.BeforeProjectiles;
 
         public override void SetStaticDefaults()
         {
@@ -137,7 +138,7 @@ namespace CalamityMod.Projectiles.Magic
             return Color.Lerp(startColor, bodyColor, completion);
         }
 
-        public void RenderPixelatedPrimitives(SpriteBatch spriteBatch, PixelationPrimitiveLayer layer)
+        public void RenderPixelatedPrimitives(SpriteBatch spriteBatch, GeneralDrawLayer layer)
         {
             // Render the main trail for the body for the laser.
             GameShaders.Misc["CalamityMod:ImpFlameTrail"].SetShaderTexture(ModContent.Request<Texture2D>("CalamityMod/ExtraTextures/Trails/SylvestaffStreak"));

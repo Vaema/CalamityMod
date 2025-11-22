@@ -16,6 +16,7 @@ using CalamityMod.Enums;
 using System.IO;
 using CalamityMod.Particles;
 using Terraria.Audio;
+using CalamityMod.Items.Potions;
 
 namespace CalamityMod.NPCs.SunkenSea
 {
@@ -480,8 +481,7 @@ namespace CalamityMod.NPCs.SunkenSea
             {
                 if (PanaceaTimer > 60)
                 {
-                    // TODO: add actual panacea item
-                    Item.NewItem(NPC.GetSource_CatchEntity(NPC), (int)NPC.Center.X, (int)NPC.Center.Y, 1, 1, ItemID.FlaskofPoison);
+                    Item.NewItem(NPC.GetSource_CatchEntity(NPC), (int)NPC.Center.X, (int)NPC.Center.Y, 1, 1, ModContent.ItemType<BottledPanacea>());
                     PanaceaTimer = 60;
                 }
                 return false;

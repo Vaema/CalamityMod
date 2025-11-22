@@ -33,6 +33,7 @@ namespace CalamityMod.Items.Accessories
             Item.rare = ModContent.RarityType<BurnishedAuric>();
             Item.value = CalamityGlobalItem.RarityVioletBuyPrice;
             Item.accessory = true;
+            Item.expert = true;
         }
 
         public override void UpdateVanity(Player player)

@@ -8,7 +8,7 @@ AndroombaBanner.DisplayName: "{$Items.Placeables.FormattedBannerName}"
 AnthozoanCrabBanner.DisplayName: "{$Items.Placeables.FormattedBannerName}"
 AquaticUrchinBanner.DisplayName: "{$Items.Placeables.FormattedBannerName}"
 AriesBanner.DisplayName: "{$Items.Placeables.FormattedBannerName}"
-ArmoredDiggerBanner.DisplayName: "{$Items.Placeables.FormattedBannerName}"
+BurrowerBanner.DisplayName: "{$Items.Placeables.FormattedBannerName}"
 AstraglomerateBanner.DisplayName: "{$Items.Placeables.FormattedBannerName}"
 AstralachneaBanner.DisplayName: "{$Items.Placeables.FormattedBannerName}"
 AstralProbeBanner.DisplayName: "{$Items.Placeables.FormattedBannerName}"
@@ -510,32 +510,6 @@ BabyGhostBellJar: {
 	Tooltip: ""
 }
 
-CalamityCanvas2023: {
-	DisplayName: Calamity Canvas 2023
-	Tooltip:
-		'''
-		<right> when placed to open a UI which allows customizing the focus of the painting
-		<left> to make the focus follow the cursor, <left> again to set it
-		Arrow keys can also be used to manually adjust the focus point
-		The scroll wheel zooms the focus in and out
-		Hold Shift to hide the UI without closing it
-		'Embrace chaos'
-		'''
-}
-
-CalamityCanvas2024: {
-	DisplayName: Calamity Canvas 2024
-	Tooltip:
-		'''
-		<right> when placed to open a UI which allows customizing the focus of the painting
-		<left> to make the focus follow the cursor, <left> again to set it
-		Arrow keys can also be used to manually adjust the focus point
-		The scroll wheel zooms the focus in and out
-		Hold Shift to hide the UI without closing it
-		'Embrace havoc'
-		'''
-}
-
 AquaticScourgeRelic: {
 	DisplayName: Aquatic Scourge Relic
 	Tooltip: A glimpse into what could have been...
@@ -771,16 +745,6 @@ CrimsonEffigy: {
 		'''
 }
 
-ThankYouPainting: {
-	DisplayName: Thank You
-	Tooltip:
-		'''
-		Thanks to the entire team, everyone who supported, and those who all play the mod and keep it alive!
-		The confines of this painting is not enough to fit the entire team
-		Hold Shift to see a list of past and current developers
-		'''
-}
-
 EffigyOfDecay: {
 	DisplayName: Effigy of Decay
 	Tooltip:
@@ -899,6 +863,51 @@ PurpleDistortedMonolith: {
 NavyPrismTorch: {
 	DisplayName: Navy Prism Torch
 	Tooltip: Can be placed in water
+}
+
+AmidiasPainting: {
+	DisplayName: Sea King's Release
+	Tooltip:
+		'''
+		'O. Rios'
+		'September-October!'
+		'''
+}
+
+CalamityCanvas2023: {
+	DisplayName: Calamity Canvas 2023
+	Tooltip:
+		'''
+		<right> when placed to open a UI which allows customizing the focus of the painting
+		<left> to make the focus follow the cursor, <left> again to set it
+		Arrow keys can also be used to manually adjust the focus point
+		The scroll wheel zooms the focus in and out
+		Hold Shift to hide the UI without closing it
+		'Embrace chaos'
+		'''
+}
+
+CalamityCanvas2024: {
+	DisplayName: Calamity Canvas 2024
+	Tooltip:
+		'''
+		<right> when placed to open a UI which allows customizing the focus of the painting
+		<left> to make the focus follow the cursor, <left> again to set it
+		Arrow keys can also be used to manually adjust the focus point
+		The scroll wheel zooms the focus in and out
+		Hold Shift to hide the UI without closing it
+		'Embrace havoc'
+		'''
+}
+
+ThankYouPainting: {
+	DisplayName: Thank You
+	Tooltip:
+		'''
+		Thanks to the entire team, everyone who supported, and those who all play the mod and keep it alive!
+		The confines of this painting is not enough to fit the entire team
+		Hold Shift to see a list of past and current developers
+		'''
 }
 
 PiggyCage: {
@@ -3976,11 +3985,6 @@ VolcanicSand: {
 }
 
 // End of Sunken Sea
-
-Dreadstone: {
-	DisplayName: Dreadstone
-	Tooltip: ""
-}
 
 UelibloomBrick: {
 	DisplayName: Uelibloom Brick

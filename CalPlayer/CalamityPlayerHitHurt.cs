@@ -1014,7 +1014,7 @@ namespace CalamityMod.CalPlayer
 
             bool isReducedTrap = (proj.trap || proj.type == ProjectileID.RollingCactusSpike || proj.type == ProjectileID.Landmine) && !isIgnoredTrap;
             if (Player.Calamity().trapProtection && isReducedTrap)
-                modifiers.SourceDamage *= 0.35f;
+                modifiers.SourceDamage *= (1f - ArchaicPowder.TrapDamageReduction);
 
             // Reduce damage dealt by rainbow trails
             if (proj.type == ProjectileID.HallowBossLastingRainbow)
@@ -2261,7 +2261,7 @@ namespace CalamityMod.CalPlayer
                 if (aquaticHeartIce)
                 {
                     SoundEngine.PlaySound(SoundID.NPCDeath7, Player.Center);
-                    Player.AddCooldown(AquaticHeartIceShield.ID, CalamityUtils.SecondsToFrames(30));
+                    Player.AddCooldown(AquaticHeartIceShield.ID, AquaticHeart.IceShieldCooldown);
 
                     for (int d = 0; d < 10; d++)
                     {

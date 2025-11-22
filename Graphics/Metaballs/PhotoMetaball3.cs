@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using CalamityMod.Effects;
-using CalamityMod.Rarities;
+using CalamityMod.Enums;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria;
@@ -47,7 +47,7 @@ namespace CalamityMod.Graphics.Metaballs
             }
         }
 
-        public override MetaballDrawLayer DrawContext => MetaballDrawLayer.AfterProjectiles;
+        public override GeneralDrawLayer DrawLayer => GeneralDrawLayer.AfterProjectiles;
 
         public Color sparkColor;
         public int Time = 0;

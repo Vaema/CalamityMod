@@ -3,6 +3,7 @@ using CalamityMod.CalPlayer;
 using CalamityMod.Items.Materials;
 using Terraria;
 using Terraria.ID;
+using Terraria.Localization;
 using Terraria.ModLoader;
 
 namespace CalamityMod.Items.Accessories
@@ -10,6 +11,10 @@ namespace CalamityMod.Items.Accessories
     public class AlchemicalFlask : ModItem, ILocalizedModType
     {
         public new string LocalizationCategory => "Items.Accessories";
+
+        public static float PlagueReduction = 0.5f;
+        public override LocalizedText Tooltip => base.Tooltip.WithFormatArgs(PlagueReduction.ToPercent());
+
         public override void SetDefaults()
         {
             Item.width = 26;

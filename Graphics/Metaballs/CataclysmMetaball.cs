@@ -1,11 +1,11 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using CalamityMod.Enums;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using ReLogic.Content;
 using Terraria;
 using Terraria.ModLoader;
-using static CalamityMod.Graphics.Metaballs.StreamGougeMetaball;
 
 namespace CalamityMod.Graphics.Metaballs
 {
@@ -71,7 +71,7 @@ namespace CalamityMod.Graphics.Metaballs
             // Load the layer asset wrapper.
             LayerAsset = ModContent.Request<Texture2D>($"CalamityMod/Graphics/Metaballs/CataclysmLayer", AssetRequestMode.ImmediateLoad);
         }
-        public override MetaballDrawLayer DrawContext => MetaballDrawLayer.BeforeProjectiles;
+        public override GeneralDrawLayer DrawLayer => GeneralDrawLayer.BeforeProjectiles;
 
         public override Color EdgeColor => new Color(255,0,229);
 

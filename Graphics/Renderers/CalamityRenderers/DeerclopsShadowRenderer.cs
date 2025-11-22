@@ -1,4 +1,5 @@
-﻿using CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses;
+﻿using CalamityMod.Enums;
+using CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria;
@@ -11,7 +12,7 @@ namespace CalamityMod.Graphics.Renderers.CalamityRenderers
     {
         #region Fields/Properties
 
-        public override DrawLayer Layer => DrawLayer.AfterEverything;
+        public override GeneralDrawLayer Layer => GeneralDrawLayer.AfterEverything;
 
         public static NPC Deerclops => Main.npc[NPC.deerclopsBoss];
 

@@ -764,7 +764,8 @@ namespace CalamityMod.NPCs.CeaselessVoid
                 normalOnly.Add(DropHelper.PerPlayer(ItemType<DarkPlasma>(), 1, 10, 12));
 
                 // Equipment
-                normalOnly.Add(DropHelper.PerPlayer(ItemType<TheEvolution>()));
+                // 16NOV2025: Ozzatron: item has been chosen as the "Expert gatekept" item for this Calamity boss
+                // normalOnly.Add(DropHelper.PerPlayer(ItemType<TheEvolution>()));
 
                 // Vanity
                 normalOnly.Add(ItemType<CeaselessVoidMask>(), 7);

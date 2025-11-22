@@ -14,6 +14,7 @@ using CalamityMod.Items.Placeables.Astral;
 using CalamityMod.Items.Placeables.Crags;
 using CalamityMod.Items.Placeables.Furniture;
 using CalamityMod.Items.Placeables.Furniture.Fountains;
+using CalamityMod.Items.Placeables.Furniture.Paintings;
 using CalamityMod.Items.Potions;
 using CalamityMod.Items.Potions.Alcohol;
 using CalamityMod.Items.SummonItems.Invasion;
@@ -209,7 +210,7 @@ namespace CalamityMod.NPCs
         };
         private static readonly string[] SkeletonMerchantNames =
         {
-            "Sans Undertale", // <@!145379091648872450> (shayy)
+            "Sans Undertale", // <@!534770496038895616> (done_22_)
             "Papyrus Undertale", // <@!262663471189983242> (nycro)
             "Gaster Undertale", // <@!924706306093379614> (enamoured)
             "Mr. Bones", // <@!359215912856977408> (jaybones.)
@@ -351,13 +352,13 @@ namespace CalamityMod.NPCs
             "Lucerne", // <@!271954788676141066> (lord_lucerne)
             "Milo", // <@!401849201597874179> (maskedmilo)
             "Octo", // <@!796112889353994281> (octolinggrimm)
-            "Hognar the Wicked", // <@!766511001356468237> (xzier_tengal)
         };
         private static readonly string[] TownCatSiameseNames = null;
         private static readonly string[] TownCatBlackNames =
         {
             "Bear", // <@!183424826407518208> (lilac_vrt_olligoci)
             "Storm", // <@!620383533516718085> (airwaveslr)
+            "Hognar the Wicked", // <@!766511001356468237> (xzier_tengal)
         };
         private static readonly string[] TownCatOrangeTabbyNames =
         {
@@ -370,6 +371,7 @@ namespace CalamityMod.NPCs
         private static readonly string[] TownCatSilverNames =
         {
             "Archie", // <@!303022375191183360> (jackshiz)
+            "Hognar the Wicked", // <@!766511001356468237> (xzier_tengal)
         };
         private static readonly string[] TownCatWhiteNames = null;
 
@@ -1235,7 +1237,8 @@ namespace CalamityMod.NPCs
 
             if (type == NPCID.Painter)
             {
-                shop.AddWithCustomValue(ItemID.PainterPaintballGun, Item.buyPrice(gold: 15));
+                shop.AddWithCustomValue(ItemID.PainterPaintballGun, Item.buyPrice(gold: 15))
+                .Add(ItemType<AmidiasPainting>(), CalamityConditions.InSunken, Condition.NpcIsPresent(NPCType<SeaKing>()));
             }
 
             if (type == NPCID.Steampunker)
@@ -1312,25 +1315,6 @@ namespace CalamityMod.NPCs
             if (type == NPCID.Truffle)
             {
                 shop.Add<OddMushroom>();
-            }
-        }
-
-        public override void ModifyActiveShop(NPC npc, string shopName, Item[] items)
-        {
-            // TODO: Uses a hardcoded string since dedicated names are currently hardcoded strings
-            // Will need to be changed if dedicated names are localized in the future
-            if (npc.type == NPCID.SkeletonMerchant && npc.GivenName == "Sans Undertale")
-            {
-                int index = 0;
-                for (int i = 0; i < Chest.maxItems; i++)
-                {
-                    if (items[i] == null)
-                    {
-                        index = i;
-                        break;
-                    }
-                }
-                items[index] = new Item(ItemType<PunchCard>());
             }
         }
         #endregion

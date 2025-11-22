@@ -2098,7 +2098,8 @@ namespace CalamityMod.NPCs.OldDuke
                 normalOnly.Add(ModContent.ItemType<TheOldReaper>(), 10);
 
                 // Equipment
-                normalOnly.Add(DropHelper.PerPlayer(ModContent.ItemType<OldDukeScales>()));
+                // 16NOV2025: Ozzatron: item has been chosen as the "Expert gatekept" item for this Calamity boss
+                // normalOnly.Add(DropHelper.PerPlayer(ModContent.ItemType<OldDukeScales>()));
 
                 // Vanity
                 normalOnly.Add(ModContent.ItemType<OldDukeMask>(), 7);

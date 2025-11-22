@@ -1,6 +1,8 @@
 ﻿using System;
+using CalamityMod.Systems.Graphic.PixelationSystem;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using ReLogic.Content;
 using Terraria;
 using Terraria.ModLoader;
 
@@ -8,7 +10,16 @@ namespace CalamityMod.Dusts
 {
     public class SquareDust : ModDust
     {
+        public static Asset<Texture2D> GlowSquare { get; private set; }
+
         public override string Texture => "CalamityMod/Projectiles/InvisibleProj";
+
+        public override void Load()
+        {
+            if (!Main.dedServ)
+                GlowSquare = ModContent.Request<Texture2D>("CalamityMod/Particles/GlowSquareParticleThick");
+        }
+
         public override void OnSpawn(Dust dust)
         {
             dust.scale *= Main.rand.NextFloat(0.8f, 1f);
@@ -42,22 +53,44 @@ namespace CalamityMod.Dusts
         }
         public override bool PreDraw(Dust dust)
         {
-            Vector2 dustCenter = dust.position + new Vector2(0.25f, 0.25f);
-
-            Texture2D bloom = ModContent.Request<Texture2D>("CalamityMod/Particles/GlowSquareParticleThick").Value;
-
             Vector2 squash = Vector2.One;
 
             // Glow Orb
-            Main.EntitySpriteDraw(bloom, dustCenter - Main.screenPosition, null, dust.color with { A = 0 } * Utils.GetLerpValue(255, 0, dust.alpha), dust.rotation, bloom.Size() * 0.5f, squash * dust.scale * 0.1f, SpriteEffects.None, 0);
+            Main.spriteBatch.Draw(GlowSquare.Value, dust.position - Main.screenPosition, null, dust.color with { A = 0 } * Utils.GetLerpValue(255, 0, dust.alpha), dust.rotation, GlowSquare.Size() * 0.5f, squash * dust.scale * 0.1f, SpriteEffects.None, 0f);
             if (dust.alpha < 1)
-                Main.EntitySpriteDraw(bloom, dustCenter - Main.screenPosition, null, Color.Lerp(dust.color, Color.White, 0.3f) with { A = 0 } * 0.85f * Utils.GetLerpValue(255, 0, dust.alpha), dust.rotation, bloom.Size() * 0.5f, squash * dust.scale * 0.095f, SpriteEffects.None, 0);
+                Main.spriteBatch.Draw(GlowSquare.Value, dust.position - Main.screenPosition, null, Color.Lerp(dust.color, Color.White, 0.3f) with { A = 0 } * 0.85f * Utils.GetLerpValue(255, 0, dust.alpha), dust.rotation, GlowSquare.Size() * 0.5f, squash * dust.scale * 0.095f, SpriteEffects.None, 0f);
             if (!dust.noLight)
             {
                 for (int i = 0; i < 2; i++)
-                    Main.EntitySpriteDraw(bloom, dustCenter - Main.screenPosition, null, Color.Lerp(dust.color, Color.White, 0.3f) with { A = 0 } * Utils.GetLerpValue(255, 0, dust.alpha), dust.rotation, bloom.Size() * 0.5f, squash * dust.scale * 0.09f, SpriteEffects.None, 0);
+                    Main.spriteBatch.Draw(GlowSquare.Value, dust.position - Main.screenPosition, null, Color.Lerp(dust.color, Color.White, 0.3f) with { A = 0 } * Utils.GetLerpValue(255, 0, dust.alpha), dust.rotation, GlowSquare.Size() * 0.5f, squash * dust.scale * 0.09f, SpriteEffects.None, 0f);
             }
             return false;
+        }
+    }
+
+    public class SquareDustPixelated : SquareDust
+    {
+        public override string Texture => "CalamityMod/Projectiles/InvisibleProj";
+
+        public override bool PreDraw(Dust dust)
+        {
+            PixelationManager.AddPixelatedDrawer((_) => DrawPixelated(dust), Enums.GeneralDrawLayer.AfterDusts);
+            return false;
+        }
+
+        private static void DrawPixelated(Dust dust)
+        {
+            Vector2 squash = Vector2.One;
+
+            // Glow Orb
+            Main.spriteBatch.Draw(GlowSquare.Value, dust.position - Main.screenPosition, null, dust.color with { A = 0 } * Utils.GetLerpValue(255, 0, dust.alpha), dust.rotation, GlowSquare.Size() * 0.5f, squash * dust.scale * 0.1f, SpriteEffects.None, 0f);
+            if (dust.alpha < 1)
+                Main.spriteBatch.Draw(GlowSquare.Value, dust.position - Main.screenPosition, null, Color.Lerp(dust.color, Color.White, 0.3f) with { A = 0 } * 0.85f * Utils.GetLerpValue(255, 0, dust.alpha), dust.rotation, GlowSquare.Size() * 0.5f, squash * dust.scale * 0.095f, SpriteEffects.None, 0f);
+            if (!dust.noLight)
+            {
+                for (int i = 0; i < 2; i++)
+                    Main.spriteBatch.Draw(GlowSquare.Value, dust.position - Main.screenPosition, null, Color.Lerp(dust.color, Color.White, 0.3f) with { A = 0 } * Utils.GetLerpValue(255, 0, dust.alpha), dust.rotation, GlowSquare.Size() * 0.5f, squash * dust.scale * 0.09f, SpriteEffects.None, 0f);
+            }
         }
     }
 }

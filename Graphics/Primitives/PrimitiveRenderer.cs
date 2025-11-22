@@ -18,7 +18,7 @@ namespace CalamityMod.Graphics.Primitives
     /// <item>The third controls how many points are created for the trail, and the fourth determines whether the primitive is subsequently rendered.</item>
     /// </list>
     /// If you wish to use pixelation, you <b>MUST</b> make the NPC/Projectile inherit <see cref="IPixelatedPrimitiveRenderer"/> and use <see cref="IPixelatedPrimitiveRenderer.RenderPixelatedPrimitives"/> instead of predraw..<br/>
-    /// You can also optionally specify a render layer with <see cref="IPixelatedPrimitiveRenderer.LayerToRenderTo"/>. It is <see cref="PixelationPrimitiveLayer.BeforeNPCs"/> by default.
+    /// You can also optionally specify a render layer with <see cref="IPixelatedPrimitiveRenderer.LayerToRenderTo"/>. It is <see cref="Enums.GeneralDrawLayer.BeforeNPCs"/> by default.
     /// </summary>
     [Autoload(Side = ModSide.Client)]
     public sealed class PrimitiveRenderer : ModSystem

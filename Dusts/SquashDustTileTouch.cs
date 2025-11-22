@@ -1,13 +1,15 @@
-﻿using Microsoft.Xna.Framework;
+﻿using CalamityMod.Systems.Graphic.PixelationSystem;
+using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria;
 using Terraria.ModLoader;
 
 namespace CalamityMod.Dusts
 {
-    public class SquashDustTileTouch : ModDust
+    public class SquashDustTileTouch : SquashDust
     {
         public override string Texture => "CalamityMod/Projectiles/InvisibleProj";
+
         public override void OnSpawn(Dust dust)
         {
             dust.scale *= Main.rand.NextFloat(0.8f, 1f);
@@ -16,12 +18,14 @@ namespace CalamityMod.Dusts
         public override bool Update(Dust dust)
         {
             bool touchedTiles = false;
-                int size = (int)(2);
+            int size = 2;
+
             if (Collision.SolidCollision(dust.position, size, size))
             {
                 touchedTiles = true;
                 dust.velocity = Vector2.Zero;
             }
+
             float fadeSpeed = (dust.fadeIn + 1); // For this dust, fadeIn is used to increase the power of gravity if it's active, otherwise it makes it's lifetime change
             dust.rotation = dust.velocity.ToRotation() + MathHelper.PiOver2;
             dust.velocity *= 0.96f;
@@ -45,24 +49,30 @@ namespace CalamityMod.Dusts
 
             return false;
         }
+    }
+
+    public class SquashDustTileTouchPixelated : SquashDustTileTouch
+    {
+        public override string Texture => "CalamityMod/Projectiles/InvisibleProj";
+
         public override bool PreDraw(Dust dust)
         {
-            Vector2 dustCenter = dust.position + new Vector2(0.25f, 0.25f);
-            Texture2D solidCenter = ModContent.Request<Texture2D>("CalamityMod/ExtraTextures/BasicCircle").Value;
+            PixelationManager.AddPixelatedDrawer((_) => DrawPixelated(dust), Enums.GeneralDrawLayer.AfterDusts);
+            return false;
+        }
 
-            Texture2D bloom = ModContent.Request<Texture2D>("CalamityMod/Particles/BloomCircle").Value;
-
+        private static void DrawPixelated(Dust dust)
+        {
             Vector2 squash = new Vector2(Utils.Remap(dust.velocity.Length(), 2, 7, 1, 0.5f), Utils.Remap(dust.velocity.Length(), 2, 7, 1, 2.5f));
 
             // Glow Orb
-            Main.EntitySpriteDraw(bloom, dustCenter - Main.screenPosition, null, dust.color with { A = 0 } * Utils.GetLerpValue(255, 0, dust.alpha), dust.rotation, bloom.Size() * 0.5f, squash * dust.scale * 0.1f, SpriteEffects.None, 0);
+            Main.spriteBatch.Draw(BloomCircle.Value, dust.position - Main.screenPosition, null, dust.color with { A = 0 } * Utils.GetLerpValue(255, 0, dust.alpha), dust.rotation, BloomCircle.Size() * 0.5f, squash * dust.scale * 0.1f, SpriteEffects.None, 0);
             if (dust.alpha < 1)
-                Main.EntitySpriteDraw(bloom, dustCenter - Main.screenPosition, null, dust.color with { A = 0 } * 0.85f * Utils.GetLerpValue(255, 0, dust.alpha), dust.rotation, bloom.Size() * 0.5f, squash * dust.scale * 0.04f, SpriteEffects.None, 0);
+                Main.spriteBatch.Draw(BloomCircle.Value, dust.position - Main.screenPosition, null, dust.color with { A = 0 } * 0.85f * Utils.GetLerpValue(255, 0, dust.alpha), dust.rotation, BloomCircle.Size() * 0.5f, squash * dust.scale * 0.04f, SpriteEffects.None, 0);
             if (!dust.noLight)
             {
-                Main.EntitySpriteDraw(solidCenter, dustCenter - Main.screenPosition, null, Color.Lerp(dust.color, Color.White, 0.3f) with { A = 0 } * Utils.GetLerpValue(255, 0, dust.alpha), dust.rotation, solidCenter.Size() * 0.5f, squash * dust.scale * 0.075f, SpriteEffects.None, 0);
+                Main.spriteBatch.Draw(SolidCircle.Value, dust.position - Main.screenPosition, null, Color.Lerp(dust.color, Color.White, 0.3f) with { A = 0 } * Utils.GetLerpValue(255, 0, dust.alpha), dust.rotation, SolidCircle.Size() * 0.5f, squash * dust.scale * 0.075f, SpriteEffects.None, 0);
             }
-            return false;
         }
     }
 }

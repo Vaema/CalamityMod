@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using CalamityMod.Enums;
 using CalamityMod.Graphics.Primitives;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
@@ -103,7 +104,7 @@ namespace CalamityMod.Projectiles.Summon
             return Color.Black * MathF.Pow(1 - completion, 0.5f);
         }
 
-        public void RenderPixelatedPrimitives(SpriteBatch spriteBatch, PixelationPrimitiveLayer layer)
+        public void RenderPixelatedPrimitives(SpriteBatch spriteBatch, GeneralDrawLayer layer)
         {
             List<Vector2> posList = [];
             //For the prim to render properly I need to divide the distance between the positions into a couple points. Just using start and end doesn't render.

@@ -1014,7 +1014,8 @@ namespace CalamityMod.NPCs.Ravager
                 normalOnly.Add(ItemDropRule.ByCondition(DropHelper.If(() => DownedBossSystem.downedProvidence), ModContent.ItemType<NecromanticGeode>()), hideLootReport: !DownedBossSystem.downedProvidence);
 
                 // Equipment
-                normalOnly.Add(ModContent.ItemType<BloodPact>(), 3);
+                // 16NOV2025: Ozzatron: item has been chosen as the "Expert gatekept" item for this Calamity boss
+                // normalOnly.Add(ModContent.ItemType<BloodPact>(), 3);
                 normalOnly.Add(ModContent.ItemType<FleshTotem>(), 3);
                 normalOnly.Add(ItemDropRule.ByCondition(DropHelper.PostProv(), ModContent.ItemType<BloodflareCore>()));
 
