@@ -10,6 +10,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides
     public abstract class VanillaAIOverride
     {
         public NPC NPC { get; set; }
+        public bool DisableMultiplayerSmoothing { get; set; }
 
         public abstract bool AI(Mod mod);
 
