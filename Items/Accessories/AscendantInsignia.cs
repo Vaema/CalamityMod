@@ -34,6 +34,7 @@ namespace CalamityMod.Items.Accessories
             Item.value = CalamityGlobalItem.RarityPureGreenBuyPrice;
             Item.accessory = true;
             Item.rare = ModContent.RarityType<PureGreen>();
+            Item.expert = true;
         }
 
         public override void UpdateAccessory(Player player, bool hideVisual)
