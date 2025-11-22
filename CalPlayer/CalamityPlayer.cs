@@ -1551,8 +1551,6 @@ namespace CalamityMod.CalPlayer
         public bool StellarTorus = false;
         public bool LiliesOfFinalityBool = false;
         public bool EnchantedBladeStaffBool = false;
-        public bool FlarebatBool = false;
-        public bool FrostbatBool = false;
         public bool AmphibiansGuitarBool = false;
         #endregion
 
@@ -2719,8 +2717,6 @@ namespace CalamityMod.CalPlayer
             StellarTorus = false;
             LiliesOfFinalityBool = false;
             EnchantedBladeStaffBool = false;
-            FlarebatBool = false;
-            FrostbatBool = false;
             AmphibiansGuitarBool = false;
             #endregion
 
