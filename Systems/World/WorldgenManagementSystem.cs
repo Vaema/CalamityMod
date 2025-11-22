@@ -3,6 +3,7 @@ using System.Threading;
 using CalamityMod.Items.Accessories.Vanity;
 using CalamityMod.Items.SummonItems;
 using CalamityMod.Items.Weapons.Rogue;
+using CalamityMod.Items.Weapons.Summon;
 using CalamityMod.Tiles.AstralSnow;
 using CalamityMod.Tiles.Ores;
 using CalamityMod.World;
@@ -508,6 +509,13 @@ namespace CalamityMod.Systems
                                 if (isMushroomChest)
                                 {
                                     chest.item[inventoryIndex].SetDefaults(ItemID.Shroomerang);
+                                    chest.item[inventoryIndex].Prefix(-1);
+                                    break;
+                                }
+
+                                if (isGoldChest)
+                                {
+                                    chest.item[inventoryIndex].SetDefaults(ModContent.ItemType<EnchantedBladeStaff>());
                                     chest.item[inventoryIndex].Prefix(-1);
                                     break;
                                 }

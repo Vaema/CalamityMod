@@ -560,7 +560,8 @@ namespace CalamityMod.Items
                 ItemID.FlareGun,
                 ItemID.Mace,
                 ItemID.BandofRegeneration,
-                ItemID.ShoeSpikes); // Climbing Claws is in Wooden/Pearlwood (vanilla) in case you're curious
+                ItemID.ShoeSpikes,
+                ModContent.ItemType<EnchantedBladeStaff>()); // Climbing Claws is in Wooden/Pearlwood (vanilla) in case you're curious
         #endregion
 
         #region Goodie Bag Bat Hook
