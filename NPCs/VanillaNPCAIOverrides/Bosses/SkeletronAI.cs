@@ -22,6 +22,11 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
         public static float SpinDamageMult = 1.3f; // 91
         public static int SkullDamage = 17; // 68; Also applies to crossbones
 
+        public override void SetDefaults(Mod mod)
+        {
+            DisableMultiplayerSmoothing = true;
+        }
+
         public override bool AI(Mod mod)
         {
             CalamityGlobalNPC calamityGlobalNPC = NPC.Calamity();
