@@ -1,4 +1,5 @@
-﻿using CalamityMod.Particles;
+﻿using CalamityMod.Items.Weapons.Magic;
+using CalamityMod.Particles;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria;
@@ -83,7 +84,7 @@ namespace CalamityMod.Projectiles.Magic
 
         public override void OnKill(int timeLeft)
         {
-            SoundEngine.PlaySound(SoundID.Item54, Projectile.Center);
+            SoundEngine.PlaySound(Effervescence.PopSound, Projectile.Center);
             Particle Star = new CritSpark(Projectile.Center, Vector2.Zero, Color.SkyBlue, Color.DeepSkyBlue, Main.rand.NextFloat(1f, 1.1f), 30, 0.1f, 3f);
             GeneralParticleHandler.SpawnParticle(Star);
             int num190 = Main.rand.Next(5, 9);
