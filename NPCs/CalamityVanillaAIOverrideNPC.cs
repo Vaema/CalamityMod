@@ -870,12 +870,16 @@ public sealed class CalamityVanillaAIOverrideNPC : GlobalNPC
 
     public override void SetDefaults(NPC npc)
     {
-        AIOverride = GetVanillaAIOverrideToApply(npc);
-
-        if (AIOverride != null)
+        // Clients will get their instance in ReceiveExtraAI
+        if (Main.netMode != NetmodeID.MultiplayerClient)
         {
-            AIOverride.NPC = npc;
-            AIOverride.SetDefaults(Mod);
+            AIOverride = GetVanillaAIOverrideToApply(npc);
+
+            if (AIOverride != null)
+            {
+                AIOverride.NPC = npc;
+                AIOverride.SetDefaults(Mod);
+            }
         }
     }
 
@@ -982,6 +986,7 @@ public sealed class CalamityVanillaAIOverrideNPC : GlobalNPC
         if (localNetID != remoteNetID)
         {
             AIOverride = GetNewInstanceOrNullFromNetID(remoteNetID, npc);
+            AIOverride?.SetDefaults(Mod);
         }
 
         AIOverride?.ReceiveExtraAI(bitReader, binaryReader);
