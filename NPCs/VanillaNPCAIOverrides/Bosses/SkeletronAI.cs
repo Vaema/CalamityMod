@@ -450,7 +450,6 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                             maxVelocity = maxVelocityCap;
 
                         NPC.velocity = (Main.player[NPC.target].Center - NPC.Center).SafeNormalize(Vector2.UnitY) * -maxVelocity;
-                        NPC.SyncMotionToServer();
                     }
 
                     // New charge attack
