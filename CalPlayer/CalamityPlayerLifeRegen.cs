@@ -6,6 +6,7 @@ using CalamityMod.Buffs.Placeables;
 using CalamityMod.Buffs.StatBuffs;
 using CalamityMod.CalPlayer.Dashes;
 using CalamityMod.Cooldowns;
+using CalamityMod.DataStructures;
 using CalamityMod.Enums;
 using CalamityMod.Items.Accessories;
 using CalamityMod.Items.Accessories.Wings;
@@ -307,9 +308,9 @@ namespace CalamityMod.CalPlayer
                     int buffID = Player.buffType[l];
                     if (Player.buffTime[l] <= 2)
                         continue;
-                    bool shouldHalveDuration = CalamityBuffSets.IsSicknessDebuff[buffID];
+                    bool shouldHalveDuration = BuffDatasets.DebuffDataset[buffID].SicknessDebuffScaling > 0;
                     if (livingDewHalveDebuffs)
-                        shouldHalveDuration |= CalamityBuffSets.IsFireDebuff[buffID];
+                        shouldHalveDuration |= BuffDatasets.DebuffDataset[buffID].HeatDebuffScaling > 0;
                     if (purity)
                         shouldHalveDuration |= CalamityBuffSets.IsDebuff[buffID];
 
@@ -355,7 +356,7 @@ namespace CalamityMod.CalPlayer
             }
 
             // Permafrost's Concoction increases life regen while afflicted with a fire debuff
-            if (permafrostsConcoction && Player.buffType.Any(l => CalamityBuffSets.IsFireDebuff[l]))
+            if (permafrostsConcoction && Player.buffType.Any(l => BuffDatasets.DebuffDataset[l].HeatDebuffScaling > 0))
             {
                 if (Player.lifeRegenTime < 900)
                     Player.lifeRegenTime = 900;
