@@ -5,30 +5,10 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.Buffs.Summon
 {
-    public class EnchantedBladeStaffBuff : ModBuff
+    public class EnchantedBladeStaffBuff : BaseSummonBuff
     {
-        public override void SetStaticDefaults()
-        {
-            Main.buffNoTimeDisplay[Type] = true;
-            Main.buffNoSave[Type] = true;
-        }
+        protected override int MinionProjectileType => ModContent.ProjectileType<EnchantedBladeSummon>();
 
-        public override void Update(Player player, ref int buffIndex)
-        {
-            CalamityPlayer modPlayer = player.Calamity();
-            if (player.ownedProjectileCounts[ModContent.ProjectileType<EnchantedBladeSummon>()] > 0)
-            {
-                modPlayer.EnchantedBladeStaffBool = true;
-            }
-            if (!modPlayer.EnchantedBladeStaffBool)
-            {
-                player.DelBuff(buffIndex);
-                buffIndex--;
-            }
-            else
-            {
-                player.buffTime[buffIndex] = 18000;
-            }
-        }
+        protected override ref bool MinionBool => ref BuffModdedOwner.EnchantedBladeStaffBool;
     }
 }
