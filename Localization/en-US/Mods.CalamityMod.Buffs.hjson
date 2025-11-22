@@ -1669,6 +1669,6 @@ ToastyBatBuff: {
 }
 
 EnchantedBladeStaffBuff: {
-	DisplayName: Enchanted Blade Staff Buff
-	Description: Mods.CalamityMod.Buffs.EnchantedBladeStaffBuff.Description
+	DisplayName: Enchanted Blade Staff
+	Description: No junk blades included
 }

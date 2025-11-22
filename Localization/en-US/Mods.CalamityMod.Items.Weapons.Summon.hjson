@@ -929,7 +929,7 @@ YharonsKindleStaff: {
 
 EnchantedBladeStaff: {
 	DisplayName: Enchanted Blade Staff
-	Tooltip: ""
+	Tooltip: "Summons an Enchanted Knife to fight for you"
 }
 
 FlarebatStaff: {
