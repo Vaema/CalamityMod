@@ -304,6 +304,7 @@ namespace CalamityMod.Projectiles.Typeless
         {
             Owner.velocity *= 0.8f;
             Owner.fullRotation = 0f;
+            Owner.fallStart = (int)(Owner.position.Y / 16f); // Triangle getting hit with the wrath of 2000 fall damage
 
             SoundEngine.PlaySound(SoundID.Drown, Projectile.Center);
             for (int i = 0; i < 3; i++)
