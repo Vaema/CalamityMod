@@ -14,7 +14,10 @@ using CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses;
 using CalamityMod.NPCs.VanillaNPCAIOverrides.MiniBosses;
 using CalamityMod.NPCs.VanillaNPCAIOverrides.RegularEnemies;
 using CalamityMod.World;
+using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
 using Terraria;
+using Terraria.DataStructures;
 using Terraria.ID;
 using Terraria.ModLoader;
 using Terraria.ModLoader.IO;
@@ -853,10 +856,18 @@ public sealed class CalamityVanillaAIOverrideNPC : GlobalNPC
         AIOverride = GetVanillaAIOverrideToApply(npc);
 
         if (AIOverride != null)
+        {
             AIOverride.NPC = npc;
+            AIOverride.SetDefaults(Mod);
+        }
     }
 
     #region Hooks
+
+    public override void OnSpawn(NPC npc, IEntitySource source)
+    {
+        AIOverride?.OnSpawn(Mod);
+    }
 
     public override bool PreAI(NPC npc)
     {
@@ -871,6 +882,23 @@ public sealed class CalamityVanillaAIOverrideNPC : GlobalNPC
     public override void PostAI(NPC npc)
     {
         AIOverride?.PostAI(Mod);
+    }
+
+    public override void HitEffect(NPC npc, NPC.HitInfo hit)
+    {
+        AIOverride?.HitEffect(Mod, hit);
+    }
+
+    public override void FindFrame(NPC npc, int frameHeight)
+    {
+        AIOverride?.FindFrame(Mod, frameHeight);
+    }
+
+    public override bool PreDraw(NPC npc, SpriteBatch spriteBatch, Vector2 screenPos, Color drawColor)
+    {
+        if(AIOverride != null) 
+            return AIOverride.PreDraw(Mod, spriteBatch, screenPos, drawColor);
+        return base.PreDraw(npc, spriteBatch, screenPos, drawColor);
     }
 
     #endregion
