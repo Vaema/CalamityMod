@@ -127,6 +127,7 @@ Cooldowns: {
 	OldDukeScalesFatigue: Stamina
 	OmegaBlueActive: Abyssal Madness
 	OmegaBlueCooldown: Abyssal Madness Cooldown
+	Panacea: Panacea Cooldown
 	PermafrostConcoction: Permafrost's Concoction Cooldown
 	PlagueBlackout: Plague Blackout Cooldown
 	PotionSickness: Healing Cooldown
