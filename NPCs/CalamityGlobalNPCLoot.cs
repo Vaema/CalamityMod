@@ -899,8 +899,6 @@ namespace CalamityMod.NPCs
                     // 5-10 Nightmare Fuel @ 100% IF Devourer of Gods dead
                     postDoG.Add(ModContent.ItemType<NightmareFuel>(), 1, 5, 10);
 
-                    pMoon.OnSuccess(ItemDropRule.ByCondition(new Conditions.NotExpert(), ItemID.WitchBroom, 5));
-
                     // Master items drop in Revengeance
                     pMoon.OnSuccess(ItemDropRule.ByCondition(DropHelper.RevNoMaster, ItemID.MourningWoodMasterTrophy));
                     pMoon.OnSuccess(ItemDropRule.ByCondition(DropHelper.RevNoMaster, ItemID.SpookyWoodMountItem, 4));
