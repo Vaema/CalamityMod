@@ -43,6 +43,9 @@ namespace CalamityMod.Rarities
             var fontSize = font.MeasureString(text);
             var center = fontSize / 2.0f;
 
+            if (Item.expert)
+                textColor = Main.DiscoColor;
+
             var glowPosition = new Vector2(X + center.X, Y + center.Y / 1.5f);
             textColor.A = 0;
 
