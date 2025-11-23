@@ -1,27 +1,21 @@
-﻿using CalamityMod.BiomeManagers;
+﻿using System;
+using System.Collections.Generic;
+using System.IO;
 using CalamityMod.Enums;
-using CalamityMod.Items.Placeables;
 using CalamityMod.Items.Placeables.Banners;
-using CalamityMod.Particles;
+using CalamityMod.Pathfinding;
 using CalamityMod.Projectiles.Enemy;
-using CalamityMod.Projectiles.Ranged;
-using CalamityMod.World;
-using Microsoft.CodeAnalysis;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using ReLogic.Content;
-using System;
-using System.Collections.Generic;
-using System.IO;
 using Terraria;
 using Terraria.Audio;
-using Terraria.DataStructures;
 using Terraria.GameContent;
 using Terraria.GameContent.Bestiary;
-using Terraria.GameContent.ItemDropRules;
 using Terraria.ID;
 using Terraria.ModLoader;
 using Terraria.ModLoader.Utilities;
+
 namespace CalamityMod.NPCs.SunkenSea
 {
     public class LazarusLampfish : SunkenSeaNPC

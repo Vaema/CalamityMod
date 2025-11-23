@@ -1,17 +1,15 @@
-﻿using CalamityMod.BiomeManagers;
-using CalamityMod.Items.Placeables.Banners;
+﻿using System.Collections.Generic;
+using System.IO;
+using CalamityMod.Enums;
 using CalamityMod.Items.Critters;
+using CalamityMod.Pathfinding;
 using Microsoft.Xna.Framework;
 using Terraria;
+using Terraria.DataStructures;
 using Terraria.GameContent.Bestiary;
 using Terraria.ID;
 using Terraria.ModLoader;
 using Terraria.ModLoader.Utilities;
-using Terraria.DataStructures;
-using CalamityMod.Enums;
-using System.Collections.Generic;
-using Steamworks;
-using System.IO;
 
 namespace CalamityMod.NPCs.SunkenSea
 {

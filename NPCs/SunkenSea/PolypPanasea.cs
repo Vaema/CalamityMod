@@ -1,22 +1,21 @@
-﻿using CalamityMod.BiomeManagers;
-using CalamityMod.Items.Placeables.Banners;
+﻿using System.Collections.Generic;
+using System.IO;
+using CalamityMod.Enums;
 using CalamityMod.Items.Critters;
+using CalamityMod.Items.Potions;
+using CalamityMod.Particles;
+using CalamityMod.Pathfinding;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using ReLogic.Content;
 using Terraria;
+using Terraria.Audio;
 using Terraria.DataStructures;
 using Terraria.GameContent;
 using Terraria.GameContent.Bestiary;
 using Terraria.ID;
 using Terraria.ModLoader;
 using Terraria.ModLoader.Utilities;
-using System.Collections.Generic;
-using CalamityMod.Enums;
-using System.IO;
-using CalamityMod.Particles;
-using Terraria.Audio;
-using CalamityMod.Items.Potions;
 
 namespace CalamityMod.NPCs.SunkenSea
 {
@@ -483,7 +482,7 @@ namespace CalamityMod.NPCs.SunkenSea
                     PanaceaTimer = 60;
                 }
                 return false;
-            }            
+            }
             return null;
         }
         public override bool CanBeHitByNPC(NPC attacker)

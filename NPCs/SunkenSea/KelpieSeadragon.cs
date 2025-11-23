@@ -1,26 +1,21 @@
-﻿using CalamityMod.BiomeManagers;
+﻿using System;
+using System.Collections.Generic;
+using System.IO;
 using CalamityMod.Enums;
-using CalamityMod.Items.Placeables;
 using CalamityMod.Items.Placeables.Banners;
+using CalamityMod.Pathfinding;
 using CalamityMod.Projectiles.Enemy;
-using CalamityMod.Projectiles.Ranged;
-using CalamityMod.World;
-using Microsoft.CodeAnalysis;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using ReLogic.Content;
-using System;
-using System.Collections.Generic;
-using System.IO;
 using Terraria;
 using Terraria.Audio;
-using Terraria.DataStructures;
 using Terraria.GameContent;
 using Terraria.GameContent.Bestiary;
-using Terraria.GameContent.ItemDropRules;
 using Terraria.ID;
 using Terraria.ModLoader;
 using Terraria.ModLoader.Utilities;
+
 namespace CalamityMod.NPCs.SunkenSea
 {
     public class KelpieSeadragon : SunkenSeaNPC
@@ -284,7 +279,7 @@ namespace CalamityMod.NPCs.SunkenSea
         protected override void OnPlayerDetection(Player player)
         {
             if (CurrentPrey is null && CurrentPredator is null)
-            { 
+            {
                 EnterAttackMode();
                 currentTarget = player;
             }
@@ -387,8 +382,8 @@ namespace CalamityMod.NPCs.SunkenSea
                 return true;
             Asset<Texture2D> tex = TextureAssets.Npc[Type];
             SpriteEffects fx = NPC.spriteDirection == 1 ? SpriteEffects.FlipHorizontally : SpriteEffects.None;
-            Vector2 stretch = NPC.ai[0] == 1 && NPC.ai[1] > 0 ? new Vector2(SquishX, SquishY): Vector2.One;
-            spriteBatch.Draw(tex.Value, NPC.Center - Main.screenPosition + new Vector2(0, NPC.gfxOffY), NPC.frame, drawColor, NPC.rotation, new Vector2(tex.Width() / 2, tex.Height() / 2 / Main.npcFrameCount[Type]), NPC.scale * stretch, fx, 0); 
+            Vector2 stretch = NPC.ai[0] == 1 && NPC.ai[1] > 0 ? new Vector2(SquishX, SquishY) : Vector2.One;
+            spriteBatch.Draw(tex.Value, NPC.Center - Main.screenPosition + new Vector2(0, NPC.gfxOffY), NPC.frame, drawColor, NPC.rotation, new Vector2(tex.Width() / 2, tex.Height() / 2 / Main.npcFrameCount[Type]), NPC.scale * stretch, fx, 0);
             return false;
         }
     }

@@ -1,26 +1,21 @@
-﻿using CalamityMod.BiomeManagers;
+﻿using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+using CalamityMod.Enums;
 using CalamityMod.Items.Placeables.Banners;
-using CalamityMod.Items.Critters;
+using CalamityMod.Pathfinding;
+using CalamityMod.Projectiles.Enemy;
 using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
+using ReLogic.Content;
 using Terraria;
+using Terraria.Audio;
+using Terraria.DataStructures;
+using Terraria.GameContent;
 using Terraria.GameContent.Bestiary;
 using Terraria.ID;
 using Terraria.ModLoader;
-using Terraria.ModLoader.Utilities;
-using Terraria.DataStructures;
-using CalamityMod.Enums;
-using System.Collections.Generic;
-using Steamworks;
-using System.IO;
-using CalamityMod.Projectiles.Melee;
-using CalamityMod.Projectiles.Ranged;
-using System;
-using Microsoft.Xna.Framework.Graphics;
-using Terraria.GameContent;
-using ReLogic.Content;
-using System.Linq;
-using CalamityMod.Projectiles.Enemy;
-using Terraria.Audio;
 
 namespace CalamityMod.NPCs.SunkenSea
 {
@@ -64,7 +59,8 @@ namespace CalamityMod.NPCs.SunkenSea
             ModContent.NPCType<Steampod>()
         };
 
-        protected override List<int> PredatorIDs => new List<int>() {
+        protected override List<int> PredatorIDs => new List<int>()
+        {
         };
 
         protected override SunkenSeaBiomeFlags BiomeDesignation => SunkenSeaBiomeFlags.BasaltGully;
