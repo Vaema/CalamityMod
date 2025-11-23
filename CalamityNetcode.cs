@@ -169,14 +169,6 @@ namespace CalamityMod
             NetMessage.SendData(MessageID.SyncNPC, toClient, ignoreClient, null, npcWhoAmI);
         }
 
-        public static void SyncCalamityWorldDifficulties(int sender)
-        {
-            if (Main.netMode == NetmodeID.SinglePlayer)
-                return;
-
-            SyncDifficultiesPacket.Send();
-        }
-
         public static void NewNPC_ClientSide(Vector2 spawnPosition, int npcType, Player player)
         {
             if (Main.netMode == NetmodeID.SinglePlayer)
@@ -256,7 +248,6 @@ namespace CalamityMod
         MousePositionSync,
 
         // World state sync
-        SyncDifficulties,
         SwitchToDifficulty,
 
         // Music events
