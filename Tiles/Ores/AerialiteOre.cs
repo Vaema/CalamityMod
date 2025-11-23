@@ -43,10 +43,10 @@ namespace CalamityMod.Tiles.Ores
             HitSound = MineSound;
             Main.tileSpelunker[Type] = true;
 
-            this.RegisterUniversalMerge(TileID.Cloud, "CalamityMod/Tiles/Merges/CloudMerge");
-            this.RegisterUniversalMerge(TileID.RainCloud, "CalamityMod/Tiles/Merges/RainCloudMerge");
-            this.RegisterUniversalMerge(TileID.SnowCloud, "CalamityMod/Tiles/Merges/SnowCloudMerge");
-            this.RegisterUniversalMerge(TileID.Dirt, "CalamityMod/Tiles/Merges/DirtMerge");
+            this.RegisterBlendMergeWith(TileID.Cloud);
+            this.RegisterBlendMergeWith(TileID.RainCloud);
+            this.RegisterBlendMergeWith(TileID.SnowCloud);
+            this.RegisterBlendMergeWith(TileID.Dirt);
         }
         public override void PostSetDefaults()
         {

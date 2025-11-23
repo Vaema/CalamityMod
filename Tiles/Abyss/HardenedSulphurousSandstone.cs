@@ -1,7 +1,5 @@
-﻿using System.Collections.Generic;
-using CalamityMod.World;
+﻿using CalamityMod.World;
 using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Graphics;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
@@ -21,9 +19,9 @@ namespace CalamityMod.Tiles.Abyss
             DustType = 32;
             AddMapEntry(new Color(76, 58, 59));
             HitSound = SoundID.Dig;
-            this.RegisterUniversalMerge(TileID.Dirt, "CalamityMod/Tiles/Merges/DirtMerge");
-            this.RegisterUniversalMerge(TileID.Stone, "CalamityMod/Tiles/Merges/StoneMerge");
-            this.RegisterUniversalMerge(ModContent.TileType<SulphurousShale>(), "CalamityMod/Tiles/Merges/SulphurousShaleMerge");
+            this.RegisterBlendMergeWith(TileID.Dirt);
+            this.RegisterBlendMergeWith(TileID.Stone);
+            this.RegisterBlendMergeWith(ModContent.TileType<SulphurousShale>());
         }
 
         public override void NumDust(int i, int j, bool fail, ref int num)

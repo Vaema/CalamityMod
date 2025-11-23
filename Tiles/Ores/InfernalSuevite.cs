@@ -1,10 +1,7 @@
-﻿using System.Collections.Generic;
-using CalamityMod.Tiles.Crags;
+﻿using CalamityMod.Tiles.Crags;
 using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Graphics;
 using Terraria;
 using Terraria.ID;
-using Terraria.Localization;
 using Terraria.ModLoader;
 
 namespace CalamityMod.Tiles.Ores
@@ -14,7 +11,7 @@ namespace CalamityMod.Tiles.Ores
     {
         private int sheetWidth = 234;
         private int sheetHeight = 90;
-        
+
         public override void SetStaticDefaults()
         {
             Main.tileSolid[Type] = true;
@@ -34,8 +31,8 @@ namespace CalamityMod.Tiles.Ores
             DustType = 235;
             Main.tileSpelunker[Type] = true;
 
-            this.RegisterUniversalMerge(ModContent.TileType<BrimstoneSlag>(), "CalamityMod/Tiles/Merges/BrimstoneSlagMerge");
-            this.RegisterUniversalMerge(TileID.Ash, "CalamityMod/Tiles/Merges/AshMerge");
+            this.RegisterBlendMergeWith(ModContent.TileType<BrimstoneSlag>());
+            this.RegisterBlendMergeWith(TileID.Ash);
         }
 
         public override bool CanExplode(int i, int j)

@@ -1,9 +1,7 @@
-﻿using System.Collections.Generic;
-using CalamityMod.Dusts;
+﻿using CalamityMod.Dusts;
 using CalamityMod.Systems;
 using CalamityMod.Tiles.Astral;
 using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Graphics;
 using Terraria;
 using Terraria.DataStructures;
 using Terraria.ID;
@@ -25,8 +23,8 @@ namespace CalamityMod.Tiles
             HitSound = SoundID.Tink;
             AddMapEntry(new Color(128, 128, 158));
 
-            this.RegisterUniversalMerge(TileID.Dirt, "CalamityMod/Tiles/Merges/DirtMerge");
-            this.RegisterUniversalMerge(ModContent.TileType<AstralDirt>(), "CalamityMod/Tiles/Merges/AstralDirtMerge");
+            this.RegisterBlendMergeWith(TileID.Dirt);
+            this.RegisterBlendMergeWith(ModContent.TileType<AstralDirt>());
         }
 
         public override bool CreateDust(int i, int j, ref int type)

@@ -29,8 +29,8 @@ namespace CalamityMod.Tiles.Crags
             MinPick = 100;
             AddMapEntry(new Color(87, 62, 67));
 
-            this.RegisterUniversalMerge(ModContent.TileType<BrimstoneSlag>(), "CalamityMod/Tiles/Merges/BrimstoneSlagMerge");
-            this.RegisterUniversalMerge(TileID.Ash, "CalamityMod/Tiles/Merges/AshMerge");
+            this.RegisterBlendMergeWith(ModContent.TileType<BrimstoneSlag>());
+            this.RegisterBlendMergeWith(TileID.Ash);
         }
 
         public override bool CanExplode(int i, int j)

@@ -24,8 +24,8 @@ namespace CalamityMod.Tiles.DraedonStructures
             MinPick = 30;
             AddMapEntry(new Color(36, 35, 37));
 
-            this.RegisterUniversalMerge(TileID.Dirt, "CalamityMod/Tiles/Merges/DirtMerge");
-            this.RegisterUniversalMerge(TileID.Stone, "CalamityMod/Tiles/Merges/StoneMerge");
+            this.RegisterBlendMergeWith(TileID.Dirt);
+            this.RegisterBlendMergeWith(TileID.Stone);
         }
 
         public override bool CanExplode(int i, int j) => false;

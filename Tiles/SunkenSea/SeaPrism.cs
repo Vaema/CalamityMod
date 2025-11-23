@@ -46,8 +46,8 @@ namespace CalamityMod.Tiles.SunkenSea
             Main.tileSpelunker[Type] = true;
             MinPick = 55;
 
-            this.RegisterUniversalMerge(ModContent.TileType<Navystone>(), "CalamityMod/Tiles/Merges/NavystoneMerge");
-            this.RegisterUniversalMerge(ModContent.TileType<EutrophicSand>(), "CalamityMod/Tiles/Merges/EutrophicSandMerge");
+            this.RegisterBlendMergeWith(ModContent.TileType<Navystone>());
+            this.RegisterBlendMergeWith(ModContent.TileType<EutrophicSand>());
 
             Blue = ModContent.Request<Texture2D>("CalamityMod/Tiles/SunkenSea/SeaPrism_Blue");
             Purple = ModContent.Request<Texture2D>("CalamityMod/Tiles/SunkenSea/SeaPrism_Purple");

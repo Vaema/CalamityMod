@@ -22,9 +22,9 @@ namespace CalamityMod.Tiles.Abyss
             AddMapEntry(new Color(113, 90, 71));
             HitSound = SoundID.Dig;
 
-            this.RegisterUniversalMerge(TileID.Dirt, "CalamityMod/Tiles/Merges/DirtMerge");
-            this.RegisterUniversalMerge(TileID.Stone, "CalamityMod/Tiles/Merges/StoneMerge");
-            this.RegisterUniversalMerge(ModContent.TileType<HardenedSulphurousSandstone>(), "CalamityMod/Tiles/Merges/HardenedSulphurousSandstoneMerge");
+            this.RegisterBlendMergeWith(TileID.Dirt);
+            this.RegisterBlendMergeWith(TileID.Stone);
+            this.RegisterBlendMergeWith(ModContent.TileType<HardenedSulphurousSandstone>());
         }
 
         public override void NumDust(int i, int j, bool fail, ref int num)

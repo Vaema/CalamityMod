@@ -1,20 +1,20 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
-using CalamityMod.Tiles.FurnitureNavystone.FurnitureAncientNavystone;
 using CalamityMod.Systems;
 using CalamityMod.Tiles;
 using CalamityMod.Tiles.Abyss;
 using CalamityMod.Tiles.Astral;
-using CalamityMod.Tiles.FurnitureDriftwood;
-using CalamityMod.Tiles.FurnitureMonolith;
 using CalamityMod.Tiles.AstralDesert;
 using CalamityMod.Tiles.AstralSnow;
 using CalamityMod.Tiles.Crags;
 using CalamityMod.Tiles.FloralParadise;
 using CalamityMod.Tiles.FurnitureAbyss;
 using CalamityMod.Tiles.FurnitureAshen;
+using CalamityMod.Tiles.FurnitureDriftwood;
+using CalamityMod.Tiles.FurnitureMonolith;
 using CalamityMod.Tiles.FurnitureNavystone;
+using CalamityMod.Tiles.FurnitureNavystone.FurnitureAncientNavystone;
 using CalamityMod.Tiles.FurnitureOtherworldly;
 using CalamityMod.Tiles.FurnitureProfaned;
 using CalamityMod.Tiles.FurnitureVoid;
@@ -381,10 +381,15 @@ namespace CalamityMod
         // Extension shorthand for the Tile Framing System Universal Merges.
         // As this must be defined in a static class, it's out here in CalamityUtils.
         // Flow, 2024/OCT/31 Removing Obsolete in here as tModLoader doesn't like this
-        //[Obsolete("Use TileBlendMergeSystem.RegisterMerge Instead")]
+        //[Obsolete("Use TileBlendMergeSystem.RegisterBlendMergeWith Instead")]
         public static void RegisterUniversalMerge(this ModTile tile, int mergeType, string blendSheetPath)
         {
             //TileFramingSystem.RegisterUniversalMerge(tile.Type, mergeType, blendSheetPath);
+            TileBlendMergeSystem.RegisterMerge(tile.Type, mergeType);
+        }
+
+        public static void RegisterBlendMergeWith(this ModTile tile, int mergeType)
+        {
             TileBlendMergeSystem.RegisterMerge(tile.Type, mergeType);
         }
 

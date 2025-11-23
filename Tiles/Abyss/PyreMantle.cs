@@ -24,9 +24,9 @@ namespace CalamityMod.Tiles.Abyss
             MinPick = 180;
             AddMapEntry(new Color(43, 40, 40));
 
-            this.RegisterUniversalMerge(TileID.Dirt, "CalamityMod/Tiles/Merges/DirtMerge");
-            this.RegisterUniversalMerge(TileID.Stone, "CalamityMod/Tiles/Merges/StoneMerge");
-            this.RegisterUniversalMerge(ModContent.TileType<AbyssGravel>(), "CalamityMod/Tiles/Merges/AbyssGravelMerge");
+            this.RegisterBlendMergeWith(TileID.Dirt);
+            this.RegisterBlendMergeWith(TileID.Stone);
+            this.RegisterBlendMergeWith(ModContent.TileType<AbyssGravel>());
         }
 
         public override bool CreateDust(int i, int j, ref int type)

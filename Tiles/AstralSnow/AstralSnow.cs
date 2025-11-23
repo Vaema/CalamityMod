@@ -40,8 +40,8 @@ namespace CalamityMod.Tiles.AstralSnow
             TileID.Sets.ChecksForMerge[Type] = true;
             TileID.Sets.CanBeClearedDuringOreRunner[Type] = true;
 
-            this.RegisterUniversalMerge(ModContent.TileType<AstralDirt>(), "CalamityMod/Tiles/Merges/AstralDirtMerge");
-            this.RegisterUniversalMerge(TileID.SnowBlock, "CalamityMod/Tiles/Merges/SnowMerge");
+            this.RegisterBlendMergeWith(ModContent.TileType<AstralDirt>());
+            this.RegisterBlendMergeWith(TileID.SnowBlock);
         }
 
         public override void NumDust(int i, int j, bool fail, ref int num)

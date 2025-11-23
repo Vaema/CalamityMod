@@ -6,7 +6,6 @@ using CalamityMod.Tiles.Abyss;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria;
-using Terraria.GameContent.Metadata;
 using Terraria.ID;
 using Terraria.ModLoader;
 
@@ -38,21 +37,21 @@ namespace CalamityMod.Tiles.SunkenSea
             TileID.Sets.FallingBlockProjectile[Type] = new TileID.Sets.FallingBlockProjectileInfo(ModContent.ProjectileType<BlackPearlFalling>(), 15);
 
             //Stone merges
-            this.RegisterUniversalMerge(ModContent.TileType<Shellstone>(), "CalamityMod/Tiles/Merges/ShellstoneMerge");
-            this.RegisterUniversalMerge(ModContent.TileType<PyreMantle>(), "CalamityMod/Tiles/Merges/PyreMantleMerge");
-            this.RegisterUniversalMerge(ModContent.TileType<Navystone>(), "CalamityMod/Tiles/Merges/NavystoneMerge");
-            this.RegisterUniversalMerge(ModContent.TileType<Runestone>(), "CalamityMod/Tiles/Merges/RunestoneMerge");
+            this.RegisterBlendMergeWith(ModContent.TileType<Shellstone>());
+            this.RegisterBlendMergeWith(ModContent.TileType<PyreMantle>());
+            this.RegisterBlendMergeWith(ModContent.TileType<Navystone>());
+            this.RegisterBlendMergeWith(ModContent.TileType<Runestone>());
             //Normal merges
-            this.RegisterUniversalMerge(TileID.Stone, "CalamityMod/Tiles/Merges/StoneMerge");
-            this.RegisterUniversalMerge(TileID.Dirt, "CalamityMod/Tiles/Merges/DirtMerge");
-            this.RegisterUniversalMerge(TileID.Ash, "CalamityMod/Tiles/Merges/AshMerge");
-            this.RegisterUniversalMerge(TileID.Mud, "CalamityMod/Tiles/Merges/MudMerge");
+            this.RegisterBlendMergeWith(TileID.Stone);
+            this.RegisterBlendMergeWith(TileID.Dirt);
+            this.RegisterBlendMergeWith(TileID.Ash);
+            this.RegisterBlendMergeWith(TileID.Mud);
             //Sand merges
-            this.RegisterUniversalMerge(ModContent.TileType<EutrophicSand>(), "CalamityMod/Tiles/Merges/EutrophicSandMerge");
-            this.RegisterUniversalMerge(ModContent.TileType<VolcanicSand>(), "CalamityMod/Tiles/Merges/VolcanicSandMerge");
-            this.RegisterUniversalMerge(TileID.Sandstone, "CalamityMod/Tiles/Merges/SandstoneMerge");
-            this.RegisterUniversalMerge(TileID.Sand, "CalamityMod/Tiles/Merges/SandMerge");
-            this.RegisterUniversalMerge(TileID.HardenedSand, "CalamityMod/Tiles/Merges/HardenedSandMerge");
+            this.RegisterBlendMergeWith(ModContent.TileType<EutrophicSand>());
+            this.RegisterBlendMergeWith(ModContent.TileType<VolcanicSand>());
+            this.RegisterBlendMergeWith(TileID.Sandstone);
+            this.RegisterBlendMergeWith(TileID.Sand);
+            this.RegisterBlendMergeWith(TileID.HardenedSand);
         }
 
         public override bool TileFrame(int i, int j, ref bool resetFrame, ref bool noBreak)
