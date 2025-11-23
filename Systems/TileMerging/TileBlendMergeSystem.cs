@@ -97,7 +97,11 @@ namespace CalamityMod.Systems
 
             var blendTextureSlot = _TileTypeToBlendTextureSlot[blendTileType];
             if (blendTextureSlot == TileBlendTextureLoader.EmptySlot)
+            {
+                var tileName = TileLoader.GetTile(blendTileType)?.FullName ?? "Vanilla Tile";
+                CalamityMod.Instance.Logger.Error($"[BlendMergeSystem] BlendTileType: {blendTileType} ({tileName}) does not have TileBlendTexture! StackTrace:\n{Environment.StackTrace}");
                 return;
+            }
 
             _TileBlendable[myType, blendTextureSlot] = true;
             _TileBlendLooselyFillDiagonal[myType, blendTextureSlot] = looselyFillDiagonal;
