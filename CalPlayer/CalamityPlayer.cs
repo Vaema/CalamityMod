@@ -1707,8 +1707,11 @@ namespace CalamityMod.CalPlayer
         public float tempGravDir = 1;
         public bool justChangedGravity = false;
 
-        public Vector2 mouseWorld;
-        private Vector2 oldMouseWorld;
+        public Vector2 mouseWorld => Player.MountedCenter + mouseWorldDeltaFromPlayer;
+        public Vector2 mouseWorldDeltaFromPlayer;
+        private Vector2 oldMouseWorldDeltaFromPlayer;
+        private int mouseWorldSyncSpamCounter = 0;
+        private const int mouseWorldSyncMinTickInterval = 2;
 
         /// <summary>
         /// Set this to true if you need to receive updates on right clicks from players and sync them in multiplayer.<br/>
@@ -4286,7 +4289,8 @@ namespace CalamityMod.CalPlayer
             if (Main.myPlayer == Player.whoAmI)
             {
                 mouseRight = PlayerInput.Triggers.Current.MouseRight;
-                mouseWorld = LockOnHelper.Enabled ? LockOnHelper.PredictedPosition : Main.MouseWorld;
+                var worldPos = LockOnHelper.Enabled ? LockOnHelper.PredictedPosition : Main.MouseWorld;
+                mouseWorldDeltaFromPlayer = worldPos - Player.MountedCenter;
 
                 if (rightClickListener && mouseRight != oldMouseRight)
                 {
@@ -4294,18 +4298,28 @@ namespace CalamityMod.CalPlayer
                     syncMouseRightClick = true;
                     rightClickListener = false;
                 }
-                if (mouseWorldListener && Vector2.Distance(mouseWorld, oldMouseWorld) > 5f)
+
+                if (mouseWorldSyncSpamCounter >= mouseWorldSyncMinTickInterval)
                 {
-                    oldMouseWorld = mouseWorld;
-                    syncMousePosition = true;
-                    mouseWorldListener = false;
+                    if (mouseWorldListener && Vector2.Distance(mouseWorldDeltaFromPlayer, oldMouseWorldDeltaFromPlayer) > 5f)
+                    {
+                        mouseWorldSyncSpamCounter = 0;
+                        oldMouseWorldDeltaFromPlayer = mouseWorldDeltaFromPlayer;
+                        syncMousePosition = true;
+                        mouseWorldListener = false;
+                    }
+
+                    if (mouseRotationListener && Math.Abs((mouseWorldDeltaFromPlayer).ToRotation() - (oldMouseWorldDeltaFromPlayer).ToRotation()) > 0.15f)
+                    {
+                        mouseWorldSyncSpamCounter = 0;
+                        oldMouseWorldDeltaFromPlayer = mouseWorldDeltaFromPlayer;
+                        syncMousePosition = true;
+                        mouseRotationListener = false;
+                    }
                 }
-                if (mouseRotationListener && Math.Abs((mouseWorld - Player.MountedCenter).ToRotation() - (oldMouseWorld - Player.MountedCenter).ToRotation()) > 0.15f)
-                {
-                    oldMouseWorld = mouseWorld;
-                    syncMousePosition = true;
-                    mouseRotationListener = false;
-                }
+
+                if (mouseWorldSyncSpamCounter < mouseWorldSyncMinTickInterval)
+                    mouseWorldSyncSpamCounter++;
             }
         }
         #endregion
