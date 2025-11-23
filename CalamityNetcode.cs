@@ -245,6 +245,7 @@ namespace CalamityMod
 
         // Mouse Controls syncs
         RightClickSync,
+        MouseRotationSync,
         MousePositionSync,
 
         // World state sync

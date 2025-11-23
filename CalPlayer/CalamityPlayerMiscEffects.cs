@@ -187,6 +187,12 @@ namespace CalamityMod.CalPlayer
                     syncMousePosition = false;
                     MousePositionSync();
                 }
+
+                if (syncMouseRotation)
+                {
+                    syncMouseRotation = false;
+                    MouseRotationSync();
+                }
             }
 
             if (Player.HeldItem.type != ModContent.ItemType<SaharaSlicers>())

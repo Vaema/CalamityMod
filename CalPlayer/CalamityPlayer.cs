@@ -1708,7 +1708,10 @@ namespace CalamityMod.CalPlayer
         public bool justChangedGravity = false;
 
         public Vector2 mouseWorld => Player.MountedCenter + mouseWorldDeltaFromPlayer;
+        public Vector2 mouseNormalFromPlayer => mouseRotationFromPlayer.ToRotationVector2();
         public Vector2 mouseWorldDeltaFromPlayer;
+        public float mouseRotationFromPlayer;
+
         private Vector2 oldMouseWorldDeltaFromPlayer;
         private int mouseWorldSyncSpamCounter = 0;
         private const int mouseWorldSyncMinTickInterval = 2;
@@ -1720,16 +1723,19 @@ namespace CalamityMod.CalPlayer
         public bool rightClickListener = false;
         /// <summary>
         /// Set this to true if you need to receive updates on the position of the player's mouse and sync them in multiplayer.<br/>
-        /// Automatically resets itself after sending an update.
+        /// Automatically resets itself after sending an update.<br/>
+        /// This also update the rotation.
         /// </summary>
         public bool mouseWorldListener = false;
         /// <summary>
         /// Set this to true if you need to receive updates on the rotation of the mouse to the player. This sends updates less frequently the tighter the tolerance of mouseWorldListener.<br/>
-        /// Automatically resets itself after sending an update.
+        /// Automatically resets itself after sending an update.<br/>
+        /// This does NOT update the position.
         /// </summary>
         public bool mouseRotationListener = false;
 
         public bool syncMousePosition = false;
+        public bool syncMouseRotation = false;
         public bool syncMouseRightClick = false;
         #endregion
 
@@ -4291,6 +4297,7 @@ namespace CalamityMod.CalPlayer
                 mouseRight = PlayerInput.Triggers.Current.MouseRight;
                 var worldPos = LockOnHelper.Enabled ? LockOnHelper.PredictedPosition : Main.MouseWorld;
                 mouseWorldDeltaFromPlayer = worldPos - Player.MountedCenter;
+                mouseRotationFromPlayer = mouseWorldDeltaFromPlayer.ToRotation();
 
                 if (rightClickListener && mouseRight != oldMouseRight)
                 {
@@ -4309,11 +4316,11 @@ namespace CalamityMod.CalPlayer
                         mouseWorldListener = false;
                     }
 
-                    if (mouseRotationListener && Math.Abs((mouseWorldDeltaFromPlayer).ToRotation() - (oldMouseWorldDeltaFromPlayer).ToRotation()) > 0.15f)
+                    if (!syncMousePosition && mouseRotationListener && Math.Abs((mouseWorldDeltaFromPlayer).ToRotation() - (oldMouseWorldDeltaFromPlayer).ToRotation()) > 0.15f)
                     {
                         mouseWorldSyncSpamCounter = 0;
                         oldMouseWorldDeltaFromPlayer = mouseWorldDeltaFromPlayer;
-                        syncMousePosition = true;
+                        syncMouseRotation = true;
                         mouseRotationListener = false;
                     }
                 }

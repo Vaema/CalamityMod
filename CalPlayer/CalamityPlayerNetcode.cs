@@ -30,6 +30,11 @@ namespace CalamityMod.CalPlayer
             MousePositionSyncPacket.Send(this);
         }
 
+        internal void MouseRotationSync()
+        {
+            MouseRotationSyncPacket.Send(this);
+        }
+
         internal void MouseRightClickSync()
         {
             RightClickSyncPacket.Send(this);
