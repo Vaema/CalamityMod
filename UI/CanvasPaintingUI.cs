@@ -65,9 +65,7 @@ namespace CalamityMod.UI
 
             bool hideUI = Main.keyState.PressingShift();
 
-            Texture2D tex = TextureAssets.Tile[ModContent.TileType<Tiles.Furniture.Paintings.CalamityCanvas2023Tile>()].Value;
-            if (p.CurrentlyViewedCanvasType == 1)
-                tex = TextureAssets.Tile[ModContent.TileType<Tiles.Furniture.Paintings.CalamityCanvas2024Tile>()].Value;
+            Texture2D tex = TextureAssets.Tile[p.CurrentlyViewedCanvasType].Value;
 
             // This is the length and width of the UI box, which is a square
             float dimension = Main.screenHeight * 0.66f;

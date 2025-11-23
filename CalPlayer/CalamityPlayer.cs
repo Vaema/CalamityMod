@@ -213,7 +213,7 @@ namespace CalamityMod.CalPlayer
         public int CurrentlyViewedChargerID = -1;
         public int CurrentlyViewedHologramID = -1;
         public int CurrentlyViewedCanvasID = -1;
-        public int CurrentlyViewedCanvasType = -1; // -1 = None. 0 = 2023. 1 = 2024.
+        public int CurrentlyViewedCanvasType = -1;
         public string CurrentlyViewedHologramText;
         #endregion
 
