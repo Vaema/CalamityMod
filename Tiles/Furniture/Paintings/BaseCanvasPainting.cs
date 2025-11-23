@@ -35,8 +35,8 @@ namespace CalamityMod.Tiles.Furniture.Paintings
             Main.tileSpelunker[Type] = true;
             Main.tileWaterDeath[Type] = false;
 
-            TileObjectData.newTile.LavaDeath = true;
             TileObjectData.newTile.CopyFrom(TileObjectData.Style3x3Wall);
+            TileObjectData.newTile.LavaDeath = true;
             TileObjectData.newTile.Width = 5;
             TileObjectData.newTile.Height = 5;
             TileObjectData.newTile.CoordinateHeights = new int[] { 18, 18, 18, 18, 18 };
