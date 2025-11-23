@@ -2377,7 +2377,6 @@ namespace CalamityMod.CalPlayer
             goldArmorGoldDrops = false;
 
             miningSet = false;
-            miningSetCooldown = 0;
 
             eskimoSet = false;
             rainSet = false;
