@@ -4,12 +4,12 @@ using CalamityMod.Pathfinding.Movements;
 namespace CalamityMod.Pathfinding
 {
     /// <summary>
-    /// Defines an interface for a class that can use pathfinding.
+    /// Defines an interface for an object that can use pathfinding.
     /// </summary>
     public interface IPathfinder
     {
         /// <summary>
-        /// A enumerable collection of <see cref="IMovement"/> this pathfinder can use.
+        /// A enumerable collection of <see cref="IMovement"/>s this pathfinder can use while pathfinding.
         /// </summary>
         IEnumerable<IMovement> Movements { get; }
 
