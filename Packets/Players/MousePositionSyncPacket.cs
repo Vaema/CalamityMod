@@ -1,10 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using CalamityMod.CalPlayer;
+using Microsoft.Xna.Framework;
 using Terraria;
 
 namespace CalamityMod.Packets
@@ -22,14 +19,28 @@ namespace CalamityMod.Packets
 
             var packet = Instance.CreateBasePacket();
             packet.WriteWhoAmI(player);
-            packet.WriteVector2(player.mouseWorld);
+
+            var pos = player.mouseWorld;
+            int tileX = Math.DivRem((int)pos.X, 16, out int remX);
+            int tileY = Math.DivRem((int)pos.Y, 16, out int remY);
+            byte remByte = (byte)(remX << 4 | remY);
+            packet.Write((ushort)Math.Clamp(tileX, 0, ushort.MaxValue)); // If you actually have world size above 65535 tiles in axis, Good luck on that
+            packet.Write((ushort)Math.Clamp(tileY, 0, ushort.MaxValue));
+            packet.Write(remByte);
+
             packet.Send(toClient, ignoreClient);
         }
 
         public override void HandlePacket(in BinaryReader packet, int sender)
         {
             var player = packet.ReadCalamityPlayer();
-            var mouseWorldPos = packet.ReadVector2();
+            var tileX = (int)packet.ReadUInt16();
+            var tileY = (int)packet.ReadUInt16();
+            var remByte = packet.ReadByte();
+            var remX = remByte >> 4;
+            var remY = remByte & 0b1111;
+
+            var mouseWorldPos = new Vector2((tileX * 16) + remX, (tileY * 16) + remY);
 
             if (player is null)
                 return;

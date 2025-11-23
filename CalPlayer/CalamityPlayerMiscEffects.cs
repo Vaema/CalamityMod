@@ -32,12 +32,9 @@ using CalamityMod.Items.Armor.Prismatic;
 using CalamityMod.Items.Armor.Reaver;
 using CalamityMod.Items.Armor.Silva;
 using CalamityMod.Items.Armor.Tarragon;
-using CalamityMod.Items.Armor.Wulfrum;
 using CalamityMod.Items.DraedonMisc;
 using CalamityMod.Items.Dyes;
-using CalamityMod.Items.Fishing.FishingRods;
 using CalamityMod.Items.Mounts.Minecarts;
-using CalamityMod.Items.PermanentBoosters;
 using CalamityMod.Items.Placeables.Furniture;
 using CalamityMod.Items.Potions;
 using CalamityMod.Items.Potions.Alcohol;
@@ -46,8 +43,6 @@ using CalamityMod.Items.VanillaArmorChanges;
 using CalamityMod.Items.Weapons.Magic;
 using CalamityMod.Items.Weapons.Melee;
 using CalamityMod.Items.Weapons.Ranged;
-using CalamityMod.Items.Weapons.Rogue;
-using CalamityMod.Items.Weapons.Typeless;
 using CalamityMod.NPCs;
 using CalamityMod.NPCs.AcidRain;
 using CalamityMod.NPCs.Astral;
@@ -181,10 +176,16 @@ namespace CalamityMod.CalPlayer
                     StandardSync();
                 }
 
-                if (syncMouseControls)
+                if (syncMouseRightClick)
                 {
-                    syncMouseControls = false;
-                    MouseControlsSync();
+                    syncMouseRightClick = false;
+                    MouseRightClickSync();
+                }
+
+                if (syncMousePosition)
+                {
+                    syncMousePosition = false;
+                    MousePositionSync();
                 }
             }
 
@@ -391,7 +392,7 @@ namespace CalamityMod.CalPlayer
                 {
                     if (lucreciaEnergyTimer >= 1 && !lucreciaEnergyMaxSFXPlayed)
                     {
-                        SoundEngine.PlaySound(SoundID.Item79 with { Volume = 1.6f, Pitch = 0.4f }, Player.Center); 
+                        SoundEngine.PlaySound(SoundID.Item79 with { Volume = 1.6f, Pitch = 0.4f }, Player.Center);
                         lucreciaEnergyMaxSFXPlayed = true;
 
                     }
@@ -513,7 +514,7 @@ namespace CalamityMod.CalPlayer
                     Player.endurance += 0.1f;
                     Player.noKnockback = true;
                 }
-                
+
             }
 
             if (XykVisualsBlue || XykVisualsOrange)
@@ -572,7 +573,7 @@ namespace CalamityMod.CalPlayer
                     for (int i = 0; i < 2; i++)
                     {
                         bool altDust = Main.rand.NextBool(3);
-                        Dust dust = Dust.NewDustPerfect(Player.Center + Main.rand.NextVector2Circular(20, 30) + SparkVelocity1,  altDust ? (Orange ? ModContent.DustType<SquareDust>() : ModContent.DustType<SquashDustHollow>()) : ModContent.DustType<SquashDust>(), SparkVelocity1 * Main.rand.NextFloat(0.5f, 3f) * sparkscale1, 0, default, Main.rand.NextFloat(1.5f, 1.9f) * sparkscale1);
+                        Dust dust = Dust.NewDustPerfect(Player.Center + Main.rand.NextVector2Circular(20, 30) + SparkVelocity1, altDust ? (Orange ? ModContent.DustType<SquareDust>() : ModContent.DustType<SquashDustHollow>()) : ModContent.DustType<SquashDust>(), SparkVelocity1 * Main.rand.NextFloat(0.5f, 3f) * sparkscale1, 0, default, Main.rand.NextFloat(1.5f, 1.9f) * sparkscale1);
                         dust.noGravity = true;
                         dust.color = XykFXColor;
                         dust.fadeIn = altDust ? 0 : 2;
@@ -1034,7 +1035,7 @@ namespace CalamityMod.CalPlayer
                         int vHexDuration = 0;
                         if (target.HasBuff<VulnerabilityHex>())
                             vHexDuration = target.buffTime[target.FindBuffIndex(ModContent.BuffType<VulnerabilityHex>())];
-                        target.AddBuff(ModContent.BuffType<TrueVulnerabilityHex>(),vHexDuration <= 300 ? vHexDuration : 300);
+                        target.AddBuff(ModContent.BuffType<TrueVulnerabilityHex>(), vHexDuration <= 300 ? vHexDuration : 300);
                         target.RequestBuffRemoval(ModContent.BuffType<VulnerabilityHex>());
                         SoundEngine.PlaySound(new("CalamityMod/Sounds/Custom/WeaponEnchant"), target.Center);
 
@@ -1067,7 +1068,7 @@ namespace CalamityMod.CalPlayer
 
                 // Incinerate the target with either Vulnerability Hex or True Vulnerability Hex, depending on current cursor focus.
                 // This adds 8 to the buff duration, which results in a net increase of 3 frames every time damage is dealt, due to damage occurring every 5 frames.
-                int buffToInflict = target.Calamity().trueVulnerabilityHex? ModContent.BuffType<TrueVulnerabilityHex>() : ModContent.BuffType<VulnerabilityHex>();
+                int buffToInflict = target.Calamity().trueVulnerabilityHex ? ModContent.BuffType<TrueVulnerabilityHex>() : ModContent.BuffType<VulnerabilityHex>();
                 if (!target.HasBuff(buffToInflict))
                     target.AddBuff(buffToInflict, 52);
                 target.buffTime[target.FindBuffIndex(buffToInflict)] += 8;
@@ -1774,11 +1775,11 @@ namespace CalamityMod.CalPlayer
                                 projectile.damage = (int)(projectile.damage * 0.85f);
                             projectile.friendly = true;
                         }
-                        
+
                         if (Vector2.Distance(Player.Center, projectile.Center) <= zoneSize && projectile.active && projectile.hostile && projectile.Calamity().TransformerTimer == 0 && (numOfBlobs < TheTransformer.blobCap || Main.zenithWorld) && transformerDelay == 0)
                         {
                             transformerDelay = 2; // 2 frame delay between projectile transformation
- 
+
                             projectile.Calamity().TransformerTimer = Main.zenithWorld ? 3 : 30;
 
                             int layer = (int)(Utils.GetLerpValue(0, 10, numOfBlobs + 1) + 0.9f);
@@ -1810,7 +1811,7 @@ namespace CalamityMod.CalPlayer
                                     index++;
                                 }
                             }
-                            
+
                         }
                     }
                 }
@@ -1917,7 +1918,7 @@ namespace CalamityMod.CalPlayer
                         fallingBootVelCheckTimer = 0;
                     }
                 }
-                
+
                 if (Player.gravDir == 1 ? Player.velocity.Y <= 0 : Player.velocity.Y >= 0)
                     fallingBootVelCheckTimer = 0;
             }
@@ -2006,8 +2007,8 @@ namespace CalamityMod.CalPlayer
 
                     if (Main.rand.NextBool(3))
                     {
-                        Particle floweyFromHitGameUndertale = new CustomSpark(spawnPos, -Player.velocity.SafeNormalize(Vector2.UnitX) * Main.rand.NextFloat(5f, 8f), 
-                            "CalamityMod/Particles/MiniFlower", false, Main.rand.Next(25, 28 + 1), Main.rand.NextFloat(2.3f, 2.6f) * fade, 
+                        Particle floweyFromHitGameUndertale = new CustomSpark(spawnPos, -Player.velocity.SafeNormalize(Vector2.UnitX) * Main.rand.NextFloat(5f, 8f),
+                            "CalamityMod/Particles/MiniFlower", false, Main.rand.Next(25, 28 + 1), Main.rand.NextFloat(2.3f, 2.6f) * fade,
                             Color.Lerp(Color.HotPink, Color.Plum, Main.rand.NextFloat(0, 0.65f)), new Vector2(1f, 1f), true, extraRotation: Main.rand.NextFloat(0, MathHelper.TwoPi));
                         GeneralParticleHandler.SpawnParticle(floweyFromHitGameUndertale);
                     }
@@ -2022,7 +2023,7 @@ namespace CalamityMod.CalPlayer
                         pollenDust.fadeIn = -0.5f * fade;
                     }
                 }
-                
+
                 hookPullVisuals--;
                 if (Player.velocity.Length() < 6)
                     hookPullVisuals = 0;
@@ -3156,7 +3157,7 @@ namespace CalamityMod.CalPlayer
                         resistanceSlowdownFactor -= abyssalDivingSuit ? 0.2f : 0.5f;
 
                     // Reduce breath over ticks (frames)
-                    abyssBreathCD++;    
+                    abyssBreathCD++;
                     if (abyssBreathCD >= (int)(tick * resistanceSlowdownFactor))
                     {
                         // Reset modded breath variable
@@ -3463,7 +3464,7 @@ namespace CalamityMod.CalPlayer
             }
 
             if (xWrath)
-            { 
+            {
                 Player.GetDamage<ThrowingDamageClass>() += EmpyreanMask.WrathRogueDamageBoost;
                 Player.GetCritChance<RogueDamageClass>() += EmpyreanMask.WrathRogueCritBoost;
             }
@@ -3841,7 +3842,7 @@ namespace CalamityMod.CalPlayer
             if (manaOverloader)
             {
                 float manaRatio = Player.statMana / (float)Player.statManaMax2;
-                Player.GetDamage<MagicDamageClass>() += MathHelper.Lerp(0.05f,0.15f,manaRatio);
+                Player.GetDamage<MagicDamageClass>() += MathHelper.Lerp(0.05f, 0.15f, manaRatio);
             }
 
             if (bloodyWormTooth)
@@ -3890,7 +3891,7 @@ namespace CalamityMod.CalPlayer
 
             if (vexation)
             {
-                    Player.GetDamage<GenericDamageClass>() += 0.3f* (1 - Player.statLife / (float)Player.statLifeMax2);
+                Player.GetDamage<GenericDamageClass>() += 0.3f * (1 - Player.statLife / (float)Player.statLifeMax2);
             }
 
             if (ataxiaBlaze)
@@ -4384,7 +4385,7 @@ namespace CalamityMod.CalPlayer
                 // Laudanum removes immunity to debuffs that it counters, so that you can get inflicted with them
                 int[] buffsAffected = [ModContent.BuffType<ArmorCrunch>(), ModContent.BuffType<WhisperingDeath>(), BuffID.VortexDebuff, BuffID.Ichor, BuffID.Bleeding,
                     BuffID.Chilled, BuffID.BrokenArmor, BuffID.Weak, BuffID.Slow, BuffID.Confused, BuffID.Cursed, BuffID.Silenced, BuffID.Blackout, BuffID.Darkness];
-                
+
                 for (int i = 0; i < buffsAffected.Length; i++)
                     Player.buffImmune[buffsAffected[i]] = false;
 

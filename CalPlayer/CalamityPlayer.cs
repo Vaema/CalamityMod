@@ -1725,7 +1725,8 @@ namespace CalamityMod.CalPlayer
         /// </summary>
         public bool mouseRotationListener = false;
 
-        public bool syncMouseControls = false;
+        public bool syncMousePosition = false;
+        public bool syncMouseRightClick = false;
         #endregion
 
         #endregion
@@ -4288,19 +4289,19 @@ namespace CalamityMod.CalPlayer
                 if (rightClickListener && mouseRight != oldMouseRight)
                 {
                     oldMouseRight = mouseRight;
-                    syncMouseControls = true;
+                    syncMouseRightClick = true;
                     rightClickListener = false;
                 }
                 if (mouseWorldListener && Vector2.Distance(mouseWorld, oldMouseWorld) > 5f)
                 {
                     oldMouseWorld = mouseWorld;
-                    syncMouseControls = true;
+                    syncMousePosition = true;
                     mouseWorldListener = false;
                 }
                 if (mouseRotationListener && Math.Abs((mouseWorld - Player.MountedCenter).ToRotation() - (oldMouseWorld - Player.MountedCenter).ToRotation()) > 0.15f)
                 {
                     oldMouseWorld = mouseWorld;
-                    syncMouseControls = true;
+                    syncMousePosition = true;
                     mouseRotationListener = false;
                 }
             }
