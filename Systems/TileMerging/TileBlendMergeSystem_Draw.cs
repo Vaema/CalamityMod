@@ -1,10 +1,7 @@
 ﻿using System;
-using System.Reflection;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria;
-using Terraria.DataStructures;
-using Terraria.GameContent.Drawing;
 using Terraria.ID;
 using Terraria.ModLoader;
 
@@ -12,13 +9,10 @@ namespace CalamityMod.Systems
 {
     public sealed partial class TileBlendMergeSystem : ModSystem
     {
-        private static readonly BindingFlags NonPublicStatic = BindingFlags.NonPublic | BindingFlags.Static;
-        private static readonly BindingFlags NonPublicInstance = BindingFlags.NonPublic | BindingFlags.Instance;
+        private static Color MediumQualityLightRequirement;
+        private static Color HighQualityLightRequirement;
 
-        private static readonly FastField<TileDrawing, Color> MediumQualityLightRequirement = new("_mediumQualityLightingRequirement", NonPublicInstance);
-        private static readonly FastField<TileDrawing, Color> HighQualityLightRequirement = new("_highQualityLightingRequirement", NonPublicInstance);
-
-        private readonly static Rectangle[] Rects9Slice = [
+        private static readonly Rectangle[] Rects9Slice = [
             new Rectangle(x: 0, y: 0, width: 4, height: 4),
             new Rectangle(x: 4, y: 0, width: 8, height: 4),
             new Rectangle(x: 12, y: 0, width: 4, height: 4),
@@ -32,29 +26,49 @@ namespace CalamityMod.Systems
             new Rectangle(x: 12, y: 12, width: 4, height: 4),
         ];
 
-        private readonly static Rectangle[] Rects4Slice = [
+        private static readonly Rectangle[] Rects4Slice = [
             new Rectangle(x: 0, y: 0, width: 8, height: 8),
             new Rectangle(x: 8, y: 0, width: 8, height: 8),
             new Rectangle(x: 0, y: 8, width: 8, height: 8),
             new Rectangle(x: 8, y: 8, width: 8, height: 8),
         ];
 
-        private enum SliceState : byte
+        [ThreadStatic]
+        private static Color[] ColorSliceBuffer;
+
+        private static void OnQualityRequirementUpdate(Color highQualityLightReq, Color mediumQualityLightReq)
         {
-            None,
-            Slice_4,
-            Slice_9
+            HighQualityLightRequirement = highQualityLightReq;
+            MediumQualityLightRequirement = mediumQualityLightReq;
         }
 
-        private static void OnDrawSingleTile(On_TileDrawing.orig_DrawSingleTile orig, TileDrawing self, TileDrawInfo drawData, bool solidLayer, int waterStyleOverride, Vector2 screenPosition, Vector2 screenOffset, int tileX, int tileY)
+        private void OnDrawTiles(On_Main.orig_DrawTiles orig, Main self, bool solidLayer, bool forRenderTargets, bool intoRenderTargets, int waterStyleOverride)
         {
-            orig(self, drawData, solidLayer, waterStyleOverride, screenPosition, screenOffset, tileX, tileY);
+            orig(self, solidLayer, forRenderTargets, intoRenderTargets, waterStyleOverride);
 
-            var tile = drawData.tileCache;
-            var tileType = tile.TileType;
+            if (!solidLayer)
+                return;
 
-            Color tileLight = drawData.tileLight;
-            if (tileLight.R <= 0 && tileLight.G <= 0 && tileLight.B <= 0)
+            ColorSliceBuffer ??= new Color[9]; // Prepare ColorSliceBuffer if it's not ready
+
+            var screenPosition = Main.Camera.UnscaledPosition;
+            var zero = Main.drawToScreen ? Vector2.Zero : new Vector2(Main.offScreenRange);
+            var offset = zero + (Main.Camera.UnscaledPosition - Main.Camera.ScaledPosition);
+            CalamityUtils.GetScreenDrawArea(screenPosition, offset, out int firstTileX, out int lastTileX, out int firstTileY, out int lastTileY);
+
+            for (int x = firstTileX; x <= lastTileX; x++)
+            {
+                for (int y = firstTileY; y <= lastTileY; y++)
+                {
+                    DrawOnTile(x, y);
+                }
+            }
+        }
+
+        public static void DrawOnTile(int tileX, int tileY)
+        {
+            var tile = CalamityUtils.ParanoidTileRetrieval(tileX, tileY);
+            if (!tile.HasTile)
                 return;
 
             var refLength = tile.Get<TileBlendingRefLengthData>().GetLength();
@@ -65,17 +79,38 @@ namespace CalamityMod.Systems
                 return;
 
             // Generic Drawing Parameter
-            Vector2 drawPos = new Vector2(tileX * 16, tileY * 16) - screenPosition + screenOffset;
+            var tileType = tile.TileType;
+            Vector2 zero = Main.drawToScreen ? Vector2.Zero : new Vector2(Main.offScreenRange);
+            Vector2 drawPos = new Vector2(tileX * 16, tileY * 16) - Main.screenPosition + zero;
             var tileRandomFrame = Math.Clamp(tile.TileFrameNumber, 0, 2);
             var isFullBright = tile.IsTileFullbright;
+            Color tileLight = Lighting.GetColor(tileX, tileY);
 
             // Sliced Rendering
-            var sliceRenderingPrepared = false;
-            var slices = drawData.colorSlices;
             int sliceLength = 0;
             var sliceRects = Array.Empty<Rectangle>();
-            var sliceState = SliceState.None;
-            var shouldTileShine = ShouldTileShine(tileType, (short)(drawData.tileFrameX + drawData.addFrX));
+
+            // Is HalfBlock condition is also in vanilla, so we follow that
+            if (Lighting.NotRetro && !tile.IsHalfBlock && !TileID.Sets.DontDrawTileSliced[tileType])
+            {
+                if (tileLight.IsAnyChannelGreaterThan(HighQualityLightRequirement))
+                {
+                    sliceLength = 9;
+                    sliceRects = Rects9Slice;
+                    Lighting.GetColor9Slice(tileX, tileY, ref ColorSliceBuffer);
+                }
+                else if (tileLight.IsAnyChannelGreaterThan(MediumQualityLightRequirement))
+                {
+                    sliceLength = 4;
+                    sliceRects = Rects4Slice;
+                    Lighting.GetColor4Slice(tileX, tileY, ref ColorSliceBuffer);
+                }
+            }
+
+            // If tile is Actuated, Set brightness to 40%
+            // Otherwise it sets to 100% or 160% (if shine)
+            var finalColorMultiplier = tile.IsActuated ? 0.4f : (Main.tileShine2[tileType] ? 1.6f : 1.0f);
+
             foreach (var blendRef in blendRefs)
             {
                 var sheetIdx = blendRef.SheetIndex;
@@ -88,38 +123,12 @@ namespace CalamityMod.Systems
                 var rect = TileBlendTexture.SideFlagsToSheetRect(data);
                 var texture = TileBlendTextureLoader.Registry[sheetIdx].BlendTextures[tileRandomFrame];
 
-                // Prepare Slice Rendering
-                if (!sliceRenderingPrepared)
-                {
-                    // Is HalfBlock condition is also in vanilla, so we follow that
-                    if (Lighting.NotRetro && !tile.IsHalfBlock && !TileID.Sets.DontDrawTileSliced[tileType])
-                    {
-                        var midQualityThreshold = MediumQualityLightRequirement.Get(self);
-                        var highQualityThreshold = HighQualityLightRequirement.Get(self);
-                        if (tileLight.IsAnyChannelGreaterThan(highQualityThreshold))
-                        {
-                            sliceLength = 9;
-                            sliceState = SliceState.Slice_9;
-                            sliceRects = Rects9Slice;
-                            Lighting.GetColor9Slice(tileX, tileY, ref slices);
-                        }
-                        else if (tileLight.IsAnyChannelGreaterThan(midQualityThreshold))
-                        {
-                            sliceLength = 4;
-                            sliceState = SliceState.Slice_4;
-                            sliceRects = Rects4Slice;
-                            Lighting.GetColor4Slice(tileX, tileY, ref slices);
-                        }
-                    }
-
-                    sliceRenderingPrepared = true;
-                }
-
                 // No Slice Drawing
-                if (sliceState == SliceState.None || isFullBright)
+                if (sliceLength <= 0 || isFullBright)
                 {
                     var drawColor = isFullBright ? Color.White : tileLight;
-                    Main.spriteBatch.Draw(texture, drawPos, rect, drawColor, rotation: 0.0f, origin: default, scale: 1.0f, SpriteEffects.None, layerDepth: 0.0f);
+                    var finalColor = CalamityUtils.ApplyPaint(tile.TileColor, drawColor, deepPaintOnly: false) * finalColorMultiplier;
+                    Main.spriteBatch.Draw(texture, drawPos, rect, finalColor, rotation: 0.0f, origin: default, scale: 1.0f, SpriteEffects.None, layerDepth: 0.0f);
                     continue;
                 }
 
@@ -133,32 +142,11 @@ namespace CalamityMod.Systems
 
                     // Calculate the destination position for the slice on the screen
                     var destinationSlicePos = drawPos + sliceRects[i].Location.ToVector2();
-
-                    var drawColorVec = (tileLight.ToVector3() + slices[i]) * 0.5f;
-                    drawColorVec *= drawData.colorTint.ToVector3();
-
-                    // Tile is Actuated, Reduce brightness
-                    if (tile.IsActuated)
-                    {
-                        drawColorVec *= 0.4f;
-                    }
-
-                    // Tile is shining
-                    if (shouldTileShine)
-                    {
-                        Main.shine(ref drawColorVec, tileType);
-                    }
-
-                    Main.spriteBatch.Draw(texture, destinationSlicePos, sourceSliceRect, new Color(drawColorVec), 0f, Vector2.Zero, 1.0f, SpriteEffects.None, 0f);
+                    var drawColorVec = (tileLight.ToVector3() + ColorSliceBuffer[i].ToVector3()) * 0.5f;
+                    var finalColor = CalamityUtils.ApplyPaint(tile.TileColor, new Color(drawColorVec), deepPaintOnly: false) * finalColorMultiplier;
+                    Main.spriteBatch.Draw(texture, destinationSlicePos, sourceSliceRect, finalColor, 0f, Vector2.Zero, 1.0f, SpriteEffects.None, 0f);
                 }
             }
-        }
-
-        private static MethodInfo ShouldTileShineMethod;
-        private static bool ShouldTileShine(ushort type, short frameX)
-        {
-            ShouldTileShineMethod ??= typeof(TileDrawing).GetMethod("ShouldTileShine", NonPublicStatic);
-            return (bool)ShouldTileShineMethod.Invoke(null, [type, frameX]);
         }
     }
 }

@@ -1,4 +1,7 @@
 ﻿using System;
+using System.Reflection;
+using CalamityMod.ILEditing;
+using MonoMod.Cil;
 using Terraria;
 using Terraria.GameContent.Drawing;
 using Terraria.ModLoader;
@@ -17,8 +20,46 @@ namespace CalamityMod.Systems
         public override void OnModLoad()
         {
             // Draw Code
-            On_TileDrawing.DrawSingleTile += OnDrawSingleTile;
+            On_Main.DrawTiles += OnDrawTiles;
+            IL_TileDrawing.Draw += MakeQualityRequirementUpdateHook;
             ResizeArrayHook.OnPostResizeArrays += OnResizeArrays;
+        }
+
+        private void MakeQualityRequirementUpdateHook(ILContext il)
+        {
+            const string midQualityRequirementField = "_mediumQualityLightingRequirement";
+            const string highQualityRequirementField = "_highQualityLightingRequirement";
+            const string getScreenDrawAreaMethod = "GetScreenDrawArea";
+
+            var cursor = new ILCursor(il);
+
+            if (!cursor.TryGotoNext(MoveType.After, x => x.MatchCallOrCallvirt<TileDrawing>(getScreenDrawAreaMethod)))
+            {
+                ILChanges.LogFailure("QualityRequirementHook", $"{getScreenDrawAreaMethod} call is missing!");
+                return;
+            }
+
+            var type = typeof(TileDrawing);
+            var mediumReqField = type.GetField(midQualityRequirementField, BindingFlags.NonPublic | BindingFlags.Instance);
+            var highReqField = type.GetField(highQualityRequirementField, BindingFlags.NonPublic | BindingFlags.Instance);
+
+            if (mediumReqField == null)
+            {
+                ILChanges.LogFailure("QualityRequirementHook", $"{midQualityRequirementField} field is missing!");
+                return;
+            }
+
+            if (highReqField == null)
+            {
+                ILChanges.LogFailure("QualityRequirementHook", $"{highQualityRequirementField} field is missing!");
+                return;
+            }
+
+            cursor.EmitLdarg0(); // self
+            cursor.EmitLdfld(mediumReqField); // self.mediumReqField
+            cursor.EmitLdarg0(); // self
+            cursor.EmitLdfld(highReqField); // self.highReqField
+            cursor.EmitDelegate(OnQualityRequirementUpdate); // call (highReq, mediumReq)
         }
 
         private static void OnResizeArrays(bool unloading)
