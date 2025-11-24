@@ -1713,8 +1713,8 @@ namespace CalamityMod.CalPlayer
         public float mouseRotationFromPlayer;
 
         private Vector2 oldMouseWorldDeltaFromPlayer;
-        private int mouseWorldSyncSpamCounter = 0;
-        private const int mouseWorldSyncMinTickInterval = 2;
+        private int mouseWorldPacketTimer = 0;
+        private const int MouseWorldPacketInterval = 2;
 
         /// <summary>
         /// Set this to true if you need to receive updates on right clicks from players and sync them in multiplayer.<br/>
@@ -4306,27 +4306,19 @@ namespace CalamityMod.CalPlayer
                     rightClickListener = false;
                 }
 
-                if (mouseWorldSyncSpamCounter >= mouseWorldSyncMinTickInterval)
+                if (mouseWorldListener && Vector2.Distance(mouseWorldDeltaFromPlayer, oldMouseWorldDeltaFromPlayer) > 5f)
                 {
-                    if (mouseWorldListener && Vector2.Distance(mouseWorldDeltaFromPlayer, oldMouseWorldDeltaFromPlayer) > 5f)
-                    {
-                        mouseWorldSyncSpamCounter = 0;
-                        oldMouseWorldDeltaFromPlayer = mouseWorldDeltaFromPlayer;
-                        syncMousePosition = true;
-                        mouseWorldListener = false;
-                    }
-
-                    if (!syncMousePosition && mouseRotationListener && Math.Abs((mouseWorldDeltaFromPlayer).ToRotation() - (oldMouseWorldDeltaFromPlayer).ToRotation()) > 0.15f)
-                    {
-                        mouseWorldSyncSpamCounter = 0;
-                        oldMouseWorldDeltaFromPlayer = mouseWorldDeltaFromPlayer;
-                        syncMouseRotation = true;
-                        mouseRotationListener = false;
-                    }
+                    oldMouseWorldDeltaFromPlayer = mouseWorldDeltaFromPlayer;
+                    syncMousePosition = true;
+                    mouseWorldListener = false;
                 }
 
-                if (mouseWorldSyncSpamCounter < mouseWorldSyncMinTickInterval)
-                    mouseWorldSyncSpamCounter++;
+                if (mouseRotationListener && Math.Abs((mouseWorldDeltaFromPlayer).ToRotation() - (oldMouseWorldDeltaFromPlayer).ToRotation()) > 0.15f)
+                {
+                    oldMouseWorldDeltaFromPlayer = mouseWorldDeltaFromPlayer;
+                    syncMouseRotation = true;
+                    mouseRotationListener = false;
+                }
             }
         }
         #endregion

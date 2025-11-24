@@ -182,16 +182,23 @@ namespace CalamityMod.CalPlayer
                     MouseRightClickSync();
                 }
 
-                if (syncMousePosition)
+                mouseWorldPacketTimer = Math.Min(mouseWorldPacketTimer + 1, MouseWorldPacketInterval);
+                if (mouseWorldPacketTimer >= MouseWorldPacketInterval)
                 {
-                    syncMousePosition = false;
-                    MousePositionSync();
-                }
+                    if (syncMousePosition)
+                    {
+                        mouseWorldPacketTimer = 0;
+                        syncMousePosition = false;
+                        syncMouseRotation = false; // Rotation also get update on position packet
+                        MousePositionSync();
+                    }
 
-                if (syncMouseRotation)
-                {
-                    syncMouseRotation = false;
-                    MouseRotationSync();
+                    if (syncMouseRotation)
+                    {
+                        mouseWorldPacketTimer = 0;
+                        syncMouseRotation = false;
+                        MouseRotationSync();
+                    }
                 }
             }
 
