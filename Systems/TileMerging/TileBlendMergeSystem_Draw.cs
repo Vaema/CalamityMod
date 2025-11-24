@@ -110,6 +110,7 @@ namespace CalamityMod.Systems
             // If tile is Actuated, Set brightness to 40%
             // Otherwise it sets to 100% or 160% (if shine)
             var finalColorMultiplier = tile.IsActuated ? 0.4f : (Main.tileShine2[tileType] ? 1.6f : 1.0f);
+            var finalMultColor = new Color(finalColorMultiplier, finalColorMultiplier, finalColorMultiplier);
 
             foreach (var blendRef in blendRefs)
             {
@@ -127,7 +128,7 @@ namespace CalamityMod.Systems
                 if (sliceLength <= 0 || isFullBright)
                 {
                     var drawColor = isFullBright ? Color.White : tileLight;
-                    var finalColor = CalamityUtils.ApplyPaint(tile.TileColor, drawColor, deepPaintOnly: false) * finalColorMultiplier;
+                    var finalColor = CalamityUtils.ApplyPaint(tile.TileColor, drawColor, deepPaintOnly: false).MultiplyRGB(finalMultColor);
                     Main.spriteBatch.Draw(texture, drawPos, rect, finalColor, rotation: 0.0f, origin: default, scale: 1.0f, SpriteEffects.None, layerDepth: 0.0f);
                     continue;
                 }
@@ -143,7 +144,7 @@ namespace CalamityMod.Systems
                     // Calculate the destination position for the slice on the screen
                     var destinationSlicePos = drawPos + sliceRects[i].Location.ToVector2();
                     var drawColorVec = (tileLight.ToVector3() + ColorSliceBuffer[i].ToVector3()) * 0.5f;
-                    var finalColor = CalamityUtils.ApplyPaint(tile.TileColor, new Color(drawColorVec), deepPaintOnly: false) * finalColorMultiplier;
+                    var finalColor = CalamityUtils.ApplyPaint(tile.TileColor, new Color(drawColorVec), deepPaintOnly: false).MultiplyRGB(finalMultColor);
                     Main.spriteBatch.Draw(texture, destinationSlicePos, sourceSliceRect, finalColor, 0f, Vector2.Zero, 1.0f, SpriteEffects.None, 0f);
                 }
             }
