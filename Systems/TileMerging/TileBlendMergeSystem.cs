@@ -56,9 +56,9 @@ namespace CalamityMod.Systems
             }
 
             cursor.EmitLdarg0(); // self
-            cursor.EmitLdfld(mediumReqField); // self.mediumReqField
-            cursor.EmitLdarg0(); // self
             cursor.EmitLdfld(highReqField); // self.highReqField
+            cursor.EmitLdarg0(); // self
+            cursor.EmitLdfld(mediumReqField); // self.mediumReqField
             cursor.EmitDelegate(OnQualityRequirementUpdate); // call (highReq, mediumReq)
         }
 
