@@ -102,7 +102,7 @@ namespace CalamityMod.NPCs.OldDuke
             NPC.aiStyle = -1;
             AIType = -1;
             NPC.defense = 90;
-            NPC.DR_NERD(0.5f, null, null, null, true);
+            NPC.DR_NERD(0.5f);
             NPC.LifeMaxNERB(500000, 600000, 400000);
             NPC.knockBackResist = 0f;
             NPC.noTileCollide = true;

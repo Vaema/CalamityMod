@@ -223,7 +223,7 @@ namespace CalamityMod
         /// <param name="normal">The value DR will be set to in normal mode.</param>
         /// <param name="revengeance">The value DR will be set to in Revegeneance mode.</param>
         /// <param name="bossRush">The value DR will be set to during the Boss Rush.</param>
-        public static void DR_NERD(this NPC npc, float normal, float? revengeance = null, float? death = null, float? bossRush = null, bool? customDR = null)
+        public static void DR_NERD(this NPC npc, float normal, float? revengeance = null, float? death = null, float? bossRush = null)
         {
             npc.Calamity().DR = normal;
 
@@ -235,9 +235,6 @@ namespace CalamityMod
             {
                 npc.Calamity().DR = CalamityWorld.death ? death.Value : revengeance.Value;
             }
-
-            if (customDR.HasValue)
-                npc.Calamity().customDR = true;
         }
         #endregion
 

@@ -104,16 +104,8 @@ namespace CalamityMod.NPCs
         /// <summary> Damage Reduction Value </summary>
         public float DR { get; set; } = 0f;
 
-        /// <summary> If set to true, the NPC's damage reduction cannot be reduced via any means. This applies regardless of whether <see cref="customDR"/> is true or false. </summary>
+        /// <summary> If set to true, the NPC's damage reduction cannot be reduced via any means. </summary>
         public bool unbreakableDR = false;
-
-        /// <summary>
-        /// Overrides the normal DR math and uses custom DR reductions for each debuff, registered separately.<br/>
-        /// Current only used by Old Duke.
-        /// </summary>
-        public bool customDR = false;
-        public Dictionary<int, float> flatDRReductions = new Dictionary<int, float>();
-        public Dictionary<int, float> multDRReductions = new Dictionary<int, float>();
 
         public int KillTime { get; set; } = 0;
 
@@ -527,13 +519,6 @@ namespace CalamityMod.NPCs
 
             myClone.DR = DR;
             myClone.unbreakableDR = unbreakableDR;
-            myClone.flatDRReductions = new Dictionary<int, float>();
-            foreach (var flatDR in flatDRReductions)
-                myClone.flatDRReductions.Add(flatDR.Key, flatDR.Value);
-            myClone.multDRReductions = new Dictionary<int, float>();
-            foreach (var multDR in multDRReductions)
-                myClone.multDRReductions.Add(multDR.Key, multDR.Value);
-
             myClone.KillTime = KillTime;
 
             myClone.VulnerableToHeat = VulnerableToHeat;
@@ -2968,7 +2953,7 @@ namespace CalamityMod.NPCs
 
             // If the NPC currently has unbreakable DR, it cannot be reduced by any means.
             // If custom DR is enabled, use that instead of normal DR.
-            float effectiveDR = unbreakableDR ? DR : (customDR ? CustomDRMath(npc, DR) : DefaultDRMath(npc, DR));
+            float effectiveDR = unbreakableDR ? DR : ApplyDRReduction(npc, DR);
 
             // DR floor is 0%. Nothing can have negative DR.
             if (effectiveDR <= 0f)
@@ -3009,7 +2994,7 @@ namespace CalamityMod.NPCs
         //This will need to be adjusted to use DebuffData in the future.
         //However, we still need to decide what to actually do with these due to the general flattening of DR amounts and removal from most enemies
         //This means that this will be handled in the future
-        private float DefaultDRMath(NPC npc, float DR)
+        private float ApplyDRReduction(NPC npc, float DR)
         {
             float calcDR = DR;
             if (markedForDeath)
@@ -3022,61 +3007,6 @@ namespace CalamityMod.NPCs
                 calcDR *= Crumbling.MultiplicativeDamageReductionEnemy;
             if (relicOfResilienceWeakness)
                 calcDR *= 0.5f;
-
-
-            return calcDR;
-        }
-
-        private float CustomDRMath(NPC npc, float DR)
-        {
-            void FlatEditDR(ref float theDR, bool npcHasDebuff, int buffID)
-            {
-                if (npcHasDebuff && flatDRReductions.TryGetValue(buffID, out float reduction))
-                    theDR -= reduction;
-            }
-            void MultEditDR(ref float theDR, bool npcHasDebuff, int buffID)
-            {
-                if (npcHasDebuff && multDRReductions.TryGetValue(buffID, out float multiplier))
-                    theDR *= multiplier;
-            }
-
-            float calcDR = DR;
-
-            // Apply flat reductions first. All vanilla debuffs check their internal booleans.
-            FlatEditDR(ref calcDR, npc.poisoned, BuffID.Poisoned);
-            FlatEditDR(ref calcDR, npc.onFire, BuffID.OnFire);
-            FlatEditDR(ref calcDR, npc.onFire3, BuffID.OnFire3);
-            FlatEditDR(ref calcDR, npc.venom, BuffID.Venom);
-            FlatEditDR(ref calcDR, npc.onFrostBurn, BuffID.Frostburn);
-            FlatEditDR(ref calcDR, npc.shadowFlame, BuffID.ShadowFlame);
-            FlatEditDR(ref calcDR, npc.daybreak, BuffID.Daybreak);
-            FlatEditDR(ref calcDR, npc.onFire2, BuffID.CursedInferno);
-
-            // Modded debuffs are handled modularly and use HasBuff.
-            foreach (KeyValuePair<int, float> entry in flatDRReductions)
-            {
-                int buffID = entry.Key;
-                if (buffID >= BuffID.Count && npc.HasBuff(buffID))
-                    calcDR -= entry.Value;
-            }
-
-            // Apply multiplicative reductions second. All vanilla debuffs check their internal booleans.
-            MultEditDR(ref calcDR, npc.poisoned, BuffID.Poisoned);
-            MultEditDR(ref calcDR, npc.onFire, BuffID.OnFire);
-            MultEditDR(ref calcDR, npc.onFire3, BuffID.OnFire3);
-            MultEditDR(ref calcDR, npc.venom, BuffID.Venom);
-            MultEditDR(ref calcDR, npc.onFrostBurn, BuffID.Frostburn);
-            MultEditDR(ref calcDR, npc.shadowFlame, BuffID.ShadowFlame);
-            MultEditDR(ref calcDR, npc.daybreak, BuffID.Daybreak);
-            MultEditDR(ref calcDR, npc.onFire2, BuffID.CursedInferno);
-
-            // Modded debuffs are handled modularly and use HasBuff.
-            foreach (KeyValuePair<int, float> entry in multDRReductions)
-            {
-                int buffID = entry.Key;
-                if (buffID >= BuffID.Count && npc.HasBuff(buffID))
-                    calcDR *= entry.Value;
-            }
 
             return calcDR;
         }
