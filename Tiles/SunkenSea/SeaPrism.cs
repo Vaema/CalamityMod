@@ -80,7 +80,7 @@ namespace CalamityMod.Tiles.SunkenSea
             blended = Vector3.Lerp(blended, glow1.ToVector3(), fade1 * 0.5f);
             blended = Vector3.Lerp(blended, glow2.ToVector3(), fade2 * 0.5f);
 
-            float brightness = 0.6f; 
+            float brightness = 0.6f;
             blended *= brightness;
 
             r = blended.X;
@@ -430,6 +430,7 @@ namespace CalamityMod.Tiles.SunkenSea
 
                         Rectangle sourceRect = new Rectangle(frameX, frameY, 16, 16);
                         Color light = Lighting.GetColor(x, y) * 1.5f;
+                        if (tile.IsActuated) light = light.MultiplyRGB(Color.White * 0.4f);
 
                         Main.spriteBatch.Draw(SeaPrism.Blue.Value, position, sourceRect, light);
                     }
