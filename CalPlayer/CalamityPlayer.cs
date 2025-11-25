@@ -1545,6 +1545,7 @@ namespace CalamityMod.CalPlayer
         public bool KalandraMirror = false;
         public bool StellarTorus = false;
         public bool LiliesOfFinalityBool = false;
+        public bool EnchantedBladeStaffBool = false;
         public bool AmphibiansGuitarBool = false;
         #endregion
 
@@ -2709,6 +2710,7 @@ namespace CalamityMod.CalPlayer
             KalandraMirror = false;
             StellarTorus = false;
             LiliesOfFinalityBool = false;
+            EnchantedBladeStaffBool = false;
             AmphibiansGuitarBool = false;
             #endregion
 

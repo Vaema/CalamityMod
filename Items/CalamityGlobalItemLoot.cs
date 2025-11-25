@@ -555,12 +555,13 @@ namespace CalamityMod.Items
                 ItemDropRule.NotScalingWithLuck(ModContent.ItemType<GrandMarquisBait>(), 3, 3, 7),
                 ItemDropRule.NotScalingWithLuck(ItemID.MasterBait, 1, 3, 7));
 
-        // Non-crafted underground Gold Chest loot for Golden/Titanium Crates @ 20%; Individually 5%
-        private static IItemDropRule UndergroundChestLootRule => new OneFromOptionsNotScaledWithLuckDropRule(5, 1,
+        // Non-crafted underground Gold Chest loot for Golden/Titanium Crates @ 25%; Individually 5%
+        private static IItemDropRule UndergroundChestLootRule => new OneFromOptionsNotScaledWithLuckDropRule(4, 1,
                 ItemID.FlareGun,
                 ItemID.Mace,
                 ItemID.BandofRegeneration,
-                ItemID.ShoeSpikes); // Climbing Claws is in Wooden/Pearlwood (vanilla) in case you're curious
+                ItemID.ShoeSpikes,
+                ModContent.ItemType<EnchantedBladeStaff>()); // Climbing Claws is in Wooden/Pearlwood (vanilla) in case you're curious
         #endregion
 
         #region Goodie Bag Bat Hook
