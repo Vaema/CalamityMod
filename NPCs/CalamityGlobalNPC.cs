@@ -1081,7 +1081,6 @@ namespace CalamityMod.NPCs
             DRValues = new SortedDictionary<int, float> {
                 { NPCID.CultistBoss, 0.15f },
                 { NPCID.DukeFishron, 0.15f },
-                { NPCID.DungeonGuardian, 0.9f },
                 { NPCID.Golem, 0.15f },
                 { NPCID.GolemFistLeft, 0.15f },
                 { NPCID.GolemFistRight, 0.15f },
@@ -2505,6 +2504,7 @@ namespace CalamityMod.NPCs
                 case NPCID.Mothron:
                 case NPCID.EaterofWorldsHead:
                 case NPCID.SkeletronHead:
+                case NPCID.DungeonGuardian:
                 case NPCID.WallofFlesh:
                 case NPCID.Spazmatism:
                 case NPCID.Retinazer:
@@ -2568,12 +2568,6 @@ namespace CalamityMod.NPCs
                     npc.defDamage = npc.damage;
                     npc.defense /= 2;
                     npc.defDefense = npc.defense;
-                    break;
-
-                // Reduce Dungeon Guardian HP
-                case NPCID.DungeonGuardian:
-                    npc.lifeMax = (int)Math.Round(npc.lifeMax * 0.1);
-                    canBreakPlayerDefense = true;
                     break;
 
                 // Reduce Tomb Crawler stats
