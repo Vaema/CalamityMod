@@ -800,19 +800,22 @@ namespace CalamityMod.NPCs.Providence
                     bool laserPhaseSlow = AIState == (int)Phase.Laser;
 
                     // Change X direction of movement
-                    if (flightPath == 0)
+                    if (Main.netMode != NetmodeID.MultiplayerClient)
                     {
-                        if (NPC.Center.X < player.Center.X)
+                        if (flightPath == 0)
                         {
-                            flightPath = 1;
-                            calamityGlobalNPC.newAI[0] = 0f;
-                            NPC.netUpdate = true;
-                        }
-                        else
-                        {
-                            flightPath = -1;
-                            calamityGlobalNPC.newAI[0] = 0f;
-                            NPC.netUpdate = true;
+                            if (NPC.Center.X < player.Center.X)
+                            {
+                                flightPath = 1;
+                                calamityGlobalNPC.newAI[0] = 0f;
+                                NPC.netUpdate = true;
+                            }
+                            else
+                            {
+                                flightPath = -1;
+                                calamityGlobalNPC.newAI[0] = 0f;
+                                NPC.netUpdate = true;
+                            }
                         }
                     }
 
@@ -829,17 +832,21 @@ namespace CalamityMod.NPCs.Providence
                         changeDirectionThreshold += death ? 240f : revenge ? 180f : 120f;
 
                     // Change X movement path if far enough away from target
-                    if (NPC.Center.X < player.Center.X && flightPath < 0 && distanceX > changeDirectionThreshold)
+                    if (Main.netMode != NetmodeID.MultiplayerClient)
                     {
-                        flightPath = 0;
-                        NPC.netUpdate = true;
+                        if (NPC.Center.X < player.Center.X && flightPath < 0 && distanceX > changeDirectionThreshold)
+                        {
+                            flightPath = 0;
+                            NPC.netUpdate = true;
+                        }
+
+                        if (NPC.Center.X > player.Center.X && flightPath > 0 && distanceX > changeDirectionThreshold)
+                        {
+                            flightPath = 0;
+                            NPC.netUpdate = true;
+                        }
                     }
 
-                    if (NPC.Center.X > player.Center.X && flightPath > 0 && distanceX > changeDirectionThreshold)
-                    {
-                        flightPath = 0;
-                        NPC.netUpdate = true;
-                    }
 
                     // Predictive shot checks
                     if ((NPC.velocity.X > 0f && (NPC.Center.X - player.Center.X) > 0f && player.velocity.X > 0f) || (NPC.velocity.X < 0f && (NPC.Center.X - player.Center.X) < 0f && player.velocity.X < 0f))
