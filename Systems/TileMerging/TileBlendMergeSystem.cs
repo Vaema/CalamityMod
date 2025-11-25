@@ -4,6 +4,7 @@ using CalamityMod.ILEditing;
 using MonoMod.Cil;
 using Terraria;
 using Terraria.GameContent.Drawing;
+using Terraria.ID;
 using Terraria.ModLoader;
 
 namespace CalamityMod.Systems
@@ -11,10 +12,9 @@ namespace CalamityMod.Systems
     [Autoload(Side = ModSide.Client)]
     public sealed partial class TileBlendMergeSystem : ModSystem
     {
-        private static bool[,] _TileBlendable; // dimension: [TileTypeCount, AllBlendTextureCount]
-        private static bool[,] _TileBlendLooselyFillDiagonal; // dimension: [TileTypeCount, AllBlendTextureCount]
-        private static byte[] _TileTypeToBlendTextureSlot; // dimension: [TileTypeCount]
-        private static bool _IDSetsInitialized = false;
+        private static bool[,] _TileBlendable = new bool[TileID.Count, 1]; // dimension: [TileTypeCount, AllBlendTextureCount]
+        private static bool[,] _TileBlendLooselyFillDiagonal = new bool[TileID.Count, 1]; // dimension: [TileTypeCount, AllBlendTextureCount]
+        private static byte[] _TileTypeToBlendTextureSlot = new byte[TileID.Count]; // dimension: [TileTypeCount]
 
         #region Load/Unload
         public override void OnModLoad()
@@ -22,7 +22,13 @@ namespace CalamityMod.Systems
             // Draw Code
             On_Main.DrawTiles += OnDrawTiles;
             IL_TileDrawing.Draw += MakeQualityRequirementUpdateHook;
-            ResizeArrayHook.OnPostResizeArrays += OnResizeArrays;
+        }
+
+        public override void Unload()
+        {
+            _TileBlendable = null;
+            _TileBlendLooselyFillDiagonal = null;
+            _TileTypeToBlendTextureSlot = null;
         }
 
         private void MakeQualityRequirementUpdateHook(ILContext il)
@@ -62,43 +68,19 @@ namespace CalamityMod.Systems
             cursor.EmitDelegate(OnQualityRequirementUpdate); // call (highReq, mediumReq)
         }
 
-        private static void OnResizeArrays(bool unloading)
+        public override void ResizeArrays()
         {
             var tileCount = TileLoader.TileCount;
             var blendTextureCount = TileBlendTextureLoader.Count; // This count also should be updated on ResizeArrays call
 
-            static void SetupTileTypeToBlendTextureSlot()
-            {
-                if (TileBlendTextureLoader.AllTextures == null)
-                    return;
-                foreach (var blendTexture in TileBlendTextureLoader.AllTextures)
-                {
-                    _TileTypeToBlendTextureSlot[blendTexture.TileType] = (byte)blendTexture.Slot;
-                }
-            }
-
-            if (!_IDSetsInitialized)
-            {
-                _TileBlendable = new bool[tileCount, blendTextureCount + 1];
-                _TileBlendLooselyFillDiagonal = new bool[tileCount, blendTextureCount + 1];
-                _TileTypeToBlendTextureSlot = new byte[tileCount];
-                _IDSetsInitialized = true;
-                SetupTileTypeToBlendTextureSlot();
-                return;
-            }
-
-            if (unloading)
-            {
-                _TileBlendable = null;
-                _TileBlendLooselyFillDiagonal = null;
-                _TileTypeToBlendTextureSlot = null;
-                return;
-            }
-
             ResizeArray2D(ref _TileBlendable, tileCount, blendTextureCount + 1);
             ResizeArray2D(ref _TileBlendLooselyFillDiagonal, tileCount, blendTextureCount + 1);
             Array.Resize(ref _TileTypeToBlendTextureSlot, tileCount);
-            SetupTileTypeToBlendTextureSlot();
+
+            foreach (var blendTexture in TileBlendTextureLoader.AllTextures)
+            {
+                _TileTypeToBlendTextureSlot[blendTexture.TileType] = (byte)blendTexture.Slot;
+            }
         }
 
         private static void ResizeArray2D<T>(ref T[,] array, int newColNum, int newRowNum)

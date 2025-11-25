@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Reflection;
 using Microsoft.Xna.Framework.Graphics;
 using ReLogic.Content;
 using Terraria;
@@ -111,25 +110,6 @@ namespace CalamityMod.Systems
 
     public class LavaStylesLoader : ModSystem
     {
-        private static readonly MethodInfo ResizeArrayMethodInfo;
-
-        static LavaStylesLoader()
-        {
-            ResizeArrayMethodInfo = typeof(ModContent).GetMethod("ResizeArrays", BindingFlags.NonPublic | BindingFlags.Static);
-        }
-
-        private static void ResizeArrays(ResizeArray_orig orig, bool unloading)
-        {
-            orig.Invoke(unloading);
-            int totalCount = TotalCount;
-            Array.Resize(ref LavaRenderingSystem.Textures.liquid, totalCount);
-            Array.Resize(ref LavaRenderingSystem.Textures.block, totalCount);
-            Array.Resize(ref LavaRenderingSystem.Textures.slope, totalCount);
-            Array.Resize(ref LavaRenderingSystem.Textures.fall, totalCount);
-            Array.Resize(ref LavaRenderingSystem.LavaAlpha, totalCount);
-            Array.Resize(ref LavaRenderingSystem.AlphaSave, totalCount);
-        }
-
         private static readonly List<ModLavaStyle> _content = [];
 
         public static IReadOnlyList<ModLavaStyle> Content => _content;
@@ -140,12 +120,15 @@ namespace CalamityMod.Systems
 
         public static int TotalCount => VanillaCount + ModCount;
 
-        public override void Load()
+        public override void ResizeArrays()
         {
-            if (ResizeArrayMethodInfo != null)
-            {
-                MonoModHooks.Add(ResizeArrayMethodInfo, Delegate.CreateDelegate(typeof(Action<ResizeArray_orig, bool>), typeof(LavaStylesLoader).GetMethod(nameof(ResizeArrays), BindingFlags.NonPublic | BindingFlags.Static)));
-            }
+            int totalCount = TotalCount;
+            Array.Resize(ref LavaRenderingSystem.Textures.liquid, totalCount);
+            Array.Resize(ref LavaRenderingSystem.Textures.block, totalCount);
+            Array.Resize(ref LavaRenderingSystem.Textures.slope, totalCount);
+            Array.Resize(ref LavaRenderingSystem.Textures.fall, totalCount);
+            Array.Resize(ref LavaRenderingSystem.LavaAlpha, totalCount);
+            Array.Resize(ref LavaRenderingSystem.AlphaSave, totalCount);
         }
 
         public override void PostSetupContent()
