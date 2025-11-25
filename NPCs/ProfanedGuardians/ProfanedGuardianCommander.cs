@@ -1202,8 +1202,8 @@ namespace CalamityMod.NPCs.ProfanedGuardians
 
             // 16NOV2025: Ozzatron: item has been chosen as the "Expert gatekept" item for this Calamity boss
             // npcLoot.Add(ModContent.ItemType<WarbanneroftheRighteous>(), 1);
-            LeadingConditionRule expert = npcLoot.DefineConditionalDropSet(new Conditions.IsExpert());
-            expert.Add(ModContent.ItemType<WarbanneroftheRighteous>(), 1);
+            LeadingConditionRule expert = new LeadingConditionRule(new Conditions.IsExpert());
+            expert.OnSuccess(ItemDropRule.Common(ModContent.ItemType<WarbanneroftheRighteous>(), 1));
             npcLoot.Add(expert);
 
             npcLoot.Add(ModContent.ItemType<ProfanedGuardianTrophy>(), 10);

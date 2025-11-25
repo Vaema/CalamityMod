@@ -107,7 +107,7 @@ namespace CalamityMod.Items
                 { ItemID.DyeTradersScimitar, Do(UseTurn, DamageExact(24)) }, // Exotic Scimitar
                 { ItemID.ElfMelter, Do(ShootSpeedDelta(+5f)) },
                 { ItemID.EmeraldStaff, Do(DamageExact(27)) },
-                { ItemID.EmpressBlade, Do(DamageExact(50)) }, // Terraprisma
+                { ItemID.EmpressBlade, Do(DamageExact(68)) }, // Terraprisma
                 { ItemID.EnchantedBoomerang, Do(DamageExact(24)) },
                 { ItemID.EnchantedSword, Do(UseMeleeSpeed, DamageExact(30), ShootSpeedExact(15f)) },
                 { ItemID.EndlessMusketPouch, Do(DamageExact(8)) },
@@ -1317,8 +1317,7 @@ namespace CalamityMod.Items
             shimmerTransmute[ItemID.FairyQueenRangedItem] = ItemID.FairyQueenMagicItem;
             shimmerTransmute[ItemID.FairyQueenMagicItem] = ItemID.SparkleGuitar;
             shimmerTransmute[ItemID.SparkleGuitar] = ItemID.RainbowWhip;
-            shimmerTransmute[ItemID.RainbowWhip] = ItemID.EmpressBlade;
-            shimmerTransmute[ItemID.EmpressBlade] = ItemID.PiercingStarlight;
+            shimmerTransmute[ItemID.RainbowWhip] = ItemID.PiercingStarlight;
 
             // Moon Lord
             shimmerTransmute[ItemID.Meowmere] = ItemID.StarWrath;

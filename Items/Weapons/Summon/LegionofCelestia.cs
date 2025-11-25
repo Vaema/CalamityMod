@@ -51,8 +51,8 @@ namespace CalamityMod.Items.Weapons.Summon
         public override void AddRecipes()
         {
             CreateRecipe().
-                AddIngredient(ItemID.EmpressBlade).
                 AddIngredient<PlantationStaff>().
+                AddIngredient(ItemID.Smolstar). // Blade Staff
                 AddIngredient(ItemID.LunarBar, 5).
                 AddIngredient<LifeAlloy>(5).
                 AddIngredient(ItemID.FragmentStardust, 5).

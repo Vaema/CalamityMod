@@ -306,7 +306,7 @@ namespace CalamityMod.CalPlayer
                 for (int l = 0; l < Player.MaxBuffs; ++l)
                 {
                     int buffID = Player.buffType[l];
-                    if (Player.buffTime[l] <= 2)
+                    if (Player.buffTime[l] <= 2 || BuffDatasets.DebuffDataset[buffID] is null)
                         continue;
                     bool shouldHalveDuration = BuffDatasets.DebuffDataset[buffID].SicknessDebuffScaling > 0;
                     if (livingDewHalveDebuffs)

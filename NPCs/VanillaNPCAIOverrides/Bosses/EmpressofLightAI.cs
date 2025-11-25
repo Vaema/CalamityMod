@@ -12,7 +12,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
 {
     public static class EmpressOfLightAIUtils
     {
-        public static int CalculateDamageForEnrage(this int damage) => NPC.ShouldEmpressBeEnraged() ? damage * 2 : damage;
+        public static int CalculateDamageForEnrage(this int damage) => NPC.ShouldEmpressBeEnraged() ? 9999 : damage;
     }
 
     public class EmpressofLightAI : VanillaAIOverride

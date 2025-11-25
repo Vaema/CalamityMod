@@ -234,7 +234,6 @@ namespace CalamityMod.Items
                         ItemID.FairyQueenRangedItem, // Eventide
                         ItemID.FairyQueenMagicItem, // Nightglow
                         ItemID.SparkleGuitar, // Stellar Tune
-                        ItemID.EmpressBlade, // Terraprisma
                         ItemID.RainbowWhip, // Kaleidoscope
                         ItemID.RainbowWings, // Empress Wings have a pathetically low drop rate.
                     };
