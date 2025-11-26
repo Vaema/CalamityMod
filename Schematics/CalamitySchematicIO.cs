@@ -772,7 +772,7 @@ PostAreaIteration:
             // This is an intentional "fail gracefully" case.
             else if (isTML13Schematic)
             {
-                CalamityMod.Instance.Logger.Error(TML13ValidString);
+                CalamityMod.Log.Error(TML13ValidString);
                 SchematicMetaTile[,] empty = new SchematicMetaTile[0, 0];
                 return empty;
             }

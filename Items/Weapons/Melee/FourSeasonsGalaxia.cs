@@ -87,7 +87,7 @@ namespace CalamityMod.Items.Weapons.Melee
             //.. but just in case
             if (mainAttunement == null)
             {
-                CalamityMod.Instance.Logger.Error("No main attunement on galaxia, couldn't edit its tooltip properly. How the hell did that happen.");
+                CalamityMod.Log.Error("No main attunement on galaxia, couldn't edit its tooltip properly. How the hell did that happen.");
                 return;
             }
 

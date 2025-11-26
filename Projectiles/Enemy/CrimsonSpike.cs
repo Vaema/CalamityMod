@@ -50,14 +50,6 @@ namespace CalamityMod.Projectiles.Enemy
             }
         }
 
-        public override void OnHitPlayer(Player target, Player.HurtInfo info)
-        {
-            if (info.Damage <= 0)
-                return;
-
-            target.AddBuff(BuffID.Darkness, 90);
-        }
-
         public override void OnKill(int timeLeft)
         {
             Color dustColor = Color.Crimson;

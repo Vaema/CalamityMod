@@ -29,7 +29,7 @@ namespace CalamityMod
                     var existingHandler = _PacketRegistry[msgType];
                     if (existingHandler != null)
                     {
-                        CalamityMod.Instance.Logger.Error($"Packet instance has already registered by other type!" +
+                        CalamityMod.Log.Error($"Packet instance has already registered by other type!" +
                             $" [Failed On: '{type.FullName}'" +
                             $" Current Owner: '{existingHandler.GetType().FullName}'," +
                             $" msgTypeToRegister: '{msgType}']");
@@ -48,7 +48,7 @@ namespace CalamityMod
                         }
                         else
                         {
-                            CalamityMod.Instance.Logger.Error($"Packet instance's 'Instance' property is not asssignable with given type!" +
+                            CalamityMod.Log.Error($"Packet instance's 'Instance' property is not asssignable with given type!" +
                                 $" [Failed On: '{type.FullName}']");
                         }
                     }
@@ -61,7 +61,7 @@ namespace CalamityMod
                 }
                 catch (Exception e)
                 {
-                    CalamityMod.Instance.Logger.Error($"Exception was thrown while loading for Packets! {e}");
+                    CalamityMod.Log.Error($"Exception was thrown while loading for Packets! {e}");
                     return;
                 }
             });
@@ -102,18 +102,18 @@ namespace CalamityMod
                     // Throw an exception now instead of allowing the network stream to corrupt.
                     //
 
-                    CalamityMod.Instance.Logger.Error($"Failed to parse Calamity packet: No Calamity packet exists with ID {msgType}.");
+                    CalamityMod.Log.Error($"Failed to parse Calamity packet: No Calamity packet exists with ID {msgType}.");
                     throw new Exception("Failed to parse Calamity packet: Invalid Calamity packet ID.");
                 }
             }
             catch (Exception e)
             {
                 if (e is EndOfStreamException eose)
-                    CalamityMod.Instance.Logger.Error("Failed to parse Calamity packet: Packet was too short, missing data, or otherwise corrupt.", eose);
+                    CalamityMod.Log.Error("Failed to parse Calamity packet: Packet was too short, missing data, or otherwise corrupt.", eose);
                 else if (e is ObjectDisposedException ode)
-                    CalamityMod.Instance.Logger.Error("Failed to parse Calamity packet: Packet reader disposed or destroyed.", ode);
+                    CalamityMod.Log.Error("Failed to parse Calamity packet: Packet reader disposed or destroyed.", ode);
                 else if (e is IOException ioe)
-                    CalamityMod.Instance.Logger.Error("Failed to parse Calamity packet: An unknown I/O error occurred.", ioe);
+                    CalamityMod.Log.Error("Failed to parse Calamity packet: An unknown I/O error occurred.", ioe);
                 else
                     throw; // this either will crash the game or be caught by TML's packet policing
             }

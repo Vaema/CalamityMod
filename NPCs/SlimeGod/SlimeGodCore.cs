@@ -786,8 +786,6 @@ namespace CalamityMod.NPCs.SlimeGod
             {
                 int debufftype = Main.zenithWorld ? BuffID.VortexDebuff : BuffID.Slow;
                 target.AddBuff(debufftype, 180);
-                target.AddBuff(BuffID.Weak, 180);
-                target.AddBuff(BuffID.Darkness, 180);
             }
         }
     }

@@ -40,8 +40,8 @@ namespace CalamityMod.ILEditing
         {
             if (Main.netMode == NetmodeID.MultiplayerClient)
             {
-                CalamityMod.Instance.Logger.Error($"NETCODE SAFETY VIOLATION DETECTED: {nameof(NPC.NewNPC)} was called from a Multiplayer Client");
-                CalamityMod.Instance.Logger.Error(GetSimplifiedStackTrace());
+                CalamityMod.Log.Error($"NETCODE SAFETY VIOLATION DETECTED: {nameof(NPC.NewNPC)} was called from a Multiplayer Client");
+                CalamityMod.Log.Error(GetSimplifiedStackTrace());
                 return Main.maxNPCs;
             }
 
@@ -54,8 +54,8 @@ namespace CalamityMod.ILEditing
             // So we simply stop that from happening
             if (msgType == MessageID.SyncNPC && Main.netMode == NetmodeID.MultiplayerClient)
             {
-                CalamityMod.Instance.Logger.Error($"NETCODE SAFETY VIOLATION DETECTED: {nameof(NetMessage.SendData)} ({nameof(MessageID.SyncNPC)}) was called from a Multiplayer Client");
-                CalamityMod.Instance.Logger.Error(GetSimplifiedStackTrace());
+                CalamityMod.Log.Error($"NETCODE SAFETY VIOLATION DETECTED: {nameof(NetMessage.SendData)} ({nameof(MessageID.SyncNPC)}) was called from a Multiplayer Client");
+                CalamityMod.Log.Error(GetSimplifiedStackTrace());
                 return;
             }
 

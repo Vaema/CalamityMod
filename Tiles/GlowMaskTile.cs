@@ -35,7 +35,7 @@ namespace CalamityMod.Tiles
         {
             if (GlowMask != null)
             {
-                CalamityMod.Instance.Logger.Error($"{Name} has called {nameof(SetStaticDefaults)} themselve! This is not allowed!");
+                CalamityMod.Log.Error($"{Name} has called {nameof(SetStaticDefaults)} themselve! This is not allowed!");
                 return;
             }
 

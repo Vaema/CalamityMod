@@ -365,7 +365,7 @@ namespace CalamityMod.ILEditing
 
             if (!cursor.TryGotoNext(MoveType.Before, i => i.MatchCallOrCallvirt<Main>("UpdateTime_SpawnTownNPCs")))
             {
-                CalamityMod.Instance.Logger.Warn("Town NPC spawn editing code failed.");
+                CalamityMod.Log.Warn("Town NPC spawn editing code failed.");
                 return;
             }
 

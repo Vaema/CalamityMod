@@ -2045,11 +2045,11 @@ namespace CalamityMod
                     return null;
 
                 case "LoadParticleInstances":
-                    CalamityMod.Instance.Logger.Warn("This mod call is deprecated. Calamity automatically registers particles.");
+                    CalamityMod.Log.Warn("This mod call is deprecated. Calamity automatically registers particles.");
                     return null;
 
                 case "RegisterModCooldowns":
-                    CalamityMod.Instance.Logger.Warn("This mod call is deprecated. Calamity automatically registers cooldowns.");
+                    CalamityMod.Log.Warn("This mod call is deprecated. Calamity automatically registers cooldowns.");
                     return null;
 
                 case "GetSummonerNerfDisabledByItem":

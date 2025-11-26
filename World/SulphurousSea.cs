@@ -959,7 +959,7 @@ namespace CalamityMod.World
                 // Create a log message if for some reason the schematic in question doesn't exist.
                 if (!wrappedSchematicArea.HasValue)
                 {
-                    CalamityMod.Instance.Logger.Warn($"Tried to place a schematic with name \"{schematicName}\". No matching schematic file found.");
+                    CalamityMod.Log.Warn($"Tried to place a schematic with name \"{schematicName}\". No matching schematic file found.");
                     continue;
                 }
 

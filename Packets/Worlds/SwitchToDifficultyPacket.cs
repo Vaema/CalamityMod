@@ -35,7 +35,7 @@ namespace CalamityMod.Packets
             }
             else
             {
-                CalamityMod.Instance.Logger.Error($"Packet: [{nameof(SwitchToDifficultyPacket)}] has failed! Name: [{modeName}] is not a valid {nameof(DifficultyMode)} name!");
+                CalamityMod.Log.Error($"Packet: [{nameof(SwitchToDifficultyPacket)}] has failed! Name: [{modeName}] is not a valid {nameof(DifficultyMode)} name!");
             }
         }
     }
