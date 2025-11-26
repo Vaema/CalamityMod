@@ -124,7 +124,7 @@ namespace CalamityMod.ILEditing
             }
         }
 
-        public static void DumpToLog(ILContext il) => CalamityMod.Instance.Logger.Debug(il.ToString());
-        public static void LogFailure(string name, string reason) => CalamityMod.Instance.Logger.Warn($"IL edit \"{name}\" failed! {reason}");
+        public static void DumpToLog(ILContext il) => CalamityMod.Log.Debug(il.ToString());
+        public static void LogFailure(string name, string reason) => CalamityMod.Log.Warn($"IL edit \"{name}\" failed! {reason}");
     }
 }

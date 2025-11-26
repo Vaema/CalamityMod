@@ -289,7 +289,7 @@ namespace CalamityMod.Projectiles.Summon
                 }
                 catch (Exception)
                 {
-                    CalamityMod.Instance.Logger.Warn("IbanPlay Victide Cnidarian Position Netcode failed safely");
+                    CalamityMod.Log.Warn("IbanPlay Victide Cnidarian Position Netcode failed safely");
                 }
             }
         }

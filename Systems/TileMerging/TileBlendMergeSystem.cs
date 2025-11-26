@@ -122,7 +122,7 @@ namespace CalamityMod.Systems
             if (blendTextureSlot == TileBlendTextureLoader.EmptySlot)
             {
                 var tileName = TileLoader.GetTile(blendTileType)?.FullName ?? "Vanilla Tile";
-                CalamityMod.Instance.Logger.Error($"[BlendMergeSystem] BlendTileType: {blendTileType} ({tileName}) does not have TileBlendTexture! StackTrace:\n{Environment.StackTrace}");
+                CalamityMod.Log.Error($"[BlendMergeSystem] BlendTileType: {blendTileType} ({tileName}) does not have TileBlendTexture! StackTrace:\n{Environment.StackTrace}");
                 return;
             }
 

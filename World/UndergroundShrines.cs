@@ -941,7 +941,7 @@ namespace CalamityMod.World
                     break;
                 }
             } while (tries <= 100000);
-            CalamityMod.Instance.Logger.Debug("Rox Shrine failed to generate");
+            CalamityMod.Log.Debug("Rox Shrine failed to generate");
         }
         #endregion
 

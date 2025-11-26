@@ -103,7 +103,7 @@ namespace CalamityMod.NPCs
                 }
                 catch (Exception e)
                 {
-                    CalamityMod.Instance.Logger.Error($"Exception thrown while evaluating type \"{type.Name}\": {e}");
+                    CalamityMod.Log.Error($"Exception thrown while evaluating type \"{type.Name}\": {e}");
                 }
             }
 
@@ -128,7 +128,7 @@ namespace CalamityMod.NPCs
                 }
                 catch (Exception e)
                 {
-                    CalamityMod.Instance.Logger.Error($"Exception thrown while evaluating type \"{type.Name}\": {e}");
+                    CalamityMod.Log.Error($"Exception thrown while evaluating type \"{type.Name}\": {e}");
                 }
             }
         }

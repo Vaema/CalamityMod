@@ -589,7 +589,7 @@ namespace CalamityMod.World
                 contents.Add(new ChestItem(marineKelpPlanterBox.Type, WorldGen.genRand.Next(5, 9 + 1)));
             }
             else
-                CalamityMod.Instance.Logger.Warn("Could not find Thorium Marine Kelp Planter Box. This item will not be added to the Draedon Planetoid Lab.");
+                CalamityMod.Log.Warn("Could not find Thorium Marine Kelp Planter Box. This item will not be added to the Draedon Planetoid Lab.");
 
             //Adds the Jungle Seeking Mechanism
             contents.Insert(0, new ChestItem(ModContent.ItemType<GreenSeekingMechanism>(), 1));
