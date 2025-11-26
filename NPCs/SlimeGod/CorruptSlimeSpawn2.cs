@@ -90,13 +90,5 @@ namespace CalamityMod.NPCs.SlimeGod
                 }
             }
         }
-
-        public override void ModifyNPCLoot(NPCLoot npcLoot) => npcLoot.Add(ItemDropRule.NormalvsExpert(ItemID.Vitamins, 100, 50));
-
-        public override void OnHitPlayer(Player target, Player.HurtInfo hurtInfo)
-        {
-            if (hurtInfo.Damage > 0)
-                target.AddBuff(BuffID.Weak, 180);
-        }
     }
 }

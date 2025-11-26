@@ -899,12 +899,6 @@ namespace CalamityMod.NPCs.Leviathan
             npcLoot.Add(ModContent.ItemType<LeviathanTrophy>(), 10);
         }
 
-        public override void OnHitPlayer(Player target, Player.HurtInfo hurtInfo)
-        {
-            if (hurtInfo.Damage > 0)
-                target.AddBuff(ModContent.BuffType<HeavyBleeding>(), 180, true);
-        }
-
         public override bool CheckActive() => false;
 
         public override bool PreDraw(SpriteBatch spriteBatch, Vector2 screenPos, Color drawColor)

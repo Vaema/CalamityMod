@@ -62,14 +62,6 @@ namespace CalamityMod.Projectiles.Boss
 
         public override bool CanHitPlayer(Player target) => Projectile.Opacity == 1f;
 
-        public override void OnHitPlayer(Player target, Player.HurtInfo info)
-        {
-            if (info.Damage <= 0 || Projectile.Opacity != 1f)
-                return;
-
-            target.AddBuff(BuffID.Darkness, 180);
-        }
-
         public override bool PreDraw(ref Color lightColor)
         {
             Texture2D texture = Projectile.ai[2] > 0f ? ModContent.Request<Texture2D>("CalamityMod/Projectiles/Boss/CrimulanSpike" + ((int)Projectile.ai[2] + 1)).Value : TextureAssets.Projectile[Projectile.type].Value;
