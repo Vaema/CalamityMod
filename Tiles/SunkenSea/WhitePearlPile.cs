@@ -5,6 +5,7 @@ using CalamityMod.Systems;
 using CalamityMod.Tiles.Abyss;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using ReLogic.Content;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
@@ -13,8 +14,17 @@ namespace CalamityMod.Tiles.SunkenSea
 {
     public class WhitePearlPile : ModTile
     {
+        public Asset<Texture2D> GlintTexture;
+
+        public Vector2 GlintDir;
+
         public override void SetStaticDefaults()
         {
+            GlintTexture = ModContent.Request<Texture2D>(Texture + "_Glint");
+
+            GlintDir = new Vector2(1f, -1f);
+            GlintDir.Normalize();
+
             Main.tileSolid[Type] = true;
             Main.tileBlockLight[Type] = true;
             Main.tileLighted[Type] = true;
@@ -56,15 +66,6 @@ namespace CalamityMod.Tiles.SunkenSea
             return TileFramingSystem.BetterGemsparkFraming(i, j, resetFrame);
         }
 
-        private static float GetFade1(int i, int j)
-        {
-            return (MathF.Sin(Main.GlobalTimeWrappedHourly * 0.2f) + 1f) / 2f;
-        }
-
-        private static float GetFade2(int i, int j)
-        {
-            return (MathF.Sin(Main.GlobalTimeWrappedHourly * 0.1f + i * 0.08f - j * 0.05f) + 1f) / 2f;
-        }
         public override void PostDraw(int i, int j, SpriteBatch spriteBatch)
         {
             //IF this glint effect below runs poorly on lower end PC's we should keep it as a setting for those with good PC's
@@ -78,37 +79,32 @@ namespace CalamityMod.Tiles.SunkenSea
 
             Rectangle sourceRect = new Rectangle(frameX, frameY, 16, 16);
 
-            Texture2D GlintTex = ModContent.Request<Texture2D>("CalamityMod/Tiles/SunkenSea/WhitePearlPile_Glint").Value;
-
-            Vector2 glintDir = new Vector2(1f, -1f);
-            glintDir.Normalize();
-
             Vector2 screenPos = position;
 
-            float projection = Vector2.Dot(screenPos, glintDir);
+            float projection = Vector2.Dot(screenPos, GlintDir);
 
             // this sets the length between the glints diagonally 
-            float screenDiagonalLength = Vector2.Dot(new Vector2(Main.screenWidth, Main.screenHeight), glintDir);
-            float[] beamCenters = new float[]
-            {
-              screenDiagonalLength * 0.05f, // upper glint
-              screenDiagonalLength * 0.5f,  // middle glint
-              screenDiagonalLength * 1.05f  // lower glint
-            };
+            float screenDiagonalLength = Vector2.Dot(new Vector2(Main.screenWidth, Main.screenHeight), GlintDir);
 
             float stripeWidth = 100f;
+            Color lightColor = Lighting.GetColor(i, j) * 6;
 
-            foreach (float bc in beamCenters)
+            DrawGlint(screenDiagonalLength * 0.05f);
+            DrawGlint(screenDiagonalLength * 0.5f);
+            DrawGlint(screenDiagonalLength * 1.05f);
+
+            void DrawGlint(float beamCenter)
             {
-                float dist = Math.Abs(projection - bc);
-                float strength = MathHelper.Clamp(1f - dist / stripeWidth, 0f, 1f);
+                float dist = Math.Abs(projection - beamCenter);
+                float strength = MathHelper.Clamp(1f - dist / stripeWidth, 0f, 1f) * 0.4f;
 
                 if (strength > 0f)
                 {
-                    spriteBatch.Draw(GlintTex, position, sourceRect, (Lighting.GetColor(i, j) * 6) * (strength * 0.4f), 0f, Vector2.Zero, 1f, SpriteEffects.None, 0f);
+                    spriteBatch.Draw(GlintTexture.Value, position, sourceRect, lightColor * strength, 0f, Vector2.Zero, 1f, SpriteEffects.None, 0f);
                 }
             }
         }
+
         public override void ModifyLight(int i, int j, ref float r, ref float g, ref float b)
         {
             // figure out if the tile is exposed - taken from the coral tiles
@@ -125,27 +121,20 @@ namespace CalamityMod.Tiles.SunkenSea
             // flip it so the glow is strongest in the dark
             float darknessFactor = 1f - brightness;
 
-            // diagonal glint math
-            Vector2 glintDir = new Vector2(1f, -1f);
-            glintDir.Normalize();
-
             Vector2 screenPos = new Vector2(i * 16, j * 16) - Main.screenPosition;
-            float projection = Vector2.Dot(screenPos, glintDir);
-            float screenDiagonalLength = Vector2.Dot(new Vector2(Main.screenWidth, Main.screenHeight), glintDir);
-
-            float[] beamCenters =
-            {
-             screenDiagonalLength * 0.05f,
-             screenDiagonalLength * 0.5f,
-             screenDiagonalLength * 1.05f
-          };
+            float projection = Vector2.Dot(screenPos, GlintDir);
+            float screenDiagonalLength = Vector2.Dot(new Vector2(Main.screenWidth, Main.screenHeight), GlintDir);
 
             float stripeWidth = 100f;
             float maxStrength = 0f;
 
-            foreach (float bc in beamCenters)
+            UpdateMaxStrength(screenDiagonalLength * 0.05f);
+            UpdateMaxStrength(screenDiagonalLength * 0.5f);
+            UpdateMaxStrength(screenDiagonalLength * 1.05f);
+
+            void UpdateMaxStrength(float beamCenter)
             {
-                float dist = Math.Abs(projection - bc);
+                float dist = Math.Abs(projection - beamCenter);
                 float strength = MathHelper.Clamp(1f - dist / stripeWidth, 0f, 1f);
                 if (strength > maxStrength)
                     maxStrength = strength;
@@ -156,7 +145,6 @@ namespace CalamityMod.Tiles.SunkenSea
                 // base intensity scaled by glint strength and darkness (min = 0.0f, max = 1.0f)
                 float intensity = 0.6f * maxStrength * (0.5f + darknessFactor * 0.5f);
                 //float intensity = ((float)(Math.Pow(10.0, (brightness * 2 - 2))) - 0.01f) / 0.99f; was trying to do something cool, may come back to it later
-
 
                 r = (185f / 255f) * intensity;
                 g = (164f / 255f) * intensity;
