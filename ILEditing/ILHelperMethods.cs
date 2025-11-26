@@ -1,10 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using CalamityMod.Systems;
-using CalamityMod.Waters;
 using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Graphics;
-using Microsoft.Xna.Framework.Input;
 using MonoMod.Cil;
 using Terraria;
 using Terraria.Audio;
@@ -125,6 +122,6 @@ namespace CalamityMod.ILEditing
         }
 
         public static void DumpToLog(ILContext il) => CalamityMod.Log.Debug(il.ToString());
-        public static void LogFailure(string name, string reason) => CalamityMod.Log.Warn($"IL edit \"{name}\" failed! {reason}");
+        public static void LogFailure(string name, string reason) => CalamityMod.Log.ILFailure(name, reason);
     }
 }

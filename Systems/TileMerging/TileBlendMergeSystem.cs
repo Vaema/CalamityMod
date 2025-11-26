@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Reflection;
-using CalamityMod.ILEditing;
 using MonoMod.Cil;
 using Terraria;
 using Terraria.GameContent.Drawing;
@@ -41,7 +40,7 @@ namespace CalamityMod.Systems
 
             if (!cursor.TryGotoNext(MoveType.After, x => x.MatchCallOrCallvirt<TileDrawing>(getScreenDrawAreaMethod)))
             {
-                ILChanges.LogFailure("QualityRequirementHook", $"{getScreenDrawAreaMethod} call is missing!");
+                CalamityMod.Log.ILFailure("QualityRequirementHook", $"{getScreenDrawAreaMethod} call is missing!");
                 return;
             }
 
@@ -51,13 +50,13 @@ namespace CalamityMod.Systems
 
             if (mediumReqField == null)
             {
-                ILChanges.LogFailure("QualityRequirementHook", $"{midQualityRequirementField} field is missing!");
+                CalamityMod.Log.ILFailure("QualityRequirementHook", $"{midQualityRequirementField} field is missing!");
                 return;
             }
 
             if (highReqField == null)
             {
-                ILChanges.LogFailure("QualityRequirementHook", $"{highQualityRequirementField} field is missing!");
+                CalamityMod.Log.ILFailure("QualityRequirementHook", $"{highQualityRequirementField} field is missing!");
                 return;
             }
 
