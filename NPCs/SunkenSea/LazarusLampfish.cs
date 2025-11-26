@@ -312,7 +312,9 @@ namespace CalamityMod.NPCs.SunkenSea
 
         public override void AwaitingPathBehavior()
         {
-            bool hasSight = Collision.CanHitLine(NPC.Center, 1, 1, currentTarget.Center, 1, 1);
+            bool hasSight = false;
+            if (currentTarget != null)
+                hasSight = Collision.CanHitLine(NPC.Center, 1, 1, currentTarget.Center, 1, 1);
             if (CurrentPhase == (int)PhaseType.Idle && CurrentPrey != null || CurrentPhase == (int)PhaseType.Attacking && currentTarget.Distance(NPC.Center) > 200 || !hasSight)
             {
                 if (CurrentPrey != null)
