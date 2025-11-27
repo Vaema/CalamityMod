@@ -4532,10 +4532,10 @@ namespace CalamityMod.CalPlayer
             if (ZoneAbyss && Main.netMode != NetmodeID.Server)
             {
                 //Main aura
-                EnhancedDarknessSystem.lights.Add(new() { center = Player.Center, rotation = 0, scale = 4 * abyssPlayerGlowMultiplier, texture = ModContent.Request<Texture2D>("CalamityMod/Particles/BloomCircle") });
+                EnhancedDarknessSystem.lights.Add(new(center: Player.Center, scale: 4 * abyssPlayerGlowMultiplier));
                 
                 //Flashlight
-                EnhancedDarknessSystem.lights.Add(new() { center = Player.Center + Player.DirectionTo(mouseWorld) * 750f, rotation = Player.DirectionTo(Main.MouseWorld).ToRotation() - MathHelper.PiOver2, vectorScale = new Vector2(0.75f * abyssFlashlightWidthMultiplier, 0.75f), texture = Request<Texture2D>("CalamityMod/Particles/BloomLineFade") });
+                EnhancedDarknessSystem.lights.Add(new(center: Player.Center + Player.DirectionTo(mouseWorld) * 750f, rotation: Player.DirectionTo(Main.MouseWorld).ToRotation() - MathHelper.PiOver2, vectorScale: new Vector2(0.75f * abyssFlashlightWidthMultiplier, 0.75f), texture: Request<Texture2D>("CalamityMod/Particles/BloomLineFade") ));
             }
 
     

@@ -20,6 +20,17 @@ namespace CalamityMod.Graphics
             public Vector2 vectorScale = Vector2.One;
             public Vector2 center = Main.LocalPlayer.Center;
             public float rotation = 0;
+
+            public LightSource() { }
+
+            public LightSource(Vector2? center = null, Asset<Texture2D> texture = null, float scale = 1, float rotation = 0, Vector2? vectorScale = null)
+            {
+                this.texture = texture ?? ModContent.Request<Texture2D>("CalamityMod/Particles/BloomCircle");
+                this.scale = scale;
+                this.vectorScale = vectorScale ?? Vector2.One;
+                this.center = center ?? Main.LocalPlayer.Center;
+                this.rotation = rotation;
+            }
         }
         ManagedRenderTarget rt = null;
 
@@ -91,9 +102,6 @@ namespace CalamityMod.Graphics
             }
             Main.spriteBatch.End();
             gd.SetRenderTarget(null);
-        }
-        private void DrawShadows(On_Main.orig_DrawInterface orig, Main self, GameTime gameTime)
-        {
         }
 
         public override void OnWorldUnload()
