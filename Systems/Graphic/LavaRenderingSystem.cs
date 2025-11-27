@@ -1,10 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Reflection;
-using System.Text;
-using System.Threading.Tasks;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using ReLogic.Content;
@@ -24,6 +21,8 @@ namespace CalamityMod.Systems
         //Welcome to Calamity's lava rendering. Prepare your eyes
         public static LavaRenderingSystem Instance;
 
+        internal static readonly FastField<WaterfallManager, Asset<Texture2D>[]> WaterfallTextures = new("waterfallTexture", BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.Public);
+
         public static int LavaStyle;
         public static float[] LavaAlpha = new float[1];
         internal static float[] AlphaSave = new float[1];
@@ -39,7 +38,7 @@ namespace CalamityMod.Systems
             public static Asset<Texture2D>[] fall = new Asset<Texture2D>[1];
         }
 
-        public int WaterStyleMaxCount = 0;
+        public int WaterStyleMaxCount = Main.maxLiquidTypes;
 
         public override void Load()
         {
@@ -48,14 +47,17 @@ namespace CalamityMod.Systems
 
         public override void OnModLoad()
         {
-            WaterStyleMaxCount = ModContent.GetContent<ModWaterStyle>().Count() + LoaderManager.Get<WaterStylesLoader>().VanillaCount;
-
             // Lava Texture
             Textures.liquid[0] = LiquidRenderer.Instance._liquidTextures[1];
             Textures.slope[0] = TextureAssets.LiquidSlope[1];
             Textures.block[0] = TextureAssets.Liquid[1];
-            var waterfallTexture = (Asset<Texture2D>[])typeof(WaterfallManager).GetField("waterfallTexture", BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.Public).GetValue(Main.instance.waterfallManager);
-            Textures.fall[0] = waterfallTexture[1];
+            Textures.fall[0] = WaterfallTextures.Get(Main.instance.waterfallManager)[1];
+        }
+
+        public override void ResizeArrays()
+        {
+            // Lava Texture Resizing are handled on LavaStylesLoader
+            WaterStyleMaxCount = ModContent.GetContent<ModWaterStyle>().Count() + Main.maxLiquidTypes;
         }
 
         public void DrawLavas(bool isBackground = false)
@@ -104,7 +106,7 @@ namespace CalamityMod.Systems
             {
                 DrawLiquidBehindTiles(lavaStyle);
             }
-            LiquidRenderer.Instance.DrawNormalLiquids(Main.spriteBatch, drawOffset, lavaStyle + ModContent.GetContent<ModWaterStyle>().Count() + LoaderManager.Get<WaterStylesLoader>().VanillaCount + 1, Alpha, bg);
+            LiquidRenderer.Instance.DrawNormalLiquids(Main.spriteBatch, drawOffset, lavaStyle + WaterStyleMaxCount + 1, Alpha, bg);
             if (!bg)
             {
                 TimeLogger.DrawTime(4, stopwatch.Elapsed.TotalMilliseconds);
