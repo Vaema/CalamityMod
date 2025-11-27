@@ -168,7 +168,7 @@ namespace CalamityMod.Projectiles.Typeless
             {
                 // Give the player a grace period upon any input with the fishing rod
                 // This means you can't just AFK with the fishing rod held
-                if (Owner.itemAnimation > 0 && Owner.ActiveItem().fishingPole > 0)
+                if (Owner.itemAnimation > 0 && Owner.HeldItem.fishingPole > 0)
                     PlayerFishingTimer = 600f;
                 else
                     PlayerFishingTimer = Math.Max(PlayerFishingTimer -1f, 0f);
@@ -176,11 +176,11 @@ namespace CalamityMod.Projectiles.Typeless
                 // Automatically casts bobbers one at a time
                 // This casts the same way the pole does to prevent position variance
                 int bobberType = ModContent.ProjectileType<VictideBobber>();
-                if (Owner.ownedProjectileCounts[bobberType] < 1 && Owner.ActiveItem().fishingPole > 0 && Projectile.owner == Main.myPlayer && PlayerFishingTimer > 0f)
+                if (Owner.ownedProjectileCounts[bobberType] < 1 && Owner.HeldItem.fishingPole > 0 && Projectile.owner == Main.myPlayer && PlayerFishingTimer > 0f)
                 {
                     SoundEngine.PlaySound(SoundID.Item1, Projectile.Center);
 
-                    Vector2 velocity = Owner.SafeDirectionTo(Main.MouseWorld) * Owner.ActiveItem().shootSpeed;
+                    Vector2 velocity = Owner.SafeDirectionTo(Main.MouseWorld) * Owner.HeldItem.shootSpeed;
                     Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center, velocity, bobberType, 0, 0f, Projectile.owner, ai2: Projectile.whoAmI);
                 }
             }

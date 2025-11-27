@@ -986,8 +986,6 @@ namespace CalamityMod
                 "TaintedCloudberry" => player.Calamity().tCloudberry,
                 "SacredStrawberry" => player.Calamity().sStrawberry,
 
-                "NimbleBounder" => player.Calamity().nimbleBounderBoost,
-
                 "CometShard" => player.Calamity().cShard,
                 "EtherealCore" => player.Calamity().eCore,
                 "PhantomHeart" => player.Calamity().pHeart,
@@ -1020,8 +1018,6 @@ namespace CalamityMod
                 case "CometShard": player.Calamity().cShard = value; break;
                 case "EtherealCore": player.Calamity().eCore = value; break;
                 case "PhantomHeart": player.Calamity().pHeart = value; break;
-
-                case "NimbleBounder": player.Calamity().nimbleBounderBoost = value; break;
 
                 case "MushroomPlasmaRoot": player.Calamity().rageBoostOne = value; break;
                 case "InfernalBlood": player.Calamity().rageBoostTwo = value; break;
@@ -2057,11 +2053,11 @@ namespace CalamityMod
                     return null;
 
                 case "LoadParticleInstances":
-                    CalamityMod.Instance.Logger.Warn("This mod call is deprecated. Calamity automatically registers particles.");
+                    CalamityMod.Log.Warn("This mod call is deprecated. Calamity automatically registers particles.");
                     return null;
 
                 case "RegisterModCooldowns":
-                    CalamityMod.Instance.Logger.Warn("This mod call is deprecated. Calamity automatically registers cooldowns.");
+                    CalamityMod.Log.Warn("This mod call is deprecated. Calamity automatically registers cooldowns.");
                     return null;
 
                 case "GetSummonerNerfDisabledByItem":

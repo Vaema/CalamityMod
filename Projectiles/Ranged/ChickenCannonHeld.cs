@@ -55,7 +55,7 @@ namespace CalamityMod.Projectiles.Ranged
                 FramesTillNextShot = FireRate;
                 shouldShoot = true;
             }
-            bool canShoot = !player.CantUseHoldout() && (player.HasAmmo(player.ActiveItem()) || FreeShotLoaded > 0);
+            bool canShoot = !player.CantUseHoldout() && (player.HasAmmo(player.HeldItem) || FreeShotLoaded > 0);
             if (Projectile.soundDelay <= 0 && canShoot)
             {
                 Projectile.soundDelay = (int)FireRate;
@@ -66,8 +66,8 @@ namespace CalamityMod.Projectiles.Ranged
             {
                 int projType = ModContent.ProjectileType<ChickenRocket>(); // PickAmmo screws up with Rockets as per usual so this variable is reset right afterward
                 float speedMult2 = 14.5f;
-                int dmg = player.GetWeaponDamage(player.ActiveItem());
-                float kBack = player.ActiveItem().knockBack;
+                int dmg = player.GetWeaponDamage(player.HeldItem);
+                float kBack = player.HeldItem.knockBack;
                 if (canShoot)
                 {
                     Vector2 source = player.RotatedRelativePoint(player.MountedCenter, true);
@@ -77,7 +77,7 @@ namespace CalamityMod.Projectiles.Ranged
                         direction.Y = (float)(Main.screenHeight - Main.mouseY) + Main.screenPosition.Y - source.Y;
                     }
                     Vector2 speedMult = Vector2.Normalize(direction);
-                    float shootSpeed = player.ActiveItem().shootSpeed * Projectile.scale;
+                    float shootSpeed = player.HeldItem.shootSpeed * Projectile.scale;
                     if (float.IsNaN(speedMult.X) || float.IsNaN(speedMult.Y))
                     {
                         speedMult = -Vector2.UnitY;
@@ -94,10 +94,10 @@ namespace CalamityMod.Projectiles.Ranged
                         if (FreeShotLoaded > 0)
                             FreeShotLoaded--;
                         else
-                            player.PickAmmo(player.ActiveItem(), out projType, out speedMult2, out dmg, out kBack, out _);
+                            player.PickAmmo(player.HeldItem, out projType, out speedMult2, out dmg, out kBack, out _);
 
                         projType = ModContent.ProjectileType<ChickenRocket>();
-                        kBack = player.GetWeaponKnockback(player.ActiveItem(), kBack);
+                        kBack = player.GetWeaponKnockback(player.HeldItem, kBack);
 
                         Vector2 velocity = Vector2.Normalize(Projectile.velocity) * speedMult2;
                         if (float.IsNaN(velocity.X) || float.IsNaN(velocity.Y))

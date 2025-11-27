@@ -4,6 +4,7 @@ using CalamityMod.Buffs.DamageOverTime;
 using CalamityMod.DataStructures;
 using CalamityMod.Graphics.Primitives;
 using CalamityMod.Particles;
+using CalamityMod.Enums;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria.DataStructures;
@@ -12,6 +13,7 @@ using Terraria.Audio;
 using Terraria.Graphics.Shaders;
 using Terraria.ID;
 using Terraria.ModLoader;
+
 namespace CalamityMod.Projectiles.Boss
 {
     public class DoGFire : ModProjectile, ILocalizedModType, IPixelatedPrimitiveRenderer
@@ -24,6 +26,7 @@ namespace CalamityMod.Projectiles.Boss
 
         public new string LocalizationCategory => "Projectiles.Boss";
         public override string Texture => "CalamityMod/Projectiles/InvisibleProj";
+        public static readonly SoundStyle SpawnSound = new("CalamityMod/Sounds/Custom/DoGFireball");
 
         public override void SetStaticDefaults()
         {
@@ -48,7 +51,7 @@ namespace CalamityMod.Projectiles.Boss
         public override void OnSpawn(IEntitySource source)
         {
             if (IsAPassiveFireball)
-                SoundEngine.PlaySound(SoundID.Item20, Projectile.Center);
+                SoundEngine.PlaySound(SpawnSound, Projectile.Center);
         }
 
         public override void AI()
@@ -159,7 +162,7 @@ namespace CalamityMod.Projectiles.Boss
             return Color.Lerp(fullBodyColor, Color.White, 0.175f);
         }
 
-        public void RenderPixelatedPrimitives(SpriteBatch spriteBatch, PixelationPrimitiveLayer layer)
+        public void RenderPixelatedPrimitives(SpriteBatch spriteBatch, GeneralDrawLayer layer)
         {
             // Render the main trail for the body for the flame.
             GameShaders.Misc["CalamityMod:ImpFlameTrail"].SetShaderTexture(ModContent.Request<Texture2D>("CalamityMod/ExtraTextures/Trails/ScarletDevilStreak"));

@@ -1,6 +1,4 @@
 ﻿using System.Collections.Generic;
-using CalamityMod.Projectiles.Summon;
-using CalamityMod.World;
 using Terraria;
 using Terraria.Audio;
 using Terraria.GameContent.Bestiary;
@@ -36,16 +34,6 @@ namespace CalamityMod.NPCs.NormalNPCs
             NPC.Calamity().VulnerableToHeat = true;
             NPC.Calamity().VulnerableToCold = true;
             NPC.Calamity().VulnerableToSickness = true;
-        }
-
-        public override bool PreAI()
-        {
-            if (CalamityWorld.revenge)
-            {
-                VanillaNPCAIOverrides.RegularEnemies.RevengeanceAndDeathAI.BuffedFighterAI(NPC, Mod);
-                return false;
-            }
-            return true;
         }
 
         public override void SetBestiary(BestiaryDatabase database, BestiaryEntry bestiaryEntry)

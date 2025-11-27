@@ -28,8 +28,8 @@ namespace CalamityMod.Tiles.AstralDesert
 
             TileID.Sets.ForAdvancedCollision.ForSandshark[Type] = true;
 
-            this.RegisterUniversalMerge(ModContent.TileType<AstralSand>(), "CalamityMod/Tiles/Merges/AstralSandMerge");
-            this.RegisterUniversalMerge(ModContent.TileType<AstralSandstone>(), "CalamityMod/Tiles/Merges/AstralSandstoneMerge");
+            this.RegisterBlendMergeWith(ModContent.TileType<AstralSand>());
+            this.RegisterBlendMergeWith(ModContent.TileType<AstralSandstone>());
         }
 
         public override void NumDust(int i, int j, bool fail, ref int num)

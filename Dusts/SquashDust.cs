@@ -1,5 +1,7 @@
-﻿using Microsoft.Xna.Framework;
+﻿using CalamityMod.Systems.Graphic.PixelationSystem;
+using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using ReLogic.Content;
 using Terraria;
 using Terraria.ModLoader;
 
@@ -7,7 +9,21 @@ namespace CalamityMod.Dusts
 {
     public class SquashDust : ModDust
     {
+        public static Asset<Texture2D> SolidCircle { get; private set; }
+
+        public static Asset<Texture2D> BloomCircle { get; private set; }
+
         public override string Texture => "CalamityMod/Projectiles/InvisibleProj";
+
+        public override void Load()
+        {
+            if (Main.dedServ)
+                return;
+
+            SolidCircle = ModContent.Request<Texture2D>("CalamityMod/ExtraTextures/BasicCircle");
+            BloomCircle = ModContent.Request<Texture2D>("CalamityMod/Particles/BloomCircle");
+        }
+
         public override void OnSpawn(Dust dust)
         {
             dust.scale *= Main.rand.NextFloat(0.8f, 1f);
@@ -37,24 +53,45 @@ namespace CalamityMod.Dusts
 
             return false;
         }
+
         public override bool PreDraw(Dust dust)
         {
-            Vector2 dustCenter = dust.position + new Vector2(0.25f, 0.25f);
-            Texture2D solidCenter = ModContent.Request<Texture2D>("CalamityMod/ExtraTextures/BasicCircle").Value;
-
-            Texture2D bloom = ModContent.Request<Texture2D>("CalamityMod/Particles/BloomCircle").Value;
-
             Vector2 squash = new Vector2(Utils.Remap(dust.velocity.Length(), 2, 7, 1, 0.5f), Utils.Remap(dust.velocity.Length(), 2, 7, 1, 2.5f));
 
             // Glow Orb
-            Main.EntitySpriteDraw(bloom, dustCenter - Main.screenPosition, null, dust.color with { A = 0 } * Utils.GetLerpValue(255, 0, dust.alpha), dust.rotation, bloom.Size() * 0.5f, squash * dust.scale * 0.1f, SpriteEffects.None, 0);
+            Main.spriteBatch.Draw(BloomCircle.Value, dust.position - Main.screenPosition, null, dust.color with { A = 0 } * Utils.GetLerpValue(255, 0, dust.alpha), dust.rotation, BloomCircle.Size() * 0.5f, squash * dust.scale * 0.1f, SpriteEffects.None, 0);
             if (dust.alpha < 1)
-                Main.EntitySpriteDraw(bloom, dustCenter - Main.screenPosition, null, dust.color with { A = 0 } * 0.85f * Utils.GetLerpValue(255, 0, dust.alpha), dust.rotation, bloom.Size() * 0.5f, squash * dust.scale * 0.04f, SpriteEffects.None, 0);
+                Main.spriteBatch.Draw(BloomCircle.Value, dust.position - Main.screenPosition, null, dust.color with { A = 0 } * 0.85f * Utils.GetLerpValue(255, 0, dust.alpha), dust.rotation, BloomCircle.Size() * 0.5f, squash * dust.scale * 0.04f, SpriteEffects.None, 0);
             if (!dust.noLight)
             {
-                Main.EntitySpriteDraw(solidCenter, dustCenter - Main.screenPosition, null, Color.Lerp(dust.color, Color.White, 0.3f) with { A = 0 } * Utils.GetLerpValue(255, 0, dust.alpha), dust.rotation, solidCenter.Size() * 0.5f, squash * dust.scale * 0.075f, SpriteEffects.None, 0);
+                Main.spriteBatch.Draw(SolidCircle.Value, dust.position - Main.screenPosition, null, Color.Lerp(dust.color, Color.White, 0.3f) with { A = 0 } * Utils.GetLerpValue(255, 0, dust.alpha), dust.rotation, SolidCircle.Size() * 0.5f, squash * dust.scale * 0.075f, SpriteEffects.None, 0);
             }
             return false;
+        }
+    }
+
+    public class SquashDustPixelated : SquashDust
+    {
+        public override string Texture => "CalamityMod/Projectiles/InvisibleProj";
+
+        public override bool PreDraw(Dust dust)
+        {
+            PixelationManager.AddPixelatedDrawer((_) => DrawPixelated(dust), Enums.GeneralDrawLayer.AfterDusts);
+            return false;
+        }
+
+        private static void DrawPixelated(Dust dust)
+        {
+            Vector2 squash = new Vector2(Utils.Remap(dust.velocity.Length(), 2, 7, 1, 0.5f), Utils.Remap(dust.velocity.Length(), 2, 7, 1, 2.5f));
+
+            // Glow Orb
+            Main.spriteBatch.Draw(BloomCircle.Value, dust.position - Main.screenPosition, null, dust.color with { A = 0 } * Utils.GetLerpValue(255, 0, dust.alpha), dust.rotation, BloomCircle.Size() * 0.5f, squash * dust.scale * 0.1f, SpriteEffects.None, 0);
+            if (dust.alpha < 1)
+                Main.spriteBatch.Draw(BloomCircle.Value, dust.position - Main.screenPosition, null, dust.color with { A = 0 } * 0.85f * Utils.GetLerpValue(255, 0, dust.alpha), dust.rotation, BloomCircle.Size() * 0.5f, squash * dust.scale * 0.04f, SpriteEffects.None, 0);
+            if (!dust.noLight)
+            {
+                Main.spriteBatch.Draw(SolidCircle.Value, dust.position - Main.screenPosition, null, Color.Lerp(dust.color, Color.White, 0.3f) with { A = 0 } * Utils.GetLerpValue(255, 0, dust.alpha), dust.rotation, SolidCircle.Size() * 0.5f, squash * dust.scale * 0.075f, SpriteEffects.None, 0);
+            }
         }
     }
 }

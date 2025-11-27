@@ -14,6 +14,7 @@ using CalamityMod.NPCs.SlimeGod;
 using CalamityMod.NPCs.SunkenSea;
 using CalamityMod.NPCs.Yharon;
 using CalamityMod.Packets;
+using CalamityMod.Systems.Collections;
 using CalamityMod.World;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
@@ -222,7 +223,7 @@ namespace CalamityMod
         /// <param name="normal">The value DR will be set to in normal mode.</param>
         /// <param name="revengeance">The value DR will be set to in Revegeneance mode.</param>
         /// <param name="bossRush">The value DR will be set to during the Boss Rush.</param>
-        public static void DR_NERD(this NPC npc, float normal, float? revengeance = null, float? death = null, float? bossRush = null, bool? customDR = null)
+        public static void DR_NERD(this NPC npc, float normal, float? revengeance = null, float? death = null, float? bossRush = null)
         {
             npc.Calamity().DR = normal;
 
@@ -234,9 +235,6 @@ namespace CalamityMod
             {
                 npc.Calamity().DR = CalamityWorld.death ? death.Value : revengeance.Value;
             }
-
-            if (customDR.HasValue)
-                npc.Calamity().customDR = true;
         }
         #endregion
 
@@ -266,8 +264,10 @@ namespace CalamityMod
             // do not generate rage.
             if (npc.lifeMax <= BalancingConstants.TinyHealthThreshold || ((npc.defDamage <= BalancingConstants.TinyDamageThreshold && checkDamage) && npc.lifeMax <= BalancingConstants.NoContactDamageHealthThreshold))
                 return false;
-            // Also explicitly exclude dummies and anything with a ridiculous health pool (dummies from Fargo's for example).
-            if (npc.type == NPCID.TargetDummy || npc.type == NPCType<SuperDummyNPC>() || npc.lifeMax > BalancingConstants.UnreasonableHealthThreshold)
+
+            // Exclude NPCs that specified to not be counted as enemy
+            // This includes: TargetDummy, SuperDummy by Default
+            if (CalamityNPCSets.DontCountAsEnemy[npc.type])
                 return false;
 
             // Anything else is considered a valid enemy target.
@@ -763,8 +763,8 @@ namespace CalamityMod
                 Vector2 launchVel = direction.SafeNormalize(Vector2.UnitX) * strength;
                 float knockbackMult = Utils.Remap(target.knockBackResist, 0, 1, 0.5f, 1f, false);
                 target.velocity = launchVel * (knockbackMult > 1 ? (float)Math.Pow(knockbackMult, 10) : knockbackMult);
+                target.SyncMotionToServer();
             }
-            target.SyncMotionToServer();
         }
 
         /// <summary>

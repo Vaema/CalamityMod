@@ -369,8 +369,6 @@ namespace CalamityMod.Items
                 nameLine.OverrideColor = ShatteredCommunity.GetRarityColor();
             if (item.type == ModContent.ItemType<Ozzathoth>())
                 nameLine.OverrideColor = ShatteredCommunity.GetRarityColor();
-            if (item.type == ModContent.ItemType<NimbleBounder>())
-                nameLine.OverrideColor = CalamityUtils.ColorSwap(new Color(132, 37, 147), new Color(0, 255, 0), 5f); //alternates purple and neon green
             if (item.type == ModContent.ItemType<ProfanedSoulCrystal>())
                 nameLine.OverrideColor = CalamityUtils.ColorSwap(new Color(255, 166, 0), new Color(25, 250, 25), 6f); //alternates between emerald green and amber (BanditHueh)
             if (item.type == ModContent.ItemType<TemporalUmbrella>())
@@ -564,7 +562,7 @@ namespace CalamityMod.Items
             LocalizedText GetAddedTooltip(string key) => CalamityUtils.GetText($"Vanilla.AddedTooltip.{key}");
             #endregion
 
-            // Exact life regen descriptions
+            // Applies to various item categories to clarify exact regen effects
             #region Life Regen Clarity Tooltips
             bool isCampfire = item.type == ItemID.Campfire || item.type == ItemID.CursedCampfire || item.type == ItemID.DemonCampfire || item.type == ItemID.FrozenCampfire || item.type == ItemID.IchorCampfire || item.type == ItemID.RainbowCampfire || item.type == ItemID.UltraBrightCampfire || item.type == ItemID.BoneCampfire || item.type == ItemID.DesertCampfire || item.type == ItemID.CoralCampfire || item.type == ItemID.CorruptCampfire || item.type == ItemID.CrimsonCampfire || item.type == ItemID.HallowedCampfire || item.type == ItemID.JungleCampfire || item.type == ItemID.MushroomCampfire || item.type == ItemID.ShimmerCampfire;
             if (isCampfire)
@@ -594,97 +592,58 @@ namespace CalamityMod.Items
             if (item.type == ItemID.HamBat)
                 EditTooltipByNum(1, (line) => line.Text = EditedTooltip("HamBat"));
 
-            if (item.type == ItemID.AegisCrystal)
+            if (item.type == ItemID.AegisCrystal) // Vital Crystal
                 EditTooltipByNum(0, (line) => line.Text = EditedTooltip("AegisCrystal"));
+
+            if (item.type == ItemID.SquireGreatHelm)
+                EditTooltipByNum(0, (line) => line.Text = EditedTooltip("SquireGreatHelm"));
+
+            if (item.type == ItemID.SquireAltShirt) // Valhalla Knight's Breastplate
+                EditTooltipByNum(0, (line) => line.Text = EditedTooltip("SquireAltShirt"));
+
+            if (item.type == ItemID.SolarFlareHelmet || item.type == ItemID.SolarFlareBreastplate || item.type == ItemID.SolarFlareLeggings)
+                EditTooltipByNum(1, (line) => line.Text = EditedTooltip("SolarFlarePieces"));
             #endregion
 
-            // Numerous random tooltip edits which don't fit into another category
-            #region Various Tooltip Edits
+            // Applies to various item categories which carry their light/breath effects into the Abyss
+            #region Abyss Light/Breath
+            // +1 to Abyss light level
+            if (item.type == ItemID.CrimsonHeart || item.type == ItemID.ShadowOrb || item.type == ItemID.MagicLantern || item.type == ItemID.JellyfishNecklace ||
+                item.type == ItemID.MiningHelmet || item.type == ItemID.UltrabrightHelmet)
+                EditTooltipByNum(0, (line) => line.Text += "\n" + CalamityUtils.GetTextValue("Common.AbyssLightLevel1"));
+            if (item.type == ItemID.JellyfishDivingGear || item.type == ItemID.Magiluminescence)
+                EditTooltipByNum(1, (line) => line.Text += "\n" + CalamityUtils.GetTextValue("Common.AbyssLightLevel1"));
 
-            // Apparently 612 is a homestuck reference
-            if (item.type == ModContent.ItemType<Respiteblock>())
-                EditTooltipByName("AxePower", (line) => line.Text = line.Text.Replace("610%", "612%"));
+            // +2 to Abyss light level
+            if (item.type == ItemID.ShinePotion)
+                EditTooltipByName("BuffTime", (line) => line.Text += "\n" + CalamityUtils.GetTextValue("Common.AbyssLightLevel2"));
+            if (item.type == ItemID.FairyBell || item.type == ItemID.DD2PetGhost)
+                EditTooltipByNum(0, (line) => line.Text += "\n" + CalamityUtils.GetTextValue("Common.AbyssLightLevel2"));
 
-            // Master Mode items also drop in Revengeance
-            // Only affects vanilla and Calamity items
-            if (item.master && (item.type < ItemID.Count || item.ModItem?.Mod is CalamityMod))
-                EditTooltipByName("Master", (line) => line.Text = EditedTooltip("MasterExclusive"));
+            // +3 to Abyss light level
+            if (item.type == ItemID.WispinaBottle || item.type == ItemID.PumpkingPetItem || item.type == ItemID.GolemPetItem || item.type == ItemID.FairyQueenPetItem)
+                EditTooltipByNum(0, (line) => line.Text += "\n" + CalamityUtils.GetTextValue("Common.AbyssLightLevel3"));
+            if (item.type == ItemID.SuspiciousLookingTentacle)
+                EditTooltipByNum(1, (line) => line.Text += "\n" + CalamityUtils.GetTextValue("Common.AbyssLightLevel3"));
 
-            // Add a tooltip about Slimed's effects
-            if (item.type == ItemID.SlimeGun)
-                EditTooltipByNum(0, (line) => line.Text += AddedTooltip("SlimeGun"));
-            // Replace the meme tooltip with a useful one.
-            if (item.type == ItemID.GelBalloon)
-                EditTooltipByNum(0, (line) => line.Text = EditedTooltip("GelBalloon"));
+            // Moderate breath boost
+            if (item.type == ItemID.DivingHelmet)
+                EditTooltipByNum(0, (line) => line.Text += "\n" + CalamityUtils.GetTextValue("Common.AbyssBreathLevel2"));
+            if (item.type == ItemID.ArcticDivingGear)
+                EditTooltipByNum(1, (line) => line.Text += "\n" + CalamityUtils.GetTextValue("Common.AbyssLightLevel1") + "\n" + CalamityUtils.GetTextValue("Common.AbyssBreathLevel2"));
 
-            // Flesh Knuckles giving extra max life.
-            if (item.type == ItemID.FleshKnuckles || item.type == ItemID.HeroShield || item.type == ItemID.BerserkerGlove)
-                EditTooltipByNum(0, (line) => line.Text += AddedTooltip("FleshKnucklesLine"));
+            // Great breath boost
+            if (item.type == ItemID.GillsPotion)
+                EditTooltipByName("BuffTime", (line) => line.Text += "\n" + CalamityUtils.GetTextValue("Common.AbyssBreathLevel3"));
 
-            // Rod of Discord cannot be used multiple times to hurt yourself
-            if (item.type == ItemID.RodofDiscord)
-                EditTooltipByNum(1, (line) => line.Text += AddedTooltip("RodofDiscord"));
-
-            // Indicate that the Ankh Shield provides sandstorm wind push immunity
-            if (item.type == ItemID.AnkhShield)
-            {
-                EditTooltipByNum(0, (line) => line.Text = EditedTooltip("AnkhShield1"));
-                EditTooltipByNum(1, (line) => line.Text = EditedTooltip("AnkhShield2"));
-            }
-
-            // If Early Hardmode Rework is enabled: Remind users that ores will NOT spawn when an altar is smashed.
-            if (CalamityServerConfig.Instance.EarlyHardmodeProgressionRework && (item.type == ItemID.Pwnhammer || item.type == ItemID.Hammush))
-                EditTooltipByNum(0, (line) => line.Text += AddedTooltip("Pwnhammer"));
-
-            // Nerfed Archery Potion tooltip
-            if (item.type == ItemID.ArcheryPotion)
-                EditTooltipByNum(0, (line) => line.Text = EditedTooltip("ArcheryPotion"));
-
-            // Nerfed Swiftness Potion tooltip
-            if (item.type == ItemID.SwiftnessPotion)
-                EditTooltipByNum(0, (line) => line.Text = line.Text.Replace("25%", "15%"));
-
-            // Hand Warmer has a side bonus with Snow armor
-            if (item.type == ItemID.HandWarmer)
-                EditTooltipByNum(0, (line) => line.Text += AddedTooltip("HandWarmer"));
-
-            // Golden Fishing Rod inherently contains High Test Fishing Line
-            if (item.type == ItemID.GoldenFishingRod)
-                EditTooltipByName("NeedsBait", (line) => line.Text += AddedTooltip("GoldenFishingRod"));
-
-            // Information about graveyards
-            // There are no item sets for tombstones wtf
-            if (item.type == ItemID.Tombstone || item.type == ItemID.GraveMarker || item.type == ItemID.CrossGraveMarker || item.type == ItemID.Headstone || item.type == ItemID.Gravestone || item.type == ItemID.Obelisk
-                || item.type == ItemID.RichGravestone1 || item.type == ItemID.RichGravestone2 || item.type == ItemID.RichGravestone3 || item.type == ItemID.RichGravestone4 || item.type == ItemID.RichGravestone5)
-                EditTooltipByName("Material", (line) => line.Text += AddedTooltip("Tombstones"));
-
-            // Modify item speed tooltips to use a new scale designed to more accurately reflect practical distributions of item speeds.
-            // Due to the higher complexity of the action, the actual logic is delegated to its own method.
-            // I think this fits the miscellaneous category? Not seeing anything like this elsewhere. - Tomat
-            EditTooltipByName("Speed", (line) => RedistributeSpeedTooltips(item, line));
-
-            if (item.healLife > 0 && Main.LocalPlayer.Calamity().healingPotionMultiplier != 1f)
-                EditTooltipByName("HealLife", (line) => line.Text = Language.GetOrRegister("CommonItemTooltip.RestoresLife").Format((int)(item.healLife * Main.LocalPlayer.Calamity().healingPotionMultiplier)));
-
-            // Ancient Manipulator also crafts stuff with Astral Bars
-            if (item.type == ItemID.LunarCraftingStation)
-                EditTooltipByNum(0, (line) => line.Text = EditedTooltip("LunarCraftingStation"));
-
-            // Reworked Gravity Globe
-            if (item.type == ItemID.GravityGlobe)
-                EditTooltipByNum(1, (line) => line.Text = EditedTooltip("GravityGlobe"));
-
-            // "Buffed" Step Stool
-            if (item.type == ItemID.PortableStool)
-                EditTooltipByNum(0, (line) => line.Text += AddedTooltip("PortableStool"));
-
-            // Replace the double tap line if double tap dash is overridden
-            if ((item.type == ItemID.EoCShield || item.type == ItemID.Tabi) && CalamityKeybinds.DashHotkey.GetAssignedKeys().Count != 0)
-                EditTooltipByNum(1, (line) => line.Text = CalamityUtils.GetText("Vanilla.DashKey").Format(CalamityKeybinds.DashHotkey.TooltipHotkeyString()));
+            if (item.type == ItemID.NeptunesShell || item.type == ItemID.MoonShell)
+                EditTooltipByNum(1, (line) => line.Text += "\n" + CalamityUtils.GetTextValue("Common.AbyssBreathLevel3"));
+            if (item.type == ItemID.CelestialShell)
+                EditTooltipByNum(4, (line) => line.Text += "\n" + CalamityUtils.GetTextValue("Common.AbyssBreathLevel3"));
             #endregion
 
-            // For boss summon item clarity
-            #region Boss Summon Clarity Tooltips
+            // Spawn, despawn, and enrage conditions + Non-consumable line
+            #region Boss Summons
             if (item.type == ItemID.Abeemination)
                 EditTooltipByNum(0, (line) => line.Text = EditedTooltip("Abeemination"));
 
@@ -723,17 +682,10 @@ namespace CalamityMod.Items
 
             if (item.type == ItemID.WormFood)
                 EditTooltipByNum(0, (line) => line.Text = EditedTooltip("WormFood"));
-            #endregion
 
-            // Brain of Confusion, Black Belt and Master Ninja Gear have guaranteed dodges with a fixed cooldown.
-            #region Guaranteed Dodge Tooltips
-            if (item.type == ItemID.BlackBelt)
-                EditTooltipByNum(0, (line) => line.Text = CalamityUtils.GetText("Vanilla.DodgeInfo").Format(BalancingConstants.BeltDodgeCooldownMin / 60, BalancingConstants.BeltDodgeCooldownMax / 60));
-            if (item.type == ItemID.MasterNinjaGear)
-                EditTooltipByNum(1, (line) => line.Text = CalamityUtils.GetText("Vanilla.DodgeInfo").Format(BalancingConstants.BeltDodgeCooldownMin / 60, BalancingConstants.BeltDodgeCooldownMax / 60));
-
-            if (item.type == ItemID.BrainOfConfusion)
-                EditTooltipByNum(0, (line) => line.Text = CalamityUtils.GetText("Vanilla.DodgeInfo").Format(BalancingConstants.BrainDodgeCooldownMin / 60, BalancingConstants.BrainDodgeCooldownMax / 60));
+            if (item.type == ItemID.SlimeCrown || item.type == ItemID.SuspiciousLookingEye || item.type == ItemID.WormFood || item.type == ItemID.BloodySpine || item.type == ItemID.Abeemination || item.type == ItemID.DeerThing
+                || item.type == ItemID.QueenSlimeCrystal || item.type == ItemID.MechanicalEye || item.type == ItemID.MechanicalWorm || item.type == ItemID.MechanicalSkull || item.type == ItemID.CelestialSigil)
+                EditTooltipByNum(0, (line) => line.Text += "\n" + CalamityUtils.GetTextValue("Common.NotConsumable"));
             #endregion
 
             // Whip tag is dynamically generated for all whips based on the SummonTagDebuffDict, so we'll remove the vanilla tag tootlips.
@@ -761,109 +713,22 @@ namespace CalamityMod.Items
             }
             #endregion
 
-            // Other weapon changes
-            #region Other weapon changes
-            // Aerial Bane is no longer the real bane of aerial enemies (50% dmg bonus removed)
-            if (item.type == ItemID.DD2BetsyBow)
-                EditTooltipByNum(0, (line) => line.Text = EditedTooltip("DD2BetsyBow"));
+            #region Accessories
+            // Brain of Confusion, Black Belt and Master Ninja Gear have guaranteed dodges with a fixed cooldown.
+            if (item.type == ItemID.BlackBelt)
+                EditTooltipByNum(0, (line) => line.Text = CalamityUtils.GetText("Vanilla.DodgeInfo").Format(BalancingConstants.BeltDodgeCooldownMin / 60, BalancingConstants.BeltDodgeCooldownMax / 60));
+            if (item.type == ItemID.MasterNinjaGear)
+                EditTooltipByNum(1, (line) => line.Text = CalamityUtils.GetText("Vanilla.DodgeInfo").Format(BalancingConstants.BeltDodgeCooldownMin / 60, BalancingConstants.BeltDodgeCooldownMax / 60));
+            if (item.type == ItemID.BrainOfConfusion)
+                EditTooltipByNum(0, (line) => line.Text = CalamityUtils.GetText("Vanilla.DodgeInfo").Format(BalancingConstants.BrainDodgeCooldownMin / 60, BalancingConstants.BrainDodgeCooldownMax / 60));
 
-            // Death Sickle inflict Whispering Death
-            if (item.type == ItemID.DeathSickle)
-                EditTooltipByNum(0, (line) => line.Text += AddedTooltip("DeathSickle"));
-            #endregion
-
-            // Light pets, accessories, and other items which boost the player's Abyss light stat
-            #region Abyss Light Tooltips
-            // +1 to Abyss light level
-            if (item.type == ItemID.CrimsonHeart || item.type == ItemID.ShadowOrb || item.type == ItemID.MagicLantern || item.type == ItemID.JellyfishNecklace ||
-                item.type == ItemID.MiningHelmet || item.type == ItemID.UltrabrightHelmet)
-                EditTooltipByNum(0, (line) => line.Text += "\n" + CalamityUtils.GetTextValue("Common.AbyssLightLevel1"));
-            if (item.type == ItemID.JellyfishDivingGear || item.type == ItemID.Magiluminescence)
-                EditTooltipByNum(1, (line) => line.Text += "\n" + CalamityUtils.GetTextValue("Common.AbyssLightLevel1"));
-
-            // +2 to Abyss light level
-            if (item.type == ItemID.ShinePotion)
-                EditTooltipByName("BuffTime", (line) => line.Text += "\n" + CalamityUtils.GetTextValue("Common.AbyssLightLevel2"));
-            if (item.type == ItemID.FairyBell || item.type == ItemID.DD2PetGhost)
-                EditTooltipByNum(0, (line) => line.Text += "\n" + CalamityUtils.GetTextValue("Common.AbyssLightLevel2"));
-
-            // +3 to Abyss light level
-            if (item.type == ItemID.WispinaBottle || item.type == ItemID.PumpkingPetItem || item.type == ItemID.GolemPetItem || item.type == ItemID.FairyQueenPetItem)
-                EditTooltipByNum(0, (line) => line.Text += "\n" + CalamityUtils.GetTextValue("Common.AbyssLightLevel3"));
-            if (item.type == ItemID.SuspiciousLookingTentacle)
-                EditTooltipByNum(1, (line) => line.Text += "\n" + CalamityUtils.GetTextValue("Common.AbyssLightLevel3"));
-            #endregion
-
-            // Accessories and other items which boost the player's ability to breathe in the Abyss
-            #region Abyss Breath Tooltips
-
-            // Moderate breath boost
-            if (item.type == ItemID.DivingHelmet)
-                EditTooltipByNum(0, (line) => line.Text += "\n" + CalamityUtils.GetTextValue("Common.AbyssBreathLevel2"));
-            if (item.type == ItemID.ArcticDivingGear)
-                EditTooltipByNum(1, (line) => line.Text += "\n" + CalamityUtils.GetTextValue("Common.AbyssLightLevel1") + "\n" + CalamityUtils.GetTextValue("Common.AbyssBreathLevel2"));
-
-            // Great breath boost
-            if (item.type == ItemID.GillsPotion)
-                EditTooltipByName("BuffTime", (line) => line.Text += "\n" + CalamityUtils.GetTextValue("Common.AbyssBreathLevel3"));
-
-            if (item.type == ItemID.NeptunesShell || item.type == ItemID.MoonShell)
-                EditTooltipByNum(1, (line) => line.Text += "\n" + CalamityUtils.GetTextValue("Common.AbyssBreathLevel3"));
-            if (item.type == ItemID.CelestialShell)
-                EditTooltipByNum(4, (line) => line.Text += "\n" + CalamityUtils.GetTextValue("Common.AbyssBreathLevel3"));
-            #endregion
-
-            // Flasks apply to Rogue weapons
-            #region Rogue Flask Tooltips
-            if (item.type == ItemID.FlaskofCursedFlames)
-                EditTooltipByNum(0, (line) => line.Text = EditedTooltip("FlaskofCursedFlames"));
-            if (item.type == ItemID.FlaskofFire)
-                EditTooltipByNum(0, (line) => line.Text = EditedTooltip("FlaskofFire"));
-            if (item.type == ItemID.FlaskofGold)
-                EditTooltipByNum(0, (line) => line.Text = EditedTooltip("FlaskofGold"));
-            if (item.type == ItemID.FlaskofIchor)
-                EditTooltipByNum(0, (line) => line.Text = EditedTooltip("FlaskofIchor"));
-            if (item.type == ItemID.FlaskofNanites)
-                EditTooltipByNum(0, (line) => line.Text = EditedTooltip("FlaskofNanites"));
-            // party flask is unique because it affects ALL projectiles in Calamity, not just "also rogue ones"
-            if (item.type == ItemID.FlaskofParty)
-                EditTooltipByNum(0, (line) => line.Text = EditedTooltip("FlaskofParty"));
-            if (item.type == ItemID.FlaskofPoison)
-                EditTooltipByNum(0, (line) => line.Text = EditedTooltip("FlaskofPoison"));
-            if (item.type == ItemID.FlaskofVenom)
-                EditTooltipByNum(0, (line) => line.Text = EditedTooltip("FlaskofVenom"));
-            #endregion
-
-            // Rebalances to vanilla item stats
-            #region Vanilla Item Rebalance Tooltips
-
-            // Various mining speed nerfs
-            if (item.type == ItemID.MiningPotion)
-                EditTooltipByNum(0, (line) => line.Text = line.Text.Replace("25%", "15%"));
-
+            // Nerfed Ancient Chisel and its upgrade.
             if (item.type == ItemID.AncientChisel)
                 EditTooltipByNum(0, (line) => line.Text = line.Text.Replace("25%", "15%"));
-
             if (item.type == ItemID.HandOfCreation)
                 EditTooltipByNum(0, (line) => line.Text = line.Text.Replace("25%", "15%"));
 
-            // Ale and Sake rebalance and Alcohol Poisoning.
-            if (item.type == ItemID.Ale || item.type == ItemID.Sake)
-                EditTooltipByNum(0, (line) => line.Text = EditedTooltip("AleSake"));
-
-            // Flame Waker Boots buff.
-            if (item.type == ItemID.FlameWakerBoots)
-                EditTooltipByNum(0, (line) => line.Text = EditedTooltip("FlameWakerBoots"));
-
-            // Hellfire Treads buff.
-            if (item.type == ItemID.HellfireTreads)
-                EditTooltipByNum(2, (line) => line.Text += AddedTooltip("HellfireTreads"));
-
-            // Fairy Boots buff.
-            if (item.type == ItemID.FairyBoots)
-                EditTooltipByNum(2, (line) => line.Text += AddedTooltip("FairyBoots"));
-
-            // Melee speed removal.
+            // Melee speed removed from the Celestial Stone line.
             if (item.type == ItemID.MoonStone)
                 EditTooltipByNum(1, (line) => line.Text = EditedTooltip("SunMoonStones"));
             if (item.type == ItemID.SunStone)
@@ -873,51 +738,46 @@ namespace CalamityMod.Items
             if (item.type == ItemID.CelestialShell)
                 EditTooltipByNum(2, (line) => line.Text = EditedTooltip("CelestialStoneShell"));
 
-            // Mana Flower tinker buffs.
-            if (item.type == ItemID.MagnetFlower)
-                EditTooltipByNum(0, (line) => line.Text = EditedTooltip("MagnetFlower"));
-            if (item.type == ItemID.ArcaneFlower || item.type == ItemID.ManaCloak)
-                EditTooltipByNum(0, (line) => line.Text = EditedTooltip("ArcaneFlowerManaCloak"));
-            if (item.type == ItemID.ArcaneFlower)
-                EditTooltipByNum(2, (line) => line.Text += AddedTooltip("ArcaneFlower"));
-
-            // Magiluminescence nerf and clear explanation of what it actually does.
-            if (item.type == ItemID.Magiluminescence)
-                EditTooltipByNum(0, (line) => line.Text = EditedTooltip("Magiluminescence"));
-
-            // Frog Leg and all upgrades get clear explanations of what they actually do.
-            if (item.type == ItemID.FrogLeg)
-                EditTooltipByNum(0, (line) => line.Text = GetEditedTooltip("FrogLeg").Format(BalancingConstants.VanillaFrogLegJumpSpeedBoost.ToJumpSpeedPercent()));
-
-            if (item.type == ItemID.FrogFlipper || item.type == ItemID.FrogWebbing)
-                EditTooltipByNum(1, (line) => line.Text = GetEditedTooltip("FrogLeg").Format(BalancingConstants.VanillaFrogLegJumpSpeedBoost.ToJumpSpeedPercent()));
-
-            if (item.type == ItemID.FrogGear)
-                EditTooltipByNum(2, (line) => line.Text = GetEditedTooltip("FrogLeg").Format(BalancingConstants.VanillaFrogLegJumpSpeedBoost.ToJumpSpeedPercent()));
-
-            if (item.type == ItemID.AmphibianBoots)
-                EditTooltipByNum(1, (line) => line.Text = GetEditedTooltip("FrogLeg").Format(BalancingConstants.AmphibianBootsJumpSpeedBoost.ToJumpSpeedPercent()));
-
-            // Soaring Insignia nerf and clear explanation of what it actually does.
-            if (item.type == ItemID.EmpressFlightBooster)
+            // Feral Claws line melee speed and true melee damage changes
+            if (item.type == ItemID.FeralClaws)
+                EditTooltipByNum(0, (line) => line.Text = line.Text.Replace("12%", "10%"));
+            if (item.type == ItemID.TitanGlove)
+                EditTooltipByNum(0, (line) => line.Text += AddedTooltip("TitanGloveLine"));
+            if (item.type == ItemID.PowerGlove)
             {
-                EditTooltipByNum(0, (line) => line.Text = EditedTooltip("EmpressFlightBooster1"));
-                EditTooltipByNum(1, (line) => line.Text = EditedTooltip("EmpressFlightBooster2"));
+                EditTooltipByNum(1, (line) => line.Text = EditedTooltip("PowerGlove"));
+                EditTooltipByNum(0, (line) => line.Text += AddedTooltip("TitanGloveLine"));
+            }
+            if (item.type == ItemID.BerserkerGlove)
+                EditTooltipByNum(1, (line) => line.Text = EditedTooltip("BerserkerGlove"));
+            if (item.type == ItemID.MechanicalGlove)
+                EditTooltipByNum(1, (line) => line.Text = EditedTooltip("MechanicalGlove") + AddedTooltip("TitanGloveLine"));
+            if (item.type == ItemID.FireGauntlet)
+            {
+                EditTooltipByNum(0, (line) => line.Text = EditedTooltip("FireGauntlet1"));
+                EditTooltipByNum(1, (line) => line.Text = EditedTooltip("FireGauntlet2") + AddedTooltip("TitanGloveLine"));
             }
 
+            // Yoyo Glove/Bag apply a 0.5x damage multiplier on the second yoyo
+            if (item.type == ItemID.YoyoBag || item.type == ItemID.YoYoGlove)
+                EditTooltipByNum(0, (line) => line.Text += AddedTooltip("YoyoGlove"));
+
+            // Molten Quiver sets Hellfire on all arrows.
+            if (item.type == ItemID.MoltenQuiver)
+                EditTooltipByNum(2, (line) => line.Text = EditedTooltip("MoltenQuiver"));
+
+            // Eye of the Golem gains a new effect, also applies to specifically Sniper Scope.
             if (item.type == ItemID.EyeoftheGolem)
-            {
                 EditTooltipByNum(0, (line) => line.Text += AddedTooltip("EyeoftheGolem"));
-            }
 
-            // Rifle Scope visibility change
+            // Scope effects can now be visibility toggled.
             if (item.type == ItemID.RifleScope)
             {
                 EditTooltipByNum(0, (line) => line.Text = EditedTooltip("RifleScope1"));
                 EditTooltipByNum(1, (line) => line.Text = EditedTooltip("RifleScope2"));
             }
-
-            // Sniper Scope rebalance and visibility change
+            if (item.type == ItemID.ReconScope)
+                EditTooltipByNum(0, (line) => line.Text += AddedTooltip("RifleScope"));
             if (item.type == ItemID.SniperScope)
             {
                 EditTooltipByNum(1, (line) => line.Text = EditedTooltip("SniperScope"));
@@ -925,29 +785,90 @@ namespace CalamityMod.Items
                 EditTooltipByNum(1, (line) => line.Text += AddedTooltip("EyeoftheGolem"));
             }
 
-            // Recon Scope visibility change
-            if (item.type == ItemID.ReconScope)
-                EditTooltipByNum(0, (line) => line.Text += AddedTooltip("RifleScope"));
+            // Mana Flower tinker buffs.
+            if (item.type == ItemID.MagnetFlower)
+                EditTooltipByNum(0, (line) => line.Text = line.Text.Replace("8%", "10%"));
+            if (item.type == ItemID.ArcaneFlower || item.type == ItemID.ManaCloak)
+                EditTooltipByNum(0, (line) => line.Text = line.Text.Replace("8%", "12%"));
+            if (item.type == ItemID.ArcaneFlower)
+                EditTooltipByNum(2, (line) => line.Text += AddedTooltip("ArcaneFlower"));
 
+            // Magiluminescence nerf and clarify the movement effects given.
+            if (item.type == ItemID.Magiluminescence)
+                EditTooltipByNum(0, (line) => line.Text = EditedTooltip("Magiluminescence"));
 
-            // Magic Quiver
-            if (item.type == ItemID.MagicQuiver)
-                EditTooltipByNum(0, (line) => line.Text = EditedTooltip("MagicQuiver"));
+            // Frog Leg and its upgrades clarify the amount of jump speed given.
+            if (item.type == ItemID.FrogLeg)
+                EditTooltipByNum(0, (line) => line.Text = GetEditedTooltip("FrogLeg").Format(BalancingConstants.VanillaFrogLegJumpSpeedBoost.ToJumpSpeedPercent()));
+            if (item.type == ItemID.FrogFlipper || item.type == ItemID.FrogWebbing)
+                EditTooltipByNum(1, (line) => line.Text = GetEditedTooltip("FrogLeg").Format(BalancingConstants.VanillaFrogLegJumpSpeedBoost.ToJumpSpeedPercent()));
+            if (item.type == ItemID.FrogGear)
+                EditTooltipByNum(2, (line) => line.Text = GetEditedTooltip("FrogLeg").Format(BalancingConstants.VanillaFrogLegJumpSpeedBoost.ToJumpSpeedPercent()));
+            if (item.type == ItemID.AmphibianBoots)
+                EditTooltipByNum(1, (line) => line.Text = GetEditedTooltip("FrogLeg").Format(BalancingConstants.AmphibianBootsJumpSpeedBoost.ToJumpSpeedPercent()));
 
-            // Molten Quiver
-            if (item.type == ItemID.MoltenQuiver)
+            // Soaring Insignia nerf and clarify the movement effects given.
+            if (item.type == ItemID.EmpressFlightBooster)
             {
-                EditTooltipByNum(0, (line) => line.Text = EditedTooltip("MoltenQuiver1"));
-                EditTooltipByNum(2, (line) => line.Text = EditedTooltip("MoltenQuiver2"));
+                EditTooltipByNum(0, (line) => line.Text = EditedTooltip("EmpressFlightBooster1"));
+                EditTooltipByNum(1, (line) => line.Text = EditedTooltip("EmpressFlightBooster2"));
             }
 
-            // Magic Power Potion nerf
-            if (item.type == ItemID.MagicPowerPotion)
-                EditTooltipByNum(0, (line) => line.Text = line.Text.Replace("20%", "10%"));
+            // Reworked Gravity Globe
+            if (item.type == ItemID.GravityGlobe)
+                EditTooltipByNum(1, (line) => line.Text = EditedTooltip("GravityGlobe"));
 
-            // Featherfall Potion being stupid broken with Aero Stone
-            if (item.type == ItemID.FeatherfallPotion)
-                EditTooltipByNum(0, (line) => line.Text += AddedTooltip("FeatherfallPotion"));
+            // Flame Waker Boots now has a functional effect which inherits to Hellfire Treads.
+            if (item.type == ItemID.FlameWakerBoots)
+                EditTooltipByNum(0, (line) => line.Text = EditedTooltip("FlameWakerBoots"));
+            if (item.type == ItemID.HellfireTreads)
+                EditTooltipByNum(2, (line) => line.Text += AddedTooltip("HellfireTreads"));
+
+            // Fairy Boots gains a new functional effect.
+            if (item.type == ItemID.FairyBoots)
+                EditTooltipByNum(2, (line) => line.Text += AddedTooltip("FairyBoots"));
+
+            // Ankh Shield now provides sandstorm wind push immunity.
+            if (item.type == ItemID.AnkhShield)
+                EditTooltipByNum(1, (line) => line.Text = EditedTooltip("AnkhShield"));
+
+            // Flesh Knuckles now gives increased max life.
+            if (item.type == ItemID.FleshKnuckles || item.type == ItemID.HeroShield || item.type == ItemID.BerserkerGlove)
+                EditTooltipByNum(0, (line) => line.Text += AddedTooltip("FleshKnucklesLine"));
+
+            // Hand Warmer now has a side bonus with Snow armor.
+            if (item.type == ItemID.HandWarmer)
+                EditTooltipByNum(0, (line) => line.Text += AddedTooltip("HandWarmer"));
+            #endregion
+
+            #region Pre-Hardmode Armor
+            // Gladiator
+            if (item.type == ItemID.GladiatorHelmet)
+                EditTooltipByName("Defense", (line) => line.Text += "\n" + CalamityUtils.GetText("Common.RogueDamage").Format(GladiatorArmorSetChange.HelmetRogueDamageBoostPercent));
+            if (item.type == ItemID.GladiatorBreastplate)
+                EditTooltipByName("Defense", (line) => line.Text += "\n" + CalamityUtils.GetText("Common.RogueCrit").Format(GladiatorArmorSetChange.ChestplateRogueCritBoostPercent));
+            if (item.type == ItemID.GladiatorLeggings)
+                EditTooltipByName("Defense", (line) => line.Text += "\n" + CalamityUtils.GetText("Common.RogueVelocity").Format(GladiatorArmorSetChange.LeggingRogueVelocityBoostPercent));
+
+            // Jungle
+            if (item.type == ItemID.JungleHat || item.type == ItemID.AncientCobaltHelmet)
+            {
+                EditTooltipByNum(0, (line) => line.Text = line.Text.Replace("40", "20"));
+                EditTooltipByNum(1, (line) => line.Text = line.Text.Replace("6%", "3%"));
+            }
+            if (item.type == ItemID.JunglePants || item.type == ItemID.AncientCobaltLeggings)
+                EditTooltipByNum(1, (line) => line.Text = line.Text.Replace("6%", "3%"));
+
+            // Crimson
+            if (item.type == ItemID.CrimsonHelmet || item.type == ItemID.CrimsonScalemail || item.type == ItemID.CrimsonGreaves)
+            {
+                EditTooltipByNum(0, (line) => line.Text = line.Text.Replace("3%", "6%"));
+                EditTooltipByNum(0, (line) => line.Text += AddedTooltip("CrimsonArmorPieces"));
+            }
+
+            // Meteor
+            if (item.type == ItemID.MeteorHelmet || item.type == ItemID.MeteorSuit || item.type == ItemID.MeteorLeggings)
+                EditTooltipByNum(0, (line) => line.Text = line.Text.Replace("9%", "8%"));
 
             // Magic Hat nerf
             if (item.type == ItemID.MagicHat)
@@ -976,77 +897,11 @@ namespace CalamityMod.Items
                 EditTooltipByNum(1, (line) => line.Text = line.Text.Replace("15%", "9%"));
             }
 
-            // Feral Claws line melee speed and true melee damage changes
-            if (item.type == ItemID.FeralClaws)
-                EditTooltipByNum(0, (line) => line.Text = line.Text.Replace("12%", "10%"));
-
-            if (item.type == ItemID.TitanGlove)
-                EditTooltipByNum(0, (line) => line.Text += AddedTooltip("TitanGloveLine"));
-
-            if (item.type == ItemID.PowerGlove)
-            {
-                EditTooltipByNum(1, (line) => line.Text = EditedTooltip("PowerGlove"));
-                EditTooltipByNum(0, (line) => line.Text += AddedTooltip("TitanGloveLine"));
-            }
-
-            if (item.type == ItemID.BerserkerGlove)
-                EditTooltipByNum(1, (line) => line.Text = EditedTooltip("BerserkerGlove"));
-
-            if (item.type == ItemID.MechanicalGlove)
-                EditTooltipByNum(1, (line) => line.Text = EditedTooltip("MechanicalGlove") + AddedTooltip("TitanGloveLine"));
-
-            if (item.type == ItemID.FireGauntlet)
-            {
-                EditTooltipByNum(0, (line) => line.Text = EditedTooltip("FireGauntlet1"));
-                EditTooltipByNum(1, (line) => line.Text = EditedTooltip("FireGauntlet2") + AddedTooltip("TitanGloveLine"));
-            }
-
-            // Yoyo Glove/Bag apply a 0.5x damage multiplier on the second yoyo
-            if (item.type == ItemID.YoyoBag || item.type == ItemID.YoYoGlove)
-                EditTooltipByNum(0, (line) => line.Text += AddedTooltip("YoyoGlove"));
-
             //Gi 10% melee speed into 10% jump speed replacement
             if (item.type == ItemID.Gi)
                 EditTooltipByNum(1, (line) => line.Text = EditedTooltip("Gi"));
             #endregion
 
-            // Pre-Hardmode armor tooltip edits
-            #region Pre-Hardmode Armor
-            // Gladiator
-            if (item.type == ItemID.GladiatorHelmet)
-                EditTooltipByName("Defense", (line) => line.Text += "\n" + CalamityUtils.GetText("Common.RogueDamage").Format(GladiatorArmorSetChange.HelmetRogueDamageBoostPercent));
-            if (item.type == ItemID.GladiatorBreastplate)
-                EditTooltipByName("Defense", (line) => line.Text += "\n" + CalamityUtils.GetText("Common.RogueCrit").Format(GladiatorArmorSetChange.ChestplateRogueCritBoostPercent));
-            if (item.type == ItemID.GladiatorLeggings)
-                EditTooltipByName("Defense", (line) => line.Text += "\n" + CalamityUtils.GetText("Common.RogueVelocity").Format(GladiatorArmorSetChange.LeggingRogueVelocityBoostPercent));
-
-            // Jungle
-            if (item.type == ItemID.JungleHat || item.type == ItemID.AncientCobaltHelmet)
-            {
-                EditTooltipByNum(0, (line) => line.Text = line.Text.Replace("40", "20"));
-                EditTooltipByNum(1, (line) => line.Text = line.Text.Replace("6%", "3%"));
-            }
-            if (item.type == ItemID.JunglePants || item.type == ItemID.AncientCobaltLeggings)
-                EditTooltipByNum(1, (line) => line.Text = line.Text.Replace("6%", "3%"));
-
-            // Crimson
-            if (item.type == ItemID.CrimsonHelmet || item.type == ItemID.CrimsonScalemail || item.type == ItemID.CrimsonGreaves)
-            {
-                EditTooltipByNum(0, (line) =>
-                {
-                    string newTooltip = line.Text.Replace("3%", "6%");
-                    // Chest piece has 2 regen instead of 1
-                    newTooltip += item.type == ItemID.CrimsonScalemail ? AddedTooltip("CrimsonBreastplate") : AddedTooltip("CrimsonOtherPieces");
-                    line.Text = newTooltip;
-                });
-            }
-
-            // Meteor
-            if (item.type == ItemID.MeteorHelmet || item.type == ItemID.MeteorSuit || item.type == ItemID.MeteorLeggings)
-                EditTooltipByNum(0, (line) => line.Text = line.Text.Replace("9%", "8%"));
-            #endregion
-
-            // Hardmode armor tooltip edits
             #region Hardmode Armor
             // Cobalt
             if (item.type == ItemID.CobaltHat)
@@ -1081,8 +936,6 @@ namespace CalamityMod.Items
             // Solar Flare
             if (item.type == ItemID.SolarFlareHelmet)
                 EditTooltipByNum(0, (line) => line.Text = line.Text.Replace("26%", "20%"));
-            if (item.type == ItemID.SolarFlareHelmet || item.type == ItemID.SolarFlareBreastplate || item.type == ItemID.SolarFlareLeggings)
-                EditTooltipByNum(1, (line) => line.Text = EditedTooltip("SolarFlarePieces"));
 
             // Vortex
             if (item.type == ItemID.VortexHelmet)
@@ -1092,35 +945,16 @@ namespace CalamityMod.Items
             }
             #endregion
 
-            // DD2 armor tooltip edits
             #region DD2 Armor
-            // Reduce DD2 armor piece bonuses because they're overpowered, and clarify life regen boosts
-            // Squire armor
-            if (item.type == ItemID.SquireGreatHelm)
-                EditTooltipByNum(0, (line) => line.Text = EditedTooltip("SquireGreatHelm"));
-            if (item.type == ItemID.SquirePlating)
-                EditTooltipByNum(0, (line) => line.Text = EditedTooltip("SquirePlating"));
+            // Nerf sets that are too strong
             if (item.type == ItemID.SquireGreaves)
                 EditTooltipByNum(0, (line) => line.Text = EditedTooltip("SquireGreaves"));
 
-            // Monk armor
-            if (item.type == ItemID.MonkBrows)
-                EditTooltipByNum(0, (line) => line.Text = EditedTooltip("MonkBrows"));
-            if (item.type == ItemID.MonkShirt)
-                EditTooltipByNum(0, (line) => line.Text = EditedTooltip("MonkShirt"));
-            if (item.type == ItemID.MonkPants)
-            {
-                EditTooltipByNum(0, (line) => line.Text = EditedTooltip("MonkPants1"));
-                EditTooltipByNum(1, (line) => line.Text = EditedTooltip("MonkPants2"));
-            }
-
-            // Huntress armor
+            if (item.type == ItemID.HuntressWig)
+                EditTooltipByNum(0, (line) => line.Text = line.Text.Replace("10%", "15%"));
             if (item.type == ItemID.HuntressJerkin)
-                EditTooltipByNum(0, (line) => line.Text = EditedTooltip("HuntressJerkin"));
-            if (item.type == ItemID.HuntressPants)
-                EditTooltipByNum(0, (line) => line.Text = EditedTooltip("HuntressPants"));
+                EditTooltipByNum(0, (line) => line.Text = line.Text.Replace("20%", "15%"));
 
-            // Apprentice armor
             if (item.type == ItemID.ApprenticeHat)
                 EditTooltipByNum(0, (line) => line.Text = EditedTooltip("ApprenticeHat"));
             if (item.type == ItemID.ApprenticeRobe)
@@ -1128,13 +962,33 @@ namespace CalamityMod.Items
             if (item.type == ItemID.ApprenticeTrousers)
                 EditTooltipByNum(0, (line) => line.Text = EditedTooltip("ApprenticeTrousers"));
 
-            // Valhalla Knight armor
             if (item.type == ItemID.SquireAltHead)
-                EditTooltipByNum(0, (line) => line.Text = EditedTooltip("SquireAltHead"));
+                EditTooltipByNum(0, (line) => line.Text = line.Text.Replace("10%", "15%"));
             if (item.type == ItemID.SquireAltShirt)
-                EditTooltipByNum(0, (line) => line.Text = EditedTooltip("SquireAltShirt"));
+                EditTooltipByNum(0, (line) => line.Text = line.Text.Replace("30%", "20%"));
             if (item.type == ItemID.SquireAltPants)
-                EditTooltipByNum(0, (line) => line.Text = EditedTooltip("SquireAltPants"));
+                EditTooltipByNum(0, (line) => line.Text = line.Text.Replace("20%", "15%"));
+
+            if (item.type == ItemID.HuntressAltShirt)
+                EditTooltipByNum(0, (line) => line.Text = line.Text.Replace("25%", "20%"));
+            if (item.type == ItemID.HuntressAltPants)
+                EditTooltipByNum(0, (line) => line.Text = line.Text.Replace("25%", "20%"));
+
+            if (item.type == ItemID.ApprenticeAltHead)
+                EditTooltipByNum(0, (line) => line.Text = line.Text.Replace("15%", "10%"));
+            if (item.type == ItemID.ApprenticeAltShirt)
+                EditTooltipByNum(0, (line) => line.Text = line.Text.Replace("25%", "20%"));
+            if (item.type == ItemID.ApprenticeAltPants)
+                EditTooltipByNum(0, (line) => line.Text = line.Text.Replace("25%", "15%"));
+
+            // Tweaks into Rogue
+            // Monk armor
+            if (item.type == ItemID.MonkBrows)
+                EditTooltipByNum(0, (line) => line.Text = EditedTooltip("MonkBrows"));
+            if (item.type == ItemID.MonkShirt)
+                EditTooltipByNum(0, (line) => line.Text = EditedTooltip("MonkShirt"));
+            if (item.type == ItemID.MonkPants)
+                EditTooltipByNum(1, (line) => line.Text = EditedTooltip("MonkPants"));
 
             // Shinobi Infiltrator armor
             if (item.type == ItemID.MonkAltHead)
@@ -1146,47 +1000,9 @@ namespace CalamityMod.Items
             }
             if (item.type == ItemID.MonkAltPants)
                 EditTooltipByNum(0, (line) => line.Text = EditedTooltip("MonkAltPants"));
-
-            // Red Riding armor
-            if (item.type == ItemID.HuntressAltShirt)
-                EditTooltipByNum(0, (line) => line.Text = EditedTooltip("HuntressAltShirt"));
-            if (item.type == ItemID.HuntressAltPants)
-                EditTooltipByNum(0, (line) => line.Text = EditedTooltip("HuntressAltPants"));
-
-            // Dark Artist armor
-            if (item.type == ItemID.ApprenticeAltHead)
-                EditTooltipByNum(1, (line) => line.Text = EditedTooltip("ApprenticeAltHead"));
-            if (item.type == ItemID.ApprenticeAltShirt)
-                EditTooltipByNum(0, (line) => line.Text = EditedTooltip("ApprenticeAltShirt"));
-            if (item.type == ItemID.ApprenticeAltPants)
-                EditTooltipByNum(0, (line) => line.Text = EditedTooltip("ApprenticeAltPants"));
             #endregion
 
-            // Non-consumable boss summon items
-            #region Vanilla Boss Summon Non-consumable Tooltips
-            if (item.type == ItemID.SlimeCrown || item.type == ItemID.SuspiciousLookingEye || item.type == ItemID.WormFood || item.type == ItemID.BloodySpine || item.type == ItemID.Abeemination || item.type == ItemID.DeerThing
-                || item.type == ItemID.QueenSlimeCrystal || item.type == ItemID.MechanicalEye || item.type == ItemID.MechanicalWorm || item.type == ItemID.MechanicalSkull || item.type == ItemID.CelestialSigil)
-                EditTooltipByNum(0, (line) => line.Text += "\n" + CalamityUtils.GetTextValue("Common.NotConsumable"));
-            #endregion
-
-            // Add mentions of what Calamity ores vanilla pickaxes can mine
-            #region Pickaxe New Ore Tooltips
-            if (item.type == ItemID.GoldPickaxe || item.type == ItemID.PlatinumPickaxe)
-                EditTooltipByNum(0, (line) => line.Text = EditedTooltip("GoldPickaxe"));
-
-            if (item.type == ItemID.Picksaw)
-                EditTooltipByNum(0, (line) => line.Text += AddedTooltip("Picksaw"));
-
-            if (item.type == ItemID.SolarFlarePickaxe || item.type == ItemID.VortexPickaxe || item.type == ItemID.NebulaPickaxe || item.type == ItemID.StardustPickaxe)
-                EditTooltipByName("Material", (line) => line.Text += "\n" + CalamityUtils.GetTextValue("Common.CanMineUelibloom"));
-
-            if (item.type == ItemID.SolarFlareDrill || item.type == ItemID.VortexDrill || item.type == ItemID.NebulaDrill || item.type == ItemID.StardustDrill)
-                EditTooltipByName("TileBoost", (line) => line.Text += "\n" + CalamityUtils.GetTextValue("Common.CanMineUelibloom"));
-            #endregion
-
-            // Rebalances and information about vanilla set bonuses
             #region Vanilla Set Bonus Tooltips
-
             EditTooltipByName("SetBonus", (line) => VanillaArmorChangeManager.ApplySetBonusTooltipChanges(item, ref line.Text));
 
             // Forbidden (UNLESS you are wearing the Circlet, which is Summon/Rogue and does not get this line)
@@ -1199,7 +1015,50 @@ namespace CalamityMod.Items
                 EditTooltipByName("SetBonus", (line) => line.Text = CalamityUtils.GetText($"Vanilla.Armor.SetBonus.Vortex").Format(CalamityUtils.GetArmorSetBonusKey()));
             #endregion
 
-            // Provide the full stats of every vanilla yoyo
+            #region Potions
+            // Nerfed Archery Potion
+            if (item.type == ItemID.ArcheryPotion)
+                EditTooltipByNum(0, (line) => line.Text = EditedTooltip("ArcheryPotion"));
+
+            // Nerfed Swiftness Potion
+            if (item.type == ItemID.SwiftnessPotion)
+                EditTooltipByNum(0, (line) => line.Text = line.Text.Replace("25%", "15%"));
+
+            // Nerfed Magic Power Potion
+            if (item.type == ItemID.MagicPowerPotion)
+                EditTooltipByNum(0, (line) => line.Text = line.Text.Replace("20%", "10%"));
+
+            // Nerfed Mining Potion
+            if (item.type == ItemID.MiningPotion)
+                EditTooltipByNum(0, (line) => line.Text = line.Text.Replace("25%", "15%"));
+
+            // Ale and Sake rebalance and Alcohol Poisoning.
+            if (item.type == ItemID.Ale || item.type == ItemID.Sake)
+                EditTooltipByNum(0, (line) => line.Text = EditedTooltip("AleSake"));
+
+            // Featherfall Potion being stupid broken with Aero Stone
+            if (item.type == ItemID.FeatherfallPotion)
+                EditTooltipByNum(0, (line) => line.Text += AddedTooltip("FeatherfallPotion"));
+
+            // Flasks apply to Rogue weapons (Party applies to all)
+            if (item.type == ItemID.FlaskofCursedFlames)
+                EditTooltipByNum(0, (line) => line.Text = EditedTooltip("FlaskofCursedFlames"));
+            if (item.type == ItemID.FlaskofFire)
+                EditTooltipByNum(0, (line) => line.Text = EditedTooltip("FlaskofFire"));
+            if (item.type == ItemID.FlaskofGold)
+                EditTooltipByNum(0, (line) => line.Text = EditedTooltip("FlaskofGold"));
+            if (item.type == ItemID.FlaskofIchor)
+                EditTooltipByNum(0, (line) => line.Text = EditedTooltip("FlaskofIchor"));
+            if (item.type == ItemID.FlaskofNanites)
+                EditTooltipByNum(0, (line) => line.Text = EditedTooltip("FlaskofNanites"));
+            if (item.type == ItemID.FlaskofParty)
+                EditTooltipByNum(0, (line) => line.Text = EditedTooltip("FlaskofParty"));
+            if (item.type == ItemID.FlaskofPoison)
+                EditTooltipByNum(0, (line) => line.Text = EditedTooltip("FlaskofPoison"));
+            if (item.type == ItemID.FlaskofVenom)
+                EditTooltipByNum(0, (line) => line.Text = EditedTooltip("FlaskofVenom"));
+            #endregion
+
             #region Yoyo Stat Tooltips
             // This function is shorthand for appending a stat sheet to a yoyo.
             void AddYoyoStats(float d, float r, float s)
@@ -1252,7 +1111,6 @@ namespace CalamityMod.Items
                 AddYoyoStats(-1f, 400f, 36f);
             #endregion
 
-            // Provide the full stats of every vanilla set of wings
             #region Wing Stat Tooltips
 
             // This function produces a "stat sheet" for a pair of wings from the raw stats.
@@ -1398,7 +1256,6 @@ namespace CalamityMod.Items
                 AddWingStats(item.wingSlot, 0.95f, 0.15f, 1f, 4.5f, 0.1f);
             #endregion
 
-            // Provide the full stats of every vanilla grappling hook
             #region Grappling Hook Stat Tooltips
 
             // This function is shorthand for appending a stat sheet to a grappling hook.
@@ -1515,9 +1372,77 @@ namespace CalamityMod.Items
 
             #endregion
 
-            // Beyond this point all code only applies to accessories. Skip it all if the item is not an accessory.
-            if (!item.accessory)
-                return;
+            // Add mentions of what Calamity ores vanilla pickaxes can mine
+            #region Pickaxe New Ore Tooltips
+            if (item.type == ItemID.GoldPickaxe || item.type == ItemID.PlatinumPickaxe)
+                EditTooltipByNum(0, (line) => line.Text = EditedTooltip("GoldPickaxe"));
+
+            if (item.type == ItemID.Picksaw)
+                EditTooltipByNum(0, (line) => line.Text += AddedTooltip("Picksaw"));
+
+            if (item.type == ItemID.SolarFlarePickaxe || item.type == ItemID.VortexPickaxe || item.type == ItemID.NebulaPickaxe || item.type == ItemID.StardustPickaxe)
+                EditTooltipByName("Material", (line) => line.Text += "\n" + CalamityUtils.GetTextValue("Common.CanMineUelibloom"));
+
+            if (item.type == ItemID.SolarFlareDrill || item.type == ItemID.VortexDrill || item.type == ItemID.NebulaDrill || item.type == ItemID.StardustDrill)
+                EditTooltipByName("TileBoost", (line) => line.Text += "\n" + CalamityUtils.GetTextValue("Common.CanMineUelibloom"));
+            #endregion
+
+            // Numerous random tooltip edits which don't fit into another category
+            #region Miscellaneous Tooltip Edits
+            // Apparently 612 is a homestuck reference
+            if (item.type == ModContent.ItemType<Respiteblock>())
+                EditTooltipByName("AxePower", (line) => line.Text = line.Text.Replace("610%", "612%"));
+
+            // Master Mode items also drop in Revengeance
+            // Only affects vanilla and Calamity items
+            if (item.master && (item.type < ItemID.Count || item.ModItem?.Mod is CalamityMod))
+                EditTooltipByName("Master", (line) => line.Text = EditedTooltip("MasterExclusive"));
+
+            // Add a tooltip about Slimed's effects
+            if (item.type == ItemID.SlimeGun)
+                EditTooltipByNum(0, (line) => line.Text += AddedTooltip("SlimeGun"));
+            // Replace the meme tooltip with a useful one.
+            if (item.type == ItemID.GelBalloon)
+                EditTooltipByNum(0, (line) => line.Text = EditedTooltip("GelBalloon"));
+
+            // Aerial Bane is no longer the real bane of aerial enemies (50% dmg bonus removed)
+            if (item.type == ItemID.DD2BetsyBow)
+                EditTooltipByNum(0, (line) => line.Text = EditedTooltip("DD2BetsyBow"));
+
+            // Rod of Discord cannot be used multiple times to hurt yourself
+            if (item.type == ItemID.RodofDiscord)
+                EditTooltipByNum(1, (line) => line.Text += AddedTooltip("RodofDiscord"));
+
+            // If Early Hardmode Rework is enabled: Remind users that ores will NOT spawn when an altar is smashed.
+            if (CalamityServerConfig.Instance.EarlyHardmodeProgressionRework && (item.type == ItemID.Pwnhammer || item.type == ItemID.Hammush))
+                EditTooltipByNum(0, (line) => line.Text += AddedTooltip("Pwnhammer"));
+
+            // Golden Fishing Rod inherently contains High Test Fishing Line
+            if (item.type == ItemID.GoldenFishingRod)
+                EditTooltipByName("NeedsBait", (line) => line.Text += AddedTooltip("GoldenFishingRod"));
+
+            // Information about graveyards
+            // There are no item sets for tombstones wtf
+            if (item.type == ItemID.Tombstone || item.type == ItemID.GraveMarker || item.type == ItemID.CrossGraveMarker || item.type == ItemID.Headstone || item.type == ItemID.Gravestone || item.type == ItemID.Obelisk
+                || item.type == ItemID.RichGravestone1 || item.type == ItemID.RichGravestone2 || item.type == ItemID.RichGravestone3 || item.type == ItemID.RichGravestone4 || item.type == ItemID.RichGravestone5)
+                EditTooltipByName("Material", (line) => line.Text += AddedTooltip("Tombstones"));
+
+            // Modify item speed tooltips to use a new scale designed to more accurately reflect practical distributions of item speeds.
+            // Due to the higher complexity of the action, the actual logic is delegated to its own method.
+            // I think this fits the miscellaneous category? Not seeing anything like this elsewhere. - Tomat
+            EditTooltipByName("Speed", (line) => RedistributeSpeedTooltips(item, line));
+
+            if (item.healLife > 0 && Main.LocalPlayer.Calamity().healingPotionMultiplier != 1f)
+                EditTooltipByName("HealLife", (line) => line.Text = Language.GetOrRegister("CommonItemTooltip.RestoresLife").Format((int)(item.healLife * Main.LocalPlayer.Calamity().healingPotionMultiplier)));
+
+            // Ancient Manipulator also crafts stuff with Astral Bars
+            if (item.type == ItemID.LunarCraftingStation)
+                EditTooltipByNum(0, (line) => line.Text = EditedTooltip("LunarCraftingStation"));
+
+            // Replace the double tap line if double tap dash is overridden
+            if ((item.type == ItemID.EoCShield || item.type == ItemID.Tabi) && CalamityKeybinds.DashHotkey.GetAssignedKeysOrEmpty().Count != 0)
+                EditTooltipByNum(1, (line) => line.Text = CalamityUtils.GetText("Vanilla.DashKey").Format(CalamityKeybinds.DashHotkey.TooltipHotkeyString()));
+            #endregion
         }
         #endregion
 

@@ -14,10 +14,9 @@ namespace CalamityMod.Items.Weapons.Melee
         {
             Item.width = 58;
             Item.height = 64;
-            Item.damage = 66;
+            Item.damage = 50;
             Item.DamageType = DamageClass.Melee;
-            Item.useAnimation = 23;
-            Item.useTime = 23;
+            Item.useTime = Item.useAnimation = 23;
             Item.useTurn = true;
             Item.useStyle = ItemUseStyleID.Swing;
             Item.knockBack = 6f;
@@ -31,17 +30,15 @@ namespace CalamityMod.Items.Weapons.Melee
 
         public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)
         {
-            Projectile.NewProjectile(source, position, velocity, type, (int)(damage * 0.8), knockback, player.whoAmI);
+            Projectile.NewProjectile(source, position, velocity, type, damage, knockback, player.whoAmI);
 
             Vector2 spawnPos = new Vector2(player.MountedCenter.X + Main.rand.Next(-200, 201), player.MountedCenter.Y - 600f);
 
             // 14NOV2024: Ozzatron: clamped mouse position unnecessary, only used for direction
             Vector2 targetPos = Main.MouseWorld + new Vector2(Main.rand.Next(-30, 31), Main.rand.Next(-30, 31));
-            velocity = targetPos - spawnPos;
-            velocity.Normalize();
-            velocity *= 13f;
+            velocity = Utils.DirectionTo(spawnPos, targetPos) * Item.shootSpeed;
 
-            Projectile.NewProjectile(source, spawnPos, velocity, type, (int)(damage * 0.6), knockback, player.whoAmI);
+            Projectile.NewProjectile(source, spawnPos, velocity, type, (int)(damage * 0.75), knockback, player.whoAmI);
             return false;
         }
 

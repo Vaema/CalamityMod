@@ -1,5 +1,4 @@
-﻿using System.Collections.Generic;
-using CalamityMod.Dusts;
+﻿using CalamityMod.Dusts;
 using CalamityMod.Tiles.Crags.Lily;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
@@ -32,8 +31,8 @@ namespace CalamityMod.Tiles.Crags
             RegisterItemDrop(ModContent.ItemType<Items.Placeables.Crags.ScorchedRemains>());
             AddMapEntry(new Color(212, 82, 227));
 
-            this.RegisterUniversalMerge(ModContent.TileType<BrimstoneSlag>(), "CalamityMod/Tiles/Merges/BrimstoneSlagMerge");
-            this.RegisterUniversalMerge(TileID.Ash, "CalamityMod/Tiles/Merges/AshMerge");
+            this.RegisterBlendMergeWith(ModContent.TileType<BrimstoneSlag>());
+            this.RegisterBlendMergeWith(TileID.Ash);
         }
 
         public override void ModifyLight(int i, int j, ref float r, ref float g, ref float b)
@@ -74,7 +73,7 @@ namespace CalamityMod.Tiles.Crags
                 Main.tile[i, j].TileType = (ushort)ModContent.TileType<ScorchedRemains>();
             }
 
-            if (WorldGen.genRand.NextBool(5)&& !up.HasTile && !up2.HasTile && up.LiquidAmount == 0)
+            if (WorldGen.genRand.NextBool(5) && !up.HasTile && !up2.HasTile && up.LiquidAmount == 0)
             {
                 up.TileType = (ushort)ModContent.TileType<CinderBlossomTallPlants>();
                 up.HasTile = true;
@@ -105,7 +104,7 @@ namespace CalamityMod.Tiles.Crags
                 Main.tile[i, j].TileType = (ushort)ModContent.TileType<ScorchedRemains>();
             }
 
-            if (WorldGen.genRand.NextBool(60)&& !up.HasTile && !up2.HasTile && up.LiquidAmount == 0)
+            if (WorldGen.genRand.NextBool(60) && !up.HasTile && !up2.HasTile && up.LiquidAmount == 0)
             {
                 up.TileType = (ushort)ModContent.TileType<LavaPistil>();
                 up.HasTile = true;

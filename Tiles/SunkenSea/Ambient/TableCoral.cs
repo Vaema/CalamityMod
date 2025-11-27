@@ -15,11 +15,11 @@ namespace CalamityMod.Tiles.SunkenSea.Ambient
             Main.tileFrameImportant[Type] = true;
             Main.tileNoAttach[Type] = true;
             Main.tileSolidTop[Type] = true;
-
+            
+            TileObjectData.newTile.CopyFrom(TileObjectData.Style3x2);
             TileObjectData.newTile.StyleHorizontal = true;
             TileObjectData.newTile.StyleWrapLimit = 3;
             TileObjectData.newTile.RandomStyleRange = 3;
-            TileObjectData.newTile.CopyFrom(TileObjectData.Style3x2);
             TileObjectData.newTile.AnchorBottom = AnchorData.Empty;
             TileObjectData.newTile.AnchorRight = new AnchorData(AnchorType.SolidTile, 2, 0);
             TileObjectData.newTile.DrawXOffset = 2;

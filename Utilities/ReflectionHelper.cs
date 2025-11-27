@@ -3,13 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using System.Reflection.Emit;
-using System.Text;
-using System.Threading.Tasks;
-using Terraria.GameContent;
-using Terraria.ModLoader.Core;
 using Terraria.ModLoader;
-using System.Collections;
-using CalamityMod.Particles;
+using Terraria.ModLoader.Core;
 
 namespace CalamityMod
 {
@@ -68,6 +63,25 @@ namespace CalamityMod
             return ModLoader.Mods.SelectMany(mod => AssemblyManager.GetLoadableTypes(mod.Code));
         }
 
+        public static bool IsSubclass(Type baseType, Type type, bool includeBaseType)
+        {
+            return type.IsSubclassOf(baseType) && !type.IsAbstract && (!includeBaseType && type != baseType);
+        }
+
+        public static void IterateEveryModsTypesSorted<T>(bool includeBaseType = false, Action<Type> action = null)
+        {
+            // WHY????
+            if (action is null)
+                return;
+
+            Type baseType = typeof(T);
+            var types = GetEveryModsTypes().Where(t => IsSubclass(baseType, t, includeBaseType)).OrderBy(t => t.FullName);
+            foreach (var type in types)
+            {
+                action.Invoke(type);
+            }
+        }
+
         public static void IterateEveryModsTypes<T>(bool includeBaseType = false, Action<Type> action = null)
         {
             // WHY????
@@ -75,19 +89,30 @@ namespace CalamityMod
                 return;
 
             Type baseType = typeof(T);
-            var types = GetEveryModsTypes();
+            var types = GetEveryModsTypes().Where(t => IsSubclass(baseType, t, includeBaseType));
             foreach (var type in types)
             {
-                if (type.IsSubclassOf(baseType) && !type.IsAbstract && (!includeBaseType && type != baseType))
-                {
-                    action.Invoke(type);
-                }
+                action.Invoke(type);
             }
         }
 
         public static IEnumerable<Type> GetCalamityTypes()
         {
             return AssemblyManager.GetLoadableTypes(CalamityMod.Instance.Code);
+        }
+
+        public static void IterateCalamityTypesSorted<T>(bool includeBaseType = false, Action<Type> action = null)
+        {
+            // WHY????
+            if (action is null)
+                return;
+
+            Type baseType = typeof(T);
+            var types = GetCalamityTypes().Where(t => IsSubclass(baseType, t, includeBaseType)).OrderBy(t => t.FullName);
+            foreach (var type in types)
+            {
+                action.Invoke(type);
+            }
         }
 
         public static void IterateCalamityTypes<T>(bool includeBaseType = false, Action<Type> action = null)
@@ -97,13 +122,10 @@ namespace CalamityMod
                 return;
 
             Type baseType = typeof(T);
-            var types = GetCalamityTypes();
+            var types = GetCalamityTypes().Where(t => IsSubclass(baseType, t, includeBaseType));
             foreach (var type in types)
             {
-                if (type.IsSubclassOf(baseType) && !type.IsAbstract && (!includeBaseType && type != baseType))
-                {
-                    action.Invoke(type);
-                }
+                action.Invoke(type);
             }
         }
     }

@@ -1,7 +1,5 @@
-﻿using System.Collections.Generic;
-using CalamityMod.Systems;
+﻿using CalamityMod.Systems;
 using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Graphics;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
@@ -11,7 +9,7 @@ namespace CalamityMod.Tiles.Ores
     public class AerialiteOreDisenchanted : ModTile
     {
         private const int AnimationFrameWidth = 234;
-        
+
         public override void SetStaticDefaults()
         {
             Main.tileBlockLight[Type] = true;
@@ -38,10 +36,10 @@ namespace CalamityMod.Tiles.Ores
             HitSound = SoundID.Tink;
             Main.tileSpelunker[Type] = true;
 
-            this.RegisterUniversalMerge(TileID.Cloud, "CalamityMod/Tiles/Merges/CloudMerge");
-            this.RegisterUniversalMerge(TileID.RainCloud, "CalamityMod/Tiles/Merges/RainCloudMerge");
-            this.RegisterUniversalMerge(TileID.SnowCloud, "CalamityMod/Tiles/Merges/SnowCloudMerge");
-            this.RegisterUniversalMerge(TileID.Dirt, "CalamityMod/Tiles/Merges/DirtMerge");
+            this.RegisterBlendMergeWith(TileID.Cloud);
+            this.RegisterBlendMergeWith(TileID.RainCloud);
+            this.RegisterBlendMergeWith(TileID.SnowCloud);
+            this.RegisterBlendMergeWith(TileID.Dirt);
         }
         public override void PostSetDefaults()
         {
@@ -57,7 +55,7 @@ namespace CalamityMod.Tiles.Ores
         {
             return false;
         }
-        
+
         public override void AnimateIndividualTile(int type, int i, int j, ref int frameXOffset, ref int frameYOffset)
         {
             frameXOffset = AnimationFrameWidth * TileFramingSystem.GetVariation4x4_012_Low0(i, j);

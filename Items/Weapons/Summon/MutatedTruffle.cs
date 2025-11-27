@@ -47,7 +47,7 @@ namespace CalamityMod.Items.Weapons.Summon
             Item.shoot = ModContent.ProjectileType<MutatedTruffleMinion>();
             Item.knockBack = 5f;
 
-            Item.useAnimation = Item.useTime = 10;
+            Item.useAnimation = Item.useTime = 24;
             Item.mana = 10;
             Item.noMelee = true;
             Item.useStyle = ItemUseStyleID.HoldUp;

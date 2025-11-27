@@ -54,7 +54,7 @@ namespace CalamityMod.Projectiles.Summon
                     return false;
 
                 // Drop the cannon if the player is not holding the appropriate item.
-                if (Owner.ActiveItem().type != ModContent.ItemType<AtlasMunitionsBeacon>())
+                if (Owner.HeldItem.type != ModContent.ItemType<AtlasMunitionsBeacon>())
                     return false;
 
                 return true;
@@ -185,7 +185,7 @@ namespace CalamityMod.Projectiles.Summon
 
             // Be picked up by nearby players if they right click and are holding the appropriate item.
             bool rightClick = Main.mouseRight && Main.mouseRightRelease;
-            bool correctItem = Main.LocalPlayer.ActiveItem().type == ModContent.ItemType<AtlasMunitionsBeacon>();
+            bool correctItem = Main.LocalPlayer.HeldItem.type == ModContent.ItemType<AtlasMunitionsBeacon>();
             if (Main.LocalPlayer.WithinRange(Projectile.Center, AtlasMunitionsBeacon.PickupRange) && rightClick && correctItem && HeatInterpolant < 0.5f)
             {
                 BeingHeld = true;

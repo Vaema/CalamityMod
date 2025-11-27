@@ -93,7 +93,7 @@ namespace CalamityMod.Projectiles.Ranged
 
         public override void HoldoutAI()
         {
-            CalamityGlobalItem modItem = Owner.ActiveItem().Calamity();
+            CalamityGlobalItem modItem = Owner.HeldItem.Calamity();
 
             if (Owner.CantUseHoldout() && KeepRefreshingLifetime)
             {

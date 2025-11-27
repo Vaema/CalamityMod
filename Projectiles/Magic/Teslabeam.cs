@@ -101,7 +101,7 @@ namespace CalamityMod.Projectiles.Magic
                 return false;
             }
             // Do we still have enough mana? If not, we kill the projectile because we cannot use it anymore
-            if (Owner.miscCounter % 10 == 0 && !Owner.CheckMana(Owner.ActiveItem(), -1, true))
+            if (Owner.miscCounter % 10 == 0 && !Owner.CheckMana(Owner.HeldItem, -1, true))
             {
                 Projectile.Kill();
                 return false;

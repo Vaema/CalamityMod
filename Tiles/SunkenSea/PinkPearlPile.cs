@@ -3,13 +3,11 @@ using CalamityMod.Projectiles.Typeless;
 using CalamityMod.Sounds;
 using CalamityMod.Systems;
 using CalamityMod.Tiles.Abyss;
-using Microsoft.CodeAnalysis.Text;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
-using static CalamityMod.Projectiles.Rogue.FinalDawnFlame;
 
 namespace CalamityMod.Tiles.SunkenSea
 {
@@ -38,18 +36,18 @@ namespace CalamityMod.Tiles.SunkenSea
             TileID.Sets.Falling[Type] = true;
             TileID.Sets.FallingBlockProjectile[Type] = new TileID.Sets.FallingBlockProjectileInfo(ModContent.ProjectileType<PinkPearlFalling>(), 15);
 
-            this.RegisterUniversalMerge(ModContent.TileType<Shellstone>(), "CalamityMod/Tiles/Merges/ShellstoneMerge");
-            this.RegisterUniversalMerge(ModContent.TileType<AbyssGravel>(), "CalamityMod/Tiles/Merges/AbyssGravelMerge");
-            this.RegisterUniversalMerge(ModContent.TileType<EutrophicSand>(), "CalamityMod/Tiles/Merges/EutrophicSandMerge");
-            this.RegisterUniversalMerge(ModContent.TileType<Navystone>(), "CalamityMod/Tiles/Merges/NavystoneMerge");
-            this.RegisterUniversalMerge(ModContent.TileType<Runestone>(), "CalamityMod/Tiles/Merges/RunestoneMerge");
-            this.RegisterUniversalMerge(TileID.Sandstone, "CalamityMod/Tiles/Merges/SandstoneMerge");
-            this.RegisterUniversalMerge(TileID.Sand, "CalamityMod/Tiles/Merges/SandMerge");
-            this.RegisterUniversalMerge(TileID.HardenedSand, "CalamityMod/Tiles/Merges/HardenedSandMerge");
-            this.RegisterUniversalMerge(TileID.Stone, "CalamityMod/Tiles/Merges/StoneMerge");
-            this.RegisterUniversalMerge(TileID.Dirt, "CalamityMod/Tiles/Merges/DirtMerge");
-            this.RegisterUniversalMerge(TileID.Ash, "CalamityMod/Tiles/Merges/AshMerge");
-            this.RegisterUniversalMerge(TileID.Mud, "CalamityMod/Tiles/Merges/MudMerge");
+            this.RegisterBlendMergeWith(ModContent.TileType<Shellstone>());
+            this.RegisterBlendMergeWith(ModContent.TileType<AbyssGravel>());
+            this.RegisterBlendMergeWith(ModContent.TileType<EutrophicSand>());
+            this.RegisterBlendMergeWith(ModContent.TileType<Navystone>());
+            this.RegisterBlendMergeWith(ModContent.TileType<Runestone>());
+            this.RegisterBlendMergeWith(TileID.Sandstone);
+            this.RegisterBlendMergeWith(TileID.Sand);
+            this.RegisterBlendMergeWith(TileID.HardenedSand);
+            this.RegisterBlendMergeWith(TileID.Stone);
+            this.RegisterBlendMergeWith(TileID.Dirt);
+            this.RegisterBlendMergeWith(TileID.Ash);
+            this.RegisterBlendMergeWith(TileID.Mud);
         }
 
         public override bool TileFrame(int i, int j, ref bool resetFrame, ref bool noBreak)
@@ -74,8 +72,8 @@ namespace CalamityMod.Tiles.SunkenSea
             Vector2 offScreen = Main.drawToScreen ? Vector2.Zero : new Vector2(Main.offScreenRange);
             Vector2 position = new Vector2(i * 16, j * 16) - Main.screenPosition + offScreen;
 
-            int frameX = tile.TileFrameX + (i % 1 );
-            int frameY = tile.TileFrameY + (j % 1 );
+            int frameX = tile.TileFrameX + (i % 1);
+            int frameY = tile.TileFrameY + (j % 1);
 
             Rectangle sourceRect = new Rectangle(frameX, frameY, 16, 16);
 
@@ -107,7 +105,7 @@ namespace CalamityMod.Tiles.SunkenSea
 
                 if (strength > 0f)
                 {
-                    spriteBatch.Draw(GlintTex, position, sourceRect, (Lighting.GetColor(i, j) * 6 ) * (strength * 0.4f), 0f, Vector2.Zero, 1f, SpriteEffects.None, 0f);
+                    spriteBatch.Draw(GlintTex, position, sourceRect, (Lighting.GetColor(i, j) * 6) * (strength * 0.4f), 0f, Vector2.Zero, 1f, SpriteEffects.None, 0f);
                 }
             }
         }

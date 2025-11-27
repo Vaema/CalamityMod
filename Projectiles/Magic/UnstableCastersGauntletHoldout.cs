@@ -150,7 +150,8 @@ namespace CalamityMod.Projectiles.Magic
                         GeneralParticleHandler.SpawnParticle(shootPulse);
 
                         // Spawn needle
-                        Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center, (Projectile.velocity * 35f).RotatedBy(Main.rand.NextFloat(-0.07f, 0.07f)), ModContent.ProjectileType<VisNeedle>(), (int) (Projectile.damage * 0.8f), Projectile.knockBack, Projectile.owner);
+                        if (Main.myPlayer == Projectile.owner)
+                            Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center, (Projectile.velocity * 35f).RotatedBy(Main.rand.NextFloat(-0.07f, 0.07f)), ModContent.ProjectileType<VisNeedle>(), (int) (Projectile.damage * 0.8f), Projectile.knockBack, Projectile.owner);
                         shootingTimer = 0f;
                     }
                     else
@@ -172,8 +173,8 @@ namespace CalamityMod.Projectiles.Magic
                     calPlayer.unstableCastersGauntletVis -= 12f;
 
                     SoundEngine.PlaySound(new("CalamityMod/Sounds/Item/MagicRockSound") { Volume = 0.4f, PitchVariance = 0.05f }, Projectile.Center);
-
-                    Projectile.NewProjectile(Projectile.GetSource_FromThis(), Owner.Center, Vector2.Zero, ModContent.ProjectileType<SigilSet>(), Projectile.damage, Projectile.knockBack, Projectile.owner);
+                    if (Main.myPlayer == Projectile.owner)
+                        Projectile.NewProjectile(Projectile.GetSource_FromThis(), Owner.Center, Vector2.Zero, ModContent.ProjectileType<SigilSet>(), Projectile.damage, Projectile.knockBack, Projectile.owner);
                     shootingTimer = 0f;
                 }
             }
@@ -268,9 +269,12 @@ namespace CalamityMod.Projectiles.Magic
                             SoundEngine.PlaySound(SoundID.DD2_EtherianPortalOpen with { Volume = 0.6f }, Projectile.Center);
 
                             // Spawn Warp Sigils for each empty slot
-                            foreach (int sigilIndex in availableIndices)
+                            if (Main.myPlayer == Projectile.owner)
                             {
-                                Projectile.NewProjectile(Projectile.GetSource_FromThis(), thisParent.Center, Vector2.Zero, ModContent.ProjectileType<WarpSigil>(), Projectile.damage, Projectile.knockBack, Projectile.owner, thisParent.identity, sigilIndex);
+                                foreach (int sigilIndex in availableIndices)
+                                {
+                                    Projectile.NewProjectile(Projectile.GetSource_FromThis(), thisParent.Center, Vector2.Zero, ModContent.ProjectileType<WarpSigil>(), Projectile.damage, Projectile.knockBack, Projectile.owner, thisParent.identity, sigilIndex);
+                                }
                             }
 
                             shootingTimer = 0f;

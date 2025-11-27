@@ -1,6 +1,9 @@
 ﻿using System;
+using System.Reflection;
+using MonoMod.Cil;
 using Terraria;
 using Terraria.GameContent.Drawing;
+using Terraria.ID;
 using Terraria.ModLoader;
 
 namespace CalamityMod.Systems
@@ -8,56 +11,75 @@ namespace CalamityMod.Systems
     [Autoload(Side = ModSide.Client)]
     public sealed partial class TileBlendMergeSystem : ModSystem
     {
-        private static bool[,] _TileBlendable; // dimension: [TileTypeCount, AllBlendTextureCount]
-        private static bool[,] _TileBlendLooselyFillDiagonal; // dimension: [TileTypeCount, AllBlendTextureCount]
-        private static byte[] _TileTypeToBlendTextureSlot; // dimension: [TileTypeCount]
-        private static bool _IDSetsInitialized = false;
+        private static bool[,] _TileBlendable = new bool[TileID.Count, 1]; // dimension: [TileTypeCount, AllBlendTextureCount]
+        private static bool[,] _TileBlendLooselyFillDiagonal = new bool[TileID.Count, 1]; // dimension: [TileTypeCount, AllBlendTextureCount]
+        private static byte[] _TileTypeToBlendTextureSlot = new byte[TileID.Count]; // dimension: [TileTypeCount]
 
         #region Load/Unload
         public override void OnModLoad()
         {
             // Draw Code
-            On_TileDrawing.DrawSingleTile += OnDrawSingleTile;
-            ResizeArrayHook.OnPostResizeArrays += OnResizeArrays;
+            On_Main.DrawTiles += OnDrawTiles;
+            IL_TileDrawing.Draw += MakeQualityRequirementUpdateHook;
         }
 
-        private static void OnResizeArrays(bool unloading)
+        public override void Unload()
+        {
+            _TileBlendable = null;
+            _TileBlendLooselyFillDiagonal = null;
+            _TileTypeToBlendTextureSlot = null;
+        }
+
+        private void MakeQualityRequirementUpdateHook(ILContext il)
+        {
+            const string midQualityRequirementField = "_mediumQualityLightingRequirement";
+            const string highQualityRequirementField = "_highQualityLightingRequirement";
+            const string getScreenDrawAreaMethod = "GetScreenDrawArea";
+
+            var cursor = new ILCursor(il);
+
+            if (!cursor.TryGotoNext(MoveType.After, x => x.MatchCallOrCallvirt<TileDrawing>(getScreenDrawAreaMethod)))
+            {
+                CalamityMod.Log.ILFailure("QualityRequirementHook", $"{getScreenDrawAreaMethod} call is missing!");
+                return;
+            }
+
+            var type = typeof(TileDrawing);
+            var mediumReqField = type.GetField(midQualityRequirementField, BindingFlags.NonPublic | BindingFlags.Instance);
+            var highReqField = type.GetField(highQualityRequirementField, BindingFlags.NonPublic | BindingFlags.Instance);
+
+            if (mediumReqField == null)
+            {
+                CalamityMod.Log.ILFailure("QualityRequirementHook", $"{midQualityRequirementField} field is missing!");
+                return;
+            }
+
+            if (highReqField == null)
+            {
+                CalamityMod.Log.ILFailure("QualityRequirementHook", $"{highQualityRequirementField} field is missing!");
+                return;
+            }
+
+            cursor.EmitLdarg0(); // self
+            cursor.EmitLdfld(highReqField); // self.highReqField
+            cursor.EmitLdarg0(); // self
+            cursor.EmitLdfld(mediumReqField); // self.mediumReqField
+            cursor.EmitDelegate(OnQualityRequirementUpdate); // call (highReq, mediumReq)
+        }
+
+        public override void ResizeArrays()
         {
             var tileCount = TileLoader.TileCount;
             var blendTextureCount = TileBlendTextureLoader.Count; // This count also should be updated on ResizeArrays call
 
-            static void SetupTileTypeToBlendTextureSlot()
-            {
-                if (TileBlendTextureLoader.AllTextures == null)
-                    return;
-                foreach (var blendTexture in TileBlendTextureLoader.AllTextures)
-                {
-                    _TileTypeToBlendTextureSlot[blendTexture.TileType] = (byte)blendTexture.Slot;
-                }
-            }
-
-            if (!_IDSetsInitialized)
-            {
-                _TileBlendable = new bool[tileCount, blendTextureCount + 1];
-                _TileBlendLooselyFillDiagonal = new bool[tileCount, blendTextureCount + 1];
-                _TileTypeToBlendTextureSlot = new byte[tileCount];
-                _IDSetsInitialized = true;
-                SetupTileTypeToBlendTextureSlot();
-                return;
-            }
-
-            if (unloading)
-            {
-                _TileBlendable = null;
-                _TileBlendLooselyFillDiagonal = null;
-                _TileTypeToBlendTextureSlot = null;
-                return;
-            }
-
             ResizeArray2D(ref _TileBlendable, tileCount, blendTextureCount + 1);
             ResizeArray2D(ref _TileBlendLooselyFillDiagonal, tileCount, blendTextureCount + 1);
             Array.Resize(ref _TileTypeToBlendTextureSlot, tileCount);
-            SetupTileTypeToBlendTextureSlot();
+
+            foreach (var blendTexture in TileBlendTextureLoader.AllTextures)
+            {
+                _TileTypeToBlendTextureSlot[blendTexture.TileType] = (byte)blendTexture.Slot;
+            }
         }
 
         private static void ResizeArray2D<T>(ref T[,] array, int newColNum, int newRowNum)
@@ -97,7 +119,11 @@ namespace CalamityMod.Systems
 
             var blendTextureSlot = _TileTypeToBlendTextureSlot[blendTileType];
             if (blendTextureSlot == TileBlendTextureLoader.EmptySlot)
+            {
+                var tileName = TileLoader.GetTile(blendTileType)?.FullName ?? "Vanilla Tile";
+                CalamityMod.Log.Error($"[BlendMergeSystem] BlendTileType: {blendTileType} ({tileName}) does not have TileBlendTexture! StackTrace:\n{Environment.StackTrace}");
                 return;
+            }
 
             _TileBlendable[myType, blendTextureSlot] = true;
             _TileBlendLooselyFillDiagonal[myType, blendTextureSlot] = looselyFillDiagonal;

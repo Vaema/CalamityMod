@@ -62,7 +62,7 @@ namespace CalamityMod.Projectiles.Magic
 
             if (Projectile.ai[2] >= 32)
             {
-                bool manaCostPaid = Owner.CheckMana(Owner.ActiveItem(), -1, true, false);
+                bool manaCostPaid = Owner.CheckMana(Owner.HeldItem, -1, true, false);
                 if (!manaCostPaid)
                 {
                     Projectile.Kill();
@@ -78,8 +78,8 @@ namespace CalamityMod.Projectiles.Magic
                 {
                     float scaleFactor6 = 1f;
 
-                    if (Owner.ActiveItem().shoot == Projectile.type)
-                        scaleFactor6 = Owner.ActiveItem().shootSpeed * Projectile.scale;
+                    if (Owner.HeldItem.shoot == Projectile.type)
+                        scaleFactor6 = Owner.HeldItem.shootSpeed * Projectile.scale;
 
                     // 14NOV2024: Ozzatron: clamped mouse position unnecessary, only used for direction
                     Vector2 slashDirection = Main.MouseWorld - Owner.RotatedRelativePoint(Owner.MountedCenter, true);

@@ -60,7 +60,7 @@ namespace CalamityMod.Projectiles.Ranged
 
         public override void AI()
         {
-            if (Owner.dead || !Owner.active || Owner.ActiveItem().type != ModContent.ItemType<Hydra>())
+            if (Owner.dead || !Owner.active || Owner.HeldItem.type != ModContent.ItemType<Hydra>())
                 Projectile.Kill();
             else
                 Projectile.timeLeft = 2; //Infinite lifespan
@@ -137,7 +137,7 @@ namespace CalamityMod.Projectiles.Ranged
 
         public void PerformAttacks(Vector2 aimDestination)
         {
-            Item heldItem = Owner.ActiveItem();
+            Item heldItem = Owner.HeldItem;
 
             Vector2 shootDirection = Projectile.SafeDirectionTo(aimDestination);
 

@@ -5,7 +5,6 @@ using CalamityMod.Items.Materials;
 using CalamityMod.Tiles.Astral;
 using CalamityMod.World;
 using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Graphics;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
@@ -41,12 +40,12 @@ namespace CalamityMod.Tiles.Ores
             // TileID.Sets.DoesntGetReplacedWithTileReplacement[Type] = true;
             TileID.Sets.AvoidedByMeteorLanding[Type] = true;
 
-            this.RegisterUniversalMerge(ModContent.TileType<AstralDirt>(), "CalamityMod/Tiles/Merges/AstralDirtMerge");
+            this.RegisterBlendMergeWith(ModContent.TileType<AstralDirt>());
         }
         public override void NearbyEffects(int i, int j, bool closer)
         {
             if (j < 2)
-                return; 
+                return;
             Tile tile = Main.tile[i, j];
             Tile up = Main.tile[i, j - 1];
             Tile up2 = Main.tile[i, j - 2];

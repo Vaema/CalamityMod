@@ -8,7 +8,7 @@ using CalamityMod.Items.Armor.Vanity;
 using CalamityMod.Items.LoreItems;
 using CalamityMod.Items.Materials;
 using CalamityMod.Items.Placeables.Furniture.BossRelics;
-using CalamityMod.Items.Placeables.Furniture.DevPaintings;
+using CalamityMod.Items.Placeables.Furniture.Paintings;
 using CalamityMod.Items.Placeables.Furniture.Trophies;
 using CalamityMod.Items.TreasureBags;
 using CalamityMod.Items.Weapons.Magic;
@@ -424,12 +424,12 @@ namespace CalamityMod.NPCs.BrimstoneElemental
                         int type = ModContent.ProjectileType<BrimstoneRay>();
                         int damage = RayDamage;
                         Vector2 pos = NPC.Center;
-                        if (Main.netMode != NetmodeID.MultiplayerClient)
+                        for (int i = 0; i < 4; i++)
                         {
-                            Projectile.NewProjectile(NPC.GetSource_FromAI(), pos, new Vector2(0, 1), type, damage, 0f, Main.myPlayer, 0f, NPC.whoAmI);
-                            Projectile.NewProjectile(NPC.GetSource_FromAI(), pos, new Vector2(0, -1), type, damage, 0f, Main.myPlayer, 0f, NPC.whoAmI);
-                            Projectile.NewProjectile(NPC.GetSource_FromAI(), pos, new Vector2(1, 0), type, damage, 0f, Main.myPlayer, 0f, NPC.whoAmI);
-                            Projectile.NewProjectile(NPC.GetSource_FromAI(), pos, new Vector2(-1, 0), type, damage, 0f, Main.myPlayer, 0f, NPC.whoAmI);
+                            if (Main.netMode != NetmodeID.MultiplayerClient)
+                            {
+                                Projectile.NewProjectile(NPC.GetSource_FromAI(), pos, Vector2.UnitY.RotatedBy(MathHelper.Lerp(0, MathHelper.TwoPi, i / 4f)), type, damage, 0f, Main.myPlayer, 0f, NPC.whoAmI);
+                            }
                         }
                         if (currentMode >= 1 && currentMode <= 3)
                         {
@@ -897,7 +897,8 @@ namespace CalamityMod.NPCs.BrimstoneElemental
                     ModContent.ItemType<RoseStone>(),
                 };
                 normalOnly.Add(DropHelper.CalamityStyle(DropHelper.NormalWeaponDropRateFraction, accs));
-                normalOnly.Add(DropHelper.PerPlayer(ModContent.ItemType<FlameLickedShell>()));
+                // 16NOV2025: Ozzatron: item has been chosen as the "Expert gatekept" item for this Calamity boss
+                // normalOnly.Add(DropHelper.PerPlayer(ModContent.ItemType<FlameLickedShell>()));
 
                 // Vanity
                 normalOnly.Add(ModContent.ItemType<BrimstoneElementalMask>(), 7);

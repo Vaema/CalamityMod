@@ -20,7 +20,7 @@ namespace CalamityMod.Items.Weapons.Summon
             Item.height = 60;
             Item.damage = 190;
             Item.DamageType = DamageClass.Summon;
-            Item.useAnimation = Item.useTime = 10;
+            Item.useAnimation = Item.useTime = 24;
             Item.mana = 10;
             Item.knockBack = 3f;
 

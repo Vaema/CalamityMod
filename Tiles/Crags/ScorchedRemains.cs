@@ -1,7 +1,4 @@
-﻿using System.Collections.Generic;
-using CalamityMod.Tiles.Ores;
-using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Graphics;
+﻿using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
@@ -28,8 +25,8 @@ namespace CalamityMod.Tiles.Crags
             MinPick = 100;
             AddMapEntry(new Color(57, 52, 72));
 
-            this.RegisterUniversalMerge(ModContent.TileType<BrimstoneSlag>(), "CalamityMod/Tiles/Merges/BrimstoneSlagMerge");
-            this.RegisterUniversalMerge(TileID.Ash, "CalamityMod/Tiles/Merges/AshMerge");
+            this.RegisterBlendMergeWith(ModContent.TileType<BrimstoneSlag>());
+            this.RegisterBlendMergeWith(TileID.Ash);
         }
 
         public override void RandomUpdate(int i, int j)
@@ -38,7 +35,7 @@ namespace CalamityMod.Tiles.Crags
             Tile left = Main.tile[i - 1, j];
             Tile right = Main.tile[i + 1, j];
 
-            if (WorldGen.genRand.NextBool(3)&& !up.HasTile && (left.TileType == ModContent.TileType<ScorchedRemainsGrass>() ||
+            if (WorldGen.genRand.NextBool(3) && !up.HasTile && (left.TileType == ModContent.TileType<ScorchedRemainsGrass>() ||
             right.TileType == ModContent.TileType<ScorchedRemainsGrass>()))
             {
                 Main.tile[i, j].TileType = (ushort)ModContent.TileType<ScorchedRemainsGrass>();

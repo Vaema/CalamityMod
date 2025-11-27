@@ -16,15 +16,16 @@ namespace CalamityMod.Tiles.SunkenSea.Ambient
             Main.tileSolidTop[Type] = false;
             Main.tileLighted[Type] = true;
 
+            TileObjectData.newTile.CopyFrom(TileObjectData.Style3x2);
             TileObjectData.newTile.StyleHorizontal = true;
-            TileObjectData.newTile.StyleWrapLimit = 4;
-            TileObjectData.newTile.RandomStyleRange = 4;
-
-            TileObjectData.newTile.CopyFrom(TileObjectData.Style3x3);
+            TileObjectData.newTile.StyleWrapLimit = 3;
+            TileObjectData.newTile.RandomStyleRange = 3;
+            TileObjectData.newTile.Height = 3;
+            TileObjectData.newTile.Origin = new Point16(1, 1);
+            TileObjectData.newTile.CoordinateHeights = new[] { 16, 16, 16 };
             TileObjectData.newTile.AnchorBottom = AnchorData.Empty;
-            TileObjectData.newTile.AnchorLeft = new AnchorData(AnchorType.SolidTile, 2, 0);
-            TileObjectData.newTile.DrawXOffset = -2;
-
+            TileObjectData.newTile.AnchorLeft = new AnchorData(AnchorType.SolidTile, 3, 0);
+            TileObjectData.newTile.DrawXOffset = 2;
             TileObjectData.addTile(Type);
 
             DustType = 253;

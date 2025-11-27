@@ -5,6 +5,7 @@ using CalamityMod.Projectiles.Typeless;
 using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.ID;
+using Terraria.Localization;
 using Terraria.ModLoader;
 
 namespace CalamityMod.Items.Accessories
@@ -12,10 +13,10 @@ namespace CalamityMod.Items.Accessories
     public class VoidofExtinction : ModItem, ILocalizedModType
     {
         public new string LocalizationCategory => "Items.Accessories";
-        public const int FireProjectiles = 2;
-        public const float FireAngleSpread = 120;
-        public int FireCountdown = 0;
-        public static int VoidExploDamage = 150;
+
+        public static int CritBoost = 13;
+        public static int VoidExploDamage = 40;
+        public override LocalizedText Tooltip => base.Tooltip.WithFormatArgs(CritBoost, Abaddon.BrimstoneFlamesReduction.ToPercent());
 
         public override void SetDefaults()
         {
@@ -41,7 +42,7 @@ namespace CalamityMod.Items.Accessories
             CalamityPlayer modPlayer = player.Calamity();
             modPlayer.voidOfExtinction = true;
             modPlayer.abaddon = true;
-            player.GetCritChance<GenericDamageClass>() += 13;
+            player.GetCritChance<GenericDamageClass>() += CritBoost;
 
         }
     }

@@ -25,9 +25,9 @@ namespace CalamityMod.Tiles
             TileID.Sets.CanBeClearedDuringOreRunner[Type] = true;
             TileID.Sets.HasSlopeFrames[Type] = true;
 
-            this.RegisterUniversalMerge(TileID.Dirt, "CalamityMod/Tiles/Merges/DirtMerge");
-            this.RegisterUniversalMerge(TileID.Stone, "CalamityMod/Tiles/Merges/StoneMerge");
-            this.RegisterUniversalMerge(TileID.Mud, "CalamityMod/Tiles/Merges/MudMerge");
+            this.RegisterBlendMergeWith(TileID.Dirt);
+            this.RegisterBlendMergeWith(TileID.Stone);
+            this.RegisterBlendMergeWith(TileID.Mud);
         }
 
         public override bool TileFrame(int i, int j, ref bool resetFrame, ref bool noBreak)

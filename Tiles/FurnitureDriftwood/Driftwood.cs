@@ -26,14 +26,11 @@ namespace CalamityMod.Tiles.FurnitureDriftwood
             DustType = DustID.Shadewood_Tree;
             AddMapEntry(new Color(136, 129, 154));
 
-            // 02JUN2024: Ozzatron: Dunesand has no merge
-            //TileFraming.SetUpUniversalMerge(Type, ModContent.TileType<Dunesand>(), out tileAdjacency);
-            // 02JUN2024: Ozzatron: Shellstone has no merge tile sheet defined
-            // TileFraming.SetUpUniversalMerge(Type, ModContent.TileType<Shellstone>(), out secondTileAdjacency);
-
-            this.RegisterUniversalMerge(TileID.Sandstone, "CalamityMod/Tiles/Merges/SandstoneMerge");
-            this.RegisterUniversalMerge(TileID.Sand, "CalamityMod/Tiles/Merges/SandMerge");
-            this.RegisterUniversalMerge(TileID.HardenedSand, "CalamityMod/Tiles/Merges/HardenedSandMerge");
+            this.RegisterBlendMergeWith(TileID.Sandstone);
+            this.RegisterBlendMergeWith(TileID.Sand);
+            this.RegisterBlendMergeWith(TileID.HardenedSand);
+            this.RegisterBlendMergeWith(ModContent.TileType<SunkenSea.Dunesand>());
+            this.RegisterBlendMergeWith(ModContent.TileType<SunkenSea.Shellstone>());
         }
 
         public override bool TileFrame(int i, int j, ref bool resetFrame, ref bool noBreak)

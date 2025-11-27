@@ -1,4 +1,5 @@
-﻿using CalamityMod.NPCs;
+﻿using CalamityMod.Enums;
+using CalamityMod.NPCs;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria;
@@ -18,7 +19,7 @@ namespace CalamityMod.Graphics.Renderers.CalamityRenderers
             private set;
         }
 
-        public override DrawLayer Layer => DrawLayer.NPC;
+        public override GeneralDrawLayer Layer => GeneralDrawLayer.AfterNPCs;
 
         public override bool ShouldDraw => !Main.gameMenu && CalamityDrawParameterNPC.DoGDeathAnimationTimer > 0;
 

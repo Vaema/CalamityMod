@@ -1,0 +1,996 @@
+﻿using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+using CalamityMod.Events;
+using CalamityMod.NPCs.AcidRain;
+using CalamityMod.NPCs.Astral;
+using CalamityMod.NPCs.Crags;
+using CalamityMod.NPCs.NormalNPCs;
+using CalamityMod.NPCs.PlagueEnemies;
+using CalamityMod.NPCs.PrimordialWyrm;
+using CalamityMod.NPCs.VanillaNPCAIOverrides;
+using CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses;
+using CalamityMod.NPCs.VanillaNPCAIOverrides.MiniBosses;
+using CalamityMod.NPCs.VanillaNPCAIOverrides.RegularEnemies;
+using CalamityMod.World;
+using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
+using Terraria;
+using Terraria.DataStructures;
+using Terraria.ID;
+using Terraria.ModLoader;
+using Terraria.ModLoader.IO;
+using static Terraria.ModLoader.ModContent;
+
+namespace CalamityMod.NPCs;
+
+public sealed class CalamityVanillaAIOverrideNPC : GlobalNPC
+{
+    /// <summary>
+    /// Specify the AI Override to work with. This handles AI, SendExtraAI and ReceiveExtraAI in instaned manner.
+    /// </summary>
+    public VanillaAIOverride AIOverride = null;
+
+    public static Dictionary<Type, int> NetIDLookup = [];
+
+    public const int InvalidNetID = 0;
+
+    #region Clone Logic
+    public override bool InstancePerEntity => true;
+
+    public override GlobalNPC Clone(NPC npc, NPC npcClone)
+    {
+        CalamityVanillaAIOverrideNPC clone = (CalamityVanillaAIOverrideNPC)base.Clone(npc, npcClone);
+        if (AIOverride != null)
+        {
+            clone.AIOverride = AIOverride.Clone();
+            clone.AIOverride.NPC = npcClone;
+        }
+        else
+        {
+            clone.AIOverride = null;
+        }
+        return clone;
+    }
+
+    #endregion
+
+    #region Vanilla AI Override Rule
+    public static VanillaAIOverride GetVanillaAIOverrideToApply(NPC npc)
+    {
+        if (npc == null)
+            return null;
+
+        if (npc.whoAmI < 0 || npc.whoAmI >= Main.maxNPCs)
+            return null;
+
+        if (!npc.active)
+            return null;
+
+        // Completely override the shitty AI and replace it
+        if (npc.type == NPCID.BloodNautilus)
+            return new DreadnautilusAI();
+
+        // Adult Wyrm Ancient Doom
+        if (npc.type == NPCID.AncientDoom)
+        {
+            if (Main.npc[(int)npc.ai[0]].type == NPCType<PrimordialWyrmHead>())
+                return new CultistAI.AncientDoomAI();
+        }
+
+        // Zenith seed Specifics
+        if (Main.zenithWorld)
+        {
+            if (npc.type == NPCID.QueenBee)
+                return new QueenBeeAI();
+        }
+
+        // Death Mode Specifics
+        if (CalamityWorld.death)
+        {
+            if (npc.type == NPCID.DetonatingBubble)
+                return new DukeFishronAI.DetonatingBubbleAI();
+        }
+
+        #region Rev+ Mode Boss/Miniboss AI Overrides
+
+        if (CalamityWorld.revenge || BossRushEvent.BossRushActive)
+        {
+            switch (npc.type)
+            {
+                case NPCID.KingSlime:
+                    return new KingSlimeAI();
+
+                case NPCID.EyeofCthulhu:
+                    return new EyeOfCthulhuAI();
+
+                case NPCID.EaterofWorldsHead or NPCID.EaterofWorldsBody or NPCID.EaterofWorldsTail:
+                    return new EaterOfWorldsAI();
+
+                case NPCID.BrainofCthulhu:
+                    return new BrainOfCthulhuAI();
+                case NPCID.Creeper:
+                    return new BrainOfCthulhuAI.CreeperAI();
+
+                case NPCID.QueenBee:
+                    return new QueenBeeAI();
+
+                case NPCID.SkeletronHead:
+                    return new SkeletronAI();
+                case NPCID.SkeletronHand:
+                    return new SkeletronAI.SkeletronHandAI();
+                case NPCID.DungeonGuardian:
+                    return new SkeletronAI.DungeonGuardianAI();
+
+                case NPCID.Deerclops:
+                    return new DeerclopsAI();
+
+                case NPCID.WallofFlesh:
+                    return new WallOfFleshAI();
+                case NPCID.WallofFleshEye:
+                    return new WallOfFleshAI.EyeAI();
+
+                case NPCID.QueenSlimeBoss:
+                    return new QueenSlimeAI();
+                case NPCID.QueenSlimeMinionBlue:
+                    return new QueenSlimeAI.CrystalSlimeAI();
+                case NPCID.QueenSlimeMinionPink:
+                    return new QueenSlimeAI.BouncySlimeAI();
+
+                case NPCID.TheDestroyer or NPCID.TheDestroyerBody or NPCID.TheDestroyerTail:
+                    return new DestroyerAI();
+                case NPCID.Probe:
+                    return new DestroyerAI.ProbeAI();
+
+                case NPCID.Retinazer:
+                    return new TwinsAI.RetinazerAI();
+                case NPCID.Spazmatism:
+                    return new TwinsAI.SpazmatismAI();
+
+                case NPCID.SkeletronPrime:
+                    return new SkeletronPrimeAI();
+                case NPCID.PrimeLaser:
+                    return new SkeletronPrimeAI.PrimeLaserAI();
+                case NPCID.PrimeCannon:
+                    return new SkeletronPrimeAI.PrimeCannonAI();
+                case NPCID.PrimeVice:
+                    return new SkeletronPrimeAI.PrimeViceAI();
+                case NPCID.PrimeSaw:
+                    return new SkeletronPrimeAI.PrimeSawAI();
+
+                case NPCID.Plantera:
+                    return new PlanteraAI();
+                case NPCID.PlanterasHook:
+                    return new PlanteraAI.HookAI();
+                case NPCID.PlanterasTentacle:
+                    return new PlanteraAI.TentacleAI();
+
+                case NPCID.HallowBoss:
+                    return new EmpressofLightAI();
+
+                case NPCID.Golem:
+                    return new GolemAI();
+                case NPCID.GolemFistLeft or NPCID.GolemFistRight:
+                    return new GolemAI.FistAI();
+                case NPCID.GolemHead:
+                    return new GolemAI.HeadAI();
+                case NPCID.GolemHeadFree:
+                    return new GolemAI.HeadFreeAI();
+
+                case NPCID.DukeFishron:
+                    return new DukeFishronAI();
+
+                case NPCID.Pumpking when DownedBossSystem.downedDoG:
+                    return new PumpkingAI();
+
+                case NPCID.PumpkingBlade when DownedBossSystem.downedDoG:
+                    return new PumpkingAI.BladeAI();
+
+                case NPCID.IceQueen when DownedBossSystem.downedDoG:
+                    return new IceQueenAI();
+
+                case NPCID.Mothron when DownedBossSystem.downedDoG:
+                    return new MothronAI();
+
+                case NPCID.CultistBoss or NPCID.CultistBossClone:
+                    return new CultistAI();
+                case NPCID.AncientLight:
+                    return new CultistAI.AncientLightAI();
+                case NPCID.AncientDoom:
+                    return new CultistAI.AncientDoomAI();
+
+                case NPCID.MoonLordCore:
+                case NPCID.MoonLordHand:
+                case NPCID.MoonLordHead:
+                case NPCID.MoonLordFreeEye:
+                case NPCID.MoonLordLeechBlob:
+                    return new MoonLordAI();
+            }
+            ;
+        }
+
+        #endregion
+
+        #region Rev+ Mode Regular Enemies AI Overrides
+
+        if (CalamityWorld.revenge)
+        {
+            switch (npc.aiStyle)
+            {
+                case NPCAIStyleID.Slime:
+                    if (npc.type == NPCType<BloomSlime>() || npc.type == NPCType<InfernalCongealment>() ||
+                        npc.type == NPCType<CrimulanBlightSlime>() || npc.type == NPCType<CryoSlime>() ||
+                        npc.type == NPCType<EbonianBlightSlime>() || npc.type == NPCType<PerennialSlime>() ||
+                        npc.type == NPCType<IrradiatedSlime>() || npc.type == NPCType<AstralSlime>())
+                    {
+                        return new SlimeAI();
+                    }
+                    else
+                    {
+                        switch (npc.type)
+                        {
+                            case NPCID.BlueSlime:
+                            case NPCID.MotherSlime:
+                            case NPCID.LavaSlime:
+                            case NPCID.DungeonSlime:
+                            case NPCID.CorruptSlime:
+                            case NPCID.IlluminantSlime:
+                            case NPCID.ToxicSludge:
+                            case NPCID.IceSlime:
+                            case NPCID.Crimslime:
+                            case NPCID.SpikedIceSlime:
+                            case NPCID.SpikedJungleSlime:
+                            case NPCID.UmbrellaSlime:
+                            case NPCID.RainbowSlime:
+                            case NPCID.SlimeMasked:
+                            case NPCID.HoppinJack:
+                            case NPCID.SlimeRibbonWhite:
+                            case NPCID.SlimeRibbonYellow:
+                            case NPCID.SlimeRibbonGreen:
+                            case NPCID.SlimeRibbonRed:
+                            case NPCID.SandSlime:
+                            case NPCID.SlimeSpiked:
+                            case NPCID.GoldenSlime:
+                            case NPCID.ShimmerSlime:
+                                return new SlimeAI();
+                        }
+                    }
+                    break;
+
+                case NPCAIStyleID.DemonEye:
+                    if (npc.type == NPCType<CalamityEye>())
+                    {
+                        return new DemonEyeAI();
+                    }
+                    else
+                    {
+                        switch (npc.type)
+                        {
+                            case NPCID.DemonEye:
+                            case NPCID.TheHungryII:
+                            case NPCID.WanderingEye:
+                            case NPCID.PigronCorruption:
+                            case NPCID.PigronHallow:
+                            case NPCID.PigronCrimson:
+                            case NPCID.CataractEye:
+                            case NPCID.SleepyEye:
+                            case NPCID.DialatedEye:
+                            case NPCID.GreenEye:
+                            case NPCID.PurpleEye:
+                            case NPCID.DemonEyeOwl:
+                            case NPCID.DemonEyeSpaceship:
+                                return new DemonEyeAI();
+                        }
+                    }
+                    break;
+
+                case NPCAIStyleID.Fighter:
+                    if (npc.type == NPCType<Stormlion>() || npc.type == NPCType<BucketZombie>() ||
+                        npc.type == NPCType<AstralachneaGround>() || npc.type == NPCType<RenegadeWarlock>())
+                    {
+                        return new RevengeanceAndDeathAI.FighterAI();
+                    }
+                    else
+                    {
+                        switch (npc.type)
+                        {
+                            case NPCID.Zombie:
+                            case NPCID.ArmedZombie:
+                            case NPCID.ArmedZombieEskimo:
+                            case NPCID.ArmedZombiePincussion:
+                            case NPCID.ArmedZombieSlimed:
+                            case NPCID.ArmedZombieSwamp:
+                            case NPCID.ArmedZombieTwiggy:
+                            case NPCID.ArmedZombieCenx:
+                            case NPCID.Skeleton:
+                            case NPCID.SporeSkeleton:
+                            case NPCID.AngryBones:
+                            case NPCID.UndeadMiner:
+                            case NPCID.CorruptBunny:
+                            case NPCID.DoctorBones:
+                            case NPCID.TheGroom:
+                            case NPCID.Crab:
+                            case NPCID.GoblinScout:
+                            case NPCID.ArmoredSkeleton:
+                            case NPCID.Mummy:
+                            case NPCID.DarkMummy:
+                            case NPCID.LightMummy:
+                            case NPCID.Werewolf:
+                            case NPCID.Clown:
+                            case NPCID.SkeletonArcher:
+                            case NPCID.ChaosElemental:
+                            case NPCID.BaldZombie:
+                            case NPCID.PossessedArmor:
+                            case NPCID.ZombieEskimo:
+                            case NPCID.UndeadViking:
+                            case NPCID.CorruptPenguin:
+                            case NPCID.FaceMonster:
+                            case NPCID.SnowFlinx:
+                            case NPCID.PincushionZombie:
+                            case NPCID.SlimedZombie:
+                            case NPCID.SwampZombie:
+                            case NPCID.TwiggyZombie:
+                            case NPCID.Nymph:
+                            case NPCID.ArmoredViking:
+                            case NPCID.Lihzahrd:
+                            case NPCID.LihzahrdCrawler:
+                            case NPCID.FemaleZombie:
+                            case NPCID.HeadacheSkeleton:
+                            case NPCID.MisassembledSkeleton:
+                            case NPCID.PantlessSkeleton:
+                            case NPCID.IcyMerman:
+                            case NPCID.PirateDeckhand:
+                            case NPCID.PirateCorsair:
+                            case NPCID.PirateDeadeye:
+                            case NPCID.PirateCrossbower:
+                            case NPCID.PirateCaptain:
+                            case NPCID.CochinealBeetle:
+                            case NPCID.CyanBeetle:
+                            case NPCID.LacBeetle:
+                            case NPCID.SeaSnail:
+                            case NPCID.ZombieRaincoat:
+                            case NPCID.ZombieMushroom:
+                            case NPCID.ZombieMushroomHat:
+                            case NPCID.AnomuraFungus:
+                            case NPCID.MushiLadybug:
+                            case NPCID.RustyArmoredBonesAxe:
+                            case NPCID.RustyArmoredBonesFlail:
+                            case NPCID.RustyArmoredBonesSword:
+                            case NPCID.RustyArmoredBonesSwordNoArmor:
+                            case NPCID.BlueArmoredBones:
+                            case NPCID.BlueArmoredBonesMace:
+                            case NPCID.BlueArmoredBonesNoPants:
+                            case NPCID.BlueArmoredBonesSword:
+                            case NPCID.HellArmoredBones:
+                            case NPCID.HellArmoredBonesSpikeShield:
+                            case NPCID.HellArmoredBonesMace:
+                            case NPCID.HellArmoredBonesSword:
+                            case NPCID.Paladin:
+                            case NPCID.SkeletonSniper:
+                            case NPCID.SkeletonCommando:
+                            case NPCID.AngryBonesBig:
+                            case NPCID.AngryBonesBigMuscle:
+                            case NPCID.AngryBonesBigHelmet:
+                            case NPCID.Scarecrow1:
+                            case NPCID.Scarecrow2:
+                            case NPCID.Scarecrow3:
+                            case NPCID.Scarecrow4:
+                            case NPCID.Scarecrow5:
+                            case NPCID.Scarecrow6:
+                            case NPCID.Scarecrow7:
+                            case NPCID.Scarecrow8:
+                            case NPCID.Scarecrow9:
+                            case NPCID.Scarecrow10:
+                            case NPCID.ZombieDoctor:
+                            case NPCID.ZombieSuperman:
+                            case NPCID.ZombiePixie:
+                            case NPCID.SkeletonTopHat:
+                            case NPCID.SkeletonAstonaut:
+                            case NPCID.SkeletonAlien:
+                            case NPCID.Splinterling:
+                            case NPCID.ZombieXmas:
+                            case NPCID.ZombieSweater:
+                            case NPCID.ZombieElf:
+                            case NPCID.ZombieElfBeard:
+                            case NPCID.ZombieElfGirl:
+                            case NPCID.GingerbreadMan:
+                            case NPCID.Yeti:
+                            case NPCID.Nutcracker:
+                            case NPCID.NutcrackerSpinning:
+                            case NPCID.ElfArcher:
+                            case NPCID.Krampus:
+                            case NPCID.CultistArcherBlue:
+                            case NPCID.CultistArcherWhite:
+                            case NPCID.BrainScrambler:
+                            case NPCID.RayGunner:
+                            case NPCID.MartianOfficer:
+                            case NPCID.GrayGrunt:
+                            case NPCID.MartianEngineer:
+                            case NPCID.GigaZapper:
+                            case NPCID.Scutlix:
+                            case NPCID.BoneThrowingSkeleton:
+                            case NPCID.BoneThrowingSkeleton2:
+                            case NPCID.BoneThrowingSkeleton3:
+                            case NPCID.BoneThrowingSkeleton4:
+                            case NPCID.CrimsonBunny:
+                            case NPCID.CrimsonPenguin:
+                            case NPCID.Medusa:
+                            case NPCID.GreekSkeleton:
+                            case NPCID.GraniteGolem:
+                            case NPCID.BloodZombie:
+                            case NPCID.Crawdad:
+                            case NPCID.Crawdad2:
+                            case NPCID.Salamander:
+                            case NPCID.Salamander2:
+                            case NPCID.Salamander3:
+                            case NPCID.Salamander4:
+                            case NPCID.Salamander5:
+                            case NPCID.Salamander6:
+                            case NPCID.Salamander7:
+                            case NPCID.Salamander8:
+                            case NPCID.Salamander9:
+                            case NPCID.GiantWalkingAntlion:
+                            case NPCID.WalkingAntlion:
+                            case NPCID.LarvaeAntlion:
+                            case NPCID.DesertGhoul:
+                            case NPCID.DesertGhoulCorruption:
+                            case NPCID.DesertGhoulCrimson:
+                            case NPCID.DesertGhoulHallow:
+                            case NPCID.DesertLamiaLight:
+                            case NPCID.DesertLamiaDark:
+                            case NPCID.DesertScorpionWalk:
+                            case NPCID.DesertBeast:
+                            case NPCID.StardustSoldier:
+                            case NPCID.StardustSpiderBig:
+                            case NPCID.NebulaSoldier:
+                            case NPCID.VortexSoldier:
+                            case NPCID.SolarDrakomire:
+                            case NPCID.SolarSpearman:
+                            case NPCID.SolarSolenian:
+                            case NPCID.Frankenstein:
+                            case NPCID.SwampThing:
+                            case NPCID.Vampire:
+                            case NPCID.Butcher:
+                            case NPCID.CreatureFromTheDeep:
+                            case NPCID.Fritz:
+                            case NPCID.Psycho:
+                            case NPCID.ThePossessed:
+                            case NPCID.DrManFly:
+                            case NPCID.GoblinPeon:
+                            case NPCID.GoblinThief:
+                            case NPCID.GoblinWarrior:
+                            case NPCID.GoblinArcher:
+                            case NPCID.GoblinSummoner:
+                            case NPCID.MartianWalker:
+                            case NPCID.DemonTaxCollector:
+                            case NPCID.TheBride:
+                                return new RevengeanceAndDeathAI.FighterAI();
+                        }
+                    }
+                    break;
+
+                case NPCAIStyleID.Flying:
+                    switch (npc.type)
+                    {
+                        case NPCID.ServantofCthulhu:
+                        case NPCID.EaterofSouls:
+                        case NPCID.MeteorHead:
+                        case NPCID.Crimera:
+                        case NPCID.Moth:
+                        case NPCID.Parrot:
+                        case NPCID.Bee:
+                        case NPCID.BeeSmall:
+                        case NPCID.Hornet:
+                        case NPCID.HornetFatty:
+                        case NPCID.HornetHoney:
+                        case NPCID.HornetLeafy:
+                        case NPCID.HornetSpikey:
+                        case NPCID.HornetStingy:
+                        case NPCID.MossHornet:
+                            return new RevengeanceAndDeathAI.FlyingAI();
+                    }
+                    break;
+
+                case NPCAIStyleID.Worm:
+                    switch (npc.type)
+                    {
+                        case NPCID.DevourerHead:
+                        case NPCID.DevourerBody:
+                        case NPCID.DevourerTail:
+                        case NPCID.GiantWormHead:
+                        case NPCID.GiantWormBody:
+                        case NPCID.GiantWormTail:
+                        case NPCID.BoneSerpentHead:
+                        case NPCID.BoneSerpentBody:
+                        case NPCID.BoneSerpentTail:
+                        case NPCID.WyvernHead:
+                        case NPCID.WyvernLegs:
+                        case NPCID.WyvernBody:
+                        case NPCID.WyvernBody2:
+                        case NPCID.WyvernBody3:
+                        case NPCID.WyvernTail:
+                        case NPCID.LeechHead:
+                        case NPCID.LeechBody:
+                        case NPCID.LeechTail:
+                        case NPCID.TombCrawlerHead:
+                        case NPCID.TombCrawlerBody:
+                        case NPCID.TombCrawlerTail:
+                        case NPCID.StardustWormHead:
+                        case NPCID.SolarCrawltipedeHead:
+                        case NPCID.SolarCrawltipedeBody:
+                        case NPCID.SolarCrawltipedeTail:
+                        case NPCID.BloodEelHead:
+                        case NPCID.BloodEelBody:
+                        case NPCID.BloodEelTail:
+                            return new RevengeanceAndDeathAI.WormAI();
+                    }
+                    break;
+
+                case NPCAIStyleID.ManEater:
+                    switch (npc.type)
+                    {
+                        case NPCID.ManEater:
+                        case NPCID.Snatcher:
+                        case NPCID.Clinger:
+                        case NPCID.AngryTrapper:
+                        case NPCID.FungiBulb:
+                        case NPCID.GiantFungiBulb:
+                            return new RevengeanceAndDeathAI.PlantAI();
+                    }
+                    break;
+
+                case NPCAIStyleID.Bat:
+                    if (npc.type == NPCType<StellarCulex>() || npc.type == NPCType<Melter>() || npc.type == NPCType<AeroSlime>())
+                    {
+                        return new RevengeanceAndDeathAI.BatAI();
+                    }
+                    else
+                    {
+                        switch (npc.type)
+                        {
+                            case NPCID.CaveBat:
+                            case NPCID.JungleBat:
+                            case NPCID.Hellbat:
+                            case NPCID.GiantBat:
+                            case NPCID.Slimer:
+                            case NPCID.IlluminantBat:
+                            case NPCID.IceBat:
+                            case NPCID.Lavabat:
+                            case NPCID.GiantFlyingFox:
+                            case NPCID.FlyingSnake:
+                            case NPCID.VampireBat:
+                            case NPCID.SporeBat:
+                                return new RevengeanceAndDeathAI.BatAI();
+                        }
+                    }
+                    break;
+
+                case NPCAIStyleID.Piranha:
+                    switch (npc.type)
+                    {
+                        case NPCID.CorruptGoldfish:
+                        case NPCID.Piranha:
+                        case NPCID.Shark:
+                        case NPCID.AnglerFish:
+                        case NPCID.Arapaima:
+                        case NPCID.BloodFeeder:
+                        case NPCID.CrimsonGoldfish:
+                            return new RevengeanceAndDeathAI.SwimmingAI();
+                    }
+                    break;
+
+                case NPCAIStyleID.Jellyfish:
+                    switch (npc.type)
+                    {
+                        case NPCID.BlueJellyfish:
+                        case NPCID.PinkJellyfish:
+                        case NPCID.GreenJellyfish:
+                        case NPCID.Squid:
+                        case NPCID.BloodJelly:
+                        case NPCID.FungoFish:
+                            return new RevengeanceAndDeathAI.JellyfishAI();
+                    }
+                    break;
+
+                case NPCAIStyleID.SpikeBall:
+                    switch (npc.type)
+                    {
+                        case NPCID.SpikeBall:
+                            return new RevengeanceAndDeathAI.SpikeBallAI();
+                    }
+                    break;
+
+                case NPCAIStyleID.BlazingWheel:
+                    switch (npc.type)
+                    {
+                        case NPCID.BlazingWheel:
+                            return new RevengeanceAndDeathAI.BlazingWheelAI();
+                    }
+                    break;
+
+                case NPCAIStyleID.HoveringFighter:
+                    switch (npc.type)
+                    {
+                        case NPCID.Pixie:
+                        case NPCID.Wraith:
+                        case NPCID.Gastropod:
+                        case NPCID.FloatyGross:
+                        case NPCID.Ghost:
+                        case NPCID.Poltergeist:
+                        case NPCID.Drippler:
+                        case NPCID.Reaper:
+                            return new RevengeanceAndDeathAI.HoveringAI();
+                    }
+                    break;
+
+                case NPCAIStyleID.EnchantedSword:
+                    switch (npc.type)
+                    {
+                        case NPCID.CursedHammer:
+                        case NPCID.EnchantedSword:
+                        case NPCID.CrimsonAxe:
+                            return new RevengeanceAndDeathAI.FlyingWeaponAI();
+                    }
+                    break;
+
+                case NPCAIStyleID.Mimic:
+                    switch (npc.type)
+                    {
+                        case NPCID.Mimic:
+                        case NPCID.PresentMimic:
+                        case NPCID.IceMimic:
+                            return new RevengeanceAndDeathAI.MimicAI();
+                    }
+                    break;
+
+                case NPCAIStyleID.Unicorn:
+                    if (npc.type == NPCType<Rotdog>())
+                    {
+                        return new RevengeanceAndDeathAI.UnicornAI();
+                    }
+                    else
+                    {
+                        switch (npc.type)
+                        {
+                            case NPCID.Unicorn:
+                            case NPCID.Wolf:
+                            case NPCID.HeadlessHorseman:
+                            case NPCID.Hellhound:
+                            case NPCID.StardustSpiderSmall:
+                            case NPCID.NebulaBeast:
+                            case NPCID.Tumbleweed:
+                                return new RevengeanceAndDeathAI.UnicornAI();
+                        }
+                    }
+                    break;
+
+                case NPCAIStyleID.TheHungry:
+                    switch (npc.type)
+                    {
+                        case NPCID.TheHungry:
+                            return new WallOfFleshAI.HungryAI();
+                    }
+                    break;
+
+                case NPCAIStyleID.GiantTortoise:
+                    if (npc.type == NPCType<Plagueshell>())
+                    {
+                        return new RevengeanceAndDeathAI.TortoiseAI();
+                    }
+                    else
+                    {
+                        switch (npc.type)
+                        {
+                            case NPCID.GiantTortoise:
+                            case NPCID.IceTortoise:
+                            case NPCID.GiantShelly:
+                            case NPCID.GiantShelly2:
+                            case NPCID.SolarSroller:
+                                return new RevengeanceAndDeathAI.TortoiseAI();
+                        }
+                    }
+                    break;
+
+                case NPCAIStyleID.Spider:
+                    switch (npc.type)
+                    {
+                        case NPCID.DesertScorpionWall:
+                            return new RevengeanceAndDeathAI.SpiderAI();
+                    }
+                    break;
+
+                case NPCAIStyleID.Herpling:
+                    if (npc.type == NPCType<Aries>())
+                    {
+                        return new RevengeanceAndDeathAI.HerplingAI();
+                    }
+                    else
+                    {
+                        switch (npc.type)
+                        {
+                            case NPCID.Herpling:
+                            case NPCID.Derpling:
+                            case NPCID.ChatteringTeethBomb:
+                                return new RevengeanceAndDeathAI.HerplingAI();
+                        }
+                    }
+                    break;
+
+                case NPCAIStyleID.FlyingFish:
+                    switch (npc.type)
+                    {
+                        case NPCID.FlyingFish:
+                        case NPCID.GiantFlyingAntlion:
+                        case NPCID.FlyingAntlion:
+                        case NPCID.EyeballFlyingFish:
+                            return new RevengeanceAndDeathAI.FlyingFishAI();
+                    }
+                    break;
+
+                case NPCAIStyleID.AngryNimbus:
+                    switch (npc.type)
+                    {
+                        case NPCID.AngryNimbus:
+                            return new RevengeanceAndDeathAI.AngryNimbusAI();
+                    }
+                    break;
+
+                case NPCAIStyleID.TeslaTurret:
+                    switch (npc.type)
+                    {
+                        case NPCID.MartianTurret:
+                            return new RevengeanceAndDeathAI.TeslaTurretAI();
+                    }
+                    break;
+
+                case NPCAIStyleID.Corite:
+                    switch (npc.type)
+                    {
+                        case NPCID.MartianDrone:
+                        case NPCID.SolarCorite:
+                            return new RevengeanceAndDeathAI.CoriteAI();
+                    }
+                    break;
+
+                case NPCAIStyleID.MartianProbe:
+                    switch (npc.type)
+                    {
+                        case NPCID.MartianProbe:
+                            return new RevengeanceAndDeathAI.MartianProbeAI();
+                    }
+                    break;
+
+                case NPCAIStyleID.StarCell:
+                    switch (npc.type)
+                    {
+                        case NPCID.StardustCellBig:
+                        case NPCID.NebulaHeadcrab:
+                        case NPCID.DeadlySphere:
+                            return new RevengeanceAndDeathAI.StarCellAI();
+                    }
+                    break;
+
+                case NPCAIStyleID.AncientVision:
+                    switch (npc.type)
+                    {
+                        case NPCID.ShadowFlameApparition:
+                        case NPCID.AncientCultistSquidhead:
+                            return new RevengeanceAndDeathAI.AncientVisionAI();
+                    }
+                    break;
+
+                case NPCAIStyleID.BiomeMimic:
+                    switch (npc.type)
+                    {
+                        case NPCID.BigMimicCorruption:
+                        case NPCID.BigMimicCrimson:
+                        case NPCID.BigMimicHallow:
+                        case NPCID.BigMimicJungle:
+                            return new RevengeanceAndDeathAI.BigMimicAI();
+                    }
+                    break;
+
+                case NPCAIStyleID.MothronEgg:
+                    switch (npc.type)
+                    {
+                        case NPCID.MothronEgg:
+                            return new RevengeanceAndDeathAI.MothronEggAI();
+                    }
+                    break;
+
+                case NPCAIStyleID.GraniteElemental:
+                    switch (npc.type)
+                    {
+                        case NPCID.GraniteFlyer:
+                            return new RevengeanceAndDeathAI.GraniteElementalAI();
+                    }
+                    break;
+
+                case NPCAIStyleID.SmallStarCell:
+                    switch (npc.type)
+                    {
+                        case NPCID.StardustCellSmall:
+                            return new RevengeanceAndDeathAI.SmallStarCellAI();
+                    }
+                    break;
+
+                case NPCAIStyleID.FlowInvader:
+                    switch (npc.type)
+                    {
+                        case NPCID.StardustJellyfishBig:
+                            return new RevengeanceAndDeathAI.FlowInvaderAI();
+                    }
+                    break;
+
+                case NPCAIStyleID.Spore:
+                    switch (npc.type)
+                    {
+                        case NPCID.Spore:
+                        case NPCID.FungiSpore:
+                            return new RevengeanceAndDeathAI.SporeAI();
+                    }
+                    break;
+            }
+        }
+
+        #endregion
+
+        return null;
+    }
+    #endregion
+
+    public override void Load()
+    {
+        On_NPC.UpdateNPC_Inner += OnNPCUpdate;
+    }
+
+    private void OnNPCUpdate(On_NPC.orig_UpdateNPC_Inner orig, NPC self, int i)
+    {
+        var npc = self.AIOverrideNPC();
+        if (npc?.AIOverride?.DisableMultiplayerSmoothing ?? false)
+        {
+            self.netOffset = Vector2.Zero;
+        }
+
+        orig(self, i);
+    }
+
+    public override void SetStaticDefaults()
+    {
+        NetIDLookup.Clear();
+
+        int uniqueID = 1;
+        ReflectionHelper.IterateEveryModsTypes<VanillaAIOverride>(action: type =>
+        {
+            NetIDLookup[type] = uniqueID;
+            uniqueID++;
+        });
+    }
+
+    public override void SetDefaults(NPC npc)
+    {
+        // Clients will get their instance in ReceiveExtraAI
+        if (Main.netMode != NetmodeID.MultiplayerClient)
+        {
+            AIOverride = GetVanillaAIOverrideToApply(npc);
+
+            if (AIOverride != null)
+            {
+                AIOverride.NPC = npc;
+                AIOverride.SetDefaults(Mod);
+            }
+        }
+    }
+
+    #region Hooks
+
+    public override void OnSpawn(NPC npc, IEntitySource source)
+    {
+        AIOverride?.OnSpawn(Mod);
+    }
+
+    public override bool PreAI(NPC npc)
+    {
+        if (AIOverride != null)
+        {
+            return AIOverride.AI(Mod);
+        }
+
+        return base.PreAI(npc);
+    }
+
+    public override void PostAI(NPC npc)
+    {
+        AIOverride?.PostAI(Mod);
+    }
+
+    public override void HitEffect(NPC npc, NPC.HitInfo hit)
+    {
+        AIOverride?.HitEffect(Mod, hit);
+    }
+
+    public override void FindFrame(NPC npc, int frameHeight)
+    {
+        AIOverride?.FindFrame(Mod, frameHeight);
+    }
+
+    public override bool PreDraw(NPC npc, SpriteBatch spriteBatch, Vector2 screenPos, Color drawColor)
+    {
+        if (AIOverride != null)
+            return AIOverride.PreDraw(Mod, spriteBatch, screenPos, drawColor);
+        return base.PreDraw(npc, spriteBatch, screenPos, drawColor);
+    }
+
+    #endregion
+
+    #region Networking
+
+    public static int GetNetID(VanillaAIOverride aiOverride)
+    {
+        if (aiOverride == null)
+            return InvalidNetID;
+
+        if (!NetIDLookup.TryGetValue(aiOverride.GetType(), out var netID))
+            return InvalidNetID;
+
+        return netID;
+    }
+
+    public static bool TryGetNetID(VanillaAIOverride aIOverride, out int netID)
+    {
+        netID = GetNetID(aIOverride);
+        return netID != InvalidNetID;
+    }
+
+    public static VanillaAIOverride GetNewInstanceOrNullFromNetID(int netID, NPC ownerNPC)
+    {
+        var type = NetIDLookup.FirstOrDefault(kv => kv.Value == netID).Key;
+
+        if (type == null)
+            return null;
+
+        var instance = (VanillaAIOverride)Activator.CreateInstance(type);
+        if (instance == null)
+            return null;
+
+        instance.NPC = ownerNPC;
+        return instance;
+    }
+
+    public override void SendExtraAI(NPC npc, BitWriter bitWriter, BinaryWriter binaryWriter)
+    {
+        // OnKill or any similar hooks are not reliable for checking these.
+        // As SetDefaults being called on deactivated/dead NPC before ReceiveExtraAI, Prevent Sending ExtraAI is only clean way to do.
+        if (!npc.active || npc.life <= 0)
+        {
+            AIOverride = null;
+            binaryWriter.Write7BitEncodedInt(InvalidNetID);
+            return;
+        }
+
+        if (!TryGetNetID(AIOverride, out var netID))
+        {
+            binaryWriter.Write7BitEncodedInt(InvalidNetID);
+            return;
+        }
+
+        binaryWriter.Write7BitEncodedInt(netID);
+        AIOverride.SendExtraAI(bitWriter, binaryWriter);
+    }
+
+    public override void ReceiveExtraAI(NPC npc, BitReader bitReader, BinaryReader binaryReader)
+    {
+        var remoteNetID = binaryReader.Read7BitEncodedInt();
+        var localNetID = GetNetID(AIOverride);
+        if (localNetID != remoteNetID)
+        {
+            AIOverride = GetNewInstanceOrNullFromNetID(remoteNetID, npc);
+            AIOverride?.SetDefaults(Mod);
+        }
+
+        AIOverride?.ReceiveExtraAI(bitReader, binaryReader);
+    }
+
+    #endregion
+}

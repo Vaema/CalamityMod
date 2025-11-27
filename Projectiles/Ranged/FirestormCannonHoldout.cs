@@ -27,7 +27,7 @@ namespace CalamityMod.Projectiles.Ranged
         public static readonly SoundStyle OverheatSound = new("CalamityMod/Sounds/Item/HeliumFlashSteamRelease");
         public SlotId WarningSlot;
         public ref float Timer => ref Projectile.ai[0];
-        private int BuiltHeat => (Owner.ActiveItem().ModItem as FirestormCannon).BuiltUpHeat;
+        private int BuiltHeat => (Owner.HeldItem.ModItem as FirestormCannon).BuiltUpHeat;
         private bool displayOverheat = false;
         private const int WarningTime = FirestormCannon.OverheatLevel - 100;
 
@@ -47,7 +47,7 @@ namespace CalamityMod.Projectiles.Ranged
             // Not holding the item
             // Right-clicking (Can kill it early) (Does not work if in overheat state)
             // Completely cooling while not firing
-            if (Owner.CantUseHoldout(false) || HeldItem.type != Owner.ActiveItem().type ||
+            if (Owner.CantUseHoldout(false) || HeldItem.type != Owner.HeldItem.type ||
                 (Owner.Calamity().mouseRight && !displayOverheat) || (BuiltHeat == 0 && !Main.mouseLeft))
             {
                 if (SoundEngine.TryGetActiveSound(WarningSlot, out var warn))
@@ -68,7 +68,7 @@ namespace CalamityMod.Projectiles.Ranged
             // Once holding the fire button down long enough, start actually firing
             if (Timer >= 30)
             {
-                // For some reason using ActiveItem() here breaks its functionality while being held on the cursor
+                // For some reason using HeldItem here breaks its functionality while being held on the cursor
                 (Owner.HeldItem.ModItem as FirestormCannon).BuiltUpHeat++;
 
                 // Overheat yourself if you fire too long
@@ -106,7 +106,7 @@ namespace CalamityMod.Projectiles.Ranged
                     if (Main.myPlayer == Projectile.owner)
                     {
                         Owner.PickAmmo(HeldItem, out int flareType, out _, out _, out _, out _, Main.rand.Next(100) >= 70);
-                        Vector2 velocity = Projectile.velocity.RotatedByRandom(MathHelper.Pi * 0.04f * (1f + firingLerp * 0.5f)) * Owner.ActiveItem().shootSpeed;
+                        Vector2 velocity = Projectile.velocity.RotatedByRandom(MathHelper.Pi * 0.04f * (1f + firingLerp * 0.5f)) * Owner.HeldItem.shootSpeed;
                         Projectile flare = Projectile.NewProjectileDirect(Projectile.GetSource_FromThis(), GunTipPosition, velocity, flareType, Projectile.damage, Projectile.knockBack, Projectile.owner, 0f, 0f, 1f);
                         flare.penetrate = 3;
                         flare.MaxUpdates = 2;

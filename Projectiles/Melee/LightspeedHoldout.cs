@@ -44,8 +44,8 @@ namespace CalamityMod.Projectiles.Melee
         public ref float DashState => ref Projectile.ai[1];
         public ref float DashTimer => ref Projectile.ai[2];
         private const float DashPrepTime = 40f;
-        private const float DashSpeed = 42f;
-        private const float DashDuration = 36f;
+        private const float DashSpeed = 46f;
+        private const float DashDuration = 38f;
         private const float DashAcceleration = 0.9865f;
         private float AltSpinRotation = 0f;
         public bool createdSmear = false;
@@ -298,6 +298,20 @@ namespace CalamityMod.Projectiles.Melee
                     Projectile.Center = Owner.Center + orbitalAngle.ToRotationVector2() * orbitRadius;
                     float tangentAngle = orbitalAngle + (initialDirectionForThisAnim == 1 ? MathHelper.PiOver4 : -MathHelper.PiOver4 + MathHelper.Pi);
                     Projectile.rotation = tangentAngle;
+
+                    // Proper arm positioning
+                    Vector2 armDirection = Projectile.Center - Owner.Center;
+                    float baseArmRotation = armDirection.ToRotation();
+
+                    float compositeArmRotation = baseArmRotation + (initialDirectionForThisAnim == 1 ? MathHelper.TwoPi * 0.75f : -MathHelper.PiOver2);
+                    Owner.SetCompositeArmFront(true, CompositeArmStretchAmount.Full, compositeArmRotation);
+                    Owner.SetCompositeArmBack(true, CompositeArmStretchAmount.Full, 0f);
+
+                    Owner.itemRotation = baseArmRotation;
+                    if (Owner.direction == -1)
+                        Owner.itemRotation += MathHelper.Pi;
+                    
+                    Owner.itemRotation = MathHelper.WrapAngle(Owner.itemRotation);
                 }
 
                 // Mid-spin VFX
@@ -348,10 +362,11 @@ namespace CalamityMod.Projectiles.Melee
                 Vector2 dashVelocity = Projectile.velocity;
                 Owner.velocity = dashVelocity;
                 Owner.ChangeDir(Math.Sign(dashVelocity.X));
+                Owner.Calamity().LungingDown = true;
 
                 Projectile.velocity *= DashAcceleration;
 
-                Projectile.scale = MathHelper.Lerp(1f, 0.3f, MathF.Pow(1f - DashTimer / DashDuration, 5));
+                Projectile.scale = MathHelper.Lerp(1f, 0.4f, MathF.Pow(1f - DashTimer / DashDuration, 5));
 
                 Owner.heldProj = Projectile.whoAmI;
                 Owner.itemTime = Owner.itemAnimation = 2;
@@ -359,6 +374,7 @@ namespace CalamityMod.Projectiles.Melee
                 if (DashTimer <= 0)
                 {
                     Owner.velocity *= 0.1f;
+                    Owner.Calamity().LungingDown = false;
                     Projectile.Kill();
                 }
             }

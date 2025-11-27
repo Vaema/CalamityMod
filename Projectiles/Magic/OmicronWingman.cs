@@ -66,7 +66,7 @@ namespace CalamityMod.Projectiles.Magic
                 MovingUp = Projectile.ai[2] == 1;
 
             firingDelay--;
-            Item heldItem = Owner.ActiveItem();
+            Item heldItem = Owner.HeldItem;
 
             // Update damage based on curent magic damage stat (so Mana Sickness affects it)
             Projectile.damage = heldItem is null ? 0 : Owner.GetWeaponDamage(heldItem);
@@ -89,7 +89,7 @@ namespace CalamityMod.Projectiles.Magic
                     if (launchDelay < 50)
                         launchDelay++;
 
-                    if (launchDelay >= 50 && (Owner.CheckMana(Owner.ActiveItem(), (int)(heldItem.mana * Owner.manaCost) * 2, true, false)))
+                    if (launchDelay >= 50 && (Owner.CheckMana(Owner.HeldItem, (int)(heldItem.mana * Owner.manaCost) * 2, true, false)))
                     {
                         Shoot(true);
                         PostFireCooldown = 50;
@@ -99,7 +99,7 @@ namespace CalamityMod.Projectiles.Magic
                 }
                 else if (ShootingTimer >= FiringTime)
                 {
-                    if (Owner.CheckMana(Owner.ActiveItem(), -1, false, false))
+                    if (Owner.CheckMana(Owner.HeldItem, -1, false, false))
                     {
                         Shoot(false);
                         ShootingTimer = 0;

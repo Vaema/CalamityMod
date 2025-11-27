@@ -3,6 +3,7 @@ using System.Threading;
 using CalamityMod.Items.Accessories.Vanity;
 using CalamityMod.Items.SummonItems;
 using CalamityMod.Items.Weapons.Rogue;
+using CalamityMod.Items.Weapons.Summon;
 using CalamityMod.Tiles.AstralSnow;
 using CalamityMod.Tiles.Ores;
 using CalamityMod.World;
@@ -67,9 +68,6 @@ namespace CalamityMod.Systems
                     progress.Message = Language.GetOrRegister("Mods.CalamityMod.UI.UnderworldStructures").Value;
                     CustomUnderworld.NewUnderworldStructures();
 
-                    progress.Message = Language.GetOrRegister("Mods.CalamityMod.UI.UnderworldPillars").Value;
-                    CustomUnderworld.NewUnderworldPillars();
-
                     progress.Message = Language.GetOrRegister("Mods.CalamityMod.UI.UnderworldTreesAndGrass").Value;
                     CustomUnderworld.AshTreesAndGrass();
 
@@ -104,6 +102,24 @@ namespace CalamityMod.Systems
                 {
                     progress.Message = Language.GetOrRegister("Mods.CalamityMod.UI.AstralChest").Value;
                     AstralChestGeneration.PlaceAstralChest();
+                }));
+            }
+
+            // Generate a large Living Mahogany tree on the surface of the jungle (or anywhere in Drunk world)
+            int livingTreeIndex = tasks.FindIndex(genpass => genpass.Name.Equals("Living Trees"));
+            if (livingTreeIndex != -1)
+            {
+                tasks.Insert(livingTreeIndex + 1, new PassLegacy("Living Mahogany Tree", (progress, config) =>
+                {
+                    progress.Message = Language.GetOrRegister("Mods.CalamityMod.UI.LivingMahoganyTree").Value;
+                    int attempts = 0;
+                    while (attempts < 1000)
+                    {
+                        attempts++;
+                        Point origin = WorldGen.RandomWorldPoint((int)Main.worldSurface + 25, 100, Main.maxTilesY - (int)Main.worldSurface - 125, 100);
+                        if (GiantHive.GrowLivingJungleTree(origin, GenVars.structures))
+                            break;
+                    }
                 }));
             }
 
@@ -162,7 +178,7 @@ namespace CalamityMod.Systems
                     while (attempts < 1000)
                     {
                         attempts++;
-                        Point origin = WorldGen.RandomWorldPoint((int)Main.worldSurface + 25, 20, Main.maxTilesY - (int)Main.worldSurface - 125, 20);
+                        Point origin = WorldGen.RandomWorldPoint((int)Main.worldSurface + 25, 100, Main.maxTilesY - (int)Main.UnderworldLayer + 125, 100);
                         if (GiantHive.CanPlaceGiantHive(origin, GenVars.structures))
                             break;
                     }
@@ -493,6 +509,13 @@ namespace CalamityMod.Systems
                                 if (isMushroomChest)
                                 {
                                     chest.item[inventoryIndex].SetDefaults(ItemID.Shroomerang);
+                                    chest.item[inventoryIndex].Prefix(-1);
+                                    break;
+                                }
+
+                                if (isGoldChest)
+                                {
+                                    chest.item[inventoryIndex].SetDefaults(ModContent.ItemType<EnchantedBladeStaff>());
                                     chest.item[inventoryIndex].Prefix(-1);
                                     break;
                                 }

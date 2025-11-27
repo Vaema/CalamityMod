@@ -9,7 +9,7 @@ using CalamityMod.Items.Armor.Vanity;
 using CalamityMod.Items.LoreItems;
 using CalamityMod.Items.Materials;
 using CalamityMod.Items.Placeables.Furniture.BossRelics;
-using CalamityMod.Items.Placeables.Furniture.DevPaintings;
+using CalamityMod.Items.Placeables.Furniture.Paintings;
 using CalamityMod.Items.Placeables.Furniture.Trophies;
 using CalamityMod.Items.Potions;
 using CalamityMod.Items.TreasureBags;
@@ -754,7 +754,8 @@ namespace CalamityMod.NPCs.SlimeGod
                 normalOnly.Add(ModContent.ItemType<ThankYouPainting>(), ThankYouPainting.DropInt);
 
                 // Equipment
-                normalOnly.Add(ModContent.ItemType<ManaPolarizer>());
+                // 16NOV2025: Ozzatron: item has been chosen as the "Expert gatekept" item for this Calamity boss
+                // normalOnly.Add(ModContent.ItemType<ManaPolarizer>());
             }
 
             npcLoot.Add(ModContent.ItemType<SlimeGodTrophy>(), 10);
@@ -785,8 +786,6 @@ namespace CalamityMod.NPCs.SlimeGod
             {
                 int debufftype = Main.zenithWorld ? BuffID.VortexDebuff : BuffID.Slow;
                 target.AddBuff(debufftype, 180);
-                target.AddBuff(BuffID.Weak, 180);
-                target.AddBuff(BuffID.Darkness, 180);
             }
         }
     }

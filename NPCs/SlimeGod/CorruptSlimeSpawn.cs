@@ -84,11 +84,5 @@ namespace CalamityMod.NPCs.SlimeGod
                 Projectile.NewProjectile(NPC.GetSource_Death(), NPC.Center, Vector2.Zero, type, ShaderainDamage, 0f, Main.myPlayer);
             }
         }
-
-        public override void OnHitPlayer(Player target, Player.HurtInfo hurtInfo)
-        {
-            if (hurtInfo.Damage > 0)
-                target.AddBuff(BuffID.Weak, 180);
-        }
     }
 }

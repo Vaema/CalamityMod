@@ -1,5 +1,6 @@
 ﻿using Terraria;
 using Terraria.ID;
+using Terraria.Localization;
 using Terraria.ModLoader;
 
 namespace CalamityMod.Items.Accessories
@@ -7,6 +8,10 @@ namespace CalamityMod.Items.Accessories
     public class AlluringBait : ModItem, ILocalizedModType
     {
         public new string LocalizationCategory => "Items.Accessories";
+
+        public static int FishingPowerBoost = 10;
+        public override LocalizedText Tooltip => base.Tooltip.WithFormatArgs(FishingPowerBoost);
+
         public override void SetDefaults()
         {
             Item.width = 26;
@@ -19,7 +24,7 @@ namespace CalamityMod.Items.Accessories
         public override void UpdateAccessory(Player player, bool hideVisual)
         {
             player.Calamity().alluringBait = true;
-            player.fishingSkill += 10;
+            player.fishingSkill += FishingPowerBoost;
         }
     }
 }

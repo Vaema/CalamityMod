@@ -1,14 +1,10 @@
-﻿using System.Collections.Generic;
-using CalamityMod.Dusts;
-using CalamityMod.Projectiles.Environment;
-using Microsoft.Xna.Framework;
+﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria;
 using Terraria.Audio;
 using Terraria.DataStructures;
 using Terraria.GameContent.Metadata;
 using Terraria.ID;
-using Terraria.Localization;
 using Terraria.ModLoader;
 
 namespace CalamityMod.Tiles
@@ -31,9 +27,9 @@ namespace CalamityMod.Tiles
             AddMapEntry(new Color(80, 120, 0));
             HitSound = SoundID.Dig;
 
-            this.RegisterUniversalMerge(TileID.Dirt, "CalamityMod/Tiles/Merges/DirtMerge");
-            this.RegisterUniversalMerge(TileID.Stone, "CalamityMod/Tiles/Merges/StoneMerge");
-            this.RegisterUniversalMerge(TileID.Mud, "CalamityMod/Tiles/Merges/MudMerge");
+            this.RegisterBlendMergeWith(TileID.Dirt);
+            this.RegisterBlendMergeWith(TileID.Stone);
+            this.RegisterBlendMergeWith(TileID.Mud);
         }
 
         public override void DrawEffects(int i, int j, SpriteBatch spriteBatch, ref TileDrawInfo drawData)
@@ -181,7 +177,7 @@ namespace CalamityMod.Tiles
             }
             else
             {
-                
+
 
                 DrawExtraTop(i, j, leaves, drawOffset, drawColour);
                 //DrawExtraWallEnds(i, j, leaves, drawOffset, drawColour);

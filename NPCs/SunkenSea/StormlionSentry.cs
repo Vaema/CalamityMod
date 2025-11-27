@@ -286,9 +286,12 @@ namespace CalamityMod.NPCs.SunkenSea
         }
         public override float SpawnChance(NPCSpawnInfo spawnInfo)
         {
-            if (spawnInfo.Player.Calamity().ZoneTimelessShores && !spawnInfo.Water && !spawnInfo.Player.Calamity().clamity)
+            Vector2 spawnPosition = new Vector2(spawnInfo.SpawnTileX * 16 + 8, spawnInfo.SpawnTileY * 16);
+            bool npcOnTiles = Collision.SolidCollision(spawnPosition + Vector2.UnitY * 50, 20, 20);
+
+            if (spawnInfo.Player.Calamity().ZoneTimelessShores && !spawnInfo.Water && !spawnInfo.Player.Calamity().clamity && npcOnTiles)
             {
-                return SpawnCondition.Cavern.Chance * 0.7f;
+                return SpawnCondition.Cavern.Chance * 8f;
             }
             return 0f;
         }

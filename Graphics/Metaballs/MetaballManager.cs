@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using CalamityMod.Enums;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria;
@@ -15,8 +16,6 @@ namespace CalamityMod.Graphics.Metaballs
         {
             // Prepare event subscribers.
             RenderTargetManager.RenderTargetUpdateLoopEvent += PrepareMetaballTargets;
-            On_Main.DrawProjectiles += DrawMetaballsAfterProjectiles;
-            On_Main.DrawNPCs += DrawMetaballsBeforeNPCs;
         }
 
         public override void OnModUnload()
@@ -86,51 +85,20 @@ namespace CalamityMod.Graphics.Metaballs
             Main.spriteBatch.End();
         }
 
-        private void DrawMetaballsAfterProjectiles(On_Main.orig_DrawProjectiles orig, Main self)
-        {
-            if (AnyActiveMetaballsAtLayer(MetaballDrawLayer.BeforeProjectiles))
-            {
-                Main.spriteBatch.Begin(SpriteSortMode.Immediate, BlendState.AlphaBlend, SamplerState.PointWrap, DepthStencilState.None, Main.Rasterizer, null, Main.GameViewMatrix.TransformationMatrix);
-                DrawMetaballs(MetaballDrawLayer.BeforeProjectiles);
-                Main.spriteBatch.End();
-            }
-
-            orig(self);
-
-            if (AnyActiveMetaballsAtLayer(MetaballDrawLayer.AfterProjectiles))
-            {
-                Main.spriteBatch.Begin(SpriteSortMode.Immediate, BlendState.AlphaBlend, SamplerState.PointWrap, DepthStencilState.None, Main.Rasterizer, null, Main.GameViewMatrix.TransformationMatrix);
-                DrawMetaballs(MetaballDrawLayer.AfterProjectiles);
-                Main.spriteBatch.End();
-            }
-        }
-
-        private void DrawMetaballsBeforeNPCs(On_Main.orig_DrawNPCs orig, Main self, bool behindTiles)
-        {
-            if (!behindTiles && AnyActiveMetaballsAtLayer(MetaballDrawLayer.BeforeNPCs))
-            {
-                Main.spriteBatch.End();
-                Main.spriteBatch.Begin(SpriteSortMode.Immediate, BlendState.AlphaBlend, SamplerState.PointWrap, DepthStencilState.None, Main.Rasterizer, null, Main.GameViewMatrix.TransformationMatrix);
-                DrawMetaballs(MetaballDrawLayer.BeforeNPCs);
-                Main.spriteBatch.ExitShaderRegion();
-            }
-            orig(self, behindTiles);
-        }
-
         /// <summary>
         /// Checks if a metaball of a given layering type is currently in use. This is used to minimize needless <see cref="SpriteBatch"/> restarts when there is nothing to draw.
         /// </summary>
         /// <param name="layerType">The metaball layer type to check against.</param>
-        internal static bool AnyActiveMetaballsAtLayer(MetaballDrawLayer layerType) =>
-            metaballs.Any(m => m.AnythingToDraw && m.DrawContext == layerType);
+        internal static bool AnyActiveMetaballsAtLayer(GeneralDrawLayer layerType) =>
+            metaballs.Any(m => m.AnythingToDraw && m.DrawLayer == layerType);
 
         /// <summary>
-        /// Draws all metaballs of a given <see cref="MetaballDrawLayer"/>. Used for layer ordering reasons.
+        /// Draws all metaballs of a given <see cref="GeneralDrawLayer"/>. Used for layer ordering reasons.
         /// </summary>
         /// <param name="layerType">The layer type to draw with.</param>
-        public static void DrawMetaballs(MetaballDrawLayer layerType)
+        internal static void DrawMetaballs(GeneralDrawLayer layerType)
         {
-            foreach (Metaball metaball in metaballs.Where(m => m.DrawContext == layerType && m.AnythingToDraw))
+            foreach (Metaball metaball in metaballs.Where(m => m.DrawLayer == layerType && m.AnythingToDraw))
             {
                 for (int i = 0; i < metaball.LayerTargets.Count; i++)
                 {

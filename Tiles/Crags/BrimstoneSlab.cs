@@ -1,11 +1,7 @@
-﻿using System.Collections.Generic;
-using CalamityMod.Systems;
-using CalamityMod.Tiles.Crags;
+﻿using CalamityMod.Systems;
 using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Graphics;
 using Terraria;
 using Terraria.ID;
-using Terraria.Localization;
 using Terraria.ModLoader;
 
 namespace CalamityMod.Tiles.Crags
@@ -29,8 +25,8 @@ namespace CalamityMod.Tiles.Crags
             HitSound = SoundID.Tink;
             DustType = 235;
 
-            this.RegisterUniversalMerge(ModContent.TileType<BrimstoneSlag>(), "CalamityMod/Tiles/Merges/BrimstoneSlagMerge");
-            this.RegisterUniversalMerge(TileID.Ash, "CalamityMod/Tiles/Merges/AshMerge");
+            this.RegisterBlendMergeWith(ModContent.TileType<BrimstoneSlag>());
+            this.RegisterBlendMergeWith(TileID.Ash);
         }
 
         public override bool CanExplode(int i, int j)

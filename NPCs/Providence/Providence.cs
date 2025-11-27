@@ -3,10 +3,8 @@ using System.Collections.Generic;
 using System.IO;
 using CalamityMod.Buffs.DamageOverTime;
 using CalamityMod.Buffs.StatDebuffs;
-using CalamityMod.CalPlayer;
 using CalamityMod.Dusts;
 using CalamityMod.Events;
-using CalamityMod.Graphics.Primitives;
 using CalamityMod.Items.Accessories;
 using CalamityMod.Items.Accessories.Wings;
 using CalamityMod.Items.Armor.Vanity;
@@ -14,7 +12,7 @@ using CalamityMod.Items.Dyes;
 using CalamityMod.Items.LoreItems;
 using CalamityMod.Items.Materials;
 using CalamityMod.Items.Placeables.Furniture.BossRelics;
-using CalamityMod.Items.Placeables.Furniture.DevPaintings;
+using CalamityMod.Items.Placeables.Furniture.Paintings;
 using CalamityMod.Items.Placeables.Furniture.Trophies;
 using CalamityMod.Items.Potions;
 using CalamityMod.Items.SummonItems;
@@ -29,7 +27,6 @@ using CalamityMod.Particles;
 using CalamityMod.Projectiles.Boss;
 using CalamityMod.Projectiles.Summon;
 using CalamityMod.Projectiles.Typeless;
-using CalamityMod.Tiles.FurnitureProfaned;
 using CalamityMod.Tiles.Ores;
 using CalamityMod.World;
 using Microsoft.Xna.Framework;
@@ -42,10 +39,10 @@ using Terraria.DataStructures;
 using Terraria.GameContent;
 using Terraria.GameContent.Bestiary;
 using Terraria.GameContent.ItemDropRules;
-using Terraria.Graphics.Shaders;
 using Terraria.ID;
 using Terraria.Localization;
 using Terraria.ModLoader;
+using Terraria.ModLoader.IO;
 using Filters = Terraria.Graphics.Effects.Filters;
 
 namespace CalamityMod.NPCs.Providence
@@ -53,7 +50,7 @@ namespace CalamityMod.NPCs.Providence
     [AutoloadBossHead]
     public class Providence : ModNPC
     {
-        private enum Phase
+        private enum Phase : sbyte
         {
             PhaseChange = -1,
             HolyBlast = 0,
@@ -85,10 +82,10 @@ namespace CalamityMod.NPCs.Providence
         private bool text = false;
         private bool useDefenseFrames = false;
         private float bossLife;
-        private int biomeType = 0;
+        private byte biomeType = 0;
         private int flightPath = 0;
-        private int phaseChange = 0;
-        private int frameUsed = 0;
+        private sbyte phaseChange = 0;
+        private byte frameUsed = 0;
         private int healTimer = 0;
         internal bool challenge = Main.expertMode; // Used to determine if Profaned Soul Crystal should drop, couldn't figure out mp mems always dropping it so challenge is singleplayer only.
         public bool hasBeenGivenFullPower = false;
@@ -290,24 +287,28 @@ namespace CalamityMod.NPCs.Providence
 
         public override void SendExtraAI(BinaryWriter writer)
         {
-            writer.Write(text);
-            writer.Write(useDefenseFrames);
+            var bits = new BitsByte();
+            bits[0] = text;
+            bits[1] = useDefenseFrames;
+            bits[2] = NPC.dontTakeDamage;
+            bits[3] = NPC.chaseable;
+            bits[4] = Dying;
+            bits[5] = shouldDrawInfernoBorder;
+            bits[6] = flightPath != 0;
+            bits[7] = flightPath == 1;
+            writer.Write(bits);
+
             writer.Write(biomeType);
             writer.Write(phaseChange);
             writer.Write(frameUsed);
             writer.Write(healTimer);
-            writer.Write(flightPath);
-            writer.Write(NPC.dontTakeDamage);
-            writer.Write(NPC.chaseable);
             writer.Write(NPC.localAI[0]);
             writer.Write(NPC.localAI[1]);
             writer.Write(NPC.localAI[2]);
             writer.Write(NPC.localAI[3]);
-            writer.Write(SoundWarningLevel);
-            writer.Write(Dying);
+            writer.Write((Half)SoundWarningLevel);
             writer.Write(DeathAnimationTimer);
             writer.Write(borderRadius);
-            writer.Write(shouldDrawInfernoBorder);
             for (int i = 0; i < 4; i++)
                 writer.Write(NPC.Calamity().newAI[i]);
         }
@@ -315,24 +316,28 @@ namespace CalamityMod.NPCs.Providence
         public override void ReceiveExtraAI(BinaryReader reader)
         {
             bool wasDyingBefore = Dying;
-            text = reader.ReadBoolean();
-            useDefenseFrames = reader.ReadBoolean();
-            biomeType = reader.ReadInt32();
-            phaseChange = reader.ReadInt32();
-            frameUsed = reader.ReadInt32();
+
+            var bits = reader.ReadBitsByte();
+            text = bits[0];
+            useDefenseFrames = bits[1];
+            NPC.dontTakeDamage = bits[2];
+            NPC.chaseable = bits[3];
+            Dying = bits[4];
+            shouldDrawInfernoBorder = bits[5];
+            if (bits[6]) flightPath = bits[7] ? 1 : -1;
+            else flightPath = 0;
+
+            biomeType = reader.ReadByte();
+            phaseChange = reader.ReadSByte();
+            frameUsed = reader.ReadByte();
             healTimer = reader.ReadInt32();
-            flightPath = reader.ReadInt32();
-            NPC.dontTakeDamage = reader.ReadBoolean();
-            NPC.chaseable = reader.ReadBoolean();
             NPC.localAI[0] = reader.ReadSingle();
             NPC.localAI[1] = reader.ReadSingle();
             NPC.localAI[2] = reader.ReadSingle();
             NPC.localAI[3] = reader.ReadSingle();
-            SoundWarningLevel = reader.ReadSingle();
-            Dying = reader.ReadBoolean();
+            SoundWarningLevel = (float)reader.ReadHalf();
             DeathAnimationTimer = reader.ReadInt32();
             borderRadius = reader.ReadSingle();
-            shouldDrawInfernoBorder = reader.ReadBoolean();
 
             for (int i = 0; i < 4; i++)
                 NPC.Calamity().newAI[i] = reader.ReadSingle();
@@ -795,17 +800,22 @@ namespace CalamityMod.NPCs.Providence
                     bool laserPhaseSlow = AIState == (int)Phase.Laser;
 
                     // Change X direction of movement
-                    if (flightPath == 0)
+                    if (Main.netMode != NetmodeID.MultiplayerClient)
                     {
-                        if (NPC.Center.X < player.Center.X)
+                        if (flightPath == 0)
                         {
-                            flightPath = 1;
-                            calamityGlobalNPC.newAI[0] = 0f;
-                        }
-                        else
-                        {
-                            flightPath = -1;
-                            calamityGlobalNPC.newAI[0] = 0f;
+                            if (NPC.Center.X < player.Center.X)
+                            {
+                                flightPath = 1;
+                                calamityGlobalNPC.newAI[0] = 0f;
+                                NPC.netUpdate = true;
+                            }
+                            else
+                            {
+                                flightPath = -1;
+                                calamityGlobalNPC.newAI[0] = 0f;
+                                NPC.netUpdate = true;
+                            }
                         }
                     }
 
@@ -822,10 +832,21 @@ namespace CalamityMod.NPCs.Providence
                         changeDirectionThreshold += death ? 240f : revenge ? 180f : 120f;
 
                     // Change X movement path if far enough away from target
-                    if (NPC.Center.X < player.Center.X && flightPath < 0 && distanceX > changeDirectionThreshold)
-                        flightPath = 0;
-                    if (NPC.Center.X > player.Center.X && flightPath > 0 && distanceX > changeDirectionThreshold)
-                        flightPath = 0;
+                    if (Main.netMode != NetmodeID.MultiplayerClient)
+                    {
+                        if (NPC.Center.X < player.Center.X && flightPath < 0 && distanceX > changeDirectionThreshold)
+                        {
+                            flightPath = 0;
+                            NPC.netUpdate = true;
+                        }
+
+                        if (NPC.Center.X > player.Center.X && flightPath > 0 && distanceX > changeDirectionThreshold)
+                        {
+                            flightPath = 0;
+                            NPC.netUpdate = true;
+                        }
+                    }
+
 
                     // Predictive shot checks
                     if ((NPC.velocity.X > 0f && (NPC.Center.X - player.Center.X) > 0f && player.velocity.X > 0f) || (NPC.velocity.X < 0f && (NPC.Center.X - player.Center.X) < 0f && player.velocity.X < 0f))
@@ -890,7 +911,7 @@ namespace CalamityMod.NPCs.Providence
             // Phase switch
             switch ((int)AIState)
             {
-                case (int)Phase.PhaseChange:
+                case (int)Phase.PhaseChange when Main.netMode != NetmodeID.MultiplayerClient: // Only Server or SP should handle Phase Transition
 
                     phaseChange++;
                     if (phaseChange > 14)
@@ -1774,7 +1795,7 @@ namespace CalamityMod.NPCs.Providence
             {
                 CalamityUtils.AddScreenshakeAt(NPC.Center, 5, 2000);
 
-                Color hiColor = ProvUtils.GetProjectileColor( 255, false);
+                Color hiColor = ProvUtils.GetProjectileColor(255, false);
                 Color loColor = ProvUtils.GetProjectileColor(0, true);
 
                 for (int i = 0; i < 30; i++)
@@ -2028,7 +2049,8 @@ namespace CalamityMod.NPCs.Providence
                 normalOnly.Add(ModContent.ItemType<PristineFury>(), 10);
 
                 // Equipment
-                normalOnly.Add(DropHelper.PerPlayer(ModContent.ItemType<BlazingCore>()));
+                // 16NOV2025: Ozzatron: item has been chosen as the "Expert gatekept" item for this Calamity boss
+                // normalOnly.Add(DropHelper.PerPlayer(ModContent.ItemType<BlazingCore>()));
 
                 // Materials
                 normalOnly.Add(ModContent.ItemType<DivineGeode>(), 1, 50, 60);
@@ -2799,7 +2821,7 @@ namespace CalamityMod.NPCs.Providence
 
             return FinalColor;
         }
-       
+
         public static Color GetProjectileColor(int Alpha, bool Outline = false)
         {
             Color FinalColor = new Color(255, Outline ? 0 : 155, Outline ? 0 : 25, Alpha); // Default to normal

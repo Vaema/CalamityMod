@@ -12,7 +12,7 @@ namespace CalamityMod.Systems
         internal const int MaxCount = ushort.MaxValue;
 
         internal static TileBlendTexture[] Registry { get; private set; }
-        internal static IEnumerable<TileBlendTexture> AllTextures => Registry?.Where(tex => tex is not null);
+        internal static IEnumerable<TileBlendTexture> AllTextures => Registry?.Where(tex => tex is not null) ?? [];
         internal static int Count => _UniqueSlot - StartingIndex;
 
         private static int _UniqueSlot = StartingIndex;

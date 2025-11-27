@@ -3,6 +3,7 @@ using CalamityMod.Items.BaseItems;
 using Terraria;
 using Terraria.Audio;
 using Terraria.ID;
+using Terraria.Localization;
 using Terraria.ModLoader;
 
 namespace CalamityMod.Items.Accessories
@@ -13,7 +14,9 @@ namespace CalamityMod.Items.Accessories
         public new string LocalizationCategory => "Items.Accessories";
 
         public static float WaterSpeedBoost = 0.15f;
-        public static double IceShieldAllDamageReduction = 0.2D;
+        public static float IceShieldDamageReductionBoost = 0.2f;
+        public static int IceShieldCooldown = CalamityUtils.SecondsToFrames(30);
+        public static LocalizedText FullTooltip => CalamityUtils.GetText("Items.Accessories.AquaticHeart.FullTooltip").WithFormatArgs(WaterSpeedBoost.ToPercent(), IceShieldDamageReductionBoost.ToPercent(), IceShieldCooldown.FramesToSeconds());
 
         public override string AssetPath => "CalamityMod/Items/Accessories/";
         public override (EquipType, string, string)[] EquipSlots =>
@@ -39,7 +42,7 @@ namespace CalamityMod.Items.Accessories
 
         public override void ModifyTooltips(List<TooltipLine> tooltips)
         {
-            string statusTooltip = this.GetLocalizedValue(NPC.downedBoss3 ? "FullTooltip" : "LockedTooltip");
+            string statusTooltip = NPC.downedBoss3 ? FullTooltip.ToString() : this.GetLocalizedValue("LockedTooltip");
             tooltips.FindAndReplace("[STATUS]", statusTooltip);
         }
     }
