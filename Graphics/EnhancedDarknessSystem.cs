@@ -66,17 +66,17 @@ namespace CalamityMod.Graphics
                 Main.spriteBatch.ExitShaderRegion();
             });
         }
+        private static readonly FastField<LightingEngine, LightMap> Fld_WorkingLightMap = new("_workingLightMap", BindingFlags.Instance | BindingFlags.NonPublic);
 
 
         private void AdjustTransmissiveness(On_LightingEngine.orig_UpdateLightDecay orig, LightingEngine self)
         {
             orig(self);
-            FieldInfo field = typeof(LightingEngine).GetField("_workingLightMap", BindingFlags.Instance | BindingFlags.NonPublic);
 
-            if (field != null)
+            if (Fld_WorkingLightMap != null)
             {
                 var mp = Main.LocalPlayer.Calamity();
-                var map = (LightMap)field.GetValue(self);
+                LightMap map = Fld_WorkingLightMap.Get(self);
                 if (mp.ZoneAbyss)
                 {
                     //This converts the light decay amount from the amount it normally is in water into the amount it normally is in air, depending on the intensity of the abyss darkness.
