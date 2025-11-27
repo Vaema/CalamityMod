@@ -139,7 +139,7 @@ namespace CalamityMod.Projectiles.Magic
 
             // Release bursts of homing dark magic bolts periodically. The amount of bolts that can be summoned has a hard limit.
             // This is where most of the damage comes from. Be careful when messing with this.
-            if ((int)Time % 30 == 0 && CalamityUtils.CountOwnedProjectiles(ModContent.ProjectileType<EternityHoming>(), Projectile.owner) < Eternity.MaxHomers)
+            if ((int)Time % 30 == 0 && player.ownedProjectileCounts[ModContent.ProjectileType<EternityHoming>()] < Eternity.MaxHomers)
             {
                 int homerCount = 6;
                 int damage = (int)player.GetTotalDamage<MagicDamageClass>().ApplyTo(0.8f * Eternity.BaseDamage);

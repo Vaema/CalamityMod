@@ -1134,7 +1134,7 @@ namespace CalamityMod.NPCs
 
         public override bool? CanBeHitByProjectile(NPC npc, Projectile projectile)
         {
-            //Not an axe but close enough
+            // Not an axe but close enough
             if (npc.type == NPCID.TaxCollector && projectile.type == ProjectileType<SlickCaneProjectile>())
                 return true;
             return base.CanBeHitByProjectile(npc, projectile);

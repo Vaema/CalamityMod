@@ -108,8 +108,7 @@ namespace CalamityMod.Projectiles.Rogue
             int shootType = ModContent.ProjectileType<PrismShurikenBlade>();
             if (Main.myPlayer != Projectile.owner)
                 return;
-
-            if (CalamityUtils.CountOwnedProjectiles(shootType, Projectile.owner) > 24)
+            if (Main.LocalPlayer.ownedProjectileCounts[shootType] > 24)
                 return;
 
             int energyDamage = (int)(Projectile.damage * 0.5f);

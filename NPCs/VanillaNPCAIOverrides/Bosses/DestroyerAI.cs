@@ -16,7 +16,6 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
     public class DestroyerAI : VanillaAIOverride
     {
         public const float DRIncreaseTime = 600f;
-        public const float DeathModeLaserBreathGateValue = 800f;
         public const float LaserTelegraphTime = 120f;
         public const float SparkTelegraphTime = 30f;
         public const float FlightPhaseGateValue = 900f;
@@ -188,9 +187,6 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                 }
                 brokenSegmentAggressionMultiplier += (1f - MathHelper.Clamp(numProbeSegments / (float)totalSegments, 0f, 1f)) * 0.25f;
             }
-
-            // Death Mode laser spit bool
-            bool spitLaserSpreads = death;
 
             // Height of the box used to calculate whether The Destroyer should fly at its target or not
             int noFlyZoneBoxHeight = death ? 1500 : 1800;
@@ -521,29 +517,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                 float telegraphProgress = 0f;
                 if (calamityGlobalNPC.destroyerLaserColor != -1)
                 {
-                    if (NPC.type == NPCID.TheDestroyer && spitLaserSpreads)
-                    {
-                        float telegraphGateValue = DeathModeLaserBreathGateValue - LaserTelegraphTime;
-                        if (calamityGlobalNPC.newAI[0] > telegraphGateValue)
-                        {
-                            switch (calamityGlobalNPC.destroyerLaserColor)
-                            {
-                                default:
-                                case 0:
-                                    break;
-
-                                case 1:
-                                    telegraphColor = new Vector3(0.1f, 0.3f, 0.05f);
-                                    break;
-
-                                case 2:
-                                    telegraphColor = new Vector3(0.05f, 0.2f, 0.2f);
-                                    break;
-                            }
-                            telegraphProgress = MathHelper.Clamp((calamityGlobalNPC.newAI[0] - telegraphGateValue) / LaserTelegraphTime, 0f, 1f);
-                        }
-                    }
-                    else if (NPC.type == NPCID.TheDestroyerBody)
+                    if (NPC.type == NPCID.TheDestroyerBody)
                     {
                         float shootProjectileTime = (CalamityWorld.death || BossRushEvent.BossRushActive) ? 400f : 450f;
                         float telegraphGateValue = shootProjectileTime - LaserTelegraphTime;

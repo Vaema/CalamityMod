@@ -142,18 +142,10 @@ namespace CalamityMod.NPCs
                 // Craw Carapace @ 100% IF Hardmode
                 // OTHERWISE,
                 // Craw Carapace @ 14.29% Normal, 25% Expert+
-                // Armor Polish @ 1% Normal, 2% Expert+
                 case NPCID.Crawdad:
                 case NPCID.Crawdad2:
                     hardmode.Add(ModContent.ItemType<CrawCarapace>());
                     hardmode.OnFailedConditions(ItemDropRule.NormalvsExpert(ModContent.ItemType<CrawCarapace>(), 7, 4));
-                    npcLoot.Add(ItemDropRule.NormalvsExpert(ItemID.ArmorPolish, 100, 50));
-                    break;
-
-                // Toxic Sludge
-                // Fast Clock @ 1% Normal, 2% Expert+
-                case NPCID.ToxicSludge:
-                    npcLoot.Add(ItemDropRule.NormalvsExpert(ItemID.FastClock, 100, 50));
                     break;
 
                 // Medusa
@@ -308,9 +300,8 @@ namespace CalamityMod.NPCs
                     npcLoot.Add(ModContent.ItemType<FrostyBatBottle>(), 14);
                     break;
 
-                // Undead Viking, Armored Viking
+                // Armored Viking
                 // Armor Polish @ 1% Normal, 2% Expert
-                case NPCID.UndeadViking:
                 case NPCID.ArmoredViking:
                     npcLoot.Add(ItemDropRule.NormalvsExpert(ItemID.ArmorPolish, 100, 50));
                     break;

@@ -1771,7 +1771,7 @@ namespace CalamityMod.CalPlayer
                         {
                             float insanityValue = ((p.ai[1] % 10) + 1);
                             if (p.ai[0] == layer)
-                                p.ai[2] = insanityValue / CalamityUtils.CountOwnedProjectiles(ModContent.ProjectileType<TransformerBlob>(), Player.whoAmI) * (angleMax) - (angleMax) / 2f;
+                                p.ai[2] = insanityValue / Player.ownedProjectileCounts[ModContent.ProjectileType<TransformerBlob>()] * (angleMax) - (angleMax) / 2f;
 
                             p.netUpdate = true;
                         }
@@ -1820,9 +1820,9 @@ namespace CalamityMod.CalPlayer
 
                                 if (p.type == ModContent.ProjectileType<TransformerBlob>() && p.owner == Player.whoAmI)
                                 {
-                                    float insanityValue = ((p.ai[1] % 10) + 1);
+                                    float insanityValue = (p.ai[1] % 10) + 1;
                                     if (p.ai[0] == layer)
-                                        p.ai[2] = insanityValue / CalamityUtils.CountOwnedProjectiles(ModContent.ProjectileType<TransformerBlob>(), Player.whoAmI) * (angleMax) - (angleMax) / 2f;
+                                        p.ai[2] = insanityValue / Player.ownedProjectileCounts[ModContent.ProjectileType<TransformerBlob>()] * angleMax - angleMax / 2f;
 
                                     p.netUpdate = true;
                                     index++;

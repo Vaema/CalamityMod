@@ -74,7 +74,7 @@ namespace CalamityMod.Projectiles.Summon
                 return;
             }
 
-            int totalHeads = CalamityUtils.CountOwnedProjectiles(Projectile.type, Projectile.owner);
+            int totalHeads = player.ownedProjectileCounts[Projectile.type];
             if (Projectile.localAI[0] == 0f)
             {
                 DeltaPosition = DeltaPositionMoving = new Vector2(Main.rand.NextFloat(-72f - 8f * totalHeads, 72f + 8f * totalHeads), -Main.rand.NextFloat(8f, 84f + 4f * totalHeads));
