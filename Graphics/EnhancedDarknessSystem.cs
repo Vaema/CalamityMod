@@ -60,7 +60,6 @@ namespace CalamityMod.Graphics
             {
                 Main.spriteBatch.EnterShaderRegion();
                 var shader = GameShaders.Misc["CalamityMod:DozeLightingShader"];
-                var abyssDarkness = Utils.Remap(Main.LocalPlayer.Center.Y, (float)Main.rockLayer * 16f, Main.UnderworldLayer * 16f, 0, 3, true);
                 shader.UseOpacity(mp.darknessIntensity);
                 shader.Apply();
                 Main.spriteBatch.Draw(rt, Main.screenLastPosition - Main.screenPosition, Color.White);

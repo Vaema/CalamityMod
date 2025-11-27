@@ -608,23 +608,15 @@ namespace CalamityMod.Items
             // Applies to various item categories which carry their light/breath effects into the Abyss
             #region Abyss Light/Breath
             // +1 to Abyss light level
-            if (item.type == ItemID.CrimsonHeart || item.type == ItemID.ShadowOrb || item.type == ItemID.MagicLantern || item.type == ItemID.JellyfishNecklace ||
+            if (item.type == ItemID.JellyfishNecklace ||
                 item.type == ItemID.MiningHelmet || item.type == ItemID.UltrabrightHelmet)
-                EditTooltipByNum(0, (line) => line.Text += "\n" + CalamityUtils.GetTextValue("Common.AbyssLightLevel1"));
-            if (item.type == ItemID.JellyfishDivingGear || item.type == ItemID.Magiluminescence)
-                EditTooltipByNum(1, (line) => line.Text += "\n" + CalamityUtils.GetTextValue("Common.AbyssLightLevel1"));
+                EditTooltipByNum(0, (line) => line.Text += "\n" + CalamityUtils.GetTextValue("Common.AbyssGlow"));
+            if (item.type == ItemID.JellyfishDivingGear)
+                EditTooltipByNum(1, (line) => line.Text += "\n" + CalamityUtils.GetTextValue("Common.AbyssGlow"));
 
             // +2 to Abyss light level
             if (item.type == ItemID.ShinePotion)
-                EditTooltipByName("BuffTime", (line) => line.Text += "\n" + CalamityUtils.GetTextValue("Common.AbyssLightLevel2"));
-            if (item.type == ItemID.FairyBell || item.type == ItemID.DD2PetGhost)
-                EditTooltipByNum(0, (line) => line.Text += "\n" + CalamityUtils.GetTextValue("Common.AbyssLightLevel2"));
-
-            // +3 to Abyss light level
-            if (item.type == ItemID.WispinaBottle || item.type == ItemID.PumpkingPetItem || item.type == ItemID.GolemPetItem || item.type == ItemID.FairyQueenPetItem)
-                EditTooltipByNum(0, (line) => line.Text += "\n" + CalamityUtils.GetTextValue("Common.AbyssLightLevel3"));
-            if (item.type == ItemID.SuspiciousLookingTentacle)
-                EditTooltipByNum(1, (line) => line.Text += "\n" + CalamityUtils.GetTextValue("Common.AbyssLightLevel3"));
+                EditTooltipByName("BuffTime", (line) => line.Text += "\n" + CalamityUtils.GetTextValue("Common.AbyssGlow"));
 
             // Moderate breath boost
             if (item.type == ItemID.DivingHelmet)
