@@ -71,8 +71,7 @@ namespace CalamityMod.Systems
             if (!tile.HasTile)
                 return;
 
-            var refLength = tile.Get<TileBlendingRefLengthData>().GetLength();
-            if (refLength <= 0)
+            if (tile.Get<TileSpecialDrawData>().HasBlendMergeData)
                 return;
 
             if (!TryGetBlendingRefData(tileX, tileY, out var blendRefs))

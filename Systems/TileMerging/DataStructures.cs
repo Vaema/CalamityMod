@@ -1,7 +1,4 @@
-﻿using System;
-using Terraria;
-
-namespace CalamityMod.Systems
+﻿namespace CalamityMod.Systems
 {
     // bit to relative tile pos for reference
     // MSB 0->7 LSB
@@ -108,30 +105,5 @@ namespace CalamityMod.Systems
     {
         public ushort SheetIndex = sheetIdx;
         public byte BlendData = blendData;
-    }
-
-    public struct TileBlendingRefLengthData : ITileData
-    {
-        public const int MaxLength = 8;
-
-        private byte DataLength;
-
-        public void Clear()
-        {
-            DataLength = 0b0000_0000;
-        }
-
-        public void SetLength(int length)
-        {
-            if (length < 0 || length > byte.MaxValue)
-                throw new ArgumentOutOfRangeException(nameof(length));
-
-            DataLength = (byte)length;
-        }
-
-        public readonly int GetLength()
-        {
-            return DataLength;
-        }
     }
 }

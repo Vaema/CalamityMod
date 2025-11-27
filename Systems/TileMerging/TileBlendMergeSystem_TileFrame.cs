@@ -19,8 +19,8 @@ namespace CalamityMod.Systems
                 return;
 
             var tile = Main.tile[i, j];
-            ref var refLength = ref tile.Get<TileBlendingRefLengthData>();
-            refLength.Clear();
+            ref var drawData = ref tile.Get<TileSpecialDrawData>();
+            drawData.HasBlendMergeData = false;
             RemoveBlendingRefData(i, j);
 
             if (!tile.HasTile) // Is this even possible? But I'm doing this for sanity check anyways
@@ -49,7 +49,7 @@ namespace CalamityMod.Systems
                 }
 
                 SetBlendingRefData(i, j, tileBlendingRefs);
-                refLength.SetLength(regCount);
+                drawData.HasBlendMergeData = true;
             }
         }
 
