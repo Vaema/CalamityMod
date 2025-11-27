@@ -11,11 +11,15 @@ using CalamityMod.Items.Fishing.FishingRods;
 using CalamityMod.Items.Fishing.SulphurCatches;
 using CalamityMod.Items.Fishing.SunkenSeaCatches;
 using CalamityMod.Items.Materials;
+using CalamityMod.Items.Pets;
 using CalamityMod.Items.Placeables.Abyss;
 using CalamityMod.Items.SummonItems;
+using CalamityMod.Items.Tools.ClimateChange;
+using CalamityMod.Items.Weapons.Magic;
 using CalamityMod.Items.Weapons.Melee;
 using CalamityMod.Items.Weapons.Ranged;
 using CalamityMod.Items.Weapons.Rogue;
+using CalamityMod.Items.Weapons.Summon;
 using CalamityMod.NPCs;
 using CalamityMod.NPCs.OldDuke;
 using CalamityMod.Particles;
@@ -229,6 +233,43 @@ namespace CalamityMod.CalPlayer
             {
                 itemDrop = ModContent.ItemType<Floodtide>();
                 return;
+            }
+            //Rare abyss catches are replaced with abyss chest items post-skeletron
+            if (NPC.downedBoss3 && (ZoneAbyssLayer2 || ZoneAbyssLayer3 || ZoneAbyssLayer4) && attempt.rare)
+            {
+                switch (Main.rand.Next(10))
+                {
+                    case 0:
+                        itemDrop = ModContent.ItemType<Lionfish>();
+                        return;
+                    case 1:
+                        itemDrop = ModContent.ItemType<HerringStaff>();
+                        return;
+                    case 2:
+                        itemDrop = ModContent.ItemType<BallOFugu>();
+                        return;
+                    case 3:
+                        itemDrop = ModContent.ItemType<BlackAnurian>();
+                        return;
+                    case 4:
+                        itemDrop = ModContent.ItemType<Archerfish>();
+                        return;
+                    case 5:
+                        itemDrop = ModContent.ItemType<AnechoicPlating>();
+                        return;
+                    case 6:
+                        itemDrop = ModContent.ItemType<IronBoots>();
+                        return;
+                    case 7:
+                        itemDrop = ModContent.ItemType<DepthCharm>();
+                        return;
+                    case 8:
+                        itemDrop = ModContent.ItemType<StrangeOrb>();
+                        return;
+                    case 9:
+                        itemDrop = ModContent.ItemType<TorrentialTear>();
+                        return;
+                }
             }
 
             if (grabBagFish)
