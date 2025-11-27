@@ -4664,3 +4664,8 @@ UnsafeNavystoneWall: {
 	DisplayName: Unsafe Navystone Wall
 	Tooltip: ""
 }
+
+MossyStone: {
+	DisplayName: Mossy Stone
+	Tooltip: ""
+}

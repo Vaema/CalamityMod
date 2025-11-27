@@ -3,6 +3,7 @@ using CalamityMod.Systems;
 using CalamityMod.Tiles.SunkenSea.Ambient;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using ReLogic.Content;
 using Terraria;
 using Terraria.DataStructures;
 using Terraria.GameContent.Metadata;
@@ -15,10 +16,23 @@ namespace CalamityMod.Tiles.SunkenSea
 {
     public class ScarletSeaGrassTile : ModTile
     {
+        public enum ExtraState
+        {
+            Middle = 36,
+            OverhangLeft = 18,
+            OverhangRight = 54,
+            WallEndLeft = 0,
+            WallEndRight = 72
+        }
+
+        public Asset<Texture2D> GrassTexture;
+
         private int extraFrameHeight = 36;
         private int extraFrameWidth = 90;
         public override void SetStaticDefaults()
         {
+            GrassTexture = ModContent.Request<Texture2D>("CalamityMod/Tiles/SunkenSea/ScarletSeaGrass");
+
             TileID.Sets.GeneralPlacementTiles[Type] = false;
 
             Main.tileSolid[Type] = true;
@@ -86,12 +100,13 @@ namespace CalamityMod.Tiles.SunkenSea
             col.B = (byte)(paintCol.B / 255f * col.B);
             return col;
         }
+
         public override void SpecialDraw(int i, int j, SpriteBatch spriteBatch)
         {
             Vector2 zero = Main.drawToScreen ? Vector2.Zero : new Vector2(Main.offScreenRange);
             Vector2 drawOffset = new Vector2(i * 16 - Main.screenPosition.X, j * 16 - Main.screenPosition.Y) + zero;
             Color drawColour = GetDrawColour(i, j);
-            Texture2D leaves = ModContent.Request<Texture2D>("CalamityMod/Tiles/SunkenSea/ScarletSeaGrass").Value;
+            Texture2D leaves = GrassTexture.Value;
 
             DrawExtraTop(i, j, leaves, drawOffset, drawColour);
             DrawExtraWallEnds(i, j, leaves, drawOffset, drawColour);
@@ -102,6 +117,7 @@ namespace CalamityMod.Tiles.SunkenSea
         {
             return TileFramingSystem.BetterGemsparkFraming(i, j, resetFrame);
         }
+
         public override void ModifyLight(int i, int j, ref float r, ref float g, ref float b)
         {
             r = 0.3f;
@@ -141,8 +157,10 @@ namespace CalamityMod.Tiles.SunkenSea
                 (CheckTile(Type, true, 0, 1, i, j) && CheckTile(Type, false, 1, 1, i, j) && CheckTile(Type, false, -1, 1, i, j) && CheckTile(Type, true, 1, 0, i, j) && CheckTile(Type, true, -1, 0, i, j))
                 )
             {
-                Main.spriteBatch.Draw(extras, drawOffset, new Rectangle?(new Rectangle(GetExtraState("middle") + GetExtraVariant(i, j), GetExtraPattern(i), 18, 18)), drawColour, 0.0f, Vector2.Zero, 1f, SpriteEffects.None, 0f);
-                Main.spriteBatch.Draw(extras, drawOffset + new Vector2(0f, 16f), new Rectangle?(new Rectangle(GetExtraState("middle") + GetExtraVariant(i, j), GetExtraPattern(i) + 18, 18, 18)), drawColour, 0.0f, Vector2.Zero, 1f, SpriteEffects.None, 0f);
+                var x = GetExtraState(ExtraState.Middle) + GetExtraVariant(i, j);
+                var y = GetExtraPattern(i);
+                Main.spriteBatch.Draw(extras, drawOffset, new Rectangle(x, y, 18, 18), drawColour);
+                Main.spriteBatch.Draw(extras, drawOffset + new Vector2(0f, 16f), new Rectangle(x, y + 18, 18, 18), drawColour);
 
                 DrawExtraOverhang(i, j, extras, drawOffset, drawColour);
             }
@@ -164,8 +182,10 @@ namespace CalamityMod.Tiles.SunkenSea
                 (CheckTile(Type, true, -1, 1, i, j) || CheckTile(Type, false, -1, 0, i, j))
                 )
             {
-                Main.spriteBatch.Draw(extras, drawOffset, new Rectangle?(new Rectangle(GetExtraState("wallEndLeft") + GetExtraVariant(i + 1, j), GetExtraPattern(i), 18, 18)), drawColour, 0.0f, Vector2.Zero, 1f, SpriteEffects.None, 0f);
-                Main.spriteBatch.Draw(extras, drawOffset + new Vector2(0f, 16f), new Rectangle?(new Rectangle(GetExtraState("wallEndLeft") + GetExtraVariant(i + 1, j), GetExtraPattern(i) + 18, 18, 18)), drawColour, 0.0f, Vector2.Zero, 1f, SpriteEffects.None, 0f);
+                var x = GetExtraState(ExtraState.WallEndLeft) + GetExtraVariant(i + 1, j);
+                var y = GetExtraPattern(i);
+                Main.spriteBatch.Draw(extras, drawOffset, new Rectangle(x, y, 18, 18), drawColour);
+                Main.spriteBatch.Draw(extras, drawOffset + new Vector2(0f, 16f), new Rectangle(x, y + 18, 18, 18), drawColour);
             }
             //Right
             if (
@@ -173,8 +193,10 @@ namespace CalamityMod.Tiles.SunkenSea
                 (CheckTile(Type, true, 1, 1, i, j) || CheckTile(Type, false, 1, 0, i, j))
                 )
             {
-                Main.spriteBatch.Draw(extras, drawOffset, new Rectangle?(new Rectangle(GetExtraState("wallEndRight") + GetExtraVariant(i - 1, j), GetExtraPattern(i), 18, 18)), drawColour, 0.0f, Vector2.Zero, 1f, SpriteEffects.None, 0f);
-                Main.spriteBatch.Draw(extras, drawOffset + new Vector2(0f, 16f), new Rectangle?(new Rectangle(GetExtraState("wallEndRight") + GetExtraVariant(i - 1, j), GetExtraPattern(i) + 18, 18, 18)), drawColour, 0.0f, Vector2.Zero, 1f, SpriteEffects.None, 0f);
+                var x = GetExtraState(ExtraState.WallEndRight) + GetExtraVariant(i - 1, j);
+                var y = GetExtraPattern(i);
+                Main.spriteBatch.Draw(extras, drawOffset, new Rectangle(x, y, 18, 18), drawColour);
+                Main.spriteBatch.Draw(extras, drawOffset + new Vector2(0f, 16f), new Rectangle(x, y + 18, 18, 18), drawColour);
             }
         }
         private void DrawExtraOverhang(int i, int j, Texture2D extras, Vector2 drawOffset, Color drawColour)
@@ -188,18 +210,23 @@ namespace CalamityMod.Tiles.SunkenSea
                 CheckTile(Type, false, -1, 0, i, j)
                 )
             {
-                Main.spriteBatch.Draw(extras, drawOffset + new Vector2(-16f, 0f), new Rectangle?(new Rectangle(GetExtraState("overhangLeft") + GetExtraVariant(i, j), GetExtraPattern(i - 1), 18, 18)), drawColour, 0.0f, Vector2.Zero, 1f, SpriteEffects.None, 0f);
-                Main.spriteBatch.Draw(extras, drawOffset + new Vector2(-16f, 16f), new Rectangle?(new Rectangle(GetExtraState("overhangLeft") + GetExtraVariant(i, j), GetExtraPattern(i - 1) + 18, 18, 18)), drawColour, 0.0f, Vector2.Zero, 1f, SpriteEffects.None, 0f);
+                var x = GetExtraState(ExtraState.OverhangLeft) + GetExtraVariant(i, j);
+                var y = GetExtraPattern(i - 1);
+                Main.spriteBatch.Draw(extras, drawOffset + new Vector2(-16f, 0f), new Rectangle(x, y, 18, 18), drawColour);
+                Main.spriteBatch.Draw(extras, drawOffset + new Vector2(-16f, 16f), new Rectangle(x, y + 18, 18, 18), drawColour);
             }
             //Right
             if (
                 CheckTile(Type, false, 1, 0, i, j)
                 )
             {
-                Main.spriteBatch.Draw(extras, drawOffset + new Vector2(16f, 0f), new Rectangle?(new Rectangle(GetExtraState("overhangRight") + GetExtraVariant(i, j), GetExtraPattern(i + 1), 18, 18)), drawColour, 0.0f, Vector2.Zero, 1f, SpriteEffects.None, 0f);
-                Main.spriteBatch.Draw(extras, drawOffset + new Vector2(16f, 16f), new Rectangle?(new Rectangle(GetExtraState("overhangRight") + GetExtraVariant(i, j), GetExtraPattern(i + 1) + 18, 18, 18)), drawColour, 0.0f, Vector2.Zero, 1f, SpriteEffects.None, 0f);
+                var x = GetExtraState(ExtraState.OverhangRight) + GetExtraVariant(i, j);
+                var y = GetExtraPattern(i + 1);
+                Main.spriteBatch.Draw(extras, drawOffset + new Vector2(16f, 0f), new Rectangle(x, y, 18, 18), drawColour);
+                Main.spriteBatch.Draw(extras, drawOffset + new Vector2(16f, 16f), new Rectangle(x, y + 18, 18, 18), drawColour);
             }
         }
+
         private void DrawExtraDrapes(int i, int j, Texture2D extras, Vector2 drawOffset, Color drawColour)
         {
             /*
@@ -212,7 +239,9 @@ namespace CalamityMod.Tiles.SunkenSea
                 (CheckTile(Type, true, 0, 2, i, j) && CheckTile(Type, false, 1, 2, i, j) && CheckTile(Type, false, -1, 2, i, j) && CheckTile(Type, true, 1, 1, i, j) && CheckTile(Type, true, -1, 1, i, j))
                 )
             {
-                Main.spriteBatch.Draw(extras, drawOffset, new Rectangle?(new Rectangle(GetExtraState("middle") + GetExtraVariant(i, j - 1), GetExtraPattern(i) + 18, 18, 18)), drawColour, 0.0f, Vector2.Zero, 1f, SpriteEffects.None, 0f);
+                var x = GetExtraState(ExtraState.Middle) + GetExtraVariant(i, j - 1);
+                var y = GetExtraPattern(i) + 18;
+                Main.spriteBatch.Draw(extras, drawOffset, new Rectangle(x, y, 18, 18), drawColour);
             }
             //Left Wall
             if (
@@ -220,7 +249,9 @@ namespace CalamityMod.Tiles.SunkenSea
                 (CheckTile(Type, true, -1, 2, i, j) || CheckTile(Type, false, -1, 1, i, j))
                 )
             {
-                Main.spriteBatch.Draw(extras, drawOffset, new Rectangle?(new Rectangle(GetExtraState("wallEndLeft") + GetExtraVariant(i + 1, j - 1), GetExtraPattern(i) + 18, 18, 18)), drawColour, 0.0f, Vector2.Zero, 1f, SpriteEffects.None, 0f);
+                var x = GetExtraState(ExtraState.WallEndLeft) + GetExtraVariant(i + 1, j - 1);
+                var y = GetExtraPattern(i) + 18;
+                Main.spriteBatch.Draw(extras, drawOffset, new Rectangle(x, y, 18, 18), drawColour);
             }
             //Right Wall
             if (
@@ -228,38 +259,41 @@ namespace CalamityMod.Tiles.SunkenSea
                 (CheckTile(Type, true, 1, 2, i, j) || CheckTile(Type, false, 1, 1, i, j))
                 )
             {
-                Main.spriteBatch.Draw(extras, drawOffset, new Rectangle?(new Rectangle(GetExtraState("wallEndRight") + GetExtraVariant(i - 1, j - 1), GetExtraPattern(i) + 18, 18, 18)), drawColour, 0.0f, Vector2.Zero, 1f, SpriteEffects.None, 0f);
+                var x = GetExtraState(ExtraState.WallEndRight) + GetExtraVariant(i - 1, j - 1);
+                var y = GetExtraPattern(i) + 18;
+                Main.spriteBatch.Draw(extras, drawOffset, new Rectangle(x, y, 18, 18), drawColour);
             }
             //Left Overhang
             if (
                 CheckTile(Type, true, 1, 1, i, j) && CheckTile(Type, false, 0, 1, i, j) && CheckTile(Type, false, 0, 2, i, j) && CheckTile(Type, false, 1, 2, i, j)
                 )
             {
-                Main.spriteBatch.Draw(extras, drawOffset, new Rectangle?(new Rectangle(GetExtraState("overhangLeft") + GetExtraVariant(i + 1, j - 1), GetExtraPattern(i) + 18, 18, 18)), drawColour, 0.0f, Vector2.Zero, 1f, SpriteEffects.None, 0f);
+                var x = GetExtraState(ExtraState.OverhangLeft) + GetExtraVariant(i + 1, j - 1);
+                var y = GetExtraPattern(i) + 18;
+                Main.spriteBatch.Draw(extras, drawOffset, new Rectangle(x, y, 18, 18), drawColour);
             }
             //Right Overhang
             if (
                 CheckTile(Type, true, -1, 1, i, j) && CheckTile(Type, false, 0, 1, i, j) && CheckTile(Type, false, 0, 2, i, j) && CheckTile(Type, false, -1, 2, i, j)
                 )
             {
-                Main.spriteBatch.Draw(extras, drawOffset, new Rectangle?(new Rectangle(GetExtraState("overhangRight") + GetExtraVariant(i - 1, j - 1), GetExtraPattern(i) + 18, 18, 18)), drawColour, 0.0f, Vector2.Zero, 1f, SpriteEffects.None, 0f);
+                var x = GetExtraState(ExtraState.OverhangRight) + GetExtraVariant(i - 1, j - 1);
+                var y = GetExtraPattern(i) + 18;
+                Main.spriteBatch.Draw(extras, drawOffset, new Rectangle(x, y, 18, 18), drawColour);
             }
         }
 
-        private int GetExtraState(string type)
+        private int GetExtraState(ExtraState type)
         {
             switch (type)
             {
-                case "middle":
-                    return 36;
-                case "overhangLeft":
-                    return 18;
-                case "overhangRight":
-                    return 54;
-                case "wallEndLeft":
-                    return 0;
-                case "wallEndRight":
-                    return 72;
+                case ExtraState.Middle:
+                case ExtraState.WallEndLeft:
+                case ExtraState.WallEndRight:
+                case ExtraState.OverhangLeft:
+                case ExtraState.OverhangRight:
+                    return (int)type; // Funni Trick
+
                 default:
                     Main.NewText(type.ToString() + " is not a valid Extra sheet state");
                     return 0;

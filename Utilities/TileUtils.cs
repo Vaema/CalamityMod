@@ -461,6 +461,7 @@ namespace CalamityMod
             TileType<AbyssGravel>(),
             TileType<Voidstone>(),
             TileType<Stohne>(),
+            TileType<MossyStone>(),
         });
 
         /// <summary>
@@ -539,6 +540,7 @@ namespace CalamityMod
             TileType<EutrophicSand>(),
             TileType<Navystone>(),
             TileType<SeaPrism>(),
+            TileType<MossyStone>(),
         });
 
         /// <summary>

@@ -18,8 +18,6 @@ namespace CalamityMod.Tiles.SunkenSea.Ambient
 
             TileObjectData.newTile.CopyFrom(TileObjectData.Style3x2);
             TileObjectData.newTile.StyleHorizontal = true;
-            TileObjectData.newTile.StyleWrapLimit = 3;
-            TileObjectData.newTile.RandomStyleRange = 3;
             TileObjectData.newTile.Height = 3;
             TileObjectData.newTile.Origin = new Point16(1, 1);
             TileObjectData.newTile.CoordinateHeights = new[] { 16, 16, 16 };
