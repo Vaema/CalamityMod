@@ -39,10 +39,9 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.NPCs.Cryogen
 {
-    [LongDistanceNetSync] // Cryogen follows you forever like Queen Bee in vanilla, So we need this to sync it's position on minimap
+    [LongDistanceNetSync] // Cryogen follows you forever like Queen Bee in vanilla, So we need this to sync its position on minimap
     public class Cryogen : ModNPC
     {
-        private int biomeEnrageTimer = CalamityGlobalNPC.biomeEnrageTimerMax;
         private int currentPhase = 1;
         private int teleportLocationX = 0;
 
@@ -151,7 +150,6 @@ namespace CalamityMod.NPCs.Cryogen
 
         public override void SendExtraAI(BinaryWriter writer)
         {
-            writer.Write(biomeEnrageTimer);
             writer.Write(teleportLocationX);
             writer.Write(NPC.dontTakeDamage);
             writer.Write(NPC.localAI[1]);
@@ -161,7 +159,6 @@ namespace CalamityMod.NPCs.Cryogen
 
         public override void ReceiveExtraAI(BinaryReader reader)
         {
-            biomeEnrageTimer = reader.ReadInt32();
             teleportLocationX = reader.ReadInt32();
             NPC.dontTakeDamage = reader.ReadBoolean();
             NPC.localAI[1] = reader.ReadSingle();

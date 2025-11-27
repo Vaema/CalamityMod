@@ -34,7 +34,6 @@ namespace CalamityMod.NPCs.Crabulon
     [AutoloadBossHead]
     public class Crabulon : ModNPC
     {
-        private int biomeEnrageTimer = CalamityGlobalNPC.biomeEnrageTimerMax;
         private bool stomping = false;
         private const float TelegraphTimeBeforeBigJump = 20f;
         private const float DelayBeforeBigJump = 50f;
@@ -115,14 +114,12 @@ namespace CalamityMod.NPCs.Crabulon
 
         public override void SendExtraAI(BinaryWriter writer)
         {
-            writer.Write(biomeEnrageTimer);
             writer.Write(NPC.localAI[0]);
             writer.Write(stomping);
         }
 
         public override void ReceiveExtraAI(BinaryReader reader)
         {
-            biomeEnrageTimer = reader.ReadInt32();
             NPC.localAI[0] = reader.ReadSingle();
             stomping = reader.ReadBoolean();
         }
