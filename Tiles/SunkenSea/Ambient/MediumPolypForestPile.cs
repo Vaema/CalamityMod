@@ -6,7 +6,7 @@ using Terraria.ObjectData;
 
 namespace CalamityMod.Tiles.SunkenSea.Ambient
 {
-    public class WideScarletSeagrass : ModTile
+    public class MediumPolypForestPile : ModTile
     {
         public override void SetStaticDefaults()
         {
@@ -16,16 +16,18 @@ namespace CalamityMod.Tiles.SunkenSea.Ambient
             Main.tileNoFail[Type] = true;
             Main.tileLavaDeath[Type] = true;
             Main.tileWaterDeath[Type] = false;
-            TileID.Sets.ReplaceTileBreakUp[Type] = true;
-            TileID.Sets.SwaysInWindBasic[Type] = true;
 
             TileObjectData.newTile.CopyFrom(TileObjectData.Style2x2);
+            TileObjectData.newTile.DrawYOffset = 2;
             TileObjectData.newTile.StyleHorizontal = true;
+
             TileObjectData.addTile(Type);
 
-            AddMapEntry(new Color(187, 43, 44));
-            DustType = DustID.BlueMoss;
+            AddMapEntry(new Color(162, 55, 196));
+            DustType = DustID.PurpleMoss;
             HitSound = SoundID.Dig;
+
+            base.SetStaticDefaults();
         }
     }
 }
