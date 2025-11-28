@@ -71,7 +71,7 @@ namespace CalamityMod.Systems
             if (!tile.HasTile)
                 return;
 
-            if (tile.Get<TileSpecialDrawData>().HasBlendMergeData)
+            if (!tile.Get<TileSpecialDrawData>().HasBlendMergeData)
                 return;
 
             if (!TryGetBlendingRefData(tileX, tileY, out var blendRefs))
