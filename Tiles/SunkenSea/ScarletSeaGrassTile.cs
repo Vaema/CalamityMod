@@ -68,44 +68,33 @@ namespace CalamityMod.Tiles.SunkenSea
         {
             num = fail ? 1 : 3;
         }
-        public override void DrawEffects(int i, int j, SpriteBatch spriteBatch, ref TileDrawInfo drawData)
+
+        public override void PostTileFrame(int i, int j, int up, int down, int left, int right, int upLeft, int upRight, int downLeft, int downRight)
         {
             if (Main.tile[i - 1, j - 1].TileType != Type || Main.tile[i, j - 1].TileType != Type || Main.tile[i + 1, j - 1].TileType != Type ||
                 Main.tile[i - 1, j - 2].TileType != Type || Main.tile[i, j - 2].TileType != Type || Main.tile[i + 1, j - 2].TileType != Type)
             {
-                try
-                {
-                    Main.instance.TilesRenderer.AddSpecialLegacyPoint(i, j);
-                }
-                catch { }
+                Main.tile[i, j].Get<TileSpecialDrawData>().HasSpecialPoint = true;
+            }
+            else
+            {
+                Main.tile[i, j].Get<TileSpecialDrawData>().HasSpecialPoint = false;
             }
         }
-        private Color GetDrawColour(int i, int j)
+
+        public override void DrawEffects(int i, int j, SpriteBatch spriteBatch, ref TileDrawInfo drawData)
         {
-            int colType = Main.tile[i, j].TileColor;
-            Color paintCol = WorldGen.paintColor(colType);
-            if (colType < 13)
+            if (Main.tile[i, j].Get<TileSpecialDrawData>().HasSpecialPoint)
             {
-                paintCol.R = (byte)((paintCol.R / 2f) + 128);
-                paintCol.G = (byte)((paintCol.G / 2f) + 128);
-                paintCol.B = (byte)((paintCol.B / 2f) + 128);
+                Main.instance.TilesRenderer.AddSpecialLegacyPoint(i, j);
             }
-            if (colType == 29)
-            {
-                paintCol = Color.Black;
-            }
-            Color col = Lighting.GetColor(i, j);
-            col.R = (byte)(paintCol.R / 255f * col.R);
-            col.G = (byte)(paintCol.G / 255f * col.G);
-            col.B = (byte)(paintCol.B / 255f * col.B);
-            return col;
         }
 
         public override void SpecialDraw(int i, int j, SpriteBatch spriteBatch)
         {
             Vector2 zero = Main.drawToScreen ? Vector2.Zero : new Vector2(Main.offScreenRange);
             Vector2 drawOffset = new Vector2(i * 16 - Main.screenPosition.X, j * 16 - Main.screenPosition.Y) + zero;
-            Color drawColour = GetDrawColour(i, j);
+            Color drawColour = CalamityUtils.ApplyPaint(Main.tile[i, j].TileColor, Lighting.GetColor(i, j));
             Texture2D leaves = GrassTexture.Value;
 
             DrawExtraTop(i, j, leaves, drawOffset, drawColour);
@@ -124,6 +113,7 @@ namespace CalamityMod.Tiles.SunkenSea
             g = 0f;
             b = 0.1f;
         }
+
         public override void RandomUpdate(int i, int j)
         {
             Tile tile = Main.tile[i, j];

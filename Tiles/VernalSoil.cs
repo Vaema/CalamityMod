@@ -1,5 +1,7 @@
-﻿using Microsoft.Xna.Framework;
+﻿using CalamityMod.Systems;
+using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using ReLogic.Content;
 using Terraria;
 using Terraria.Audio;
 using Terraria.DataStructures;
@@ -11,10 +13,15 @@ namespace CalamityMod.Tiles
 {
     public class VernalSoil : ModTile
     {
+        public Asset<Texture2D> GrassTexture;
+
         private int extraFrameHeight = 36;
         private int extraFrameWidth = 90;
+
         public override void SetStaticDefaults()
         {
+            GrassTexture = ModContent.Request<Texture2D>("CalamityMod/Tiles/VernicFernGrass");
+
             Main.tileSolid[Type] = true;
             Main.tileBlockLight[Type] = false;
             TileMaterials.SetForTileId(Type, TileMaterials._materialsByName["Organic"]);
@@ -32,16 +39,24 @@ namespace CalamityMod.Tiles
             this.RegisterBlendMergeWith(TileID.Mud);
         }
 
-        public override void DrawEffects(int i, int j, SpriteBatch spriteBatch, ref TileDrawInfo drawData)
+        public override void PostTileFrame(int i, int j, int up, int down, int left, int right, int upLeft, int upRight, int downLeft, int downRight)
         {
             if (Main.tile[i - 1, j - 1].TileType != Type || Main.tile[i, j - 1].TileType != Type || Main.tile[i + 1, j - 1].TileType != Type ||
                 Main.tile[i - 1, j - 2].TileType != Type || Main.tile[i, j - 2].TileType != Type || Main.tile[i + 1, j - 2].TileType != Type)
             {
-                try
-                {
-                    Main.instance.TilesRenderer.AddSpecialLegacyPoint(i, j);
-                }
-                catch { }
+                Main.tile[i, j].Get<TileSpecialDrawData>().HasSpecialPoint = true;
+            }
+            else
+            {
+                Main.tile[i, j].Get<TileSpecialDrawData>().HasSpecialPoint = false;
+            }
+        }
+
+        public override void DrawEffects(int i, int j, SpriteBatch spriteBatch, ref TileDrawInfo drawData)
+        {
+            if (Main.tile[i, j].Get<TileSpecialDrawData>().HasSpecialPoint)
+            {
+                Main.instance.TilesRenderer.AddSpecialLegacyPoint(i, j);
             }
         }
 
@@ -163,26 +178,22 @@ namespace CalamityMod.Tiles
 
         public override void SpecialDraw(int i, int j, SpriteBatch spriteBatch)
         {
-            if (Main.tile[i, j].IsTileActuallyInvisible())
+            Tile tile = Main.tile[i, j];
+            if (tile.IsTileActuallyInvisible())
                 return;
+
             Tile uptile = Main.tile[i, j - 1];
+            if (uptile.HasTile && uptile.IsTileFull())
+                return;
+
             Vector2 zero = Main.drawToScreen ? Vector2.Zero : new Vector2(Main.offScreenRange);
             Vector2 drawOffset = new Vector2(i * 16 - Main.screenPosition.X, j * 16 - Main.screenPosition.Y) + zero;
-            Color drawColour = CalamityUtils.ApplyPaint(Main.tile[i, j].TileColor, Lighting.GetColor(i, j));
-            Texture2D leaves = ModContent.Request<Texture2D>("CalamityMod/Tiles/VernicFernGrass").Value;
+            Color drawColour = CalamityUtils.ApplyPaint(tile.TileColor, Lighting.GetColor(i, j));
+            Texture2D leaves = GrassTexture.Value;
 
-            if (uptile.HasTile && uptile.IsTileFull())
-            {
-                return;
-            }
-            else
-            {
-
-
-                DrawExtraTop(i, j, leaves, drawOffset, drawColour);
-                //DrawExtraWallEnds(i, j, leaves, drawOffset, drawColour);
-                DrawExtraDrapes(i, j, leaves, drawOffset, drawColour);
-            }
+            DrawExtraTop(i, j, leaves, drawOffset, drawColour);
+            //DrawExtraWallEnds(i, j, leaves, drawOffset, drawColour);
+            DrawExtraDrapes(i, j, leaves, drawOffset, drawColour);
         }
 
         #region 'Extra Drapes' Drawing
