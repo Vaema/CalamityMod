@@ -24,5 +24,56 @@ namespace CalamityMod.Systems
             get => TileDataPacking.GetBit(Data, offset: 1);
             set => Data = (byte)TileDataPacking.SetBit(value, Data, offset: 1);
         }
+
+        /// <summary>
+        /// Shared Flag0
+        /// </summary>
+        public bool Flag0
+        {
+            get => TileDataPacking.GetBit(Data, offset: 4);
+            set => Data = (byte)leDataPacking.SetBit(value, Data, offset: 4);
+        }
+
+        /// <summary>
+        /// Shared Flag1
+        /// </summary>
+        public bool Flag1
+        {
+            get => TileDataPacking.GetBit(Data, offset: 5);
+            set => Data = (byte)TileDataPacking.SetBit(value, Data, offset: 5);
+        }
+
+        /// <summary>
+        /// Shared Flag1
+        /// </summary>
+        public bool Flag2
+        {
+            get => TileDataPacking.GetBit(Data, offset: 6);
+            set => Data = (byte)TileDataPacking.SetBit(value, Data, offset: 6);
+        }
+
+        /// <summary>
+        /// Shared Flag1
+        /// </summary>
+        public bool Flag3
+        {
+            get => TileDataPacking.GetBit(Data, offset: 7);
+            set => Data = (byte)TileDataPacking.SetBit(value, Data, offset: 7);
+        }
+
+        /// <summary>
+        /// Get All Flags
+        /// </summary>
+        /// <param name="flag0">Flag0 Value</param>
+        /// <param name="flag1">Flag1 Value</param>
+        /// <param name="flag2">Flag2 Value</param>
+        /// <param name="flag3">Flag3 Value</param>
+        public void GetFlags(out bool flag0, out bool flag1, out bool flag2, out bool flag3)
+        {
+            flag0 = Flag0;
+            flag1 = Flag1;
+            flag2 = Flag2;
+            flag3 = Flag3;
+        }
     }
 }
