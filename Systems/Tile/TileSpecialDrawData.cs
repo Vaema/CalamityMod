@@ -12,7 +12,7 @@ namespace CalamityMod.Systems
         /// </summary>
         public bool HasBlendMergeData
         {
-            get => TileDataPacking.GetBit(Data, offset: 0);
+            readonly get => TileDataPacking.GetBit(Data, offset: 0);
             set => Data = (byte)TileDataPacking.SetBit(value, Data, offset: 0);
         }
 
@@ -21,17 +21,20 @@ namespace CalamityMod.Systems
         /// </summary>
         public bool HasSpecialPoint
         {
-            get => TileDataPacking.GetBit(Data, offset: 1);
+            readonly get => TileDataPacking.GetBit(Data, offset: 1);
             set => Data = (byte)TileDataPacking.SetBit(value, Data, offset: 1);
         }
+
+        // Empty Flags:
+        // 2, 3
 
         /// <summary>
         /// Shared Flag0
         /// </summary>
         public bool Flag0
         {
-            get => TileDataPacking.GetBit(Data, offset: 4);
-            set => Data = (byte)leDataPacking.SetBit(value, Data, offset: 4);
+            readonly get => TileDataPacking.GetBit(Data, offset: 4);
+            set => Data = (byte)TileDataPacking.SetBit(value, Data, offset: 4);
         }
 
         /// <summary>
@@ -39,7 +42,7 @@ namespace CalamityMod.Systems
         /// </summary>
         public bool Flag1
         {
-            get => TileDataPacking.GetBit(Data, offset: 5);
+            readonly get => TileDataPacking.GetBit(Data, offset: 5);
             set => Data = (byte)TileDataPacking.SetBit(value, Data, offset: 5);
         }
 
@@ -48,7 +51,7 @@ namespace CalamityMod.Systems
         /// </summary>
         public bool Flag2
         {
-            get => TileDataPacking.GetBit(Data, offset: 6);
+            readonly get => TileDataPacking.GetBit(Data, offset: 6);
             set => Data = (byte)TileDataPacking.SetBit(value, Data, offset: 6);
         }
 
@@ -57,7 +60,7 @@ namespace CalamityMod.Systems
         /// </summary>
         public bool Flag3
         {
-            get => TileDataPacking.GetBit(Data, offset: 7);
+            readonly get => TileDataPacking.GetBit(Data, offset: 7);
             set => Data = (byte)TileDataPacking.SetBit(value, Data, offset: 7);
         }
 
@@ -68,12 +71,27 @@ namespace CalamityMod.Systems
         /// <param name="flag1">Flag1 Value</param>
         /// <param name="flag2">Flag2 Value</param>
         /// <param name="flag3">Flag3 Value</param>
-        public void GetFlags(out bool flag0, out bool flag1, out bool flag2, out bool flag3)
+        public readonly void GetFlags(out bool flag0, out bool flag1, out bool flag2, out bool flag3)
         {
             flag0 = Flag0;
             flag1 = Flag1;
             flag2 = Flag2;
             flag3 = Flag3;
+        }
+
+        /// <summary>
+        /// Set All Flags
+        /// </summary>
+        /// <param name="flag0">Flag0</param>
+        /// <param name="flag1">Flag1</param>
+        /// <param name="flag2">Flag2</param>
+        /// <param name="flag3">Flag3</param>
+        public void SetFlags(bool flag0, bool flag1, bool flag2, bool flag3)
+        {
+            Flag0 = flag0;
+            Flag1 = flag1;
+            Flag2 = flag2;
+            Flag3 = flag3;
         }
     }
 }
