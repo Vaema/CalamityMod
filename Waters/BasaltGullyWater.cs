@@ -11,7 +11,7 @@ namespace CalamityMod.Waters
 {
     public class BasaltGullyWaterflow : ModWaterfallStyle, IPaintableWaterfallStyle
     {
-        public void ModifyDrawColor(in Tile tile, int x, int y, ref VertexColors liquidColor) => CalamityUtils.SulphuricWaterColor(x, y, ref liquidColor, false);
+        public void ModifyDrawColor(in Tile tile, int x, int y, ref VertexColors liquidColor) => CalamityUtils.ModifySulphuricWaterColor(x, y, ref liquidColor, false);
     }
 
     public class BasaltGullyWater : ModWaterStyle, IPaintableWaterStyle, IEmittableWaterStyle
@@ -38,7 +38,7 @@ namespace CalamityMod.Waters
             b = outputColor.Z;
         }
 
-        public void ModifyDrawColor(in Tile tile, int x, int y, ref VertexColors liquidColor, bool isSlope) => CalamityUtils.SulphuricWaterColor(x, y, ref liquidColor, isSlope);
+        public void ModifyDrawColor(in Tile tile, int x, int y, ref VertexColors liquidColor, bool isSlope) => CalamityUtils.ModifySulphuricWaterColor(x, y, ref liquidColor, isSlope);
 
         public override int ChooseWaterfallStyle() => ModContent.Find<ModWaterfallStyle>("CalamityMod/BasaltGullyWaterflow").Slot;
         public override int GetSplashDust() => ModContent.DustType<BasaltGullySplash>();

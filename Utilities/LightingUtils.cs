@@ -9,7 +9,7 @@ namespace CalamityMod
 {
     public static partial class CalamityUtils
     {
-        public static void SulphuricWaterColor(int x, int y, ref VertexColors initialColor, bool isSlope)
+        public static void ModifySulphuricWaterColor(int x, int y, ref VertexColors initialColor, bool isSlope)
         {
             if (SulphuricWaterSafeZoneSystem.NearbySafeTiles.Count >= 1)
             {
