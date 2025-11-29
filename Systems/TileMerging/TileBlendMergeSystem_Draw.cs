@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Threading;
+using CalamityMod.Systems.Collections;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria;
@@ -33,8 +35,7 @@ namespace CalamityMod.Systems
             new Rectangle(x: 8, y: 8, width: 8, height: 8),
         ];
 
-        [ThreadStatic]
-        private static Color[] ColorSliceBuffer;
+        private static readonly ThreadLocal<Color[]> ColorSliceBuffer = new(() => new Color[9]);
 
         private static void OnQualityRequirementUpdate(Color highQualityLightReq, Color mediumQualityLightReq)
         {
@@ -49,8 +50,6 @@ namespace CalamityMod.Systems
             if (!solidLayer)
                 return;
 
-            ColorSliceBuffer ??= new Color[9]; // Prepare ColorSliceBuffer if it's not ready
-
             var screenPosition = Main.Camera.UnscaledPosition;
             var zero = Main.drawToScreen ? Vector2.Zero : new Vector2(Main.offScreenRange);
             var offset = zero + (Main.Camera.UnscaledPosition - Main.Camera.ScaledPosition);
@@ -60,23 +59,26 @@ namespace CalamityMod.Systems
             {
                 for (int y = firstTileY; y <= lastTileY; y++)
                 {
-                    DrawOnTile(x, y);
+                    if (!WorldGen.InWorld(x, y))
+                        continue;
+
+                    var tile = Main.tile[x, y];
+                    if (!CalamityTileSets.DrawBlendMergeAfterSolidTile[tile.TileType])
+                        continue;
+
+                    if (!tile.Get<TileSpecialDrawData>().HasBlendMergeData)
+                        continue;
+
+                    if (!TryGetBlendingRefData(x, y, out var blendRefs))
+                        continue;
+
+                    DrawOnTile(tile, x, y, in blendRefs);
                 }
             }
         }
 
-        public static void DrawOnTile(int tileX, int tileY)
+        public static void DrawOnTile(Tile tile, int tileX, int tileY, in TileBlendingRef[] blendRefs)
         {
-            var tile = CalamityUtils.ParanoidTileRetrieval(tileX, tileY);
-            if (!tile.HasTile)
-                return;
-
-            if (!tile.Get<TileSpecialDrawData>().HasBlendMergeData)
-                return;
-
-            if (!TryGetBlendingRefData(tileX, tileY, out var blendRefs))
-                return;
-
             // Generic Drawing Parameter
             var tileType = tile.TileType;
             Vector2 zero = Main.drawToScreen ? Vector2.Zero : new Vector2(Main.offScreenRange);
@@ -87,7 +89,8 @@ namespace CalamityMod.Systems
 
             // Sliced Rendering
             int sliceLength = 0;
-            var sliceRects = Array.Empty<Rectangle>();
+            Rectangle[] sliceRects = null;
+            Color[] colorSliceBuffer = ColorSliceBuffer.Value;
 
             // Is HalfBlock condition is also in vanilla, so we follow that
             if (Lighting.NotRetro && !tile.IsHalfBlock && !TileID.Sets.DontDrawTileSliced[tileType])
@@ -96,13 +99,13 @@ namespace CalamityMod.Systems
                 {
                     sliceLength = 9;
                     sliceRects = Rects9Slice;
-                    Lighting.GetColor9Slice(tileX, tileY, ref ColorSliceBuffer);
+                    Lighting.GetColor9Slice(tileX, tileY, ref colorSliceBuffer);
                 }
                 else if (tileLight.IsAnyChannelGreaterThan(MediumQualityLightRequirement))
                 {
                     sliceLength = 4;
                     sliceRects = Rects4Slice;
-                    Lighting.GetColor4Slice(tileX, tileY, ref ColorSliceBuffer);
+                    Lighting.GetColor4Slice(tileX, tileY, ref colorSliceBuffer);
                 }
             }
 
@@ -142,7 +145,7 @@ namespace CalamityMod.Systems
 
                     // Calculate the destination position for the slice on the screen
                     var destinationSlicePos = drawPos + sliceRects[i].Location.ToVector2();
-                    var drawColorVec = (tileLight.ToVector3() + ColorSliceBuffer[i].ToVector3()) * 0.5f;
+                    var drawColorVec = (tileLight.ToVector3() + colorSliceBuffer[i].ToVector3()) * 0.5f;
                     var finalColor = CalamityUtils.ApplyPaint(tile.TileColor, new Color(drawColorVec), deepPaintOnly: false).MultiplyRGB(finalMultColor);
                     Main.spriteBatch.Draw(texture, destinationSlicePos, sourceSliceRect, finalColor, 0f, Vector2.Zero, 1.0f, SpriteEffects.None, 0f);
                 }
