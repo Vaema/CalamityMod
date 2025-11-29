@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
 using CalamityMod.Systems;
 using Microsoft.Xna.Framework;
@@ -15,42 +14,22 @@ namespace CalamityMod
             if (SulphuricWaterSafeZoneSystem.NearbySafeTiles.Count >= 1)
             {
                 Color cleanWaterColor = new(10, 62, 193);
-                Point closestSafeZone = SulphuricWaterSafeZoneSystem.NearbySafeTiles.Keys.OrderBy(t => t.ToVector2().DistanceSQ(new(x, y))).First();
-                List<Vector2> points = new()
-                {
-                    new Vector2(x - 0.5f, y - 0.5f),
-                    new Vector2(x + 0.5f, y - 0.5f),
-                    new Vector2(x - 0.5f, y + 0.5f),
-                    new Vector2(x + 0.5f, y + 0.5f),
-                };
+                var closestSafeZone = SulphuricWaterSafeZoneSystem.NearbySafeTiles.OrderBy(t => t.Key.ToVector2().DistanceSQ(new(x, y))).First();
+                Point closestSafeZonePoint = closestSafeZone.Key;
+                float closestSafeZoneAmt = closestSafeZone.Value;
+                float lerpAmt = (1f - closestSafeZoneAmt) * 21f;
 
-                float lerpAmt = (1f - SulphuricWaterSafeZoneSystem.NearbySafeTiles[closestSafeZone]) * 21f;
-                for (int i = 0; i < 4; i++)
+                void ModifyColor(Vector2 point, ref Color vertexColor)
                 {
-                    float distanceToClosest = points[i].Distance(closestSafeZone.ToVector2());
+                    float distanceToClosest = point.Distance(closestSafeZonePoint.ToVector2());
                     float acidicWaterInterpolant = Utils.GetLerpValue(12f, 20.5f, distanceToClosest + lerpAmt, true);
-                    switch (i)
-                    {
-                        case 0:
-                            initialColor.TopLeftColor = Color.Lerp(initialColor.TopLeftColor, cleanWaterColor, 1f - acidicWaterInterpolant);
-                            break;
-
-                        case 1:
-                            initialColor.TopRightColor = Color.Lerp(initialColor.TopRightColor, cleanWaterColor, 1f - acidicWaterInterpolant);
-                            break;
-
-                        case 2:
-                            initialColor.BottomLeftColor = Color.Lerp(initialColor.BottomLeftColor, cleanWaterColor, 1f - acidicWaterInterpolant);
-                            break;
-
-                        case 3:
-                            initialColor.BottomRightColor = Color.Lerp(initialColor.BottomRightColor, cleanWaterColor, 1f - acidicWaterInterpolant);
-                            break;
-
-                        default:
-                            break;
-                    }
+                    vertexColor = Color.Lerp(cleanWaterColor, vertexColor, acidicWaterInterpolant);
                 }
+
+                ModifyColor(new(x - 0.5f, y - 0.5f), ref initialColor.TopLeftColor);
+                ModifyColor(new(x + 0.5f, y - 0.5f), ref initialColor.TopRightColor);
+                ModifyColor(new(x - 0.5f, y + 0.5f), ref initialColor.BottomLeftColor);
+                ModifyColor(new(x + 0.5f, y + 0.5f), ref initialColor.BottomRightColor);
             }
 
             if (isSlope)
