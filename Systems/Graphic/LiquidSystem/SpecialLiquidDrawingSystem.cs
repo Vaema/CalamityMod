@@ -27,6 +27,7 @@ namespace CalamityMod.Systems.Graphic.LiquidSystem
             On_WaterfallManager.DrawWaterfall_int_int_int_float_Vector2_Rectangle_Color_SpriteEffects += ModifyWaterfallColor;
         }
 
+        // TODO: Better Transition Support.
         private static void ModifyEmit(Tile tile, int x, int y, ref Vector3 lightColor)
         {
             if (tile.HasTile || tile.LiquidAmount <= 0)
@@ -87,6 +88,7 @@ namespace CalamityMod.Systems.Graphic.LiquidSystem
             }
         }
 
+        // TODO: Better Transition Support.
         private static void ModifyColor(int x, int y, byte liquidType, ref VertexColors initialColor, bool isSlope = false)
         {
             if (liquidType == LiquidID.Water && TryGetModWaterStyleAs<IPaintableWaterStyle>(Main.waterStyle, out var waterStyle))

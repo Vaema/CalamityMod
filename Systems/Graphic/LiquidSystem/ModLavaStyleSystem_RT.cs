@@ -80,9 +80,17 @@ namespace CalamityMod.Systems.Graphic.LiquidSystem
             graphicsDevice.SetRenderTarget(null);
         }
 
+        private static readonly BlendState ActualAdditive = new()
+        {
+            ColorSourceBlend = Blend.One,
+            AlphaSourceBlend = Blend.One,
+            ColorDestinationBlend = Blend.One,
+            AlphaDestinationBlend = Blend.One
+        };
+
         private static void Begin()
         {
-            Main.spriteBatch.Begin(SpriteSortMode.Immediate, BlendState.AlphaBlend, SamplerState.PointClamp, DepthStencilState.Default, RasterizerState.CullNone, null, Matrix.Identity);
+            Main.spriteBatch.Begin(SpriteSortMode.Immediate, ActualAdditive, SamplerState.PointClamp, DepthStencilState.Default, RasterizerState.CullNone, null, Matrix.Identity);
         }
 
         private static void End()
@@ -95,7 +103,9 @@ namespace CalamityMod.Systems.Graphic.LiquidSystem
             var totalCount = ModLavaStyleLoader.TotalCount;
             for (int i = 0; i < totalCount; i++)
             {
-                Main.spriteBatch.Draw(textures[i].Value, Vector2.Zero, null, Color.White * LavaAlpha[i]);
+                var alpha = LavaAlpha[i];
+                var color = new Color(1, 1, 1, alpha);
+                Main.spriteBatch.Draw(textures[i].Value, Vector2.Zero, null, Color.White * alpha);
             }
         }
     }

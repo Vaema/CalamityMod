@@ -93,7 +93,7 @@ namespace CalamityMod.Systems.Graphic.LiquidSystem
             {
                 if (LavaStyle == type)
                 {
-                    LavaAlpha[type] += 0.2f;
+                    LavaAlpha[type] += 0.125f;
                     if (LavaAlpha[type] > 1f)
                     {
                         LavaAlpha[type] = 1f;
@@ -101,7 +101,7 @@ namespace CalamityMod.Systems.Graphic.LiquidSystem
                 }
                 else
                 {
-                    LavaAlpha[type] -= 0.2f;
+                    LavaAlpha[type] -= 0.125f;
                     if (LavaAlpha[type] < 0f)
                     {
                         LavaAlpha[type] = 0f;
