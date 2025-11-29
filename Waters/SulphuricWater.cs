@@ -15,7 +15,7 @@ namespace CalamityMod.Waters
 {
     public class SulphuricWaterflow : ModWaterfallStyle, IPaintableWaterfallStyle
     {
-        public void ModifyDrawColor(in Tile tile, int x, int y, ref VertexColors liquidColor) => CalamityUtils.SulphuricWaterColor(x, y, ref liquidColor, true);
+        public void ModifyDrawColor(in Tile tile, int x, int y, ref VertexColors liquidColor) => CalamityUtils.SulphuricWaterColor(x, y, ref liquidColor, false);
     }
 
     public class SulphuricWater : ModWaterStyle, IPaintableWaterStyle, IEmittableWaterStyle
