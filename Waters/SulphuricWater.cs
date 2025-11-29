@@ -1,24 +1,26 @@
-﻿using CalamityMod.Particles;
-using System;
-using CalamityMod.Systems;
+﻿using System;
+using CalamityMod.Dusts.WaterSplash;
+using CalamityMod.Gores.WaterDroplet;
+using CalamityMod.Particles;
+using CalamityMod.Systems.Graphic.LiquidSystem;
 using CalamityMod.Tiles.Abyss;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using ReLogic.Content;
 using Terraria;
-using Terraria.ModLoader;
 using Terraria.Graphics;
-using Terraria.ID;
-using CalamityMod.Dusts.WaterSplash;
-using CalamityMod.Gores.WaterDroplet;
+using Terraria.ModLoader;
 
 namespace CalamityMod.Waters
 {
-    public class SulphuricWaterflow : ModWaterfallStyle { }
-
-    public class SulphuricWater : CalamityModWaterStyle
+    public class SulphuricWaterflow : ModWaterfallStyle, IPaintableWaterfallStyle
     {
-        public static CalamityModWaterStyle Instance { get; private set; }
+        public void ModifyDrawColor(in Tile tile, int x, int y, ref VertexColors liquidColor) => CalamityUtils.SulphuricWaterColor(x, y, ref liquidColor, true);
+    }
+
+    public class SulphuricWater : ModWaterStyle, IPaintableWaterStyle, IEmittableWaterStyle
+    {
+        public static ModWaterStyle Instance { get; private set; }
         public static ModWaterfallStyle WaterfallStyle { get; private set; }
         public static int SplashDust { get; private set; }
         public static int DropletGore { get; private set; }
@@ -45,11 +47,11 @@ namespace CalamityMod.Waters
         public override int GetSplashDust() => SplashDust;
         public override int GetDropletGore() => DropletGore;
         public override Asset<Texture2D> GetRainTexture() => RainTexture ??= ModContent.Request<Texture2D>("CalamityMod/Waters/SulphuricRain");
-        
+
         public override byte GetRainVariant() => (byte)Main.rand.Next(3);
         public override Color BiomeHairColor() => new Color(43, 168, 110);
-        public override void DrawColor(int x, int y, ref VertexColors liquidColor, bool isSlope) => ILEditing.ILChanges.SelectSulphuricWaterColor(x, y, ref liquidColor, isSlope);
-        public override void ModifyLight(ref readonly Tile tile, int i, int j, ref float r, ref float g, ref float b)
+        public void ModifyDrawColor(in Tile tile, int x, int y, ref VertexColors liquidColor, bool isSlope) => CalamityUtils.SulphuricWaterColor(x, y, ref liquidColor, isSlope);
+        public void ModifyLight(in Tile tile, int i, int j, ref float r, ref float g, ref float b)
         {
             Vector3 outputColor = new Vector3(r, g, b);
 

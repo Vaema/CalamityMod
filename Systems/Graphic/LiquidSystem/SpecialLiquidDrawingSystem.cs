@@ -1,6 +1,9 @@
 ﻿using System;
+using System.Reflection;
 using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
 using MonoMod.Cil;
+using ReLogic.Content;
 using Terraria;
 using Terraria.GameContent.Drawing;
 using Terraria.GameContent.Liquid;
@@ -14,11 +17,14 @@ namespace CalamityMod.Systems.Graphic.LiquidSystem
     [Autoload(Side = ModSide.Client)]
     public sealed class SpecialLiquidDrawingSystem : ModSystem
     {
+        public static readonly FastField<WaterfallManager, Asset<Texture2D>[]> WaterfallTextureField = new("waterfallTexture", BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.Public);
+
         public override void OnModLoad()
         {
             On_TileLightScanner.GetTileLight += ApplyLiquidEmit;
             IL_LiquidRenderer.DrawNormalLiquids += LiquidDrawColors; //Liquid Light
             On_TileDrawing.DrawPartialLiquid += LiquidSlopeDrawColors;
+            On_WaterfallManager.DrawWaterfall_int_int_int_float_Vector2_Rectangle_Color_SpriteEffects += ModifyWaterfallColor;
         }
 
         private static void ModifyEmit(Tile tile, int x, int y, ref Vector3 lightColor)
@@ -32,7 +38,7 @@ namespace CalamityMod.Systems.Graphic.LiquidSystem
                 float G = 0f;
                 float B = 0f;
 
-                waterStyle.ModifyLight(in tile, x, y, Main.waterStyle, ref R, ref G, ref B);
+                waterStyle.ModifyLight(in tile, x, y, ref R, ref G, ref B);
 
                 lightColor.X = Math.Max(lightColor.X, R);
                 lightColor.Y = Math.Max(lightColor.Y, G);
@@ -85,7 +91,8 @@ namespace CalamityMod.Systems.Graphic.LiquidSystem
         {
             if (liquidType == LiquidID.Water && TryGetModWaterStyleAs<IPaintableWaterStyle>(Main.waterStyle, out var waterStyle))
             {
-                waterStyle.DrawColor(x, y, Main.waterStyle, ref initialColor, isSlope);
+                var tile = Main.tile[x, y];
+                waterStyle.ModifyDrawColor(in tile, x, y, ref initialColor, isSlope);
             }
             else if (liquidType == LiquidID.Lava && ModLavaStyleSystem.Initialized)
             {
@@ -170,13 +177,29 @@ namespace CalamityMod.Systems.Graphic.LiquidSystem
             });
         }
 
-        private void LiquidSlopeDrawColors(On_TileDrawing.orig_DrawPartialLiquid orig, TileDrawing self, bool behindBlocks, Tile tileCache, ref Vector2 position, ref Rectangle liquidSize, int liquidType, ref VertexColors colors)
+        private static void LiquidSlopeDrawColors(On_TileDrawing.orig_DrawPartialLiquid orig, TileDrawing self, bool behindBlocks, Tile tileCache, ref Vector2 position, ref Rectangle liquidSize, int liquidType, ref VertexColors colors)
         {
             tileCache.TilePos(out var x, out var y);
             var type = tileCache.TileType;
             var isFullblock = type == 0 || (!TileID.Sets.BlocksWaterDrawingBehindSelf[type] && behindBlocks);
             ModifyColor(x, y, (byte)liquidType, ref colors, isSlope: !isFullblock);
             orig(self, behindBlocks, tileCache, ref position, ref liquidSize, liquidType, ref colors);
+        }
+
+        private static void ModifyWaterfallColor(On_WaterfallManager.orig_DrawWaterfall_int_int_int_float_Vector2_Rectangle_Color_SpriteEffects orig, WaterfallManager self, int waterfallType, int x, int y, float opacity, Vector2 position, Rectangle sourceRect, Color color, Microsoft.Xna.Framework.Graphics.SpriteEffects effects)
+        {
+            if (TryGetModWaterStyleAs<IPaintableWaterfallStyle>(waterfallType, out var style))
+            {
+                Tile tile = Main.tile[x, y];
+                Texture2D texture = WaterfallTextureField.Get(self)[waterfallType].Value;
+                Lighting.GetCornerColors(x, y, out var vertices, 1f);
+                style.ModifyDrawColor(in tile, x, y, ref vertices);
+                Main.tileBatch.Draw(texture, position, sourceRect, vertices, Vector2.Zero, 1f, effects);
+            }
+            else
+            {
+                orig(self, waterfallType, x, y, opacity, position, sourceRect, color, effects);
+            }
         }
 
         #endregion

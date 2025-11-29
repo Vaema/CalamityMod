@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Reflection;
 using Microsoft.Xna.Framework.Graphics;
 using ReLogic.Content;
 using Terraria;
@@ -12,8 +11,6 @@ namespace CalamityMod.Systems.Graphic.LiquidSystem
     [Autoload(Side = ModSide.Client)]
     public sealed partial class ModLavaStyleSystem : ModSystem
     {
-        internal static readonly FastField<WaterfallManager, Asset<Texture2D>[]> WaterfallTextureField = new("waterfallTexture", BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.Public);
-
         public static ModLavaStyle[] LavaStyles = new ModLavaStyle[ModLavaStyleLoader.VanillaCount];
         public static Asset<Texture2D>[] Textures = new Asset<Texture2D>[ModLavaStyleLoader.VanillaCount];
         public static Asset<Texture2D>[] BlockTextures = new Asset<Texture2D>[ModLavaStyleLoader.VanillaCount];
@@ -52,7 +49,7 @@ namespace CalamityMod.Systems.Graphic.LiquidSystem
             Textures[0] = LiquidRenderer.Instance._liquidTextures[1];
             SlopeTextures[0] = TextureAssets.LiquidSlope[1];
             BlockTextures[0] = TextureAssets.Liquid[1];
-            WaterfallTextures[0] = WaterfallTextureField.Get(Main.instance.waterfallManager)[1];
+            WaterfallTextures[0] = SpecialLiquidDrawingSystem.WaterfallTextureField.Get(Main.instance.waterfallManager)[1];
 
             TextureArrayReady = true;
         }

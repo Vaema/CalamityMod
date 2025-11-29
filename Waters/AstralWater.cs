@@ -1,6 +1,5 @@
 ﻿using CalamityMod.Dusts.WaterSplash;
 using CalamityMod.Gores.WaterDroplet;
-using CalamityMod.Systems;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using ReLogic.Content;
@@ -11,9 +10,9 @@ namespace CalamityMod.Waters
 {
     public class AstralWaterflow : ModWaterfallStyle { }
 
-    public class AstralWater : CalamityModWaterStyle
+    public class AstralWater : ModWaterStyle
     {
-        public static CalamityModWaterStyle Instance { get; private set; }
+        public static ModWaterStyle Instance { get; private set; }
         public static ModWaterfallStyle WaterfallStyle { get; private set; }
         public static int SplashDust { get; private set; }
         public static int DropletGore { get; private set; }
@@ -39,7 +38,7 @@ namespace CalamityMod.Waters
         public override int GetSplashDust() => SplashDust;
         public override int GetDropletGore() => DropletGore;
         public override Asset<Texture2D> GetRainTexture() => RainTexture ??= ModContent.Request<Texture2D>("CalamityMod/Waters/AstralRain");
-        
+
         public override byte GetRainVariant() => (byte)Main.rand.Next(3);
         public override Color BiomeHairColor() => new Color(93, 78, 107);
     }

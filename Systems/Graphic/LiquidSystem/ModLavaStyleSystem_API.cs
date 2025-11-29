@@ -18,9 +18,9 @@ namespace CalamityMod.Systems.Graphic.LiquidSystem
             }
         }
 
-        public static void DrawColorSetup(int x, int y, int type, ref VertexColors liquidColor, bool isSlope = false)
+        public static void DrawColorSetup(int x, int y, int style, ref VertexColors liquidColor, bool isSlope = false)
         {
-            if (LavaStyles[type] is ModLavaStyle styles)
+            if (LavaStyles[style] is ModLavaStyle styles)
             {
                 styles.DrawColor(x, y, ref liquidColor, isSlope);
             }
