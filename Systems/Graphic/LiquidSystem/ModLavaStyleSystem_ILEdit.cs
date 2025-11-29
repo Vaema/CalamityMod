@@ -169,11 +169,12 @@ namespace CalamityMod.Systems.Graphic.LiquidSystem
             }
         }
 
-        private static void DrawWaterfall(On_WaterfallManager.orig_DrawWaterfall_int_int_int_float_Vector2_Rectangle_Color_SpriteEffects orig, WaterfallManager self, int waterfallType, int x, int y, float opacity, Microsoft.Xna.Framework.Vector2 position, Microsoft.Xna.Framework.Rectangle sourceRect, Microsoft.Xna.Framework.Color color, SpriteEffects effects)
+        private static void DrawWaterfall(On_WaterfallManager.orig_DrawWaterfall_int_int_int_float_Vector2_Rectangle_Color_SpriteEffects orig, WaterfallManager self, int waterfallType, int x, int y, float opacity, Vector2 position, Rectangle sourceRect, Color color, SpriteEffects effects)
         {
-            if (waterfallType == LiquidID.Lava)
+            if (waterfallType == LiquidID.Lava && CurrentLavaStyle != null)
             {
-                Main.spriteBatch.Draw(LavaWaterfallRT, position, sourceRect, color, 0f, Vector2.Zero, 1f, effects, 0f);
+                var lightColor = Lighting.GetColor(x, y);
+                Main.spriteBatch.Draw(LavaWaterfallRT, position, sourceRect, lightColor * opacity, 0f, Vector2.Zero, 1f, effects, 0f);
             }
             else
             {
