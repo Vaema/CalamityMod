@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using Microsoft.Xna.Framework.Graphics;
-using ReLogic.Content;
+﻿using CalamityMod.Systems.Graphic.LiquidSystem;
 using Terraria;
 using Terraria.Graphics;
 using Terraria.ID;
@@ -28,7 +25,7 @@ namespace CalamityMod.Systems
 
         protected sealed override void Register()
         {
-            Slot = LavaStylesLoader.Register(this);
+            Slot = ModLavaStyleLoader.Register(this);
         }
 
         public sealed override void SetupContent()
@@ -105,137 +102,6 @@ namespace CalamityMod.Systems
         /// <param name="onfireDuration">The duration of the OnFire! debuff. This allows for easy replacement of OnFire</param>
         public virtual void InflictDebuff(Player player, int onfireDuration)
         {
-        }
-    }
-
-    public class LavaStylesLoader : ModSystem
-    {
-        private static readonly List<ModLavaStyle> _content = [];
-
-        public static IReadOnlyList<ModLavaStyle> Content => _content;
-
-        public static int VanillaCount => 1;
-
-        public static int ModCount => _content.Count;
-
-        public static int TotalCount => VanillaCount + ModCount;
-
-        public override void ResizeArrays()
-        {
-            int totalCount = TotalCount;
-            Array.Resize(ref LavaRenderingSystem.Textures.liquid, totalCount);
-            Array.Resize(ref LavaRenderingSystem.Textures.block, totalCount);
-            Array.Resize(ref LavaRenderingSystem.Textures.slope, totalCount);
-            Array.Resize(ref LavaRenderingSystem.Textures.fall, totalCount);
-            Array.Resize(ref LavaRenderingSystem.LavaAlpha, totalCount);
-            Array.Resize(ref LavaRenderingSystem.AlphaSave, totalCount);
-        }
-
-        public override void PostSetupContent()
-        {
-            foreach (ModLavaStyle item in Content)
-            {
-                int Slot = item.Slot;
-                LavaRenderingSystem.Textures.liquid[Slot] = ModContent.Request<Texture2D>(item.Texture, AssetRequestMode.AsyncLoad);
-                LavaRenderingSystem.Textures.block[Slot] = ModContent.Request<Texture2D>(item.BlockTexture, AssetRequestMode.AsyncLoad);
-                LavaRenderingSystem.Textures.slope[Slot] = ModContent.Request<Texture2D>(item.SlopeTexture, AssetRequestMode.AsyncLoad);
-                LavaRenderingSystem.Textures.fall[Slot] = ModContent.Request<Texture2D>(item.WaterfallTexture, AssetRequestMode.AsyncLoad);
-            }
-        }
-
-        public static ModLavaStyle Get(int type)
-        {
-            type -= VanillaCount;
-            return type >= 0 && type < _content.Count ? _content[type] : null;
-        }
-
-        internal static int Register(ModLavaStyle instance)
-        {
-            int type = TotalCount;
-            ModTypeLookup<ModLavaStyle>.Register(instance);
-            _content.Add(instance);
-            return type;
-        }
-
-        private delegate void ResizeArray_orig(bool unloading);
-
-        public static void UpdateLiquidAlphas()
-        {
-            if (LavaRenderingSystem.LavaStyle >= VanillaCount)
-            {
-                for (int i = 0; i < VanillaCount; i++)
-                {
-                    LavaRenderingSystem.LavaAlpha[i] -= 0.2f;
-                    if (LavaRenderingSystem.LavaAlpha[i] < 0f)
-                    {
-                        LavaRenderingSystem.LavaAlpha[i] = 0f;
-                    }
-                }
-            }
-            foreach (ModLavaStyle item in Content)
-            {
-                int type = item.Slot;
-                if (LavaRenderingSystem.LavaStyle == type)
-                {
-                    LavaRenderingSystem.LavaAlpha[type] += 0.2f;
-                    if (LavaRenderingSystem.LavaAlpha[type] > 1f)
-                    {
-                        LavaRenderingSystem.LavaAlpha[type] = 1f;
-                    }
-                }
-                else
-                {
-                    LavaRenderingSystem.LavaAlpha[type] -= 0.2f;
-                    if (LavaRenderingSystem.LavaAlpha[type] < 0f)
-                    {
-                        LavaRenderingSystem.LavaAlpha[type] = 0f;
-                    }
-                }
-            }
-        }
-
-        public static void ModifyLightSetup(int i, int j, int style, ref float r, ref float g, ref float b)
-        {
-            ModLavaStyle lavaStyle = Get(style);
-            if (lavaStyle != null)
-            {
-                lavaStyle?.ModifyLight(i, j, ref r, ref g, ref b);
-            }
-        }
-
-        internal static void DrawColorSetup(int x, int y, int type, ref VertexColors liquidColor, bool isSlope = false)
-        {
-            ModLavaStyle styles = Get(type);
-            if (styles != null)
-            {
-                styles?.DrawColor(x, y, ref liquidColor, isSlope);
-            }
-        }
-
-        public static void InflictDebuff(Player player, int type, int onfireDuration)
-        {
-            ModLavaStyle lavaStyle = Get(type);
-            if (lavaStyle != null)
-            {
-                lavaStyle?.InflictDebuff(player, onfireDuration);
-            }
-        }
-
-        public static void IsLavaActive()
-        {
-            foreach (ModLavaStyle item in Content)
-            {
-                int type = item.Slot;
-                ModLavaStyle lavaStyle = Get(type);
-                if (lavaStyle != null)
-                {
-                    bool? flag = lavaStyle?.IsLavaActive();
-                    if (flag != null && flag == true)
-                    {
-                        LavaRenderingSystem.LavaStyle = lavaStyle.Slot;
-                    }
-                }
-            }
         }
     }
 }
