@@ -47,7 +47,7 @@ namespace CalamityMod.Systems
         }
 
         /// <summary>
-        /// Shared Flag1
+        /// Shared Flag2
         /// </summary>
         public bool Flag2
         {
@@ -56,7 +56,7 @@ namespace CalamityMod.Systems
         }
 
         /// <summary>
-        /// Shared Flag1
+        /// Shared Flag3
         /// </summary>
         public bool Flag3
         {
