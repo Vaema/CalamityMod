@@ -1,9 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using ReLogic.Content;
 using Terraria;
@@ -14,36 +9,30 @@ namespace CalamityMod
     /// <summary>
     /// Utility Class for using 2D Grayscale Texture as gradient
     /// </summary>
-    public sealed class GrayscaleTexture2D
+    public sealed class GrayscaleTexture2D : IDeferredLoadTexture
     {
+        public Texture2D Texture { get; private set; }
+
         private int _Width = 0;
         private int _Height = 0;
         private float[] _Scales; // 2D array is not thread-safe
+
+        private Asset<Texture2D> _Asset;
+        private bool _Prepared;
+
+        public bool IsAssetLoaded => _Asset?.IsLoaded ?? false;
 
         public GrayscaleTexture2D(string assetName)
         {
             if (Main.dedServ)
                 return;
 
-            var texture = ModContent.Request<Texture2D>(assetName, AssetRequestMode.ImmediateLoad).Value;
-            if (texture is null)
+            _Asset = ModContent.Request<Texture2D>(assetName);
+            if (_Asset is null)
                 return;
 
-            Main.QueueMainThreadAction(() =>
-            {
-                _Width = texture.Width;
-                _Height = texture.Height;
-                _Scales = new float[_Width * _Height];
-
-                var colorScheme = texture.GetColorsFromTexture();
-                for (int i = 0; i < _Width; i++)
-                {
-                    for (int j = 0; j < _Height; j++)
-                    {
-                        _Scales[(j * _Width) + i] = colorScheme[i, j].R / 255.0f;
-                    }
-                }
-            });
+            Texture = _Asset.Value;
+            DeferredTextureLoadingManager.Enqueue(this);
         }
 
         public void Unload()
@@ -51,10 +40,41 @@ namespace CalamityMod
             _Width = 0;
             _Height = 0;
             _Scales = null;
+            _Asset = null;
+            Texture = null;
+            _Prepared = false;
+        }
+
+        public void OnTextureLoaded()
+        {
+            if (_Prepared)
+                return;
+
+            Texture = _Asset.Value;
+            if (Texture is null)
+                return;
+
+            _Width = Texture.Width;
+            _Height = Texture.Height;
+            _Scales = new float[_Width * _Height];
+
+            var colorScheme = Texture.GetColorsFromTexture();
+            for (int i = 0; i < _Width; i++)
+            {
+                for (int j = 0; j < _Height; j++)
+                {
+                    _Scales[(j * _Width) + i] = colorScheme[i, j].R / 255.0f;
+                }
+            }
+
+            _Prepared = true;
         }
 
         public float GetClamp(int x, int y)
         {
+            if (!_Prepared)
+                return default;
+
             if (_Width == 0 || _Height == 0)
                 return default;
 
@@ -65,6 +85,9 @@ namespace CalamityMod
 
         public float GetRepeat(int x, int y)
         {
+            if (!_Prepared)
+                return default;
+
             if (_Width == 0 || _Height == 0)
                 return default;
 
