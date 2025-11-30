@@ -14,6 +14,7 @@ using ReLogic.Content;
 using ReLogic.Graphics;
 using Terraria;
 using Terraria.Audio;
+using Terraria.GameContent;
 using Terraria.ID;
 using Terraria.Localization;
 using Terraria.ModLoader;
@@ -177,13 +178,13 @@ namespace CalamityMod.UI.DialogueDisplay
         private bool lockDelay = false;
         private float WrapWidth = -1;
 
-        public DialogueDisplay(DialoguePage textData, DisplayEffect displayEffects, int startPage = 0, bool screenLocked = false, float wrapWidth = -1, string font = "MouseText")
+        public DialogueDisplay(DialoguePage textData, DisplayEffect displayEffects, int startPage = 0, bool screenLocked = false, float wrapWidth = -1, Asset<DynamicSpriteFont>? font = null)
         {
             DisplayEffects = displayEffects;
             ScreenLocked = screenLocked;
             DialoguePage = textData;
             DisplayEffects = displayEffects;
-            Font = FontAssetSystem.ExpectFont(font);
+            Font = font ?? FontAssets.MouseText;
             WrapWidth = wrapWidth;
         }
 
