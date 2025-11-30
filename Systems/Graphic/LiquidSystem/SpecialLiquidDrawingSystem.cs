@@ -2,6 +2,7 @@
 using System.Reflection;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using Mono.Cecil.Cil;
 using MonoMod.Cil;
 using ReLogic.Content;
 using Terraria;
@@ -24,6 +25,8 @@ namespace CalamityMod.Systems.Graphic.LiquidSystem
             On_TileLightScanner.GetTileLight += ApplyLiquidEmit;
             IL_LiquidRenderer.DrawNormalLiquids += LiquidDrawColorAndPostDraw; //Liquid Light
             On_TileDrawing.DrawPartialLiquid += LiquidSlopeDrawColors;
+            IL_Main.oldDrawWater += OldLiquidPostDraw;
+
             On_WaterfallManager.DrawWaterfall_int_int_int_float_Vector2_Rectangle_Color_SpriteEffects += ModifyWaterfallColor;
         }
 
@@ -210,6 +213,67 @@ namespace CalamityMod.Systems.Graphic.LiquidSystem
             var isFullblock = type == 0 || (!TileID.Sets.BlocksWaterDrawingBehindSelf[type] && behindBlocks);
             ModifyColor(x, y, liquidType, ref colors, isSlope: !isFullblock);
             orig(self, behindBlocks, tileCache, ref position, ref liquidSize, liquidType, ref colors);
+        }
+
+        private static void OldLiquidPostDraw(ILContext il)
+        {
+            const string PatchName = "Old Liquid PostDraw";
+
+            ILCursor cursor = new ILCursor(il);
+            var typeRef = cursor.Context.Import(typeof(bool));
+            var isDrawnVarDef = new VariableDefinition(typeRef);
+            il.Body.Variables.Add(isDrawnVarDef);
+
+            // Start of method, Reset IsDrawn Variable to False
+            cursor.EmitLdcI4(0); // False
+            cursor.EmitStloc(isDrawnVarDef);
+
+            int xLocalIdx = 0;
+            int yLocalIdx = 0;
+            ILLabel endLoopLabal = null;
+            if (!cursor.TryGotoNext(MoveType.After,
+                c => c.MatchBrfalse(out endLoopLabal),
+                c => c.MatchLdloc(out xLocalIdx),
+                c => c.MatchLdloc(out yLocalIdx),
+                c => c.MatchCallOrCallvirt<Lighting>(nameof(Lighting.GetColor)),
+                c => c.MatchStloc(out _))) // Color color;
+            {
+                CalamityMod.Log.ILFailure(PatchName, "Could not locate Lighting.GetColor call");
+                return;
+            }
+
+            // Start of loop, Passed Draw Condition, Set IsDrawn Variable to True
+            cursor.EmitLdcI4(1); // True
+            cursor.EmitStloc(isDrawnVarDef);
+
+            // Jump to end of the loop
+            cursor.GotoLabel(endLoopLabal, MoveType.AfterLabel);
+
+            // Load Variables to stack
+            cursor.EmitLdloc(isDrawnVarDef);
+            cursor.EmitLdloc(xLocalIdx);
+            cursor.EmitLdloc(yLocalIdx);
+            cursor.EmitLdarg(1); // bool background
+            cursor.EmitLdarg(2); // int WaterStyle
+            cursor.EmitDelegate((bool isDrawn, int x, int y, bool isBackground, int waterStyle) =>
+            {
+                if (!isDrawn || isBackground)
+                    return;
+
+                if (Main.waterStyle != waterStyle)
+                    return;
+
+                var tile = Main.tile[x, y];
+                var liquidType = tile.LiquidType;
+                if (liquidType == LiquidID.Water)
+                {
+                    PostDrawEffect(x, y, waterStyle);
+                }
+            });
+
+            // End, Reset IsDrawn to False
+            cursor.EmitLdcI4(0); // False
+            cursor.EmitStloc(isDrawnVarDef);
         }
 
         private static void ModifyWaterfallColor(On_WaterfallManager.orig_DrawWaterfall_int_int_int_float_Vector2_Rectangle_Color_SpriteEffects orig, WaterfallManager self, int waterfallType, int x, int y, float opacity, Vector2 position, Rectangle sourceRect, Color color, SpriteEffects effects)
