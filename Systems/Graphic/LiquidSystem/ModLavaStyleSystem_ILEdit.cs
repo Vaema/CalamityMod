@@ -3,7 +3,6 @@ using System.Reflection;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Mono.Cecil;
-using Mono.Cecil.Cil;
 using MonoMod.Cil;
 using ReLogic.Content;
 using Terraria;
@@ -266,14 +265,12 @@ namespace CalamityMod.Systems.Graphic.LiquidSystem
 
             ILCursor cursor = new ILCursor(il);
 
-            Func<Instruction, bool>[] predicates = [
+            if (!cursor.TryGotoNext(MoveType.After,
                 i => i.MatchLdfld<Entity>("width"),
                 i => i.MatchLdcI4(12),
                 i => i.MatchAdd(),
                 i => i.MatchLdcI4(24),
-                i => i.MatchLdcI4(DustID.Lava)
-            ];
-            if (!cursor.TryGotoNext(MoveType.After, predicates))
+                i => i.MatchLdcI4(DustID.Lava)))
             {
                 CalamityMod.Log.ILFailure(PatchName, "Could not locate the first lava bubble splashing");
                 return;
@@ -304,19 +301,20 @@ namespace CalamityMod.Systems.Graphic.LiquidSystem
             //Injects code directly at the position where the OnFire debuff is handled
             ILCursor cursor = new ILCursor(il);
 
+            int onFireTimeLocalIdx = 0;
             if (!cursor.TryGotoNext(MoveType.Before,
                 i => i.MatchLdarg0(),
-                i => i.MatchLdcI4(24),
-                i => i.MatchLdloc(161),
-                i => i.MatchLdcI4(1),
-                i => i.MatchLdcI4(0),
+                i => i.MatchLdcI4(BuffID.OnFire),
+                i => i.MatchLdloc(out onFireTimeLocalIdx), //
+                i => i.MatchLdcI4(1), // quiet
+                i => i.MatchLdcI4(0), // foodHack
                 i => i.MatchCall<Player>(nameof(Player.AddBuff))))
             {
                 CalamityMod.Log.ILFailure(PatchName, "Could not locate the infliction of the On Fire! debuff inside the Player Update code");
                 return;
             }
             cursor.EmitLdarg0(); // Player player
-            cursor.EmitLdloc(161); // int OnFireTime
+            cursor.EmitLdloc(onFireTimeLocalIdx); // int OnFireTime
             cursor.EmitDelegate(InflictDebuff);
         }
         #endregion
