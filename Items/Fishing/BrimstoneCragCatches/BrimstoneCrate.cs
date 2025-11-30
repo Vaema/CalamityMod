@@ -41,9 +41,9 @@ namespace CalamityMod.Items.Fishing.BrimstoneCragCatches
         public override bool CanRightClick() => true;
         public override void ModifyItemLoot(ItemLoot itemLoot)
         {
-            // 2-5 Scorched Bones @ 50%
-            // This is our equivalent to Crystal Shards/Ichor
-            itemLoot.Add(ModContent.ItemType<Placeables.Crags.ScorchedBone>(), 2, 2, 5);
+            // 20-50 Scorched Bones @ 33.33%
+            // This is our equivalent to Bamboo
+            itemLoot.Add(ModContent.ItemType<Placeables.Crags.ScorchedBone>(), 3, 20, 50);
 
             itemLoot.AddBiomeCrateLootRules();
         }
