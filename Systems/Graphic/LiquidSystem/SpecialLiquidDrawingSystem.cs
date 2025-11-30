@@ -30,7 +30,6 @@ namespace CalamityMod.Systems.Graphic.LiquidSystem
             On_WaterfallManager.DrawWaterfall_int_int_int_float_Vector2_Rectangle_Color_SpriteEffects += ModifyWaterfallColor;
         }
 
-        // TODO: Better Transition Support.
         private static void ModifyEmit(Tile tile, int x, int y, ref Vector3 lightColor)
         {
             if (tile.HasTile || tile.LiquidAmount <= 0)
@@ -50,48 +49,36 @@ namespace CalamityMod.Systems.Graphic.LiquidSystem
             }
             else if (tile.LiquidType == LiquidID.Lava && ModLavaStyleSystem.Initialized)
             {
-                Vector3 lavaLight = new Vector3(0.55f, 0.33f, 0.11f);
-
-                float R = ModLavaStyleSystem.LavaStyle == 0 ? lavaLight.X : 0f;
-                float G = ModLavaStyleSystem.LavaStyle == 0 ? lavaLight.Y : 0f;
-                float B = ModLavaStyleSystem.LavaStyle == 0 ? lavaLight.Z : 0f;
-                ModLavaStyleSystem.ModifyLightSetup(x, y, ModLavaStyleSystem.LavaStyle, ref R, ref G, ref B);
+                Vector3 vanillaLavaLight = new Vector3(0.55f, 0.33f, 0.11f);
+                Vector3 lavaEmit = ModLavaStyleSystem.LavaStyle == 0 ? vanillaLavaLight : Vector3.Zero;
+                ModLavaStyleSystem.ModifyLightSetup(x, y, ModLavaStyleSystem.LavaStyle, ref lavaEmit.X, ref lavaEmit.Y, ref lavaEmit.Z);
 
                 for (int styleIndex = 0; styleIndex < ModLavaStyleLoader.TotalCount; styleIndex++)
                 {
                     if (ModLavaStyleSystem.LavaAlpha[styleIndex] > 0f && styleIndex != ModLavaStyleSystem.LavaStyle)
                     {
-                        float r = styleIndex == 0 ? lavaLight.X : 0f;
-                        float g = styleIndex == 0 ? lavaLight.Y : 0f;
-                        float b = styleIndex == 0 ? lavaLight.Z : 0f;
-                        ModLavaStyleSystem.ModifyLightSetup(x, y, styleIndex, ref r, ref g, ref b);
+                        Vector3 propagatingColor = (styleIndex == 0) ? vanillaLavaLight : Vector3.Zero;
+                        ModLavaStyleSystem.ModifyLightSetup(x, y, styleIndex, ref propagatingColor.X, ref propagatingColor.Y, ref propagatingColor.Z);
 
-                        float r2 = ModLavaStyleSystem.LavaStyle == 0 ? lavaLight.X : 0f;
-                        float g2 = ModLavaStyleSystem.LavaStyle == 0 ? lavaLight.Y : 0f;
-                        float b2 = ModLavaStyleSystem.LavaStyle == 0 ? lavaLight.Z : 0f;
-                        ModLavaStyleSystem.ModifyLightSetup(x, y, ModLavaStyleSystem.LavaStyle, ref r2, ref g2, ref b2);
+                        Vector3 activeColor = (ModLavaStyleSystem.LavaStyle == 0) ? vanillaLavaLight : Vector3.Zero;
+                        ModLavaStyleSystem.ModifyLightSetup(x, y, ModLavaStyleSystem.LavaStyle, ref activeColor.Z, ref activeColor.Y, ref activeColor.Z);
 
-                        R = float.Lerp(r, r2, ModLavaStyleSystem.LavaAlpha[ModLavaStyleSystem.LavaStyle]);
-                        G = float.Lerp(g, g2, ModLavaStyleSystem.LavaAlpha[ModLavaStyleSystem.LavaStyle]);
-                        B = float.Lerp(b, b2, ModLavaStyleSystem.LavaAlpha[ModLavaStyleSystem.LavaStyle]);
+                        lavaEmit = Vector3.Lerp(propagatingColor, activeColor, ModLavaStyleSystem.LavaAlpha[ModLavaStyleSystem.LavaStyle]);
                     }
                 }
 
-                if (R != 0.0f || G != 0.0f || B != 0.0f)
+                if (lavaEmit.X != 0.0f || lavaEmit.Y != 0.0f || lavaEmit.Z != 0.0f)
                 {
-                    float colorManipulator = (float)(270 - Main.mouseTextColor) / 900f;
-                    R += colorManipulator;
-                    G += colorManipulator;
-                    B += colorManipulator;
+                    float colorManipulator = (270 - Main.mouseTextColor) / 900f;
+                    lavaEmit += Vector3.One * colorManipulator;
                 }
 
-                lightColor.X = Math.Max(lightColor.X, R);
-                lightColor.Y = Math.Max(lightColor.Y, G);
-                lightColor.Z = Math.Max(lightColor.Z, B);
+                lightColor.X = Math.Max(lightColor.X, lavaEmit.X);
+                lightColor.Y = Math.Max(lightColor.Y, lavaEmit.Y);
+                lightColor.Z = Math.Max(lightColor.Z, lavaEmit.Z);
             }
         }
 
-        // TODO: Better Transition Support.
         private static void ModifyColor(int x, int y, int liquidStyle, ref VertexColors initialColor, bool isSlope = false)
         {
             if (TryGetModWaterStyleAs(liquidStyle, out IPaintableWaterStyle waterStyle))
@@ -101,7 +88,34 @@ namespace CalamityMod.Systems.Graphic.LiquidSystem
             }
             else if (liquidStyle == LiquidID.Lava && ModLavaStyleSystem.Initialized)
             {
-                ModLavaStyleSystem.DrawColorSetup(x, y, ModLavaStyleSystem.LavaStyle, ref initialColor, isSlope);
+                VertexColors color = initialColor;
+                ModLavaStyleSystem.DrawColorSetup(x, y, ModLavaStyleSystem.LavaStyle, ref color, isSlope);
+                for (int styleIndex = 0; styleIndex < ModLavaStyleLoader.TotalCount; styleIndex++)
+                {
+                    if (ModLavaStyleSystem.LavaAlpha[styleIndex] > 0f && styleIndex != ModLavaStyleSystem.LavaStyle)
+                    {
+                        VertexColors propagatingColor = initialColor;
+                        ModLavaStyleSystem.DrawColorSetup(x, y, styleIndex, ref propagatingColor, isSlope);
+
+                        VertexColors activeColor = initialColor;
+                        ModLavaStyleSystem.DrawColorSetup(x, y, ModLavaStyleSystem.LavaStyle, ref activeColor, isSlope);
+
+                        color = LerpColors(propagatingColor, activeColor, ModLavaStyleSystem.LavaAlpha[ModLavaStyleSystem.LavaStyle]);
+                    }
+                }
+
+                initialColor = color;
+            }
+
+            static VertexColors LerpColors(VertexColors a, VertexColors b, float amt)
+            {
+                return new VertexColors()
+                {
+                    TopLeftColor = Color.Lerp(a.TopLeftColor, b.TopLeftColor, amt),
+                    TopRightColor = Color.Lerp(a.TopRightColor, b.TopRightColor, amt),
+                    BottomLeftColor = Color.Lerp(a.BottomLeftColor, b.BottomLeftColor, amt),
+                    BottomRightColor = Color.Lerp(a.BottomRightColor, b.BottomRightColor, amt),
+                };
             }
         }
 
