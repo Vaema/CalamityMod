@@ -73,7 +73,6 @@ namespace CalamityMod.Items.Placeables.Furniture.Paintings
             "fryzahh",
             "HaguriHat",
             "LordMetarex",
-            "Memes",
             "Mercutio 'Merkalto' Takle",
             "Mishiro Usui",
             "Moonburn",
