@@ -22,7 +22,7 @@ namespace CalamityMod.Systems.Graphic.LiquidSystem
         public override void OnModLoad()
         {
             On_TileLightScanner.GetTileLight += ApplyLiquidEmit;
-            IL_LiquidRenderer.DrawNormalLiquids += LiquidDrawColors; //Liquid Light
+            IL_LiquidRenderer.DrawNormalLiquids += LiquidDrawColorAndPostDraw; //Liquid Light
             On_TileDrawing.DrawPartialLiquid += LiquidSlopeDrawColors;
             On_WaterfallManager.DrawWaterfall_int_int_int_float_Vector2_Rectangle_Color_SpriteEffects += ModifyWaterfallColor;
         }
@@ -89,16 +89,25 @@ namespace CalamityMod.Systems.Graphic.LiquidSystem
         }
 
         // TODO: Better Transition Support.
-        private static void ModifyColor(int x, int y, byte liquidType, ref VertexColors initialColor, bool isSlope = false)
+        private static void ModifyColor(int x, int y, int liquidStyle, ref VertexColors initialColor, bool isSlope = false)
         {
-            if (liquidType == LiquidID.Water && TryGetModWaterStyleAs<IPaintableWaterStyle>(Main.waterStyle, out var waterStyle))
+            if (TryGetModWaterStyleAs(liquidStyle, out IPaintableWaterStyle waterStyle))
             {
                 var tile = Main.tile[x, y];
                 waterStyle.ModifyDrawColor(in tile, x, y, ref initialColor, isSlope);
             }
-            else if (liquidType == LiquidID.Lava && ModLavaStyleSystem.Initialized)
+            else if (liquidStyle == LiquidID.Lava && ModLavaStyleSystem.Initialized)
             {
                 ModLavaStyleSystem.DrawColorSetup(x, y, ModLavaStyleSystem.LavaStyle, ref initialColor, isSlope);
+            }
+        }
+
+        private static void PostDrawEffect(int x, int y, int liquidStyle)
+        {
+            if (TryGetModWaterStyleAs(liquidStyle, out IPostDrawEffectWaterStyle waterStyle))
+            {
+                var tile = Main.tile[x, y];
+                waterStyle.PostDrawEffect(in tile, x, y);
             }
         }
 
@@ -110,7 +119,7 @@ namespace CalamityMod.Systems.Graphic.LiquidSystem
             ModifyEmit(Main.tile[x, y], x, y, ref outputColor);
         }
 
-        private static void LiquidDrawColors(ILContext il)
+        private static void LiquidDrawColorAndPostDraw(ILContext il)
         {
             const string PatchName = "Liquid Draw Colors";
 
@@ -137,13 +146,13 @@ namespace CalamityMod.Systems.Graphic.LiquidSystem
                 return;
             }
 
-            int typeLocalIdx = 0;
+            int liquidStyleLocalIdx = 0;
             if (!cursor.TryGotoNext(MoveType.Before,
                 c => c.MatchLdloc(out _), // This is the local index for LiquidDrawCache*. Use it if you want for future
                 c => c.MatchLdfld(typeField),
-                c => c.MatchStloc(out typeLocalIdx)))
+                c => c.MatchStloc(out liquidStyleLocalIdx)))
             {
-                CalamityMod.Log.ILFailure(PatchName, "Could not locate the local index for Liquid Type");
+                CalamityMod.Log.ILFailure(PatchName, "Could not locate the local index for Liquid Type (Style)");
                 return;
             }
 
@@ -169,13 +178,28 @@ namespace CalamityMod.Systems.Graphic.LiquidSystem
                 return;
             }
 
-            cursor.EmitLdloc(typeLocalIdx);
+            cursor.EmitLdloc(liquidStyleLocalIdx);
             cursor.EmitLdloc(xLocalIdx);
             cursor.EmitLdloc(yLocalIdx);
             cursor.EmitLdloca(vertexColorLocalIdx);
-            cursor.EmitDelegate((int type, int x, int y, ref VertexColors initialColor) =>
+            cursor.EmitDelegate((int liquidStyle, int x, int y, ref VertexColors initialColor) =>
             {
-                ModifyColor(x, y, (byte)type, ref initialColor);
+                ModifyColor(x, y, liquidStyle, ref initialColor);
+            });
+
+            if (!cursor.TryGotoNext(MoveType.After,
+                c => c.MatchCallOrCallvirt<TileBatch>(nameof(TileBatch.Draw))))
+            {
+                CalamityMod.Log.ILFailure(PatchName, "Could not locate TileBatch.Draw call");
+                return;
+            }
+
+            cursor.EmitLdloc(liquidStyleLocalIdx);
+            cursor.EmitLdloc(xLocalIdx);
+            cursor.EmitLdloc(yLocalIdx);
+            cursor.EmitDelegate((int liquidStyle, int x, int y) =>
+            {
+                PostDrawEffect(x, y, liquidStyle);
             });
         }
 
@@ -184,13 +208,13 @@ namespace CalamityMod.Systems.Graphic.LiquidSystem
             tileCache.TilePos(out var x, out var y);
             var type = tileCache.TileType;
             var isFullblock = type == 0 || (!TileID.Sets.BlocksWaterDrawingBehindSelf[type] && behindBlocks);
-            ModifyColor(x, y, (byte)liquidType, ref colors, isSlope: !isFullblock);
+            ModifyColor(x, y, liquidType, ref colors, isSlope: !isFullblock);
             orig(self, behindBlocks, tileCache, ref position, ref liquidSize, liquidType, ref colors);
         }
 
-        private static void ModifyWaterfallColor(On_WaterfallManager.orig_DrawWaterfall_int_int_int_float_Vector2_Rectangle_Color_SpriteEffects orig, WaterfallManager self, int waterfallType, int x, int y, float opacity, Vector2 position, Rectangle sourceRect, Color color, Microsoft.Xna.Framework.Graphics.SpriteEffects effects)
+        private static void ModifyWaterfallColor(On_WaterfallManager.orig_DrawWaterfall_int_int_int_float_Vector2_Rectangle_Color_SpriteEffects orig, WaterfallManager self, int waterfallType, int x, int y, float opacity, Vector2 position, Rectangle sourceRect, Color color, SpriteEffects effects)
         {
-            if (TryGetModWaterStyleAs<IPaintableWaterfallStyle>(waterfallType, out var style))
+            if (TryGetModWaterfallStyleAs(waterfallType, out IPaintableWaterfallStyle style))
             {
                 Tile tile = Main.tile[x, y];
                 Texture2D texture = WaterfallTextureField.Get(self)[waterfallType].Value;
@@ -211,9 +235,20 @@ namespace CalamityMod.Systems.Graphic.LiquidSystem
             return LoaderManager.Get<WaterStylesLoader>().Get(type);
         }
 
+        private static ModWaterfallStyle GetModWaterfallStyle(int type)
+        {
+            return LoaderManager.Get<WaterFallStylesLoader>().Get(type);
+        }
+
         private static bool TryGetModWaterStyleAs<T>(int type, out T style) where T : class
         {
             style = GetModWaterStyle(type) as T;
+            return style != null;
+        }
+
+        private static bool TryGetModWaterfallStyleAs<T>(int type, out T style) where T : class
+        {
+            style = GetModWaterfallStyle(type) as T;
             return style != null;
         }
     }

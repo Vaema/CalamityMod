@@ -18,7 +18,7 @@ namespace CalamityMod.Waters
         public void ModifyDrawColor(in Tile tile, int x, int y, ref VertexColors liquidColor) => CalamityUtils.ModifySulphuricWaterColor(x, y, ref liquidColor, false);
     }
 
-    public class SulphuricWater : ModWaterStyle, IPaintableWaterStyle, IEmittableWaterStyle
+    public class SulphuricWater : ModWaterStyle, IPaintableWaterStyle, IEmittableWaterStyle, IPostDrawEffectWaterStyle
     {
         public static ModWaterStyle Instance { get; private set; }
         public static ModWaterfallStyle WaterfallStyle { get; private set; }
@@ -54,13 +54,6 @@ namespace CalamityMod.Waters
         public void ModifyLight(in Tile tile, int i, int j, ref float r, ref float g, ref float b)
         {
             Vector3 outputColor = new Vector3(r, g, b);
-
-            Tile above = CalamityUtils.ParanoidTileRetrieval(i, j - 1);
-            if (!Main.gamePaused && !above.HasTile && above.LiquidAmount <= 0 && Main.rand.NextBool(9))
-            {
-                MediumMistParticle acidFoam = new(new(i * 16f + Main.rand.NextFloat(16f), j * 16f + 8f), -Vector2.UnitY.RotatedByRandom(0.67f) * Main.rand.NextFloat(1f, 2.4f), Color.LightSeaGreen, Color.White, 0.16f, 128f, 0.02f);
-                GeneralParticleHandler.SpawnParticle(acidFoam);
-            }
 
             if (tile.TileType != RustyChestTile.TileType)
             {
@@ -124,6 +117,16 @@ namespace CalamityMod.Waters
             r = outputColor.X;
             g = outputColor.Y;
             b = outputColor.Z;
+        }
+
+        public void PostDrawEffect(in Tile tile, int x, int y)
+        {
+            Tile above = CalamityUtils.ParanoidTileRetrieval(x, y - 1);
+            if (!Main.gamePaused && !above.HasTile && above.LiquidAmount <= 0 && Main.rand.NextBool(9))
+            {
+                MediumMistParticle acidFoam = new(new(x * 16f + Main.rand.NextFloat(16f), y * 16f + 8f), -Vector2.UnitY.RotatedByRandom(0.67f) * Main.rand.NextFloat(1f, 2.4f), Color.LightSeaGreen, Color.White, 0.16f, 128f, 0.02f);
+                GeneralParticleHandler.SpawnParticle(acidFoam);
+            }
         }
     }
 }
