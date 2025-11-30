@@ -1,4 +1,5 @@
-﻿using CalamityMod.Tiles.Crags;
+﻿using CalamityMod.Items.Placeables.Crags;
+using CalamityMod.Tiles.Crags;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
@@ -40,6 +41,10 @@ namespace CalamityMod.Items.Fishing.BrimstoneCragCatches
         public override bool CanRightClick() => true;
         public override void ModifyItemLoot(ItemLoot itemLoot)
         {
+            // 2-5 Scorched Bones @ 50%
+            // This is our equivalent to Crystal Shards/Ichor
+            itemLoot.Add(ModContent.ItemType<Placeables.Crags.ScorchedBone>(), 2, 2, 5);
+
             itemLoot.AddBiomeCrateLootRules();
         }
     }
