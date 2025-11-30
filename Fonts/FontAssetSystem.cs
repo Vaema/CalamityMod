@@ -1,10 +1,8 @@
-﻿using System;
+﻿#nullable enable
+
+using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using CalamityMod.Projectiles.Boss;
-using CalamityMod.UI.DraedonSummoning;
+using System.Runtime.CompilerServices;
 using ReLogic.Content;
 using ReLogic.Graphics;
 using Terraria;
@@ -13,33 +11,67 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.Fonts
 {
-    public class FontAssetSystem : ModSystem
+    public sealed class FontAssetSystem : ModSystem
     {
-        public static readonly Dictionary<string, DynamicSpriteFont> Fonts = new() {
-            { "MouseText", FontAssets.MouseText.Value },
-            { "ItemStack", FontAssets.ItemStack.Value},
-            { "DeathText", FontAssets.DeathText.Value },
-            { "CombatText", FontAssets.CombatText[0].Value },
-            { "CombatTextCrit", FontAssets.CombatText[1].Value }
+        public static readonly Dictionary<string, Asset<DynamicSpriteFont>?> Fonts = new() {
+            { "MouseText", FontAssets.MouseText },
+            { "ItemStack", FontAssets.ItemStack },
+            { "DeathText", FontAssets.DeathText  },
+            { "CombatText", FontAssets.CombatText[0] },
+            { "CombatTextCrit", FontAssets.CombatText[1] }
         };
+
+        public static Asset<DynamicSpriteFont> MouseText => FontAssets.MouseText;
+
+        public static Asset<DynamicSpriteFont> ItemStack => FontAssets.ItemStack;
+
+        public static Asset<DynamicSpriteFont> DeathText => FontAssets.DeathText;
+
+        public static Asset<DynamicSpriteFont> CombatText => FontAssets.CombatText[0];
+
+        public static Asset<DynamicSpriteFont> CombatTextCrit => FontAssets.CombatText[1];
+
+        // TODO: We could implement pretty simple caching here with the `field`
+        // keyword, but not everyone has a newer SDK installed.  Wait until tML
+        // updates to .NET 10.
+        public static Asset<DynamicSpriteFont>? Wingdings => ExpectFont(nameof(Wingdings));
+
+        public static Asset<DynamicSpriteFont>? CodebreakerDialog => ExpectFont(nameof(CodebreakerDialog));
+
+        public static Asset<DynamicSpriteFont>? Impact => ExpectFont(nameof(Impact));
+
+        public static Asset<DynamicSpriteFont>? Flexure => ExpectFont(nameof(Flexure));
 
         public override void OnModLoad()
         {
             if (Main.dedServ)
                 return;
 
-            AddFont("Wingdings", CalamityMod.Instance.Assets.Request<DynamicSpriteFont>("Fonts/Wingdings", AssetRequestMode.ImmediateLoad).Value); //Intentionally does not have a fallback due to it already having null checks where it is utilized to prevent them from appearing
-            AddFont("CodebreakerDialog", CalamityMod.Instance.Assets.Request<DynamicSpriteFont>("Fonts/CodebreakerDialog", AssetRequestMode.ImmediateLoad).Value, FontAssets.MouseText.Value);
-            AddFont("Impact", CalamityMod.Instance.Assets.Request<DynamicSpriteFont>("Fonts/Impact", AssetRequestMode.ImmediateLoad).Value, FontAssets.CombatText[1].Value);
-            AddFont("Flexure", CalamityMod.Instance.Assets.Request<DynamicSpriteFont>("Fonts/Flexure", AssetRequestMode.ImmediateLoad).Value, FontAssets.CombatText[1].Value);
+            // Intentionally does not have a fallback due to it already having null checks where it is utilized to prevent them from appearing
+            AddFont("Wingdings", Mod.Assets.Request<DynamicSpriteFont>("Fonts/Wingdings"), fallbackFont: null);
+            AddFont("CodebreakerDialog", Mod.Assets.Request<DynamicSpriteFont>("Fonts/CodebreakerDialog"), FontAssets.MouseText);
+            AddFont("Impact", Mod.Assets.Request<DynamicSpriteFont>("Fonts/Impact"), FontAssets.CombatText[1]);
+            AddFont("Flexure", Mod.Assets.Request<DynamicSpriteFont>("Fonts/Flexure"), FontAssets.CombatText[1]);
         }
 
-        private static void AddFont(string key, DynamicSpriteFont font, DynamicSpriteFont fallback = null)
+        private static void AddFont(string key, Asset<DynamicSpriteFont> newFont, Asset<DynamicSpriteFont>? fallbackFont)
         {
-            if (Environment.OSVersion.Platform == PlatformID.Win32NT)
-                Fonts.Add(key, font);
-            else
-                Fonts.Add(key, fallback);
+            var font = OperatingSystem.IsWindows()
+                ? newFont
+                : fallbackFont;
+
+            Fonts.Add(key, font);
+        }
+
+        public static Asset<DynamicSpriteFont>? ExpectFont(string fontName)
+        {
+            if (!Fonts.TryGetValue(fontName, out var font) || font is null)
+            {
+                return null;
+            }
+
+            font.Wait();
+            return font;
         }
     }
 }

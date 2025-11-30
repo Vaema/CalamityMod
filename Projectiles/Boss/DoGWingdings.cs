@@ -90,10 +90,10 @@ namespace CalamityMod.Projectiles.Boss
         public override bool PreDraw(ref Color lightColor)
         {
             // Do not draw if the font isn't loaded or text is Cyrillic or Chinese
-            if (FontAssetSystem.Fonts["Wingdings"] == null || System.Environment.OSVersion.Platform != PlatformID.Win32NT || GameCulture.FromCultureName(GameCulture.CultureName.Chinese).IsActive || GameCulture.FromCultureName(GameCulture.CultureName.Russian).IsActive)
+            if (FontAssetSystem.Wingdings is null || System.Environment.OSVersion.Platform != PlatformID.Win32NT || GameCulture.FromCultureName(GameCulture.CultureName.Chinese).IsActive || GameCulture.FromCultureName(GameCulture.CultureName.Russian).IsActive)
                 return false;
             // Otherwise identical drawcode to CombatText
-            Vector2 stringSize = FontAssetSystem.Fonts["Wingdings"].MeasureString(dialogue);
+            Vector2 stringSize = FontAssetSystem.Wingdings.Value.MeasureString(dialogue);
             Vector2 origin = new Vector2(stringSize.X * 0.5f, stringSize.Y * 0.5f);
             Color cyan = Color.Cyan;
             float scale = Projectile.scale;
@@ -136,11 +136,11 @@ namespace CalamityMod.Projectiles.Boss
                 {
                     float finalYPos = Projectile.position.Y - Main.screenPosition.Y;
                     finalYPos = (float)Main.screenHeight - finalYPos;
-                    Main.spriteBatch.DrawString(FontAssetSystem.Fonts["Wingdings"], dialogue.ToUpper(), new Vector2(Projectile.position.X - Main.screenPosition.X + xOffset + origin.X, finalYPos + yOffset + origin.Y), color, Projectile.rotation, origin, Projectile.scale, SpriteEffects.None, 0f);
+                    Main.spriteBatch.DrawString(FontAssetSystem.Wingdings.Value, dialogue.ToUpper(), new Vector2(Projectile.position.X - Main.screenPosition.X + xOffset + origin.X, finalYPos + yOffset + origin.Y), color, Projectile.rotation, origin, Projectile.scale, SpriteEffects.None, 0f);
                 }
                 else
                 {
-                    Main.spriteBatch.DrawString(FontAssetSystem.Fonts["Wingdings"], dialogue.ToUpper(), new Vector2(Projectile.position.X - Main.screenPosition.X + xOffset + origin.X, Projectile.position.Y - Main.screenPosition.Y + yOffset + origin.Y), color, Projectile.rotation, origin, Projectile.scale, SpriteEffects.None, 0f);
+                    Main.spriteBatch.DrawString(FontAssetSystem.Wingdings.Value, dialogue.ToUpper(), new Vector2(Projectile.position.X - Main.screenPosition.X + xOffset + origin.X, Projectile.position.Y - Main.screenPosition.Y + yOffset + origin.Y), color, Projectile.rotation, origin, Projectile.scale, SpriteEffects.None, 0f);
                 }
             }
             return false;
