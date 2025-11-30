@@ -1,8 +1,10 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Reflection;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Mono.Cecil;
+using Mono.Cecil.Cil;
 using MonoMod.Cil;
 using ReLogic.Content;
 using Terraria;
@@ -75,32 +77,36 @@ namespace CalamityMod.Systems.Graphic.LiquidSystem
 
             var cursor = new ILCursor(il);
 
-            int patchedCount = PatchMultiple(cursor, () =>
+            int patchedCount = 0;
+            foreach (var context in FindAllGetTexture2DLdArg(cursor))
             {
-                return PatchNextGetTexture2DLdArg(cursor, (textureIdxArgIdx, textureArrayField) =>
+                var c = context.c;
+                var textureArgIdx = context.textureArgIdx;
+                var textureArrayField = context.textureArrayField;
+                var textureArrayFieldName = textureArrayField.Name;
+                if (textureArrayField.Name == nameof(TextureAssets.Liquid))
                 {
-                    if (textureArrayField.Name == nameof(TextureAssets.Liquid))
+                    c.EmitLdarg(textureArgIdx);
+                    c.EmitDelegate((Texture2D origTex, int textureIdx) =>
                     {
-                        cursor.EmitLdarg(textureIdxArgIdx);
-                        cursor.EmitDelegate((Texture2D origTex, int textureIdx) =>
-                        {
-                            return (textureIdx == LiquidID.Lava) ? LavaBlockRT : origTex;
-                        });
-                    }
-                    else if (textureArrayField.Name == nameof(TextureAssets.LiquidSlope))
+                        return (textureIdx == LiquidID.Lava) ? LavaBlockRT : origTex;
+                    });
+                    patchedCount++;
+                }
+                else if (textureArrayField.Name == nameof(TextureAssets.LiquidSlope))
+                {
+                    c.EmitLdarg(textureArgIdx);
+                    c.EmitDelegate((Texture2D origTex, int textureIdx) =>
                     {
-                        cursor.EmitLdarg(textureIdxArgIdx);
-                        cursor.EmitDelegate((Texture2D origTex, int textureIdx) =>
-                        {
-                            return (textureIdx == LiquidID.Lava) ? LavaSlopeRT : origTex;
-                        });
-                    }
-                    else
-                    {
-                        CalamityMod.Log.ILFailure(PatchName, $"Texture Array We referencing is [{textureArrayField.Name}] Which is not intended. Skipping");
-                    }
-                });
-            });
+                        return (textureIdx == LiquidID.Lava) ? LavaSlopeRT : origTex;
+                    });
+                    patchedCount++;
+                }
+                else
+                {
+                    CalamityMod.Log.ILFailure(PatchName, $"Texture Array We referencing is [{textureArrayField.Name}] Which is not intended. Skipping");
+                }
+            }
 
             // Finalizing Patch
             if (patchedCount <= 0)
@@ -125,32 +131,36 @@ namespace CalamityMod.Systems.Graphic.LiquidSystem
 
             var cursor = new ILCursor(il);
 
-            int patchedCount = PatchMultiple(cursor, () =>
+            int patchedCount = 0;
+            foreach (var context in FindAllGetTexture2DLdLoc(cursor))
             {
-                return PatchNextGetTexture2DLdLoc(cursor, (textureIdxLocIdx, textureArrayField) =>
+                var c = context.c;
+                var textureLocIdx = context.textureLocIdx;
+                var textureArrayField = context.textureArrayField;
+                var textureArrayFieldName = textureArrayField.Name;
+                if (textureArrayField.Name == nameof(TextureAssets.Liquid))
                 {
-                    if (textureArrayField.Name == nameof(TextureAssets.Liquid))
+                    c.EmitLdloc(textureLocIdx);
+                    c.EmitDelegate((Texture2D origTex, int textureIdx) =>
                     {
-                        cursor.EmitLdloc(textureIdxLocIdx);
-                        cursor.EmitDelegate((Texture2D origTex, int textureIdx) =>
-                        {
-                            return (textureIdx == LiquidID.Lava) ? LavaBlockRT : origTex;
-                        });
-                    }
-                    else if (textureArrayField.Name == nameof(TextureAssets.LiquidSlope))
+                        return (textureIdx == LiquidID.Lava) ? LavaBlockRT : origTex;
+                    });
+                    patchedCount++;
+                }
+                else if (textureArrayField.Name == nameof(TextureAssets.LiquidSlope))
+                {
+                    c.EmitLdloc(textureLocIdx);
+                    c.EmitDelegate((Texture2D origTex, int textureIdx) =>
                     {
-                        cursor.EmitLdloc(textureIdxLocIdx);
-                        cursor.EmitDelegate((Texture2D origTex, int textureIdx) =>
-                        {
-                            return (textureIdx == LiquidID.Lava) ? LavaSlopeRT : origTex;
-                        });
-                    }
-                    else
-                    {
-                        CalamityMod.Log.ILFailure(PatchName, $"Texture Array We referencing is [{textureArrayField.Name}] Which is not intended. Skipping");
-                    }
-                });
-            });
+                        return (textureIdx == LiquidID.Lava) ? LavaSlopeRT : origTex;
+                    });
+                    patchedCount++;
+                }
+                else
+                {
+                    CalamityMod.Log.ILFailure(PatchName, $"Texture Array We referencing is [{textureArrayField.Name}] Which is not intended. Skipping");
+                }
+            }
 
             // Finalizing Patch
             if (patchedCount <= 0)
@@ -321,20 +331,41 @@ namespace CalamityMod.Systems.Graphic.LiquidSystem
 
         #region Patch Utils
 
-        private static int PatchMultiple(ILCursor cursor, Func<bool> patch)
+        private static IEnumerable<(ILCursor c, int textureArgIdx, FieldReference textureArrayField)> FindAllGetTexture2DLdArg(ILCursor cursor)
         {
-            int patchedCount = 0;
-            while (true)
+            int textureArgIdx = 0;
+            FieldReference textureArrayField = null;
+            foreach (var c in FindAll(cursor, MoveType.After,
+                x => x.MatchLdsfld(out textureArrayField) || x.MatchLdfld(out textureArrayField),
+                x => x.MatchLdarg(out textureArgIdx),
+                x => x.MatchLdelemRef(),
+                x => x.MatchCallOrCallvirt(Tex2DAssetGetter)))
             {
-                var patched = patch.Invoke();
-
-                if (patched)
-                    patchedCount++;
-                else
-                    break;
+                yield return (c, textureArgIdx, textureArrayField);
             }
+        }
 
-            return patchedCount;
+        private static IEnumerable<(ILCursor c, int textureLocIdx, FieldReference textureArrayField)> FindAllGetTexture2DLdLoc(ILCursor cursor)
+        {
+            int textureLocIdx = 0;
+            FieldReference textureArrayField = null;
+            foreach (var c in FindAll(cursor, MoveType.After,
+                x => x.MatchLdsfld(out textureArrayField) || x.MatchLdfld(out textureArrayField),
+                x => x.MatchLdloc(out textureLocIdx),
+                x => x.MatchLdelemRef(),
+                x => x.MatchCallOrCallvirt(Tex2DAssetGetter)))
+            {
+                yield return (c, textureLocIdx, textureArrayField);
+            }
+        }
+
+        private static IEnumerable<ILCursor> FindAll(ILCursor cursor, MoveType moveType, params Func<Instruction, bool>[] predicates)
+        {
+            var c = cursor.Clone();
+            while (c.TryGotoNext(moveType, predicates))
+            {
+                yield return c.Clone();
+            }
         }
 
         private static bool PatchNextGetTexture2DLdArg(ILCursor cursor, Action<int, FieldReference> patcher)
