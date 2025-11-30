@@ -82,7 +82,7 @@ namespace CalamityMod
             }
         }
 
-        public static void IterateEveryModsTypes<T>(bool includeBaseType = false, Action<Type> action)
+        public static void IterateEveryModsTypes<T>(Action<Type> action, bool includeBaseType = false)
         {
             // WHY????
             if (action is null)
