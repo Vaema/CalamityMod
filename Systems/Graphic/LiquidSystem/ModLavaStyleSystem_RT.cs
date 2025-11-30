@@ -104,7 +104,9 @@ namespace CalamityMod.Systems.Graphic.LiquidSystem
             for (int i = 0; i < totalCount; i++)
             {
                 var alpha = LavaAlpha[i];
-                var color = new Color(1, 1, 1, alpha);
+                if (alpha <= 0.0f)
+                    continue;
+
                 Main.spriteBatch.Draw(textures[i].Value, Vector2.Zero, null, Color.White * alpha);
             }
         }
