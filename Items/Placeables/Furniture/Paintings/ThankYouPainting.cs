@@ -151,7 +151,6 @@ namespace CalamityMod.Items.Placeables.Furniture.Paintings
             "Lompl Allimath",
             "Lucille Karma",
             "MarieArk",
-            "Memes",
             "Mihaii",
             "Minecat",
             "Mrrp",
