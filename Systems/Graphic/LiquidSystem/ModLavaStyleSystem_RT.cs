@@ -45,6 +45,11 @@ namespace CalamityMod.Systems.Graphic.LiquidSystem
             LavaBlockRT?.Dispose();
             LavaSlopeRT?.Dispose();
             LavaWaterfallRT?.Dispose();
+
+            LavaRT = null;
+            LavaBlockRT = null;
+            LavaSlopeRT = null;
+            LavaWaterfallRT = null;
         }
 
         private static void UpdateRT(GameTime time)
