@@ -43,7 +43,6 @@ using Terraria;
 using Terraria.Audio;
 using Terraria.DataStructures;
 using Terraria.GameContent;
-using Terraria.GameContent.Biomes;
 using Terraria.GameContent.Drawing;
 using Terraria.GameContent.Events;
 using Terraria.GameContent.Liquid;
@@ -57,7 +56,6 @@ using Terraria.ID;
 using Terraria.Localization;
 using Terraria.ModLoader;
 using Terraria.UI.Gamepad;
-using Terraria.WorldBuilding;
 
 namespace CalamityMod.ILEditing
 {
@@ -2088,59 +2086,27 @@ namespace CalamityMod.ILEditing
         #endregion
 
         #region Add Stohne to the Jungle
-        public static void AddStohne(On_JunglePass.orig_GenerateFinishingTouches orig, JunglePass self, GenerationProgress progress, int oldX, int oldY)
+        private static void AddStohne(ILContext il)
         {
-            int anchorX = oldX;
-            int anchorY = oldY;
-            double worldScale = (double)Main.maxTilesX / 4200.0 * 1.5;
-            // Generate mud
-            for (int i = 0; (double)i <= 20.0 * worldScale; i++)
+            var cursor = new ILCursor(il);
+
+            if (!cursor.TryGotoNext(MoveType.Before,
+                c => c.MatchLdcI4(out var tileType) && tileType == TileID.Stone,
+                c => c.MatchLdcI4(out _), // bool addTile
+                c => c.MatchLdcR8(out _), // double speedX
+                c => c.MatchLdcR8(out _), // double speedY
+                c => c.MatchLdcI4(out _), // bool noYChange
+                c => c.MatchLdcI4(out _), // bool overRide
+                c => c.MatchLdcI4(out _), // int ignoreTileType
+                c => c.MatchCallOrCallvirt<WorldGen>(nameof(WorldGen.TileRunner))))
             {
-                progress.Set((60.0 + (double)i / worldScale) * 0.01);
-                anchorX += WorldGen.genRand.Next((int)(-5.0 * worldScale), (int)(6.0 * worldScale));
-                anchorY += WorldGen.genRand.Next((int)(-5.0 * worldScale), (int)(6.0 * worldScale));
-                WorldGen.TileRunner(anchorX, anchorY, WorldGen.genRand.Next(40, 100), WorldGen.genRand.Next(300, 500), TileID.Mud);
+                LogFailure("Add Stohne To Jungle", "Could not locate the TileRunner call for Stone");
+                return;
             }
-            for (int j = 0; (double)j <= 10.0 * worldScale; j++)
-            {
-                progress.Set((80.0 + (double)j / worldScale * 2.0) * 0.01);
-                anchorX = oldX + WorldGen.genRand.Next((int)(-600.0 * worldScale), (int)(600.0 * worldScale));
-                anchorY = oldY + WorldGen.genRand.Next((int)(-200.0 * worldScale), (int)(200.0 * worldScale));
-                while (anchorX < 1 || anchorX >= Main.maxTilesX - 1 || anchorY < 1 || anchorY >= Main.maxTilesY - 1 || Main.tile[anchorX, anchorY].TileType != TileID.Mud)
-                {
-                    anchorX = oldX + WorldGen.genRand.Next((int)(-600.0 * worldScale), (int)(600.0 * worldScale));
-                    anchorY = oldY + WorldGen.genRand.Next((int)(-200.0 * worldScale), (int)(200.0 * worldScale));
-                }
-                for (int k = 0; (double)k < 8.0 * worldScale; k++)
-                {
-                    anchorX += WorldGen.genRand.Next(-30, 31);
-                    anchorY += WorldGen.genRand.Next(-30, 31);
-                    int type = -1;
-                    if (WorldGen.genRand.NextBool(7))
-                    {
-                        type = -2;
-                    }
-                    WorldGen.TileRunner(anchorX, anchorY, WorldGen.genRand.Next(10, 20), WorldGen.genRand.Next(30, 70), type);
-                }
-            }
-            int stoneType = ModContent.TileType<Stohne>();
-            for (int l = 0; (double)l <= 300.0 * worldScale; l++)
-            {
-                anchorX = oldX + WorldGen.genRand.Next((int)(-600.0 * worldScale), (int)(600.0 * worldScale));
-                anchorY = oldY + WorldGen.genRand.Next((int)(-200.0 * worldScale), (int)(200.0 * worldScale));
-                while (anchorX < 1 || anchorX >= Main.maxTilesX - 1 || anchorY < 1 || anchorY >= Main.maxTilesY - 1 || Main.tile[anchorX, anchorY].TileType != 59)
-                {
-                    anchorX = oldX + WorldGen.genRand.Next((int)(-600.0 * worldScale), (int)(600.0 * worldScale));
-                    anchorY = oldY + WorldGen.genRand.Next((int)(-200.0 * worldScale), (int)(200.0 * worldScale));
-                }
-                WorldGen.TileRunner(anchorX, anchorY, WorldGen.genRand.Next(4, 10), WorldGen.genRand.Next(5, 30), stoneType);
-                // Generate Gems
-                if (WorldGen.genRand.NextBool(4))
-                {
-                    int gem = WorldGen.genRand.Next(63, 69);
-                    WorldGen.TileRunner(anchorX + WorldGen.genRand.Next(-1, 2), anchorY + WorldGen.genRand.Next(-1, 2), WorldGen.genRand.Next(3, 7), WorldGen.genRand.Next(4, 8), gem);
-                }
-            }
+
+            // Replace Next Instruction to Ldc.I4 :: Stohne
+            cursor.Next.OpCode = OpCodes.Ldc_I4;
+            cursor.Next.Operand = ModContent.TileType<Stohne>();
         }
         #endregion
 

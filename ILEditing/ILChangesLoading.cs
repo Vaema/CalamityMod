@@ -182,7 +182,7 @@ namespace CalamityMod.ILEditing
             On_WorldGen.MakeDungeon += LimitDungeonEntranceXPosition;
             IL_WorldGen.DungeonHalls += LimitDungeonHallsXPosition;
             IL_WorldGen.MakeDungeon += ChangeDungeonSpikeQuantities;
-            On_JunglePass.GenerateFinishingTouches += AddStohne;
+            IL_JunglePass.GenerateFinishingTouches += AddStohne;
 
             // Removal of vanilla stupidity
             IL_Player.StatusFromNPC += RemoveExpertBrainRandomDebuffs;
