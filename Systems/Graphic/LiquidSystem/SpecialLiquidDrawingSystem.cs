@@ -49,33 +49,7 @@ namespace CalamityMod.Systems.Graphic.LiquidSystem
             }
             else if (tile.LiquidType == LiquidID.Lava && ModLavaStyleSystem.Initialized)
             {
-                Vector3 vanillaLavaLight = new Vector3(0.55f, 0.33f, 0.11f);
-                Vector3 lavaEmit = ModLavaStyleSystem.LavaStyle == 0 ? vanillaLavaLight : Vector3.Zero;
-                ModLavaStyleSystem.ModifyLightSetup(x, y, ModLavaStyleSystem.LavaStyle, ref lavaEmit.X, ref lavaEmit.Y, ref lavaEmit.Z);
-
-                for (int styleIndex = 0; styleIndex < ModLavaStyleLoader.TotalCount; styleIndex++)
-                {
-                    if (ModLavaStyleSystem.LavaAlpha[styleIndex] > 0f && styleIndex != ModLavaStyleSystem.LavaStyle)
-                    {
-                        Vector3 propagatingColor = (styleIndex == 0) ? vanillaLavaLight : Vector3.Zero;
-                        ModLavaStyleSystem.ModifyLightSetup(x, y, styleIndex, ref propagatingColor.X, ref propagatingColor.Y, ref propagatingColor.Z);
-
-                        Vector3 activeColor = (ModLavaStyleSystem.LavaStyle == 0) ? vanillaLavaLight : Vector3.Zero;
-                        ModLavaStyleSystem.ModifyLightSetup(x, y, ModLavaStyleSystem.LavaStyle, ref activeColor.Z, ref activeColor.Y, ref activeColor.Z);
-
-                        lavaEmit = Vector3.Lerp(propagatingColor, activeColor, ModLavaStyleSystem.LavaAlpha[ModLavaStyleSystem.LavaStyle]);
-                    }
-                }
-
-                if (lavaEmit.X != 0.0f || lavaEmit.Y != 0.0f || lavaEmit.Z != 0.0f)
-                {
-                    float colorManipulator = (270 - Main.mouseTextColor) / 900f;
-                    lavaEmit += Vector3.One * colorManipulator;
-                }
-
-                lightColor.X = Math.Max(lightColor.X, lavaEmit.X);
-                lightColor.Y = Math.Max(lightColor.Y, lavaEmit.Y);
-                lightColor.Z = Math.Max(lightColor.Z, lavaEmit.Z);
+                ModLavaStyleSystem.ModifyLightBlended(x, y, ref lightColor.X, ref lightColor.Y, ref lightColor.Z);
             }
         }
 
@@ -88,34 +62,7 @@ namespace CalamityMod.Systems.Graphic.LiquidSystem
             }
             else if (liquidStyle == LiquidID.Lava && ModLavaStyleSystem.Initialized)
             {
-                VertexColors color = initialColor;
-                ModLavaStyleSystem.DrawColorSetup(x, y, ModLavaStyleSystem.LavaStyle, ref color, isSlope);
-                for (int styleIndex = 0; styleIndex < ModLavaStyleLoader.TotalCount; styleIndex++)
-                {
-                    if (ModLavaStyleSystem.LavaAlpha[styleIndex] > 0f && styleIndex != ModLavaStyleSystem.LavaStyle)
-                    {
-                        VertexColors propagatingColor = initialColor;
-                        ModLavaStyleSystem.DrawColorSetup(x, y, styleIndex, ref propagatingColor, isSlope);
-
-                        VertexColors activeColor = initialColor;
-                        ModLavaStyleSystem.DrawColorSetup(x, y, ModLavaStyleSystem.LavaStyle, ref activeColor, isSlope);
-
-                        color = LerpColors(propagatingColor, activeColor, ModLavaStyleSystem.LavaAlpha[ModLavaStyleSystem.LavaStyle]);
-                    }
-                }
-
-                initialColor = color;
-            }
-
-            static VertexColors LerpColors(VertexColors a, VertexColors b, float amt)
-            {
-                return new VertexColors()
-                {
-                    TopLeftColor = Color.Lerp(a.TopLeftColor, b.TopLeftColor, amt),
-                    TopRightColor = Color.Lerp(a.TopRightColor, b.TopRightColor, amt),
-                    BottomLeftColor = Color.Lerp(a.BottomLeftColor, b.BottomLeftColor, amt),
-                    BottomRightColor = Color.Lerp(a.BottomRightColor, b.BottomRightColor, amt),
-                };
+                ModLavaStyleSystem.ModifyColorBlended(x, y, ref initialColor, isSlope);
             }
         }
 
