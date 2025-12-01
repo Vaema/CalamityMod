@@ -1,12 +1,12 @@
-﻿using Microsoft.Xna.Framework.Graphics;
-using Terraria.GameContent;
-using Terraria;
-using Terraria.ModLoader;
+﻿using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
 using ReLogic.Content;
+using Terraria;
 using Terraria.Audio;
+using Terraria.GameContent;
 using Terraria.GameContent.ObjectInteractions;
 using Terraria.ID;
-using Microsoft.Xna.Framework;
+using Terraria.ModLoader;
 
 namespace CalamityMod.Tiles.BaseTiles
 {
@@ -24,6 +24,11 @@ namespace CalamityMod.Tiles.BaseTiles
         /// GlowMask to use for Monolith
         /// </summary>
         public Asset<Texture2D> GlowMask;
+
+        /// <summary>
+        /// Highlight to use for Monolith
+        /// </summary>
+        public Asset<Texture2D> Highlight;
 
         /// <summary>
         /// Sound to play on right-clicked by player
@@ -69,8 +74,8 @@ namespace CalamityMod.Tiles.BaseTiles
                     var relJ = leftTopJ + p;
                     var relTile = Main.tile[relI, relJ];
 
-                    if (enabled)    relTile.TileFrameY -= (short)height;
-                    else            relTile.TileFrameY += (short)height;
+                    if (enabled) relTile.TileFrameY -= (short)height;
+                    else relTile.TileFrameY += (short)height;
 
                     if (Wiring.running)
                     {
@@ -144,10 +149,9 @@ namespace CalamityMod.Tiles.BaseTiles
             // transplanted into base monolith as part of manual cherry pick merge
             //
             // Draws the Smart Cursor Highlight. Not 100% accurate, but its close enough
-            bool actuallySelected;
             Color highlightColor;
-            Texture2D texhighlight = ModContent.Request<Texture2D>(HighlightTexture).Value;
-            if (texhighlight is not null && Main.InSmartCursorHighlightArea(i, j, out actuallySelected))
+            Highlight ??= ModContent.Request<Texture2D>(HighlightTexture);
+            if (Highlight is not null && Main.InSmartCursorHighlightArea(i, j, out var actuallySelected))
             {
                 if (actuallySelected)
                 {
@@ -157,7 +161,7 @@ namespace CalamityMod.Tiles.BaseTiles
                 {
                     highlightColor = new Color(125, 125, 125);
                 }
-                Main.spriteBatch.Draw(texhighlight, new Vector2(i * 16 - (int)Main.screenPosition.X, j * 16 - (int)Main.screenPosition.Y) + zero, new Rectangle(tile.TileFrameX, tile.TileFrameY + animateFrameOffset, 16, height), highlightColor, 0f, default(Vector2), 1f, SpriteEffects.None, 0f); ;
+                Main.spriteBatch.Draw(Highlight.Value, new Vector2(i * 16 - (int)Main.screenPosition.X, j * 16 - (int)Main.screenPosition.Y) + zero, new Rectangle(tile.TileFrameX, tile.TileFrameY + animateFrameOffset, 16, height), highlightColor, 0f, default(Vector2), 1f, SpriteEffects.None, 0f); ;
             }
 
             return false;

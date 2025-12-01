@@ -1,6 +1,7 @@
 ﻿using CalamityMod.Items.Placeables.Abyss;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using ReLogic.Content;
 using Terraria;
 using Terraria.GameContent;
 using Terraria.ModLoader;
@@ -10,6 +11,7 @@ namespace CalamityMod.Tiles.Rubblemaker.Abyss
 {
     public class SpiderCoral1Echo : ModTile
     {
+        public Asset<Texture2D> GlowTexture;
         public override string Texture => "CalamityMod/Tiles/Abyss/AbyssAmbient/SpiderCoral1";
         public override void SetStaticDefaults()
         {
@@ -40,7 +42,8 @@ namespace CalamityMod.Tiles.Rubblemaker.Abyss
             if (tile.IsTileActuallyInvisible())
                 return;
 
-            Texture2D tex = ModContent.Request<Texture2D>("CalamityMod/Tiles/Abyss/AbyssAmbient/SpiderCoral1Glow").Value;
+            GlowTexture ??= ModContent.Request<Texture2D>("CalamityMod/Tiles/Abyss/AbyssAmbient/SpiderCoral1Glow");
+            Texture2D tex = GlowTexture.Value;
             Vector2 zero = Main.drawToScreen ? Vector2.Zero : new Vector2(Main.offScreenRange, Main.offScreenRange);
 
             spriteBatch.Draw(tex, new Vector2(i * 16, j * 16 + 2) - Main.screenPosition + zero, new Rectangle(tile.TileFrameX, tile.TileFrameY, 16, 16), Color.White);
@@ -56,7 +59,8 @@ namespace CalamityMod.Tiles.Rubblemaker.Abyss
             if (tile.IsTileActuallyInvisible())
                 return;
 
-            Texture2D tex = ModContent.Request<Texture2D>("CalamityMod/Tiles/Abyss/AbyssAmbient/SpiderCoral2Glow").Value;
+            GlowTexture ??= ModContent.Request<Texture2D>("CalamityMod/Tiles/Abyss/AbyssAmbient/SpiderCoral2Glow");
+            Texture2D tex = GlowTexture.Value;
             Vector2 zero = Main.drawToScreen ? Vector2.Zero : new Vector2(Main.offScreenRange, Main.offScreenRange);
 
             spriteBatch.Draw(tex, new Vector2(i * 16, j * 16 + 2) - Main.screenPosition + zero, new Rectangle(tile.TileFrameX, tile.TileFrameY, 16, 16), Color.White);
@@ -72,7 +76,8 @@ namespace CalamityMod.Tiles.Rubblemaker.Abyss
             if (tile.IsTileActuallyInvisible())
                 return;
 
-            Texture2D tex = ModContent.Request<Texture2D>("CalamityMod/Tiles/Abyss/AbyssAmbient/SpiderCoral3Glow").Value;
+            GlowTexture ??= ModContent.Request<Texture2D>("CalamityMod/Tiles/Abyss/AbyssAmbient/SpiderCoral3Glow");
+            Texture2D tex = GlowTexture.Value;
             Vector2 zero = Main.drawToScreen ? Vector2.Zero : new Vector2(Main.offScreenRange, Main.offScreenRange);
 
             spriteBatch.Draw(tex, new Vector2(i * 16, j * 16 + 2) - Main.screenPosition + zero, new Rectangle(tile.TileFrameX, tile.TileFrameY, 16, 16), Color.White);
@@ -88,7 +93,8 @@ namespace CalamityMod.Tiles.Rubblemaker.Abyss
             if (tile.IsTileActuallyInvisible())
                 return;
 
-            Texture2D tex = ModContent.Request<Texture2D>("CalamityMod/Tiles/Abyss/AbyssAmbient/SpiderCoral4Glow").Value;
+            GlowTexture ??= ModContent.Request<Texture2D>("CalamityMod/Tiles/Abyss/AbyssAmbient/SpiderCoral4Glow");
+            Texture2D tex = GlowTexture.Value;
             Vector2 zero = Main.drawToScreen ? Vector2.Zero : new Vector2(Main.offScreenRange, Main.offScreenRange);
 
             spriteBatch.Draw(tex, new Vector2(i * 16, j * 16 + 2) - Main.screenPosition + zero, new Rectangle(tile.TileFrameX, tile.TileFrameY, 16, 16), Color.White);
@@ -104,7 +110,8 @@ namespace CalamityMod.Tiles.Rubblemaker.Abyss
             if (tile.IsTileActuallyInvisible())
                 return;
 
-            Texture2D tex = ModContent.Request<Texture2D>("CalamityMod/Tiles/Abyss/AbyssAmbient/SpiderCoral5Glow").Value;
+            GlowTexture ??= ModContent.Request<Texture2D>("CalamityMod/Tiles/Abyss/AbyssAmbient/SpiderCoral5Glow");
+            Texture2D tex = GlowTexture.Value;
             Vector2 zero = Main.drawToScreen ? Vector2.Zero : new Vector2(Main.offScreenRange, Main.offScreenRange);
 
             spriteBatch.Draw(tex, new Vector2(i * 16, j * 16 + 2) - Main.screenPosition + zero, new Rectangle(tile.TileFrameX, tile.TileFrameY, 16, 16), Color.White);
