@@ -225,6 +225,7 @@ namespace CalamityMod.NPCs
             "Eira", // <@!1166136068408623234> (taela_gemetha)
             "Kreutz", // <@!553445849149997056> (red_r_kreutz)
             "Cathlyn", // <@!156672312425316352> (xaqult)
+            "Eunice", // <@!358376627400605699> (srmg267)
         };
         private static readonly string[] StylistNames =
         {
@@ -259,6 +260,7 @@ namespace CalamityMod.NPCs
             "Aldrimil", // <@!413719640238194689> (Thorioum#2475)
             "Wonton", // <@!1198092982923043040> (imonthatgudkush)
             "Mad Lad", // <@!215269032360804352> (crimsoncb)
+            "Nokko", // <@!706732954079985745> (violet.prime)
         };
         private static readonly string[] WitchDoctorNames =
         {
