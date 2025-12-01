@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Reflection;
-using CalamityMod.Graphics.Renderers.CalamityRenderers;
 using CalamityMod.Tiles.DraedonStructures;
 using CalamityMod.Tiles.FurnitureExo;
 using Terraria;
@@ -46,12 +45,6 @@ namespace CalamityMod.ILEditing
             On_TileDrawing.Draw += ClearTilePings;
             On_CommonCode.ModifyItemDropFromNPC += ColorBlightedGel;
             On_MoonlordDeathDrama.RequestLight += DisableFlashesWithPhotosensitivityConfig;
-
-            // Graphics (dyeable shader stuff)
-            On_Player.UpdateItemDye += DyeableShadersRenderer.FindDyesDetour;
-            On_Player.ApplyEquipFunctional += DyeableShadersRenderer.CheckAccessoryDetour;
-            On_Player.ApplyEquipVanity_Item += DyeableShadersRenderer.CheckVanityDetour;
-            On_Player.UpdateArmorSets += DyeableShadersRenderer.CheckArmorSetsDetour;
 
             // Graphics (ModPlant stuff)
             IL_TileDrawing.DrawSingleTile += DisableCullingForTreeAndCactus;
