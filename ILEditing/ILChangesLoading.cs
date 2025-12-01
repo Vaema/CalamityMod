@@ -5,6 +5,7 @@ using CalamityMod.Tiles.FurnitureExo;
 using Terraria;
 using Terraria.DataStructures;
 using Terraria.GameContent;
+using Terraria.GameContent.Biomes;
 using Terraria.GameContent.Drawing;
 using Terraria.GameContent.Events;
 using Terraria.GameContent.ItemDropRules;
@@ -178,11 +179,10 @@ namespace CalamityMod.ILEditing
             IL_WorldGen.Chlorophyte += AdjustChlorophyteSpawnLimits;
             IL_UIWorldCreation.SetDefaultOptions += ChangeDefaultWorldSize;
             IL_UIWorldCreation.AddWorldSizeOptions += SwapSmallDescriptionKey;
-            Terraria.IO.On_WorldFile.ClearTempTiles += ClearModdedTempTiles;
             On_WorldGen.MakeDungeon += LimitDungeonEntranceXPosition;
             IL_WorldGen.DungeonHalls += LimitDungeonHallsXPosition;
             IL_WorldGen.MakeDungeon += ChangeDungeonSpikeQuantities;
-            Terraria.GameContent.Biomes.On_JunglePass.GenerateFinishingTouches += AddStohne;
+            On_JunglePass.GenerateFinishingTouches += AddStohne;
 
             // Removal of vanilla stupidity
             IL_Player.StatusFromNPC += RemoveExpertBrainRandomDebuffs;
