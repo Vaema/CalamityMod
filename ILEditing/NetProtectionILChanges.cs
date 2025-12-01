@@ -28,7 +28,6 @@ namespace CalamityMod.ILEditing
             _ModNames = ModLoader.Mods.Select(mod => mod.Name).ToArray();
 
             On_NPC.NewNPC += NewNPCRule;
-            On_NetMessage.SendData += SendDataRule;
         }
 
         public override void OnModUnload()
@@ -48,7 +47,7 @@ namespace CalamityMod.ILEditing
             return orig(source, X, Y, Type, Start, ai0, ai1, ai2, ai3, Target);
         }
 
-        private static void SendDataRule(On_NetMessage.orig_SendData orig, int msgType, int remoteClient, int ignoreClient, NetworkText text, int number, float number2, float number3, float number4, int number5, int number6, int number7)
+        public override bool HijackSendData(int whoAmI, int msgType, int remoteClient, int ignoreClient, NetworkText text, int number, float number2, float number3, float number4, int number5, int number6, int number7)
         {
             // Sending SyncNPC as Client will cause Server to not read their bytes
             // So we simply stop that from happening
@@ -56,10 +55,10 @@ namespace CalamityMod.ILEditing
             {
                 CalamityMod.Log.Error($"NETCODE SAFETY VIOLATION DETECTED: {nameof(NetMessage.SendData)} ({nameof(MessageID.SyncNPC)}) was called from a Multiplayer Client");
                 CalamityMod.Log.Error(GetSimplifiedStackTrace());
-                return;
+                return true;
             }
 
-            orig(msgType, remoteClient, ignoreClient, text, number, number2, number3, number4, number5, number6, number7);
+            return base.HijackSendData(whoAmI, msgType, remoteClient, ignoreClient, text, number, number2, number3, number4, number5, number6, number7);
         }
 
         #region Simplified StackTrace Util Method
