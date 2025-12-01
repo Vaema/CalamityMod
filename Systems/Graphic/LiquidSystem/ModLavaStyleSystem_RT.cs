@@ -61,25 +61,25 @@ namespace CalamityMod.Systems.Graphic.LiquidSystem
             graphicsDevice.SetRenderTarget(LavaRT);
             graphicsDevice.Clear(Color.Transparent);
             Begin();
-            DrawTextures(Textures, TextureWidth, TextureHeight);
+            DrawTextures(Textures);
             End();
 
             graphicsDevice.SetRenderTarget(LavaBlockRT);
             graphicsDevice.Clear(Color.Transparent);
             Begin();
-            DrawTextures(BlockTextures, BlockTextureWidth, BlockTextureHeight);
+            DrawTextures(BlockTextures);
             End();
 
             graphicsDevice.SetRenderTarget(LavaSlopeRT);
             graphicsDevice.Clear(Color.Transparent);
             Begin();
-            DrawTextures(SlopeTextures, SlopeTextureWidth, SlopeTextureHeight);
+            DrawTextures(SlopeTextures);
             End();
 
             graphicsDevice.SetRenderTarget(LavaWaterfallRT);
             graphicsDevice.Clear(Color.Transparent);
             Begin();
-            DrawTextures(WaterfallTextures, WaterfallTextureWidth, WaterfallTextureHeight);
+            DrawTextures(WaterfallTextures);
             End();
 
             graphicsDevice.SetRenderTarget(null);
@@ -103,7 +103,7 @@ namespace CalamityMod.Systems.Graphic.LiquidSystem
             Main.spriteBatch.End();
         }
 
-        private static void DrawTextures(Asset<Texture2D>[] textures, int width, int height)
+        private static void DrawTextures(Asset<Texture2D>[] textures)
         {
             var totalCount = ModLavaStyleLoader.TotalCount;
             for (int i = 0; i < totalCount; i++)
