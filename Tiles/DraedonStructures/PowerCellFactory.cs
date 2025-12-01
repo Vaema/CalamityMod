@@ -4,7 +4,6 @@ using CalamityMod.Items.Placeables.DraedonStructures;
 using CalamityMod.TileEntities;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using ReLogic.Content;
 using Terraria;
 using Terraria.Audio;
 using Terraria.DataStructures;
@@ -37,8 +36,6 @@ namespace CalamityMod.Tiles.DraedonStructures
         public const int CellCreateFrame = 42;
         // With a delay of this many extra frames after that animation frame starts.
         public const int MagicFrameDelay = AnimationFramerate - 1;
-
-        public Asset<Texture2D> Highlight;
 
         public override void SetStaticDefaults()
         {
@@ -150,8 +147,7 @@ namespace CalamityMod.Tiles.DraedonStructures
 
             // Draws the Smart Cursor Highlight. Not 100% accurate, but its close enough
             Color highlightColor;
-            Highlight ??= ModContent.Request<Texture2D>(HighlightTexture);
-            if (Main.InSmartCursorHighlightArea(i, j, out var actuallySelected))
+            if (TileID.Sets.HasOutlines[Type] && Main.InSmartCursorHighlightArea(i, j, out var actuallySelected))
             {
                 if (actuallySelected)
                 {
@@ -161,7 +157,7 @@ namespace CalamityMod.Tiles.DraedonStructures
                 {
                     highlightColor = new Color(125, 125, 125);
                 }
-                spriteBatch.Draw(Highlight.Value, drawOffset, new Rectangle(frameXPos, frameYPos, 16, 16), highlightColor, 0.0f, Vector2.Zero, 1f, SpriteEffects.None, 0.0f);
+                spriteBatch.Draw(TextureAssets.HighlightMask[Type].Value, drawOffset, new Rectangle(frameXPos, frameYPos, 16, 16), highlightColor, 0.0f, Vector2.Zero, 1f, SpriteEffects.None, 0.0f);
             }
 
 

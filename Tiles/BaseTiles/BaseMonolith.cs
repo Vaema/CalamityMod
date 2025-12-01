@@ -26,11 +26,6 @@ namespace CalamityMod.Tiles.BaseTiles
         public Asset<Texture2D> GlowMask;
 
         /// <summary>
-        /// Highlight to use for Monolith
-        /// </summary>
-        public Asset<Texture2D> Highlight;
-
-        /// <summary>
         /// Sound to play on right-clicked by player
         /// </summary>
         public SoundStyle? RightClickSound = SoundID.Mech;
@@ -150,8 +145,8 @@ namespace CalamityMod.Tiles.BaseTiles
             //
             // Draws the Smart Cursor Highlight. Not 100% accurate, but its close enough
             Color highlightColor;
-            Highlight ??= ModContent.Request<Texture2D>(HighlightTexture);
-            if (Highlight is not null && Main.InSmartCursorHighlightArea(i, j, out var actuallySelected))
+            var highlight = TextureAssets.HighlightMask[Type];
+            if (highlight != null && highlight.IsLoaded && Main.InSmartCursorHighlightArea(i, j, out var actuallySelected))
             {
                 if (actuallySelected)
                 {
@@ -161,7 +156,7 @@ namespace CalamityMod.Tiles.BaseTiles
                 {
                     highlightColor = new Color(125, 125, 125);
                 }
-                Main.spriteBatch.Draw(Highlight.Value, new Vector2(i * 16 - (int)Main.screenPosition.X, j * 16 - (int)Main.screenPosition.Y) + zero, new Rectangle(tile.TileFrameX, tile.TileFrameY + animateFrameOffset, 16, height), highlightColor, 0f, default(Vector2), 1f, SpriteEffects.None, 0f); ;
+                Main.spriteBatch.Draw(highlight.Value, new Vector2(i * 16 - (int)Main.screenPosition.X, j * 16 - (int)Main.screenPosition.Y) + zero, new Rectangle(tile.TileFrameX, tile.TileFrameY + animateFrameOffset, 16, height), highlightColor, 0f, default(Vector2), 1f, SpriteEffects.None, 0f); ;
             }
 
             return false;
