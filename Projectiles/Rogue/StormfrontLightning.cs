@@ -157,7 +157,7 @@ namespace CalamityMod.Projectiles.Rogue
 
         public Color PrimitiveColorFunction(float completionRatio)
         {
-            //Why did you have to overcomplicate it Dom, I could have just fucking used "lightningColor = new Color(Main.rand.Next(20,100), 204, 250);" and shove it in PreDraw - Shade
+            //Why did you have to overcomplicate it Lucille, I could have just fucking used "lightningColor = new Color(Main.rand.Next(20,100), 204, 250);" and shove it in PreDraw - Shade
             float colorInterpolant = (float)Math.Sin(Projectile.identity / 3f + completionRatio * 20f + Main.GlobalTimeWrappedHourly * 1.1f) * 0.5f + 0.5f;
             Color color = CalamityUtils.MulticolorLerp(colorInterpolant, new Color(Main.rand.Next(20, 100), 204, 250), new Color(Main.rand.Next(20, 100), 204, 250));
             return color;
@@ -179,7 +179,7 @@ namespace CalamityMod.Projectiles.Rogue
 
         public override bool PreDraw(ref Color lightColor)
         {
-            //Just gonna use Dom's work on Heavenly Gale, tried to do a new one myself but I barely understand the .fx files and how they work, might revist it again eventually - Shade
+            //Just gonna use Lucille's work on Heavenly Gale, tried to do a new one myself but I barely understand the .fx files and how they work, might revist it again eventually - Shade
             GameShaders.Misc["CalamityMod:HeavenlyGaleLightningArc"].UseImage1("Images/Misc/Perlin");
             GameShaders.Misc["CalamityMod:HeavenlyGaleLightningArc"].Apply();
 
