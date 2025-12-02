@@ -857,8 +857,12 @@ public sealed class CalamityVanillaAIOverrideNPC : GlobalNPC
 
     private void OnNPCUpdate(On_NPC.orig_UpdateNPC_Inner orig, NPC self, int i)
     {
-        var npc = self.AIOverrideNPC();
-        if (npc?.AIOverride?.DisableMultiplayerSmoothing ?? false)
+        if (!self.TryGetGlobalNPC<CalamityVanillaAIOverrideNPC>(out var npc))
+        {
+            return;
+        }
+
+        if (npc.AIOverride?.DisableMultiplayerSmoothing ?? false)
         {
             self.netOffset = Vector2.Zero;
         }
