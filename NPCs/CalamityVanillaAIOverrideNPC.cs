@@ -13,6 +13,7 @@ using CalamityMod.NPCs.VanillaNPCAIOverrides;
 using CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses;
 using CalamityMod.NPCs.VanillaNPCAIOverrides.MiniBosses;
 using CalamityMod.NPCs.VanillaNPCAIOverrides.RegularEnemies;
+using CalamityMod.Systems.Collections;
 using CalamityMod.World;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
@@ -35,6 +36,15 @@ public sealed class CalamityVanillaAIOverrideNPC : GlobalNPC
     public static Dictionary<Type, int> NetIDLookup = [];
 
     public const int InvalidNetID = 0;
+
+    public override bool AppliesToEntity(NPC entity, bool lateInstantiation)
+    {
+        if (entity.townNPC) return false;
+        if (entity.friendly) return false;
+        if (entity.CountsAsACritter) return false;
+        if (CalamityNPCSets.DontCountAsEnemy[entity.type]) return false;
+        return true;
+    }
 
     #region Clone Logic
     public override bool InstancePerEntity => true;
