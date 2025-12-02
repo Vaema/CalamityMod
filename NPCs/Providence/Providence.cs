@@ -2638,28 +2638,56 @@ namespace CalamityMod.NPCs.Providence
     /// </summary>
     public class ProvItemFloating : GlobalItem
     {
-        public override void Load()
+        // Leaving this for mod compatibility
+        public static readonly List<int> FlameItemTypes = [];
+
+        public override void SetStaticDefaults()
         {
-            On_CommonCode.ModifyItemDropFromNPC += On_CommonCode_ModifyItemDropFromNPC;
+            FlameItemTypes.AddRange([
+                // Resources
+                ModContent.ItemType<UnholyEssence>(),
+                ModContent.ItemType<DivineGeode>(),
+                ModContent.ItemType<MarkofProvidence>(),
+                ModContent.ItemType<ProvidenceBag>(),
+
+                // Weapons
+                ModContent.ItemType<HolyCollider>(),
+                ModContent.ItemType<BurningRevelation>(),
+                ModContent.ItemType<BlissfulBombardier>(),
+                ModContent.ItemType<TelluricGlare>(),
+                ModContent.ItemType<PurgeGuzzler>(),
+                ModContent.ItemType<DazzlingStabberStaff>(),
+                ModContent.ItemType<MoltenAmputator>(),
+                ModContent.ItemType<PristineFury>(),
+
+                // Equipment
+                ModContent.ItemType<ElysianWings>(),
+                ModContent.ItemType<ElysianAegis>(),
+                ModContent.ItemType<BlazingCore>(),
+                ModContent.ItemType<ProfanedSoulCrystal>(),
+
+                // Vanity
+                ModContent.ItemType<ProfanedMoonlightDye>(),
+                ModContent.ItemType<ProvidenceMask>(),
+                ModContent.ItemType<ThankYouPainting>(),
+                ModContent.ItemType<ProvidenceTrophy>(),
+                ModContent.ItemType<ProvidenceRelic>(),
+                ModContent.ItemType<LoreProvidence>(),
+
+                // GFB
+                ModContent.ItemType<AscendantSpiritEssence>(),
+                ModContent.ItemType<BlasphemousDonut>()
+            ]);
         }
 
-        public override void Unload()
+        public override bool AppliesToEntity(Item entity, bool lateInstantiation)
         {
-            On_CommonCode.ModifyItemDropFromNPC -= On_CommonCode_ModifyItemDropFromNPC;
-        }
+            if (FlameItemTypes.Contains(entity.type))
+            {
+                return true;
+            }
 
-        private void On_CommonCode_ModifyItemDropFromNPC(On_CommonCode.orig_ModifyItemDropFromNPC orig, NPC npc, int itemIndex)
-        {
-            if (npc.type == ModContent.NPCType<Providence>() && !BossRushEvent.BossRushActive)
-            {
-                Main.item[itemIndex].GetGlobalItem<ProvItemFloating>().HolyFlame = 2f;
-                if ((npc.ModNPC as Providence).hasBeenGivenFullPower)
-                    Main.item[itemIndex].GetGlobalItem<ProvItemFloating>().ProviWasEnraged = true;
-            }
-            else
-            {
-                orig(npc, itemIndex);
-            }
+            return false;
         }
 
         public override bool InstancePerEntity => true;
@@ -2667,6 +2695,27 @@ namespace CalamityMod.NPCs.Providence
         public float HolyFlame = 0f;
         public float FlameTimer = 0f;
         public bool ProviWasEnraged = false;
+
+        public override void OnSpawn(Item item, IEntitySource source)
+        {
+            if (!BossRushEvent.BossRushActive && source is EntitySource_Loot loot && loot.Entity is NPC npc && npc.ModNPC is Providence provi)
+            {
+                HolyFlame = 2f;
+                ProviWasEnraged = provi.hasBeenGivenFullPower;
+            }
+        }
+
+        public override void NetSend(Item item, BinaryWriter writer)
+        {
+            writer.Write((Half)HolyFlame);
+            writer.Write(ProviWasEnraged);
+        }
+
+        public override void NetReceive(Item item, BinaryReader reader)
+        {
+            HolyFlame = (float)reader.ReadHalf();
+            ProviWasEnraged = reader.ReadBoolean();
+        }
 
         public override void Update(Item item, ref float gravity, ref float maxFallSpeed)
         {
