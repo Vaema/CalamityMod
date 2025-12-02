@@ -1,6 +1,7 @@
 ﻿using System;
 using Microsoft.Xna.Framework.Graphics;
 using ReLogic.Content;
+using ReLogic.Threading;
 using Terraria;
 using Terraria.ModLoader;
 
@@ -59,13 +60,14 @@ namespace CalamityMod
             _Scales = new float[_Width * _Height];
 
             var colorScheme = Texture.GetColorsFromTexture();
-            for (int i = 0; i < _Width; i++)
+            FastParallel.For(0, _Width * _Height, (startInclusive, endExclusive, context) =>
             {
-                for (int j = 0; j < _Height; j++)
+                for (int i = startInclusive; i < endExclusive; i++)
                 {
-                    _Scales[(j * _Width) + i] = colorScheme[i, j].R / 255.0f;
+                    var y = Math.DivRem(i, _Width, out var x);
+                    _Scales[i] = colorScheme[x, y].R / 255.0f;
                 }
-            }
+            });
 
             _Prepared = true;
         }
