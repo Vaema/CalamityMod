@@ -5,27 +5,27 @@ namespace CalamityMod.Systems.Graphic.LiquidSystem
 {
     public class ModLavaStyleLoader : ModSystem
     {
-        private static readonly List<ModLavaStyle> ModStyleList = [];
+        public static IEnumerable<ModLavaStyle> AllStyles => _AllStyles;
 
-        public static IReadOnlyList<ModLavaStyle> AllStyles => ModStyleList;
-
-
-        public const int VanillaCount = 1;
+        public static int VanillaCount => 1;
         public static int ModCount { get; private set; } = 0;
         public static int TotalCount => ModCount + VanillaCount;
+
+        private static readonly List<ModLavaStyle> _AllStyles = [];
 
         internal static int Register(ModLavaStyle instance)
         {
             int type = TotalCount;
+            ModCount++;
+
             ModTypeLookup<ModLavaStyle>.Register(instance);
-            ModStyleList.Add(instance);
-            ModCount = ModStyleList.Count;
+            _AllStyles.Add(instance);
             return type;
         }
 
         public override void Unload()
         {
-            ModStyleList.Clear();
+            _AllStyles.Clear();
         }
     }
 }
