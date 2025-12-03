@@ -193,14 +193,14 @@ SparklingEmpress: {
 		'''
 		Fires a stream of erratic magic
 		After firing for long enough, the fish will shine
-		Ceasing use of the fish while it shines will restore some of your mana and life
+		Ceasing use of the fish while it shines will restore some of your mana
 		'An beautiful fish that seems to feed on mana'
 		'''
 	TooltipGFB:
 		'''
 		Fires a stream of erratic magic
 		After firing for long enough, the fish will shine
-		Ceasing use of the fish while it shines will restore some of your mana and life
+		Ceasing use of the fish while it shines will restore some of your mana
 		'Hello there, you seem to be an unfamiliar face around here.
 		Perhaps you are surprised a fish like me is able to speak?
 		No need for worry, I have no intention of any foul play.
