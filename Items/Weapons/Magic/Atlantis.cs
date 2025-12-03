@@ -40,16 +40,6 @@ namespace CalamityMod.Items.Weapons.Magic
             Item.shootSpeed = 40f;
         }
 
-        public override void ModifyWeaponDamage(Player player, ref StatModifier damage)
-        {
-            if (Main.zenithWorld)
-            {
-                bool devourer = DownedBossSystem.downedDoG;
-                float damageMult = 1f + (devourer ? (348f / 86f - 1f) : 0f);
-                damage *= damageMult;
-            }
-        }
-        public override float UseSpeedMultiplier(Player player) => (DownedBossSystem.downedDoG && Main.zenithWorld) ? 2.5f : 1f;
         public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)
         {
             int points = 6;
@@ -75,17 +65,6 @@ namespace CalamityMod.Items.Weapons.Magic
 
             Projectile.NewProjectile(source, position + velocity * 2, velocity, type, damage, knockback, player.whoAmI, 0f, 0f, 5f);
             return false;
-        }
-
-        public override void ModifyTooltips(List<TooltipLine> list)
-        {
-            bool devourer = DownedBossSystem.downedDoG;
-            string line = this.GetLocalizedValue("TooltipNormal");
-            if (Main.zenithWorld && devourer)
-                line = this.GetLocalizedValue("TooltipGFBDoG");
-            else if (Main.zenithWorld)
-                line = this.GetLocalizedValue("TooltipGFB");
-            list.FindAndReplace("[GFB]", line);
         }
     }
 }
