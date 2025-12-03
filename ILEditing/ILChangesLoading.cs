@@ -181,7 +181,6 @@ namespace CalamityMod.ILEditing
             IL_UIWorldCreation.AddWorldSizeOptions += SwapSmallDescriptionKey;
             On_WorldGen.MakeDungeon += LimitDungeonEntranceXPosition;
             IL_WorldGen.DungeonHalls += LimitDungeonHallsXPosition;
-            IL_WorldGen.MakeDungeon += ChangeDungeonSpikeQuantities;
             IL_JunglePass.GenerateFinishingTouches += AddStohne;
 
             // Removal of vanilla stupidity
