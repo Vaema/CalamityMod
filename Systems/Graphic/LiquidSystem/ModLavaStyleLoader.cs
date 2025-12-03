@@ -8,7 +8,7 @@ namespace CalamityMod.Systems.Graphic.LiquidSystem
         public static IEnumerable<ModLavaStyle> AllStyles => _AllStyles;
 
         public static int VanillaCount => 1;
-        public static int ModCount { get; private set; } = 0;
+        public static int ModCount => _AllStyles.Count;
         public static int TotalCount => ModCount + VanillaCount;
 
         private static readonly List<ModLavaStyle> _AllStyles = [];
@@ -16,7 +16,6 @@ namespace CalamityMod.Systems.Graphic.LiquidSystem
         internal static int Register(ModLavaStyle instance)
         {
             int type = TotalCount;
-            ModCount++;
 
             ModTypeLookup<ModLavaStyle>.Register(instance);
             _AllStyles.Add(instance);
