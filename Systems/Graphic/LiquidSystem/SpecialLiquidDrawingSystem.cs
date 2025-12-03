@@ -35,7 +35,7 @@ namespace CalamityMod.Systems.Graphic.LiquidSystem
             if (tile.HasTile || tile.LiquidAmount <= 0)
                 return;
 
-            if (tile.LiquidType == LiquidID.Water && TryGetModWaterStyleAs<IWaterStyleModifyLight>(Main.waterStyle, out var waterStyle))
+            if (tile.LiquidType == LiquidID.Water && GetModWaterStyle(Main.waterStyle) is IWaterStyleModifyLight waterStyle)
             {
                 float R = 0f;
                 float G = 0f;
@@ -55,7 +55,7 @@ namespace CalamityMod.Systems.Graphic.LiquidSystem
 
         private static void ModifyColor(int x, int y, int liquidStyle, ref VertexColors initialColor, bool isSlope = false)
         {
-            if (TryGetModWaterStyleAs(liquidStyle, out IWaterStyleModifyColor waterStyle))
+            if (GetModWaterStyle(liquidStyle) is IWaterStyleModifyColor waterStyle)
             {
                 var tile = Main.tile[x, y];
                 waterStyle.ModifyColor(in tile, x, y, ref initialColor, isSlope);
@@ -239,7 +239,7 @@ namespace CalamityMod.Systems.Graphic.LiquidSystem
 
         private static void ModifyWaterfallColor(On_WaterfallManager.orig_DrawWaterfall_int_int_int_float_Vector2_Rectangle_Color_SpriteEffects orig, WaterfallManager self, int waterfallType, int x, int y, float opacity, Vector2 position, Rectangle sourceRect, Color color, SpriteEffects effects)
         {
-            if (TryGetModWaterfallStyleAs(waterfallType, out IWaterfallStyleModifyColor style))
+            if (GetModWaterfallStyle(waterfallType) is IWaterfallStyleModifyColor style)
             {
                 Tile tile = Main.tile[x, y];
                 Texture2D texture = WaterfallTextureField.Get(self)[waterfallType].Value;
@@ -263,18 +263,6 @@ namespace CalamityMod.Systems.Graphic.LiquidSystem
         private static ModWaterfallStyle GetModWaterfallStyle(int type)
         {
             return LoaderManager.Get<WaterFallStylesLoader>().Get(type);
-        }
-
-        private static bool TryGetModWaterStyleAs<T>(int type, out T style) where T : class
-        {
-            style = GetModWaterStyle(type) as T;
-            return style != null;
-        }
-
-        private static bool TryGetModWaterfallStyleAs<T>(int type, out T style) where T : class
-        {
-            style = GetModWaterfallStyle(type) as T;
-            return style != null;
         }
     }
 }
