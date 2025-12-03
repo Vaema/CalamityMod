@@ -690,7 +690,7 @@ AltarOfTheAccursedItem: {
 	Tooltip:
 		'''
 		Offer [i:CalamityMod/AshesofCalamity] {$Items.Materials.AshesofCalamity.DisplayName} at this altar to summon the Witch
-		Doing so will create a square arena of blocks, with the altar at its center
+		Doing so will create a square arena, with the altar at its center
 		The Witch enrages while you are outside of the arena
 		Hovering over the altar while using ruler measurements will display a temporary arena box
 		{$CommonItemTooltip.SpecialCrafting}
