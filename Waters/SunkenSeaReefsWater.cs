@@ -10,7 +10,7 @@ namespace CalamityMod.Waters
 {
     public class SunkenSeaReefsWaterflow : ModWaterfallStyle { }
 
-    public class SunkenSeaReefsWater : ModWaterStyle, IEmittableWaterStyle
+    public class SunkenSeaReefsWater : ModWaterStyle, IWaterStyleModifyLight
     {
         private readonly Vector3 WaterGlowColor = new Color(140, 222, 240).ToVector3();
 

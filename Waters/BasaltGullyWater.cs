@@ -9,12 +9,12 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.Waters
 {
-    public class BasaltGullyWaterflow : ModWaterfallStyle, IPaintableWaterfallStyle
+    public class BasaltGullyWaterflow : ModWaterfallStyle, IWaterfallStyleModifyColor
     {
-        public void ModifyDrawColor(in Tile tile, int x, int y, ref VertexColors liquidColor) => CalamityUtils.ModifySulphuricWaterColor(x, y, ref liquidColor, false);
+        public void ModifyColor(in Tile tile, int x, int y, ref VertexColors liquidColor) => CalamityUtils.ModifySulphuricWaterColor(x, y, ref liquidColor, false);
     }
 
-    public class BasaltGullyWater : ModWaterStyle, IPaintableWaterStyle, IEmittableWaterStyle
+    public class BasaltGullyWater : ModWaterStyle, IWaterStyleModifyColor, IWaterStyleModifyLight
     {
         public static int Type;
 
@@ -38,7 +38,7 @@ namespace CalamityMod.Waters
             b = outputColor.Z;
         }
 
-        public void ModifyDrawColor(in Tile tile, int x, int y, ref VertexColors liquidColor, bool isSlope) => CalamityUtils.ModifySulphuricWaterColor(x, y, ref liquidColor, isSlope);
+        public void ModifyColor(in Tile tile, int x, int y, ref VertexColors liquidColor, bool isSlope) => CalamityUtils.ModifySulphuricWaterColor(x, y, ref liquidColor, isSlope);
 
         public override int ChooseWaterfallStyle() => ModContent.Find<ModWaterfallStyle>("CalamityMod/BasaltGullyWaterflow").Slot;
         public override int GetSplashDust() => ModContent.DustType<BasaltGullySplash>();

@@ -8,10 +8,10 @@ using Terraria.ModLoader;
 namespace CalamityMod.Systems
 #pragma warning restore IDE0130 // Namespace does not match folder structure
 {
-    [Obsolete($"Use {nameof(IPaintableWaterStyle)} and {nameof(IEmittableWaterStyle)} Instead")]
-    public abstract class CalamityModWaterStyle : ModWaterStyle, IPaintableWaterStyle, IEmittableWaterStyle
+    [Obsolete($"Use {nameof(IWaterStyleModifyColor)} and {nameof(IWaterStyleModifyLight)} Instead")]
+    public abstract class CalamityModWaterStyle : ModWaterStyle, IWaterStyleModifyColor, IWaterStyleModifyLight
     {
-        public void ModifyDrawColor(in Tile tile, int x, int y, ref VertexColors liquidColor, bool isSlope) => DrawColor(x, y, ref liquidColor, isSlope);
+        public void ModifyColor(in Tile tile, int x, int y, ref VertexColors liquidColor, bool isSlope) => DrawColor(x, y, ref liquidColor, isSlope);
 
         /// <summary>
         /// Allows water styles to manipulate what color the liquid is drawn to, this can allow waters to be see-throughable to see backgrounds (surface and underground backgrounds not walls)

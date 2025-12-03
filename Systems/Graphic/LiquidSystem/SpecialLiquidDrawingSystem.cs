@@ -35,7 +35,7 @@ namespace CalamityMod.Systems.Graphic.LiquidSystem
             if (tile.HasTile || tile.LiquidAmount <= 0)
                 return;
 
-            if (tile.LiquidType == LiquidID.Water && TryGetModWaterStyleAs<IEmittableWaterStyle>(Main.waterStyle, out var waterStyle))
+            if (tile.LiquidType == LiquidID.Water && TryGetModWaterStyleAs<IWaterStyleModifyLight>(Main.waterStyle, out var waterStyle))
             {
                 float R = 0f;
                 float G = 0f;
@@ -55,10 +55,10 @@ namespace CalamityMod.Systems.Graphic.LiquidSystem
 
         private static void ModifyColor(int x, int y, int liquidStyle, ref VertexColors initialColor, bool isSlope = false)
         {
-            if (TryGetModWaterStyleAs(liquidStyle, out IPaintableWaterStyle waterStyle))
+            if (TryGetModWaterStyleAs(liquidStyle, out IWaterStyleModifyColor waterStyle))
             {
                 var tile = Main.tile[x, y];
-                waterStyle.ModifyDrawColor(in tile, x, y, ref initialColor, isSlope);
+                waterStyle.ModifyColor(in tile, x, y, ref initialColor, isSlope);
             }
             else if (liquidStyle == LiquidID.Lava && ModLavaStyleSystem.Initialized)
             {
@@ -68,7 +68,7 @@ namespace CalamityMod.Systems.Graphic.LiquidSystem
 
         private static void PostDrawEffect(int x, int y, int liquidStyle)
         {
-            if (TryGetModWaterStyleAs(liquidStyle, out IPostDrawEffectWaterStyle waterStyle))
+            if (GetModWaterStyle(liquidStyle) is IWaterStylePostDrawEffect waterStyle)
             {
                 var tile = Main.tile[x, y];
                 waterStyle.PostDrawEffect(in tile, x, y);
@@ -239,12 +239,12 @@ namespace CalamityMod.Systems.Graphic.LiquidSystem
 
         private static void ModifyWaterfallColor(On_WaterfallManager.orig_DrawWaterfall_int_int_int_float_Vector2_Rectangle_Color_SpriteEffects orig, WaterfallManager self, int waterfallType, int x, int y, float opacity, Vector2 position, Rectangle sourceRect, Color color, SpriteEffects effects)
         {
-            if (TryGetModWaterfallStyleAs(waterfallType, out IPaintableWaterfallStyle style))
+            if (TryGetModWaterfallStyleAs(waterfallType, out IWaterfallStyleModifyColor style))
             {
                 Tile tile = Main.tile[x, y];
                 Texture2D texture = WaterfallTextureField.Get(self)[waterfallType].Value;
                 Lighting.GetCornerColors(x, y, out var vertices, 1f);
-                style.ModifyDrawColor(in tile, x, y, ref vertices);
+                style.ModifyColor(in tile, x, y, ref vertices);
                 Main.tileBatch.Draw(texture, position, sourceRect, vertices, Vector2.Zero, 1f, effects);
             }
             else

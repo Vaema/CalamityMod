@@ -8,12 +8,12 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.Waters
 {
-    public class MiddleAbyssWaterflow : ModWaterfallStyle, IPaintableWaterfallStyle
+    public class MiddleAbyssWaterflow : ModWaterfallStyle, IWaterfallStyleModifyColor
     {
-        public void ModifyDrawColor(in Tile tile, int x, int y, ref VertexColors liquidColor) => CalamityUtils.ModifySulphuricWaterColor(x, y, ref liquidColor, false);
+        public void ModifyColor(in Tile tile, int x, int y, ref VertexColors liquidColor) => CalamityUtils.ModifySulphuricWaterColor(x, y, ref liquidColor, false);
     }
 
-    public class MiddleAbyssWater : ModWaterStyle, IPaintableWaterStyle
+    public class MiddleAbyssWater : ModWaterStyle, IWaterStyleModifyColor
     {
         public static ModWaterStyle Instance { get; private set; }
         public static ModWaterfallStyle WaterfallStyle { get; private set; }
@@ -41,6 +41,6 @@ namespace CalamityMod.Waters
         public override int GetDropletGore() => DropletGore;
         public override Color BiomeHairColor() => new Color(36, 23, 19);
 
-        public void ModifyDrawColor(in Tile tile, int x, int y, ref VertexColors liquidColor, bool isSlope) => CalamityUtils.ModifySulphuricWaterColor(x, y, ref liquidColor, isSlope);
+        public void ModifyColor(in Tile tile, int x, int y, ref VertexColors liquidColor, bool isSlope) => CalamityUtils.ModifySulphuricWaterColor(x, y, ref liquidColor, isSlope);
     }
 }

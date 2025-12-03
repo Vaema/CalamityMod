@@ -13,12 +13,12 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.Waters
 {
-    public class SulphuricWaterflow : ModWaterfallStyle, IPaintableWaterfallStyle
+    public class SulphuricWaterflow : ModWaterfallStyle, IWaterfallStyleModifyColor
     {
-        public void ModifyDrawColor(in Tile tile, int x, int y, ref VertexColors liquidColor) => CalamityUtils.ModifySulphuricWaterColor(x, y, ref liquidColor, false);
+        public void ModifyColor(in Tile tile, int x, int y, ref VertexColors liquidColor) => CalamityUtils.ModifySulphuricWaterColor(x, y, ref liquidColor, false);
     }
 
-    public class SulphuricWater : ModWaterStyle, IPaintableWaterStyle, IEmittableWaterStyle, IPostDrawEffectWaterStyle
+    public class SulphuricWater : ModWaterStyle, IWaterStyleModifyColor, IWaterStyleModifyLight, IPostDrawEffectWaterStyle
     {
         public static ModWaterStyle Instance { get; private set; }
         public static ModWaterfallStyle WaterfallStyle { get; private set; }
@@ -50,7 +50,7 @@ namespace CalamityMod.Waters
 
         public override byte GetRainVariant() => (byte)Main.rand.Next(3);
         public override Color BiomeHairColor() => new Color(43, 168, 110);
-        public void ModifyDrawColor(in Tile tile, int x, int y, ref VertexColors liquidColor, bool isSlope) => CalamityUtils.ModifySulphuricWaterColor(x, y, ref liquidColor, isSlope);
+        public void ModifyColor(in Tile tile, int x, int y, ref VertexColors liquidColor, bool isSlope) => CalamityUtils.ModifySulphuricWaterColor(x, y, ref liquidColor, isSlope);
         public void ModifyLight(in Tile tile, int i, int j, ref float r, ref float g, ref float b)
         {
             Vector3 outputColor = new Vector3(r, g, b);
