@@ -1,4 +1,5 @@
-﻿using CalamityMod.Tiles.SunkenSea;
+﻿using CalamityMod.Items.Placeables.SunkenSea;
+using CalamityMod.Tiles.SunkenSea;
 using Terraria;
 using Terraria.GameContent.ItemDropRules;
 using Terraria.ID;
