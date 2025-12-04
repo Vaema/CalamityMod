@@ -40,6 +40,10 @@ namespace CalamityMod.Items.Fishing.SunkenSeaCatches
                 ItemDropRule.NotScalingWithLuck(ModContent.ItemType<Items.Placeables.FurnitureDriftwood.Driftwood>(), 1, 20, 50)
             }));
 
+            // 4-10 Prism Shards @ 50%
+            // This is our equivalent to Crystal Shards/Ichor
+            itemLoot.Add(ModContent.ItemType<PrismShard>(), 2, 4, 10);
+
             itemLoot.AddBiomeCrateLootRules(false);
         }
     }
