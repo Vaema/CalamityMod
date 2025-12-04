@@ -1744,7 +1744,7 @@ namespace CalamityMod.CalPlayer
                     modifiers.DisableSound();
                 }
 
-                SoundEngine.PlaySound(Main.zenithWorld ? ShieldoftheOcean.ParrySoundGFB : ShieldoftheOcean.ParrySound, Player.Center);
+                SoundEngine.PlaySound(ShieldoftheOcean.ParrySound, Player.Center);
                 Player.AddCooldown(ParryCooldown.ID, 1200, false, "shieldoftheocean");
                 ShieldoftheOcean.ActivateParry(Player);
             }
