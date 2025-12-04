@@ -18,7 +18,7 @@ namespace CalamityMod.Waters
         public void ModifyColor(in Tile tile, int x, int y, ref VertexColors liquidColor) => CalamityUtils.ModifySulphuricWaterColor(x, y, ref liquidColor, false);
     }
 
-    public class SulphuricWater : ModWaterStyle, IWaterStyleModifyColor, IWaterStyleModifyLight, IPostDrawEffectWaterStyle
+    public class SulphuricWater : ModWaterStyle, IWaterStyleModifyColor, IWaterStyleModifyLight, IWaterStylePostDrawEffect
     {
         public static ModWaterStyle Instance { get; private set; }
         public static ModWaterfallStyle WaterfallStyle { get; private set; }
