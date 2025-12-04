@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using ReLogic.Content;
 using Terraria;
 using Terraria.Audio;
 using Terraria.ID;
@@ -26,6 +27,20 @@ namespace CalamityMod.Tiles.Crags.Tree
         y-frame 2 = right branch
         y-frame 3 = both left and right branch
         */
+
+        public Asset<Texture2D> BottomTexture;
+        public Asset<Texture2D> SegmentsTexture;
+
+        public Asset<Texture2D> Rib1LeftTexture;
+        public Asset<Texture2D> Rib1RightTexture;
+
+        public Asset<Texture2D> Rib2LeftTexture;
+        public Asset<Texture2D> Rib2RightTexture;
+
+        public Asset<Texture2D> Rib3LeftTexture;
+        public Asset<Texture2D> Rib3RightTexture;
+
+        public Asset<Texture2D> TopTexture;
 
         public override void SetStaticDefaults()
         {
@@ -310,15 +325,16 @@ namespace CalamityMod.Tiles.Crags.Tree
             Vector2 treeSegmentOffset = new Vector2((xOff * 2) - (frameOff / 2) + 25, 14);
             Vector2 topSegmentOffset = new Vector2((xOff * 2) - (frameOff / 2) + 20, 16);
 
-            Texture2D baseTex = ModContent.Request<Texture2D>("CalamityMod/Tiles/Crags/Tree/SpineBottom").Value;
-            Texture2D segmentTex = ModContent.Request<Texture2D>("CalamityMod/Tiles/Crags/Tree/SpineSegments").Value;
+            BottomTexture ??= ModContent.Request<Texture2D>("CalamityMod/Tiles/Crags/Tree/SpineBottom");
+            SegmentsTexture ??= ModContent.Request<Texture2D>("CalamityMod/Tiles/Crags/Tree/SpineSegments");
+            var segmentTex = SegmentsTexture.Value;
 
             //draw the base of the tree
             if (Framing.GetTileSafely(i, j).TileFrameX == 0)
             {
                 int frame = tile.TileFrameY / 18;
 
-                DrawTreeSegments(i, j, baseTex, new Rectangle(34 * frame, 0, 32, 20), TileOffset.ToWorldCoordinates(), baseSegmentOffset, false);
+                DrawTreeSegments(i, j, BottomTexture.Value, new Rectangle(34 * frame, 0, 32, 20), TileOffset.ToWorldCoordinates(), baseSegmentOffset, false);
             }
 
             //draw the different segments of the tree
@@ -335,8 +351,8 @@ namespace CalamityMod.Tiles.Crags.Tree
                 int frame = tile.TileFrameY / 18;
 
                 //branch drawing stuff
-                Texture2D leftBranchTex = ModContent.Request<Texture2D>("CalamityMod/Tiles/Crags/Tree/SpineRib1Left").Value;
-                Texture2D rightBranchTex = ModContent.Request<Texture2D>("CalamityMod/Tiles/Crags/Tree/SpineRib1Right").Value;
+                Rib1LeftTexture ??= ModContent.Request<Texture2D>("CalamityMod/Tiles/Crags/Tree/SpineRib1Left");
+                Rib1RightTexture ??= ModContent.Request<Texture2D>("CalamityMod/Tiles/Crags/Tree/SpineRib1Right");
 
                 Vector2 leftBranchOffset = new Vector2((xOff * 2) - (frameOff / 2) + 50, 14);
                 Vector2 rightBranchOffset = new Vector2((xOff * 2) - (frameOff / 2) + 4, 14);
@@ -344,8 +360,8 @@ namespace CalamityMod.Tiles.Crags.Tree
                 //ok so, terraria just does not want to cooperate when i draw a single branch texture on the side of the tree segments
                 //i changed them into a horitonzal sheet with blanks in it so it gives the illusion of branches being random
                 //not a good idea if branches are meant to be separate tiles, but here they are purely visual so it doesnt matter
-                DrawTreeSegments(i, j, leftBranchTex, new Rectangle(38 * frame, 0, 38, 40), TileOffset.ToWorldCoordinates(), leftBranchOffset, false);
-                DrawTreeSegments(i, j, rightBranchTex, new Rectangle(38 * frame, 0, 38, 40), TileOffset.ToWorldCoordinates(), rightBranchOffset, false);
+                DrawTreeSegments(i, j, Rib1LeftTexture.Value, new Rectangle(38 * frame, 0, 38, 40), TileOffset.ToWorldCoordinates(), leftBranchOffset, false);
+                DrawTreeSegments(i, j, Rib1RightTexture.Value, new Rectangle(38 * frame, 0, 38, 40), TileOffset.ToWorldCoordinates(), rightBranchOffset, false);
 
                 //draw segments
                 DrawTreeSegments(i, j, segmentTex, new Rectangle(34 * frame, 0, 32, 20), TileOffset.ToWorldCoordinates(), treeSegmentOffset, false);
@@ -357,14 +373,14 @@ namespace CalamityMod.Tiles.Crags.Tree
                 int frame = tile.TileFrameY / 18;
 
                 //branch drawing stuff
-                Texture2D leftBranchTex = ModContent.Request<Texture2D>("CalamityMod/Tiles/Crags/Tree/SpineRib2Left").Value;
-                Texture2D rightBranchTex = ModContent.Request<Texture2D>("CalamityMod/Tiles/Crags/Tree/SpineRib2Right").Value;
+                Rib2LeftTexture ??= ModContent.Request<Texture2D>("CalamityMod/Tiles/Crags/Tree/SpineRib2Left");
+                Rib2RightTexture ??= ModContent.Request<Texture2D>("CalamityMod/Tiles/Crags/Tree/SpineRib2Right");
 
                 Vector2 leftBranchOffset = new Vector2((xOff * 2) - (frameOff / 2) + 60, 14);
                 Vector2 rightBranchOffset = new Vector2((xOff * 2) - (frameOff / 2) + 4, 14);
 
-                DrawTreeSegments(i, j, leftBranchTex, new Rectangle(50 * frame, 0, 50, 54), TileOffset.ToWorldCoordinates(), leftBranchOffset, false);
-                DrawTreeSegments(i, j, rightBranchTex, new Rectangle(50 * frame, 0, 50, 54), TileOffset.ToWorldCoordinates(), rightBranchOffset, false);
+                DrawTreeSegments(i, j, Rib2LeftTexture.Value, new Rectangle(50 * frame, 0, 50, 54), TileOffset.ToWorldCoordinates(), leftBranchOffset, false);
+                DrawTreeSegments(i, j, Rib2RightTexture.Value, new Rectangle(50 * frame, 0, 50, 54), TileOffset.ToWorldCoordinates(), rightBranchOffset, false);
 
                 //draw segments
                 DrawTreeSegments(i, j, segmentTex, new Rectangle(34 * frame, 0, 32, 20), TileOffset.ToWorldCoordinates(), treeSegmentOffset, false);
@@ -376,14 +392,14 @@ namespace CalamityMod.Tiles.Crags.Tree
                 int frame = tile.TileFrameY / 18;
 
                 //branch drawing stuff
-                Texture2D leftBranchTex = ModContent.Request<Texture2D>("CalamityMod/Tiles/Crags/Tree/SpineRib3Left").Value;
-                Texture2D rightBranchTex = ModContent.Request<Texture2D>("CalamityMod/Tiles/Crags/Tree/SpineRib3Right").Value;
+                Rib3LeftTexture ??= ModContent.Request<Texture2D>("CalamityMod/Tiles/Crags/Tree/SpineRib3Left");
+                Rib3RightTexture ??= ModContent.Request<Texture2D>("CalamityMod/Tiles/Crags/Tree/SpineRib3Right");
 
                 Vector2 leftBranchOffset = new Vector2((xOff * 2) - (frameOff / 2) + 75, 14);
                 Vector2 rightBranchOffset = new Vector2((xOff * 2) - (frameOff / 2) + 4, 14);
 
-                DrawTreeSegments(i, j, leftBranchTex, new Rectangle(62 * frame, 0, 62, 60), TileOffset.ToWorldCoordinates(), leftBranchOffset, false);
-                DrawTreeSegments(i, j, rightBranchTex, new Rectangle(62 * frame, 0, 62, 60), TileOffset.ToWorldCoordinates(), rightBranchOffset, false);
+                DrawTreeSegments(i, j, Rib3LeftTexture.Value, new Rectangle(62 * frame, 0, 62, 60), TileOffset.ToWorldCoordinates(), leftBranchOffset, false);
+                DrawTreeSegments(i, j, Rib3RightTexture.Value, new Rectangle(62 * frame, 0, 62, 60), TileOffset.ToWorldCoordinates(), rightBranchOffset, false);
 
                 //draw segments
                 DrawTreeSegments(i, j, segmentTex, new Rectangle(34 * frame, 0, 32, 20), TileOffset.ToWorldCoordinates(), treeSegmentOffset, false);
@@ -392,10 +408,10 @@ namespace CalamityMod.Tiles.Crags.Tree
             //draw top segment
             if (Framing.GetTileSafely(i, j).TileFrameX == 36)
             {
-                Texture2D topTex = ModContent.Request<Texture2D>("CalamityMod/Tiles/Crags/Tree/SpineTop").Value;
+                TopTexture ??= ModContent.Request<Texture2D>("CalamityMod/Tiles/Crags/Tree/SpineTop");
                 int frame = tile.TileFrameY / 18;
 
-                DrawTreeSegments(i, j - 1, topTex, new Rectangle(26 * frame, 0, 24, 24), TileOffset.ToWorldCoordinates(), topSegmentOffset, false);
+                DrawTreeSegments(i, j - 1, TopTexture.Value, new Rectangle(26 * frame, 0, 24, 24), TileOffset.ToWorldCoordinates(), topSegmentOffset, false);
 
                 //draw segments
                 DrawTreeSegments(i, j, segmentTex, new Rectangle(34 * frame, 0, 32, 20), TileOffset.ToWorldCoordinates(), treeSegmentOffset, false);

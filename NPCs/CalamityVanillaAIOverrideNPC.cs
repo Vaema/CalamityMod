@@ -850,22 +850,6 @@ public sealed class CalamityVanillaAIOverrideNPC : GlobalNPC
     }
     #endregion
 
-    public override void Load()
-    {
-        On_NPC.UpdateNPC_Inner += OnNPCUpdate;
-    }
-
-    private void OnNPCUpdate(On_NPC.orig_UpdateNPC_Inner orig, NPC self, int i)
-    {
-        var npc = self.AIOverrideNPC();
-        if (npc?.AIOverride?.DisableMultiplayerSmoothing ?? false)
-        {
-            self.netOffset = Vector2.Zero;
-        }
-
-        orig(self, i);
-    }
-
     public override void SetStaticDefaults()
     {
         NetIDLookup.Clear();
@@ -904,6 +888,11 @@ public sealed class CalamityVanillaAIOverrideNPC : GlobalNPC
     {
         if (AIOverride != null)
         {
+            if (AIOverride.DisableMultiplayerSmoothing)
+            {
+                npc.netOffset = Vector2.Zero;
+            }
+
             return AIOverride.AI(Mod);
         }
 

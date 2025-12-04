@@ -1,9 +1,9 @@
-﻿using System;
-using Microsoft.Xna.Framework;
+﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using ReLogic.Content;
 using Terraria;
 using Terraria.DataStructures;
-using Terraria.Enums;
+using Terraria.GameContent;
 using Terraria.ID;
 using Terraria.ModLoader;
 using Terraria.ObjectData;
@@ -12,10 +12,12 @@ namespace CalamityMod.Tiles.SunkenSea.Ambient
 {
     public class ShoresFlower : ModTile
     {
+        public Asset<Texture2D> CenterTexture;
+
         public override void SetStaticDefaults()
         {
-            Main.tileFrameImportant[Type] = true; 
-            Main.tileLavaDeath[Type] = true;   
+            Main.tileFrameImportant[Type] = true;
+            Main.tileLavaDeath[Type] = true;
             Main.tileLighted[Type] = true;
 
             TileID.Sets.FramesOnKillWall[Type] = true;
@@ -39,8 +41,8 @@ namespace CalamityMod.Tiles.SunkenSea.Ambient
 
             TileObjectData.addTile(Type);
 
-            AddMapEntry(new Color(20, 100, 220)); 
-            DustType = DustID.MagicMirror; 
+            AddMapEntry(new Color(20, 100, 220));
+            DustType = DustID.MagicMirror;
         }
 
         public override void ModifyLight(int i, int j, ref float r, ref float g, ref float b)
@@ -58,7 +60,7 @@ namespace CalamityMod.Tiles.SunkenSea.Ambient
 
             int xFrameOffset = Main.tile[i, j].TileFrameX;
             int yFrameOffset = Main.tile[i, j].TileFrameY;
-            Texture2D glowmask = ModContent.Request<Texture2D>("CalamityMod/Tiles/SunkenSea/Ambient/ShoresFlower").Value;
+            Texture2D glowmask = TextureAssets.Tile[Type].Value;
             Vector2 drawOffest = Main.drawToScreen ? Vector2.Zero : new Vector2(Main.offScreenRange);
             Vector2 drawPosition = new Vector2(i * 16 - Main.screenPosition.X, j * 16 - Main.screenPosition.Y) + drawOffest;
             Color drawColour = Color.White * pulse;
@@ -69,7 +71,8 @@ namespace CalamityMod.Tiles.SunkenSea.Ambient
             else if (trackTile.IsHalfBlock)
                 spriteBatch.Draw(glowmask, drawPosition + new Vector2(0f, 8f), new Rectangle(xFrameOffset, yFrameOffset, 18, 8), drawColour, 0.0f, Vector2.Zero, 1f, SpriteEffects.None, 0.0f);
 
-            CalamityUtils.DrawFlameEffect(ModContent.Request<Texture2D>("CalamityMod/Tiles/SunkenSea/Ambient/ShoresFlower_Center").Value, i, j, 2);
+            CenterTexture ??= ModContent.Request<Texture2D>("CalamityMod/Tiles/SunkenSea/Ambient/ShoresFlower_Center");
+            CalamityUtils.DrawFlameEffect(CenterTexture.Value, i, j, 2);
         }
     }
 }

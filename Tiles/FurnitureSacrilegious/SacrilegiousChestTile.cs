@@ -1,6 +1,7 @@
 ﻿using CalamityMod.Items.Placeables.FurnitureSacrilegious;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using ReLogic.Content;
 using Terraria;
 using Terraria.GameContent.ObjectInteractions;
 using Terraria.ID;
@@ -12,6 +13,8 @@ namespace CalamityMod.Tiles.FurnitureSacrilegious
 {
     public class SacrilegiousChestTile : ModTile
     {
+        public Asset<Texture2D> GlowTexture;
+
         public override void SetStaticDefaults()
         {
             this.SetUpChest(ModContent.ItemType<SacrilegiousChest>(), true);
@@ -44,7 +47,9 @@ namespace CalamityMod.Tiles.FurnitureSacrilegious
             Tile tile = Main.tile[i, j];
             if (tile.IsTileActuallyInvisible())
                 return;
-            Texture2D texture = ModContent.Request<Texture2D>("CalamityMod/Tiles/FurnitureSacrilegious/SacrilegiousChestTileGlow").Value;
+
+            GlowTexture ??= ModContent.Request<Texture2D>("CalamityMod/Tiles/FurnitureSacrilegious/SacrilegiousChestTileGlow");
+            Texture2D texture = GlowTexture.Value;
 
             int x = i;
             int y = j;

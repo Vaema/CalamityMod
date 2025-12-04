@@ -9,12 +9,10 @@ using Terraria.GameContent.Biomes;
 using Terraria.GameContent.Drawing;
 using Terraria.GameContent.Events;
 using Terraria.GameContent.ItemDropRules;
-using Terraria.GameContent.Liquid;
 using Terraria.GameContent.UI.Elements;
 using Terraria.GameContent.UI.States;
 using Terraria.GameInput;
 using Terraria.Graphics.CameraModifiers;
-using Terraria.Graphics.Light;
 using Terraria.Map;
 using Terraria.ModLoader;
 
@@ -102,45 +100,6 @@ namespace CalamityMod.ILEditing
             On_Player.CheckMana_int_bool_bool += AllowNegativeCheckMana;
             On_Player.CheckMana_Item_int_bool_bool += AllowNegativeCheckMana;
 
-            //LavaStyles
-            if (ExternalMods.biomeLava == null)
-            {
-                //Rendering/Drawing
-                IL_Main.DoDraw += DoDrawLavas;
-                IL_Main.RenderWater += RenderLavas;
-                IL_Main.RenderBackground += RenderLavaBackgrounds;
-                IL_Main.DrawCapture += DrawLavatoCapture;
-                IL_TileDrawing.Draw += AddTileLiquidDrawing;
-
-                //Blocking
-                IL_LiquidRenderer.DrawNormalLiquids += BlockLavaDrawing;
-                On_TileDrawing.DrawTile_LiquidBehindTile += BlockLavaDrawingForSlopes;
-                On_TileDrawing.DrawPartialLiquid += BlockLavaDrawingForSlopes2;
-                On_WaterfallManager.DrawWaterfall_int_int_int_float_Vector2_Rectangle_Color_SpriteEffects += LavafallRemover;
-                IL_Main.oldDrawWater += BlockRetroLightingLava;
-
-                //Replacing
-                IL_LiquidRenderer.InternalPrepareDraw += LavaBubbleReplacer;
-                IL_TileDrawing.EmitLiquidDrops += LavaDropletReplacer;
-                IL_NPC.Collision_WaterCollision += SplashEntityLava;
-                IL_Projectile.Update += SplashEntityLava;
-                IL_Item.MoveInWorld += SplashEntityLava;
-                IL_Player.Update += SplashEntityLava;
-                IL_Player.Update += PlayerDebuffEdit;
-
-                //Other
-                On_WaterfallManager.Draw += LavaFallRedrawer;
-                On_WaterfallManager.StylizeColor += WaterfallGlowmaskEditor;
-
-                //Waterfall light
-                On_WaterfallManager.AddLight += LavafallLightEditor;
-            }
-
-            // Liquid Lighting and alpha (Liquid Viusuals)
-            IL_TileLightScanner.GetTileLight += ApplyLiquidEmit;
-            IL_LiquidRenderer.DrawNormalLiquids += LiquidDrawColors; //Liquid Light
-            IL_TileDrawing.DrawTile_LiquidBehindTile += LiquidSlopeDrawColors;
-
             // Custom grappling
             On_Player.GrappleMovement += CustomGrappleMovementCheck;
             On_Player.UpdatePettingAnimal += CustomGrapplePreDefaultMovement;
@@ -181,7 +140,6 @@ namespace CalamityMod.ILEditing
             IL_UIWorldCreation.AddWorldSizeOptions += SwapSmallDescriptionKey;
             On_WorldGen.MakeDungeon += LimitDungeonEntranceXPosition;
             IL_WorldGen.DungeonHalls += LimitDungeonHallsXPosition;
-            IL_WorldGen.MakeDungeon += ChangeDungeonSpikeQuantities;
             IL_JunglePass.GenerateFinishingTouches += AddStohne;
 
             // Removal of vanilla stupidity

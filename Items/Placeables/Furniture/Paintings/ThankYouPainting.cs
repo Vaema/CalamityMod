@@ -72,6 +72,7 @@ namespace CalamityMod.Items.Placeables.Furniture.Paintings
             "Fluffy",
             "fryzahh",
             "HaguriHat",
+            "jasper",
             "LordMetarex",
             "Mercutio 'Merkalto' Takle",
             "Mishiro Usui",

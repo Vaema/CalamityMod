@@ -13,7 +13,6 @@ namespace CalamityMod.Projectiles.Magic
     public class AtlantisSpear : ModProjectile, ILocalizedModType
     {
         public new string LocalizationCategory => "Projectiles.Magic";
-        public bool devourer = DownedBossSystem.downedDoG;
         private static int TotalSegments = 16;
         private float damageMultiplier = 1f;
         private int time = 0;
@@ -28,9 +27,8 @@ namespace CalamityMod.Projectiles.Magic
             Projectile.ignoreWater = true;
             Projectile.DamageType = DamageClass.Magic;
             Projectile.penetrate = 4;
-            Projectile.extraUpdates = (Main.zenithWorld && devourer) ? 1 : 0;
             Projectile.usesIDStaticNPCImmunity = true;
-            Projectile.idStaticNPCHitCooldown = (Main.zenithWorld && devourer) ? 2 : 8;
+            Projectile.idStaticNPCHitCooldown = 8;
             Projectile.appliesImmunityTimeOnSingleHits = true;
         }
 

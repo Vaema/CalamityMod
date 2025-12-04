@@ -1,5 +1,6 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using ReLogic.Content;
 using Terraria;
 using Terraria.DataStructures;
 using Terraria.Enums;
@@ -11,6 +12,10 @@ namespace CalamityMod.Tiles.Crags.Lily
 {
     public class LavaLily4 : ModTile
     {
+        public Asset<Texture2D> GlowTexture;
+        public Asset<Texture2D> TopTexture;
+        public Asset<Texture2D> TopGlowTexture;
+
         public override void SetStaticDefaults()
         {
             Main.tileFrameImportant[Type] = true;
@@ -60,19 +65,19 @@ namespace CalamityMod.Tiles.Crags.Lily
             if (tile.IsTileActuallyInvisible())
                 return;
 
-            Texture2D tex = ModContent.Request<Texture2D>("CalamityMod/Tiles/Crags/Lily/LavaLily4Glow").Value;
+            GlowTexture ??= ModContent.Request<Texture2D>("CalamityMod/Tiles/Crags/Lily/LavaLily4Glow");
             Vector2 zero = Main.drawToScreen ? Vector2.Zero : new Vector2(Main.offScreenRange, Main.offScreenRange);
 
-            spriteBatch.Draw(tex, new Vector2(i * 16, j * 16 + 2) - Main.screenPosition + zero, new Rectangle(tile.TileFrameX, tile.TileFrameY, 16, 16), Color.White);
-
-            Texture2D lilyTex = ModContent.Request<Texture2D>("CalamityMod/Tiles/Crags/Lily/LavaLily4Top").Value;
-            Texture2D glowTex = ModContent.Request<Texture2D>("CalamityMod/Tiles/Crags/Lily/LavaLily4TopGlow").Value;
+            spriteBatch.Draw(GlowTexture.Value, new Vector2(i * 16, j * 16 + 2) - Main.screenPosition + zero, new Rectangle(tile.TileFrameX, tile.TileFrameY, 16, 16), Color.White);
 
             //draw in the middle of the tile so it doesnt draw more than once
             if (Framing.GetTileSafely(i, j).TileFrameX == 36 && Framing.GetTileSafely(i, j).TileFrameY == 18)
             {
-                DrawLilyTop(i, j, lilyTex, new Rectangle(0, 0, 178, 184), TileOffset.ToWorldCoordinates(), new Vector2(96, 191), false);
-                DrawLilyTop(i, j, glowTex, new Rectangle(0, 0, 178, 184), TileOffset.ToWorldCoordinates(), new Vector2(96, 191), true);
+                TopTexture ??= ModContent.Request<Texture2D>("CalamityMod/Tiles/Crags/Lily/LavaLily4Top");
+                TopGlowTexture ??= ModContent.Request<Texture2D>("CalamityMod/Tiles/Crags/Lily/LavaLily4TopGlow");
+
+                DrawLilyTop(i, j, TopTexture.Value, new Rectangle(0, 0, 178, 184), TileOffset.ToWorldCoordinates(), new Vector2(96, 191), false);
+                DrawLilyTop(i, j, TopGlowTexture.Value, new Rectangle(0, 0, 178, 184), TileOffset.ToWorldCoordinates(), new Vector2(96, 191), true);
             }
         }
     }

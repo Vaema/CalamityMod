@@ -1,15 +1,17 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using ReLogic.Content;
 using Terraria;
 using Terraria.DataStructures;
 using Terraria.ID;
-using Terraria.Localization;
 using Terraria.ModLoader;
 
 namespace CalamityMod.Tiles.SunkenSea
 {
     public class NavyPrismTorch : ModTile
     {
+        public Asset<Texture2D> FlameTexture;
+
         public override void SetStaticDefaults() => this.SetUpTorch(ModContent.ItemType<Items.Placeables.Furniture.NavyPrismTorch>(), true, true);
 
         public override bool CreateDust(int i, int j, ref int type)
@@ -55,7 +57,8 @@ namespace CalamityMod.Tiles.SunkenSea
 
         public override void PostDraw(int i, int j, SpriteBatch spriteBatch)
         {
-            CalamityUtils.DrawFlameEffect(ModContent.Request<Texture2D>("CalamityMod/Tiles/SunkenSea/NavyPrismTorchFlame").Value, i, j, 2);
+            FlameTexture ??= ModContent.Request<Texture2D>("CalamityMod/Tiles/SunkenSea/NavyPrismTorchFlame");
+            CalamityUtils.DrawFlameEffect(FlameTexture.Value, i, j, 2);
         }
 
         public override void DrawEffects(int i, int j, SpriteBatch spriteBatch, ref TileDrawInfo drawData)

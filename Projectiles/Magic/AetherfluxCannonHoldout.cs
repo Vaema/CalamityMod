@@ -8,7 +8,6 @@ using Terraria.Audio;
 using Terraria.GameContent;
 using Terraria.ID;
 using Terraria.ModLoader;
-using static CalamityMod.Systems.LavaRenderingSystem;
 
 namespace CalamityMod.Projectiles.Magic
 {
@@ -83,7 +82,7 @@ namespace CalamityMod.Projectiles.Magic
                         SoundStyle fire = new("CalamityMod/Sounds/Item/MagnaCannonShot");
                         SoundEngine.PlaySound(fire with { Volume = 0.4f, Pitch = Main.rand.NextFloat(0.1f, 0.3f) }, Projectile.Center);
                     }
-                        
+
 
                     int projID = ModContent.ProjectileType<PhasedGodRay>();
                     float shootSpeed = HeldItem.shootSpeed;

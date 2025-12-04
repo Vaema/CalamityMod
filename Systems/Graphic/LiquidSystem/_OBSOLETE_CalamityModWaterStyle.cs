@@ -1,11 +1,18 @@
-﻿using Terraria;
+﻿using System;
+using CalamityMod.Systems.Graphic.LiquidSystem;
+using Terraria;
 using Terraria.Graphics;
 using Terraria.ModLoader;
 
+#pragma warning disable IDE0130 // Namespace does not match folder structure
 namespace CalamityMod.Systems
+#pragma warning restore IDE0130 // Namespace does not match folder structure
 {
-    public abstract class CalamityModWaterStyle : ModWaterStyle
+    [Obsolete($"Use {nameof(IWaterStyleModifyColor)} and {nameof(IWaterStyleModifyLight)} Instead")]
+    public abstract class CalamityModWaterStyle : ModWaterStyle, IWaterStyleModifyColor, IWaterStyleModifyLight
     {
+        public void ModifyColor(in Tile tile, int x, int y, ref VertexColors liquidColor, bool isSlope) => DrawColor(x, y, ref liquidColor, isSlope);
+
         /// <summary>
         /// Allows water styles to manipulate what color the liquid is drawn to, this can allow waters to be see-throughable to see backgrounds (surface and underground backgrounds not walls)
         /// </summary>
@@ -15,6 +22,8 @@ namespace CalamityMod.Systems
         public virtual void DrawColor(int x, int y, ref VertexColors liquidColor, bool isSlope)
         {
         }
+
+        public void ModifyLight(in Tile tile, int x, int y, ref float r, ref float g, ref float b) => ModifyLight(x, y, ref r, ref g, ref b);
 
         /// <summary>
         /// Allows you to determine how much light this water emits.<br />
@@ -26,44 +35,9 @@ namespace CalamityMod.Systems
         /// <param name="r">The red component of light, usually a value between 0 and 1</param>
         /// <param name="g">The green component of light, usually a value between 0 and 1</param>
         /// <param name="b">The blue component of light, usually a value between 0 and 1</param>
-        public virtual void ModifyLight(ref readonly Tile tile, int i, int j, ref float r, ref float g, ref float b)
+        public virtual void ModifyLight(int i, int j, ref float r, ref float g, ref float b)
         {
-        }
-    }
 
-    internal static class CalamityWaterLoader
-    {
-        internal static void ModifyLightSetup(ref readonly Tile tile, int i, int j, int type, ref float r, ref float g, ref float b)
-        {
-            if (TryGetCalamityWaterStyle(type, out var styles))
-            {
-                styles.ModifyLight(in tile, i, j, ref r, ref g, ref b);
-            }
-        }
-
-        internal static void DrawColorSetup(int x, int y, int type, ref VertexColors liquidColor, bool isSlope = false)
-        {
-            if (TryGetCalamityWaterStyle(type, out var styles))
-            {
-                styles.DrawColor(x, y, ref liquidColor, isSlope);
-            }
-        }
-
-        internal static bool TryGetCalamityWaterStyle(int type, out CalamityModWaterStyle waterStyle)
-        {
-            waterStyle = GetCalamityWaterStyle(type);
-            return waterStyle != null;
-        }
-
-        internal static CalamityModWaterStyle GetCalamityWaterStyle(int type)
-        {
-            var modWaterStyle = LoaderManager.Get<WaterStylesLoader>().Get(type);
-            if (modWaterStyle is CalamityModWaterStyle calWaterStyle)
-            {
-                return calWaterStyle;
-            }
-
-            return null;
         }
     }
 }

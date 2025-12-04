@@ -293,13 +293,27 @@ namespace CalamityMod.Items
                     loot.Add(UndergroundChestLootRule);
                     break;
 
+                // 2-5 Essences of Eleum @ 50%
+                // This is our equivalent to Souls of Light/Night
+                case ItemID.FrozenCrateHard:
+                    RemoveHardmodeOresFromBiomeCrates(loot);
+                    loot.AddHardmodeOresToCrates(HardmodeCrateType.Biome);
+                    loot.Add(ModContent.ItemType<EssenceofEleum>(), 2, 2, 5);
+                    break;
+
+                // 2-5 Essences of Sunlight @ 50%
+                // This is our equivalent to Souls of Light/Night
+                case ItemID.FloatingIslandFishingCrateHard:
+                    RemoveHardmodeOresFromBiomeCrates(loot);
+                    loot.AddHardmodeOresToCrates(HardmodeCrateType.Biome);
+                    loot.Add(ModContent.ItemType<EssenceofSunlight>(), 2, 2, 5);
+                    break;
+
                 case ItemID.CorruptFishingCrateHard:
                 case ItemID.CrimsonFishingCrateHard:
                 case ItemID.HallowedFishingCrateHard:
                 case ItemID.DungeonFishingCrateHard:
                 case ItemID.JungleFishingCrateHard:
-                case ItemID.FloatingIslandFishingCrateHard:
-                case ItemID.FrozenCrateHard:
                 case ItemID.LavaCrateHard:
                 case ItemID.OasisCrateHard:
                 case ItemID.OceanCrateHard:
