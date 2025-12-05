@@ -17,8 +17,6 @@ namespace CalamityMod.Fonts
 
         public static Asset<DynamicSpriteFont> CombatTextCrit => FontAssets.CombatText[1];
 
-        public static Asset<DynamicSpriteFont> Wingdings => field ??= GetFont("Fonts/Wingdings");
-
         public static Asset<DynamicSpriteFont> CodebreakerDialog => field ??= GetFont("Fonts/CodebreakerDialog");
 
         public static Asset<DynamicSpriteFont> Impact => field ??= GetFont("Fonts/Impact");
