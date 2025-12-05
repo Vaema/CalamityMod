@@ -1,5 +1,6 @@
 ﻿using CalamityMod.Projectiles.Typeless;
 using Microsoft.Xna.Framework;
+using Terraria.ModLoader;
 using Terraria;
 using Terraria.ID;
 
