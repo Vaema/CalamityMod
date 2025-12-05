@@ -8,10 +8,15 @@ namespace CalamityMod.CalPlayer.Dashes
 {
     public class SuperradiantSawDash : PlayerDashEffect
     {
-        public static new string ID => "Superradiant Slaughterer";
+        public static new string ID { get; private set; }
         public override DashCollisionType CollisionType => DashCollisionType.NoCollision;
 
         public override bool IsOmnidirectional => true;
+
+        public override void Load()
+        {
+            ID = DashID;
+        }
 
         public override float CalculateDashSpeed(Player player) => 36f;
 

@@ -28,7 +28,7 @@ namespace CalamityMod.CalPlayer.Dashes
             //PlayerDashEffect, then don't add the dash and stop the method.
             if (DashIdentificationTable == null || dashEffect.GetType().IsAbstract) return;
 
-            string id = (string)dashEffect.GetType().GetProperty("ID").GetValue(null);
+            string id = dashEffect.DashID;
 
             //This chunk of the code only executes if the dash isn't already added and
             //the dash id isn't empty.
@@ -36,21 +36,7 @@ namespace CalamityMod.CalPlayer.Dashes
             {
                 DashIdentificationTable[id] = dashEffect;
             }
-
         }
-
-        public override void OnModLoad()
-        {
-            DashIdentificationTable = new();
-            ReflectionHelper.IterateCalamityTypes<PlayerDashEffect>(action: type =>
-            {
-                string id = (string)type.GetProperty("ID").GetValue(null);
-
-                PlayerDashEffect dashEffect = (PlayerDashEffect)Activator.CreateInstance(type);
-                DashIdentificationTable[id] = dashEffect;
-            });
-        }
-
 
         public override void Unload()
         {

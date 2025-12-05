@@ -12,7 +12,7 @@ namespace CalamityMod.CalPlayer.Dashes
 {
     public class StatisVoidSashDash : PlayerDashEffect
     {
-        public static new string ID => "Statis' Void Sash";
+        public static new string ID { get; private set; }
 
         public override DashCollisionType CollisionType => DashCollisionType.NoCollision;
 
@@ -20,6 +20,11 @@ namespace CalamityMod.CalPlayer.Dashes
         public int Time = 0;
         public Vector2 aimVel;
         public bool strongVisuals = true;
+
+        public override void Load()
+        {
+            ID = DashID;
+        }
 
         public override float CalculateDashSpeed(Player player) => (64f);
 
