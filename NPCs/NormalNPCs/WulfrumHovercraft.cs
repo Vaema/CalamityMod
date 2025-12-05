@@ -175,7 +175,7 @@ namespace CalamityMod.NPCs.NormalNPCs
                 {
                     for (int i = 0; i < 2; i++)
                     {
-                        Dust.NewDustPerfect(NPC.Center + Main.rand.NextVector2Circular(8f, 8f), 226).scale = 0.7f;
+                        Dust.NewDustPerfect(NPC.Center + Main.rand.NextVector2Circular(8f, 8f), DustID.Electric).scale = 0.7f;
                     }
                 }
 

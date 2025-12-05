@@ -40,7 +40,7 @@ namespace CalamityMod.Tiles.DraedonStructures
             AddMapEntry(new Color(119, 105, 79), Language.GetText("MapObject.Door"));
             TileID.Sets.DisableSmartCursor[Type] = true;
             AdjTiles = new int[] { TileID.OpenDoor };
-            DustType = 8;
+            DustType = DustID.Iron;
             RegisterItemDrop(ModContent.ItemType<AgedLaboratoryDoorItem>());
             TileID.Sets.CloseDoorID[Type] = ModContent.TileType<AgedLaboratoryDoorClosed>();
         }

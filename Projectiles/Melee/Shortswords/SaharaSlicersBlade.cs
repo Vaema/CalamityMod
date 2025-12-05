@@ -50,7 +50,7 @@ namespace CalamityMod.Projectiles.Melee.Shortswords
         {
             if (Main.rand.NextBool(2))
             {
-                Dust dust = Dust.NewDustPerfect(Projectile.Center + Main.rand.NextVector2Circular(12, 12), 288);
+                Dust dust = Dust.NewDustPerfect(Projectile.Center + Main.rand.NextVector2Circular(12, 12), DustID.DesertWater2);
                 dust.scale = Main.rand.NextFloat(0.15f, 0.6f);
                 dust.noGravity = true;
                 dust.velocity = -Projectile.velocity * 0.5f;

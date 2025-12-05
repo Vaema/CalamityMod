@@ -23,7 +23,7 @@ namespace CalamityMod.Tiles.AstralDesert
             CalamityUtils.MergeWithDesert(Type);
             CalamityUtils.MergeAstralTiles(Type);
 
-            DustType = 108;
+            DustType = DustID.RainCloud;
 
             AddMapEntry(new Color(187, 220, 237));
 
@@ -52,7 +52,7 @@ namespace CalamityMod.Tiles.AstralDesert
 
         public override void WalkDust(ref int dustType, ref bool makeDust, ref Color color)
         {
-            DustType = 108;
+            DustType = DustID.RainCloud;
         }
 
         public override bool IsTileBiomeSightable(int i, int j, ref Color sightColor)

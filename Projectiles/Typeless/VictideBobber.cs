@@ -72,7 +72,7 @@ namespace CalamityMod.Projectiles.Typeless
                         {
                             Item dummyCatch = new Item();
                             dummyCatch.SetDefaults((int)Projectile.localAI[1]);
-                            if (dummyCatch.rare < 0)
+                            if (dummyCatch.rare < ItemRarityID.White)
                                 consume = false;
                         }
                     }

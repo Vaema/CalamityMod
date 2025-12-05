@@ -74,7 +74,7 @@ namespace CalamityMod.Items.Weapons.Ranged
                 Particle smoke = new HeavySmokeParticle(spawnPosition, smokeVel, Color.White, Main.rand.Next(40, 60 + 1), Main.rand.NextFloat(0.2f, 0.45f), 0.5f, Main.rand.NextFloat(-0.2f, 0.2f), Main.rand.NextBool(), required: true);
                 GeneralParticleHandler.SpawnParticle(smoke);
 
-                Dust dust = Dust.NewDustPerfect(spawnPosition, 303, smokeVel.RotatedByRandom(0.15f), 80, default, Main.rand.NextFloat(0.25f, 1f));
+                Dust dust = Dust.NewDustPerfect(spawnPosition, DustID.SteampunkSteam, smokeVel.RotatedByRandom(0.15f), 80, default, Main.rand.NextFloat(0.25f, 1f));
                 dust.noGravity = false;
                 dust.color = Color.White;
             }

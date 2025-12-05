@@ -130,7 +130,7 @@ namespace CalamityMod.Projectiles.Melee
             }
             for (int k = 0; k < 7; k++)
             {
-                Dust dust2 = Dust.NewDustPerfect(Projectile.Center, 66, new Vector2(6, 6).RotatedByRandom(100) * Main.rand.NextFloat(0.3f, 1.8f));
+                Dust dust2 = Dust.NewDustPerfect(Projectile.Center, DustID.RainbowTorch, new Vector2(6, 6).RotatedByRandom(100) * Main.rand.NextFloat(0.3f, 1.8f));
                 dust2.scale = Main.rand.NextFloat(0.65f, 0.85f);
                 dust2.noGravity = true;
                 dust2.color = Color.Plum;

@@ -37,7 +37,7 @@ namespace CalamityMod.Projectiles.Rogue
             if (Projectile.timeLeft % 30 == 0)
                 SoundEngine.PlaySound(SoundID.DD2_SkyDragonsFurySwing with { Volume = 1.2f }, Projectile.position);
 
-            Dust dust2 = Dust.NewDustPerfect(Projectile.Center + Main.rand.NextVector2Circular(200f, 200f), 75);
+            Dust dust2 = Dust.NewDustPerfect(Projectile.Center + Main.rand.NextVector2Circular(200f, 200f), DustID.CursedTorch);
             dust2.scale = Main.rand.NextFloat(0.8f, 1.1f);
             dust2.noGravity = true;
 

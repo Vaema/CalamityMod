@@ -151,7 +151,7 @@ namespace CalamityMod.Projectiles.Magic
                     burstDirectionVariance += j * 2;
                     for (int k = 0; k < 40; k++)
                     {
-                        Dust burstDust = Dust.NewDustPerfect(Projectile.Center, 267);
+                        Dust burstDust = Dust.NewDustPerfect(Projectile.Center, DustID.RainbowMk2);
                         burstDust.scale = Main.rand.NextFloat(1.74f, 2.5f);
                         burstDust.position += Main.rand.NextVector2Circular(10f, 10f);
                         burstDust.velocity = Main.rand.NextVector2Square(-burstDirectionVariance, burstDirectionVariance).SafeNormalize(Vector2.UnitY) * burstSpeed;

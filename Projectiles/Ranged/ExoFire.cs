@@ -8,6 +8,7 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria;
 using Terraria.Audio;
+using Terraria.ID;
 using Terraria.ModLoader;
 
 namespace CalamityMod.Projectiles.Ranged
@@ -81,7 +82,7 @@ namespace CalamityMod.Projectiles.Ranged
             }
             if (Main.rand.NextBool(35) && targetDist < 1400f && Time > 5)
             {
-                Dust dust = Dust.NewDustPerfect(Projectile.Center, 263, new Vector2(0, -5).RotatedByRandom(0.05f) * Main.rand.NextFloat(0.3f, 1.6f));
+                Dust dust = Dust.NewDustPerfect(Projectile.Center, DustID.PortalBolt, new Vector2(0, -5).RotatedByRandom(0.05f) * Main.rand.NextFloat(0.3f, 1.6f));
                 dust.noGravity = true;
                 dust.scale = Main.rand.NextFloat(0.3f, 1f);
                 dust.color = sparkColor;

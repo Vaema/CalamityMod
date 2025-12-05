@@ -2,6 +2,7 @@
 using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.DataStructures;
+using Terraria.ID;
 using Terraria.Localization;
 using Terraria.ModLoader;
 using Terraria.ObjectData;
@@ -24,7 +25,7 @@ namespace CalamityMod.Tiles.Abyss
             TileObjectData.newTile.CopyFrom(TileObjectData.Style2x2);
             TileObjectData.addTile(Type);
             AddMapEntry(new Color(47, 79, 79), CalamityUtils.GetItemName<SulphurousCrate>()); // dark slate gray
-            DustType = 33;
+            DustType = DustID.Water;
         }
 
         public override bool CreateDust(int i, int j, ref int type)

@@ -38,7 +38,7 @@ namespace CalamityMod.Projectiles.Melee
                 {
                     // You need to set position depending on what you are doing. You may need to subtract width/2 and height/2 as well to center the spawn rectangle.
                     Vector2 pos = Projectile.position + new Vector2((Projectile.width / 2) - 8, Projectile.height + 16);
-                    Dust dust1 = Dust.NewDustPerfect(pos + new Vector2(-20 + i, -2), 180, new Vector2(i * 0.7f, -1.1f));
+                    Dust dust1 = Dust.NewDustPerfect(pos + new Vector2(-20 + i, -2), DustID.DungeonSpirit, new Vector2(i * 0.7f, -1.1f));
                     dust1.noGravity = true;
                 }
             }
@@ -48,7 +48,7 @@ namespace CalamityMod.Projectiles.Melee
                 {
                     // You need to set position depending on what you are doing. You may need to subtract width/2 and height/2 as well to center the spawn rectangle.
                     Vector2 pos = Projectile.position + new Vector2((Projectile.width / 2) - 8, Projectile.height + 16);
-                    Dust dust1 = Dust.NewDustPerfect(pos + new Vector2(20 + i, -2), 180, new Vector2(i * 0.7f, -1.1f));
+                    Dust dust1 = Dust.NewDustPerfect(pos + new Vector2(20 + i, -2), DustID.DungeonSpirit, new Vector2(i * 0.7f, -1.1f));
                     dust1.noGravity = true;
                 }
             }

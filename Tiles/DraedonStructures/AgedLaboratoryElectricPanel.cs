@@ -3,6 +3,7 @@ using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.DataStructures;
 using Terraria.Enums;
+using Terraria.ID;
 using Terraria.Localization;
 using Terraria.ModLoader;
 using Terraria.ObjectData;
@@ -33,7 +34,7 @@ namespace CalamityMod.Tiles.DraedonStructures
             TileObjectData.addTile(Type);
 
             AddMapEntry(Color.DimGray, CalamityUtils.GetText("Tiles.ElectricPanel"));
-            DustType = 8;
+            DustType = DustID.Iron;
         }
 
         public override bool CanExplode(int i, int j) => false;

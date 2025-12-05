@@ -13,6 +13,7 @@ using ReLogic.Utilities;
 using Terraria;
 using Terraria.Audio;
 using Terraria.DataStructures;
+using Terraria.ID;
 using Terraria.Localization;
 using Terraria.ModLoader;
 
@@ -424,7 +425,7 @@ namespace CalamityMod.Projectiles.Melee
                     float starAngle = MathHelper.ToRadians(45f);
                     for (int i = 0; i < 4; i++)
                     {
-                        Dust chargefull = Dust.NewDustPerfect(Projectile.Center, 278);
+                        Dust chargefull = Dust.NewDustPerfect(Projectile.Center, DustID.FireworksRGB);
                         Vector2 vel = (MathHelper.TwoPi * i / 4f).ToRotationVector2().RotatedBy(starAngle) * 4f;
 
                         Particle pulse = new CustomSpark(target.Center, vel, "CalamityMod/Particles/BloomCircle", false, 12, 1.2f, Color.Orange, new Vector2(3.2f, 0.9f), true, true, shrinkSpeed: 0.95f);

@@ -45,7 +45,7 @@ namespace CalamityMod.Projectiles.Ranged
             Projectile.ai[2]++;
             Projectile.rotation = Projectile.velocity.ToRotation() + MathHelper.PiOver2;
 
-            Dust dust = Dust.NewDustPerfect(Projectile.Center, 264, -Projectile.velocity * Main.rand.NextFloat(0.05f, 0.6f));
+            Dust dust = Dust.NewDustPerfect(Projectile.Center, DustID.PortalBoltTrail, -Projectile.velocity * Main.rand.NextFloat(0.05f, 0.6f));
             dust.noGravity = true;
             dust.scale = Main.rand.NextFloat(0.5f, 0.8f);
             dust.color = Main.rand.NextBool(3) ? Color.MediumAquamarine : Color.Lime;

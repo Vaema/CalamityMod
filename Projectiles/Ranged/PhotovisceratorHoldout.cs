@@ -7,6 +7,7 @@ using Microsoft.Xna.Framework.Graphics;
 using ReLogic.Utilities;
 using Terraria;
 using Terraria.Audio;
+using Terraria.ID;
 using Terraria.Localization;
 using Terraria.ModLoader;
 using static CalamityMod.Items.Weapons.Ranged.Photoviscerator;
@@ -173,11 +174,11 @@ namespace CalamityMod.Projectiles.Ranged
                 SoundEngine.PlaySound(DeadSunsWind.ShootSound with { Volume = 1.9f }, Owner.MountedCenter);
             }
 
-            Dust dust = Dust.NewDustPerfect(position, 263, (Projectile.velocity * 10).RotatedByRandom(0.6f) * Main.rand.NextFloat(0.3f, 1.6f));
+            Dust dust = Dust.NewDustPerfect(position, DustID.PortalBolt, (Projectile.velocity * 10).RotatedByRandom(0.6f) * Main.rand.NextFloat(0.3f, 1.6f));
             dust.noGravity = true;
             dust.scale = Main.rand.NextFloat(1.3f, 1.8f) - PhotoTimer * 0.02f;
             dust.color = sparkColorSmooth;
-            Dust dust2 = Dust.NewDustPerfect(position, 263, (Projectile.velocity * 15).RotatedByRandom(0.25f) * Main.rand.NextFloat(0.3f, 1.6f));
+            Dust dust2 = Dust.NewDustPerfect(position, DustID.PortalBolt, (Projectile.velocity * 15).RotatedByRandom(0.25f) * Main.rand.NextFloat(0.3f, 1.6f));
             dust2.noGravity = true;
             dust2.scale = Main.rand.NextFloat(1.3f, 1.8f) - PhotoTimer * 0.02f;
             dust2.color = sparkColorSmooth;
@@ -234,7 +235,7 @@ namespace CalamityMod.Projectiles.Ranged
                 GeneralParticleHandler.SpawnParticle(pulse);
                 DirectionalPulseRing pulse2 = new DirectionalPulseRing(position, (Projectile.velocity * 10).RotatedByRandom(0.1f) * Main.rand.NextFloat(0.8f, 3.1f), sparkColor, new Vector2(1, 1), 0, Main.rand.NextFloat(0.2f, 0.35f), 0f, 40);
                 GeneralParticleHandler.SpawnParticle(pulse2);
-                Dust dust = Dust.NewDustPerfect(position, 263, (Projectile.velocity * 10).RotatedByRandom(0.6f) * Main.rand.NextFloat(0.3f, 1.6f));
+                Dust dust = Dust.NewDustPerfect(position, DustID.PortalBolt, (Projectile.velocity * 10).RotatedByRandom(0.6f) * Main.rand.NextFloat(0.3f, 1.6f));
                 dust.noGravity = true;
                 dust.scale = Main.rand.NextFloat(1.3f, 1.8f);
                 dust.color = sparkColor;

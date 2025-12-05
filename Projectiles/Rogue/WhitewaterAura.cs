@@ -55,7 +55,7 @@ namespace CalamityMod.Projectiles.Rogue
             {
                 for (int i = 0; i < 4; i++)
                 {
-                    Dust dust = Dust.NewDustPerfect(Projectile.Center + Main.rand.NextVector2CircularEdge(200f * areaScale, 200f * areaScale), 66);
+                    Dust dust = Dust.NewDustPerfect(Projectile.Center + Main.rand.NextVector2CircularEdge(200f * areaScale, 200f * areaScale), DustID.RainbowTorch);
                     dust.scale = Main.rand.NextFloat(0.3f, 0.7f);
                     dust.velocity = Vector2.One.RotatedByRandom(100) * Main.rand.NextFloat(0.5f, 1f);
                     dust.color = Color.LightBlue;

@@ -182,7 +182,7 @@ namespace CalamityMod.Projectiles.Melee
                         1 => Color.MediumTurquoise,
                         _ => Color.LawnGreen,
                     };
-                    Dust dust2 = Dust.NewDustPerfect(target.Center, 278, Vector2.One.RotatedByRandom(100) * Main.rand.NextFloat(5.5f, 20));
+                    Dust dust2 = Dust.NewDustPerfect(target.Center, DustID.FireworksRGB, Vector2.One.RotatedByRandom(100) * Main.rand.NextFloat(5.5f, 20));
                     dust2.scale = Main.rand.NextFloat(0.85f, 1.15f);
                     dust2.noGravity = false;
                     dust2.color = Color.Lerp(Color.White, randomColor, 0.5f);

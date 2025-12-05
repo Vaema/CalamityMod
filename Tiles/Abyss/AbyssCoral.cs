@@ -22,7 +22,7 @@ namespace CalamityMod.Tiles.Abyss
 
             TileID.Sets.ChecksForMerge[Type] = true;
             HitSound = SoundID.Dig;
-            DustType = 119;
+            DustType = DustID.Ice_Pink;
             AddMapEntry(new Color(70, 115, 144));
             Main.tileShine2[Type] = true;
 

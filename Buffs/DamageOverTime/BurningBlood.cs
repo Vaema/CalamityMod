@@ -59,7 +59,7 @@ namespace CalamityMod.Buffs.DamageOverTime
             {
                 float rot = MathHelper.ToRadians(i * 280);
                 Vector2 offset = new Vector2(0.1f, 0).RotatedBy(rot * Main.rand.NextFloat(0.08f, 0.05f));
-                Dust dust2 = Dust.NewDustPerfect(Player.Calamity().RandomDebuffVisualSpot + offset, 5);
+                Dust dust2 = Dust.NewDustPerfect(Player.Calamity().RandomDebuffVisualSpot + offset, DustID.Blood);
                 dust2.scale = Main.rand.NextFloat(0.6f, 0.7f);
             }
         }

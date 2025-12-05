@@ -5712,7 +5712,7 @@ namespace CalamityMod.CalPlayer
 
                 for (int i = 0; i < 8; i++)
                 {
-                    Dust life = Dust.NewDustPerfect(Player.Top + Main.rand.NextVector2Circular(Player.width * 0.5f, 6f), 267);
+                    Dust life = Dust.NewDustPerfect(Player.Top + Main.rand.NextVector2Circular(Player.width * 0.5f, 6f), DustID.RainbowMk2);
                     life.color = Color.Red;
                     life.velocity = -Vector2.UnitY.RotatedByRandom(0.48f) * Main.rand.NextFloat(3f, 4.4f);
                     life.scale = Main.rand.NextFloat(1.5f, 1.72f);

@@ -23,7 +23,7 @@ namespace CalamityMod.Tiles.Abyss
             Main.tileNoSunLight[Type] = false;
             AddMapEntry(new Color(0, 50, 0));
             HitSound = SoundID.Grass;
-            DustType = 2;
+            DustType = DustID.Grass;
             TileID.Sets.IsVine[Type] = true;
             TileID.Sets.ReplaceTileBreakDown[Type] = true;
             TileID.Sets.VineThreads[Type] = true;

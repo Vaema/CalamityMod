@@ -50,7 +50,7 @@ namespace CalamityMod.Buffs.DamageOverTime
             }
             if (Main.rand.NextBool(4))
             {
-                Dust dust = Dust.NewDustPerfect(modPlayer.RandomDebuffVisualSpot, 18);
+                Dust dust = Dust.NewDustPerfect(modPlayer.RandomDebuffVisualSpot, DustID.CorruptGibs);
                 dust.noGravity = true;
                 dust.velocity = Vector2.Zero;
                 dust.alpha = 90;

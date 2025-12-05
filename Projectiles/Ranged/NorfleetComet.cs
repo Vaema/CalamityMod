@@ -109,7 +109,7 @@ namespace CalamityMod.Projectiles.Ranged
                 for (int k = 0; k < 30; k++)
                 {
                     Vector2 velocity = new Vector2(10, 10).RotatedByRandom(100) * Main.rand.NextFloat(0.3f, 1.2f);
-                    Dust dust2 = Dust.NewDustPerfect(Projectile.Center + velocity, 259, velocity);
+                    Dust dust2 = Dust.NewDustPerfect(Projectile.Center + velocity, DustID.SolarFlare, velocity);
                     dust2.scale = Main.rand.NextFloat(1.15f, 1.45f);
                     dust2.noGravity = true;
                 }
@@ -133,7 +133,7 @@ namespace CalamityMod.Projectiles.Ranged
                 for (int k = 0; k < 30; k++)
                 {
                     Vector2 velocity = new Vector2(10, 10).RotatedByRandom(100) * Main.rand.NextFloat(0.3f, 1.2f);
-                    Dust dust2 = Dust.NewDustPerfect(Projectile.Center + velocity, 226, velocity);
+                    Dust dust2 = Dust.NewDustPerfect(Projectile.Center + velocity, DustID.Electric, velocity);
                     dust2.scale = Main.rand.NextFloat(1.15f, 1.45f);
                     dust2.noGravity = false;
                 }

@@ -91,7 +91,7 @@ namespace CalamityMod.Projectiles.Typeless
 
                         for (int iy = 0; iy < 16; iy++)
                         {
-                            Dust zapDust = Dust.NewDustPerfect(spawnPosition + Main.rand.NextVector2Circular(1f, 1f) * 20f, 226, Main.rand.NextVector2Circular(1f, 1f) * Main.rand.NextFloat(1f, 2.3f) - Vector2.UnitY * 6f);
+                            Dust zapDust = Dust.NewDustPerfect(spawnPosition + Main.rand.NextVector2Circular(1f, 1f) * 20f, DustID.Electric, Main.rand.NextVector2Circular(1f, 1f) * Main.rand.NextFloat(1f, 2.3f) - Vector2.UnitY * 6f);
                             zapDust.noGravity = true;
                         }
                     }
@@ -104,7 +104,7 @@ namespace CalamityMod.Projectiles.Typeless
                 for (int i = 0; i < dustCount; i++)
                 {
                     float angle = MathHelper.TwoPi * i / dustCount;
-                    Dust dust = Dust.NewDustPerfect(Projectile.Center, 229);
+                    Dust dust = Dust.NewDustPerfect(Projectile.Center, DustID.Vortex);
                     dust.position = Projectile.Center + angle.ToRotationVector2() * 300;
                     dust.scale = 0.7f;
                     dust.noGravity = true;

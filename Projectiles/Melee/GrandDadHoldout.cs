@@ -13,6 +13,7 @@ using ReLogic.Content;
 using Terraria;
 using Terraria.Audio;
 using Terraria.DataStructures;
+using Terraria.ID;
 using Terraria.Localization;
 using Terraria.ModLoader;
 
@@ -197,7 +198,7 @@ namespace CalamityMod.Projectiles.Melee
                         {
                             float randRot = Main.rand.NextFloat(-30, -60);
                             Vector2 dustVel = (new Vector2(0, 15 * -Projectile.ai[1] * Owner.direction)).RotatedBy(FinalRotation + MathHelper.ToRadians(randRot));
-                            Dust dust2 = Dust.NewDustPerfect(Owner.Center + (new Vector2(185, 0).RotatedBy(FinalRotation + MathHelper.ToRadians(-45)).RotatedByRandom(0.3f)), 278, dustVel * Main.rand.NextFloat(0.1f, 0.5f));
+                            Dust dust2 = Dust.NewDustPerfect(Owner.Center + (new Vector2(185, 0).RotatedBy(FinalRotation + MathHelper.ToRadians(-45)).RotatedByRandom(0.3f)), DustID.FireworksRGB, dustVel * Main.rand.NextFloat(0.1f, 0.5f));
                             dust2.scale = Main.rand.NextFloat(0.55f, 1.05f);
                             dust2.noGravity = true;
                             dust2.color = Main.rand.NextBool(3) ? Color.Goldenrod : Color.Gold;

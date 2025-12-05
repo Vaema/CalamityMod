@@ -183,7 +183,7 @@ namespace CalamityMod.Projectiles.Melee
 
                 Projectile.localAI[0] += 1f;
 
-                int water = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, 33, 0f, 0f, 100, default, 0.4f);
+                int water = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.Water, 0f, 0f, 100, default, 0.4f);
                 Main.dust[water].noGravity = true;
                 Main.dust[water].velocity *= 0.5f;
                 Main.dust[water].velocity += Projectile.velocity * 0.1f;

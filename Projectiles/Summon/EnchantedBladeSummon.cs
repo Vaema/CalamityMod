@@ -7,6 +7,7 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria;
 using Terraria.GameContent;
+using Terraria.ID;
 using static CalamityMod.Items.Weapons.Summon.EnchantedBladeStaff;
 using static Terraria.ModLoader.ModContent;
 
@@ -208,8 +209,8 @@ namespace CalamityMod.Projectiles.Summon
                     {
                         float angle = MathHelper.TwoPi / dustAmount * i;
                         Vector2 velocity = angle.ToRotationVector2() * Main.rand.NextFloat(5f);
-                        Dust tpDustStart = Dust.NewDustPerfect(previousCenter, 309, velocity);
-                        Dust tpDustEnd = Dust.NewDustPerfect(SwingCenter, 309, velocity);
+                        Dust tpDustStart = Dust.NewDustPerfect(previousCenter, DustID.ShimmerSpark, velocity);
+                        Dust tpDustEnd = Dust.NewDustPerfect(SwingCenter, DustID.ShimmerSpark, velocity);
                         tpDustStart.noGravity = true;
                         tpDustEnd.noGravity = true;
                     }

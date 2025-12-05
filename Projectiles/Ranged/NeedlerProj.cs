@@ -64,7 +64,7 @@ namespace CalamityMod.Projectiles.Ranged
             Projectile.position.Y = Projectile.position.Y - (float)(Projectile.height / 2);
             for (int j = 0; j < 4; j++)
             {
-                Dust dust = Dust.NewDustPerfect(Projectile.Center, 46, new Vector2(3, 3).RotatedByRandom(100) * Main.rand.NextFloat(0.3f, 1.3f));
+                Dust dust = Dust.NewDustPerfect(Projectile.Center, DustID.Poisoned, new Vector2(3, 3).RotatedByRandom(100) * Main.rand.NextFloat(0.3f, 1.3f));
                 dust.noGravity = false;
                 dust.scale = Main.rand.NextFloat(0.8f, 1.8f);
                 if (Main.rand.NextBool())

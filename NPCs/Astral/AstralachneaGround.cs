@@ -65,7 +65,7 @@ namespace CalamityMod.NPCs.Astral
                 {
                     for (int j = y - 1; j <= y + 1; j++)
                     {
-                        if (Main.tile[i, j] != null && Main.tile[i, j].WallType > 0)
+                        if (Main.tile[i, j] != null && Main.tile[i, j].WallType > WallID.None)
                         {
                             transform = true;
                         }

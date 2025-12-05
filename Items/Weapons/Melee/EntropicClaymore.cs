@@ -73,7 +73,7 @@ namespace CalamityMod.Items.Weapons.Melee
             if (Main.rand.NextBool())
             {
                 Vector2 dustVel = new Vector2(5 * swordDirection, -5).RotatedByRandom(1.55f) * Main.rand.NextFloat(0.7f, 1.3f) * 2;
-                Dust dust = Dust.NewDustPerfect(player.Center + dustVel * 9, 66);
+                Dust dust = Dust.NewDustPerfect(player.Center + dustVel * 9, DustID.RainbowTorch);
                 dust.scale = Main.rand.NextFloat(0.5f, 0.75f);
                 dust.velocity = dustVel * 0.85f;
                 dust.color = Color.LightGreen;

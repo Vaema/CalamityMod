@@ -331,7 +331,7 @@ namespace CalamityMod.Projectiles.Melee
             {
                 for (int i = 0; i < 75; i++)
                 {
-                    Dust fire = Dust.NewDustPerfect(Owner.Center, 6);
+                    Dust fire = Dust.NewDustPerfect(Owner.Center, DustID.Torch);
                     fire.velocity = (MathHelper.TwoPi * i / 75f).ToRotationVector2() * 4f - Vector2.UnitY * 3f;
                     fire.scale = 1.4f;
                     fire.noGravity = true;

@@ -509,7 +509,7 @@ namespace CalamityMod.ILEditing
                 for (int i = 0; i < 200; i++)
                 {
                     NPC hitNPC = Main.npc[i];
-                    if (!hitNPC.active || hitNPC.dontTakeDamage || hitNPC.friendly || (hitNPC.aiStyle == 112 && !(hitNPC.ai[2] <= 1f)) || !self.CanNPCBeHitByPlayerOrPlayerProjectile(hitNPC))
+                    if (!hitNPC.active || hitNPC.dontTakeDamage || hitNPC.friendly || (hitNPC.aiStyle == NPCAIStyleID.Fairy && !(hitNPC.ai[2] <= 1f)) || !self.CanNPCBeHitByPlayerOrPlayerProjectile(hitNPC))
                     {
                         continue;
                     }

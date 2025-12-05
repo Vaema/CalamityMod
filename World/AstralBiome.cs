@@ -141,7 +141,7 @@ namespace CalamityMod.World
                 while (y < Main.maxTilesY)
                 {
                     //check to place the astral meteor on valid tiles, place automatically on ebonstone walls, and avoid platforms
-                    if (((Main.tile[x, y].HasTile && Main.tileSolid[(int)Main.tile[x, y].TileType]) || Main.tile[x, y].WallType == 3) && !TileID.Sets.Platforms[Main.tile[x, y].TileType])
+                    if (((Main.tile[x, y].HasTile && Main.tileSolid[(int)Main.tile[x, y].TileType]) || Main.tile[x, y].WallType == WallID.EbonstoneUnsafe) && !TileID.Sets.Platforms[Main.tile[x, y].TileType])
                     {
                         int suitableTiles = 0;
                         int checkRadius = 15;
@@ -303,7 +303,7 @@ namespace CalamityMod.World
             {
                 for (int n = j - avoidRectangleSize; n < j + avoidRectangleSize; n++)
                 {
-                    if (Main.tile[m, n].HasTile && Main.tile[m, n].TileType == 21)
+                    if (Main.tile[m, n].HasTile && Main.tile[m, n].TileType == TileID.Containers)
                     {
                         return false;
                     }
@@ -363,7 +363,7 @@ namespace CalamityMod.World
                     {
                         if ((double)tileDistance3 < (double)avoidRectangleSize * 0.7)
                         {
-                            if (Main.tile[inc3, doubleinc3].TileType == 5 || Main.tile[inc3, doubleinc3].TileType == 32 || Main.tile[inc3, doubleinc3].TileType == 352)
+                            if (Main.tile[inc3, doubleinc3].TileType == TileID.Trees || Main.tile[inc3, doubleinc3].TileType == TileID.CorruptThorns || Main.tile[inc3, doubleinc3].TileType == TileID.CrimsonThorns)
                             {
                                 try
                                 { WorldGen.KillTile(inc3, doubleinc3, false, false, true); }
@@ -402,7 +402,7 @@ namespace CalamityMod.World
                         {
                             if (Main.tile[inc4, doubleinc4] != null)
                             {
-                                if (Main.tile[inc4, doubleinc4].TileType == 5 || Main.tile[inc4, doubleinc4].TileType == 32 || Main.tile[inc4, doubleinc4].TileType == 352)
+                                if (Main.tile[inc4, doubleinc4].TileType == TileID.Trees || Main.tile[inc4, doubleinc4].TileType == TileID.CorruptThorns || Main.tile[inc4, doubleinc4].TileType == TileID.CrimsonThorns)
                                 {
                                     WorldGen.KillTile(inc4, doubleinc4, false, false, false);
                                 }
@@ -427,7 +427,7 @@ namespace CalamityMod.World
                         {
                             if (Main.tile[inc5, doubleinc5] != null)
                             {
-                                if (Main.tile[inc5, doubleinc5].TileType == 5 || Main.tile[inc5, doubleinc5].TileType == 32 || Main.tile[inc5, doubleinc5].TileType == 352)
+                                if (Main.tile[inc5, doubleinc5].TileType == TileID.Trees || Main.tile[inc5, doubleinc5].TileType == TileID.CorruptThorns || Main.tile[inc5, doubleinc5].TileType == TileID.CrimsonThorns)
                                 {
                                     WorldGen.KillTile(inc5, doubleinc5, false, false, false);
                                 }

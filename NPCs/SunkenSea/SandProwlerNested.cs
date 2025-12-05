@@ -229,7 +229,7 @@ namespace CalamityMod.NPCs.SunkenSea
             // Also emit some particle effects as an indicator.
             if (InHidingSpot)
             {
-                Dust sparkle = Dust.NewDustDirect(TileCoordsToHideIn.ToWorldCoordinates(0, 0), 16, 16, 261);
+                Dust sparkle = Dust.NewDustDirect(TileCoordsToHideIn.ToWorldCoordinates(0, 0), 16, 16, DustID.AncientLight);
                 sparkle.color = Color.Orange;
                 sparkle.velocity = Main.rand.NextVector2Circular(4f, 4f);
                 sparkle.noGravity = true;

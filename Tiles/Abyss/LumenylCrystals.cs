@@ -18,7 +18,7 @@ namespace CalamityMod.Tiles.Abyss
             AddToArray(ref TileID.Sets.RoomNeeds.CountsAsTorch);
             AddMapEntry(new Color(0, 150, 200), CalamityUtils.GetItemName<Lumenyl>());
             HitSound = SoundID.Item27;
-            DustType = 67;
+            DustType = DustID.IceRod;
             Main.tileSpelunker[Type] = true;
         }
 

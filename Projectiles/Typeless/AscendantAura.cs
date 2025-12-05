@@ -57,7 +57,7 @@ namespace CalamityMod.Projectiles.Typeless
                     float angle = MathHelper.TwoPi / dustAmount * d;
                     Vector2 velocity = angle.ToRotationVector2() * Main.rand.NextFloat(5f, 40f);
 
-                    Dust spawnDust = Dust.NewDustPerfect(Projectile.Center, 204, velocity);
+                    Dust spawnDust = Dust.NewDustPerfect(Projectile.Center, DustID.TreasureSparkle, velocity);
                     spawnDust.noGravity = true;
                     spawnDust.scale = velocity.Length() * 0.05f;
                     spawnDust.velocity *= 0.4f;
@@ -98,7 +98,7 @@ namespace CalamityMod.Projectiles.Typeless
                 float rot = MathHelper.ToRadians(i * rotFactor);
                 Vector2 offset = new Vector2(8f, 0).RotatedBy(rot);
                 Vector2 velOffset = new Vector2(10.5f, 0).RotatedBy(rot);
-                Dust dust = Dust.NewDustPerfect(Projectile.Center + offset, 278, new Vector2(velOffset.X, velOffset.Y));
+                Dust dust = Dust.NewDustPerfect(Projectile.Center + offset, DustID.FireworksRGB, new Vector2(velOffset.X, velOffset.Y));
                 dust.noGravity = true;
                 dust.velocity = velOffset * Main.rand.NextFloat(0.2f, 1.1f);
                 dust.scale = Main.rand.NextFloat(0.3f, 0.8f);

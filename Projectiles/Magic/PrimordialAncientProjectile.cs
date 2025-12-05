@@ -83,9 +83,9 @@ namespace CalamityMod.Projectiles.Magic
                                 GlowSparkParticle spark = new GlowSparkParticle(Projectile.Center, dustVelocity * 0.7f, false, 12, 0.009f, Color.Purple, new Vector2(3.5f, 1.3f), true);
                                 GeneralParticleHandler.SpawnParticle(spark);
 
-                                Dust dust = Dust.NewDustPerfect(player.Center, 86, dustVelocity.RotatedBy(MathHelper.ToRadians(22.5f)), 0, default, 0.9f);
+                                Dust dust = Dust.NewDustPerfect(player.Center, DustID.GemAmethyst, dustVelocity.RotatedBy(MathHelper.ToRadians(22.5f)), 0, default, 0.9f);
                                 dust.noGravity = true;
-                                Dust dust2 = Dust.NewDustPerfect(player.Center, 86, dustVelocity.RotatedBy(MathHelper.ToRadians(22.5f)) * 0.4f, 0, default, 1.2f);
+                                Dust dust2 = Dust.NewDustPerfect(player.Center, DustID.GemAmethyst, dustVelocity.RotatedBy(MathHelper.ToRadians(22.5f)) * 0.4f, 0, default, 1.2f);
                                 dust2.noGravity = true;
                             }
 
@@ -138,7 +138,7 @@ namespace CalamityMod.Projectiles.Magic
                     for (int i = 0; i < 2; i++)
                     {
                         Vector2 dustPos = Projectile.Center + (i * MathHelper.Pi + Projectile.rotation + MathHelper.PiOver2).ToRotationVector2() * 60f * Projectile.scale * Utils.GetLerpValue(350, 250, time, true);
-                        Dust dust = Dust.NewDustPerfect(dustPos, 272, (i * MathHelper.Pi + Projectile.rotation * Math.Sign(Projectile.velocity.Length())).ToRotationVector2());
+                        Dust dust = Dust.NewDustPerfect(dustPos, DustID.WitherLightning, (i * MathHelper.Pi + Projectile.rotation * Math.Sign(Projectile.velocity.Length())).ToRotationVector2());
                         dust.noGravity = true;
                         dust.scale = Main.rand.NextFloat(0.4f, 0.6f);
                     }
@@ -177,7 +177,7 @@ namespace CalamityMod.Projectiles.Magic
                         float size = Projectile.width * 0.03f * Projectile.scale;
                         Vector2 dustPos = Projectile.Center + Main.rand.NextVector2Circular(size, size);
                         Vector2 trailVel = (new Vector2(CenterX, CenterY) - Projectile.Center).SafeNormalize(Vector2.UnitX) * 0.5f;
-                        Dust dust = Dust.NewDustPerfect(dustPos, 272, trailVel);
+                        Dust dust = Dust.NewDustPerfect(dustPos, DustID.WitherLightning, trailVel);
                         dust.noGravity = true;
                         dust.scale = Main.rand.NextFloat(0.4f, 0.6f);
                     }

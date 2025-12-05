@@ -123,7 +123,7 @@ namespace CalamityMod.Projectiles.Magic
         {
             for (int i = 0; i < 3; i++)
             {
-                Dust rainbowMagic = Dust.NewDustPerfect(Projectile.Center + Main.rand.NextVector2Circular(8f, 8f), 261);
+                Dust rainbowMagic = Dust.NewDustPerfect(Projectile.Center + Main.rand.NextVector2Circular(8f, 8f), DustID.AncientLight);
                 rainbowMagic.velocity = Main.rand.NextVector2Circular(6f, 6f) - ((Projectile.position - Projectile.oldPos[1]) / 3f).RotatedByRandom(0.51f);
                 rainbowMagic.color = Main.hslToRgb(Main.rand.NextFloat(), 1f, Main.rand.NextFloat(0.5f, 0.9f));
                 rainbowMagic.color.A = 128;
@@ -191,7 +191,7 @@ namespace CalamityMod.Projectiles.Magic
         {
             for (int i = 0; i < 60; i++)
             {
-                Dust rainbowMagic = Dust.NewDustPerfect(dustSpawnPosition + Main.rand.NextVector2Circular(12f, 12f), 267);
+                Dust rainbowMagic = Dust.NewDustPerfect(dustSpawnPosition + Main.rand.NextVector2Circular(12f, 12f), DustID.RainbowMk2);
                 rainbowMagic.velocity = Main.rand.NextVector2Unit() * Main.rand.NextFloat(2f, 9.5f);
                 rainbowMagic.color = Main.hslToRgb(Main.rand.NextFloat(), 1f, Main.rand.NextFloat(0.5f, 0.9f));
                 rainbowMagic.color.A = 100;

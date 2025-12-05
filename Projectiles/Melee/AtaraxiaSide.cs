@@ -56,7 +56,7 @@ namespace CalamityMod.Projectiles.Melee
             {
                 float colorRando = Main.rand.NextFloat(0, 1);
                 Vector2 dustvel = Projectile.ai[1] == 2 ? Projectile.velocity.RotatedBy(0.2f) : Projectile.velocity.RotatedBy(-0.2f);
-                Dust dust = Dust.NewDustPerfect(Projectile.Center + Projectile.velocity, 261, -dustvel * Main.rand.NextFloat(0.2f, 1.2f), 0, default, Main.rand.NextFloat(0.4f, 0.6f));
+                Dust dust = Dust.NewDustPerfect(Projectile.Center + Projectile.velocity, DustID.AncientLight, -dustvel * Main.rand.NextFloat(0.2f, 1.2f), 0, default, Main.rand.NextFloat(0.4f, 0.6f));
                 dust.noGravity = true;
                 dust.color = Color.Lerp(Color.DarkOrchid, Color.IndianRed, colorRando);
             }

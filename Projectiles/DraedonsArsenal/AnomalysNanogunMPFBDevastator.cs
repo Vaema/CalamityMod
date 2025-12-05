@@ -39,11 +39,11 @@ namespace CalamityMod.Projectiles.DraedonsArsenal
             float sine = (float)Math.Sin(Projectile.timeLeft * 0.375f / MathHelper.Pi);
 
             Vector2 offset = Projectile.velocity.SafeNormalize(Vector2.UnitX).RotatedBy(MathHelper.PiOver2) * sine * 16f;
-            Dust dust = Dust.NewDustPerfect(Projectile.Center + offset, 267, Vector2.Zero);
+            Dust dust = Dust.NewDustPerfect(Projectile.Center + offset, DustID.RainbowMk2, Vector2.Zero);
             dust.color = Color.Cyan;
             dust.noGravity = true;
 
-            dust = Dust.NewDustPerfect(Projectile.Center - offset, 267, Vector2.Zero);
+            dust = Dust.NewDustPerfect(Projectile.Center - offset, DustID.RainbowMk2, Vector2.Zero);
             dust.color = Color.Cyan;
             dust.noGravity = true;
 
@@ -77,7 +77,7 @@ namespace CalamityMod.Projectiles.DraedonsArsenal
             for (int i = 0; i < 18; i++)
             {
                 Vector2 vel = new Vector2(10, 10).RotatedByRandom(100) * Main.rand.NextFloat(0.8f, 1.2f);
-                Dust dust = Dust.NewDustPerfect(Projectile.Center + vel * 1.5f, 226, vel * Main.rand.NextFloat(0.1f, 1.2f) + new Vector2(0, -2));
+                Dust dust = Dust.NewDustPerfect(Projectile.Center + vel * 1.5f, DustID.Electric, vel * Main.rand.NextFloat(0.1f, 1.2f) + new Vector2(0, -2));
                 dust.noGravity = false;
                 dust.scale = Main.rand.NextFloat(0.65f, 1.2f);
             }

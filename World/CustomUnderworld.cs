@@ -1476,9 +1476,9 @@ namespace CalamityMod.World
                     if (Main.tile[x, y].HasTile && (Main.tile[x, y].TileType == TileID.ObsidianBrick || Main.tile[x, y].TileType == TileID.HellstoneBrick))
                     {
                         int xOffset = 0;
-                        if (Main.tile[x - 1, y].WallType > 0)
+                        if (Main.tile[x - 1, y].WallType > WallID.None)
                             xOffset = -1;
-                        else if (Main.tile[x + 1, y].WallType > 0)
+                        else if (Main.tile[x + 1, y].WallType > WallID.None)
                             xOffset = 1;
 
                         if (!Main.tile[x + xOffset, y].HasTile && !Main.tile[x + xOffset, y + 1].HasTile)

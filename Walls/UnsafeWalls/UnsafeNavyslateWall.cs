@@ -4,6 +4,7 @@ using Microsoft.Xna.Framework.Graphics;
 using Terraria.GameContent;
 using Terraria;
 using Terraria.ModLoader;
+using Terraria.ID;
 namespace CalamityMod.Walls.UnsafeWalls
 {
     public class UnsafeNavyslateWall : ModWall, IVisibleThroughWater
@@ -14,7 +15,7 @@ namespace CalamityMod.Walls.UnsafeWalls
         public override void SetStaticDefaults()
         {
             Main.wallHouse[Type] = false;
-            DustType = 96;
+            DustType = DustID.BlueMoss;
             this.AddMapEntryWithWaterVisibility(new Color(11, 40, 43));
         }
         

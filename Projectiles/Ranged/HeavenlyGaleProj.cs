@@ -146,7 +146,7 @@ namespace CalamityMod.Projectiles.Ranged
                     float unitOffsetY = (float)Math.Pow(Math.Sin(offsetAngle), 3D);
 
                     Vector2 puffDustVelocity = new Vector2(unitOffsetX, unitOffsetY) * 5f;
-                    Dust magic = Dust.NewDustPerfect(tipPosition, 267, puffDustVelocity);
+                    Dust magic = Dust.NewDustPerfect(tipPosition, DustID.RainbowMk2, puffDustVelocity);
                     magic.scale = 1.8f;
                     magic.fadeIn = 0.5f;
                     magic.color = CalamityUtils.MulticolorLerp(i / 75f, CalamityUtils.ExoPalette);

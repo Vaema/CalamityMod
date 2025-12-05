@@ -10,7 +10,7 @@ namespace CalamityMod.Walls.UnsafeWalls
         public override string Texture => "CalamityMod/Walls/SulphurousSandWall";
         public override void SetStaticDefaults()
         {
-            DustType = 32;
+            DustType = DustID.Sand;
             AddMapEntry(new Color(84, 71, 46));
         }
 

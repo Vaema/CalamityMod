@@ -29,7 +29,7 @@ namespace CalamityMod.Tiles.Ores
             TileID.Sets.Ore[Type] = true;
             TileID.Sets.OreMergesWithMud[Type] = true;
 
-            DustType = 55;
+            DustType = DustID.Pixie;
             AddMapEntry(new Color(255, 200, 0), CreateMapEntryName());
             MineResist = 5f;
             MinPick = 250;

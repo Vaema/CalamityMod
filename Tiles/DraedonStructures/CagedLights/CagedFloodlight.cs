@@ -24,7 +24,7 @@ namespace CalamityMod.Tiles.DraedonStructures.CagedLights
             RegisterItemDrop(ModContent.ItemType<CagedFloodlightItem>());
 
             HitSound = CommonCalamitySounds.PlatingMine;
-            DustType = 187;
+            DustType = DustID.BlueFlare;
 
             AddToArray(ref TileID.Sets.RoomNeeds.CountsAsTorch);
             AddMapEntry(new Color(48, 201, 214), CalamityUtils.GetItemName<CagedLablightItem>());

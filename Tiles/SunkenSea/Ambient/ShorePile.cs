@@ -25,7 +25,7 @@ namespace CalamityMod.Tiles.SunkenSea.Ambient
 
 
             AddMapEntry(new Color(189, 120, 94));
-            DustType = 96;
+            DustType = DustID.BlueMoss;
             HitSound = SoundID.Dig;
         }
     }

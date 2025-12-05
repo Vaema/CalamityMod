@@ -108,8 +108,8 @@ namespace CalamityMod.Projectiles.Rogue
                 for (int i = 0; i < 8; i += 2)
                 {
                     // d, du, dus, dust :)
-                    Dust du = Dust.NewDustPerfect(Projectile.Center, 180, velocity, 0, default, Main.rand.NextFloat(1.1f, 1.4f));
-                    Dust dus = Dust.NewDustPerfect(Projectile.Center, 180, -velocity, 0, default, Main.rand.NextFloat(1.1f, 1.4f));
+                    Dust du = Dust.NewDustPerfect(Projectile.Center, DustID.DungeonSpirit, velocity, 0, default, Main.rand.NextFloat(1.1f, 1.4f));
+                    Dust dus = Dust.NewDustPerfect(Projectile.Center, DustID.DungeonSpirit, -velocity, 0, default, Main.rand.NextFloat(1.1f, 1.4f));
                     du.noGravity = true;
                     dus.noGravity = true;
                     // Rotate direction for the next dust.

@@ -150,7 +150,7 @@ namespace CalamityMod.Tiles.BaseTiles
                 if (averageBrightness > 10)
                 {
                     // Use the vanilla crystal sheet to get the autoselect outline.
-                    Texture2D vanillaCrystalSheet = TextureAssets.Extra[181].Value;
+                    Texture2D vanillaCrystalSheet = TextureAssets.Extra[ExtrasID.PylonCrystals].Value;
                     Rectangle smartCursorGlowFrame = vanillaCrystalSheet.Frame(12, 8, 2, frameY);
 
                     Color selectionGlowColor = Colors.GetSelectionGlowColor(tileSelectionTier == 2, averageBrightness);

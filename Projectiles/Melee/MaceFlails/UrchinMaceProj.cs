@@ -61,7 +61,7 @@ namespace CalamityMod.Projectiles.Melee.MaceFlails
                     for (int i = 0; i < 25; i++)
                     {
                         Vector2 dustPos = Owner.position + Main.rand.NextVector2FromRectangle(Owner.Hitbox);
-                        Dust dust = Dust.NewDustPerfect(dustPos, 176, Vector2.UnitY * -5f * Main.rand.NextFloat(1f, 2f) + Owner.velocity, Scale: Main.rand.NextFloat(1f, 2f));
+                        Dust dust = Dust.NewDustPerfect(dustPos, DustID.BubbleBurst_Blue, Vector2.UnitY * -5f * Main.rand.NextFloat(1f, 2f) + Owner.velocity, Scale: Main.rand.NextFloat(1f, 2f));
                         dust.noGravity = true;
                     }
                 }
@@ -79,7 +79,7 @@ namespace CalamityMod.Projectiles.Melee.MaceFlails
                 {
                     float angle = i / (float)dustCount * MathHelper.TwoPi + offset;
                     Vector2 dustPos = Owner.MountedCenter + angle.ToRotationVector2() * 40f * WindupProgress;
-                    Dust dust = Dust.NewDustPerfect(dustPos, 176, (angle - MathHelper.PiOver2 * Owner.direction).ToRotationVector2() * 5f + Owner.velocity, Scale: Main.rand.NextFloat(1f, 2f));
+                    Dust dust = Dust.NewDustPerfect(dustPos, DustID.BubbleBurst_Blue, (angle - MathHelper.PiOver2 * Owner.direction).ToRotationVector2() * 5f + Owner.velocity, Scale: Main.rand.NextFloat(1f, 2f));
                     dust.noGravity = true;
                 }
             }

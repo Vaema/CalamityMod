@@ -364,7 +364,7 @@ namespace CalamityMod.Items.Armor.MarniteArchitect
                 if (Main.rand.NextFloat() > (centerDistance / MarniteArchitectHeadgear.MaxLiftHeight) * 0.6f && Main.rand.NextBool())
                 {
                     float scale = 1.2f - (centerDistance / MarniteArchitectHeadgear.MaxLiftHeight) * 0.7f;
-                    Dust dust = Dust.NewDustPerfect(player.Bottom + Vector2.UnitY * centerDistance + Vector2.UnitX * Main.rand.Next(-16, 16), 31, new Vector2((Main.rand.NextFloat(-8, 8) * scale) - player.velocity.X, Main.rand.NextFloat(-1, 1)), 120, Scale: scale * 1.5f);
+                    Dust dust = Dust.NewDustPerfect(player.Bottom + Vector2.UnitY * centerDistance + Vector2.UnitX * Main.rand.Next(-16, 16), DustID.Smoke, new Vector2((Main.rand.NextFloat(-8, 8) * scale) - player.velocity.X, Main.rand.NextFloat(-1, 1)), 120, Scale: scale * 1.5f);
                 }
             }
 
@@ -372,7 +372,7 @@ namespace CalamityMod.Items.Armor.MarniteArchitect
             {
                 float speedRotation = player.velocity.X * 0.03f;
 
-                Dust dust = Dust.NewDustPerfect(player.Bottom + Vector2.UnitX.RotatedBy(speedRotation) * Main.rand.Next(-6, 6) + Vector2.UnitY.RotatedBy(speedRotation) * -2f, 229, Vector2.UnitY.RotatedBy(speedRotation) * Main.rand.NextFloat(1f, 3f), 120, Scale: Main.rand.NextFloat(0.6f, 1f));
+                Dust dust = Dust.NewDustPerfect(player.Bottom + Vector2.UnitX.RotatedBy(speedRotation) * Main.rand.Next(-6, 6) + Vector2.UnitY.RotatedBy(speedRotation) * -2f, DustID.Vortex, Vector2.UnitY.RotatedBy(speedRotation) * Main.rand.NextFloat(1f, 3f), 120, Scale: Main.rand.NextFloat(0.6f, 1f));
                 dust.noGravity = true;
             }
         }

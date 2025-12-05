@@ -90,7 +90,7 @@ namespace CalamityMod.Projectiles.Rogue
             {
                 for (int i = 0; i < 15; i++)
                 {
-                    Dust rainbowBurst = Dust.NewDustPerfect(Projectile.Center, 267);
+                    Dust rainbowBurst = Dust.NewDustPerfect(Projectile.Center, DustID.RainbowMk2);
                     rainbowBurst.color = Main.hslToRgb(i / 80f, 0.9f, 0.6f);
                     rainbowBurst.velocity = Main.rand.NextVector2Unit() * Main.rand.NextFloat(3f, 5.5f);
                     rainbowBurst.scale = Main.rand.NextFloat(1.4f, 2.4f);

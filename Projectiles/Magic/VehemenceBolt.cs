@@ -53,7 +53,7 @@ namespace CalamityMod.Projectiles.Magic
             {
                 float angle = MathHelper.TwoPi * i / 40f;
 
-                Dust brimstoneMagic = Dust.NewDustPerfect(Projectile.Center + Projectile.velocity * 7f, 27);
+                Dust brimstoneMagic = Dust.NewDustPerfect(Projectile.Center + Projectile.velocity * 7f, DustID.Shadowflame);
                 brimstoneMagic.velocity = angle.ToRotationVector2() * 15f;
                 brimstoneMagic.color = Color.Lerp(Color.Red, Color.MediumPurple, (float)Math.Sin(angle) * 0.5f + 0.5f);
                 brimstoneMagic.scale = 1.6f;

@@ -228,7 +228,7 @@ public static partial class RevengeanceAndDeathAI
                 {
                     for (int j = npcY - 1; j <= npcY + 1; j++)
                     {
-                        if (Main.tile[i, j].WallType > 0)
+                        if (Main.tile[i, j].WallType > WallID.None)
                         {
                             climbingWall = true;
                         }

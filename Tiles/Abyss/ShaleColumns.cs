@@ -34,7 +34,7 @@ namespace CalamityMod.Tiles.Abyss
             TileObjectData.newTile.LavaDeath = true;
             TileObjectData.addTile(Type);
             AddMapEntry(new Color(37, 24, 63));
-            DustType = 33;
+            DustType = DustID.Water;
 
             base.SetStaticDefaults();
         }

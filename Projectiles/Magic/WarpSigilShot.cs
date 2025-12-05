@@ -130,7 +130,7 @@ namespace CalamityMod.Projectiles.Magic
 
             for (int i = 0; i < 8; i++)
             {
-                Dust dust = Dust.NewDustPerfect(Projectile.Center, 173, Main.rand.NextVector2Circular(2f, 2f));
+                Dust dust = Dust.NewDustPerfect(Projectile.Center, DustID.ShadowbeamStaff, Main.rand.NextVector2Circular(2f, 2f));
                 dust.noGravity = true;
                 dust.scale = 0.5f;
             }

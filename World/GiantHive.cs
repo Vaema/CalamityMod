@@ -57,7 +57,7 @@ namespace CalamityMod.World
                     treeHeight++;
                 }
 
-                if (Main.tile[origin.X, treeHeight].HasTile || Main.tile[origin.X, treeHeight].WallType > 0)
+                if (Main.tile[origin.X, treeHeight].HasTile || Main.tile[origin.X, treeHeight].WallType > WallID.None)
                 {
                     validHeightFound = true;
                 }

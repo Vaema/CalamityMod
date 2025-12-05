@@ -93,7 +93,7 @@ namespace CalamityMod.Projectiles.Magic
         {
             if (Main.rand.NextBool(4))
             {
-                Dust magic = Dust.NewDustPerfect(Projectile.Center, 264);
+                Dust magic = Dust.NewDustPerfect(Projectile.Center, DustID.PortalBoltTrail);
                 magic.color = ColorFunction(0f);
                 magic.scale *= 0.56f;
                 magic.noGravity = true;

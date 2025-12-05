@@ -19,7 +19,7 @@ namespace CalamityMod.Tiles
             Main.tileLighted[Type] = true;
             Main.tileSolid[Type] = true;
             Main.tileBlockLight[Type] = true;
-            DustType = 105;
+            DustType = DustID.Water_BloodMoon;
             AddMapEntry(new Color(85, 87, 101));
             HitSound = SoundID.Tink;
 

@@ -17,7 +17,7 @@ namespace CalamityMod.Tiles.FloralParadise
             Main.tileFrameImportant[Type] = true;
             AddMapEntry(new Color(47, 75, 32));
             HitSound = SoundID.Grass;
-            DustType = 2;
+            DustType = DustID.Grass;
         }
 
         public override void NumDust(int i, int j, bool fail, ref int num)

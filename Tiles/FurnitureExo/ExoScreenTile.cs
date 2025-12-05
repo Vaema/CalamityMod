@@ -23,7 +23,7 @@ namespace CalamityMod.Tiles.FurnitureExo
             TileObjectData.addTile(Type);
 
             AddMapEntry(new Color(71, 95, 114), CalamityUtils.GetText("Tiles.Screen"));
-            DustType = 8;
+            DustType = DustID.Iron;
             AnimationFrameHeight = 36;
             TileID.Sets.FramesOnKillWall[Type] = true;
         }

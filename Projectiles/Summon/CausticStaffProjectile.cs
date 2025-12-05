@@ -43,7 +43,7 @@ namespace CalamityMod.Projectiles.Summon
         {
             for (int i = 0; i < 5; i++)
             {
-                Dust dust = Dust.NewDustPerfect(Projectile.Center, 6);
+                Dust dust = Dust.NewDustPerfect(Projectile.Center, DustID.Torch);
                 dust.noGravity = true;
                 dust.velocity = Vector2.UnitY.RotatedByRandom(MathHelper.TwoPi) * Main.rand.NextFloat(2f);
             }

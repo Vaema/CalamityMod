@@ -52,7 +52,7 @@ namespace CalamityMod.Items.Weapons.Magic
                 GeneralParticleHandler.SpawnParticle(spark);
                 for (int b = 0; b < 3; b++)
                 {
-                    Dust dust = Dust.NewDustPerfect(position + velocity * 2.5f, 278, (velocity2 * 10).RotatedByRandom(0.5) * Main.rand.NextFloat(0.5f, 0.9f));
+                    Dust dust = Dust.NewDustPerfect(position + velocity * 2.5f, DustID.FireworksRGB, (velocity2 * 10).RotatedByRandom(0.5) * Main.rand.NextFloat(0.5f, 0.9f));
                     dust.scale = Main.rand.NextFloat(0.3f, 0.5f);
                     dust.color = Main.rand.NextBool() ? Color.Cyan : Color.LightBlue;
                     dust.noGravity = true;

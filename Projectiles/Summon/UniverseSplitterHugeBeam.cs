@@ -102,13 +102,13 @@ namespace CalamityMod.Projectiles.Summon
                     SoundEngine.PlaySound(TeslaCannon.FireSound, Projectile.Center);
                 for (int i = 0; i < 75; i++)
                 {
-                    Dust dust = Dust.NewDustPerfect(beamEndPosition, 269);
+                    Dust dust = Dust.NewDustPerfect(beamEndPosition, DustID.Sandnado);
                     dust.velocity = Main.rand.NextVector2Circular(16f, 11f);
                     dust.velocity = dust.velocity.SafeNormalize(Vector2.UnitY) * new Vector2(5f, 3.5f);
                     dust.scale = Main.rand.NextFloat(1.2f, 1.5f);
                     dust.noGravity = true;
 
-                    dust = Dust.NewDustPerfect(beamEndPosition, 269);
+                    dust = Dust.NewDustPerfect(beamEndPosition, DustID.Sandnado);
                     dust.velocity = (i / 75f * MathHelper.TwoPi).ToRotationVector2().RotatedByRandom(0.2f) * new Vector2(16f, 11f) * 1.3f;
                     dust.scale = Main.rand.NextFloat(1.4f, 1.75f);
                     dust.noGravity = true;

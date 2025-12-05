@@ -8,6 +8,7 @@ using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.DataStructures;
 using Terraria.Graphics.Shaders;
+using Terraria.ID;
 using Terraria.ModLoader;
 
 namespace CalamityMod.CalPlayer.Dashes
@@ -50,7 +51,7 @@ namespace CalamityMod.CalPlayer.Dashes
                 if (hFlameDust.type == 180)
                     hFlameDust.scale = Main.rand.NextFloat(1.6f, 2.2f);
 
-                Dust dust = Dust.NewDustPerfect(player.Center + Main.rand.NextVector2Circular(6, 6) - player.velocity * 2, 228);
+                Dust dust = Dust.NewDustPerfect(player.Center + Main.rand.NextVector2Circular(6, 6) - player.velocity * 2, DustID.GoldFlame);
                 dust.velocity = -player.velocity * Main.rand.NextFloat(0.6f, 1.4f);
                 dust.scale = Main.rand.NextFloat(0.9f, 1.4f);
                 dust.noGravity = true;

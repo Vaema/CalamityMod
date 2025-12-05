@@ -135,7 +135,7 @@ namespace CalamityMod.CalPlayer.DrawLayers
                 drawInfo.itemColor = drawInfo.itemColor.MultiplyRGBA(new Color(Vector4.Lerp(Vector4.One, new Vector4(0f, 0.12f, 0.16f, 0f), 1f - stealth)));
             }
 
-            bool inUse = drawPlayer.itemAnimation > 0 && heldItem.useStyle != 0;
+            bool inUse = drawPlayer.itemAnimation > 0 && heldItem.useStyle != ItemUseStyleID.None;
             bool visuallyHeld = heldItem.holdStyle != 0 && !drawPlayer.pulley;
             if (!drawPlayer.CanVisuallyHoldItem(heldItem))
                 visuallyHeld = false;

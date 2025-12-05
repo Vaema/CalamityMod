@@ -69,10 +69,10 @@ namespace CalamityMod.Projectiles.Magic
                             for (int i = 0; i < Dusts; i++)
                             {
                                 Vector2 dustVelocity = spinningPoint.RotatedBy(radians * i) * 12.5f;
-                                Dust dust = Dust.NewDustPerfect(player.Center, 262, dustVelocity, 0, default, 0.9f);
+                                Dust dust = Dust.NewDustPerfect(player.Center, DustID.AmberBolt, dustVelocity, 0, default, 0.9f);
                                 dust.noGravity = true;
 
-                                Dust dust2 = Dust.NewDustPerfect(player.Center, 262, dustVelocity * 0.6f, 0, default, 1.2f);
+                                Dust dust2 = Dust.NewDustPerfect(player.Center, DustID.AmberBolt, dustVelocity * 0.6f, 0, default, 1.2f);
                                 dust2.noGravity = true;
                             }
 

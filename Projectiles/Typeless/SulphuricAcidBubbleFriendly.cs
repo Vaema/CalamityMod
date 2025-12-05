@@ -141,7 +141,7 @@ namespace CalamityMod.Projectiles.Typeless
             {
                 for (int k = 0; k < 15; k++)
                 {
-                    Dust dust2 = Dust.NewDustPerfect(Projectile.Center, 303, new Vector2(8, 8).RotatedByRandom(MathHelper.TwoPi) * Main.rand.NextFloat(0.05f, 0.8f));
+                    Dust dust2 = Dust.NewDustPerfect(Projectile.Center, DustID.SteampunkSteam, new Vector2(8, 8).RotatedByRandom(MathHelper.TwoPi) * Main.rand.NextFloat(0.05f, 0.8f));
                     dust2.scale = Main.rand.NextFloat(0.75f, 0.95f);
                     dust2.noGravity = true;
                     dust2.color = Main.rand.NextBool(3) ? Color.YellowGreen : Color.OliveDrab;

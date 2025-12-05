@@ -405,7 +405,7 @@ namespace CalamityMod.Projectiles.Summon
                 // Pumpkins relase a bit of fire from their heads when running after enemies
                 if (!Main.dedServ)
                 {
-                    Dust dust = Dust.NewDustPerfect(Projectile.Center + new Vector2(0, -Projectile.height * 0.5f), 6, new Vector2(0, -4).RotatedBy(0.7f * -Projectile.direction) * Main.rand.NextFloat(0.1f, 0.8f));
+                    Dust dust = Dust.NewDustPerfect(Projectile.Center + new Vector2(0, -Projectile.height * 0.5f), DustID.Torch, new Vector2(0, -4).RotatedBy(0.7f * -Projectile.direction) * Main.rand.NextFloat(0.1f, 0.8f));
                     dust.noGravity = true;
                     dust.scale = Main.rand.NextFloat(0.4f, 0.95f);
                 }

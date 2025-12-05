@@ -93,7 +93,7 @@ namespace CalamityMod.Projectiles.Summon
                 for (int i = 0; i < 20; i++)
                 {
                     Vector2 spawnOffset = Main.rand.NextVector2Unit() * Main.rand.NextFloat(4f, 36f);
-                    Dust slime = Dust.NewDustPerfect(Projectile.Center + spawnOffset, 243);
+                    Dust slime = Dust.NewDustPerfect(Projectile.Center + spawnOffset, DustID.PinkSlime);
                     slime.velocity = spawnOffset.RotatedBy(MathHelper.PiOver2 * Main.rand.NextBool().ToDirectionInt()) * 0.16f;
                     slime.scale = 1.2f;
                 }

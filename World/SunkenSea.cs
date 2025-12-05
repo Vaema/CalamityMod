@@ -463,7 +463,7 @@ namespace CalamityMod.World
 
                         if (canPlaceSand)
                         {
-                            if (Main.tile[X, Y - 1].WallType == 0)
+                            if (Main.tile[X, Y - 1].WallType == WallID.None)
                             {
                                 WorldGen.KillWall(X, Y);
                             }
@@ -777,7 +777,7 @@ namespace CalamityMod.World
 
                             if ((caveNoiseMapWalls + 0.085f) * (caveNoiseMapWalls + 0.085f) > caveCreationThresholdWalls)
                             {
-                                if (t.WallType == 0)
+                                if (t.WallType == WallID.None)
                                     t.WallType = (ushort)ModContent.WallType<UnsafeScarletSeaGrassWall>();
                             }
                             Main.tile[X, Y].Get<LiquidData>().LiquidType = LiquidID.Water;
@@ -1158,7 +1158,7 @@ namespace CalamityMod.World
 
                             if (caveNoiseMapWalls * caveNoiseMapWalls > caveCreationThresholdWalls)
                             {
-                                if (t.WallType == 0)
+                                if (t.WallType == WallID.None)
                                     t.WallType = NavystoneWall;
                             }
 

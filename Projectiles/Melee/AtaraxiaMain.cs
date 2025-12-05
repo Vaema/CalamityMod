@@ -64,7 +64,7 @@ namespace CalamityMod.Projectiles.Melee
             if (time > 8 && Main.rand.NextBool())
             {
                 Vector2 dustvel = -Projectile.velocity;
-                Dust dust = Dust.NewDustPerfect(Projectile.Center, 267, dustvel * Main.rand.NextFloat(0.1f, 1.2f), 0, default, Main.rand.NextFloat(0.7f, 0.9f));
+                Dust dust = Dust.NewDustPerfect(Projectile.Center, DustID.RainbowMk2, dustvel * Main.rand.NextFloat(0.1f, 1.2f), 0, default, Main.rand.NextFloat(0.7f, 0.9f));
                 dust.noGravity = true;
                 dust.color = Color.Lerp(Color.DarkOrchid, Color.IndianRed, Main.rand.NextFloat(0, 1));
             }
@@ -100,7 +100,7 @@ namespace CalamityMod.Projectiles.Melee
             {
                 Vector2 velocity = new Vector2(20, 20).RotatedByRandom(100) * Main.rand.NextFloat(0.3f, 1.2f);
                 float colorRando = Main.rand.NextFloat(0, 1);
-                Dust dust = Dust.NewDustPerfect(Projectile.Center + velocity, 278, velocity * Main.rand.NextFloat(0.2f, 1f));
+                Dust dust = Dust.NewDustPerfect(Projectile.Center + velocity, DustID.FireworksRGB, velocity * Main.rand.NextFloat(0.2f, 1f));
                 dust.noGravity = true;
                 dust.scale = Main.rand.NextFloat(0.3f, 0.65f);
                 dust.color = Color.Lerp(Color.DarkOrchid, Color.IndianRed, colorRando);

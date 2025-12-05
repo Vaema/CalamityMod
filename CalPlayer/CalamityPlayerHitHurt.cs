@@ -239,7 +239,7 @@ namespace CalamityMod.CalPlayer
                 {
                     for (int i = 0; i < 40; i++)
                     {
-                        Dust dust = Dust.NewDustPerfect(Player.Center + Utils.NextVector2Circular(Main.rand, 60f, 90f), 133);
+                        Dust dust = Dust.NewDustPerfect(Player.Center + Utils.NextVector2Circular(Main.rand, 60f, 90f), DustID.Firework_Yellow);
                         dust.velocity = Utils.NextVector2Circular(Main.rand, 4f, 4f);
                         dust.noGravity = true;
                         dust.scale = Main.rand.NextFloat(1.2f, 1.35f);
@@ -1172,7 +1172,7 @@ namespace CalamityMod.CalPlayer
 
                     if (i % 3 == 0)
                     {
-                        Dust dust = Dust.NewDustPerfect(fxPos, 278, dustVel, 0, default, Main.rand.NextFloat(0.75f, 1.1f));
+                        Dust dust = Dust.NewDustPerfect(fxPos, DustID.FireworksRGB, dustVel, 0, default, Main.rand.NextFloat(0.75f, 1.1f));
                         dust.noGravity = true;
                         dust.color = Color.Gold;
                         dust.noGravity = false;
@@ -1408,7 +1408,7 @@ namespace CalamityMod.CalPlayer
                 {
                     Particle spark2 = new LineParticle(Player.Center, new Vector2(8, 8).RotatedByRandom(100) * Main.rand.NextFloat(0.5f, 1f), false, 20, Main.rand.NextFloat(0.5f, 1.1f), Main.rand.NextBool() ? Color.Coral : Color.DarkTurquoise);
                     GeneralParticleHandler.SpawnParticle(spark2);
-                    Dust dust2 = Dust.NewDustPerfect(Player.Center, 267, new Vector2(8, 8).RotatedByRandom(100) * Main.rand.NextFloat(0.5f, 1f));
+                    Dust dust2 = Dust.NewDustPerfect(Player.Center, DustID.RainbowMk2, new Vector2(8, 8).RotatedByRandom(100) * Main.rand.NextFloat(0.5f, 1f));
                     dust2.scale = Main.rand.NextFloat(0.75f, 1.2f);
                     dust2.noGravity = true;
                     dust2.color = Main.rand.NextBool() ? Color.Coral : Color.DarkTurquoise;
@@ -2620,7 +2620,7 @@ namespace CalamityMod.CalPlayer
             }
             if (Main.myPlayer == Player.whoAmI)
             {
-                Player.trashItem.SetDefaults(0, false);
+                Player.trashItem.SetDefaults(ItemID.None, false);
                 if (Player.difficulty == PlayerDifficultyID.SoftCore || Player.difficulty == PlayerDifficultyID.Creative)
                 {
                     for (int i = 0; i < 59; i++)
@@ -2640,7 +2640,7 @@ namespace CalamityMod.CalPlayer
                             {
                                 NetMessage.SendData(MessageID.SyncItem, -1, -1, null, droppedLargeGem, 0f, 0f, 0f, 0, 0, 0);
                             }
-                            Player.inventory[i].SetDefaults(0, false);
+                            Player.inventory[i].SetDefaults(ItemID.None, false);
                         }
                     }
                 }

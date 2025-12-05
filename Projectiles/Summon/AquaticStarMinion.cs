@@ -58,7 +58,7 @@ namespace CalamityMod.Projectiles.Summon
                     float angle = MathHelper.TwoPi / 45f * i;
                     Vector2 direction = angle.ToRotationVector2() * 10f;
 
-                    Dust spawnDust = Dust.NewDustPerfect(Projectile.Center, 33, direction);
+                    Dust spawnDust = Dust.NewDustPerfect(Projectile.Center, DustID.Water, direction);
                     spawnDust.noGravity = true;
                 }
                 CheckForSpawning++;

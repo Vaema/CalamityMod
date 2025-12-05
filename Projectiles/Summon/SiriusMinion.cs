@@ -88,7 +88,7 @@ namespace CalamityMod.Projectiles.Summon
                 {
                     float angle = MathHelper.TwoPi / dustAmt * d;
                     Vector2 dustVelocity = angle.ToRotationVector2() * 20f;
-                    Dust spawnDust = Dust.NewDustPerfect(Owner.Center - Vector2.UnitY * 60f, 20, dustVelocity);
+                    Dust spawnDust = Dust.NewDustPerfect(Owner.Center - Vector2.UnitY * 60f, DustID.PurificationPowder, dustVelocity);
                     spawnDust.noGravity = true;
                 }
                 CheckForSpawning = true;
@@ -107,7 +107,7 @@ namespace CalamityMod.Projectiles.Summon
                     {
                         float angle = MathHelper.TwoPi / dustAmt * d;
                         Vector2 dustVelocity = angle.ToRotationVector2() * 20f;
-                        Dust spawnDust = Dust.NewDustPerfect(Projectile.Center, 20, dustVelocity);
+                        Dust spawnDust = Dust.NewDustPerfect(Projectile.Center, DustID.PurificationPowder, dustVelocity);
                         spawnDust.noGravity = true;
                     }
 

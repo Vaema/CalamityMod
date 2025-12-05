@@ -59,7 +59,7 @@ namespace CalamityMod.Projectiles.Melee
             }
             if (Projectile.timeLeft > 60)
             {
-                Dust disgustingtrail = Dust.NewDustPerfect(Projectile.Center - Projectile.velocity, 119, -Projectile.velocity * Main.rand.NextFloat(0.2f, 0.4f));
+                Dust disgustingtrail = Dust.NewDustPerfect(Projectile.Center - Projectile.velocity, DustID.Ice_Pink, -Projectile.velocity * Main.rand.NextFloat(0.2f, 0.4f));
                 disgustingtrail.noGravity = true;
                 disgustingtrail.scale = 1.2f;
             }

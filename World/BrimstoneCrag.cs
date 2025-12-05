@@ -295,7 +295,7 @@ namespace CalamityMod.World
                                 Tile lavaTile = Main.tile[i, j];
                                 Tile lavaTileDown = Main.tile[i, j + 1];
 
-                                if (lavaTile.WallType == 0 && lavaTileDown.WallType == 0)
+                                if (lavaTile.WallType == WallID.None && lavaTileDown.WallType == WallID.None)
                                 {
                                     lavaTile.LiquidAmount = 0;
                                 }

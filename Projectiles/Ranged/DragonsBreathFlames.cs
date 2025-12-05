@@ -6,6 +6,7 @@ using CalamityMod.Particles;
 using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.Audio;
+using Terraria.ID;
 using Terraria.ModLoader;
 
 namespace CalamityMod.Projectiles.Ranged
@@ -185,7 +186,7 @@ namespace CalamityMod.Projectiles.Ranged
                         }
                         for (int i = 0; i <= 3; i++)
                         {
-                            Dust dust = Dust.NewDustPerfect(Projectile.Center - Projectile.velocity * 0.5f, 278, Projectile.velocity.RotatedByRandom(100) * Main.rand.NextFloat(2.5f, 8.5f), 0, default, Main.rand.NextFloat(0.5f, 1.1f));
+                            Dust dust = Dust.NewDustPerfect(Projectile.Center - Projectile.velocity * 0.5f, DustID.FireworksRGB, Projectile.velocity.RotatedByRandom(100) * Main.rand.NextFloat(2.5f, 8.5f), 0, default, Main.rand.NextFloat(0.5f, 1.1f));
                             dust.noGravity = true;
                             dust.color = Main.rand.NextBool() ? Color.Orange : Color.OrangeRed;
                         }
@@ -220,7 +221,7 @@ namespace CalamityMod.Projectiles.Ranged
                 }
                 for (int i = 0; i <= 2; i++)
                 {
-                    Dust dust = Dust.NewDustPerfect(Projectile.Center - Projectile.velocity * 0.5f, 278, Projectile.velocity.RotatedByRandom(MathHelper.ToRadians(15f)) * Main.rand.NextFloat(0.5f, 3.5f), 0, default, Main.rand.NextFloat(0.8f, 1.5f));
+                    Dust dust = Dust.NewDustPerfect(Projectile.Center - Projectile.velocity * 0.5f, DustID.FireworksRGB, Projectile.velocity.RotatedByRandom(MathHelper.ToRadians(15f)) * Main.rand.NextFloat(0.5f, 3.5f), 0, default, Main.rand.NextFloat(0.8f, 1.5f));
                     dust.noGravity = true;
                     dust.color = Main.rand.NextBool() ? Color.Orange : Color.OrangeRed;
                 }

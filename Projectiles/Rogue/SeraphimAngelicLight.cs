@@ -1,6 +1,7 @@
 ﻿using System;
 using Microsoft.Xna.Framework;
 using Terraria;
+using Terraria.ID;
 using Terraria.ModLoader;
 
 namespace CalamityMod.Projectiles.Rogue
@@ -40,7 +41,7 @@ namespace CalamityMod.Projectiles.Rogue
             // Release a puff of golden light dust.
             for (int i = 0; i < 15; i++)
             {
-                Dust light = Dust.NewDustPerfect(Projectile.Center, 267);
+                Dust light = Dust.NewDustPerfect(Projectile.Center, DustID.RainbowMk2);
                 light.color = Color.Lerp(Color.Gold, Color.White, Main.rand.NextFloat(0.5f, 1f));
                 light.velocity = (MathHelper.TwoPi * i / 16f).ToRotationVector2() * 5f;
                 light.scale = 1.35f;

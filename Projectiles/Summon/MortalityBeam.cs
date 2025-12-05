@@ -41,7 +41,7 @@ namespace CalamityMod.Projectiles.Summon
                     float offset = (float)Math.Sin(Time / 45f * MathHelper.TwoPi) * 10f * i;
                     Vector2 rotatedOffset = new Vector2(offset, 2f).RotatedBy(Projectile.velocity.ToRotation() + MathHelper.PiOver2);
 
-                    Dust rainbowDust = Dust.NewDustPerfect(Projectile.Center + rotatedOffset, 261);
+                    Dust rainbowDust = Dust.NewDustPerfect(Projectile.Center + rotatedOffset, DustID.AncientLight);
                     rainbowDust.color = Main.hslToRgb(Main.rand.NextFloat(), 0.9f, 0.5f);
                     rainbowDust.velocity = Vector2.Zero;
                     rainbowDust.scale = 1.5f;

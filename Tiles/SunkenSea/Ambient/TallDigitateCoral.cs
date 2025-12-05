@@ -63,7 +63,7 @@ namespace CalamityMod.Tiles.SunkenSea.Ambient
             TileObjectData.newTile.DrawYOffset = 3;
             TileObjectData.addTile(Type);
             AddMapEntry(new Color(48, 201, 214));
-            DustType = 96;
+            DustType = DustID.BlueMoss;
             HitSound = SoundID.Dig;
         }
 
@@ -99,7 +99,7 @@ namespace CalamityMod.Tiles.SunkenSea.Ambient
             TileObjectData.newTile.DrawYOffset = 3;
             TileObjectData.addTile(Type);
             AddMapEntry(new Color(48, 201, 214));
-            DustType = 96;
+            DustType = DustID.BlueMoss;
             HitSound = SoundID.Dig;
         }
 
@@ -135,7 +135,7 @@ namespace CalamityMod.Tiles.SunkenSea.Ambient
             TileObjectData.newTile.DrawYOffset = 3;
             TileObjectData.addTile(Type);
             AddMapEntry(new Color(48, 201, 214));
-            DustType = 96;
+            DustType = DustID.BlueMoss;
             HitSound = SoundID.Dig;
         }
 

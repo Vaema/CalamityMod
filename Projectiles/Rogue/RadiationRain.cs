@@ -86,7 +86,7 @@ namespace CalamityMod.Projectiles.Rogue
                 }
                 if (time % 4 == 0)
                 {
-                    Dust c = Dust.NewDustPerfect(Projectile.Center + Main.rand.NextVector2Circular(70, 70), 267);
+                    Dust c = Dust.NewDustPerfect(Projectile.Center + Main.rand.NextVector2Circular(70, 70), DustID.RainbowMk2);
                     c.velocity = Projectile.velocity * Main.rand.NextFloat(0.5f, 3f);
                     c.scale = Main.rand.NextFloat(0.45f, 0.75f);
                     c.noGravity = true;

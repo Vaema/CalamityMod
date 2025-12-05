@@ -24,7 +24,7 @@ namespace CalamityMod.Tiles.DraedonStructures.CagedLights
             RegisterItemDrop(ModContent.ItemType<CagedBiolightItem>());
 
             HitSound = CommonCalamitySounds.PlatingMine;
-            DustType = 89;
+            DustType = DustID.GemEmerald;
 
             AddToArray(ref TileID.Sets.RoomNeeds.CountsAsTorch);
             AddMapEntry(new Color(48, 201, 214), CalamityUtils.GetItemName<CagedLablightItem>());

@@ -166,7 +166,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.MiniBosses
             {
                 NPC.spriteDirection = -(int)NPC.ai[0];
 
-                if (!Main.npc[(int)NPC.ai[1]].active || Main.npc[(int)NPC.ai[1]].aiStyle != 58)
+                if (!Main.npc[(int)NPC.ai[1]].active || Main.npc[(int)NPC.ai[1]].aiStyle != NPCAIStyleID.Pumpking)
                 {
                     NPC.ai[2] += 10f;
                     if (NPC.ai[2] > 50f || !Main.dedServ)

@@ -1,5 +1,6 @@
 ﻿using Microsoft.Xna.Framework;
 using Terraria;
+using Terraria.ID;
 using Terraria.ModLoader;
 
 namespace CalamityMod.Walls
@@ -11,7 +12,7 @@ namespace CalamityMod.Walls
         public override void SetStaticDefaults()
         {
             Main.wallHouse[Type] = true;
-            DustType = 24;
+            DustType = DustID.CorruptionThorns;
 
             this.AddMapEntryWithWaterVisibility(new Color(74, 71, 84));
         }

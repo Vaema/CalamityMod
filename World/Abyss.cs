@@ -559,7 +559,7 @@ namespace CalamityMod.World
                         }
                     }
 
-                    if (!tile.HasTile && tile.WallType > 0)
+                    if (!tile.HasTile && tile.WallType > WallID.None)
                     {
                         //fill up any air pockets with water
                         tile.Get<LiquidData>().LiquidType = LiquidID.Water;
@@ -996,7 +996,7 @@ namespace CalamityMod.World
             while (islandXOffsetPos < islandPositionXAgain)
             {
                 int islandYOffsetPos = islandPositionY;
-                while ((!Main.tile[islandXOffsetPos, islandYOffsetPos].HasTile || Main.tile[islandXOffsetPos, islandYOffsetPos].TileType != 0) && islandXOffsetPos < islandPositionXAgain)
+                while ((!Main.tile[islandXOffsetPos, islandYOffsetPos].HasTile || Main.tile[islandXOffsetPos, islandYOffsetPos].TileType != TileID.Dirt) && islandXOffsetPos < islandPositionXAgain)
                 {
                     islandYOffsetPos--;
                     if (islandYOffsetPos < islandPositionYAgain)

@@ -94,7 +94,7 @@ namespace CalamityMod.Projectiles.Rogue
             for (int i = 0; i <= 15; i++)
             {
                 Vector2 sparkVelocity = Projectile.velocity.RotatedByRandom(0.4f) * Main.rand.NextFloat(0.6f, 1.5f);
-                Dust dust = Dust.NewDustPerfect(Projectile.Center + Projectile.velocity, 272, sparkVelocity.RotatedByRandom(0.1f), 0, default, Main.rand.NextFloat(1.2f, 1.5f));
+                Dust dust = Dust.NewDustPerfect(Projectile.Center + Projectile.velocity, DustID.WitherLightning, sparkVelocity.RotatedByRandom(0.1f), 0, default, Main.rand.NextFloat(1.2f, 1.5f));
                 dust.noGravity = true;
 
                 int sparkLifetime = Main.rand.Next(43, 48);

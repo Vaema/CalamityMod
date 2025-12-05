@@ -88,7 +88,7 @@ IL_6899:
 
         public override bool PreAI()
         {
-            Projectile.type = 319; //tricks AI 26 into thinking this is a black cat, makes it act like black cat
+            Projectile.type = ProjectileID.BlackCat; //tricks AI 26 into thinking this is a black cat, makes it act like black cat
             Player player = Main.player[Projectile.owner];
             player.blackCat = false; //ensure doesnt interact weird with actual black cat
             return true;

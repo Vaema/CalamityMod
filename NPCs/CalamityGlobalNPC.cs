@@ -6437,7 +6437,7 @@ namespace CalamityMod.NPCs
                                 player.inventory[item].stack--;
                                 if (player.inventory[item].stack <= 0)
                                 {
-                                    player.inventory[item].SetDefaults(0, false);
+                                    player.inventory[item].SetDefaults(ItemID.None, false);
                                 }
                                 break;
                             }

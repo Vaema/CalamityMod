@@ -26,7 +26,7 @@ namespace CalamityMod.Tiles.Abyss
             CalamityUtils.MergeWithGeneral(Type);
             CalamityUtils.MergeWithAbyss(Type);
 
-            DustType = 2;
+            DustType = DustID.Grass;
             AddMapEntry(new Color(84, 102, 39), CalamityUtils.GetItemName<Items.Placeables.Abyss.PlantyMush>());
             HitSound = MineSound;
 

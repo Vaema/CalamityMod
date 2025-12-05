@@ -125,7 +125,7 @@ namespace CalamityMod.Items.Weapons.Ranged
                 }
                 for (int i = 0; i <= 10; i++)
                 {
-                    Dust dust = Dust.NewDustPerfect(nuzzlePos, 303, velocity.RotatedByRandom(MathHelper.ToRadians(7f)) * Main.rand.NextFloat(0.05f, 0.4f), 0, default, Main.rand.NextFloat(0.9f, 1.2f));
+                    Dust dust = Dust.NewDustPerfect(nuzzlePos, DustID.SteampunkSteam, velocity.RotatedByRandom(MathHelper.ToRadians(7f)) * Main.rand.NextFloat(0.05f, 0.4f), 0, default, Main.rand.NextFloat(0.9f, 1.2f));
                     dust.noGravity = true;
                     dust.alpha = 150;
                 }

@@ -27,7 +27,7 @@ namespace CalamityMod.Tiles.FurnitureWulfrum
             CalamityUtils.MergeWithGeneral(Type);
             CalamityUtils.MergeDecorativeTiles(Type);
 
-            DustType = 108;
+            DustType = DustID.RainCloud;
             AddMapEntry(new Color(194, 255, 67));
             HitSound = SoundID.Shatter;
         }

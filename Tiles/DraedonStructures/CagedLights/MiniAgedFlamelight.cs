@@ -28,7 +28,7 @@ namespace CalamityMod.Tiles.DraedonStructures.CagedLights
             Main.tileObsidianKill[Type] = false;
 
             HitSound = CommonCalamitySounds.PlatingMine;
-            DustType = 60;
+            DustType = DustID.RedTorch;
 
             AddToArray(ref TileID.Sets.RoomNeeds.CountsAsTorch);
             AddMapEntry(new Color(48, 201, 214), CalamityUtils.GetItemName<MiniAgedFlamelightItem>());

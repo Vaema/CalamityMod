@@ -20,7 +20,7 @@ namespace CalamityMod.Tiles.Abyss
             TileMaterials.SetForTileId(Type, TileMaterials._materialsByName["Plant"]);
             AddMapEntry(new Color(0, 50, 0));
             HitSound = SoundID.Grass;
-            DustType = 2;
+            DustType = DustID.Grass;
         }
 
         public override bool PreDraw(int i, int j, SpriteBatch spriteBatch)

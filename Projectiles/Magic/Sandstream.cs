@@ -2,6 +2,7 @@
 using CalamityMod.Particles;
 using Microsoft.Xna.Framework;
 using Terraria;
+using Terraria.ID;
 using Terraria.ModLoader;
 
 namespace CalamityMod.Projectiles.Magic
@@ -34,7 +35,7 @@ namespace CalamityMod.Projectiles.Magic
             {
                 for (int i = 0; i <= 10; i++)
                 {
-                    Dust dust = Dust.NewDustPerfect(Projectile.Center, 313, Projectile.velocity.RotatedByRandom(MathHelper.ToRadians(35f)) * Main.rand.NextFloat(0.2f, 1.2f), 0, default, Main.rand.NextFloat(1.3f, 1.7f));
+                    Dust dust = Dust.NewDustPerfect(Projectile.Center, DustID.DirtSpray, Projectile.velocity.RotatedByRandom(MathHelper.ToRadians(35f)) * Main.rand.NextFloat(0.2f, 1.2f), 0, default, Main.rand.NextFloat(1.3f, 1.7f));
                     dust.noGravity = true;
                     dust.scale = Main.rand.NextFloat(1.7f, 2.3f);
                 }
@@ -48,7 +49,7 @@ namespace CalamityMod.Projectiles.Magic
                     dust.velocity = new Vector2(0.5f, 0.5f).RotatedByRandom(100);
                     dust.scale = Main.rand.NextFloat(0.3f, 1.3f);
                 }
-                Dust dust2 = Dust.NewDustPerfect(Projectile.Center, 313);
+                Dust dust2 = Dust.NewDustPerfect(Projectile.Center, DustID.DirtSpray);
                 dust2.noGravity = true;
                 dust2.velocity = -Projectile.velocity * Main.rand.NextFloat(0.2f, 0.5f);
                 dust2.scale = Main.rand.NextFloat(0.3f, 1.3f);

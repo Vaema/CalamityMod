@@ -1,6 +1,7 @@
 ﻿using System;
 using Microsoft.Xna.Framework;
 using Terraria;
+using Terraria.ID;
 using Terraria.ModLoader;
 
 namespace CalamityMod.Particles
@@ -56,7 +57,7 @@ namespace CalamityMod.Particles
                     if (Main.rand.NextBool(7))
                     {
                         float velocityMultiplier = MathHelper.Lerp(0.05f, 1f, MathHelper.Clamp((distanceToOwner - 10f) / 40f, 0f, 1f));
-                        Dust chust = Dust.NewDustPerfect(Position, 15, Velocity * Main.rand.NextFloat(0.7f, 1.2f) * velocityMultiplier, Alpha: 100, Scale: Main.rand.NextFloat(1.2f, 1.8f));
+                        Dust chust = Dust.NewDustPerfect(Position, DustID.MagicMirror, Velocity * Main.rand.NextFloat(0.7f, 1.2f) * velocityMultiplier, Alpha: 100, Scale: Main.rand.NextFloat(1.2f, 1.8f));
                         chust.noGravity = true;
                         chust.noLight = true;
                     }

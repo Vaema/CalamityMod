@@ -28,7 +28,7 @@ namespace CalamityMod.Tiles
             Main.tileBlockLight[Type] = true;
 
             HitSound = SoundID.Item52;
-            DustType = 83;
+            DustType = DustID.Tungsten;
             AddMapEntry(new Color(128, 90, 77));
             Main.tileLighted[Type] = true;
         }

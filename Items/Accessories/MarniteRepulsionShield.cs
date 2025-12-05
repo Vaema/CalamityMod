@@ -117,7 +117,7 @@ namespace CalamityMod.Items.Accessories
 
                     for (int i = 0; i < 5; i++)
                     {
-                        Dust dust = Dust.NewDustPerfect(dustOrigin, 229, dustVelocity, 120, Scale: Main.rand.NextFloat(0.6f, 1f));
+                        Dust dust = Dust.NewDustPerfect(dustOrigin, DustID.Vortex, dustVelocity, 120, Scale: Main.rand.NextFloat(0.6f, 1f));
                         dust.noGravity = true;
                         dustOrigin += dustOriginOffset;
                     }

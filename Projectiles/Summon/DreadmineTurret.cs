@@ -77,7 +77,7 @@ namespace CalamityMod.Projectiles.Summon
                                 int tileX = (int)center.X / 16;
                                 int tileY = (int)center.Y / 16;
                                 bool canSpawnMine = false;
-                                if (Main.rand.NextBool(3) && Main.tile[tileX, tileY] != null && Main.tile[tileX, tileY].WallType > 0)
+                                if (Main.rand.NextBool(3) && Main.tile[tileX, tileY] != null && Main.tile[tileX, tileY].WallType > WallID.None)
                                 {
                                     canSpawnMine = true;
                                 }

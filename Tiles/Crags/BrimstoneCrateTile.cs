@@ -2,6 +2,7 @@
 using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.DataStructures;
+using Terraria.ID;
 using Terraria.Localization;
 using Terraria.ModLoader;
 using Terraria.ObjectData;
@@ -23,7 +24,7 @@ namespace CalamityMod.Tiles.Crags
             TileObjectData.newTile.CopyFrom(TileObjectData.Style2x2);
             TileObjectData.addTile(Type);
             AddMapEntry(new Color(128, 0, 0), CalamityUtils.GetItemName<BrimstoneCrate>()); //Maroon
-            DustType = 60;
+            DustType = DustID.RedTorch;
         }
 
         public override void NumDust(int i, int j, bool fail, ref int num)

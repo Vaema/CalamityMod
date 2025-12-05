@@ -23,7 +23,7 @@ namespace CalamityMod.Tiles.SunkenSea.Ambient
             TileObjectData.newTile.RandomStyleRange = 3;
             TileObjectData.newTile.DrawYOffset = 2;
             TileObjectData.addTile(Type);
-            DustType = 253;
+            DustType = DustID.TsunamiInABottle;
             AddMapEntry(new Color(31, 92, 114));
 
             base.SetStaticDefaults();

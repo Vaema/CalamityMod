@@ -7,6 +7,7 @@ using Microsoft.Xna.Framework.Graphics;
 using ReLogic.Content;
 using Terraria;
 using Terraria.Audio;
+using Terraria.ID;
 using Terraria.ModLoader;
 using static System.MathF;
 using static CalamityMod.Items.Weapons.Summon.LiliesOfFinality;
@@ -472,7 +473,7 @@ namespace CalamityMod.Projectiles.Summon
             bool behindBackWall = false;
             Tile tileSafely = Framing.GetTileSafely(Projectile.Center);
             if (tileSafely != null)
-                behindBackWall = tileSafely.WallType > 0;
+                behindBackWall = tileSafely.WallType > WallID.None;
             if (behindBackWall)
                 storming = false;
 

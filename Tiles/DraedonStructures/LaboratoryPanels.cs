@@ -20,7 +20,7 @@ namespace CalamityMod.Tiles.DraedonStructures
             CalamityUtils.SetMerge(Type, ModContent.TileType<HazardChevronPanels>());
 
             HitSound = CommonCalamitySounds.PlatingMine;
-            DustType = 109;
+            DustType = DustID.Asphalt;
             MinPick = 30;
             AddMapEntry(new Color(36, 35, 37));
 

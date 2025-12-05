@@ -29,7 +29,7 @@ namespace CalamityMod.Tiles.DraedonStructures.CagedLights
             RegisterItemDrop(ModContent.ItemType<AgedCinderlightItem>());
 
             HitSound = CommonCalamitySounds.PlatingMine;
-            DustType = 6;
+            DustType = DustID.Torch;
 
             AddToArray(ref TileID.Sets.RoomNeeds.CountsAsTorch);
             AddMapEntry(new Color(48, 201, 214), CalamityUtils.GetItemName<CagedLablightItem>());

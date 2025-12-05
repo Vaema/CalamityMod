@@ -1,6 +1,7 @@
 ﻿using CalamityMod.Items.Fishing.SunkenSeaCatches;
 using Microsoft.Xna.Framework;
 using Terraria;
+using Terraria.ID;
 using Terraria.ModLoader;
 using Terraria.ObjectData;
 
@@ -22,7 +23,7 @@ namespace CalamityMod.Tiles.SunkenSea
             TileObjectData.newTile.CopyFrom(TileObjectData.Style2x2);
             TileObjectData.addTile(Type);
             AddMapEntry(new Color(106, 218, 230), CalamityUtils.GetItemName<EutrophicCrate>());
-            DustType = 253;
+            DustType = DustID.TsunamiInABottle;
         }
 
         public override void NumDust(int i, int j, bool fail, ref int num)

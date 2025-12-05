@@ -145,7 +145,7 @@ namespace CalamityMod.Projectiles.Melee
                         Vector2 particleVel = new Vector2(0, 7 * -Projectile.ai[1] * Owner.direction).RotatedBy(FinalRotation + MathHelper.ToRadians(-45));
                         Vector2 particlePos = Owner.Center + (new Vector2(Main.rand.Next(10, 90), 0).RotatedBy(FinalRotation + MathHelper.ToRadians(-45)));
 
-                        Dust dust = Dust.NewDustPerfect(particlePos, 79);
+                        Dust dust = Dust.NewDustPerfect(particlePos, DustID.Pearlwood);
                         dust.noGravity = true;
                         dust.scale = Main.rand.NextFloat(0.85f, 1.3f);
                         dust.velocity = -particleVel.RotatedByRandom(0.2f);
