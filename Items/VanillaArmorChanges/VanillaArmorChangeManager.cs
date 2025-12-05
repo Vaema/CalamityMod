@@ -9,16 +9,7 @@ namespace CalamityMod.Items.VanillaArmorChanges
 {
     public class VanillaArmorChangeManager : ModSystem
     {
-        internal static List<VanillaArmorChange> ArmorChanges;
-
-        public override void OnModLoad()
-        {
-            ArmorChanges = [];
-            ReflectionHelper.IterateCalamityTypes<VanillaArmorChange>(action: type =>
-            {
-                ArmorChanges.Add((VanillaArmorChange)Activator.CreateInstance(type));
-            });
-        }
+        internal static List<VanillaArmorChange> ArmorChanges = [];
 
         public override void Unload()
         {
