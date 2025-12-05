@@ -12,16 +12,7 @@ namespace CalamityMod
 {
     public static partial class CalamityUtils
     {
-        // Cached for efficiency purposes.
-        private const BindingFlags Bind_Private_Instance = BindingFlags.NonPublic | BindingFlags.Instance;
-        private static readonly FastField<SpriteBatch, bool> Fld_BeginCalled = new("beginCalled", Bind_Private_Instance);
-        private static readonly FastField<SpriteBatch, SpriteSortMode> Fld_SortMode = new("sortMode", Bind_Private_Instance);
-        private static readonly FastField<SpriteBatch, BlendState> Fld_BlendState = new("blendState", Bind_Private_Instance);
-        private static readonly FastField<SpriteBatch, SamplerState> Fld_SamplerState = new("samplerState", Bind_Private_Instance);
-        private static readonly FastField<SpriteBatch, DepthStencilState> Fld_DepthStencilState = new("depthStencilState", Bind_Private_Instance);
-        private static readonly FastField<SpriteBatch, RasterizerState> Fld_RasterizerState = new("rasterizerState", Bind_Private_Instance);
-        private static readonly FastField<SpriteBatch, Matrix> Fld_TransformMatrix = new("transformMatrix", Bind_Private_Instance);
-        private static readonly FastField<SpriteBatch, Effect> Fld_CustomEffect = new("customEffect", Bind_Private_Instance);
+
 
         /// <summary>
         /// Sets a <see cref="SpriteBatch"/>'s <see cref="BlendState"/> arbitrarily.
@@ -40,23 +31,24 @@ namespace CalamityMod
         /// <param name="spriteBatch">The sprite batch to check.</param>
         public static bool HasBeginBeenCalled(this SpriteBatch spriteBatch)
         {
-            return Fld_BeginCalled.Get(spriteBatch);
+            return spriteBatch.beginCalled;
         }
 
-        public static void SafeAction(this SpriteBatch spriteBatch, Action action)
+        [Obsolete("Please don't use this if possible.")]
+        internal static void SafeAction(this SpriteBatch spriteBatch, Action action)
         {
             if (spriteBatch is null)
                 return;
 
             if (spriteBatch.HasBeginBeenCalled())
             {
-                var oldSort = Fld_SortMode.Get(spriteBatch);
-                var oldBlend = Fld_BlendState.Get(spriteBatch);
-                var oldSampler = Fld_SamplerState.Get(spriteBatch);
-                var oldDepths = Fld_DepthStencilState.Get(spriteBatch);
-                var oldRaster = Fld_RasterizerState.Get(spriteBatch);
-                var oldEffect = Fld_CustomEffect.Get(spriteBatch);
-                var oldMtx = Fld_TransformMatrix.Get(spriteBatch);
+                var oldSort = spriteBatch.sortMode;
+                var oldBlend = spriteBatch.blendState;
+                var oldSampler = spriteBatch.samplerState;
+                var oldDepths = spriteBatch.depthStencilState;
+                var oldRaster = spriteBatch.rasterizerState;
+                var oldEffect = spriteBatch.customEffect;
+                var oldMtx = spriteBatch.transformMatrix;
                 try
                 {
                     action?.Invoke();
