@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using MonoMod.Cil;
 using Terraria;
@@ -16,14 +15,13 @@ namespace CalamityMod.Prefixes.VanillaPrefixChanges
 
         public override void Load()
         {
-            ReflectionHelper.IterateCalamityTypes<VanillaPrefixChange>(includeBaseType: false, type =>
-            {
-                var changeToAdd = (VanillaPrefixChange)Activator.CreateInstance(type);
-                PrefixChanges[changeToAdd.TargetPrefix] = changeToAdd;
-            });
-
             On_Player.GrantPrefixBenefits += OnGrantBenefits;
             IL_Item.Prefix += VanillaPrefixValueOverride;
+        }
+
+        public override void Unload()
+        {
+            PrefixChanges.Clear();
         }
 
         private void VanillaPrefixValueOverride(ILContext il)
