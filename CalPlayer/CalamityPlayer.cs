@@ -4194,7 +4194,7 @@ namespace CalamityMod.CalPlayer
 
                     // Play sound a bit early so it goes in time with the fall
                     if (gSabatonHotkeyFallWindup == 5 && !gSabatonFalling)
-                        SoundEngine.PlaySound(new("CalamityMod/Sounds/Custom/GravistarCharge") { Volume = 0.3f });
+                        SoundEngine.PlaySound(new SoundStyle("CalamityMod/Sounds/Custom/GravistarCharge") { Volume = 0.3f });
 
                     // 0.5 seconds passed, falling time
                     if (gSabatonHotkeyFallWindup == 20)

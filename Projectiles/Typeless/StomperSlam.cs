@@ -42,7 +42,7 @@ namespace CalamityMod.Projectiles.Typeless
                 damageScaleFromFall = Projectile.ai[0] / 40;
                 Projectile.damage = (int)(300f * damageScaleFromFall + 300f);
 
-                SoundEngine.PlaySound(new("CalamityMod/Sounds/Custom/GravistarSlam") { Volume = 0.75f }, Projectile.Center);
+                SoundEngine.PlaySound(new SoundStyle("CalamityMod/Sounds/Custom/GravistarSlam") { Volume = 0.75f }, Projectile.Center);
 
                 //Spawn particles, but also increase the count to fill more of the circle the bigger it is
                 int particleCount = (int)(10 * scaleFromFall);

@@ -142,7 +142,7 @@ namespace CalamityMod.Projectiles.Magic
                         currentRecoilRotation -= RecoilRotationAmount;
 
                         // SFX
-                        SoundEngine.PlaySound(new("CalamityMod/Sounds/Item/UnstableCastersGauntlet/VisNeedleFire") { Volume = 0.4f, PitchVariance = 0.15f }, Projectile.Center);
+                        SoundEngine.PlaySound(new SoundStyle("CalamityMod/Sounds/Item/UnstableCastersGauntlet/VisNeedleFire") { Volume = 0.4f, PitchVariance = 0.15f }, Projectile.Center);
 
                         // Pulse VFX
                         Particle shootPulse = new DirectionalPulseRing(GunTipPosition, Projectile.velocity.SafeNormalize(Vector2.UnitY) * 5f, Color.DarkMagenta * 4f, new Vector2(0.4f, 0.8f), Projectile.velocity.ToRotation(), 0.07f, 0.3f, 16);
@@ -171,7 +171,7 @@ namespace CalamityMod.Projectiles.Magic
                 {
                     calPlayer.unstableCastersGauntletVis -= 12f;
 
-                    SoundEngine.PlaySound(new("CalamityMod/Sounds/Item/MagicRockSound") { Volume = 0.4f, PitchVariance = 0.05f }, Projectile.Center);
+                    SoundEngine.PlaySound(new SoundStyle("CalamityMod/Sounds/Item/MagicRockSound") { Volume = 0.4f, PitchVariance = 0.05f }, Projectile.Center);
                     if (Main.myPlayer == Projectile.owner)
                         Projectile.NewProjectile(Projectile.GetSource_FromThis(), Owner.Center, Vector2.Zero, ModContent.ProjectileType<SigilSet>(), Projectile.damage, Projectile.knockBack, Projectile.owner);
                     shootingTimer = 0f;

@@ -131,7 +131,7 @@ namespace CalamityMod.Projectiles.Melee
             {
                 Projectile.extraUpdates = 3;
 
-                SoundEngine.PlaySound(new("CalamityMod/Sounds/Item/VividClarityBeamAppear") { Volume = 0.65f, PitchVariance = 0.3f }, Projectile.Center);
+                SoundEngine.PlaySound(new SoundStyle("CalamityMod/Sounds/Item/VividClarityBeamAppear") { Volume = 0.65f, PitchVariance = 0.3f }, Projectile.Center);
                 SoundEngine.PlaySound(SoundID.ShimmerWeak1 with { Pitch = 0.15f }, Projectile.Center);
 
                 Particle pulse = new DirectionalPulseRing(Projectile.Center, Vector2.Zero, Color.Aqua, new Vector2(2f, 2f), Main.rand.NextFloat(12f, 25f), 0.01f, 0.9f, 22);
@@ -273,7 +273,7 @@ namespace CalamityMod.Projectiles.Melee
                 SoundStyle HitSound2 = new("CalamityMod/Sounds/Item/HellkiteSmallHit", 3) { Volume = 0.45f, Pitch = 0.2f };
 
                 SoundEngine.PlaySound(HitSound2, Projectile.Center);
-                SoundEngine.PlaySound(new("CalamityMod/Sounds/Custom/SwiftSlice") { Volume = 0.65f, Pitch = -0.3f }, Projectile.Center);
+                SoundEngine.PlaySound(new SoundStyle("CalamityMod/Sounds/Custom/SwiftSlice") { Volume = 0.65f, Pitch = -0.3f }, Projectile.Center);
             }
         }
 

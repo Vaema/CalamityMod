@@ -46,7 +46,7 @@ namespace CalamityMod.Projectiles.Magic
             FiringTimer++;
             if (FiringTimer % DelayBetweenShots == 0)
             {
-                SoundEngine.PlaySound(new("CalamityMod/Sounds/Item/UnstableCastersGauntlet/VisNeedleFire") { Volume = 0.35f, Pitch = -0.3f, PitchVariance = 0.1f }, Projectile.Center);
+                SoundEngine.PlaySound(new SoundStyle("CalamityMod/Sounds/Item/UnstableCastersGauntlet/VisNeedleFire") { Volume = 0.35f, Pitch = -0.3f, PitchVariance = 0.1f }, Projectile.Center);
 
                 // Shoot blasts from random angles, then pass a given point to target
                 Vector2 fixedTargetOffset = Main.rand.NextVector2Circular(36f, 36f);

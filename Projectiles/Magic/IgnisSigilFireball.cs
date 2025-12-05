@@ -125,7 +125,7 @@ namespace CalamityMod.Projectiles.Magic
 
         public override void OnKill(int timeLeft)
         {
-            SoundEngine.PlaySound(new("CalamityMod/Sounds/Item/UnstableCastersGauntlet/IgnisSigilHit") { Volume = 0.7f, PitchVariance = 0.1f }, Projectile.Center);
+            SoundEngine.PlaySound(new SoundStyle("CalamityMod/Sounds/Item/UnstableCastersGauntlet/IgnisSigilHit") { Volume = 0.7f, PitchVariance = 0.1f }, Projectile.Center);
 
             for (int i = 0; i < 40; i++)
             {

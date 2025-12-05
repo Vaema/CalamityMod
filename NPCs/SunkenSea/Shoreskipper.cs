@@ -194,7 +194,7 @@ namespace CalamityMod.NPCs.SunkenSea
 
             if (notLandedFromWater && !NPC.wet && NPC.velocity.Length() > 6.5f && Timer % 4 == 0) // When skipping on water at high enough velocity, spawns trailing rings
                 GeneralParticleHandler.SpawnParticle(new DirectionalPulseRing(NPC.Center, -NPC.velocity * 0.33f, Color.DeepSkyBlue * 0.65f, new Vector2(0.5f, 1f), NPC.rotation, 0.12f, 0.24f, 18));
-            
+
 
             switch (CurrentPhase)
             {
@@ -211,7 +211,7 @@ namespace CalamityMod.NPCs.SunkenSea
                             NPC.ai[2] = 1;
                             NPC.velocity.X = Main.rand.NextFloat(1.75f, 2.5f) * Main.rand.NextBool().ToDirectionInt();
                             if (Main.rand.NextBool(4))
-                                SoundEngine.PlaySound(new("CalamityMod/Sounds/Custom/ShoreskipperGrunt", 2) { Volume = 0.9f, PitchVariance = 0.15f }, NPC.Center);
+                                SoundEngine.PlaySound(new SoundStyle("CalamityMod/Sounds/Custom/ShoreskipperGrunt", 2) { Volume = 0.9f, PitchVariance = 0.15f }, NPC.Center);
                         }
 
                         // Increment the timer before the slide ends
@@ -243,7 +243,7 @@ namespace CalamityMod.NPCs.SunkenSea
                     }
                     break;
 
-                    // Based off of Leerslug's initial detection phase.
+                // Based off of Leerslug's initial detection phase.
                 case (int)PhaseType.Roar:
                     {
                         int roar = 20;
@@ -253,7 +253,7 @@ namespace CalamityMod.NPCs.SunkenSea
                         // Roar in place with a lil jump
                         if (Timer == roar)
                         {
-                            SoundEngine.PlaySound(new("CalamityMod/Sounds/Custom/ShoreskipperSighting") { Volume = 0.85f, Pitch = -0.1f, PitchVariance = 0.1f }, NPC.Center);
+                            SoundEngine.PlaySound(new SoundStyle("CalamityMod/Sounds/Custom/ShoreskipperSighting") { Volume = 0.85f, Pitch = -0.1f, PitchVariance = 0.1f }, NPC.Center);
                             if (NPC.velocity.Y == 0)
                             {
                                 NPC.velocity.Y = -2.5f;
@@ -301,7 +301,7 @@ namespace CalamityMod.NPCs.SunkenSea
 
                         if ((!spawnedTackleHitbox && (isGrounded && isAtJumpFrame)) || (NPC.Calamity().newAI[1] == 1f && HasActiveTackle() == false)) // Latter set of conditions allows spawning a hitbox while skipping on water
                         {
-                            if (isGrounded)               
+                            if (isGrounded)
                                 NPC.velocity.Y = -jumpHeight;
 
                             // Face and chase after target
@@ -310,9 +310,9 @@ namespace CalamityMod.NPCs.SunkenSea
                             // Spawn hitbox while jumping
                             if (Main.netMode != NetmodeID.MultiplayerClient)
                             {
-                                Projectile.NewProjectile(NPC.GetSource_FromAI(), NPC.Center, Vector2.Zero, ProjectileType<ShoreskipperTackle>(), (int) (NPC.damage * Main.rand.NextFloat(0.7f, 1.4f)), Main.rand.Next(3, 7), Main.myPlayer, NPC.whoAmI);
+                                Projectile.NewProjectile(NPC.GetSource_FromAI(), NPC.Center, Vector2.Zero, ProjectileType<ShoreskipperTackle>(), (int)(NPC.damage * Main.rand.NextFloat(0.7f, 1.4f)), Main.rand.Next(3, 7), Main.myPlayer, NPC.whoAmI);
                                 if (Main.rand.NextBool())
-                                    SoundEngine.PlaySound(new("CalamityMod/Sounds/Custom/ShoreskipperGrunt", 2) { Volume = 1f, PitchVariance = 0.15f }, NPC.Center);
+                                    SoundEngine.PlaySound(new SoundStyle("CalamityMod/Sounds/Custom/ShoreskipperGrunt", 2) { Volume = 1f, PitchVariance = 0.15f }, NPC.Center);
 
                                 spawnedTackleHitbox = true;
                             }

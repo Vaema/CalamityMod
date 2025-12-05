@@ -42,10 +42,10 @@ namespace CalamityMod.Projectiles.Magic
                 ShotsFiredCount++;
                 if (ShotsFiredCount == TotalShots)
                 {
-                    SoundEngine.PlaySound(new("CalamityMod/Sounds/Item/UnstableCastersGauntlet/PerditoSigilHit2") { Volume = 0.9f, PitchVariance = 0.1f }, Projectile.Center);
+                    SoundEngine.PlaySound(new SoundStyle("CalamityMod/Sounds/Item/UnstableCastersGauntlet/PerditoSigilHit2") { Volume = 0.9f, PitchVariance = 0.1f }, Projectile.Center);
                 }
                 else
-                    SoundEngine.PlaySound(new("CalamityMod/Sounds/Item/UnstableCastersGauntlet/PerditoSigilHit1") { Volume = 0.8f, PitchVariance = 0.1f }, Projectile.Center);
+                    SoundEngine.PlaySound(new SoundStyle("CalamityMod/Sounds/Item/UnstableCastersGauntlet/PerditoSigilHit1") { Volume = 0.8f, PitchVariance = 0.1f }, Projectile.Center);
 
                 float startAngle = Main.rand.NextFloat(MathHelper.TwoPi);
                 Vector2 spawnOffset = startAngle.ToRotationVector2() * SpawnRadius;

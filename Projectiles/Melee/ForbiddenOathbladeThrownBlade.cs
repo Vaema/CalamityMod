@@ -311,7 +311,7 @@ namespace CalamityMod.Projectiles.Melee
                     if (Projectile.velocity.Length() < 8)
                         Projectile.velocity = Projectile.velocity.SafeNormalize(Vector2.UnitX) * 8;
                     Projectile.velocity.Y *= 0.85f;
-                    SoundEngine.PlaySound(new("CalamityMod/Sounds/Custom/CeramicImpact", 2) { Volume = 0.35f, Pitch = Main.rand.NextFloat(-0.4f, -0.5f) }, Projectile.Center);
+                    SoundEngine.PlaySound(new SoundStyle("CalamityMod/Sounds/Custom/CeramicImpact", 2) { Volume = 0.35f, Pitch = Main.rand.NextFloat(-0.4f, -0.5f) }, Projectile.Center);
                     bounces++;
                     Projectile.timeLeft = Lifetime;
                 }
