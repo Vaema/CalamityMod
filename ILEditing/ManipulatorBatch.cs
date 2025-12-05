@@ -12,7 +12,7 @@ namespace CalamityMod.ILEditing;
 ///     Since multiple edits are applied at once, a failure from one edit will
 ///     cause every edit to fail.  Use with caution.
 /// </remarks>
-internal readonly ref struct ManipulatorBatch() : IDisposable
+internal sealed class ManipulatorBatch : IDisposable
 {
     public required Action<ILContext.Manipulator> ManipulatorProvider { get; init; }
 

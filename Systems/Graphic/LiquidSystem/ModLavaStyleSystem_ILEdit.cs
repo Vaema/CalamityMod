@@ -22,18 +22,13 @@ namespace CalamityMod.Systems.Graphic.LiquidSystem
     {
         private static readonly MethodInfo Tex2DAssetGetter = typeof(Asset<Texture2D>).GetProperty(nameof(Asset<Texture2D>.Value)).GetMethod;
 
-        private void LoadILEdits()
+        private static void ApplyEdits(ManipulatorContext ctx)
         {
             if (Tex2DAssetGetter == null)
             {
                 CalamityMod.Log.ILFailure("ModLavaStyle", "Cannot find Getter for Asset<Texture2D>::Value");
                 return;
             }
-            
-            // Refer to the documentation in ManipulatorBatch for how this
-            // works.  The objects are automatically disposed at the end of this
-            // method, applying any queued edits.
-            using var playerUpdate = ManipulatorBatch.From(manipulator => IL_Player.Update += manipulator);
 
             // Graphic
             IL_LiquidRenderer.DrawNormalLiquids += DrawNormalLiquidPatch;
@@ -49,8 +44,8 @@ namespace CalamityMod.Systems.Graphic.LiquidSystem
             IL_NPC.Collision_WaterCollision += SplashEntityLava;
             IL_Projectile.Update += SplashEntityLava;
             IL_Item.MoveInWorld += SplashEntityLava;
-            playerUpdate.Add(SplashEntityLava);
-            playerUpdate.Add(PlayerDebuffEdit);
+            ctx.PlayerUpdate.Add(SplashEntityLava);
+            ctx.PlayerUpdate.Add(PlayerDebuffEdit);
         }
 
         #region Drawing IL Edits

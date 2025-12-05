@@ -18,18 +18,24 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.ILEditing
 {
-    public partial class ILChanges : ModSystem
+    public partial class ILChanges : ILoadable
     {
+        void ILoadable.Load(Mod mod)
+        {
+            ManipulatorManager.ApplyEdits += ApplyEdits;
+        }
+
+        void ILoadable.Unload()
+        {
+            // (2023/07) Manually unloading IL hooks is no longer necessary as TML should automatically do it for you.
+            // https://discord.com/channels/103110554649894912/445276626352209920/1099856743820959855 (links to TML server)
+        }
+
         /// <summary>
         /// Loads all IL Editing changes in the mod.
         /// </summary>
-        public override void OnModLoad()
+        private static void ApplyEdits(ManipulatorContext ctx)
         {
-            // Refer to the documentation in ManipulatorBatch for how this
-            // works.  The objects are automatically disposed at the end of this
-            // method, applying any queued edits.
-            using var playerUpdate = ManipulatorBatch.From(manipulator => IL_Player.Update += manipulator);
-
             // Wrap the vanilla town NPC spawning function in a delegate so that it can be tossed around and called at will.
             var updateTime = typeof(Main).GetMethod("UpdateTime_SpawnTownNPCs", BindingFlags.Static | BindingFlags.NonPublic);
             VanillaSpawnTownNPCs = Delegate.CreateDelegate(typeof(Action), updateTime) as Action;
@@ -123,15 +129,15 @@ namespace CalamityMod.ILEditing
 
             // Movement speed balance
             IL_Player.UpdateJumpHeight += FixJumpHeightBoosts;
-            playerUpdate.Add(BaseJumpSpeedAdjustment);
-            playerUpdate.Add(RunSpeedAdjustments);
-            playerUpdate.Add(NerfOverpoweredRunAccelerationSources); // Soaring Insignia, Magiluminescence, and Shadow Armor
+            ctx.PlayerUpdate.Add(BaseJumpSpeedAdjustment);
+            ctx.PlayerUpdate.Add(RunSpeedAdjustments);
+            ctx.PlayerUpdate.Add(NerfOverpoweredRunAccelerationSources); // Soaring Insignia, Magiluminescence, and Shadow Armor
             IL_Player.WingMovement += RemoveSoaringInsigniaInfiniteWingTime;
 
             // Life regen and mana regen balance
             IL_Player.UpdateLifeRegen += UpdateLifeRegenBalancingChanges;
             IL_Player.UpdateManaRegen += UpdateManaRegenBalancingChanges;
-            playerUpdate.Add(ManaRegenDelayAdjustment);
+            ctx.PlayerUpdate.Add(ManaRegenDelayAdjustment);
 
             // Debuff balancing
             IL_Projectile.StatusPlayer += RemoveFrozenInflictionFromDeerclopsIceSpikes;
@@ -167,7 +173,7 @@ namespace CalamityMod.ILEditing
             IL_Main.UpdateTime_StartNight += BloodMoonsRequire200MaxLife;
             IL_WorldGen.AttemptFossilShattering += PreventFossilShattering;
             On_Player.GetPickaxeDamage += RemoveHellforgePickaxeRequirement;
-            playerUpdate.Add(PreventUFODismountInWater);
+            ctx.PlayerUpdate.Add(PreventUFODismountInWater);
 
             On_Player.GetAnglerReward_MainReward += AddMoreGuaranteedAnglerRewards;
             On_Player.GetAnglerReward_Bait += ImproveAnglerBaitReward;
@@ -200,18 +206,6 @@ namespace CalamityMod.ILEditing
             //Rover drive detours on Player.DrawInfernoRings to draw its shield
             //Wulfrum armor hooks on Player.KeyDoubleTap and DrawPendingMouseText to activate its set bonus and spoof the mouse text to display the stats of the activated weapon if shift is held
             //HeldOnlyItem detours Player.dropItemCheck, ItemSlot.Draw (Sb, itemarray, int, int, vector2, color) and ItemSlot.LeftClick_ItemArray to make its stuff work
-        }
-
-        /// <summary>
-        /// Unloads all IL Editing changes in the mod.
-        /// </summary>
-        public override void OnModUnload()
-        {
-            // (2023/07) Manually unloading IL hooks is no longer necessary as TML should automatically do it for you.
-            // https://discord.com/channels/103110554649894912/445276626352209920/1099856743820959855 (links to TML server)
-
-            VanillaSpawnTownNPCs = null;
-            labDoorOpen = labDoorClosed = aLabDoorOpen = aLabDoorClosed = exoDoorClosed = exoDoorOpen = -1;
         }
     }
 }
