@@ -1,13 +1,8 @@
-﻿using System.IO;
-using CalamityMod.Buffs.StatDebuffs;
+﻿using CalamityMod.Buffs.StatDebuffs;
 using CalamityMod.NPCs.SunkenSea;
 using CalamityMod.Particles;
-using CalamityMod.Projectiles.Magic;
 using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Graphics;
 using Terraria;
-using Terraria.Audio;
-using Terraria.ID;
 using Terraria.ModLoader;
 namespace CalamityMod.Projectiles.Enemy
 {

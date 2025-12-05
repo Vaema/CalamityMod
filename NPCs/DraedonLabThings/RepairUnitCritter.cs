@@ -249,7 +249,7 @@ namespace CalamityMod.NPCs.DraedonLabThings
             }
 
             // If there are walls to clime on and this NPC wants to climb on some, do so.
-            if (WantsToClimbOnSomeWall && CalamityUtils.ParanoidTileRetrieval((int)NPC.Center.X / 16, (int)NPC.Center.Y / 16).WallType > 0)
+            if (WantsToClimbOnSomeWall && CalamityUtils.ParanoidTileRetrieval((int)NPC.Center.X / 16, (int)NPC.Center.Y / 16).WallType > WallID.None)
             {
                 CurrentState = BehaviorState.WalkOnWalls;
                 StuckCount = 0f;

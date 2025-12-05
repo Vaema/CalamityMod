@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using CalamityMod.Items.SummonItems;
 using CalamityMod.Items.Weapons.DraedonsArsenal;
 using CalamityMod.Items.Weapons.Magic;
@@ -10,7 +9,6 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria;
 using Terraria.DataStructures;
-using Terraria.GameContent;
 using Terraria.ID;
 using Terraria.ModLoader;
 using Terraria.UI;
@@ -135,7 +133,7 @@ namespace CalamityMod.CalPlayer.DrawLayers
                 drawInfo.itemColor = drawInfo.itemColor.MultiplyRGBA(new Color(Vector4.Lerp(Vector4.One, new Vector4(0f, 0.12f, 0.16f, 0f), 1f - stealth)));
             }
 
-            bool inUse = drawPlayer.itemAnimation > 0 && heldItem.useStyle != 0;
+            bool inUse = drawPlayer.itemAnimation > 0 && heldItem.useStyle != ItemUseStyleID.None;
             bool visuallyHeld = heldItem.holdStyle != 0 && !drawPlayer.pulley;
             if (!drawPlayer.CanVisuallyHoldItem(heldItem))
                 visuallyHeld = false;

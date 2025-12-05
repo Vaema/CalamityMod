@@ -1,9 +1,7 @@
-﻿using CalamityMod.Buffs.StatDebuffs;
-using CalamityMod.Projectiles.Typeless;
+﻿using CalamityMod.Projectiles.Typeless;
 using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.ID;
-using Terraria.ModLoader;
 
 namespace CalamityMod.Items.VanillaArmorChanges
 {

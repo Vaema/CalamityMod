@@ -1,14 +1,9 @@
 ﻿using System;
 using System.Linq;
-using CalamityMod.Buffs.DamageOverTime;
 using CalamityMod.Dusts;
 using CalamityMod.Graphics.Primitives;
-using CalamityMod.Items.Materials;
-using CalamityMod.Items.Weapons.Melee;
 using CalamityMod.Particles;
 using CalamityMod.Projectiles.DraedonsArsenal;
-using CalamityMod.Projectiles.Magic;
-using CalamityMod.Projectiles.Typeless;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using ReLogic.Content;
@@ -17,7 +12,6 @@ using Terraria.Audio;
 using Terraria.Graphics.Shaders;
 using Terraria.ID;
 using Terraria.ModLoader;
-using static CalamityMod.CalamityUtils;
 using static Terraria.ModLoader.ModContent;
 
 namespace CalamityMod.Projectiles.Magic

@@ -1,6 +1,4 @@
 ﻿using Microsoft.Xna.Framework.Graphics;
-using Mono.Cecil.Cil;
-using MonoMod.Cil;
 using Terraria;
 using Terraria.DataStructures;
 using Terraria.Graphics.Shaders;

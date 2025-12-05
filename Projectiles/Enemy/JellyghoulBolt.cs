@@ -1,6 +1,4 @@
-﻿using System.Collections.Generic;
-using CalamityMod.Buffs.DamageOverTime;
-using CalamityMod.Buffs.StatDebuffs;
+﻿using CalamityMod.Buffs.DamageOverTime;
 using CalamityMod.Dusts;
 using CalamityMod.Graphics.Primitives;
 using CalamityMod.Particles;

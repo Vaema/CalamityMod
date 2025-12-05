@@ -1,7 +1,4 @@
-﻿using CalamityMod.Balancing;
-using CalamityMod.CalPlayer;
-using CalamityMod.Items.Potions.Alcohol;
-using CalamityMod.Projectiles.Magic;
+﻿using CalamityMod.CalPlayer;
 using Terraria;
 using Terraria.ID;
 using Terraria.Localization;

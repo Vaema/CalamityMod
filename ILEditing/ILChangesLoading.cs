@@ -18,12 +18,23 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.ILEditing
 {
-    public partial class ILChanges : ModSystem
+    public partial class ILChanges : ILoadable
     {
+        void ILoadable.Load(Mod mod)
+        {
+            ManipulatorManager.ApplyEdits += ApplyEdits;
+        }
+
+        void ILoadable.Unload()
+        {
+            // (2023/07) Manually unloading IL hooks is no longer necessary as TML should automatically do it for you.
+            // https://discord.com/channels/103110554649894912/445276626352209920/1099856743820959855 (links to TML server)
+        }
+
         /// <summary>
         /// Loads all IL Editing changes in the mod.
         /// </summary>
-        public override void OnModLoad()
+        private static void ApplyEdits(ManipulatorContext ctx)
         {
             // Wrap the vanilla town NPC spawning function in a delegate so that it can be tossed around and called at will.
             var updateTime = typeof(Main).GetMethod("UpdateTime_SpawnTownNPCs", BindingFlags.Static | BindingFlags.NonPublic);
@@ -118,15 +129,15 @@ namespace CalamityMod.ILEditing
 
             // Movement speed balance
             IL_Player.UpdateJumpHeight += FixJumpHeightBoosts;
-            IL_Player.Update += BaseJumpSpeedAdjustment;
-            IL_Player.Update += RunSpeedAdjustments;
-            IL_Player.Update += NerfOverpoweredRunAccelerationSources; // Soaring Insignia, Magiluminescence, and Shadow Armor
+            ctx.PlayerUpdate.Add(BaseJumpSpeedAdjustment);
+            ctx.PlayerUpdate.Add(RunSpeedAdjustments);
+            ctx.PlayerUpdate.Add(NerfOverpoweredRunAccelerationSources); // Soaring Insignia, Magiluminescence, and Shadow Armor
             IL_Player.WingMovement += RemoveSoaringInsigniaInfiniteWingTime;
 
             // Life regen and mana regen balance
             IL_Player.UpdateLifeRegen += UpdateLifeRegenBalancingChanges;
             IL_Player.UpdateManaRegen += UpdateManaRegenBalancingChanges;
-            IL_Player.Update += ManaRegenDelayAdjustment;
+            ctx.PlayerUpdate.Add(ManaRegenDelayAdjustment);
 
             // Debuff balancing
             IL_Projectile.StatusPlayer += RemoveFrozenInflictionFromDeerclopsIceSpikes;
@@ -144,7 +155,7 @@ namespace CalamityMod.ILEditing
 
             // Removal of vanilla stupidity
             IL_Player.StatusFromNPC += RemoveExpertBrainRandomDebuffs;
-            IL_NPC.VanillaHitEffect += PreventLavaSlimeLavaDrop;
+            On_NPC.HitEffect_HitInfo += PreventLavaSlimeLavaDrop;
             IL_NPC.StrikeNPC_HitInfo_bool_bool += LetDetonatingBubblesTakeDamage;
             IL_PunchCameraModifier.Update += PunchCameraUsesScreenshakeConfig;
             IL_Player.ItemCheck_EmitUseVisuals += MakeMagmaStoneFireGauntletDustToggleable;
@@ -162,7 +173,7 @@ namespace CalamityMod.ILEditing
             IL_Main.UpdateTime_StartNight += BloodMoonsRequire200MaxLife;
             IL_WorldGen.AttemptFossilShattering += PreventFossilShattering;
             On_Player.GetPickaxeDamage += RemoveHellforgePickaxeRequirement;
-            IL_Player.Update += PreventUFODismountInWater;
+            ctx.PlayerUpdate.Add(PreventUFODismountInWater);
 
             On_Player.GetAnglerReward_MainReward += AddMoreGuaranteedAnglerRewards;
             On_Player.GetAnglerReward_Bait += ImproveAnglerBaitReward;
@@ -195,18 +206,6 @@ namespace CalamityMod.ILEditing
             //Rover drive detours on Player.DrawInfernoRings to draw its shield
             //Wulfrum armor hooks on Player.KeyDoubleTap and DrawPendingMouseText to activate its set bonus and spoof the mouse text to display the stats of the activated weapon if shift is held
             //HeldOnlyItem detours Player.dropItemCheck, ItemSlot.Draw (Sb, itemarray, int, int, vector2, color) and ItemSlot.LeftClick_ItemArray to make its stuff work
-        }
-
-        /// <summary>
-        /// Unloads all IL Editing changes in the mod.
-        /// </summary>
-        public override void OnModUnload()
-        {
-            // (2023/07) Manually unloading IL hooks is no longer necessary as TML should automatically do it for you.
-            // https://discord.com/channels/103110554649894912/445276626352209920/1099856743820959855 (links to TML server)
-
-            VanillaSpawnTownNPCs = null;
-            labDoorOpen = labDoorClosed = aLabDoorOpen = aLabDoorClosed = exoDoorClosed = exoDoorOpen = -1;
         }
     }
 }

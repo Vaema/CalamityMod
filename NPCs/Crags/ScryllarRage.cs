@@ -2,7 +2,6 @@
 using CalamityMod.Dusts;
 using CalamityMod.Items.Placeables.Banners;
 using Terraria;
-using Terraria.GameContent.Bestiary;
 using Terraria.ID;
 using Terraria.ModLoader;
 

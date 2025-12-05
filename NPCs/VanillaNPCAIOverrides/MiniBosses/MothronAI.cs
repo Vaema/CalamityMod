@@ -428,7 +428,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.MiniBosses
 
                         attackTimer++;
                         if (attackTimer == eggLayTime)
-                            NPC.NewNPC(NPC.GetSource_FromAI(), (int)spotToLayEgg.X, (int)spotToLayEgg.Y + 20, 478, NPC.whoAmI, 0f, 0f, 0f, 0f, 255);
+                            NPC.NewNPC(NPC.GetSource_FromAI(), (int)spotToLayEgg.X, (int)spotToLayEgg.Y + 20, NPCID.MothronEgg, NPC.whoAmI, 0f, 0f, 0f, 0f, 255);
                         else if (attackTimer == eggLayTime + waitTime)
                         {
                             aiState = (int)MothronAIState.NewAISelection;

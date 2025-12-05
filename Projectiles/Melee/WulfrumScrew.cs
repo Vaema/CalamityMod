@@ -73,7 +73,7 @@ namespace CalamityMod.Projectiles.Melee
 
                 Vector2 dustCenter = Projectile.Center + Projectile.velocity.RotatedBy(MathHelper.PiOver2).SafeNormalize(Vector2.Zero) * Main.rand.NextFloat(-3f, 3f);
 
-                Dust chust = Dust.NewDustPerfect(dustCenter, 15, -Projectile.velocity * Main.rand.NextFloat(0.6f, 1.5f), Scale: Main.rand.NextFloat(1f, 1.4f));
+                Dust chust = Dust.NewDustPerfect(dustCenter, DustID.MagicMirror, -Projectile.velocity * Main.rand.NextFloat(0.6f, 1.5f), Scale: Main.rand.NextFloat(1f, 1.4f));
                 chust.noGravity = true;
 
                 if (!Main.rand.NextBool(5))

@@ -1,13 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
-using CalamityMod.CalPlayer;
 using CalamityMod.Dusts;
 using CalamityMod.NPCs;
-using CalamityMod.NPCs.Ravager;
 using CalamityMod.Particles;
-using CalamityMod.Projectiles.Ranged;
-using CalamityMod.Sounds;
-using Humanizer;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria;

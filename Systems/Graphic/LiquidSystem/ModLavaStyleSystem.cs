@@ -1,4 +1,5 @@
 ﻿using System;
+using CalamityMod.ILEditing;
 using Microsoft.Xna.Framework.Graphics;
 using ReLogic.Content;
 using Terraria;
@@ -54,11 +55,13 @@ namespace CalamityMod.Systems.Graphic.LiquidSystem
             TextureArrayReady = true;
         }
 
-        public override void OnModLoad()
+        public override void Load()
         {
+            base.Load();
+            
             if (ExternalMods.biomeLava == null)
             {
-                LoadILEdits();
+                ManipulatorManager.ApplyEdits += ApplyEdits;
                 Main.QueueMainThreadAction(PrepareRT);
                 Main.OnPreDraw += UpdateRT;
                 Initialized = true;

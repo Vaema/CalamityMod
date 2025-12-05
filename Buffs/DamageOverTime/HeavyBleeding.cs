@@ -1,11 +1,9 @@
-﻿using System;
-using CalamityMod.DataStructures;
+﻿using CalamityMod.DataStructures;
 using CalamityMod.Particles;
 using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.DataStructures;
 using Terraria.ID;
-using Terraria.Localization;
 using Terraria.ModLoader;
 
 namespace CalamityMod.Buffs.DamageOverTime
@@ -42,7 +40,7 @@ namespace CalamityMod.Buffs.DamageOverTime
             if (Main.rand.NextBool(3))
             {
                 Vector2 randVel = new Vector2(5, 5).RotatedByRandom(100) * Main.rand.NextFloat(0.3f, 1f);
-                Dust dust = Dust.NewDustPerfect(modPlayer.RandomDebuffVisualSpot, 5, randVel * Main.rand.NextFloat(0.1f, 0.8f), 100, default, Main.rand.NextFloat(0.6f, 0.9f));
+                Dust dust = Dust.NewDustPerfect(modPlayer.RandomDebuffVisualSpot, DustID.Blood, randVel * Main.rand.NextFloat(0.1f, 0.8f), 100, default, Main.rand.NextFloat(0.6f, 0.9f));
                 dust.noGravity = false;
                 Particle spark = new AltSparkParticle(modPlayer.RandomDebuffVisualSpot, randVel + new Vector2(0, -4), true, 12, Main.rand.NextFloat(0.25f, 0.6f), Color.DarkRed * 0.5f);
                 GeneralParticleHandler.SpawnParticle(spark);
@@ -65,7 +63,7 @@ namespace CalamityMod.Buffs.DamageOverTime
             }
             else
             {
-                Dust dust = Dust.NewDustPerfect(npcSize, 5, randVel * Main.rand.NextFloat(0.1f, 0.8f), 100, default, Main.rand.NextFloat(0.2f, 0.6f));
+                Dust dust = Dust.NewDustPerfect(npcSize, DustID.Blood, randVel * Main.rand.NextFloat(0.1f, 0.8f), 100, default, Main.rand.NextFloat(0.2f, 0.6f));
                 dust.noGravity = false;
             }
             if (Main.rand.NextBool(8))

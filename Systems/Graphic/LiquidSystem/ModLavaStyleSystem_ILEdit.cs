@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Reflection;
+using CalamityMod.ILEditing;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Mono.Cecil;
@@ -21,7 +22,7 @@ namespace CalamityMod.Systems.Graphic.LiquidSystem
     {
         private static readonly MethodInfo Tex2DAssetGetter = typeof(Asset<Texture2D>).GetProperty(nameof(Asset<Texture2D>.Value)).GetMethod;
 
-        private void LoadILEdits()
+        private static void ApplyEdits(ManipulatorContext ctx)
         {
             if (Tex2DAssetGetter == null)
             {
@@ -43,8 +44,8 @@ namespace CalamityMod.Systems.Graphic.LiquidSystem
             IL_NPC.Collision_WaterCollision += SplashEntityLava;
             IL_Projectile.Update += SplashEntityLava;
             IL_Item.MoveInWorld += SplashEntityLava;
-            IL_Player.Update += SplashEntityLava;
-            IL_Player.Update += PlayerDebuffEdit;
+            ctx.PlayerUpdate.Add(SplashEntityLava);
+            ctx.PlayerUpdate.Add(PlayerDebuffEdit);
         }
 
         #region Drawing IL Edits

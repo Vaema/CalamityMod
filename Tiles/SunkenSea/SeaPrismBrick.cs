@@ -2,7 +2,6 @@
 using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.ID;
-using Terraria.Localization;
 using Terraria.ModLoader;
 
 namespace CalamityMod.Tiles.SunkenSea
@@ -22,7 +21,7 @@ namespace CalamityMod.Tiles.SunkenSea
             Main.tileShine2[Type] = true;
 
             TileID.Sets.ChecksForMerge[Type] = true;
-            DustType = 33;
+            DustType = DustID.Water;
             AddMapEntry(new Color(47, 193, 236));
             HitSound = SoundID.Tink;
             Main.tileSpelunker[Type] = true;

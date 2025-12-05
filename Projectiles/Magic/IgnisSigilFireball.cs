@@ -1,11 +1,7 @@
 ﻿using System;
-using CalamityMod.Buffs.DamageOverTime;
-using CalamityMod.Items.Weapons.Magic;
 using CalamityMod.Projectiles.DraedonsArsenal;
-using CalamityMod.Sounds;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using ReLogic.Content;
 using Terraria;
 using Terraria.Audio;
 using Terraria.ID;

@@ -1,7 +1,6 @@
 ﻿using System;
 using CalamityMod.Items.Weapons.DraedonsArsenal;
 using CalamityMod.Particles;
-using CalamityMod.Projectiles.BaseProjectiles;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria;

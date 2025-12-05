@@ -2,7 +2,6 @@
 using Microsoft.Xna.Framework.Graphics;
 using Terraria;
 using Terraria.DataStructures;
-using Terraria.GameContent.Drawing;
 using Terraria.GameContent.Metadata;
 using Terraria.ID;
 using Terraria.ModLoader;
@@ -20,7 +19,7 @@ namespace CalamityMod.Tiles.Abyss
             TileMaterials.SetForTileId(Type, TileMaterials._materialsByName["Plant"]);
             AddMapEntry(new Color(0, 50, 0));
             HitSound = SoundID.Grass;
-            DustType = 2;
+            DustType = DustID.Grass;
         }
 
         public override bool PreDraw(int i, int j, SpriteBatch spriteBatch)

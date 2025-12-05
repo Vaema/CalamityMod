@@ -1,6 +1,4 @@
 ﻿using System;
-using CalamityMod.Cooldowns;
-using CalamityMod.Items.Accessories;
 using CalamityMod.Particles;
 using Microsoft.Xna.Framework;
 using ReLogic.Utilities;

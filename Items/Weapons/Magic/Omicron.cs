@@ -1,5 +1,4 @@
 ﻿using CalamityMod.CalPlayer;
-using CalamityMod.DataStructures;
 using CalamityMod.Items.Materials;
 using CalamityMod.Projectiles.Magic;
 using CalamityMod.Rarities;

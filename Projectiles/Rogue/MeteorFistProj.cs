@@ -1,9 +1,7 @@
 ﻿using CalamityMod.DataStructures;
 using CalamityMod.Graphics.Primitives;
 using CalamityMod.Particles;
-using CalamityMod.Projectiles.Typeless;
 using Microsoft.Xna.Framework;
-using System;
 using System.Collections.Generic;
 using Terraria;
 using Terraria.Audio;

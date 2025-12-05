@@ -5,8 +5,6 @@ using CalamityMod.Items.Fishing;
 using CalamityMod.Items.Materials;
 using CalamityMod.Items.PermanentBoosters;
 using CalamityMod.Items.Placeables.Furniture.Paintings;
-using CalamityMod.Items.Placeables.Ores;
-using CalamityMod.Items.Potions;
 using CalamityMod.Items.Weapons.Melee;
 using CalamityMod.Items.Weapons.Ranged;
 using CalamityMod.Items.Weapons.Rogue;

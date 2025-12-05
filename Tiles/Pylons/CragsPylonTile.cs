@@ -4,7 +4,6 @@ using CalamityMod.Tiles.BaseTiles;
 using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.GameContent;
-using Terraria.ID;
 using Terraria.ModLoader;
 
 namespace CalamityMod.Tiles.Pylons

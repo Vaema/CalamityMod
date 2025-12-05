@@ -62,7 +62,7 @@ namespace CalamityMod.Tiles.DraedonStructures
             AnimationFrameHeight = 112;
 
             // Spawn electric sparks when this tile is hit with a pickaxe.
-            DustType = 229;
+            DustType = DustID.Vortex;
             HitSound = SoundID.Tink;
         }
 

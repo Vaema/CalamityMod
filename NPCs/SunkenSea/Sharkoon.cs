@@ -361,7 +361,7 @@ namespace CalamityMod.NPCs.SunkenSea
                 {
                     Vector2 velOffset = RandomVelocity(50f, 20f, 70f, 0.04f);
                     velOffset *= Main.rand.NextFloat(15, 20) * fade;
-                    Dust dust = Dust.NewDustPerfect(NPC.Center + velOffset * 2.5f, 267, -velOffset * Main.rand.NextFloat(0.08f, 0.12f) * 1.5f, 0, default, Main.rand.NextFloat(0.8f, 0.95f));
+                    Dust dust = Dust.NewDustPerfect(NPC.Center + velOffset * 2.5f, DustID.RainbowMk2, -velOffset * Main.rand.NextFloat(0.08f, 0.12f) * 1.5f, 0, default, Main.rand.NextFloat(0.8f, 0.95f));
                     dust.noGravity = true;
                     dust.color = Color.Aqua;
                 }
@@ -491,13 +491,13 @@ namespace CalamityMod.NPCs.SunkenSea
             {
                 for (int i = 0; i < 10; i++)
                 {
-                    Dust dust = Dust.NewDustPerfect(NPC.Center, 278, new Vector2(8, 8).RotatedByRandom(100) * Main.rand.NextFloat(0.2f, 1f), 0, default, Main.rand.NextFloat(0.9f, 1.1f));
+                    Dust dust = Dust.NewDustPerfect(NPC.Center, DustID.FireworksRGB, new Vector2(8, 8).RotatedByRandom(100) * Main.rand.NextFloat(0.2f, 1f), 0, default, Main.rand.NextFloat(0.9f, 1.1f));
                     dust.noGravity = false;
                     dust.color = Main.rand.NextBool() ? Color.OrangeRed : Color.Orange;
                 }
                 for (int i = 0; i < 18; i++)
                 {
-                    Dust dust = Dust.NewDustPerfect(NPC.Center, 267, new Vector2(4, 4).RotatedByRandom(100) * Main.rand.NextFloat(0.2f, 1f), 0, default, Main.rand.NextFloat(0.9f, 1.1f));
+                    Dust dust = Dust.NewDustPerfect(NPC.Center, DustID.RainbowMk2, new Vector2(4, 4).RotatedByRandom(100) * Main.rand.NextFloat(0.2f, 1f), 0, default, Main.rand.NextFloat(0.9f, 1.1f));
                     dust.noGravity = true;
                     dust.color = Main.rand.NextBool() ? Color.OrangeRed : Color.Orange;
                 }

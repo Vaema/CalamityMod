@@ -67,7 +67,6 @@ using CalamityMod.Tiles.FurnitureAuric;
 using CalamityMod.Tiles.Ores;
 using CalamityMod.UI;
 using CalamityMod.World;
-using Microsoft.CodeAnalysis;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using ReLogic.Content;
@@ -3031,7 +3030,7 @@ namespace CalamityMod.CalPlayer
                 if (WorldGen.SolidTile(tile) || tile.LiquidAmount > 0)
                     continue;
 
-                Dust pollen = Dust.NewDustPerfect(dustSpawnPosition, 261);
+                Dust pollen = Dust.NewDustPerfect(dustSpawnPosition, DustID.AncientLight);
                 pollen.velocity = Main.rand.NextVector2Circular(0.4f, 0.4f);
                 pollen.scale = Main.rand.NextFloat(0.8f, 1f);
                 pollen.fadeIn = 2f;

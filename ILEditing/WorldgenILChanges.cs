@@ -159,7 +159,7 @@ namespace CalamityMod.ILEditing
 
         #region Prevent Abyss/Dungeon Interactions
 
-        private void LimitDungeonEntranceXPosition(On_WorldGen.orig_MakeDungeon orig, int x, int y)
+        private static void LimitDungeonEntranceXPosition(On_WorldGen.orig_MakeDungeon orig, int x, int y)
         {
             // Ensure that the base X position stays within its required bounds.
             x = Utils.Clamp(x, DungeonBaseXLimit, Main.maxTilesX - DungeonBaseXLimit);

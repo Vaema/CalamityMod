@@ -1,8 +1,6 @@
 ﻿using System;
 using CalamityMod.Dusts;
 using CalamityMod.Particles;
-using CalamityMod.Projectiles.Typeless;
-using Microsoft.Build.Construction;
 using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.Audio;

@@ -41,7 +41,7 @@ namespace CalamityMod.Projectiles.Summon
 
             Dust trailDust = Dust.NewDustPerfect(
                 Projectile.Center + Main.rand.NextVector2Circular(8f, 8f),
-                64,
+                DustID.YellowTorch,
                 Projectile.velocity * Main.rand.NextFloat(0.01f, 0.05f),
                 Scale: Main.rand.NextFloat(1f, 1.2f));
             trailDust.noGravity = true;

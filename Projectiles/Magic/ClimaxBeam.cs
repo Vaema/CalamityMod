@@ -59,7 +59,7 @@ namespace CalamityMod.Projectiles.Magic
         {
             for (int i = 0; i <= 4; i++)
             {
-                Dust dust = Dust.NewDustPerfect(Projectile.Center + Main.rand.NextVector2Circular(4, 4), 226, (Projectile.velocity * 2) * Main.rand.NextFloat(0.1f, 0.9f));
+                Dust dust = Dust.NewDustPerfect(Projectile.Center + Main.rand.NextVector2Circular(4, 4), DustID.Electric, (Projectile.velocity * 2) * Main.rand.NextFloat(0.1f, 0.9f));
                 dust.scale = Main.rand.NextFloat(0.3f, 0.5f);
                 dust.noGravity = true;
             }

@@ -1,13 +1,9 @@
 ﻿using System;
-using System.Security.Policy;
 using CalamityMod.Dusts;
 using CalamityMod.Enums;
 using CalamityMod.Graphics.Metaballs;
 using CalamityMod.Items.Accessories;
-using CalamityMod.Particles;
-using CalamityMod.Projectiles.Rogue;
 using Microsoft.Xna.Framework;
-using rail;
 using Terraria;
 using Terraria.Audio;
 using Terraria.ModLoader;

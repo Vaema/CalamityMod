@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using Terraria;
 using Terraria.ModLoader;
-using Terraria.ModLoader.Core;
 
 namespace CalamityMod.CalPlayer.Dashes
 {

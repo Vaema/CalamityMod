@@ -1,5 +1,4 @@
-﻿using CalamityMod.Balancing;
-using CalamityMod.Dusts;
+﻿using CalamityMod.Dusts;
 using CalamityMod.Particles;
 using Microsoft.Xna.Framework;
 using Terraria;

@@ -7,6 +7,7 @@ using ReLogic.Utilities;
 using Terraria;
 using Terraria.Audio;
 using Terraria.GameContent;
+using Terraria.ID;
 using Terraria.ModLoader;
 
 namespace CalamityMod.Projectiles.Magic
@@ -77,7 +78,7 @@ namespace CalamityMod.Projectiles.Magic
 
                         for (int i = 0; i < 17; i++)
                         {
-                            Dust chargefull = Dust.NewDustPerfect(GunTipPosition, 278);
+                            Dust chargefull = Dust.NewDustPerfect(GunTipPosition, DustID.FireworksRGB);
                             chargefull.velocity = Projectile.velocity.RotatedByRandom(0.4f) * Main.rand.NextFloat(5, 25);
                             chargefull.scale = Main.rand.NextFloat(0.65f, 0.95f);
                             chargefull.noGravity = true;
@@ -108,7 +109,7 @@ namespace CalamityMod.Projectiles.Magic
                         SoundEngine.PlaySound(fire with { Volume = 0.4f, Pitch = 0.3f }, Projectile.Center);
                         for (int i = 0; i < 12; i++)
                         {
-                            Dust dust2 = Dust.NewDustPerfect(GunTipPosition, 278, Vector2.One.RotatedByRandom(100) * Main.rand.NextFloat(1f, 3.5f));
+                            Dust dust2 = Dust.NewDustPerfect(GunTipPosition, DustID.FireworksRGB, Vector2.One.RotatedByRandom(100) * Main.rand.NextFloat(1f, 3.5f));
                             dust2.scale = Main.rand.NextFloat(0.55f, 0.9f);
                             dust2.noGravity = false;
                             dust2.color = Color.Lerp(Color.White, Main.rand.NextBool(4) ? Color.Orange : Color.OrangeRed, 0.7f);
@@ -131,7 +132,7 @@ namespace CalamityMod.Projectiles.Magic
                     if (Main.rand.NextBool())
                     {
                         Vector2 dustVel = Vector2.One.RotatedByRandom(100) * Main.rand.NextFloat(3, 5);
-                        Dust dust2 = Dust.NewDustPerfect(GunTipPosition + dustVel, 278, dustVel * 0.15f);
+                        Dust dust2 = Dust.NewDustPerfect(GunTipPosition + dustVel, DustID.FireworksRGB, dustVel * 0.15f);
                         dust2.scale = Main.rand.NextFloat(0.35f, 0.7f);
                         dust2.noGravity = true;
                         dust2.color = Color.Lerp(Color.White, Main.rand.NextBool(4) ? Color.Orange : Color.OrangeRed, 0.7f);
@@ -158,7 +159,7 @@ namespace CalamityMod.Projectiles.Magic
                     for (int i = 0; i < 18; i++)
                     {
                         Vector2 dustVel = Vector2.One.RotatedByRandom(100) * Main.rand.NextFloat(1, 5);
-                        Dust dust2 = Dust.NewDustPerfect(GunTipPosition + dustVel, 278, dustVel * 0.7f);
+                        Dust dust2 = Dust.NewDustPerfect(GunTipPosition + dustVel, DustID.FireworksRGB, dustVel * 0.7f);
                         dust2.scale = Main.rand.NextFloat(0.45f, 0.9f);
                         dust2.noGravity = true;
                         dust2.color = Color.Lerp(Color.White, Main.rand.NextBool(4) ? Color.Orange : Color.OrangeRed, 0.7f);
@@ -189,13 +190,13 @@ namespace CalamityMod.Projectiles.Magic
                             Particle smoke3 = new HeavySmokeParticle(GunTipPosition + smokeVel3 * 2, smokeVel3 * Main.rand.NextFloat(0.2f, 0.7f), Color.Lerp(Color.SlateGray, Color.Orange, Main.rand.NextFloat(0, 0.4f)), Main.rand.Next(15, 35 + 1), Main.rand.NextFloat(0.08f, 0.45f), 0.5f, Main.rand.NextFloat(-0.2f, 0.2f), Main.rand.NextBool(), required: true);
                             GeneralParticleHandler.SpawnParticle(smoke3);
 
-                            Dust dust1 = Dust.NewDustPerfect(GunTipPosition + smokeVel1 * 2, 303, smokeVel1.RotatedByRandom(0.2f) * Main.rand.NextFloat(0.03f, 0.3f), 180, default, Main.rand.NextFloat(0.3f, 1.1f));
+                            Dust dust1 = Dust.NewDustPerfect(GunTipPosition + smokeVel1 * 2, DustID.SteampunkSteam, smokeVel1.RotatedByRandom(0.2f) * Main.rand.NextFloat(0.03f, 0.3f), 180, default, Main.rand.NextFloat(0.3f, 1.1f));
                             dust1.noGravity = false;
                             dust1.color = Color.Lerp(Color.SlateGray, Color.Orange, Main.rand.NextFloat(0, 0.4f));
-                            Dust dust2 = Dust.NewDustPerfect(GunTipPosition + smokeVel2 * 2, 303, smokeVel2.RotatedByRandom(0.2f) * Main.rand.NextFloat(0.03f, 0.3f), 180, default, Main.rand.NextFloat(0.3f, 1.1f));
+                            Dust dust2 = Dust.NewDustPerfect(GunTipPosition + smokeVel2 * 2, DustID.SteampunkSteam, smokeVel2.RotatedByRandom(0.2f) * Main.rand.NextFloat(0.03f, 0.3f), 180, default, Main.rand.NextFloat(0.3f, 1.1f));
                             dust2.noGravity = false;
                             dust2.color = Color.Lerp(Color.SlateGray, Color.Orange, Main.rand.NextFloat(0, 0.4f));
-                            Dust dust3 = Dust.NewDustPerfect(GunTipPosition + smokeVel3 * 2, 303, smokeVel3.RotatedByRandom(0.2f) * Main.rand.NextFloat(0.03f, 0.3f), 180, default, Main.rand.NextFloat(0.3f, 1.1f));
+                            Dust dust3 = Dust.NewDustPerfect(GunTipPosition + smokeVel3 * 2, DustID.SteampunkSteam, smokeVel3.RotatedByRandom(0.2f) * Main.rand.NextFloat(0.03f, 0.3f), 180, default, Main.rand.NextFloat(0.3f, 1.1f));
                             dust3.noGravity = false;
                             dust3.color = Color.Lerp(Color.SlateGray, Color.Orange, Main.rand.NextFloat(0, 0.4f));
 

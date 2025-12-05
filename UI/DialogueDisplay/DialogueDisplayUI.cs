@@ -4,7 +4,6 @@ using System.IO;
 using System.Linq;
 using System.Text.Json;
 using System.Text.Json.Serialization;
-using CalamityMod.Fonts;
 using CalamityMod.UI.DialogueDisplay.DialogueEvents;
 using CalamityMod.UI.DialogueDisplay.DisplayEffects;
 using CalamityMod.UI.DialogueDisplay.TextEffects;

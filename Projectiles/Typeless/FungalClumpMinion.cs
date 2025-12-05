@@ -1,5 +1,4 @@
 ﻿using System;
-using CalamityMod.Balancing;
 using CalamityMod.CalPlayer;
 using CalamityMod.NPCs;
 using CalamityMod.Projectiles.Healing;

@@ -1,6 +1,7 @@
 ﻿using CalamityMod.Items.Fishing.SulphurCatches;
 using Microsoft.Xna.Framework;
 using Terraria;
+using Terraria.ID;
 using Terraria.ModLoader;
 using Terraria.ObjectData;
 
@@ -21,7 +22,7 @@ namespace CalamityMod.Tiles.Abyss
             TileObjectData.newTile.CopyFrom(TileObjectData.Style2x2);
             TileObjectData.addTile(Type);
             AddMapEntry(new Color(150, 109, 26), CalamityUtils.GetItemName<HydrothermalCrate>());
-            DustType = 127;
+            DustType = DustID.Flare;
         }
 
         public override bool CreateDust(int i, int j, ref int type)

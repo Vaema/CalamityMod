@@ -178,7 +178,7 @@ namespace CalamityMod.Projectiles.Typeless
             Owner.grapCount = 0;
             for (int i = 0; i < 1000; i++)
             {
-                if (Main.projectile[i].active && Main.projectile[i].owner == Owner.whoAmI && Main.projectile[i].aiStyle == 7 && !(Main.projectile[i].whoAmI == Projectile.whoAmI))
+                if (Main.projectile[i].active && Main.projectile[i].owner == Owner.whoAmI && Main.projectile[i].aiStyle == ProjAIStyleID.Hook && !(Main.projectile[i].whoAmI == Projectile.whoAmI))
                     Main.projectile[i].Kill();
             }
 

@@ -5,7 +5,6 @@ using CalamityMod.Projectiles.Typeless;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria;
-using Terraria.GameContent.Drawing;
 using Terraria.Graphics.Shaders;
 using Terraria.ID;
 using Terraria.ModLoader;
@@ -198,7 +197,7 @@ namespace CalamityMod.Projectiles.Magic
                 float outwardnessFactor = Main.rand.NextFloat();
                 Vector2 spawnPosition = target.Center + randomAngle.ToRotationVector2() * MathHelper.Lerp(70f, EternityCircle.TargetOffsetRadius - 60f, outwardnessFactor);
                 Vector2 velocity = (randomAngle - 3f * MathHelper.Pi / 8f).ToRotationVector2() * (10f + 9f * Main.rand.NextFloat() + 4f * outwardnessFactor);
-                Dust swirlingDust = Dust.NewDustPerfect(spawnPosition, 267, new Vector2?(velocity), 0, Main.rand.NextBool(3) ? Eternity.BlueColor : Eternity.PinkColor, 1.4f);
+                Dust swirlingDust = Dust.NewDustPerfect(spawnPosition, DustID.RainbowMk2, new Vector2?(velocity), 0, Main.rand.NextBool(3) ? Eternity.BlueColor : Eternity.PinkColor, 1.4f);
                 swirlingDust.scale = 1.2f;
                 swirlingDust.fadeIn = 0.25f + outwardnessFactor * 0.1f;
                 swirlingDust.noGravity = true;

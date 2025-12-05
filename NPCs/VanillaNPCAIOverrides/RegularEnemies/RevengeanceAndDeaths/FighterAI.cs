@@ -173,7 +173,7 @@ public static partial class RevengeanceAndDeathAI
             {
                 for (int y = tileCoordsY - 1; y <= tileCoordsY + 1; y++)
                 {
-                    if (Main.tile[x, y].WallType > 0)
+                    if (Main.tile[x, y].WallType > WallID.None)
                     {
                         climbWalls = true;
                     }
@@ -219,7 +219,7 @@ public static partial class RevengeanceAndDeathAI
             int npcType = NPC.type;
             if (NPC.ModNPC != null)
             {
-                if (NPC.ModNPC.AIType != 0)
+                if (NPC.ModNPC.AIType != NPCID.None)
                     npcType = NPC.ModNPC.AIType;
             }
 
@@ -1204,7 +1204,7 @@ PrepareToShoot:
                 {
                     for (int y = centerTileY - 1; y <= centerTileY + 1; y++)
                     {
-                        if (Main.tile[x, y] != null && Main.tile[x, y].WallType > 0)
+                        if (Main.tile[x, y] != null && Main.tile[x, y].WallType > WallID.None)
                         {
                             spiderAI = true;
                             break;
@@ -2390,7 +2390,7 @@ PrepareToShoot:
                 // Emit demon dust from eye when about to fire
                 if (NPC.ai[2] > (CalamityWorld.death ? EyezorLaserGateValue_Death : CalamityWorld.revenge ? EyezorLaserGateValue_Rev : EyezorLaserGateValue) - EyezorLaserTelegraphTime)
                 {
-                    Dust dust = Dust.NewDustDirect(eyeLocation, 1, 1, 27, 0f, 0f, 100, default, 1.5f);
+                    Dust dust = Dust.NewDustDirect(eyeLocation, 1, 1, DustID.Shadowflame, 0f, 0f, 100, default, 1.5f);
                     dust.noGravity = true;
                     dust.velocity *= 0f;
                 }

@@ -1,5 +1,4 @@
 ﻿using System;
-using CalamityMod.Balancing;
 using CalamityMod.Enums;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;

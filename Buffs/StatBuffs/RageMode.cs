@@ -1,6 +1,5 @@
 ﻿using CalamityMod.Balancing;
 using CalamityMod.CalPlayer;
-using CalamityMod.Items.Accessories;
 using CalamityMod.Particles;
 using Microsoft.Xna.Framework;
 using Terraria;

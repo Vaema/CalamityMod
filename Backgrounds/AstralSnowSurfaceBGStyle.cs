@@ -5,7 +5,6 @@ using Terraria.Graphics.Effects;
 using Terraria;
 using Terraria.ModLoader;
 using Microsoft.Xna.Framework;
-using Terraria.GameContent.UI.States;
 using CalamityMod.Skies;
 
 namespace CalamityMod.Backgrounds

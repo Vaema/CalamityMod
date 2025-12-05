@@ -1,15 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics.Contracts;
 using System.IO;
-using CalamityMod.Buffs.Potions;
 using CalamityMod.Buffs.StatDebuffs;
 using CalamityMod.Dusts;
 using CalamityMod.Events;
 using CalamityMod.Graphics.Renderers.CalamityRenderers;
-using CalamityMod.Fonts;
-using CalamityMod.Items.Accessories;
-using CalamityMod.Items.Accessories.Vanity;
 using CalamityMod.Items.Armor.Vanity;
 using CalamityMod.Items.LoreItems;
 using CalamityMod.Items.Materials;
@@ -29,10 +24,7 @@ using CalamityMod.NPCs.TownNPCs;
 using CalamityMod.Particles;
 using CalamityMod.Projectiles.Boss;
 using CalamityMod.Projectiles.Melee.Yoyos;
-using CalamityMod.Projectiles.Typeless;
-using CalamityMod.Sounds;
 using CalamityMod.World;
-using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using ReLogic.Content;
@@ -2337,7 +2329,7 @@ namespace CalamityMod.NPCs.DevourerofGods
                     {
                         for (int j = 0; j < 20; j++)
                         {
-                            Dust cosmicBurst = Dust.NewDustPerfect(n.Center + Main.rand.NextVector2Circular(25f, 25f), 234);
+                            Dust cosmicBurst = Dust.NewDustPerfect(n.Center + Main.rand.NextVector2Circular(25f, 25f), DustID.BoneTorch);
                             cosmicBurst.scale = 1.7f;
                             cosmicBurst.velocity = Main.rand.NextVector2Circular(9f, 9f);
                             cosmicBurst.noGravity = true;

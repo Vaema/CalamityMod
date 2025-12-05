@@ -1,9 +1,7 @@
 ﻿using CalamityMod.Buffs.DamageOverTime;
 using CalamityMod.Buffs.StatDebuffs;
-using CalamityMod.Dusts;
 using CalamityMod.Particles;
 using CalamityMod.Systems;
-using Microsoft.CodeAnalysis;
 using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.Audio;

@@ -1041,7 +1041,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
 
                             try
                             {
-                                if (WorldGen.SolidTile(hookTileX, hookTileY) || (Main.tile[hookTileX, hookTileY].WallType > 0 && (hookMoveTries > 500 || lifeRatio < 0.5f)))
+                                if (WorldGen.SolidTile(hookTileX, hookTileY) || (Main.tile[hookTileX, hookTileY].WallType > WallID.None && (hookMoveTries > 500 || lifeRatio < 0.5f)))
                                 {
                                     hookCanMove = true;
                                     NPC.ai[0] = hookTileX;

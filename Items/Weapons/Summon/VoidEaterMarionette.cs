@@ -1,17 +1,14 @@
 ﻿using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 using CalamityMod.Buffs.Summon;
 using CalamityMod.Items.Weapons.Rogue;
 using CalamityMod.NPCs.DevourerofGods;
 using CalamityMod.Projectiles.Summon;
 using CalamityMod.Rarities;
-using Microsoft.CodeAnalysis.Operations;
 using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.DataStructures;
 using Terraria.ID;
-using Terraria.Localization;
 using Terraria.ModLoader;
 
 namespace CalamityMod.Items.Weapons.Summon

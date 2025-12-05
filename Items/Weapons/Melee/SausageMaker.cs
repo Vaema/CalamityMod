@@ -1,6 +1,4 @@
-﻿using CalamityMod.Items.Materials;
-using CalamityMod.Items.Weapons.Rogue;
-using CalamityMod.Projectiles.Melee.Spears;
+﻿using CalamityMod.Projectiles.Melee.Spears;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;

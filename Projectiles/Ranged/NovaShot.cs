@@ -94,7 +94,7 @@ namespace CalamityMod.Projectiles.Ranged
         {
             for (int i = 0; i <= 4; i++)
             {
-                Dust dust = Dust.NewDustPerfect(Projectile.position, 107, Projectile.velocity.RotatedByRandom(MathHelper.ToRadians(15f)) * Main.rand.NextFloat(0.1f, 0.8f), 0, default, Main.rand.NextFloat(1.2f, 1.6f));
+                Dust dust = Dust.NewDustPerfect(Projectile.position, DustID.Terra, Projectile.velocity.RotatedByRandom(MathHelper.ToRadians(15f)) * Main.rand.NextFloat(0.1f, 0.8f), 0, default, Main.rand.NextFloat(1.2f, 1.6f));
                 dust.noGravity = false;
             }
         }

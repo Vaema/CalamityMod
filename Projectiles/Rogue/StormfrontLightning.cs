@@ -1,11 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using CalamityMod.Buffs.DamageOverTime;
 using CalamityMod.Graphics.Primitives;
-using CalamityMod.Items.Weapons.Rogue;
-using CalamityMod.Projectiles.Rogue;
 using CalamityMod.Sounds;
 using Microsoft.Xna.Framework;
 using Terraria;
@@ -83,7 +79,7 @@ namespace CalamityMod.Projectiles.Rogue
             //dust sparks are now a feature
             if (Main.rand.NextBool(10))
             {
-                int d = Dust.NewDust(Projectile.Center, Projectile.width, Projectile.height, 226, 0f, 0f, 100, new Color(Main.rand.Next(20, 100), 204, 250), 1f);
+                int d = Dust.NewDust(Projectile.Center, Projectile.width, Projectile.height, DustID.Electric, 0f, 0f, 100, new Color(Main.rand.Next(20, 100), 204, 250), 1f);
                 Main.dust[d].scale += (float)Main.rand.Next(50) * 0.01f;
                 Main.dust[d].noGravity = true;
                 Main.dust[d].position = Projectile.Center;

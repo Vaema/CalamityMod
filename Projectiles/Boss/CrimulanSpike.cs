@@ -1,13 +1,6 @@
-﻿using System;
-using System.IO;
-using CalamityMod.Events;
-using CalamityMod.NPCs;
-using CalamityMod.Sounds;
-using CalamityMod.World;
-using Microsoft.Xna.Framework;
+﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria;
-using Terraria.Audio;
 using Terraria.GameContent;
 using Terraria.ID;
 using Terraria.ModLoader;

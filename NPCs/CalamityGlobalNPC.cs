@@ -57,7 +57,6 @@ using CalamityMod.NPCs.VanillaNPCAIOverrides.RegularEnemies;
 using CalamityMod.Packets;
 using CalamityMod.Particles;
 using CalamityMod.Projectiles.Magic;
-using CalamityMod.Projectiles.Melee;
 using CalamityMod.Projectiles.Ranged;
 using CalamityMod.Projectiles.Rogue;
 using CalamityMod.Projectiles.Typeless;
@@ -69,7 +68,6 @@ using CalamityMod.UI;
 using CalamityMod.UI.DebuffSystem;
 using CalamityMod.Walls.DraedonStructures;
 using CalamityMod.World;
-using Microsoft.CodeAnalysis;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using MonoMod.Utils;
@@ -6437,7 +6435,7 @@ namespace CalamityMod.NPCs
                                 player.inventory[item].stack--;
                                 if (player.inventory[item].stack <= 0)
                                 {
-                                    player.inventory[item].SetDefaults(0, false);
+                                    player.inventory[item].SetDefaults(ItemID.None, false);
                                 }
                                 break;
                             }

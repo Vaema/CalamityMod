@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.IO;
 using CalamityMod.Buffs.DamageOverTime;
-using CalamityMod.Graphics.Metaballs;
 using CalamityMod.Items.Weapons.Ranged;
 using CalamityMod.Particles;
 using Microsoft.Xna.Framework;

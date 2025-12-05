@@ -52,7 +52,7 @@ namespace CalamityMod.Tiles.Crags.Tree
             Main.tileLighted[Type] = false;
             Main.tileBlockLight[Type] = false;
             AddMapEntry(new Color(38, 25, 27), CreateMapEntryName());
-            DustType = 155;
+            DustType = DustID.Ambient_DarkBrown;
             HitSound = SoundID.DD2_SkeletonHurt;
             RegisterItemDrop(ModContent.ItemType<Items.Placeables.Crags.ScorchedBone>());
         }

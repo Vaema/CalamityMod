@@ -1,7 +1,6 @@
 ﻿using System;
 using System.IO;
 using CalamityMod.Events;
-using CalamityMod.Items.Weapons.DraedonsArsenal;
 using CalamityMod.NPCs.ExoMechs.Ares;
 using CalamityMod.Skies;
 using CalamityMod.World;
@@ -93,7 +92,7 @@ namespace CalamityMod.Projectiles.Boss
                     float scale = Main.rand.NextFloat(0.5f, 1.6f);
 
                     // Spawn dust
-                    Dust dust = Dust.NewDustPerfect(Projectile.Center, 107, -dustVel, 0, default, scale);
+                    Dust dust = Dust.NewDustPerfect(Projectile.Center, DustID.Terra, -dustVel, 0, default, scale);
                     dust.noGravity = true;
                 }
 

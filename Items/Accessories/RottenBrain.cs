@@ -1,5 +1,4 @@
 ﻿using CalamityMod.CalPlayer;
-using CalamityMod.Projectiles.Magic;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;

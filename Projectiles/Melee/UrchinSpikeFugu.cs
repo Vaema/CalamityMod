@@ -52,7 +52,7 @@ namespace CalamityMod.Projectiles.Melee
             int dustRate = (int)MathF.Max(Utils.Remap(Time, 0f, 12f, 20f, 4f), Utils.Remap(Time, 60f, 90f, 4f, 20f));
             if (Main.rand.NextBool(dustRate))
             {
-                Dust offTrail = Dust.NewDustPerfect(Projectile.Center, 171, Main.rand.NextVector2Circular(0.2f, 0.2f));
+                Dust offTrail = Dust.NewDustPerfect(Projectile.Center, DustID.Venom, Main.rand.NextVector2Circular(0.2f, 0.2f));
                 offTrail.noGravity = true;
                 offTrail.scale = Main.rand.NextFloat(0.6f, 1.2f);
             }

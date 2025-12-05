@@ -1,5 +1,4 @@
 ﻿using System;
-using CalamityMod.Balancing;
 using CalamityMod.Buffs.StatDebuffs;
 using CalamityMod.Dusts;
 using CalamityMod.Graphics.Primitives;
@@ -88,7 +87,7 @@ namespace CalamityMod.Projectiles.Typeless
             trail.color = trailColor;
 
             Vector2 sinOffset = (Vector2.UnitY * MathF.Sin(Projectile.timeLeft * MathHelper.Pi * 0.05f) * 24f).RotatedBy(Projectile.rotation);
-            Dust offTrail = Dust.NewDustPerfect(Projectile.Center + sinOffset, 175, Main.rand.NextVector2Circular(0.2f, 0.2f));
+            Dust offTrail = Dust.NewDustPerfect(Projectile.Center + sinOffset, DustID.SpectreStaff, Main.rand.NextVector2Circular(0.2f, 0.2f));
             offTrail.noGravity = true;
             offTrail.scale = Main.rand.NextFloat(1.2f, 1.8f);
             offTrail.alpha = Main.rand.Next(120, 180 + 1);

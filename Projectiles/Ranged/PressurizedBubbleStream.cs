@@ -109,7 +109,7 @@ namespace CalamityMod.Projectiles.Ranged
                 for (int i = 0; i < numDust; i++)
                 {
                     Vector2 ringSpeed = new Vector2((float)Math.Cos(i / (float)numDust * MathHelper.TwoPi), (float)Math.Sin(i / (float)numDust * MathHelper.TwoPi) * 0.5f).RotatedBy(Projectile.velocity.ToRotation() + MathHelper.PiOver2) * (3.5f * (1 - Progress) + 3f);
-                    Dust ringDust = Dust.NewDustPerfect(Projectile.position, 211, ringSpeed, 100, default, 1.25f);
+                    Dust ringDust = Dust.NewDustPerfect(Projectile.position, DustID.Wet, ringSpeed, 100, default, 1.25f);
                     ringDust.noGravity = true;
 
                 }

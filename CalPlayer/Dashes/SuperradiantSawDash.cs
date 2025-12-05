@@ -1,9 +1,7 @@
 ﻿using CalamityMod.Enums;
-using CalamityMod.Items.Weapons.Ranged;
 using CalamityMod.Particles;
 using Microsoft.Xna.Framework;
 using Terraria;
-using Terraria.Audio;
 using Terraria.ID;
 
 namespace CalamityMod.CalPlayer.Dashes

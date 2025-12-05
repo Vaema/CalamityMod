@@ -2,13 +2,11 @@
 using CalamityMod.Balancing;
 using CalamityMod.Items.Accessories;
 using CalamityMod.Items.Fishing.AstralCatches;
-using CalamityMod.Items.PermanentBoosters;
 using CalamityMod.Items.Placeables.Ores;
 using CalamityMod.Items.Weapons.Ranged;
 using CalamityMod.Items.Weapons.Rogue;
 using CalamityMod.Items.Weapons.Summon;
 using CalamityMod.Items.Weapons.Typeless;
-using CalamityMod.Physics;
 using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.ID;

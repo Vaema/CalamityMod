@@ -1,7 +1,5 @@
 ﻿using CalamityMod.Items.Materials;
 using CalamityMod.Projectiles.Melee.Yoyos;
-using CalamityMod.Tiles.Furniture.CraftingStations;
-using Terraria;
 using Terraria.ID;
 using Terraria.Localization;
 using Terraria.ModLoader;

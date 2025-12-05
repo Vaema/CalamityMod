@@ -29,7 +29,7 @@ namespace CalamityMod.Tiles.Abyss
             MineResist = 3f;
             MinPick = 65;
             HitSound = MineSound;
-            DustType = 33;
+            DustType = DustID.Water;
             this.RegisterBlendMergeWith(TileID.Dirt);
             this.RegisterBlendMergeWith(TileID.Stone);
             this.RegisterBlendMergeWith(ModContent.TileType<AbyssGravel>());

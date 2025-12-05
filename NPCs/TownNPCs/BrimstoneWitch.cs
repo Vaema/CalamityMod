@@ -9,7 +9,6 @@ using CalamityMod.Systems.Collections;
 using CalamityMod.UI.CalamitasEnchants;
 using Microsoft.Xna.Framework;
 using Terraria;
-using Terraria.GameContent;
 using Terraria.GameContent.Bestiary;
 using Terraria.GameContent.Events;
 using Terraria.GameContent.Personalities;

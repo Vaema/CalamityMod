@@ -1,6 +1,4 @@
-﻿using CalamityMod.Items.Materials;
-using Terraria;
-using Terraria.ID;
+﻿using Terraria;
 using Terraria.Localization;
 using Terraria.ModLoader;
 

@@ -1,8 +1,4 @@
-﻿using CalamityMod.Items.Materials;
-using CalamityMod.Items.Weapons.Rogue;
-using CalamityMod.Projectiles.Melee.Spears;
-using CalamityMod.Projectiles.Melee.Yoyos;
-using Terraria;
+﻿using CalamityMod.Projectiles.Melee.Yoyos;
 using Terraria.ID;
 using Terraria.Localization;
 using Terraria.ModLoader;

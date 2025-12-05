@@ -30,7 +30,7 @@ namespace CalamityMod.Tiles
 
             TileID.Sets.CanBeDugByShovel[Type] = true;
 
-            DustType = 38;
+            DustType = DustID.Mud;
             AddMapEntry(new Color(80, 120, 0));
             HitSound = SoundID.Dig;
 

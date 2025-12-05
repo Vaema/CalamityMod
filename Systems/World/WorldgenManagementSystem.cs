@@ -4,8 +4,6 @@ using CalamityMod.Items.Accessories.Vanity;
 using CalamityMod.Items.SummonItems;
 using CalamityMod.Items.Weapons.Rogue;
 using CalamityMod.Items.Weapons.Summon;
-using CalamityMod.Tiles.AstralSnow;
-using CalamityMod.Tiles.Ores;
 using CalamityMod.World;
 using CalamityMod.World.Minibiomes;
 using CalamityMod.World.Planets;

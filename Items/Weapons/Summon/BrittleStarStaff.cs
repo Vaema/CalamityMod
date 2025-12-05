@@ -1,14 +1,11 @@
 ﻿using CalamityMod.Buffs.Summon;
-using CalamityMod.Items.Weapons.Magic;
 using CalamityMod.Items.Weapons.Rogue;
 using CalamityMod.Projectiles.Summon;
-using CalamityMod.Projectiles.Typeless;
 using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.DataStructures;
 using Terraria.ID;
 using Terraria.ModLoader;
-using static Humanizer.In;
 
 namespace CalamityMod.Items.Weapons.Summon
 {

@@ -1,5 +1,4 @@
 ﻿using System;
-using CalamityMod.Buffs.DamageOverTime;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria;
@@ -75,7 +74,7 @@ namespace CalamityMod.Projectiles.Boss
                 Projectile.Opacity = 0f;
                 if (Main.rand.NextBool())
                 {
-                    Dust catastrophedust = Dust.NewDustPerfect(Projectile.Center, 66, -Projectile.velocity * Main.rand.NextFloat(0.1f, 1.5f));
+                    Dust catastrophedust = Dust.NewDustPerfect(Projectile.Center, DustID.RainbowTorch, -Projectile.velocity * Main.rand.NextFloat(0.1f, 1.5f));
                     catastrophedust.noGravity = true;
                     catastrophedust.scale = Main.rand.NextFloat(0.5f, 0.7f);
                     catastrophedust.color = Color.DeepSkyBlue;
@@ -100,7 +99,7 @@ namespace CalamityMod.Projectiles.Boss
                     Projectile.velocity *= 1.015f;
                 if (Main.rand.NextBool(3))
                 {
-                    Dust catastrophedust = Dust.NewDustPerfect(Projectile.Center + Main.rand.NextVector2Circular(50, 50) - Projectile.velocity.SafeNormalize(Vector2.UnitY) * 8.5f, 66, -Projectile.velocity * Main.rand.NextFloat(0.2f, 1.2f));
+                    Dust catastrophedust = Dust.NewDustPerfect(Projectile.Center + Main.rand.NextVector2Circular(50, 50) - Projectile.velocity.SafeNormalize(Vector2.UnitY) * 8.5f, DustID.RainbowTorch, -Projectile.velocity * Main.rand.NextFloat(0.2f, 1.2f));
                     catastrophedust.noGravity = true;
                     catastrophedust.scale = Main.rand.NextFloat(0.5f, 0.7f);
                     catastrophedust.color = Color.DeepSkyBlue;
@@ -131,7 +130,7 @@ namespace CalamityMod.Projectiles.Boss
                         for (int i = 0; i < 3; i++)
                         {
                             Vector2 vel = new Vector2(14, 14).RotatedByRandom(100) * Main.rand.NextFloat(0.1f, 2.5f);
-                            Dust catastrophedust = Dust.NewDustPerfect(Projectile.Center + vel * 2, 279, vel);
+                            Dust catastrophedust = Dust.NewDustPerfect(Projectile.Center + vel * 2, DustID.SilverFlame, vel);
                             catastrophedust.noGravity = true;
                             catastrophedust.scale = Main.rand.NextFloat(1.2f, 1.8f);
                             catastrophedust.color = Color.DeepSkyBlue;
@@ -163,7 +162,7 @@ namespace CalamityMod.Projectiles.Boss
                         for (int i = 0; i < 3; i++)
                         {
                             Vector2 vel = new Vector2(14, 14).RotatedByRandom(100) * Main.rand.NextFloat(0.1f, 2.5f);
-                            Dust catastrophedust = Dust.NewDustPerfect(Projectile.Center + vel * 2, 279, vel);
+                            Dust catastrophedust = Dust.NewDustPerfect(Projectile.Center + vel * 2, DustID.SilverFlame, vel);
                             catastrophedust.noGravity = true;
                             catastrophedust.scale = Main.rand.NextFloat(1.2f, 1.8f);
                             catastrophedust.color = Color.DeepSkyBlue;
@@ -179,7 +178,7 @@ namespace CalamityMod.Projectiles.Boss
                 {
                     Vector2 velocity = new Vector2(7, 7).RotatedByRandom(100) * Main.rand.NextFloat(0.8f, 1.2f);
 
-                    Dust dust = Dust.NewDustPerfect(Projectile.Center + velocity, 66, velocity * Main.rand.NextFloat(0.2f, 1f));
+                    Dust dust = Dust.NewDustPerfect(Projectile.Center + velocity, DustID.RainbowTorch, velocity * Main.rand.NextFloat(0.2f, 1f));
                     dust.noGravity = true;
                     dust.scale = Main.rand.NextFloat(1.3f, 1.9f);
                     dust.color = Color.Cyan;

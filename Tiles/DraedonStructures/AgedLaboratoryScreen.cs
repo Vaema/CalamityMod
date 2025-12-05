@@ -24,7 +24,7 @@ namespace CalamityMod.Tiles.DraedonStructures
 
             AddMapEntry(Color.DarkGray, CalamityUtils.GetText("Tiles.Screen"));
             TileID.Sets.FramesOnKillWall[Type] = true;
-            DustType = 8;
+            DustType = DustID.Iron;
         }
 
         public override bool CanExplode(int i, int j) => false;

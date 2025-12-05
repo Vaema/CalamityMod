@@ -1,7 +1,5 @@
-﻿using CalamityMod.CalPlayer;
-using CalamityMod.Items.Accessories;
+﻿using CalamityMod.Items.Accessories;
 using CalamityMod.Items.Armor.GemTech;
-using CalamityMod.Items.Potions.Alcohol;
 using CalamityMod.Projectiles.Melee;
 using CalamityMod.Projectiles.Ranged;
 using CalamityMod.Projectiles.Typeless;
@@ -376,7 +374,7 @@ namespace CalamityMod.DataStructures
 
             for (int i = 0; i < 12; i++)
             {
-                Dust energyPuff = Dust.NewDustPerfect(CalculateGemPosition(gemType), 267);
+                Dust energyPuff = Dust.NewDustPerfect(CalculateGemPosition(gemType), DustID.RainbowMk2);
                 energyPuff.velocity = (MathHelper.TwoPi * i / 12f).ToRotationVector2() * 5f;
                 energyPuff.color = GetColorFromGemType(gemType);
                 energyPuff.scale = 1.125f;

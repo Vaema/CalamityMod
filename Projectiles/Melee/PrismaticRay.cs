@@ -1,12 +1,10 @@
 ﻿using CalamityMod.Buffs.DamageOverTime;
 using CalamityMod.Graphics.Primitives;
 using CalamityMod.NPCs;
-using CalamityMod.Particles;
 using CalamityMod.Projectiles.BaseProjectiles;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using ReLogic.Content;
-using Steamworks;
 using System.Collections.Generic;
 using Terraria;
 using Terraria.Audio;

@@ -77,7 +77,7 @@ namespace CalamityMod.Projectiles.DraedonsArsenal
                     Vector2 offset = Main.rand.NextVector2CircularEdge(energyRadius, energyRadius) * 3f;
 
                     float dustHue = Main.rand.NextFloat(0.15f, 0.3f);
-                    Dust dust = Dust.NewDustPerfect(Projectile.Center + offset, 261);
+                    Dust dust = Dust.NewDustPerfect(Projectile.Center + offset, DustID.AncientLight);
                     dust.velocity = Projectile.DirectionFrom(dust.position) * energyRadius / 3f;
                     dust.color = Main.hslToRgb(dustHue, Main.rand.NextFloat(0.9f, 1f), Main.rand.NextFloat(0.5f, 0.66f));
                     dust.noGravity = true;
@@ -98,7 +98,7 @@ namespace CalamityMod.Projectiles.DraedonsArsenal
                     offset.Y *= yOffsetFactor;
 
                     float dustHue = Main.rand.NextFloat(0.15f, 0.3f);
-                    Dust dust = Dust.NewDustPerfect(Projectile.Center + offset, 261);
+                    Dust dust = Dust.NewDustPerfect(Projectile.Center + offset, DustID.AncientLight);
                     dust.velocity = Main.rand.NextVector2Circular(energySphereSpeedMax, energySphereSpeedMax);
                     dust.velocity += Projectile.velocity;
                     dust.color = Main.hslToRgb(dustHue, Main.rand.NextFloat(0.9f, 1f), Main.rand.NextFloat(0.5f, 0.66f));
@@ -116,7 +116,7 @@ namespace CalamityMod.Projectiles.DraedonsArsenal
                     offset.Y *= yOffsetFactor;
 
                     float dustHue = Main.rand.NextFloat(0.15f, 0.3f);
-                    Dust dust = Dust.NewDustPerfect(Projectile.Center + offset, 261);
+                    Dust dust = Dust.NewDustPerfect(Projectile.Center + offset, DustID.AncientLight);
                     dust.velocity = Vector2.Zero;
                     dust.color = Main.hslToRgb(dustHue, Main.rand.NextFloat(0.9f, 1f), Main.rand.NextFloat(0.5f, 0.66f));
                     dust.scale = 0.5f;

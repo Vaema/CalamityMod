@@ -1,7 +1,4 @@
-﻿using CalamityMod.BiomeManagers;
-using CalamityMod.Items.Critters;
-using CalamityMod.Items.Placeables.Banners;
-using CalamityMod.Tiles.SunkenSea.Ambient;
+﻿using CalamityMod.Items.Placeables.Banners;
 using Microsoft.Xna.Framework;
 using System.IO;
 using Terraria;
@@ -10,7 +7,6 @@ using Terraria.GameContent.Bestiary;
 using Terraria.ModLoader;
 using Terraria.ModLoader.Utilities;
 using Terraria.Audio;
-using Terraria.DataStructures;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria.GameContent;
 using ReLogic.Content;
@@ -18,7 +14,6 @@ using CalamityMod.Enums;
 using System.Collections.Generic;
 using System;
 using CalamityMod.Particles;
-using Microsoft.CodeAnalysis.CSharp.Syntax;
 using CalamityMod.Items.Weapons.Ranged;
 
 namespace CalamityMod.NPCs.SunkenSea

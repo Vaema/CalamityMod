@@ -1,11 +1,7 @@
 ﻿using CalamityMod.Projectiles.BaseProjectiles;
-using CalamityMod.Projectiles.Melee;
 using CalamityMod.Items.Weapons.Ranged;
-using CalamityMod.Items.Weapons.Rogue;
 using CalamityMod.Projectiles.Melee.Spears;
-using Microsoft.Xna.Framework;
 using Terraria;
-using Terraria.DataStructures;
 using Terraria.ID;
 using Terraria.ModLoader;
 

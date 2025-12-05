@@ -9,6 +9,7 @@ using ReLogic.Utilities;
 using Terraria;
 using Terraria.Audio;
 using Terraria.GameContent;
+using Terraria.ID;
 using Terraria.ModLoader;
 
 namespace CalamityMod.Projectiles.Magic
@@ -89,7 +90,7 @@ namespace CalamityMod.Projectiles.Magic
 
                         for (int i = 0; i < 17; i++)
                         {
-                            Dust chargefull = Dust.NewDustPerfect(GunTipPosition, 278);
+                            Dust chargefull = Dust.NewDustPerfect(GunTipPosition, DustID.FireworksRGB);
                             chargefull.velocity = Projectile.velocity.RotatedByRandom(0.4f) * Main.rand.NextFloat(5, 25);
                             chargefull.scale = Main.rand.NextFloat(0.45f, 0.75f);
                             chargefull.noGravity = true;
@@ -125,7 +126,7 @@ namespace CalamityMod.Projectiles.Magic
                         }
                         for (int i = 0; i < 17; i++)
                         {
-                            Dust chargefull = Dust.NewDustPerfect(GunTipPosition, 278);
+                            Dust chargefull = Dust.NewDustPerfect(GunTipPosition, DustID.FireworksRGB);
                             chargefull.velocity = Projectile.velocity.RotatedByRandom(0.4f) * Main.rand.NextFloat(5, 25);
                             chargefull.scale = Main.rand.NextFloat(0.55f, 0.75f) * chargePower + 0.1f;
                             chargefull.noGravity = true;
@@ -178,7 +179,7 @@ namespace CalamityMod.Projectiles.Magic
                     for (int i = 0; i < 18; i++)
                     {
                         Vector2 dustVel = Vector2.One.RotatedByRandom(100) * Main.rand.NextFloat(1, 5);
-                        Dust dust2 = Dust.NewDustPerfect(GunTipPosition + dustVel, 278, dustVel * 0.7f);
+                        Dust dust2 = Dust.NewDustPerfect(GunTipPosition + dustVel, DustID.FireworksRGB, dustVel * 0.7f);
                         dust2.scale = Main.rand.NextFloat(0.45f, 0.9f);
                         dust2.noGravity = true;
                         dust2.color = Color.Lerp(Color.White, Main.rand.NextBool(4) ? bColor : Color.Green, 0.7f);
@@ -190,7 +191,7 @@ namespace CalamityMod.Projectiles.Magic
                     SoundEngine.PlaySound(fire with { Volume = 1f, Pitch = 0.2f }, Projectile.Center);
                     for (int i = 0; i < 12; i++)
                     {
-                        Dust dust2 = Dust.NewDustPerfect(GunTipPosition, 278, Vector2.One.RotatedByRandom(100) * Main.rand.NextFloat(2f, 5.5f));
+                        Dust dust2 = Dust.NewDustPerfect(GunTipPosition, DustID.FireworksRGB, Vector2.One.RotatedByRandom(100) * Main.rand.NextFloat(2f, 5.5f));
                         dust2.scale = Main.rand.NextFloat(0.75f, 1.1f);
                         dust2.noGravity = false;
                         dust2.color = Color.Lerp(Color.White, Main.rand.NextBool(4) ? Color.Green : bColor, 0.7f);

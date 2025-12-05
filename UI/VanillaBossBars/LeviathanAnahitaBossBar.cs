@@ -1,6 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using CalamityMod.NPCs.Leviathan;
+﻿using CalamityMod.NPCs.Leviathan;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using ReLogic.Content;

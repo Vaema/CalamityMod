@@ -1,11 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using CalamityMod.Events;
-using CalamityMod.Items;
 using CalamityMod.Items.Accessories;
 using CalamityMod.Items.Accessories.Vanity;
 using CalamityMod.Items.Ammo;
-using CalamityMod.Items.Armor;
 using CalamityMod.Items.Armor.Vanity;
 using CalamityMod.Items.Dyes;
 using CalamityMod.Items.Dyes.HairDye;

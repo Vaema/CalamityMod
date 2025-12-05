@@ -158,7 +158,7 @@ namespace CalamityMod.Projectiles.Melee
                             SoundEngine.PlaySound(SoundID.DD2_BetsysWrathShot with { Volume = 0.4f }, Projectile.Center);
                             for (int i = 0; i < 30; i++)
                             {
-                                Dust fire = Dust.NewDustPerfect(Projectile.Center, 181);
+                                Dust fire = Dust.NewDustPerfect(Projectile.Center, DustID.GiantCursedSkullBolt);
                                 fire.velocity = Projectile.velocity.SafeNormalize(Vector2.UnitY).RotatedByRandom(0.8f) * new Vector2(4f, 1.25f) * Main.rand.NextFloat(0.9f, 1f);
                                 fire.velocity = fire.velocity.RotatedBy(Projectile.rotation - MathHelper.PiOver2);
                                 fire.velocity += Projectile.velocity * (EmpoweredHammer * 0.04f);
@@ -209,7 +209,7 @@ namespace CalamityMod.Projectiles.Melee
                         velOffset *= Main.rand.NextFloat(45, 65) * fade;
                         Particle energy = new SparkParticle(Projectile.Center + velOffset * 2.5f, -velOffset * Main.rand.NextFloat(0.08f, 0.12f) * 1.5f, false, 14, Main.rand.NextFloat(1.1f, 1.25f) - 0.5f * fade, usedColor);
                         GeneralParticleHandler.SpawnParticle(energy);
-                        Dust dust = Dust.NewDustPerfect(Projectile.Center + velOffset * 2.5f, 278, -velOffset * Main.rand.NextFloat(0.08f, 0.12f) * 1.5f, 0, default, Main.rand.NextFloat(0.4f, 0.6f));
+                        Dust dust = Dust.NewDustPerfect(Projectile.Center + velOffset * 2.5f, DustID.FireworksRGB, -velOffset * Main.rand.NextFloat(0.08f, 0.12f) * 1.5f, 0, default, Main.rand.NextFloat(0.4f, 0.6f));
                         dust.noGravity = true;
                         dust.color = usedColor;
                         GalaxyMetaball.SpawnParticle(Projectile.Center + velOffset * 1.5f, -velOffset * Main.rand.NextFloat(0.08f, 0.12f) * 1.5f, 50f * Main.rand.NextFloat(0.9f, 1.3f) * fade);
@@ -232,7 +232,7 @@ namespace CalamityMod.Projectiles.Melee
                 {
                     Vector2 offset = new Vector2(12, 0).RotatedByRandom(MathHelper.ToRadians(360f));
                     Vector2 velOffset = new Vector2(4, 0).RotatedBy(offset.ToRotation());
-                    Dust dust = Dust.NewDustPerfect(Projectile.Center + offset, 278, -Projectile.velocity * 0.2f + velOffset, 100, default, 0.7f);
+                    Dust dust = Dust.NewDustPerfect(Projectile.Center + offset, DustID.FireworksRGB, -Projectile.velocity * 0.2f + velOffset, 100, default, 0.7f);
                     dust.noGravity = true;
                     dust.color = Main.rand.NextBool() ? Color.Magenta : Color.Aqua;
                 }

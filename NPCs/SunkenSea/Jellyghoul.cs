@@ -2,12 +2,9 @@
 using System.Collections.Generic;
 using CalamityMod.BiomeManagers;
 using CalamityMod.DataStructures;
-using CalamityMod.Items.Placeables;
 using CalamityMod.Items.Placeables.Banners;
 using CalamityMod.Particles;
 using CalamityMod.Projectiles.Enemy;
-using CalamityMod.Systems;
-using CalamityMod.Walls;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using ReLogic.Content;

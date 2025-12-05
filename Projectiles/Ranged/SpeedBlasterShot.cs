@@ -1,5 +1,4 @@
-﻿using System.Linq;
-using CalamityMod.Graphics.Metaballs;
+﻿using CalamityMod.Graphics.Metaballs;
 using CalamityMod.Graphics.Primitives;
 using CalamityMod.Particles;
 using Microsoft.Xna.Framework;
@@ -95,7 +94,7 @@ namespace CalamityMod.Projectiles.Ranged
 
             if (Main.rand.NextBool(20) && !DashShot && !PostHit)
             {
-                Dust dust = Dust.NewDustPerfect(Projectile.Center, 192);
+                Dust dust = Dust.NewDustPerfect(Projectile.Center, DustID.Ghost);
                 dust.noLight = true;
                 dust.noGravity = false;
                 dust.scale = 1.2f;
@@ -123,7 +122,7 @@ namespace CalamityMod.Projectiles.Ranged
                     GeneralParticleHandler.SpawnParticle(spark2);
                 }
 
-                Dust dust = Dust.NewDustPerfect(Projectile.Center, 192);
+                Dust dust = Dust.NewDustPerfect(Projectile.Center, DustID.Ghost);
                 dust.noLight = true;
                 dust.noGravity = false;
                 dust.scale = Main.rand.NextFloat(1.3f, 1.5f);
@@ -135,7 +134,7 @@ namespace CalamityMod.Projectiles.Ranged
             {
                 for (int i = 0; i <= 10; i++)
                 {
-                    Dust dust = Dust.NewDustPerfect(Projectile.Center, 192, Projectile.velocity.RotatedByRandom(MathHelper.ToRadians(30f)) * Main.rand.NextFloat(0.4f, 1.2f));
+                    Dust dust = Dust.NewDustPerfect(Projectile.Center, DustID.Ghost, Projectile.velocity.RotatedByRandom(MathHelper.ToRadians(30f)) * Main.rand.NextFloat(0.4f, 1.2f));
                     dust.noGravity = true;
                     dust.color = ColorUsed;
                     dust.alpha = Main.rand.Next(40, 90);
@@ -147,7 +146,7 @@ namespace CalamityMod.Projectiles.Ranged
             {
                 for (int i = 0; i <= 7; i++)
                 {
-                    Dust dust = Dust.NewDustPerfect(Projectile.Center, 192, Projectile.velocity.RotatedByRandom(MathHelper.ToRadians(PostDashShot ? 13f : 23f)) * Main.rand.NextFloat(0.4f, 1.2f));
+                    Dust dust = Dust.NewDustPerfect(Projectile.Center, DustID.Ghost, Projectile.velocity.RotatedByRandom(MathHelper.ToRadians(PostDashShot ? 13f : 23f)) * Main.rand.NextFloat(0.4f, 1.2f));
                     dust.noGravity = true;
                     dust.color = ColorUsed;
                     dust.alpha = Main.rand.Next(40, 90);
@@ -187,7 +186,7 @@ namespace CalamityMod.Projectiles.Ranged
             {
                 for (int i = 0; i <= 8; i++)
                 {
-                    Dust dust = Dust.NewDustPerfect(Projectile.Center + Main.rand.NextVector2Circular(7, 7), 192, Projectile.velocity.RotatedByRandom(MathHelper.ToRadians(20f)) * Main.rand.NextFloat(0.05f, 0.45f), 0, default, Main.rand.NextFloat(0.6f, 1.2f));
+                    Dust dust = Dust.NewDustPerfect(Projectile.Center + Main.rand.NextVector2Circular(7, 7), DustID.Ghost, Projectile.velocity.RotatedByRandom(MathHelper.ToRadians(20f)) * Main.rand.NextFloat(0.05f, 0.45f), 0, default, Main.rand.NextFloat(0.6f, 1.2f));
                     dust.noLight = true;
                     dust.noGravity = false;
                     dust.color = GetColor(Projectile.ai[0]);

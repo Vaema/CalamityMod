@@ -1,5 +1,4 @@
-﻿using CalamityMod.Items.Weapons.Rogue;
-using CalamityMod.Projectiles.Magic;
+﻿using CalamityMod.Projectiles.Magic;
 using CalamityMod.Rarities;
 using Terraria;
 using Terraria.DataStructures;

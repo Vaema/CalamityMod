@@ -61,7 +61,7 @@ namespace CalamityMod.Projectiles.Magic
                 CalamityUtils.HomeInOnNPC(Projectile, !Projectile.tileCollide, 400f, 8f, 20f);
                 if (Main.rand.NextBool(10))
                 {
-                    Dust trailDust = Dust.NewDustPerfect(Projectile.Center + Main.rand.NextVector2Circular(5, 5) - Projectile.velocity, 66);
+                    Dust trailDust = Dust.NewDustPerfect(Projectile.Center + Main.rand.NextVector2Circular(5, 5) - Projectile.velocity, DustID.RainbowTorch);
                     trailDust.scale = Main.rand.NextFloat(0.7f, 0.85f);
                     trailDust.velocity = -Projectile.velocity * Main.rand.NextFloat(0.3f, 0.5f);
                     trailDust.color = Main.rand.NextBool() ? Color.AliceBlue : Color.SkyBlue;

@@ -12,7 +12,6 @@ using CalamityMod.Graphics.Primitives;
 using System.Linq;
 using Terraria.Graphics.Shaders;
 using static CalamityMod.CalamityUtils;
-using CalamityMod.Projectiles.DraedonsArsenal;
 using CalamityMod.Sounds;
 
 

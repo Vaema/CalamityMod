@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using CalamityMod.Enums;
 using CalamityMod.Graphics.Primitives;
 using Microsoft.Xna.Framework;

@@ -1,5 +1,4 @@
-﻿using System;
-using CalamityMod.Particles;
+﻿using CalamityMod.Particles;
 using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.Audio;
@@ -48,7 +47,7 @@ namespace CalamityMod.Projectiles.Magic
             {
                 for (int i = 0; i < 12; i++)
                 {
-                    Dust chargefull = Dust.NewDustPerfect(Projectile.Center, 278);
+                    Dust chargefull = Dust.NewDustPerfect(Projectile.Center, DustID.FireworksRGB);
                     chargefull.velocity = Projectile.velocity.RotatedByRandom(0.25f) * Main.rand.NextFloat(0.1f, 1);
                     chargefull.scale = Main.rand.NextFloat(0.45f, 0.8f);
                     chargefull.noGravity = true;
@@ -122,7 +121,7 @@ namespace CalamityMod.Projectiles.Magic
 
                 for (int i = 0; i < 20; i++)
                 {
-                    Dust chargefull = Dust.NewDustPerfect(Projectile.Center, 278);
+                    Dust chargefull = Dust.NewDustPerfect(Projectile.Center, DustID.FireworksRGB);
                     chargefull.velocity = new Vector2(9, 9).RotatedByRandom(100) * Main.rand.NextFloat(0.2f, 2f);
                     chargefull.scale = Main.rand.NextFloat(0.65f, 1.25f);
                     chargefull.noGravity = true;

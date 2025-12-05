@@ -5,6 +5,7 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using ReLogic.Content;
 using Terraria;
+using Terraria.ID;
 using Terraria.ModLoader;
 
 namespace CalamityMod.Projectiles.Magic
@@ -47,7 +48,7 @@ namespace CalamityMod.Projectiles.Magic
                         Color dustColor = Color.Lerp(Color.White, Color.Yellow, j / 12f);
                         float dustScale = MathHelper.Lerp(1.6f, 0.85f, j / 12f);
 
-                        Dust fire = Dust.NewDustPerfect(Projectile.Center, 6);
+                        Dust fire = Dust.NewDustPerfect(Projectile.Center, DustID.Torch);
                         fire.velocity = angle.ToRotationVector2() * starSpeed;
                         fire.color = dustColor;
                         fire.scale = dustScale;
