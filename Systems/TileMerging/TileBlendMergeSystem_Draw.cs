@@ -11,9 +11,6 @@ namespace CalamityMod.Systems
 {
     public sealed partial class TileBlendMergeSystem : ModSystem
     {
-        private static Color MediumQualityLightRequirement;
-        private static Color HighQualityLightRequirement;
-
         private static readonly Rectangle[] Rects9Slice = [
             new Rectangle(x: 0, y: 0, width: 4, height: 4),
             new Rectangle(x: 4, y: 0, width: 8, height: 4),
@@ -36,12 +33,6 @@ namespace CalamityMod.Systems
         ];
 
         private static readonly ThreadLocal<Color[]> ColorSliceBuffer = new(() => new Color[9]);
-
-        private static void OnQualityRequirementUpdate(Color highQualityLightReq, Color mediumQualityLightReq)
-        {
-            HighQualityLightRequirement = highQualityLightReq;
-            MediumQualityLightRequirement = mediumQualityLightReq;
-        }
 
         private void OnDrawTiles(On_Main.orig_DrawTiles orig, Main self, bool solidLayer, bool forRenderTargets, bool intoRenderTargets, int waterStyleOverride)
         {
@@ -95,13 +86,14 @@ namespace CalamityMod.Systems
             // Is HalfBlock condition is also in vanilla, so we follow that
             if (Lighting.NotRetro && !tile.IsHalfBlock && !TileID.Sets.DontDrawTileSliced[tileType])
             {
-                if (tileLight.IsAnyChannelGreaterThan(HighQualityLightRequirement))
+                var tileRenderer = Main.instance.TilesRenderer;
+                if (tileLight.IsAnyChannelGreaterThan(tileRenderer._highQualityLightingRequirement))
                 {
                     sliceLength = 9;
                     sliceRects = Rects9Slice;
                     Lighting.GetColor9Slice(tileX, tileY, ref colorSliceBuffer);
                 }
-                else if (tileLight.IsAnyChannelGreaterThan(MediumQualityLightRequirement))
+                else if (tileLight.IsAnyChannelGreaterThan(tileRenderer._mediumQualityLightingRequirement))
                 {
                     sliceLength = 4;
                     sliceRects = Rects4Slice;
