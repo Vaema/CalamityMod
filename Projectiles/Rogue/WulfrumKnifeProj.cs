@@ -68,7 +68,9 @@ namespace CalamityMod.Projectiles.Rogue
                 Projectile.tileCollide = false;
                 if (!Main.npc[(int)StuckEnemyID-1].active)
                 {
-                    Projectile.Kill();
+                    StuckEnemyID = 0;
+                    Projectile.velocity = -Vector2.UnitY.RotatedByRandom(0.25f) * Main.rand.NextFloat(0, 1f);
+                    Projectile.tileCollide = true;
                     return;
                 }
                 Projectile.Center = Main.npc[(int)StuckEnemyID-1].Center + Vector2.UnitX.RotatedBy(StuckEnemyRotation) * StuckEnemyDistance;
@@ -83,11 +85,15 @@ namespace CalamityMod.Projectiles.Rogue
                 {
                     Vector2 dustCenter = Projectile.Center + Main.rand.NextVector2Circular(4f, 4f);
 
-                    Dust chust = Dust.NewDustPerfect(dustCenter, 15, -Projectile.velocity * Main.rand.NextFloat(0.2f, 0.1f), Scale: Main.rand.NextFloat(1.2f, 1.8f));
+                    Dust chust = Dust.NewDustPerfect(dustCenter, DustID.MagicMirror, -Projectile.velocity * Main.rand.NextFloat(0.2f, 0.1f), Scale: Main.rand.NextFloat(1.2f, 1.8f));
                     chust.noGravity = true;
                 }
                 if (Projectile.Distance(player.Center) < 16)
                 {
+                    //Gives 1 second of armorless stealth usage
+                    player.Calamity().temporaryStealthTimer = 60;
+                    if (player.Calamity().rogueStealthMax < 0.1f)
+                        player.Calamity().rogueStealthMax = 0.1f;
                     player.Calamity().rogueStealth += player.Calamity().rogueStealthMax * 0.067f;
                     Projectile.Kill();
                 }
@@ -106,7 +112,7 @@ namespace CalamityMod.Projectiles.Rogue
                 {
                     Vector2 dustCenter = Projectile.Center + Projectile.velocity.RotatedBy(MathHelper.PiOver2).SafeNormalize(Vector2.Zero) * Main.rand.NextFloat(-3f, 3f);
 
-                    Dust chust = Dust.NewDustPerfect(dustCenter, 15, -Projectile.velocity * Main.rand.NextFloat(0.6f, 1.5f), Scale: Main.rand.NextFloat(1f, 1.4f));
+                    Dust chust = Dust.NewDustPerfect(dustCenter, DustID.MagicMirror, -Projectile.velocity * Main.rand.NextFloat(0.6f, 1.5f), Scale: Main.rand.NextFloat(1f, 1.4f));
                     chust.noGravity = true;
 
                     if (!Main.rand.NextBool(5))
@@ -130,7 +136,7 @@ namespace CalamityMod.Projectiles.Rogue
                 {
                     Vector2 dustCenter = Projectile.Center + Projectile.velocity.RotatedBy(MathHelper.PiOver2).SafeNormalize(Vector2.Zero) * Main.rand.NextFloat(-3f, 3f);
 
-                    Dust chust = Dust.NewDustPerfect(dustCenter, 15, -Projectile.velocity * Main.rand.NextFloat(0.6f, 1.5f), Scale: Main.rand.NextFloat(1f, 1.4f));
+                    Dust chust = Dust.NewDustPerfect(dustCenter, DustID.MagicMirror, -Projectile.velocity * Main.rand.NextFloat(0.6f, 1.5f), Scale: Main.rand.NextFloat(1f, 1.4f));
                     chust.noGravity = true;
                     chust.noLightEmittence = true;
                 }

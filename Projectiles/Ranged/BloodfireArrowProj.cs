@@ -1,13 +1,7 @@
-﻿using System;
-using CalamityMod.Balancing;
-using CalamityMod.Buffs.DamageOverTime;
-using CalamityMod.Dusts;
-using CalamityMod.Items.Weapons.Ranged;
+﻿using CalamityMod.Dusts;
 using CalamityMod.Particles;
-using CalamityMod.Projectiles.Typeless;
 using Microsoft.Xna.Framework;
 using Terraria;
-using Terraria.Audio;
 using Terraria.DataStructures;
 using Terraria.ID;
 using Terraria.ModLoader;

@@ -1,5 +1,4 @@
 ﻿using CalamityMod.Buffs.StatBuffs;
-using CalamityMod.Items.Weapons.Magic;
 using CalamityMod.Items.Weapons.Ranged;
 using Microsoft.Xna.Framework;
 using Terraria;

@@ -1,6 +1,4 @@
-﻿using CalamityMod.Tiles.FurnitureNavystone;
-using CalamityMod.Tiles.SunkenSea;
-using Terraria;
+﻿using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
 

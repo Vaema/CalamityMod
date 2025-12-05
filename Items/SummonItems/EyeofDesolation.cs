@@ -1,8 +1,6 @@
-﻿using System.Collections.Generic;
-using CalamityMod.Events;
+﻿using CalamityMod.Events;
 using CalamityMod.Items.Materials;
 using CalamityMod.NPCs.CalClone;
-using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;

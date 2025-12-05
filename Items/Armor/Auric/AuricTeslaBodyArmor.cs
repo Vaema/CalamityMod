@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using CalamityMod.CalPlayer;
 using CalamityMod.Items.Armor.Bloodflare;
 using CalamityMod.Items.Armor.GodSlayer;
 using CalamityMod.Items.Armor.Silva;
@@ -9,7 +8,6 @@ using CalamityMod.Rarities;
 using CalamityMod.Tiles.Furniture.CraftingStations;
 using Microsoft.Xna.Framework;
 using Terraria;
-using Terraria.ID;
 using Terraria.Localization;
 using Terraria.ModLoader;
 

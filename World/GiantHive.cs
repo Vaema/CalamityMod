@@ -1,31 +1,15 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Reflection;
-using CalamityMod.DataStructures;
-using CalamityMod.Items.Accessories;
-using CalamityMod.Items.Materials;
 using CalamityMod.Items.Potions;
-using CalamityMod.Items.Weapons.Rogue;
-using CalamityMod.Tiles;
-using CalamityMod.Tiles.Abyss;
-using CalamityMod.Tiles.Astral;
-using CalamityMod.Tiles.Crags;
-using CalamityMod.Tiles.FloralParadise;
-using CalamityMod.Tiles.FurnitureAncient;
-using CalamityMod.Tiles.Ores;
 using CalamityMod.Walls;
 using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Graphics;
 using Terraria;
-using Terraria.DataStructures;
 using Terraria.GameContent.Generation;
 using Terraria.ID;
-using Terraria.IO;
 using Terraria.ModLoader;
 using Terraria.Utilities;
 using Terraria.WorldBuilding;
-using CalamityMod.World;
 
 namespace CalamityMod.World
 {
@@ -57,7 +41,7 @@ namespace CalamityMod.World
                     treeHeight++;
                 }
 
-                if (Main.tile[origin.X, treeHeight].HasTile || Main.tile[origin.X, treeHeight].WallType > 0)
+                if (Main.tile[origin.X, treeHeight].HasTile || Main.tile[origin.X, treeHeight].WallType > WallID.None)
                 {
                     validHeightFound = true;
                 }

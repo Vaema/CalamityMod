@@ -2,15 +2,12 @@
 using System.Collections.Generic;
 using CalamityMod.Enums;
 using CalamityMod.Items.Accessories;
-using CalamityMod.Items.Potions;
-using CalamityMod.NPCs.SulphurousSea;
 using CalamityMod.World;
 using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.DataStructures;
 using Terraria.GameContent.ItemDropRules;
 using Terraria.ID;
-using Terraria.Localization;
 using Terraria.ModLoader;
 using Terraria.Utilities;
 

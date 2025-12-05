@@ -69,7 +69,7 @@ namespace CalamityMod.Projectiles.Magic
             }
             if (Main.rand.NextBool(7))
             {
-                Dust dust = Dust.NewDustPerfect(Projectile.Center + Projectile.velocity * 0.5f, 278, Projectile.velocity.RotatedByRandom(0.8) * Main.rand.NextFloat(0.03f, 0.18f));
+                Dust dust = Dust.NewDustPerfect(Projectile.Center + Projectile.velocity * 0.5f, DustID.FireworksRGB, Projectile.velocity.RotatedByRandom(0.8) * Main.rand.NextFloat(0.03f, 0.18f));
                 dust.scale = Main.rand.NextFloat(0.3f, 0.5f);
                 dust.color = Main.rand.NextBool() ? Color.CornflowerBlue : Color.LightBlue;
                 dust.noGravity = true;

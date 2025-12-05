@@ -11,7 +11,6 @@ using Microsoft.Xna.Framework.Graphics;
 using ReLogic.Content;
 using Terraria;
 using Terraria.Audio;
-using Terraria.Graphics.Effects;
 using Terraria.Graphics.Shaders;
 using Terraria.ID;
 using Terraria.ModLoader;
@@ -151,7 +150,7 @@ namespace CalamityMod.Projectiles.Summon
                 {
                     Vector2 direction = Main.rand.NextVector2CircularEdge(1f, 1f);
 
-                    Dust wishyDust = Dust.NewDustPerfect(Projectile.Center + direction * Main.rand.NextFloat(1f, 8f), 229, Alpha : 100, Scale: Main.rand.NextFloat(1f, 1.4f));
+                    Dust wishyDust = Dust.NewDustPerfect(Projectile.Center + direction * Main.rand.NextFloat(1f, 8f), DustID.Vortex, Alpha : 100, Scale: Main.rand.NextFloat(1f, 1.4f));
                     wishyDust.noGravity = true;
                     wishyDust.noLight = true;
                     wishyDust.velocity = direction * Main.rand.NextFloat(2f, 4);
@@ -363,7 +362,7 @@ namespace CalamityMod.Projectiles.Summon
                         {
                             Vector2 direction = Main.rand.NextVector2CircularEdge(1f, 1f);
 
-                            Dust wishyDust = Dust.NewDustPerfect(playerToBuff.Center + direction * Main.rand.NextFloat(4f, 9f), 229, Alpha: 100, Scale: Main.rand.NextFloat(1f, 1.4f));
+                            Dust wishyDust = Dust.NewDustPerfect(playerToBuff.Center + direction * Main.rand.NextFloat(4f, 9f), DustID.Vortex, Alpha: 100, Scale: Main.rand.NextFloat(1f, 1.4f));
                             wishyDust.noGravity = true;
                             wishyDust.noLight = true;
                             wishyDust.velocity = direction * Main.rand.NextFloat(2f, 4);

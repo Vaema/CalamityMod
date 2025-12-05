@@ -1,8 +1,6 @@
 ﻿using System.IO;
 using CalamityMod.Dusts;
-using CalamityMod.Events;
 using CalamityMod.Projectiles.Boss;
-using CalamityMod.World;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using ReLogic.Content;
@@ -13,8 +11,6 @@ using Terraria.GameContent.Bestiary;
 using Terraria.ID;
 using Terraria.ModLoader;
 using CalamityMod.Particles;
-using Steamworks;
-using CalamityMod.Items.Weapons.Summon;
 
 namespace CalamityMod.NPCs.SupremeCalamitas
 {

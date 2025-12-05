@@ -1,6 +1,5 @@
 ﻿using System.IO;
 using CalamityMod.NPCs.Yharon;
-using CalamityMod.World;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria;

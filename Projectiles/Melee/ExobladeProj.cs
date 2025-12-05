@@ -2,13 +2,11 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using CalamityMod.Balancing;
 using CalamityMod.Buffs.StatDebuffs;
 using CalamityMod.Dusts;
 using CalamityMod.Graphics.Primitives;
 using CalamityMod.Items.Weapons.Melee;
 using CalamityMod.Particles;
-using CalamityMod.Projectiles.Healing;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using ReLogic.Content;
@@ -326,7 +324,7 @@ namespace CalamityMod.Projectiles.Melee
             if (Main.rand.NextFloat() < RiskOfDust)
             {
                 Color dustColor = Main.hslToRgb(Main.rand.NextFloat(), 1f, 0.9f);
-                Dust must = Dust.NewDustPerfect(Owner.MountedCenter + SwordDirection * BladeLength * Projectile.scale * (float)Math.Pow(Main.rand.NextFloat(0.2f, 1f), 0.5f), 267, SwordDirection.RotatedBy(MathHelper.PiOver2 * Direction) * 2.6f, 0, dustColor);
+                Dust must = Dust.NewDustPerfect(Owner.MountedCenter + SwordDirection * BladeLength * Projectile.scale * (float)Math.Pow(Main.rand.NextFloat(0.2f, 1f), 0.5f), DustID.RainbowMk2, SwordDirection.RotatedBy(MathHelper.PiOver2 * Direction) * 2.6f, 0, dustColor);
 
                 must.scale = 0.3f;
                 must.fadeIn = Main.rand.NextFloat() * 1.2f;
@@ -393,7 +391,7 @@ namespace CalamityMod.Projectiles.Melee
                 if (Main.rand.NextBool())
                 {
                     Color dustColor = Main.hslToRgb(Main.rand.NextFloat(), 1f, 0.9f);
-                    Dust must = Dust.NewDustPerfect(Owner.MountedCenter + Main.rand.NextVector2Circular(20f, 20f), 267, SwordDirection * -2.6f, 0, dustColor);
+                    Dust must = Dust.NewDustPerfect(Owner.MountedCenter + Main.rand.NextVector2Circular(20f, 20f), DustID.RainbowMk2, SwordDirection * -2.6f, 0, dustColor);
                     must.scale = 0.3f;
                     must.fadeIn = Main.rand.NextFloat() * 1.2f;
                     must.noGravity = true;

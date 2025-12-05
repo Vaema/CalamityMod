@@ -1,12 +1,10 @@
-﻿using CalamityMod.CalPlayer;
-using CalamityMod.Graphics.Primitives;
+﻿using CalamityMod.Graphics.Primitives;
 using CalamityMod.Items.Weapons.Melee;
 using CalamityMod.Particles;
 using CalamityMod.Enums;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using System;
-using System.IO;
 using Terraria;
 using Terraria.Graphics.Shaders;
 using Terraria.ID;

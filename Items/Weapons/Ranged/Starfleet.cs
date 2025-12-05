@@ -1,6 +1,5 @@
 ﻿using System.Collections.Generic;
 using CalamityMod.Items.Materials;
-using CalamityMod.Items.Placeables.Ores;
 using CalamityMod.Projectiles.Ranged;
 using CalamityMod.Rarities;
 using Terraria;

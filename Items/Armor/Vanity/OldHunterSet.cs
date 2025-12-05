@@ -1,6 +1,4 @@
-﻿using CalamityMod.CalPlayer;
-using CalamityMod.Items.Armor.DesertProwler;
-using CalamityMod.Items.Materials;
+﻿using CalamityMod.Items.Armor.DesertProwler;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;

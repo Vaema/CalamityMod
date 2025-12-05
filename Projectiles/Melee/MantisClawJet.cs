@@ -1,16 +1,9 @@
-﻿using CalamityMod.Projectiles.Typeless;
-using Microsoft.Xna.Framework;
+﻿using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.ID;
-using CalamityMod.Items.BaseItems;
 using Terraria.ModLoader;
-using CalamityMod.Projectiles.BaseProjectiles;
 using Microsoft.Xna.Framework.Graphics;
 using ReLogic.Content;
-using CalamityMod.Balancing;
-using Terraria.Audio;
-using CalamityMod.Items.Weapons.Melee;
-using System;
 using CalamityMod.Particles;
 using Terraria.DataStructures;
 using System.Collections.Generic;

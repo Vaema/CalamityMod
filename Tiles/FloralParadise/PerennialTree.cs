@@ -43,7 +43,7 @@ namespace CalamityMod.Tiles.FloralParadise
         {
             Main.tileAxe[Type] = true;
             Main.tileFrameImportant[Type] = true;
-            DustType = 7;
+            DustType = DustID.WoodFurniture;
             ItemDrop = ItemID.Wood;
             UseDefaultSize();
             TileObjectData.addTile(Type);

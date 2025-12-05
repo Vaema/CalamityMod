@@ -1,6 +1,4 @@
-﻿using System.Diagnostics;
-using CalamityMod.Items.Weapons.Rogue;
-using CalamityMod.Particles;
+﻿using CalamityMod.Particles;
 using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.Audio;

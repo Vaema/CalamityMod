@@ -1,5 +1,6 @@
 ﻿using Microsoft.Xna.Framework;
 using Terraria;
+using Terraria.ID;
 using Terraria.ModLoader;
 using Terraria.ObjectData;
 
@@ -19,7 +20,7 @@ namespace CalamityMod.Tiles.FloralParadise
             TileObjectData.newTile.RandomStyleRange = Variants;
             TileObjectData.addTile(Type);
 
-            DustType = 38;
+            DustType = DustID.Mud;
 
             AddMapEntry(new Color(56, 56, 56));
         }

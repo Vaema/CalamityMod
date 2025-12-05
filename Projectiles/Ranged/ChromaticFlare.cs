@@ -1,5 +1,4 @@
 ﻿using System;
-using System.IO;
 using CalamityMod.Buffs.DamageOverTime;
 using CalamityMod.Particles;
 using Microsoft.Xna.Framework;

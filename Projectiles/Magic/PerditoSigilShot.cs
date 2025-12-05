@@ -1,16 +1,9 @@
 ﻿using System;
-using System.Collections.Generic;
-using CalamityMod.CalPlayer;
 using CalamityMod.Dusts;
-using CalamityMod.Items.Weapons.Ranged;
-using CalamityMod.NPCs;
-using CalamityMod.NPCs.NormalNPCs;
-using CalamityMod.Particles;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using ReLogic.Content;
 using Terraria;
-using Terraria.Audio;
 using Terraria.ID;
 using Terraria.ModLoader;
 

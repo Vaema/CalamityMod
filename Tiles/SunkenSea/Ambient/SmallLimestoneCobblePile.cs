@@ -3,7 +3,6 @@ using Terraria.ID;
 using Terraria.ModLoader;
 using Terraria.ObjectData;
 using Microsoft.Xna.Framework;
-using Terraria.GameContent;
 
 namespace CalamityMod.Tiles.SunkenSea.Ambient
 {
@@ -25,7 +24,7 @@ namespace CalamityMod.Tiles.SunkenSea.Ambient
 
 
             AddMapEntry(new Color(174, 120, 91));
-            DustType = 96;
+            DustType = DustID.BlueMoss;
             HitSound = SoundID.Dig;
         }
     }

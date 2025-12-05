@@ -1,4 +1,5 @@
 ﻿using Terraria;
+using Terraria.ID;
 using Terraria.ModLoader;
 
 namespace CalamityMod.Dusts.WaterSplash
@@ -7,7 +8,7 @@ namespace CalamityMod.Dusts.WaterSplash
     {
         public override void SetStaticDefaults()
         {
-            UpdateType = 33;
+            UpdateType = DustID.Water;
         }
 
         public override void OnSpawn(Dust dust)

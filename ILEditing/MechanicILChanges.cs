@@ -2031,7 +2031,7 @@ namespace CalamityMod.ILEditing
 
         #region Arena Collision for other things
 
-        private bool ArenaCollision_Vector2_int_int_bool(On_Collision.orig_SolidCollision_Vector2_int_int_bool orig, Vector2 Position, int Width, int Height, bool acceptTopSurfaces)
+        private static bool ArenaCollision_Vector2_int_int_bool(On_Collision.orig_SolidCollision_Vector2_int_int_bool orig, Vector2 Position, int Width, int Height, bool acceptTopSurfaces)
         {
             if (ArenaWallSystem.ActiveBoxes.Count > 0)
             {
@@ -2044,7 +2044,7 @@ namespace CalamityMod.ILEditing
             return orig(Position, Width, Height, acceptTopSurfaces);
         }
 
-        private bool ArenaCollision_Vector2_int_int(On_Collision.orig_SolidCollision_Vector2_int_int orig, Vector2 Position, int Width, int Height)
+        private static bool ArenaCollision_Vector2_int_int(On_Collision.orig_SolidCollision_Vector2_int_int orig, Vector2 Position, int Width, int Height)
         {
             if (ArenaWallSystem.ActiveBoxes.Count > 0)
             {
@@ -2058,7 +2058,7 @@ namespace CalamityMod.ILEditing
         }
 
 
-        private Vector2 ArenaCollision_TileCollision(On_Collision.orig_TileCollision orig, Vector2 Position, Vector2 Velocity, int Width, int Height, bool fallThrough, bool fall2, int gravDir)
+        private static Vector2 ArenaCollision_TileCollision(On_Collision.orig_TileCollision orig, Vector2 Position, Vector2 Velocity, int Width, int Height, bool fallThrough, bool fall2, int gravDir)
         {
             Velocity = orig(Position, Velocity, Width, Height, fallThrough, fall2, gravDir);
             if (ArenaWallSystem.ActiveBoxes.Count > 0 && Velocity != Vector2.Zero)
@@ -2074,7 +2074,7 @@ namespace CalamityMod.ILEditing
             return Velocity;
         }
 
-        Vector2 ArenaCollisionLogic(ArenaWallSystem.Box box, Vector2 Position, int Width, int Height, Vector2 Velocity)
+        private static Vector2 ArenaCollisionLogic(ArenaWallSystem.Box box, Vector2 Position, int Width, int Height, Vector2 Velocity)
         {
             var originalVelocity = Velocity;
             var originalTopLeft = Position;

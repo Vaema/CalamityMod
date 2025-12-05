@@ -1,10 +1,8 @@
 ﻿using CalamityMod.DataStructures;
-using CalamityMod.Particles;
 using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.DataStructures;
 using Terraria.ID;
-using Terraria.Localization;
 using Terraria.ModLoader;
 
 namespace CalamityMod.Buffs.DamageOverTime
@@ -46,7 +44,7 @@ namespace CalamityMod.Buffs.DamageOverTime
             {
                 if (Main.rand.NextBool(3))
                 {
-                    Dust dust = Dust.NewDustPerfect(modPlayer.RandomDebuffVisualSpot, 278, new Vector2(2f, 2f).RotatedByRandom(100) * Main.rand.NextFloat(0.3f, 0.7f), 0, default, Main.rand.NextFloat(0.2f, 0.6f));
+                    Dust dust = Dust.NewDustPerfect(modPlayer.RandomDebuffVisualSpot, DustID.FireworksRGB, new Vector2(2f, 2f).RotatedByRandom(100) * Main.rand.NextFloat(0.3f, 0.7f), 0, default, Main.rand.NextFloat(0.2f, 0.6f));
                     dust.color = (Main.rand.NextBool(3) ? Color.Yellow : Color.LightSkyBlue);
                 }
             }
@@ -59,7 +57,7 @@ namespace CalamityMod.Buffs.DamageOverTime
 
             if (Main.rand.NextBool(4))
             { 
-                Dust dust = Dust.NewDustPerfect(npcSize, 278, new Vector2(2f, 2f).RotatedByRandom(100) * Main.rand.NextFloat(0.3f, 0.7f), 0, default, Main.rand.NextFloat(0.2f, 0.6f));
+                Dust dust = Dust.NewDustPerfect(npcSize, DustID.FireworksRGB, new Vector2(2f, 2f).RotatedByRandom(100) * Main.rand.NextFloat(0.3f, 0.7f), 0, default, Main.rand.NextFloat(0.2f, 0.6f));
                 dust.color = (Main.rand.NextBool(3) ? Color.Yellow : Color.LightSkyBlue);
             }
         }

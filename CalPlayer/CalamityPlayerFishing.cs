@@ -1,9 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using CalamityMod.Events;
 using CalamityMod.Items.Accessories;
-using CalamityMod.Items.Critters;
 using CalamityMod.Items.Fishing;
 using CalamityMod.Items.Fishing.AstralCatches;
 using CalamityMod.Items.Fishing.BrimstoneCragCatches;
@@ -30,7 +28,6 @@ using Terraria.DataStructures;
 using Terraria.ID;
 using Terraria.Localization;
 using Terraria.ModLoader;
-using Terraria.Utilities;
 
 namespace CalamityMod.CalPlayer
 {
@@ -148,7 +145,7 @@ namespace CalamityMod.CalPlayer
                         itemDrop = ModContent.ItemType<Brimlish>();
                     else if (questFish == ModContent.ItemType<Slurpfish>() && attempt.uncommon)
                         itemDrop = ModContent.ItemType<Slurpfish>();
-                    else if (grabBagFish && Main.hardMode)
+                    else if (questFish == ModContent.ItemType<Havocfish>() && attempt.uncommon)
                         itemDrop = ModContent.ItemType<Havocfish>();
                     else if (attempt.rare)
                     {
@@ -272,6 +269,12 @@ namespace CalamityMod.CalPlayer
                 }
             }
 
+            // Quest fish
+            if (sky && questFish == ModContent.ItemType<SunbeamFish>() && attempt.uncommon)
+                itemDrop = ModContent.ItemType<SunbeamFish>();
+            if (Player.ZoneSnow && questFish == ModContent.ItemType<FishofEleum>() && attempt.uncommon)
+                itemDrop = ModContent.ItemType<FishofEleum>();
+
             if (grabBagFish)
             {
                 if (surface && Main.bloodMoon)
@@ -287,10 +290,8 @@ namespace CalamityMod.CalPlayer
                         itemDrop = ModContent.ItemType<FishofNight>();
                     else if (Player.ZoneHallow && cavern && Main.rand.NextBool())
                         itemDrop = ModContent.ItemType<FishofLight>();
-                    else if (Player.ZoneSnow)
-                        itemDrop = ModContent.ItemType<FishofEleum>();
                     else if (sky)
-                        itemDrop = Main.rand.NextBool() ? ModContent.ItemType<SunbeamFish>() : ModContent.ItemType<FishofFlight>();
+                        itemDrop = ModContent.ItemType<FishofFlight>();
                 }
             }
 

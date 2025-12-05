@@ -110,7 +110,7 @@ namespace CalamityMod.Projectiles.Magic
             float burstSpeed = Main.rand.NextFloat(1f, 3f);
             for (int i = 0; i < 4; i++)
             {
-                Dust magicBurst = Dust.NewDustPerfect(searchPosition, 264);
+                Dust magicBurst = Dust.NewDustPerfect(searchPosition, DustID.PortalBoltTrail);
                 magicBurst.velocity = Projectile.velocity.RotatedBy(MathHelper.TwoPi * i / 4f + MathHelper.PiOver4).SafeNormalize(Vector2.Zero) * burstSpeed;
                 magicBurst.color = Color.White;
                 magicBurst.noLight = true;
@@ -127,7 +127,7 @@ namespace CalamityMod.Projectiles.Magic
             {
                 Color colorAccent = Main.rand.NextBool() ? Color.HotPink : Color.Aqua;
 
-                Dust transMagic = Dust.NewDustPerfect(GlowCenter, 264);
+                Dust transMagic = Dust.NewDustPerfect(GlowCenter, DustID.PortalBoltTrail);
                 transMagic.velocity = Main.rand.NextVector2Circular(4.6f, 4.6f) + Projectile.velocity * 0.25f;
                 transMagic.color = Color.Lerp(Color.White, colorAccent, Main.rand.NextFloat(0.23f));
                 transMagic.scale *= 1.1f;

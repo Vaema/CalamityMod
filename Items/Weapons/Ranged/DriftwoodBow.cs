@@ -39,7 +39,7 @@ namespace CalamityMod.Items.Weapons.Ranged
 
                 for (int i = 0; i <= 18; i++)
                 {
-                    Dust dust = Dust.NewDustPerfect(position + velocity * 3f, 160, velocity.RotatedByRandom(MathHelper.ToRadians(19f)) * Main.rand.NextFloat(0.8f, 3.8f), Scale: Main.rand.NextFloat(1.2f, 1.6f));
+                    Dust dust = Dust.NewDustPerfect(position + velocity * 3f, DustID.MagnetSphere, velocity.RotatedByRandom(MathHelper.ToRadians(19f)) * Main.rand.NextFloat(0.8f, 3.8f), Scale: Main.rand.NextFloat(1.2f, 1.6f));
                     dust.noGravity = true;
                 }
             }

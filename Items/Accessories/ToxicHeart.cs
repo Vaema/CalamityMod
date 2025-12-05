@@ -1,11 +1,6 @@
-﻿using CalamityMod.Buffs.DamageOverTime;
-using CalamityMod.CalPlayer;
-using CalamityMod.Items.Potions.Alcohol;
-using CalamityMod.Projectiles.Typeless;
-using Microsoft.Xna.Framework;
+﻿using CalamityMod.CalPlayer;
 using Terraria;
 using Terraria.ID;
-using Terraria.Audio;
 using Terraria.ModLoader;
 
 namespace CalamityMod.Items.Accessories

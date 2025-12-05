@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using CalamityMod.NPCs.CalClone;
-using CalamityMod.NPCs.DevourerofGods;
+﻿using CalamityMod.NPCs.CalClone;
 using CalamityMod.NPCs.Leviathan;
 using CalamityMod.NPCs.PlaguebringerGoliath;
 using CalamityMod.NPCs.Signus;

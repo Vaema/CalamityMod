@@ -5,7 +5,6 @@ using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
 using Terraria.GameContent;
-using CalamityMod.Projectiles.Ranged;
 using Terraria.Graphics.Shaders;
 using CalamityMod.Graphics.Primitives;
 using Terraria.Audio;

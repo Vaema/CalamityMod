@@ -1,5 +1,4 @@
-﻿using CalamityMod.Items.Placeables.FurnitureNavystone;
-using CalamityMod.Items.Placeables.FurnitureNavystone.FurnitureAncientNavystone;
+﻿using CalamityMod.Items.Placeables.FurnitureNavystone.FurnitureAncientNavystone;
 using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.GameContent.ObjectInteractions;

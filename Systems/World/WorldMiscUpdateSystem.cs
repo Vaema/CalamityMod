@@ -1,10 +1,8 @@
 ﻿using System;
 using CalamityMod.CalPlayer;
-using CalamityMod.Enums;
 using CalamityMod.Events;
 using CalamityMod.NPCs;
 using CalamityMod.NPCs.ExoMechs;
-using CalamityMod.NPCs.NormalNPCs;
 using CalamityMod.NPCs.PrimordialWyrm;
 using CalamityMod.Projectiles.Boss;
 using CalamityMod.Tiles;

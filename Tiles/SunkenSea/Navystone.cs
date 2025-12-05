@@ -47,7 +47,7 @@ namespace CalamityMod.Tiles.SunkenSea
             Tile Below = Framing.GetTileSafely(i, j + 1);
             Tile Above = Framing.GetTileSafely(i, j - 1);
 
-            if (!Below.HasTile && Below.LiquidType <= 0 && !Tile.BottomSlope)
+            if (!Below.HasTile && Below.LiquidType <= LiquidID.Water && !Tile.BottomSlope)
             {
                 if (Main.rand.NextBool(10))
                 {

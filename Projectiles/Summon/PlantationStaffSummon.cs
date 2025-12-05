@@ -324,7 +324,7 @@ namespace CalamityMod.Projectiles.Summon
         private void ShootEffect()
         {
             for (int i = 0; i < 5; i++)
-                Dust.NewDustPerfect(Projectile.Center, 40, Projectile.rotation.ToRotationVector2().RotatedByRandom(MathHelper.PiOver4) * Main.rand.NextFloat(3f, 5f));
+                Dust.NewDustPerfect(Projectile.Center, DustID.JunglePlants, Projectile.rotation.ToRotationVector2().RotatedByRandom(MathHelper.PiOver4) * Main.rand.NextFloat(3f, 5f));
         }
 
         #endregion

@@ -28,7 +28,7 @@ namespace CalamityMod.Tiles.Ores
             MineResist = 2f;
             MinPick = 150;
             HitSound = SoundID.Tink;
-            DustType = 235;
+            DustType = DustID.LifeDrain;
             Main.tileSpelunker[Type] = true;
 
             this.RegisterBlendMergeWith(ModContent.TileType<BrimstoneSlag>());

@@ -69,7 +69,7 @@ namespace CalamityMod.Projectiles.Magic
                 starAngle = Main.rand.NextFloat(-0.9f, 0.9f);
                 for (int i = 0; i < 4; i++)
                 {
-                    Dust chargefull = Dust.NewDustPerfect(Projectile.Center, 278);
+                    Dust chargefull = Dust.NewDustPerfect(Projectile.Center, DustID.FireworksRGB);
                     Vector2 vel = (MathHelper.TwoPi * i / 4f).ToRotationVector2().RotatedBy(starAngle) * 8f;
 
                     Particle pulse = new GlowSparkParticle(Projectile.Center, vel, false, 6, 0.12f, Color.Orange, new Vector2(1.5f, 0.9f), true, true, 2);
@@ -100,7 +100,7 @@ namespace CalamityMod.Projectiles.Magic
                 }
                 for (int i = 0; i < 4; i++)
                 {
-                    Dust chargefull = Dust.NewDustPerfect(Projectile.Center, 278);
+                    Dust chargefull = Dust.NewDustPerfect(Projectile.Center, DustID.FireworksRGB);
                     Vector2 vel = (MathHelper.TwoPi * i / 4f).ToRotationVector2().RotatedBy(starAngle) * 8f;
 
                     Particle pulse = new GlowSparkParticle(Projectile.Center, vel, false, 10, 0.22f, Color.Orange, new Vector2(1.5f, 0.9f), true, true, 1);
@@ -114,7 +114,7 @@ namespace CalamityMod.Projectiles.Magic
                 }
                 for (int i = 0; i < 60; i++)
                 {
-                    Dust chargefull = Dust.NewDustPerfect(Projectile.Center, 278);
+                    Dust chargefull = Dust.NewDustPerfect(Projectile.Center, DustID.FireworksRGB);
                     chargefull.velocity = new Vector2(25, 25).RotatedByRandom(100) * Main.rand.NextFloat(0.2f, 2f);
                     chargefull.scale = Main.rand.NextFloat(0.65f, 1.25f);
                     chargefull.noGravity = true;

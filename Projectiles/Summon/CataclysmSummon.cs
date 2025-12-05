@@ -90,7 +90,7 @@ namespace CalamityMod.Projectiles.Summon
             {
                 for (int i = 0; i < 40; i++)
                 {
-                    Dust brimstone = Dust.NewDustPerfect(projectile.Center + Main.rand.NextVector2Square(-65f, 65f), 267);
+                    Dust brimstone = Dust.NewDustPerfect(projectile.Center + Main.rand.NextVector2Square(-65f, 65f), DustID.RainbowMk2);
                     brimstone.velocity = -Vector2.UnitY * Main.rand.NextFloat(1.8f, 3.6f);
                     brimstone.scale = Main.rand.NextFloat(1.65f, 1.85f);
                     brimstone.fadeIn = Main.rand.NextFloat(0.7f, 0.9f);

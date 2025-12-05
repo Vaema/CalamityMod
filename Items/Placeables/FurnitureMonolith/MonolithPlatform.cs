@@ -1,6 +1,4 @@
-﻿using CalamityMod.Items.Placeables.Astral;
-using Terraria.ID;
-using Terraria.ModLoader;
+﻿using Terraria.ModLoader;
 namespace CalamityMod.Items.Placeables.FurnitureMonolith
 {
     public class MonolithPlatform : ModItem, ILocalizedModType

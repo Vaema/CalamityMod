@@ -12,10 +12,7 @@ using Terraria.Graphics.Shaders;
 using Terraria.ID;
 using Terraria.Localization;
 using Terraria.ModLoader;
-using CalamityMod;
 using CalamityMod.NPCs.ExoMechs.Ares;
-using CalamityMod.Projectiles.Melee;
-using ReLogic.Content;
 using System.Linq;
 using Terraria.DataStructures;
 
@@ -331,7 +328,7 @@ namespace CalamityMod.Projectiles.Melee
             {
                 for (int i = 0; i < 75; i++)
                 {
-                    Dust fire = Dust.NewDustPerfect(Owner.Center, 6);
+                    Dust fire = Dust.NewDustPerfect(Owner.Center, DustID.Torch);
                     fire.velocity = (MathHelper.TwoPi * i / 75f).ToRotationVector2() * 4f - Vector2.UnitY * 3f;
                     fire.scale = 1.4f;
                     fire.noGravity = true;

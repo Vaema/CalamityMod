@@ -24,7 +24,7 @@ namespace CalamityMod.Tiles.FurnitureWulfrum
             Main.tileObsidianKill[Type] = false;
 
             HitSound = CommonCalamitySounds.PlatingMine;
-            DustType = 299;
+            DustType = DustID.KryptonMoss;
 
             AddToArray(ref TileID.Sets.RoomNeeds.CountsAsTorch);
             AddMapEntry(new Color(92, 187, 99), CalamityUtils.GetItemName<Items.Placeables.FurnitureWulfrum.WulfrumWallMountedBulb>());

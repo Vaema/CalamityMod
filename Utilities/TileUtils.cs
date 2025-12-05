@@ -757,7 +757,7 @@ namespace CalamityMod
         /// </summary>
         /// <param name="theTile"></param>
         /// <returns>Wether or not the tile may be grappled onto</returns>
-        public static bool CanTileBeLatchedOnTo(this Tile theTile, bool grappleOnTrees = false) => Main.tileSolid[theTile.TileType] | (theTile.TileType == 314) | (grappleOnTrees && TileID.Sets.IsATreeTrunk[theTile.TileType]) | (grappleOnTrees && theTile.TileType == 323);
+        public static bool CanTileBeLatchedOnTo(this Tile theTile, bool grappleOnTrees = false) => Main.tileSolid[theTile.TileType] | (theTile.TileType == TileID.MinecartTrack) | (grappleOnTrees && TileID.Sets.IsATreeTrunk[theTile.TileType]) | (grappleOnTrees && theTile.TileType == TileID.PalmTree);
 
         /// <summary>
         /// Gets the required pickaxe power of a tile, accounting for both the ModTile and the vanilla tile pick requirements

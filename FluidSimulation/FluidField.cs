@@ -1,11 +1,9 @@
 ﻿using System;
 using CalamityMod.Effects;
 using CalamityMod.Graphics;
-using CalamityMod.NPCs.TownNPCs;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria;
-using Terraria.ID;
 using Terraria.ModLoader;
 
 namespace CalamityMod.FluidSimulation

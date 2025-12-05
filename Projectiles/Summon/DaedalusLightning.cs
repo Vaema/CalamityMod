@@ -1,6 +1,5 @@
 ﻿using System;
 using System.IO;
-using System.Linq;
 using CalamityMod.Graphics.Primitives;
 using Microsoft.Xna.Framework;
 using Terraria;

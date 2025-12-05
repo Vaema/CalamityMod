@@ -24,7 +24,7 @@ namespace CalamityMod.Tiles.AstralSnow
             CalamityUtils.MergeWithSnow(Type);
             CalamityUtils.MergeAstralTiles(Type);
 
-            DustType = 173;
+            DustType = DustID.ShadowbeamStaff;
 
             HitSound = SoundID.Item50;
 

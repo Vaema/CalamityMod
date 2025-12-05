@@ -1,25 +1,13 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Reflection;
-using CalamityMod.Items.Accessories;
 using CalamityMod.Items.Materials;
 using CalamityMod.Items.Potions;
-using CalamityMod.Items.Weapons.Rogue;
-using CalamityMod.Tiles;
 using CalamityMod.Tiles.Abyss;
 using CalamityMod.Tiles.Astral;
-using CalamityMod.Tiles.Crags;
-using CalamityMod.Tiles.FurnitureAncient;
 using CalamityMod.Tiles.FurnitureAuric;
-using CalamityMod.Tiles.Ores;
-using CalamityMod.Walls;
 using Microsoft.Xna.Framework;
 using Terraria;
-using Terraria.GameContent.Generation;
 using Terraria.ID;
-using Terraria.IO;
 using Terraria.ModLoader;
-using Terraria.Utilities;
 using Terraria.WorldBuilding;
 
 namespace CalamityMod.World

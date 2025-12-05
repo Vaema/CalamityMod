@@ -16,7 +16,7 @@ namespace CalamityMod.Tiles.Abyss
             CalamityUtils.MergeWithGeneral(Type);
             CalamityUtils.MergeWithAbyss(Type);
 
-            DustType = 32;
+            DustType = DustID.Sand;
             AddMapEntry(new Color(76, 58, 59));
             HitSound = SoundID.Dig;
             this.RegisterBlendMergeWith(TileID.Dirt);

@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using CalamityMod.Graphics.Primitives;
 using CalamityMod.Particles;
 using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Graphics;
 using Terraria;
 using Terraria.Graphics.Shaders;
 using Terraria.ID;
@@ -132,7 +131,7 @@ namespace CalamityMod.Projectiles.Magic
             for (int k = 0; k < 7; k++)
             {
                 Vector2 velocity = Main.rand.NextVector2Unit() * (Main.rand.NextFloat(8f, 14f));
-                Dust spark = Dust.NewDustPerfect(Projectile.Center, 278, velocity);
+                Dust spark = Dust.NewDustPerfect(Projectile.Center, DustID.FireworksRGB, velocity);
                 spark.noLight = true;
                 spark.color = Main.rand.NextBool() ? Color.Cyan : Color.Orchid;
             }

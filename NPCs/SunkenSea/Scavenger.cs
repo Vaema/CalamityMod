@@ -26,7 +26,6 @@ using Terraria.ModLoader;
 using Terraria.ModLoader.Utilities;
 using Terraria.Utilities;
 using CalamityMod.Items.Placeables.Banners;
-using CalamityMod.Items.Potions.Alcohol;
 
 namespace CalamityMod.NPCs.SunkenSea
 {

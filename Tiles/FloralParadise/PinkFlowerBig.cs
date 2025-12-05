@@ -44,7 +44,7 @@ namespace CalamityMod.Tiles.FloralParadise
             HitSound = SoundID.Grass;
             TileObjectData.addTile(Type);
 
-            DustType = 44;
+            DustType = DustID.JungleSpore;
             AddMapEntry(new Color(255, 155, 202));
         }
 
@@ -86,7 +86,7 @@ namespace CalamityMod.Tiles.FloralParadise
             if (!Main.gamePaused && windTimeLeft >= 2 && Main.rand.NextBool(4))
             {
                 Vector2 pollenVelocity = -Vector2.UnitY.RotatedByRandom(windRotation * 2.3f) * 3f;
-                Dust pollen = Dust.NewDustPerfect(drawPos + Main.screenPosition - drawOffset - Vector2.UnitY * 16f, 44);
+                Dust pollen = Dust.NewDustPerfect(drawPos + Main.screenPosition - drawOffset - Vector2.UnitY * 16f, DustID.JungleSpore);
                 pollen.velocity = pollenVelocity;
                 pollen.scale = 1.6f;
             }

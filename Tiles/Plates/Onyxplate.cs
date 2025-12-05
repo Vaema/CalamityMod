@@ -2,6 +2,7 @@
 using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.DataStructures;
+using Terraria.ID;
 
 namespace CalamityMod.Tiles.Plates
 {
@@ -22,7 +23,7 @@ namespace CalamityMod.Tiles.Plates
 
             HitSound = CommonCalamitySounds.PlatingMine;
             MineResist = 1f;
-            DustType = 173;
+            DustType = DustID.ShadowbeamStaff;
             AddMapEntry(new Color(182, 28, 232));
         }
 

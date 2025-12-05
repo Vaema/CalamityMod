@@ -4,6 +4,7 @@ using Microsoft.Xna.Framework.Graphics;
 using ReLogic.Content;
 using Terraria;
 using Terraria.GameContent;
+using Terraria.ID;
 using Terraria.ModLoader;
 using Terraria.ObjectData;
 
@@ -21,7 +22,7 @@ namespace CalamityMod.Tiles.Rubblemaker.Abyss
             TileObjectData.newTile.CopyFrom(TileObjectData.Style2x2);
             TileObjectData.addTile(Type);
             AddMapEntry(new Color(82, 49, 27));
-            DustType = 32;
+            DustType = DustID.Sand;
 
             RegisterItemDrop(ModContent.ItemType<PyreMantle>());
             FlexibleTileWand.RubblePlacementLarge.AddVariations(ModContent.ItemType<PyreMantle>(), Type, 0);

@@ -44,7 +44,7 @@ namespace CalamityMod.Projectiles.Boss
                 SoundEngine.PlaySound(TeslaCannon.FireSound, Projectile.Center);
                 for (int i = 0; i < 36; i++)
                 {
-                    Dust exoDust = Dust.NewDustPerfect(Projectile.BottomRight, 267);
+                    Dust exoDust = Dust.NewDustPerfect(Projectile.BottomRight, DustID.RainbowMk2);
                     exoDust.color = CalamityUtils.MulticolorLerp(i / 36f, CalamityUtils.ExoPalette);
                     exoDust.velocity = (MathHelper.TwoPi * i / 36f).ToRotationVector2() * new Vector2(3f, 1.45f) - Vector2.UnitY * 2f;
                     exoDust.scale = 2.8f;
@@ -54,7 +54,7 @@ namespace CalamityMod.Projectiles.Boss
 
                 for (int i = 0; i < 10; i++)
                 {
-                    Dust exoDust = Dust.NewDustPerfect(Projectile.BottomRight, 267);
+                    Dust exoDust = Dust.NewDustPerfect(Projectile.BottomRight, DustID.RainbowMk2);
                     exoDust.color = CalamityUtils.MulticolorLerp(Main.rand.NextFloat(), CalamityUtils.ExoPalette);
                     exoDust.velocity = Main.rand.NextVector2Circular(2f, 2f);
                     exoDust.scale = 4f;

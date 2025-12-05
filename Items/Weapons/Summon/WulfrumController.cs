@@ -1,5 +1,4 @@
-﻿using System;
-using CalamityMod.Buffs.Summon;
+﻿using CalamityMod.Buffs.Summon;
 using CalamityMod.Items.Materials;
 using CalamityMod.Projectiles.Summon;
 using Microsoft.Xna.Framework;
@@ -89,7 +88,7 @@ namespace CalamityMod.Items.Weapons.Summon
             {
                 Vector2 dustPos = Player.position + (Player.height * Main.rand.NextFloat(0.7f, 1f) + Player.gfxOffY) * Vector2.UnitY + Vector2.UnitX * Main.rand.NextFloat() * Player.width;
 
-                Dust chust = Dust.NewDustPerfect(dustPos, 274, -Vector2.UnitY * Main.rand.NextFloat(1.4f, 7f) + Player.velocity, Alpha: 100, Scale: Main.rand.NextFloat(1.2f, 1.8f));
+                Dust chust = Dust.NewDustPerfect(dustPos, DustID.ApprenticeStorm, -Vector2.UnitY * Main.rand.NextFloat(1.4f, 7f) + Player.velocity, Alpha: 100, Scale: Main.rand.NextFloat(1.2f, 1.8f));
                 chust.noGravity = true;
                 chust.noLight = true;
             }

@@ -10,7 +10,6 @@ using CalamityMod.Tiles.Ores;
 using CalamityMod.Tiles.SunkenSea;
 using Terraria;
 using Terraria.ModLoader;
-using CalamityMod.Walls;
 using Terraria.ID;
 
 namespace CalamityMod.Systems

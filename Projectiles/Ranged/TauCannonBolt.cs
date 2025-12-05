@@ -40,7 +40,7 @@ namespace CalamityMod.Projectiles.Ranged
                 return;
             if (Main.rand.NextBool(10))
             {
-                Dust trailDust = Dust.NewDustDirect(Projectile.position, Projectile.width, Projectile.height, 278, Scale: Main.rand.NextFloat(0.5f, 0.8f));
+                Dust trailDust = Dust.NewDustDirect(Projectile.position, Projectile.width, Projectile.height, DustID.FireworksRGB, Scale: Main.rand.NextFloat(0.5f, 0.8f));
                 trailDust.noGravity = true;
                 trailDust.color = Main.rand.NextBool(3) ? coralColor : turquoiseColor;
             }
@@ -60,7 +60,7 @@ namespace CalamityMod.Projectiles.Ranged
             int dustAmount = Main.rand.Next(5, 10);
             for (int i = 0; i < dustAmount; i++)
             {
-                Dust boomDust = Dust.NewDustPerfect(Projectile.Center, 278, (MathHelper.TwoPi / dustAmount * i).ToRotationVector2() * Main.rand.NextFloat(5f, 8f), Scale: Main.rand.NextFloat(0.6f, 1f));
+                Dust boomDust = Dust.NewDustPerfect(Projectile.Center, DustID.FireworksRGB, (MathHelper.TwoPi / dustAmount * i).ToRotationVector2() * Main.rand.NextFloat(5f, 8f), Scale: Main.rand.NextFloat(0.6f, 1f));
                 boomDust.noGravity = true;
                 boomDust.color = Main.rand.NextBool(3) ? coralColor : turquoiseColor;
             }

@@ -1,6 +1,4 @@
-﻿using System;
-using CalamityMod.Items.Weapons.Ranged;
-using CalamityMod.Sounds;
+﻿using CalamityMod.Items.Weapons.Ranged;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using ReLogic.Utilities;

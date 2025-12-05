@@ -1,10 +1,8 @@
-﻿using System;
-using CalamityMod.Buffs.DamageOverTime;
+﻿using CalamityMod.Buffs.DamageOverTime;
 using CalamityMod.Dusts;
 using CalamityMod.Graphics.Metaballs;
 using CalamityMod.Particles;
 using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Graphics;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
@@ -111,6 +109,8 @@ namespace CalamityMod.Projectiles.Boss
         public override bool PreDraw(ref Color lightColor)
         {
             return false;
+            
+            /*
             Texture2D fire = Terraria.GameContent.TextureAssets.Projectile[Type].Value;
             Texture2D mist = ModContent.Request<Texture2D>("CalamityMod/Particles/MediumMist").Value;
 
@@ -159,6 +159,7 @@ namespace CalamityMod.Projectiles.Boss
                 Main.spriteBatch.SetBlendState(BlendState.AlphaBlend);
             }
             return false;
+            */
         }
     }
 }

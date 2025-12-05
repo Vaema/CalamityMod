@@ -1,8 +1,6 @@
-﻿using CalamityMod.Projectiles.BaseProjectiles;
-using Microsoft.Xna.Framework;
+﻿using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.ModLoader;
-using Terraria.ID;
 
 namespace CalamityMod.Projectiles.Magic
 {

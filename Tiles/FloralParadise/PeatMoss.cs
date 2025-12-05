@@ -30,7 +30,7 @@ namespace CalamityMod.Tiles.FloralParadise
             CalamityUtils.SetMerge(Type, TileID.CrimsonGrass);
             CalamityUtils.MergeWithFloralParadise(Type);
 
-            DustType = 39;
+            DustType = DustID.JungleGrass;
             HitSound = MineSound;
 
             AddMapEntry(new Color(65, 142, 101));

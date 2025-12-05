@@ -1,4 +1,4 @@
-﻿using CalamityMod.Items.Placeables.Crags;
+﻿using CalamityMod.Items.Materials;
 using CalamityMod.Tiles.Crags;
 using Terraria;
 using Terraria.ID;
@@ -44,6 +44,10 @@ namespace CalamityMod.Items.Fishing.BrimstoneCragCatches
             // 20-50 Scorched Bones @ 33.33%
             // This is our equivalent to Bamboo
             itemLoot.Add(ModContent.ItemType<Placeables.Crags.ScorchedBone>(), 3, 20, 50);
+
+            // 2-5 Essences of Havoc @ 50%
+            // This is our equivalent to Souls of Light/Night
+            itemLoot.Add(ModContent.ItemType<EssenceofHavoc>(), 2, 2, 5);
 
             itemLoot.AddBiomeCrateLootRules();
         }

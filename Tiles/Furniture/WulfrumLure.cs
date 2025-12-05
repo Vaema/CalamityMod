@@ -32,7 +32,7 @@ namespace CalamityMod.Tiles.Furniture
             AddMapEntry(new Color(194, 255, 67), CalamityUtils.GetItemName<WulfrumLureItem>());
             TileID.Sets.DisableSmartCursor[Type] = true;
 
-            DustType = 83;
+            DustType = DustID.Tungsten;
         }
 
         public override bool RightClick(int i, int j)

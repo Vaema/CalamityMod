@@ -650,7 +650,7 @@ public static partial class RevengeanceAndDeathAI
                     if (NPC.localAI[0] > CorruptorVileSpitGateValue - CorruptorVileSpitTelegraphTime)
                     {
                         Vector2 dustCenter = NPC.Center + NPC.SafeDirectionTo(Main.player[NPC.target].Center, -Vector2.UnitY) * 25f + Main.rand.NextVector2CircularEdge(3f, 3f);
-                        Dust dust = Dust.NewDustDirect(dustCenter, 1, 1, 18, NPC.velocity.X * 0.1f, NPC.velocity.Y * 0.1f, 80, default, 1.3f);
+                        Dust dust = Dust.NewDustDirect(dustCenter, 1, 1, DustID.CorruptGibs, NPC.velocity.X * 0.1f, NPC.velocity.Y * 0.1f, 80, default, 1.3f);
                         dust.noGravity = true;
                         dust.velocity *= 0.3f;
                     }

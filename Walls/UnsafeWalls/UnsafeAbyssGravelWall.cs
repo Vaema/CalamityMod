@@ -10,7 +10,7 @@ namespace CalamityMod.Walls.UnsafeWalls
         public override string Texture => "CalamityMod/Walls/AbyssGravelWall";
         public override void SetStaticDefaults()
         {
-            DustType = 33;
+            DustType = DustID.Water;
             AddMapEntry(new Color(6, 10, 54));
         }
 

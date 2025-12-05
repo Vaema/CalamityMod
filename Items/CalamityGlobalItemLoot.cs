@@ -5,8 +5,6 @@ using CalamityMod.Items.Fishing;
 using CalamityMod.Items.Materials;
 using CalamityMod.Items.PermanentBoosters;
 using CalamityMod.Items.Placeables.Furniture.Paintings;
-using CalamityMod.Items.Placeables.Ores;
-using CalamityMod.Items.Potions;
 using CalamityMod.Items.Weapons.Melee;
 using CalamityMod.Items.Weapons.Ranged;
 using CalamityMod.Items.Weapons.Rogue;
@@ -293,13 +291,27 @@ namespace CalamityMod.Items
                     loot.Add(UndergroundChestLootRule);
                     break;
 
+                // 2-5 Essences of Eleum @ 50%
+                // This is our equivalent to Souls of Light/Night
+                case ItemID.FrozenCrateHard:
+                    RemoveHardmodeOresFromBiomeCrates(loot);
+                    loot.AddHardmodeOresToCrates(HardmodeCrateType.Biome);
+                    loot.Add(ModContent.ItemType<EssenceofEleum>(), 2, 2, 5);
+                    break;
+
+                // 2-5 Essences of Sunlight @ 50%
+                // This is our equivalent to Souls of Light/Night
+                case ItemID.FloatingIslandFishingCrateHard:
+                    RemoveHardmodeOresFromBiomeCrates(loot);
+                    loot.AddHardmodeOresToCrates(HardmodeCrateType.Biome);
+                    loot.Add(ModContent.ItemType<EssenceofSunlight>(), 2, 2, 5);
+                    break;
+
                 case ItemID.CorruptFishingCrateHard:
                 case ItemID.CrimsonFishingCrateHard:
                 case ItemID.HallowedFishingCrateHard:
                 case ItemID.DungeonFishingCrateHard:
                 case ItemID.JungleFishingCrateHard:
-                case ItemID.FloatingIslandFishingCrateHard:
-                case ItemID.FrozenCrateHard:
                 case ItemID.LavaCrateHard:
                 case ItemID.OasisCrateHard:
                 case ItemID.OceanCrateHard:

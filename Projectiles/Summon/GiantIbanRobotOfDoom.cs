@@ -1,7 +1,6 @@
 ﻿using System;
 using CalamityMod.Buffs.Mounts;
 using CalamityMod.Items;
-using CalamityMod.Items.Weapons.DraedonsArsenal;
 using CalamityMod.Projectiles.Summon.AndromedaUI;
 using Microsoft.Xna.Framework;
 using Terraria;
@@ -243,7 +242,7 @@ namespace CalamityMod.Projectiles.Summon
             {
                 for (int i = 0; i < 2; i++)
                 {
-                    Dust dust = Dust.NewDustPerfect(Projectile.position + dustOffset, 263);
+                    Dust dust = Dust.NewDustPerfect(Projectile.position + dustOffset, DustID.PortalBolt);
                     dust.velocity = Vector2.Normalize(dust.position - Projectile.Top).RotatedByRandom(0.4f) * Main.rand.NextFloat(4f, 7f) + Projectile.velocity;
                     dust.color = Color.SkyBlue;
                     dust.scale = Main.rand.NextFloat(0.9f, 1.35f);
@@ -368,13 +367,13 @@ namespace CalamityMod.Projectiles.Summon
                         for (int speedSign = -1; speedSign <= 1; speedSign += 2)
                         {
                             float angle = MathHelper.Lerp(0f, MathHelper.TwoPi / 10f, (outwardness - 190f) / 170f);
-                            Dust dust = Dust.NewDustPerfect(Projectile.Center, 221);
+                            Dust dust = Dust.NewDustPerfect(Projectile.Center, DustID.FireworkFountain_Blue);
                             dust.noGravity = true;
                             dust.scale = 1.6f;
                             dust.position = player.Center + outwardness * (MathHelper.TwoPi / 10f * angleInterval).ToRotationVector2().RotatedBy(angle);
                             dust.velocity = player.SafeDirectionTo(dust.position) * 8f * speedSign;
 
-                            dust = Dust.NewDustPerfect(Projectile.Center, 221);
+                            dust = Dust.NewDustPerfect(Projectile.Center, DustID.FireworkFountain_Blue);
                             dust.noGravity = true;
                             dust.scale = 1.6f;
                             dust.position = player.Center + outwardness * (MathHelper.TwoPi / 10f * angleInterval).ToRotationVector2().RotatedBy(-angle);
@@ -397,7 +396,7 @@ namespace CalamityMod.Projectiles.Summon
                         int pointsOnStarSegment = 24;
                         for (int j = 0; j < pointsOnStarSegment; j++)
                         {
-                            Dust dust = Dust.NewDustPerfect(player.Center, 221);
+                            Dust dust = Dust.NewDustPerfect(player.Center, DustID.FireworkFountain_Blue);
                             dust.noGravity = true;
                             dust.scale = 1.9f;
                             dust.velocity = Vector2.Lerp(start, end, j / (float)pointsOnStarSegment) * 13f * new Vector2(1.414f, 1f);

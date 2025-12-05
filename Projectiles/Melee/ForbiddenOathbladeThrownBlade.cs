@@ -1,5 +1,4 @@
 ﻿using System;
-using System.IO;
 using CalamityMod.Buffs.DamageOverTime;
 using CalamityMod.Dusts;
 using CalamityMod.Packets.Entities;
@@ -10,7 +9,6 @@ using Terraria;
 using Terraria.Audio;
 using Terraria.ID;
 using Terraria.ModLoader;
-using Terraria.ModLoader.IO;
 using static CalamityMod.CalamityUtils;
 
 namespace CalamityMod.Projectiles.Melee
@@ -162,7 +160,7 @@ namespace CalamityMod.Projectiles.Melee
                     }
                     if (exitedTarget && i == 0)
                     {
-                        Dust dust = Dust.NewDustPerfect(Projectile.Center + safeVel.RotatedBy(Projectile.rotation - MathHelper.ToRadians(Projectile.direction * 45)) * 45, 278, dustVel * Main.rand.NextFloat(1, 4), 0, default, Main.rand.NextFloat(0.4f, 0.6f));
+                        Dust dust = Dust.NewDustPerfect(Projectile.Center + safeVel.RotatedBy(Projectile.rotation - MathHelper.ToRadians(Projectile.direction * 45)) * 45, DustID.FireworksRGB, dustVel * Main.rand.NextFloat(1, 4), 0, default, Main.rand.NextFloat(0.4f, 0.6f));
                         dust.noGravity = true;
                         dust.color = Main.rand.NextBool() ? Color.MediumOrchid : Color.BlueViolet;
                     }

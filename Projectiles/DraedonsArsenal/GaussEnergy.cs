@@ -1,4 +1,5 @@
 ﻿using Terraria;
+using Terraria.ID;
 using Terraria.ModLoader;
 
 namespace CalamityMod.Projectiles.DraedonsArsenal
@@ -21,7 +22,7 @@ namespace CalamityMod.Projectiles.DraedonsArsenal
         {
             for (int i = 0; i < 2; i++)
             {
-                Dust dust = Dust.NewDustPerfect(Projectile.Center + Main.rand.NextVector2Circular(4f, 4f), 107);
+                Dust dust = Dust.NewDustPerfect(Projectile.Center + Main.rand.NextVector2Circular(4f, 4f), DustID.Terra);
                 dust.scale = Main.rand.NextFloat(1.1f, 1.3f);
                 dust.noGravity = true;
             }

@@ -40,7 +40,7 @@ namespace CalamityMod.Projectiles.Typeless
             {
                 for (int i = 0; i < 15; i++)
                 {
-                    Dust energyPuff = Dust.NewDustPerfect(Projectile.Center, 267);
+                    Dust energyPuff = Dust.NewDustPerfect(Projectile.Center, DustID.RainbowMk2);
                     energyPuff.velocity = -Vector2.UnitY.RotatedByRandom(0.81f) * Main.rand.NextFloat(1.25f, 6f);
                     energyPuff.color = Color.Lerp(new Color(104, 183, 136), Color.White, Main.rand.NextFloat(0.5f));
                     energyPuff.scale = 1.1f;
@@ -104,7 +104,7 @@ namespace CalamityMod.Projectiles.Typeless
         {
             for (int i = 0; i < 15; i++)
             {
-                Dust energyPuff = Dust.NewDustPerfect(Projectile.Center, 267);
+                Dust energyPuff = Dust.NewDustPerfect(Projectile.Center, DustID.RainbowMk2);
                 energyPuff.velocity = Projectile.velocity.SafeNormalize(Vector2.UnitY).RotatedByRandom(0.97f) * Main.rand.NextFloat(1f, 8f);
                 energyPuff.color = Color.Lerp(new Color(104, 183, 136), Color.White, Main.rand.NextFloat(0.5f));
                 energyPuff.scale = 1.1f;

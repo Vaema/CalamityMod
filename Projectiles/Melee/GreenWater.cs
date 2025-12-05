@@ -85,7 +85,7 @@ namespace CalamityMod.Projectiles.Melee
                 SparkParticle orb2 = new(Projectile.Center - offset, -Projectile.velocity * 0.05f, false, 7, 0.7f, Color.Aqua * 0.6f * fade);
                 GeneralParticleHandler.SpawnParticle(orb2);
 
-                Dust dust = Dust.NewDustPerfect(Projectile.Center - Projectile.velocity.SafeNormalize(Vector2.UnitX) * 3 + Main.rand.NextVector2Circular(6, 6), 102, (-Projectile.velocity.SafeNormalize(Vector2.UnitX) * 9).RotatedByRandom(0.3f) * Main.rand.NextFloat(0.1f, 0.8f), 180, default, Main.rand.NextFloat(0.8f, 1.4f));
+                Dust dust = Dust.NewDustPerfect(Projectile.Center - Projectile.velocity.SafeNormalize(Vector2.UnitX) * 3 + Main.rand.NextVector2Circular(6, 6), DustID.Water_Desert, (-Projectile.velocity.SafeNormalize(Vector2.UnitX) * 9).RotatedByRandom(0.3f) * Main.rand.NextFloat(0.1f, 0.8f), 180, default, Main.rand.NextFloat(0.8f, 1.4f));
                 dust.noGravity = true;
                 dust.alpha = (int)MathHelper.Clamp(Projectile.alpha, 0, 180);
 
@@ -97,7 +97,7 @@ namespace CalamityMod.Projectiles.Melee
 
             if (Main.rand.NextBool())
             {
-                Dust dust = Dust.NewDustPerfect(Projectile.Center - Projectile.velocity.SafeNormalize(Vector2.UnitX) * 3 + Main.rand.NextVector2Circular(6, 6), 5, (-Projectile.velocity.SafeNormalize(Vector2.UnitX) * 4).RotatedByRandom(0.3f) * Main.rand.NextFloat(0.1f, 0.8f), 100, default, Main.rand.NextFloat(0.8f, 1.4f));
+                Dust dust = Dust.NewDustPerfect(Projectile.Center - Projectile.velocity.SafeNormalize(Vector2.UnitX) * 3 + Main.rand.NextVector2Circular(6, 6), DustID.Blood, (-Projectile.velocity.SafeNormalize(Vector2.UnitX) * 4).RotatedByRandom(0.3f) * Main.rand.NextFloat(0.1f, 0.8f), 100, default, Main.rand.NextFloat(0.8f, 1.4f));
                 dust.noGravity = true;
                 dust.alpha = (int)MathHelper.Clamp(Projectile.alpha, 0, 100);
             }
@@ -123,7 +123,7 @@ namespace CalamityMod.Projectiles.Melee
             }
             for (int i = 0; i <= 4; i++)
             {
-                Dust dust = Dust.NewDustPerfect(Projectile.Center, 5, (Projectile.velocity * 2.5f).RotatedByRandom(0.7) * Main.rand.NextFloat(0.1f, 0.8f), 0, default, Main.rand.NextFloat(0.9f, 1.8f));
+                Dust dust = Dust.NewDustPerfect(Projectile.Center, DustID.Blood, (Projectile.velocity * 2.5f).RotatedByRandom(0.7) * Main.rand.NextFloat(0.1f, 0.8f), 0, default, Main.rand.NextFloat(0.9f, 1.8f));
                 dust.noGravity = false;
             }
             for (int i = 0; i <= 2; i++)

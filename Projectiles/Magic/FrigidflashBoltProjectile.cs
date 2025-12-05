@@ -3,7 +3,6 @@ using CalamityMod.Dusts;
 using CalamityMod.Items.Weapons.Magic;
 using CalamityMod.Particles;
 using CalamityMod.Projectiles.Typeless;
-using Microsoft.Build.Construction;
 using Microsoft.Xna.Framework;
 using ReLogic.Utilities;
 using Terraria;

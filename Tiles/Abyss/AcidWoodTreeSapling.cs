@@ -67,7 +67,7 @@ namespace CalamityMod.Tiles.Abyss
                 {
                     return;
                 }
-                if (tileAbovePosition.WallType != 0 || tileAbovePosition.LiquidAmount != 0)
+                if (tileAbovePosition.WallType != WallID.None || tileAbovePosition.LiquidAmount != 0)
                 {
                     return;
                 }

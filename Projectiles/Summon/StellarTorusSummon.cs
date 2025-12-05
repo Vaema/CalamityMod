@@ -107,7 +107,7 @@ namespace CalamityMod.Projectiles.Summon
 
                     Vector2 chargeDustSpawn = Projectile.Center + Main.rand.NextVector2Circular(scale * 1.2f, scale * 1.2f);
                     Dust chargeDust = Dust.NewDustPerfect(chargeDustSpawn,
-                        307,
+                        DustID.MushroomTorch,
                         chargeDustSpawn.DirectionTo(Projectile.Center) * Main.rand.NextFloat(5f, 8f));
                     chargeDust.noGravity = true;
                     chargeDust.scale = chargeDust.velocity.Length() * .15f;
@@ -167,7 +167,7 @@ namespace CalamityMod.Projectiles.Summon
                     Projectile.rotation = MathHelper.Lerp(swingRotStart, swingRotStart + (MathHelper.PiOver4 * -LaserSwingDirection), RotationInterpolant);
                     RotationInterpolant += 1f / StellarTorusStaff.TimeShooting;
 
-                    Dust shootDust = Dust.NewDustPerfect(Projectile.Center, 307, Main.rand.NextVector2Circular(Main.rand.NextFloat(10f, 15f), Main.rand.NextFloat(10f, 15f)));
+                    Dust shootDust = Dust.NewDustPerfect(Projectile.Center, DustID.MushroomTorch, Main.rand.NextVector2Circular(Main.rand.NextFloat(10f, 15f), Main.rand.NextFloat(10f, 15f)));
                     shootDust.noGravity = true;
                     shootDust.scale = shootDust.velocity.Length() * .2f;
 

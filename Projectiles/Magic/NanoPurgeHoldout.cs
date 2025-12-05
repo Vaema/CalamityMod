@@ -1,5 +1,4 @@
-﻿using System;
-using CalamityMod.Dusts;
+﻿using CalamityMod.Dusts;
 using CalamityMod.Items.Weapons.Magic;
 using CalamityMod.Projectiles.BaseProjectiles;
 using Microsoft.Xna.Framework;

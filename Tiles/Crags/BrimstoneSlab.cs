@@ -23,7 +23,7 @@ namespace CalamityMod.Tiles.Crags
             MineResist = 2f;
             MinPick = 100;
             HitSound = SoundID.Tink;
-            DustType = 235;
+            DustType = DustID.LifeDrain;
 
             this.RegisterBlendMergeWith(ModContent.TileType<BrimstoneSlag>());
             this.RegisterBlendMergeWith(TileID.Ash);

@@ -1,5 +1,4 @@
 ﻿using CalamityMod.NPCs.ProfanedGuardians;
-using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
 

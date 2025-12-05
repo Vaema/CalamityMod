@@ -1,7 +1,6 @@
 ﻿using System.Collections.Generic;
 using CalamityMod.Items.Materials;
 using CalamityMod.Projectiles.Melee.Spears;
-using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;

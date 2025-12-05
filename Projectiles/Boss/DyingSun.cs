@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using CalamityMod.Graphics.Primitives;
-using CalamityMod.World;
 using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.Graphics.Shaders;

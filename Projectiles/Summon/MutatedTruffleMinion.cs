@@ -170,7 +170,7 @@ namespace CalamityMod.Projectiles.Summon
 
                     if (!Main.dedServ)
                     {
-                        Dust.NewDustPerfect(Projectile.Right.RotatedBy(Projectile.rotation), 7, Projectile.rotation.ToRotationVector2().RotatedByRandom(MathHelper.PiOver4 / 2) * Main.rand.NextFloat(1f, 3f));
+                        Dust.NewDustPerfect(Projectile.Right.RotatedBy(Projectile.rotation), DustID.WoodFurniture, Projectile.rotation.ToRotationVector2().RotatedByRandom(MathHelper.PiOver4 / 2) * Main.rand.NextFloat(1f, 3f));
 
                         SoundEngine.PlaySound(SoundID.NPCDeath13 with { Volume = .5f, PitchVariance = .1f }, Projectile.Center);
                     }

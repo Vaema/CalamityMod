@@ -80,7 +80,7 @@ namespace CalamityMod.Items.Weapons.Melee
                         Vector2 dustSpawn = t.ToRotationVector2() * r * Item.Size;
                         if (dustSpawn.X > Item.width / 2)
                         {
-                            Dust.NewDustPerfect(player.MountedCenter + dustSpawn.RotatedBy(player.itemRotation) * player.direction, 218, Vector2.Zero).noGravity = true;
+                            Dust.NewDustPerfect(player.MountedCenter + dustSpawn.RotatedBy(player.itemRotation) * player.direction, DustID.Rain_BloodMoon, Vector2.Zero).noGravity = true;
                         }
                         else
                         {

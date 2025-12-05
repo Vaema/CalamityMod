@@ -1,13 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using CalamityMod.Schematics;
-using Microsoft.Xna.Framework;
+﻿using Microsoft.Xna.Framework;
 using ReLogic.Utilities;
 using Terraria;
-using Terraria.ID;
-using Terraria.ModLoader;
 using Terraria.WorldBuilding;
-using static CalamityMod.Schematics.SchematicManager;
 
 namespace CalamityMod.World
 {

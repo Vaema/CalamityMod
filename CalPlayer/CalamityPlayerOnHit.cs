@@ -15,7 +15,6 @@ using CalamityMod.Items.Armor.Bloodflare;
 using CalamityMod.Items.Armor.Fearmonger;
 using CalamityMod.Items.Armor.Hydrothermic;
 using CalamityMod.Items.Armor.Plaguebringer;
-using CalamityMod.Items.Armor.Reaver;
 using CalamityMod.Items.Armor.Silva;
 using CalamityMod.Items.Armor.SnowRuffian;
 using CalamityMod.Items.Armor.Sulphurous;
@@ -496,7 +495,7 @@ namespace CalamityMod.CalPlayer
                         }
                         for (int i = 0; i <= 12; i++)
                         {
-                            Dust dust2 = Dust.NewDustPerfect(proj.Center, 278, new Vector2(4, 4).RotatedByRandom(100f) * Main.rand.NextFloat(0.1f, 2.9f));
+                            Dust dust2 = Dust.NewDustPerfect(proj.Center, DustID.FireworksRGB, new Vector2(4, 4).RotatedByRandom(100f) * Main.rand.NextFloat(0.1f, 2.9f));
                             dust2.noGravity = false;
                             dust2.scale = Main.rand.NextFloat(0.3f, 0.9f);
                             dust2.color = Color.Turquoise;
@@ -545,7 +544,7 @@ namespace CalamityMod.CalPlayer
                     int dusts = (int)(MathHelper.Clamp(10 - (int)(proj.numHits * 0.5f), 2, 10));
                     for (int i = 0; i <= dusts; i++)
                     {
-                        Dust dust2 = Dust.NewDustPerfect(Position, 278, new Vector2(5, 5).RotatedByRandom(100f) * Main.rand.NextFloat(0.1f, 2.9f));
+                        Dust dust2 = Dust.NewDustPerfect(Position, DustID.FireworksRGB, new Vector2(5, 5).RotatedByRandom(100f) * Main.rand.NextFloat(0.1f, 2.9f));
                         dust2.noGravity = false;
                         dust2.scale = Main.rand.NextFloat(0.3f, 0.8f);
                         dust2.color = color;

@@ -64,7 +64,7 @@ namespace CalamityMod.Items.Weapons.Summon
                 head.originalDamage = Item.damage;
                 for (int i = 0; i < 72; i++)
                 {
-                    Dust dust = Dust.NewDustPerfect(Main.projectile[bodyIndex].Center, 113);
+                    Dust dust = Dust.NewDustPerfect(Main.projectile[bodyIndex].Center, DustID.MushroomSpray);
                     dust.velocity = (MathHelper.TwoPi * Vector2.Dot((i / 72f * MathHelper.TwoPi).ToRotationVector2(), player.velocity.SafeNormalize(Vector2.UnitY).RotatedBy(i / 72f * -MathHelper.TwoPi))).ToRotationVector2();
                     dust.velocity = dust.velocity.RotatedBy(i / 36f * MathHelper.TwoPi) * 8f;
                     dust.noGravity = true;

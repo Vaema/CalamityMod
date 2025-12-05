@@ -1,6 +1,5 @@
 ﻿using System;
 using CalamityMod.NPCs.NormalNPCs;
-using CalamityMod.NPCs;
 using CalamityMod.Particles;
 using CalamityMod.Projectiles.Typeless;
 using Microsoft.Xna.Framework;
@@ -8,7 +7,6 @@ using Terraria;
 using Terraria.Audio;
 using Terraria.ID;
 using Terraria.ModLoader;
-using static Terraria.GameContent.Animations.IL_Actions.Sprites;
 
 namespace CalamityMod.Projectiles.Ranged
 {
@@ -73,7 +71,7 @@ namespace CalamityMod.Projectiles.Ranged
                         for (int i = 0; i < Dusts; i++)
                         {
                             Vector2 dustVelocity = spinningPoint.RotatedBy(radians * i).RotatedBy(0.5f * rotRando) * 6f;
-                            Dust dust2 = Dust.NewDustPerfect(Projectile.Center, 264, dustVelocity);
+                            Dust dust2 = Dust.NewDustPerfect(Projectile.Center, DustID.PortalBoltTrail, dustVelocity);
                             dust2.noGravity = true;
                             dust2.scale = Main.rand.NextFloat(0.85f, 1.35f);
                             dust2.color = Main.rand.NextBool(3) ? Color.MediumAquamarine : Color.Lime;

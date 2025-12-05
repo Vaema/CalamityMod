@@ -1,15 +1,11 @@
 ﻿using System;
 using CalamityMod.Graphics.Primitives;
-using CalamityMod.Particles;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using ReLogic.Content;
 using Terraria;
-using Terraria.Graphics.Effects;
 using Terraria.Graphics.Shaders;
 using Terraria.ID;
 using Terraria.ModLoader;
-using static CalamityMod.CalamityUtils;
 using static Terraria.ModLoader.ModContent;
 
 namespace CalamityMod.Projectiles.Summon
@@ -136,7 +132,7 @@ namespace CalamityMod.Projectiles.Summon
 
                 for (int i = 0; i < 5; i++)
                 {
-                    Dust chust = Dust.NewDustPerfect(dustCenter, 178, Projectile.velocity.RotatedByRandom(MathHelper.PiOver4) * Main.rand.NextFloat(0.2f, 0.5f), Scale: Main.rand.NextFloat(1f, 1.2f));
+                    Dust chust = Dust.NewDustPerfect(dustCenter, DustID.BubbleBurst_Green, Projectile.velocity.RotatedByRandom(MathHelper.PiOver4) * Main.rand.NextFloat(0.2f, 0.5f), Scale: Main.rand.NextFloat(1f, 1.2f));
                     chust.noGravity = true;
                 }
             }
@@ -147,7 +143,7 @@ namespace CalamityMod.Projectiles.Summon
                 {
                     Vector2 dustCenter = Projectile.Center + Projectile.velocity.RotatedBy(MathHelper.PiOver2).SafeNormalize(Vector2.Zero) * Main.rand.NextFloat(-3f, 3f);
 
-                    Dust chust = Dust.NewDustPerfect(dustCenter, 178, -Projectile.velocity * Main.rand.NextFloat(0.2f, 0.5f), Scale: Main.rand.NextFloat(0.6f, 1.15f));
+                    Dust chust = Dust.NewDustPerfect(dustCenter, DustID.BubbleBurst_Green, -Projectile.velocity * Main.rand.NextFloat(0.2f, 0.5f), Scale: Main.rand.NextFloat(0.6f, 1.15f));
                     chust.noGravity = true;
                 }
 
@@ -155,7 +151,7 @@ namespace CalamityMod.Projectiles.Summon
                 {
                     Vector2 dustCenter = Projectile.Center + Projectile.velocity.RotatedBy(MathHelper.PiOver2).SafeNormalize(Vector2.Zero) * Main.rand.NextFloat(-3f, 3f);
 
-                    Dust largeDust = Dust.NewDustPerfect(dustCenter, 178, -Projectile.velocity * Main.rand.NextFloat(0.2f, 0.4f), Scale: Main.rand.NextFloat(0.4f, 1f));
+                    Dust largeDust = Dust.NewDustPerfect(dustCenter, DustID.BubbleBurst_Green, -Projectile.velocity * Main.rand.NextFloat(0.2f, 0.4f), Scale: Main.rand.NextFloat(0.4f, 1f));
                     largeDust.noGravity = true;
                     largeDust.noLight = true;
                 }

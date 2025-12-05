@@ -208,7 +208,7 @@ namespace CalamityMod.Projectiles.Summon
                     {
                         Dust.NewDustPerfect(
                             Projectile.Center + Utils.NextVector2Unit(Main.rand) * Main.rand.NextFloat(10f),
-                            6,
+                            DustID.Torch,
                             Utils.NextVector2Unit(Main.rand) * Main.rand.NextFloat(1f, 4f));
                     }
                     Projectile.netUpdate = true;

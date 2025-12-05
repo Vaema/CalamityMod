@@ -1,5 +1,4 @@
-﻿using CalamityMod.CalPlayer;
-using CalamityMod.CalPlayer.Dashes;
+﻿using CalamityMod.CalPlayer.Dashes;
 using CalamityMod.Items.Materials;
 using CalamityMod.NPCs.DevourerofGods;
 using CalamityMod.Rarities;

@@ -1,6 +1,5 @@
 ﻿using System;
 using System.IO;
-using CalamityMod.Events;
 using CalamityMod.Particles;
 using CalamityMod.Projectiles.Boss;
 using CalamityMod.World;
@@ -12,7 +11,6 @@ using Terraria.GameContent;
 using Terraria.GameContent.Bestiary;
 using Terraria.ID;
 using Terraria.ModLoader;
-using static Humanizer.In;
 
 namespace CalamityMod.NPCs.SupremeCalamitas
 {

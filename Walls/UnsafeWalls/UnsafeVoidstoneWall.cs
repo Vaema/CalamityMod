@@ -1,7 +1,6 @@
 ﻿using System;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using ReLogic.Content;
 using Terraria;
 using Terraria.GameContent;
 using Terraria.ID;
@@ -21,7 +20,7 @@ namespace CalamityMod.Walls.UnsafeWalls
             // But leaving this in case of changing to Unsafe variant specific glowmask
             GlowMask = new("CalamityMod/Walls/VoidstoneWall_Glowmask", 36, 36);
 
-            DustType = 187;
+            DustType = DustID.BlueFlare;
             AddMapEntry(new Color(0, 0, 0));
         }
 

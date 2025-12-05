@@ -1,9 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
 using CalamityMod.Systems;
 using CalamityMod.Tiles.Astral;
 using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Graphics;
 using Terraria;
 using Terraria.DataStructures;
 using Terraria.GameContent.Metadata;
@@ -29,7 +27,7 @@ namespace CalamityMod.Tiles.AstralSnow
             CalamityUtils.MergeWithSnow(Type);
             CalamityUtils.MergeAstralTiles(Type);
 
-            DustType = 173;
+            DustType = DustID.ShadowbeamStaff;
 
             HitSound = SoundID.Item48;
 
