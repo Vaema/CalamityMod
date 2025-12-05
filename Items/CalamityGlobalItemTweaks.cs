@@ -1238,6 +1238,9 @@ namespace CalamityMod.Items
             shimmerTransmute[ItemID.ChlorophyteOre] = ModContent.ItemType<HallowedOre>();
             shimmerTransmute[ItemID.CobaltOre] = ModContent.ItemType<AerialiteOre>();
 
+            // Note: Not a part of the "main" ore shimmer chain
+            shimmerTransmute[ModContent.ItemType<InfernalSuevite>()] = ItemID.Hellstone;
+
             //Fuck vanilla's stupid Giant Shelly, Crawdad, and Salamander exclusivity 
             shimmerTransmute[ModContent.ItemType<CrawCarapace>()] = ModContent.ItemType<GiantShell>();
             shimmerTransmute[ModContent.ItemType<GiantShell>()] = ModContent.ItemType<CrawCarapace>();
