@@ -1,9 +1,7 @@
 ﻿using System;
-using System.Runtime.Intrinsics.X86;
 using CalamityMod.Buffs.DamageOverTime;
 using CalamityMod.Items.Weapons.Ranged;
 using CalamityMod.Particles;
-using Humanizer;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using ReLogic.Utilities;

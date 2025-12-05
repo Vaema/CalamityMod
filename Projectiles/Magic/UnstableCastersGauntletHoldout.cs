@@ -3,7 +3,6 @@ using CalamityMod.Dusts;
 using CalamityMod.Items.Weapons.Magic;
 using CalamityMod.Particles;
 using CalamityMod.Projectiles.BaseProjectiles;
-using CalamityMod.Projectiles.Magic;
 using Microsoft.Xna.Framework;
 using System.Collections.Generic;
 using Terraria;

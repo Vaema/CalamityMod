@@ -1,6 +1,5 @@
 ﻿using System;
 using CalamityMod.NPCs.NormalNPCs;
-using CalamityMod.NPCs;
 using CalamityMod.Particles;
 using CalamityMod.Projectiles.Typeless;
 using Microsoft.Xna.Framework;
@@ -8,7 +7,6 @@ using Terraria;
 using Terraria.Audio;
 using Terraria.ID;
 using Terraria.ModLoader;
-using static Terraria.GameContent.Animations.IL_Actions.Sprites;
 
 namespace CalamityMod.Projectiles.Ranged
 {

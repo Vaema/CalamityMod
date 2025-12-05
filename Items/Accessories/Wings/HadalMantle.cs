@@ -1,5 +1,4 @@
-﻿using CalamityMod.Items.Armor.Hydrothermic;
-using CalamityMod.Items.Materials;
+﻿using CalamityMod.Items.Materials;
 using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.DataStructures;

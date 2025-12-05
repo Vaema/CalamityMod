@@ -2,23 +2,15 @@
 using System.Collections.Generic;
 using System.Linq;
 using CalamityMod.Buffs.Mounts;
-using CalamityMod.CalPlayer;
-using CalamityMod.Cooldowns;
-using CalamityMod.Items.Accessories.Vanity;
-using CalamityMod.Items.Materials;
-using CalamityMod.Items.Mounts;
-using CalamityMod.Particles;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using ReLogic.Utilities;
 using Terraria;
 using Terraria.Audio;
 using Terraria.DataStructures;
-using Terraria.GameInput;
 using Terraria.ID;
 using Terraria.Localization;
 using Terraria.ModLoader;
-using static Microsoft.Xna.Framework.Input.Keys;
 using static Terraria.ModLoader.ModContent;
 
 

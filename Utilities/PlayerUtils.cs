@@ -10,7 +10,6 @@ using CalamityMod.Events;
 using CalamityMod.Items.Accessories;
 using CalamityMod.Items.Armor;
 using CalamityMod.Items.Armor.GodSlayer;
-using CalamityMod.Items.Potions.Alcohol;
 using CalamityMod.Systems.Collections;
 using CalamityMod.World;
 using Microsoft.Xna.Framework;

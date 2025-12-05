@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using CalamityMod.Cooldowns;
 using CalamityMod.Items.BaseItems;
-using CalamityMod.Items.Potions.Alcohol;
 using CalamityMod.Projectiles.Summon;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;

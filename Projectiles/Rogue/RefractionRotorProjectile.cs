@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Security.AccessControl;
-using CalamityMod.Items.Weapons.Rogue;
-using CalamityMod.Particles;
-using CalamityMod.Projectiles.Rogue;
-using CalamityMod.Sounds;
+﻿using CalamityMod.Particles;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using ReLogic.Content;

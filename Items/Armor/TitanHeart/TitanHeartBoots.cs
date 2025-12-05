@@ -1,5 +1,4 @@
-﻿using CalamityMod.Items.Materials;
-using CalamityMod.Items.Placeables.FurnitureMonolith;
+﻿using CalamityMod.Items.Placeables.FurnitureMonolith;
 using Terraria;
 using Terraria.ID;
 using Terraria.Localization;

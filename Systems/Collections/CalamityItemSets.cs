@@ -1,5 +1,4 @@
-﻿using System;
-using CalamityMod.Items.Accessories;
+﻿using CalamityMod.Items.Accessories;
 using CalamityMod.Items.Armor.Vanity;
 using CalamityMod.Items.Fishing.FishingRods;
 using CalamityMod.Items.LoreItems;

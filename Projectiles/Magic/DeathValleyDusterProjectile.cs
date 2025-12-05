@@ -1,16 +1,13 @@
 ﻿using System;
 using CalamityMod.Buffs.StatBuffs;
-using CalamityMod.Buffs.StatDebuffs;
-using CalamityMod.DataStructures;
 using CalamityMod.Particles;
-using Microsoft.CodeAnalysis;
 using Microsoft.Xna.Framework;
 using Terraria.Audio;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
 using System.Collections.Generic;
-using CalamityMod.Items.Placeables.FurnitureMarnite;
+
 namespace CalamityMod.Projectiles.Magic
 {
     public class DeathValleyDusterProjectile : ModProjectile, ILocalizedModType

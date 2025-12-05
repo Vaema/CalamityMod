@@ -1,6 +1,4 @@
 ﻿using System;
-using CalamityMod.Buffs.DamageOverTime;
-using CalamityMod.Items.Accessories;
 using CalamityMod.NPCs.SupremeCalamitas;
 using CalamityMod.Particles;
 using CalamityMod.Events;

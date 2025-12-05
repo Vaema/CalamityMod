@@ -1,5 +1,4 @@
 ﻿using CalamityMod.Dusts;
-using CalamityMod.Items.Weapons.Rogue;
 using CalamityMod.Items.Weapons.Summon;
 using CalamityMod.Particles;
 using CalamityMod.Projectiles.Magic;

@@ -1,7 +1,6 @@
 ﻿using System;
 using CalamityMod.Balancing;
 using CalamityMod.Enums;
-using CalamityMod.Projectiles.Typeless;
 using Microsoft.Xna.Framework;
 using Mono.Cecil.Cil;
 using MonoMod.Cil;

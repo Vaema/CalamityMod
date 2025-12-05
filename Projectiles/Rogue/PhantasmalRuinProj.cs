@@ -1,6 +1,4 @@
-﻿using CalamityMod.Projectiles.Melee;
-using Microsoft.Xna.Framework;
-using Mono.Cecil;
+﻿using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.Audio;
 using Terraria.ID;

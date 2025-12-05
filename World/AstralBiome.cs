@@ -1,10 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using CalamityMod.Schematics;
 using CalamityMod.Tiles.Abyss;
 using CalamityMod.Tiles.Astral;
-using CalamityMod.Tiles.FurnitureAcidwood;
 using CalamityMod.Tiles.FurnitureMonolith;
 using CalamityMod.Tiles.AstralDesert;
 using CalamityMod.Tiles.AstralSnow;

@@ -4,7 +4,6 @@ using System.IO;
 using CalamityMod.Events;
 using CalamityMod.Graphics.Primitives;
 using CalamityMod.Items.Potions;
-using CalamityMod.Items.Weapons.DraedonsArsenal;
 using CalamityMod.NPCs.ExoMechs.Ares;
 using CalamityMod.NPCs.ExoMechs.Thanatos;
 using CalamityMod.Projectiles.Boss;

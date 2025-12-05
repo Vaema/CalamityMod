@@ -1,11 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using CalamityMod.Buffs.DamageOverTime;
 using CalamityMod.Graphics.Primitives;
-using CalamityMod.Items.Weapons.Rogue;
-using CalamityMod.Projectiles.Rogue;
 using CalamityMod.Sounds;
 using Microsoft.Xna.Framework;
 using Terraria;

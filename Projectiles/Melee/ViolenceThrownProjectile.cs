@@ -12,10 +12,7 @@ using Terraria.Graphics.Shaders;
 using Terraria.ID;
 using Terraria.Localization;
 using Terraria.ModLoader;
-using CalamityMod;
 using CalamityMod.NPCs.ExoMechs.Ares;
-using CalamityMod.Projectiles.Melee;
-using ReLogic.Content;
 using System.Linq;
 using Terraria.DataStructures;
 

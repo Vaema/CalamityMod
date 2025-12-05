@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using CalamityMod.Items.Materials;
-using CalamityMod.Items.Placeables.SunkenSea;
-using CalamityMod.Projectiles.Rogue;
+﻿using CalamityMod.Projectiles.Rogue;
 using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.DataStructures;

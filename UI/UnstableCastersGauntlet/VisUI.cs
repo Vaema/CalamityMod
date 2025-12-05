@@ -1,5 +1,4 @@
 ﻿using System;
-using CalamityMod.Items;
 using CalamityMod.Items.Weapons.Magic;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;

@@ -1,5 +1,4 @@
-﻿using CalamityMod.CalPlayer;
-using CalamityMod.Items.PermanentBoosters;
+﻿using CalamityMod.Items.PermanentBoosters;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;

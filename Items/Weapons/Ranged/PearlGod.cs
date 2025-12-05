@@ -10,7 +10,6 @@ using Terraria.ModLoader;
 using CalamityMod.Rarities;
 using Terraria.Audio;
 using CalamityMod.Items.Materials;
-using Steamworks;
 
 namespace CalamityMod.Items.Weapons.Ranged
 {

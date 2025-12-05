@@ -1,7 +1,6 @@
 ﻿using CalamityMod.Items.Weapons.Ranged;
 using CalamityMod.Projectiles.Melee;
 using CalamityMod.Projectiles.Melee.Shortswords;
-using CalamityMod.Projectiles.Rogue;
 using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.Audio;

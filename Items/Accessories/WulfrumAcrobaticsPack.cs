@@ -4,7 +4,6 @@ using System.Linq;
 using CalamityMod.DataStructures;
 using CalamityMod.Items.Materials;
 using CalamityMod.Projectiles.Typeless;
-using CalamityMod.Sounds;
 using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.Audio;

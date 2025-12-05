@@ -2,7 +2,6 @@
 using System.IO;
 using CalamityMod.Buffs.DamageOverTime;
 using CalamityMod.Buffs.StatDebuffs;
-using CalamityMod.Events;
 using CalamityMod.Items.Materials;
 using CalamityMod.Items.Pets;
 using CalamityMod.Items.Placeables.Abyss;
@@ -13,7 +12,6 @@ using CalamityMod.Items.Weapons.Melee;
 using CalamityMod.Items.Weapons.Ranged;
 using CalamityMod.NPCs.Abyss;
 using CalamityMod.NPCs.NormalNPCs;
-using CalamityMod.NPCs.Perforator;
 using CalamityMod.Sounds;
 using CalamityMod.World;
 using Microsoft.Xna.Framework;

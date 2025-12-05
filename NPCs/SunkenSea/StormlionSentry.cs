@@ -1,13 +1,10 @@
 ﻿using System;
 using System.IO;
 using CalamityMod.BiomeManagers;
-using CalamityMod.Dusts;
 using CalamityMod.Items.Materials;
 using CalamityMod.Items.Placeables.Banners;
-using CalamityMod.Items.Weapons.Summon;
 using CalamityMod.Projectiles.Enemy;
 using CalamityMod.Projectiles.Magic;
-using CalamityMod.Projectiles.Rogue;
 using CalamityMod.Projectiles.Summon;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;

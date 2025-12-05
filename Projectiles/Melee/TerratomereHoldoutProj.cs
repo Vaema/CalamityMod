@@ -1,11 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using CalamityMod.Balancing;
 using CalamityMod.Buffs.StatDebuffs;
 using CalamityMod.Graphics.Primitives;
 using CalamityMod.Items.Weapons.Melee;
-using CalamityMod.Projectiles.Healing;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria;

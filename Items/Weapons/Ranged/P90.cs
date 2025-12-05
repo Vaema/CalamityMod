@@ -1,8 +1,6 @@
 ﻿using CalamityMod.Projectiles.Ranged;
-using CalamityMod.Projectiles.Turret;
 using Microsoft.Xna.Framework;
 using Terraria;
-using Terraria.Audio;
 using Terraria.DataStructures;
 using Terraria.ID;
 using Terraria.Localization;

@@ -1,11 +1,9 @@
 ﻿using System;
-using CalamityMod.Items;
 using CalamityMod.Items.SummonItems;
 using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.DataStructures;
 using Terraria.ID;
-using Terraria.Localization;
 using Terraria.ModLoader;
 
 namespace CalamityMod.Projectiles.Typeless

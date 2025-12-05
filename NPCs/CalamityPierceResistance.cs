@@ -4,7 +4,6 @@ using System.Linq;
 using System.Reflection;
 using CalamityMod.Balancing;
 using CalamityMod.Items.Accessories;
-using CalamityMod.Projectiles;
 using CalamityMod.Systems.Collections;
 using Terraria;
 using Terraria.ID;

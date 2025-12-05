@@ -1,8 +1,6 @@
-﻿using System;
-using CalamityMod.Events;
+﻿using CalamityMod.Events;
 using CalamityMod.Rarities;
 using CalamityMod.World;
-using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;

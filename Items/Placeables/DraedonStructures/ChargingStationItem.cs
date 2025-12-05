@@ -1,7 +1,6 @@
 ﻿using CalamityMod.Rarities;
 using CalamityMod.Tiles.DraedonStructures;
 using Terraria;
-using Terraria.ID;
 using Terraria.ModLoader;
 
 namespace CalamityMod.Items.Placeables.DraedonStructures

@@ -1,5 +1,4 @@
-﻿using System;
-using CalamityMod.Dusts;
+﻿using CalamityMod.Dusts;
 using CalamityMod.Graphics.Primitives;
 using CalamityMod.Particles;
 using CalamityMod.Enums;

@@ -1,11 +1,8 @@
-﻿using System;
-using CalamityMod.Buffs.DamageOverTime;
-using CalamityMod.Cooldowns;
+﻿using CalamityMod.Cooldowns;
 using CalamityMod.Dusts;
 using CalamityMod.Items.Materials;
 using CalamityMod.Particles;
 using CalamityMod.Projectiles.Melee;
-using CalamityMod.Projectiles.Typeless;
 using CalamityMod.Rarities;
 using CalamityMod.Tiles.Furniture.CraftingStations;
 using Microsoft.Xna.Framework;

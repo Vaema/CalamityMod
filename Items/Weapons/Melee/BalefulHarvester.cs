@@ -1,6 +1,5 @@
 ﻿using CalamityMod.Items.BaseItems;
 using CalamityMod.Projectiles.Melee;
-using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
 

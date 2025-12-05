@@ -1,11 +1,7 @@
-﻿using System;
-using CalamityMod.Buffs.DamageOverTime;
-using CalamityMod.Items.Weapons.Magic;
+﻿using CalamityMod.Buffs.DamageOverTime;
 using CalamityMod.Particles;
-using CalamityMod.Projectiles.Ranged;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using Mono.Cecil;
 using Terraria;
 using Terraria.Audio;
 using Terraria.ID;

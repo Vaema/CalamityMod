@@ -1,24 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using CalamityMod.Dusts;
+﻿using System.Collections.Generic;
 using CalamityMod.Effects;
-using CalamityMod.Events;
-using CalamityMod.Graphics;
 using CalamityMod.Graphics.Primitives;
-using CalamityMod.Items.Placeables.FurnitureVoid;
 using CalamityMod.NPCs.DevourerofGods;
 using CalamityMod.Systems.Graphic;
-using CalamityMod.World;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using ReLogic.Content;
 using Terraria;
-using Terraria.Audio;
-using Terraria.GameContent;
 using Terraria.Graphics.Effects;
-using Terraria.Graphics.Shaders;
-using Terraria.ID;
 using Terraria.ModLoader;
 
 namespace CalamityMod.Skies

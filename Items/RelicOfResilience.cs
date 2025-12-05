@@ -1,9 +1,4 @@
-﻿using System.Linq;
-using CalamityMod.Projectiles.Damageable;
-using CalamityMod.Projectiles.Typeless;
-using Microsoft.Xna.Framework;
-using Terraria;
-using Terraria.DataStructures;
+﻿using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
 

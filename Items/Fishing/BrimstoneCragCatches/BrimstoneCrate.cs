@@ -1,5 +1,4 @@
 ﻿using CalamityMod.Items.Materials;
-using CalamityMod.Items.Placeables.Crags;
 using CalamityMod.Tiles.Crags;
 using Terraria;
 using Terraria.ID;

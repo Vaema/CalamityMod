@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.IO;
 using CalamityMod.CalPlayer;
 using CalamityMod.Dusts;
 using CalamityMod.Items.Weapons.Typeless;

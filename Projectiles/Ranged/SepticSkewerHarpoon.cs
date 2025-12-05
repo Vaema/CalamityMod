@@ -2,7 +2,6 @@
 using System.Linq;
 using CalamityMod.Buffs.DamageOverTime;
 using CalamityMod.DataStructures;
-using CalamityMod.Items.Weapons.Melee;
 using CalamityMod.NPCs;
 using CalamityMod.Particles;
 using Microsoft.Xna.Framework;

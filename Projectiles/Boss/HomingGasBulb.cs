@@ -1,11 +1,8 @@
 ﻿using System;
-using CalamityMod.Buffs.DamageOverTime;
 using CalamityMod.Events;
-using CalamityMod.NPCs.TownNPCs;
 using CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses;
 using CalamityMod.World;
 using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Graphics;
 using Terraria;
 using Terraria.Audio;
 using Terraria.ID;

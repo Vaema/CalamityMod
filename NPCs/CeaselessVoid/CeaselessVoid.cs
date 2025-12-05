@@ -13,7 +13,6 @@ using CalamityMod.Items.TreasureBags;
 using CalamityMod.Items.Weapons.Melee;
 using CalamityMod.Items.Weapons.Summon;
 using CalamityMod.Projectiles.Boss;
-using CalamityMod.Sounds;
 using CalamityMod.UI.VanillaBossBars;
 using CalamityMod.World;
 using Microsoft.Xna.Framework;
@@ -28,7 +27,6 @@ using Terraria.GameContent.ItemDropRules;
 using Terraria.ID;
 using Terraria.ModLoader;
 using static Terraria.ModLoader.ModContent;
-using CalamityMod.UI;
 
 namespace CalamityMod.NPCs.CeaselessVoid
 {

@@ -2,7 +2,6 @@
 using System.Linq;
 using CalamityMod.Graphics.Primitives;
 using CalamityMod.NPCs;
-using CalamityMod.Systems.Collections;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using ReLogic.Content;
@@ -15,7 +14,6 @@ using Terraria.ModLoader;
 using Terraria.Audio;
 using System;
 using System.IO;
-using CalamityMod.Projectiles.Summon;
 
 namespace CalamityMod.Projectiles.BaseProjectiles
 {

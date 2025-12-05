@@ -1,9 +1,6 @@
-﻿using CalamityMod.Items.Weapons.Rogue;
-using CalamityMod.Items.Weapons.Summon;
+﻿using CalamityMod.Items.Weapons.Summon;
 using CalamityMod.Projectiles.Magic;
-using CalamityMod.Projectiles.Summon;
 using CalamityMod.Rarities;
-using CalamityMod.Sounds;
 using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.DataStructures;

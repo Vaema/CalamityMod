@@ -1,5 +1,4 @@
-﻿using System.Diagnostics.CodeAnalysis;
-using CalamityMod.Buffs.Summon;
+﻿using CalamityMod.Buffs.Summon;
 using CalamityMod.CalPlayer;
 using Microsoft.Xna.Framework;
 using Terraria;

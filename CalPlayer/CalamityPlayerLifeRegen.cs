@@ -1,15 +1,11 @@
 ﻿using System;
 using System.Linq;
 using CalamityMod.Buffs.Alcohol;
-using CalamityMod.Buffs.DamageOverTime;
-using CalamityMod.Buffs.Placeables;
 using CalamityMod.Buffs.StatBuffs;
 using CalamityMod.CalPlayer.Dashes;
-using CalamityMod.Cooldowns;
 using CalamityMod.DataStructures;
 using CalamityMod.Enums;
 using CalamityMod.Items.Accessories;
-using CalamityMod.Items.Accessories.Wings;
 using CalamityMod.Items.Armor.Fearmonger;
 using CalamityMod.Items.Armor.Reaver;
 using CalamityMod.Items.Armor.Silva;

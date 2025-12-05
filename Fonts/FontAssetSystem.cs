@@ -2,7 +2,6 @@
 
 using System;
 using System.Collections.Generic;
-using System.Runtime.CompilerServices;
 using ReLogic.Content;
 using ReLogic.Graphics;
 using Terraria;

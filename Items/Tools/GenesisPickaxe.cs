@@ -3,10 +3,8 @@ using CalamityMod.Items.Materials;
 using CalamityMod.Particles;
 using Microsoft.Xna.Framework;
 using Terraria;
-using Terraria.Graphics.Renderers;
 using Terraria.ID;
 using Terraria.ModLoader;
-using Terraria.Utilities.Terraria.Utilities;
 
 namespace CalamityMod.Items.Tools
 {

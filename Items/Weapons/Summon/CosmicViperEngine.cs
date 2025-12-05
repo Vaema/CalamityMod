@@ -1,7 +1,5 @@
-﻿using System;
-using CalamityMod.Buffs.Summon;
+﻿using CalamityMod.Buffs.Summon;
 using CalamityMod.Items.Materials;
-using CalamityMod.Items.Placeables.Ores;
 using CalamityMod.Projectiles.Summon;
 using CalamityMod.Rarities;
 using CalamityMod.Tiles.Furniture.CraftingStations;

@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using CalamityMod.CalPlayer;
 using CalamityMod.DataStructures;
 using CalamityMod.Items.Materials;
@@ -16,7 +15,6 @@ using Terraria.DataStructures;
 using Terraria.Graphics.Effects;
 using Terraria.ID;
 using Terraria.ModLoader;
-using static CalamityMod.Items.Accessories.ProfanedSoulCrystal;
 
 namespace CalamityMod.Items.Accessories
 {

@@ -1,5 +1,4 @@
 ﻿using System;
-using CalamityMod.Balancing;
 using CalamityMod.Buffs.StatDebuffs;
 using CalamityMod.Dusts;
 using CalamityMod.Graphics.Primitives;

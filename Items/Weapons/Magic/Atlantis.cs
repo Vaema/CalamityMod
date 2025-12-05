@@ -1,5 +1,4 @@
-﻿using System.Collections.Generic;
-using CalamityMod.Projectiles.Magic;
+﻿using CalamityMod.Projectiles.Magic;
 using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.Audio;

@@ -19,10 +19,8 @@ using Terraria.GameContent.Drawing;
 using Terraria.GameContent.ItemDropRules;
 using Terraria.GameInput;
 using Terraria.Graphics.Effects;
-using Terraria.Graphics.CameraModifiers;
 using Terraria.ID;
 using Terraria.ModLoader;
-using ReLogic.Utilities;
 
 namespace CalamityMod.ILEditing
 {

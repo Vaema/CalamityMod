@@ -9,7 +9,6 @@ using Terraria.GameContent;
 using Terraria.ID;
 using Terraria.Localization;
 using Terraria.ModLoader;
-using CalamityMod.NPCs.PrimordialWyrm;
 
 namespace CalamityMod.NPCs.PrimordialWyrm
 {

@@ -6,12 +6,8 @@ using Terraria.Audio;
 using Terraria.ID;
 using Terraria.ModLoader;
 using ReLogic.Utilities;
-using CalamityMod.Projectiles.Ranged;
-using CalamityMod.Items.Weapons.Ranged;
 using Microsoft.Xna.Framework.Graphics;
 using CalamityMod.Particles;
-using Terraria.Graphics.Renderers;
-using CalamityMod.Dusts;
 using ReLogic.Content;
 
 namespace CalamityMod.Projectiles.Melee

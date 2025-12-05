@@ -1,5 +1,4 @@
-﻿using CalamityMod.Items.Weapons.Ranged;
-using CalamityMod.Particles;
+﻿using CalamityMod.Particles;
 using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.ID;

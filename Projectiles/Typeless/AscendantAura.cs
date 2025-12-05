@@ -1,7 +1,4 @@
-﻿using CalamityMod.Buffs.Summon;
-using CalamityMod.CalPlayer;
-using CalamityMod.Dusts;
-using CalamityMod.Particles;
+﻿using CalamityMod.CalPlayer;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria;

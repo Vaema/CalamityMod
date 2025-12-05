@@ -1,7 +1,6 @@
 ﻿using System;
 using System.IO;
 using CalamityMod.Events;
-using CalamityMod.Items.Tools;
 using CalamityMod.NPCs.ExoMechs.Thanatos;
 using CalamityMod.Particles;
 using CalamityMod.Projectiles.Boss;

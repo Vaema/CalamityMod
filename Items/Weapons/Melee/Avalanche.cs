@@ -1,5 +1,4 @@
-﻿using System;
-using CalamityMod.Items.Weapons.Ranged;
+﻿using CalamityMod.Items.Weapons.Ranged;
 using CalamityMod.Projectiles.Melee;
 using Microsoft.Xna.Framework;
 using Terraria;

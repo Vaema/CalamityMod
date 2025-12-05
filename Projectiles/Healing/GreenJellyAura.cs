@@ -1,14 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using CalamityMod.Buffs.DamageOverTime;
+﻿using System.Collections.Generic;
 using CalamityMod.Buffs.StatBuffs;
-using CalamityMod.Buffs.StatDebuffs;
-using CalamityMod.Dusts;
 using CalamityMod.Items.Accessories;
 using CalamityMod.Particles;
 using CalamityMod.Systems.Collections;
 using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Graphics;
 using Terraria;
 using Terraria.Audio;
 using Terraria.ID;

@@ -1,13 +1,10 @@
 ﻿using System;
 using System.IO;
-using CalamityMod.Buffs.DamageOverTime;
 using CalamityMod.Events;
 using CalamityMod.Items.Accessories;
-using CalamityMod.Items.Ammo;
 using CalamityMod.Items.Armor.Vanity;
 using CalamityMod.Items.Fishing.BrimstoneCragCatches;
 using CalamityMod.Items.LoreItems;
-using CalamityMod.Items.Materials;
 using CalamityMod.Items.Pets;
 using CalamityMod.Items.Placeables.Furniture.BossRelics;
 using CalamityMod.Items.Placeables.Furniture.Paintings;

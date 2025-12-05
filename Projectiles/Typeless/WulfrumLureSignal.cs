@@ -1,15 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using CalamityMod.Items.Placeables.Furniture;
 using CalamityMod.Items.Tools;
-using CalamityMod.NPCs.AstrumDeus;
 using CalamityMod.NPCs.NormalNPCs;
 using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Graphics;
 using Terraria;
 using Terraria.Audio;
-using Terraria.DataStructures;
-using Terraria.Graphics.Shaders;
 using Terraria.ID;
 using Terraria.ModLoader;
 

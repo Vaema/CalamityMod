@@ -1,6 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using CalamityMod.Items.Weapons.Rogue;
+﻿using System.Collections.Generic;
 using CalamityMod.Items.Weapons.Summon;
 using CalamityMod.NPCs.DevourerofGods;
 using CalamityMod.Projectiles.Magic;
@@ -10,7 +8,6 @@ using Microsoft.Xna.Framework.Graphics;
 using Terraria;
 using Terraria.DataStructures;
 using Terraria.ID;
-using Terraria.Localization;
 using Terraria.ModLoader;
 
 namespace CalamityMod.Items.Weapons.Magic

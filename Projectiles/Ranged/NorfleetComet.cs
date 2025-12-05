@@ -6,7 +6,6 @@ using CalamityMod.Particles;
 using Terraria.ID;
 using Terraria.ModLoader;
 using Microsoft.Xna.Framework.Graphics;
-using SteelSeries.GameSense;
 
 namespace CalamityMod.Projectiles.Ranged
 {

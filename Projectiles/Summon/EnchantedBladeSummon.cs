@@ -1,7 +1,6 @@
 ﻿using System;
 using System.IO;
 using CalamityMod.Buffs.Summon;
-using CalamityMod.Particles;
 using CalamityMod.Projectiles.BaseProjectiles;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;

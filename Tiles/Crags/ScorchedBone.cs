@@ -1,8 +1,5 @@
-﻿using System.Collections.Generic;
-using CalamityMod.Systems;
-using CalamityMod.Tiles.Ores;
+﻿using CalamityMod.Systems;
 using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Graphics;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;

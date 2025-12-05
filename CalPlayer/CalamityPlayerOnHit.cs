@@ -15,7 +15,6 @@ using CalamityMod.Items.Armor.Bloodflare;
 using CalamityMod.Items.Armor.Fearmonger;
 using CalamityMod.Items.Armor.Hydrothermic;
 using CalamityMod.Items.Armor.Plaguebringer;
-using CalamityMod.Items.Armor.Reaver;
 using CalamityMod.Items.Armor.Silva;
 using CalamityMod.Items.Armor.SnowRuffian;
 using CalamityMod.Items.Armor.Sulphurous;

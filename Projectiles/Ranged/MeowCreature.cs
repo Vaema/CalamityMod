@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Linq;
 using CalamityMod.Graphics.Primitives;
 using CalamityMod.Particles;
 using Microsoft.Xna.Framework;

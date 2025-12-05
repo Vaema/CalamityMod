@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using CalamityMod.Items.Accessories;
-using CalamityMod.Items.Accessories.Wings;
 using CalamityMod.Items.Critters;
 using CalamityMod.Items.Fishing.AstralCatches;
 using CalamityMod.Items.Fishing.BrimstoneCragCatches;

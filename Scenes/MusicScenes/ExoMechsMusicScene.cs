@@ -4,7 +4,6 @@ using CalamityMod.NPCs.ExoMechs.Apollo;
 using CalamityMod.NPCs.ExoMechs.Ares;
 using CalamityMod.NPCs.ExoMechs.Artemis;
 using CalamityMod.NPCs.ExoMechs.Thanatos;
-using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
 

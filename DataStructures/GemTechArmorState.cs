@@ -1,7 +1,5 @@
-﻿using CalamityMod.CalPlayer;
-using CalamityMod.Items.Accessories;
+﻿using CalamityMod.Items.Accessories;
 using CalamityMod.Items.Armor.GemTech;
-using CalamityMod.Items.Potions.Alcohol;
 using CalamityMod.Projectiles.Melee;
 using CalamityMod.Projectiles.Ranged;
 using CalamityMod.Projectiles.Typeless;

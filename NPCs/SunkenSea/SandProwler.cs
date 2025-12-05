@@ -1,5 +1,4 @@
-﻿using CalamityMod.BiomeManagers;
-using CalamityMod.Enums;
+﻿using CalamityMod.Enums;
 using CalamityMod.Items.Placeables.Banners;
 using CalamityMod.Items.Weapons.Magic;
 using Microsoft.Xna.Framework;

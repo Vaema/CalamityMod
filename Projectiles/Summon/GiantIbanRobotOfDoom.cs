@@ -1,7 +1,6 @@
 ﻿using System;
 using CalamityMod.Buffs.Mounts;
 using CalamityMod.Items;
-using CalamityMod.Items.Weapons.DraedonsArsenal;
 using CalamityMod.Projectiles.Summon.AndromedaUI;
 using Microsoft.Xna.Framework;
 using Terraria;

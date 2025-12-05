@@ -1,15 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.IO;
 using CalamityMod.Items;
 using CalamityMod.TileEntities;
-using Terraria.DataStructures;
 using Terraria.ID;
 using Terraria;
-using System.Runtime.InteropServices;
 
 namespace CalamityMod.Packets
 {

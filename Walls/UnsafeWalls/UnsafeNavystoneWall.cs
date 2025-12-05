@@ -1,8 +1,4 @@
-﻿using System;
-using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Graphics;
-using Terraria.GameContent;
-using Terraria;
+﻿using Microsoft.Xna.Framework;
 using Terraria.ModLoader;
 using Terraria.ID;
 namespace CalamityMod.Walls.UnsafeWalls

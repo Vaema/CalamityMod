@@ -1,24 +1,19 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using CalamityMod.Schematics;
 using CalamityMod.Tiles.Crags;
 using CalamityMod.Tiles.Crags.Lily;
 using CalamityMod.Tiles.Crags.Spike;
 using CalamityMod.Tiles.Crags.Tree;
 using CalamityMod.Tiles.Ores;
-using CalamityMod.Walls;
 using CalamityMod.Walls.UnsafeWalls;
 using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.DataStructures;
-using Terraria.GameContent.Generation;
 using Terraria.ID;
-using Terraria.IO;
 using Terraria.ModLoader;
 using Terraria.Utilities;
 using Terraria.WorldBuilding;
-using static CalamityMod.Schematics.SchematicManager;
 
 namespace CalamityMod.World
 {

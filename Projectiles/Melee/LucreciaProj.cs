@@ -3,17 +3,11 @@ using CalamityMod.Items.Weapons.Melee;
 using CalamityMod.Particles;
 using CalamityMod.Projectiles.BaseProjectiles;
 using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Graphics;
 using Terraria;
 using Terraria.Audio;
 using Terraria.DataStructures;
 using Terraria.ID;
-using Terraria.Localization;
 using Terraria.ModLoader;
-using CalamityMod.CalPlayer;
-using CalamityMod.Buffs.StatBuffs;
-using CalamityMod.Projectiles.Melee.Shortswords;
-using System.Runtime.InteropServices;
 using CalamityMod.Sounds;
 
 namespace CalamityMod.Projectiles.Melee

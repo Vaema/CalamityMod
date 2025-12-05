@@ -1,9 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using CalamityMod.Effects;
-using CalamityMod.Graphics.Metaballs;
 using CalamityMod.Items.Tools;
-using CalamityMod.NPCs.Deconstructors;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria;

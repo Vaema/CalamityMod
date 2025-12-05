@@ -10,7 +10,6 @@ using Terraria.Graphics.Shaders;
 using CalamityMod.Particles;
 using System;
 using CalamityMod.Dusts;
-using Humanizer;
 
 namespace CalamityMod.Projectiles.Magic
 {

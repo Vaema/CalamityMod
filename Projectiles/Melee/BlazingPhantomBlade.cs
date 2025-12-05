@@ -1,5 +1,4 @@
 ﻿using System;
-using CalamityMod.DataStructures;
 using CalamityMod.Items.Weapons.Melee;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;

@@ -3,7 +3,6 @@ using Terraria.ID;
 using Terraria.ModLoader;
 using Terraria.ObjectData;
 using Microsoft.Xna.Framework;
-using Terraria.GameContent;
 
 namespace CalamityMod.Tiles.SunkenSea.Ambient
 {

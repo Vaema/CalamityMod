@@ -1,14 +1,10 @@
 ﻿using System;
-using CalamityMod.Buffs.DamageOverTime;
 using CalamityMod.Enums;
 using CalamityMod.Items.Accessories;
-using CalamityMod.Particles;
-using CalamityMod.Projectiles.Typeless;
 using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.Audio;
 using Terraria.DataStructures;
-using Terraria.GameContent.UI.States;
 using Terraria.Graphics.Shaders;
 using Terraria.ID;
 using Terraria.ModLoader;

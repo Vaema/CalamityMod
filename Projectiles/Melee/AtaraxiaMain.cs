@@ -1,8 +1,5 @@
-﻿using CalamityMod.Items.Ammo;
-using CalamityMod.Particles;
+﻿using CalamityMod.Particles;
 using Microsoft.Xna.Framework;
-using Mono.Cecil;
-using SteelSeries.GameSense;
 using Terraria;
 using Terraria.Audio;
 using Terraria.ID;

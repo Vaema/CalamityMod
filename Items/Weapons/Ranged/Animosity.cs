@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using CalamityMod.Items.Weapons.Magic;
-using CalamityMod.Items.Weapons.Rogue;
 using CalamityMod.Projectiles;
 using CalamityMod.Projectiles.Magic;
 using CalamityMod.Projectiles.Ranged;
@@ -10,7 +9,6 @@ using Terraria;
 using Terraria.Audio;
 using Terraria.DataStructures;
 using Terraria.ID;
-using Terraria.Localization;
 using Terraria.ModLoader;
 
 namespace CalamityMod.Items.Weapons.Ranged

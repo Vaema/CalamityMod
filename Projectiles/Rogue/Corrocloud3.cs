@@ -1,5 +1,4 @@
-﻿using CalamityMod.Buffs.StatDebuffs;
-using CalamityMod.Dusts;
+﻿using CalamityMod.Dusts;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;

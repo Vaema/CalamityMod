@@ -1,15 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using CalamityMod.Schematics;
 using Microsoft.Xna.Framework;
 using Terraria;
-using Terraria.DataStructures;
-using Terraria.GameContent.Generation;
 using Terraria.ID;
-using Terraria.IO;
-using Terraria.ModLoader;
-using Terraria.Utilities;
 using Terraria.WorldBuilding;
 using static CalamityMod.Schematics.SchematicManager;
 

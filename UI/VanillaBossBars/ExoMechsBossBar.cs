@@ -1,6 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using CalamityMod.NPCs.ExoMechs.Ares;
+﻿using CalamityMod.NPCs.ExoMechs.Ares;
 using CalamityMod.NPCs.ExoMechs.Artemis;
 using CalamityMod.NPCs.ExoMechs.Thanatos;
 using Microsoft.Xna.Framework;

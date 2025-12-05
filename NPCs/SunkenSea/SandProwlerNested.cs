@@ -1,22 +1,16 @@
-﻿using System;
-using CalamityMod.BiomeManagers;
-using CalamityMod.DataStructures;
+﻿using CalamityMod.DataStructures;
 using CalamityMod.Items.Placeables.Banners;
-using CalamityMod.Items.Weapons.Magic;
-using CalamityMod.World;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using System.Collections.Generic;
 using System.IO;
 using Terraria;
 using Terraria.Audio;
-using Terraria.DataStructures;
 using Terraria.GameContent;
 using Terraria.ID;
 using Terraria.ModLoader;
 using Terraria.ModLoader.Utilities;
 using Terraria.GameContent.Bestiary;
-using CalamityMod.NPCs.Crags;
 using CalamityMod.Enums;
 
 namespace CalamityMod.NPCs.SunkenSea

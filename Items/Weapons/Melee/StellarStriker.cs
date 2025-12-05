@@ -1,9 +1,5 @@
-﻿using System;
-using CalamityMod.Items.BaseItems;
+﻿using CalamityMod.Items.BaseItems;
 using CalamityMod.Projectiles.Melee;
-using Microsoft.Xna.Framework;
-using Terraria;
-using Terraria.Audio;
 using Terraria.ID;
 using Terraria.ModLoader;
 

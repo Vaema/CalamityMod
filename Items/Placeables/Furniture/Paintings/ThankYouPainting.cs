@@ -2,7 +2,6 @@
 using System.Linq;
 using CalamityMod.Tiles.Furniture.Paintings;
 using Terraria;
-using Terraria.ID;
 using Terraria.ModLoader;
 
 namespace CalamityMod.Items.Placeables.Furniture.Paintings

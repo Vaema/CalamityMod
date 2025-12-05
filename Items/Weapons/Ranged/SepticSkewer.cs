@@ -6,10 +6,7 @@ using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
 using System;
-using CalamityMod.Items.Weapons.Melee;
-using CalamityMod.Projectiles.Boss;
 using Terraria.Audio;
-using CalamityMod.Items.Weapons.Rogue;
 using CalamityMod.Items.Weapons.Magic;
 
 namespace CalamityMod.Items.Weapons.Ranged

@@ -1,8 +1,6 @@
 ﻿using System;
 using CalamityMod.Buffs.DamageOverTime;
-using CalamityMod.Items.Weapons.Melee;
 using CalamityMod.Items.Weapons.Rogue;
-using CalamityMod.Items.Weapons.Summon;
 using CalamityMod.Particles;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;

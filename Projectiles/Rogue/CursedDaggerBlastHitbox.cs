@@ -1,15 +1,9 @@
-﻿using System;
-using System.Reflection.Metadata;
-using CalamityMod.Dusts;
-using CalamityMod.Items.Weapons.Rogue;
-using CalamityMod.Particles;
+﻿using CalamityMod.Particles;
 using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.Audio;
 using Terraria.ID;
 using Terraria.ModLoader;
-using Terraria.Utilities;
-using static Humanizer.In;
 
 namespace CalamityMod.Projectiles.Rogue
 {

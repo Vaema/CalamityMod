@@ -1,22 +1,15 @@
 ﻿using CalamityMod.BiomeManagers;
-using CalamityMod.Items.Critters;
 using CalamityMod.Items.Placeables.Banners;
-using CalamityMod.Tiles.SunkenSea.Ambient;
 using Microsoft.Xna.Framework;
 using System.IO;
 using Terraria;
 using Terraria.ID;
 using Terraria.GameContent.Bestiary;
 using Terraria.ModLoader;
-using Terraria.ModLoader.Utilities;
 using Terraria.Audio;
-using Terraria.DataStructures;
-using rail;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria.GameContent;
 using CalamityMod.Particles;
-using CalamityMod.Graphics.Metaballs;
-using ReLogic.Content;
 using System;
 
 namespace CalamityMod.NPCs.SunkenSea

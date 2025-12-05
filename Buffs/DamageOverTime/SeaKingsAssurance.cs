@@ -1,24 +1,13 @@
 ﻿using System;
-using System.Diagnostics;
-using CalamityMod.DataStructures;
-using CalamityMod.ExtraTextures;
-using CalamityMod.Items.Weapons.Magic;
-using CalamityMod.Items.Weapons.Rogue;
 using CalamityMod.NPCs;
 using CalamityMod.Particles;
-using CalamityMod.Projectiles.Rogue;
-using CalamityMod.Projectiles.Typeless;
-using CalamityMod.Sounds;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using ReLogic.Content;
 using Terraria;
 using Terraria.Audio;
-using Terraria.DataStructures;
 using Terraria.ID;
-using Terraria.Localization;
 using Terraria.ModLoader;
-using Terraria.Utilities;
 
 namespace CalamityMod.Buffs.DamageOverTime
 {

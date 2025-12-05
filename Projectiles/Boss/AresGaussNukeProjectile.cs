@@ -1,7 +1,6 @@
 ﻿using System;
 using System.IO;
 using CalamityMod.Events;
-using CalamityMod.Items.Weapons.DraedonsArsenal;
 using CalamityMod.NPCs.ExoMechs.Ares;
 using CalamityMod.Skies;
 using CalamityMod.World;

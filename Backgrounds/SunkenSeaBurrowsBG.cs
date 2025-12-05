@@ -2,11 +2,9 @@
 using Terraria.ModLoader;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using System;
 using ReLogic.Content;
 using Terraria.ID;
 using CalamityMod.Graphics;
-using System.Reflection;
 using Terraria.Graphics.Shaders;
 
 namespace CalamityMod.Backgrounds

@@ -1,14 +1,9 @@
-﻿using System;
-using Microsoft.Xna.Framework;
+﻿using Microsoft.Xna.Framework;
 using Terraria;
-using Terraria.Audio;
 using CalamityMod.Particles;
-using Terraria.ID;
 using Terraria.ModLoader;
 using Microsoft.Xna.Framework.Graphics;
-using SteelSeries.GameSense;
 using CalamityMod.Buffs.DamageOverTime;
-using Mono.Cecil;
 
 namespace CalamityMod.Projectiles.Typeless
 {

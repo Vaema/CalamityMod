@@ -1,5 +1,4 @@
 ﻿using CalamityMod.Dusts;
-using CalamityMod.Items.Weapons.Summon;
 using CalamityMod.NPCs.Cryogen;
 using CalamityMod.NPCs.SupremeCalamitas;
 using CalamityMod.Particles;

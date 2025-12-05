@@ -1,6 +1,5 @@
 ﻿using CalamityMod.Items.Weapons.Magic;
 using CalamityMod.NPCs;
-using CalamityMod.Projectiles.Ranged;
 using CalamityMod.Systems;
 using Microsoft.Xna.Framework;
 using ReLogic.Utilities;

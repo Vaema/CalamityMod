@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Text;
 using CalamityMod.Items.DraedonMisc;
-using CalamityMod.Items.Materials;
 using CalamityMod.Items.Pets;
 using CalamityMod.NPCs.ExoMechs;
 using CalamityMod.Packets;

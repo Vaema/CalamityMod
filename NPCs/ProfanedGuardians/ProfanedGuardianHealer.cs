@@ -1,6 +1,5 @@
 ﻿using System;
 using System.IO;
-using CalamityMod.Buffs.DamageOverTime;
 using CalamityMod.Dusts;
 using CalamityMod.Events;
 using CalamityMod.Items;

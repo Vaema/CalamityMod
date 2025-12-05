@@ -2,7 +2,6 @@
 using CalamityMod.Dusts;
 using CalamityMod.NPCs;
 using CalamityMod.Particles;
-using CalamityMod.Projectiles.Typeless;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using ReLogic.Content;

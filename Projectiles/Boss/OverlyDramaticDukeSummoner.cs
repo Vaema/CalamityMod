@@ -1,6 +1,4 @@
 ﻿using System;
-using CalamityMod.Buffs.StatDebuffs;
-using CalamityMod.Dusts;
 using CalamityMod.Events;
 using CalamityMod.NPCs.OldDuke;
 using CalamityMod.Particles;
@@ -11,7 +9,6 @@ using ReLogic.Utilities;
 using Terraria;
 using Terraria.Audio;
 using Terraria.Chat;
-using Terraria.DataStructures;
 using Terraria.ID;
 using Terraria.Localization;
 using Terraria.ModLoader;
