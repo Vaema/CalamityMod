@@ -3663,7 +3663,7 @@ namespace CalamityMod.NPCs
                     GeneralParticleHandler.SpawnParticle(sparks);
                 }
 
-                SoundEngine.PlaySound(new("CalamityMod/Sounds/NPCHit/CryogenHit", 3) { Volume = 0.6f }, npc.Center);
+                SoundEngine.PlaySound(new SoundStyle("CalamityMod/Sounds/NPCHit/CryogenHit", 3) { Volume = 0.6f }, npc.Center);
                 Projectile.NewProjectile(npc.GetSource_FromThis(), npc.Center, Vector2.Zero, ProjectileType<DirectStrike>(), 100 + (15 * veriumDoomStacks), 0, Main.myPlayer, npc.whoAmI);
 
                 veriumDoomMarked = false;
@@ -3746,7 +3746,7 @@ namespace CalamityMod.NPCs
                     dust.noGravity = true;
                 }
 
-                SoundEngine.PlaySound(new("CalamityMod/Sounds/Item/LaserBurn") { Volume = 0.6f, Pitch = Main.rand.NextFloat(-0.15f, 0.15f) }, npc.Center);
+                SoundEngine.PlaySound(new SoundStyle("CalamityMod/Sounds/Item/LaserBurn") { Volume = 0.6f, Pitch = Main.rand.NextFloat(-0.15f, 0.15f) }, npc.Center);
                 laserBurnMarked = false;
                 laserBurnStacks = 0;
                 laserBurnTimer = 0;

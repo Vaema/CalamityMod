@@ -44,7 +44,7 @@ namespace CalamityMod.Projectiles.Magic
 
                 if (Projectile.localAI[0] == 35 && !spawnedProjectile)
                 {
-                    SoundEngine.PlaySound(new("CalamityMod/Sounds/Item/VividClarityBeamAppear") { Volume = 0.5f, PitchVariance = 0.1f }, Projectile.Center);
+                    SoundEngine.PlaySound(new SoundStyle("CalamityMod/Sounds/Item/VividClarityBeamAppear") { Volume = 0.5f, PitchVariance = 0.1f }, Projectile.Center);
 
                     Player owner = Main.player[Projectile.owner];
                     Vector2 targetDirection = Projectile.Center.DirectionTo(Main.MouseWorld).SafeNormalize(Vector2.UnitX);

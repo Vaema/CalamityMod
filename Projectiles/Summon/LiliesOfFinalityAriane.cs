@@ -332,7 +332,7 @@ namespace CalamityMod.Projectiles.Summon
             GeneralParticleHandler.SpawnParticle(outerRing);
             GeneralParticleHandler.SpawnParticle(innerRing);
 
-            SoundEngine.PlaySound(new("CalamityMod/Sounds/Custom/SCalSounds/BrimstoneHellblastSound") { Pitch = 0.4f }, Projectile.Center);
+            SoundEngine.PlaySound(new SoundStyle("CalamityMod/Sounds/Custom/SCalSounds/BrimstoneHellblastSound") { Pitch = 0.4f }, Projectile.Center);
         }
 
         private void FlyTowardsPlace(float speed, Vector2 place, int spriteDirection)

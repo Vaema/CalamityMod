@@ -330,7 +330,7 @@ namespace CalamityMod.Projectiles.Summon
             {
                 if (Projectile.owner == Main.myPlayer)
                 {
-                    SoundEngine.PlaySound(new("CalamityMod/Sounds/Item/MechGaussRifle"), Projectile.Center);
+                    SoundEngine.PlaySound(new SoundStyle("CalamityMod/Sounds/Item/MechGaussRifle"), Projectile.Center);
                     int damage = (int)player.GetTotalDamage<SummonDamageClass>().ApplyTo(LaserBaseDamage);
 
                     // 15NOV2024: Ozzatron: clamped mouse position unnecessary, only used for direction
@@ -353,7 +353,7 @@ namespace CalamityMod.Projectiles.Summon
         public void ExitChargeModeEarly(Player player)
         {
             RightIconCooldown = RightIconAttackTime;
-            SoundEngine.PlaySound(new("CalamityMod/Sounds/Item/MechGaussRifle"), Projectile.Center);
+            SoundEngine.PlaySound(new SoundStyle("CalamityMod/Sounds/Item/MechGaussRifle"), Projectile.Center);
             SpecialAttackExplosionDust(player);
         }
         public void SpecialAttackExplosionDust(Player player)

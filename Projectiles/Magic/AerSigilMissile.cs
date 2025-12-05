@@ -101,7 +101,7 @@ namespace CalamityMod.Projectiles.Magic
 
         public override void OnKill(int timeLeft)
         {
-            SoundEngine.PlaySound(new("CalamityMod/Sounds/Item/UnstableCastersGauntlet/AerSigilGust") { Volume = 0.6f, PitchVariance = 0.1f }, Projectile.Center);
+            SoundEngine.PlaySound(new SoundStyle("CalamityMod/Sounds/Item/UnstableCastersGauntlet/AerSigilGust") { Volume = 0.6f, PitchVariance = 0.1f }, Projectile.Center);
 
             Vector2 adjustedCenter = Projectile.Center - Main.screenPosition + new Vector2(0, -16).RotatedBy(Projectile.rotation - MathHelper.PiOver2);
 

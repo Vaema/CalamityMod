@@ -328,7 +328,7 @@ namespace CalamityMod.Projectiles.Summon
                 7);
             GeneralParticleHandler.SpawnParticle(shootRing);
 
-            SoundEngine.PlaySound(new("CalamityMod/Sounds/Custom/ElsterShot", 4) { Volume = 0.3f }, Projectile.Center);
+            SoundEngine.PlaySound(new SoundStyle("CalamityMod/Sounds/Custom/ElsterShot", 4) { Volume = 0.3f }, Projectile.Center);
         }
 
         private void ElevationDust(bool shootingState)
