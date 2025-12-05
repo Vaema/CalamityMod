@@ -90,7 +90,7 @@ namespace CalamityMod.Projectiles.Boss
         public override bool PreDraw(ref Color lightColor)
         {
             // Do not draw if the font isn't loaded or text is Cyrillic or Chinese
-            if (FontAssetSystem.Wingdings is null || System.Environment.OSVersion.Platform != PlatformID.Win32NT || GameCulture.FromCultureName(GameCulture.CultureName.Chinese).IsActive || GameCulture.FromCultureName(GameCulture.CultureName.Russian).IsActive)
+            if (FontAssetSystem.Wingdings is null || GameCulture.FromCultureName(GameCulture.CultureName.Chinese).IsActive || GameCulture.FromCultureName(GameCulture.CultureName.Russian).IsActive)
                 return false;
             // Otherwise identical drawcode to CombatText
             Vector2 stringSize = FontAssetSystem.Wingdings.Value.MeasureString(dialogue);
