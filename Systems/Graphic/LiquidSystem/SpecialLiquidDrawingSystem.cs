@@ -18,8 +18,6 @@ namespace CalamityMod.Systems.Graphic.LiquidSystem
     [Autoload(Side = ModSide.Client)]
     public sealed class SpecialLiquidDrawingSystem : ModSystem
     {
-        public static readonly FastField<WaterfallManager, Asset<Texture2D>[]> WaterfallTextureField = new("waterfallTexture", BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.Public);
-
         public override void OnModLoad()
         {
             On_TileLightScanner.GetTileLight += ApplyLiquidEmit;
@@ -242,7 +240,7 @@ namespace CalamityMod.Systems.Graphic.LiquidSystem
             if (GetModWaterfallStyle(waterfallType) is IWaterfallStyleModifyColor style)
             {
                 Tile tile = Main.tile[x, y];
-                Texture2D texture = WaterfallTextureField.Get(self)[waterfallType].Value;
+                Texture2D texture = self.waterfallTexture[waterfallType].Value;
                 Lighting.GetCornerColors(x, y, out var vertices, 1f);
                 style.ModifyColor(in tile, x, y, ref vertices);
                 Main.tileBatch.Draw(texture, position, sourceRect, vertices, Vector2.Zero, 1f, effects);
