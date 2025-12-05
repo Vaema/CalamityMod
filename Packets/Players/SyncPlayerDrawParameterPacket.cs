@@ -5,7 +5,7 @@ using Terraria;
 
 namespace CalamityMod.Packets
 {
-    public sealed class SyncPlayerDrawParameterPacket : CalamityPacket
+    internal sealed class SyncPlayerDrawParameterPacket : CalamityPacket
     {
         public static SyncPlayerDrawParameterPacket Instance { get; set; }
 

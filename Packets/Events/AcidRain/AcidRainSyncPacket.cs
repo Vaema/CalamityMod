@@ -3,7 +3,7 @@ using CalamityMod.Events;
 
 namespace CalamityMod.Packets
 {
-    public sealed class AcidRainSyncPacket : CalamityPacket
+    internal sealed class AcidRainSyncPacket : CalamityPacket
     {
         public static AcidRainSyncPacket Instance { get; private set; }
 

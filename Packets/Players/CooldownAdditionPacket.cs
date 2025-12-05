@@ -6,7 +6,7 @@ using Terraria.ID;
 
 namespace CalamityMod.Packets
 {
-    public sealed class CooldownAdditionPacket : CalamityPacket
+    internal sealed class CooldownAdditionPacket : CalamityPacket
     {
         public static CooldownAdditionPacket Instance { get; private set; }
 

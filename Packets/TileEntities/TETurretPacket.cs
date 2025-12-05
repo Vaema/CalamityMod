@@ -5,7 +5,7 @@ using Terraria;
 
 namespace CalamityMod.Packets
 {
-    public sealed class TETurretPacket : CalamityPacket
+    internal sealed class TETurretPacket : CalamityPacket
     {
         public static TETurretPacket Instance { get; private set; }
 

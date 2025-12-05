@@ -4,7 +4,7 @@ using Terraria;
 
 namespace CalamityMod.Packets
 {
-    public sealed class DefenseDamageSyncPacket : CalamityPacket
+    internal sealed class DefenseDamageSyncPacket : CalamityPacket
     {
         public static DefenseDamageSyncPacket Instance { get; private set; }
 

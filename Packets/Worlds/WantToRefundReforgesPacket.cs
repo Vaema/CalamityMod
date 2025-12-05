@@ -5,7 +5,7 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.Packets
 {
-    public sealed class WantToRefundReforgesPacket : CalamityPacket
+    internal sealed class WantToRefundReforgesPacket : CalamityPacket
     {
         public static WantToRefundReforgesPacket Instance { get; private set; }
 

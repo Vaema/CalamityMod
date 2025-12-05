@@ -4,7 +4,7 @@ using Terraria;
 
 namespace CalamityMod.Packets
 {
-    public sealed class SyncSlabCrabAIPacket : CalamityPacket
+    internal sealed class SyncSlabCrabAIPacket : CalamityPacket
     {
         public static SyncSlabCrabAIPacket Instance { get; private set; }
 

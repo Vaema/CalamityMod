@@ -4,7 +4,7 @@ using Terraria.ID;
 
 namespace CalamityMod.Packets
 {
-    public sealed class SyncNPCMotionDataToServerPacket : CalamityPacket
+    internal sealed class SyncNPCMotionDataToServerPacket : CalamityPacket
     {
         public static SyncNPCMotionDataToServerPacket Instance { get; private set; }
 

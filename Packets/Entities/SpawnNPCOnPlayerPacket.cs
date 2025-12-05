@@ -1,10 +1,10 @@
 ﻿using System.IO;
-using Terraria.DataStructures;
 using Terraria;
+using Terraria.DataStructures;
 
 namespace CalamityMod.Packets
 {
-    public sealed class SpawnNPCOnPlayerPacket : CalamityPacket
+    internal sealed class SpawnNPCOnPlayerPacket : CalamityPacket
     {
         public static SpawnNPCOnPlayerPacket Instance { get; private set; }
 

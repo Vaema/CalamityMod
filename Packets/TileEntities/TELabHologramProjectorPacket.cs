@@ -3,7 +3,7 @@ using CalamityMod.TileEntities;
 
 namespace CalamityMod.Packets
 {
-    public sealed class TELabHologramProjectorPacket : CalamityPacket
+    internal sealed class TELabHologramProjectorPacket : CalamityPacket
     {
         public static TELabHologramProjectorPacket Instance { get; private set; }
 

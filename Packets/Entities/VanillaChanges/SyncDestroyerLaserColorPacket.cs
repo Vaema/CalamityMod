@@ -3,7 +3,7 @@ using Terraria;
 
 namespace CalamityMod.Packets
 {
-    public sealed class SyncDestroyerLaserColorPacket : CalamityPacket
+    internal sealed class SyncDestroyerLaserColorPacket : CalamityPacket
     {
         public static SyncDestroyerLaserColorPacket Instance { get; private set; }
 

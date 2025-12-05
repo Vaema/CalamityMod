@@ -4,7 +4,7 @@ using Terraria;
 
 namespace CalamityMod.Packets
 {
-    public sealed class SyncAndroombaAIPacket : CalamityPacket
+    internal sealed class SyncAndroombaAIPacket : CalamityPacket
     {
         public static SyncAndroombaAIPacket Instance { get; private set; }
 

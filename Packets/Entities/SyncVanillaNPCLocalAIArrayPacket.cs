@@ -3,7 +3,7 @@ using Terraria;
 
 namespace CalamityMod.Packets
 {
-    public sealed class SyncVanillaNPCLocalAIArrayPacket : CalamityPacket
+    internal sealed class SyncVanillaNPCLocalAIArrayPacket : CalamityPacket
     {
         public static SyncVanillaNPCLocalAIArrayPacket Instance { get; private set; }
 

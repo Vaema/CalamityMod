@@ -4,7 +4,7 @@ using Terraria;
 
 namespace CalamityMod.Packets
 {
-    public sealed class TECanvasPaintingPacket : CalamityPacket
+    internal sealed class TECanvasPaintingPacket : CalamityPacket
     {
         public static TECanvasPaintingPacket Instance { get; private set; }
 

@@ -4,7 +4,7 @@ using Terraria;
 
 namespace CalamityMod.Packets
 {
-    public sealed class BanditStolenMoneySyncPacket : CalamityPacket
+    internal sealed class BanditStolenMoneySyncPacket : CalamityPacket
     {
         public static BanditStolenMoneySyncPacket Instance { get; private set; }
 

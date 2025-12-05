@@ -3,7 +3,7 @@ using CalamityMod.NPCs.Providence;
 
 namespace CalamityMod.Packets
 {
-    public sealed class PSCChallengeSyncPacket : CalamityPacket
+    internal sealed class PSCChallengeSyncPacket : CalamityPacket
     {
         public static PSCChallengeSyncPacket Instance { get; private set; }
 

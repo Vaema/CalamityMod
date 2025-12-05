@@ -3,7 +3,7 @@ using CalamityMod.Events;
 
 namespace CalamityMod.Packets
 {
-    public sealed class BossRushEndTimerPacket : CalamityPacket
+    internal sealed class BossRushEndTimerPacket : CalamityPacket
     {
         public static BossRushEndTimerPacket Instance { get; private set; }
 

@@ -4,7 +4,7 @@ using Terraria;
 
 namespace CalamityMod.Packets
 {
-    public sealed class CodebreakerSummonStuffPacket : CalamityPacket
+    internal sealed class CodebreakerSummonStuffPacket : CalamityPacket
     {
         public static CodebreakerSummonStuffPacket Instance { get; private set; }
 

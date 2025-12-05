@@ -6,7 +6,7 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.Packets
 {
-    public sealed class SpawnSuperDummyPacket : CalamityPacket
+    internal sealed class SpawnSuperDummyPacket : CalamityPacket
     {
         public static SpawnSuperDummyPacket Instance { get; private set; }
 

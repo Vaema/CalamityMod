@@ -4,7 +4,7 @@ using Terraria;
 
 namespace CalamityMod.Packets
 {
-    public sealed class SyncNPCPosAndRotOnlyPacket : CalamityPacket
+    internal sealed class SyncNPCPosAndRotOnlyPacket : CalamityPacket
     {
         public static SyncNPCPosAndRotOnlyPacket Instance { get; private set; }
 
@@ -26,7 +26,7 @@ namespace CalamityMod.Packets
         {
             var npc = packet.ReadNPC();
             var position = packet.ReadVector2();
-            var rotation = (float)packet.ReadHalf(); 
+            var rotation = (float)packet.ReadHalf();
 
             if (npc is null)
                 return;

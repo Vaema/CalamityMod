@@ -1,11 +1,11 @@
 ﻿using System.IO;
 using CalamityMod.TileEntities;
-using Terraria.ID;
 using Terraria;
+using Terraria.ID;
 
 namespace CalamityMod.Packets
 {
-    public sealed class TEPowerCellFactoryPacket : CalamityPacket
+    internal sealed class TEPowerCellFactoryPacket : CalamityPacket
     {
         public static TEPowerCellFactoryPacket Instance { get; private set; }
 

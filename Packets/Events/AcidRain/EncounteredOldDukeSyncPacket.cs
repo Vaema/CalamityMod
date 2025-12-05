@@ -3,7 +3,7 @@ using CalamityMod.Events;
 
 namespace CalamityMod.Packets
 {
-    public sealed class EncounteredOldDukeSyncPacket : CalamityPacket
+    internal sealed class EncounteredOldDukeSyncPacket : CalamityPacket
     {
         public static EncounteredOldDukeSyncPacket Instance { get; private set; }
 

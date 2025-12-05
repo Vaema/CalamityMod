@@ -3,7 +3,7 @@ using CalamityMod.World;
 
 namespace CalamityMod.Packets
 {
-    public sealed class ExoMechSelectionPacket : CalamityPacket
+    internal sealed class ExoMechSelectionPacket : CalamityPacket
     {
         public static ExoMechSelectionPacket Instance { get; private set; }
 

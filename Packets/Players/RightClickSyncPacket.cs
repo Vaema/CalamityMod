@@ -4,7 +4,7 @@ using Terraria;
 
 namespace CalamityMod.Packets
 {
-    public sealed class RightClickSyncPacket : CalamityPacket
+    internal sealed class RightClickSyncPacket : CalamityPacket
     {
         public static RightClickSyncPacket Instance { get; private set; }
 

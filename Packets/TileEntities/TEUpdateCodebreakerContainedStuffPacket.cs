@@ -3,7 +3,7 @@ using CalamityMod.TileEntities;
 
 namespace CalamityMod.Packets
 {
-    public sealed class TEUpdateCodebreakerContainedStuffPacket : CalamityPacket
+    internal sealed class TEUpdateCodebreakerContainedStuffPacket : CalamityPacket
     {
         public static TEUpdateCodebreakerContainedStuffPacket Instance { get; private set; }
 

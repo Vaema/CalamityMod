@@ -4,7 +4,7 @@ using Terraria;
 
 namespace CalamityMod.Packets
 {
-    public sealed class DeleteAllSuperDummiesPacket : CalamityPacket
+    internal sealed class DeleteAllSuperDummiesPacket : CalamityPacket
     {
         public static DeleteAllSuperDummiesPacket Instance { get; private set; }
 

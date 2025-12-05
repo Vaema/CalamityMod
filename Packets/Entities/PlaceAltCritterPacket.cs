@@ -3,7 +3,7 @@ using Terraria;
 
 namespace CalamityMod.Packets
 {
-    public sealed class PlaceAltCritterPacket : CalamityPacket
+    internal sealed class PlaceAltCritterPacket : CalamityPacket
     {
         public static PlaceAltCritterPacket Instance { get; private set; }
 

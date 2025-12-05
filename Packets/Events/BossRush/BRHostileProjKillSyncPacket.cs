@@ -3,7 +3,7 @@ using CalamityMod.Events;
 
 namespace CalamityMod.Packets
 {
-    public sealed class BRHostileProjKillSyncPacket : CalamityPacket
+    internal sealed class BRHostileProjKillSyncPacket : CalamityPacket
     {
         public static BRHostileProjKillSyncPacket Instance { get; private set; }
 

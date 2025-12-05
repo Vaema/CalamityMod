@@ -3,7 +3,7 @@ using CalamityMod.World;
 
 namespace CalamityMod.Packets
 {
-    public sealed class UnlockAbyssChestsPacket : CalamityPacket
+    internal sealed class UnlockAbyssChestsPacket : CalamityPacket
     {
         public static UnlockAbyssChestsPacket Instance { get; private set; }
 

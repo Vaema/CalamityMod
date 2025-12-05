@@ -6,7 +6,7 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.Packets
 {
-    public abstract class CalamityPacket : ILoadable
+    internal abstract class CalamityPacket : ILoadable
     {
         public abstract byte MessageType { get; }
         public abstract void HandlePacket(in BinaryReader packet, int sender);

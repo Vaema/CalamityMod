@@ -5,7 +5,7 @@ using Terraria.ModLoader.IO;
 
 namespace CalamityMod.Packets
 {
-    public sealed class TEChargingStationItemChangePacket : CalamityPacket
+    internal sealed class TEChargingStationItemChangePacket : CalamityPacket
     {
         public static TEChargingStationItemChangePacket Instance { get; private set; }
 

@@ -4,7 +4,7 @@ using Terraria.ID;
 
 namespace CalamityMod.Packets
 {
-    public sealed class MusicEventSyncRequestPacket : CalamityPacket
+    internal sealed class MusicEventSyncRequestPacket : CalamityPacket
     {
         public static MusicEventSyncRequestPacket Instance { get; private set; }
 

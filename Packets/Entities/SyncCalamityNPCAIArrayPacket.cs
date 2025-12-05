@@ -3,7 +3,7 @@ using Terraria;
 
 namespace CalamityMod.Packets
 {
-    public sealed class SyncCalamityNPCAIArrayPacket : CalamityPacket
+    internal sealed class SyncCalamityNPCAIArrayPacket : CalamityPacket
     {
         // MIGRATED COMMENTS FROM: 'CalamityNetcode.cs'
         // - This code has been edited to fail gracefully when trying to provide data for an invalid NPC.

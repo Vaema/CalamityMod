@@ -3,7 +3,7 @@ using Terraria;
 
 namespace CalamityMod.Packets
 {
-    public sealed class SpawnBossOnPositionPacket : CalamityPacket
+    internal sealed class SpawnBossOnPositionPacket : CalamityPacket
     {
         public static SpawnBossOnPositionPacket Instance { get; private set; }
 
@@ -33,7 +33,7 @@ namespace CalamityMod.Packets
             int spawnedNPCIdx = NPC.NewNPC(NPC.GetBossSpawnSource(targetIndex), x, y, npcType, Start: 1);
             if (spawnedNPCIdx >= Main.maxNPCs)
                 return;
-            
+
             NPC npc = Main.npc[spawnedNPCIdx];
             npc.timeLeft *= 20;
             npc.target = targetIndex;

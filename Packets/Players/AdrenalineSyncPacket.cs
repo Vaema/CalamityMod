@@ -4,7 +4,7 @@ using Terraria;
 
 namespace CalamityMod.Packets
 {
-    public sealed class AdrenalineSyncPacket : CalamityPacket
+    internal sealed class AdrenalineSyncPacket : CalamityPacket
     {
         public static AdrenalineSyncPacket Instance { get; private set; }
 

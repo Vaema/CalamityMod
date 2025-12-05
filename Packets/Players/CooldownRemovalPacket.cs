@@ -1,12 +1,12 @@
 ﻿using System.IO;
 using CalamityMod.CalPlayer;
 using CalamityMod.Cooldowns;
-using Terraria.ID;
 using Terraria;
+using Terraria.ID;
 
 namespace CalamityMod.Packets
 {
-    public sealed class CooldownRemovalPacket : CalamityPacket
+    internal sealed class CooldownRemovalPacket : CalamityPacket
     {
         public static CooldownRemovalPacket Instance { get; private set; }
 

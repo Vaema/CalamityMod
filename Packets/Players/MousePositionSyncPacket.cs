@@ -5,7 +5,7 @@ using Terraria;
 
 namespace CalamityMod.Packets
 {
-    public sealed class MousePositionSyncPacket : CalamityPacket
+    internal sealed class MousePositionSyncPacket : CalamityPacket
     {
         public static MousePositionSyncPacket Instance { get; private set; }
 

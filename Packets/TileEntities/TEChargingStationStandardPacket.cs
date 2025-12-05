@@ -1,12 +1,12 @@
 ﻿using System.IO;
 using CalamityMod.Items;
 using CalamityMod.TileEntities;
-using Terraria.ID;
 using Terraria;
+using Terraria.ID;
 
 namespace CalamityMod.Packets
 {
-    public sealed class TEChargingStationStandardPacket : CalamityPacket
+    internal sealed class TEChargingStationStandardPacket : CalamityPacket
     {
         public static TEChargingStationStandardPacket Instance { get; private set; }
 
