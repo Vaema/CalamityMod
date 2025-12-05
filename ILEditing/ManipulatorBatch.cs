@@ -4,9 +4,6 @@ using MonoMod.Cil;
 
 namespace CalamityMod.ILEditing;
 
-// TODO: We can directly add the IDisposable interface if we update the C#
-//       version the project targets.
-
 /// <summary>
 ///     Simple helper object to capture multiple IL edits to apply in a single
 ///     pass to avoid additional overhead.
@@ -15,7 +12,7 @@ namespace CalamityMod.ILEditing;
 ///     Since multiple edits are applied at once, a failure from one edit will
 ///     cause every edit to fail.  Use with caution.
 /// </remarks>
-internal readonly ref struct ManipulatorBatch()
+internal readonly ref struct ManipulatorBatch() : IDisposable
 {
     public required Action<ILContext.Manipulator> ManipulatorProvider { get; init; }
 
