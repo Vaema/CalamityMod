@@ -5,10 +5,11 @@ using Microsoft.Xna.Framework.Graphics;
 using Terraria;
 using Terraria.GameContent;
 using Terraria.Localization;
+using Terraria.ModLoader;
 
 namespace CalamityMod.UI
 {
-    public abstract class InvasionProgressUI
+    public abstract class InvasionProgressUI : ILoadable
     {
         public virtual int SecondaryDigitPrecision { get; } = 0;
         public abstract bool IsActive { get; }
@@ -88,6 +89,16 @@ namespace CalamityMod.UI
             DrawProgressText(spriteBatch, yScale, barDrawPosition, barOffsetY, out Vector2 newBarPosition);
             DrawBackground(spriteBatch, yScale, newBarPosition, barOffsetY);
             DrawProgressTextAndIcons(spriteBatch, barOffsetY);
+        }
+
+        public void Load(Mod mod)
+        {
+            InvasionProgressUIManager.gUIs.Add(this);
+        }
+
+        public void Unload()
+        {
+
         }
     }
 }
