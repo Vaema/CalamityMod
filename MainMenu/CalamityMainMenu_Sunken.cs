@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Reflection;
 using CalamityMod.Effects;
 using CalamityMod.Systems;
 using Microsoft.Xna.Framework;
@@ -75,11 +74,11 @@ namespace CalamityMod.MainMenu
         public static List<SunkenFishBoid> Fishes { get; private set; } = [];
 
         public static Asset<Texture2D> LogoWater => ModContent.Request<Texture2D>("CalamityMod/MainMenu/LogoSunken_Water");
-        
+
         public static Asset<Texture2D> LogoWaterFill => ModContent.Request<Texture2D>("CalamityMod/MainMenu/LogoSunken_Water_Fill");
-        
+
         public static Asset<Texture2D> Perlin => ModContent.Request<Texture2D>("CalamityMod/MainMenu/Perlin");
-        
+
         public static Asset<Texture2D> WorleyInverted => ModContent.Request<Texture2D>("CalamityMod/MainMenu/WorleyInverted");
 
         private static RenderTarget2D logoWaterFillTarget;
@@ -88,7 +87,7 @@ namespace CalamityMod.MainMenu
         public int MaxBoids = 120;
 
         public float remixLogoRotation = 0f;
-        
+
         /// <summary>
         /// The global save data key which dictates whether or not the player is opening the Sunken Sea Overhaul update for the first time.
         /// </summary>
@@ -129,15 +128,13 @@ namespace CalamityMod.MainMenu
             if (GlobalSaveDataSystem.IsKeyAlreadySaved(FirstTimeOpeningSunkenSeaOverhaulKey))
                 return;
 
-            FieldInfo menusInfo = typeof(MenuLoader).GetField("menus", BindingFlags.Static | BindingFlags.NonPublic);
-            List<ModMenu> modMenus = (List<ModMenu>)menusInfo.GetValue(null);
+            List<ModMenu> modMenus = MenuLoader.menus;
 
             var sunkenMenu = ModContent.GetInstance<CalamityMainMenu_Sunken>();
             if (modMenus.Contains(sunkenMenu))
             {
-                FieldInfo lastSelectedMenuInfo = typeof(MenuLoader).GetField("LastSelectedModMenu", BindingFlags.Static | BindingFlags.NonPublic);
                 int sunkenSeaMenuIndex = modMenus.IndexOf(sunkenMenu);
-                lastSelectedMenuInfo.SetValue(null, modMenus[sunkenSeaMenuIndex].FullName);
+                MenuLoader.LastSelectedModMenu = modMenus[sunkenSeaMenuIndex].FullName;
             }
         }
 
@@ -150,7 +147,7 @@ namespace CalamityMod.MainMenu
         public override bool PreDrawLogo(SpriteBatch spriteBatch, ref Vector2 logoDrawCenter, ref float logoRotation, ref float logoScale, ref Color drawColor)
         {
             DrawLogoWaterShader(spriteBatch);
-            
+
             // Draw the main background for the menu.   
             DrawMenuBackground(spriteBatch);
 
@@ -165,17 +162,17 @@ namespace CalamityMod.MainMenu
 
             // Draw the logo.
             DrawLogo(spriteBatch, ref logoDrawCenter, ref logoRotation, ref logoScale, ref drawColor);
-            
+
             return false;
         }
 
         private static void DrawLogoWaterShader(SpriteBatch sb)
         {
             sb.End();
-            
+
             Main.instance.GraphicsDevice.SetRenderTarget(logoWaterFillTarget);
             Main.instance.GraphicsDevice.Clear(Color.Transparent);
-            
+
             sb.Begin(SpriteSortMode.Immediate, BlendState.AlphaBlend, SamplerState.PointClamp, DepthStencilState.None, RasterizerState.CullCounterClockwise, null, Matrix.Identity);
 
             var fillShader = CalamityShaders.SunkenSeaMenuLogoWater.Value;
@@ -192,19 +189,19 @@ namespace CalamityMod.MainMenu
             fillShader.Parameters["uEdgeColor"]?.SetValue(new Color(16, 99, 112, 255 / 2).ToVector4() * 0.7f);
             fillShader.Parameters["uLineColor"]?.SetValue(new Color(179, 255, 255, 255 / 2).ToVector4() * 0.7f);
             fillShader.CurrentTechnique.Passes[0].Apply();
-            
+
             sb.Draw(LogoWaterFill.Value, Vector2.Zero, Color.White);
-            
+
             sb.End();
-            
+
             Main.pixelShader.CurrentTechnique.Passes[0].Apply();
-            
+
             Main.instance.GraphicsDevice.SetRenderTarget(logoTarget);
             Main.instance.GraphicsDevice.Clear(Color.Transparent);
             sb.Begin(SpriteSortMode.Immediate, BlendState.AlphaBlend, SamplerState.PointClamp, DepthStencilState.None, RasterizerState.CullCounterClockwise, null, Matrix.Identity);
-            
+
             sb.Draw(logoWaterFillTarget, new Vector2(406, 48), Color.White);
-            
+
             sb.End();
             Main.instance.GraphicsDevice.SetRenderTarget(null);
             sb.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, SamplerState.LinearClamp, DepthStencilState.None, RasterizerState.CullCounterClockwise, null, Main.UIScaleMatrix);

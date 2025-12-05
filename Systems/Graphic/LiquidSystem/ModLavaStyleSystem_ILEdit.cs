@@ -20,7 +20,7 @@ namespace CalamityMod.Systems.Graphic.LiquidSystem
     [Autoload(Side = ModSide.Client)]
     public sealed partial class ModLavaStyleSystem : ModSystem
     {
-        private static readonly MethodInfo Tex2DAssetGetter = typeof(Asset<Texture2D>).GetProperty(nameof(Asset<Texture2D>.Value)).GetMethod;
+        private static readonly MethodInfo Tex2DAssetGetter = typeof(Asset<Texture2D>).GetProperty(nameof(Asset<>.Value)).GetMethod;
 
         private static void ApplyEdits(ManipulatorContext ctx)
         {

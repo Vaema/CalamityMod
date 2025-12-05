@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Reflection;
 using CalamityMod.Balancing;
 using CalamityMod.CalPlayer;
 using CalamityMod.Cooldowns;
@@ -613,17 +612,13 @@ namespace CalamityMod
                 player.hurtCooldowns[i] = 0;
         }
 
-        private static readonly FieldInfo hurtInfoDamageField = typeof(HurtInfo).GetField("_damage", BindingFlags.Instance | BindingFlags.NonPublic);
-
         /// <summary>
         /// Lifted from Fargo's. Sets the damage and knockback of an incoming hit to zero, making it not affect the player.
         /// </summary>
         /// <param name="hurtInfo">The HurtInfo instance to nullify.</param>
         public static void NullifyHit(ref this HurtInfo hurtInfo)
         {
-            object unboxedHurtInfo = hurtInfo;
-            hurtInfoDamageField.SetValue(unboxedHurtInfo, 0);
-            hurtInfo = (Player.HurtInfo)unboxedHurtInfo;
+            hurtInfo._damage = 0;
             hurtInfo.Knockback = 0;
         }
         #endregion
@@ -645,7 +640,7 @@ namespace CalamityMod
 
             // Limit the amount of heal to the player's max health
             amount = Math.Min(amount, player.statLifeMax2 - player.statLife);
-            
+
             // As well as the physical cap to how much HP can be healed
             amount = Math.Min(amount, BalancingConstants.LifeStealCap);
 
@@ -697,7 +692,7 @@ namespace CalamityMod
 
             // Limit the amount of heal to the target player's max health
             amount = Math.Min(amount, lowestHealthCheck);
-            
+
             // As well as the physical cap to how much HP can be healed
             amount = Math.Min(amount, BalancingConstants.LifeStealCap);
 
@@ -997,7 +992,7 @@ namespace CalamityMod
         public static Vector2 ClampedMouseWorld(this Player player)
         {
             Vector2 mouseWorld = player.Calamity().mouseWorld;
-            
+
             // Clamp each axis
             mouseWorld.X = mouseWorld.X >= player.MountedCenter.X ? MathF.Min(mouseWorld.X, player.MountedCenter.X + 960f) : MathF.Max(mouseWorld.X, player.MountedCenter.X - 960f);
             mouseWorld.Y = mouseWorld.Y >= player.MountedCenter.Y ? MathF.Min(mouseWorld.Y, player.MountedCenter.Y + 540f) : MathF.Max(mouseWorld.Y, player.MountedCenter.Y - 540f);

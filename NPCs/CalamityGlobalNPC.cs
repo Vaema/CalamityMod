@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Reflection;
 using CalamityMod.Balancing;
 using CalamityMod.BiomeManagers;
 using CalamityMod.Buffs;
@@ -1020,8 +1019,8 @@ namespace CalamityMod.NPCs
                     blazingStarShredTimer--;
                 }
                 npc.lifeRegenCount -= dmg;
-                if (damage < dmg/12) // 1/6th of the DPS dealt by Glaive Shred shows up as the indicator, unless another debuff does more per tick
-                    damage = dmg/12;
+                if (damage < dmg / 12) // 1/6th of the DPS dealt by Glaive Shred shows up as the indicator, unless another debuff does more per tick
+                    damage = dmg / 12;
 
                 if (-120 * damage >= npc.lifeRegenCount)
                 {
@@ -2421,7 +2420,7 @@ namespace CalamityMod.NPCs
                     VulnerableToSickness = true;
                     VulnerableToWater = true;
                     break;
-                #endregion
+                    #endregion
             }
         }
         #endregion
@@ -4730,15 +4729,13 @@ namespace CalamityMod.NPCs
         #endregion
 
         #region Edit Spawn Pool
-        internal static readonly FieldInfo MaxSpawnsField = typeof(NPC).GetField("maxSpawns", BindingFlags.NonPublic | BindingFlags.Static);
-
         public static void AttemptToSpawnLabCritters(Player player)
         {
             if (Main.netMode == NetmodeID.MultiplayerClient)
                 return;
 
             int spawnRate = 400;
-            int maxSpawnCount = (int)MaxSpawnsField.GetValue(null);
+            int maxSpawnCount = NPC.maxSpawns;
             NPCLoader.EditSpawnRate(player, ref spawnRate, ref maxSpawnCount);
 
             // Enforce a limit on the amount of enemies that can appear.
@@ -4812,7 +4809,7 @@ namespace CalamityMod.NPCs
                 return;
 
             int spawnRate = 400;
-            int maxSpawnCount = (int)MaxSpawnsField.GetValue(null);
+            int maxSpawnCount = NPC.maxSpawns;
             NPCLoader.EditSpawnRate(player, ref spawnRate, ref maxSpawnCount);
 
             // Enforce a limit on the amount of enemies that can appear.

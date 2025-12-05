@@ -1,6 +1,4 @@
-﻿using System;
-using System.Reflection;
-using CalamityMod.Tiles.DraedonStructures;
+﻿using CalamityMod.Tiles.DraedonStructures;
 using CalamityMod.Tiles.FurnitureExo;
 using Terraria;
 using Terraria.DataStructures;
@@ -36,10 +34,6 @@ namespace CalamityMod.ILEditing
         /// </summary>
         private static void ApplyEdits(ManipulatorContext ctx)
         {
-            // Wrap the vanilla town NPC spawning function in a delegate so that it can be tossed around and called at will.
-            var updateTime = typeof(Main).GetMethod("UpdateTime_SpawnTownNPCs", BindingFlags.Static | BindingFlags.NonPublic);
-            VanillaSpawnTownNPCs = Delegate.CreateDelegate(typeof(Action), updateTime) as Action;
-
             // Cache the six lab door tile types for efficiency.
             labDoorOpen = ModContent.TileType<LaboratoryDoorOpen>();
             labDoorClosed = ModContent.TileType<LaboratoryDoorClosed>();

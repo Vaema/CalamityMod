@@ -350,13 +350,11 @@ namespace CalamityMod.ILEditing
             var cursor = new ILCursor(il);
             cursor.EmitDelegate<Action>(() =>
             {
-                // A cached delegate is used here instead of direct reflection for performance reasons
-                // since UpdateTime is called every frame.
                 if (Main.dayTime || CalamityServerConfig.Instance.TownNPCsSpawnAtNight)
-                    VanillaSpawnTownNPCs();
+                    Main.UpdateTime_SpawnTownNPCs();
             });
 
-            if (!cursor.TryGotoNext(MoveType.Before, i => i.MatchCallOrCallvirt<Main>("UpdateTime_SpawnTownNPCs")))
+            if (!cursor.TryGotoNext(MoveType.Before, i => i.MatchCallOrCallvirt<Main>(nameof(Main.UpdateTime_SpawnTownNPCs))))
             {
                 CalamityMod.Log.Warn("Town NPC spawn editing code failed.");
                 return;

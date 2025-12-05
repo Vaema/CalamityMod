@@ -28,7 +28,6 @@ namespace CalamityMod.Systems
         public static List<DifficultyMode[]> DifficultyTiers; //Difficulty modes grouped together by difficulty
         public static int MostAlternateDifficulties; //The most alternate difficulties at any tier that exists. Used to know the widest space to take in the ui
 
-        public static FieldInfo journeySliderCacheField; // The current value of the journey mode difficulty slider
         public static MethodInfo journeyDifficultyUpdateMethod; // The method which updates difficulty modes in journey mode
 
         public override void OnModLoad()
@@ -40,8 +39,6 @@ namespace CalamityMod.Systems
                                                         ModContent.GetInstance<MasterDifficulty>(), ModContent.GetInstance<RevengeanceDifficulty>(),
                                                         ModContent.GetInstance<DeathDifficulty>() };
 
-            // Reflect private journey difficulty slider info
-            journeySliderCacheField = typeof(CreativePowers.DifficultySliderPower).GetField("_sliderCurrentValueCache", BindingFlags.Instance | BindingFlags.NonPublic);
             journeyDifficultyUpdateMethod = typeof(CreativePowers.DifficultySliderPower).GetMethod("UpdateInfoFromSliderValueCache", BindingFlags.Instance | BindingFlags.NonPublic);
 
             CalculateDifficultyData();
@@ -95,7 +92,7 @@ namespace CalamityMod.Systems
                 if (power.GetIsUnlocked())
                 {
                     int effectiveVanillaDifficulty;
-                    var sliderValue = (float)journeySliderCacheField.GetValue(power);
+                    var sliderValue = power._sliderCurrentValueCache;
                     if (sliderValue == 1)
                     {
                         effectiveVanillaDifficulty = GameModeID.Master;
@@ -181,10 +178,10 @@ namespace CalamityMod.Systems
                 throw new ArgumentException("DifficultyModeSystemAlignJourneyDifficultySlider(): must be invoked in journey mode");
             }
             CreativePowers.DifficultySliderPower power = CreativePowerManager.Instance.GetPower<CreativePowers.DifficultySliderPower>();
-            var oldValue = (float)journeySliderCacheField.GetValue(power);
-            if (compatitableValueRanges.ContainsKey(_newGameModeID))
+            var oldValue = power._sliderCurrentValueCache;
+            if (compatitableValueRanges.TryGetValue(_newGameModeID, out var value))
             {
-                var (low, high) = compatitableValueRanges[_newGameModeID];
+                var (low, high) = value;
                 float valueToSet;
                 if (oldValue >= low && oldValue < high)
                 {
@@ -194,7 +191,7 @@ namespace CalamityMod.Systems
                 {
                     valueToSet = low;
                 }
-                journeySliderCacheField.SetValue(power, valueToSet);
+                power._sliderCurrentValueCache = valueToSet;
                 journeyDifficultyUpdateMethod.Invoke(power, null);
             }
             else

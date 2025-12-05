@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Reflection;
 using CalamityMod.World;
 using Microsoft.Xna.Framework;
 using Terraria.GameContent.UI.Elements;
@@ -51,8 +50,7 @@ namespace CalamityMod.Systems
         public static bool GetDeath(AWorldListItem item)
         {
             // Grab data from the listed world
-            FieldInfo worldDataField = typeof(UIWorldListItem).GetField("_data", BindingFlags.NonPublic | BindingFlags.Instance);
-            WorldFileData worldData = (WorldFileData)worldDataField.GetValue(item);
+            WorldFileData worldData = item._data;
 
             if (item.Data.TryGetHeaderData<WorldSelectionDifficultySystem>(out TagCompound tag))
             {
@@ -71,8 +69,7 @@ namespace CalamityMod.Systems
         public static bool GetMalice(AWorldListItem item)
         {
             // Grab data from the listed world
-            FieldInfo worldDataField = typeof(UIWorldListItem).GetField("_data", BindingFlags.NonPublic | BindingFlags.Instance);
-            WorldFileData worldData = (WorldFileData)worldDataField.GetValue(item);
+            WorldFileData worldData = item._data;
 
             int trueGameMode = worldData.GameMode;
             if (worldData.ForTheWorthy)
