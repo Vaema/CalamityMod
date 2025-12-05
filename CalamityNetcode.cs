@@ -1,6 +1,5 @@
 ﻿using System;
 using System.IO;
-using System.Reflection;
 using CalamityMod.Packets;
 using Microsoft.Xna.Framework;
 using Terraria;
@@ -12,77 +11,28 @@ namespace CalamityMod
 {
     public class CalamityNetcode : ModSystem
     {
-        private static CalamityPacket[] _PacketRegistry;
+        private static CalamityPacket[] _PacketRegistry = new CalamityPacket[256]; // This should allow to use 0-255 range (full byte range)
 
-        public override void OnModLoad()
+        internal static void RegisterHandler(CalamityPacket handler)
         {
-            _PacketRegistry = new CalamityPacket[256]; // This should allow to use 0-255 range (full byte range)
+            var msgType = handler.MessageType;
+            var existingHandler = _PacketRegistry[msgType];
 
-            ReflectionHelper.IterateEveryModsTypes<CalamityPacket>(action: type =>
+            if (existingHandler != null)
             {
-                try
-                {
-                    if (Activator.CreateInstance(type) is not CalamityPacket packetHandler)
-                        return;
+                CalamityMod.Log.Error($"Packet instance has already registered by other type!" +
+                    $" [Failed On: '{handler.GetType().FullName}'" +
+                    $" Current Owner: '{existingHandler.GetType().FullName}'," +
+                    $" msgTypeToRegister: '{msgType}']");
+                return;
+            }
 
-                    var msgType = packetHandler.MessageType;
-                    var existingHandler = _PacketRegistry[msgType];
-                    if (existingHandler != null)
-                    {
-                        CalamityMod.Log.Error($"Packet instance has already registered by other type!" +
-                            $" [Failed On: '{type.FullName}'" +
-                            $" Current Owner: '{existingHandler.GetType().FullName}'," +
-                            $" msgTypeToRegister: '{msgType}']");
-                        return;
-                    }
-
-                    _PacketRegistry[packetHandler.MessageType] = packetHandler;
-
-                    var instanceProperty = type.GetProperty("Instance", BindingFlags.Public | BindingFlags.Static | BindingFlags.NonPublic);
-                    if (instanceProperty is not null)
-                    {
-                        if (instanceProperty.PropertyType.IsAssignableFrom(type))
-                        {
-                            instanceProperty.SetValue(null, packetHandler);
-                            packetHandler._Prop_Static_Instance = instanceProperty; // We saving this for Unload Steps
-                        }
-                        else
-                        {
-                            CalamityMod.Log.Error($"Packet instance's 'Instance' property is not asssignable with given type!" +
-                                $" [Failed On: '{type.FullName}']");
-                        }
-                    }
-
-                    // We should not print error message if "Instance" property is missing
-                    // Addons still can assign them with OnLoaded overload, and it's up to their implementation
-                    // Still, Calamity's Standard is having "Instance" property for every packet types
-
-                    packetHandler.OnLoaded();
-                }
-                catch (Exception e)
-                {
-                    CalamityMod.Log.Error($"Exception was thrown while loading for Packets! {e}");
-                    return;
-                }
-            });
+            _PacketRegistry[msgType] = handler;
         }
 
         public override void OnModUnload()
         {
-            if (_PacketRegistry is not null)
-            {
-                foreach (var packetHandler in _PacketRegistry)
-                {
-                    if (packetHandler is null)
-                        continue;
-
-                    packetHandler.OnUnloaded();
-                    packetHandler._Prop_Static_Instance?.SetValue(null, null);
-                    packetHandler._Prop_Static_Instance = null;
-                }
-
-                _PacketRegistry = null;
-            }
+            _PacketRegistry = null;
         }
 
         public static void HandlePacket(Mod mod, BinaryReader reader, int whoAmI)

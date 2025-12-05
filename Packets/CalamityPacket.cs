@@ -6,15 +6,35 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.Packets
 {
-    public abstract class CalamityPacket
+    public abstract class CalamityPacket : ILoadable
     {
         public abstract byte MessageType { get; }
         public abstract void HandlePacket(in BinaryReader packet, int sender);
 
-        public virtual void OnLoaded() { }
-        public virtual void OnUnloaded() { }
+        private PropertyInfo _Prop_Static_Instance;
 
-        internal PropertyInfo _Prop_Static_Instance;
+        public void Load(Mod mod)
+        {
+            CalamityNetcode.RegisterHandler(this);
+
+            var type = GetType();
+            var instanceProperty = type.GetProperty("Instance", BindingFlags.Public | BindingFlags.Static | BindingFlags.NonPublic);
+
+            if (instanceProperty == null)
+                return;
+
+            if (!instanceProperty.PropertyType.IsAssignableFrom(type))
+                CalamityMod.Log.Error($"Packet instance's 'Instance' property is not asssignable with given type! [Failed On: '{type.FullName}']");
+
+            instanceProperty.SetValue(null, this);
+            _Prop_Static_Instance = instanceProperty; // We saving this for Unload Steps
+        }
+
+        public virtual void Unload()
+        {
+            _Prop_Static_Instance?.SetValue(null, null);
+            _Prop_Static_Instance = null;
+        }
 
         public void CloneAndBroadcast(in BinaryReader packet, long startIndex, int length, int ignoreClient = -1)
         {
