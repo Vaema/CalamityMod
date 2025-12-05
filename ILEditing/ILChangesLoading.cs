@@ -25,6 +25,11 @@ namespace CalamityMod.ILEditing
         /// </summary>
         public override void OnModLoad()
         {
+            // Refer to the documentation in ManipulatorBatch for how this
+            // works.  The objects are automatically disposed at the end of this
+            // method, applying any queued edits.
+            using var playerUpdate = ManipulatorBatch.From(manipulator => IL_Player.Update += manipulator);
+
             // Wrap the vanilla town NPC spawning function in a delegate so that it can be tossed around and called at will.
             var updateTime = typeof(Main).GetMethod("UpdateTime_SpawnTownNPCs", BindingFlags.Static | BindingFlags.NonPublic);
             VanillaSpawnTownNPCs = Delegate.CreateDelegate(typeof(Action), updateTime) as Action;
@@ -118,15 +123,15 @@ namespace CalamityMod.ILEditing
 
             // Movement speed balance
             IL_Player.UpdateJumpHeight += FixJumpHeightBoosts;
-            IL_Player.Update += BaseJumpSpeedAdjustment;
-            IL_Player.Update += RunSpeedAdjustments;
-            IL_Player.Update += NerfOverpoweredRunAccelerationSources; // Soaring Insignia, Magiluminescence, and Shadow Armor
+            playerUpdate.Add(BaseJumpSpeedAdjustment);
+            playerUpdate.Add(RunSpeedAdjustments);
+            playerUpdate.Add(NerfOverpoweredRunAccelerationSources); // Soaring Insignia, Magiluminescence, and Shadow Armor
             IL_Player.WingMovement += RemoveSoaringInsigniaInfiniteWingTime;
 
             // Life regen and mana regen balance
             IL_Player.UpdateLifeRegen += UpdateLifeRegenBalancingChanges;
             IL_Player.UpdateManaRegen += UpdateManaRegenBalancingChanges;
-            IL_Player.Update += ManaRegenDelayAdjustment;
+            playerUpdate.Add(ManaRegenDelayAdjustment);
 
             // Debuff balancing
             IL_Projectile.StatusPlayer += RemoveFrozenInflictionFromDeerclopsIceSpikes;
@@ -162,7 +167,7 @@ namespace CalamityMod.ILEditing
             IL_Main.UpdateTime_StartNight += BloodMoonsRequire200MaxLife;
             IL_WorldGen.AttemptFossilShattering += PreventFossilShattering;
             On_Player.GetPickaxeDamage += RemoveHellforgePickaxeRequirement;
-            IL_Player.Update += PreventUFODismountInWater;
+            playerUpdate.Add(PreventUFODismountInWater);
 
             On_Player.GetAnglerReward_MainReward += AddMoreGuaranteedAnglerRewards;
             On_Player.GetAnglerReward_Bait += ImproveAnglerBaitReward;

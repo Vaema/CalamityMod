@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Reflection;
+using CalamityMod.ILEditing;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Mono.Cecil;
@@ -28,6 +29,11 @@ namespace CalamityMod.Systems.Graphic.LiquidSystem
                 CalamityMod.Log.ILFailure("ModLavaStyle", "Cannot find Getter for Asset<Texture2D>::Value");
                 return;
             }
+            
+            // Refer to the documentation in ManipulatorBatch for how this
+            // works.  The objects are automatically disposed at the end of this
+            // method, applying any queued edits.
+            using var playerUpdate = ManipulatorBatch.From(manipulator => IL_Player.Update += manipulator);
 
             // Graphic
             IL_LiquidRenderer.DrawNormalLiquids += DrawNormalLiquidPatch;
@@ -43,8 +49,8 @@ namespace CalamityMod.Systems.Graphic.LiquidSystem
             IL_NPC.Collision_WaterCollision += SplashEntityLava;
             IL_Projectile.Update += SplashEntityLava;
             IL_Item.MoveInWorld += SplashEntityLava;
-            IL_Player.Update += SplashEntityLava;
-            IL_Player.Update += PlayerDebuffEdit;
+            playerUpdate.Add(SplashEntityLava);
+            playerUpdate.Add(PlayerDebuffEdit);
         }
 
         #region Drawing IL Edits
