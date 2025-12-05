@@ -35,8 +35,8 @@ namespace CalamityMod.Items.Weapons.Melee
         {
             CreateRecipe().
                 AddIngredient(ItemID.Sunfury).
+                AddIngredient(ItemID.AncientCloth, 5).
                 AddIngredient<GrandScale>().
-                AddIngredient(ItemID.SoulofMight, 5).
                 AddTile(TileID.MythrilAnvil).
                 Register();
         }
