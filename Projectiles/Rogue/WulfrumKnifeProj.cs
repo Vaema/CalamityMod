@@ -68,7 +68,9 @@ namespace CalamityMod.Projectiles.Rogue
                 Projectile.tileCollide = false;
                 if (!Main.npc[(int)StuckEnemyID-1].active)
                 {
-                    Projectile.Kill();
+                    StuckEnemyID = 0;
+                    Projectile.velocity = -Vector2.UnitY.RotatedByRandom(0.25f) * Main.rand.NextFloat(0, 1f);
+                    Projectile.tileCollide = true;
                     return;
                 }
                 Projectile.Center = Main.npc[(int)StuckEnemyID-1].Center + Vector2.UnitX.RotatedBy(StuckEnemyRotation) * StuckEnemyDistance;
@@ -88,6 +90,10 @@ namespace CalamityMod.Projectiles.Rogue
                 }
                 if (Projectile.Distance(player.Center) < 16)
                 {
+                    //Gives 1 second of armorless stealth usage
+                    player.Calamity().temporaryStealthTimer = 60;
+                    if (player.Calamity().rogueStealthMax < 0.1f)
+                        player.Calamity().rogueStealthMax = 0.1f;
                     player.Calamity().rogueStealth += player.Calamity().rogueStealthMax * 0.067f;
                     Projectile.Kill();
                 }

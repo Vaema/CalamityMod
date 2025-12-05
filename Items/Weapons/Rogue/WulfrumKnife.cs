@@ -64,7 +64,7 @@ namespace CalamityMod.Items.Weapons.Rogue
                 }
                 foreach (var item in Main.ActiveProjectiles)
                 {
-                    if (item.type == ModContent.ProjectileType<WulfrumKnifeProj>() && item.owner == player.whoAmI && item.ai[0] > 0)
+                    if (item.type == ModContent.ProjectileType<WulfrumKnifeProj>() && item.owner == player.whoAmI && (item.ai[0] > 0 || item.damage == 0))
                     {
                         item.ai[0] = -1;
                     }

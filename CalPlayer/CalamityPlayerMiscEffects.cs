@@ -1180,8 +1180,11 @@ namespace CalamityMod.CalPlayer
             // Dust on hand when holding the phosphorescent gauntlet.
             if (Player.HeldItem.type == ModContent.ItemType<PhosphorescentGauntlet>())
                 PhosphorescentGauntletPunches.GenerateDustOnOwnerHand(Player);
-
-            if (stealthUIAlpha > 0f && (rogueStealth <= 0f || rogueStealthMax <= 0f))
+            if (temporaryStealthTimer > 0)
+            {
+                stealthUIAlpha = 1;
+            }
+            else if (stealthUIAlpha > 0f && (rogueStealth <= 0f || rogueStealthMax <= 0f))
             {
                 stealthUIAlpha -= 0.035f;
                 stealthUIAlpha = MathHelper.Clamp(stealthUIAlpha, 0f, 1f);
@@ -1590,17 +1593,6 @@ namespace CalamityMod.CalPlayer
                 {
                     Player.GetDamage<GenericDamageClass>() += OmegaBlueHelmet.MadnessDamageBoost;
                     Player.GetCritChance<GenericDamageClass>() += OmegaBlueHelmet.MadnessCritBoost;
-                }
-            }
-
-            // Rain armor set effects
-            if (rainSet)
-            {
-                if (Player.jump == 15 && Player.whoAmI == Main.myPlayer) // This is technically the frame after you start jumping from the ground
-                {
-                    bool rainBoost = Player.Center.Y < Main.worldSurface * 16.0 && Main.raining;
-                    int damage = (int)Player.GetBestClassDamage().ApplyTo(30 * (rainBoost ? 2f : 1));
-                    Projectile.NewProjectile(Player.GetSource_FromThis(), Player.Center + Vector2.UnitY * 26, Vector2.Zero, ModContent.ProjectileType<PuddleSplash>(), damage, 0, Main.myPlayer);
                 }
             }
 

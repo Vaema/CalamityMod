@@ -453,6 +453,11 @@ namespace CalamityMod.CalPlayer
         /// Note that the player's displayed stealth value is 100x the internal value. For example, a value of 0.1f means having 10 max stealth.
         /// </summary>
         public float rogueStealthMax = 0f;
+        /// <summary>
+        /// Temporarily provides stealth even without Rogue armor.
+        /// Max stealth is set to 10 if it's 0.
+        /// </summary>
+        public int temporaryStealthTimer = 0;
         /// <summary> A multiplier to the player's stealth generation when standing still. </summary>
         public float stealthGenStandstill = 1f;
         /// <summary> A multiplier to the player's stealth generation when moving. </summary>
@@ -4342,9 +4347,27 @@ namespace CalamityMod.CalPlayer
         }
         #endregion
 
+        public override void OnExtraJumpStarted(ExtraJump jump, ref bool playSound)
+        {
+            if (rainSet && Player.whoAmI == Main.myPlayer)
+            {
+                RainArmorSetChange.SpawnRainArmorJump(Player);
+            }
+        }
+
         #region PreUpdateMovement
         public override void PreUpdateMovement()
         {
+
+            // Rain armor set effects
+            if (rainSet)
+            {
+                if (Player.justJumped && Player.whoAmI == Main.myPlayer)
+                {
+                    RainArmorSetChange.SpawnRainArmorJump(Player);
+                }
+            }
+
             // Remove acceleration when using the exo chair.
             if (Player.whoAmI == Main.myPlayer && ExoChair)
             {
@@ -5371,10 +5394,20 @@ namespace CalamityMod.CalPlayer
             // stealthAcceleration only resets if you don't have either of the accelerator accessories equipped
             if (!darkGodSheath && !eclipseMirror)
                 stealthAcceleration = 1f;
+
+            if (temporaryStealthTimer > 0)
+                temporaryStealthTimer--;
         }
 
         public void UpdateRogueStealth()
         {
+            if (temporaryStealthTimer > 0)
+            {
+                if (rogueStealthMax < 0.1f)
+                    rogueStealthMax = 0.1f;
+                wearingRogueArmor = true;
+            }
+
             // If the player un-equips rogue armor, then reset the sound so it'll play again when they re-equip it
             if (!wearingRogueArmor)
             {
