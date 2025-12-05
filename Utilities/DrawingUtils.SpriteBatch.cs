@@ -33,41 +33,9 @@ namespace CalamityMod
         [Obsolete("Please don't use this if possible.")]
         internal static void SafeAction(this SpriteBatch spriteBatch, Action action)
         {
-            if (spriteBatch is null)
-                return;
-
-            if (spriteBatch.HasBeginBeenCalled())
-            {
-                var oldSort = spriteBatch.sortMode;
-                var oldBlend = spriteBatch.blendState;
-                var oldSampler = spriteBatch.samplerState;
-                var oldDepths = spriteBatch.depthStencilState;
-                var oldRaster = spriteBatch.rasterizerState;
-                var oldEffect = spriteBatch.customEffect;
-                var oldMtx = spriteBatch.transformMatrix;
-                try
-                {
-                    action?.Invoke();
-                }
-                finally
-                {
-                    // If something has started in this block, restore the state to previous one
-                    spriteBatch.TryEnd();
-                    spriteBatch.TryBegin(oldSort, oldBlend, oldSampler, oldDepths, oldRaster, oldEffect, oldMtx);
-                }
-            }
-            else
-            {
-                try
-                {
-                    action?.Invoke();
-                }
-                finally
-                {
-                    // Initial State was off, turn off the batching
-                    spriteBatch.TryEnd(); 
-                }
-            }
+            // we need to get the stack trace here since the crash never happens here directly,
+            CalamityMod.Log.Error(Environment.StackTrace.ToString());
+            action?.Invoke();
         }
 
         /// <summary>
