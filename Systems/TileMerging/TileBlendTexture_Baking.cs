@@ -58,7 +58,8 @@ namespace CalamityMod.Systems
                         }
                     }
                 });
-
+                // TODO: bandaid fix
+                Main.spriteBatch.TryEnd();
                 graphicsDevice.SetRenderTarget(null);
             }
         }
