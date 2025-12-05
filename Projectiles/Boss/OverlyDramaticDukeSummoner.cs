@@ -22,7 +22,7 @@ namespace CalamityMod.Projectiles.Boss
     {
         Vector2 cen;
 
-        public SlotId SoundId = SlotId.Invalid;
+        public SlotId? SoundId;
 
         public new string LocalizationCategory => "Projectiles.Boss";
         public override string Texture => "CalamityMod/Projectiles/Boss/OldDukeVortex";
@@ -44,13 +44,6 @@ namespace CalamityMod.Projectiles.Boss
             Projectile.tileCollide = false;
             Projectile.ignoreWater = true;
             Projectile.timeLeft = 1800;
-        }
-
-        public override void OnSpawn(IEntitySource source)
-        {
-            base.OnSpawn(source);
-
-            SoundId = SoundEngine.PlaySound(OldDukeVortex.SpawnSound with { IsLooped = true, MaxInstances = 20 }, Projectile.Center, _ => new ProjectileAudioTracker(Projectile).IsActiveAndInGame());
         }
 
         private static void ExpandVertically(int startX, int startY, out int topY, out int bottomY, int maxExpandUp = 100, int maxExpandDown = 100)
@@ -81,6 +74,11 @@ namespace CalamityMod.Projectiles.Boss
 
         public override void AI()
         {
+            if (Main.netMode != NetmodeID.Server && !SoundId.HasValue)
+            {
+                SoundId = SoundEngine.PlaySound(OldDukeVortex.SpawnSound with { IsLooped = true, MaxInstances = 20 }, Projectile.Center, _ => new ProjectileAudioTracker(Projectile).IsActiveAndInGame());
+            }
+            
             if (Projectile.ai[0] == 0)
                 cen = Projectile.Center;
 
@@ -221,7 +219,7 @@ namespace CalamityMod.Projectiles.Boss
                 Projectile.Kill();
             }
 
-            if (SoundEngine.TryGetActiveSound(SoundId, out var Sound) && Sound.IsPlaying)
+            if (SoundId.HasValue && SoundEngine.TryGetActiveSound(SoundId.Value, out var Sound) && Sound.IsPlaying)
             {
                 Sound.Position = Projectile.Center;
                 Sound.Volume = Projectile.scale * 2f;
