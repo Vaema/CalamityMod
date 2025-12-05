@@ -21,7 +21,7 @@ namespace CalamityMod.Projectiles.Boss
     {
         Vector2 cen;
 
-        public SlotId SoundId;
+        public SlotId SoundId = SlotId.Invalid;
 
         public new string LocalizationCategory => "Projectiles.Boss";
         public override string Texture => "CalamityMod/Projectiles/Boss/OldDukeVortex";
@@ -35,7 +35,9 @@ namespace CalamityMod.Projectiles.Boss
 
         public override void SetDefaults()
         {
-            SoundId = SoundEngine.PlaySound(OldDukeVortex.SpawnSound with { IsLooped = true, MaxInstances = 20 }, Projectile.Center, _ => new ProjectileAudioTracker(Projectile).IsActiveAndInGame());
+            if (!Main.gameMenu)
+                SoundId = SoundEngine.PlaySound(OldDukeVortex.SpawnSound with { IsLooped = true, MaxInstances = 20 }, Projectile.Center, _ => new ProjectileAudioTracker(Projectile).IsActiveAndInGame());
+
             Projectile.width = Projectile.height = 408;
             Projectile.scale = 0.004f;
             Projectile.hostile = true;
