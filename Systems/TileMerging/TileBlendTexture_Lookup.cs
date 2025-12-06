@@ -108,7 +108,7 @@ namespace CalamityMod.Systems
         #endregion
 
         #region Sheet Lookup
-        private static readonly Dictionary<BlendSideFlags, Rectangle[]> _ShapeLookup = new()
+        private static readonly Dictionary<BlendSideFlags, Rectangle[]> _BasicShapeLookup = new()
         {
             // Special Shapes: 5
             [Shape_AllSide] = _AllClosed,
@@ -181,30 +181,38 @@ namespace CalamityMod.Systems
             [ShapeU_RightEmpty_DownEnd] = _U_RightEmpty_DownEnd,
         };
 
-        private static readonly Dictionary<SheetPositionKey, SheetPosition> _SheetLookup = new(new SheetPositionKeyEqualityComparator());
+        private static readonly Dictionary<SheetPositionKey, SheetPosition> _SheetPositionLookup = new(new SheetPositionKeyEqualityComparator());
 
-        private static void CalculateSheetLookup()
+        private static void CalculateSheetPositionLookup()
         {
+            if (_SheetPositionLookup.Count > 0)
+                return;
+
             int bakeSheetIndex = 0;
             for (int i = 0; i < 256; i++)
             {
+                bool hasAddedToSheet = false;
+
                 for (byte randomFrame = 0; randomFrame < VariantCount; randomFrame++)
                 {
                     var mergeSides = (BlendSideFlags)i;
                     var key = new SheetPositionKey(mergeSides, randomFrame);
 
-                    if (_ShapeLookup.TryGetValue(mergeSides, out var rects))
+                    if (_BasicShapeLookup.TryGetValue(mergeSides, out var rects))
                     {
                         var rect = rects[randomFrame];
-                        _SheetLookup[key] = new SheetPosition(rect.X, rect.Y, bakedSheetIndex: -1);
+                        _SheetPositionLookup[key] = new SheetPosition(rect.X, rect.Y, bakedSheetIndex: -1);
                     }
                     else
                     {
                         var y = Math.DivRem(bakeSheetIndex, BlendTextureXCount, out var x);
-                        _SheetLookup[key] = new SheetPosition(x * BlendTextureFrameWidth, y * BlendTextureFrameHeight, bakedSheetIndex: (sbyte)randomFrame);
-                        bakeSheetIndex++;
+                        _SheetPositionLookup[key] = new SheetPosition(x * BlendTextureFrameWidth, y * BlendTextureFrameHeight, bakedSheetIndex: (sbyte)randomFrame);
+                        hasAddedToSheet = true;
                     }
                 }
+
+                if (hasAddedToSheet)
+                    bakeSheetIndex++;
             }
         }
 

@@ -42,17 +42,15 @@ namespace CalamityMod.Systems
 
 
         #region Setups
+
         protected sealed override void Register()
         {
+            CalculateSheetPositionLookup();
+
             ModTypeLookup<TileBlendTexture>.Register(this);
             Slot = TileBlendTextureLoader.Register(this);
             TextureAsset = ModContent.Request<Texture2D>(Texture);
             BlendTextures = new RenderTarget2D[VariantCount];
-
-            if (_SheetLookup.Count == 0)
-            {
-                CalculateSheetLookup();
-            }
         }
 
         public sealed override void SetupContent()

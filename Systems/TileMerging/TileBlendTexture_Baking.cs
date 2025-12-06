@@ -99,24 +99,24 @@ namespace CalamityMod.Systems
             {
                 var mergeSides = (BlendSideFlags)i;
 
-                // If it's match the basic shape, skip the drawing and rely on basic sheet
-                if (_ShapeLookup.TryGetValue(mergeSides, out var rects))
+                if (!_SheetPositionLookup.TryGetValue(new(mergeSides, (byte)sheetIndex), out var sheetPosition))
                 {
                     continue;
                 }
 
-                if (!_SheetLookup.TryGetValue(new(mergeSides, (byte)sheetIndex), out var sheetPosition))
+                // If it's basic shape, pull it from base texture instead
+                if (sheetPosition.IsUsingBaseTexture)
                 {
                     continue;
                 }
 
-                var drawPos = new Vector2(sheetPosition.X, sheetPosition.Y);
+                var drawPos = sheetPosition.GetDrawPosition();
                 var extractedShapes = ConsumeMergeSides(mergeSides);
                 foreach (var shape in extractedShapes)
                 {
-                    if (_ShapeLookup.TryGetValue(shape, out var shapeRects))
+                    if (_BasicShapeLookup.TryGetValue(shape, out var shapeRects))
                     {
-                        Main.spriteBatch.Draw(BlendTextures[sheetIndex], drawPos, shapeRects[sheetIndex], Color.White, 0.0f, Vector2.Zero, 1.0f, SpriteEffects.None, 0.0f);
+                        Main.spriteBatch.Draw(TextureAsset.Value, drawPos, shapeRects[sheetIndex], Color.White, 0.0f, Vector2.Zero, 1.0f, SpriteEffects.None, 0.0f);
                     }
                 }
             }
@@ -149,14 +149,14 @@ namespace CalamityMod.Systems
         #region Utils
         public bool TryGetDrawingInfo(SheetPositionKey key, out Texture2D texture, out Rectangle sourceRect)
         {
-            if (!_SheetLookup.TryGetValue(key, out var pos))
+            if (!_SheetPositionLookup.TryGetValue(key, out var pos))
             {
                 texture = null;
                 sourceRect = default;
                 return false;
             }
 
-            sourceRect = new Rectangle(pos.X, pos.Y, 16, 16);
+            sourceRect = pos.GetDrawRect();
             texture = pos.BakedSheetIndex switch
             {
                 0 => BlendTextures[0],

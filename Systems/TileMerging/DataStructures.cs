@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
+using Microsoft.Xna.Framework;
 
 namespace CalamityMod.Systems
 {
@@ -123,11 +124,40 @@ namespace CalamityMod.Systems
         }
     }
 
-    public struct SheetPosition(int x, int y, sbyte bakedSheetIndex = -1)
+    public struct SheetPosition
     {
-        public short X = (short)x;
-        public short Y = (short)y;
-        public sbyte BakedSheetIndex = bakedSheetIndex;
+        public byte X;
+        public byte Y;
+        public sbyte BakedSheetIndex;
+
+        public SheetPosition(int x, int y, sbyte bakedSheetIndex = -1)
+        {
+            BakedSheetIndex = bakedSheetIndex;
+            if (IsUsingBaseTexture)
+            {
+                X = (byte)(x / 18);
+                Y = (byte)(y / 18);
+            }
+            else
+            {
+                X = (byte)(x / TileBlendTexture.BlendTextureFrameWidth);
+                Y = (byte)(y / TileBlendTexture.BlendTextureFrameHeight);
+            }
+        }
+
+        public readonly Vector2 GetDrawPosition()
+        {
+            if (IsUsingBaseTexture) return new Vector2(X * 18.0f, Y * 18.0f);
+            else return new Vector2(X * TileBlendTexture.BlendTextureFrameWidth, Y * TileBlendTexture.BlendTextureFrameHeight);
+        }
+
+        public readonly Rectangle GetDrawRect()
+        {
+            if (IsUsingBaseTexture) return new Rectangle(X * 18, Y * 18, 16, 16);
+            else return new Rectangle(X * TileBlendTexture.BlendTextureFrameWidth, Y * TileBlendTexture.BlendTextureFrameHeight, 16, 16);
+        }
+
+        public readonly bool IsUsingBaseTexture => BakedSheetIndex < 0;
     }
 
     public struct TileBlendingRef(ushort sheetIdx, byte blendData)
