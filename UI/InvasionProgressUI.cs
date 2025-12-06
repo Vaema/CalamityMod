@@ -10,7 +10,7 @@ using Terraria.ModLoader;
 namespace CalamityMod.UI
 {
     [Autoload(Side = ModSide.Client)]
-    public abstract class InvasionProgressUI : ILoadable
+    public abstract class InvasionProgressUI : ModType
     {
         public virtual int SecondaryDigitPrecision { get; } = 0;
         public abstract bool IsActive { get; }
@@ -18,6 +18,13 @@ namespace CalamityMod.UI
         public abstract string InvasionName { get; }
         public abstract Color InvasionBarColor { get; }
         public abstract Texture2D IconTexture { get; }
+
+        protected override void Register()
+        {
+            ModTypeLookup<InvasionProgressUI>.Register(this);
+            InvasionProgressUIManager.gUIs.Add(this);
+        }
+
         public virtual void DrawBlueBar(SpriteBatch spriteBatch, Vector2 barDrawPosition, int barOffsetY)
         {
             int barWidth = 200;
@@ -90,16 +97,6 @@ namespace CalamityMod.UI
             DrawProgressText(spriteBatch, yScale, barDrawPosition, barOffsetY, out Vector2 newBarPosition);
             DrawBackground(spriteBatch, yScale, newBarPosition, barOffsetY);
             DrawProgressTextAndIcons(spriteBatch, barOffsetY);
-        }
-
-        public void Load(Mod mod)
-        {
-            InvasionProgressUIManager.gUIs.Add(this);
-        }
-
-        public void Unload()
-        {
-
         }
     }
 }

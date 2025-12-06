@@ -7,7 +7,7 @@ using Terraria.ModLoader;
 namespace CalamityMod.Particles
 {
     [Autoload(Side = ModSide.Client)]
-    public abstract class Particle : ILoadable
+    public abstract class Particle : ModTexturedType
     {
         /// <summary>
         /// The ID of the particle type as registered by <see cref="GeneralParticleHandler"/> when the mod loads.
@@ -71,14 +71,6 @@ namespace CalamityMod.Particles
         /// An 0-1 interpolant representing how close this particle is from its <see cref="Lifetime"/>.
         /// </summary>
         public float LifetimeCompletion => Lifetime != 0 ? Time / (float)Lifetime : 0;
-
-        /// <summary>
-        /// The path to this particle's autoloaded texture.
-        /// </summary>
-        /// <remarks>
-        /// Can be accessed via <see cref="GeneralParticleHandler.GetTexture(int)"/>.
-        /// </remarks>
-        public virtual string Texture => "";
 
         /// <summary>
         /// <see cref="AssetRequestMode"/> for how <see cref="Texture"/> should be autoloaded.<br/>
@@ -149,14 +141,10 @@ namespace CalamityMod.Particles
         /// </summary>
         public void Kill() => GeneralParticleHandler.RemoveParticle(this);
 
-        public void Load(Mod mod)
+        protected override void Register()
         {
+            ModTypeLookup<Particle>.Register(this);
             GeneralParticleHandler.RegisterParticleType(this);
-        }
-
-        public void Unload()
-        {
-
         }
     }
 }

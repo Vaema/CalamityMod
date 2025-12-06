@@ -6,20 +6,16 @@ using Terraria.ModLoader;
 namespace CalamityMod.UI
 {
     [Autoload(Side = ModSide.Client)]
-    public abstract class PopupGUI : ILoadable
+    public abstract class PopupGUI : ModType
     {
         public int FadeTime;
         public bool Active;
         public virtual int FadeTimeMax { get; set; } = 30;
 
-        public void Load(Mod mod)
+        protected override void Register()
         {
+            ModTypeLookup<PopupGUIManager>.Register(this);
             PopupGUIManager.gUIs.Add(this);
-        }
-
-        public void Unload()
-        {
-
         }
 
         public virtual void Update()
