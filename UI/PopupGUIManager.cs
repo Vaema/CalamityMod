@@ -10,7 +10,7 @@ namespace CalamityMod.UI
     [Autoload(Side = ModSide.Client)]
     public sealed class PopupGUIManager : ModSystem
     {
-        private static readonly List<PopupGUI> gUIs = [];
+        internal static readonly List<PopupGUI> gUIs = [];
         public static bool GUIActive(PopupGUI gui) => gui.Active || gui.FadeTime > 0;
         public static bool AnyGUIsActive => gUIs.Any(GUIActive);
         public static PopupGUI GetActiveGUI => gUIs.FirstOrDefault(GUIActive);
@@ -54,15 +54,6 @@ namespace CalamityMod.UI
             if (!gUIs.Any(gui => gui.GetType() == type))
                 return;
             gUIs.First(gui => gui.GetType() == type).Active = !gUIs.First(gui => gui.GetType() == type).Active;
-        }
-
-        public override void OnModLoad()
-        {
-            // Look through every type in the mod, and check if it's derived from PopupGUI. If it is, create a copy and save it in the static list.
-            ReflectionHelper.IterateEveryModsTypes<PopupGUI>(action: type =>
-            {
-                gUIs.Add(Activator.CreateInstance(type) as PopupGUI);
-            });
         }
 
         public override void Unload()

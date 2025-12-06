@@ -1,14 +1,27 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria;
+using Terraria.ModLoader;
 
 namespace CalamityMod.UI
 {
-    public abstract class PopupGUI
+    [Autoload(Side = ModSide.Client)]
+    public abstract class PopupGUI : ILoadable
     {
         public int FadeTime;
         public bool Active;
         public virtual int FadeTimeMax { get; set; } = 30;
+
+        public void Load(Mod mod)
+        {
+            PopupGUIManager.gUIs.Add(this);
+        }
+
+        public void Unload()
+        {
+
+        }
+
         public virtual void Update()
         {
             if (Active)
