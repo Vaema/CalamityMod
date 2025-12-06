@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using CalamityMod.Enums;
 using CalamityMod.Systems.Graphic.PixelationSystem;
 using Microsoft.Xna.Framework;
@@ -63,18 +64,25 @@ namespace CalamityMod.Particles
         #endregion
 
         #region Loading and Unloading
-
-        internal static void RegisterParticleType(Particle particle)
+        public override void PostSetupContent()
         {
-            var type = particle.GetType();
-            int ID = particleIDsByTypes.Count; //Get the ID of the particle
-            particleIDsByTypes[type] = ID;
+            Type baseParticleType = typeof(Particle);
+            ReflectionHelper.IterateEveryModsTypes<Particle>(action: type =>
+            {
+                int ID = particleIDsByTypes.Count; //Get the ID of the particle
+                particleIDsByTypes[type] = ID;
 
-            string texturePath = particle.Texture;
-            if (string.IsNullOrEmpty(texturePath))
-                texturePath = type.Namespace.Replace('.', '/') + "/" + type.Name;
+                // Flow: 2024/09/17
+                // 'UnintializedObject' is allowed to use here as it's only read for Texture string Property
+                // But do NOT EVER use it's instance as they are literally Uninitialized.
+                // It might cause unintended behaviour if we do that.
+                Particle instance = (Particle)RuntimeHelpers.GetUninitializedObject(type);
 
-            particleTexturesByIDs[ID] = ModContent.Request<Texture2D>(texturePath, particle.TextureRequestMode);
+                string texturePath = type.Namespace.Replace('.', '/') + "/" + type.Name;
+                if (instance.Texture != "")
+                    texturePath = instance.Texture;
+                particleTexturesByIDs[ID] = ModContent.Request<Texture2D>(texturePath, instance.TextureRequestMode);
+            });
         }
 
         public override void Load()
