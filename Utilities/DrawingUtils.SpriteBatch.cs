@@ -147,14 +147,43 @@ namespace CalamityMod
             spriteBatch.Begin(parameters);
         }
 
-        public class SpritebatchScope : IDisposable
+        internal class SpritebatchScope : IDisposable
         {
             private readonly SpritebatchParameters _parameters;
             private readonly SpriteBatch _sb;
+            /// <summary>
+            /// Takes in a spritebatch and gets <see cref="SpritebatchParameters"/> from it without ending or otherwise mutating it.
+            /// </summary>
+            /// <param name="sb"></param>
             public SpritebatchScope(SpriteBatch sb)
             {
                 _sb = sb;
                 _sb.GetParameters(out _parameters);
+            }
+            /// <summary>
+            /// Takes in a spritebatch and gets <see cref="SpritebatchParameters"/> from it before restarting it with the input <see cref="SpritebatchParameters"/>.
+            /// </summary>
+            /// <param name="sb"></param>
+            /// <param name="parameters"></param>
+            public SpritebatchScope(SpriteBatch sb, SpritebatchParameters parameters)
+            {
+                _sb = sb;
+                _sb.GetParameters(out _parameters);
+                _sb.Restart(parameters);
+            }
+            /// <summary>
+            /// SafeBegin equivalent; takes in a <see cref="SpriteBatch"/>, gets <see cref="SpritebatchParameters"/> from it, and then uses the <see cref="SpriteBatch"/> and other parameters to start a new <see cref="SpriteBatch"/>.
+            /// </summary>
+            /// <param name="sb"></param>
+            /// <param name="sortMode"></param>
+            /// <param name="settings"></param>
+            /// <param name="effect"></param>
+            /// <param name="transformMatrix"></param>
+            public SpritebatchScope(SpriteBatch sb, SpriteSortMode sortMode, BatchSetting settings, Effect effect, Matrix transformMatrix)
+            {
+                _sb = sb;
+                _sb.End(out _parameters);
+                _sb.Begin(sortMode, settings.blendState, settings.samplerState, settings.depthStencilState, settings.rasterizerState ?? Main.Rasterizer, effect, transformMatrix);
             }
 
             ~SpritebatchScope()
