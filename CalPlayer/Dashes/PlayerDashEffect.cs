@@ -46,6 +46,7 @@ namespace CalamityMod.CalPlayer.Dashes
 
         protected sealed override void Register()
         {
+            ModTypeLookup<PlayerDashEffect>.Register(this);
             PlayerDashManager.DashIdentificationTable[DashID] = this;
         }
     }

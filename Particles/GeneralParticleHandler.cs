@@ -67,6 +67,7 @@ namespace CalamityMod.Particles
         public override void PostSetupContent()
         {
             Type baseParticleType = typeof(Particle);
+#pragma warning disable CS0618 // Type or member is obsolete
             ReflectionHelper.IterateEveryModsTypes<Particle>(action: type =>
             {
                 int ID = particleIDsByTypes.Count; //Get the ID of the particle
@@ -83,6 +84,7 @@ namespace CalamityMod.Particles
                     texturePath = instance.Texture;
                 particleTexturesByIDs[ID] = ModContent.Request<Texture2D>(texturePath, instance.TextureRequestMode);
             });
+#pragma warning restore CS0618 // Type or member is obsolete
         }
 
         public override void Load()
