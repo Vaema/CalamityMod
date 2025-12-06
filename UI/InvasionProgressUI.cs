@@ -19,7 +19,7 @@ namespace CalamityMod.UI
         public abstract Color InvasionBarColor { get; }
         public abstract Texture2D IconTexture { get; }
 
-        protected override void Register()
+        protected sealed override void Register()
         {
             ModTypeLookup<InvasionProgressUI>.Register(this);
             InvasionProgressUIManager.gUIs.Add(this);

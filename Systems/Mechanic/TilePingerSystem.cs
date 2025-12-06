@@ -128,7 +128,8 @@ namespace CalamityMod.Systems
                     if (tileLight.G < 200 * brightness) tileLight.G = (byte)(200 * brightness);
                     if (tileLight.B < 200 * brightness) tileLight.B = (byte)(200 * brightness);
                     returnColor = tileLight;
-                } else
+                }
+                else
                      if (effect is BurrowerPingTileEffect b && effect.Active && effect.ShouldRegisterTile(i, j))
                 {
                     float distanceFromCenter = (new Point(i, j).ToWorldCoordinates() - BurrowerPingTileEffect.PingCenter).Length();
@@ -436,7 +437,7 @@ namespace CalamityMod.Systems
     public class BurrowerPingTileEffect : ModType, IPingedTileEffect
     {
 
-        protected override void Register()
+        protected sealed override void Register()
         {
             ModTypeLookup<BurrowerPingTileEffect>.Register(this);
         }
@@ -450,7 +451,7 @@ namespace CalamityMod.Systems
         public static Vector2 PingCenter = Vector2.Zero;
         public static int PingTimer = 0;
         public static float PingProgress => (MaxPingLife - PingTimer) / (float)MaxPingLife;
-        
+
         public bool Active => PingTimer > 0;
 
         public BlendState BlendState => BlendState.Additive;
@@ -458,9 +459,9 @@ namespace CalamityMod.Systems
         public bool TryAddPing(Vector2 position, Player pinger)
         {
             if (Active)
-            { 
+            {
                 PingCenter = position;
-                PingTimer = Math.Max(PingTimer, MaxPingLife-MaxPingTravelTime);
+                PingTimer = Math.Max(PingTimer, MaxPingLife - MaxPingTravelTime);
                 return false;
             }
             PingCenter = position;

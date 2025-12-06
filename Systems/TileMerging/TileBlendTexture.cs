@@ -43,6 +43,7 @@ namespace CalamityMod.Systems
         #region Setups
         protected sealed override void Register()
         {
+            ModTypeLookup<TileBlendTexture>.Register(this);
             Slot = TileBlendTextureLoader.Register(this);
             TextureAsset = ModContent.Request<Texture2D>(Texture);
             BlendTextures = new RenderTarget2D[3];

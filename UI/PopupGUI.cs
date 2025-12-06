@@ -12,7 +12,7 @@ namespace CalamityMod.UI
         public bool Active;
         public virtual int FadeTimeMax { get; set; } = 30;
 
-        protected override void Register()
+        protected sealed override void Register()
         {
             ModTypeLookup<PopupGUI>.Register(this);
             PopupGUIManager.gUIs.Add(this);

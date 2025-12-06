@@ -235,8 +235,9 @@ namespace CalamityMod.Systems
 
     public abstract class DifficultyMode : ModType
     {
-        protected override void Register()
+        protected sealed override void Register()
         {
+            ModTypeLookup<DifficultyMode>.Register(this);
             // This is registered in DifficultyModeSystem.OnModLoad
             // Note that DifficultyModeSystem.Load can't ensure system is loaded after all modes
         }
