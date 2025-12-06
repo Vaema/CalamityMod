@@ -29,14 +29,7 @@ namespace CalamityMod
         {
             return spriteBatch.beginCalled;
         }
-
-        [Obsolete("Please don't use this if possible.")]
-        internal static void SafeAction(this SpriteBatch spriteBatch, Action action)
-        {
-            // we need to get the stack trace here since the crash never happens here directly,
-            CalamityMod.Log.Error(Environment.StackTrace.ToString());
-            action?.Invoke();
-        }
+        
 
         /// <summary>
         /// Starts SpriteBatch then Re-Begin batch with old settings when it's all done
@@ -57,13 +50,11 @@ namespace CalamityMod
             if (spriteBatch is null)
                 return;
 
-            spriteBatch.SafeAction(() =>
-            {
+
                 spriteBatch.TryEnd();
                 var rasterizer = settings.rasterizerState ?? Main.Rasterizer;
                 spriteBatch.TryBegin(sortMode, settings.blendState, settings.samplerState, settings.depthStencilState, rasterizer, effect, transformMatrix);
                 batchCallback?.Invoke();
-            });
         }
 
         public static bool TryBegin(this SpriteBatch spriteBatch, SpriteSortMode sortMode,

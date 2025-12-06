@@ -869,39 +869,29 @@ namespace CalamityMod.ILEditing
         #region GeneralDrawLayer Systems Drawing
         private static void GeneralDrawLayer_DrawForSupportedSystems(GeneralDrawLayer drawLayer)
         {
-            Main.spriteBatch.SafeAction(() =>
-            {
-                Main.spriteBatch.TryEnd();
-                GeneralParticleHandler.DrawParticleCollectionsAtSpecificLayer(drawLayer);
-            });
+            Main.spriteBatch.TryEnd();
+            GeneralParticleHandler.DrawParticleCollectionsAtSpecificLayer(drawLayer);
 
-            Main.spriteBatch.SafeAction(() =>
-            {
-                Main.spriteBatch.TryEnd();
-                Main.spriteBatch.TryBegin(SpriteSortMode.Immediate, BlendState.AlphaBlend, SamplerState.PointWrap, DepthStencilState.None, Main.Rasterizer, null, Main.GameViewMatrix.TransformationMatrix);
-                MetaballManager.DrawMetaballs(drawLayer);
-            });
+            Main.spriteBatch.TryEnd();
+            Main.spriteBatch.TryBegin(SpriteSortMode.Immediate, BlendState.AlphaBlend, SamplerState.PointWrap, DepthStencilState.None, Main.Rasterizer, null, Main.GameViewMatrix.TransformationMatrix);
+            MetaballManager.DrawMetaballs(drawLayer);
 
-            Main.spriteBatch.SafeAction(() =>
-            {
-                Main.spriteBatch.TryEnd();
-                PrimitivePixelationSystem.DrawTargetScaled(drawLayer);
-            });
+            Main.spriteBatch.TryEnd();
+            PrimitivePixelationSystem.DrawTargetScaled(drawLayer);
 
             PixelationManager.DrawPixelatedTargets(drawLayer);
 
-            Main.spriteBatch.SafeAction(() =>
-            {
-                Main.spriteBatch.TryEnd();
-                RendererManager.DrawRendererAtLayer(drawLayer);
-            });
+
+            Main.spriteBatch.TryEnd();
+            RendererManager.DrawRendererAtLayer(drawLayer);
+
         }
 
         private static void GeneralDrawLayer_DrawToLayer_BeforeAllTiles(On_Main.orig_DrawBackgroundBlackFill orig, Main self)
         {
             GeneralDrawLayer_DrawForSupportedSystems(GeneralDrawLayer.BeforeAllTiles);
             // TODO: this is a bandaid solution, but almost assuredly the method call here does not always correct state
-            Main.spriteBatch.TryBegin(SpriteSortMode.Deferred, BlendState.AlphaBlend, SamplerState.PointWrap, DepthStencilState.None, Main.Rasterizer, null, Main.GameViewMatrix.TransformationMatrix); 
+            Main.spriteBatch.TryBegin(SpriteSortMode.Deferred, BlendState.AlphaBlend, SamplerState.PointWrap, DepthStencilState.None, Main.Rasterizer, null, Main.GameViewMatrix.TransformationMatrix);
             orig(self);
         }
 
@@ -942,7 +932,7 @@ namespace CalamityMod.ILEditing
             orig(self);
             GeneralDrawLayer_DrawForSupportedSystems(GeneralDrawLayer.AfterEverything);
             // TODO: this is a bandaid solution, but almost assuredly the method call here does not always correct state
-            Main.spriteBatch.TryBegin(SpriteSortMode.Deferred, BlendState.AlphaBlend, SamplerState.PointWrap, DepthStencilState.None, Main.Rasterizer, null, Main.GameViewMatrix.TransformationMatrix); 
+            Main.spriteBatch.TryBegin(SpriteSortMode.Deferred, BlendState.AlphaBlend, SamplerState.PointWrap, DepthStencilState.None, Main.Rasterizer, null, Main.GameViewMatrix.TransformationMatrix);
         }
         #endregion
 

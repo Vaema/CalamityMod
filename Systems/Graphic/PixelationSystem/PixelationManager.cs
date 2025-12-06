@@ -195,8 +195,6 @@ namespace CalamityMod.Systems.Graphic.PixelationSystem
         internal static void DrawPixelatedTargets(GeneralDrawLayer drawLayer)
         {
             var targetCollection = ReturnAssociatedTargetCollection(drawLayer);
-            Main.spriteBatch.SafeAction(() =>
-            {
                 foreach (var keyValuePair in targetCollection)
                 {
                     Main.spriteBatch.TryEnd();
@@ -205,7 +203,6 @@ namespace CalamityMod.Systems.Graphic.PixelationSystem
                     float targetScale = 1f / PixelationResolution;
                     Main.spriteBatch.Draw(keyValuePair.Value, Vector2.Zero, null, Color.White, 0f, Vector2.Zero, targetScale, SpriteEffects.None, 0f);
                 }
-            });
         }
 
         private static List<PixelatedDrawer> ReturnAssociatedDrawerCollection(GeneralDrawLayer drawLayer)
