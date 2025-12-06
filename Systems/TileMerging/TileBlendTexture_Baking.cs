@@ -16,7 +16,7 @@ namespace CalamityMod.Systems
             Main.QueueMainThreadAction(() =>
             {
                 BakeBlendTexture_Inner(texture);
-                // TODO: Bandaid fix
+                // TODO: [SAFEACTION] Bandaid fix
                 Main.spriteBatch.TryEnd();
             });
         }
@@ -60,7 +60,7 @@ namespace CalamityMod.Systems
                         }
                     }
                 });
-                // TODO: bandaid fix
+                // TODO: [SAFEACTION] bandaid fix
                 Main.spriteBatch.TryEnd();
                 graphicsDevice.SetRenderTarget(null);
             }

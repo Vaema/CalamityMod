@@ -49,14 +49,14 @@ namespace CalamityMod
         {
             if (spriteBatch is null)
                 return;
-
-
-                spriteBatch.TryEnd();
-                var rasterizer = settings.rasterizerState ?? Main.Rasterizer;
-                spriteBatch.TryBegin(sortMode, settings.blendState, settings.samplerState, settings.depthStencilState, rasterizer, effect, transformMatrix);
-                batchCallback?.Invoke();
+            
+            spriteBatch.TryEnd();
+            var rasterizer = settings.rasterizerState ?? Main.Rasterizer;
+            spriteBatch.TryBegin(sortMode, settings.blendState, settings.samplerState, settings.depthStencilState, rasterizer, effect, transformMatrix);
+            batchCallback?.Invoke();
         }
-
+        
+        [Obsolete("This is violative of spritebatch's control flow and will eventually be removed")]
         public static bool TryBegin(this SpriteBatch spriteBatch, SpriteSortMode sortMode,
             BlendState blendState,
             SamplerState samplerState,
@@ -75,7 +75,8 @@ namespace CalamityMod
                 return true;
             }
         }
-
+        
+        [Obsolete("This is violative of spritebatch's control flow and will eventually be removed")]
         public static bool TryEnd(this SpriteBatch spriteBatch)
         {
             if (!spriteBatch.HasBeginBeenCalled())
