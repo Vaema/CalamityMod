@@ -941,6 +941,8 @@ namespace CalamityMod.ILEditing
         {
             orig(self);
             GeneralDrawLayer_DrawForSupportedSystems(GeneralDrawLayer.AfterEverything);
+            // TODO: this is a bandaid solution, but almost assuredly the method call here does not always correct state
+            Main.spriteBatch.TryBegin(SpriteSortMode.Deferred, BlendState.AlphaBlend, SamplerState.PointWrap, DepthStencilState.None, Main.Rasterizer, null, Main.GameViewMatrix.TransformationMatrix); 
         }
         #endregion
 

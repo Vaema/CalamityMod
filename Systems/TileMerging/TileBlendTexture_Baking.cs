@@ -16,6 +16,8 @@ namespace CalamityMod.Systems
             Main.QueueMainThreadAction(() =>
             {
                 BakeBlendTexture_Inner(texture);
+                // TODO: Bandaid fix
+                Main.spriteBatch.TryEnd();
             });
         }
 
