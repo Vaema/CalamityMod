@@ -25,7 +25,7 @@ namespace CalamityMod.Projectiles.Rogue
             ProjectileID.Sets.TrailingMode[Type] = 0;
         }
 
-        public static int Lifetime = 1200;
+        public static int Lifetime = 1440;
         public float LifetimeCompletion => MathHelper.Clamp((Lifetime - Projectile.timeLeft) / (float)Lifetime, 0f, 1f);
         public float StealthEffectOpacity => MathHelper.Clamp(1 - LifetimeCompletion, 0f, 1f);
 
@@ -94,7 +94,7 @@ namespace CalamityMod.Projectiles.Rogue
                     player.Calamity().temporaryStealthTimer = 60;
                     if (player.Calamity().rogueStealthMax < 0.1f)
                         player.Calamity().rogueStealthMax = 0.1f;
-                    player.Calamity().rogueStealth += player.Calamity().rogueStealthMax * 0.067f;
+                    player.Calamity().rogueStealth += player.Calamity().rogueStealthMax * 0.084f;
                     Projectile.Kill();
                 }
                 return;
