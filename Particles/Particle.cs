@@ -5,7 +5,7 @@ using ReLogic.Content;
 
 namespace CalamityMod.Particles
 {
-    public class Particle
+    public abstract class Particle
     {
         /// <summary>
         /// The ID of the particle type as registered by <see cref="GeneralParticleHandler"/> when the mod loads.
@@ -69,6 +69,14 @@ namespace CalamityMod.Particles
         /// An 0-1 interpolant representing how close this particle is from its <see cref="Lifetime"/>.
         /// </summary>
         public float LifetimeCompletion => Lifetime != 0 ? Time / (float)Lifetime : 0;
+
+        /// <summary>
+        /// The path to this particle's autoloaded texture.
+        /// </summary>
+        /// <remarks>
+        /// Can be accessed via <see cref="GeneralParticleHandler.GetTexture(int)"/>.
+        /// </remarks>
+        public virtual string Texture => "";
 
         /// <summary>
         /// <see cref="AssetRequestMode"/> for how <see cref="Texture"/> should be autoloaded.<br/>
