@@ -9,6 +9,7 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.UI
 {
+    [Autoload(Side = ModSide.Client)]
     public abstract class InvasionProgressUI : ILoadable
     {
         public virtual int SecondaryDigitPrecision { get; } = 0;
