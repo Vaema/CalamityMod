@@ -9,7 +9,7 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.Cooldowns
 {
-    public class CooldownHandler
+    public abstract class CooldownHandler
     {
         public static string ID => null;
         public CooldownInstance instance;

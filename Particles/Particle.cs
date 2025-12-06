@@ -7,7 +7,7 @@ using Terraria.ModLoader;
 namespace CalamityMod.Particles
 {
     [Autoload(Side = ModSide.Client)]
-    public class Particle : ILoadable
+    public abstract class Particle : ILoadable
     {
         /// <summary>
         /// The ID of the particle type as registered by <see cref="GeneralParticleHandler"/> when the mod loads.
