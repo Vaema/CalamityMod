@@ -6,6 +6,7 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.Particles
 {
+    [Autoload(Side = ModSide.Client)]
     public class Particle : ILoadable
     {
         /// <summary>
