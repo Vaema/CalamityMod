@@ -98,11 +98,7 @@ namespace CalamityMod.Systems
             for (int i = 0; i < 256; i++)
             {
                 var mergeSides = (BlendSideFlags)i;
-
-                if (!_SheetPositionLookup.TryGetValue(new(mergeSides, (byte)sheetIndex), out var sheetPosition))
-                {
-                    continue;
-                }
+                var sheetPosition = _SheetPositionLookup[new SheetPositionKey(mergeSides, (byte)sheetIndex)];
 
                 // If it's basic shape, pull it from base texture instead
                 if (sheetPosition.IsUsingBaseTexture)
@@ -149,12 +145,7 @@ namespace CalamityMod.Systems
         #region Utils
         public bool TryGetDrawingInfo(SheetPositionKey key, out Texture2D texture, out Rectangle sourceRect)
         {
-            if (!_SheetPositionLookup.TryGetValue(key, out var pos))
-            {
-                texture = null;
-                sourceRect = default;
-                return false;
-            }
+            var pos = _SheetPositionLookup[key];
 
             sourceRect = pos.GetDrawRect();
             texture = pos.BakedSheetIndex switch

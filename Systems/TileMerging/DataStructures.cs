@@ -1,6 +1,4 @@
-﻿using System.Collections.Generic;
-using System.Diagnostics.CodeAnalysis;
-using Microsoft.Xna.Framework;
+﻿using Microsoft.Xna.Framework;
 
 namespace CalamityMod.Systems
 {
@@ -109,19 +107,8 @@ namespace CalamityMod.Systems
     {
         public BlendSideFlags BlendSides = blendSides;
         public byte RandomFrameIndex = randomFrameIndex;
-    }
 
-    public sealed class SheetPositionKeyEqualityComparator : IEqualityComparer<SheetPositionKey>
-    {
-        public bool Equals(SheetPositionKey x, SheetPositionKey y)
-        {
-            return x.BlendSides == y.BlendSides && x.RandomFrameIndex == y.RandomFrameIndex;
-        }
-
-        public int GetHashCode([DisallowNull] SheetPositionKey obj)
-        {
-            return ((int)obj.BlendSides << 8) | obj.RandomFrameIndex;
-        }
+        public static implicit operator int(SheetPositionKey key) => (int)key.BlendSides + (key.RandomFrameIndex * byte.MaxValue);
     }
 
     public struct SheetPosition

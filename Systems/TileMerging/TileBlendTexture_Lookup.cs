@@ -181,12 +181,14 @@ namespace CalamityMod.Systems
             [ShapeU_RightEmpty_DownEnd] = _U_RightEmpty_DownEnd,
         };
 
-        private static readonly Dictionary<SheetPositionKey, SheetPosition> _SheetPositionLookup = new(new SheetPositionKeyEqualityComparator());
+        private static SheetPosition[] _SheetPositionLookup;
 
         private static void CalculateSheetPositionLookup()
         {
-            if (_SheetPositionLookup.Count > 0)
+            if (_SheetPositionLookup != null)
                 return;
+
+            _SheetPositionLookup = new SheetPosition[256 * VariantCount];
 
             int bakeSheetIndex = 0;
             for (int i = 0; i < 256; i++)
