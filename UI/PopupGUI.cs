@@ -14,7 +14,7 @@ namespace CalamityMod.UI
 
         protected override void Register()
         {
-            ModTypeLookup<PopupGUIManager>.Register(this);
+            ModTypeLookup<PopupGUI>.Register(this);
             PopupGUIManager.gUIs.Add(this);
         }
 
