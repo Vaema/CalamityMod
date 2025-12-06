@@ -18,7 +18,8 @@ namespace CalamityMod
         public static void SetBlendState(this SpriteBatch spriteBatch, BlendState blendState)
         {
             spriteBatch.End();
-            spriteBatch.Begin(SpriteSortMode.Immediate, blendState, Main.DefaultSamplerState, DepthStencilState.None, RasterizerState.CullCounterClockwise, null, Main.GameViewMatrix.TransformationMatrix);
+            spriteBatch.Begin(SpriteSortMode.Immediate, blendState, Main.DefaultSamplerState, DepthStencilState.None,
+                RasterizerState.CullCounterClockwise, null, Main.GameViewMatrix.TransformationMatrix);
         }
 
         /// <summary>
@@ -29,7 +30,7 @@ namespace CalamityMod
         {
             return spriteBatch.beginCalled;
         }
-        
+
 
         /// <summary>
         /// Starts SpriteBatch then Re-Begin batch with old settings when it's all done
@@ -45,17 +46,31 @@ namespace CalamityMod
             Effect effect,
             Matrix transformMatrix,
             Action batchCallback
-            )
+        )
         {
             if (spriteBatch is null)
                 return;
             
+            SpritebatchParameters parameters = new SpritebatchParameters(
+                spriteBatch.blendState,
+                spriteBatch.sortMode,
+                spriteBatch.depthStencilState,
+                spriteBatch.samplerState,
+                settings.rasterizerState ?? Main.Rasterizer,
+                spriteBatch.customEffect,
+                spriteBatch.transformMatrix
+            );
+
+            using (new SpritebatchScope(Main.spriteBatch))
+            {
+                
+            }
+            
             spriteBatch.TryEnd();
-            var rasterizer = settings.rasterizerState ?? Main.Rasterizer;
-            spriteBatch.TryBegin(sortMode, settings.blendState, settings.samplerState, settings.depthStencilState, rasterizer, effect, transformMatrix);
+            spriteBatch.Begin(parameters);
             batchCallback?.Invoke();
         }
-        
+
         [Obsolete("This is violative of spritebatch's control flow and will eventually be removed")]
         public static bool TryBegin(this SpriteBatch spriteBatch, SpriteSortMode sortMode,
             BlendState blendState,
@@ -71,11 +86,12 @@ namespace CalamityMod
             }
             else
             {
-                spriteBatch.Begin(sortMode, blendState, samplerState, depthStencilState, rasterizerState, effect, transformMatrix);
+                spriteBatch.Begin(sortMode, blendState, samplerState, depthStencilState, rasterizerState, effect,
+                    transformMatrix);
                 return true;
             }
         }
-        
+
         [Obsolete("This is violative of spritebatch's control flow and will eventually be removed")]
         public static bool TryEnd(this SpriteBatch spriteBatch)
         {
@@ -87,6 +103,67 @@ namespace CalamityMod
             {
                 spriteBatch.End();
                 return true;
+            }
+        }
+
+        internal readonly record struct SpritebatchParameters(
+            BlendState BlendState,
+            SpriteSortMode SortMode,
+            DepthStencilState DepthStencilState,
+            SamplerState SamplerState, 
+            RasterizerState RasterizerState,
+            Effect Effect,
+            Matrix TransformMatrix
+        );
+
+        internal static void End(this SpriteBatch spriteBatch, out SpritebatchParameters parameters)
+        {
+            parameters = new SpritebatchParameters(
+                spriteBatch.blendState,
+                spriteBatch.sortMode,
+                spriteBatch.depthStencilState,
+                spriteBatch.samplerState,
+                spriteBatch.rasterizerState,
+                spriteBatch.customEffect,
+                spriteBatch.transformMatrix
+            );
+            
+            spriteBatch.End();
+        }
+
+        internal static void Begin(this SpriteBatch spriteBatch, in SpritebatchParameters parameters)
+        {
+            spriteBatch.Begin(parameters.SortMode,
+                parameters.BlendState, 
+                parameters.SamplerState, 
+                parameters.DepthStencilState, 
+                parameters.RasterizerState,
+                parameters.Effect,
+                parameters.TransformMatrix);
+        }
+
+        internal static void Restart(this SpriteBatch spriteBatch)
+        {
+            spriteBatch.End(out var sp);
+            spriteBatch.Begin(in sp);
+        }
+
+        public class SpritebatchScope : IDisposable
+        {
+            private readonly SpriteBatch _sb;
+            public SpritebatchScope(SpriteBatch sb)
+            {
+                _sb = sb;
+            }
+
+            ~SpritebatchScope()
+            {
+                Dispose();
+            }
+            
+            public void Dispose()
+            {
+                _sb.Restart();
             }
         }
     }
