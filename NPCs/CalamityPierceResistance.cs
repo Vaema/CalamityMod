@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Reflection;
 using CalamityMod.Balancing;
 using CalamityMod.Items.Accessories;
@@ -8,7 +7,6 @@ using CalamityMod.Systems.Collections;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
-using Terraria.ModLoader.Core;
 using static Terraria.ModLoader.ModContent;
 
 namespace CalamityMod.NPCs
@@ -75,20 +73,17 @@ namespace CalamityMod.NPCs
             singleHitboxExemptProjectiles[ProjectileID.ToxicCloud2] = true;
             singleHitboxExemptProjectiles[ProjectileID.ToxicCloud3] = true;
 
-            var projectileTypes = AssemblyManager.GetLoadableTypes(CalamityMod.Instance.Code)
-                .Where(type => !type.IsAbstract && type.IsSubclassOf(typeof(ModProjectile)));
-
-            foreach (var type in projectileTypes)
+            var projectiles = GetContent<ModProjectile>();
+            foreach (var projectile in projectiles)
             {
                 try
                 {
+                    var type = projectile.GetType();
                     var pierceResistException = type.GetCustomAttribute<PierceResistExceptionAttribute>();
                     if (pierceResistException == null)
                         continue;
 
-                    var projectileTypeMethod = typeof(ModContent).GetMethod(nameof(ModContent.ProjectileType));
-                    var projectileTypeActualMethod = projectileTypeMethod.MakeGenericMethod(type);
-                    int projectileType = (int)projectileTypeActualMethod.Invoke(null, null);
+                    int projectileType = projectile.Type;
 
                     if (pierceResistException.OnlyForSingleHitbox)
                     {
@@ -102,24 +97,21 @@ namespace CalamityMod.NPCs
                 }
                 catch (Exception e)
                 {
-                    CalamityMod.Log.Error($"Exception thrown while evaluating type \"{type.Name}\": {e}");
+                    CalamityMod.Log.Error($"Exception thrown while evaluating type \"{projectile.FullName}\": {e}");
                 }
             }
 
-            var npcTypes = AssemblyManager.GetLoadableTypes(CalamityMod.Instance.Code)
-                .Where(type => !type.IsAbstract && type.IsSubclassOf(typeof(ModNPC)));
-
-            foreach (var type in npcTypes)
+            var npcs = GetContent<ModNPC>();
+            foreach (var npc in npcs)
             {
                 try
                 {
+                    var type = npc.GetType();
                     var hasPierceResist = type.GetCustomAttribute<HasPierceResistAttribute>();
                     if (hasPierceResist == null)
                         continue;
 
-                    var npcTypeMethod = typeof(ModContent).GetMethod(nameof(ModContent.NPCType));
-                    var npcTypeActualMethod = npcTypeMethod.MakeGenericMethod(type);
-                    int npcType = (int)npcTypeActualMethod.Invoke(null, null);
+                    int npcType = npc.Type;
 
                     pierceResistNPC.Add(npcType);
                     if (hasPierceResist.SingleHitbox)
@@ -127,7 +119,7 @@ namespace CalamityMod.NPCs
                 }
                 catch (Exception e)
                 {
-                    CalamityMod.Log.Error($"Exception thrown while evaluating type \"{type.Name}\": {e}");
+                    CalamityMod.Log.Error($"Exception thrown while evaluating type \"{npc.FullName}\": {e}");
                 }
             }
         }

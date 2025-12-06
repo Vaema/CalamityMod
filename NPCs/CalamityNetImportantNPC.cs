@@ -1,11 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Reflection;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
-using Terraria.ModLoader.Core;
 
 namespace CalamityMod.NPCs
 {
@@ -40,24 +38,19 @@ namespace CalamityMod.NPCs
             uniqueNetOffsetID++;
             #endregion Vanilla Enemies
 
-            var types = AssemblyManager.GetLoadableTypes(CalamityMod.Instance.Code)
-                .Where(type => !type.IsAbstract && type.IsSubclassOf(typeof(ModNPC)));
-
-            // Caching this for better performance
-            var npcTypeMethod = typeof(ModContent).GetMethod(nameof(ModContent.NPCType));
+            var npcs = ModContent.GetContent<ModNPC>();
             var netOffsetTable = new Dictionary<Type, int>();
-            foreach (var type in types)
+            foreach (var npc in npcs)
             {
                 try
                 {
+                    var type = npc.GetType();
                     var longDistSync = type.GetCustomAttribute<LongDistanceNetSyncAttribute>();
 
                     if (longDistSync == null)
                         continue;
 
-                    var npcTypeActualMethod = npcTypeMethod.MakeGenericMethod(typeArguments: type);
-
-                    int npcType = (int)npcTypeActualMethod.Invoke(null, null);
+                    int npcType = npc.Type;
                     int netOffset = uniqueNetOffsetID;
 
                     Type typeToCheck = longDistSync.SyncWith ?? type;
@@ -75,7 +68,7 @@ namespace CalamityMod.NPCs
                 }
                 catch (Exception e)
                 {
-                    CalamityMod.Log.Error($"Exception thrown while evaluating type \"{type.Name}\": {e}");
+                    CalamityMod.Log.Error($"Exception thrown while evaluating type \"{npc.FullName}\": {e}");
                 }
             }
 
