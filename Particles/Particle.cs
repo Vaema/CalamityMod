@@ -2,10 +2,11 @@
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using ReLogic.Content;
+using Terraria.ModLoader;
 
 namespace CalamityMod.Particles
 {
-    public class Particle
+    public class Particle : ILoadable
     {
         /// <summary>
         /// The ID of the particle type as registered by <see cref="GeneralParticleHandler"/> when the mod loads.
@@ -146,5 +147,15 @@ namespace CalamityMod.Particles
         /// Removes the particle from the handler
         /// </summary>
         public void Kill() => GeneralParticleHandler.RemoveParticle(this);
+
+        public void Load(Mod mod)
+        {
+            GeneralParticleHandler.RegisterParticleType(this);
+        }
+
+        public void Unload()
+        {
+
+        }
     }
 }
