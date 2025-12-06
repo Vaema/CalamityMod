@@ -50,25 +50,13 @@ namespace CalamityMod
         {
             if (spriteBatch is null)
                 return;
-            
-            SpritebatchParameters parameters = new SpritebatchParameters(
-                spriteBatch.blendState,
-                spriteBatch.sortMode,
-                spriteBatch.depthStencilState,
-                spriteBatch.samplerState,
-                settings.rasterizerState ?? Main.Rasterizer,
-                spriteBatch.customEffect,
-                spriteBatch.transformMatrix
-            );
 
-            using (new SpritebatchScope(Main.spriteBatch))
-            {
-                
-            }
-            
+            spriteBatch.GetParameters(out var parameters);
             spriteBatch.TryEnd();
-            spriteBatch.Begin(parameters);
+            
+            spriteBatch.Begin(sortMode, settings.blendState, settings.samplerState, settings.depthStencilState, settings.rasterizerState ?? Main.Rasterizer, effect, transformMatrix);
             batchCallback?.Invoke();
+            spriteBatch.Restart(parameters);
         }
 
         [Obsolete("This is violative of spritebatch's control flow and will eventually be removed")]
@@ -118,6 +106,13 @@ namespace CalamityMod
 
         internal static void End(this SpriteBatch spriteBatch, out SpritebatchParameters parameters)
         {
+            spriteBatch.GetParameters(out parameters);
+            
+            spriteBatch.End();
+        }
+
+        internal static void GetParameters(this SpriteBatch spriteBatch, out SpritebatchParameters parameters)
+        {
             parameters = new SpritebatchParameters(
                 spriteBatch.blendState,
                 spriteBatch.sortMode,
@@ -127,10 +122,8 @@ namespace CalamityMod
                 spriteBatch.customEffect,
                 spriteBatch.transformMatrix
             );
-            
-            spriteBatch.End();
         }
-
+        
         internal static void Begin(this SpriteBatch spriteBatch, in SpritebatchParameters parameters)
         {
             spriteBatch.Begin(parameters.SortMode,
@@ -147,13 +140,21 @@ namespace CalamityMod
             spriteBatch.End(out var sp);
             spriteBatch.Begin(in sp);
         }
+        
+        internal static void Restart(this SpriteBatch spriteBatch, in SpritebatchParameters parameters)
+        {
+            spriteBatch.End();
+            spriteBatch.Begin(parameters);
+        }
 
         public class SpritebatchScope : IDisposable
         {
+            private readonly SpritebatchParameters _parameters;
             private readonly SpriteBatch _sb;
             public SpritebatchScope(SpriteBatch sb)
             {
                 _sb = sb;
+                _sb.GetParameters(out _parameters);
             }
 
             ~SpritebatchScope()
@@ -163,7 +164,7 @@ namespace CalamityMod
             
             public void Dispose()
             {
-                _sb.Restart();
+                _sb.Restart(_parameters);
             }
         }
     }
