@@ -562,7 +562,7 @@ namespace CalamityMod.NPCs.Deconstructors
             {
                 return 0f;
             }
-            return SpawnCondition.Cavern.Chance * (Main.projectile.Any(x=> x.active && x.type == ModContent.ProjectileType<WulfrumLureSignal>()) ? 5f : 0.05f);
+            return SpawnCondition.Cavern.Chance * (Main.projectile.Any(x=> x.active && x.type == ModContent.ProjectileType<WulfrumLureSignal>()) ? 5f : 0.01f);
         }
     }
 }
