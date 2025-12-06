@@ -1,10 +1,10 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using Microsoft.Xna.Framework;
 using Terraria.ModLoader;
-
 using static CalamityMod.Systems.BlendSideFlags;
 
 namespace CalamityMod.Systems
@@ -180,6 +180,33 @@ namespace CalamityMod.Systems
             [ShapeU_RightEmpty_UpEnd] = _U_RightEmpty_UpEnd,
             [ShapeU_RightEmpty_DownEnd] = _U_RightEmpty_DownEnd,
         };
+
+        private static readonly Dictionary<SheetPositionKey, SheetPosition> _SheetLookup = new(new SheetPositionKeyEqualityComparator());
+
+        private static void CalculateSheetLookup()
+        {
+            int bakeSheetIndex = 0;
+            for (int i = 0; i < 256; i++)
+            {
+                for (byte randomFrame = 0; randomFrame < VariantCount; randomFrame++)
+                {
+                    var mergeSides = (BlendSideFlags)i;
+                    var key = new SheetPositionKey(mergeSides, randomFrame);
+
+                    if (_ShapeLookup.TryGetValue(mergeSides, out var rects))
+                    {
+                        var rect = rects[randomFrame];
+                        _SheetLookup[key] = new SheetPosition(rect.X, rect.Y, bakedSheetIndex: -1);
+                    }
+                    else
+                    {
+                        var y = Math.DivRem(bakeSheetIndex, BlendTextureXCount, out var x);
+                        _SheetLookup[key] = new SheetPosition(x * BlendTextureFrameWidth, y * BlendTextureFrameHeight, bakedSheetIndex: (sbyte)randomFrame);
+                        bakeSheetIndex++;
+                    }
+                }
+            }
+        }
 
         #endregion
 

@@ -1,4 +1,7 @@
-﻿namespace CalamityMod.Systems
+﻿using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
+
+namespace CalamityMod.Systems
 {
     // bit to relative tile pos for reference
     // MSB 0->7 LSB
@@ -99,6 +102,32 @@
         ShapeU_RightEmpty_End = ShapeI_Up_End | ShapeI_Down_End | ShapeI_Left,
         ShapeU_RightEmpty_UpEnd = ShapeI_Up_End | ShapeI_Down | ShapeI_Left,
         ShapeU_RightEmpty_DownEnd = ShapeI_Up | ShapeI_Down_End | ShapeI_Left,
+    }
+
+    public struct SheetPositionKey(BlendSideFlags blendSides, byte randomFrameIndex)
+    {
+        public BlendSideFlags BlendSides = blendSides;
+        public byte RandomFrameIndex = randomFrameIndex;
+    }
+
+    public sealed class SheetPositionKeyEqualityComparator : IEqualityComparer<SheetPositionKey>
+    {
+        public bool Equals(SheetPositionKey x, SheetPositionKey y)
+        {
+            return x.BlendSides == y.BlendSides && x.RandomFrameIndex == y.RandomFrameIndex;
+        }
+
+        public int GetHashCode([DisallowNull] SheetPositionKey obj)
+        {
+            return ((int)obj.BlendSides << 8) | obj.RandomFrameIndex;
+        }
+    }
+
+    public struct SheetPosition(int x, int y, sbyte bakedSheetIndex = -1)
+    {
+        public short X = (short)x;
+        public short Y = (short)y;
+        public sbyte BakedSheetIndex = bakedSheetIndex;
     }
 
     public struct TileBlendingRef(ushort sheetIdx, byte blendData)

@@ -13,8 +13,9 @@ namespace CalamityMod.Systems
         public const byte EmptySheetIndex = byte.MaxValue;
         public const int VariantCount = 3;
 
-        public const int BlendTextureXCount = 16;
-        public const int BlendTextureYCount = 16;
+        // 204 slots per sheet (1 empty slot per sheet)
+        public const int BlendTextureXCount = 17;
+        public const int BlendTextureYCount = 12;
 
         // FA: 2024/OCT/01
         // Removing Margin as I believe artifacts never happens on Terraria
@@ -46,21 +47,12 @@ namespace CalamityMod.Systems
             ModTypeLookup<TileBlendTexture>.Register(this);
             Slot = TileBlendTextureLoader.Register(this);
             TextureAsset = ModContent.Request<Texture2D>(Texture);
-            BlendTextures = new RenderTarget2D[3];
+            BlendTextures = new RenderTarget2D[VariantCount];
 
-            Main.QueueMainThreadAction(() =>
+            if (_SheetLookup.Count == 0)
             {
-                for (int v = 0; v < VariantCount; v++)
-                    BlendTextures[v] = new(
-                        Main.instance.GraphicsDevice,
-                        BlendTextureWidth,
-                        BlendTextureHeight,
-                        mipMap: false,
-                        preferredFormat: SurfaceFormat.Color,
-                        preferredDepthFormat: DepthFormat.None,
-                        preferredMultiSampleCount: 0,
-                        usage: RenderTargetUsage.PreserveContents);
-            });
+                CalculateSheetLookup();
+            }
         }
 
         public sealed override void SetupContent()
@@ -101,10 +93,10 @@ namespace CalamityMod.Systems
 
 
         #region Public API
-        public void RebuildBlendSheet(Texture2D texture = null)
+        public void RebuildBlendSheet(Asset<Texture2D> texture = null)
         {
-            texture ??= TextureAsset.Value;
-            BakeBlendTexture(texture);
+            TextureAsset = texture ?? ModContent.Request<Texture2D>(Texture);
+            ClearBakeCache();
         }
         #endregion
     }

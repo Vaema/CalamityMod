@@ -1,4 +1,5 @@
 ﻿using System;
+using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
@@ -17,10 +18,12 @@ namespace CalamityMod.Systems
         {
             // Draw Code
             On_Main.DrawTiles += OnDrawTiles;
+            Main.OnPreDraw += UpdateBaking;
         }
 
         public override void Unload()
         {
+            Main.OnPreDraw -= UpdateBaking;
             _TileBlendable = null;
             _TileBlendLooselyFillDiagonal = null;
             _TileTypeToBlendTextureSlot = null;
@@ -56,7 +59,15 @@ namespace CalamityMod.Systems
         {
             foreach (var blendTexture in TileBlendTextureLoader.AllTextures)
             {
-                blendTexture.BakeBlendTexture(blendTexture.TextureAsset.Value);
+                blendTexture.ClearBakeCache();
+            }
+        }
+
+        private static void UpdateBaking(GameTime obj)
+        {
+            foreach (var blendTexture in TileBlendTextureLoader.AllTextures)
+            {
+                blendTexture.BakeRequestedBlendTextureCache();
             }
         }
         #endregion
