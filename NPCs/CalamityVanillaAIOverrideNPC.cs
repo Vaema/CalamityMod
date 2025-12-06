@@ -850,16 +850,15 @@ public sealed class CalamityVanillaAIOverrideNPC : GlobalNPC
     }
     #endregion
 
-    public override void SetStaticDefaults()
+    internal static void RegisterNetID(VanillaAIOverride aiOverride)
+    {
+        var id = NetIDLookup.Count + 1;
+        NetIDLookup[aiOverride.GetType()] = id;
+    }
+
+    public override void Unload()
     {
         NetIDLookup.Clear();
-
-        int uniqueID = 1;
-        ReflectionHelper.IterateEveryModsTypes<VanillaAIOverride>(action: type =>
-        {
-            NetIDLookup[type] = uniqueID;
-            uniqueID++;
-        });
     }
 
     public override void SetDefaults(NPC npc)

@@ -7,10 +7,20 @@ using Terraria.ModLoader.IO;
 
 namespace CalamityMod.NPCs.VanillaNPCAIOverrides
 {
-    public abstract class VanillaAIOverride
+    public abstract class VanillaAIOverride : ILoadable
     {
         public NPC NPC { get; set; }
         public bool DisableMultiplayerSmoothing { get; set; }
+
+        public void Load(Mod mod)
+        {
+            CalamityVanillaAIOverrideNPC.RegisterNetID(this);
+        }
+
+        public void Unload()
+        {
+
+        }
 
         public abstract bool AI(Mod mod);
 
