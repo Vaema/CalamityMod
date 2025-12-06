@@ -8,6 +8,8 @@ namespace CalamityMod.Systems
 {
     public abstract partial class TileBlendTexture : ModTexturedType
     {
+        internal static int BakedCountInFrame = 0;
+
         private bool[] _IsBaked = new bool[VariantCount];
         private bool[] _RequestedVariants = new bool[VariantCount];
         private bool _IsRequestedAny = false;
@@ -51,6 +53,9 @@ namespace CalamityMod.Systems
                 if (!_RequestedVariants[variant])
                     continue;
 
+                if (BakedCountInFrame >= 3)
+                    continue;
+
                 var renderTarget = BlendTextures[variant];
                 if (renderTarget != null && !renderTarget.IsDisposed && !renderTarget.IsContentLost)
                 {
@@ -80,6 +85,8 @@ namespace CalamityMod.Systems
                                 usage: RenderTargetUsage.PreserveContents);
                     });
                 }
+
+                BakedCountInFrame++;
             }
 
             foreach (var requested in _RequestedVariants)

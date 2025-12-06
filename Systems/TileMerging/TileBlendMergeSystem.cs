@@ -65,6 +65,7 @@ namespace CalamityMod.Systems
 
         private static void UpdateBaking(GameTime obj)
         {
+            TileBlendTexture.BakedCountInFrame = 0;
             foreach (var blendTexture in TileBlendTextureLoader.AllTextures)
             {
                 blendTexture.BakeRequestedBlendTextureCache();
