@@ -37,7 +37,6 @@ namespace CalamityMod.Projectiles.Rogue
                 if (Projectile.velocity.Y > 16f)
                     Projectile.velocity.Y = 16f;
             }
-            //Sticky Behaviour
             Projectile.StickyProjAI(15);
         }
 

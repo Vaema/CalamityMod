@@ -73,7 +73,6 @@ namespace CalamityMod.Projectiles.Summon
             {
                 Projectile.spriteDirection = -Projectile.direction;
             }
-
             Projectile.ChargingMinionAI(700f, 800f, 1200f, 150f, 0, 40f, 8f, 4f, new Vector2(0f, -60f), 40f, 8f, false, true);
 
             //Give off some light

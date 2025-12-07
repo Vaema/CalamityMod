@@ -43,7 +43,6 @@ namespace CalamityMod.Projectiles.Rogue
                 flame.velocity = Vector2.Zero;
                 flame.noGravity = true;
             }
-
             Projectile.StickyProjAI(50);
 
             if (Projectile.ai[0] == 1f)

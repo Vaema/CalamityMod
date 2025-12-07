@@ -45,7 +45,6 @@ namespace CalamityMod.Projectiles.Rogue
                 Projectile.rotation += 0.4f * (float)Projectile.direction;
                 Projectile.spriteDirection = Projectile.direction;
             }
-            //Sticky Behaviour
             Projectile.StickyProjAI(15);
             if (Projectile.ai[2] < 30f && Projectile.ai[0] != 1f)
             {

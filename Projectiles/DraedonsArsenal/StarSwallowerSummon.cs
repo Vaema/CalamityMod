@@ -140,7 +140,6 @@ namespace CalamityMod.Projectiles.DraedonsArsenal
                 PlayerSeparationAnxietyAI(player, ref minimumFrame, ref maximumFrame);
                 FallThroughYPoint = player.Top.Y;
             }
-
             Projectile.MinionAntiClump();
             ManipulateFrames(minimumFrame, maximumFrame);
         }

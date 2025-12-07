@@ -138,8 +138,6 @@ namespace CalamityMod.Projectiles.Rogue
                     laser.DamageType = RogueDamageClass.Instance;
                 }
             }
-
-            // Stay stuck to the target.
             Projectile.StickyProjAI(6, true);
 
             // If still attached to a target, do nothing.
@@ -209,8 +207,6 @@ namespace CalamityMod.Projectiles.Rogue
                 // Provide a fixed amount of grind time so that DPS can't vary wildly.
                 Projectile.timeLeft = 90;
             }
-
-            // Apply sticky AI.
             Projectile.ModifyHitNPCSticky(3);
         }
 

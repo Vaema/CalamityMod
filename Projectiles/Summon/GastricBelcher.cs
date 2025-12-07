@@ -92,8 +92,6 @@ namespace CalamityMod.Projectiles.Summon
                     Projectile.timeLeft = 2;
                 }
             }
-
-            //Anti sticky movement to prevent overlapping minions
             Projectile.MinionAntiClump();
 
             //Find a target

@@ -46,7 +46,6 @@ namespace CalamityMod.Projectiles.Melee
                 }
                 Projectile.rotation = Projectile.velocity.ToRotation() + MathHelper.PiOver2;
             }
-            //Sticky Behaviour
             Projectile.StickyProjAI(15);
         }
 

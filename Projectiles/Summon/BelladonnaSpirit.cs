@@ -32,7 +32,6 @@ namespace CalamityMod.Projectiles.Summon
             FollowPlayer();
             if (Target != null)
                 AttackTarget();
-
             Projectile.MinionAntiClump();
             Projectile.spriteDirection = Target == null ? MathF.Sign(Projectile.velocity.X) : MathF.Sign(Target.Center.X - Projectile.Center.X);
 

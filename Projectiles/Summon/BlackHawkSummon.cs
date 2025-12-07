@@ -114,8 +114,6 @@ namespace CalamityMod.Projectiles.Summon
                     Projectile.timeLeft = 2;
                 }
             }
-
-            //Anti sticky movement to prevent overlapping minions
             Projectile.MinionAntiClump();
 
             float maxDistance = 700f;

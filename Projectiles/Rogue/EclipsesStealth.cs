@@ -87,8 +87,6 @@ namespace CalamityMod.Projectiles.Rogue
                     }
                 }
             }
-
-            // Sticky behavior. Lets the projectile impale enemies and sticks to its impaled enemy automatically.
             Projectile.StickyProjAI(10);
         }
 

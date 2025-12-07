@@ -191,8 +191,6 @@ namespace CalamityMod.Projectiles.Summon
                         Main.projectile[projIndex].minion = false;
                     }
                 }
-
-                // Prevent minion clumping while firing.
                 Projectile.MinionAntiClump(0.25f);
             }
         }

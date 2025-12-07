@@ -97,7 +97,6 @@ namespace CalamityMod.Projectiles.Summon
                 {
                     Projectile.frame = (Projectile.localAI[1] == 1f).ToInt() * 4;
                 }
-
                 Projectile.MinionAntiClump(0.1f);
                 if (Projectile.Distance(player.Center) > 2700f)
                 {

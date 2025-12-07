@@ -95,8 +95,6 @@ namespace CalamityMod.Projectiles.Typeless
             {
                 Dust.NewDust(Projectile.position + Projectile.velocity, Projectile.width, Projectile.height, DustID.BlueFairy, Projectile.velocity.X * 0.05f, Projectile.velocity.Y * 0.05f);
             }
-
-            //Anti-sticky movement failsafe
             Projectile.MinionAntiClump();
 
             //If too far from player, increase speed to chase after player

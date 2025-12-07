@@ -123,8 +123,6 @@ namespace CalamityMod.Projectiles.Ranged
             // Clamp the center so that it does not go too far from the return position.
             if (Projectile.Distance(returnPosition) > 120f)
                 Projectile.Center = returnPosition + Projectile.DirectionFrom(returnPosition) * 120f;
-
-            // Disallow heads from getting too close to each other.
             Projectile.MinionAntiClump(0.15f);
         }
 

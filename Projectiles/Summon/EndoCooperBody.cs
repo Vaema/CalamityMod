@@ -137,7 +137,6 @@ namespace CalamityMod.Projectiles.Summon
 
             if (limbs.type != ModContent.ProjectileType<EndoCooperLimbs>() || !limbs.active)
                 Projectile.Kill();
-
             Projectile.MinionAntiClump();
             bool accelerate = false;
             if (Projectile.ai[0] == 2f)

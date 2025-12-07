@@ -56,7 +56,6 @@ namespace CalamityMod.Projectiles.Summon
                     RamState();
                     break;
             }
-
             Projectile.MinionAntiClump(0.5f);
 
             if (!Main.dedServ)

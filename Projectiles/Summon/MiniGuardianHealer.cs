@@ -82,7 +82,6 @@ namespace CalamityMod.Projectiles.Summon
                 hasSetTimers = true;
                 Projectile.netUpdate = true;
             }
-
             Projectile.MinionAntiClump();
             Player owner = Owner;
 

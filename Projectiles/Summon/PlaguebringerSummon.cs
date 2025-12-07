@@ -60,7 +60,6 @@ namespace CalamityMod.Projectiles.Summon
             }
             if (!modPlayer.plaguebringerPatronSet)
                 Projectile.Kill();
-
             Projectile.MinionAntiClump();
 
             Projectile.ai[0]++;

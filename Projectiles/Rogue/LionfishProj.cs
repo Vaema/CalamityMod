@@ -65,7 +65,6 @@ namespace CalamityMod.Projectiles.Rogue
                     }
                 }
             }
-            //Sticky Behaviour
             Projectile.StickyProjAI(15);
         }
 

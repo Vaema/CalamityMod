@@ -32,7 +32,6 @@ namespace CalamityMod.Projectiles.Rogue
             {
                 Dust.NewDust(Projectile.position + Projectile.velocity, Projectile.width, Projectile.height, DustID.ChlorophyteWeapon, Projectile.velocity.X * 0.5f, Projectile.velocity.Y * 0.5f);
             }
-            //Sticky Behaviour
             Projectile.StickyProjAI(15);
             if (Projectile.ai[0] != 1f)
             {
