@@ -24,7 +24,6 @@ using CalamityMod.Items.Weapons.Melee;
 using CalamityMod.Items.Weapons.Summon;
 using CalamityMod.NPCs.Other;
 using CalamityMod.NPCs.TownNPCs;
-using CalamityMod.Packets;
 using CalamityMod.Particles;
 using CalamityMod.Projectiles.Healing;
 using CalamityMod.Projectiles.Magic;
@@ -36,7 +35,6 @@ using CalamityMod.Systems.Collections;
 using CalamityMod.Tiles.Furniture.CraftingStations;
 using CalamityMod.UI;
 using CalamityMod.UI.CalamitasEnchants;
-using CalamityMod.World;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria;
@@ -46,7 +44,6 @@ using Terraria.GameContent;
 using Terraria.ID;
 using Terraria.ModLoader;
 using Terraria.ModLoader.IO;
-using Terraria.Utilities;
 using static Terraria.ModLoader.ModContent;
 
 namespace CalamityMod.Items
@@ -1613,73 +1610,6 @@ namespace CalamityMod.Items
         }
         #endregion
 
-        #region Reforge Mechanic Rework
-        private static int storedPrefix = -1;
-        public override void PreReforge(Item item)
-        {
-            StealthStrikePrefixBonus = 0f;
-            storedPrefix = item.prefix;
-        }
-
-        // Ozzatron 31AUG2022: total rework to the reforge rework for mod compatibility
-        // you can now disable the rework with config in case it isn't enough to solve your conflicts
-        // removed data saved on items; reforging is now a coalescing flowchart that has no RNG
-        public override int ChoosePrefix(Item item, UnifiedRandom rand)
-        {
-            if (storedPrefix == -1 && item.CountsAsClass<RogueDamageClass>() && (item.maxStack == 1 || item.AllowReforgeForStackableItem))
-            {
-                // Crafting (or first reforge of) a rogue weapon has a 75% chance for a random modifier, this check is done by vanilla
-                // Negative modifiers have a 66.66% chance of being voided, Annoying modifier is intentionally ignored by vanilla
-                int prefix = CalamityUtils.RandomRoguePrefix();
-                bool keepPrefix = !CalamityUtils.NegativeRoguePrefix(prefix) || Main.rand.NextBool(3);
-                return keepPrefix ? prefix : 0;
-            }
-
-            if (Main.gameMenu)
-                return -1;
-
-            if (item.accessory)
-            {
-                return CalamityUtils.GetAccessoryReforge(item, rand, storedPrefix);
-            }
-            else
-            {
-                if (CalamityServerConfig.Instance.RemoveReforgeRNG && storedPrefix != -1)
-                {
-                    return CalamityUtils.GetReworkedReforge(item, rand, storedPrefix);
-                }
-            }
-
-            return -1;
-        }
-
-        public override void PostReforge(Item item)
-        {
-            storedPrefix = -1;
-            // Bandit steals 20% of the total price of the reforge if she's around.
-            if (NPC.AnyNPCs(NPCType<Bandit>()))
-            {
-                // Calculate the item's reforge cost.
-                int value = item.value;
-                Player p = Main.LocalPlayer;
-                ItemLoader.ReforgePrice(item, ref value, ref p.discountAvailable);
-
-                // Steal 20% of that money.
-                int stolen = value / 5;
-                CalamityWorld.MoneyStolenByBandit += stolen;
-
-                // Increment the reforge counter to allow the Bandit to refund
-                // Also triggers Tinkerer dialogue that hints to the player that money is being stolen
-                CalamityWorld.Reforges++;
-
-                if (Main.netMode == NetmodeID.MultiplayerClient)
-                {
-                    BanditStolenMoneySyncPacket.Send(stolen);
-                }
-            }
-        }
-        #endregion
-
         #region Rarity Price Table
         // Base numeric rarity pricing guide.
         private static readonly int Rarity0BuyPrice = Item.buyPrice(0, 0, 50, 0);
@@ -1742,6 +1672,13 @@ namespace CalamityMod.Items
         public static int RarityVioletBuyPrice => Rarity15BuyPrice;
         public static int RarityHotPinkBuyPrice => Rarity16BuyPrice;
         public static int RarityCalamityRedBuyPrice => Rarity17BuyPrice;
+        #endregion
+
+        #region PreReforge
+        public override void PreReforge(Item item)
+        {
+            StealthStrikePrefixBonus = 0f;
+        }
         #endregion
 
         //
