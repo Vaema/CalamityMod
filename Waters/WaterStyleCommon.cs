@@ -7,7 +7,7 @@ using Terraria.Graphics;
 
 namespace CalamityMod
 {
-    public static partial class CalamityUtils
+    internal static class WaterStyleCommon
     {
         public static void ModifySulphuricWaterColor(int x, int y, ref VertexColors initialColor, bool isSlope)
         {
@@ -32,6 +32,11 @@ namespace CalamityMod
                 ModifyColor(new(x + 0.5f, y + 0.5f), ref initialColor.BottomRightColor);
             }
 
+            ModifyTransparentWaterColor(x, y, ref initialColor, isSlope);
+        }
+
+        public static void ModifyTransparentWaterColor(int x, int y, ref VertexColors initialColor, bool isSlope)
+        {
             if (isSlope)
             {
                 initialColor.TopLeftColor *= 1f / 3;
@@ -48,7 +53,7 @@ namespace CalamityMod
             }
         }
 
-        public static void SunkenSeaWaterLighting(int x, int y, Vector3 waterColor, ref float r, ref float g, ref float b)
+        public static void ModifySunkenSeaWaterLight(int x, int y, Vector3 waterColor, ref float r, ref float g, ref float b)
         {
             float tick = (float)Main.timeForVisualEffects;
             float brightness = MathHelper.Clamp(0.07f, 0f, 0.07f);

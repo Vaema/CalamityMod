@@ -11,7 +11,7 @@ namespace CalamityMod.Waters
 {
     public class BasaltGullyWaterflow : ModWaterfallStyle, IWaterfallStyleModifyColor
     {
-        public void ModifyColor(in Tile tile, int x, int y, ref VertexColors liquidColor) => CalamityUtils.ModifySulphuricWaterColor(x, y, ref liquidColor, false);
+        public void ModifyColor(in Tile tile, int x, int y, ref VertexColors liquidColor) => WaterStyleCommon.ModifyTransparentWaterColor(x, y, ref liquidColor, false);
     }
 
     public class BasaltGullyWater : ModWaterStyle, IWaterStyleModifyColor, IWaterStyleModifyLight
@@ -30,7 +30,7 @@ namespace CalamityMod.Waters
 
             if (tile.TileType != RustyChestTile.TileType)
             {
-                CalamityUtils.SunkenSeaWaterLighting(i, j, WaterGlowColor, ref outputColor.X, ref outputColor.Y, ref outputColor.Z);
+                WaterStyleCommon.ModifySunkenSeaWaterLight(i, j, WaterGlowColor, ref outputColor.X, ref outputColor.Y, ref outputColor.Z);
             }
 
             r = outputColor.X;
@@ -38,7 +38,7 @@ namespace CalamityMod.Waters
             b = outputColor.Z;
         }
 
-        public void ModifyColor(in Tile tile, int x, int y, ref VertexColors liquidColor, bool isSlope) => CalamityUtils.ModifySulphuricWaterColor(x, y, ref liquidColor, isSlope);
+        public void ModifyColor(in Tile tile, int x, int y, ref VertexColors liquidColor, bool isSlope) => WaterStyleCommon.ModifyTransparentWaterColor(x, y, ref liquidColor, isSlope);
 
         public override int ChooseWaterfallStyle() => ModContent.Find<ModWaterfallStyle>("CalamityMod/BasaltGullyWaterflow").Slot;
         public override int GetSplashDust() => ModContent.DustType<BasaltGullySplash>();
