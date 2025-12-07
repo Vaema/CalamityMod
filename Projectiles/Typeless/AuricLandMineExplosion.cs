@@ -96,11 +96,11 @@ namespace CalamityMod.Projectiles.Typeless
                 return false;
         }
 
-        internal float WidthFunction(float completionRatio) => MathHelper.Clamp(CalamityUtils.Convert01To010(completionRatio * 2), 0.2f, 1f) * 4f;
-        internal Color ColorFunction(float completionRatio) => new Color(123, 205, 237); // Auric blue
+        internal float WidthFunction(float completionRatio, Vector2 vertexPos) => MathHelper.Clamp(CalamityUtils.Convert01To010(completionRatio * 2), 0.2f, 1f) * 4f;
+        internal Color ColorFunction(float completionRatio, Vector2 vertexPos) => new Color(123, 205, 237); // Auric blue
 
-        internal float BackgroundWidthFunction(float completionRatio) => WidthFunction(completionRatio) * 2f;
-        internal Color BackgroundColorFunction(float completionRatio) => ColorFunction(completionRatio) * 0.5f;
+        internal float BackgroundWidthFunction(float completionRatio, Vector2 vertexPos) => WidthFunction(completionRatio, vertexPos) * 2f;
+        internal Color BackgroundColorFunction(float completionRatio, Vector2 vertexPos) => ColorFunction(completionRatio, vertexPos) * 0.5f;
 
         public override bool PreDraw(ref Color lightColor)
         {

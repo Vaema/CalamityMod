@@ -272,7 +272,7 @@ namespace CalamityMod.Projectiles.DraedonsArsenal
             }
         }
 
-        internal Color ColorFunction(float completionRatio)
+        internal Color ColorFunction(float completionRatio, Vector2 vertexPos)
         {
             float averageRotation = Projectile.oldRot.Take(20).Average(angle => MathHelper.WrapAngle(angle) + MathHelper.Pi);
             float deltaAngle = Math.Abs(averageRotation - (MathHelper.WrapAngle(Projectile.rotation) + MathHelper.Pi));
@@ -291,7 +291,7 @@ namespace CalamityMod.Projectiles.DraedonsArsenal
             return Color.Lerp(Color.Red, Color.PaleVioletRed * completionRatio, MathHelper.Clamp(completionRatio * 0.8f, 0f, 1f)) * opacity;
         }
 
-        internal float WidthFunction(float completionRatio) => (IsSmall ? 101f : 127f) * (1f - completionRatio) * 0.8f;
+        internal float WidthFunction(float completionRatio, Vector2 vertexPos) => (IsSmall ? 101f : 127f) * (1f - completionRatio) * 0.8f;
 
         public override bool PreDraw(ref Color lightColor)
         {
@@ -324,7 +324,7 @@ namespace CalamityMod.Projectiles.DraedonsArsenal
                 float angularTurn = i * swingAngularDirection * -0.09f;
                 drawPoints[i] = Projectile.position + perpendicularDirection.RotatedBy(angularTurn) * offsetFactor;
             }
-            PrimitiveRenderer.RenderTrail(drawPoints, new(WidthFunction, ColorFunction, (_) => Projectile.Size * 0.5f + bladeOffset, shader: GameShaders.Misc["CalamityMod:PhaseslayerRipEffect"]), 50);
+            PrimitiveRenderer.RenderTrail(drawPoints, new(WidthFunction, ColorFunction, (_,_) => Projectile.Size * 0.5f + bladeOffset, shader: GameShaders.Misc["CalamityMod:PhaseslayerRipEffect"]), 50);
 
             Main.EntitySpriteDraw(bladeTexture, Projectile.Center + bladeOffset - Main.screenPosition, frame, Color.White, Projectile.rotation + MathHelper.PiOver2, origin, Projectile.scale, SpriteEffects.None, 0);
             Main.EntitySpriteDraw(hiltTexture, Projectile.Center - Main.screenPosition, null, lightColor, Projectile.rotation + MathHelper.PiOver2, hiltTexture.Size() * 0.5f, Projectile.scale, SpriteEffects.None, 0);

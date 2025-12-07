@@ -73,14 +73,14 @@ namespace CalamityMod.Projectiles.Boss
             return new Color(255, 255, 255, Projectile.alpha);
         }
 
-        public Color TelegraphPrimitiveColor(float completionRatio)
+        public Color TelegraphPrimitiveColor(float completionRatio, Vector2 vertexPos)
         {
             float colorInterpolant = (completionRatio * 1.2f + Main.GlobalTimeWrappedHourly * 0.26f) % 1f;
             float opacity = MathHelper.Lerp(0.2f, 0.425f, Projectile.Opacity) * Utils.GetLerpValue(30f, 24f, Projectile.timeLeft, true);
             return CalamityUtils.MulticolorLerp(colorInterpolant, Color.Orange, Color.Red, Color.Crimson, Color.Red) * opacity;
         }
 
-        public float TelegraphPrimitiveWidth(float completionRatio)
+        public float TelegraphPrimitiveWidth(float completionRatio, Vector2 vertexPos)
         {
             // Used to determine the degree to which the ends of the telegraph should smoothen away.
             float endSmoothenFactor = Utils.GetLerpValue(1f, 0.995f, completionRatio, true);
@@ -96,7 +96,7 @@ namespace CalamityMod.Projectiles.Boss
             for (int i = 0; i < drawPositions.Length; i++)
                 drawPositions[i] = Projectile.Center + Projectile.velocity.SafeNormalize(Vector2.UnitY) * TelegraphWidth * i / (drawPositions.Length - 1f);
 
-            PrimitiveRenderer.RenderTrail(drawPositions, new(TelegraphPrimitiveWidth, TelegraphPrimitiveColor, (_) => Projectile.Size * 0.5f, shader: GameShaders.Misc["CalamityMod:Flame"]), 87);
+            PrimitiveRenderer.RenderTrail(drawPositions, new(TelegraphPrimitiveWidth, TelegraphPrimitiveColor, (_,_) => Projectile.Size * 0.5f, shader: GameShaders.Misc["CalamityMod:Flame"]), 87);
             return false;
         }
     }

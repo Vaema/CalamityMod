@@ -81,7 +81,7 @@ namespace CalamityMod.Projectiles.Typeless
 
         public override bool? CanDamage() => Time >= AttackDelay ? null : false;
 
-        public Color TrailColor(float completionRatio)
+        public Color TrailColor(float completionRatio, Vector2 vertexPos)
         {
             float trailOpacity = Utils.GetLerpValue(0f, 0.13f, completionRatio, true) * Utils.GetLerpValue(0.7f, 0.58f, completionRatio, true);
             Color startingColor = Color.Lerp(Color.White, Color.LightGreen, 0.47f);
@@ -90,13 +90,13 @@ namespace CalamityMod.Projectiles.Typeless
             return CalamityUtils.MulticolorLerp(completionRatio, startingColor, middleColor, endColor) * trailOpacity;
         }
 
-        public float TrailWidth(float completionRatio) => MathHelper.SmoothStep(Projectile.width, 4.25f, completionRatio);
+        public float TrailWidth(float completionRatio, Vector2 vertexPos) => MathHelper.SmoothStep(Projectile.width, 4.25f, completionRatio);
 
         public override bool PreDraw(ref Color lightColor)
         {
             // Prepare the flame trail shader with its map texture.
             GameShaders.Misc["CalamityMod:ImpFlameTrail"].SetShaderTexture(ModContent.Request<Texture2D>("CalamityMod/ExtraTextures/GreyscaleGradients/EternityStreak"));
-            PrimitiveRenderer.RenderTrail(Projectile.oldPos, new(TrailWidth, TrailColor, (_) => Projectile.Size * 0.5f, shader: GameShaders.Misc["CalamityMod:ImpFlameTrail"]), 74);
+            PrimitiveRenderer.RenderTrail(Projectile.oldPos, new(TrailWidth, TrailColor, (_,_) => Projectile.Size * 0.5f, shader: GameShaders.Misc["CalamityMod:ImpFlameTrail"]), 74);
             return false;
         }
 

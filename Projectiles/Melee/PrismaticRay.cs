@@ -101,8 +101,8 @@ namespace CalamityMod.Projectiles.Melee
         }
 
 
-        public float LaserWidthFunction(float _) => Projectile.scale * Projectile.width;
-        public Color LaserColorFunction(float completionRatio) => Main.DiscoColor;
+        public float LaserWidthFunction(float _, Vector2 vertexPos) => Projectile.scale * Projectile.width;
+        public Color LaserColorFunction(float completionRatio, Vector2 vertexPos) => Main.DiscoColor;
         public override bool PreDraw(ref Color lightColor)
         {
             // This should never happen, but just in case...

@@ -62,12 +62,12 @@ namespace CalamityMod.Projectiles.Melee
 
         public override bool? CanDamage() => Time < 12f ? false : base.CanDamage();
 
-        internal float WidthFunction(float completionRatio) => (1f - completionRatio) * Projectile.scale * 4f;
-        internal Color ColorFunction(float completionRatio) => new Color(91, 62, 153) * Projectile.Opacity;
+        internal float WidthFunction(float completionRatio, Vector2 vertexPos) => (1f - completionRatio) * Projectile.scale * 4f;
+        internal Color ColorFunction(float completionRatio, Vector2 vertexPos) => new Color(91, 62, 153) * Projectile.Opacity;
         public override bool PreDraw(ref Color lightColor)
         {
             GameShaders.Misc["CalamityMod:TrailStreak"].SetShaderTexture(ModContent.Request<Texture2D>("CalamityMod/ExtraTextures/Trails/SylvestaffStreak"));
-            PrimitiveRenderer.RenderTrail(Projectile.oldPos, new(WidthFunction, ColorFunction, (_) => Projectile.Size * 0.5f, shader: GameShaders.Misc["CalamityMod:TrailStreak"]), 8);
+            PrimitiveRenderer.RenderTrail(Projectile.oldPos, new(WidthFunction, ColorFunction, (_,_) => Projectile.Size * 0.5f, shader: GameShaders.Misc["CalamityMod:TrailStreak"]), 8);
             return true;
         }
     }

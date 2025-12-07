@@ -121,9 +121,9 @@ namespace CalamityMod.Projectiles.Melee
 
         public override Color? GetAlpha(Color lightColor) => Color.White;
 
-        internal float WidthFunction(float completionRatio) => (Projectile.scale * 24f * (1f - Utils.GetLerpValue(0.7f, 1f, completionRatio, true)) + 1f);
+        internal float WidthFunction(float completionRatio, Vector2 vertexPos) => (Projectile.scale * 24f * (1f - Utils.GetLerpValue(0.7f, 1f, completionRatio, true)) + 1f);
 
-        internal Color ColorFunction(float completionRatio)
+        internal Color ColorFunction(float completionRatio, Vector2 vertexPos)
         {
             float hue = (Projectile.identity % 9f / 9f + completionRatio * 0.7f) % 1f;
             return Color.Lerp(Color.White, Main.hslToRgb(hue, 0.95f, 0.55f), 0.35f) * Projectile.Opacity;
@@ -148,7 +148,7 @@ namespace CalamityMod.Projectiles.Melee
             int numPointsRendered = 22;
             int numPointsProvided = 80;
             var positionsToUse = Projectile.oldPos.Take(numPointsProvided).ToArray();
-            PrimitiveRenderer.RenderTrail(positionsToUse, new(WidthFunction, ColorFunction, (_) => Projectile.Size * 0.5f + generalOffset, shader: GameShaders.Misc["CalamityMod:PrismaticStreak"], smoothen: false), numPointsRendered);
+            PrimitiveRenderer.RenderTrail(positionsToUse, new(WidthFunction, ColorFunction, (_,_) => Projectile.Size * 0.5f + generalOffset, shader: GameShaders.Misc["CalamityMod:PrismaticStreak"], smoothen: false), numPointsRendered);
             Main.spriteBatch.ExitShaderRegion();
             return true;
         }

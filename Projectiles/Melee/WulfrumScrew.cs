@@ -138,13 +138,13 @@ namespace CalamityMod.Projectiles.Melee
             return base.OnTileCollide(oldVelocity);
         }
 
-        internal Color ColorFunction(float completionRatio)
+        internal Color ColorFunction(float completionRatio, Vector2 vertexPos)
         {
             float fadeOpacity = (float)Math.Pow(1 - completionRatio, 2) * (float)Math.Pow(1 - BazingaTimeCompletion, 0.4f);
             return Color.GreenYellow.MultiplyRGB(PrimColorMult) * fadeOpacity;
         }
 
-        internal float WidthFunction(float completionRatio)
+        internal float WidthFunction(float completionRatio, Vector2 vertexPos)
         {
             return 9.4f;
         }
@@ -206,7 +206,7 @@ namespace CalamityMod.Projectiles.Melee
                 CalamityUtils.DrawChromaticAberration(Vector2.UnitX, 1f, delegate (Vector2 offset, Color colorMod)
                 {
                     PrimColorMult = colorMod;
-                    PrimitiveRenderer.RenderTrail(Projectile.oldPos, new(WidthFunction, ColorFunction, (_) => Projectile.Size * 0.5f + offset, shader: GameShaders.Misc["CalamityMod:TrailStreak"]), 30);
+                    PrimitiveRenderer.RenderTrail(Projectile.oldPos, new(WidthFunction, ColorFunction, (_,_) => Projectile.Size * 0.5f + offset, shader: GameShaders.Misc["CalamityMod:TrailStreak"]), 30);
                 });
 
                 //Draw the screw with chroma abberation

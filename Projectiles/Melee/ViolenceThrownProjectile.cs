@@ -202,7 +202,7 @@ namespace CalamityMod.Projectiles.Melee
             // and thus causes it to be consistently added over and over, which is not intended behavior.
             Vector2[] drawPoints = (Vector2[])Projectile.oldPos.Clone();
             Vector2 aimAheadDirection = (Projectile.rotation - MathHelper.PiOver2).ToRotationVector2();
-            PrimitiveRenderer.RenderTrail(Projectile.oldPos.Take(60).ToArray(), new(PrimitiveWidthFunction, PrimitiveColorFunction, (_) => Projectile.Size * 0.5f, shader: GameShaders.Misc["CalamityMod:TrailStreak"], smoothen: true), 25);
+            PrimitiveRenderer.RenderTrail(Projectile.oldPos.Take(60).ToArray(), new(PrimitiveWidthFunction, PrimitiveColorFunction, (_,_) => Projectile.Size * 0.5f, shader: GameShaders.Misc["CalamityMod:TrailStreak"], smoothen: true), 25);
             return true;
         }
         public void JavelinSetDefaults()
@@ -434,7 +434,7 @@ namespace CalamityMod.Projectiles.Melee
                 drawPoints[i] -= (Projectile.oldRot[i] + MathHelper.PiOver4).ToRotationVector2() * Projectile.height * 0.5f;
 
             int numPointsRendered = (int)Math.Min(24, Time);
-            PrimitiveRenderer.RenderTrail(drawPoints.Take((int)Math.Min(Time, 36)).ToArray(), new(PrimitiveWidthFunction, PrimitiveColorFunction, (_) => Projectile.Size * 0.5f, shader: GameShaders.Misc["CalamityMod:TrailStreak"], smoothen: true), 24);
+            PrimitiveRenderer.RenderTrail(drawPoints.Take((int)Math.Min(Time, 36)).ToArray(), new(PrimitiveWidthFunction, PrimitiveColorFunction, (_,_) => Projectile.Size * 0.5f, shader: GameShaders.Misc["CalamityMod:TrailStreak"], smoothen: true), 24);
 
             Vector2 drawPosition = Projectile.Center - Main.screenPosition;
             for (int i = 0; i < 6; i++)
@@ -453,14 +453,14 @@ namespace CalamityMod.Projectiles.Melee
 
         #region Shared Methods
 
-        internal float PrimitiveWidthFunction(float completionRatio)
+        internal float PrimitiveWidthFunction(float completionRatio, Vector2 vertexPos)
         {
             float tipWidthFactor = MathHelper.SmoothStep(0f, 1f, Utils.GetLerpValue(0.01f, 0.04f, completionRatio));
             float bodyWidthFactor = (float)Math.Pow(Utils.GetLerpValue(1f, 0.04f, completionRatio), 0.9D);
             return (float)Math.Pow(tipWidthFactor * bodyWidthFactor, 0.1D) * 30f;
         }
 
-        internal Color PrimitiveColorFunction(float completionRatio)
+        internal Color PrimitiveColorFunction(float completionRatio, Vector2 vertexPos)
         {
             float fadeInterpolant = (float)Math.Cos(Main.GlobalTimeWrappedHourly * -9f + completionRatio * 6f + Projectile.identity * 2f) * 0.5f + 0.5f;
 

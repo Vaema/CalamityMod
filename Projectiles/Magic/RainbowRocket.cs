@@ -117,13 +117,13 @@ namespace CalamityMod.Projectiles.Magic
             return Color.White;
         }
 
-        internal Color ColorFunction(float completionRatio)
+        internal Color ColorFunction(float completionRatio, Vector2 vertexPos)
         {
             Color baseColor = Main.hslToRgb((Projectile.identity * 0.33f + completionRatio + Main.GlobalTimeWrappedHourly * 2f) % 1f, 1f, 0.54f);
             return Color.Lerp(GetRocketColor(), baseColor, MathHelper.Clamp(completionRatio * 0.8f, 0f, 1f)) * Projectile.Opacity;
         }
 
-        internal float WidthFunction(float completionRatio)
+        internal float WidthFunction(float completionRatio, Vector2 vertexPos)
         {
             float width;
             float maxWidthOutwardness = 8f;
@@ -137,7 +137,7 @@ namespace CalamityMod.Projectiles.Magic
         public override bool PreDraw(ref Color lightColor)
         {
             Projectile.oldPos[0] = Projectile.position + Projectile.velocity.SafeNormalize(Vector2.Zero) * 50f;
-            PrimitiveRenderer.RenderTrail(Projectile.oldPos, new(WidthFunction, ColorFunction, (_) => Projectile.Size * 0.5f + Projectile.velocity), 80);
+            PrimitiveRenderer.RenderTrail(Projectile.oldPos, new(WidthFunction, ColorFunction, (_,_) => Projectile.Size * 0.5f + Projectile.velocity), 80);
 
             Texture2D rocketTexture = Terraria.GameContent.TextureAssets.Projectile[Type].Value;
             Main.EntitySpriteDraw(rocketTexture,

@@ -173,13 +173,13 @@ namespace CalamityMod.Projectiles.Magic
             }
         }
 
-        internal Color ColorFunction(float completionRatio)
+        internal Color ColorFunction(float completionRatio, Vector2 vertexPos)
         {
             float fadeOpacity = (float)Math.Sqrt(1 - completionRatio);
             return Color.DeepSkyBlue.MultiplyRGB(PrimColorMult) * fadeOpacity;
         }
 
-        internal float WidthFunction(float completionRatio)
+        internal float WidthFunction(float completionRatio, Vector2 vertexPos)
         {
             return  9.4f;
         }
@@ -195,7 +195,7 @@ namespace CalamityMod.Projectiles.Magic
             {
                 PrimColorMult = colorMod;
 
-                PrimitiveRenderer.RenderTrail(Projectile.oldPos, new(WidthFunction, ColorFunction, (_) => Projectile.Size * 0.5f + offset, shader: GameShaders.Misc["CalamityMod:TrailStreak"]), 30);
+                PrimitiveRenderer.RenderTrail(Projectile.oldPos, new(WidthFunction, ColorFunction, (_,_) => Projectile.Size * 0.5f + offset, shader: GameShaders.Misc["CalamityMod:TrailStreak"]), 30);
             });
 
             Main.spriteBatch.End();

@@ -222,12 +222,12 @@ namespace CalamityMod.Projectiles.Typeless
             }
         }
 
-        public float PrimWidthFunction(float completionRatio)
+        public float PrimWidthFunction(float completionRatio, Vector2 vertexPos)
         {
             return 1.6f;
         }
 
-        public Color PrimColorFunction(float completionRatio)
+        public Color PrimColorFunction(float completionRatio, Vector2 vertexPos)
         {
             Color EndColor = Color.GreenYellow;
 

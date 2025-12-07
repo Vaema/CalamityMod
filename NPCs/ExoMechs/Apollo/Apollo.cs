@@ -1481,18 +1481,18 @@ namespace CalamityMod.NPCs.ExoMechs.Apollo
             NPC.frame = new Rectangle(NPC.width * frameX, NPC.height * frameY, NPC.width, NPC.height);
         }
 
-        public float FlameTrailWidthFunction(float completionRatio) => MathHelper.SmoothStep(21f, 8f, completionRatio) * ChargeComboFlash;
+        public float FlameTrailWidthFunction(float completionRatio, Vector2 vertexPos) => MathHelper.SmoothStep(21f, 8f, completionRatio) * ChargeComboFlash;
 
-        public float FlameTrailWidthFunctionBig(float completionRatio) => MathHelper.SmoothStep(34f, 12f, completionRatio) * ChargeComboFlash;
+        public float FlameTrailWidthFunctionBig(float completionRatio, Vector2 vertexPos) => MathHelper.SmoothStep(34f, 12f, completionRatio) * ChargeComboFlash;
 
-        public static float RibbonTrailWidthFunction(float completionRatio)
+        public static float RibbonTrailWidthFunction(float completionRatio, Vector2 vertexPos)
         {
             float baseWidth = Utils.GetLerpValue(1f, 0.54f, completionRatio, true) * 5f;
             float endTipWidth = CalamityUtils.Convert01To010(Utils.GetLerpValue(0.96f, 0.89f, completionRatio, true)) * 2.4f;
             return baseWidth + endTipWidth;
         }
 
-        public Color FlameTrailColorFunction(float completionRatio)
+        public Color FlameTrailColorFunction(float completionRatio, Vector2 vertexPos)
         {
             float trailOpacity = Utils.GetLerpValue(0.8f, 0.27f, completionRatio, true) * Utils.GetLerpValue(0f, 0.067f, completionRatio, true);
             Color startingColor = Color.Lerp(Color.White, Color.Cyan, 0.27f);
@@ -1501,7 +1501,7 @@ namespace CalamityMod.NPCs.ExoMechs.Apollo
             return CalamityUtils.MulticolorLerp(completionRatio, startingColor, middleColor, endColor) * ChargeComboFlash * trailOpacity;
         }
 
-        public Color FlameTrailColorFunctionBig(float completionRatio)
+        public Color FlameTrailColorFunctionBig(float completionRatio, Vector2 vertexPos)
         {
             float trailOpacity = Utils.GetLerpValue(0.8f, 0.27f, completionRatio, true) * Utils.GetLerpValue(0f, 0.067f, completionRatio, true) * 0.56f;
             Color startingColor = Color.Lerp(Color.White, Color.Cyan, 0.25f);
@@ -1512,7 +1512,7 @@ namespace CalamityMod.NPCs.ExoMechs.Apollo
             return color;
         }
 
-        public Color RibbonTrailColorFunction(float completionRatio)
+        public Color RibbonTrailColorFunction(float completionRatio, Vector2 vertexPos)
         {
             Color startingColor = new Color(34, 40, 48);
             Color endColor = new Color(40, 160, 32);
@@ -1648,7 +1648,7 @@ namespace CalamityMod.NPCs.ExoMechs.Apollo
                         for (int i = 0; i < 4; i++)
                         {
                             Vector2 drawOffset = (MathHelper.TwoPi * i / 4f).ToRotationVector2() * 8f;
-                            PrimitiveRenderer.RenderTrail(drawPositions, new(FlameTrailWidthFunctionBig, FlameTrailColorFunctionBig, (_) => drawOffset, shader: GameShaders.Misc["CalamityMod:ImpFlameTrail"]), 70);
+                            PrimitiveRenderer.RenderTrail(drawPositions, new(FlameTrailWidthFunctionBig, FlameTrailColorFunctionBig, (_,_) => drawOffset, shader: GameShaders.Misc["CalamityMod:ImpFlameTrail"]), 70);
                         }
                     }
                     else

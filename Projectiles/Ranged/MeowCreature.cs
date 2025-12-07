@@ -51,8 +51,8 @@ namespace CalamityMod.Projectiles.Ranged
             }
         }
 
-        internal float WidthFunction(float completionRatio) => (1f - completionRatio) * Projectile.scale * 9f;
-        internal Color ColorFunction(float completionRatio)
+        internal float WidthFunction(float completionRatio, Vector2 vertexPos) => (1f - completionRatio) * Projectile.scale * 9f;
+        internal Color ColorFunction(float completionRatio, Vector2 vertexPos)
         {
             float hue = 0.5f + 0.5f * completionRatio * MathF.Sin(Main.GlobalTimeWrappedHourly * 5f);
             Color trailColor = Main.hslToRgb(hue, 1f, 0.8f);
@@ -62,7 +62,7 @@ namespace CalamityMod.Projectiles.Ranged
         // The creature glows
         public override void PostDraw(Color lightColor)
         {
-            PrimitiveRenderer.RenderTrail(Projectile.oldPos, new(WidthFunction, ColorFunction, (_) => Projectile.Size * 0.5f), 30);
+            PrimitiveRenderer.RenderTrail(Projectile.oldPos, new(WidthFunction, ColorFunction, (_,_) => Projectile.Size * 0.5f), 30);
             Texture2D glow = Terraria.GameContent.TextureAssets.Projectile[Type].Value;
             Main.EntitySpriteDraw(glow, Projectile.Center - Main.screenPosition, null, Color.White, Projectile.rotation, glow.Size() * 0.5f, Projectile.scale, SpriteEffects.None);
         }

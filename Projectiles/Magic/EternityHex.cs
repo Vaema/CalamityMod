@@ -204,7 +204,7 @@ namespace CalamityMod.Projectiles.Magic
             }
         }
 
-        public Color PrimitiveColorFunction(float completionRatio)
+        public Color PrimitiveColorFunction(float completionRatio, Vector2 vertexPos)
         {
             float leftoverTimeScale = (float)Math.Sin(Main.GlobalTimeWrappedHourly * 4f) * 0.5f + 0.5f;
             leftoverTimeScale *= 0.5f;
@@ -217,7 +217,7 @@ namespace CalamityMod.Projectiles.Magic
             return Color.Lerp(headColor, tailColor, fadeToMagenta) * opacity;
         }
 
-        public static float PrimitiveWidthFunction(float completionRatio)
+        public static float PrimitiveWidthFunction(float completionRatio, Vector2 vertexPos)
         {
             float widthInterpolant = Utils.GetLerpValue(0f, 0.12f, completionRatio, true);
             return MathHelper.SmoothStep(1f, 10f, widthInterpolant);
@@ -226,7 +226,7 @@ namespace CalamityMod.Projectiles.Magic
         public override bool PreDraw(ref Color lightColor)
         {
             GameShaders.Misc["CalamityMod:TrailStreak"].SetShaderTexture(ModContent.Request<Texture2D>("CalamityMod/ExtraTextures/GreyscaleGradients/EternityStreak"));
-            PrimitiveRenderer.RenderTrail(Projectile.oldPos, new(PrimitiveWidthFunction, PrimitiveColorFunction, (_) => Projectile.Size * 0.5f, shader: GameShaders.Misc["CalamityMod:TrailStreak"]), 84);
+            PrimitiveRenderer.RenderTrail(Projectile.oldPos, new(PrimitiveWidthFunction, PrimitiveColorFunction, (_,_) => Projectile.Size * 0.5f, shader: GameShaders.Misc["CalamityMod:TrailStreak"]), 84);
             return false;
         }
     }

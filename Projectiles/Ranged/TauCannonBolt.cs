@@ -69,14 +69,14 @@ namespace CalamityMod.Projectiles.Ranged
         {
             target.AddBuff(ModContent.BuffType<AstralInfectionDebuff>(), 60);
         }
-        private float WidthFunction(float completionRatio) => Projectile.scale * 32f * CalamityUtils.Convert01To010(completionRatio);
+        private float WidthFunction(float completionRatio, Vector2 vertexPos) => Projectile.scale * 32f * CalamityUtils.Convert01To010(completionRatio);
 
-        private Color ColorFunction(float completionRatio) => Color.Lerp(turquoiseColor, Color.Transparent, completionRatio) * Utils.GetLerpValue(0f, 30f, Projectile.timeLeft, true);
+        private Color ColorFunction(float completionRatio, Vector2 vertexPos) => Color.Lerp(turquoiseColor, Color.Transparent, completionRatio) * Utils.GetLerpValue(0f, 30f, Projectile.timeLeft, true);
 
         public override bool PreDraw(ref Color lightColor)
         {
             GameShaders.Misc["CalamityMod:TrailStreak"].SetShaderTexture(ModContent.Request<Texture2D>("CalamityMod/ExtraTextures/Trails/ZapTrail"));
-            PrimitiveRenderer.RenderTrail(Projectile.oldPos, new(WidthFunction, ColorFunction, (_) => Projectile.Size * 0.5f, shader: GameShaders.Misc["CalamityMod:TrailStreak"]));
+            PrimitiveRenderer.RenderTrail(Projectile.oldPos, new(WidthFunction, ColorFunction, (_,_) => Projectile.Size * 0.5f, shader: GameShaders.Misc["CalamityMod:TrailStreak"]));
             return false;
         }
     }
