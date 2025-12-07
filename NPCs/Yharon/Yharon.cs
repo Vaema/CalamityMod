@@ -109,7 +109,7 @@ namespace CalamityMod.NPCs.Yharon
             NPC.width = 200;
             NPC.height = 200;
             NPC.defense = 90;
-            NPC.LifeMaxNERB(1300000, 1560000, 740000);
+            NPC.LifeMaxNERB(1000000, 1560000, 740000);
             NPC.knockBackResist = 0f;
             NPC.aiStyle = -1;
             AIType = -1;

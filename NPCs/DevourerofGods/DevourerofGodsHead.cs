@@ -256,7 +256,7 @@ namespace CalamityMod.NPCs.DevourerofGods
             NPC.width = 104;
             NPC.height = 104;
             NPC.defense = 50;
-            NPC.LifeMaxNERB(760000, 910000, 1500000);
+            NPC.LifeMaxNERB(750000, 900000, 1500000);
             NPC.aiStyle = -1;
             AIType = -1;
             NPC.knockBackResist = 0f;

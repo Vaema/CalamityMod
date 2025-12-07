@@ -83,7 +83,7 @@ namespace CalamityMod.NPCs.AstrumDeus
             NPC.height = 56;
             NPC.defense = 20;
             NPC.DR_NERD(0.1f);
-            NPC.LifeMaxNERB(200000, 240000, 650000);
+            NPC.LifeMaxNERB(150000, 240000, 650000);
             NPC.aiStyle = -1;
             AIType = -1;
             NPC.knockBackResist = 0f;

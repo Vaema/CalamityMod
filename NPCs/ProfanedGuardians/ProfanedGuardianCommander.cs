@@ -80,7 +80,7 @@ namespace CalamityMod.NPCs.ProfanedGuardians
             NPC.height = 186;
             NPC.defense = 40;
             NPC.DR_NERD(0.3f);
-            NPC.LifeMaxNERB(100000, 120000, 200000);
+            NPC.LifeMaxNERB(80000, 120000, 200000);
             NPC.knockBackResist = 0f;
             NPC.noGravity = true;
             NPC.noTileCollide = true;

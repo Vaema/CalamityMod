@@ -95,7 +95,7 @@ namespace CalamityMod.NPCs.PlaguebringerGoliath
             NPC.height = 198;
             NPC.defense = 50;
             NPC.DR_NERD(0.3f);
-            NPC.LifeMaxNERB(87500, 105000, 370000);
+            NPC.LifeMaxNERB(70000, 105000, 370000);
             NPC.knockBackResist = 0f;
             NPC.aiStyle = -1;
             AIType = -1;

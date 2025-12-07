@@ -70,7 +70,7 @@ namespace CalamityMod.NPCs.CeaselessVoid
             NPC.height = 100;
             NPC.defense = 80;
             NPC.Calamity().DR = 0.5f;
-            NPC.LifeMaxNERB(65000, 78000, 72000);
+            NPC.LifeMaxNERB(50000, 78000, 72000);
             NPC.value = Item.buyPrice(gold: 50);
             NPC.aiStyle = -1;
             AIType = -1;

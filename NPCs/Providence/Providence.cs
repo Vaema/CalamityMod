@@ -255,7 +255,7 @@ namespace CalamityMod.NPCs.Providence
             NPC.height = 450;
             NPC.defense = 50;
             NPC.DR_NERD(normalDR);
-            NPC.LifeMaxNERB(312500, 375000, 1250000); // Old HP - 440000, 500000
+            NPC.LifeMaxNERB(250000, 375000, 1250000); // Old HP - 440000, 500000
             NPC.knockBackResist = 0f;
             NPC.aiStyle = -1;
             AIType = -1;

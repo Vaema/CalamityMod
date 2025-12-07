@@ -53,7 +53,7 @@ namespace CalamityMod.NPCs.Perforator
             NPC.height = 68;
             NPC.defense = 2;
 
-            NPC.LifeMaxNERB(144, 172, 7000);
+            NPC.LifeMaxNERB(130, 170, 7000);
             if (Main.zenithWorld)
                 NPC.lifeMax *= 4;
 

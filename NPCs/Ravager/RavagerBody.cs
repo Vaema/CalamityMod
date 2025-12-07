@@ -87,7 +87,7 @@ namespace CalamityMod.NPCs.Ravager
             NPC.defense = 55;
             NPC.value = Item.buyPrice(gold: 25);
             NPC.DR_NERD(0.35f);
-            NPC.LifeMaxNERB(45000, 54000, 460000);
+            NPC.LifeMaxNERB(30000, 54000, 460000);
             if (DownedBossSystem.downedProvidence && !BossRushEvent.BossRushActive)
             {
                 NPC.damage = (int)(NPC.damage * 1.5);

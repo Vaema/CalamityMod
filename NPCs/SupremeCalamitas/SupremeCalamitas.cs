@@ -271,7 +271,7 @@ namespace CalamityMod.NPCs.SupremeCalamitas
             NPC.defense = 100;
             NPC.DR_NERD(normalDR);
             NPC.value = Item.buyPrice(platinum: 3);
-            NPC.LifeMaxNERB(960000, 1150000, 900000);
+            NPC.LifeMaxNERB(750000, 1150000, 900000);
             NPC.aiStyle = -1;
             AIType = -1;
             NPC.knockBackResist = 0f;

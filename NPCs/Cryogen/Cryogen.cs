@@ -98,7 +98,7 @@ namespace CalamityMod.NPCs.Cryogen
             NPC.height = 88;
             NPC.defense = 15;
             NPC.DR_NERD(0.3f);
-            NPC.LifeMaxNERB(40000, 48000, 300000);
+            NPC.LifeMaxNERB(25000, 48000, 300000);
             NPC.aiStyle = -1;
             AIType = -1;
             NPC.knockBackResist = 0f;

@@ -156,7 +156,7 @@ namespace CalamityMod.NPCs.ExoMechs.Apollo
             NPC.height = 226;
             NPC.defense = 100;
             NPC.DR_NERD(0.25f);
-            NPC.LifeMaxNERB(1250000, 1495000, 650000);
+            NPC.LifeMaxNERB(1000000, 1495000, 650000);
             NPC.aiStyle = -1;
             AIType = -1;
             NPC.Opacity = 0f;
