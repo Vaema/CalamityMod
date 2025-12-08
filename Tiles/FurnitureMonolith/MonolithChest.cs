@@ -19,7 +19,7 @@ namespace CalamityMod.Tiles.FurnitureMonolith
         public override void SetStaticDefaults()
         {
             this.SetUpChest(ModContent.ItemType<Items.Placeables.FurnitureMonolith.MonolithChest>());
-            AddMapEntry(new Color(191, 142, 111), CalamityUtils.GetItemName<Items.Placeables.FurnitureMonolith.MonolithChest>(), CalamityUtils.GetMapChestName);
+            AddMapEntry(new Color(191, 142, 111), CalamityUtils.GetItemName<Items.Placeables.FurnitureMonolith.MonolithChest>(), FurnitureCommon.GetMapChestName);
         }
 
         public override bool CreateDust(int i, int j, ref int type)
@@ -31,8 +31,8 @@ namespace CalamityMod.Tiles.FurnitureMonolith
         public override void NumDust(int i, int j, bool fail, ref int num) => num = fail ? 1 : 3;
 
         public override LocalizedText DefaultContainerName(int frameX, int frameY) => CalamityUtils.GetItemName<Items.Placeables.FurnitureMonolith.MonolithChest>();
-        public override void MouseOver(int i, int j) => CalamityUtils.ChestMouseOver<Items.Placeables.FurnitureMonolith.MonolithChest>(i, j);
-        public override void MouseOverFar(int i, int j) => CalamityUtils.ChestMouseFar<Items.Placeables.FurnitureMonolith.MonolithChest>(i, j);
+        public override void MouseOver(int i, int j) => FurnitureCommon.ChestMouseOver<Items.Placeables.FurnitureMonolith.MonolithChest>(i, j);
+        public override void MouseOverFar(int i, int j) => FurnitureCommon.ChestMouseFar<Items.Placeables.FurnitureMonolith.MonolithChest>(i, j);
         public override void KillMultiTile(int i, int j, int frameX, int frameY) => Chest.DestroyChest(i, j);
         public override bool RightClick(int i, int j)
         {
@@ -62,7 +62,7 @@ namespace CalamityMod.Tiles.FurnitureMonolith
                 }
             }
 
-            return CalamityUtils.ChestRightClick(i, j);
+            return FurnitureCommon.ChestRightClick(i, j);
         }
 
         public override void PostDraw(int i, int j, SpriteBatch spriteBatch)

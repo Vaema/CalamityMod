@@ -70,7 +70,7 @@ namespace CalamityMod.Tiles.DraedonStructures.CagedLights
 
         public override void HitWire(int i, int j)
         {
-            CalamityUtils.LightHitWire(Type, i, j, 1, 1);
+            FurnitureCommon.LightHitWire(Type, i, j, 1, 1);
         }
 
         public override void ModifyLight(int i, int j, ref float r, ref float g, ref float b)

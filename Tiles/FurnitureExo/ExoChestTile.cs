@@ -18,7 +18,7 @@ namespace CalamityMod.Tiles.FurnitureExo
         public override void SetStaticDefaults()
         {
             this.SetUpChest(ModContent.ItemType<ExoChest>(), true, 2);
-            AddMapEntry(new Color(71, 95, 114), CalamityUtils.GetItemName<ExoChest>(), CalamityUtils.GetMapChestName);
+            AddMapEntry(new Color(71, 95, 114), CalamityUtils.GetItemName<ExoChest>(), FurnitureCommon.GetMapChestName);
         }
 
         public override bool CanExplode(int i, int j) => false;
@@ -31,10 +31,10 @@ namespace CalamityMod.Tiles.FurnitureExo
         public override void NumDust(int i, int j, bool fail, ref int num) => num = fail ? 1 : 3;
 
         public override LocalizedText DefaultContainerName(int frameX, int frameY) => CalamityUtils.GetItemName<ExoChest>();
-        public override void MouseOver(int i, int j) => CalamityUtils.ChestMouseOver<ExoChest>(i, j);
-        public override void MouseOverFar(int i, int j) => CalamityUtils.ChestMouseFar<ExoChest>(i, j);
+        public override void MouseOver(int i, int j) => FurnitureCommon.ChestMouseOver<ExoChest>(i, j);
+        public override void MouseOverFar(int i, int j) => FurnitureCommon.ChestMouseFar<ExoChest>(i, j);
         public override void KillMultiTile(int i, int j, int frameX, int frameY) => Chest.DestroyChest(i, j);
-        public override bool RightClick(int i, int j) => CalamityUtils.ChestRightClick(i, j);
+        public override bool RightClick(int i, int j) => FurnitureCommon.ChestRightClick(i, j);
 
         public override void PostDraw(int i, int j, SpriteBatch spriteBatch)
         {

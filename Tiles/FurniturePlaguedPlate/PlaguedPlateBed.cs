@@ -62,6 +62,6 @@ namespace CalamityMod.Tiles.FurniturePlaguedPlate
             return true;
         }
 
-        public override void MouseOver(int i, int j) => CalamityUtils.MouseOver(i, j, ModContent.ItemType<Items.Placeables.FurniturePlagued.PlaguedPlateBed>());
+        public override void MouseOver(int i, int j) => FurnitureCommon.MouseOver(i, j, ModContent.ItemType<Items.Placeables.FurniturePlagued.PlaguedPlateBed>());
     }
 }

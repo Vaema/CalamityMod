@@ -71,7 +71,7 @@ namespace CalamityMod.Tiles.Abyss
 
         public override bool RightClick(int i, int j)
         {
-            CalamityUtils.RightClickBreak(i, j);
+            FurnitureCommon.RightClickBreak(i, j);
             return true;
         }
 

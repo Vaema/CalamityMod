@@ -74,9 +74,9 @@ namespace CalamityMod.Tiles.Furniture
             info.AnchorTilePosition.Y = j;
         }
 
-        public override bool RightClick(int i, int j) => CalamityUtils.ChairRightClick(i, j);
+        public override bool RightClick(int i, int j) => FurnitureCommon.ChairRightClick(i, j);
 
-        public override void MouseOver(int i, int j) => CalamityUtils.BenchMouseOver(i, j, ModContent.ItemType<Items.Placeables.Furniture.ZenithThrone>());
+        public override void MouseOver(int i, int j) => FurnitureCommon.BenchMouseOver(i, j, ModContent.ItemType<Items.Placeables.Furniture.ZenithThrone>());
 
         public override bool HasSmartInteract(int i, int j, SmartInteractScanSettings settings)
         {
