@@ -1,5 +1,4 @@
-﻿using System.Collections.Generic;
-using System.Linq;
+﻿using System.Linq;
 using CalamityMod.NPCs.TownNPCs;
 using CalamityMod.Packets;
 using CalamityMod.World;
@@ -72,7 +71,20 @@ namespace CalamityMod.Prefixes
             }
         }
 
-        #region Prefix Tier Definition
+        #region Prefix Definition
+        public static int[] SimplifiedAccessoryPrefixes =
+        [
+            PrefixID.Warding,
+            PrefixID.Menacing,
+            PrefixID.Lucky,
+            PrefixID.Quick2,
+            PrefixID.Violent,
+            PrefixID.Arcane,
+            PrefixType<Silent>(),
+            PrefixType<Invigorating>(),
+            PrefixType<Dauntless>()
+        ];
+
         public static int[][] AccessoryPrefixTiers =
         [
             /* 0 */ [PrefixID.Hard, PrefixID.Jagged, PrefixID.Brisk, PrefixID.Wild],
@@ -275,21 +287,8 @@ namespace CalamityMod.Prefixes
         #region Simplified Accessory Reforge
         internal static int GetSimplifiedAccessoryReforge(Item item, UnifiedRandom rand, int currentPrefix)
         {
-            var pool = new HashSet<int>()
-                {
-                    PrefixID.Warding,
-                    PrefixID.Menacing,
-                    PrefixID.Lucky,
-                    PrefixID.Quick2,
-                    PrefixID.Violent,
-                    PrefixID.Arcane,
-                    PrefixType<Silent>(),
-                    PrefixType<Invigorating>(),
-                    PrefixType<Dauntless>()
-                };
-
-            pool.Remove(currentPrefix);
-            return pool.ElementAt(rand.Next(0, pool.Count));
+            var pool = SimplifiedAccessoryPrefixes.Where(id => id != currentPrefix);
+            return pool.ElementAt(rand.Next(0, pool.Count()));
         }
         #endregion
     }
