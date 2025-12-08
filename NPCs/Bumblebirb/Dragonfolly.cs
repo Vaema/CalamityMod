@@ -3,13 +3,12 @@ using System.IO;
 using CalamityMod.Buffs.DamageOverTime;
 using CalamityMod.Buffs.StatDebuffs;
 using CalamityMod.Events;
-using CalamityMod.Items.Accessories;
 using CalamityMod.Items.Armor.Vanity;
 using CalamityMod.Items.LoreItems;
 using CalamityMod.Items.Materials;
 using CalamityMod.Items.Mounts;
 using CalamityMod.Items.Placeables.Furniture.BossRelics;
-using CalamityMod.Items.Placeables.Furniture.DevPaintings;
+using CalamityMod.Items.Placeables.Furniture.Paintings;
 using CalamityMod.Items.Placeables.Furniture.Trophies;
 using CalamityMod.Items.Potions;
 using CalamityMod.Items.TreasureBags;
@@ -75,7 +74,7 @@ namespace CalamityMod.NPCs.Bumblebirb
             NPC.height = 100;
             NPC.defense = 40;
             NPC.DR_NERD(0.1f);
-            NPC.LifeMaxNERB(187500, 225000, 300000); // Old HP - 227500, 252500
+            NPC.LifeMaxNERB(150000, 225000, 300000); // Old HP - 227500, 252500
             NPC.knockBackResist = 0f;
             NPC.boss = true;
             NPC.noTileCollide = true;
@@ -1248,7 +1247,8 @@ namespace CalamityMod.NPCs.Bumblebirb
                 normalOnly.Add(ModContent.ItemType<EffulgentFeather>(), 1, 25, 30);
 
                 // Equipment
-                normalOnly.Add(DropHelper.PerPlayer(ModContent.ItemType<DynamoStemCells>()));
+                // 16NOV2025: Ozzatron: item has been chosen as the "Expert gatekept" item for this Calamity boss
+                // normalOnly.Add(DropHelper.PerPlayer(ModContent.ItemType<DynamoStemCells>()));
                 normalOnly.Add(ModContent.ItemType<FollyFeed>(), DropHelper.NormalWeaponDropRateFraction);
 
                 // Vanity

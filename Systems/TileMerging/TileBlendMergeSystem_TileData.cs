@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+﻿using System.Collections.Concurrent;
 using Terraria;
 using Terraria.ModLoader;
 
@@ -7,7 +7,7 @@ namespace CalamityMod.Systems
     public sealed partial class TileBlendMergeSystem : ModSystem
     {
         // Blending Refs for every tiles
-        private static readonly Dictionary<int, TileBlendingRef[]> _TileBlendingRefs = [];
+        private static readonly ConcurrentDictionary<int, TileBlendingRef[]> _TileBlendingRefs = [];
 
         public override void ClearWorld()
         {
@@ -20,7 +20,7 @@ namespace CalamityMod.Systems
                 return;
 
             var tileIdx = tileX + (Main.tile.Width * tileY);
-            _TileBlendingRefs.Remove(tileIdx);
+            _TileBlendingRefs.TryRemove(tileIdx, out _);
         }
 
         public static void SetBlendingRefData(int tileX, int tileY, TileBlendingRef[] blendingRef)

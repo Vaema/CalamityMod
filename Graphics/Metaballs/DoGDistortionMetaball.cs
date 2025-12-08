@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using CalamityMod.Effects;
+using CalamityMod.Enums;
 using CalamityMod.Projectiles.Boss;
 using CalamityMod.Systems.Graphic;
 using Microsoft.Xna.Framework;
@@ -33,7 +34,7 @@ namespace CalamityMod.Graphics.Metaballs
 
         public static List<DistortionParticle> Particles { get; private set; } = [];
 
-        public override MetaballDrawLayer DrawContext => MetaballDrawLayer.AfterProjectiles;
+        public override GeneralDrawLayer DrawLayer => GeneralDrawLayer.AfterProjectiles;
 
         public override bool AnythingToDraw => Particles.Count > 0 || CalamityUtils.AnyProjectiles(ModContent.ProjectileType<DoGRiftCrack>());
 
@@ -67,16 +68,16 @@ namespace CalamityMod.Graphics.Metaballs
             if (FixedToScreen)
                 layerScrollOffset = Vector2.Zero;
 
-            metaballShader.Parameters["layerSize"]?.SetValue(DoGVisualsManager.DistortionForegroundContentsTarget.Target.Size());
-            metaballShader.Parameters["screenSize"]?.SetValue(screenSize);
-            metaballShader.Parameters["layerOffset"]?.SetValue(layerScrollOffset);
-            metaballShader.Parameters["edgeColor"]?.SetValue(EdgeColor.ToVector4());
-            metaballShader.Parameters["singleFrameScreenOffset"]?.SetValue((Main.screenLastPosition - Main.screenPosition) / screenSize);
+            metaballShader.Value.Parameters["layerSize"]?.SetValue(DoGVisualsManager.DistortionForegroundContentsTarget.Target.Size());
+            metaballShader.Value.Parameters["screenSize"]?.SetValue(screenSize);
+            metaballShader.Value.Parameters["layerOffset"]?.SetValue(layerScrollOffset);
+            metaballShader.Value.Parameters["edgeColor"]?.SetValue(EdgeColor.ToVector4());
+            metaballShader.Value.Parameters["singleFrameScreenOffset"]?.SetValue((Main.screenLastPosition - Main.screenPosition) / screenSize);
 
             gd.Textures[1] = DoGVisualsManager.DistortionForegroundContentsTarget;
             gd.SamplerStates[1] = SamplerState.LinearWrap;
 
-            metaballShader.CurrentTechnique.Passes[0].Apply();
+            metaballShader.Value.CurrentTechnique.Passes[0].Apply();
         }
 
         public override void DrawInstances()

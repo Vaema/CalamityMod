@@ -1,6 +1,7 @@
 ﻿using CalamityMod.Buffs.DamageOverTime;
 using Microsoft.Xna.Framework;
 using Terraria;
+using Terraria.ID;
 using Terraria.ModLoader;
 namespace CalamityMod.Projectiles.Melee
 {
@@ -41,7 +42,7 @@ namespace CalamityMod.Projectiles.Melee
                 float lifePersistance = Main.rand.NextFloat(0.8f, 1.7f);
                 for (int i = 0; i < 60; i++)
                 {
-                    Dust energy = Dust.NewDustPerfect(Projectile.Center, 267);
+                    Dust energy = Dust.NewDustPerfect(Projectile.Center, DustID.RainbowMk2);
                     energy.velocity = (MathHelper.TwoPi * i / 60f).ToRotationVector2() * speed;
                     energy.noGravity = true;
                     energy.color = Main.hslToRgb(Main.rand.NextFloat(), 0.7f, 0.625f);

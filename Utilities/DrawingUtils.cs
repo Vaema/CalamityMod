@@ -1,10 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Text;
-using CalamityMod.Graphics;
-using CalamityMod.Items.Weapons.Melee;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using ReLogic.Content;
@@ -112,7 +109,7 @@ namespace CalamityMod
                     // Standard afterimages. No customizable features other than total afterimage count.
                     // Type 0 afterimages linearly scale down from 100% to 0% opacity. Their color and lighting is equal to the main projectile's.
                     case 0:
-                        
+
 
                         for (int i = 0; i < proj.oldPos.Length; ++i)
                         {
@@ -304,7 +301,7 @@ namespace CalamityMod
         public static void DrawInventoryDot(SpriteBatch spriteBatch, Vector2 itemPosition, Vector2 dotOffset, bool enabled)
         {
             var tex = CalamityUtils.GetTextureEfficient(ref ItemDotTexture, "Terraria/Images/Extra_20").Value;
-            var dotFrame = tex.Frame(1,4, frameY: enabled ? 1 : 2);
+            var dotFrame = tex.Frame(1, 4, frameY: enabled ? 1 : 2);
             spriteBatch.Draw(tex, itemPosition + dotOffset, dotFrame, Color.White, 0, dotFrame.Size() * 0.5f, Main.inventoryScale, SpriteEffects.None, 0);
         }
 
@@ -645,11 +642,6 @@ namespace CalamityMod
             return false;
         }
 
-        // Cached for efficiency purposes.
-        internal static readonly FieldInfo UImageFieldMisc0 = typeof(MiscShaderData).GetField("_uImage0", BindingFlags.NonPublic | BindingFlags.Instance);
-        internal static readonly FieldInfo UImageFieldMisc1 = typeof(MiscShaderData).GetField("_uImage1", BindingFlags.NonPublic | BindingFlags.Instance);
-        internal static readonly FieldInfo UImageFieldArmor = typeof(ArmorShaderData).GetField("_uImage", BindingFlags.NonPublic | BindingFlags.Instance);
-
         /// <summary>
         /// Manually sets the texture of a <see cref="MiscShaderData"/> instance, since vanilla's implementation only supports strings that access vanilla textures.
         /// </summary>
@@ -660,10 +652,9 @@ namespace CalamityMod
             switch (index)
             {
                 case 0:
-                    UImageFieldMisc0.SetValue(shader, texture);
+                    shader._uImage0 = texture;
                     break;
                 case 1:
-                    UImageFieldMisc1.SetValue(shader, texture);
                     break;
             }
             return shader;
@@ -676,20 +667,20 @@ namespace CalamityMod
         /// <param name="texture">The texture to bind.</param>
         public static ArmorShaderData SetShaderTextureArmor(this ArmorShaderData shader, Asset<Texture2D> texture)
         {
-            UImageFieldArmor.SetValue(shader, texture);
+            shader._uImage = texture;
             return shader;
         }
 
-        public static void EnterShaderRegion(this SpriteBatch spriteBatch, BlendState newBlendState = null, Effect effect = null)
+        public static void EnterShaderRegion(this SpriteBatch spriteBatch, BlendState newBlendState = null, Effect effect = null, Matrix? matrix = null)
         {
             spriteBatch.End();
-            spriteBatch.Begin(SpriteSortMode.Immediate, newBlendState ?? BlendState.AlphaBlend, Main.DefaultSamplerState, DepthStencilState.None, Main.Rasterizer, effect, Main.GameViewMatrix.TransformationMatrix);
+            spriteBatch.Begin(SpriteSortMode.Immediate, newBlendState ?? BlendState.AlphaBlend, Main.DefaultSamplerState, DepthStencilState.None, Main.Rasterizer, effect, matrix ?? Main.GameViewMatrix.TransformationMatrix);
         }
 
-        public static void ExitShaderRegion(this SpriteBatch spriteBatch)
+        public static void ExitShaderRegion(this SpriteBatch spriteBatch, Matrix? matrix = null)
         {
             spriteBatch.End();
-            spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, Main.DefaultSamplerState, DepthStencilState.None, Main.Rasterizer, null, Main.GameViewMatrix.TransformationMatrix);
+            spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, Main.DefaultSamplerState, DepthStencilState.None, Main.Rasterizer, null, matrix ?? Main.GameViewMatrix.TransformationMatrix);
         }
 
         /// <summary>
@@ -854,6 +845,36 @@ namespace CalamityMod
 
 
                 Main.spriteBatch.DrawLineBetter(pointList[i], pointList[i + 1], color, scaleMod);
+            }
+        }
+
+        public static void GetScreenDrawArea(Vector2 unscaledScreenPosition, Vector2 offSet, out int firstTileX, out int lastTileX, out int firstTileY, out int lastTileY)
+        {
+            const int Padding = 4;
+
+            firstTileX = (int)((unscaledScreenPosition.X - offSet.X) / 16f - 1f);
+            lastTileX = (int)((unscaledScreenPosition.X + Main.screenWidth + offSet.X) / 16f) + 2;
+            firstTileY = (int)((unscaledScreenPosition.Y - offSet.Y) / 16f - 1f);
+            lastTileY = (int)((unscaledScreenPosition.Y + Main.screenHeight + offSet.Y) / 16f) + 5;
+
+            if (firstTileX < Padding)
+            {
+                firstTileX = Padding;
+            }
+
+            if (lastTileX > Main.maxTilesX - Padding)
+            {
+                lastTileX = Main.maxTilesX - Padding;
+            }
+
+            if (firstTileY < Padding)
+            {
+                firstTileY = Padding;
+            }
+
+            if (lastTileY > Main.maxTilesY - Padding)
+            {
+                lastTileY = Main.maxTilesY - Padding;
             }
         }
     }

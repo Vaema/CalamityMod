@@ -1,6 +1,5 @@
 ﻿using CalamityMod.BiomeManagers;
 using CalamityMod.Particles;
-using CalamityMod.Items.Placeables.Banners;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using System.Collections.Generic;

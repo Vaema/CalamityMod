@@ -4,9 +4,7 @@ using CalamityMod.Items.Accessories;
 using CalamityMod.Items.Fishing;
 using CalamityMod.Items.Materials;
 using CalamityMod.Items.PermanentBoosters;
-using CalamityMod.Items.Placeables.Furniture.DevPaintings;
-using CalamityMod.Items.Placeables.Ores;
-using CalamityMod.Items.Potions;
+using CalamityMod.Items.Placeables.Furniture.Paintings;
 using CalamityMod.Items.Weapons.Melee;
 using CalamityMod.Items.Weapons.Ranged;
 using CalamityMod.Items.Weapons.Rogue;
@@ -234,7 +232,6 @@ namespace CalamityMod.Items
                         ItemID.FairyQueenRangedItem, // Eventide
                         ItemID.FairyQueenMagicItem, // Nightglow
                         ItemID.SparkleGuitar, // Stellar Tune
-                        ItemID.EmpressBlade, // Terraprisma
                         ItemID.RainbowWhip, // Kaleidoscope
                         ItemID.RainbowWings, // Empress Wings have a pathetically low drop rate.
                     };
@@ -294,13 +291,27 @@ namespace CalamityMod.Items
                     loot.Add(UndergroundChestLootRule);
                     break;
 
+                // 2-5 Essences of Eleum @ 50%
+                // This is our equivalent to Souls of Light/Night
+                case ItemID.FrozenCrateHard:
+                    RemoveHardmodeOresFromBiomeCrates(loot);
+                    loot.AddHardmodeOresToCrates(HardmodeCrateType.Biome);
+                    loot.Add(ModContent.ItemType<EssenceofEleum>(), 2, 2, 5);
+                    break;
+
+                // 2-5 Essences of Sunlight @ 50%
+                // This is our equivalent to Souls of Light/Night
+                case ItemID.FloatingIslandFishingCrateHard:
+                    RemoveHardmodeOresFromBiomeCrates(loot);
+                    loot.AddHardmodeOresToCrates(HardmodeCrateType.Biome);
+                    loot.Add(ModContent.ItemType<EssenceofSunlight>(), 2, 2, 5);
+                    break;
+
                 case ItemID.CorruptFishingCrateHard:
                 case ItemID.CrimsonFishingCrateHard:
                 case ItemID.HallowedFishingCrateHard:
                 case ItemID.DungeonFishingCrateHard:
                 case ItemID.JungleFishingCrateHard:
-                case ItemID.FloatingIslandFishingCrateHard:
-                case ItemID.FrozenCrateHard:
                 case ItemID.LavaCrateHard:
                 case ItemID.OasisCrateHard:
                 case ItemID.OceanCrateHard:
@@ -555,12 +566,13 @@ namespace CalamityMod.Items
                 ItemDropRule.NotScalingWithLuck(ModContent.ItemType<GrandMarquisBait>(), 3, 3, 7),
                 ItemDropRule.NotScalingWithLuck(ItemID.MasterBait, 1, 3, 7));
 
-        // Non-crafted underground Gold Chest loot for Golden/Titanium Crates @ 20%; Individually 5%
-        private static IItemDropRule UndergroundChestLootRule => new OneFromOptionsNotScaledWithLuckDropRule(5, 1,
+        // Non-crafted underground Gold Chest loot for Golden/Titanium Crates @ 25%; Individually 5%
+        private static IItemDropRule UndergroundChestLootRule => new OneFromOptionsNotScaledWithLuckDropRule(4, 1,
                 ItemID.FlareGun,
                 ItemID.Mace,
                 ItemID.BandofRegeneration,
-                ItemID.ShoeSpikes); // Climbing Claws is in Wooden/Pearlwood (vanilla) in case you're curious
+                ItemID.ShoeSpikes,
+                ModContent.ItemType<EnchantedBladeStaff>()); // Climbing Claws is in Wooden/Pearlwood (vanilla) in case you're curious
         #endregion
 
         #region Goodie Bag Bat Hook

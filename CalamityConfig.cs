@@ -108,12 +108,8 @@ namespace CalamityMod
         public bool DebuffDisplay { get; set; }
 
         [BackgroundColor(192, 54, 64, 192)]
-        [SliderColor(224, 165, 56, 128)]
-        [Range(0f, 2f)]
-        [DefaultValue(2f)]
-        [Increment(1f)]
-        [DrawTicks]
-        public float CooldownDisplay { get; set; }
+        [DefaultValue(CooldownDisplayOptions.Full)]
+        public CooldownDisplayOptions CooldownDisplay { get; set; }
 
         [BackgroundColor(192, 54, 64, 192)]
         [DefaultValue(true)]
@@ -264,8 +260,6 @@ namespace CalamityMod
         public bool FasterFallHotkey { get; set; }
 
         [BackgroundColor(192, 54, 64, 192)]
-        [SliderColor(224, 165, 56, 128)]
-        [DrawTicks]
         [DefaultValue(SetBonusDoubleTapOptions.Auto)]
         public SetBonusDoubleTapOptions SetBonusDoubleTap { get; set; }
 

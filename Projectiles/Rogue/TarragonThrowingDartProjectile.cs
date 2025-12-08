@@ -1,6 +1,4 @@
-﻿using System;
-using CalamityMod.Dusts;
-using CalamityMod.Items.Weapons.Rogue;
+﻿using CalamityMod.Dusts;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria;

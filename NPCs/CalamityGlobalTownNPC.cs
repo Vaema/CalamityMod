@@ -1,11 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using CalamityMod.Events;
-using CalamityMod.Items;
 using CalamityMod.Items.Accessories;
 using CalamityMod.Items.Accessories.Vanity;
 using CalamityMod.Items.Ammo;
-using CalamityMod.Items.Armor;
 using CalamityMod.Items.Armor.Vanity;
 using CalamityMod.Items.Dyes;
 using CalamityMod.Items.Dyes.HairDye;
@@ -14,6 +12,7 @@ using CalamityMod.Items.Placeables.Astral;
 using CalamityMod.Items.Placeables.Crags;
 using CalamityMod.Items.Placeables.Furniture;
 using CalamityMod.Items.Placeables.Furniture.Fountains;
+using CalamityMod.Items.Placeables.Furniture.Paintings;
 using CalamityMod.Items.Potions;
 using CalamityMod.Items.Potions.Alcohol;
 using CalamityMod.Items.SummonItems.Invasion;
@@ -42,29 +41,27 @@ namespace CalamityMod.NPCs
         {
             get
             {
-                // Max of 20 platinum.
-                if (DownedBossSystem.downedYharon)
-                    return 40f;
-
-                // Max of 10 platinum.
+                // 10 silver per NPC, max of 5 platinum.
                 if (DownedBossSystem.downedDoG)
-                    return 20f;
-
-                // Max of 5 platinum.
-                if (NPC.downedMoonlord)
                     return 10f;
 
-                // Max of 2 platinum.
+                // 8 silver per NPC, max of 4 platinum.
+                if (NPC.downedMoonlord)
+                    return 8f;
+
+                // 2 silver per NPC, max of 1 platinum.
                 if (NPC.downedPlantBoss)
-                    return 4f;
+                    return 2f;
 
                 return 1f;
             }
         }
 
-        public static int TotalTaxesPerNPC => (int)(Item.buyPrice(0, 0, 1, 50) * TaxYieldFactor);
+        // Vanilla: 50 copper
+        public static int TotalTaxesPerNPC => (int)(Item.buyPrice(silver: 1) * TaxYieldFactor);
 
-        public static int TaxesToCollectLimit => (int)(Item.buyPrice(0, 50, 0, 0) * TaxYieldFactor);
+        // Vanilla: 25 gold
+        public static int TaxesToCollectLimit => (int)(Item.buyPrice(gold: 50) * TaxYieldFactor);
 
         #region Town NPC Patreon Name Sets
         private static readonly string[] AnglerNames =
@@ -211,9 +208,8 @@ namespace CalamityMod.NPCs
         };
         private static readonly string[] SkeletonMerchantNames =
         {
-            "Sans Undertale", // <@!145379091648872450> (shayy)
+            "Sans Undertale", // <@!534770496038895616> (done_22_)
             "Papyrus Undertale", // <@!262663471189983242> (nycro)
-            "Gaster Undertale", // <@!924706306093379614> (enamoured)
             "Mr. Bones", // <@!359215912856977408> (jaybones.)
             "Freakbob", // <@!377863128140087296> (jevilamv)
         };
@@ -226,6 +222,7 @@ namespace CalamityMod.NPCs
             "Eira", // <@!1166136068408623234> (taela_gemetha)
             "Kreutz", // <@!553445849149997056> (red_r_kreutz)
             "Cathlyn", // <@!156672312425316352> (xaqult)
+            "Eunice", // <@!358376627400605699> (srmg267)
         };
         private static readonly string[] StylistNames =
         {
@@ -260,6 +257,7 @@ namespace CalamityMod.NPCs
             "Aldrimil", // <@!413719640238194689> (Thorioum#2475)
             "Wonton", // <@!1198092982923043040> (imonthatgudkush)
             "Mad Lad", // <@!215269032360804352> (crimsoncb)
+            "Nokko", // <@!706732954079985745> (violet.prime)
         };
         private static readonly string[] WitchDoctorNames =
         {
@@ -279,6 +277,7 @@ namespace CalamityMod.NPCs
             "Syethas", // <@!325413275066171393> (cosmicstariight)
             "Nextdoor Psycho", // <@!173261518572486656> (nextdoorpsycho)
             "Mike Cyclops", // <@!702327497475227741> (seichoseicho)
+            "Derin", // <@!466703979695308820> (god_15)
         };
         private static readonly string[] ZoologistNames =
         {
@@ -358,6 +357,7 @@ namespace CalamityMod.NPCs
         {
             "Bear", // <@!183424826407518208> (lilac_vrt_olligoci)
             "Storm", // <@!620383533516718085> (airwaveslr)
+            "Hognar the Wicked", // <@!766511001356468237> (xzier_tengal)
         };
         private static readonly string[] TownCatOrangeTabbyNames =
         {
@@ -370,6 +370,7 @@ namespace CalamityMod.NPCs
         private static readonly string[] TownCatSilverNames =
         {
             "Archie", // <@!303022375191183360> (jackshiz)
+            "Hognar the Wicked", // <@!766511001356468237> (xzier_tengal)
         };
         private static readonly string[] TownCatWhiteNames = null;
 
@@ -1089,12 +1090,6 @@ namespace CalamityMod.NPCs
                 npc.dontTakeDamageFromHostiles = true;
         }
 
-        public void MakeTownNPCsTakeMoreDamage(NPC npc, Projectile projectile, Mod mod, ref NPC.HitModifiers modifiers)
-        {
-            if (npc.townNPC && projectile.hostile)
-                modifiers.SourceDamage *= 2f;
-        }
-
         // Does not affect Dryad's Bane
         // See CalamityGlobalNPC: UpdateLifeRegen
         public override void BuffTownNPC(ref float damageMult, ref int defense)
@@ -1138,7 +1133,7 @@ namespace CalamityMod.NPCs
 
         public override bool? CanBeHitByProjectile(NPC npc, Projectile projectile)
         {
-            //Not an axe but close enough
+            // Not an axe but close enough
             if (npc.type == NPCID.TaxCollector && projectile.type == ProjectileType<SlickCaneProjectile>())
                 return true;
             return base.CanBeHitByProjectile(npc, projectile);
@@ -1241,7 +1236,8 @@ namespace CalamityMod.NPCs
 
             if (type == NPCID.Painter)
             {
-                shop.AddWithCustomValue(ItemID.PainterPaintballGun, Item.buyPrice(gold: 15));
+                shop.AddWithCustomValue(ItemID.PainterPaintballGun, Item.buyPrice(gold: 15))
+                .Add(ItemType<AmidiasPainting>(), CalamityConditions.InSunken, Condition.NpcIsPresent(NPCType<SeaKing>()));
             }
 
             if (type == NPCID.Steampunker)
@@ -1318,25 +1314,6 @@ namespace CalamityMod.NPCs
             if (type == NPCID.Truffle)
             {
                 shop.Add<OddMushroom>();
-            }
-        }
-
-        public override void ModifyActiveShop(NPC npc, string shopName, Item[] items)
-        {
-            // TODO: Uses a hardcoded string since dedicated names are currently hardcoded strings
-            // Will need to be changed if dedicated names are localized in the future
-            if (npc.type == NPCID.SkeletonMerchant && npc.GivenName == "Sans Undertale")
-            {
-                int index = 0;
-                for (int i = 0; i < Chest.maxItems; i++)
-                {
-                    if (items[i] == null)
-                    {
-                        index = i;
-                        break;
-                    }
-                }
-                items[index] = new Item(ItemType<PunchCard>());
             }
         }
         #endregion

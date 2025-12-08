@@ -1,14 +1,10 @@
-﻿using CalamityMod.Graphics.Metaballs;
-using CalamityMod.Items.Weapons.Magic;
+﻿using CalamityMod.Items.Weapons.Magic;
 using CalamityMod.Particles;
 using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Graphics;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
 using Terraria.Audio;
-using CalamityMod.Balancing;
-using System;
 using CalamityMod.Buffs.DamageOverTime;
 using CalamityMod.Projectiles.Healing;
 

@@ -4,10 +4,8 @@ using System.Reflection;
 using CalamityMod.Events;
 using CalamityMod.Items.Fishing;
 using CalamityMod.Items.Materials;
-using CalamityMod.Items.TreasureBags.MiscGrabBags;
 using CalamityMod.NPCs.AcidRain;
 using CalamityMod.NPCs.NormalNPCs;
-using CalamityMod.NPCs.TownNPCs;
 using CalamityMod.Projectiles.Typeless;
 using CalamityMod.Walls;
 using CalamityMod.World;
@@ -17,13 +15,12 @@ using MonoMod.Cil;
 using Terraria;
 using Terraria.Audio;
 using Terraria.DataStructures;
-using Terraria.GameContent;
 using Terraria.GameContent.Drawing;
 using Terraria.GameContent.ItemDropRules;
+using Terraria.GameInput;
+using Terraria.Graphics.Effects;
 using Terraria.ID;
 using Terraria.ModLoader;
-using Terraria.Graphics.Effects;
-using Terraria.GameInput;
 
 namespace CalamityMod.ILEditing
 {
@@ -157,8 +154,10 @@ namespace CalamityMod.ILEditing
         #region Prevention of Slime Rain Spawns When Near Bosses
         private static void PreventBossSlimeRainSpawns(On_NPC.orig_SlimeRainSpawns orig, int plr)
         {
-            if (!Main.player[plr].Calamity().isNearbyBoss && CalamityServerConfig.Instance.BossZen)
-                orig(plr);
+            if (CalamityServerConfig.Instance.BossZen && Main.player[plr].Calamity().isNearbyBoss)
+                return;
+
+            orig(plr);
         }
         #endregion Prevention of Slime Rain Spawns When Near Bosses
 
@@ -175,28 +174,35 @@ namespace CalamityMod.ILEditing
                 return;
             }
 
-            // Remove the Expert Mode check, and in its place put a check for the Zenith seed (Get fixed boi).
-            cursor.Emit(OpCodes.Pop);
-            cursor.Emit(OpCodes.Ldsfld, typeof(Main).GetField("zenithWorld"));
+            // AND with 0, so that Expert Mode is never considered active.
+            // Calamity implements something more sinister in GFB :)
+            cursor.Emit(OpCodes.Ldc_I4_0);
+            cursor.Emit(OpCodes.And);
         }
         #endregion
 
         #region Prevent Lava Slime Dropping Lava
-        private static void PreventLavaSlimeLavaDrop(ILContext il)
+        private static void PreventLavaSlimeLavaDrop(On_NPC.orig_HitEffect_HitInfo orig, NPC self, NPC.HitInfo hit)
         {
-            // Disable Lava Slimes dropping lava if its respective config is enabled.
-            var cursor = new ILCursor(il);
-
-            // Go to the check for Remix world.
-            if (!cursor.TryGotoNext(MoveType.Before, i => i.MatchLdsfld<Main>("remixWorld")))
+            if (self.type != NPCID.LavaSlime || !CalamityServerConfig.Instance.RemoveLavaDropsFromLavaSlimes)
             {
-                LogFailure("Prevent Lava Slime Dropping Lava", "Could not find the check for Remix World.");
+                orig(self, hit);
                 return;
             }
 
-            // Add an additional check for the config.
-            cursor.Remove();
-            cursor.EmitDelegate<Func<bool>>(() => CalamityServerConfig.Instance.RemoveLavaDropsFromLavaSlimes || Main.remixWorld);
+            int tileX = (int)(self.Center.X / 16);
+            int tileY = (int)(self.Center.Y / 16);
+            Tile tile = Framing.GetTileSafely(tileX, tileY);
+            if (tile.LiquidAmount != 0)
+            {
+                orig(self, hit);
+                return;
+            }
+
+            byte originalAmount = tile.LiquidAmount;
+            tile.LiquidAmount = 255;
+            orig(self, hit);
+            tile.LiquidAmount = originalAmount;
         }
         #endregion
 
@@ -233,6 +239,28 @@ namespace CalamityMod.ILEditing
                 return;
             }
             cursor.MarkLabel(label);
+        }
+        #endregion
+
+        #region Make PunchCameraModifier Affected by Screenshake Config
+        private static void PunchCameraUsesScreenshakeConfig(ILContext il)
+        {
+            // Allow the screenshake from PunchCameraModifier to scale based on our screenshake power config.
+            var cursor = new ILCursor(il);
+
+            // There are 3 local variables that control the strength of the screenshake in separate ways, but they all get multiplied together at the end.
+            // Thus it doesn't matter at all which one is multiplied to. Here I chose num2.
+            if (!cursor.TryGotoNext(MoveType.After, i => i.MatchStloc2()))
+            {
+                LogFailure("Make PunchCameraModifier Affected by Screenshake Config", "Could not move to the location to inject code.");
+                return;
+            }
+
+            // Emit a delegate which grabs the value of the screenshake config. Then multiply the local variable by it.
+            cursor.Emit(OpCodes.Ldloc_1);
+            cursor.EmitDelegate<Func<float>>(() => CalamityClientConfig.Instance.ScreenshakePower);
+            cursor.Emit(OpCodes.Mul);
+            cursor.Emit(OpCodes.Stloc_1);
         }
         #endregion
 
@@ -577,7 +605,7 @@ namespace CalamityMod.ILEditing
                 LogFailure("Use VisibleThroughWater Map Tile", "Could not locate call to Terraria.Map.TileMap::get_Item.");
                 return;
             }
-            
+
             int tileIndex = -1;
             if (!c.TryGotoNext(x => x.MatchStloc(out tileIndex)) || tileIndex == -1)
             {
@@ -777,12 +805,13 @@ namespace CalamityMod.ILEditing
         private static void DelayGravity(On_Player.orig_UpdateControlHolds orig, Player Player)
         {
             var cplay = Player.Calamity();
-            if (CalamityKeybinds.SwitchGravityHotkey.GetAssignedKeys().Count != 0 && (Player.gravControl || Player.gravControl2) && !Player.mount.Active)
+            if (CalamityKeybinds.SwitchGravityHotkey.GetAssignedKeysOrEmpty().Count != 0 && (Player.gravControl || Player.gravControl2) && !Player.mount.Active)
             {
-                if (Player.controlUp && Player.releaseUp) {
+                if (Player.controlUp && Player.releaseUp)
+                {
                     Player.gravDir *= -1;
                 }
-                if (CalamityKeybinds.SwitchGravityHotkey.JustPressed) 
+                if (CalamityKeybinds.SwitchGravityHotkey.JustPressed)
                 {
                     Player.gravDir *= -1;
                     Player.fallStart = (int)(Player.position.Y / 16f);
@@ -790,32 +819,39 @@ namespace CalamityMod.ILEditing
                     SoundEngine.PlaySound(SoundID.Item8, Player.position);
                 }
 
-                if (Player.forcedGravity > 0) {
-				    Player.gravDir = -1f;
-			}   
+                if (Player.forcedGravity > 0)
+                {
+                    Player.gravDir = -1f;
+                }
             }
-            
-            if (cplay.justChangedGravity) {
+
+            if (cplay.justChangedGravity)
+            {
                 Player.gravDir = cplay.oldGravDir;
             }
             cplay.justChangedGravity = cplay.oldGravDir != Player.gravDir;
-            
+
             cplay.oldGravDir = Player.gravDir;
             if (Main.netMode != NetmodeID.Server && !Main.gameMenu && CalamityClientConfig.Instance.DisableGravityScreenSwap)
             {
-            if (Player.gravDir == -1) {
-                if (!Filters.Scene["CalamityMod:FlipScreen"].IsActive()) {
-                    Filters.Scene.Activate("CalamityMod:FlipScreen");
-                    Filters.Scene["CalamityMod:FlipScreen"].Opacity = 1f;
+                if (Player.gravDir == -1)
+                {
+                    if (!Filters.Scene["CalamityMod:FlipScreen"].IsActive())
+                    {
+                        Filters.Scene.Activate("CalamityMod:FlipScreen");
+                        Filters.Scene["CalamityMod:FlipScreen"].Opacity = 1f;
 
+                    }
                 }
-            } else {
-                if (Filters.Scene["CalamityMod:FlipScreen"].IsActive()) {
-                    Filters.Scene["CalamityMod:FlipScreen"].Opacity = 0f;
-                    Filters.Scene.Deactivate("CalamityMod:FlipScreen");
+                else
+                {
+                    if (Filters.Scene["CalamityMod:FlipScreen"].IsActive())
+                    {
+                        Filters.Scene["CalamityMod:FlipScreen"].Opacity = 0f;
+                        Filters.Scene.Deactivate("CalamityMod:FlipScreen");
 
+                    }
                 }
-            }
             }
             if (cplay.justChangedGravity)
             {
@@ -824,7 +860,8 @@ namespace CalamityMod.ILEditing
             orig(Player);
         }
 
-        private static void GravityMouse(On_PlayerInput.orig_SetZoom_MouseInWorld orig) {
+        private static void GravityMouse(On_PlayerInput.orig_SetZoom_MouseInWorld orig)
+        {
             orig();
             if (!Main.gameMenu && Filters.Scene["CalamityMod:FlipScreen"].IsActive())//((Main.LocalPlayer.gravDir == -1 && !Main.LocalPlayer.Calamity().justChangedGravity) || (Main.LocalPlayer.Calamity().oldGravDir == -1 && Main.LocalPlayer.Calamity().justChangedGravity))
             {
@@ -841,7 +878,7 @@ namespace CalamityMod.ILEditing
             }
             orig(self);
         }
-        
+
         private static void UI_Unflip_End(On_Main.orig_DrawInterface orig, Main self, GameTime gameTime)
         {
             orig(self, gameTime);

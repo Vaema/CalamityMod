@@ -1,10 +1,8 @@
 ﻿using System;
 using CalamityMod.Buffs.DamageOverTime;
-using CalamityMod.Projectiles.BaseProjectiles;
 using CalamityMod.World;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using ReLogic.Content;
 using Terraria;
 using Terraria.Audio;
 using Terraria.ID;
@@ -99,7 +97,7 @@ namespace CalamityMod.Projectiles.Magic
         public override bool? CanHitNPC(NPC target)
         {
             if (canDamage)
-                return true;
+                return null;
             return false;
         }
         public override bool CanHitPlayer(Player target)

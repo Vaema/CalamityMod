@@ -1,15 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using CalamityMod.NPCs;
+﻿using System.IO;
 using Terraria;
 
 namespace CalamityMod.Packets
 {
-    public sealed class SyncDestroyerLaserColorPacket : CalamityPacket
+    internal sealed class SyncDestroyerLaserColorPacket : CalamityPacket
     {
         public static SyncDestroyerLaserColorPacket Instance { get; private set; }
 

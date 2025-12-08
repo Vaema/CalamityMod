@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using CalamityMod.Enums;
 using CalamityMod.NPCs;
 using CalamityMod.NPCs.ExoMechs.Ares;
 using Microsoft.Xna.Framework;
@@ -42,7 +43,7 @@ namespace CalamityMod.Graphics.Renderers.CalamityRenderers
             private set;
         }
 
-        public override DrawLayer Layer => DrawLayer.NPC;
+        public override GeneralDrawLayer Layer => GeneralDrawLayer.AfterNPCs;
 
         // Unsure whether its more performant to always draw, or to check if any NPC actually has the debuff.
         public override bool ShouldDraw => true;

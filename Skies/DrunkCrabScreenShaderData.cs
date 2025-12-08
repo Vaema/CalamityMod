@@ -1,7 +1,4 @@
-﻿using CalamityMod.NPCs;
-using CalamityMod.NPCs.Crabulon;
-using CalamityMod.NPCs.SupremeCalamitas;
-using CalamityMod.World;
+﻿using CalamityMod.NPCs.Crabulon;
 using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.Graphics.Effects;

@@ -1,6 +1,5 @@
 ﻿using CalamityMod.NPCs;
 using CalamityMod.NPCs.SupremeCalamitas;
-using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
 

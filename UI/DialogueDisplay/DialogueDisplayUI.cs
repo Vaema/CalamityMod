@@ -4,15 +4,16 @@ using System.IO;
 using System.Linq;
 using System.Text.Json;
 using System.Text.Json.Serialization;
-using CalamityMod.Fonts;
 using CalamityMod.UI.DialogueDisplay.DialogueEvents;
 using CalamityMod.UI.DialogueDisplay.DisplayEffects;
 using CalamityMod.UI.DialogueDisplay.TextEffects;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using ReLogic.Content;
 using ReLogic.Graphics;
 using Terraria;
 using Terraria.Audio;
+using Terraria.GameContent;
 using Terraria.ID;
 using Terraria.Localization;
 using Terraria.ModLoader;
@@ -157,7 +158,7 @@ namespace CalamityMod.UI.DialogueDisplay
         private int TextTimer = 0;
         internal int textIndex = 0;
         internal int Uptime = 0;
-        internal string FontKey;
+        internal Asset<DynamicSpriteFont> Font;
 
         //Effects
         internal Dictionary<int, (float IndexOffset, string[] hexcodes)> UniqueColors = [];
@@ -176,13 +177,13 @@ namespace CalamityMod.UI.DialogueDisplay
         private bool lockDelay = false;
         private float WrapWidth = -1;
 
-        public DialogueDisplay(DialoguePage textData, DisplayEffect displayEffects, int startPage = 0, bool screenLocked = false, float wrapWidth = -1, string font = "MouseText")
+        public DialogueDisplay(DialoguePage textData, DisplayEffect displayEffects, int startPage = 0, bool screenLocked = false, float wrapWidth = -1, Asset<DynamicSpriteFont>? font = null)
         {
             DisplayEffects = displayEffects;
             ScreenLocked = screenLocked;
             DialoguePage = textData;
             DisplayEffects = displayEffects;
-            FontKey = font;
+            Font = font ?? FontAssets.MouseText;
             WrapWidth = wrapWidth;
         }
 
@@ -196,6 +197,9 @@ namespace CalamityMod.UI.DialogueDisplay
             UniqueScales = [];
 
             if (DialoguePage.Event != null)
+                return;
+
+            if (Font is null || !Font.IsLoaded)
                 return;
 
             int fullLength = 0;
@@ -222,7 +226,7 @@ namespace CalamityMod.UI.DialogueDisplay
                         line = line.Remove(line.Length - 1, 1);
 
                     int finalIndex = 0;
-                    float width = MeasureString(line, FontAssetSystem.Fonts[FontKey]).X;
+                    float width = MeasureString(line, Font.Value).X;
 
                     if (width > WrapWidth)
                     {
@@ -234,7 +238,7 @@ namespace CalamityMod.UI.DialogueDisplay
                                 finalIndex++;
                             yoinked = line.Substring(finalIndex) + yoinked;
                             line = line.Remove(finalIndex);
-                        } while (MeasureString(line, FontAssetSystem.Fonts[FontKey]).X > WrapWidth);
+                        } while (MeasureString(line, Font.Value).X > WrapWidth);
 
                         lines[i] = line;
                         if (yoinked[0] == ' ')
@@ -339,7 +343,7 @@ namespace CalamityMod.UI.DialogueDisplay
                             if (UniqueScales.TryGetValue(j, out Vector2 uniqueScale) && uniqueScale.Y > highestYscale)
                                 highestYscale = uniqueScale.Y;
                         }
-                        zero.Y += FontAssetSystem.Fonts[FontKey].LineSpacing * highestYscale;
+                        zero.Y += Font.Value.LineSpacing * highestYscale;
                         newLine = true;
                         continue;
                     case '\r':
@@ -361,26 +365,26 @@ namespace CalamityMod.UI.DialogueDisplay
                         if (UniqueScales.TryGetValue(j, out Vector2 uniqueScale) && uniqueScale.Y > highestYscale)
                             highestYscale = uniqueScale.Y;
                     }
-                    zero.Y += FontAssetSystem.Fonts[FontKey].LineSpacing * highestYscale;
+                    zero.Y += Font.Value.LineSpacing * highestYscale;
                     newLine = true;
                 }
 
                 //Sets the character's position within the full text
-                SpriteCharacterData spriteData = FontAssetSystem.Fonts[FontKey].SpriteCharacters[c];
+                SpriteCharacterData spriteData = Font.Value.SpriteCharacters[c];
                 Vector3 kerning = spriteData.Kerning;
                 Rectangle padding = spriteData.Padding;
 
                 if (newLine)
                     kerning.X = Math.Max(kerning.X, 0f);
                 else
-                    zero.X += FontAssetSystem.Fonts[FontKey].CharacterSpacing * scale.X;
+                    zero.X += Font.Value.CharacterSpacing * scale.X;
 
                 zero.X += kerning.X * scale.X;
                 Vector2 position = zero + spriteData.Glyph.Size() * 0.5f;
                 position.X += padding.X * scale.X;
                 position.Y += padding.Y * scale.Y;
 
-                CharacterData[i].TextPosition = position - (Vector2.UnitY * scale.Y * FontAssetSystem.Fonts[FontKey].LineSpacing * 0.5f);
+                CharacterData[i].TextPosition = position - (Vector2.UnitY * scale.Y * Font.Value.LineSpacing * 0.5f);
 
                 zero.X += (kerning.Y + kerning.Z) * scale.X;
                 newLine = false;
@@ -836,7 +840,7 @@ namespace CalamityMod.UI.DialogueDisplay
                         scale = Effect.ModifyScale(scale, CharacterData[i], args);
                     }
 
-                SpriteCharacterData spriteData = FontAssetSystem.Fonts[FontKey].SpriteCharacters[c];
+                SpriteCharacterData spriteData = Font.Value.SpriteCharacters[c];
                 Vector2 origin = spriteData.Glyph.Size() * 0.5f;
 
                 CharacterData[i].SetDrawInfo(drawPos, spriteData.Glyph, color * opacity, rotation, scale);
@@ -861,7 +865,7 @@ namespace CalamityMod.UI.DialogueDisplay
                 if (CharacterData == null)
                     Activate();
 
-                SpriteCharacterData spriteData = FontAssetSystem.Fonts[FontKey].SpriteCharacters[c];
+                SpriteCharacterData spriteData = Font.Value.SpriteCharacters[c];
                 Vector2 origin = spriteData.Glyph.Size() * 0.5f;
 
                 spriteBatch.Draw(spriteData.Texture, CharacterData[i].DrawPosition, spriteData.Glyph, CharacterData[i].DrawColor, CharacterData[i].Rotation, origin, CharacterData[i].Scale, SpriteEffects.None, 0);

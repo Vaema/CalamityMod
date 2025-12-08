@@ -1,7 +1,6 @@
 ﻿using System;
 using CalamityMod.Buffs.DamageOverTime;
 using CalamityMod.Particles;
-using CalamityMod.Projectiles.Typeless;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria;
@@ -52,7 +51,7 @@ namespace CalamityMod.Projectiles.Melee
             {
                 Projectile.friendly = true;
 
-                SoundEngine.PlaySound(new("CalamityMod/Sounds/NPCKilled/DevourerSegmentBreak1") { Volume = 0.3f, PitchVariance = 0.3f }, Projectile.position);
+                SoundEngine.PlaySound(new SoundStyle("CalamityMod/Sounds/NPCKilled/DevourerSegmentBreak1") { Volume = 0.3f, PitchVariance = 0.3f }, Projectile.position);
                 SoundEngine.PlaySound(SoundID.Item62 with { Volume = 0.5f, PitchVariance = 0.3f }, Projectile.position);
                 for (int i = 0; i < 35; i++)
                 {

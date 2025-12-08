@@ -73,7 +73,7 @@ namespace CalamityMod.Projectiles.Summon
             {
                 for (int i = 0; i < 36; i++)
                 {
-                    Dust dust = Dust.NewDustPerfect(Projectile.Center, 261);
+                    Dust dust = Dust.NewDustPerfect(Projectile.Center, DustID.AncientLight);
                     dust.noGravity = true;
                     dust.color = Main.hslToRgb(Main.rand.NextFloat(), 1f, 0.5f);
                     dust.velocity = Main.rand.NextVector2Unit() * Main.rand.NextFloat(2f, 7f);

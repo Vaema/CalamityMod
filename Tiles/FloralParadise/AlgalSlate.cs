@@ -21,7 +21,7 @@ namespace CalamityMod.Tiles.FloralParadise
             CalamityUtils.MergeWithOres(Type);
             CalamityUtils.MergeWithFloralParadise(Type);
 
-            DustType = 78;
+            DustType = DustID.t_LivingWood;
 
             HitSound = SoundID.Tink;
 

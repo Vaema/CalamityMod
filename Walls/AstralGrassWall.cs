@@ -6,6 +6,7 @@ using ReLogic.Content;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
+using Terraria.Utilities;
 namespace CalamityMod.Walls
 {
     [LegacyName("AstralGrassWallSafe")]
@@ -35,11 +36,11 @@ namespace CalamityMod.Walls
         {
             if (i > Main.screenPosition.X / 16 && i < Main.screenPosition.X / 16 + Main.screenWidth / 16 && j > Main.screenPosition.Y / 16 && j < Main.screenPosition.Y / 16 + Main.screenHeight / 16)
             {
-                Texture2D tex = AstralGrassWall.leafTexture.Value;
-                var rand = new Random(i + (j * 100000));
+                Texture2D tex = leafTexture.Value;
+                var rand = new FastRandom(i + (j * 100000));
 
-                float offset = i * j % 6.28f + (float)rand.NextDouble() / 8f;
-                float sin = (float)Math.Sin(Main.GameUpdateCount / 45f + offset);
+                float offset = i * j % 6.28f + rand.NextFloat() / 8f;
+                float sin = MathF.Sin(Main.GameUpdateCount / 45f + offset);
 
                 spriteBatch.Draw(tex, (new Vector2(i + 0.5f, j + 0.5f) + TileAdj) * 16 + new Vector2(1, 0.5f) * sin * 2.2f - Main.screenPosition,
                 new Rectangle(rand.Next(4) * 26, 0, 24, 24), Lighting.GetColor(i, j), offset + sin * 0.09f, new Vector2(12, 12), 1 + sin / 14f, 0, 0);

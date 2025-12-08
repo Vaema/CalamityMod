@@ -1,9 +1,6 @@
-﻿using System;
-using CalamityMod.Buffs.DamageOverTime;
-using CalamityMod.Dusts;
+﻿using CalamityMod.Buffs.DamageOverTime;
 using Microsoft.Xna.Framework;
 using Terraria;
-using Terraria.Audio;
 using Terraria.DataStructures;
 using Terraria.ID;
 using Terraria.ModLoader;
@@ -40,7 +37,7 @@ namespace CalamityMod.Projectiles.Ranged
             int dustAmount = Main.rand.Next(14, 20 + 1);
             for (int i = 0; i <= 28; i++)
             {
-                Dust dust = Dust.NewDustPerfect(Projectile.Center, 278, new Vector2(7, 7).RotatedByRandom(100) * Main.rand.NextFloat(0.3f, 1.3f), 0, default, Main.rand.NextFloat(0.7f, 1.3f));
+                Dust dust = Dust.NewDustPerfect(Projectile.Center, DustID.FireworksRGB, new Vector2(7, 7).RotatedByRandom(100) * Main.rand.NextFloat(0.3f, 1.3f), 0, default, Main.rand.NextFloat(0.7f, 1.3f));
                 dust.noGravity = false;
                 dust.color = Color.SeaGreen;
             }

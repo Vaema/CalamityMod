@@ -1,10 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using CalamityMod.Graphics.Metaballs;
-using CalamityMod.Particles;
-using CalamityMod.World;
+﻿using CalamityMod.Particles;
 using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Graphics;
 using Terraria;
 using Terraria.Audio;
 using Terraria.ID;
@@ -58,7 +53,7 @@ namespace CalamityMod.Projectiles.Typeless
                     velOffset *= Main.rand.NextFloat(15, 30) * fade;
                     Particle energy = new SparkParticle(Projectile.Center + velOffset * 2.5f, -velOffset * Main.rand.NextFloat(0.08f, 0.12f) * 1.5f, false, 14, Main.rand.NextFloat(1.1f, 1.25f) - 0.2f * fade, effectColor);
                     GeneralParticleHandler.SpawnParticle(energy);
-                    Dust dust = Dust.NewDustPerfect(Projectile.Center + velOffset * 2.5f, 278, -velOffset * Main.rand.NextFloat(0.08f, 0.12f) * 1.5f, 0, default, Main.rand.NextFloat(0.4f, 0.6f));
+                    Dust dust = Dust.NewDustPerfect(Projectile.Center + velOffset * 2.5f, DustID.FireworksRGB, -velOffset * Main.rand.NextFloat(0.08f, 0.12f) * 1.5f, 0, default, Main.rand.NextFloat(0.4f, 0.6f));
                     dust.noGravity = true;
                     dust.color = effectColor;
                 }

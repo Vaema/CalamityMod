@@ -14,21 +14,21 @@ namespace CalamityMod.Graphics.Primitives
         /// </summary>
         /// <param name="trailLengthInterpolant">The current position along the trail as a 0-1 interlopant value.</param>
         /// <returns>The width for the current point.</returns>
-        public delegate float VertexWidthFunction(float trailLengthInterpolant);
+        public delegate float VertexWidthFunction(float trailLengthInterpolant, Vector2 vertexPosition);
 
         /// <summary>
         /// A delegate to dynamically determine the color of the trail at each position.
         /// </summary>
         /// <param name="trailLengthInterpolant">The current position along the trail as a 0-1 interlopant value.</param>
         /// <returns>The color for the current point.</returns>
-        public delegate Color VertexColorFunction(float trailLengthInterpolant);
+        public delegate Color VertexColorFunction(float trailLengthInterpolant, Vector2 vertexPosition);
 
         /// <summary>
         /// A delegate to dynamically determine the offset of the trail at each position.
         /// </summary>
         /// <param name="trailLengthInterpolant">The current position along the trail as a 0-1 interlopant value.</param>
         /// <returns>The offset for the current point.</returns>
-        public delegate Vector2 VertexOffsetFunction(float trailLengthInterpolant);
+        public delegate Vector2 VertexOffsetFunction(float trailLengthInterpolant, Vector2 vertexPosition);
         #endregion
 
         #region Instance Fields

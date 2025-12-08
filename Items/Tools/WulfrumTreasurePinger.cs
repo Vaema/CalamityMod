@@ -115,7 +115,7 @@ namespace CalamityMod.Items.Tools
 
                 for (int i = 0; i < sparkCount; i++)
                 {
-                    Dust.NewDustPerfect(centerPosition, 226, Main.rand.NextVector2Circular(18f, 18f), Scale: Main.rand.NextFloat(0.4f, 1f));
+                    Dust.NewDustPerfect(centerPosition, DustID.Electric, Main.rand.NextVector2Circular(18f, 18f), Scale: Main.rand.NextFloat(0.4f, 1f));
                 }
             }
         }

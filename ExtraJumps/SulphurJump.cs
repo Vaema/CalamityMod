@@ -1,6 +1,5 @@
 ﻿using CalamityMod.CalPlayer;
 using CalamityMod.Items.Armor.Sulphurous;
-using CalamityMod.Items.Potions.Alcohol;
 using CalamityMod.Particles;
 using CalamityMod.Projectiles.Typeless;
 using Microsoft.Xna.Framework;

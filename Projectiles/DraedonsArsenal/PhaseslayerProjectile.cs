@@ -41,7 +41,7 @@ namespace CalamityMod.Projectiles.DraedonsArsenal
         {
             get
             {
-                CalamityGlobalItem swordItem = Main.player[Projectile.owner].ActiveItem().Calamity();
+                CalamityGlobalItem swordItem = Main.player[Projectile.owner].HeldItem.Calamity();
                 return swordItem.ChargeRatio < Phaseslayer.SizeChargeThreshold;
             }
         }
@@ -92,7 +92,7 @@ namespace CalamityMod.Projectiles.DraedonsArsenal
         public override void AI()
         {
             Player player = Main.player[Projectile.owner];
-            CalamityGlobalItem modItem = player.ActiveItem().Calamity();
+            CalamityGlobalItem modItem = player.HeldItem.Calamity();
 
             // Angles are wrapped to be 0 to 2pi instead of -pi to pi for convenience with absolute values.
             float rotationAdjusted = MathHelper.WrapAngle(Projectile.rotation) + MathHelper.Pi;
@@ -130,7 +130,7 @@ namespace CalamityMod.Projectiles.DraedonsArsenal
             if (Main.myPlayer == player.whoAmI)
             {
                 // In addition to typical channel cancellation criteria, the sword fizzles out if it runs out of charge.
-                Item playerItem = player.ActiveItem();
+                Item playerItem = player.HeldItem;
                 bool hasCharge = modItem.Charge > 0f;
                 if (!player.CantUseHoldout() && playerItem.type == ModContent.ItemType<Phaseslayer>() && hasCharge)
                 {
@@ -205,7 +205,7 @@ namespace CalamityMod.Projectiles.DraedonsArsenal
             float speedDamageScalar = MathF.Log(AngularDamageFactor / StandardSwingSpeed + 3f, 3f);
 
             // Get the underlying sword item's current damage. This takes into account the player's stats and the sword's current charge.
-            int damageWithChargeAndStats = player.GetWeaponDamage(player.ActiveItem());
+            int damageWithChargeAndStats = player.GetWeaponDamage(player.HeldItem);
             float sizeDamageScalar = IsSmall ? Phaseslayer.SmallDamageMultiplier : 1f;
             Projectile.damage = (int)(damageWithChargeAndStats * speedDamageScalar * sizeDamageScalar);
         }
@@ -272,7 +272,7 @@ namespace CalamityMod.Projectiles.DraedonsArsenal
             }
         }
 
-        internal Color ColorFunction(float completionRatio)
+        internal Color ColorFunction(float completionRatio, Vector2 vertexPos)
         {
             float averageRotation = Projectile.oldRot.Take(20).Average(angle => MathHelper.WrapAngle(angle) + MathHelper.Pi);
             float deltaAngle = Math.Abs(averageRotation - (MathHelper.WrapAngle(Projectile.rotation) + MathHelper.Pi));
@@ -291,7 +291,7 @@ namespace CalamityMod.Projectiles.DraedonsArsenal
             return Color.Lerp(Color.Red, Color.PaleVioletRed * completionRatio, MathHelper.Clamp(completionRatio * 0.8f, 0f, 1f)) * opacity;
         }
 
-        internal float WidthFunction(float completionRatio) => (IsSmall ? 101f : 127f) * (1f - completionRatio) * 0.8f;
+        internal float WidthFunction(float completionRatio, Vector2 vertexPos) => (IsSmall ? 101f : 127f) * (1f - completionRatio) * 0.8f;
 
         public override bool PreDraw(ref Color lightColor)
         {
@@ -324,7 +324,7 @@ namespace CalamityMod.Projectiles.DraedonsArsenal
                 float angularTurn = i * swingAngularDirection * -0.09f;
                 drawPoints[i] = Projectile.position + perpendicularDirection.RotatedBy(angularTurn) * offsetFactor;
             }
-            PrimitiveRenderer.RenderTrail(drawPoints, new(WidthFunction, ColorFunction, (_) => Projectile.Size * 0.5f + bladeOffset, shader: GameShaders.Misc["CalamityMod:PhaseslayerRipEffect"]), 50);
+            PrimitiveRenderer.RenderTrail(drawPoints, new(WidthFunction, ColorFunction, (_,_) => Projectile.Size * 0.5f + bladeOffset, shader: GameShaders.Misc["CalamityMod:PhaseslayerRipEffect"]), 50);
 
             Main.EntitySpriteDraw(bladeTexture, Projectile.Center + bladeOffset - Main.screenPosition, frame, Color.White, Projectile.rotation + MathHelper.PiOver2, origin, Projectile.scale, SpriteEffects.None, 0);
             Main.EntitySpriteDraw(hiltTexture, Projectile.Center - Main.screenPosition, null, lightColor, Projectile.rotation + MathHelper.PiOver2, hiltTexture.Size() * 0.5f, Projectile.scale, SpriteEffects.None, 0);

@@ -186,7 +186,7 @@ namespace CalamityMod.NPCs.SupremeCalamitas
 
             // Increase DR if the target leaves SCal's arena.
             NPC.Calamity().DR = NormalBrothersDR;
-            if (Main.npc[CalamityGlobalNPC.SCal].ModNPC<SupremeCalamitas>().IsTargetOutsideOfArena)
+            if (Main.npc[CalamityGlobalNPC.SCal].ModNPC<SupremeCalamitas>().protectionBoost)
                 NPC.Calamity().DR = SupremeCalamitas.enragedDR;
 
             float totalLifeRatio = NPC.life / (float)NPC.lifeMax;
@@ -264,7 +264,7 @@ namespace CalamityMod.NPCs.SupremeCalamitas
                         {
                             for (int i = 0; i < 6; i++)
                             {
-                                Dust cataclysmdust = Dust.NewDustPerfect(NPC.Center + Main.rand.NextVector2Circular(NPC.width, NPC.height) - NPC.velocity * 0.5f, 66, -NPC.velocity * Main.rand.NextFloat(0.1f, 0.6f));
+                                Dust cataclysmdust = Dust.NewDustPerfect(NPC.Center + Main.rand.NextVector2Circular(NPC.width, NPC.height) - NPC.velocity * 0.5f, DustID.RainbowTorch, -NPC.velocity * Main.rand.NextFloat(0.1f, 0.6f));
                                 cataclysmdust.noGravity = true;
                                 cataclysmdust.scale = Main.rand.NextFloat(0.7f, 1.3f);
                                 cataclysmdust.color = Color.Lerp(Color.Red, Color.Magenta, 0.5f);
@@ -375,7 +375,7 @@ namespace CalamityMod.NPCs.SupremeCalamitas
                 for (int i = 0; i < 7; i++)
                 {
                     Vector2 vel = new Vector2(14, 14).RotatedByRandom(100) * Main.rand.NextFloat(0.1f, 2.5f);
-                    Dust cataclysmdust = Dust.NewDustPerfect(NPC.Center + vel * 2, 279, vel);
+                    Dust cataclysmdust = Dust.NewDustPerfect(NPC.Center + vel * 2, DustID.SilverFlame, vel);
                     cataclysmdust.noGravity = true;
                     cataclysmdust.scale = Main.rand.NextFloat(1.2f, 1.8f);
                     cataclysmdust.color = Color.Red;
@@ -552,7 +552,7 @@ namespace CalamityMod.NPCs.SupremeCalamitas
                             for (int i = 0; i < 45; i++)
                             {
                                 Vector2 vel = new Vector2(14, 14).RotatedByRandom(100) * Main.rand.NextFloat(0.1f, 2.5f);
-                                Dust catastrophedust = Dust.NewDustPerfect(NPC.Center + vel * 2, 279, vel);
+                                Dust catastrophedust = Dust.NewDustPerfect(NPC.Center + vel * 2, DustID.SilverFlame, vel);
                                 catastrophedust.noGravity = true;
                                 catastrophedust.scale = Main.rand.NextFloat(1.2f, 1.8f);
                                 catastrophedust.color = Color.DeepSkyBlue;

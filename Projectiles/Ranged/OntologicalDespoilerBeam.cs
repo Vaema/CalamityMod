@@ -4,6 +4,7 @@ using CalamityMod.Particles;
 using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.Audio;
+using Terraria.ID;
 using Terraria.ModLoader;
 
 namespace CalamityMod.Projectiles.Ranged
@@ -97,7 +98,7 @@ namespace CalamityMod.Projectiles.Ranged
                 dust.noGravity = true;
                 dust.scale = Main.rand.NextFloat(2.15f, 3.45f) * dustPower;
                 dust.color = baseColor;
-                Dust dust3 = Dust.NewDustPerfect(Projectile.Center, 278, (Projectile.velocity * 25 * (dustPower * dustPower)).RotatedByRandom(1f - dustPower * dustPower) * Main.rand.NextFloat(0.9f, 1f));
+                Dust dust3 = Dust.NewDustPerfect(Projectile.Center, DustID.FireworksRGB, (Projectile.velocity * 25 * (dustPower * dustPower)).RotatedByRandom(1f - dustPower * dustPower) * Main.rand.NextFloat(0.9f, 1f));
                 dust3.noGravity = true;
                 dust3.scale = Main.rand.NextFloat(1.35f, 1.75f) * dustPower;
                 dust3.color = baseColor;

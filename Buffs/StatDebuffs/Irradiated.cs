@@ -2,7 +2,6 @@
 using CalamityMod.Projectiles.Magic;
 using Terraria;
 using Terraria.ID;
-using Terraria.Localization;
 using Terraria.ModLoader;
 
 namespace CalamityMod.Buffs.StatDebuffs

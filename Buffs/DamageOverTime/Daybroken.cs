@@ -1,5 +1,4 @@
 ﻿using CalamityMod.DataStructures;
-using CalamityMod.Projectiles.Boss;
 using Terraria;
 using Terraria.DataStructures;
 using Terraria.ID;

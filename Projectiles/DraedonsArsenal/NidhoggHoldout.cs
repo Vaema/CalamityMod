@@ -78,7 +78,7 @@ namespace CalamityMod.Projectiles.DraedonsArsenal
                 return;
             }
 
-            if (HeldItem.type != Owner.ActiveItem().type)
+            if (HeldItem.type != Owner.HeldItem.type)
             {
                 StopSounds();
                 Projectile.Kill();
@@ -147,12 +147,15 @@ namespace CalamityMod.Projectiles.DraedonsArsenal
                 Owner.AddCooldown(ArsenalPower.ID, 540);
 
                 Vector2 shootVelocity = Projectile.velocity.SafeNormalize(Vector2.UnitY);
-                int chargeDamage = (int)(Projectile.damage * 33);
-                Projectile.NewProjectileDirect(Projectile.GetSource_FromThis(), GunTipPosition, shootVelocity * 6, ModContent.ProjectileType<NidhoggRailgunBigShot>(), chargeDamage, 0, Projectile.owner);
-                
+                if (Main.myPlayer == Projectile.owner)
+                {
+                    int chargeDamage = Projectile.damage * 33;
+                    Projectile.NewProjectileDirect(Projectile.GetSource_FromThis(), GunTipPosition, shootVelocity * 6, ModContent.ProjectileType<NidhoggRailgunBigShot>(), chargeDamage, 0, Projectile.owner);
+                }
+
                 SoundStyle sound = new("CalamityMod/Sounds/Item/NidhoggBigShot");
                 for (int i = 0; i < 2; i++)
-                    SoundEngine.PlaySound(sound with { Volume = 0.9f, MaxInstances = 2, Pitch = (i == 0 ? -0.4f : 0) }, Projectile.Center);
+                    SoundEngine.PlaySound(sound with { Volume = 0.9f, MaxInstances = 2, Pitch = i == 0 ? -0.4f : 0 }, Projectile.Center);
                 Owner.SetScreenshake(8f);
 
                 for (int i = 0; i < 40; i++)
@@ -178,7 +181,8 @@ namespace CalamityMod.Projectiles.DraedonsArsenal
                 SoundEngine.PlaySound(sound with { Volume = 0.6f, Pitch = Main.rand.NextFloat(0.5f, 0.65f) }, Projectile.Center);
 
                 Vector2 shootVelocity = Projectile.velocity.SafeNormalize(Vector2.UnitX) * 6f;
-                Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center, shootVelocity, ModContent.ProjectileType<NidhoggRailgunBlast>(), Projectile.damage, 0, Projectile.owner);
+                if (Main.myPlayer == Projectile.owner)
+                    Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center, shootVelocity, ModContent.ProjectileType<NidhoggRailgunBlast>(), Projectile.damage, 0, Projectile.owner);
 
                 for (int i = 0; i < 9; i++)
                 {

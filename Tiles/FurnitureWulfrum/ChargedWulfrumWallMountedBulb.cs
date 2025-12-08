@@ -1,22 +1,21 @@
-﻿using System;
-using CalamityMod.Items.Placeables.DraedonStructures.CagedLights;
+﻿using CalamityMod.Sounds;
+using CalamityMod.Systems;
 using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
+using ReLogic.Content;
 using Terraria;
-using Terraria.ID;
-using Terraria.Localization;
-using Terraria.ModLoader;
 using Terraria.DataStructures;
 using Terraria.Enums;
+using Terraria.ID;
+using Terraria.ModLoader;
 using Terraria.ObjectData;
-using Terraria.Audio;
-using CalamityMod.Systems;
-using Microsoft.Xna.Framework.Graphics;
-using CalamityMod.Sounds;
 
 namespace CalamityMod.Tiles.FurnitureWulfrum
 {
     public class ChargedWulfrumWallMountedBulb : ModTile
     {
+        public Asset<Texture2D> GlowTexture;
+
         public override void SetStaticDefaults()
         {
             Main.tileLighted[Type] = true;
@@ -25,7 +24,7 @@ namespace CalamityMod.Tiles.FurnitureWulfrum
             Main.tileObsidianKill[Type] = false;
 
             HitSound = CommonCalamitySounds.PlatingMine;
-            DustType = 299;
+            DustType = DustID.KryptonMoss;
 
             AddToArray(ref TileID.Sets.RoomNeeds.CountsAsTorch);
             AddMapEntry(new Color(48, 201, 214), CalamityUtils.GetItemName<Items.Placeables.FurnitureWulfrum.ChargedWulfrumWallMountedBulb>());
@@ -33,7 +32,7 @@ namespace CalamityMod.Tiles.FurnitureWulfrum
 
             // Attach to ground
             TileObjectData.newTile.CopyFrom(TileObjectData.Style2x2);
-            TileObjectData.newTile.StyleHorizontal = true; 
+            TileObjectData.newTile.StyleHorizontal = true;
             TileObjectData.newTile.StyleMultiplier = 10; // total 10 frames, all should be same "itemStyle"
             TileObjectData.newTile.StyleWrapLimit = 2; // only 1 placement alternative per row
             TileObjectData.newTile.Origin = new Point16(0, 1);
@@ -98,7 +97,8 @@ namespace CalamityMod.Tiles.FurnitureWulfrum
             if (Main.tile[i, j].IsTileActuallyInvisible())
                 return;
 
-            Texture2D tex = ModContent.Request<Texture2D>("CalamityMod/Tiles/FurnitureWulfrum/ChargedWulfrumWallMountedBulb_Glow").Value;
+            GlowTexture ??= ModContent.Request<Texture2D>("CalamityMod/Tiles/FurnitureWulfrum/ChargedWulfrumWallMountedBulb_Glow");
+            Texture2D tex = GlowTexture.Value;
 
             Tile tile = Main.tile[i, j];
             Rectangle frame = new Rectangle(tile.TileFrameX, tile.TileFrameY, 16, 16);

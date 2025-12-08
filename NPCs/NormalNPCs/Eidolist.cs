@@ -312,7 +312,9 @@ namespace CalamityMod.NPCs.NormalNPCs
 
         public override float SpawnChance(NPCSpawnInfo spawnInfo)
         {
-            if (!spawnInfo.Player.InAbyss())
+            // Waffles% stipulation: Eidolists are accessible by beating Cal Clone, even without beating WoF
+            bool hardmodeOrCalClone = Main.hardMode || DownedBossSystem.downedCalamitasClone;
+            if (!hardmodeOrCalClone || !spawnInfo.Player.InAbyss())
                 return 0f;
 
             // Keep this as a separate if check, because it's a loop and we don't want to be checking it constantly.

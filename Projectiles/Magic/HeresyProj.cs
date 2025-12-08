@@ -67,7 +67,7 @@ namespace CalamityMod.Projectiles.Magic
 
             // If the owner has sufficient mana, consume it.
             // Otherwise, delete the book and don't bother summoning anything.
-            if (!Owner.CheckMana(Owner.ActiveItem().mana, true, false))
+            if (!Owner.CheckMana(Owner.HeldItem.mana, true, false))
             {
                 Projectile.Kill();
                 return;

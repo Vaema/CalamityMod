@@ -1,11 +1,9 @@
-﻿using CalamityMod.Items.Placeables.Banners;
-using CalamityMod.NPCs.Abyss;
+﻿using CalamityMod.NPCs.Abyss;
 using CalamityMod.NPCs.AcidRain;
-using CalamityMod.NPCs.AquaticScourge;
 using CalamityMod.NPCs.Astral;
 using CalamityMod.NPCs.Crags;
+using CalamityMod.NPCs.Deconstructors;
 using CalamityMod.NPCs.DraedonLabThings;
-using CalamityMod.NPCs.Leviathan;
 using CalamityMod.NPCs.NormalNPCs;
 using CalamityMod.NPCs.PlagueEnemies;
 using CalamityMod.NPCs.SulphurousSea;
@@ -306,7 +304,7 @@ namespace CalamityMod.Tiles
                     npc = NPCType<Horse>();
                     break;
                 case 77:
-                    npc = NPCType<ArmoredDiggerHead>();
+                    npc = NPCType<Burrower>();
                     break;
                 case 78:
                     npc = NPCType<Melter>();
@@ -518,9 +516,9 @@ namespace CalamityMod.Tiles
                 case 147:
                     npc = NPCType<Searslug>();
                     break;
-                /* case 148:
-                    npc = NPCType<Shoreskipper>(); // NOT YET IMPLEMENTED. Banner sprite is already on the mastersheet and associated with this case/position.
-                    break; */
+                case 148:
+                    npc = NPCType<Shoreskipper>();
+                    break;
                 case 149:
                     npc = NPCType<Slugbun>();
                     break;

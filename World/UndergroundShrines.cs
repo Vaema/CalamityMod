@@ -1,10 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using CalamityMod.Items.Accessories;
 using CalamityMod.Items.Mounts;
 using CalamityMod.Items.Placeables.Furniture;
-using CalamityMod.Items.Placeables.SunkenSea;
 using CalamityMod.Items.Potions;
 using CalamityMod.Items.Potions.Alcohol;
 using CalamityMod.Items.SummonItems;
@@ -12,10 +10,7 @@ using CalamityMod.Items.Weapons.Magic;
 using CalamityMod.Items.Weapons.Melee;
 using CalamityMod.Schematics;
 using CalamityMod.Tiles;
-using CalamityMod.Tiles.Crags;
-using CalamityMod.Tiles.DraedonStructures;
 using CalamityMod.Tiles.FurnitureVoid;
-using CalamityMod.Tiles.SunkenSea;
 using CalamityMod.Walls;
 using Microsoft.Xna.Framework;
 using Terraria;
@@ -941,7 +936,7 @@ namespace CalamityMod.World
                     break;
                 }
             } while (tries <= 100000);
-            CalamityMod.Instance.Logger.Debug("Rox Shrine failed to generate");
+            CalamityMod.Log.Debug("Rox Shrine failed to generate");
         }
         #endregion
 

@@ -36,6 +36,14 @@ BrimstoneTargetRay.DisplayName: Brimstone Target Ray
 BrimstoneWave.DisplayName: Brimstone Flame Skull
 BrokenApolloLens.DisplayName: Lens
 BrokenArtemisLens.DisplayName: Lens
+BurningBolt.DisplayName: Burning Bolt
+BurningFireblast.DisplayName: Burning Fireblast
+BurningGigablast.DisplayName: Burning Gigablast
+CalamitousDart.DisplayName: Calamitous Dart
+CalamitousExplosion.DisplayName: Calamitous Explosion
+CalamitousFireball.DisplayName: Calamitous Fireball
+CataclysmicFlame.DisplayName: Cataclysmic Flame
+CatastrophicCinder.DisplayName: Catastrophic Cinder
 CrimulanSpike.DisplayName: Crimulan Spike
 CursedFire.DisplayName: Eye Fire
 DarkEnergyBall.DisplayName: Dark Energy
@@ -57,7 +65,6 @@ DoGLaserWallsBigBeam.DisplayName: Hyperdeath Rift Ripper
 DoGP1EndPortal.DisplayName: Portal
 DoGRiftCrack.DisplayName: DoG Distortion Crack
 DoGTeleportRift.DisplayName: DoG Distortion Rift
-DoGWingdings.DisplayName: Ramblings of Wing DoGster
 DraedonSummonLaser.DisplayName: Giant Fuck-off Deathray of Doom
 DyingSun.DisplayName: Dying Sun
 EssenceDust.DisplayName: Cosmic Dust

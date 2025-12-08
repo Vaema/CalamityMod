@@ -1,8 +1,5 @@
-﻿
-using System.Collections.Generic;
-using CalamityMod.Dusts;
+﻿using CalamityMod.Dusts;
 using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Graphics;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
@@ -30,7 +27,7 @@ namespace CalamityMod.Tiles.Astral
             TileID.Sets.CanBeDugByShovel[Type] = true;
 
 
-            this.RegisterUniversalMerge(ModContent.TileType<AstralDirt>(), "CalamityMod/Tiles/Merges/AstralDirtMerge");
+            this.RegisterBlendMergeWith(ModContent.TileType<AstralDirt>());
         }
 
         public override void NumDust(int i, int j, bool fail, ref int num)

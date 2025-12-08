@@ -66,7 +66,7 @@ namespace CalamityMod.Projectiles.Melee
             {
                 for (int i = 0; i < 20; i++)
                 {
-                    Dust dust = Dust.NewDustPerfect(Projectile.Center, 278, ((targeted.Center - Projectile.Center).SafeNormalize(Vector2.UnitX) * 15).RotatedByRandom(0.4f) * Main.rand.NextFloat(0.2f, 1f));
+                    Dust dust = Dust.NewDustPerfect(Projectile.Center, DustID.FireworksRGB, ((targeted.Center - Projectile.Center).SafeNormalize(Vector2.UnitX) * 15).RotatedByRandom(0.4f) * Main.rand.NextFloat(0.2f, 1f));
                     dust.noGravity = true;
                     dust.scale = Main.rand.NextFloat(0.5f, 1.2f);
                     dust.color = Main.rand.NextBool() ? Color.IndianRed : Color.Red;
@@ -77,7 +77,7 @@ namespace CalamityMod.Projectiles.Melee
             {
                 Vector2 offset = new Vector2(7, 0).RotatedByRandom(MathHelper.ToRadians(360f));
                 Vector2 velOffset = new Vector2(3, 0).RotatedBy(offset.ToRotation());
-                Dust dust = Dust.NewDustPerfect(Projectile.Center + offset, 267, new Vector2(Projectile.velocity.X * 0.2f + velOffset.X, Projectile.velocity.Y * 0.2f + velOffset.Y), 0, new Color(255, 245, 198), 1f);
+                Dust dust = Dust.NewDustPerfect(Projectile.Center + offset, DustID.RainbowMk2, new Vector2(Projectile.velocity.X * 0.2f + velOffset.X, Projectile.velocity.Y * 0.2f + velOffset.Y), 0, new Color(255, 245, 198), 1f);
                 dust.noGravity = true;
                 dust.color = Color.DarkRed;
             }

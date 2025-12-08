@@ -1,5 +1,4 @@
 using CalamityMod.Buffs.StatBuffs;
-using CalamityMod.CalPlayer;
 using CalamityMod.Items.Materials;
 using Terraria;
 using Terraria.ID;

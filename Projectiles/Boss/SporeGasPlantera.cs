@@ -1,5 +1,4 @@
 ﻿using System.IO;
-using CalamityMod.World;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria;
@@ -18,12 +17,6 @@ namespace CalamityMod.Projectiles.Boss
         {
             ProjectileID.Sets.TrailCacheLength[Type] = 2;
             ProjectileID.Sets.TrailingMode[Type] = 0;
-
-            if (!Main.dedServ)
-            {
-                Main.instance.LoadProjectile(ProjectileID.SporeGas2);
-                Main.instance.LoadProjectile(ProjectileID.SporeGas3);
-            }
         }
 
         public override void SetDefaults()
@@ -94,9 +87,11 @@ namespace CalamityMod.Projectiles.Boss
                 case 0:
                     break;
                 case 1:
+                    Main.instance.LoadProjectile(ProjectileID.SporeGas2);
                     texture = TextureAssets.Projectile[ProjectileID.SporeGas2].Value;
                     break;
                 case 2:
+                    Main.instance.LoadProjectile(ProjectileID.SporeGas3);
                     texture = TextureAssets.Projectile[ProjectileID.SporeGas3].Value;
                     break;
                 default:

@@ -1,5 +1,4 @@
-﻿using CalamityMod.NPCs.Crags;
-using CalamityMod.NPCs.Other;
+﻿using CalamityMod.NPCs.Other;
 using CalamityMod.Particles;
 using CalamityMod.Rarities;
 using Microsoft.Xna.Framework;

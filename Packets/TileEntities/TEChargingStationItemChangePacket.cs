@@ -1,18 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.IO;
 using CalamityMod.TileEntities;
 using Terraria;
-using Terraria.DataStructures;
-using Terraria.ID;
 using Terraria.ModLoader.IO;
 
 namespace CalamityMod.Packets
 {
-    public sealed class TEChargingStationItemChangePacket : CalamityPacket
+    internal sealed class TEChargingStationItemChangePacket : CalamityPacket
     {
         public static TEChargingStationItemChangePacket Instance { get; private set; }
 

@@ -1,6 +1,5 @@
 ﻿using CalamityMod.Cooldowns;
 using CalamityMod.Items.Materials;
-using CalamityMod.Projectiles.DraedonsArsenal;
 using CalamityMod.Projectiles.Melee;
 using Terraria;
 using Terraria.ID;

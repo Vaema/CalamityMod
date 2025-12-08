@@ -1,16 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using CalamityMod.Enums;
 using CalamityMod.Items.Accessories.Vanity;
 using CalamityMod.Items.Tools;
 using CalamityMod.Items.VanillaArmorChanges;
 using CalamityMod.Items.Weapons.Melee;
 using CalamityMod.Tiles.Abyss;
-using CalamityMod.Tiles.Astral;
-using CalamityMod.Tiles.DraedonStructures;
-using CalamityMod.Tiles.DraedonSummoner;
-using CalamityMod.Tiles.Furniture.CraftingStations;
 using CalamityMod.Tiles.SunkenSea;
 using CalamityMod.Tiles.SunkenSea.Ambient;
 using Microsoft.Xna.Framework;
@@ -58,7 +52,7 @@ namespace CalamityMod.Tiles
             // All trees have a 33% chance to drop extra fruit when using Feller of Evergreens
             Vector2 worldPosition = new Vector2(x, y).ToWorldCoordinates();
             Player nearestPlayer = Main.player[Player.FindClosest(worldPosition, 16, 16)];
-            if (nearestPlayer.active && nearestPlayer.ActiveItem().type == ItemType<FellerofEvergreens>() && WorldGen.genRand.NextBool(3))
+            if (nearestPlayer.active && nearestPlayer.HeldItem.type == ItemType<FellerofEvergreens>() && WorldGen.genRand.NextBool(3))
             {
                 int treeDropItemType = 0;
                 switch (treeType)

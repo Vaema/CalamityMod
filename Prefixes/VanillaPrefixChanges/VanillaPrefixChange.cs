@@ -7,7 +7,7 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.Prefixes.VanillaPrefixChanges
 {
-    public abstract class VanillaPrefixChange
+    public abstract class VanillaPrefixChange : ILoadable
     {
         public abstract int TargetPrefix { get; }
         public abstract string TargetTooltipName { get; }
@@ -75,6 +75,16 @@ namespace CalamityMod.Prefixes.VanillaPrefixChanges
         public static string GetMoveSpeedString(float speedP)
         {
             return GetStatTooltip("SpeedStat").Format(speedP.ToPercent());
+        }
+
+        public void Load(Mod mod)
+        {
+            VanillaPrefixChangeSystem.PrefixChanges[TargetPrefix] = this;
+        }
+
+        public void Unload()
+        {
+            // Nothing to do here
         }
     }
 }

@@ -1,4 +1,5 @@
 ﻿using CalamityMod.Dusts;
+using CalamityMod.World;
 using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.Audio;
@@ -11,6 +12,9 @@ namespace CalamityMod.Projectiles.Typeless
     {
         public new string LocalizationCategory => "Projectiles.Typeless";
         public override string Texture => "CalamityMod/Items/Weapons/Typeless/StarStruckWater";
+
+        public static int ConversionType;
+        public override void SetStaticDefaults() => ConversionType = ModContent.GetInstance<AstralConversion>().Type;
 
         public override void SetDefaults()
         {
@@ -46,7 +50,12 @@ namespace CalamityMod.Projectiles.Typeless
                     dust.velocity.X *= 1.5f;
                     dust.velocity *= 3f;
                 }
-                Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center, Vector2.Zero, ModContent.ProjectileType<WaterConvertor>(), 0, 0f, Projectile.owner, 4f);
+
+                if (Main.myPlayer == Projectile.owner)
+                {
+                    Point tileCenter = Projectile.Center.ToTileCoordinates();
+                    WorldGen.Convert(tileCenter.X, tileCenter.Y, ConversionType);
+                }
             }
         }
 

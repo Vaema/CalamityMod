@@ -1,18 +1,24 @@
-﻿using Terraria;
+﻿using CalamityMod.DataStructures;
+using Terraria;
 using Terraria.ID;
-using Terraria.Localization;
 using Terraria.ModLoader;
 
 namespace CalamityMod.Buffs.StatDebuffs
 {
     public class WhisperingDeath : ModBuff
     {
+        // Whispering Death does not deal DoT, but is classified as a sickness debuff.
+        public static DebuffData debuffData = new DebuffData()
+        {
+            SicknessDebuffScaling = 1
+        };
         public override void SetStaticDefaults()
         {
             Main.debuff[Type] = true;
             Main.pvpBuff[Type] = true;
             Main.buffNoSave[Type] = true;
             BuffID.Sets.LongerExpertDebuff[Type] = true;
+            BuffDatasets.DebuffDataset[Type] = debuffData;
         }
 
         public override void Update(Player player, ref int buffIndex)

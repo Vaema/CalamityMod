@@ -35,7 +35,7 @@ namespace CalamityMod.Items.Weapons.Summon
 
             Item.buffType = ModContent.BuffType<BelladonnaSpiritBuff>();
             Item.shoot = ModContent.ProjectileType<BelladonnaSpirit>();
-            Item.useAnimation = Item.useTime = 35;
+            Item.useAnimation = Item.useTime = 36;
 
             Item.DamageType = DamageClass.Summon;
             Item.useStyle = ItemUseStyleID.Swing;

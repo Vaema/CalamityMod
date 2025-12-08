@@ -1,6 +1,4 @@
 ﻿using System;
-using CalamityMod.Buffs.DamageOverTime;
-using CalamityMod.Dusts;
 using CalamityMod.Particles;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
@@ -38,7 +36,7 @@ namespace CalamityMod.Projectiles.Boss
             {
                 Vector2 cinderPos = Projectile.Center + Main.rand.NextVector2Circular(60f, 60f) * Utils.Remap(Time, 0f, Lifetime, 0.5f, 1f);
                 float cinderSize = Utils.GetLerpValue(6f, 12f, Time, true);
-                Dust cinder = Dust.NewDustDirect(cinderPos, 4, 4, 75, Projectile.velocity.X * 0.25f, Projectile.velocity.Y * 0.25f);
+                Dust cinder = Dust.NewDustDirect(cinderPos, 4, 4, DustID.CursedTorch, Projectile.velocity.X * 0.25f, Projectile.velocity.Y * 0.25f);
                 if (Main.rand.NextBool(3))
                 {
                     cinder.scale *= 2f;

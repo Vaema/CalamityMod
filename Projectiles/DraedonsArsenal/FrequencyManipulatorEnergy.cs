@@ -62,11 +62,11 @@ namespace CalamityMod.Projectiles.DraedonsArsenal
                     float pulse = (float)Math.Sin(Time / 110f + MathHelper.TwoPi / 3f * i);
                     Vector2 offset = angle.ToRotationVector2().RotatedBy(MathHelper.TwoPi / 3f * i) * pulse * 6f;
 
-                    Dust dust = Dust.NewDustPerfect(Projectile.Center + offset, 234);
+                    Dust dust = Dust.NewDustPerfect(Projectile.Center + offset, DustID.BoneTorch);
                     dust.velocity = Vector2.Zero;
                     dust.noGravity = true;
 
-                    dust = Dust.NewDustPerfect(Projectile.Center + offset, 234);
+                    dust = Dust.NewDustPerfect(Projectile.Center + offset, DustID.BoneTorch);
                     dust.velocity = Vector2.Zero;
                     dust.noGravity = true;
                 }

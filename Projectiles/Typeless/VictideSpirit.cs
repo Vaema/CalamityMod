@@ -241,12 +241,12 @@ namespace CalamityMod.Projectiles.Typeless
             #endregion
         }
 
-        public float JetstreamWidthFunction(float completionRatio) => Utils.GetLerpValue(1f, 0.8f, completionRatio, true) * 3f;
-        public float SpiritWidthFunction(float completionRatio) => MathF.Min(MathHelper.SmoothStep(64f, 8f, completionRatio), Utils.GetLerpValue(0f, 0.15f, completionRatio, true) * 60f);
+        public float JetstreamWidthFunction(float completionRatio, Vector2 vertexPos) => Utils.GetLerpValue(1f, 0.8f, completionRatio, true) * 3f;
+        public float SpiritWidthFunction(float completionRatio, Vector2 vertexPos) => MathF.Min(MathHelper.SmoothStep(64f, 8f, completionRatio), Utils.GetLerpValue(0f, 0.15f, completionRatio, true) * 60f);
 
-        public Color InnerJetstreamColorFunction(float completionRatio) => Color.Lerp(Color.CornflowerBlue, new Color(169, 100, 237), MathF.Pow(completionRatio, 2.5f)) * Utils.GetLerpValue(1f, 0.6f, completionRatio, true) * 0.5f;
-        public Color OuterJetstreamColorFunction(float completionRatio) => Color.Lerp(Color.CornflowerBlue, new Color(100, 237, 237), MathF.Pow(completionRatio, 2.5f)) * Utils.GetLerpValue(1f, 0.6f, completionRatio, true) * 0.2f;
-        public Color SpiritColorFunction(float completionRatio) => Color.Lerp(Color.Lerp(Color.White, Color.Cyan, 0.4f + completionRatio), Color.RoyalBlue, completionRatio) * Utils.GetLerpValue(0.8f, 0.54f, completionRatio, true);
+        public Color InnerJetstreamColorFunction(float completionRatio, Vector2 vertexPos) => Color.Lerp(Color.CornflowerBlue, new Color(169, 100, 237), MathF.Pow(completionRatio, 2.5f)) * Utils.GetLerpValue(1f, 0.6f, completionRatio, true) * 0.5f;
+        public Color OuterJetstreamColorFunction(float completionRatio, Vector2 vertexPos) => Color.Lerp(Color.CornflowerBlue, new Color(100, 237, 237), MathF.Pow(completionRatio, 2.5f)) * Utils.GetLerpValue(1f, 0.6f, completionRatio, true) * 0.2f;
+        public Color SpiritColorFunction(float completionRatio, Vector2 vertexPos) => Color.Lerp(Color.Lerp(Color.White, Color.Cyan, 0.4f + completionRatio), Color.RoyalBlue, completionRatio) * Utils.GetLerpValue(0.8f, 0.54f, completionRatio, true);
 
         public override bool PreDraw(ref Color lightColor)
         {
@@ -304,6 +304,7 @@ namespace CalamityMod.Projectiles.Typeless
         {
             Owner.velocity *= 0.8f;
             Owner.fullRotation = 0f;
+            Owner.fallStart = (int)(Owner.position.Y / 16f); // Triangle getting hit with the wrath of 2000 fall damage
 
             SoundEngine.PlaySound(SoundID.Drown, Projectile.Center);
             for (int i = 0; i < 3; i++)

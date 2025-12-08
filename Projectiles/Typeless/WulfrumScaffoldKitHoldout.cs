@@ -220,7 +220,7 @@ namespace CalamityMod.Projectiles.Typeless
             for (int i = 0; i < 3; i++)
             {
                 Vector2 dustpos = pos.ToWorldCoordinates();
-                Dust.NewDustPerfect(dustpos, 83, Main.rand.NextVector2Circular(3f, 3f), Scale: Main.rand.NextFloat(0.4f, 0.7f));
+                Dust.NewDustPerfect(dustpos, DustID.Tungsten, Main.rand.NextVector2Circular(3f, 3f), Scale: Main.rand.NextFloat(0.4f, 0.7f));
             }
 
             TemporaryTile tile = new TemporaryTile(pos, this, WulfrumScaffoldKit.TileTime);
@@ -232,7 +232,7 @@ namespace CalamityMod.Projectiles.Typeless
             if (tile.timeleft < WulfrumScaffoldKit.TileTime * 0.1f && Main.rand.NextBool(10))
             {
                 Vector2 dustpos = tile.position.ToWorldCoordinates();
-                Dust.NewDustPerfect(dustpos, 226, Main.rand.NextVector2Circular(4f, 4f), Scale: Main.rand.NextFloat(0.4f, 1f));
+                Dust.NewDustPerfect(dustpos, DustID.Electric, Main.rand.NextVector2Circular(4f, 4f), Scale: Main.rand.NextFloat(0.4f, 1f));
             }
         }
     }

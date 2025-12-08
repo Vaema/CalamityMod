@@ -1,11 +1,7 @@
 ﻿using System;
-using CalamityMod.Buffs.DamageOverTime;
-using CalamityMod.Items.Weapons.Magic;
 using CalamityMod.Projectiles.DraedonsArsenal;
-using CalamityMod.Sounds;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using ReLogic.Content;
 using Terraria;
 using Terraria.Audio;
 using Terraria.ID;
@@ -104,8 +100,8 @@ namespace CalamityMod.Projectiles.Magic
         }
 
         // Standard trail drawing logic
-        private float WidthFunction(float completionRatio) => MathHelper.Lerp(0f, MathHelper.Lerp(Projectile.scale * 132f, 0f, completionRatio), MathF.Pow(completionRatio, 1f / 2.5f));
-        private Color ColorFunction(float completionRatio)
+        private float WidthFunction(float completionRatio, Vector2 vertexPos) => MathHelper.Lerp(0f, MathHelper.Lerp(Projectile.scale * 132f, 0f, completionRatio), MathF.Pow(completionRatio, 1f / 2.5f));
+        private Color ColorFunction(float completionRatio, Vector2 vertexPos)
         {
             float offsetTime = Main.GlobalTimeWrappedHourly;
             float fadeOpacity = Utils.GetLerpValue(0.5f, 0f, completionRatio, true) * Projectile.Opacity;
@@ -115,7 +111,7 @@ namespace CalamityMod.Projectiles.Magic
         public override bool PreDraw(ref Color lightColor)
         {
             GameShaders.Misc["CalamityMod:TrailStreak"].SetShaderTexture(ModContent.Request<Texture2D>("CalamityMod/ExtraTextures/Trails/SylvestaffStreak"));
-            PrimitiveRenderer.RenderTrail(Projectile.oldPos, new PrimitiveSettings(WidthFunction, ColorFunction, (_) => Projectile.Size * 0.5f, pixelate: false, shader: GameShaders.Misc["CalamityMod:TrailStreak"]), 340);
+            PrimitiveRenderer.RenderTrail(Projectile.oldPos, new PrimitiveSettings(WidthFunction, ColorFunction, (_,_) => Projectile.Size * 0.5f, pixelate: false, shader: GameShaders.Misc["CalamityMod:TrailStreak"]), 340);
 
 
             Texture2D texture = TextureAssets.Projectile[Type].Value;
@@ -129,7 +125,7 @@ namespace CalamityMod.Projectiles.Magic
 
         public override void OnKill(int timeLeft)
         {
-            SoundEngine.PlaySound(new("CalamityMod/Sounds/Item/UnstableCastersGauntlet/IgnisSigilHit") { Volume = 0.7f, PitchVariance = 0.1f }, Projectile.Center);
+            SoundEngine.PlaySound(new SoundStyle("CalamityMod/Sounds/Item/UnstableCastersGauntlet/IgnisSigilHit") { Volume = 0.7f, PitchVariance = 0.1f }, Projectile.Center);
 
             for (int i = 0; i < 40; i++)
             {

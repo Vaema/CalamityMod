@@ -1,5 +1,6 @@
 ﻿using Microsoft.Xna.Framework;
 using Terraria;
+using Terraria.ID;
 using Terraria.ModLoader;
 
 namespace CalamityMod.Walls
@@ -13,7 +14,7 @@ namespace CalamityMod.Walls
         public override void SetStaticDefaults()
         {
             Main.wallHouse[Type] = true;
-            DustType = 96;
+            DustType = DustID.BlueMoss;
             this.AddMapEntryWithWaterVisibility(new Color(0, 50, 50));
         }
 

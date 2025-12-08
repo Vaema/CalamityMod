@@ -1,8 +1,5 @@
-﻿using CalamityMod.Items.Materials;
-using CalamityMod.Items.Placeables.Crags;
-using CalamityMod.Items.Placeables.Ores;
+﻿using CalamityMod.Items.Placeables.Crags;
 using Terraria;
-using Terraria.ID;
 using Terraria.ModLoader;
 namespace CalamityMod.Items.Placeables.FurnitureAncient
 {

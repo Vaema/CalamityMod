@@ -1,9 +1,7 @@
-﻿using CalamityMod.Balancing;
-using CalamityMod.CalPlayer;
-using CalamityMod.Items.Potions.Alcohol;
-using CalamityMod.Projectiles.Magic;
+﻿using CalamityMod.CalPlayer;
 using Terraria;
 using Terraria.ID;
+using Terraria.Localization;
 using Terraria.ModLoader;
 
 namespace CalamityMod.Items.Accessories
@@ -12,7 +10,9 @@ namespace CalamityMod.Items.Accessories
     {
         public new string LocalizationCategory => "Items.Accessories";
 
+        public static float DamageBoost = 0.05f;
         public static int NimbusDamage => CalamityUtils.ScaleWithDifficulty(18);
+        public override LocalizedText Tooltip => base.Tooltip.WithFormatArgs(DamageBoost.ToPercent());
 
         public override void SetDefaults()
         {
@@ -21,6 +21,7 @@ namespace CalamityMod.Items.Accessories
             Item.value = CalamityGlobalItem.RarityLightRedBuyPrice;
             Item.rare = ItemRarityID.LightRed;
             Item.accessory = true;
+            Item.expert = true;
         }
 
         public override void UpdateAccessory(Player player, bool hideVisual)
@@ -29,7 +30,7 @@ namespace CalamityMod.Items.Accessories
             modPlayer.rBrain = true; // Handles shaderain cloud spawning on hit
             modPlayer.aBrain = true;
             player.brainOfConfusionItem = Item;
-            player.GetDamage<GenericDamageClass>() += 0.05f;
+            player.GetDamage<GenericDamageClass>() += DamageBoost;
         }
 
         public override void AddRecipes()

@@ -61,6 +61,9 @@ namespace CalamityMod.NPCs
             if (npc is null)
                 return;
 
+            if (npc.whoAmI < 0 || npc.whoAmI >= Main.maxNPCs)
+                return;
+
             var whoAmI = npc.whoAmI;
             DrawingMiracleBlight[whoAmI] = false;
             DrawingPolarity[whoAmI] = false;
@@ -70,6 +73,9 @@ namespace CalamityMod.NPCs
         public override bool PreAI(NPC npc)
         {
             if (npc is null)
+                return true;
+
+            if (npc.whoAmI < 0 || npc.whoAmI >= Main.maxNPCs)
                 return true;
 
             var whoAmI = npc.whoAmI;

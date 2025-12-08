@@ -1,24 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using CalamityMod.Dusts;
+﻿using System.Collections.Generic;
 using CalamityMod.Effects;
-using CalamityMod.Events;
-using CalamityMod.Graphics;
 using CalamityMod.Graphics.Primitives;
-using CalamityMod.Items.Placeables.FurnitureVoid;
 using CalamityMod.NPCs.DevourerofGods;
 using CalamityMod.Systems.Graphic;
-using CalamityMod.World;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using ReLogic.Content;
 using Terraria;
-using Terraria.Audio;
-using Terraria.GameContent;
 using Terraria.Graphics.Effects;
-using Terraria.Graphics.Shaders;
-using Terraria.ID;
 using Terraria.ModLoader;
 
 namespace CalamityMod.Skies
@@ -284,13 +272,13 @@ namespace CalamityMod.Skies
                 for (int j = 0; j < DistortionRiftArms[i].ArmPoints.Count; j++)
                     parallaxedPoints.Add((DistortionRiftArms[i].ArmPoints[j] - screenCenter) * depthFactor + screenCenter);
 
-                PrimitiveRenderer.RenderTrail(parallaxedPoints, new((completion) => MathHelper.Lerp(0f, DistortionRiftArms[i].MaxWidth, 1f - completion) * SkyIntensity, (_) => Color.White * 1f, null, false, useUnscaledMatrices: true), DistortionRiftArms[i].TotalPoints + 16);
+                PrimitiveRenderer.RenderTrail(parallaxedPoints, new((completion, _) => MathHelper.Lerp(0f, DistortionRiftArms[i].MaxWidth, 1f - completion) * SkyIntensity, (_, _) => Color.White * 1f, null, false, useUnscaledMatrices: true), DistortionRiftArms[i].TotalPoints + 16);
             }
         }
 
         private void DrawDistortionWinds(SpriteBatch spriteBatch)
         {
-            Effect shader = CalamityShaders.DoGDistortionWindsShader;
+            Effect shader = CalamityShaders.DoGDistortionWindsShader.Value;
             Texture2D windsTexture = ModContent.Request<Texture2D>("CalamityMod/ExtraTextures/GreyscaleGradients/Neurons2").Value;
             Texture2D highlightsTexture = ModContent.Request<Texture2D>("CalamityMod/ExtraTextures/GreyscaleGradients/SharpNoise").Value;
             Texture2D distortionTexture = ModContent.Request<Texture2D>("CalamityMod/ExtraTextures/GreyscaleGradients/MeltyNoise").Value;
@@ -329,7 +317,7 @@ namespace CalamityMod.Skies
 
         private void DrawRollingBackgroundFog(SpriteBatch spriteBatch)
         {
-            Effect shader = CalamityShaders.DoGBackgroundFogShader;
+            Effect shader = CalamityShaders.DoGBackgroundFogShader.Value;
             Texture2D cloudsTexture = ModContent.Request<Texture2D>("CalamityMod/ExtraTextures/GreyscaleGradients/RealisticClouds").Value;
             Texture2D erosionTexture = ModContent.Request<Texture2D>("CalamityMod/ExtraTextures/GreyscaleGradients/HarshNoise").Value;
 
@@ -365,7 +353,7 @@ namespace CalamityMod.Skies
             if (RealityCracks == null || RealityCracks.Count == 0)
                 return;
 
-            Effect shader = CalamityShaders.DoGRiftAuraShader;
+            Effect shader = CalamityShaders.DoGRiftAuraShader.Value;
             Texture2D riftAuraTexture = ModContent.Request<Texture2D>("CalamityMod/ExtraTextures/GreyscaleGradients/Smudges").Value;
             Texture2D distortionTexture = ModContent.Request<Texture2D>("CalamityMod/ExtraTextures/GreyscaleGradients/Swirls").Value;
 
@@ -399,7 +387,7 @@ namespace CalamityMod.Skies
             if (RealityCracks == null || RealityCracks.Count == 0)
                 return;
 
-            Effect shader = CalamityShaders.DoGRealityCrackShader;
+            Effect shader = CalamityShaders.DoGRealityCrackShader.Value;
             Texture2D cracksTexture = ModContent.Request<Texture2D>("CalamityMod/ExtraTextures/CrackedGlass_Glowing").Value;
 
             Vector2 screenSize = new(Main.screenWidth, Main.screenHeight);
@@ -432,15 +420,15 @@ namespace CalamityMod.Skies
 
             Vector2 screenSize = new(Main.screenWidth, Main.screenHeight);
 
-            metaballShader.Parameters["layerSize"]?.SetValue(distortionRiftContents.Size());
-            metaballShader.Parameters["screenSize"]?.SetValue(screenSize);
-            metaballShader.Parameters["layerOffset"]?.SetValue(Vector2.Zero);
-            metaballShader.Parameters["edgeColor"]?.SetValue(Color.Lerp(Color.Lerp(DoGSkyColor, Color.White, 0.6f), Color.Black, 0.15f).ToVector4());
+            metaballShader.Value.Parameters["layerSize"]?.SetValue(distortionRiftContents.Size());
+            metaballShader.Value.Parameters["screenSize"]?.SetValue(screenSize);
+            metaballShader.Value.Parameters["layerOffset"]?.SetValue(Vector2.Zero);
+            metaballShader.Value.Parameters["edgeColor"]?.SetValue(Color.Lerp(Color.Lerp(DoGSkyColor, Color.White, 0.6f), Color.Black, 0.15f).ToVector4());
 
             Main.instance.GraphicsDevice.Textures[1] = distortionRiftContents;
             Main.instance.GraphicsDevice.SamplerStates[1] = SamplerState.LinearWrap;
 
-            metaballShader.CurrentTechnique.Passes[0].Apply();
+            metaballShader.Value.CurrentTechnique.Passes[0].Apply();
             spriteBatch.Draw(distortionRift, new Rectangle(0, 0, Main.screenWidth, Main.screenHeight), Color.White);
         }
 

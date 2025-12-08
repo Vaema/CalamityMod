@@ -1,17 +1,21 @@
 ﻿using CalamityMod.Dusts.WaterSplash;
 using CalamityMod.Gores.WaterDroplet;
-using CalamityMod.Systems;
+using CalamityMod.Systems.Graphic.LiquidSystem;
 using Microsoft.Xna.Framework;
+using Terraria;
 using Terraria.Graphics;
 using Terraria.ModLoader;
 
 namespace CalamityMod.Waters
 {
-    public class UpperAbyssWaterflow : ModWaterfallStyle { }
-
-    public class UpperAbyssWater : CalamityModWaterStyle
+    public class UpperAbyssWaterflow : ModWaterfallStyle, IWaterfallStyleModifyColor
     {
-        public static CalamityModWaterStyle Instance { get; private set; }
+        public void ModifyColor(in Tile tile, int x, int y, ref VertexColors liquidColor) => CalamityUtils.ModifySulphuricWaterColor(x, y, ref liquidColor, false);
+    }
+
+    public class UpperAbyssWater : ModWaterStyle, IWaterStyleModifyColor
+    {
+        public static ModWaterStyle Instance { get; private set; }
         public static ModWaterfallStyle WaterfallStyle { get; private set; }
         public static int SplashDust { get; private set; }
         public static int DropletGore { get; private set; }
@@ -36,6 +40,6 @@ namespace CalamityMod.Waters
         public override int GetSplashDust() => SplashDust;
         public override int GetDropletGore() => DropletGore;
         public override Color BiomeHairColor() => new Color(9, 69, 82);
-        public override void DrawColor(int x, int y, ref VertexColors liquidColor, bool isSlope) => ILEditing.ILChanges.SelectSulphuricWaterColor(x, y, ref liquidColor, isSlope);
+        public void ModifyColor(in Tile tile, int x, int y, ref VertexColors liquidColor, bool isSlope) => CalamityUtils.ModifySulphuricWaterColor(x, y, ref liquidColor, isSlope);
     }
 }

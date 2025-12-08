@@ -1,4 +1,5 @@
-﻿using System.Runtime.CompilerServices;
+﻿using System;
+using System.Runtime.CompilerServices;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
@@ -9,13 +10,17 @@ namespace CalamityMod.Systems
 {
     public sealed partial class TileBlendMergeSystem : ModSystem
     {
+        [ThreadStatic]
+        private static BlendSidesReg TempBlendSidesReg;
+
         private static void TileFrame(int i, int j, int type)
         {
             if (!WorldGen.InWorld(i, j))
                 return;
 
             var tile = Main.tile[i, j];
-            tile.Get<TileBlendingRefLengthData>().Clear();
+            ref var drawData = ref tile.Get<TileSpecialDrawData>();
+            drawData.HasBlendMergeData = false;
             RemoveBlendingRefData(i, j);
 
             if (!tile.HasTile) // Is this even possible? But I'm doing this for sanity check anyways
@@ -43,8 +48,8 @@ namespace CalamityMod.Systems
                     }
                 }
 
-                tile.Get<TileBlendingRefLengthData>().SetLength(regCount);
                 SetBlendingRefData(i, j, tileBlendingRefs);
+                drawData.HasBlendMergeData = true;
             }
         }
 
@@ -328,7 +333,11 @@ namespace CalamityMod.Systems
 
         private static BlendSidesReg PopulateBlendSidesReg(int i, int j, int centerType)
         {
-            var reg = new BlendSidesReg();
+            // Prepare Registry
+            TempBlendSidesReg ??= [];
+            TempBlendSidesReg.Clear();
+
+            var reg = TempBlendSidesReg;
 
             int left = GetTileType(i - 1, j);
             int right = GetTileType(i + 1, j);

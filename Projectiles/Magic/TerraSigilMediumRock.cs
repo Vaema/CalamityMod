@@ -1,9 +1,6 @@
-﻿using System;
-using CalamityMod.Items.Weapons.Magic;
-using Microsoft.Xna.Framework;
+﻿using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.ModLoader;
-using Terraria.ID;
 using CalamityMod.Particles;
 using Terraria.Audio;
 using CalamityMod.Dusts;
@@ -80,7 +77,7 @@ namespace CalamityMod.Projectiles.Magic
 
         public override void OnKill(int timeLeft)
         {
-            SoundEngine.PlaySound(new("CalamityMod/Sounds/Custom/Ravager/RavagerJump2") { Volume = 0.7f, PitchVariance = 0.1f }, Projectile.Center);
+            SoundEngine.PlaySound(new SoundStyle("CalamityMod/Sounds/Custom/Ravager/RavagerJump2") { Volume = 0.7f, PitchVariance = 0.1f }, Projectile.Center);
 
             int rockCount = Main.rand.Next(1, 3);
             for (int i = 0; i < rockCount; i++)

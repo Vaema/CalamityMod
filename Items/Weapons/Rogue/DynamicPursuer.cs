@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using CalamityMod.CustomRecipes;
-using CalamityMod.Items.Materials;
-using CalamityMod.Items.Placeables;
+﻿using CalamityMod.Items.Materials;
 using CalamityMod.Items.Weapons.DraedonsArsenal;
 using CalamityMod.Projectiles.Rogue;
 using CalamityMod.Rarities;

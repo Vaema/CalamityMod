@@ -2,11 +2,9 @@
 using Terraria.ModLoader;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using System;
 using ReLogic.Content;
 using Terraria.ID;
 using CalamityMod.Graphics;
-using System.Reflection;
 using Terraria.Graphics.Shaders;
 
 namespace CalamityMod.Backgrounds
@@ -52,7 +50,7 @@ namespace CalamityMod.Backgrounds
                     {
                         Point pos = drawPoint + new Point(i, j);
                         if (!Main.tile[pos.X, pos.Y].HasTile &&
-                            Main.tile[pos.X, pos.Y].WallType == 0)
+                            Main.tile[pos.X, pos.Y].WallType == WallID.None)
                             Lighting.AddLight(pos.X, pos.Y, TorchID.White, 0.1f);
                     }
                 }
@@ -68,7 +66,7 @@ namespace CalamityMod.Backgrounds
                     {
                         Point pos = drawPoint + new Point(i, j);
                         if (!Main.tile[pos.X, pos.Y].HasTile &&
-                            Main.tile[pos.X, pos.Y].WallType == 0 &&
+                            Main.tile[pos.X, pos.Y].WallType == WallID.None &&
                             Main.tile[pos.X, pos.Y].LiquidAmount == 0)
                             Lighting.AddLight(pos.X, pos.Y, TorchID.White, 0.2f);
                     }
@@ -85,7 +83,7 @@ namespace CalamityMod.Backgrounds
                     {
                         Point pos = drawPoint + new Point(i, j);
                         if (!Main.tile[pos.X, pos.Y].HasTile &&
-                        Main.tile[pos.X, pos.Y].WallType == 0)
+                        Main.tile[pos.X, pos.Y].WallType == WallID.None)
                             Lighting.AddLight(pos.X, pos.Y, TorchID.White, 0.2f);
                     }
                 }
@@ -101,7 +99,7 @@ namespace CalamityMod.Backgrounds
                     {
                         Point pos = drawPoint + new Point(i, j);
                         if (!Main.tile[pos.X, pos.Y].HasTile &&
-                            Main.tile[pos.X, pos.Y].WallType == 0)
+                            Main.tile[pos.X, pos.Y].WallType == WallID.None)
                             Lighting.AddLight(pos.X, pos.Y, TorchID.White, 0.2f);
                     }
                 }
@@ -119,7 +117,7 @@ namespace CalamityMod.Backgrounds
                         if (pos.Y >= Main.maxTilesY - 450)
                         {
                             if (!Main.tile[pos.X, pos.Y].HasTile &&
-                                Main.tile[pos.X, pos.Y].WallType == 0)
+                                Main.tile[pos.X, pos.Y].WallType == WallID.None)
                                 Lighting.AddLight(pos.X, pos.Y, TorchID.Red, 0.6f);
                             }
                     }

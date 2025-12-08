@@ -68,7 +68,7 @@ namespace CalamityMod.Projectiles.Rogue
                 Projectile.rotation = Projectile.velocity.ToRotation() + MathHelper.PiOver2;
                 if ((time % 2 == 0 || !canStick) && time > 5)
                 {
-                    Dust dust = Dust.NewDustPerfect(Projectile.Center - Projectile.velocity.SafeNormalize(Vector2.UnitX) * 3 + Main.rand.NextVector2Circular(6, 6), 5, (-Projectile.velocity.SafeNormalize(Vector2.UnitX) * 4).RotatedByRandom(0.3f) * Main.rand.NextFloat(0.1f, 0.8f), 100, default, Main.rand.NextFloat(0.8f, 1.4f) * (canStick ? 1 : 1.3f));
+                    Dust dust = Dust.NewDustPerfect(Projectile.Center - Projectile.velocity.SafeNormalize(Vector2.UnitX) * 3 + Main.rand.NextVector2Circular(6, 6), DustID.Blood, (-Projectile.velocity.SafeNormalize(Vector2.UnitX) * 4).RotatedByRandom(0.3f) * Main.rand.NextFloat(0.1f, 0.8f), 100, default, Main.rand.NextFloat(0.8f, 1.4f) * (canStick ? 1 : 1.3f));
                     dust.noGravity = true;
                     Particle blood = new CustomSpark(Projectile.Center, -Projectile.velocity.SafeNormalize(Vector2.UnitX).RotatedByRandom(canStick ? 0.3f : 0.1f) * Main.rand.NextFloat(5f, 8f), "CalamityMod/Particles/LargeBloom",
                             false, 8, Main.rand.NextFloat(0.055f, 0.07f), Color.Lerp(Color.DarkRed, Color.Black, Main.rand.NextFloat(0, 0.5f)) * 0.7f, new Vector2(0.7f, 1f), false, shrinkSpeed: 0.8f);
@@ -111,7 +111,7 @@ namespace CalamityMod.Projectiles.Rogue
 
                     for (int i = 0; i <= 7; i++)
                     {
-                        Dust dust = Dust.NewDustPerfect(Projectile.Center, 5, (storedVelocity * 2.5f).RotatedByRandom(0.7) * Main.rand.NextFloat(0.1f, 0.8f), 0, default, Main.rand.NextFloat(0.9f, 1.8f));
+                        Dust dust = Dust.NewDustPerfect(Projectile.Center, DustID.Blood, (storedVelocity * 2.5f).RotatedByRandom(0.7) * Main.rand.NextFloat(0.1f, 0.8f), 0, default, Main.rand.NextFloat(0.9f, 1.8f));
                         dust.noGravity = false;
                     }
                     for (int i = 0; i <= 3; i++)

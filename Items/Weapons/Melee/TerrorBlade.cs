@@ -1,6 +1,4 @@
-﻿using System.Collections.Generic;
-using CalamityMod.Items.Weapons.Ranged;
-using CalamityMod.Items.Weapons.Rogue;
+﻿using CalamityMod.Items.Weapons.Ranged;
 using CalamityMod.Projectiles.Melee;
 using CalamityMod.Rarities;
 using Microsoft.Xna.Framework;
@@ -42,16 +40,6 @@ namespace CalamityMod.Items.Weapons.Melee
         public override void PostDrawInWorld(SpriteBatch spriteBatch, Color lightColor, Color alphaColor, float rotation, float scale, int whoAmI)
         {
             Item.DrawItemGlowmaskSingleFrame(spriteBatch, rotation, ModContent.Request<Texture2D>("CalamityMod/Items/Weapons/Melee/TerrorBladeGlow").Value);
-        }
-        public override void UpdateInventory(Player player)
-        {
-            if (Main.zenithWorld)
-                Item.SetNameOverride(this.GetLocalizedValue("GFBName"));
-        }
-        public override void ModifyTooltips(List<TooltipLine> tooltips)
-        {
-            string GFBflavour = this.GetLocalizedValue("GFB");
-            tooltips.FindAndReplace("[STATUS]", Main.zenithWorld ? "\n" + GFBflavour : "");
         }
 
         public override void MeleeEffects(Player player, Rectangle hitbox)

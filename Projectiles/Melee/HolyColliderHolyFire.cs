@@ -70,7 +70,7 @@ namespace CalamityMod.Projectiles.Melee
                         float starAngle = Main.rand.NextFloat(-0.9f, 0.9f);
                         for (int i = 0; i < 4; i++)
                         {
-                            Dust chargefull = Dust.NewDustPerfect(Projectile.Center, 278);
+                            Dust chargefull = Dust.NewDustPerfect(Projectile.Center, DustID.FireworksRGB);
                             Vector2 vel = (MathHelper.TwoPi * i / 4f).ToRotationVector2().RotatedBy(starAngle) * 8f;
 
                             Particle pulse = new GlowSparkParticle(Projectile.Center, vel, false, 10, 0.08f, Color.Orange, new Vector2(3.2f, 0.9f), true, true, 0.9f);

@@ -2,6 +2,8 @@ BabyCannonballJellyfish.DisplayName: Baby Cannonball Jellyfish
 Bloatfish.DisplayName: Bloatfish
 BobbitWormHead.DisplayName: Bobbit Worm
 BoxJellyfish.DisplayName: Box Jellyfish
+Burrower.DisplayName: Burrower
+BurrowerHitbox.DisplayName: Burrower
 CannonballJellyfish.DisplayName: Cannonball Jellyfish
 ChaoticPuffer.DisplayName: Chaotic Puffer
 ColossalSquid.DisplayName: Colossal Squid
@@ -144,7 +146,6 @@ AquaticAberration.DisplayName: Aquatic Aberration
 Leviathan.DisplayName: The Leviathan
 LeviathanStart.DisplayName: ???
 AeroSlime.DisplayName: Aero Slime
-ArmoredDiggerHead.DisplayName: Armored Digger
 MechanizedSerpent: Mechanized Serpent
 AuroraSpirit.DisplayName: Aurora Spirit
 BloomSlime.DisplayName: Bloom Slime
@@ -563,3 +564,4 @@ SeaKing: {
 WildBumblebirb.DisplayName: Wild Bumblebirb
 DraconicSwarmer.DisplayName: Draconic Swarmer
 Dragonfolly.DisplayName: Dragonfolly
+Shoreskipper.DisplayName: Shoreskipper

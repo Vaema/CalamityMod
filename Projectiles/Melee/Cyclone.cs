@@ -52,7 +52,7 @@ namespace CalamityMod.Projectiles.Melee
                     for (int i = 1; i <= 6; i++)
                     {
                         Vector2 dustspeed = new Vector2(3f, 3f).RotatedBy(MathHelper.ToRadians(dustVortex));
-                        int d = Dust.NewDust(Projectile.Center, Projectile.width / 2, Projectile.height / 2, 31, dustspeed.X, dustspeed.Y, 200, new Color(232, 251, 250, 200), 1.3f);
+                        int d = Dust.NewDust(Projectile.Center, Projectile.width / 2, Projectile.height / 2, DustID.Smoke, dustspeed.X, dustspeed.Y, 200, new Color(232, 251, 250, 200), 1.3f);
                         Main.dust[d].noGravity = true;
                         Main.dust[d].velocity = dustspeed;
                         dustVortex += 60;
@@ -104,7 +104,7 @@ namespace CalamityMod.Projectiles.Melee
             for (int i = 0; i <= 360; i += 3)
             {
                 Vector2 dustspeed = new Vector2(3f, 3f).RotatedBy(MathHelper.ToRadians(i));
-                int d = Dust.NewDust(Projectile.Center, Projectile.width, Projectile.height, 31, dustspeed.X, dustspeed.Y, 200, new Color(232, 251, 250, 200), 1.4f);
+                int d = Dust.NewDust(Projectile.Center, Projectile.width, Projectile.height, DustID.Smoke, dustspeed.X, dustspeed.Y, 200, new Color(232, 251, 250, 200), 1.4f);
                 Main.dust[d].noGravity = true;
                 Main.dust[d].position = Projectile.Center;
                 Main.dust[d].velocity = dustspeed;

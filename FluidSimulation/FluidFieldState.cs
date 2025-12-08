@@ -2,7 +2,6 @@
 using CalamityMod.Graphics;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria;
-using Terraria.ID;
 
 namespace CalamityMod.FluidSimulation
 {

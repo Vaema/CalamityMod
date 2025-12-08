@@ -10,7 +10,7 @@ namespace CalamityMod.Items.Accessories
         internal static readonly int EncasedIFrames = 90;
 
         public static int EncasedDefenseBoost = 30;
-        public static double EncasedAllDamageReduction = 0.3D;
+        public static float EncasedDamageReductionBoost = 0.3f;
 
         public new string LocalizationCategory => "Items.Accessories";
         public override void SetDefaults()

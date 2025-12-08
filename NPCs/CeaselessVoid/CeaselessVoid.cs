@@ -6,14 +6,13 @@ using CalamityMod.Items.Armor.Vanity;
 using CalamityMod.Items.LoreItems;
 using CalamityMod.Items.Materials;
 using CalamityMod.Items.Placeables.Furniture.BossRelics;
-using CalamityMod.Items.Placeables.Furniture.DevPaintings;
+using CalamityMod.Items.Placeables.Furniture.Paintings;
 using CalamityMod.Items.Placeables.Furniture.Trophies;
 using CalamityMod.Items.Potions;
 using CalamityMod.Items.TreasureBags;
 using CalamityMod.Items.Weapons.Melee;
 using CalamityMod.Items.Weapons.Summon;
 using CalamityMod.Projectiles.Boss;
-using CalamityMod.Sounds;
 using CalamityMod.UI.VanillaBossBars;
 using CalamityMod.World;
 using Microsoft.Xna.Framework;
@@ -28,7 +27,6 @@ using Terraria.GameContent.ItemDropRules;
 using Terraria.ID;
 using Terraria.ModLoader;
 using static Terraria.ModLoader.ModContent;
-using CalamityMod.UI;
 
 namespace CalamityMod.NPCs.CeaselessVoid
 {
@@ -72,7 +70,7 @@ namespace CalamityMod.NPCs.CeaselessVoid
             NPC.height = 100;
             NPC.defense = 80;
             NPC.Calamity().DR = 0.5f;
-            NPC.LifeMaxNERB(65000, 78000, 72000);
+            NPC.LifeMaxNERB(50000, 78000, 72000);
             NPC.value = Item.buyPrice(gold: 50);
             NPC.aiStyle = -1;
             AIType = -1;
@@ -764,7 +762,8 @@ namespace CalamityMod.NPCs.CeaselessVoid
                 normalOnly.Add(DropHelper.PerPlayer(ItemType<DarkPlasma>(), 1, 10, 12));
 
                 // Equipment
-                normalOnly.Add(DropHelper.PerPlayer(ItemType<TheEvolution>()));
+                // 16NOV2025: Ozzatron: item has been chosen as the "Expert gatekept" item for this Calamity boss
+                // normalOnly.Add(DropHelper.PerPlayer(ItemType<TheEvolution>()));
 
                 // Vanity
                 normalOnly.Add(ItemType<CeaselessVoidMask>(), 7);

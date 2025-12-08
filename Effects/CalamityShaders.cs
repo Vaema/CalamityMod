@@ -1,7 +1,6 @@
 ﻿using CalamityMod.Skies;
 using Microsoft.Xna.Framework.Graphics;
 using ReLogic.Content;
-using Terraria;
 using Terraria.Graphics.Effects;
 using Terraria.Graphics.Shaders;
 using Terraria.ModLoader;
@@ -16,7 +15,7 @@ namespace CalamityMod.Effects
         internal const string CalamityShaderPrefix = "CalamityMod:";
 
         // made by boffin. Source code not available. Creates fog in the astral infection
-        internal static Effect AstralFogShader;
+        internal static Asset<Effect> AstralFogShader;
 
         //
         // All below shaders created by Lucille Karma
@@ -24,115 +23,115 @@ namespace CalamityMod.Effects
         #region Lucille's Shaders
 
         // The Dance of Light's Blinding Light
-        internal static Effect DanceOfLightBlindingShader;
+        internal static Asset<Effect> DanceOfLightBlindingShader;
 
         // Calamity accessory
-        internal static Effect CalamityAccessoryMouseShader;
+        internal static Asset<Effect> CalamityAccessoryMouseShader;
 
         // Subsuming Vortex tentacles
-        internal static Effect SubsumingVortexTentacleShader;
+        internal static Asset<Effect> SubsumingVortexTentacleShader;
 
         // Draedon teleporting shader
-        internal static Effect DraedonTeleportShader;
+        internal static Asset<Effect> DraedonTeleportShader;
 
         // UNKNOWN -- PROBABLY UNUSED
-        internal static Effect LightDistortionShader;
+        internal static Asset<Effect> LightDistortionShader;
 
         // Phaseslayer red energy trail
-        internal static Effect PhaseslayerRipShader;
+        internal static Asset<Effect> PhaseslayerRipShader;
 
         // Generic UV-fade streak trail shader. Used by many things?
-        internal static Effect FadedUVMapStreakShader;
+        internal static Asset<Effect> FadedUVMapStreakShader;
 
         // Generic flaming streak trail shader. Used by many things?
-        internal static Effect FlameStreakShader;
+        internal static Asset<Effect> FlameStreakShader;
 
         // Generic solid trail shader. Used by many things?
-        internal static Effect FadingSolidTrailShader;
+        internal static Asset<Effect> FadingSolidTrailShader;
 
         // Typical projectile javelin glowing trail. BEWARE: Is used by many items!
-        internal static Effect ScarletDevilShader;
+        internal static Asset<Effect> ScarletDevilShader;
 
         // Yharon border flame pillar trail.
-        internal static Effect BordernadoFireShader;
+        internal static Asset<Effect> BordernadoFireShader;
 
         // Photon Ripper hardlight teeth trail shader
-        internal static Effect PrismCrystalShader;
+        internal static Asset<Effect> PrismCrystalShader;
 
         // Generic flame trail. BEWARE: Reused by Apollo, Artemis, Cosmilamp, Gem Tech broken gems, and Persecuted enchant portal demons
-        internal static Effect ImpFlameTrailShader;
+        internal static Asset<Effect> ImpFlameTrailShader;
 
         // Supreme Witch, Calamitas' force field (which is her visual hitbox)
-        internal static Effect SCalShieldShader;
+        internal static Asset<Effect> SCalShieldShader;
 
         // Rancor's alchemical / satanic circle which floats near the player. The laser is emitted from here
-        internal static Effect RancorMagicCircleShader;
+        internal static Asset<Effect> RancorMagicCircleShader;
 
         // Generic colored glow shader. BEWARE: Used by about a billion things, including Ares telegraphs, the Biome Blade line, etc.
-        internal static Effect BasicTintShader;
+        internal static Asset<Effect> BasicTintShader;
 
         // Generic "pie chart" shader that renders only certain arc sectors of things. Used for the Cooldown Rack and various other visuals.
-        internal static Effect CircularBarShader;
+        internal static Asset<Effect> CircularBarShader;
 
         // Cooldown Rack shader used to draw the cooldown's icon appropriately.
-        internal static Effect CircularBarSpriteShader;
+        internal static Asset<Effect> CircularBarSpriteShader;
 
         // Devourer of Gods' death animation where he disintegrates into purple energy stuff.
-        internal static Effect DoGDisintegrationShader;
+        internal static Asset<Effect> DoGDisintegrationShader;
 
         // Art Attack's main projectile trail shader (Visually designed to match Paper Mario)
-        internal static Effect ArtAttackTrailShader;
+        internal static Asset<Effect> ArtAttackTrailShader;
 
         // Generic AoE telegraph. Used for Ares' nukes to denote their area of effect.
-        internal static Effect CircularAoETelegraph;
+        internal static Asset<Effect> CircularAoETelegraph;
 
         // Clips a sprite along a fixed plane. Used by Stream Gouge to have half-spears come out of portals.
-        internal static Effect IntersectionClipShader;
+        internal static Asset<Effect> IntersectionClipShader;
 
         // Was previously used by Dom's Bladecrest Oathsword. Appears to govern the swing animation.
-        internal static Effect LocalLinearTransformationShader;
+        internal static Asset<Effect> LocalLinearTransformationShader;
 
         // UNUSED -- Probably leftover from Lucille's experiments with applying shaders to primitives (arbitrary GPU-rendered triangles)
-        internal static Effect BasicPrimitiveShader;
+        internal static Asset<Effect> BasicPrimitiveShader;
 
         // Artemis Ohio Beam. Also used by get fixed boi Nuclear Terror's "G-FUEL BEAM"
-        internal static Effect ArtemisLaserShader;
+        internal static Asset<Effect> ArtemisLaserShader;
 
         // Exoblade's melee slash trails. Also used by Terratomere
-        internal static Effect ExobladeSlashShader;
+        internal static Asset<Effect> ExobladeSlashShader;
 
         // Exoblade's projectile on-hit "anime slash marks". Also used by Terratomere
-        internal static Effect ExobladePierceShader;
+        internal static Asset<Effect> ExobladePierceShader;
 
         // Used by Subsuming Vortex's various vortices. Draws the main vortices. BEWARE: Reused by Burning Sea's fireball.
-        internal static Effect ExoVortexShader;
+        internal static Asset<Effect> ExoVortexShader;
 
         // Used by Subsuming Vortex's small vortices. Draws the trailing energy tendrils.
-        internal static Effect SideStreakTrailShader;
+        internal static Asset<Effect> SideStreakTrailShader;
 
         // Used by Heavenly Gale's hardlight arrows.
-        internal static Effect HeavenlyGaleTrailShader;
+        internal static Asset<Effect> HeavenlyGaleTrailShader;
 
         // Used by Heavenly Gale's exo lightning strikes. Also used by Stormfront Razor lightning.
-        internal static Effect HeavenlyGaleLightningShader;
+        internal static Asset<Effect> HeavenlyGaleLightningShader;
 
         // Used in the Codebreaker on Draedon's sprite while communicating with him.
-        internal static Effect BlueStaticShader;
+        internal static Asset<Effect> BlueStaticShader;
 
         // Used by Acid Eels, presumably to have their snaking movements look more smooth.
-        internal static Effect PrimTextureOverlayShader;
+        internal static Asset<Effect> PrimTextureOverlayShader;
 
         // Used as a default for primitive drawing when no specific shader is supplied. This shader simply renders the vertex color data without modification.
-        internal static Effect StandardPrimitiveShader;
+        internal static Asset<Effect> StandardPrimitiveShader;
 
         // Used by Devourer of Gods. Renders the portal that he escapes through at the end of phase 1.
-        internal static Effect DoGPortalShader;
+        internal static Asset<Effect> DoGPortalShader;
 
         // Used to render all-encompassing fog in the Floral Paradise biome.
-        internal static Effect FogShader;
+        internal static Asset<Effect> FogShader;
 
         // Used to render background water features in the Floral Paradise biome.
-        internal static Effect WaterfallShader;
+        internal static Asset<Effect> WaterfallShader;
 
         // Metaballs. See the MetaballManager class for comments on how this system works.
         // These shaders are leveraged to render the results of the metaball simulation to the screen.
@@ -140,17 +139,17 @@ namespace CalamityMod.Effects
         // The "Additive" shader actually FUSES the particles into their blobby mess.
         //
         // Backing textures vary. The primary use of this system is Gruesome Eminence.
-        internal static Effect MetaballEdgeShader;
-        internal static Effect AdditiveMetaballEdgeShader;
+        internal static Asset<Effect> MetaballEdgeShader;
+        internal static Asset<Effect> AdditiveMetaballEdgeShader;
 
         // Used to render the results of Navier-Stokes fluid simulations.
-        internal static Effect FluidShaders;
+        internal static Asset<Effect> FluidShaders;
 
         // Used by projectiles fired by the Sylvestaff.
-        internal static Effect SylvestaffProjectileShader;
+        internal static Asset<Effect> SylvestaffProjectileShader;
 
         // Used by the ribbons on the Sylvestaff.
-        internal static Effect SylvestaffRibbonShader;
+        internal static Asset<Effect> SylvestaffRibbonShader;
         #endregion
 
         //
@@ -160,25 +159,25 @@ namespace CalamityMod.Effects
         #region Iban's Shaders
 
         // Used by Coral Spout and Titanium Railgun while charging to indicate current projectile spread.
-        internal static Effect SpreadTelegraph;
+        internal static Asset<Effect> SpreadTelegraph;
 
         // Used by Wulfrum Screwdriver and Titanium Railgun. Renders a pixelly "laser sight".
-        internal static Effect PixelatedSightLine;
+        internal static Asset<Effect> PixelatedSightLine;
 
         // Used by the Wulfrum Treasure Pinger to highlight tiles in range
-        internal static Effect WulfrumTilePing;
+        internal static Asset<Effect> WulfrumTilePing;
 
         // Used by the Wulfrum Scaffold Kit to highlight locations where Scaffold tiles will be placed
-        internal static Effect WulfrumScaffoldSelection;
+        internal static Asset<Effect> WulfrumScaffoldSelection;
 
         // Used to render the Rover Drive's force field around the player
-        internal static Effect RoverDriveShield;
+        internal static Asset<Effect> RoverDriveShield;
 
         // UNUSED -- Probably leftover from Iban's work on the Biome Blade and Ark lines.
-        internal static Effect RotateSprite;
+        internal static Asset<Effect> RotateSprite;
 
         // Used on Exoblade to draw the sword swinging dramatically. This was the edit Iban made to Dom's Exoblade.
-        internal static Effect SwingSprite;
+        internal static Asset<Effect> SwingSprite;
         #endregion
 
         //
@@ -187,14 +186,14 @@ namespace CalamityMod.Effects
         #region Ozz's Shaders
 
         // Used on players and NPCs when they have the Miracle Blight debuff.
-        internal static Effect MiracleBlight;
+        internal static Asset<Effect> MiracleBlight;
         #endregion
 
         #region Aqua's Shaders
-        internal static Effect CircularGradientWithEdge;
-        internal static Effect GaleforceArrowTrailShader;
-        internal static Effect WavyOpacity;
-        internal static Effect HellBall;
+        internal static Asset<Effect> CircularGradientWithEdge;
+        internal static Asset<Effect> GaleforceArrowTrailShader;
+        internal static Asset<Effect> WavyOpacity;
+        internal static Asset<Effect> HellBall;
         #endregion
 
         //
@@ -203,17 +202,25 @@ namespace CalamityMod.Effects
         //
 
         #region Amber's Shaders
-        internal static Effect PrimitiveClearShader;
-        internal static Effect HolyInfernoShader;
-        internal static Effect DeerclopsShadowShader;
+        internal static Asset<Effect> PrimitiveClearShader;
+        internal static Asset<Effect> HolyInfernoShader;
+        internal static Asset<Effect> DeerclopsShadowShader;
         #endregion
 
         #region YuH's Shaders
-        internal static Effect TeslaTrailShader;
+        internal static Asset<Effect> TeslaTrailShader;
         #endregion
 
         #region Doze's Shaders
-        internal static Effect FlipScreenShader;
+        /// <summary>
+        /// Flips the screen. Used for Gravity Globe.
+        /// </summary>
+        internal static Asset<Effect> FlipScreenShader;
+        /// <summary>
+        /// Distorts a texture towards the center based on a provided noisemap. Meant to emulate the Terraria Otherworld barrier effects.
+        /// Opacity is the intensity of this distortion, and Saturation is the speed the noisemap moves at.
+        /// </summary>
+        internal static Asset<Effect> OtherworldBarrierDistortionShader;
         #endregion
 
         //
@@ -221,26 +228,30 @@ namespace CalamityMod.Effects
         //
         #region fryzahh's Shaders
         // A simple shader which distorts an image using a provided texture of choice. 
-        internal static Effect BasicTextureDistortionShader;
+        internal static Asset<Effect> BasicTextureDistortionShader;
 
         // The underwater rays seen at the top of the Sunken Sea Mod Menu.
-        internal static Effect UnderwaterRaysShader;
+        internal static Asset<Effect> UnderwaterRaysShader;
 
         // The blowing wind-like effect seen in the background during DoG's fight.
-        internal static Effect DoGDistortionWindsShader;
+        internal static Asset<Effect> DoGDistortionWindsShader;
 
         // The rolling fog clouds seen behind the Distortion Winds effect during DoG's fight.
-        internal static Effect DoGBackgroundFogShader;
+        internal static Asset<Effect> DoGBackgroundFogShader;
 
         // Allows a texture to control its opacity from the edges to the center in the shape of a circle.
-        internal static Effect CircularOpacityShader;
+        internal static Asset<Effect> CircularOpacityShader;
 
         // The shader effect imposed onto the static crack textures seen during DoG's fight. Fades out the texture from its edges to its center and 
         // allows it to lerp between two colors depending on the brightness of individual pixels along the sampled texture.
-        internal static Effect DoGRealityCrackShader;
+        internal static Asset<Effect> DoGRealityCrackShader;
 
         // The distorted circular effect seen emanating from the distortion rift during DoG's fight.
-        internal static Effect DoGRiftAuraShader;
+        internal static Asset<Effect> DoGRiftAuraShader;
+        #endregion
+
+        #region Big E's Shaders
+        internal static Asset<Effect> SeaPrismColorBlendingShader;
         #endregion
 
         internal static Asset<Effect> SunkenSeaMenuLogoWater;
@@ -251,15 +262,14 @@ namespace CalamityMod.Effects
 
             // Shorthand to load shaders immediately.
             // Strings provided to LoadShader are the .xnb file paths.
-            Effect LoadShader(string path) => LoadShaderAsset(path).Value;
-            Asset<Effect> LoadShaderAsset(string path) => calAss.Request<Effect>($"{ShaderPath}{path}", AssetRequestMode.ImmediateLoad);
+            Asset<Effect> LoadShader(string path) => calAss.Request<Effect>($"{ShaderPath}{path}", AssetRequestMode.ImmediateLoad);
 
             //
             // Loading and registering each individual compiled shader for use.
             //
 
             AstralFogShader = LoadShader("AstralFogShader");
-            var astralPassReg = new AstralScreenShaderData(new Ref<Effect>(AstralFogShader), "AstralPass").UseColor(0.18f, 0.08f, 0.24f);
+            var astralPassReg = new AstralScreenShaderData(AstralFogShader, "AstralPass").UseColor(0.18f, 0.08f, 0.24f);
             RegisterSceneFilter(astralPassReg, "Astral", EffectPriority.VeryHigh);
 
             #region Loading Lucille's Shaders
@@ -458,6 +468,9 @@ namespace CalamityMod.Effects
             #region Loading Doze's Shaders
             FlipScreenShader = LoadShader("ScreenShaders/FlipScreen");
             RegisterScreenShader(FlipScreenShader, "FlipTheScreen", "FlipScreen",EffectPriority.VeryHigh);
+
+            OtherworldBarrierDistortionShader = LoadShader("OtherworldBarrierDistortion");
+            RegisterMiscShader(OtherworldBarrierDistortionShader, "DistortionPass", "OtherworldBarrierDistortion");
             #endregion
 
             #region Loading fryzahh's Shaders
@@ -483,16 +496,20 @@ namespace CalamityMod.Effects
             RegisterMiscShader(DoGRiftAuraShader, "DoGRiftAuraPass", "DoGRiftAura");
             #endregion
 
-            SunkenSeaMenuLogoWater = LoadShaderAsset("UI/SunkenSeaMenuLogoWater");
+            #region Loading Big E's Shaders
+            SeaPrismColorBlendingShader = LoadShader("SeaPrismColorBlending");
+            RegisterMiscShader(SeaPrismColorBlendingShader, "SeaPrismBlendingPass", "SeaPrismColorBlending");
+            #endregion
+
+            SunkenSeaMenuLogoWater = LoadShader("UI/SunkenSeaMenuLogoWater");
         }
 
         // Shorthand to register a loaded shader in Terraria's graphics engine
         // All shaders registered this way are accessible under GameShaders.Misc
         // They will use the prefix described above
-        private static void RegisterMiscShader(Effect shader, string passName, string registrationName)
+        private static void RegisterMiscShader(Asset<Effect> shader, string passName, string registrationName)
         {
-            Ref<Effect> shaderPointer = new(shader);
-            MiscShaderData passParamRegistration = new(shaderPointer, passName);
+            MiscShaderData passParamRegistration = new(shader, passName);
             GameShaders.Misc[$"{CalamityShaderPrefix}{registrationName}"] = passParamRegistration;
         }
 
@@ -506,10 +523,9 @@ namespace CalamityMod.Effects
         // Shorthand to register a loaded shader in Terraria's graphics engine
         // All shaders registered this way are accessible under Filters.Scene
         // They will use the prefix described above
-        private static void RegisterScreenShader(Effect shader, string passName, string registrationName, EffectPriority priority = EffectPriority.High)
+        private static void RegisterScreenShader(Asset<Effect> shader, string passName, string registrationName, EffectPriority priority = EffectPriority.High)
         {
-            Ref<Effect> shaderPointer = new(shader);
-            ScreenShaderData passParamRegistration = new(shaderPointer, passName);
+            ScreenShaderData passParamRegistration = new(shader, passName);
             RegisterSceneFilter(passParamRegistration, registrationName, priority);
         }
     }

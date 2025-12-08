@@ -5,7 +5,6 @@ using CalamityMod.Particles;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using ReLogic.Content;
-using System;
 using CalamityMod.Dusts;
 using Terraria.Audio;
 

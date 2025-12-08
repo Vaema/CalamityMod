@@ -18,7 +18,7 @@ namespace CalamityMod.Waterfalls
 
         private static float currentWaterfallHeight;
 
-        internal static float PrimitiveWidthFunction(float completionRatio)
+        internal static float PrimitiveWidthFunction(float completionRatio, Vector2 vertexPos)
         {
             float baseWidth = MathHelper.Lerp(16f, 6f, Utils.GetLerpValue(36f, 216f, currentWaterfallHeight, true));
             float positionOffset = currentWaterfallPosition.X * 0.17f % 300f + currentWaterfallPosition.Y * 0.33f % 300f;
@@ -30,7 +30,7 @@ namespace CalamityMod.Waterfalls
             return baseWidth + x2Offset + MathHelper.SmoothStep(0f, baseWidth * 0.85f, Utils.GetLerpValue(0.84f, 0.96f, completionRatio, true)) - x1Offset;
         }
 
-        internal static Color PrimitiveColorFunction(float completionRatio)
+        internal static Color PrimitiveColorFunction(float completionRatio, Vector2 vertexPos)
         {
             Color c = Color.Lerp(Color.Cyan, new Color(1f, 1f, 1f, 0f), (float)Math.Pow(Utils.GetLerpValue(0.75f, 1f, completionRatio, true), 0.68));
             return c;

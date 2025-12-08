@@ -1,24 +1,26 @@
-﻿using CalamityMod.Particles;
-using System;
-using CalamityMod.Systems;
+﻿using System;
+using CalamityMod.Dusts.WaterSplash;
+using CalamityMod.Gores.WaterDroplet;
+using CalamityMod.Particles;
+using CalamityMod.Systems.Graphic.LiquidSystem;
 using CalamityMod.Tiles.Abyss;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using ReLogic.Content;
 using Terraria;
-using Terraria.ModLoader;
 using Terraria.Graphics;
-using Terraria.ID;
-using CalamityMod.Dusts.WaterSplash;
-using CalamityMod.Gores.WaterDroplet;
+using Terraria.ModLoader;
 
 namespace CalamityMod.Waters
 {
-    public class SulphuricWaterflow : ModWaterfallStyle { }
-
-    public class SulphuricWater : CalamityModWaterStyle
+    public class SulphuricWaterflow : ModWaterfallStyle, IWaterfallStyleModifyColor
     {
-        public static CalamityModWaterStyle Instance { get; private set; }
+        public void ModifyColor(in Tile tile, int x, int y, ref VertexColors liquidColor) => CalamityUtils.ModifySulphuricWaterColor(x, y, ref liquidColor, false);
+    }
+
+    public class SulphuricWater : ModWaterStyle, IWaterStyleModifyColor, IWaterStyleModifyLight, IWaterStylePostDrawEffect
+    {
+        public static ModWaterStyle Instance { get; private set; }
         public static ModWaterfallStyle WaterfallStyle { get; private set; }
         public static int SplashDust { get; private set; }
         public static int DropletGore { get; private set; }
@@ -45,20 +47,13 @@ namespace CalamityMod.Waters
         public override int GetSplashDust() => SplashDust;
         public override int GetDropletGore() => DropletGore;
         public override Asset<Texture2D> GetRainTexture() => RainTexture ??= ModContent.Request<Texture2D>("CalamityMod/Waters/SulphuricRain");
-        
+
         public override byte GetRainVariant() => (byte)Main.rand.Next(3);
         public override Color BiomeHairColor() => new Color(43, 168, 110);
-        public override void DrawColor(int x, int y, ref VertexColors liquidColor, bool isSlope) => ILEditing.ILChanges.SelectSulphuricWaterColor(x, y, ref liquidColor, isSlope);
-        public override void ModifyLight(ref readonly Tile tile, int i, int j, ref float r, ref float g, ref float b)
+        public void ModifyColor(in Tile tile, int x, int y, ref VertexColors liquidColor, bool isSlope) => CalamityUtils.ModifySulphuricWaterColor(x, y, ref liquidColor, isSlope);
+        public void ModifyLight(in Tile tile, int i, int j, ref float r, ref float g, ref float b)
         {
             Vector3 outputColor = new Vector3(r, g, b);
-
-            Tile above = CalamityUtils.ParanoidTileRetrieval(i, j - 1);
-            if (!Main.gamePaused && !above.HasTile && above.LiquidAmount <= 0 && Main.rand.NextBool(9))
-            {
-                MediumMistParticle acidFoam = new(new(i * 16f + Main.rand.NextFloat(16f), j * 16f + 8f), -Vector2.UnitY.RotatedByRandom(0.67f) * Main.rand.NextFloat(1f, 2.4f), Color.LightSeaGreen, Color.White, 0.16f, 128f, 0.02f);
-                GeneralParticleHandler.SpawnParticle(acidFoam);
-            }
 
             if (tile.TileType != RustyChestTile.TileType)
             {
@@ -122,6 +117,16 @@ namespace CalamityMod.Waters
             r = outputColor.X;
             g = outputColor.Y;
             b = outputColor.Z;
+        }
+
+        public void PostDrawEffect(in Tile tile, int x, int y)
+        {
+            Tile above = CalamityUtils.ParanoidTileRetrieval(x, y - 1);
+            if (!Main.gamePaused && !above.HasTile && above.LiquidAmount <= 0 && Main.rand.NextBool(9))
+            {
+                MediumMistParticle acidFoam = new(new(x * 16f + Main.rand.NextFloat(16f), y * 16f + 8f), -Vector2.UnitY.RotatedByRandom(0.67f) * Main.rand.NextFloat(1f, 2.4f), Color.LightSeaGreen, Color.White, 0.16f, 128f, 0.02f);
+                GeneralParticleHandler.SpawnParticle(acidFoam);
+            }
         }
     }
 }

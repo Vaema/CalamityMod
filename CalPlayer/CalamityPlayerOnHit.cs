@@ -15,7 +15,6 @@ using CalamityMod.Items.Armor.Bloodflare;
 using CalamityMod.Items.Armor.Fearmonger;
 using CalamityMod.Items.Armor.Hydrothermic;
 using CalamityMod.Items.Armor.Plaguebringer;
-using CalamityMod.Items.Armor.Reaver;
 using CalamityMod.Items.Armor.Silva;
 using CalamityMod.Items.Armor.SnowRuffian;
 using CalamityMod.Items.Armor.Sulphurous;
@@ -102,10 +101,6 @@ namespace CalamityMod.CalPlayer
 
             switch (item.type)
             {
-                case ItemID.DeathSickle:
-                    target.AddBuff(BuffType<WhisperingDeath>(), 120);
-                    break;
-
                 case ItemID.InfluxWaver:
                     target.AddBuff(BuffID.Electrified, 300);
                     break;
@@ -206,11 +201,11 @@ namespace CalamityMod.CalPlayer
 
             // Arc Flash Ring lightning strike (Remember to change the one for projectile hits if applicable when you change this one!)
             // This one has a lot less limits than the projectile one, but that's because vanilla broadsword code is limiting (wow so surprising)
-            bool spawnChance = (Main.rand.Next(0, 100) < 6);
+            bool spawnChance = (Main.rand.Next(100) < ArcFlashRing.LightningSpawnPercent);
             if (arcFlashRing && spawnChance)
             {
                 var source = item.GetSource_FromThis();
-                int damage = (int)(((hit.Damage * 4f) * (hit.Crit ? 0.5f : 1)) / (Player.Calamity().adrenalineModeActive ? Player.Calamity().GetAdrenalineDamage() + 1 : 1)); // 400% damage (uneffected by crits and adrenaline)
+                int damage = (int)(((hit.Damage * ArcFlashRing.LightningDamageMult) * (hit.Crit ? 0.5f : 1)) / (Player.Calamity().adrenalineModeActive ? Player.Calamity().GetAdrenalineDamage() + 1 : 1)); // 400% damage (uneffected by crits and adrenaline)
 
                 Projectile bolt = Projectile.NewProjectileDirect(source, target.Center, Vector2.Zero, ProjectileType<FlashBolt>(), damage, 0f, Player.whoAmI, target.whoAmI);
                 bolt.DamageType = hit.DamageType;
@@ -274,10 +269,6 @@ namespace CalamityMod.CalPlayer
 
                 case ProjectileID.GolemFist:
                     target.AddBuff(BuffType<ArmorCrunch>(), 180);
-                    break;
-
-                case ProjectileID.DeathSickle:
-                    target.AddBuff(BuffType<WhisperingDeath>(), 60);
                     break;
 
                 case ProjectileID.ButchersChainsaw:
@@ -504,7 +495,7 @@ namespace CalamityMod.CalPlayer
                         }
                         for (int i = 0; i <= 12; i++)
                         {
-                            Dust dust2 = Dust.NewDustPerfect(proj.Center, 278, new Vector2(4, 4).RotatedByRandom(100f) * Main.rand.NextFloat(0.1f, 2.9f));
+                            Dust dust2 = Dust.NewDustPerfect(proj.Center, DustID.FireworksRGB, new Vector2(4, 4).RotatedByRandom(100f) * Main.rand.NextFloat(0.1f, 2.9f));
                             dust2.noGravity = false;
                             dust2.scale = Main.rand.NextFloat(0.3f, 0.9f);
                             dust2.color = Color.Turquoise;
@@ -553,7 +544,7 @@ namespace CalamityMod.CalPlayer
                     int dusts = (int)(MathHelper.Clamp(10 - (int)(proj.numHits * 0.5f), 2, 10));
                     for (int i = 0; i <= dusts; i++)
                     {
-                        Dust dust2 = Dust.NewDustPerfect(Position, 278, new Vector2(5, 5).RotatedByRandom(100f) * Main.rand.NextFloat(0.1f, 2.9f));
+                        Dust dust2 = Dust.NewDustPerfect(Position, DustID.FireworksRGB, new Vector2(5, 5).RotatedByRandom(100f) * Main.rand.NextFloat(0.1f, 2.9f));
                         dust2.noGravity = false;
                         dust2.scale = Main.rand.NextFloat(0.3f, 0.8f);
                         dust2.color = color;
@@ -762,7 +753,7 @@ namespace CalamityMod.CalPlayer
         private void MeleeOnHit(Projectile proj, CalamityGlobalProjectile modProj, Vector2 position, bool crit, bool npcCheck, bool targetIsDummy)
         {
             var source = proj.GetSource_FromThis();
-            Item heldItem = Player.ActiveItem();
+            Item heldItem = Player.HeldItem;
 
             if (proj.IsTrueMelee())
             {
@@ -1224,18 +1215,15 @@ namespace CalamityMod.CalPlayer
                     target.AddBuff(BuffType<AstralInfectionDebuff>(), TitanHeartMask.OnHitDebuffDuration);
                 }
             }
-            if (summon)
+            if (summon && !whip)
             {
-                if (pSoulArtifact && !profanedCrystal)
+                if (profanedCrystal && (DownedBossSystem.downedCalamitas && DownedBossSystem.downedExoMechs))
+                    target.AddBuff(BuffType<HolyFlames>(), 600);
+                else if (pSoulArtifact)
                     target.AddBuff(BuffType<HolyFlames>(), 300);
 
-                if (profanedCrystal && (DownedBossSystem.downedCalamitas && DownedBossSystem.downedExoMechs))
-                {
-                    target.AddBuff(BuffType<HolyFlames>(), 600);
-                }
-
                 if (divineBless)
-                    target.AddBuff(BuffType<BanishingFire>(), 60);
+                    target.AddBuff(BuffType<BanishingFire>(), AngelicAlliance.BanishingFireDuration);
 
                 if (shadowMinions)
                     target.AddBuff(BuffID.ShadowFlame, 180);
@@ -1264,8 +1252,6 @@ namespace CalamityMod.CalPlayer
                 target.AddBuff(BuffType<VermillionFlux>(), 120);
                 target.AddBuff(BuffType<CrushDepth>(), 120);
             }
-            if (voidOfExtinction)
-                CalamityUtils.Inflict246DebuffsNPC(target, BuffType<BrimstoneFlames>());
             if (frostFlare)
                 CalamityUtils.Inflict246DebuffsNPC(target, BuffID.Frostburn2);
             if (omegaBlueChestplate)
@@ -1338,7 +1324,7 @@ namespace CalamityMod.CalPlayer
                 if (bloodflareThrowing && proj.CountsAsClass<ThrowingDamageClass>() && crit)
                     Projectile.NewProjectile(proj.GetSource_OnHit(target), proj.Center, proj.velocity.SafeNormalize(Vector2.Zero) * Math.Min(((proj.velocity.Length() * proj.MaxUpdates) / 4f), 4f) * Main.rand.NextFloat(0.75f, 1.25f), ModContent.ProjectileType<BloodstoneHealOrb>(), 4, 0f, proj.owner);
 
-                if (proj.CountsAsClass<MagicDamageClass>() && Player.ActiveItem().CountsAsClass<MagicDamageClass>())
+                if (proj.CountsAsClass<MagicDamageClass>() && Player.HeldItem.CountsAsClass<MagicDamageClass>())
                 {
                     if (manaOverloader)
                     {
@@ -1413,7 +1399,7 @@ namespace CalamityMod.CalPlayer
             Vector2 velocity = Main.npc[targetIdx].DirectionFrom(spawnPos);
             velocity *= speed;
 
-            var source = player.GetSource_ItemUse(player.ActiveItem());
+            var source = player.GetSource_ItemUse(player.HeldItem);
             int projectile = Projectile.NewProjectile(source, spawnPos, velocity, type, damage, knockback, player.whoAmI, targetIdx, 0f);
             Main.projectile[projectile].extraUpdates += extraUpdateAmt;
         }

@@ -3,7 +3,6 @@ using CalamityMod.Projectiles.Summon;
 using CalamityMod.Rarities;
 using Microsoft.Xna.Framework;
 using Terraria;
-using Terraria.Audio;
 using Terraria.DataStructures;
 using Terraria.ID;
 using Terraria.ModLoader;
@@ -29,7 +28,7 @@ namespace CalamityMod.Items.Weapons.Summon
             Item.sentry = true;
             Item.knockBack = 4f;
 
-            Item.useAnimation = Item.useTime = 10; // 9 because of useStyle 1.
+            Item.useAnimation = Item.useTime = 30;
             Item.mana = 10;
             Item.noMelee = true;
             Item.autoReuse = true;

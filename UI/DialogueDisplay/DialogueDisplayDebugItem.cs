@@ -1,7 +1,6 @@
 ﻿using Terraria.ID;
 using Terraria.ModLoader;
 using Terraria;
-using System.Linq;
 using CalamityMod.UI.DialogueDisplay.DisplayEffects;
 
 namespace CalamityMod.UI.DialogueDisplay

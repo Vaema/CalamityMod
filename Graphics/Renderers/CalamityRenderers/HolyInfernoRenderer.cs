@@ -1,4 +1,5 @@
-﻿using CalamityMod.NPCs;
+﻿using CalamityMod.Enums;
+using CalamityMod.NPCs;
 using CalamityMod.NPCs.Providence;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
@@ -13,7 +14,7 @@ namespace CalamityMod.Graphics.Renderers.CalamityRenderers
     {
         #region Fields/Properties
 
-        public override DrawLayer Layer => DrawLayer.BeforeTiles;
+        public override GeneralDrawLayer Layer => GeneralDrawLayer.BeforeAllTiles;
 
         public static Providence Provi
         {

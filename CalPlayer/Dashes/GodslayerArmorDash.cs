@@ -17,7 +17,7 @@ namespace CalamityMod.CalPlayer.Dashes
 {
     public class GodslayerArmorDash : PlayerDashEffect
     {
-        public static new string ID => "Godslayer Armor";
+        public static new string ID { get; private set; }
 
         public SlotId GSDashSlot;
 
@@ -30,6 +30,11 @@ namespace CalamityMod.CalPlayer.Dashes
         public int Time = 0;
         public float Size = 2.2f;
         public bool SoundOnce = true;
+
+        public override void Load()
+        {
+            ID = DashID;
+        }
 
         public override float CalculateDashSpeed(Player player) => 32f;
 

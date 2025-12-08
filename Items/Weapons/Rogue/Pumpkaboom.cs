@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using CalamityMod.Items.Materials;
-using CalamityMod.Items.Placeables.SunkenSea;
-using CalamityMod.Projectiles.Rogue;
+﻿using CalamityMod.Projectiles.Rogue;
 using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.DataStructures;
@@ -31,8 +27,6 @@ namespace CalamityMod.Items.Weapons.Rogue
             Item.shootSpeed = 14f;
             Item.DamageType = RogueDamageClass.Instance;
         }
-
-        public override float StealthDamageMultiplier => 1f;
 
         public override bool CanUseItem(Player player)
         {

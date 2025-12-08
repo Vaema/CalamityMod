@@ -1,14 +1,7 @@
-﻿using System.Collections.Generic;
-using System.Linq;
-using CalamityMod.Systems;
-using CalamityMod.Waters;
-using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Graphics;
-using Microsoft.Xna.Framework.Input;
+﻿using Microsoft.Xna.Framework;
 using MonoMod.Cil;
 using Terraria;
 using Terraria.Audio;
-using Terraria.Graphics;
 using Terraria.ID;
 
 namespace CalamityMod.ILEditing
@@ -65,66 +58,7 @@ namespace CalamityMod.ILEditing
             return true;
         }
 
-        public static void SelectSulphuricWaterColor(int x, int y, ref VertexColors initialColor, bool isSlope)
-        {
-            if (SulphuricWaterSafeZoneSystem.NearbySafeTiles.Count >= 1)
-            {
-                Color cleanWaterColor = new(10, 62, 193);
-                Point closestSafeZone = SulphuricWaterSafeZoneSystem.NearbySafeTiles.Keys.OrderBy(t => t.ToVector2().DistanceSQ(new(x, y))).First();
-                List<Vector2> points = new()
-                {
-                    new Vector2(x - 0.5f, y - 0.5f),
-                    new Vector2(x + 0.5f, y - 0.5f),
-                    new Vector2(x - 0.5f, y + 0.5f),
-                    new Vector2(x + 0.5f, y + 0.5f),
-                };
-
-                float lerpAmt = (1f - SulphuricWaterSafeZoneSystem.NearbySafeTiles[closestSafeZone]) * 21f;
-                for (int i = 0; i < 4; i++)
-                {
-                    float distanceToClosest = points[i].Distance(closestSafeZone.ToVector2());
-                    float acidicWaterInterpolant = Utils.GetLerpValue(12f, 20.5f, distanceToClosest + lerpAmt, true);
-                    switch (i)
-                    {
-                        case 0:
-                            initialColor.TopLeftColor = Color.Lerp(initialColor.TopLeftColor, cleanWaterColor, 1f - acidicWaterInterpolant);
-                            break;
-
-                        case 1:
-                            initialColor.TopRightColor = Color.Lerp(initialColor.TopRightColor, cleanWaterColor, 1f - acidicWaterInterpolant);
-                            break;
-
-                        case 2:
-                            initialColor.BottomLeftColor = Color.Lerp(initialColor.BottomLeftColor, cleanWaterColor, 1f - acidicWaterInterpolant);
-                            break;
-
-                        case 3:
-                            initialColor.BottomRightColor = Color.Lerp(initialColor.BottomRightColor, cleanWaterColor, 1f - acidicWaterInterpolant);
-                            break;
-
-                        default:
-                            break;
-                    }
-                }
-            }
-
-            if (isSlope)
-            {
-                initialColor.TopLeftColor *= 1f / 3;
-                initialColor.TopRightColor *= 1f / 3;
-                initialColor.BottomLeftColor *= 1f / 3;
-                initialColor.BottomRightColor *= 1f / 3;
-            }
-            else
-            {
-                initialColor.TopLeftColor *= 0.4f;
-                initialColor.TopRightColor *= 0.4f;
-                initialColor.BottomLeftColor *= 0.4f;
-                initialColor.BottomRightColor *= 0.4f;
-            }
-        }
-
-        public static void DumpToLog(ILContext il) => CalamityMod.Instance.Logger.Debug(il.ToString());
-        public static void LogFailure(string name, string reason) => CalamityMod.Instance.Logger.Warn($"IL edit \"{name}\" failed! {reason}");
+        public static void DumpToLog(ILContext il) => CalamityMod.Log.Debug(il.ToString());
+        public static void LogFailure(string name, string reason) => CalamityMod.Log.ILFailure(name, reason);
     }
 }

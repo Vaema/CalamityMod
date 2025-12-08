@@ -121,13 +121,5 @@ namespace CalamityMod.Projectiles.Boss
         }
 
         public override bool CanHitPlayer(Player target) => Projectile.Opacity == 1f;
-
-        public override void OnHitPlayer(Player target, Player.HurtInfo info)
-        {
-            if (info.Damage <= 0 || Projectile.Opacity != 1f)
-                return;
-
-            target.AddBuff(BuffID.Frostburn, 180, true);
-        }
     }
 }

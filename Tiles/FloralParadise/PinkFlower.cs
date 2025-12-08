@@ -1,7 +1,7 @@
 ﻿using CalamityMod.ILEditing;
-using CalamityMod.Items.Placeables;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using ReLogic.Content;
 using Terraria;
 using Terraria.DataStructures;
 using Terraria.ID;
@@ -16,8 +16,12 @@ namespace CalamityMod.Tiles.FloralParadise
 
         public const int WindPushLifetime = 45;
 
+        public Asset<Texture2D> StamenTexture;
+
         public override void SetStaticDefaults()
         {
+            StamenTexture = ModContent.Request<Texture2D>("CalamityMod/Tiles/FloralParadise/PinkFlowerStamen");
+
             Main.tileFrameImportant[Type] = true;
             Main.tileNoFail[Type] = true;
             Main.tileObsidianKill[Type] = true;
@@ -38,7 +42,7 @@ namespace CalamityMod.Tiles.FloralParadise
             TileObjectData.addTile(Type);
 
             HitSound = SoundID.Grass;
-            DustType = 44;
+            DustType = DustID.JungleSpore;
             AddMapEntry(new Color(255, 155, 202));
         }
 
@@ -61,7 +65,7 @@ namespace CalamityMod.Tiles.FloralParadise
 
             int frameX = Main.tile[i, j].TileFrameX;
             Color drawColor = Lighting.GetColor(i, j);
-            Texture2D stamenTexture = ModContent.Request<Texture2D>("CalamityMod/Tiles/FloralParadise/PinkFlowerStamen").Value;
+            Texture2D stamenTexture = StamenTexture.Value;
             Rectangle stamenFrame = stamenTexture.Frame(2, 1, frameX > 36 ? 1 : 0, 0);
             Vector2 stamenOrigin = stamenFrame.Size() * new Vector2(0.5f, 1f);
             Vector2 drawOffset = Main.drawToScreen ? Vector2.Zero : new Vector2(Main.offScreenRange);
@@ -71,7 +75,7 @@ namespace CalamityMod.Tiles.FloralParadise
             if (!Main.gamePaused && windTimeLeft >= 2 && Main.rand.NextBool(6))
             {
                 Vector2 pollenVelocity = -Vector2.UnitY.RotatedByRandom(windRotation * 2.3f) * 3f;
-                Dust pollen = Dust.NewDustPerfect(drawPos + Main.screenPosition - drawOffset - Vector2.UnitY * 16f, 44);
+                Dust pollen = Dust.NewDustPerfect(drawPos + Main.screenPosition - drawOffset - Vector2.UnitY * 16f, DustID.JungleSpore);
                 pollen.velocity = pollenVelocity;
                 pollen.scale = 1.4f;
             }

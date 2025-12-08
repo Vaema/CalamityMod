@@ -63,7 +63,7 @@ namespace CalamityMod.Projectiles.Ranged
         public override void KillHoldoutLogic()
         {
             // Only allow the projectile to kill if we're not reloading
-            if (CurrentState == 0 && HeldItem.type != Owner.ActiveItem().type)
+            if (CurrentState == 0 && HeldItem.type != Owner.HeldItem.type)
             {
                 Projectile.Kill();
                 Projectile.netUpdate = true;
@@ -90,7 +90,7 @@ namespace CalamityMod.Projectiles.Ranged
                     if (Projectile.frame == 5)
                     {
                         Projectile.frameCounter++;
-                        if (Projectile.frameCounter >= MathHelper.Clamp(Owner.ActiveItem().useAnimation - 18, 0f, Owner.ActiveItem().useAnimation))
+                        if (Projectile.frameCounter >= MathHelper.Clamp(Owner.HeldItem.useAnimation - 18, 0f, Owner.HeldItem.useAnimation))
                         {
                             if (Owner.CantUseHoldout())
                             {
@@ -154,15 +154,18 @@ namespace CalamityMod.Projectiles.Ranged
 
                             Vector2 velocity = Projectile.velocity.SafeNormalize(Vector2.UnitY) * HeldItem.shootSpeed;
 
-                            // Eject bullet casing
-                            Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center, velocity.RotatedBy(Main.rand.NextFloat(2.5f, 2.65f) * -Projectile.direction) * 0.5f, ModContent.ProjectileType<M1GarandBulletCasing>(), 0, 0, Projectile.owner);
-
-                            if (Owner.Calamity().garandShots == 0)
+                            if (Main.myPlayer == Projectile.owner)
                             {
-                                Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center, velocity.RotatedBy(Main.rand.NextFloat(1.175f, 1.25f) * -Projectile.direction) * 0.285f, ModContent.ProjectileType<M1GarandEmptyClip>(), 0, 0, Projectile.owner);
+                                // Eject bullet casing
+                                Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center, velocity.RotatedBy(Main.rand.NextFloat(2.5f, 2.65f) * -Projectile.direction) * 0.5f, ModContent.ProjectileType<M1GarandBulletCasing>(), 0, 0, Projectile.owner);
 
-                                GenericSparkle sparker = new GenericSparkle(Projectile.Center, Vector2.Zero, Color.PaleGoldenrod, Color.Gold * 0.25f, 1.25f, 5, Projectile.velocity.ToRotation() + Main.rand.NextFloat(-0.15f, 0.15f), 1f);
-                                GeneralParticleHandler.SpawnParticle(sparker);
+                                if (Owner.Calamity().garandShots == 0)
+                                {
+                                    Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center, velocity.RotatedBy(Main.rand.NextFloat(1.175f, 1.25f) * -Projectile.direction) * 0.285f, ModContent.ProjectileType<M1GarandEmptyClip>(), 0, 0, Projectile.owner);
+
+                                    GenericSparkle sparker = new GenericSparkle(Projectile.Center, Vector2.Zero, Color.PaleGoldenrod, Color.Gold * 0.25f, 1.25f, 5, Projectile.velocity.ToRotation() + Main.rand.NextFloat(-0.15f, 0.15f), 1f);
+                                    GeneralParticleHandler.SpawnParticle(sparker);
+                                }
                             }
 
                             // Direct smoke
@@ -177,8 +180,11 @@ namespace CalamityMod.Projectiles.Ranged
                             GeneralParticleHandler.SpawnParticle(shootPulse);
 
                             // Shot starts from slightly behind the tip
-                            Vector2 offsetPos = GunTipPosition - Projectile.velocity.SafeNormalize(Vector2.UnitY) * 18f;
-                            Projectile.NewProjectile(Projectile.GetSource_FromThis(), offsetPos, velocity, ModContent.ProjectileType<M1GarandShot>(), Projectile.damage, Projectile.knockBack, Projectile.owner);
+                            if (Main.myPlayer == Projectile.owner)
+                            {
+                                Vector2 offsetPos = GunTipPosition - Projectile.velocity.SafeNormalize(Vector2.UnitY) * 18f;
+                                Projectile.NewProjectile(Projectile.GetSource_FromThis(), offsetPos, velocity, ModContent.ProjectileType<M1GarandShot>(), Projectile.damage, Projectile.knockBack, Projectile.owner);
+                            }
                         }
                     }
                     // The firing animation

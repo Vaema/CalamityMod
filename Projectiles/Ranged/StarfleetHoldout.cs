@@ -162,15 +162,19 @@ namespace CalamityMod.Projectiles.Ranged
             Owner.SetScreenshake(naildriver ? 9 : scattershot ? 7 : 4);
             OffsetLengthFromArm = naildriver ? 0 : scattershot ? 7 : 15;
 
-            int baseShotCount = 6;
-            for (int i = 0; i < baseShotCount; i++)
+            if (Main.myPlayer == Projectile.owner)
             {
-                float randomVel = Main.rand.NextFloat(0.8f, 1f);
-                float damageMult = ((naildriver || scattershot) ? 1.75f : 1f) / baseShotCount;
-                float spread = (naildriver ? 0.06f : scattershot ? 0.9f : 0.25f);
-                Projectile shotgun = Projectile.NewProjectileDirect(Projectile.GetSource_FromThis(), GunTipPosition, randomVel * Projectile.velocity.RotatedByRandom(spread) * 8, ModContent.ProjectileType<StarfleetStar>(), (int)(Projectile.damage * damageMult), Projectile.knockBack, Projectile.owner, 0, 0, Main.rand.Next(0, 300 + 1));
-                shotgun.extraUpdates = naildriver ? 9 : scattershot ? 7 : 3;
+                int baseShotCount = 6;
+                for (int i = 0; i < baseShotCount; i++)
+                {
+                    float randomVel = Main.rand.NextFloat(0.8f, 1f);
+                    float damageMult = ((naildriver || scattershot) ? 1.75f : 1f) / baseShotCount;
+                    float spread = (naildriver ? 0.06f : scattershot ? 0.9f : 0.25f);
+                    Projectile shotgun = Projectile.NewProjectileDirect(Projectile.GetSource_FromThis(), GunTipPosition, randomVel * Projectile.velocity.RotatedByRandom(spread) * 8, ModContent.ProjectileType<StarfleetStar>(), (int)(Projectile.damage * damageMult), Projectile.knockBack, Projectile.owner, 0, 0, Main.rand.Next(0, 300 + 1));
+                    shotgun.extraUpdates = naildriver ? 9 : scattershot ? 7 : 3;
+                }
             }
+            
             for (int i = 0; i < 25; i++)
             {
                 float variance = Main.rand.NextFloat(-0.7f, 0.7f);
@@ -202,11 +206,14 @@ namespace CalamityMod.Projectiles.Ranged
             if (starburstCooldown < extendedCooldown)
                 starburstCooldown = extendedCooldown;
 
-            float blastSize = 140;
-            float minMultiplier = 0.1f;
-            int hitsToMinMult = 6;
-            Projectile blast = Projectile.NewProjectileDirect(Owner.GetSource_FromThis(), Projectile.Center, Vector2.Zero, ModContent.ProjectileType<BasicBurst>(), (int)(Projectile.damage * 3), -45, Owner.whoAmI, blastSize, minMultiplier, hitsToMinMult);
-            blast.timeLeft = 15;
+            if (Main.myPlayer == Projectile.owner)
+            {
+                float blastSize = 140;
+                float minMultiplier = 0.1f;
+                int hitsToMinMult = 6;
+                Projectile blast = Projectile.NewProjectileDirect(Owner.GetSource_FromThis(), Projectile.Center, Vector2.Zero, ModContent.ProjectileType<BasicBurst>(), Projectile.damage * 3, -45, Owner.whoAmI, blastSize, minMultiplier, hitsToMinMult);
+                blast.timeLeft = 15;
+            }
 
             for (int i = 0; i < 14; i++)
             {

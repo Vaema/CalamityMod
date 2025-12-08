@@ -1,5 +1,4 @@
-﻿using System.Security.Policy;
-using CalamityMod.CalPlayer;
+﻿using CalamityMod.CalPlayer;
 using CalamityMod.Events;
 using CalamityMod.Items.Placeables.Furniture;
 using CalamityMod.Systems;

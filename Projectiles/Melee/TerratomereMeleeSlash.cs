@@ -1,7 +1,6 @@
 ﻿using System.Collections.Generic;
 using CalamityMod.Graphics.Primitives;
 using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Graphics;
 using Terraria;
 using Terraria.Graphics.Shaders;
 using Terraria.ModLoader;
@@ -40,9 +39,9 @@ namespace CalamityMod.Projectiles.Melee
             Projectile.scale *= 1.01f;
         }
 
-        public float SlashWidthFunction(float completionRatio) => Projectile.scale * 22f;
+        public float SlashWidthFunction(float completionRatio, Vector2 vertexPos) => Projectile.scale * 22f;
 
-        public Color SlashColorFunction(float completionRatio) => Color.Lime * Utils.GetLerpValue(0.04f, 0.27f, completionRatio, true) * Projectile.Opacity;
+        public Color SlashColorFunction(float completionRatio, Vector2 vertexPos) => Color.Lime * Utils.GetLerpValue(0.04f, 0.27f, completionRatio, true) * Projectile.Opacity;
         
         public override bool PreDraw(ref Color lightColor)
         {
@@ -56,7 +55,7 @@ namespace CalamityMod.Projectiles.Melee
                 points.Add(ControlPoints[i] + ControlPoints[i].SafeNormalize(Vector2.Zero) * (Projectile.scale - 1f) * 40f);
 
             // 17MAY2024: Ozzatron: remove Terratomere rendering its trails multiple times
-            PrimitiveRenderer.RenderTrail(points, new(SlashWidthFunction, SlashColorFunction, (_) => Projectile.Center, shader: GameShaders.Misc["CalamityMod:ExobladeSlash"]), 65);
+            PrimitiveRenderer.RenderTrail(points, new(SlashWidthFunction, SlashColorFunction, (_,_) => Projectile.Center, shader: GameShaders.Misc["CalamityMod:ExobladeSlash"]), 65);
 
             Main.spriteBatch.ExitShaderRegion();
             return false;

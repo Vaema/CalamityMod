@@ -1,14 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.IO;
 using CalamityMod.NPCs.Providence;
 
 namespace CalamityMod.Packets
 {
-    public sealed class ProvidenceDyeConditionSyncPacket : CalamityPacket
+    internal sealed class ProvidenceDyeConditionSyncPacket : CalamityPacket
     {
         public static ProvidenceDyeConditionSyncPacket Instance { get; private set; }
 

@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using CalamityMod.NPCs.CalClone;
-using CalamityMod.NPCs.DevourerofGods;
+﻿using CalamityMod.NPCs.CalClone;
 using CalamityMod.NPCs.Leviathan;
 using CalamityMod.NPCs.PlaguebringerGoliath;
 using CalamityMod.NPCs.Signus;
@@ -26,7 +20,7 @@ namespace CalamityMod.Systems
             Filters.Scene["CalamityMod:DevourerofGodsHead"] = new Filter(new DoGScreenShaderData("FilterMiniTower").UseOpacity(0.025f), EffectPriority.VeryHigh);
             SkyManager.Instance["CalamityMod:DevourerofGodsHead"] = new DoGSky();
 
-            Filters.Scene["CalamityMod:CalamitasRun3"] = new Filter(new CalScreenShaderData("FilterMiniTower").UseColor(1.1f, 0.3f, 0.3f).UseOpacity(0.6f), EffectPriority.VeryHigh);
+            Filters.Scene["CalamityMod:CalamitasRun3"] = new Filter(new CalScreenShaderData("FilterMiniTower").UseColor(1.1f, 0.3f, 0.3f).UseOpacity(0.2f), EffectPriority.VeryHigh);
             SkyManager.Instance["CalamityMod:CalamitasRun3"] = new CalSky();
 
             Filters.Scene["CalamityMod:PlaguebringerGoliath"] = new Filter(new PbGScreenShaderData("FilterMiniTower").UseColor(0.2f, 0.6f, 0.2f).UseOpacity(0.35f), EffectPriority.VeryHigh);

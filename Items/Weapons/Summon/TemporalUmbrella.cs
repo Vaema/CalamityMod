@@ -25,7 +25,7 @@ namespace CalamityMod.Items.Weapons.Summon
             Item.damage = 193;
             Item.knockBack = 1f;
             Item.mana = 99;
-            Item.useAnimation = Item.useTime = 10;
+            Item.useAnimation = Item.useTime = 24;
             Item.DamageType = DamageClass.Summon;
             Item.buffType = ModContent.BuffType<MagicHatBuff>();
             Item.shoot = ModContent.ProjectileType<MagicHat>();

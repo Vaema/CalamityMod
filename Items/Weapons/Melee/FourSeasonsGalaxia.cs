@@ -7,7 +7,6 @@ using CalamityMod.Items.Materials;
 using CalamityMod.Projectiles.Melee;
 using CalamityMod.Rarities;
 using CalamityMod.Systems;
-using CalamityMod.Tiles.Furniture.CraftingStations;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria;
@@ -87,7 +86,7 @@ namespace CalamityMod.Items.Weapons.Melee
             //.. but just in case
             if (mainAttunement == null)
             {
-                CalamityMod.Instance.Logger.Error("No main attunement on galaxia, couldn't edit its tooltip properly. How the hell did that happen.");
+                CalamityMod.Log.Error("No main attunement on galaxia, couldn't edit its tooltip properly. How the hell did that happen.");
                 return;
             }
 

@@ -50,7 +50,7 @@ namespace CalamityMod.Balancing
                 p.type == ProjectileType<ArkoftheCosmosSwungBlade>() && (p.ai[0] == 2 || p.ai[0] == 3);
 
             bool HiveBeeFilter(Projectile p) =>
-                p.type == ProjectileType<BasicPlagueBee>() && Main.player[p.owner].ActiveItem().type == ItemType<TheHive>();
+                p.type == ProjectileType<BasicPlagueBee>() && Main.player[p.owner].HeldItem.type == ItemType<TheHive>();
 
             NPCSpecificBalancingChanges = new List<NPCBalancingChange>();
 

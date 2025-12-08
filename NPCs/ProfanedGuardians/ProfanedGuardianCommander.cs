@@ -8,7 +8,7 @@ using CalamityMod.Items.Armor.Vanity;
 using CalamityMod.Items.LoreItems;
 using CalamityMod.Items.Materials;
 using CalamityMod.Items.Placeables.Furniture.BossRelics;
-using CalamityMod.Items.Placeables.Furniture.DevPaintings;
+using CalamityMod.Items.Placeables.Furniture.Paintings;
 using CalamityMod.Items.Placeables.Furniture.Trophies;
 using CalamityMod.Items.SummonItems;
 using CalamityMod.Items.Weapons.Typeless;
@@ -23,7 +23,7 @@ using Terraria;
 using Terraria.Audio;
 using Terraria.GameContent;
 using Terraria.GameContent.Bestiary;
-using Terraria.Graphics.Effects;
+using Terraria.GameContent.ItemDropRules;
 using Terraria.ID;
 using Terraria.ModLoader;
 using Filters = Terraria.Graphics.Effects.Filters;
@@ -80,7 +80,7 @@ namespace CalamityMod.NPCs.ProfanedGuardians
             NPC.height = 186;
             NPC.defense = 40;
             NPC.DR_NERD(0.3f);
-            NPC.LifeMaxNERB(100000, 120000, 200000);
+            NPC.LifeMaxNERB(80000, 120000, 200000);
             NPC.knockBackResist = 0f;
             NPC.noGravity = true;
             NPC.noTileCollide = true;
@@ -1199,7 +1199,13 @@ namespace CalamityMod.NPCs.ProfanedGuardians
         {
             npcLoot.Add(ModContent.ItemType<RelicOfDeliverance>(), 4);
             npcLoot.Add(ModContent.ItemType<ProfanedGuardianMask>(), 7);
-            npcLoot.Add(ModContent.ItemType<WarbanneroftheRighteous>(), 4);
+
+            // 16NOV2025: Ozzatron: item has been chosen as the "Expert gatekept" item for this Calamity boss
+            // npcLoot.Add(ModContent.ItemType<WarbanneroftheRighteous>(), 1);
+            LeadingConditionRule expert = new LeadingConditionRule(new Conditions.IsExpert());
+            expert.OnSuccess(ItemDropRule.Common(ModContent.ItemType<WarbanneroftheRighteous>(), 1));
+            npcLoot.Add(expert);
+
             npcLoot.Add(ModContent.ItemType<ProfanedGuardianTrophy>(), 10);
             npcLoot.Add(ModContent.ItemType<ProfanedCore>());
             npcLoot.Add(DropHelper.NormalVsExpertQuantity(ModContent.ItemType<UnholyEssence>(), 1, 15, 20, 20, 25));

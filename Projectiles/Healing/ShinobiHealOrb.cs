@@ -32,12 +32,12 @@ namespace CalamityMod.Projectiles.Healing
 
         public override void AI() => Projectile.HealingProjectile((int)Projectile.ai[1], Projectile.owner, 6f, 15f);
 
-        internal Color ColorFunction(float completionRatio) => Color.Lerp(Color.Blue, Color.CornflowerBlue, completionRatio);
-        internal float WidthFunction(float completionRatio) => 10f * (completionRatio < 0.2f ? MathHelper.Clamp(1f - MathF.Pow(5f * completionRatio - 1f, 2f), 0f, 1f) : Utils.GetLerpValue(1f, 0.2f, completionRatio, true));
+        internal Color ColorFunction(float completionRatio, Vector2 vertexPos) => Color.Lerp(Color.Blue, Color.CornflowerBlue, completionRatio);
+        internal float WidthFunction(float completionRatio, Vector2 vertexPos) => 10f * (completionRatio < 0.2f ? MathHelper.Clamp(1f - MathF.Pow(5f * completionRatio - 1f, 2f), 0f, 1f) : Utils.GetLerpValue(1f, 0.2f, completionRatio, true));
         public override bool PreDraw(ref Color lightColor)
         {
             GameShaders.Misc["CalamityMod:TrailStreak"].SetShaderTexture(ModContent.Request<Texture2D>("CalamityMod/ExtraTextures/Trails/BasicTrail"));
-            PrimitiveRenderer.RenderTrail(Projectile.oldPos, new(WidthFunction, ColorFunction, (_) => Projectile.Size * 0.5f, shader: GameShaders.Misc["CalamityMod:TrailStreak"]), 30);
+            PrimitiveRenderer.RenderTrail(Projectile.oldPos, new(WidthFunction, ColorFunction, (_,_) => Projectile.Size * 0.5f, shader: GameShaders.Misc["CalamityMod:TrailStreak"]), 30);
             return false;
         }
 

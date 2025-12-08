@@ -1,6 +1,7 @@
 ﻿using CalamityMod.Items.Fishing.BrimstoneCragCatches;
 using Microsoft.Xna.Framework;
 using Terraria;
+using Terraria.ID;
 using Terraria.ModLoader;
 using Terraria.ObjectData;
 
@@ -21,7 +22,7 @@ namespace CalamityMod.Tiles.Crags
             TileObjectData.newTile.CopyFrom(TileObjectData.Style2x2);
             TileObjectData.addTile(Type);
             AddMapEntry(new Color(189, 152, 43), CalamityUtils.GetItemName<SlagCrate>());
-            DustType = 60;
+            DustType = DustID.RedTorch;
         }
 
         public override void NumDust(int i, int j, bool fail, ref int num)

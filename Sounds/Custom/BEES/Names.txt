@@ -6,9 +6,8 @@ Names:
 5 - moonburn
 6 - Ozzatron
 7 - Rebecca
-8 - Shayy
-9 - StipulatedVenus
-10 - Xyk
-11 - Shade
-12 - YuH
-13 - ENNWAY
+8 - StipulatedVenus
+9 - Xyk
+10 - Shade
+11 - YuH
+12 - ENNWAY

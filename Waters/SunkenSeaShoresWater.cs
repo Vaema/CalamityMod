@@ -1,6 +1,6 @@
 ﻿using CalamityMod.Dusts.WaterSplash;
 using CalamityMod.Gores.WaterDroplet;
-using CalamityMod.Systems;
+using CalamityMod.Systems.Graphic.LiquidSystem;
 using CalamityMod.Tiles.Abyss;
 using Microsoft.Xna.Framework;
 using Terraria;
@@ -10,12 +10,12 @@ namespace CalamityMod.Waters
 {
     public class SunkenSeaShoresWaterflow : ModWaterfallStyle { }
 
-    public class SunkenSeaShoresWater : CalamityModWaterStyle
+    public class SunkenSeaShoresWater : ModWaterStyle, IWaterStyleModifyLight
     {
         private readonly Vector3 WaterGlowColor = new Color(82, 223, 255).ToVector3();
 
         public static int Type { get; private set; }
-        public static CalamityModWaterStyle Instance { get; private set; }
+        public static ModWaterStyle Instance { get; private set; }
 
         public override void SetStaticDefaults()
         {
@@ -29,7 +29,7 @@ namespace CalamityMod.Waters
             Instance = null;
         }
 
-        public override void ModifyLight(ref readonly Tile tile, int i, int j, ref float r, ref float g, ref float b)
+        public void ModifyLight(in Tile tile, int i, int j, ref float r, ref float g, ref float b)
         {
             Vector3 outputColor = new Vector3(r, g, b);
 

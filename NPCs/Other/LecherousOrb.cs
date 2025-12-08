@@ -97,7 +97,7 @@ namespace CalamityMod.NPCs.Other
         {
             for (int i = 0; i < 3; i++)
             {
-                Dust magic = Dust.NewDustPerfect(NPC.Center + Main.rand.NextVector2Circular(12f, 12f), 264);
+                Dust magic = Dust.NewDustPerfect(NPC.Center + Main.rand.NextVector2Circular(12f, 12f), DustID.PortalBoltTrail);
                 magic.color = Color.Red;
                 magic.velocity = Main.rand.NextVector2Circular(3f, 3f);
                 magic.fadeIn = 0.9f;
@@ -109,7 +109,7 @@ namespace CalamityMod.NPCs.Other
             {
                 for (int i = 0; i < 15; i++)
                 {
-                    Dust magic = Dust.NewDustPerfect(NPC.Center + Main.rand.NextVector2Circular(12f, 12f), 264);
+                    Dust magic = Dust.NewDustPerfect(NPC.Center + Main.rand.NextVector2Circular(12f, 12f), DustID.PortalBoltTrail);
                     magic.color = Color.Red;
                     magic.velocity = Main.rand.NextVector2Circular(6f, 6f);
                     magic.fadeIn = 1.25f;

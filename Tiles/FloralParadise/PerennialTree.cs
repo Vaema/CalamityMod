@@ -4,6 +4,7 @@ using CalamityMod.ILEditing;
 using CalamityMod.Tiles.BaseTiles;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using ReLogic.Content;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
@@ -36,11 +37,13 @@ namespace CalamityMod.Tiles.FloralParadise
 
         public override int MaxCutoffBranchesPerBranch => 5;
 
+        public Asset<Texture2D> VineTexture;
+
         public override void SetStaticDefaults()
         {
             Main.tileAxe[Type] = true;
             Main.tileFrameImportant[Type] = true;
-            DustType = 7;
+            DustType = DustID.WoodFurniture;
             ItemDrop = ItemID.Wood;
             UseDefaultSize();
             TileObjectData.addTile(Type);
@@ -50,7 +53,8 @@ namespace CalamityMod.Tiles.FloralParadise
 
         public void DrawVine(Vector2 vineTop, Vector2 downwardBottom, int totalVinesToDraw, float swayFactor)
         {
-            Texture2D vineTexture = ModContent.Request<Texture2D>("CalamityMod/Tiles/PerennialTreeVines").Value;
+            VineTexture ??= ModContent.Request<Texture2D>("CalamityMod/Tiles/PerennialTreeVines");
+            Texture2D vineTexture = VineTexture.Value;
 
             // Determine the initial points for the vines.
             Vector2[] controlPoints = new Vector2[8];

@@ -24,13 +24,14 @@ namespace CalamityMod.Items.Accessories
             Item.width = 36;
             Item.height = 38;
             Item.DamageType = DamageClass.MeleeNoSpeed;
-            Item.damage = 30;
+            Item.damage = 300;
             Item.knockBack = 9f;
             Item.value = CalamityGlobalItem.RarityYellowBuyPrice;
             Item.rare = ItemRarityID.Yellow;
             Item.Calamity().donorItem = true;
             Item.defense = 4;
             Item.accessory = true;
+            Item.expert = true;
         }
 
         public override bool MeleePrefix() => false;
