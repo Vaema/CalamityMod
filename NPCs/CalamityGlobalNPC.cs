@@ -1345,7 +1345,7 @@ namespace CalamityMod.NPCs
                     npc.scale *= 1.15f;
                     break;
                 case NPCID.Plantera:
-                    npc.lifeMax = (int)Math.Round(npc.lifeMax * 2.88);
+                    npc.lifeMax = (int)Math.Round(npc.lifeMax * 2.85);
                     break;
                 case NPCID.PlanterasTentacle:
                     npc.lifeMax = (int)Math.Round(npc.lifeMax * 0.5);
