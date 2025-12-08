@@ -4861,13 +4861,13 @@ namespace CalamityMod.CalPlayer
         #region Get Weapon Damage And KB
         public override void ModifyWeaponDamage(Item item, ref StatModifier damage)
         {
-            if (item.CountsAsClass<RogueDamageClass>())
+            if (item.CountsAsClass<RogueDamageClass>() && item.TryGetGlobalItem<RogueGlobalItem>(out var rogueItem))
             {
                 // Apply weapon modifier stealth strike damage bonus
                 // 01OCT2023: Ozzatron: This is a multiplicative bonus because it is a prefix.
                 // It should be equivalent to x1.15 (or whatever multiplier) on the base damage of the weapon for stealth only.
-                if (item.Calamity().StealthStrikePrefixBonus != 0f && StealthStrikeAvailable())
-                    damage *= item.Calamity().StealthStrikePrefixBonus; // This number centers on 1f, so 1.15f = 1.15x damage.
+                if (rogueItem.StealthStrikePrefixBonus != 0f && StealthStrikeAvailable())
+                    damage *= rogueItem.StealthStrikePrefixBonus; // This number centers on 1f, so 1.15f = 1.15x damage.
             }
         }
 

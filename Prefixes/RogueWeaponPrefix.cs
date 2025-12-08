@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using CalamityMod.Items;
 using Terraria;
 using Terraria.Localization;
 using Terraria.ModLoader;
@@ -153,8 +154,8 @@ namespace CalamityMod.Prefixes
         // Applying stealth strike damage
         public override void Apply(Item item)
         {
-            if (item.CountsAsClass<RogueDamageClass>())
-                item.Calamity().StealthStrikePrefixBonus = stealthDmgMult;
+            if (item.CountsAsClass<RogueDamageClass>() && item.TryGetGlobalItem<RogueGlobalItem>(out var rogueItem))
+                rogueItem.StealthStrikePrefixBonus = stealthDmgMult;
         }
 
         // Changing value based on prefix tier (rarity is set automatically around value multiplier)
