@@ -179,10 +179,13 @@ namespace CalamityMod
             /// <param name="settings"></param>
             /// <param name="effect"></param>
             /// <param name="transformMatrix"></param>
-            public SpritebatchScope(SpriteBatch sb, SpriteSortMode sortMode, BatchSetting settings, Effect effect, Matrix transformMatrix)
+            public SpritebatchScope(SpriteBatch sb, SpriteSortMode sortMode, BatchSetting settings, Effect effect, Matrix transformMatrix, bool end = false)
             {
                 _sb = sb;
                 _sb.GetParameters(out _parameters);
+                if (end) {
+                    _sb.End();
+                }
                 _sb.Begin(sortMode, settings.blendState, settings.samplerState, settings.depthStencilState, settings.rasterizerState ?? Main.Rasterizer, effect, transformMatrix);
             }
 

@@ -89,11 +89,11 @@ namespace CalamityMod.Graphics.Renderers
                     continue;
 
                 var matrix = Main.GameViewMatrix.TransformationMatrix;
-                Main.spriteBatch.SafeBegin(SpriteSortMode.Deferred, BatchSetting.AlphaBlend, null, matrix, () =>
+                using (new CalamityUtils.SpritebatchScope(Main.spriteBatch, SpriteSortMode.Deferred, BatchSetting.AlphaBlend, null, matrix, true))
                 {
                     renderer.MainTarget.SwapTo(Color.Transparent);
                     renderer.DrawToTarget(Main.spriteBatch);
-                });
+                }
             }
 
             Main.instance.GraphicsDevice.SetRenderTarget(null);
