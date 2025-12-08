@@ -11,9 +11,10 @@ namespace CalamityMod.Buffs.StatBuffs
 {
     public class FortunesFavor : ModBuff
     {
-        public override string Texture => "CalamityMod/Buffs/StatBuffs/AbsorberRegen"; // PLACEHOLDER!!!
         public static int FortunesFavorRegenBoost = 3;
+
         public override LocalizedText Description => base.Description.WithFormatArgs(FortunesFavorRegenBoost.ToRegenPerSecond());
+
         public override void SetStaticDefaults()
         {
             Main.debuff[Type] = false;
