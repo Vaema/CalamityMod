@@ -986,21 +986,21 @@ namespace CalamityMod.ILEditing
         private static void MakeTaxCollectorUseful(ILContext il)
         {
             ILCursor cursor = new(il);
-            if (!cursor.TryGotoNext(MoveType.After, i => i.MatchCall<Item>("buyPrice")))
+            if (!cursor.TryGotoNext(MoveType.After, i => i.MatchCall<Item>(nameof(Item.buyPrice))))
             {
                 LogFailure("Tax Collector Money Boosts", "Could not locate the amount of money to collect per town NPC.");
                 return;
             }
             cursor.Emit(OpCodes.Pop);
-            cursor.Emit<CalamityGlobalNPC>(OpCodes.Call, "get_TotalTaxesPerNPC");
+            cursor.Emit<CalamityGlobalNPC>(OpCodes.Call, $"get_{nameof(CalamityGlobalNPC.TotalTaxesPerNPC)}");
 
-            if (!cursor.TryGotoNext(MoveType.After, i => i.MatchCall<Item>("buyPrice")))
+            if (!cursor.TryGotoNext(MoveType.After, i => i.MatchCall<Item>(nameof(Item.buyPrice))))
             {
                 LogFailure("Tax Collector Money Boosts", "Could not locate the maximum amount of money to collect.");
                 return;
             }
             cursor.Emit(OpCodes.Pop);
-            cursor.Emit<CalamityGlobalNPC>(OpCodes.Call, "get_TaxesToCollectLimit");
+            cursor.Emit<CalamityGlobalNPC>(OpCodes.Call, $"get_{nameof(CalamityGlobalNPC.TaxesToCollectLimit)}");
         }
         #endregion
 
