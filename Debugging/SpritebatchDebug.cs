@@ -2,6 +2,7 @@
 using System.Diagnostics;
 using System.Reflection;
 using System.Reflection.Emit;
+using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using MonoMod.RuntimeDetour;
 using MonoMod.RuntimeDetour.HookGen;
@@ -21,27 +22,58 @@ namespace CalamityMod.Debugging
         
         public void Load(Mod mod)
         {
-            MethodInfo begin = typeof(SpriteBatch).GetMethod(nameof(SpriteBatch.CheckBegin), BindingFlags.NonPublic | BindingFlags.Instance);
+            MethodInfo begin = typeof(SpriteBatch).GetMethod(
+                nameof(SpriteBatch.Begin),
+                BindingFlags.Public | BindingFlags.Instance,
+                binder: null,
+                types: new[]
+                {
+                    typeof(SpriteSortMode),
+                    typeof(BlendState),
+                    typeof(SamplerState),
+                    typeof(DepthStencilState),
+                    typeof(RasterizerState),
+                    typeof(Effect),
+                    typeof(Matrix)
+                },
+                modifiers: null);
             MethodInfo end = typeof(SpriteBatch).GetMethod(nameof(SpriteBatch.End), BindingFlags.Public | BindingFlags.Instance);
             
             Debug.Assert(begin != null);
             Debug.Assert(end != null);
             
-            _beginHook = new Hook(begin, CheckBegin_Impl);
+            _beginHook = new Hook(begin, Begin_Impl);
             _endHook = new Hook(end, End_Impl);
         }
 
-        private static void CheckBegin_Impl(Action<SpriteBatch, string> orig, SpriteBatch self, string method)
+        private static void Begin_Impl(Action<SpriteBatch, SpriteSortMode, BlendState,
+            SamplerState,
+            DepthStencilState,
+            RasterizerState,
+            Effect,
+            Matrix> orig, SpriteBatch self, SpriteSortMode sortMode,
+            BlendState blendState,
+            SamplerState samplerState,
+            DepthStencilState depthStencilState,
+            RasterizerState rasterizerState,
+            Effect effect,
+            Matrix transformMatrix)
         {
-            if (self.beginCalled) ModLoader.GetMod(nameof(CalamityMod)).Logger.Debug(SpritebatchDebug.Trace); 
+            if (self.beginCalled) ModLoader.GetMod(nameof(CalamityMod)).Logger.Debug("[SPRITEBATCH DEBUG] Begin was last called here: " + SpritebatchDebug.Trace); 
             SpritebatchDebug.Trace = Environment.StackTrace;
             
-            orig(self, method);
+            orig(self, sortMode,
+                blendState,
+                samplerState,
+                depthStencilState,
+                rasterizerState,
+                effect,
+                transformMatrix);
         }
 
         private static void End_Impl(Action<SpriteBatch> orig, SpriteBatch self)
         {
-            if (!self.beginCalled) ModLoader.GetMod(nameof(CalamityMod)).Logger.Debug(SpritebatchDebug.Trace); 
+            if (!self.beginCalled) ModLoader.GetMod(nameof(CalamityMod)).Logger.Debug("[SPRITEBATCH DEBUG] Doesn't seem like Begin was called. Here's the last end call: " + SpritebatchDebug.Trace); 
             SpritebatchDebug.Trace = Environment.StackTrace;
             
             orig(self);
