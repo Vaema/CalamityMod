@@ -52,7 +52,7 @@ namespace CalamityMod
                 return;
 
             spriteBatch.GetParameters(out var parameters);
-            spriteBatch.TryEnd();
+            spriteBatch.End();
             
             spriteBatch.Begin(sortMode, settings.blendState, settings.samplerState, settings.depthStencilState, settings.rasterizerState ?? Main.Rasterizer, effect, transformMatrix);
             batchCallback?.Invoke();

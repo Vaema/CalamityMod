@@ -17,7 +17,7 @@ namespace CalamityMod.Systems
             {
                 BakeBlendTexture_Inner(texture);
                 // TODO: [SAFEACTION] Bandaid fix
-                Main.spriteBatch.TryEnd();
+                Main.spriteBatch.End();
             });
         }
 
@@ -61,7 +61,7 @@ namespace CalamityMod.Systems
                     }
                 });
                 // TODO: [SAFEACTION] bandaid fix
-                Main.spriteBatch.TryEnd();
+                Main.spriteBatch.End();
                 graphicsDevice.SetRenderTarget(null);
             }
         }

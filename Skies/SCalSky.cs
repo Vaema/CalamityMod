@@ -250,7 +250,7 @@ namespace CalamityMod.Skies
                 Rectangle dest = new Rectangle(posOffset.X - tex.Width, posOffset.Y - tex.Height, (int)(tex.Width * repeatX), (int)(tex.Height * repeatY));
 
                 //We need the texture to loop, so we use a linearwrap sampler state. We draw it one extra texture size in all directions around the screen to provide buffer for the posOffset.
-                spriteBatch.TryEnd();
+                spriteBatch.End();
                 spriteBatch.Begin(SpriteSortMode.Immediate, BlendState.AlphaBlend, SamplerState.LinearWrap, DepthStencilState.None, RasterizerState.CullCounterClockwise);
 
                 spriteBatch.Draw(

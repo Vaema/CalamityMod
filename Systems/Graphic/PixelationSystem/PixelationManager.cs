@@ -167,7 +167,7 @@ namespace CalamityMod.Systems.Graphic.PixelationSystem
             }
             
             orig();
-            Main.spriteBatch.TryEnd();
+            Main.spriteBatch.End();
         }
    
         private static void DrawCollectionsToTarget(Dictionary<BlendState, ManagedRenderTarget> targetCollection, Matrix pixelationMatrix, List<PixelatedDrawer> drawerCollection)
@@ -197,8 +197,8 @@ namespace CalamityMod.Systems.Graphic.PixelationSystem
             var targetCollection = ReturnAssociatedTargetCollection(drawLayer);
                 foreach (var keyValuePair in targetCollection)
                 {
-                    Main.spriteBatch.TryEnd();
-                    Main.spriteBatch.TryBegin(default, keyValuePair.Key, SamplerState.PointClamp, DepthStencilState.None, Main.Rasterizer, null, Main.GameViewMatrix.TransformationMatrix);
+                    Main.spriteBatch.End();
+                    Main.spriteBatch.Begin(default, keyValuePair.Key, SamplerState.PointClamp, DepthStencilState.None, Main.Rasterizer, null, Main.GameViewMatrix.TransformationMatrix);
 
                     float targetScale = 1f / PixelationResolution;
                     Main.spriteBatch.Draw(keyValuePair.Value, Vector2.Zero, null, Color.White, 0f, Vector2.Zero, targetScale, SpriteEffects.None, 0f);

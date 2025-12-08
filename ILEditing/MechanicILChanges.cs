@@ -869,20 +869,20 @@ namespace CalamityMod.ILEditing
         #region GeneralDrawLayer Systems Drawing
         private static void GeneralDrawLayer_DrawForSupportedSystems(GeneralDrawLayer drawLayer)
         {
-            Main.spriteBatch.TryEnd();
+            Main.spriteBatch.End();
             GeneralParticleHandler.DrawParticleCollectionsAtSpecificLayer(drawLayer);
 
-            Main.spriteBatch.TryEnd();
-            Main.spriteBatch.TryBegin(SpriteSortMode.Immediate, BlendState.AlphaBlend, SamplerState.PointWrap, DepthStencilState.None, Main.Rasterizer, null, Main.GameViewMatrix.TransformationMatrix);
+            Main.spriteBatch.End();
+            Main.spriteBatch.Begin(SpriteSortMode.Immediate, BlendState.AlphaBlend, SamplerState.PointWrap, DepthStencilState.None, Main.Rasterizer, null, Main.GameViewMatrix.TransformationMatrix);
             MetaballManager.DrawMetaballs(drawLayer);
 
-            Main.spriteBatch.TryEnd();
+            Main.spriteBatch.End();
             PrimitivePixelationSystem.DrawTargetScaled(drawLayer);
 
             PixelationManager.DrawPixelatedTargets(drawLayer);
 
 
-            Main.spriteBatch.TryEnd();
+            Main.spriteBatch.End();
             RendererManager.DrawRendererAtLayer(drawLayer);
 
         }
@@ -891,7 +891,7 @@ namespace CalamityMod.ILEditing
         {
             GeneralDrawLayer_DrawForSupportedSystems(GeneralDrawLayer.BeforeAllTiles);
             // TODO: [SAFEACTION] this is a bandaid solution, but almost assuredly the method call here does not always correct state
-            Main.spriteBatch.TryBegin(SpriteSortMode.Deferred, BlendState.AlphaBlend, SamplerState.PointWrap, DepthStencilState.None, Main.Rasterizer, null, Main.GameViewMatrix.TransformationMatrix);
+            Main.spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, SamplerState.PointWrap, DepthStencilState.None, Main.Rasterizer, null, Main.GameViewMatrix.TransformationMatrix);
             orig(self);
         }
 
@@ -932,7 +932,7 @@ namespace CalamityMod.ILEditing
             orig(self);
             GeneralDrawLayer_DrawForSupportedSystems(GeneralDrawLayer.AfterEverything);
             // TODO: [SAFEACTION] this is a bandaid solution, but almost assuredly the method call here does not always correct state
-            Main.spriteBatch.TryBegin(SpriteSortMode.Deferred, BlendState.AlphaBlend, SamplerState.PointWrap, DepthStencilState.None, Main.Rasterizer, null, Main.GameViewMatrix.TransformationMatrix);
+            Main.spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, SamplerState.PointWrap, DepthStencilState.None, Main.Rasterizer, null, Main.GameViewMatrix.TransformationMatrix);
         }
         #endregion
 
