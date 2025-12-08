@@ -3866,12 +3866,11 @@ namespace CalamityMod.NPCs
                 npc.velocity *= velocitySlownessFactor;
             }
 
-            // Auric Ore/Repulsers reject Town NPCs and dummies (Auric Land Mines work on them too)
+            // Auric Ore/Repulsers reject Town NPCs and dummies
             if ((NPCID.Sets.ActsLikeTownNPC[npc.type] || npc.townNPC) && !npc.dontTakeDamage || npc.type == NPCType<SuperDummyNPC>())
             {
                 int auricOreID = TileType<AuricOre>();
                 int auricRepulserID = TileType<AuricRepulserPanelTile>();
-                int auricLandMineID = TileType<AuricLandMineTile>();
 
                 // Get a list of tiles near the npc
                 // This is just Collision.GetEntityTiles but with a larger detection square because the sheer speed from auric boosts causes the detection to fail at higher speeds
@@ -3910,17 +3909,6 @@ namespace CalamityMod.NPCs
                     Tile tile = Framing.GetTileSafely(touchedTile);
                     if (!tile.HasTile || !tile.HasUnactuatedTile)
                         continue;
-
-                    if (tile.TileType == auricLandMineID)
-                    {
-                        SoundStyle explode = new("CalamityMod/Sounds/Item/DudFire");
-                        SoundEngine.PlaySound(explode with { Pitch = 0.8f }, touchedTile.ToWorldCoordinates());
-                        GenericSparkle sparker = new GenericSparkle(touchedTile.ToWorldCoordinates(), Vector2.Zero, Color.Goldenrod, Color.Gold, 2.5f, 9, Main.rand.NextFloat(-0.01f, 0.01f), 2.68f);
-                        GeneralParticleHandler.SpawnParticle(sparker);
-                        Projectile.NewProjectile(new EntitySource_TileInteraction(npc, touchedTile.X, touchedTile.Y), touchedTile.ToWorldCoordinates(), Vector2.Zero, ProjectileType<AuricLandMineExplosion>(), 40000, 0f);
-                        WorldGen.KillTile(touchedTile.X, touchedTile.Y, noItem: true);
-                        continue;
-                    }
 
                     if (tile.TileType != auricOreID && tile.TileType != auricRepulserID)
                         continue;
