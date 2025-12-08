@@ -53,11 +53,6 @@ namespace CalamityMod.Tiles.Furniture
             }
         }
 
-        public override void KillMultiTile(int i, int j, int frameX, int frameY)
-        {
-            LanternNight.ManualLanterns = false;
-        }
-
         public override void HitWire(int i, int j)
         {
             LanternNight.ToggleManualLanterns();
