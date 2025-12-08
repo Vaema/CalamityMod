@@ -26,7 +26,6 @@ namespace CalamityMod.Graphics.Metaballs
             public Vector2 Scale = Vector2.One;
 
             public float SizeScaling = 0.85f;
-            bool firstFrame = true;
             public int CurrentFrame = 0;
             public int MaxFrames = 1;
 
@@ -46,7 +45,6 @@ namespace CalamityMod.Graphics.Metaballs
                 Velocity *= 0.96f;
                 if (ShrinkDelay < TimeAlive)
                     Size *= SizeScaling;
-                firstFrame = false;
             }
         }
 

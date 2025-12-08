@@ -63,10 +63,6 @@ namespace CalamityMod.ILEditing
         private static int exoDoorOpen = -1;
         private static int exoDoorClosed = -1;
 
-        // Holds the vanilla game function which spawns town NPCs, wrapped in a delegate for reflection purposes.
-        // This function is (optionally) invoked manually in an IL edit to enable NPCs to spawn at night.
-        private static Action VanillaSpawnTownNPCs;
-
         //private static readonly MethodInfo textureGetValueMethod = typeof(Asset<Texture2D>).GetMethod("get_Value", BindingFlags.Public | BindingFlags.Instance);
 
         #region Dash Fixes and Improvements
