@@ -182,15 +182,10 @@ namespace CalamityMod
             public SpritebatchScope(SpriteBatch sb, SpriteSortMode sortMode, BatchSetting settings, Effect effect, Matrix transformMatrix)
             {
                 _sb = sb;
-                _sb.End(out _parameters);
+                _sb.GetParameters(out _parameters);
                 _sb.Begin(sortMode, settings.blendState, settings.samplerState, settings.depthStencilState, settings.rasterizerState ?? Main.Rasterizer, effect, transformMatrix);
             }
 
-            ~SpritebatchScope()
-            {
-                Dispose();
-            }
-            
             public void Dispose()
             {
                 _sb.Restart(_parameters);

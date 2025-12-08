@@ -17,7 +17,6 @@ namespace CalamityMod.Systems
             {
                 BakeBlendTexture_Inner(texture);
                 // TODO: [SAFEACTION] Bandaid fix
-                Main.spriteBatch.End();
             });
         }
 
@@ -36,7 +35,8 @@ namespace CalamityMod.Systems
                 graphicsDevice.SetRenderTarget(renderTarget);
                 graphicsDevice.Clear(Color.Transparent);
 
-                Main.spriteBatch.SafeBegin(SpriteSortMode.Immediate, BatchSetting.AlphaBlend, null, Matrix.Identity, () =>
+                
+                using (new CalamityUtils.SpritebatchScope(Main.spriteBatch, SpriteSortMode.Immediate, BatchSetting.AlphaBlend, null, Matrix.Identity))
                 {
                     for (int i = 0; i < 256; i++)
                     {
@@ -59,7 +59,8 @@ namespace CalamityMod.Systems
                             }
                         }
                     }
-                });
+                }
+                
                 // TODO: [SAFEACTION] bandaid fix
                 Main.spriteBatch.End();
                 graphicsDevice.SetRenderTarget(null);

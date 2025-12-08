@@ -167,7 +167,7 @@ namespace CalamityMod.Systems.Graphic.PixelationSystem
             }
             
             orig();
-            Main.spriteBatch.End();
+
         }
    
         private static void DrawCollectionsToTarget(Dictionary<BlendState, ManagedRenderTarget> targetCollection, Matrix pixelationMatrix, List<PixelatedDrawer> drawerCollection)

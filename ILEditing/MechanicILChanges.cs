@@ -871,8 +871,7 @@ namespace CalamityMod.ILEditing
         {
             Main.spriteBatch.End();
             GeneralParticleHandler.DrawParticleCollectionsAtSpecificLayer(drawLayer);
-
-            Main.spriteBatch.End();
+            
             Main.spriteBatch.Begin(SpriteSortMode.Immediate, BlendState.AlphaBlend, SamplerState.PointWrap, DepthStencilState.None, Main.Rasterizer, null, Main.GameViewMatrix.TransformationMatrix);
             MetaballManager.DrawMetaballs(drawLayer);
 
@@ -880,9 +879,7 @@ namespace CalamityMod.ILEditing
             PrimitivePixelationSystem.DrawTargetScaled(drawLayer);
 
             PixelationManager.DrawPixelatedTargets(drawLayer);
-
-
-            Main.spriteBatch.End();
+            
             RendererManager.DrawRendererAtLayer(drawLayer);
 
         }
