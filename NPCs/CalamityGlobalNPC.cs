@@ -408,6 +408,8 @@ namespace CalamityMod.NPCs
         public int ashesOnDeath = 0;
         #endregion
 
+        public bool fortunesFavor = false; // Buff which grants positive life regen. Given when near Gilded Axolotls.
+
         // whoAmI Variables
         public static int[] bobbitWormBottom = new int[5];
         public static int hiveMind = -1;
@@ -652,6 +654,8 @@ namespace CalamityMod.NPCs
             myClone.wither = wither;
             myClone.ashesOnDeath = ashesOnDeath;
 
+            myClone.fortunesFavor = fortunesFavor;
+
             // This gets set up as needed.
             myClone.VulnerabilityHexFireDrawer = null;
             myClone.ManaBurnFireDrawer = null;
@@ -821,6 +825,8 @@ namespace CalamityMod.NPCs
             if (ashesOnDeath > 0)
                 ashesOnDeath--;
 
+            fortunesFavor = false;
+
             if (antlionCloudDebuffTimer > 0)
                 antlionCloudDebuffTimer--;
             if (cursorFocus > 0 && cursorFocus < cursorFocusMax)
@@ -944,6 +950,11 @@ namespace CalamityMod.NPCs
                     ActiveWaterDebuffMultiplier *= ResistantToDoTDamageMult;
             }
             #endregion
+
+            if (fortunesFavor)
+            {
+                npc.lifeRegen += 4; // 2 HP/s at base           
+            }
 
             //Apply DoT Debuffs
             for (var index = 0; index < npc.buffType.Length; index++)
@@ -5073,6 +5084,9 @@ namespace CalamityMod.NPCs
             // Eutrophication and Temporal Sadness share the same visual effects
             if (eutrophication || temporalSadness)
                 Eutrophication.DrawEffects(npc, ref drawColor);
+
+            if (fortunesFavor)
+                FortunesFavor.DrawEffects(npc, ref drawColor);
 
             if (godSlayerInferno)
                 GodSlayerInferno.DrawEffects(npc, ref drawColor);
