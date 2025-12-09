@@ -176,7 +176,7 @@ namespace CalamityMod.Graphics.Primitives
                     // 29FEB2024: Ozzatron: offset function needs to apply even in cases where smoothing is off.
                     Vector2 finalPos = Vector2.Lerp(currentPoint, nextPoint, completionRatio * (positions.Length - 1) % 0.99999f) - Main.screenPosition;
                     if (settings.OffsetFunction != null)
-                        finalPos += settings.OffsetFunction(completionRatio);
+                        finalPos += settings.OffsetFunction(completionRatio, finalPos);
 
                     MainPositions[PositionsIndex] = finalPos;
                     PositionsIndex++;
@@ -199,7 +199,7 @@ namespace CalamityMod.Graphics.Primitives
                 float completionRatio = i / (float)positions.Length;
                 Vector2 offset = -Main.screenPosition;
                 if (settings.OffsetFunction != null)
-                    offset += settings.OffsetFunction(completionRatio);
+                    offset += settings.OffsetFunction(completionRatio, positions[i]);
                 controlPoints.Add(positions[i] + offset);
             }
 
@@ -287,8 +287,8 @@ namespace CalamityMod.Graphics.Primitives
             for (int i = 0; i < PositionsIndex; i++)
             {
                 float completionRatio = GetCompletionRatioForIndex(i);
-                float widthAtVertex = Math.Max(MainSettings.WidthFunction(completionRatio), 0f);
-                Color vertexColor = MainSettings.ColorFunction(completionRatio);
+                float widthAtVertex = Math.Max(MainSettings.WidthFunction(completionRatio, MainPositions[i]), 0f);
+                Color vertexColor = MainSettings.ColorFunction(completionRatio, MainPositions[i]);
                 float textureU = ComputeTextureCoordinateForIndex(i, completionRatio);
 
                 ComputeEdgePositions(i, widthAtVertex, out Vector2 left, out Vector2 right, out float effectiveHalfWidth);

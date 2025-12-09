@@ -143,7 +143,7 @@ namespace CalamityMod.NPCs.SunkenSea
 
         protected override List<int> PreyIDs =>
         [
-            // NPCType<GildedAxolotl>(),
+            NPCType<GildedAxolotl>(),
             NPCType<SeaFloaty>(),
             NPCType<Probesnout>(),
             NPCType<ProbesnoutGold>(),
@@ -156,7 +156,7 @@ namespace CalamityMod.NPCs.SunkenSea
 
         protected override List<int> PredatorIDs =>
         [
-            // NPCType<Polyperil>(),
+            NPCType<Polyperil>(),
             // NPCType<Snailord>(),
             NPCType<PrismBack>(),
             // NPCType<Hermititan>,

@@ -158,13 +158,13 @@ namespace CalamityMod.Projectiles.Summon
             }
         }
 
-        internal Color ColorFunction(float completionRatio)
+        internal Color ColorFunction(float completionRatio, Vector2 vertexPos)
         {
             float fadeOpacity = (float)Math.Sqrt(1 - completionRatio);
             return Color.Chartreuse.MultiplyRGB(PrimColorMult) * fadeOpacity;
         }
 
-        internal float WidthFunction(float completionRatio)
+        internal float WidthFunction(float completionRatio, Vector2 vertexPos)
         {
             return 9.4f;
         }
@@ -179,7 +179,7 @@ namespace CalamityMod.Projectiles.Summon
             CalamityUtils.DrawChromaticAberration(Vector2.UnitX, 1.5f, delegate (Vector2 offset, Color colorMod)
             {
                 PrimColorMult = colorMod;
-                PrimitiveRenderer.RenderTrail(Projectile.oldPos, new(WidthFunction, ColorFunction, (_) => Projectile.Size * 0.5f + offset, shader: GameShaders.Misc["CalamityMod:TrailStreak"]), 30);
+                PrimitiveRenderer.RenderTrail(Projectile.oldPos, new(WidthFunction, ColorFunction, (_, _) => Projectile.Size * 0.5f + offset, shader: GameShaders.Misc["CalamityMod:TrailStreak"]), 30);
             });
 
             Main.spriteBatch.End();

@@ -237,6 +237,7 @@ namespace CalamityMod.Projectiles.BaseProjectiles
         #region Draw
         public override bool PreDraw(ref Color lightColor)
         {
+
             for (int i = Segments.Count - 1; i >= 0; i--)
             {
                 DrawSegment(ref lightColor, Segments[i]);

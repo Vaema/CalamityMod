@@ -292,13 +292,11 @@ namespace CalamityMod.NPCs.Deconstructors
 
             foreach (var p in vein)
             {
-                bool isOuter = false;
                 foreach (var offset in new[] { new Point(1, 0), new Point(-1, 0), new Point(0, 1), new Point(0, -1) })
                 {
                     Point neighbor = p + offset;
                     if (!veinSet.Contains(neighbor))
                     {
-                        isOuter = true;
                         if (neighbor.X >= 0 && neighbor.X < Main.maxTilesX && neighbor.Y >= 0 && neighbor.Y < Main.maxTilesY)
                         {
                             var tile = Main.tile[neighbor];

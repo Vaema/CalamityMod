@@ -1316,12 +1316,12 @@ namespace CalamityMod.NPCs.ExoMechs.Ares
 
             return false;
         }
-        internal float WidthFunction(float completionRatio)
+        internal float WidthFunction(float completionRatio, Vector2 vertexPos)
         {
             return MathHelper.Lerp(0.5f, 1.3f, (float)Math.Sin(MathHelper.Pi * completionRatio)) * NPC.scale;
         }
 
-        internal Color ColorFunction(float completionRatio)
+        internal Color ColorFunction(float completionRatio, Vector2 vertexPos)
         {
             Color baseColor1 = EnragedState == (float)Enraged.Yes ? Color.Red : Color.Cyan;
             Color baseColor2 = EnragedState == (float)Enraged.Yes ? Color.IndianRed : Color.Cyan;
@@ -1335,9 +1335,9 @@ namespace CalamityMod.NPCs.ExoMechs.Ares
             return color;
         }
 
-        internal float BackgroundWidthFunction(float completionRatio) => WidthFunction(completionRatio) * 4f;
+        internal float BackgroundWidthFunction(float completionRatio, Vector2 vertexPos) => WidthFunction(completionRatio, vertexPos) * 4f;
 
-        public Color BackgroundColorFunction(float completionRatio)
+        public Color BackgroundColorFunction(float completionRatio, Vector2 vertexPos)
         {
             Color backgroundColor = EnragedState == (float)Enraged.Yes ? Color.Crimson : Color.CornflowerBlue;
             Color color = backgroundColor * NPC.Opacity * 0.4f;

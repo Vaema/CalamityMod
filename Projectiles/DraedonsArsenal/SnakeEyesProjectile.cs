@@ -148,7 +148,7 @@ namespace CalamityMod.Projectiles.DraedonsArsenal
 
         #region Shader Trail Methods
 
-        private float PrimitiveWidthFunction(float completionRatio)
+        private float PrimitiveWidthFunction(float completionRatio, Vector2 vertexPos)
         {
             float arrowheadCutoff = 0.36f;
             float width = 39f;
@@ -159,7 +159,7 @@ namespace CalamityMod.Projectiles.DraedonsArsenal
             return width;
         }
 
-        private Color PrimitiveColorFunction(float completionRatio)
+        private Color PrimitiveColorFunction(float completionRatio, Vector2 vertexPos)
         {
             float endFadeRatio = 0.41f;
 
@@ -187,7 +187,7 @@ namespace CalamityMod.Projectiles.DraedonsArsenal
             Main.EntitySpriteDraw(texture, drawPosition, frame, Projectile.GetAlpha(lightColor), Projectile.rotation, origin, Projectile.scale, SpriteEffects.None, 0);
 
             GameShaders.Misc["CalamityMod:TrailStreak"].SetShaderTexture(ModContent.Request<Texture2D>("CalamityMod/ExtraTextures/Trails/SylvestaffStreak"));
-            PrimitiveRenderer.RenderTrail(Projectile.oldPos, new(PrimitiveWidthFunction, PrimitiveColorFunction, (_) => Projectile.Size * 0.5f, shader: GameShaders.Misc["CalamityMod:TrailStreak"]), 92);
+            PrimitiveRenderer.RenderTrail(Projectile.oldPos, new(PrimitiveWidthFunction, PrimitiveColorFunction, (_,_) => Projectile.Size * 0.5f, shader: GameShaders.Misc["CalamityMod:TrailStreak"]), 92);
             return false;
         }
     }

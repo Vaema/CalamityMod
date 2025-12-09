@@ -82,23 +82,23 @@ namespace CalamityMod.Projectiles.Summon
 
         public override bool PreDraw(ref Color lightColor) => false;
 
-        public float FireWidthFunction(float completion)
+        public float FireWidthFunction(float completion, Vector2 vertexPos)
         {
             return MathHelper.Min(Utils.Remap(completion, 0, 0.1f, 0, 96), Utils.Remap(completion, 0.9f, 1f, 96, 0)) * Utils.Remap(Projectile.timeLeft, 0, 5, 0, 1) * (0.75f+MathF.Pow(1 -(Owner.Calamity().sarosEclipseBeamUsage / 300f), 3));
         }
 
-        public Color FireColorFunction(float completion)
+        public Color FireColorFunction(float completion, Vector2 vertexPos)
         {
             Color mainColor = Color.Lerp(new Color(238, 226, 153), new Color(255, 191, 73), (MathF.Sin(completion*MathHelper.TwoPi + Main.GlobalTimeWrappedHourly*5)+1)*0.5f);
             return mainColor * MathF.Pow(1 - completion, 0.5f);
         }
 
-        public float FireCoreWidthFunction(float completion)
+        public float FireCoreWidthFunction(float completion, Vector2 vertexPos)
         {
             return MathHelper.Min(Utils.Remap(completion, 0, 0.1f, 0, 32), Utils.Remap(completion, 0.9f, 1f, 32, 0)) * Utils.Remap(Projectile.timeLeft, 0, 5, 0, 1) * (0.75f+MathF.Pow(1 - (Owner.Calamity().sarosEclipseBeamUsage / 300f), 3));
         }
 
-        public Color FireCoreColorFunction(float completion)
+        public Color FireCoreColorFunction(float completion, Vector2 vertexPos)
         {
             return Color.Black * MathF.Pow(1 - completion, 0.5f);
         }

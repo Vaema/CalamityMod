@@ -147,9 +147,9 @@ namespace CalamityMod.Projectiles.Magic
             RancorLavaMetaball.SpawnParticle(endOfLaser + Main.rand.NextVector2Circular(10f, 10f) + Projectile.velocity * 40f, 135f);
         }
 
-        private float PrimitiveWidthFunction(float completionRatio) => Projectile.scale * 20f;
+        private float PrimitiveWidthFunction(float completionRatio, Vector2 vertexPos) => Projectile.scale * 20f;
 
-        private Color PrimitiveColorFunction(float completionRatio)
+        private Color PrimitiveColorFunction(float completionRatio, Vector2 vertexPos)
         {
             Color vibrantColor = Color.Lerp(Color.Blue, Color.Red, (float)Math.Cos(Main.GlobalTimeWrappedHourly * 0.67f - completionRatio / LaserLength * 29f) * 0.5f + 0.5f);
             float opacity = Projectile.Opacity * Utils.GetLerpValue(0.97f, 0.9f, completionRatio, true) *

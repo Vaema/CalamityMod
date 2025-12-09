@@ -68,12 +68,12 @@ namespace CalamityMod.Projectiles.Boss
             Projectile.scale = Utils.GetLerpValue(-1f, 15f, Projectile.timeLeft, true) * Utils.GetLerpValue(Lifetime + 1f, Lifetime - 15f, Projectile.timeLeft, true);
         }
 
-        private float PrimitiveWidthFunction(float completionRatio)
+        private float PrimitiveWidthFunction(float completionRatio, Vector2 vertexPos)
         {
             return Utils.GetLerpValue(1f, 0.96f, completionRatio, true) * Utils.GetLerpValue(0f, 0.016f, completionRatio, true) * Projectile.scale * 20f;
         }
 
-        private Color PrimitiveColorFunction(float completionRatio)
+        private Color PrimitiveColorFunction(float completionRatio, Vector2 vertexPos)
         {
             return CalamityUtils.MulticolorLerp((Main.GlobalTimeWrappedHourly * 0.67f - completionRatio * 3f) % 1f, CalamityUtils.ExoPalette) * 1.2f;
         }
@@ -87,7 +87,7 @@ namespace CalamityMod.Projectiles.Boss
                 basePoints[i] = Projectile.Center - Vector2.UnitY * i / basePoints.Length * LaserLength;
 
             Vector2 overallOffset = Projectile.Size * 0.5f;
-            PrimitiveRenderer.RenderTrail(basePoints, new(PrimitiveWidthFunction, PrimitiveColorFunction, (_) => overallOffset, shader: GameShaders.Misc["CalamityMod:Flame"]), 92);
+            PrimitiveRenderer.RenderTrail(basePoints, new(PrimitiveWidthFunction, PrimitiveColorFunction, (_,_) => overallOffset, shader: GameShaders.Misc["CalamityMod:Flame"]), 92);
             return false;
         }
 

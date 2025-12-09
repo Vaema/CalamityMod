@@ -127,7 +127,7 @@ namespace CalamityMod.Projectiles.Typeless
 
         public override bool? CanDamage() => Time > UpwardFlyTime + RedirectTime ? null : false;
 
-        public Color TrailColor(float completionRatio)
+        public Color TrailColor(float completionRatio, Vector2 vertexPos)
         {
             float trailOpacity = Utils.GetLerpValue(0f, 0.067f, completionRatio, true) * Utils.GetLerpValue(0.7f, 0.58f, completionRatio, true);
             Color startingColor = Color.Lerp(Color.White, GemColor, 0.47f);
@@ -136,7 +136,7 @@ namespace CalamityMod.Projectiles.Typeless
             return CalamityUtils.MulticolorLerp(completionRatio, startingColor, middleColor, endColor) * trailOpacity;
         }
 
-        public static float TrailWidth(float completionRatio) => MathHelper.SmoothStep(12f, 4.25f, completionRatio);
+        public static float TrailWidth(float completionRatio, Vector2 vertexPos) => MathHelper.SmoothStep(12f, 4.25f, completionRatio);
 
         public override bool PreDraw(ref Color lightColor)
         {
@@ -172,7 +172,7 @@ namespace CalamityMod.Projectiles.Typeless
             Main.EntitySpriteDraw(texture, drawPosition, null, Projectile.GetAlpha(Color.White), Projectile.rotation, origin, Projectile.scale, SpriteEffects.None, 0);
 
             if (Projectile.ai[0] > UpwardFlyTime + RedirectTime)
-                PrimitiveRenderer.RenderTrail(Projectile.oldPos, new(TrailWidth, TrailColor, (_) => Projectile.Size * 0.5f, shader: GameShaders.Misc["CalamityMod:ImpFlameTrail"]), 71);
+                PrimitiveRenderer.RenderTrail(Projectile.oldPos, new(TrailWidth, TrailColor, (_,_) => Projectile.Size * 0.5f, shader: GameShaders.Misc["CalamityMod:ImpFlameTrail"]), 71);
 
             return false;
         }

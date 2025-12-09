@@ -115,8 +115,12 @@ namespace CalamityMod.Systems
                 if (sheetIdx == TileBlendTextureLoader.EmptySlot)
                     break;
 
-                var rect = TileBlendTexture.SideFlagsToSheetRect(data);
-                var texture = TileBlendTextureLoader.Registry[sheetIdx].BlendTextures[tileRandomFrame];
+                var key = new SheetPositionKey((BlendSideFlags)data, (byte)tileRandomFrame);
+                var blendTexture = TileBlendTextureLoader.Registry[sheetIdx];
+
+                blendTexture.RequestBake(tileRandomFrame);
+                if (!blendTexture.TryGetDrawingInfo(key, out var texture, out var rect))
+                    continue;
 
                 // No Slice Drawing
                 if (sliceLength <= 0 || isFullBright)

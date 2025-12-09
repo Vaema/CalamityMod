@@ -26,9 +26,9 @@ namespace CalamityMod.Projectiles.Melee
 
         public override float trailOffset => 20;
 
-        public override float trailWidth(float completion)
+        public override float trailWidth(float completion, Vector2 vertexPos)
         {
-            return base.trailWidth(completion);
+            return base.trailWidth(completion, vertexPos);
         }
 
         public override int trailLength => 5;

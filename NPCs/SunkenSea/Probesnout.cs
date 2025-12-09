@@ -40,7 +40,7 @@ namespace CalamityMod.NPCs.SunkenSea
 
         protected override List<int> PredatorIDs =>
         [
-            // NPCType<IlmerianAxolotl>(),
+            NPCType<GildedAxolotl>(),
             NPCType<Sharkoon>(),
             NPCType<Polyperil>(),
             // NPCType<CrestedStalker>(),

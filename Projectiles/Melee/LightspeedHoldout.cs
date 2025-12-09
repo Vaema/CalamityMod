@@ -380,7 +380,7 @@ namespace CalamityMod.Projectiles.Melee
         }
 
         // Drawcode below is mostly based on Exoblade's dash.
-        public float PierceWidthFunction(float completionRatio)
+        public float PierceWidthFunction(float completionRatio, Vector2 vertexPos)
         {
             float width = Utils.GetLerpValue(0f, 0.2f, completionRatio, true) * Projectile.scale * 24f;
             //Fade it out starkly near the end of the lunge
@@ -388,7 +388,7 @@ namespace CalamityMod.Projectiles.Melee
             return width;
         }
 
-        public Color PierceColorFunction(float completionRatio) => Color.White * Projectile.Opacity; // The trail color doesnt matter here
+        public Color PierceColorFunction(float completionRatio, Vector2 vertexPos) => Color.White * Projectile.Opacity; // The trail color doesnt matter here
 
         public override bool PreDraw(ref Color lightColor)
         {
@@ -431,7 +431,7 @@ namespace CalamityMod.Projectiles.Melee
             int numPointsRendered = 30;
             int numPointsProvided = 60;
             var positionsToUse = Projectile.oldPos.Take(numPointsProvided).ToArray();
-            PrimitiveRenderer.RenderTrail(positionsToUse, new(PierceWidthFunction, PierceColorFunction, (_) => trailOffset, shader: GameShaders.Misc["CalamityMod:ExobladePierce"]), numPointsRendered);
+            PrimitiveRenderer.RenderTrail(positionsToUse, new(PierceWidthFunction, PierceColorFunction, (_,_) => trailOffset, shader: GameShaders.Misc["CalamityMod:ExobladePierce"]), numPointsRendered);
 
             Main.spriteBatch.ExitShaderRegion();
         }

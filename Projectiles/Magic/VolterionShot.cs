@@ -70,7 +70,7 @@ namespace CalamityMod.Projectiles.Magic
                 // Randomly spawn glowing bolts outwards
                 if (Main.rand.NextBool(6))
                 {
-                    BoltParticle bolt = new BoltParticle(Projectile.Center, Projectile.velocity.RotatedByRandom(MathHelper.ToRadians(36f)), false, 10, 0.3f, TrailColorFunction(0f), Vector2.One, true);
+                    BoltParticle bolt = new BoltParticle(Projectile.Center, Projectile.velocity.RotatedByRandom(MathHelper.ToRadians(36f)), false, 10, 0.3f, TrailColorFunction(0f, Vector2.Zero), Vector2.One, true);
                     GeneralParticleHandler.SpawnParticle(bolt);
                 }
 
@@ -137,8 +137,8 @@ namespace CalamityMod.Projectiles.Magic
             }
         }
 
-        internal float TrailWidthFunction(float completionRatio) => Projectile.scale * 15f * Utils.GetLerpValue(0.5f, 0.4f, MathF.Abs(0.5f - completionRatio), true);
-        internal Color TrailColorFunction(float completionRatio) => OrbType > 0f ? VolterionOrb.GetColor(OrbType - 1f) : Color.Lerp(new Color(51, 197, 255), new Color(143, 51, 255), 0.5f + 0.5f * MathF.Sin(Main.GlobalTimeWrappedHourly * 20f)) * Projectile.Opacity;
+        internal float TrailWidthFunction(float completionRatio, Vector2 vertexPos) => Projectile.scale * 15f * Utils.GetLerpValue(0.5f, 0.4f, MathF.Abs(0.5f - completionRatio), true);
+        internal Color TrailColorFunction(float completionRatio, Vector2 vertexPos) => OrbType > 0f ? VolterionOrb.GetColor(OrbType - 1f) : Color.Lerp(new Color(51, 197, 255), new Color(143, 51, 255), 0.5f + 0.5f * MathF.Sin(Main.GlobalTimeWrappedHourly * 20f)) * Projectile.Opacity;
 
         public override bool PreDraw(ref Color lightColor)
         {

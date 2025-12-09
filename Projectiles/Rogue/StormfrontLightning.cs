@@ -149,9 +149,9 @@ namespace CalamityMod.Projectiles.Rogue
             }
         }
 
-        public float PrimitiveWidthFunction(float completionRatio) => CalamityUtils.Convert01To010(completionRatio) * Projectile.scale * Projectile.width;
+        public float PrimitiveWidthFunction(float completionRatio, Vector2 vertexPos) => CalamityUtils.Convert01To010(completionRatio) * Projectile.scale * Projectile.width;
 
-        public Color PrimitiveColorFunction(float completionRatio)
+        public Color PrimitiveColorFunction(float completionRatio, Vector2 vertexPos)
         {
             //Why did you have to overcomplicate it Lucille, I could have just fucking used "lightningColor = new Color(Main.rand.Next(20,100), 204, 250);" and shove it in PreDraw - Shade
             float colorInterpolant = (float)Math.Sin(Projectile.identity / 3f + completionRatio * 20f + Main.GlobalTimeWrappedHourly * 1.1f) * 0.5f + 0.5f;
@@ -179,7 +179,7 @@ namespace CalamityMod.Projectiles.Rogue
             GameShaders.Misc["CalamityMod:HeavenlyGaleLightningArc"].UseImage1("Images/Misc/Perlin");
             GameShaders.Misc["CalamityMod:HeavenlyGaleLightningArc"].Apply();
 
-            PrimitiveRenderer.RenderTrail(Projectile.oldPos, new(PrimitiveWidthFunction, PrimitiveColorFunction, (_) => Projectile.Size * 0.3f, false,
+            PrimitiveRenderer.RenderTrail(Projectile.oldPos, new(PrimitiveWidthFunction, PrimitiveColorFunction, (_,_) => Projectile.Size * 0.3f, false,
                 shader: GameShaders.Misc["CalamityMod:HeavenlyGaleLightningArc"]), 10);
             return false;
         }

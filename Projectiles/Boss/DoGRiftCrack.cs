@@ -69,9 +69,9 @@ namespace CalamityMod.Projectiles.Boss
             Timer++;
         }
 
-        public float CrackWidthFunction(float completion) => Projectile.scale * MathHelper.Lerp(MaxWidth, 0f, completion);
+        public float CrackWidthFunction(float completion, Vector2 vertexPos) => Projectile.scale * MathHelper.Lerp(MaxWidth, 0f, completion);
 
-        public Color CrackColorFunction(float completion) => Projectile.GetAlpha(Color.White);
+        public Color CrackColorFunction(float completion, Vector2 vertexPos) => Projectile.GetAlpha(Color.White);
 
         public override bool PreDraw(ref Color lightColor)
         {
