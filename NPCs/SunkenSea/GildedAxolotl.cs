@@ -1,22 +1,23 @@
-﻿using CalamityMod.BiomeManagers;
+﻿using System;
+using System.Collections.Generic;
+using System.IO;
+using CalamityMod.BiomeManagers;
+using CalamityMod.Buffs.StatBuffs;
+using CalamityMod.Dusts;
+using CalamityMod.Enums;
 using CalamityMod.Items.Critters;
 using CalamityMod.Items.Placeables.Banners;
+using CalamityMod.Particles;
+using CalamityMod.Pathfinding;
 using Microsoft.Xna.Framework;
-using System.IO;
+using Microsoft.Xna.Framework.Graphics;
 using Terraria;
-using Terraria.ID;
+using Terraria.Audio;
+using Terraria.GameContent;
 using Terraria.GameContent.Bestiary;
+using Terraria.ID;
 using Terraria.ModLoader;
 using Terraria.ModLoader.Utilities;
-using Terraria.Audio;
-using Microsoft.Xna.Framework.Graphics;
-using Terraria.GameContent;
-using CalamityMod.Particles;
-using CalamityMod.Enums;
-using System.Collections.Generic;
-using CalamityMod.Buffs.StatBuffs;
-using System;
-using CalamityMod.Dusts;
 
 namespace CalamityMod.NPCs.SunkenSea
 {
@@ -183,12 +184,10 @@ namespace CalamityMod.NPCs.SunkenSea
         {
             if (pathfinding == null)
             {
-                pathfinding = new PathfindingManager(NPC)
-                {
-                    Acceleration = 0.4f,
-                    MaxSpeed = IdleMaxSpeed,
-                    MinimumPointDistance = 60f
-                };
+                pathfinding = new PathfindingManager(this);
+                Acceleration = 0.4f;
+                MaxSpeed = IdleMaxSpeed;
+                MinimumPointDistance = 60f;
             }
 
             // Find nearby players
@@ -351,20 +350,20 @@ namespace CalamityMod.NPCs.SunkenSea
             }
 
             // Timers
-            if (FleeTimer > 0) 
+            if (FleeTimer > 0)
                 FleeTimer--;
-            if (PassiveSoundTimer > 0) 
+            if (PassiveSoundTimer > 0)
                 PassiveSoundTimer--;
-            if (NoticeHeldItemSoundTimer > 0) 
+            if (NoticeHeldItemSoundTimer > 0)
                 NoticeHeldItemSoundTimer--;
         }
 
         public void IdleBehavior()
         {
-            pathfinding.MaxSpeed = IdleMaxSpeed;
+            MaxSpeed = IdleMaxSpeed;
 
             // Always pathfind to a random point when idling
-            pathfinding.DoPathfinding(new(NPC.Center, NPC.Center + Main.rand.NextVector2Unit() * Main.rand.NextFloat(IdleMinPathDistance, IdleMaxPathDistance), SunkenSeaTileValidity));
+            pathfinding.DoPathfinding(new(this, NPC.Center, NPC.Center + Main.rand.NextVector2Unit() * Main.rand.NextFloat(IdleMinPathDistance, IdleMaxPathDistance), SunkenSeaTileValidity));
 
             if (Main.rand.NextBool(300) && PassiveSoundTimer <= 0) // Randomly emit a noise
             {
@@ -375,7 +374,7 @@ namespace CalamityMod.NPCs.SunkenSea
 
         public void HuntBehavior()
         {
-            pathfinding.MaxSpeed = HuntMaxSpeed;
+            MaxSpeed = HuntMaxSpeed;
 
             if (PathfindToPlayer) // Player is holding an item of interest
             {
@@ -391,9 +390,9 @@ namespace CalamityMod.NPCs.SunkenSea
                     return;
                 }
                 targetPoint = CurrentPrey.Center;
-            }
+            }
 
-            pathfinding.DoPathfinding(new(NPC.Center, targetPoint, SunkenSeaTileValidity));
+            pathfinding.DoPathfinding(new(this, NPC.Center, targetPoint, tileValidity: SunkenSeaTileValidity));
         }
 
         public void FleeBehavior()
@@ -418,14 +417,14 @@ namespace CalamityMod.NPCs.SunkenSea
                 FleeTimer = FleeFXCooldown;
             }
 
-            pathfinding.MaxSpeed = FleeMaxSpeed;
+            MaxSpeed = FleeMaxSpeed;
 
             // Try to find a safe point from predator
             float distanceFromAvoided = Vector2.Distance(NPC.Center, CurrentPredator.Center);
             Vector2 runDirection = NPC.DirectionFrom(CurrentPredator.Center);
             targetPoint = NPC.Center + runDirection * Utils.Remap(distanceFromAvoided, 0f, 960f, 80f, 3200f);
 
-            pathfinding.DoPathfinding(new(NPC.Center, targetPoint, SunkenSeaTileValidity));
+            pathfinding.DoPathfinding(new(this, NPC.Center, targetPoint, SunkenSeaTileValidity));
             NPC.netUpdate = true;
         }
 
@@ -433,7 +432,7 @@ namespace CalamityMod.NPCs.SunkenSea
         {
             NPC.noGravity = false; // Gravity on while not swimming
             if (NPC.collideY)
-            {
+            {
                 if (GroundMovementTimer <= 0)
                 {
                     NPC.velocity.X *= 0.94f; // Slow down
@@ -458,7 +457,7 @@ namespace CalamityMod.NPCs.SunkenSea
                     GroundMovementTimer--;
             }
 
-            if (Math.Abs(NPC.velocity.X) > 0.01f) // Face chosen direction while moving
+            if (Math.Abs(NPC.velocity.X) > 0.01f) // Face chosen direction while moving
             {
                 int dir = NPC.velocity.X.DirectionalSign();
                 if (dir != 0)
