@@ -98,11 +98,10 @@ namespace CalamityMod.Systems.Collections
         /// Currently unused, and exists as an objective classification for the sake of the Wiki.<br/>
         /// Defaults to <see langword="false"/>.
         /// </summary>
-        public static bool[] RogueBoomerang = Factory.CreateBoolSet(ItemType<EnchantedAxe>(), ItemType<FishboneBoomerang>(), ItemType<Glaive>(), ItemType<InfestedClawmerang>(), ItemType<Kylie>(),
-                ItemType<SandDollar>(), ItemType<AerialTracker>(), ItemType<BlazingStar>(), ItemType<Brimblade>(), ItemType<DefectiveSphere>(), ItemType<EpidemicShredder>(), ItemType<Equanimity>(),
-                ItemType<FrostcrushValari>(), ItemType<Icebreaker>(), ItemType<KelvinCatalyst>(), ItemType<MangroveChakram>(), ItemType<SamsaraSlicer>(), ItemType<SubductionSlicer>(),
-                ItemType<Celestus>(), ItemType<DynamicPursuer>(), ItemType<ReboundingRainbow>(), ItemType<DimensionTearingDisk>(), ItemType<GhoulishGouger>(), ItemType<MoltenAmputator>(), 
-                ItemType<NanoblackReaper>(), ItemType<ToxicantTwister>(), ItemType<Valediction>());
+        public static bool[] RogueBoomerang = Factory.CreateBoolSet(ItemType<EnchantedAxe>(), ItemType<FishboneBoomerang>(), ItemType<InfestedClawmerang>(), ItemType<Kylie>(), ItemType<SandDollar>(),
+                ItemType<AerialTracker>(), ItemType<Brimblade>(), ItemType<DefectiveSphere>(), ItemType<EpidemicShredder>(), ItemType<Equanimity>(), ItemType<FrostcrushValari>(), ItemType<Icebreaker>(), 
+                ItemType<KelvinCatalyst>(), ItemType<MangroveChakram>(), ItemType<SamsaraSlicer>(), ItemType<SubductionSlicer>(), ItemType<Celestus>(), ItemType<DynamicPursuer>(), ItemType<ReboundingRainbow>(), 
+                ItemType<DimensionTearingDisk>(), ItemType<GhoulishGouger>(), ItemType<MoltenAmputator>(), ItemType<NanoblackReaper>(), ItemType<ToxicantTwister>(), ItemType<Valediction>());
 
         /// <summary>
         /// If <see langword="true"/> for an item type, this item is considered to be a rogue dagger.<br/>
