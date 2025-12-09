@@ -42,6 +42,85 @@ namespace CalamityMod.Graphics.Primitives
     }
 
     /// <summary>
+    /// Determines how intermediate sample points are generated for smoothing.
+    /// </summary>
+    public enum PrimitiveSmoothingType
+    {
+        /// <summary>
+        /// Classic Catmull-Rom interpolation between points.
+        /// </summary>
+        CatmullRom,
+
+        /// <summary>
+        /// Cardinal spline interpolation with configurable tension.
+        /// </summary>
+        Cardinal,
+
+        /// <summary>
+        /// Straight-line interpolation between neighbouring points.
+        /// </summary>
+        Linear,
+
+        /// <summary>
+        /// Cubic Hermite interpolation using central difference tangents.
+        /// </summary>
+        Hermite,
+
+        /// <summary>
+        /// Cubic Bezier interpolation using Catmull-Rom handles.
+        /// </summary>
+        CubicBezier
+    }
+
+    /// <summary>
+    /// Selects how orientation frames propagate along the trail.
+    /// </summary>
+    public enum PrimitiveFrameTransportMode
+    {
+        /// <summary>
+        /// Derives the normal from the instantaneous tangent (legacy behaviour).
+        /// </summary>
+        Basic,
+
+        /// <summary>
+        /// Uses parallel transport to minimise twisting.
+        /// </summary>
+        ParallelTransport
+    }
+
+    /// <summary>
+    /// Determines the topology used when submitting geometry to the GPU.
+    /// </summary>
+    public enum PrimitiveTopology
+    {
+        /// <summary>
+        /// Expands geometry into independent triangles (legacy behaviour).
+        /// </summary>
+        TriangleList,
+
+        /// <summary>
+        /// Connects geometry using a continuous triangle strip.
+        /// </summary>
+        TriangleStrip
+    }
+
+    /// <summary>
+    /// Controls how the start and end of the primitive are capped.
+    /// </summary>
+    public enum PrimitiveCapStyle
+    {
+        /// <summary>
+        /// Leaves the ribbon open (legacy behaviour).
+        /// </summary>
+        None,
+
+        /// <summary>
+        /// Adds a flat triangular cap across the ribbon ends.
+        /// </summary>
+        Flat
+    }
+
+    /// <summary>
     /// Contains all the various options to use when creating a primitive trail. New members can be added freely without breaking existing implementations.
     /// </summary>
     public readonly struct PrimitiveSettings
@@ -150,6 +229,36 @@ namespace CalamityMod.Graphics.Primitives
         /// The color used for the optional wireframe overlay.
         /// </summary>
         public readonly Color WireframeColor;
+
+        /// <summary>
+        /// Determines the interpolation style when smoothing the provided point list.
+        /// </summary>
+        public readonly PrimitiveSmoothingType SmoothingType;
+
+        /// <summary>
+        /// Controls how many intermediate subdivisions are generated per control segment when smoothing. Set to 0 for automatic distribution.
+        /// </summary>
+        public readonly int SmoothingSegments;
+
+        /// <summary>
+        /// Additional tension used by smoothing functions that support it (e.g. Cardinal splines).
+        /// </summary>
+        public readonly float SmoothingTension;
+
+        /// <summary>
+        /// Determines how normals are transported along the curve.
+        /// </summary>
+        public readonly PrimitiveFrameTransportMode FrameTransportMode;
+
+        /// <summary>
+        /// Chooses the primitive topology when submitting geometry to the GPU.
+        /// </summary>
+        public readonly PrimitiveTopology Topology;
+
+        /// <summary>
+        /// Determines how the ribbon is capped at its extremities.
+        /// </summary>
+        public readonly PrimitiveCapStyle CapStyle;
         #endregion
 
         /// <summary>
@@ -171,7 +280,13 @@ namespace CalamityMod.Graphics.Primitives
         /// <param name="joinMiterLimit">Maximum multiplier applied to miter joins to prevent spikes. Only used when <paramref name="joinStyle"/> is <see cref="PrimitiveJoinStyle.Miter"/>.</param>
         /// <param name="debugWireframe">When true, draws a wireframe overlay useful for debugging primitive geometry.</param>
         /// <param name="wireframeColor">Optional override for the wireframe color. If null, a vivid green is used.</param>
-        public PrimitiveSettings(VertexWidthFunction widthFunction, VertexColorFunction colorFunction, VertexOffsetFunction offsetFunction = null, bool smoothen = true, bool pixelate = false, MiscShaderData shader = null, bool useUnscaledMatrices = false, (Vector2, Vector2)? initialVertexPositionsOverride = null, PrimitiveTextureMode textureCoordinateMode = PrimitiveTextureMode.Normalized, float textureCycleLength = 1f, float textureScrollOffset = 0f, Func<float, float> textureCoordinateFunction = null, PrimitiveJoinStyle joinStyle = PrimitiveJoinStyle.Flat, float joinMiterLimit = 4f, bool debugWireframe = false, Color? wireframeColor = null)
+        /// <param name="smoothingType">Determines the interpolation style used when smoothing the control points.</param>
+        /// <param name="smoothingSegments">When greater than zero, specifies the number of subdivisions created per control edge.</param>
+        /// <param name="smoothingTension">Optional tension parameter used by certain smoothing types such as cardinal splines.</param>
+        /// <param name="frameTransportMode">Controls how frame orientation is propagated along the curve.</param>
+        /// <param name="topology">Specifies the primitive topology used when submitting geometry.</param>
+        /// <param name="capStyle">Selects how the ribbon's start and end are capped.</param>
+        public PrimitiveSettings(VertexWidthFunction widthFunction, VertexColorFunction colorFunction, VertexOffsetFunction offsetFunction = null, bool smoothen = true, bool pixelate = false, MiscShaderData shader = null, bool useUnscaledMatrices = false, (Vector2, Vector2)? initialVertexPositionsOverride = null, PrimitiveTextureMode textureCoordinateMode = PrimitiveTextureMode.Normalized, float textureCycleLength = 1f, float textureScrollOffset = 0f, Func<float, float> textureCoordinateFunction = null, PrimitiveJoinStyle joinStyle = PrimitiveJoinStyle.Smooth, float joinMiterLimit = 4f, bool debugWireframe = false, Color? wireframeColor = null, PrimitiveSmoothingType smoothingType = PrimitiveSmoothingType.CatmullRom, int smoothingSegments = 0, float smoothingTension = 0f, PrimitiveFrameTransportMode frameTransportMode = PrimitiveFrameTransportMode.ParallelTransport, PrimitiveTopology topology = PrimitiveTopology.TriangleStrip, PrimitiveCapStyle capStyle = PrimitiveCapStyle.None)
         {
             WidthFunction = widthFunction;
             ColorFunction = colorFunction;
@@ -187,8 +302,14 @@ namespace CalamityMod.Graphics.Primitives
             TextureCoordinateFunction = textureCoordinateFunction;
             JoinStyle = joinStyle;
             JoinMiterLimit = Math.Max(joinMiterLimit, 1f);
-            DebugWireframe = true;
+            DebugWireframe = debugWireframe;
             WireframeColor = wireframeColor ?? Color.LimeGreen;
+            SmoothingType = smoothingType;
+            SmoothingSegments = Math.Max(smoothingSegments, 0);
+            SmoothingTension = smoothingTension;
+            FrameTransportMode = frameTransportMode;
+            Topology = topology;
+            CapStyle = PrimitiveCapStyle.Flat;
         }
     }
 }

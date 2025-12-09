@@ -29,7 +29,13 @@ namespace CalamityMod.Graphics.Primitives
 
         private static PrimitiveSettings MainSettings;
 
+        private static PrimitiveTopology ActiveTopology;
+
         private static Vector2[] MainPositions;
+
+        private static Vector2[] MainTangents;
+
+        private static Vector2[] MainNormals;
 
         private static VertexPosition2DColorTexture[] MainVertices;
 
@@ -42,6 +48,10 @@ namespace CalamityMod.Graphics.Primitives
         private static BasicEffect WireframeEffect;
 
         private static int[] NonSmoothIndexScratch;
+
+        private static short StartCapCenterIndex;
+
+        private static short EndCapCenterIndex;
 
         private const short MaxPositions = 1000;
 
@@ -71,6 +81,8 @@ namespace CalamityMod.Graphics.Primitives
                 MainVertices = new VertexPosition2DColorTexture[MaxVertices];
                 MainIndices = new short[MaxIndices];
                 MainCompletionRatios = new float[MaxPositions];
+                MainTangents = new Vector2[MaxPositions];
+                MainNormals = new Vector2[MaxPositions];
                 WireframeVertices = new VertexPositionColor[MaxPositions * 8];
                 NonSmoothIndexScratch = new int[MaxPositions];
                 VertexBuffer ??= new DynamicVertexBuffer(Main.instance.GraphicsDevice, VertexPosition2DColorTexture.VertexDeclaration2D, MaxVertices, BufferUsage.WriteOnly);
@@ -128,19 +140,21 @@ namespace CalamityMod.Graphics.Primitives
             int desiredPointCount = pointsToCreate ?? positions.Length;
             desiredPointCount = Math.Clamp(desiredPointCount, 2, MaxPositions);
 
+            MainSettings = settings;
+            ActiveTopology = settings.CapStyle != PrimitiveCapStyle.None ? PrimitiveTopology.TriangleList : settings.Topology;
+
             // IF this is false, a correct position trail could not be made and rendering should not continue.
             if (!AssignPointsRectangleTrail(positions, settings, desiredPointCount))
                 return;
 
             // A trail with only one point or less has nothing to connect to, and therefore, can't make a trail.
-            MainSettings = settings;
             AssignCompletionData();
 
             if (PositionsIndex <= 2)
                 return;
 
             AssignVerticesRectangleTrail();
-            AssignIndicesRectangleTrail();
+            AssignIndices();
 
             // Else render without wasting resources creating a set.
             PrivateRender();
@@ -149,7 +163,15 @@ namespace CalamityMod.Graphics.Primitives
 
         private static void PrivateRender()
         {
-            if (IndicesIndex % 6 != 0 || VerticesIndex <= 3)
+            if (VerticesIndex <= 3)
+                return;
+
+            if (ActiveTopology == PrimitiveTopology.TriangleList)
+            {
+                if (IndicesIndex < 6 || IndicesIndex % 3 != 0)
+                    return;
+            }
+            else if (ActiveTopology == PrimitiveTopology.TriangleStrip && IndicesIndex < 4)
                 return;
 
             // Perform screen culling, for performance reasons.
@@ -173,7 +195,10 @@ namespace CalamityMod.Graphics.Primitives
 
             Main.instance.GraphicsDevice.SetVertexBuffer(VertexBuffer);
             Main.instance.GraphicsDevice.Indices = IndexBuffer;
-            Main.instance.GraphicsDevice.DrawIndexedPrimitives(PrimitiveType.TriangleList, 0, 0, VerticesIndex, 0, IndicesIndex / 3);
+
+            PrimitiveType primitiveType = ActiveTopology == PrimitiveTopology.TriangleStrip ? PrimitiveType.TriangleStrip : PrimitiveType.TriangleList;
+            int primitiveCount = primitiveType == PrimitiveType.TriangleStrip ? Math.Max(IndicesIndex - 2, 0) : IndicesIndex / 3;
+            Main.instance.GraphicsDevice.DrawIndexedPrimitives(primitiveType, 0, 0, VerticesIndex, 0, primitiveCount);
 
             if (MainSettings.DebugWireframe && WireframeEffect != null && TryBuildWireframeGeometry(MainSettings.WireframeColor, out int lineCount))
                 DrawWireframe(view, projection, lineCount);
@@ -225,16 +250,13 @@ namespace CalamityMod.Graphics.Primitives
                 return true;
             }
 
-            // Due to the first point being manually added, points should be added starting at the second position instead of the first.
-            PositionsIndex = 1;
+            PositionsIndex = 0;
 
             // Create the control points for the spline.
             List<Vector2> controlPoints = ControlPointsCache;
             controlPoints.Clear();
             for (int i = 0; i < positions.Length; i++)
             {
-                // Don't incorporate points that are zeroed out.
-                // They are almost certainly a result of incomplete oldPos arrays.
                 if (positions[i] == Vector2.Zero)
                     continue;
 
@@ -245,47 +267,73 @@ namespace CalamityMod.Graphics.Primitives
                 controlPoints.Add(positions[i] + offset);
             }
 
-            // Avoid stupid index errors.
-            if (controlPoints.Count <= 4)
+            int controlCount = controlPoints.Count;
+            if (controlCount <= 1)
+            {
+                controlPoints.Clear();
                 return false;
+            }
+
+            int segmentCount = controlCount - 1;
+
+            if (settings.SmoothingSegments > 0)
+            {
+                int segmentsPerEdge = Math.Max(1, settings.SmoothingSegments);
+                PrimitiveSmoothingType smoothingType = settings.SmoothingType;
+
+                for (int segment = 0; segment < segmentCount; segment++)
+                {
+                    Vector2 p0 = controlPoints[Math.Max(segment - 1, 0)];
+                    Vector2 p1 = controlPoints[segment];
+                    Vector2 p2 = controlPoints[segment + 1];
+                    Vector2 p3 = controlPoints[Math.Min(segment + 2, controlCount - 1)];
+
+                    for (int step = segment == 0 ? 0 : 1; step <= segmentsPerEdge; step++)
+                    {
+                        if (PositionsIndex >= MaxPositions - 1)
+                        {
+                            controlPoints.Clear();
+                            return true;
+                        }
+
+                        float localT = step / (float)segmentsPerEdge;
+                        Vector2 point = EvaluateCurve(smoothingType, p0, p1, p2, p3, localT, settings);
+                        MainPositions[PositionsIndex++] = point;
+                    }
+                }
+
+                controlPoints.Clear();
+                return true;
+            }
+
+            // Legacy behaviour: sample based on requested point count using Catmull-Rom style interpolation.
+            PositionsIndex = 1;
+            float controlCountMinusOne = controlCount - 1f;
+            PrimitiveSmoothingType legacyType = settings.SmoothingType;
 
             for (int j = 0; j < pointsToCreate; j++)
             {
+                if (PositionsIndex >= MaxPositions - 1)
+                    break;
+
                 float splineInterpolant = j / (float)pointsToCreate;
-                float localSplineInterpolant = splineInterpolant * (controlPoints.Count - 1f) % 1f;
-                int localSplineIndex = (int)(splineInterpolant * (controlPoints.Count - 1f));
+                float positionOnCurve = splineInterpolant * controlCountMinusOne;
+                int localSplineIndex = (int)positionOnCurve;
+                float localSplineInterpolant = positionOnCurve - localSplineIndex;
 
-                Vector2 farLeft;
-                Vector2 left = controlPoints[localSplineIndex];
-                Vector2 right = controlPoints[localSplineIndex + 1];
-                Vector2 farRight;
+                Vector2 p0 = controlPoints[Math.Max(localSplineIndex - 1, 0)];
+                Vector2 p1 = controlPoints[localSplineIndex];
+                Vector2 p2 = controlPoints[Math.Min(localSplineIndex + 1, controlCount - 1)];
+                Vector2 p3 = controlPoints[Math.Min(localSplineIndex + 2, controlCount - 1)];
 
-                // Special case: If the spline attempts to access the previous/next index but the index is already at the very beginning/end, simply
-                // cheat a little bit by creating a phantom point that's mirrored from the previous one.
-                if (localSplineIndex <= 0)
-                {
-                    Vector2 mirrored = left * 2f - right;
-                    farLeft = mirrored;
-                }
-                else
-                    farLeft = controlPoints[localSplineIndex - 1];
-
-                if (localSplineIndex >= controlPoints.Count - 2)
-                {
-                    Vector2 mirrored = right * 2f - left;
-                    farRight = mirrored;
-                }
-                else
-                    farRight = controlPoints[localSplineIndex + 2];
-
-                MainPositions[PositionsIndex] = Vector2.CatmullRom(farLeft, left, right, farRight, localSplineInterpolant);
+                MainPositions[PositionsIndex] = EvaluateCurve(legacyType, p0, p1, p2, p3, localSplineInterpolant, settings);
                 PositionsIndex++;
             }
 
-            // Manually insert the front and end points.
             MainPositions[0] = controlPoints[0];
-            MainPositions[PositionsIndex] = controlPoints[controlPoints.Count - 1];
+            MainPositions[PositionsIndex] = controlPoints[controlCount - 1];
             PositionsIndex++;
+            controlPoints.Clear();
             return true;
         }
 
@@ -311,8 +359,27 @@ namespace CalamityMod.Graphics.Primitives
             if (TotalTrailLength > Epsilon)
             {
                 float inverseTotal = 1f / TotalTrailLength;
-                for (int i = 1; i < PositionsIndex; i++)
-                    MainCompletionRatios[i] *= inverseTotal;
+                int lastIndex = PositionsIndex - 1;
+
+                if (System.Numerics.Vector.IsHardwareAccelerated && PositionsIndex - 1 >= System.Numerics.Vector<float>.Count)
+                {
+                    var scale = new System.Numerics.Vector<float>(inverseTotal);
+                    int i = 1;
+                    int upperBound = lastIndex - System.Numerics.Vector<float>.Count + 1;
+                    for (; i <= upperBound; i += System.Numerics.Vector<float>.Count)
+                    {
+                        var values = new System.Numerics.Vector<float>(MainCompletionRatios, i);
+                        (values * scale).CopyTo(MainCompletionRatios, i);
+                    }
+
+                    for (; i <= lastIndex; i++)
+                        MainCompletionRatios[i] *= inverseTotal;
+                }
+                else
+                {
+                    for (int i = 1; i < PositionsIndex; i++)
+                        MainCompletionRatios[i] *= inverseTotal;
+                }
 
                 MainCompletionRatios[PositionsIndex - 1] = 1f;
             }
@@ -326,6 +393,9 @@ namespace CalamityMod.Graphics.Primitives
         private static void AssignVerticesRectangleTrail()
         {
             VerticesIndex = 0;
+            StartCapCenterIndex = -1;
+            EndCapCenterIndex = -1;
+            ComputeFrameData();
             for (int i = 0; i < PositionsIndex; i++)
             {
                 float completionRatio = GetCompletionRatioForIndex(i);
@@ -354,6 +424,45 @@ namespace CalamityMod.Graphics.Primitives
                 MainVertices[VerticesIndex] = new VertexPosition2DColorTexture(right, vertexColor, rightCurrentTextureCoord, effectiveHalfWidth);
                 VerticesIndex++;
             }
+
+            AddCaps();
+        }
+
+        private static void AddCaps()
+        {
+            if (MainSettings.CapStyle == PrimitiveCapStyle.None || PositionsIndex <= 0)
+                return;
+
+            if (ActiveTopology == PrimitiveTopology.TriangleStrip)
+                return;
+
+            StartCapCenterIndex = TryCreateCapVertex(0);
+            if (PositionsIndex > 1)
+                EndCapCenterIndex = TryCreateCapVertex(PositionsIndex - 1);
+        }
+
+        private static short TryCreateCapVertex(int positionIndex)
+        {
+            if (VerticesIndex >= MaxVertices - 1)
+                return -1;
+
+            int leftVertexIndex = positionIndex * 2;
+            int rightVertexIndex = leftVertexIndex + 1;
+            if (rightVertexIndex >= VerticesIndex)
+                return -1;
+
+            ref readonly VertexPosition2DColorTexture leftVertex = ref MainVertices[leftVertexIndex];
+            ref readonly VertexPosition2DColorTexture rightVertex = ref MainVertices[rightVertexIndex];
+
+            Vector2 centerPosition = MainPositions[positionIndex];
+            Color centerColor = Color.Lerp(leftVertex.Color, rightVertex.Color, 0.5f);
+            float centerHalfWidth = Math.Max(Math.Max(leftVertex.TextureCoordinates.Z, rightVertex.TextureCoordinates.Z), Epsilon);
+            float centerU = (leftVertex.TextureCoordinates.X + rightVertex.TextureCoordinates.X) * 0.5f;
+            Vector2 centerTexcoord = new(centerU, 0.5f);
+
+            short newVertexIndex = VerticesIndex;
+            MainVertices[VerticesIndex++] = new VertexPosition2DColorTexture(centerPosition, centerColor, centerTexcoord, centerHalfWidth);
+            return newVertexIndex;
         }
 
         private static float GetCompletionRatioForIndex(int index)
@@ -392,6 +501,146 @@ namespace CalamityMod.Graphics.Primitives
             }
         }
 
+        private static void ComputeFrameData()
+        {
+            if (PositionsIndex <= 0)
+                return;
+
+            Vector2 fallbackTangent = Vector2.UnitX;
+
+            for (int i = 0; i < PositionsIndex; i++)
+            {
+                Vector2 tangent = ComputeTangent(i, fallbackTangent);
+                tangent = tangent.SafeNormalize(fallbackTangent.SafeNormalize(Vector2.UnitX));
+                MainTangents[i] = tangent;
+                fallbackTangent = tangent;
+            }
+
+            Vector2 previousNormal = Vector2.Zero;
+
+            for (int i = 0; i < PositionsIndex; i++)
+            {
+                Vector2 tangent = MainTangents[i];
+                if (tangent.LengthSquared() <= Epsilon)
+                    tangent = fallbackTangent.SafeNormalize(Vector2.UnitX);
+
+                Vector2 baseNormal = new Vector2(-tangent.Y, tangent.X);
+                Vector2 normal;
+
+                if (MainSettings.FrameTransportMode == PrimitiveFrameTransportMode.ParallelTransport && i > 0 && previousNormal.LengthSquared() > Epsilon)
+                {
+                    Vector2 previousTangent = MainTangents[i - 1];
+                    float cosine = MathHelper.Clamp(Vector2.Dot(previousTangent, tangent), -1f, 1f);
+                    float sine = Cross(previousTangent, tangent);
+                    Vector2 transported = new Vector2(
+                        cosine * previousNormal.X - sine * previousNormal.Y,
+                        sine * previousNormal.X + cosine * previousNormal.Y
+                    );
+                    normal = transported;
+                }
+                else
+                    normal = baseNormal;
+
+                if (normal.LengthSquared() <= Epsilon)
+                    normal = previousNormal.LengthSquared() > Epsilon ? previousNormal : baseNormal;
+
+                normal = normal.SafeNormalize(previousNormal.LengthSquared() > Epsilon ? previousNormal : Vector2.UnitY);
+                MainNormals[i] = normal;
+                previousNormal = normal;
+            }
+        }
+
+        private static Vector2 ComputeTangent(int index, Vector2 fallback)
+        {
+            int last = PositionsIndex - 1;
+            Vector2 tangent;
+
+            if (PositionsIndex <= 1)
+            {
+                tangent = fallback;
+            }
+            else if (index <= 0)
+            {
+                tangent = MainPositions[1] - MainPositions[0];
+            }
+            else if (index >= last)
+            {
+                tangent = MainPositions[last] - MainPositions[last - 1];
+            }
+            else
+            {
+                Vector2 forward = MainPositions[index + 1] - MainPositions[index];
+                Vector2 backward = MainPositions[index] - MainPositions[index - 1];
+                tangent = forward + backward;
+
+                if (tangent.LengthSquared() <= Epsilon)
+                    tangent = forward.LengthSquared() >= backward.LengthSquared() ? forward : backward;
+            }
+
+            if (tangent.LengthSquared() <= Epsilon)
+                tangent = fallback.LengthSquared() > Epsilon ? fallback : Vector2.UnitX;
+
+            return tangent;
+        }
+
+        private static Vector2 EvaluateCurve(PrimitiveSmoothingType type, Vector2 p0, Vector2 p1, Vector2 p2, Vector2 p3, float t, PrimitiveSettings settings)
+        {
+            t = MathHelper.Clamp(t, 0f, 1f);
+
+            switch (type)
+            {
+                case PrimitiveSmoothingType.Linear:
+                    return Vector2.Lerp(p1, p2, t);
+
+                case PrimitiveSmoothingType.Cardinal:
+                {
+                    float tension = MathHelper.Clamp(settings.SmoothingTension, -1f, 1f);
+                    float scale = (1f - tension) * 0.5f;
+                    Vector2 m0 = (p2 - p0) * scale;
+                    Vector2 m1 = (p3 - p1) * scale;
+                    return EvaluateHermiteSpan(p1, p2, m0, m1, t);
+                }
+
+                case PrimitiveSmoothingType.Hermite:
+                {
+                    Vector2 m0 = 0.5f * (p2 - p0);
+                    Vector2 m1 = 0.5f * (p3 - p1);
+                    return EvaluateHermiteSpan(p1, p2, m0, m1, t);
+                }
+
+                case PrimitiveSmoothingType.CubicBezier:
+                {
+                    Vector2 handle1 = p1 + (p2 - p0) / 3f;
+                    Vector2 handle2 = p2 - (p3 - p1) / 3f;
+                    return EvaluateBezierSpan(p1, handle1, handle2, p2, t);
+                }
+
+                default:
+                    return Vector2.CatmullRom(p0, p1, p2, p3, t);
+            }
+        }
+
+        private static Vector2 EvaluateHermiteSpan(Vector2 start, Vector2 end, Vector2 tangentStart, Vector2 tangentEnd, float t)
+        {
+            float t2 = t * t;
+            float t3 = t2 * t;
+            float h00 = 2f * t3 - 3f * t2 + 1f;
+            float h10 = t3 - 2f * t2 + t;
+            float h01 = -2f * t3 + 3f * t2;
+            float h11 = t3 - t2;
+            return h00 * start + h10 * tangentStart + h01 * end + h11 * tangentEnd;
+        }
+
+        private static Vector2 EvaluateBezierSpan(Vector2 p0, Vector2 p1, Vector2 p2, Vector2 p3, float t)
+        {
+            float u = 1f - t;
+            float u2 = u * u;
+            float u3 = u2 * u;
+            float t2 = t * t;
+            float t3 = t2 * t;
+            return u3 * p0 + 3f * u2 * t * p1 + 3f * u * t2 * p2 + t3 * p3;
+        }
+
         private static void ComputeEdgePositions(int index, float halfWidth, out Vector2 left, out Vector2 right, out float effectiveHalfWidth)
         {
             Vector2 currentPosition = MainPositions[index];
@@ -404,16 +653,9 @@ namespace CalamityMod.Graphics.Primitives
                 return;
             }
 
-            Vector2 forward = index >= PositionsIndex - 1 ? MainPositions[index] - MainPositions[index - 1] : MainPositions[index + 1] - MainPositions[index];
-            Vector2 backward = index <= 0 ? forward : MainPositions[index] - MainPositions[index - 1];
-
-            Vector2 forwardDir = forward.SafeNormalize(Vector2.Zero);
-            if (forwardDir == Vector2.Zero)
-                forwardDir = backward.SafeNormalize(Vector2.UnitX);
-            if (forwardDir == Vector2.Zero)
-                forwardDir = Vector2.UnitX;
-
-            Vector2 defaultNormal = new Vector2(-forwardDir.Y, forwardDir.X).SafeNormalize(Vector2.UnitY);
+            Vector2 defaultNormal = MainNormals[index];
+            if (defaultNormal.LengthSquared() <= Epsilon)
+                defaultNormal = Vector2.UnitY;
 
             if (MainSettings.JoinStyle == PrimitiveJoinStyle.Flat || PositionsIndex <= 2 || index == 0 || index == PositionsIndex - 1)
             {
@@ -424,17 +666,23 @@ namespace CalamityMod.Graphics.Primitives
                 return;
             }
 
-            Vector2 backwardDir = backward.SafeNormalize(forwardDir);
-            Vector2 averageTangent = backwardDir + forwardDir;
-            if (averageTangent.LengthSquared() <= Epsilon)
-                averageTangent = forwardDir;
-            Vector2 averageNormal = new Vector2(-averageTangent.Y, averageTangent.X).SafeNormalize(defaultNormal);
+            Vector2 prevNormal = MainNormals[Math.Max(index - 1, 0)];
+            if (prevNormal.LengthSquared() <= Epsilon)
+                prevNormal = defaultNormal;
+
+            Vector2 nextNormal = MainNormals[Math.Min(index + 1, PositionsIndex - 1)];
+            if (nextNormal.LengthSquared() <= Epsilon)
+                nextNormal = defaultNormal;
 
             switch (MainSettings.JoinStyle)
             {
                 case PrimitiveJoinStyle.Smooth:
                 {
-                    Vector2 offset = averageNormal * halfWidth;
+                    Vector2 averageNormal = (prevNormal + defaultNormal + nextNormal) * (1f / 3f);
+                    if (averageNormal.LengthSquared() <= Epsilon)
+                        averageNormal = defaultNormal;
+
+                    Vector2 offset = averageNormal.SafeNormalize(defaultNormal) * halfWidth;
                     left = currentPosition - offset;
                     right = currentPosition + offset;
                     effectiveHalfWidth = halfWidth;
@@ -443,14 +691,14 @@ namespace CalamityMod.Graphics.Primitives
 
                 case PrimitiveJoinStyle.Miter:
                 {
-                    Vector2 prevNormal = new Vector2(-backwardDir.Y, backwardDir.X).SafeNormalize(defaultNormal);
-                    Vector2 nextNormal = new Vector2(-forwardDir.Y, forwardDir.X).SafeNormalize(defaultNormal);
-                    Vector2 miter = prevNormal + nextNormal;
+                    Vector2 prev = prevNormal.SafeNormalize(defaultNormal);
+                    Vector2 next = nextNormal.SafeNormalize(defaultNormal);
+                    Vector2 miter = prev + next;
                     if (miter.LengthSquared() <= Epsilon)
-                        miter = averageNormal;
+                        miter = defaultNormal;
 
-                    miter = miter.SafeNormalize(averageNormal);
-                    float denom = Vector2.Dot(miter, nextNormal);
+                    miter = miter.SafeNormalize(defaultNormal);
+                    float denom = Vector2.Dot(miter, next);
                     if (Math.Abs(denom) < Epsilon)
                         denom = denom >= 0f ? Epsilon : -Epsilon;
 
@@ -541,15 +789,23 @@ namespace CalamityMod.Graphics.Primitives
             }
         }
 
-        private static void AssignIndicesRectangleTrail()
+        private static void AssignIndices()
         {
+            IndicesIndex = 0;
+
+            if (ActiveTopology == PrimitiveTopology.TriangleStrip)
+            {
+                for (short i = 0; i < VerticesIndex && IndicesIndex < MaxIndices; i++)
+                    MainIndices[IndicesIndex++] = i;
+                return;
+            }
+
             // What this is doing is basically representing each point on the vertices list as
             // indices. These indices should come together to create a tiny rectangle that acts
             // as a segment on the trail. This is achieved here by splitting the indices (or rather, points)
             // into 2 triangles, which requires 6 points.
             // The logic here basically determines which indices are connected together.
-            IndicesIndex = 0;
-            for (short i = 0; i < PositionsIndex - 2; i++)
+            for (short i = 0; i < PositionsIndex - 2 && IndicesIndex + 5 < MaxIndices; i++)
             {
                 short connectToIndex = (short)(i * 2);
                 MainIndices[IndicesIndex] = connectToIndex;
@@ -570,6 +826,37 @@ namespace CalamityMod.Graphics.Primitives
                 MainIndices[IndicesIndex] = (short)(connectToIndex + 3);
                 IndicesIndex++;
             }
+
+            AppendCapTriangles();
+        }
+
+        private static void AppendCapTriangles()
+        {
+            if (MainSettings.CapStyle == PrimitiveCapStyle.None)
+                return;
+
+            if (PositionsIndex <= 0)
+                return;
+
+            if (StartCapCenterIndex >= 0)
+                AddTriangle((short)(StartCapCenterIndex), 0, 1);
+
+            if (EndCapCenterIndex >= 0)
+            {
+                short leftIndex = (short)((PositionsIndex - 1) * 2);
+                short rightIndex = (short)(leftIndex + 1);
+                AddTriangle(leftIndex, rightIndex, EndCapCenterIndex);
+            }
+        }
+
+        private static void AddTriangle(short i0, short i1, short i2)
+        {
+            if (IndicesIndex + 2 >= MaxIndices)
+                return;
+
+            MainIndices[IndicesIndex++] = i0;
+            MainIndices[IndicesIndex++] = i1;
+            MainIndices[IndicesIndex++] = i2;
         }
 
         private static void CalcuatePixelatedPerspectiveMatrices(out Matrix viewMatrix, out Matrix projectionMatrix)
@@ -578,6 +865,8 @@ namespace CalamityMod.Graphics.Primitives
             projectionMatrix = Matrix.CreateOrthographicOffCenter(0, Main.screenWidth, Main.screenHeight, 0, -1, 1);
             viewMatrix = Matrix.Identity;
         }
+
+        private static float Cross(Vector2 a, Vector2 b) => a.X * b.Y - a.Y * b.X;
         #endregion
     }
 }
