@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria;
@@ -36,11 +35,21 @@ namespace CalamityMod.Graphics.Primitives
 
         private static short[] MainIndices;
 
+        private static VertexPositionColor[] WireframeVertices;
+
+        private static int WireframeVertexCount;
+
+        private static BasicEffect WireframeEffect;
+
+        private static int[] NonSmoothIndexScratch;
+
         private const short MaxPositions = 1000;
 
         private const short MaxVertices = 3072;
 
         private const short MaxIndices = 8192;
+
+        private static readonly List<Vector2> ControlPointsCache = new(MaxPositions);
 
         private static short PositionsIndex;
 
@@ -48,7 +57,7 @@ namespace CalamityMod.Graphics.Primitives
 
         private static float TotalTrailLength;
 
-        private const float Epsilon = 1e-6f;
+        public const float Epsilon = 1e-6f;
 
         private static short VerticesIndex;
 
@@ -62,9 +71,23 @@ namespace CalamityMod.Graphics.Primitives
                 MainVertices = new VertexPosition2DColorTexture[MaxVertices];
                 MainIndices = new short[MaxIndices];
                 MainCompletionRatios = new float[MaxPositions];
+                WireframeVertices = new VertexPositionColor[MaxPositions * 8];
+                NonSmoothIndexScratch = new int[MaxPositions];
                 VertexBuffer ??= new DynamicVertexBuffer(Main.instance.GraphicsDevice, VertexPosition2DColorTexture.VertexDeclaration2D, MaxVertices, BufferUsage.WriteOnly);
                 IndexBuffer ??= new DynamicIndexBuffer(Main.instance.GraphicsDevice, IndexElementSize.SixteenBits, MaxIndices, BufferUsage.WriteOnly);
+                WireframeEffect ??= new BasicEffect(Main.instance.GraphicsDevice)
+                {
+                    VertexColorEnabled = true,
+                    TextureEnabled = false,
+                    LightingEnabled = false
+                };
             });
+        }
+
+        public override void OnModUnload()
+        {
+            WireframeEffect?.Dispose();
+            WireframeEffect = null;
         }
 
         private static void PerformPixelationSafetyChecks(PrimitiveSettings settings)
@@ -99,11 +122,14 @@ namespace CalamityMod.Graphics.Primitives
                 return;
 
             // Return if too many to draw anything,
-            if (positions.Length >= MaxPositions)
+            if (positions.Length > MaxPositions)
                 return;
 
+            int desiredPointCount = pointsToCreate ?? positions.Length;
+            desiredPointCount = Math.Clamp(desiredPointCount, 2, MaxPositions);
+
             // IF this is false, a correct position trail could not be made and rendering should not continue.
-            if (!AssignPointsRectangleTrail(positions, settings, pointsToCreate ?? positions.Length))
+            if (!AssignPointsRectangleTrail(positions, settings, desiredPointCount))
                 return;
 
             // A trail with only one point or less has nothing to connect to, and therefore, can't make a trail.
@@ -148,6 +174,9 @@ namespace CalamityMod.Graphics.Primitives
             Main.instance.GraphicsDevice.SetVertexBuffer(VertexBuffer);
             Main.instance.GraphicsDevice.Indices = IndexBuffer;
             Main.instance.GraphicsDevice.DrawIndexedPrimitives(PrimitiveType.TriangleList, 0, 0, VerticesIndex, 0, IndicesIndex / 3);
+
+            if (MainSettings.DebugWireframe && WireframeEffect != null && TryBuildWireframeGeometry(MainSettings.WireframeColor, out int lineCount))
+                DrawWireframe(view, projection, lineCount);
         }
         #endregion
 
@@ -159,27 +188,39 @@ namespace CalamityMod.Graphics.Primitives
             {
                 PositionsIndex = 0;
 
-                // Would like to remove this, but unsure how else to properly ensure that none are zero.
-                positions = positions.Where(originalPosition => originalPosition != Vector2.Zero).ToArray();
+                int validCount = 0;
+                for (int i = 0; i < positions.Length; i++)
+                {
+                    if (positions[i] == Vector2.Zero)
+                        continue;
 
-                if (positions.Length <= 2)
+                    NonSmoothIndexScratch[validCount++] = i;
+                }
+
+                if (validCount <= 2)
                     return false;
 
-                // Remap the original positions across a certain length.
+                int lastIndex = validCount - 1;
+                float inversePointCount = 1f / (pointsToCreate - 1);
+                float lastIndexFloat = lastIndex;
+
+                // Remap the original positions across a certain length without additional allocations.
                 for (int i = 0; i < pointsToCreate; i++)
                 {
-                    float completionRatio = i / (float)(pointsToCreate - 1f);
-                    int currentIndex = (int)(completionRatio * (positions.Length - 1));
-                    Vector2 currentPoint = positions[currentIndex];
-                    Vector2 nextPoint = positions[(currentIndex + 1) % positions.Length];
+                    float completionRatio = i * inversePointCount;
+                    float scaledIndex = completionRatio * lastIndexFloat;
+                    int currentIndex = (int)scaledIndex;
+                    int nextIndex = Math.Min(currentIndex + 1, lastIndex);
+                    float localInterpolant = scaledIndex - currentIndex;
 
-                    // 29FEB2024: Ozzatron: offset function needs to apply even in cases where smoothing is off.
-                    Vector2 finalPos = Vector2.Lerp(currentPoint, nextPoint, completionRatio * (positions.Length - 1) % 0.99999f) - Main.screenPosition;
+                    Vector2 currentPoint = positions[NonSmoothIndexScratch[currentIndex]];
+                    Vector2 nextPoint = positions[NonSmoothIndexScratch[nextIndex]];
+                    Vector2 interpolatedWorld = Vector2.Lerp(currentPoint, nextPoint, localInterpolant);
+                    Vector2 finalPos = interpolatedWorld - Main.screenPosition;
                     if (settings.OffsetFunction != null)
-                        finalPos += settings.OffsetFunction(completionRatio, finalPos);
+                        finalPos += settings.OffsetFunction(completionRatio, interpolatedWorld);
 
-                    MainPositions[PositionsIndex] = finalPos;
-                    PositionsIndex++;
+                    MainPositions[PositionsIndex++] = finalPos;
                 }
                 return true;
             }
@@ -188,7 +229,8 @@ namespace CalamityMod.Graphics.Primitives
             PositionsIndex = 1;
 
             // Create the control points for the spline.
-            List<Vector2> controlPoints = new();
+            List<Vector2> controlPoints = ControlPointsCache;
+            controlPoints.Clear();
             for (int i = 0; i < positions.Length; i++)
             {
                 // Don't incorporate points that are zeroed out.
@@ -241,8 +283,8 @@ namespace CalamityMod.Graphics.Primitives
             }
 
             // Manually insert the front and end points.
-            MainPositions[0] = controlPoints.First();
-            MainPositions[PositionsIndex] = controlPoints.Last();
+            MainPositions[0] = controlPoints[0];
+            MainPositions[PositionsIndex] = controlPoints[controlPoints.Count - 1];
             PositionsIndex++;
             return true;
         }
@@ -430,6 +472,72 @@ namespace CalamityMod.Graphics.Primitives
                     effectiveHalfWidth = halfWidth;
                     return;
                 }
+            }
+        }
+
+        private static bool TryBuildWireframeGeometry(Color lineColor, out int lineCount)
+        {
+            lineCount = 0;
+
+            if (WireframeVertices == null)
+                return false;
+
+            int segments = PositionsIndex - 1;
+            if (segments <= 0)
+                return false;
+
+            WireframeVertexCount = 0;
+
+            for (int i = 0; i < segments; i++)
+            {
+                int currentLeft = i * 2;
+                int currentRight = currentLeft + 1;
+                int nextLeft = currentLeft + 2;
+                int nextRight = nextLeft + 1;
+
+                AddWireframeLineFromIndices(currentLeft, nextLeft, lineColor);
+                AddWireframeLineFromIndices(currentRight, nextRight, lineColor);
+            }
+
+            for (int i = 0; i < PositionsIndex; i++)
+            {
+                int leftIndex = i * 2;
+                AddWireframeLineFromIndices(leftIndex, leftIndex + 1, lineColor);
+            }
+
+            lineCount = WireframeVertexCount / 2;
+            return lineCount > 0;
+        }
+
+        private static void AddWireframeLineFromIndices(int startVertexIndex, int endVertexIndex, Color color)
+        {
+            if (WireframeVertexCount + 1 >= WireframeVertices.Length)
+                return;
+
+            int vertexCount = VerticesIndex;
+            if (startVertexIndex >= vertexCount || endVertexIndex >= vertexCount)
+                return;
+
+            ref readonly VertexPosition2DColorTexture start = ref MainVertices[startVertexIndex];
+            ref readonly VertexPosition2DColorTexture end = ref MainVertices[endVertexIndex];
+            WireframeVertices[WireframeVertexCount++] = new VertexPositionColor(new Vector3(start.Position, 0f), color);
+            WireframeVertices[WireframeVertexCount++] = new VertexPositionColor(new Vector3(end.Position, 0f), color);
+        }
+
+        private static void DrawWireframe(Matrix view, Matrix projection, int lineCount)
+        {
+            if (lineCount <= 0 || WireframeEffect == null)
+                return;
+
+            WireframeEffect.World = Matrix.Identity;
+            WireframeEffect.View = view;
+            WireframeEffect.Projection = projection;
+
+            var device = Main.instance.GraphicsDevice;
+            foreach (EffectPass pass in WireframeEffect.CurrentTechnique.Passes)
+            {
+                pass.Apply();
+                device.DrawUserPrimitives(PrimitiveType.LineList, WireframeVertices, 0, lineCount);
             }
         }
 

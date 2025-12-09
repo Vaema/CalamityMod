@@ -140,6 +140,16 @@ namespace CalamityMod.Graphics.Primitives
         /// Maximum multiplier applied to miter joins to keep spikes under control.
         /// </summary>
         public readonly float JoinMiterLimit;
+
+        /// <summary>
+        /// If true, a debug wireframe will be rendered on top of the primitive.
+        /// </summary>
+        public readonly bool DebugWireframe;
+
+        /// <summary>
+        /// The color used for the optional wireframe overlay.
+        /// </summary>
+        public readonly Color WireframeColor;
         #endregion
 
         /// <summary>
@@ -159,7 +169,9 @@ namespace CalamityMod.Graphics.Primitives
         /// <param name="textureCoordinateFunction">Optional override that receives the completion ratio and returns a custom U coordinate.</param>
         /// <param name="joinStyle">Determines how neighbouring segments are joined when expanding into quads.</param>
         /// <param name="joinMiterLimit">Maximum multiplier applied to miter joins to prevent spikes. Only used when <paramref name="joinStyle"/> is <see cref="PrimitiveJoinStyle.Miter"/>.</param>
-        public PrimitiveSettings(VertexWidthFunction widthFunction, VertexColorFunction colorFunction, VertexOffsetFunction offsetFunction = null, bool smoothen = true, bool pixelate = false, MiscShaderData shader = null, bool useUnscaledMatrices = false, (Vector2, Vector2)? initialVertexPositionsOverride = null, PrimitiveTextureMode textureCoordinateMode = PrimitiveTextureMode.Normalized, float textureCycleLength = 1f, float textureScrollOffset = 0f, Func<float, float> textureCoordinateFunction = null, PrimitiveJoinStyle joinStyle = PrimitiveJoinStyle.Flat, float joinMiterLimit = 4f)
+        /// <param name="debugWireframe">When true, draws a wireframe overlay useful for debugging primitive geometry.</param>
+        /// <param name="wireframeColor">Optional override for the wireframe color. If null, a vivid green is used.</param>
+        public PrimitiveSettings(VertexWidthFunction widthFunction, VertexColorFunction colorFunction, VertexOffsetFunction offsetFunction = null, bool smoothen = true, bool pixelate = false, MiscShaderData shader = null, bool useUnscaledMatrices = false, (Vector2, Vector2)? initialVertexPositionsOverride = null, PrimitiveTextureMode textureCoordinateMode = PrimitiveTextureMode.Normalized, float textureCycleLength = 1f, float textureScrollOffset = 0f, Func<float, float> textureCoordinateFunction = null, PrimitiveJoinStyle joinStyle = PrimitiveJoinStyle.Flat, float joinMiterLimit = 4f, bool debugWireframe = false, Color? wireframeColor = null)
         {
             WidthFunction = widthFunction;
             ColorFunction = colorFunction;
@@ -170,11 +182,13 @@ namespace CalamityMod.Graphics.Primitives
             UseUnscaledMatrices = useUnscaledMatrices;
             InitialVertexPositionsOverride = initialVertexPositionsOverride;
             TextureCoordinateMode = textureCoordinateMode;
-            TextureCycleLength = Math.Abs(textureCycleLength) <= 1e-4f ? 1f : textureCycleLength;
+            TextureCycleLength = Math.Abs(textureCycleLength) <= PrimitiveRenderer.Epsilon ? 1f : textureCycleLength;
             TextureScrollOffset = textureScrollOffset;
             TextureCoordinateFunction = textureCoordinateFunction;
             JoinStyle = joinStyle;
             JoinMiterLimit = Math.Max(joinMiterLimit, 1f);
+            DebugWireframe = true;
+            WireframeColor = wireframeColor ?? Color.LimeGreen;
         }
     }
 }
