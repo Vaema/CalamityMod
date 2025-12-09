@@ -416,8 +416,8 @@ BearBuff: {
 }
 
 BeldumBuff: {
-	DisplayName: Beldum
-	Description: Super shiny!
+	DisplayName: Iron Ball
+	Description: Extra shiny!
 }
 
 BloodBound: {
