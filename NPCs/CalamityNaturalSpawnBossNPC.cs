@@ -46,6 +46,15 @@ namespace CalamityMod.NPCs
             _GreatSharkTriggerNPCS = null;
         }
 
+        private sealed class ClearWorldHook : ModSystem
+        {
+            public override void ClearWorld()
+            {
+                ghostKillCount = 0;
+                sharkKillCount = 0;
+            }
+        }
+
         public override void OnKill(NPC npc)
         {
             CheckPolterghastCondition(npc);
