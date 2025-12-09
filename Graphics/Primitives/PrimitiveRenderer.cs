@@ -44,6 +44,12 @@ namespace CalamityMod.Graphics.Primitives
 
         private static short PositionsIndex;
 
+        private static float[] MainCompletionRatios;
+
+        private static float TotalTrailLength;
+
+        private const float Epsilon = 1e-6f;
+
         private static short VerticesIndex;
 
         private static short IndicesIndex;
@@ -55,6 +61,7 @@ namespace CalamityMod.Graphics.Primitives
                 MainPositions = new Vector2[MaxPositions];
                 MainVertices = new VertexPosition2DColorTexture[MaxVertices];
                 MainIndices = new short[MaxIndices];
+                MainCompletionRatios = new float[MaxPositions];
                 VertexBuffer ??= new DynamicVertexBuffer(Main.instance.GraphicsDevice, VertexPosition2DColorTexture.VertexDeclaration2D, MaxVertices, BufferUsage.WriteOnly);
                 IndexBuffer ??= new DynamicIndexBuffer(Main.instance.GraphicsDevice, IndexElementSize.SixteenBits, MaxIndices, BufferUsage.WriteOnly);
             });
@@ -100,10 +107,11 @@ namespace CalamityMod.Graphics.Primitives
                 return;
 
             // A trail with only one point or less has nothing to connect to, and therefore, can't make a trail.
-            if (MainPositions.Length <= 2)
-                return;
-
             MainSettings = settings;
+            AssignCompletionData();
+
+            if (PositionsIndex <= 2)
+                return;
 
             AssignVerticesRectangleTrail();
             AssignIndicesRectangleTrail();
@@ -239,40 +247,189 @@ namespace CalamityMod.Graphics.Primitives
             return true;
         }
 
+        private static void AssignCompletionData()
+        {
+            TotalTrailLength = 0f;
+
+            if (PositionsIndex <= 0)
+                return;
+
+            MainCompletionRatios[0] = 0f;
+
+            for (int i = 1; i < PositionsIndex; i++)
+            {
+                float segmentLength = Vector2.Distance(MainPositions[i], MainPositions[i - 1]);
+                TotalTrailLength += segmentLength;
+                MainCompletionRatios[i] = TotalTrailLength;
+            }
+
+            if (PositionsIndex <= 0)
+                return;
+
+            if (TotalTrailLength > Epsilon)
+            {
+                float inverseTotal = 1f / TotalTrailLength;
+                for (int i = 1; i < PositionsIndex; i++)
+                    MainCompletionRatios[i] *= inverseTotal;
+
+                MainCompletionRatios[PositionsIndex - 1] = 1f;
+            }
+            else
+            {
+                for (int i = 1; i < PositionsIndex; i++)
+                    MainCompletionRatios[i] = 0f;
+            }
+        }
+
         private static void AssignVerticesRectangleTrail()
         {
             VerticesIndex = 0;
             for (int i = 0; i < PositionsIndex; i++)
             {
-                float completionRatio = (i - 1f) / (float)(PositionsIndex - 1);
-                float widthAtVertex = MainSettings.WidthFunction(completionRatio);
+                float completionRatio = GetCompletionRatioForIndex(i);
+                float widthAtVertex = Math.Max(MainSettings.WidthFunction(completionRatio), 0f);
                 Color vertexColor = MainSettings.ColorFunction(completionRatio);
-                Vector2 currentPosition = MainPositions[i];
-                Vector2 directionToAhead = i == PositionsIndex - 1 ? (MainPositions[i] - MainPositions[i - 1]).SafeNormalize(Vector2.Zero) : (MainPositions[i + 1] - MainPositions[i]).SafeNormalize(Vector2.Zero);
-                Vector2 leftCurrentTextureCoord = new(completionRatio, 0.5f - widthAtVertex * 0.5f);
-                Vector2 rightCurrentTextureCoord = new(completionRatio, 0.5f + widthAtVertex * 0.5f);
+                float textureU = ComputeTextureCoordinateForIndex(i, completionRatio);
 
-                // Point 90 degrees away from the direction towards the next point, and use it to mark the edges of the rectangle.
-                // This doesn't use RotatedBy for the sake of performance (there can potentially be a lot of trail points).
-                Vector2 sideDirection = new(-directionToAhead.Y, directionToAhead.X);
-
-                Vector2 left = currentPosition - sideDirection * widthAtVertex;
-                Vector2 right = currentPosition + sideDirection * widthAtVertex;
+                ComputeEdgePositions(i, widthAtVertex, out Vector2 left, out Vector2 right, out float effectiveHalfWidth);
 
                 // Override the initial vertex positions if requested.
                 if (i == 0 && MainSettings.InitialVertexPositionsOverride.HasValue && MainSettings.InitialVertexPositionsOverride.Value.Item1 != Vector2.Zero && MainSettings.InitialVertexPositionsOverride.Value.Item2 != Vector2.Zero)
                 {
                     left = MainSettings.InitialVertexPositionsOverride.Value.Item1;
                     right = MainSettings.InitialVertexPositionsOverride.Value.Item2;
+                    effectiveHalfWidth = Math.Max(Vector2.Distance(left, right) * 0.5f, Epsilon);
                 }
 
-                // What this is doing, at its core, is defining a rectangle based on two triangles.
-                // These triangles are defined based on the width of the strip at that point.
-                // The resulting rectangles combined are what make the trail itself.
-                MainVertices[VerticesIndex] = new VertexPosition2DColorTexture(left, vertexColor, leftCurrentTextureCoord, widthAtVertex);
+                // Guard against degenerate width
+                effectiveHalfWidth = Math.Max(effectiveHalfWidth, Epsilon);
+
+                Vector2 leftCurrentTextureCoord = new Vector2(textureU, 0.5f - effectiveHalfWidth * 0.5f);
+                Vector2 rightCurrentTextureCoord = new Vector2(textureU, 0.5f + effectiveHalfWidth * 0.5f);
+
+                MainVertices[VerticesIndex] = new VertexPosition2DColorTexture(left, vertexColor, leftCurrentTextureCoord, effectiveHalfWidth);
                 VerticesIndex++;
-                MainVertices[VerticesIndex] = new VertexPosition2DColorTexture(right, vertexColor, rightCurrentTextureCoord, widthAtVertex);
+                MainVertices[VerticesIndex] = new VertexPosition2DColorTexture(right, vertexColor, rightCurrentTextureCoord, effectiveHalfWidth);
                 VerticesIndex++;
+            }
+        }
+
+        private static float GetCompletionRatioForIndex(int index)
+        {
+            if (PositionsIndex <= 0)
+                return 0f;
+
+            if (index <= 0)
+                return MainCompletionRatios[0];
+
+            if (index >= PositionsIndex)
+                return MainCompletionRatios[PositionsIndex - 1];
+
+            return MainCompletionRatios[index];
+        }
+
+        private static float ComputeTextureCoordinateForIndex(int index, float completionRatio)
+        {
+            float clampedCompletion = MathHelper.Clamp(completionRatio, 0f, 1f);
+
+            if (MainSettings.TextureCoordinateFunction != null)
+                return MainSettings.TextureCoordinateFunction(clampedCompletion);
+
+            float cycleLength = MainSettings.TextureCycleLength;
+            if (Math.Abs(cycleLength) <= Epsilon)
+                cycleLength = cycleLength >= 0f ? 1f : -1f;
+
+            switch (MainSettings.TextureCoordinateMode)
+            {
+                case PrimitiveTextureMode.Distance:
+                    float distance = clampedCompletion * TotalTrailLength + MainSettings.TextureScrollOffset;
+                    return distance / cycleLength;
+
+                default:
+                    return clampedCompletion * cycleLength + MainSettings.TextureScrollOffset;
+            }
+        }
+
+        private static void ComputeEdgePositions(int index, float halfWidth, out Vector2 left, out Vector2 right, out float effectiveHalfWidth)
+        {
+            Vector2 currentPosition = MainPositions[index];
+
+            if (halfWidth <= 0f)
+            {
+                left = currentPosition;
+                right = currentPosition;
+                effectiveHalfWidth = Epsilon;
+                return;
+            }
+
+            Vector2 forward = index >= PositionsIndex - 1 ? MainPositions[index] - MainPositions[index - 1] : MainPositions[index + 1] - MainPositions[index];
+            Vector2 backward = index <= 0 ? forward : MainPositions[index] - MainPositions[index - 1];
+
+            Vector2 forwardDir = forward.SafeNormalize(Vector2.Zero);
+            if (forwardDir == Vector2.Zero)
+                forwardDir = backward.SafeNormalize(Vector2.UnitX);
+            if (forwardDir == Vector2.Zero)
+                forwardDir = Vector2.UnitX;
+
+            Vector2 defaultNormal = new Vector2(-forwardDir.Y, forwardDir.X).SafeNormalize(Vector2.UnitY);
+
+            if (MainSettings.JoinStyle == PrimitiveJoinStyle.Flat || PositionsIndex <= 2 || index == 0 || index == PositionsIndex - 1)
+            {
+                Vector2 offset = defaultNormal * halfWidth;
+                left = currentPosition - offset;
+                right = currentPosition + offset;
+                effectiveHalfWidth = halfWidth;
+                return;
+            }
+
+            Vector2 backwardDir = backward.SafeNormalize(forwardDir);
+            Vector2 averageTangent = backwardDir + forwardDir;
+            if (averageTangent.LengthSquared() <= Epsilon)
+                averageTangent = forwardDir;
+            Vector2 averageNormal = new Vector2(-averageTangent.Y, averageTangent.X).SafeNormalize(defaultNormal);
+
+            switch (MainSettings.JoinStyle)
+            {
+                case PrimitiveJoinStyle.Smooth:
+                {
+                    Vector2 offset = averageNormal * halfWidth;
+                    left = currentPosition - offset;
+                    right = currentPosition + offset;
+                    effectiveHalfWidth = halfWidth;
+                    return;
+                }
+
+                case PrimitiveJoinStyle.Miter:
+                {
+                    Vector2 prevNormal = new Vector2(-backwardDir.Y, backwardDir.X).SafeNormalize(defaultNormal);
+                    Vector2 nextNormal = new Vector2(-forwardDir.Y, forwardDir.X).SafeNormalize(defaultNormal);
+                    Vector2 miter = prevNormal + nextNormal;
+                    if (miter.LengthSquared() <= Epsilon)
+                        miter = averageNormal;
+
+                    miter = miter.SafeNormalize(averageNormal);
+                    float denom = Vector2.Dot(miter, nextNormal);
+                    if (Math.Abs(denom) < Epsilon)
+                        denom = denom >= 0f ? Epsilon : -Epsilon;
+
+                    float miterLength = halfWidth / denom;
+                    float maxLength = halfWidth * MainSettings.JoinMiterLimit;
+                    miterLength = MathHelper.Clamp(miterLength, -maxLength, maxLength);
+                    Vector2 offset = miter * miterLength;
+                    left = currentPosition - offset;
+                    right = currentPosition + offset;
+                    effectiveHalfWidth = Math.Max(Math.Abs(miterLength), Epsilon);
+                    return;
+                }
+
+                default:
+                {
+                    Vector2 offset = defaultNormal * halfWidth;
+                    left = currentPosition - offset;
+                    right = currentPosition + offset;
+                    effectiveHalfWidth = halfWidth;
+                    return;
+                }
             }
         }
 

@@ -1,8 +1,46 @@
-﻿using Microsoft.Xna.Framework;
+﻿using System;
+using Microsoft.Xna.Framework;
 using Terraria.Graphics.Shaders;
 
 namespace CalamityMod.Graphics.Primitives
 {
+    /// <summary>
+    /// Controls how U texture coordinates are generated for primitive ribbons.
+    /// </summary>
+    public enum PrimitiveTextureMode
+    {
+        /// <summary>
+        /// U coordinates run from 0 to 1 across the full trail length. This matches the legacy behavior.
+        /// </summary>
+        Normalized,
+
+        /// <summary>
+        /// U coordinates advance according to distance along the trail. One full texture cycle occurs every <see cref="PrimitiveSettings.TextureCycleLength"/> pixels.
+        /// </summary>
+        Distance
+    }
+
+    /// <summary>
+    /// Controls how adjacent segments are joined together when expanding points into quads.
+    /// </summary>
+    public enum PrimitiveJoinStyle
+    {
+        /// <summary>
+        /// Legacy behavior. Each segment is expanded using its forward direction only.
+        /// </summary>
+        Flat,
+
+        /// <summary>
+        /// Uses the averaged tangent of neighbouring segments to smooth corners.
+        /// </summary>
+        Smooth,
+
+        /// <summary>
+        /// Uses a mitered join to keep width continuous around sharp corners.
+        /// </summary>
+        Miter
+    }
+
     /// <summary>
     /// Contains all the various options to use when creating a primitive trail. New members can be added freely without breaking existing implementations.
     /// </summary>
@@ -72,6 +110,36 @@ namespace CalamityMod.Graphics.Primitives
         /// An optional override to force the trail to use the provided positions as the side positions of the initial vertex. They are the left and right positions respectively.
         /// </summary>
         public readonly (Vector2, Vector2)? InitialVertexPositionsOverride;
+
+        /// <summary>
+        /// Determines how U texture coordinates are generated.
+        /// </summary>
+        public readonly PrimitiveTextureMode TextureCoordinateMode;
+
+        /// <summary>
+        /// Controls the scale of generated U coordinates. In <see cref="PrimitiveTextureMode.Normalized"/> this is a multiplier, in <see cref="PrimitiveTextureMode.Distance"/> this is the distance (in pixels) for one full texture cycle.
+        /// </summary>
+        public readonly float TextureCycleLength;
+
+        /// <summary>
+        /// Adds an additional offset to the generated U coordinate. In distance mode this value is interpreted in pixels.
+        /// </summary>
+        public readonly float TextureScrollOffset;
+
+        /// <summary>
+        /// Allows overriding the automatically generated U coordinate with a custom function. Receives the normalized completion ratio (0-1) and should return the desired U coordinate.
+        /// </summary>
+        public readonly Func<float, float> TextureCoordinateFunction;
+
+        /// <summary>
+        /// Determines how consecutive segments are joined together when expanding into quads.
+        /// </summary>
+        public readonly PrimitiveJoinStyle JoinStyle;
+
+        /// <summary>
+        /// Maximum multiplier applied to miter joins to keep spikes under control.
+        /// </summary>
+        public readonly float JoinMiterLimit;
         #endregion
 
         /// <summary>
@@ -85,7 +153,13 @@ namespace CalamityMod.Graphics.Primitives
         /// <param name="shader">The shader to apply when rendering the primitives.</param>
         /// <param name="useUnscaledMatrices">Whether to use unscaled perspective matrices when rendering primitives. Recommended when using this system outside of its typical context; i.e. rendering primitives in the background via a CustomSky.</param>
         /// <param name="initialVertexPositionsOverride">An optional override to force the trail to use the provided positions as the side positions of the initial vertex. They are the left and right positions respectively and should be in screen space.</param>
-        public PrimitiveSettings(VertexWidthFunction widthFunction, VertexColorFunction colorFunction, VertexOffsetFunction offsetFunction = null, bool smoothen = true, bool pixelate = false, MiscShaderData shader = null, bool useUnscaledMatrices = false, (Vector2, Vector2)? initialVertexPositionsOverride = null)
+        /// <param name="textureCoordinateMode">Determines how U texture coordinates are generated.</param>
+        /// <param name="textureCycleLength">Controls how fast U coordinates advance. Acts as a multiplier in normalized mode, or the distance per cycle in distance mode.</param>
+        /// <param name="textureScrollOffset">Adds an offset to generated U coordinates. Interpreted in pixels when using distance mode.</param>
+        /// <param name="textureCoordinateFunction">Optional override that receives the completion ratio and returns a custom U coordinate.</param>
+        /// <param name="joinStyle">Determines how neighbouring segments are joined when expanding into quads.</param>
+        /// <param name="joinMiterLimit">Maximum multiplier applied to miter joins to prevent spikes. Only used when <paramref name="joinStyle"/> is <see cref="PrimitiveJoinStyle.Miter"/>.</param>
+        public PrimitiveSettings(VertexWidthFunction widthFunction, VertexColorFunction colorFunction, VertexOffsetFunction offsetFunction = null, bool smoothen = true, bool pixelate = false, MiscShaderData shader = null, bool useUnscaledMatrices = false, (Vector2, Vector2)? initialVertexPositionsOverride = null, PrimitiveTextureMode textureCoordinateMode = PrimitiveTextureMode.Normalized, float textureCycleLength = 1f, float textureScrollOffset = 0f, Func<float, float> textureCoordinateFunction = null, PrimitiveJoinStyle joinStyle = PrimitiveJoinStyle.Flat, float joinMiterLimit = 4f)
         {
             WidthFunction = widthFunction;
             ColorFunction = colorFunction;
@@ -95,6 +169,12 @@ namespace CalamityMod.Graphics.Primitives
             Shader = shader;
             UseUnscaledMatrices = useUnscaledMatrices;
             InitialVertexPositionsOverride = initialVertexPositionsOverride;
+            TextureCoordinateMode = textureCoordinateMode;
+            TextureCycleLength = Math.Abs(textureCycleLength) <= 1e-4f ? 1f : textureCycleLength;
+            TextureScrollOffset = textureScrollOffset;
+            TextureCoordinateFunction = textureCoordinateFunction;
+            JoinStyle = joinStyle;
+            JoinMiterLimit = Math.Max(joinMiterLimit, 1f);
         }
     }
 }
