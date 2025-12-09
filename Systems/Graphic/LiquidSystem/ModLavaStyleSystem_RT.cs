@@ -51,10 +51,11 @@ namespace CalamityMod.Systems.Graphic.LiquidSystem
             LavaSlopeRT = null;
             LavaWaterfallRT = null;
         }
-
+        
         private static void UpdateRT(GameTime time)
         {
-            if (!Initialized || !TextureArrayReady)
+            
+            if (!Initialized || !TextureArrayReady || Main.gameMenu)
                 return;
 
             var graphicsDevice = Main.instance.GraphicsDevice;

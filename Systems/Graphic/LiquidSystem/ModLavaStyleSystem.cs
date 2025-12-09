@@ -63,7 +63,7 @@ namespace CalamityMod.Systems.Graphic.LiquidSystem
             {
                 ManipulatorManager.ApplyEdits += ApplyEdits;
                 Main.QueueMainThreadAction(PrepareRT);
-                Main.OnPreDraw += UpdateRT;
+                // Main.OnPreDraw += UpdateRT;
                 Initialized = true;
             }
         }
@@ -73,7 +73,7 @@ namespace CalamityMod.Systems.Graphic.LiquidSystem
             if (Initialized)
             {
                 Main.QueueMainThreadAction(DisposeRT);
-                Main.OnPreDraw -= UpdateRT;
+                // Main.OnPreDraw -= UpdateRT;
                 Initialized = false;
             }
 

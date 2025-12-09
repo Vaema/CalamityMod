@@ -880,7 +880,7 @@ namespace CalamityMod.ILEditing
 
             PixelationManager.DrawPixelatedTargets(drawLayer);
             
-            RendererManager.DrawRendererAtLayer(drawLayer);
+            // RendererManager.DrawRendererAtLayer(drawLayer);
 
         }
 
