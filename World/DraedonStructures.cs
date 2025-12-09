@@ -4,6 +4,7 @@ using System.Linq;
 using CalamityMod.Items.DraedonMisc;
 using CalamityMod.Items.LabFinders;
 using CalamityMod.Items.Materials;
+using CalamityMod.Items.Pets;
 using CalamityMod.Items.Weapons.Melee;
 using CalamityMod.Schematics;
 using CalamityMod.Tiles.SunkenSea;
@@ -610,7 +611,7 @@ namespace CalamityMod.World
         #endregion
 
         #region Cavern Lab
-        public static void FillCavernLaboratoryChest(Chest chest)
+        public static void FillCavernLaboratoryChest(Chest chest, int useless, bool placedMagnetOrb)
         {
             int potionType = Utils.SelectRandom(WorldGen.genRand, ItemID.EndurancePotion, ItemID.GravitationPotion, ItemID.HeartreachPotion, ItemID.LifeforcePotion);
             List<ChestItem> contents = new List<ChestItem>()
@@ -624,6 +625,11 @@ namespace CalamityMod.World
                 new ChestItem(potionType, WorldGen.genRand.Next(4, 7 + 1)),
                 new ChestItem(ModContent.ItemType<LabSeekingMechanism>(), 1),
             };
+
+            if (!placedMagnetOrb)
+            {
+                contents.Insert(0, new ChestItem(ModContent.ItemType<MagnetizedOrb>(), 1));
+            }
 
             for (int i = 0; i < contents.Count; i++)
             {
@@ -675,8 +681,8 @@ namespace CalamityMod.World
                     tries++;
                 else
                 {
-                    bool _ = true;
-                    PlaceSchematic(mapKey, new Point(placementPoint.X, placementPoint.Y), SchematicAnchor.TopLeft, ref _, new Action<Chest>(FillCavernLaboratoryChest));
+                    bool placedBeldum = false;
+                    PlaceSchematic(mapKey, new Point(placementPoint.X, placementPoint.Y), SchematicAnchor.TopLeft, ref placedBeldum, new Action<Chest, int, bool>(FillCavernLaboratoryChest));
                     CalamityUtils.AddProtectedStructure(new Rectangle(placementPoint.X, placementPoint.Y, (int)schematicSize.X, (int)schematicSize.Y), 20);
                     CalamityWorld.CavernLabCenter = placementPoint.ToWorldCoordinates() + new Vector2(TileMaps[mapKey].GetLength(0), TileMaps[mapKey].GetLength(1)) * 8f;
                     break;

@@ -121,6 +121,11 @@ LittleLight: {
 		'''
 }
 
+MagnetizedOrb: {
+	DisplayName: Magnetized Orb
+	Tooltip: Summons a living iron ball
+}
+
 McNuggets: {
 	DisplayName: McNuggets
 	Tooltip: "'These chicken nuggets aren't for you to eat!'"

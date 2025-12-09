@@ -415,6 +415,11 @@ BearBuff: {
 	Description: A guardian angel is following you
 }
 
+BeldumBuff: {
+	DisplayName: Beldum
+	Description: Super shiny!
+}
+
 BloodBound: {
 	DisplayName: Blood Bound
 	Description: You must be desperate for company
