@@ -102,6 +102,7 @@ namespace CalamityMod.Graphics.Renderers
                     );
                     renderer.MainTarget.SwapTo(Color.Transparent);
                     renderer.DrawToTarget(Main.spriteBatch);
+                    Main.spriteBatch.End();
                 }
             }
 
