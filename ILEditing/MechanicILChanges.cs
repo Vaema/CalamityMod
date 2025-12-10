@@ -869,13 +869,12 @@ namespace CalamityMod.ILEditing
         #region GeneralDrawLayer Systems Drawing
         private static void GeneralDrawLayer_DrawForSupportedSystems(GeneralDrawLayer drawLayer)
         {
-            Main.spriteBatch.End();
             GeneralParticleHandler.DrawParticleCollectionsAtSpecificLayer(drawLayer);
             
             Main.spriteBatch.Begin(SpriteSortMode.Immediate, BlendState.AlphaBlend, SamplerState.PointWrap, DepthStencilState.None, Main.Rasterizer, null, Main.GameViewMatrix.TransformationMatrix);
             MetaballManager.DrawMetaballs(drawLayer);
-
             Main.spriteBatch.End();
+
             PrimitivePixelationSystem.DrawTargetScaled(drawLayer);
 
             PixelationManager.DrawPixelatedTargets(drawLayer);
@@ -886,9 +885,9 @@ namespace CalamityMod.ILEditing
 
         private static void GeneralDrawLayer_DrawToLayer_BeforeAllTiles(On_Main.orig_DrawBackgroundBlackFill orig, Main self)
         {
+            Main.spriteBatch.End(out var ss);
             GeneralDrawLayer_DrawForSupportedSystems(GeneralDrawLayer.BeforeAllTiles);
-            // TODO: [SAFEACTION] this is a bandaid solution, but almost assuredly the method call here does not always correct state
-            Main.spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, SamplerState.PointWrap, DepthStencilState.None, Main.Rasterizer, null, Main.GameViewMatrix.TransformationMatrix);
+            Main.spriteBatch.Begin(ss);
             orig(self);
         }
 
@@ -927,9 +926,9 @@ namespace CalamityMod.ILEditing
         private static void GeneralDrawLayer_DrawToLayer_AfterEverything(On_Main.orig_DrawInfernoRings orig, Main self)
         {
             orig(self);
+            Main.spriteBatch.End(out var ss);
             GeneralDrawLayer_DrawForSupportedSystems(GeneralDrawLayer.AfterEverything);
-            // TODO: [SAFEACTION] this is a bandaid solution, but almost assuredly the method call here does not always correct state
-            Main.spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, SamplerState.PointWrap, DepthStencilState.None, Main.Rasterizer, null, Main.GameViewMatrix.TransformationMatrix);
+            Main.spriteBatch.Begin(ss);
         }
         #endregion
 
