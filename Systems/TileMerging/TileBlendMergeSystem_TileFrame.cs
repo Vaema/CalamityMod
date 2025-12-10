@@ -334,7 +334,7 @@ namespace CalamityMod.Systems
         private static BlendSidesReg PopulateBlendSidesReg(int i, int j, int centerType)
         {
             // Prepare Registry
-            TempBlendSidesReg ??= [];
+            TempBlendSidesReg ??= new BlendSidesReg(capacity: 8);
             TempBlendSidesReg.Clear();
 
             var reg = TempBlendSidesReg;
@@ -353,9 +353,6 @@ namespace CalamityMod.Systems
             void Populate(int sideType)
             {
                 if (sideType < 0)
-                    return;
-
-                if (!_TileTypeToBlendTextureSlot.IndexInRange(sideType))
                     return;
 
                 var blendTextureSlot = _TileTypeToBlendTextureSlot[sideType];

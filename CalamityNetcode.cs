@@ -210,8 +210,6 @@ namespace CalamityMod
         WantToRefundReforges,
 
         // Player Draw Effect Parameters
-        SyncPlayerDrawParameter,
-
-        Reserved = 150
+        SyncPlayerDrawParameter
     }
 }

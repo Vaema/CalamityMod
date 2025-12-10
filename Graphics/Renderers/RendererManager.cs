@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using CalamityMod.Enums;
+using CalamityMod.Utilities.Daybreak;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria;
@@ -25,7 +26,7 @@ namespace CalamityMod.Graphics.Renderers
                 return;
 
             // This hooks here, because doing it any sooner causes the screen position to be a frame behind.
-            Main.QueueMainThreadAction(() => On_Main.CheckMonoliths += DrawToTargets);
+            On_Main.CheckMonoliths += DrawToTargets;
         }
 
         public override void Unload()
@@ -88,12 +89,21 @@ namespace CalamityMod.Graphics.Renderers
                 if (!renderer.ShouldDraw)
                     continue;
 
-                var matrix = Main.GameViewMatrix.TransformationMatrix;
-                Main.spriteBatch.SafeBegin(SpriteSortMode.Deferred, BatchSetting.AlphaBlend, null, matrix, () =>
+                using (Main.spriteBatch.Scope())
                 {
+                    Main.spriteBatch.Begin(
+                        SpriteSortMode.Deferred,
+                        BlendState.AlphaBlend,
+                        SamplerState.PointClamp,
+                        DepthStencilState.None,
+                        Main.Rasterizer,
+                        null,
+                        Main.GameViewMatrix.TransformationMatrix
+                    );
                     renderer.MainTarget.SwapTo(Color.Transparent);
                     renderer.DrawToTarget(Main.spriteBatch);
-                });
+                    Main.spriteBatch.End();
+                }
             }
 
             Main.instance.GraphicsDevice.SetRenderTarget(null);

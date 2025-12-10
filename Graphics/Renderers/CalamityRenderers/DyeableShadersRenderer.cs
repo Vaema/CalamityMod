@@ -2,6 +2,7 @@
 using System.Linq;
 using CalamityMod.DataStructures;
 using CalamityMod.Enums;
+using CalamityMod.Utilities.Daybreak;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria;
@@ -178,8 +179,9 @@ namespace CalamityMod.Graphics.Renderers.CalamityRenderers
                 return;
 
             var matrix = Main.GameViewMatrix.TransformationMatrix;
-            Main.spriteBatch.SafeBegin(SpriteSortMode.Immediate, BatchSetting.AlphaBlend, null, matrix, () =>
+            using (spriteBatch.Scope())
             {
+                spriteBatch.Begin(SpriteSortMode.Immediate, BlendState.AlphaBlend, SamplerState.PointClamp, DepthStencilState.None, Main.Rasterizer, null, matrix);
                 foreach (var renderer in RenderersToDrawThisFrame)
                 {
                     if (!Targets.TryGetValue(renderer, out var target))
@@ -192,7 +194,8 @@ namespace CalamityMod.Graphics.Renderers.CalamityRenderers
                     // Draw the assosiated target that has been drawn to.
                     spriteBatch.Draw(target, Vector2.Zero, Color.White with { A = 0 });
                 }
-            });
+                spriteBatch.End();
+            }
         }
         #endregion
     }

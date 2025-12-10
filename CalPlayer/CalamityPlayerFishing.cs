@@ -283,16 +283,8 @@ namespace CalamityMod.CalPlayer
                     itemDrop = ModContent.ItemType<StuffedFish>();
                 else if (cavern)
                     itemDrop = ModContent.ItemType<GlimmeringGemfish>();
-                if (Main.hardMode)
-                {
-                    // Fish of Light/Night are evenly split with Gemfish
-                    if ((Player.ZoneCrimson || Player.ZoneCorrupt) && cavern && Main.rand.NextBool())
-                        itemDrop = ModContent.ItemType<FishofNight>();
-                    else if (Player.ZoneHallow && cavern && Main.rand.NextBool())
-                        itemDrop = ModContent.ItemType<FishofLight>();
-                    else if (sky)
-                        itemDrop = ModContent.ItemType<FishofFlight>();
-                }
+                if (Main.hardMode && sky)
+                    itemDrop = ModContent.ItemType<FishofFlight>();
             }
 
             // Increased chance of Enchanted Starfish if you don't have maximum mana
