@@ -26,7 +26,7 @@ namespace CalamityMod.Graphics.Renderers
                 return;
 
             // This hooks here, because doing it any sooner causes the screen position to be a frame behind.
-            // Main.QueueMainThreadAction(() => On_Main.CheckMonoliths += DrawToTargets);
+            On_Main.CheckMonoliths += DrawToTargets;
         }
 
         public override void Unload()

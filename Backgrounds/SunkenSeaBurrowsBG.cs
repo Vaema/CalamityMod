@@ -6,7 +6,6 @@ using ReLogic.Content;
 using Terraria.ID;
 using CalamityMod.Graphics;
 using Terraria.Graphics.Shaders;
-using Terraria.Graphics.Shaders;
 
 namespace CalamityMod.Backgrounds
 {
