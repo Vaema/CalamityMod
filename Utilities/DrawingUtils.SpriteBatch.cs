@@ -42,6 +42,7 @@ namespace CalamityMod
         /// <param name="effect"></param>
         /// <param name="transformMatrix"></param>
         /// <param name="batchCallback"></param>
+        [Obsolete("Use SpriteBatch.Begin, SpriteBatchScope, or SpriteBatchSnapshot")]
         public static void SafeBegin(this SpriteBatch spriteBatch, SpriteSortMode sortMode,
             BatchSetting settings,
             Effect effect,
