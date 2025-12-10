@@ -1,6 +1,6 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
-  <Import Project="..\tModLoader.targets"/>
+  <Import Project="..\tModLoader.targets" />
 
   <PropertyGroup>
     <LangVersion>latest</LangVersion>
@@ -8,7 +8,7 @@
 
 
   <ItemGroup>
-    <PackageReference Include="Krafs.Publicizer" Version="2.3.0" PrivateAssets="all" ExcludeAssets="runtime"/>
+    <PackageReference Include="Krafs.Publicizer" Version="2.3.0" PrivateAssets="all" ExcludeAssets="runtime" />
   </ItemGroup>
 
     <!-- Taken from: <https://github.com/krafs/Publicizer/pull/128>.  This is
@@ -16,15 +16,15 @@
          emits a type also included by MonoMod.Utils. -->
   <Target Name="RemoveIgnoresAccessChecksToAttributeCs" AfterTargets="PublicizeAssemblies">
     <ItemGroup>
-      <FilesToRemove Include="@(Compile)" Condition="'%(Filename)' == 'IgnoresAccessChecksToAttribute'"/>
+      <FilesToRemove Include="@(Compile)" Condition="'%(Filename)' == 'IgnoresAccessChecksToAttribute'" />
     </ItemGroup>
     <ItemGroup>
-      <Compile Remove="@(FilesToRemove)"/>
+      <Compile Remove="@(FilesToRemove)" />
     </ItemGroup>
   </Target>
 
   <ItemGroup>
-    <Publicize Include="tModLoader" IncludeCompilerGeneratedMembers="false" IncludeVirtualMembers="false"/>
+    <Publicize Include="tModLoader" IncludeCompilerGeneratedMembers="false" IncludeVirtualMembers="false" />
     <DoNotPublicize Include="tModLoader:Terraria.Tile" /> 
 
     <Publicize Include="FNA" IncludeCompilerGeneratedMembers="false" IncludeVirtualMembers="false" />
