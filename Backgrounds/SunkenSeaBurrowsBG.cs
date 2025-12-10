@@ -22,7 +22,8 @@ namespace CalamityMod.Backgrounds
             {
                 return;
             }
-            
+
+            On_Main.CheckMonoliths += DrawToTarget;
             On_Main.DrawBackgroundBlackFill += On_Main_DrawBackgroundBlackFill;
 
             Main.QueueMainThreadAction(() => WaterDistortionTarget = new(true, ManagedRenderTarget.CreateScreenSizedTarget));
@@ -149,8 +150,6 @@ namespace CalamityMod.Backgrounds
             CurrentlyRendering = false;
 
             orig();
-            
-            Main.spriteBatch.Begin(); // TODO: [SPRITEBATCH DEBUG] Dummy replacement
         }
 
         private void On_Main_DrawBackgroundBlackFill(On_Main.orig_DrawBackgroundBlackFill orig, Main self)
