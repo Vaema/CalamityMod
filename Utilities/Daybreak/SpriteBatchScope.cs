@@ -40,11 +40,6 @@ internal readonly struct SpriteBatchScope : IDisposable
     /// </summary>
     public void Dispose()
     {
-        if (spriteBatch.beginCalled)
-        {
-            spriteBatch.End();
-        }
-
         if (oldState.HasValue)
         {
             spriteBatch.Begin(oldState.Value);

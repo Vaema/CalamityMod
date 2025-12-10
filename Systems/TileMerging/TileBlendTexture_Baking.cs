@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using CalamityMod.Utilities.Daybreak;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria;
@@ -35,8 +36,18 @@ namespace CalamityMod.Systems
                 graphicsDevice.Clear(Color.Transparent);
 
                 
-                using (new CalamityUtils.SpritebatchScope(Main.spriteBatch, SpriteSortMode.Immediate, BatchSetting.AlphaBlend, null, Matrix.Identity))
+                using (Main.spriteBatch.Scope())
                 {
+                    Main.spriteBatch.Begin(
+                        SpriteSortMode.Immediate,
+                        BlendState.AlphaBlend,
+                        SamplerState.PointClamp,
+                        DepthStencilState.None,
+                        Main.Rasterizer,
+                        null,
+                        Matrix.Identity
+                    );
+
                     for (int i = 0; i < 256; i++)
                     {
                         var drawPos = SideFlagsToPositionInSheet((byte)i);
@@ -58,6 +69,8 @@ namespace CalamityMod.Systems
                             }
                         }
                     }
+
+                    Main.spriteBatch.End();
                 }
                 
                 // TODO: [SAFEACTION] bandaid fix

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Reflection;
+using CalamityMod.Utilities.Daybreak;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria;
@@ -51,12 +52,11 @@ namespace CalamityMod
             if (spriteBatch is null)
                 return;
 
-            spriteBatch.GetParameters(out var parameters);
-            spriteBatch.End();
+            spriteBatch.End(out var ss);
             
             spriteBatch.Begin(sortMode, settings.blendState, settings.samplerState, settings.depthStencilState, settings.rasterizerState ?? Main.Rasterizer, effect, transformMatrix);
             batchCallback?.Invoke();
-            spriteBatch.Restart(parameters);
+            spriteBatch.Restart(ss);
         }
 
         [Obsolete("This is violative of spritebatch's control flow and will eventually be removed")]

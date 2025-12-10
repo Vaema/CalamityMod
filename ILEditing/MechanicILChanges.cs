@@ -30,6 +30,7 @@ using CalamityMod.Systems;
 using CalamityMod.Systems.Graphic.PixelationSystem;
 using CalamityMod.Systems.Mechanic;
 using CalamityMod.Tiles;
+using CalamityMod.Utilities.Daybreak;
 using CalamityMod.Walls;
 using CalamityMod.Walls.UnsafeWalls;
 using CalamityMod.Waterfalls;
