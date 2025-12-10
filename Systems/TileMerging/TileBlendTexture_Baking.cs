@@ -72,9 +72,7 @@ namespace CalamityMod.Systems
 
                     Main.spriteBatch.End();
                 }
-                
-                // TODO: [SAFEACTION] bandaid fix
-                Main.spriteBatch.End();
+
                 graphicsDevice.SetRenderTarget(null);
             }
         }
