@@ -181,7 +181,7 @@ namespace CalamityMod.Graphics.Renderers.CalamityRenderers
             var matrix = Main.GameViewMatrix.TransformationMatrix;
             using (spriteBatch.Scope())
             {
-                spriteBatch.Begin(SpriteSortMode.Immediate, BatchSetting.AlphaBlend, null, matrix);
+                spriteBatch.Begin(SpriteSortMode.Immediate, BlendState.AlphaBlend, SamplerState.PointClamp, DepthStencilState.None, Main.Rasterizer, null, matrix);
                 foreach (var renderer in RenderersToDrawThisFrame)
                 {
                     if (!Targets.TryGetValue(renderer, out var target))

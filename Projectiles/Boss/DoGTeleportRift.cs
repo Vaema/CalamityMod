@@ -264,7 +264,7 @@ namespace CalamityMod.Projectiles.Boss
             crackShader.Parameters["brighterPixelColor"].SetValue(Color.White.ToVector3());
             using (Main.spriteBatch.Scope())
             {
-                Main.spriteBatch.Begin(SpriteSortMode.Immediate, BatchSetting.Additive, crackShader, Main.GameViewMatrix.TransformationMatrix);
+                Main.spriteBatch.Begin(SpriteSortMode.Immediate, BlendState.Additive, SamplerState.PointClamp, DepthStencilState.None, Main.Rasterizer, crackShader, Main.GameViewMatrix.TransformationMatrix);
                 int crackCount = FakeRift ? 1 : 3;
                 for (int i = 0; i < crackCount; i++)
                 {

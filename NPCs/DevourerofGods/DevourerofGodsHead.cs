@@ -2461,7 +2461,7 @@ namespace CalamityMod.NPCs.DevourerofGods
                 {
                     using (spriteBatch.Scope())
                     {
-                        spriteBatch.Begin(SpriteSortMode.Deferred, BatchSetting.Additive, null, Main.GameViewMatrix.TransformationMatrix);
+                        spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.Additive, SamplerState.PointClamp, DepthStencilState.None, Main.Rasterizer, null, Main.GameViewMatrix.TransformationMatrix);
                         Vector2 godSlayerJawOrigin = GodSlayerDashJawTexture.Size() * 0.5f;
                         float godSlayerJawOpacity = GodSlayerDashJawFadeProgress;
 

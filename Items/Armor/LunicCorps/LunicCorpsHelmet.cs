@@ -173,7 +173,7 @@ namespace CalamityMod.Items.Armor.LunicCorps
 
             using (spriteBatch.Scope())
             {
-                spriteBatch.Begin(SpriteSortMode.Immediate, BatchSetting.Additive, shieldEffect, Matrix.Identity);
+                spriteBatch.Begin(SpriteSortMode.Immediate, BlendState.Additive, SamplerState.PointClamp, DepthStencilState.None, Main.Rasterizer, shieldEffect, Matrix.Identity);
                 // Fetch shield noise overlay texture (this is the polygons fed to the shader)
                 NoiseTex ??= ModContent.Request<Texture2D>("CalamityMod/ExtraTextures/GreyscaleGradients/VoronoiShapes2");
                 Vector2 pos = player.MountedCenter + player.gfxOffY * Vector2.UnitY - Main.screenPosition;

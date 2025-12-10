@@ -169,7 +169,7 @@ namespace CalamityMod.Items.Accessories
 
             using (Main.spriteBatch.Scope())
             {
-                Main.spriteBatch.Begin(SpriteSortMode.Immediate, BatchSetting.Additive, shieldEffect, Matrix.Identity);
+                Main.spriteBatch.Begin(SpriteSortMode.Immediate, BlendState.Additive, SamplerState.PointClamp, DepthStencilState.None, Main.Rasterizer, shieldEffect, Matrix.Identity);
                 // Fetch shield heat overlay texture (this is the neutrons fed to the shader)
                 HeatTex ??= ModContent.Request<Texture2D>("CalamityMod/ExtraTextures/GreyscaleGradients/Neurons2");
                 Vector2 pos = player.MountedCenter + player.gfxOffY * Vector2.UnitY - Main.screenPosition;

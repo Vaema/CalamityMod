@@ -154,7 +154,7 @@ namespace CalamityMod.Projectiles.Summon
             Main.spriteBatch.Draw(whiteTex, Projectile.Center - Main.screenPosition, null, Color.Black * completion, Main.GlobalTimeWrappedHourly, spTex.Size() * 0.5f, 0.75f, SpriteEffects.None, 0);
             using (Main.spriteBatch.Scope())
             {
-                Main.spriteBatch.Begin(SpriteSortMode.Deferred, BatchSetting.Additive, null, Main.GameViewMatrix.TransformationMatrix);
+                Main.spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.Additive, SamplerState.PointClamp, DepthStencilState.None, Main.Rasterizer, null, Main.GameViewMatrix.TransformationMatrix);
                 color = Color.Lerp(Color.Yellow, Color.OrangeRed, completion);
                 if (completion >= 1)
                     color = Color.LightBlue;

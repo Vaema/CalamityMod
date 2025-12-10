@@ -1184,7 +1184,7 @@ namespace CalamityMod.NPCs.ProfanedGuardians
                 var matrix = Main.GameViewMatrix.TransformationMatrix;
                 using (Main.spriteBatch.Scope())
                 {
-                    Main.spriteBatch.Begin(SpriteSortMode.Immediate, BatchSetting.Additive, shieldEffect, matrix);
+                    Main.spriteBatch.Begin(SpriteSortMode.Immediate, BlendState.Additive, SamplerState.PointClamp, DepthStencilState.None, Main.Rasterizer, shieldEffect, matrix);
                     // Fetch shield heat overlay texture (this is the neutrons fed to the shader)
                     Texture2D heatTex = ModContent.Request<Texture2D>("CalamityMod/ExtraTextures/GreyscaleGradients/Neurons2").Value;
                     Vector2 pos = NPC.Center + NPC.gfxOffY * Vector2.UnitY - Main.screenPosition;

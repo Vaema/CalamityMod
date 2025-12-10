@@ -124,7 +124,7 @@ namespace CalamityMod.Projectiles.Summon
 
             using (Main.spriteBatch.Scope())
             {
-                Main.spriteBatch.Begin(SpriteSortMode.Deferred, BatchSetting.Additive, null, Main.GameViewMatrix.TransformationMatrix);
+                Main.spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.Additive, SamplerState.PointClamp, DepthStencilState.None, Main.Rasterizer, null, Main.GameViewMatrix.TransformationMatrix);
                 float count = MathHelper.Min(Projectile.minionSlots * 2, 40);
                 for (var i = 0; i < count; i++)
                 {
