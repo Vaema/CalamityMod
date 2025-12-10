@@ -15,6 +15,7 @@ namespace CalamityMod.Debugging
         public static string Trace { get; set; }
     }
 
+    [Autoload(false)]
     public class SpritebatchDebugInitializer : ILoadable
     {
         private static Hook _beginHook;
