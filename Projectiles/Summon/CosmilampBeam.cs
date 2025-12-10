@@ -84,7 +84,7 @@ namespace CalamityMod.Projectiles.Summon
                 Timer++;
         }
 
-        internal Color ColorFunction(float completionRatio)
+        internal Color ColorFunction(float completionRatio, Vector2 vertexPos)
         {
             float streakOpacity = Utils.GetLerpValue(0.8f, 0.54f, completionRatio, true) * Projectile.Opacity;
             Color endColor = Color.Lerp(Color.Fuchsia, Color.DarkViolet, (float)Math.Sin(completionRatio * MathHelper.Pi * 1.6f - Main.GlobalTimeWrappedHourly * 4f) * 0.5f + 0.5f);
@@ -95,7 +95,7 @@ namespace CalamityMod.Projectiles.Summon
             return Color.Lerp(endColor, Color.Black, 0.3f) * streakOpacity;
         }
 
-        internal float WidthFunction(float completionRatio)
+        internal float WidthFunction(float completionRatio, Vector2 vertexPos)
         {
             float expansionCompletion = 1f - (float)Math.Pow(1f - Utils.GetLerpValue(0f, 0.3f, completionRatio, true), 2D);
             float maxWidth = Projectile.Opacity * Projectile.width * 1.65f;
@@ -112,7 +112,7 @@ namespace CalamityMod.Projectiles.Summon
             Projectile.localAI[0] = 0f;
             GameShaders.Misc["CalamityMod:ImpFlameTrail"].SetShaderTexture(ModContent.Request<Texture2D>("CalamityMod/ExtraTextures/Trails/ScarletDevilStreak"));
 
-            var settings = new PrimitiveSettings(WidthFunction, ColorFunction, (_) => Projectile.Size * 0.5f, shader: GameShaders.Misc["CalamityMod:ImpFlameTrail"]);
+            var settings = new PrimitiveSettings(WidthFunction, ColorFunction, (_,_) => Projectile.Size * 0.5f, shader: GameShaders.Misc["CalamityMod:ImpFlameTrail"]);
             PrimitiveRenderer.RenderTrail(Projectile.oldPos, settings, 42);
             Projectile.localAI[0] = 1f;
             PrimitiveRenderer.RenderTrail(Projectile.oldPos, settings, 42);

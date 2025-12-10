@@ -68,6 +68,11 @@ namespace CalamityMod.Tiles.SunkenSea
             return TileFramingSystem.BetterGemsparkFraming(i, j, resetFrame);
         }
 
+        public override void PostTileFrame(int i, int j, int up, int down, int left, int right, int upLeft, int upRight, int downLeft, int downRight)
+        {
+            Main.tile[i, j].Get<TileSpecialDrawData>().Flag0 = !Main.tile[i - 1, j].HasTile || !Main.tile[i + 1, j].HasTile || !Main.tile[i, j - 1].HasTile || !Main.tile[i, j + 1].HasTile;
+        }
+
         public override void PostDraw(int i, int j, SpriteBatch spriteBatch)
         {
             //IF this glint effect below runs poorly on lower end PC's we should keep it as a setting for those with good PC's
@@ -109,9 +114,7 @@ namespace CalamityMod.Tiles.SunkenSea
 
         public override void ModifyLight(int i, int j, ref float r, ref float g, ref float b)
         {
-            // figure out if the tile is exposed - taken from the coral tiles
-            if (Main.tile[i, j] == null ||
-                (Main.tile[i - 1, j].HasTile && Main.tile[i + 1, j].HasTile && Main.tile[i, j - 1].HasTile && Main.tile[i, j + 1].HasTile))
+            if (!Main.tile[i, j].Get<TileSpecialDrawData>().Flag0)
                 return;
 
             // get in-game lighting color at this tile

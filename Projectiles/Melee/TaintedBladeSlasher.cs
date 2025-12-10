@@ -198,9 +198,9 @@ namespace CalamityMod.Projectiles.Melee
             Time++;
         }
 
-        internal float PrimitiveWidthFunction(float completionRatio) => BladeFrame.Height * 0.47f;
+        internal float PrimitiveWidthFunction(float completionRatio, Vector2 vertexPos) => BladeFrame.Height * 0.47f;
 
-        internal Color PrimitiveColorFunction(float completionRatio)
+        internal Color PrimitiveColorFunction(float completionRatio, Vector2 vertexPos)
         {
             float opacity = Utils.GetLerpValue(0.8f, 0.52f, completionRatio, true) * Utils.GetLerpValue(1f, 0.81f, AttackCompletionRatio, true);
             Color startingColor = Color.Lerp(Color.Red, Color.DarkRed, 0.4f);
@@ -263,7 +263,7 @@ namespace CalamityMod.Projectiles.Melee
                 if (Owner.direction == -1)
                     Utils.Swap(ref leftVertexPosition, ref rightVertexPosition);
 
-                PrimitiveRenderer.RenderTrail(drawPoints, new(PrimitiveWidthFunction, PrimitiveColorFunction, (_) => BladeCenterPosition - Projectile.position,
+                PrimitiveRenderer.RenderTrail(drawPoints, new(PrimitiveWidthFunction, PrimitiveColorFunction, (_,_) => BladeCenterPosition - Projectile.position,
                     shader: GameShaders.Misc["CalamityMod:FadingSolidTrail"], initialVertexPositionsOverride: (leftVertexPosition, rightVertexPosition)), 67);
             }
 

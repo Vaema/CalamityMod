@@ -119,9 +119,9 @@ namespace CalamityMod.Projectiles.Boss
                 Projectile.frame = (Projectile.frame + 1) % Main.projFrames[Type];
         }
 
-        public float LaserWidthFunction(float _) => Projectile.scale * Projectile.width;
+        public float LaserWidthFunction(float _, Vector2 vertexPos) => Projectile.scale * Projectile.width;
 
-        public static Color LaserColorFunction(float completionRatio)
+        public static Color LaserColorFunction(float completionRatio, Vector2 vertexPos)
         {
             float colorInterpolant = (float)Math.Sin(Main.GlobalTimeWrappedHourly * -3.2f + completionRatio * 23f) * 0.5f + 0.5f;
             return Color.Lerp(Color.Orange, Color.Red, colorInterpolant * 0.67f);

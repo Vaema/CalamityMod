@@ -502,7 +502,7 @@ namespace CalamityMod.Projectiles.Summon
             }
         }
 
-        internal Color ColorFunction(float completionRatio)
+        internal Color ColorFunction(float completionRatio, Vector2 vertexPos)
         {
             float fadeOpacity = 0.4f + 0.4f * ((float)Math.Sin(Main.GlobalTimeWrappedHourly * 6f + completionRatio * -12f) * 0.5f + 0.5f);
 
@@ -511,7 +511,7 @@ namespace CalamityMod.Projectiles.Summon
             return Color.CornflowerBlue.MultiplyRGB(PrimColorMult) * fadeOpacity;
         }
 
-        internal float WidthFunction(float completionRatio)
+        internal float WidthFunction(float completionRatio, Vector2 vertexPos)
         {
             return (3.4f + 4f * ((float)Math.Sin(Main.GlobalTimeWrappedHourly * 6f + completionRatio * -12f) * 0.5f + 0.5f)) * 2f;
         }
@@ -534,7 +534,7 @@ namespace CalamityMod.Projectiles.Summon
                 CalamityUtils.DrawChromaticAberration(Vector2.UnitX, 1.8f, delegate (Vector2 offset, Color colorMod)
                 {
                     PrimColorMult = colorMod;
-                    PrimitiveRenderer.RenderTrail(drawPos, new(WidthFunction, ColorFunction, (_) => offset, shader: GameShaders.Misc["CalamityMod:TrailStreak"]), 30);
+                    PrimitiveRenderer.RenderTrail(drawPos, new(WidthFunction, ColorFunction, (_,_) => offset, shader: GameShaders.Misc["CalamityMod:TrailStreak"]), 30);
                 });
 
                 Main.spriteBatch.End();

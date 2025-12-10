@@ -139,7 +139,7 @@ namespace CalamityMod.Projectiles.Magic
         /// <summary>
         ///     The function responsible for dictating the color of this ray.
         /// </summary>
-        internal Color ColorFunction(float completionRatio)
+        internal Color ColorFunction(float completionRatio, Vector2 vertexPos)
         {
             float opacity = MathF.Pow(Utils.GetLerpValue(1f, 0.64f, completionRatio, true), 3f) * Projectile.Opacity;
             float colorInterpolant = MathF.Cos(MathHelper.Pi * completionRatio - Main.GlobalTimeWrappedHourly * 7.2f) * 0.5f + 0.5f;
@@ -154,7 +154,7 @@ namespace CalamityMod.Projectiles.Magic
         /// <summary>
         ///     The function responsible for dictating the width of this ray.
         /// </summary>
-        internal float WidthFunction(float completionRatio)
+        internal float WidthFunction(float completionRatio, Vector2 vertexPos)
         {
             float expansionCompletion = 1f - MathF.Pow(1f - Utils.GetLerpValue(0f, 0.3f, completionRatio, true), 2f);
             float undulation = MathF.Cos(MathHelper.Pi * completionRatio * 5f - Main.GlobalTimeWrappedHourly * 23f) * 2.4f;
@@ -166,7 +166,7 @@ namespace CalamityMod.Projectiles.Magic
         /// <summary>
         ///     The function responsible for dictating the render offset of this ray.
         /// </summary>
-        internal Vector2 OffsetFunction(float completionRatio) => Projectile.Size * 0.5f;
+        internal Vector2 OffsetFunction(float completionRatio, Vector2 vertexPos) => Projectile.Size * 0.5f;
 
         /// <summary>
         ///     Renders the front-glow for this ray, to help make it look like it has a defined origin of concentrated magic.
@@ -180,8 +180,8 @@ namespace CalamityMod.Projectiles.Magic
 
             Vector2 startingPosition = GlowCenter - Main.screenPosition;
             Texture2D lightTexture = ModContent.Request<Texture2D>("CalamityMod/ExtraTextures/BloomCirclePinpoint").Value;
-            Main.spriteBatch.Draw(lightTexture, startingPosition, null, ColorFunction(0f) with { A = 0 }, glowRotation, lightTexture.Size() * 0.5f, glowScale, 0, 0f);
-            Main.spriteBatch.Draw(lightTexture, startingPosition, null, ColorFunction(0f) with { A = 0 }, glowRotation, lightTexture.Size() * 0.5f, glowScale * 0.4f, 0, 0f);
+            Main.spriteBatch.Draw(lightTexture, startingPosition, null, ColorFunction(0f,Vector2.Zero) with { A = 0 }, glowRotation, lightTexture.Size() * 0.5f, glowScale, 0, 0f);
+            Main.spriteBatch.Draw(lightTexture, startingPosition, null, ColorFunction(0f, Vector2.Zero) with { A = 0 }, glowRotation, lightTexture.Size() * 0.5f, glowScale * 0.4f, 0, 0f);
         }
 
         public override bool PreDraw(ref Color lightColor)

@@ -72,9 +72,9 @@ namespace CalamityMod.Projectiles.Ranged
             return true;
         }
 
-        public float PrimitiveWidthFunction(float completionRatio) => Projectile.scale * 30f;
+        public float PrimitiveWidthFunction(float completionRatio, Vector2 vertexPos) => Projectile.scale * 30f;
 
-        public Color PrimitiveColorFunction(float _) => Color.Lime * Projectile.Opacity;
+        public Color PrimitiveColorFunction(float _, Vector2 vertexPos) => Color.Lime * Projectile.Opacity;
 
         public override bool PreDraw(ref Color lightColor)
         {
@@ -91,7 +91,7 @@ namespace CalamityMod.Projectiles.Ranged
             GameShaders.Misc["CalamityMod:HeavenlyGaleTrail"].UseColor(mainColor);
             GameShaders.Misc["CalamityMod:HeavenlyGaleTrail"].UseSecondaryColor(secondaryColor);
             GameShaders.Misc["CalamityMod:HeavenlyGaleTrail"].Apply();
-            PrimitiveRenderer.RenderTrail(Projectile.oldPos, new(PrimitiveWidthFunction, PrimitiveColorFunction, (_) => trailOffset, shader: GameShaders.Misc["CalamityMod:HeavenlyGaleTrail"]), 53);
+            PrimitiveRenderer.RenderTrail(Projectile.oldPos, new(PrimitiveWidthFunction, PrimitiveColorFunction, (_,_) => trailOffset, shader: GameShaders.Misc["CalamityMod:HeavenlyGaleTrail"]), 53);
             Texture2D tex = Terraria.GameContent.TextureAssets.Projectile[Type].Value;
             Vector2 origin = tex.Size() * 0.5f;
             Vector2 drawPosition = Projectile.Center - Main.screenPosition;

@@ -94,7 +94,7 @@ namespace CalamityMod.Projectiles.Magic
             if (Main.rand.NextBool(4))
             {
                 Dust magic = Dust.NewDustPerfect(Projectile.Center, DustID.PortalBoltTrail);
-                magic.color = ColorFunction(0f);
+                magic.color = ColorFunction(0f, Vector2.Zero);
                 magic.scale *= 0.56f;
                 magic.noGravity = true;
             }
@@ -103,7 +103,7 @@ namespace CalamityMod.Projectiles.Magic
         /// <summary>
         ///     The function responsible for dictating the color of this bolt.
         /// </summary>
-        internal Color ColorFunction(float completionRatio)
+        internal Color ColorFunction(float completionRatio, Vector2 vertexPos)
         {
             float opacity = (1f - completionRatio) * Projectile.Opacity;
             return CalamityUtils.MulticolorLerp(HueInterpolant, new Color(255, 193, 255), Color.White, new Color(127, 242, 255)) * opacity;
@@ -112,7 +112,7 @@ namespace CalamityMod.Projectiles.Magic
         /// <summary>
         ///     The function responsible for dictating the width of this bolt.
         /// </summary>
-        internal float WidthFunction(float completionRatio)
+        internal float WidthFunction(float completionRatio, Vector2 vertexPos)
         {
             float tip = 1f - MathF.Pow(1f - Utils.GetLerpValue(0.05f, 0.2f, completionRatio * Projectile.Opacity, true), 2f);
             return tip * Projectile.Opacity * Projectile.scale * 22f;
@@ -123,7 +123,7 @@ namespace CalamityMod.Projectiles.Magic
             MiscShaderData boltShader = GameShaders.Misc["CalamityMod:SylvestaffProjectile"];
 
             boltShader.SetShaderTexture(ModContent.Request<Texture2D>("CalamityMod/ExtraTextures/Trails/SylvestaffStreak"));
-            PrimitiveRenderer.RenderTrail(Projectile.oldPos, new(WidthFunction, ColorFunction, (_) => Projectile.Size * 0.5f, smoothen: false, shader: boltShader), 80);
+            PrimitiveRenderer.RenderTrail(Projectile.oldPos, new(WidthFunction, ColorFunction, (_,_) => Projectile.Size * 0.5f, smoothen: false, shader: boltShader), 80);
             return false;
         }
 

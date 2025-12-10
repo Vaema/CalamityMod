@@ -489,6 +489,16 @@ namespace CalamityMod.CalPlayer
                 VulnerabilityHex.DrawEffects(drawInfo);
             #endregion
 
+            if (calamityPlayer.fortunesFavor && drawInfo.shadow == 0f)
+            {
+                if (Main.rand.NextBool(12))
+                {
+                    Vector2 plusPos = new Vector2(Player.position.X + Main.rand.NextFloat(-8f, 20f), Player.position.Y + Main.rand.NextFloat(-14f, 36f));
+
+                    Particle Plus = new HealingPlus(plusPos, Main.rand.NextFloat(0.33f, 0.66f), new Vector2(0, Main.rand.NextFloat(-2f, -3.5f)) + Player.velocity, Color.Gold, Color.Goldenrod, Main.rand.Next(9, 13));
+                    GeneralParticleHandler.SpawnParticle(Plus);
+                }
+            }
             if (calamityPlayer.PinkJellyRegen && drawInfo.shadow == 0f)
             {
                 if (Main.rand.NextBool(24))

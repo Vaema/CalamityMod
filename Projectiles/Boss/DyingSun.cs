@@ -40,9 +40,9 @@ namespace CalamityMod.Projectiles.Boss
             Time++;
         }
 
-        public float SunWidthFunction(float completionRatio) => Radius * Projectile.scale * (float)Math.Sin(MathHelper.Pi * completionRatio);
+        public float SunWidthFunction(float completionRatio, Vector2 vertexPos) => Radius * Projectile.scale * (float)Math.Sin(MathHelper.Pi * completionRatio);
 
-        public Color SunColorFunction(float completionRatio)
+        public Color SunColorFunction(float completionRatio, Vector2 vertexPos)
         {
             Color sunColor = Main.zenithWorld ? (new Color(Main.DiscoR, Main.DiscoG, Main.DiscoB) * 0.8f) : (Main.IsItDay() ? Color.Yellow : Color.Cyan);
             return Color.Lerp(sunColor, Color.White, (float)Math.Sin(MathHelper.Pi * completionRatio) * 0.5f + 0.3f) * Projectile.Opacity;

@@ -272,7 +272,7 @@ namespace CalamityMod.Skies
                 for (int j = 0; j < DistortionRiftArms[i].ArmPoints.Count; j++)
                     parallaxedPoints.Add((DistortionRiftArms[i].ArmPoints[j] - screenCenter) * depthFactor + screenCenter);
 
-                PrimitiveRenderer.RenderTrail(parallaxedPoints, new((completion) => MathHelper.Lerp(0f, DistortionRiftArms[i].MaxWidth, 1f - completion) * SkyIntensity, (_) => Color.White * 1f, null, false, useUnscaledMatrices: true), DistortionRiftArms[i].TotalPoints + 16);
+                PrimitiveRenderer.RenderTrail(parallaxedPoints, new((completion, _) => MathHelper.Lerp(0f, DistortionRiftArms[i].MaxWidth, 1f - completion) * SkyIntensity, (_, _) => Color.White * 1f, null, false, useUnscaledMatrices: true), DistortionRiftArms[i].TotalPoints + 16);
             }
         }
 

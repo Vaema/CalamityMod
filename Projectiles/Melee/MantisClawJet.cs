@@ -97,7 +97,7 @@ namespace CalamityMod.Projectiles.Melee
 
             GameShaders.Misc["CalamityMod:TrailStreak"].SetShaderTexture(ModContent.Request<Texture2D>(Texture));
 
-            PrimitiveRenderer.RenderTrail(positions, new PrimitiveSettings(AA => { return Projectile.ai[1]; }, CC => { return Lighting.GetColor(Vector2.Lerp(Projectile.oldPos[Projectile.oldPos.Length - 1], Projectile.position, CC).ToPoint()).MultiplyRGBA(WaterColor); }, shader: GameShaders.Misc["CalamityMod:TrailStreak"]));
+            PrimitiveRenderer.RenderTrail(positions, new PrimitiveSettings((AA,_) => { return Projectile.ai[1]; }, (CC,_) => { return Lighting.GetColor(Vector2.Lerp(Projectile.oldPos[Projectile.oldPos.Length - 1], Projectile.position, CC).ToPoint()).MultiplyRGBA(WaterColor); }, shader: GameShaders.Misc["CalamityMod:TrailStreak"]));
 
             return false;
         }

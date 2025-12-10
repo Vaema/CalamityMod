@@ -160,8 +160,8 @@ namespace CalamityMod.Projectiles.Rogue
             }
         }
 
-        public float WidthFunction(float completionRatio) => 0.4f;
-        public Color ColorFunction(float completionRatio)
+        public float WidthFunction(float completionRatio, Vector2 vertexPos) => 0.4f;
+        public Color ColorFunction(float completionRatio, Vector2 vertexPos)
         {
             float fadeThreshold = 60f;
             float opacity = Projectile.numHits > 0 && Timer > fadeThreshold ? MathHelper.Lerp(0.75f, 0f, (Timer - fadeThreshold) / 30f) : 0.75f;

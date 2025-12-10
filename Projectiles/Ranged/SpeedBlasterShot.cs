@@ -235,11 +235,11 @@ namespace CalamityMod.Projectiles.Ranged
         public static Color GetColor(float type) => type == 0 ? Color.Aqua : type == 1 ? Color.Blue : type == 2 ? Color.Fuchsia : type == 3 ? Color.Lime : Color.Yellow;
 
         public override Color? GetAlpha(Color drawColor) => GetColor(Projectile.ai[0]) * drawColor.A * Projectile.Opacity;
-        internal float WidthFunction(float completionRatio) => (1f - completionRatio) * Projectile.scale * 6f;
-        internal Color ColorFunction(float completionRatio) => GetColor(Projectile.ai[0]) * Projectile.Opacity;
+        internal float WidthFunction(float completionRatio, Vector2 vertexPos) => (1f - completionRatio) * Projectile.scale * 6f;
+        internal Color ColorFunction(float completionRatio, Vector2 vertexPos) => GetColor(Projectile.ai[0]) * Projectile.Opacity;
         public override bool PreDraw(ref Color lightColor)
         {
-            PrimitiveRenderer.RenderTrail(Projectile.oldPos, new(WidthFunction, ColorFunction, (_) => Projectile.Size * 0.5f), 20);
+            PrimitiveRenderer.RenderTrail(Projectile.oldPos, new(WidthFunction, ColorFunction, (_,_) => Projectile.Size * 0.5f), 20);
             return true;
         }
     }

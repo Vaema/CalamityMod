@@ -1346,6 +1346,7 @@ namespace CalamityMod.CalPlayer
         public bool flaskBrimstone = false;
         public bool purpleHaze = false;
         public bool mushy = false;
+        public bool fortunesFavor = false;
         public bool PinkJellyRegen = false;
         public bool GreenJellyRegen = false;
         public bool AbsorberRegen = false;
@@ -2562,6 +2563,7 @@ namespace CalamityMod.CalPlayer
             shine = false;
             anechoicCoating = false;
             mushy = false;
+            fortunesFavor = false;
             PinkJellyRegen = false;
             GreenJellyRegen = false;
             AbsorberRegen = false;
@@ -3064,6 +3066,7 @@ namespace CalamityMod.CalPlayer
             shine = false;
             anechoicCoating = false;
             mushy = false;
+            fortunesFavor = false;
             PinkJellyRegen = false;
             GreenJellyRegen = false;
             AbsorberRegen = false;

@@ -53,6 +53,11 @@ BabyGhostBellPinkItem: {
 	Tooltip: ""
 }
 
+GildedAxolotlItem: {
+	DisplayName: Gilded Axolotl
+	Tooltip: ""
+}
+
 NanodroidDysfunctionalItem: {
 	DisplayName: Dysfunctional Nanodroid
 	Tooltip: ""

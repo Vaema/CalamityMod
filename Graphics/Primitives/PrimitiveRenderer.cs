@@ -168,7 +168,7 @@ namespace CalamityMod.Graphics.Primitives
                     // 29FEB2024: Ozzatron: offset function needs to apply even in cases where smoothing is off.
                     Vector2 finalPos = Vector2.Lerp(currentPoint, nextPoint, completionRatio * (positions.Length - 1) % 0.99999f) - Main.screenPosition;
                     if (settings.OffsetFunction != null)
-                        finalPos += settings.OffsetFunction(completionRatio);
+                        finalPos += settings.OffsetFunction(completionRatio, finalPos);
 
                     MainPositions[PositionsIndex] = finalPos;
                     PositionsIndex++;
@@ -191,7 +191,7 @@ namespace CalamityMod.Graphics.Primitives
                 float completionRatio = i / (float)positions.Length;
                 Vector2 offset = -Main.screenPosition;
                 if (settings.OffsetFunction != null)
-                    offset += settings.OffsetFunction(completionRatio);
+                    offset += settings.OffsetFunction(completionRatio, positions[i]);
                 controlPoints.Add(positions[i] + offset);
             }
 
@@ -245,9 +245,10 @@ namespace CalamityMod.Graphics.Primitives
             for (int i = 0; i < PositionsIndex; i++)
             {
                 float completionRatio = (i - 1f) / (float)(PositionsIndex - 1);
-                float widthAtVertex = MainSettings.WidthFunction(completionRatio);
-                Color vertexColor = MainSettings.ColorFunction(completionRatio);
                 Vector2 currentPosition = MainPositions[i];
+                float widthAtVertex = MainSettings.WidthFunction(completionRatio,currentPosition);
+                Color vertexColor = MainSettings.ColorFunction(completionRatio, currentPosition);
+
                 Vector2 directionToAhead = i == PositionsIndex - 1 ? (MainPositions[i] - MainPositions[i - 1]).SafeNormalize(Vector2.Zero) : (MainPositions[i + 1] - MainPositions[i]).SafeNormalize(Vector2.Zero);
                 Vector2 leftCurrentTextureCoord = new(completionRatio, 0.5f - widthAtVertex * 0.5f);
                 Vector2 rightCurrentTextureCoord = new(completionRatio, 0.5f + widthAtVertex * 0.5f);

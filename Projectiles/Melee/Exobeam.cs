@@ -118,7 +118,7 @@ namespace CalamityMod.Projectiles.Melee
         public override Color? GetAlpha(Color lightColor) => Color.White with { A = 0 } * Projectile.Opacity;
 
 
-        public float TrailWidth(float completionRatio)
+        public float TrailWidth(float completionRatio, Vector2 vertexPos)
         {
             float width = Utils.GetLerpValue(1f, 0.4f, completionRatio, true) * (float)Math.Sin(Math.Acos(1 - Utils.GetLerpValue(0f, 0.15f, completionRatio, true)));
 
@@ -126,15 +126,15 @@ namespace CalamityMod.Projectiles.Melee
 
             return width * MaxWidth;
         }
-        public Color TrailColor(float completionRatio)
+        public Color TrailColor(float completionRatio, Vector2 vertexPos)
         {
             Color baseColor = Color.Lerp(Color.Cyan, new Color(0, 0, 255), completionRatio);
 
             return baseColor;
         }
 
-        public float MiniTrailWidth(float completionRatio) => TrailWidth(completionRatio) * 0.8f;
-        public Color MiniTrailColor(float completionRatio) => Color.White;
+        public float MiniTrailWidth(float completionRatio, Vector2 vertexPos) => TrailWidth(completionRatio, vertexPos) * 0.8f;
+        public Color MiniTrailColor(float completionRatio, Vector2 vertexPos) => Color.White;
 
 
         public override bool PreDraw(ref Color lightColor)
@@ -172,12 +172,12 @@ namespace CalamityMod.Projectiles.Melee
 
             GameShaders.Misc["CalamityMod:ExobladePierce"].Apply();
             
-            PrimitiveRenderer.RenderTrail(Projectile.oldPos, new(TrailWidth, TrailColor, (_) => Projectile.Size * 0.5f, shader: GameShaders.Misc["CalamityMod:ExobladePierce"]), 30);
+            PrimitiveRenderer.RenderTrail(Projectile.oldPos, new(TrailWidth, TrailColor, (_,_) => Projectile.Size * 0.5f, shader: GameShaders.Misc["CalamityMod:ExobladePierce"]), 30);
 
             GameShaders.Misc["CalamityMod:ExobladePierce"].UseColor(Color.White);
             GameShaders.Misc["CalamityMod:ExobladePierce"].UseSecondaryColor(Color.White);
 
-            PrimitiveRenderer.RenderTrail(Projectile.oldPos, new(MiniTrailWidth, MiniTrailColor, (_) => Projectile.Size * 0.5f, shader: GameShaders.Misc["CalamityMod:ExobladePierce"]), 30);
+            PrimitiveRenderer.RenderTrail(Projectile.oldPos, new(MiniTrailWidth, MiniTrailColor, (_,_) => Projectile.Size * 0.5f, shader: GameShaders.Misc["CalamityMod:ExobladePierce"]), 30);
 
             Main.spriteBatch.ExitShaderRegion();
 

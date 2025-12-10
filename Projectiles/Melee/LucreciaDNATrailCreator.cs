@@ -81,20 +81,20 @@ namespace CalamityMod.Projectiles.Melee
                 oldPositionsRight.RemoveAt(0);
         }
 
-        private float WidthFunction(float completionRatio)
+        private float WidthFunction(float completionRatio, Vector2 vertexPos)
         {
             return MathHelper.Lerp(12f, 0f, completionRatio);
         }
 
 
-        private Color LeftColorFunction(float completionRatio)
+        private Color LeftColorFunction(float completionRatio, Vector2 vertexPos)
         {
             Color baseColor = Color.MediumPurple * 1.3f;
 
             float alphaScaling = -4 * completionRatio * (completionRatio - 1);
             return baseColor * alphaScaling;
         }
-        private Color RightColorFunction(float completionRatio)
+        private Color RightColorFunction(float completionRatio, Vector2 vertexPos)
         {
             Color baseColor = Color.CornflowerBlue * 1.3f;
 
@@ -109,8 +109,8 @@ namespace CalamityMod.Projectiles.Melee
             trailShader.SetShaderTexture(ModContent.Request<Texture2D>("CalamityMod/ExtraTextures/Trails/SylvestaffStreak"));
 
             // Use the separate color functions for each trail
-            PrimitiveRenderer.RenderTrail(oldPositionsLeft, new PrimitiveSettings(WidthFunction, LeftColorFunction, (_) => Projectile.Size * 1f, pixelate: false, shader: trailShader));
-            PrimitiveRenderer.RenderTrail(oldPositionsRight, new PrimitiveSettings(WidthFunction, RightColorFunction, (_) => Projectile.Size * 1f, pixelate: false, shader: trailShader));
+            PrimitiveRenderer.RenderTrail(oldPositionsLeft, new PrimitiveSettings(WidthFunction, LeftColorFunction, (_,_) => Projectile.Size * 1f, pixelate: false, shader: trailShader));
+            PrimitiveRenderer.RenderTrail(oldPositionsRight, new PrimitiveSettings(WidthFunction, RightColorFunction, (_,_) => Projectile.Size * 1f, pixelate: false, shader: trailShader));
             return false;
         }
     }

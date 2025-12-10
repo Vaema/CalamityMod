@@ -126,20 +126,20 @@ namespace CalamityMod.Projectiles.Magic
 
         public override Color? GetAlpha(Color lightColor) => Color.Lerp(Color.LightGoldenrodYellow, Color.Orange, 0.5f) with { A = 0 } * Projectile.Opacity;
 
-        public float TrailWidth(float completionRatio)
+        public float TrailWidth(float completionRatio, Vector2 vertexPos)
         {
             float width = Utils.GetLerpValue(1f, 0.4f, completionRatio, true) * (float)Math.Sin(Math.Acos(1 - Utils.GetLerpValue(0f, 0.08f, completionRatio, true)));
             width *= Utils.GetLerpValue(0f, 0.1f, Projectile.timeLeft / 600f, true);
             return width * (MaxWidth * .265f);
         }
-        public Color TrailColor(float completionRatio)
+        public Color TrailColor(float completionRatio, Vector2 vertexPos)
         {
             Color baseColor = Color.Lerp(Color.LightGoldenrodYellow, Color.Orange, completionRatio);
             return baseColor * 0.2f;
         }
 
-        public float MiniTrailWidth(float completionRatio) => TrailWidth(completionRatio) * 5.5f;
-        public Color MiniTrailColor(float completionRatio) => Color.Lerp(Color.LightGoldenrodYellow, Color.Orange, completionRatio);
+        public float MiniTrailWidth(float completionRatio, Vector2 vertexPos) => TrailWidth(completionRatio, vertexPos) * 5.5f;
+        public Color MiniTrailColor(float completionRatio, Vector2 vertexPos) => Color.Lerp(Color.LightGoldenrodYellow, Color.Orange, completionRatio);
         public override bool PreDraw(ref Color lightColor)
         {
             Color mainColor = Color.Lerp(Color.LightGoldenrodYellow, Color.Orange, ((float)Main.timeForVisualEffects * 0.5f + Projectile.whoAmI * 0.12f) % 1);
@@ -209,12 +209,12 @@ namespace CalamityMod.Projectiles.Magic
             Vector2 offset = Projectile.Size * 0.5f;
             Vector2[] oldPosWithOffset = Projectile.oldPos.Select(p => p - offset).ToArray();
 
-            PrimitiveRenderer.RenderTrail(oldPosWithOffset, new(TrailWidth, TrailColor, (_) => Projectile.Size * 1f, shader: GameShaders.Misc["CalamityMod:ExobladePierce"]), 30);
+            PrimitiveRenderer.RenderTrail(oldPosWithOffset, new(TrailWidth, TrailColor, (_,_) => Projectile.Size * 1f, shader: GameShaders.Misc["CalamityMod:ExobladePierce"]), 30);
 
             GameShaders.Misc["CalamityMod:ExobladePierce"].UseColor(mainColor);
             GameShaders.Misc["CalamityMod:ExobladePierce"].UseSecondaryColor(secondaryColor);
 
-            PrimitiveRenderer.RenderTrail(oldPosWithOffset, new(MiniTrailWidth, MiniTrailColor, (_) => Projectile.Size * 1f, shader: GameShaders.Misc["CalamityMod:ExobladePierce"]), 30);
+            PrimitiveRenderer.RenderTrail(oldPosWithOffset, new(MiniTrailWidth, MiniTrailColor, (_,_) => Projectile.Size * 1f, shader: GameShaders.Misc["CalamityMod:ExobladePierce"]), 30);
 
             Main.spriteBatch.ExitShaderRegion();
 

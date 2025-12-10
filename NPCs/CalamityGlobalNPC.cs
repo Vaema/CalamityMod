@@ -408,6 +408,8 @@ namespace CalamityMod.NPCs
         public int ashesOnDeath = 0;
         #endregion
 
+        public bool fortunesFavor = false; // Buff which grants positive life regen. Given when near Gilded Axolotls.
+
         // whoAmI Variables
         public static int[] bobbitWormBottom = new int[5];
         public static int hiveMind = -1;
@@ -652,6 +654,8 @@ namespace CalamityMod.NPCs
             myClone.wither = wither;
             myClone.ashesOnDeath = ashesOnDeath;
 
+            myClone.fortunesFavor = fortunesFavor;
+
             // This gets set up as needed.
             myClone.VulnerabilityHexFireDrawer = null;
             myClone.ManaBurnFireDrawer = null;
@@ -821,6 +825,8 @@ namespace CalamityMod.NPCs
             if (ashesOnDeath > 0)
                 ashesOnDeath--;
 
+            fortunesFavor = false;
+
             if (antlionCloudDebuffTimer > 0)
                 antlionCloudDebuffTimer--;
             if (cursorFocus > 0 && cursorFocus < cursorFocusMax)
@@ -944,6 +950,11 @@ namespace CalamityMod.NPCs
                     ActiveWaterDebuffMultiplier *= ResistantToDoTDamageMult;
             }
             #endregion
+
+            if (fortunesFavor)
+            {
+                npc.lifeRegen += 4; // 2 HP/s at base           
+            }
 
             //Apply DoT Debuffs
             for (var index = 0; index < npc.buffType.Length; index++)
@@ -1222,7 +1233,6 @@ namespace CalamityMod.NPCs
                 npc.noGravity = true;
 
             DeclareBossHealthUIVariables(npc);
-            BaseVanillaBossHPAdjustments(npc);
 
             if (BossRushEvent.BossRushActive)
                 BossRushStatChanges(npc, Mod);
@@ -1267,99 +1277,6 @@ namespace CalamityMod.NPCs
         }
         #endregion
 
-        #region Base Vanilla Boss HP Adjustments
-        private void BaseVanillaBossHPAdjustments(NPC npc)
-        {
-            switch (npc.type)
-            {
-                case NPCID.MoonLordCore:
-                    npc.lifeMax = 92000;
-                    break;
-
-                case NPCID.CultistBoss:
-                    npc.lifeMax = 80000;
-                    break;
-
-                case NPCID.CultistDragonBody1:
-                case NPCID.CultistDragonBody2:
-                case NPCID.CultistDragonBody3:
-                case NPCID.CultistDragonBody4:
-                case NPCID.CultistDragonHead:
-                case NPCID.CultistDragonTail:
-                    npc.lifeMax = 20000;
-                    break;
-
-                case NPCID.AncientCultistSquidhead:
-                    npc.lifeMax = 3200;
-                    break;
-
-                case NPCID.DukeFishron:
-                    npc.lifeMax = 100000;
-                    break;
-
-                case NPCID.Golem:
-                    npc.lifeMax = 40000;
-                    break;
-
-                case NPCID.GolemHead:
-                    npc.lifeMax = 26500;
-                    break;
-
-                case NPCID.GolemFistRight:
-                case NPCID.GolemFistLeft:
-                    npc.lifeMax = 7500;
-                    break;
-
-                case NPCID.HallowBoss:
-                    npc.lifeMax = 100000;
-                    break;
-
-                case NPCID.Plantera:
-                    npc.lifeMax = 72000;
-                    break;
-
-                case NPCID.PlanterasTentacle:
-                    npc.lifeMax = 500;
-                    break;
-
-                case NPCID.Retinazer:
-                    npc.lifeMax = 23500;
-                    break;
-
-                case NPCID.Spazmatism:
-                    npc.lifeMax = 24500;
-                    break;
-
-                case NPCID.QueenSlimeBoss:
-                    npc.lifeMax = 27000;
-                    break;
-
-                case NPCID.WallofFlesh:
-                case NPCID.WallofFleshEye:
-                    npc.lifeMax = 12800;
-                    break;
-
-                case NPCID.Deerclops:
-                    npc.lifeMax = 10000;
-                    break;
-
-                case NPCID.BrainofCthulhu:
-                    npc.lifeMax = 1500;
-                    break;
-
-                case NPCID.EaterofWorldsBody:
-                case NPCID.EaterofWorldsHead:
-                case NPCID.EaterofWorldsTail:
-                    npc.lifeMax = 175;
-                    break;
-
-                case NPCID.EyeofCthulhu:
-                    npc.lifeMax = 3000;
-                    break;
-            }
-        }
-        #endregion
-
         #region Boss Rush Stat Changes
         private void BossRushStatChanges(NPC npc, Mod mod)
         {
@@ -1380,13 +1297,13 @@ namespace CalamityMod.NPCs
                     npc.lifeMax = (int)Math.Round(npc.lifeMax * 1.5);
                     break;
                 case NPCID.EyeofCthulhu:
-                    npc.lifeMax = (int)Math.Round(npc.lifeMax * 1.4);
+                    npc.lifeMax = (int)Math.Round(npc.lifeMax * 1.5);
                     break;
                 case NPCID.ServantofCthulhu:
                     npc.lifeMax *= 4;
                     break;
                 case NPCID.BrainofCthulhu:
-                    npc.lifeMax = (int)Math.Round(npc.lifeMax * 1.65);
+                    npc.lifeMax *= 2;
                     break;
                 case NPCID.Creeper:
                     npc.lifeMax = (int)Math.Round(npc.lifeMax * 1.4);
@@ -1404,19 +1321,24 @@ namespace CalamityMod.NPCs
                         npc.scale *= 1.25f;
                     }
                     break;
+                case NPCID.Deerclops:
+                    npc.lifeMax = (int)Math.Round(npc.lifeMax * 1.4);
+                    break;
                 case NPCID.SkeletronHand:
                     npc.lifeMax = (int)Math.Round(npc.lifeMax * (CalamityWorld.death ? 0.5 : 0.75));
                     break;
                 case NPCID.WallofFlesh:
                 case NPCID.WallofFleshEye:
-                    npc.lifeMax = (int)Math.Round(npc.lifeMax * 1.3);
+                    npc.lifeMax *= 2;
                     break;
                 case NPCID.QueenSlimeBoss:
-                    npc.lifeMax = (int)Math.Round(npc.lifeMax * 1.2);
+                    npc.lifeMax = (int)Math.Round(npc.lifeMax * 1.8);
                     break;
                 case NPCID.Retinazer:
+                    npc.lifeMax = (int)Math.Round(npc.lifeMax * 1.4);
+                    break;
                 case NPCID.Spazmatism:
-                    npc.lifeMax = (int)Math.Round(npc.lifeMax * 1.2);
+                    npc.lifeMax = (int)Math.Round(npc.lifeMax * 1.3);
                     break;
                 case NPCID.Probe:
                     if (CalamityWorld.death)
@@ -1434,31 +1356,41 @@ namespace CalamityMod.NPCs
                     npc.scale *= 1.15f;
                     break;
                 case NPCID.Plantera:
-                    npc.lifeMax = (int)Math.Round(npc.lifeMax * 1.2);
+                    npc.lifeMax = (int)Math.Round(npc.lifeMax * 2.85);
+                    break;
+                case NPCID.PlanterasTentacle:
+                    npc.lifeMax = (int)Math.Round(npc.lifeMax * 0.5);
                     break;
                 case NPCID.Golem:
+                    npc.lifeMax = (int)Math.Round(npc.lifeMax * 3.2);
+                    break;
                 case NPCID.GolemHead:
-                    npc.lifeMax = (int)Math.Round(npc.lifeMax * 1.2);
+                    npc.lifeMax = (int)Math.Round(npc.lifeMax * 1.28);
                     break;
                 case NPCID.GolemFistLeft:
                 case NPCID.GolemFistRight:
+                    npc.lifeMax = (int)Math.Round(npc.lifeMax * 0.75);
                     npc.scale *= 1.15f;
                     break;
                 case NPCID.DukeFishron:
-                    npc.lifeMax = (int)Math.Round(npc.lifeMax * 1.4);
+                    npc.lifeMax = (int)Math.Round(npc.lifeMax * 2.3);
                     break;
                 case NPCID.Sharkron:
                 case NPCID.Sharkron2:
                     npc.lifeMax *= 5;
                     break;
                 case NPCID.HallowBoss:
-                    npc.lifeMax = (int)Math.Round(npc.lifeMax * 1.2);
+                    npc.lifeMax = (int)Math.Round(npc.lifeMax * 1.7);
                     break;
                 case NPCID.CultistBoss:
+                    npc.lifeMax *= 3;
+                    break;
                 case NPCID.AncientCultistSquidhead:
-                    npc.lifeMax = (int)Math.Round(npc.lifeMax * 1.2);
+                    npc.lifeMax = (int)Math.Round(npc.lifeMax * 1.8);
                     break;
                 case NPCID.MoonLordCore:
+                    npc.lifeMax = (int)Math.Round(npc.lifeMax * 2.2);
+                    break;
                 case NPCID.MoonLordHand:
                 case NPCID.MoonLordHead:
                 case NPCID.MoonLordLeechBlob:
@@ -1481,7 +1413,7 @@ namespace CalamityMod.NPCs
 
             if (npc.type >= NPCID.CultistDragonHead && npc.type <= NPCID.CultistDragonTail)
             {
-                npc.lifeMax = (int)Math.Round(npc.lifeMax * 1.2);
+                npc.lifeMax = (int)Math.Round(npc.lifeMax * 2.4);
             }
             else if (CalamityNPCTypeSets.Destroyer.Contains(npc.type))
             {
@@ -1490,7 +1422,7 @@ namespace CalamityMod.NPCs
             }
             else if (CalamityNPCTypeSets.EaterOfWorlds.Contains(npc.type))
             {
-                npc.lifeMax = (int)Math.Round(npc.lifeMax * 1.2);
+                npc.lifeMax = (int)Math.Round(npc.lifeMax * 1.4);
                 if (CalamityWorld.death)
                     npc.scale *= 1.1f;
             }
@@ -3866,12 +3798,11 @@ namespace CalamityMod.NPCs
                 npc.velocity *= velocitySlownessFactor;
             }
 
-            // Auric Ore/Repulsers reject Town NPCs and dummies (Auric Land Mines work on them too)
+            // Auric Ore/Repulsers reject Town NPCs and dummies
             if ((NPCID.Sets.ActsLikeTownNPC[npc.type] || npc.townNPC) && !npc.dontTakeDamage || npc.type == NPCType<SuperDummyNPC>())
             {
                 int auricOreID = TileType<AuricOre>();
                 int auricRepulserID = TileType<AuricRepulserPanelTile>();
-                int auricLandMineID = TileType<AuricLandMineTile>();
 
                 // Get a list of tiles near the npc
                 // This is just Collision.GetEntityTiles but with a larger detection square because the sheer speed from auric boosts causes the detection to fail at higher speeds
@@ -3910,17 +3841,6 @@ namespace CalamityMod.NPCs
                     Tile tile = Framing.GetTileSafely(touchedTile);
                     if (!tile.HasTile || !tile.HasUnactuatedTile)
                         continue;
-
-                    if (tile.TileType == auricLandMineID)
-                    {
-                        SoundStyle explode = new("CalamityMod/Sounds/Item/DudFire");
-                        SoundEngine.PlaySound(explode with { Pitch = 0.8f }, touchedTile.ToWorldCoordinates());
-                        GenericSparkle sparker = new GenericSparkle(touchedTile.ToWorldCoordinates(), Vector2.Zero, Color.Goldenrod, Color.Gold, 2.5f, 9, Main.rand.NextFloat(-0.01f, 0.01f), 2.68f);
-                        GeneralParticleHandler.SpawnParticle(sparker);
-                        Projectile.NewProjectile(new EntitySource_TileInteraction(npc, touchedTile.X, touchedTile.Y), touchedTile.ToWorldCoordinates(), Vector2.Zero, ProjectileType<AuricLandMineExplosion>(), 40000, 0f);
-                        WorldGen.KillTile(touchedTile.X, touchedTile.Y, noItem: true);
-                        continue;
-                    }
 
                     if (tile.TileType != auricOreID && tile.TileType != auricRepulserID)
                         continue;
@@ -5164,6 +5084,9 @@ namespace CalamityMod.NPCs
             // Eutrophication and Temporal Sadness share the same visual effects
             if (eutrophication || temporalSadness)
                 Eutrophication.DrawEffects(npc, ref drawColor);
+
+            if (fortunesFavor)
+                FortunesFavor.DrawEffects(npc, ref drawColor);
 
             if (godSlayerInferno)
                 GodSlayerInferno.DrawEffects(npc, ref drawColor);

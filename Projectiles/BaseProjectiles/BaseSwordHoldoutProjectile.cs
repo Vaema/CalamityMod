@@ -260,7 +260,7 @@ namespace CalamityMod.Projectiles.BaseProjectiles
         /// </summary>
         /// <param name="completion"></param>
         /// <returns></returns>
-        public virtual float trailWidth(float completion)
+        public virtual float trailWidth(float completion, Vector2 vertexPos)
         {
             return MathHelper.Lerp(30, 0, completion);
         }
@@ -270,7 +270,7 @@ namespace CalamityMod.Projectiles.BaseProjectiles
         /// </summary>
         /// <param name="completion"></param>
         /// <returns></returns>
-        public virtual Color trailColor(float completion)
+        public virtual Color trailColor(float completion, Vector2 vertexPos)
         {
             return Color.Black;
         }
@@ -484,7 +484,7 @@ namespace CalamityMod.Projectiles.BaseProjectiles
                     if (i >= timer) break;
                     positionsToUse[i] += (Projectile.oldRot[i] - MathHelper.PiOver4 * (Projectile.spriteDirection == -1 ? 3 : 1)).ToRotationVector2() * this.trailOffset * oldScale[i];
                 }
-                PrimitiveRenderer.RenderTrail(positionsToUse, new(trailWidth, trailColor, (_) => trailOffset, shader: GameShaders.Misc["CalamityMod:ExobladeSlash"]), 25);
+                PrimitiveRenderer.RenderTrail(positionsToUse, new(trailWidth, trailColor, (_,_) => trailOffset, shader: GameShaders.Misc["CalamityMod:ExobladeSlash"]), 25);
                 Main.spriteBatch.ExitShaderRegion();
 
                 Main.player[Projectile.owner].heldProj = Projectile.whoAmI;
