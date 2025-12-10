@@ -24,6 +24,7 @@ using CalamityMod.NPCs.TownNPCs;
 using CalamityMod.Particles;
 using CalamityMod.Projectiles.Boss;
 using CalamityMod.Projectiles.Melee.Yoyos;
+using CalamityMod.Utilities.Daybreak;
 using CalamityMod.World;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
@@ -2458,14 +2459,16 @@ namespace CalamityMod.NPCs.DevourerofGods
                 // Draw the additional special jaw textures above these for the Rift Dash attack.
                 if (GodSlayerDashJawFadeProgress > 0.02f && !DoGDeathAnimationRenderer.ValidToDraw(NPC))
                 {
-                    spriteBatch.SafeBegin(SpriteSortMode.Deferred, BatchSetting.Additive, null, Main.GameViewMatrix.TransformationMatrix, () =>
+                    using (spriteBatch.Scope())
                     {
+                        spriteBatch.Begin(SpriteSortMode.Deferred, BatchSetting.Additive, null, Main.GameViewMatrix.TransformationMatrix);
                         Vector2 godSlayerJawOrigin = GodSlayerDashJawTexture.Size() * 0.5f;
                         float godSlayerJawOpacity = GodSlayerDashJawFadeProgress;
 
                         spriteBatch.Draw(GodSlayerDashJawTexture.Value, jawDrawPosition, null, NPC.GetAlpha(Color.Fuchsia) * godSlayerJawOpacity, NPC.rotation + JawRotation * i, godSlayerJawOrigin, NPC.scale * 1.6f, jawSpriteEffect, 0f);
                         spriteBatch.Draw(GodSlayerDashJawTexture.Value, jawDrawPosition, null, NPC.GetAlpha(Color.Cyan) * godSlayerJawOpacity, NPC.rotation + JawRotation * i, godSlayerJawOrigin, NPC.scale * 1.3f, jawSpriteEffect, 0f);
-                    });
+                        spriteBatch.End();
+                    }
                 }
             }
 
