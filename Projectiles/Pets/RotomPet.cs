@@ -69,6 +69,7 @@ namespace CalamityMod.Projectiles.Pets
 
             UpdateForm(player);
             UpdateFrames();
+
             Projectile.FloatingPetAI(true, 0.05f);
         }
 

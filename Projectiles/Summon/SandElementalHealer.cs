@@ -97,6 +97,7 @@ namespace CalamityMod.Projectiles.Summon
                 lightScalar *= Main.essScale;
                 Lighting.AddLight(Projectile.Center, 0.7f * lightScalar, 0.6f * lightScalar, 0f * lightScalar);
             }
+
             Projectile.MinionAntiClump();
 
             if (Vector2.Distance(player.Center, Projectile.Center) > 400f)

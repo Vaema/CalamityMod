@@ -62,6 +62,8 @@ namespace CalamityMod.Projectiles.Summon
                 }
                 Projectile.localAI[0] += 1f;
             }
+
+            //anti sticking movement
             Projectile.MinionAntiClump();
 
             //get in a line

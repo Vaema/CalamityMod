@@ -31,6 +31,7 @@ namespace CalamityMod.Projectiles.Summon
         {
             if (!Main.dedServ && Projectile.velocity.Length() > 5f)
                 Dust.NewDustPerfect(Projectile.Center, (int)CalamityDusts.SulphurousSeaAcid).noGravity = true;
+
             Projectile.StickyProjAI(3);
         }
         public override void OnKill(int timeLeft)

@@ -131,6 +131,7 @@ namespace CalamityMod.Projectiles.Summon
                     Projectile.Center = player.Center;
                     Projectile.netUpdate = true;
                 }
+
                 Projectile.MinionAntiClump(0.35f);
                 Projectile.rotation = Projectile.velocity.X * 0.03f;
             }

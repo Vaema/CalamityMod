@@ -146,6 +146,7 @@ namespace CalamityMod.Projectiles.Summon
 
         public void DoPlayerHoverMovement()
         {
+            // Move away from other minions of the same type.
             Projectile.MinionAntiClump(0.1f);
 
             Vector2 hoverDestination = Owner.Top - Vector2.UnitY * 50f;

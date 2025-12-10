@@ -58,6 +58,7 @@ namespace CalamityMod.Projectiles.Summon
                 }
             }
             Projectile.rotation += 0.075f;
+
             Projectile.ChargingMinionAI(1600f, 1800f, 2500f, 400f, 1, 30f, 24f, 12f, new Vector2(0f, -60f), 30f, 16f, true, true);
 
             // Destroy trees in GFB, because it's an axe, and axes should do that

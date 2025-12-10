@@ -51,6 +51,7 @@ namespace CalamityMod.Projectiles.Rogue
                     Main.dust[dust].noGravity = true;
                 }
             }
+            //Sticky Behaviour
             Projectile.StickyProjAI(15);
         }
 

@@ -111,6 +111,7 @@ namespace CalamityMod.Projectiles.Summon
 
             float colorScale = (float)Projectile.alpha / 255f;
             Lighting.AddLight((int)Projectile.Center.X / 16, (int)Projectile.Center.Y / 16, 1f * colorScale, 0.1f * colorScale, 1f * colorScale);
+
             Projectile.MinionAntiClump();
 
             float detectRange = 2200f;

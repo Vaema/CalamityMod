@@ -71,6 +71,8 @@ namespace CalamityMod.Projectiles.Summon
                     Projectile.timeLeft = 2;
                 }
             }
+
+            //Anti sticky movement to prevent minions from stacking
             Projectile.MinionAntiClump();
 
             //Set tile collision for only when trying to return to the player

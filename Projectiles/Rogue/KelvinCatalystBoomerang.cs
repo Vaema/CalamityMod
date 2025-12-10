@@ -67,6 +67,7 @@ namespace CalamityMod.Projectiles.Rogue
                     ReturnToPlayer();
                     break;
                 case 2:
+                    // Will target the targetted NPC that minions use btw
                     Projectile.ChargingMinionAI(1200f, 1500f, 2200f, 150f, 1, 40f, 12f, 6f, new Vector2(0f, -60f), 40f, 12f, true, true);
                     Projectile.localAI[0] += 1f;
                     if (Projectile.localAI[0] >= 180)

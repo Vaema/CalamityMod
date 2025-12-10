@@ -36,6 +36,7 @@ namespace CalamityMod.Projectiles.Summon
 
         public override void AI()
         {
+            // Prevent clumping of other slime puppets near this one.
             Projectile.MinionAntiClump();
 
             NPC potentialTarget = Projectile.Center.MinionHoming(800f, Owner);

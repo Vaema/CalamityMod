@@ -79,6 +79,7 @@ namespace CalamityMod.Projectiles.Summon
             {
                 Projectile.frame = 0;
             }
+
             Projectile.ChargingMinionAI(Calamitamini.Range, Calamitamini.SeparationAnxietyMin, Calamitamini.SeparationAnxietyMax, Calamitamini.SafeDist, 0, 40f, 8f, 4f, new Vector2(0f, -60f), 40f, 8f, false, true);
         }
 

@@ -57,6 +57,7 @@ namespace CalamityMod.Projectiles.Pets
             {
                 Projectile.timeLeft = 2;
             }
+
             Projectile.FloatingPetAI(true, 0.1f);
 
             //Dust

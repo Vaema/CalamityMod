@@ -66,6 +66,7 @@ namespace CalamityMod.Projectiles.Summon
                     Projectile.timeLeft = 2;
                 }
             }
+
             Projectile.MinionAntiClump();
 
             Projectile.frameCounter++;

@@ -78,6 +78,7 @@ namespace CalamityMod.Projectiles.Summon
             }
 
             CurrentState.Invoke();
+
             Projectile.MinionAntiClump(0.25f);
 
             if (!Main.dedServ)

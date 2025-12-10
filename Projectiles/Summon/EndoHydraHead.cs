@@ -156,6 +156,7 @@ namespace CalamityMod.Projectiles.Summon
             {
                 Projectile.Center = returnPosition + Projectile.DirectionFrom(returnPosition) * 120f;
             }
+
             Projectile.MinionAntiClump(0.15f);
             AdjustOldVelocityArray();
         }

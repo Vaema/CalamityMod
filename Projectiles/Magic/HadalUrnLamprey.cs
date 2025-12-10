@@ -48,6 +48,7 @@ namespace CalamityMod.Projectiles.Magic
             {
                 Projectile.rotation = Projectile.velocity.ToRotation();
             }
+            //Sticky Behaviour
             Projectile.StickyProjAI(15);
 
             Projectile.frameCounter++;
