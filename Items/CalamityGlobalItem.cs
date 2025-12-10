@@ -1597,9 +1597,6 @@ namespace CalamityMod.Items
         private static int cachedForgeID = -1;
         public override void OnCreated(Item item, ItemCreationContext context)
         {
-            // ChoosePrefix also happens on craft so go reset it here too
-            storedPrefix = -1;
-
             // 05JUL2024: Ozzatron: Register the usage of Draedon's Forge for the purposes of his dialogue.
             // This was moved out of an On edit in the DraedonsForge item for Magic Storage compatibility.
             Player p = Main.LocalPlayer;
