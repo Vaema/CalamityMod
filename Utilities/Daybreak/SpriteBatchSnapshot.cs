@@ -20,7 +20,7 @@ namespace CalamityMod.Utilities.Daybreak;
 ///     <see cref="SpriteBatch" />, use the APIs provided in
 ///     <see cref="SpriteBatchSnapshotExtensions" />.
 /// </remarks>
-public struct SpriteBatchSnapshot
+internal struct SpriteBatchSnapshot
 {
     /// <summary>
     ///     The sort mode.
@@ -119,7 +119,7 @@ public struct SpriteBatchSnapshot
 ///     Extensions to <see cref="SpriteBatch" /> using
 ///     <see cref="SpriteBatchSnapshot" /> instances.
 /// </summary>
-public static class SpriteBatchSnapshotExtensions
+internal static class SpriteBatchSnapshotExtensions
 {
     /// <param name="sb">The <see cref="SpriteBatch" />.</param>
     extension(SpriteBatch sb)

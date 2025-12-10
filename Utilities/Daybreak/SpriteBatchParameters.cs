@@ -10,7 +10,7 @@ namespace CalamityMod.Utilities.Daybreak;
 ///     permitting <see langword="null"/> values which may be replaced with
 ///     defaults when being converted to a snapshot.
 /// </summary>
-public struct SpriteBatchParameters
+internal struct SpriteBatchParameters
 {
     /// <summary>
     ///     The sort mode.

@@ -9,7 +9,7 @@ namespace CalamityMod.Utilities.Daybreak;
 ///     Starts a <see cref="SpriteBatch"/> and caches its old start parameters
 ///     if it was begun to restore it on disposal.
 /// </summary>
-public readonly struct SpriteBatchScope : IDisposable
+internal readonly struct SpriteBatchScope : IDisposable
 {
     private readonly SpriteBatch spriteBatch;
     private readonly SpriteBatchSnapshot? oldState;
@@ -55,7 +55,7 @@ public readonly struct SpriteBatchScope : IDisposable
 /// <summary>
 ///     Extensions to types for <see cref="SpriteBatch"/> scopes.
 /// </summary>
-public static class SpriteBatchScopeExtensions
+internal static class SpriteBatchScopeExtensions
 {
     /// <summary>
     ///     See <see cref="SpriteBatchScope"/>.
