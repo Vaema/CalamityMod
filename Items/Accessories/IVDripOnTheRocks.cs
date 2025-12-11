@@ -13,8 +13,8 @@ namespace CalamityMod.Items.Accessories
     public class IVDripOnTheRocks : ModItem, ILocalizedModType
     {
         public new string LocalizationCategory => "Items.Accessories";
-        public static readonly float DamageBoostMultiplier = 1.25f;
-        public static readonly float DamageReductionMultiplier = 0.75f;
+        public static readonly float DamageBoostMultiplier = 1.25f; // Same as Old Fashioned but can be changed at any time
+        public static readonly float DamageReductionMultiplier = 0.75f; // Same as Old Fashioned but can be changed at any time
         public override LocalizedText Tooltip => base.Tooltip.WithFormatArgs((DamageBoostMultiplier).ToString("N2"), (DamageReductionMultiplier).ToString("N2")); public override void SetDefaults()
         {
             Item.width = 58;
