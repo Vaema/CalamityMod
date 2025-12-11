@@ -1,4 +1,5 @@
 ﻿using System;
+using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using ReLogic.Content;
 using ReLogic.Threading;
@@ -59,13 +60,14 @@ namespace CalamityMod
             _Height = Texture.Height;
             _Scales = new float[_Width * _Height];
 
-            var colorScheme = Texture.GetColorsFromTexture();
+            Color[] colorScheme = new Color[_Width * _Height];
+            Texture.GetData(colorScheme);
+
             FastParallel.For(0, _Width * _Height, (startInclusive, endExclusive, context) =>
             {
                 for (int i = startInclusive; i < endExclusive; i++)
                 {
-                    var y = Math.DivRem(i, _Width, out var x);
-                    _Scales[i] = colorScheme[x, y].R / 255.0f;
+                    _Scales[i] = colorScheme[i].R / 255.0f;
                 }
             });
 
