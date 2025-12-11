@@ -373,7 +373,7 @@ CalamityClientConfig: {
 		Tooltip:
             '''
             Change quality of tile merge soft-blending renderer.
-            This controls quality of soft-blending between different types of merged tile.
+            This controls the quality of soft-blending between different types of merged tile.
             '''
 	}
 
