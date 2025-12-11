@@ -34,9 +34,7 @@ namespace CalamityMod.Items.Accessories
         {
             CreateRecipe().
                 AddIngredient<OldFashioned>().
-                AddIngredient<DarkPlasma>().
-                AddIngredient<ArmoredShell>().
-                AddIngredient<TwistingNether>().
+                AddIngredient<UelibloomBar>(5).
                 AddTile(TileID.MythrilAnvil).
                 Register();
         }
