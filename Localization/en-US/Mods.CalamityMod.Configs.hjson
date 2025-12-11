@@ -624,7 +624,7 @@ TileBlendingQuality: {
 		Tooltip:
             '''
             Enable Tile Texture Soft Blending.
-            [c/F05A5A:Allows Silced Rendering. Not recommended for low-end devices.]
+            [c/F05A5A:Allows Sliced Rendering. Not recommended for low-end devices.]
             '''
 	}
 }
