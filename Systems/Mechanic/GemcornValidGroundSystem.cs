@@ -14,12 +14,9 @@ internal sealed class GemcornValidGroundSystem : ModSystem
 
     public override void PostSetupContent()
     {
-        var tiles = CalamityMod.Instance.GetContent<ModTile>()
+        ValidGemcornGrounds = [.. CalamityMod.Instance.GetContent<ModTile>()
             .Where(tile => WorldGen.GemTreeGroundTest(tile.Type))
-            .Select(tile => (int)tile.Type)
-            .ToArray();
-
-        ValidGemcornGrounds = [.. tiles];
+            .Select(tile => (int)tile.Type)];
 
         var gemSaplingData = GemSaplingData;
         gemSaplingData.AnchorValidTiles = [.. gemSaplingData.AnchorValidTiles, .. ValidGemcornGrounds];
