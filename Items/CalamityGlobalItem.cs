@@ -56,6 +56,8 @@ namespace CalamityMod.Items
         /// <summary> Tracks the stealth strike damage modifier for this item, derived from its prefix. </summary>
         internal float StealthStrikePrefixBonus;
 
+        private byte flag0 = 0;
+
         #region Chargeable Item Variables
         /// <summary>
         /// If set to true, this item will consume <see cref="Charge"/> on use.<br/>
@@ -85,7 +87,11 @@ namespace CalamityMod.Items
 
         #region Enchantment Variables
         /// <summary> If set to true, this item cannot receive enchantments from the Brimstone Witch. </summary>
-        public bool CannotBeEnchanted = false;
+        public bool CannotBeEnchanted
+        {
+            get => TileDataPacking.GetBit(flag0, 0);
+            set => flag0 = (byte)TileDataPacking.SetBit(value, flag0, 0);
+        }
         /// <summary> Stores the current enchantment placed on this item. If set to null, this item has no enchantment. </summary>
         public Enchantment? AppliedEnchantment = null;
         /// <summary>
@@ -110,15 +116,14 @@ namespace CalamityMod.Items
         #endregion
 
         // Miscellaneous stuff
-        private byte miscellaneousFlag0 = 0;
         /// <summary>
         /// Set to true if this item can only be obtained in Revengeance Mode.<br/>
         /// Adds "Revengeance" to the bottom of the item's tooltip.
         /// </summary>
         public bool revengeanceItem
         {
-            get => TileDataPacking.GetBit(miscellaneousFlag0, 0);
-            set => miscellaneousFlag0 = (byte)TileDataPacking.SetBit(value, miscellaneousFlag0, 0);
+            get => TileDataPacking.GetBit(flag0, 1);
+            set => flag0 = (byte)TileDataPacking.SetBit(value, flag0, 1);
         }
         /// <summary>
         /// Set to true if this item is dedicated to a Patreon donator.<br/>
@@ -126,8 +131,8 @@ namespace CalamityMod.Items
         /// </summary>
         public bool donorItem
         {
-            get => TileDataPacking.GetBit(miscellaneousFlag0, 1);
-            set => miscellaneousFlag0 = (byte)TileDataPacking.SetBit(value, miscellaneousFlag0, 1);
+            get => TileDataPacking.GetBit(flag0, 2);
+            set => flag0 = (byte)TileDataPacking.SetBit(value, flag0, 2);
         }
         /// <summary>
         /// Set to true if this item is dedicated to a Calamity developer.<br/>
@@ -135,8 +140,8 @@ namespace CalamityMod.Items
         /// </summary>
         public bool devItem
         {
-            get => TileDataPacking.GetBit(miscellaneousFlag0, 2);
-            set => miscellaneousFlag0 = (byte)TileDataPacking.SetBit(value, miscellaneousFlag0, 2);
+            get => TileDataPacking.GetBit(flag0, 3);
+            set => flag0 = (byte)TileDataPacking.SetBit(value, flag0, 3);
         }
 
         public static readonly Color ExhumedTooltipColor = new Color(198, 27, 64);
@@ -157,6 +162,9 @@ namespace CalamityMod.Items
         {
             CalamityGlobalItem myClone = (CalamityGlobalItem)base.Clone(item, itemClone);
 
+            // BitFlags
+            myClone.flag0 = flag0;
+
             // Rogue
             myClone.StealthStrikePrefixBonus = StealthStrikePrefixBonus;
 
@@ -168,12 +176,8 @@ namespace CalamityMod.Items
             myClone.ChargePerAltUse = ChargePerAltUse;
 
             // Enchantments
-            myClone.CannotBeEnchanted = CannotBeEnchanted;
             myClone.AppliedEnchantment = AppliedEnchantment.HasValue ? AppliedEnchantment.Value : null;
             myClone.DischargeEnchantExhaustion = DischargeEnchantExhaustion;
-
-            // Miscellaneous
-            myClone.miscellaneousFlag0 = miscellaneousFlag0;
 
             return myClone;
         }
