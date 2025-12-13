@@ -152,4 +152,11 @@ namespace CalamityMod.Systems
         public ushort SheetIndex = sheetIdx;
         public byte BlendData = blendData;
     }
+
+    public enum TileBlendingQuality
+    {
+        Disable,
+        Normal,
+        High
+    }
 }

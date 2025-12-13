@@ -20,6 +20,9 @@ namespace CalamityMod.Systems
 
             public override void PostDraw(int i, int j, int type, SpriteBatch spriteBatch)
             {
+                if (CalamityClientConfig.Instance.TileTextureBlendingQuality == TileBlendingQuality.Disable)
+                    return;
+
                 if (CalamityTileSets.DrawBlendMergeAfterSolidTile[type])
                     return;
 

@@ -38,7 +38,7 @@ namespace CalamityMod.Systems
         {
             orig(self, solidLayer, forRenderTargets, intoRenderTargets, waterStyleOverride);
 
-            if (!solidLayer)
+            if (!solidLayer || CalamityClientConfig.Instance.TileTextureBlendingQuality == TileBlendingQuality.Disable)
                 return;
 
             var screenPosition = Main.Camera.UnscaledPosition;
@@ -84,7 +84,8 @@ namespace CalamityMod.Systems
             Color[] colorSliceBuffer = ColorSliceBuffer.Value;
 
             // Is HalfBlock condition is also in vanilla, so we follow that
-            if (Lighting.NotRetro && !tile.IsHalfBlock && !TileID.Sets.DontDrawTileSliced[tileType])
+            var silcedConfigEnabled = CalamityClientConfig.Instance.TileTextureBlendingQuality == TileBlendingQuality.High;
+            if (silcedConfigEnabled && Lighting.NotRetro && !tile.IsHalfBlock && !TileID.Sets.DontDrawTileSliced[tileType])
             {
                 var tileRenderer = Main.instance.TilesRenderer;
                 if (tileLight.IsAnyChannelGreaterThan(tileRenderer._highQualityLightingRequirement))
