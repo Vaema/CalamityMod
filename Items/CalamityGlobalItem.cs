@@ -110,21 +110,34 @@ namespace CalamityMod.Items
         #endregion
 
         // Miscellaneous stuff
+        private byte miscellaneousFlag0 = 0;
         /// <summary>
         /// Set to true if this item can only be obtained in Revengeance Mode.<br/>
         /// Adds "Revengeance" to the bottom of the item's tooltip.
         /// </summary>
-        public bool revengeanceItem = false;
+        public bool revengeanceItem
+        {
+            get => TileDataPacking.GetBit(miscellaneousFlag0, 0);
+            set => miscellaneousFlag0 = (byte)TileDataPacking.SetBit(value, miscellaneousFlag0, 0);
+        }
         /// <summary>
         /// Set to true if this item is dedicated to a Patreon donator.<br/>
         /// Adds "- Donor Item -" to the bottom of the item's tooltip.
         /// </summary>
-        public bool donorItem = false;
+        public bool donorItem
+        {
+            get => TileDataPacking.GetBit(miscellaneousFlag0, 1);
+            set => miscellaneousFlag0 = (byte)TileDataPacking.SetBit(value, miscellaneousFlag0, 1);
+        }
         /// <summary>
         /// Set to true if this item is dedicated to a Calamity developer.<br/>
         /// Adds "- Dev Item -" to the bottom of the item's tooltip.
         /// </summary>
-        public bool devItem = false;
+        public bool devItem
+        {
+            get => TileDataPacking.GetBit(miscellaneousFlag0, 2);
+            set => miscellaneousFlag0 = (byte)TileDataPacking.SetBit(value, miscellaneousFlag0, 2);
+        }
 
         public static readonly Color ExhumedTooltipColor = new Color(198, 27, 64);
 
@@ -160,9 +173,7 @@ namespace CalamityMod.Items
             myClone.DischargeEnchantExhaustion = DischargeEnchantExhaustion;
 
             // Miscellaneous
-            myClone.revengeanceItem = revengeanceItem;
-            myClone.donorItem = donorItem;
-            myClone.devItem = devItem;
+            myClone.miscellaneousFlag0 = miscellaneousFlag0;
 
             return myClone;
         }
