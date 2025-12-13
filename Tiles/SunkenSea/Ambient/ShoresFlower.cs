@@ -48,7 +48,7 @@ namespace CalamityMod.Tiles.SunkenSea.Ambient
 
         public override void ModifyLight(int i, int j, ref float r, ref float g, ref float b)
         {
-            float pulse = 0.95f + 0.15f * (0.5f + 0.5f * (float)System.Math.Sin(Main.GlobalTimeWrappedHourly * 4.2f));
+            float pulse = 0.95f + 0.15f * (0.5f + 0.5f * MathF.Sin(Main.GlobalTimeWrappedHourly * 4.2f));
             r = 0.1f * pulse;
             g = 0.3f * pulse;
             b = 0.8f * pulse;
