@@ -125,11 +125,6 @@ namespace CalamityMod.Items
         /// Adds "- Dev Item -" to the bottom of the item's tooltip.
         /// </summary>
         public bool devItem = false;
-        /// <summary>
-        /// If set to a value greater than 1, applies a multiplier to the item's grab range.<br/>
-        /// Used by coin items spawned from hitting ricoshot coins.
-        /// </summary>
-        public float grabRangeMultiplier = 1f;
 
         public static readonly Color ExhumedTooltipColor = new Color(198, 27, 64);
 
@@ -168,7 +163,6 @@ namespace CalamityMod.Items
             myClone.revengeanceItem = revengeanceItem;
             myClone.donorItem = donorItem;
             myClone.devItem = devItem;
-            myClone.grabRangeMultiplier = grabRangeMultiplier;
 
             return myClone;
         }
@@ -1448,8 +1442,8 @@ namespace CalamityMod.Items
         public override void GrabRange(Item item, Player player, ref int grabRange)
         {
             // First, apply the grab range multiplier.
-            if (grabRangeMultiplier > 1f)
-                grabRange = (int)(grabRangeMultiplier * grabRange);
+            if (item.TryGetGlobalItem<GrabRangeGlobalItem>(out var grabRangeItem) && grabRangeItem.grabRangeMultiplier > 1f)
+                grabRange = (int)(grabRangeItem.grabRangeMultiplier * grabRange);
 
             // Then, apply flat grab range boosts.
             if (player.Calamity().reaverExplore)
