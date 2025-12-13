@@ -54,10 +54,10 @@ namespace CalamityMod.Systems
                         continue;
 
                     var tile = Main.tile[x, y];
-                    if (!CalamityTileSets.DrawBlendMergeAfterSolidTile[tile.TileType])
+                    if (!tile.Get<TileSpecialDrawData>().HasBlendMergeData)
                         continue;
 
-                    if (!tile.Get<TileSpecialDrawData>().HasBlendMergeData)
+                    if (!CalamityTileSets.DrawBlendMergeAfterSolidTile[tile.TileType])
                         continue;
 
                     if (!TryGetBlendingRefData(x, y, out var blendRefs))

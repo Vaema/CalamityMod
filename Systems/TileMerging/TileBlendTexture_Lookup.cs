@@ -208,7 +208,8 @@ namespace CalamityMod.Systems
                     else
                     {
                         var y = Math.DivRem(bakeSheetIndex, BlendTextureXCount, out var x);
-                        _SheetPositionLookup[key] = new SheetPosition(x * BlendTextureFrameWidth, y * BlendTextureFrameHeight, bakedSheetIndex: (sbyte)randomFrame);
+                        var heightOffset = BlendTextureHeight * randomFrame;
+                        _SheetPositionLookup[key] = new SheetPosition(x * BlendTextureFrameWidth, (y * BlendTextureFrameHeight) + heightOffset, bakedSheetIndex: (sbyte)randomFrame);
                         hasAddedToSheet = true;
                     }
                 }
