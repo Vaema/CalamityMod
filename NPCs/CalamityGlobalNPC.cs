@@ -210,12 +210,6 @@ namespace CalamityMod.NPCs
         /// </summary>
         private const float BossZenDistance = 6400f;
 
-        /// <summary>
-        /// Destroyer laser colors, used for telegraphs.<br/>
-        /// None = -1, Red = 0, Green = 1, Cyan = 2
-        /// </summary>
-        public int destroyerLaserColor = -1;
-
         /// <summary> Constant multiplier used to decrease the health and/or damage of pre-Hardmode Desert enemies. </summary>
         private const double DesertEnemyStatMultiplier = 0.75;
 
@@ -543,8 +537,6 @@ namespace CalamityMod.NPCs
             myClone.canBreakPlayerDefense = canBreakPlayerDefense;
 
             myClone.miscDefenseLoss = miscDefenseLoss;
-
-            myClone.destroyerLaserColor = destroyerLaserColor;
 
             myClone.dashImmunityTime = new int[maxPlayerImmunities];
             for (int i = 0; i < maxPlayerImmunities; ++i)
@@ -5788,28 +5780,25 @@ namespace CalamityMod.NPCs
 
                     // Telegraph for body lasers
                     float telegraphProgress = 0f;
-                    if (destroyerLaserColor != -1)
+                    if (npc.TryGetAIOverride<DestroyerAI>(out var destroyerAI) && destroyerAI.LaserColor != -1)
                     {
-                        if (npc.type == NPCID.TheDestroyerBody && revenge)
+                        float shootProjectileTime = death ? (phase5 ? 180f : phase4 ? 270f : 360f) : 450f;
+                        float telegraphGateValue = shootProjectileTime - DestroyerAI.LaserTelegraphTime;
+                        if (newAI[0] > telegraphGateValue)
                         {
-                            float shootProjectileTime = death ? (phase5 ? 180f : phase4 ? 270f : 360f) : 450f;
-                            float telegraphGateValue = shootProjectileTime - DestroyerAI.LaserTelegraphTime;
-                            if (newAI[0] > telegraphGateValue)
+                            switch (destroyerAI.LaserColor)
                             {
-                                switch (destroyerLaserColor)
-                                {
-                                    default:
-                                    case 0:
-                                        break;
-                                    case 1:
-                                        telegraphColor = telegraphColor_Green;
-                                        break;
-                                    case 2:
-                                        telegraphColor = telegraphColor_Cyan;
-                                        break;
-                                }
-                                telegraphProgress = MathHelper.Clamp((newAI[0] - telegraphGateValue) / DestroyerAI.LaserTelegraphTime, 0f, 1f);
+                                default:
+                                case 0:
+                                    break;
+                                case 1:
+                                    telegraphColor = telegraphColor_Green;
+                                    break;
+                                case 2:
+                                    telegraphColor = telegraphColor_Cyan;
+                                    break;
                             }
+                            telegraphProgress = MathHelper.Clamp((newAI[0] - telegraphGateValue) / DestroyerAI.LaserTelegraphTime, 0f, 1f);
                         }
                     }
 

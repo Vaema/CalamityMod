@@ -49,6 +49,8 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides
 
         public virtual bool PreDraw(Mod mod, SpriteBatch spriteBatch, Vector2 screenPos, Color drawColor) => true;
 
+        public virtual void PostDraw(Mod mod, SpriteBatch spriteBatch, Vector2 screenPos, Color drawColor) { }
+
         /// <summary>
         /// This Method should be Implemented If we added our custom field to AI Overrides
         /// </summary>

@@ -145,7 +145,6 @@ namespace CalamityMod
         ExaltationDirection,
 
         // Syncs for specific bosses or entities
-        SyncDestroyerLaserColor,
         SyncCalamityNPCAIArray,
         SyncVanillaNPCLocalAIArray,
         SpawnSuperDummy,
