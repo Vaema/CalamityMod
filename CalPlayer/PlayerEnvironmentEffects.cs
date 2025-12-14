@@ -24,7 +24,7 @@ namespace CalamityMod.CalPlayer
 
             for (int tries = 0; tries < 50; tries++)
             {
-                Vector2 potentialSpawnPosition = Player.Center + Main.rand.NextVector2Unit() * Main.rand.NextFloat(200f, 800f);
+                Vector2 potentialSpawnPosition = Player.Center + new Vector2(Main.rand.NextFloat(-1000f, 1000f), Main.rand.NextFloat(-300f, 300f));
                 if (Collision.SolidCollision(potentialSpawnPosition, 1, 1))
                     continue;
 

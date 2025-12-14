@@ -1,4 +1,5 @@
 ﻿using CalamityMod.ILEditing;
+using CalamityMod.Items.Placeables.FloralParadise;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using ReLogic.Content;
@@ -46,6 +47,7 @@ namespace CalamityMod.Tiles.FloralParadise
 
             DustType = DustID.JungleSpore;
             AddMapEntry(new Color(255, 155, 202));
+            RegisterItemDrop(ModContent.ItemType<ScintillatingBloom>());
         }
 
         public override void ModifyLight(int i, int j, ref float r, ref float g, ref float b)

@@ -890,8 +890,8 @@ namespace CalamityMod.ILEditing
         #endregion
 
         // 02JUN2024: Ozzatron: The below code is being kept in its initial state for historic value.
+        // 14DEC2025: This has been momentarily restored for Floral Paradise plants. Enjoy whatever this is. - Iris
         #region Store The Stupid Fucking Private Wind Map In Public Property
-        [/*TotallyNot*/Obsolete("This function serves no purpose and is included in the Calamity source code for historic value.", error: true)]
         private static void StoreWindGrid(On_TileDrawing.orig_Update orig, TileDrawing self)
         {
             orig(self);

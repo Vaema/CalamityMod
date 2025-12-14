@@ -1,4 +1,5 @@
 ﻿using CalamityMod.ILEditing;
+using CalamityMod.Items.Placeables.FloralParadise;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using ReLogic.Content;
@@ -44,6 +45,7 @@ namespace CalamityMod.Tiles.FloralParadise
             HitSound = SoundID.Grass;
             DustType = DustID.JungleSpore;
             AddMapEntry(new Color(255, 155, 202));
+            RegisterItemDrop(ModContent.ItemType<ScintillatingBloom>());
         }
 
         public override void DrawEffects(int i, int j, SpriteBatch spriteBatch, ref TileDrawInfo drawData)
@@ -81,11 +83,6 @@ namespace CalamityMod.Tiles.FloralParadise
             }
 
             Main.spriteBatch.Draw(stamenTexture, drawPos, stamenFrame, drawColor, windRotation, stamenOrigin, 1f, SpriteEffects.None, 0f);
-        }
-
-        public override void KillMultiTile(int i, int j, int frameX, int frameY)
-        {
-            Item.NewItem(new EntitySource_TileBreak(i, j), i * 16, j * 16, 32, 48, ModContent.ItemType<Items.Placeables.FloralParadise.ScintillatingBloom>());
         }
 
         public override void NumDust(int i, int j, bool fail, ref int num)

@@ -53,7 +53,7 @@ namespace CalamityMod.Tiles.FloralParadise
 
         public void DrawVine(Vector2 vineTop, Vector2 downwardBottom, int totalVinesToDraw, float swayFactor)
         {
-            VineTexture ??= ModContent.Request<Texture2D>("CalamityMod/Tiles/PerennialTreeVines");
+            VineTexture ??= ModContent.Request<Texture2D>("CalamityMod/Tiles/FloralParadise/PerennialTreeVines");
             Texture2D vineTexture = VineTexture.Value;
 
             // Determine the initial points for the vines.
