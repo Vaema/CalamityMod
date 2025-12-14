@@ -865,10 +865,6 @@ namespace CalamityMod.Items
                 EditTooltipByNum(0, (line) => line.Text += AddedTooltip("CrimsonArmorPieces"));
             }
 
-            // Meteor
-            if (item.type == ItemID.MeteorHelmet || item.type == ItemID.MeteorSuit || item.type == ItemID.MeteorLeggings)
-                EditTooltipByNum(0, (line) => line.Text = line.Text.Replace("9%", "8%"));
-
             // Magic Hat nerf
             if (item.type == ItemID.MagicHat)
                 EditTooltipByNum(0, (line) => line.Text = EditedTooltip("MagicHat"));
