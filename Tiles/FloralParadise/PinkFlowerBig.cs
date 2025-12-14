@@ -1,5 +1,4 @@
-﻿using CalamityMod.ILEditing;
-using CalamityMod.Items.Placeables.FloralParadise;
+﻿using CalamityMod.Items.Placeables.FloralParadise;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using ReLogic.Content;
@@ -69,7 +68,7 @@ namespace CalamityMod.Tiles.FloralParadise
                 return;
 
             // 02JUN2024: Ozzatron: directionY did not exist at the time of the creation of this content. As such, it is ignored here.
-            ILChanges.Windgrid.GetWindTime(i, j, WindPushLifetime, out int windTimeLeft, out int direction, out _);
+            Main.instance.TilesRenderer.Wind.GetWindTime(i, j, WindPushLifetime, out int windTimeLeft, out int direction, out _);
 
             float windInterpolant = windTimeLeft / (float)WindPushLifetime;
             float windRotation = Utils.GetLerpValue(0f, 0.5f, windInterpolant, true) * Utils.GetLerpValue(1f, 0.5f, windInterpolant, true) * direction * 0.34f;

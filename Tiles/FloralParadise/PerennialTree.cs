@@ -1,6 +1,5 @@
 ﻿using System;
 using CalamityMod.DataStructures;
-using CalamityMod.ILEditing;
 using CalamityMod.Tiles.BaseTiles;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
@@ -67,7 +66,7 @@ namespace CalamityMod.Tiles.FloralParadise
                 Point p = (controlPoints[i] + lightOffset + BranchDrawer.PreviousPoint.ToWorldCoordinates()).ToTileCoordinates();
 
                 // 02JUN2024: Ozzatron: directionY did not exist at the time of the creation of the Perennial Tree. As such, it is ignored here.
-                ILChanges.Windgrid.GetWindTime(p.X, p.Y, 40, out int windTimeLeft, out int direction, out _);
+                Main.instance.TilesRenderer.Wind.GetWindTime(p.X, p.Y, 40, out int windTimeLeft, out int direction, out _);
 
                 float windInterpolant = windTimeLeft / 40f;
                 swayOffset += Utils.GetLerpValue(0f, 0.45f, windInterpolant, true) * Utils.GetLerpValue(1f, 0.55f, windInterpolant, true) * direction * 28f;

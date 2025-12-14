@@ -26,6 +26,7 @@ namespace CalamityMod.ILEditing
 {
     public partial class ILChanges
     {
+        [Obsolete("Use 'Main.instance.TilesRenderer.Wind' Instead. This property is included in the Calamity source code only for historic value.", error: true)]
         public static WindGrid Windgrid
         {
             get;
@@ -867,7 +868,8 @@ namespace CalamityMod.ILEditing
             {
                 var center = Main.screenHeight / 2;
                 Main.mouseY = center - (Main.mouseY - center);
-            };
+            }
+            ;
         }
         private static void UI_Unflip_Start(On_Main.orig_DrawPlayerChatBubbles orig, Main self)
         {
@@ -890,8 +892,8 @@ namespace CalamityMod.ILEditing
         #endregion
 
         // 02JUN2024: Ozzatron: The below code is being kept in its initial state for historic value.
-        // 14DEC2025: This has been momentarily restored for Floral Paradise plants. Enjoy whatever this is. - Iris
         #region Store The Stupid Fucking Private Wind Map In Public Property
+        [/*TotallyNot*/Obsolete("This function serves no purpose and is included in the Calamity source code for historic value.", error: true)]
         private static void StoreWindGrid(On_TileDrawing.orig_Update orig, TileDrawing self)
         {
             orig(self);
