@@ -7,9 +7,6 @@ using CalamityMod.DataStructures;
 using CalamityMod.Enums;
 using CalamityMod.Events;
 using CalamityMod.FluidSimulation;
-using CalamityMod.Graphics.Metaballs;
-using CalamityMod.Graphics.Primitives;
-using CalamityMod.Graphics.Renderers;
 using CalamityMod.Items.Accessories;
 using CalamityMod.Items.Armor.Wulfrum;
 using CalamityMod.Items.Critters;
@@ -27,7 +24,6 @@ using CalamityMod.Projectiles;
 using CalamityMod.Projectiles.Ranged;
 using CalamityMod.Projectiles.Typeless;
 using CalamityMod.Systems;
-using CalamityMod.Systems.Graphic.PixelationSystem;
 using CalamityMod.Systems.Mechanic;
 using CalamityMod.Tiles;
 using CalamityMod.Utilities.Daybreak;
@@ -860,72 +856,6 @@ namespace CalamityMod.ILEditing
 
             Main.spriteBatch.End();
             Main.spriteBatch.Begin();
-        }
-        #endregion
-
-        #region GeneralDrawLayer Systems Drawing
-        private static void GeneralDrawLayer_DrawForSupportedSystems(GeneralDrawLayer drawLayer)
-        {
-            GeneralParticleHandler.DrawParticleCollectionsAtSpecificLayer(drawLayer);
-
-            Main.spriteBatch.Begin(SpriteSortMode.Immediate, BlendState.AlphaBlend, SamplerState.PointWrap, DepthStencilState.None, Main.Rasterizer, null, Main.GameViewMatrix.TransformationMatrix);
-            MetaballManager.DrawMetaballs(drawLayer);
-            Main.spriteBatch.End();
-
-            PrimitivePixelationSystem.DrawTargetScaled(drawLayer);
-
-            PixelationManager.DrawPixelatedTargets(drawLayer);
-
-            RendererManager.DrawRendererAtLayer(drawLayer);
-
-        }
-
-        private static void GeneralDrawLayer_DrawToLayer_BeforeAllTiles(On_Main.orig_DrawBackgroundBlackFill orig, Main self)
-        {
-            Main.spriteBatch.End(out var ss);
-            GeneralDrawLayer_DrawForSupportedSystems(GeneralDrawLayer.BeforeAllTiles);
-            Main.spriteBatch.Begin(ss);
-            orig(self);
-        }
-
-        private static void GeneralDrawLayer_DrawToLayer_BeforeSolidTiles(On_Main.orig_DoDraw_Tiles_Solid orig, Main self)
-        {
-            GeneralDrawLayer_DrawForSupportedSystems(GeneralDrawLayer.BeforeSolidTiles);
-            orig(self);
-        }
-
-        private static void GeneralDrawLayer_DrawToLayer_NPCs(On_Main.orig_DoDraw_DrawNPCsOverTiles orig, Main self)
-        {
-            GeneralDrawLayer_DrawForSupportedSystems(GeneralDrawLayer.BeforeNPCs);
-            orig(self);
-            GeneralDrawLayer_DrawForSupportedSystems(GeneralDrawLayer.AfterNPCs);
-        }
-
-        private static void GeneralDrawLayer_DrawToLayer_Projectiles(On_Main.orig_DrawProjectiles orig, Main self)
-        {
-            GeneralDrawLayer_DrawForSupportedSystems(GeneralDrawLayer.BeforeProjectiles);
-            orig(self);
-            GeneralDrawLayer_DrawForSupportedSystems(GeneralDrawLayer.AfterProjectiles);
-        }
-
-        private static void GeneralDrawLayer_DrawToLayer_AfterPlayers(On_Main.orig_DrawPlayers_AfterProjectiles orig, Main self)
-        {
-            orig(self);
-            GeneralDrawLayer_DrawForSupportedSystems(GeneralDrawLayer.AfterPlayers);
-        }
-
-        private static void GeneralDrawLayer_DrawToLayer_AfterDusts(On_Main.orig_DrawDust orig, Main self)
-        {
-            orig(self);
-            GeneralDrawLayer_DrawForSupportedSystems(GeneralDrawLayer.AfterDusts);
-        }
-
-        private static void GeneralDrawLayer_DrawToLayer_AfterEverything(On_Main.orig_DrawInfernoRings orig, Main self)
-        {
-            orig(self);
-            Main.spriteBatch.End(out var ss);
-            GeneralDrawLayer_DrawForSupportedSystems(GeneralDrawLayer.AfterEverything);
-            Main.spriteBatch.Begin(ss);
         }
         #endregion
 
