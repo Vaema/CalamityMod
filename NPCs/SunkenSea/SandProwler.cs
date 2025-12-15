@@ -51,7 +51,6 @@ namespace CalamityMod.NPCs.SunkenSea
         protected override List<int> PreyIDs => new List<int>()
         {
             ModContent.NPCType<PolypPanasea>(),
-            ModContent.NPCType<PrismaticGuppy>(),
             ModContent.NPCType<Slugbun>(),
         };
 

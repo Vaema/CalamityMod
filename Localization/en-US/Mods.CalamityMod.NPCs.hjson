@@ -187,7 +187,6 @@ ScornEater.DisplayName: Scorn Eater
 ShockstormShuttle.DisplayName: Shockstorm Shuttle
 Shroomble.DisplayName: Shroomble
 Stormlion.DisplayName: Stormlion
-StormlionSentry.DisplayName: Stormlion Sentry
 Sunskater.DisplayName: Sunskater
 SuperDummyNPC.DisplayName: Super Dummy
 WildBumblefuck.DisplayName: Draconic Swarmer
@@ -258,52 +257,21 @@ MicrobialCluster.DisplayName: Microbial Cluster
 Sulflounder.DisplayName: Sulflounder
 Toxicatfish.DisplayName: Toxicatfish
 Trasher.DisplayName: Trasher
-AlphaSeaMinnow.DisplayName: Alpha Sea Minnow
-AlphaSeaMinnowGold.DisplayName: Gold Alpha Sea Minnow
-MinnowPrime: Minnow Prime
 BabyGhostBell.DisplayName: Baby Ghost Bell
-CarrionSwallower.DisplayName: Carrion Swallower
 Clam.DisplayName: Clam
 EutrophicRay.DisplayName: Eutrophic Ray
-FesteringRemains.DisplayName: Festering Remains
 GhostBell.DisplayName: Ghost Bell
 GiantClam.DisplayName: Giant Clam
 Clamitas: Clamitas
 SupremeClamitas: Supreme Clamitas
-GildedAxolotl.DisplayName: Gilded Axolotl
 GoldBabyGhostBell: Gold Baby Ghost Bell
-GoldPolypPanasea: Gold Polyp Panasea
-GoldPrismaticGuppy: Gold Prismatic Guppy
-HauntedChum.DisplayName: Haunted Chum
-Jellyghoul.DisplayName: Jellyghoul
-KelpieSeadragon.DisplayName: Kelpie Seadragon
-LazarusLampfish.DisplayName: Lazarus Lampfish
-Leerslug.DisplayName: Leerslug
-LostShoal.DisplayName: Lost Shoal
-PearlpodBlack.DisplayName: Pearlpod
-PearlpodPink.DisplayName: Pearlpod
-PearlpodWhite.DisplayName: Pearlpod
-PodobooKoi.DisplayName: Podoboo Koi
-PolypPanasea.DisplayName: Polyp Panasea
-Polyperil.DisplayName: Polyperil
 PrismBack.DisplayName: Prism-Back
-Probesnout.DisplayName: Probesnout
-ProbesnoutGold.DisplayName: Gold Probesnout
-PrismaticGuppy.DisplayName: Prismatic Guppy
 RadiantBabyGhostBell: Radiant Baby Ghost Bell
-RadiantPolypPanasea: Radiant Polyp Panasea
-RadiantPrismaticGuppy: Radiant Prismatic Guppy
-RadiantSlugbun: Radiant Slugbun
 SandProwler.DisplayName: Sand Prowler
 SandProwlerNested.DisplayName: Sand Prowler
-Scavenger.DisplayName: Scavenger
 SeaFloaty.DisplayName: Sea Floaty
 SeaMinnow.DisplayName: Sea Minnow
 SeaMinnowGold.DisplayName: Gold Sea Minnow
-Searslug.DisplayName: Searslug
-Sharkoon.DisplayName: Sharkoon
-Slugbun.DisplayName: Slugbun
-Steampod.DisplayName: Steampod
 BrimstoneHeart.DisplayName: Brimstone Heart
 SepulcherHead.DisplayName: Sepulcher
 SoulSeekerSupreme.DisplayName: Soul Seeker
@@ -564,4 +532,3 @@ SeaKing: {
 WildBumblebirb.DisplayName: Wild Bumblebirb
 DraconicSwarmer.DisplayName: Draconic Swarmer
 Dragonfolly.DisplayName: Dragonfolly
-Shoreskipper.DisplayName: Shoreskipper

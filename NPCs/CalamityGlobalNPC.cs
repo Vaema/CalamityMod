@@ -408,8 +408,6 @@ namespace CalamityMod.NPCs
         public int ashesOnDeath = 0;
         #endregion
 
-        public bool fortunesFavor = false; // Buff which grants positive life regen. Given when near Gilded Axolotls.
-
         // whoAmI Variables
         public static int[] bobbitWormBottom = new int[5];
         public static int hiveMind = -1;
@@ -654,8 +652,6 @@ namespace CalamityMod.NPCs
             myClone.wither = wither;
             myClone.ashesOnDeath = ashesOnDeath;
 
-            myClone.fortunesFavor = fortunesFavor;
-
             // This gets set up as needed.
             myClone.VulnerabilityHexFireDrawer = null;
             myClone.ManaBurnFireDrawer = null;
@@ -825,8 +821,6 @@ namespace CalamityMod.NPCs
             if (ashesOnDeath > 0)
                 ashesOnDeath--;
 
-            fortunesFavor = false;
-
             if (antlionCloudDebuffTimer > 0)
                 antlionCloudDebuffTimer--;
             if (cursorFocus > 0 && cursorFocus < cursorFocusMax)
@@ -950,11 +944,6 @@ namespace CalamityMod.NPCs
                     ActiveWaterDebuffMultiplier *= ResistantToDoTDamageMult;
             }
             #endregion
-
-            if (fortunesFavor)
-            {
-                npc.lifeRegen += 4; // 2 HP/s at base           
-            }
 
             //Apply DoT Debuffs
             for (var index = 0; index < npc.buffType.Length; index++)
@@ -4719,7 +4708,7 @@ namespace CalamityMod.NPCs
             }
         }
 
-        public static void AttemptToSpawnLavaNPCs(Player player)
+        /*public static void AttemptToSpawnLavaNPCs(Player player)
         {
             if (Main.netMode == NetmodeID.MultiplayerClient)
                 return;
@@ -4751,7 +4740,6 @@ namespace CalamityMod.NPCs
 
                 WeightedRandom<int> pool = new WeightedRandom<int>();
                 pool.Add(NPCID.None, 1f);
-                pool.Add(NPCType<PodobooKoi>(), 0.05f);
 
                 int typeToSpawn = pool.Get();
                 if (typeToSpawn != NPCID.None)
@@ -4765,7 +4753,7 @@ namespace CalamityMod.NPCs
                     }
                 }
             }
-        }
+        }*/
 
         public override void EditSpawnPool(IDictionary<int, float> pool, NPCSpawnInfo spawnInfo)
         {
@@ -5084,9 +5072,6 @@ namespace CalamityMod.NPCs
             // Eutrophication and Temporal Sadness share the same visual effects
             if (eutrophication || temporalSadness)
                 Eutrophication.DrawEffects(npc, ref drawColor);
-
-            if (fortunesFavor)
-                FortunesFavor.DrawEffects(npc, ref drawColor);
 
             if (godSlayerInferno)
                 GodSlayerInferno.DrawEffects(npc, ref drawColor);

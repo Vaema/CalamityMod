@@ -558,9 +558,6 @@ namespace CalamityMod.CalPlayer
             if (sRegen)
                 Player.lifeRegen += SpiritGlyph.RegenBoost;
 
-            if (fortunesFavor)
-                Player.lifeRegen += FortunesFavor.FortunesFavorRegenBoost;
-
             if (PinkJellyRegen)
                 Player.lifeRegen += LifeJelly.AuraRegenBoost;
 
