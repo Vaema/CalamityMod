@@ -93,7 +93,6 @@ namespace CalamityMod.ILEditing
             On_Player.Teleport += TPOverride;
             On_TileDrawing.DrawSingleTile += GlowMaskTileRender;
             On_Player.PlaceThing_CannonBall += AllowCannonJellyfishUse;
-            On_Player.ItemCheck_ReleaseCritter += ReleaseCritterVariant;
             On_Player.IsItemSlotUnlockedAndUsable += MasterModeCelestialOnionCheck;
             On_Projectile.AI_007_GrapplingHooks += AllowHooksToGrabArenabox;
             On_Collision.SolidCollision_Vector2_int_int += ArenaCollision_Vector2_int_int;

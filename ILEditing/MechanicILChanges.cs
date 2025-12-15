@@ -1778,56 +1778,6 @@ namespace CalamityMod.ILEditing
 
         #endregion
 
-        #region Sunken Sea critter variants
-        public static void ReleaseCritterVariant(On_Player.orig_ItemCheck_ReleaseCritter orig, Player player, Item item)
-        {
-            int mouseX = Main.mouseX + (int)Main.screenPosition.X;
-            int mouseY = Main.mouseY + (int)Main.screenPosition.Y;
-            int tileX = mouseX / 16;
-            int tileY = mouseY / 16;
-            if (item.makeNPC == ModContent.NPCType<BabyGhostBell>())
-            {
-                if (!WorldGen.SolidTile(tileX, tileY))
-                {
-                    int colorType = (int)BabyGhostBell.JellyColor.Blue;
-                    if (item.type == ModContent.ItemType<BabyGhostBellGreenItem>())
-                    {
-                        colorType = (int)BabyGhostBell.JellyColor.Green;
-                    }
-                    if (item.type == ModContent.ItemType<BabyGhostBellPinkItem>())
-                    {
-                        colorType = (int)BabyGhostBell.JellyColor.Pink;
-                    }
-                    if (item.type == ModContent.ItemType<BabyGhostBellRadiantItem>())
-                    {
-                        colorType = (int)BabyGhostBell.JellyColor.Radiant;
-                    }
-                    if (item.type == ModContent.ItemType<BabyGhostBellGoldItem>())
-                    {
-                        colorType = (int)BabyGhostBell.JellyColor.Gold;
-                    }
-                    player.ApplyItemTime(item);
-
-                    if (Main.netMode == NetmodeID.SinglePlayer)
-                    {
-                        int n = NPC.NewNPC(player.GetSource_ReleaseEntity(), mouseX, mouseY, item.makeNPC);
-                        Main.npc[n].ai[1] = colorType;
-                        Main.npc[n].catchItem = item.type;
-                        Main.npc[n].releaseOwner = (short)player.whoAmI;
-                    }
-                    else
-                    {
-                        PlaceAltCritterPacket.Send(player, mouseX, mouseY, item, colorType);
-                    }
-                }
-            }
-            else
-            {
-                orig(player, item);
-            }
-        }
-        #endregion
-
         #region Make Celestial Onion give the Master Mode slot
         public static bool MasterModeCelestialOnionCheck(On_Player.orig_IsItemSlotUnlockedAndUsable orig, Player self, int slot)
         {
