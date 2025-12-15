@@ -391,7 +391,7 @@ namespace CalamityMod.Tiles
                     npc = NPCType<SeaMinnow>();
                     break;
                 case 106:
-                    npc = NPCType<SandProwler>();
+                    npc = NPCType<SeaSerpent1>();
                     break;
                 /*case 107:
                     npc = NPCType<Unused>(); - Formerly Giant Clam

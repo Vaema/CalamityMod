@@ -1143,13 +1143,6 @@ namespace CalamityMod.Systems
 
             #region Seafood Dinner
             r = Recipe.Create(ItemID.SeafoodDinner);
-            r.AddIngredient<PrismaticGuppyRadiantItem>(); // Consistency would be 2, but considering you need only 1 for Golden Delight, I'm leaving this at 1
-            r.AddTile(TileID.CookingPots);
-            r.Register();
-            r.SortAfterFirstRecipesOf(ItemID.SeafoodDinner);
-            r.DisableDecraft();
-
-            r = Recipe.Create(ItemID.SeafoodDinner);
             r.AddIngredient<AldebaranAlewife>(2);
             r.AddTile(TileID.CookingPots);
             r.Register();
@@ -1182,50 +1175,6 @@ namespace CalamityMod.Systems
             r.AddTile(TileID.CookingPots);
             r.Register();
             r.SortAfterFirstRecipesOf(ItemID.SeafoodDinner);
-            r.DisableDecraft();
-            #endregion
-
-            #region Golden Delight
-            r = Recipe.Create(ItemID.GoldenDelight);
-            r.AddIngredient<PrismaticGuppyGoldItem>();
-            r.AddTile(TileID.CookingPots);
-            r.Register();
-            r.SortAfterFirstRecipesOf(ItemID.GoldenDelight);
-            r.DisableDecraft();
-
-            r = Recipe.Create(ItemID.GoldenDelight);
-            r.AddIngredient<BabyGhostBellGoldItem>();
-            r.AddTile(TileID.CookingPots);
-            r.Register();
-            r.SortAfterFirstRecipesOf(ItemID.GoldenDelight);
-            r.DisableDecraft();
-
-            r = Recipe.Create(ItemID.GoldenDelight);
-            r.AddIngredient<ProbesnoutGoldItem>();
-            r.AddTile(TileID.CookingPots);
-            r.Register();
-            r.SortAfterFirstRecipesOf(ItemID.GoldenDelight);
-            r.DisableDecraft();
-
-            r = Recipe.Create(ItemID.GoldenDelight);
-            r.AddIngredient<PolypPanaseaGoldItem>();
-            r.AddTile(TileID.CookingPots);
-            r.Register();
-            r.SortAfterFirstRecipesOf(ItemID.GoldenDelight);
-            r.DisableDecraft();
-
-            r = Recipe.Create(ItemID.GoldenDelight);
-            r.AddIngredient<SeaMinnowGoldItem>();
-            r.AddTile(TileID.CookingPots);
-            r.Register();
-            r.SortAfterFirstRecipesOf(ItemID.GoldenDelight);
-            r.DisableDecraft();
-
-            r = Recipe.Create(ItemID.GoldenDelight);
-            r.AddIngredient<AlphaSeaMinnowGoldItem>();
-            r.AddTile(TileID.CookingPots);
-            r.Register();
-            r.SortAfterFirstRecipesOf(ItemID.GoldenDelight);
             r.DisableDecraft();
             #endregion
 
