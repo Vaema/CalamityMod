@@ -20,6 +20,7 @@ namespace CalamityMod.Tiles.SunkenSea
             Main.tileShine[Type] = 3500;
             Main.tileShine2[Type] = true;
 
+            TileID.Sets.DrawsWalls[Type] = true;
             TileID.Sets.ChecksForMerge[Type] = true;
             DustType = DustID.Water;
             AddMapEntry(new Color(47, 193, 236));
