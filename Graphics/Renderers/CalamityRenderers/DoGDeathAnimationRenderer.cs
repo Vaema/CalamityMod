@@ -76,7 +76,7 @@ namespace CalamityMod.Graphics.Renderers.CalamityRenderers
             spriteBatch.Draw(MainTarget, Vector2.Zero, Color.White);
 
             spriteBatch.End();
-            spriteBatch.Begin(SpriteSortMode.Immediate, BlendState.AlphaBlend, Main.DefaultSamplerState, DepthStencilState.None, Main.Rasterizer);
+            spriteBatch.Begin(SpriteSortMode.Immediate, BlendState.AlphaBlend, Main.DefaultSamplerState, DepthStencilState.None, RasterizerState.CullCounterClockwise);
         }
     }
 }

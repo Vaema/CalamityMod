@@ -60,7 +60,7 @@ namespace CalamityMod.Graphics.Renderers.CalamityRenderers
 
                 // Shadow drawing complete
                 spriteBatch.End();
-                spriteBatch.Begin(SpriteSortMode.Immediate, BlendState.AlphaBlend, Main.DefaultSamplerState, DepthStencilState.None, Main.Rasterizer);
+                spriteBatch.Begin(SpriteSortMode.Immediate, BlendState.AlphaBlend, Main.DefaultSamplerState, DepthStencilState.None, RasterizerState.CullCounterClockwise);
             }
 
             if (deerclopsInactive)

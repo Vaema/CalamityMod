@@ -65,7 +65,7 @@ namespace CalamityMod.Graphics.Renderers
             var renderers = Renderers.Where(renderer => renderer.ShouldDraw && renderer.Layer == drawLayer);
             if (renderers.Any())
             {
-                Main.spriteBatch.Begin(SpriteSortMode.Immediate, BlendState.AlphaBlend, Main.DefaultSamplerState, DepthStencilState.None, Main.Rasterizer);
+                Main.spriteBatch.Begin(SpriteSortMode.Immediate, BlendState.AlphaBlend, Main.DefaultSamplerState, DepthStencilState.None, RasterizerState.CullCounterClockwise);
 
                 foreach (var renderer in renderers)
                     renderer.DrawTarget(Main.spriteBatch);

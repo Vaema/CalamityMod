@@ -169,7 +169,7 @@ namespace CalamityMod.Items.Accessories
 
             using (Main.spriteBatch.Scope())
             {
-                Main.spriteBatch.Begin(SpriteSortMode.Immediate, BlendState.Additive, SamplerState.PointClamp, DepthStencilState.None, Main.Rasterizer, shieldEffect, Matrix.Identity);
+                Main.spriteBatch.Begin(SpriteSortMode.Immediate, BlendState.Additive, SamplerState.PointClamp, DepthStencilState.None, Main.Rasterizer, shieldEffect, Main.Transform);
                 // Fetch shield heat overlay texture (this is the neutrons fed to the shader)
                 HeatTex ??= ModContent.Request<Texture2D>("CalamityMod/ExtraTextures/GreyscaleGradients/Neurons2");
                 Vector2 pos = player.MountedCenter + player.gfxOffY * Vector2.UnitY - Main.screenPosition;
@@ -183,7 +183,7 @@ namespace CalamityMod.Items.Accessories
                 Vector2 origin = shieldFrame.Size() * 0.5f;
                 Main.spriteBatch.End();
 
-                Main.spriteBatch.Begin(SpriteSortMode.Immediate, BlendState.Additive, Main.DefaultSamplerState, DepthStencilState.None, Main.Rasterizer, null, Matrix.Identity);
+                Main.spriteBatch.Begin(SpriteSortMode.Immediate, BlendState.Additive, Main.DefaultSamplerState, DepthStencilState.None, Main.Rasterizer, null, Main.Transform);
                 Main.spriteBatch.Draw(shieldTexture, pos, shieldFrame, shieldColor * 0.5f, player.fullRotation, origin, shieldScale, SpriteEffects.None, 0f);
                 Main.spriteBatch.Draw(shieldTexture, pos, shieldFrame, secondaryEdgeColor * 0.5f, player.fullRotation, origin, shieldScale * 0.95f, SpriteEffects.None, 0f);
                 Main.spriteBatch.Draw(shieldTexture, pos, shieldFrame, shieldColor * 0.5f, player.fullRotation, origin, shieldScale, SpriteEffects.None, 0f);
