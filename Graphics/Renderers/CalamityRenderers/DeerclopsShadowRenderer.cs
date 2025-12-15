@@ -52,12 +52,15 @@ namespace CalamityMod.Graphics.Renderers.CalamityRenderers
                 shader.Parameters["screenSize"].SetValue(Main.ScreenSize.ToVector2());
                 shader.Parameters["maxOpacity"].SetValue(DeerclopsAI.borderScalar);
 
-                spriteBatch.EnterShaderRegion(BlendState.NonPremultiplied, shader);
+                spriteBatch.End();
+                spriteBatch.Begin(SpriteSortMode.Immediate, BlendState.NonPremultiplied, Main.DefaultSamplerState, DepthStencilState.None, Main.Rasterizer, shader, Main.Transform);
+
                 Rectangle rekt = new(Main.screenWidth / 2, Main.screenHeight / 2, Main.screenWidth, Main.screenHeight);
                 spriteBatch.Draw(blackTile.Value, rekt, null, default, 0f, blackTile.Value.Size() * 0.5f, 0, 0f);
 
                 // Shadow drawing complete
-                spriteBatch.ExitShaderRegion();
+                spriteBatch.End();
+                spriteBatch.Begin(SpriteSortMode.Immediate, BlendState.AlphaBlend, Main.DefaultSamplerState, DepthStencilState.None, Main.Rasterizer);
             }
 
             if (deerclopsInactive)

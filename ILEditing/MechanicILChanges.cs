@@ -867,7 +867,7 @@ namespace CalamityMod.ILEditing
         private static void GeneralDrawLayer_DrawForSupportedSystems(GeneralDrawLayer drawLayer)
         {
             GeneralParticleHandler.DrawParticleCollectionsAtSpecificLayer(drawLayer);
-            
+
             Main.spriteBatch.Begin(SpriteSortMode.Immediate, BlendState.AlphaBlend, SamplerState.PointWrap, DepthStencilState.None, Main.Rasterizer, null, Main.GameViewMatrix.TransformationMatrix);
             MetaballManager.DrawMetaballs(drawLayer);
             Main.spriteBatch.End();
@@ -875,8 +875,8 @@ namespace CalamityMod.ILEditing
             PrimitivePixelationSystem.DrawTargetScaled(drawLayer);
 
             PixelationManager.DrawPixelatedTargets(drawLayer);
-            
-            // RendererManager.DrawRendererAtLayer(drawLayer);
+
+            RendererManager.DrawRendererAtLayer(drawLayer);
 
         }
 

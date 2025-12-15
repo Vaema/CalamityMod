@@ -95,7 +95,10 @@ namespace CalamityMod.Graphics.Renderers.CalamityRenderers
             blightShader.UseOpacity(0.7f);
             blightShader.Apply();
 
-            Main.spriteBatch.Draw(MainTarget, Vector2.Zero, Color.White);
+            spriteBatch.Draw(MainTarget, Vector2.Zero, Color.White);
+
+            spriteBatch.End();
+            spriteBatch.Begin(SpriteSortMode.Immediate, BlendState.AlphaBlend, Main.DefaultSamplerState, DepthStencilState.None, Main.Rasterizer);
         }
         #endregion
     }

@@ -178,24 +178,24 @@ namespace CalamityMod.Graphics.Renderers.CalamityRenderers
             if (RenderersToDrawThisFrame.Count <= 0)
                 return;
 
-            var matrix = Main.GameViewMatrix.TransformationMatrix;
-            using (spriteBatch.Scope())
+            spriteBatch.End();
+            spriteBatch.Begin(SpriteSortMode.Immediate, BlendState.AlphaBlend, SamplerState.PointClamp, DepthStencilState.None, Main.Rasterizer, null, Main.Transform);
+
+            foreach (var renderer in RenderersToDrawThisFrame)
             {
-                spriteBatch.Begin(SpriteSortMode.Immediate, BlendState.AlphaBlend, SamplerState.PointClamp, DepthStencilState.None, Main.Rasterizer, null, matrix);
-                foreach (var renderer in RenderersToDrawThisFrame)
-                {
-                    if (!Targets.TryGetValue(renderer, out var target))
-                        continue;
+                if (!Targets.TryGetValue(renderer, out var target))
+                    continue;
 
-                    // If it is dyeable, and a dye exists, apply it. This has null safety, as dyeShader can be null here.
-                    if (renderer.ShaderIsDyeable && Dyes.TryGetValue(renderer, out var dyeID) && dyeID > 0)
-                        GameShaders.Armor.Apply(dyeID, null, new(target, Vector2.Zero, new Rectangle(0, 0, target.Width, target.Height), Color.White));
+                // If it is dyeable, and a dye exists, apply it. This has null safety, as dyeShader can be null here.
+                if (renderer.ShaderIsDyeable && Dyes.TryGetValue(renderer, out var dyeID) && dyeID > 0)
+                    GameShaders.Armor.Apply(dyeID, null, new(target, Vector2.Zero, new Rectangle(0, 0, target.Width, target.Height), Color.White));
 
-                    // Draw the assosiated target that has been drawn to.
-                    spriteBatch.Draw(target, Vector2.Zero, Color.White with { A = 0 });
-                }
-                spriteBatch.End();
+                // Draw the assosiated target that has been drawn to.
+                spriteBatch.Draw(target, Vector2.Zero, Color.White with { A = 0 });
             }
+
+            spriteBatch.End();
+            spriteBatch.Begin(SpriteSortMode.Immediate, BlendState.AlphaBlend, Main.DefaultSamplerState, DepthStencilState.None, Main.Rasterizer);
         }
         #endregion
     }

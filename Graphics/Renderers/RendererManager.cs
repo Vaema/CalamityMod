@@ -62,13 +62,16 @@ namespace CalamityMod.Graphics.Renderers
         #region Drawing
         internal static void DrawRendererAtLayer(GeneralDrawLayer drawLayer)
         {
-            Main.spriteBatch.Begin(SpriteSortMode.Immediate, BlendState.AlphaBlend, Main.DefaultSamplerState, DepthStencilState.None, RasterizerState.CullCounterClockwise);
-
             var renderers = Renderers.Where(renderer => renderer.ShouldDraw && renderer.Layer == drawLayer);
-            foreach (var renderer in renderers)
-                renderer.DrawTarget(Main.spriteBatch);
+            if (renderers.Any())
+            {
+                Main.spriteBatch.Begin(SpriteSortMode.Immediate, BlendState.AlphaBlend, Main.DefaultSamplerState, DepthStencilState.None, Main.Rasterizer);
 
-            Main.spriteBatch.End();
+                foreach (var renderer in renderers)
+                    renderer.DrawTarget(Main.spriteBatch);
+
+                Main.spriteBatch.End();
+            }
         }
 
         private void DrawToTargets(On_Main.orig_CheckMonoliths orig)
@@ -91,6 +94,8 @@ namespace CalamityMod.Graphics.Renderers
 
                 using (Main.spriteBatch.Scope())
                 {
+                    Main.instance.GraphicsDevice.SetRenderTarget(renderer.MainTarget);
+                    Main.instance.GraphicsDevice.Clear(Color.Transparent);
                     Main.spriteBatch.Begin(
                         SpriteSortMode.Deferred,
                         BlendState.AlphaBlend,
@@ -100,7 +105,6 @@ namespace CalamityMod.Graphics.Renderers
                         null,
                         Main.GameViewMatrix.TransformationMatrix
                     );
-                    renderer.MainTarget.SwapTo(Color.Transparent);
                     renderer.DrawToTarget(Main.spriteBatch);
                     Main.spriteBatch.End();
                 }
