@@ -978,12 +978,7 @@ HowlsHeart: {
 
 IlmerisSpark: {
 	DisplayName: Ilmeris' Spark
-	Tooltip:
-		'''
-		Attacks inflict Static Discharge while underwater
-		Taking damage causes the enemy to be shocked
-		Shocked enemies constantly release sparks
-		'''
+	Tooltip: Taking damage releases a blast of sparks
 }
 
 InfectedJewel: {

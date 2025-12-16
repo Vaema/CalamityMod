@@ -3866,9 +3866,6 @@ namespace CalamityMod.NPCs
             if (target.Calamity().sulphurSet)
                 npc.AddBuff(BuffID.Poisoned, 60);
 
-            if (target.Calamity().ilSpark)
-                shocked = 120;
-
             if (target.Transformation().Type == ItemType<Popo>())
             {
                 if (npc.type == NPCID.Demon || npc.type == NPCID.VoodooDemon || npc.type == NPCID.RedDevil)

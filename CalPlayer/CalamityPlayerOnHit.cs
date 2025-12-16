@@ -1258,11 +1258,6 @@ namespace CalamityMod.CalPlayer
                 target.AddBuff(BuffType<HadopelagicPressure>(), 180);
             if (sulphurSet)
                 target.AddBuff(BuffID.Poisoned, SulphurousHelmet.SetBonusPoisonDuration);
-            if (ilSpark && Player.Calamity().countsAsAnyWet)
-            {
-                int duration = 60;
-                target.AddBuff(BuffType<StaticDischarge>(), duration);
-            }
             if (corrosiveSpine)
             {
                 target.AddBuff(BuffType<Irradiated>(), 120);

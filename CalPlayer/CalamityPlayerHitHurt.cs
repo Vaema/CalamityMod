@@ -40,6 +40,7 @@ using CalamityMod.NPCs.Providence;
 using CalamityMod.NPCs.SupremeCalamitas;
 using CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses;
 using CalamityMod.Particles;
+using CalamityMod.Projectiles.Pets;
 using CalamityMod.Projectiles.Ranged;
 using CalamityMod.Projectiles.Rogue;
 using CalamityMod.Projectiles.Typeless;
@@ -51,8 +52,8 @@ using Terraria;
 using Terraria.Audio;
 using Terraria.Chat;
 using Terraria.DataStructures;
-using Terraria.Graphics.Shaders;
 using Terraria.GameContent.Creative;
+using Terraria.Graphics.Shaders;
 using Terraria.ID;
 using Terraria.Localization;
 using Terraria.ModLoader;
@@ -1231,8 +1232,6 @@ namespace CalamityMod.CalPlayer
                 {
                     if (sulphurSet)
                         Main.npc[proj.Calamity().ParentNPCIndex].AddBuff(BuffID.Poisoned, SulphurousHelmet.SetBonusPoisonDuration);
-                    if (ilSpark)
-                        Main.npc[proj.Calamity().ParentNPCIndex].Calamity().shocked = 120;
                 }   
             }
 
@@ -2457,19 +2456,38 @@ namespace CalamityMod.CalPlayer
                 }
                 if (ilSpark)
                 {
-                    SoundEngine.PlaySound(SoundID.Item93, Player.Center);
-
-                    // Only visual effects are done here
-                    // The actual spark spawning is now handled with the shocked variable in CalamityGlobalNPC
-
-                    SeaFoamParticle boom = new(Player.Center, Vector2.Zero, new Color(89, 239, 247), new Color(56, 158, 209), 1f, 200f, Main.rand.NextBool() ? -1f : 1f);
-                    GeneralParticleHandler.SpawnParticle(boom);
-
-                    for (int e = 0; e < 6; e++)
+                    var source = Player.GetSource_Accessory(FindAccessory(ModContent.ItemType<HideofAstrumDeus>()));
+                    if (hurtInfo.Damage > 0)
                     {
-                        Vector2 dustVel = Main.rand.NextVector2CircularEdge(1f, 1f) * Main.rand.NextFloat(4.5f, 5.25f);
-                        Dust electric = Dust.NewDustPerfect(Player.Center, DustID.Electric, dustVel, Scale: 0.75f);
-                        electric.noGravity = true;
+                        SoundEngine.PlaySound(SoundID.Item93, Player.Center);
+                        float spread = 45f * 0.0174f;
+                        double startAngle = Math.Atan2(Player.velocity.X, Player.velocity.Y) - spread / 2;
+                        double deltaAngle = spread / 8f;
+                        double offsetAngle;
+
+                        // Start with base damage, then apply the best damage class you can
+                        int sDamage = 6;
+                        if (transformer)
+                            sDamage += 42;
+                        sDamage = (int)Player.GetBestClassDamage().ApplyTo(sDamage);
+
+                        if (Player.whoAmI == Main.myPlayer)
+                        {
+                            for (int i = 0; i < 4; i++)
+                            {
+                                offsetAngle = startAngle + deltaAngle * (i + i * i) / 2f + 32f * i;
+                                int spark1 = Projectile.NewProjectile(source, Player.Center.X, Player.Center.Y, (float)(Math.Sin(offsetAngle) * 5f), (float)(Math.Cos(offsetAngle) * 5f), ModContent.ProjectileType<GenericElectricSpark>(), sDamage, 1.25f, Player.whoAmI, 0f, 1);
+                                int spark2 = Projectile.NewProjectile(source, Player.Center.X, Player.Center.Y, (float)(-Math.Sin(offsetAngle) * 5f), (float)(-Math.Cos(offsetAngle) * 5f), ModContent.ProjectileType<GenericElectricSpark>(), sDamage, 1.25f, Player.whoAmI, 0f, 1);
+                                if (spark1.WithinBounds(Main.maxProjectiles))
+                                {
+                                    Main.projectile[spark1].timeLeft = 120;
+                                }
+                                if (spark2.WithinBounds(Main.maxProjectiles))
+                                {
+                                    Main.projectile[spark2].timeLeft = 120;
+                                }
+                            }
+                        }
                     }
                 }
                 if (rBrain)
