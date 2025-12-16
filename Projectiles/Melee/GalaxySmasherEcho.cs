@@ -84,7 +84,7 @@ namespace CalamityMod.Projectiles.Melee
 
             Vector2 offset = new Vector2(12, 0).RotatedByRandom(MathHelper.ToRadians(360f));
             Vector2 velOffset = new Vector2(4, 0).RotatedBy(offset.ToRotation());
-            Dust dust = Dust.NewDustPerfect(Projectile.Center + offset, 278, (-Projectile.velocity + velOffset) * Main.rand.NextFloat(0.3f, 1f), 0, default, Main.rand.NextFloat(0.35f, 0.75f));
+            Dust dust = Dust.NewDustPerfect(Projectile.Center + offset, DustID.FireworksRGB, (-Projectile.velocity + velOffset) * Main.rand.NextFloat(0.3f, 1f), 0, default, Main.rand.NextFloat(0.35f, 0.75f));
             dust.noGravity = true;
             dust.color = Main.rand.NextBool() ? Color.Magenta : Color.Aqua;
 
@@ -110,8 +110,8 @@ namespace CalamityMod.Projectiles.Melee
         public override bool PreKill(int timeLeft)
         {
             Player player = Main.player[Projectile.owner];
-            //This is what we call fucking IMPACT (3).
-            Main.player[Projectile.owner].Calamity().GeneralScreenShakePower = 15;
+            // This is what we call fucking IMPACT (3).
+            Main.player[Projectile.owner].SetScreenshake(15f);
             if (Main.zenithWorld)
                 SoundEngine.PlaySound(Kunk, Projectile.Center);
             else

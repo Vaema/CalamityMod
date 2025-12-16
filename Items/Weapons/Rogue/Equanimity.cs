@@ -1,6 +1,4 @@
-﻿using System.Linq;
-using CalamityMod.Items.Materials;
-using CalamityMod.Projectiles.Rogue;
+﻿using CalamityMod.Projectiles.Rogue;
 using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.Audio;

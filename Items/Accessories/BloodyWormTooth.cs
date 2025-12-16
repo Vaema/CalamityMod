@@ -16,6 +16,7 @@ namespace CalamityMod.Items.Accessories
             Item.value = CalamityGlobalItem.RarityOrangeBuyPrice;
             Item.rare = ItemRarityID.Orange;
             Item.accessory = true;
+            Item.expert = true;
         }
 
         public override void UpdateAccessory(Player player, bool hideVisual)
@@ -30,7 +31,8 @@ namespace CalamityMod.Items.Accessories
                 AddIngredient<RottenBrain>().
                 AddTile(TileID.TinkerersWorkbench).
                 AddCondition(Condition.InGraveyard).
-                Register();
+                Register()
+                .DisableDecraft();
         }
     }
 }

@@ -5,10 +5,6 @@ using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
 using Terraria.GameContent;
-using CalamityMod.Projectiles.Ranged;
-using static CalamityMod.NPCs.SunkenSea.LostShoal;
-using static Terraria.GameContent.Animations.IL_Actions.NPCs;
-using CalamityMod.Buffs.DamageOverTime;
 
 namespace CalamityMod.Projectiles.Enemy
 {

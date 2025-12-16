@@ -22,7 +22,7 @@ namespace CalamityMod.Tiles.FloralParadise
             TileObjectData.addTile(Type);
 
             HitSound = SoundID.Grass;
-            DustType = 2;
+            DustType = DustID.Grass;
             AddMapEntry(new Color(28, 216, 94));
         }
 

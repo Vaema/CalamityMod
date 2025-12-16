@@ -68,7 +68,7 @@ namespace CalamityMod.Items.Weapons.Ranged
             ModContent.ProjectileType<ContagionArrow>(),
             ModContent.ProjectileType<CorrodedShell>(),
             ModContent.ProjectileType<DaemonsFlameArrow>(),
-            ModContent.ProjectileType<DWArrow>(),
+            ModContent.ProjectileType<FriendlyLaserWallBeam>(), // Not ranged
             ModContent.ProjectileType<DrataliornusFlame>(),
             ModContent.ProjectileType<FlareBat>(),
             ModContent.ProjectileType<ImmolationArrow>(),
@@ -147,10 +147,15 @@ namespace CalamityMod.Items.Weapons.Ranged
                 // Now for the special conditions to fix stuff...
                 if (projectile.WithinBounds(Main.maxProjectiles))
                 {
-                    if (projType == ProjectileID.Leaf || projType == ModContent.ProjectileType<SlimeStream>())
+                    if (projType == ProjectileID.Leaf || projType == ModContent.ProjectileType<SlimeStream>() || projType == ModContent.ProjectileType<FriendlyLaserWallBeam>())
                         Main.projectile[projectile].DamageType = DamageClass.Ranged;
                     if (projType == ModContent.ProjectileType<AstrealArrow>() || projType == ModContent.ProjectileType<CorrodedShell>() || projType == ModContent.ProjectileType<Shell>())
                         Main.projectile[projectile].velocity /= 2;
+                    if (projType == ModContent.ProjectileType<FriendlyLaserWallBeam>())
+                    {
+                        Main.projectile[projectile].ai[0] = -0.25f;
+                        Main.projectile[projectile].ai[1] = 1f;
+                    }
                 }
             }
             return false;

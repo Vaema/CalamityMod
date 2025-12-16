@@ -1,5 +1,4 @@
-﻿using CalamityMod.CalPlayer;
-using CalamityMod.Items.Materials;
+﻿using CalamityMod.Items.Materials;
 using CalamityMod.Rarities;
 using Terraria;
 using Terraria.ID;
@@ -23,7 +22,7 @@ namespace CalamityMod.Items.Armor.Tarragon
         public static int SetBonusAggroBoost = 800;
         public static int TarraLifeDuration = CalamityUtils.SecondsToFrames(5);
         public static int TarraLifeRegenBoost = 3;
-        public static double CloakContactDamageReduction = 0.5D;
+        public static float CloakContactDamageReduction = 0.5f;
         public static int CloakDuration = CalamityUtils.SecondsToFrames(10);
         public static int CloakCooldown = CalamityUtils.SecondsToFrames(30);
 

@@ -1,15 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.IO;
 using CalamityMod.NPCs.TownNPCs;
 using Terraria;
 
 namespace CalamityMod.Packets
 {
-    public sealed class SyncAndroombaSolutionPacket : CalamityPacket
+    internal sealed class SyncAndroombaSolutionPacket : CalamityPacket
     {
         public static SyncAndroombaSolutionPacket Instance { get; private set; }
 

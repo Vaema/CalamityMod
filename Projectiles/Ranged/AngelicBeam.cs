@@ -104,8 +104,8 @@ namespace CalamityMod.Projectiles.Ranged
             }
         }
 
-        public Color LaserColor(float completionRatio) => Main.hslToRgb(0.08f + 0.05f * completionRatio + 0.05f * MathF.Sin(Main.GlobalTimeWrappedHourly * 5f), 1f, 0.7f) * 0.8f * Projectile.Opacity;
-        public float LaserWidth(float completionRatio) => 30f * Projectile.Opacity * Projectile.scale;
+        public Color LaserColor(float completionRatio, Vector2 vertexPos) => Main.hslToRgb(0.08f + 0.05f * completionRatio + 0.05f * MathF.Sin(Main.GlobalTimeWrappedHourly * 5f), 1f, 0.7f) * 0.8f * Projectile.Opacity;
+        public float LaserWidth(float completionRatio, Vector2 vertexPos) => 30f * Projectile.Opacity * Projectile.scale;
 
         public override bool PreDraw(ref Color lightColor)
         {

@@ -6,7 +6,6 @@ using Microsoft.Xna.Framework.Input;
 using ReLogic.Content;
 using Terraria;
 using Terraria.ModLoader;
-using static Microsoft.Xna.Framework.Input.Keys;
 
 namespace CalamityMod.UI
 {

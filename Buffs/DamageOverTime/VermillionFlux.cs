@@ -61,7 +61,7 @@ namespace CalamityMod.Buffs.DamageOverTime
                 }
 
                 if (Main.rand.NextBool())
-                    Dust.NewDustPerfect(modPlayer.RandomDebuffVisualSpot, 219, new Vector2(4f, 4f).RotatedByRandom(100) * Main.rand.NextFloat(0.3f, 0.7f), 0, default, Main.rand.NextFloat(0.2f, 0.6f));
+                    Dust.NewDustPerfect(modPlayer.RandomDebuffVisualSpot, DustID.Fireworks, new Vector2(4f, 4f).RotatedByRandom(100) * Main.rand.NextFloat(0.3f, 0.7f), 0, default, Main.rand.NextFloat(0.2f, 0.6f));
             }
         }
 
@@ -87,7 +87,7 @@ namespace CalamityMod.Buffs.DamageOverTime
             }
 
             if (Main.rand.NextBool(3))
-                Dust.NewDustPerfect(npcSize, 219, new Vector2(4f, 4f).RotatedByRandom(100) * Main.rand.NextFloat(0.3f, 0.7f), 0, default, Main.rand.NextFloat(0.2f, 0.6f));
+                Dust.NewDustPerfect(npcSize, DustID.Fireworks, new Vector2(4f, 4f).RotatedByRandom(100) * Main.rand.NextFloat(0.3f, 0.7f), 0, default, Main.rand.NextFloat(0.2f, 0.6f));
 
             Lighting.AddLight(npc.Center, Color.Red.ToVector3());
         }

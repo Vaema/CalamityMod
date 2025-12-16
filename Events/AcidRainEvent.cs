@@ -102,7 +102,7 @@ namespace CalamityMod.Events
         /// Broadcasts some text from a given localization key.
         /// </summary>
         /// <param name="localizationKey">The key to write</param>
-        public static void BroadcastEventText(string localizationKey) => CalamityUtils.DisplayLocalizedText(localizationKey, TextColor);
+        public static void BroadcastEventText(string localizationKey) => CalamityUtils.BroadcastLocalizedText(localizationKey, TextColor);
 
         public static int NeededEnemyKills
         {

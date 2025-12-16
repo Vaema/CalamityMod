@@ -1,11 +1,9 @@
 ﻿using System;
-using CalamityMod.Items;
 using CalamityMod.Items.SummonItems;
 using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.DataStructures;
 using Terraria.ID;
-using Terraria.Localization;
 using Terraria.ModLoader;
 
 namespace CalamityMod.Projectiles.Typeless
@@ -31,7 +29,7 @@ namespace CalamityMod.Projectiles.Typeless
         public override bool PreAI()
         {
             // Snap if the snail is shelled, or just nowhere to be found
-            if (!Parent.active || Owner.ActiveItem().fishingPole <= 0 || Parent == null || Parent.frame < 6)
+            if (!Parent.active || Owner.HeldItem.fishingPole <= 0 || Parent == null || Parent.frame < 6)
             {
                 Projectile.Kill();
                 return false;
@@ -72,7 +70,7 @@ namespace CalamityMod.Projectiles.Typeless
                         {
                             Item dummyCatch = new Item();
                             dummyCatch.SetDefaults((int)Projectile.localAI[1]);
-                            if (dummyCatch.rare < 0)
+                            if (dummyCatch.rare < ItemRarityID.White)
                                 consume = false;
                         }
                     }

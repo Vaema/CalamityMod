@@ -1,6 +1,5 @@
 ﻿using CalamityMod.Items.Materials;
 using CalamityMod.Projectiles.Melee;
-using CalamityMod.Tiles.Furniture.CraftingStations;
 using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.ID;

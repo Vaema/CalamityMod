@@ -47,8 +47,8 @@ namespace CalamityMod.Items.Weapons.Magic
             CreateRecipe().
                 AddIngredient(ItemID.SpellTome).
                 AddIngredient<CosmicDischarge>().
-                AddIngredient<StaffoftheMechworm>(2).
-                AddIngredient<Excelsus>(2).
+                AddIngredient<VoidEaterMarionette>(2).
+                AddIngredient<MawOfInfinity>(2).
                 AddIngredient<ShadowspecBar>(5).
                 AddIngredient<CosmiliteBar>(33).
                 AddIngredient<AscendantSpiritEssence>(11).

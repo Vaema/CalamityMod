@@ -1,12 +1,10 @@
 ﻿using CalamityMod.Buffs.DamageOverTime;
 using CalamityMod.Graphics.Primitives;
 using CalamityMod.NPCs;
-using CalamityMod.Particles;
 using CalamityMod.Projectiles.BaseProjectiles;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using ReLogic.Content;
-using Steamworks;
 using System.Collections.Generic;
 using Terraria;
 using Terraria.Audio;
@@ -85,9 +83,7 @@ namespace CalamityMod.Projectiles.Melee
         public override void ExtraBehavior()
         {
             Projectile.rotation = Projectile.velocity.ToRotation();
-
-            if (Owner.Calamity().GeneralScreenShakePower < 3f)
-                Owner.Calamity().GeneralScreenShakePower = 3f;
+            Owner.SetScreenshake(3f);
 
             if (HitSoundCooldown > 0)
                 HitSoundCooldown--;
@@ -105,8 +101,8 @@ namespace CalamityMod.Projectiles.Melee
         }
 
 
-        public float LaserWidthFunction(float _) => Projectile.scale * Projectile.width;
-        public Color LaserColorFunction(float completionRatio) => Main.DiscoColor;
+        public float LaserWidthFunction(float _, Vector2 vertexPos) => Projectile.scale * Projectile.width;
+        public Color LaserColorFunction(float completionRatio, Vector2 vertexPos) => Main.DiscoColor;
         public override bool PreDraw(ref Color lightColor)
         {
             // This should never happen, but just in case...

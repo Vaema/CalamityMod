@@ -1,24 +1,28 @@
 ﻿using System;
 using CalamityMod.Enums;
 using CalamityMod.Items.Accessories;
+using CalamityMod.Particles;
 using Microsoft.Xna.Framework;
 using Terraria;
+using Terraria.Audio;
 using Terraria.DataStructures;
 using Terraria.Graphics.Shaders;
-using Terraria.ID;
 using Terraria.ModLoader;
-using CalamityMod.Particles;
-using Terraria.Audio;
 
 namespace CalamityMod.CalPlayer.Dashes
 {
     public class DeepDiverDash : PlayerDashEffect
     {
-        public static new string ID => "Deep Diver";
+        public static new string ID { get; private set; }
 
         public override DashCollisionType CollisionType => DashCollisionType.ShieldSlam;
 
         public override bool IsOmnidirectional => false;
+
+        public override void Load()
+        {
+            ID = DashID;
+        }
 
         public override float CalculateDashSpeed(Player player) => 20f;
         public int Time = 0;

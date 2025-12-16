@@ -1,9 +1,9 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using ReLogic.Content;
 using Terraria;
 using Terraria.DataStructures;
 using Terraria.ID;
-using Terraria.Localization;
 using Terraria.ModLoader;
 using Terraria.ObjectData;
 
@@ -11,6 +11,8 @@ namespace CalamityMod.Tiles.FurnitureAncient
 {
     public class AncientBasin : ModTile
     {
+        public Asset<Texture2D> FlameTexture;
+
         int animationFrame = 0;
 
         public override void SetStaticDefaults()
@@ -67,7 +69,8 @@ namespace CalamityMod.Tiles.FurnitureAncient
 
         public override void PostDraw(int i, int j, SpriteBatch spriteBatch)
         {
-            CalamityUtils.DrawStaticFlameEffect(ModContent.Request<Texture2D>("CalamityMod/Tiles/FurnitureAncient/AncientBasinFlame").Value, i, j, offsetY: animationFrame * AnimationFrameHeight);
+            FlameTexture ??= ModContent.Request<Texture2D>("CalamityMod/Tiles/FurnitureAncient/AncientBasinFlame");
+            CalamityUtils.DrawStaticFlameEffect(FlameTexture.Value, i, j, offsetY: animationFrame * AnimationFrameHeight);
         }
 
         public override void DrawEffects(int i, int j, SpriteBatch spriteBatch, ref TileDrawInfo drawData)

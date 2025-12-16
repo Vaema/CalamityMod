@@ -1,5 +1,6 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using ReLogic.Content;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
@@ -8,6 +9,8 @@ namespace CalamityMod.Tiles.FurnitureStratus
 {
     public class StratusCandle : ModTile
     {
+        public Asset<Texture2D> FlameTexture;
+
         public override void SetStaticDefaults() => this.SetUpCandle(ModContent.ItemType<Items.Placeables.FurnitureStratus.StratusCandle>(), true);
 
         public override bool CreateDust(int i, int j, ref int type)
@@ -59,7 +62,8 @@ namespace CalamityMod.Tiles.FurnitureStratus
 
         public override void PostDraw(int i, int j, SpriteBatch spriteBatch)
         {
-            CalamityUtils.DrawFlameEffect(ModContent.Request<Texture2D>("CalamityMod/Tiles/FurnitureStratus/StratusCandleFlame").Value, i, j, 0, -7);
+            FlameTexture ??= ModContent.Request<Texture2D>("CalamityMod/Tiles/FurnitureStratus/StratusCandleFlame");
+            CalamityUtils.DrawFlameEffect(FlameTexture.Value, i, j, 0, -7);
         }
     }
 }

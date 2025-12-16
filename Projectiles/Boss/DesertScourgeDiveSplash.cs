@@ -1,10 +1,5 @@
-﻿using System;
-using System.IO;
-using CalamityMod.Dusts;
-using CalamityMod.World;
-using Microsoft.Xna.Framework;
+﻿using Microsoft.Xna.Framework;
 using Terraria;
-using Terraria.Audio;
 using Terraria.ID;
 using Terraria.ModLoader;
 

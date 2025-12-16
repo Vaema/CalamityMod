@@ -19,9 +19,9 @@ using CalamityMod.Items.Armor.Reaver;
 using CalamityMod.Items.Potions.Alcohol;
 using CalamityMod.Items.VanillaArmorChanges;
 using CalamityMod.NPCs;
-using CalamityMod.NPCs.NormalNPCs;
 using CalamityMod.NPCs.PlagueEnemies;
 using CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses;
+using CalamityMod.NPCs.NormalNPCs;
 using CalamityMod.Particles;
 using CalamityMod.Projectiles.Boss;
 using CalamityMod.Projectiles.Healing;
@@ -32,6 +32,7 @@ using CalamityMod.Projectiles.Summon;
 using CalamityMod.Projectiles.Typeless;
 using CalamityMod.Projectiles.VanillaProjectileOverrides;
 using CalamityMod.Systems.Collections;
+using CalamityMod.Systems.Mechanic;
 using CalamityMod.Tiles.Abyss;
 using CalamityMod.Tiles.Astral;
 using CalamityMod.Tiles.AstralDesert;
@@ -123,7 +124,14 @@ namespace CalamityMod.Projectiles
         public bool showArcFlash = true;
         /// <summary> Cooldown variable for Arc Flash Ring's lightning. Primarily used for lingering projectiles and minions. </summary>
         public int arcFlashCooldown = 0;
-
+        /// <summary>
+        /// The location of this projectile in an arena box, used for maintaining this when the arena box moves.
+        /// </summary>
+        public Vector2 arenaBoxPosition = Vector2.Zero;
+        /// <summary>
+        /// Which Box this projectile is attached to
+        /// </summary>
+        public ArenaWallSystem.Box arenaBox = null;
         /// <summary>
         /// If true, adds a brimstone trail to the projectile, and makes it inflict Brimstone Flames.<br/>
         /// Used by Animosity.
@@ -178,7 +186,7 @@ namespace CalamityMod.Projectiles
         public bool betterLifeBullet2 = false;
         /// <summary>
         /// If set to a value greater than 0, causes this projectile to gain homing with a range equal to the value in pixels.<br/>
-        /// Used by Arterial Assault.
+        /// Used by Arterial Assault, Deific Amulet's stars, and certain sand projectiles from the Sand Gun.
         /// </summary>
         public float conditionalHomingRange = 0f;
 
@@ -273,11 +281,13 @@ namespace CalamityMod.Projectiles
         /// <summary>
         /// Custom update priority.<br/>
         /// Calamity sorts projectiles by their update priority to fix otherwise absurdly difficult to resolve visual bugs on certain weapons.<br/>
-        /// Examples include Mechworm segments detaching or Rancor's laser beam being offset from the magic circle.
+        /// Examples include Void Eater Marionette segments detaching or Rancor's laser beam being offset from the magic circle.
         /// </summary>
         public float UpdatePriority = 0f;
 
         public int BloodstoneOrbValue = 0;
+
+        public int HomingTarget = -1;
 
         #region On Spawn
         public override void OnSpawn(Projectile projectile, IEntitySource source)
@@ -324,13 +334,14 @@ namespace CalamityMod.Projectiles
                 // Nerf Cursed Dart flame damage by 50%
                 if (parent.type == ProjectileID.CursedDart && projectile.type == ProjectileID.CursedDartFlame)
                     projectile.damage /= 2;
+
+                // Nerf Chlorophyte armor's set bonus crystal damage by 30%
+                if (parent.type == ProjectileID.CrystalLeaf && projectile.type == ProjectileID.CrystalLeafShot)
+                    projectile.damage = (int)(projectile.damage * 0.7f);
             }
 
             if (source is EntitySource_OnHit e)
             {
-                // Nerf Orichalcum armor's set bonus petal damage by 25%
-                if (e.Context == "SetBonus_Orichalcum")
-                    projectile.damage = (int)(projectile.damage * 0.75f);
                 // Nerf Spectre armor's set bonus soul damage by 50%
                 if (e.Context == "SetBonus_GhostHurt")
                     projectile.damage /= 2;
@@ -367,6 +378,8 @@ namespace CalamityMod.Projectiles
         {
             if (projectile.bobber && projectile.type != ModContent.ProjectileType<VictideBobber>() && RunFishingMinigames(projectile))
                 return false;
+            //Reset the Homing Target immediately before AI can re-set it on applicable projectiles
+            HomingTarget = -1;
             #region Vanilla Summons AI Changes
 
             //
@@ -444,7 +457,7 @@ namespace CalamityMod.Projectiles
                     if (Main.rand.NextBool(24))
                         SoundEngine.PlaySound(SoundID.DD2_BetsyFireballShot, projectile.Center);
 
-                    Dust fire = Dust.NewDustPerfect(projectile.Center + Main.rand.NextVector2Circular(projectile.width, projectile.height) * 0.42f, 267);
+                    Dust fire = Dust.NewDustPerfect(projectile.Center + Main.rand.NextVector2Circular(projectile.width, projectile.height) * 0.42f, DustID.RainbowMk2);
                     fire.color = Color.Lerp(Color.Orange, Color.Red, Main.rand.NextFloat(0.45f, 1f));
                     fire.scale = Main.rand.NextFloat(1.4f, 1.65f);
                     fire.fadeIn = 0.5f;
@@ -1440,7 +1453,7 @@ namespace CalamityMod.Projectiles
                     {
                         float x2 = projectile.position.X - projectile.velocity.X / (float)totalDust * (float)i;
                         float y2 = projectile.position.Y - projectile.velocity.Y / (float)totalDust * (float)i;
-                        int dust = Dust.NewDust(new Vector2(x2, y2), 1, 1, 75);
+                        int dust = Dust.NewDust(new Vector2(x2, y2), 1, 1, DustID.CursedTorch);
                         Main.dust[dust].alpha = projectile.alpha;
                         Main.dust[dust].position.X = x2;
                         Main.dust[dust].position.Y = y2;
@@ -2057,14 +2070,14 @@ namespace CalamityMod.Projectiles
                         projectile.rotation = projectile.velocity.ToRotation();
                         for (int dustIndex = 0; dustIndex < 5; dustIndex++)
                         {
-                            Dust dust = Dust.NewDustPerfect(projectile.Center + Main.rand.NextVector2Circular(24f, 24f), 16, projectile.velocity * MathHelper.Lerp(0.2f, 0.7f, Main.rand.NextFloat()));
+                            Dust dust = Dust.NewDustPerfect(projectile.Center + Main.rand.NextVector2Circular(24f, 24f), DustID.Cloud, projectile.velocity * MathHelper.Lerp(0.2f, 0.7f, Main.rand.NextFloat()));
                             dust.velocity += Main.rand.NextVector2Circular(0.5f, 0.5f);
                             dust.scale = 0.8f + Main.rand.NextFloat() * 0.5f;
                         }
 
                         for (int dustIndex = 0; dustIndex < 5; dustIndex++)
                         {
-                            Dust dust = Dust.NewDustPerfect(projectile.Center + Main.rand.NextVector2Circular(24f, 24f), 16, Main.rand.NextVector2Circular(2f, 2f) + projectile.velocity * MathHelper.Lerp(0.2f, 0.5f, Main.rand.NextFloat()));
+                            Dust dust = Dust.NewDustPerfect(projectile.Center + Main.rand.NextVector2Circular(24f, 24f), DustID.Cloud, Main.rand.NextVector2Circular(2f, 2f) + projectile.velocity * MathHelper.Lerp(0.2f, 0.5f, Main.rand.NextFloat()));
                             dust.velocity += Main.rand.NextVector2Circular(0.5f, 0.5f);
                             dust.scale = 0.8f + Main.rand.NextFloat() * 0.5f;
                             dust.fadeIn = 1f;
@@ -3632,7 +3645,7 @@ namespace CalamityMod.Projectiles
                 {
                     if (projectile.timeLeft > 570) //all of these have a time left of 600 or 660
                     {
-                        if (player.ActiveItem().type == ItemID.BeesKnees)
+                        if (player.HeldItem.type == ItemID.BeesKnees)
                             projectile.DamageType = DamageClass.Ranged;
                     }
                 }
@@ -4224,7 +4237,7 @@ namespace CalamityMod.Projectiles
 
                         for (int i = 0; i < 2; ++i)
                         {
-                            Dust dust = Dust.NewDustPerfect(projectile.Center + projectile.velocity, 261, -projectile.velocity * Main.rand.NextFloat(0.1f, 0.9f));
+                            Dust dust = Dust.NewDustPerfect(projectile.Center + projectile.velocity, DustID.AncientLight, -projectile.velocity * Main.rand.NextFloat(0.1f, 0.9f));
                             dust.noGravity = true;
                             dust.scale = Main.rand.NextFloat(0.65f, 0.9f);
                             dust.alpha = 100;
@@ -4247,7 +4260,7 @@ namespace CalamityMod.Projectiles
 
                         for (int i = 0; i < 3; ++i)
                         {
-                            Dust dust = Dust.NewDustPerfect(projectile.Center + spawnOffset, 278, projectile.velocity * Main.rand.NextFloat(0.05f, 0.2f));
+                            Dust dust = Dust.NewDustPerfect(projectile.Center + spawnOffset, DustID.FireworksRGB, projectile.velocity * Main.rand.NextFloat(0.05f, 0.2f));
                             dust.noGravity = true;
                             dust.scale = Main.rand.NextFloat(0.35f, 0.45f);
                             dust.color = color;
@@ -4276,7 +4289,7 @@ namespace CalamityMod.Projectiles
 
                         for (int i = 0; i < 3; ++i)
                         {
-                            Dust dust = Dust.NewDustPerfect(projectile.Center + spawnOffset, 278, projectile.velocity * Main.rand.NextFloat(0.05f, 0.2f));
+                            Dust dust = Dust.NewDustPerfect(projectile.Center + spawnOffset, DustID.FireworksRGB, projectile.velocity * Main.rand.NextFloat(0.05f, 0.2f));
                             dust.noGravity = true;
                             dust.scale = Main.rand.NextFloat(0.35f, 0.45f);
                             dust.color = color;
@@ -4327,24 +4340,11 @@ namespace CalamityMod.Projectiles
                     Projectile.NewProjectile(projectile.GetSource_FromThis(), projectile.Center, Vector2.Zero, ProjectileType<BloomStoneFlower>(), 0, 0f, projectile.owner, projectile.whoAmI);
             }
 
-            // optimization to remove conversion X/Y loop for irrelevant projectiles
-            bool isConversionProjectile = projectile.type == ProjectileID.PurificationPowder
-                || projectile.type == ProjectileID.VilePowder
-                || projectile.type == ProjectileID.ViciousPowder
-                || projectile.type == ProjectileID.PureSpray
-                || projectile.type == ProjectileID.CorruptSpray
-                || projectile.type == ProjectileID.CrimsonSpray
-                || projectile.type == ProjectileID.HallowSpray
-                || projectile.type == ProjectileID.Fertilizer;
-            if (!isConversionProjectile)
-                return;
-
-            if (projectile.owner == Main.myPlayer/* && Main.netMode != NetmodeID.MultiplayerClient*/)
+            // Fertilizer
+            if (projectile.type == ProjectileID.Fertilizer && projectile.owner == Main.myPlayer/* && Main.netMode != NetmodeID.MultiplayerClient*/)
             {
                 int x = (int)(projectile.Center.X / 16f);
                 int y = (int)(projectile.Center.Y / 16f);
-
-                bool isPowder = projectile.type == ProjectileID.PurificationPowder || projectile.type == ProjectileID.VilePowder || projectile.type == ProjectileID.ViciousPowder;
 
                 if (!WorldGen.InWorld(x, y, 3))
                     return;
@@ -4353,47 +4353,27 @@ namespace CalamityMod.Projectiles
                 {
                     for (int j = y - 1; j <= y + 1; j++)
                     {
-                        if (projectile.type == ProjectileID.Fertilizer)
-                        {
-                            Tile tile = Main.tile[i, j];
+                        Tile tile = Main.tile[i, j];
 
-                            if (tile.TileType == ModContent.TileType<AstralTreeSapling>() || tile.TileType == ModContent.TileType<AstralSnowTreeSapling>())
-                            {
-                                bool isPlayerNear = WorldGen.PlayerLOS(i, j);
-                                bool success = WorldGen.GrowTree(i, j);
-                                if (success && isPlayerNear)
-                                    WorldGen.TreeGrowFXCheck(i, j);
-                            }
-                            else if (tile.TileType == ModContent.TileType<AstralPalmSapling>() || tile.TileType == ModContent.TileType<AcidWoodTreeSapling>())
-                            {
-                                bool isPlayerNear = WorldGen.PlayerLOS(i, j);
-                                bool success = WorldGen.GrowPalmTree(i, j);
-                                if (success && isPlayerNear)
-                                    WorldGen.TreeGrowFXCheck(i, j);
-                            }
-                            else if (tile.TileType == ModContent.TileType<SpineSapling>())
-                            {
-                                bool isPlayerNear = WorldGen.PlayerLOS(i, j);
-                                if (isPlayerNear && Main.tile[i, j + 1].TileType != ModContent.TileType<SpineSapling>())
-                                    SpineTree.Spawn(i, j, 22, 28, true);
-                            }
-                        }
-
-                        if (projectile.type == ProjectileID.PureSpray || projectile.type == ProjectileID.PurificationPowder)
+                        if (tile.TileType == ModContent.TileType<AstralTreeSapling>() || tile.TileType == ModContent.TileType<AstralSnowTreeSapling>())
                         {
-                            AstralBiome.ConvertFromAstral(i, j, ConvertType.Pure, !isPowder);
+                            bool isPlayerNear = WorldGen.PlayerLOS(i, j);
+                            bool success = WorldGen.GrowTree(i, j);
+                            if (success && isPlayerNear)
+                                WorldGen.TreeGrowFXCheck(i, j);
                         }
-                        if (projectile.type == ProjectileID.CorruptSpray || projectile.type == ProjectileID.VilePowder)
+                        else if (tile.TileType == ModContent.TileType<AstralPalmSapling>() || tile.TileType == ModContent.TileType<AcidWoodTreeSapling>())
                         {
-                            AstralBiome.ConvertFromAstral(i, j, ConvertType.Corrupt, !isPowder);
+                            bool isPlayerNear = WorldGen.PlayerLOS(i, j);
+                            bool success = WorldGen.GrowPalmTree(i, j);
+                            if (success && isPlayerNear)
+                                WorldGen.TreeGrowFXCheck(i, j);
                         }
-                        if (projectile.type == ProjectileID.CrimsonSpray || projectile.type == ProjectileID.ViciousPowder)
+                        else if (tile.TileType == ModContent.TileType<SpineSapling>())
                         {
-                            AstralBiome.ConvertFromAstral(i, j, ConvertType.Crimson, !isPowder);
-                        }
-                        if (projectile.type == ProjectileID.HallowSpray)
-                        {
-                            AstralBiome.ConvertFromAstral(i, j, ConvertType.Hallow);
+                            bool isPlayerNear = WorldGen.PlayerLOS(i, j);
+                            if (isPlayerNear && Main.tile[i, j + 1].TileType != ModContent.TileType<SpineSapling>())
+                                SpineTree.Spawn(i, j, 22, 28, true);
                         }
                         NetMessage.SendTileSquare(-1, i, j, 1, 1);
                     }
@@ -4615,7 +4595,12 @@ namespace CalamityMod.Projectiles
                     target.Calamity().hyperiusMarked = false;
                 }
             }
-
+            // Crystal Darts reset iframes on bouncing off an enemy
+            if (projectile.type == ProjectileID.CrystalDart)
+            {
+                projectile.ResetLocalNPCHitImmunity();
+                projectile.localNPCImmunity[target.whoAmI] = -1;
+            }
             // Implementation of shared static iframes.
             // If this projectile does not use static iframes, or is not registered to share them, then do nothing.
             if (!projectile.usesIDStaticNPCImmunity || CalamityProjectileSets.SharedIDStaticIFrames[projectile.type] == -1)
@@ -4706,6 +4691,25 @@ namespace CalamityMod.Projectiles
             }
             return true;
         }
+
+        public override bool? CanHitNPC(Projectile projectile, NPC target)
+        {
+            if (target.Calamity().IsArmored() && HomingTarget > -1 && HomingTarget != target.whoAmI)
+                return false;
+            return null;
+        }
+        #endregion
+
+        #region TileCollide
+        public override bool OnTileCollide(Projectile projectile, Vector2 oldVelocity)
+        {
+            //Crystal Darts use -1 local that needs to reset whenever they bounce
+            if (projectile.type == ProjectileID.CrystalDart)
+            {
+                projectile.ResetLocalNPCHitImmunity();
+            }
+            return base.OnTileCollide(projectile, oldVelocity);
+        }
         #endregion
 
         #region Drawing
@@ -4718,8 +4722,9 @@ namespace CalamityMod.Projectiles
             {
                 if (projectile.ModProjectile is null || (projectile.ModProjectile != null && projectile.ModProjectile.CanHitPlayer(Main.LocalPlayer) && (projectile.ModProjectile.CanDamage() ?? true)))
                 {
-                    Color mainColor = Color.Lerp(Color.Crimson with { A = 0 }, Color.OrangeRed with { A = 0 }, ((Main.GlobalTimeWrappedHourly * 2) % 1f));
-                    return mainColor;
+                    Color mainColor = Color.Lerp(Color.Crimson with { A = 0 }, Color.OrangeRed with { A = 0 }, (Main.GlobalTimeWrappedHourly * 2) % 1f);
+                    Color actualDisplayColor = new Color(Math.Max(mainColor.R, lightColor.R), Math.Max(mainColor.G, lightColor.G), Math.Max(mainColor.B, lightColor.B));
+                    return actualDisplayColor;
                 }
             }
 
@@ -4800,8 +4805,6 @@ namespace CalamityMod.Projectiles
 
         public override bool PreDraw(Projectile projectile, ref Color lightColor)
         {
-            // This is used so that projectiles with specific PreDraws can still have Odd Mushroom clone drawing.
-            // If Odd Mushroom clone drawing is done manually due to using a different texture, just return false instead of setting this.
             bool shouldDrawBool = true;
 
             #region Vanilla Summons Drawing Changes
@@ -4838,7 +4841,7 @@ namespace CalamityMod.Projectiles
                 if (projectile.spriteDirection == -1)
                     spriteEffects = SpriteEffects.FlipHorizontally;
 
-                Main.EntitySpriteDraw(TextureAssets.Extra[98].Value, projectile.Center - Main.screenPosition + new Vector2(0f, projectile.gfxOffY) - projectile.velocity * projectile.scale * 0.5f, null, projectile.GetAlpha(new Color(vector41.X, vector41.Y, vector41.Z, vector41.W)), projectile.rotation + MathHelper.PiOver2, TextureAssets.Extra[98].Value.Size() / 2f, projectile.scale * 0.9f, spriteEffects);
+                Main.EntitySpriteDraw(TextureAssets.Extra[ExtrasID.SharpTears].Value, projectile.Center - Main.screenPosition + new Vector2(0f, projectile.gfxOffY) - projectile.velocity * projectile.scale * 0.5f, null, projectile.GetAlpha(new Color(vector41.X, vector41.Y, vector41.Z, vector41.W)), projectile.rotation + MathHelper.PiOver2, TextureAssets.Extra[ExtrasID.SharpTears].Value.Size() / 2f, projectile.scale * 0.9f, spriteEffects);
                 Color color49 = projectile.GetAlpha(Color.White) * Utils.Remap(projectile.ai[0], 0f, killGateValue, 0.5f, 0f);
                 color49.A = 0;
 
@@ -4856,8 +4859,6 @@ namespace CalamityMod.Projectiles
                 Texture2D crossbone = TextureAssets.Projectile[ProjectileID.BoneGloveProj].Value;
 
                 Main.spriteBatch.Draw(crossbone, projectile.Center - Main.screenPosition, null, projectile.GetAlpha(lightColor), projectile.rotation, crossbone.Size() / 2f, projectile.scale, projectile.spriteDirection == -1 ? SpriteEffects.FlipHorizontally : SpriteEffects.None, 0f);
-                if (Main.LocalPlayer.Calamity().trippy)
-                    OddMushroomProjectileDrawing(projectile, crossbone);
                 return false;
             }
 
@@ -4876,8 +4877,6 @@ namespace CalamityMod.Projectiles
                         spriteEffects = SpriteEffects.FlipHorizontally;
 
                     Main.spriteBatch.Draw(texture, projectile.Center - Main.screenPosition + new Vector2(0f, projectile.gfxOffY), rectangle, projectile.GetAlpha(lightColor), projectile.rotation, origin, projectile.scale, spriteEffects, 0f);
-                    if (Main.LocalPlayer.Calamity().trippy)
-                        OddMushroomProjectileDrawing(projectile, texture);
                     return false;
                 }
             }
@@ -4894,9 +4893,6 @@ namespace CalamityMod.Projectiles
                 shouldDrawBool = false;
             }
 
-            if (Main.LocalPlayer.Calamity().trippy)
-                OddMushroomProjectileDrawing(projectile);
-
             if (Main.zenithWorld)
             {
                 if (NPC.AnyNPCs(NPCType<NPCs.CeaselessVoid.CeaselessVoid>()))
@@ -4909,134 +4905,6 @@ namespace CalamityMod.Projectiles
             }
 
             return shouldDrawBool;
-        }
-
-        private static void OddMushroomProjectileDrawing(Projectile projectile, Texture2D? tex = null)
-        {
-            Texture2D texture = tex ?? TextureAssets.Projectile[projectile.type].Value;
-
-            SpriteEffects spriteEffects = SpriteEffects.None;
-            if (projectile.spriteDirection == -1)
-                spriteEffects = SpriteEffects.FlipHorizontally;
-
-            Color rainbow = new Color(Main.DiscoR, Main.DiscoG, Main.DiscoB, Main.DiscoR);
-            Color alphaColor = projectile.GetAlpha(rainbow);
-            float RGBMult = 0.99f;
-            alphaColor.R = (byte)(alphaColor.R * RGBMult);
-            alphaColor.G = (byte)(alphaColor.G * RGBMult);
-            alphaColor.B = (byte)(alphaColor.B * RGBMult);
-            alphaColor.A = (byte)(alphaColor.A * RGBMult);
-            int totalAfterimages = Main.LocalPlayer.Calamity().trippyLevel == 3 ? 16 : (Main.LocalPlayer.Calamity().trippyLevel == 2 ? 12 : 4);
-            for (int i = 0; i < totalAfterimages; i++)
-            {
-                Vector2 position = projectile.position;
-                float distanceFromTargetX = Math.Abs(projectile.Center.X - Main.LocalPlayer.Center.X);
-                float distanceFromTargetY = Math.Abs(projectile.Center.Y - Main.LocalPlayer.Center.Y);
-
-                float smallDistanceMult = 0.48f;
-                float largeDistanceMult = 1.33f;
-                bool whatTheFuck = Main.LocalPlayer.Calamity().trippyLevel == 3;
-
-                switch (i)
-                {
-                    case 0:
-                        position.X = Main.LocalPlayer.Center.X - distanceFromTargetX;
-                        position.Y = Main.LocalPlayer.Center.Y - distanceFromTargetY;
-                        break;
-
-                    case 1:
-                        position.X = Main.LocalPlayer.Center.X + distanceFromTargetX;
-                        position.Y = Main.LocalPlayer.Center.Y - distanceFromTargetY;
-                        break;
-
-                    case 2:
-                        position.X = Main.LocalPlayer.Center.X + distanceFromTargetX;
-                        position.Y = Main.LocalPlayer.Center.Y + distanceFromTargetY;
-                        break;
-
-                    case 3:
-                        position.X = Main.LocalPlayer.Center.X - distanceFromTargetX;
-                        position.Y = Main.LocalPlayer.Center.Y + distanceFromTargetY;
-                        break;
-
-                    case 4: // 1 o'clock position
-                        position.X = Main.LocalPlayer.Center.X + (distanceFromTargetX * (whatTheFuck ? 1f : smallDistanceMult));
-                        position.Y = Main.LocalPlayer.Center.Y - (distanceFromTargetY * (whatTheFuck ? 0f : largeDistanceMult));
-                        break;
-
-                    case 5: // 4 o'clock position
-                        position.X = Main.LocalPlayer.Center.X + (distanceFromTargetX * (whatTheFuck ? 0f : largeDistanceMult));
-                        position.Y = Main.LocalPlayer.Center.Y + (distanceFromTargetY * (whatTheFuck ? 1f : smallDistanceMult));
-                        break;
-
-                    case 6: // 7 o'clock position
-                        position.X = Main.LocalPlayer.Center.X - (distanceFromTargetX * (whatTheFuck ? 1f : smallDistanceMult));
-                        position.Y = Main.LocalPlayer.Center.Y + (distanceFromTargetY * (whatTheFuck ? 0f : largeDistanceMult));
-                        break;
-
-                    case 7: // 10 o'clock position
-                        position.X = Main.LocalPlayer.Center.X - (distanceFromTargetX * (whatTheFuck ? 0f : largeDistanceMult));
-                        position.Y = Main.LocalPlayer.Center.Y - (distanceFromTargetY * (whatTheFuck ? 1f : smallDistanceMult));
-                        break;
-
-                    case 8: // 11 o'clock position
-                        position.X = Main.LocalPlayer.Center.X - (distanceFromTargetX * (whatTheFuck ? 0f : smallDistanceMult));
-                        position.Y = Main.LocalPlayer.Center.Y - (distanceFromTargetY * (whatTheFuck ? 0.5f : largeDistanceMult));
-                        break;
-
-                    case 9: // 2 o'clock position
-                        position.X = Main.LocalPlayer.Center.X + (distanceFromTargetX * (whatTheFuck ? 0.5f : largeDistanceMult));
-                        position.Y = Main.LocalPlayer.Center.Y - (distanceFromTargetY * (whatTheFuck ? 0f : smallDistanceMult));
-                        break;
-
-                    case 10: // 5 o'clock position
-                        position.X = Main.LocalPlayer.Center.X + (distanceFromTargetX * (whatTheFuck ? 0f : smallDistanceMult));
-                        position.Y = Main.LocalPlayer.Center.Y + (distanceFromTargetY * (whatTheFuck ? 0.5f : largeDistanceMult));
-                        break;
-
-                    case 11: // 8 o'clock position
-                        position.X = Main.LocalPlayer.Center.X - (distanceFromTargetX * (whatTheFuck ? 0.5f : largeDistanceMult));
-                        position.Y = Main.LocalPlayer.Center.Y + (distanceFromTargetY * (whatTheFuck ? 0f : smallDistanceMult));
-                        break;
-
-                    case 12:
-                        position.X = Main.LocalPlayer.Center.X - distanceFromTargetX * 0.5f;
-                        position.Y = Main.LocalPlayer.Center.Y - distanceFromTargetY * 0.5f;
-                        break;
-
-                    case 13:
-                        position.X = Main.LocalPlayer.Center.X + distanceFromTargetX * 0.5f;
-                        position.Y = Main.LocalPlayer.Center.Y - distanceFromTargetY * 0.5f;
-                        break;
-
-                    case 14:
-                        position.X = Main.LocalPlayer.Center.X + distanceFromTargetX * 0.5f;
-                        position.Y = Main.LocalPlayer.Center.Y + distanceFromTargetY * 0.5f;
-                        break;
-
-                    case 15:
-                        position.X = Main.LocalPlayer.Center.X - distanceFromTargetX * 0.5f;
-                        position.Y = Main.LocalPlayer.Center.Y + distanceFromTargetY * 0.5f;
-                        break;
-
-                    default:
-                        break;
-                }
-
-                position.X -= projectile.width / 2;
-                position.Y -= projectile.height / 2;
-
-                int frameHeight = texture.Height / Main.projFrames[projectile.type];
-                int currentframeHeight = frameHeight * projectile.frame;
-                Rectangle frame = new Rectangle(0, currentframeHeight, texture.Width, frameHeight);
-
-                Vector2 halfSize = frame.Size() / 2;
-
-                Main.spriteBatch.Draw(texture,
-                    new Vector2(position.X - Main.screenPosition.X + (float)(projectile.width / 2) - (float)TextureAssets.Projectile[projectile.type].Width() * projectile.scale / 2f + halfSize.X * projectile.scale,
-                    position.Y - Main.screenPosition.Y + (float)projectile.height - (float)TextureAssets.Projectile[projectile.type].Height() * projectile.scale / (float)Main.projFrames[projectile.type] + 4f + halfSize.Y * projectile.scale + projectile.gfxOffY),
-                    frame, alphaColor, projectile.rotation, halfSize, projectile.scale, spriteEffects, 0f);
-            }
         }
         #endregion
 
@@ -5169,15 +5037,6 @@ namespace CalamityMod.Projectiles
                             modPlayer.scuttlerCooldown = 30;
                         }
                     }
-
-                    if (projectile.type == ProjectileID.UnholyWater)
-                        Projectile.NewProjectile(projectile.GetSource_FromThis(), projectile.Center, Vector2.Zero, ProjectileType<WaterConvertor>(), 0, 0f, projectile.owner, 1f);
-
-                    if (projectile.type == ProjectileID.BloodWater)
-                        Projectile.NewProjectile(projectile.GetSource_FromThis(), projectile.Center, Vector2.Zero, ProjectileType<WaterConvertor>(), 0, 0f, projectile.owner, 2f);
-
-                    if (projectile.type == ProjectileID.HolyWater)
-                        Projectile.NewProjectile(projectile.GetSource_FromThis(), projectile.Center, Vector2.Zero, ProjectileType<WaterConvertor>(), 0, 0f, projectile.owner, 3f);
                 }
             }
         }

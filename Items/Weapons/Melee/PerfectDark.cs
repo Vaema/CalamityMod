@@ -1,6 +1,4 @@
 ﻿using CalamityMod.Buffs.DamageOverTime;
-using CalamityMod.Items.Materials;
-using CalamityMod.Items.Weapons.Magic;
 using CalamityMod.Items.Weapons.Ranged;
 using CalamityMod.Projectiles.Melee;
 using Terraria;

@@ -4,9 +4,7 @@ using CalamityMod.Particles;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria;
-using Terraria.Audio;
 using Terraria.Graphics.Shaders;
-using Terraria.ID;
 using Terraria.ModLoader;
 
 namespace CalamityMod.Projectiles.Melee
@@ -47,7 +45,7 @@ namespace CalamityMod.Projectiles.Melee
                 GeneralParticleHandler.SpawnParticle(blastG);
                 Particle blastB = new CustomPulse(Projectile.Center, Vector2.Zero, TriactisHammerFlare.GetColor(3f) * 0.7f, "CalamityMod/Particles/ShatteredExplosion", Vector2.One, rotation + MathHelper.ToRadians(240f), 0f, 0.4f, 24);
                 GeneralParticleHandler.SpawnParticle(blastB);
-                Owner.Calamity().GeneralScreenShakePower = 40;
+                Owner.SetScreenshake(40f);
             }
 
             if (Timer % 4f == 0f)
@@ -90,11 +88,11 @@ namespace CalamityMod.Projectiles.Melee
             modifiers.SourceDamage *= Utils.Remap(Projectile.numHits, 0, 10, 1f, 0.1f, true);
         }
 
-        internal float WidthFunction(float completionRatio) => MathHelper.Clamp(CalamityUtils.Convert01To010(completionRatio * 2), 0.2f, 1f) * 4f;
-        internal Color ColorFunction(float completionRatio) => Color.White;
+        internal float WidthFunction(float completionRatio, Vector2 vertexPos) => MathHelper.Clamp(CalamityUtils.Convert01To010(completionRatio * 2), 0.2f, 1f) * 4f;
+        internal Color ColorFunction(float completionRatio, Vector2 vertexPos) => Color.White;
 
-        internal float BackgroundWidthFunction(float completionRatio) => WidthFunction(completionRatio) * 2f;
-        internal Color BackgroundColorFunction(float completionRatio) => ColorFunction(completionRatio) * 0.5f;
+        internal float BackgroundWidthFunction(float completionRatio, Vector2 vertexPos) => WidthFunction(completionRatio, vertexPos) * 2f;
+        internal Color BackgroundColorFunction(float completionRatio, Vector2 vertexPos) => ColorFunction(completionRatio, vertexPos) * 0.5f;
 
         public override bool PreDraw(ref Color lightColor)
         {

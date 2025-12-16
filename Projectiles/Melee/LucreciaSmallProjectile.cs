@@ -1,12 +1,7 @@
 ﻿using System;
 using System.Linq;
-using CalamityMod.Buffs.DamageOverTime;
 using CalamityMod.Dusts;
 using CalamityMod.Graphics.Primitives;
-using CalamityMod.Items.Materials;
-using CalamityMod.Items.Weapons.Melee;
-using CalamityMod.Particles;
-using CalamityMod.Projectiles.Typeless;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using ReLogic.Content;
@@ -15,7 +10,6 @@ using Terraria.Audio;
 using Terraria.Graphics.Shaders;
 using Terraria.ID;
 using Terraria.ModLoader;
-using static CalamityMod.CalamityUtils;
 using static Terraria.ModLoader.ModContent;
 
 namespace CalamityMod.Projectiles.Melee
@@ -24,13 +18,10 @@ namespace CalamityMod.Projectiles.Melee
     {
         public new string LocalizationCategory => "Projectiles.Melee";
         public override string Texture => "CalamityMod/Projectiles/InvisibleProj";
-        public int TargetIndex = -1;
 
         public static float MaxWidth = 30;
         public ref float Time => ref Projectile.ai[0];
 
-        public static Asset<Texture2D> BloomTex;
-        public static Asset<Texture2D> SlashTex;
         public static Asset<Texture2D> TrailTex;
 
         public override void SetStaticDefaults()
@@ -48,9 +39,9 @@ namespace CalamityMod.Projectiles.Melee
             Projectile.DamageType = DamageClass.MeleeNoSpeed;
             Projectile.ignoreWater = true;
             Projectile.tileCollide = true;
-            Projectile.penetrate = 1;
+            Projectile.penetrate = -1;
             Projectile.extraUpdates = 1;
-            Projectile.alpha = 255;
+            Projectile.alpha = 0;
             Projectile.timeLeft = 420;
             Projectile.usesLocalNPCImmunity = true;
             Projectile.localNPCHitCooldown = Projectile.MaxUpdates * 12;
@@ -77,6 +68,17 @@ namespace CalamityMod.Projectiles.Melee
                 }
                 Projectile.localAI[0] = 1f;
             }
+
+            if (Projectile.ai[1] > 0)
+            {
+                Projectile.damage = 0;
+                // Reduce opacity over time
+                Projectile.Opacity -= 0.04f;
+                if (Projectile.Opacity <= 0f)
+                {
+                    Projectile.Kill();
+                }
+            }
         }
 
 
@@ -92,6 +94,9 @@ namespace CalamityMod.Projectiles.Melee
                 dust2.noGravity = true;
                 dust2.color = Color.Lerp(Color.MediumPurple, Color.CornflowerBlue, Main.rand.NextFloat(0f, 1f));
             }
+            
+            // Flag set for fading out
+            Projectile.ai[1] = 1f;
         }
 
         public override void OnKill(int timeLeft)
@@ -102,7 +107,7 @@ namespace CalamityMod.Projectiles.Melee
 
         public override Color? GetAlpha(Color lightColor) => Color.Lerp(Color.MediumPurple, Color.CornflowerBlue, 0.5f) with { A = 0 } * Projectile.Opacity;
 
-        public float TrailWidth(float completionRatio)
+        public float TrailWidth(float completionRatio, Vector2 vertexPos)
         {
             float width = Utils.GetLerpValue(1f, 0.4f, completionRatio, true) * (float)Math.Sin(Math.Acos(1 - Utils.GetLerpValue(0f, 0.08f, completionRatio, true)));
 
@@ -110,15 +115,21 @@ namespace CalamityMod.Projectiles.Melee
 
             return width * (MaxWidth * .265f);
         }
-        public Color TrailColor(float completionRatio)
+        public Color TrailColor(float completionRatio, Vector2 vertexPos)
         {
             Color baseColor = Color.Lerp(Color.MediumPurple, Color.CornflowerBlue, completionRatio);
 
-            return baseColor * 0.2f;
+            return baseColor * 0.2f * Projectile.Opacity;
         }
 
-        public float MiniTrailWidth(float completionRatio) => TrailWidth(completionRatio) * 5.5f;
-        public Color MiniTrailColor(float completionRatio) => Color.Lerp(Color.MediumPurple, Color.CornflowerBlue, completionRatio);
+        public Color MiniTrailColor(float completionRatio, Vector2 vertexPos)
+        {
+            Color baseColor = Color.Lerp(Color.MediumPurple, Color.CornflowerBlue, completionRatio);
+
+            return baseColor * Projectile.Opacity;
+        }
+
+        public float MiniTrailWidth(float completionRatio, Vector2 vertexPos) => TrailWidth(completionRatio, vertexPos) * 5.5f;
 
         public override bool PreDraw(ref Color lightColor)
         {
@@ -144,12 +155,12 @@ namespace CalamityMod.Projectiles.Melee
             // Apply the offset to the projectile's old position
             Vector2[] oldPosWithOffset = Projectile.oldPos.Select(p => p - offset).ToArray();
 
-            PrimitiveRenderer.RenderTrail(oldPosWithOffset, new(TrailWidth, TrailColor, (_) => Projectile.Size * 1f, shader: GameShaders.Misc["CalamityMod:ExobladePierce"]), 30);
+            PrimitiveRenderer.RenderTrail(oldPosWithOffset, new(TrailWidth, TrailColor, (_,_) => Projectile.Size * 1f, shader: GameShaders.Misc["CalamityMod:ExobladePierce"]), 30);
 
             GameShaders.Misc["CalamityMod:ExobladePierce"].UseColor(mainColor);
             GameShaders.Misc["CalamityMod:ExobladePierce"].UseSecondaryColor(secondaryColor);
 
-            PrimitiveRenderer.RenderTrail(oldPosWithOffset, new(MiniTrailWidth, MiniTrailColor, (_) => Projectile.Size * 1f, shader: GameShaders.Misc["CalamityMod:ExobladePierce"]), 30);
+            PrimitiveRenderer.RenderTrail(oldPosWithOffset, new(MiniTrailWidth, MiniTrailColor, (_,_) => Projectile.Size * 1f, shader: GameShaders.Misc["CalamityMod:ExobladePierce"]), 30);
 
             Main.spriteBatch.ExitShaderRegion();
             return false;

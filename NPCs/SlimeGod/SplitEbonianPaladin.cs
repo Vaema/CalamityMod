@@ -892,11 +892,5 @@ namespace CalamityMod.NPCs.SlimeGod
         {
             NPC.lifeMax = (int)(NPC.lifeMax * 0.8f * balance * bossAdjustment);
         }
-
-        public override void OnHitPlayer(Player target, Player.HurtInfo hurtInfo)
-        {
-            if (hurtInfo.Damage > 0)
-                target.AddBuff(BuffID.Weak, 240);
-        }
     }
 }

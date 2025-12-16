@@ -1,8 +1,6 @@
 ﻿
 using CalamityMod.Dusts.Furniture;
-using CalamityMod.Systems;
 using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Graphics;
 using Terraria;
 using Terraria.DataStructures;
 using Terraria.ID;

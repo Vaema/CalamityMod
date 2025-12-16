@@ -99,10 +99,10 @@ namespace CalamityMod.UI.ResourceSets
 
             if (drawingLife)
             {
-            if (!CalPlayer.chaliceOfTheBloodGod) return;
-            var bleed = CalPlayer.chaliceBleedoutBuffer;
-            var hearts = snapshot.AmountOfLifeHearts;
-                var height = 0;
+                if (!CalPlayer.chaliceOfTheBloodGod)
+                    return;
+                var bleed = CalPlayer.chaliceBleedoutBuffer;
+                var hearts = snapshot.AmountOfLifeHearts;
                 int drawType = -1; //0 - bars 1- regular heart 2 - fancy heart
                 Vector2 position = new Vector2(Main.screenWidth - 60, 28);
 
@@ -110,16 +110,13 @@ namespace CalamityMod.UI.ResourceSets
                 switch (displaySet.NameKey)
                 {
                     case "HorizontalBarsWithText":
-                        height = 12;
                         drawType = 0;
                         break;
                     case "HorizontalBarsWithFullText":
-                        height = 12;
                         position.Y -= 2;
                         drawType = 0;
                         break;
                     case "HorizontalBars":
-                        height = 12;
                         position.Y -= 4;
                         drawType = 0;
                         break;
@@ -200,9 +197,8 @@ namespace CalamityMod.UI.ResourceSets
             // This is where Mana Burn is drawn
             else if (Player.statMana < 0)
             {
-            var mana = -Player.statMana;
-            var stars = snapshot.AmountOfManaStars;
-                var height = 0;
+                var mana = -Player.statMana;
+                var stars = snapshot.AmountOfManaStars;
                 int drawType = -1; //0 - bars 1- regular heart 2 - fancy heart
                 Vector2 position = new Vector2(Main.screenWidth - 70, 52);
 
@@ -210,16 +206,13 @@ namespace CalamityMod.UI.ResourceSets
                 switch (displaySet.NameKey)
                 {
                     case "HorizontalBarsWithText":
-                        height = 12;
                         drawType = 0;
                         break;
                     case "HorizontalBarsWithFullText":
-                        height = 12;
                         position.Y -= 2;
                         drawType = 0;
                         break;
                     case "HorizontalBars":
-                        height = 12;
                         position.Y -= 4;
                         drawType = 0;
                         break;
@@ -245,6 +238,8 @@ namespace CalamityMod.UI.ResourceSets
 
                     // This works by dynamically creating a texture that it then draws over the life bar.
                     int width = 12 * stars;
+                    if (width < 1)
+                        width = 1;
                     GraphicsDevice _graphicsDevice = Main.graphics.GraphicsDevice;
                     var barOverlay = new Texture2D(_graphicsDevice, width, 12);
                     Color[] barTextureData = new Color[12*12];

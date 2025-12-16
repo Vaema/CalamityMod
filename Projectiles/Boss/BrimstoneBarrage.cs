@@ -1,12 +1,7 @@
-﻿using System.IO;
-using CalamityMod.Buffs.DamageOverTime;
-using CalamityMod.Dusts;
-using CalamityMod.Events;
+﻿using CalamityMod.Buffs.DamageOverTime;
 using CalamityMod.NPCs;
-using CalamityMod.NPCs.CalClone;
 using CalamityMod.NPCs.SupremeCalamitas;
 using CalamityMod.Particles;
-using CalamityMod.World;
 using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.ID;
@@ -102,7 +97,7 @@ namespace CalamityMod.Projectiles.Boss
 
                 Projectile.scale = 0.85f;
 
-                Dust trailDust = Dust.NewDustPerfect(Projectile.Center + Main.rand.NextVector2Circular(4, 4), 182);
+                Dust trailDust = Dust.NewDustPerfect(Projectile.Center + Main.rand.NextVector2Circular(4, 4), DustID.TheDestroyer);
                 trailDust.noGravity = true;
                 trailDust.velocity = (-Projectile.velocity * 0.5f) * Main.rand.NextFloat(0.1f, 0.9f);
                 trailDust.scale = Main.rand.NextFloat(0.2f, 0.6f);
@@ -142,7 +137,7 @@ namespace CalamityMod.Projectiles.Boss
                 }
             }
 
-            CalamityUtils.DrawAfterimagesCentered(Projectile, ProjectileID.Sets.TrailingMode[Type], lightColor, 1);
+            CalamityUtils.DrawAfterimagesCentered(Projectile, ProjectileID.Sets.TrailingMode[Type], lightColor * 0.5f, 1);
             return false;
         }
         public override bool? Colliding(Rectangle projHitbox, Rectangle targetHitbox) => CalamityUtils.CircularHitboxCollision(Projectile.Center, 10 * Projectile.scale, targetHitbox);

@@ -1,5 +1,6 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using ReLogic.Content;
 using Terraria;
 using Terraria.DataStructures;
 using Terraria.ID;
@@ -9,6 +10,8 @@ namespace CalamityMod.Tiles.FurnitureAshen
 {
     public class AshenCandle : ModTile
     {
+        public Asset<Texture2D> FlameTexture;
+
         public override void SetStaticDefaults() => this.SetUpCandle(ModContent.ItemType<Items.Placeables.FurnitureAshen.AshenCandle>(), true);
 
         public override bool CreateDust(int i, int j, ref int type)
@@ -60,7 +63,8 @@ namespace CalamityMod.Tiles.FurnitureAshen
 
         public override void PostDraw(int i, int j, SpriteBatch spriteBatch)
         {
-            CalamityUtils.DrawFlameEffect(ModContent.Request<Texture2D>("CalamityMod/Tiles/FurnitureAshen/AshenCandleFlame").Value, i, j);
+            FlameTexture ??= ModContent.Request<Texture2D>("CalamityMod/Tiles/FurnitureAshen/AshenCandleFlame");
+            CalamityUtils.DrawFlameEffect(FlameTexture.Value, i, j);
         }
 
         public override void DrawEffects(int i, int j, SpriteBatch spriteBatch, ref TileDrawInfo drawData)

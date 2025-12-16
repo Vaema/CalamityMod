@@ -1,6 +1,4 @@
 ﻿using System;
-using CalamityMod.Buffs.DamageOverTime;
-using CalamityMod.Items.Accessories;
 using CalamityMod.NPCs.SupremeCalamitas;
 using CalamityMod.Particles;
 using CalamityMod.Events;
@@ -81,7 +79,7 @@ namespace CalamityMod.Projectiles.Boss
                             {
                                 Vector2 velocity = spinningPoint.RotatedBy(radians * k).RotatedBy(-0.45f * rotRando);
 
-                                Dust cataclysmdust = Dust.NewDustPerfect(Projectile.Center + velocity * (b == 0 ? 7 : 5), 279, velocity * (b == 0 ? 9 : 7));
+                                Dust cataclysmdust = Dust.NewDustPerfect(Projectile.Center + velocity * (b == 0 ? 7 : 5), DustID.SilverFlame, velocity * (b == 0 ? 9 : 7));
                                 cataclysmdust.noGravity = true;
                                 cataclysmdust.scale = Main.rand.NextFloat(1.3f, 1.9f);
                                 cataclysmdust.color = Color.Red;
@@ -91,7 +89,7 @@ namespace CalamityMod.Projectiles.Boss
                     }
 
                     Vector2 vel = new Vector2(14, 14).RotatedByRandom(100) * Main.rand.NextFloat(0.1f, 2.5f);
-                    Dust cataclysmdust2 = Dust.NewDustPerfect(Projectile.Center + vel * 2, 279, vel);
+                    Dust cataclysmdust2 = Dust.NewDustPerfect(Projectile.Center + vel * 2, DustID.SilverFlame, vel);
                     cataclysmdust2.noGravity = true;
                     cataclysmdust2.scale = Main.rand.NextFloat(0.9f, 1.2f);
                     cataclysmdust2.color = Color.Red;
@@ -176,7 +174,7 @@ namespace CalamityMod.Projectiles.Boss
                             {
                                 Vector2 velocity = spinningPoint.RotatedBy(radians * k).RotatedBy(-0.45f * rotRando);
 
-                                Dust cataclysmdust = Dust.NewDustPerfect(Projectile.Center + velocity * (b == 0 ? 7 : 5), 279, velocity * (b == 0 ? 9 : 7));
+                                Dust cataclysmdust = Dust.NewDustPerfect(Projectile.Center + velocity * (b == 0 ? 7 : 5), DustID.SilverFlame, velocity * (b == 0 ? 9 : 7));
                                 cataclysmdust.noGravity = true;
                                 cataclysmdust.scale = Main.rand.NextFloat(1.3f, 1.9f);
                                 cataclysmdust.color = Color.Red;
@@ -186,7 +184,7 @@ namespace CalamityMod.Projectiles.Boss
                     }
 
                     Vector2 vel = new Vector2(14, 14).RotatedByRandom(100) * Main.rand.NextFloat(0.1f, 2.5f);
-                    Dust cataclysmdust2 = Dust.NewDustPerfect(Projectile.Center + vel * 2, 279, vel);
+                    Dust cataclysmdust2 = Dust.NewDustPerfect(Projectile.Center + vel * 2, DustID.SilverFlame, vel);
                     cataclysmdust2.noGravity = true;
                     cataclysmdust2.scale = Main.rand.NextFloat(0.9f, 1.2f);
                     cataclysmdust2.color = Color.Red;
@@ -245,7 +243,7 @@ namespace CalamityMod.Projectiles.Boss
                 {
                     Vector2 velocity = new Vector2(7, 7).RotatedByRandom(100) * Main.rand.NextFloat(0.8f, 1.2f);
 
-                    Dust dust = Dust.NewDustPerfect(Projectile.Center + velocity, 66, velocity * Main.rand.NextFloat(0.2f, 1f));
+                    Dust dust = Dust.NewDustPerfect(Projectile.Center + velocity, DustID.RainbowTorch, velocity * Main.rand.NextFloat(0.2f, 1f));
                     dust.noGravity = true;
                     dust.scale = Main.rand.NextFloat(1.3f, 1.9f);
                     dust.color = Color.Lerp(Color.Red, Color.Magenta, 0.5f);

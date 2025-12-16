@@ -1,13 +1,8 @@
-﻿using CalamityMod.NPCs.Yharon;
-using CalamityMod.UI;
-using System;
-using Microsoft.Xna.Framework;
+﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using ReLogic.Content;
 using Terraria;
-using Terraria.GameContent;
 using Terraria.ModLoader;
-using System.Text.RegularExpressions;
 
 namespace CalamityMod.Projectiles.Rogue
 {

@@ -1,6 +1,7 @@
 ﻿using CalamityMod.Dusts;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using ReLogic.Content;
 using Terraria;
 using Terraria.Audio;
 using Terraria.GameContent.ObjectInteractions;
@@ -13,6 +14,8 @@ namespace CalamityMod.Tiles.FurnitureMonolith
 {
     public class MonolithChest : ModTile
     {
+        public Asset<Texture2D> GlowTexture;
+
         public override void SetStaticDefaults()
         {
             this.SetUpChest(ModContent.ItemType<Items.Placeables.FurnitureMonolith.MonolithChest>());
@@ -75,11 +78,11 @@ namespace CalamityMod.Tiles.FurnitureMonolith
                 return;
 
             int yOffset = TileObjectData.GetTileData(tile).DrawYOffset;
-            Texture2D glowmask = ModContent.Request<Texture2D>("CalamityMod/Tiles/FurnitureMonolith/MonolithChestGlow").Value;
+            GlowTexture ??= ModContent.Request<Texture2D>("CalamityMod/Tiles/FurnitureMonolith/MonolithChestGlow");
             Color drawColour = CalamityUtils.ApplyPaint(Main.tile[i, j].TileColor, new Color(100, 100, 100, 100));
             Vector2 drawOffset = new Vector2(i * 16 - Main.screenPosition.X, j * 16 - Main.screenPosition.Y + yOffset) + (Main.drawToScreen ? Vector2.Zero : new Vector2(Main.offScreenRange));
             Rectangle frame = new Rectangle(xPos, yPos + Main.chest[chestIndex].frame * 38, 18, 18);
-            Main.spriteBatch.Draw(glowmask, drawOffset, frame, drawColour, 0.0f, Vector2.Zero, 1f, SpriteEffects.None, 0.0f);
+            Main.spriteBatch.Draw(GlowTexture.Value, drawOffset, frame, drawColour, 0.0f, Vector2.Zero, 1f, SpriteEffects.None, 0.0f);
         }
     }
 }

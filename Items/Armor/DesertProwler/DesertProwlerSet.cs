@@ -1,11 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
-using CalamityMod.CalPlayer;
 using CalamityMod.Cooldowns;
-using CalamityMod.Dusts;
 using CalamityMod.Items.Materials;
-using CalamityMod.Items.Weapons.Melee;
-using CalamityMod.Items.Weapons.Ranged;
 using CalamityMod.Particles;
 using Microsoft.Xna.Framework;
 using ReLogic.Utilities;
@@ -339,55 +334,63 @@ namespace CalamityMod.Items.Armor.DesertProwler
         public int ExtraCrit = 0;
         public override bool InstancePerEntity => true;
 
+        // This should be okay since we can't handle projectiles with altering ClassType in OnSpawn hook anyways
+        public override bool AppliesToEntity(Projectile entity, bool lateInstantiation)
+        {
+            if (entity.DamageType.CountsAsClass(RogueDamageClass.Instance)) return true;
+            return false;
+        }
+
         public override void OnSpawn(Projectile projectile, IEntitySource source)
         {
-            if (projectile.damage > 0 && !Main.gameMenu)
+            if (Main.gameMenu)
+                return;
+
+            if (projectile.damage <= 0 || projectile.owner < 0)
+                return;
+
+            if (!DesertProwlerHat.ShroudedInSmoke(Main.player[projectile.owner], out var _))
+                return;
+
+            int critPool = DesertProwlerHat.FreeCrit;
+            int achievedDamage = projectile.damage;
+
+            //Increase the crit cance of the projectile for as long as theres free crits to be handed out.
+            //Only increase the crit chance if the additional 100% damage wouldnt make the projectile deal more than the damage cap
+            while (critPool >= 100)
             {
-                if (projectile.owner >= 0 && DesertProwlerHat.ShroudedInSmoke(Main.player[projectile.owner], out var cd) && projectile.DamageType.CountsAsClass(RogueDamageClass.Instance))
+                if (achievedDamage + projectile.damage <= DesertProwlerHat.BonusDamageCap)
                 {
-                    int critPool = DesertProwlerHat.FreeCrit;
+                    ExtraCrit += 100;
+                    critPool -= 100;
 
-                    int achievedDamage = projectile.damage;
+                    achievedDamage += projectile.damage;
+                }
 
-                    //Increase the crit cance of the projectile for as long as theres free crits to be handed out.
-                    //Only increase the crit chance if the additional 100% damage wouldnt make the projectile deal more than the damage cap
-                    while (critPool >= 100)
+                else
+                {
+                    //Don't do anything to projectiles that reached the damage cap
+                    if (achievedDamage < DesertProwlerHat.BonusDamageCap)
                     {
-                        if (achievedDamage + projectile.damage <= DesertProwlerHat.BonusDamageCap)
-                        {
-                            ExtraCrit += 100;
-                            critPool -= 100;
+                        //Give some compensation crit if there's still some crit left but adding one full 100% crit chance would make the projectile go over the damage cap
+                        //For example, if the free crit was 200%, the projectile dealt 40 damage, and the damage cap was 100.
+                        //The projectile would get one layer of extra crit, bringing it to 80 damage, but we still have 100% crit leftover
+                        //Adding an extra layer of crit would make the projectile deal 120 damage, which we do not want.
+                        //To compensate for the 20 potential damage loss, we instead add 20/40 crit, making it have 50% extra crit
 
-                            achievedDamage += projectile.damage;
-                        }
-
-                        else
-                        {
-                            //Don't do anything to projectiles that reached the damage cap
-                            if (achievedDamage < DesertProwlerHat.BonusDamageCap)
-                            {
-                                //Give some compensation crit if there's still some crit left but adding one full 100% crit chance would make the projectile go over the damage cap
-                                //For example, if the free crit was 200%, the projectile dealt 40 damage, and the damage cap was 100.
-                                //The projectile would get one layer of extra crit, bringing it to 80 damage, but we still have 100% crit leftover
-                                //Adding an extra layer of crit would make the projectile deal 120 damage, which we do not want.
-                                //To compensate for the 20 potential damage loss, we instead add 20/40 crit, making it have 50% extra crit
-
-                                int remainingDamageTilCap = DesertProwlerHat.BonusDamageCap - achievedDamage;
-                                ExtraCrit += (int)(100 * remainingDamageTilCap / (float)projectile.damage);
-                            }
-
-                            //Avoid infinite loops
-                            break;
-                        }
+                        int remainingDamageTilCap = DesertProwlerHat.BonusDamageCap - achievedDamage;
+                        ExtraCrit += (int)(100 * remainingDamageTilCap / (float)projectile.damage);
                     }
 
-                    projectile.CritChance += ExtraCrit;
-
-                    projectile.Calamity().supercritHits = 1;
-                    LightsOut = true;
-                    Main.player[projectile.owner].GetModPlayer<DesertProwlerPlayer>().stopSmokeBomb = true;
+                    //Avoid infinite loops
+                    break;
                 }
             }
+
+            projectile.CritChance += ExtraCrit;
+            projectile.Calamity().supercritHits = 1;
+            LightsOut = true;
+            Main.player[projectile.owner].GetModPlayer<DesertProwlerPlayer>().stopSmokeBomb = true;
         }
 
         public override void OnHitNPC(Projectile projectile, NPC target, NPC.HitInfo hit, int damageDone)

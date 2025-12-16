@@ -1,7 +1,4 @@
-﻿using CalamityMod.Items.Materials;
-using CalamityMod.Items.Placeables.FurnitureWulfrum;
-using CalamityMod.Tiles.FurnitureWulfrum;
-using Terraria.ID;
+﻿using Terraria.ID;
 using Terraria.ModLoader;
 using WallTiles = CalamityMod.Walls;
 

@@ -2,6 +2,7 @@
 using CalamityMod.Graphics.Metaballs;
 using Microsoft.Xna.Framework;
 using Terraria;
+using Terraria.ID;
 using Terraria.ModLoader;
 
 namespace CalamityMod.Projectiles.Magic
@@ -113,7 +114,7 @@ namespace CalamityMod.Projectiles.Magic
         {
             for (int i = 0; i < 6; i++)
             {
-                Dust necroplasm = Dust.NewDustPerfect(Projectile.Center + Main.rand.NextVector2Circular(12f, 12f), 261);
+                Dust necroplasm = Dust.NewDustPerfect(Projectile.Center + Main.rand.NextVector2Circular(12f, 12f), DustID.AncientLight);
                 necroplasm.color = Color.Lerp(Color.LightPink, Color.Red, Main.rand.NextFloat(0.67f));
                 necroplasm.scale = 1.2f;
                 necroplasm.fadeIn = 0.55f;

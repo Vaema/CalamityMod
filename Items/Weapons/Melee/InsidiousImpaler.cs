@@ -1,7 +1,5 @@
 ﻿using CalamityMod.Items.Weapons.Ranged;
-using CalamityMod.Items.Weapons.Rogue;
 using CalamityMod.Projectiles.Melee;
-using CalamityMod.Projectiles.Melee.Spears;
 using CalamityMod.Rarities;
 using Microsoft.Xna.Framework;
 using Terraria;
@@ -22,7 +20,7 @@ namespace CalamityMod.Items.Weapons.Melee
         {
             Item.width = 66;
             Item.height = 70;
-            Item.damage = 351;
+            Item.damage = 300;
             Item.DamageType = DamageClass.MeleeNoSpeed;
             Item.noMelee = true;
             Item.useTurn = true;

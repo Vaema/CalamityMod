@@ -108,7 +108,7 @@ namespace CalamityMod.Projectiles.Ranged
                     }
                     else
                     {
-                        Dust dust = Dust.NewDustPerfect(GunTipPosition, 278, (Projectile.velocity * 12).RotatedByRandom(0.6f) * Main.rand.NextFloat(0.4f, 1.7f), 0, default, Main.rand.NextFloat(1.2f, 1.6f));
+                        Dust dust = Dust.NewDustPerfect(GunTipPosition, DustID.FireworksRGB, (Projectile.velocity * 12).RotatedByRandom(0.6f) * Main.rand.NextFloat(0.4f, 1.7f), 0, default, Main.rand.NextFloat(1.2f, 1.6f));
                         dust.noGravity = false;
                         dust.color = Main.rand.NextBool(3) ? Color.Orange : staticEffectsColor;
                     }
@@ -157,7 +157,7 @@ namespace CalamityMod.Projectiles.Ranged
             {
                 Projectile.NewProjectileDirect(Projectile.GetSource_FromThis(), GunTipPosition, shootDirection * projSpeed * velocityMultiplier, ProjectileType<NukeOfBliss>(), damage, knockback, Projectile.owner, rocketType);
                 PostFireCooldown = Owner.itemAnimationMax;
-                Owner.Calamity().GeneralScreenShakePower = 5f;
+                Owner.SetScreenshake(5f);
             }
 
             // Inside here go all the things that dedicated servers shouldn't spend resources on.
@@ -189,7 +189,7 @@ namespace CalamityMod.Projectiles.Ranged
                 Particle smoke = new HeavySmokeParticle(GunTipPosition, smokeVel, staticEffectsColor, Main.rand.Next(40, 60 + 1), Main.rand.NextFloat(0.3f, 0.6f), 0.5f, Main.rand.NextFloat(-0.2f, 0.2f), Main.rand.NextBool(), required: true);
                 GeneralParticleHandler.SpawnParticle(smoke);
 
-                Dust dust = Dust.NewDustPerfect(GunTipPosition, 303, smokeVel.RotatedByRandom(0.1f), 80, default, Main.rand.NextFloat(0.4f, 1.3f));
+                Dust dust = Dust.NewDustPerfect(GunTipPosition, DustID.SteampunkSteam, smokeVel.RotatedByRandom(0.1f), 80, default, Main.rand.NextFloat(0.4f, 1.3f));
                 dust.noGravity = false;
                 dust.color = staticEffectsColor;
             }

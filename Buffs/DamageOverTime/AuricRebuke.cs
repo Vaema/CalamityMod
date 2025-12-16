@@ -51,12 +51,12 @@ namespace CalamityMod.Buffs.DamageOverTime
                     GeneralParticleHandler.SpawnParticle(spark);
                 }
 
-                Dust dust = Dust.NewDustPerfect(modPlayer.RandomDebuffVisualSpot, 278, new Vector2(1.5f, 1.5f).RotatedByRandom(100) * Main.rand.NextFloat(0.3f, 0.7f), 0, default, Main.rand.NextFloat(0.1f, 0.6f));
+                Dust dust = Dust.NewDustPerfect(modPlayer.RandomDebuffVisualSpot, DustID.FireworksRGB, new Vector2(1.5f, 1.5f).RotatedByRandom(100) * Main.rand.NextFloat(0.3f, 0.7f), 0, default, Main.rand.NextFloat(0.1f, 0.6f));
                 dust.color = Color.Lerp(Color.Cyan, Color.Lavender, Main.rand.NextFloat(0, 0.6f));
 
                 if (Main.rand.NextBool(6))
                 {
-                    Dust dust2 = Dust.NewDustPerfect(modPlayer.RandomDebuffVisualSpot, 278, new Vector2(4.5f, 4.5f).RotatedByRandom(100) * Main.rand.NextFloat(0.3f, 0.7f), 0, default, Main.rand.NextFloat(0.8f, 0.95f));
+                    Dust dust2 = Dust.NewDustPerfect(modPlayer.RandomDebuffVisualSpot, DustID.FireworksRGB, new Vector2(4.5f, 4.5f).RotatedByRandom(100) * Main.rand.NextFloat(0.3f, 0.7f), 0, default, Main.rand.NextFloat(0.8f, 0.95f));
                     dust2.color = Main.rand.NextBool(4) ? Color.Lavender : Color.Cyan;
                 }
             }
@@ -77,12 +77,12 @@ namespace CalamityMod.Buffs.DamageOverTime
 
             if (Main.rand.NextBool())
             {
-                Dust dust = Dust.NewDustPerfect(npcSize, 278, new Vector2(1.5f, 1.5f).RotatedByRandom(100) * Main.rand.NextFloat(0.3f, 0.7f), 0, default, Main.rand.NextFloat(0.1f, 0.6f));
+                Dust dust = Dust.NewDustPerfect(npcSize, DustID.FireworksRGB, new Vector2(1.5f, 1.5f).RotatedByRandom(100) * Main.rand.NextFloat(0.3f, 0.7f), 0, default, Main.rand.NextFloat(0.1f, 0.6f));
                 dust.color = Color.Lerp(Color.Cyan, Color.Lavender, Main.rand.NextFloat(0, 0.6f));
             }
             if (Main.rand.NextBool(10))
             {
-                Dust dust2 = Dust.NewDustPerfect(npcSize, 278, new Vector2(4.5f, 4.5f).RotatedByRandom(100) * Main.rand.NextFloat(0.3f, 0.7f), 0, default, Main.rand.NextFloat(0.8f, 0.95f));
+                Dust dust2 = Dust.NewDustPerfect(npcSize, DustID.FireworksRGB, new Vector2(4.5f, 4.5f).RotatedByRandom(100) * Main.rand.NextFloat(0.3f, 0.7f), 0, default, Main.rand.NextFloat(0.8f, 0.95f));
                 dust2.color = Main.rand.NextBool(4) ? Color.Lavender : Color.Cyan;
             }
         }

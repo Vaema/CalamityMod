@@ -62,10 +62,10 @@ namespace CalamityMod.Projectiles.Ranged
                 // Frame 1 effects: Initialize the shoot speed
                 if (FramesToLoadBolt == 0f)
                 {
-                    FramesToLoadBolt = Owner.ActiveItem().useAnimation;
+                    FramesToLoadBolt = Owner.HeldItem.useAnimation;
                 }
 
-                if (Owner.HasAmmo(Owner.ActiveItem()))
+                if (Owner.HasAmmo(Owner.HeldItem))
                 {
                     ++CurrentChargingFrames;
 
@@ -75,7 +75,7 @@ namespace CalamityMod.Projectiles.Ranged
                     if (CurrentChargingFrames >= FramesToLoadBolt && LoadedBolts < ClockworkBow.MaxBolts)
                     {
                         // Save the stats here for later
-                        Item heldItem = Owner.ActiveItem();
+                        Item heldItem = Owner.HeldItem;
                         Owner.PickAmmo(heldItem, out _, out float shootSpeed, out int damage, out float knockback, out _);
                         Projectile.damage = damage;
                         Projectile.knockBack = knockback;
@@ -135,7 +135,7 @@ namespace CalamityMod.Projectiles.Ranged
                 SoundEngine.PlaySound(SoundID.Item38);//play the sound
             }
 
-            FramesToLoadBolt = Owner.ActiveItem().useAnimation; //reset the reload time
+            FramesToLoadBolt = Owner.HeldItem.useAnimation; //reset the reload time
             LoadedBolts = 0; //Unload the bow
         }
 
@@ -216,7 +216,7 @@ namespace CalamityMod.Projectiles.Ranged
                     Shift = 1 - (CurrentChargingFrames / FramesToLoadBolt);
 
                 // You need to have arrows left for the tint to not remain in stasis
-                if ((i == LoadedBolts - 1 || LoadedBolts == ClockworkBow.MaxBolts) && Owner.HasAmmo(Owner.ActiveItem())) //If the arrow we are looking at is the one that just got loaded, OR all arrows got loaded, we apply some flashiness
+                if ((i == LoadedBolts - 1 || LoadedBolts == ClockworkBow.MaxBolts) && Owner.HasAmmo(Owner.HeldItem)) //If the arrow we are looking at is the one that just got loaded, OR all arrows got loaded, we apply some flashiness
                 {
                     Main.spriteBatch.EnterShaderRegion();
                     GameShaders.Misc["CalamityMod:BasicTint"].UseOpacity(1f - MathHelper.Clamp((CurrentChargingFrames * 2 / FramesToLoadBolt), 0f, 1f));
@@ -233,7 +233,7 @@ namespace CalamityMod.Projectiles.Ranged
 
                 Main.EntitySpriteDraw(BoltTexture, drawPosition, null, Transparency, Projectile.rotation + BoltAngle + MathHelper.PiOver2 + FlipFactor, BoltTexture.Size(), 1f, 0, 0);
 
-                if ((i == LoadedBolts - 1 || LoadedBolts == ClockworkBow.MaxBolts) && Owner.HasAmmo(Owner.ActiveItem())) //Don't forget to exit the shader region
+                if ((i == LoadedBolts - 1 || LoadedBolts == ClockworkBow.MaxBolts) && Owner.HasAmmo(Owner.HeldItem)) //Don't forget to exit the shader region
                     Main.spriteBatch.ExitShaderRegion();
             }
             return true;

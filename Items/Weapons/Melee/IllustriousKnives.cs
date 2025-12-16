@@ -1,5 +1,4 @@
-﻿using System;
-using CalamityMod.Items.Materials;
+﻿using CalamityMod.Items.Materials;
 using CalamityMod.Projectiles.Melee;
 using CalamityMod.Rarities;
 using CalamityMod.Tiles.Furniture.CraftingStations;

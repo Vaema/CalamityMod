@@ -80,6 +80,9 @@ namespace CalamityMod.Systems.Collections
             // Vilethorn
             ProjectileID.VilethornBase, ProjectileID.VilethornBase,
             ProjectileID.VilethornTip, ProjectileID.VilethornBase,
+            // Crystal Vile Shard
+            ProjectileID.CrystalVileShardHead, ProjectileID.CrystalVileShardHead,
+            ProjectileID.CrystalVileShardShaft, ProjectileID.CrystalVileShardHead,
             // Nettle Burst
             ProjectileID.NettleBurstRight, ProjectileID.NettleBurstRight,
             ProjectileID.NettleBurstLeft, ProjectileID.NettleBurstRight,

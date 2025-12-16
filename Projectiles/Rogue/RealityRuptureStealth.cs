@@ -1,14 +1,9 @@
-﻿using System;
-using System.Reflection.Metadata;
-using CalamityMod.Particles;
+﻿using CalamityMod.Particles;
 using CalamityMod.Projectiles.Melee;
-using CalamityMod.Projectiles.Pets;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using Mono.Cecil;
 using Terraria;
 using Terraria.Audio;
-using Terraria.Graphics.Shaders;
 using Terraria.ID;
 using Terraria.ModLoader;
 
@@ -73,7 +68,7 @@ namespace CalamityMod.Projectiles.Rogue
             CrackParticle crack2 = new CrackParticle(Projectile.Center, vel2, Color.Plum, new Vector2(1f, 1f), 0, Scale2, Scale2 - 0.5f, Main.rand.Next(27, 32));
             GeneralParticleHandler.SpawnParticle(crack2);
             Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center, Projectile.velocity * 0f, ModContent.ProjectileType<SpearofDestinyStealthExplosion>(), Projectile.damage / 2, Projectile.knockBack * 2, Projectile.owner, 0f);
-            Main.player[Projectile.owner].Calamity().GeneralScreenShakePower = 8;
+            Main.player[Projectile.owner].SetScreenshake(8f);
         }
         public override bool PreDraw(ref Color lightColor)
         {
@@ -94,7 +89,7 @@ namespace CalamityMod.Projectiles.Rogue
             for (int i = 0; i <= 15; i++)
             {
                 Vector2 sparkVelocity = Projectile.velocity.RotatedByRandom(0.4f) * Main.rand.NextFloat(0.6f, 1.5f);
-                Dust dust = Dust.NewDustPerfect(Projectile.Center + Projectile.velocity, 272, sparkVelocity.RotatedByRandom(0.1f), 0, default, Main.rand.NextFloat(1.2f, 1.5f));
+                Dust dust = Dust.NewDustPerfect(Projectile.Center + Projectile.velocity, DustID.WitherLightning, sparkVelocity.RotatedByRandom(0.1f), 0, default, Main.rand.NextFloat(1.2f, 1.5f));
                 dust.noGravity = true;
 
                 int sparkLifetime = Main.rand.Next(43, 48);

@@ -23,12 +23,12 @@ namespace CalamityMod.Projectiles.Typeless
         public override string Texture => "CalamityMod/Projectiles/InvisibleProj";
         public Player Owner => Main.player[Projectile.owner];
 
-        public static Asset<Texture2D> GlowTexture;
+        public static Asset<Texture2D> SpiritGlow;
 
         public ref float SubmergedTimer => ref Projectile.ai[0];
         public ref float DustCounter => ref Projectile.ai[1];
 
-        public override void Load() => GlowTexture = ModContent.Request<Texture2D>("CalamityMod/Particles/BloomCircle");
+        public override void Load() => SpiritGlow = ModContent.Request<Texture2D>("CalamityMod/Particles/BloomCircle");
 
         public override void SetStaticDefaults()
         {
@@ -241,12 +241,12 @@ namespace CalamityMod.Projectiles.Typeless
             #endregion
         }
 
-        public float JetstreamWidthFunction(float completionRatio) => Utils.GetLerpValue(1f, 0.8f, completionRatio, true) * 3f;
-        public float SpiritWidthFunction(float completionRatio) => MathF.Min(MathHelper.SmoothStep(64f, 8f, completionRatio), Utils.GetLerpValue(0f, 0.15f, completionRatio, true) * 60f);
+        public float JetstreamWidthFunction(float completionRatio, Vector2 vertexPos) => Utils.GetLerpValue(1f, 0.8f, completionRatio, true) * 3f;
+        public float SpiritWidthFunction(float completionRatio, Vector2 vertexPos) => MathF.Min(MathHelper.SmoothStep(64f, 8f, completionRatio), Utils.GetLerpValue(0f, 0.15f, completionRatio, true) * 60f);
 
-        public Color InnerJetstreamColorFunction(float completionRatio) => Color.Lerp(Color.CornflowerBlue, new Color(169, 100, 237), MathF.Pow(completionRatio, 2.5f)) * Utils.GetLerpValue(1f, 0.6f, completionRatio, true) * 0.5f;
-        public Color OuterJetstreamColorFunction(float completionRatio) => Color.Lerp(Color.CornflowerBlue, new Color(100, 237, 237), MathF.Pow(completionRatio, 2.5f)) * Utils.GetLerpValue(1f, 0.6f, completionRatio, true) * 0.2f;
-        public Color SpiritColorFunction(float completionRatio) => Color.Lerp(Color.Lerp(Color.White, Color.Cyan, 0.4f + completionRatio), Color.RoyalBlue, completionRatio) * Utils.GetLerpValue(0.8f, 0.54f, completionRatio, true);
+        public Color InnerJetstreamColorFunction(float completionRatio, Vector2 vertexPos) => Color.Lerp(Color.CornflowerBlue, new Color(169, 100, 237), MathF.Pow(completionRatio, 2.5f)) * Utils.GetLerpValue(1f, 0.6f, completionRatio, true) * 0.5f;
+        public Color OuterJetstreamColorFunction(float completionRatio, Vector2 vertexPos) => Color.Lerp(Color.CornflowerBlue, new Color(100, 237, 237), MathF.Pow(completionRatio, 2.5f)) * Utils.GetLerpValue(1f, 0.6f, completionRatio, true) * 0.2f;
+        public Color SpiritColorFunction(float completionRatio, Vector2 vertexPos) => Color.Lerp(Color.Lerp(Color.White, Color.Cyan, 0.4f + completionRatio), Color.RoyalBlue, completionRatio) * Utils.GetLerpValue(0.8f, 0.54f, completionRatio, true);
 
         public override bool PreDraw(ref Color lightColor)
         {
@@ -289,7 +289,7 @@ namespace CalamityMod.Projectiles.Typeless
             if (Projectile.timeLeft < 180)
             {
                 Main.spriteBatch.EnterShaderRegion(BlendState.Additive);
-                Texture2D glow = GlowTexture.Value;
+                Texture2D glow = SpiritGlow.Value;
                 Vector2 drawPos = Projectile.Center + Vector2.UnitY * Projectile.gfxOffY - Main.screenPosition;
                 Color glowColor = new Color(255, 170, 204) * (0.2f * MathF.Sin(Projectile.timeLeft * MathHelper.Pi * 0.25f) + Utils.Remap(Projectile.timeLeft, 180f, 0f, 0.2f, 0.6f, true));
                 Main.EntitySpriteDraw(glow, drawPos, null, glowColor, Projectile.rotation, glow.Size() * 0.5f, new Vector2(0.6f, 0.5f), SpriteEffects.None);
@@ -304,6 +304,7 @@ namespace CalamityMod.Projectiles.Typeless
         {
             Owner.velocity *= 0.8f;
             Owner.fullRotation = 0f;
+            Owner.fallStart = (int)(Owner.position.Y / 16f); // Triangle getting hit with the wrath of 2000 fall damage
 
             SoundEngine.PlaySound(SoundID.Drown, Projectile.Center);
             for (int i = 0; i < 3; i++)

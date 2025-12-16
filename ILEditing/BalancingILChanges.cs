@@ -1,7 +1,6 @@
 ﻿using System;
 using CalamityMod.Balancing;
 using CalamityMod.Enums;
-using CalamityMod.Projectiles.Typeless;
 using Microsoft.Xna.Framework;
 using Mono.Cecil.Cil;
 using MonoMod.Cil;
@@ -330,26 +329,6 @@ namespace CalamityMod.ILEditing
         }
         #endregion
 
-        #region Item Prefix Changes
-        private static void PrefixChanges(On_Player.orig_GrantPrefixBenefits orig, Player self, Item item)
-        {
-            orig(self, item);
-            // Hard / Guarding / Armored / Warding give 0.25% / 0.5% / 0.75% / 1% DR
-            if (item.prefix == PrefixID.Hard)
-                self.endurance += 0.0025f;
-            if (item.prefix == PrefixID.Guarding)
-                self.endurance += 0.005f;
-            if (item.prefix == PrefixID.Armored)
-                self.endurance += 0.0075f;
-            if (item.prefix == PrefixID.Warding)
-                self.endurance += 0.01f;
-
-            // Lucky prefix increases luck
-            if (item.prefix == PrefixID.Lucky)
-                self.Calamity().calamityBonusLuck += 0.05f;
-        }
-        #endregion
-
         #region Damage Variance Dampening and Luck Removal
         private static int AdjustDamageVariance(On_Main.orig_DamageVar_float_int_float orig, float dmg, int percent, float luck)
         {
@@ -529,7 +508,7 @@ namespace CalamityMod.ILEditing
                 for (int i = 0; i < 200; i++)
                 {
                     NPC hitNPC = Main.npc[i];
-                    if (!hitNPC.active || hitNPC.dontTakeDamage || hitNPC.friendly || (hitNPC.aiStyle == 112 && !(hitNPC.ai[2] <= 1f)) || !self.CanNPCBeHitByPlayerOrPlayerProjectile(hitNPC))
+                    if (!hitNPC.active || hitNPC.dontTakeDamage || hitNPC.friendly || (hitNPC.aiStyle == NPCAIStyleID.Fairy && !(hitNPC.ai[2] <= 1f)) || !self.CanNPCBeHitByPlayerOrPlayerProjectile(hitNPC))
                     {
                         continue;
                     }

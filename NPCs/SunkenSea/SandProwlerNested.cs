@@ -1,22 +1,16 @@
-﻿using System;
-using CalamityMod.BiomeManagers;
-using CalamityMod.DataStructures;
+﻿using CalamityMod.DataStructures;
 using CalamityMod.Items.Placeables.Banners;
-using CalamityMod.Items.Weapons.Magic;
-using CalamityMod.World;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using System.Collections.Generic;
 using System.IO;
 using Terraria;
 using Terraria.Audio;
-using Terraria.DataStructures;
 using Terraria.GameContent;
 using Terraria.ID;
 using Terraria.ModLoader;
 using Terraria.ModLoader.Utilities;
 using Terraria.GameContent.Bestiary;
-using CalamityMod.NPCs.Crags;
 using CalamityMod.Enums;
 
 namespace CalamityMod.NPCs.SunkenSea
@@ -96,8 +90,8 @@ namespace CalamityMod.NPCs.SunkenSea
             NPC.DeathSound = SoundID.NPCDeath1;
             NPC.chaseable = false;
             NPC.netAlways = true;
-            Banner = NPC.type;
-            BannerItem = ModContent.ItemType<SeaSerpentBanner>();
+            Banner = ModContent.NPCType<SandProwler>();
+            BannerItem = ModContent.ItemType<SandProwlerBanner>();
             NPC.Calamity().VulnerableToHeat = false;
             NPC.Calamity().VulnerableToSickness = true;
             NPC.Calamity().VulnerableToElectricity = true;
@@ -229,7 +223,7 @@ namespace CalamityMod.NPCs.SunkenSea
             // Also emit some particle effects as an indicator.
             if (InHidingSpot)
             {
-                Dust sparkle = Dust.NewDustDirect(TileCoordsToHideIn.ToWorldCoordinates(0, 0), 16, 16, 261);
+                Dust sparkle = Dust.NewDustDirect(TileCoordsToHideIn.ToWorldCoordinates(0, 0), 16, 16, DustID.AncientLight);
                 sparkle.color = Color.Orange;
                 sparkle.velocity = Main.rand.NextVector2Circular(4f, 4f);
                 sparkle.noGravity = true;

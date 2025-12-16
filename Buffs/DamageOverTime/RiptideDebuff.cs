@@ -30,7 +30,7 @@ namespace CalamityMod.Buffs.DamageOverTime
 
         public override void Update(NPC npc, ref int buffIndex)
         {
-                npc.Calamity().riptide = true;
+            npc.Calamity().riptide = true;
         }
 
         internal static void DrawEffects(PlayerDrawSet drawInfo)
@@ -60,7 +60,7 @@ namespace CalamityMod.Buffs.DamageOverTime
             Vector2 npcSize = npc.Center + new Vector2(Main.rand.NextFloat(-npc.width / 2, npc.width / 2), Main.rand.NextFloat(-npc.height / 2, npc.height / 2));
             if (Main.rand.NextBool(9))
             {
-                Dust dust = Dust.NewDustPerfect(npcSize, 76, new Vector2(2f, 2f).RotatedByRandom(100) * Main.rand.NextFloat(0.3f, 0.7f), 0, default, Main.rand.NextFloat(0.2f, 0.6f));
+                Dust dust = Dust.NewDustPerfect(npcSize, DustID.Snow, new Vector2(2f, 2f).RotatedByRandom(100) * Main.rand.NextFloat(0.3f, 0.7f), 0, default, Main.rand.NextFloat(0.2f, 0.6f));
                 dust.color = (Main.rand.NextBool(3) ? Color.LightBlue : Color.LightSkyBlue);
             }
             if (Main.rand.NextBool(8))

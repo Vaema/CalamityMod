@@ -1,15 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.IO;
 using Terraria;
 using Terraria.ID;
 
 namespace CalamityMod.Packets
 {
-    public sealed class SyncNPCMotionDataToServerPacket : CalamityPacket
+    internal sealed class SyncNPCMotionDataToServerPacket : CalamityPacket
     {
         public static SyncNPCMotionDataToServerPacket Instance { get; private set; }
 

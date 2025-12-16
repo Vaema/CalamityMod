@@ -1,12 +1,10 @@
-﻿using System;
-using System.IO;
+﻿using System.IO;
 using CalamityMod.BiomeManagers;
 using CalamityMod.Items.Materials;
 using CalamityMod.Items.Placeables.Banners;
 using CalamityMod.Items.Placeables.SunkenSea;
 using CalamityMod.Particles;
 using CalamityMod.Projectiles.Enemy;
-using CalamityMod.Projectiles.Melee;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using ReLogic.Content;
@@ -439,12 +437,14 @@ namespace CalamityMod.NPCs.SunkenSea
                 {
                     Dust.NewDust(NPC.position, NPC.width, NPC.height, DustID.Obsidian, hit.HitDirection, -1f, 0, default, 1f);
                 }
-                if (!Main.dedServ)
+                string name = NPC.localAI[1] switch
                 {
-                    Gore.NewGore(NPC.GetSource_Death(), NPC.position, NPC.velocity, Mod.Find<ModGore>("Clam1").Type, 1f);
-                    Gore.NewGore(NPC.GetSource_Death(), NPC.position, NPC.velocity, Mod.Find<ModGore>("Clam2").Type, 1f);
-                    Gore.NewGore(NPC.GetSource_Death(), NPC.position, NPC.velocity, Mod.Find<ModGore>("Clam3").Type, 1f);
-                }
+                    1 => "ClamAlgae",
+                    2 => "ClamCoral",
+                    _ => "Clam"
+                };
+
+                CalamityUtils.SpawnGores(NPC, name, 2);
             }
         }
 

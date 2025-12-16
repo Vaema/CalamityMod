@@ -1,5 +1,4 @@
-﻿using System;
-using CalamityMod.CalPlayer;
+﻿using CalamityMod.CalPlayer;
 using CalamityMod.NPCs.AquaticScourge;
 using CalamityMod.NPCs.AstrumAureus;
 using CalamityMod.NPCs.AstrumDeus;
@@ -10,7 +9,6 @@ using CalamityMod.NPCs.CeaselessVoid;
 using CalamityMod.NPCs.Crabulon;
 using CalamityMod.NPCs.Cryogen;
 using CalamityMod.NPCs.DesertScourge;
-using CalamityMod.NPCs.DevourerofGods;
 using CalamityMod.NPCs.ExoMechs.Ares;
 using CalamityMod.NPCs.Leviathan;
 using CalamityMod.NPCs.OldDuke;

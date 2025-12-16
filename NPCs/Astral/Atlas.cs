@@ -1,6 +1,5 @@
 ﻿using System;
 using System.IO;
-using CalamityMod.BiomeManagers;
 using CalamityMod.Buffs.DamageOverTime;
 using CalamityMod.Dusts;
 using CalamityMod.Items.Materials;

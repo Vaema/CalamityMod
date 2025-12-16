@@ -1,10 +1,8 @@
 ﻿using System;
-using CalamityMod.Projectiles.Healing;
 using CalamityMod.Projectiles.Typeless;
 using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.ModLoader;
-using static System.Net.Mime.MediaTypeNames;
 
 namespace CalamityMod.NPCs
 {

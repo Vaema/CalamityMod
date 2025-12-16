@@ -129,15 +129,15 @@ namespace CalamityMod.Projectiles.Melee
 
         public override void AI()
         {
-            CalamityPlayer.EnchantHeldItemEffects(Owner, Owner.Calamity(), Owner.ActiveItem());
-            if (!Owner.Calamity().bladeArmEnchant || Owner.ActiveItem().type != SwordItemID || Owner.CCed || !Owner.active || Owner.dead)
+            CalamityPlayer.EnchantHeldItemEffects(Owner, Owner.Calamity(), Owner.HeldItem);
+            if (!Owner.Calamity().bladeArmEnchant || Owner.HeldItem.type != SwordItemID || Owner.CCed || !Owner.active || Owner.dead)
             {
                 Projectile.Kill();
                 return;
             }
 
             if (Owner.itemAnimationMax == 0)
-                Owner.itemAnimationMax = (int)(Owner.ActiveItem().useAnimation * Owner.GetAttackSpeed<MeleeDamageClass>());
+                Owner.itemAnimationMax = (int)(Owner.HeldItem.useAnimation * Owner.GetAttackSpeed<MeleeDamageClass>());
 
             float swingOffsetAngle = MathHelper.SmoothStep(-1.87f, 3.79f, AttackCompletionRatio);
 
@@ -198,9 +198,9 @@ namespace CalamityMod.Projectiles.Melee
             Time++;
         }
 
-        internal float PrimitiveWidthFunction(float completionRatio) => BladeFrame.Height * 0.47f;
+        internal float PrimitiveWidthFunction(float completionRatio, Vector2 vertexPos) => BladeFrame.Height * 0.47f;
 
-        internal Color PrimitiveColorFunction(float completionRatio)
+        internal Color PrimitiveColorFunction(float completionRatio, Vector2 vertexPos)
         {
             float opacity = Utils.GetLerpValue(0.8f, 0.52f, completionRatio, true) * Utils.GetLerpValue(1f, 0.81f, AttackCompletionRatio, true);
             Color startingColor = Color.Lerp(Color.Red, Color.DarkRed, 0.4f);
@@ -263,7 +263,7 @@ namespace CalamityMod.Projectiles.Melee
                 if (Owner.direction == -1)
                     Utils.Swap(ref leftVertexPosition, ref rightVertexPosition);
 
-                PrimitiveRenderer.RenderTrail(drawPoints, new(PrimitiveWidthFunction, PrimitiveColorFunction, (_) => BladeCenterPosition - Projectile.position,
+                PrimitiveRenderer.RenderTrail(drawPoints, new(PrimitiveWidthFunction, PrimitiveColorFunction, (_,_) => BladeCenterPosition - Projectile.position,
                     shader: GameShaders.Misc["CalamityMod:FadingSolidTrail"], initialVertexPositionsOverride: (leftVertexPosition, rightVertexPosition)), 67);
             }
 
@@ -289,8 +289,8 @@ namespace CalamityMod.Projectiles.Melee
 
         public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
         {
-            ItemLoader.OnHitNPC(Owner.ActiveItem(), Owner, target, hit, damageDone);
-            NPCLoader.OnHitByItem(target, Owner, Owner.ActiveItem(), hit, damageDone);
+            ItemLoader.OnHitNPC(Owner.HeldItem, Owner, target, hit, damageDone);
+            NPCLoader.OnHitByItem(target, Owner, Owner.HeldItem, hit, damageDone);
             PlayerLoader.OnHitNPC(Owner, target, hit, damageDone);
         }
     }

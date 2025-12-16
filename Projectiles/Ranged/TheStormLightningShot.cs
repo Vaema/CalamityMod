@@ -67,7 +67,7 @@ namespace CalamityMod.Projectiles.Ranged
             }
             if (time % 15 == 0)
             {
-                Dust dust = Dust.NewDustPerfect(Projectile.Center, 278, (effectVel * 10) * Main.rand.NextFloat(-0.4f, -0.7f), 0, default, Main.rand.NextFloat(0.45f, 0.6f));
+                Dust dust = Dust.NewDustPerfect(Projectile.Center, DustID.FireworksRGB, (effectVel * 10) * Main.rand.NextFloat(-0.4f, -0.7f), 0, default, Main.rand.NextFloat(0.45f, 0.6f));
                 dust.noGravity = true;
                 dust.color = usedColor;
                 effectVel = Projectile.velocity.RotatedBy(0.2f * zagDirection * (hasZaged ? 1 : 0.5f)) * 0.08f;
@@ -115,7 +115,7 @@ namespace CalamityMod.Projectiles.Ranged
         {
             for (int i = 0; i <= 2; i++)
             {
-                Dust dust = Dust.NewDustPerfect(Projectile.Center, 278, (Projectile.velocity * 4).RotatedByRandom(MathHelper.ToRadians(15f)) * Main.rand.NextFloat(0.3f, 1.8f), 0, default, Main.rand.NextFloat(0.6f, 0.8f));
+                Dust dust = Dust.NewDustPerfect(Projectile.Center, DustID.FireworksRGB, (Projectile.velocity * 4).RotatedByRandom(MathHelper.ToRadians(15f)) * Main.rand.NextFloat(0.3f, 1.8f), 0, default, Main.rand.NextFloat(0.6f, 0.8f));
                 dust.noGravity = true;
                 dust.color = Main.rand.NextBool(5) ? Color.Cyan : Color.Orchid;
             }

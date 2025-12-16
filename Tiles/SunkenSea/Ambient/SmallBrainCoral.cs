@@ -1,9 +1,11 @@
-﻿using CalamityMod.Projectiles.Typeless;
+﻿using System;
+using CalamityMod.Projectiles.Typeless;
 using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
 using Terraria;
 using Terraria.DataStructures;
+using Terraria.GameContent;
 using Terraria.ID;
-using Terraria.Localization;
 using Terraria.ModLoader;
 using Terraria.ObjectData;
 
@@ -26,6 +28,31 @@ namespace CalamityMod.Tiles.SunkenSea.Ambient
         public override void NumDust(int i, int j, bool fail, ref int num)
         {
             num = fail ? 1 : 3;
+        }
+
+        public override bool PreDraw(int i, int j, SpriteBatch spriteBatch)
+        {
+            var tile = Main.tile[i, j];
+            if (tile.IsTileActuallyInvisible())
+                return false;
+
+            float glowbrightness = 1f;
+            float glowspeed = (float)(Main.timeForVisualEffects * 0.01);
+            glowbrightness *= MathF.Sin(i / 60f + glowspeed);
+
+            int xFrameOffset = tile.TileFrameX;
+            int yFrameOffset = tile.TileFrameY;
+            Texture2D glowmask = TextureAssets.Tile[Type].Value;
+            Vector2 drawOffest = Main.drawToScreen ? Vector2.Zero : new Vector2(Main.offScreenRange);
+            Vector2 drawPosition = new Vector2(i * 16 - Main.screenPosition.X, j * 16 - Main.screenPosition.Y) + drawOffest;
+            Color drawColour = Color.White * glowbrightness;
+
+            if (!tile.IsHalfBlock && tile.Slope == 0)
+                spriteBatch.Draw(glowmask, drawPosition, new Rectangle(xFrameOffset, yFrameOffset, 18, 18), drawColour, 0.0f, Vector2.Zero, 1f, SpriteEffects.None, 0.0f);
+            else if (tile.IsHalfBlock)
+                spriteBatch.Draw(glowmask, drawPosition + new Vector2(0f, 8f), new Rectangle(xFrameOffset, yFrameOffset, 18, 8), drawColour, 0.0f, Vector2.Zero, 1f, SpriteEffects.None, 0.0f);
+
+            return false;
         }
 
         public override void NearbyEffects(int i, int j, bool closer)

@@ -4,10 +4,9 @@ using CalamityMod.Events;
 using CalamityMod.Items.Accessories;
 using CalamityMod.Items.Armor.Vanity;
 using CalamityMod.Items.LoreItems;
-using CalamityMod.Items.Materials;
 using CalamityMod.Items.Pets;
 using CalamityMod.Items.Placeables.Furniture.BossRelics;
-using CalamityMod.Items.Placeables.Furniture.DevPaintings;
+using CalamityMod.Items.Placeables.Furniture.Paintings;
 using CalamityMod.Items.Placeables.Furniture.Trophies;
 using CalamityMod.Items.TreasureBags;
 using CalamityMod.Items.Weapons.Magic;
@@ -148,7 +147,7 @@ namespace CalamityMod.NPCs.HiveMind
             NPC.height = frameHeight_P1;
 
             NPC.defense = 8;
-            NPC.LifeMaxNERB(6150, 7350, 350000);
+            NPC.LifeMaxNERB(5000, 7000, 350000);
             NPC.aiStyle = -1;
             AIType = -1;
             NPC.knockBackResist = 0f;
@@ -1317,7 +1316,7 @@ namespace CalamityMod.NPCs.HiveMind
                 Color messageColor = Color.Cyan;
                 AerialiteOreGen.Enchant();
 
-                CalamityUtils.DisplayLocalizedText(key, messageColor);
+                CalamityUtils.BroadcastLocalizedText(key, messageColor);
             }
 
             // Mark The Hive Mind as dead
@@ -1350,7 +1349,8 @@ namespace CalamityMod.NPCs.HiveMind
 
                 // Equipment
                 normalOnly.Add(ModContent.ItemType<FilthyGlove>(), DropHelper.NormalWeaponDropRateFraction);
-                normalOnly.Add(DropHelper.PerPlayer(ModContent.ItemType<RottenBrain>()));
+                // 16NOV2025: Ozzatron: item has been chosen as the "Expert gatekept" item for this Calamity boss
+                // normalOnly.Add(DropHelper.PerPlayer(ModContent.ItemType<RottenBrain>()));
 
                 // Vanity
                 normalOnly.Add(ModContent.ItemType<HiveMindMask>(), 7);

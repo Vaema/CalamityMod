@@ -48,7 +48,7 @@ namespace CalamityMod.Items.Weapons.Magic
             }
             for (int i = 0; i < 2; i++)
             {
-                Dust chargefull = Dust.NewDustPerfect(position + velocity * 13, 267);
+                Dust chargefull = Dust.NewDustPerfect(position + velocity * 13, DustID.RainbowMk2);
                 chargefull.velocity = velocity.RotatedByRandom(0.25f) * Main.rand.NextFloat(1f, 4);
                 chargefull.scale = Main.rand.NextFloat(0.5f, 0.9f);
                 chargefull.noGravity = true;

@@ -1,9 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
 using CalamityMod.Systems;
 using CalamityMod.Tiles.Astral;
 using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Graphics;
 using Terraria;
 using Terraria.DataStructures;
 using Terraria.GameContent.Metadata;
@@ -26,7 +24,7 @@ namespace CalamityMod.Tiles.AstralSnow
             CalamityUtils.MergeWithSnow(Type);
             CalamityUtils.MergeAstralTiles(Type);
 
-            DustType = 173;
+            DustType = DustID.ShadowbeamStaff;
 
             HitSound = SoundID.Item50;
 
@@ -40,8 +38,8 @@ namespace CalamityMod.Tiles.AstralSnow
             TileID.Sets.Conversion.Ice[Type] = true;
             TileID.Sets.CanBeClearedDuringOreRunner[Type] = true;
 
-            this.RegisterUniversalMerge(ModContent.TileType<AstralSnow>(), "CalamityMod/Tiles/Merges/AstralSnowMerge");
-            this.RegisterUniversalMerge(ModContent.TileType<AstralDirt>(), "CalamityMod/Tiles/Merges/AstralDirtMerge");
+            this.RegisterBlendMergeWith(ModContent.TileType<AstralSnow>());
+            this.RegisterBlendMergeWith(ModContent.TileType<AstralDirt>());
         }
 
         public override void NumDust(int i, int j, bool fail, ref int num)

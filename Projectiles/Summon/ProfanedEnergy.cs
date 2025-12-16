@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using CalamityMod.Dusts;
 using CalamityMod.Particles;
 using CalamityMod.Projectiles.Boss;
-using CalamityMod.Projectiles.Ranged;
 using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.Audio;

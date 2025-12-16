@@ -154,12 +154,12 @@ namespace CalamityMod.Projectiles.Magic
             if (isActive && Main.myPlayer == Projectile.owner)
             {
                 float coreVelocity = 11.5f;
-                int weaponDamage2 = player.GetWeaponDamage(player.ActiveItem());
-                float weaponKnockback2 = player.ActiveItem().knockBack;
+                int weaponDamage2 = player.GetWeaponDamage(player.HeldItem);
+                float weaponKnockback2 = player.HeldItem.knockBack;
                 if (canUseItem)
                 {
-                    weaponKnockback2 = player.GetWeaponKnockback(player.ActiveItem(), weaponKnockback2);
-                    float scaleFactor12 = player.ActiveItem().shootSpeed * Projectile.scale;
+                    weaponKnockback2 = player.GetWeaponKnockback(player.HeldItem, weaponKnockback2);
+                    float scaleFactor12 = player.HeldItem.shootSpeed * Projectile.scale;
                     Vector2 playerRotateCopy = playerRotate;
                     Vector2 projSpawnDirection = Main.screenPosition + new Vector2((float)Main.mouseX, (float)Main.mouseY) - playerRotateCopy;
                     if (player.gravDir == -1f)

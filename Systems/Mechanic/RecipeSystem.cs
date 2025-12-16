@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using CalamityMod.Items.Accessories;
-using CalamityMod.Items.Accessories.Wings;
 using CalamityMod.Items.Critters;
 using CalamityMod.Items.Fishing.AstralCatches;
 using CalamityMod.Items.Fishing.BrimstoneCragCatches;
@@ -410,39 +409,10 @@ namespace CalamityMod.Systems
                 ItemID.RichGravestone5
             });
             AnyTombstone = RecipeGroup.RegisterGroup("AnyTombstone", group);
-
-            // Wings for Celestial Tracers
-            AnyWings = RecipeGroup.RegisterGroup("AnyWings", GetValidWingsForTracers());
         }
         #endregion
 
         #region Automatic Recipe Groups
-        private static RecipeGroup GetValidWingsForTracers()
-        {
-            List<int> wingIds = new List<int>();
-            // List of wings that can't be used to craft Celestial Tracers, includes tracers themselves, specific wing ingredients, and non-traditional wings
-            List<int> excludedWings = new List<int>
-            {
-                ItemType<TracersSeraph>(),
-                ItemType<TracersElysian>(),
-                ItemType<TracersCelestial>(),
-                ItemType<SoulofCryogen>(),
-                ItemType<ElysianWings>(),
-                ItemType<WingsofRebirth>(),
-                ItemType<MOAB>(),
-                ItemID.Jetpack
-            };
-            foreach (var i in ContentSamples.ItemsByType)
-            {
-                Item item = i.Value;
-                if (item.wingSlot > -1 && !excludedWings.Contains(item.type))
-                {
-                    wingIds.Add(item.type);
-                }
-            }
-            return new RecipeGroup(() => CalamityUtils.GetTextValue("Misc.RecipeGroup.AnyWings"), [.. wingIds]);
-        }
-
         private static RecipeGroup GetFoodItems()
         {
             List<int> foodIds = new List<int>();
@@ -490,6 +460,7 @@ namespace CalamityMod.Systems
                 AddIngredient(ItemID.ExplosivePowder, 4).
                 AddTile(TileID.Anvils).
                 Register();
+
             // and Rocket IIs (requires slightly more explosive powder)
             Recipe.Create(ItemID.RocketII, 100).
                 AddRecipeGroup("IronBar").
@@ -961,6 +932,10 @@ namespace CalamityMod.Systems
             // Enchanted Sword and Terragrim shimmer into each other
             convert[ItemID.EnchantedSword] = ItemID.Terragrim;
             convert[ItemID.Terragrim] = ItemID.EnchantedSword;
+
+            // Allow Cascade and Gray Zapinator to be obtained in Hardmode
+            convert[ItemID.HelFire] = ItemID.Cascade;
+            convert[ItemID.ZapinatorOrange] = ItemID.ZapinatorGray;
         }
         #endregion
 
@@ -1131,21 +1106,35 @@ namespace CalamityMod.Systems
             r.DisableDecraft();
 
             r = Recipe.Create(ItemID.CookedFish);
-            r.AddIngredient<PrismaticGuppyBlueItem>();
+            r.AddIngredient<CoralskinFoolfish>();
             r.AddTile(TileID.CookingPots);
             r.Register();
             r.SortAfterFirstRecipesOf(ItemID.CookedFish);
             r.DisableDecraft();
 
             r = Recipe.Create(ItemID.CookedFish);
-            r.AddIngredient<PrismaticGuppyGreenItem>();
+            r.AddIngredient<GleamingCucumber>();
             r.AddTile(TileID.CookingPots);
             r.Register();
             r.SortAfterFirstRecipesOf(ItemID.CookedFish);
             r.DisableDecraft();
 
             r = Recipe.Create(ItemID.CookedFish);
-            r.AddIngredient<PrismaticGuppyPinkItem>();
+            r.AddIngredient<MoltenFishron>();
+            r.AddTile(TileID.CookingPots);
+            r.Register();
+            r.SortAfterFirstRecipesOf(ItemID.CookedFish);
+            r.DisableDecraft();
+
+            r = Recipe.Create(ItemID.CookedFish);
+            r.AddIngredient<SpecularSturgeon>();
+            r.AddTile(TileID.CookingPots);
+            r.Register();
+            r.SortAfterFirstRecipesOf(ItemID.CookedFish);
+            r.DisableDecraft();
+
+            r = Recipe.Create(ItemID.CookedFish);
+            r.AddIngredient<Squidoom>();
             r.AddTile(TileID.CookingPots);
             r.Register();
             r.SortAfterFirstRecipesOf(ItemID.CookedFish);
@@ -1298,7 +1287,6 @@ namespace CalamityMod.Systems
             r.AddRecipeGroup("AnyCopperBar", 2);
             r.AddTile(TileID.Loom);
             r.Register();
-            r.DisableDecraft();
 
             // Lower half Desert items (these are partially destroyed by Sunken Sea)
             // Bast Statue
@@ -1308,14 +1296,12 @@ namespace CalamityMod.Systems
             r.AddIngredient(ItemID.Ruby);
             r.AddTile(TileID.Anvils);
             r.Register();
-            r.DisableDecraft();
 
             // Encumbering Stone
             r = Recipe.Create(ItemID.EncumberingStone);
             r.AddIngredient(ItemID.StoneBlock, 100);
             r.AddTile(TileID.Anvils);
             r.Register();
-            r.DisableDecraft();
         }
         #endregion
 
@@ -1328,7 +1314,6 @@ namespace CalamityMod.Systems
             r.AddIngredient(ItemID.Wood, 7);
             r.AddTile(TileID.WorkBenches);
             r.Register();
-            r.DisableDecraft();
 
             // Wand of Sparking
             r = Recipe.Create(ItemID.WandofSparking);
@@ -1338,7 +1323,6 @@ namespace CalamityMod.Systems
             r.AddCondition(Condition.NotRemixWorld);
             r.AddTile(TileID.Anvils);
             r.Register();
-            r.DisableDecraft();
 
             // Early game minions
             // Finch Staff
@@ -1347,7 +1331,6 @@ namespace CalamityMod.Systems
             r.AddRecipeGroup("Wood", 8);
             r.AddTile(TileID.WorkBenches);
             r.Register();
-            r.DisableDecraft();
 
             // Slime Staff
             r = Recipe.Create(ItemID.SlimeStaff);
@@ -1355,7 +1338,6 @@ namespace CalamityMod.Systems
             r.AddIngredient(ItemID.Gel, 40);
             r.AddTile(TileID.Anvils);
             r.Register();
-            r.DisableDecraft();
 
             // Key sword components
             // Enchanted Sword
@@ -1403,7 +1385,6 @@ namespace CalamityMod.Systems
             r.AddRecipeGroup("Wood", 10);
             r.AddTile(TileID.Sawmill);
             r.Register();
-            r.DisableDecraft();
 
             #region Terraspark Boots Line
             // Hermes Boots
@@ -1412,14 +1393,12 @@ namespace CalamityMod.Systems
             r.AddIngredient(ItemID.SwiftnessPotion, 5);
             r.AddTile(TileID.Loom);
             r.Register();
-            r.DisableDecraft();
 
             // Aglet
             r = Recipe.Create(ItemID.Aglet);
             r.AddRecipeGroup(AnyCopperBar, 5);
             r.AddTile(TileID.Anvils);
             r.Register();
-            r.DisableDecraft();
 
             // Anklet of the Wind
             r = Recipe.Create(ItemID.AnkletoftheWind);
@@ -1428,7 +1407,6 @@ namespace CalamityMod.Systems
             r.AddIngredient(ItemID.PinkGel, 5);
             r.AddTile(TileID.Anvils);
             r.Register();
-            r.DisableDecraft();
 
             // Ice Skates
             r = Recipe.Create(ItemID.IceSkates);
@@ -1436,7 +1414,6 @@ namespace CalamityMod.Systems
             r.AddRecipeGroup("IronBar", 5);
             r.AddTile(TileID.Anvils);
             r.Register();
-            r.DisableDecraft();
 
             // Water Walking Boots
             r = Recipe.Create(ItemID.WaterWalkingBoots);
@@ -1444,7 +1421,6 @@ namespace CalamityMod.Systems
             r.AddIngredient(ItemID.WaterWalkingPotion, 5);
             r.AddTile(TileID.Anvils);
             r.Register();
-            r.DisableDecraft();
 
             // Lava Charm
             r = Recipe.Create(ItemID.LavaCharm);
@@ -1462,7 +1438,6 @@ namespace CalamityMod.Systems
             r.AddIngredient(ItemID.Hellstone, 5);
             r.AddTile(TileID.Anvils);
             r.Register();
-            r.DisableDecraft();
             #endregion
 
             #region Core Movement Accessories
@@ -1474,7 +1449,6 @@ namespace CalamityMod.Systems
             r.AddIngredient(ItemID.Feather, 3);
             r.AddTile(TileID.Anvils);
             r.Register();
-            r.DisableDecraft();
 
             // Cloud in a Bottle
             r = Recipe.Create(ItemID.CloudinaBottle);
@@ -1483,7 +1457,6 @@ namespace CalamityMod.Systems
             r.AddIngredient(ItemID.Feather, 2);
             r.AddTile(TileID.Anvils);
             r.Register();
-            r.DisableDecraft();
 
             // Sandstorm in a Bottle
             r = Recipe.Create(ItemID.SandstorminaBottle);
@@ -1503,7 +1476,6 @@ namespace CalamityMod.Systems
             r.AddIngredient(ItemID.Feather, 10);
             r.AddTile(TileID.Anvils);
             r.Register();
-            r.DisableDecraft();
 
             // Flying Carpet
             r = Recipe.Create(ItemID.FlyingCarpet);
@@ -1526,7 +1498,6 @@ namespace CalamityMod.Systems
             r.AddRecipeGroup(AnyGoldBar, 8);
             r.AddTile(TileID.Anvils);
             r.Register();
-            r.DisableDecraft();
 
             // Shiny Red Balloon
             r = Recipe.Create(ItemID.ShinyRedBalloon);
@@ -1534,7 +1505,6 @@ namespace CalamityMod.Systems
             r.AddIngredient(ItemID.Cloud, 10);
             r.AddTile(TileID.Solidifier);
             r.Register();
-            r.DisableDecraft();
             #endregion
 
             // Cobalt Shield
@@ -1551,7 +1521,6 @@ namespace CalamityMod.Systems
             r.AddIngredient(ItemID.Obsidian, 4);
             r.AddTile(TileID.Anvils);
             r.Register();
-            r.DisableDecraft();
 
             // Flower Boots
             r = Recipe.Create(ItemID.FlowerBoots);
@@ -1560,21 +1529,18 @@ namespace CalamityMod.Systems
             r.AddIngredient(ItemID.JungleGrassSeeds, 5);
             r.AddTile(TileID.Loom);
             r.Register();
-            r.DisableDecraft();
 
             // Hand Warmer
             r = Recipe.Create(ItemID.HandWarmer);
             r.AddIngredient(ItemID.Silk, 10);
             r.AddTile(TileID.Loom);
             r.Register();
-            r.DisableDecraft();
 
             // Radar
             r = Recipe.Create(ItemID.Radar);
             r.AddRecipeGroup("IronBar", 5);
             r.AddTile(TileID.Anvils);
             r.Register();
-            r.DisableDecraft();
         }
         #endregion
 
@@ -1587,21 +1553,18 @@ namespace CalamityMod.Systems
             r.AddIngredient(ItemID.FlinxFur, 1);
             r.AddTile(TileID.Loom);
             r.Register();
-            r.DisableDecraft();
 
             r = Recipe.Create(ItemID.EskimoCoat);
             r.AddIngredient(ItemID.Silk, 8);
             r.AddIngredient(ItemID.FlinxFur, 2);
             r.AddTile(TileID.Loom);
             r.Register();
-            r.DisableDecraft();
 
             r = Recipe.Create(ItemID.EskimoPants);
             r.AddIngredient(ItemID.Silk, 6);
             r.AddIngredient(ItemID.FlinxFur, 1);
             r.AddTile(TileID.Loom);
             r.Register();
-            r.DisableDecraft();
         }
         #endregion
 
@@ -1638,7 +1601,6 @@ namespace CalamityMod.Systems
             r.AddIngredient(ItemID.LunarBar);
             r.AddTile(TileID.LunarCraftingStation);
             r.Register();
-            r.DisableDecraft();
 
             // Tiershift Mini Nuke 2s to post Moon Lord.
             r = Recipe.Create(ItemID.MiniNukeII, 333);
@@ -1646,7 +1608,6 @@ namespace CalamityMod.Systems
             r.AddIngredient(ItemID.LunarBar);
             r.AddTile(TileID.LunarCraftingStation);
             r.Register();
-            r.DisableDecraft();
         }
         #endregion
 

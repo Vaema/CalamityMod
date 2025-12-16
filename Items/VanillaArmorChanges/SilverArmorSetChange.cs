@@ -1,8 +1,6 @@
-﻿using System.Text;
-using Microsoft.Xna.Framework;
+﻿using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.ID;
-using Terraria.ModLoader;
 
 namespace CalamityMod.Items.VanillaArmorChanges
 {

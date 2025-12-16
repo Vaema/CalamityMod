@@ -1,8 +1,6 @@
-﻿using System;
-using CalamityMod.Particles;
+﻿using CalamityMod.Particles;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using MonoMod.Core.Utils;
 using ReLogic.Content;
 using Terraria;
 using Terraria.Audio;

@@ -1,17 +1,8 @@
-﻿using System.Collections.Generic;
-using CalamityMod.Buffs.DamageOverTime;
-using CalamityMod.Systems;
-using CalamityMod.Tiles.Astral;
-using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Graphics;
-using ReLogic.Content;
+﻿using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.Audio;
 using Terraria.DataStructures;
 using Terraria.ID;
-using Terraria.Localization;
-using Terraria.ModLoader;
-using Terraria.ObjectData;
 
 namespace CalamityMod.Tiles.Ores
 {
@@ -38,14 +29,14 @@ namespace CalamityMod.Tiles.Ores
             TileID.Sets.Ore[Type] = true;
             TileID.Sets.OreMergesWithMud[Type] = true;
 
-            DustType = 55;
+            DustType = DustID.Pixie;
             AddMapEntry(new Color(255, 200, 0), CreateMapEntryName());
             MineResist = 5f;
             MinPick = 250;
             HitSound = MineSound;
-            
-            this.RegisterUniversalMerge(TileID.Dirt, "CalamityMod/Tiles/Merges/DirtMerge");
-            this.RegisterUniversalMerge(TileID.Stone, "CalamityMod/Tiles/Merges/StoneMerge");
+
+            this.RegisterBlendMergeWith(TileID.Dirt);
+            this.RegisterBlendMergeWith(TileID.Stone);
         }
 
         public override bool CanExplode(int i, int j)

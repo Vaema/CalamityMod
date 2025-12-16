@@ -1,6 +1,5 @@
 ﻿using System;
 using System.IO;
-using CalamityMod.Buffs.DamageOverTime;
 using CalamityMod.Dusts;
 using CalamityMod.Events;
 using CalamityMod.Items;
@@ -84,7 +83,7 @@ namespace CalamityMod.NPCs.ProfanedGuardians
             NPC.height = 164;
             NPC.defense = 30;
             NPC.DR_NERD(0.2f);
-            NPC.LifeMaxNERB(60000, 72000, 50000);
+            NPC.LifeMaxNERB(48000, 72000, 50000);
             NPC.knockBackResist = 0f;
             NPC.noGravity = true;
             NPC.noTileCollide = true;

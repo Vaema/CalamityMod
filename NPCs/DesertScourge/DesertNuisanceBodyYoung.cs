@@ -1,5 +1,4 @@
-﻿using System.IO;
-using CalamityMod.Events;
+﻿using CalamityMod.Events;
 using CalamityMod.World;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
@@ -299,12 +298,6 @@ namespace CalamityMod.NPCs.DesertScourge
         public override void ApplyDifficultyAndPlayerScaling(int numPlayers, float balance, float bossAdjustment)
         {
             NPC.lifeMax = (int)(NPC.lifeMax * 0.7f * balance);
-        }
-
-        public override void OnHitPlayer(Player target, Player.HurtInfo hurtInfo)
-        {
-            if (hurtInfo.Damage > 0)
-                target.AddBuff(BuffID.Bleeding, 120);
         }
 
         public override Color? GetAlpha(Color drawColor)

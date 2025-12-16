@@ -1,9 +1,8 @@
 ﻿using System;
-using System.Collections.Generic;
+using CalamityMod.ExtraTextures.GreyscaleGradients;
 using CalamityMod.Systems;
 using CalamityMod.Tiles.Astral;
 using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Graphics;
 using Terraria;
 using Terraria.DataStructures;
 using Terraria.GameContent.Metadata;
@@ -15,11 +14,9 @@ namespace CalamityMod.Tiles.AstralSnow
     public class AstralSnow : GlowMaskTile
     {
         public override string GlowMaskAsset => "CalamityMod/Tiles/AstralSnow/AstralSnowLightmask";
-        public GrayscaleTexture2D NoiseTexture;
+
         public override void SetupStatic()
         {
-            NoiseTexture = new("CalamityMod/ExtraTextures/GreyscaleGradients/BlobbyNoise");
-
             Main.tileSolid[Type] = true;
             Main.tileBlockLight[Type] = true;
             Main.tileBrick[Type] = true;
@@ -29,7 +26,7 @@ namespace CalamityMod.Tiles.AstralSnow
             CalamityUtils.MergeWithSnow(Type);
             CalamityUtils.MergeAstralTiles(Type);
 
-            DustType = 173;
+            DustType = DustID.ShadowbeamStaff;
 
             HitSound = SoundID.Item48;
 
@@ -40,18 +37,13 @@ namespace CalamityMod.Tiles.AstralSnow
             TileID.Sets.ChecksForMerge[Type] = true;
             TileID.Sets.CanBeClearedDuringOreRunner[Type] = true;
 
-            this.RegisterUniversalMerge(ModContent.TileType<AstralDirt>(), "CalamityMod/Tiles/Merges/AstralDirtMerge");
-            this.RegisterUniversalMerge(TileID.SnowBlock, "CalamityMod/Tiles/Merges/SnowMerge");
+            this.RegisterBlendMergeWith(ModContent.TileType<AstralDirt>());
+            this.RegisterBlendMergeWith(TileID.SnowBlock);
         }
 
         public override void NumDust(int i, int j, bool fail, ref int num)
         {
             num = fail ? 1 : 3;
-        }
-        public override void OnUnload()
-        {
-            NoiseTexture?.Unload();
-            NoiseTexture = null;
         }
 
         public override bool IsTileBiomeSightable(int i, int j, ref Color sightColor)
@@ -62,7 +54,7 @@ namespace CalamityMod.Tiles.AstralSnow
         public override Color GetGlowMaskColor(int i, int j, TileDrawInfo drawData)
         {
             int time = (int)(Main.timeForVisualEffects * 0.11);
-            float brightness = 1.0f - NoiseTexture.GetRepeat((i * 60) + time, (j * 50) + time);
+            float brightness = 1.0f - GreyscaleGradient.BlobbyNoise.GetRepeat((i * 60) + time, (j * 50) + time);
             brightness += (float)MathF.Sin(-j / 1f + Main.GameUpdateCount * 0.02f + -i / 30f);
             brightness -= (float)MathF.Sin(j / 8f + Main.GameUpdateCount * 0.02f - i / 11f);
             brightness -= (float)MathF.Sin(j / 1f + Main.GameUpdateCount * 0.01f - i / 2f);

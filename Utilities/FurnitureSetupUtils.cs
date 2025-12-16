@@ -305,7 +305,7 @@ namespace CalamityMod
             if (player.cursorItemIconText == "")
             {
                 player.cursorItemIconEnabled = false;
-                player.cursorItemIconID = 0;
+                player.cursorItemIconID = ItemID.None;
             }
         }
 
@@ -492,7 +492,7 @@ namespace CalamityMod
             if (player.cursorItemIconText == "")
             {
                 player.cursorItemIconEnabled = false;
-                player.cursorItemIconID = 0;
+                player.cursorItemIconID = ItemID.None;
             }
         }
 
@@ -678,7 +678,7 @@ namespace CalamityMod
             if (player.cursorItemIconText == "")
             {
                 player.cursorItemIconEnabled = false;
-                player.cursorItemIconID = 0;
+                player.cursorItemIconID = ItemID.None;
             }
         }
 
@@ -1529,7 +1529,7 @@ namespace CalamityMod
             TileID.Sets.FramesOnKillWall[mt.Type] = true;
 
             mt.AddMapEntry(new Color(120, 85, 60), Language.GetText("MapObject.Trophy"));
-            mt.DustType = 7;
+            mt.DustType = DustID.WoodFurniture;
         }
 
         /// <summary>

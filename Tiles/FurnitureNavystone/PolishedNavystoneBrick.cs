@@ -16,7 +16,7 @@ namespace CalamityMod.Tiles.FurnitureNavystone
             TileID.Sets.HasSlopeFrames[Type] = true;
 
             HitSound = SoundID.Tink;
-            DustType = 96;
+            DustType = DustID.BlueMoss;
             AddMapEntry(new Color(53, 99, 117));
         }
 

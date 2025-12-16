@@ -1,9 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
 using CalamityMod.Buffs.StatDebuffs;
-using CalamityMod.Dusts;
 using CalamityMod.Particles;
-using CalamityMod.World;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using ReLogic.Content;

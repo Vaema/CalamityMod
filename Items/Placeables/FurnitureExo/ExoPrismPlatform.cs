@@ -1,7 +1,6 @@
 ﻿using CalamityMod.Tiles.FurnitureExo;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using Terraria.ID;
 using Terraria.ModLoader;
 
 namespace CalamityMod.Items.Placeables.FurnitureExo

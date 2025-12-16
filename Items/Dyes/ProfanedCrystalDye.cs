@@ -1,12 +1,9 @@
-﻿using CalamityMod.Items.Materials;
-using CalamityMod.Items.Placeables.FurnitureProfaned;
+﻿using CalamityMod.Items.Placeables.FurnitureProfaned;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using ReLogic.Content;
 using Terraria;
 using Terraria.Graphics.Shaders;
 using Terraria.ID;
-using Terraria.ModLoader;
 
 namespace CalamityMod.Items.Dyes
 {

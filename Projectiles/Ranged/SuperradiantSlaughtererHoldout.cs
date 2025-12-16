@@ -11,7 +11,6 @@ using System;
 using Terraria;
 using Terraria.Audio;
 using Terraria.DataStructures;
-using Terraria.ID;
 using Terraria.ModLoader;
 
 namespace CalamityMod.Projectiles.Ranged
@@ -59,7 +58,7 @@ namespace CalamityMod.Projectiles.Ranged
 
         public override void KillHoldoutLogic()
         {
-            if (HeldItem.type != Owner.ActiveItem().type || Owner.dead || !Owner.active)
+            if (HeldItem.type != Owner.HeldItem.type || Owner.dead || !Owner.active)
             {
                 Projectile.Kill();
                 Projectile.netUpdate = true;
@@ -83,14 +82,17 @@ namespace CalamityMod.Projectiles.Ranged
                     SoundEngine.PlaySound(new SoundStyle("CalamityMod/Sounds/Custom/MeatySlash"), GunTipPosition);
 
                     // Throws a lingering saw at the cursor that deals 3x damage (since the holdout already deals 2x)
-                    float clampedMouseDist = MathHelper.Clamp(Vector2.Distance(GunTipPosition, Owner.Calamity().mouseWorld), 0f, 960f);
-                    float adjustedMouseDist = clampedMouseDist / 21f;
-                    Projectile.NewProjectile(Projectile.GetSource_FromThis(), GunTipPosition, Projectile.velocity.SafeNormalize(Vector2.UnitY) * adjustedMouseDist, ModContent.ProjectileType<SuperradiantSawLingering>(), (int)(Projectile.damage * 1.5f), Projectile.knockBack, Projectile.owner);
+                    if (Main.myPlayer == Projectile.owner)
+                    {
+                        float clampedMouseDist = MathHelper.Clamp(Vector2.Distance(GunTipPosition, Owner.Calamity().mouseWorld), 0f, 960f);
+                        float adjustedMouseDist = clampedMouseDist / 21f;
+                        Projectile.NewProjectile(Projectile.GetSource_FromThis(), GunTipPosition, Projectile.velocity.SafeNormalize(Vector2.UnitY) * adjustedMouseDist, ModContent.ProjectileType<SuperradiantSawLingering>(), (int)(Projectile.damage * 1.5f), Projectile.knockBack, Projectile.owner);
+                    }
 
                     // End animation early
                     NoSawOnHoldout = true;
                     OffsetLengthFromArm -= 16f;
-                    Projectile.timeLeft = Owner.ActiveItem().useAnimation;
+                    Projectile.timeLeft = Owner.HeldItem.useAnimation;
                     KeepRefreshingLifetime = false;
                     Idle?.Stop();
 
@@ -119,7 +121,7 @@ namespace CalamityMod.Projectiles.Ranged
                 Idle?.Stop();
 
                 Projectile.ai[1] = 1f;
-                Projectile.timeLeft = Owner.ActiveItem().useAnimation;
+                Projectile.timeLeft = Owner.HeldItem.useAnimation;
                 SoundStyle ShootSound = new("CalamityMod/Sounds/Item/SawShot", 2) { PitchVariance = 0.1f, Volume = 0.4f + SawPower * 0.5f };
                 SoundEngine.PlaySound(ShootSound, GunTipPosition);
 
@@ -128,7 +130,8 @@ namespace CalamityMod.Projectiles.Ranged
                 int sawLevel = (SawPower >= 1f).ToInt() + (SawPower >= 0.25f).ToInt();
 
                 // ai[0] determines which slashes are drawn. ai[1] is the saw's timer variable. ai[2] stores the saw's pierce.
-                Projectile.NewProjectile(Projectile.GetSource_FromThis(), GunTipPosition, Projectile.velocity.SafeNormalize(Vector2.UnitY) * SuperradiantSlaughterer.ShootSpeed, ModContent.ProjectileType<SuperradiantSaw>(), (int)(Projectile.damage * sawDamageMult), Projectile.knockBack, Projectile.owner, sawLevel, 0f, sawPierce);
+                if (Main.myPlayer == Projectile.owner)
+                    Projectile.NewProjectile(Projectile.GetSource_FromThis(), GunTipPosition, Projectile.velocity.SafeNormalize(Vector2.UnitY) * SuperradiantSlaughterer.ShootSpeed, ModContent.ProjectileType<SuperradiantSaw>(), (int)(Projectile.damage * sawDamageMult), Projectile.knockBack, Projectile.owner, sawLevel, 0f, sawPierce);
 
                 NoSawOnHoldout = true;
                 OffsetLengthFromArm -= 4f + 12f * SawPower;

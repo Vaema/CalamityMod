@@ -35,7 +35,7 @@ namespace CalamityMod.Projectiles.Ranged
             Vector2 shootPosition = armPosition + Projectile.velocity * Projectile.width * 0.5f;
 
             // Destroy the holdout projectile if the owner is no longer eligible to hold it.
-            if (Owner.CantUseHoldout() || !Owner.HasAmmo(Owner.ActiveItem()))
+            if (Owner.CantUseHoldout() || !Owner.HasAmmo(Owner.HeldItem))
             {
                 Projectile.Kill();
                 return;
@@ -45,7 +45,7 @@ namespace CalamityMod.Projectiles.Ranged
             if (FramesToLoadNextArrow == 0f)
             {
                 SoundEngine.PlaySound(SoundID.Item20, Projectile.Center);
-                FramesToLoadNextArrow = Owner.ActiveItem().useAnimation;
+                FramesToLoadNextArrow = Owner.HeldItem.useAnimation;
             }
 
             // Actually make progress towards loading more arrows.
@@ -84,7 +84,7 @@ namespace CalamityMod.Projectiles.Ranged
             if (Main.myPlayer != Projectile.owner)
                 return;
 
-            Item heldItem = Owner.ActiveItem();
+            Item heldItem = Owner.HeldItem;
 
             // Calculate damage at the instant the arrow is fired
             int arrowDamage = heldItem is null ? 0 : Owner.GetWeaponDamage(heldItem);

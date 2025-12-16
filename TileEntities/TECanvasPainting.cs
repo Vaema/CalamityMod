@@ -1,5 +1,5 @@
 ﻿using CalamityMod.Packets;
-using CalamityMod.Tiles.Furniture;
+using CalamityMod.Tiles.Furniture.Paintings;
 using Microsoft.Xna.Framework;
 using System.IO;
 using Terraria;
@@ -17,7 +17,7 @@ namespace CalamityMod.TileEntities
         public override bool IsTileValidForEntity(int x, int y)
         {
             Tile tile = Main.tile[x, y];
-            return tile.HasTile && (tile.TileType == ModContent.TileType<CalamityCanvas2023Tile>() || tile.TileType == ModContent.TileType<CalamityCanvas2024Tile>()) && tile.TileFrameX == 0 && tile.TileFrameY == 0;
+            return tile.HasTile && TileLoader.GetTile(tile.TileType) is BaseCanvasPainting && tile.TileFrameX == 0 && tile.TileFrameY == 0;
         }
 
         public override int Hook_AfterPlacement(int i, int j, int type, int style, int direction, int alternate)

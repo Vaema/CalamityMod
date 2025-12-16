@@ -1,7 +1,9 @@
-﻿using CalamityMod.CalPlayer;
-using CalamityMod.World;
+﻿using System.Collections.Generic;
+using CalamityMod.CalPlayer;
+using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.ID;
+using Terraria.Localization;
 using Terraria.ModLoader;
 
 namespace CalamityMod.Items.PermanentBoosters
@@ -23,7 +25,26 @@ namespace CalamityMod.Items.PermanentBoosters
             Item.rare = ItemRarityID.Red;
         }
 
-        public override bool CanUseItem(Player player) => !(Main.masterMode && player.extraAccessory) && !player.Calamity().extraAccessoryML;
+        public static bool HasConsumedBefore(Player player)
+        {
+            return (Main.masterMode && player.extraAccessory) || player.Calamity().extraAccessoryML;
+        }
+
+        public override bool CanUseItem(Player player)
+        {
+            if (HasConsumedBefore(player))
+            {
+                if (player.whoAmI == Main.myPlayer)
+                {
+                    string key = "Mods.CalamityMod.Misc.CelestialOnionText";
+                    Color messageColor = Color.LightSlateGray;
+                    Main.NewText(Language.GetTextValue(key), messageColor);
+                }
+                return false;
+            }
+
+            return true;
+        }
 
         public override bool? UseItem(Player player)
         {
@@ -44,6 +65,12 @@ namespace CalamityMod.Items.PermanentBoosters
                 modPlayer.extraAccessoryML = true;
             }
             return true;
+        }
+
+        public override void ModifyTooltips(List<TooltipLine> list)
+        {
+            if (HasConsumedBefore(Main.LocalPlayer))
+                list.AddConsumedTooltip();
         }
     }
 }

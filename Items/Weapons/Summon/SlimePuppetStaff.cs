@@ -1,7 +1,6 @@
 ﻿using CalamityMod.Items.Materials;
 using CalamityMod.NPCs.SlimeGod;
 using CalamityMod.Projectiles.Summon;
-using CalamityMod.Tiles.Furniture.CraftingStations;
 using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.DataStructures;

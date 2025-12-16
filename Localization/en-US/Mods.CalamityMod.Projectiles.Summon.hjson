@@ -167,11 +167,10 @@ LostSoulGold.DisplayName: Gold Soul
 LostSoulLarge.DisplayName: Soul
 LostSoulSmall.DisplayName: Soul
 LuxorsGiftSummon.DisplayName: Luxor's Summon
-MechwormBody.DisplayName: Mechworm
-MechwormHead.DisplayName: Mechworm
-MechwormLaser.DisplayName: Mechworm Laser
-MechwormTail.DisplayName: Mechworm
-MechwormTeleportRift.DisplayName: Rift
+VoidEaterMarionetteBody.DisplayName: Void Eater Marionette
+VoidEaterMarionetteHead.DisplayName: Void Eater Marionette
+VoidEaterMarionetteTail.DisplayName: Void Eater Marionette
+DoGWeaponTeleportRift.DisplayName: Rift
 MidnightSunBeaconProj.DisplayName: Midnight Sun Beacon
 MidnightSunBeam.DisplayName: Midnight Beam
 MidnightSunShot.DisplayName: Midnight Shot
@@ -242,7 +241,6 @@ SandMark.DisplayName: Mark
 SandnadoMinion.DisplayName: Sandnado
 SandTornado.DisplayName: Tornado
 SarosAura.DisplayName: Saros Aura
-SarosMicrosun.DisplayName: Saros Microsun
 SarosSunfire.DisplayName: Saros Sunfire
 SeashineSwordProj.DisplayName: Seashine Sword
 SeekerSummonProj.DisplayName: Soul Seeker
@@ -275,9 +273,6 @@ MinionPlasmaBlast.DisplayName: Volatile Plasma Blast
 MinionPlasmaGas.DisplayName: Superheated Plasma Cloud
 MinionTeslaOrb.DisplayName: Tesla Sphere
 SmallSkeletonMinion.DisplayName: Small Skeleton
-SolarBeam.DisplayName: Solar Beam
-SolarGod.DisplayName: Vengeful Solar Spirit
-SolarPixie.DisplayName: Solar Pixie
 Spikecrag.DisplayName: Spikecrag
 SpikecragSpike.DisplayName: Spikecrag Spike
 SquirrelSquireAcorn.DisplayName: Squirrel Acorn
@@ -314,6 +309,7 @@ ViridVanguardBlade.DisplayName: Vanguard Blade
 VoidConcentrationAura.DisplayName: Concentrated Void Aura
 VoidConcentrationBlackhole.DisplayName: Black Hole
 VoidConcentrationOrb.DisplayName: Void Orb
+VoidEaterMarionetteProjectile.DisplayName: Void Eater Marionette
 VolcanicFireballSummon.DisplayName: Volcanic Fireball
 WaterElementalMinion.DisplayName: Anahita
 WaterElementalSong.DisplayName: Siren Song
@@ -329,7 +325,12 @@ WulfrumDroid.DisplayName: Wulfrum Droid
 WulfrumEnergyBurst.DisplayName: Wulfrum Bolt
 WulfrumFusionBolt.DisplayName: Fusion Bolt
 YharonMinionFireball.DisplayName: Dragon Fireball
-FlarebatMinion.DisplayName: Flarebat
-FrostbatMinion.DisplayName: Frostbat
+EnchantedBladeSummon.DisplayName: Enchanted Blade
+EnchantedBladeStaffProjectile.DisplayName: Enchanted Blade Beam
 AmphibiansGuitarMinion.DisplayName: Amphibian's Guitars
 AmphibiansGuitarProjectile.DisplayName: Note
+SunSpiritBeam.DisplayName: Sun Spirit Beam
+SunSpiritMinion.DisplayName: Sun Spirit Minion
+VengefulSunBeam.DisplayName: Vengeful Sun Beam
+VengefulSunSpiritMinion.DisplayName: Vengeful Sun Spirit Minion
+SarosEclipseBeam.DisplayName: Saros Eclipse Beam

@@ -1,16 +1,8 @@
-﻿using System;
-using CalamityMod.Items.Accessories;
-using CalamityMod.Items.Weapons.Melee;
-using CalamityMod.Items.Weapons.Ranged;
-using Microsoft.Xna.Framework;
+﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria;
-using Terraria.Audio;
 using Terraria.GameContent;
-using Terraria.Graphics.Shaders;
-using Terraria.ID;
 using Terraria.Localization;
-using static Terraria.ModLoader.ModContent;
 
 namespace CalamityMod.Cooldowns
 {
@@ -36,14 +28,14 @@ namespace CalamityMod.Cooldowns
         {
             base.DrawExpanded(spriteBatch, position, opacity, scale);
 
-            CalamityUtils.DrawBorderStringEightWay(spriteBatch, FontAssets.MouseText.Value, (-instance.timeLeft + 20).ToString() + "%", position + TextPosition, TextColor, TextBorderColor);
+            CalamityUtils.DrawBorderStringEightWay(spriteBatch, FontAssets.MouseText.Value, (-instance.timeLeft + 15).ToString() + "%", position + TextPosition, TextColor, TextBorderColor);
         }
 
         public override void DrawCompact(SpriteBatch spriteBatch, Vector2 position, float opacity, float scale)
         {
             base.DrawCompact(spriteBatch, position, opacity, scale);
 
-            CalamityUtils.DrawBorderStringEightWay(spriteBatch, FontAssets.MouseText.Value, (-instance.timeLeft + 20).ToString() + "%", position + TextPosition, TextColor, TextBorderColor);
+            CalamityUtils.DrawBorderStringEightWay(spriteBatch, FontAssets.MouseText.Value, (-instance.timeLeft + 15).ToString() + "%", position + TextPosition, TextColor, TextBorderColor);
         }
     }
 }

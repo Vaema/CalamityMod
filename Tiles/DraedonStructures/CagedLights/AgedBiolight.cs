@@ -1,27 +1,21 @@
-﻿using System;
+﻿using CalamityMod.ExtraTextures.GreyscaleGradients;
 using CalamityMod.Items.Placeables.DraedonStructures.CagedLights;
+using CalamityMod.Sounds;
 using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
 using Terraria;
-using Terraria.ID;
-using Terraria.Localization;
-using Terraria.ModLoader;
 using Terraria.DataStructures;
 using Terraria.Enums;
+using Terraria.ID;
+using Terraria.ModLoader;
 using Terraria.ObjectData;
-using Terraria.Audio;
-using Microsoft.Xna.Framework.Graphics;
-using CalamityMod.Sounds;
 
 namespace CalamityMod.Tiles.DraedonStructures.CagedLights
 {
     public class AgedBiolight : ModTile
     {
-        internal static GrayscaleTexture1D PulseGradient;
-
         public override void SetStaticDefaults()
         {
-            PulseGradient = new("CalamityMod/Tiles/Plates/PlagueContainmentCellsPulse");
-
             Main.tileLighted[Type] = true;
             Main.tileNoFail[Type] = true;
             Main.tileFrameImportant[Type] = true;
@@ -29,7 +23,7 @@ namespace CalamityMod.Tiles.DraedonStructures.CagedLights
             RegisterItemDrop(ModContent.ItemType<AgedBiolightItem>());
 
             HitSound = CommonCalamitySounds.PlatingMine;
-            DustType = 89;
+            DustType = DustID.GemEmerald;
 
             AddToArray(ref TileID.Sets.RoomNeeds.CountsAsTorch);
             AddMapEntry(new Color(48, 201, 214), CalamityUtils.GetItemName<CagedLablightItem>());
@@ -37,7 +31,7 @@ namespace CalamityMod.Tiles.DraedonStructures.CagedLights
 
             // Attach to ground
             TileObjectData.newTile.CopyFrom(TileObjectData.Style2x2);
-            TileObjectData.newTile.StyleHorizontal = true; 
+            TileObjectData.newTile.StyleHorizontal = true;
             TileObjectData.newTile.StyleMultiplier = 10; // total 10 frames, all should be same "itemStyle"
             TileObjectData.newTile.StyleWrapLimit = 2; // only 1 placement alternative per row
             TileObjectData.newTile.Origin = new Point16(0, 1);
@@ -79,7 +73,7 @@ namespace CalamityMod.Tiles.DraedonStructures.CagedLights
 
         public override void PostDraw(int i, int j, SpriteBatch spriteBatch)
         {
-            float brightness = PulseGradient.GetRepeat((int)Main.GameUpdateCount);
+            float brightness = GreyscaleGradient.PlagueContainmentCellsPulse.GetRepeat((int)Main.GameUpdateCount);
             brightness = MathHelper.Clamp(brightness, 0.2f, 0.6f);
 
             Lighting.AddLight(new Vector2(i * 16, j * 16), 9f / 255f * brightness, 195f / 255f * brightness, 0f * brightness);

@@ -1,7 +1,7 @@
-﻿using System;
-using CalamityMod.ILEditing;
+﻿using CalamityMod.Items.Placeables.FloralParadise;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using ReLogic.Content;
 using Terraria;
 using Terraria.DataStructures;
 using Terraria.ID;
@@ -16,8 +16,12 @@ namespace CalamityMod.Tiles.FloralParadise
 
         public const int WindPushLifetime = 48;
 
+        public Asset<Texture2D> StamenTexture;
+
         public override void SetStaticDefaults()
         {
+            StamenTexture = ModContent.Request<Texture2D>("CalamityMod/Tiles/FloralParadise/PinkFlowerBigStamen");
+
             Main.tileFrameImportant[Type] = true;
             Main.tileNoFail[Type] = true;
             Main.tileObsidianKill[Type] = true;
@@ -40,8 +44,9 @@ namespace CalamityMod.Tiles.FloralParadise
             HitSound = SoundID.Grass;
             TileObjectData.addTile(Type);
 
-            DustType = 44;
+            DustType = DustID.JungleSpore;
             AddMapEntry(new Color(255, 155, 202));
+            RegisterItemDrop(ModContent.ItemType<ScintillatingBloom>());
         }
 
         public override void ModifyLight(int i, int j, ref float r, ref float g, ref float b)
@@ -63,14 +68,14 @@ namespace CalamityMod.Tiles.FloralParadise
                 return;
 
             // 02JUN2024: Ozzatron: directionY did not exist at the time of the creation of this content. As such, it is ignored here.
-            ILChanges.Windgrid.GetWindTime(i, j, WindPushLifetime, out int windTimeLeft, out int direction, out _);
+            Main.instance.TilesRenderer.Wind.GetWindTime(i, j, WindPushLifetime, out int windTimeLeft, out int direction, out _);
 
             float windInterpolant = windTimeLeft / (float)WindPushLifetime;
             float windRotation = Utils.GetLerpValue(0f, 0.5f, windInterpolant, true) * Utils.GetLerpValue(1f, 0.5f, windInterpolant, true) * direction * 0.34f;
 
             int frameX = Main.tile[i, j].TileFrameX;
             Color drawColor = Lighting.GetColor(i, j);
-            Texture2D stamenTexture = ModContent.Request<Texture2D>("CalamityMod/Tiles/FloralParadise/PinkFlowerBigStamen").Value;
+            Texture2D stamenTexture = StamenTexture.Value;
             Rectangle stamenFrame = stamenTexture.Frame(2, 1, frameX > 72 ? 1 : 0, 0);
             Vector2 stamenOrigin = stamenFrame.Size() * new Vector2(0.5f, 1f);
             Vector2 drawOffset = Main.drawToScreen ? Vector2.Zero : new Vector2(Main.offScreenRange);
@@ -82,7 +87,7 @@ namespace CalamityMod.Tiles.FloralParadise
             if (!Main.gamePaused && windTimeLeft >= 2 && Main.rand.NextBool(4))
             {
                 Vector2 pollenVelocity = -Vector2.UnitY.RotatedByRandom(windRotation * 2.3f) * 3f;
-                Dust pollen = Dust.NewDustPerfect(drawPos + Main.screenPosition - drawOffset - Vector2.UnitY * 16f, 44);
+                Dust pollen = Dust.NewDustPerfect(drawPos + Main.screenPosition - drawOffset - Vector2.UnitY * 16f, DustID.JungleSpore);
                 pollen.velocity = pollenVelocity;
                 pollen.scale = 1.6f;
             }

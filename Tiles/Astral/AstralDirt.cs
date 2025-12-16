@@ -1,7 +1,5 @@
-﻿using System.Collections.Generic;
-using CalamityMod.Dusts;
+﻿using CalamityMod.Dusts;
 using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Graphics;
 using Terraria;
 using Terraria.GameContent.Metadata;
 using Terraria.ID;
@@ -35,8 +33,8 @@ namespace CalamityMod.Tiles.Astral
             TileID.Sets.CanBeClearedDuringOreRunner[Type] = true;
             TileID.Sets.Conversion.Dirt[Type] = true;
 
-            this.RegisterUniversalMerge(TileID.Dirt, "CalamityMod/Tiles/Merges/DirtMerge");
-            this.RegisterUniversalMerge(TileID.Stone, "CalamityMod/Tiles/Merges/StoneMerge");
+            this.RegisterBlendMergeWith(TileID.Dirt);
+            this.RegisterBlendMergeWith(TileID.Stone);
         }
 
         public override void RandomUpdate(int i, int j)

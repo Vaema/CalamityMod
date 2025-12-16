@@ -59,7 +59,7 @@ namespace CalamityMod.Projectiles.Magic
             }
             firingDelay--;
 
-            Item heldItem = Owner.ActiveItem();
+            Item heldItem = Owner.HeldItem;
 
             // Update damage based on curent magic damage stat (so Mana Sickness affects it)
             Projectile.damage = heldItem is null ? 0 : Owner.GetWeaponDamage(heldItem);
@@ -81,7 +81,7 @@ namespace CalamityMod.Projectiles.Magic
                 // If the player's pressing RMB, it'll shoot the grenade.
                 if (Owner.Calamity().mouseRight)
                 {
-                    if ((Owner.CheckMana(Owner.ActiveItem(), (int)(heldItem.mana * Owner.manaCost) * 5, true, false)))
+                    if ((Owner.CheckMana(Owner.HeldItem, (int)(heldItem.mana * Owner.manaCost) * 5, true, false)))
                     {
                         Shoot(true);
                         PostFireCooldown = 35 + 55 * Utils.GetLerpValue(10, 40, FiringTime, true);
@@ -100,7 +100,7 @@ namespace CalamityMod.Projectiles.Magic
                 }
                 else if (ShootingTimer >= FiringTime)
                 {
-                    if (Owner.CheckMana(Owner.ActiveItem(), (int)(heldItem.mana * Owner.manaCost), true, false))
+                    if (Owner.CheckMana(Owner.HeldItem, (int)(heldItem.mana * Owner.manaCost), true, false))
                     {
                         Shoot(false);
                         ShootingTimer = 0;
@@ -236,7 +236,7 @@ namespace CalamityMod.Projectiles.Magic
                 Particle smoke = new HeavySmokeParticle(tipPosition, smokeVel, StaticEffectsColor, Main.rand.Next(30, 50 + 1), Main.rand.NextFloat(0.1f, 0.4f), 0.5f, Main.rand.NextFloat(-0.2f, 0.2f), Main.rand.NextBool(), required: true);
                 GeneralParticleHandler.SpawnParticle(smoke);
 
-                Dust dust = Dust.NewDustPerfect(tipPosition, 303, smokeVel.RotatedByRandom(0.1f), 80, default, Main.rand.NextFloat(0.2f, 0.8f));
+                Dust dust = Dust.NewDustPerfect(tipPosition, DustID.SteampunkSteam, smokeVel.RotatedByRandom(0.1f), 80, default, Main.rand.NextFloat(0.2f, 0.8f));
                 dust.noGravity = false;
                 dust.color = StaticEffectsColor;
             }

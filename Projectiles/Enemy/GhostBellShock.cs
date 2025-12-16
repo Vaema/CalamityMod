@@ -132,8 +132,8 @@ namespace CalamityMod.Projectiles.Enemy
             int boltPoints = 12; // How many times can a bolt bend
             int minimumBolts = 6; // Minimum number of bolts
             int maximumBolts = 12; // Maximum number of bolts
-            int minimumSplits = 0; // Minimum number of split bolts
-            int maximumSplits = 2; // Maximum number of split bolts
+            //int minimumSplits = 0; // Minimum number of split bolts
+            //int maximumSplits = 2; // Maximum number of split bolts
             points.Clear();
             bolts.Clear();
             jellyBolts.Clear();
@@ -238,22 +238,22 @@ namespace CalamityMod.Projectiles.Enemy
             if (Timer >= GhostBell.ElectrifyingPhaseDischarge)
             {
                 // The aura
-                PrimitiveRenderer.RenderTrail(points, new((float completion) => 4, (float completion) => Color.Cyan * Projectile.Opacity * opacity, smoothen: true, shader: GameShaders.Misc["CalamityMod:TeslaTrail"]));
-                PrimitiveRenderer.RenderTrail(points, new((float completion) => 1, (float completion) => Color.White * Projectile.Opacity * opacity, smoothen: true, shader: GameShaders.Misc["CalamityMod:TeslaTrail"]));
+                PrimitiveRenderer.RenderTrail(points, new((float completion, Vector2 vertexPos) => 4, (float completion, Vector2 vertexPos) => Color.Cyan * Projectile.Opacity * opacity, smoothen: true, shader: GameShaders.Misc["CalamityMod:TeslaTrail"]));
+                PrimitiveRenderer.RenderTrail(points, new((float completion, Vector2 vertexPos) => 1, (float completion, Vector2 vertexPos) => Color.White * Projectile.Opacity * opacity, smoothen: true, shader: GameShaders.Misc["CalamityMod:TeslaTrail"]));
                 // Bolts inside of the aura
                 for (int i = 0; i < bolts.Count; i++)
                 {
                     List<Vector2> boltPoints = bolts[i];
-                    PrimitiveRenderer.RenderTrail(boltPoints, new((float completion) => 3, (float completion) => Color.Cyan * Projectile.Opacity * opacity, smoothen: true, shader: GameShaders.Misc["CalamityMod:TeslaTrail"]));
-                    PrimitiveRenderer.RenderTrail(boltPoints, new((float completion) => 1, (float completion) => Color.White * Projectile.Opacity * opacity, smoothen: true, shader: GameShaders.Misc["CalamityMod:TeslaTrail"]));
+                    PrimitiveRenderer.RenderTrail(boltPoints, new((float completion, Vector2 vertexPos) => 3, (float completion, Vector2 vertexPos) => Color.Cyan * Projectile.Opacity * opacity, smoothen: true, shader: GameShaders.Misc["CalamityMod:TeslaTrail"]));
+                    PrimitiveRenderer.RenderTrail(boltPoints, new((float completion, Vector2 vertexPos) => 1, (float completion, Vector2 vertexPos) => Color.White * Projectile.Opacity * opacity, smoothen: true, shader: GameShaders.Misc["CalamityMod:TeslaTrail"]));
                 }
             }
             // Harmless bolts connecting to babies
             for (int i = 0; i < jellyBolts.Count; i++)
             {
                 List<Vector2> boltPoints = jellyBolts[i];
-                PrimitiveRenderer.RenderTrail(boltPoints, new((float completion) => 2, (float completion) => Color.Cyan * jellyOpacity, smoothen: true, shader: GameShaders.Misc["CalamityMod:TeslaTrail"]));
-                PrimitiveRenderer.RenderTrail(boltPoints, new((float completion) => 1, (float completion) => Color.White * jellyOpacity, smoothen: true, shader: GameShaders.Misc["CalamityMod:TeslaTrail"]));
+                PrimitiveRenderer.RenderTrail(boltPoints, new((float completion, Vector2 vertexPos) => 2, (float completion, Vector2 vertexPos) => Color.Cyan * jellyOpacity, smoothen: true, shader: GameShaders.Misc["CalamityMod:TeslaTrail"]));
+                PrimitiveRenderer.RenderTrail(boltPoints, new((float completion, Vector2 vertexPos) => 1, (float completion, Vector2 vertexPos) => Color.White * jellyOpacity, smoothen: true, shader: GameShaders.Misc["CalamityMod:TeslaTrail"]));
             }
             Main.spriteBatch.ExitShaderRegion();
             return false;

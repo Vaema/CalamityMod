@@ -1,16 +1,13 @@
 ﻿using System;
 using System.IO;
-using CalamityMod.Buffs.DamageOverTime;
 using CalamityMod.Events;
 using CalamityMod.Items.Accessories;
-using CalamityMod.Items.Ammo;
 using CalamityMod.Items.Armor.Vanity;
 using CalamityMod.Items.Fishing.BrimstoneCragCatches;
 using CalamityMod.Items.LoreItems;
-using CalamityMod.Items.Materials;
 using CalamityMod.Items.Pets;
 using CalamityMod.Items.Placeables.Furniture.BossRelics;
-using CalamityMod.Items.Placeables.Furniture.DevPaintings;
+using CalamityMod.Items.Placeables.Furniture.Paintings;
 using CalamityMod.Items.Placeables.Furniture.Trophies;
 using CalamityMod.Items.TreasureBags;
 using CalamityMod.Items.Weapons.Magic;
@@ -84,7 +81,7 @@ namespace CalamityMod.NPCs.Perforator
             NPC.width = Width;
             NPC.height = Height;
             NPC.defense = 4;
-            NPC.LifeMaxNERB(4800, 5750, 270000);
+            NPC.LifeMaxNERB(4000, 5750, 270000);
             NPC.aiStyle = -1;
             AIType = -1;
             NPC.knockBackResist = 0f;
@@ -651,7 +648,7 @@ namespace CalamityMod.NPCs.Perforator
                 Color messageColor = Color.Cyan;
                 AerialiteOreGen.Enchant();
 
-                CalamityUtils.DisplayLocalizedText(key, messageColor);
+                CalamityUtils.BroadcastLocalizedText(key, messageColor);
             }
 
             // Mark The Perforator Hive as dead
@@ -686,7 +683,8 @@ namespace CalamityMod.NPCs.Perforator
 
                 // Equipment
                 normalOnly.Add(ModContent.ItemType<BloodstainedGlove>(), DropHelper.NormalWeaponDropRateFraction);
-                normalOnly.Add(DropHelper.PerPlayer(ModContent.ItemType<BloodyWormTooth>()));
+                // 16NOV2025: Ozzatron: item has been chosen as the "Expert gatekept" item for this Calamity boss
+                // normalOnly.Add(DropHelper.PerPlayer(ModContent.ItemType<BloodyWormTooth>()));
 
                 // Vanity
                 normalOnly.Add(ModContent.ItemType<PerforatorMask>(), 7);

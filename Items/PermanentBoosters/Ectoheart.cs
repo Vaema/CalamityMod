@@ -1,4 +1,5 @@
-﻿using CalamityMod.Balancing;
+﻿using System.Collections.Generic;
+using CalamityMod.Balancing;
 using CalamityMod.CalPlayer;
 using CalamityMod.Rarities;
 using Microsoft.Xna.Framework;
@@ -30,7 +31,18 @@ namespace CalamityMod.Items.PermanentBoosters
             Item.SetRevExclusive();
         }
 
-        public override bool CanUseItem(Player player) => !player.Calamity().adrenalineBoostThree;
+        public static bool HasConsumedBefore(Player player) => player.Calamity().adrenalineBoostThree;
+
+        public override bool CanUseItem(Player player)
+        {
+            if (HasConsumedBefore(player))
+            {
+                // Refuse Text can be added on here
+                return false;
+            }
+
+            return true;
+        }
 
         public override bool PreDrawInInventory(SpriteBatch spriteBatch, Vector2 position, Rectangle frameI, Color drawColor, Color itemColor, Vector2 origin, float scale)
         {
@@ -61,6 +73,12 @@ namespace CalamityMod.Items.PermanentBoosters
                 modPlayer.adrenalineBoostThree = true;
             }
             return true;
+        }
+
+        public override void ModifyTooltips(List<TooltipLine> list)
+        {
+            if (HasConsumedBefore(Main.LocalPlayer))
+                list.AddConsumedTooltip("Tooltip0");
         }
     }
 }

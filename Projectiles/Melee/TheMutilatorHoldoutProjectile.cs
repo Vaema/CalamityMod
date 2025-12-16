@@ -1,8 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using CalamityMod.Items.Weapons.Melee;
 using Microsoft.Xna.Framework;
 using Terraria.DataStructures;
@@ -12,9 +8,7 @@ using Terraria;
 using CalamityMod.Projectiles.BaseProjectiles;
 using CalamityMod.Projectiles.Healing;
 using Terraria.Audio;
-using Terraria.IO;
 using CalamityMod.Buffs.DamageOverTime;
-using CalamityMod.Items.Weapons.Magic;
 using CalamityMod.Particles;
 
 namespace CalamityMod.Projectiles.Melee
@@ -32,9 +26,9 @@ namespace CalamityMod.Projectiles.Melee
 
         public override float trailOffset => 20;
 
-        public override float trailWidth(float completion)
+        public override float trailWidth(float completion, Vector2 vertexPos)
         {
-            return base.trailWidth(completion);
+            return base.trailWidth(completion, vertexPos);
         }
 
         public override int trailLength => 5;

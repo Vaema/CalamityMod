@@ -7,7 +7,7 @@ using CalamityMod.Items.Armor.Vanity;
 using CalamityMod.Items.LoreItems;
 using CalamityMod.Items.Materials;
 using CalamityMod.Items.Placeables.Furniture.BossRelics;
-using CalamityMod.Items.Placeables.Furniture.DevPaintings;
+using CalamityMod.Items.Placeables.Furniture.Paintings;
 using CalamityMod.Items.Placeables.Furniture.Trophies;
 using CalamityMod.Items.TreasureBags;
 using CalamityMod.Items.TreasureBags.MiscGrabBags;
@@ -17,7 +17,6 @@ using CalamityMod.Items.Weapons.Ranged;
 using CalamityMod.Items.Weapons.Rogue;
 using CalamityMod.Items.Weapons.Summon;
 using CalamityMod.Projectiles.Boss;
-using CalamityMod.Projectiles.Enemy;
 using CalamityMod.UI.VanillaBossBars;
 using CalamityMod.World;
 using Microsoft.Xna.Framework;
@@ -88,7 +87,7 @@ namespace CalamityMod.NPCs.Ravager
             NPC.defense = 55;
             NPC.value = Item.buyPrice(gold: 25);
             NPC.DR_NERD(0.35f);
-            NPC.LifeMaxNERB(45000, 54000, 460000);
+            NPC.LifeMaxNERB(30000, 54000, 460000);
             if (DownedBossSystem.downedProvidence && !BossRushEvent.BossRushActive)
             {
                 NPC.damage = (int)(NPC.damage * 1.5);
@@ -1014,7 +1013,8 @@ namespace CalamityMod.NPCs.Ravager
                 normalOnly.Add(ItemDropRule.ByCondition(DropHelper.If(() => DownedBossSystem.downedProvidence), ModContent.ItemType<NecromanticGeode>()), hideLootReport: !DownedBossSystem.downedProvidence);
 
                 // Equipment
-                normalOnly.Add(ModContent.ItemType<BloodPact>(), 3);
+                // 16NOV2025: Ozzatron: item has been chosen as the "Expert gatekept" item for this Calamity boss
+                // normalOnly.Add(ModContent.ItemType<BloodPact>(), 3);
                 normalOnly.Add(ModContent.ItemType<FleshTotem>(), 3);
                 normalOnly.Add(ItemDropRule.ByCondition(DropHelper.PostProv(), ModContent.ItemType<BloodflareCore>()));
 

@@ -1,5 +1,4 @@
-﻿using CalamityMod.Items.Placeables.Astral;
-using CalamityMod.Items.Placeables.Walls;
+﻿using CalamityMod.Items.Placeables.Walls;
 using Terraria.ID;
 using Terraria.ModLoader;
 

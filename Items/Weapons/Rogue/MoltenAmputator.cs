@@ -1,5 +1,4 @@
-﻿using System;
-using CalamityMod.Dusts;
+﻿using CalamityMod.Dusts;
 using CalamityMod.Items.Weapons.Melee;
 using CalamityMod.Projectiles.Rogue;
 using CalamityMod.Rarities;

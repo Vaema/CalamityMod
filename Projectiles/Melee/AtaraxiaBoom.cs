@@ -53,7 +53,7 @@ namespace CalamityMod.Projectiles.Melee
                         // instead of weaving backwards.
                         (float)(Math.Sin(thetaDelta + theta * flowerPetalCount) + 0.5f + weaveDistanceInner) *
                         weaveDistanceOutwardMax);
-                    Dust dust = Dust.NewDustPerfect(Projectile.Center, 267, velocity);
+                    Dust dust = Dust.NewDustPerfect(Projectile.Center, DustID.RainbowMk2, velocity);
                     dust.noGravity = true;
                     dust.scale = 1.15f;
                     dust.color = Color.Lerp(Color.DarkOrchid, Color.IndianRed, colorRando);

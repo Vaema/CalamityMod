@@ -53,7 +53,7 @@ namespace CalamityMod.Projectiles.DraedonsArsenal
             Rectangle frame = bladeTexture.Frame(1, 5, 0, Projectile.frameCounter / 4 % 5);
             var drawData2 = new DrawData(bladeTexture, Projectile.Center - Main.screenPosition, frame, Color.White, Projectile.rotation, bladeTexture.Size() / new Vector2(1f, 5f) * 0.5f, Projectile.scale * 1.2f, SpriteEffects.None, 0);
 
-            CalamityShaders.LightDistortionShader.CurrentTechnique.Passes[0].Apply();
+            CalamityShaders.LightDistortionShader.Value.CurrentTechnique.Passes[0].Apply();
             drawData2.Draw(Main.spriteBatch);
 
             return false;

@@ -1,5 +1,4 @@
-﻿using CalamityMod.Items.Weapons.Rogue;
-using CalamityMod.Projectiles.Summon;
+﻿using CalamityMod.Projectiles.Summon;
 using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.DataStructures;
@@ -21,7 +20,7 @@ namespace CalamityMod.Items.Weapons.Summon
             Item.mana = 10;
             Item.damage = 25;
             Item.useStyle = ItemUseStyleID.Swing;
-            Item.useAnimation = Item.useTime = 20;
+            Item.useAnimation = Item.useTime = 36;
             Item.noMelee = true;
             Item.knockBack = 7f;
             Item.value = CalamityGlobalItem.RarityYellowBuyPrice;

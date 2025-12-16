@@ -1,5 +1,6 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using ReLogic.Content;
 using Terraria;
 using Terraria.DataStructures;
 using Terraria.GameContent;
@@ -11,6 +12,8 @@ namespace CalamityMod.Tiles.FurnitureWulfrum.FurnitureAnodizedWulfrum
 {
     public class AnodizedWulfrumSofa : ModTile
     {
+        public Asset<Texture2D> GlowTexture;
+
         public override void SetStaticDefaults() => this.SetUpSofa(ModContent.ItemType<Items.Placeables.FurnitureWulfrum.FurnitureAnodizedWulfrum.AnodizedWulfrumSofa>(), true);
 
         public override bool CreateDust(int i, int j, ref int type)
@@ -41,7 +44,10 @@ namespace CalamityMod.Tiles.FurnitureWulfrum.FurnitureAnodizedWulfrum
 
             int xFrameOffset = Main.tile[i, j].TileFrameX;
             int yFrameOffset = Main.tile[i, j].TileFrameY;
-            Texture2D glowmask = ModContent.Request<Texture2D>("CalamityMod/Tiles/FurnitureWulfrum/FurnitureAnodizedWulfrum/AnodizedWulfrumSofa_Glow").Value;
+
+            GlowTexture ??= ModContent.Request<Texture2D>("CalamityMod/Tiles/FurnitureWulfrum/FurnitureAnodizedWulfrum/AnodizedWulfrumSofa_Glow");
+            Texture2D glowmask = GlowTexture.Value;
+
             Vector2 drawOffest = Main.drawToScreen ? Vector2.Zero : new Vector2(Main.offScreenRange);
             Vector2 drawPosition = new Vector2(i * 16 - Main.screenPosition.X, j * 16 - Main.screenPosition.Y) + drawOffest;
             Color drawColour = Color.White;

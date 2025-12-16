@@ -91,7 +91,7 @@ namespace CalamityMod.Projectiles.Rogue
             }
             if (time == jawSlamTime)
             {
-                Owner.Calamity().GeneralScreenShakePower = 5f;
+                Owner.SetScreenshake(5f);
                 Owner.Calamity().ConsumeStealthByAttacking();
                 SoundStyle crunch = new("CalamityMod/Sounds/NPCKilled/PerfSmallDeath");
                 for (int i = 0; i < 3; i++)
@@ -166,7 +166,7 @@ namespace CalamityMod.Projectiles.Rogue
 
                     if (!spawnedDust && toothNum > 1)
                     {
-                        Dust dust = Dust.NewDustPerfect(finalDrawPos, 5, (rotation.ToRotationVector2().RotatedBy(MathHelper.PiOver2)).RotatedByRandom(0.5f).RotatedBy(1.2f * (isTopJaw ? -1 : 1)) * Main.rand.NextFloat(5f, 8f), 100, default, Main.rand.NextFloat(1.1f, 1.9f) * scale);
+                        Dust dust = Dust.NewDustPerfect(finalDrawPos, DustID.Blood, (rotation.ToRotationVector2().RotatedBy(MathHelper.PiOver2)).RotatedByRandom(0.5f).RotatedBy(1.2f * (isTopJaw ? -1 : 1)) * Main.rand.NextFloat(5f, 8f), 100, default, Main.rand.NextFloat(1.1f, 1.9f) * scale);
                         dust.noGravity = true;
                         dust.alpha = (int)(255 * (1 - toothOpacity));
                         Particle blood = new CustomSpark(finalDrawPos, (rotation.ToRotationVector2().RotatedBy(MathHelper.PiOver2)).RotatedByRandom(0.4f).RotatedBy(1.2f * (isTopJaw ? -1 : 1)) * Main.rand.NextFloat(5f, 8f), "CalamityMod/Particles/LargeBloom", 
@@ -187,15 +187,13 @@ namespace CalamityMod.Projectiles.Rogue
             if (!canDamage)
                 return false;
 
-            Player Owner = Main.player[Projectile.owner];
             Vector2 start = Projectile.Center;
             float length = jawLength;
             float size = 165;
             float _ = float.NaN;
-            bool hit = Collision.CheckAABBvLineCollision(targetHitbox.TopLeft(), targetHitbox.Size(), start, start + Projectile.velocity.SafeNormalize(Vector2.UnitX) * length, size, ref _);
-            return (hit);
 
-            return CalamityUtils.CircularHitboxCollision(Projectile.Center, Projectile.Calamity().stealthStrike ? 50 : 18, targetHitbox);
+            bool hit = Collision.CheckAABBvLineCollision(targetHitbox.TopLeft(), targetHitbox.Size(), start, start + Projectile.velocity.SafeNormalize(Vector2.UnitX) * length, size, ref _);
+            return hit;
         }
     }
 }

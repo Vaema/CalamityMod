@@ -179,7 +179,7 @@ namespace CalamityMod.NPCs.ExoMechs.Thanatos
             NPC.defense = 100;
             NPC.DR_NERD(0.9999f);
             NPC.Calamity().unbreakableDR = true;
-            NPC.LifeMaxNERB(960000, 1150000, 600000);
+            NPC.LifeMaxNERB(800000, 1150000, 600000);
             NPC.aiStyle = -1;
             AIType = -1;
             NPC.Opacity = 0f;

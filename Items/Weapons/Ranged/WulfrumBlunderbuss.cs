@@ -106,8 +106,7 @@ namespace CalamityMod.Items.Weapons.Ranged
 
         public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)
         {
-            if (player.Calamity().GeneralScreenShakePower < 3f)
-                player.Calamity().GeneralScreenShakePower = 3f;
+            player.SetScreenshake(3f);
 
             // 14NOV2024: Ozzatron: clamped mouse position unnecessary due to the result being clamped
             float aimLength = (Main.MouseWorld - player.MountedCenter).Length();

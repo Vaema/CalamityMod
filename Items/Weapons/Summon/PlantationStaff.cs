@@ -47,7 +47,7 @@ namespace CalamityMod.Items.Weapons.Summon
             Item.knockBack = 1f;
 
             Item.mana = 10;
-            Item.useAnimation = Item.useTime = 20;
+            Item.useAnimation = Item.useTime = 36;
             Item.noMelee = true;
             Item.value = CalamityGlobalItem.RarityYellowBuyPrice;
             Item.rare = ItemRarityID.Yellow;
@@ -74,7 +74,6 @@ namespace CalamityMod.Items.Weapons.Summon
         {
             CreateRecipe().
                 AddIngredient<EyeOfNight>().
-                AddIngredient(ItemID.Smolstar). // Blade Staff.
                 AddIngredient<LivingShard>(12).
                 AddTile(TileID.MythrilAnvil).
                 Register();

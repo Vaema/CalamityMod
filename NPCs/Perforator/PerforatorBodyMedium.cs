@@ -1,5 +1,4 @@
 ﻿using System;
-using CalamityMod.Buffs.DamageOverTime;
 using CalamityMod.Events;
 using CalamityMod.Projectiles.Boss;
 using CalamityMod.World;
@@ -42,7 +41,7 @@ namespace CalamityMod.NPCs.Perforator
             NPC.height = 40;
             NPC.defense = 6;
 
-            NPC.LifeMaxNERB(144, 172, 7000);
+            NPC.LifeMaxNERB(130, 170, 7000);
             if (Main.zenithWorld)
                 NPC.lifeMax *= 4;
 

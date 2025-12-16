@@ -3,17 +3,12 @@ using CalamityMod.Items.Weapons.Melee;
 using CalamityMod.Particles;
 using CalamityMod.Projectiles.BaseProjectiles;
 using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Graphics;
 using Terraria;
 using Terraria.Audio;
 using Terraria.DataStructures;
 using Terraria.ID;
-using Terraria.Localization;
 using Terraria.ModLoader;
-using CalamityMod.CalPlayer;
-using CalamityMod.Buffs.StatBuffs;
-using CalamityMod.Projectiles.Melee.Shortswords;
-using System.Runtime.InteropServices;
+using CalamityMod.Sounds;
 
 namespace CalamityMod.Projectiles.Melee
 {
@@ -32,7 +27,6 @@ namespace CalamityMod.Projectiles.Melee
         public override bool AlternateSwings { get => base.AlternateSwings; set => base.AlternateSwings = value; }
         public override float lineCollisionLength => 82;
 
-        // Boolshit
         public bool helixFired = false;
         public bool gotEnergyThisSwing = false;
         public bool trailFXTriggered = false;
@@ -47,6 +41,8 @@ namespace CalamityMod.Projectiles.Melee
         public int thrustStartupTime = 33;
         public int thrustForwardTime = 7;
         public int thrustCooldownTime = 17;
+        public float thrustSpinRotation = 0f;
+        public bool playedAlternateThrustStartupWhoosh = false;
 
         public override void Defaults()
         {
@@ -105,33 +101,54 @@ namespace CalamityMod.Projectiles.Melee
                 RotateInStartup = 0.8f;
                 RotateInCooldown = 0;
             }
-
-            if (AlternateSwings)
-                modplayer.swingNum = (modplayer.swingNum + 1) % 2;
         }
 
         public override void AdditionalAI()
         {
+            Player player = Main.player[Projectile.owner];
+            var modplayer = player.GetModPlayer<BaseSwordHoldoutPlayer>();
+
             if (IsAlternateThrust)
             {
                 if (inStartup)
                 {
                     trailFXTriggered = false; // Reset bool just in case
                     Projectile.Opacity += 0.01f; // Fade in
+                    Projectile.scale = baseScale * MathHelper.Lerp(1f, 0.85f, MathF.Pow(StartupCompletion, 0.3f));
 
-                    // Pullback
-                    float eased = MathF.Pow(StartupCompletion, 0.3f);
-                    OffsetDistance = (int)MathHelper.Lerp(44, 34, eased);
-                    Projectile.scale = baseScale * MathHelper.Lerp(1f, 0.85f, eased);
-
-
-                    if (!sparkTriggered && Projectile.scale < 0.96f) // Right before thrusting forward
+                    if (StartupCompletion >= 0.12f && !playedAlternateThrustStartupWhoosh)
                     {
-                        // Won't happen again this right-click
-                        sparkTriggered = true;
+                        SoundEngine.PlaySound(CommonCalamitySounds.MeatySlashSound with { Volume = 0.55f, Pitch = -0.05f }, Projectile.Center);
+                        playedAlternateThrustStartupWhoosh = true;
+                    }
 
-                        GenericSparkle sparker = new GenericSparkle(Projectile.Center, Vector2.Zero, Color.AntiqueWhite, Color.Lerp(Color.MediumPurple, Color.CornflowerBlue, 0.5f) * 0.3f, 2f, 8, Projectile.velocity.ToRotation() + (Main.rand.NextBool() ? -0.25f : 0.25f), 1f);
-                        GeneralParticleHandler.SpawnParticle(sparker);
+                    // Every 8 ticks during this part of startup, release a sparkle.
+                    if (StartupCompletion > 0.12f && StartupCompletion < 0.44f)
+                    {
+                        if (timer % 8 == 0)
+                        {
+                            Vector2 pos = player.Center + Projectile.rotation.ToRotationVector2() * 60f;
+                            Particle sparkle = new CritSpark(pos, new Vector2(7f, 0).RotatedBy(Projectile.rotation), Color.Lerp(Color.CornflowerBlue, Color.MediumPurple, Main.rand.NextFloat(1f)), Color.White * 0.33f, 1.2f, 12, 0.3f, 1.2f);
+                            GeneralParticleHandler.SpawnParticle(sparkle);
+                        }
+                        Particle smear = new CircularSmearVFX(player.Center, Color.CornflowerBlue * 0.25f, Projectile.rotation, Projectile.scale * 1.25f);
+                        GeneralParticleHandler.SpawnParticle(smear);
+                    }
+
+                    // Easing on spin
+                    float t = MathHelper.Clamp(StartupCompletion * 2f, 0f, 1f);
+                    float eased = 0.5f - 0.5f * MathF.Cos(MathHelper.Pi * t);
+                    thrustSpinRotation = eased * MathHelper.TwoPi; 
+
+                    // Pull back
+                    if (StartupCompletion >= 0.5f)
+                    {
+                        float easedPullback = MathF.Pow((StartupCompletion - 0.5f) * 2f, 0.3f);
+                        OffsetDistance = (int)MathHelper.Lerp(44, 34, easedPullback);
+                    }
+                    else
+                    {
+                        OffsetDistance = 44;
                     }
                 }
 
@@ -140,23 +157,22 @@ namespace CalamityMod.Projectiles.Melee
                     Projectile.Opacity -= 0.0135f;
 
                     // During cooldown, pull back slightly
-                    Projectile.scale = baseScale * MathHelper.Lerp(1.6f, 1.55f, CooldownCompletion);
-                    OffsetDistance = (int)MathHelper.Lerp(68, 42, CooldownCompletion);
+                    Projectile.scale = baseScale * MathHelper.Lerp(1.4f, 1.25f, CooldownCompletion);
+                    OffsetDistance = (int)MathHelper.Lerp(78, 38, CooldownCompletion);
                 }
 
                 else if (inSwing)
                 {
                     // Thrust forward
-                    OffsetDistance = (int)MathHelper.Lerp(34, 68, SwingCompletion);
-                    Main.player[Projectile.owner].Calamity().GeneralScreenShakePower = 3.5f;
+                    OffsetDistance = (int)MathHelper.Lerp(34, 78, SwingCompletion);
+                    Main.player[Projectile.owner].SetScreenshake(3.5f);
 
                     // Scaling adjustments
                     var t = MathHelper.Clamp(SwingCompletion, 0f, 1f);
                     var eased = MathF.Pow(t, 0.125f);
-                    Projectile.scale = baseScale * MathHelper.Lerp(0.9f, 1.6f, eased);
+                    Projectile.scale = baseScale * MathHelper.Lerp(0.9f, 1.4f, eased);
 
                     // VFX vars
-                    Player player = Main.player[Projectile.owner];
                     Vector2 mousePosition = Main.MouseWorld;
                     Vector2 fireDirection = Vector2.Normalize(mousePosition - player.Center);
 
@@ -166,10 +182,10 @@ namespace CalamityMod.Projectiles.Melee
                         Projectile.NewProjectile(Projectile.GetSource_FromThis(), player.Center, fireDirection * 5, ModContent.ProjectileType<LucreciaDNATrailCreator>(), Projectile.damage * 8, Projectile.knockBack, Projectile.owner, 0f, 0f);
                         
                         SoundStyle swish = new("CalamityMod/Sounds/Custom/MeatySlash");
-                        SoundEngine.PlaySound(swish with { Volume = 0.45f, Pitch = Main.rand.NextFloat(-0.1f, 0.1f) }, Projectile.Center);
+                        SoundEngine.PlaySound(swish with { Volume = 0.3f, Pitch = Main.rand.NextFloat(0.1f, 0.2f) }, Projectile.Center);
 
                         SoundStyle projectile = new("CalamityMod/Sounds/Item/OmicronBeam");
-                        SoundEngine.PlaySound(projectile with { Volume = 0.75f, Pitch = Main.rand.NextFloat(0.15f, 0.2f) }, Projectile.Center);
+                        SoundEngine.PlaySound(projectile with { Volume = 0.85f, Pitch = Main.rand.NextFloat(0.15f, 0.2f) }, Projectile.Center);
                     }
 
                     trailFXTriggered = true;
@@ -194,8 +210,6 @@ namespace CalamityMod.Projectiles.Melee
             {
                 if (inStartup)
                 {
-                    AfterImageLength = 0;
-
                     Projectile.Opacity += 0.01f; // Fade in
                     gotEnergyThisSwing = false;
                     helixFired = false;
@@ -204,8 +218,6 @@ namespace CalamityMod.Projectiles.Melee
 
                 else if (inCooldown)
                 {
-                    AfterImageLength = 0;
-
                     helixFired = false;
                     Projectile.Opacity -= 0.09f;
                     Projectile.scale = baseScale * MathHelper.Lerp(0.85f, 0.625f, CooldownCompletion);
@@ -216,8 +228,14 @@ namespace CalamityMod.Projectiles.Melee
                     if (!helixFired)
                     {
                         helixFired = true;
-                        var player = Main.player[Projectile.owner];
                         var mousePosition = Main.MouseWorld;
+
+                        // Smear fx on swing
+                        Vector2 shootDir = player.Center.DirectionTo(mousePosition) * 10f;
+                        int dir = -Math.Sign(mousePosition.X);
+                        Particle swipe = new CustomSpark(player.Center - shootDir * 4, shootDir.RotatedBy(0.075f * (dir * (modplayer.swingNum % 2 == 0 ? 1 : -1))) * 1.22f, "CalamityMod/Particles/VerticalSmearLarge", false, (int)(14 / player.GetAttackSpeed(DamageClass.Melee)), 0.3f, modplayer.swingNum % 2 == 0 ? Color.CornflowerBlue * 0.85f : Color.MediumPurple * 0.8f, new Vector2(1.1f, 1.3f), true, false, 0, false, false);
+                        GeneralParticleHandler.SpawnParticle(swipe);
+
                         var fireDirection = Vector2.Normalize(mousePosition - player.Center);
                         var helixSpeed = 12f;
                         var helixVelocity = fireDirection * helixSpeed;
@@ -227,8 +245,6 @@ namespace CalamityMod.Projectiles.Melee
                         SoundEngine.PlaySound(projectile with { Volume = 0.8f, Pitch = Main.rand.NextFloat(-0.06f, 0.1f) }, Projectile.Center);
                     }
 
-                    AfterImageLength = 30;
-
                     var t = MathHelper.Clamp(SwingCompletion, 0f, 1f);
                     var parabola = 1f - MathF.Pow(t - 0.5f, 2f) * 4f;
                     OffsetDistance = (int)MathHelper.Lerp(36 * 1f, 36 * 1.435f, parabola);
@@ -236,6 +252,18 @@ namespace CalamityMod.Projectiles.Melee
                     var eased = MathF.Pow(upPhase, 2.6f);
                     Projectile.scale = baseScale * MathHelper.Lerp(0.8f, 1.4f, eased);
 
+                    // Every 5 ticks during swing, release a particle
+                    if (t > 0.05f && t < 0.5f)
+                    {
+                        if (timer % 5 == 0)
+                        {
+                            var fireDirection = Vector2.Normalize(Main.MouseWorld - player.Center);
+                            var helixVelocity = fireDirection * 14f;
+
+                            SparkParticle orb3 = new SparkParticle(player.Center + fireDirection * 3, helixVelocity.RotatedByRandom(1f), true, 16, 0.5f, Color.Lerp(Color.CornflowerBlue, Color.MediumPurple, Main.rand.NextFloat()) * 0.66f, true);
+                            GeneralParticleHandler.SpawnParticle(orb3);
+                        }
+                    }
                 }
             }
             base.AdditionalAI();
@@ -247,19 +275,8 @@ namespace CalamityMod.Projectiles.Melee
 
             if (IsAlternateThrust)
             {
-                var modplayer = player.GetModPlayer<BaseSwordHoldoutPlayer>();
-                float swingDirection = Projectile.spriteDirection;
-
                 if (inStartup)
-                {
-                    return 0f;
-                }
-
-                if (timer < StartupTime + swingTime)
-                {
-                    return 0f;
-                }
-
+                    return thrustSpinRotation;
                 else
                     return 0f; // Just retract and fade out without moving the angle
             }
@@ -268,7 +285,7 @@ namespace CalamityMod.Projectiles.Melee
             {
                 var modplayer = player.GetModPlayer<BaseSwordHoldoutPlayer>();
                 float swingDirection = Projectile.spriteDirection;
-                if (modplayer.swingNum == 1)
+                if (modplayer.swingNum % 2 == 1)
                     swingDirection *= -1;
 
                 var parabolicFactorPrimary = 1f - MathF.Pow(SwingCompletion - 0.5f, 2f) * 4f;
@@ -288,6 +305,8 @@ namespace CalamityMod.Projectiles.Melee
             // Add energy for the primary attack
             if (!IsAlternateThrust && !gotEnergyThisSwing)
             {
+                SoundEngine.PlaySound(CommonCalamitySounds.SwiftSliceSound with { Volume = CommonCalamitySounds.SwiftSliceSound.Volume * 0.3f }, Projectile.Center);
+
                 gotEnergyThisSwing = true;
                 var player = Main.player[Projectile.owner];
                 var modPlayer = player.Calamity();
@@ -302,12 +321,12 @@ namespace CalamityMod.Projectiles.Melee
                 Vector2 spinningPoint = Vector2.Normalize(new Vector2(-1f, -1f)).RotatedByRandom(100);
 
                 var modplayer = player.GetModPlayer<BaseSwordHoldoutPlayer>();
-                Color useColor = modplayer.swingNum == 1 ? Color.CornflowerBlue : Color.MediumPurple; // Alternate each swing
+                Color useColor = modplayer.swingNum % 2 == 0 ? Color.CornflowerBlue : Color.MediumPurple; // Alternate each swing
 
                 for (int k = 0; k < points; k++)
                 {
                     Vector2 velocity = spinningPoint.RotatedBy(radians * k).RotatedBy(-0.45f);
-                    Particle spark = new GlowSparkParticle((target.Center + velocity * 7.5f), velocity * 0.5f, false, 9, 0.05f, useColor, new Vector2(0.5f, 0.4f), true, false);
+                    Particle spark = new GlowSparkParticle((target.Center + velocity * 7.5f), velocity * 0.5f, false, 9, 0.05f, useColor, new Vector2(0.5f, 0.6f), true, false);
                     GeneralParticleHandler.SpawnParticle(spark);
                 }
             }

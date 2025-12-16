@@ -1,15 +1,11 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using CalamityMod.CalPlayer;
 using Terraria;
 
 namespace CalamityMod.Packets
 {
-    public sealed class SyncPlayerDrawParameterPacket : CalamityPacket
+    internal sealed class SyncPlayerDrawParameterPacket : CalamityPacket
     {
         public static SyncPlayerDrawParameterPacket Instance { get; set; }
 

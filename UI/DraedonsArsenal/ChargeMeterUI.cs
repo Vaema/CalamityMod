@@ -69,7 +69,7 @@ namespace CalamityMod.UI.DraedonsArsenal
             }
 
             // If the Charge Meter is turned off or the player is not holding an item, stop.
-            Item heldItem = player.ActiveItem();
+            Item heldItem = player.HeldItem;
             if (!CalamityClientConfig.Instance.ChargeMeter || heldItem is null || heldItem.IsAir)
             {
                 Reset();

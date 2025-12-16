@@ -3,7 +3,7 @@ using Terraria;
 
 namespace CalamityMod.Packets.Entities
 {
-    public sealed class DemonSwordImpalesSyncPacket : CalamityPacket
+    internal sealed class DemonSwordImpalesSyncPacket : CalamityPacket
     {
         public static DemonSwordImpalesSyncPacket Instance { get; private set; }
         public override byte MessageType => (byte)CalamityModMessageType.SyncNPCDemonSwordImpales;

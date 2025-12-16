@@ -1,16 +1,53 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using CalamityMod.Waters;
+using CalamityMod.Systems;
 using Microsoft.Xna.Framework;
 using Terraria;
+using Terraria.Graphics;
 
 namespace CalamityMod
 {
     public static partial class CalamityUtils
     {
+        public static void ModifySulphuricWaterColor(int x, int y, ref VertexColors initialColor, bool isSlope)
+        {
+            if (SulphuricWaterSafeZoneSystem.NearbySafeTiles.Count >= 1)
+            {
+                Color cleanWaterColor = new(10, 62, 193);
+                var closestSafeZone = SulphuricWaterSafeZoneSystem.NearbySafeTiles.OrderBy(t => t.Key.ToVector2().DistanceSQ(new(x, y))).First();
+                Point closestSafeZonePoint = closestSafeZone.Key;
+                float closestSafeZoneAmt = closestSafeZone.Value;
+                float lerpAmt = (1f - closestSafeZoneAmt) * 21f;
+
+                void ModifyColor(Vector2 point, ref Color vertexColor)
+                {
+                    float distanceToClosest = point.Distance(closestSafeZonePoint.ToVector2());
+                    float acidicWaterInterpolant = Utils.GetLerpValue(12f, 20.5f, distanceToClosest + lerpAmt, true);
+                    vertexColor = Color.Lerp(cleanWaterColor, vertexColor, acidicWaterInterpolant);
+                }
+
+                ModifyColor(new(x - 0.5f, y - 0.5f), ref initialColor.TopLeftColor);
+                ModifyColor(new(x + 0.5f, y - 0.5f), ref initialColor.TopRightColor);
+                ModifyColor(new(x - 0.5f, y + 0.5f), ref initialColor.BottomLeftColor);
+                ModifyColor(new(x + 0.5f, y + 0.5f), ref initialColor.BottomRightColor);
+            }
+
+            if (isSlope)
+            {
+                initialColor.TopLeftColor *= 1f / 3;
+                initialColor.TopRightColor *= 1f / 3;
+                initialColor.BottomLeftColor *= 1f / 3;
+                initialColor.BottomRightColor *= 1f / 3;
+            }
+            else
+            {
+                initialColor.TopLeftColor *= 0.4f;
+                initialColor.TopRightColor *= 0.4f;
+                initialColor.BottomLeftColor *= 0.4f;
+                initialColor.BottomRightColor *= 0.4f;
+            }
+        }
+
         public static void SunkenSeaWaterLighting(int x, int y, Vector3 waterColor, ref float r, ref float g, ref float b)
         {
             float tick = (float)Main.timeForVisualEffects;

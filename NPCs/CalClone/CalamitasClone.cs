@@ -1,4 +1,5 @@
-﻿using System.IO;
+﻿using System;
+using System.IO;
 using CalamityMod.Buffs.DamageOverTime;
 using CalamityMod.Dusts;
 using CalamityMod.Events;
@@ -7,7 +8,7 @@ using CalamityMod.Items.Armor.Vanity;
 using CalamityMod.Items.LoreItems;
 using CalamityMod.Items.Materials;
 using CalamityMod.Items.Placeables.Furniture.BossRelics;
-using CalamityMod.Items.Placeables.Furniture.DevPaintings;
+using CalamityMod.Items.Placeables.Furniture.Paintings;
 using CalamityMod.Items.Placeables.Furniture.Trophies;
 using CalamityMod.Items.TreasureBags;
 using CalamityMod.Items.Weapons.Magic;
@@ -16,12 +17,12 @@ using CalamityMod.Items.Weapons.Ranged;
 using CalamityMod.Items.Weapons.Summon;
 using CalamityMod.NPCs.TownNPCs;
 using CalamityMod.Projectiles.Boss;
+using CalamityMod.Systems.Mechanic;
 using CalamityMod.World;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using ReLogic.Content;
 using ReLogic.Utilities;
-using System;
 using Terraria;
 using Terraria.Audio;
 using Terraria.GameContent;
@@ -42,6 +43,61 @@ namespace CalamityMod.NPCs.CalClone
         public static readonly SoundStyle ChargeSound = new("CalamityMod/Sounds/Custom/CalamitasClone/CalCloneDash", 3);
         public SlotId BulletHellWarnSlot;
 
+        public ArenaWallSystem.Box ArenaBox = null;
+        void UpdateArena(ArenaWallSystem.Box box)
+        {
+            if (box.borderColor == Color.Gray || box.oldData.borderColor == Color.Gray)
+                return;
+            for (var i2 = 0; i2 < box.Size.Y / 400f; i2++)
+            {
+                var p = Vector2.Lerp(box.BottomRight, box.TopRight, Main.rand.NextFloat());
+                Dust.NewDustPerfect(p, DustID.Clentaminator_Red, p.DirectionFrom(box.Center) * Main.rand.NextFloat(0, 5), Scale: Main.rand.NextFloat(0.1f, 1f), newColor: box.borderColor);
+
+                p = Vector2.Lerp(box.TopLeft, box.BottomLeft, Main.rand.NextFloat());
+                Dust.NewDustPerfect(p, DustID.Clentaminator_Red, p.DirectionFrom(box.Center) * Main.rand.NextFloat(0, 5), Scale: Main.rand.NextFloat(0.1f, 1f), newColor: box.borderColor);
+
+            }
+            for (var i2 = 0; i2 < box.Size.X / 400f; i2++)
+            {
+                var p = Vector2.Lerp(box.TopLeft, box.TopRight, Main.rand.NextFloat());
+                Dust.NewDustPerfect(p, DustID.Clentaminator_Red, p.DirectionFrom(box.Center) * Main.rand.NextFloat(0, 5), Scale: Main.rand.NextFloat(0.1f, 1f), newColor: box.borderColor);
+                p = Vector2.Lerp(box.BottomRight, box.BottomLeft, Main.rand.NextFloat());
+                Dust.NewDustPerfect(p, DustID.Clentaminator_Red, p.DirectionFrom(box.Center) * Main.rand.NextFloat(0, 5), Scale: Main.rand.NextFloat(0.1f, 1f), newColor: box.borderColor);
+            }
+        }
+
+        void DrawArena(ArenaWallSystem.Box box)
+        {
+
+            var color = Color.Black * 0.75f;
+            //Inside Fill
+            box.DrawBoxWithOffset(box.borderThickness * 0.5f, box.borderThickness, Color.Black * 0.75f);
+            //Inner Border
+            box.DrawBoxWithOffset(4, 8, box.borderColor);
+            //Inner Border Clones
+            float amount = 4;
+            float totalDistance = 64f;
+            for (var i = Main.GlobalTimeWrappedHourly % 1; i < amount; i++)
+            {
+                box.DrawBoxWithOffset(totalDistance * (i / amount) + 4, 4, box.borderColor * (1 - i / amount));
+            }
+            //Outer Border
+            box.DrawBoxWithOffset(box.borderThickness - 4, 4, box.borderColor);
+        }
+        public static Vector4 GetArenaSize(bool brothersActive = false, float lifeRatio = 0, bool inBulletHell = false)
+        {
+            var baseSize = new Vector4(1600, 800, 0, 800);
+            if (brothersActive)
+                baseSize *= 1.25f;
+            if (NPC.AnyNPCs(ModContent.NPCType<SoulSeeker>()))
+                baseSize *= new Vector4(1.5f, 0.75f, 1.5f, 0.75f);
+            if (!CalamityWorld.death)
+                baseSize *= 1.25f;
+            if (lifeRatio < 0.1f && !inBulletHell && CalamityWorld.death)
+                baseSize *= MathHelper.Lerp(Main.getGoodWorld ? 0.22f : 0.4f, 1f, lifeRatio * 10f); // Scale down the lower health calclone has. Much lower bound on FTW.
+
+            return baseSize + new Vector4(-22, 0 ,22,0);
+        }
         public override void SetStaticDefaults()
         {
             Main.npcFrameCount[Type] = 6;
@@ -74,12 +130,9 @@ namespace CalamityMod.NPCs.CalClone
             NPC.width = 120;
             NPC.height = 120;
 
-            if (CalamityWorld.death || BossRushEvent.BossRushActive)
-                NPC.scale *= 0.8f;
-
             NPC.defense = 25;
             NPC.value = Item.buyPrice(gold: 15);
-            NPC.LifeMaxNERB(39000, 46875, 520000);
+            NPC.LifeMaxNERB(30000, 46875, 520000);
             NPC.aiStyle = -1;
             AIType = -1;
             NPC.knockBackResist = 0f;
@@ -132,7 +185,6 @@ namespace CalamityMod.NPCs.CalClone
             int frame = (int)NPC.frameCounter;
             NPC.frame.Y = frame * frameHeight;
         }
-
         public override void AI()
         {
             CalamityGlobalNPC calamityGlobalNPC = NPC.Calamity();
@@ -180,7 +232,7 @@ namespace CalamityMod.NPCs.CalClone
 
                 string key = "Mods.CalamityMod.Status.Boss.CalamitasBossText3";
                 Color messageColor = Color.Orange;
-                CalamityUtils.DisplayLocalizedText(key, messageColor);
+                CalamityUtils.BroadcastLocalizedText(key, messageColor);
 
                 calamityGlobalNPC.newAI[1] = 1f;
             }
@@ -219,7 +271,7 @@ namespace CalamityMod.NPCs.CalClone
 
                         string key = "Mods.CalamityMod.Status.Boss.CalamitasBossText2";
                         Color messageColor = Color.Orange;
-                        CalamityUtils.DisplayLocalizedText(key, messageColor);
+                        CalamityUtils.BroadcastLocalizedText(key, messageColor);
 
                         SpawnDust();
                     }
@@ -250,6 +302,47 @@ namespace CalamityMod.NPCs.CalClone
 
             if (brotherAlive)
                 NPC.dontTakeDamage = true;
+
+            bool inBulletHell = calamityGlobalNPC.newAI[2] > 0f;
+
+            //arena in rev+
+            if (revenge)
+            {
+                if (ArenaBox is null)
+                {
+                    ArenaBox = new()
+                    {
+                        position = Main.player[NPC.FindClosestPlayer()].Center,
+                        boxDimensions = new Vector4(2000),
+                        borderThickness = 2000,
+                        RemovalCondition = () => !(Main.npc[NPC.whoAmI].active) || Main.npc[NPC.whoAmI].type != Type,
+                        UpdateBox = UpdateArena,
+                        DrawBox = DrawArena,
+                        DespawnAction = (box) =>
+                        {
+                            box.boxDimensions += new Vector4(64);
+                            if (box.Size.X > 5000)
+                                return true;
+                            return false;
+                        }
+                    };
+                    ArenaWallSystem.ActiveBoxes.Add(ArenaBox);
+                }
+                ArenaBox.NewDimensions = Vector4.Lerp(ArenaBox.boxDimensions, GetArenaSize(brotherAlive, lifeRatio, inBulletHell), lifeRatio > 0.9f ? 0.1f : 0.025f);
+                if (ArenaBox.oldData is not null)
+                    ArenaBox.oldData.borderColor = Color.White;
+                if (brotherAlive)
+                    ArenaBox.borderColor = Color.Lerp(ArenaBox.borderColor, Color.Lerp(new Color(0, 255, 255), new Color(255, 0, 229), (MathF.Sin(Main.GlobalTimeWrappedHourly * 0.5f) + 1) * 0.5f), 0.03f);
+                else if (NPC.AnyNPCs(ModContent.NPCType<SoulSeeker>()))
+                    ArenaBox.borderColor = Color.Lerp(ArenaBox.borderColor, Color.Lerp(Color.Crimson, new Color(255, 106, 0), (MathF.Sin(Main.GlobalTimeWrappedHourly * 0.5f) + 1) * 0.5f), 0.03f);
+                else if (NPC.dontTakeDamage)
+                {
+                    ArenaBox.borderColor = Color.Lerp(ArenaBox.borderColor, Color.Gray, 0.1f);
+                    ArenaBox.oldData.borderColor = Color.Gray;
+                }
+                else
+                    ArenaBox.borderColor = Color.Lerp(ArenaBox.borderColor, Color.Lerp(Color.Crimson, Color.IndianRed, (MathF.Sin(Main.GlobalTimeWrappedHourly * 0.5f) + 1) * 0.25f), 0.03f);
+            }
 
             void SpawnDust()
             {
@@ -391,7 +484,7 @@ namespace CalamityMod.NPCs.CalClone
                 xPos = -1;
 
             // How far Cal Clone should be from the target
-            float averageDistance = 500f;
+            float averageDistance = 400f;
             float chargeDistance = phase4 ? 300f : 400f;
 
             // This is where Cal Clone should be
@@ -442,10 +535,10 @@ namespace CalamityMod.NPCs.CalClone
                     {
                         if (calamityGlobalNPC.newAI[2] == 2f)
                         {
-                            int type = ModContent.ProjectileType<SCalBrimstoneFireblast>();
+                            int type = ModContent.ProjectileType<BurningFireblast>();
                             int damage = FireblastDamage;
                             if (Main.zenithWorld)
-                                type = ModContent.ProjectileType<SCalBrimstoneGigablast>();
+                                type = ModContent.ProjectileType<BurningGigablast>();
 
                             float gigaBlastFrequency = Main.getGoodWorld ? 120f : expertMode ? 180f : 240f;
                             float projSpeed = 5f;
@@ -475,7 +568,7 @@ namespace CalamityMod.NPCs.CalClone
 
                         if (Main.netMode != NetmodeID.MultiplayerClient)
                         {
-                            int type = ModContent.ProjectileType<BrimstoneHellblast2>();
+                            int type = ModContent.ProjectileType<CalamitousDart>();
                             int damage = HellblastDamage;
                             float projSpeed = 4f;
                             // Blasts aimed directly at the player's horizontal position, does not spawn during the second bullet hell
@@ -567,12 +660,12 @@ namespace CalamityMod.NPCs.CalClone
                         Projectile projectile = Main.projectile[x];
                         if (projectile.active)
                         {
-                            if (projectile.type == ModContent.ProjectileType<BrimstoneHellblast2>() || projectile.type == ModContent.ProjectileType<BrimstoneBarrage>())
+                            if (projectile.type == ModContent.ProjectileType<CalamitousDart>() || projectile.type == ModContent.ProjectileType<BurningBolt>())
                             {
                                 if (projectile.timeLeft > 60)
                                     projectile.timeLeft = 60;
                             }
-                            else if (projectile.type == ModContent.ProjectileType<SCalBrimstoneFireblast>())
+                            else if (projectile.type == ModContent.ProjectileType<BurningFireblast>())
                             {
                                 projectile.ai[2] = 1f;
 
@@ -600,7 +693,7 @@ namespace CalamityMod.NPCs.CalClone
 
                     if (Main.netMode != NetmodeID.MultiplayerClient)
                     {
-                        int type = ModContent.ProjectileType<BrimstoneHellblast2>();
+                        int type = ModContent.ProjectileType<CalamitousDart>();
                         int damage = HellblastDamage;
                         float projSpeed = 4f;
                         if (calamityGlobalNPC.newAI[3] % (hellblastGateValue * 6f) == 0f)
@@ -666,7 +759,7 @@ namespace CalamityMod.NPCs.CalClone
                         SoundEngine.PlaySound(BrimstoneElemental.BrimstoneElemental.HellfireballSound, NPC.Center);
 
                         float projectileVelocity = expertMode ? 14f : 12.5f;
-                        int type = ModContent.ProjectileType<BrimstoneHellfireball>();
+                        int type = ModContent.ProjectileType<CalamitousFireball>();
                         Vector2 predictionVector = Main.getGoodWorld ? player.velocity * 20f : Vector2.Zero;
                         Vector2 fireballVelocity = Vector2.Normalize(player.Center + predictionVector - NPC.Center) * projectileVelocity;
                         Vector2 offset = Vector2.Normalize(fireballVelocity) * 40f;
@@ -695,19 +788,20 @@ namespace CalamityMod.NPCs.CalClone
                         NPC.localAI[1] = 0f;
 
                         float projectileVelocity = expertMode ? 12.5f : 11f;
-                        int type = ModContent.ProjectileType<BrimstoneHellblast>();
+                        int type = ModContent.ProjectileType<CalamitousDart>();
                         int damage = HellblastDamage;
                         Vector2 fireballVelocity = Vector2.Normalize(player.Center - NPC.Center) * projectileVelocity;
                         Vector2 offset = Vector2.Normalize(fireballVelocity) * 40f;
 
                         if (!Collision.CanHit(NPC.position, NPC.width, NPC.height, player.position, player.width, player.height))
                         {
-                            type = ModContent.ProjectileType<BrimstoneHellfireball>();
+                            type = ModContent.ProjectileType<CalamitousFireball>();
                             Projectile.NewProjectile(NPC.GetSource_FromAI(), NPC.Center + offset, fireballVelocity, type, HellfireballDamage, 0f, Main.myPlayer, player.position.X, player.position.Y);
                         }
                         else
                         {
                             Projectile.NewProjectile(NPC.GetSource_FromAI(), NPC.Center + offset, fireballVelocity, type, damage, 0f, Main.myPlayer, 1f);
+                            SoundEngine.PlaySound(SoundID.Item20, NPC.Center);
                         }
                     }
                 }
@@ -745,7 +839,7 @@ namespace CalamityMod.NPCs.CalClone
                 NPC.ai[1] = 3f;
                 NPC.netUpdate = true;
             }
-            else if (NPC.ai[1] == 3f)
+            else if (NPC.ai[1] == 3f) // Dashing time
             {
                 // Set damage
                 NPC.damage = NPC.defDamage;
@@ -766,14 +860,15 @@ namespace CalamityMod.NPCs.CalClone
                 }
                 else
                 {
+
                     NPC.rotation = (float)Math.Atan2(NPC.velocity.Y, NPC.velocity.X) - MathHelper.PiOver2;
 
                     // Leave behind slow hellblasts in Death Mode
-                    if (Main.netMode != NetmodeID.MultiplayerClient && death && phase3 && NPC.ai[2] % (phase4 ? 6f : 10f) == 0f)
+                    if (Main.netMode != NetmodeID.MultiplayerClient && death && phase4 && NPC.ai[2] % 6f == 0f)
                     {
-                        int type = ModContent.ProjectileType<BrimstoneHellblast>();
+                        int type = ModContent.ProjectileType<CalamitousDart>();
                         Vector2 fireballVelocity = Main.getGoodWorld ? Main.rand.NextVector2CircularEdge(0.02f, 0.02f) : NPC.velocity * 0.01f;
-                        Projectile.NewProjectile(NPC.GetSource_FromAI(), NPC.Center, fireballVelocity, type, HellblastDamage, 0f, Main.myPlayer, 1f, 0f);
+                        Projectile.NewProjectile(NPC.GetSource_FromAI(), NPC.Center, fireballVelocity, type, HellblastDamage, 0f, Main.myPlayer, 1f, 0f, 2f); // ai[2] is used here to distinguish acceleration in its ai
                     }
                 }
 
@@ -798,15 +893,33 @@ namespace CalamityMod.NPCs.CalClone
                     NPC.ai[1] = 4f;
                 }
             }
+
+            // Prepare dash
             else
             {
-                // Avoid cheap bullshit
                 NPC.damage = 0;
 
                 NPC.ai[2] += 1f;
-                if (NPC.ai[2] >= (phase4 ? 15f : 30f))
+                float telegraphDuration = phase4 ? 15f : 30f;
+
+
+                float startTelegraphTime = phase4 ? -25f : -10f; // Start 40 frames before dash
+                if (NPC.ai[2] >= startTelegraphTime && NPC.ai[2] < telegraphDuration && Main.netMode != NetmodeID.MultiplayerClient)
                 {
-                    NPC.ai[1] = 2f;
+                    // Lines converge inward
+                    if (Main.rand.NextBool(3))
+                    {
+                        Vector2 dustVel2 = (Vector2.UnitX).RotatedByRandom(100) * Main.rand.NextFloat(23f, 28f);
+                        Dust dust2 = Dust.NewDustPerfect(NPC.Center + dustVel2.SafeNormalize(Vector2.UnitX) * 420, ModContent.DustType<SquashDust>(), -dustVel2 * 1.2f, 0, default, Main.rand.NextFloat(1.4f, 2.35f));
+                        dust2.noGravity = true;
+                        dust2.fadeIn = 0.8f;
+                        dust2.color = Color.Crimson;
+                    }
+                }
+
+                if (NPC.ai[2] >= telegraphDuration)
+                {
+                    NPC.ai[1] = 2f; // Start dash
                     NPC.ai[2] = 0f;
                     if (death)
                         NPC.localAI[0] = 1f;
@@ -826,7 +939,11 @@ namespace CalamityMod.NPCs.CalClone
             Vector2 origin = new Vector2((float)(texture.Width / 2), (float)(texture.Height / Main.npcFrameCount[Type] / 2));
             Color white = Color.White;
             float colorLerpAmt = 0.5f;
-            int afterimageAmt = 7;
+            int afterimageAmt = 6;
+
+            bool death = CalamityWorld.death || BossRushEvent.BossRushActive;
+            float lifeRatio = NPC.life / (float)NPC.lifeMax;
+            bool phase4 = lifeRatio <= 0.1f && death;
 
             if (CalamityClientConfig.Instance.Afterimages)
             {
@@ -869,8 +986,33 @@ namespace CalamityMod.NPCs.CalClone
                 }
             }
 
-            spriteBatch.Draw(texture, npcOffset, NPC.frame, color, NPC.rotation, origin, NPC.scale, spriteEffects, 0f);
+            if (NPC.ai[1] == 4f)
+            {
+                // Same logic as in AI
+                float telegraphDuration = phase4 ? 15f : 30f;
+                float startTelegraphTime = phase4 ? -25f : -10f;
 
+                float glowTimeElapsed = NPC.ai[2] - startTelegraphTime;
+                float timeForMaxGlow = telegraphDuration - startTelegraphTime;
+
+                float lifeFadeIn = Utils.GetLerpValue(0, timeForMaxGlow, glowTimeElapsed, true);
+
+                float glowSine = (float)Math.Sin(Main.GlobalTimeWrappedHourly * 10f); // Period of full pulse
+                float pulse = MathHelper.Lerp(0.7f, 1f, glowSine); // Least protruding to most protruding
+                float finalGlowIntensity = pulse * lifeFadeIn;
+
+                // Create 20 visual copies of calclone that draw behind to create a glowy outline effect
+                for (int i = 0; i < 20; i++)
+                {
+                    float rotationOffset = (MathHelper.TwoPi * i / 15);
+                    Vector2 glowOffset = rotationOffset.ToRotationVector2() * (3f + glowSine * 1f) * finalGlowIntensity;
+
+                    // Use the drawPosition variable that incorporates the screen offset
+                    Main.spriteBatch.Draw(texture, NPC.Center - screenPos + glowOffset, NPC.frame, Color.Red with { A = 150 } * finalGlowIntensity, NPC.rotation, origin, NPC.scale, spriteEffects, 0f);
+                }
+            }
+
+            spriteBatch.Draw(texture, npcOffset, NPC.frame, color, NPC.rotation, origin, NPC.scale, spriteEffects, 0f);
             return false;
         }
 
@@ -892,7 +1034,8 @@ namespace CalamityMod.NPCs.CalClone
                 normalOnly.Add(DropHelper.CalamityStyle(DropHelper.NormalWeaponDropRateFraction, items));
 
                 // Equipment
-                normalOnly.Add(DropHelper.PerPlayer(ModContent.ItemType<VoidofCalamity>()));
+                // 16NOV2025: Ozzatron: item has been chosen as the "Expert gatekept" item for this Calamity boss
+                // normalOnly.Add(DropHelper.PerPlayer(ModContent.ItemType<VoidofCalamity>()));
                 normalOnly.Add(ModContent.ItemType<ChaosStone>(), DropHelper.NormalWeaponDropRateFraction);
                 normalOnly.Add(ModContent.ItemType<Regenerator>(), DropHelper.NormalWeaponDropRateFraction);
 
