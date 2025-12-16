@@ -4,7 +4,6 @@ using System.Linq;
 using CalamityMod.DataStructures;
 using CalamityMod.Items.Materials;
 using CalamityMod.Projectiles.Typeless;
-using CalamityMod.Sounds;
 using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.Audio;
@@ -77,7 +76,7 @@ namespace CalamityMod.Items.Accessories
         public override void OnSpawn(Projectile projectile, IEntitySource source)
         {
             Player owner = Main.player[projectile.owner];
-            if (projectile.aiStyle == 7 && projectile.type != ProjectileType<WulfrumHook>() && owner.GetModPlayer<WulfrumPackPlayer>().WulfrumPackEquipped && projectile.type != ProjectileID.TrackHook)
+            if (projectile.aiStyle == ProjAIStyleID.Hook && projectile.type != ProjectileType<WulfrumHook>() && owner.GetModPlayer<WulfrumPackPlayer>().WulfrumPackEquipped && projectile.type != ProjectileID.TrackHook)
             {
                 projectile.active = false;
             }
@@ -424,7 +423,10 @@ namespace CalamityMod.Items.Accessories
                     bool playerCrossedSides = Math.Sign(Segments[SimulationResolution].oldPosition.X - Segments[0].position.X) != Math.Sign(Segments[SimulationResolution].position.X - Segments[0].position.X);
                     float swingSpeed = (Segments[SimulationResolution].oldPosition - Segments[SimulationResolution].position).Length();
                     if (swingSpeed > 6f && playerCrossedSides)
-                        SoundEngine.PlaySound(CommonCalamitySounds.LouderSwingWoosh with { Volume = CommonCalamitySounds.LouderSwingWoosh.Volume * (Math.Clamp((swingSpeed - 6f) / 12f, 0, 1)) }, Player.Center);
+                    {
+                        SoundStyle swing = new SoundStyle("CalamityMod/Sounds/Custom/LoudSwingWoosh") with { Volume = Math.Clamp((swingSpeed - 6f) / 12f, 0, 1) };
+                        SoundEngine.PlaySound(swing, Player.Center);
+                    }
                 }
             }
 
@@ -533,7 +535,7 @@ namespace CalamityMod.Items.Accessories
                 //Clear any previous non-wulfrum hooks / Any hooks that just got shot (should already be handled by the global proj
                 foreach (Projectile p in Main.ActiveProjectiles)
                 {
-                    if (p.owner != Player.whoAmI || p.aiStyle != 7 || p.type == ProjectileType<WulfrumHook>())
+                    if (p.owner != Player.whoAmI || p.aiStyle != ProjAIStyleID.Hook || p.type == ProjectileType<WulfrumHook>())
                         continue;
 
                     p.Kill();
@@ -624,7 +626,7 @@ namespace CalamityMod.Items.Accessories
 
                         SoundEngine.PlaySound(WulfrumAcrobaticsPack.ReleaseSound, p.Center);
                         p.Kill();
-
+                        Player.grapCount = 0;
                     }
                 }
 

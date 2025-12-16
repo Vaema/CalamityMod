@@ -30,7 +30,7 @@ namespace CalamityMod.Tiles.FloralParadise
             CalamityUtils.SetMerge(Type, TileID.CrimsonGrass);
             CalamityUtils.MergeWithFloralParadise(Type);
 
-            DustType = 39;
+            DustType = DustID.JungleGrass;
             HitSound = MineSound;
 
             AddMapEntry(new Color(65, 142, 101));
@@ -49,7 +49,7 @@ namespace CalamityMod.Tiles.FloralParadise
 
         public override void NearbyEffects(int i, int j, bool closer)
         {
-            if (WorldGen.genRand.NextBool(60) && !Main.gamePaused && CalamityUtils.ParanoidTileRetrieval(i, j - 1).LiquidAmount >= 200)
+            if (WorldGen.genRand.NextBool(180) && !Main.gamePaused && CalamityUtils.ParanoidTileRetrieval(i, j - 1).LiquidAmount >= 200)
             {
                 Vector2 algaeVelocity = -Vector2.UnitY.RotatedByRandom(0.91f) * Main.rand.NextFloat(0.85f, 1.6f);
                 Projectile.NewProjectile(new EntitySource_WorldEvent(), new Vector2(i + 0.5f, j - 0.5f) * 16f, algaeVelocity, ModContent.ProjectileType<WaterAlgae>(), 0, 0f);

@@ -1,15 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using CalamityMod.Schematics;
 using Microsoft.Xna.Framework;
 using Terraria;
-using Terraria.DataStructures;
-using Terraria.GameContent.Generation;
 using Terraria.ID;
-using Terraria.IO;
-using Terraria.ModLoader;
-using Terraria.Utilities;
 using Terraria.WorldBuilding;
 using static CalamityMod.Schematics.SchematicManager;
 
@@ -135,6 +129,7 @@ namespace CalamityMod.World
                 else
                 {
                     chest.item[i].SetDefaults(contents2[i].Type);
+                    chest.item[i].Prefix(-1);
                     chest.item[i].stack = contents2[i].Stack;
                 }
             }

@@ -51,7 +51,7 @@ AtlasMunitionsBeacon: {
 		[c/F27049:If an enemy is in close proximity, it will enter Overdrive]
 		[c/F27049:When in Overdrive the cannon uses its full power to bring down any foe]
 		[c/F27049:While in Overdrive, the cannon will build up heat, eventually overheating]
-		[c/69F0DC:Press right click while holding this item to pick up the cannon and use it yourself]
+		[c/69F0DC:Press <right> while holding this item to pick up the cannon and use it yourself]
 		[c/69F0DC:When held, the cannon will always be in Overdrive]
 		[c/69F0DC:If the cannon overheats while you hold it, you will be forced to drop it]
 		[c/9AA4AE:Pressing <right> allows you to drop it manually]
@@ -91,7 +91,7 @@ BrittleStarStaff: {
 		'''
 		Summons a small brittle starfish that will dash through enemies until it shatters
 		Starfish will quickly regenerate after shattering
-		Holding right click will swap starfish between dashing and circling you
+		Holding <right> will swap starfish between dashing and circling you
 		When the starfish are circling, each one provides you with 4 defense
 		'''
 }
@@ -293,7 +293,7 @@ DragonbloodDisgorger: {
 		'''
 		Summons a skeletal dragon and her two children
 		Baby spits burst into blood orbs upon hitting an enemy
-		Picking up these blood orbs reduces the duration of [Potion Sickness]
+		Picking up these blood orbs reduces the duration of [cbuff:PotionSickness]
 		Requires 6 minion slots to be summoned
 		There can only be one family at a time
 		'''
@@ -364,7 +364,7 @@ FlamsteedRing: {
 	Tooltip:
 		'''
 		Summons a colossal controllable mech
-		Right click to display the mech's control panel
+		<right> to display the mech's control panel
 		The panel has 3 configurations, selected using the brackets on the edges of the UI
 		Each bracket powers 2 out of 3 possible functions, represented by the circular icons
 		The bottom left icon miniaturizes the mech to the size of a player, but weakens its weapons
@@ -435,7 +435,7 @@ GlacialEmbrace: {
 		For each minion slot used, you will gain an additional orbiting shield spike
 		These spikes accelerate rapidly towards a nearby enemy to inflict heavy damage
 		They take some time to regenerate after launching themselves at the target, however
-		On right click, summons a duplicate ring around the targeted enemy, which slowly converges before exploding
+		On <right>, summons a duplicate ring around the targeted enemy, which slowly converges before exploding
 		'''
 }
 
@@ -485,7 +485,9 @@ IgneousExaltation: {
 	Tooltip:
 		'''
 		Summons an Igneous blade that orbits around you
-		Right click to launch all blades towards the cursor
+		When your minion slots are full, <left> again to launch all blades towards the cursor
+		This ability has a two-second cooldown that requires holding this item
+		Shift-<right> this item in your inventory to change the rotation direction
 		'''
 }
 
@@ -591,7 +593,7 @@ Perdition: {
 		'''
 		{$CommonItemTooltip.Sentry}
 		Summons a beacon at the position of the mouse
-		When a target is manually selected via right click it releases torrents of souls from below onto the target
+		When a target is manually selected via <right> it releases torrents of souls from below onto the target
 		Requires one sentry slot to summon, and only one beacon may exist at a time
 		'''
 }
@@ -659,10 +661,10 @@ SarosPossession: {
 	DisplayName: Saros Possession
 	Tooltip:
 		'''
-		Summons a radiant aura that gives absolute control of light itself
-		The aura will annihilate enemies with orbs of radiance
-		There can only be one aura at a time
-		Requires 8 minion slots
+		Summons a radiant aura harnessing the power of primordial light
+		Repeated summons increase the power of the aura
+		<left> with full summon slots to channel an eclipse beam that decays over time
+		This beam recharges when not in use
 		'''
 }
 
@@ -745,9 +747,16 @@ StaffOfNecrosteocytes: {
 		'''
 }
 
-StaffoftheMechworm: {
-	DisplayName: Staff of the Mechworm
-	Tooltip: Summons an aerial mechworm to fight for you
+VoidEaterMarionette: {
+	DisplayName: Void Eater Marionette
+	Tooltip:
+		'''
+		Contains the power to control a miniature Devourer
+		Repeated summons increase the length and power of the Devourer
+		The Devourer attacks with [c/ff00ff:Divinity Devourer], [c/ff00ff:Faith Incinerator] and [c/ff00ff:Ultracosmic Maelstrom]
+		Can play fetch with dropped items 
+		Shift-<right> this item in your inventory when the Devourer has been spawned to prioritize fetching
+		'''
 }
 
 StarspawnHelixStaff: {
@@ -770,7 +779,7 @@ SunSpiritStaff: {
 	Tooltip:
 		'''
 		Summons a solar spirit to protect you
-		There can only be one spirit at a time
+		Repeated summons increase its power
 		'''
 }
 
@@ -829,8 +838,8 @@ VengefulSunStaff: {
 	DisplayName: Vengeful Sun Staff
 	Tooltip:
 		'''
-		Summons a vengeful solar spirit to protect you
-		There can only be one spirit at a time
+		Summons an eclipse spirit to protect you
+		Repeated summons increase its power
 		'''
 }
 
@@ -855,7 +864,16 @@ ViralSprout: {
 
 ViridVanguard: {
 	DisplayName: Virid Vanguard
-	Tooltip: Summons a circular formation of blades that slice nearby enemies to pieces
+	Tooltip:
+		'''
+		Alternates between summoning axes and swords, both laced with a powerful poison
+		Axes orbit the player, dealing high damage at a close range
+		Swords chase down enemies with extreme precision, tearing them to shreds
+		All weapons inflict Sage Poison, which becomes more powerful the more weapons are summoned
+		When all minion slots are full, <left> again to spin up a flurry of slashes aimed at your cursor
+		This ability has a five-second cooldown that requires holding this item
+		Shift-<right> this item in your inventory to change the rotation direction
+		'''
 }
 
 VoidConcentrationStaff: {
@@ -866,7 +884,7 @@ VoidConcentrationStaff: {
 		Minion damage is increased by 5% while the aura is active
 		Requires three minion slots to use
 		There can only be one aura at a time
-		Right click to launch a black hole that grows in size
+		<right> to launch a black hole that grows in size
 		'''
 }
 
@@ -893,7 +911,7 @@ WulfrumController: {
 	Tooltip:
 		'''
 		Summons a wulfrum droid to fight for you
-		Hold right click while holding the remote to switch all of your drones into supercharge mode
+		Hold <right> while holding the remote to switch all of your drones between regular and supercharge mode
 		Supercharged droids will stop attacking and focus wulfrum energy onto you
 		Supercharged droids provide +0.5 HP/s life regen and 3 defense per droid
 		Can also be used to heal other players by keeping your mouse cursor close enough to them
@@ -909,22 +927,9 @@ YharonsKindleStaff: {
 		'''
 }
 
-FlarebatStaff: {
-	DisplayName: Flarebat Staff
-	Tooltip:
-		'''
-		Summons a bat construct of pure fire to fight for you
-		Swoops towards foes with great haste
-		'''
-}
-
-FrostbatStaff: {
-	DisplayName: Frostbat Staff
-	Tooltip:
-		'''
-		Summons a bat construct of pure ice to fight for you
-		Swoops towards foes with slow and precise maneuvers
-		'''
+EnchantedBladeStaff: {
+	DisplayName: Enchanted Blade Staff
+	Tooltip: Summons an Enchanted Knife to fight for you
 }
 
 AmphibiansGuitar: {

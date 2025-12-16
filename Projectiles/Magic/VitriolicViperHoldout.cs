@@ -9,6 +9,7 @@ using ReLogic.Utilities;
 using Terraria;
 using Terraria.Audio;
 using Terraria.GameContent;
+using Terraria.ID;
 using Terraria.ModLoader;
 
 namespace CalamityMod.Projectiles.Magic
@@ -39,7 +40,7 @@ namespace CalamityMod.Projectiles.Magic
 
         public override void KillHoldoutLogic()
         {
-            if (Owner.CantUseHoldout(false) || HeldItem.type != Owner.ActiveItem().type)
+            if (Owner.CantUseHoldout(false) || HeldItem.type != Owner.HeldItem.type)
                 Projectile.Kill();
         }
 
@@ -77,10 +78,11 @@ namespace CalamityMod.Projectiles.Magic
                         SoundEngine.PlaySound(fire2 with { Pitch = -0.3f, Volume = 0.5f }, Projectile.Center);
 
                         // Vipers can apparently have 33 teeth or something like that
-                        Owner.Calamity().GeneralScreenShakePower = 4f;
-                        for (int i = 0; i < 33; i++)
+                        Owner.SetScreenshake(4f);
+                        if (Main.myPlayer == Projectile.owner)
                         {
-                            Projectile.NewProjectile(Projectile.GetSource_FromThis(), GunTipPosition, (shootVelocity * 2).RotatedByRandom(0.5f) * Main.rand.NextFloat(0.8f, 1.2f), ModContent.ProjectileType<VitriolicViperFang>(), Projectile.damage / 10, Projectile.knockBack, Projectile.owner, 0);
+                            for (int i = 0; i < 33; i++)
+                                Projectile.NewProjectile(Projectile.GetSource_FromThis(), GunTipPosition, (shootVelocity * 2).RotatedByRandom(0.5f) * Main.rand.NextFloat(0.8f, 1.2f), ModContent.ProjectileType<VitriolicViperFang>(), Projectile.damage / 10, Projectile.knockBack, Projectile.owner, 0);
                         }
 
                         Particle pulse = new CustomPulse(GunTipPosition, Vector2.Zero, bColor, "CalamityMod/Particles/HighResFoggyCircleHardEdge", Vector2.One, Main.rand.NextFloat(-10f, 10f), 0f, 0.05f, 14);
@@ -88,7 +90,7 @@ namespace CalamityMod.Projectiles.Magic
 
                         for (int i = 0; i < 17; i++)
                         {
-                            Dust chargefull = Dust.NewDustPerfect(GunTipPosition, 278);
+                            Dust chargefull = Dust.NewDustPerfect(GunTipPosition, DustID.FireworksRGB);
                             chargefull.velocity = Projectile.velocity.RotatedByRandom(0.4f) * Main.rand.NextFloat(5, 25);
                             chargefull.scale = Main.rand.NextFloat(0.45f, 0.75f);
                             chargefull.noGravity = true;
@@ -117,11 +119,14 @@ namespace CalamityMod.Projectiles.Magic
                         SoundStyle fire = new("CalamityMod/Sounds/Item/ViperSpit");
                         SoundEngine.PlaySound(fire with { Pitch = (chargePower * 0.3f) + Main.rand.NextFloat(-0.1f, 0.1f), Volume = 0.5f }, Projectile.Center);
 
-                        Projectile hiss = Projectile.NewProjectileDirect(Projectile.GetSource_FromThis(), GunTipPosition, shootVelocity * MathHelper.Clamp(chargePower, 0.3f, 1), ModContent.ProjectileType<VitriolicViperSpit>(), (int)(Projectile.damage * MathHelper.Clamp(chargePower, 0.3f, 1)), Projectile.knockBack, Projectile.owner, 0, 0, chargePower);
-                        hiss.extraUpdates = (int)(Utils.Remap(chargePower, 0, 1, 2, 13, true));
+                        if (Main.myPlayer == Projectile.owner)
+                        {
+                            Projectile hiss = Projectile.NewProjectileDirect(Projectile.GetSource_FromThis(), GunTipPosition, shootVelocity * MathHelper.Clamp(chargePower, 0.3f, 1), ModContent.ProjectileType<VitriolicViperSpit>(), (int)(Projectile.damage * MathHelper.Clamp(chargePower, 0.3f, 1)), Projectile.knockBack, Projectile.owner, 0, 0, chargePower);
+                            hiss.extraUpdates = (int)(Utils.Remap(chargePower, 0, 1, 2, 13, true));
+                        }
                         for (int i = 0; i < 17; i++)
                         {
-                            Dust chargefull = Dust.NewDustPerfect(GunTipPosition, 278);
+                            Dust chargefull = Dust.NewDustPerfect(GunTipPosition, DustID.FireworksRGB);
                             chargefull.velocity = Projectile.velocity.RotatedByRandom(0.4f) * Main.rand.NextFloat(5, 25);
                             chargefull.scale = Main.rand.NextFloat(0.55f, 0.75f) * chargePower + 0.1f;
                             chargefull.noGravity = true;
@@ -174,7 +179,7 @@ namespace CalamityMod.Projectiles.Magic
                     for (int i = 0; i < 18; i++)
                     {
                         Vector2 dustVel = Vector2.One.RotatedByRandom(100) * Main.rand.NextFloat(1, 5);
-                        Dust dust2 = Dust.NewDustPerfect(GunTipPosition + dustVel, 278, dustVel * 0.7f);
+                        Dust dust2 = Dust.NewDustPerfect(GunTipPosition + dustVel, DustID.FireworksRGB, dustVel * 0.7f);
                         dust2.scale = Main.rand.NextFloat(0.45f, 0.9f);
                         dust2.noGravity = true;
                         dust2.color = Color.Lerp(Color.White, Main.rand.NextBool(4) ? bColor : Color.Green, 0.7f);
@@ -186,7 +191,7 @@ namespace CalamityMod.Projectiles.Magic
                     SoundEngine.PlaySound(fire with { Volume = 1f, Pitch = 0.2f }, Projectile.Center);
                     for (int i = 0; i < 12; i++)
                     {
-                        Dust dust2 = Dust.NewDustPerfect(GunTipPosition, 278, Vector2.One.RotatedByRandom(100) * Main.rand.NextFloat(2f, 5.5f));
+                        Dust dust2 = Dust.NewDustPerfect(GunTipPosition, DustID.FireworksRGB, Vector2.One.RotatedByRandom(100) * Main.rand.NextFloat(2f, 5.5f));
                         dust2.scale = Main.rand.NextFloat(0.75f, 1.1f);
                         dust2.noGravity = false;
                         dust2.color = Color.Lerp(Color.White, Main.rand.NextBool(4) ? Color.Green : bColor, 0.7f);

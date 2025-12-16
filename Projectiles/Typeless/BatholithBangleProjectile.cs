@@ -1,6 +1,4 @@
 ﻿using System;
-using CalamityMod.Cooldowns;
-using CalamityMod.Items.Accessories;
 using CalamityMod.Particles;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
@@ -80,7 +78,7 @@ namespace CalamityMod.Projectiles.Typeless
                 float visMult = (visual ? 1 : 0.6f);
                 if (visual)
                 {
-                    Owner.Calamity().GeneralScreenShakePower = 5f;
+                    Owner.SetScreenshake(5f);
 
                     Particle spark = new CustomSpark(Projectile.Center, Vector2.Zero, "CalamityMod/Particles/BloomCircle", false, 12, 1.35f, clr3, Projectile.scale * new Vector2(2.5f, 1.3f), true, true, shrinkSpeed: 1.25f, extraRotation: MathHelper.PiOver2);
                     GeneralParticleHandler.SpawnParticle(spark);
@@ -126,17 +124,6 @@ namespace CalamityMod.Projectiles.Typeless
             Vector2 launchVel = Utils.DirectionTo(Owner.Center, target.Center) - Vector2.UnitY;
             float launchPower = 9;
             target.MoveNPC(launchVel, launchPower, true);
-        }
-        public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
-        {
-            bool hasCD = Owner.Calamity().cooldowns.TryGetValue(GenericBandCooldown.ID, out CooldownInstance bandCD);
-
-            if ((damageDone <= 2 || (target.life <= 0 && target.realLife == -1)) && Owner.Calamity().generalBandCooldown > BatholithBangle.cooldown / 2)
-            {
-                Owner.Calamity().generalBandCooldown -= BatholithBangle.cooldown / 2;
-                if (hasCD)
-                    bandCD.timeLeft -= BatholithBangle.cooldown / 2;
-            }
         }
         public override bool? Colliding(Rectangle projHitbox, Rectangle targetHitbox) => CalamityUtils.CircularHitboxCollision(Projectile.Center, Projectile.width * 0.5f, targetHitbox);
         public override bool? CanDamage()

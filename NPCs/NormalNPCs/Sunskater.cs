@@ -4,7 +4,6 @@ using CalamityMod.Buffs.DamageOverTime;
 using CalamityMod.Items.Materials;
 using CalamityMod.Items.Placeables.Banners;
 using CalamityMod.NPCs.ExoMechs.Ares;
-using CalamityMod.World;
 using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.Audio;
@@ -34,10 +33,10 @@ namespace CalamityMod.NPCs.NormalNPCs
             NPC.width = 58;
             NPC.height = 22;
             NPC.defense = 4;
-            NPC.lifeMax = 125;
+            NPC.lifeMax = 160;
             NPC.aiStyle = -1;
             AIType = -1;
-            NPC.value = Item.buyPrice(0, 0, 3, 0);
+            NPC.value = Item.buyPrice(silver: 3);
             NPC.HitSound = SoundID.NPCHit50;
             NPC.DeathSound = Main.zenithWorld ? AresGaussNuke.NukeExplosionSound : DeathSound;
             NPC.knockBackResist = 0.7f;
@@ -47,10 +46,6 @@ namespace CalamityMod.NPCs.NormalNPCs
             NPC.Calamity().VulnerableToCold = true;
             NPC.Calamity().VulnerableToSickness = true;
             NPC.Calamity().VulnerableToWater = true;
-
-            // Scale stats in Expert and Master
-            CalamityGlobalNPC.AdjustExpertModeStatScaling(NPC);
-            CalamityGlobalNPC.AdjustMasterModeStatScaling(NPC);
         }
 
         public override void SetBestiary(BestiaryDatabase database, BestiaryEntry bestiaryEntry)
@@ -282,8 +277,7 @@ namespace CalamityMod.NPCs.NormalNPCs
                 if (Main.zenithWorld)
                 {
                     float screenShakePower = 16 * Utils.GetLerpValue(1300f, 0f, NPC.Distance(Main.LocalPlayer.Center), true);
-                    if (Main.LocalPlayer.Calamity().GeneralScreenShakePower < screenShakePower)
-                        Main.LocalPlayer.Calamity().GeneralScreenShakePower = screenShakePower;
+                    Main.LocalPlayer.SetScreenshake(screenShakePower);
                 }
             }
         }

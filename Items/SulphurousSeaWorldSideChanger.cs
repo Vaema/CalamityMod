@@ -1,8 +1,6 @@
-﻿using System;
-using CalamityMod.Events;
+﻿using CalamityMod.Events;
 using CalamityMod.Rarities;
 using CalamityMod.World;
-using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
@@ -43,7 +41,7 @@ namespace CalamityMod.Items
             {
                 Abyss.AtLeftSideOfWorld = true;
             }
-            CalamityUtils.DisplayLocalizedText(key, AcidRainEvent.TextColor);
+            CalamityUtils.BroadcastLocalizedText(key, AcidRainEvent.TextColor);
             return true;
         }
     }

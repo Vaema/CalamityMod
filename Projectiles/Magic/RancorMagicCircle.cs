@@ -132,7 +132,7 @@ namespace CalamityMod.Projectiles.Magic
                 Vector2 dustVelocity = (-dustSpawnOffset.SafeNormalize(Vector2.UnitY)).RotatedBy(MathHelper.PiOver2 * Main.rand.NextFloatDirection());
                 dustVelocity *= Main.rand.NextFloat(2f, 6f);
 
-                Dust magic = Dust.NewDustPerfect(Projectile.Center + dustSpawnOffset, 264);
+                Dust magic = Dust.NewDustPerfect(Projectile.Center + dustSpawnOffset, DustID.PortalBoltTrail);
                 magic.color = Color.Lerp(Color.Red, Color.Blue, Main.rand.NextFloat());
                 magic.velocity = dustVelocity;
                 magic.scale *= Main.rand.NextFloat(1f, 1.4f);
@@ -168,7 +168,7 @@ namespace CalamityMod.Projectiles.Magic
                 Vector2 dustSpawnOffsetDirection = Main.rand.NextVector2CircularEdge(0.5f, 1f).RotatedBy(Projectile.velocity.ToRotation());
                 Vector2 dustSpawnOffset = dustSpawnOffsetDirection * dustSpawnOffsetFactor;
 
-                Dust magic = Dust.NewDustPerfect(Projectile.Center + dustSpawnOffset, 264);
+                Dust magic = Dust.NewDustPerfect(Projectile.Center + dustSpawnOffset, DustID.PortalBoltTrail);
                 magic.color = Color.Lerp(Color.Red, Color.Blue, Main.rand.NextFloat());
                 magic.velocity = dustVelocity;
                 magic.scale *= Main.rand.NextFloat(1f, 1.05f + ChargeupCompletion * 0.55f);

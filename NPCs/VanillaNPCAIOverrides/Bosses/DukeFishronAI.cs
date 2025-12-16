@@ -9,40 +9,42 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
 {
-    public static class DukeFishronAI
+    public class DukeFishronAI : VanillaAIOverride
     {
-        public static bool BuffedDukeFishronAI(NPC npc, Mod mod)
+        // Vanilla values
+        public static float Phase2ContactDamageMult = 1.436f; // 201
+        public static float Phase3ContactDamageMult = 1.315f; // 184
+
+        public override bool AI(Mod mod)
         {
-            CalamityGlobalNPC calamityGlobalNPC = npc.Calamity();
+            CalamityGlobalNPC calamityGlobalNPC = NPC.Calamity();
 
             // Percent life remaining
-            float lifeRatio = npc.life / (float)npc.lifeMax;
+            float lifeRatio = NPC.life / (float)NPC.lifeMax;
 
             // Variables
-            bool bossRush = BossRushEvent.BossRushActive;
-            bool death = CalamityWorld.death || bossRush;
-            bool deathModeSurprise = lifeRatio >= 0.9f && death;
+            bool death = CalamityWorld.death || BossRushEvent.BossRushActive;
             bool phase2 = lifeRatio < (death ? 0.6f : 0.7f);
             bool phase3 = lifeRatio < (death ? 0.3f : 0.4f);
             bool phase4 = lifeRatio < (death ? 0.1f : 0.2f);
-            bool phase2AI = npc.ai[0] > 4f;
-            bool phase3AI = npc.ai[0] > 9f;
-            bool charging = npc.ai[3] < 10f;
+            bool phase2AI = NPC.ai[0] > 4f;
+            bool phase3AI = NPC.ai[0] > 9f;
+            bool charging = NPC.ai[3] < 10f;
 
             // Adjust stats
-            int setDamage = npc.defDamage;
+            NPC.damage = NPC.defDamage;
             if (phase3AI)
             {
-                setDamage = (int)Math.Round(setDamage * 1.32);
-                npc.defense = 0;
+                NPC.damage = (int)Math.Round(NPC.defDamage * Phase3ContactDamageMult);
+                NPC.defense = 0;
             }
             else if (phase2AI)
             {
-                setDamage = (int)Math.Round(setDamage * 1.44);
-                npc.defense = (int)Math.Round(npc.defDefense * 0.8);
+                NPC.damage = (int)Math.Round(NPC.defDamage * Phase2ContactDamageMult);
+                NPC.defense = (int)Math.Round(NPC.defDefense * 0.8);
             }
             else
-                npc.defense = npc.defDefense;
+                NPC.defense = NPC.defDefense;
 
             int idlePhaseTimer = 30;
             float idlePhaseAcceleration = 0.55f;
@@ -58,7 +60,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                 idlePhaseVelocity = 10f;
             }
 
-            if (CalamityWorld.LegendaryMode)
+            if (Main.getGoodWorld)
             {
                 idlePhaseAcceleration *= 1.15f;
                 idlePhaseVelocity *= 1.15f;
@@ -83,10 +85,10 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                 idlePhaseAcceleration *= 1.05f;
                 idlePhaseVelocity *= 1.08f;
                 chargeTime -= 1;
-                chargeVelocity *= 1.13f;
+                chargeVelocity *= 1.1f;
             }
 
-            if (CalamityWorld.LegendaryMode)
+            if (Main.getGoodWorld)
                 chargeVelocity *= 1.15f;
 
             int bubbleBelchPhaseTimer = death ? 60 : 80;
@@ -94,7 +96,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
             float bubbleBelchPhaseAcceleration = death ? 0.35f : 0.3f;
             float bubbleBelchPhaseVelocity = death ? 5.5f : 5f;
 
-            if (CalamityWorld.LegendaryMode)
+            if (Main.getGoodWorld)
             {
                 bubbleBelchPhaseAcceleration *= 1.5f;
                 bubbleBelchPhaseVelocity *= 1.5f;
@@ -106,59 +108,59 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
 
             int teleportPhaseTimer = 30;
 
-            int bubbleSpinPhaseTimer = bossRush ? 45 : death ? 90 : 120;
+            int bubbleSpinPhaseTimer = death ? 90 : 120;
             int bubbleSpinPhaseDivisor = death ? 3 : 4;
             float bubbleSpinBubbleVelocity = death ? 8f : 7f;
             float bubbleSpinPhaseVelocity = 20f;
             float bubbleSpinPhaseRotation = MathHelper.TwoPi / (bubbleSpinPhaseTimer / 2);
 
-            if (CalamityWorld.LegendaryMode)
+            if (Main.getGoodWorld)
                 bubbleSpinBubbleVelocity *= 1.5f;
 
             int spawnEffectPhaseTimer = 75;
 
-            Player player = Main.player[npc.target];
+            Player player = Main.player[NPC.target];
 
             // Get target
-            if (npc.target < 0 || npc.target == Main.maxPlayers || player.dead || !player.active || Vector2.Distance(player.Center, npc.Center) > CalamityGlobalNPC.CatchUpDistance350Tiles)
+            if (NPC.target < 0 || NPC.target == Main.maxPlayers || player.dead || !player.active || Vector2.Distance(player.Center, NPC.Center) > CalamityGlobalNPC.CatchUpDistance350Tiles)
             {
-                CalamityUtils.CalamityTargeting(npc, CalamityTargetingParameters.BossDefaults);
-                player = Main.player[npc.target];
-                npc.netUpdate = true;
+                CalamityUtils.CalamityTargeting(NPC, CalamityTargetingParameters.BossDefaults);
+                player = Main.player[NPC.target];
+                NPC.netUpdate = true;
             }
 
             // Despawn
-            if (player.dead || Vector2.Distance(player.Center, npc.Center) > CalamityGlobalNPC.CatchUpDistance350Tiles)
+            if (player.dead || Vector2.Distance(player.Center, NPC.Center) > CalamityGlobalNPC.CatchUpDistance350Tiles)
             {
-                npc.velocity.Y -= 0.4f;
+                NPC.velocity.Y -= 0.4f;
 
-                if (npc.timeLeft > 10)
-                    npc.timeLeft = 10;
+                if (NPC.timeLeft > 10)
+                    NPC.timeLeft = 10;
 
-                if (npc.ai[0] > 4f)
-                    npc.ai[0] = 5f;
+                if (NPC.ai[0] > 4f)
+                    NPC.ai[0] = 5f;
                 else
-                    npc.ai[0] = 0f;
+                    NPC.ai[0] = 0f;
 
-                npc.ai[2] = 0f;
+                NPC.ai[2] = 0f;
             }
 
             // Enrage variable
-            bool enrage = !bossRush &&
+            bool enrage = !BossRushEvent.BossRushActive &&
                 (player.position.Y < 800f || player.position.Y > Main.worldSurface * 16.0 ||
                 (player.position.X > 6400f && player.position.X < (Main.maxTilesX * 16 - 6400)));
 
-            calamityGlobalNPC.CurrentlyEnraged = !bossRush && enrage;
+            calamityGlobalNPC.CurrentlyEnraged = enrage;
 
             // Make him always able to take damage
-            npc.dontTakeDamage = false;
+            NPC.dontTakeDamage = false;
 
             // Increased DR during phase transitions
-            calamityGlobalNPC.DR = (npc.ai[0] == -1f || npc.ai[0] == 4f || npc.ai[0] == 9f) ? (bossRush ? 0.99f : 0.625f) : 0.15f;
-            calamityGlobalNPC.CurrentlyIncreasingDefenseOrDR = npc.ai[0] == -1f || npc.ai[0] == 4f || npc.ai[0] == 9f;
+            calamityGlobalNPC.DR = (NPC.ai[0] == -1f || NPC.ai[0] == 4f || NPC.ai[0] == 9f) ? 0.625f : 0.15f;
+            calamityGlobalNPC.CurrentlyIncreasingDefenseOrDR = NPC.ai[0] == -1f || NPC.ai[0] == 4f || NPC.ai[0] == 9f;
 
             // Enrage
-            if (enrage || bossRush)
+            if (enrage)
             {
                 bubbleBelchPhaseTimer = 20;
                 bubbleBelchPhaseDivisor = 1;
@@ -172,27 +174,21 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                 bubbleSpinPhaseDivisor = 1;
                 bubbleSpinBubbleVelocity = 15f;
 
-                if (!bossRush)
-                {
-                    setDamage *= 2;
-                    npc.defense = npc.defDefense * 3;
-                }
+                NPC.damage *= 2;
+                NPC.defense = NPC.defDefense * 3;
             }
 
             if (death)
             {
-                idlePhaseTimer -= 6;
-                idlePhaseAcceleration *= 1.2f;
-                idlePhaseVelocity *= 1.2f;
-                chargeTime -= 4;
-                chargeVelocity += 3f;
+                chargeTime -= 2;
+                chargeVelocity += 1f;
             }
 
-            if (CalamityWorld.LegendaryMode)
+            if (Main.getGoodWorld)
                 chargeTime += Main.rand.Next(5, 66);
 
             // Spawn cthulhunadoes in phase 3
-            if (phase3AI && ((!phase4 && !deathModeSurprise) || CalamityWorld.LegendaryMode))
+            if (phase3AI && ((!phase4) || Main.getGoodWorld))
             {
                 calamityGlobalNPC.newAI[0] += 1f;
                 float timeGateValue = 600f;
@@ -201,162 +197,150 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                     calamityGlobalNPC.newAI[0] = 0f;
 
                     if (Main.netMode != NetmodeID.MultiplayerClient)
-                        Projectile.NewProjectile(npc.GetSource_FromAI(), npc.Center, Vector2.Zero, ProjectileID.SharknadoBolt, 0, 0f, Main.myPlayer, 1f, npc.target + 1, (enrage || death) ? 1 : 0);
+                        Projectile.NewProjectile(NPC.GetSource_FromAI(), NPC.Center, Vector2.Zero, ProjectileID.SharknadoBolt, 0, 0f, Main.myPlayer, 1f, NPC.target + 1, (enrage || death) ? 1 : 0);
 
-                    npc.netUpdate = true;
+                    NPC.netUpdate = true;
                 }
             }
 
             // Set variables for spawn effects
-            if (npc.localAI[0] == 0f)
+            if (NPC.localAI[0] == 0f)
             {
-                npc.localAI[0] = 1f;
-                npc.alpha = 255;
-                npc.rotation = 0f;
+                NPC.localAI[0] = 1f;
+                NPC.alpha = 255;
+                NPC.rotation = 0f;
                 if (Main.netMode != NetmodeID.MultiplayerClient)
                 {
-                    npc.ai[0] = deathModeSurprise ? 9f : -1f;
-                    npc.netUpdate = true;
+                    NPC.ai[0] = -1f;
+                    NPC.netUpdate = true;
                 }
             }
 
             // Rotation
             float rateOfRotation = 0.04f;
-            if (npc.ai[0] == 1f || npc.ai[0] == 6f || npc.ai[0] == 7f)
+            if (NPC.ai[0] == 1f || NPC.ai[0] == 6f || NPC.ai[0] == 7f)
                 rateOfRotation = 0f;
-            if (npc.ai[0] == 3f || npc.ai[0] == 4f || npc.ai[0] == 8f)
+            if (NPC.ai[0] == 3f || NPC.ai[0] == 4f || NPC.ai[0] == 8f)
                 rateOfRotation = 0.01f;
 
-            Vector2 rotationVector = player.Center - npc.Center;
-            if (!player.dead && bossRush && phase4)
-            {
-                // Rotate to show direction of predictive charge
-                if (npc.ai[0] == 10f)
-                {
-                    rateOfRotation = 0.1f;
-                    rotationVector = Vector2.Normalize(player.Center + player.velocity * 20f - npc.Center) * chargeVelocity;
-                }
-            }
+            Vector2 rotationVector = player.Center - NPC.Center;
 
             float rotationSpeed = (float)Math.Atan2(rotationVector.Y, rotationVector.X);
-            if (npc.spriteDirection == 1)
+            if (NPC.spriteDirection == 1)
                 rotationSpeed += MathHelper.Pi;
             if (rotationSpeed < 0f)
                 rotationSpeed += MathHelper.TwoPi;
             if (rotationSpeed > MathHelper.TwoPi)
                 rotationSpeed -= MathHelper.TwoPi;
-            if (npc.ai[0] == -1f || npc.ai[0] == 3f || npc.ai[0] == 4f || npc.ai[0] == 8f)
+            if (NPC.ai[0] == -1f || NPC.ai[0] == 3f || NPC.ai[0] == 4f || NPC.ai[0] == 8f)
                 rotationSpeed = 0f;
 
             if (rateOfRotation != 0f)
-                npc.rotation = npc.rotation.AngleTowards(rotationSpeed, rateOfRotation);
+                NPC.rotation = NPC.rotation.AngleTowards(rotationSpeed, rateOfRotation);
 
             // Alpha adjustments
-            if (npc.ai[0] != -1f && npc.ai[0] < 9f)
+            if (NPC.ai[0] != -1f && NPC.ai[0] < 9f)
             {
-                if (Collision.SolidCollision(npc.position, npc.width, npc.height))
-                    npc.alpha += 15;
+                if (Collision.SolidCollision(NPC.position, NPC.width, NPC.height))
+                    NPC.alpha += 15;
                 else
-                    npc.alpha -= 15;
+                    NPC.alpha -= 15;
 
-                if (npc.alpha < 0)
-                    npc.alpha = 0;
-                if (npc.alpha > 150)
-                    npc.alpha = 150;
+                if (NPC.alpha < 0)
+                    NPC.alpha = 0;
+                if (NPC.alpha > 150)
+                    NPC.alpha = 150;
             }
 
             // Spawn effects
-            if (npc.ai[0] == -1f)
+            if (NPC.ai[0] == -1f)
             {
-                // Avoid cheap bullshit
-                npc.damage = 0;
+                // Disable contact damage while spawning
+                NPC.damage = 0;
 
                 // Velocity
-                npc.velocity *= 0.98f;
+                NPC.velocity *= 0.98f;
 
                 // Direction
-                int faceDirection = Math.Sign(player.Center.X - npc.Center.X);
+                int faceDirection = Math.Sign(player.Center.X - NPC.Center.X);
                 if (faceDirection != 0)
                 {
-                    npc.direction = faceDirection;
-                    npc.spriteDirection = -npc.direction;
+                    NPC.direction = faceDirection;
+                    NPC.spriteDirection = -NPC.direction;
                 }
 
                 // Alpha
-                if (npc.ai[2] > 20f)
+                if (NPC.ai[2] > 20f)
                 {
-                    npc.velocity.Y = -2f;
+                    NPC.velocity.Y = -2f;
 
-                    npc.alpha -= 5;
-                    if (Collision.SolidCollision(npc.position, npc.width, npc.height))
-                        npc.alpha += 15;
-                    if (npc.alpha < 0)
-                        npc.alpha = 0;
-                    if (npc.alpha > 150)
-                        npc.alpha = 150;
+                    NPC.alpha -= 5;
+                    if (Collision.SolidCollision(NPC.position, NPC.width, NPC.height))
+                        NPC.alpha += 15;
+                    if (NPC.alpha < 0)
+                        NPC.alpha = 0;
+                    if (NPC.alpha > 150)
+                        NPC.alpha = 150;
                 }
 
                 // Spawn dust and play sound
-                if (npc.ai[2] == sharknadoPhaseTimer - 30)
+                if (NPC.ai[2] == sharknadoPhaseTimer - 30)
                 {
                     int dustAmt = 36;
                     for (int i = 0; i < dustAmt; i++)
                     {
-                        Vector2 dust = (Vector2.Normalize(npc.velocity) * new Vector2(npc.width / 2f, npc.height) * 0.75f * 0.5f).RotatedBy((i - (dustAmt / 2 - 1)) * MathHelper.TwoPi / dustAmt) + npc.Center;
-                        Vector2 sharknadoDustDirection = dust - npc.Center;
+                        Vector2 dust = (Vector2.Normalize(NPC.velocity) * new Vector2(NPC.width / 2f, NPC.height) * 0.75f * 0.5f).RotatedBy((i - (dustAmt / 2 - 1)) * MathHelper.TwoPi / dustAmt) + NPC.Center;
+                        Vector2 sharknadoDustDirection = dust - NPC.Center;
                         int sharknadoDust = Dust.NewDust(dust + sharknadoDustDirection, 0, 0, DustID.DungeonWater, sharknadoDustDirection.X * 2f, sharknadoDustDirection.Y * 2f, 100, default, 1.4f);
                         Main.dust[sharknadoDust].noGravity = true;
                         Main.dust[sharknadoDust].noLight = true;
                         Main.dust[sharknadoDust].velocity = Vector2.Normalize(sharknadoDustDirection) * 3f;
                     }
 
-                    SoundEngine.PlaySound(SoundID.Zombie20, npc.Center);
+                    SoundEngine.PlaySound(SoundID.Zombie20, NPC.Center);
                 }
 
-                npc.ai[2] += 1f;
-                if (npc.ai[2] >= spawnEffectPhaseTimer)
+                NPC.ai[2] += 1f;
+                if (NPC.ai[2] >= spawnEffectPhaseTimer)
                 {
-                    npc.ai[0] = 0f;
-                    npc.ai[1] = 0f;
-                    npc.ai[2] = 0f;
-                    npc.netUpdate = true;
+                    NPC.ai[0] = 0f;
+                    NPC.ai[1] = 0f;
+                    NPC.ai[2] = 0f;
+                    NPC.netUpdate = true;
                 }
             }
 
             // Phase 1
-            else if (npc.ai[0] == 0f && !player.dead)
+            else if (NPC.ai[0] == 0f && !player.dead)
             {
-                // Avoid cheap bullshit
-                npc.damage = 0;
-
                 // Velocity
-                if (npc.ai[1] == 0f)
-                    npc.ai[1] = 300 * Math.Sign((npc.Center - player.Center).X);
+                if (NPC.ai[1] == 0f)
+                    NPC.ai[1] = 300 * Math.Sign((NPC.Center - player.Center).X);
 
-                Vector2 idlePhaseDirection = Vector2.Normalize(player.Center + new Vector2(npc.ai[1], -200f) - npc.Center - npc.velocity) * idlePhaseVelocity;
-                npc.SimpleFlyMovement(idlePhaseDirection, idlePhaseAcceleration);
+                Vector2 idlePhaseDirection = Vector2.Normalize(player.Center + new Vector2(NPC.ai[1], -200f) - NPC.Center - NPC.velocity) * idlePhaseVelocity;
+                NPC.SimpleFlyMovement(idlePhaseDirection, idlePhaseAcceleration);
 
                 // Rotation and direction
-                int playerFaceDirection = Math.Sign(player.Center.X - npc.Center.X);
+                int playerFaceDirection = Math.Sign(player.Center.X - NPC.Center.X);
                 if (playerFaceDirection != 0)
                 {
-                    if (npc.ai[2] == 0f && playerFaceDirection != npc.direction)
-                        npc.rotation += MathHelper.Pi;
+                    if (NPC.ai[2] == 0f && playerFaceDirection != NPC.direction)
+                        NPC.rotation += MathHelper.Pi;
 
-                    npc.direction = playerFaceDirection;
+                    NPC.direction = playerFaceDirection;
 
-                    if (npc.spriteDirection != -npc.direction)
-                        npc.rotation += MathHelper.Pi;
+                    if (NPC.spriteDirection != -NPC.direction)
+                        NPC.rotation += MathHelper.Pi;
 
-                    npc.spriteDirection = -npc.direction;
+                    NPC.spriteDirection = -NPC.direction;
                 }
 
                 // Phase switch
-                npc.ai[2] += 1f;
-                if (npc.ai[2] >= idlePhaseTimer || CalamityWorld.LegendaryMode)
+                NPC.ai[2] += 1f;
+                if (NPC.ai[2] >= idlePhaseTimer || Main.zenithWorld)
                 {
                     int attackPicker = 0;
-                    switch ((int)npc.ai[3])
+                    switch ((int)NPC.ai[3])
                     {
                         case 0:
                         case 1:
@@ -371,11 +355,11 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                             attackPicker = 1;
                             break;
                         case 10:
-                            npc.ai[3] = 1f;
+                            NPC.ai[3] = 1f;
                             attackPicker = 2;
                             break;
                         case 11:
-                            npc.ai[3] = 0f;
+                            NPC.ai[3] = 0f;
                             attackPicker = 3;
                             break;
                     }
@@ -389,237 +373,222 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                     // Set velocity for charge
                     if (attackPicker == 1)
                     {
-                        npc.ai[0] = 1f;
-                        npc.ai[1] = 0f;
-                        npc.ai[2] = 0f;
+                        NPC.ai[0] = 1f;
+                        NPC.ai[1] = 0f;
+                        NPC.ai[2] = 0f;
 
                         // Velocity
-                        npc.velocity = Vector2.Normalize(player.Center - npc.Center) * chargeVelocity;
-                        npc.rotation = (float)Math.Atan2(npc.velocity.Y, npc.velocity.X);
+                        NPC.velocity = Vector2.Normalize(player.Center - NPC.Center) * chargeVelocity;
+                        NPC.rotation = (float)Math.Atan2(NPC.velocity.Y, NPC.velocity.X);
 
                         // Direction
                         if (playerFaceDirection != 0)
                         {
-                            npc.direction = playerFaceDirection;
+                            NPC.direction = playerFaceDirection;
 
-                            if (npc.spriteDirection == 1)
-                                npc.rotation += MathHelper.Pi;
+                            if (NPC.spriteDirection == 1)
+                                NPC.rotation += MathHelper.Pi;
 
-                            npc.spriteDirection = -npc.direction;
+                            NPC.spriteDirection = -NPC.direction;
                         }
                     }
 
                     // Bubbles
                     else if (attackPicker == 2)
                     {
-                        npc.ai[0] = 2f;
-                        npc.ai[1] = 0f;
-                        npc.ai[2] = 0f;
+                        NPC.ai[0] = 2f;
+                        NPC.ai[1] = 0f;
+                        NPC.ai[2] = 0f;
                     }
 
                     // Spawn sharknadoes
                     else if (attackPicker == 3)
                     {
-                        npc.ai[0] = 3f;
-                        npc.ai[1] = 0f;
-                        npc.ai[2] = 0f;
+                        NPC.ai[0] = 3f;
+                        NPC.ai[1] = 0f;
+                        NPC.ai[2] = 0f;
                         if (enrage)
-                            npc.ai[2] = sharknadoPhaseTimer - 40;
+                            NPC.ai[2] = sharknadoPhaseTimer - 40;
                         else if (death)
-                            npc.ai[2] = sharknadoPhaseTimer - 60;
+                            NPC.ai[2] = sharknadoPhaseTimer - 40;
                     }
 
                     // Go to phase 2
                     else if (attackPicker == 4)
                     {
-                        npc.ai[0] = 4f;
-                        npc.ai[1] = 0f;
-                        npc.ai[2] = 0f;
+                        NPC.ai[0] = 4f;
+                        NPC.ai[1] = 0f;
+                        NPC.ai[2] = 0f;
                     }
 
-                    npc.netUpdate = true;
+                    NPC.netUpdate = true;
                 }
             }
 
             // Charge
-            else if (npc.ai[0] == 1f)
+            else if (NPC.ai[0] == 1f)
             {
-                // Set damage
-                npc.damage = setDamage;
-
                 // Accelerate
-                npc.velocity *= 1.01f;
+                NPC.velocity *= 1.01f;
 
                 // Spawn dust
                 int chargeDustAmt = 7;
                 for (int j = 0; j < chargeDustAmt; j++)
                 {
-                    Vector2 arg_E1C_0 = (Vector2.Normalize(npc.velocity) * new Vector2((npc.width + 50) / 2f, npc.height) * 0.75f).RotatedBy((j - (chargeDustAmt / 2 - 1)) * MathHelper.Pi / chargeDustAmt) + npc.Center;
+                    Vector2 arg_E1C_0 = (Vector2.Normalize(NPC.velocity) * new Vector2((NPC.width + 50) / 2f, NPC.height) * 0.75f).RotatedBy((j - (chargeDustAmt / 2 - 1)) * MathHelper.Pi / chargeDustAmt) + NPC.Center;
                     Vector2 chargeDustDirection = ((float)(Main.rand.NextDouble() * MathHelper.Pi) - MathHelper.PiOver2).ToRotationVector2() * Main.rand.Next(3, 8);
                     int chargeDust = Dust.NewDust(arg_E1C_0 + chargeDustDirection, 0, 0, DustID.DungeonWater, chargeDustDirection.X * 2f, chargeDustDirection.Y * 2f, 100, default, 1.4f);
                     Main.dust[chargeDust].noGravity = true;
                     Main.dust[chargeDust].noLight = true;
                     Main.dust[chargeDust].velocity /= 4f;
-                    Main.dust[chargeDust].velocity -= npc.velocity;
+                    Main.dust[chargeDust].velocity -= NPC.velocity;
                 }
 
-                npc.ai[2] += 1f;
-                if (npc.ai[2] >= chargeTime)
+                NPC.ai[2] += 1f;
+                if (NPC.ai[2] >= chargeTime)
                 {
-                    npc.ai[0] = 0f;
-                    npc.ai[1] = 0f;
-                    npc.ai[2] = 0f;
-                    npc.ai[3] += 2f;
-                    npc.netUpdate = true;
+                    NPC.ai[0] = 0f;
+                    NPC.ai[1] = 0f;
+                    NPC.ai[2] = 0f;
+                    NPC.ai[3] += 2f;
+                    NPC.netUpdate = true;
                 }
             }
 
             // Bubble belch
-            else if (npc.ai[0] == 2f)
+            else if (NPC.ai[0] == 2f)
             {
-                // Avoid cheap bullshit
-                npc.damage = 0;
-
                 // Velocity
-                if (npc.ai[1] == 0f)
-                    npc.ai[1] = 300 * Math.Sign((npc.Center - player.Center).X);
+                if (NPC.ai[1] == 0f)
+                    NPC.ai[1] = 300 * Math.Sign((NPC.Center - player.Center).X);
 
-                Vector2 bubbleAttackDirection = Vector2.Normalize(player.Center + new Vector2(npc.ai[1], -200f) - npc.Center - npc.velocity) * bubbleBelchPhaseVelocity;
-                npc.SimpleFlyMovement(bubbleAttackDirection, bubbleBelchPhaseAcceleration);
+                Vector2 bubbleAttackDirection = Vector2.Normalize(player.Center + new Vector2(NPC.ai[1], -200f) - NPC.Center - NPC.velocity) * bubbleBelchPhaseVelocity;
+                NPC.SimpleFlyMovement(bubbleAttackDirection, bubbleBelchPhaseAcceleration);
 
                 // Play sounds and spawn bubbles
-                if (npc.ai[2] == 0f)
-                    SoundEngine.PlaySound(SoundID.Zombie20, npc.Center);
+                if (NPC.ai[2] == 0f)
+                    SoundEngine.PlaySound(SoundID.Zombie20, NPC.Center);
 
-                if (npc.ai[2] % bubbleBelchPhaseDivisor == 0f)
+                if (NPC.ai[2] % bubbleBelchPhaseDivisor == 0f)
                 {
-                    SoundEngine.PlaySound(SoundID.NPCDeath19, npc.Center);
+                    SoundEngine.PlaySound(SoundID.NPCDeath19, NPC.Center);
 
                     if (Main.netMode != NetmodeID.MultiplayerClient)
                     {
-                        Vector2 bubbleSpawnDirection = Vector2.Normalize(player.Center - npc.Center) * (npc.width + 20) / 2f + npc.Center;
-                        NPC.NewNPC(npc.GetSource_FromAI(), (int)bubbleSpawnDirection.X, (int)bubbleSpawnDirection.Y + 45, NPCID.DetonatingBubble);
+                        Vector2 bubbleSpawnDirection = Vector2.Normalize(player.Center - NPC.Center) * (NPC.width + 20) / 2f + NPC.Center;
+                        NPC.NewNPC(NPC.GetSource_FromAI(), (int)bubbleSpawnDirection.X, (int)bubbleSpawnDirection.Y + 45, NPCID.DetonatingBubble);
                     }
                 }
 
                 // Direction
-                int bubbleSpriteFaceDirection = Math.Sign(player.Center.X - npc.Center.X);
+                int bubbleSpriteFaceDirection = Math.Sign(player.Center.X - NPC.Center.X);
                 if (bubbleSpriteFaceDirection != 0)
                 {
-                    npc.direction = bubbleSpriteFaceDirection;
-                    if (npc.spriteDirection != -npc.direction)
-                        npc.rotation += MathHelper.Pi;
-                    npc.spriteDirection = -npc.direction;
+                    NPC.direction = bubbleSpriteFaceDirection;
+                    if (NPC.spriteDirection != -NPC.direction)
+                        NPC.rotation += MathHelper.Pi;
+                    NPC.spriteDirection = -NPC.direction;
                 }
 
-                npc.ai[2] += 1f;
-                if (npc.ai[2] >= bubbleBelchPhaseTimer)
+                NPC.ai[2] += 1f;
+                if (NPC.ai[2] >= bubbleBelchPhaseTimer)
                 {
-                    npc.ai[0] = 0f;
-                    npc.ai[1] = 0f;
-                    npc.ai[2] = 0f;
-                    npc.netUpdate = true;
+                    NPC.ai[0] = 0f;
+                    NPC.ai[1] = 0f;
+                    NPC.ai[2] = 0f;
+                    NPC.netUpdate = true;
                 }
             }
 
             // Sharknado spawn
-            else if (npc.ai[0] == 3f)
+            else if (NPC.ai[0] == 3f)
             {
-                // Avoid cheap bullshit
-                npc.damage = 0;
-
                 // Velocity
-                npc.velocity *= 0.98f;
-                npc.velocity.Y = MathHelper.Lerp(npc.velocity.Y, 0f, 0.02f);
+                NPC.velocity *= 0.98f;
+                NPC.velocity.Y = MathHelper.Lerp(NPC.velocity.Y, 0f, 0.02f);
 
                 // Play sound and spawn sharknadoes
-                if (npc.ai[2] == (sharknadoPhaseTimer - 30))
-                    SoundEngine.PlaySound(SoundID.Zombie9, npc.Center);
+                if (NPC.ai[2] == (sharknadoPhaseTimer - 30))
+                    SoundEngine.PlaySound(SoundID.Zombie9, NPC.Center);
 
-                if (Main.netMode != NetmodeID.MultiplayerClient && npc.ai[2] == sharknadoPhaseTimer - 30)
+                if (Main.netMode != NetmodeID.MultiplayerClient && NPC.ai[2] == sharknadoPhaseTimer - 30)
                 {
-                    Vector2 sharknadoSpawnerDirection = npc.rotation.ToRotationVector2() * (Vector2.UnitX * npc.direction) * (npc.width + 20) / 2f + npc.Center;
+                    Vector2 sharknadoSpawnerDirection = NPC.rotation.ToRotationVector2() * (Vector2.UnitX * NPC.direction) * (NPC.width + 20) / 2f + NPC.Center;
                     bool normal = Main.rand.NextBool();
                     float velocityY = normal ? 8f : -4f;
                     float ai1 = normal ? 0f : -1f;
 
-                    Projectile.NewProjectile(npc.GetSource_FromAI(), sharknadoSpawnerDirection.X, sharknadoSpawnerDirection.Y, npc.direction * 3, velocityY, ProjectileID.SharknadoBolt, 0, 0f, Main.myPlayer, 0f, ai1);
-                    Projectile.NewProjectile(npc.GetSource_FromAI(), sharknadoSpawnerDirection.X, sharknadoSpawnerDirection.Y, -(float)npc.direction * 3, velocityY, ProjectileID.SharknadoBolt, 0, 0f, Main.myPlayer, 0f, ai1);
+                    Projectile.NewProjectile(NPC.GetSource_FromAI(), sharknadoSpawnerDirection.X, sharknadoSpawnerDirection.Y, NPC.direction * 3, velocityY, ProjectileID.SharknadoBolt, 0, 0f, Main.myPlayer, 0f, ai1);
+                    Projectile.NewProjectile(NPC.GetSource_FromAI(), sharknadoSpawnerDirection.X, sharknadoSpawnerDirection.Y, -(float)NPC.direction * 3, velocityY, ProjectileID.SharknadoBolt, 0, 0f, Main.myPlayer, 0f, ai1);
 
                     velocityY = normal ? -4f : 8f;
                     ai1 = normal ? -1f : 0f;
-                    Projectile.NewProjectile(npc.GetSource_FromAI(), sharknadoSpawnerDirection.X, sharknadoSpawnerDirection.Y, 0f, velocityY, ProjectileID.SharknadoBolt, 0, 0f, Main.myPlayer, 0f, ai1);
+                    Projectile.NewProjectile(NPC.GetSource_FromAI(), sharknadoSpawnerDirection.X, sharknadoSpawnerDirection.Y, 0f, velocityY, ProjectileID.SharknadoBolt, 0, 0f, Main.myPlayer, 0f, ai1);
                 }
 
-                npc.ai[2] += 1f;
-                if (npc.ai[2] >= sharknadoPhaseTimer)
+                NPC.ai[2] += 1f;
+                if (NPC.ai[2] >= sharknadoPhaseTimer)
                 {
-                    npc.ai[0] = 0f;
-                    npc.ai[1] = 0f;
-                    npc.ai[2] = 0f;
-                    npc.netUpdate = true;
+                    NPC.ai[0] = 0f;
+                    NPC.ai[1] = 0f;
+                    NPC.ai[2] = 0f;
+                    NPC.netUpdate = true;
                 }
             }
 
             // Transition to phase 2
-            else if (npc.ai[0] == 4f)
+            else if (NPC.ai[0] == 4f)
             {
-                // Avoid cheap bullshit
-                npc.damage = 0;
-
                 // Velocity
-                npc.velocity *= 0.98f;
-                npc.velocity.Y = MathHelper.Lerp(npc.velocity.Y, 0f, 0.02f);
+                NPC.velocity *= 0.98f;
+                NPC.velocity.Y = MathHelper.Lerp(NPC.velocity.Y, 0f, 0.02f);
 
                 // Sound
-                if (npc.ai[2] == phaseTransitionTimer - 60)
-                    SoundEngine.PlaySound(SoundID.Zombie20, npc.Center);
+                if (NPC.ai[2] == phaseTransitionTimer - 60)
+                    SoundEngine.PlaySound(SoundID.Zombie20, NPC.Center);
 
-                npc.ai[2] += 1f;
-                if (npc.ai[2] >= phaseTransitionTimer)
+                NPC.ai[2] += 1f;
+                if (NPC.ai[2] >= phaseTransitionTimer)
                 {
-                    npc.ai[0] = 5f;
-                    npc.ai[1] = 0f;
-                    npc.ai[2] = 0f;
-                    npc.ai[3] = 0f;
-                    npc.netUpdate = true;
+                    NPC.ai[0] = 5f;
+                    NPC.ai[1] = 0f;
+                    NPC.ai[2] = 0f;
+                    NPC.ai[3] = 0f;
+                    NPC.netUpdate = true;
                 }
             }
 
             // Phase 2
-            else if (npc.ai[0] == 5f && !player.dead)
+            else if (NPC.ai[0] == 5f && !player.dead)
             {
-                // Avoid cheap bullshit
-                npc.damage = 0;
-
                 // Velocity
-                if (npc.ai[1] == 0f)
-                    npc.ai[1] = 300 * Math.Sign((npc.Center - player.Center).X);
+                if (NPC.ai[1] == 0f)
+                    NPC.ai[1] = 300 * Math.Sign((NPC.Center - player.Center).X);
 
-                Vector2 phase2IdleDirection = Vector2.Normalize(player.Center + new Vector2(npc.ai[1], -200f) - npc.Center - npc.velocity) * idlePhaseVelocity;
-                npc.SimpleFlyMovement(phase2IdleDirection, idlePhaseAcceleration);
+                Vector2 phase2IdleDirection = Vector2.Normalize(player.Center + new Vector2(NPC.ai[1], -200f) - NPC.Center - NPC.velocity) * idlePhaseVelocity;
+                NPC.SimpleFlyMovement(phase2IdleDirection, idlePhaseAcceleration);
 
                 // Direction and rotation
-                int phase2SpriteFaceDirection = Math.Sign(player.Center.X - npc.Center.X);
+                int phase2SpriteFaceDirection = Math.Sign(player.Center.X - NPC.Center.X);
                 if (phase2SpriteFaceDirection != 0)
                 {
-                    if (npc.ai[2] == 0f && phase2SpriteFaceDirection != npc.direction)
-                        npc.rotation += MathHelper.Pi;
+                    if (NPC.ai[2] == 0f && phase2SpriteFaceDirection != NPC.direction)
+                        NPC.rotation += MathHelper.Pi;
 
-                    npc.direction = phase2SpriteFaceDirection;
+                    NPC.direction = phase2SpriteFaceDirection;
 
-                    if (npc.spriteDirection != -npc.direction)
-                        npc.rotation += MathHelper.Pi;
+                    if (NPC.spriteDirection != -NPC.direction)
+                        NPC.rotation += MathHelper.Pi;
 
-                    npc.spriteDirection = -npc.direction;
+                    NPC.spriteDirection = -NPC.direction;
                 }
 
                 // Phase switch
-                npc.ai[2] += 1f;
-                if (npc.ai[2] >= idlePhaseTimer || CalamityWorld.LegendaryMode)
+                NPC.ai[2] += 1f;
+                if (NPC.ai[2] >= idlePhaseTimer || Main.zenithWorld)
                 {
                     int phase2AttackPicker = 0;
-                    switch ((int)npc.ai[3])
+                    switch ((int)NPC.ai[3])
                     {
                         case 0:
                         case 1:
@@ -630,11 +599,11 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                             phase2AttackPicker = 1;
                             break;
                         case 6:
-                            npc.ai[3] = 1f;
+                            NPC.ai[3] = 1f;
                             phase2AttackPicker = 2;
                             break;
                         case 7:
-                            npc.ai[3] = 0f;
+                            NPC.ai[3] = 0f;
                             phase2AttackPicker = 3;
                             break;
                     }
@@ -648,23 +617,23 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                     // Set velocity for charge
                     if (phase2AttackPicker == 1)
                     {
-                        npc.ai[0] = 6f;
-                        npc.ai[1] = 0f;
-                        npc.ai[2] = 0f;
+                        NPC.ai[0] = 6f;
+                        NPC.ai[1] = 0f;
+                        NPC.ai[2] = 0f;
 
                         // Velocity and rotation
-                        npc.velocity = Vector2.Normalize(player.Center - npc.Center) * chargeVelocity;
-                        npc.rotation = (float)Math.Atan2(npc.velocity.Y, npc.velocity.X);
+                        NPC.velocity = Vector2.Normalize(player.Center - NPC.Center) * chargeVelocity;
+                        NPC.rotation = (float)Math.Atan2(NPC.velocity.Y, NPC.velocity.X);
 
                         // Direction
                         if (phase2SpriteFaceDirection != 0)
                         {
-                            npc.direction = phase2SpriteFaceDirection;
+                            NPC.direction = phase2SpriteFaceDirection;
 
-                            if (npc.spriteDirection == 1)
-                                npc.rotation += MathHelper.Pi;
+                            if (NPC.spriteDirection == 1)
+                                NPC.rotation += MathHelper.Pi;
 
-                            npc.spriteDirection = -npc.direction;
+                            NPC.spriteDirection = -NPC.direction;
                         }
                     }
 
@@ -672,243 +641,228 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                     else if (phase2AttackPicker == 2)
                     {
                         // Velocity and rotation
-                        npc.velocity = Vector2.Normalize(player.Center - npc.Center) * bubbleSpinPhaseVelocity;
-                        npc.rotation = (float)Math.Atan2(npc.velocity.Y, npc.velocity.X);
+                        NPC.velocity = Vector2.Normalize(player.Center - NPC.Center) * bubbleSpinPhaseVelocity;
+                        NPC.rotation = (float)Math.Atan2(NPC.velocity.Y, NPC.velocity.X);
 
                         // Direction
                         if (phase2SpriteFaceDirection != 0)
                         {
-                            npc.direction = phase2SpriteFaceDirection;
+                            NPC.direction = phase2SpriteFaceDirection;
 
-                            if (npc.spriteDirection == 1)
-                                npc.rotation += MathHelper.Pi;
+                            if (NPC.spriteDirection == 1)
+                                NPC.rotation += MathHelper.Pi;
 
-                            npc.spriteDirection = -npc.direction;
+                            NPC.spriteDirection = -NPC.direction;
                         }
 
-                        npc.ai[0] = 7f;
-                        npc.ai[1] = 0f;
-                        npc.ai[2] = 0f;
+                        NPC.ai[0] = 7f;
+                        NPC.ai[1] = 0f;
+                        NPC.ai[2] = 0f;
                     }
 
                     // Spawn cthulhunado
                     else if (phase2AttackPicker == 3)
                     {
-                        npc.ai[0] = 8f;
-                        npc.ai[1] = 0f;
-                        npc.ai[2] = 0f;
+                        NPC.ai[0] = 8f;
+                        NPC.ai[1] = 0f;
+                        NPC.ai[2] = 0f;
                     }
 
                     // Go to next phase
                     else if (phase2AttackPicker == 4)
                     {
-                        npc.ai[0] = 9f;
-                        npc.ai[1] = 0f;
-                        npc.ai[2] = 0f;
+                        NPC.ai[0] = 9f;
+                        NPC.ai[1] = 0f;
+                        NPC.ai[2] = 0f;
                     }
 
-                    npc.netUpdate = true;
+                    NPC.netUpdate = true;
                 }
             }
 
             // Charge
-            else if (npc.ai[0] == 6f)
+            else if (NPC.ai[0] == 6f)
             {
-                // Set damage
-                npc.damage = setDamage;
-
                 // Accelerate
-                npc.velocity *= 1.01f;
+                NPC.velocity *= 1.01f;
 
                 // Spawn dust
                 int phase2ChargeDustAmt = 7;
                 for (int k = 0; k < phase2ChargeDustAmt; k++)
                 {
-                    Vector2 arg_1A97_0 = (Vector2.Normalize(npc.velocity) * new Vector2((npc.width + 50) / 2f, npc.height) * 0.75f).RotatedBy((k - (phase2ChargeDustAmt / 2 - 1)) * MathHelper.Pi / phase2ChargeDustAmt) + npc.Center;
+                    Vector2 arg_1A97_0 = (Vector2.Normalize(NPC.velocity) * new Vector2((NPC.width + 50) / 2f, NPC.height) * 0.75f).RotatedBy((k - (phase2ChargeDustAmt / 2 - 1)) * MathHelper.Pi / phase2ChargeDustAmt) + NPC.Center;
                     Vector2 phase2ChargeDustDirection = ((float)(Main.rand.NextDouble() * MathHelper.Pi) - MathHelper.PiOver2).ToRotationVector2() * Main.rand.Next(3, 8);
                     int phase2ChargeDust = Dust.NewDust(arg_1A97_0 + phase2ChargeDustDirection, 0, 0, DustID.DungeonWater, phase2ChargeDustDirection.X * 2f, phase2ChargeDustDirection.Y * 2f, 100, default, 1.4f);
                     Main.dust[phase2ChargeDust].noGravity = true;
                     Main.dust[phase2ChargeDust].noLight = true;
                     Main.dust[phase2ChargeDust].velocity /= 4f;
-                    Main.dust[phase2ChargeDust].velocity -= npc.velocity;
+                    Main.dust[phase2ChargeDust].velocity -= NPC.velocity;
                 }
 
-                npc.ai[2] += 1f;
-                if (npc.ai[2] >= chargeTime)
+                NPC.ai[2] += 1f;
+                if (NPC.ai[2] >= chargeTime)
                 {
-                    npc.ai[0] = 5f;
-                    npc.ai[1] = 0f;
-                    npc.ai[2] = 0f;
-                    npc.ai[3] += 2f;
-                    npc.netUpdate = true;
+                    NPC.ai[0] = 5f;
+                    NPC.ai[1] = 0f;
+                    NPC.ai[2] = 0f;
+                    NPC.ai[3] += 2f;
+                    NPC.netUpdate = true;
                 }
             }
 
             // Bubble spin
-            else if (npc.ai[0] == 7f)
+            else if (NPC.ai[0] == 7f)
             {
-                // Set damage
-                npc.damage = 0;
-
                 // Play sounds and spawn bubbles
-                if (npc.ai[2] == 0f)
-                    SoundEngine.PlaySound(SoundID.Zombie20, npc.Center);
+                if (NPC.ai[2] == 0f)
+                    SoundEngine.PlaySound(SoundID.Zombie20, NPC.Center);
 
-                if (npc.ai[2] % bubbleSpinPhaseDivisor == 0f)
+                if (NPC.ai[2] % bubbleSpinPhaseDivisor == 0f)
                 {
-                    SoundEngine.PlaySound(SoundID.NPCDeath19, npc.Center);
+                    SoundEngine.PlaySound(SoundID.NPCDeath19, NPC.Center);
 
                     if (Main.netMode != NetmodeID.MultiplayerClient)
                     {
-                        Vector2 phase2BubbleSharkronDirection = Vector2.Normalize(npc.velocity) * (npc.width + 20) / 2f + npc.Center;
-                        int phase2Bubbles = NPC.NewNPC(npc.GetSource_FromAI(), (int)phase2BubbleSharkronDirection.X, (int)phase2BubbleSharkronDirection.Y + 45, NPCID.DetonatingBubble);
-                        Main.npc[phase2Bubbles].target = npc.target;
-                        Main.npc[phase2Bubbles].velocity = Vector2.Normalize(npc.velocity).RotatedBy(MathHelper.PiOver2 * npc.direction) * bubbleSpinBubbleVelocity * (CalamityWorld.LegendaryMode ? (Main.rand.NextFloat() + 0.5f) : 1f);
+                        Vector2 phase2BubbleSharkronDirection = Vector2.Normalize(NPC.velocity) * (NPC.width + 20) / 2f + NPC.Center;
+                        int phase2Bubbles = NPC.NewNPC(NPC.GetSource_FromAI(), (int)phase2BubbleSharkronDirection.X, (int)phase2BubbleSharkronDirection.Y + 45, NPCID.DetonatingBubble);
+                        Main.npc[phase2Bubbles].target = NPC.target;
+                        Main.npc[phase2Bubbles].velocity = Vector2.Normalize(NPC.velocity).RotatedBy(MathHelper.PiOver2 * NPC.direction) * bubbleSpinBubbleVelocity * (Main.getGoodWorld ? (Main.rand.NextFloat() + 0.5f) : 1f);
                         Main.npc[phase2Bubbles].netUpdate = true;
                         Main.npc[phase2Bubbles].ai[3] = Main.rand.Next(80, 121) / 100f;
 
-                        if (npc.ai[2] % (bubbleSpinPhaseDivisor * 5) == 0f)
+                        if (NPC.ai[2] % (bubbleSpinPhaseDivisor * 5) == 0f)
                         {
-                            int phase2BubbleSharkrons = NPC.NewNPC(npc.GetSource_FromAI(), (int)phase2BubbleSharkronDirection.X, (int)phase2BubbleSharkronDirection.Y + 45, NPCID.Sharkron2);
+                            int phase2BubbleSharkrons = NPC.NewNPC(NPC.GetSource_FromAI(), (int)phase2BubbleSharkronDirection.X, (int)phase2BubbleSharkronDirection.Y + 45, NPCID.Sharkron2);
                             Main.npc[phase2BubbleSharkrons].ai[1] = 89f;
                         }
                     }
                 }
 
                 // Velocity and rotation
-                npc.velocity = npc.velocity.RotatedBy(-(double)bubbleSpinPhaseRotation * (float)npc.direction);
-                npc.rotation -= bubbleSpinPhaseRotation * npc.direction;
+                NPC.velocity = NPC.velocity.RotatedBy(-(double)bubbleSpinPhaseRotation * (float)NPC.direction);
+                NPC.rotation -= bubbleSpinPhaseRotation * NPC.direction;
 
-                npc.ai[2] += 1f;
-                if (npc.ai[2] >= bubbleSpinPhaseTimer)
+                NPC.ai[2] += 1f;
+                if (NPC.ai[2] >= bubbleSpinPhaseTimer)
                 {
-                    npc.ai[0] = 5f;
-                    npc.ai[1] = 0f;
-                    npc.ai[2] = 0f;
-                    npc.netUpdate = true;
+                    NPC.ai[0] = 5f;
+                    NPC.ai[1] = 0f;
+                    NPC.ai[2] = 0f;
+                    NPC.netUpdate = true;
                 }
             }
 
             // Spawn cthulhunado
-            else if (npc.ai[0] == 8f)
+            else if (NPC.ai[0] == 8f)
             {
-                // Avoid cheap bullshit
-                npc.damage = 0;
-
                 // Velocity
-                npc.velocity *= 0.98f;
-                npc.velocity.Y = MathHelper.Lerp(npc.velocity.Y, 0f, 0.02f);
+                NPC.velocity *= 0.98f;
+                NPC.velocity.Y = MathHelper.Lerp(NPC.velocity.Y, 0f, 0.02f);
 
                 // Play sound and spawn cthulhunado
-                if (npc.ai[2] == sharknadoPhaseTimer - 30)
-                    SoundEngine.PlaySound(SoundID.Zombie20, npc.Center);
+                if (NPC.ai[2] == sharknadoPhaseTimer - 30)
+                    SoundEngine.PlaySound(SoundID.Zombie20, NPC.Center);
 
-                if (Main.netMode != NetmodeID.MultiplayerClient && npc.ai[2] == sharknadoPhaseTimer - 30)
-                    Projectile.NewProjectile(npc.GetSource_FromAI(), npc.Center, Vector2.Zero, ProjectileID.SharknadoBolt, 0, 0f, Main.myPlayer, 1f, npc.target + 1, (enrage || death) ? 1 : 0);
+                if (Main.netMode != NetmodeID.MultiplayerClient && NPC.ai[2] == sharknadoPhaseTimer - 30)
+                    Projectile.NewProjectile(NPC.GetSource_FromAI(), NPC.Center, Vector2.Zero, ProjectileID.SharknadoBolt, 0, 0f, Main.myPlayer, 1f, NPC.target + 1, (enrage || death) ? 1 : 0);
 
-                npc.ai[2] += 1f;
-                if (npc.ai[2] >= sharknadoPhaseTimer)
+                NPC.ai[2] += 1f;
+                if (NPC.ai[2] >= sharknadoPhaseTimer)
                 {
-                    npc.ai[0] = 5f;
-                    npc.ai[1] = 0f;
-                    npc.ai[2] = 0f;
-                    npc.netUpdate = true;
+                    NPC.ai[0] = 5f;
+                    NPC.ai[1] = 0f;
+                    NPC.ai[2] = 0f;
+                    NPC.netUpdate = true;
                 }
             }
 
             // Transition to phase 3
-            else if (npc.ai[0] == 9f)
+            else if (NPC.ai[0] == 9f)
             {
-                // Avoid cheap bullshit
-                npc.damage = 0;
-
                 // Alpha adjustments
-                if (npc.ai[2] < phaseTransitionTimer - 90)
+                if (NPC.ai[2] < phaseTransitionTimer - 90)
                 {
-                    if (Collision.SolidCollision(npc.position, npc.width, npc.height))
-                        npc.alpha += 15;
+                    if (Collision.SolidCollision(NPC.position, NPC.width, NPC.height))
+                        NPC.alpha += 15;
                     else
-                        npc.alpha -= 15;
+                        NPC.alpha -= 15;
 
-                    if (npc.alpha < 0)
-                        npc.alpha = 0;
-                    if (npc.alpha > 150)
-                        npc.alpha = 150;
+                    if (NPC.alpha < 0)
+                        NPC.alpha = 0;
+                    if (NPC.alpha > 150)
+                        NPC.alpha = 150;
                 }
-                else if (npc.alpha < 255)
+                else if (NPC.alpha < 255)
                 {
-                    npc.alpha += 4;
-                    if (npc.alpha > 255)
-                        npc.alpha = 255;
+                    NPC.alpha += 4;
+                    if (NPC.alpha > 255)
+                        NPC.alpha = 255;
                 }
 
                 // Velocity
-                npc.velocity *= 0.98f;
-                npc.velocity.Y = MathHelper.Lerp(npc.velocity.Y, 0f, 0.02f);
+                NPC.velocity *= 0.98f;
+                NPC.velocity.Y = MathHelper.Lerp(NPC.velocity.Y, 0f, 0.02f);
 
                 // Play sound
-                if (npc.ai[2] == phaseTransitionTimer - 60)
-                    SoundEngine.PlaySound(SoundID.Zombie20, npc.Center);
+                if (NPC.ai[2] == phaseTransitionTimer - 60)
+                    SoundEngine.PlaySound(SoundID.Zombie20, NPC.Center);
 
-                npc.ai[2] += 1f;
-                if (npc.ai[2] >= phaseTransitionTimer)
+                NPC.ai[2] += 1f;
+                if (NPC.ai[2] >= phaseTransitionTimer)
                 {
-                    npc.ai[0] = 10f;
-                    npc.ai[1] = 0f;
-                    npc.ai[2] = 0f;
-                    npc.ai[3] = 0f;
-                    npc.netUpdate = true;
+                    NPC.ai[0] = 10f;
+                    NPC.ai[1] = 0f;
+                    NPC.ai[2] = 0f;
+                    NPC.ai[3] = 0f;
+                    NPC.netUpdate = true;
                 }
             }
 
             // Phase 3
-            else if (npc.ai[0] == 10f && !player.dead)
+            else if (NPC.ai[0] == 10f && !player.dead)
             {
-                // Avoid cheap bullshit
-                npc.damage = 0;
-
                 // Alpha
-                if (npc.alpha < 255)
+                if (NPC.alpha < 255)
                 {
-                    npc.alpha += 25;
-                    if (npc.alpha > 255)
-                        npc.alpha = 255;
+                    NPC.alpha += 25;
+                    if (NPC.alpha > 255)
+                        NPC.alpha = 255;
                 }
 
                 // Teleport location
-                if (npc.ai[1] == 0f)
-                    npc.ai[1] = 360 * Math.Sign((npc.Center - player.Center).X);
+                if (NPC.ai[1] == 0f)
+                    NPC.ai[1] = 360 * Math.Sign((NPC.Center - player.Center).X);
 
-                Vector2 desiredVelocity = Vector2.Normalize(player.Center + new Vector2(npc.ai[1], -200f) - npc.Center - npc.velocity) * idlePhaseVelocity;
-                npc.SimpleFlyMovement(desiredVelocity, idlePhaseAcceleration);
+                Vector2 desiredVelocity = Vector2.Normalize(player.Center + new Vector2(NPC.ai[1], -200f) - NPC.Center - NPC.velocity) * idlePhaseVelocity;
+                NPC.SimpleFlyMovement(desiredVelocity, idlePhaseAcceleration);
 
                 // Rotation and direction
-                int phase3SpriteFaceDirection = Math.Sign(player.Center.X - npc.Center.X);
+                int phase3SpriteFaceDirection = Math.Sign(player.Center.X - NPC.Center.X);
                 if (phase3SpriteFaceDirection != 0)
                 {
-                    if (npc.ai[2] == 0f && phase3SpriteFaceDirection != npc.direction)
+                    if (NPC.ai[2] == 0f && phase3SpriteFaceDirection != NPC.direction)
                     {
-                        npc.rotation += MathHelper.Pi;
-                        for (int l = 0; l < npc.oldPos.Length; l++)
-                            npc.oldPos[l] = Vector2.Zero;
+                        NPC.rotation += MathHelper.Pi;
+                        for (int l = 0; l < NPC.oldPos.Length; l++)
+                            NPC.oldPos[l] = Vector2.Zero;
                     }
 
-                    npc.direction = phase3SpriteFaceDirection;
+                    NPC.direction = phase3SpriteFaceDirection;
 
-                    if (npc.spriteDirection != -npc.direction)
-                        npc.rotation += MathHelper.Pi;
+                    if (NPC.spriteDirection != -NPC.direction)
+                        NPC.rotation += MathHelper.Pi;
 
-                    npc.spriteDirection = -npc.direction;
+                    NPC.spriteDirection = -NPC.direction;
                 }
 
                 // Phase switch
-                npc.ai[2] += 1f;
-                if (npc.ai[2] >= idlePhaseTimer || CalamityWorld.LegendaryMode)
+                NPC.ai[2] += 1f;
+                if (NPC.ai[2] >= idlePhaseTimer || Main.zenithWorld)
                 {
                     int phase3AttackPicker = 0;
                     if (phase4)
                     {
-                        switch ((int)npc.ai[3])
+                        switch ((int)NPC.ai[3])
                         {
                             case 0:
                             case 1:
@@ -930,7 +884,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                     }
                     else
                     {
-                        switch ((int)npc.ai[3])
+                        switch ((int)NPC.ai[3])
                         {
                             case 0:
                             case 2:
@@ -948,291 +902,272 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                         }
                     }
 
-                    // Go back to normalcy after dropping below 90% HP
-                    if (!deathModeSurprise && !phase3)
-                        phase3AttackPicker = 3;
-
                     // Set velocity for charge
                     if (phase3AttackPicker == 1)
                     {
-                        npc.ai[0] = 11f;
-                        npc.ai[1] = 0f;
-                        npc.ai[2] = 0f;
+                        NPC.ai[0] = 11f;
+                        NPC.ai[1] = 0f;
+                        NPC.ai[2] = 0f;
 
                         // Velocity and rotation
-                        npc.velocity = Vector2.Normalize(player.Center + (bossRush && phase4 ? player.velocity * 20f : Vector2.Zero) - npc.Center) * chargeVelocity;
-                        npc.rotation = (float)Math.Atan2(npc.velocity.Y, npc.velocity.X);
+                        NPC.velocity = Vector2.Normalize(player.Center - NPC.Center) * chargeVelocity;
+                        NPC.rotation = (float)Math.Atan2(NPC.velocity.Y, NPC.velocity.X);
 
                         // Direction
                         if (phase3SpriteFaceDirection != 0)
                         {
-                            npc.direction = phase3SpriteFaceDirection;
+                            NPC.direction = phase3SpriteFaceDirection;
 
-                            if (npc.spriteDirection == 1)
-                                npc.rotation += MathHelper.Pi;
+                            if (NPC.spriteDirection == 1)
+                                NPC.rotation += MathHelper.Pi;
 
-                            npc.spriteDirection = -npc.direction;
+                            NPC.spriteDirection = -NPC.direction;
                         }
                     }
 
                     // Pause
                     else if (phase3AttackPicker == 2)
                     {
-                        npc.ai[0] = 12f;
-                        npc.ai[1] = 0f;
-                        npc.ai[2] = 0f;
+                        NPC.ai[0] = 12f;
+                        NPC.ai[1] = 0f;
+                        NPC.ai[2] = 0f;
                     }
 
                     // Go to next phase
                     else if (phase3AttackPicker == 3)
                     {
-                        npc.ai[0] = -1f;
-                        npc.ai[1] = 0f;
-                        npc.ai[2] = 0f;
+                        NPC.ai[0] = -1f;
+                        NPC.ai[1] = 0f;
+                        NPC.ai[2] = 0f;
                     }
 
-                    npc.netUpdate = true;
+                    NPC.netUpdate = true;
                 }
             }
 
             // Charge
-            else if (npc.ai[0] == 11f)
+            else if (NPC.ai[0] == 11f)
             {
-                // Set damage
-                npc.damage = setDamage;
-
                 // Accelerate
-                npc.velocity *= 1.01f;
+                NPC.velocity *= 1.01f;
 
                 // Alpha
-                npc.alpha -= 25;
-                if (npc.alpha < 0)
-                    npc.alpha = 0;
+                NPC.alpha -= 25;
+                if (NPC.alpha < 0)
+                    NPC.alpha = 0;
 
                 // Spawn dust
                 int phase3ChargeDustAmt = 7;
                 for (int m = 0; m < phase3ChargeDustAmt; m++)
                 {
-                    Vector2 arg_2444_0 = (Vector2.Normalize(npc.velocity) * new Vector2((npc.width + 50) / 2f, npc.height) * 0.75f).RotatedBy((m - (phase3ChargeDustAmt / 2 - 1)) * MathHelper.Pi / phase3ChargeDustAmt) + npc.Center;
+                    Vector2 arg_2444_0 = (Vector2.Normalize(NPC.velocity) * new Vector2((NPC.width + 50) / 2f, NPC.height) * 0.75f).RotatedBy((m - (phase3ChargeDustAmt / 2 - 1)) * MathHelper.Pi / phase3ChargeDustAmt) + NPC.Center;
                     Vector2 phase3ChargeDustDirection = ((float)(Main.rand.NextDouble() * MathHelper.Pi) - MathHelper.PiOver2).ToRotationVector2() * Main.rand.Next(3, 8);
                     int phase3ChargeDust = Dust.NewDust(arg_2444_0 + phase3ChargeDustDirection, 0, 0, DustID.DungeonWater, phase3ChargeDustDirection.X * 2f, phase3ChargeDustDirection.Y * 2f, 100, default, 1.4f);
                     Main.dust[phase3ChargeDust].noGravity = true;
                     Main.dust[phase3ChargeDust].noLight = true;
                     Main.dust[phase3ChargeDust].velocity /= 4f;
-                    Main.dust[phase3ChargeDust].velocity -= npc.velocity;
+                    Main.dust[phase3ChargeDust].velocity -= NPC.velocity;
                 }
 
-                // Spawn bubbles during charge in Master Mode (these bubbles have special behavior that makes them float upward, doing no damage, before returning to their normal behavior)
-                if (death && phase4)
+                NPC.ai[2] += 1f;
+                if (NPC.ai[2] >= chargeTime)
                 {
-                    if (npc.ai[2] % (bubbleBelchPhaseDivisor * 2) == 0f)
-                    {
-                        SoundEngine.PlaySound(SoundID.NPCDeath19, npc.Center);
-
-                        if (Main.netMode != NetmodeID.MultiplayerClient)
-                        {
-                            Vector2 bubbleSpawnDirection = Vector2.Normalize(player.Center - npc.Center) * (npc.width + 20) / 2f + npc.Center;
-                            NPC.NewNPC(npc.GetSource_FromAI(), (int)bubbleSpawnDirection.X, (int)bubbleSpawnDirection.Y + 45, NPCID.DetonatingBubble, 0, 0f, -60f);
-                        }
-                    }
-                }
-
-                npc.ai[2] += 1f;
-                if (npc.ai[2] >= chargeTime)
-                {
-                    npc.ai[0] = 10f;
-                    npc.ai[1] = 0f;
-                    npc.ai[2] = 0f;
+                    NPC.ai[0] = 10f;
+                    NPC.ai[1] = 0f;
+                    NPC.ai[2] = 0f;
 
                     if (!phase4 || !death)
-                        npc.ai[3] += 1f;
+                        NPC.ai[3] += 1f;
 
-                    npc.netUpdate = true;
+                    NPC.netUpdate = true;
                 }
             }
 
             // Pause before teleport
-            else if (npc.ai[0] == 12f)
+            else if (NPC.ai[0] == 12f)
             {
-                // Avoid cheap bullshit
-                npc.damage = 0;
+                // Disable contact damage during the teleporting phase
+                NPC.damage = 0;
 
                 // Alpha
-                if (npc.alpha < 255)
+                if (NPC.alpha < 255)
                 {
-                    npc.alpha += 17;
-                    if (npc.alpha > 255)
-                        npc.alpha = 255;
+                    NPC.alpha += 17;
+                    if (NPC.alpha > 255)
+                        NPC.alpha = 255;
                 }
 
                 // Velocity
-                npc.velocity *= 0.98f;
-                npc.velocity.Y = MathHelper.Lerp(npc.velocity.Y, 0f, 0.02f);
+                NPC.velocity *= 0.98f;
+                NPC.velocity.Y = MathHelper.Lerp(NPC.velocity.Y, 0f, 0.02f);
 
                 // Play sound
-                if (npc.ai[2] == teleportPhaseTimer / 2)
-                    SoundEngine.PlaySound(SoundID.Zombie20, npc.Center);
+                if (NPC.ai[2] == teleportPhaseTimer / 2)
+                    SoundEngine.PlaySound(SoundID.Zombie20, NPC.Center);
 
-                if (Main.netMode != NetmodeID.MultiplayerClient && npc.ai[2] == teleportPhaseTimer / 2)
+                if (Main.netMode != NetmodeID.MultiplayerClient && NPC.ai[2] == teleportPhaseTimer / 2)
                 {
                     // Teleport location
-                    if (npc.ai[1] == 0f)
-                        npc.ai[1] = 300 * Math.Sign((npc.Center - player.Center).X);
+                    if (NPC.ai[1] == 0f)
+                        NPC.ai[1] = 300 * Math.Sign((NPC.Center - player.Center).X);
 
                     // Rotation and direction
-                    Vector2 center = player.Center + new Vector2(-npc.ai[1], -200f);
-                    npc.Center = center;
-                    int phase3PlayerDirection = Math.Sign(player.Center.X - npc.Center.X);
+                    Vector2 center = player.Center + new Vector2(-NPC.ai[1], -200f);
+                    NPC.Center = center;
+                    int phase3PlayerDirection = Math.Sign(player.Center.X - NPC.Center.X);
                     if (phase3PlayerDirection != 0)
                     {
-                        if (npc.ai[2] == 0f && phase3PlayerDirection != npc.direction)
+                        if (NPC.ai[2] == 0f && phase3PlayerDirection != NPC.direction)
                         {
-                            npc.rotation += MathHelper.Pi;
-                            for (int n = 0; n < npc.oldPos.Length; n++)
-                                npc.oldPos[n] = Vector2.Zero;
+                            NPC.rotation += MathHelper.Pi;
+                            for (int n = 0; n < NPC.oldPos.Length; n++)
+                                NPC.oldPos[n] = Vector2.Zero;
                         }
 
-                        npc.direction = phase3PlayerDirection;
+                        NPC.direction = phase3PlayerDirection;
 
-                        if (npc.spriteDirection != -npc.direction)
-                            npc.rotation += MathHelper.Pi;
+                        if (NPC.spriteDirection != -NPC.direction)
+                            NPC.rotation += MathHelper.Pi;
 
-                        npc.spriteDirection = -npc.direction;
+                        NPC.spriteDirection = -NPC.direction;
                     }
                 }
 
-                npc.ai[2] += 1f;
-                if (npc.ai[2] >= teleportPhaseTimer)
+                NPC.ai[2] += 1f;
+                if (NPC.ai[2] >= teleportPhaseTimer)
                 {
-                    npc.ai[0] = 10f;
-                    npc.ai[1] = 0f;
-                    npc.ai[2] = 0f;
+                    NPC.ai[0] = 10f;
+                    NPC.ai[1] = 0f;
+                    NPC.ai[2] = 0f;
 
-                    npc.ai[3] += 1f;
-                    if (npc.ai[3] >= 9f)
-                        npc.ai[3] = 0f;
+                    NPC.ai[3] += 1f;
+                    if (NPC.ai[3] >= 9f)
+                        NPC.ai[3] = 0f;
 
-                    npc.netUpdate = true;
+                    NPC.netUpdate = true;
                 }
             }
 
             return false;
         }
 
-        public static bool BuffedDetonatingBubbleAI(NPC npc, Mod mod)
+        public class DetonatingBubbleAI : VanillaAIOverride
         {
-            bool driftUpward = npc.ai[1] < 0f;
-            npc.damage = driftUpward ? 0 : npc.defDamage;
-
-            if (driftUpward)
+            public override bool AI(Mod mod)
             {
-                npc.ai[1] += 1f;
+                bool driftUpward = NPC.ai[1] < 0f;
+                NPC.damage = driftUpward ? 0 : NPC.defDamage;
 
-                if (npc.velocity.Y > -2f)
-                    npc.velocity.Y -= 0.04f;
-                
-                return false;
-            }
-
-            if (npc.target == Main.maxPlayers)
-            {
-                CalamityUtils.CalamityTargeting(npc, default);
-                npc.ai[3] = (float)Main.rand.Next(100, 151) / 100f;
-                float startingVelocity = (float)Main.rand.Next(250, 351) / 15f;
-                npc.velocity = (Main.player[npc.target].Center - npc.Center + new Vector2(Main.rand.Next(-100, 101), Main.rand.Next(-100, 101))).SafeNormalize(Vector2.UnitY) * startingVelocity;
-                npc.netUpdate = true;
-            }
-
-            bool pop = npc.ai[0] == 1f;
-
-            Vector2 velocityVector = (Main.player[npc.target].Center - npc.Center).SafeNormalize(Vector2.UnitY);
-            float inertia = 30f;
-            float velocity = 20f;
-            npc.velocity = (npc.velocity * inertia + velocityVector * velocity) / (inertia + 1f);
-            
-            npc.scale = npc.ai[3];
-
-            npc.alpha -= 30;
-            if (npc.alpha < 50)
-                npc.alpha = 50;
-            npc.alpha = 50;
-
-            float inertia2 = inertia + 10f;
-            npc.velocity.X = (npc.velocity.X * inertia2 + (float)Main.rand.Next(-10, 11) * 0.1f) / (inertia2 + 1f);
-            npc.velocity.Y = (npc.velocity.Y * inertia2 + -0.25f + (float)Main.rand.Next(-10, 11) * 0.2f) / (inertia2 + 1f);
-            if (npc.velocity.Y > 0f)
-                npc.velocity.Y -= 0.04f;
-
-            // Push Bubbles away from each other.
-            float spreadOutStrength = (CalamityWorld.death || BossRushEvent.BossRushActive) ? -0.08f : -0.06f;
-            for (int i = 0; i < Main.maxNPCs; i++)
-            {
-                if (i != npc.whoAmI && Main.npc[i].active && Main.npc[i].type == npc.type)
+                if (driftUpward)
                 {
-                    Vector2 otherBubbleDist = Main.npc[i].Center - npc.Center;
-                    if (otherBubbleDist.Length() < (npc.width + npc.height))
-                    {
-                        otherBubbleDist = otherBubbleDist.SafeNormalize(Vector2.UnitY);
-                        otherBubbleDist *= spreadOutStrength;
-                        npc.velocity += otherBubbleDist;
-                        Main.npc[i].velocity -= otherBubbleDist;
-                    }
-                }
-            }
+                    NPC.ai[1] += 1f;
 
-            if (npc.ai[0] == 0f)
-            {
-                int size = 40;
-                Rectangle rect = npc.getRect();
-                rect.X -= size + npc.width / 2;
-                rect.Y -= size + npc.height / 2;
-                rect.Width += size * 2;
-                rect.Height += size * 2;
-                for (int i = 0; i < Main.maxPlayers; i++)
-                {
-                    Player player = Main.player[i];
-                    if (player.active && !player.dead && rect.Intersects(player.getRect()))
-                    {
-                        npc.ai[0] = 1f;
-                        npc.ai[1] = 4f;
-                        npc.netUpdate = true;
-                        break;
-                    }
-                }
-            }
+                    if (NPC.velocity.Y > -2f)
+                        NPC.velocity.Y -= 0.04f;
 
-            if (npc.ai[0] == 0f)
-            {
-                npc.ai[1] += 1f;
-                float timeBeforePopping = 300f;
-                if (npc.ai[1] >= timeBeforePopping)
-                {
-                    npc.ai[0] = 1f;
-                    npc.ai[1] = 4f;
-                }
-            }
-
-            if (pop)
-            {
-                npc.ai[1] -= 1f;
-                if (npc.ai[1] <= 0f)
-                {
-                    npc.life = 0;
-                    npc.HitEffect();
-                    npc.active = false;
                     return false;
                 }
-            }
 
-            if (pop)
-            {
-                npc.position = npc.Center;
-                npc.width = npc.height = 100;
-                npc.position = new Vector2(npc.position.X - (float)(npc.width / 2), npc.position.Y - (float)(npc.height / 2));
-                npc.EncourageDespawn(3);
-            }
+                if (NPC.target == Main.maxPlayers)
+                {
+                    CalamityUtils.CalamityTargeting(NPC, default);
+                    NPC.ai[3] = (float)Main.rand.Next(100, 151) / 100f;
+                    float startingVelocity = (float)Main.rand.Next(250, 351) / 15f;
+                    NPC.velocity = (Main.player[NPC.target].Center - NPC.Center + new Vector2(Main.rand.Next(-100, 101), Main.rand.Next(-100, 101))).SafeNormalize(Vector2.UnitY) * startingVelocity;
+                    NPC.netUpdate = true;
+                }
 
-            return false;
+                bool pop = NPC.ai[0] == 1f;
+
+                Vector2 velocityVector = (Main.player[NPC.target].Center - NPC.Center).SafeNormalize(Vector2.UnitY);
+                float inertia = 30f;
+                float velocity = 20f;
+                NPC.velocity = (NPC.velocity * inertia + velocityVector * velocity) / (inertia + 1f);
+
+                NPC.scale = NPC.ai[3];
+
+                NPC.alpha -= 30;
+                if (NPC.alpha < 50)
+                    NPC.alpha = 50;
+                NPC.alpha = 50;
+
+                float inertia2 = inertia + 10f;
+                NPC.velocity.X = (NPC.velocity.X * inertia2 + (float)Main.rand.Next(-10, 11) * 0.1f) / (inertia2 + 1f);
+                NPC.velocity.Y = (NPC.velocity.Y * inertia2 + -0.25f + (float)Main.rand.Next(-10, 11) * 0.2f) / (inertia2 + 1f);
+                if (NPC.velocity.Y > 0f)
+                    NPC.velocity.Y -= 0.04f;
+
+                // Push Bubbles away from each other.
+                float spreadOutStrength = (CalamityWorld.death || BossRushEvent.BossRushActive) ? -0.08f : -0.06f;
+                for (int i = 0; i < Main.maxNPCs; i++)
+                {
+                    if (i != NPC.whoAmI && Main.npc[i].active && Main.npc[i].type == NPC.type)
+                    {
+                        Vector2 otherBubbleDist = Main.npc[i].Center - NPC.Center;
+                        if (otherBubbleDist.Length() < (NPC.width + NPC.height))
+                        {
+                            otherBubbleDist = otherBubbleDist.SafeNormalize(Vector2.UnitY);
+                            otherBubbleDist *= spreadOutStrength;
+                            NPC.velocity += otherBubbleDist;
+                            Main.npc[i].velocity -= otherBubbleDist;
+                        }
+                    }
+                }
+
+                if (NPC.ai[0] == 0f)
+                {
+                    int size = 40;
+                    Rectangle rect = NPC.getRect();
+                    rect.X -= size + NPC.width / 2;
+                    rect.Y -= size + NPC.height / 2;
+                    rect.Width += size * 2;
+                    rect.Height += size * 2;
+                    for (int i = 0; i < Main.maxPlayers; i++)
+                    {
+                        Player player = Main.player[i];
+                        if (player.active && !player.dead && rect.Intersects(player.getRect()))
+                        {
+                            NPC.ai[0] = 1f;
+                            NPC.ai[1] = 4f;
+                            NPC.netUpdate = true;
+                            break;
+                        }
+                    }
+                }
+
+                if (NPC.ai[0] == 0f)
+                {
+                    NPC.ai[1] += 1f;
+                    float timeBeforePopping = 300f;
+                    if (NPC.ai[1] >= timeBeforePopping)
+                    {
+                        NPC.ai[0] = 1f;
+                        NPC.ai[1] = 4f;
+                    }
+                }
+
+                if (pop)
+                {
+                    NPC.ai[1] -= 1f;
+                    if (NPC.ai[1] <= 0f)
+                    {
+                        NPC.life = 0;
+                        NPC.HitEffect();
+                        NPC.active = false;
+                        return false;
+                    }
+                }
+
+                if (pop)
+                {
+                    NPC.position = NPC.Center;
+                    NPC.width = NPC.height = 100;
+                    NPC.position = new Vector2(NPC.position.X - (float)(NPC.width / 2), NPC.position.Y - (float)(NPC.height / 2));
+                    NPC.EncourageDespawn(3);
+                }
+
+                return false;
+            }
         }
     }
 }

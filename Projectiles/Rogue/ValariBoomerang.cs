@@ -1,9 +1,7 @@
 ﻿using System;
-using CalamityMod.Buffs.DamageOverTime;
 using CalamityMod.Buffs.StatDebuffs;
 using CalamityMod.Items.Weapons.Rogue;
 using CalamityMod.Particles;
-using CalamityMod.Projectiles.Typeless;
 using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.Audio;
@@ -144,7 +142,6 @@ namespace CalamityMod.Projectiles.Rogue
                         if (Projectile.velocity.Y > 0f && yDist < 0f)
                             Projectile.velocity.Y -= acceleration;
                     }
-
 
                     // Delete the projectile if it touches its owner.
                     if (Main.myPlayer == Projectile.owner)

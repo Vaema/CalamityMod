@@ -3,7 +3,6 @@ using CalamityMod.Buffs.DamageOverTime;
 using CalamityMod.Events;
 using CalamityMod.NPCs;
 using CalamityMod.NPCs.SupremeCalamitas;
-using CalamityMod.World;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria;
@@ -40,8 +39,8 @@ namespace CalamityMod.Projectiles.Boss
             // Cal Clone bullet hell projectiles accelerate after a certain time has passed
             if (Projectile.ai[0] == 2f && (Main.expertMode || BossRushEvent.BossRushActive) && Projectile.timeLeft < 1260)
             {
-                if (Projectile.velocity.Length() < (BossRushEvent.BossRushActive ? 12.5f : 10f))
-                    Projectile.velocity *= 1.005f;
+                if (Projectile.velocity.Length() < 10f)
+                    Projectile.velocity *= 1.002f;
             }
 
             Projectile.frameCounter++;
@@ -107,7 +106,7 @@ namespace CalamityMod.Projectiles.Boss
             if (Projectile.ai[0] == 0f || Main.zenithWorld)
                 target.AddBuff(ModContent.BuffType<VulnerabilityHex>(), 180);
             else
-                target.AddBuff(ModContent.BuffType<BrimstoneFlames>(), 90);
+                target.AddBuff(ModContent.BuffType<BrimstoneFlames>(), 120);
         }
     }
 }

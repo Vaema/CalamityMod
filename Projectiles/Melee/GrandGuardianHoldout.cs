@@ -1,17 +1,12 @@
-﻿using System;
-using CalamityMod.CalPlayer;
-using CalamityMod.Items.Weapons.Melee;
+﻿using CalamityMod.Items.Weapons.Melee;
 using CalamityMod.NPCs;
-using CalamityMod.NPCs.PrimordialWyrm;
 using CalamityMod.Particles;
 using CalamityMod.Projectiles.BaseProjectiles;
-using CalamityMod.Projectiles.Ranged;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using ReLogic.Content;
 using Terraria;
 using Terraria.Audio;
-using Terraria.DataStructures;
 using Terraria.ID;
 using Terraria.Localization;
 using Terraria.ModLoader;
@@ -179,7 +174,7 @@ namespace CalamityMod.Projectiles.Melee
                             GenericSparkle sparker = new GenericSparkle(Owner.Center + (new Vector2(198, 0).RotatedBy(FinalRotation + MathHelper.ToRadians(-45)).RotatedByRandom(0.3f)), Vector2.Zero, color ? Color.Cyan : Color.DarkOrchid, color ? Color.DarkOrchid : Color.Cyan, Main.rand.NextFloat(0.4f, 0.6f), 10, Main.rand.NextFloat(-0.1f, 0.1f), 2.68f);
                             GeneralParticleHandler.SpawnParticle(sparker);
 
-                            Dust dust2 = Dust.NewDustPerfect(Owner.Center + (new Vector2(180, 0).RotatedBy(FinalRotation + MathHelper.ToRadians(-45)).RotatedByRandom(0.3f)), 278, Vector2.One.RotatedByRandom(100) * Main.rand.NextFloat(0.5f, 2));
+                            Dust dust2 = Dust.NewDustPerfect(Owner.Center + (new Vector2(180, 0).RotatedBy(FinalRotation + MathHelper.ToRadians(-45)).RotatedByRandom(0.3f)), DustID.FireworksRGB, Vector2.One.RotatedByRandom(100) * Main.rand.NextFloat(0.5f, 2));
                             dust2.scale = Main.rand.NextFloat(0.55f, 0.85f);
                             dust2.noGravity = true;
                             dust2.color = Main.rand.NextBool() ? Color.Cyan : Color.DarkOrchid;
@@ -215,7 +210,7 @@ namespace CalamityMod.Projectiles.Melee
             int heal = (int)(MathHelper.Clamp(5 - Projectile.numHits * 3, 1, 5));
             if (Projectile.numHits < 5)
             {
-                Owner.HealPlayer(heal);
+                Owner.DoLifestealDirect(target, heal, 0.75f);
             }
 
             int points = 4;
@@ -231,7 +226,7 @@ namespace CalamityMod.Projectiles.Melee
 
             for (int i = 0; i < MathHelper.Clamp(10 - Projectile.numHits * 2, 2, 10); i++)
             {
-                Dust dust2 = Dust.NewDustPerfect(target.Center, 278, new Vector2(12, 12).RotatedByRandom(100) * Main.rand.NextFloat(0.05f, 0.7f));
+                Dust dust2 = Dust.NewDustPerfect(target.Center, DustID.FireworksRGB, new Vector2(12, 12).RotatedByRandom(100) * Main.rand.NextFloat(0.05f, 0.7f));
                 dust2.scale = Main.rand.NextFloat(0.55f, 0.85f);
                 dust2.noGravity = true;
                 dust2.color = Main.rand.NextBool() ? Color.Cyan : Color.DarkOrchid;

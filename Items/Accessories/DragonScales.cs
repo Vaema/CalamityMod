@@ -2,7 +2,6 @@
 using CalamityMod.CalPlayer;
 using CalamityMod.Rarities;
 using Terraria;
-using Terraria.ID;
 using Terraria.ModLoader;
 
 namespace CalamityMod.Items.Accessories
@@ -17,7 +16,7 @@ namespace CalamityMod.Items.Accessories
         {
             Item.width = 32;
             Item.height = 34;
-            Item.value = CalamityGlobalItem.RarityVioletBuyPrice;
+            Item.value = Item.buyPrice(platinum: 15); // Sold by Bandit
             Item.rare = ModContent.RarityType<BurnishedAuric>();
             Item.accessory = true;
         }

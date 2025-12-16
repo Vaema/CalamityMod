@@ -1,5 +1,6 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using ReLogic.Content;
 using Terraria;
 using Terraria.DataStructures;
 using Terraria.ID;
@@ -7,8 +8,11 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.Tiles.Abyss
 {
+    [LegacyName("AbyssTorch")]
     public class VoidTorch : ModTile
     {
+        public Asset<Texture2D> FlameTexture;
+
         public override void SetStaticDefaults() => this.SetUpTorch(ModContent.ItemType<Items.Placeables.Furniture.VoidTorch>(), true, true);
 
         public override bool CreateDust(int i, int j, ref int type)
@@ -56,7 +60,8 @@ namespace CalamityMod.Tiles.Abyss
 
         public override void PostDraw(int i, int j, SpriteBatch spriteBatch)
         {
-            CalamityUtils.DrawFlameEffect(ModContent.Request<Texture2D>("CalamityMod/Tiles/Abyss/VoidTorchFlame").Value, i, j, 2);
+            FlameTexture ??= ModContent.Request<Texture2D>("CalamityMod/Tiles/Abyss/VoidTorchFlame");
+            CalamityUtils.DrawFlameEffect(FlameTexture.Value, i, j, 2);
         }
 
         public override void DrawEffects(int i, int j, SpriteBatch spriteBatch, ref TileDrawInfo drawData)

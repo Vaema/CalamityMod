@@ -9,11 +9,6 @@ namespace CalamityMod.Items.Weapons.Rogue
 {
     public class IceStar : RogueWeapon
     {
-        public override void SetStaticDefaults()
-        {
-            Item.ResearchUnlockCount = 99;
-        }
-
         public override void SetDefaults()
         {
             Item.width = Item.height = 66;
@@ -26,7 +21,7 @@ namespace CalamityMod.Items.Weapons.Rogue
             Item.knockBack = 2.5f;
             Item.UseSound = SoundID.Item1;
             Item.autoReuse = true;
-            Item.value = Item.buyPrice(0, 0, 5, 0);
+            Item.value = CalamityGlobalItem.RarityPinkBuyPrice;
             Item.rare = ItemRarityID.Pink;
             Item.shoot = ModContent.ProjectileType<IceStarProjectile>();
             Item.shootSpeed = 14f;

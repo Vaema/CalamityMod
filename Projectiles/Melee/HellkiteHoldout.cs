@@ -9,7 +9,7 @@ using ReLogic.Content;
 using ReLogic.Utilities;
 using Terraria;
 using Terraria.Audio;
-using Terraria.DataStructures;
+using Terraria.ID;
 using Terraria.Localization;
 using Terraria.ModLoader;
 
@@ -143,7 +143,7 @@ namespace CalamityMod.Projectiles.Melee
                     Vector2 particleVel = (Owner.Center - particlePos).SafeNormalize(Vector2.UnitX) * -15;
                     particlePos += Main.rand.NextVector2Circular(20, 20);
 
-                    Dust dust2 = Dust.NewDustPerfect(particlePos, 267, particleVel * Main.rand.NextFloat(0.2f, 1));
+                    Dust dust2 = Dust.NewDustPerfect(particlePos, DustID.RainbowMk2, particleVel * Main.rand.NextFloat(0.2f, 1));
                     dust2.scale = Main.rand.NextFloat(0.65f, 1.15f) * fadeIn * GFBMulti;
                     dust2.noGravity = true;
                     dust2.color = Main.rand.NextBool(3) ? Color.Orange : Color.OrangeRed;
@@ -187,7 +187,7 @@ namespace CalamityMod.Projectiles.Melee
                     {
                         Particle spark2 = new LineParticle(particlePos, new Vector2(8, 8).RotatedByRandom(100) * Main.rand.NextFloat(0.5f, 1f), false, 30, Main.rand.NextFloat(0.3f, 0.8f), Main.rand.NextBool(3) ? Color.Red : Color.OrangeRed);
                         GeneralParticleHandler.SpawnParticle(spark2);
-                        Dust dust2 = Dust.NewDustPerfect(particlePos, 267, new Vector2(8, 8).RotatedByRandom(100) * Main.rand.NextFloat(0.5f, 1f));
+                        Dust dust2 = Dust.NewDustPerfect(particlePos, DustID.RainbowMk2, new Vector2(8, 8).RotatedByRandom(100) * Main.rand.NextFloat(0.5f, 1f));
                         dust2.scale = Main.rand.NextFloat(0.65f, 1.15f) * fadeIn;
                         dust2.noGravity = true;
                         dust2.color = Main.rand.NextBool(3) ? Color.Orange : Color.OrangeRed;
@@ -315,7 +315,7 @@ namespace CalamityMod.Projectiles.Melee
                             {
                                 float randRot = Main.rand.NextFloat(-30, -60);
                                 Vector2 dustVel = (new Vector2(0, 15 * -Projectile.ai[1] * Owner.direction)).RotatedBy(FinalRotation + MathHelper.ToRadians(randRot));
-                                Dust dust2 = Dust.NewDustPerfect(Owner.Center + (new Vector2(170, 0).RotatedBy(FinalRotation + MathHelper.ToRadians(-45)).RotatedByRandom(0.3f)), 278, dustVel * Main.rand.NextFloat(0.3f, 0.9f));
+                                Dust dust2 = Dust.NewDustPerfect(Owner.Center + (new Vector2(170, 0).RotatedBy(FinalRotation + MathHelper.ToRadians(-45)).RotatedByRandom(0.3f)), DustID.FireworksRGB, dustVel * Main.rand.NextFloat(0.3f, 0.9f));
                                 dust2.scale = Main.rand.NextFloat(0.65f, 0.95f);
                                 dust2.noGravity = true;
                                 dust2.color = Main.rand.NextBool(3) ? Color.Orange : Color.OrangeRed;
@@ -327,7 +327,7 @@ namespace CalamityMod.Projectiles.Melee
                             {
                                 float randRot = Main.rand.NextFloat(-30, -60);
                                 Vector2 dustVel = (new Vector2(0, 15 * -Projectile.ai[1] * Owner.direction)).RotatedBy(FinalRotation + MathHelper.ToRadians(randRot));
-                                Dust dust2 = Dust.NewDustPerfect(Owner.Center + (new Vector2(170, 0).RotatedBy(FinalRotation + MathHelper.ToRadians(-45)).RotatedByRandom(0.3f)), 278, dustVel * Main.rand.NextFloat(0.1f, 0.5f));
+                                Dust dust2 = Dust.NewDustPerfect(Owner.Center + (new Vector2(170, 0).RotatedBy(FinalRotation + MathHelper.ToRadians(-45)).RotatedByRandom(0.3f)), DustID.FireworksRGB, dustVel * Main.rand.NextFloat(0.1f, 0.5f));
                                 dust2.scale = Main.rand.NextFloat(0.55f, 0.85f);
                                 dust2.noGravity = true;
                                 dust2.color = Main.rand.NextBool(3) ? Color.Orange : Color.OrangeRed;
@@ -358,7 +358,7 @@ namespace CalamityMod.Projectiles.Melee
                 if (Projectile.numHits == 0)
                 {
                     SoundEngine.PlaySound(Hellkite.HitSoundSmall with { Volume = 0.85f, PitchVariance = 0.25f }, Projectile.Center);
-                    Owner.Calamity().GeneralScreenShakePower = 4.5f;
+                    Owner.SetScreenshake(4.5f);
                 }
                 for (int i = 0; i < MathHelper.Clamp(8 - Projectile.numHits * 2, 2, 8); i++)
                 {
@@ -376,7 +376,7 @@ namespace CalamityMod.Projectiles.Melee
                 if (Projectile.numHits == 0)
                 {
                     SoundEngine.PlaySound(Hellkite.HitSoundBig with { Volume = 1f }, Projectile.Center);
-                    Owner.Calamity().GeneralScreenShakePower = 8.5f * GFBMulti;
+                    Owner.SetScreenshake(8.5f * GFBMulti);
                     bool photos = CalamityClientConfig.Instance.Photosensitivity;
 
                     if (!photos)
@@ -404,7 +404,7 @@ namespace CalamityMod.Projectiles.Melee
                             Particle spark3 = new AltSparkParticle(target.Center, ((Owner.Center - Owner.Calamity().mouseWorld).SafeNormalize(Vector2.UnitY) * -40).RotatedByRandom(100) * Main.rand.NextFloat(0.2f, 1f), true, 40, Main.rand.NextFloat(0.5f, 1.2f) * GFBMulti, Color.DarkRed);
                             GeneralParticleHandler.SpawnParticle(spark3);
                         }
-                        Dust dust2 = Dust.NewDustPerfect(target.Center, 278, new Vector2(20, 20).RotatedByRandom(100) * Main.rand.NextFloat(0.2f, 1));
+                        Dust dust2 = Dust.NewDustPerfect(target.Center, DustID.FireworksRGB, new Vector2(20, 20).RotatedByRandom(100) * Main.rand.NextFloat(0.2f, 1));
                         dust2.scale = Main.rand.NextFloat(0.55f, 0.85f) * GFBMulti;
                         dust2.noGravity = true;
                         dust2.color = Main.rand.NextBool(3) ? Color.Orange : Color.OrangeRed;
@@ -424,7 +424,7 @@ namespace CalamityMod.Projectiles.Melee
             float minMult = 0.25f;
             int hitsToMinMult = 10;
             float damageMult = Utils.Remap(pierceReduction, 0, hitsToMinMult, 1, minMult, true);
-            modifiers.SourceDamage *= (chargedSwing ? (3f * (GFBMulti) + critDamage) : 1) * damageMult;
+            modifiers.SourceDamage *= (chargedSwing ? (2.9f * GFBMulti + critDamage) : 1) * damageMult;
         }
         public override bool PreDraw(ref Color lightColor)
         {

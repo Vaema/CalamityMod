@@ -1,4 +1,4 @@
-﻿using CalamityMod.Items.Materials;
+﻿using CalamityMod.Items.Weapons.Summon;
 using CalamityMod.Projectiles.Magic;
 using Microsoft.Xna.Framework;
 using Terraria;
@@ -11,6 +11,7 @@ namespace CalamityMod.Items.Weapons.Magic
     public class ShaderainStaff : ModItem, ILocalizedModType
     {
         public new string LocalizationCategory => "Items.Weapons.Magic";
+
         #region Other stats
 
         // Stats for the shaderain.
@@ -26,10 +27,10 @@ namespace CalamityMod.Items.Weapons.Magic
         public const float DeaccelerationStrenght = 0.95f; // A number lower than 1, non-including 1, changing it very slightly will have drastic results.
 
         #endregion
-
         public override void SetStaticDefaults()
         {
             Item.staff[Type] = true;
+            ItemID.Sets.ShimmerTransformToItem[Type] = ModContent.ItemType<DankStaff>();
         }
 
         public override void SetDefaults()
@@ -76,16 +77,6 @@ namespace CalamityMod.Items.Weapons.Magic
                 player.whoAmI);
 
             return false;
-        }
-
-        public override void AddRecipes()
-        {
-            CreateRecipe().
-                AddIngredient(ItemID.DemoniteBar, 3).
-                AddIngredient<RottenMatter>(9).
-                AddIngredient(ItemID.RottenChunk, 3).
-                AddTile(TileID.DemonAltar).
-                Register();
         }
     }
 }

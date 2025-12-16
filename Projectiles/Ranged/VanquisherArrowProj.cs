@@ -1,12 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using CalamityMod.Buffs.DamageOverTime;
 using CalamityMod.Dusts;
-using CalamityMod.Graphics.Metaballs;
-using CalamityMod.Items.Ammo;
 using CalamityMod.Particles;
-using CalamityMod.Projectiles.Typeless;
-using Humanizer;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using ReLogic.Content;
@@ -14,7 +9,7 @@ using Terraria;
 using Terraria.Audio;
 using Terraria.ID;
 using Terraria.ModLoader;
-using static Terraria.GameContent.Animations.IL_Actions.Sprites;
+
 namespace CalamityMod.Projectiles.Ranged
 {
     public class VanquisherArrowProj : ModProjectile, ILocalizedModType
@@ -46,7 +41,6 @@ namespace CalamityMod.Projectiles.Ranged
             Projectile.penetrate = 2;
             Projectile.timeLeft = 600;
             Projectile.extraUpdates = 7;
-            Projectile.Calamity().pointBlankShotDuration = CalamityGlobalProjectile.DefaultPointBlankDuration;
             Projectile.usesLocalNPCImmunity = true;
             Projectile.localNPCHitCooldown = 15 * Projectile.extraUpdates;
         }
@@ -119,9 +113,9 @@ namespace CalamityMod.Projectiles.Ranged
         }
         public override void ModifyHitNPC(NPC target, ref NPC.HitModifiers modifiers)
         {
-            // First hit is 30% damage
+            // First hit is 40% damage
             // Second hit is 100% base damage, it is the "Slash Hit"
-            modifiers.SourceDamage *= (Projectile.numHits == 0 ? 0.3f : 1f);
+            modifiers.SourceDamage *= (Projectile.numHits == 0 ? 0.4f : 1f);
             if (Projectile.damage < 1)
                 Projectile.damage = 1;
         }
@@ -148,7 +142,7 @@ namespace CalamityMod.Projectiles.Ranged
 
                 SoundStyle onKill = new("CalamityMod/Sounds/Item/ScorpioHit");
                 SoundEngine.PlaySound(onKill with { Volume = 0.25f, Pitch = 0.1f, PitchVariance = 0.3f }, Projectile.Center);
-                SoundEngine.PlaySound(SoundID.DD2_FlameburstTowerShot with { Volume = 0.8f, Pitch = -0.5f, PitchVariance = 0.3f }, Projectile.Center);
+                SoundEngine.PlaySound(SoundID.DD2_FlameburstTowerShot with { Volume = 0.4f, Pitch = -0.4f, PitchVariance = 0.3f }, Projectile.Center);
             }
         }
         public override bool PreDraw(ref Color lightColor)

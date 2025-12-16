@@ -1,5 +1,4 @@
-﻿using CalamityMod.Tiles.Furniture.CraftingStations;
-using Terraria;
+﻿using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
 namespace CalamityMod.Items.Placeables.FurnitureStatigel
@@ -19,7 +18,7 @@ namespace CalamityMod.Items.Placeables.FurnitureStatigel
                 AddIngredient<StatigelBlock>(10).
                 AddRecipeGroup("IronBar", 3).
                 AddIngredient(ItemID.Glass, 6).
-                AddTile<StaticRefiner>().
+                AddTile(TileID.Solidifier).
                 Register();
         }
     }

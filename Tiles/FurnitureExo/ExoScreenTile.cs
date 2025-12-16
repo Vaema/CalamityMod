@@ -1,10 +1,8 @@
-﻿using CalamityMod.Items.Placeables.FurnitureExo;
-using Microsoft.Xna.Framework;
+﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using ReLogic.Content;
 using Terraria;
-using Terraria.DataStructures;
 using Terraria.ID;
-using Terraria.Localization;
 using Terraria.ModLoader;
 using Terraria.ObjectData;
 
@@ -12,6 +10,8 @@ namespace CalamityMod.Tiles.FurnitureExo
 {
     public class ExoScreenTile : ModTile
     {
+        public Asset<Texture2D> GlowTexture;
+
         public override void SetStaticDefaults()
         {
             Main.tileFrameImportant[Type] = true;
@@ -23,7 +23,7 @@ namespace CalamityMod.Tiles.FurnitureExo
             TileObjectData.addTile(Type);
 
             AddMapEntry(new Color(71, 95, 114), CalamityUtils.GetText("Tiles.Screen"));
-            DustType = 8;
+            DustType = DustID.Iron;
             AnimationFrameHeight = 36;
             TileID.Sets.FramesOnKillWall[Type] = true;
         }
@@ -60,7 +60,10 @@ namespace CalamityMod.Tiles.FurnitureExo
                 return;
 
             int yOffset = TileObjectData.GetTileData(tile).DrawYOffset;
-            Texture2D glowmask = ModContent.Request<Texture2D>("CalamityMod/Tiles/FurnitureExo/ExoScreenGlow").Value;
+
+            GlowTexture ??= ModContent.Request<Texture2D>("CalamityMod/Tiles/FurnitureExo/ExoScreenGlow");
+            Texture2D glowmask = GlowTexture.Value;
+
             Vector2 drawOffset = Main.drawToScreen ? Vector2.Zero : new Vector2(Main.offScreenRange, Main.offScreenRange);
             Vector2 drawPosition = new Vector2(i * 16 - (int)Main.screenPosition.X / 2f, j * 16 - (int)Main.screenPosition.Y + yOffset) + drawOffset;
             Color drawColour = Color.White;

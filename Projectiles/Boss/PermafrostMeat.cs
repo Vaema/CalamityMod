@@ -1,8 +1,4 @@
 ﻿using System;
-using CalamityMod.Buffs.Alcohol;
-using CalamityMod.Dusts;
-using CalamityMod.Events;
-using CalamityMod.Projectiles.Magic;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria;

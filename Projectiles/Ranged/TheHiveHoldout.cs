@@ -84,7 +84,7 @@ namespace CalamityMod.Projectiles.Ranged
                 }
                 for (int e = 0; e < 2; e++)
                 {
-                    Dust dust2 = Dust.NewDustPerfect(GunTipPosition + Projectile.velocity * 1.5f, 90, shootDirection * Main.rand.NextFloat(0.01f, 0.8f));
+                    Dust dust2 = Dust.NewDustPerfect(GunTipPosition + Projectile.velocity * 1.5f, DustID.GemRuby, shootDirection * Main.rand.NextFloat(0.01f, 0.8f));
                     dust2.scale = Main.rand.NextFloat(0.45f, 0.75f);
                     dust2.noGravity = true;
                 }
@@ -96,7 +96,7 @@ namespace CalamityMod.Projectiles.Ranged
                 SoundEngine.PlaySound(fullCharge with { Volume = 0.9f }, Projectile.Center);
                 for (int k = 0; k < 15; k++)
                 {
-                    Dust dust2 = Dust.NewDustPerfect(GunTipPosition, 90, new Vector2(4, 4).RotatedByRandom(100) * Main.rand.NextFloat(0.05f, 0.8f));
+                    Dust dust2 = Dust.NewDustPerfect(GunTipPosition, DustID.GemRuby, new Vector2(4, 4).RotatedByRandom(100) * Main.rand.NextFloat(0.05f, 0.8f));
                     dust2.scale = Main.rand.NextFloat(0.85f, 1.15f);
                     dust2.noGravity = true;
                 }
@@ -140,15 +140,9 @@ namespace CalamityMod.Projectiles.Ranged
                 SoundStyle fire = new("CalamityMod/Sounds/Custom/PlagueSounds/PBGBarrageLaunch");
                 SoundEngine.PlaySound(fire with { Volume = 0.5f, Pitch = 0.1f }, Projectile.Center);
 
-                Projectile.NewProjectile(
-                Projectile.GetSource_FromThis(),
-                GunTipPosition,
-                shootDirection * projSpeed * 0.3f,
-                ProjectileType<HiveNuke>(),
-                damage * 10,
-                knockback,
-                Projectile.owner,
-                rocketType);
+                if (Main.myPlayer == Projectile.owner)
+                    Projectile.NewProjectile(Projectile.GetSource_FromThis(), GunTipPosition, shootDirection * projSpeed * 0.3f, ProjectileType<HiveNuke>(), damage * 10, knockback, Projectile.owner, rocketType);
+                
                 PostFireCooldown = 75;
             }
             else
@@ -156,21 +150,25 @@ namespace CalamityMod.Projectiles.Ranged
                 SoundStyle fire = new("CalamityMod/Sounds/Custom/PlagueSounds/PBGBarrageLaunch");
                 SoundEngine.PlaySound(fire with { Volume = 0.4f, Pitch = 0.7f }, Projectile.Center);
 
-                int numProj = 4;
-                float rotation = MathHelper.ToRadians(MathHelper.Clamp(35 - VelocityMultiplier * 26, 2, 25));
-                for (int i = 0; i < numProj; i++)
+                if (Main.myPlayer == Projectile.owner)
                 {
-                    Vector2 perturbedSpeed = (shootDirection).RotatedBy(MathHelper.Lerp(-rotation, rotation, i / (float)(numProj - 1)));
-                    Projectile.NewProjectile(
-                    Projectile.GetSource_FromThis(),
-                    GunTipPosition,
-                    perturbedSpeed * projSpeed * VelocityMultiplier,
-                    ProjectileType<HiveMissile>(),
-                    damage,
-                    knockback,
-                    Projectile.owner,
-                    rocketType);
+                    int numProj = 4;
+                    float rotation = MathHelper.ToRadians(MathHelper.Clamp(35 - VelocityMultiplier * 26, 2, 25));
+                    for (int i = 0; i < numProj; i++)
+                    {
+                        Vector2 perturbedSpeed = (shootDirection).RotatedBy(MathHelper.Lerp(-rotation, rotation, i / (float)(numProj - 1)));
+                        Projectile.NewProjectile(
+                        Projectile.GetSource_FromThis(),
+                        GunTipPosition,
+                        perturbedSpeed * projSpeed * VelocityMultiplier,
+                        ProjectileType<HiveMissile>(),
+                        damage,
+                        knockback,
+                        Projectile.owner,
+                        rocketType);
+                    }
                 }
+                
                 PostFireCooldown = 30;
             }
 
@@ -219,7 +217,7 @@ namespace CalamityMod.Projectiles.Ranged
                 Particle smoke = new HeavySmokeParticle(GunTipPosition, smokeVel, StaticEffectsColor, Main.rand.Next(40, 60 + 1), Main.rand.NextFloat(0.3f, 0.6f), 0.5f, Main.rand.NextFloat(-0.2f, 0.2f), Main.rand.NextBool(), required: true);
                 GeneralParticleHandler.SpawnParticle(smoke);
 
-                Dust dust = Dust.NewDustPerfect(GunTipPosition, 303, smokeVel.RotatedByRandom(0.1f), 80, default, Main.rand.NextFloat(0.4f, 1.3f));
+                Dust dust = Dust.NewDustPerfect(GunTipPosition, DustID.SteampunkSteam, smokeVel.RotatedByRandom(0.1f), 80, default, Main.rand.NextFloat(0.4f, 1.3f));
                 dust.noGravity = false;
                 dust.color = StaticEffectsColor;
             }

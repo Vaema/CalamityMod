@@ -2,7 +2,6 @@
 using CalamityMod.Buffs.Summon;
 using CalamityMod.CalPlayer;
 using Microsoft.Xna.Framework;
-using rail;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
@@ -88,7 +87,7 @@ namespace CalamityMod.Projectiles.Summon
                 {
                     float angle = MathHelper.TwoPi / dustAmt * d;
                     Vector2 dustVelocity = angle.ToRotationVector2() * 20f;
-                    Dust spawnDust = Dust.NewDustPerfect(Owner.Center - Vector2.UnitY * 60f, 20, dustVelocity);
+                    Dust spawnDust = Dust.NewDustPerfect(Owner.Center - Vector2.UnitY * 60f, DustID.PurificationPowder, dustVelocity);
                     spawnDust.noGravity = true;
                 }
                 CheckForSpawning = true;
@@ -107,7 +106,7 @@ namespace CalamityMod.Projectiles.Summon
                     {
                         float angle = MathHelper.TwoPi / dustAmt * d;
                         Vector2 dustVelocity = angle.ToRotationVector2() * 20f;
-                        Dust spawnDust = Dust.NewDustPerfect(Projectile.Center, 20, dustVelocity);
+                        Dust spawnDust = Dust.NewDustPerfect(Projectile.Center, DustID.PurificationPowder, dustVelocity);
                         spawnDust.noGravity = true;
                     }
 
@@ -119,8 +118,6 @@ namespace CalamityMod.Projectiles.Summon
         }
 
         public override Color? GetAlpha(Color lightColor) => new Color(200, 200, 200, 200);
-
-        public override bool? CanDamage() => false;
 
         #endregion
     }

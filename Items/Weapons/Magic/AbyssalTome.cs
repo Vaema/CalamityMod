@@ -1,6 +1,5 @@
 ﻿using CalamityMod.NPCs.SlimeGod;
 using CalamityMod.Projectiles.Magic;
-using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
 
@@ -9,6 +8,10 @@ namespace CalamityMod.Items.Weapons.Magic
     public class AbyssalTome : ModItem, ILocalizedModType
     {
         public new string LocalizationCategory => "Items.Weapons.Magic";
+        public override void SetStaticDefaults()
+        {
+            ItemID.Sets.ShimmerTransformToItem[Type] = ModContent.ItemType<EldritchTome>();
+        }
         public override void SetDefaults()
         {
             Item.width = 28;

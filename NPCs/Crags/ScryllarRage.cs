@@ -2,7 +2,6 @@
 using CalamityMod.Dusts;
 using CalamityMod.Items.Placeables.Banners;
 using Terraria;
-using Terraria.GameContent.Bestiary;
 using Terraria.ID;
 using Terraria.ModLoader;
 
@@ -23,10 +22,10 @@ namespace CalamityMod.NPCs.Crags
             NPC.width = 80;
             NPC.height = 80;
             NPC.defense = 10;
-            NPC.lifeMax = 75;
+            NPC.lifeMax = 100;
             NPC.alpha = 100;
             NPC.knockBackResist = 0.9f;
-            NPC.value = Item.buyPrice(0, 0, 5, 0);
+            NPC.value = Item.buyPrice(silver: 5);
             NPC.HitSound = SoundID.NPCHit49;
             NPC.DeathSound = SoundID.NPCDeath51;
             NPC.noGravity = true;
@@ -43,10 +42,6 @@ namespace CalamityMod.NPCs.Crags
             NPC.Calamity().VulnerableToHeat = false;
             NPC.Calamity().VulnerableToCold = true;
             NPC.Calamity().VulnerableToWater = true;
-
-            // Scale stats in Expert and Master
-            CalamityGlobalNPC.AdjustExpertModeStatScaling(NPC);
-            CalamityGlobalNPC.AdjustMasterModeStatScaling(NPC);
         }
 
         public override void AI()

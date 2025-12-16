@@ -1,4 +1,7 @@
-﻿using CalamityMod.Particles;
+﻿using System;
+using CalamityMod.Dusts;
+using CalamityMod.Items.Weapons.Ranged;
+using CalamityMod.Particles;
 using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.Audio;
@@ -26,7 +29,6 @@ namespace CalamityMod.Projectiles.Ranged
             Projectile.penetrate = 1;
             Projectile.timeLeft = 1200;
             Projectile.DamageType = DamageClass.Ranged;
-            Projectile.Calamity().pointBlankShotDuration = CalamityGlobalProjectile.DefaultPointBlankDuration;
             Projectile.extraUpdates = 24;
             Projectile.usesLocalNPCImmunity = true;
             Projectile.localNPCHitCooldown = -1;
@@ -36,18 +38,31 @@ namespace CalamityMod.Projectiles.Ranged
         {
             Time++;
             Projectile.rotation = Projectile.velocity.ToRotation() + MathHelper.PiOver2;
-            Dust dust = Dust.NewDustPerfect(Projectile.Center + Main.rand.NextVector2Circular(-3, 3), 107);
+            Dust dust = Dust.NewDustPerfect(Projectile.Center + Main.rand.NextVector2Circular(-3, 3), ModContent.DustType<SquashDust>());
             dust.noGravity = true;
-            dust.scale = 1.2f;
+            dust.scale = Main.rand.NextFloat(0.9f, 1.3f);
+            dust.color = ArcNovaDiffuser.mainColor;
+            dust.fadeIn = -0.4f;
             if (Time < 120)
             {
                 if (Main.rand.NextBool())
                 {
                     Vector2 trailPos = Projectile.Center + Main.rand.NextVector2Circular(10, 10);
-                    float trailScale = Main.rand.NextFloat(0.8f, 1.2f);
-                    Color trailColor = Main.rand.NextBool(3) ? Color.Chartreuse : Color.Lime;
-                    Particle Trail = new SparkParticle(trailPos, Projectile.velocity * 0.2f, false, 60, trailScale, trailColor);
+                    float trailScale = Main.rand.NextFloat(0.6f, 0.75f);
+                    Color trailColor = Main.rand.NextBool(3) ? Color.Chartreuse : ArcNovaDiffuser.mainColor;
+                    Particle Trail = new CustomSpark(trailPos, Projectile.velocity * 0.2f, "CalamityMod/Particles/BloomCircle", false, 50, trailScale, trailColor, new Vector2(0.2f, 1.4f), true, true, shrinkSpeed: 0.1f);
                     GeneralParticleHandler.SpawnParticle(Trail);
+                }
+                if (Time % 2 == 0)
+                {
+                    for (int i = -1; i <= 1; i += 2)
+                    {
+                        float sine = (float)Math.Sin(Projectile.timeLeft * 0.45f / MathHelper.Pi);
+                        Dust dust2 = Dust.NewDustPerfect(Projectile.Center + Projectile.velocity.SafeNormalize(Vector2.UnitX).RotatedBy(MathHelper.PiOver2) * sine * 28 * i, ModContent.DustType<SquashDust>(), Projectile.velocity * Main.rand.NextFloat(0.6f, 0.8f), 0, default, Main.rand.NextFloat(0.8f, 0.85f));
+                        dust2.noGravity = true;
+                        dust2.color = Main.rand.NextBool(3) ? Color.Lime : ArcNovaDiffuser.mainColor;
+                        dust2.fadeIn = -0.55f;
+                    }
                 }
             }
 
@@ -60,45 +75,43 @@ namespace CalamityMod.Projectiles.Ranged
         }
         public override Color? GetAlpha(Color lightColor)
         {
-            return new Color(50, 255, 50, Projectile.alpha);
+            return ArcNovaDiffuser.mainColor with { A = 0 };
         }
         public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
         {
-            target.AddBuff(BuffID.CursedInferno, 900);
+            
         }
         public override void OnKill(int timeLeft)
         {
             for (int i = 0; i <= 19; i++)
             {
-                Dust dust = Dust.NewDustPerfect(Projectile.Center, 107, new Vector2(0, -18).RotatedByRandom(MathHelper.ToRadians(35f)) * Main.rand.NextFloat(0.1f, 1.9f));
+                Dust dust = Dust.NewDustPerfect(Projectile.Center, ModContent.DustType<SquashDust>(), new Vector2(0, -18).RotatedByRandom(MathHelper.ToRadians(35f)) * Main.rand.NextFloat(0.1f, 1.9f));
                 dust.noGravity = false;
-                dust.scale = Main.rand.NextFloat(0.8f, 1.5f);
-                Dust dust2 = Dust.NewDustPerfect(Projectile.Center, 107, new Vector2(0, -7).RotatedByRandom(MathHelper.ToRadians(35f)) * Main.rand.NextFloat(0.1f, 1.9f));
+                dust.scale = Main.rand.NextFloat(0.8f, 2.3f);
+                dust.color = ArcNovaDiffuser.mainColor;
+                Dust dust2 = Dust.NewDustPerfect(Projectile.Center, ModContent.DustType<SquashDust>(), new Vector2(0, -7).RotatedByRandom(MathHelper.ToRadians(35f)) * Main.rand.NextFloat(0.1f, 1.9f));
                 dust2.noGravity = false;
-                dust2.scale = Main.rand.NextFloat(0.8f, 1.5f);
+                dust2.scale = Main.rand.NextFloat(0.8f, 2.3f);  
+                dust2.color = Color.Lime;
             }
-            SoundEngine.PlaySound(ChargeImpact, Projectile.position);
-            Particle pulse = new DirectionalPulseRing(Projectile.Center, Vector2.Zero, Color.Lime, new Vector2(2f, 2f), Main.rand.NextFloat(12f, 25f), 0.1f, 0.6f, 20);
+            SoundEngine.PlaySound(ChargeImpact, Projectile.Center);
+            Particle pulse = new CustomPulse(Projectile.Center, Vector2.Zero, ArcNovaDiffuser.mainColor, "CalamityMod/Particles/BloomRing", new Vector2(1f, 1f), 0, 0.2f, 1.3f, 16);
             GeneralParticleHandler.SpawnParticle(pulse);
-            Particle pulse2 = new DirectionalPulseRing(Projectile.Center, Vector2.Zero, Color.Chartreuse, new Vector2(2f, 2f), Main.rand.NextFloat(12f, 25f), 0.1f, 0.5f, 16);
+            Particle pulse2 = new CustomPulse(Projectile.Center, Vector2.Zero, Color.Lime, "CalamityMod/Particles/BloomCircle", new Vector2(1f, 1f), 0, 0.8f, 0.1f, 20);
             GeneralParticleHandler.SpawnParticle(pulse2);
-
-            for (int i = 0; i < 25; ++i)
+            for (int i = 0; i < 2; i++)
             {
-                int bloodLifetime = Main.rand.Next(22, 36);
-                float bloodScale = Main.rand.NextFloat(0.6f, 0.8f);
-                Color bloodColor = Color.Lerp(Color.Lime, Color.Chartreuse, Main.rand.NextFloat());
-                bloodColor = Color.Lerp(bloodColor, new Color(51, 22, 94), Main.rand.NextFloat(0.65f));
-
-                if (Main.rand.NextBool(20))
-                    bloodScale *= 2f;
-
-                float randomSpeedMultiplier = Main.rand.NextFloat(1.25f, 2.25f);
-                Vector2 bloodVelocity = Main.rand.NextVector2Unit() * 5 * randomSpeedMultiplier;
-                bloodVelocity.Y -= 5f;
-                BloodParticle blood = new BloodParticle(Projectile.Center, bloodVelocity, bloodLifetime, bloodScale, bloodColor);
-                GeneralParticleHandler.SpawnParticle(blood);
+                Particle spark2 = new CustomSpark(Projectile.Center, Vector2.Zero, "CalamityMod/Particles/BloomCircle", false, 16, 0.95f, ArcNovaDiffuser.mainColor, new Vector2(1f, 1f), true, true, glowOpacity: 0.9f);
+                GeneralParticleHandler.SpawnParticle(spark2);
             }
+
+        }
+        public override void ModifyHitNPC(NPC target, ref NPC.HitModifiers modifiers)
+        {
+            modifiers.SetCrit();
+            Player Owner = Main.player[Projectile.owner];
+            float critDamage = Math.Min(Owner.GetTotalCritChance(Projectile.DamageType) * 0.01f, 1f);
+            modifiers.SourceDamage *= 1 + critDamage;
         }
         public override bool? CanDamage() => base.CanDamage();
     }

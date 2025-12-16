@@ -1,19 +1,18 @@
-﻿using CalamityMod.BiomeManagers;
+﻿using System;
+using System.Collections.Generic;
+using System.IO;
 using CalamityMod.Enums;
 using CalamityMod.Items.Placeables.Banners;
 using CalamityMod.Items.Placeables.SunkenSea;
+using CalamityMod.Pathfinding;
 using CalamityMod.Projectiles.Enemy;
-using CalamityMod.Tiles.SunkenSea.Ambient;
+using CalamityMod.Tiles.SunkenSea;
 using CalamityMod.World;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using ReLogic.Content;
-using System;
-using System.Collections.Generic;
-using System.IO;
 using Terraria;
 using Terraria.Audio;
-using Terraria.DataStructures;
 using Terraria.GameContent.Bestiary;
 using Terraria.GameContent.ItemDropRules;
 using Terraria.ID;
@@ -65,11 +64,10 @@ namespace CalamityMod.NPCs.SunkenSea
             NPC.width = 88;
             NPC.height = 66;
             NPC.defense = 15;
-            NPC.DR_NERD(0.25f);
             NPC.lifeMax = 500;
             NPC.aiStyle = -1;
             AIType = -1;
-            NPC.value = Item.buyPrice(0, 0, 2, 0);
+            NPC.value = Item.buyPrice(silver: 2);
             NPC.HitSound = SoundID.NPCHit24;
             NPC.DeathSound = SoundID.NPCDeath27;
             NPC.knockBackResist = 0.15f;
@@ -80,10 +78,6 @@ namespace CalamityMod.NPCs.SunkenSea
             NPC.Calamity().VulnerableToSickness = true;
             NPC.Calamity().VulnerableToElectricity = true;
             NPC.Calamity().VulnerableToWater = false;
-
-            // Scale stats in Expert and Master
-            CalamityGlobalNPC.AdjustExpertModeStatScaling(NPC);
-            CalamityGlobalNPC.AdjustMasterModeStatScaling(NPC);
         }
 
         public override void SetBestiary(BestiaryDatabase database, BestiaryEntry bestiaryEntry)
@@ -107,10 +101,8 @@ namespace CalamityMod.NPCs.SunkenSea
         {
             if (pathfinding == null)
             {
-                pathfinding = new PathfindingManager(NPC)
-                {
-                    MaxSpeed = 1.8f
-                };
+                pathfinding = new PathfindingManager(this);
+                MaxSpeed = 1.8f;
             }
 
             NPC.spriteDirection = NPC.direction = MathF.Sign(NPC.velocity.X);
@@ -123,7 +115,7 @@ namespace CalamityMod.NPCs.SunkenSea
 
             // TODO
             // Change this to kelp when it's added
-            int tileType = ModContent.TileType<DepthVines>();
+            int tileType = ModContent.TileType<SunkenKelp>();
 
             // Assure the kelp still exists, if it's gone, clear the tile
             if ((TileX != 0 || TileY != 0) && t.TileType != tileType)
@@ -158,7 +150,7 @@ namespace CalamityMod.NPCs.SunkenSea
                         // Go to the vine if not far enough
                         if (tilePos.Value.Distance(NPC.Center) > 40 && BiteCount == 0)
                         {
-                            pathfinding.DoPathfinding(new(NPC.Center, tilePos.Value, SunkenSeaTileValidity));
+                            pathfinding.DoPathfinding(new(this, NPC.Center, tilePos.Value, SunkenSeaTileValidity));
                         }
                         // Slow down and eat the kelp
                         else
@@ -193,7 +185,7 @@ namespace CalamityMod.NPCs.SunkenSea
                     TileX = 0;
                     TileY = 0;
                     BiteCount = 0;
-                    pathfinding.DoPathfinding(new(NPC.Center, NPC.Center + Main.rand.NextVector2Unit() * Main.rand.NextFloat(200f, 800f), SunkenSeaTileValidity));
+                    pathfinding.DoPathfinding(new(this, NPC.Center, NPC.Center + Main.rand.NextVector2Unit() * Main.rand.NextFloat(200f, 800f), SunkenSeaTileValidity));
                 }
             }
             else
@@ -258,19 +250,12 @@ namespace CalamityMod.NPCs.SunkenSea
             }
             if (NPC.life <= 0)
             {
-                if (!Main.dedServ)
-                {
-                    Gore.NewGore(NPC.GetSource_Death(), NPC.position, NPC.velocity, Mod.Find<ModGore>("PrismTurtleGore1").Type, 1f);
-                    Gore.NewGore(NPC.GetSource_Death(), NPC.position, NPC.velocity, Mod.Find<ModGore>("PrismTurtleGore2").Type, 1f);
-                    Gore.NewGore(NPC.GetSource_Death(), NPC.position, NPC.velocity, Mod.Find<ModGore>("PrismTurtleGore3").Type, 1f);
-                    Gore.NewGore(NPC.GetSource_Death(), NPC.position, NPC.velocity, Mod.Find<ModGore>("PrismTurtleGore4").Type, 1f);
-                    Gore.NewGore(NPC.GetSource_Death(), NPC.position, NPC.velocity, Mod.Find<ModGore>("PrismTurtleGore5").Type, 1f);
-                }
                 for (int k = 0; k < 25; k++)
                 {
                     Dust.NewDust(NPC.position, NPC.width, NPC.height, DustID.BlueCrystalShard, hit.HitDirection, -1f, 0, default, 1f);
                 }
             }
+            CalamityUtils.SpawnGores(NPC, "Prismback", 3);
         }
 
         /*public override void FindFrame(int frameHeight)

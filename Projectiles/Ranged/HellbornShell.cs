@@ -1,5 +1,6 @@
 ﻿using Microsoft.Xna.Framework;
 using Terraria;
+using Terraria.ID;
 using Terraria.ModLoader;
 
 namespace CalamityMod.Projectiles.Ranged
@@ -42,7 +43,7 @@ namespace CalamityMod.Projectiles.Ranged
 
                 if (Main.rand.NextBool(4))
                 {
-                    Dust dust = Dust.NewDustPerfect(Projectile.Center - Projectile.velocity, 303, -Projectile.velocity.RotatedByRandom(0.1f) * Main.rand.NextFloat(0.2f, 1f), 180, default, Main.rand.NextFloat(0.4f, 1.3f));
+                    Dust dust = Dust.NewDustPerfect(Projectile.Center - Projectile.velocity, DustID.SteampunkSteam, -Projectile.velocity.RotatedByRandom(0.1f) * Main.rand.NextFloat(0.2f, 1f), 180, default, Main.rand.NextFloat(0.4f, 1.3f));
                     dust.noGravity = false;
                     dust.color = Color.White;
                 }

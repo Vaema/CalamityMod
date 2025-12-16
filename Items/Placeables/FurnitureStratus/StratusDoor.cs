@@ -1,6 +1,5 @@
 ﻿using CalamityMod.Tiles.FurnitureStratus;
 using Terraria;
-using Terraria.ID;
 using Terraria.ModLoader;
 namespace CalamityMod.Items.Placeables.FurnitureStratus
 {
@@ -17,7 +16,7 @@ namespace CalamityMod.Items.Placeables.FurnitureStratus
         {
             CreateRecipe().
                 AddIngredient<StratusBricks>(6).
-                AddTile(TileID.WorkBenches).
+                AddTile<Tiles.Furniture.CraftingStations.VoidCondenser>().
                 Register();
         }
     }

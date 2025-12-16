@@ -1,17 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using CalamityMod.Enums;
 using CalamityMod.Items.Accessories.Vanity;
 using CalamityMod.Items.Tools;
 using CalamityMod.Items.VanillaArmorChanges;
 using CalamityMod.Items.Weapons.Melee;
 using CalamityMod.Tiles.Abyss;
-using CalamityMod.Tiles.Astral;
-using CalamityMod.Tiles.DraedonStructures;
-using CalamityMod.Tiles.DraedonSummoner;
-using CalamityMod.Tiles.Furniture.CraftingStations;
 using CalamityMod.Tiles.SunkenSea;
+using CalamityMod.Tiles.SunkenSea.Ambient;
 using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.DataStructures;
@@ -32,7 +27,13 @@ namespace CalamityMod.Tiles
             TileType<PyreMantle>(),
             TileType<Navystone>(),
             TileType<Shellstone>(),
+            TileType<EutrophicSand>(),
+            TileType<PolypSand>(),
+            TileType<VolcanicSand>(),
+            TileType<HardenedEutrophicSand>(),
+            TileType<Dunesand>(),
             TileType<Limestone>(),
+            TileType<LimestoneCobble>(),
             TileType<Voidstone>()
         };
 
@@ -51,7 +52,7 @@ namespace CalamityMod.Tiles
             // All trees have a 33% chance to drop extra fruit when using Feller of Evergreens
             Vector2 worldPosition = new Vector2(x, y).ToWorldCoordinates();
             Player nearestPlayer = Main.player[Player.FindClosest(worldPosition, 16, 16)];
-            if (nearestPlayer.active && nearestPlayer.ActiveItem().type == ItemType<FellerofEvergreens>() && WorldGen.genRand.NextBool(3))
+            if (nearestPlayer.active && nearestPlayer.HeldItem.type == ItemType<FellerofEvergreens>() && WorldGen.genRand.NextBool(3))
             {
                 int treeDropItemType = 0;
                 switch (treeType)
@@ -167,7 +168,7 @@ namespace CalamityMod.Tiles
                     return;
 
                 Tile t = Main.tile[xPos, yPos];
-                if (t.HasTile && (t.TileType == TileType<LumenylCrystals>() || t.TileType == TileType<SeaPrismCrystals>()))
+                if (t.HasTile && (t.TileType == TileType<LumenylCrystals>() || t.TileType == TileType<SeaPrismCrystals>() || t.TileType == TileType<SmallCorals>()))
                 {
                     WorldGen.KillTile(xPos, yPos, false, false, false);
                     if (!Main.tile[xPos, yPos].HasTile && Main.netMode != NetmodeID.SinglePlayer)
@@ -176,7 +177,7 @@ namespace CalamityMod.Tiles
             }
 
             // Check if crystals should be shattered, do not shatter crystals next to other crystals if a crystal is shattered.
-            if (Main.tileSolid[tile.TileType] && tile.TileType != TileType<LumenylCrystals>() && tile.TileType != TileType<SeaPrismCrystals>())
+            if (Main.tileSolid[tile.TileType] && tile.TileType != TileType<LumenylCrystals>() && tile.TileType != TileType<SeaPrismCrystals>() && tile.TileType != TileType<SmallCorals>())
             {
                 bool dontShatter = fail || effectOnly;
                 CheckShatterCrystal(i + 1, j, dontShatter);
@@ -305,7 +306,7 @@ namespace CalamityMod.Tiles
 
                 // Drop Evil Smasher on every 12 alter smashed
                 if (WorldGen.altarCount > 1 && WorldGen.altarCount % 12 == 0)
-                    DropItem(i, j, ItemType<EvilSmasher>(), quantity: 1, asStack: true);
+                    DropItem(i, j, ItemType<EvilSmasher>(), quantity: 1, asStack: true, prefix: true);
             }
 
             // Drop Golden Bombs at a 0.33% chance from Pots
@@ -356,7 +357,7 @@ namespace CalamityMod.Tiles
             }
         }
 
-        private static void DropItem(int i, int j, int itemType, int quantity, bool asStack, Vector2 spreadMinMax = default)
+        private static void DropItem(int i, int j, int itemType, int quantity, bool asStack, Vector2 spreadMinMax = default, bool prefix = false)
         {
             // Multiplayer Client should not spawn item themselves
             if (Main.netMode == NetmodeID.MultiplayerClient)
@@ -366,14 +367,14 @@ namespace CalamityMod.Tiles
             if (asStack)
             {
                 Vector2 spawnOffset = Main.rand.NextVector2Unit(spreadMinMax.X, spreadMinMax.Y);
-                Item.NewItem(new EntitySource_TileBreak(i, j), worldPos + spawnOffset, itemType, Stack: quantity);
+                Item.NewItem(new EntitySource_TileBreak(i, j), worldPos + spawnOffset, itemType, Stack: quantity, prefixGiven: prefix ? -1 : 0);
             }
             else
             {
                 for (int k = 0; k < quantity; k += 1)
                 {
                     Vector2 spawnOffset = Main.rand.NextVector2Unit(spreadMinMax.X, spreadMinMax.Y);
-                    Item.NewItem(new EntitySource_TileBreak(i, j), worldPos + spawnOffset, itemType, Stack: 1);
+                    Item.NewItem(new EntitySource_TileBreak(i, j), worldPos + spawnOffset, itemType, Stack: 1, prefixGiven: prefix ? -1 : 0);
                 }
             }
         }

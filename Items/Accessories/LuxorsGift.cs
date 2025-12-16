@@ -1,14 +1,7 @@
-﻿using System;
-using CalamityMod.CalPlayer;
-using CalamityMod.Cooldowns;
-using CalamityMod.NPCs;
-using CalamityMod.NPCs.NormalNPCs;
+﻿using CalamityMod.CalPlayer;
 using CalamityMod.Projectiles.Typeless;
 using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Graphics;
 using Terraria;
-using Terraria.DataStructures;
-using Terraria.GameContent;
 using Terraria.ID;
 using Terraria.ModLoader;
 using static Terraria.ModLoader.ModContent;

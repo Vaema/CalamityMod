@@ -60,7 +60,7 @@ namespace CalamityMod.Projectiles.Typeless
                     else
                         puffDustVelocity = puffDustVelocity.RotatedBy(generalAngularOffset);
 
-                    Dust magic = Dust.NewDustPerfect(target.Center, 182, puffDustVelocity);
+                    Dust magic = Dust.NewDustPerfect(target.Center, DustID.TheDestroyer, puffDustVelocity);
                     magic.scale = sideways ? 1.8f : 1f;
                     magic.fadeIn = 0.5f;
                     magic.noGravity = true;

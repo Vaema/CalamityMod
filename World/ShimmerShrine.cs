@@ -4,7 +4,6 @@ using CalamityMod.Schematics;
 using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.ID;
-using Terraria.ModLoader;
 using Terraria.WorldBuilding;
 using static CalamityMod.Schematics.SchematicManager;
 

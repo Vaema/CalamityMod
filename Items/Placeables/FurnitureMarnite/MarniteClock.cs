@@ -1,6 +1,4 @@
-﻿using CalamityMod.Tiles.Furniture.CraftingStations;
-using CalamityMod.Tiles.FurnitureMarnite;
-using Terraria;
+﻿using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
 namespace CalamityMod.Items.Placeables.FurnitureMarnite
@@ -20,7 +18,7 @@ namespace CalamityMod.Items.Placeables.FurnitureMarnite
                 AddIngredient<PolishedMarniteBlock>(4).
                 AddRecipeGroup("IronBar", 3).
                 AddIngredient(ItemID.Glass, 6).
-                AddTile(TileID.WorkBenches).
+                AddTile(TileID.Sawmill).
                 Register();
         }
     }

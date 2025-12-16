@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Numerics;
 using CalamityMod.Items.Critters;
 using CalamityMod.Items.Placeables.Banners;
 using CalamityMod.Projectiles.Summon;
@@ -39,6 +38,7 @@ namespace CalamityMod.NPCs.NormalNPCs
             NPC.knockBackResist = 0.5f;
             NPC.HitSound = SoundID.NPCHit1;
             NPC.DeathSound = SoundID.NPCDeath1;
+            DrawOffsetY = -2;
             Banner = NPC.type;
             BannerItem = ModContent.ItemType<ShroombleBanner>();
             NPC.catchItem = (short)ModContent.ItemType<ShroombleItem>();
@@ -165,7 +165,7 @@ namespace CalamityMod.NPCs.NormalNPCs
             {
                 for (int k = 0; k < 15; k++)
                 {
-                     Dust.NewDust(NPC.position, NPC.width, NPC.height, DustID.Pixie, hit.HitDirection * 0.5f, -0.5f, 0, default, 0.5f);
+                    Dust.NewDust(NPC.position, NPC.width, NPC.height, DustID.Pixie, hit.HitDirection * 0.5f, -0.5f, 0, default, 0.5f);
                 }
                 if (!Main.dedServ)
                 {

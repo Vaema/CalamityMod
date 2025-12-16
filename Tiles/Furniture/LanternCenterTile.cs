@@ -3,11 +3,9 @@ using Microsoft.Xna.Framework;
 using System;
 using Terraria;
 using Terraria.Audio;
-using Terraria.DataStructures;
 using Terraria.GameContent.Events;
 using Terraria.GameContent.ObjectInteractions;
 using Terraria.ID;
-using Terraria.Localization;
 using Terraria.ModLoader;
 using Terraria.ObjectData;
 
@@ -53,11 +51,6 @@ namespace CalamityMod.Tiles.Furniture
                 }
                 frame = Math.Clamp(frame, 1, 6);
             }
-        }
-
-        public override void KillMultiTile(int i, int j, int frameX, int frameY)
-        {
-            LanternNight.ManualLanterns = false;
         }
 
         public override void HitWire(int i, int j)

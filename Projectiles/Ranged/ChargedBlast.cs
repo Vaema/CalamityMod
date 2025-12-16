@@ -1,5 +1,4 @@
-﻿using System;
-using CalamityMod.Particles;
+﻿using CalamityMod.Particles;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria;
@@ -30,7 +29,6 @@ namespace CalamityMod.Projectiles.Ranged
             Projectile.penetrate = 1;
             Projectile.extraUpdates = 6;
             Projectile.timeLeft = 360;
-            Projectile.Calamity().pointBlankShotDuration = CalamityGlobalProjectile.DefaultPointBlankDuration;
         }
 
         public override void AI()
@@ -57,7 +55,7 @@ namespace CalamityMod.Projectiles.Ranged
                 if (Svant)
                     Projectile.ArmorPenetration = 200;
                 if (Infinity)
-                    Projectile.ArmorPenetration = 25;
+                    Projectile.ArmorPenetration = 20;
             }
             Projectile.rotation = Projectile.velocity.ToRotation() + MathHelper.PiOver2;
             if (Projectile.timeLeft == 2)
@@ -73,10 +71,9 @@ namespace CalamityMod.Projectiles.Ranged
             if (!outOfTime)
             {
                 SoundEngine.PlaySound(SoundID.Item62, Projectile.Center);
-                int projectiles = 2;
                 if (Projectile.owner == Main.myPlayer)
                 {
-                    for (int k = 0; k < projectiles; k++)
+                    for (int k = 0; k < 2; k++)
                         Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center, -baseVel.RotatedByRandom(0.9f) * Main.rand.NextFloat(0.6f, 0.7f), ModContent.ProjectileType<ChargedBlastSplit>(), (int)(Projectile.damage * (Projectile.ai[2] > 0 ? 0.3f : 0.5f)), Projectile.knockBack * 0.8f, Main.myPlayer, 0, 0, Projectile.ai[2]);
                 }
                 for (int k = 0; k < 3; k++)

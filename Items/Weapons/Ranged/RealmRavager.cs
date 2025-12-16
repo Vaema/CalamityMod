@@ -1,4 +1,5 @@
-﻿using CalamityMod.Projectiles.Ranged;
+﻿using CalamityMod.Items.Weapons.Magic;
+using CalamityMod.Projectiles.Ranged;
 using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.DataStructures;
@@ -10,6 +11,10 @@ namespace CalamityMod.Items.Weapons.Ranged
     public class RealmRavager : ModItem, ILocalizedModType
     {
         public new string LocalizationCategory => "Items.Weapons.Ranged";
+        public override void SetStaticDefaults()
+        {
+            ItemID.Sets.ShimmerTransformToItem[Type] = ModContent.ItemType<Hematemesis>();
+        }
         public override void SetDefaults()
         {
             Item.width = 76;
@@ -28,7 +33,6 @@ namespace CalamityMod.Items.Weapons.Ranged
             Item.shootSpeed = 30f;
             Item.shoot = ModContent.ProjectileType<RealmRavagerBullet>();
             Item.useAmmo = AmmoID.Bullet;
-            Item.Calamity().canFirePointBlankShots = true;
         }
 
         public override Vector2? HoldoutOffset() => new Vector2(-10, 0);

@@ -1,8 +1,5 @@
-﻿using CalamityMod.Buffs.DamageOverTime;
-using CalamityMod.NPCs;
-using CalamityMod.NPCs.Providence;
+﻿using CalamityMod.NPCs.Providence;
 using CalamityMod.Particles;
-using CalamityMod.World;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria;
@@ -36,7 +33,7 @@ namespace CalamityMod.Projectiles.Boss
 
         public override void AI()
         {
-            ProvUtils.ApplyGFBDamage(Projectile, 80, 20);
+            ProvUtils.ApplyGFBDamage(Projectile, 120, 10);
 
             Lighting.AddLight(Projectile.Center, 0.3f, 0.225f, 0f);
 
@@ -93,12 +90,12 @@ namespace CalamityMod.Projectiles.Boss
                 if (Projectile.owner == Main.myPlayer)
                 {
                     Vector2 velocity = new Vector2(0.01f, 0f);
-                    if (CalamityWorld.LegendaryMode)
+                    if (Main.getGoodWorld)
                         velocity *= Main.rand.NextFloat(1f, 2f);
 
                     Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center, velocity, ModContent.ProjectileType<HolyFire2>(), Projectile.damage, Projectile.knockBack, Projectile.owner, 1f);
 
-                    if (CalamityWorld.LegendaryMode)
+                    if (Main.getGoodWorld)
                         velocity *= Main.rand.NextFloat(1f, 2f);
 
                     Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center, -velocity, ModContent.ProjectileType<HolyFire2>(), Projectile.damage, Projectile.knockBack, Projectile.owner, 1f);
@@ -109,12 +106,12 @@ namespace CalamityMod.Projectiles.Boss
                 if (Projectile.owner == Main.myPlayer)
                 {
                     Vector2 velocity = new Vector2(0.05f, 0f);
-                    if (CalamityWorld.LegendaryMode)
+                    if (Main.getGoodWorld)
                         velocity *= Main.rand.NextFloat(1f, 2f);
 
                     Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center, velocity, ModContent.ProjectileType<HolyFire2>(), Projectile.damage, Projectile.knockBack, Projectile.owner, 1f);
 
-                    if (CalamityWorld.LegendaryMode)
+                    if (Main.getGoodWorld)
                         velocity *= Main.rand.NextFloat(1f, 2f);
 
                     Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center, -velocity, ModContent.ProjectileType<HolyFire2>(), Projectile.damage, Projectile.knockBack, Projectile.owner, 1f);
@@ -131,7 +128,7 @@ namespace CalamityMod.Projectiles.Boss
             if (info.Damage <= 0 || target.creativeGodMode)
                 return;
 
-            ProvUtils.ApplyDebuffs(target, 80);
+            ProvUtils.ApplyDebuffs(target, 120);
         }
     }
 }

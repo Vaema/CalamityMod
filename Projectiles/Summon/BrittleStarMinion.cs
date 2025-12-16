@@ -1,6 +1,4 @@
-﻿using System;
-using CalamityMod.Buffs.Summon;
-using CalamityMod.CalPlayer;
+﻿using CalamityMod.Buffs.Summon;
 using CalamityMod.Items.Weapons.Summon;
 using CalamityMod.Particles;
 using CalamityMod.Projectiles.BaseProjectiles;

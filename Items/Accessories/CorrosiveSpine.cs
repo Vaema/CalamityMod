@@ -1,6 +1,4 @@
 ﻿using CalamityMod.CalPlayer;
-using CalamityMod.Projectiles.Rogue;
-using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
@@ -16,7 +14,6 @@ namespace CalamityMod.Items.Accessories
             Item.height = 46;
             Item.value = CalamityGlobalItem.RarityPinkBuyPrice;
             Item.rare = ItemRarityID.Pink;
-            Item.defense = 4;
             Item.accessory = true;
         }
 
@@ -25,6 +22,8 @@ namespace CalamityMod.Items.Accessories
             CalamityPlayer modPlayer = player.Calamity();
             modPlayer.corrosiveSpine = true;
             player.moveSpeed += 0.05f;
+            modPlayer.WaterDebuffMultiplier += 0.25f;
+            modPlayer.SicknessDebuffMultiplier += 0.25f;
         }
     }
 }

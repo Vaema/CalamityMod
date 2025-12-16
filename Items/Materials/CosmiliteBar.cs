@@ -2,7 +2,6 @@
 using CalamityMod.Tiles;
 using Terraria;
 using Terraria.DataStructures;
-using Terraria.GameContent;
 using Terraria.ID;
 using Terraria.ModLoader;
 
@@ -22,7 +21,7 @@ namespace CalamityMod.Items.Materials
         public override void SetDefaults()
         {
             Item.DefaultToPlaceableTile(ModContent.TileType<CosmiliteBarTile>());
-            Item.value = Item.sellPrice(gold: 3);
+            Item.value = Item.sellPrice(gold: 2);
             Item.rare = ModContent.RarityType<CosmicPurple>();
         }
 

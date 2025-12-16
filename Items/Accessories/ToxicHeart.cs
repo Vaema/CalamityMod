@@ -1,11 +1,6 @@
-﻿using CalamityMod.Buffs.DamageOverTime;
-using CalamityMod.CalPlayer;
-using CalamityMod.Items.Potions.Alcohol;
-using CalamityMod.Projectiles.Typeless;
-using Microsoft.Xna.Framework;
+﻿using CalamityMod.CalPlayer;
 using Terraria;
 using Terraria.ID;
-using Terraria.Audio;
 using Terraria.ModLoader;
 
 namespace CalamityMod.Items.Accessories
@@ -21,6 +16,7 @@ namespace CalamityMod.Items.Accessories
             Item.value = CalamityGlobalItem.RarityYellowBuyPrice;
             Item.rare = ItemRarityID.Yellow;
             Item.accessory = true;
+            Item.expert = true;
         }
 
         public override void UpdateAccessory(Player player, bool hideVisual)
@@ -28,6 +24,7 @@ namespace CalamityMod.Items.Accessories
             CalamityPlayer modPlayer = player.Calamity();
             modPlayer.toxicHeart = true;
             modPlayer.toxicHeartVisuals = !hideVisual;
+            modPlayer.SicknessDebuffMultiplier += 0.5f;
         }
     }
 }

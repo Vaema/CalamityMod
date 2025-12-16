@@ -1,15 +1,9 @@
-﻿using System;
-using System.Reflection.Metadata;
-using CalamityMod.Dusts;
-using CalamityMod.Items.Weapons.Rogue;
-using CalamityMod.Particles;
+﻿using CalamityMod.Particles;
 using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.Audio;
 using Terraria.ID;
 using Terraria.ModLoader;
-using Terraria.Utilities;
-using static Humanizer.In;
 
 namespace CalamityMod.Projectiles.Rogue
 {
@@ -37,7 +31,7 @@ namespace CalamityMod.Projectiles.Rogue
             if (Projectile.timeLeft % 30 == 0)
                 SoundEngine.PlaySound(SoundID.DD2_SkyDragonsFurySwing with { Volume = 1.2f }, Projectile.position);
 
-            Dust dust2 = Dust.NewDustPerfect(Projectile.Center + Main.rand.NextVector2Circular(200f, 200f), 75);
+            Dust dust2 = Dust.NewDustPerfect(Projectile.Center + Main.rand.NextVector2Circular(200f, 200f), DustID.CursedTorch);
             dust2.scale = Main.rand.NextFloat(0.8f, 1.1f);
             dust2.noGravity = true;
 

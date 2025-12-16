@@ -1,12 +1,10 @@
 ﻿using CalamityMod.Events;
 using CalamityMod.Items.Materials;
 using CalamityMod.Items.Placeables.Abyss;
-using CalamityMod.Items.Placeables.SunkenSea;
+using CalamityMod.Items.Placeables.FurnitureDriftwood;
 using CalamityMod.NPCs.Leviathan;
-using CalamityMod.Projectiles.Typeless;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using Steamworks;
 using Terraria;
 using Terraria.Audio;
 using Terraria.ID;

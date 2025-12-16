@@ -15,7 +15,6 @@ namespace CalamityMod.Items.Accessories
         public new string LocalizationCategory => "Items.Accessories";
         public static readonly SoundStyle TriggerSound = new("CalamityMod/Sounds/Custom/MossMine");
         public static readonly SoundStyle ParrySound = new("CalamityMod/Sounds/Custom/BubbleCracklePop");
-        public static readonly SoundStyle ParrySoundGFB = new("CalamityMod/Sounds/Custom/GFB/OceanShieldParryGFB");
         public const int ParryTime = 30;
         // These damage values scale in Expert and Master.
         public const int ShoveFallBaseDamage = 80;
@@ -58,10 +57,8 @@ namespace CalamityMod.Items.Accessories
         }
 
         // GFB changes:
-        // Different sound when parrying.
         // Larger radius for pushing away enemies.
         // Enemies are pushed much faster.
-        // Damage is multiplied by 10.
         public static void ActivateParry(Player player)
         {
             bool empowered = player.Calamity().shieldOfTheOceanEmpoweredParry;
@@ -73,8 +70,8 @@ namespace CalamityMod.Items.Accessories
                     continue;
 
                 // Inflict Riptide on empowered parries.
-                //Doze - I gave all parry accessories long debuff infliction times due to the lack of weapons that inflict debuffs for a decent time, and the scarcity of using the parry
-                //Most common vanilla debuffs have a way to inflict them for 15, 20, or even 30 seconds
+                // Doze - I gave all parry accessories long debuff infliction times due to the lack of weapons that inflict debuffs for a decent time, and the scarcity of using the parry
+                // Most common vanilla debuffs have a way to inflict them for 15, 20, or even 30 seconds
                 if (empowered)
                     npc.AddBuff(ModContent.BuffType<RiptideDebuff>(), CalamityUtils.SecondsToFrames(15));
 
@@ -86,7 +83,7 @@ namespace CalamityMod.Items.Accessories
                     Vector2 shoveVelocity = Utils.DirectionTo(player.Center, npc.Center) * (Main.zenithWorld ? 35f : 12.5f) - Vector2.UnitY * 6f;
                     npc.MoveNPC(Vector2.Normalize(shoveVelocity), shoveVelocity.Length(), true);
 
-                    int scaledFallDamage = ShoveFallBaseDamage * (Main.masterMode ? 3 : Main.expertMode ? 2 : 1) * (Main.zenithWorld ? 10 : 1);
+                    int scaledFallDamage = CalamityUtils.ScaleWithDifficulty(ShoveFallBaseDamage);
                     if (empowered)
                         npc.FlungNPC().ApplyCollisionDamage(npc, player, scaledFallDamage, shoveVelocity * 0.5f, 5f, true);
                     else
@@ -103,7 +100,7 @@ namespace CalamityMod.Items.Accessories
                 {
                     if (empowered)
                     {
-                        int scaledImmuneDamage = ImmuneToShoveBaseDamage * (Main.masterMode ? 3 : Main.expertMode ? 2 : 1) * (Main.zenithWorld ? 10 : 1);
+                        int scaledImmuneDamage = CalamityUtils.ScaleWithDifficulty(ImmuneToShoveBaseDamage) * (Main.zenithWorld ? 10 : 1);
                         Projectile.NewProjectile(player.GetSource_FromThis(), npc.Center, Vector2.Zero, ModContent.ProjectileType<DirectStrike>(), scaledImmuneDamage, 0f, player.whoAmI, npc.whoAmI);
                     }
 

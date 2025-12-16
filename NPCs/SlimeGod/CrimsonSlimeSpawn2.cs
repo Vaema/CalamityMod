@@ -2,12 +2,10 @@
 using CalamityMod.Events;
 using CalamityMod.Projectiles.Boss;
 using CalamityMod.Projectiles.Enemy;
-using CalamityMod.World;
 using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.GameContent;
 using Terraria.GameContent.Bestiary;
-using Terraria.GameContent.ItemDropRules;
 using Terraria.ID;
 using Terraria.Localization;
 using Terraria.ModLoader;
@@ -26,17 +24,17 @@ namespace CalamityMod.NPCs.SlimeGod
             NPCID.Sets.BossBestiaryPriority.Add(Type);
         }
 
+        public static int SmallSpikeDamage = 11; // 44
+
         public override void SetDefaults()
         {
             NPC.aiStyle = NPCAIStyleID.Slime;
-            NPC.GetNPCDamage();
+            NPC.damage = 28; // 56
             NPC.width = 40;
             NPC.height = 30;
-            if (CalamityWorld.LegendaryMode)
-                NPC.scale = 2f;
 
             NPC.defense = 6;
-            NPC.lifeMax = BossRushEvent.BossRushActive ? 12000 : CalamityWorld.LegendaryMode ? 260 : 130;
+            NPC.lifeMax = BossRushEvent.BossRushActive ? 12000 : 130;
             NPC.knockBackResist = 0.7f;
             NPC.lavaImmune = false;
             NPC.noGravity = false;
@@ -101,7 +99,7 @@ namespace CalamityMod.NPCs.SlimeGod
                 spikeTimer -= 1f;
 
             int type = ModContent.ProjectileType<CrimsonSpike>();
-            int damage = NPC.GetProjectileDamage(type);
+            int damage = SmallSpikeDamage;
             if (Main.zenithWorld)
                 type = Main.rand.NextBool() ? ModContent.ProjectileType<IchorShot>() : ModContent.ProjectileType<BloodGeyser>();
 
@@ -172,14 +170,6 @@ namespace CalamityMod.NPCs.SlimeGod
             int closestPlayer = Player.FindClosest(NPC.Center, 1, 1);
             if (Main.rand.NextBool(8) && Main.player[closestPlayer].statLife < Main.player[closestPlayer].statLifeMax2)
                 Item.NewItem(NPC.GetSource_Loot(), (int)NPC.position.X, (int)NPC.position.Y, NPC.width, NPC.height, ItemID.Heart);
-        }
-
-        public override void ModifyNPCLoot(NPCLoot npcLoot) => npcLoot.Add(ItemDropRule.NormalvsExpert(ItemID.Blindfold, 100, 50));
-
-        public override void OnHitPlayer(Player target, Player.HurtInfo hurtInfo)
-        {
-            if (hurtInfo.Damage > 0)
-                target.AddBuff(BuffID.Darkness, 180);
         }
     }
 }

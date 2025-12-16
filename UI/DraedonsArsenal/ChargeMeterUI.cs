@@ -65,11 +65,11 @@ namespace CalamityMod.UI.DraedonsArsenal
                     changed = true;
                 }
                 if (changed)
-                    CalamityClientConfig.SaveConfig();
+                    CalamityClientConfig.Instance.SaveChanges();
             }
 
             // If the Charge Meter is turned off or the player is not holding an item, stop.
-            Item heldItem = player.ActiveItem();
+            Item heldItem = player.HeldItem;
             if (!CalamityClientConfig.Instance.ChargeMeter || heldItem is null || heldItem.IsAir)
             {
                 Reset();
@@ -132,7 +132,7 @@ namespace CalamityMod.UI.DraedonsArsenal
                 if (ms.LeftButton == ButtonState.Released)
                 {
                     dragOffset = null;
-                    CalamityClientConfig.SaveConfig();
+                    CalamityClientConfig.Instance.SaveChanges();
                 }
             }
         }

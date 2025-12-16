@@ -5,7 +5,6 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria;
 using Terraria.Audio;
-using Terraria.DataStructures;
 using Terraria.ID;
 using Terraria.ModLoader;
 
@@ -55,7 +54,6 @@ namespace CalamityMod.Items.Weapons.Ranged
             Item.useTurn = true;
             Item.rare = ModContent.RarityType<BurnishedAuric>();
             Item.value = CalamityGlobalItem.RarityVioletBuyPrice;
-            Item.Calamity().canFirePointBlankShots = true;
         }
 
         // Shoot via the projectile only

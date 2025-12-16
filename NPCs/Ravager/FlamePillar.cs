@@ -28,9 +28,12 @@ namespace CalamityMod.NPCs.Ravager
             }
         }
 
+        public static int FlameDamage = 30; // 120
+        public static int PostProviFlameBuff = 20; // +80 = 200
+
         public override void SetDefaults()
         {
-            NPC.GetNPCDamage();
+            NPC.damage = 75; // 150
             NPC.width = 40;
             NPC.height = 150;
             NPC.chaseable = false;
@@ -43,10 +46,6 @@ namespace CalamityMod.NPCs.Ravager
             NPC.DeathSound = SoundID.NPCDeath14;
             NPC.Calamity().VulnerableToSickness = false;
             NPC.Calamity().VulnerableToWater = true;
-
-            // Scale stats in Expert and Master
-            CalamityGlobalNPC.AdjustExpertModeStatScaling(NPC);
-            CalamityGlobalNPC.AdjustMasterModeStatScaling(NPC);
         }
 
         public override void FindFrame(int frameHeight)
@@ -125,9 +124,8 @@ namespace CalamityMod.NPCs.Ravager
                             }
                             Vector2 velocity = new Vector2(speedX, speedY);
                             int type = ModContent.ProjectileType<RavagerFlame>();
-                            int damage = NPC.GetProjectileDamage(type);
-                            Projectile.NewProjectile(NPC.GetSource_FromAI(), NPC.Center, velocity, type, damage + (provy ? 30 : 0), 0f, Main.myPlayer, 0f, 0f);
                             NPC.SimpleStrikeNPC(NPC.lifeMax/4,0,false,noPlayerInteraction:true);
+                            Projectile.NewProjectile(NPC.GetSource_FromAI(), NPC.Center, velocity, type, FlameDamage + (provy ? PostProviFlameBuff : 0), 0f, Main.myPlayer, 0f, 0f);
                         }
 
                         NPC.ai[2] += 1f;

@@ -1,5 +1,5 @@
-﻿using CalamityMod.Projectiles.Melee.Yoyos;
-using Terraria;
+﻿using CalamityMod.Items.Weapons.Ranged;
+using CalamityMod.Projectiles.Melee.Yoyos;
 using Terraria.Audio;
 using Terraria.ID;
 using Terraria.Localization;
@@ -22,6 +22,7 @@ namespace CalamityMod.Items.Weapons.Melee
             ItemID.Sets.Yoyo[Type] = true;
             ItemID.Sets.GamepadExtraRange[Type] = 15;
             ItemID.Sets.GamepadSmartQuickReach[Type] = true;
+            ItemID.Sets.ShimmerTransformToItem[Type] = ModContent.ItemType<StarSputter>();
         }
 
         public override void SetDefaults()

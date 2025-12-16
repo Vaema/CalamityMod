@@ -1,12 +1,9 @@
-﻿using CalamityMod.Items.Materials;
-using CalamityMod.Items.Placeables.Ores;
-using CalamityMod.Items.TreasureBags.MiscGrabBags;
+﻿using CalamityMod.Items.Placeables.Ores;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria;
 using Terraria.Graphics.Shaders;
 using Terraria.ID;
-using Terraria.ModLoader;
 using static Terraria.ModLoader.ModContent;
 
 namespace CalamityMod.Items.Dyes

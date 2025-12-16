@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using CalamityMod.CustomRecipes;
 using CalamityMod.Items.Materials;
 using CalamityMod.Projectiles.DraedonsArsenal;
-using CalamityMod.Projectiles.Ranged;
 using CalamityMod.Rarities;
 using CalamityMod.Tiles.Furniture.CraftingStations;
 using Microsoft.Xna.Framework;
@@ -29,7 +28,7 @@ namespace CalamityMod.Items.Weapons.DraedonsArsenal
 
             Item.width = 102;
             Item.height = 44;
-            Item.damage = 1675;
+            Item.damage = 1600;
             Item.knockBack = 4.5f;
             Item.useAnimation = Item.useTime = AnomalysNanogunHoldout.PlasmaFireTimer;
             Item.shootSpeed = 5f;

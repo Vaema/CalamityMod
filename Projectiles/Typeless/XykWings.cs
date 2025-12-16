@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using CalamityMod.CalPlayer;
 using CalamityMod.Dusts;
 using Microsoft.Xna.Framework;
@@ -264,11 +263,13 @@ namespace CalamityMod.Projectiles.Typeless
                 time++;
             }
         }
-        public override bool PreDraw(ref Color lightColor)
+        public override void PostDraw(Color lightColor)
         {
             if (!BreakApart)
                 lastDir = Owner.direction;
-
+        }
+        public override bool PreDraw(ref Color lightColor)
+        {
             float topWingNum = (checkActiveWings() - 1);
             float width = 1;
             float height = 1;

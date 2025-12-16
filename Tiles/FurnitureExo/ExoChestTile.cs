@@ -1,6 +1,7 @@
 ﻿using CalamityMod.Items.Placeables.FurnitureExo;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using ReLogic.Content;
 using Terraria;
 using Terraria.GameContent.ObjectInteractions;
 using Terraria.ID;
@@ -12,6 +13,8 @@ namespace CalamityMod.Tiles.FurnitureExo
 {
     public class ExoChestTile : ModTile
     {
+        public Asset<Texture2D> GlowTexture;
+
         public override void SetStaticDefaults()
         {
             this.SetUpChest(ModContent.ItemType<ExoChest>(), true, 2);
@@ -46,7 +49,10 @@ namespace CalamityMod.Tiles.FurnitureExo
                 return;
 
             int yOffset = TileObjectData.GetTileData(tile).DrawYOffset;
-            Texture2D glowmask = ModContent.Request<Texture2D>("CalamityMod/Tiles/FurnitureExo/ExoChestGlow").Value;
+
+            GlowTexture ??= ModContent.Request<Texture2D>("CalamityMod/Tiles/FurnitureExo/ExoChestGlow");
+            Texture2D glowmask = GlowTexture.Value;
+
             Color drawColour = Color.White;
             Vector2 drawPosition = new Vector2(i * 16 - Main.screenPosition.X, j * 16 - Main.screenPosition.Y + yOffset) + (Main.drawToScreen ? Vector2.Zero : new Vector2(Main.offScreenRange));
             Rectangle frame = new Rectangle(xPos, yPos + Main.chest[chestIndex].frame * 38, 18, 18);

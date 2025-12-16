@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using CalamityMod.Buffs.Summon;
 using CalamityMod.Projectiles.Summon;
 using CalamityMod.Rarities;
 using Microsoft.Xna.Framework;
@@ -43,8 +44,9 @@ namespace CalamityMod.Items.Weapons.Summon
             Item.damage = 110;
             Item.DamageType = DamageClass.Summon;
             Item.mana = 10;
-            Item.useAnimation = Item.useTime = 10;
+            Item.useAnimation = Item.useTime = 24;
             Item.knockBack = 0.25f;
+            Item.buffType = ModContent.BuffType<CalamarisLamentBuff>();
             Item.shoot = ModContent.ProjectileType<CalamarisLamentMinion>();
             Item.shootSpeed = 1f; // This does nothing, it's just here so it's able to act like a staff.
             
@@ -59,7 +61,9 @@ namespace CalamityMod.Items.Weapons.Summon
 
         public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)
         {
-            Projectile.NewProjectile(source, player.ClampedMouseWorld(), velocity, type, damage, knockback, player.whoAmI);
+            player.AddBuff(Item.buffType, 2);
+            var minion = Projectile.NewProjectileDirect(source, player.ClampedMouseWorld(), velocity, type, damage, knockback, player.whoAmI);
+            minion.originalDamage = Item.damage;
             return false;
         }
 

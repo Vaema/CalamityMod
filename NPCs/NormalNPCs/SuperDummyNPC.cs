@@ -11,6 +11,7 @@ namespace CalamityMod.NPCs.NormalNPCs
     public class SuperDummyNPC : ModNPC
     {
         public int deathCounter = 0;
+        public RevengeanceAndDeathAI.MimicAI ZenithSeedMimicAI;
 
         public override void SetStaticDefaults()
         {
@@ -28,10 +29,12 @@ namespace CalamityMod.NPCs.NormalNPCs
             NPC.lifeMax = 9999999;
             NPC.HitSound = null;
             NPC.DeathSound = SoundID.NPCDeath2;
-            NPC.value = 0f;
             NPC.knockBackResist = 0f;
             NPC.netAlways = true;
             NPC.aiStyle = NPCAIStyleID.FaceClosestPlayer;
+
+            ZenithSeedMimicAI = new RevengeanceAndDeathAI.MimicAI();
+            ZenithSeedMimicAI.NPC = NPC;
         }
 
         public override void SendExtraAI(BinaryWriter writer)
@@ -53,7 +56,7 @@ namespace CalamityMod.NPCs.NormalNPCs
                 if (deathCounter >= 6000)
                 {
                     NPC.damage = NPC.lifeMax;
-                    RevengeanceAndDeathAI.BuffedMimicAI(NPC, Mod);
+                    ZenithSeedMimicAI.AI(Mod);
                     return false;
                 }
             }
@@ -62,7 +65,8 @@ namespace CalamityMod.NPCs.NormalNPCs
 
         public override void UpdateLifeRegen(ref int damage)
         {
-            NPC.lifeRegen += 2000000;
+            if (NPC.lifeRegen >= 0)
+                NPC.lifeRegen += 2000000;
         }
 
         public override bool CanHitPlayer(Player target, ref int cooldownSlot) => Main.zenithWorld;

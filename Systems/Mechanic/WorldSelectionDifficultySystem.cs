@@ -1,11 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Reflection;
 using CalamityMod.World;
 using Microsoft.Xna.Framework;
 using Terraria.GameContent.UI.Elements;
 using Terraria.IO;
-using Terraria.Localization;
 using Terraria.ModLoader;
 using Terraria.ModLoader.IO;
 
@@ -23,7 +21,7 @@ namespace CalamityMod.Systems
             {
                 WorldDifficulties.Add(new WorldDifficulty(CalamityUtils.GetTextValue("UI.Revengeance"), GetRevengeance, new(211, 42, 42)));
                 WorldDifficulties.Add(new WorldDifficulty(CalamityUtils.GetTextValue("UI.Death"), GetDeath, new(192, 64, 219)));
-                WorldDifficulties.Add(new WorldDifficulty(CalamityUtils.GetTextValue("UI.DeathLegend"), GetLegendDeath, new(220, 255, 132))); // Defiled color
+                WorldDifficulties.Add(new WorldDifficulty(CalamityUtils.GetTextValue("UI.Malice"), GetMalice, new(240, 128, 128)));
             }
         }
 
@@ -51,21 +49,27 @@ namespace CalamityMod.Systems
 
         public static bool GetDeath(AWorldListItem item)
         {
+            // Grab data from the listed world
+            WorldFileData worldData = item._data;
+
             if (item.Data.TryGetHeaderData<WorldSelectionDifficultySystem>(out TagCompound tag))
             {
                 if (tag.ContainsKey("DeathMode") && tag.GetBool("DeathMode"))
                 {
                     return true;
                 }
+                else if (tag.ContainsKey("RevengeanceMode") && tag.GetBool("RevengeanceMode"))
+                {
+                    return worldData.ForTheWorthy;
+                }
             }
             return false;
         }
 
-        public static bool GetLegendDeath(AWorldListItem item)
+        public static bool GetMalice(AWorldListItem item)
         {
             // Grab data from the listed world
-            FieldInfo worldDataField = typeof(UIWorldListItem).GetField("_data", BindingFlags.NonPublic | BindingFlags.Instance);
-            WorldFileData worldData = (WorldFileData)worldDataField.GetValue(item);
+            WorldFileData worldData = item._data;
 
             int trueGameMode = worldData.GameMode;
             if (worldData.ForTheWorthy)

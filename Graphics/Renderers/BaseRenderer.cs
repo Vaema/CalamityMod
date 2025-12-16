@@ -1,4 +1,5 @@
 ﻿using System;
+using CalamityMod.Enums;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria.ModLoader;
@@ -14,7 +15,7 @@ namespace CalamityMod.Graphics.Renderers
         /// <summary>
         /// The layer that the target should be drawn at.
         /// </summary>
-        public abstract DrawLayer Layer { get; }
+        public abstract GeneralDrawLayer Layer { get; }
 
         /// <summary>
         /// Whether the target should draw and be drawn to this frame.

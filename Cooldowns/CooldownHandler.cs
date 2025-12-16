@@ -9,10 +9,15 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.Cooldowns
 {
-    public class CooldownHandler
+    public abstract class CooldownHandler : ModType
     {
         public static string ID => null;
         public CooldownInstance instance;
+
+        protected sealed override void Register()
+        {
+            ModTypeLookup<CooldownHandler>.Register(this);
+        }
 
         #region Gameplay Behavior
         /// <summary>

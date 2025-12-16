@@ -4,6 +4,7 @@ using CalamityMod.Items.Materials;
 using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.ID;
+using Terraria.Localization;
 using Terraria.ModLoader;
 
 namespace CalamityMod.Items.Accessories
@@ -11,6 +12,11 @@ namespace CalamityMod.Items.Accessories
     public class RadiantOoze : ModItem, ILocalizedModType
     {
         public new string LocalizationCategory => "Items.Accessories";
+
+        public static int MinRegenBoost = 4;
+        public static int MaxRegenBoost = 10;
+        public override LocalizedText Tooltip => base.Tooltip.WithFormatArgs(MinRegenBoost.ToRegenPerSecond(), MaxRegenBoost.ToRegenPerSecond());
+
         public override void SetDefaults()
         {
             Item.width = 20;

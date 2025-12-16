@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using CalamityMod.Buffs.DamageOverTime;
-using CalamityMod.Dusts;
 using CalamityMod.Items.Weapons.Melee;
 using CalamityMod.Particles;
 using Microsoft.Xna.Framework;
@@ -28,8 +27,9 @@ namespace CalamityMod.Projectiles.Melee
         public static float CrystalBounceDamageMult = 2f; // Exponential scaling for multiple bounces but capped at max bounces
         public static float CrystalBounceSpeedMult = 1.25f;
         public static int MaxBounces = 3;
-        public const float MaxNPCHomingRange = 1200f; // 75 tiles
-        public const float MaxAxeHomingRange = 800f; // 50 tiles
+        public const float MaxNPCHomingRange = 960f; // 60 tiles + up to 3x empowerment boosts
+        public const float MaxAxeHomingRange = 640f; // 40 tiles + up to 2x empowerment boosts
+        public const float BonusRangePerEmpowerment = 80f; // 5 tiles
 
         private List<int> PreviousNPCs = new List<int>() { -1 };
         public Player Owner => Main.player[Projectile.owner];
@@ -126,6 +126,9 @@ namespace CalamityMod.Projectiles.Melee
                             // Cause the axe that just hit to be empowered and counts as a bounce
                             proj.damage = Math.Clamp((int)(proj.damage * CrystalBounceDamageMult), 0, (int)(proj.originalDamage * MathF.Pow(CrystalBounceDamageMult, MaxBounces)));
                             proj.velocity = proj.velocity.RotatedBy(Main.rand.NextBool() ? MathHelper.ToRadians(Main.rand.NextFloat(108f, 162f)) : MathHelper.ToRadians(Main.rand.NextFloat(-162f, -108f))) * CrystalBounceSpeedMult;
+                            if (proj.MaxUpdates < 5)
+                                proj.MaxUpdates++;
+
                             proj.ai[1] -= 30f;
                             proj.ai[2] = -1f;
                             proj.netUpdate = true;
@@ -270,7 +273,7 @@ namespace CalamityMod.Projectiles.Melee
                 return;
             }
 
-            float range = MaxNPCHomingRange;
+            float range = MaxNPCHomingRange + BonusRangePerEmpowerment * (Projectile.MaxUpdates - 2);
             int targetNPC = -1;
             foreach (NPC target in Main.ActiveNPCs)
             {
@@ -289,7 +292,7 @@ namespace CalamityMod.Projectiles.Melee
             {
                 // Will only try to bounce towards nearby axes if there are nearby enemies as to not waste axe hits
                 // The last usable pierce will never be spent on an axe since it would then just return to the player
-                float range2 = MaxAxeHomingRange;
+                float range2 = MaxAxeHomingRange + BonusRangePerEmpowerment * (Projectile.MaxUpdates - 2);
                 int targetAxe = -1;
                 foreach (Projectile proj in Main.ActiveProjectiles)
                 {
@@ -326,6 +329,7 @@ namespace CalamityMod.Projectiles.Melee
         {
             // Swiftly move back towards the player; also make it avoid naturally despawning
             Projectile.velocity = Projectile.SafeDirectionTo(Owner.Center) * Projectile.velocity.Length();
+            Projectile.MaxUpdates = 2;
             Projectile.timeLeft = 2;
 
             // Delete the Projectile if it touches its owner or too far away.

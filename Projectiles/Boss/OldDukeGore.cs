@@ -1,6 +1,4 @@
-﻿using CalamityMod.Buffs.StatDebuffs;
-using CalamityMod.Dusts;
-using CalamityMod.NPCs.OldDuke;
+﻿using CalamityMod.NPCs.OldDuke;
 using CalamityMod.Particles;
 using Microsoft.Xna.Framework;
 using Terraria;
@@ -78,14 +76,6 @@ namespace CalamityMod.Projectiles.Boss
             {
                 GeneralParticleHandler.SpawnParticle(new PointParticle(Projectile.Center, new Vector2(Main.rand.NextFloat(10), 0).RotatedByRandom(MathHelper.TwoPi), true, 10, Main.rand.NextFloat(0.5f, 1.5f), Color.DarkRed, false, true));
             }
-        }
-
-        public override void OnHitPlayer(Player target, Player.HurtInfo info)
-        {
-            if (info.Damage <= 0)
-                return;
-
-            target.AddBuff(ModContent.BuffType<Irradiated>(), 180);
         }
 
         public override bool PreDraw(ref Color lightColor)

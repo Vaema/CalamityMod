@@ -18,6 +18,7 @@ namespace CalamityMod.NPCs.TownNPCs
     public class AndroombaFriendly : ModNPC
     {
         public static Asset<Texture2D>[] FaceTextures = new Asset<Texture2D>[9];
+        public static int AstralConversionType;
 
         // Allow for solutions from other mods. The first integer is the solution's item ID, the texture is what face shoul dappear, the Action is what modders should use for spread code
         public static List<(int, string, Action<NPC>)> customConversionTypes = new List<(int, string, Action<NPC>)>{};
@@ -44,6 +45,7 @@ namespace CalamityMod.NPCs.TownNPCs
                 FaceTextures[7] = ModContent.Request<Texture2D>(Texture + "_Forest", AssetRequestMode.AsyncLoad);
                 FaceTextures[8] = ModContent.Request<Texture2D>(Texture + "_Astral", AssetRequestMode.AsyncLoad);
             }
+            AstralConversionType = ModContent.GetInstance<AstralConversion>().Type;
         }
 
         public override void SetDefaults()
@@ -65,6 +67,8 @@ namespace CalamityMod.NPCs.TownNPCs
             NPC.catchItem = (short)ModContent.ItemType<AndroombaItem>();
             SpawnModBiomes = new int[1] { ModContent.GetInstance<ArsenalLabBiome>().Type };
             NPC.dontTakeDamage = true;
+            NPC.Calamity().VulnerableToSickness = false;
+            NPC.Calamity().VulnerableToElectricity = true;
         }
 
         public override bool CanChat() => false;
@@ -131,26 +135,12 @@ namespace CalamityMod.NPCs.TownNPCs
             // Stuff for vanilla solutions
             if (conversionType <= 7)
             {
-                ConvertType type = ConvertType.Pure;
-                switch (conversionType)
-                {
-                    case 1:
-                        type = ConvertType.Corrupt;
-                        break;
-                    case 2:
-                        type = ConvertType.Hallow;
-                        break;
-                    case 4:
-                        type = ConvertType.Crimson;
-                        break;
-                }
-                World.AstralBiome.ConvertFromAstral(x - 2, x + 2, y - 2, y + 2, type);
                 WorldGen.Convert(x, y, conversionType, 2);
             }
             // Calamity solution(s)
             else if (conversionType == 8)
             {
-                World.AstralBiome.ConvertToAstral(x - 2, x + 2, y - 2, y + 2);
+                WorldGen.Convert(x, y, AstralConversionType, 2);
             }
             // Solutions registered by other mods
             else

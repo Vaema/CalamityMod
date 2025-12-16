@@ -124,7 +124,7 @@ namespace CalamityMod.Projectiles.Summon
         {
             for (int i = 0; i < 45; i++)
             {
-                Dust fire = Dust.NewDustPerfect(Projectile.Center + Main.rand.NextVector2Circular(55f, 55f), 244);
+                Dust fire = Dust.NewDustPerfect(Projectile.Center + Main.rand.NextVector2Circular(55f, 55f), DustID.CopperCoin);
                 fire.velocity *= 2f;
                 fire.scale *= 1.15f;
             }
@@ -214,12 +214,12 @@ namespace CalamityMod.Projectiles.Summon
                 // Create an explosion of dust.
                 for (int i = 0; i < 150; i++)
                 {
-                    Dust fire = Dust.NewDustPerfect(Projectile.Center, 244);
+                    Dust fire = Dust.NewDustPerfect(Projectile.Center, DustID.CopperCoin);
                     fire.velocity = Main.rand.NextVector2Circular(20f, 20f);
                     fire.scale *= 3f;
                     fire.noGravity = true;
 
-                    fire = Dust.NewDustPerfect(Projectile.Center, 244);
+                    fire = Dust.NewDustPerfect(Projectile.Center, DustID.CopperCoin);
                     fire.velocity *= Main.rand.NextVector2Circular(8f, 8f);
                     fire.scale *= 2f;
                 }
@@ -235,7 +235,7 @@ namespace CalamityMod.Projectiles.Summon
                 modifiers.FinalDamage *= YharonsKindleStaff.ReboundRamDamageFactor;
         }
 
-        public override bool? CanDamage() => Projectile.localAI[0] > 1f;
+        public override bool MinionContactDamage() => Projectile.localAI[0] > 1f;
 
         public override bool PreDraw(ref Color lightColor)
         {

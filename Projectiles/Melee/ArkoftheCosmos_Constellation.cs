@@ -52,7 +52,7 @@ namespace CalamityMod.Projectiles.Melee
             if (!Main.dedServ)
             {
                 Particles.Add(particle);
-                particle.Type = GeneralParticleHandler.particleTypes[particle.GetType()];
+                particle.Type = GeneralParticleHandler.particleIDsByTypes[particle.GetType()];
             }
         }
 

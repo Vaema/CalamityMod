@@ -1,6 +1,7 @@
 ﻿using CalamityMod.Items.Materials;
 using Terraria;
 using Terraria.ID;
+using Terraria.Localization;
 using Terraria.ModLoader;
 
 namespace CalamityMod.Items.Armor.Umbraphile
@@ -9,6 +10,11 @@ namespace CalamityMod.Items.Armor.Umbraphile
     public class UmbraphileRegalia : ModItem, ILocalizedModType
     {
         public new string LocalizationCategory => "Items.Armor.Hardmode";
+
+        public static float RogueDamageBoost = 0.1f;
+        public static int RogueCritBoost = 10; // NOTE: Tooltip shares this number with damage % as they're equal
+        public override LocalizedText Tooltip => base.Tooltip.WithFormatArgs(RogueDamageBoost.ToPercent());
+
         public override void SetDefaults()
         {
             Item.width = 38;
@@ -20,8 +26,8 @@ namespace CalamityMod.Items.Armor.Umbraphile
 
         public override void UpdateEquip(Player player)
         {
-            player.GetDamage<ThrowingDamageClass>() += 0.1f;
-            player.GetCritChance<ThrowingDamageClass>() += 10;
+            player.GetDamage<ThrowingDamageClass>() += RogueDamageBoost;
+            player.GetCritChance<ThrowingDamageClass>() += RogueCritBoost;
         }
 
         public override void AddRecipes()

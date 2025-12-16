@@ -1,8 +1,6 @@
 ﻿using CalamityMod.Events;
 using CalamityMod.NPCs.Ravager;
 using Terraria;
-using Terraria.Audio;
-using Terraria.DataStructures;
 using Terraria.ID;
 using Terraria.ModLoader;
 
@@ -53,13 +51,6 @@ namespace CalamityMod.Items.SummonItems
                 AddIngredient(ItemID.LunarTabletFragment, 15).
                 AddIngredient(ItemID.LihzahrdBrick, 25).
                 AddTile(TileID.DemonAltar).
-                Register();
-            
-            
-            CreateRecipe().
-                AddIngredient(ItemID.LunarTabletFragment, 15).
-                AddIngredient(ItemID.LihzahrdBrick, 25).
-                AddTile(TileID.LihzahrdAltar).
                 Register();
         }
     }

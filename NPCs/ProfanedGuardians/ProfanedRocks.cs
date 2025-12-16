@@ -43,9 +43,9 @@ namespace CalamityMod.NPCs.ProfanedGuardians
         public override void SetDefaults()
         {
             NPC.Calamity().canBreakPlayerDefense = true;
+            NPC.damage = 100; // 200
             NPC.aiStyle = -1;
             AIType = -1;
-            NPC.GetNPCDamage();
             NPC.dontTakeDamage = true;
             NPC.width = 50;
             NPC.height = 50;
@@ -142,10 +142,9 @@ namespace CalamityMod.NPCs.ProfanedGuardians
                 NPC.timeLeft = 1800;
 
             // Difficulty modes
-            bool bossRush = BossRushEvent.BossRushActive;
-            bool expertMode = Main.expertMode || bossRush;
-            bool revenge = CalamityWorld.revenge || bossRush;
-            bool death = CalamityWorld.death || bossRush;
+            bool expertMode = Main.expertMode || BossRushEvent.BossRushActive;
+            bool revenge = CalamityWorld.revenge || BossRushEvent.BossRushActive;
+            bool death = CalamityWorld.death || BossRushEvent.BossRushActive;
 
             // Spin and fly at the target
             if ((Main.npc[CalamityGlobalNPC.doughnutBossDefender].ai[0] != 0f && Main.npc[CalamityGlobalNPC.doughnutBossDefender].ai[1] >= -60f) || NPC.Calamity().newAI[0] < 0f)
@@ -159,7 +158,7 @@ namespace CalamityMod.NPCs.ProfanedGuardians
 
                 // Distance the rock travels before it starts to fall down
                 float maxChargeDistance = 4800f;
-                float chargeSpeed = bossRush ? 20f : death ? 18f : revenge ? 17f : expertMode ? 16f : 14f;
+                float chargeSpeed = death ? 18f : revenge ? 17f : expertMode ? 16f : 14f;
                 float fallDownGateValue = maxChargeDistance / chargeSpeed;
 
                 // Fall down after some time and blow up if inside tiles
@@ -209,7 +208,7 @@ namespace CalamityMod.NPCs.ProfanedGuardians
 
                     // Start off slow
                     Vector2 finalVelocity = NPC.SafeDirectionTo(player.Center, -Vector2.UnitY) * chargeSpeed;
-                    if (CalamityWorld.LegendaryMode)
+                    if (Main.getGoodWorld)
                         finalVelocity *= Main.rand.NextFloat(1f, 1.7f);
 
                     NPC.Calamity().newAI[2] = finalVelocity.X;
@@ -229,7 +228,7 @@ namespace CalamityMod.NPCs.ProfanedGuardians
                     // Push away from each other in Death and Boss Rush
                     if (death)
                     {
-                        float pushVelocity = bossRush ? 0.2f : 0.15f;
+                        float pushVelocity = 0.15f;
                         foreach (NPC n in Main.ActiveNPCs)
                         {
                             if (n.whoAmI != NPC.whoAmI && n.type == NPC.type)
@@ -257,7 +256,7 @@ namespace CalamityMod.NPCs.ProfanedGuardians
 
                     // Rotate faster and charge
                     NPC.Calamity().newAI[1] += 1f;
-                    float chargeGateValue = bossRush ? 60f : death ? 80f : revenge ? 90f : expertMode ? 100f : 120f;
+                    float chargeGateValue = death ? 80f : revenge ? 90f : expertMode ? 100f : 120f;
                     chargeGateValue += chargeGateValue * 0.5f * NPC.ai[1];
                     float anglularSpeed = NPC.Calamity().newAI[1] / chargeGateValue;
                     anglularSpeed = 0.05f + anglularSpeed * 0.2f;
@@ -279,7 +278,7 @@ namespace CalamityMod.NPCs.ProfanedGuardians
             NPC.damage = 0;
 
             // Distance from Defender Guardian
-            double maxDistance = bossRush ? 360D : death ? 340D : revenge ? 330D : expertMode ? 320D : MinMaxDistance;
+            double maxDistance = death ? 340D : revenge ? 330D : expertMode ? 320D : MinMaxDistance;
             double rateOfChangeIncrease = (maxDistance / MinMaxDistance) - 1D;
             double rateOfChange = (NPC.ai[1] * 0.5f) + 2D + rateOfChangeIncrease;
             if (NPC.Calamity().newAI[0] == 0f)

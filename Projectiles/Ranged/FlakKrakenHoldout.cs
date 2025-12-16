@@ -57,7 +57,7 @@ namespace CalamityMod.Projectiles.Ranged
 
                     // Every time we shoot we use ammo.
                     // With this method we also use the item's stats, like the shoot speed, or the type of ammo it was used.
-                    Owner.PickAmmo(Owner.ActiveItem(), out _, out float itemShootSpeed, out int itemDamage, out float itemKnockback, out int rocketTypeShot);
+                    Owner.PickAmmo(Owner.HeldItem, out _, out float itemShootSpeed, out int itemDamage, out float itemKnockback, out int rocketTypeShot);
 
                     // Decides the color of the effects depending on the type of rocket used.
                     switch (rocketTypeShot)
@@ -80,20 +80,23 @@ namespace CalamityMod.Projectiles.Ranged
                             break;
                     }
 
-                    // 15NOV2024: Ozzatron: manually clamp flak explosion distance
-                    float flakDist = MathHelper.Clamp(ownerToMouse.Length(), 0f, 960f);
+                    if (Main.myPlayer == Projectile.owner)
+                    {
+                        // 15NOV2024: Ozzatron: manually clamp flak explosion distance
+                        float flakDist = MathHelper.Clamp(ownerToMouse.Length(), 0f, 960f);
 
-                    // Spawns the projectile.
-                    Projectile.NewProjectile(
-                        Projectile.GetSource_FromThis(),
-                        GunTipPosition,
-                        direction * itemShootSpeed,
-                        ProjectileType<FlakKrakenProjectile>(),
-                        itemDamage,
-                        itemKnockback,
-                        Projectile.owner,
-                        rocketTypeShot,
-                        flakDist);
+                        // Spawns the projectile.
+                        Projectile.NewProjectile(
+                            Projectile.GetSource_FromThis(),
+                            GunTipPosition,
+                            direction * itemShootSpeed,
+                            ProjectileType<FlakKrakenProjectile>(),
+                            itemDamage,
+                            itemKnockback,
+                            Projectile.owner,
+                            rocketTypeShot,
+                            flakDist);
+                    }
 
                     // Applies the knockback to the player.
                     Owner.velocity += ownerToMouse.SafeNormalize(Vector2.UnitY) * -OwnerKnockbackStrength;
@@ -105,7 +108,7 @@ namespace CalamityMod.Projectiles.Ranged
                         // By decreasing the offset length of the gun from the arms, we give an effect of recoil.
                         OffsetLengthFromArm = 10f;
 
-                        Owner.Calamity().GeneralScreenShakePower = 3.5f;
+                        Owner.SetScreenshake(3.5f);
 
                         Particle shootPulse = new DirectionalPulseRing(GunTipPosition,
                             Vector2.Zero,

@@ -1,7 +1,6 @@
 ﻿using CalamityMod.Items.Placeables.Crags;
 using CalamityMod.Tiles.Furniture.CraftingStations;
 using Terraria;
-using Terraria.ID;
 using Terraria.ModLoader;
 
 namespace CalamityMod.Items.Placeables.FurnitureAncient
@@ -19,7 +18,7 @@ namespace CalamityMod.Items.Placeables.FurnitureAncient
         {
             CreateRecipe().
                 AddIngredient<BrimstoneSlag>(4).
-                AddTile<AncientAltar>().
+                AddTile<AshenAltar>().
                 Register();
         }
     }

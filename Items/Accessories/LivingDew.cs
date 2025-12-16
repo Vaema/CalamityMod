@@ -20,12 +20,12 @@ namespace CalamityMod.Items.Accessories
 
         public override void UpdateAccessory(Player player, bool hideVisual)
         {
-            player.statLifeMax2 += 50;
+            player.statLifeMax2 += 25;
+            if (!player.HasBuff(BuffID.Honey))
+                player.AddBuff(BuffID.Honey, 2);
 
             // Inherits all effects of Honey Dew
             CalamityPlayer modPlayer = player.Calamity();
-            modPlayer.alwaysHoneyRegen = true;
-            modPlayer.honeyTurboRegen = true;
             modPlayer.honeyDewHalveDebuffs = true;
             modPlayer.livingDewHalveDebuffs = true;
         }

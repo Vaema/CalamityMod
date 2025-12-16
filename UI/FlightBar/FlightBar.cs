@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Text;
 using CalamityMod.CalPlayer;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
@@ -125,7 +124,7 @@ namespace CalamityMod.UI
                 }
 
                 if (changed)
-                    CalamityClientConfig.SaveConfig();
+                    CalamityClientConfig.Instance.SaveChanges();
                 return;
             }
 
@@ -175,7 +174,7 @@ namespace CalamityMod.UI
                 if (ms.LeftButton == ButtonState.Released)
                 {
                     dragOffset = null;
-                    CalamityClientConfig.SaveConfig();
+                    CalamityClientConfig.Instance.SaveChanges();
                 }
             }
         }

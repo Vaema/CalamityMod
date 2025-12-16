@@ -1,6 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using CalamityMod.NPCs.ProfanedGuardians;
+﻿using CalamityMod.NPCs.ProfanedGuardians;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using ReLogic.Content;

@@ -1,4 +1,4 @@
-﻿using CalamityMod.Items.Placeables.Abyss;
+﻿using CalamityMod.Items.Placeables.FurnitureAcidwood;
 using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.ID;
@@ -23,8 +23,8 @@ namespace CalamityMod.Items.Weapons.Melee
             Item.knockBack = 5f;
             Item.UseSound = SoundID.Item1;
             Item.autoReuse = true;
-            Item.value = CalamityGlobalItem.RarityGreenBuyPrice;
-            Item.rare = ItemRarityID.Green;
+            Item.value = CalamityGlobalItem.RarityOrangeBuyPrice;
+            Item.rare = ItemRarityID.Orange;
         }
 
         public override void MeleeEffects(Player player, Rectangle hitbox)

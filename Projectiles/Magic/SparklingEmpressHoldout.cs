@@ -32,14 +32,15 @@ namespace CalamityMod.Projectiles.Magic
         public bool deservesMana = false;
 
         public float GfbMult = 1;
-        public int cooldownTime => 20 * (deservesMana ? 2 : 1);
+        public int CooldownTime => 20 * (deservesMana ? 2 : 1);
+        private const int FishShineTime = 150;
 
         public override void KillHoldoutLogic()
         {
-            if (HeldItem.type != Owner.ActiveItem().type || Owner.dead)
+            if (HeldItem.type != Owner.HeldItem.type || Owner.dead)
                 Projectile.Kill();
             if (Owner.CantUseHoldout() && !hasLetGo)
-                postFireTimer = cooldownTime;
+                postFireTimer = CooldownTime;
         }
 
         public override void HoldoutAI()
@@ -48,7 +49,8 @@ namespace CalamityMod.Projectiles.Magic
                 GfbMult = MathHelper.Clamp((int)(time / 60), 1, 7);
             if (!hasLetGo)
             {
-                if (shootingTimer >= (deservesMana && !Main.zenithWorld ? 6 : 3))
+                int shootInterval = deservesMana && !Main.zenithWorld ? Owner.HeldItem.useTime * 2 : Owner.HeldItem.useTime;
+                if (shootingTimer >= shootInterval)
                 {
                     if (Owner.CheckMana(HeldItem, (int)(HeldItem.mana * GfbMult), true, false))
                     {
@@ -58,15 +60,15 @@ namespace CalamityMod.Projectiles.Magic
                     else
                     {
                         SoundEngine.PlaySound(SoundID.MaxMana with { Pitch = -0.5f }, Projectile.Center);
-                        postFireTimer = cooldownTime;
+                        postFireTimer = CooldownTime;
                     }
                 }
 
                 shootingTimer++;
 
-                if (time >= 120)
+                if (time >= FishShineTime)
                     deservesMana = true;
-                if (time == 120)
+                if (time == FishShineTime)
                 {
                     SoundStyle f = new("CalamityMod/Sounds/Item/MeldShoot");
                     SoundEngine.PlaySound(f with { Volume = 0.5f, Pitch = 0.95f }, Projectile.Center);
@@ -129,7 +131,7 @@ namespace CalamityMod.Projectiles.Magic
                             CombatText.NewText(Projectile.Hitbox, Color.Cyan, CalamityUtils.GetTextValue("Misc.Empress4"));
                     }
                     if (postFireTimer == 0)
-                        postFireTimer = (cooldownTime * 5);
+                        postFireTimer = (CooldownTime * 5);
                     deservesMana = false;
                 }
             }
@@ -143,7 +145,7 @@ namespace CalamityMod.Projectiles.Magic
 
             if (deservesMana && postFireTimer % 8 == 0)
             {
-                int manaGained = 24;
+                int manaGained = 10;
                 Owner.statMana += manaGained;
                 if (Main.myPlayer == Owner.whoAmI)
                     Owner.ManaEffect(manaGained);
@@ -161,10 +163,6 @@ namespace CalamityMod.Projectiles.Magic
                 SoundStyle s = new("CalamityMod/Sounds/Custom/PistolShrimpBubbleBurst");
                 SoundEngine.PlaySound(s with { Volume = 0.35f, Pitch = -postFireTimer * 0.01f, MaxInstances = -1 }, Projectile.Center);
             }
-            if (deservesMana && (postFireTimer + 2) % 8 == 0)
-            {
-                Owner.HealPlayer(1);
-            }
             if (postFireTimer == 1)
                 Projectile.Kill();
             postFireTimer--;
@@ -172,9 +170,12 @@ namespace CalamityMod.Projectiles.Magic
         public void Shoot()
         {
             Vector2 shootDirection = Projectile.velocity.SafeNormalize(Vector2.Zero);
-            Vector2 firingVelocity = (shootDirection * 4);
-            for (int k = 0; k < (int)(GfbMult); k++)
-                Projectile.NewProjectile(Projectile.GetSource_FromThis(), GunTipPosition + firingVelocity * 5, firingVelocity.RotatedByRandom(Main.zenithWorld ? GfbMult * 0.08f : 0), ModContent.ProjectileType<SparklingLaser>(), Projectile.damage, Projectile.knockBack, Projectile.owner, 0, 0);
+            if (Main.myPlayer == Projectile.owner)
+            {
+                Vector2 firingVelocity = (shootDirection * 4);
+                for (int k = 0; k < (int)(GfbMult); k++)
+                    Projectile.NewProjectile(Projectile.GetSource_FromThis(), GunTipPosition + firingVelocity * 5, firingVelocity.RotatedByRandom(Main.zenithWorld ? GfbMult * 0.08f : 0), ModContent.ProjectileType<SparklingLaser>(), Projectile.damage, Projectile.knockBack, Projectile.owner, 0, 0);
+            }
 
             for (int k = 0; k < 4; k++)
             {

@@ -1,5 +1,5 @@
-﻿using System;
-using CalamityMod.Dusts;
+﻿using CalamityMod.Dusts;
+using CalamityMod.Items.Weapons.Melee;
 using CalamityMod.Projectiles.Rogue;
 using CalamityMod.Rarities;
 using Microsoft.Xna.Framework;
@@ -14,6 +14,10 @@ namespace CalamityMod.Items.Weapons.Rogue
     public class MoltenAmputator : RogueWeapon
     {
         public float speed = 16;
+        public override void SetStaticDefaults()
+        {
+            ItemID.Sets.ShimmerTransformToItem[Type] = ModContent.ItemType<BurningRevelation>();
+        }
         public override void SetDefaults()
         {
             Item.width = 92;

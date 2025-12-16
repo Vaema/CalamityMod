@@ -2,8 +2,6 @@
 using CalamityMod.Items.Fishing.AstralCatches;
 using Microsoft.Xna.Framework;
 using Terraria;
-using Terraria.DataStructures;
-using Terraria.Localization;
 using Terraria.ModLoader;
 using Terraria.ObjectData;
 

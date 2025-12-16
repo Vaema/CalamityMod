@@ -44,17 +44,18 @@ namespace CalamityMod.Projectiles.Rogue
 
                 if (shoot)
                 {
-                    Vector2 vel = new Vector2(Main.rand.Next(-300, 301), Main.rand.Next(500, 801));
-                    Vector2 pos = Projectile.Center - vel;
-                    vel.X += Main.rand.Next(-50, 51);
-                    vel.Normalize();
-                    vel *= 30f;
-                    int shard = Projectile.NewProjectile(Projectile.GetSource_FromThis(), pos, vel + Projectile.velocity / 4f, ModContent.ProjectileType<FrostShardFriendly>(), Projectile.damage, Projectile.knockBack, Projectile.owner);
+                    Vector2 pos = Projectile.Center - new Vector2(Main.rand.Next(-300, 301), Main.rand.Next(500, 751));
+                    Vector2 vel = Utils.DirectionTo(pos, Projectile.Center) * 30f;
+                    vel.X += Main.rand.NextFloat(-4f, 4f);
+                    int shard = Projectile.NewProjectile(Projectile.GetSource_FromThis(), pos, vel + Projectile.velocity / 4f, ModContent.ProjectileType<FrostShardFriendly>(), (int)(Projectile.damage * 0.75f), Projectile.knockBack, Projectile.owner);
                     Main.projectile[shard].alpha = Projectile.alpha;
                 }
 
                 int index2 = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.DungeonWater);
                 Main.dust[index2].noGravity = true;
+
+                if (Projectile.ai[2] == 1f)
+                    CalamityUtils.HomeInOnSelectedNPC(Projectile, CalamityUtils.ClosestNPCAt(Projectile.Center, 400f, false), false, 5f, 30f, 0.99f);
             }
             else
             {
@@ -68,12 +69,10 @@ namespace CalamityMod.Projectiles.Rogue
 
                     if (shoot)
                     {
-                        Vector2 vel = new Vector2(Main.rand.Next(-300, 301), Main.rand.Next(500, 801));
-                        Vector2 pos = Main.npc[id].Center - vel;
-                        vel.X += Main.rand.Next(-50, 51);
-                        vel.Normalize();
-                        vel *= 30f;
-                        int shard = Projectile.NewProjectile(Projectile.GetSource_FromThis(), pos, vel + Main.npc[id].velocity, ModContent.ProjectileType<FrostShardFriendly>(), Projectile.damage, Projectile.knockBack, Projectile.owner);
+                        Vector2 pos = Projectile.Center - new Vector2(Main.rand.Next(-300, 301), Main.rand.Next(500, 751));
+                        Vector2 vel = Utils.DirectionTo(pos, Projectile.Center) * 30f;
+                        vel.X += Main.rand.NextFloat(-4f, 4f);
+                        int shard = Projectile.NewProjectile(Projectile.GetSource_FromThis(), pos, vel + Main.npc[id].velocity, ModContent.ProjectileType<FrostShardFriendly>(), (int)(Projectile.damage * 0.75f), Projectile.knockBack, Projectile.owner);
                         Main.projectile[shard].alpha = Projectile.alpha;
                     }
                 }

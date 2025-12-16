@@ -1,14 +1,10 @@
 ﻿using System;
-using System.Linq;
-using CalamityMod.Systems;
 using CalamityMod.World;
 using Microsoft.Xna.Framework;
 using Mono.Cecil.Cil;
 using MonoMod.Cil;
 using Terraria;
 using Terraria.GameContent.UI.States;
-using Terraria.ID;
-using Terraria.IO;
 using Terraria.WorldBuilding;
 
 namespace CalamityMod.ILEditing
@@ -33,28 +29,6 @@ namespace CalamityMod.ILEditing
             get;
             set;
         }
-
-        #region Replacement of Pharaoh Set in Pyramids
-        // Note: There is no need to replace the other Pharaoh piece, due to how the vanilla code works.
-        // The other Pharaoh vanity piece is added automatically if the mask is found in the chest.
-        private static void ReplacePharaohSetInPyramids(ILContext il)
-        {
-            var cursor = new ILCursor(il);
-
-            // Find the instruction which loads in the item ID of the Pharaoh's Mask.
-            if (!cursor.TryGotoNext(MoveType.Before, i => i.MatchLdcI4(ItemID.PharaohsMask)))
-            {
-                LogFailure("Pharaoh Set Pyramid Replacement", "Could not locate the Pharaoh's Mask item ID.");
-                return;
-            }
-
-            // Replace the Pharaoh's Mask with the Amber Hook.
-            // THIS INT CAST IS MANDATORY. DO NOT REMOVE IT.
-            // In TML's DLL, despite item IDs being shorts (16 bits), the hardcoded 848 here is a 32-bit integer literal.
-            // As such, it must be replaced with a 32-bit integer literal or the branches of the switch will misalign and the IL edit fails.
-            cursor.Next.Operand = (int)ItemID.AmberHook;
-        }
-        #endregion Replacement of Pharaoh Set in Pyramids
 
         #region Fixing of Living Tree/Sulphurous Sea Interactions
         private static void BlockLivingTreesNearOcean(ILContext il)
@@ -183,25 +157,9 @@ namespace CalamityMod.ILEditing
         }
         #endregion
 
-        #region Clear temporary modded tiles
-        private static void ClearModdedTempTiles(On_WorldFile.orig_ClearTempTiles orig)
-        {
-            orig();
-
-            for (int i = 0; i < Main.maxTilesX; i++)
-            {
-                for (int j = 0; j < Main.maxTilesY; j++)
-                {
-                    if (TempTilesManagerSystem.TemporaryTileIDs.Contains(Main.tile[i, j].TileType))
-                        WorldGen.KillTile(i, j);
-                }
-            }
-        }
-        #endregion
-
         #region Prevent Abyss/Dungeon Interactions
 
-        private void LimitDungeonEntranceXPosition(On_WorldGen.orig_MakeDungeon orig, int x, int y)
+        private static void LimitDungeonEntranceXPosition(On_WorldGen.orig_MakeDungeon orig, int x, int y)
         {
             // Ensure that the base X position stays within its required bounds.
             x = Utils.Clamp(x, DungeonBaseXLimit, Main.maxTilesX - DungeonBaseXLimit);
@@ -250,77 +208,5 @@ namespace CalamityMod.ILEditing
         }
 
         #endregion Prevent Abyss/Dungeon Interactions
-
-        #region Change Dungeon Spike Quantities
-
-        /// <summary>
-        /// Makes dungeon spikes more infrequent in the dungeon under normal circumstances.
-        /// </summary>
-        private static void ChangeDungeonSpikeQuantities(ILContext il)
-        {
-            var c = new ILCursor(il);
-
-            /* The code being altered is as follows:
-             * int num16 = Main.maxTilesX / 100;
-             * if (WorldGen.getGoodWorldGen)
-             * {
-             *     num16 *= 3;
-             * }
-             * 
-             * The desired change is to halve num16 under typical circumstances but leave them unchanged on the meme seeds (Except for GFB, where it's even more ridiculous).
-             * This should result in the following logical output via this edit:
-             * 
-             * int num16 = Main.maxTilesX / 200;
-             * if (WorldGen.getGoodWorldGen)
-             * {
-             *     num16 *= 6;
-             * }
-             * if (Main.zenithWorld)
-             * {
-             *     num16 *= 4;
-             * }
-             */
-
-            // WorldGen.getGoodWorldGen is only used once in this method, and as such is a reliable entrypoint for getting near the above code.
-            if (!c.TryGotoNext(MoveType.After, x => x.MatchLdsfld<WorldGen>("getGoodWorldGen")))
-            {
-                LogFailure("Change Dungeon Spike Quantities", "Could not match the load of Worldgen.getGoodWorldGen.");
-                return;
-            }
-
-            // Go back to find the local index of num16, being sure to go right before it's stored.
-            if (!c.TryGotoPrev(MoveType.Before, x => x.MatchStloc(out _)))
-            {
-                LogFailure("Change Dungeon Spike Quantities", "Could not match the storage of num16.");
-                return;
-            }
-
-            // Since we're right before the storage of num16, that means that its exact number is right above and available for manipulation.
-            // This will be accomplished via a division by 2 for the default condition and respective multiplications for the meme seeds.
-            // The reason this isn't done in a single multiplication/division is as a means of avoiding the annoyances of casting to floats and back.
-
-            // Divide by two.
-            c.Emit(OpCodes.Ldc_I4_2);
-            c.Emit(OpCodes.Div);
-
-            // Multiply by factors relative to the meme seed.
-            c.EmitDelegate(() =>
-            {
-                int frequencyFactor = 1;
-
-                // Undo the division by 2 in the FTW seed. It will be given the *= 3 after the placement of these edits.
-                if (WorldGen.getGoodWorldGen)
-                    frequencyFactor *= 2;
-
-                // GFB, where good game design dies.
-                if (Main.zenithWorld)
-                    frequencyFactor *= 4;
-
-                return frequencyFactor;
-            });
-            c.Emit(OpCodes.Mul);
-        }
-
-        #endregion Change Dungeon Spike Quantities
     }
 }

@@ -1,10 +1,6 @@
-﻿using System;
-using CalamityMod.Buffs.DamageOverTime;
-using Microsoft.Xna.Framework.Graphics;
+﻿using CalamityMod.Buffs.DamageOverTime;
 using Microsoft.Xna.Framework;
-using ReLogic.Content;
 using Terraria;
-using Terraria.Audio;
 using Terraria.ID;
 using Terraria.ModLoader;
 using CalamityMod.Dusts;
@@ -51,7 +47,7 @@ namespace CalamityMod.Projectiles.Rogue
                     velOffset *= Main.rand.NextFloat(25, 45) * fade;
                     Particle energy = new GlowOrbParticle(Projectile.Center + velOffset * 2.5f, -velOffset * Main.rand.NextFloat(0.08f, 0.12f) * 1.5f, false, (int)(14 - (5 * fade)), Main.rand.NextFloat(1.1f, 1.25f) - 0.5f * fade, Color.Chartreuse);
                     GeneralParticleHandler.SpawnParticle(energy);
-                    Dust dust = Dust.NewDustPerfect(Projectile.Center + velOffset * 2.5f, 278, -velOffset * Main.rand.NextFloat(0.08f, 0.12f) * 1.5f, 0, default, Main.rand.NextFloat(0.4f, 0.6f));
+                    Dust dust = Dust.NewDustPerfect(Projectile.Center + velOffset * 2.5f, DustID.FireworksRGB, -velOffset * Main.rand.NextFloat(0.08f, 0.12f) * 1.5f, 0, default, Main.rand.NextFloat(0.4f, 0.6f));
                     dust.noGravity = true;
                     dust.color = Color.Chartreuse;
                 }
@@ -81,7 +77,7 @@ namespace CalamityMod.Projectiles.Rogue
                 Particle orb2 = new CustomPulse(Projectile.Center, Vector2.Zero, Color.White, "CalamityMod/Particles/LargeBloom", new Vector2(1, 1), Main.rand.NextFloat(-10, 10), 1f, 0.2f, 32);
                 GeneralParticleHandler.SpawnParticle(orb2);
 
-                Owner.Calamity().GeneralScreenShakePower = 3.5f;
+                Owner.SetScreenshake(3.5f);
             }
             time++;
         }

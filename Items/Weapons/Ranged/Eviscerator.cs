@@ -1,4 +1,4 @@
-﻿using CalamityMod.Items.Materials;
+﻿using CalamityMod.Items.Weapons.Magic;
 using CalamityMod.Projectiles.Ranged;
 using Microsoft.Xna.Framework;
 using Terraria;
@@ -11,6 +11,10 @@ namespace CalamityMod.Items.Weapons.Ranged
     public class Eviscerator : ModItem, ILocalizedModType
     {
         public new string LocalizationCategory => "Items.Weapons.Ranged";
+        public override void SetStaticDefaults()
+        {
+            ItemID.Sets.ShimmerTransformToItem[Type] = ModContent.ItemType<BloodBath>();
+        }
         public override void SetDefaults()
         {
             Item.width = 58;
@@ -29,7 +33,6 @@ namespace CalamityMod.Items.Weapons.Ranged
             Item.shoot = ModContent.ProjectileType<BloodClotFriendly>();
             Item.shootSpeed = 22f;
             Item.useAmmo = AmmoID.Bullet;
-            Item.Calamity().canFirePointBlankShots = true;
         }
 
         // Terraria seems to really dislike high crit values in SetDefaults
@@ -45,16 +48,6 @@ namespace CalamityMod.Items.Weapons.Ranged
                 Projectile.NewProjectile(source, position, velocity, type, damage, knockback, player.whoAmI);
 
             return false;
-        }
-
-        public override void AddRecipes()
-        {
-            CreateRecipe().
-                AddIngredient(ItemID.CrimtaneBar, 4).
-                AddIngredient<BloodSample>(12).
-                AddIngredient(ItemID.Vertebrae, 4).
-                AddTile(TileID.DemonAltar).
-                Register();
         }
     }
 }

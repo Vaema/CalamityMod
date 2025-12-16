@@ -16,6 +16,7 @@ namespace CalamityMod.Projectiles.Summon
         public override void SetStaticDefaults()
         {
             Main.projFrames[Type] = 5;
+            Main.projPet[Type] = true;
             ProjectileID.Sets.MinionTargettingFeature[Type] = true;
             ProjectileID.Sets.MinionSacrificable[Type] = true;
         }
@@ -65,7 +66,7 @@ namespace CalamityMod.Projectiles.Summon
 
             for (int i = 0; i < 40; i++)
             {
-                Dust brimstoneFire = Dust.NewDustPerfect(Projectile.Center + Main.rand.NextVector2Circular(50f, 50f), 219);
+                Dust brimstoneFire = Dust.NewDustPerfect(Projectile.Center + Main.rand.NextVector2Circular(50f, 50f), DustID.Fireworks);
                 brimstoneFire.velocity = Vector2.UnitY * -Main.rand.NextFloat(2f, 5f);
                 brimstoneFire.scale = 1f + brimstoneFire.velocity.Length() * 0.1f;
                 brimstoneFire.color = Color.Lerp(Color.White, Color.OrangeRed, Main.rand.NextFloat());
@@ -159,5 +160,7 @@ namespace CalamityMod.Projectiles.Summon
             else if (Projectile.velocity.Length() < 28f)
                 Projectile.velocity = Projectile.SafeDirectionTo(target.Center) * 29f;
         }
+
+        public override bool MinionContactDamage() => true;
     }
 }

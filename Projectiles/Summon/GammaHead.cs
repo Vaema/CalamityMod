@@ -32,6 +32,7 @@ namespace CalamityMod.Projectiles.Summon
         public override void SetStaticDefaults()
         {
             Main.projFrames[Type] = 4;
+            Main.projPet[Type] = true;
             ProjectileID.Sets.MinionSacrificable[Type] = true;
             ProjectileID.Sets.MinionTargettingFeature[Type] = true;
         }
@@ -97,7 +98,7 @@ namespace CalamityMod.Projectiles.Summon
 
         public void PerformInitializationEffects()
         {
-            int totalHeads = CalamityUtils.CountOwnedProjectiles(Projectile.type, Projectile.owner);
+            int totalHeads = Main.player[Projectile.owner].ownedProjectileCounts[Projectile.type];
             CurrentPositionOffset = IdealPositionOffset = new Vector2(Main.rand.NextFloat(-72f - 8f * totalHeads, 72f + 8f * totalHeads), -Main.rand.NextFloat(8f, 84f + 4f * totalHeads));
             Projectile.netUpdate = true;
 
@@ -169,7 +170,7 @@ namespace CalamityMod.Projectiles.Summon
                 Projectile.velocity = (Projectile.velocity * 9f + Projectile.SafeDirectionTo(returnPosition) * flySpeed) / 10f;
             }
 
-            int totalHeads = CalamityUtils.CountOwnedProjectiles(Projectile.type, Projectile.owner);
+            int totalHeads = Main.player[Projectile.owner].ownedProjectileCounts[Projectile.type];
             int moveRate = 40 + totalHeads * 4;
 
             // Reset the ideal offset from time to time.
@@ -264,7 +265,5 @@ namespace CalamityMod.Projectiles.Summon
 
             return false;
         }
-
-        public override bool? CanDamage() => false;
     }
 }

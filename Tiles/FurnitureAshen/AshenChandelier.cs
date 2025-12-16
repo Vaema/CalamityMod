@@ -75,7 +75,7 @@ namespace CalamityMod.Tiles.FurnitureAshen
             tileFlameData.flameRangeXMax = 11;
             tileFlameData.flameRangeYMin = -10;
             tileFlameData.flameRangeYMax = 11;
-            tileFlameData.flameRangeMultX = 0.1f;
+            tileFlameData.flameRangeMultX = 0.05f;
             tileFlameData.flameRangeMultY = 0f;
         }
 

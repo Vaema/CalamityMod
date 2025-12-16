@@ -1,11 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
-using CalamityMod.CalPlayer;
 using CalamityMod.Cooldowns;
-using CalamityMod.Dusts;
 using CalamityMod.Items.Materials;
-using CalamityMod.Items.Weapons.Melee;
-using CalamityMod.Items.Weapons.Ranged;
 using CalamityMod.Particles;
 using Microsoft.Xna.Framework;
 using ReLogic.Utilities;
@@ -27,9 +22,17 @@ namespace CalamityMod.Items.Armor.DesertProwler
         public static readonly SoundStyle SmokeBombEndSound = new("CalamityMod/Sounds/Custom/AbilitySounds/DesertProwlerSmokeBombEnd");
         public static readonly SoundStyle CDResetSound = new("CalamityMod/Sounds/Custom/AbilitySounds/DesertProwlerCDReset");
 
-        public static int SmokeCooldown = 25 * 60;
-        public static int SmokeDuration = 5 * 60;
-        public static int LightsOutReset = (int)(1.5f * 60);
+        public static int RogueCritBoost = 4;
+        public override LocalizedText Tooltip => base.Tooltip.WithFormatArgs(RogueCritBoost);
+
+        // Set Bonus
+        public static float SetBonusRogueStealth = 0.5f;
+        public static float SmokeMoveSpeedMult = 1.5f;
+        public static float SmokeDefenseMult = 0.75f;
+        public static float SmokeAggroMult = 0.5f;
+        public static int SmokeCooldown = CalamityUtils.SecondsToFrames(25);
+        public static int SmokeDuration = CalamityUtils.SecondsToFrames(5);
+        public static int LightsOutReset = CalamityUtils.SecondsToFrames(2);
         public static int FreeCrit = 200;
         public static int BonusDamageCap = 200;
 
@@ -40,32 +43,13 @@ namespace CalamityMod.Items.Armor.DesertProwler
             return (hasSmokebombCD && cd.timeLeft > SmokeCooldown);
         }
 
-        public override void Load()
-        {
-            Terraria.On_Player.KeyDoubleTap += ActivateSetBonus;
-        }
-
-        private void ActivateSetBonus(Terraria.On_Player.orig_KeyDoubleTap orig, Player player, int keyDir)
-        {
-            if (keyDir == (Main.ReversedUpDownArmorSetBonuses ? 1 : 0) && HasArmorSet(player) && !player.mount.Active)
-            {
-                // The set bonus can only be activated if the player does not have the cooldown.
-                if (!player.Calamity().cooldowns.TryGetValue(SandsmokeBomb.ID, out CooldownInstance cd))
-                {
-                    player.AddCooldown(SandsmokeBomb.ID, SmokeCooldown + SmokeDuration);
-                }
-            }
-
-            orig(player, keyDir);
-        }
-
         public override void SetDefaults()
         {
             Item.width = 18;
             Item.height = 18;
             Item.value = CalamityGlobalItem.RarityBlueBuyPrice;
             Item.rare = ItemRarityID.Blue;
-            Item.defense = 1; //6
+            Item.defense = 2; // 9
         }
 
         public override bool IsArmorSet(Item head, Item body, Item legs) => body.type == ItemType<DesertProwlerShirt>() && legs.type == ItemType<DesertProwlerPants>();
@@ -77,10 +61,10 @@ namespace CalamityMod.Items.Armor.DesertProwler
 
         public override void UpdateArmorSet(Player player)
         {
-            player.setBonus = this.GetLocalization("SetBonus").Format(); //More gets edited in elsewhere
+            Color AbilityBriefColor = Color.Lerp(new Color(255, 229, 156), new Color(233, 225, 198), 0.5f + 0.5f * MathF.Sin(Main.GlobalTimeWrappedHourly * 3f));
+            player.setBonus = this.GetLocalization("SetBonus").Format(SetBonusRogueStealth.ToStealth(), AbilityBriefColor.Hex3(), CalamityUtils.GetArmorSetBonusKey(), FreeCrit, BonusDamageCap, LightsOutReset.FramesToSeconds()); //More gets edited in elsewhere
             player.Calamity().wearingRogueArmor = true;
-            player.Calamity().rogueStealthMax += 0.5f;
-            player.GetDamage<ThrowingDamageClass>() += 0.05f;
+            player.Calamity().rogueStealthMax += SetBonusRogueStealth;
 
             DesertProwlerPlayer armorPlayer = player.GetModPlayer<DesertProwlerPlayer>();
             armorPlayer.desertProwlerSet = true;
@@ -90,9 +74,9 @@ namespace CalamityMod.Items.Armor.DesertProwler
                 if (cd.timeLeft == SmokeCooldown + SmokeDuration)
                     armorPlayer.SetBonusStartEffect();
 
-                player.moveSpeed *= 1.5f;
+                player.moveSpeed *= SmokeMoveSpeedMult;
                 player.invis = true;
-                player.aggro = (int)(player.aggro * 0.5f);
+                player.aggro = (int)(player.aggro * SmokeAggroMult);
                 player.noKnockback = true;
 
                 for (int i = 0; i < 2; i++)
@@ -156,36 +140,10 @@ namespace CalamityMod.Items.Armor.DesertProwler
                 dhusvtt.fadeIn = 1f;
                 Vector2 dustVelocity = dustDirection.RotatedBy(MathHelper.PiOver2) * 0.04f * dustDistance;
                 dhusvtt.velocity = dustVelocity;
-
             }
         }
 
-        public static void ModifySetTooltips(ModItem item, List<TooltipLine> tooltips)
-        {
-            if (HasArmorSet(Main.LocalPlayer))
-            {
-                int setBonusIndex = tooltips.FindIndex(x => x.Name == "SetBonus" && x.Mod == "Terraria");
-
-                if (setBonusIndex != -1)
-                {
-                    string dir = Language.GetTextValue(Main.ReversedUpDownArmorSetBonuses ? "Key.UP" : "Key.DOWN");
-                    TooltipLine setBonus1 = new TooltipLine(item.Mod, "CalamityMod:SetBonus1", CalamityUtils.GetTextFromModItem<DesertProwlerHat>("AbilityBrief").Format(dir));
-                    setBonus1.OverrideColor = Color.Lerp(new Color(255, 229, 156), new Color(233, 225, 198), 0.5f + 0.5f * (float)Math.Sin(Main.GlobalTimeWrappedHourly * 3f));
-                    tooltips.Insert(setBonusIndex + 1, setBonus1);
-
-                    TooltipLine setBonus2 = new TooltipLine(item.Mod, "CalamityMod:SetBonus2", CalamityUtils.GetTextFromModItem<DesertProwlerHat>("AbilityDescription").Format(FreeCrit, BonusDamageCap, LightsOutReset / 60f));
-                    setBonus2.OverrideColor = new Color(204, 181, 72);
-                    tooltips.Insert(setBonusIndex + 2, setBonus2);
-                }
-            }
-        }
-
-        public override void ModifyTooltips(List<TooltipLine> tooltips) => ModifySetTooltips(this, tooltips);
-
-        public override void UpdateEquip(Player player)
-        {
-            player.GetCritChance<ThrowingDamageClass>() += 4;
-        }
+        public override void UpdateEquip(Player player) => player.GetCritChance<ThrowingDamageClass>() += RogueCritBoost;
 
         public override void AddRecipes()
         {
@@ -202,6 +160,9 @@ namespace CalamityMod.Items.Armor.DesertProwler
     {
         public new string LocalizationCategory => "Items.Armor.PreHardmode";
         public string BulkTexture => "CalamityMod/Items/Armor/DesertProwler/DesertProwlerShirt_Bulk";
+
+        public static float RogueDamageBoost = 0.05f;
+        public override LocalizedText Tooltip => base.Tooltip.WithFormatArgs(RogueDamageBoost.ToPercent());
 
         public override void SetStaticDefaults()
         {
@@ -220,15 +181,10 @@ namespace CalamityMod.Items.Armor.DesertProwler
             Item.height = 18;
             Item.value = CalamityGlobalItem.RarityBlueBuyPrice;
             Item.rare = ItemRarityID.Blue;
-            Item.defense = 3;
+            Item.defense = 4;
         }
 
-        public override void ModifyTooltips(List<TooltipLine> tooltips) => DesertProwlerHat.ModifySetTooltips(this, tooltips);
-
-        public override void UpdateEquip(Player player)
-        {
-            player.GetCritChance<ThrowingDamageClass>() += 5;
-        }
+        public override void UpdateEquip(Player player) => player.GetDamage<ThrowingDamageClass>() += RogueDamageBoost;
 
         public override void AddRecipes()
         {
@@ -245,19 +201,23 @@ namespace CalamityMod.Items.Armor.DesertProwler
     public class DesertProwlerPants : ModItem, ILocalizedModType
     {
         public new string LocalizationCategory => "Items.Armor.PreHardmode";
+
+        public static int RogueCritBoost = 4;
+        public override LocalizedText Tooltip => base.Tooltip.WithFormatArgs(RogueCritBoost);
+
         public override void SetDefaults()
         {
             Item.width = 18;
             Item.height = 18;
             Item.value = CalamityGlobalItem.RarityBlueBuyPrice;
             Item.rare = ItemRarityID.Blue;
-            Item.defense = 2;
+            Item.defense = 3;
         }
-        public override void ModifyTooltips(List<TooltipLine> tooltips) => DesertProwlerHat.ModifySetTooltips(this, tooltips);
+
         public override void UpdateEquip(Player player)
         {
+            player.GetCritChance<ThrowingDamageClass>() += RogueCritBoost;
             player.buffImmune[BuffID.WindPushed] = true;
-            player.moveSpeed += 0.1f;
         }
 
         public override void AddRecipes()
@@ -272,9 +232,6 @@ namespace CalamityMod.Items.Armor.DesertProwler
 
     public class DesertProwlerPlayer : ModPlayer
     {
-        public static int BastionShootDamage = 10;
-        public static float BastionShootSpeed = 18f;
-        public static int BastionShootTime = 10;
         internal SlotId SmokeBombSoundSlot;
 
         public bool desertProwlerSet = false;
@@ -377,55 +334,63 @@ namespace CalamityMod.Items.Armor.DesertProwler
         public int ExtraCrit = 0;
         public override bool InstancePerEntity => true;
 
+        // This should be okay since we can't handle projectiles with altering ClassType in OnSpawn hook anyways
+        public override bool AppliesToEntity(Projectile entity, bool lateInstantiation)
+        {
+            if (entity.DamageType.CountsAsClass(RogueDamageClass.Instance)) return true;
+            return false;
+        }
+
         public override void OnSpawn(Projectile projectile, IEntitySource source)
         {
-            if (projectile.damage > 0 && !Main.gameMenu)
+            if (Main.gameMenu)
+                return;
+
+            if (projectile.damage <= 0 || projectile.owner < 0)
+                return;
+
+            if (!DesertProwlerHat.ShroudedInSmoke(Main.player[projectile.owner], out var _))
+                return;
+
+            int critPool = DesertProwlerHat.FreeCrit;
+            int achievedDamage = projectile.damage;
+
+            //Increase the crit cance of the projectile for as long as theres free crits to be handed out.
+            //Only increase the crit chance if the additional 100% damage wouldnt make the projectile deal more than the damage cap
+            while (critPool >= 100)
             {
-                if (projectile.owner >= 0 && DesertProwlerHat.ShroudedInSmoke(Main.player[projectile.owner], out var cd) && projectile.DamageType.CountsAsClass(RogueDamageClass.Instance))
+                if (achievedDamage + projectile.damage <= DesertProwlerHat.BonusDamageCap)
                 {
-                    int critPool = DesertProwlerHat.FreeCrit;
+                    ExtraCrit += 100;
+                    critPool -= 100;
 
-                    int achievedDamage = projectile.damage;
+                    achievedDamage += projectile.damage;
+                }
 
-                    //Increase the crit cance of the projectile for as long as theres free crits to be handed out.
-                    //Only increase the crit chance if the additional 100% damage wouldnt make the projectile deal more than the damage cap
-                    while (critPool >= 100)
+                else
+                {
+                    //Don't do anything to projectiles that reached the damage cap
+                    if (achievedDamage < DesertProwlerHat.BonusDamageCap)
                     {
-                        if (achievedDamage + projectile.damage <= DesertProwlerHat.BonusDamageCap)
-                        {
-                            ExtraCrit += 100;
-                            critPool -= 100;
+                        //Give some compensation crit if there's still some crit left but adding one full 100% crit chance would make the projectile go over the damage cap
+                        //For example, if the free crit was 200%, the projectile dealt 40 damage, and the damage cap was 100.
+                        //The projectile would get one layer of extra crit, bringing it to 80 damage, but we still have 100% crit leftover
+                        //Adding an extra layer of crit would make the projectile deal 120 damage, which we do not want.
+                        //To compensate for the 20 potential damage loss, we instead add 20/40 crit, making it have 50% extra crit
 
-                            achievedDamage += projectile.damage;
-                        }
-
-                        else
-                        {
-                            //Don't do anything to projectiles that reached the damage cap
-                            if (achievedDamage < DesertProwlerHat.BonusDamageCap)
-                            {
-                                //Give some compensation crit if there's still some crit left but adding one full 100% crit chance would make the projectile go over the damage cap
-                                //For example, if the free crit was 200%, the projectile dealt 40 damage, and the damage cap was 100.
-                                //The projectile would get one layer of extra crit, bringing it to 80 damage, but we still have 100% crit leftover
-                                //Adding an extra layer of crit would make the projectile deal 120 damage, which we do not want.
-                                //To compensate for the 20 potential damage loss, we instead add 20/40 crit, making it have 50% extra crit
-
-                                int remainingDamageTilCap = DesertProwlerHat.BonusDamageCap - achievedDamage;
-                                ExtraCrit += (int)(100 * remainingDamageTilCap / (float)projectile.damage);
-                            }
-
-                            //Avoid infinite loops
-                            break;
-                        }
+                        int remainingDamageTilCap = DesertProwlerHat.BonusDamageCap - achievedDamage;
+                        ExtraCrit += (int)(100 * remainingDamageTilCap / (float)projectile.damage);
                     }
 
-                    projectile.CritChance += ExtraCrit;
-
-                    projectile.Calamity().supercritHits = 1;
-                    LightsOut = true;
-                    Main.player[projectile.owner].GetModPlayer<DesertProwlerPlayer>().stopSmokeBomb = true;
+                    //Avoid infinite loops
+                    break;
                 }
             }
+
+            projectile.CritChance += ExtraCrit;
+            projectile.Calamity().supercritHits = 1;
+            LightsOut = true;
+            Main.player[projectile.owner].GetModPlayer<DesertProwlerPlayer>().stopSmokeBomb = true;
         }
 
         public override void OnHitNPC(Projectile projectile, NPC target, NPC.HitInfo hit, int damageDone)

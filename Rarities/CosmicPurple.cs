@@ -1,10 +1,8 @@
 ﻿using System;
-using CalamityMod.Items;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using ReLogic.Graphics;
 using Terraria.GameContent;
-using Terraria.Localization;
 using Terraria;
 using Terraria.ModLoader;
 using Terraria.UI.Chat;
@@ -29,6 +27,9 @@ namespace CalamityMod.Rarities
             var sparkle = ModContent.Request<Texture2D>("CalamityMod/ExtraTextures/UI/CrystalTextSparkle").Value;
             var fontSize = font.MeasureString(text);
             var center = fontSize / 2f;
+
+            if (Item.expert)
+                textColor = Main.DiscoColor;
 
             var glowPosition = new Vector2(X + center.X, Y + center.Y / 1.5f);
             textColor.A = 0;
@@ -104,13 +105,15 @@ namespace CalamityMod.Rarities
         {
             Draw(Item, line.Text, line.X, line.Y, line.Rotation, line.Origin, line.BaseScale);
         }
-        public override int GetPrefixedRarity(int offset, float valueMult) => offset switch
+
+        // TODO: Add a cooler alternative for reforge rarities
+        /*public override int GetPrefixedRarity(int offset, float valueMult) => offset switch
         {
             -2 => ModContent.RarityType<Turquoise>(),
             -1 => ModContent.RarityType<PureGreen>(),
             1 => ModContent.RarityType<BurnishedAuric>(),
             2 => ModContent.RarityType<HotPink>(),
             _ => Type,
-        };
+        };*/
     }
 }

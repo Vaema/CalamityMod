@@ -1,4 +1,5 @@
-﻿using Microsoft.Xna.Framework.Graphics;
+﻿using CalamityMod.Enums;
+using Microsoft.Xna.Framework.Graphics;
 
 namespace CalamityMod.Graphics.Primitives
 {
@@ -10,11 +11,11 @@ namespace CalamityMod.Graphics.Primitives
         /// <summary>
         /// The layer to render the primitive(s) to.
         /// </summary>
-        PixelationPrimitiveLayer LayerToRenderTo => PixelationPrimitiveLayer.BeforeProjectiles;
+        GeneralDrawLayer LayerToRenderTo => GeneralDrawLayer.BeforeProjectiles;
 
         /// <summary>
         /// Render primitives that use pixelation here.
         /// </summary>
-        void RenderPixelatedPrimitives(SpriteBatch spriteBatch, PixelationPrimitiveLayer layer);
+        void RenderPixelatedPrimitives(SpriteBatch spriteBatch, GeneralDrawLayer layer);
     }
 }

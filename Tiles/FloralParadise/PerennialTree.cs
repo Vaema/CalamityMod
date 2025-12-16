@@ -1,9 +1,9 @@
 ﻿using System;
 using CalamityMod.DataStructures;
-using CalamityMod.ILEditing;
 using CalamityMod.Tiles.BaseTiles;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using ReLogic.Content;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
@@ -36,11 +36,13 @@ namespace CalamityMod.Tiles.FloralParadise
 
         public override int MaxCutoffBranchesPerBranch => 5;
 
+        public Asset<Texture2D> VineTexture;
+
         public override void SetStaticDefaults()
         {
             Main.tileAxe[Type] = true;
             Main.tileFrameImportant[Type] = true;
-            DustType = 7;
+            DustType = DustID.WoodFurniture;
             ItemDrop = ItemID.Wood;
             UseDefaultSize();
             TileObjectData.addTile(Type);
@@ -50,7 +52,8 @@ namespace CalamityMod.Tiles.FloralParadise
 
         public void DrawVine(Vector2 vineTop, Vector2 downwardBottom, int totalVinesToDraw, float swayFactor)
         {
-            Texture2D vineTexture = ModContent.Request<Texture2D>("CalamityMod/Tiles/PerennialTreeVines").Value;
+            VineTexture ??= ModContent.Request<Texture2D>("CalamityMod/Tiles/FloralParadise/PerennialTreeVines");
+            Texture2D vineTexture = VineTexture.Value;
 
             // Determine the initial points for the vines.
             Vector2[] controlPoints = new Vector2[8];
@@ -63,7 +66,7 @@ namespace CalamityMod.Tiles.FloralParadise
                 Point p = (controlPoints[i] + lightOffset + BranchDrawer.PreviousPoint.ToWorldCoordinates()).ToTileCoordinates();
 
                 // 02JUN2024: Ozzatron: directionY did not exist at the time of the creation of the Perennial Tree. As such, it is ignored here.
-                ILChanges.Windgrid.GetWindTime(p.X, p.Y, 40, out int windTimeLeft, out int direction, out _);
+                Main.instance.TilesRenderer.Wind.GetWindTime(p.X, p.Y, 40, out int windTimeLeft, out int direction, out _);
 
                 float windInterpolant = windTimeLeft / 40f;
                 swayOffset += Utils.GetLerpValue(0f, 0.45f, windInterpolant, true) * Utils.GetLerpValue(1f, 0.55f, windInterpolant, true) * direction * 28f;

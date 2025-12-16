@@ -53,6 +53,11 @@ BabyGhostBellPinkItem: {
 	Tooltip: ""
 }
 
+GildedAxolotlItem: {
+	DisplayName: Gilded Axolotl
+	Tooltip: ""
+}
+
 NanodroidDysfunctionalItem: {
 	DisplayName: Dysfunctional Nanodroid
 	Tooltip: ""
@@ -183,6 +188,11 @@ SearslugItem: {
 	Tooltip: ""
 }
 
+ShoreskipperItem: {
+	DisplayName: "{$NPCs.Shoreskipper.DisplayName}"
+	Tooltip: ""
+}
+
 ShroombleItem: {
 	DisplayName: "{$NPCs.Shroomble.DisplayName}"
 	Tooltip: ""
@@ -262,16 +272,6 @@ MiracleFruit: {
 
 MushroomPlasmaRoot.DisplayName: Mushroom Plasma Root
 
-NimbleBounder: {
-	DisplayName: Nimble Bounder
-	Tooltip:
-		'''
-		Permanently increases movement and jump speed by {0}%
-		Permanently increases acceleration by {1}%
-		[c/842593:'Might be useful for speedrunning']
-		'''
-}
-
 PhantomHeart: {
 	DisplayName: Phantom Heart
 	Tooltip:
@@ -316,8 +316,8 @@ TaintedCloudberry: {
 }
 
 // Spawn Blockers
-SpawnBlockersOn: Currently enabled
-SpawnBlockersOff: Currently disabled
+SpawnBlockersOn: Spawns are currently disabled
+SpawnBlockersOff: Spawns are currently enabled
 
 AntiCystOintment: {
 	DisplayName: Anti-Cyst Ointment
@@ -383,22 +383,13 @@ VoodooDemonVoodooDoll: {
 ExhumeShortTooltip:
 	'''
 	[c/C61B40:'Ah, are you curious what I saw within this item?']
-	[c/BABABA:Press "Left Shift" to listen]
+	[c/BABABA:Hold Shift to listen]
 	'''
 LegendaryShortTooltip:
 	'''
 	[c/FF6F00:Tales of legends past radiate around you...]
-	[c/BABABA:Press "Left Shift" to listen closer]
+	[c/BABABA:Hold Shift to listen closer]
 	'''
-
-BallAndChain: {
-	DisplayName: Ball and Chain
-	Tooltip:
-		'''
-		Favorite this item to disable any dashes granted by equipment
-		'So heavy...'
-		'''
-}
 
 BrimstoneLocus: {
 	DisplayName: Brimstone Locus
@@ -514,6 +505,7 @@ SuperDummy: {
 		Creates a super dummy
 		Regenerates 1 million life per second
 		Will not die when taking damage over time from debuffs
-		Right click to kill all super dummies
+		<right> to kill all super dummies
+		Can only spawn 50 super dummies at once
 		'''
 }

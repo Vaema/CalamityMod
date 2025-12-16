@@ -7,6 +7,7 @@ using CalamityMod.Items.Weapons.Ranged;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria;
+using Terraria.ID;
 using Terraria.ModLoader;
 
 namespace CalamityMod.Projectiles.Ranged
@@ -60,7 +61,7 @@ namespace CalamityMod.Projectiles.Ranged
 
         public override void AI()
         {
-            if (Owner.dead || !Owner.active || Owner.ActiveItem().type != ModContent.ItemType<Hydra>())
+            if (Owner.dead || !Owner.active || Owner.HeldItem.type != ModContent.ItemType<Hydra>())
                 Projectile.Kill();
             else
                 Projectile.timeLeft = 2; //Infinite lifespan
@@ -137,7 +138,7 @@ namespace CalamityMod.Projectiles.Ranged
 
         public void PerformAttacks(Vector2 aimDestination)
         {
-            Item heldItem = Owner.ActiveItem();
+            Item heldItem = Owner.HeldItem;
 
             Vector2 shootDirection = Projectile.SafeDirectionTo(aimDestination);
 
@@ -147,7 +148,7 @@ namespace CalamityMod.Projectiles.Ranged
                 //Calculation for damage and co
                 Owner.PickAmmo(heldItem, out _, out float itemVelocity, out int itemDamage, out float itemKB, out _);
                 int type = ModContent.ProjectileType<HydrasBlood>();
-                for (int i = 0; i < 3; i++)
+                for (int i = 0; i < Hydra.BulletsPerShot - 1; i++)
                 {
                     Vector2 spreadDirection = shootDirection.RotatedByRandom(MathHelper.ToRadians(Hydra.ShotSpread / 2f));
                     float spreadVelocity = itemVelocity * Main.rand.NextFloat(1f, 1.4f);
@@ -183,7 +184,7 @@ namespace CalamityMod.Projectiles.Ranged
                 return;
 
             for (int i = 0; i < 10; i++)
-                Dust.NewDustPerfect(Projectile.Center, 171, Main.rand.NextVector2CircularEdge(4f, 4f)).noGravity = true;
+                Dust.NewDustPerfect(Projectile.Center, DustID.Venom, Main.rand.NextVector2CircularEdge(4f, 4f)).noGravity = true;
         }
 
         public override bool PreDraw(ref Color lightColor)

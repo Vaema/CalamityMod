@@ -3,7 +3,6 @@ using CalamityMod.Buffs.Summon;
 using CalamityMod.CalPlayer;
 using CalamityMod.Items.Weapons.Summon;
 using CalamityMod.Particles;
-using CalamityMod.Sounds;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria;
@@ -79,7 +78,8 @@ namespace CalamityMod.Projectiles.Summon.MirrorofKalandraMinions
                 // Repeating swing sound.
                 if (Projectile.soundDelay <= 0)
                 {
-                    SoundEngine.PlaySound(CommonCalamitySounds.LouderSwingWoosh with { Pitch = -.8f, PitchVariance = 1f, Volume = .6f }, Projectile.Center);
+                    SoundStyle swing = new SoundStyle("CalamityMod/Sounds/Custom/LoudSwingWoosh") with { Pitch = -.8f, PitchVariance = 1f, Volume = .6f };
+                    SoundEngine.PlaySound(swing, Projectile.Center);
                     Projectile.soundDelay = 15;
                     Projectile.netUpdate = true;
                 }

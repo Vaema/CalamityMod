@@ -8,7 +8,7 @@ using CalamityMod.Items.Armor.Vanity;
 using CalamityMod.Items.LoreItems;
 using CalamityMod.Items.Materials;
 using CalamityMod.Items.Placeables.Furniture.BossRelics;
-using CalamityMod.Items.Placeables.Furniture.DevPaintings;
+using CalamityMod.Items.Placeables.Furniture.Paintings;
 using CalamityMod.Items.Placeables.Furniture.Trophies;
 using CalamityMod.Items.TreasureBags;
 using CalamityMod.Items.TreasureBags.MiscGrabBags;
@@ -18,7 +18,6 @@ using CalamityMod.Items.Weapons.Ranged;
 using CalamityMod.Items.Weapons.Rogue;
 using CalamityMod.Items.Weapons.Summon;
 using CalamityMod.Projectiles.Boss;
-using CalamityMod.Projectiles.Enemy;
 using CalamityMod.UI.VanillaBossBars;
 using CalamityMod.World;
 using Microsoft.Xna.Framework;
@@ -70,26 +69,32 @@ namespace CalamityMod.NPCs.Ravager
             }
         }
 
+        // GFB exclusive
+        public static int BlasterDamage = 92; // 368
+
+        // Legendary exclusive
+        public static int RockDamage = 60; // 240
+
         public override void SetDefaults()
         {
             NPC.Calamity().canBreakPlayerDefense = true;
+            NPC.damage = 90; // 180
             NPC.lavaImmune = true;
             NPC.noGravity = true;
             NPC.npcSlots = 20f;
             NPC.aiStyle = -1;
-            NPC.GetNPCDamage();
             NPC.width = 332;
             NPC.height = 214;
             NPC.defense = 55;
-            NPC.value = Item.buyPrice(0, 30, 0, 0);
+            NPC.value = Item.buyPrice(gold: 25);
             NPC.DR_NERD(0.35f);
-            NPC.LifeMaxNERB(45000, 54000, 460000);
+            NPC.LifeMaxNERB(30000, 54000, 460000);
             if (DownedBossSystem.downedProvidence && !BossRushEvent.BossRushActive)
             {
                 NPC.damage = (int)(NPC.damage * 1.5);
                 NPC.defense *= 2;
                 NPC.lifeMax *= 4;
-                NPC.value *= 3f;
+                NPC.value *= 4f;
             }
             NPC.knockBackResist = 0f;
             AIType = -1;
@@ -101,9 +106,6 @@ namespace CalamityMod.NPCs.Ravager
             NPC.DeathSound = DeathSound;
             NPC.Calamity().VulnerableToSickness = false;
             NPC.Calamity().VulnerableToWater = true;
-
-            // Scale HP in Master
-            CalamityGlobalNPC.AdjustMasterModeStatScaling(NPC, true);
         }
 
         public override void SetBestiary(BestiaryDatabase database, BestiaryEntry bestiaryEntry)
@@ -150,10 +152,9 @@ namespace CalamityMod.NPCs.Ravager
         {
             CalamityGlobalNPC calamityGlobalNPC = NPC.Calamity();
 
-            bool bossRush = BossRushEvent.BossRushActive;
-            bool expertMode = Main.expertMode || bossRush;
-            bool revenge = CalamityWorld.revenge || bossRush;
-            bool death = CalamityWorld.death || bossRush;
+            bool expertMode = Main.expertMode || BossRushEvent.BossRushActive;
+            bool revenge = CalamityWorld.revenge || BossRushEvent.BossRushActive;
+            bool death = CalamityWorld.death || BossRushEvent.BossRushActive;
 
             // Percent life remaining
             float lifeRatio = NPC.life / (float)NPC.lifeMax;
@@ -228,14 +229,6 @@ namespace CalamityMod.NPCs.Ravager
             if (immunePhase)
             {
                 NPC.dontTakeDamage = true;
-                if (bossRush)
-                {
-                    foreach (Player p in Main.ActivePlayers)
-                    {
-                        if (!p.dead && revenge)
-                            p.AddBuff(ModContent.BuffType<WeakPetrification>(), 2);
-                    }
-                }
             }
             else
             {
@@ -254,7 +247,7 @@ namespace CalamityMod.NPCs.Ravager
 
                 Vector2 Pos = player.Center; //Spawn projectiles based on player's center. Having it be based on the boss turned out weird. (Except for final)
                 int type = ModContent.ProjectileType<RavagerBlaster>();
-                int damage = NPC.GetProjectileDamage(type);
+                int damage = BlasterDamage;
                 if (finalStand) //Circle
                 {
                     Vector2 circleOffset = Pos + (Vector2.UnitY * 640f).RotatedBy(MathHelper.ToRadians(NPC.localAI[1] * 3f));
@@ -498,7 +491,7 @@ namespace CalamityMod.NPCs.Ravager
                             NPC.ai[1] += 1f;
                     }
 
-                    float jumpGateValue = CalamityWorld.LegendaryMode ? 0f : 180f;
+                    float jumpGateValue = Main.getGoodWorld ? 0f : 180f;
                     if (NPC.ai[1] >= jumpGateValue)
                     {
                         NPC.ai[1] = -20f;
@@ -527,11 +520,11 @@ namespace CalamityMod.NPCs.Ravager
 
                         if (revenge)
                         {
-                            float multiplier = bossRush ? 0.003f : 0.0015f;
+                            float multiplier = 0.0015f;
                             if (distanceBelowTarget > 0f)
                                 calamityGlobalNPC.newAI[1] += 1f + distanceBelowTarget * multiplier;
 
-                            float speedMultLimit = bossRush ? 3f : 2f;
+                            float speedMultLimit = 2f;
                             if (calamityGlobalNPC.newAI[1] > speedMultLimit)
                                 calamityGlobalNPC.newAI[1] = speedMultLimit;
 
@@ -594,30 +587,6 @@ namespace CalamityMod.NPCs.Ravager
                     {
                         bool anyRockPillars = Main.npc.Any(x => x.active && x.type == ModContent.NPCType<RockPillar>() && x.ai[1] < 2);
                         bool anyFlamePillars = NPC.AnyNPCs(ModContent.NPCType<FlamePillar>());
-
-                        if (CalamityWorld.LegendaryMode)
-                        {
-                            if (!expertMode || anyRockPillars || anyFlamePillars)
-                                SoundEngine.PlaySound(PillarSound, NPC.Center);
-
-                            // Eruption of bouncing rock projectiles
-                            float projectileVelocity = 12f;
-                            int type = ModContent.ProjectileType<EarthRockBig>();
-                            Vector2 destination = new Vector2(NPC.Center.X, NPC.Center.Y - 100f) - NPC.Center;
-                            destination.Normalize();
-                            destination *= projectileVelocity;
-                            int numProj = 11;
-                            float rotation = MathHelper.ToRadians(90);
-                            for (int i = 0; i < numProj; i++)
-                            {
-                                // Spawn projectiles 0, 1, 2, 3, 7, 8, 9 and 10
-                                if (i < 4 || i > 6)
-                                {
-                                    Vector2 perturbedSpeed = destination.RotatedBy(MathHelper.Lerp(-rotation, rotation, i / (float)(numProj - 1)));
-                                    Projectile.NewProjectile(NPC.GetSource_FromAI(), NPC.Center + Vector2.UnitY * 30f * NPC.scale + Vector2.Normalize(perturbedSpeed) * 30f * NPC.scale, perturbedSpeed, type, 60, 0f, Main.myPlayer);
-                                }
-                            }
-                        }
 
                         if (expertMode)
                         {
@@ -733,7 +702,7 @@ namespace CalamityMod.NPCs.Ravager
                     {
                         if (phase2)
                         {
-                            float stopBeforeFallTime = bossRush ? 25f : 30f;
+                            float stopBeforeFallTime = 30f;
                             if (!anyHeadActive)
                                 stopBeforeFallTime -= 15f;
                             else if (expertMode)
@@ -750,7 +719,7 @@ namespace CalamityMod.NPCs.Ravager
                                 NPC.damage = NPC.defDamage;
 
                                 float fallSpeedBoost = !anyHeadActive ? 1.8f : death ? 1.8f * (1f - lifeRatio) : 1.2f * (1f - lifeRatio);
-                                float fallSpeed = (bossRush ? 1.8f : 1.2f) + fallSpeedBoost;
+                                float fallSpeed = 1.2f + fallSpeedBoost;
 
                                 if (calamityGlobalNPC.newAI[1] > 1f)
                                     fallSpeed *= calamityGlobalNPC.newAI[1];
@@ -767,7 +736,7 @@ namespace CalamityMod.NPCs.Ravager
                             if (NPC.Bottom.Y < player.position.Y)
                             {
                                 float fallSpeedBoost = !anyHeadActive ? 0.9f : 0.6f * (1f - lifeRatio);
-                                float fallSpeed = (bossRush ? 0.9f : 0.6f) + fallSpeedBoost;
+                                float fallSpeed = 0.6f + fallSpeedBoost;
 
                                 if (calamityGlobalNPC.newAI[1] > 1f)
                                     fallSpeed *= calamityGlobalNPC.newAI[1];
@@ -778,7 +747,7 @@ namespace CalamityMod.NPCs.Ravager
                     }
                     else
                     {
-                        float velocityMult = bossRush ? 2f : 1.8f;
+                        float velocityMult = 1.8f;
                         float velocityXChange = 0.2f + Math.Abs(NPC.Center.X - player.Center.X) * 0.001f;
 
                         float velocityXBoost = !anyHeadActive ? 6f : 4f * (1f - lifeRatio);
@@ -827,11 +796,6 @@ namespace CalamityMod.NPCs.Ravager
             {
                 float gravity = phase2 ? 0f : 0.45f;
                 float maxFallSpeed = reduceFallSpeed ? 12f : phase2 ? 24f : 15f;
-                if (bossRush && !reduceFallSpeed)
-                {
-                    gravity *= 1.25f;
-                    maxFallSpeed *= 1.25f;
-                }
 
                 if (calamityGlobalNPC.newAI[1] > 1f && !reduceFallSpeed)
                     maxFallSpeed *= calamityGlobalNPC.newAI[1];
@@ -848,7 +812,7 @@ namespace CalamityMod.NPCs.Ravager
                 player = Main.player[NPC.target];
             }
 
-            int distanceFromTarget = player.dead ? 1600 : bossRush ? 8400 : 5600;
+            int distanceFromTarget = player.dead ? 1600 : 5600;
             if (Vector2.Distance(NPC.Center, player.Center) > distanceFromTarget)
             {
                 NPC.TargetClosest();
@@ -921,7 +885,6 @@ namespace CalamityMod.NPCs.Ravager
         public override void ApplyDifficultyAndPlayerScaling(int numPlayers, float balance, float bossAdjustment)
         {
             NPC.lifeMax = (int)(NPC.lifeMax * 0.8f * balance * bossAdjustment);
-            NPC.damage = (int)(NPC.damage * NPC.GetExpertDamageMultiplier());
         }
 
         public override void HitEffect(NPC.HitInfo hit)
@@ -1022,7 +985,7 @@ namespace CalamityMod.NPCs.Ravager
                 target.AddBuff(ModContent.BuffType<ArmorCrunch>(), 480);
         }
 
-        public override void BossLoot(ref string name, ref int potionType) => potionType = ItemID.GreaterHealingPotion;
+        public override void BossLoot(ref int potionType) => potionType = ItemID.GreaterHealingPotion;
 
         public override void OnKill()
         {
@@ -1062,7 +1025,8 @@ namespace CalamityMod.NPCs.Ravager
                 normalOnly.Add(ItemDropRule.ByCondition(DropHelper.If(() => DownedBossSystem.downedProvidence), ModContent.ItemType<NecromanticGeode>()), hideLootReport: !DownedBossSystem.downedProvidence);
 
                 // Equipment
-                normalOnly.Add(ModContent.ItemType<BloodPact>(), 3);
+                // 16NOV2025: Ozzatron: item has been chosen as the "Expert gatekept" item for this Calamity boss
+                // normalOnly.Add(ModContent.ItemType<BloodPact>(), 3);
                 normalOnly.Add(ModContent.ItemType<FleshTotem>(), 3);
                 normalOnly.Add(ItemDropRule.ByCondition(DropHelper.PostProv(), ModContent.ItemType<BloodflareCore>()));
 

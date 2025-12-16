@@ -1,6 +1,4 @@
 ﻿using System.Collections.Generic;
-using System.IO;
-using CalamityMod.Items.Weapons.Melee;
 using CalamityMod.Particles;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
@@ -48,7 +46,7 @@ namespace CalamityMod.Projectiles.Melee
             Projectile.timeLeft = 102;
             Projectile.scale = Scale;
             Projectile.usesIDStaticNPCImmunity = true;
-            Projectile.idStaticNPCHitCooldown = 10;
+            Projectile.idStaticNPCHitCooldown = 20;
             Projectile.hide = true;
         }
 

@@ -1,5 +1,4 @@
 ﻿using CalamityMod.Items.Materials;
-using CalamityMod.Tiles.Furniture.CraftingStations;
 using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.ID;
@@ -35,7 +34,7 @@ namespace CalamityMod.Items.Tools
             CreateRecipe().
                 AddIngredient<PurifiedGel>(12).
                 AddIngredient<BlightedGel>(12).
-                AddTile<StaticRefiner>().
+                AddTile(TileID.Solidifier).
                 Register();
         }
 

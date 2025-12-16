@@ -104,6 +104,13 @@ namespace CalamityMod.Systems
                     return true;
                 }, InterfaceScaleType.None));
 
+                // Unstable Caster's Gauntlet vis meter
+                layers.Insert(mouseIndex, new LegacyGameInterfaceLayer("Vis UI", () =>
+                {
+                    VisUI.Draw(Main.spriteBatch, Main.LocalPlayer);
+                    return true;
+                }, InterfaceScaleType.None));
+
                 // Enchantment meters
                 layers.Insert(mouseIndex, new LegacyGameInterfaceLayer("Enchantment Meters", () =>
                 {

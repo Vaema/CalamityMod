@@ -2,6 +2,7 @@
 using CalamityMod.NPCs;
 using CalamityMod.Systems;
 using Microsoft.Xna.Framework;
+using ReLogic.Utilities;
 using System;
 using System.IO;
 using Terraria;
@@ -22,7 +23,9 @@ namespace CalamityMod.Projectiles.Magic
         public int LingeringTime = 300;
         public int FadeOutTime = 20;
         public bool HasSetFadeOutVelocity = false;
+        public Vector2 ReleaseCenterPoint = Vector2.Zero;
         public float _randomReleaseRotationOffset;
+        public SlotId StupidEasterEggSlot;
 
         public Player Owner => Main.player[Projectile.owner];
 
@@ -63,8 +66,23 @@ namespace CalamityMod.Projectiles.Magic
                     Projectile.localAI[0] = 0f;
             }
 
+            // Sound business
             if (Timer == 1f)
-                SoundEngine.PlaySound(new("CalamityMod/Sounds/Item/HarpLV" + Math.Clamp((int)NoteSequence + 1, 1, 6)), Owner.Center);
+            {
+                if (Main.zenithWorld)
+                {
+                    if (NoteSequence == 0f)
+                        StupidEasterEggSlot = SoundEngine.PlaySound(new SoundStyle("CalamityMod/Sounds/Custom/GFB/SevenTrebleClefSouls"), Owner.Center);
+                }
+                else
+                    SoundEngine.PlaySound(new SoundStyle("CalamityMod/Sounds/Item/HarpLV" + Math.Clamp((int)NoteSequence + 1, 1, 6)) with { Volume = 0.8f }, Owner.Center);
+            }
+            // They did not obey me
+            // Big shoutouts to NotRyo for making this Finale remix out of harp notes
+            if (Main.zenithWorld && NoteSequence == 0f && Timer % 2428f == 0f && AIState == 0f)
+                StupidEasterEggSlot = SoundEngine.PlaySound(new SoundStyle("CalamityMod/Sounds/Custom/GFB/SevenTrebleClefSouls"), Owner.Center);
+            if (SoundEngine.TryGetActiveSound(StupidEasterEggSlot, out var TrebleSoul) && TrebleSoul.IsPlaying)
+                TrebleSoul.Position = Owner.Center;
 
             if (Main.zenithWorld)
                 Lighting.AddLight(Projectile.Center, 1.25f, 1.25f, 1.25f);
@@ -78,7 +96,7 @@ namespace CalamityMod.Projectiles.Magic
 
                 // Makes the music notes appear to orbit around the player
                 float baseRotationSpeed = Main.zenithWorld ? 0.857142f : 1f;
-                float rotationSpeed = baseRotationSpeed * (60f / Owner.ActiveItem().useTime);
+                float rotationSpeed = baseRotationSpeed * (60f / Owner.HeldItem.useTime);
                 Projectile.Center = Owner.Center + new Vector2(80, 0).RotatedBy(MathHelper.ToRadians(Timer * rotationSpeed));
 
                 // If the player stops using the weapon or does not have enough mana, switch to fade away mode
@@ -114,12 +132,19 @@ namespace CalamityMod.Projectiles.Magic
 
                     Vector2 mouse = Owner.ClampedMouseWorld();
                     Projectile.Center = mouse + musicNoteRotationOffset * 220f;
+                    ReleaseCenterPoint = mouse;
                     playerDirection = Projectile.Center - mouse;
                     playerDirection.Normalize();
-                    playerDirection *= -9.2f;
+                    playerDirection *= -13f;
                     Projectile.velocity = playerDirection;
 
-                    SoundEngine.PlaySound(AnahitasArpeggio.EndSound, Projectile.Center);
+                    if (Main.zenithWorld)
+                    {
+                        if (SoundEngine.TryGetActiveSound(StupidEasterEggSlot, out var Flowey))
+                            Flowey?.Stop();
+                    }
+                    else
+                        SoundEngine.PlaySound(AnahitasArpeggio.EndSound with { Volume = 0.8f }, Projectile.Center);
                     AIState = 2f;
                 }
             }
@@ -142,9 +167,18 @@ namespace CalamityMod.Projectiles.Magic
 
                 // Slow down quickly
                 if (Projectile.velocity.Length() > 0.5f)
-                    Projectile.velocity *= 0.95f;
+                    Projectile.velocity *= 0.925f;
                 else
+                {
                     Projectile.velocity = Vector2.Zero;
+
+                    // Makes the notes slowly follow the mouse and rotate
+                    Vector2 centerPointDirection = (Owner.Calamity().mouseWorld - ReleaseCenterPoint).SafeNormalize(Vector2.Zero);
+                    float distToMove = MathF.Min(2.75f, Vector2.Distance(Owner.Calamity().mouseWorld, ReleaseCenterPoint)); // The constant value is the maximum chase speed
+                    ReleaseCenterPoint += centerPointDirection * distToMove;
+                    Projectile.Center += centerPointDirection * distToMove;
+                    Projectile.Center = ReleaseCenterPoint + Utils.DirectionTo(ReleaseCenterPoint, Projectile.Center).RotatedBy(MathHelper.Pi * 0.01f) * Vector2.Distance(ReleaseCenterPoint, Projectile.Center);
+                }
             }
         }
 
@@ -202,7 +236,6 @@ namespace CalamityMod.Projectiles.Magic
         }
 
         public override void SendExtraAI(BinaryWriter writer) => writer.Write(_randomReleaseRotationOffset);
-
         public override void ReceiveExtraAI(BinaryReader reader) => _randomReleaseRotationOffset = reader.ReadSingle();
     }
 }

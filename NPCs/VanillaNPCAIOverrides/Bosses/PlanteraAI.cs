@@ -11,7 +11,7 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
 {
-    public static class PlanteraAI
+    public class PlanteraAI : VanillaAIOverride
     {
         public const float SeedGatlingGateValue = 600f;
         public const float SeedGatlingDuration = 300f;
@@ -27,19 +27,34 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
         public const float StopChargeGateValue = BeginChargeSlowDownGateValue - 30f;
         public const float MovementVelocityMultiplierForSlowAttacks = 0.5f;
 
-        public static bool BuffedPlanteraAI(NPC npc, Mod mod)
-        {
-            CalamityGlobalNPC calamityGlobalNPC = npc.Calamity();
+        // Vanilla values
+        public static float Phase2ContactDamageMult = 1.4f; // 140
+        public static int PinkSeedDamage = 19; // 76
+        public static int PoisonSeedDamage = 24; // 96
+        public static int ThornBallDamage = 27; // 108
 
-            bool bossRush = BossRushEvent.BossRushActive;
-            bool death = CalamityWorld.death || bossRush;
+        // Expert AI has uses a magic number which we have to correct for
+        public static int ContactDamageCorrection = Main.masterMode ? 150 : 100;
+
+        // Rev+ exclusive
+        public static int ThornBallSpikeDamage = 22; // 88
+        public static int GasBulbDamage = 27; // 108
+        public static int PinkCloudDamage = 22; // 88
+        public static int GreenCloudDamage = 24; // 96
+        public static float DashDamageMult = 1.25f; // 175
+
+        public override bool AI(Mod mod)
+        {
+            CalamityGlobalNPC calamityGlobalNPC = NPC.Calamity();
+
+            bool death = CalamityWorld.death || BossRushEvent.BossRushActive;
 
             // Get a target
-            if (npc.target < 0 || npc.target == Main.maxPlayers || Main.player[npc.target].dead || !Main.player[npc.target].active)
-                CalamityUtils.CalamityTargeting(npc, CalamityTargetingParameters.BossDefaults);
+            if (NPC.target < 0 || NPC.target == Main.maxPlayers || Main.player[NPC.target].dead || !Main.player[NPC.target].active)
+                CalamityUtils.CalamityTargeting(NPC, CalamityTargetingParameters.BossDefaults);
 
             // Percent life remaining
-            float lifeRatio = npc.life / (float)npc.lifeMax;
+            float lifeRatio = NPC.life / (float)NPC.lifeMax;
 
             // Phases based on HP
             float phase2LifeRatio = 0.5f;
@@ -48,29 +63,26 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
             bool useNewGatlingAttackVariant = addSporeGasBlastToGatlingAttack && death;
             bool phase2 = lifeRatio <= phase2LifeRatio;
             bool phase3 = lifeRatio < 0.35f;
-            bool vomitFreeTentacles = lifeRatio < 0.25f && death;
             bool phase4 = lifeRatio < 0.2f;
 
-            // Contact damage values for phase 2
-            int setDamage = (int)Math.Round(npc.defDamage * 1.4);
-            int reducedSetDamage = (int)Math.Round(setDamage * 0.5);
+            NPC.damage = (int)Math.Round(ContactDamageCorrection * (phase2 ? Phase2ContactDamageMult : 1f));
 
             // Variables and target
-            bool enrage = bossRush;
+            bool enrage = false;
             bool despawn = false;
 
             // Check for Jungle
-            bool surface = !bossRush && Main.player[npc.target].position.Y < Main.worldSurface * 16.0;
+            bool surface = !BossRushEvent.BossRushActive && Main.player[NPC.target].position.Y < Main.worldSurface * 16.0;
 
             // Tentacle limits
             int maxTentaclesAfterFirstTentaclePhase = death ? 4 : 2;
             int maxFreeTentaclesAfterFirstTentaclePhase = maxTentaclesAfterFirstTentaclePhase * 2;
 
             float speedUpDistance = 480f;
-            bool speedUp = Vector2.Distance(Main.player[npc.target].Center, npc.Center) > speedUpDistance; // 30 or 40 tile distance
+            bool speedUp = Vector2.Distance(Main.player[NPC.target].Center, NPC.Center) > speedUpDistance; // 30 or 40 tile distance
 
             // Despawn
-            if (Main.player[npc.target].dead)
+            if (Main.player[NPC.target].dead)
             {
                 despawn = true;
                 enrage = true;
@@ -79,23 +91,23 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
             // Despawn if too far from target
             if (Main.netMode != NetmodeID.MultiplayerClient)
             {
-                if (Vector2.Distance(Main.player[npc.target].Center, npc.Center) > 6000f)
+                if (Vector2.Distance(Main.player[NPC.target].Center, NPC.Center) > 6000f)
                 {
-                    npc.active = false;
-                    npc.life = 0;
+                    NPC.active = false;
+                    NPC.life = 0;
                     if (Main.dedServ)
-                        NetMessage.SendData(MessageID.SyncNPC, -1, -1, null, npc.whoAmI);
+                        NetMessage.SendData(MessageID.SyncNPC, -1, -1, null, NPC.whoAmI);
                 }
             }
 
             // Set whoAmI variable and spawn hooks
-            NPC.plantBoss = npc.whoAmI;
-            if (npc.localAI[0] == 0f && Main.netMode != NetmodeID.MultiplayerClient)
+            NPC.plantBoss = NPC.whoAmI;
+            if (NPC.localAI[0] == 0f && Main.netMode != NetmodeID.MultiplayerClient)
             {
-                npc.localAI[0] = 1f;
-                NPC.NewNPC(npc.GetSource_FromAI(), (int)npc.Center.X, (int)npc.Center.Y, NPCID.PlanterasHook, npc.whoAmI);
-                NPC.NewNPC(npc.GetSource_FromAI(), (int)npc.Center.X, (int)npc.Center.Y, NPCID.PlanterasHook, npc.whoAmI);
-                NPC.NewNPC(npc.GetSource_FromAI(), (int)npc.Center.X, (int)npc.Center.Y, NPCID.PlanterasHook, npc.whoAmI);
+                NPC.localAI[0] = 1f;
+                NPC.NewNPC(NPC.GetSource_FromAI(), (int)NPC.Center.X, (int)NPC.Center.Y, NPCID.PlanterasHook, NPC.whoAmI);
+                NPC.NewNPC(NPC.GetSource_FromAI(), (int)NPC.Center.X, (int)NPC.Center.Y, NPCID.PlanterasHook, NPC.whoAmI);
+                NPC.NewNPC(NPC.GetSource_FromAI(), (int)NPC.Center.X, (int)NPC.Center.Y, NPCID.PlanterasHook, NPC.whoAmI);
             }
 
             // Find positions of hooks
@@ -121,29 +133,29 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
             hookPositionY /= numHooksSpawned;
 
             // Velocity and acceleration
-            float velocity = bossRush ? 12f : phase4 ? 7f : phase3 ? 6.5f : phase2 ? 6f : 4f;
-            float acceleration = bossRush ? 0.12f : phase3 ? 0.06f : 0.04f;
-            float chargeLineUpVelocity = bossRush ? 20f : phase4 ? 12f : phase3 ? 10f : 8f;
-            float chargeLineUpAcceleration = bossRush ? 0.8f : phase4 ? 0.6f : phase3 ? 0.5f : 0.4f;
-            float chargeVelocity = bossRush ? 30f : phase4 ? 22f : phase3 ? 20f : 18f;
-            float chargeDeceleration = bossRush ? 0.85f : phase4 ? 0.92f : phase3 ? 0.95f : 0.96f;
+            float velocity = phase4 ? 7f : phase3 ? 6.5f : phase2 ? 6f : 4f;
+            float acceleration = phase3 ? 0.06f : 0.04f;
+            float chargeLineUpVelocity = phase4 ? 12f : phase3 ? 10f : 8f;
+            float chargeLineUpAcceleration = phase4 ? 0.6f : phase3 ? 0.5f : 0.4f;
+            float chargeVelocity = phase4 ? 22f : phase3 ? 20f : 18f;
+            float chargeDeceleration = phase4 ? 0.92f : phase3 ? 0.95f : 0.96f;
 
             // Enrage if target is on the surface
-            if (!bossRush && (surface || Main.player[npc.target].position.Y > Main.UnderworldLayer * 16))
+            if (!BossRushEvent.BossRushActive && (surface || Main.player[NPC.target].position.Y > Main.UnderworldLayer * 16))
             {
                 enrage = true;
                 velocity += 8f;
                 acceleration = 0.15f;
             }
 
-            npc.Calamity().CurrentlyEnraged = !bossRush && enrage;
+            NPC.Calamity().CurrentlyEnraged = enrage;
 
             // Movement relative to the target and hook positions
             Vector2 npcCenterAccountingForHooks = new Vector2(hookPositionX, hookPositionY);
-            float maxVelocityX = Main.player[npc.target].Center.X - npcCenterAccountingForHooks.X;
-            float maxVelocityY = Main.player[npc.target].Center.Y - npcCenterAccountingForHooks.Y;
-            bool phase1MoveAway = !phase2 && Vector2.Distance(Main.player[npc.target].Center, npc.Center) < 240f && Collision.CanHit(npc.Center, 1, 1, Main.player[npc.target].position, Main.player[npc.target].width, Main.player[npc.target].height);
-            bool adjustProjectileShootLocation = Vector2.Distance(Main.player[npc.target].Center, npc.Center) < 80f;
+            float maxVelocityX = Main.player[NPC.target].Center.X - npcCenterAccountingForHooks.X;
+            float maxVelocityY = Main.player[NPC.target].Center.Y - npcCenterAccountingForHooks.Y;
+            bool phase1MoveAway = !phase2 && Vector2.Distance(Main.player[NPC.target].Center, NPC.Center) < 240f && Collision.CanHit(NPC.Center, 1, 1, Main.player[NPC.target].position, Main.player[NPC.target].width, Main.player[NPC.target].height);
+            bool adjustProjectileShootLocation = Vector2.Distance(Main.player[NPC.target].Center, NPC.Center) < 80f;
             if (despawn)
             {
                 maxVelocityY *= -1f;
@@ -161,8 +173,8 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
 
             if (death)
             {
-                velocity += velocity * 0.35f * (1f - lifeRatio);
-                acceleration += acceleration * 0.35f * (1f - lifeRatio);
+                velocity += velocity * 0.35f * ((1f - lifeRatio) / 2);
+                acceleration += acceleration * 0.35f * ((1f - lifeRatio) / 2);
                 if (phase2)
                 {
                     float aggressionScale = (phase2LifeRatio - lifeRatio) / phase2LifeRatio;
@@ -173,7 +185,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                 }
             }
 
-            if (CalamityWorld.LegendaryMode)
+            if (Main.getGoodWorld)
             {
                 velocity *= 1.15f;
                 acceleration *= 1.15f;
@@ -182,17 +194,17 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
             // Slow down and fire a gatling of projectiles
             // These projectiles are slower than normal
             // Glow gradually more green the closer the gatling attack is to ending
-            bool usingSeedGatling = npc.ai[1] > SeedGatlingGateValue;
-            bool slowedDuringTentaclePhase = npc.ai[2] > 0f;
-            bool doneWithTentaclePhase = npc.ai[2] == -1f;
-            bool charging = npc.ai[3] <= -2f;
+            bool usingSeedGatling = NPC.ai[1] > SeedGatlingGateValue;
+            bool slowedDuringTentaclePhase = NPC.ai[2] > 0f;
+            bool doneWithTentaclePhase = NPC.ai[2] == -1f;
+            bool charging = NPC.ai[3] <= -2f;
             bool secondCharge = calamityGlobalNPC.newAI[2] == 1f;
             if (!phase2)
             {
-                npc.ai[1] += 1f;
+                NPC.ai[1] += 1f;
                 if (usingSeedGatling)
                 {
-                    float currentSeedGatlingTime = npc.ai[1] - SeedGatlingGateValue;
+                    float currentSeedGatlingTime = NPC.ai[1] - SeedGatlingGateValue;
 
                     // Slow down more and more as gatling attack continues
                     velocity *= MathHelper.Lerp(MovementVelocityMultiplierForSlowAttacks, 1f, (float)Math.Pow(currentSeedGatlingTime / SeedGatlingDuration, 2D));
@@ -208,15 +220,15 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                     else if (currentSeedGatlingTime >= 60f)
                         shootProjectileGateValue = useNewGatlingAttackVariant ? 30f : 15f;
 
-                    if (npc.ai[1] % shootProjectileGateValue == 0f)
+                    if (NPC.ai[1] % shootProjectileGateValue == 0f)
                     {
-                        bool shootThornBall = npc.ai[1] % 90f == 0f && addThornBallsToGatlingAttack && !useNewGatlingAttackVariant;
-                        bool shootPoisonSeed = npc.ai[1] % 9f == 0f && !shootThornBall;
+                        bool shootThornBall = NPC.ai[1] % 90f == 0f && addThornBallsToGatlingAttack && !useNewGatlingAttackVariant;
+                        bool shootPoisonSeed = NPC.ai[1] % 9f == 0f && !shootThornBall;
                         float projectileSpeed = 14f;
                         int projectileType = shootThornBall ? ProjectileID.ThornBall : shootPoisonSeed ? ProjectileID.PoisonSeedPlantera : ProjectileID.SeedPlantera;
-                        int damage = npc.GetProjectileDamage(projectileType);
-                        Vector2 projectileVelocity = (Main.player[npc.target].Center - npc.Center).SafeNormalize(Vector2.UnitY);
-                        Vector2 spawnOffset = npc.Center + projectileVelocity * 70f;
+                        int damage = shootThornBall ? ThornBallDamage : shootPoisonSeed ? PoisonSeedDamage : PinkSeedDamage;
+                        Vector2 projectileVelocity = (Main.player[NPC.target].Center - NPC.Center).SafeNormalize(Vector2.UnitY);
+                        Vector2 spawnOffset = NPC.Center + projectileVelocity * 70f;
 
                         if (useNewGatlingAttackVariant)
                         {
@@ -245,7 +257,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                                 }
 
                                 if (Main.netMode != NetmodeID.MultiplayerClient)
-                                    Projectile.NewProjectile(npc.GetSource_FromAI(), spawnOffset, perturbedSpeed * projectileSpeed, projectileType, damage, 0f, Main.myPlayer);
+                                    Projectile.NewProjectile(NPC.GetSource_FromAI(), spawnOffset, perturbedSpeed * projectileSpeed, projectileType, damage, 0f, Main.myPlayer);
                             }
                         }
                         else
@@ -264,7 +276,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                             if (Main.netMode != NetmodeID.MultiplayerClient)
                             {
                                 float ai2 = projectileType == ProjectileID.ThornBall && (Main.rand.NextBool() || !Main.zenithWorld) ? 1f : 0f;
-                                Projectile.NewProjectile(npc.GetSource_FromAI(), adjustProjectileShootLocation ? npc.Center : spawnOffset, projectileVelocity * projectileSpeed, projectileType, damage, 0f, Main.myPlayer, 0f, 0f, ai2);
+                                Projectile.NewProjectile(NPC.GetSource_FromAI(), adjustProjectileShootLocation ? NPC.Center : spawnOffset, projectileVelocity * projectileSpeed, projectileType, damage, 0f, Main.myPlayer, 0f, 0f, ai2);
                             }
                         }
                     }
@@ -273,42 +285,41 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                 // Spore Gas vomit color telegraph
                 if (addSporeGasBlastToGatlingAttack)
                 {
-                    bool startEmittingDust = npc.ai[1] > SeedGatlingColorChangeGateValue;
+                    bool startEmittingDust = NPC.ai[1] > SeedGatlingColorChangeGateValue;
                     if (startEmittingDust)
                     {
-                        float dustEmitAmount = npc.ai[1] - SeedGatlingColorChangeGateValue;
+                        float dustEmitAmount = NPC.ai[1] - SeedGatlingColorChangeGateValue;
                         int dustInXChanceMin = 2;
                         int dustInXChanceMax = 8;
                         int dustChance = (int)Math.Round(MathHelper.Lerp(dustInXChanceMin, dustInXChanceMax, 1f - dustEmitAmount / SeedGatlingColorChangeDuration));
                         if (Main.rand.NextBool(dustChance))
                         {
-                            int dust = Dust.NewDust(npc.position, npc.width, npc.height, DustID.GreenFairy, 0f, 0f, 0, default, 1.4f);
+                            int dust = Dust.NewDust(NPC.position, NPC.width, NPC.height, DustID.GreenFairy, 0f, 0f, 0, default, 1.4f);
                             Vector2 vector = new Vector2(Main.rand.Next(-100, 101), Main.rand.Next(-100, 101)).SafeNormalize(Vector2.UnitY);
                             vector *= Main.rand.Next(50, 100) * 0.04f;
                             Main.dust[dust].velocity = vector;
                             vector = vector.SafeNormalize(Vector2.UnitY);
                             vector *= 86f;
-                            Main.dust[dust].position = npc.Center - vector;
+                            Main.dust[dust].position = NPC.Center - vector;
                         }
                     }
                 }
 
-                if (npc.ai[1] >= SeedGatlingStopValue)
+                if (NPC.ai[1] >= SeedGatlingStopValue)
                 {
                     // Vomit dense spread of spore gas at the end of the gatling attack
                     if (addSporeGasBlastToGatlingAttack)
                     {
-                        SoundEngine.PlaySound(SoundID.Item74, npc.Center);
+                        SoundEngine.PlaySound(SoundID.Item74, NPC.Center);
                         int totalProjectiles = death ? 36 : 30;
                         float radians = MathHelper.TwoPi / totalProjectiles;
                         int type = ModContent.ProjectileType<SporeGasPlantera>();
-                        int damage = npc.GetProjectileDamage(type);
-                        float velocity2 = CalamityWorld.LegendaryMode ? 10f : 5f;
+                        float velocity2 = Main.getGoodWorld ? 10f : 5f;
                         Vector2 spinningPoint = new Vector2(0f, -velocity2);
                         for (int k = 0; k < totalProjectiles; k++)
                         {
                             Vector2 projectileVelocity = spinningPoint.RotatedBy(radians * k);
-                            Vector2 spawnOffset = npc.Center + projectileVelocity.SafeNormalize(Vector2.UnitY) * 50f;
+                            Vector2 spawnOffset = NPC.Center + projectileVelocity.SafeNormalize(Vector2.UnitY) * 50f;
                             float randomSpeed = Main.rand.NextFloat(0.8f, death ? 1.5f : 1.2f);
 
                             int dustType = 74;
@@ -321,22 +332,22 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
 
                             float ai0 = Main.rand.Next(3);
                             if (Main.netMode != NetmodeID.MultiplayerClient)
-                                Projectile.NewProjectile(npc.GetSource_FromAI(), adjustProjectileShootLocation ? npc.Center : spawnOffset, projectileVelocity * randomSpeed, type, damage, 0f, Main.myPlayer, ai0);
+                                Projectile.NewProjectile(NPC.GetSource_FromAI(), adjustProjectileShootLocation ? NPC.Center : spawnOffset, projectileVelocity * randomSpeed, type, GreenCloudDamage, 0f, Main.myPlayer, ai0);
                         }
                     }
 
-                    CalamityUtils.CalamityTargeting(npc, CalamityTargetingParameters.BossDefaults);
+                    CalamityUtils.CalamityTargeting(NPC, CalamityTargetingParameters.BossDefaults);
 
-                    npc.ai[1] = -SeedGatlingDuration;
+                    NPC.ai[1] = -SeedGatlingDuration;
                 }
             }
             else
             {
-                npc.ai[1] = 0f;
+                NPC.ai[1] = 0f;
 
                 // Slow down for a while after tentacles are spawned
                 if (slowedDuringTentaclePhase)
-                    velocity *= MathHelper.Lerp(MovementVelocityMultiplierForSlowAttacks, 1f, (float)Math.Pow(1f - npc.ai[2] / TentaclePhaseSlowDuration, 2D));
+                    velocity *= MathHelper.Lerp(MovementVelocityMultiplierForSlowAttacks, 1f, (float)Math.Pow(1f - NPC.ai[2] / TentaclePhaseSlowDuration, 2D));
 
                 // Prepare to charge
                 // More charges are used in a row at lower HP
@@ -346,17 +357,17 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                     if (death)
                         timeToChargeIncrement *= 2f;
 
-                    npc.ai[3] += timeToChargeIncrement;
-                    if (npc.ai[3] >= ChargePhaseGateValue)
-                        npc.ai[3] = -2f;
+                    NPC.ai[3] += timeToChargeIncrement;
+                    if (NPC.ai[3] >= ChargePhaseGateValue)
+                        NPC.ai[3] = -2f;
                 }
             }
 
             // Move slowly for a bit after finishing gatling attack
-            bool slowedAfterGatlingAttack = npc.ai[1] < 0f && !phase2;
+            bool slowedAfterGatlingAttack = NPC.ai[1] < 0f && !phase2;
             if (slowedAfterGatlingAttack)
             {
-                float absValueOfTimer = Math.Abs(npc.ai[1]);
+                float absValueOfTimer = Math.Abs(NPC.ai[1]);
                 velocity *= MathHelper.Lerp(MovementVelocityMultiplierForSlowAttacks, 1f, (float)Math.Pow(absValueOfTimer / SeedGatlingDuration, 2D));
 
                 // Shoot homing pink bulb projectiles that leave behind lingering pink clouds
@@ -368,9 +379,8 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                 {
                     float projectileSpeed = 9f;
                     int projectileType = ModContent.ProjectileType<HomingGasBulb>();
-                    int damage = npc.GetProjectileDamage(projectileType);
-                    Vector2 projectileVelocity = (Main.player[npc.target].Center - npc.Center).SafeNormalize(Vector2.UnitY);
-                    Vector2 spawnOffset = npc.Center + projectileVelocity * 70f;
+                    Vector2 projectileVelocity = (Main.player[NPC.target].Center - NPC.Center).SafeNormalize(Vector2.UnitY);
+                    Vector2 spawnOffset = NPC.Center + projectileVelocity * 70f;
 
                     int dustType = 73;
                     Vector2 dustVelocity = projectileVelocity * projectileSpeed;
@@ -382,30 +392,27 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                     }
 
                     if (Main.netMode != NetmodeID.MultiplayerClient)
-                        Projectile.NewProjectile(npc.GetSource_FromAI(), adjustProjectileShootLocation ? npc.Center : spawnOffset, projectileVelocity * projectileSpeed, projectileType, damage, 0f, Main.myPlayer);
+                        Projectile.NewProjectile(NPC.GetSource_FromAI(), adjustProjectileShootLocation ? NPC.Center : spawnOffset, projectileVelocity * projectileSpeed, projectileType, GasBulbDamage, 0f, Main.myPlayer);
                 }
             }
 
             if (charging)
             {
                 // Slow down and return to normal behavior
-                if (npc.ai[3] <= BeginChargeSlowDownGateValue)
+                if (NPC.ai[3] <= BeginChargeSlowDownGateValue)
                 {
-                    // Avoid cheap bullshit
-                    npc.damage = reducedSetDamage;
-
-                    npc.velocity *= chargeDeceleration;
-                    float timeToDecelerateDecrement = bossRush ? 2f : phase4 ? 1.5f : 1f;
-                    npc.ai[3] -= timeToDecelerateDecrement;
-                    if (npc.ai[3] <= StopChargeGateValue)
+                    NPC.velocity *= chargeDeceleration;
+                    float timeToDecelerateDecrement = phase4 ? 1.5f : 1f;
+                    NPC.ai[3] -= timeToDecelerateDecrement;
+                    if (NPC.ai[3] <= StopChargeGateValue)
                     {
-                        bool canChargeAgain = phase4 ? true : phase3 ? Main.rand.NextBool() : false;
+                        bool canChargeAgain = phase4 || (phase3 && Main.rand.NextBool());
                         bool chargeAgain = canChargeAgain && death && calamityGlobalNPC.newAI[2] == 0f;
-                        npc.ai[3] = chargeAgain ? -2f : 0f;
+                        NPC.ai[3] = chargeAgain ? -2f : 0f;
                         calamityGlobalNPC.newAI[2] = (death && calamityGlobalNPC.newAI[2] == 0f && chargeAgain) ? 1f : 0f;
-                        npc.SyncExtraAI();
+                        NPC.SyncExtraAI();
 
-                        if (!vomitFreeTentacles && !secondCharge)
+                        if (!secondCharge)
                         {
                             // Spawn a few tentacles
                             if (Main.netMode != NetmodeID.MultiplayerClient)
@@ -416,7 +423,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                                     if (NPC.CountNPCS(ModContent.NPCType<PlanterasFreeTentacle>()) < maxFreeTentaclesAfterFirstTentaclePhase)
                                     {
                                         for (int i = 0; i < maxTentaclesAfterFirstTentaclePhase; i++)
-                                            NPC.NewNPC(npc.GetSource_FromAI(), (int)npc.Center.X, (int)npc.Center.Y, NPCID.PlanterasTentacle, npc.whoAmI, 0f, 0f, 1f, 0f);
+                                            NPC.NewNPC(NPC.GetSource_FromAI(), (int)NPC.Center.X, (int)NPC.Center.Y, NPCID.PlanterasTentacle, NPC.whoAmI, 0f, 0f, 1f, 0f);
                                     }
                                 }
                             }
@@ -426,19 +433,16 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
 
                 // Maintain charge velocity
                 // Emit spore gas in phase 3
-                else if (npc.ai[3] <= BeginChargeGateValue)
+                else if (NPC.ai[3] <= BeginChargeGateValue)
                 {
-                    // Set damage
-                    npc.damage = setDamage;
-
+                    NPC.damage = (int)Math.Round(ContactDamageCorrection * Phase2ContactDamageMult * DashDamageMult);
                     float sporeGasDashGateValue = death ? 6f : 9f;
-                    if (phase3 && npc.ai[3] % sporeGasDashGateValue == 0f)
+                    if (phase3 && NPC.ai[3] % sporeGasDashGateValue == 0f)
                     {
                         int projectileType = ModContent.ProjectileType<SporeGasPlantera>();
-                        int damage = npc.GetProjectileDamage(projectileType);
                         float randomVelocityMultiplier = secondCharge ? 0.05f : death ? 0.3f : 0.2f;
-                        Vector2 projectileVelocity = npc.velocity * Main.rand.NextVector2CircularEdge(randomVelocityMultiplier, randomVelocityMultiplier);
-                        Vector2 spawnOffset = npc.Center + projectileVelocity.SafeNormalize(Vector2.UnitY) * 30f;
+                        Vector2 projectileVelocity = NPC.velocity * Main.rand.NextVector2CircularEdge(randomVelocityMultiplier, randomVelocityMultiplier);
+                        Vector2 spawnOffset = NPC.Center + projectileVelocity.SafeNormalize(Vector2.UnitY) * 30f;
 
                         int dustType = 74;
                         Vector2 dustVelocity = projectileVelocity;
@@ -450,72 +454,66 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
 
                         float ai0 = Main.rand.Next(3);
                         if (Main.netMode != NetmodeID.MultiplayerClient)
-                            Projectile.NewProjectile(npc.GetSource_FromAI(), spawnOffset, projectileVelocity, projectileType, damage, 0f, Main.myPlayer, ai0);
+                            Projectile.NewProjectile(NPC.GetSource_FromAI(), spawnOffset, projectileVelocity, projectileType, GasBulbDamage, 0f, Main.myPlayer, ai0);
                     }
 
-                    npc.ai[3] -= 1f;
-                    if (npc.ai[3] <= BeginChargeSlowDownGateValue)
-                        npc.ai[3] = BeginChargeSlowDownGateValue;
+                    NPC.ai[3] -= 1f;
+                    if (NPC.ai[3] <= BeginChargeSlowDownGateValue)
+                        NPC.ai[3] = BeginChargeSlowDownGateValue;
                 }
 
                 // Move a specified distance away from the target and charge once that distance is reached
                 else
                 {
-                    // Avoid cheap bullshit
-                    npc.damage = reducedSetDamage;
-
                     // Line up before charging
-                    if (npc.Calamity().newAI[0] == 0f)
+                    if (NPC.Calamity().newAI[0] == 0f)
                     {
-                        npc.Calamity().newAI[0] = Math.Sign((npc.Center - Main.player[npc.target].Center).X);
-                        npc.SyncExtraAI();
+                        NPC.Calamity().newAI[0] = Math.Sign((NPC.Center - Main.player[NPC.target].Center).X);
+                        NPC.SyncExtraAI();
                     }
 
-                    Vector2 destination = Main.player[npc.target].Center + new Vector2(npc.Calamity().newAI[0], 0);
-                    Vector2 distanceFromDestination = destination - npc.Center;
-                    Vector2 desiredVelocity = (distanceFromDestination - npc.velocity).SafeNormalize(Vector2.UnitY) * chargeLineUpVelocity;
+                    Vector2 destination = Main.player[NPC.target].Center + new Vector2(NPC.Calamity().newAI[0], 0);
+                    Vector2 distanceFromDestination = destination - NPC.Center;
+                    Vector2 desiredVelocity = (distanceFromDestination - NPC.velocity).SafeNormalize(Vector2.UnitY) * chargeLineUpVelocity;
 
-                    if (Vector2.Distance(npc.Center, destination) > ReduceSpeedForChargeDistance)
-                        npc.SimpleFlyMovement(desiredVelocity, chargeLineUpAcceleration);
+                    if (Vector2.Distance(NPC.Center, destination) > ReduceSpeedForChargeDistance)
+                        NPC.SimpleFlyMovement(desiredVelocity, chargeLineUpAcceleration);
                     else
-                        npc.velocity *= 0.98f;
+                        NPC.velocity *= 0.98f;
 
                     // Emit dust to show that a spore and charge attack are about to happen
-                    float dustEmitAmount = Math.Abs(BeginChargeGateValue) - Math.Abs(npc.ai[3]);
+                    float dustEmitAmount = Math.Abs(BeginChargeGateValue) - Math.Abs(NPC.ai[3]);
                     int dustInXChanceMin = 2;
                     int dustInXChanceMax = 8;
                     int dustChance = (int)Math.Round(MathHelper.Lerp(dustInXChanceMin, dustInXChanceMax, 1f - dustEmitAmount / Math.Abs(BeginChargeGateValue)));
                     if (Main.rand.NextBool(dustChance))
                     {
-                        int dust = Dust.NewDust(npc.position, npc.width, npc.height, DustID.GreenFairy, 0f, 0f, 0, default, 1.4f);
+                        int dust = Dust.NewDust(NPC.position, NPC.width, NPC.height, DustID.GreenFairy, 0f, 0f, 0, default, 1.4f);
                         Vector2 vector = new Vector2(Main.rand.Next(-100, 101), Main.rand.Next(-100, 101)).SafeNormalize(Vector2.UnitY);
                         vector *= Main.rand.Next(50, 100) * 0.04f;
                         Main.dust[dust].velocity = vector;
                         vector = vector.SafeNormalize(Vector2.UnitY);
                         vector *= 86f;
-                        Main.dust[dust].position = npc.Center - vector;
+                        Main.dust[dust].position = NPC.Center - vector;
                     }
 
                     float timeToLineUpChargeDecrement = phase4 ? 2f : 1f;
                     if (death)
                         timeToLineUpChargeDecrement *= 2f;
 
-                    npc.ai[3] -= timeToLineUpChargeDecrement;
-                    if (npc.ai[3] <= BeginChargeGateValue)
+                    NPC.ai[3] -= timeToLineUpChargeDecrement;
+                    if (NPC.ai[3] <= BeginChargeGateValue)
                     {
-                        // Set damage
-                        npc.damage = setDamage;
-
                         // Charge
-                        npc.ai[3] = BeginChargeGateValue;
-                        npc.velocity = (Main.player[npc.target].Center - npc.Center).SafeNormalize(Vector2.UnitY) * chargeVelocity;
-                        SoundEngine.PlaySound(SoundID.Item74, npc.Center);
+                        NPC.ai[3] = BeginChargeGateValue;
+                        NPC.velocity = (Main.player[NPC.target].Center - NPC.Center).SafeNormalize(Vector2.UnitY) * chargeVelocity;
+                        SoundEngine.PlaySound(SoundID.Item74, NPC.Center);
 
                         // Spore dust cloud
-                        Vector2 dustVelocity = npc.velocity * -0.25f;
+                        Vector2 dustVelocity = NPC.velocity * -0.25f;
                         for (int k = 0; k < 30; k++)
                         {
-                            Dust dust = Dust.NewDustDirect(npc.Center, npc.width, npc.height, DustID.JungleSpore, dustVelocity.X, dustVelocity.Y, 250, default, 0.8f);
+                            Dust dust = Dust.NewDustDirect(NPC.Center, NPC.width, NPC.height, DustID.JungleSpore, dustVelocity.X, dustVelocity.Y, 250, default, 0.8f);
                             dust.fadeIn = 0.7f;
                         }
 
@@ -523,13 +521,12 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                         int totalProjectiles = secondCharge ? 6 : 12;
                         float radians = MathHelper.TwoPi / totalProjectiles;
                         int type = ModContent.ProjectileType<SporeGasPlantera>();
-                        int damage = npc.GetProjectileDamage(type);
-                        float velocity2 = CalamityWorld.LegendaryMode ? 10f : 5f;
+                        float velocity2 = Main.getGoodWorld ? 10f : 5f;
                         Vector2 spinningPoint = new Vector2(0f, -velocity2);
                         for (int k = 0; k < totalProjectiles; k++)
                         {
                             Vector2 projectileVelocity = spinningPoint.RotatedBy(radians * k);
-                            Vector2 spawnOffset = npc.Center + projectileVelocity.SafeNormalize(Vector2.UnitY) * 50f;
+                            Vector2 spawnOffset = NPC.Center + projectileVelocity.SafeNormalize(Vector2.UnitY) * 50f;
                             float randomSpeed = Main.rand.NextFloat(0.8f, secondCharge ? 1f : death ? 1.5f : 1.2f);
 
                             int dustType = 74;
@@ -542,21 +539,18 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
 
                             float ai0 = Main.rand.Next(3);
                             if (Main.netMode != NetmodeID.MultiplayerClient)
-                                Projectile.NewProjectile(npc.GetSource_FromAI(), spawnOffset, projectileVelocity * randomSpeed, type, damage, 0f, Main.myPlayer, ai0);
+                                Projectile.NewProjectile(NPC.GetSource_FromAI(), spawnOffset, projectileVelocity * randomSpeed, type, GasBulbDamage, 0f, Main.myPlayer, ai0);
                         }
                     }
 
                     // Rotation
-                    float rotationX = Main.player[npc.target].Center.X - npc.Center.X;
-                    float rotationY = Main.player[npc.target].Center.Y - npc.Center.Y;
-                    npc.rotation = (float)Math.Atan2(rotationY, rotationX) + MathHelper.PiOver2;
+                    float rotationX = Main.player[NPC.target].Center.X - NPC.Center.X;
+                    float rotationY = Main.player[NPC.target].Center.Y - NPC.Center.Y;
+                    NPC.rotation = (float)Math.Atan2(rotationY, rotationX) + MathHelper.PiOver2;
                 }
             }
             else
             {
-                // Avoid cheap bullshit
-                npc.damage = phase2 ? reducedSetDamage : 0;
-
                 // Velocity ranges from 4 to 7.2, Acceleration ranges from 0.04 to 0.072, non-enraged phase 1
                 // Velocity ranges from 7 to 12.6, Acceleration ranges from 0.07 to 0.126, non-enraged phase 2
                 // Velocity ranges from 9 to 16.2, Acceleration ranges from 0.07 to 0.126, non-enraged phase 3
@@ -568,7 +562,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                     maxDistanceFromHooks += 150f;
                 if (death)
                 {
-                    maxDistanceFromHooks += maxDistanceFromHooks * 0.2f * (1f - lifeRatio);
+                    maxDistanceFromHooks += maxDistanceFromHooks * 0.2f * ((1f - lifeRatio) / 2);
                     maxDistanceFromHooks += 200f;
                 }
 
@@ -581,15 +575,15 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
 
                 hookPositionX += maxVelocityX;
                 hookPositionY += maxVelocityY;
-                npcCenterAccountingForHooks = npc.Center;
+                npcCenterAccountingForHooks = NPC.Center;
                 maxVelocityX = hookPositionX - npcCenterAccountingForHooks.X;
                 maxVelocityY = hookPositionY - npcCenterAccountingForHooks.Y;
                 distanceFromTarget = (float)Math.Sqrt(maxVelocityX * maxVelocityX + maxVelocityY * maxVelocityY);
 
                 if (distanceFromTarget < velocity)
                 {
-                    maxVelocityX = npc.velocity.X;
-                    maxVelocityY = npc.velocity.Y;
+                    maxVelocityX = NPC.velocity.X;
+                    maxVelocityY = NPC.velocity.Y;
                 }
                 else
                 {
@@ -598,64 +592,64 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                     maxVelocityY *= distanceFromTarget;
                 }
 
-                if (npc.velocity.X < maxVelocityX)
+                if (NPC.velocity.X < maxVelocityX)
                 {
-                    npc.velocity.X += acceleration;
-                    if (npc.velocity.X < 0f && maxVelocityX > 0f)
-                        npc.velocity.X += acceleration * 2f;
+                    NPC.velocity.X += acceleration;
+                    if (NPC.velocity.X < 0f && maxVelocityX > 0f)
+                        NPC.velocity.X += acceleration * 2f;
                 }
-                else if (npc.velocity.X > maxVelocityX)
+                else if (NPC.velocity.X > maxVelocityX)
                 {
-                    npc.velocity.X -= acceleration;
-                    if (npc.velocity.X > 0f && maxVelocityX < 0f)
-                        npc.velocity.X -= acceleration * 2f;
+                    NPC.velocity.X -= acceleration;
+                    if (NPC.velocity.X > 0f && maxVelocityX < 0f)
+                        NPC.velocity.X -= acceleration * 2f;
                 }
-                if (npc.velocity.Y < maxVelocityY)
+                if (NPC.velocity.Y < maxVelocityY)
                 {
-                    npc.velocity.Y += acceleration;
-                    if (npc.velocity.Y < 0f && maxVelocityY > 0f)
-                        npc.velocity.Y += acceleration * 2f;
+                    NPC.velocity.Y += acceleration;
+                    if (NPC.velocity.Y < 0f && maxVelocityY > 0f)
+                        NPC.velocity.Y += acceleration * 2f;
                 }
-                else if (npc.velocity.Y > maxVelocityY)
+                else if (NPC.velocity.Y > maxVelocityY)
                 {
-                    npc.velocity.Y -= acceleration;
-                    if (npc.velocity.Y > 0f && maxVelocityY < 0f)
-                        npc.velocity.Y -= acceleration * 2f;
+                    NPC.velocity.Y -= acceleration;
+                    if (NPC.velocity.Y > 0f && maxVelocityY < 0f)
+                        NPC.velocity.Y -= acceleration * 2f;
                 }
 
                 // Rotation
-                float rotationX = Main.player[npc.target].Center.X - npc.Center.X;
-                float rotationY = Main.player[npc.target].Center.Y - npc.Center.Y;
-                npc.rotation = (float)Math.Atan2(rotationY, rotationX) + MathHelper.PiOver2;
+                float rotationX = Main.player[NPC.target].Center.X - NPC.Center.X;
+                float rotationY = Main.player[NPC.target].Center.Y - NPC.Center.Y;
+                NPC.rotation = (float)Math.Atan2(rotationY, rotationX) + MathHelper.PiOver2;
             }
 
             // Phase 1
             if (!phase2)
             {
                 // Emit light
-                Lighting.AddLight((int)((npc.position.X + (npc.width / 2)) / 16f), (int)((npc.position.Y + (npc.height / 2)) / 16f), 0.8f, 0.2f, 0.4f);
+                Lighting.AddLight((int)((NPC.position.X + (NPC.width / 2)) / 16f), (int)((NPC.position.Y + (NPC.height / 2)) / 16f), 0.8f, 0.2f, 0.4f);
 
                 // Adjust stats
                 calamityGlobalNPC.DR = 0.15f;
                 calamityGlobalNPC.unbreakableDR = false;
-                npc.defense = 32;
+                NPC.defense = 32;
 
                 // Fire projectiles
                 if (!usingSeedGatling && !slowedAfterGatlingAttack)
                 {
                     float shootBoost = 2f * (1f - lifeRatio);
-                    npc.localAI[1] += 1f + shootBoost;
+                    NPC.localAI[1] += 1f + shootBoost;
 
                     if (enrage)
-                        npc.localAI[1] += 2f;
+                        NPC.localAI[1] += 2f;
 
-                    if (CalamityWorld.LegendaryMode)
-                        npc.localAI[1] += 1f;
+                    if (Main.getGoodWorld)
+                        NPC.localAI[1] += 1f;
 
-                    float shootProjectileGateValue = death ? 30f : 60f;
-                    if (npc.localAI[1] >= shootProjectileGateValue)
+                    float shootProjectileGateValue = death ? 40f : 60f;
+                    if (NPC.localAI[1] >= shootProjectileGateValue)
                     {
-                        npc.localAI[1] = 0f;
+                        NPC.localAI[1] = 0f;
 
                         bool shootThornBall = false;
                         if (useNewGatlingAttackVariant)
@@ -676,12 +670,12 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                             }
                         }
 
-                        bool shootPoisonSeed = (CalamityWorld.LegendaryMode || Main.rand.NextBool(death ? 2 : 4)) && !shootThornBall;
+                        bool shootPoisonSeed = (Main.getGoodWorld || Main.rand.NextBool(death ? 2 : 4)) && !shootThornBall;
                         int projectileType = shootThornBall ? ProjectileID.ThornBall : shootPoisonSeed ? ProjectileID.PoisonSeedPlantera : ProjectileID.SeedPlantera;
                         float projectileSpeed = death ? 16f : 14f;
-                        int damage = npc.GetProjectileDamage(projectileType);
-                        Vector2 projectileVelocity = (Main.player[npc.target].Center - npc.Center).SafeNormalize(Vector2.UnitY);
-                        Vector2 spawnOffset = npc.Center + projectileVelocity * 70f;
+                        int damage = shootThornBall ? ThornBallDamage : shootPoisonSeed ? PoisonSeedDamage : PinkSeedDamage;
+                        Vector2 projectileVelocity = (Main.player[NPC.target].Center - NPC.Center).SafeNormalize(Vector2.UnitY);
+                        Vector2 spawnOffset = NPC.Center + projectileVelocity * 70f;
 
                         int dustType = shootPoisonSeed ? 74 : 73;
                         int dustSpawnBoxSize = shootThornBall ? 38 : 14;
@@ -696,7 +690,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
 
                         if (Main.netMode != NetmodeID.MultiplayerClient)
                         {
-                            int proj = Projectile.NewProjectile(npc.GetSource_FromAI(), adjustProjectileShootLocation ? npc.Center : spawnOffset, projectileVelocity * projectileSpeed, projectileType, damage, 0f, Main.myPlayer);
+                            int proj = Projectile.NewProjectile(NPC.GetSource_FromAI(), adjustProjectileShootLocation ? NPC.Center : spawnOffset, projectileVelocity * projectileSpeed, projectileType, damage, 0f, Main.myPlayer);
                             if (projectileType == ProjectileID.ThornBall && (Main.rand.NextBool() || !Main.zenithWorld))
                                 Main.projectile[proj].tileCollide = false;
                         }
@@ -708,36 +702,34 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
             else
             {
                 // Emit light
-                Lighting.AddLight((int)((npc.position.X + (npc.width / 2)) / 16f), (int)((npc.position.Y + (npc.height / 2)) / 16f), 0.4f, 0.8f, 0.2f);
+                Lighting.AddLight((int)((NPC.position.X + (NPC.width / 2)) / 16f), (int)((NPC.position.Y + (NPC.height / 2)) / 16f), 0.4f, 0.8f, 0.2f);
 
                 // Spore dust
                 if (Main.rand.NextBool(10))
                 {
-                    Dust dust = Dust.NewDustDirect(npc.position, npc.width, npc.height, DustID.JungleSpore, 0f, 0f, 250, default, 0.6f);
+                    Dust dust = Dust.NewDustDirect(NPC.position, NPC.width, NPC.height, DustID.JungleSpore, 0f, 0f, 250, default, 0.6f);
                     dust.fadeIn = 0.7f;
                 }
 
                 // Adjust stats
                 calamityGlobalNPC.DR = 0.15f;
                 calamityGlobalNPC.unbreakableDR = false;
-                npc.defense = 10;
+                NPC.defense = 10;
 
                 // Spawn tentacles
                 if (Main.netMode != NetmodeID.MultiplayerClient)
                 {
-                    if (npc.localAI[0] == 1f)
+                    if (NPC.localAI[0] == 1f)
                     {
-                        npc.localAI[0] = 2f;
-                        int totalTentacles = death ? 12 : 8;
-                        if (CalamityWorld.LegendaryMode)
-                            totalTentacles += 6;
-                        if (CalamityWorld.LegendaryMode)
+                        NPC.localAI[0] = 2f;
+                        int totalTentacles = death ? 11 : 8;
+                        if (Main.getGoodWorld)
                             totalTentacles *= 2;
 
                         for (int i = 0; i < totalTentacles; i++)
-                            NPC.NewNPC(npc.GetSource_FromAI(), (int)npc.Center.X, (int)npc.Center.Y, NPCID.PlanterasTentacle, npc.whoAmI);
+                            NPC.NewNPC(NPC.GetSource_FromAI(), (int)NPC.Center.X, (int)NPC.Center.Y, NPCID.PlanterasTentacle, NPC.whoAmI);
 
-                        if (CalamityWorld.LegendaryMode)
+                        if (Main.getGoodWorld)
                         {
                             foreach (NPC n in Main.ActiveNPCs)
                             {
@@ -745,7 +737,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                                 {
                                     for (int j = 0; j < totalTentacles / 2 - 1; j++)
                                     {
-                                        int hookIndex = NPC.NewNPC(npc.GetSource_FromAI(), (int)npc.Center.X, (int)npc.Center.Y, NPCID.PlanterasTentacle, npc.whoAmI);
+                                        int hookIndex = NPC.NewNPC(NPC.GetSource_FromAI(), (int)NPC.Center.X, (int)NPC.Center.Y, NPCID.PlanterasTentacle, NPC.whoAmI);
                                         Main.npc[hookIndex].ai[3] = n.whoAmI + 1;
                                     }
                                 }
@@ -757,8 +749,8 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                 // Slow down for 20 seconds after transitioning to phase 2
                 // This gives players time to handle the tentacles before Plantera starts attack again
                 // Decrement the timer far faster if there aren't any tentacles alive
-                if (npc.ai[2] == 0f)
-                    npc.ai[2] = TentaclePhaseSlowDuration;
+                if (NPC.ai[2] == 0f)
+                    NPC.ai[2] = TentaclePhaseSlowDuration;
 
                 if (slowedDuringTentaclePhase)
                 {
@@ -768,35 +760,33 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                     if (death)
                         tentacleIdleTimerDecrement *= 2f;
 
-                    npc.ai[2] -= tentacleIdleTimerDecrement;
-                    if (npc.ai[2] <= 0f)
-                        npc.ai[2] = -1f;
+                    NPC.ai[2] -= tentacleIdleTimerDecrement;
+                    if (NPC.ai[2] <= 0f)
+                        NPC.ai[2] = -1f;
                 }
 
                 // Spawn gore
-                if (npc.localAI[2] == 0f)
+                if (NPC.localAI[2] == 0f)
                 {
                     if (!Main.dedServ)
                     {
-                        Gore.NewGore(npc.GetSource_FromAI(), new Vector2(npc.position.X + Main.rand.Next(npc.width), npc.position.Y + Main.rand.Next(npc.height)), npc.velocity, 378, npc.scale);
-                        Gore.NewGore(npc.GetSource_FromAI(), new Vector2(npc.position.X + Main.rand.Next(npc.width), npc.position.Y + Main.rand.Next(npc.height)), npc.velocity, 379, npc.scale);
-                        Gore.NewGore(npc.GetSource_FromAI(), new Vector2(npc.position.X + Main.rand.Next(npc.width), npc.position.Y + Main.rand.Next(npc.height)), npc.velocity, 380, npc.scale);
+                        Gore.NewGore(NPC.GetSource_FromAI(), new Vector2(NPC.position.X + Main.rand.Next(NPC.width), NPC.position.Y + Main.rand.Next(NPC.height)), NPC.velocity, 378, NPC.scale);
+                        Gore.NewGore(NPC.GetSource_FromAI(), new Vector2(NPC.position.X + Main.rand.Next(NPC.width), NPC.position.Y + Main.rand.Next(NPC.height)), NPC.velocity, 379, NPC.scale);
+                        Gore.NewGore(NPC.GetSource_FromAI(), new Vector2(NPC.position.X + Main.rand.Next(NPC.width), NPC.position.Y + Main.rand.Next(NPC.height)), NPC.velocity, 380, NPC.scale);
                     }
-                    npc.localAI[2] = 1f;
+                    NPC.localAI[2] = 1f;
                 }
 
                 if (!charging)
                 {
                     // Fire spreads of poison seeds
-                    npc.localAI[3] += 1f;
+                    NPC.localAI[3] += 1f;
                     float shootProjectileGateValue = slowedDuringTentaclePhase ? 120f : 90f;
-                    if (npc.localAI[3] >= shootProjectileGateValue)
+                    if (NPC.localAI[3] >= shootProjectileGateValue)
                     {
                         float projectileSpeed = 14f;
-                        if (bossRush)
-                            projectileSpeed += 4f;
 
-                        Vector2 projectileVelocity = (Main.player[npc.target].Center - npc.Center).SafeNormalize(Vector2.UnitY);
+                        Vector2 projectileVelocity = (Main.player[NPC.target].Center - NPC.Center).SafeNormalize(Vector2.UnitY);
 
                         int spread = 8 + (int)Math.Round((0.5f - lifeRatio) * 16f); // 8 to 16, wider spread is harder to avoid
                         int numProj = spread / 2;
@@ -806,11 +796,8 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                             numProj++;
 
                         int type = ProjectileID.PoisonSeedPlantera;
-                        int damage = npc.GetProjectileDamage(type);
+                        int damage = PoisonSeedDamage;
                         float rotation = MathHelper.ToRadians(spread);
-                        bool vomitTentacles = vomitFreeTentacles && NPC.CountNPCS(ModContent.NPCType<PlanterasFreeTentacle>()) < maxTentaclesAfterFirstTentaclePhase;
-                        if (vomitTentacles)
-                            SoundEngine.PlaySound(SoundID.NPCDeath11, npc.Center);
 
                         for (int i = 0; i < numProj; i++)
                         {
@@ -818,15 +805,15 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                             if (shootPinkSeed)
                             {
                                 type = ProjectileID.SeedPlantera;
-                                damage = npc.GetProjectileDamage(type);
+                                damage = PinkSeedDamage;
                             }
                             else
                                 type = ProjectileID.PoisonSeedPlantera;
 
                             Vector2 perturbedSpeed = projectileVelocity.RotatedBy(MathHelper.Lerp(-rotation, rotation, i / (float)(numProj - 1)));
-                            Vector2 spawnOffset = npc.Center + perturbedSpeed * 50f;
+                            Vector2 spawnOffset = NPC.Center + perturbedSpeed * 50f;
 
-                            int dustType = (shootPinkSeed && !vomitTentacles) ? 73 : 74;
+                            int dustType = shootPinkSeed ? 73 : 74;
                             Vector2 dustVelocity = perturbedSpeed * projectileSpeed;
                             for (int k = 0; k < 5; k++)
                             {
@@ -836,17 +823,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                             }
 
                             if (Main.netMode != NetmodeID.MultiplayerClient)
-                            {
-                                if (vomitTentacles)
-                                {
-                                    int tentacle = NPC.NewNPC(npc.GetSource_FromAI(), (int)spawnOffset.X, (int)spawnOffset.Y, ModContent.NPCType<PlanterasFreeTentacle>(), 0, 120f, projectileSpeed);
-                                    Main.npc[tentacle].velocity.X = (perturbedSpeed * projectileSpeed * 0.5f).X;
-                                    Main.npc[tentacle].velocity.Y = (perturbedSpeed * projectileSpeed * 0.5f).Y;
-                                    Main.npc[tentacle].netUpdate = true;
-                                }
-                                else
-                                    Projectile.NewProjectile(npc.GetSource_FromAI(), spawnOffset, perturbedSpeed * projectileSpeed * 0.5f, type, damage, 0f, Main.myPlayer, 0f, 0f, projectileSpeed);
-                            }
+                                Projectile.NewProjectile(NPC.GetSource_FromAI(), spawnOffset, perturbedSpeed * projectileSpeed * 0.5f, type, damage, 0f, Main.myPlayer, 0f, 0f, projectileSpeed);
                         }
 
                         if (death)
@@ -870,15 +847,15 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                             if (shootThornBall)
                             {
                                 type = ProjectileID.ThornBall;
-                                damage = npc.GetProjectileDamage(type);
-                                Vector2 spawnOffset = npc.Center + projectileVelocity * 50f;
+                                damage = ThornBallDamage;
+                                Vector2 spawnOffset = NPC.Center + projectileVelocity * 50f;
 
                                 if (Main.netMode != NetmodeID.MultiplayerClient)
                                 {
                                     float ai2 = 0f;
                                     if (Main.rand.NextBool() || !Main.zenithWorld)
                                         ai2 = 1f;
-                                    Projectile.NewProjectile(npc.GetSource_FromAI(), spawnOffset, projectileVelocity * projectileSpeed, type, damage, 0f, Main.myPlayer, 0f, 0f, ai2);
+                                    Projectile.NewProjectile(NPC.GetSource_FromAI(), spawnOffset, projectileVelocity * projectileSpeed, type, damage, 0f, Main.myPlayer, 0f, 0f, ai2);
                                 }
                             }
                         }
@@ -887,13 +864,13 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                         {
                             float sporeSpeed = 12f;
                             Vector2 sporeVelocity = projectileVelocity * sporeSpeed;
-                            int spore = NPC.NewNPC(npc.GetSource_FromAI(), (int)npc.Center.X, (int)npc.Center.Y, NPCID.Spore);
+                            int spore = NPC.NewNPC(NPC.GetSource_FromAI(), (int)NPC.Center.X, (int)NPC.Center.Y, NPCID.Spore);
                             Main.npc[spore].velocity.X = sporeVelocity.X;
                             Main.npc[spore].velocity.Y = sporeVelocity.Y;
                             Main.npc[spore].netUpdate = true;
                         }
 
-                        npc.localAI[3] = 0f;
+                        NPC.localAI[3] = 0f;
                     }
                 }
             }
@@ -903,7 +880,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
             {
                 if (Main.rand.NextBool(Main.IsItDay() ? 3 : 6))
                 {
-                    int dust = Dust.NewDust(npc.position, npc.width, npc.height, DustID.Pixie, 0f, 0f, 200, default, 0.5f);
+                    int dust = Dust.NewDust(NPC.position, NPC.width, NPC.height, DustID.Pixie, 0f, 0f, 200, default, 0.5f);
                     Main.dust[dust].noGravity = true;
                     Main.dust[dust].velocity *= 0.75f;
                     Main.dust[dust].fadeIn = 1.3f;
@@ -912,7 +889,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                     Main.dust[dust].velocity = vector;
                     vector = vector.SafeNormalize(Vector2.UnitY);
                     vector *= 86f;
-                    Main.dust[dust].position = npc.Center - vector;
+                    Main.dust[dust].position = NPC.Center - vector;
                 }
 
                 // Heal, 100 (50 during daytime) seconds to reach full HP from 0
@@ -920,40 +897,40 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                 if (calamityGlobalNPC.newAI[1] >= (Main.IsItDay() ? 30f : 60f))
                 {
                     calamityGlobalNPC.newAI[1] = 0f;
-                    npc.SyncExtraAI();
+                    NPC.SyncExtraAI();
                     if (Main.netMode != NetmodeID.MultiplayerClient)
                     {
-                        int healAmt = npc.lifeMax / 100;
-                        if (healAmt > npc.lifeMax - npc.life)
-                            healAmt = npc.lifeMax - npc.life;
+                        int healAmt = NPC.lifeMax / 100;
+                        if (healAmt > NPC.lifeMax - NPC.life)
+                            healAmt = NPC.lifeMax - NPC.life;
 
                         if (healAmt > 0)
                         {
-                            npc.life += healAmt;
-                            npc.HealEffect(healAmt, true);
-                            npc.netUpdate = true;
+                            NPC.life += healAmt;
+                            NPC.HealEffect(healAmt, true);
+                            NPC.netUpdate = true;
                         }
                     }
                 }
             }
 
-            if (npc.ai[0] == 0f && npc.life > 0)
-                npc.ai[0] = npc.lifeMax;
+            if (NPC.ai[0] == 0f && NPC.life > 0)
+                NPC.ai[0] = NPC.lifeMax;
 
-            if (npc.life > 0)
+            if (NPC.life > 0)
             {
                 if (Main.netMode != NetmodeID.MultiplayerClient)
                 {
-                    int healthInterval = death ? (int)(npc.lifeMax * 0.03) : (int)(npc.lifeMax * 0.04);
-                    if ((npc.life + healthInterval) < npc.ai[0])
+                    int healthInterval = death ? (int)(NPC.lifeMax * 0.03) : (int)(NPC.lifeMax * 0.04);
+                    if ((NPC.life + healthInterval) < NPC.ai[0])
                     {
-                        npc.ai[0] = npc.life;
+                        NPC.ai[0] = NPC.life;
 
                         if (phase2)
                         {
-                            int spore = NPC.NewNPC(npc.GetSource_FromAI(), (int)npc.Center.X, (int)npc.Center.Y, NPCID.Spore, npc.whoAmI);
-                            float sporeSpeed = death ? 9f : 6f;
-                            Vector2 sporeVelocity = (Main.player[npc.target].Center - npc.Center).SafeNormalize(Vector2.UnitY) * sporeSpeed;
+                            int spore = NPC.NewNPC(NPC.GetSource_FromAI(), (int)NPC.Center.X, (int)NPC.Center.Y, NPCID.Spore, NPC.whoAmI);
+                            float sporeSpeed = death ? 8f : 6f;
+                            Vector2 sporeVelocity = (Main.player[NPC.target].Center - NPC.Center).SafeNormalize(Vector2.UnitY) * sporeSpeed;
                             Main.npc[spore].velocity.X = sporeVelocity.X;
                             Main.npc[spore].velocity.Y = sporeVelocity.Y;
                             Main.npc[spore].netUpdate = true;
@@ -965,337 +942,340 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
             return false;
         }
 
-        public static bool BuffedPlanterasHookAI(NPC npc, Mod mod)
+        public class HookAI : VanillaAIOverride
         {
-            // Variables
-            bool enrage = BossRushEvent.BossRushActive;
-            bool despawn = false;
-            bool death = CalamityWorld.death || enrage;
-
-            // Despawn if Plantera is gone
-            if (NPC.plantBoss < 0)
+            public override bool AI(Mod mod)
             {
-                if (Main.netMode != NetmodeID.MultiplayerClient)
-                    npc.StrikeInstantKill();
+                // Variables
+                bool enrage = false;
+                bool despawn = false;
+                bool death = CalamityWorld.death || enrage;
 
-                return false;
-            }
-
-            // Percent life remaining, Plantera
-            float lifeRatio = Main.npc[NPC.plantBoss].life / (float)Main.npc[NPC.plantBoss].lifeMax;
-
-            // Despawn if Plantera's target is dead
-            if (Main.player[Main.npc[NPC.plantBoss].target].dead && !enrage)
-                despawn = true;
-
-            // Enrage if Plantera's target is on the surface
-            if (!enrage && ((Main.player[Main.npc[NPC.plantBoss].target].position.Y < Main.worldSurface * 16.0 || Main.player[Main.npc[NPC.plantBoss].target].position.Y > Main.UnderworldLayer * 16) | despawn))
-            {
-                npc.localAI[0] -= 4f;
-                enrage = true;
-            }
-
-            // Set centers for movement
-            if (Main.netMode == NetmodeID.MultiplayerClient)
-            {
-                if (npc.ai[0] == 0f)
-                    npc.ai[0] = (int)(npc.Center.X / 16f);
-                if (npc.ai[1] == 0f)
-                    npc.ai[1] = (int)(npc.Center.X / 16f);
-            }
-
-            // Find new spot to move to after set time has passed
-            if (Main.netMode != NetmodeID.MultiplayerClient)
-            {
-                // Move immediately
-                if (npc.ai[0] == 0f || npc.ai[1] == 0f)
-                    npc.localAI[0] = 0f;
-
-                // Timer dictating whether to pick a new location or not
-                float moveBoost = death ? 6f * (1f - lifeRatio) : 2f * (1f - lifeRatio);
-                npc.localAI[0] -= 1f + moveBoost;
-                if (enrage)
-                    npc.localAI[0] -= 6f;
-
-                // Set timer to new amount if a different hook is currently moving
-                if (!despawn && npc.localAI[0] <= 0f && npc.ai[0] != 0f)
+                // Despawn if Plantera is gone
+                if (NPC.plantBoss < 0)
                 {
-                    foreach (NPC n in Main.ActiveNPCs)
-                    {
-                        if (n.whoAmI != npc.whoAmI && n.type == npc.type && (n.velocity.X != 0f || n.velocity.Y != 0f))
-                            npc.localAI[0] = Main.rand.Next(60, 301);
-                    }
+                    if (Main.netMode != NetmodeID.MultiplayerClient)
+                        NPC.StrikeInstantKill();
+
+                    return false;
                 }
 
-                // Pick a location to move to
-                if (npc.localAI[0] <= 0f)
+                // Percent life remaining, Plantera
+                float lifeRatio = Main.npc[NPC.plantBoss].life / (float)Main.npc[NPC.plantBoss].lifeMax;
+
+                // Despawn if Plantera's target is dead
+                if (Main.player[Main.npc[NPC.plantBoss].target].dead && !enrage)
+                    despawn = true;
+
+                // Enrage if Plantera's target is on the surface
+                if (!enrage && !BossRushEvent.BossRushActive && ((Main.player[Main.npc[NPC.plantBoss].target].position.Y < Main.worldSurface * 16.0 || Main.player[Main.npc[NPC.plantBoss].target].position.Y > Main.UnderworldLayer * 16) | despawn))
                 {
-                    // Reset timer
-                    npc.localAI[0] = Main.rand.Next(300, 601);
+                    NPC.localAI[0] -= 4f;
+                    enrage = true;
+                }
 
-                    // Pick location
-                    bool hookCanMove = false;
-                    int hookMoveTries = 0;
-                    while (!hookCanMove && hookMoveTries <= 1000)
+                // Set centers for movement
+                if (Main.netMode == NetmodeID.MultiplayerClient)
+                {
+                    if (NPC.ai[0] == 0f)
+                        NPC.ai[0] = (int)(NPC.Center.X / 16f);
+                    if (NPC.ai[1] == 0f)
+                        NPC.ai[1] = (int)(NPC.Center.X / 16f);
+                }
+
+                // Find new spot to move to after set time has passed
+                if (Main.netMode != NetmodeID.MultiplayerClient)
+                {
+                    // Move immediately
+                    if (NPC.ai[0] == 0f || NPC.ai[1] == 0f)
+                        NPC.localAI[0] = 0f;
+
+                    // Timer dictating whether to pick a new location or not
+                    float moveBoost = death ? 4f * (1f - lifeRatio) : 2f * (1f - lifeRatio);
+                    NPC.localAI[0] -= 1f + moveBoost;
+                    if (enrage)
+                        NPC.localAI[0] -= 6f;
+
+                    // Set timer to new amount if a different hook is currently moving
+                    if (!despawn && NPC.localAI[0] <= 0f && NPC.ai[0] != 0f)
                     {
-                        hookMoveTries++;
-
-                        int targetTilePosX = (int)(Main.player[Main.npc[NPC.plantBoss].target].Center.X / 16f);
-                        int targetTilePosY = (int)(Main.player[Main.npc[NPC.plantBoss].target].Center.Y / 16f);
-
-                        if (npc.ai[0] == 0f)
+                        foreach (NPC n in Main.ActiveNPCs)
                         {
-                            targetTilePosX = (int)((Main.player[Main.npc[NPC.plantBoss].target].Center.X + Main.npc[NPC.plantBoss].Center.X) / 32f);
-                            targetTilePosY = (int)((Main.player[Main.npc[NPC.plantBoss].target].Center.Y + Main.npc[NPC.plantBoss].Center.Y) / 32f);
+                            if (n.whoAmI != NPC.whoAmI && n.type == NPC.type && (n.velocity.X != 0f || n.velocity.Y != 0f))
+                                NPC.localAI[0] = Main.rand.Next(60, 301);
                         }
+                    }
 
-                        if (despawn)
+                    // Pick a location to move to
+                    if (NPC.localAI[0] <= 0f)
+                    {
+                        // Reset timer
+                        NPC.localAI[0] = Main.rand.Next(300, 601);
+
+                        // Pick location
+                        bool hookCanMove = false;
+                        int hookMoveTries = 0;
+                        while (!hookCanMove && hookMoveTries <= 1000)
                         {
-                            targetTilePosX = (int)Main.npc[NPC.plantBoss].position.X / 16;
-                            targetTilePosY = (int)(Main.npc[NPC.plantBoss].position.Y + 400f) / 16;
-                        }
+                            hookMoveTries++;
 
-                        int hookTileOffset = 20;
-                        hookTileOffset += (int)(100f * (hookMoveTries / 1000f));
-                        int hookTileX = targetTilePosX + Main.rand.Next(-hookTileOffset, hookTileOffset + 1);
-                        int hookTileY = targetTilePosY + Main.rand.Next(-hookTileOffset, hookTileOffset + 1);
+                            int targetTilePosX = (int)(Main.player[Main.npc[NPC.plantBoss].target].Center.X / 16f);
+                            int targetTilePosY = (int)(Main.player[Main.npc[NPC.plantBoss].target].Center.Y / 16f);
 
-                        try
-                        {
-                            if (WorldGen.SolidTile(hookTileX, hookTileY) || (Main.tile[hookTileX, hookTileY].WallType > 0 && (hookMoveTries > 500 || lifeRatio < 0.5f)))
+                            if (NPC.ai[0] == 0f)
                             {
-                                hookCanMove = true;
-                                npc.ai[0] = hookTileX;
-                                npc.ai[1] = hookTileY;
-                                npc.netUpdate = true;
+                                targetTilePosX = (int)((Main.player[Main.npc[NPC.plantBoss].target].Center.X + Main.npc[NPC.plantBoss].Center.X) / 32f);
+                                targetTilePosY = (int)((Main.player[Main.npc[NPC.plantBoss].target].Center.Y + Main.npc[NPC.plantBoss].Center.Y) / 32f);
+                            }
+
+                            if (despawn)
+                            {
+                                targetTilePosX = (int)Main.npc[NPC.plantBoss].position.X / 16;
+                                targetTilePosY = (int)(Main.npc[NPC.plantBoss].position.Y + 400f) / 16;
+                            }
+
+                            int hookTileOffset = 20;
+                            hookTileOffset += (int)(100f * (hookMoveTries / 1000f));
+                            int hookTileX = targetTilePosX + Main.rand.Next(-hookTileOffset, hookTileOffset + 1);
+                            int hookTileY = targetTilePosY + Main.rand.Next(-hookTileOffset, hookTileOffset + 1);
+
+                            try
+                            {
+                                if (WorldGen.SolidTile(hookTileX, hookTileY) || (Main.tile[hookTileX, hookTileY].WallType > WallID.None && (hookMoveTries > 500 || lifeRatio < 0.5f)))
+                                {
+                                    hookCanMove = true;
+                                    NPC.ai[0] = hookTileX;
+                                    NPC.ai[1] = hookTileY;
+                                    NPC.netUpdate = true;
+                                }
+                            }
+                            catch
+                            {
                             }
                         }
-                        catch
-                        {
-                        }
                     }
                 }
-            }
 
-            // Movement to new location
-            if (npc.ai[0] > 0f && npc.ai[1] > 0f)
-            {
-                // Hook movement velocity
-                float velocityBoost = death ? 9f * (1f - lifeRatio) : 3f * (1f - lifeRatio);
-                float velocity = 7f + velocityBoost;
-                if (enrage)
-                    velocity *= 2f;
-                if (despawn)
-                    velocity *= 2f;
-
-                // Moving to new location
-                Vector2 hookCenter = new Vector2(npc.Center.X, npc.Center.Y);
-                float hookMoveX = npc.ai[0] * 16f - 8f - hookCenter.X;
-                float hookMoveY = npc.ai[1] * 16f - 8f - hookCenter.Y;
-                float hookMoveDistance = (float)Math.Sqrt(hookMoveX * hookMoveX + hookMoveY * hookMoveY);
-                if (hookMoveDistance < 12f + velocity)
+                // Movement to new location
+                if (NPC.ai[0] > 0f && NPC.ai[1] > 0f)
                 {
-                    if (Main.netMode != NetmodeID.MultiplayerClient && CalamityWorld.LegendaryMode && npc.localAI[3] == 1f)
+                    // Hook movement velocity
+                    float velocityBoost = death ? 6f * (1f - lifeRatio) : 3f * (1f - lifeRatio);
+                    float velocity = 7f + velocityBoost;
+                    if (enrage)
+                        velocity *= 2f;
+                    if (despawn)
+                        velocity *= 2f;
+
+                    // Moving to new location
+                    Vector2 hookCenter = new Vector2(NPC.Center.X, NPC.Center.Y);
+                    float hookMoveX = NPC.ai[0] * 16f - 8f - hookCenter.X;
+                    float hookMoveY = NPC.ai[1] * 16f - 8f - hookCenter.Y;
+                    float hookMoveDistance = (float)Math.Sqrt(hookMoveX * hookMoveX + hookMoveY * hookMoveY);
+                    if (hookMoveDistance < 12f + velocity)
                     {
-                        npc.localAI[3] = 0f;
-                        WorldGen.SpawnPlanteraThorns(npc.Center);
+                        if (Main.netMode != NetmodeID.MultiplayerClient && Main.getGoodWorld && NPC.localAI[3] == 1f)
+                        {
+                            NPC.localAI[3] = 0f;
+                            WorldGen.SpawnPlanteraThorns(NPC.Center);
+                        }
+
+                        NPC.velocity.X = hookMoveX;
+                        NPC.velocity.Y = hookMoveY;
+                    }
+                    else
+                    {
+                        if (Main.netMode != NetmodeID.MultiplayerClient && Main.getGoodWorld)
+                            NPC.localAI[3] = 1f;
+
+                        hookMoveDistance = velocity / hookMoveDistance;
+                        NPC.velocity.X = hookMoveX * hookMoveDistance;
+                        NPC.velocity.Y = hookMoveY * hookMoveDistance;
                     }
 
-                    npc.velocity.X = hookMoveX;
-                    npc.velocity.Y = hookMoveY;
-                }
-                else
-                {
-                    if (Main.netMode != NetmodeID.MultiplayerClient && CalamityWorld.LegendaryMode)
-                        npc.localAI[3] = 1f;
-
-                    hookMoveDistance = velocity / hookMoveDistance;
-                    npc.velocity.X = hookMoveX * hookMoveDistance;
-                    npc.velocity.Y = hookMoveY * hookMoveDistance;
+                    // Rotation
+                    Vector2 hookCenterRotation = new Vector2(NPC.Center.X, NPC.Center.Y);
+                    float plantXDirection = Main.npc[NPC.plantBoss].Center.X - hookCenterRotation.X;
+                    float plantYDirection = Main.npc[NPC.plantBoss].Center.Y - hookCenterRotation.Y;
+                    NPC.rotation = (float)Math.Atan2(plantYDirection, plantXDirection) - MathHelper.PiOver2;
                 }
 
-                // Rotation
-                Vector2 hookCenterRotation = new Vector2(npc.Center.X, npc.Center.Y);
-                float plantXDirection = Main.npc[NPC.plantBoss].Center.X - hookCenterRotation.X;
-                float plantYDirection = Main.npc[NPC.plantBoss].Center.Y - hookCenterRotation.Y;
-                npc.rotation = (float)Math.Atan2(plantYDirection, plantXDirection) - MathHelper.PiOver2;
+                return false;
             }
-
-            return false;
         }
 
-        public static bool BuffedPlanterasTentacleAI(NPC npc, Mod mod)
+        public class TentacleAI : VanillaAIOverride
         {
-            CalamityGlobalNPC calamityGlobalNPC = npc.Calamity();
-
-            // Emit light
-            Lighting.AddLight((int)(npc.Center.X / 16f), (int)(npc.Center.Y / 16f), 0.2f, 0.4f, 0.1f);
-
-            // Spore dust
-            if (Main.rand.NextBool(10))
+            public override bool AI(Mod mod)
             {
-                Dust dust = Dust.NewDustDirect(npc.position, npc.width, npc.height, DustID.JungleSpore, 0f, 0f, 250, default, 0.4f);
-                dust.fadeIn = 0.7f;
-            }
+                CalamityGlobalNPC calamityGlobalNPC = NPC.Calamity();
 
-            bool death = CalamityWorld.death || BossRushEvent.BossRushActive;
+                // Emit light
+                Lighting.AddLight((int)(NPC.Center.X / 16f), (int)(NPC.Center.Y / 16f), 0.2f, 0.4f, 0.1f);
 
-            if (CalamityWorld.LegendaryMode)
-            {
-                if (Main.rand.NextBool(5))
-                    npc.reflectsProjectiles = true;
-                else
-                    npc.reflectsProjectiles = false;
-            }
-
-            // Die if Plantera is gone
-            if (NPC.plantBoss < 0)
-            {
-                if (Main.netMode != NetmodeID.MultiplayerClient)
-                    npc.StrikeInstantKill();
-
-                return false;
-            }
-
-            // Set Plantera to a variable
-            int plantBoss = NPC.plantBoss;
-
-            // Retract to be near Plantera while she's charging
-            bool planteraIsCharging = Main.npc[plantBoss].ai[3] <= -2f;
-
-            // Become free if Plantera gets sick of your shit
-            if (Main.npc[plantBoss].ai[2] == -1f && npc.ai[2] != 1f)
-            {
-                if (Main.netMode != NetmodeID.MultiplayerClient)
-                    npc.StrikeInstantKill();
-
-                return false;
-            }
-
-            // 3 seconds of extending from Plantera to max length to prevent unfair hits
-            float extendTime = 180f;
-            if (planteraIsCharging)
-            {
-                npc.damage = 0;
-
-                if (npc.localAI[0] > 0f)
+                // Spore dust
+                if (Main.rand.NextBool(10))
                 {
-                    npc.localAI[0] = 0f;
-                    npc.SyncExtraAI();
+                    Dust dust = Dust.NewDustDirect(NPC.position, NPC.width, NPC.height, DustID.JungleSpore, 0f, 0f, 250, default, 0.4f);
+                    dust.fadeIn = 0.7f;
                 }
-            }
-            else if (npc.localAI[0] < extendTime)
-            {
-                npc.damage = npc.defDamage;
-                npc.localAI[0] += 1f;
-                if (npc.localAI[0] >= extendTime)
-                    npc.SyncExtraAI();
-            }
 
-            // Movement variables
-            int maxOffset = 100;
-            if (Main.netMode != NetmodeID.MultiplayerClient)
-            {
-                if (npc.ai[0] == 0f || npc.ai[1] == 0f)
+                bool death = CalamityWorld.death || BossRushEvent.BossRushActive;
+
+                if (Main.getGoodWorld)
                 {
-                    npc.ai[0] = Main.rand.Next(-maxOffset, maxOffset + 1);
-                    npc.ai[1] = Main.rand.Next(-maxOffset, maxOffset + 1);
-                    npc.netUpdate = true;
+                    if (Main.rand.NextBool(5))
+                        NPC.reflectsProjectiles = true;
+                    else
+                        NPC.reflectsProjectiles = false;
                 }
-            }
 
-            // Velocity and acceleration
-            float tentacleAcceleration = death ? 2.4f : 1.6f;
-            float extendedDistanceFromPlantera = Math.Abs(npc.ai[0] + npc.ai[1]) / maxOffset;
-            float tentacleDistance = MathHelper.Lerp(50f, 100f + (extendedDistanceFromPlantera * 300f), npc.localAI[0] / extendTime);
-            float deceleration = (death ? 0.5f : 0.8f) / (1f + extendedDistanceFromPlantera);
+                // Die if Plantera is gone
+                if (NPC.plantBoss < 0)
+                {
+                    if (Main.netMode != NetmodeID.MultiplayerClient)
+                        NPC.StrikeInstantKill();
 
-            if (death)
-            {
-                tentacleAcceleration *= 1.2f;
-                extendedDistanceFromPlantera *= 1.1f;
-                tentacleDistance *= 1.2f;
-                deceleration *= 0.75f;
-            }
+                    return false;
+                }
 
-            if (CalamityWorld.LegendaryMode)
-                tentacleAcceleration += 4f;
+                // Set Plantera to a variable
+                int plantBoss = NPC.plantBoss;
 
-            // Fast retraction
-            if (planteraIsCharging)
-            {
-                tentacleAcceleration *= 2f;
-                deceleration *= 0.5f;
-            }
+                // Retract to be near Plantera while she's charging
+                bool planteraIsCharging = Main.npc[plantBoss].ai[3] <= -2f;
 
-            // Despawn if Plantera is gone
-            if (!Main.npc[plantBoss].active)
-            {
-                npc.active = false;
+                // Become free if Plantera gets sick of your shit
+                if (Main.npc[plantBoss].ai[2] == -1f && NPC.ai[2] != 1f)
+                {
+                    if (Main.netMode != NetmodeID.MultiplayerClient)
+                        NPC.StrikeInstantKill();
+
+                    return false;
+                }
+
+                // 3 seconds of extending from Plantera to max length to prevent unfair hits
+                float extendTime = 180f;
+                if (planteraIsCharging)
+                {
+                    if (NPC.localAI[0] > 0f)
+                    {
+                        NPC.localAI[0] = 0f;
+                        NPC.SyncExtraAI();
+                    }
+                }
+                else if (NPC.localAI[0] < extendTime)
+                {
+                    NPC.localAI[0] += 1f;
+                    if (NPC.localAI[0] >= extendTime)
+                        NPC.SyncExtraAI();
+                }
+
+                // Movement variables
+                int maxOffset = 100;
+                if (Main.netMode != NetmodeID.MultiplayerClient)
+                {
+                    if (NPC.ai[0] == 0f || NPC.ai[1] == 0f)
+                    {
+                        NPC.ai[0] = Main.rand.Next(-maxOffset, maxOffset + 1);
+                        NPC.ai[1] = Main.rand.Next(-maxOffset, maxOffset + 1);
+                        NPC.netUpdate = true;
+                    }
+                }
+
+                // Velocity and acceleration
+                float tentacleAcceleration = 1.6f;
+                float extendedDistanceFromPlantera = Math.Abs(NPC.ai[0] + NPC.ai[1]) / maxOffset;
+                float tentacleDistance = MathHelper.Lerp(50f, 100f + (extendedDistanceFromPlantera * 300f), NPC.localAI[0] / extendTime);
+                float deceleration = (death ? 0.5f : 0.8f) / (1f + extendedDistanceFromPlantera);
+
+                if (death)
+                {
+                    tentacleAcceleration *= 1.2f;
+                    extendedDistanceFromPlantera *= 1.1f;
+                    tentacleDistance *= 1.2f;
+                    deceleration *= 0.75f;
+                }
+
+                if (Main.getGoodWorld)
+                    tentacleAcceleration += 4f;
+
+                // Fast retraction
+                if (planteraIsCharging)
+                {
+                    tentacleAcceleration *= 2f;
+                    deceleration *= 0.5f;
+                }
+
+                // Despawn if Plantera is gone
+                if (!Main.npc[plantBoss].active)
+                {
+                    NPC.active = false;
+                    return false;
+                }
+
+                // Movement
+                Vector2 planteraCenter = Main.npc[plantBoss].Center;
+                float plantXOffset = planteraCenter.X + NPC.ai[0];
+                float plantYOffset = planteraCenter.Y + NPC.ai[1];
+                float plantXDist = plantXOffset - planteraCenter.X;
+                float plantYDist = plantYOffset - planteraCenter.Y;
+                float plantTotalDist = (float)Math.Sqrt(plantXDist * plantXDist + plantYDist * plantYDist);
+                plantTotalDist = tentacleDistance / plantTotalDist;
+                plantXDist *= plantTotalDist;
+                plantYDist *= plantTotalDist;
+
+                if (NPC.position.X < planteraCenter.X + plantXDist)
+                {
+                    NPC.velocity.X += tentacleAcceleration;
+                    if (NPC.velocity.X < 0f && plantXDist > 0f)
+                        NPC.velocity.X *= deceleration;
+                }
+                else if (NPC.position.X > planteraCenter.X + plantXDist)
+                {
+                    NPC.velocity.X -= tentacleAcceleration;
+                    if (NPC.velocity.X > 0f && plantXDist < 0f)
+                        NPC.velocity.X *= deceleration;
+                }
+                if (NPC.position.Y < planteraCenter.Y + plantYDist)
+                {
+                    NPC.velocity.Y += tentacleAcceleration;
+                    if (NPC.velocity.Y < 0f && plantYDist > 0f)
+                        NPC.velocity.Y *= deceleration;
+                }
+                else if (NPC.position.Y > planteraCenter.Y + plantYDist)
+                {
+                    NPC.velocity.Y -= tentacleAcceleration;
+                    if (NPC.velocity.Y > 0f && plantYDist < 0f)
+                        NPC.velocity.Y *= deceleration;
+                }
+
+                float velocityLimit = 12f + 6f * extendedDistanceFromPlantera;
+                if (planteraIsCharging)
+                    velocityLimit *= 1.5f;
+                if (NPC.velocity.X > velocityLimit)
+                    NPC.velocity.X = velocityLimit;
+                if (NPC.velocity.X < -velocityLimit)
+                    NPC.velocity.X = -velocityLimit;
+                if (NPC.velocity.Y > velocityLimit)
+                    NPC.velocity.Y = velocityLimit;
+                if (NPC.velocity.Y < -velocityLimit)
+                    NPC.velocity.Y = -velocityLimit;
+
+                // Direction and rotation
+                if (plantXDist > 0f)
+                {
+                    NPC.spriteDirection = 1;
+                    NPC.rotation = (float)Math.Atan2(plantYDist, plantXDist);
+                }
+                if (plantXDist < 0f)
+                {
+                    NPC.spriteDirection = -1;
+                    NPC.rotation = (float)Math.Atan2(plantYDist, plantXDist) + MathHelper.Pi;
+                }
+
                 return false;
             }
-
-            // Movement
-            Vector2 planteraCenter = Main.npc[plantBoss].Center;
-            float plantXOffset = planteraCenter.X + npc.ai[0];
-            float plantYOffset = planteraCenter.Y + npc.ai[1];
-            float plantXDist = plantXOffset - planteraCenter.X;
-            float plantYDist = plantYOffset - planteraCenter.Y;
-            float plantTotalDist = (float)Math.Sqrt(plantXDist * plantXDist + plantYDist * plantYDist);
-            plantTotalDist = tentacleDistance / plantTotalDist;
-            plantXDist *= plantTotalDist;
-            plantYDist *= plantTotalDist;
-
-            if (npc.position.X < planteraCenter.X + plantXDist)
-            {
-                npc.velocity.X += tentacleAcceleration;
-                if (npc.velocity.X < 0f && plantXDist > 0f)
-                    npc.velocity.X *= deceleration;
-            }
-            else if (npc.position.X > planteraCenter.X + plantXDist)
-            {
-                npc.velocity.X -= tentacleAcceleration;
-                if (npc.velocity.X > 0f && plantXDist < 0f)
-                    npc.velocity.X *= deceleration;
-            }
-            if (npc.position.Y < planteraCenter.Y + plantYDist)
-            {
-                npc.velocity.Y += tentacleAcceleration;
-                if (npc.velocity.Y < 0f && plantYDist > 0f)
-                    npc.velocity.Y *= deceleration;
-            }
-            else if (npc.position.Y > planteraCenter.Y + plantYDist)
-            {
-                npc.velocity.Y -= tentacleAcceleration;
-                if (npc.velocity.Y > 0f && plantYDist < 0f)
-                    npc.velocity.Y *= deceleration;
-            }
-
-            float velocityLimit = 12f + 6f * extendedDistanceFromPlantera;
-            if (planteraIsCharging)
-                velocityLimit *= 1.5f;
-            if (npc.velocity.X > velocityLimit)
-                npc.velocity.X = velocityLimit;
-            if (npc.velocity.X < -velocityLimit)
-                npc.velocity.X = -velocityLimit;
-            if (npc.velocity.Y > velocityLimit)
-                npc.velocity.Y = velocityLimit;
-            if (npc.velocity.Y < -velocityLimit)
-                npc.velocity.Y = -velocityLimit;
-
-            // Direction and rotation
-            if (plantXDist > 0f)
-            {
-                npc.spriteDirection = 1;
-                npc.rotation = (float)Math.Atan2(plantYDist, plantXDist);
-            }
-            if (plantXDist < 0f)
-            {
-                npc.spriteDirection = -1;
-                npc.rotation = (float)Math.Atan2(plantYDist, plantXDist) + MathHelper.Pi;
-            }
-
-            return false;
         }
     }
 }

@@ -1,16 +1,8 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using CalamityMod.CalPlayer;
-using CalamityMod.Items.Potions.Alcohol;
-using CalamityMod.Projectiles.Typeless;
 using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Graphics;
-using ReLogic.Content;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
-using static CalamityMod.CalamityUtils;
 
 namespace CalamityMod.Items.Accessories
 {
@@ -27,7 +19,7 @@ namespace CalamityMod.Items.Accessories
             Item.rare = ItemRarityID.Blue;
             Item.value = CalamityGlobalItem.RarityBlueBuyPrice;
             Item.accessory = true;
-            Item.defense = 4;
+            Item.defense = 3;
         }
 
         public override void UpdateAccessory(Player player, bool hideVisual)
@@ -117,7 +109,7 @@ namespace CalamityMod.Items.Accessories
 
                     for (int i = 0; i < 5; i++)
                     {
-                        Dust dust = Dust.NewDustPerfect(dustOrigin, 229, dustVelocity, 120, Scale: Main.rand.NextFloat(0.6f, 1f));
+                        Dust dust = Dust.NewDustPerfect(dustOrigin, DustID.Vortex, dustVelocity, 120, Scale: Main.rand.NextFloat(0.6f, 1f));
                         dust.noGravity = true;
                         dustOrigin += dustOriginOffset;
                     }

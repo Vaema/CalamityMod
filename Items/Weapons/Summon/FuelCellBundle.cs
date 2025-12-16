@@ -9,6 +9,10 @@ namespace CalamityMod.Items.Weapons.Summon
     public class FuelCellBundle : ModItem, ILocalizedModType
     {
         public new string LocalizationCategory => "Items.Weapons.Summon";
+        public override void SetStaticDefaults()
+        {
+            ItemID.Sets.ShimmerTransformToItem[Type] = ModContent.ItemType<InfectedRemote>();
+        }
         public override void SetDefaults()
         {
             Item.width = 32;
@@ -16,7 +20,7 @@ namespace CalamityMod.Items.Weapons.Summon
             Item.mana = 10;
             Item.damage = 25;
             Item.useStyle = ItemUseStyleID.Swing;
-            Item.useAnimation = Item.useTime = 20;
+            Item.useAnimation = Item.useTime = 36;
             Item.noMelee = true;
             Item.knockBack = 7f;
             Item.value = CalamityGlobalItem.RarityYellowBuyPrice;

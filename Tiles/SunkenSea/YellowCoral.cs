@@ -1,5 +1,4 @@
-﻿using System;
-using CalamityMod.Systems;
+﻿using CalamityMod.Systems;
 using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.ID;
@@ -22,24 +21,29 @@ namespace CalamityMod.Tiles.SunkenSea
             TileID.Sets.ChecksForMerge[Type] = true;
             HitSound = SoundID.Dig;
             DustType = DustID.Firework_Yellow;
-            AddMapEntry(new Color(198, 169, 24));
+            AddMapEntry(new Color(238, 207, 37));
             Main.tileShine2[Type] = true;
 
             TileID.Sets.CanBeDugByShovel[Type] = true;
 
-            this.RegisterUniversalMerge(ModContent.TileType<Shellstone>(), "CalamityMod/Tiles/Merges/ShellstoneMerge");
-            this.RegisterUniversalMerge(ModContent.TileType<EutrophicSand>(), "CalamityMod/Tiles/Merges/EutrophicSandMerge");
-            this.RegisterUniversalMerge(ModContent.TileType<Navystone>(), "CalamityMod/Tiles/Merges/NavystoneMerge");
+            this.RegisterBlendMergeWith(ModContent.TileType<Shellstone>());
+            this.RegisterBlendMergeWith(ModContent.TileType<EutrophicSand>());
+            this.RegisterBlendMergeWith(ModContent.TileType<Navystone>());
         }
 
         public override void ModifyLight(int i, int j, ref float r, ref float g, ref float b)
         {
-            if (!Main.tile[i - 1, j].HasTile || !Main.tile[i + 1, j].HasTile || !Main.tile[i, j - 1].HasTile || !Main.tile[i, j + 1].HasTile)
+            if (Main.tile[i, j].Get<TileSpecialDrawData>().Flag0)
             {
                 r = 0.73f;
                 g = 0.68f;
                 b = 0.22f;
             }
+        }
+
+        public override void PostTileFrame(int i, int j, int up, int down, int left, int right, int upLeft, int upRight, int downLeft, int downRight)
+        {
+            Main.tile[i, j].Get<TileSpecialDrawData>().Flag0 = !Main.tile[i - 1, j].HasTile || !Main.tile[i + 1, j].HasTile || !Main.tile[i, j - 1].HasTile || !Main.tile[i, j + 1].HasTile;
         }
 
         public override bool TileFrame(int i, int j, ref bool resetFrame, ref bool noBreak)

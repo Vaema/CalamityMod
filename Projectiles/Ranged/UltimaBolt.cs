@@ -31,7 +31,6 @@ namespace CalamityMod.Projectiles.Ranged
             Projectile.arrow = true;
             Projectile.penetrate = 1;
             Projectile.timeLeft = 300;
-            Projectile.Calamity().pointBlankShotDuration = CalamityGlobalProjectile.DefaultPointBlankDuration;
         }
 
         public override void AI()
@@ -48,7 +47,7 @@ namespace CalamityMod.Projectiles.Ranged
             {
                 for (int i = 0; i < dustCount; i++)
                 {
-                    Dust dust = Dust.NewDustPerfect(Projectile.Center, 267);
+                    Dust dust = Dust.NewDustPerfect(Projectile.Center, DustID.RainbowMk2);
                     dust.color = Main.hslToRgb(Main.rand.NextFloat(), 1f, 0.8f);
                     dust.scale = Main.rand.NextFloat(1f, 1.25f);
                     dust.velocity = Main.rand.NextVector2Circular(7f, 7f);

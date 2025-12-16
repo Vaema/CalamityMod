@@ -1,10 +1,9 @@
 ﻿using System.Linq;
 using CalamityMod.Cooldowns;
-using CalamityMod.Items.Accessories;
+using CalamityMod.Items.Weapons.Magic;
 using CalamityMod.Projectiles.Ranged;
 using Microsoft.Xna.Framework;
 using Terraria;
-using Terraria.Audio;
 using Terraria.DataStructures;
 using Terraria.ID;
 using Terraria.ModLoader;
@@ -18,6 +17,7 @@ namespace CalamityMod.Items.Weapons.Ranged
         {
             ItemID.Sets.ItemsThatAllowRepeatedRightClick[Type] = true;
             ItemID.Sets.IsRangedSpecialistWeapon[Type] = true;
+            ItemID.Sets.ShimmerTransformToItem[Type] = ModContent.ItemType<SeethingDischarge>();
         }
         public override void SetDefaults()
         {

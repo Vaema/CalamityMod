@@ -1,12 +1,10 @@
 ﻿using CalamityMod.CalPlayer;
-using CalamityMod.Enums;
 using CalamityMod.Events;
 using CalamityMod.NPCs;
 using CalamityMod.Skies;
 using CalamityMod.World;
 using Microsoft.Xna.Framework;
 using Terraria;
-using Terraria.GameContent.Events;
 using Terraria.Graphics.Effects;
 using Terraria.ModLoader;
 
@@ -62,7 +60,7 @@ namespace CalamityMod.Systems
                             // Total darkness
                             float signusDarkness = signusLifeRatio * multiplier;
                             darkRatio = MathHelper.Clamp(signusDarkness, 0f, 1f);
-                            scale += (CalamityWorld.LegendaryMode ? MaxGFBSignusDarkness : MaxSignusDarkness) * darkRatio;
+                            scale += (Main.zenithWorld ? MaxGFBSignusDarkness : MaxSignusDarkness) * darkRatio;
                         }
                     }
                 }

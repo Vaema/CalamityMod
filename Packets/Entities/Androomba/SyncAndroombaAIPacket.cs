@@ -1,18 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using CalamityMod.NPCs.DraedonLabThings;
+﻿using System.IO;
 using CalamityMod.NPCs.TownNPCs;
-using Microsoft.Build.Execution;
 using Terraria;
 
 namespace CalamityMod.Packets
 {
-    public sealed class SyncAndroombaAIPacket : CalamityPacket
+    internal sealed class SyncAndroombaAIPacket : CalamityPacket
     {
         public static SyncAndroombaAIPacket Instance { get; private set; }
 

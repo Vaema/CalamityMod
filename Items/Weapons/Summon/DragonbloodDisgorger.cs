@@ -1,4 +1,5 @@
-﻿using CalamityMod.Items.Materials;
+﻿using CalamityMod.Buffs.Summon;
+using CalamityMod.Items.Materials;
 using CalamityMod.Projectiles.Summon;
 using CalamityMod.Rarities;
 using Microsoft.Xna.Framework;
@@ -21,23 +22,23 @@ namespace CalamityMod.Items.Weapons.Summon
             Item.height = 62;
             Item.damage = 215;
             Item.mana = 10;
-            Item.useAnimation = Item.useTime = 15;
+            Item.useAnimation = Item.useTime = 24;
             Item.useStyle = ItemUseStyleID.Swing;
             Item.noMelee = true;
             Item.knockBack = 4f;
             Item.value = CalamityGlobalItem.RarityTurquoiseBuyPrice;
             Item.rare = ModContent.RarityType<Turquoise>();
             Item.UseSound = SoundID.DD2_SkeletonDeath;
+            Item.buffType = ModContent.BuffType<SkeletalDragonsBuff>();
             Item.shoot = ModContent.ProjectileType<SkeletalDragonMother>();
-            Item.shootSpeed = 10f;
             Item.DamageType = DamageClass.Summon;
         }
 
         public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)
         {
-            int p = Projectile.NewProjectile(source, player.ClampedMouseWorld(), Vector2.Zero, type, damage, knockback, player.whoAmI);
-            if (Main.projectile.IndexInRange(p))
-                Main.projectile[p].originalDamage = Item.damage;
+            player.AddBuff(Item.buffType, 2);
+            var minion = Projectile.NewProjectileDirect(source, player.ClampedMouseWorld(), Vector2.Zero, type, damage, knockback, player.whoAmI);
+            minion.originalDamage = Item.damage;
             return false;
         }
 

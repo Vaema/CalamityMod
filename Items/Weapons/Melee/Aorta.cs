@@ -1,6 +1,4 @@
-﻿using CalamityMod.Items.Materials;
-using CalamityMod.Projectiles.Melee.Yoyos;
-using Terraria;
+﻿using CalamityMod.Projectiles.Melee.Yoyos;
 using Terraria.ID;
 using Terraria.Localization;
 using Terraria.ModLoader;
@@ -21,6 +19,7 @@ namespace CalamityMod.Items.Weapons.Melee
             ItemID.Sets.Yoyo[Type] = true;
             ItemID.Sets.GamepadExtraRange[Type] = 15;
             ItemID.Sets.GamepadSmartQuickReach[Type] = true;
+            ItemID.Sets.ShimmerTransformToItem[Type] = ModContent.ItemType<SausageMaker>();
         }
 
         public override void SetDefaults()
@@ -45,16 +44,6 @@ namespace CalamityMod.Items.Weapons.Melee
 
             Item.rare = ItemRarityID.Orange;
             Item.value = CalamityGlobalItem.RarityOrangeBuyPrice;
-        }
-
-        public override void AddRecipes()
-        {
-            CreateRecipe().
-                AddIngredient(ItemID.CrimtaneBar, 3).
-                AddIngredient<BloodSample>(9).
-                AddIngredient(ItemID.Vertebrae, 3).
-                AddTile(TileID.DemonAltar).
-                Register();
         }
     }
 }

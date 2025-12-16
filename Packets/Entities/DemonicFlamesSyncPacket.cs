@@ -3,7 +3,7 @@ using Terraria;
 
 namespace CalamityMod.Packets.Entities
 {
-    public sealed class DemonicFlamesSyncPacket : CalamityPacket
+    internal sealed class DemonicFlamesSyncPacket : CalamityPacket
     {
         public static DemonicFlamesSyncPacket Instance { get; private set; }
         public override byte MessageType => (byte)CalamityModMessageType.SyncNPCDemonicFlamesDamage;

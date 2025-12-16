@@ -1,20 +1,23 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using CalamityMod.Events;
 using CalamityMod.Items.Accessories;
-using CalamityMod.Items.Critters;
 using CalamityMod.Items.Fishing;
 using CalamityMod.Items.Fishing.AstralCatches;
 using CalamityMod.Items.Fishing.BrimstoneCragCatches;
 using CalamityMod.Items.Fishing.FishingRods;
 using CalamityMod.Items.Fishing.SulphurCatches;
 using CalamityMod.Items.Fishing.SunkenSeaCatches;
+using CalamityMod.Items.Materials;
+using CalamityMod.Items.Pets;
 using CalamityMod.Items.Placeables.Abyss;
 using CalamityMod.Items.SummonItems;
+using CalamityMod.Items.Tools.ClimateChange;
+using CalamityMod.Items.Weapons.Magic;
 using CalamityMod.Items.Weapons.Melee;
 using CalamityMod.Items.Weapons.Ranged;
 using CalamityMod.Items.Weapons.Rogue;
+using CalamityMod.Items.Weapons.Summon;
 using CalamityMod.NPCs;
 using CalamityMod.NPCs.OldDuke;
 using CalamityMod.Particles;
@@ -25,7 +28,6 @@ using Terraria.DataStructures;
 using Terraria.ID;
 using Terraria.Localization;
 using Terraria.ModLoader;
-using Terraria.Utilities;
 
 namespace CalamityMod.CalPlayer
 {
@@ -143,7 +145,7 @@ namespace CalamityMod.CalPlayer
                         itemDrop = ModContent.ItemType<Brimlish>();
                     else if (questFish == ModContent.ItemType<Slurpfish>() && attempt.uncommon)
                         itemDrop = ModContent.ItemType<Slurpfish>();
-                    else if (grabBagFish && Main.hardMode)
+                    else if (questFish == ModContent.ItemType<Havocfish>() && attempt.uncommon)
                         itemDrop = ModContent.ItemType<Havocfish>();
                     else if (attempt.rare)
                     {
@@ -158,6 +160,10 @@ namespace CalamityMod.CalPlayer
                     else
                         itemDrop = ModContent.ItemType<CragBullhead>();
                 }
+                if (ZoneBasaltGully)
+                {
+                    itemDrop = ModContent.ItemType<MoltenFishron>();
+                }
                 return;
             }
 
@@ -169,6 +175,22 @@ namespace CalamityMod.CalPlayer
             if (canSulphurFish && bait == ModContent.ItemType<BloodwormItem>() && !BossRushEvent.BossRushActive)
             {
                 CalamityGlobalNPC.OldDukeSpawn(Player.whoAmI, ModContent.NPCType<OldDuke>(), bait);
+                itemDrop = -1;
+                return;
+            }
+
+            if (attempt.playerFishingConditions.PoleItemType == ModContent.ItemType<WulfrumRod>())
+            {
+                if (Main.rand.NextBool(5))
+                {
+                    itemDrop = ModContent.ItemType<WulfrumMetalScrap>();
+                    return;
+                }
+                if (Main.rand.NextBool(15))
+                {
+                    itemDrop = ModContent.ItemType<EnergyCore>();
+                    return;
+                }
             }
 
             // Ignore catches if it's junk
@@ -209,6 +231,49 @@ namespace CalamityMod.CalPlayer
                 itemDrop = ModContent.ItemType<Floodtide>();
                 return;
             }
+            //Rare abyss catches are replaced with abyss chest items post-skeletron
+            if (NPC.downedBoss3 && (ZoneAbyssLayer2 || ZoneAbyssLayer3 || ZoneAbyssLayer4) && attempt.rare)
+            {
+                switch (Main.rand.Next(10))
+                {
+                    case 0:
+                        itemDrop = ModContent.ItemType<Lionfish>();
+                        return;
+                    case 1:
+                        itemDrop = ModContent.ItemType<HerringStaff>();
+                        return;
+                    case 2:
+                        itemDrop = ModContent.ItemType<BallOFugu>();
+                        return;
+                    case 3:
+                        itemDrop = ModContent.ItemType<BlackAnurian>();
+                        return;
+                    case 4:
+                        itemDrop = ModContent.ItemType<Archerfish>();
+                        return;
+                    case 5:
+                        itemDrop = ModContent.ItemType<AnechoicPlating>();
+                        return;
+                    case 6:
+                        itemDrop = ModContent.ItemType<IronBoots>();
+                        return;
+                    case 7:
+                        itemDrop = ModContent.ItemType<DepthCharm>();
+                        return;
+                    case 8:
+                        itemDrop = ModContent.ItemType<StrangeOrb>();
+                        return;
+                    case 9:
+                        itemDrop = ModContent.ItemType<TorrentialTear>();
+                        return;
+                }
+            }
+
+            // Quest fish
+            if (sky && questFish == ModContent.ItemType<SunbeamFish>() && attempt.uncommon)
+                itemDrop = ModContent.ItemType<SunbeamFish>();
+            if (Player.ZoneSnow && questFish == ModContent.ItemType<FishofEleum>() && attempt.uncommon)
+                itemDrop = ModContent.ItemType<FishofEleum>();
 
             if (grabBagFish)
             {
@@ -218,18 +283,8 @@ namespace CalamityMod.CalPlayer
                     itemDrop = ModContent.ItemType<StuffedFish>();
                 else if (cavern)
                     itemDrop = ModContent.ItemType<GlimmeringGemfish>();
-                if (Main.hardMode)
-                {
-                    // Fish of Light/Night are evenly split with Gemfish
-                    if ((Player.ZoneCrimson || Player.ZoneCorrupt) && cavern && Main.rand.NextBool())
-                        itemDrop = ModContent.ItemType<FishofNight>();
-                    else if (Player.ZoneHallow && cavern && Main.rand.NextBool())
-                        itemDrop = ModContent.ItemType<FishofLight>();
-                    else if (Player.ZoneSnow)
-                        itemDrop = ModContent.ItemType<FishofEleum>();
-                    else if (sky)
-                        itemDrop = Main.rand.NextBool() ? ModContent.ItemType<SunbeamFish>() : ModContent.ItemType<FishofFlight>();
-                }
+                if (Main.hardMode && sky)
+                    itemDrop = ModContent.ItemType<FishofFlight>();
             }
 
             // Increased chance of Enchanted Starfish if you don't have maximum mana
@@ -286,12 +341,13 @@ namespace CalamityMod.CalPlayer
                 if (Player.ZoneDesert && Main.rand.NextBool())
                     return;
 
-                int commonCatch = Utils.SelectRandom(Main.rand, new int[]
-                    {
-                        ModContent.ItemType<PrismaticGuppyItem>(),
-                        ModContent.ItemType<PrismaticGuppyPinkItem>(),
-                        ModContent.ItemType<PrismaticGuppyGreenItem>()
-                    });
+                int commonCatch = ModContent.ItemType<CoralskinFoolfish>();
+                if (ZonePolypForest)
+                    commonCatch = ModContent.ItemType<GleamingCucumber>();
+                else if (ZoneGleamingBurrows)
+                    commonCatch = ModContent.ItemType<SpecularSturgeon>();
+                else if (ZoneTimelessShores)
+                    commonCatch = ModContent.ItemType<Squidoom>();
 
                 if (attempt.legendary)
                 {
@@ -413,6 +469,8 @@ namespace CalamityMod.CalPlayer
                 if (fishList.Contains(fish.type))
                     fish.stack += Main.rand.Next(1, 3 + 1);
             }
+            if (fish.type == ModContent.ItemType<WulfrumMetalScrap>())
+                fish.stack = Main.rand.Next(1, 6);
         }
         #endregion
     }

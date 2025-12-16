@@ -10,7 +10,7 @@ namespace CalamityMod.Buffs.StatBuffs
 {
     public class Encased : ModBuff
     {
-        public override LocalizedText Description => base.Description.WithFormatArgs(PermafrostsConcoction.EncasedDefenseBoost, PermafrostsConcoction.EncasedAllDamageReduction.ToPercent());
+        public override LocalizedText Description => base.Description.WithFormatArgs(PermafrostsConcoction.EncasedDefenseBoost, PermafrostsConcoction.EncasedDamageReductionBoost.ToPercent());
 
         public override void SetStaticDefaults()
         {

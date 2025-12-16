@@ -1,6 +1,4 @@
 ﻿using CalamityMod.CalPlayer;
-using CalamityMod.Projectiles.Typeless;
-using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
@@ -18,6 +16,7 @@ namespace CalamityMod.Items.Accessories
             Item.value = CalamityGlobalItem.RarityLimeBuyPrice;
             Item.accessory = true;
             Item.rare = ItemRarityID.Lime;
+            Item.expert = true;
         }
 
         public override void UpdateAccessory(Player player, bool hideVisual)

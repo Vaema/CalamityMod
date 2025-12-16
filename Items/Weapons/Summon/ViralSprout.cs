@@ -1,4 +1,5 @@
-﻿using CalamityMod.Items.Materials;
+﻿using CalamityMod.Buffs.Summon;
+using CalamityMod.Items.Materials;
 using CalamityMod.Projectiles.Summon;
 using Microsoft.Xna.Framework;
 using Terraria;
@@ -15,9 +16,9 @@ namespace CalamityMod.Items.Weapons.Summon
         {
             Item.width = 48;
             Item.height = 56;
-            Item.damage = 30;
+            Item.damage = 24;
             Item.mana = 10;
-            Item.useAnimation = Item.useTime = 19;
+            Item.useAnimation = Item.useTime = 36;
             Item.useStyle = ItemUseStyleID.HoldUp;
             Item.noMelee = true;
             Item.knockBack = 2f;
@@ -25,29 +26,26 @@ namespace CalamityMod.Items.Weapons.Summon
             Item.rare = ItemRarityID.Lime;
             Item.UseSound = SoundID.Item44;
             Item.autoReuse = true;
+            Item.buffType = ModContent.BuffType<SageSpiritBuff>();
             Item.shoot = ModContent.ProjectileType<SageSpirit>();
-            Item.shootSpeed = 10f;
             Item.DamageType = DamageClass.Summon;
         }
 
         public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)
         {
-            if (player.altFunctionUse != 2)
+            player.AddBuff(Item.buffType, 2);
+            var minion = Projectile.NewProjectileDirect(source, player.ClampedMouseWorld(), Vector2.Zero, type, damage, knockback, player.whoAmI);
+            minion.originalDamage = Item.damage;
+
+            int minionCount = 0;
+            foreach (Projectile pro in Main.ActiveProjectiles)
             {
-                int p = Projectile.NewProjectile(source, player.ClampedMouseWorld(), Vector2.Zero, type, damage, knockback, player.whoAmI);
-                if (Main.projectile.IndexInRange(p))
-                    Main.projectile[p].originalDamage = Item.damage;
+                if (pro.type != type || pro.owner != player.whoAmI)
+                    continue;
 
-                int minionCount = 0;
-                foreach (Projectile pro in Main.ActiveProjectiles)
-                {
-                    if (pro.type != type || pro.owner != player.whoAmI)
-                        continue;
-
-                    pro.localAI[0] = minionCount;
-                    pro.netUpdate = true;
-                    minionCount++;
-                }
+                pro.localAI[0] = minionCount;
+                pro.netUpdate = true;
+                minionCount++;
             }
             return false;
         }

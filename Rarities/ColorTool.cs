@@ -1,9 +1,8 @@
-﻿using CalamityMod.Rarities;
-using Microsoft.Xna.Framework;
+﻿using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.ModLoader;
 
-namespace CalamityMod.Items
+namespace CalamityMod.Rarities
 {
     public sealed class ColorTool : GlobalItem
     {
@@ -41,7 +40,7 @@ namespace CalamityMod.Items
         }
 
         public static Color Rainbowing(float position) => colorLerps(
-            new Color[] { new Color(255, 50, 50, 255), new Color(255, 128, 50, 255), new Color(230, 255, 50, 255), new Color(80, 255, 60, 255),
-                new Color(50, 80, 250, 255), new Color(200, 50, 250, 255),new Color(255, 50, 230, 255), }, position);
+            [ new Color(255, 50, 50, 255), new Color(255, 128, 50, 255), new Color(230, 255, 50, 255), new Color(80, 255, 60, 255),
+                new Color(50, 80, 250, 255), new Color(200, 50, 250, 255), new Color(255, 50, 230, 255), ], position);
     }
 }

@@ -10,7 +10,6 @@ using Microsoft.Xna.Framework.Graphics;
 using ReLogic.Content;
 using Terraria;
 using Terraria.DataStructures;
-using Terraria.Enums;
 using Terraria.GameContent;
 using Terraria.ID;
 using Terraria.ModLoader;
@@ -60,7 +59,7 @@ namespace CalamityMod.Tiles.Astral
             //treeFrame = (i + j * j) % 3;
         }
 
-        public override int DropWood() => ModContent.ItemType<Items.Placeables.Astral.AstralMonolith>();
+        public override int DropWood() => ModContent.ItemType<Items.Placeables.FurnitureMonolith.AstralMonolith>();
         public override int CreateDust() => ModContent.DustType<AstralBasic>();
 
         public override int SaplingGrowthType(ref int style)
@@ -77,7 +76,7 @@ namespace CalamityMod.Tiles.Astral
             // 33% chance to drop extra fruit when using Feller of Evergreens
             Vector2 worldPosition = new Vector2(x, y).ToWorldCoordinates();
             Player nearestPlayer = Main.player[Player.FindClosest(worldPosition, 16, 16)];
-            if (nearestPlayer.active && nearestPlayer.ActiveItem().type == ModContent.ItemType<FellerofEvergreens>() && WorldGen.genRand.NextBool(3))
+            if (nearestPlayer.active && nearestPlayer.HeldItem.type == ModContent.ItemType<FellerofEvergreens>() && WorldGen.genRand.NextBool(3))
             {
                 int treeDropItemType = WorldGen.genRand.NextBool() ? ModContent.ItemType<Barberry>() : ModContent.ItemType<Lotus>();
                 Item.NewItem(WorldGen.GetItemSource_FromTreeShake(x, y), x * 16, y * 16, 16, 16, treeDropItemType);

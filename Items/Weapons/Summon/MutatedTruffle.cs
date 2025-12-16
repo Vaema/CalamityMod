@@ -1,4 +1,6 @@
-﻿using CalamityMod.Projectiles.Summon;
+﻿using CalamityMod.Buffs.Summon;
+using CalamityMod.Items.Weapons.Rogue;
+using CalamityMod.Projectiles.Summon;
 using CalamityMod.Rarities;
 using Microsoft.Xna.Framework;
 using Terraria;
@@ -29,18 +31,23 @@ namespace CalamityMod.Items.Weapons.Summon
 
         #endregion
 
-        public override void SetStaticDefaults() => ItemID.Sets.StaffMinionSlotsRequired[Type] = 3f;
+        public override void SetStaticDefaults()
+        {
+            ItemID.Sets.StaffMinionSlotsRequired[Type] = 3f;
+            ItemID.Sets.ShimmerTransformToItem[Type] = ModContent.ItemType<ToxicantTwister>();
+        }
 
         public override void SetDefaults()
         {
             Item.width = 24;
             Item.height = 26;
-            Item.damage = 275;
+            Item.damage = 250;
             Item.DamageType = DamageClass.Summon;
+            Item.buffType = ModContent.BuffType<MutatedTruffleBuff>();
             Item.shoot = ModContent.ProjectileType<MutatedTruffleMinion>();
             Item.knockBack = 5f;
 
-            Item.useAnimation = Item.useTime = 10;
+            Item.useAnimation = Item.useTime = 24;
             Item.mana = 10;
             Item.noMelee = true;
             Item.useStyle = ItemUseStyleID.HoldUp;
@@ -49,12 +56,15 @@ namespace CalamityMod.Items.Weapons.Summon
             Item.value = CalamityGlobalItem.RarityPureGreenBuyPrice;
         }
 
+        // Only one can be summoned.
+        public override bool CanUseItem(Player player) => player.ownedProjectileCounts[Item.shoot] < 1 && player.maxMinions >= 3;
+
         public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)
         {
-            // Only one can be summoned.
-            if (player.ownedProjectileCounts[type] < 1 && player.maxMinions >= 3)
-                Projectile.NewProjectile(source, player.ClampedMouseWorld(), Main.rand.NextVector2Circular(2f, 2f), type, damage, knockback, player.whoAmI);
-
+            player.AddBuff(Item.buffType, 2);
+            CalamityUtils.KillShootProjectiles(true, type, player);
+            var minion = Projectile.NewProjectileDirect(source, player.ClampedMouseWorld(), Main.rand.NextVector2Circular(2f, 2f), type, damage, knockback, player.whoAmI);
+            minion.originalDamage = Item.damage;
             return false;
         }
     }

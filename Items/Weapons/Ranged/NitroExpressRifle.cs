@@ -1,10 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
 using CalamityMod.Items.Materials;
 using CalamityMod.Projectiles.Ranged;
-using CalamityMod.Rarities;
-using CalamityMod.Sounds;
-using CalamityMod.Tiles.Furniture.CraftingStations;
 using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.Audio;
@@ -35,7 +31,6 @@ namespace CalamityMod.Items.Weapons.Ranged
             Item.shootSpeed = 12f;
             Item.useAmmo = AmmoID.Bullet;
             Item.rare = ItemRarityID.LightRed;
-            Item.Calamity().canFirePointBlankShots = true;
         }
 
         public override Vector2? HoldoutOffset() => new Vector2(-10, 8);
@@ -80,30 +75,6 @@ namespace CalamityMod.Items.Weapons.Ranged
             Vector2 itemSize = new Vector2(Item.width, Item.height);
             Vector2 itemOrigin = new Vector2(-5, 6);
 
-
-            //Sniper's horizontal recoil; can be a bit subtle but it is noticeable
-            if (player.altFunctionUse == 2)
-            {
-                //Recoil:
-                int anim = 0;
-                for (int r = 0; r < Item.useAnimation; ++r)
-                {
-                    if (anim == 10 && r < Item.useAnimation / 2) //animates every 10 frames so that the player notices a recoil because this happens way too fast
-                    {
-                        itemPosition.X -= player.direction * 0.025f;
-                        itemPosition.Y -= player.direction * 0.025f;
-                        anim = 0;
-                    }
-                    else if (anim == 10 && r > Item.useAnimation / 2)
-                    {
-                        itemPosition.X += player.direction * 0.025f;
-                        itemPosition.Y += player.direction * 0.025f;
-                        anim = 0;
-                    }
-                    ++anim;
-                }
-            }
-
             CalamityUtils.CleanHoldStyle(player, itemRotation, itemPosition, itemSize, itemOrigin);
             base.UseStyle(player, heldItemFrame);
         }
@@ -116,7 +87,7 @@ namespace CalamityMod.Items.Weapons.Ranged
             float animProgress = 1 - player.itemTime / (float)player.itemTimeMax;
             float rotation = (player.Center - player.Calamity().mouseWorld).ToRotation() * player.gravDir + MathHelper.PiOver2;
             if (animProgress < 0.5)
-                rotation += (player.altFunctionUse == 2 ? -1f : -0.45f) * (float)Math.Pow((0.5f - animProgress) / 0.5f, 2) * player.direction;
+                rotation += -0.45f * (float)Math.Pow((0.5f - animProgress) / 0.5f, 2) * player.direction;
             player.SetCompositeArmFront(true, Player.CompositeArmStretchAmount.Full, rotation); //must be here otherwise it will vibrate
 
 

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using CalamityMod.Dusts;
+using CalamityMod.NPCs;
 using CalamityMod.Particles;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
@@ -11,6 +12,7 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.Projectiles.Typeless
 {
+    [PierceResistException]
     public class PauldronDash : ModProjectile, ILocalizedModType
     {
         public new string LocalizationCategory => "Projectiles.Typeless";
@@ -22,6 +24,8 @@ namespace CalamityMod.Projectiles.Typeless
         public bool isAlive = true;
         public bool visuals => Owner.Calamity().sPauldronVisual;
         public Vector2 aimVel;
+
+        bool hasHit = false;
         public override void SetDefaults()
         {
             Projectile.width = (int)ExplosionRadius;
@@ -80,7 +84,9 @@ namespace CalamityMod.Projectiles.Typeless
             if (visuals)
             {
                 int dir = MathF.Sign(aimVel.X);
-                Vector2 safeVel = aimVel.SafeNormalize(Vector2.UnitX);
+                if (dir == 0)
+                    dir = Owner.direction;
+                Vector2 safeVel = aimVel.SafeNormalize(Vector2.UnitX * dir);
                 float sparkscale2 = 0.35f * Math.Max(fxFade, 0.5f);
                 for (int i = -1; i <= 1; i += 2)
                 {
@@ -100,7 +106,7 @@ namespace CalamityMod.Projectiles.Typeless
                 }
             }
 
-            if (Owner.dead || (!isAlive && fxFade < 0.1f) || Owner.velocity == Vector2.Zero)
+            if (Owner.dead || (!isAlive && fxFade < 0.1f) || (Owner.velocity == Vector2.Zero && Owner.dashDelay != -1))
                 Projectile.Kill();
         }
         public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
@@ -150,9 +156,15 @@ namespace CalamityMod.Projectiles.Typeless
                 }
             }
 
-            Owner.Calamity().GeneralScreenShakePower = 4f;
+            Owner.SetScreenshake(4f);
 
-            Projectile.NewProjectile(Projectile.GetSource_FromThis(), target.Center, Vector2.Zero, ModContent.ProjectileType<PauldronExplosion>(), Projectile.damage / 5, 0, Projectile.owner);
+            if (!hasHit)
+            {
+                Projectile.NewProjectile(Projectile.GetSource_FromThis(), target.Center, Vector2.Zero, ModContent.ProjectileType<PauldronExplosion>(), Projectile.damage / 5, 0, Projectile.owner);
+                hasHit = true;
+            }
+
+            Projectile.damage = (int)(Projectile.damage * 0.67f);
         }
         public override bool? Colliding(Rectangle projHitbox, Rectangle targetHitbox) => CalamityUtils.CircularHitboxCollision(Projectile.Center, ExplosionRadius, targetHitbox);
         public override bool? CanDamage() => (isAlive ? null : false);

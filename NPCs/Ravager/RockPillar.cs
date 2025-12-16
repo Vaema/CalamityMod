@@ -1,8 +1,6 @@
 ﻿using CalamityMod.Buffs.StatDebuffs;
 using CalamityMod.Events;
-using CalamityMod.World;
 using Microsoft.Xna.Framework;
-using System;
 using Terraria;
 using Terraria.Audio;
 using Terraria.ID;
@@ -22,7 +20,7 @@ namespace CalamityMod.NPCs.Ravager
         public override void SetDefaults()
         {
             NPC.Calamity().canBreakPlayerDefense = true;
-            NPC.GetNPCDamage();
+            NPC.damage = 90; // 180
             NPC.width = 60;
             NPC.height = 300;
             NPC.defense = 50;
@@ -37,10 +35,6 @@ namespace CalamityMod.NPCs.Ravager
             NPC.Calamity().VulnerableToSickness = false;
             NPC.Calamity().VulnerableToWater = true;
             NPCID.Sets.ImmuneToAllBuffs[Type] = true;
-
-            // Scale stats in Expert and Master
-            CalamityGlobalNPC.AdjustExpertModeStatScaling(NPC);
-            CalamityGlobalNPC.AdjustMasterModeStatScaling(NPC);
             NPC.lifeMax = 1800;
         }
 
@@ -110,7 +104,7 @@ namespace CalamityMod.NPCs.Ravager
 
                         NPC.noTileCollide = true;
                         if (NPC.rotation == 0)
-                            NPC.velocity.X = (BossRushEvent.BossRushActive ? 15 : 12) * NPC.direction;
+                            NPC.velocity.X = 12 * NPC.direction;
                         NPC.velocity.Y = -28.5f;
                         NPC.ai[0] = 1f;
                         NPC.ai[1] = 0;

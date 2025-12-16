@@ -2,18 +2,16 @@
 using System.IO;
 using CalamityMod.Buffs.DamageOverTime;
 using CalamityMod.Buffs.StatDebuffs;
-using CalamityMod.Events;
 using CalamityMod.Items.Materials;
 using CalamityMod.Items.Pets;
 using CalamityMod.Items.Placeables.Abyss;
-using CalamityMod.Items.Placeables.Furniture.DevPaintings;
+using CalamityMod.Items.Placeables.Furniture.Paintings;
 using CalamityMod.Items.Potions;
 using CalamityMod.Items.Weapons.Magic;
 using CalamityMod.Items.Weapons.Melee;
 using CalamityMod.Items.Weapons.Ranged;
 using CalamityMod.NPCs.Abyss;
 using CalamityMod.NPCs.NormalNPCs;
-using CalamityMod.NPCs.Perforator;
 using CalamityMod.Sounds;
 using CalamityMod.World;
 using Microsoft.Xna.Framework;
@@ -108,11 +106,18 @@ namespace CalamityMod.NPCs.PrimordialWyrm
             }
         }
 
+        public static int IceMistDamage = 110; // 440
+        public static int LightningDamage = 140; // 560
+
+        // Reused Cultist projectiles
+        public static float LightDamageMult = 2.445f; // 440
+        public static float DoomDamageMult = 2.445f; // 440
+
         public override void SetDefaults()
         {
             NPC.Calamity().canBreakPlayerDefense = true;
+            NPC.damage = 300; // 600
             NPC.npcSlots = 50f;
-            NPC.GetNPCDamage();
             NPC.width = 230;
             NPC.height = 138;
             NPC.LifeMaxNERB(2500000, 3000000);
@@ -120,7 +125,7 @@ namespace CalamityMod.NPCs.PrimordialWyrm
             AIType = -1;
             NPC.Opacity = 0f;
             NPC.knockBackResist = 0f;
-            NPC.value = Item.buyPrice(5, 0, 0, 0);
+            NPC.value = Item.buyPrice(platinum: 5);
             NPC.behindTiles = true;
             NPC.noGravity = true;
             NPC.noTileCollide = true;
@@ -212,7 +217,7 @@ namespace CalamityMod.NPCs.PrimordialWyrm
             // Target variable
             Player player = Main.player[NPC.target];
 
-            bool targetDownDeep = player.Calamity().ZoneAbyssLayer4 || BossRushEvent.BossRushActive;
+            bool targetDownDeep = player.Calamity().ZoneAbyssLayer4;
             bool targetOnMount = player.mount.Active;
 
             // Check whether enraged for the sake of the HP bar UI
@@ -329,7 +334,7 @@ namespace CalamityMod.NPCs.PrimordialWyrm
             float ancientDoomGateValue = death ? 95f : revenge ? 100f : expertMode ? 105f : 120f;
             float lightningChargePhaseGateValue = death ? 120f : revenge ? 135f : expertMode ? 150f : 180f;
 
-            if (CalamityWorld.LegendaryMode)
+            if (Main.getGoodWorld)
             {
                 lightningRainDuration *= 0.5f;
                 eidolonWyrmPhaseDuration *= 0.25f;
@@ -447,7 +452,7 @@ namespace CalamityMod.NPCs.PrimordialWyrm
             // Velocity and turn speed values
             float velocityScale = death ? 1.8f : revenge ? 1.5f : expertMode ? 1.2f : 0f;
             float baseVelocity = (targetDownDeep ? 10f : 15f) + (targetDownDeep ? velocityScale : velocityScale * 1.5f);
-            if (CalamityWorld.LegendaryMode)
+            if (Main.getGoodWorld)
                 baseVelocity *= 1.15f;
 
             float turnSpeed = baseVelocity * 0.015f;
@@ -646,22 +651,21 @@ namespace CalamityMod.NPCs.PrimordialWyrm
                                     float ai = Main.rand.Next(100);
                                     Vector2 projectileVelocity = Vector2.Normalize(projectileDestination.RotatedByRandom(MathHelper.PiOver4)) * lightningVelocity;
                                     int type = ProjectileID.CultistBossLightningOrbArc;
-                                    int damage = NPC.GetProjectileDamage(type);
-                                    int proj = Projectile.NewProjectile(NPC.GetSource_FromAI(), NPC.Center, projectileVelocity, type, damage, 0f, Main.myPlayer, projectileDestination.ToRotation(), ai);
+                                    int proj = Projectile.NewProjectile(NPC.GetSource_FromAI(), NPC.Center, projectileVelocity, type, LightningDamage, 0f, Main.myPlayer, projectileDestination.ToRotation(), ai);
                                     Main.projectile[proj].tileCollide = false;
 
                                     // Opposite bolt
                                     projectileDestination = targetCenterArray[i] - Main.player[whoAmIArray[i]].velocity * predictionAmt - NPC.Center;
                                     ai = Main.rand.Next(100);
                                     projectileVelocity = Vector2.Normalize(projectileDestination.RotatedByRandom(MathHelper.PiOver4)) * lightningVelocity;
-                                    proj = Projectile.NewProjectile(NPC.GetSource_FromAI(), NPC.Center, projectileVelocity, type, damage, 0f, Main.myPlayer, projectileDestination.ToRotation(), ai);
+                                    proj = Projectile.NewProjectile(NPC.GetSource_FromAI(), NPC.Center, projectileVelocity, type, LightningDamage, 0f, Main.myPlayer, projectileDestination.ToRotation(), ai);
                                     Main.projectile[proj].tileCollide = false;
 
                                     // Normal bolt
                                     projectileDestination = targetCenterArray[i] - NPC.Center;
                                     ai = Main.rand.Next(100);
                                     projectileVelocity = Vector2.Normalize(projectileDestination.RotatedByRandom(MathHelper.PiOver4)) * lightningVelocity;
-                                    proj = Projectile.NewProjectile(NPC.GetSource_FromAI(), NPC.Center, projectileVelocity, type, damage, 0f, Main.myPlayer, projectileDestination.ToRotation(), ai);
+                                    proj = Projectile.NewProjectile(NPC.GetSource_FromAI(), NPC.Center, projectileVelocity, type, LightningDamage, 0f, Main.myPlayer, projectileDestination.ToRotation(), ai);
                                     Main.projectile[proj].tileCollide = false;
                                 }
                             }
@@ -940,18 +944,17 @@ namespace CalamityMod.NPCs.PrimordialWyrm
                                 Vector2 projectileDestination = targetCenterArray[i] + Main.player[whoAmIArray[i]].velocity * predictionAmt - NPC.Center;
                                 Vector2 projectileVelocity = Vector2.Normalize(projectileDestination) * iceMistVelocity;
                                 int type = ProjectileID.CultistBossIceMist;
-                                int damage = NPC.GetProjectileDamage(type);
-                                Projectile.NewProjectile(NPC.GetSource_FromAI(), NPC.Center, projectileVelocity, type, damage, 0f, Main.myPlayer, 0f, 1f);
+                                Projectile.NewProjectile(NPC.GetSource_FromAI(), NPC.Center, projectileVelocity, type, IceMistDamage, 0f, Main.myPlayer, 0f, 1f);
 
                                 // Opposite mist
                                 projectileDestination = targetCenterArray[i] - Main.player[whoAmIArray[i]].velocity * predictionAmt - NPC.Center;
                                 projectileVelocity = Vector2.Normalize(projectileDestination) * iceMistVelocity;
-                                Projectile.NewProjectile(NPC.GetSource_FromAI(), NPC.Center, projectileVelocity, type, damage, 0f, Main.myPlayer, 0f, 1f);
+                                Projectile.NewProjectile(NPC.GetSource_FromAI(), NPC.Center, projectileVelocity, type, IceMistDamage, 0f, Main.myPlayer, 0f, 1f);
 
                                 // Normal bolt
                                 projectileDestination = targetCenterArray[i] - NPC.Center;
                                 projectileVelocity = Vector2.Normalize(projectileDestination) * iceMistVelocity;
-                                Projectile.NewProjectile(NPC.GetSource_FromAI(), NPC.Center, projectileVelocity, type, damage, 0f, Main.myPlayer, 0f, 1f);
+                                Projectile.NewProjectile(NPC.GetSource_FromAI(), NPC.Center, projectileVelocity, type, IceMistDamage, 0f, Main.myPlayer, 0f, 1f);
                             }
                         }
 
@@ -1147,13 +1150,12 @@ namespace CalamityMod.NPCs.PrimordialWyrm
                                     if (Main.netMode != NetmodeID.MultiplayerClient)
                                     {
                                         int type = ProjectileID.CultistBossLightningOrbArc;
-                                        int damage = NPC.GetProjectileDamage(type);
                                         for (int i = 0; i < numLightningBolts; i++)
                                         {
                                             Vector2 projectileDestination = player.Center - lightningSpawnLocation;
                                             Vector2 projectileVelocity = Vector2.Normalize(projectileDestination.RotatedByRandom(MathHelper.PiOver4)) * baseVelocity * 0.5f;
                                             float ai = Main.rand.Next(100);
-                                            int proj = Projectile.NewProjectile(NPC.GetSource_FromAI(), lightningSpawnLocation, projectileVelocity, type, damage, 0f, Main.myPlayer, projectileDestination.ToRotation(), ai);
+                                            int proj = Projectile.NewProjectile(NPC.GetSource_FromAI(), lightningSpawnLocation, projectileVelocity, type, LightningDamage, 0f, Main.myPlayer, projectileDestination.ToRotation(), ai);
                                             Main.projectile[proj].tileCollide = false;
                                             lightningSpawnLocation.Y += distanceBetweenBolts;
                                             if (i == numLightningBolts / 2)
@@ -1475,7 +1477,7 @@ namespace CalamityMod.NPCs.PrimordialWyrm
             return false;
         }
 
-        public override void BossLoot(ref string name, ref int potionType)
+        public override void BossLoot(ref int potionType)
         {
             potionType = ModContent.ItemType<OmegaHealingPotion>();
         }
@@ -1524,7 +1526,6 @@ namespace CalamityMod.NPCs.PrimordialWyrm
         public override void ApplyDifficultyAndPlayerScaling(int numPlayers, float balance, float bossAdjustment)
         {
             NPC.lifeMax = (int)(NPC.lifeMax * 0.8f * balance * bossAdjustment);
-            NPC.damage = (int)(NPC.damage * NPC.GetExpertDamageMultiplier());
         }
 
         public override void ModifyTypeName(ref string typeName)

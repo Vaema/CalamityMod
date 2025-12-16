@@ -3,6 +3,7 @@ using System.Linq;
 using System.Text.RegularExpressions;
 using CalamityMod.CalPlayer;
 using CalamityMod.Events;
+using CalamityMod.Packets;
 using CalamityMod.Systems;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
@@ -203,14 +204,14 @@ namespace CalamityMod.UI.ModeIndicator
             if (MouseScreenArea.Intersects(MainClickArea))
             {
                 //Display the first non-none difficulty by default
-                string modeToDisplay = Difficulties[1].Name.ToString();
-                bool anyActiveMode = false;
+                string modeToDisplay = Main.getGoodWorld ? Difficulties[0].FTWName.ToString() : Difficulties[1].Name.ToString();
+                bool anyActiveMode = Main.getGoodWorld ? true : false;
 
                 for (int i = 1; i < Difficulties.Count; i++)
                 {
                     if (GetCurrentDifficulty == Difficulties[i])
                     {
-                        modeToDisplay = Difficulties[i].Name.ToString();
+                        modeToDisplay = Main.getGoodWorld ? Difficulties[i].FTWName.ToString() : Difficulties[i].Name.ToString();
                         anyActiveMode = true;
                     }
                 }
@@ -347,7 +348,7 @@ namespace CalamityMod.UI.ModeIndicator
                         text = GetDifficultyText(mode);
 
                         if (ClickingMouse)
-                            SwitchToDifficulty(mode);
+                            SwitchToDifficulty(mode, broadcast: true);
                     }
                 }
             }
@@ -367,9 +368,9 @@ namespace CalamityMod.UI.ModeIndicator
         #region Difficulty toggling
         public static string GetDifficultyText(DifficultyMode mode)
         {
-            LocalizedText preface = mode.Name;
+            LocalizedText preface = Main.getGoodWorld ? mode.FTWName : mode.Name;
             if (mode == GetCurrentDifficulty)
-                preface = CalamityUtils.GetText("UI.CurrentlySelected").WithFormatArgs(mode.Name.ToString());
+                preface = CalamityUtils.GetText("UI.CurrentlySelected").WithFormatArgs(Main.getGoodWorld ? mode.FTWName.ToString() : mode.Name.ToString());
 
             string text = "\n" + mode.ShortDescription.ToString();
 
@@ -377,7 +378,7 @@ namespace CalamityMod.UI.ModeIndicator
             if (mode.ExpandedDescription != LocalizedText.Empty)
             {
                 // Show the description either if the player is holding shift.
-                if (Main.keyState.IsKeyDown(Microsoft.Xna.Framework.Input.Keys.LeftShift))
+                if (Main.keyState.PressingShift())
                     text += "\n" + mode.ExpandedDescription.ToString();
 
                 else
@@ -387,15 +388,21 @@ namespace CalamityMod.UI.ModeIndicator
             return preface.ToString() + text;
         }
 
-        public static void SwitchToDifficulty(DifficultyMode mode)
+        public static void SwitchToDifficulty(DifficultyMode mode, bool broadcast)
         {
             //No swap on server (although this doesn't matter anymore since it's not an item but dnc.
             //No swap if the requested difficulty is the same as the current one.
             if (mode == GetCurrentDifficulty)
                 return;
 
+            // This has to be put before difficulties change as to not disrupt GetCurrentDifficulty
+            BroadcastFormattedText("Mods.CalamityMod.UI.DifficultySwitch", Color.White, Main.getGoodWorld ? GetCurrentDifficulty.FTWTextColor.Hex3() : GetCurrentDifficulty.ChatTextColor.Hex3(), Main.getGoodWorld ? GetCurrentDifficulty.FTWName : GetCurrentDifficulty.Name
+            , Main.getGoodWorld ? mode.FTWTextColor.Hex3() : mode.ChatTextColor.Hex3(), Main.getGoodWorld ? mode.FTWName : mode.Name);
+
             // Todo, maybe in the future having a way to have multiple difficulty options on the same tier that can coexist, and it works in branching pathes? Not very necessary for cal & addons.
             // But would be super useful so other mods can let their own difficulties go there.
+
+            DifficultyModeSystem._newGameModeID = mode.BackBoneGameModeID;
 
             // Disable difficulties.
             for (int i = 0; i < Difficulties.Count; i++)
@@ -404,12 +411,7 @@ namespace CalamityMod.UI.ModeIndicator
                 if (Difficulties[i]._difficultyTier >= mode._difficultyTier && Difficulties[i] != mode)
                 {
                     if (Difficulties[i].Enabled)
-                    {
-                        if (Difficulties[i].DeactivationTextKey != string.Empty)
-                            DisplayLocalizedText(Difficulties[i].DeactivationTextKey, Difficulties[i].ChatTextColor);
-
                         Difficulties[i].Enabled = false;
-                    }
                 }
             }
 
@@ -436,16 +438,20 @@ namespace CalamityMod.UI.ModeIndicator
                 }
             }
 
-            if (mode.ActivationTextKey != string.Empty)
-                DisplayLocalizedText(mode.ActivationTextKey, mode.ChatTextColor);
-
             mode.Enabled = true;
 
             SoundEngine.PlaySound(mode.ActivationSound);
-            CalamityNetcode.SyncCalamityWorldDifficulties(Main.myPlayer);
 
-            menuOpen = false;
-            menuOpenTransitionTime = MenuAnimLength;
+            if (Main.netMode != NetmodeID.SinglePlayer && broadcast)
+            {
+                SwitchToDifficultyPacket.Send(mode);
+            }
+
+            if (menuOpen)
+            {
+                menuOpen = false;
+                menuOpenTransitionTime = MenuAnimLength;
+            }
         }
 
         #endregion

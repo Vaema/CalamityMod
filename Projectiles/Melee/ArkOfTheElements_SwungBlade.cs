@@ -186,9 +186,7 @@ namespace CalamityMod.Projectiles.Melee
                 {
                     Particle snapSpark = new GenericSparkle(Projectile.Center, Owner.velocity - Utils.SafeNormalize(Projectile.velocity, Vector2.Zero), Color.White, Color.OrangeRed, Main.rand.NextFloat(1f, 2f), 10 + Main.rand.Next(10), 0.1f, 3f);
                     GeneralParticleHandler.SpawnParticle(snapSpark);
-
-                    if (Main.LocalPlayer.Calamity().GeneralScreenShakePower < 3)
-                        Main.LocalPlayer.Calamity().GeneralScreenShakePower = 3;
+                    Main.LocalPlayer.SetScreenshake(3f);
 
                     if (Owner.whoAmI == Main.myPlayer)
                     {
@@ -258,9 +256,7 @@ namespace CalamityMod.Projectiles.Melee
         {
             if (Combo == 3f)
             {
-                if (Main.LocalPlayer.Calamity().GeneralScreenShakePower < 3)
-                    Main.LocalPlayer.Calamity().GeneralScreenShakePower = 3;
-
+                Main.LocalPlayer.SetScreenshake(3f);
                 SoundEngine.PlaySound(SoundID.Item84, Projectile.Center);
 
                 Vector2 sliceDirection = direction * 40;

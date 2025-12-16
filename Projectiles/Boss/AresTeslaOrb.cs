@@ -149,12 +149,11 @@ namespace CalamityMod.Projectiles.Boss
                 return null;
 
             // Difficulty modes
-            bool bossRush = BossRushEvent.BossRushActive;
-            bool death = CalamityWorld.death || bossRush;
-            bool revenge = CalamityWorld.revenge || bossRush;
-            bool expertMode = Main.expertMode || bossRush;
+            bool death = CalamityWorld.death || BossRushEvent.BossRushActive;
+            bool revenge = CalamityWorld.revenge || BossRushEvent.BossRushActive;
+            bool expertMode = Main.expertMode || BossRushEvent.BossRushActive;
 
-            float detachDistance = bossRush ? 1600f : death ? 1360f : revenge ? 1280f : expertMode ? 1200f : 960f;
+            float detachDistance = death ? 1360f : revenge ? 1280f : expertMode ? 1200f : 960f;
             foreach (Projectile p in Main.ActiveProjectiles)
             {
                 if (p.type != Projectile.type || p.ai[0] != Identity + 1f || Main.npc[CalamityGlobalNPC.draedonExoMechPrime].Calamity().newAI[0] == (float)AresBody.Phase.Deathrays)
@@ -203,21 +202,21 @@ namespace CalamityMod.Projectiles.Boss
             return points;
         }
 
-        internal float WidthFunction(float completionRatio)
+        internal float WidthFunction(float completionRatio, Vector2 vertexPos)
         {
             return MathHelper.Lerp(0.75f, 1.85f, (float)Math.Sin(MathHelper.Pi * completionRatio)) * Projectile.scale;
         }
 
-        internal Color ColorFunction(float completionRatio)
+        internal Color ColorFunction(float completionRatio, Vector2 vertexPos)
         {
             float fadeToWhite = MathHelper.Lerp(0f, 0.65f, (float)Math.Sin(MathHelper.TwoPi * completionRatio + Main.GlobalTimeWrappedHourly * 4f) * 0.5f + 0.5f);
             Color baseColor = Color.Lerp(Color.Cyan, Color.White, fadeToWhite);
             return Color.Lerp(baseColor, Color.LightBlue, ((float)Math.Sin(MathHelper.Pi * completionRatio + Main.GlobalTimeWrappedHourly * 4f) * 0.5f + 0.5f) * 0.8f) * Projectile.Opacity;
         }
 
-        internal float BackgroundWidthFunction(float completionRatio) => WidthFunction(completionRatio) * 4f;
+        internal float BackgroundWidthFunction(float completionRatio, Vector2 vertexPos) => WidthFunction(completionRatio, vertexPos) * 4f;
 
-        internal Color BackgroundColorFunction(float completionRatio)
+        internal Color BackgroundColorFunction(float completionRatio, Vector2 vertexPos)
         {
             Color color = Color.CornflowerBlue * Projectile.Opacity * 0.4f;
             return color;

@@ -29,7 +29,6 @@ namespace CalamityMod.Projectiles.Ranged
             Projectile.timeLeft = 600;
             Projectile.DamageType = DamageClass.Ranged;
             Projectile.extraUpdates = 2;
-            Projectile.Calamity().pointBlankShotDuration = CalamityGlobalProjectile.DefaultPointBlankDuration;
             Projectile.usesLocalNPCImmunity = true;
             Projectile.localNPCHitCooldown = 10;
         }
@@ -112,7 +111,7 @@ namespace CalamityMod.Projectiles.Ranged
         {
             for (int l = 0; l < 17; l++)
             {
-                Dust dust = Dust.NewDustPerfect(Projectile.Center, 278, new Vector2(8, 8).RotatedByRandom(100) * Main.rand.NextFloat(0.1f, 0.8f));
+                Dust dust = Dust.NewDustPerfect(Projectile.Center, DustID.FireworksRGB, new Vector2(8, 8).RotatedByRandom(100) * Main.rand.NextFloat(0.1f, 0.8f));
                 dust.noGravity = false;
                 dust.scale = Main.rand.NextFloat(0.62f, 0.82f);
                 dust.color = Color.Lerp(Color.Orange, Color.Red, Main.rand.NextFloat(0f, 1f));

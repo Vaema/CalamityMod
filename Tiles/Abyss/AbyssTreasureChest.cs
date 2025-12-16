@@ -1,6 +1,7 @@
 ﻿using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.GameContent.ObjectInteractions;
+using Terraria.ID;
 using Terraria.Localization;
 using Terraria.ModLoader;
 
@@ -12,7 +13,7 @@ namespace CalamityMod.Tiles.Abyss
         {
             this.SetUpChest(ModContent.ItemType<Items.Placeables.Furniture.AbyssTreasureChest>());
             AddMapEntry(new Color(71, 49, 41), CalamityUtils.GetItemName<Items.Placeables.Furniture.AbyssTreasureChest>(), CalamityUtils.GetMapChestName);
-            DustType = 33;
+            DustType = DustID.Water;
         }
 
         public override bool HasSmartInteract(int i, int j, SmartInteractScanSettings settings) => true;

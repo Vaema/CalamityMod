@@ -6,7 +6,6 @@ using Microsoft.Xna.Framework.Input;
 using ReLogic.Content;
 using Terraria;
 using Terraria.ModLoader;
-using static Microsoft.Xna.Framework.Input.Keys;
 
 namespace CalamityMod.UI
 {
@@ -76,7 +75,7 @@ namespace CalamityMod.UI
                 }
 
                 if (changed)
-                    CalamityClientConfig.SaveConfig();
+                    CalamityClientConfig.Instance.SaveChanges();
             }
 
             Rectangle mouseHitbox = new Rectangle((int)Main.MouseScreen.X, (int)Main.MouseScreen.Y, 8, 8);
@@ -98,7 +97,7 @@ namespace CalamityMod.UI
                     string maxStealthStr = (100f * modPlayer.rogueStealthMax).ToString("n2");
                     string textToDisplay = $"{CalamityUtils.GetTextValue("UI.Stealth")}: {stealthStr}/{maxStealthStr}\n";
 
-                    if (!Main.keyState.IsKeyDown(LeftShift))
+                    if (!Main.keyState.PressingShift())
                     {
                         textToDisplay += CalamityUtils.GetTextValue("UI.StealthShiftText");
                     }
@@ -139,7 +138,7 @@ namespace CalamityMod.UI
                 if (ms.LeftButton == ButtonState.Released)
                 {
                     dragOffset = null;
-                    CalamityClientConfig.SaveConfig();
+                    CalamityClientConfig.Instance.SaveChanges();
                 }
             }
         }

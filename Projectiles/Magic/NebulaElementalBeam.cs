@@ -4,6 +4,7 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using ReLogic.Content;
 using Terraria;
+using Terraria.ID;
 using Terraria.ModLoader;
 
 namespace CalamityMod.Projectiles.Magic
@@ -42,7 +43,7 @@ namespace CalamityMod.Projectiles.Magic
                 int totalBubbles = 24;
                 for (int i = 0; i < totalBubbles; i++)
                 {
-                    Dust nebulaBubble = Dust.NewDustPerfect(Projectile.Center, 242);
+                    Dust nebulaBubble = Dust.NewDustPerfect(Projectile.Center, DustID.PinkTorch);
                     nebulaBubble.velocity = Main.rand.NextVector2Circular(6f, 6f);
                     nebulaBubble.scale = Main.rand.NextFloat(2f, 3f);
                     nebulaBubble.noGravity = true;

@@ -1,4 +1,5 @@
-﻿using System.Runtime.CompilerServices;
+﻿using System;
+using System.Runtime.CompilerServices;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
@@ -9,13 +10,18 @@ namespace CalamityMod.Systems
 {
     public sealed partial class TileBlendMergeSystem : ModSystem
     {
+        [ThreadStatic]
+        private static BlendSidesReg TempBlendSidesReg;
+
         private static void TileFrame(int i, int j, int type)
         {
             if (!WorldGen.InWorld(i, j))
                 return;
 
             var tile = Main.tile[i, j];
-            tile.Get<TileBlendingData>().Clear();
+            ref var drawData = ref tile.Get<TileSpecialDrawData>();
+            drawData.HasBlendMergeData = false;
+            RemoveBlendingRefData(i, j);
 
             if (!tile.HasTile) // Is this even possible? But I'm doing this for sanity check anyways
                 return;
@@ -23,18 +29,27 @@ namespace CalamityMod.Systems
             var blendDataUniqueIndex = 0;
             var blendSidesReg = PopulateBlendSidesReg(i, j, tile.TileType);
 
-            CalculateSides(i, j, in blendSidesReg);
-
-            foreach (var pair in blendSidesReg)
+            var regCount = blendSidesReg.Count;
+            if (regCount > 0)
             {
-                var blendTextureSlot = pair.Key;
-                var sideFlags = pair.Value;
+                CalculateSides(i, j, in blendSidesReg);
 
-                if (sideFlags != BlendSideFlags.None)
+                var tileBlendingRefs = new TileBlendingRef[regCount];
+
+                foreach (var pair in blendSidesReg)
                 {
-                    tile.Get<TileBlendingData>().Set(blendDataUniqueIndex, (byte)blendTextureSlot, (byte)sideFlags);
-                    blendDataUniqueIndex++;
+                    var blendTextureSlot = pair.Key;
+                    var sideFlags = pair.Value;
+
+                    if (sideFlags != BlendSideFlags.None)
+                    {
+                        tileBlendingRefs[blendDataUniqueIndex] = new TileBlendingRef((ushort)blendTextureSlot, (byte)sideFlags);
+                        blendDataUniqueIndex++;
+                    }
                 }
+
+                SetBlendingRefData(i, j, tileBlendingRefs);
+                drawData.HasBlendMergeData = true;
             }
         }
 
@@ -318,7 +333,11 @@ namespace CalamityMod.Systems
 
         private static BlendSidesReg PopulateBlendSidesReg(int i, int j, int centerType)
         {
-            var reg = new BlendSidesReg();
+            // Prepare Registry
+            TempBlendSidesReg ??= new BlendSidesReg(capacity: 8);
+            TempBlendSidesReg.Clear();
+
+            var reg = TempBlendSidesReg;
 
             int left = GetTileType(i - 1, j);
             int right = GetTileType(i + 1, j);
@@ -334,9 +353,6 @@ namespace CalamityMod.Systems
             void Populate(int sideType)
             {
                 if (sideType < 0)
-                    return;
-
-                if (!_TileTypeToBlendTextureSlot.IndexInRange(sideType))
                     return;
 
                 var blendTextureSlot = _TileTypeToBlendTextureSlot[sideType];
@@ -382,7 +398,7 @@ namespace CalamityMod.Systems
                 tile = default;
                 type = -1;
                 return false;
-            }     
+            }
 
             tile = Main.tile[i, j];
             if (!tile.HasTile)

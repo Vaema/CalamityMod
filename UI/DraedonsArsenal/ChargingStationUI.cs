@@ -202,7 +202,7 @@ namespace CalamityMod.UI.DraedonsArsenal
                 // Since HoverItem is active, we don't need to input anything into this method.
                 Main.instance.MouseTextHackZoom("");
                 // Specifically do not block mouse input if holding a pickaxe, so that you can mine blocks behind the UI.
-                Main.blockMouse = Main.LocalPlayer.ActiveItem().pick <= 0;
+                Main.blockMouse = Main.LocalPlayer.HeldItem.pick <= 0;
             }
         }
 

@@ -1,7 +1,5 @@
 ﻿using System;
 using CalamityMod.Buffs.DamageOverTime;
-using CalamityMod.Events;
-using CalamityMod.World;
 using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.ID;
@@ -37,11 +35,10 @@ namespace CalamityMod.Projectiles.Boss
             if (Projectile.ai[0] == 1f)
             {
                 Projectile.extraUpdates = 2;
-                bool bossRush = BossRushEvent.BossRushActive;
-                float maxVelocity = bossRush ? 3.75f : 3f;
+                float maxVelocity = 3f;
                 if (Projectile.velocity.Length() < maxVelocity)
                 {
-                    Projectile.velocity *= bossRush ? 1.02f : 1.015f;
+                    Projectile.velocity *= 1.015f;
                     if (Projectile.velocity.Length() > maxVelocity)
                     {
                         Projectile.velocity.Normalize();
@@ -78,7 +75,7 @@ namespace CalamityMod.Projectiles.Boss
             if (info.Damage <= 0)
                 return;
 
-            target.AddBuff(ModContent.BuffType<AstralInfectionDebuff>(), 45);
+            target.AddBuff(ModContent.BuffType<AstralInfectionDebuff>(), 60);
         }
 
         public override Color? GetAlpha(Color lightColor)

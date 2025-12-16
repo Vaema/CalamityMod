@@ -29,7 +29,6 @@ namespace CalamityMod.Items.Weapons.Ranged
             Item.shootSpeed = 12f;
             Item.shoot = ModContent.ProjectileType<SicknessRound>();
             Item.useAmmo = AmmoID.Bullet;
-            Item.Calamity().canFirePointBlankShots = true;
         }
 
         public override Vector2? HoldoutOffset()

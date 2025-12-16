@@ -61,8 +61,8 @@ namespace CalamityMod.NPCs.SunkenSea
             NPC.DeathSound = SoundID.NPCDeath6;
             NPC.noTileCollide = true;
             NPC.alpha = 120;
-            //Banner = NPC.type;
-            //BannerItem = ModContent.ItemType<LostShoalBanner>();
+            Banner = NPC.type;
+            BannerItem = ModContent.ItemType<LostShoalBanner>();
             NPC.chaseable = false;
             NPC.catchItem = ItemID.AshBlock; // yeah this is intentional
             NPC.Calamity().VulnerableToHeat = false;
@@ -87,7 +87,6 @@ namespace CalamityMod.NPCs.SunkenSea
             {
                 Variant = (int)ShoalColor.Gold;
                 NPC.catchItem = ItemID.GoldCoin;
-                NPC.value = 10000;
             }
 
             RandomOpacityOffset = Main.rand.NextFloat(MathHelper.TwoPi);

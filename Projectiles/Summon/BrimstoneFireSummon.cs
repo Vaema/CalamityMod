@@ -1,6 +1,5 @@
 ﻿using CalamityMod.Buffs.DamageOverTime;
 using CalamityMod.Dusts;
-using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
@@ -25,7 +24,7 @@ namespace CalamityMod.Projectiles.Summon
             Projectile.extraUpdates = 3;
             Projectile.timeLeft = 50;
             Projectile.usesIDStaticNPCImmunity = true;
-            Projectile.idStaticNPCHitCooldown = 9;
+            Projectile.idStaticNPCHitCooldown = 12;
             Projectile.DamageType = DamageClass.Summon;
         }
 

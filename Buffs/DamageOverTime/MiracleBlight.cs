@@ -1,4 +1,5 @@
-﻿using CalamityMod.Particles;
+﻿using CalamityMod.DataStructures;
+using CalamityMod.Particles;
 using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.DataStructures;
@@ -9,12 +10,17 @@ namespace CalamityMod.Buffs.DamageOverTime
 {
     public class MiracleBlight : ModBuff
     {
+        public static DebuffData debuffData = new DebuffData()
+        {
+            EnemyLostRegen = 3000
+        };
         public override void SetStaticDefaults()
         {
             Main.debuff[Type] = true;
             Main.pvpBuff[Type] = true;
             Main.buffNoSave[Type] = true;
             BuffID.Sets.LongerExpertDebuff[Type] = true;
+            BuffDatasets.DebuffDataset[Type] = debuffData;
         }
 
         public override void Update(Player player, ref int buffIndex)
@@ -24,10 +30,7 @@ namespace CalamityMod.Buffs.DamageOverTime
 
         public override void Update(NPC npc, ref int buffIndex)
         {
-            if (npc.Calamity().miracleBlight < npc.buffTime[buffIndex])
-                npc.Calamity().miracleBlight = npc.buffTime[buffIndex];
-            npc.DelBuff(buffIndex);
-            buffIndex--;
+            npc.Calamity().miracleBlight = true;
         }
 
         internal static void DrawEffects(PlayerDrawSet drawInfo)
@@ -44,7 +47,7 @@ namespace CalamityMod.Buffs.DamageOverTime
 
             if (Main.rand.NextBool(2))
             {
-                Dust dust = Dust.NewDustPerfect(Player.Calamity().RandomDebuffVisualSpot, 66, CalamityUtils.RandomVelocity(100f, 70f, 150f, 0.04f));
+                Dust dust = Dust.NewDustPerfect(Player.Calamity().RandomDebuffVisualSpot, DustID.RainbowTorch, CalamityUtils.RandomVelocity(100f, 70f, 150f, 0.04f));
                 dust.noGravity = true;
                 dust.scale = Main.rand.NextFloat(0.7f, 0.85f);
                 dust.color = sparkColor;
@@ -75,7 +78,7 @@ namespace CalamityMod.Buffs.DamageOverTime
 
             if (Main.rand.NextBool(4))
             {
-                Dust dust = Dust.NewDustPerfect(npcSize, 66, CalamityUtils.RandomVelocity(100f, 70f, 150f, 0.04f));
+                Dust dust = Dust.NewDustPerfect(npcSize, DustID.RainbowTorch, CalamityUtils.RandomVelocity(100f, 70f, 150f, 0.04f));
                 dust.noGravity = true;
                 dust.scale = Main.rand.NextFloat(0.7f, 0.85f) + (0.0000007f * npc.width * npc.height);
                 dust.color = sparkColor;

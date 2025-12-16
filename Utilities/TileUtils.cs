@@ -11,7 +11,10 @@ using CalamityMod.Tiles.Crags;
 using CalamityMod.Tiles.FloralParadise;
 using CalamityMod.Tiles.FurnitureAbyss;
 using CalamityMod.Tiles.FurnitureAshen;
-using CalamityMod.Tiles.FurnitureEutrophic;
+using CalamityMod.Tiles.FurnitureDriftwood;
+using CalamityMod.Tiles.FurnitureMonolith;
+using CalamityMod.Tiles.FurnitureNavystone;
+using CalamityMod.Tiles.FurnitureNavystone.FurnitureAncientNavystone;
 using CalamityMod.Tiles.FurnitureOtherworldly;
 using CalamityMod.Tiles.FurnitureProfaned;
 using CalamityMod.Tiles.FurnitureVoid;
@@ -300,7 +303,7 @@ namespace CalamityMod
             {
                 for (int j = y; j != y + height; j += Math.Sign(height))
                 {
-                    if (WorldGen.InWorld(i, j))
+                    if (!WorldGen.InWorld(i, j))
                         continue;
 
                     if (WorldGen.SolidTile(Framing.GetTileSafely(i, j)))
@@ -378,10 +381,15 @@ namespace CalamityMod
         // Extension shorthand for the Tile Framing System Universal Merges.
         // As this must be defined in a static class, it's out here in CalamityUtils.
         // Flow, 2024/OCT/31 Removing Obsolete in here as tModLoader doesn't like this
-        //[Obsolete("Use TileBlendMergeSystem.RegisterMerge Instead")]
+        [Obsolete("Use TileBlendMergeSystem.RegisterBlendMergeWith Instead")]
         public static void RegisterUniversalMerge(this ModTile tile, int mergeType, string blendSheetPath)
         {
             //TileFramingSystem.RegisterUniversalMerge(tile.Type, mergeType, blendSheetPath);
+            TileBlendMergeSystem.RegisterMerge(tile.Type, mergeType);
+        }
+
+        public static void RegisterBlendMergeWith(this ModTile tile, int mergeType)
+        {
             TileBlendMergeSystem.RegisterMerge(tile.Type, mergeType);
         }
 
@@ -447,10 +455,13 @@ namespace CalamityMod
             TileType<Dunesand>(),
             TileType<Navystone>(),
             TileType<EutrophicSand>(),
+            TileType<Limestone>(),
+            TileType<LimestoneCobble>(),
             TileType<SulphurousShale>(),
             TileType<AbyssGravel>(),
             TileType<Voidstone>(),
             TileType<Stohne>(),
+            TileType<MossyStone>(),
         });
 
         /// <summary>
@@ -517,6 +528,7 @@ namespace CalamityMod
             TileType<CelestialRemains>(),
             // Sunken Sea
             TileType<Limestone>(),
+            TileType<LimestoneCobble>(),
             TileType<PolypSand>(),
             TileType<VolcanicSand>(),
             TileType<PinkPearlPile>(),
@@ -528,6 +540,7 @@ namespace CalamityMod
             TileType<EutrophicSand>(),
             TileType<Navystone>(),
             TileType<SeaPrism>(),
+            TileType<MossyStone>(),
         });
 
         /// <summary>
@@ -744,7 +757,7 @@ namespace CalamityMod
         /// </summary>
         /// <param name="theTile"></param>
         /// <returns>Wether or not the tile may be grappled onto</returns>
-        public static bool CanTileBeLatchedOnTo(this Tile theTile, bool grappleOnTrees = false) => Main.tileSolid[theTile.TileType] | (theTile.TileType == 314) | (grappleOnTrees && TileID.Sets.IsATreeTrunk[theTile.TileType]) | (grappleOnTrees && theTile.TileType == 323);
+        public static bool CanTileBeLatchedOnTo(this Tile theTile, bool grappleOnTrees = false) => Main.tileSolid[theTile.TileType] | (theTile.TileType == TileID.MinecartTrack) | (grappleOnTrees && TileID.Sets.IsATreeTrunk[theTile.TileType]) | (grappleOnTrees && theTile.TileType == TileID.PalmTree);
 
         /// <summary>
         /// Gets the required pickaxe power of a tile, accounting for both the ModTile and the vanilla tile pick requirements

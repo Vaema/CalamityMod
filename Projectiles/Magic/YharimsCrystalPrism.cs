@@ -45,7 +45,7 @@ namespace CalamityMod.Projectiles.Magic
             Vector2 rrp = player.RotatedRelativePoint(player.MountedCenter, true);
 
             // Update damage based on curent magic damage stat (so Mana Sickness affects it)
-            Projectile.damage = player.ActiveItem() is null ? 0 : player.GetWeaponDamage(player.ActiveItem());
+            Projectile.damage = player.HeldItem is null ? 0 : player.GetWeaponDamage(player.HeldItem);
 
             FrameCounter += 1f;
             float chargeRatio = MathHelper.Clamp(FrameCounter / MaxCharge, 0f, 1f);
@@ -79,11 +79,11 @@ namespace CalamityMod.Projectiles.Magic
             if (Projectile.owner == Main.myPlayer)
             {
                 // Scale seemingly never changes, so this just scales with shoot speed (Yharim's Crystal is 30 by default)
-                float speedTimesScale = player.ActiveItem().shootSpeed * Projectile.scale;
+                float speedTimesScale = player.HeldItem.shootSpeed * Projectile.scale;
                 UpdateAim(rrp, speedTimesScale);
 
                 // CheckMana returns true if the mana cost can be paid. If mana isn't consumed this frame, the CheckMana short-circuits out of being evaluated.
-                bool allowContinuedUse = !ShouldConsumeMana() || player.CheckMana(player.ActiveItem(), -1, true, false);
+                bool allowContinuedUse = !ShouldConsumeMana() || player.CheckMana(player.HeldItem, -1, true, false);
                 bool crystalStillInUse = !player.CantUseHoldout() && allowContinuedUse;
 
                 // The beams are only projected once (on frame 1).

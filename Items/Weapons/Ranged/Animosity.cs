@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using CalamityMod.Items.Weapons.Magic;
 using CalamityMod.Projectiles;
 using CalamityMod.Projectiles.Magic;
 using CalamityMod.Projectiles.Ranged;
@@ -8,7 +9,6 @@ using Terraria;
 using Terraria.Audio;
 using Terraria.DataStructures;
 using Terraria.ID;
-using Terraria.Localization;
 using Terraria.ModLoader;
 
 namespace CalamityMod.Items.Weapons.Ranged
@@ -23,20 +23,20 @@ namespace CalamityMod.Items.Weapons.Ranged
         public float SniperVelocityMult = 2f;
         public new string LocalizationCategory => "Items.Weapons.Ranged";
 
-        public override void SetStaticDefaults() => ItemID.Sets.ItemsThatAllowRepeatedRightClick[Type] = true;
-
+        public override void SetStaticDefaults()
+        {
+            ItemID.Sets.ItemsThatAllowRepeatedRightClick[Type] = true;
+            ItemID.Sets.ShimmerTransformToItem[Type] = ModContent.ItemType<LashesofChaos>();
+        }
         public override void SetDefaults()
         {
             Item.width = 70;
             Item.height = 18;
-            Item.damage = 46;
+            Item.damage = 39;
             Item.DamageType = DamageClass.Ranged;
-            Item.width = 70;
-            Item.height = 18;
             Item.scale = 0.85f;
-            Item.useTime = 30;
+            Item.useTime = Item.useAnimation = 33;
             Item.reuseDelay = 10;
-            Item.useAnimation = 30;
             Item.useStyle = ItemUseStyleID.Shoot;
             Item.noMelee = true;
             Item.knockBack = 2f;
@@ -48,12 +48,11 @@ namespace CalamityMod.Items.Weapons.Ranged
             Item.shootSpeed = 6.5f;
             Item.useAmmo = AmmoID.Bullet;
             Item.crit = 8;
-            Item.Calamity().canFirePointBlankShots = true;
         }
 
         public override void UpdateInventory(Player player)
         {
-            //ITS MY REWORK SO I CAN PUT A REFERENCE: Shotgun full of hate, returns Animosity otherwise
+            //ITS MY REWORK SO I CAN PUT A REFERENCE: Shotgun Full of Hate, returns Animosity otherwise
             if (Main.zenithWorld)
                 Item.SetNameOverride(this.GetLocalizedValue("GFBName"));
         }
@@ -65,15 +64,8 @@ namespace CalamityMod.Items.Weapons.Ranged
             //Distortion wind do whisper one truth...
         }
 
-        public override Vector2? HoldoutOffset()
-        {
-            return new Vector2(-5, 0);
-        }
-
-        public override bool AltFunctionUse(Player player)
-        {
-            return true;
-        }
+        public override Vector2? HoldoutOffset() => new Vector2(-5, 0);
+        public override bool AltFunctionUse(Player player) => true;
 
         public override float UseSpeedMultiplier(Player player)
         {
@@ -100,7 +92,7 @@ namespace CalamityMod.Items.Weapons.Ranged
 
             if (player.altFunctionUse == 2)
             {
-                player.Calamity().GeneralScreenShakePower = 2f;
+                player.SetScreenshake(2f);
                 SoundEngine.PlaySound(ShootAndReloadSound with { PitchVariance = 0.3f }, position);
 
                 if (Main.zenithWorld) // Why only shotgun full of hate, why not Hexagun too? (See AnimosityBullet for more)
@@ -131,7 +123,7 @@ namespace CalamityMod.Items.Weapons.Ranged
                 }
                 for (int i = 0; i <= 10; i++)
                 {
-                    Dust dust = Dust.NewDustPerfect(nuzzlePos, 303, velocity.RotatedByRandom(MathHelper.ToRadians(7f)) * Main.rand.NextFloat(0.05f, 0.4f), 0, default, Main.rand.NextFloat(0.9f, 1.2f));
+                    Dust dust = Dust.NewDustPerfect(nuzzlePos, DustID.SteampunkSteam, velocity.RotatedByRandom(MathHelper.ToRadians(7f)) * Main.rand.NextFloat(0.05f, 0.4f), 0, default, Main.rand.NextFloat(0.9f, 1.2f));
                     dust.noGravity = true;
                     dust.alpha = 150;
                 }
@@ -180,7 +172,7 @@ namespace CalamityMod.Items.Weapons.Ranged
             if (!Main.dedServ)
             {
                 string goreType = Main.rand.NextBool() ? "EmptyAnimosityShell" : "EmptyAnimosityShell2";
-                Gore.NewGore(source, position, velocity.RotatedBy(2f * -player.direction) * Main.rand.NextFloat(0.6f, 0.7f), Mod.Find<ModGore>(goreType).Type);
+                Gore.NewGore(source, position, velocity.RotatedBy(2f * -player.direction) * Main.rand.NextFloat(0.6f, 0.7f), Mod.Find<ModGore>(goreType).Type, 0.75f);
             }
             return false;
         }

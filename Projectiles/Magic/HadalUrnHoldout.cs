@@ -33,16 +33,16 @@ namespace CalamityMod.Projectiles.Magic
             float rotoffset = MathHelper.PiOver2;
             Vector2 playerpos = player.RotatedRelativePoint(player.MountedCenter, true);
             bool shouldBeHeld = !player.CantUseHoldout();
-            Projectile.damage = player.ActiveItem() is null ? 0 : player.GetWeaponDamage(player.ActiveItem());
+            Projectile.damage = player.HeldItem is null ? 0 : player.GetWeaponDamage(player.HeldItem);
             if (Projectile.ai[0] > 0f)
             {
-                Projectile.ai[0] -= 1f;
+                Projectile.ai[0]--;
             }
             if (Main.myPlayer == Projectile.owner)
             {
                 if (shouldBeHeld)
                 {
-                    float holdscale = player.ActiveItem().shootSpeed * Projectile.scale;
+                    float holdscale = player.HeldItem.shootSpeed * Projectile.scale;
                     Vector2 playerpos2 = playerpos;
                     Vector2 going = Main.screenPosition + new Vector2((float)Main.mouseX, (float)Main.mouseY) - playerpos2;
                     if (player.gravDir == -1f)
@@ -63,7 +63,7 @@ namespace CalamityMod.Projectiles.Magic
 
                     if (Projectile.ai[0] <= 0)
                     {
-                        bool manaCostPaid = player.CheckMana(player.ActiveItem(), -1, true, false);
+                        bool manaCostPaid = player.CheckMana(player.HeldItem, -1, true, false);
                         if (manaCostPaid)
                         {
                             SoundEngine.PlaySound(SoundID.Item111, Projectile.Center);
@@ -107,7 +107,7 @@ namespace CalamityMod.Projectiles.Magic
                                 }
                                 Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center, shotSpeed, projType, projDamage, Projectile.knockBack, player.whoAmI, ai);
                             }
-                            Projectile.ai[0] = 16;
+                            Projectile.ai[0] = player.HeldItem.useTime;
                         }
                         else
                         {

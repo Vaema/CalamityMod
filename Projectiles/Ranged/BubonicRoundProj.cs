@@ -27,7 +27,6 @@ namespace CalamityMod.Projectiles.Ranged
             Projectile.timeLeft = 600;
             Projectile.extraUpdates = 3;
             AIType = ProjectileID.Bullet;
-            Projectile.Calamity().pointBlankShotDuration = CalamityGlobalProjectile.DefaultPointBlankDuration;
         }
 
         public override void AI()
@@ -39,7 +38,7 @@ namespace CalamityMod.Projectiles.Ranged
             {
                 if (Main.rand.NextBool())
                 {
-                    Dust dust = Dust.NewDustPerfect(Projectile.Center, 303, -Projectile.velocity.RotatedByRandom(0.3f) * Main.rand.NextFloat(0.01f, 0.15f));
+                    Dust dust = Dust.NewDustPerfect(Projectile.Center, DustID.SteampunkSteam, -Projectile.velocity.RotatedByRandom(0.3f) * Main.rand.NextFloat(0.01f, 0.15f));
                     dust.scale = Main.rand.NextFloat(0.7f, 0.85f);
                     dust.noGravity = true;
                     if (Main.rand.NextBool(3))
@@ -85,7 +84,7 @@ namespace CalamityMod.Projectiles.Ranged
             }
             for (int b = 0; b < 6; b++)
             {
-                Dust dust = Dust.NewDustPerfect(Projectile.Center, 107, new Vector2(3, 3).RotatedByRandom(100) * Main.rand.NextFloat(0.2f, 1.5f));
+                Dust dust = Dust.NewDustPerfect(Projectile.Center, DustID.Terra, new Vector2(3, 3).RotatedByRandom(100) * Main.rand.NextFloat(0.2f, 1.5f));
                 dust.noGravity = true;
                 dust.scale = Main.rand.NextFloat(0.5f, 1.1f);
                 dust.alpha = 200;

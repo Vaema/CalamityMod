@@ -8,14 +8,13 @@ using CalamityMod.Items.LoreItems;
 using CalamityMod.Items.Materials;
 using CalamityMod.Items.Pets;
 using CalamityMod.Items.Placeables.Furniture.BossRelics;
-using CalamityMod.Items.Placeables.Furniture.DevPaintings;
+using CalamityMod.Items.Placeables.Furniture.Paintings;
 using CalamityMod.Items.Placeables.Furniture.Trophies;
 using CalamityMod.Items.Potions;
 using CalamityMod.Items.TreasureBags;
 using CalamityMod.Items.Weapons.Magic;
 using CalamityMod.Items.Weapons.Melee;
 using CalamityMod.Items.Weapons.Ranged;
-using CalamityMod.NPCs.Perforator;
 using CalamityMod.Projectiles.Boss;
 using CalamityMod.Projectiles.Enemy;
 using CalamityMod.Sounds;
@@ -83,16 +82,20 @@ namespace CalamityMod.NPCs.StormWeaver
             }
         }
 
+        public static int LightningDamage = 64; // 256
+        public static int FrostWaveDamage = 64; // 256
+        public static int TornadoDamage = 72; // 288
+
         public override void SetDefaults()
         {
             NPC.Calamity().canBreakPlayerDefense = true;
-            NPC.GetNPCDamage();
+            NPC.damage = 180; // 360
             NPC.npcSlots = 5f;
             NPC.width = 74;
             NPC.height = 74;
             NPC.lifeMax = 825000;
             NPC.LifeMaxNERB(NPC.lifeMax, NPC.lifeMax, 500000);
-            NPC.value = Item.buyPrice(1, 0, 0, 0);
+            NPC.value = Item.buyPrice(gold: 50);
 
             // Phase one settings
             CalamityGlobalNPC global = NPC.Calamity();
@@ -112,22 +115,17 @@ namespace CalamityMod.NPCs.StormWeaver
             NPC.noTileCollide = true;
             NPC.netAlways = true;
 
-            if (BossRushEvent.BossRushActive)
-                NPC.scale *= 1.25f;
-            else if (CalamityWorld.death)
+            if (CalamityWorld.death || BossRushEvent.BossRushActive)
                 NPC.scale *= 1.2f;
             else if (CalamityWorld.revenge)
                 NPC.scale *= 1.15f;
             else if (Main.expertMode)
                 NPC.scale *= 1.1f;
 
-            if (CalamityWorld.LegendaryMode)
+            if (Main.getGoodWorld)
                 NPC.scale *= 0.7f;
 
             NPC.Calamity().VulnerableToElectricity = false;
-
-            // Scale HP in Master
-            CalamityGlobalNPC.AdjustMasterModeStatScaling(NPC, true);
         }
 
         public override void SetBestiary(BestiaryDatabase database, BestiaryEntry bestiaryEntry)
@@ -171,14 +169,13 @@ namespace CalamityMod.NPCs.StormWeaver
         {
             CalamityGlobalNPC calamityGlobalNPC = NPC.Calamity();
 
-            bool bossRush = BossRushEvent.BossRushActive;
-            bool death = CalamityWorld.death || bossRush;
-            bool revenge = CalamityWorld.revenge || bossRush;
-            bool expertMode = Main.expertMode || bossRush;
+            bool death = CalamityWorld.death || BossRushEvent.BossRushActive;
+            bool revenge = CalamityWorld.revenge || BossRushEvent.BossRushActive;
+            bool expertMode = Main.expertMode || BossRushEvent.BossRushActive;
 
             if (CalamityServerConfig.Instance.BossesStopWeather)
                 CalamityWorld.StopRain();
-            else if (!Main.raining && !bossRush)
+            else if (!Main.raining && !BossRushEvent.BossRushActive)
                 CalamityWorld.StartRain();
 
             float lifeRatio = NPC.life / (float)NPC.lifeMax;
@@ -193,7 +190,7 @@ namespace CalamityMod.NPCs.StormWeaver
             bool phase4 = lifeRatio < 0.3f;
 
             // Update armored settings to naked settings
-            if (phase2 && !CalamityWorld.LegendaryMode)
+            if (phase2 && !Main.zenithWorld)
             {
                 // Spawn armor gore, roar and set other crucial variables
                 if (!NPC.chaseable)
@@ -280,7 +277,7 @@ namespace CalamityMod.NPCs.StormWeaver
                 }
 
                 // Used for body and tail projectile firing timings in phase 1
-                if (!phase2 || CalamityWorld.LegendaryMode)
+                if (!phase2 || Main.zenithWorld)
                     NPC.localAI[0] += 1f;
             }
 
@@ -333,8 +330,8 @@ namespace CalamityMod.NPCs.StormWeaver
             Vector2 npcCenter = NPC.Center;
             float targetCenterX = Main.player[NPC.target].Center.X;
             float targetCenterY = Main.player[NPC.target].Center.Y;
-            float velocity = (phase2 ? 12f : 10f) + (bossRush ? 3f : revenge ? 1.5f : expertMode ? 1f : 0f);
-            float acceleration = (phase2 ? 0.24f : 0.2f) + (bossRush ? 0.12f : revenge ? 0.08f : expertMode ? 0.04f : 0f);
+            float velocity = (phase2 ? 12f : 10f) + (revenge ? 1.5f : expertMode ? 1f : 0f);
+            float acceleration = (phase2 ? 0.24f : 0.2f) + (revenge ? 0.08f : expertMode ? 0.04f : 0f);
 
             // Start charging at the player when in phase 2
             if (phase2)
@@ -358,7 +355,7 @@ namespace CalamityMod.NPCs.StormWeaver
                 bool useTornadoes = calamityGlobalNPC.newAI[3] % 2f != 0f;
 
                 // Gate value that decides when Storm Weaver will charge
-                float chargePhaseGateValue = bossRush ? 280f : death ? 320f : revenge ? 340f : expertMode ? 360f : 400f;
+                float chargePhaseGateValue = death ? 320f : revenge ? 340f : expertMode ? 360f : 400f;
                 if (!phase3)
                     chargePhaseGateValue *= 0.5f;
                 if (phase4 && expertMode)
@@ -468,7 +465,6 @@ namespace CalamityMod.NPCs.StormWeaver
                         if (Main.netMode != NetmodeID.MultiplayerClient)
                         {
                             int type = ProjectileID.FrostWave;
-                            int waveDamage = NPC.GetProjectileDamage(type);
                             int totalWaves = death ? (phase4 ? 27 : 25) : (phase4 ? 25 : 23);
                             int shotSpacing = death ? (phase4 ? 185 : 200) : (phase4 ? 200 : 215);
                             float projectileSpawnX = Main.player[NPC.target].Center.X - totalWaves * shotSpacing * 0.5f;
@@ -520,7 +516,7 @@ namespace CalamityMod.NPCs.StormWeaver
                                 // Frost Waves start moving after 30 frames
                                 // Frost Waves take 30 frames to reach full velocity
                                 Projectile.NewProjectile(NPC.GetSource_FromAI(), projectileSpawnX, Main.player[NPC.target].Center.Y - 1600f, 0f, velocityY * 0.5f, ModContent.ProjectileType<StormWeaverFrostWaveTelegraph>(), 0, 0f, Main.myPlayer, 0f, velocityY);
-                                Projectile.NewProjectile(NPC.GetSource_FromAI(), projectileSpawnX, Main.player[NPC.target].Center.Y - 1600f, 0f, velocityY * 0.1f, type, waveDamage, 0f, Main.myPlayer, delayBeforeFiring, velocityY);
+                                Projectile.NewProjectile(NPC.GetSource_FromAI(), projectileSpawnX, Main.player[NPC.target].Center.Y - 1600f, 0f, velocityY * 0.1f, type, FrostWaveDamage, 0f, Main.myPlayer, delayBeforeFiring, velocityY);
                                 projectileSpawnX += shotSpacing;
                             }
                         }
@@ -540,13 +536,12 @@ namespace CalamityMod.NPCs.StormWeaver
                         if (Main.netMode != NetmodeID.MultiplayerClient)
                         {
                             int projectileType = ModContent.ProjectileType<StormMarkHostile>();
-                            int tornadoDamage = NPC.GetProjectileDamage(projectileType);
                             int totalTornadoes = revenge ? 7 : expertMode ? 5 : 3;
                             float spawnDistance = revenge ? 750f : expertMode ? 900f : 1050f;
                             for (int i = 0; i < totalTornadoes; i++)
                             {
                                 Vector2 spawnPosition = Main.player[NPC.target].Center + Vector2.UnitX * spawnDistance * (i - totalTornadoes / 2);
-                                Projectile.NewProjectile(NPC.GetSource_FromAI(), spawnPosition, Vector2.Zero, projectileType, 0, 0f, Main.myPlayer, tornadoDamage, 1f);
+                                Projectile.NewProjectile(NPC.GetSource_FromAI(), spawnPosition, Vector2.Zero, projectileType, 0, 0f, Main.myPlayer, TornadoDamage, 1f);
                             }
                         }
                     }
@@ -558,7 +553,8 @@ namespace CalamityMod.NPCs.StormWeaver
                     if (calamityGlobalNPC.newAI[0] == chargePhaseGateValue - 70)
                     {
                         Vector2 soundCenter = Main.player[NPC.target].Center;
-                        SoundEngine.PlaySound(CommonCalamitySounds.LightningTelegraph, soundCenter);
+                        SoundStyle lightning = new("CalamityMod/Sounds/Custom/LightningTelegraph") { Volume = 0.7f };
+                        SoundEngine.PlaySound(lightning, soundCenter);
                     }
                     if (calamityGlobalNPC.newAI[0] >= chargePhaseGateValue)
                     {
@@ -621,7 +617,7 @@ namespace CalamityMod.NPCs.StormWeaver
                 }
             }
 
-            if (CalamityWorld.LegendaryMode)
+            if (Main.getGoodWorld)
             {
                 velocity *= 1.4f;
                 acceleration *= 1.4f;
@@ -676,8 +672,7 @@ namespace CalamityMod.NPCs.StormWeaver
                                 Vector2 aimDirection = Main.player[NPC.target].Center - source;
                                 float ai = Main.rand.Next(100);
                                 int type = ProjectileID.CultistBossLightningOrbArc;
-                                int damage = NPC.GetProjectileDamage(type);
-                                Projectile.NewProjectile(NPC.GetSource_FromAI(), source, boltVelocity, type, damage, 0f, Main.myPlayer, aimDirection.ToRotation(), ai);
+                                Projectile.NewProjectile(NPC.GetSource_FromAI(), source, boltVelocity, type, LightningDamage, 0f, Main.myPlayer, aimDirection.ToRotation(), ai);
                             }
                         }
                     }
@@ -780,19 +775,6 @@ namespace CalamityMod.NPCs.StormWeaver
                 }
             }
 
-            // Calculate contact damage based on velocity
-            float minimalContactDamageVelocity = velocity * 0.25f;
-            float minimalDamageVelocity = velocity * 0.5f;
-            if (NPC.velocity.Length() <= minimalContactDamageVelocity)
-            {
-                NPC.damage = (int)Math.Round(NPC.defDamage * 0.5);
-            }
-            else
-            {
-                float velocityDamageScalar = MathHelper.Clamp((NPC.velocity.Length() - minimalContactDamageVelocity) / minimalDamageVelocity, 0f, 1f);
-                NPC.damage = (int)MathHelper.Lerp((float)Math.Round(NPC.defDamage * 0.5), NPC.defDamage, velocityDamageScalar);
-            }
-
             NPC.rotation = (float)Math.Atan2(NPC.velocity.Y, NPC.velocity.X) + MathHelper.PiOver2;
 
             if (phase4)
@@ -818,7 +800,7 @@ namespace CalamityMod.NPCs.StormWeaver
                     SoundEngine.PlaySound(SoundID.Thunder, NPC.Center);
 
                 // Start a storm when in third phase. Don't do this during Boss Rush
-                if (Main.netMode == NetmodeID.MultiplayerClient || (Main.netMode == NetmodeID.SinglePlayer && Main.gameMenu) || calamityGlobalNPC.newAI[1] > 0f || bossRush)
+                if (Main.netMode == NetmodeID.MultiplayerClient || (Main.netMode == NetmodeID.SinglePlayer && Main.gameMenu) || calamityGlobalNPC.newAI[1] > 0f || BossRushEvent.BossRushActive)
                     return;
 
                 CalamityWorld.StartRain(true, true);
@@ -840,18 +822,17 @@ namespace CalamityMod.NPCs.StormWeaver
 
             CalamityGlobalNPC calamityGlobalNPC = NPC.Calamity();
 
-            bool bossRush = BossRushEvent.BossRushActive;
-            bool death = CalamityWorld.death || bossRush;
-            bool revenge = CalamityWorld.revenge || bossRush;
-            bool expertMode = Main.expertMode || bossRush;
+            bool death = CalamityWorld.death || BossRushEvent.BossRushActive;
+            bool revenge = CalamityWorld.revenge || BossRushEvent.BossRushActive;
+            bool expertMode = Main.expertMode || BossRushEvent.BossRushActive;
 
             float lifeRatio = NPC.life / (float)NPC.lifeMax;
 
-            bool phase2 = lifeRatio < 0.8f && !CalamityWorld.LegendaryMode;
+            bool phase2 = lifeRatio < 0.8f && !Main.zenithWorld;
             bool phase3 = lifeRatio < 0.55f;
 
             // Gate value that decides when Storm Weaver will charge
-            float chargePhaseGateValue = bossRush ? 280f : death ? 320f : revenge ? 340f : expertMode ? 360f : 400f;
+            float chargePhaseGateValue = death ? 320f : revenge ? 340f : expertMode ? 360f : 400f;
             if (!phase3)
                 chargePhaseGateValue *= 0.5f;
 
@@ -877,21 +858,20 @@ namespace CalamityMod.NPCs.StormWeaver
 
         public override void OnHitPlayer(Player target, Player.HurtInfo hurtInfo)
         {
-            bool bossRush = BossRushEvent.BossRushActive;
-            bool death = CalamityWorld.death || bossRush;
-            bool revenge = CalamityWorld.revenge || bossRush;
-            bool expertMode = Main.expertMode || bossRush;
+            bool death = CalamityWorld.death || BossRushEvent.BossRushActive;
+            bool revenge = CalamityWorld.revenge || BossRushEvent.BossRushActive;
+            bool expertMode = Main.expertMode || BossRushEvent.BossRushActive;
 
             float lifeRatio = NPC.life / (float)NPC.lifeMax;
 
             bool phase3 = lifeRatio < 0.55f;
 
             // Gate value that decides when Storm Weaver will charge
-            float chargePhaseGateValue = bossRush ? 280f : death ? 320f : revenge ? 340f : expertMode ? 360f : 400f;
+            float chargePhaseGateValue = death ? 320f : revenge ? 340f : expertMode ? 360f : 400f;
             if (!phase3)
                 chargePhaseGateValue *= 0.5f;
 
-            int buffDuration = NPC.Calamity().newAI[0] >= chargePhaseGateValue ? 480 : 240;
+            int buffDuration = NPC.Calamity().newAI[0] >= chargePhaseGateValue ? 360 : 240;
             if (hurtInfo.Damage > 0)
                 target.AddBuff(BuffID.Electrified, buffDuration);
         }
@@ -954,7 +934,7 @@ namespace CalamityMod.NPCs.StormWeaver
             return true;
         }
 
-        public override void BossLoot(ref string name, ref int potionType)
+        public override void BossLoot(ref int potionType)
         {
             potionType = ModContent.ItemType<SupremeHealingPotion>();
         }
@@ -1000,7 +980,8 @@ namespace CalamityMod.NPCs.StormWeaver
                 normalOnly.Add(DropHelper.CalamityStyle(DropHelper.NormalWeaponDropRateFraction, weapons));
 
                 // Equipment
-                normalOnly.Add(DropHelper.PerPlayer(ModContent.ItemType<ArcFlashRing>()));
+                // 16NOV2025: Ozzatron: item has been chosen as the "Expert gatekept" item for this Calamity boss
+                // normalOnly.Add(DropHelper.PerPlayer(ModContent.ItemType<ArcFlashRing>()));
 
                 // Materials
                 normalOnly.Add(DropHelper.PerPlayer(ModContent.ItemType<ArmoredShell>(), 1, 10, 12));

@@ -1,12 +1,7 @@
 ﻿using System.Linq;
-using CalamityMod.Dusts;
-using CalamityMod.Events;
 using CalamityMod.Items.Materials;
 using CalamityMod.Items.Placeables.Furniture;
-using CalamityMod.Items.SummonItems;
 using CalamityMod.Items.Tools;
-using CalamityMod.NPCs.AstrumDeus;
-using CalamityMod.Projectiles.Boss;
 using CalamityMod.Projectiles.Typeless;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
@@ -15,7 +10,6 @@ using Terraria;
 using Terraria.Audio;
 using Terraria.DataStructures;
 using Terraria.ID;
-using Terraria.Localization;
 using Terraria.ModLoader;
 using Terraria.ObjectData;
 
@@ -38,7 +32,7 @@ namespace CalamityMod.Tiles.Furniture
             AddMapEntry(new Color(194, 255, 67), CalamityUtils.GetItemName<WulfrumLureItem>());
             TileID.Sets.DisableSmartCursor[Type] = true;
 
-            DustType = 83;
+            DustType = DustID.Tungsten;
         }
 
         public override bool RightClick(int i, int j)
@@ -98,12 +92,10 @@ namespace CalamityMod.Tiles.Furniture
                 return;
             }
 
-            if (CogTexture == null)
-                CogTexture = ModContent.Request<Texture2D>("CalamityMod/Tiles/Furniture/WulfrumLureCog");
+            CogTexture ??= ModContent.Request<Texture2D>("CalamityMod/Tiles/Furniture/WulfrumLureCog");
             Texture2D cogTexture = CogTexture.Value;
 
-            if (CoverTexture == null)
-                CoverTexture = ModContent.Request<Texture2D>("CalamityMod/Tiles/Furniture/WulfrumLureCover");
+            CoverTexture ??= ModContent.Request<Texture2D>("CalamityMod/Tiles/Furniture/WulfrumLureCover");
             Texture2D coverTex = CoverTexture.Value;
 
             Vector2 worldPos = p.ToWorldCoordinates(16f, 16f);

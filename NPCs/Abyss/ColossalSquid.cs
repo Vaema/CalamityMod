@@ -7,7 +7,6 @@ using CalamityMod.Items.Materials;
 using CalamityMod.Items.Placeables.Banners;
 using CalamityMod.Items.Weapons.Summon;
 using CalamityMod.Projectiles.Enemy;
-using CalamityMod.World;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria;
@@ -38,13 +37,12 @@ namespace CalamityMod.NPCs.Abyss
             NPC.width = 180;
             NPC.height = 180;
             NPC.defense = 50;
-            NPC.DR_NERD(0.05f);
             NPC.lifeMax = 130000; // Previously 220,000
             NPC.aiStyle = -1;
             AIType = -1;
             NPC.knockBackResist = 0f;
             NPC.timeLeft = NPC.activeTime * 30;
-            NPC.value = Item.buyPrice(0, 25, 0, 0);
+            NPC.value = Item.buyPrice(gold: 25);
             NPC.HitSound = SoundID.NPCHit20;
             NPC.DeathSound = SoundID.NPCDeath23;
             NPC.rarity = 2;
@@ -56,10 +54,6 @@ namespace CalamityMod.NPCs.Abyss
             NPC.Calamity().VulnerableToWater = false;
             NPC.Calamity().canBreakPlayerDefense = true;
             SpawnModBiomes = new int[2] { ModContent.GetInstance<AbyssLayer3Biome>().Type, ModContent.GetInstance<AbyssLayer4Biome>().Type };
-
-            // Scale stats in Expert and Master
-            CalamityGlobalNPC.AdjustExpertModeStatScaling(NPC);
-            CalamityGlobalNPC.AdjustMasterModeStatScaling(NPC);
         }
 
         public override void SetBestiary(BestiaryDatabase database, BestiaryEntry bestiaryEntry)
@@ -629,7 +623,7 @@ namespace CalamityMod.NPCs.Abyss
 
         public override void ModifyNPCLoot(NPCLoot npcLoot)
         {
-            npcLoot.Add(ItemID.BlackInk, 1, 3, 5);
+            npcLoot.Add(ItemID.BlackInk, 1, 12, 16);
             npcLoot.Add(ModContent.ItemType<InkBomb>(), 3);
 
             var postLevi = npcLoot.DefineConditionalDropSet(DropHelper.PostLevi());

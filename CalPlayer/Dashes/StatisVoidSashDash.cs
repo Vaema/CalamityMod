@@ -1,13 +1,9 @@
 ﻿using System;
-using System.Security.Policy;
 using CalamityMod.Dusts;
 using CalamityMod.Enums;
 using CalamityMod.Graphics.Metaballs;
 using CalamityMod.Items.Accessories;
-using CalamityMod.Particles;
-using CalamityMod.Projectiles.Rogue;
 using Microsoft.Xna.Framework;
-using rail;
 using Terraria;
 using Terraria.Audio;
 using Terraria.ModLoader;
@@ -16,7 +12,7 @@ namespace CalamityMod.CalPlayer.Dashes
 {
     public class StatisVoidSashDash : PlayerDashEffect
     {
-        public static new string ID => "Statis' Void Sash";
+        public static new string ID { get; private set; }
 
         public override DashCollisionType CollisionType => DashCollisionType.NoCollision;
 
@@ -24,23 +20,16 @@ namespace CalamityMod.CalPlayer.Dashes
         public int Time = 0;
         public Vector2 aimVel;
         public bool strongVisuals = true;
-        public int lastDashDir = 0;
 
-        public override float CalculateDashSpeed(Player player) => (70f * player.moveSpeed);
+        public override void Load()
+        {
+            ID = DashID;
+        }
+
+        public override float CalculateDashSpeed(Player player) => (64f);
 
         public override void OnDashEffects(Player player)
         {
-            if (Math.Sign(player.velocity.X) == lastDashDir && lastDashDir != 0)
-            {
-                player.Calamity().statisPenaltyTimer = player.Calamity().statisTimerMax;
-                if (player.Calamity().statisAnticheese < 6)
-                    player.Calamity().statisAnticheese++;
-            }
-            else
-                player.Calamity().statisAnticheese = 0;
-            if (player.Calamity().statisAnticheese > 1)
-                player.velocity.X *= Utils.Remap(player.Calamity().statisAnticheese, 1, 6, 0.9f, 0.3f, true);
-            lastDashDir = Math.Sign(player.velocity.X);
 
             strongVisuals = player.Calamity().voidSashVisuals;
             Time = 0;
@@ -52,7 +41,7 @@ namespace CalamityMod.CalPlayer.Dashes
                 SoundEngine.PlaySound(sound with { Volume = 0.7f, Pitch = Main.rand.NextFloat(-0.15f, 0.15f) }, player.Center);
                 for (int i = 0; i < 40; i++)
                 {
-                    Vector2 intenededVel = (MathHelper.TwoPi * i / 40f).ToRotationVector2() * 5.5f;
+                    Vector2 intenededVel = (MathHelper.TwoPi * i / 40f).ToRotationVector2() * 3f;
                     Vector2 fxVel = new Vector2(intenededVel.X, intenededVel.Y * 2.3f).RotatedBy(player.velocity.ToRotation());
                     Vector2 fxPlace = player.Center + fxVel.RotatedBy(player.velocity.ToRotation()) + player.velocity.SafeNormalize(Vector2.UnitX) * 60;
 
@@ -61,8 +50,8 @@ namespace CalamityMod.CalPlayer.Dashes
             }
             for (int i = 0; i < 30; i++)
             {
-                Vector2 intenededVel = (MathHelper.TwoPi * i / 30f).ToRotationVector2() * 5.5f;
-                Vector2 fxVel = new Vector2(intenededVel.X, intenededVel.Y * 2.3f).RotatedBy(player.velocity.ToRotation());
+                Vector2 intenededVel = (MathHelper.TwoPi * i / 30f).ToRotationVector2() * 3f;
+                Vector2 fxVel = new Vector2(intenededVel.X, intenededVel.Y * 2f).RotatedBy(player.velocity.ToRotation());
                 Vector2 fxPlace = player.Center + fxVel.RotatedBy(player.velocity.ToRotation()) + player.velocity.SafeNormalize(Vector2.UnitX) * 60;
 
                 Color dustColor = Main.rand.NextBool(3) ? Color.Indigo : Color.DarkOrchid;
@@ -109,7 +98,7 @@ namespace CalamityMod.CalPlayer.Dashes
                     SignusMetaball.SpawnParticle(fxPlace, fxVelocity * Main.rand.NextFloat(5, 8), 50f * Main.rand.NextFloat(0.7f, 1f), 8, new Vector2(0.8f, 1.2f), 0.18f, 0);
                 }
             }
-            player.velocity.X *= 0.912f;
+            player.velocity.X *= 0.95f;
             if (player.velocity.X > 140)
             {
                 player.velocity.X = 140;
@@ -118,7 +107,7 @@ namespace CalamityMod.CalPlayer.Dashes
             {
                 player.velocity.X = -140;
             }
-            if (Time > 8)
+            if (Time > 10)
                 player.velocity.X *= 0.5f;
         }
     }

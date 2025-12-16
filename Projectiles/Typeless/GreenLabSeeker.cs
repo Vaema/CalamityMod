@@ -35,7 +35,7 @@ namespace CalamityMod.Projectiles.Typeless
         {
             for (int i = 0; i < 8; i++)
             {
-                Dust dust = Dust.NewDustPerfect(Projectile.Center + Main.rand.NextVector2Circular(16f, 16f), 267);
+                Dust dust = Dust.NewDustPerfect(Projectile.Center + Main.rand.NextVector2Circular(16f, 16f), DustID.RainbowMk2);
                 dust.color = Color.Green;
                 dust.scale = Main.rand.NextFloat(0.95f, 1.25f);
                 dust.velocity = Main.rand.NextVector2Circular(2.5f, 2.5f);

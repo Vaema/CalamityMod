@@ -26,6 +26,7 @@ namespace CalamityMod.Projectiles.Summon
         public override void SetStaticDefaults()
         {
             Main.projFrames[Type] = 5;
+            Main.projPet[Type] = true;
             ProjectileID.Sets.TrailingMode[Type] = 0;
             ProjectileID.Sets.TrailCacheLength[Type] = 20;
             ProjectileID.Sets.MinionSacrificable[Type] = true;
@@ -73,7 +74,7 @@ namespace CalamityMod.Projectiles.Summon
                 return;
             }
 
-            int totalHeads = CalamityUtils.CountOwnedProjectiles(Projectile.type, Projectile.owner);
+            int totalHeads = player.ownedProjectileCounts[Projectile.type];
             if (Projectile.localAI[0] == 0f)
             {
                 DeltaPosition = DeltaPositionMoving = new Vector2(Main.rand.NextFloat(-72f - 8f * totalHeads, 72f + 8f * totalHeads), -Main.rand.NextFloat(8f, 84f + 4f * totalHeads));
@@ -83,7 +84,7 @@ namespace CalamityMod.Projectiles.Summon
                 {
                     for (int i = 0; i < 18; i++)
                     {
-                        Dust dust = Dust.NewDustPerfect(Projectile.Center, 113);
+                        Dust dust = Dust.NewDustPerfect(Projectile.Center, DustID.MushroomSpray);
                         dust.velocity = new Vector2(0f, -5f).RotatedBy(i / 18f * MathHelper.TwoPi);
                         dust.noGravity = true;
                         dust.scale = 1.2f;
@@ -241,6 +242,5 @@ namespace CalamityMod.Projectiles.Summon
                              0);
             return false;
         }
-        public override bool? CanDamage() => false;
     }
 }

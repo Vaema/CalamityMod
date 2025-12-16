@@ -1,11 +1,8 @@
-﻿using System;
-using CalamityMod.Dusts;
-using CalamityMod.Items.BaseItems;
+﻿using CalamityMod.Items.BaseItems;
 using CalamityMod.Items.Materials;
 using CalamityMod.Projectiles.Melee;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
 

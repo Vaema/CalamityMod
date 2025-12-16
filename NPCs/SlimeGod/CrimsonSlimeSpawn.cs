@@ -1,11 +1,9 @@
 ﻿using System;
 using CalamityMod.Events;
 using CalamityMod.Projectiles.Boss;
-using CalamityMod.World;
 using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.GameContent.Bestiary;
-using Terraria.GameContent.ItemDropRules;
 using Terraria.ID;
 using Terraria.ModLoader;
 
@@ -22,14 +20,12 @@ namespace CalamityMod.NPCs.SlimeGod
         public override void SetDefaults()
         {
             NPC.aiStyle = NPCAIStyleID.Slime;
-            NPC.GetNPCDamage();
+            NPC.damage = 20; // 40
             NPC.width = 40;
             NPC.height = 30;
-            if (CalamityWorld.LegendaryMode)
-                NPC.scale = 2f;
 
             NPC.defense = 4;
-            NPC.lifeMax = BossRushEvent.BossRushActive ? 10000 : CalamityWorld.LegendaryMode ? 220 : 110;
+            NPC.lifeMax = BossRushEvent.BossRushActive ? 10000 : 110;
             NPC.knockBackResist = 0.8f;
             AnimationType = NPCID.CorruptSlime;
             NPC.lavaImmune = false;
@@ -39,10 +35,6 @@ namespace CalamityMod.NPCs.SlimeGod
             NPC.DeathSound = SoundID.NPCDeath1;
             NPC.Calamity().VulnerableToHeat = true;
             NPC.Calamity().VulnerableToSickness = false;
-
-            // Scale stats in Expert and Master
-            CalamityGlobalNPC.AdjustExpertModeStatScaling(NPC);
-            CalamityGlobalNPC.AdjustMasterModeStatScaling(NPC);
         }
 
         public override void SetBestiary(BestiaryDatabase database, BestiaryEntry bestiaryEntry)
@@ -108,14 +100,6 @@ namespace CalamityMod.NPCs.SlimeGod
                     }
                 }
             }
-        }
-
-        public override void ModifyNPCLoot(NPCLoot npcLoot) => npcLoot.Add(ItemDropRule.NormalvsExpert(ItemID.Blindfold, 100, 50));
-
-        public override void OnHitPlayer(Player target, Player.HurtInfo hurtInfo)
-        {
-            if (hurtInfo.Damage > 0)
-                target.AddBuff(BuffID.Darkness, 180);
         }
     }
 }

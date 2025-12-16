@@ -22,7 +22,7 @@ namespace CalamityMod.Items.Placeables.FurnitureStratus
                 AddIngredient<Lumenyl>(3).
                 AddIngredient<RuinousSoul>().
                 AddIngredient<ExodiumCluster>().
-                AddTile(TileID.AdamantiteForge).
+                AddTile<Tiles.Furniture.CraftingStations.VoidCondenser>().
                 Register();
             CreateRecipe().
                 AddIngredient<StratusWall>(4).

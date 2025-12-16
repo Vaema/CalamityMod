@@ -3,7 +3,6 @@ using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
-using static Terraria.GameContent.Animations.Actions.Sprites;
 
 namespace CalamityMod.Projectiles.Ranged
 {
