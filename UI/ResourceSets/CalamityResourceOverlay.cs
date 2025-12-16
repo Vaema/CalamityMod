@@ -238,6 +238,8 @@ namespace CalamityMod.UI.ResourceSets
 
                     // This works by dynamically creating a texture that it then draws over the life bar.
                     int width = 12 * stars;
+                    if (width < 1)
+                        width = 1;
                     GraphicsDevice _graphicsDevice = Main.graphics.GraphicsDevice;
                     var barOverlay = new Texture2D(_graphicsDevice, width, 12);
                     Color[] barTextureData = new Color[12*12];
