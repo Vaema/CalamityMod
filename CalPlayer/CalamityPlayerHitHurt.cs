@@ -873,6 +873,22 @@ namespace CalamityMod.CalPlayer
         #region Modify Hit By Proj
         public override void ModifyHitByProjectile(Projectile proj, ref Player.HurtModifiers modifiers)
         {
+            //This goes first so it activated before dodges or any other effects, as these projectiles aren't supposed to "hit" the player, but just inflict debuffs
+            if (CalamityWorld.revenge)
+            {
+                if (proj.type == ProjectileID.CultistBossIceMist && proj.ai[1] == 1f) // Main ice mists only; no shards
+                {
+                    Player.AddBuff(BuffID.Frozen, 120);
+                    modifiers.Cancel();
+                    return;
+                }
+                else if (proj.type == ProjectileID.CultistBossIceMist && proj.ai[1] != 1f) // Ice Mist shards
+                {
+                    Player.AddBuff(BuffID.Chilled, 240);
+                    modifiers.Cancel();
+                    return;
+                }
+            }
             if (!CalamityProjectileSets.ShouldNotBeReflected[proj.type] && proj.active && !proj.friendly && proj.hostile && proj.damage > 0 && !modifiers.PvP)
             {
                 double dodgeDamageGateValuePercent = 0.05;
@@ -1324,10 +1340,6 @@ namespace CalamityMod.CalPlayer
                     else if (proj.type == ProjectileID.CultistBossFireBall)
                     {
                         Player.AddBuff(ModContent.BuffType<Daybroken>(), 180);
-                    }
-                    else if (proj.type == ProjectileID.CultistBossIceMist && proj.ai[1] == 1f) // Main ice mists only; no shards
-                    {
-                        Player.AddBuff(BuffID.Chilled, 180);
                     }
                     else if (proj.type == ProjectileID.CultistBossLightningOrbArc)
                     {
