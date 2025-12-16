@@ -1218,13 +1218,13 @@ namespace CalamityMod.Items
 
             if (item.type == ItemID.EyeoftheGolem)
             {
-                player.Calamity().critDamage += 0.2f;
+                player.Calamity().critDamage += 0.15f;
             }
             if (item.type == ItemID.SniperScope)
             {
                 player.GetDamage<RangedDamageClass>() -= 0.1f; //Total 0% damage
                 player.GetCritChance<RangedDamageClass>() += 2; //Total 12% crit
-                player.Calamity().critDamage += 0.2f;
+                player.Calamity().critDamage += 0.15f;
             }
 
             if (item.type == ItemID.FireGauntlet)
