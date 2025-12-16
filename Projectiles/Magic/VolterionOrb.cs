@@ -5,7 +5,6 @@ using ReLogic.Content;
 using System;
 using Terraria;
 using Terraria.Audio;
-using Terraria.GameContent;
 using Terraria.ID;
 using Terraria.ModLoader;
 using static CalamityMod.CalamityUtils;
@@ -91,7 +90,7 @@ namespace CalamityMod.Projectiles.Magic
                 else if (AttackTimer > MathHelper.Lerp(AttackRate * 2f, ExplosionTime, 0.8f) || AttackTimer % 3 == 2)
                 {
                     Vector2 velocity = Main.rand.NextVector2Unit() * (Main.rand.NextFloat(8f, 10f));
-                    Dust spark = Dust.NewDustPerfect(Projectile.Center, 278, velocity);
+                    Dust spark = Dust.NewDustPerfect(Projectile.Center, DustID.FireworksRGB, velocity);
                     spark.noLight = true;
                     spark.noGravity = Main.rand.NextBool();
                     spark.color = GetColor(OrbType);

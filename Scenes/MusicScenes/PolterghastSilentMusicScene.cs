@@ -1,7 +1,6 @@
 ﻿using CalamityMod.NPCs.Polterghast;
 using CalamityMod.Projectiles.Summon;
 using Terraria;
-using Terraria.ID;
 using Terraria.ModLoader;
 
 namespace CalamityMod.Systems

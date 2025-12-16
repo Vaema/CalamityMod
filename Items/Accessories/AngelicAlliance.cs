@@ -6,6 +6,7 @@ using CalamityMod.Tiles.Furniture.CraftingStations;
 using Terraria;
 using Terraria.Audio;
 using Terraria.ID;
+using Terraria.Localization;
 using Terraria.ModLoader;
 
 namespace CalamityMod.Items.Accessories
@@ -15,6 +16,18 @@ namespace CalamityMod.Items.Accessories
     {
         public new string LocalizationCategory => "Items.Accessories";
         public static readonly SoundStyle ActivationSound = new("CalamityMod/Sounds/Custom/AbilitySounds/AngelicAllianceActivation");
+
+        // This accessory is insane. wtf. - Iris
+        public static int MinionSlotBoost = 2;
+        public static float TotalSummonDamageBoost = 0.15f; // this is partially all-class -- this number represents the whole thing
+        public static float DamageBoost = 0.08f;
+        public static int RegenBoostDuringFlight = 4;
+        public static int DivineBlessDuration = CalamityUtils.SecondsToFrames(15);
+        public static int DivineBlessCooldown = CalamityUtils.SecondsToFrames(60);
+        public static int HealPerAngelSpawned = 2;
+        public static int BanishingFireDuration = CalamityUtils.SecondsToFrames(1);
+        public static int DivineBlessFramesPerHeal = 15;
+        public override LocalizedText Tooltip => base.Tooltip.WithFormatArgs(MinionSlotBoost, TotalSummonDamageBoost.ToPercent(), DamageBoost.ToPercent(), RegenBoostDuringFlight.ToRegenPerSecond(), DivineBlessDuration.FramesToSeconds(), HealPerAngelSpawned, (60 / (float)DivineBlessFramesPerHeal).Round(), (DivineBlessCooldown / 3600f).Round());
 
         public override void SetDefaults()
         {
@@ -32,11 +45,11 @@ namespace CalamityMod.Items.Accessories
         {
             CalamityPlayer modPlayer = player.Calamity();
             modPlayer.angelicAlliance = true;
-            player.GetDamage<GenericDamageClass>() += 0.08f;
-            player.GetDamage<SummonDamageClass>() += 0.07f; //7% + 8% = 15%
-            player.maxMinions += 2;
+            player.GetDamage<GenericDamageClass>() += DamageBoost;
+            player.GetDamage<SummonDamageClass>() += TotalSummonDamageBoost - DamageBoost;
+            player.maxMinions += MinionSlotBoost;
             if (player.wingTime < player.wingTimeMax)
-                player.lifeRegen += 4;
+                player.lifeRegen += RegenBoostDuringFlight;
         }
 
         public override void AddRecipes()

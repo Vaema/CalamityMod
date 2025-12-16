@@ -1,5 +1,4 @@
 ﻿using System;
-using CalamityMod.Items.Accessories;
 using CalamityMod.Items.Materials;
 using CalamityMod.Projectiles.Ranged;
 using CalamityMod.Rarities;

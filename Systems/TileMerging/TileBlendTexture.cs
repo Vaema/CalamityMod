@@ -1,13 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Graphics;
+﻿using Microsoft.Xna.Framework.Graphics;
 using ReLogic.Content;
 using Terraria;
-using Terraria.DataStructures;
 using Terraria.ModLoader;
 
 namespace CalamityMod.Systems
@@ -19,8 +12,9 @@ namespace CalamityMod.Systems
         public const byte EmptySheetIndex = byte.MaxValue;
         public const int VariantCount = 3;
 
-        public const int BlendTextureXCount = 16;
-        public const int BlendTextureYCount = 16;
+        // 204 slots per sheet (1 empty slot per sheet)
+        public const int BlendTextureXCount = 17;
+        public const int BlendTextureYCount = 12;
 
         // FA: 2024/OCT/01
         // Removing Margin as I believe artifacts never happens on Terraria
@@ -31,13 +25,14 @@ namespace CalamityMod.Systems
 
         public const int BlendTextureWidth = BlendTextureFrameWidth * BlendTextureXCount;
         public const int BlendTextureHeight = BlendTextureFrameHeight * BlendTextureYCount;
+        public const int BlendTextureFullHeight = BlendTextureHeight * VariantCount;
         #endregion
 
 
         #region Properties
         public Asset<Texture2D> TextureAsset { get; private set; }
         public int Slot { get; private set; } = -1;
-        public RenderTarget2D[] BlendTextures { get; private set; } // dimension: [3]
+        public RenderTarget2D BakedBlendTexture { get; private set; }
         #endregion
 
 
@@ -47,25 +42,15 @@ namespace CalamityMod.Systems
 
 
         #region Setups
+
         protected sealed override void Register()
         {
+            CalculateSheetPositionLookup();
+
+            ModTypeLookup<TileBlendTexture>.Register(this);
             Slot = TileBlendTextureLoader.Register(this);
             TextureAsset = ModContent.Request<Texture2D>(Texture);
-            BlendTextures = new RenderTarget2D[3];
-
-            Main.QueueMainThreadAction(() =>
-            {
-                for (int v = 0; v < VariantCount; v++)
-                    BlendTextures[v] = new(
-                        Main.instance.GraphicsDevice,
-                        BlendTextureWidth,
-                        BlendTextureHeight,
-                        mipMap: false,
-                        preferredFormat: SurfaceFormat.Color,
-                        preferredDepthFormat: DepthFormat.None,
-                        preferredMultiSampleCount: 0,
-                        usage: RenderTargetUsage.PreserveContents);
-            });
+            BakedBlendTexture = null;
         }
 
         public sealed override void SetupContent()
@@ -77,22 +62,8 @@ namespace CalamityMod.Systems
         {
             Main.QueueMainThreadAction(() =>
             {
-                if (BlendTextures is not null)
-                {
-                    foreach (var rt in BlendTextures)
-                    {
-                        if (rt is null)
-                            continue;
-
-                        if (rt.IsDisposed)
-                            continue;
-
-                        rt.Dispose();
-                    }
-
-                    Array.Clear(BlendTextures);
-                    BlendTextures = null;
-                }
+                BakedBlendTexture?.Dispose();
+                BakedBlendTexture = null;
             });
 
             PostUnload();
@@ -106,10 +77,10 @@ namespace CalamityMod.Systems
 
 
         #region Public API
-        public void RebuildBlendSheet(Texture2D texture = null)
+        public void RebuildBlendSheet(Asset<Texture2D> texture = null)
         {
-            texture ??= TextureAsset.Value;
-            BakeBlendTexture(texture);
+            TextureAsset = texture ?? ModContent.Request<Texture2D>(Texture);
+            ClearBakeCache();
         }
         #endregion
     }

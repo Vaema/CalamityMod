@@ -3,6 +3,7 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria;
 using Terraria.Audio;
+using Terraria.ID;
 using Terraria.ModLoader;
 
 namespace CalamityMod.Projectiles.Rogue
@@ -62,7 +63,7 @@ namespace CalamityMod.Projectiles.Rogue
                 Lighting.AddLight(Projectile.Center, Color.LightBlue.ToVector3() * fade);
                 if (Main.rand.NextBool(5))
                 {
-                    Dust dust = Dust.NewDustPerfect(Projectile.Center + Main.rand.NextVector2Circular(15, 15), 278);
+                    Dust dust = Dust.NewDustPerfect(Projectile.Center + Main.rand.NextVector2Circular(15, 15), DustID.FireworksRGB);
                     dust.noGravity = true;
                     dust.scale = Main.rand.NextFloat(0.3f, 0.55f);
                     dust.velocity = Projectile.velocity * Main.rand.NextFloat(0.2f, 0.4f);
@@ -94,7 +95,7 @@ namespace CalamityMod.Projectiles.Rogue
                     if (Main.rand.NextBool(5))
                     {
                         Vector2 vel = (Vector2.One * 19).RotatedByRandom(100) * Main.rand.NextFloat(0.9f, 1.1f);
-                        Dust dust = Dust.NewDustPerfect(Projectile.Center + vel * 3, 66);
+                        Dust dust = Dust.NewDustPerfect(Projectile.Center + vel * 3, DustID.RainbowTorch);
                         dust.noGravity = true;
                         dust.scale = Main.rand.NextFloat(0.5f, 0.85f);
                         dust.velocity = -vel * Main.rand.NextFloat(0.2f, 0.4f);
@@ -106,7 +107,7 @@ namespace CalamityMod.Projectiles.Rogue
                     for (int i = 0; i < 25; i++)
                     {
                         Vector2 vel = (Vector2.One * 24).RotatedByRandom(100) * Main.rand.NextFloat(0.9f, 1.1f);
-                        Dust dust = Dust.NewDustPerfect(Projectile.Center, 66);
+                        Dust dust = Dust.NewDustPerfect(Projectile.Center, DustID.RainbowTorch);
                         dust.noGravity = true;
                         dust.scale = Main.rand.NextFloat(0.5f, 0.85f);
                         dust.velocity = vel * Main.rand.NextFloat(0.2f, 0.4f);

@@ -1,12 +1,6 @@
 ﻿using System;
-using System.Diagnostics;
-using System.Security.Cryptography;
-using CalamityMod.NPCs;
 using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Graphics;
-using ReLogic.Content;
 using Terraria;
-using Terraria.GameContent;
 using Terraria.ID;
 using Terraria.ModLoader;
 
@@ -23,6 +17,7 @@ namespace CalamityMod.DataStructures
                 BuffID.CursedInferno, DebuffData.CursedInferno,
                 BuffID.ShadowFlame, DebuffData.Shadowflame,
                 BuffID.Daybreak, DebuffData.Daybroken,
+                BuffID.Burning, DebuffData.Burning,
                 BuffID.Frostburn, DebuffData.Frostburn,
                 BuffID.Frostburn2, DebuffData.Frostbite,
                 BuffID.Poisoned, DebuffData.Poisoned,
@@ -377,6 +372,11 @@ namespace CalamityMod.DataStructures
             EnemyVanillaRegenToCancelOut = 200,
             HeatDebuffScaling = 1,
             NPCLifeRegenMethod = DaybrokenRegen
+        };
+        // Provided purely to classify it as a heat debuff
+        public static DebuffData Burning = new DebuffData()
+        {
+            HeatDebuffScaling = 1
         };
         public static DebuffData Frostburn = new DebuffData()
         {

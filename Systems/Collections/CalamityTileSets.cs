@@ -1,4 +1,4 @@
-﻿using CalamityMod.Tiles.LivingFire;
+﻿using CalamityMod.Tiles.SunkenSea;
 using ReLogic.Reflection;
 using Terraria.ID;
 using Terraria.ModLoader;
@@ -18,5 +18,11 @@ namespace CalamityMod.Systems.Collections
         /// Defaults to <see langword="false"/>.
         /// </summary>
         public static bool[] CanBeReplacedByAbyssGeneration = Factory.CreateBoolSet();
+
+        /// <summary>
+        /// If <see langword="true"/> for a tile type, It does not draw BlendMerge on PostDraw hook. Instead it will be drawn after every solid tiles has drawn to screen<br/>
+        /// Defaults to <see langword="false"/>.
+        /// </summary>
+        public static bool[] DrawBlendMergeAfterSolidTile = Factory.CreateBoolSet(TileType<SeaPrism>());
     }
 }

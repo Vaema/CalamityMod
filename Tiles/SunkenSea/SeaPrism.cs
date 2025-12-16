@@ -46,8 +46,8 @@ namespace CalamityMod.Tiles.SunkenSea
             Main.tileSpelunker[Type] = true;
             MinPick = 55;
 
-            this.RegisterUniversalMerge(ModContent.TileType<Navystone>(), "CalamityMod/Tiles/Merges/NavystoneMerge");
-            this.RegisterUniversalMerge(ModContent.TileType<EutrophicSand>(), "CalamityMod/Tiles/Merges/EutrophicSandMerge");
+            this.RegisterBlendMergeWith(ModContent.TileType<Navystone>());
+            this.RegisterBlendMergeWith(ModContent.TileType<EutrophicSand>());
 
             Blue = ModContent.Request<Texture2D>("CalamityMod/Tiles/SunkenSea/SeaPrism_Blue");
             Purple = ModContent.Request<Texture2D>("CalamityMod/Tiles/SunkenSea/SeaPrism_Purple");
@@ -80,7 +80,7 @@ namespace CalamityMod.Tiles.SunkenSea
             blended = Vector3.Lerp(blended, glow1.ToVector3(), fade1 * 0.5f);
             blended = Vector3.Lerp(blended, glow2.ToVector3(), fade2 * 0.5f);
 
-            float brightness = 0.6f; 
+            float brightness = 0.6f;
             blended *= brightness;
 
             r = blended.X;
@@ -349,10 +349,24 @@ namespace CalamityMod.Tiles.SunkenSea
 
     public class SeaPrismShaderDrawing : ModSystem
     {
+        private int SeaPrismTileType = -1;
+        private int SeaPrismCrystalTileType = -1;
+        private int MediumSeaPrismCrystalTileType = -1;
+
+        private int SeaPrismWallType = -1;
+        private int UnsafeSeaPrismWallType = -1;
+
         public override void OnModLoad()
         {
             On_Main.DrawTiles += DrawSeaPrismsAndCrystals;
             On_Main.DrawWalls += DrawSeaPrismWalls;
+
+            SeaPrismTileType = ModContent.TileType<SeaPrism>();
+            SeaPrismCrystalTileType = ModContent.TileType<SeaPrismCrystals>();
+            MediumSeaPrismCrystalTileType = ModContent.TileType<MediumSeaPrismCrystal>();
+
+            SeaPrismWallType = ModContent.WallType<SeaPrismWall>();
+            UnsafeSeaPrismWallType = ModContent.WallType<UnsafeSeaPrismWall>();
         }
 
         private static void GetScreenDrawArea(Vector2 screenPosition, Vector2 offSet, out int firstTileX, out int lastTileX, out int firstTileY, out int lastTileY)
@@ -420,7 +434,7 @@ namespace CalamityMod.Tiles.SunkenSea
                             continue;
 
                         int type = tile.TileType;
-                        if (type != ModContent.TileType<SeaPrism>())
+                        if (type != SeaPrismTileType)
                             continue;
 
                         Vector2 position = new Vector2(x * 16, y * 16) - Main.screenPosition + offscreenPosition;
@@ -430,6 +444,7 @@ namespace CalamityMod.Tiles.SunkenSea
 
                         Rectangle sourceRect = new Rectangle(frameX, frameY, 16, 16);
                         Color light = Lighting.GetColor(x, y) * 1.5f;
+                        if (tile.IsActuated) light = light.MultiplyRGB(Color.White * 0.4f);
 
                         Main.spriteBatch.Draw(SeaPrism.Blue.Value, position, sourceRect, light);
                     }
@@ -458,7 +473,7 @@ namespace CalamityMod.Tiles.SunkenSea
                             continue;
 
                         int type = tile.TileType;
-                        if (type != ModContent.TileType<SeaPrismCrystals>())
+                        if (type != SeaPrismCrystalTileType)
                             continue;
 
                         Vector2 offScreen = Main.drawToScreen ? Vector2.Zero : new Vector2(Main.offScreenRange);
@@ -494,7 +509,7 @@ namespace CalamityMod.Tiles.SunkenSea
                             continue;
 
                         int type = tile.TileType;
-                        if (type != ModContent.TileType<MediumSeaPrismCrystal>())
+                        if (type != MediumSeaPrismCrystalTileType)
                             continue;
 
                         Vector2 offScreen = Main.drawToScreen ? Vector2.Zero : new Vector2(Main.offScreenRange);
@@ -555,7 +570,7 @@ namespace CalamityMod.Tiles.SunkenSea
                         continue;
 
                     int type = tile.WallType;
-                    if (type != ModContent.WallType<SeaPrismWall>() && type != ModContent.WallType<UnsafeSeaPrismWall>())
+                    if (type != SeaPrismWallType && type != UnsafeSeaPrismWallType)
                         continue;
 
                     Vector2 position = new Vector2(x * 16, y * 16) - Main.screenPosition + offscreenPosition;

@@ -74,7 +74,6 @@ namespace CalamityMod.Items.Weapons.Summon
         {
             CreateRecipe().
                 AddIngredient<EyeOfNight>().
-                AddIngredient(ItemID.Smolstar). // Blade Staff.
                 AddIngredient<LivingShard>(12).
                 AddTile(TileID.MythrilAnvil).
                 Register();

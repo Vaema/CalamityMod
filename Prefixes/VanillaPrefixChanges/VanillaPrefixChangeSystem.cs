@@ -1,7 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
-using CalamityMod.ILEditing;
 using MonoMod.Cil;
 using Terraria;
 using Terraria.ID;
@@ -17,14 +15,13 @@ namespace CalamityMod.Prefixes.VanillaPrefixChanges
 
         public override void Load()
         {
-            ReflectionHelper.IterateCalamityTypes<VanillaPrefixChange>(includeBaseType: false, type =>
-            {
-                var changeToAdd = (VanillaPrefixChange)Activator.CreateInstance(type);
-                PrefixChanges[changeToAdd.TargetPrefix] = changeToAdd;
-            });
-
             On_Player.GrantPrefixBenefits += OnGrantBenefits;
             IL_Item.Prefix += VanillaPrefixValueOverride;
+        }
+
+        public override void Unload()
+        {
+            PrefixChanges.Clear();
         }
 
         private void VanillaPrefixValueOverride(ILContext il)
@@ -32,25 +29,25 @@ namespace CalamityMod.Prefixes.VanillaPrefixChanges
             var cursor = new ILCursor(il);
             if (!cursor.TryGotoNext(x => x.MatchCallOrCallvirt<ModPrefix>(nameof(ModPrefix.ModifyValue))))
             {
-                ILChanges.LogFailure("Vanilla Prefix Override", "Unable to locate callvirt (ModPrefix.ModifyValue)");
+                CalamityMod.Log.ILFailure("Vanilla Prefix Override", "Unable to locate callvirt (ModPrefix.ModifyValue)");
                 return;
             }
 
             if (!cursor.Prev.MatchLdloca(out var multLocaIdx))
             {
-                ILChanges.LogFailure("Vanilla Prefix Override", "Unable to locate Ldloca (mult)");
+                CalamityMod.Log.ILFailure("Vanilla Prefix Override", "Unable to locate Ldloca (mult)");
                 return;
             }
 
             if (!cursor.TryGotoPrev(x => x.MatchLdsfld<PrefixID>(nameof(PrefixID.Count))))
             {
-                ILChanges.LogFailure("Vanilla Prefix Override", "Unable to locate Ldsfld (PrefixID.Count)");
+                CalamityMod.Log.ILFailure("Vanilla Prefix Override", "Unable to locate Ldsfld (PrefixID.Count)");
                 return;
             }
 
             if (!cursor.Prev.MatchLdloc(out var prefixLocaIdx))
             {
-                ILChanges.LogFailure("Vanilla Prefix Override", "Unable to locate Ldloc (prefix)");
+                CalamityMod.Log.ILFailure("Vanilla Prefix Override", "Unable to locate Ldloc (prefix)");
                 return;
             }
 

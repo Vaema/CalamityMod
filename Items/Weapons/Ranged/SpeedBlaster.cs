@@ -1,6 +1,4 @@
 ﻿using System;
-using CalamityMod.CalPlayer;
-using CalamityMod.CalPlayer.Dashes;
 using CalamityMod.Particles;
 using CalamityMod.Projectiles.Ranged;
 using Microsoft.Xna.Framework;

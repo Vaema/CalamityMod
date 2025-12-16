@@ -1,10 +1,10 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using CalamityMod.Enums;
+using CalamityMod.Utilities.Daybreak;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria;
-using Terraria.ID;
 using Terraria.ModLoader;
 
 namespace CalamityMod.Graphics.Renderers
@@ -26,7 +26,7 @@ namespace CalamityMod.Graphics.Renderers
                 return;
 
             // This hooks here, because doing it any sooner causes the screen position to be a frame behind.
-            Main.QueueMainThreadAction(() => On_Main.CheckMonoliths += DrawToTargets);
+            On_Main.CheckMonoliths += DrawToTargets;
         }
 
         public override void Unload()
@@ -62,13 +62,16 @@ namespace CalamityMod.Graphics.Renderers
         #region Drawing
         internal static void DrawRendererAtLayer(GeneralDrawLayer drawLayer)
         {
-            Main.spriteBatch.Begin(SpriteSortMode.Immediate, BlendState.AlphaBlend, Main.DefaultSamplerState, DepthStencilState.None, RasterizerState.CullCounterClockwise);
-
             var renderers = Renderers.Where(renderer => renderer.ShouldDraw && renderer.Layer == drawLayer);
-            foreach (var renderer in renderers)
-                renderer.DrawTarget(Main.spriteBatch);
+            if (renderers.Any())
+            {
+                Main.spriteBatch.Begin(SpriteSortMode.Immediate, BlendState.AlphaBlend, Main.DefaultSamplerState, DepthStencilState.None, RasterizerState.CullCounterClockwise);
 
-            Main.spriteBatch.End();
+                foreach (var renderer in renderers)
+                    renderer.DrawTarget(Main.spriteBatch);
+
+                Main.spriteBatch.End();
+            }
         }
 
         private void DrawToTargets(On_Main.orig_CheckMonoliths orig)
@@ -89,12 +92,22 @@ namespace CalamityMod.Graphics.Renderers
                 if (!renderer.ShouldDraw)
                     continue;
 
-                var matrix = Main.GameViewMatrix.TransformationMatrix;
-                Main.spriteBatch.SafeBegin(SpriteSortMode.Deferred, BatchSetting.AlphaBlend, null, matrix, () =>
+                using (Main.spriteBatch.Scope())
                 {
-                    renderer.MainTarget.SwapTo(Color.Transparent);
+                    Main.instance.GraphicsDevice.SetRenderTarget(renderer.MainTarget);
+                    Main.instance.GraphicsDevice.Clear(Color.Transparent);
+                    Main.spriteBatch.Begin(
+                        SpriteSortMode.Deferred,
+                        BlendState.AlphaBlend,
+                        SamplerState.PointClamp,
+                        DepthStencilState.None,
+                        Main.Rasterizer,
+                        null,
+                        Main.GameViewMatrix.TransformationMatrix
+                    );
                     renderer.DrawToTarget(Main.spriteBatch);
-                });
+                    Main.spriteBatch.End();
+                }
             }
 
             Main.instance.GraphicsDevice.SetRenderTarget(null);

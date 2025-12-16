@@ -116,7 +116,7 @@ namespace CalamityMod.Projectiles.Magic
 
                 if (Main.rand.NextBool())
                 {
-                    Dust dust = Dust.NewDustPerfect(Projectile.Center + Main.rand.NextVector2Circular(15f, 15f), 45, Vector2.UnitY * -7f, Alpha: Main.rand.Next(100) + 120, Scale: Main.rand.NextFloat(1f, 2f));
+                    Dust dust = Dust.NewDustPerfect(Projectile.Center + Main.rand.NextVector2Circular(15f, 15f), DustID.ManaRegeneration, Vector2.UnitY * -7f, Alpha: Main.rand.Next(100) + 120, Scale: Main.rand.NextFloat(1f, 2f));
                     dust.noGravity = true;
                 }
 
@@ -145,7 +145,7 @@ namespace CalamityMod.Projectiles.Magic
                 //Sharticles
                 if (Main.rand.NextBool())
                 {
-                    Dust dust = Dust.NewDustPerfect(Projectile.Center + Main.rand.NextVector2Circular(15f, 15f), 15, Projectile.velocity * 0.3f, Alpha: Main.rand.Next(100) + 120, Scale: Main.rand.NextFloat(1f, 2f));
+                    Dust dust = Dust.NewDustPerfect(Projectile.Center + Main.rand.NextVector2Circular(15f, 15f), DustID.MagicMirror, Projectile.velocity * 0.3f, Alpha: Main.rand.Next(100) + 120, Scale: Main.rand.NextFloat(1f, 2f));
                     dust.noGravity = true;
                 }
 
@@ -228,7 +228,7 @@ namespace CalamityMod.Projectiles.Magic
                 for (int i = 0; i < 14; i++)
                 {
                     Vector2 direction = Main.rand.NextVector2Circular(10f, 10f);
-                    Dust dust = Dust.NewDustPerfect(Projectile.Center + direction, 45, direction + Vector2.UnitY * -7f, Alpha: Main.rand.Next(100) + 120, Scale: Main.rand.NextFloat(1f, 2f));
+                    Dust dust = Dust.NewDustPerfect(Projectile.Center + direction, DustID.ManaRegeneration, direction + Vector2.UnitY * -7f, Alpha: Main.rand.Next(100) + 120, Scale: Main.rand.NextFloat(1f, 2f));
                     dust.noGravity = true;
                 }
 

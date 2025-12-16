@@ -48,7 +48,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
             NPC.damage = (int)Math.Round(NPC.defDamage * (phase3 ? Phase3ContactDamageMult : phase2 ? Phase2ContactDamageMult : Phase1ContactDamageMult));
 
             // Servant and projectile velocity, the projectile velocity is multiplied by 2
-            float servantAndProjectileVelocity = death ? 10f : 6f;
+            float servantAndProjectileVelocity = death ? 7f : 6f;
             NPC.reflectsProjectiles = false;
 
             // Get a target
@@ -130,8 +130,8 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
             {
                 if (NPC.ai[1] == 0f)
                 {
-                    float hoverSpeed = death ? 9.5f + 7f * (1f - lifeRatio) : 7f;
-                    float hoverAcceleration = death ? 0.2f + 0.15f * (1f - lifeRatio) : 0.15f;
+                    float hoverSpeed = death ? 7f + 3f * (1f - lifeRatio) : 7f;
+                    float hoverAcceleration = death ? 0.15f + 0.1f * (1f - lifeRatio) : 0.15f;
 
                     if (Main.getGoodWorld)
                     {
@@ -181,6 +181,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                             {
                                 if (spawnServant)
                                 {
+                                    //Phase 1 Servant Spawn
                                     int eye = NPC.NewNPC(NPC.GetSource_FromAI(), (int)servantSpawnCenter.X, (int)servantSpawnCenter.Y, NPCID.ServantofCthulhu);
                                     Main.npc[eye].velocity = servantSpawnVelocity;
 
@@ -307,6 +308,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                     Vector2 servantSpawnCenter = NPC.Center + servantSpawnVelocity.SafeNormalize(Vector2.UnitY) * ProjectileOffset;
                     if (Main.netMode != NetmodeID.MultiplayerClient)
                     {
+                        //Phase Transition Servant Spawn
                         int servantSpawn = NPC.NewNPC(NPC.GetSource_FromAI(), (int)servantSpawnCenter.X, (int)servantSpawnCenter.Y, NPCID.ServantofCthulhu);
                         Main.npc[servantSpawn].velocity.X = servantSpawnVelocity.X;
                         Main.npc[servantSpawn].velocity.Y = servantSpawnVelocity.Y;
@@ -619,7 +621,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                     float hoverAcceleration = (death ? 0.3125f : 0.25f) + accelerationBoost;
 
                     bool horizontalCharge = calamityGlobalNPC.newAI[0] == 1f || calamityGlobalNPC.newAI[0] == 3f;
-                    float timeGateValue = horizontalCharge ? (110f - (death ? 60f * (phase3LifeRatio - lifeRatio) : 0f)) : (95f - (death ? 55f * (phase3LifeRatio - lifeRatio) : 0f));
+                    float timeGateValue = horizontalCharge ? (110f - (death ? 30f * (phase3LifeRatio - lifeRatio) : 0f)) : (95f - (death ? 55f * (phase3LifeRatio - lifeRatio) : 0f));
                     if (NPC.ai[2] > timeGateValue)
                     {
                         float velocityScalar = NPC.ai[2] - timeGateValue;
@@ -650,10 +652,15 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                     NPC.ai[2] += 1f;
                     if (NPC.ai[2] % servantSpawnGateValue == 0f && shootProjectile && NPC.ai[2] <= servantSpawnGateValue * maxServantSpawnsPerAttack)
                     {
+                        //phase 3 servant spawning
                         Vector2 servantSpawnVelocity = (Main.player[NPC.target].Center - NPC.Center).SafeNormalize(Vector2.UnitY) * servantAndProjectileVelocity;
                         Vector2 servantSpawnCenter = NPC.Center + servantSpawnVelocity.SafeNormalize(Vector2.UnitY) * ProjectileOffset;
-
-                        int maxServants = death ? (finalPhaseDeath ? 1 : penultimatePhaseDeath ? 2 : 3) : (finalPhaseRev ? 2 : 4);
+                        if (death)
+                        {
+                            servantSpawnCenter = Main.player[NPC.target].Center + Main.rand.NextVector2CircularEdge(1600, 1600);
+                            servantSpawnVelocity = (Main.player[NPC.target].Center - servantSpawnCenter).SafeNormalize(Vector2.UnitY) * servantAndProjectileVelocity * 2;
+                        }
+                        int maxServants = death ? (finalPhaseDeath ? 2 : penultimatePhaseDeath ? 3 : 4) : (finalPhaseRev ? 2 : 4);
                         bool spawnServant = NPC.CountNPCS(NPCID.ServantofCthulhu) < maxServants;
 
                         if (spawnServant)
@@ -668,6 +675,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                         {
                             if (spawnServant)
                             {
+                                //Final Phase Servant Spawn
                                 int eye = NPC.NewNPC(NPC.GetSource_FromAI(), (int)servantSpawnCenter.X, (int)servantSpawnCenter.Y, NPCID.ServantofCthulhu);
                                 Main.npc[eye].velocity.X = servantSpawnVelocity.X;
                                 Main.npc[eye].velocity.Y = servantSpawnVelocity.Y;
@@ -677,16 +685,22 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                             }
                             else if (!Main.getGoodWorld)
                             {
-                                int projType = ProjectileID.BloodNautilusShot;
-                                int proj = Projectile.NewProjectile(NPC.GetSource_FromAI(), NPC.Center + servantSpawnVelocity.SafeNormalize(Vector2.UnitY) * ProjectileOffset, servantSpawnVelocity * 2f, projType, BloodShotDamage, 0f, Main.myPlayer);
-                                Main.projectile[proj].timeLeft = 600;
+                                var spawnVelocity = (Main.player[NPC.target].Center - NPC.Center).SafeNormalize(Vector2.UnitY) * servantAndProjectileVelocity;
+                                int amount = death ? 3 : 1;
+                                for (var i = 0; i < amount; i++)
+                                {
+                                    Vector2 perturbedSpeed = spawnVelocity.RotatedBy(MathHelper.Lerp(-0.5f, 0.5f, i / (float)(amount - 1))) * (death ? 1.25f : 1f);
+                                    int projType = ProjectileID.BloodNautilusShot;
+                                    int proj = Projectile.NewProjectile(NPC.GetSource_FromAI(), NPC.Center + perturbedSpeed.SafeNormalize(Vector2.UnitY) * ProjectileOffset, perturbedSpeed * 2f, projType, BloodShotDamage, 0f, Main.myPlayer);
+                                    Main.projectile[proj].timeLeft = 600;
+                                }
                             }
 
                             if (Main.getGoodWorld)
                             {
                                 int type = ProjectileID.BloodNautilusShot;
                                 Vector2 projectileVelocity = servantSpawnVelocity * 3f;
-                                int numProj = 3;
+                                int numProj = death ? 5 : 3;
                                 int spread = 20;
                                 float rotation = MathHelper.ToRadians(spread);
                                 for (int i = 0; i < numProj; i++)

@@ -84,7 +84,7 @@ namespace CalamityMod.Projectiles.Summon
 
         public override bool PreDraw(ref Color lightColor) => false;
 
-        public float FireWidthFunction(float completion)
+        public float FireWidthFunction(float completion, Vector2 pos)
         {
             float width;
             float maxBodyWidth = 38f * Projectile.scale;
@@ -103,14 +103,14 @@ namespace CalamityMod.Projectiles.Summon
             return  (width + additionalPulseWidth ) * positions.Count() / (float)ProjectileID.Sets.TrailCacheLength[Type] ;
         }
 
-        public Color FireColorFunction(float completion)
+        public Color FireColorFunction(float completion, Vector2 pos)
         {
             Color mainColor = Color.DarkSlateBlue * 1.3f;
             Color endColor = Color.Lerp(mainColor, Color.Transparent, Utils.GetLerpValue(0.8f, 1f, completion, true));
             return Color.Lerp(mainColor, endColor, completion) * Projectile.Opacity;
         }
 
-        public float FireCoreWidthFunction(float completion)
+        public float FireCoreWidthFunction(float completion, Vector2 pos)
         {
             float width;
             float maxBodyWidth = Projectile.scale * 16;
@@ -126,7 +126,7 @@ namespace CalamityMod.Projectiles.Summon
             return  width * positions.Count() / (float)ProjectileID.Sets.TrailCacheLength[Type];
         }
 
-        public Color FireCoreColorFunction(float completion)
+        public Color FireCoreColorFunction(float completion, Vector2 pos)
         {
             Color mainColor = Color.SkyBlue;
             Color tipColor = Color.Lerp(mainColor, Color.Transparent, Utils.GetLerpValue(0.8f, 1f, completion, true));
@@ -138,12 +138,12 @@ namespace CalamityMod.Projectiles.Summon
         {
             // Render the main trail for the body for the flame.
             GameShaders.Misc["CalamityMod:ImpFlameTrail"].SetShaderTexture(ModContent.Request<Texture2D>("CalamityMod/ExtraTextures/Trails/ScarletDevilStreak"));
-            PrimitiveRenderer.RenderTrail(Projectile.oldPos, new(FireWidthFunction, FireColorFunction, (_) => Projectile.Size * 0.5f, true, true, GameShaders.Misc["CalamityMod:ImpFlameTrail"]), Projectile.oldPos.Length + 32);
+            PrimitiveRenderer.RenderTrail(Projectile.oldPos, new(FireWidthFunction, FireColorFunction, (_, _) => Projectile.Size * 0.5f, true, true, GameShaders.Misc["CalamityMod:ImpFlameTrail"]), Projectile.oldPos.Length + 32);
 
             // Render a smaller, pure white trail in the same position to represent the glowing core of the flame.
             Vector2[] fireCoreLength = Projectile.oldPos.Take(8).ToArray();
             GameShaders.Misc["CalamityMod:ImpFlameTrail"].SetShaderTexture(ModContent.Request<Texture2D>("CalamityMod/ExtraTextures/Trails/SylvestaffStreak"));
-            PrimitiveRenderer.RenderTrail(fireCoreLength, new(FireCoreWidthFunction, FireCoreColorFunction, (_) => Projectile.Size * 0.5f, true, true, GameShaders.Misc["CalamityMod:ImpFlameTrail"]), fireCoreLength.Length + 24);
+            PrimitiveRenderer.RenderTrail(fireCoreLength, new(FireCoreWidthFunction, FireCoreColorFunction, (_, _) => Projectile.Size * 0.5f, true, true, GameShaders.Misc["CalamityMod:ImpFlameTrail"]), fireCoreLength.Length + 24);
         }
     }
 }

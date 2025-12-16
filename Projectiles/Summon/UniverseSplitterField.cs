@@ -73,7 +73,7 @@ namespace CalamityMod.Projectiles.Summon
             // Generate a dust ring that pulsates
             for (int i = 0; i < 80; i++)
             {
-                Dust dust = Dust.NewDustPerfect(Projectile.Center + (i / 80f * MathHelper.TwoPi).ToRotationVector2() * DustRadius, 247);
+                Dust dust = Dust.NewDustPerfect(Projectile.Center + (i / 80f * MathHelper.TwoPi).ToRotationVector2() * DustRadius, DustID.PlatinumCoin);
                 dust.velocity = Vector2.Zero;
                 dust.scale = 1.2f;
                 dust.noGravity = true;
@@ -88,7 +88,7 @@ namespace CalamityMod.Projectiles.Summon
                     {
                         Dust dust = Dust.NewDustPerfect(Projectile.Center +
                             Vector2.UnitY.RotatedBy(Timer / SpiralPrecision * direction).RotatedBy(j / (float)SpiralRings * MathHelper.TwoPi).RotatedBy(i / (float)SpiralPrecision * MathHelper.TwoPi / SpiralRings * direction) *
-                            DustRadius * i / SpiralPrecision, 261);
+                            DustRadius * i / SpiralPrecision, DustID.AncientLight);
                         dust.velocity = Vector2.Zero;
                         dust.scale = 0.7f;
                         dust.noGravity = true;
@@ -100,7 +100,7 @@ namespace CalamityMod.Projectiles.Summon
             bool firingGiantLaserBeam = Timer > TimeLeft - UniverseSplitterHugeBeam.TimeLeft;
             for (int i = 0; i < (firingGiantLaserBeam ? 30 : 16); i++)
             {
-                Dust dust = Dust.NewDustPerfect(Projectile.Center, 247);
+                Dust dust = Dust.NewDustPerfect(Projectile.Center, DustID.PlatinumCoin);
                 dust.velocity = Main.rand.NextVector2Circular(8f, 8f) * (firingGiantLaserBeam ? 1.6f : 1f);
                 dust.noGravity = true;
                 dust.scale = 1.25f;
@@ -112,7 +112,7 @@ namespace CalamityMod.Projectiles.Summon
                 float outwardCircleRadius = MathHelper.Lerp(0f, DustRadius * 1.2f, MathHelper.Clamp((Timer - (TimeLeft - UniverseSplitterHugeBeam.TimeLeft - 120f)) / 40f, 0f, 1f));
                 for (int i = 0; i < 95; i++)
                 {
-                    Dust dust = Dust.NewDustPerfect(Projectile.Center + (i / 95f * MathHelper.TwoPi).ToRotationVector2() * outwardCircleRadius, 247);
+                    Dust dust = Dust.NewDustPerfect(Projectile.Center + (i / 95f * MathHelper.TwoPi).ToRotationVector2() * outwardCircleRadius, DustID.PlatinumCoin);
                     dust.scale = 1.2f;
                     dust.noGravity = true;
                     dust.velocity = Main.rand.NextBool(7) ? Projectile.DirectionFrom(dust.position) * 6f : Vector2.Zero;

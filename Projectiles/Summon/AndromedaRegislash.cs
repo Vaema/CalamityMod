@@ -36,7 +36,7 @@ namespace CalamityMod.Projectiles.Summon
             Player player = Main.player[Projectile.owner];
             if (Projectile.localAI[0] == 0f)
             {
-                if (CalamityUtils.CountOwnedProjectiles(Projectile.type, Projectile.owner) > 1)
+                if (player.ownedProjectileCounts[Projectile.type] > 1)
                 {
                     Projectile.Kill();
                     return;

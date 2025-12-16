@@ -1,6 +1,4 @@
-﻿using System;
-using CalamityMod.Buffs.StatDebuffs;
-using CalamityMod.NPCs.Cryogen;
+﻿using CalamityMod.NPCs.Cryogen;
 using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.Audio;

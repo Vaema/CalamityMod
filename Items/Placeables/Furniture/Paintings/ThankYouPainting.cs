@@ -2,7 +2,6 @@
 using System.Linq;
 using CalamityMod.Tiles.Furniture.Paintings;
 using Terraria;
-using Terraria.ID;
 using Terraria.ModLoader;
 
 namespace CalamityMod.Items.Placeables.Furniture.Paintings
@@ -50,7 +49,7 @@ namespace CalamityMod.Items.Placeables.Furniture.Paintings
 
         public static IList<string> devList = new List<string>()
         {
-			"Altix",
+			"Altixal",
             "apotofkoolaid",
             "AquaSG",
             "Atalya",
@@ -72,8 +71,8 @@ namespace CalamityMod.Items.Placeables.Furniture.Paintings
             "Fluffy",
             "fryzahh",
             "HaguriHat",
+            "jasper",
             "LordMetarex",
-            "Memes",
             "Mercutio 'Merkalto' Takle",
             "Mishiro Usui",
             "Moonburn",
@@ -84,12 +83,8 @@ namespace CalamityMod.Items.Placeables.Furniture.Paintings
             "Poroboros",
             "Raesh",
             "Sagittariod",
-            "Shade",
-            "Shayy",
             "Spider Prov",
             "StipulateVenus",
-            "Sunny",
-            "Tobias",
             "_tofu",
             "Tomat",
             "Triangle",
@@ -177,6 +172,7 @@ namespace CalamityMod.Items.Placeables.Furniture.Paintings
             "Runefield",
             "Sargassum",
             "sentri",
+            "Shade",
             "SharZz",
             "Shucks",
             "Silver-Lord of Ash",
@@ -185,6 +181,7 @@ namespace CalamityMod.Items.Placeables.Furniture.Paintings
             "Sok",
             "spooktacular",
             "Spoopyro",
+            "Sunny",
             "Svante",
             "Sylvium",
             "Teragat",
@@ -193,6 +190,7 @@ namespace CalamityMod.Items.Placeables.Furniture.Paintings
             "TikiWiki",
             "Tinymanx",
             "Trivaxy",
+            "Tobias",
             "Uberransy",
             "Vaikyia",
             "Vladimier",

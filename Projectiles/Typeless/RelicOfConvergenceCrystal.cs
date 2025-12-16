@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using CalamityMod.Buffs.StatBuffs;
 using CalamityMod.Dusts;
 using CalamityMod.Enums;
 using CalamityMod.Items;

@@ -5,7 +5,6 @@ using CalamityMod.Projectiles.Typeless;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria;
-using Terraria.GameContent.Drawing;
 using Terraria.Graphics.Shaders;
 using Terraria.ID;
 using Terraria.ModLoader;
@@ -139,7 +138,7 @@ namespace CalamityMod.Projectiles.Magic
 
             // Release bursts of homing dark magic bolts periodically. The amount of bolts that can be summoned has a hard limit.
             // This is where most of the damage comes from. Be careful when messing with this.
-            if ((int)Time % 30 == 0 && CalamityUtils.CountOwnedProjectiles(ModContent.ProjectileType<EternityHoming>(), Projectile.owner) < Eternity.MaxHomers)
+            if ((int)Time % 30 == 0 && player.ownedProjectileCounts[ModContent.ProjectileType<EternityHoming>()] < Eternity.MaxHomers)
             {
                 int homerCount = 6;
                 int damage = (int)player.GetTotalDamage<MagicDamageClass>().ApplyTo(0.8f * Eternity.BaseDamage);
@@ -198,14 +197,14 @@ namespace CalamityMod.Projectiles.Magic
                 float outwardnessFactor = Main.rand.NextFloat();
                 Vector2 spawnPosition = target.Center + randomAngle.ToRotationVector2() * MathHelper.Lerp(70f, EternityCircle.TargetOffsetRadius - 60f, outwardnessFactor);
                 Vector2 velocity = (randomAngle - 3f * MathHelper.Pi / 8f).ToRotationVector2() * (10f + 9f * Main.rand.NextFloat() + 4f * outwardnessFactor);
-                Dust swirlingDust = Dust.NewDustPerfect(spawnPosition, 267, new Vector2?(velocity), 0, Main.rand.NextBool(3) ? Eternity.BlueColor : Eternity.PinkColor, 1.4f);
+                Dust swirlingDust = Dust.NewDustPerfect(spawnPosition, DustID.RainbowMk2, new Vector2?(velocity), 0, Main.rand.NextBool(3) ? Eternity.BlueColor : Eternity.PinkColor, 1.4f);
                 swirlingDust.scale = 1.2f;
                 swirlingDust.fadeIn = 0.25f + outwardnessFactor * 0.1f;
                 swirlingDust.noGravity = true;
             }
         }
 
-        public Color PrimitiveColorFunction(float completionRatio)
+        public Color PrimitiveColorFunction(float completionRatio, Vector2 vertexPos)
         {
             float leftoverTimeScale = (float)Math.Sin(Main.GlobalTimeWrappedHourly * 4f) * 0.5f + 0.5f;
             leftoverTimeScale *= 0.5f;
@@ -218,7 +217,7 @@ namespace CalamityMod.Projectiles.Magic
             return Color.Lerp(headColor, tailColor, fadeToMagenta) * opacity;
         }
 
-        public static float PrimitiveWidthFunction(float completionRatio)
+        public static float PrimitiveWidthFunction(float completionRatio, Vector2 vertexPos)
         {
             float widthInterpolant = Utils.GetLerpValue(0f, 0.12f, completionRatio, true);
             return MathHelper.SmoothStep(1f, 10f, widthInterpolant);
@@ -227,7 +226,7 @@ namespace CalamityMod.Projectiles.Magic
         public override bool PreDraw(ref Color lightColor)
         {
             GameShaders.Misc["CalamityMod:TrailStreak"].SetShaderTexture(ModContent.Request<Texture2D>("CalamityMod/ExtraTextures/GreyscaleGradients/EternityStreak"));
-            PrimitiveRenderer.RenderTrail(Projectile.oldPos, new(PrimitiveWidthFunction, PrimitiveColorFunction, (_) => Projectile.Size * 0.5f, shader: GameShaders.Misc["CalamityMod:TrailStreak"]), 84);
+            PrimitiveRenderer.RenderTrail(Projectile.oldPos, new(PrimitiveWidthFunction, PrimitiveColorFunction, (_,_) => Projectile.Size * 0.5f, shader: GameShaders.Misc["CalamityMod:TrailStreak"]), 84);
             return false;
         }
     }

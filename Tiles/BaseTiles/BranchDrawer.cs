@@ -6,7 +6,6 @@ using Terraria.Utilities;
 using Microsoft.Xna.Framework;
 using System;
 using Microsoft.Xna.Framework.Graphics;
-using Terraria.ID;
 using Terraria.DataStructures;
 using Terraria.ObjectData;
 using Terraria.Enums;

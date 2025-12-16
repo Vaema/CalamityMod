@@ -181,13 +181,11 @@ NanoblackSplit.DisplayName: Nanoblack Blade
 NanoblackStealthSplit.DisplayName: Nanoblack Afterimage
 NastyChollaBol.DisplayName: Nasty Cholla
 NastyChollaNeedle.DisplayName: Cactus Needle
-NiceCock.DisplayName: Kitchen Fire
-VegaProjectile.DisplayName: Night's Gaze
-VegaSpark.DisplayName: Night's Gaze Spark
-VegaStar.DisplayName: Night's Gaze Star
+VegaProjectile.DisplayName: Vega
+VegaSpark.DisplayName: Vega Spark
+VegaStar.DisplayName: Vega Star
 OrichalcumSpikedGemstoneProjectile.DisplayName: Orichalcum Gemstone
 PalladiumJavelinProjectile.DisplayName: Palladium Javelin
-PanSpark.DisplayName: Pan Spark
 PartisanExplosion.DisplayName: Profaned Explosion
 PenumbraBomb.DisplayName: Penumbra Bomb
 PenumbraSoul.DisplayName: Penumbra Soul
@@ -242,7 +240,6 @@ SeafoamBubble.DisplayName: Seafoam Bubble
 SealedSingularityBlackhole.DisplayName: Sealed Blackhole
 SealedSingularityGore.DisplayName: Sealed Singularity Fragment
 SealedSingularityProj.DisplayName: Sealed Singularity
-SearedPanProjectile.DisplayName: Pan
 SeraphimAngelicLight.DisplayName: Light Orb
 SeraphimAngelicLight2.DisplayName: Light Orb
 SeraphimBeamLarge.DisplayName: Holy Beam
@@ -326,5 +323,7 @@ WrathwingCinder.DisplayName: Wrathwing Eruption
 WrathwingFireball.DisplayName: Wrathwing Fireball
 WrathwingSpear.DisplayName: Wrathwing
 WulfrumKnifeProj.DisplayName: Wulfrum Knife
+GlaiveOrbital.DisplayName: Glaive Orbital
+BlazingStarOrbital.DisplayName: Blazing Star Orbital
 LyraConstellation.DisplayName: Lyra Constellation
 ScorpiusConstellation.DisplayName: Scorpius Constellation

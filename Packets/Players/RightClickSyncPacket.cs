@@ -1,16 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.IO;
 using CalamityMod.CalPlayer;
-using CalamityMod.Events;
 using Terraria;
 
 namespace CalamityMod.Packets
 {
-    public sealed class RightClickSyncPacket : CalamityPacket
+    internal sealed class RightClickSyncPacket : CalamityPacket
     {
         public static RightClickSyncPacket Instance { get; private set; }
 

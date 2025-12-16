@@ -1,5 +1,4 @@
-﻿using CalamityMod.Balancing;
-using CalamityMod.Buffs.DamageOverTime;
+﻿using CalamityMod.Buffs.DamageOverTime;
 using CalamityMod.Buffs.StatBuffs;
 using CalamityMod.Particles;
 using CalamityMod.Sounds;

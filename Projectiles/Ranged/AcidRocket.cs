@@ -1,16 +1,12 @@
 ﻿using System;
 using CalamityMod.Buffs.DamageOverTime;
-using CalamityMod.Graphics.Primitives;
 using CalamityMod.NPCs;
 using CalamityMod.Particles;
-using CalamityMod.Projectiles.Ranged;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria;
 using Terraria.Audio;
 using Terraria.DataStructures;
-using Terraria.GameContent;
-using Terraria.Graphics.Shaders;
 using Terraria.ID;
 using Terraria.ModLoader;
 

@@ -2,7 +2,6 @@
 using CalamityMod.Systems;
 using Microsoft.Xna.Framework;
 using Terraria;
-using Terraria.Audio;
 using Terraria.ID;
 using Terraria.ModLoader;
 
@@ -23,7 +22,7 @@ namespace CalamityMod.Tiles.DraedonStructures
             CalamityUtils.SetMerge(Type, ModContent.TileType<LaboratoryPanels>());
 
             HitSound = CommonCalamitySounds.PlatingMine;
-            DustType = 19;
+            DustType = DustID.Sunflower;
             MinPick = 30;
             AddMapEntry(new Color(163, 150, 73));
         }

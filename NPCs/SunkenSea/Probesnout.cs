@@ -3,10 +3,10 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading;
-using System.Xml.XPath;
 using CalamityMod.Enums;
 using CalamityMod.Items.Critters;
 using CalamityMod.Items.Placeables.Banners;
+using CalamityMod.Pathfinding;
 using CalamityMod.Tiles;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
@@ -40,7 +40,7 @@ namespace CalamityMod.NPCs.SunkenSea
 
         protected override List<int> PredatorIDs =>
         [
-            // NPCType<IlmerianAxolotl>(),
+            NPCType<GildedAxolotl>(),
             NPCType<Sharkoon>(),
             NPCType<Polyperil>(),
             // NPCType<CrestedStalker>(),
@@ -107,10 +107,6 @@ namespace CalamityMod.NPCs.SunkenSea
 
         public Vector2 Velocity { get => NPC.velocity; set => NPC.velocity = value; }
 
-        public float Acceleration => 0.4f;
-
-        public float MaxSpeed => 8f;
-
         private Vector2 SpongeFoundPosition;
 
         private bool HasEatenSponge;
@@ -131,12 +127,10 @@ namespace CalamityMod.NPCs.SunkenSea
 
         public override void OnSpawn(IEntitySource source)
         {
-            pathfinding = new PathfindingManager(NPC)
-            {
-                Acceleration = 0.4f,
-                MaxSpeed = 8f,
-                MinimumPointDistance = 60f
-            };
+            pathfinding = new PathfindingManager(this);
+            Acceleration = 0.4f;
+            MaxSpeed = 8f;
+            MinimumPointDistance = 60f;
             CurrentBehavior = IdlingBehavior;
             NPC.spriteDirection = Main.rand.NextBool().ToDirectionInt();
             NPC.GravityMultiplier *= 2f;
@@ -147,12 +141,10 @@ namespace CalamityMod.NPCs.SunkenSea
         {
             if (pathfinding == null)
             {
-                pathfinding = new PathfindingManager(NPC)
-                {
-                    Acceleration = 0.4f,
-                    MaxSpeed = 8f,
-                    MinimumPointDistance = 60f
-                };
+                pathfinding = new PathfindingManager(this);
+                Acceleration = 0.4f;
+                MaxSpeed = 8f;
+                MinimumPointDistance = 60f;
             }
             CurrentBehavior?.Invoke();
 
@@ -206,8 +198,8 @@ namespace CalamityMod.NPCs.SunkenSea
         private void IdlingBehavior()
         {
             // At random, the mob will choose a random nearby point and pathfind there.
-            pathfinding.DoPathfinding(new(NPC.Center, NPC.Center + Main.rand.NextVector2Unit() * Main.rand.NextFloat(500f, 3000f), SunkenSeaTileValidity));
-            pathfinding.MaxSpeed = 6f;
+            pathfinding.DoPathfinding(new(this, NPC.Center, NPC.Center + Main.rand.NextVector2Unit() * Main.rand.NextFloat(500f, 3000f), SunkenSeaTileValidity));
+            MaxSpeed = 6f;
         }
 
         private void FleeingBehavior()
@@ -235,8 +227,8 @@ namespace CalamityMod.NPCs.SunkenSea
                 }
                 while (!Main.tile[(NPC.Center + _randomPathPoint).ToTileCoordinates()].IsTileSolid());
                 NPC.netUpdate = true;
-                pathfinding.DoPathfinding(new(NPC.Center, NPC.Center + _randomPathPoint, SunkenSeaTileValidity));
-                pathfinding.MaxSpeed = 8f;
+                pathfinding.DoPathfinding(new(this, NPC.Center, NPC.Center + _randomPathPoint, SunkenSeaTileValidity));
+                MaxSpeed = 8f;
             }
             else
             {
@@ -263,21 +255,8 @@ namespace CalamityMod.NPCs.SunkenSea
                 HuntCooldown = Main.rand.Next(13, 30);
 
             // With sight, just go straight at him. Without it, try to pathfind over them.
-            pathfinding.DoPathfinding(new(NPC.Center, CurrentPrey.Center, tileValidity: SunkenSeaTileValidity), forceNewTask: huntReady);
-            pathfinding.MaxSpeed = 8f;
-            pathfinding.CustomIdleBehavior = () =>
-            {
-                if (CurrentPrey != null)
-                {
-                    NPC.velocity += NPC.DirectionTo(CurrentPrey.Center) * pathfinding.Acceleration;
-
-                    // Cap the speed if MaxSpeed has been surpassed.
-                    if (NPC.velocity.LengthSquared() > pathfinding.MaxSpeed * pathfinding.MaxSpeed)
-                        NPC.velocity = Vector2.Normalize(NPC.velocity) * pathfinding.MaxSpeed;
-                }
-                else
-                    NPC.velocity *= 0.95f;
-            };
+            pathfinding.DoPathfinding(new(this, NPC.Center, CurrentPrey.Center, tileValidity: SunkenSeaTileValidity), forceNewTask: huntReady);
+            MaxSpeed = 8f;
 
             HuntCooldown--;
         }
@@ -299,8 +278,8 @@ namespace CalamityMod.NPCs.SunkenSea
             }
             else
             {
-                pathfinding.DoPathfinding(new(NPC.Center, SpongeFoundPosition, SunkenSeaTileValidity));
-                pathfinding.MaxSpeed = 6f;
+                pathfinding.DoPathfinding(new(this, NPC.Center, SpongeFoundPosition, SunkenSeaTileValidity));
+                MaxSpeed = 6f;
             }
         }
 
@@ -360,6 +339,25 @@ namespace CalamityMod.NPCs.SunkenSea
         }
 
         public override bool CanBeHitByNPC(NPC attacker) => PredatorIDs.Contains(attacker.type);
+
+        public override void AwaitingPathBehavior()
+        {
+            if (CurrentBehavior == HuntBehavior)
+            {
+                if (CurrentPrey != null)
+                {
+                    NPC.velocity += NPC.DirectionTo(CurrentPrey.Center) * Acceleration;
+
+                    // Cap the speed if MaxSpeed has been surpassed.
+                    if (NPC.velocity.LengthSquared() > MaxSpeed * MaxSpeed)
+                        NPC.velocity = Vector2.Normalize(NPC.velocity) * MaxSpeed;
+                }
+                else
+                    NPC.velocity *= 0.95f;
+            }
+            else
+                base.AwaitingPathBehavior();
+        }
 
         #endregion
 

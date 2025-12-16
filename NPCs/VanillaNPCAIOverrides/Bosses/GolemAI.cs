@@ -634,7 +634,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                             Vector2 largeRandDustRadius = Main.rand.NextVector2Circular(80f, 80f);
                             Vector2 largeRandDustRecoil = largeRandDustRadius * -1f * 0.05f;
                             Vector2 smallRandDustRadius = Main.rand.NextVector2Circular(20f, 20f);
-                            Dust dust = Dust.NewDustPerfect(NPC.Center + largeRandDustRecoil + largeRandDustRadius + smallRandDustRadius, 228, largeRandDustRecoil);
+                            Dust dust = Dust.NewDustPerfect(NPC.Center + largeRandDustRecoil + largeRandDustRadius + smallRandDustRadius, DustID.GoldFlame, largeRandDustRecoil);
                             dust.fadeIn = 1.5f;
                             dust.scale = 0.5f;
                             if (Main.getGoodWorld)
@@ -702,7 +702,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                     {
                         Vector2 halfVelocityDust = NPC.velocity * 0.5f;
                         Vector2 randDustRadius = Main.rand.NextVector2Circular(20f, 20f);
-                        Dust.NewDustPerfect(NPC.Center + halfVelocityDust + randDustRadius, 306, halfVelocityDust, 0, Main.OurFavoriteColor).scale = 2f;
+                        Dust.NewDustPerfect(NPC.Center + halfVelocityDust + randDustRadius, DustID.SparkForLightDisc, halfVelocityDust, 0, Main.OurFavoriteColor).scale = 2f;
                     }
 
                     if (Math.Abs(NPC.velocity.X) > Math.Abs(NPC.velocity.Y))
@@ -1360,11 +1360,11 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                     NPC.position += NPC.netOffset;
                     int randDustOffset = Main.rand.Next(2) * 2 - 1;
                     Vector2 randDustPos = NPC.Bottom + new Vector2((float)(randDustOffset * 22) * NPC.scale, -22f * NPC.scale);
-                    Dust getGoodDust = Dust.NewDustPerfect(randDustPos, 228, (MathHelper.PiOver2 + -MathHelper.PiOver2 * (float)randDustOffset + Main.rand.NextFloatDirection() * MathHelper.PiOver4).ToRotationVector2() * (2f + Main.rand.NextFloat()));
+                    Dust getGoodDust = Dust.NewDustPerfect(randDustPos, DustID.GoldFlame, (MathHelper.PiOver2 + -MathHelper.PiOver2 * (float)randDustOffset + Main.rand.NextFloatDirection() * MathHelper.PiOver4).ToRotationVector2() * (2f + Main.rand.NextFloat()));
                     Dust dust = getGoodDust;
                     dust.velocity += NPC.velocity;
                     getGoodDust.noGravity = true;
-                    getGoodDust = Dust.NewDustPerfect(NPC.Bottom + new Vector2(Main.rand.NextFloatDirection() * 6f * NPC.scale, (Main.rand.NextFloat() * -4f - 8f) * NPC.scale), 228, Vector2.UnitY * (2f + Main.rand.NextFloat()));
+                    getGoodDust = Dust.NewDustPerfect(NPC.Bottom + new Vector2(Main.rand.NextFloatDirection() * 6f * NPC.scale, (Main.rand.NextFloat() * -4f - 8f) * NPC.scale), DustID.GoldFlame, Vector2.UnitY * (2f + Main.rand.NextFloat()));
                     getGoodDust.fadeIn = 0f;
                     getGoodDust.scale = 0.7f + Main.rand.NextFloat() * 0.5f;
                     getGoodDust.noGravity = true;

@@ -1,7 +1,5 @@
-﻿using CalamityMod.Items.Weapons.Rogue;
-using CalamityMod.NPCs.SlimeGod;
+﻿using CalamityMod.NPCs.SlimeGod;
 using CalamityMod.Projectiles.Magic;
-using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
 

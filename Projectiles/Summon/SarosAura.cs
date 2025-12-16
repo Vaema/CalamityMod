@@ -1,13 +1,11 @@
 ﻿using CalamityMod.Buffs.Summon;
 using CalamityMod.CalPlayer;
+using CalamityMod.Utilities.Daybreak;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using rail;
 using ReLogic.Content;
 using Terraria;
-using Terraria.DataStructures;
 using Terraria.GameContent;
-using Terraria.Graphics.Shaders;
 using Terraria.ID;
 using Terraria.ModLoader;
 namespace CalamityMod.Projectiles.Summon
@@ -156,9 +154,10 @@ namespace CalamityMod.Projectiles.Summon
         public static Asset<Texture2D> circle;
         public override bool PreDraw(ref Color lightColor)
         {
-            
-            Main.spriteBatch.SafeBegin(SpriteSortMode.Deferred, BatchSetting.Additive, null, Main.GameViewMatrix.TransformationMatrix, () =>
+            using (Main.spriteBatch.Scope())
             {
+                Main.spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.Additive, SamplerState.PointClamp, DepthStencilState.None, Main.Rasterizer, null, Main.GameViewMatrix.TransformationMatrix);
+
                 //Sigil
                 var spTex = TextureAssets.Projectile[Type].Value;
                 Main.spriteBatch.Draw(spTex, Projectile.Center - Main.screenPosition, null, Color.White, Main.GlobalTimeWrappedHourly, spTex.Size() * 0.5f, 0.75f, SpriteEffects.None, 0);
@@ -184,7 +183,9 @@ namespace CalamityMod.Projectiles.Summon
                         offset = 1 - offset;
                     Main.EntitySpriteDraw(ciTex, Projectile.Center - Main.screenPosition, null, Color.Lerp(Color.Gold, Color.OrangeRed, i / (4f)), Main.GlobalTimeWrappedHourly, ciTex.Size() * 0.5f, 0.0225f + 0.0025f * offset + 0.005f * i, SpriteEffects.None);
                 }
-            });
+
+                Main.spriteBatch.End();
+            }
             return false;
         }
     }

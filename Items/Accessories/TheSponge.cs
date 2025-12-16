@@ -5,6 +5,7 @@ using CalamityMod.DataStructures;
 using CalamityMod.Items.Materials;
 using CalamityMod.Rarities;
 using CalamityMod.Tiles.Furniture.CraftingStations;
+using CalamityMod.Utilities.Daybreak;
 using CalamityMod.World;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
@@ -231,14 +232,16 @@ namespace CalamityMod.Items.Accessories
             shieldEffect.Parameters["shieldColor"].SetValue(shieldColor.ToVector3());
             shieldEffect.Parameters["shieldEdgeColor"].SetValue(edgeColor.ToVector3());
 
-            Main.spriteBatch.SafeBegin(SpriteSortMode.Immediate, BatchSetting.Additive, shieldEffect, Matrix.Identity, () =>
+            using (Main.spriteBatch.Scope())
             {
+                Main.spriteBatch.Begin(SpriteSortMode.Immediate, BlendState.Additive, SamplerState.PointClamp, DepthStencilState.None, Main.Rasterizer, shieldEffect, Main.Transform);
                 // Fetch shield noise overlay texture (this is the polygons fed to the shader)
                 NoiseTex ??= ModContent.Request<Texture2D>("CalamityMod/ExtraTextures/GreyscaleGradients/Neurons");
                 Vector2 pos = player.MountedCenter + player.gfxOffY * Vector2.UnitY - Main.screenPosition;
                 Texture2D tex = NoiseTex.Value;
                 Main.spriteBatch.Draw(tex, pos, null, Color.White, 0, tex.Size() / 2f, scale, 0, 0);
-            });
+                Main.spriteBatch.End();
+            }
 
             modPlayer.drawnAnyShieldThisFrame = true;
         }

@@ -4,6 +4,7 @@ using Terraria;
 using Terraria.DataStructures;
 using Terraria.Enums;
 using Terraria.GameContent;
+using Terraria.ID;
 using Terraria.ModLoader;
 using Terraria.ObjectData;
 
@@ -29,7 +30,7 @@ namespace CalamityMod.Tiles.Rubblemaker.Abyss
             TileObjectData.newTile.DrawYOffset = 2;
             TileObjectData.addTile(Type);
             AddMapEntry(new Color(17, 19, 38));
-            DustType = 33;
+            DustType = DustID.Water;
 
             RegisterItemDrop(ModContent.ItemType<AbyssGravel>());
             FlexibleTileWand.RubblePlacementLarge.AddVariations(ModContent.ItemType<AbyssGravel>(), Type, 0);

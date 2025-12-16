@@ -1,10 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
-using CalamityMod.Dusts;
-using CalamityMod.NPCs.TownNPCs;
 using CalamityMod.Particles;
-using CalamityMod.Projectiles.Melee;
 using CalamityMod.Projectiles.Typeless;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;

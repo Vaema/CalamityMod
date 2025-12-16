@@ -3,9 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using CalamityMod.Buffs.DamageOverTime;
 using CalamityMod.Effects;
-using CalamityMod.Items.Accessories;
 using CalamityMod.Items.Materials;
-using CalamityMod.Items.Weapons.Summon;
+using CalamityMod.Items.Placeables.Banners;
 using CalamityMod.NPCs.ExoMechs.Thanatos;
 using CalamityMod.Particles;
 using CalamityMod.Projectiles.Typeless;
@@ -15,13 +14,16 @@ using CalamityMod.Tiles.Ores;
 using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.Audio;
+using Terraria.GameContent.Bestiary;
 using Terraria.ID;
+using Terraria.Localization;
 using Terraria.ModLoader;
 using Terraria.ModLoader.Utilities;
 namespace CalamityMod.NPCs.Deconstructors
 {
     public class BurrowerHitbox : BaseWormHitboxNPC
     {
+        public override LocalizedText DisplayName => CalamityUtils.GetText("NPCs.Burrower.DisplayName");
         public override bool? DrawHealthBar(byte hbPosition, ref float scale, ref Vector2 position)
         {
             return false;
@@ -46,6 +48,9 @@ namespace CalamityMod.NPCs.Deconstructors
             NPC.Calamity().VulnerableToHeat = false;
             NPC.Calamity().VulnerableToSickness = false;
             NPC.Calamity().VulnerableToWater = false;
+
+            Banner = ModContent.NPCType<Burrower>();
+            BannerItem = ModContent.ItemType<BurrowerBanner>();
             base.SetDefaults();
         }
         public override void AI()
@@ -110,7 +115,7 @@ namespace CalamityMod.NPCs.Deconstructors
             NPC.height = 38;
             NPC.lifeMax = 1000;
             NPC.value = Item.buyPrice(1, 0, 0, 0);
-
+            NPC.rarity = 3;
             NPC.HitSound = ThanatosHead.ThanatosHitSoundClosed;
             NPC.DeathSound = SoundID.NPCDeath44;
             NPC.knockBackResist = 0f;
@@ -125,12 +130,22 @@ namespace CalamityMod.NPCs.Deconstructors
             NPC.Calamity().VulnerableToHeat = false;
             NPC.Calamity().VulnerableToSickness = false;
             NPC.Calamity().VulnerableToWater = false;
+            Banner = NPC.type;
+            BannerItem = ModContent.ItemType<BurrowerBanner>();
 
             for (var i = 0; i < SegmentCount - 1; i++)
             {
                 Segments.Add(new BaseWormSegment(this, i % 3));
             }
             Segments.Add(new BaseWormSegment(this, 3));
+        }
+        public override void SetBestiary(BestiaryDatabase database, BestiaryEntry bestiaryEntry)
+        {
+            bestiaryEntry.Info.AddRange(
+            [
+                BestiaryDatabaseNPCsPopulator.CommonTags.SpawnConditions.Biomes.Caverns,
+                new FlavorTextBestiaryInfoElement("Mods.CalamityMod.Bestiary.Burrower")
+            ]);
         }
 
         #region AI Variables
@@ -277,13 +292,11 @@ namespace CalamityMod.NPCs.Deconstructors
 
             foreach (var p in vein)
             {
-                bool isOuter = false;
                 foreach (var offset in new[] { new Point(1, 0), new Point(-1, 0), new Point(0, 1), new Point(0, -1) })
                 {
                     Point neighbor = p + offset;
                     if (!veinSet.Contains(neighbor))
                     {
-                        isOuter = true;
                         if (neighbor.X >= 0 && neighbor.X < Main.maxTilesX && neighbor.Y >= 0 && neighbor.Y < Main.maxTilesY)
                         {
                             var tile = Main.tile[neighbor];
@@ -531,7 +544,7 @@ namespace CalamityMod.NPCs.Deconstructors
             npcLoot.Add(ItemID.CrimtaneOre, 5, 6, 32);
 
             var condition = npcLoot.DefineConditionalDropSet(DropHelper.PostPlant());
-            condition.Add(ItemID.CobaltOre, 2, 6, 32,true);
+            condition.Add(ItemID.CobaltOre, 2, 6, 32);
             condition.Add(ItemID.PalladiumOre, 2, 6, 32);
             condition.Add(ItemID.MythrilOre, 3, 6, 32);
             condition.Add(ItemID.OrichalcumOre, 3, 6, 32);
@@ -547,7 +560,7 @@ namespace CalamityMod.NPCs.Deconstructors
             {
                 return 0f;
             }
-            return SpawnCondition.Cavern.Chance * (Main.projectile.Any(x=> x.active && x.type == ModContent.ProjectileType<WulfrumLureSignal>()) ? 5f : 0.1f);
+            return SpawnCondition.Cavern.Chance * (Main.projectile.Any(x=> x.active && x.type == ModContent.ProjectileType<WulfrumLureSignal>()) ? 5f : 0.01f);
         }
     }
 }

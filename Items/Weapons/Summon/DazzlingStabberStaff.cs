@@ -5,7 +5,6 @@ using CalamityMod.Rarities;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria;
-using Terraria.Audio;
 using Terraria.DataStructures;
 using Terraria.ID;
 using Terraria.ModLoader;
@@ -52,7 +51,7 @@ namespace CalamityMod.Items.Weapons.Summon
                 minion.originalDamage = Item.damage;
             }
             float angleMax = MathHelper.ToRadians(360f);
-            if (CalamityUtils.CountOwnedProjectiles(type, player.whoAmI) == 1)
+            if (player.ownedProjectileCounts[type] == 1)
                 angleMax = 0f;
             float index = 1f;
             if (player.ownedProjectileCounts[Item.shoot] > 30)
@@ -64,7 +63,7 @@ namespace CalamityMod.Items.Weapons.Summon
             {
                 if (p.type == type && p.owner == player.whoAmI)
                 {
-                    p.ai[1] = (index / CalamityUtils.CountOwnedProjectiles(type, player.whoAmI)) * angleMax - angleMax / 2f;
+                    p.ai[1] = index / player.ownedProjectileCounts[type] * angleMax - angleMax / 2f;
                     p.netUpdate = true;
                     index++;
                 }

@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Reflection;
 using Terraria.ModLoader;
-using Terraria.ModLoader.Core;
 
 namespace CalamityMod.Cooldowns
 {
@@ -12,18 +12,16 @@ namespace CalamityMod.Cooldowns
         // Indexed by ushort netID. Contains every registered cooldown.
         // Cooldowns are given netIDs when they are registered.
         // Cooldowns are useless until they are registered.
-        public static Cooldown[] registry;
+        public static Cooldown[] registry = new Cooldown[defaultSize];
         private const ushort defaultSize = 256;
         private static ushort nextCDNetID = 0;
 
-        private static Dictionary<string, ushort> nameToNetID = null;
+        private static Dictionary<string, ushort> nameToNetID = new Dictionary<string, ushort>(defaultSize);
 
-        public override void Load()
+        #region Unused manual registration left here as backup
+        /*public override void Load()
         {
-            registry = new Cooldown[defaultSize];
-            nameToNetID = new Dictionary<string, ushort>(defaultSize);
-
-            #region Unused manual registration left here as backup
+            
             // Vanilla cooldowns represented by the interface
             //var potionSickness = Register<PotionSickness>(PotionSickness.ID);
             //var chaosState = Register<ChaosState>(ChaosState.ID);
@@ -57,33 +55,30 @@ namespace CalamityMod.Cooldowns
             //var tarragonCloak = Register<TarragonCloak>(TarragonCloak.ID);
             //var tarragonImmunity = Register<TarragonImmunity>(TarragonImmunity.ID);
             //var universeSplitter = Register<UniverseSplitter>(UniverseSplitter.ID);
-            #endregion
-        }
+            
+        }*/
+        #endregion
 
-        public override void OnModLoad()
+        public override void ResizeArrays()
         {
-            Type baseHandlerType = typeof(CooldownHandler);
-            foreach (Mod mod in ModLoader.Mods)
+            var cooldowns = ModContent.GetContent<CooldownHandler>();
+            var count = cooldowns.Count();
+            Array.Resize(ref registry, count);
+
+            MethodInfo registerBaseMethod = typeof(CooldownRegistry).GetMethod(nameof(Register), BindingFlags.Public | BindingFlags.Static);
+            foreach (var cooldown in cooldowns)
             {
-                foreach (Type type in AssemblyManager.GetLoadableTypes(mod.Code))
-                {
-                    if (type.IsSubclassOf(baseHandlerType) && !type.IsAbstract && type != baseHandlerType)
-                    {
-                        //Get the static property ID of the handler
-                        string handlerID = (string)type.GetProperty("ID").GetValue(null);
+                var type = cooldown.GetType();
 
-                        //If for whatever reason the ID is not set, create an ID from the mod and handler name
-                        if (handlerID == null)
-                            handlerID = mod.Name + "_" + type.Name;
+                //Get the static property ID of the handler
+                string handlerID = (string)type.GetProperty("ID").GetValue(null);
 
-                        //Use reflection to call the method. You can't use the type as the generic type argument of register here
-                        MethodInfo methodInfo = typeof(CooldownRegistry).GetMethod("Register", BindingFlags.Public | BindingFlags.Static);
-                        Type[] genericArguments = new Type[] { type };
+                //If for whatever reason the ID is not set, create an ID from the mod and handler name
+                handlerID ??= cooldown.FullName;
 
-                        MethodInfo genericRegister = methodInfo.MakeGenericMethod(genericArguments);
-                        genericRegister.Invoke(null, new object[] { handlerID });
-                    }
-                }
+                //Use reflection to call the method. You can't use the type as the generic type argument of register here
+                MethodInfo genericRegister = registerBaseMethod.MakeGenericMethod(typeArguments: [type]);
+                genericRegister.Invoke(null, [handlerID]);
             }
         }
 
@@ -118,6 +113,7 @@ namespace CalamityMod.Cooldowns
             registry[cd.netID] = cd;
             ++nextCDNetID;
 
+            // TODO: Cooldown resizes are not really needed now. Leaving it here just in case.
             // If the end of the array is reached, double its size.
             if (nextCDNetID == currentMaxID && currentMaxID < ushort.MaxValue)
             {

@@ -131,7 +131,7 @@ namespace CalamityMod.Projectiles.Magic
                 if (Timer > BurningSea.BurnOutTime)
                 {
                     Projectile.timeLeft = (int)BurningSea.FizzleOutTime;
-                    SoundEngine.PlaySound(new("CalamityMod/Sounds/Custom/WeaponEnchant"), Owner.Center);
+                    SoundEngine.PlaySound(new SoundStyle("CalamityMod/Sounds/Custom/WeaponEnchant"), Owner.Center);
                     CombatText.NewText(Owner.Hitbox, new Color(192, 0, 0), CalamityUtils.GetTextValue("Misc.BurningSeaBurn"), true);
 
                     Owner.AddBuff(ModContent.BuffType<BrimstoneFlames>(), 120);

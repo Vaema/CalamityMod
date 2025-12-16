@@ -3,12 +3,12 @@ using CalamityMod.Items.Placeables.DraedonStructures;
 using CalamityMod.TileEntities;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using ReLogic.Content;
 using Terraria;
 using Terraria.Audio;
 using Terraria.DataStructures;
 using Terraria.Enums;
 using Terraria.ID;
-using Terraria.Localization;
 using Terraria.ModLoader;
 using Terraria.ObjectData;
 
@@ -22,6 +22,8 @@ namespace CalamityMod.Tiles.DraedonStructures
         public const int IdleFrames = 8;
         public const int TalkingFrames = 8;
         public const int FrameCount = IdleFrames + TalkingFrames;
+
+        public Asset<Texture2D> GlowTexture;
 
         public override void SetStaticDefaults()
         {
@@ -60,7 +62,7 @@ namespace CalamityMod.Tiles.DraedonStructures
             AnimationFrameHeight = 112;
 
             // Spawn electric sparks when this tile is hit with a pickaxe.
-            DustType = 229;
+            DustType = DustID.Vortex;
             HitSound = SoundID.Tink;
         }
 
@@ -131,7 +133,9 @@ namespace CalamityMod.Tiles.DraedonStructures
             int yPos = trackTile.TileFrameY;
             yPos += frame % 16 * 112;
 
-            Texture2D tileTexture = ModContent.Request<Texture2D>("CalamityMod/Tiles/DraedonStructures/LabHologramProjector").Value;
+            GlowTexture ??= ModContent.Request<Texture2D>("CalamityMod/Tiles/DraedonStructures/LabHologramProjector");
+            Texture2D tileTexture = GlowTexture.Value;
+
             Vector2 offset = Main.drawToScreen ? Vector2.Zero : new Vector2(Main.offScreenRange);
             Vector2 drawOffset = new Vector2(i * 16 - Main.screenPosition.X, j * 16 - Main.screenPosition.Y) + offset;
             Color drawColor = Lighting.GetColor(i, j);

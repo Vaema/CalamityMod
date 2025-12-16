@@ -368,6 +368,15 @@ CalamityClientConfig: {
 			'''
 	}
 
+	TileTextureBlendingQuality: {
+		Label: "[i:GlowPaint] Tile Blending Quality"
+		Tooltip:
+			'''
+			Change quality of tile merge soft-blending renderer.
+			This controls the quality of soft-blending between different types of merged tile.
+			'''
+	}
+
 	VanillaCooldownDisplay: {
 		Label: "[i:HealingPotion] Display Vanilla Cooldowns"
 		Tooltip:
@@ -445,7 +454,7 @@ CalamityServerConfig: {
 		Label: "[i:Pwnhammer] Early Hardmode Progression Rework"
 		Tooltip:
 			'''
-			Demon Altars no longer spawn ores and crimson/corruption blocks when broken.
+			Demon Altars no longer spawn ores when broken.
 			Wall of Flesh spawns Cobalt and Palladium ore on first kill.
 			The first mech boss you fight has 20% (10% in Expert and Master) less HP and damage and spawns Mythril and Orichalcum ore on first kill.
 			The second mech boss you fight has 10% (5% in Expert and Master) less HP and damage and spawns Adamantite and Titanium ore on first kill.
@@ -594,5 +603,28 @@ SetBonusDoubleTapOptions: {
 	Off: {
 		Label: Always Off
 		Tooltip: Always disables double-tap. Can be used to completely disable set bonus activation.
+	}
+}
+
+TileBlendingQuality: {
+	Tooltip: ""
+
+	Disable: {
+		Label: Disable
+		Tooltip: Disable Tile Texture Soft Blending
+	}
+
+	Normal: {
+		Label: Normal
+		Tooltip: Enable Tile Texture Soft Blending
+	}
+
+	High: {
+		Label: High
+		Tooltip:
+			'''
+			Enable Tile Texture Soft Blending.
+			[c/F05A5A:Allows Sliced Rendering. Not recommended for low-end devices.]
+			'''
 	}
 }

@@ -1,5 +1,4 @@
 ﻿using CalamityMod.Buffs.Alcohol;
-using CalamityMod.Items.Accessories.Vanity;
 using CalamityMod.Items.Materials;
 using Microsoft.Xna.Framework;
 using Terraria;

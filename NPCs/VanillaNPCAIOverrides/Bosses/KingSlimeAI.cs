@@ -415,22 +415,17 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                     int slimeAmt = death ? 1 : Main.rand.Next(1, 3);
                     for (int i = 0; i < slimeAmt; i++)
                     {
-                        float minLowerLimit = 0f;
-                        float maxLowerLimit = 2f;
-                        int minTypeChoice = (int)MathHelper.Lerp(minLowerLimit, 5f, 1f - lifeRatio2);
-                        int maxTypeChoice = (int)MathHelper.Lerp(maxLowerLimit, 7f, 1f - lifeRatio2);
+                        int minTypeChoice = (int)MathHelper.Lerp(0f, 5f, 1f - lifeRatio2);
+                        int maxTypeChoice = (int)MathHelper.Lerp(2f, 7f, 1f - lifeRatio2);
 
                         int npcType;
                         switch (Main.rand.Next(minTypeChoice, maxTypeChoice + 1))
                         {
-                            default:
-                                npcType = NPCID.SlimeSpiked;
-                                break;
                             case 0:
                                 npcType = NPCID.GreenSlime;
                                 break;
                             case 1:
-                                npcType = Main.player[NPC.target].ZoneJungle ? NPCID.JungleSlime : Main.player[NPC.target].ZoneSnow ? NPCID.IceSlime : NPCID.BlueSlime;
+                                npcType = NPCID.BlueSlime;
                                 break;
                             case 2:
                                 npcType = Main.raining ? NPCID.UmbrellaSlime : NPCID.BlueSlime;
@@ -444,21 +439,16 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                             case 5:
                                 npcType = NPCID.YellowSlime;
                                 break;
-                            case 6:
-                                npcType = Main.player[NPC.target].ZoneJungle ? NPCID.SpikedJungleSlime : Main.player[NPC.target].ZoneSnow ? NPCID.SpikedIceSlime : NPCID.SlimeSpiked;
+                            default:
+                                npcType = NPCID.SlimeSpiked;
                                 break;
                         }
 
                         if ((Main.raining && Main.hardMode) && Main.rand.NextBool(50))
                             npcType = NPCID.RainbowSlime;
 
-                        if (death) // 50% chance to spawn a spiked slime instead of the above npcType value
-                        {
-                            if (Main.rand.NextBool())
-                            {
-                                npcType = Main.player[NPC.target].ZoneJungle ? NPCID.SpikedJungleSlime : Main.player[NPC.target].ZoneSnow ? NPCID.SpikedIceSlime : NPCID.SlimeSpiked;
-                            }
-                        }
+                        if (death && Main.rand.NextBool()) // 50% chance to spawn a spiked slime instead of the above npcType value
+                            npcType = NPCID.SlimeSpiked;
 
                         if (Main.rand.NextBool(100))
                             npcType = NPCID.Pinky;

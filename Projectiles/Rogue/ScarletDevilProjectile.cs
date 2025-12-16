@@ -1,5 +1,4 @@
 ﻿using System;
-using CalamityMod.Balancing;
 using CalamityMod.Graphics.Primitives;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
@@ -45,7 +44,7 @@ namespace CalamityMod.Projectiles.Rogue
             if (!Main.dedServ)
             {
                 for (int i = 0; i < (Projectile.Calamity().stealthStrike && Main.rand.NextBool() ? 2 : 1); i++)
-                    Dust.NewDust(Projectile.position + Projectile.velocity, Projectile.width, Projectile.height, 130, Projectile.velocity.X * 0.25f, Projectile.velocity.Y * 0.25f, 0, new Color(255, 255, 255), 0.85f);
+                    Dust.NewDust(Projectile.position + Projectile.velocity, Projectile.width, Projectile.height, DustID.Firework_Red, Projectile.velocity.X * 0.25f, Projectile.velocity.Y * 0.25f, 0, new Color(255, 255, 255), 0.85f);
             }
 
             ShootTimer++;
@@ -145,14 +144,14 @@ namespace CalamityMod.Projectiles.Rogue
             SpawnOnStealthStrikeBullets();
         }
 
-        internal float WidthFunction(float completionRatio)
+        internal float WidthFunction(float completionRatio, Vector2 vertexPos)
         {
             float widthRatio = Utils.GetLerpValue(0f, 0.1f, completionRatio, true);
             float baseWidth = MathHelper.Lerp(0f, 110f, widthRatio) * MathHelper.Clamp(1f - (float)Math.Pow(completionRatio, 0.4D), 0.37f, 1f);
             return baseWidth;
         }
 
-        internal Color ColorFunction(float completionRatio)
+        internal Color ColorFunction(float completionRatio, Vector2 vertexPos)
         {
             float colorIncrement = (float)Math.Pow(completionRatio, 1f / 2f);
             if (colorIncrement is float.NaN)
@@ -172,7 +171,7 @@ namespace CalamityMod.Projectiles.Rogue
             else
             {
                 GameShaders.Misc["CalamityMod:OverpoweredTouhouSpearShader"].SetShaderTexture(ModContent.Request<Texture2D>("CalamityMod/ExtraTextures/Trails/ScarletDevilStreak"));
-                PrimitiveRenderer.RenderTrail(Projectile.oldPos, new(WidthFunction, ColorFunction, (_) => Projectile.Size * 0.5f + Projectile.velocity.SafeNormalize(Vector2.Zero) * 86f, false,
+                PrimitiveRenderer.RenderTrail(Projectile.oldPos, new(WidthFunction, ColorFunction, (_,_) => Projectile.Size * 0.5f + Projectile.velocity.SafeNormalize(Vector2.Zero) * 86f, false,
                     shader: GameShaders.Misc["CalamityMod:OverpoweredTouhouSpearShader"]), 60);
 
                 Texture2D spearTexture = Terraria.GameContent.TextureAssets.Projectile[Type].Value;

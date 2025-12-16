@@ -1,8 +1,6 @@
 ﻿using System.Collections.Generic;
 using CalamityMod.Items.Weapons.Magic;
 using CalamityMod.NPCs.DevourerofGods;
-using CalamityMod.Particles;
-using CalamityMod.Projectiles.Ranged;
 using CalamityMod.Projectiles.Typeless;
 using CalamityMod.Rarities;
 using Microsoft.Xna.Framework;
@@ -10,7 +8,6 @@ using Microsoft.Xna.Framework.Graphics;
 using Terraria;
 using Terraria.DataStructures;
 using Terraria.ID;
-using Terraria.Localization;
 using Terraria.ModLoader;
 
 namespace CalamityMod.Items.Weapons.Ranged

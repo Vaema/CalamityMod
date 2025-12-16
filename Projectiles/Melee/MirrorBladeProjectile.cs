@@ -126,7 +126,7 @@ namespace CalamityMod.Projectiles.Melee
             SoundEngine.PlaySound(SoundID.DD2_WitherBeastCrystalImpact,Projectile.Center);
         }
         public override float trailOffset => 28;
-        public override float trailWidth(float completion)
+        public override float trailWidth(float completion, Vector2 vertexPos)
         {
             return 60;
         }

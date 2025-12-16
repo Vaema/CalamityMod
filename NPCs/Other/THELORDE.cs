@@ -5,7 +5,6 @@ using CalamityMod.Buffs.StatDebuffs;
 using CalamityMod.Items.Pets;
 using CalamityMod.Items.Potions;
 using CalamityMod.Projectiles.Boss;
-using CalamityMod.World;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using ReLogic.Content;

@@ -58,7 +58,7 @@ namespace CalamityMod.NPCs.CalClone
                 NPC.scale *= 1.2f;
 
             NPC.defense = 10;
-            NPC.LifeMaxNERB(8500, 10000, 80000);
+            NPC.LifeMaxNERB(7000, 10000, 80000);
             NPC.aiStyle = -1;
             AIType = -1;
             NPC.knockBackResist = 0f;

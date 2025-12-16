@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Reflection;
 using CalamityMod.Balancing;
 using CalamityMod.BiomeManagers;
 using CalamityMod.Buffs;
@@ -57,7 +56,6 @@ using CalamityMod.NPCs.VanillaNPCAIOverrides.RegularEnemies;
 using CalamityMod.Packets;
 using CalamityMod.Particles;
 using CalamityMod.Projectiles.Magic;
-using CalamityMod.Projectiles.Melee;
 using CalamityMod.Projectiles.Ranged;
 using CalamityMod.Projectiles.Rogue;
 using CalamityMod.Projectiles.Typeless;
@@ -69,7 +67,6 @@ using CalamityMod.UI;
 using CalamityMod.UI.DebuffSystem;
 using CalamityMod.Walls.DraedonStructures;
 using CalamityMod.World;
-using Microsoft.CodeAnalysis;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using MonoMod.Utils;
@@ -104,16 +101,8 @@ namespace CalamityMod.NPCs
         /// <summary> Damage Reduction Value </summary>
         public float DR { get; set; } = 0f;
 
-        /// <summary> If set to true, the NPC's damage reduction cannot be reduced via any means. This applies regardless of whether <see cref="customDR"/> is true or false. </summary>
+        /// <summary> If set to true, the NPC's damage reduction cannot be reduced via any means. </summary>
         public bool unbreakableDR = false;
-
-        /// <summary>
-        /// Overrides the normal DR math and uses custom DR reductions for each debuff, registered separately.<br/>
-        /// Current only used by Old Duke.
-        /// </summary>
-        public bool customDR = false;
-        public Dictionary<int, float> flatDRReductions = new Dictionary<int, float>();
-        public Dictionary<int, float> multDRReductions = new Dictionary<int, float>();
 
         public int KillTime { get; set; } = 0;
 
@@ -265,7 +254,7 @@ namespace CalamityMod.NPCs
         // TODO: This should be deprecated at some point.
         internal const int maxAIMod = 4;
         public float[] newAI = new float[maxAIMod];
-        public int AITimer = 0;
+        public int killTimeTimer = 0;
 
         /// <summary> Used for allowing Patreon names for Town NPCs. </summary>
         public bool setNewName = true;
@@ -355,8 +344,11 @@ namespace CalamityMod.NPCs
         public static int hyperiusOverflowTime = 100;
         public int hyperiusOverflowTimer = hyperiusOverflowTime;
         /// <summary> Constant variable representing the % of max health Hyperius Bullet's damage stacks must reach before they start to overflow. </summary>
-        public const float hyperiusLifePercentThreshold = 0.07f;
+        public const float HyperiusLifePercentThreshold = 0.07f;
         public int hyperiusFxTimer = 0;
+
+        public int glaiveShredTimer = 0;
+        public int blazingStarShredTimer = 0;
 
         /// <summary>
         /// Tracks the strength of Calamity's cursor effect; increments by 2 on every frame.<br/>
@@ -415,6 +407,8 @@ namespace CalamityMod.NPCs
         /// </summary>
         public int ashesOnDeath = 0;
         #endregion
+
+        public bool fortunesFavor = false; // Buff which grants positive life regen. Given when near Gilded Axolotls.
 
         // whoAmI Variables
         public static int[] bobbitWormBottom = new int[5];
@@ -523,13 +517,6 @@ namespace CalamityMod.NPCs
 
             myClone.DR = DR;
             myClone.unbreakableDR = unbreakableDR;
-            myClone.flatDRReductions = new Dictionary<int, float>();
-            foreach (var flatDR in flatDRReductions)
-                myClone.flatDRReductions.Add(flatDR.Key, flatDR.Value);
-            myClone.multDRReductions = new Dictionary<int, float>();
-            foreach (var multDR in multDRReductions)
-                myClone.multDRReductions.Add(multDR.Key, multDR.Value);
-
             myClone.KillTime = KillTime;
 
             myClone.VulnerableToHeat = VulnerableToHeat;
@@ -571,7 +558,7 @@ namespace CalamityMod.NPCs
             myClone.newAI = new float[maxAIMod];
             for (int i = 0; i < maxAIMod; ++i)
                 myClone.newAI[i] = newAI[i];
-            myClone.AITimer = AITimer;
+            myClone.killTimeTimer = killTimeTimer;
 
             myClone.setNewName = setNewName;
 
@@ -667,6 +654,8 @@ namespace CalamityMod.NPCs
             myClone.wither = wither;
             myClone.ashesOnDeath = ashesOnDeath;
 
+            myClone.fortunesFavor = fortunesFavor;
+
             // This gets set up as needed.
             myClone.VulnerabilityHexFireDrawer = null;
             myClone.ManaBurnFireDrawer = null;
@@ -710,7 +699,7 @@ namespace CalamityMod.NPCs
 
             ResetSavedIndex(ref hiveMind, NPCType<HiveMind.HiveMind>());
             ResetSavedIndex(ref perfHive, NPCType<PerforatorHive>());
-            ResetSavedIndex(ref slimeGodPurple, NPCType<SlimeGod.EbonianPaladin>(), NPCType<SplitEbonianPaladin>());
+            ResetSavedIndex(ref slimeGodPurple, NPCType<EbonianPaladin>(), NPCType<SplitEbonianPaladin>());
             ResetSavedIndex(ref slimeGodRed, NPCType<CrimulanPaladin>(), NPCType<SplitCrimulanPaladin>());
             ResetSavedIndex(ref slimeGod, NPCType<SlimeGodCore>());
             ResetSavedIndex(ref laserEye, NPCID.Retinazer);
@@ -836,6 +825,8 @@ namespace CalamityMod.NPCs
             if (ashesOnDeath > 0)
                 ashesOnDeath--;
 
+            fortunesFavor = false;
+
             if (antlionCloudDebuffTimer > 0)
                 antlionCloudDebuffTimer--;
             if (cursorFocus > 0 && cursorFocus < cursorFocusMax)
@@ -847,7 +838,7 @@ namespace CalamityMod.NPCs
         #region Life Regen
         public override void UpdateLifeRegen(NPC npc, ref int damage)
         {
-            if (npc.damage > 0 && !npc.boss && !npc.friendly && !npc.dontTakeDamage && BiomeTileCounterSystem.SulphurTiles > 30 &&
+            if (npc.defDamage > 0 && !npc.boss && !npc.friendly && !npc.dontTakeDamage && BiomeTileCounterSystem.SulphurTiles > 30 &&
                 !npc.buffImmune[BuffID.Poisoned] && !npc.buffImmune[BuffType<CrushDepth>()])
             {
                 if (npc.wet)
@@ -857,8 +848,7 @@ namespace CalamityMod.NPCs
                     npc.AddBuff(BuffType<Irradiated>(), 2);
             }
 
-            #region Stacking Debuff Effects
-            // Lionfish, Leviathan Teeth, and Jaws of Oblivion debuff stacking
+            // Lionfish and Jaws of Oblivion debuff stacking
             if (npc.venom)
             {
                 if (npc.lifeRegen > 0)
@@ -867,7 +857,7 @@ namespace CalamityMod.NPCs
                 int projectileCount = 0;
                 foreach (Projectile p in Main.ActiveProjectiles)
                 {
-                    if ((p.type == ProjectileType<LionfishProj>() || p.type == ProjectileType<LeviathanTooth>() || p.type == ProjectileType<JawsProjectile>()) &&
+                    if ((p.type == ProjectileType<LionfishProj>() || p.type == ProjectileType<JawsProjectile>()) &&
                         p.ai[0] == 1f && p.ai[1] == npc.whoAmI)
                     {
                         projectileCount++;
@@ -876,38 +866,12 @@ namespace CalamityMod.NPCs
 
                 if (projectileCount > 0)
                 {
-                    npc.lifeRegen -= projectileCount * 30;
+                    npc.lifeRegen -= projectileCount * (int)(DebuffData.AcidVenom.EnemyLostRegen / 2);
 
                     if (damage < projectileCount * 6)
                         damage = projectileCount * 6;
                 }
             }
-
-            // Bonebreaker debuff stacking
-            if (npc.javelined)
-            {
-                if (npc.lifeRegen > 0)
-                    npc.lifeRegen = 0;
-
-                int projectileCount = 0;
-                foreach (Projectile p in Main.ActiveProjectiles)
-                {
-                    if (p.type == ProjectileType<BonebreakerProjectile>() &&
-                        p.ai[0] == 1f && p.ai[1] == npc.whoAmI)
-                    {
-                        projectileCount++;
-                    }
-                }
-
-                if (projectileCount > 0)
-                {
-                    npc.lifeRegen -= projectileCount * 20;
-
-                    if (damage < projectileCount * 4)
-                        damage = projectileCount * 4;
-                }
-            }
-            #endregion
 
             // Debuff vulnerabilities and resistances.
             // Damage multiplier calcs.
@@ -916,7 +880,6 @@ namespace CalamityMod.NPCs
             bool wormBoss = CalamityNPCTypeSets.DesertScourge.Contains(npc.type) || CalamityNPCTypeSets.EaterOfWorlds.Contains(npc.type) || CalamityNPCTypeSets.Perforators.Contains(npc.type) ||
                 CalamityNPCTypeSets.AquaticScourge.Contains(npc.type) || CalamityNPCTypeSets.AstrumDeus.Contains(npc.type) || CalamityNPCTypeSets.StormWeaver.Contains(npc.type);
             bool slimeGod = CalamityNPCTypeSets.SlimeGod.Contains(npc.type);
-
 
             ActiveHeatDebuffMultiplier = HeatDebuffMultiplier;
             ActiveColdDebuffMultiplier = ColdDebuffMultiplier;
@@ -988,9 +951,13 @@ namespace CalamityMod.NPCs
             }
             #endregion
 
+            if (fortunesFavor)
+            {
+                npc.lifeRegen += 4; // 2 HP/s at base           
+            }
 
             //Apply DoT Debuffs
-            for (var index = 0; index < npc.buffType.Count(); index++)
+            for (var index = 0; index < npc.buffType.Length; index++)
             {
                 var type = npc.buffType[index];
                 var debuffData = BuffDatasets.DebuffDataset[type];
@@ -1020,19 +987,18 @@ namespace CalamityMod.NPCs
                 if (npc.lifeRegen > -1)
                     npc.lifeRegen = -1;
 
-                // Every other EoW body segment and the head segments are immune to DoT.
+                // Every other EoW body segment and the head segments are immune to DoT in Death Mode.
                 if (((npc.ai[2] % 2f == 0f && npc.type == NPCID.EaterofWorldsBody) || npc.type == NPCID.EaterofWorldsHead) && (CalamityWorld.death || BossRushEvent.BossRushActive))
                     npc.lifeRegen = 0;
             }
 
             // Mana Burn
-            //This is at the end to leave it full effect on worms, and to force the DOT numbers to match mana burn
+            // This is at the end to leave it full effect on worms, and to force the DOT numbers to match mana burn
             if (manaBurn > 0)
             {
                 if (manaBurnPeak >= 0.1f)
-                {
                     manaBurnPeak *= 0.999f;
-                }
+
                 manaBurnPeak = Math.Max(manaBurnPeak, manaBurn);
                 int burnPerSecond = (int)MathF.Ceiling(manaBurn * 0.5f);
                 manaBurn -= burnPerSecond / 60f;
@@ -1047,6 +1013,30 @@ namespace CalamityMod.NPCs
             {
                 manaBurnPeak = 0;
                 playerManaBurnIntensity = 0;
+            }
+
+            // This is at the end to make sure the dmg check for particle creations runs properly
+            if (glaiveShredTimer > 0 || blazingStarShredTimer > 0)
+            {
+                int dmg = 0;
+                if (glaiveShredTimer > 0)
+                {
+                    dmg += 120; // 60 DPS
+                    glaiveShredTimer--;
+                }
+                if (blazingStarShredTimer > 0)
+                {
+                    dmg += 480; // 240 DPS
+                    blazingStarShredTimer--;
+                }
+                npc.lifeRegenCount -= dmg;
+                if (damage < dmg / 12) // 1/6th of the DPS dealt by Glaive Shred shows up as the indicator, unless another debuff does more per tick
+                    damage = dmg / 12;
+
+                if (-120 * damage >= npc.lifeRegenCount)
+                {
+                    GeneralParticleHandler.SpawnParticle(new CustomSpark(npc.Center, new Vector2(1, 0).RotatedByRandom(7), "CalamityMod/Particles/TrientCircularSmear", false, 15, 0.4f + 0.1f * npc.width / 16f, Color.White, new Vector2(0.5f, 1f)));
+                }
             }
         }
 
@@ -1069,7 +1059,6 @@ namespace CalamityMod.NPCs
             DRValues = new SortedDictionary<int, float> {
                 { NPCID.CultistBoss, 0.15f },
                 { NPCID.DukeFishron, 0.15f },
-                { NPCID.DungeonGuardian, 0.9f },
                 { NPCID.Golem, 0.15f },
                 { NPCID.GolemFistLeft, 0.15f },
                 { NPCID.GolemFistRight, 0.15f },
@@ -1233,9 +1222,7 @@ namespace CalamityMod.NPCs
 
             // Aquatic Scourge sets kill time in AI, not here.
             if (BossKillTimes.TryGetValue(npc.type, out int revKillTime) && !CalamityNPCTypeSets.AquaticScourge.Contains(npc.type))
-            {
                 KillTime = revKillTime;
-            }
 
             // Fixing more red mistakes
             if (npc.type == NPCID.WallofFleshEye)
@@ -1246,8 +1233,6 @@ namespace CalamityMod.NPCs
                 npc.noGravity = true;
 
             DeclareBossHealthUIVariables(npc);
-
-            BaseVanillaBossHPAdjustments(npc);
 
             if (BossRushEvent.BossRushActive)
                 BossRushStatChanges(npc, Mod);
@@ -1272,10 +1257,7 @@ namespace CalamityMod.NPCs
             npc.SetDebuffImmunities();
 
             VulnerabilitiesAndResistances(npc);
-
             BoundNPCSafety(Mod, npc);
-
-
         }
 
         public override bool? CanFallThroughPlatforms(NPC npc)
@@ -1295,99 +1277,6 @@ namespace CalamityMod.NPCs
         }
         #endregion
 
-        #region Base Vanilla Boss HP Adjustments
-        private void BaseVanillaBossHPAdjustments(NPC npc)
-        {
-            switch (npc.type)
-            {
-                case NPCID.MoonLordCore:
-                    npc.lifeMax = 92000;
-                    break;
-
-                case NPCID.CultistBoss:
-                    npc.lifeMax = 80000;
-                    break;
-
-                case NPCID.CultistDragonBody1:
-                case NPCID.CultistDragonBody2:
-                case NPCID.CultistDragonBody3:
-                case NPCID.CultistDragonBody4:
-                case NPCID.CultistDragonHead:
-                case NPCID.CultistDragonTail:
-                    npc.lifeMax = 20000;
-                    break;
-
-                case NPCID.AncientCultistSquidhead:
-                    npc.lifeMax = 3200;
-                    break;
-
-                case NPCID.DukeFishron:
-                    npc.lifeMax = 100000;
-                    break;
-
-                case NPCID.Golem:
-                    npc.lifeMax = 40000;
-                    break;
-
-                case NPCID.GolemHead:
-                    npc.lifeMax = 26500;
-                    break;
-
-                case NPCID.GolemFistRight:
-                case NPCID.GolemFistLeft:
-                    npc.lifeMax = 7500;
-                    break;
-
-                case NPCID.HallowBoss:
-                    npc.lifeMax = 100000;
-                    break;
-
-                case NPCID.Plantera:
-                    npc.lifeMax = 72000;
-                    break;
-
-                case NPCID.PlanterasTentacle:
-                    npc.lifeMax = 500;
-                    break;
-
-                case NPCID.Retinazer:
-                    npc.lifeMax = 23500;
-                    break;
-
-                case NPCID.Spazmatism:
-                    npc.lifeMax = 24500;
-                    break;
-
-                case NPCID.QueenSlimeBoss:
-                    npc.lifeMax = 27000;
-                    break;
-
-                case NPCID.WallofFlesh:
-                case NPCID.WallofFleshEye:
-                    npc.lifeMax = 12800;
-                    break;
-
-                case NPCID.Deerclops:
-                    npc.lifeMax = 10000;
-                    break;
-
-                case NPCID.BrainofCthulhu:
-                    npc.lifeMax = 1500;
-                    break;
-
-                case NPCID.EaterofWorldsBody:
-                case NPCID.EaterofWorldsHead:
-                case NPCID.EaterofWorldsTail:
-                    npc.lifeMax = 175;
-                    break;
-
-                case NPCID.EyeofCthulhu:
-                    npc.lifeMax = 3000;
-                    break;
-            }
-        }
-        #endregion
-
         #region Boss Rush Stat Changes
         private void BossRushStatChanges(NPC npc, Mod mod)
         {
@@ -1401,168 +1290,141 @@ namespace CalamityMod.NPCs
         #region Revengeance and Death Mode Stat Changes
         private void RevDeathStatChanges(NPC npc, Mod mod)
         {
-            if (npc.type == NPCID.Mothron)
+            switch (npc.type)
             {
-                npc.scale *= 1.25f;
+                case NPCID.KingSlime:
+                    npc.scale = CalamityWorld.death ? (Main.getGoodWorld ? 6f : 2.5f) : (Main.getGoodWorld ? 3f : 1.5f);
+                    npc.lifeMax = (int)Math.Round(npc.lifeMax * 1.5);
+                    break;
+                case NPCID.EyeofCthulhu:
+                    npc.lifeMax = (int)Math.Round(npc.lifeMax * 1.5);
+                    break;
+                case NPCID.ServantofCthulhu:
+                    npc.lifeMax *= 4;
+                    break;
+                case NPCID.BrainofCthulhu:
+                    npc.lifeMax *= 2;
+                    break;
+                case NPCID.Creeper:
+                    npc.lifeMax = (int)Math.Round(npc.lifeMax * 1.4);
+                    break;
+                case NPCID.QueenBee:
+                    npc.lifeMax = (int)Math.Round(npc.lifeMax * 1.8);
+                    npc.defense = 14;
+                    npc.defDefense = npc.defense;
+                    break;
+                case NPCID.Bee:
+                case NPCID.BeeSmall:
+                    if (CalamityPlayer.areThereAnyDamnBosses)
+                    {
+                        npc.lifeMax = (int)Math.Round(npc.lifeMax * 1.5);
+                        npc.scale *= 1.25f;
+                    }
+                    break;
+                case NPCID.Deerclops:
+                    npc.lifeMax = (int)Math.Round(npc.lifeMax * 1.4);
+                    break;
+                case NPCID.SkeletronHand:
+                    npc.lifeMax = (int)Math.Round(npc.lifeMax * (CalamityWorld.death ? 0.5 : 0.75));
+                    break;
+                case NPCID.WallofFlesh:
+                case NPCID.WallofFleshEye:
+                    npc.lifeMax *= 2;
+                    break;
+                case NPCID.QueenSlimeBoss:
+                    npc.lifeMax = (int)Math.Round(npc.lifeMax * 1.8);
+                    break;
+                case NPCID.Retinazer:
+                    npc.lifeMax = (int)Math.Round(npc.lifeMax * 1.4);
+                    break;
+                case NPCID.Spazmatism:
+                    npc.lifeMax = (int)Math.Round(npc.lifeMax * 1.3);
+                    break;
+                case NPCID.Probe:
+                    if (CalamityWorld.death)
+                        npc.lifeMax *= 2;
+                    npc.scale *= Main.zenithWorld ? 2f : 1.2f;
+                    break;
+                case NPCID.SkeletronPrime:
+                    npc.lifeMax = (int)Math.Round(npc.lifeMax * 1.2);
+                    break;
+                case NPCID.PrimeCannon:
+                case NPCID.PrimeSaw:
+                case NPCID.PrimeVice:
+                case NPCID.PrimeLaser:
+                    npc.lifeMax = (int)Math.Round(npc.lifeMax * 0.65);
+                    npc.scale *= 1.15f;
+                    break;
+                case NPCID.Plantera:
+                    npc.lifeMax = (int)Math.Round(npc.lifeMax * 2.85);
+                    break;
+                case NPCID.PlanterasTentacle:
+                    npc.lifeMax = (int)Math.Round(npc.lifeMax * 0.5);
+                    break;
+                case NPCID.Golem:
+                    npc.lifeMax = (int)Math.Round(npc.lifeMax * 3.2);
+                    break;
+                case NPCID.GolemHead:
+                    npc.lifeMax = (int)Math.Round(npc.lifeMax * 1.28);
+                    break;
+                case NPCID.GolemFistLeft:
+                case NPCID.GolemFistRight:
+                    npc.lifeMax = (int)Math.Round(npc.lifeMax * 0.75);
+                    npc.scale *= 1.15f;
+                    break;
+                case NPCID.DukeFishron:
+                    npc.lifeMax = (int)Math.Round(npc.lifeMax * 2.3);
+                    break;
+                case NPCID.Sharkron:
+                case NPCID.Sharkron2:
+                    npc.lifeMax *= 5;
+                    break;
+                case NPCID.HallowBoss:
+                    npc.lifeMax = (int)Math.Round(npc.lifeMax * 1.7);
+                    break;
+                case NPCID.CultistBoss:
+                    npc.lifeMax *= 3;
+                    break;
+                case NPCID.AncientCultistSquidhead:
+                    npc.lifeMax = (int)Math.Round(npc.lifeMax * 1.8);
+                    break;
+                case NPCID.MoonLordCore:
+                    npc.lifeMax = (int)Math.Round(npc.lifeMax * 2.2);
+                    break;
+                case NPCID.MoonLordHand:
+                case NPCID.MoonLordHead:
+                case NPCID.MoonLordLeechBlob:
+                    npc.lifeMax = (int)Math.Round(npc.lifeMax * 1.2);
+                    break;
+                case NPCID.Mothron:
+                    npc.scale *= 1.25f;
+                    break;
+                case NPCID.Ghost:
+                case NPCID.IceMimic:
+                case NPCID.Mimic:
+                case NPCID.PresentMimic:
+                case NPCID.Reaper:
+                case NPCID.SandElemental:
+                case NPCID.Wraith:
+                    if (Main.getGoodWorld)
+                        npc.knockBackResist = 0f;
+                    break;
             }
-            else if (npc.type == NPCID.MoonLordCore || npc.type == NPCID.MoonLordHand || npc.type == NPCID.MoonLordHead || npc.type == NPCID.MoonLordLeechBlob)
-            {
-                npc.lifeMax = (int)Math.Round(npc.lifeMax * 1.2);
 
-                if (npc.type == NPCID.MoonLordCore)
-                    npc.npcSlots = 36f;
-            }
-            else if (npc.type == NPCID.CultistBoss || (npc.type >= NPCID.CultistDragonHead && npc.type <= NPCID.CultistDragonTail) || npc.type == NPCID.AncientCultistSquidhead)
+            if (npc.type >= NPCID.CultistDragonHead && npc.type <= NPCID.CultistDragonTail)
             {
-                npc.lifeMax = (int)Math.Round(npc.lifeMax * 1.2);
-
-                if (npc.type == NPCID.CultistBoss)
-                    npc.npcSlots = 20f;
-            }
-            else if (npc.type == NPCID.DukeFishron)
-            {
-                npc.lifeMax = (int)Math.Round(npc.lifeMax * 1.4);
-                npc.npcSlots = 20f;
-            }
-            else if (npc.type == NPCID.Sharkron || npc.type == NPCID.Sharkron2)
-            {
-                npc.lifeMax = (int)Math.Round(npc.lifeMax * 5D);
-            }
-            else if (npc.type == NPCID.Golem)
-            {
-                npc.lifeMax = (int)Math.Round(npc.lifeMax * 1.2);
-                npc.npcSlots = 64f;
-            }
-            else if (npc.type == NPCID.GolemHead)
-            {
-                npc.lifeMax = (int)Math.Round(npc.lifeMax * 1.2);
-            }
-            else if (npc.type == NPCID.GolemFistLeft || npc.type == NPCID.GolemFistRight)
-            {
-                npc.scale *= 1.15f;
-            }
-            else if (npc.type == NPCID.HallowBoss)
-            {
-                npc.lifeMax = (int)Math.Round(npc.lifeMax * 1.2);
-                npc.npcSlots = 32f;
-            }
-            else if (npc.type == NPCID.Plantera)
-            {
-                npc.lifeMax = (int)Math.Round(npc.lifeMax * 1.2);
-                npc.npcSlots = 32f;
+                npc.lifeMax = (int)Math.Round(npc.lifeMax * 2.4);
             }
             else if (CalamityNPCTypeSets.Destroyer.Contains(npc.type))
             {
                 npc.lifeMax = (int)Math.Round(npc.lifeMax * 1.25);
                 npc.scale *= Main.zenithWorld ? 2f : 1.2f;
-                npc.npcSlots = 10f;
-            }
-            else if (npc.type == NPCID.Probe)
-            {
-                if (CalamityWorld.death)
-                    npc.lifeMax = (int)Math.Round(npc.lifeMax * 2D);
-
-                npc.scale *= Main.zenithWorld ? 2f : 1.2f;
-            }
-            else if (npc.type == NPCID.SkeletronPrime)
-            {
-                npc.lifeMax = (int)Math.Round(npc.lifeMax * 1.2);
-                npc.npcSlots = 12f;
-            }
-            else if (npc.type <= NPCID.PrimeLaser && npc.type >= NPCID.PrimeCannon)
-            {
-                npc.lifeMax = (int)Math.Round(npc.lifeMax * 0.65);
-                npc.scale = 1.15f;
-            }
-            else if (npc.type == NPCID.Retinazer || npc.type == NPCID.Spazmatism)
-            {
-                npc.lifeMax = (int)Math.Round(npc.lifeMax * 1.2);
-                npc.npcSlots = 10f;
-            }
-            else if (npc.type == NPCID.QueenSlimeBoss)
-            {
-                npc.lifeMax = (int)Math.Round(npc.lifeMax * 1.2);
-                npc.npcSlots = 32f;
-            }
-            else if (npc.type == NPCID.WallofFlesh || npc.type == NPCID.WallofFleshEye)
-            {
-                npc.lifeMax = (int)Math.Round(npc.lifeMax * 1.3);
-
-                if (npc.type == NPCID.WallofFlesh)
-                    npc.npcSlots = 20f;
-            }
-            else if (npc.type == NPCID.Deerclops)
-            {
-                npc.npcSlots = 16f;
-            }
-            else if (npc.type == NPCID.SkeletronHead)
-            {
-                /*if (CalamityWorld.death)
-                    npc.lifeMax = (int)(npc.lifeMax * 0.65);
-                else
-                    npc.lifeMax = (int)(npc.lifeMax * 0.9);*/
-
-                npc.npcSlots = 12f;
-            }
-            else if (npc.type == NPCID.SkeletronHand)
-            {
-                if (CalamityWorld.death)
-                    npc.lifeMax = (int)Math.Round(npc.lifeMax * 0.5);
-                else
-                    npc.lifeMax = (int)Math.Round(npc.lifeMax * 0.75);
-            }
-            else if (npc.type == NPCID.QueenBee)
-            {
-                npc.defense = 14;
-                npc.defDefense = npc.defense;
-                npc.lifeMax = (int)Math.Round(npc.lifeMax * 1.8);
-                npc.npcSlots = 14f;
-            }
-            else if ((npc.type == NPCID.Bee || npc.type == NPCID.BeeSmall) && CalamityPlayer.areThereAnyDamnBosses)
-            {
-                npc.lifeMax = (int)Math.Round(npc.lifeMax * 1.5);
-                npc.scale *= 1.25f;
-            }
-            else if (npc.type == NPCID.BrainofCthulhu)
-            {
-                npc.lifeMax = (int)Math.Round(npc.lifeMax * 1.65);
-                npc.npcSlots = 12f;
-            }
-            else if (npc.type == NPCID.Creeper)
-            {
-                npc.lifeMax = (int)Math.Round(npc.lifeMax * 1.4);
             }
             else if (CalamityNPCTypeSets.EaterOfWorlds.Contains(npc.type))
             {
-                npc.lifeMax = (int)Math.Round(npc.lifeMax * 1.2);
-
-                if (npc.type == NPCID.EaterofWorldsHead)
-                    npc.npcSlots = 10f;
-
+                npc.lifeMax = (int)Math.Round(npc.lifeMax * 1.4);
                 if (CalamityWorld.death)
                     npc.scale *= 1.1f;
-            }
-            else if (npc.type == NPCID.EyeofCthulhu)
-            {
-                npc.lifeMax = (int)Math.Round(npc.lifeMax * 1.4);
-                npc.npcSlots = 10f;
-            }
-            else if (npc.type == NPCID.ServantofCthulhu)
-            {
-                npc.lifeMax = (int)Math.Round(npc.lifeMax * 4D);
-            }
-            else if (npc.type == NPCID.KingSlime)
-            {
-                if (CalamityWorld.death)
-                    npc.scale = Main.getGoodWorld ? 6f : 2.5f;
-                else
-                    npc.scale = Main.getGoodWorld ? 3f : 1.5f;
-
-                npc.lifeMax = (int)Math.Round(npc.lifeMax * 1.5);
-            }
-            else if ((npc.type == NPCID.Wraith || npc.type == NPCID.Mimic || npc.type == NPCID.Reaper || npc.type == NPCID.PresentMimic || npc.type == NPCID.SandElemental || npc.type == NPCID.Ghost) && Main.getGoodWorld)
-            {
-                npc.knockBackResist = 0f;
             }
         }
         #endregion
@@ -1574,7 +1436,8 @@ namespace CalamityMod.NPCs
             // Regroup these if necessary, reminder to keep it comprehensive
             switch (npc.type)
             {
-                // Regular organic desert enemies.
+                // Organic desert enemies: +Cold, +Sickness, +Water
+                #region Organic Desert
                 case NPCID.Antlion:
                 case NPCID.GiantWalkingAntlion:
                 case NPCID.FlyingAntlion:
@@ -1607,8 +1470,9 @@ namespace CalamityMod.NPCs
                     VulnerableToSickness = true;
                     VulnerableToWater = true;
                     break;
+                #endregion
 
-                // Scorpions and sand elemental.
+                // Sand Poacher and Sand Elemental: +Cold, +Water, -Sickness
                 case NPCID.DesertScorpionWalk:
                 case NPCID.DesertScorpionWall:
                 case NPCID.SandElemental:
@@ -1617,7 +1481,7 @@ namespace CalamityMod.NPCs
                     VulnerableToWater = true;
                     break;
 
-                // Desert slimes.
+                // Sand Slime: +Cold, +Water, +Heat, -Sickness
                 case NPCID.SandSlime:
                     VulnerableToCold = true;
                     VulnerableToSickness = false;
@@ -1625,7 +1489,7 @@ namespace CalamityMod.NPCs
                     VulnerableToHeat = true;
                     break;
 
-                // Organic undead or other enemies that are covered in slime.
+                // Organic undead enemies covered in slime: +Cold, +Heat
                 case NPCID.ArmedZombieSlimed:
                 case NPCID.BigSlimedZombie:
                 case NPCID.SlimedZombie:
@@ -1634,7 +1498,7 @@ namespace CalamityMod.NPCs
                     VulnerableToHeat = true;
                     break;
 
-                // Slimes that use heat-related attacks.
+                // Lava Slime: +Cold, +Water, -Sickness, -Heat
                 case NPCID.LavaSlime:
                     VulnerableToCold = true;
                     VulnerableToSickness = false;
@@ -1642,7 +1506,8 @@ namespace CalamityMod.NPCs
                     VulnerableToWater = true;
                     break;
 
-                // Regular slimes.
+                // Regular slimes: +Heat, -Sickness
+                #region Slimes
                 case NPCID.QueenSlimeBoss:
                 case NPCID.QueenSlimeMinionBlue:
                 case NPCID.QueenSlimeMinionPink:
@@ -1683,8 +1548,9 @@ namespace CalamityMod.NPCs
                     VulnerableToSickness = false;
                     VulnerableToHeat = true;
                     break;
+                #endregion
 
-                // Skeletons and other armored/bone enemies that use heat-related attacks.
+                // Skeleton enemies that are heat-related: +Cold, +Water, -Heat, -Sickness
                 case NPCID.HellArmoredBones:
                 case NPCID.HellArmoredBonesMace:
                 case NPCID.HellArmoredBonesSpikeShield:
@@ -1697,14 +1563,15 @@ namespace CalamityMod.NPCs
                     VulnerableToWater = true;
                     break;
 
-                // Spore skeleton.
+                // Spore Skeleton: +Heat, +Water, -Sickness
                 case NPCID.SporeSkeleton:
                     VulnerableToHeat = true;
                     VulnerableToSickness = false;
                     VulnerableToWater = true;
                     break;
 
-                // Skeletons and other armored/bone enemies that are dead or undead.
+                // Skeleton and rock enemies: +Water, -Sickness
+                #region Skeletons And Rock Enemies
                 case NPCID.SkeletronHand:
                 case NPCID.SkeletronHead:
                 case NPCID.AngryBones:
@@ -1777,8 +1644,9 @@ namespace CalamityMod.NPCs
                     VulnerableToSickness = false;
                     VulnerableToWater = true;
                     break;
+                #endregion
 
-                // Metal non-robotic enemies
+                // Metal non-robotic enemies: -Sickness
                 case NPCID.BigMimicCorruption:
                 case NPCID.BigMimicCrimson:
                 case NPCID.BigMimicHallow:
@@ -1791,7 +1659,8 @@ namespace CalamityMod.NPCs
                     VulnerableToSickness = false;
                     break;
 
-                // Robotic enemies.
+                // Robotic enemies: +Electricity, -Sickness
+                #region Robots
                 case NPCID.Probe:
                 case NPCID.MartianProbe:
                 case NPCID.DeadlySphere:
@@ -1816,8 +1685,10 @@ namespace CalamityMod.NPCs
                     VulnerableToElectricity = true;
                     VulnerableToSickness = false;
                     break;
+                #endregion
 
-                // Ghostly or ethereal enemies.
+                // Ghostly or ethereal enemies: -Sickness
+                #region Ghosts
                 case NPCID.DungeonSpirit:
                 case NPCID.AncientCultistSquidhead:
                 case NPCID.CultistDragonBody1:
@@ -1840,8 +1711,10 @@ namespace CalamityMod.NPCs
                 case NPCID.PirateGhost:
                     VulnerableToSickness = false;
                     break;
+                #endregion
 
-                // Organic enemies.
+                // Organic enemies: +Cold, +Heat, +Sickness
+                #region Organic Enemies
                 case NPCID.HallowBoss:
                 case NPCID.Dandelion:
                 case NPCID.Gnome:
@@ -2099,8 +1972,10 @@ namespace CalamityMod.NPCs
                     VulnerableToHeat = true;
                     VulnerableToSickness = true;
                     break;
+                #endregion
 
-                // Demons and shit.
+                // Demons: +Cold, +Sickness, -Heat
+                #region Demons
                 case NPCID.WallofFlesh:
                 case NPCID.WallofFleshEye:
                 case NPCID.TheHungry:
@@ -2116,8 +1991,9 @@ namespace CalamityMod.NPCs
                     VulnerableToHeat = false;
                     VulnerableToSickness = true;
                     break;
+                #endregion
 
-                // Fire enemies that are also organic.
+                // Fiery organic enemies: +Cold, +Sickness, +Water, -Heat
                 case NPCID.FireImp:
                 case NPCID.Hellbat:
                 case NPCID.Lavabat:
@@ -2127,7 +2003,7 @@ namespace CalamityMod.NPCs
                     VulnerableToWater = true;
                     break;
 
-                // Fire enemies that aren't organic.
+                // Meteor Head: +Cold, +Water, -Heat, -Sickness
                 case NPCID.MeteorHead:
                     VulnerableToCold = true;
                     VulnerableToHeat = false;
@@ -2135,7 +2011,7 @@ namespace CalamityMod.NPCs
                     VulnerableToWater = true;
                     break;
 
-                // Lightning bug thing.
+                // Lightning Bug: +Cold, +Heat, +Sickness, -Electricity
                 case NPCID.DD2LightningBugT3:
                     VulnerableToElectricity = false;
                     VulnerableToCold = true;
@@ -2143,14 +2019,14 @@ namespace CalamityMod.NPCs
                     VulnerableToSickness = true;
                     break;
 
-                // Betsy.
+                // Betsy: +Cold, +Sickness, -Heat
                 case NPCID.DD2Betsy:
                     VulnerableToCold = true;
                     VulnerableToHeat = false;
                     VulnerableToSickness = true;
                     break;
 
-                // Nimbus
+                // Angry Nimbus: +Cold, -Heat, -Sickness, -Electricity, -Water
                 case NPCID.AngryNimbus:
                     VulnerableToCold = true;
                     VulnerableToElectricity = false;
@@ -2159,7 +2035,8 @@ namespace CalamityMod.NPCs
                     VulnerableToSickness = false;
                     break;
 
-                // Cold-themed enemies
+                // Cold organic enemies: +Heat, +Sickness, -Cold
+                #region Cold Organic
                 case NPCID.ArmedZombieEskimo:
                 case NPCID.ZombieEskimo:
                 case NPCID.IceBat:
@@ -2185,8 +2062,10 @@ namespace CalamityMod.NPCs
                     VulnerableToCold = false;
                     VulnerableToSickness = true;
                     break;
+                #endregion
 
-                // Cold-themed enemies that aren't organic.
+                // Cold non-organic enemies: +Heat, -Cold, -Sickness
+                #region Cold Non-Organic
                 case NPCID.IceElemental:
                 case NPCID.IceSlime:
                 case NPCID.SpikedIceSlime:
@@ -2202,8 +2081,10 @@ namespace CalamityMod.NPCs
                     VulnerableToHeat = true;
                     VulnerableToSickness = false;
                     break;
+                #endregion
 
-                // Water-themed enemies.
+                // Fish and aquatic enemies: +Sickness, +Electricity, -Water, -Heat
+                #region Aquatic Enemies
                 case NPCID.Crawdad:
                 case NPCID.Crawdad2:
                 case NPCID.BlueJellyfish:
@@ -2231,8 +2112,10 @@ namespace CalamityMod.NPCs
                     VulnerableToElectricity = true;
                     VulnerableToWater = false;
                     break;
+                #endregion
 
-                // Fucking bees, hornets and poisonous/toxic stuff.
+                // Bees, Hornets, and poisonous enemies: +Cold, +Heat, -Sickness
+                #region Bees and Poisonous
                 case NPCID.Bee:
                 case NPCID.BeeSmall:
                 case NPCID.QueenBee:
@@ -2267,8 +2150,10 @@ namespace CalamityMod.NPCs
                     VulnerableToHeat = true;
                     VulnerableToSickness = false;
                     break;
+                #endregion
 
                 // Town NPCs. Mostly irrelevant, but it displays in the Bestiary
+                #region Town NPCs
                 case NPCID.Merchant:
                 case NPCID.Nurse:
                 case NPCID.ArmsDealer:
@@ -2336,8 +2221,10 @@ namespace CalamityMod.NPCs
                     VulnerableToSickness = false;
                     VulnerableToHeat = true;
                     break;
+                #endregion
 
                 // Critters
+                #region Critters
                 case NPCID.Bunny:
                 case NPCID.Bird:
                 case NPCID.BirdBlue:
@@ -2465,6 +2352,7 @@ namespace CalamityMod.NPCs
                     VulnerableToSickness = true;
                     VulnerableToWater = true;
                     break;
+                    #endregion
             }
         }
         #endregion
@@ -2493,6 +2381,7 @@ namespace CalamityMod.NPCs
                 case NPCID.Mothron:
                 case NPCID.EaterofWorldsHead:
                 case NPCID.SkeletronHead:
+                case NPCID.DungeonGuardian:
                 case NPCID.WallofFlesh:
                 case NPCID.Spazmatism:
                 case NPCID.Retinazer:
@@ -2526,16 +2415,12 @@ namespace CalamityMod.NPCs
                     npc.lifeMax = (int)Math.Round(npc.lifeMax * 0.5);
                     break;
 
-                case NPCID.PirateGhost:
-                    npc.lifeMax = (int)Math.Round(npc.lifeMax * 0.33);
-                    break;
-
                 case NPCID.BloodSquid:
                     npc.lifeMax = (int)Math.Round(npc.lifeMax * 0.25);
                     break;
 
                 case NPCID.LarvaeAntlion:
-                    npc.lifeMax = 15;
+                    npc.lifeMax = (int)Math.Round(npc.lifeMax * 0.5);
                     break;
 
                 // Reduce prehardmode desert enemy stats
@@ -2556,12 +2441,6 @@ namespace CalamityMod.NPCs
                     npc.defDamage = npc.damage;
                     npc.defense /= 2;
                     npc.defDefense = npc.defense;
-                    break;
-
-                // Reduce Dungeon Guardian HP
-                case NPCID.DungeonGuardian:
-                    npc.lifeMax = (int)Math.Round(npc.lifeMax * 0.1);
-                    canBreakPlayerDefense = true;
                     break;
 
                 // Reduce Tomb Crawler stats
@@ -2593,19 +2472,21 @@ namespace CalamityMod.NPCs
                     npc.height = 90;
                     break;
 
-                // Make Core hitbox bigger and reduce HP
+                // Make Core hitbox bigger
                 case NPCID.MartianSaucerCore:
-                    npc.lifeMax = (int)Math.Round(npc.lifeMax * 0.6);
                     npc.width *= 2;
                     npc.height *= 2;
                     break;
 
-                // Nerf Green Jellyfish because they spawn in prehardmode
+                // Nerf Green Jellyfish stats in pre-Hardmode
                 case NPCID.GreenJellyfish:
-                    npc.damage = 40;
-                    npc.defDamage = npc.damage;
-                    npc.defense = 4;
-                    npc.defDefense = npc.defense;
+                    if (!Main.hardMode)
+                    {
+                        npc.damage = 40;
+                        npc.defDamage = npc.damage;
+                        npc.defense = 4;
+                        npc.defDefense = npc.defense;
+                    }
                     break;
 
                 // Make Plantera's Spores immune to damage because otherwise they're pointless
@@ -2734,21 +2615,10 @@ namespace CalamityMod.NPCs
         #region Special Drawing
         public static void DrawGlowmask(NPC npc, SpriteBatch spriteBatch, Texture2D texture = null, bool invertedDirection = false, Vector2 offset = default)
         {
-            if (texture is null)
-                texture = TextureAssets.Npc[npc.type].Value;
-            SpriteEffects effects = npc.spriteDirection == 1 ? SpriteEffects.None : SpriteEffects.FlipHorizontally;
-            if (invertedDirection)
-                effects = npc.spriteDirection == -1 ? SpriteEffects.None : SpriteEffects.FlipHorizontally;
+            texture ??= TextureAssets.Npc[npc.type].Value;
+            SpriteEffects effects = npc.spriteDirection == 1 ? (invertedDirection ? SpriteEffects.FlipHorizontally : SpriteEffects.None) : (invertedDirection ? SpriteEffects.None : SpriteEffects.FlipHorizontally);
             Vector2 screenOffset = npc.IsABestiaryIconDummy ? Vector2.Zero : Main.screenPosition;
-            spriteBatch.Draw(texture,
-                             npc.Center - screenOffset + offset,
-                             npc.frame,
-                             npc.GetAlpha(Color.White),
-                             npc.rotation,
-                             npc.frame.Size() * 0.5f,
-                             npc.scale,
-                             effects,
-                             0f);
+            spriteBatch.Draw(texture, npc.Center - screenOffset + offset, npc.frame, npc.GetAlpha(Color.White), npc.rotation, npc.frame.Size() * 0.5f, npc.scale, effects, 0f);
         }
 
         public static void DrawAfterimage(NPC npc, SpriteBatch spriteBatch, Color startingColor, Color endingColor, Texture2D texture = null, Func<NPC, int, float> rotationCalculation = null, bool directioning = false, bool invertedDirection = false)
@@ -2757,19 +2627,15 @@ namespace CalamityMod.NPCs
                 return;
 
             SpriteEffects spriteEffects = SpriteEffects.None;
-
             if (npc.spriteDirection == -1 && directioning)
                 spriteEffects = SpriteEffects.FlipHorizontally;
-
             if (invertedDirection)
                 spriteEffects ^= SpriteEffects.FlipHorizontally; // Same as x XOR 1, or x XOR TRUE, which inverts the bit. In this case, this reverses the horizontal flip
 
-            // Set the rotation calculation to a predefined value. The null default is solely so that
-            if (rotationCalculation is null)
-                rotationCalculation = (nPC, afterimageIndex) => nPC.rotation;
+            // Set the rotation calculation to a predefined value.
+            rotationCalculation ??= (nPC, afterimageIndex) => nPC.rotation;
 
             endingColor.A = 0;
-
             Color drawColor = npc.GetAlpha(startingColor);
             Texture2D npcTexture = texture ?? TextureAssets.Npc[npc.type].Value;
             Vector2 screenOffset = npc.IsABestiaryIconDummy ? Vector2.Zero : Main.screenPosition;
@@ -2778,15 +2644,9 @@ namespace CalamityMod.NPCs
             {
                 Color colorToDraw = Color.Lerp(drawColor, endingColor, afterimageCounter / (float)NPCID.Sets.TrailCacheLength[npc.type]);
                 colorToDraw *= afterimageCounter / (float)NPCID.Sets.TrailCacheLength[npc.type];
-                spriteBatch.Draw(npcTexture,
-                                 npc.oldPos[afterimageCounter] + npc.Size / 2f - screenOffset + Vector2.UnitY * npc.gfxOffY,
-                                 npc.frame,
-                                 colorToDraw,
-                                 rotationCalculation.Invoke(npc, afterimageCounter),
-                                 npc.frame.Size() * 0.5f,
-                                 npc.scale,
-                                 spriteEffects,
-                                 0f);
+                Vector2 imagePosition = npc.oldPos[afterimageCounter] + npc.Size / 2f - screenOffset + Vector2.UnitY * npc.gfxOffY;
+
+                spriteBatch.Draw(npcTexture, imagePosition, npc.frame, colorToDraw, rotationCalculation.Invoke(npc, afterimageCounter), npc.frame.Size() * 0.5f, npc.scale, spriteEffects, 0f);
                 afterimageCounter++;
             }
         }
@@ -2940,8 +2800,7 @@ namespace CalamityMod.NPCs
             float finalMultiplier = 1f;
 
             // If the NPC currently has unbreakable DR, it cannot be reduced by any means.
-            // If custom DR is enabled, use that instead of normal DR.
-            float effectiveDR = unbreakableDR ? DR : (customDR ? CustomDRMath(npc, DR) : DefaultDRMath(npc, DR));
+            float effectiveDR = unbreakableDR ? DR : ApplyDRReduction(npc, DR);
 
             // DR floor is 0%. Nothing can have negative DR.
             if (effectiveDR <= 0f)
@@ -2949,8 +2808,7 @@ namespace CalamityMod.NPCs
 
             // Calculate extra DR based on kill time, similar to the Hush boss from The Binding of Isaac
             bool enragedProvi = npc.type == NPCType<Providence.Providence>() && !ProvUtils.StandardAI();
-            bool dayEmpress = npc.type == NPCID.HallowBoss && NPC.ShouldEmpressBeEnraged();
-            if (KillTime > 0 && AITimer < KillTime && !BossRushEvent.BossRushActive && (enragedProvi || dayEmpress))
+            if (KillTime > 0 && killTimeTimer < KillTime && !BossRushEvent.BossRushActive && enragedProvi)
             {
                 // Set the DR scaling factor
                 float DRScalar = 10f;
@@ -2962,7 +2820,7 @@ namespace CalamityMod.NPCs
                 float currentHPRatio = npc.life / (float)npc.lifeMax;
 
                 // Ranges from 0 to 1
-                float killTimeRatio = AITimer / (float)KillTime;
+                float killTimeRatio = killTimeTimer / (float)KillTime;
 
                 // If the player is damaging the boss too quickly
                 float extraDRScalar = currentHPRatio + killTimeRatio;
@@ -2983,7 +2841,7 @@ namespace CalamityMod.NPCs
         //This will need to be adjusted to use DebuffData in the future.
         //However, we still need to decide what to actually do with these due to the general flattening of DR amounts and removal from most enemies
         //This means that this will be handled in the future
-        private float DefaultDRMath(NPC npc, float DR)
+        private float ApplyDRReduction(NPC npc, float DR)
         {
             float calcDR = DR;
             if (markedForDeath)
@@ -2996,61 +2854,6 @@ namespace CalamityMod.NPCs
                 calcDR *= Crumbling.MultiplicativeDamageReductionEnemy;
             if (relicOfResilienceWeakness)
                 calcDR *= 0.5f;
-
-
-            return calcDR;
-        }
-
-        private float CustomDRMath(NPC npc, float DR)
-        {
-            void FlatEditDR(ref float theDR, bool npcHasDebuff, int buffID)
-            {
-                if (npcHasDebuff && flatDRReductions.TryGetValue(buffID, out float reduction))
-                    theDR -= reduction;
-            }
-            void MultEditDR(ref float theDR, bool npcHasDebuff, int buffID)
-            {
-                if (npcHasDebuff && multDRReductions.TryGetValue(buffID, out float multiplier))
-                    theDR *= multiplier;
-            }
-
-            float calcDR = DR;
-
-            // Apply flat reductions first. All vanilla debuffs check their internal booleans.
-            FlatEditDR(ref calcDR, npc.poisoned, BuffID.Poisoned);
-            FlatEditDR(ref calcDR, npc.onFire, BuffID.OnFire);
-            FlatEditDR(ref calcDR, npc.onFire3, BuffID.OnFire3);
-            FlatEditDR(ref calcDR, npc.venom, BuffID.Venom);
-            FlatEditDR(ref calcDR, npc.onFrostBurn, BuffID.Frostburn);
-            FlatEditDR(ref calcDR, npc.shadowFlame, BuffID.ShadowFlame);
-            FlatEditDR(ref calcDR, npc.daybreak, BuffID.Daybreak);
-            FlatEditDR(ref calcDR, npc.onFire2, BuffID.CursedInferno);
-
-            // Modded debuffs are handled modularly and use HasBuff.
-            foreach (KeyValuePair<int, float> entry in flatDRReductions)
-            {
-                int buffID = entry.Key;
-                if (buffID >= BuffID.Count && npc.HasBuff(buffID))
-                    calcDR -= entry.Value;
-            }
-
-            // Apply multiplicative reductions second. All vanilla debuffs check their internal booleans.
-            MultEditDR(ref calcDR, npc.poisoned, BuffID.Poisoned);
-            MultEditDR(ref calcDR, npc.onFire, BuffID.OnFire);
-            MultEditDR(ref calcDR, npc.onFire3, BuffID.OnFire3);
-            MultEditDR(ref calcDR, npc.venom, BuffID.Venom);
-            MultEditDR(ref calcDR, npc.onFrostBurn, BuffID.Frostburn);
-            MultEditDR(ref calcDR, npc.shadowFlame, BuffID.ShadowFlame);
-            MultEditDR(ref calcDR, npc.daybreak, BuffID.Daybreak);
-            MultEditDR(ref calcDR, npc.onFire2, BuffID.CursedInferno);
-
-            // Modded debuffs are handled modularly and use HasBuff.
-            foreach (KeyValuePair<int, float> entry in multDRReductions)
-            {
-                int buffID = entry.Key;
-                if (buffID >= BuffID.Count && npc.HasBuff(buffID))
-                    calcDR *= entry.Value;
-            }
 
             return calcDR;
         }
@@ -3076,8 +2879,7 @@ namespace CalamityMod.NPCs
                 }
             }
 
-            if (VulnerabilityHexFireDrawer != null)
-                VulnerabilityHexFireDrawer.Update();
+            VulnerabilityHexFireDrawer?.Update();
 
             if (ManaBurnFireDrawer != null)
             {
@@ -3109,21 +2911,13 @@ namespace CalamityMod.NPCs
 
                 if (npc.type != NPCType<Draedon>())
                 {
-                    if (AITimer < KillTime)
-                        AITimer++;
+                    if (killTimeTimer < KillTime)
+                        killTimeTimer++;
                 }
             }
 
             if (npc.type == NPCID.TargetDummy || npc.type == NPCType<SuperDummyNPC>())
-            {
-                npc.dontTakeDamage = CalamityPlayer.areThereAnyDamnBosses;
-
-                if (draedon != -1)
-                {
-                    if (Main.npc[draedon].active)
-                        npc.dontTakeDamage = true;
-                }
-            }
+                npc.dontTakeDamage = CalamityPlayer.areThereAnyDamnBosses || (draedon != -1 && Main.npc[draedon].active);
 
             // Setting this in SetDefaults will disable expert mode scaling, so put it here instead
             if (CalamityNPCSets.DealsZeroContactDamage[npc.type] && !(npc.type == NPCID.RuneWizard && Main.zenithWorld))
@@ -3133,7 +2927,7 @@ namespace CalamityMod.NPCs
             if (npc.type == NPCID.Sharkron || npc.type == NPCID.Sharkron2)
                 npc.damage = npc.alpha > 0 ? 0 : npc.defDamage;
 
-            if (BossRushEvent.BossRushActive && !npc.friendly && !npc.townNPC && !npc.Calamity().DoesNotDisappearInBossRush)
+            if (BossRushEvent.BossRushActive && !npc.friendly && !npc.townNPC && !DoesNotDisappearInBossRush)
                 BossRushForceDespawnOtherNPCs(npc, Mod);
 
             if (NPC.LunarApocalypseIsUp)
@@ -3143,41 +2937,37 @@ namespace CalamityMod.NPCs
             if (npc.type == NPCID.ServantofCthulhu)
                 Lighting.AddLight(npc.Center, 0.2f, 0.2f, 0.2f);
 
-            if (npc.type == NPCID.CultistBoss || npc.type == NPCID.CultistBossClone)
+            if (npc.type == NPCID.CultistBoss)
             {
-                if (npc.type == NPCID.CultistBossClone)
-                {
-                    if (Main.npc[(int)npc.ai[3]].active)
-                    {
-                        // Emit light
-                        float lifeRatio = Main.npc[(int)npc.ai[3]].life / (float)Main.npc[(int)npc.ai[3]].lifeMax;
-                        float colorTransitionAmt = (float)Math.Pow((double)(1f - lifeRatio), 2D);
-                        Color lightColor = Color.Lerp(Color.Cyan, Color.Blue, colorTransitionAmt);
-                        Lighting.AddLight(npc.Center, lightColor.R / 255f, lightColor.G / 255f, lightColor.B / 255f);
-                    }
-                }
-                else
+                // Emit light
+                float lifeRatio = npc.life / (float)npc.lifeMax;
+                float colorTransitionAmt = (float)Math.Pow((double)(1f - lifeRatio), 2D);
+                Color lightColor = Color.Lerp(Color.Cyan, Color.Blue, colorTransitionAmt);
+                Lighting.AddLight(npc.Center, lightColor.R / 255f, lightColor.G / 255f, lightColor.B / 255f);
+
+                // Decrement the hit counter for the shield flicker
+                if (newAI[1] > 0f)
+                    newAI[1] -= 1f;
+
+                // Cultist shield hitbox
+                Vector2 hitboxSize = new Vector2(216f / 1.4142f);
+                if (npc.Size != hitboxSize)
+                    npc.Size = hitboxSize;
+            }
+            if (npc.type == NPCID.CultistBossClone)
+            {
+                if (Main.npc[(int)npc.ai[3]].active)
                 {
                     // Emit light
-                    float lifeRatio = npc.life / (float)npc.lifeMax;
+                    float lifeRatio = Main.npc[(int)npc.ai[3]].life / (float)Main.npc[(int)npc.ai[3]].lifeMax;
                     float colorTransitionAmt = (float)Math.Pow((double)(1f - lifeRatio), 2D);
                     Color lightColor = Color.Lerp(Color.Cyan, Color.Blue, colorTransitionAmt);
                     Lighting.AddLight(npc.Center, lightColor.R / 255f, lightColor.G / 255f, lightColor.B / 255f);
-
-                    // Decrement the hit counter for the shield flicker
-                    if (newAI[1] > 0f)
-                        newAI[1] -= 1f;
-
-                    // Cultist shield hitbox
-                    Vector2 hitboxSize = new Vector2(216f / 1.4142f);
-                    if (npc.Size != hitboxSize)
-                        npc.Size = hitboxSize;
                 }
             }
 
             #region Fairies Edit
-
-            //Fairies don't run away and are immune to damage while wearing Fairy Boots.
+            // Fairies don't run away and are immune to damage while wearing Fairy Boots.
             if (npc.type >= NPCID.FairyCritterPink && npc.type <= NPCID.FairyCritterBlue && (npc.ai[2] < 2f || npc.ai[2] == 7f))
             {
                 npc.TargetClosest();
@@ -3219,29 +3009,27 @@ namespace CalamityMod.NPCs
                         npc.velocity = Vector2.Lerp(npc.velocity, targetPointDir, 0.07f);
                     }
 
-                    for (int k = 0; k < Main.maxNPCs; k++)
+                    foreach (NPC k in Main.ActiveNPCs)
                     {
-                        if (k != npc.whoAmI && Main.npc[k].active && Main.npc[k].aiStyle == NPCAIStyleID.Fairy && Math.Abs(npc.position.X - Main.npc[k].position.X) + Math.Abs(npc.position.Y - Main.npc[k].position.Y) < (float)npc.width * 1.5f)
+                        if (k != npc && k.aiStyle == NPCAIStyleID.Fairy && Math.Abs(npc.position.X - k.position.X) + Math.Abs(npc.position.Y - k.position.Y) < npc.width * 1.5f)
                         {
-                            if (npc.position.Y < Main.npc[k].position.Y)
+                            if (npc.position.Y < k.position.Y)
                                 npc.velocity.Y -= 0.05f;
                             else
                                 npc.velocity.Y += 0.05f;
                         }
                     }
 
-                    npc.direction = (npc.velocity.X >= 0f) ? 1 : (-1);
+                    npc.direction = npc.velocity.X >= 0f ? 1 : -1;
                     npc.spriteDirection = -npc.direction;
 
                     Color dustLerpColor1 = Color.HotPink;
                     Color dustLerpColor2 = Color.LightPink;
-                    int dustPosition = 4;
                     if (npc.type == NPCID.FairyCritterGreen)
                     {
                         dustLerpColor1 = Color.LimeGreen;
                         dustLerpColor2 = Color.LightSeaGreen;
                     }
-
                     if (npc.type == NPCID.FairyCritterBlue)
                     {
                         dustLerpColor1 = Color.RoyalBlue;
@@ -3251,7 +3039,7 @@ namespace CalamityMod.NPCs
                     if ((int)Main.timeForVisualEffects % 2 == 0)
                     {
                         npc.position += npc.netOffset;
-                        Dust dust = Dust.NewDustDirect(npc.Center - new Vector2(dustPosition) * 0.5f, dustPosition + 4, dustPosition + 4, DustID.FireworksRGB, 0f, 0f, 200, Color.Lerp(dustLerpColor1, dustLerpColor2, Main.rand.NextFloat()), 0.65f);
+                        Dust dust = Dust.NewDustDirect(npc.Center - new Vector2(2f), 8, 8, DustID.FireworksRGB, 0f, 0f, 200, Color.Lerp(dustLerpColor1, dustLerpColor2, Main.rand.NextFloat()), 0.65f);
                         dust.velocity *= 0f;
                         dust.velocity += npc.velocity * 0.3f;
                         dust.noGravity = true;
@@ -3270,7 +3058,6 @@ namespace CalamityMod.NPCs
                     return false;
                 }
             }
-
             #endregion
 
             return true;
@@ -3723,8 +3510,6 @@ namespace CalamityMod.NPCs
                     npc.ai[3] = 0f;
             }
 
-
-
             if (warbannerBurnTimer > 0)
                 warbannerBurnTimer--;
             if (warbannerBurnTimer == 0 && warbannerBurnMarked)
@@ -3799,9 +3584,6 @@ namespace CalamityMod.NPCs
 
             if (veriumDoomTimer > 0)
                 veriumDoomTimer--;
-            if (laserBurnTimer > 0)
-                laserBurnTimer--;
-
             if (veriumDoomTimer == 0 && veriumDoomMarked)
             {
                 for (int d = 0; d < 14 + veriumDoomStacks; d++)
@@ -3810,7 +3592,7 @@ namespace CalamityMod.NPCs
                     GeneralParticleHandler.SpawnParticle(sparks);
                 }
 
-                SoundEngine.PlaySound(new("CalamityMod/Sounds/NPCHit/CryogenHit", 3) { Volume = 0.6f }, npc.Center);
+                SoundEngine.PlaySound(new SoundStyle("CalamityMod/Sounds/NPCHit/CryogenHit", 3) { Volume = 0.6f }, npc.Center);
                 Projectile.NewProjectile(npc.GetSource_FromThis(), npc.Center, Vector2.Zero, ProjectileType<DirectStrike>(), 100 + (15 * veriumDoomStacks), 0, Main.myPlayer, npc.whoAmI);
 
                 veriumDoomMarked = false;
@@ -3821,7 +3603,6 @@ namespace CalamityMod.NPCs
             if (shocked > 0)
             {
                 var player = Main.LocalPlayer;
-
                 int frequency = 15;
 
                 // Spawn sparks from the enemy
@@ -3841,11 +3622,11 @@ namespace CalamityMod.NPCs
                 else if (hyperiusFxTimer > 20)
                     hyperiusFxTimer = (int)Utils.Lerp(hyperiusFxTimer, 20, 0.2f);
 
-                float threshold = ((float)(hyperiusDamage) / (float)(npc.lifeMax));
-                int overflowSpeed = (int)Utils.Remap(threshold, hyperiusLifePercentThreshold, 0.35f, 1, 34);
-                if (threshold > hyperiusLifePercentThreshold) // If the stored damage is greater than the life % cap of the target's max health, rapily deal a % of the stored damage to the enemy to drain it
+                float threshold = hyperiusDamage / (float)(npc.lifeMax);
+                int overflowSpeed = (int)Utils.Remap(threshold, HyperiusLifePercentThreshold, 0.35f, 1, 34);
+                if (threshold > HyperiusLifePercentThreshold) // If the stored damage is greater than the life % cap of the target's max health, rapily deal a % of the stored damage to the enemy to drain it
                 {
-                    bool enemyIsNotArmored = (npc.defense < 1000 && !unbreakableDR && DR <= 0.9f && !npc.dontTakeDamage && !npc.immortal);
+                    bool enemyIsNotArmored = npc.defense < 1000 && !unbreakableDR && DR <= 0.9f && !npc.dontTakeDamage && !npc.immortal;
                     if (enemyIsNotArmored)
                         hyperiusOverflowTimer -= overflowSpeed;
                     if (hyperiusOverflowTimer <= 0)
@@ -3853,7 +3634,7 @@ namespace CalamityMod.NPCs
                         hyperiusOverflowTimer = hyperiusOverflowTime;
 
                         float damagePercent = 0.07f; // The % of stacks drained when you're over the cap
-                        int damage = (int)Math.Max((int)((float)(hyperiusDamage) * damagePercent), 1);
+                        int damage = Math.Max((int)(hyperiusDamage * damagePercent), 1);
                         hyperiusDamage -= damage;
 
                         // Spawn "bleed" hit
@@ -3874,6 +3655,8 @@ namespace CalamityMod.NPCs
             else if (hyperiusFxTimer > 0)
                 hyperiusFxTimer--;
 
+            if (laserBurnTimer > 0)
+                laserBurnTimer--;
             if ((laserBurnTimer <= 0 || laserBurnDamage >= npc.life * 1.5f) && laserBurnMarked && laserBurnType > 0)
             {
                 if (laserBurnType == 1) // Applied damage
@@ -3883,19 +3666,16 @@ namespace CalamityMod.NPCs
 
                 for (int d = 0; d < (int)(7 + laserBurnStacks * 0.4f); d++)
                 {
-                    float partScale = Main.rand.NextFloat(0.7f, 1f);
-                    Vector2 partVel = (new Vector2(10, 10) * (laserBurnStacks * 0.025f)).RotatedByRandom(100) * Main.rand.NextFloat(0.2f, 1f);
-
+                    Vector2 partVel = (new Vector2(10) * (laserBurnStacks * 0.025f)).RotatedByRandom(MathHelper.Pi) * Main.rand.NextFloat(0.2f, 1f);
                     Particle spark2 = new CustomSpark(npc.Center, partVel, "CalamityMod/Particles/BloomLineSoftEdge", false, 12, Main.rand.NextFloat(0.02f, 0.03f), Effects.ArsenalEffects.ArsenalLaserColor * 0.8f, new Vector2(1, 1), true, false, 0, false, false, 1f);
                     GeneralParticleHandler.SpawnParticle(spark2);
-                    Dust dust = Dust.NewDustPerfect(npc.Center, Effects.ArsenalEffects.ArsenalLaserDust);
-                    dust.velocity = (Vector2.UnitX * 5 * (laserBurnStacks * 0.05f)).RotatedByRandom(100) * Main.rand.NextFloat(0.85f, 1f);
-                    dust.scale = Main.rand.NextFloat(0.65f, 0.8f);
+
+                    Vector2 dustVel = (Vector2.UnitX * 5f * (laserBurnStacks * 0.05f)).RotatedByRandom(MathHelper.Pi) * Main.rand.NextFloat(0.85f, 1f);
+                    Dust dust = Dust.NewDustPerfect(npc.Center, Effects.ArsenalEffects.ArsenalLaserDust, dustVel, 0, Color.Red, Main.rand.NextFloat(0.65f, 0.8f));
                     dust.noGravity = true;
-                    dust.color = Color.Red;
                 }
 
-                SoundEngine.PlaySound(new("CalamityMod/Sounds/Item/LaserBurn") { Volume = 0.6f, Pitch = Main.rand.NextFloat(-0.15f, 0.15f) }, npc.Center);
+                SoundEngine.PlaySound(new SoundStyle("CalamityMod/Sounds/Item/LaserBurn") { Volume = 0.6f, Pitch = Main.rand.NextFloat(-0.15f, 0.15f) }, npc.Center);
                 laserBurnMarked = false;
                 laserBurnStacks = 0;
                 laserBurnTimer = 0;
@@ -3918,7 +3698,7 @@ namespace CalamityMod.NPCs
 
                     // Prevent things from getting too crazy
                     // CIT 8MAR2025: It is assumed that pearlAuraOwner is always set to something other than -1 when this code is run.
-                    if (CalamityUtils.CountOwnedProjectiles(ProjectileType<PearlAuraShard>(), pearlAuraOwner) <= 3)
+                    if (Main.player[pearlAuraOwner].ownedProjectileCounts[ProjectileType<PearlAuraShard>()] <= 3)
                     {
                         for (int i = 0; i < 3; i++)
                         {
@@ -3946,10 +3726,6 @@ namespace CalamityMod.NPCs
                 }
             }
             impalePacketTimer++;
-
-            // Queen Bee is completely immune to having her movement impaired if not in a high difficulty mode.
-            if (npc.type == NPCID.QueenBee && !CalamityWorld.revenge && !BossRushEvent.BossRushActive)
-                return;
 
             // Apply slowing debuff effects
             if (debuffResistanceTimer <= 0 || (debuffResistanceTimer > slowingDebuffResistanceMin))
@@ -4022,40 +3798,28 @@ namespace CalamityMod.NPCs
                 npc.velocity *= velocitySlownessFactor;
             }
 
-            // Auric Ore/Repulsers reject Town NPCs and dummies (Auric Land Mines work on them too)
+            // Auric Ore/Repulsers reject Town NPCs and dummies
             if ((NPCID.Sets.ActsLikeTownNPC[npc.type] || npc.townNPC) && !npc.dontTakeDamage || npc.type == NPCType<SuperDummyNPC>())
             {
                 int auricOreID = TileType<AuricOre>();
                 int auricRepulserID = TileType<AuricRepulserPanelTile>();
-                int auricLandMineID = TileType<AuricLandMineTile>();
 
                 // Get a list of tiles near the npc
                 // This is just Collision.GetEntityTiles but with a larger detection square because the sheer speed from auric boosts causes the detection to fail at higher speeds
-                List<Point> EdgeTiles = new List<Point>();
+                List<Point> EdgeTiles = [];
                 int extraDist = (int)(8 * npc.velocity.Length() / 6) + 1;
                 int left = (int)npc.position.X - extraDist;
                 int up = (int)npc.position.Y - extraDist;
                 int right = (int)npc.Right.X + extraDist;
                 int down = (int)npc.Bottom.Y + extraDist;
                 if (left % 16 == 0)
-                {
                     left--;
-                }
-
                 if (up % 16 == 0)
-                {
                     up--;
-                }
-
                 if (right % 16 == 0)
-                {
                     right++;
-                }
-
                 if (down % 16 == 0)
-                {
                     down++;
-                }
 
                 int width = right / 16 - left / 16;
                 int height = down / 16 - up / 16;
@@ -4077,17 +3841,6 @@ namespace CalamityMod.NPCs
                     Tile tile = Framing.GetTileSafely(touchedTile);
                     if (!tile.HasTile || !tile.HasUnactuatedTile)
                         continue;
-
-                    if (tile.TileType == auricLandMineID)
-                    {
-                        SoundStyle explode = new("CalamityMod/Sounds/Item/DudFire");
-                        SoundEngine.PlaySound(explode with { Pitch = 0.8f }, touchedTile.ToWorldCoordinates());
-                        GenericSparkle sparker = new GenericSparkle(touchedTile.ToWorldCoordinates(), Vector2.Zero, Color.Goldenrod, Color.Gold, 2.5f, 9, Main.rand.NextFloat(-0.01f, 0.01f), 2.68f);
-                        GeneralParticleHandler.SpawnParticle(sparker);
-                        Projectile.NewProjectile(new EntitySource_TileInteraction(npc, touchedTile.X, touchedTile.Y), touchedTile.ToWorldCoordinates(), Vector2.Zero, ProjectileType<AuricLandMineExplosion>(), 40000, 0f);
-                        WorldGen.KillTile(touchedTile.X, touchedTile.Y, noItem: true);
-                        continue;
-                    }
 
                     if (tile.TileType != auricOreID && tile.TileType != auricRepulserID)
                         continue;
@@ -4125,11 +3878,9 @@ namespace CalamityMod.NPCs
                 npc.AddBuff(BuffID.Poisoned, 60);
 
             if (target.Calamity().ilSpark)
-            {
                 shocked = 120;
-            }
 
-            if (target.Transformation().Type == ModContent.ItemType<Popo>())
+            if (target.Transformation().Type == ItemType<Popo>())
             {
                 if (npc.type == NPCID.Demon || npc.type == NPCID.VoodooDemon || npc.type == NPCID.RedDevil)
                     target.AddBuff(BuffType<PopoNoselessBuff>(), 36000);
@@ -4142,18 +3893,14 @@ namespace CalamityMod.NPCs
                     target.AddBuff(BuffID.Weak, 180);
                     break;
 
-                case NPCID.Crawdad:
-                case NPCID.Crawdad2:
-                case NPCID.UndeadViking:
-                    target.AddBuff(BuffID.BrokenArmor, 180);
-                    break;
-
                 case NPCID.ArmoredViking:
-                    target.AddBuff(BuffID.BrokenArmor, 300);
+                    if (Main.rand.NextBool(6))
+                        target.AddBuff(BuffID.BrokenArmor, 1800);
                     break;
 
                 case NPCID.IlluminantBat:
-                    target.AddBuff(BuffID.Confused, 120);
+                    if (Main.rand.NextBool(14))
+                        target.AddBuff(BuffID.Confused, 180);
                     break;
 
                 case NPCID.Piranha:
@@ -4163,10 +3910,6 @@ namespace CalamityMod.NPCs
                 case NPCID.Arapaima:
                 case NPCID.BloodFeeder:
                     target.AddBuff(BuffID.Bleeding, 300);
-                    break;
-
-                case NPCID.ToxicSludge:
-                    target.AddBuff(BuffID.Slow, 300);
                     break;
 
                 case NPCID.ShadowFlameApparition:
@@ -4200,6 +3943,11 @@ namespace CalamityMod.NPCs
                     target.AddBuff(BuffType<BurningBlood>(), 180);
                     break;
 
+                case NPCID.Hellbat:
+                    if (Main.expertMode)
+                        target.AddBuff(BuffID.OnFire, 120);
+                    break;
+
                 case NPCID.Lavabat:
                     target.AddBuff(BuffID.OnFire, 300);
                     break;
@@ -4213,49 +3961,6 @@ namespace CalamityMod.NPCs
                     break;
             }
 
-            if (Main.hardMode)
-            {
-                if (CalamityNPCTypeSets.AngryBones[npc.type])
-                    target.AddBuff(BuffType<ArmorCrunch>(), 120);
-
-                if (NPC.downedPlantBoss)
-                {
-                    switch (npc.type)
-                    {
-                        case NPCID.RustyArmoredBonesAxe:
-                        case NPCID.RustyArmoredBonesFlail:
-                        case NPCID.RustyArmoredBonesSword:
-                        case NPCID.RustyArmoredBonesSwordNoArmor:
-                        case NPCID.BlueArmoredBones:
-                        case NPCID.BlueArmoredBonesMace:
-                        case NPCID.BlueArmoredBonesNoPants:
-                        case NPCID.BlueArmoredBonesSword:
-                        case NPCID.HellArmoredBones:
-                        case NPCID.HellArmoredBonesSpikeShield:
-                        case NPCID.HellArmoredBonesMace:
-                        case NPCID.HellArmoredBonesSword:
-                            target.AddBuff(BuffType<ArmorCrunch>(), 240);
-                            break;
-
-                        default:
-                            break;
-                    }
-                }
-            }
-
-            if (Main.expertMode)
-            {
-                switch (npc.type)
-                {
-                    case NPCID.Hellbat:
-                        target.AddBuff(BuffID.OnFire, 120);
-                        break;
-
-                    default:
-                        break;
-                }
-            }
-
             // GFB Brain and its Creepers can inflict literally any buff in the game
             // Yes this includes pets, light pets, mounts, whip tags, endgame debuffs, anything!
             if ((npc.type == NPCID.BrainofCthulhu || npc.type == NPCID.Creeper) && Main.zenithWorld)
@@ -4267,13 +3972,11 @@ namespace CalamityMod.NPCs
         #endregion
 
         #region On Hit NPC
-
         public override void OnHitNPC(NPC npc, NPC target, NPC.HitInfo hit)
         {
             if (target.ModNPC is SunkenSeaNPC ssnpc)
                 ssnpc.OnHitByNPC(npc);
         }
-
         #endregion
 
         #region Modify Hit
@@ -4322,12 +4025,12 @@ namespace CalamityMod.NPCs
             if (modPlayer.camper && !player.StandingStill())
                 modifiers.SourceDamage *= 0.5f;
 
-            if (IsArmored()) //Hide combat text so we can draw our own for armored NPCs
-            {
+            // Hide combat text so we can draw our own for armored NPCs
+            if (IsArmored())
                 modifiers.HideCombatText();
-            }
 
             // True melee resists
+            // TODO: This should probably be moved into BalancingChangesManager
             if (item.CountsAsClass<MeleeDamageClass>() && item.type != ItemType<InfernaCutter>())
             {
                 float damageMult = 1f;
@@ -4349,21 +4052,19 @@ namespace CalamityMod.NPCs
 
         #region Modify Hit By Projectile
         public static bool DisableMultWhipTag = false;
-        //this bool does nothing on the main branch, its just here so that CalTestHelpers doesn't crash searching for it
-        //if you want to mess with this to test whips, please do so in the summoner branch - Shade
-
+        // This bool does nothing on the main branch, it's just here so that CalTestHelpers doesn't crash searching for it
+        // If you want to mess with this to test whips, please do so in the summoner branch - Shade
         public override void ModifyHitByProjectile(NPC npc, Projectile projectile, ref NPC.HitModifiers modifiers)
         {
             Player player = Main.player[projectile.owner];
             CalamityPlayer modPlayer = player.Calamity();
 
-            if (IsArmored()) //Hide combat text so we can draw our own for armored NPCs
-            {
+            // Hide combat text so we can draw our own for armored NPCs
+            if (IsArmored())
                 modifiers.HideCombatText();
-            }
 
             // Block natural falling stars from killing boss spawners randomly
-            if ((projectile.type == ProjectileID.FallingStar && projectile.damage >= 1000) && (npc.type == NPCType<PerforatorCyst>() || npc.type == NPCType<HiveTumor>() || npc.type == NPCType<LeviathanStart>()))
+            if (projectile.type == ProjectileID.FallingStar && projectile.damage >= 1000 && (npc.type == NPCType<PerforatorCyst>() || npc.type == NPCType<HiveTumor>() || npc.type == NPCType<LeviathanStart>()))
                 modifiers.SourceDamage *= 0f;
 
             // Supercrits
@@ -4498,7 +4199,7 @@ namespace CalamityMod.NPCs
             if (CalamityProjectileSets.ResistedExplosiveProjectile[projectile.type])
             {
                 // Eater of Worlds has a vanilla resist in Expert+, this gives it to him in Normal mode
-                // Note that Calamity reduces the vanilla resist from 80% to 60%
+                // Note that Calamity reduces the vanilla resist from 80% to 67%
                 bool hasResist = CalamityNPCTypeSets.EaterOfWorlds.Contains(npc.type) && !Main.expertMode;
                 // Add a resist for BoC's creepers and Prehardmode worm bosses
                 if (npc.type == NPCID.Creeper || CalamityNPCTypeSets.DesertScourge.Contains(npc.type) || CalamityNPCTypeSets.Perforators.Contains(npc.type))
@@ -4510,11 +4211,12 @@ namespace CalamityMod.NPCs
             if (modPlayer.camper && !player.StandingStill())
                 modifiers.SourceDamage *= 0.5f;
 
+            // Reduce damage of summon weapons while using Guardians relics
             if ((projectile.minion || ProjectileID.Sets.MinionShot[projectile.type] || projectile.sentry || ProjectileID.Sets.SentryShot[projectile.type]) && (player.ownedProjectileCounts[ProjectileType<RelicOfDeliveranceSpear>()] > 0 || player.ownedProjectileCounts[ProjectileType<RelicOfConvergenceCrystal>()] > 0 || (player.Calamity().rOfResilienceCooldown == 0 && player.HeldItem.type == ItemType<RelicOfResilience>())))
                 modifiers.SourceDamage *= 0.1f;
 
-            //Doze apr-6-2025: with the summon tag system we now have this is unnececcessary and very likely causes issues on MP, so i'm commenting it out for the time being. Once further testing is done, delete it entirely.
-            //Delete ardor blososm sparks and buff if hit by something that isnt a minion or sentry while not having Ardor Blossom Star in hand
+            // Doze apr-6-2025: With the summon tag system we now have this is unnecessary and very likely causes issues on MP, so I'm commenting it out for the time being. Once further testing is done, delete it entirely.
+            // Delete Ardor Blossom sparks and buff if hit by something that isn't a minion or sentry while not having Ardor Blossom Star in hand.
             /*if (npc.HasBuff<ArdorBlossomSpark>() && player.HeldItem.type != ModContent.ItemType<ArdorBlossomStar>() && !projectile.minion && !ProjectileID.Sets.MinionShot[projectile.type] && !projectile.sentry)
             {
                 npc.RequestBuffRemoval(ModContent.BuffType<ArdorBlossomSpark>());
@@ -4525,13 +4227,9 @@ namespace CalamityMod.NPCs
                         Main.projectile[k].Kill();
                 }
             }*/
-            //Handle summon tag effects
+            // Handle summon tag effects
             if (projectile.minion || ProjectileID.Sets.MinionShot[projectile.type] || projectile.sentry || ProjectileID.Sets.SentryShot[projectile.type])
-            {
                 EditSummonTagDamage(projectile, npc, ref modifiers);
-            }
-
-
         }
         #endregion
 
@@ -4539,25 +4237,22 @@ namespace CalamityMod.NPCs
         public override void OnHitByProjectile(NPC npc, Projectile projectile, NPC.HitInfo hit, int damagedone)
         {
             if (projectile.minion || ProjectileID.Sets.MinionShot[projectile.type] || projectile.sentry || ProjectileID.Sets.SentryShot[projectile.type])
-            {
                 SummonTagOnHitEffects(npc, projectile, hit, damagedone);
-            }
 
             if (IsArmored())
-            {
                 CombatText.NewText(npc.Hitbox, Color.Gray, damagedone, hit.Crit);
-            }
+
             if (projectile.type == ProjectileType<HyperiusDamage>() || projectile.type == ProjectileType<HyperiusBleed>())
             {
-                float rate = (Main.GlobalTimeWrappedHourly * 3f);
-                List<Color> eColors = new List<Color>()
-                {
+                float rate = Main.GlobalTimeWrappedHourly * 3f;
+                List<Color> eColors =
+                [
                     Color.Yellow,
                     Color.Magenta,
                     Color.Red,
                     Color.Cyan,
                     Color.Lime
-                };
+                ];
                 int colorIndex = (int)(rate / 2 % eColors.Count);
                 Color currentColor = eColors[colorIndex];
                 Color nextColor = eColors[(colorIndex + 1) % eColors.Count];
@@ -4565,16 +4260,15 @@ namespace CalamityMod.NPCs
 
                 CombatText.NewText(npc.Hitbox, usedColor, damagedone, hit.Crit, true);
             }
-
         }
-
         #endregion
 
-        #region Summon Tag 
+        #region Summon Tag
         //doze 03-15-2025: A full refactor of the summon tag system to make it easier to use and more flexible. Ping me with any questions.
         private void EditSummonTagDamage(Projectile proj, NPC npc, ref NPC.HitModifiers modifiers)
         {
-            if (proj.npcProj || proj.trap || proj.owner == -1) // don't run on non-player-owned projectiles.
+            // Don't run on non-player-owned projectiles.
+            if (proj.npcProj || proj.trap || proj.owner == -1)
                 return;
 
             var player = Main.player[proj.owner];
@@ -4592,9 +4286,7 @@ namespace CalamityMod.NPCs
                 {
                     int type = npc.buffType[i];
                     if (CalamityBuffSets.SummonTagDebuff.TryGetValue(type, out SummonTag tag))
-                    {
                         tag.TagModifyHitEffects(proj, npc, ref modifiers, ref TagDamageMult, ref critChance);
-                    }
                 }
             }
 
@@ -4611,7 +4303,7 @@ namespace CalamityMod.NPCs
                 }
             }
 
-            //Used to convert all multiplicative tag into crit chance and vice-versa. If both force tag crit and multiplicative are applied, chooses one at random.
+            // Used to convert all multiplicative tag into crit chance and vice-versa. If both force tag crit and multiplicative are applied, chooses one at random.
             if (modPlayer.forceSummonTagCrit && !(modPlayer.forceSummonTagMultiplicative && Main.rand.NextBool()))
             {
                 critChance += modifiers.ScalingBonusDamage.Value;
@@ -4620,22 +4312,22 @@ namespace CalamityMod.NPCs
             }
             else if (modPlayer.forceSummonTagMultiplicative)
             {
-
                 modifiers.ScalingBonusDamage += critChance;
                 critChance = 0;
             }
 
-            //currently doesn't support more than 100% crit chance, todo if something does more than +100% tag damage
+            // Currently doesn't support more than 100% crit chance, todo if something does more than +100% tag damage
             if (Main.rand.NextFloat() < critChance)
                 modifiers.SetCrit();
             else
-                modifiers.DisableCrit(); //This is to prevent Morning Star and Kalei from critting with their vanilla tag effect. If you want a minion/sentry to crit, you *must* make sure to change critChance in this function.
+                modifiers.DisableCrit(); // This is to prevent Morning Star and Kalei from critting with their vanilla tag effect. If you want a minion/sentry to crit, you *must* make sure to change critChance in this function.
         }
 
-        //This is for whip tag effects that run on hit and don't modify the damage of the hit.
+        // This is for whip tag effects that run on hit and don't modify the damage of the hit.
         private void SummonTagOnHitEffects(NPC npc, Projectile projectile, NPC.HitInfo hit, int damagedone)
         {
-            if (projectile.npcProj || projectile.trap || projectile.owner == -1) // don't run on non-player-owned projectiles.
+            // Don't run on non-player-owned projectiles.
+            if (projectile.npcProj || projectile.trap || projectile.owner == -1)
                 return;
 
             Player player = Main.player[projectile.owner];
@@ -4646,9 +4338,7 @@ namespace CalamityMod.NPCs
                 {
                     int type = npc.buffType[i];
                     if (CalamityBuffSets.SummonTagDebuff.TryGetValue(type, out SummonTag tag))
-                    {
                         tag.TagOnHit(npc, projectile, hit, damagedone);
-                    }
                 }
             }
         }
@@ -4671,19 +4361,18 @@ namespace CalamityMod.NPCs
 
                 if (Main.player[npc.target].RollLuck(baseValue) == 0 && Main.wallDungeon[Main.tile[(int)npc.Center.X / 16, (int)npc.Center.Y / 16].WallType])
                 {
-                    int randomType = Utils.SelectRandom(Main.rand, new int[]
-                    {
+                    int randomType = Utils.SelectRandom(Main.rand,
+                    [
                         NPCType<PhantomSpirit>(),
                         NPCType<PhantomSpiritS>(),
                         NPCType<PhantomSpiritM>(),
                         NPCType<PhantomSpiritL>()
-                    });
+                    ]);
 
                     if (Main.netMode != NetmodeID.MultiplayerClient)
                         NPC.NewNPC(npc.GetSource_FromAI(), (int)npc.Center.X, (int)npc.Center.Y, randomType);
                 }
             }
-
             return true;
         }
         #endregion
@@ -4712,7 +4401,7 @@ namespace CalamityMod.NPCs
                         if (npc.life <= 0)
                         {
                             if (Main.netMode != NetmodeID.MultiplayerClient)
-                                NPC.NewNPC(npc.GetSource_FromAI(), (int)(npc.position.X + (float)(npc.width / 2)), (int)(npc.position.Y + (float)npc.height), NPCType<PlanterasFreeTentacle>());
+                                NPC.NewNPC(npc.GetSource_FromAI(), (int)(npc.position.X + npc.width / 2), (int)(npc.position.Y + npc.height), NPCType<PlanterasFreeTentacle>());
                         }
                         break;
 
@@ -4743,34 +4432,20 @@ namespace CalamityMod.NPCs
                     case NPCID.CursedHammer:
                     case NPCID.EnchantedSword:
                     case NPCID.CrimsonAxe:
-                        if (Main.getGoodWorld)
-                            npc.justHit = false;
-
-                        break;
-
                     case NPCID.Clinger:
                     case NPCID.Gastropod:
                     case NPCID.GiantTortoise:
                     case NPCID.IceTortoise:
                     case NPCID.BlackRecluse:
                     case NPCID.BlackRecluseWall:
-                        if (Main.getGoodWorld)
-                            npc.justHit = false;
-
-                        break;
-
                     case NPCID.Paladin:
                         if (Main.getGoodWorld)
                             npc.justHit = false;
-
                         break;
                 }
 
-                if (npc.type == NPCType<Plagueshell>())
-                {
-                    if (Main.getGoodWorld)
-                        npc.justHit = false;
-                }
+                if (npc.type == NPCType<Plagueshell>() && Main.getGoodWorld)
+                    npc.justHit = false;
             }
 
             // Plague debuff on kill effect
@@ -4791,18 +4466,14 @@ namespace CalamityMod.NPCs
                     {
                         NPC target = Main.npc[i];
 
-                        if (target != null && target.IsAnEnemy(true, true) && !target.buffImmune[BuffType<Plague>()] && Vector2.Distance(target.Center, npc.Center) < 400)
+                        if (target != null && target.IsAnEnemy() && !target.buffImmune[BuffType<Plague>()] && Vector2.Distance(target.Center, npc.Center) < 400)
                         {
-                            if (target.HasBuff<Plague>() || target.life <= 0)
+                            if (!target.HasBuff<Plague>() && target.life > 0)
                             {
-                                target.AddBuff(BuffType<Plague>(), 300);
-                            }
-                            else
-                            {
-                                target.AddBuff(BuffType<Plague>(), 300);
-                                DirectionalPulseRing pulse = new DirectionalPulseRing(target.Center, Vector2.Zero, Main.rand.NextBool(3) ? Color.LimeGreen : Color.Green, new Vector2(1, 1), 0, Main.rand.NextFloat(0.07f, 0.18f) * 3, 0f, 15);
+                                DirectionalPulseRing pulse = new DirectionalPulseRing(target.Center, Vector2.Zero, Main.rand.NextBool(3) ? Color.LimeGreen : Color.Green, Vector2.One, 0, Main.rand.NextFloat(0.07f, 0.18f) * 3, 0f, 15);
                                 GeneralParticleHandler.SpawnParticle(pulse);
                             }
+                            target.AddBuff(BuffType<Plague>(), 300);
                         }
                     }
                 }
@@ -4812,12 +4483,9 @@ namespace CalamityMod.NPCs
             {
                 for (int g = 0; g < 17; g++)
                 {
-                    int DustID = ModContent.DustType<SquashDust>();
-                    Dust dust = Dust.NewDustPerfect(npc.Center, DustID);
-                    dust.scale = Main.rand.NextFloat(1.1f, 1.35f);
-                    dust.velocity = new Vector2(9, 9).RotatedByRandom(100) * Main.rand.NextFloat(0.4f, 0.9f) + Vector2.UnitY * -10;
+                    Vector2 dustVel = new Vector2(9).RotatedByRandom(MathHelper.Pi) * Main.rand.NextFloat(0.4f, 0.9f) + Vector2.UnitY * -10;
+                    Dust dust = Dust.NewDustPerfect(npc.Center, DustType<SquashDust>(), dustVel, 0, Main.rand.NextBool() ? Color.Green : Color.Chartreuse, Main.rand.NextFloat(1.1f, 1.35f));
                     dust.noGravity = false;
-                    dust.color = Main.rand.NextBool() ? Color.Green : Color.Chartreuse;
                     dust.fadeIn = Main.rand.NextFloat(0.2f, 2f);
                 }
                 Particle blastvfx = new CustomPulse(npc.Center, Vector2.Zero, Color.Chartreuse * 0.9f, "CalamityMod/Particles/ShineExplosion1", Vector2.One, Main.rand.NextFloat(-10, 10), 0.05f, 0.15f, 10, true);
@@ -4827,15 +4495,13 @@ namespace CalamityMod.NPCs
                 int explosionDamage = 12;
                 float highestDamage = 0;
                 Player Owner = null;
-                for (int playerIndex = 0; playerIndex < Main.maxPlayers; playerIndex++)
+                foreach (Player p in Main.ActivePlayers)
                 {
-                    Player player = Main.player[playerIndex];
-
-                    float playerRangedDamage = player.GetTotalDamage(DamageClass.Ranged).ApplyTo(explosionDamage);
-                    if (playerRangedDamage > highestDamage && player.Calamity().scionsCurio)
+                    float playerRangedDamage = p.GetTotalDamage(DamageClass.Ranged).ApplyTo(explosionDamage);
+                    if (playerRangedDamage > highestDamage && p.Calamity().scionsCurio)
                     {
                         highestDamage = playerRangedDamage;
-                        Owner = player;
+                        Owner = p;
                     }
                 }
 
@@ -4843,111 +4509,13 @@ namespace CalamityMod.NPCs
                 float blastSize = 115;
                 float minMultiplier = 0.5f;
                 int hitsToMinMult = 5;
-                int debuff = ModContent.BuffType<Irradiated>();
+                int debuff = BuffType<Irradiated>();
                 int debuffTime = 300;
-                Projectile blast = Projectile.NewProjectileDirect((Owner != null ? Owner.GetSource_FromThis() : npc.GetSource_FromThis()), npc.Center, Vector2.Zero, ModContent.ProjectileType<BasicBurst>(), (int)(highestDamage), 7, (Owner != null ? Owner.whoAmI : -1), blastSize, minMultiplier, hitsToMinMult);
+                Projectile blast = Projectile.NewProjectileDirect(Owner != null ? Owner.GetSource_FromThis() : npc.GetSource_FromThis(), npc.Center, Vector2.Zero, ProjectileType<BasicBurst>(), (int)highestDamage, 7, Owner != null ? Owner.whoAmI : -1, blastSize, minMultiplier, hitsToMinMult);
                 blast.localAI[0] = debuff;
                 blast.localAI[1] = debuffTime;
                 blast.timeLeft = 15;
                 blast.DamageType = DamageClass.Ranged;
-            }
-
-            bool fakeAbbadon = false; // Will be used for abbadon revamp
-            if (fakeAbbadon && npc.life <= 0 && npc.realLife == -1)
-            {
-                float areaOfEffect = 500;
-                if (Main.netMode != NetmodeID.MultiplayerClient)
-                {
-                    Color color1 = Color.Crimson;
-                    Color color2 = Color.OrangeRed;
-                    for (int r = 0; r < Main.maxNPCs; r++)
-                    {
-                        NPC target = Main.npc[r];
-
-                        if (target != null && target.IsAnEnemy(true, true) && Vector2.Distance(target.Center, npc.Center) <= areaOfEffect)
-                        {
-                            if (target.life <= 0)
-                            {
-                                target.Calamity().scionsCurioEffected = true;
-                            }
-                            else
-                            {
-                                for (int g = 0; g < 7; g++)
-                                {
-                                    int DustID = ModContent.DustType<LightDust>();
-                                    Dust dust2 = Dust.NewDustDirect(target.Center, target.width, target.height, DustID);
-                                    dust2.scale = Main.rand.NextFloat(0.6f, 0.75f);
-                                    dust2.velocity = new Vector2(4, 4).RotatedByRandom(100) * Main.rand.NextFloat(0.5f, 0.8f);
-                                    dust2.noGravity = true;
-                                    dust2.color = Main.rand.NextBool() ? color2 : color1;
-                                }
-
-                                Vector2 start = npc.Center;
-                                Vector2 end = target.Center;
-                                Color color = Main.rand.NextBool() ? color2 : color1;
-
-                                Vector2 lerpVel = Vector2.Lerp(start, end, 0.5f);
-                                float scale = 0.015f;
-                                Particle spark = new CustomSpark(lerpVel, npc.SafeDirectionTo(target.Center), "CalamityMod/Particles/BloomLineThick", false, 18, scale, color, new Vector2(1.2f, (Utils.Distance(start, end) * 0.034f)), true, true, shrinkSpeed: 0.25f, glowOpacity: 0.75f);
-                                GeneralParticleHandler.SpawnParticle(spark);
-                                for (int u = 0; u < 2; u++)
-                                {
-                                    Vector2 pos = start;
-                                    if (u == 0) pos = end;
-                                    Particle spark2 = new CustomSpark(pos, Vector2.Zero, "CalamityMod/Particles/BloomCircle", false, 18, 0.55f, color, Vector2.One, true, true, glowOpacity: 0.85f);
-                                    GeneralParticleHandler.SpawnParticle(spark2);
-                                }
-
-                                float distance = Vector2.Distance(target.Center, npc.Center);
-                                int maxDusts = (int)distance;
-                                int dustCaper = 60;
-                                int dustDivisor = maxDusts / dustCaper;
-                                if (dustDivisor < 2)
-                                    dustDivisor = 2;
-
-                                Vector2 dustLineStart = target.Center;
-                                Vector2 dustLineEnd = npc.Center;
-                                Vector2 currentDustPos = default;
-                                Vector2 dustVel = npc.Center.DirectionTo(target.Center);
-                                int startingPoint = Main.rand.Next(0, 400 + 1);
-                                Vector2 lastDustPos = default;
-                                for (int i = 0; i < maxDusts; i++)
-                                {
-                                    float sine = (float)Math.Sin((i + startingPoint) * 0.425f / MathHelper.Pi);
-                                    float endStartFade = Math.Min(Utils.GetLerpValue(maxDusts * 0.8f, 0, i), Utils.GetLerpValue(0 + maxDusts * 0.2f, maxDusts, i));
-                                    currentDustPos = Vector2.Lerp(dustLineStart, dustLineEnd, i / (float)maxDusts) + dustVel.RotatedBy(MathHelper.PiOver2) * 6 * sine * endStartFade;
-                                    if (i == 0)
-                                        lastDustPos = currentDustPos;
-
-                                    /*Dust dustLine = Dust.NewDustPerfect(currentDustPos, ModContent.DustType<SquashDust>());
-                                    dustLine.position = currentDustPos;
-                                    dustLine.velocity = Vector2.Zero;
-                                    dustLine.noGravity = true;
-                                    dustLine.scale = 1.5f * Math.Max(endStartFade, 0.7f);
-                                    dustLine.fadeIn = Main.rand.NextFloat() * 2f;
-                                    dustLine.color = Color.Lerp(color1, color2, Utils.GetLerpValue(0, maxDusts, i));*/
-
-                                    currentDustPos = Vector2.Lerp(dustLineStart, dustLineEnd, i / (float)maxDusts) + dustVel.RotatedBy(MathHelper.PiOver2) * 55 * sine * endStartFade;
-                                    Dust dustLinger = Dust.NewDustPerfect(currentDustPos, ModContent.DustType<SquashDust>());
-                                    dustLinger.position = currentDustPos;
-                                    dustLinger.velocity = currentDustPos.DirectionTo(lastDustPos) * (Main.rand.NextBool(5) ? 4f : Main.rand.NextFloat(0.2f, 0.8f));
-                                    dustLinger.noGravity = true;
-                                    dustLinger.scale = Main.rand.NextFloat(0.8f, 1f) * 1.5f;
-                                    dustLinger.fadeIn = Main.rand.NextFloat(0.6f, 1f) * 4;
-                                    dustLinger.color = Color.Lerp(color1, color2, Utils.GetLerpValue(0, maxDusts, i));
-
-                                    lastDustPos = currentDustPos;
-                                }
-
-                                target.Calamity().scionsCurioEffected = true;
-                                if (target.Calamity().irradiated)
-                                    target.buffTime[target.FindBuffIndex(ModContent.BuffType<Irradiated>())] += 90;
-                                else
-                                    target.AddBuff(BuffType<Irradiated>(), 180);
-                            }
-                        }
-                    }
-                }
             }
         }
         #endregion
@@ -5081,16 +4649,13 @@ namespace CalamityMod.NPCs
         #endregion
 
         #region Edit Spawn Pool
-
-        internal static readonly FieldInfo MaxSpawnsField = typeof(NPC).GetField("maxSpawns", BindingFlags.NonPublic | BindingFlags.Static);
-
         public static void AttemptToSpawnLabCritters(Player player)
         {
             if (Main.netMode == NetmodeID.MultiplayerClient)
                 return;
 
             int spawnRate = 400;
-            int maxSpawnCount = (int)MaxSpawnsField.GetValue(null);
+            int maxSpawnCount = NPC.maxSpawns;
             NPCLoader.EditSpawnRate(player, ref spawnRate, ref maxSpawnCount);
 
             // Enforce a limit on the amount of enemies that can appear.
@@ -5164,7 +4729,7 @@ namespace CalamityMod.NPCs
                 return;
 
             int spawnRate = 400;
-            int maxSpawnCount = (int)MaxSpawnsField.GetValue(null);
+            int maxSpawnCount = NPC.maxSpawns;
             NPCLoader.EditSpawnRate(player, ref spawnRate, ref maxSpawnCount);
 
             // Enforce a limit on the amount of enemies that can appear.
@@ -5210,23 +4775,23 @@ namespace CalamityMod.NPCs
                 spawnInfo.Player.Calamity().ZoneSunkenSea ||
                 (spawnInfo.Player.Calamity().ZoneAstral && !spawnInfo.Player.PillarZone());
 
-            // Fuck the Goblin and the Wizard
+            // Increase Goblin and Wizard spawn rates
             if (!spawnInfo.Water && spawnInfo.Player.ZoneRockLayerHeight)
             {
                 if (NPC.downedGoblins && !NPC.savedGoblin)
                 {
                     if (!NPC.AnyNPCs(NPCID.BoundGoblin))
-                        pool[NPCID.BoundGoblin] = SpawnCondition.BoundCaveNPC.Chance * 5f;
+                        pool[NPCID.BoundGoblin] = SpawnCondition.BoundCaveNPC.Chance * 2f;
                 }
 
                 if (Main.hardMode && !NPC.savedWizard)
                 {
                     if (!NPC.AnyNPCs(NPCID.BoundWizard))
-                        pool[NPCID.BoundWizard] = SpawnCondition.BoundCaveNPC.Chance * 5f;
+                        pool[NPCID.BoundWizard] = SpawnCondition.BoundCaveNPC.Chance * 2f;
                 }
             }
 
-            // Fuck Chaos Elementals, overrides the vanilla spawn so they can be afk farmed once more
+            // Overrides the vanilla spawn of Chaos Elementals so they can be AFK farmed once more
             if (Main.hardMode && spawnInfo.Player.ZoneRockLayerHeight && !calamityBiomeZone)
             {
                 // Added more tiles for them to spawn on
@@ -5286,20 +4851,15 @@ namespace CalamityMod.NPCs
                 pool[NPCID.MaggotZombie] = SpawnCondition.OverworldNightMonster.Chance * 0.2f;
                 pool[NPCID.TheGroom] = SpawnCondition.OverworldNightMonster.Chance * 0.035f;
                 pool[NPCID.TheBride] = SpawnCondition.OverworldNightMonster.Chance * 0.035f;
-
             }
 
             // Disable vanilla spawns while in the Brimstone Crag
             if (calamityBiomeZone)
-            {
                 pool[0] = 0f;
-            }
 
             // Add Enchanted Nightcrawlers as a critter to the Astral Infection
             if (!AnyEvents(spawnInfo.Player) && spawnInfo.Player.InAstral())
-            {
                 pool[NPCID.EnchantedNightcrawler] = SpawnCondition.TownCritter.Chance;
-            }
 
             if (spawnInfo.Player.Calamity().ZoneSulphur && !spawnInfo.Player.Calamity().ZoneAbyss && AcidRainEvent.AcidRainEventIsOngoing)
             {
@@ -5368,9 +4928,7 @@ namespace CalamityMod.NPCs
                         }
                     }
                     if (NPC.CountNPCS(NPCType<NuclearToad>()) >= AcidRainEvent.MaxNuclearToadCount)
-                    {
                         pool.Remove(NPCType<NuclearToad>());
-                    }
                 }
             }
 
@@ -5379,7 +4937,6 @@ namespace CalamityMod.NPCs
 
             // Voodoo Demon changes (including partial Voodoo Demon Voodoo Doll implementation)
             bool voodooDemonDollActive = spawnInfo.Player.Calamity().disableVoodooSpawns;
-
             // If the doll is active, Voodoo Demons cannot spawn (via modded means).
             if (voodooDemonDollActive)
                 pool.Remove(NPCID.VoodooDemon);
@@ -5459,12 +5016,8 @@ namespace CalamityMod.NPCs
                 bestiaryWormTimer += 0.02f;
                 // Resets after an hour. No sane human being is looking at a bestiary entry for an hour straight
                 if (bestiaryWormTimer > 4320)
-                {
                     bestiaryWormTimer = 0;
-                }
             }
-
-
         }
 
         // Debuff visuals. Alphabetical order as per usual, please
@@ -5481,9 +5034,8 @@ namespace CalamityMod.NPCs
             if (ashesOnDeath > 0)
             {
                 if (Main.rand.NextBool(4))
-                {
                     Projectile.NewProjectile(npc.GetSource_FromThis(), npc.Center, Main.rand.NextVector2Circular(2.75f, 6.5f), ProjectileType<RancorFog>(), 0, 0f, Main.myPlayer, 0f, 0.475f);
-                }
+
                 if (Main.rand.NextBool(6))
                 {
                     Vector2 randomPosition = new(npc.position.X + Main.rand.NextFloat(-10f, npc.width + 10f), npc.position.Y + Main.rand.NextFloat(-10f, npc.height + 10f));
@@ -5533,6 +5085,9 @@ namespace CalamityMod.NPCs
             if (eutrophication || temporalSadness)
                 Eutrophication.DrawEffects(npc, ref drawColor);
 
+            if (fortunesFavor)
+                FortunesFavor.DrawEffects(npc, ref drawColor);
+
             if (godSlayerInferno)
                 GodSlayerInferno.DrawEffects(npc, ref drawColor);
 
@@ -5546,14 +5101,14 @@ namespace CalamityMod.NPCs
             if (hyperiusFxTimer > 0)
             {
                 float rate = (Main.GlobalTimeWrappedHourly * 5);
-                List<Color> eColors = new List<Color>()
-                {
+                List<Color> eColors =
+                [
                     Color.Yellow,
                     Color.Magenta,
                     Color.Red,
                     Color.Cyan,
                     Color.Lime
-                };
+                ];
                 int colorIndex = (int)(rate / 2 % eColors.Count);
                 Color currentColor = eColors[colorIndex];
                 Color nextColor = eColors[(colorIndex + 1) % eColors.Count];
@@ -5562,12 +5117,11 @@ namespace CalamityMod.NPCs
                 Texture2D tex2 = Request<Texture2D>("CalamityMod/Particles/BloomCircle").Value;
                 Texture2D sparkle = Request<Texture2D>("CalamityMod/Particles/BloomLineSoftEdge").Value;
                 Vector2 drawPosition = npc.Center - Main.screenPosition;
-                float drawRotation = npc.rotation + (npc.spriteDirection == -1 ? MathHelper.Pi : 0f);
 
                 float power = (float)(Math.Pow(Utils.GetLerpValue(0, 20, hyperiusFxTimer, true), 3)) * MathHelper.Lerp(Math.Max(npc.height, npc.width) / 100, 1.4f, 0.5f);
                 for (int i = 0; i < 4; i++)
                 {
-                    float iMult = (1 + 0.25f * i);
+                    float iMult = 1 + 0.25f * i;
                     Main.EntitySpriteDraw(tex2, drawPosition, null, Color.Lerp(usedColor, Color.White, i * 0.1f) with { A = 0 } * 0.6f, Main.rand.NextFloat(-5f, 5f), tex2.Size() * 0.5f, new Vector2(1f, 0.8f) * 0.35f * Main.rand.NextFloat(0.9f, 1.1f) * iMult * power * (Utils.GetLerpValue(0, 20, hyperiusFxTimer)), SpriteEffects.None);
 
                     for (int b = -1; b <= 1; b += 2)
@@ -5616,7 +5170,7 @@ namespace CalamityMod.NPCs
             if (pearlAura)
                 PearlAura.DrawEffects(npc, ref drawColor);
 
-            if (plague) // Plague debuff
+            if (plague)
                 Plague.DrawEffects(npc, ref drawColor);
 
             if (relicOfResilienceWeakness)
@@ -5642,7 +5196,7 @@ namespace CalamityMod.NPCs
                 int sparkleChance = Math.Max(2, 8 - (veriumDoomStacks / 2));
                 if (veriumDoomTimer % sparkleChance == 0)
                 {
-                    float veriumRatio = (float)veriumDoomTimer / (float)veriumDoomTime;
+                    float veriumRatio = veriumDoomTimer / (float)veriumDoomTime;
                     Vector2 randPosition = new Vector2(npc.position.X + Main.rand.Next(0, npc.width), npc.position.Y + Main.rand.Next(0, npc.height));
                     Particle markedSparkle = new CustomPulse(randPosition, Vector2.Zero, Color.Lerp(new Color(103, 230, 240), new Color(255, 110, 220), 1 - veriumRatio), "CalamityMod/Particles/Sparkle", Vector2.One, Main.rand.NextFloat(-0.75f, 0.75f), 0.9f, 1.1f, 35);
                     GeneralParticleHandler.SpawnParticle(markedSparkle);
@@ -5656,9 +5210,7 @@ namespace CalamityMod.NPCs
             if (electrified)
             {
                 if (Main.rand.NextBool())
-                {
                     Dust.NewDustDirect(npc.position, npc.width, npc.height, DustID.Electric, Main.rand.NextFloat(-2f, 2f), Main.rand.NextFloat(-2f, 2f), 0, default, 0.35f);
-                }
             }
             if (webbed)
             {
@@ -5676,7 +5228,7 @@ namespace CalamityMod.NPCs
                 }
             }
 
-            // Some extraneous and probably undocumented visual effect caused by the heart lad pet thing
+            // Lad pet spawns hearts from NPCs
             if (ladHearts > 0 && !npc.loveStruck && !Main.dedServ)
             {
                 if (Main.rand.NextBool(5))
@@ -5755,7 +5307,6 @@ namespace CalamityMod.NPCs
             return null;
         }
 
-
         //TODO - Make this a part of DebuffData
         public static List<(string, Predicate<NPC>)> moddedDebuffTextureList = new List<(string, Predicate<NPC>)>
         {
@@ -5811,8 +5362,7 @@ namespace CalamityMod.NPCs
 
         public override bool PreDraw(NPC npc, SpriteBatch spriteBatch, Vector2 screenPos, Color drawColor)
         {
-            // This is used so that NPCs with specific PreDraws can still have Odd Mushroom clone drawing.
-            // If Odd Mushroom clone drawing is done manually due to using a different texture, just return false instead of setting this.
+            // This is used so that NPCs with specific PreDraws can still draw everything in this hook.
             bool shouldDrawBool = true;
 
             if (npc.IsABestiaryIconDummy)
@@ -5846,9 +5396,7 @@ namespace CalamityMod.NPCs
                     for (int b = 0; b < moddedDebuffTextureList.Count(); b++)
                     {
                         if (moddedDebuffTextureList[b].Item2.Invoke(npc))
-                        {
                             currentDebuffs.Add(Request<Texture2D>(moddedDebuffTextureList[b].Item1).Value);
-                        }
                     }
                     // Vanilla damage over time debuffs
                     if (electrified)
@@ -5909,21 +5457,16 @@ namespace CalamityMod.NPCs
                         currentDebuffs.Add(TextureAssets.Buff[BuffID.GelBalloonBuff].Value);
 
                     // Total amount of elements in the buff list
-                    int buffTextureListLength = currentDebuffs.Count();
-
+                    int buffTextureListLength = currentDebuffs.Count;
                     // Total length of a single row in the buff display
                     int totalLength = buffTextureListLength * 14;
-
                     // Max amount of buffs per row
                     int buffDisplayRowLimit = 5;
-
                     // The maximum length of a single row in the buff display
                     // Limited to 80 units, because every buff drawn here is half the size of a normal buff, 16 x 16, 16 * 5 = 80 units
                     float drawPosX = totalLength >= 80f ? 40f : (float)(totalLength / 2);
-
                     // The height of a single frame of the npc
-                    float npcHeight = (npc.height * npc.scale) / 2;//(float)(TextureAssets.Npc[npc.type].Value.Height / Main.npcFrameCount[npc.type] / 2) * npc.scale;
-
+                    float npcHeight = (npc.height * npc.scale) / 2;
                     // Offset the debuff display based on the npc's graphical offset, and 16 units, to create some space between the sprite and the display
                     float drawPosY = npcHeight + npc.gfxOffY + 32f;
 
@@ -5950,7 +5493,6 @@ namespace CalamityMod.NPCs
                         if (currentDebuffs[i] == TextureAssets.Buff[BuffType<Shred>()].Value)
                             ChatManager.DrawColorCodedStringWithShadow(Main.spriteBatch, FontAssets.MouseText.Value, somaShredStacks.ToString(), npc.Center - screenPos - new Vector2(drawPosX, drawPosY + additionalYOffset) + Vector2.One * 4f, Color.Gold, 0f, Vector2.Zero, Vector2.One * Main.UIScale * 0.8f);
                     }
-
 
                     // Draw summon tag display. TODO: make it use custom textures provided by SummonTag.
                     int yOffset = 0;
@@ -6062,19 +5604,6 @@ namespace CalamityMod.NPCs
                 }
             }
 
-            if (npc.type == NPCID.Corruptor || npc.type == NPCID.BloodSquid || (npc.type == NPCID.HornetHoney && npc.ai[3] == 1f))
-            {
-                Texture2D texture = TextureAssets.Npc[npc.type].Value;
-
-                SpriteEffects spriteEffects = SpriteEffects.None;
-                if (npc.spriteDirection == -1)
-                    spriteEffects = SpriteEffects.FlipHorizontally;
-
-                Main.spriteBatch.Draw(texture, npc.Center - screenPos + new Vector2(0f, npc.gfxOffY), npc.frame, npc.GetAlpha(drawColor), npc.rotation, npc.frame.Size() / 2, npc.scale, spriteEffects, 0f);
-
-                shouldDrawBool = false;
-            }
-
             // VHex, Mana Burn and Miracle Blight visuals do not appear if Odd Mushroom is in use for sanity reasons
             if (!Main.LocalPlayer.Calamity().trippy)
             {
@@ -6086,9 +5615,8 @@ namespace CalamityMod.NPCs
                     float power = npc.height / 100f;
                     if (power > 2.75f)
                         power = 2.75f;
-                    var color = Color.Red;
                     if (VulnerabilityHexFireDrawer is null || VulnerabilityHexFireDrawer.LocalTimer >= VulnerabilityHexFireDrawer.SetLifetime)
-                        VulnerabilityHexFireDrawer = new FireParticleSet(npc.Calamity().trueVulnerabilityHex ? npc.buffTime[npc.FindBuffIndex(ModContent.BuffType<TrueVulnerabilityHex>())] : npc.buffTime[npc.FindBuffIndex(ModContent.BuffType<VulnerabilityHex>())], 1, Color.Red * 1.25f, Color.Red, compactness, power);
+                        VulnerabilityHexFireDrawer = new FireParticleSet(npc.Calamity().trueVulnerabilityHex ? npc.buffTime[npc.FindBuffIndex(BuffType<TrueVulnerabilityHex>())] : npc.buffTime[npc.FindBuffIndex(BuffType<VulnerabilityHex>())], 1, Color.Red * 1.25f, Color.Red, compactness, power);
                     else
                         VulnerabilityHexFireDrawer.DrawSet(npc.Bottom - Vector2.UnitY * (12f - npc.gfxOffY));
                 }
@@ -6147,7 +5675,6 @@ namespace CalamityMod.NPCs
                 spriteBatch.EnterShaderRegion();
 
                 float intensity = newAI[1] / 35f;
-
                 float lifeRatio = npc.type == NPCID.CultistBoss ? (npc.life / (float)npc.lifeMax) : (Main.npc[(int)npc.ai[3]].life / (float)Main.npc[(int)npc.ai[3]].lifeMax);
 
                 float flickerPower = 0f;
@@ -6204,13 +5731,8 @@ namespace CalamityMod.NPCs
             else if (CalamityNPCTypeSets.Destroyer.Contains(npc.type) && !npc.IsABestiaryIconDummy)
             {
                 Texture2D npcTexture = TextureAssets.Npc[npc.type].Value;
-                int frameHeight = npcTexture.Height / Main.npcFrameCount[npc.type];
-
                 Vector2 halfSize = npc.frame.Size() / 2;
-                SpriteEffects spriteEffects = SpriteEffects.None;
-                if (npc.spriteDirection == 1)
-                    spriteEffects = SpriteEffects.FlipHorizontally;
-
+                SpriteEffects spriteEffects = npc.spriteDirection == 1 ? SpriteEffects.FlipHorizontally : SpriteEffects.None;
                 Color segmentDrawColor = npc.GetAlpha(drawColor);
 
                 // Check if Destroyer is behind tiles and, if so, how much of the segment is behind tiles and adjust color accordingly
@@ -6228,8 +5750,7 @@ namespace CalamityMod.NPCs
                 }
 
                 // Draw segments
-                spriteBatch.Draw(npcTexture, npc.Center - screenPos + new Vector2(0, npc.gfxOffY),
-                    npc.frame, segmentDrawColor, npc.rotation, halfSize, npc.scale, spriteEffects, 0f);
+                spriteBatch.Draw(npcTexture, npc.Center - screenPos + new Vector2(0, npc.gfxOffY), npc.frame, segmentDrawColor, npc.rotation, halfSize, npc.scale, spriteEffects, 0f);
 
                 // Draw lights
                 if (npc.ai[2] == 0f && segmentDrawColor != Color.Black)
@@ -6265,33 +5786,11 @@ namespace CalamityMod.NPCs
                     Color telegraphColor_Cyan = new Color(0, 255, 255, alpha);
                     Color telegraphColor = telegraphColor_Red;
 
-                    // Telegraph for the laser breath and body lasers
+                    // Telegraph for body lasers
                     float telegraphProgress = 0f;
                     if (destroyerLaserColor != -1)
                     {
-                        if (npc.type == NPCID.TheDestroyer && death)
-                        {
-                            float telegraphGateValue = DestroyerAI.DeathModeLaserBreathGateValue - DestroyerAI.LaserTelegraphTime;
-                            if (newAI[0] > telegraphGateValue)
-                            {
-                                switch (destroyerLaserColor)
-                                {
-                                    default:
-                                    case 0:
-                                        break;
-
-                                    case 1:
-                                        telegraphColor = telegraphColor_Green;
-                                        break;
-
-                                    case 2:
-                                        telegraphColor = telegraphColor_Cyan;
-                                        break;
-                                }
-                                telegraphProgress = MathHelper.Clamp((newAI[0] - telegraphGateValue) / DestroyerAI.LaserTelegraphTime, 0f, 1f);
-                            }
-                        }
-                        else if (npc.type == NPCID.TheDestroyerBody && revenge)
+                        if (npc.type == NPCID.TheDestroyerBody && revenge)
                         {
                             float shootProjectileTime = death ? (phase5 ? 180f : phase4 ? 270f : 360f) : 450f;
                             float telegraphGateValue = shootProjectileTime - DestroyerAI.LaserTelegraphTime;
@@ -6302,11 +5801,9 @@ namespace CalamityMod.NPCs
                                     default:
                                     case 0:
                                         break;
-
                                     case 1:
                                         telegraphColor = telegraphColor_Green;
                                         break;
-
                                     case 2:
                                         telegraphColor = telegraphColor_Cyan;
                                         break;
@@ -6322,11 +5819,9 @@ namespace CalamityMod.NPCs
                         default:
                         case NPCID.TheDestroyer:
                             break;
-
                         case NPCID.TheDestroyerBody:
                             glowTexture = CalamityClientConfig.Instance.EnableVanillaTextureEdits ? ExtraTextureRefs.DestroyerBodyGlowmask.Value : TextureAssets.Dest[1].Value;
                             break;
-
                         case NPCID.TheDestroyerTail:
                             glowTexture = CalamityClientConfig.Instance.EnableVanillaTextureEdits ? ExtraTextureRefs.DestroyerTailGlowmask.Value : TextureAssets.Dest[2].Value;
                             break;
@@ -6361,14 +5856,11 @@ namespace CalamityMod.NPCs
                         return;
 
                     Vector2 halfSize = npc.frame.Size() / 2;
-                    SpriteEffects spriteEffects = SpriteEffects.None;
-                    if (npc.spriteDirection == 1)
-                        spriteEffects = SpriteEffects.FlipHorizontally;
+                    SpriteEffects spriteEffects = npc.spriteDirection == 1 ? SpriteEffects.FlipHorizontally : SpriteEffects.None;
 
                     bool brainIsInPhase2 = Main.npc[NPC.crimsonBoss].ai[0] < 0f;
                     if (brainIsInPhase2)
                     {
-                        Vector2 distanceFromBrain = npc.Center - Main.npc[NPC.crimsonBoss].Center;
                         Color currentColor = npc.GetAlpha(drawColor);
                         float opacity = (1f - Main.npc[NPC.crimsonBoss].life / (float)Main.npc[NPC.crimsonBoss].lifeMax) * 2f;
                         opacity *= opacity;
@@ -6401,7 +5893,7 @@ namespace CalamityMod.NPCs
 
                             int width = TextureAssets.Npc[npc.type] is null ? 0 : TextureAssets.Npc[npc.type].Width();
                             int height = TextureAssets.Npc[npc.type] is null ? 0 : TextureAssets.Npc[npc.type].Height();
-                            spriteBatch.Draw(TextureAssets.Npc[npc.type].Value, new Vector2(position.X - screenPos.X + (float)(npc.width / 2) - (float)width * npc.scale / 2f + halfSize.X * npc.scale, position.Y - screenPos.Y + (float)npc.height - (float)height * npc.scale / (float)Main.npcFrameCount[npc.type] + 4f + halfSize.Y * npc.scale + npc.gfxOffY), npc.frame, currentColor, npc.rotation, halfSize, npc.scale, spriteEffects, 0f);
+                            spriteBatch.Draw(TextureAssets.Npc[npc.type].Value, new Vector2(position.X - screenPos.X + npc.width / 2 - width * npc.scale / 2f + halfSize.X * npc.scale, position.Y - screenPos.Y + (float)npc.height - (float)height * npc.scale / (float)Main.npcFrameCount[npc.type] + 4f + halfSize.Y * npc.scale + npc.gfxOffY), npc.frame, currentColor, npc.rotation, halfSize, npc.scale, spriteEffects, 0f);
                         }
                     }
 
@@ -6427,9 +5919,7 @@ namespace CalamityMod.NPCs
                         float colorScale = MathHelper.Clamp((npc.localAI[1] - beginTelegraphGateValue) / SkeletronAI.ChargeTelegraphTime, 0f, 1f);
                         Color drawColor2 = new Color(150, 150, 150, 0) * colorScale;
                         Vector2 halfSize = npc.frame.Size() / 2;
-                        SpriteEffects spriteEffects = SpriteEffects.None;
-                        if (npc.spriteDirection == 1)
-                            spriteEffects = SpriteEffects.FlipHorizontally;
+                        SpriteEffects spriteEffects = npc.spriteDirection == 1 ? SpriteEffects.FlipHorizontally : SpriteEffects.None;
 
                         for (int i = 0; i < 2; i++)
                         {
@@ -6470,9 +5960,7 @@ namespace CalamityMod.NPCs
                     {
                         Texture2D glowTexture = CalamityClientConfig.Instance.EnableVanillaTextureEdits ? ExtraTextureRefs.WallOfFleshEyeGlowmask.Value : TextureAssets.Npc[npc.type].Value;
                         Vector2 halfSize = npc.frame.Size() / 2;
-                        SpriteEffects spriteEffects = SpriteEffects.None;
-                        if (npc.spriteDirection == 1)
-                            spriteEffects = SpriteEffects.FlipHorizontally;
+                        SpriteEffects spriteEffects = npc.spriteDirection == 1 ? SpriteEffects.FlipHorizontally : SpriteEffects.None;
 
                         float colorScale = enraged ? MathHelper.Clamp(npc.localAI[3] / WallOfFleshAI.EnragedLaserFiringDuration, 0f, 1f) :
                             npc.localAI[2] > 0f ? 1f - ((npc.localAI[2] - 1f) / WallOfFleshAI.TotalLasersPerBarrage) :
@@ -6491,13 +5979,8 @@ namespace CalamityMod.NPCs
                 {
                     // Percent life remaining
                     float lifeRatio = npc.life / (float)npc.lifeMax;
-
                     Texture2D npcTexture = TextureAssets.Npc[npc.type].Value;
-
-                    SpriteEffects spriteEffects = SpriteEffects.None;
-                    if (npc.spriteDirection == 1)
-                        spriteEffects = SpriteEffects.FlipHorizontally;
-
+                    SpriteEffects spriteEffects = npc.spriteDirection == 1 ? SpriteEffects.FlipHorizontally : SpriteEffects.None;
                     Color originalColor = npc.GetAlpha(drawColor);
                     Color newColor = new Color(100, 255, 100, 255);
                     Vector2 glowOffset = Vector2.UnitY * -4f;
@@ -6565,21 +6048,6 @@ namespace CalamityMod.NPCs
                     }
                 }
             }
-        }
-
-        public override bool? DrawHealthBar(NPC npc, byte hbPosition, ref float scale, ref Vector2 position)
-        {
-            if (CalamityWorld.death || BossRushEvent.BossRushActive)
-            {
-                if (npc.type == NPCID.Creeper)
-                {
-                    bool brainIsInPhase2 = Main.npc[NPC.crimsonBoss].ai[0] < 0f;
-                    if (brainIsInPhase2)
-                        return false;
-                }
-            }
-
-            return null;
         }
 
         public static Color buffColor(Color newColor, float R, float G, float B, float A)
@@ -6704,61 +6172,45 @@ namespace CalamityMod.NPCs
             {
                 case NPCID.KingSlime:
                     return NPC.downedSlimeKing;
-
                 case NPCID.EyeofCthulhu:
                     return NPC.downedBoss1;
-
                 case NPCID.EaterofWorldsHead:
                 case NPCID.EaterofWorldsBody:
                 case NPCID.EaterofWorldsTail:
                 case NPCID.BrainofCthulhu:
                 case NPCID.Creeper:
                     return NPC.downedBoss2;
-
                 case NPCID.QueenBee:
                     return NPC.downedQueenBee;
-
                 case NPCID.SkeletronHead:
                     return NPC.downedBoss3;
-
                 case NPCID.Deerclops:
                     return NPC.downedDeerclops;
-
                 case NPCID.WallofFlesh:
                 case NPCID.WallofFleshEye:
                     return Main.hardMode;
-
                 case NPCID.QueenSlimeBoss:
                     return NPC.downedQueenSlime;
-
                 case NPCID.TheDestroyer:
                 case NPCID.TheDestroyerBody:
                 case NPCID.TheDestroyerTail:
                     return NPC.downedMechBoss1;
-
                 case NPCID.Spazmatism:
                 case NPCID.Retinazer:
                     return NPC.downedMechBoss2;
-
                 case NPCID.SkeletronPrime:
                     return NPC.downedMechBoss3;
-
                 case NPCID.Plantera:
                     return NPC.downedPlantBoss;
-
                 case NPCID.HallowBoss:
                     return NPC.downedEmpressOfLight;
-
                 case NPCID.Golem:
                 case NPCID.GolemHead:
                     return NPC.downedGolemBoss;
-
                 case NPCID.DukeFishron:
                     return NPC.downedFishron;
-
                 case NPCID.CultistBoss:
                     return NPC.downedAncientCultist;
-
                 case NPCID.MoonLordCore:
                 case NPCID.MoonLordHand:
                 case NPCID.MoonLordHead:
@@ -6766,113 +6218,59 @@ namespace CalamityMod.NPCs
             }
 
             if (type == NPCType<DesertScourgeHead>() || type == NPCType<DesertScourgeBody>() || type == NPCType<DesertScourgeTail>())
-            {
                 return DownedBossSystem.downedDesertScourge;
-            }
             else if (type == NPCType<Crabulon.Crabulon>())
-            {
                 return DownedBossSystem.downedCrabulon;
-            }
             else if (type == NPCType<HiveMind.HiveMind>())
-            {
                 return DownedBossSystem.downedHiveMind;
-            }
             else if (type == NPCType<PerforatorHive>())
-            {
                 return DownedBossSystem.downedPerforator;
-            }
             else if (type == NPCType<SlimeGodCore>())
-            {
                 return DownedBossSystem.downedSlimeGod;
-            }
             else if (type == NPCType<Cryogen.Cryogen>())
-            {
                 return DownedBossSystem.downedCryogen;
-            }
             else if (type == NPCType<AquaticScourgeHead>() || type == NPCType<AquaticScourgeBody>() || type == NPCType<AquaticScourgeBodyAlt>() || type == NPCType<AquaticScourgeTail>())
-            {
                 return DownedBossSystem.downedAquaticScourge;
-            }
             else if (type == NPCType<BrimstoneElemental.BrimstoneElemental>())
-            {
                 return DownedBossSystem.downedBrimstoneElemental;
-            }
             else if (type == NPCType<CalamitasClone>())
-            {
                 return DownedBossSystem.downedCalamitasClone;
-            }
             else if (type == NPCType<Leviathan.Leviathan>() || type == NPCType<Anahita>())
-            {
                 return DownedBossSystem.downedLeviathan;
-            }
             else if (type == NPCType<AstrumAureus.AstrumAureus>())
-            {
                 return DownedBossSystem.downedAstrumAureus;
-            }
             else if (type == NPCType<AstrumDeusHead>() || type == NPCType<AstrumDeusBody>() || type == NPCType<AstrumDeusTail>())
-            {
                 return DownedBossSystem.downedAstrumDeus;
-            }
             else if (type == NPCType<PlaguebringerGoliath.PlaguebringerGoliath>())
-            {
                 return DownedBossSystem.downedPlaguebringer;
-            }
             else if (type == NPCType<RavagerBody>())
-            {
                 return DownedBossSystem.downedRavager;
-            }
             else if (type == NPCType<ProfanedGuardianCommander>())
-            {
                 return DownedBossSystem.downedGuardians;
-            }
             else if (type == NPCType<Dragonfolly>())
-            {
                 return DownedBossSystem.downedDragonfolly;
-            }
             else if (type == NPCType<Providence.Providence>())
-            {
                 return DownedBossSystem.downedProvidence;
-            }
             else if (type == NPCType<CeaselessVoid.CeaselessVoid>() || type == NPCType<DarkEnergy>())
-            {
                 return DownedBossSystem.downedCeaselessVoid;
-            }
             else if (type == NPCType<StormWeaverHead>() || type == NPCType<StormWeaverBody>() || type == NPCType<StormWeaverTail>())
-            {
                 return DownedBossSystem.downedStormWeaver;
-            }
             else if (type == NPCType<Signus.Signus>())
-            {
                 return DownedBossSystem.downedSignus;
-            }
             else if (type == NPCType<Polterghast.Polterghast>())
-            {
                 return DownedBossSystem.downedPolterghast;
-            }
             else if (type == NPCType<OldDuke.OldDuke>())
-            {
                 return DownedBossSystem.downedBoomerDuke;
-            }
             else if (type == NPCType<DevourerofGodsHead>() || type == NPCType<DevourerofGodsBody>() || type == NPCType<DevourerofGodsTail>())
-            {
                 return DownedBossSystem.downedDoG;
-            }
             else if (type == NPCType<Yharon.Yharon>())
-            {
                 return DownedBossSystem.downedYharon;
-            }
             else if (type == NPCType<Artemis>() || type == NPCType<Apollo>() || type == NPCType<AresBody>() || type == NPCType<AresGaussNuke>() || type == NPCType<AresLaserCannon>() || type == NPCType<AresPlasmaFlamethrower>() || type == NPCType<AresTeslaCannon>() || type == NPCType<ThanatosHead>() || type == NPCType<ThanatosBody1>() || type == NPCType<ThanatosBody2>() || type == NPCType<ThanatosTail>())
-            {
                 return DownedBossSystem.downedExoMechs;
-            }
             else if (type == NPCType<SupremeCalamitas.SupremeCalamitas>())
-            {
                 return DownedBossSystem.downedCalamitas;
-            }
             else if (type == NPCType<PrimordialWyrmHead>())
-            {
                 return DownedBossSystem.downedPrimordialWyrm;
-            }
 
             return true;
         }
@@ -6904,9 +6302,7 @@ namespace CalamityMod.NPCs
             foreach (Player player in Main.ActivePlayers)
             {
                 if (!player.dead && !player.ghost)
-                {
                     return true;
-                }
             }
             return false;
         }
@@ -6914,9 +6310,7 @@ namespace CalamityMod.NPCs
         public static int GetActivePlayerCount()
         {
             if (Main.netMode == NetmodeID.SinglePlayer)
-            {
                 return 1;
-            }
 
             return Main.CurrentFrameFlags.ActivePlayersCount;
         }
@@ -6943,7 +6337,6 @@ namespace CalamityMod.NPCs
         public static void OldDukeSpawn(int plr, int type, int baitType)
         {
             Player player = Main.player[plr];
-
             if (!player.active || player.dead)
                 return;
 
@@ -6962,7 +6355,7 @@ namespace CalamityMod.NPCs
                                 player.inventory[item].stack--;
                                 if (player.inventory[item].stack <= 0)
                                 {
-                                    player.inventory[item].SetDefaults(0, false);
+                                    player.inventory[item].SetDefaults(ItemID.None, false);
                                 }
                                 break;
                             }
@@ -6972,10 +6365,8 @@ namespace CalamityMod.NPCs
                         projectile.netUpdate = true;
 
                         // The vanilla game uses a special packet for Duke Fishron spawning.
-                        // However, this packet doesn't work on modded NPC types, so we must create
-                        // a custom one.
-                        // Also, you can't use Netmode != NetmodeID.MultiplayerClient in a projectile context that
-                        // has an owner, hence the MyPlayer check.
+                        // However, this packet doesn't work on modded NPC types, so we must create a custom one.
+                        // Also, you can't use Netmode != NetmodeID.MultiplayerClient in a projectile context that has an owner, hence the MyPlayer check.
                         if (Main.myPlayer == projectile.owner)
                         {
                             if (!player.active || player.dead)
@@ -7007,7 +6398,6 @@ namespace CalamityMod.NPCs
                             }
                         }
                     }
-
                     break;
                 }
                 else
@@ -7018,7 +6408,7 @@ namespace CalamityMod.NPCs
         }
         #endregion
 
-        #region Astral things
+        #region Astral Things
         public static void DoHitDust(NPC npc, int hitDirection, int dustType = 5, float xSpeedMult = 1f, int numHitDust = 5, int numDeathDust = 20)
         {
             for (int k = 0; k < 5; k++)
@@ -7029,19 +6419,15 @@ namespace CalamityMod.NPCs
             if (npc.life <= 0)
             {
                 for (int k = 0; k < 20; k++)
-                {
                     Dust.NewDust(npc.position, npc.width, npc.height, dustType, hitDirection * xSpeedMult, -1f);
-                }
             }
         }
 
         public static void DoFlyingAI(NPC npc, float maxSpeed, float acceleration, float circleTime, float minDistanceTarget = 150f, bool shouldAttackTarget = true)
         {
-            //Pick a new target.
+            // Pick a new target
             if (npc.target < 0 || npc.target >= Main.maxPlayers || Main.player[npc.target].dead)
-            {
                 npc.TargetClosest(true);
-            }
 
             Player myTarget = Main.player[npc.target];
             Vector2 toTarget = myTarget.Center - npc.Center;
@@ -7058,40 +6444,26 @@ namespace CalamityMod.NPCs
                 maxVelocity *= magnitude;
             }
 
-            //Circular motion
+            // Circular motion
             npc.ai[0]++;
 
-            //y motion
+            // Y motion
             if (npc.ai[0] > circleTime * 0.5f)
-            {
                 npc.velocity.Y += acceleration;
-            }
             else
-            {
                 npc.velocity.Y -= acceleration;
-            }
-
-            //x motion
+            // X motion
             if (npc.ai[0] < circleTime * 0.25f || npc.ai[0] > circleTime * 0.75f)
-            {
                 npc.velocity.X += acceleration;
-            }
             else
-            {
                 npc.velocity.X -= acceleration;
-            }
-
-            //reset
+            // Reset
             if (npc.ai[0] > circleTime)
-            {
                 npc.ai[0] = 0f;
-            }
 
-            //if close enough
+            // If close enough
             if (shouldAttackTarget && distanceToTarget < minDistanceTarget)
-            {
                 npc.velocity += maxVelocity * 0.007f;
-            }
 
             if (myTarget.dead)
             {
@@ -7099,40 +6471,25 @@ namespace CalamityMod.NPCs
                 maxVelocity.Y = -maxSpeed / 2f;
             }
 
-            //maximise velocity
+            // Maximise velocity
             if (npc.velocity.X < maxVelocity.X)
-            {
                 npc.velocity.X += acceleration;
-            }
-
             if (npc.velocity.X > maxVelocity.X)
-            {
                 npc.velocity.X -= acceleration;
-            }
-
             if (npc.velocity.Y < maxVelocity.Y)
-            {
                 npc.velocity.Y += acceleration;
-            }
-
             if (npc.velocity.Y > maxVelocity.Y)
-            {
                 npc.velocity.Y -= acceleration;
-            }
 
-            //rotate towards player if alive
+            // Rotate towards player if alive
             if (!myTarget.dead)
-            {
                 npc.rotation = toTarget.ToRotation();
-            }
-            else //don't, do velocity instead
-            {
+            else // Don't, do velocity instead
                 npc.rotation = npc.velocity.ToRotation();
-            }
 
             npc.rotation += MathHelper.Pi;
 
-            //tile collision
+            // Tile collision
             float collisionDamp = 0.7f;
             if (npc.collideX)
             {
@@ -7140,14 +6497,9 @@ namespace CalamityMod.NPCs
                 npc.velocity.X = npc.oldVelocity.X * -collisionDamp;
 
                 if (npc.direction == -1 && npc.velocity.X > 0f && npc.velocity.X < 2f)
-                {
                     npc.velocity.X = 2f;
-                }
-
                 if (npc.direction == 1 && npc.velocity.X < 0f && npc.velocity.X > -2f)
-                {
                     npc.velocity.X = -2f;
-                }
             }
             if (npc.collideY)
             {
@@ -7155,33 +6507,22 @@ namespace CalamityMod.NPCs
                 npc.velocity.Y = npc.oldVelocity.Y * -collisionDamp;
 
                 if (npc.velocity.Y > 0f && npc.velocity.Y < 1.5f)
-                {
                     npc.velocity.Y = 1.5f;
-                }
-
                 if (npc.velocity.Y < 0f && npc.velocity.Y > -1.5f)
-                {
                     npc.velocity.Y = -1.5f;
-                }
             }
 
-            //water collision
+            // Water collision
             if (npc.wet)
             {
                 if (npc.velocity.Y > 0f)
-                {
                     npc.velocity.Y *= 0.95f;
-                }
-
                 npc.velocity.Y -= 0.3f;
-
                 if (npc.velocity.Y < -2f)
-                {
                     npc.velocity.Y = -2f;
-                }
             }
 
-            //Taken from source. Important for net?
+            // Taken from source. Important for net?
             if (((npc.velocity.X > 0f && npc.oldVelocity.X < 0f) || (npc.velocity.X < 0f && npc.oldVelocity.X > 0f) || (npc.velocity.Y > 0f && npc.oldVelocity.Y < 0f) || (npc.velocity.Y < 0f && npc.oldVelocity.Y > 0f)) && !npc.justHit)
             {
                 npc.netUpdate = true;
@@ -7190,16 +6531,14 @@ namespace CalamityMod.NPCs
 
         public static void DoSpiderWallAI(NPC npc, int transformType, float chaseMaxSpeed = 2f, float chaseAcceleration = 0.08f)
         {
-            //GET NEW TARGET
+            // GET NEW TARGET
             if (npc.target < 0 || npc.target == Main.maxPlayers || Main.player[npc.target].dead)
-            {
                 npc.TargetClosest();
-            }
 
             Vector2 between = Main.player[npc.target].Center - npc.Center;
             float distance = between.Length();
 
-            //modify vector depending on distance and speed.
+            // Modify vector depending on distance and speed.
             if (distance == 0f)
             {
                 between.X = npc.velocity.X;
@@ -7212,7 +6551,7 @@ namespace CalamityMod.NPCs
                 between.Y *= distance;
             }
 
-            //update if target dead.
+            // Update if target dead.
             if (Main.player[npc.target].dead)
             {
                 between.X = npc.direction * chaseMaxSpeed / 2f;
@@ -7220,58 +6559,35 @@ namespace CalamityMod.NPCs
             }
             npc.spriteDirection = -1;
 
-            //If spider can't see target, circle around to attempt to find the target.
+            // If spider can't see target, circle around to attempt to find the target.
             if (!Collision.CanHit(npc.position, npc.width, npc.height, Main.player[npc.target].position, Main.player[npc.target].width, Main.player[npc.target].height))
             {
-                //CIRCULAR MOTION, SIMILAR TO FLYING AI (Eater of Souls etc.)
+                // CIRCULAR MOTION, SIMILAR TO FLYING AI (Eater of Souls etc.)
                 npc.ai[0]++;
 
                 if (npc.ai[0] > 0f)
-                {
                     npc.velocity.Y += 0.023f;
-                }
                 else
-                {
                     npc.velocity.Y -= 0.023f;
-                }
-
                 if (npc.ai[0] < -100f || npc.ai[0] > 100f)
-                {
                     npc.velocity.X += 0.023f;
-                }
                 else
-                {
                     npc.velocity.X -= 0.023f;
-                }
-
                 if (npc.ai[0] > 200f)
-                {
                     npc.ai[0] = -200f;
-                }
 
                 npc.velocity.X += between.X * 0.007f;
                 npc.velocity.Y += between.Y * 0.007f;
                 npc.rotation = npc.velocity.ToRotation();
 
                 if (npc.velocity.X > 1.5f)
-                {
                     npc.velocity.X *= 0.9f;
-                }
-
                 if (npc.velocity.X < -1.5f)
-                {
                     npc.velocity.X *= 0.9f;
-                }
-
                 if (npc.velocity.Y > 1.5f)
-                {
                     npc.velocity.Y *= 0.9f;
-                }
-
                 if (npc.velocity.Y < -1.5f)
-                {
                     npc.velocity.Y *= 0.9f;
-                }
 
                 npc.velocity.X = MathHelper.Clamp(npc.velocity.X, -3f, 3f);
                 npc.velocity.Y = MathHelper.Clamp(npc.velocity.Y, -3f, 3f);
@@ -7281,43 +6597,31 @@ namespace CalamityMod.NPCs
                 if (npc.velocity.X < between.X)
                 {
                     npc.velocity.X += chaseAcceleration;
-
                     if (npc.velocity.X < 0f && between.X > 0f)
-                    {
                         npc.velocity.X += chaseAcceleration;
-                    }
                 }
                 else if (npc.velocity.X > between.X)
                 {
                     npc.velocity.X -= chaseAcceleration;
-
                     if (npc.velocity.X > 0f && between.X < 0f)
-                    {
                         npc.velocity.X -= chaseAcceleration;
-                    }
                 }
                 if (npc.velocity.Y < between.Y)
                 {
                     npc.velocity.Y += chaseAcceleration;
-
                     if (npc.velocity.Y < 0f && between.Y > 0f)
-                    {
                         npc.velocity.Y += chaseAcceleration;
-                    }
                 }
                 else if (npc.velocity.Y > between.Y)
                 {
                     npc.velocity.Y -= chaseAcceleration;
-
                     if (npc.velocity.Y > 0f && between.Y < 0f)
-                    {
                         npc.velocity.Y -= chaseAcceleration;
-                    }
                 }
                 npc.rotation = between.ToRotation();
             }
 
-            //DAMP COLLISIONS OFF OF WALLS
+            // DAMP COLLISIONS OFF OF WALLS
             float collisionDamp = 0.5f;
             if (npc.collideX)
             {
@@ -7325,14 +6629,9 @@ namespace CalamityMod.NPCs
                 npc.velocity.X = npc.oldVelocity.X * -collisionDamp;
 
                 if (npc.direction == -1 && npc.velocity.X > 0f && npc.velocity.X < 2f)
-                {
                     npc.velocity.X = 2f;
-                }
-
                 if (npc.direction == 1 && npc.velocity.X < 0f && npc.velocity.X > -2f)
-                {
                     npc.velocity.X = -2f;
-                }
             }
             if (npc.collideY)
             {
@@ -7340,14 +6639,9 @@ namespace CalamityMod.NPCs
                 npc.velocity.Y = npc.oldVelocity.Y * -collisionDamp;
 
                 if (npc.velocity.Y > 0f && npc.velocity.Y < 1.5f)
-                {
                     npc.velocity.Y = 2f;
-                }
-
                 if (npc.velocity.Y < 0f && npc.velocity.Y > -1.5f)
-                {
                     npc.velocity.Y = -2f;
-                }
             }
 
             if (((npc.velocity.X > 0f && npc.oldVelocity.X < 0f) || (npc.velocity.X < 0f && npc.oldVelocity.X > 0f) || (npc.velocity.Y > 0f && npc.oldVelocity.Y < 0f) || (npc.velocity.Y < 0f && npc.oldVelocity.Y > 0f)) && !npc.justHit)
@@ -7365,10 +6659,8 @@ namespace CalamityMod.NPCs
                 {
                     for (int j = y - 1; j <= y + 1; j++)
                     {
-                        if (Main.tile[i, j].WallType > 0)
-                        {
+                        if (Main.tile[i, j].WallType > WallID.None)
                             flag = true;
-                        }
                     }
                 }
                 if (!flag)
@@ -7419,14 +6711,9 @@ namespace CalamityMod.NPCs
                     npc.velocity.X = npc.oldVelocity.X * -0.5f;
 
                     if (npc.direction == -1 && npc.velocity.X > 0f && npc.velocity.X < 2f)
-                    {
                         npc.velocity.X = 2f;
-                    }
-
                     if (npc.direction == 1 && npc.velocity.X < 0f && npc.velocity.X > -2f)
-                    {
                         npc.velocity.X = -2f;
-                    }
                 }
 
                 if (npc.collideY)
@@ -7434,14 +6721,9 @@ namespace CalamityMod.NPCs
                     npc.velocity.Y = npc.oldVelocity.Y * -0.5f;
 
                     if (npc.velocity.Y > 0f && npc.velocity.Y < 1f)
-                    {
                         npc.velocity.Y = 1f;
-                    }
-
                     if (npc.velocity.Y < 0f && npc.velocity.Y > -1f)
-                    {
                         npc.velocity.Y = -1f;
-                    }
                 }
 
                 if (npc.direction == -1 && npc.velocity.X > -maxSpeed)
@@ -7449,88 +6731,57 @@ namespace CalamityMod.NPCs
                     npc.velocity.X -= acceleration;
 
                     if (npc.velocity.X > maxSpeed)
-                    {
                         npc.velocity.X -= acceleration;
-                    }
                     else if (npc.velocity.X > 0f)
-                    {
                         npc.velocity.X -= acceleration * 0.5f;
-                    }
-
                     if (npc.velocity.X < -maxSpeed)
-                    {
                         npc.velocity.X = -maxSpeed;
-                    }
                 }
                 else if (npc.direction == 1 && npc.velocity.X < maxSpeed)
                 {
                     npc.velocity.X += acceleration;
 
                     if (npc.velocity.X < -maxSpeed)
-                    {
                         npc.velocity.X += acceleration;
-                    }
                     else if (npc.velocity.X < 0f)
-                    {
                         npc.velocity.X += acceleration * 0.5f;
-                    }
-
                     if (npc.velocity.X > maxSpeed)
-                    {
                         npc.velocity.X = maxSpeed;
-                    }
                 }
 
                 float xDistance = Math.Abs(npc.Center.X - Main.player[npc.target].Center.X);
                 float yLimiter = Main.player[npc.target].position.Y - (npc.height / 2f);
                 if (xDistance > 50f)
-                {
                     yLimiter -= 100f;
-                }
 
                 if (npc.position.Y < yLimiter)
                 {
                     npc.velocity.Y += acceleration * 0.5f;
 
                     if (npc.velocity.Y < 0f)
-                    {
                         npc.velocity.Y += acceleration * 0.1f;
-                    }
                 }
                 else
                 {
                     npc.velocity.Y -= acceleration * 0.5f;
 
                     if (npc.velocity.Y > 0f)
-                    {
                         npc.velocity.Y -= acceleration * 0.1f;
-                    }
                 }
 
                 if (npc.velocity.Y < -maxSpeed)
-                {
                     npc.velocity.Y = -maxSpeed;
-                }
-
                 if (npc.velocity.Y > maxSpeed)
-                {
                     npc.velocity.Y = maxSpeed;
-                }
             }
-            //Change velocity if wet.
+            // Change velocity if wet.
             if (npc.wet)
             {
                 if (npc.velocity.Y > 0f)
-                {
                     npc.velocity.Y *= 0.95f;
-                }
-
                 npc.velocity.Y -= 0.5f;
-
                 if (npc.velocity.Y < -4f)
-                {
                     npc.velocity.Y = -4f;
-                }
             }
         }
 
@@ -7545,7 +6796,7 @@ namespace CalamityMod.NPCs
         {
             Vector2 half = new Vector2(frameWidth / 2f, frameHeight / 2f);
 
-            //"flip" the rectangle's position x-wise.
+            // "Flip" the rectangle's position x-wise.
             if ((!useSpriteDirection && npc.direction == 1) || (useSpriteDirection && npc.spriteDirection == 1))
             {
                 rect.X = frameWidth - rect.Right;
@@ -7686,15 +6937,11 @@ namespace CalamityMod.NPCs
 
             // Add the Astral Infection to the Enchanted Nightcrawler's entry as it spawns there now
             if (npc.type == NPCID.EnchantedNightcrawler)
-            {
                 bestiaryEntry.AddTags(GetInstance<AstralInfectionBiome>().ModBiomeBestiaryInfoElement);
-            }
 
             // Add the Surface Mushroom biome to the Truffle Worm's entry as it spawns there now
             if (npc.type == NPCID.TruffleWorm)
-            {
                 bestiaryEntry.AddTags(BestiaryDatabaseNPCsPopulator.CommonTags.SpawnConditions.Biomes.SurfaceMushroom);
-            }
 
             // Remove the static portraits from vanilla worms so that Calamity's worm movement can be added in PreDraw
             switch (npc.netID)
@@ -7723,13 +6970,10 @@ namespace CalamityMod.NPCs
         {
             string result = CalamityUtils.GetTextValue("UI.DebuffSystem.Neutral");
             if (effectiveness == true)
-            {
                 result = CalamityUtils.GetTextValue("UI.DebuffSystem.Weak");
-            }
             else if (effectiveness == false)
-            {
                 result = CalamityUtils.GetTextValue("UI.DebuffSystem.Resistant");
-            }
+
             result += " " + CalamityUtils.GetTextValue("UI.DebuffSystem.To") + " " + name;
             return result;
         }

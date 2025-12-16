@@ -1,10 +1,8 @@
 ﻿using System.IO;
 using CalamityMod.BiomeManagers;
 using CalamityMod.Dusts;
-using CalamityMod.Items.Accessories;
 using CalamityMod.Items.Materials;
 using CalamityMod.Items.Placeables.Banners;
-using CalamityMod.NPCs.NormalNPCs;
 using CalamityMod.Particles;
 using CalamityMod.Projectiles.Enemy;
 using Microsoft.Xna.Framework;

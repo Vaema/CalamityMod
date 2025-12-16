@@ -50,23 +50,6 @@ namespace CalamityMod.Systems.Collections
                 BuffType<WeaponImbueCrumbling>(), BuffType<WeaponImbueHolyFlames>());
 
         /// <summary>
-        /// If <see langword="true"/> for a buff type, then that buff is considered to be a sickness debuff.<br/>
-        /// Used for reducing buff duration with Honey Dew and its upgrades.<br/>
-        /// Defaults to <see langword="false"/>.
-        /// </summary>
-        public static bool[] IsSicknessDebuff = Factory.CreateBoolSet(BuffID.Poisoned, BuffID.Venom, BuffType<BrainRot>(), BuffType<BurningBlood>(), BuffType<SulphuricPoisoning>(),
-                BuffType<AstralInfectionDebuff>(), BuffType<Plague>(), BuffType<AbsorberAffliction>(), BuffType<WhisperingDeath>(), BuffType<Irradiated>());
-
-        /// <summary>
-        /// If <see langword="true"/> for a buff type, then that buff is considered to be a fire debuff.<br/>
-        /// Used for reducing buff duration with Living Dew and its upgrades, and providing Permafrost's Concoction's life regeneration boost.<br/>
-        /// Defaults to <see langword="false"/>.
-        /// </summary>
-        public static bool[] IsFireDebuff = Factory.CreateBoolSet(BuffID.OnFire, BuffID.OnFire3, BuffID.Burning, BuffID.CursedInferno, BuffID.ShadowFlame, BuffType<Shadowflame>(),
-                BuffType<SearingLava>(), BuffType<BrimstoneFlames>(), BuffType<Daybroken>(), BuffType<HolyFlames>(), BuffType<GodSlayerInferno>(), BuffType<Dragonfire>(),
-                BuffType<WeakBrimstoneFlames>(), BuffType<BanishingFire>(), BuffType<ManaBurn>());
-
-        /// <summary>
         /// If <see langword="true"/> for a buff type, then that buff is considered to be a debuff.<br/>
         /// This general-purpose set has several different uses, including reducing buff duration with Radiance, Crown Jewel and its upgrades' debuff effects, and removing debuffs with Cleansing Jelly and its upgrades' auras.<br/>
         /// Defaults to <see langword="false"/>.

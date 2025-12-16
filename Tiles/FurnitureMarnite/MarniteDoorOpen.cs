@@ -1,6 +1,4 @@
-﻿using CalamityMod.Items.Placeables.FurnitureAbyss;
-using CalamityMod.Items.Placeables.FurnitureMarnite;
-using CalamityMod.Tiles.FurnitureMarnite;
+﻿using CalamityMod.Items.Placeables.FurnitureMarnite;
 using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.GameContent.ObjectInteractions;

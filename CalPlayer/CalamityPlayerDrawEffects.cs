@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using CalamityMod.Buffs.DamageOverTime;
 using CalamityMod.Buffs.StatBuffs;
 using CalamityMod.Buffs.StatDebuffs;
@@ -16,6 +15,7 @@ using CalamityMod.Projectiles.Ranged;
 using CalamityMod.Projectiles.Summon;
 using CalamityMod.Projectiles.Typeless;
 using CalamityMod.Systems.Collections;
+using CalamityMod.Utilities.Daybreak;
 using CalamityMod.Systems.Graphic.PixelationSystem;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
@@ -195,11 +195,13 @@ namespace CalamityMod.CalPlayer
                     color = color * 0.2f;
                 var bloomTex = ModContent.Request<Texture2D>("CalamityMod/Particles/BloomCircle").Value;
                 var circleTex = ModContent.Request<Texture2D>("CalamityMod/ExtraTextures/BasicCircle").Value;
-                Main.spriteBatch.SafeBegin(SpriteSortMode.Deferred, BatchSetting.Additive, null, Main.GameViewMatrix.TransformationMatrix, () =>
+                using (Main.spriteBatch.Scope())
                 {
+                    Main.spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.Additive, SamplerState.PointClamp, DepthStencilState.None, Main.Rasterizer, null, Main.GameViewMatrix.TransformationMatrix);
                     Main.spriteBatch.Draw(bloomTex, Player.Center + (Vector2.UnitX * Player.direction).RotatedBy(Player.itemRotation) * (48 + scale * 96) - Main.screenPosition, null, color, 0, bloomTex.Size() * 0.5f, scale * 2.0f, SpriteEffects.None, 0);
                     Main.spriteBatch.Draw(bloomTex, Player.Center + (Vector2.UnitX * Player.direction).RotatedBy(Player.itemRotation) * (48 + scale * 96) - Main.screenPosition, null, color, 0, bloomTex.Size() * 0.5f, scale * 2.0f, SpriteEffects.None, 0);
-                });
+                    Main.spriteBatch.End();
+                }
                 for (var i = 0; i < 5; i++)
                     Main.spriteBatch.Draw(circleTex, Player.Center + (Vector2.UnitX * Player.direction).RotatedBy(Player.itemRotation) * (48 + scale * 96) - Main.screenPosition, null, Color.Black * ((i + 1) / 5f) * (CalamityClientConfig.Instance.Photosensitivity ? 0.2f : 1f), 0, circleTex.Size() * 0.5f, scale * 2.2f * (0.5f + 0.5f * (1 - (i) / 5f)), SpriteEffects.None, 0);
                 //GeneralParticleHandler.SpawnParticle(new DirectionalPulseRing(player.Center + Vector2.UnitX.RotatedBy(player.itemRotation) * (48 + scale*96), Vector2.Zero, Color.Cyan, Vector2.One, 0, scale, scale, 3));
@@ -561,6 +563,16 @@ namespace CalamityMod.CalPlayer
                 VulnerabilityHex.DrawEffects(drawInfo);
             #endregion
 
+            if (calamityPlayer.fortunesFavor && drawInfo.shadow == 0f)
+            {
+                if (Main.rand.NextBool(12))
+                {
+                    Vector2 plusPos = new Vector2(Player.position.X + Main.rand.NextFloat(-8f, 20f), Player.position.Y + Main.rand.NextFloat(-14f, 36f));
+
+                    Particle Plus = new HealingPlus(plusPos, Main.rand.NextFloat(0.33f, 0.66f), new Vector2(0, Main.rand.NextFloat(-2f, -3.5f)) + Player.velocity, Color.Gold, Color.Goldenrod, Main.rand.Next(9, 13));
+                    GeneralParticleHandler.SpawnParticle(Plus);
+                }
+            }
             if (calamityPlayer.PinkJellyRegen && drawInfo.shadow == 0f)
             {
                 if (Main.rand.NextBool(24))

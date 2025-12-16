@@ -1,12 +1,7 @@
 ﻿using System;
 using System.Linq;
-using CalamityMod.Buffs.DamageOverTime;
 using CalamityMod.Dusts;
 using CalamityMod.Graphics.Primitives;
-using CalamityMod.Items.Materials;
-using CalamityMod.Items.Weapons.Melee;
-using CalamityMod.Particles;
-using CalamityMod.Projectiles.Typeless;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using ReLogic.Content;
@@ -15,7 +10,6 @@ using Terraria.Audio;
 using Terraria.Graphics.Shaders;
 using Terraria.ID;
 using Terraria.ModLoader;
-using static CalamityMod.CalamityUtils;
 using static Terraria.ModLoader.ModContent;
 
 namespace CalamityMod.Projectiles.Melee
@@ -113,7 +107,7 @@ namespace CalamityMod.Projectiles.Melee
 
         public override Color? GetAlpha(Color lightColor) => Color.Lerp(Color.MediumPurple, Color.CornflowerBlue, 0.5f) with { A = 0 } * Projectile.Opacity;
 
-        public float TrailWidth(float completionRatio)
+        public float TrailWidth(float completionRatio, Vector2 vertexPos)
         {
             float width = Utils.GetLerpValue(1f, 0.4f, completionRatio, true) * (float)Math.Sin(Math.Acos(1 - Utils.GetLerpValue(0f, 0.08f, completionRatio, true)));
 
@@ -121,21 +115,21 @@ namespace CalamityMod.Projectiles.Melee
 
             return width * (MaxWidth * .265f);
         }
-        public Color TrailColor(float completionRatio)
+        public Color TrailColor(float completionRatio, Vector2 vertexPos)
         {
             Color baseColor = Color.Lerp(Color.MediumPurple, Color.CornflowerBlue, completionRatio);
 
             return baseColor * 0.2f * Projectile.Opacity;
         }
 
-        public Color MiniTrailColor(float completionRatio)
+        public Color MiniTrailColor(float completionRatio, Vector2 vertexPos)
         {
             Color baseColor = Color.Lerp(Color.MediumPurple, Color.CornflowerBlue, completionRatio);
 
             return baseColor * Projectile.Opacity;
         }
 
-        public float MiniTrailWidth(float completionRatio) => TrailWidth(completionRatio) * 5.5f;
+        public float MiniTrailWidth(float completionRatio, Vector2 vertexPos) => TrailWidth(completionRatio, vertexPos) * 5.5f;
 
         public override bool PreDraw(ref Color lightColor)
         {
@@ -161,12 +155,12 @@ namespace CalamityMod.Projectiles.Melee
             // Apply the offset to the projectile's old position
             Vector2[] oldPosWithOffset = Projectile.oldPos.Select(p => p - offset).ToArray();
 
-            PrimitiveRenderer.RenderTrail(oldPosWithOffset, new(TrailWidth, TrailColor, (_) => Projectile.Size * 1f, shader: GameShaders.Misc["CalamityMod:ExobladePierce"]), 30);
+            PrimitiveRenderer.RenderTrail(oldPosWithOffset, new(TrailWidth, TrailColor, (_,_) => Projectile.Size * 1f, shader: GameShaders.Misc["CalamityMod:ExobladePierce"]), 30);
 
             GameShaders.Misc["CalamityMod:ExobladePierce"].UseColor(mainColor);
             GameShaders.Misc["CalamityMod:ExobladePierce"].UseSecondaryColor(secondaryColor);
 
-            PrimitiveRenderer.RenderTrail(oldPosWithOffset, new(MiniTrailWidth, MiniTrailColor, (_) => Projectile.Size * 1f, shader: GameShaders.Misc["CalamityMod:ExobladePierce"]), 30);
+            PrimitiveRenderer.RenderTrail(oldPosWithOffset, new(MiniTrailWidth, MiniTrailColor, (_,_) => Projectile.Size * 1f, shader: GameShaders.Misc["CalamityMod:ExobladePierce"]), 30);
 
             Main.spriteBatch.ExitShaderRegion();
             return false;

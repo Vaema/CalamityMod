@@ -83,7 +83,7 @@ namespace CalamityMod.NPCs.Signus
             NPC.width = 130;
             NPC.height = 130;
             NPC.defense = 60;
-            NPC.LifeMaxNERB(320000, 375000, 380000);
+            NPC.LifeMaxNERB(250000, 375000, 380000);
             NPC.value = Item.buyPrice(gold: 50);
             NPC.knockBackResist = 0f;
             NPC.aiStyle = -1;

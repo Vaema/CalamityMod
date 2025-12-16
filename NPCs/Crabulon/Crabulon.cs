@@ -1,8 +1,6 @@
 ﻿using System;
 using System.IO;
-using CalamityMod.Buffs.Alcohol;
 using CalamityMod.Events;
-using CalamityMod.Items.Accessories;
 using CalamityMod.Items.Armor.Vanity;
 using CalamityMod.Items.LoreItems;
 using CalamityMod.Items.Placeables.Furniture.BossRelics;
@@ -34,7 +32,6 @@ namespace CalamityMod.NPCs.Crabulon
     [AutoloadBossHead]
     public class Crabulon : ModNPC
     {
-        private int biomeEnrageTimer = CalamityGlobalNPC.biomeEnrageTimerMax;
         private bool stomping = false;
         private const float TelegraphTimeBeforeBigJump = 20f;
         private const float DelayBeforeBigJump = 50f;
@@ -83,7 +80,7 @@ namespace CalamityMod.NPCs.Crabulon
             NPC.width = 196;
             NPC.height = 196;
             NPC.defense = 8;
-            NPC.LifeMaxNERB(3700, 4400, 500000);
+            NPC.LifeMaxNERB(3500, 4400, 500000);
             NPC.aiStyle = -1;
             AIType = -1;
             NPC.noGravity = false;
@@ -115,14 +112,12 @@ namespace CalamityMod.NPCs.Crabulon
 
         public override void SendExtraAI(BinaryWriter writer)
         {
-            writer.Write(biomeEnrageTimer);
             writer.Write(NPC.localAI[0]);
             writer.Write(stomping);
         }
 
         public override void ReceiveExtraAI(BinaryReader reader)
         {
-            biomeEnrageTimer = reader.ReadInt32();
             NPC.localAI[0] = reader.ReadSingle();
             stomping = reader.ReadBoolean();
         }

@@ -3,7 +3,6 @@ using System.IO;
 using CalamityMod.Buffs.DamageOverTime;
 using CalamityMod.Buffs.StatDebuffs;
 using CalamityMod.Events;
-using CalamityMod.Items.Accessories;
 using CalamityMod.Items.Armor.Vanity;
 using CalamityMod.Items.LoreItems;
 using CalamityMod.Items.Materials;
@@ -75,7 +74,7 @@ namespace CalamityMod.NPCs.Bumblebirb
             NPC.height = 100;
             NPC.defense = 40;
             NPC.DR_NERD(0.1f);
-            NPC.LifeMaxNERB(187500, 225000, 300000); // Old HP - 227500, 252500
+            NPC.LifeMaxNERB(150000, 225000, 300000); // Old HP - 227500, 252500
             NPC.knockBackResist = 0f;
             NPC.boss = true;
             NPC.noTileCollide = true;

@@ -1,14 +1,11 @@
 ﻿using System;
 using System.Linq;
 using CalamityMod.Buffs.Alcohol;
-using CalamityMod.Buffs.DamageOverTime;
-using CalamityMod.Buffs.Placeables;
 using CalamityMod.Buffs.StatBuffs;
 using CalamityMod.CalPlayer.Dashes;
-using CalamityMod.Cooldowns;
+using CalamityMod.DataStructures;
 using CalamityMod.Enums;
 using CalamityMod.Items.Accessories;
-using CalamityMod.Items.Accessories.Wings;
 using CalamityMod.Items.Armor.Fearmonger;
 using CalamityMod.Items.Armor.Reaver;
 using CalamityMod.Items.Armor.Silva;
@@ -117,8 +114,8 @@ namespace CalamityMod.CalPlayer
             ApplyDoTDebuff(crushDepth, 18, purity);
             ApplyDoTDebuff(astralInfection, 24, infectedJewel || hideOfDeus || purity);
             ApplyDoTDebuff(shadowflame, 30, purity);
-            ApplyDoTDebuff(brimstoneFlames, abaddon ? 15 : 30, purity);
-            ApplyDoTDebuff(plague, alchFlask ? 15 : 30, purity);
+            ApplyDoTDebuff(brimstoneFlames, (int)MathF.Round(30 * (abaddon ? (1f - Abaddon.BrimstoneFlamesReduction) : 1f)), purity);
+            ApplyDoTDebuff(plague, (int)MathF.Round(30 * (abaddon ? (1f - AlchemicalFlask.PlagueReduction) : 1f)), purity);
             ApplyDoTDebuff(vHex, 30); // Has other effects
             ApplyDoTDebuff(searingLava, 30);
             ApplyDoTDebuff(demonicFlames, 33, purity); // Never inflicted on the player
@@ -305,11 +302,11 @@ namespace CalamityMod.CalPlayer
                 for (int l = 0; l < Player.MaxBuffs; ++l)
                 {
                     int buffID = Player.buffType[l];
-                    if (Player.buffTime[l] <= 2)
+                    if (Player.buffTime[l] <= 2 || BuffDatasets.DebuffDataset[buffID] is null)
                         continue;
-                    bool shouldHalveDuration = CalamityBuffSets.IsSicknessDebuff[buffID];
+                    bool shouldHalveDuration = BuffDatasets.DebuffDataset[buffID].SicknessDebuffScaling > 0;
                     if (livingDewHalveDebuffs)
-                        shouldHalveDuration |= CalamityBuffSets.IsFireDebuff[buffID];
+                        shouldHalveDuration |= BuffDatasets.DebuffDataset[buffID].HeatDebuffScaling > 0;
                     if (purity)
                         shouldHalveDuration |= CalamityBuffSets.IsDebuff[buffID];
 
@@ -320,7 +317,7 @@ namespace CalamityMod.CalPlayer
 
             if (divineBless)
             {
-                if (Player.whoAmI == Main.myPlayer && Player.miscCounter % 15 == 0) // Flat 4 health per second
+                if (Player.whoAmI == Main.myPlayer && Player.miscCounter % AngelicAlliance.DivineBlessFramesPerHeal == 0) // Flat 4 health per second
                 {
                     if (!noLifeRegen)
                         Player.HealPlayer(1, HealTextType.None);
@@ -355,7 +352,7 @@ namespace CalamityMod.CalPlayer
             }
 
             // Permafrost's Concoction increases life regen while afflicted with a fire debuff
-            if (permafrostsConcoction && Player.buffType.Any(l => CalamityBuffSets.IsFireDebuff[l]))
+            if (permafrostsConcoction && Player.buffType.Any(l => BuffDatasets.DebuffDataset[l].HeatDebuffScaling > 0))
             {
                 if (Player.lifeRegenTime < 900)
                     Player.lifeRegenTime = 900;
@@ -368,7 +365,7 @@ namespace CalamityMod.CalPlayer
             {
                 float missingLifeRatio = (Player.statLifeMax2 - Player.statLife) / (float)Player.statLifeMax2;
                 //Ambrosial Ampule and ooze give between 2 and 5 hp/s
-                int lifeRegenToGive = (int)Math.Round(MathHelper.Lerp(4f, 10f, missingLifeRatio));//Rounding is needed for it to ever actually give +5 hp/s, as the integer conversion would otherwise floor it.
+                int lifeRegenToGive = (int)Math.Round(MathHelper.Lerp(RadiantOoze.MinRegenBoost, RadiantOoze.MaxRegenBoost, missingLifeRatio));//Rounding is needed for it to ever actually give +5 hp/s, as the integer conversion would otherwise floor it.
                 Player.lifeRegen += lifeRegenToGive; 
                 radiantOozeRegen += lifeRegenToGive / 2f;
                 purityRegen += lifeRegenToGive / 2f;
@@ -561,6 +558,9 @@ namespace CalamityMod.CalPlayer
             if (sRegen)
                 Player.lifeRegen += SpiritGlyph.RegenBoost;
 
+            if (fortunesFavor)
+                Player.lifeRegen += FortunesFavor.FortunesFavorRegenBoost;
+
             if (PinkJellyRegen)
                 Player.lifeRegen += LifeJelly.AuraRegenBoost;
 
@@ -574,7 +574,7 @@ namespace CalamityMod.CalPlayer
                 Player.lifeRegen += HallowedRune.RegenBoost;
 
             if (affliction || afflicted)
-                Player.lifeRegen += 1;
+                Player.lifeRegen += Affliction.RegenBoost;
 
             if (trinketOfChi || chiRegen)
                 Player.lifeRegen += 2;

@@ -1,5 +1,6 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using ReLogic.Content;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
@@ -8,6 +9,8 @@ namespace CalamityMod.Tiles.FurnitureStatigel
 {
     public class StatigelCandelabra : ModTile
     {
+        public Asset<Texture2D> FlameTexture;
+
         public override void SetStaticDefaults() => this.SetUpCandelabra(ModContent.ItemType<Items.Placeables.FurnitureStatigel.StatigelCandelabra>());
 
         public override bool CreateDust(int i, int j, ref int type)
@@ -44,7 +47,8 @@ namespace CalamityMod.Tiles.FurnitureStatigel
 
         public override void PostDraw(int i, int j, SpriteBatch spriteBatch)
         {
-            CalamityUtils.DrawFlameEffect(ModContent.Request<Texture2D>("CalamityMod/Tiles/FurnitureStatigel/StatigelCandelabraFlame").Value, i, j);
+            FlameTexture ??= ModContent.Request<Texture2D>("CalamityMod/Tiles/FurnitureStatigel/StatigelCandelabraFlame");
+            CalamityUtils.DrawFlameEffect(FlameTexture.Value, i, j);
         }
     }
 }

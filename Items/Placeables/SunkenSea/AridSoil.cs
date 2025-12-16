@@ -1,5 +1,4 @@
-﻿using CalamityMod.Tiles.SunkenSea;
-using Terraria.ID;
+﻿using Terraria.ID;
 using Terraria.ModLoader;
 
 namespace CalamityMod.Items.Placeables.SunkenSea

@@ -1,5 +1,4 @@
-﻿using System;
-using CalamityMod.Items.Weapons.Rogue;
+﻿using CalamityMod.Items.Weapons.Rogue;
 using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.ID;

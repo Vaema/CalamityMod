@@ -1,6 +1,4 @@
-﻿using CalamityMod.Items.Placeables.Walls;
-using CalamityMod.Projectiles.Typeless;
-using Terraria;
+﻿using CalamityMod.Projectiles.Typeless;
 using Terraria.ID;
 using Terraria.ModLoader;
 

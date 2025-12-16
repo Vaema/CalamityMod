@@ -1,11 +1,7 @@
-﻿
-using CalamityMod.Systems;
-using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Graphics;
+﻿using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.DataStructures;
 using Terraria.ID;
-using Terraria.ModLoader;
 
 namespace CalamityMod.Tiles.FurnitureCosmilite
 {

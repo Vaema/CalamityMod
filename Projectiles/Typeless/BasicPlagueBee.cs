@@ -1,11 +1,8 @@
-﻿using System;
-using CalamityMod.Buffs.DamageOverTime;
-using CalamityMod.Dusts;
+﻿using CalamityMod.Buffs.DamageOverTime;
 using CalamityMod.Particles;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria;
-using Terraria.Audio;
 using Terraria.ID;
 using Terraria.ModLoader;
 
@@ -83,7 +80,7 @@ namespace CalamityMod.Projectiles.Typeless
 
                     if (Main.rand.NextBool())
                     {
-                        Dust dust = Dust.NewDustPerfect(Projectile.Center, 89, -Projectile.velocity.RotatedByRandom(0.2f) * Main.rand.NextFloat(0.2f, 0.6f), 0, default, Main.rand.NextFloat(0.5f, 0.8f));
+                        Dust dust = Dust.NewDustPerfect(Projectile.Center, DustID.GemEmerald, -Projectile.velocity.RotatedByRandom(0.2f) * Main.rand.NextFloat(0.2f, 0.6f), 0, default, Main.rand.NextFloat(0.5f, 0.8f));
                         dust.noGravity = true;
                         dust.alpha = Main.rand.Next(90, 220 + 1);
                     }
@@ -198,7 +195,7 @@ namespace CalamityMod.Projectiles.Typeless
         {
             for (int i = 0; i <= 5; i++)
             {
-                Dust dust = Dust.NewDustPerfect(Projectile.Center, 89, Projectile.velocity.RotatedByRandom(0.3f) * Main.rand.NextFloat(0.1f, 0.8f), 0, default, Main.rand.NextFloat(0.7f, 0.85f));
+                Dust dust = Dust.NewDustPerfect(Projectile.Center, DustID.GemEmerald, Projectile.velocity.RotatedByRandom(0.3f) * Main.rand.NextFloat(0.1f, 0.8f), 0, default, Main.rand.NextFloat(0.7f, 0.85f));
                 dust.noGravity = true;
             }
         }

@@ -1,5 +1,4 @@
-﻿using CalamityMod.Balancing;
-using CalamityMod.Items.Weapons.Rogue;
+﻿using CalamityMod.Items.Weapons.Rogue;
 using CalamityMod.Particles;
 using CalamityMod.Projectiles.Healing;
 using Microsoft.Xna.Framework;

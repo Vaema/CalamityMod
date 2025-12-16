@@ -250,18 +250,15 @@ namespace CalamityMod.Skies
                 Rectangle dest = new Rectangle(posOffset.X - tex.Width, posOffset.Y - tex.Height, (int)(tex.Width * repeatX), (int)(tex.Height * repeatY));
 
                 //We need the texture to loop, so we use a linearwrap sampler state. We draw it one extra texture size in all directions around the screen to provide buffer for the posOffset.
-                spriteBatch.SafeAction(() =>
-                {
-                    spriteBatch.TryEnd();
-                    spriteBatch.Begin(SpriteSortMode.Immediate, BlendState.AlphaBlend, SamplerState.LinearWrap, DepthStencilState.None, RasterizerState.CullCounterClockwise);
+                spriteBatch.End();
+                spriteBatch.Begin(SpriteSortMode.Immediate, BlendState.AlphaBlend, SamplerState.LinearWrap, DepthStencilState.None, RasterizerState.CullCounterClockwise);
 
-                    spriteBatch.Draw(
-                        tex,
-                        destinationRectangle: dest,
-                        sourceRectangle: new Rectangle(0, 0, (int)(tex.Width * repeatX), (int)(tex.Height * repeatY)),
-                        color: Color.White * intensity
-                    );
-                });
+                spriteBatch.Draw(
+                    tex,
+                    destinationRectangle: dest,
+                    sourceRectangle: new Rectangle(0, 0, (int)(tex.Width * repeatX), (int)(tex.Height * repeatY)),
+                    color: Color.White * intensity
+                );
             }
 
             // Draw cinders.

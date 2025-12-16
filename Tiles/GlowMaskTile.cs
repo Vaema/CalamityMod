@@ -1,12 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Microsoft.Xna.Framework;
-using Terraria;
+﻿using Microsoft.Xna.Framework;
 using Terraria.DataStructures;
-using Terraria.ID;
 using Terraria.ModLoader;
 
 namespace CalamityMod.Tiles
@@ -35,7 +28,7 @@ namespace CalamityMod.Tiles
         {
             if (GlowMask != null)
             {
-                CalamityMod.Instance.Logger.Error($"{Name} has called {nameof(SetStaticDefaults)} themselve! This is not allowed!");
+                CalamityMod.Log.Error($"{Name} has called {nameof(SetStaticDefaults)} themselve! This is not allowed!");
                 return;
             }
 

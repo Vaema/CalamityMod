@@ -44,7 +44,7 @@ namespace CalamityMod.Projectiles.Summon
 
             Dust trailDust = Dust.NewDustPerfect(
                 Projectile.Center + Main.rand.NextVector2Circular(8f, 8f),
-                64,
+                DustID.YellowTorch,
                 Projectile.velocity * Main.rand.NextFloat(0.01f, 0.05f),
                 Scale: Main.rand.NextFloat(1f, 1.2f));
             trailDust.noGravity = true;
@@ -57,18 +57,18 @@ namespace CalamityMod.Projectiles.Summon
             Projectile.timeLeft = 10;
         }
 
-        private float PrimitiveWidthFunction(float completionRatio)
+        private float PrimitiveWidthFunction(float completionRatio, Vector2 vertexPos)
         {
             float trailPoint = 0.1f;
             return completionRatio > trailPoint ? Utils.Remap(completionRatio, trailPoint, 1f, 16f, 0f) : Utils.Remap(completionRatio, trailPoint, 0f, 16f, 0f);
         }
 
-        private Color PrimitiveColorFunction(float completionRatio) => Color.Lerp(Color.DarkGoldenrod, Color.LightGoldenrodYellow, completionRatio);
+        private Color PrimitiveColorFunction(float completionRatio, Vector2 vertexPos) => Color.Lerp(Color.DarkGoldenrod, Color.LightGoldenrodYellow, completionRatio);
 
         public void RenderPixelatedPrimitives(SpriteBatch spriteBatch, GeneralDrawLayer layer)
         {
             GameShaders.Misc["CalamityMod:TrailStreak"].SetShaderTexture(ModContent.Request<Texture2D>("CalamityMod/ExtraTextures/Trails/SylvestaffStreak"));
-            PrimitiveRenderer.RenderTrail(Projectile.oldPos, new(PrimitiveWidthFunction, PrimitiveColorFunction, (_) => Projectile.Size * 0.5f, pixelate: true, shader: GameShaders.Misc["CalamityMod:TrailStreak"]));
+            PrimitiveRenderer.RenderTrail(Projectile.oldPos, new(PrimitiveWidthFunction, PrimitiveColorFunction, (_, _) => Projectile.Size * 0.5f, pixelate: true, shader: GameShaders.Misc["CalamityMod:TrailStreak"]));
         }
     }
 }

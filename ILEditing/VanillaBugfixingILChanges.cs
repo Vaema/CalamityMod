@@ -14,7 +14,7 @@ namespace CalamityMod.ILEditing
     {
         #region Fixing Vanilla Not Accounting For Spritebatch Modification in Held Projectiles
         private static bool HasLoggedHeldProjectileBlendStateCatch = false;
-        private void FixHeldProjectileBlendState(On_PlayerDrawLayers.orig_DrawHeldProj orig, PlayerDrawSet drawinfo, Projectile proj)
+        private static void FixHeldProjectileBlendState(On_PlayerDrawLayers.orig_DrawHeldProj orig, PlayerDrawSet drawinfo, Projectile proj)
         {
             orig(drawinfo, proj);
 
@@ -38,7 +38,7 @@ namespace CalamityMod.ILEditing
         #endregion
 
         #region Fix Vanilla Not Accounting For Multiple Bobbers When Fishing With Truffle Worm
-        private void FixTruffleWormFishing(ILContext il)
+        private static void FixTruffleWormFishing(ILContext il)
         {
             var cursor = new ILCursor(il);
 
@@ -85,7 +85,7 @@ namespace CalamityMod.ILEditing
         #endregion
 
         #region Fix Vanilla does not call CheckDead when NPC has realLife
-        private void EnsureCheckDeadOnSegments(ILContext il)
+        private static void EnsureCheckDeadOnSegments(ILContext il)
         {
             var cursor = new ILCursor(il);
             if (!cursor.TryGotoNext(MoveType.After,

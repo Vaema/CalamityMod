@@ -68,7 +68,7 @@ namespace CalamityMod.NPCs.Leviathan
             NPC.height = 450;
             NPC.defense = 40;
             NPC.DR_NERD(0.1f);
-            NPC.LifeMaxNERB(57000, 68400, 600000);
+            NPC.LifeMaxNERB(50000, 67500, 600000);
             NPC.knockBackResist = 0f;
             NPC.aiStyle = -1;
             AIType = -1;
@@ -897,12 +897,6 @@ namespace CalamityMod.NPCs.Leviathan
 
             // Trophy (always directly from boss, never in bag)
             npcLoot.Add(ModContent.ItemType<LeviathanTrophy>(), 10);
-        }
-
-        public override void OnHitPlayer(Player target, Player.HurtInfo hurtInfo)
-        {
-            if (hurtInfo.Damage > 0)
-                target.AddBuff(ModContent.BuffType<HeavyBleeding>(), 180, true);
         }
 
         public override bool CheckActive() => false;

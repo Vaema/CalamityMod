@@ -187,7 +187,7 @@ namespace CalamityMod.Projectiles.Typeless
             SoundEngine.PlaySound(SoundID.DD2_KoboldExplosion, Projectile.Center);
             for (int i = 0; i < 40; i++)
             {
-                Dust explosion = Dust.NewDustDirect(Projectile.position, Projectile.width, Projectile.height, 267);
+                Dust explosion = Dust.NewDustDirect(Projectile.position, Projectile.width, Projectile.height, DustID.RainbowMk2);
                 explosion.velocity = Main.rand.NextVector2Circular(4f, 4f);
                 explosion.color = Color.Red;
                 explosion.scale = 1.35f;
@@ -215,9 +215,9 @@ namespace CalamityMod.Projectiles.Typeless
             else modifiers.SourceDamage.Flat += 360f;
         }
 
-        public float FlameTrailWidthFunction(float completionRatio) => MathHelper.SmoothStep(21f, 8f, completionRatio);
+        public float FlameTrailWidthFunction(float completionRatio, Vector2 vertexPos) => MathHelper.SmoothStep(21f, 8f, completionRatio);
 
-        public Color FlameTrailColorFunction(float completionRatio)
+        public Color FlameTrailColorFunction(float completionRatio, Vector2 vertexPos)
         {
             float trailOpacity = Utils.GetLerpValue(0.8f, 0.27f, completionRatio, true) * Utils.GetLerpValue(0f, 0.067f, completionRatio, true);
             Color startingColor = Color.Lerp(Color.Cyan, Color.White, 0.4f);
@@ -265,7 +265,7 @@ namespace CalamityMod.Projectiles.Typeless
 
                 Vector2 trailOffset = Projectile.Size * 0.5f;
                 trailOffset += (Projectile.rotation + MathHelper.PiOver2).ToRotationVector2() * 20f;
-                PrimitiveRenderer.RenderTrail(Projectile.oldPos, new(FlameTrailWidthFunction, FlameTrailColorFunction, (_) => trailOffset, shader: GameShaders.Misc["CalamityMod:ImpFlameTrail"]), 61);
+                PrimitiveRenderer.RenderTrail(Projectile.oldPos, new(FlameTrailWidthFunction, FlameTrailColorFunction, (_,_) => trailOffset, shader: GameShaders.Misc["CalamityMod:ImpFlameTrail"]), 61);
             }
 
             Main.spriteBatch.ExitShaderRegion();

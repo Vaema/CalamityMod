@@ -57,7 +57,7 @@ namespace CalamityMod.Projectiles.Summon
                 {
                     float angle = MathHelper.TwoPi / dustAmount * dustIndex;
                     Vector2 velocity = angle.ToRotationVector2() * Main.rand.NextFloat(1f, 3f);
-                    Dust.NewDustPerfect(Projectile.Center, 7, velocity);
+                    Dust.NewDustPerfect(Projectile.Center, DustID.WoodFurniture, velocity);
 
                     Dust deathDust = Dust.NewDustDirect(Projectile.position, Projectile.width, Projectile.height, DustID.WoodFurniture);
                     deathDust.noGravity = true;

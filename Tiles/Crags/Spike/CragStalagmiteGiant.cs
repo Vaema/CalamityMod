@@ -1,5 +1,4 @@
 ﻿using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Graphics;
 using Terraria;
 using Terraria.DataStructures;
 using Terraria.Enums;
@@ -26,7 +25,7 @@ namespace CalamityMod.Tiles.Crags.Spike
             TileObjectData.newTile.DrawYOffset = 3;
             TileObjectData.addTile(Type);
             AddMapEntry(new Color(43, 23, 46));
-            DustType = 155;
+            DustType = DustID.Ambient_DarkBrown;
             HitSound = SoundID.Tink;
         }
     }

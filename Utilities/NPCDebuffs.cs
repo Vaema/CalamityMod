@@ -403,9 +403,6 @@ namespace CalamityMod
                 { ModContent.NPCType<ProfanedEnergyBody>(), holy },
                 { ModContent.NPCType<Sunskater>(), holy },
 
-                { ModContent.NPCType<ArmoredDiggerHead>(), immuneToEverything },
-                { ModContent.NPCType<ArmoredDiggerBody>(), immuneToEverything },
-                { ModContent.NPCType<ArmoredDiggerTail>(), immuneToEverything },
                 { ModContent.NPCType<Eidolist>(), immuneToEverything },
 
                 { ModContent.NPCType<Frogfish>(), new(GeneralImmunityStatus.None, new int[] { BuffID.Poisoned, BuffID.Venom }) },

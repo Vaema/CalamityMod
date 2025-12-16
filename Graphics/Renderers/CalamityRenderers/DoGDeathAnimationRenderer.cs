@@ -73,7 +73,10 @@ namespace CalamityMod.Graphics.Renderers.CalamityRenderers
             Main.instance.GraphicsDevice.SamplerStates[1] = SamplerState.LinearWrap;
 
             disintegrationShader.Techniques[0].Passes[0].Apply();
-            Main.spriteBatch.Draw(MainTarget, Vector2.Zero, Color.White);
+            spriteBatch.Draw(MainTarget, Vector2.Zero, Color.White);
+
+            spriteBatch.End();
+            spriteBatch.Begin(SpriteSortMode.Immediate, BlendState.AlphaBlend, Main.DefaultSamplerState, DepthStencilState.None, RasterizerState.CullCounterClockwise);
         }
     }
 }

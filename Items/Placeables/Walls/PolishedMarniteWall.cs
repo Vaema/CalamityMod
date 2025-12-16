@@ -1,5 +1,4 @@
 ﻿using CalamityMod.Items.Placeables.FurnitureMarnite;
-using CalamityMod.Walls;
 using Terraria.ID;
 using Terraria.ModLoader;
 using WallTiles = CalamityMod.Walls;

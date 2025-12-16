@@ -1,13 +1,10 @@
 ﻿using CalamityMod.Buffs.DamageOverTime;
-using CalamityMod.Items.Weapons.Ranged;
 using CalamityMod.Particles;
 using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Graphics;
 using Terraria;
 using Terraria.Audio;
 using Terraria.ID;
 using Terraria.ModLoader;
-using Terraria.WorldBuilding;
 
 namespace CalamityMod.Projectiles.Ranged
 {
@@ -97,7 +94,7 @@ namespace CalamityMod.Projectiles.Ranged
 
             for (int i = 0; i <= 6; i++)
             {
-                Dust dust2 = Dust.NewDustPerfect(Projectile.Center, 226, new Vector2(2, 2).RotatedByRandom(100f) * Main.rand.NextFloat(0.1f, 2.9f));
+                Dust dust2 = Dust.NewDustPerfect(Projectile.Center, DustID.Electric, new Vector2(2, 2).RotatedByRandom(100f) * Main.rand.NextFloat(0.1f, 2.9f));
                 dust2.noGravity = false;
                 dust2.scale = Main.rand.NextFloat(0.3f, 0.9f);
             }

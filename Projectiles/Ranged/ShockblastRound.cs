@@ -1,5 +1,4 @@
 ﻿using System;
-using CalamityMod.Balancing;
 using CalamityMod.Projectiles.Healing;
 using Microsoft.Xna.Framework;
 using Terraria;

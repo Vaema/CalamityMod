@@ -385,7 +385,7 @@ namespace CalamityMod.Projectiles.DraedonsArsenal
             float damageMult = 25;
             foreach (NPC npc in Main.ActiveNPCs)
             {
-                if (!npc.dontTakeDamage && (Main.zenithWorld || Utils.Distance(npc.Center, palmBlastPos) <= (80 + Math.Max(npc.width / 2, npc.height / 2))))
+                if (!npc.dontTakeDamage && Utils.Distance(npc.Center, palmBlastPos) <= (80 + Math.Max(npc.width / 2, npc.height / 2)))
                 {
                     hitAnything = true;
                     Vector2 pos = Vector2.Lerp(npc.Center, Projectile.Center, 0.35f);

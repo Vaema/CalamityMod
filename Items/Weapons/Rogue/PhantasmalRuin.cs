@@ -1,9 +1,6 @@
-﻿using CalamityMod.Items.Materials;
-using CalamityMod.Projectiles.Rogue;
-using CalamityMod.Rarities;
+﻿using CalamityMod.Projectiles.Rogue;
 using Microsoft.Xna.Framework;
 using Terraria;
-using Terraria.Audio;
 using Terraria.DataStructures;
 using Terraria.ID;
 using Terraria.ModLoader;

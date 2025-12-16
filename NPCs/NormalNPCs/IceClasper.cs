@@ -236,7 +236,7 @@ namespace CalamityMod.NPCs.NormalNPCs
             else if (AITimer >= TimeBetweenBurst / 2f && AITimer < TimeBetweenBurst)
             {
                 Vector2 randPos = Main.rand.NextVector2CircularEdge(100f, 100f);
-                Dust telegraphDust = Dust.NewDustPerfect(NPC.Center + randPos, 172, NPC.DirectionFrom(NPC.Center + NPC.velocity + randPos) * Main.rand.NextFloat(5f, 7f), 0, default, 1.5f);
+                Dust telegraphDust = Dust.NewDustPerfect(NPC.Center + randPos, DustID.DungeonWater, NPC.DirectionFrom(NPC.Center + NPC.velocity + randPos) * Main.rand.NextFloat(5f, 7f), 0, default, 1.5f);
                 telegraphDust.noGravity = true;
                 NPC.netUpdate = true;
             }

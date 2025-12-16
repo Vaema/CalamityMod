@@ -52,7 +52,7 @@ namespace CalamityMod.Projectiles.Magic
             }
         }
 
-        internal Color ColorFunction(float completionRatio)
+        internal Color ColorFunction(float completionRatio, Vector2 vertexPos)
         {
             Color baseColor = Color.Cyan;
             if (completionRatio > 0.66f)
@@ -69,7 +69,7 @@ namespace CalamityMod.Projectiles.Magic
             return colorToUse * Projectile.Opacity;
         }
 
-        internal float WidthFunction(float completionRatio)
+        internal float WidthFunction(float completionRatio, Vector2 vertexPos)
         {
             float width;
             float maxWidthOutwardness = 6f;
@@ -92,7 +92,7 @@ namespace CalamityMod.Projectiles.Magic
 
         public override bool PreDraw(ref Color lightColor)
         {
-            PrimitiveRenderer.RenderTrail(Projectile.oldPos, new(WidthFunction, ColorFunction, (_) => Projectile.Size * 0.5f), 85);
+            PrimitiveRenderer.RenderTrail(Projectile.oldPos, new(WidthFunction, ColorFunction, (_,_) => Projectile.Size * 0.5f), 85);
             return false;
         }
     }

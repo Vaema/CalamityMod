@@ -133,19 +133,19 @@ namespace CalamityMod.Projectiles.Magic
             return true;
         }
 
-        internal float WidthFunction(float completionRatio)
+        internal float WidthFunction(float completionRatio, Vector2 vertexPos)
         {
             return MathHelper.Clamp(completionRatio * 15, 1, 1.5f);
         }
 
-        internal Color ColorFunction(float completionRatio)
+        internal Color ColorFunction(float completionRatio, Vector2 vertexPos)
         {
             return new Color(174, 227, 244); // directly color picked from the source material
         }
 
-        internal float BackgroundWidthFunction(float completionRatio) => WidthFunction(completionRatio) * 4f;
+        internal float BackgroundWidthFunction(float completionRatio, Vector2 vertexPos) => WidthFunction(completionRatio, vertexPos) * 4f;
 
-        internal Color BackgroundColorFunction(float completionRatio)
+        internal Color BackgroundColorFunction(float completionRatio, Vector2 vertexPos)
         {
             return new Color(92, 144, 245) * 0.6f; // directly color picked from the source material
         }

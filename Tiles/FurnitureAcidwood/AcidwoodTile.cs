@@ -1,5 +1,4 @@
-﻿using CalamityMod.Items.Placeables;
-using Microsoft.Xna.Framework;
+﻿using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.GameContent.Metadata;
 using Terraria.ID;

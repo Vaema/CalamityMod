@@ -2,6 +2,7 @@
 using CalamityMod.Items.Placeables.Crags;
 using Terraria;
 using Terraria.ID;
+using Terraria.Localization;
 using Terraria.ModLoader;
 
 namespace CalamityMod.Items.Accessories
@@ -9,6 +10,11 @@ namespace CalamityMod.Items.Accessories
     public class ArchaicPowder : ModItem, ILocalizedModType
     {
         public new string LocalizationCategory => "Items.Accessories";
+
+        public static float MiningSpeedBoost = 0.25f;
+        public static float TrapDamageReduction = 0.65f;
+        public override LocalizedText Tooltip => base.Tooltip.WithFormatArgs(MiningSpeedBoost.ToPercent(), TrapDamageReduction.ToPercent());
+
         public override void SetDefaults()
         {
             Item.width = 56;
@@ -20,7 +26,7 @@ namespace CalamityMod.Items.Accessories
 
         public override void UpdateAccessory(Player player, bool hideVisual)
         {
-            player.pickSpeed -= 0.25f;
+            player.pickSpeed -= MiningSpeedBoost;
             player.Calamity().aPowder = true;
             player.Calamity().fallingBlockProtection = true;
             player.Calamity().trapProtection = true;
@@ -29,7 +35,7 @@ namespace CalamityMod.Items.Accessories
             if (player.chiselSpeed)
                 player.pickSpeed += 0.15f;
             if (player.Calamity().aFossil)
-                player.pickSpeed += 0.1f;
+                player.pickSpeed += AncientFossil.MiningSpeedBoost;
         }
 
         public override void AddRecipes()

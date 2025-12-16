@@ -9,7 +9,6 @@ using ReLogic.Content;
 using Microsoft.Xna.Framework.Graphics;
 using CalamityMod.Particles;
 using Terraria.Audio;
-using Terraria.ID;
 using System;
 using Terraria.DataStructures;
 using CalamityMod.Buffs.DamageOverTime;

@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using System.Linq;
 using CalamityMod.Items.Fishing.BrimstoneCragCatches;
 using CalamityMod.Items.Placeables.Abyss;
 using Microsoft.Xna.Framework;
@@ -14,8 +13,8 @@ namespace CalamityMod.Items.Potions
     public class HadalStew : ModItem, ILocalizedModType
     {
         public new string LocalizationCategory => "Items.Potions";
-        public static int BuffType = BuffID.WellFed2;
-        public static int BuffDuration = CalamityUtils.MinutesToFrames(60);
+        public static int BuffType = BuffID.WellFed3;
+        public static int BuffDuration = CalamityUtils.MinutesToFrames(8);
         public static int SicknessDuration = CalamityUtils.SecondsToFrames(50);
         public override LocalizedText Tooltip => base.Tooltip.WithFormatArgs(BuffDuration / 3600);
 
@@ -34,7 +33,7 @@ namespace CalamityMod.Items.Potions
 
         public override void SetDefaults()
         {
-            Item.DefaultToHealingPotion(28, 18, 120);
+            Item.DefaultToHealingPotion(28, 18, 100);
             Item.value = Item.sellPrice(silver: 40);
             Item.rare = ItemRarityID.Green;
         }
@@ -51,19 +50,17 @@ namespace CalamityMod.Items.Potions
 
         public override void AddRecipes()
         {
-            CreateRecipe(2).
-                AddIngredient<AbyssGravel>(10).
+            CreateRecipe().
+                AddIngredient<AbyssGravel>(3).
                 AddIngredient<CoastalDemonfish>().
-                AddIngredient(ItemID.Honeyfin).
-                AddIngredient(ItemID.Bowl, 2).
+                AddIngredient(ItemID.Bowl).
                 AddTile(TileID.CookingPots).
                 Register();
 
-            CreateRecipe(2).
-                AddIngredient<Voidstone>(10).
+            CreateRecipe().
+                AddIngredient<Voidstone>(3).
                 AddIngredient<CoastalDemonfish>().
-                AddIngredient(ItemID.Honeyfin).
-                AddIngredient(ItemID.Bowl, 2).
+                AddIngredient(ItemID.Bowl).
                 AddTile(TileID.CookingPots).
                 Register();
         }

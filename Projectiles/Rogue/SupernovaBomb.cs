@@ -1,8 +1,6 @@
 ﻿using System;
 using CalamityMod.Buffs.DamageOverTime;
-using CalamityMod.Items.Weapons.Melee;
 using CalamityMod.Items.Weapons.Rogue;
-using CalamityMod.Items.Weapons.Summon;
 using CalamityMod.Particles;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
@@ -109,7 +107,7 @@ namespace CalamityMod.Projectiles.Rogue
                 }
                 for (int i = 0; i < 2; i++)
                 {
-                    Dust dust2 = Dust.NewDustPerfect(Projectile.Center + Main.rand.NextVector2Circular(12, 12) - Projectile.velocity.SafeNormalize(Vector2.UnitY) * 12, 303, visualDirection * Main.rand.NextFloat(0.05f, 0.7f));
+                    Dust dust2 = Dust.NewDustPerfect(Projectile.Center + Main.rand.NextVector2Circular(12, 12) - Projectile.velocity.SafeNormalize(Vector2.UnitY) * 12, DustID.SteampunkSteam, visualDirection * Main.rand.NextFloat(0.05f, 0.7f));
                     dust2.scale = Main.rand.NextFloat(0.75f, 2.25f);
                     dust2.noGravity = true;
                     dust2.color = Main.rand.NextBool() ? Color.White : Color.Lerp(Color.White, randomColor, 0.1f);
@@ -270,7 +268,7 @@ namespace CalamityMod.Projectiles.Rogue
                         _ => Color.LawnGreen,
                     };
                     Vector2 vel = Projectile.velocity.SafeNormalize(Vector2.UnitY) * 14 * Main.rand.NextFloat(0.05f, 1.2f);
-                    Dust dust2 = Dust.NewDustPerfect(Projectile.Center + Main.rand.NextVector2Circular(20, 20), 278, vel);
+                    Dust dust2 = Dust.NewDustPerfect(Projectile.Center + Main.rand.NextVector2Circular(20, 20), DustID.FireworksRGB, vel);
                     dust2.scale = Main.rand.NextFloat(0.45f, 1.15f);
                     dust2.noGravity = true;
                     dust2.color = Color.Lerp(Color.White, randomColor, 0.3f);

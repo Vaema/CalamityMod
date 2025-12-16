@@ -13,8 +13,12 @@ using CalamityMod.NPCs.VanillaNPCAIOverrides;
 using CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses;
 using CalamityMod.NPCs.VanillaNPCAIOverrides.MiniBosses;
 using CalamityMod.NPCs.VanillaNPCAIOverrides.RegularEnemies;
+using CalamityMod.Systems.Collections;
 using CalamityMod.World;
+using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
 using Terraria;
+using Terraria.DataStructures;
 using Terraria.ID;
 using Terraria.ModLoader;
 using Terraria.ModLoader.IO;
@@ -32,6 +36,15 @@ public sealed class CalamityVanillaAIOverrideNPC : GlobalNPC
     public static Dictionary<Type, int> NetIDLookup = [];
 
     public const int InvalidNetID = 0;
+
+    public override bool AppliesToEntity(NPC entity, bool lateInstantiation)
+    {
+        if (entity.townNPC) return false;
+        if (entity.friendly) return false;
+        if (entity.CountsAsACritter) return false;
+        if (CalamityNPCSets.DontCountAsEnemy[entity.type]) return false;
+        return true;
+    }
 
     #region Clone Logic
     public override bool InstancePerEntity => true;
@@ -203,7 +216,8 @@ public sealed class CalamityVanillaAIOverrideNPC : GlobalNPC
                 case NPCID.MoonLordFreeEye:
                 case NPCID.MoonLordLeechBlob:
                     return new MoonLordAI();
-            };
+            }
+            ;
         }
 
         #endregion
@@ -836,32 +850,48 @@ public sealed class CalamityVanillaAIOverrideNPC : GlobalNPC
     }
     #endregion
 
-    public override void SetStaticDefaults()
+    internal static void RegisterNetID(VanillaAIOverride aiOverride)
+    {
+        var id = NetIDLookup.Count + 1;
+        NetIDLookup[aiOverride.GetType()] = id;
+    }
+
+    public override void Unload()
     {
         NetIDLookup.Clear();
-
-        int uniqueID = 1;
-        ReflectionHelper.IterateEveryModsTypes<VanillaAIOverride>(action: type =>
-        {
-            NetIDLookup[type] = uniqueID;
-            uniqueID++;
-        });
     }
 
     public override void SetDefaults(NPC npc)
     {
-        AIOverride = GetVanillaAIOverrideToApply(npc);
+        // Clients will get their instance in ReceiveExtraAI
+        if (Main.netMode != NetmodeID.MultiplayerClient)
+        {
+            AIOverride = GetVanillaAIOverrideToApply(npc);
 
-        if (AIOverride != null)
-            AIOverride.NPC = npc;
+            if (AIOverride != null)
+            {
+                AIOverride.NPC = npc;
+                AIOverride.SetDefaults(Mod);
+            }
+        }
     }
 
     #region Hooks
+
+    public override void OnSpawn(NPC npc, IEntitySource source)
+    {
+        AIOverride?.OnSpawn(Mod);
+    }
 
     public override bool PreAI(NPC npc)
     {
         if (AIOverride != null)
         {
+            if (AIOverride.DisableMultiplayerSmoothing)
+            {
+                npc.netOffset = Vector2.Zero;
+            }
+
             return AIOverride.AI(Mod);
         }
 
@@ -871,6 +901,23 @@ public sealed class CalamityVanillaAIOverrideNPC : GlobalNPC
     public override void PostAI(NPC npc)
     {
         AIOverride?.PostAI(Mod);
+    }
+
+    public override void HitEffect(NPC npc, NPC.HitInfo hit)
+    {
+        AIOverride?.HitEffect(Mod, hit);
+    }
+
+    public override void FindFrame(NPC npc, int frameHeight)
+    {
+        AIOverride?.FindFrame(Mod, frameHeight);
+    }
+
+    public override bool PreDraw(NPC npc, SpriteBatch spriteBatch, Vector2 screenPos, Color drawColor)
+    {
+        if (AIOverride != null)
+            return AIOverride.PreDraw(Mod, spriteBatch, screenPos, drawColor);
+        return base.PreDraw(npc, spriteBatch, screenPos, drawColor);
     }
 
     #endregion
@@ -937,6 +984,7 @@ public sealed class CalamityVanillaAIOverrideNPC : GlobalNPC
         if (localNetID != remoteNetID)
         {
             AIOverride = GetNewInstanceOrNullFromNetID(remoteNetID, npc);
+            AIOverride?.SetDefaults(Mod);
         }
 
         AIOverride?.ReceiveExtraAI(bitReader, binaryReader);

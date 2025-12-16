@@ -5,7 +5,6 @@ using CalamityMod.Items.Weapons.Melee;
 using CalamityMod.Systems;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using ReLogic.Utilities;
 using Terraria;
 using Terraria.Audio;
 using Terraria.ID;

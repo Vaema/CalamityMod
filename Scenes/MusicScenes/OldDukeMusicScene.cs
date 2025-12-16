@@ -1,5 +1,4 @@
 ﻿using CalamityMod.NPCs.OldDuke;
-using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
 

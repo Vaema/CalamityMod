@@ -1,14 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.IO;
 using CalamityMod.Events;
 
 namespace CalamityMod.Packets
 {
-    public sealed class AcidRainSyncPacket : CalamityPacket
+    internal sealed class AcidRainSyncPacket : CalamityPacket
     {
         public static AcidRainSyncPacket Instance { get; private set; }
 

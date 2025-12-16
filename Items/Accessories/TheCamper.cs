@@ -22,6 +22,7 @@ namespace CalamityMod.Items.Accessories
             Item.rare = ItemRarityID.Yellow;
             Item.accessory = true;
             Item.defense = 10;
+            Item.expert = true;
         }
 
         public override void UpdateAccessory(Player player, bool hideVisual)

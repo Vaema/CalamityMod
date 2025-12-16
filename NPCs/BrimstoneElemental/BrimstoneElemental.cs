@@ -80,7 +80,7 @@ namespace CalamityMod.NPCs.BrimstoneElemental
             NPC.height = 150;
             NPC.defense = 15;
             NPC.value = Item.buyPrice(gold: 12);
-            NPC.LifeMaxNERB(41000, 49200, 500000);
+            NPC.LifeMaxNERB(30000, 49200, 500000);
             NPC.DR_NERD(0.2f);
             NPC.knockBackResist = 0f;
             NPC.aiStyle = -1;
@@ -424,12 +424,12 @@ namespace CalamityMod.NPCs.BrimstoneElemental
                         int type = ModContent.ProjectileType<BrimstoneRay>();
                         int damage = RayDamage;
                         Vector2 pos = NPC.Center;
-                        if (Main.netMode != NetmodeID.MultiplayerClient)
+                        for (int i = 0; i < 4; i++)
                         {
-                            Projectile.NewProjectile(NPC.GetSource_FromAI(), pos, new Vector2(0, 1), type, damage, 0f, Main.myPlayer, 0f, NPC.whoAmI);
-                            Projectile.NewProjectile(NPC.GetSource_FromAI(), pos, new Vector2(0, -1), type, damage, 0f, Main.myPlayer, 0f, NPC.whoAmI);
-                            Projectile.NewProjectile(NPC.GetSource_FromAI(), pos, new Vector2(1, 0), type, damage, 0f, Main.myPlayer, 0f, NPC.whoAmI);
-                            Projectile.NewProjectile(NPC.GetSource_FromAI(), pos, new Vector2(-1, 0), type, damage, 0f, Main.myPlayer, 0f, NPC.whoAmI);
+                            if (Main.netMode != NetmodeID.MultiplayerClient)
+                            {
+                                Projectile.NewProjectile(NPC.GetSource_FromAI(), pos, Vector2.UnitY.RotatedBy(MathHelper.Lerp(0, MathHelper.TwoPi, i / 4f)), type, damage, 0f, Main.myPlayer, 0f, NPC.whoAmI);
+                            }
                         }
                         if (currentMode >= 1 && currentMode <= 3)
                         {

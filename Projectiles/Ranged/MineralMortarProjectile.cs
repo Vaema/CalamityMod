@@ -162,9 +162,9 @@ namespace CalamityMod.Projectiles.Ranged
             }
         }
 
-        public static float TrailWidthFunction(float completionRatio) => MathHelper.Lerp(20f, 0f, completionRatio);
+        public static float TrailWidthFunction(float completionRatio, Vector2 vertexPos) => MathHelper.Lerp(20f, 0f, completionRatio);
 
-        public Color ColorTrailFunction(float completionRatio) => Color.Lerp(BackTrailColor, FrontTrailColor, completionRatio);
+        public Color ColorTrailFunction(float completionRatio, Vector2 vertexPos) => Color.Lerp(BackTrailColor, FrontTrailColor, completionRatio);
 
         public override bool PreDraw(ref Color lightColor)
         {
@@ -174,7 +174,7 @@ namespace CalamityMod.Projectiles.Ranged
             Vector2 origin = texture.Size() * 0.5f;
 
             GameShaders.Misc["CalamityMod:TrailStreak"].SetShaderTexture(ModContent.Request<Texture2D>("CalamityMod/ExtraTextures/Trails/SwordSlashTexture"));
-            PrimitiveRenderer.RenderTrail(Projectile.oldPos, new(TrailWidthFunction, ColorTrailFunction, (_) => Projectile.Size * 0.5f, shader: GameShaders.Misc["CalamityMod:TrailStreak"]), 50);
+            PrimitiveRenderer.RenderTrail(Projectile.oldPos, new(TrailWidthFunction, ColorTrailFunction, (_,_) => Projectile.Size * 0.5f, shader: GameShaders.Misc["CalamityMod:TrailStreak"]), 50);
             if (CalamityClientConfig.Instance.Afterimages)
             {
                 for (int i = 0; i < 3; i++)

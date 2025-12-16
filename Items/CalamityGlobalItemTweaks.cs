@@ -2,13 +2,11 @@
 using CalamityMod.Balancing;
 using CalamityMod.Items.Accessories;
 using CalamityMod.Items.Fishing.AstralCatches;
-using CalamityMod.Items.PermanentBoosters;
 using CalamityMod.Items.Placeables.Ores;
 using CalamityMod.Items.Weapons.Ranged;
 using CalamityMod.Items.Weapons.Rogue;
 using CalamityMod.Items.Weapons.Summon;
 using CalamityMod.Items.Weapons.Typeless;
-using CalamityMod.Physics;
 using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.ID;
@@ -107,7 +105,7 @@ namespace CalamityMod.Items
                 { ItemID.DyeTradersScimitar, Do(UseTurn, DamageExact(24)) }, // Exotic Scimitar
                 { ItemID.ElfMelter, Do(ShootSpeedDelta(+5f)) },
                 { ItemID.EmeraldStaff, Do(DamageExact(27)) },
-                { ItemID.EmpressBlade, Do(DamageExact(50)) }, // Terraprisma
+                { ItemID.EmpressBlade, Do(DamageExact(68)) }, // Terraprisma
                 { ItemID.EnchantedBoomerang, Do(DamageExact(24)) },
                 { ItemID.EnchantedSword, Do(UseMeleeSpeed, DamageExact(30), ShootSpeedExact(15f)) },
                 { ItemID.EndlessMusketPouch, Do(DamageExact(8)) },
@@ -373,7 +371,6 @@ namespace CalamityMod.Items
                 { ItemID.PlatinumHammer, Do(HammerPower(60), UseTimeExact(9)) },
                 { ItemID.PlatinumPickaxe, Do(PickPower(55), UseTimeExact(9)) },
                 { ItemID.Pwnhammer, Do(UseTimeExact(11), TileBoostExact(+1)) },
-                { ItemID.ReaverShark, Do(PickPower(65), UseTimeExact(16)) },
                 { ItemID.RichMahoganyHammer, Do(HammerPower(25), UseTimeExact(10)) },
                 { ItemID.Rockfish, Do(HammerPower(50), UseTimeExact(10)) },
                 { ItemID.SawtoothShark, Do(TrueMeleeNoSpeed, AxePower(45)) },
@@ -1241,6 +1238,9 @@ namespace CalamityMod.Items
             shimmerTransmute[ItemID.ChlorophyteOre] = ModContent.ItemType<HallowedOre>();
             shimmerTransmute[ItemID.CobaltOre] = ModContent.ItemType<AerialiteOre>();
 
+            // Note: Not a part of the "main" ore shimmer chain
+            shimmerTransmute[ModContent.ItemType<InfernalSuevite>()] = ItemID.Hellstone;
+
             //Fuck vanilla's stupid Giant Shelly, Crawdad, and Salamander exclusivity 
             shimmerTransmute[ModContent.ItemType<CrawCarapace>()] = ModContent.ItemType<GiantShell>();
             shimmerTransmute[ModContent.ItemType<GiantShell>()] = ModContent.ItemType<CrawCarapace>();
@@ -1259,9 +1259,6 @@ namespace CalamityMod.Items
             shimmerTransmute[ModContent.ItemType<RelicOfDeliverance>()] = ModContent.ItemType<RelicOfResilience>();
             shimmerTransmute[ModContent.ItemType<RelicOfResilience>()] = ModContent.ItemType<RelicOfConvergence>();
             shimmerTransmute[ModContent.ItemType<RelicOfConvergence>()] = ModContent.ItemType<RelicOfDeliverance>();
-
-            //Calamity Permanent Upgrades
-            shimmerTransmute[ItemID.FrogLeg] = ModContent.ItemType<NimbleBounder>();
 
 
             // -- Vanilla Boss Shimmer Drop Cycles --
@@ -1320,8 +1317,7 @@ namespace CalamityMod.Items
             shimmerTransmute[ItemID.FairyQueenRangedItem] = ItemID.FairyQueenMagicItem;
             shimmerTransmute[ItemID.FairyQueenMagicItem] = ItemID.SparkleGuitar;
             shimmerTransmute[ItemID.SparkleGuitar] = ItemID.RainbowWhip;
-            shimmerTransmute[ItemID.RainbowWhip] = ItemID.EmpressBlade;
-            shimmerTransmute[ItemID.EmpressBlade] = ItemID.PiercingStarlight;
+            shimmerTransmute[ItemID.RainbowWhip] = ItemID.PiercingStarlight;
 
             // Moon Lord
             shimmerTransmute[ItemID.Meowmere] = ItemID.StarWrath;

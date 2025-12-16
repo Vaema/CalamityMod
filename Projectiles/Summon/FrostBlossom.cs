@@ -72,7 +72,7 @@ namespace CalamityMod.Projectiles.Summon
             {
                 for (int i = 0; i < 36; i++)
                 {
-                    Dust dust = Dust.NewDustPerfect(Projectile.Center, 113);
+                    Dust dust = Dust.NewDustPerfect(Projectile.Center, DustID.MushroomSpray);
                     dust.noGravity = true;
                     dust.velocity = Vector2.One.RotatedByRandom(MathHelper.TwoPi) * Main.rand.NextFloat(2f, 7f);
                 }

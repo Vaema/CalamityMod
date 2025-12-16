@@ -1,5 +1,4 @@
 ﻿using CalamityMod.Buffs.StatDebuffs;
-using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.Audio;
 using Terraria.ID;

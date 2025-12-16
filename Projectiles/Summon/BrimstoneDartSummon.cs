@@ -57,7 +57,7 @@ namespace CalamityMod.Projectiles.Summon
 
             for (int i = 0; i < 15; i++)
             {
-                Dust brimstone = Dust.NewDustPerfect(Projectile.Center, 267);
+                Dust brimstone = Dust.NewDustPerfect(Projectile.Center, DustID.RainbowMk2);
                 brimstone.velocity = Projectile.velocity.RotatedByRandom(0.26f) * Main.rand.NextFloat(0.3f, 0.8f);
                 brimstone.scale = Main.rand.NextFloat(1.5f, 1.85f);
                 brimstone.color = Color.DarkRed;

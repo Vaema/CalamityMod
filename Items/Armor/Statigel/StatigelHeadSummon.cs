@@ -1,9 +1,7 @@
 ﻿using CalamityMod.Buffs.Summon;
 using CalamityMod.ExtraJumps;
 using CalamityMod.Items.Materials;
-using CalamityMod.Items.Potions.Alcohol;
 using CalamityMod.Projectiles.Summon;
-using CalamityMod.Tiles.Furniture.CraftingStations;
 using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.ID;

@@ -230,7 +230,7 @@ namespace CalamityMod.Systems.Mechanic
             void spawnShoeDust()
             {
 
-                int num4 = Dust.NewDust(new Vector2(Player.position.X + (float)(Player.width / 2) + (float)((Player.width / 2 - 4) * Player.slideDir), Player.position.Y + (float)(Player.height / 2) + (float)(Player.height / 2 - 4) * Player.gravDir), 8, 8, 31);
+                int num4 = Dust.NewDust(new Vector2(Player.position.X + (float)(Player.width / 2) + (float)((Player.width / 2 - 4) * Player.slideDir), Player.position.Y + (float)(Player.height / 2) + (float)(Player.height / 2 - 4) * Player.gravDir), 8, 8, DustID.Smoke);
                 if (Player.slideDir < 0)
                 {
                     Main.dust[num4].position.X -= 10f;

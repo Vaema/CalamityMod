@@ -94,7 +94,7 @@ namespace CalamityMod.Projectiles.Boss
             return new Color(255, 255, 255, Projectile.alpha);
         }
 
-        public Color TelegraphPrimitiveColor(float completionRatio)
+        public Color TelegraphPrimitiveColor(float completionRatio, Vector2 vertexPos)
         {
             float opacity = MathHelper.Lerp(0.38f, 1.2f, Projectile.Opacity);
             opacity *= CalamityUtils.Convert01To010(completionRatio);
@@ -104,7 +104,7 @@ namespace CalamityMod.Projectiles.Boss
             return Color.Green * opacity;
         }
 
-        public float TelegraphPrimitiveWidth(float completionRatio)
+        public float TelegraphPrimitiveWidth(float completionRatio, Vector2 vertexPos)
         {
             return Projectile.Opacity * 15f;
         }
@@ -125,7 +125,7 @@ namespace CalamityMod.Projectiles.Boss
                 // It is not used anywhere else.
                 Projectile.ai[0] = i;
 
-                PrimitiveRenderer.RenderTrail(positions, new(TelegraphPrimitiveWidth, TelegraphPrimitiveColor, (_) => Projectile.Size * 0.5f, smoothen: false, shader: GameShaders.Misc["CalamityMod:Flame"]), 55);
+                PrimitiveRenderer.RenderTrail(positions, new(TelegraphPrimitiveWidth, TelegraphPrimitiveColor, (_,_) => Projectile.Size * 0.5f, smoothen: false, shader: GameShaders.Misc["CalamityMod:Flame"]), 55);
             }
             return false;
         }

@@ -3,7 +3,6 @@ using System.IO;
 using CalamityMod.Buffs.DamageOverTime;
 using CalamityMod.Dusts;
 using CalamityMod.Events;
-using CalamityMod.Graphics.Metaballs;
 using CalamityMod.Items.Accessories;
 using CalamityMod.Items.Armor.Vanity;
 using CalamityMod.Items.LoreItems;
@@ -17,7 +16,6 @@ using CalamityMod.Items.Weapons.Melee;
 using CalamityMod.Items.Weapons.Ranged;
 using CalamityMod.Items.Weapons.Summon;
 using CalamityMod.NPCs.TownNPCs;
-using CalamityMod.Particles;
 using CalamityMod.Projectiles.Boss;
 using CalamityMod.Systems.Mechanic;
 using CalamityMod.World;
@@ -134,7 +132,7 @@ namespace CalamityMod.NPCs.CalClone
 
             NPC.defense = 25;
             NPC.value = Item.buyPrice(gold: 15);
-            NPC.LifeMaxNERB(39000, 46875, 520000);
+            NPC.LifeMaxNERB(30000, 46875, 520000);
             NPC.aiStyle = -1;
             AIType = -1;
             NPC.knockBackResist = 0f;

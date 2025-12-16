@@ -3,9 +3,9 @@ using CalamityMod.Effects;
 using CalamityMod.Graphics.Metaballs;
 using CalamityMod.Particles;
 using CalamityMod.Skies;
+using CalamityMod.Utilities.Daybreak;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using ReLogic.Content;
 using Terraria;
 using Terraria.Audio;
 using Terraria.ModLoader;
@@ -262,15 +262,17 @@ namespace CalamityMod.Projectiles.Boss
             crackShader.Parameters["minBrightnessValue"].SetValue(0.75f);
             crackShader.Parameters["darkerPixelColor"].SetValue(darkerPixelColor.ToVector3());
             crackShader.Parameters["brighterPixelColor"].SetValue(Color.White.ToVector3());
-            Main.spriteBatch.SafeBegin(SpriteSortMode.Immediate, BatchSetting.Additive, crackShader, Main.GameViewMatrix.TransformationMatrix, () =>
+            using (Main.spriteBatch.Scope())
             {
+                Main.spriteBatch.Begin(SpriteSortMode.Immediate, BlendState.Additive, SamplerState.PointClamp, DepthStencilState.None, Main.Rasterizer, crackShader, Main.GameViewMatrix.TransformationMatrix);
                 int crackCount = FakeRift ? 1 : 3;
                 for (int i = 0; i < crackCount; i++)
                 {
                     float crackRotation = i * MathHelper.TwoPi / crackCount;
                     Main.EntitySpriteDraw(crackTexture, drawPosition + Vector2.UnitY * 8f, null, Color.White * Projectile.Opacity, crackRotation, crackTexture.Size() * 0.5f, CrackScale, 0);
                 }
-            });
+                Main.spriteBatch.End();
+            }
 
             if (AIState != 1f)
             {

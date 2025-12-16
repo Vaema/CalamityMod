@@ -1,24 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using CalamityMod.Dusts;
+﻿using System.Collections.Generic;
 using CalamityMod.Effects;
-using CalamityMod.Events;
-using CalamityMod.Graphics;
 using CalamityMod.Graphics.Primitives;
-using CalamityMod.Items.Placeables.FurnitureVoid;
 using CalamityMod.NPCs.DevourerofGods;
 using CalamityMod.Systems.Graphic;
-using CalamityMod.World;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using ReLogic.Content;
 using Terraria;
-using Terraria.Audio;
-using Terraria.GameContent;
 using Terraria.Graphics.Effects;
-using Terraria.Graphics.Shaders;
-using Terraria.ID;
 using Terraria.ModLoader;
 
 namespace CalamityMod.Skies
@@ -284,7 +272,7 @@ namespace CalamityMod.Skies
                 for (int j = 0; j < DistortionRiftArms[i].ArmPoints.Count; j++)
                     parallaxedPoints.Add((DistortionRiftArms[i].ArmPoints[j] - screenCenter) * depthFactor + screenCenter);
 
-                PrimitiveRenderer.RenderTrail(parallaxedPoints, new((completion) => MathHelper.Lerp(0f, DistortionRiftArms[i].MaxWidth, 1f - completion) * SkyIntensity, (_) => Color.White * 1f, null, false, useUnscaledMatrices: true), DistortionRiftArms[i].TotalPoints + 16);
+                PrimitiveRenderer.RenderTrail(parallaxedPoints, new((completion, _) => MathHelper.Lerp(0f, DistortionRiftArms[i].MaxWidth, 1f - completion) * SkyIntensity, (_, _) => Color.White * 1f, null, false, useUnscaledMatrices: true), DistortionRiftArms[i].TotalPoints + 16);
             }
         }
 

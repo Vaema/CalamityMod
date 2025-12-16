@@ -2,13 +2,11 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using CalamityMod.Balancing;
 using CalamityMod.Buffs.StatDebuffs;
 using CalamityMod.Dusts;
 using CalamityMod.Graphics.Primitives;
 using CalamityMod.Items.Weapons.Melee;
 using CalamityMod.Particles;
-using CalamityMod.Projectiles.Healing;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using ReLogic.Content;
@@ -326,7 +324,7 @@ namespace CalamityMod.Projectiles.Melee
             if (Main.rand.NextFloat() < RiskOfDust)
             {
                 Color dustColor = Main.hslToRgb(Main.rand.NextFloat(), 1f, 0.9f);
-                Dust must = Dust.NewDustPerfect(Owner.MountedCenter + SwordDirection * BladeLength * Projectile.scale * (float)Math.Pow(Main.rand.NextFloat(0.2f, 1f), 0.5f), 267, SwordDirection.RotatedBy(MathHelper.PiOver2 * Direction) * 2.6f, 0, dustColor);
+                Dust must = Dust.NewDustPerfect(Owner.MountedCenter + SwordDirection * BladeLength * Projectile.scale * (float)Math.Pow(Main.rand.NextFloat(0.2f, 1f), 0.5f), DustID.RainbowMk2, SwordDirection.RotatedBy(MathHelper.PiOver2 * Direction) * 2.6f, 0, dustColor);
 
                 must.scale = 0.3f;
                 must.fadeIn = Main.rand.NextFloat() * 1.2f;
@@ -393,7 +391,7 @@ namespace CalamityMod.Projectiles.Melee
                 if (Main.rand.NextBool())
                 {
                     Color dustColor = Main.hslToRgb(Main.rand.NextFloat(), 1f, 0.9f);
-                    Dust must = Dust.NewDustPerfect(Owner.MountedCenter + Main.rand.NextVector2Circular(20f, 20f), 267, SwordDirection * -2.6f, 0, dustColor);
+                    Dust must = Dust.NewDustPerfect(Owner.MountedCenter + Main.rand.NextVector2Circular(20f, 20f), DustID.RainbowMk2, SwordDirection * -2.6f, 0, dustColor);
                     must.scale = 0.3f;
                     must.fadeIn = Main.rand.NextFloat() * 1.2f;
                     must.noGravity = true;
@@ -425,11 +423,11 @@ namespace CalamityMod.Projectiles.Melee
             Projectile.rotation = Projectile.velocity.ToRotation() + MathHelper.PiOver4 * Direction;
         }
 
-        public float SlashWidthFunction(float completionRatio) => SquishAtProgress(RealProgressionAtTrailCompletion(completionRatio)) * Projectile.scale * 60.5f;
+        public float SlashWidthFunction(float completionRatio, Vector2 vertexPos) => SquishAtProgress(RealProgressionAtTrailCompletion(completionRatio)) * Projectile.scale * 60.5f;
 
-        public Color SlashColorFunction(float completionRatio) => Color.Lime * Utils.GetLerpValue(0.9f, 0.4f, completionRatio, true) * Projectile.Opacity;
+        public Color SlashColorFunction(float completionRatio, Vector2 vertexPos) => Color.Lime * Utils.GetLerpValue(0.9f, 0.4f, completionRatio, true) * Projectile.Opacity;
 
-        public float PierceWidthFunction(float completionRatio)
+        public float PierceWidthFunction(float completionRatio, Vector2 vertexPos)
         {
             float width = Utils.GetLerpValue(0f, 0.2f, completionRatio, true) * Projectile.scale * 50f;
             //Fade it out starkly near the end of the lunge
@@ -437,7 +435,7 @@ namespace CalamityMod.Projectiles.Melee
             return width;
         }
 
-        public Color PierceColorFunction(float completionRatio) => Color.Lime * Projectile.Opacity; //The trail color doesnt matter here
+        public Color PierceColorFunction(float completionRatio, Vector2 vertexPos) => Color.Lime * Projectile.Opacity; //The trail color doesnt matter here
 
         public List<Vector2> GenerateSlashPoints()
         {
@@ -480,7 +478,7 @@ namespace CalamityMod.Projectiles.Melee
             GameShaders.Misc["CalamityMod:ExobladeSlash"].Shader.Parameters["flipped"].SetValue(Direction == 1);
             GameShaders.Misc["CalamityMod:ExobladeSlash"].Apply();
 
-            PrimitiveRenderer.RenderTrail(GenerateSlashPoints(), new(SlashWidthFunction, SlashColorFunction, (_) => Projectile.Center, shader: GameShaders.Misc["CalamityMod:ExobladeSlash"]), 95);
+            PrimitiveRenderer.RenderTrail(GenerateSlashPoints(), new(SlashWidthFunction, SlashColorFunction, (_,_) => Projectile.Center, shader: GameShaders.Misc["CalamityMod:ExobladeSlash"]), 95);
 
             Main.spriteBatch.ExitShaderRegion();
         }
@@ -510,7 +508,7 @@ namespace CalamityMod.Projectiles.Melee
             int numPointsRendered = 30;
             int numPointsProvided = 60;
             var positionsToUse = Projectile.oldPos.Take(numPointsProvided).ToArray();
-            PrimitiveRenderer.RenderTrail(positionsToUse, new(PierceWidthFunction, PierceColorFunction, (_) => trailOffset, shader: GameShaders.Misc["CalamityMod:ExobladePierce"]), numPointsRendered);
+            PrimitiveRenderer.RenderTrail(positionsToUse, new(PierceWidthFunction, PierceColorFunction, (_,_) => trailOffset, shader: GameShaders.Misc["CalamityMod:ExobladePierce"]), numPointsRendered);
 
             Main.spriteBatch.ExitShaderRegion();
         }

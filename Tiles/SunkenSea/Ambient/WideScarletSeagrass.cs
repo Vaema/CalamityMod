@@ -1,5 +1,4 @@
-﻿using System;
-using Microsoft.Xna.Framework;
+﻿using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
@@ -22,9 +21,6 @@ namespace CalamityMod.Tiles.SunkenSea.Ambient
 
             TileObjectData.newTile.CopyFrom(TileObjectData.Style2x2);
             TileObjectData.newTile.StyleHorizontal = true;
-            TileObjectData.newTile.StyleWrapLimit = 4;
-            TileObjectData.newTile.RandomStyleRange = 4;
-
             TileObjectData.addTile(Type);
 
             AddMapEntry(new Color(187, 43, 44));

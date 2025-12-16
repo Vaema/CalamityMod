@@ -142,18 +142,10 @@ namespace CalamityMod.NPCs
                 // Craw Carapace @ 100% IF Hardmode
                 // OTHERWISE,
                 // Craw Carapace @ 14.29% Normal, 25% Expert+
-                // Armor Polish @ 1% Normal, 2% Expert+
                 case NPCID.Crawdad:
                 case NPCID.Crawdad2:
                     hardmode.Add(ModContent.ItemType<CrawCarapace>());
                     hardmode.OnFailedConditions(ItemDropRule.NormalvsExpert(ModContent.ItemType<CrawCarapace>(), 7, 4));
-                    npcLoot.Add(ItemDropRule.NormalvsExpert(ItemID.ArmorPolish, 100, 50));
-                    break;
-
-                // Toxic Sludge
-                // Fast Clock @ 1% Normal, 2% Expert+
-                case NPCID.ToxicSludge:
-                    npcLoot.Add(ItemDropRule.NormalvsExpert(ItemID.FastClock, 100, 50));
                     break;
 
                 // Medusa
@@ -308,9 +300,8 @@ namespace CalamityMod.NPCs
                     npcLoot.Add(ModContent.ItemType<FrostyBatBottle>(), 14);
                     break;
 
-                // Undead Viking, Armored Viking
+                // Armored Viking
                 // Armor Polish @ 1% Normal, 2% Expert
-                case NPCID.UndeadViking:
                 case NPCID.ArmoredViking:
                     npcLoot.Add(ItemDropRule.NormalvsExpert(ItemID.ArmorPolish, 100, 50));
                     break;
@@ -898,8 +889,6 @@ namespace CalamityMod.NPCs
                 case NPCID.MourningWood:
                     // 5-10 Nightmare Fuel @ 100% IF Devourer of Gods dead
                     postDoG.Add(ModContent.ItemType<NightmareFuel>(), 1, 5, 10);
-
-                    pMoon.OnSuccess(ItemDropRule.ByCondition(new Conditions.NotExpert(), ItemID.WitchBroom, 5));
 
                     // Master items drop in Revengeance
                     pMoon.OnSuccess(ItemDropRule.ByCondition(DropHelper.RevNoMaster, ItemID.MourningWoodMasterTrophy));
@@ -1746,8 +1735,6 @@ namespace CalamityMod.NPCs
                     GFB.Add(DropHelper.PerPlayer(ModContent.ItemType<FishboneBoomerang>()), hideLootReport: true);
                     GFB.Add(DropHelper.PerPlayer(ModContent.ItemType<FishofEleum>(), 1, 1, 9999), true);
                     GFB.Add(DropHelper.PerPlayer(ModContent.ItemType<FishofFlight>(), 1, 1, 9999), true);
-                    GFB.Add(DropHelper.PerPlayer(ModContent.ItemType<FishofLight>(), 1, 1, 9999), true);
-                    GFB.Add(DropHelper.PerPlayer(ModContent.ItemType<FishofNight>(), 1, 1, 9999), true);
 
                     // Lore
                     npcLoot.AddConditionalPerPlayer(() => !NPC.downedFishron, ModContent.ItemType<LoreDukeFishron>(), desc: DropHelper.FirstKillText);
@@ -1772,7 +1759,6 @@ namespace CalamityMod.NPCs
                                 ItemID.FairyQueenRangedItem, // Eventide
                                 ItemID.FairyQueenMagicItem, // Nightglow
                                 ItemID.SparkleGuitar, // Stellar Tune
-                                ItemID.EmpressBlade, // Terraprisma
                                 ItemID.RainbowWhip, // Kaleidoscope
                                 ItemID.RainbowWings // Empress Wings
                             };

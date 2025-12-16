@@ -4,10 +4,8 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using ReLogic.Content;
 using Terraria;
-using Terraria.DataStructures;
 using Terraria.GameContent;
 using Terraria.ID;
-using Terraria.Localization;
 using Terraria.Map;
 using Terraria.ModLoader;
 using Terraria.ModLoader.Default;
@@ -150,7 +148,7 @@ namespace CalamityMod.Tiles.BaseTiles
                 if (averageBrightness > 10)
                 {
                     // Use the vanilla crystal sheet to get the autoselect outline.
-                    Texture2D vanillaCrystalSheet = TextureAssets.Extra[181].Value;
+                    Texture2D vanillaCrystalSheet = TextureAssets.Extra[ExtrasID.PylonCrystals].Value;
                     Rectangle smartCursorGlowFrame = vanillaCrystalSheet.Frame(12, 8, 2, frameY);
 
                     Color selectionGlowColor = Colors.GetSelectionGlowColor(tileSelectionTier == 2, averageBrightness);

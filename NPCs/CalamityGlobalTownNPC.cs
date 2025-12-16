@@ -1,11 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using CalamityMod.Events;
-using CalamityMod.Items;
 using CalamityMod.Items.Accessories;
 using CalamityMod.Items.Accessories.Vanity;
 using CalamityMod.Items.Ammo;
-using CalamityMod.Items.Armor;
 using CalamityMod.Items.Armor.Vanity;
 using CalamityMod.Items.Dyes;
 using CalamityMod.Items.Dyes.HairDye;
@@ -210,9 +208,8 @@ namespace CalamityMod.NPCs
         };
         private static readonly string[] SkeletonMerchantNames =
         {
-            "Sans Undertale", // <@!145379091648872450> (shayy)
+            "Sans Undertale", // <@!534770496038895616> (done_22_)
             "Papyrus Undertale", // <@!262663471189983242> (nycro)
-            "Gaster Undertale", // <@!924706306093379614> (enamoured)
             "Mr. Bones", // <@!359215912856977408> (jaybones.)
             "Freakbob", // <@!377863128140087296> (jevilamv)
         };
@@ -225,6 +222,7 @@ namespace CalamityMod.NPCs
             "Eira", // <@!1166136068408623234> (taela_gemetha)
             "Kreutz", // <@!553445849149997056> (red_r_kreutz)
             "Cathlyn", // <@!156672312425316352> (xaqult)
+            "Eunice", // <@!358376627400605699> (srmg267)
         };
         private static readonly string[] StylistNames =
         {
@@ -259,6 +257,7 @@ namespace CalamityMod.NPCs
             "Aldrimil", // <@!413719640238194689> (Thorioum#2475)
             "Wonton", // <@!1198092982923043040> (imonthatgudkush)
             "Mad Lad", // <@!215269032360804352> (crimsoncb)
+            "Nokko", // <@!706732954079985745> (violet.prime)
         };
         private static readonly string[] WitchDoctorNames =
         {
@@ -1134,7 +1133,7 @@ namespace CalamityMod.NPCs
 
         public override bool? CanBeHitByProjectile(NPC npc, Projectile projectile)
         {
-            //Not an axe but close enough
+            // Not an axe but close enough
             if (npc.type == NPCID.TaxCollector && projectile.type == ProjectileType<SlickCaneProjectile>())
                 return true;
             return base.CanBeHitByProjectile(npc, projectile);
@@ -1315,25 +1314,6 @@ namespace CalamityMod.NPCs
             if (type == NPCID.Truffle)
             {
                 shop.Add<OddMushroom>();
-            }
-        }
-
-        public override void ModifyActiveShop(NPC npc, string shopName, Item[] items)
-        {
-            // TODO: Uses a hardcoded string since dedicated names are currently hardcoded strings
-            // Will need to be changed if dedicated names are localized in the future
-            if (npc.type == NPCID.SkeletonMerchant && npc.GivenName == "Sans Undertale")
-            {
-                int index = 0;
-                for (int i = 0; i < Chest.maxItems; i++)
-                {
-                    if (items[i] == null)
-                    {
-                        index = i;
-                        break;
-                    }
-                }
-                items[index] = new Item(ItemType<PunchCard>());
             }
         }
         #endregion

@@ -1,10 +1,11 @@
-﻿using Microsoft.Xna.Framework;
+﻿using CalamityMod.Items.Weapons.Magic;
+using CalamityMod.Particles;
+using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.Audio;
 using Terraria.ID;
 using Terraria.ModLoader;
-using CalamityMod.Particles;
-using CalamityMod.Dusts;
+
 namespace CalamityMod.Projectiles.Magic
 {
     public class UberBubble : ModProjectile, ILocalizedModType
@@ -63,7 +64,7 @@ namespace CalamityMod.Projectiles.Magic
 
         public override void OnKill(int timeLeft)
         {
-            SoundEngine.PlaySound(SoundID.Item96, Projectile.Center);
+            SoundEngine.PlaySound(Effervescence.BurstSound, Projectile.Center);
             Particle Star = new GenericSparkle(Projectile.Center, Vector2.Zero, Color.Purple, Color.PeachPuff, Main.rand.NextFloat(0.5f, 0.6f), 30, 0.1f, 3f);
             GeneralParticleHandler.SpawnParticle(Star);
             Star = new GenericSparkle(Projectile.Center + Projectile.velocity, Vector2.Zero, Color.MediumPurple, Color.LightPink, Main.rand.NextFloat(0.5f, 0.6f), 20, 0.1f, 3f);
@@ -80,7 +81,7 @@ namespace CalamityMod.Projectiles.Magic
             if (Projectile.owner == Main.myPlayer)
             {
                 for (int numBubbles = 0; numBubbles < 3; numBubbles++)
-                    Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center.X, Projectile.Center.Y, Projectile.velocity.X * (Main.rand.NextFloat() * 2f), Projectile.velocity.Y * (Main.rand.NextFloat() * 2f), ModContent.ProjectileType<BlueBubble>(), Projectile.damage, Projectile.knockBack, Projectile.owner);
+                    Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center, Projectile.velocity.RotatedByRandom(MathHelper.ToRadians(20f)) * Main.rand.NextFloat(0.5f, 2f), ModContent.ProjectileType<BlueBubble>(), Projectile.damage, Projectile.knockBack, Projectile.owner);
             }
         }
     }

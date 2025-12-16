@@ -1,5 +1,4 @@
-﻿using CalamityMod.BiomeManagers;
-using CalamityMod.Dusts;
+﻿using CalamityMod.Dusts;
 using CalamityMod.Items.Critters;
 using Terraria;
 using Terraria.GameContent.Bestiary;

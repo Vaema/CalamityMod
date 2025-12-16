@@ -47,13 +47,13 @@ namespace CalamityMod.Projectiles.Ranged
             return base.OnTileCollide(oldVelocity);
         }
 
-        internal Color ColorFunction(float completionRatio)
+        internal Color ColorFunction(float completionRatio, Vector2 vertexPos)
         {
             float fadeOpacity = (float)Math.Sqrt(Projectile.timeLeft / 100f);
             return Color.PaleGoldenrod * fadeOpacity;
         }
 
-        internal float WidthFunction(float completionRatio)
+        internal float WidthFunction(float completionRatio, Vector2 vertexPos)
         {
             return (1 - completionRatio) * 6.4f;
         }
@@ -61,7 +61,7 @@ namespace CalamityMod.Projectiles.Ranged
         public override bool PreDraw(ref Color lightColor)
         {
             GameShaders.Misc["CalamityMod:TrailStreak"].SetShaderTexture(Request<Texture2D>("CalamityMod/ExtraTextures/Trails/BasicTrail"));
-            PrimitiveRenderer.RenderTrail(Projectile.oldPos, new(WidthFunction, ColorFunction, (_) => Projectile.Size * 0.5f, shader: GameShaders.Misc["CalamityMod:TrailStreak"]), 30);
+            PrimitiveRenderer.RenderTrail(Projectile.oldPos, new(WidthFunction, ColorFunction, (_,_) => Projectile.Size * 0.5f, shader: GameShaders.Misc["CalamityMod:TrailStreak"]), 30);
             return false;
         }
     }
