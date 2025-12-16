@@ -8,14 +8,14 @@ namespace CalamityMod.Enums
     [Flags]
     public enum GeneralDrawLayer
     {
-        BeforeAllTiles = 0,
-        BeforeSolidTiles = 1,
-        BeforeNPCs = 2,
-        AfterNPCs = 4,
-        BeforeProjectiles = 8,
-        AfterProjectiles = 16,
-        AfterPlayers = 32,
-        AfterDusts = 64,
-        AfterEverything = 128,
+        BeforeAllTiles = 1 << 0,
+        BeforeSolidTiles = 1 << 1,
+        BeforeNPCs = 1 << 2,
+        AfterNPCs = 1 << 3,
+        BeforeProjectiles = 1 << 4,
+        AfterProjectiles = 1 << 5,
+        AfterPlayers = 1 << 6,
+        AfterDusts = 1 << 7,
+        AfterEverything = 1 << 8,
     }
 }
