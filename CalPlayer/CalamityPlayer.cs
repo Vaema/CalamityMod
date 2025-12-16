@@ -1106,12 +1106,8 @@ namespace CalamityMod.CalPlayer
         public bool necroSet = false;
         /// <summary> Calamity's Frost armor set bonus; gives a combined 20% damage boost split between melee and ranged based on distance from the closest enemy. </summary>
         public bool frostSet = false;
-        public bool victideBarrierSet = false;
-        public int victideBarrierHeal = 0;
-        public bool victideBarrierHead = false;
-        public bool victideBurrowSet = false;
-        public bool victideBurrowHead = false;
-        public bool victideSnailSet = false;
+        public bool victideSet = false;
+        public bool victideSummoner = false;
         public bool sulphurSet = false;
         public bool sulphurJump = false;
         public int sulphurBubbleCooldown = 0;
@@ -2396,11 +2392,8 @@ namespace CalamityMod.CalPlayer
             necroSet = false;
             frostSet = false;
 
-            victideBarrierSet = false;
-            victideBarrierHead = false;
-            victideBurrowSet = false;
-            victideBurrowHead = false;
-            victideSnailSet = false;
+            victideSet = false;
+            victideSummoner = false;
 
             sulphurSet = false;
 
@@ -3189,10 +3182,7 @@ namespace CalamityMod.CalPlayer
             meteorSet = false;
             necroSet = false;
             frostSet = false;
-            victideBarrierSet = false;
-            victideBarrierHead = false;
-            victideBurrowSet = false;
-            victideBurrowHead = false;
+            victideSet = false;
             aeroSet = false;
             sulphurSet = false;
             statigelSet = false;
@@ -3770,36 +3760,6 @@ namespace CalamityMod.CalPlayer
 
         public override void ArmorSetBonusActivated()
         {
-            // TODO -- It would be nice if triggerable set bonuses used interfaces instead of having to go through this large if chain.
-            if (victideBurrowSet)
-            {
-                if (cooldowns.TryGetValue(BubblyBurrow.ID, out CooldownInstance cd))
-                {
-                    // Return to normal if you have the ability active
-                    if (cd.timeLeft > VictideHeadBurrow.BurrowCooldown)
-                    {
-                        cd.timeLeft = VictideHeadBurrow.BurrowCooldown + 1;
-                        SyncCooldownDictionary(false);
-                    }
-                }
-                else if (!Player.tongued && !Player.shimmering)
-                {
-                    SoundEngine.PlaySound(SoundID.Item154, Player.Center);
-                    if (Player.whoAmI == Main.myPlayer)
-                    {
-                        Player.AddCooldown(BubblyBurrow.ID, VictideHeadBurrow.BurrowCooldown + VictideHeadBurrow.BurrowDuration);
-
-                        var source = Player.GetSource_Misc("1");
-                        Projectile.NewProjectile(source, Player.Center, Vector2.Zero, ProjectileType<VictideSpirit>(), 0, 0f, Player.whoAmI);
-                    }
-                }
-            }
-            if (victideBarrierSet && !Player.HasCooldown(WardingWave.ID))
-            {
-                // Explosion and dash are handled in the VictideBarrier file
-                if (Player.whoAmI == Main.myPlayer)
-                    Player.AddCooldown(WardingWave.ID, VictideHeadBarrier.BarrierCooldown);
-            }
             if (brimflameSet && !Player.HasCooldown(BrimflameFrenzy.ID))
             {
                 if (Player.whoAmI == Main.myPlayer)
@@ -4587,7 +4547,6 @@ namespace CalamityMod.CalPlayer
             if (!Player.mount.Active)
             {
                 float runAccMult = 1f +
-                    (victideBurrowHead ? VictideHeadBurrow.MoveSpeedAccelerationBoost : 0f) +
                     (lunicCorpsLegs ? LunicCorpsBoots.MoveSpeedAccelerationBoost : 0f) +
                     (shadowSpeed ? DemonshadeGreaves.AccelerationBoost : 0f) +
                     (stressPills ? 0.05f : 0f) +
@@ -4608,7 +4567,6 @@ namespace CalamityMod.CalPlayer
                     (hasteLevel * 0.05f);
 
                 float runSpeedMult = 1f +
-                    (victideBurrowHead ? VictideHeadBurrow.MoveSpeedAccelerationBoost : 0f) +
                     (lunicCorpsLegs ? LunicCorpsBoots.MoveSpeedAccelerationBoost : 0f) +
                     (shadowSpeed ? DemonshadeGreaves.AccelerationBoost : 0f) +
                     (stressPills ? 0.05f : 0f) +
@@ -4637,12 +4595,6 @@ namespace CalamityMod.CalPlayer
                 // If the timer has hit zero, or you aren't using Momentum Capacitor, you get nothing.
                 else
                     momentumCapacitorBoost = 0f;
-
-                if (victideBarrierHead)
-                {
-                    Player.runAcceleration *= VictideHeadBarrier.RunAccelerationMult;
-                    Player.runSlowdown *= VictideHeadBarrier.RunAccelerationMult;
-                }
 
                 Player.runAcceleration *= runAccMult;
                 Player.maxRunSpeed *= runSpeedMult;

@@ -2149,12 +2149,6 @@ namespace CalamityMod.CalPlayer
                     }
                 }
 
-                if (victideBarrierSet && !Player.HasCooldown(WardingWave.ID))
-                {
-                    int healAmt = (int)(hurtInfo.Damage * VictideHeadBarrier.BarrierDamageAbsorptionPercent);
-                    victideBarrierHeal += healAmt;
-                }
-
                 if (daedalusAbsorb && Main.rand.NextBool(DaedalusHeadMagic.AbsorptionChanceDenominator))
                 {
                     int healAmt = (int)(hurtInfo.Damage * DaedalusHeadMagic.DamageAbsorptionPercent);

@@ -26,10 +26,10 @@ namespace CalamityMod.Items.Accessories
                 player.statDefense += 5;
             }
             // Accessory update comes before set bonus for some reason, so this has to be done
-            /*if ((player.armor[0].type == ModContent.ItemType<VictideHeadMagic>() || player.armor[0].type == ModContent.ItemType<VictideHeadSummon>() ||
+            if ((player.armor[0].type == ModContent.ItemType<VictideHeadMagic>() || player.armor[0].type == ModContent.ItemType<VictideHeadSummon>() ||
                 player.armor[0].type == ModContent.ItemType<VictideHeadMelee>() || player.armor[0].type == ModContent.ItemType<VictideHeadRanged>() ||
                 player.armor[0].type == ModContent.ItemType<VictideHeadRogue>()) &&
-                player.armor[1].type == ModContent.ItemType<VictideBreastplate>() && player.armor[2].type == ModContent.ItemType<VictideGreaves>())*/
+                player.armor[1].type == ModContent.ItemType<VictideBreastplate>() && player.armor[2].type == ModContent.ItemType<VictideGreaves>())
             {
                 player.moveSpeed += 0.1f;
                 player.lifeRegen += 2;

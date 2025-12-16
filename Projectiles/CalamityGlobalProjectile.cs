@@ -376,8 +376,6 @@ namespace CalamityMod.Projectiles
         #region Pre AI
         public override bool PreAI(Projectile projectile)
         {
-            if (projectile.bobber && projectile.type != ModContent.ProjectileType<VictideBobber>() && RunFishingMinigames(projectile))
-                return false;
             //Reset the Homing Target immediately before AI can re-set it on applicable projectiles
             HomingTarget = -1;
             #region Vanilla Summons AI Changes
@@ -2892,13 +2890,6 @@ namespace CalamityMod.Projectiles
         {
             var owner = Main.player[projectile.owner];
             var cplayer = owner.Calamity();
-
-            //Make sure Victide Snail actually fishes when using a minigame rod
-            foreach (var item in Main.ActiveProjectiles)
-            {
-                if (item.type == ModContent.ProjectileType<VictideSeaSnail>() && item.owner == projectile.owner)
-                    item.ModProjectile<VictideSeaSnail>().PlayerFishingTimer = 600;
-            }
             #region Utilities
             void SmallSplashAtOffset(Vector2 offset)
             {
@@ -3211,7 +3202,7 @@ namespace CalamityMod.Projectiles
 
                             foreach (var item in Main.ActiveProjectiles)
                             {
-                                if (item.bobber && projectile.type != ModContent.ProjectileType<VictideBobber>() && item.owner == projectile.owner && item.ai[0] == 0 && item.Calamity().PersistentFishingDataVector2 != Vector2.Zero)
+                                if (item.bobber && item.owner == projectile.owner && item.ai[0] == 0 && item.Calamity().PersistentFishingDataVector2 != Vector2.Zero)
                                 {
                                     validRifts.Add((item.Calamity().PersistentFishingDataVector2, item.whoAmI));
                                 }
@@ -3552,7 +3543,7 @@ namespace CalamityMod.Projectiles
 
                             foreach (var item in Main.ActiveProjectiles)
                             {
-                                if (item.bobber && projectile.type != ModContent.ProjectileType<VictideBobber>() && item.owner == projectile.owner && item.ai[0] == 0 && item.Calamity().PersistentFishingDataVector2 != Vector2.Zero)
+                                if (item.bobber && item.owner == projectile.owner && item.ai[0] == 0 && item.Calamity().PersistentFishingDataVector2 != Vector2.Zero)
                                 {
                                     validRifts.Add((item.Calamity().PersistentFishingDataVector2, item.whoAmI));
                                 }

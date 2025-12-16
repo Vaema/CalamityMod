@@ -38,14 +38,7 @@ namespace CalamityMod.CalPlayer
                 PlayerDrawLayers.Shoes.Hide();
             }
 
-            if (drawInfo.drawPlayer.ownedProjectileCounts[ModContent.ProjectileType<VictideSpirit>()] > 0)
-            {
-                foreach (var layer in PlayerDrawLayerLoader.Layers)
-                {
-                    layer.Hide();
-                }
-            }
-            else if (drawInfo.drawPlayer.Calamity().andromedaState != AndromedaPlayerState.Inactive)
+            if (drawInfo.drawPlayer.Calamity().andromedaState != AndromedaPlayerState.Inactive)
             {
                 foreach (var layer in PlayerDrawLayerLoader.Layers)
                 {
