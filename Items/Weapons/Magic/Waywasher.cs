@@ -1,7 +1,6 @@
 ﻿using CalamityMod.Projectiles.Magic;
 using Microsoft.Xna.Framework;
 using Terraria;
-using Terraria.Audio;
 using Terraria.DataStructures;
 using Terraria.ID;
 using Terraria.ModLoader;
@@ -11,35 +10,31 @@ namespace CalamityMod.Items.Weapons.Magic
     public class Waywasher : ModItem, ILocalizedModType
     {
         public new string LocalizationCategory => "Items.Weapons.Magic";
-        public int shotCount = 0;
         public override void SetDefaults()
         {
             Item.width = 30;
             Item.height = 30;
-            Item.damage = 38;
+            Item.damage = 16;
             Item.DamageType = DamageClass.Magic;
-            Item.mana = 10;
-            Item.useTime = 14;
-            Item.useAnimation = 28;
-            Item.reuseDelay = 23;
+            Item.mana = 4;
+            Item.useTime = 15;
+            Item.useAnimation = 15;
             Item.useStyle = ItemUseStyleID.Shoot;
             Item.noMelee = true;
-            Item.knockBack = 12f;
+            Item.knockBack = 2.5f;
             Item.value = CalamityGlobalItem.RarityGreenBuyPrice;
             Item.rare = ItemRarityID.Green;
+            Item.UseSound = SoundID.Item8;
             Item.autoReuse = true;
             Item.shoot = ModContent.ProjectileType<WaywasherProj>();
-            Item.shootSpeed = 13f;
+            Item.shootSpeed = 12f;
         }
 
         public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)
         {
-            Projectile.NewProjectile(source, position, velocity.RotatedBy(-0.3f * (shotCount % 2 == 0 ? -1 : 1)), ModContent.ProjectileType<WaywasherProj>(), damage, knockback, player.whoAmI, 0, shotCount % 2 == 0 ? -1 : 1);
-
-            SoundStyle WayWashed = new("CalamityMod/Sounds/Item/WaterSplash" + (shotCount % 2 == 0 ? "1" : "2"));
-            SoundEngine.PlaySound(WayWashed with { Volume = 0.6f, Pitch = Main.rand.NextFloat(-0.1f, 0.1f), MaxInstances = 2 }, position);
-
-            shotCount++;
+            float SpeedX = velocity.X + (float)Main.rand.Next(-20, 21) * 0.05f;
+            float SpeedY = velocity.Y + (float)Main.rand.Next(-20, 21) * 0.05f;
+            Projectile.NewProjectile(source, position.X, position.Y, SpeedX, SpeedY, ModContent.ProjectileType<WaywasherProj>(), damage, knockback, player.whoAmI, 0f, 0f);
             return false;
         }
 
