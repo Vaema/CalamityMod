@@ -669,21 +669,21 @@ namespace CalamityMod.World
                         //stalactites
                         if (WorldGen.genRand.NextBool(15))
                         {
-                            WorldGen.PlaceObject(num5, num6 + 2, ModContent.TileType<SunkenStalactites>());
+                            WorldGen.PlaceObject(num5, num6 + 2, ModContent.TileType<SunkenStalactites>(), style: WorldGen.genRand.Next(3));
                         }
                         if (WorldGen.genRand.NextBool(15))
                         {
-                            WorldGen.PlaceTile(num5, num6 + 1, ModContent.TileType<SmallSunkenStalactites>(), true, false, -1, 0);
+                            WorldGen.PlaceTile(num5, num6 + 1, ModContent.TileType<SmallSunkenStalactites>(), true, false, -1, style: WorldGen.genRand.Next(3));
                         }
 
                         //stalagmites
                         if (WorldGen.genRand.NextBool(10))
                         {
-                            WorldGen.PlaceObject(num5, num6 - 2, ModContent.TileType<SunkenStalagmites>());
+                            WorldGen.PlaceObject(num5, num6 - 2, ModContent.TileType<SunkenStalagmites>(), style: WorldGen.genRand.Next(3));
                         }
                         if (WorldGen.genRand.NextBool(10))
                         {
-                            WorldGen.PlaceTile(num5, num6 - 1, ModContent.TileType<SmallSunkenStalagmites>(), true, false, -1, 0);
+                            WorldGen.PlaceTile(num5, num6 - 1, ModContent.TileType<SmallSunkenStalagmites>(), true, false, -1, style: WorldGen.genRand.Next(3));
                         }
                     }
                     if (!tile.HasTile)
