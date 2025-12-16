@@ -341,7 +341,7 @@ namespace CalamityMod.CalPlayer
                 if (Player.ZoneDesert && Main.rand.NextBool())
                     return;
 
-                int commonCatch = ModContent.ItemType<CoralskinFoolfish>();
+                int commonCatch = Main.rand.NextBool() ? ModContent.ItemType<PrismaticGuppy>() : ModContent.ItemType<CoralskinFoolfish>();
                 if (ZonePolypForest)
                     commonCatch = ModContent.ItemType<GleamingCucumber>();
                 else if (ZoneGleamingBurrows)

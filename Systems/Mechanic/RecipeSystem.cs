@@ -1106,6 +1106,13 @@ namespace CalamityMod.Systems
             r.DisableDecraft();
 
             r = Recipe.Create(ItemID.CookedFish);
+            r.AddIngredient<PrismaticGuppy>();
+            r.AddTile(TileID.CookingPots);
+            r.Register();
+            r.SortAfterFirstRecipesOf(ItemID.CookedFish);
+            r.DisableDecraft();
+
+            r = Recipe.Create(ItemID.CookedFish);
             r.AddIngredient<CoralskinFoolfish>();
             r.AddTile(TileID.CookingPots);
             r.Register();
