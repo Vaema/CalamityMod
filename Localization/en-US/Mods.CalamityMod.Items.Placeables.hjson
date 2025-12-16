@@ -4651,3 +4651,13 @@ MossyStone: {
 	DisplayName: Mossy Stone
 	Tooltip: ""
 }
+
+EutrophicSandWall: {
+	DisplayName: Unsafe Eutrophic Sand Wall
+	Tooltip: ""
+}
+
+EutrophicSandWallSafe: {
+	DisplayName: Eutrophic Sand Wall
+	Tooltip: ""
+}

@@ -1,4 +1,5 @@
-﻿using CalamityMod.Projectiles.Typeless;
+﻿using CalamityMod.Items.Placeables.Walls;
+using CalamityMod.Projectiles.Typeless;
 using Terraria.ID;
 using Terraria.ModLoader;
 
@@ -21,6 +22,14 @@ namespace CalamityMod.Items.Placeables.SunkenSea
             Item.DefaultToPlaceableTile(ModContent.TileType<Tiles.SunkenSea.EutrophicSand>());
             Item.ammo = AmmoID.Sand;
             Item.notAmmo = true;
+        }
+
+        public override void AddRecipes()
+        {
+            CreateRecipe().
+                AddIngredient<EutrophicSandWallSafe>(4).
+                AddTile(TileID.WorkBenches).
+                Register();
         }
     }
 }

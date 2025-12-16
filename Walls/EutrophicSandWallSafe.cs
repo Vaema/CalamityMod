@@ -1,18 +1,18 @@
 ﻿using Microsoft.Xna.Framework;
+using Terraria;
 using Terraria.ModLoader;
-using Terraria.ID;
+
 namespace CalamityMod.Walls
 {
-    public class NavyslateWall : ModWall, IVisibleThroughWater
+    public class EutrophicSandWallSafe : ModWall
     {
-        int IVisibleThroughWater.WaterMapEntry { get; set; }
-
         public override void SetStaticDefaults()
         {
-            DustType = DustID.BlueMoss;
-            this.AddMapEntryWithWaterVisibility(new Color(11, 40, 43));
+            Main.wallHouse[Type] = true;
+            DustType = 108;
+            AddMapEntry(new Color(11, 56, 81));
         }
-        
+
         public override void NumDust(int i, int j, bool fail, ref int num) => num = fail ? 1 : 3;
     }
 }
