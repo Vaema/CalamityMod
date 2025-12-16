@@ -136,12 +136,12 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                 NPC.ai[1] = Main.npc[(int)NPC.ai[3]].ai[1];
                 dontTakeDamage = true;
 
-                if (npc.ai[0] == 5f && npc.ai[1] >= 120f && npc.ai[1] < timeToFinishRitual)
+                if (NPC.ai[0] == 5f && NPC.ai[1] >= 120f && NPC.ai[1] < timeToFinishRitual)
                 {
                     dontTakeDamage = false;
-                    if (npc.justHit)
+                    if (NPC.justHit)
                     {
-                        var mainCultist = Main.npc[(int)npc.ai[3]];
+                        var mainCultist = Main.npc[(int)NPC.ai[3]];
                         mainCultist.ai[1] = timeToFinishRitual;
                     }
                 }
@@ -927,7 +927,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
             {
                 NPC.localAI[2] = 13f;
 
-                if ((NPC.ai[1] >= 4f & isCultist) && (int)(NPC.ai[1] - 4f) % 20f == 0f && npc.ai[1] <= 64)
+                if ((NPC.ai[1] >= 4f & isCultist) && (int)(NPC.ai[1] - 4f) % 20f == 0f && NPC.ai[1] <= 64)
                 {
                     List<int> list8 = new List<int>();
                     for (int k = 0; k < Main.maxNPCs; k++)
