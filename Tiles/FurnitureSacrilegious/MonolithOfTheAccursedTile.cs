@@ -136,7 +136,7 @@ namespace CalamityMod.Tiles.FurnitureSacrilegious
             num = fail ? 1 : 3;
         }
 
-        public override void MouseOver(int i, int j) => CalamityUtils.MouseOver(i, j, ModContent.ItemType<MonolithOfTheAccursed>());
+        public override void MouseOver(int i, int j) => FurnitureCommon.MouseOver(i, j, ModContent.ItemType<MonolithOfTheAccursed>());
 
         // For drawing the floating icon
         public override void PostDraw(int i, int j, SpriteBatch spriteBatch)

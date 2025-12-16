@@ -35,7 +35,7 @@ namespace CalamityMod.Waters
 
             if (tile.TileType != RustyChestTile.TileType)
             {
-                CalamityUtils.SunkenSeaWaterLighting(i, j, WaterGlowColor, ref outputColor.X, ref outputColor.Y, ref outputColor.Z);
+                WaterStyleCommon.ModifySunkenSeaWaterLight(i, j, WaterGlowColor, ref outputColor.X, ref outputColor.Y, ref outputColor.Z);
             }
 
             r = outputColor.X;

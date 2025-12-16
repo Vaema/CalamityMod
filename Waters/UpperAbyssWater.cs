@@ -10,7 +10,7 @@ namespace CalamityMod.Waters
 {
     public class UpperAbyssWaterflow : ModWaterfallStyle, IWaterfallStyleModifyColor
     {
-        public void ModifyColor(in Tile tile, int x, int y, ref VertexColors liquidColor) => CalamityUtils.ModifySulphuricWaterColor(x, y, ref liquidColor, false);
+        public void ModifyColor(in Tile tile, int x, int y, ref VertexColors liquidColor) => WaterStyleCommon.ModifyTransparentWaterColor(x, y, ref liquidColor, false);
     }
 
     public class UpperAbyssWater : ModWaterStyle, IWaterStyleModifyColor
@@ -40,6 +40,6 @@ namespace CalamityMod.Waters
         public override int GetSplashDust() => SplashDust;
         public override int GetDropletGore() => DropletGore;
         public override Color BiomeHairColor() => new Color(9, 69, 82);
-        public void ModifyColor(in Tile tile, int x, int y, ref VertexColors liquidColor, bool isSlope) => CalamityUtils.ModifySulphuricWaterColor(x, y, ref liquidColor, isSlope);
+        public void ModifyColor(in Tile tile, int x, int y, ref VertexColors liquidColor, bool isSlope) => WaterStyleCommon.ModifyTransparentWaterColor(x, y, ref liquidColor, isSlope);
     }
 }

@@ -2484,42 +2484,16 @@ namespace CalamityMod.Projectiles
                         Vector2 vector11 = Main.player[num103].Center - projectile.Center;
                         float scaleFactor2 = projectile.velocity.Length();
                         vector11.Normalize();
+                        if (vector11.HasNaNs())
+                            vector11 = Vector2.Zero;
                         vector11 *= scaleFactor2;
                         projectile.velocity = (projectile.velocity * 20f + vector11) / 21f;
                         projectile.velocity.Normalize();
                         projectile.velocity *= scaleFactor2;
+                        projectile.velocity *= 0.99f;
 
-                        // Fly away from other Ice Mists in Master
-                        if (death)
-                        {
-                            float pushForce = 0.06f;
-                            float pushDistance = 120f;
-                            for (int k = 0; k < Main.maxProjectiles; k++)
-                            {
-                                Projectile otherProj = Main.projectile[k];
-                                // Short circuits to make the loop as fast as possible
-                                if (!otherProj.active || k == projectile.whoAmI)
-                                    continue;
-
-                                // If the other projectile is indeed the same owned by the same player and they're too close, nudge them away
-                                bool sameProjType = otherProj.type == projectile.type;
-                                float taxicabDist = Vector2.Distance(projectile.Center, otherProj.Center);
-                                if (sameProjType && taxicabDist < pushDistance)
-                                {
-                                    if (projectile.position.X < otherProj.position.X)
-                                        projectile.velocity.X -= pushForce;
-                                    else
-                                        projectile.velocity.X += pushForce;
-
-                                    if (projectile.position.Y < otherProj.position.Y)
-                                        projectile.velocity.Y -= pushForce;
-                                    else
-                                        projectile.velocity.Y += pushForce;
-                                }
-                            }
-                        }
-
-                        if (projectile.ai[0] % (death ? 30f : 60f) == 0f && Main.netMode != NetmodeID.MultiplayerClient)
+                        
+                        if (projectile.ai[0] % (death ? 20f : 30f) == 0f && Main.netMode != NetmodeID.MultiplayerClient)
                         {
                             Vector2 vector50 = projectile.rotation.ToRotationVector2();
                             Projectile.NewProjectile(projectile.GetSource_FromThis(), projectile.Center, vector50, projectile.type, projectile.damage, projectile.knockBack, projectile.owner);

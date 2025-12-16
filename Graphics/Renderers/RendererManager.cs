@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using CalamityMod.Enums;
+using CalamityMod.Systems.Graphic;
 using CalamityMod.Utilities.Daybreak;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
@@ -26,7 +27,8 @@ namespace CalamityMod.Graphics.Renderers
                 return;
 
             // This hooks here, because doing it any sooner causes the screen position to be a frame behind.
-            On_Main.CheckMonoliths += DrawToTargets;
+            GeneralDrawLayerSystem.OnDrawLayer += DrawRendererAtLayer;
+            GeneralDrawLayerSystem.OnPrepareDraw += DrawToTargets;
         }
 
         public override void Unload()
@@ -60,7 +62,7 @@ namespace CalamityMod.Graphics.Renderers
         #endregion
 
         #region Drawing
-        internal static void DrawRendererAtLayer(GeneralDrawLayer drawLayer)
+        private static void DrawRendererAtLayer(GeneralDrawLayer drawLayer)
         {
             var renderers = Renderers.Where(renderer => renderer.ShouldDraw && renderer.Layer == drawLayer);
             if (renderers.Any())
@@ -74,10 +76,8 @@ namespace CalamityMod.Graphics.Renderers
             }
         }
 
-        private void DrawToTargets(On_Main.orig_CheckMonoliths orig)
+        private void DrawToTargets()
         {
-            orig();
-
             if (Main.gameMenu || Main.dedServ)
                 return;
 

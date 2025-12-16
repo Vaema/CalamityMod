@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using CalamityMod.Enums;
+using CalamityMod.Systems.Graphic;
 using CalamityMod.Systems.Graphic.PixelationSystem;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
@@ -100,6 +101,8 @@ namespace CalamityMod.Particles
             particlesToDraw = [];
             particlesToDraw_Pixelated = [];
             particlesToDraw_CustomShader = [];
+
+            GeneralDrawLayerSystem.OnDrawLayer += DrawParticleCollectionsAtSpecificLayer;
         }
 
         public override void Unload()
@@ -289,7 +292,7 @@ namespace CalamityMod.Particles
             particlesToKill.Clear();
         }
 
-        internal static void DrawParticleCollectionsAtSpecificLayer(GeneralDrawLayer drawLayer)
+        private static void DrawParticleCollectionsAtSpecificLayer(GeneralDrawLayer drawLayer)
         {
             if (Main.dedServ)
                 return;

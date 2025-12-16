@@ -12,22 +12,10 @@ using Terraria.ModLoader.Default;
 using Terraria.ObjectData;
 using static Terraria.ModLoader.ModContent;
 
-namespace CalamityMod
+namespace CalamityMod.Tiles
 {
-    public static partial class CalamityUtils
+    internal static class FurnitureCommon
     {
-        public static void RightClickBreak(int i, int j)
-        {
-            if (Main.tile[i, j] != null && Main.tile[i, j].HasTile)
-            {
-                WorldGen.KillTile(i, j, false, false, false);
-                if (!Main.tile[i, j].HasTile && Main.netMode != NetmodeID.SinglePlayer)
-                {
-                    NetMessage.SendData(MessageID.TileManipulation, -1, -1, null, 0, (float)i, (float)j, 0f, 0, 0, 0);
-                }
-            }
-        }
-
         public static bool BedRightClick(int i, int j)
         {
             Player player = Main.LocalPlayer;
@@ -66,7 +54,79 @@ namespace CalamityMod
             return true;
         }
 
-        #region Sitting in Chairs
+        public static void BenchMouseOver(int i, int j, int itemID)
+        {
+            Player player = Main.LocalPlayer;
+
+            if (!player.IsWithinSnappngRangeToTile(i, j, PlayerSittingHelper.ChairSittingMaxDistance))
+            {
+                return;
+            }
+
+            player.noThrow = 2;
+            player.cursorItemIconEnabled = true;
+            player.cursorItemIconID = itemID;
+        }
+
+        public static void BenchSitInfo(int i, int j, ref TileRestingInfo info, int nextStyleHeight = 40)
+        {
+            Tile tile = Framing.GetTileSafely(i, j);
+            Player player = Main.LocalPlayer;
+
+            info.DirectionOffset = 0;
+            float offset = 0f;
+            if (tile.TileFrameX < 17 && player.direction == 1)
+                offset = 8f;
+            if (tile.TileFrameX < 17 && player.direction == -1)
+                offset = -8f;
+            if (tile.TileFrameX > 34 && player.direction == 1)
+                offset = -8f;
+            if (tile.TileFrameX > 34 && player.direction == -1)
+                offset = 8f;
+            info.VisualOffset = new Vector2(offset, 0f);
+            info.TargetDirection = player.direction;
+
+            info.AnchorTilePosition.X = i;
+            info.AnchorTilePosition.Y = j;
+
+            if (tile.TileFrameY % nextStyleHeight == 0)
+            {
+                info.AnchorTilePosition.Y++;
+            }
+        }
+
+        public static void ChairMouseOver(int i, int j, int itemID, bool fat = false)
+        {
+            Player player = Main.LocalPlayer;
+
+            if (!player.IsWithinSnappngRangeToTile(i, j, PlayerSittingHelper.ChairSittingMaxDistance))
+            {
+                return;
+            }
+
+            player.noThrow = 2;
+            player.cursorItemIconEnabled = true;
+            player.cursorItemIconID = itemID;
+
+            bool frameCheck = fat ? Main.tile[i, j].TileFrameX <= 35 : Main.tile[i, j].TileFrameX / 18 < 0;
+            if (frameCheck)
+            {
+                player.cursorItemIconReversed = true;
+            }
+        }
+
+        public static bool ChairRightClick(int i, int j)
+        {
+            Player player = Main.LocalPlayer;
+
+            if (player.IsWithinSnappngRangeToTile(i, j, PlayerSittingHelper.ChairSittingMaxDistance))
+            {
+                player.GamepadEnableGrappleCooldown();
+                player.sitting.SitDown(player, i, j);
+            }
+            return true;
+        }
+
         // fat is for 2 tile chairs like Exo Chair and Exo Toilet
         public static void ChairSitInfo(int i, int j, ref TileRestingInfo info, int nextStyleHeight = 40, bool fat = false, bool hasOffset = false, bool shitter = false)
         {
@@ -105,90 +165,50 @@ namespace CalamityMod
                 info.AnchorTilePosition.Y++;
             }
         }
-
-        public static bool ChairRightClick(int i, int j)
+        public static void ChestMouseFar<T>(int i, int j) where T : ModItem
         {
+            ChestMouseOver<T>(i, j);
             Player player = Main.LocalPlayer;
-
-            if (player.IsWithinSnappngRangeToTile(i, j, PlayerSittingHelper.ChairSittingMaxDistance))
+            if (player.cursorItemIconText == "")
             {
-                player.GamepadEnableGrappleCooldown();
-                player.sitting.SitDown(player, i, j);
+                player.cursorItemIconEnabled = false;
+                player.cursorItemIconID = ItemID.None;
             }
-            return true;
         }
 
-        public static void ChairMouseOver(int i, int j, int itemID, bool fat = false)
+        public static void ChestMouseOver<T>(int i, int j) where T : ModItem
         {
             Player player = Main.LocalPlayer;
-
-            if (!player.IsWithinSnappngRangeToTile(i, j, PlayerSittingHelper.ChairSittingMaxDistance))
+            Tile tile = Main.tile[i, j];
+            string chestName = TileLoader.DefaultContainerName(tile.TileType, tile.TileFrameX, tile.TileFrameY);
+            int left = i;
+            int top = j;
+            if (tile.TileFrameX % 36 != 0)
             {
-                return;
+                left--;
             }
-
+            if (tile.TileFrameY != 0)
+            {
+                top--;
+            }
+            int chest = Chest.FindChest(left, top);
+            player.cursorItemIconID = -1;
+            if (chest < 0)
+            {
+                player.cursorItemIconText = Language.GetTextValue("LegacyChestType.0");
+            }
+            else
+            {
+                player.cursorItemIconText = Main.chest[chest].name.Length > 0 ? Main.chest[chest].name : chestName;
+                if (player.cursorItemIconText == chestName)
+                {
+                    player.cursorItemIconID = ItemType<T>();
+                    player.cursorItemIconText = "";
+                }
+            }
             player.noThrow = 2;
             player.cursorItemIconEnabled = true;
-            player.cursorItemIconID = itemID;
-
-            bool frameCheck = fat ? Main.tile[i, j].TileFrameX <= 35 : Main.tile[i, j].TileFrameX / 18 < 0;
-            if (frameCheck)
-            {
-                player.cursorItemIconReversed = true;
-            }
         }
-
-        public static void MouseOver(int i, int j, int itemID)
-        {
-            Player player = Main.LocalPlayer;
-            player.noThrow = 2;
-            player.cursorItemIconEnabled = true;
-            player.cursorItemIconID = itemID;
-        }
-        #endregion
-
-        #region Sitting in Sofas/Benches
-        public static void BenchSitInfo(int i, int j, ref TileRestingInfo info, int nextStyleHeight = 40)
-        {
-            Tile tile = Framing.GetTileSafely(i, j);
-            Player player = Main.LocalPlayer;
-
-            info.DirectionOffset = 0;
-            float offset = 0f;
-            if (tile.TileFrameX < 17 && player.direction == 1)
-                offset = 8f;
-            if (tile.TileFrameX < 17 && player.direction == -1)
-                offset = -8f;
-            if (tile.TileFrameX > 34 && player.direction == 1)
-                offset = -8f;
-            if (tile.TileFrameX > 34 && player.direction == -1)
-                offset = 8f;
-            info.VisualOffset = new Vector2(offset, 0f);
-            info.TargetDirection = player.direction;
-
-            info.AnchorTilePosition.X = i;
-            info.AnchorTilePosition.Y = j;
-
-            if (tile.TileFrameY % nextStyleHeight == 0)
-            {
-                info.AnchorTilePosition.Y++;
-            }
-        }
-
-        public static void BenchMouseOver(int i, int j, int itemID)
-        {
-            Player player = Main.LocalPlayer;
-
-            if (!player.IsWithinSnappngRangeToTile(i, j, PlayerSittingHelper.ChairSittingMaxDistance))
-            {
-                return;
-            }
-
-            player.noThrow = 2;
-            player.cursorItemIconEnabled = true;
-            player.cursorItemIconID = itemID;
-        }
-        #endregion
 
         public static bool ChestRightClick(int i, int j)
         {
@@ -264,51 +284,6 @@ namespace CalamityMod
             return true;
         }
 
-        public static void ChestMouseOver<T>(int i, int j) where T : ModItem
-        {
-            Player player = Main.LocalPlayer;
-            Tile tile = Main.tile[i, j];
-            string chestName = TileLoader.DefaultContainerName(tile.TileType, tile.TileFrameX, tile.TileFrameY);
-            int left = i;
-            int top = j;
-            if (tile.TileFrameX % 36 != 0)
-            {
-                left--;
-            }
-            if (tile.TileFrameY != 0)
-            {
-                top--;
-            }
-            int chest = Chest.FindChest(left, top);
-            player.cursorItemIconID = -1;
-            if (chest < 0)
-            {
-                player.cursorItemIconText = Language.GetTextValue("LegacyChestType.0");
-            }
-            else
-            {
-                player.cursorItemIconText = Main.chest[chest].name.Length > 0 ? Main.chest[chest].name : chestName;
-                if (player.cursorItemIconText == chestName)
-                {
-                    player.cursorItemIconID = ItemType<T>();
-                    player.cursorItemIconText = "";
-                }
-            }
-            player.noThrow = 2;
-            player.cursorItemIconEnabled = true;
-        }
-
-        public static void ChestMouseFar<T>(int i, int j) where T : ModItem
-        {
-            ChestMouseOver<T>(i, j);
-            Player player = Main.LocalPlayer;
-            if (player.cursorItemIconText == "")
-            {
-                player.cursorItemIconEnabled = false;
-                player.cursorItemIconID = ItemID.None;
-            }
-        }
-
         public static bool ClockRightClick()
         {
             string text = "AM";
@@ -356,6 +331,91 @@ namespace CalamityMod
             var newText = string.Concat("Time: ", intTime, ":", minuteText, " ", text);
             Main.NewText(newText, 255, 240, 20);
             return true;
+        }
+
+        public static void DresserMouseFar<T>() where T : ModItem
+        {
+            Player player = Main.LocalPlayer;
+            Tile tile = Main.tile[Player.tileTargetX, Player.tileTargetY];
+            string chestName = TileLoader.DefaultContainerName(tile.TileType, tile.TileFrameX, tile.TileFrameY);
+            int left = Player.tileTargetX;
+            int top = Player.tileTargetY;
+            left -= (int)(tile.TileFrameX % 54 / 18);
+            if (tile.TileFrameY % 36 != 0)
+            {
+                top--;
+            }
+            int chestIndex = Chest.FindChest(left, top);
+            player.cursorItemIconID = -1;
+            if (chestIndex < 0)
+            {
+                player.cursorItemIconText = Language.GetTextValue("LegacyDresserType.0");
+            }
+            else
+            {
+                if (Main.chest[chestIndex].name != "")
+                {
+                    player.cursorItemIconText = Main.chest[chestIndex].name;
+                }
+                else
+                {
+                    player.cursorItemIconText = chestName;
+                }
+                if (player.cursorItemIconText == chestName)
+                {
+                    player.cursorItemIconID = ItemType<T>();
+                    player.cursorItemIconText = "";
+                }
+            }
+            player.noThrow = 2;
+            player.cursorItemIconEnabled = true;
+            if (player.cursorItemIconText == "")
+            {
+                player.cursorItemIconEnabled = false;
+                player.cursorItemIconID = ItemID.None;
+            }
+        }
+
+        public static void DresserMouseOver<T>() where T : ModItem
+        {
+            Player player = Main.LocalPlayer;
+            Tile tile = Main.tile[Player.tileTargetX, Player.tileTargetY];
+            string chestName = TileLoader.DefaultContainerName(tile.TileType, tile.TileFrameX, tile.TileFrameY);
+            int left = Player.tileTargetX;
+            int top = Player.tileTargetY;
+            left -= (int)(tile.TileFrameX % 54 / 18);
+            if (tile.TileFrameY % 36 != 0)
+            {
+                top--;
+            }
+            int chestIndex = Chest.FindChest(left, top);
+            player.cursorItemIconID = -1;
+            if (chestIndex < 0)
+            {
+                player.cursorItemIconText = Language.GetTextValue("LegacyDresserType.0");
+            }
+            else
+            {
+                if (Main.chest[chestIndex].name != "")
+                {
+                    player.cursorItemIconText = Main.chest[chestIndex].name;
+                }
+                else
+                {
+                    player.cursorItemIconText = chestName;
+                }
+                if (player.cursorItemIconText == chestName)
+                {
+                    player.cursorItemIconID = ItemType<T>();
+                    player.cursorItemIconText = "";
+                }
+            }
+            player.noThrow = 2;
+            player.cursorItemIconEnabled = true;
+            if (Main.tile[Player.tileTargetX, Player.tileTargetY].TileFrameY > 0)
+            {
+                player.cursorItemIconID = ItemID.FamiliarShirt;
+            }
         }
 
         public static bool DresserRightClick()
@@ -452,89 +512,113 @@ namespace CalamityMod
 
             return false;
         }
+        public static string GetMapChestName(string baseName, int x, int y)
+        {
+            // Bounds check.
+            if (!WorldGen.InWorld(x, y, 2))
+                return baseName;
 
-        public static void DresserMouseFar<T>() where T : ModItem
+            Tile tile = Main.tile[x, y];
+            int left = x;
+            int top = y;
+            if (tile.TileFrameX % 36 != 0)
+                left--;
+            if (tile.TileFrameY != 0)
+                top--;
+
+            int chest = Chest.FindChest(left, top);
+
+            // Valid chest index check.
+            if (chest < 0)
+                return baseName;
+
+            string name = baseName;
+
+            // Concatenate the chest's custom name if it has one.
+            if (!string.IsNullOrEmpty(Main.chest[chest].name))
+                name += $": {Main.chest[chest].name}";
+
+            return name;
+        }
+
+        public static void LightHitWire(int type, int i, int j, int tileX, int tileY)
+        {
+            int x = i - Main.tile[i, j].TileFrameX / 18 % tileX;
+            int y = j - Main.tile[i, j].TileFrameY / 18 % tileY;
+            int tileXX18 = 18 * tileX;
+            for (int l = x; l < x + tileX; l++)
+            {
+                for (int m = y; m < y + tileY; m++)
+                {
+                    if (Main.tile[l, m].HasTile && Main.tile[l, m].TileType == type)
+                    {
+                        if (Main.tile[l, m].TileFrameX < tileXX18)
+                            Main.tile[l, m].TileFrameX += (short)(tileXX18);
+                        else
+                            Main.tile[l, m].TileFrameX -= (short)(tileXX18);
+                    }
+                }
+            }
+
+            if (Wiring.running)
+            {
+                for (int k = 0; k < tileX; k++)
+                {
+                    for (int l = 0; l < tileY; l++)
+                        Wiring.SkipWire(x + k, y + l);
+                }
+            }
+
+            if (Main.netMode != NetmodeID.SinglePlayer)
+                NetMessage.SendTileSquare(-1, x, y, tileX, tileY);
+        }
+
+        public static void LockedChestMouseOver<K, C>(int i, int j)
+            where K : ModItem where C : ModItem
         {
             Player player = Main.LocalPlayer;
-            Tile tile = Main.tile[Player.tileTargetX, Player.tileTargetY];
+            Tile tile = Main.tile[i, j];
             string chestName = TileLoader.DefaultContainerName(tile.TileType, tile.TileFrameX, tile.TileFrameY);
-            int left = Player.tileTargetX;
-            int top = Player.tileTargetY;
-            left -= (int)(tile.TileFrameX % 54 / 18);
-            if (tile.TileFrameY % 36 != 0)
+            int left = i;
+            int top = j;
+            if (tile.TileFrameX % 36 != 0)
+            {
+                left--;
+            }
+            if (tile.TileFrameY != 0)
             {
                 top--;
             }
-            int chestIndex = Chest.FindChest(left, top);
+            int chest = Chest.FindChest(left, top);
             player.cursorItemIconID = -1;
-            if (chestIndex < 0)
+            if (chest < 0)
             {
-                player.cursorItemIconText = Language.GetTextValue("LegacyDresserType.0");
+                player.cursorItemIconText = Language.GetTextValue("LegacyChestType.0");
             }
             else
             {
-                if (Main.chest[chestIndex].name != "")
-                {
-                    player.cursorItemIconText = Main.chest[chestIndex].name;
-                }
-                else
-                {
-                    player.cursorItemIconText = chestName;
-                }
+                player.cursorItemIconText = Main.chest[chest].name.Length > 0 ? Main.chest[chest].name : chestName;
                 if (player.cursorItemIconText == chestName)
                 {
-                    player.cursorItemIconID = ItemType<T>();
+                    player.cursorItemIconID = ItemType<C>();
+                    if (Main.tile[left, top].TileFrameX / 36 == 1)
+                        player.cursorItemIconID = ItemType<K>();
                     player.cursorItemIconText = "";
                 }
             }
             player.noThrow = 2;
             player.cursorItemIconEnabled = true;
+        }
+
+        public static void LockedChestMouseOverFar<K, C>(int i, int j)
+            where K : ModItem where C : ModItem
+        {
+            LockedChestMouseOver<K, C>(i, j);
+            Player player = Main.LocalPlayer;
             if (player.cursorItemIconText == "")
             {
                 player.cursorItemIconEnabled = false;
                 player.cursorItemIconID = ItemID.None;
-            }
-        }
-
-        public static void DresserMouseOver<T>() where T : ModItem
-        {
-            Player player = Main.LocalPlayer;
-            Tile tile = Main.tile[Player.tileTargetX, Player.tileTargetY];
-            string chestName = TileLoader.DefaultContainerName(tile.TileType, tile.TileFrameX, tile.TileFrameY);
-            int left = Player.tileTargetX;
-            int top = Player.tileTargetY;
-            left -= (int)(tile.TileFrameX % 54 / 18);
-            if (tile.TileFrameY % 36 != 0)
-            {
-                top--;
-            }
-            int chestIndex = Chest.FindChest(left, top);
-            player.cursorItemIconID = -1;
-            if (chestIndex < 0)
-            {
-                player.cursorItemIconText = Language.GetTextValue("LegacyDresserType.0");
-            }
-            else
-            {
-                if (Main.chest[chestIndex].name != "")
-                {
-                    player.cursorItemIconText = Main.chest[chestIndex].name;
-                }
-                else
-                {
-                    player.cursorItemIconText = chestName;
-                }
-                if (player.cursorItemIconText == chestName)
-                {
-                    player.cursorItemIconID = ItemType<T>();
-                    player.cursorItemIconText = "";
-                }
-            }
-            player.noThrow = 2;
-            player.cursorItemIconEnabled = true;
-            if (Main.tile[Player.tileTargetX, Player.tileTargetY].TileFrameY > 0)
-            {
-                player.cursorItemIconID = ItemID.FamiliarShirt;
             }
         }
 
@@ -633,53 +717,44 @@ namespace CalamityMod
             return false;
         }
 
-        public static void LockedChestMouseOver<K, C>(int i, int j)
-            where K : ModItem where C : ModItem
+        public static void MouseOver(int i, int j, int itemID)
         {
             Player player = Main.LocalPlayer;
-            Tile tile = Main.tile[i, j];
-            string chestName = TileLoader.DefaultContainerName(tile.TileType, tile.TileFrameX, tile.TileFrameY);
-            int left = i;
-            int top = j;
-            if (tile.TileFrameX % 36 != 0)
-            {
-                left--;
-            }
-            if (tile.TileFrameY != 0)
-            {
-                top--;
-            }
-            int chest = Chest.FindChest(left, top);
-            player.cursorItemIconID = -1;
-            if (chest < 0)
-            {
-                player.cursorItemIconText = Language.GetTextValue("LegacyChestType.0");
-            }
-            else
-            {
-                player.cursorItemIconText = Main.chest[chest].name.Length > 0 ? Main.chest[chest].name : chestName;
-                if (player.cursorItemIconText == chestName)
-                {
-                    player.cursorItemIconID = ItemType<C>();
-                    if (Main.tile[left, top].TileFrameX / 36 == 1)
-                        player.cursorItemIconID = ItemType<K>();
-                    player.cursorItemIconText = "";
-                }
-            }
             player.noThrow = 2;
             player.cursorItemIconEnabled = true;
+            player.cursorItemIconID = itemID;
+        }
+        public static void RightClickBreak(int i, int j)
+        {
+            if (Main.tile[i, j] != null && Main.tile[i, j].HasTile)
+            {
+                WorldGen.KillTile(i, j, false, false, false);
+                if (!Main.tile[i, j].HasTile && Main.netMode != NetmodeID.SinglePlayer)
+                {
+                    NetMessage.SendData(MessageID.TileManipulation, -1, -1, null, 0, (float)i, (float)j, 0f, 0, 0, 0);
+                }
+            }
         }
 
-        public static void LockedChestMouseOverFar<K, C>(int i, int j)
-            where K : ModItem where C : ModItem
+        /// <summary>
+        /// Extension which initializes a ModTile to be a 6x6 Painting.
+        /// </summary>
+        /// <param name="mt">The ModTile which is being initialized.</param>
+        /// <param name="lavaImmune">Whether this tile is supposed to be immune to lava. Defaults to false.</param>
+        internal static void SetUp6x6Painting(this ModTile mt, bool lavaImmune = false)
         {
-            LockedChestMouseOver<K, C>(i, j);
-            Player player = Main.LocalPlayer;
-            if (player.cursorItemIconText == "")
-            {
-                player.cursorItemIconEnabled = false;
-                player.cursorItemIconID = ItemID.None;
-            }
+            Main.tileFrameImportant[mt.Type] = true;
+            Main.tileLavaDeath[mt.Type] = !lavaImmune;
+            Main.tileSpelunker[mt.Type] = true;
+            Main.tileWaterDeath[mt.Type] = false;
+            TileObjectData.newTile.CopyFrom(TileObjectData.Style3x3Wall);
+            TileObjectData.newTile.Width = 6;
+            TileObjectData.newTile.Height = 6;
+            TileObjectData.newTile.Origin = new Point16(2, 2);
+            TileObjectData.newTile.CoordinateHeights = new int[] { 16, 16, 16, 16, 16, 16 };
+            TileObjectData.newTile.LavaDeath = !lavaImmune;
+            TileObjectData.newTile.LavaPlacement = lavaImmune ? LiquidPlacement.Allowed : LiquidPlacement.NotAllowed;
+            TileObjectData.addTile(mt.Type);
         }
 
         /// <summary>
@@ -1559,27 +1634,6 @@ namespace CalamityMod
             mt.AddToArray(ref TileID.Sets.RoomNeeds.CountsAsTable);
             mt.AddMapEntry(new Color(191, 142, 111), Language.GetText("ItemName.WorkBench"));
             mt.AdjTiles = new int[] { TileID.WorkBenches };
-        }
-
-        /// <summary>
-        /// Extension which initializes a ModTile to be a 6x6 Painting.
-        /// </summary>
-        /// <param name="mt">The ModTile which is being initialized.</param>
-        /// <param name="lavaImmune">Whether this tile is supposed to be immune to lava. Defaults to false.</param>
-        internal static void SetUp6x6Painting(this ModTile mt, bool lavaImmune = false)
-        {
-            Main.tileFrameImportant[mt.Type] = true;
-            Main.tileLavaDeath[mt.Type] = !lavaImmune;
-            Main.tileSpelunker[mt.Type] = true;
-            Main.tileWaterDeath[mt.Type] = false;
-            TileObjectData.newTile.CopyFrom(TileObjectData.Style3x3Wall);
-            TileObjectData.newTile.Width = 6;
-            TileObjectData.newTile.Height = 6;
-            TileObjectData.newTile.Origin = new Point16(2, 2);
-            TileObjectData.newTile.CoordinateHeights = new int[] { 16, 16, 16, 16, 16, 16 };
-            TileObjectData.newTile.LavaDeath = !lavaImmune;
-            TileObjectData.newTile.LavaPlacement = lavaImmune ? LiquidPlacement.Allowed : LiquidPlacement.NotAllowed;
-            TileObjectData.addTile(mt.Type);
         }
     }
 }

@@ -16,7 +16,7 @@ namespace CalamityMod.Tiles.FurnitureWulfrum.FurnitureAnodizedWulfrum
         public override void SetStaticDefaults()
         {
             this.SetUpDresser(ModContent.ItemType<Items.Placeables.FurnitureWulfrum.FurnitureAnodizedWulfrum.AnodizedWulfrumDresser>());
-            AddMapEntry(new Color(191, 142, 111), CalamityUtils.GetItemName<Items.Placeables.FurnitureWulfrum.FurnitureAnodizedWulfrum.AnodizedWulfrumDresser>(), CalamityUtils.GetMapChestName);
+            AddMapEntry(new Color(191, 142, 111), CalamityUtils.GetItemName<Items.Placeables.FurnitureWulfrum.FurnitureAnodizedWulfrum.AnodizedWulfrumDresser>(), FurnitureCommon.GetMapChestName);
         }
 
         public override bool CreateDust(int i, int j, ref int type)
@@ -28,10 +28,10 @@ namespace CalamityMod.Tiles.FurnitureWulfrum.FurnitureAnodizedWulfrum
         public override void NumDust(int i, int j, bool fail, ref int num) => num = fail ? 1 : 3;
 
         public override LocalizedText DefaultContainerName(int frameX, int frameY) => CalamityUtils.GetItemName<Items.Placeables.FurnitureWulfrum.FurnitureAnodizedWulfrum.AnodizedWulfrumDresser>();
-        public override void MouseOver(int i, int j) => CalamityUtils.DresserMouseOver<Items.Placeables.FurnitureWulfrum.FurnitureAnodizedWulfrum.AnodizedWulfrumDresser>();
-        public override void MouseOverFar(int i, int j) => CalamityUtils.DresserMouseFar<Items.Placeables.FurnitureWulfrum.FurnitureAnodizedWulfrum.AnodizedWulfrumDresser>();
+        public override void MouseOver(int i, int j) => FurnitureCommon.DresserMouseOver<Items.Placeables.FurnitureWulfrum.FurnitureAnodizedWulfrum.AnodizedWulfrumDresser>();
+        public override void MouseOverFar(int i, int j) => FurnitureCommon.DresserMouseFar<Items.Placeables.FurnitureWulfrum.FurnitureAnodizedWulfrum.AnodizedWulfrumDresser>();
         public override void KillMultiTile(int i, int j, int frameX, int frameY) => Chest.DestroyChest(i, j);
-        public override bool RightClick(int i, int j) => CalamityUtils.DresserRightClick();
+        public override bool RightClick(int i, int j) => FurnitureCommon.DresserRightClick();
 
         public override void PostDraw(int i, int j, SpriteBatch spriteBatch)
         {

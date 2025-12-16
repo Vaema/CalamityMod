@@ -26,6 +26,24 @@ using static Terraria.ModLoader.ModContent;
 
 namespace CalamityMod.NPCs;
 
+public static class VanillaAIOverrideExtension
+{
+    extension(NPC npc)
+    {
+        public bool TryGetAIOverride<AI>(out AI aiInstance) where AI : VanillaAIOverride, new()
+        {
+            if (!npc.TryGetGlobalNPC<CalamityVanillaAIOverrideNPC>(out var aiOverrideNPC))
+            {
+                aiInstance = null;
+                return false;
+            }
+
+            aiInstance = aiOverrideNPC.AIOverride as AI;
+            return aiInstance != null;
+        }
+    }
+}
+
 public sealed class CalamityVanillaAIOverrideNPC : GlobalNPC
 {
     /// <summary>
@@ -918,6 +936,11 @@ public sealed class CalamityVanillaAIOverrideNPC : GlobalNPC
         if (AIOverride != null)
             return AIOverride.PreDraw(Mod, spriteBatch, screenPos, drawColor);
         return base.PreDraw(npc, spriteBatch, screenPos, drawColor);
+    }
+
+    public override void PostDraw(NPC npc, SpriteBatch spriteBatch, Vector2 screenPos, Color drawColor)
+    {
+        AIOverride?.PostDraw(Mod, spriteBatch, screenPos, drawColor);
     }
 
     #endregion

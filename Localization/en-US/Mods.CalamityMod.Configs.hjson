@@ -369,12 +369,8 @@ CalamityClientConfig: {
 	}
 
 	TileTextureBlendingQuality: {
-		Label: "[i:GlowPaint] Tile Blending Quality"
-		Tooltip:
-			'''
-			Change quality of tile merge soft-blending renderer.
-			This controls the quality of soft-blending between different types of merged tile.
-			'''
+		Label: "[i:GlowPaint] Tile Merge Soft Blending"
+		Tooltip: Changes the quality of the soft-blending renderer used when different types of tiles merge together.
 	}
 
 	VanillaCooldownDisplay: {
@@ -610,21 +606,21 @@ TileBlendingQuality: {
 	Tooltip: ""
 
 	Disable: {
-		Label: Disable
-		Tooltip: Disable Tile Texture Soft Blending
+		Label: Disabled
+		Tooltip: Tile texture soft blending is disabled.
 	}
 
 	Normal: {
-		Label: Normal
-		Tooltip: Enable Tile Texture Soft Blending
+		Label: Enabled
+		Tooltip: Tile texture soft blending is enabled.
 	}
 
 	High: {
-		Label: High
+		Label: Enabled + Slices
 		Tooltip:
 			'''
-			Enable Tile Texture Soft Blending.
-			[c/F05A5A:Allows Sliced Rendering. Not recommended for low-end devices.]
+			Tile texture soft blending is enabled and uses sliced rendering.
+			[c/F05A5A:Not recommended for low-end devices.]
 			'''
 	}
 }

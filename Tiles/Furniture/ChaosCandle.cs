@@ -53,7 +53,7 @@ namespace CalamityMod.Tiles.Furniture
 
         public override void HitWire(int i, int j)
         {
-            CalamityUtils.LightHitWire(Type, i, j, 1, 1);
+            FurnitureCommon.LightHitWire(Type, i, j, 1, 1);
         }
 
         public override void DrawEffects(int i, int j, SpriteBatch spriteBatch, ref TileDrawInfo drawData)
@@ -70,7 +70,7 @@ namespace CalamityMod.Tiles.Furniture
 
         public override bool RightClick(int i, int j)
         {
-            CalamityUtils.LightHitWire(Type, i, j, 1, 1);
+            FurnitureCommon.LightHitWire(Type, i, j, 1, 1);
             return true;
         }
     }

@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using CalamityMod.Enums;
+using CalamityMod.Systems.Graphic;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria;
@@ -12,9 +13,10 @@ namespace CalamityMod.Graphics.Metaballs
     {
         internal static readonly List<Metaball> metaballs = new();
 
-        public override void OnModLoad()
+        public override void Load()
         {
             // Prepare event subscribers.
+            GeneralDrawLayerSystem.OnDrawLayer += DrawMetaballs;
             RenderTargetManager.RenderTargetUpdateLoopEvent += PrepareMetaballTargets;
         }
 
@@ -96,8 +98,10 @@ namespace CalamityMod.Graphics.Metaballs
         /// Draws all metaballs of a given <see cref="GeneralDrawLayer"/>. Used for layer ordering reasons.
         /// </summary>
         /// <param name="layerType">The layer type to draw with.</param>
-        internal static void DrawMetaballs(GeneralDrawLayer layerType)
+        private static void DrawMetaballs(GeneralDrawLayer layerType)
         {
+            Main.spriteBatch.Begin(SpriteSortMode.Immediate, BlendState.AlphaBlend, SamplerState.PointWrap, DepthStencilState.None, Main.Rasterizer, null, Main.GameViewMatrix.TransformationMatrix);
+
             foreach (Metaball metaball in metaballs.Where(m => m.DrawLayer == layerType && m.AnythingToDraw))
             {
                 for (int i = 0; i < metaball.LayerTargets.Count; i++)
@@ -109,6 +113,8 @@ namespace CalamityMod.Graphics.Metaballs
                     Main.spriteBatch.Draw(metaball.LayerTargets[i], Main.screenLastPosition - Main.screenPosition, Color.White);
                 }
             }
+
+            Main.spriteBatch.End();
         }
     }
 }

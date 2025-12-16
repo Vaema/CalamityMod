@@ -27,7 +27,7 @@ namespace CalamityMod.Tiles.FurnitureProfaned
 
         public override bool RightClick(int x, int y)
         {
-            return CalamityUtils.ClockRightClick();
+            return FurnitureCommon.ClockRightClick();
         }
 
         public override void NearbyEffects(int i, int j, bool closer)
@@ -38,6 +38,6 @@ namespace CalamityMod.Tiles.FurnitureProfaned
             }
         }
 
-        public override void MouseOver(int i, int j) => CalamityUtils.MouseOver(i, j, ModContent.ItemType<Items.Placeables.FurnitureProfaned.ProfanedClock>());
+        public override void MouseOver(int i, int j) => FurnitureCommon.MouseOver(i, j, ModContent.ItemType<Items.Placeables.FurnitureProfaned.ProfanedClock>());
     }
 }
