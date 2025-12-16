@@ -16,15 +16,6 @@ namespace CalamityMod.Projectiles.Typeless
         public override int DustType => 108;
     }
 
-    public class EutrophicSandBallFalling : SandBall
-    {
-        public override string Texture => "CalamityMod/Projectiles/Typeless/SandBallEutrophic";
-        public override bool Fired => false;
-        public override int TileType => ModContent.TileType<Tiles.SunkenSea.EutrophicSand>();
-        public override int ItemType => ModContent.ItemType<Items.Placeables.SunkenSea.EutrophicSand>();
-        public override int DustType => DustID.Titanium;
-    }
-
     public class DunesandBallFalling : SandBall
     {
         public override string Texture => "CalamityMod/Projectiles/Typeless/SandBallDune";
