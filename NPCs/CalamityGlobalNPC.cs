@@ -285,16 +285,6 @@ namespace CalamityMod.NPCs
         public float manaBurn = 0f;
         public float manaBurnPeak = 0f;
         public float playerManaBurnIntensity = 0f;
-        /// <summary>
-        /// Counter variable that increments while the NPC is inflicted with Pearl Aura.<br/>
-        /// Used to determine when Giant Pearl's pearl shards should rain down onto the NPC.
-        /// </summary>
-        public int pearlAuraCounter = 0;
-        /// <summary>
-        /// When an NPC is inflicted with Pearl Aura, this variable is set to index of the player who inflicted it.<br/>
-        /// Used for properly counting pearl shard amount and for giving pearl shards an owner.
-        /// </summary>
-        public int pearlAuraOwner = -1;
         public bool burningBlood = false;
         public bool brainRot = false;
         public bool heavyBleeding = false;
@@ -575,7 +565,6 @@ namespace CalamityMod.NPCs
             myClone.webbed = webbed;
             myClone.electrified = electrified;
             myClone.pearlAura = pearlAura;
-            myClone.pearlAuraCounter = pearlAuraCounter;
             myClone.burningBlood = burningBlood;
             myClone.brainRot = brainRot;
             myClone.heavyBleeding = heavyBleeding;
@@ -3674,36 +3663,6 @@ namespace CalamityMod.NPCs
             // Queen Bee is completely immune to having her movement impaired if not in a high difficulty mode.
             if (npc.type == NPCID.QueenBee && !CalamityWorld.revenge && !BossRushEvent.BossRushActive)
                 return;
-
-            // Pearl Aura shard spawning
-            // Slowing is handled in the general slowing code below
-            if (pearlAura)
-            {
-                pearlAuraCounter++;
-                if (pearlAuraCounter >= 45)
-                {
-                    pearlAuraCounter = 0;
-                    SoundEngine.PlaySound(SoundID.Item49, npc.Center);
-
-                    // Prevent things from getting too crazy
-                    // CIT 8MAR2025: It is assumed that pearlAuraOwner is always set to something other than -1 when this code is run.
-                    if (Main.player[pearlAuraOwner].ownedProjectileCounts[ProjectileType<PearlAuraShard>()] <= 3)
-                    {
-                        for (int i = 0; i < 3; i++)
-                        {
-                            Vector2 shardPos = npc.Center + new Vector2(Main.rand.NextFloat(-100f, 100f), Main.rand.NextFloat(-500f, -650f));
-                            Vector2 shardVel = Vector2.Normalize(npc.Center - shardPos).RotatedByRandom(MathHelper.Pi / 55f) * 20f;
-                            int damage = 20;
-                            Projectile.NewProjectile(npc.GetSource_FromThis(), shardPos, shardVel, ProjectileType<PearlAuraShard>(), damage, 5f, pearlAuraOwner);
-                        }
-                    }
-                }
-            }
-            else
-            {
-                pearlAuraCounter = 0;
-                pearlAuraOwner = -1;
-            }
 
             if (demonSwordImpales > 0 && npc.CanBeMoved(true))
             {

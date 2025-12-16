@@ -2392,13 +2392,6 @@ namespace CalamityMod.CalPlayer
                 else
                     flameLickedShellParry--;
             }
-            if (shieldOfTheOceanParry > 0)
-            {
-                if (shieldOfTheOcean)
-                    ShieldoftheOcean.HandleParryCountdown(Player);
-                else
-                    shieldOfTheOceanParry--;
-            }
 
             if (!flameLickedShell && flameLickedShellParry > 0)
                 flameLickedShellParry--;
@@ -3677,10 +3670,7 @@ namespace CalamityMod.CalPlayer
                             continue;
                         float distance = (npc.Center - Player.Center).Length();
                         if (distance < GiantPearl.AuraRadius)
-                        {
                             npc.AddBuff(ModContent.BuffType<PearlAura>(), 20, false);
-                            npc.Calamity().pearlAuraOwner = Player.whoAmI;
-                        }
                     }
                 }
             }
