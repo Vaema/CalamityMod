@@ -534,17 +534,6 @@ namespace CalamityMod
         });
 
         /// <summary>
-        /// Makes the tile merge with all the tile types that generate within various types of floral paradise tiles.
-        /// </summary>
-        /// <param name="type">The tile whose merging properties will be set.</param>
-        public static void MergeWithFloralParadise(int type) => MergeWithSet(type, new int[] {
-            TileType<PeatMoss>(),
-            TileType<Peat>(),
-            TileType<AlgalSlate>(),
-            TileType<PerennialOre>(),
-        });
-
-        /// <summary>
         /// Makes the tile merge with all the tile types that generate within various types of astral tiles
         /// </summary>
         /// <param name="type"></param>
