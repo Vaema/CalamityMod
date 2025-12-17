@@ -19,9 +19,14 @@ namespace CalamityMod.Prefixes
         // Ozzatron 31AUG2022: total rework to the reforge rework for mod compatibility
         // you can now disable the rework with config in case it isn't enough to solve your conflicts
         // removed data saved on items; reforging is now a coalescing flowchart that has no RNG
+        private static int storedPrefix = -1;
+        public override void PreReforge(Item item)
+        {
+            storedPrefix = item.prefix;
+        }
+
         public override int ChoosePrefix(Item item, UnifiedRandom rand)
         {
-            int storedPrefix = item.prefix;
             if (storedPrefix == -1 && item.CountsAsClass<RogueDamageClass>() && (item.maxStack == 1 || item.AllowReforgeForStackableItem))
             {
                 // Crafting (or first reforge of) a rogue weapon has a 75% chance for a random modifier, this check is done by vanilla
@@ -48,6 +53,8 @@ namespace CalamityMod.Prefixes
 
         public override void PostReforge(Item item)
         {
+            storedPrefix = -1;
+
             // Bandit steals 20% of the total price of the reforge if she's around.
             if (NPC.AnyNPCs(NPCType<Bandit>()))
             {
