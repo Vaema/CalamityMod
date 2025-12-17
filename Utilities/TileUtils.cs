@@ -8,7 +8,6 @@ using CalamityMod.Tiles.Astral;
 using CalamityMod.Tiles.AstralDesert;
 using CalamityMod.Tiles.AstralSnow;
 using CalamityMod.Tiles.Crags;
-using CalamityMod.Tiles.FloralParadise;
 using CalamityMod.Tiles.FurnitureAbyss;
 using CalamityMod.Tiles.FurnitureAshen;
 using CalamityMod.Tiles.FurnitureDriftwood;

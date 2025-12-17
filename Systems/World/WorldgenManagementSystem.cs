@@ -5,7 +5,6 @@ using CalamityMod.Items.SummonItems;
 using CalamityMod.Items.Weapons.Rogue;
 using CalamityMod.Items.Weapons.Summon;
 using CalamityMod.World;
-using CalamityMod.World.Minibiomes;
 using CalamityMod.World.Planets;
 using Microsoft.Xna.Framework;
 using Terraria;
@@ -195,7 +194,7 @@ namespace CalamityMod.Systems
                             }
                         }
                     }
-                        
+
                 }));
             }
 
