@@ -468,7 +468,7 @@ namespace CalamityMod.NPCs.DevourerofGods
             float speed = death ? 16.5f : 15f;
             float turnSpeed = death ? 0.33f : 0.3f;
             float homingSpeed = death ? 30f : 24f;
-            float homingTurnSpeed = death ? 0.405f : 0.33f;
+            float homingTurnSpeed = 0.405f;
 
             if (expertMode)
             {
@@ -478,7 +478,7 @@ namespace CalamityMod.NPCs.DevourerofGods
                 homingTurnSpeed += 0.15f * (1f - (lifeRatio * 0.75f + 0.25f));
             }
 
-            float groundPhaseTurnSpeed = death ? 0.24f : 0.18f;
+            float groundPhaseTurnSpeed = death ? 0.24f : 0.21f;
 
             if (expertMode)
                 groundPhaseTurnSpeed += 0.1f * (1f - (lifeRatio * 0.75f + 0.25f));
@@ -728,14 +728,14 @@ namespace CalamityMod.NPCs.DevourerofGods
                         if (laserWallPhase == (int)LaserWallPhase.SetUp)
                         {
                             // Enter laser wall phase very quickly when final phase starts
-                            if (phase6 && !spawnedGuardians3 && calamityGlobalNPC.newAI[3] < adjustedAlphaGateValue)
+                            if (phase6 && !spawnedGuardians3 && calamityGlobalNPC.newAI[3] < adjustedAlphaGateValue && NPC.ai[3] < 2)
                             {
                                 NPC.ai[3] = 2;
                                 calamityGlobalNPC.newAI[3] = adjustedAlphaGateValue;
                             }
 
                             // Increment next laser wall phase timer
-                            if (NPC.ai[3] == 2 || (!spawnedGuardians3 && phase6))
+                            if (NPC.ai[3] == 2 || (!spawnedGuardians3 && phase6 && NPC.ai[3] < 2))
                                 calamityGlobalNPC.newAI[3] += 1f;
 
                             // Set alpha value prior to firing laser walls
@@ -1409,6 +1409,9 @@ namespace CalamityMod.NPCs.DevourerofGods
                             NPC.velocity = VelocityRotation.ToRotationVector2() * (currentVelLength < 40 ? currentVelLength + 0.2f : currentVelLength > 42 ? currentVelLength - 0.2f : currentVelLength);
 
                             NPC.rotation = (float)Math.Atan2(NPC.velocity.Y, NPC.velocity.X) + MathHelper.PiOver2;
+                        } else
+                        {
+                            NPC.dontTakeDamage = true;
                         }
                     }
                     #endregion

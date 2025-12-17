@@ -309,6 +309,9 @@ namespace CalamityMod.NPCs.DevourerofGods
 
         public override bool CanHitPlayer(Player target, ref int cooldownSlot)
         {
+
+            if (Main.npc[(int)NPC.ai[2]].dontTakeDamage)
+                return false;
             cooldownSlot = ImmunityCooldownID.Bosses;
 
             Rectangle targetHitbox = target.Hitbox;
