@@ -31,6 +31,7 @@ using Terraria.Audio;
 using Terraria.GameContent.ItemDropRules;
 using Terraria.ID;
 using Terraria.ModLoader;
+using static CalamityMod.NPCs.CalamityGlobalTownNPC;
 
 namespace CalamityMod.NPCs
 {
@@ -699,7 +700,7 @@ namespace CalamityMod.NPCs
                 case NPCID.Drippler:
                     postEoC.Add(ModContent.ItemType<BloodOrb>(), 4);
                     break;
-                
+
                 //Hardmode enemies drop orbs even if EoC is not dead
                 //99% of players will not encounter this and challenge runners will appreciate it
                 case NPCID.Clown:
@@ -1701,12 +1702,12 @@ namespace CalamityMod.NPCs
                         }
                     }
                     catch (ArgumentNullException) { }
-                    DukeEditFailed:
+DukeEditFailed:
 
-                    // 16NOV2025: Ozzatron: following overwhelming dev vote, Expert+ drops are NOT available in Classic
-                    // npcLoot.AddNormalOnly(DropHelper.PerPlayer(ItemID.ShrimpyTruffle));
+// 16NOV2025: Ozzatron: following overwhelming dev vote, Expert+ drops are NOT available in Classic
+// npcLoot.AddNormalOnly(DropHelper.PerPlayer(ItemID.ShrimpyTruffle));
 
-                    // Would be in the bag otherwise
+// Would be in the bag otherwise
                     npcLoot.AddNormalOnly(ModContent.ItemType<BrinyBaron>(), 10);
                     npcLoot.AddNormalOnly(ModContent.ItemType<ThankYouPainting>(), ThankYouPainting.DropInt);
 

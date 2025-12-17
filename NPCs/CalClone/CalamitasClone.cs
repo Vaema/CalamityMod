@@ -96,7 +96,7 @@ namespace CalamityMod.NPCs.CalClone
             if (lifeRatio < 0.1f && !inBulletHell && CalamityWorld.death)
                 baseSize *= MathHelper.Lerp(Main.getGoodWorld ? 0.22f : 0.4f, 1f, lifeRatio * 10f); // Scale down the lower health calclone has. Much lower bound on FTW.
 
-            return baseSize + new Vector4(-22, 0 ,22,0);
+            return baseSize + new Vector4(-22, 0, 22, 0);
         }
         public override void SetStaticDefaults()
         {
@@ -1071,7 +1071,7 @@ namespace CalamityMod.NPCs.CalClone
 
             CalamityGlobalNPC.SetNewBossJustDowned(NPC);
 
-            CalamityGlobalNPC.SetNewShopVariable(new int[] { ModContent.NPCType<Bandit>() }, DownedBossSystem.downedCalamitasClone);
+            CalamityGlobalTownNPC.SetNewShopVariable(new int[] { ModContent.NPCType<Bandit>() }, DownedBossSystem.downedCalamitasClone);
 
             // Mark the Calamitas Clone as dead
             DownedBossSystem.downedCalamitasClone = true;
