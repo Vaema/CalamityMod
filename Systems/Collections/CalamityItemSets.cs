@@ -88,20 +88,20 @@ namespace CalamityMod.Systems.Collections
         /// Currently unused, and exists as an objective classification for the sake of the Wiki.<br/>
         /// Defaults to <see langword="false"/>.
         /// </summary>
-        public static bool[] RogueBomb = Factory.CreateBoolSet(ItemType<ContaminatedBile>(), ItemType<MeteorFist>(), ItemType<SeafoamBomb>(), ItemType<BallisticPoisonBomb>(), ItemType<BlastBarrel>(),
-                ItemType<ConsecratedWater>(), ItemType<CraniumSmasher>(), ItemType<DesecratedWater>(), ItemType<DuststormInABottle>(), ItemType<Exorcism>(), ItemType<LeonidProgenitor>(), ItemType<Plaguenade>(),
-                ItemType<PulseGrenade>(), ItemType<Pumpkaboom>(), ItemType<SkyfinBombers>(), ItemType<SpentFuelContainer>(), ItemType<StarofDestruction>(), ItemType<TotalityBreakers>(), ItemType<Whitewater>(),
-                ItemType<Penumbra>(), ItemType<PlasmaGrenade>(), ItemType<SealedSingularity>(), ItemType<Supernova>(), ItemType<WavePounder>());
+        public static bool[] RogueBomb = Factory.CreateBoolSet(ItemType<BallisticPoisonBomb>(), ItemType<BlastBarrel>(), ItemType<ContaminatedBile>(), ItemType<ConsecratedWater>(), ItemType<CraniumSmasher>(),
+                ItemType<DesecratedWater>(), ItemType<DuststormInABottle>(), ItemType<Exorcism>(), ItemType<LeonidProgenitor>(), ItemType<MeteorFist>(), ItemType<Penumbra>(), ItemType<Plaguenade>(), 
+                ItemType<PlasmaGrenade>(), ItemType<PulseGrenade>(), ItemType<Pumpkaboom>(), ItemType<SeafoamBomb>(), ItemType<SealedSingularity>(), ItemType<SkyfinBombers>(), ItemType<SpentFuelContainer>(), 
+                ItemType<StarofDestruction>(), ItemType<Supernova>(), ItemType<TotalityBreakers>(), ItemType<WavePounder>(), ItemType<Whitewater>());
 
         /// <summary>
         /// If <see langword="true"/> for an item type, this item is considered to be a rogue boomerang.<br/>
         /// Currently unused, and exists as an objective classification for the sake of the Wiki.<br/>
         /// Defaults to <see langword="false"/>.
         /// </summary>
-        public static bool[] RogueBoomerang = Factory.CreateBoolSet(ItemType<EnchantedAxe>(), ItemType<FishboneBoomerang>(), ItemType<InfestedClawmerang>(), ItemType<Kylie>(), ItemType<AerialTracker>(),
-                ItemType<Brimblade>(), ItemType<DefectiveSphere>(), ItemType<EpidemicShredder>(), ItemType<Equanimity>(), ItemType<FrostcrushValari>(), ItemType<Icebreaker>(), ItemType<KelvinCatalyst>(),
-                ItemType<MangroveChakram>(), ItemType<SamsaraSlicer>(), ItemType<SubductionSlicer>(), ItemType<Celestus>(), ItemType<DimensionTearingDisk>(), ItemType<DynamicPursuer>(),  
-                ItemType<GhoulishGouger>(), ItemType<MoltenAmputator>(), ItemType<NanoblackReaper>(), ItemType<ReboundingRainbow>(), ItemType<ToxicantTwister>(), ItemType<Valediction>());
+        public static bool[] RogueBoomerang = Factory.CreateBoolSet(ItemType<AerialTracker>(), ItemType<Brimblade>(), ItemType<Celestus>(), ItemType<DefectiveSphere>(), ItemType<DimensionTearingDisk>(), 
+                ItemType<DynamicPursuer>(), ItemType<EnchantedAxe>(), ItemType<EpidemicShredder>(), ItemType<Equanimity>(), ItemType<FishboneBoomerang>(), ItemType<FrostcrushValari>(), ItemType<GhoulishGouger>(),
+                ItemType<Icebreaker>(), ItemType<InfestedClawmerang>(), ItemType<KelvinCatalyst>(), ItemType<Kylie>(), ItemType<MangroveChakram>(), ItemType<MoltenAmputator>(), ItemType<NanoblackReaper>(), 
+                ItemType<ReboundingRainbow>(), ItemType<SamsaraSlicer>(), ItemType<SubductionSlicer>(), ItemType<ToxicantTwister>(), ItemType<Valediction>());
 
         /// <summary>
         /// If <see langword="true"/> for an item type, this item is considered to be a rogue dagger.<br/>
@@ -120,16 +120,17 @@ namespace CalamityMod.Systems.Collections
         /// Currently unused, and exists as an objective classification for the sake of the Wiki.<br/>
         /// Defaults to <see langword="false"/>.
         /// </summary>
-        public static bool[] RogueJavelin = Factory.CreateBoolSet(ItemType<AntlionSkewer>(), ItemType<ScourgeoftheDesert>(), ItemType<Turbulance>(), ItemType<CrystalPiercer>(), ItemType<IchorSpear>(),
-                ItemType<PalladiumJavelin>(), ItemType<PhantasmalRuin>(), ItemType<ScourgeoftheSeas>(), ItemType<ShardofAntumbra>(), ItemType<SpearofDestiny>(), ItemType<SpearofPaleolith>(), ItemType<WaveSkipper>(), 
-                ItemType<TheAtomSplitter>(), ItemType<EclipsesFall>(), ItemType<NightsGaze>(), ItemType<ProfanedPartisan>(), ItemType<RealityRupture>(), ItemType<ScarletDevil>(), ItemType<Wrathwing>());
+        public static bool[] RogueJavelin = Factory.CreateBoolSet(ItemType<AntlionSkewer>(), ItemType<CrystalPiercer>(), ItemType<EclipsesFall>(), ItemType<IchorSpear>(), ItemType<NightsGaze>(),
+                ItemType<PalladiumJavelin>(), ItemType<PhantasmalRuin>(), ItemType<ProfanedPartisan>(), ItemType<RealityRupture>(), ItemType<ScarletDevil>(), ItemType<ScourgeoftheDesert>(), 
+                ItemType<ScourgeoftheSeas>(), ItemType<ShardofAntumbra>(), ItemType<SpearofDestiny>(), ItemType<SpearofPaleolith>(), ItemType<Turbulance>(), ItemType<TheAtomSplitter>(), ItemType<WaveSkipper>(), 
+                ItemType<Wrathwing>());
 
         /// <summary>
         /// If <see langword="true"/> for an item type, this item is considered to be a rogue spiky ball.<br/>
         /// Currently unused, and exists as an objective classification for the sake of the Wiki.<br/>
         /// Defaults to <see langword="false"/>.
         /// </summary>
-        public static bool[] RogueSpikyBall = Factory.CreateBoolSet(ItemType<MetalMonstrosity>(), ItemType<NastyCholla>(), ItemType<WebBall>(), ItemType<BurningStrife>(), ItemType<SystemBane>(),
-                ItemType<GodsParanoia>());
+        public static bool[] RogueSpikyBall = Factory.CreateBoolSet(ItemType<BurningStrife>(), ItemType<GodsParanoia>(), ItemType<MetalMonstrosity>(), ItemType<NastyCholla>(), ItemType<SystemBane>(),
+                ItemType<WebBall>());
     }
 }
