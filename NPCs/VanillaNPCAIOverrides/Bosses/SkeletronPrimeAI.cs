@@ -4,8 +4,10 @@ using CalamityMod.Buffs.StatDebuffs;
 using CalamityMod.Events;
 using CalamityMod.World;
 using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
 using Terraria;
 using Terraria.Audio;
+using Terraria.GameContent;
 using Terraria.ID;
 using Terraria.ModLoader;
 
@@ -611,6 +613,46 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
             }
 
             return false;
+        }
+
+        public override bool PreDraw(Mod mod, SpriteBatch spriteBatch, Vector2 screenPos, Color drawColor)
+        {
+            if (NPC.IsMechQueenUp)
+                return true;
+
+            // Allows correct frames to draw in Rev+ phases
+            // GFB can rot for all I care
+            var calNPC = NPC.GetGlobalNPC<CalamityGlobalNPC>();
+            int frameHeight = TextureAssets.Npc[NPC.type].Value.Height / Main.npcFrameCount[NPC.type];
+            if (NPC.ai[1] == 0f || NPC.ai[1] == 4f)
+            {
+                calNPC.newAI[2] += 1f;
+                if (calNPC.newAI[2] >= 12f)
+                {
+                    calNPC.newAI[2] = 0f;
+                    calNPC.newAI[3] += frameHeight;
+
+                    if (calNPC.newAI[3] / frameHeight >= 2f)
+                        calNPC.newAI[3] = 0f;
+                }
+            }
+
+            // Spinning probe spawn or fly over phase
+            else if (NPC.ai[1] == 5f || NPC.ai[1] == 6f)
+            {
+                calNPC.newAI[2] = 0f;
+                calNPC.newAI[3] = frameHeight;
+            }
+
+            // Spinning phase
+            else
+            {
+                calNPC.newAI[2] = 0f;
+                calNPC.newAI[3] = frameHeight * 2;
+            }
+
+            NPC.frame.Y = (int)calNPC.newAI[3];
+            return true;
         }
 
         public class PrimeLaserAI : VanillaAIOverride

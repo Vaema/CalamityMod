@@ -44,7 +44,7 @@ public static class VanillaAIOverrideExtension
     }
 }
 
-public sealed class CalamityVanillaAIOverrideNPC : GlobalNPC
+public sealed partial class CalamityVanillaAIOverrideNPC : GlobalNPC
 {
     /// <summary>
     /// Toggle Entire System. External mods can toggle this out if they want.
@@ -905,11 +905,17 @@ public sealed class CalamityVanillaAIOverrideNPC : GlobalNPC
 
     public override void OnSpawn(NPC npc, IEntitySource source)
     {
+        if (!Enabled)
+            return;
+
         AIOverride?.OnSpawn(Mod);
     }
 
     public override bool PreAI(NPC npc)
     {
+        if (!Enabled)
+            return base.PreAI(npc);
+
         if (AIOverride != null)
         {
             if (AIOverride.DisableMultiplayerSmoothing)
@@ -920,34 +926,58 @@ public sealed class CalamityVanillaAIOverrideNPC : GlobalNPC
             return AIOverride.AI(Mod);
         }
 
-        return base.PreAI(npc);
+        return GlobalPreAI(npc);
+    }
+
+    public override void AI(NPC npc)
+    {
+        if (!Enabled)
+            return;
+
+        GlobalAI(npc);
     }
 
     public override void PostAI(NPC npc)
     {
+        if (!Enabled)
+            return;
+
         AIOverride?.PostAI(Mod);
     }
 
     public override void HitEffect(NPC npc, NPC.HitInfo hit)
     {
+        if (!Enabled)
+            return;
+
         AIOverride?.HitEffect(Mod, hit);
     }
 
     public override void FindFrame(NPC npc, int frameHeight)
     {
+        if (!Enabled)
+            return;
+
         AIOverride?.FindFrame(Mod, frameHeight);
     }
 
     public override bool PreDraw(NPC npc, SpriteBatch spriteBatch, Vector2 screenPos, Color drawColor)
     {
+        if (!Enabled)
+            base.PreDraw(npc, spriteBatch, screenPos, drawColor);
+
         if (AIOverride != null)
             return AIOverride.PreDraw(Mod, spriteBatch, screenPos, drawColor);
-        return base.PreDraw(npc, spriteBatch, screenPos, drawColor);
+        return GlobalPreDraw(npc, spriteBatch, screenPos, drawColor);
     }
 
     public override void PostDraw(NPC npc, SpriteBatch spriteBatch, Vector2 screenPos, Color drawColor)
     {
+        if (!Enabled)
+            return;
+
         AIOverride?.PostDraw(Mod, spriteBatch, screenPos, drawColor);
+        GlobalPostDraw(npc, spriteBatch, screenPos, drawColor);
     }
 
     #endregion
