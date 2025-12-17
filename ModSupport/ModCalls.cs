@@ -1022,7 +1022,7 @@ namespace CalamityMod
                 case "Ectoheart": player.Calamity().adrenalineBoostThree = value; break;
 
                 case "CelestialOnion": player.Calamity().extraAccessoryML = value; break;
-            };
+            }
         }
         #endregion
 
@@ -1778,6 +1778,21 @@ namespace CalamityMod
                         if (!isValidNPCArg(args[1]))
                             return new ArgumentException("ERROR: The first argument to \"SetDebuffVulnerability\" must be an NPC.");
                         SetDebuffVulnerability(castNPC(args[1]), args[2].ToString(), (bool?)args[3]);
+                        return null;
+                    }
+
+                case "GetVanillaAIOverrideEnabled":
+                    {
+                        return CalamityVanillaAIOverrideNPC.Enabled;
+                    }
+
+                case "SetVanillaAIOverrideEnabled":
+                    {
+                        if (args.Length < 1)
+                            return new ArgumentNullException(nameof(args), "ERROR: Must specify a bool parameter");
+                        if (args[0] is not bool aiOverrideEnabled)
+                            return new ArgumentException("ERROR: The third argument to \"SetVanillaAIOverrideEnabled\" must be a bool.");
+                        CalamityVanillaAIOverrideNPC.Enabled = aiOverrideEnabled;
                         return null;
                     }
 

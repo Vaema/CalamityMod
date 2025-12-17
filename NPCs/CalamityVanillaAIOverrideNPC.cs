@@ -47,6 +47,11 @@ public static class VanillaAIOverrideExtension
 public sealed class CalamityVanillaAIOverrideNPC : GlobalNPC
 {
     /// <summary>
+    /// Toggle Entire System. External mods can toggle this out if they want.
+    /// </summary>
+    public static bool Enabled { get; set; } = true;
+
+    /// <summary>
     /// Specify the AI Override to work with. This handles AI, SendExtraAI and ReceiveExtraAI in instaned manner.
     /// </summary>
     public VanillaAIOverride AIOverride = null;
@@ -881,16 +886,18 @@ public sealed class CalamityVanillaAIOverrideNPC : GlobalNPC
 
     public override void SetDefaults(NPC npc)
     {
-        // Clients will get their instance in ReceiveExtraAI
-        if (Main.netMode != NetmodeID.MultiplayerClient)
-        {
-            AIOverride = GetVanillaAIOverrideToApply(npc);
+        if (!Enabled)
+            return;
 
-            if (AIOverride != null)
-            {
-                AIOverride.NPC = npc;
-                AIOverride.SetDefaults(Mod);
-            }
+        // Clients will get their instance in ReceiveExtraAI
+        if (Main.netMode == NetmodeID.MultiplayerClient)
+            return;
+
+        AIOverride = GetVanillaAIOverrideToApply(npc);
+        if (AIOverride != null)
+        {
+            AIOverride.NPC = npc;
+            AIOverride.SetDefaults(Mod);
         }
     }
 
