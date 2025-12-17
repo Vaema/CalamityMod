@@ -1578,15 +1578,6 @@ namespace CalamityMod.Systems
             r.Register();
             r.DisableDecraft();
 
-            // Rod of Discord
-            r = Recipe.Create(ItemID.RodofDiscord);
-            r.AddIngredient(ItemID.SoulofLight, 30);
-            r.AddIngredient(ItemID.CrystalShard, 25);
-            r.AddIngredient(ItemID.ChaosFish, 5);
-            r.AddTile(TileID.MythrilAnvil);
-            r.Register();
-            r.DisableDecraft();
-
             // Sergeant United Shield
             r = Recipe.Create(ItemID.BouncingShield);
             r.AddRecipeGroup(AnyCobaltBar, 12);
