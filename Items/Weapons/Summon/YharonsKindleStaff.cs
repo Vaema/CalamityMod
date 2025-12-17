@@ -20,7 +20,6 @@ namespace CalamityMod.Items.Weapons.Summon
         public override void SetStaticDefaults()
         {
             ItemID.Sets.StaffMinionSlotsRequired[Type] = 5f;
-            ItemID.Sets.ShimmerTransformToItem[Type] = ModContent.ItemType<TheFinalDawn>();
         }
 
         public override void SetDefaults()

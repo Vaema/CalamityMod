@@ -19,7 +19,6 @@ namespace CalamityMod.Items.Weapons.Ranged
         {
             ItemID.Sets.IsRangedSpecialistWeapon[Type] = true;
             ItemID.Sets.ItemsThatAllowRepeatedRightClick[Type] = true;
-            ItemID.Sets.ShimmerTransformToItem[Type] = ModContent.ItemType<VitriolicViper>();
         }
         public override void SetDefaults()
         {

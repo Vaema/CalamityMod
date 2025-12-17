@@ -13,10 +13,6 @@ namespace CalamityMod.Items.Weapons.Melee
     {
         public new string LocalizationCategory => "Items.Weapons.Melee";
         internal const float TerrorBlastMultiplier = 0.3f;
-        public override void SetStaticDefaults()
-        {
-            ItemID.Sets.ShimmerTransformToItem[Type] = ModContent.ItemType<DaemonsFlame>();
-        }
         public override void SetDefaults()
         {
             Item.width = 88;

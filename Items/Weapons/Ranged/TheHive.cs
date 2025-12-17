@@ -16,10 +16,6 @@ namespace CalamityMod.Items.Weapons.Ranged
 
         public static float MaxCharge = 90f;
         public static int OriginalUseTime = 34;
-        public override void SetStaticDefaults()
-        {
-            ItemID.Sets.ShimmerTransformToItem[Type] = ModContent.ItemType<Malevolence>();
-        }
         public override void SetDefaults()
         {
             Item.damage = 92;

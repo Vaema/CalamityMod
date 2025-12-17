@@ -13,10 +13,6 @@ namespace CalamityMod.Items.Weapons.Magic
     {
         public new string LocalizationCategory => "Items.Weapons.Magic";
         private const float Spread = 0.025f;
-        public override void SetStaticDefaults()
-        {
-            ItemID.Sets.ShimmerTransformToItem[Type] = ModContent.ItemType<DazzlingStabberStaff>();
-        }
         public override void SetDefaults()
         {
             Item.width = 64;
