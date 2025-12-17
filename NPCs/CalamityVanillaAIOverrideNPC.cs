@@ -916,6 +916,8 @@ public sealed partial class CalamityVanillaAIOverrideNPC : GlobalNPC
         if (!Enabled)
             return base.PreAI(npc);
 
+        bool result = true;
+        result &= GlobalPreAI(npc);
         if (AIOverride != null)
         {
             if (AIOverride.DisableMultiplayerSmoothing)
@@ -923,10 +925,9 @@ public sealed partial class CalamityVanillaAIOverrideNPC : GlobalNPC
                 npc.netOffset = Vector2.Zero;
             }
 
-            return AIOverride.AI(Mod);
+            result &= AIOverride.AI(Mod);
         }
-
-        return GlobalPreAI(npc);
+        return result;
     }
 
     public override void AI(NPC npc)
@@ -966,9 +967,10 @@ public sealed partial class CalamityVanillaAIOverrideNPC : GlobalNPC
         if (!Enabled)
             base.PreDraw(npc, spriteBatch, screenPos, drawColor);
 
-        if (AIOverride != null)
-            return AIOverride.PreDraw(Mod, spriteBatch, screenPos, drawColor);
-        return GlobalPreDraw(npc, spriteBatch, screenPos, drawColor);
+        bool result = true;
+        result &= GlobalPreDraw(npc, spriteBatch, screenPos, drawColor);
+        result &= AIOverride?.PreDraw(Mod, spriteBatch, screenPos, drawColor) ?? true;
+        return result;
     }
 
     public override void PostDraw(NPC npc, SpriteBatch spriteBatch, Vector2 screenPos, Color drawColor)
@@ -976,8 +978,8 @@ public sealed partial class CalamityVanillaAIOverrideNPC : GlobalNPC
         if (!Enabled)
             return;
 
-        AIOverride?.PostDraw(Mod, spriteBatch, screenPos, drawColor);
         GlobalPostDraw(npc, spriteBatch, screenPos, drawColor);
+        AIOverride?.PostDraw(Mod, spriteBatch, screenPos, drawColor);
     }
 
     #endregion
