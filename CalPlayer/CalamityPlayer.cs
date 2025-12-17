@@ -1582,13 +1582,11 @@ namespace CalamityMod.CalPlayer
         public bool ZoneAbyssLayer3 => Player.InModBiome<AbyssLayer3Biome>();
         public bool ZoneAbyssLayer4 => Player.InModBiome<AbyssLayer4Biome>();
 
-        public bool ZoneFloralParadise => Player.InModBiome<FloralParadiseBiome>();
-
         public bool ZoneCalamity => Player.InModBiome<BrimstoneCragsBiome>();
 
         public bool ZoneAstral => Player.InModBiome<AstralInfectionBiome>() && !ZoneAbyss;
 
-        public bool InAnyCalamityBiome => ZoneAbyss || ZoneCalamity || ZoneFloralParadise || ZoneSulphur || ZoneSunkenSea || ZoneAstral;
+        public bool InAnyCalamityBiome => ZoneAbyss || ZoneCalamity || ZoneSulphur || ZoneSunkenSea || ZoneAstral;
 
         public bool abyssDeath = false;
         public int abyssBreathCD;

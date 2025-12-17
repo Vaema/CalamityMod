@@ -6,7 +6,7 @@ using Terraria.ID;
 using Terraria.ModLoader;
 using Terraria.ObjectData;
 
-namespace CalamityMod.Tiles.FloralParadise
+namespace CalamityMod.Tiles
 {
     public class BloodOrangePlant : ModTile
     {

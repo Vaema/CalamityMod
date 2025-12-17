@@ -130,14 +130,6 @@ namespace CalamityMod.Systems
                     progress.Message = Language.GetOrRegister("Mods.CalamityMod.UI.BetterJungleTemple").Value;
                     CustomTemple.NewJungleTemple();
                 });
-
-                // Floral Paradise Biome
-                tasks.Insert(jungleTempleIndex + 1, new PassLegacy("FloralParadise", (progress, config) =>
-                {
-                    progress.Message = "Growing a floral paradise underground";
-                    if (FloralParadiseMinibiome.SHOULD_GENERATE)
-                        FloralParadiseMinibiome.GenerateInstances();
-                }));
             }
 
             // Improved Golem Arena
