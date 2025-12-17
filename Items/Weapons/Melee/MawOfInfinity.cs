@@ -18,7 +18,6 @@ namespace CalamityMod.Items.Weapons.Melee
         public override int ProjectileType => ModContent.ProjectileType<MawOfInfinityHoldout>();
         public override void SetStaticDefaults()
         {
-            ItemID.Sets.ShimmerTransformToItem[Type] = ModContent.ItemType<TheObliterator>();
             base.SetStaticDefaults();
         }
         public override void ModifyTooltips(List<TooltipLine> tooltips)

@@ -12,10 +12,6 @@ namespace CalamityMod.Items.Weapons.Rogue
 {
     public class GhoulishGouger : RogueWeapon
     {
-        public override void SetStaticDefaults()
-        {
-            ItemID.Sets.ShimmerTransformToItem[Type] = ModContent.ItemType<BansheeHook>();
-        }
         public override void SetDefaults()
         {
             Item.width = 74;

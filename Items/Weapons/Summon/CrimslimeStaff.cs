@@ -12,10 +12,6 @@ namespace CalamityMod.Items.Weapons.Summon
     public class CrimslimeStaff : ModItem, ILocalizedModType
     {
         public new string LocalizationCategory => "Items.Weapons.Summon";
-        public override void SetStaticDefaults()
-        {
-            ItemID.Sets.ShimmerTransformToItem[Type] = ModContent.ItemType<OverloadedBlaster>();
-        }
         public override void SetDefaults()
         {
             Item.width = 52;

@@ -20,10 +20,6 @@ namespace CalamityMod.Items.Weapons.Ranged
         {
             tooltips.FindAndReplaceAll("ff00ff", Utils.Hex3(DevourerofGodsHead.SpecialMoveColor));
         }
-        public override void SetStaticDefaults()
-        {
-            ItemID.Sets.ShimmerTransformToItem[Type] = ModContent.ItemType<HyperdeathRiftScepter>();
-        }
         public override void SetDefaults()
         {
             Item.width = 40;

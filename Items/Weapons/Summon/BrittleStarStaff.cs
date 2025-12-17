@@ -36,7 +36,6 @@ namespace CalamityMod.Items.Weapons.Summon
         {
             Item.staff[Type] = true;
             ItemID.Sets.ItemsThatAllowRepeatedRightClick[Type] = true;
-            ItemID.Sets.ShimmerTransformToItem[Type] = ModContent.ItemType<ScourgeoftheDesert>();
         }
         public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)
         {

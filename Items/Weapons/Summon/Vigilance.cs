@@ -13,10 +13,6 @@ namespace CalamityMod.Items.Weapons.Summon
     public class Vigilance : ModItem, ILocalizedModType
     {
         public new string LocalizationCategory => "Items.Weapons.Summon";
-        public override void SetStaticDefaults()
-        {
-            ItemID.Sets.ShimmerTransformToItem[Type] = ModContent.ItemType<Sacrifice>();
-        }
         public override void SetDefaults()
         {
             Item.width = Item.height = 32;

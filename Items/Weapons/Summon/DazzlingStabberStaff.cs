@@ -14,10 +14,6 @@ namespace CalamityMod.Items.Weapons.Summon
     public class DazzlingStabberStaff : ModItem, ILocalizedModType
     {
         public new string LocalizationCategory => "Items.Weapons.Summon";
-        public override void SetStaticDefaults()
-        {
-            ItemID.Sets.ShimmerTransformToItem[Type] = ModContent.ItemType<MoltenAmputator>();
-        }
         public override void SetDefaults()
         {
             Item.width = 56;

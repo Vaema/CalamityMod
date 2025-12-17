@@ -16,10 +16,6 @@ namespace CalamityMod.Items.Weapons.Rogue
     public class DimensionTearingDisk : RogueWeapon
     {
         public static float Speed = 10.5f;
-        public override void SetStaticDefaults()
-        {
-            ItemID.Sets.ShimmerTransformToItem[Type] = ModContent.ItemType<MawOfInfinity>();
-        }
         public override void SetDefaults()
         {
             Item.width = 62;
