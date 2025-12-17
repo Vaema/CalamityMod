@@ -29,7 +29,6 @@ using CalamityMod.Tiles;
 using CalamityMod.Utilities.Daybreak;
 using CalamityMod.Walls;
 using CalamityMod.Walls.UnsafeWalls;
-using CalamityMod.Waterfalls;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Mono.Cecil.Cil;
@@ -795,22 +794,12 @@ namespace CalamityMod.ILEditing
         #region Custom DoDraw Changes
         private static void CustomDoDrawChanges(ILContext il)
         {
-            // This IL edit accomplishes two things:
-            // 1. Calls a helper function for drawing the fog in the Floral Paradise.
-            // 2. Allows for drawing additive blend projectiles using IAdditiveDrawer.
+            // Allows for drawing additive blend projectiles using IAdditiveDrawer.
             ILCursor cursor = new ILCursor(il);
 
-            // First, Floral Paradise fog.
+            // Move before the place we want to inject code.
             if (!cursor.TryGotoNext(MoveType.Before, i => i.MatchCallOrCallvirt<Main>("DrawInfernoRings")))
                 return;
-
-            cursor.EmitDelegate<Action>(() =>
-            {
-                if (!Main.dedServ && BiomeTileCounterSystem.FloralParadiseTiles > 0)
-                    DrawFog(Utils.GetLerpValue(0f, 250f, BiomeTileCounterSystem.FloralParadiseTiles, true));
-            });
-
-            // Then, additive drawing.
             if (!cursor.TryGotoNext(MoveType.After, i => i.MatchCall<ScreenObstruction>("Draw")))
                 return;
 
@@ -834,28 +823,6 @@ namespace CalamityMod.ILEditing
 
                 Main.spriteBatch.SetBlendState(BlendState.AlphaBlend);
             });
-        }
-
-        private static void DrawFog(float intensity)
-        {
-            Main.spriteBatch.EnterShaderRegion();
-            WaterfallRenderer.DrawWaterfalls();
-
-            Texture2D fogTexture = ModContent.Request<Texture2D>("Terraria/Images/Misc/Perlin").Value;
-            Vector2 scale = new Vector2(Main.screenWidth, Main.screenHeight) / fogTexture.Size();
-
-            Main.spriteBatch.End();
-            Main.spriteBatch.Begin(SpriteSortMode.Immediate, BlendState.AlphaBlend, Main.DefaultSamplerState, DepthStencilState.None, Main.Rasterizer, null, Main.GameViewMatrix.TransformationMatrix);
-            GameShaders.Misc["CalamityMod:Fog"].UseOpacity(intensity * 0.74f);
-            GameShaders.Misc["CalamityMod:Fog"].UseColor(Color.Lerp(Color.Lime, Color.Black, 0.85f));
-            GameShaders.Misc["CalamityMod:Fog"].UseSaturation(1.67f);
-            GameShaders.Misc["CalamityMod:Fog"].Shader.Parameters["fogMovementSpeed"].SetValue(1.75f);
-            GameShaders.Misc["CalamityMod:Fog"].Apply();
-
-            Main.spriteBatch.Draw(fogTexture, Vector2.Zero, null, Color.White, 0f, Vector2.Zero, scale, SpriteEffects.None, 0f);
-
-            Main.spriteBatch.End();
-            Main.spriteBatch.Begin();
         }
         #endregion
 
