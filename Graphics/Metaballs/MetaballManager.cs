@@ -16,8 +16,8 @@ namespace CalamityMod.Graphics.Metaballs
         public override void Load()
         {
             // Prepare event subscribers.
+            GeneralDrawLayerSystem.OnPrepareDraw += PrepareMetaballTargets;
             GeneralDrawLayerSystem.OnDrawLayer += DrawMetaballs;
-            RenderTargetManager.RenderTargetUpdateLoopEvent += PrepareMetaballTargets;
         }
 
         public override void OnModUnload()
@@ -110,7 +110,7 @@ namespace CalamityMod.Graphics.Metaballs
                     metaball.PrepareShaderForTarget(i);
 
                     // Draw the metaball's raw contents with the shader.
-                    Main.spriteBatch.Draw(metaball.LayerTargets[i], Main.screenLastPosition - Main.screenPosition, Color.White);
+                    Main.spriteBatch.Draw(metaball.LayerTargets[i], Vector2.Zero, Color.White);
                 }
             }
 
