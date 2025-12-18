@@ -12,7 +12,6 @@ using CalamityMod.Items.Placeables.Astral;
 using CalamityMod.Items.Placeables.Crags;
 using CalamityMod.Items.Placeables.Furniture;
 using CalamityMod.Items.Placeables.Furniture.Fountains;
-using CalamityMod.Items.Placeables.Furniture.Paintings;
 using CalamityMod.Items.Potions;
 using CalamityMod.Items.Potions.Alcohol;
 using CalamityMod.Items.SummonItems.Invasion;
@@ -1236,8 +1235,7 @@ namespace CalamityMod.NPCs
 
             if (type == NPCID.Painter)
             {
-                shop.AddWithCustomValue(ItemID.PainterPaintballGun, Item.buyPrice(gold: 15))
-                .Add(ItemType<AmidiasPainting>(), CalamityConditions.InSunken, Condition.NpcIsPresent(NPCType<SeaKing>()));
+                shop.AddWithCustomValue(ItemID.PainterPaintballGun, Item.buyPrice(gold: 15));
             }
 
             if (type == NPCID.Steampunker)

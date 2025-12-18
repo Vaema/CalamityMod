@@ -847,15 +847,6 @@ NavyPrismTorch: {
 	Tooltip: Can be placed in water
 }
 
-AmidiasPainting: {
-	DisplayName: Sea King's Release
-	Tooltip:
-		'''
-		'O. Rios'
-		'September-October!'
-		'''
-}
-
 CalamityCanvas2023: {
 	DisplayName: Calamity Canvas 2023
 	Tooltip:
