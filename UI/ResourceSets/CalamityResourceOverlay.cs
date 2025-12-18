@@ -21,15 +21,15 @@ namespace CalamityMod.UI.ResourceSets
         {
             CalamityPlayer modPlayer = Main.LocalPlayer.Calamity();
             if (modPlayer.chaliceOfTheBloodGod) // dozezoze - Chalice gets it's own heart color to make bleed indicator contrast consistent, and also because it looks cool
-                return CalamityUIResourceSets.ChaliceHP;
+                return CalamityUIResourceSets.HPChalice;
             if (modPlayer.sStrawberry)
-                return CalamityUIResourceSets.SacredStrawberryHP;
+                return CalamityUIResourceSets.HPSacredStrawberry;
             if (modPlayer.tCloudberry)
-                return CalamityUIResourceSets.TaintedCloudberryHP;
+                return CalamityUIResourceSets.HPTaintedCloudberry;
             if (modPlayer.mFruit)
-                return CalamityUIResourceSets.MiracleFruitHP;
+                return CalamityUIResourceSets.HPMiracleFruit;
             if (modPlayer.sTangerine)
-                return CalamityUIResourceSets.SanguineTangerineHP;
+                return CalamityUIResourceSets.HPSanguineTangerine;
             return null;
         }
 
@@ -38,13 +38,13 @@ namespace CalamityMod.UI.ResourceSets
         {
             CalamityPlayer modPlayer = Main.LocalPlayer.Calamity();
             if (Main.LocalPlayer.statMana < 0)
-                return CalamityUIResourceSets.ManaBurnMP;
+                return CalamityUIResourceSets.MPManaBurn;
             if (modPlayer.pHeart)
-                return CalamityUIResourceSets.PhantomHeartMP;
+                return CalamityUIResourceSets.MPPhantomHeart;
             if (modPlayer.eCore)
-                return CalamityUIResourceSets.EtherealCoreMP;
+                return CalamityUIResourceSets.MPEtherealCore;
             if (modPlayer.cShard)
-                return CalamityUIResourceSets.CometShardMP;
+                return CalamityUIResourceSets.MPCometShard;
             return null;
         }
 
@@ -153,7 +153,7 @@ namespace CalamityMod.UI.ResourceSets
                     GraphicsDevice _graphicsDevice = Main.graphics.GraphicsDevice;
                     var barOverlay = new Texture2D(_graphicsDevice, width, 12);
                     Color[] barTextureData = new Color[12 * 12];
-                    CalamityUIResourceSets.ChaliceBleedHP.Bar.Value.GetData(barTextureData);
+                    CalamityUIResourceSets.HPChaliceBleed.Bar.Value.GetData(barTextureData);
                     var pixelsPerLife = 12f / snapshot.LifePerSegment;
                     int deadPixels = (int)Math.Floor((snapshot.LifeMax - snapshot.Life) * pixelsPerLife);
                     var bleedPixels = Math.Round(bleed * pixelsPerLife);
@@ -179,7 +179,7 @@ namespace CalamityMod.UI.ResourceSets
                 }
                 else if (drawType == 1) //default heart
                 {
-                    Texture2D heartTexture = CalamityUIResourceSets.ChaliceBleedHP.Heart.Value;
+                    Texture2D heartTexture = CalamityUIResourceSets.HPChaliceBleed.Heart.Value;
                     for (int i = 0; i < hearts; i++)
                     {
                         Vector2 PosOffset = new Vector2((i >= 10 ? i - 10 : i) * 26, Math.Min(MathF.Floor(i / 10), 1) * 26);
@@ -191,7 +191,7 @@ namespace CalamityMod.UI.ResourceSets
                 }
                 else if (drawType == 2) //fancy heart. this is the same as default but with different distances between hearts
                 {
-                    Texture2D heartTexture = CalamityUIResourceSets.ChaliceBleedHP.Heart.Value;
+                    Texture2D heartTexture = CalamityUIResourceSets.HPChaliceBleed.Heart.Value;
                     for (int i = 0; i < hearts; i++)
                     {
                         Vector2 PosOffset = new Vector2((i >= 10 ? i - 10 : i) * 24, Math.Min(MathF.Floor(i / 10), 1) * 28);

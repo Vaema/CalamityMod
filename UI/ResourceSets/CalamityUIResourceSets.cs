@@ -12,52 +12,52 @@ public record CalamityUIResourceSet(Asset<Texture2D> Bar, Asset<Texture2D> Obj)
 
 public sealed class CalamityUIResourceSets : ILoadable
 {
-    public string BasePath => "CalamityMod/UI/ResourceSets/";
+    public static string BasePath => "CalamityMod/UI/ResourceSets/";
 
-    public static CalamityUIResourceSet ChaliceHP { get; private set; }
-    public static CalamityUIResourceSet ChaliceBleedHP { get; private set; }
-    public static CalamityUIResourceSet MiracleFruitHP { get; private set; }
-    public static CalamityUIResourceSet SacredStrawberryHP { get; private set; }
-    public static CalamityUIResourceSet SanguineTangerineHP { get; private set; }
-    public static CalamityUIResourceSet TaintedCloudberryHP { get; private set; }
+    public static CalamityUIResourceSet HPChalice { get; private set; }
+    public static CalamityUIResourceSet HPChaliceBleed { get; private set; }
+    public static CalamityUIResourceSet HPMiracleFruit { get; private set; }
+    public static CalamityUIResourceSet HPSacredStrawberry { get; private set; }
+    public static CalamityUIResourceSet HPSanguineTangerine { get; private set; }
+    public static CalamityUIResourceSet HPTaintedCloudberry { get; private set; }
 
-    public static CalamityUIResourceSet CometShardMP { get; private set; }
-    public static CalamityUIResourceSet EtherealCoreMP { get; private set; }
-    public static CalamityUIResourceSet ManaBurnMP { get; private set; }
-    public static CalamityUIResourceSet PhantomHeartMP { get; private set; }
+    public static CalamityUIResourceSet MPCometShard { get; private set; }
+    public static CalamityUIResourceSet MPEtherealCore { get; private set; }
+    public static CalamityUIResourceSet MPManaBurn { get; private set; }
+    public static CalamityUIResourceSet MPPhantomHeart { get; private set; }
 
     private static CalamityUIResourceSet LoadResourceSet(string path, bool isHP)
     {
-        return new(Bar: ModContent.Request<Texture2D>(path + "Bar"), Obj: ModContent.Request<Texture2D>(path + (isHP ? "Heart" : "Star")));
+        return new(Bar: ModContent.Request<Texture2D>(BasePath + path + "Bar"), Obj: ModContent.Request<Texture2D>(BasePath + path + (isHP ? "Heart" : "Star")));
     }
 
     void ILoadable.Load(Mod mod)
     {
-        ChaliceHP = LoadResourceSet(BasePath + "HPChalice", isHP: true);
-        ChaliceBleedHP = LoadResourceSet(BasePath + "HPChaliceBleed", isHP: true);
-        MiracleFruitHP = LoadResourceSet(BasePath + "HPMiracleFruit", isHP: true);
-        SacredStrawberryHP = LoadResourceSet(BasePath + "HPSacredStrawberry", isHP: true);
-        SanguineTangerineHP = LoadResourceSet(BasePath + "HPSanguineTangerine", isHP: true);
-        TaintedCloudberryHP = LoadResourceSet(BasePath + "HPTaintedCloudberry", isHP: true);
+        HPChalice = LoadResourceSet(nameof(HPChalice), isHP: true);
+        HPChaliceBleed = LoadResourceSet(nameof(HPChaliceBleed), isHP: true);
+        HPMiracleFruit = LoadResourceSet(nameof(HPMiracleFruit), isHP: true);
+        HPSacredStrawberry = LoadResourceSet(nameof(HPSacredStrawberry), isHP: true);
+        HPSanguineTangerine = LoadResourceSet(nameof(HPSanguineTangerine), isHP: true);
+        HPTaintedCloudberry = LoadResourceSet(nameof(HPTaintedCloudberry), isHP: true);
 
-        CometShardMP = LoadResourceSet(BasePath + "MPCometShard", isHP: false);
-        EtherealCoreMP = LoadResourceSet(BasePath + "MPEtherealCore", isHP: false);
-        ManaBurnMP = LoadResourceSet(BasePath + "MPManaBurn", isHP: false);
-        PhantomHeartMP = LoadResourceSet(BasePath + "MPPhantomHeart", isHP: false);
+        MPCometShard = LoadResourceSet(nameof(MPCometShard), isHP: false);
+        MPEtherealCore = LoadResourceSet(nameof(MPEtherealCore), isHP: false);
+        MPManaBurn = LoadResourceSet(nameof(MPManaBurn), isHP: false);
+        MPPhantomHeart = LoadResourceSet(nameof(MPPhantomHeart), isHP: false);
     }
 
     void ILoadable.Unload()
     {
-        ChaliceHP = null;
-        ChaliceBleedHP = null;
-        MiracleFruitHP = null;
-        SacredStrawberryHP = null;
-        SanguineTangerineHP = null;
-        TaintedCloudberryHP = null;
+        HPChalice = null;
+        HPChaliceBleed = null;
+        HPMiracleFruit = null;
+        HPSacredStrawberry = null;
+        HPSanguineTangerine = null;
+        HPTaintedCloudberry = null;
 
-        CometShardMP = null;
-        EtherealCoreMP = null;
-        ManaBurnMP = null;
-        PhantomHeartMP = null;
+        MPCometShard = null;
+        MPEtherealCore = null;
+        MPManaBurn = null;
+        MPPhantomHeart = null;
     }
 }
