@@ -9,7 +9,6 @@ namespace CalamityMod.Tiles.Abyss.AbyssAmbient
 {
     public class AbyssGiantKelp1 : GlowMaskTile
     {
-        public override string GlowMaskAsset => "CalamityMod/Tiles/Abyss/AbyssAmbient/AbyssGiantKelp1Glow";
         public override void SetupStatic()
         {
             Main.tileLighted[Type] = true;
@@ -66,8 +65,5 @@ namespace CalamityMod.Tiles.Abyss.AbyssAmbient
     }
 
     //just clone the first one its literally the same size
-    public class AbyssGiantKelp2 : AbyssGiantKelp1
-    {
-        public override string GlowMaskAsset => "CalamityMod/Tiles/Abyss/AbyssAmbient/AbyssGiantKelp2Glow";
-    }
+    public class AbyssGiantKelp2 : AbyssGiantKelp1;
 }

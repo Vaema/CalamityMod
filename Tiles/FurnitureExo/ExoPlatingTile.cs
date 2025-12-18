@@ -7,8 +7,6 @@ namespace CalamityMod.Tiles.FurnitureExo
 {
     public class ExoPlatingTile : GlowMaskTile
     {
-        public override string GlowMaskAsset => "CalamityMod/Tiles/FurnitureExo/ExoPlatingTileGlow";
-
         public override void SetupStatic()
         {
             Main.tileSolid[Type] = true;

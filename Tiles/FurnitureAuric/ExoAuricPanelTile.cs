@@ -9,7 +9,7 @@ namespace CalamityMod.Tiles.FurnitureAuric
 {
     public class ExoAuricPanelTile : GlowMaskTile
     {
-        public override string GlowMaskAsset => "CalamityMod/Tiles/FurnitureAuric/ExoAuricPanelTile_Glow";
+        public override string GlowMaskAsset => $"{Texture}_Glow";
 
         public override void SetupStatic()
         {

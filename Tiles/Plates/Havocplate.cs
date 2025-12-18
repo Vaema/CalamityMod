@@ -11,8 +11,6 @@ namespace CalamityMod.Tiles.Plates
     [LegacyName("Chaosplate")]
     public class Havocplate : GlowMaskTile
     {
-        public override string GlowMaskAsset => "CalamityMod/Tiles/Plates/HavocplateGlow";
-
         public override void SetupStatic()
         {
             Main.tileSolid[Type] = true;

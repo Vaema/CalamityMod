@@ -8,8 +8,6 @@ namespace CalamityMod.Tiles.Abyss.AbyssAmbient
 {
     public class SpiderCoral1 : GlowMaskTile
     {
-        public override string GlowMaskAsset => "CalamityMod/Tiles/Abyss/AbyssAmbient/SpiderCoral1Glow";
-
         public override void SetupStatic()
         {
             Main.tileLighted[Type] = true;
@@ -34,23 +32,11 @@ namespace CalamityMod.Tiles.Abyss.AbyssAmbient
         }
     }
 
-    public class SpiderCoral2 : SpiderCoral1
-    {
-        public override string GlowMaskAsset => "CalamityMod/Tiles/Abyss/AbyssAmbient/SpiderCoral2Glow";
-    }
+    public class SpiderCoral2 : SpiderCoral1;
 
-    public class SpiderCoral3 : SpiderCoral1
-    {
-        public override string GlowMaskAsset => "CalamityMod/Tiles/Abyss/AbyssAmbient/SpiderCoral3Glow";
-    }
+    public class SpiderCoral3 : SpiderCoral1;
 
-    public class SpiderCoral4 : SpiderCoral1
-    {
-        public override string GlowMaskAsset => "CalamityMod/Tiles/Abyss/AbyssAmbient/SpiderCoral4Glow";
-    }
+    public class SpiderCoral4 : SpiderCoral1;
 
-    public class SpiderCoral5 : SpiderCoral1
-    {
-        public override string GlowMaskAsset => "CalamityMod/Tiles/Abyss/AbyssAmbient/SpiderCoral5Glow";
-    }
+    public class SpiderCoral5 : SpiderCoral1;
 }

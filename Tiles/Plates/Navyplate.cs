@@ -9,8 +9,6 @@ namespace CalamityMod.Tiles.Plates
 {
     public class Navyplate : GlowMaskTile
     {
-        public override string GlowMaskAsset => "CalamityMod/Tiles/Plates/NavyplateGlow";
-
         public override void SetupStatic()
         {
             Main.tileSolid[Type] = true;

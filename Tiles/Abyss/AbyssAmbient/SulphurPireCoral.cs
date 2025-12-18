@@ -9,8 +9,6 @@ namespace CalamityMod.Tiles.Abyss.AbyssAmbient
 {
     public class SulphurPireCoral1 : GlowMaskTile
     {
-        public override string GlowMaskAsset => "CalamityMod/Tiles/Abyss/AbyssAmbient/SulphurPireCoral1Glow";
-
         public override void SetupStatic()
         {
             Main.tileLighted[Type] = true;
@@ -49,13 +47,7 @@ namespace CalamityMod.Tiles.Abyss.AbyssAmbient
         }
     }
 
-    public class SulphurPireCoral2 : SulphurPireCoral1
-    {
-        public override string GlowMaskAsset => "CalamityMod/Tiles/Abyss/AbyssAmbient/SulphurPireCoral2Glow";
-    }
+    public class SulphurPireCoral2 : SulphurPireCoral1;
 
-    public class SulphurPireCoral3 : SulphurPireCoral1
-    {
-        public override string GlowMaskAsset => "CalamityMod/Tiles/Abyss/AbyssAmbient/SulphurPireCoral3Glow";
-    }
+    public class SulphurPireCoral3 : SulphurPireCoral1;
 }

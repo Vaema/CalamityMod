@@ -12,8 +12,6 @@ namespace CalamityMod.Tiles.Ores
     {
         public const int AnimationFrameWidth = 234;
 
-        public override string GlowMaskAsset => "CalamityMod/Tiles/Ores/PerennialOreGlow";
-
         public override void SetupStatic()
         {
             Main.tileLighted[Type] = true;

@@ -22,7 +22,7 @@ namespace CalamityMod.Tiles
         public bool GlowMaskAffectedByLight = true;
         public bool GlowMaskCanBeCulled = true;
 
-        public abstract string GlowMaskAsset { get; }
+        public virtual string GlowMaskAsset => $"{Texture}Glow";
 
         public sealed override void SetStaticDefaults()
         {
