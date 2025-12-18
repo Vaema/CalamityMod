@@ -135,7 +135,7 @@ namespace CalamityMod.UI
                 }
 
                 // When the mouse is released, save the config and destroy the drag offset.
-                if (ms.LeftButton == ButtonState.Released)
+                if (dragOffset.HasValue && ms.LeftButton == ButtonState.Released)
                 {
                     dragOffset = null;
                     CalamityClientConfig.Instance.SaveChanges();
