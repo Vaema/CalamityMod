@@ -1,21 +1,20 @@
 ﻿using System.Collections.Generic;
 using System.IO;
-using CalamityMod.Items.Materials;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
 using Terraria.ModLoader.IO;
 using static CalamityMod.CalamityUtils;
 
-namespace CalamityMod.Items
+namespace CalamityMod.Items.Tools.SpawnBlocker
 {
-    public class BleachBall : ModItem, ILocalizedModType
+    public class AntiCystOintment : ModItem, ILocalizedModType
     {
-        public new string LocalizationCategory => "Items.Misc";
+        public new string LocalizationCategory => "Items.Tools";
         public override void SetDefaults()
         {
-            Item.width = 38;
-            Item.height = 46;
+            Item.width = 44;
+            Item.height = 34;
             Item.value = CalamityGlobalItem.RarityBlueBuyPrice;
             Item.rare = ItemRarityID.Blue;
         }
@@ -31,7 +30,7 @@ namespace CalamityMod.Items
 
         public override ModItem Clone(Item item)
         {
-            var clone = (BleachBall)base.Clone(item);
+            var clone = (AntiCystOintment)base.Clone(item);
             clone.Enabled = Enabled;
             return clone;
         }
@@ -58,7 +57,7 @@ namespace CalamityMod.Items
 
         public override void UpdateInventory(Player player)
         {
-            player.Calamity().disableNaturalScourgeSpawns |= Enabled;
+            player.Calamity().disablePerfCystSpawns |= Enabled;
         }
 
         /*
@@ -69,12 +68,12 @@ namespace CalamityMod.Items
             if (state)
             {
                 //Replace with enabled texture
-                texture = ModContent.Request<Texture2D>("CalamityMod/Items/BleachBall").Value;
+                texture = ModContent.Request<Texture2D>("CalamityMod/Items/AntiCystOintment").Value;
                 spriteBatch.Draw(texture, position, null, Color.White, 0f, origin, scale, SpriteEffects.None, 0);
             }
             else
             {
-                texture = ModContent.Request<Texture2D>("CalamityMod/Items/BleachBall").Value;
+                texture = ModContent.Request<Texture2D>("CalamityMod/Items/AntiCystOintment").Value;
                 spriteBatch.Draw(texture, position, null, Color.White, 0f, origin, scale, SpriteEffects.None, 0);
             }
 
@@ -88,12 +87,12 @@ namespace CalamityMod.Items
             if (state)
             {
                 //Replace with enabled texture
-                texture = ModContent.Request<Texture2D>("CalamityMod/Items/BleachBall").Value;
+                texture = ModContent.Request<Texture2D>("CalamityMod/Items/AntiCystOintment").Value;
                 spriteBatch.Draw(texture, Item.position - Main.screenPosition, null, lightColor, 0f, Vector2.Zero, 1f, SpriteEffects.None, 0);
             }
             else
             {
-                texture = ModContent.Request<Texture2D>("CalamityMod/Items/BleachBall").Value;
+                texture = ModContent.Request<Texture2D>("CalamityMod/Items/AntiCystOintment").Value;
                 spriteBatch.Draw(texture, Item.position - Main.screenPosition, null, lightColor, 0f, Vector2.Zero, 1f, SpriteEffects.None, 0);
             }
             return false;
@@ -109,12 +108,11 @@ namespace CalamityMod.Items
                 text = GetTextValue("Items.Misc.SpawnBlockersOff");
             tooltips.FindAndReplace("[STATE]", text);
         }
-
         public override void AddRecipes()
         {
             CreateRecipe().
-                AddIngredient<BlightedGel>(5).
-                AddIngredient(ItemID.CalmingPotion).
+                AddIngredient(ItemID.CrimtaneBar, 5).
+                AddIngredient(ItemID.BottledWater).
                 AddTile(TileID.Anvils).
                 Register();
         }

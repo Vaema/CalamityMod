@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
-using CalamityMod.Items;
 using CalamityMod.Items.Accessories;
 using CalamityMod.Items.Pets;
+using CalamityMod.Items.Tools;
 using CalamityMod.Items.Weapons.Rogue;
 using CalamityMod.Packets;
 using CalamityMod.Projectiles.Rogue;

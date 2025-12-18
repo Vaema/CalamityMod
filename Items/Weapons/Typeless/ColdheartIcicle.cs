@@ -6,12 +6,12 @@ using Terraria;
 using Terraria.Audio;
 using Terraria.ModLoader;
 
-namespace CalamityMod.Items
+namespace CalamityMod.Items.Weapons.Typeless
 {
     [LegacyName("AlicornonaStick")]
     public class ColdheartIcicle : ModItem, ILocalizedModType
     {
-        public new string LocalizationCategory => "Items.Misc";
+        public new string LocalizationCategory => "Items.Weapons.Typeless";
         public override void SetDefaults()
         {
             Item.width = 42;

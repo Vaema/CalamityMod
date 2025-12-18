@@ -4,11 +4,11 @@ using Terraria.ID;
 using Terraria.Localization;
 using Terraria.ModLoader;
 
-namespace CalamityMod.Items
+namespace CalamityMod.Items.Tools
 {
     public class RelicOfConvergence : ModItem, ILocalizedModType
     {
-        public new string LocalizationCategory => "Items.Misc";
+        public new string LocalizationCategory => "Items.Tools";
 
         public static int HealValue = 60;
         public override LocalizedText Tooltip => base.Tooltip.WithFormatArgs(HealValue);

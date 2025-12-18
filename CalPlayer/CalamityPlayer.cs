@@ -80,6 +80,7 @@ using Terraria.Net;
 using static Terraria.Main;
 using static Terraria.ModLoader.ModContent;
 using CalamityMod.NPCs.Ravager;
+using CalamityMod.Items.Tools;
 
 namespace CalamityMod.CalPlayer
 {

@@ -4,11 +4,11 @@ using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
 
-namespace CalamityMod.Items
+namespace CalamityMod.Items.Tools
 {
     public class MomentumCapacitor : ModItem, ILocalizedModType
     {
-        public new string LocalizationCategory => "Items.Misc";
+        public new string LocalizationCategory => "Items.Tools";
         internal const float MomentumChargePerFrame = 0.02f;
         internal const float MaxMomentumCharge = 5.8f; // +580% movemnt speed
         internal const int TotalFadeTime = 16;

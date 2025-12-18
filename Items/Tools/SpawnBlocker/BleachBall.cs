@@ -1,20 +1,21 @@
 ﻿using System.Collections.Generic;
 using System.IO;
+using CalamityMod.Items.Materials;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
 using Terraria.ModLoader.IO;
 using static CalamityMod.CalamityUtils;
 
-namespace CalamityMod.Items
+namespace CalamityMod.Items.Tools.SpawnBlocker
 {
-    public class SirenproofEarMuffs : ModItem, ILocalizedModType
+    public class BleachBall : ModItem, ILocalizedModType
     {
-        public new string LocalizationCategory => "Items.Misc";
+        public new string LocalizationCategory => "Items.Tools";
         public override void SetDefaults()
         {
-            Item.width = 44;
-            Item.height = 34;
+            Item.width = 38;
+            Item.height = 46;
             Item.value = CalamityGlobalItem.RarityBlueBuyPrice;
             Item.rare = ItemRarityID.Blue;
         }
@@ -30,7 +31,7 @@ namespace CalamityMod.Items
 
         public override ModItem Clone(Item item)
         {
-            var clone = (SirenproofEarMuffs)base.Clone(item);
+            var clone = (BleachBall)base.Clone(item);
             clone.Enabled = Enabled;
             return clone;
         }
@@ -57,7 +58,7 @@ namespace CalamityMod.Items
 
         public override void UpdateInventory(Player player)
         {
-            player.Calamity().disableAnahitaSpawns |= Enabled;
+            player.Calamity().disableNaturalScourgeSpawns |= Enabled;
         }
 
         /*
@@ -68,12 +69,12 @@ namespace CalamityMod.Items
             if (state)
             {
                 //Replace with enabled texture
-                texture = ModContent.Request<Texture2D>("CalamityMod/Items/SirenproofEarMuffs").Value;
+                texture = ModContent.Request<Texture2D>("CalamityMod/Items/BleachBall").Value;
                 spriteBatch.Draw(texture, position, null, Color.White, 0f, origin, scale, SpriteEffects.None, 0);
             }
             else
             {
-                texture = ModContent.Request<Texture2D>("CalamityMod/Items/SirenproofEarMuffs").Value;
+                texture = ModContent.Request<Texture2D>("CalamityMod/Items/BleachBall").Value;
                 spriteBatch.Draw(texture, position, null, Color.White, 0f, origin, scale, SpriteEffects.None, 0);
             }
 
@@ -87,12 +88,12 @@ namespace CalamityMod.Items
             if (state)
             {
                 //Replace with enabled texture
-                texture = ModContent.Request<Texture2D>("CalamityMod/Items/SirenproofEarMuffs").Value;
+                texture = ModContent.Request<Texture2D>("CalamityMod/Items/BleachBall").Value;
                 spriteBatch.Draw(texture, Item.position - Main.screenPosition, null, lightColor, 0f, Vector2.Zero, 1f, SpriteEffects.None, 0);
             }
             else
             {
-                texture = ModContent.Request<Texture2D>("CalamityMod/Items/SirenproofEarMuffs").Value;
+                texture = ModContent.Request<Texture2D>("CalamityMod/Items/BleachBall").Value;
                 spriteBatch.Draw(texture, Item.position - Main.screenPosition, null, lightColor, 0f, Vector2.Zero, 1f, SpriteEffects.None, 0);
             }
             return false;
@@ -112,8 +113,8 @@ namespace CalamityMod.Items
         public override void AddRecipes()
         {
             CreateRecipe().
-                AddIngredient(ItemID.FlinxFur, 2).
-                AddIngredient(ItemID.Silk, 5).
+                AddIngredient<BlightedGel>(5).
+                AddIngredient(ItemID.CalmingPotion).
                 AddTile(TileID.Anvils).
                 Register();
         }
