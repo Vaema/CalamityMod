@@ -36,7 +36,7 @@ namespace CalamityMod.Items.BaseItems
 
             private static void DrawSpecial(Terraria.UI.On_ItemSlot.orig_Draw_SpriteBatch_ItemArray_int_int_Vector2_Color orig, SpriteBatch sb, Item[] inv, int context, int slot, Vector2 position, Color color)
             {
-                if (inv[slot].ModItem is HeldOnlyItem && !(inv[slot].ModItem as HeldOnlyItem).VisibleInUI)
+                if (inv[slot].ModItem is HeldOnlyItem heldOnlyItem && !heldOnlyItem.VisibleInUI)
                     return;
 
                 else
@@ -45,14 +45,14 @@ namespace CalamityMod.Items.BaseItems
 
             private static void LockMouseToSpecialItem(Terraria.UI.On_ItemSlot.orig_LeftClick_ItemArray_int_int orig, Item[] inv, int context, int slot)
             {
-                if (!(Main.mouseItem.ModItem is HeldOnlyItem))
+                if (Main.mouseItem.ModItem is not HeldOnlyItem)
                     orig(inv, context, slot);
             }
 
             //https://media.discordapp.net/attachments/458432092301295618/993675527539916850/unknown.png
             private static void DontDropCoolStuff(Terraria.On_Player.orig_dropItemCheck orig, Terraria.Player self)
             {
-                if (!(Main.mouseItem.ModItem is HeldOnlyItem))
+                if (Main.mouseItem.ModItem is not HeldOnlyItem)
                     orig(self);
             }
         }
