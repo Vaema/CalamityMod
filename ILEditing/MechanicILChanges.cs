@@ -1321,31 +1321,6 @@ namespace CalamityMod.ILEditing
         }
         #endregion
 
-        #region Add Stohne to the Jungle
-        private static void AddStohne(ILContext il)
-        {
-            var cursor = new ILCursor(il);
-
-            if (!cursor.TryGotoNext(MoveType.Before,
-                c => c.MatchLdcI4(out var tileType) && tileType == TileID.Stone,
-                c => c.MatchLdcI4(out _), // bool addTile
-                c => c.MatchLdcR8(out _), // double speedX
-                c => c.MatchLdcR8(out _), // double speedY
-                c => c.MatchLdcI4(out _), // bool noYChange
-                c => c.MatchLdcI4(out _), // bool overRide
-                c => c.MatchLdcI4(out _), // int ignoreTileType
-                c => c.MatchCallOrCallvirt<WorldGen>(nameof(WorldGen.TileRunner))))
-            {
-                LogFailure("Add Stohne To Jungle", "Could not locate the TileRunner call for Stone");
-                return;
-            }
-
-            // Replace Next Instruction to Ldc.I4 :: Stohne
-            cursor.Next.OpCode = OpCodes.Ldc_I4;
-            cursor.Next.Operand = ModContent.TileType<Stohne>();
-        }
-        #endregion
-
         #region Hellscape for GlowMask ModPlants
 
         #region Tree Trunk / Cactus GlowMask
