@@ -886,7 +886,7 @@ namespace CalamityMod.ILEditing
                 return;
             }
             cursor.Emit(OpCodes.Pop);
-            cursor.Emit<CalamityGlobalNPC>(OpCodes.Call, $"get_{nameof(CalamityGlobalNPC.TotalTaxesPerNPC)}");
+            cursor.Emit<CalamityGlobalTownNPC>(OpCodes.Call, $"get_{nameof(CalamityGlobalTownNPC.TotalTaxesPerNPC)}");
 
             if (!cursor.TryGotoNext(MoveType.After, i => i.MatchCall<Item>(nameof(Item.buyPrice))))
             {
@@ -894,7 +894,7 @@ namespace CalamityMod.ILEditing
                 return;
             }
             cursor.Emit(OpCodes.Pop);
-            cursor.Emit<CalamityGlobalNPC>(OpCodes.Call, $"get_{nameof(CalamityGlobalNPC.TaxesToCollectLimit)}");
+            cursor.Emit<CalamityGlobalTownNPC>(OpCodes.Call, $"get_{nameof(CalamityGlobalTownNPC.TaxesToCollectLimit)}");
         }
         #endregion
 

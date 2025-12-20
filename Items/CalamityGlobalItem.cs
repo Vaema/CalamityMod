@@ -52,10 +52,6 @@ namespace CalamityMod.Items
     {
         public override bool InstancePerEntity => true;
 
-        // TODO -- split out a separate GlobalItem for rogue behavior?
-        /// <summary> Tracks the stealth strike damage modifier for this item, derived from its prefix. </summary>
-        internal float StealthStrikePrefixBonus;
-
         private BitsByte flag0 = 0;
 
         #region Chargeable Item Variables
@@ -150,11 +146,6 @@ namespace CalamityMod.Items
 
         public static readonly Color ExhumedTooltipColor = new Color(198, 27, 64);
 
-        public CalamityGlobalItem()
-        {
-            StealthStrikePrefixBonus = 0f;
-        }
-
         // Ozzatron 21MAY2022: This function is required by TML 1.4's new clone behavior.
         // This behavior is sadly mandatory because there are a few places in vanilla Terraria which use cloning.
         // Most notably: reforging and item tooltips.
@@ -168,9 +159,6 @@ namespace CalamityMod.Items
 
             // BitFlags
             myClone.flag0 = flag0;
-
-            // Rogue
-            myClone.StealthStrikePrefixBonus = StealthStrikePrefixBonus;
 
             // Charge (Draedon's Arsenal)
             myClone.UsesCharge = UsesCharge;
@@ -1691,13 +1679,6 @@ namespace CalamityMod.Items
         public static int RarityVioletBuyPrice => Rarity15BuyPrice;
         public static int RarityHotPinkBuyPrice => Rarity16BuyPrice;
         public static int RarityCalamityRedBuyPrice => Rarity17BuyPrice;
-        #endregion
-
-        #region PreReforge
-        public override void PreReforge(Item item)
-        {
-            StealthStrikePrefixBonus = 0f;
-        }
         #endregion
 
         //

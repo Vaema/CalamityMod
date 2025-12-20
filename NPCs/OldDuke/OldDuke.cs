@@ -1981,7 +1981,7 @@ namespace CalamityMod.NPCs.OldDuke
             drawLocation += new Vector2(Main.rand.NextFloat(-shake, shake), Main.rand.NextFloat(-shake, shake));
 
             spriteBatch.Draw(texture2D15, drawLocation, NPC.frame, NPC.GetAlpha(finalDrawColor), NPC.rotation, halfSizeTexture, NPC.scale, spriteEffects, 0f);
-            
+
             spriteBatch.Draw(texture2D15, drawLocation, NPC.frame, NPC.GetAlpha(overlayDrawColor), NPC.rotation, halfSizeTexture, NPC.scale, spriteEffects, 0f);
 
             float auraOutset = 6f + (float)(Math.Sin(VisualTimerSystem.GlobalVisualTimer / 10f) * 10f);
@@ -2066,7 +2066,7 @@ namespace CalamityMod.NPCs.OldDuke
 
             CalamityGlobalNPC.SetNewBossJustDowned(NPC);
 
-            CalamityGlobalNPC.SetNewShopVariable(new int[] { ModContent.NPCType<SeaKing>() }, DownedBossSystem.downedBoomerDuke);
+            CalamityGlobalTownNPC.SetNewShopVariable(new int[] { ModContent.NPCType<SeaKing>() }, DownedBossSystem.downedBoomerDuke);
 
             // Mark Old Duke as dead
             DownedBossSystem.downedBoomerDuke = true;

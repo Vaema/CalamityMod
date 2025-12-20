@@ -36,6 +36,12 @@ namespace CalamityMod.Cooldowns
                     cooldownColorStart = new Color(107, 6, 6);
                     cooldownColorEnd = new Color(228, 78, 78);
                     break;
+                case "shieldoftheocean":
+                    skinTexture = "OceanShieldParry";
+                    outlineColor = Color.White;
+                    cooldownColorStart = new Color(233, 111, 165);
+                    cooldownColorEnd = new Color(105, 139, 148);
+                    break;
                 default:
                     skinTexture = "ParryCooldown";
                     outlineColor = Color.White;

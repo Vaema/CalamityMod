@@ -16,8 +16,8 @@ namespace CalamityMod.Graphics.Metaballs
         public override void Load()
         {
             // Prepare event subscribers.
+            GeneralDrawLayerSystem.OnPrepareDraw += PrepareMetaballTargets;
             GeneralDrawLayerSystem.OnDrawLayer += DrawMetaballs;
-            RenderTargetManager.RenderTargetUpdateLoopEvent += PrepareMetaballTargets;
         }
 
         public override void OnModUnload()
@@ -57,7 +57,7 @@ namespace CalamityMod.Graphics.Metaballs
                 return;
 
             // Prepare the sprite batch for drawing. Metaballs may restart the sprite batch via PrepareSpriteBatch if their implementation requires it.
-            Main.spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, SamplerState.PointClamp, DepthStencilState.Default, Main.Rasterizer, null, Matrix.Identity);
+            Main.spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, SamplerState.PointClamp, DepthStencilState.Default, Main.Rasterizer, null, Main.Transform);
 
             var gd = Main.instance.GraphicsDevice;
             foreach (Metaball metaball in activeMetaballs)
@@ -78,7 +78,7 @@ namespace CalamityMod.Graphics.Metaballs
 
                     // Flush metaball contents to its render target and reset the sprite batch for the next iteration.
                     Main.spriteBatch.End();
-                    Main.spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, SamplerState.PointClamp, DepthStencilState.Default, Main.Rasterizer, null, Matrix.Identity);
+                    Main.spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, SamplerState.PointClamp, DepthStencilState.Default, Main.Rasterizer, null, Main.Transform);
                 }
             }
 
@@ -100,7 +100,7 @@ namespace CalamityMod.Graphics.Metaballs
         /// <param name="layerType">The layer type to draw with.</param>
         private static void DrawMetaballs(GeneralDrawLayer layerType)
         {
-            Main.spriteBatch.Begin(SpriteSortMode.Immediate, BlendState.AlphaBlend, SamplerState.PointWrap, DepthStencilState.None, Main.Rasterizer, null, Main.GameViewMatrix.TransformationMatrix);
+            Main.spriteBatch.Begin(SpriteSortMode.Immediate, BlendState.AlphaBlend, SamplerState.PointWrap, DepthStencilState.None, RasterizerState.CullCounterClockwise);
 
             foreach (Metaball metaball in metaballs.Where(m => m.DrawLayer == layerType && m.AnythingToDraw))
             {
@@ -110,7 +110,7 @@ namespace CalamityMod.Graphics.Metaballs
                     metaball.PrepareShaderForTarget(i);
 
                     // Draw the metaball's raw contents with the shader.
-                    Main.spriteBatch.Draw(metaball.LayerTargets[i], Main.screenLastPosition - Main.screenPosition, Color.White);
+                    Main.spriteBatch.Draw(metaball.LayerTargets[i], Vector2.Zero, Color.White);
                 }
             }
 

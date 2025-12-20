@@ -38,7 +38,7 @@ namespace CalamityMod.NPCs.Polterghast
     {
         public static int phase1IconIndex;
         public static int phase3IconIndex;
-        
+
         public override void Load()
         {
             string phase1IconPath = "CalamityMod/NPCs/Polterghast/Polterghast_Head_Boss";
@@ -943,7 +943,7 @@ namespace CalamityMod.NPCs.Polterghast
 
             CalamityGlobalNPC.SetNewBossJustDowned(NPC);
 
-            CalamityGlobalNPC.SetNewShopVariable(new int[] { NPCID.Cyborg }, DownedBossSystem.downedPolterghast);
+            CalamityGlobalTownNPC.SetNewShopVariable(new int[] { NPCID.Cyborg }, DownedBossSystem.downedPolterghast);
 
             // If Polterghast has not been killed, notify players about the Abyss minibosses now dropping items
             if (!DownedBossSystem.downedPolterghast)
