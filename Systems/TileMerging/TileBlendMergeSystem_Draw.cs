@@ -81,7 +81,7 @@ namespace CalamityMod.Systems
             // Sliced Rendering
             int sliceLength = 0;
             Rectangle[] sliceRects = null;
-            Color[] colorSliceBuffer = ColorSliceBuffer.Value;
+            Color[] colorSliceBuffer = null;
 
             // Is HalfBlock condition is also in vanilla, so we follow that
             var silcedConfigEnabled = CalamityClientConfig.Instance.TileTextureBlendingQuality == TileBlendingQuality.High;
@@ -92,12 +92,14 @@ namespace CalamityMod.Systems
                 {
                     sliceLength = 9;
                     sliceRects = Rects9Slice;
+                    colorSliceBuffer = ColorSliceBuffer.Value;
                     Lighting.GetColor9Slice(tileX, tileY, ref colorSliceBuffer);
                 }
                 else if (tileLight.IsAnyChannelGreaterThan(tileRenderer._mediumQualityLightingRequirement))
                 {
                     sliceLength = 4;
                     sliceRects = Rects4Slice;
+                    colorSliceBuffer = ColorSliceBuffer.Value;
                     Lighting.GetColor4Slice(tileX, tileY, ref colorSliceBuffer);
                 }
             }

@@ -160,13 +160,7 @@ namespace CalamityMod.Systems
             var pos = _SheetPositionLookup[key];
 
             sourceRect = pos.GetDrawRect();
-            texture = pos.BakedSheetIndex switch
-            {
-                0 => BakedBlendTexture,
-                1 => BakedBlendTexture,
-                2 => BakedBlendTexture,
-                _ => TextureAsset.Value
-            };
+            texture = pos.IsUsingBaseTexture ? TextureAsset.Value : BakedBlendTexture;
 
             return texture != null;
         }
