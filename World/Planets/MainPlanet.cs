@@ -85,6 +85,10 @@ namespace CalamityMod.World.Planets
 
             mainShape.Subtract(outerCoreShape, origin, origin);
 
+            bool hasPlacedLogAndSchematic = false;
+            SchematicManager.PlaceSchematic(SchematicManager.PlanetoidLabKey, new Point(origin.X, origin.Y), SchematicAnchor.Center, ref hasPlacedLogAndSchematic, new Action<Chest, int, bool>(DraedonStructures.FillPlanetoidLaboratoryChest));
+            CalamityWorld.PlanetoidLabCenter = origin.ToWorldCoordinates();
+
             //PLACE GRASS
             Vector2 worldCenter = origin.ToWorldCoordinates();
             WorldUtils.Gen(origin, new ModShapes.OuterOutline(mainShape, true, true), Actions.Chain(new GenAction[]
@@ -99,10 +103,6 @@ namespace CalamityMod.World.Planets
                 new Actions.Smooth(),
                 new Actions.SetFrames(true)
             }));
-
-            bool hasPlacedLogAndSchematic = false;
-            SchematicManager.PlaceSchematic(SchematicManager.PlanetoidLabKey, new Point(origin.X, origin.Y), SchematicAnchor.Center, ref hasPlacedLogAndSchematic, new Action<Chest, int, bool>(DraedonStructures.FillPlanetoidLaboratoryChest));
-            CalamityWorld.PlanetoidLabCenter = origin.ToWorldCoordinates();
 
             //PLACE BREAKABLE GRASS AND TREES
             WorldUtils.Gen(origin, new ModShapes.OuterOutline(mainShape, true, true), Actions.Chain(new GenAction[]
