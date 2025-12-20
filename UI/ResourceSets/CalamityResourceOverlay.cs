@@ -16,6 +16,18 @@ namespace CalamityMod.UI.ResourceSets
         // Most of this is taken from ExampleMod. See that for additional explanations.
         private Dictionary<string, Asset<Texture2D>> vanillaAssetCache = new();
 
+        // Vanilla texture paths
+        const string fancyFolder = "Images/UI/PlayerResourceSets/FancyClassic/";
+        const string barsFolder = "Images/UI/PlayerResourceSets/HorizontalBars/";
+
+        private Asset<Texture2D> FancyHeartFill => field ??= Main.Assets.Request<Texture2D>(fancyFolder + "Heart_Fill");
+        private Asset<Texture2D> FancyHeartFillB => field ??= Main.Assets.Request<Texture2D>(fancyFolder + "Heart_Fill_B");
+        private Asset<Texture2D> FancyStarFill => field ??= Main.Assets.Request<Texture2D>(fancyFolder + "Star_Fill");
+
+        private Asset<Texture2D> BarMPFill => field ??= Main.Assets.Request<Texture2D>(barsFolder + "MP_Fill");
+        private Asset<Texture2D> BarHPFill => field ??= Main.Assets.Request<Texture2D>(barsFolder + "HP_Fill");
+        private Asset<Texture2D> BarHPFillHoney => field ??= Main.Assets.Request<Texture2D>(barsFolder + "HP_Fill_Honey");
+
         // Determines which health UI to draw based on player upgrades.
         public static CalamityUIResourceSet GetLifeTextureSet()
         {
@@ -52,29 +64,17 @@ namespace CalamityMod.UI.ResourceSets
         {
             Asset<Texture2D> asset = context.texture;
 
-            // Vanilla texture paths
-            const string fancyFolder = "Images/UI/PlayerResourceSets/FancyClassic/";
-            const string barsFolder = "Images/UI/PlayerResourceSets/HorizontalBars/";
-
-            const string fancyHeartFill = fancyFolder + "Heart_Fill";
-            const string fancyHeartFillB = fancyFolder + "Heart_Fill_B";
-            const string fancyStarFill = fancyFolder + "Star_Fill";
-
-            const string barMPFill = barsFolder + "MP_Fill";
-            const string barHPFill = barsFolder + "HP_Fill";
-            const string barHPFillHoney = barsFolder + "HP_Fill_Honey";
-
             var manaTextureSet = GetManaTextureSet();
             if (manaTextureSet != null)
             {
                 // Draw stars for Classic and Fancy
-                if (asset == TextureAssets.Mana || CompareAssets(asset, fancyStarFill))
+                if (asset == TextureAssets.Mana || asset == FancyStarFill)
                 {
                     context.texture = manaTextureSet.Star;
                     context.Draw();
                 }
                 // Draw mana bars
-                else if (CompareAssets(asset, barMPFill))
+                else if (asset == BarMPFill)
                 {
                     context.texture = manaTextureSet.Bar;
                     context.Draw();
@@ -85,13 +85,13 @@ namespace CalamityMod.UI.ResourceSets
             if (lifeTextureSet != null)
             {
                 // Draw hearts for Classic and Fancy
-                if (asset == TextureAssets.Heart || asset == TextureAssets.Heart2 || CompareAssets(asset, fancyHeartFill) || CompareAssets(asset, fancyHeartFillB))
+                if (asset == TextureAssets.Heart || asset == TextureAssets.Heart2 || asset == FancyHeartFill || asset == FancyHeartFillB)
                 {
                     context.texture = lifeTextureSet.Heart;
                     context.Draw();
                 }
                 // Draw health bars
-                else if (CompareAssets(asset, barHPFill) || CompareAssets(asset, barHPFillHoney))
+                else if (asset == BarHPFill || asset == BarHPFillHoney)
                 {
                     context.texture = lifeTextureSet.Bar;
                     context.Draw();
@@ -302,14 +302,6 @@ namespace CalamityMod.UI.ResourceSets
                 }
             }
 
-        }
-
-        private bool CompareAssets(Asset<Texture2D> currentAsset, string compareAssetPath)
-        {
-            if (!vanillaAssetCache.TryGetValue(compareAssetPath, out var asset))
-                asset = vanillaAssetCache[compareAssetPath] = Main.Assets.Request<Texture2D>(compareAssetPath);
-
-            return currentAsset == asset;
         }
     }
 }
