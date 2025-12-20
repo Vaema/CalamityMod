@@ -13,8 +13,7 @@ namespace CalamityMod.Systems.Mechanic;
 
 public class WulfrumPingTileEffect : IPingedTileEffect, ILoadable
 {
-    public const string EffectName = "WulfrumPing";
-
+    public static string EffectName => "WulfrumPing";
     public static WulfrumPingTileEffect Instance { get; private set; }
 
     internal static Texture2D emptyFrame;
@@ -185,8 +184,7 @@ public class WulfrumPingTileEffect : IPingedTileEffect, ILoadable
 
 public class BurrowerPingTileEffect : IPingedTileEffect, ILoadable
 {
-    public const string EffectName = "BurrowerPing";
-
+    public static string EffectName => "BurrowerPing";
     public static BurrowerPingTileEffect Instance { get; private set; }
 
     internal static Texture2D emptyFrame;
