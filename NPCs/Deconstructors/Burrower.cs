@@ -427,7 +427,7 @@ namespace CalamityMod.NPCs.Deconstructors
                             NPC.rotation = SecondaryVector.DirectionTo(TargetVector).ToRotation() + MathHelper.PiOver2;
 
                             if (Main.netMode != NetmodeID.Server && !(BurrowerPingTileEffect.Instance.Active))
-                                TilePingerSystem.AddPing(BurrowerPingTileEffect.EffectName, NPC.Center, player);
+                                TilePingerSystem.AddPing(BurrowerPingTileEffect.Instance, NPC.Center, player);
                             for (int i = 0; i < 1; i++)
                             {
                                 int sparkLifetime = Main.rand.Next(10, 20);

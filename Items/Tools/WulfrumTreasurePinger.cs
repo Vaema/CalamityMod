@@ -128,7 +128,7 @@ namespace CalamityMod.Items.Tools
 
         public override bool? UseItem(Player player)
         {
-            if (TilePingerSystem.AddPing(WulfrumPingTileEffect.EffectName, player.Center, player))
+            if (!Main.dedServ && TilePingerSystem.AddPing(WulfrumPingTileEffect.Instance, player.Center, player))
             {
                 if (player.name != "John Wulfrum")
                     usesLeft--;
