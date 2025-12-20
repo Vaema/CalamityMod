@@ -100,6 +100,18 @@ namespace CalamityMod.Graphics.Primitives
         {
             Main.QueueMainThreadAction(() =>
             {
+                MainPositions = null;
+                MainVertices = null;
+                MainIndices = null;
+                MainCompletionRatios = null;
+                MainTangents = null;
+                MainNormals = null;
+                WireframeVertices = null;
+                NonSmoothIndexScratch = null;
+                VertexBuffer?.Dispose();
+                VertexBuffer = null;
+                IndexBuffer?.Dispose();
+                IndexBuffer = null;
                 WireframeEffect?.Dispose();
                 WireframeEffect = null;
             });
