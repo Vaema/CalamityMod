@@ -7,8 +7,6 @@ namespace CalamityMod.Tiles.FurnitureAshen
 {
     public class SmoothBrimstoneSlag : GlowMaskTile
     {
-        public override string GlowMaskAsset => "CalamityMod/Tiles/FurnitureAshen/SmoothBrimstoneSlagGlow";
-
         public override void SetupStatic()
         {
             Main.tileSolid[Type] = true;

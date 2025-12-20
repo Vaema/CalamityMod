@@ -12,7 +12,7 @@ namespace CalamityMod.Tiles.Abyss
 {
     public class Voidstone : GlowMaskTile
     {
-        public override string GlowMaskAsset => "CalamityMod/Tiles/Abyss/Voidstone_Glowmask";
+        public override string GlowMaskAsset => $"{Texture}_Glowmask";
 
         public override void SetupStatic()
         {

@@ -382,6 +382,11 @@ ReinforcedCrateItem: {
 	Tooltip: ""
 }
 
+Rock: {
+	DisplayName: Rock
+	Tooltip: ""
+}
+
 RustedPipes: {
 	DisplayName: Rusted Pipes
 	Tooltip: ""

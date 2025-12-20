@@ -9,8 +9,6 @@ namespace CalamityMod.Tiles.Plates
 {
     public class Cinderplate : GlowMaskTile
     {
-        public override string GlowMaskAsset => "CalamityMod/Tiles/Plates/CinderplateGlow";
-
         public override void SetupStatic()
         {
             Main.tileSolid[Type] = true;

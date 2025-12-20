@@ -8,11 +8,11 @@ using Terraria.DataStructures;
 using Terraria.ID;
 using Terraria.ModLoader;
 
-namespace CalamityMod.Items
+namespace CalamityMod.Items.Tools
 {
     public class NormalityRelocator : ModItem, ILocalizedModType
     {
-        public new string LocalizationCategory => "Items.Misc";
+        public new string LocalizationCategory => "Items.Tools";
         public static readonly SoundStyle TeleportSound = new("CalamityMod/Sounds/Item/NormalityRelocator", 3);
         public override void SetStaticDefaults()
         {

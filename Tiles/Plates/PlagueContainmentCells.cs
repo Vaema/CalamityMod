@@ -9,8 +9,6 @@ namespace CalamityMod.Tiles.Plates
 {
     public class PlagueContainmentCells : GlowMaskTile
     {
-        public override string GlowMaskAsset => "CalamityMod/Tiles/Plates/PlagueContainmentCellsGlow";
-
         public override void SetupStatic()
         {
             Main.tileSolid[Type] = true;

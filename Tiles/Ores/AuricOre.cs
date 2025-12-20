@@ -11,8 +11,6 @@ namespace CalamityMod.Tiles.Ores
         public static readonly SoundStyle MineSound = new("CalamityMod/Sounds/Custom/AuricMine", 3);
         public static bool Animate;
 
-        public override string GlowMaskAsset => "CalamityMod/Tiles/Ores/AuricOreGlow";
-
         public override void SetupStatic()
         {
             AnimationFrameHeight = 90;

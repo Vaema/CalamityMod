@@ -8,8 +8,6 @@ namespace CalamityMod.Tiles.FurniturePlaguedPlate
 {
     public class PlaguedPlate : GlowMaskTile
     {
-        public override string GlowMaskAsset => "CalamityMod/Tiles/FurniturePlaguedPlate/PlaguedPlateGlow";
-
         public override void SetupStatic()
         {
             Main.tileSolid[Type] = true;

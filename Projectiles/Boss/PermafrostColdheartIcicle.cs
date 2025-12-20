@@ -1,5 +1,6 @@
 ﻿using System;
 using CalamityMod.Graphics.Primitives;
+using CalamityMod.Items.Weapons.Typeless;
 using CalamityMod.NPCs.SupremeCalamitas;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
@@ -15,7 +16,7 @@ namespace CalamityMod.Projectiles.Boss
     {
         public new string LocalizationCategory => "Projectiles.Boss";
 
-        public override string Texture => "CalamityMod/Items/ColdheartIcicle";
+        public override string Texture => ModContent.GetInstance<ColdheartIcicle>().Texture;
 
         public const int Lifetime = 80;
 
@@ -154,7 +155,7 @@ namespace CalamityMod.Projectiles.Boss
             Main.spriteBatch.EnterShaderRegion();
             GameShaders.Misc["CalamityMod:PrismaticStreak"].SetShaderTexture(ModContent.Request<Texture2D>("CalamityMod/ExtraTextures/Trails/ScarletDevilStreak"));
 
-            PrimitiveRenderer.RenderTrail(Projectile.oldPos, new(WidthFunction, ColorFunction, (_,_) => Projectile.Size * 0.5f + generalOffset, shader: GameShaders.Misc["CalamityMod:PrismaticStreak"]), 65);
+            PrimitiveRenderer.RenderTrail(Projectile.oldPos, new(WidthFunction, ColorFunction, (_, _) => Projectile.Size * 0.5f + generalOffset, shader: GameShaders.Misc["CalamityMod:PrismaticStreak"]), 65);
             Main.spriteBatch.ExitShaderRegion();
             return true;
         }

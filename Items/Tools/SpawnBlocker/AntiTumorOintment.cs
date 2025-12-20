@@ -6,19 +6,17 @@ using Terraria.ModLoader;
 using Terraria.ModLoader.IO;
 using static CalamityMod.CalamityUtils;
 
-namespace CalamityMod.Items
+namespace CalamityMod.Items.Tools.SpawnBlocker
 {
-    public class VoodooDemonVoodooDoll : ModItem, ILocalizedModType
+    public class AntiTumorOintment : ModItem, ILocalizedModType
     {
-        public new string LocalizationCategory => "Items.Misc";
-
+        public new string LocalizationCategory => "Items.Tools";
         public override void SetDefaults()
         {
             Item.width = 44;
             Item.height = 34;
             Item.value = CalamityGlobalItem.RarityBlueBuyPrice;
             Item.rare = ItemRarityID.Blue;
-            Item.consumable = false;
         }
 
         public override void ModifyResearchSorting(ref ContentSamples.CreativeHelper.ItemGroup itemGroup)
@@ -32,7 +30,7 @@ namespace CalamityMod.Items
 
         public override ModItem Clone(Item item)
         {
-            var clone = (VoodooDemonVoodooDoll)base.Clone(item);
+            var clone = (AntiTumorOintment)base.Clone(item);
             clone.Enabled = Enabled;
             return clone;
         }
@@ -59,7 +57,7 @@ namespace CalamityMod.Items
 
         public override void UpdateInventory(Player player)
         {
-            player.Calamity().disableVoodooSpawns |= Enabled;
+            player.Calamity().disableHiveCystSpawns |= Enabled;
         }
 
         /*
@@ -70,12 +68,12 @@ namespace CalamityMod.Items
             if (state)
             {
                 //Replace with enabled texture
-                texture = ModContent.Request<Texture2D>("CalamityMod/Items/VoodooDemonVoodooDoll").Value;
+                texture = ModContent.Request<Texture2D>("CalamityMod/Items/AntiTumorOintment").Value;
                 spriteBatch.Draw(texture, position, null, Color.White, 0f, origin, scale, SpriteEffects.None, 0);
             }
             else
             {
-                texture = ModContent.Request<Texture2D>("CalamityMod/Items/VoodooDemonVoodooDoll").Value;
+                texture = ModContent.Request<Texture2D>("CalamityMod/Items/AntiTumorOintment").Value;
                 spriteBatch.Draw(texture, position, null, Color.White, 0f, origin, scale, SpriteEffects.None, 0);
             }
 
@@ -89,12 +87,12 @@ namespace CalamityMod.Items
             if (state)
             {
                 //Replace with enabled texture
-                texture = ModContent.Request<Texture2D>("CalamityMod/Items/VoodooDemonVoodooDoll").Value;
+                texture = ModContent.Request<Texture2D>("CalamityMod/Items/AntiTumorOintment").Value;
                 spriteBatch.Draw(texture, Item.position - Main.screenPosition, null, lightColor, 0f, Vector2.Zero, 1f, SpriteEffects.None, 0);
             }
             else
             {
-                texture = ModContent.Request<Texture2D>("CalamityMod/Items/VoodooDemonVoodooDoll").Value;
+                texture = ModContent.Request<Texture2D>("CalamityMod/Items/AntiTumorOintment").Value;
                 spriteBatch.Draw(texture, Item.position - Main.screenPosition, null, lightColor, 0f, Vector2.Zero, 1f, SpriteEffects.None, 0);
             }
             return false;
@@ -114,8 +112,8 @@ namespace CalamityMod.Items
         public override void AddRecipes()
         {
             CreateRecipe().
-                AddIngredient(ItemID.HellstoneBar, 5).
-                AddIngredient(ItemID.Silk, 5).
+                AddIngredient(ItemID.DemoniteBar, 5).
+                AddIngredient(ItemID.BottledWater).
                 AddTile(TileID.Anvils).
                 Register();
         }

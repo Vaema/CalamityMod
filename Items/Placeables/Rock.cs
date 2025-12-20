@@ -4,11 +4,11 @@ using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
 
-namespace CalamityMod.Items
+namespace CalamityMod.Items.Placeables
 {
     public class Rock : ModItem, ILocalizedModType
     {
-        public new string LocalizationCategory => "Items.Misc";
+        public new string LocalizationCategory => "Items.Placeables";
         public override void SetStaticDefaults()
         {
             Item.ResearchUnlockCount = 0;

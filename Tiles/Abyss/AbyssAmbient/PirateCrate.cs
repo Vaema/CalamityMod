@@ -60,19 +60,16 @@ namespace CalamityMod.Tiles.Abyss.AbyssAmbient
 
     public class PirateCrate1 : PirateCrateExplosive
     {
-        public override string GlowMaskAsset => "CalamityMod/Tiles/Abyss/AbyssAmbient/PirateCrate1Glow";
         public override string GoreKey => "PirateCrateL";
     }
 
     public class PirateCrate2 : PirateCrateExplosive
     {
-        public override string GlowMaskAsset => "CalamityMod/Tiles/Abyss/AbyssAmbient/PirateCrate2Glow";
         public override string GoreKey => "PirateCrateM";
     }
 
     public class PirateCrate3 : PirateCrateExplosive
     {
-        public override string GlowMaskAsset => "CalamityMod/Tiles/Abyss/AbyssAmbient/PirateCrate3Glow";
         public override string GoreKey => "PirateCrateR";
     }
 

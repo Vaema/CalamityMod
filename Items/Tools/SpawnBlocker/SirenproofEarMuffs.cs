@@ -6,14 +6,14 @@ using Terraria.ModLoader;
 using Terraria.ModLoader.IO;
 using static CalamityMod.CalamityUtils;
 
-namespace CalamityMod.Items
+namespace CalamityMod.Items.Tools.SpawnBlocker
 {
-    public class BrokenWaterFilter : ModItem, ILocalizedModType
+    public class SirenproofEarMuffs : ModItem, ILocalizedModType
     {
-        public new string LocalizationCategory => "Items.Misc";
+        public new string LocalizationCategory => "Items.Tools";
         public override void SetDefaults()
         {
-            Item.width = 32;
+            Item.width = 44;
             Item.height = 34;
             Item.value = CalamityGlobalItem.RarityBlueBuyPrice;
             Item.rare = ItemRarityID.Blue;
@@ -30,7 +30,7 @@ namespace CalamityMod.Items
 
         public override ModItem Clone(Item item)
         {
-            var clone = (BrokenWaterFilter)base.Clone(item);
+            var clone = (SirenproofEarMuffs)base.Clone(item);
             clone.Enabled = Enabled;
             return clone;
         }
@@ -57,7 +57,7 @@ namespace CalamityMod.Items
 
         public override void UpdateInventory(Player player)
         {
-            player.Calamity().noStupidNaturalARSpawns |= Enabled;
+            player.Calamity().disableAnahitaSpawns |= Enabled;
         }
 
         /*
@@ -68,12 +68,12 @@ namespace CalamityMod.Items
             if (state)
             {
                 //Replace with enabled texture
-                texture = ModContent.Request<Texture2D>("CalamityMod/Items/BrokenWaterFilter").Value;
+                texture = ModContent.Request<Texture2D>("CalamityMod/Items/SirenproofEarMuffs").Value;
                 spriteBatch.Draw(texture, position, null, Color.White, 0f, origin, scale, SpriteEffects.None, 0);
             }
             else
             {
-                texture = ModContent.Request<Texture2D>("CalamityMod/Items/BrokenWaterFilter").Value;
+                texture = ModContent.Request<Texture2D>("CalamityMod/Items/SirenproofEarMuffs").Value;
                 spriteBatch.Draw(texture, position, null, Color.White, 0f, origin, scale, SpriteEffects.None, 0);
             }
 
@@ -87,12 +87,12 @@ namespace CalamityMod.Items
             if (state)
             {
                 //Replace with enabled texture
-                texture = ModContent.Request<Texture2D>("CalamityMod/Items/BrokenWaterFilter").Value;
+                texture = ModContent.Request<Texture2D>("CalamityMod/Items/SirenproofEarMuffs").Value;
                 spriteBatch.Draw(texture, Item.position - Main.screenPosition, null, lightColor, 0f, Vector2.Zero, 1f, SpriteEffects.None, 0);
             }
             else
             {
-                texture = ModContent.Request<Texture2D>("CalamityMod/Items/BrokenWaterFilter").Value;
+                texture = ModContent.Request<Texture2D>("CalamityMod/Items/SirenproofEarMuffs").Value;
                 spriteBatch.Draw(texture, Item.position - Main.screenPosition, null, lightColor, 0f, Vector2.Zero, 1f, SpriteEffects.None, 0);
             }
             return false;
@@ -107,6 +107,15 @@ namespace CalamityMod.Items
             else
                 text = GetTextValue("Items.Misc.SpawnBlockersOff");
             tooltips.FindAndReplace("[STATE]", text);
+        }
+
+        public override void AddRecipes()
+        {
+            CreateRecipe().
+                AddIngredient(ItemID.FlinxFur, 2).
+                AddIngredient(ItemID.Silk, 5).
+                AddTile(TileID.Anvils).
+                Register();
         }
     }
 }
