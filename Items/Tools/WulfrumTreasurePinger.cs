@@ -3,6 +3,7 @@ using System.IO;
 using CalamityMod.Items.Materials;
 using CalamityMod.Particles;
 using CalamityMod.Systems;
+using CalamityMod.Systems.Mechanic;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria;
@@ -122,12 +123,12 @@ namespace CalamityMod.Items.Tools
 
         public override bool CanUseItem(Player player)
         {
-            return !(TilePingerSystem.tileEffects["WulfrumPing"].Active);
+            return !WulfrumPingTileEffect.Instance.Active;
         }
 
         public override bool? UseItem(Player player)
         {
-            if (TilePingerSystem.AddPing("WulfrumPing", player.Center, player))
+            if (TilePingerSystem.AddPing(WulfrumPingTileEffect.EffectName, player.Center, player))
             {
                 if (player.name != "John Wulfrum")
                     usesLeft--;
