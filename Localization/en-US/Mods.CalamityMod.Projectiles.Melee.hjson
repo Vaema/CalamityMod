@@ -163,10 +163,10 @@ LightningThing.DisplayName: Lightning
 LightspeedDashHitbox.DisplayName: Lightspeed Rupture
 LightspeedHoldout.DisplayName: Lightspeed
 LightspeedM1Hitbox.DisplayName: Lightspeed Stab
-LucreciaProj.DisplayName: Lucrecia
-LucreciaDNATrailCreator.DisplayName: Lucrecia DNA
-LucreciaDoubleHelix.DisplayName: Lucrecia Helix Comet
-LucreciaSmallProjectile.DisplayName: Lucrecia
+LucreciaDNATrailCreator.DisplayName: Darklight Comet Trail
+LucreciaDoubleHelix.DisplayName: Darklight Comet
+LucreciaHoldout.DisplayName: Lucrecia Holdout
+LucreciaShard.DisplayName: Lucrecia Shard
 LuxorsGiftMelee.DisplayName: Luxor's Melee
 MantisClawHoldout.DisplayName: Mantis Claw
 MantisClawJet.DisplayName: Mantis Claw Jet
@@ -313,3 +313,4 @@ WulfrumScrew.DisplayName: Wulfrum Screw
 WulfrumScrewdriverProj.DisplayName: Wulfrum Screwdriver
 YinYoDark.DisplayName: Dark Shard
 YinYoLight.DisplayName: Light Shard
+LucreciaBolt.DisplayName: Lucrecia Bolt

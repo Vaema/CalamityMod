@@ -286,10 +286,10 @@ namespace CalamityMod.CalPlayer
         public int deadSunCounter = 6;
         public int DragonsBreathAudioCooldown = 0;
         public int DragonsBreathAudioCooldown2 = 0;
-        public int lucreciaEnergy = 0;
-        public int lucreciaEnergyTimer = 0;
-        public bool lucreciaEnergyPaused = false;
-        public bool lucreciaEnergyMaxSFXPlayed = false;
+        public int darklightEnergy = 0;
+        public int darklightEnergyTimer = 0;
+        public bool darklightEnergyPaused = false;
+        public bool darklightEnergyMaxFXPlayed = false;
         private int lucreciaParticleTimer = 0;
         public int elementalMastery = 0;
         public int elementalMasteryTimer = 0;
@@ -3256,7 +3256,7 @@ namespace CalamityMod.CalPlayer
             burningSeaBurnOut = 0;
             flareGunOverheat = 0;
             hellbornShots = 0;
-            lucreciaEnergy = 0;
+            darklightEnergy = 0;
             elementalMastery = 0;
             garandShots = 0;
             persecutedEnchantSummonTimer = 0;

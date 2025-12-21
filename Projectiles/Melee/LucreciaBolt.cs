@@ -14,7 +14,7 @@ using static Terraria.ModLoader.ModContent;
 
 namespace CalamityMod.Projectiles.Melee
 {
-    public class LucreciaSmallProjectile : ModProjectile, ILocalizedModType
+    public class LucreciaBolt : ModProjectile, ILocalizedModType
     {
         public new string LocalizationCategory => "Projectiles.Melee";
         public override string Texture => "CalamityMod/Projectiles/InvisibleProj";
@@ -97,12 +97,6 @@ namespace CalamityMod.Projectiles.Melee
             
             // Flag set for fading out
             Projectile.ai[1] = 1f;
-        }
-
-        public override void OnKill(int timeLeft)
-        {
-            SoundStyle projectile = new("CalamityMod/Sounds/Item/LucreciaBoltImpact");
-            SoundEngine.PlaySound(projectile with { Volume = 0.9f, Pitch = Main.rand.NextFloat(-0.06f, 0.1f) }, Projectile.Center);
         }
 
         public override Color? GetAlpha(Color lightColor) => Color.Lerp(Color.MediumPurple, Color.CornflowerBlue, 0.5f) with { A = 0 } * Projectile.Opacity;

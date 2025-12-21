@@ -386,50 +386,61 @@ namespace CalamityMod.CalPlayer
                 Lighting.AddLight(Player.Center, Color.MediumOrchid.ToVector3());
             }
 
-            if (Player.HeldItem.type == ModContent.ItemType<Lucrecia>() && lucreciaEnergy > 0)
+            if (Player.HeldItem.type == ModContent.ItemType<Lucrecia>() && darklightEnergy > 0)
             {
-                if (lucreciaEnergy == Lucrecia.MaxEnergy && !lucreciaEnergyPaused)
+                if (darklightEnergy == Lucrecia.MaxEnergy && !darklightEnergyPaused)
                 {
-                    lucreciaEnergyPaused = true;
-                    lucreciaEnergyTimer = 0;
+                    darklightEnergyPaused = true;
+                    darklightEnergyTimer = 0;
                 }
 
-                lucreciaEnergyTimer++;
+                darklightEnergyTimer++;
 
                 // If the energy is at max, pause for 180 ticks
-                if (lucreciaEnergyPaused)
+                if (darklightEnergyPaused)
                 {
-                    if (lucreciaEnergyTimer >= 1 && !lucreciaEnergyMaxSFXPlayed)
+                    if (darklightEnergyTimer >= 1 && !darklightEnergyMaxFXPlayed)
                     {
-                        SoundEngine.PlaySound(SoundID.Item79 with { Volume = 1.6f, Pitch = 0.4f }, Player.Center);
-                        lucreciaEnergyMaxSFXPlayed = true;
+                        SoundStyle maxEnergyReached = new("CalamityMod/Sounds/Custom/AbilitySounds/DarklightEnergyCharged");
+                        SoundEngine.PlaySound(maxEnergyReached with { Volume = 0.9f }, Player.Center);
 
+                        for (int i = 0; i < 10; i++) // Circular ring of particles burst from player
+                        {
+                            float angle = MathHelper.TwoPi * (i / 10f);
+                            Vector2 spawnDirection = angle.ToRotationVector2();
+                            Vector2 velocity = spawnDirection * 14f;
+
+                            CritSpark spark = new CritSpark(Player.Center + spawnDirection * 3f, velocity, Color.Lerp(Color.CornflowerBlue, Color.MediumPurple, Main.rand.NextFloat(1f)), Color.White * 0.33f, 1.2f, 12, 0.3f, 1.2f);
+                            GeneralParticleHandler.SpawnParticle(spark);
+                        }
+                        darklightEnergyMaxFXPlayed = true;
                     }
+
                     // If the pause is Done, resume decrementing.
-                    if (lucreciaEnergyTimer >= 180)
+                    if (darklightEnergyTimer >= 180)
                     {
-                        lucreciaEnergyPaused = false;
-                        lucreciaEnergyTimer = 0;
-                        lucreciaEnergy--;
+                        darklightEnergyPaused = false;
+                        darklightEnergyTimer = 0;
+                        darklightEnergy--;
                     }
                 }
                 else // Decrementing
                 {
-                    lucreciaEnergyMaxSFXPlayed = false;
+                    darklightEnergyMaxFXPlayed = false;
                     // Once every 20 ticks
-                    if (lucreciaEnergyTimer >= 20)
+                    if (darklightEnergyTimer >= 20)
                     {
-                        lucreciaEnergy--;
-                        lucreciaEnergyTimer = 0;
+                        darklightEnergy--;
+                        darklightEnergyTimer = 0;
                     }
                 }
             }
             else
             {
                 // Reset all energy variables when not holding the weapon
-                lucreciaEnergyTimer = 0;
-                lucreciaEnergyPaused = false;
-                lucreciaEnergy = 0;
+                darklightEnergyTimer = 0;
+                darklightEnergyPaused = false;
+                darklightEnergy = 0;
             }
 
             if (Player.HeldItem.type == ModContent.ItemType<Lightspeed>() && elementalMastery > 0)
@@ -447,9 +458,19 @@ namespace CalamityMod.CalPlayer
                 {
                     if (elementalMasteryTimer >= 1 && !elementalMasterySFXPlayed)
                     {
-                        SoundEngine.PlaySound(SoundID.Item79 with { Volume = 1.6f, Pitch = 0.4f }, Player.Center);
-                        elementalMasterySFXPlayed = true;
+                        SoundStyle maxEnergyReached = new("CalamityMod/Sounds/Custom/AbilitySounds/DarklightEnergyCharged");
+                        SoundEngine.PlaySound(maxEnergyReached with { Volume = 0.9f }, Player.Center);
 
+                        for (int i = 0; i < 10; i++) // Circular ring of particles burst from player
+                        {
+                            float angle = MathHelper.TwoPi * (i / 10f);
+                            Vector2 spawnDirection = angle.ToRotationVector2();
+                            Vector2 velocity = spawnDirection * 14f;
+
+                            CritSpark spark = new CritSpark(Player.Center + spawnDirection * 3f, velocity, Color.Lerp(Color.CornflowerBlue, Color.MediumPurple, Main.rand.NextFloat(1f)), Color.White * 0.33f, 1.2f, 12, 0.3f, 1.2f);
+                            GeneralParticleHandler.SpawnParticle(spark);
+                        }
+                        elementalMasterySFXPlayed = true;
                     }
                     // If the pause is Done, resume decrementing.
                     if (elementalMasteryTimer >= 180)
@@ -4478,7 +4499,7 @@ namespace CalamityMod.CalPlayer
             int lucreciaItemID = ModContent.ItemType<Lucrecia>();
             int lightspeedItemID = ModContent.ItemType<Lightspeed>();
 
-            if (Player.HeldItem.type == lucreciaItemID && lucreciaEnergy > 0)
+            if (Player.HeldItem.type == lucreciaItemID && darklightEnergy > 0)
             {
                 lucreciaParticleTimer--;
 
@@ -4486,7 +4507,7 @@ namespace CalamityMod.CalPlayer
                 if (lucreciaParticleTimer <= 0)
                 {
                     // Reset the timer (spawn rate depends on energy)
-                    lucreciaParticleTimer = (int)(20 - 15 * (lucreciaEnergy / 60));
+                    lucreciaParticleTimer = (int)(20 - 15 * (darklightEnergy / 60));
 
                     float radius = Main.rand.NextFloat(160f, 190f); // Distance from center
                     float spawnAngle = Main.rand.NextFloat(MathHelper.TwoPi); // Random angle along the whole radius
@@ -4494,13 +4515,13 @@ namespace CalamityMod.CalPlayer
                     Vector2 spawnPosition = Player.Center + spawnAngle.ToRotationVector2() * radius;
 
                     // Scale opacity with energy
-                    float opacity = lucreciaEnergy / (float)Lucrecia.MaxEnergy;
+                    float opacity = darklightEnergy / (float)Lucrecia.MaxEnergy;
                     Color color = Main.rand.NextBool() ? Color.MediumPurple : Color.CornflowerBlue;
-                    color *= opacity;
+                    color *= opacity * 0.5f;
 
-                    if (lucreciaEnergy >= 100)
+                    if (darklightEnergy >= 100)
                     {
-                        color *= 1.6f; // Brighter
+                        color *= 2.4f; // Way brighter
                     }
 
                     Vector2 dummyVelocity = Vector2.Zero; // We dont want the argument where this is used to have influence on the actual path
@@ -4529,11 +4550,11 @@ namespace CalamityMod.CalPlayer
                     // Scale opacity with energy
                     float opacity = elementalMastery / (float)Lightspeed.MaxEnergy;
                     Color color = Main.rand.NextBool() ? Color.Aqua : Color.OrangeRed;
-                    color *= opacity;
+                    color *= opacity * 0.5f;
 
                     if (elementalMastery >= 100)
                     {
-                        color *= 1.6f; // Brighter
+                        color *= 2.4f; // Way brighter
                     }
 
                     Vector2 dummyVelocity = Vector2.Zero; // We dont want the argument where this is used to have influence on the actual path
