@@ -29,7 +29,7 @@ namespace CalamityMod.Items.Potions.Alcohol
 
         public override void SetDefaults()
         {
-            Item.DefaultToFood(18, 32, ModContent.BuffType<EvergreenGinBuff>(), CalamityUtils.MinutesToFrames(8), true);
+            Item.DefaultToFood(18, 32, ModContent.BuffType<EvergreenGinBuff>(), CalamityUtils.MinutesToFrames(6), true);
 
             Item.value = Item.sellPrice(silver: 60);
             Item.rare = ItemRarityID.Lime;
@@ -37,19 +37,12 @@ namespace CalamityMod.Items.Potions.Alcohol
 
         public override void AddRecipes()
         {
-            CreateRecipe().
-                AddIngredient(ItemID.Ale).
-                AddIngredient<LivingShard>().
+            CreateRecipe(6).
+                AddIngredient(ItemID.Bottle, 6).
+                AddIngredient(ItemID.Vine, 3).
+                AddIngredient<StarblightSoot>(10).
                 AddTile(TileID.Kegs).
                 Register();
-
-            CreateRecipe().
-                AddIngredient(ItemID.BottledWater).
-                AddIngredient<BloodOrb>(5).
-                AddIngredient<LivingShard>().
-                AddTile(TileID.AlchemyTable).
-                Register()
-                .DisableDecraft();
         }
     }
 }

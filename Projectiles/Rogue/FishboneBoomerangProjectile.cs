@@ -116,7 +116,7 @@ namespace CalamityMod.Projectiles.Rogue
             for (int i = 0; i < 2; i++)
             {
                 Vector2 dustPos = Projectile.Center + (i * MathHelper.Pi + Projectile.rotation + MathHelper.PiOver2).ToRotationVector2() * 14f;
-                Dust dust = Dust.NewDustPerfect(dustPos, 176, (i * MathHelper.Pi + Projectile.rotation * Math.Sign(Projectile.velocity.X)).ToRotationVector2() * 3f);
+                Dust dust = Dust.NewDustPerfect(dustPos, DustID.BubbleBurst_Blue, (i * MathHelper.Pi + Projectile.rotation * Math.Sign(Projectile.velocity.X)).ToRotationVector2() * 3f);
                 dust.noGravity = true;
             }
 
@@ -151,7 +151,7 @@ namespace CalamityMod.Projectiles.Rogue
 
                 for (int j = 0; j < 4; j++)
                 {
-                    Dust dust = Dust.NewDustPerfect(Projectile.Center + streakRotation.ToRotationVector2() * (2f + 0.4f * j), 176, streakRotation.ToRotationVector2() * (0.6f * j + 3f), Scale: 1.4f);
+                    Dust dust = Dust.NewDustPerfect(Projectile.Center + streakRotation.ToRotationVector2() * (2f + 0.4f * j), DustID.BubbleBurst_Blue, streakRotation.ToRotationVector2() * (0.6f * j + 3f), Scale: 1.4f);
                     dust.noGravity = true;
                 }
             }

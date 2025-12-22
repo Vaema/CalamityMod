@@ -106,7 +106,7 @@ namespace CalamityMod.Projectiles.Ranged
 
                 for (int i = 0; i < 2; i++)
                 {
-                    Dust dust = Dust.NewDustPerfect(position, 303, velocity * 0.5f, 200, default, Main.rand.NextFloat(0.9f, 1.3f));
+                    Dust dust = Dust.NewDustPerfect(position, DustID.SteampunkSteam, velocity * 0.5f, 200, default, Main.rand.NextFloat(0.9f, 1.3f));
                     dust.noGravity = false;
                 }
             }
@@ -143,16 +143,19 @@ namespace CalamityMod.Projectiles.Ranged
             }
 
             // Spawns the projectile.
-            Projectile.NewProjectile(
-                Projectile.GetSource_FromThis(),
-                GunTipPosition,
-                projectileVelocity.RotatedByRandom(isRMB ? 0f : MathHelper.PiOver4) * projSpeed * (isRMB ? 1f : Main.rand.NextFloat(0.8f, 1f)),
-                isRMB ? ProjectileType<ScorpioLargeRocket>() : ProjectileType<ScorpioRocket>(),
-                damage,
-                knockback,
-                Projectile.owner,
-                rocketType,
-                projSpeed);
+            if (Main.myPlayer == Projectile.owner)
+            {
+                Projectile.NewProjectile(
+                    Projectile.GetSource_FromThis(),
+                    GunTipPosition,
+                    projectileVelocity.RotatedByRandom(isRMB ? 0f : MathHelper.PiOver4) * projSpeed * (isRMB ? 1f : Main.rand.NextFloat(0.8f, 1f)),
+                    isRMB ? ProjectileType<ScorpioLargeRocket>() : ProjectileType<ScorpioRocket>(),
+                    damage,
+                    knockback,
+                    Projectile.owner,
+                    rocketType,
+                    projSpeed);
+            }
 
             // Inside here go all the things that dedicated servers shouldn't spend resources on.
             // Like visuals and sounds.

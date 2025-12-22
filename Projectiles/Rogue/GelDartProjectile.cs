@@ -1,5 +1,4 @@
 ﻿using System;
-using CalamityMod.Items.Weapons.Rogue;
 using CalamityMod.Projectiles.Typeless;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;

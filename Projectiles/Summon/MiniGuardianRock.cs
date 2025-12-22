@@ -1,6 +1,7 @@
 ﻿using System;
 using CalamityMod.Buffs.Summon.Whips;
 using CalamityMod.Dusts;
+using CalamityMod.NPCs.ProfanedGuardians;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria;
@@ -109,7 +110,7 @@ namespace CalamityMod.Projectiles.Summon
             var dye = Owner?.cMinion ?? 0;
             bool psc = Owner.Calamity().profanedCrystalBuffs;
             int rockType = (int)MathHelper.Clamp(Projectile.ai[2], 1f, 6f); ;
-            Texture2D texture = ModContent.Request<Texture2D>("CalamityMod/NPCs/ProfanedGuardians/ProfanedRocks" + rockType.ToString()).Value;
+            Texture2D texture = ProfanedRocks.Textures[rockType - 1].Value;
 
             Vector2 drawOrigin = new Vector2(texture.Width / 2, texture.Height / 2);
             Vector2 drawPos = Projectile.Center - Main.screenPosition;

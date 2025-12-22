@@ -1,5 +1,4 @@
 ﻿using CalamityMod.Tiles.FurnitureExo;
-using Terraria.ID;
 using Terraria.ModLoader;
 
 namespace CalamityMod.Items.Placeables.FurnitureExo

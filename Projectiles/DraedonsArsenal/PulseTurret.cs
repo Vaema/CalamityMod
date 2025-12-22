@@ -94,7 +94,7 @@ namespace CalamityMod.Projectiles.DraedonsArsenal
                         if (!Main.dedServ)
                         {
                             for (int i = 0; i < 12; i++)
-                                Dust.NewDustPerfect(shootPosition, 173).scale = Main.rand.NextFloat(1.4f, 1.8f);
+                                Dust.NewDustPerfect(shootPosition, DustID.ShadowbeamStaff).scale = Main.rand.NextFloat(1.4f, 1.8f);
                         }
 
                         Projectile.ai[1] = 15f;

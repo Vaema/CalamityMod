@@ -31,7 +31,7 @@ namespace CalamityMod.Items.Weapons.DraedonsArsenal
 
             Item.width = 26;
             Item.height = 26;
-            Item.damage = 980;
+            Item.damage = 1350;
             Item.DamageType = DamageClass.MeleeNoSpeed;
             Item.useTime = 24;
             Item.useAnimation = 24;

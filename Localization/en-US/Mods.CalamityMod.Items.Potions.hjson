@@ -36,6 +36,15 @@ BlasphemousDonut: {
 		'''
 }
 
+BottledPanacea: {
+	DisplayName: Bottled Panacea
+	Tooltip:
+		'''
+		Cures you of all sickness and electricity debuffs when consumed
+		This has a 30 second cooldown
+		'''
+}
+
 BoundingPotion: {
 	DisplayName: Bounding Potion
 	Tooltip: "{0}% increased jump speed and {1}% increased jump height"
@@ -284,7 +293,6 @@ OddMushroom: {
 	Tooltip:
 		'''
 		Causes you to see many fake, vibrant copies of all nearby entities
-		These effects become more potent as you consume more shrooms
 		[c/FF232C:These visual effects may be nauseating or otherwise bad for some]
 		'Trippy'
 		'''
@@ -391,7 +399,7 @@ WhiteWine: {
 	Tooltip:
 		'''
 		You regain flight time the closer you are to an enemy
-		      {0}% reduced flight time
+		{0}% reduced flight time
 		{$Common.AlcoholWarning}
 		'''
 }

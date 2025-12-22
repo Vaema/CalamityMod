@@ -1,13 +1,10 @@
-﻿using CalamityMod.Buffs.DamageOverTime;
-using CalamityMod.CalPlayer;
-using CalamityMod.Items.Materials;
+﻿using CalamityMod.Items.Materials;
 using CalamityMod.Projectiles.BaseProjectiles;
 using CalamityMod.Projectiles.Melee;
 using CalamityMod.Rarities;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria;
-using Terraria.Audio;
 using Terraria.ID;
 using Terraria.ModLoader;
 
@@ -26,7 +23,7 @@ namespace CalamityMod.Items.Weapons.Melee
             Item.width = 90;
             Item.height = 90;
             Item.damage = 1005;
-            Item.DamageType = DamageClass.Melee;
+            Item.DamageType = TrueMeleeDamageClass.Instance;
             Item.useAnimation = 30;
             Item.useStyle = ItemUseStyleID.Swing;
             Item.useTime = 30;

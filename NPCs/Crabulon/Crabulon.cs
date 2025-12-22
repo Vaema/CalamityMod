@@ -1,12 +1,10 @@
 ﻿using System;
 using System.IO;
-using CalamityMod.Buffs.Alcohol;
 using CalamityMod.Events;
-using CalamityMod.Items.Accessories;
 using CalamityMod.Items.Armor.Vanity;
 using CalamityMod.Items.LoreItems;
 using CalamityMod.Items.Placeables.Furniture.BossRelics;
-using CalamityMod.Items.Placeables.Furniture.DevPaintings;
+using CalamityMod.Items.Placeables.Furniture.Paintings;
 using CalamityMod.Items.Placeables.Furniture.Trophies;
 using CalamityMod.Items.Potions.Alcohol;
 using CalamityMod.Items.TreasureBags;
@@ -34,7 +32,6 @@ namespace CalamityMod.NPCs.Crabulon
     [AutoloadBossHead]
     public class Crabulon : ModNPC
     {
-        private int biomeEnrageTimer = CalamityGlobalNPC.biomeEnrageTimerMax;
         private bool stomping = false;
         private const float TelegraphTimeBeforeBigJump = 20f;
         private const float DelayBeforeBigJump = 50f;
@@ -83,7 +80,7 @@ namespace CalamityMod.NPCs.Crabulon
             NPC.width = 196;
             NPC.height = 196;
             NPC.defense = 8;
-            NPC.LifeMaxNERB(3700, 4400, 500000);
+            NPC.LifeMaxNERB(3500, 4400, 500000);
             NPC.aiStyle = -1;
             AIType = -1;
             NPC.noGravity = false;
@@ -115,14 +112,12 @@ namespace CalamityMod.NPCs.Crabulon
 
         public override void SendExtraAI(BinaryWriter writer)
         {
-            writer.Write(biomeEnrageTimer);
             writer.Write(NPC.localAI[0]);
             writer.Write(stomping);
         }
 
         public override void ReceiveExtraAI(BinaryReader reader)
         {
-            biomeEnrageTimer = reader.ReadInt32();
             NPC.localAI[0] = reader.ReadSingle();
             stomping = reader.ReadBoolean();
         }
@@ -250,7 +245,7 @@ namespace CalamityMod.NPCs.Crabulon
                 // Avoid cheap bullshit
                 NPC.damage = 0;
 
-                float walkingVelocity = death ? (5f + 2f * (1f - lifeRatio)) : expertMode ? 5f : 3.5f;
+                float walkingVelocity = death ? (5f + 1f * (1f - lifeRatio)) : expertMode ? 5f : 3.5f;
                 if (phase2)
                     walkingVelocity += 0.5f;
                 if (phase3)
@@ -328,7 +323,7 @@ namespace CalamityMod.NPCs.Crabulon
                 if (NPC.Distance(player.Center) < 160f)
                     NPC.ai[1] += death ? 4f : expertMode ? 2f : 1f;
 
-                float stompPhaseGateValue = (revenge ? 150f : expertMode ? 240f : 360f) - (death ? 90f * (1f - lifeRatio) : 0f);
+                float stompPhaseGateValue = (revenge ? 150f : expertMode ? 240f : 360f) - (death ? 60f * (1f - lifeRatio) : 0f);
                 if (NPC.ai[1] >= stompPhaseGateValue)
                 {
                     NPC.noGravity = false;
@@ -1185,7 +1180,8 @@ namespace CalamityMod.NPCs.Crabulon
                 normalOnly.Add(DropHelper.CalamityStyle(DropHelper.NormalWeaponDropRateFraction, weapons));
 
                 // Equipment
-                normalOnly.Add(DropHelper.PerPlayer(ModContent.ItemType<FungalClump>()));
+                // 16NOV2025: Ozzatron: item has been chosen as the "Expert gatekept" item for this Calamity boss
+                // normalOnly.Add(DropHelper.PerPlayer(ModContent.ItemType<FungalClump>()));
 
                 // Vanity
                 normalOnly.Add(ModContent.ItemType<CrabulonMask>(), 7);

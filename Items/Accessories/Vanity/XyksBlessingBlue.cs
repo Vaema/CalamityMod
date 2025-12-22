@@ -1,10 +1,7 @@
 ﻿using CalamityMod.CalPlayer;
 using CalamityMod.Items.BaseItems;
 using CalamityMod.Rarities;
-using Microsoft.Xna.Framework;
 using Terraria;
-using Terraria.DataStructures;
-using Terraria.ID;
 using Terraria.ModLoader;
 
 namespace CalamityMod.Items.Accessories.Vanity

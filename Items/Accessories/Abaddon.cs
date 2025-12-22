@@ -1,5 +1,6 @@
 ﻿using Terraria;
 using Terraria.ID;
+using Terraria.Localization;
 using Terraria.ModLoader;
 
 namespace CalamityMod.Items.Accessories
@@ -9,7 +10,11 @@ namespace CalamityMod.Items.Accessories
     {
         public new string LocalizationCategory => "Items.Accessories";
 
-        public static int AbaddonExploDamage = 90;
+        public static int CritBoost = 8;
+        public static float BrimstoneFlamesReduction = 0.5f;
+        public static int AbaddonExploDamage = 25;
+        public override LocalizedText Tooltip => base.Tooltip.WithFormatArgs(CritBoost, BrimstoneFlamesReduction.ToPercent());
+
         public override void SetDefaults()
         {
             Item.width = 26;
@@ -22,7 +27,7 @@ namespace CalamityMod.Items.Accessories
         public override void UpdateAccessory(Player player, bool hideVisual)
         {
             player.Calamity().abaddon = true;
-            player.GetCritChance<GenericDamageClass>() += 8;
+            player.GetCritChance<GenericDamageClass>() += CritBoost;
         }
     }
 }

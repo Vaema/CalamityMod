@@ -108,12 +108,12 @@ namespace CalamityMod.Projectiles.Magic
         }
 
         public override Color? GetAlpha(Color lightColor) => Color.White;
-        public float PrimitiveWidthFunction(float completionRatio)
+        public float PrimitiveWidthFunction(float completionRatio, Vector2 vertexPos)
         {
             return (1 - completionRatio) * 20 * Projectile.scale;
         }
 
-        public Color PrimitiveColorFunction(float completionRatio)
+        public Color PrimitiveColorFunction(float completionRatio, Vector2 vertexPos)
         {
             return Color.Lerp(new Color(86, 176, 240), Color.Azure, (float)Math.Pow(completionRatio, 1.5D)) * 0.6f * Projectile.Opacity;
         }
@@ -126,7 +126,7 @@ namespace CalamityMod.Projectiles.Magic
             Main.spriteBatch.EnterShaderRegion();
 
             GameShaders.Misc["CalamityMod:ImpFlameTrail"].SetShaderTexture(ModContent.Request<Texture2D>("CalamityMod/ExtraTextures/Trails/ScarletDevilStreak"));
-            PrimitiveRenderer.RenderTrail(Projectile.oldPos, new(PrimitiveWidthFunction, PrimitiveColorFunction, (_) => Vector2.Zero, shader: GameShaders.Misc["CalamityMod:ImpFlameTrail"]), 66);
+            PrimitiveRenderer.RenderTrail(Projectile.oldPos, new(PrimitiveWidthFunction, PrimitiveColorFunction, (_,_) => Vector2.Zero, shader: GameShaders.Misc["CalamityMod:ImpFlameTrail"]), 66);
             Main.spriteBatch.ExitShaderRegion();
             Main.EntitySpriteDraw(TextureAssets.Projectile[Type].Value, Projectile.position - Main.screenPosition, null, Projectile.GetAlpha(lightColor) * Projectile.Opacity, Projectile.rotation, Projectile.getRect().Size() * 0.5f, Projectile.scale, 0, 0);
 

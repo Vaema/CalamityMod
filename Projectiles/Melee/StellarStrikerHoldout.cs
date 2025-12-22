@@ -9,7 +9,7 @@ using Microsoft.Xna.Framework.Graphics;
 using ReLogic.Content;
 using Terraria;
 using Terraria.Audio;
-using Terraria.DataStructures;
+using Terraria.ID;
 using Terraria.Localization;
 using Terraria.ModLoader;
 
@@ -206,7 +206,7 @@ namespace CalamityMod.Projectiles.Melee
 
             for (int i = 0; i < MathHelper.Clamp(10 - Projectile.numHits * 2, 2, 10); i++)
             {
-                Dust dust2 = Dust.NewDustPerfect(target.Center, 278, ((Owner.Center - Owner.Calamity().mouseWorld).SafeNormalize(Vector2.UnitY) * -20).RotatedByRandom(0.4) * Main.rand.NextFloat(0.2f, 1f));
+                Dust dust2 = Dust.NewDustPerfect(target.Center, DustID.FireworksRGB, ((Owner.Center - Owner.Calamity().mouseWorld).SafeNormalize(Vector2.UnitY) * -20).RotatedByRandom(0.4) * Main.rand.NextFloat(0.2f, 1f));
                 dust2.scale = Main.rand.NextFloat(0.55f, 0.95f);
                 dust2.noGravity = true;
                 dust2.color = Main.rand.NextBool(3) ? Color.PaleTurquoise : Color.Turquoise;
@@ -239,8 +239,11 @@ namespace CalamityMod.Projectiles.Melee
             if ((useAnim > 0 || DrawUnconditionally) && Owner.ItemAnimationActive)
             {
                 Asset<Texture2D> tex = ModContent.Request<Texture2D>(Texture);
+                Asset<Texture2D> swoosh = ModContent.Request<Texture2D>("CalamityMod/Particles/CircularSmearSmokey");
 
                 float r = FlipAsSword ? MathHelper.ToRadians(90) : 0f;
+
+                Main.EntitySpriteDraw(swoosh.Value, Owner.Center - Main.screenPosition, null, Color.Turquoise with { A = 0 } * (float)Math.Pow(fadeIn, 3), Projectile.rotation + MathHelper.PiOver4 * Owner.direction + RotationOffset * 1.75f, swoosh.Size() * 0.5f, Projectile.scale * 2f, spriteEffects != SpriteEffects.None ? spriteEffects : (FlipAsSword ? SpriteEffects.FlipHorizontally : SpriteEffects.None));
 
                 for (int i = 0; i < 25; i++)
                 {

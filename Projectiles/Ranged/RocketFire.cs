@@ -1,4 +1,6 @@
 ﻿using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
+using ReLogic.Content;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
@@ -11,11 +13,11 @@ namespace CalamityMod.Projectiles.Ranged
         public override string Texture => "CalamityMod/Projectiles/Rogue/TotalityFire";
         private bool initialized = false;
 
+        public static Asset<Texture2D> Glow;
         public override void SetStaticDefaults()
         {
             Main.projFrames[Type] = 3;
             ProjectileID.Sets.TrailCacheLength[Type] = 2;
-            ProjectileID.Sets.TrailingMode[Type] = 0;
         }
 
         public override void SetDefaults()
@@ -60,7 +62,6 @@ namespace CalamityMod.Projectiles.Ranged
             {
                 Projectile.frame = 0;
             }
-
             //movement
             if (Projectile.velocity.X != Projectile.velocity.X)
             {
@@ -99,9 +100,9 @@ namespace CalamityMod.Projectiles.Ranged
             }
 
             //dust
-            if (Main.rand.NextBool(4))
+            if (Main.rand.NextBool(3))
             {
-                int fire = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.Torch, 0f, 0f, 100, default, 1f);
+                int fire = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, Main.rand.NextBool() ? DustID.Torch : Main.rand.NextBool() ? 53 : 54, 0f, 0f, 100, default, 1f);
                 Dust dust = Main.dust[fire];
                 dust.position.X -= 2f;
                 dust.position.Y += 2f;
@@ -109,9 +110,9 @@ namespace CalamityMod.Projectiles.Ranged
                 dust.noGravity = true;
                 dust.velocity.Y -= 2f;
             }
-            if (Main.rand.NextBool(10))
+            if (Main.rand.NextBool(6))
             {
-                int fire = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.Torch, 0f, 0f, 100, default, 1f);
+                int fire = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, Main.rand.NextBool() ? DustID.Torch : Main.rand.NextBool() ? 53 : 54, 0f, 0f, 100, default, 1f);
                 Dust dust = Main.dust[fire];
                 dust.position.X -= 2f;
                 dust.position.Y += 2f;
@@ -119,6 +120,17 @@ namespace CalamityMod.Projectiles.Ranged
                 dust.noGravity = true;
                 dust.velocity *= 0.1f;
             }
+        }
+        public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
+        {
+            target.AddBuff(BuffID.Daybreak, 300);
+            target.AddBuff(BuffID.Oiled, 300);
+        }
+
+        public override void OnHitPlayer(Player target, Player.HurtInfo info)
+        {
+            target.AddBuff(BuffID.Daybreak, 300);
+            target.AddBuff(BuffID.Oiled, 300);
         }
 
         public override bool OnTileCollide(Vector2 oldVelocity)

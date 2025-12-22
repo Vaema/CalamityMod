@@ -10,6 +10,7 @@ namespace CalamityMod.Projectiles.Enemy
     public class InkPoisonCloud : ModProjectile, ILocalizedModType
     {
         public new string LocalizationCategory => "Projectiles.Enemy";
+
         public override void SetStaticDefaults()
         {
             Main.projFrames[Type] = 10;
@@ -35,6 +36,7 @@ namespace CalamityMod.Projectiles.Enemy
                 Projectile.frame++;
                 Projectile.frameCounter = 0;
             }
+
             if (Projectile.ai[0] < 180f)
             {
                 if (Projectile.frame >= 4)
@@ -42,11 +44,13 @@ namespace CalamityMod.Projectiles.Enemy
                     Projectile.frame = 0;
                 }
             }
-            if (Projectile.ai[0] > 180f)
+            else
             {
                 Projectile.damage = 0;
             }
-            else if (Projectile.frame >= Main.projFrames[Type])
+
+            // Kill the Projectile if reached end of frame
+            if (Projectile.frame >= Main.projFrames[Type])
             {
                 Projectile.Kill();
             }

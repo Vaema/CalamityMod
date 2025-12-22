@@ -1,16 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.IO;
 using CalamityMod.NPCs.Abyss;
-using CalamityMod.NPCs.TownNPCs;
 using Terraria;
 
 namespace CalamityMod.Packets
 {
-    public sealed class SyncSlabCrabAIPacket : CalamityPacket
+    internal sealed class SyncSlabCrabAIPacket : CalamityPacket
     {
         public static SyncSlabCrabAIPacket Instance { get; private set; }
 

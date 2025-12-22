@@ -1,9 +1,6 @@
 ﻿using System;
 using CalamityMod.Buffs.StatBuffs;
-using CalamityMod.Buffs.StatDebuffs;
-using CalamityMod.DataStructures;
 using CalamityMod.Particles;
-using Microsoft.CodeAnalysis;
 using Microsoft.Xna.Framework;
 using Terraria.Audio;
 using Terraria;
@@ -79,10 +76,10 @@ namespace CalamityMod.Projectiles.Magic
                             for (int i = 0; i < Dusts; i++)
                             {
                                 Vector2 dustVelocity = spinningPoint.RotatedBy(radians * i) * 12.5f;
-                                Dust dust = Dust.NewDustPerfect(player.Center, 262, dustVelocity, 0, default, 0.9f);
+                                Dust dust = Dust.NewDustPerfect(player.Center, DustID.AmberBolt, dustVelocity, 0, default, 0.9f);
                                 dust.noGravity = true;
 
-                                Dust dust2 = Dust.NewDustPerfect(player.Center, 262, dustVelocity * 0.6f, 0, default, 1.2f);
+                                Dust dust2 = Dust.NewDustPerfect(player.Center, DustID.AmberBolt, dustVelocity * 0.6f, 0, default, 1.2f);
                                 dust2.noGravity = true;
                             }
                             SoundStyle buff = new("CalamityMod/Sounds/Custom/Ravager/RavagerPillarSummon");
@@ -177,7 +174,7 @@ namespace CalamityMod.Projectiles.Magic
             if (Projectile.ai[1] == 1)
             {
                 Player Owner = Main.player[Projectile.owner];
-                Owner.Calamity().GeneralScreenShakePower = 5f;
+                Owner.SetScreenshake(5f);
 
                 Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center, Vector2.Zero, ModContent.ProjectileType<PrimordialEarthExplosion>(), (int)(Projectile.damage * 2.5f), 0, Projectile.owner);
                 SoundStyle explo = new("CalamityMod/Sounds/Item/MagicRockImpact");

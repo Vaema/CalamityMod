@@ -1,5 +1,4 @@
 ﻿using CalamityMod.Projectiles.Rogue;
-using log4net.Core;
 using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.Audio;

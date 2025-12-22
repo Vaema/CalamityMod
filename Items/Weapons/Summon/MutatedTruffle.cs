@@ -34,20 +34,19 @@ namespace CalamityMod.Items.Weapons.Summon
         public override void SetStaticDefaults()
         {
             ItemID.Sets.StaffMinionSlotsRequired[Type] = 3f;
-            ItemID.Sets.ShimmerTransformToItem[Type] = ModContent.ItemType<ToxicantTwister>();
         }
 
         public override void SetDefaults()
         {
             Item.width = 24;
             Item.height = 26;
-            Item.damage = 275;
+            Item.damage = 250;
             Item.DamageType = DamageClass.Summon;
             Item.buffType = ModContent.BuffType<MutatedTruffleBuff>();
             Item.shoot = ModContent.ProjectileType<MutatedTruffleMinion>();
             Item.knockBack = 5f;
 
-            Item.useAnimation = Item.useTime = 10;
+            Item.useAnimation = Item.useTime = 24;
             Item.mana = 10;
             Item.noMelee = true;
             Item.useStyle = ItemUseStyleID.HoldUp;

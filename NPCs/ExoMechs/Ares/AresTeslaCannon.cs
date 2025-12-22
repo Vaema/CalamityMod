@@ -83,7 +83,7 @@ namespace CalamityMod.NPCs.ExoMechs.Ares
             }
         }
 
-        public static int OrbDamage = 85; // 340
+        public static int OrbDamage = 80; // 320
 
         public override void SetDefaults()
         {
@@ -93,7 +93,7 @@ namespace CalamityMod.NPCs.ExoMechs.Ares
             NPC.height = 108;
             NPC.defense = 100;
             NPC.DR_NERD(0.35f);
-            NPC.LifeMaxNERB(1250000, 1495000, 650000);
+            NPC.LifeMaxNERB(1000000, 1495000, 650000);
             NPC.aiStyle = -1;
             AIType = -1;
             NPC.Opacity = 0f;

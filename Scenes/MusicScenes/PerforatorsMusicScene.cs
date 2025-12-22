@@ -1,5 +1,4 @@
 ﻿using CalamityMod.NPCs.Perforator;
-using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
 

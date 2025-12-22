@@ -6,10 +6,7 @@ using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
 using System;
-using CalamityMod.Items.Weapons.Melee;
-using CalamityMod.Projectiles.Boss;
 using Terraria.Audio;
-using CalamityMod.Items.Weapons.Rogue;
 using CalamityMod.Items.Weapons.Magic;
 
 namespace CalamityMod.Items.Weapons.Ranged
@@ -22,7 +19,6 @@ namespace CalamityMod.Items.Weapons.Ranged
         {
             ItemID.Sets.IsRangedSpecialistWeapon[Type] = true;
             ItemID.Sets.ItemsThatAllowRepeatedRightClick[Type] = true;
-            ItemID.Sets.ShimmerTransformToItem[Type] = ModContent.ItemType<VitriolicViper>();
         }
         public override void SetDefaults()
         {
@@ -62,7 +58,7 @@ namespace CalamityMod.Items.Weapons.Ranged
                 SoundStyle fire = new("CalamityMod/Sounds/Item/GunShotMid");
                 SoundEngine.PlaySound(fire with { Volume = 0.7f, Pitch = Main.rand.NextFloat(0.7f, 0.8f) }, position);
                 if (pulled)
-                    player.Calamity().GeneralScreenShakePower = 5.5f;
+                    player.SetScreenshake(5.5f);
             }
             else
             {

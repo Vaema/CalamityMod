@@ -1,12 +1,11 @@
 ﻿using CalamityMod.Buffs.Summon;
 using CalamityMod.ExtraJumps;
 using CalamityMod.Items.Materials;
-using CalamityMod.Items.Potions.Alcohol;
 using CalamityMod.Projectiles.Summon;
-using CalamityMod.Tiles.Furniture.CraftingStations;
 using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.ID;
+using Terraria.Localization;
 using Terraria.ModLoader;
 
 namespace CalamityMod.Items.Armor.Statigel
@@ -17,11 +16,12 @@ namespace CalamityMod.Items.Armor.Statigel
     {
         public new string LocalizationCategory => "Items.Armor.PreHardmode";
 
-        public static float SummonKBBoost = 1.5f;
+        public static int MinionSlotBoost = 1;
+        public static float SummonDamageBoost = 0.05f;
+        public override LocalizedText Tooltip => base.Tooltip.WithFormatArgs(MinionSlotBoost, SummonDamageBoost.ToPercent());
 
         // Set Bonus
-        public static int SetBonusMinionSlotBoost = 1;
-        public static float SetBonusSummonDamageBoost = 0.18f;
+        public static float SetBonusSummonDamageBoost = 0.15f;
         public static int SlimeDamage = 18;
 
         public override void SetDefaults()
@@ -33,15 +33,11 @@ namespace CalamityMod.Items.Armor.Statigel
             Item.defense = 4; //20
         }
 
-        public override bool IsArmorSet(Item head, Item body, Item legs)
-        {
-            return body.type == ModContent.ItemType<StatigelArmor>() && legs.type == ModContent.ItemType<StatigelGreaves>();
-        }
+        public override bool IsArmorSet(Item head, Item body, Item legs) => body.type == ModContent.ItemType<StatigelArmor>() && legs.type == ModContent.ItemType<StatigelGreaves>();
 
         public override void UpdateArmorSet(Player player)
         {
-            player.setBonus = this.GetLocalization("SetBonus").Format(SetBonusMinionSlotBoost, SetBonusSummonDamageBoost.ToPercent())
-            + "\n" + CalamityUtils.GetTextFromModItem<StatigelArmor>("CommonSetBonus").Format(StatigelArmor.SetBonusHurtDamageThreshold, StatigelArmor.SetBonusJumpSpeedBoost.ToJumpSpeedPercent());
+            player.setBonus = this.GetLocalization("SetBonus").Format(SetBonusSummonDamageBoost.ToPercent(), StatigelArmor.SetBonusJumpSpeedBoost.ToJumpSpeedPercent());
             var modPlayer = player.Calamity();
             modPlayer.statigelSet = true;
             modPlayer.slimeGod = true;
@@ -49,7 +45,6 @@ namespace CalamityMod.Items.Armor.Statigel
             Player.jumpHeight += (int)(StatigelArmor.SetBonusJumpHeightPercentBoost * 15);
             player.jumpSpeedBoost += StatigelArmor.SetBonusJumpSpeedBoost;
             player.GetDamage<SummonDamageClass>() += SetBonusSummonDamageBoost;
-            player.maxMinions += SetBonusMinionSlotBoost;
             if (player.whoAmI == Main.myPlayer)
             {
                 var source = player.GetSource_Accessory(Item);
@@ -71,7 +66,11 @@ namespace CalamityMod.Items.Armor.Statigel
             }
         }
 
-        public override void UpdateEquip(Player player) => player.GetKnockback<SummonDamageClass>() += SummonKBBoost;
+        public override void UpdateEquip(Player player)
+        {
+            player.maxMinions += MinionSlotBoost;
+            player.GetDamage<SummonDamageClass>() += SummonDamageBoost;
+        }
 
         public override void AddRecipes()
         {

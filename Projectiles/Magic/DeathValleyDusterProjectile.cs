@@ -1,16 +1,13 @@
 ﻿using System;
 using CalamityMod.Buffs.StatBuffs;
-using CalamityMod.Buffs.StatDebuffs;
-using CalamityMod.DataStructures;
 using CalamityMod.Particles;
-using Microsoft.CodeAnalysis;
 using Microsoft.Xna.Framework;
 using Terraria.Audio;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
 using System.Collections.Generic;
-using CalamityMod.Items.Placeables.FurnitureMarnite;
+
 namespace CalamityMod.Projectiles.Magic
 {
     public class DeathValleyDusterProjectile : ModProjectile, ILocalizedModType
@@ -69,10 +66,10 @@ namespace CalamityMod.Projectiles.Magic
                             for (int i = 0; i < Dusts; i++)
                             {
                                 Vector2 dustVelocity = spinningPoint.RotatedBy(radians * i) * 12.5f;
-                                Dust dust = Dust.NewDustPerfect(player.Center, 262, dustVelocity, 0, default, 0.9f);
+                                Dust dust = Dust.NewDustPerfect(player.Center, DustID.AmberBolt, dustVelocity, 0, default, 0.9f);
                                 dust.noGravity = true;
 
-                                Dust dust2 = Dust.NewDustPerfect(player.Center, 262, dustVelocity * 0.6f, 0, default, 1.2f);
+                                Dust dust2 = Dust.NewDustPerfect(player.Center, DustID.AmberBolt, dustVelocity * 0.6f, 0, default, 1.2f);
                                 dust2.noGravity = true;
                             }
 
@@ -158,7 +155,7 @@ namespace CalamityMod.Projectiles.Magic
             if (Projectile.numHits == 0)
             {
                 Player Owner = Main.player[Projectile.owner];
-                Owner.Calamity().GeneralScreenShakePower = 3.5f;
+                Owner.SetScreenshake(3.5f);
                 damageMult += 0.5f;
                 for (int i = 0; i < 3; i++)
                     SoundEngine.PlaySound(SoundID.DD2_MonkStaffGroundImpact with { Volume = 0.9f, Pitch = -0.4f + i * 0.25f, MaxInstances = 3 }, Projectile.Center);

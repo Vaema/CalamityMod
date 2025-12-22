@@ -1,9 +1,7 @@
 ﻿using System;
-using System.Runtime.Intrinsics.X86;
 using CalamityMod.Buffs.DamageOverTime;
 using CalamityMod.Items.Weapons.Ranged;
 using CalamityMod.Particles;
-using Humanizer;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using ReLogic.Utilities;
@@ -28,7 +26,6 @@ namespace CalamityMod.Projectiles.Ranged
         private SlotId NorfleetRecharge;
 
         private ref float OffsetLength => ref Projectile.localAI[0];
-        private ref float loadedShots => ref Projectile.ai[2];
 
         private Player Owner;
 
@@ -52,7 +49,7 @@ namespace CalamityMod.Projectiles.Ranged
 
         public override void AI()
         {
-            Item heldItem = Owner.ActiveItem();
+            Item heldItem = Owner.HeldItem;
 
             if (Owner.dead || Owner is null)
                 Projectile.Kill();
@@ -92,7 +89,7 @@ namespace CalamityMod.Projectiles.Ranged
                 {
                     hum?.Stop();
                 }
-                if (loadedShots > 1)
+                if (Owner.Calamity().NorfleetCounter < 2)
                 {
                     ShootRocket(heldItem);
                     PostFireCooldown = PUNISHMENTMODE ? 1000 : 55;
@@ -191,6 +188,7 @@ namespace CalamityMod.Projectiles.Ranged
                 // Spawns the projectile.
                 SoundStyle fire = new("CalamityMod/Sounds/Item/NorfleetFire");
                 SoundEngine.PlaySound(fire with { Volume = 0.9f, PitchVariance = 0.25f }, Projectile.Center);
+                Owner.Calamity().NorfleetCounter++;
 
                 for (int i = 0; i < 3; i++)
                 {
@@ -264,7 +262,7 @@ namespace CalamityMod.Projectiles.Ranged
                 Particle smoke = new HeavySmokeParticle(tipPosition, smokeVel, PUNISHMENTMODE ? Color.Red : StaticEffectsColor, Main.rand.Next(40, 60 + 1), Main.rand.NextFloat(0.3f, 0.6f), 0.5f, Main.rand.NextFloat(-0.2f, 0.2f), Main.rand.NextBool(), required: true);
                 GeneralParticleHandler.SpawnParticle(smoke);
 
-                Dust dust = Dust.NewDustPerfect(tipPosition, 303, smokeVel.RotatedByRandom(0.1f), 80, default, Main.rand.NextFloat(0.4f, 1.3f));
+                Dust dust = Dust.NewDustPerfect(tipPosition, DustID.SteampunkSteam, smokeVel.RotatedByRandom(0.1f), 80, default, Main.rand.NextFloat(0.4f, 1.3f));
                 dust.noGravity = false;
                 dust.color = PUNISHMENTMODE ? Color.Red : Color.White;
             }
@@ -306,7 +304,7 @@ namespace CalamityMod.Projectiles.Ranged
                 if (PostFireCooldown > 15)
                 {
                     Vector2 dustVel = Projectile.velocity.RotatedByRandom(100) * Main.rand.NextFloat(5.1f, 25.8f);
-                    Dust dust = Dust.NewDustPerfect(tipPosition + dustVel * 5, 267, -dustVel * 0.5f, 0, default, Main.rand.NextFloat(0.5f, 1f));
+                    Dust dust = Dust.NewDustPerfect(tipPosition + dustVel * 5, DustID.RainbowMk2, -dustVel * 0.5f, 0, default, Main.rand.NextFloat(0.5f, 1f));
                     dust.noGravity = true;
                     dust.color = mainColor;
                 }
@@ -328,6 +326,12 @@ namespace CalamityMod.Projectiles.Ranged
         {
             Owner = Main.player[Projectile.owner];
             OffsetLength = MaxOffsetLength;
+
+            if (Main.zenithWorld && Main.rand.NextBool(1000))
+            {
+                PUNISHMENTMODE = true;
+                SoundEngine.PlaySound(new SoundStyle("CalamityMod/Sounds/Item/NuhUhUh"), Owner.Center);
+            }
         }
 
         // Because we use the velocity as a direction, we don't need it to change its position.

@@ -1,9 +1,6 @@
-﻿using System.Collections.Generic;
-using CalamityMod.Sounds;
+﻿using CalamityMod.Sounds;
 using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Graphics;
 using Terraria;
-using Terraria.Audio;
 using Terraria.ID;
 using Terraria.ModLoader;
 
@@ -20,12 +17,12 @@ namespace CalamityMod.Tiles.DraedonStructures
             CalamityUtils.SetMerge(Type, ModContent.TileType<HazardChevronPanels>());
 
             HitSound = CommonCalamitySounds.PlatingMine;
-            DustType = 109;
+            DustType = DustID.Asphalt;
             MinPick = 30;
             AddMapEntry(new Color(36, 35, 37));
 
-            this.RegisterUniversalMerge(TileID.Dirt, "CalamityMod/Tiles/Merges/DirtMerge");
-            this.RegisterUniversalMerge(TileID.Stone, "CalamityMod/Tiles/Merges/StoneMerge");
+            this.RegisterBlendMergeWith(TileID.Dirt);
+            this.RegisterBlendMergeWith(TileID.Stone);
         }
 
         public override bool CanExplode(int i, int j) => false;

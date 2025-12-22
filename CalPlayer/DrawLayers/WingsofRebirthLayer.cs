@@ -1,7 +1,5 @@
-﻿using CalamityMod.Items.Accessories.Wings;
-using Microsoft.Xna.Framework;
+﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using Microsoft.Xna.Framework.Graphics.PackedVector;
 using ReLogic.Content;
 using Terraria;
 using Terraria.DataStructures;

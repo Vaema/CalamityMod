@@ -2,7 +2,6 @@
 using CalamityMod.DataStructures;
 using CalamityMod.Dusts;
 using CalamityMod.Particles;
-using CalamityMod.Projectiles.Pets;
 using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.DataStructures;

@@ -28,7 +28,7 @@ namespace CalamityMod.Items.Potions.Alcohol
 
         public override void SetDefaults()
         {
-            Item.DefaultToFood(22, 28, ModContent.BuffType<TequilaSunriseBuff>(), CalamityUtils.MinutesToFrames(5), true);
+            Item.DefaultToFood(22, 28, ModContent.BuffType<TequilaSunriseBuff>(), CalamityUtils.MinutesToFrames(6), true);
 
             Item.value = Item.sellPrice(gold: 1);
             Item.rare = ItemRarityID.Yellow;
@@ -36,19 +36,12 @@ namespace CalamityMod.Items.Potions.Alcohol
 
         public override void AddRecipes()
         {
-            CreateRecipe().
-                AddIngredient(ItemID.Ale).
-                AddIngredient<ScoriaOre>(3).
+            CreateRecipe(6).
+                AddIngredient(ItemID.Bottle, 6).
+                AddIngredient(ItemID.LightShard).
+                AddIngredient<StarblightSoot>(10).
                 AddTile(TileID.Kegs).
                 Register();
-
-            CreateRecipe().
-                AddIngredient(ItemID.BottledWater).
-                AddIngredient<BloodOrb>(5).
-                AddIngredient<ScoriaOre>().
-                AddTile(TileID.AlchemyTable).
-                Register()
-                .DisableDecraft();
         }
     }
 }

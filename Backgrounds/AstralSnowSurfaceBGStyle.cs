@@ -1,20 +1,15 @@
-﻿using Microsoft.Xna.Framework.Graphics;
-using System.Reflection;
-using System;
-using Terraria.Graphics.Effects;
-using Terraria;
-using Terraria.ModLoader;
-using Microsoft.Xna.Framework;
-using Terraria.GameContent.UI.States;
+﻿using System;
 using CalamityMod.Skies;
+using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
+using Terraria;
+using Terraria.Graphics.Effects;
+using Terraria.ModLoader;
 
 namespace CalamityMod.Backgrounds
 {
     public class AstralSnowSurfaceBGStyle : ModSurfaceBackgroundStyle
     {
-        internal static readonly FieldInfo screenOffField = typeof(Main).GetField("screenOff", BindingFlags.Instance | BindingFlags.NonPublic);
-        internal static readonly FieldInfo scAdjField = typeof(Main).GetField("scAdj", BindingFlags.Instance | BindingFlags.NonPublic);
-        internal static readonly FieldInfo COSBMAplhaField = typeof(Main).GetField("ColorOfSurfaceBackgroundsModified", BindingFlags.Static | BindingFlags.NonPublic);
         readonly int FrontBGYOffset = 275;
         readonly int CloseBGYOffset = 175;
         readonly int MiddleBGYOffset = 475;
@@ -47,9 +42,9 @@ namespace CalamityMod.Backgrounds
         public override bool PreDrawCloseBackground(SpriteBatch spriteBatch)
         {
             //Please see AstralSurfaceBGStyle for comments, code is pretty much identical here
-            float screenOff = (float)screenOffField.GetValue(Main.instance);
-            float scAdj = (float)scAdjField.GetValue(Main.instance);
-            Color COSBMAplha = (Color)COSBMAplhaField.GetValue(null);
+            float screenOff = Main.instance.screenOff;
+            float scAdj = Main.instance.scAdj;
+            Color COSBMAplha = Main.ColorOfSurfaceBackgroundsModified;
             Color ColorOfSurfaceBackgroundsModified = new Color(63, 51, 90, COSBMAplha.A);
             bool canBGDraw = false;
             if ((!Main.remixWorld || (Main.gameMenu && !WorldGen.remixWorldGen)) && (!WorldGen.remixWorldGen || !WorldGen.drunkWorldGen))

@@ -45,6 +45,7 @@ namespace CalamityMod.Items.Accessories
             Item.defense = 20;
             Item.value = CalamityGlobalItem.RarityVioletBuyPrice;
             Item.rare = ModContent.RarityType<BurnishedAuric>();
+            Item.expert = true;
         }
 
         public override void UpdateAccessory(Player player, bool hideVisual)

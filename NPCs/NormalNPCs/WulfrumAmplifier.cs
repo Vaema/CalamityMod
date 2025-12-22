@@ -153,7 +153,7 @@ namespace CalamityMod.NPCs.NormalNPCs
                     for (int i = 0; i < dustCount; i++)
                     {
                         float angle = MathHelper.TwoPi * i / dustCount;
-                        Dust dust = Dust.NewDustPerfect(NPC.Center, 229);
+                        Dust dust = Dust.NewDustPerfect(NPC.Center, DustID.Vortex);
                         dust.position = NPC.Center + angle.ToRotationVector2() * ChargeRadius;
                         dust.scale = 0.7f;
                         dust.noGravity = true;

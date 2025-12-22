@@ -1,18 +1,14 @@
-﻿using CalamityMod.Dusts;
-using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Graphics;
+﻿using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.DataStructures;
 using Terraria.Enums;
-using Terraria.ModLoader;
+using Terraria.ID;
 using Terraria.ObjectData;
 
 namespace CalamityMod.Tiles.Abyss.AbyssAmbient
 {
     public class SulphurPireCoral1 : GlowMaskTile
     {
-        public override string GlowMaskAsset => "CalamityMod/Tiles/Abyss/AbyssAmbient/SulphurPireCoral1Glow";
-
         public override void SetupStatic()
         {
             Main.tileLighted[Type] = true;
@@ -30,7 +26,7 @@ namespace CalamityMod.Tiles.Abyss.AbyssAmbient
             TileObjectData.newTile.DrawYOffset = 2;
             TileObjectData.addTile(Type);
             AddMapEntry(new Color(91, 128, 13));
-            DustType = 32;
+            DustType = DustID.Sand;
         }
 
         public override void ModifyLight(int i, int j, ref float r, ref float g, ref float b)
@@ -51,13 +47,7 @@ namespace CalamityMod.Tiles.Abyss.AbyssAmbient
         }
     }
 
-    public class SulphurPireCoral2 : SulphurPireCoral1
-    {
-        public override string GlowMaskAsset => "CalamityMod/Tiles/Abyss/AbyssAmbient/SulphurPireCoral2Glow";
-    }
+    public class SulphurPireCoral2 : SulphurPireCoral1;
 
-    public class SulphurPireCoral3 : SulphurPireCoral1
-    {
-        public override string GlowMaskAsset => "CalamityMod/Tiles/Abyss/AbyssAmbient/SulphurPireCoral3Glow";
-    }
+    public class SulphurPireCoral3 : SulphurPireCoral1;
 }

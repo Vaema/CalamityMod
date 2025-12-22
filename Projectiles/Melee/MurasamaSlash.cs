@@ -1,14 +1,11 @@
 ﻿using System;
-using CalamityMod.Dusts;
 using CalamityMod.Items.Weapons.Melee;
 using CalamityMod.NPCs;
 using CalamityMod.Particles;
-using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria;
 using Terraria.Audio;
-using Terraria.ID;
 using Terraria.Localization;
 using Terraria.ModLoader;
 
@@ -156,9 +153,9 @@ namespace CalamityMod.Projectiles.Melee
         public void HandleChannelMovement(Player player, Vector2 playerRotatedPoint)
         {
             float speed = 1f;
-            if (player.ActiveItem().shoot == Projectile.type)
+            if (player.HeldItem.shoot == Projectile.type)
             {
-                speed = player.ActiveItem().shootSpeed * Projectile.scale;
+                speed = player.HeldItem.shootSpeed * Projectile.scale;
             }
             // 15NOV2024: Ozzatron: clamped mouse position unnecessary, only used for direction
             Vector2 newVelocity = (Main.MouseWorld - playerRotatedPoint).SafeNormalize(Vector2.UnitX * player.direction) * speed;

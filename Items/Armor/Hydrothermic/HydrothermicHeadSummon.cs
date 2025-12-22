@@ -1,7 +1,5 @@
 ﻿using CalamityMod.Buffs.Summon;
-using CalamityMod.CalPlayer;
 using CalamityMod.Items.Materials;
-using CalamityMod.Items.Potions.Alcohol;
 using CalamityMod.Projectiles.Summon;
 using Terraria;
 using Terraria.ID;
@@ -44,7 +42,7 @@ namespace CalamityMod.Items.Armor.Hydrothermic
 
         public override void UpdateArmorSet(Player player)
         {
-            player.setBonus = this.GetLocalization("SetBonus").Format(SetBonusMinionSlotBoost, SetBonusSummonDamageBoost.ToPercent()) + "\n" + CalamityUtils.GetTextFromModItem<HydrothermicArmor>("CommonSetBonus").Format(HydrothermicArmor.InfernoHealthThreshold.ToPercent());
+            player.setBonus = this.GetLocalization("SetBonus").Format(SetBonusMinionSlotBoost, SetBonusSummonDamageBoost.ToPercent(), HydrothermicArmor.InfernoHealthThreshold.ToPercent());
             var modPlayer = player.Calamity();
             modPlayer.ataxiaBlaze = true;
             modPlayer.chaosSpirit = true;

@@ -2,7 +2,6 @@
 using CalamityMod.Items.Placeables.Ores;
 using CalamityMod.Projectiles.Melee.Shortswords;
 using CalamityMod.Rarities;
-using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
 

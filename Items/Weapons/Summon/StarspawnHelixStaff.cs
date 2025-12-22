@@ -13,10 +13,6 @@ namespace CalamityMod.Items.Weapons.Summon
     public class StarspawnHelixStaff : ModItem, ILocalizedModType
     {
         public new string LocalizationCategory => "Items.Weapons.Summon";
-        public override void SetStaticDefaults()
-        {
-            ItemID.Sets.ShimmerTransformToItem[Type] = ModContent.ItemType<RegulusRiot>();
-        }
         public override void SetDefaults()
         {
             Item.width = 54;
@@ -27,7 +23,7 @@ namespace CalamityMod.Items.Weapons.Summon
 
             Item.buffType = ModContent.BuffType<AstralProbeBuff>();
             Item.shoot = ModContent.ProjectileType<AstralProbeSummon>();
-            Item.useAnimation = Item.useTime = 20;
+            Item.useAnimation = Item.useTime = 36;
             Item.DamageType = DamageClass.Summon;
             Item.useStyle = ItemUseStyleID.Swing;
             Item.UseSound = SoundID.Item44;

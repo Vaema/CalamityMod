@@ -50,10 +50,7 @@ namespace CalamityMod.Balancing
                 p.type == ProjectileType<ArkoftheCosmosSwungBlade>() && (p.ai[0] == 2 || p.ai[0] == 3);
 
             bool HiveBeeFilter(Projectile p) =>
-                p.type == ProjectileType<BasicPlagueBee>() && Main.player[p.owner].ActiveItem().type == ItemType<TheHive>();
-
-            bool EradicatorLaserFilter(Projectile p) =>
-                p.type == ProjectileType<NebulaShot>() && p.DamageType == RogueDamageClass.Instance;
+                p.type == ProjectileType<BasicPlagueBee>() && Main.player[p.owner].HeldItem.type == ItemType<TheHive>();
 
             NPCSpecificBalancingChanges = new List<NPCBalancingChange>();
 
@@ -175,9 +172,6 @@ namespace CalamityMod.Balancing
 
             // 35% resist to Flying Dragon.
             NPCSpecificBalancingChanges.AddRange(Bundle(CalamityNPCTypeSets.Ravager, Do(new ProjectileResistBalancingRule(0.65f, ProjectileID.DD2SquireSonicBoom))));
-
-            // 25% resist to Lucrecia.
-            NPCSpecificBalancingChanges.AddRange(Bundle(CalamityNPCTypeSets.Ravager, Do(new ProjectileResistBalancingRule(0.75f, ProjectileType<DNA>()))));
 
             // 20% resist to Aurora Blazer.
             NPCSpecificBalancingChanges.AddRange(Bundle(CalamityNPCTypeSets.Ravager, Do(new ProjectileResistBalancingRule(0.8f, ProjectileType<AuroraFire>()))));
@@ -404,9 +398,6 @@ namespace CalamityMod.Balancing
 
             // 20% resist to Ariane's aura (Lilies of Finality).
             NPCSpecificBalancingChanges.AddRange(Bundle(CalamityNPCTypeSets.Thanatos, Do(new ProjectileResistBalancingRule(0.8f, ProjectileType<LiliesOfFinalityAoE>()))));
-
-            // 20% resist to Eradicator's beams.
-            NPCSpecificBalancingChanges.AddRange(Bundle(CalamityNPCTypeSets.Thanatos, Do(new ProjectileSpecificRequirementBalancingRule(0.8f, EradicatorLaserFilter))));
 
             // 20% resist to Mirror of Kalandra's Paradoxica minion.
             NPCSpecificBalancingChanges.AddRange(Bundle(CalamityNPCTypeSets.Thanatos, Do(new ProjectileResistBalancingRule(0.8f, ProjectileType<Paradoxica>()))));

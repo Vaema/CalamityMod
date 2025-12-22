@@ -2,7 +2,6 @@
 using System.Linq;
 using CalamityMod.Graphics.Primitives;
 using CalamityMod.NPCs;
-using CalamityMod.Systems.Collections;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using ReLogic.Content;
@@ -15,7 +14,6 @@ using Terraria.ModLoader;
 using Terraria.Audio;
 using System;
 using System.IO;
-using CalamityMod.Projectiles.Summon;
 
 namespace CalamityMod.Projectiles.BaseProjectiles
 {
@@ -182,6 +180,8 @@ namespace CalamityMod.Projectiles.BaseProjectiles
         /// </summary>
         public virtual float lineCollisionLength { get; set; } = 0;
 
+        public virtual Color AfterImageColor { get; set; } = Color.White;
+
         #endregion
 
         #region Fields
@@ -260,7 +260,7 @@ namespace CalamityMod.Projectiles.BaseProjectiles
         /// </summary>
         /// <param name="completion"></param>
         /// <returns></returns>
-        public virtual float trailWidth(float completion)
+        public virtual float trailWidth(float completion, Vector2 vertexPos)
         {
             return MathHelper.Lerp(30, 0, completion);
         }
@@ -270,7 +270,7 @@ namespace CalamityMod.Projectiles.BaseProjectiles
         /// </summary>
         /// <param name="completion"></param>
         /// <returns></returns>
-        public virtual Color trailColor(float completion)
+        public virtual Color trailColor(float completion, Vector2 vertexPos)
         {
             return Color.Black;
         }
@@ -321,9 +321,13 @@ namespace CalamityMod.Projectiles.BaseProjectiles
                 player.direction = -1;
                 Projectile.spriteDirection = -1 * (int)player.gravDir;
             }
-            if (AlternateSwings && player.GetModPlayer<BaseSwordHoldoutPlayer>().swingNum % 2 == 0)
+            if (AlternateSwings && player.GetModPlayer<BaseSwordHoldoutPlayer>().swingNum % 2 == 1)
             {
                 Projectile.spriteDirection *= -1;
+            }
+            if (AlternateSwings)
+            {
+                player.GetModPlayer<BaseSwordHoldoutPlayer>().swingNum++;
             }
             swingTime = Main.player[Projectile.owner].HeldItem.useTime;
             Spawn(source);
@@ -366,6 +370,7 @@ namespace CalamityMod.Projectiles.BaseProjectiles
         public override void AI()
         {
             var player = Main.player[Projectile.owner];
+            Projectile.gfxOffY = player.gfxOffY;
             var modplayer = player.GetModPlayer<BaseSwordHoldoutPlayer>();
             float adust = MathHelper.ToRadians(225);
             if (timer < StartupTime || timer > StartupTime + swingTime)
@@ -384,6 +389,10 @@ namespace CalamityMod.Projectiles.BaseProjectiles
                     player.direction = -1;
                     Projectile.spriteDirection = -1 * (int)player.gravDir;
                 }
+                if (AlternateSwings && player.GetModPlayer<BaseSwordHoldoutPlayer>().swingNum % 2 == 1)
+                {
+                    Projectile.spriteDirection *= -1;
+                }
             }
             if (Projectile.spriteDirection == -1)
             {
@@ -393,7 +402,7 @@ namespace CalamityMod.Projectiles.BaseProjectiles
             if (AfterImageLength > 0)
             {
                 oldProjectileRot.Add(Projectile.rotation);
-                oldProjectilePos.Add(Projectile.Center);
+                oldProjectilePos.Add(Projectile.Center + new Vector2(0, Projectile.gfxOffY));
                 if (oldProjectileRot.Count > AfterImageLength)
                 {
                     oldProjectileRot.RemoveAt(0);
@@ -404,10 +413,12 @@ namespace CalamityMod.Projectiles.BaseProjectiles
             {
                 SoundEngine.PlaySound((SoundStyle)UseSound,player.Center);
             }
-            var angle2 = (AlternateSwings && (modplayer.swingNum % 2 == 1 ? false : true) ? SwingFunction() : SwingFunction());
+            var angle2 = (AlternateSwings && modplayer.swingNum % 2 == 1 ? SwingFunction() : SwingFunction());
             Projectile.Center = armCenter - (angle * OffsetDistance * (1 + (Projectile.scale - 1) * 0.75f)).RotatedBy(Projectile.spriteDirection * angle2);
             Projectile.rotation = angle.RotatedBy(Projectile.spriteDirection * angle2).ToRotation() + adust;
             AdditionalAI();
+            if (!Projectile.active)
+                return;
             oldPlayerOffset = Projectile.Center - player.Center;
             player.itemTime = ExistsTime + 2 - timer;
             player.itemAnimation = ExistsTime + 2 - timer;
@@ -440,11 +451,11 @@ namespace CalamityMod.Projectiles.BaseProjectiles
                     var col = Projectile.Opacity * (i / (float)AfterImageLength) * 0.1f;
                     if (Projectile.spriteDirection == 1)
                     {
-                        Main.EntitySpriteDraw(texture, oldProjectilePos[i] - Main.screenPosition, null, Color.White * col, oldProjectileRot[i], texture.Size() / 2, 1, SpriteEffects.None, 0);
+                        Main.EntitySpriteDraw(texture, oldProjectilePos[i] - Main.screenPosition, null, AfterImageColor * col, oldProjectileRot[i], texture.Size() / 2, oldScale[i], SpriteEffects.None, 0);
                     }
                     else
                     {
-                        Main.EntitySpriteDraw(texture, oldProjectilePos[i] - Main.screenPosition, null, Color.White * col, oldProjectileRot[i], texture.Size() / 2, 1, SpriteEffects.FlipHorizontally, 0);
+                        Main.EntitySpriteDraw(texture, oldProjectilePos[i] - Main.screenPosition, null, AfterImageColor * col, oldProjectileRot[i], texture.Size() / 2, oldScale[i], SpriteEffects.FlipHorizontally, 0);
                     }
                 }
             }
@@ -473,7 +484,7 @@ namespace CalamityMod.Projectiles.BaseProjectiles
                     if (i >= timer) break;
                     positionsToUse[i] += (Projectile.oldRot[i] - MathHelper.PiOver4 * (Projectile.spriteDirection == -1 ? 3 : 1)).ToRotationVector2() * this.trailOffset * oldScale[i];
                 }
-                PrimitiveRenderer.RenderTrail(positionsToUse, new(trailWidth, trailColor, (_) => trailOffset, shader: GameShaders.Misc["CalamityMod:ExobladeSlash"]), 25);
+                PrimitiveRenderer.RenderTrail(positionsToUse, new(trailWidth, trailColor, (_,_) => trailOffset, shader: GameShaders.Misc["CalamityMod:ExobladeSlash"]), 25);
                 Main.spriteBatch.ExitShaderRegion();
 
                 Main.player[Projectile.owner].heldProj = Projectile.whoAmI;

@@ -107,7 +107,7 @@ namespace CalamityMod
         public static string GetArmorSetBonusKey()
         {
             ModKeybind setBonusKey = CalamityKeybinds.ArmorSetBonusHotKey;
-            bool hasHotkey = setBonusKey.GetAssignedKeys().Count != 0;
+            bool hasHotkey = setBonusKey.GetAssignedKeysOrEmpty().Count != 0;
             string directionKey = (Main.ReversedUpDownArmorSetBonuses ? Language.GetTextValue("Key.UP") : Language.GetTextValue("Key.DOWN"));
 
             // Allow both

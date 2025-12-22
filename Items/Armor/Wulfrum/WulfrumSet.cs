@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using CalamityMod.Cooldowns;
 using CalamityMod.Items.Accessories.Vanity;
 using CalamityMod.Items.Materials;

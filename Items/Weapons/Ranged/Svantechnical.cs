@@ -8,6 +8,7 @@ using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.DataStructures;
 using Terraria.ID;
+using Terraria.Localization;
 using Terraria.ModLoader;
 
 namespace CalamityMod.Items.Weapons.Ranged
@@ -16,6 +17,10 @@ namespace CalamityMod.Items.Weapons.Ranged
     {
         public new string LocalizationCategory => "Items.Weapons.Ranged";
         public int SineCounter = 0;
+
+        public static int AmmoSavedPercent = 80;
+        public override LocalizedText Tooltip => base.Tooltip.WithFormatArgs(AmmoSavedPercent);
+
         public override void SetStaticDefaults()
         {
             ItemID.Sets.ItemsThatAllowRepeatedRightClick[Type] = true;
@@ -27,7 +32,8 @@ namespace CalamityMod.Items.Weapons.Ranged
             Item.damage = 232;
             Item.DamageType = DamageClass.Ranged;
             Item.useTime = 1;
-            Item.useAnimation = 3;
+            Item.useAnimation = 4;
+            Item.useLimitPerAnimation = 4;
             Item.useStyle = ItemUseStyleID.Shoot;
             Item.noMelee = true;
             Item.knockBack = 3.5f;
@@ -41,14 +47,11 @@ namespace CalamityMod.Items.Weapons.Ranged
             Item.shootSpeed = 6f;
             Item.shoot = ProjectileID.PurificationPowder;
             Item.useAmmo = AmmoID.Bullet;
+            Item.consumeAmmoOnLastShotOnly = true;
         }
 
         public override Vector2? HoldoutOffset() => new Vector2(-5, 0);
-        public override bool AltFunctionUse(Player player)
-        {
-            return true;
-        }
-        public override void HoldItem(Player player) => player.scope = false;
+        public override bool AltFunctionUse(Player player) => true;
 
         public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)
         {
@@ -75,12 +78,8 @@ namespace CalamityMod.Items.Weapons.Ranged
             }
             return false;
         }
-        public override bool CanConsumeAmmo(Item ammo, Player player)
-        {
-            if (Main.rand.Next(0, 100) > 90 && SineCounter % 4 == 0)
-                return true;
-            return false;
-        }
+
+        public override bool CanConsumeAmmo(Item ammo, Player player) => Main.rand.Next(100) >= AmmoSavedPercent;
 
         public override void AddRecipes()
         {

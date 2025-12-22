@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.IO;
 using CalamityMod.NPCs.NormalNPCs;
 using Terraria;
 using Terraria.DataStructures;
@@ -11,7 +6,7 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.Packets
 {
-    public sealed class SpawnSuperDummyPacket : CalamityPacket
+    internal sealed class SpawnSuperDummyPacket : CalamityPacket
     {
         public static SpawnSuperDummyPacket Instance { get; private set; }
 

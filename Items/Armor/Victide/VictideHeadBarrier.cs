@@ -1,5 +1,4 @@
 ﻿using System;
-using CalamityMod.CalPlayer;
 using CalamityMod.Cooldowns;
 using CalamityMod.Items.Materials;
 using CalamityMod.Projectiles.Typeless;
@@ -23,8 +22,9 @@ namespace CalamityMod.Items.Armor.Victide
 
         // Set Bonus
         public static int BarrierCooldown = CalamityUtils.SecondsToFrames(8);
-        public static int BarrierDefenseBoost = 8;
+        public static int BarrierDefenseBoost = 6;
         public static float BarrierDamageAbsorptionPercent = 0.1f;
+        public static int BarrierFramesPerHeal = 15;
         public static int BarrierDamage = 50;
         public static float BarrierExplosionKB = 8f;
 
@@ -34,7 +34,7 @@ namespace CalamityMod.Items.Armor.Victide
             Item.height = 18;
             Item.value = CalamityGlobalItem.RarityGreenBuyPrice;
             Item.rare = ItemRarityID.Green;
-            Item.defense = 7; // 16
+            Item.defense = 5; // 12
         }
 
         public override bool IsArmorSet(Item head, Item body, Item legs) => body.type == ModContent.ItemType<VictideBreastplate>() && legs.type == ModContent.ItemType<VictideGreaves>();

@@ -1,5 +1,4 @@
 ﻿using CalamityMod.Items.Materials;
-using CalamityMod.Items.Placeables;
 using CalamityMod.Items.Weapons.Magic;
 using CalamityMod.Projectiles.Melee.Spears;
 using Terraria;

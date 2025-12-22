@@ -58,7 +58,7 @@ namespace CalamityMod.Projectiles.Summon
                     float angle = MathHelper.TwoPi / 45f * i;
                     Vector2 direction = angle.ToRotationVector2() * 10f;
 
-                    Dust spawnDust = Dust.NewDustPerfect(Projectile.Center, 33, direction);
+                    Dust spawnDust = Dust.NewDustPerfect(Projectile.Center, DustID.Water, direction);
                     spawnDust.noGravity = true;
                 }
                 CheckForSpawning++;
@@ -72,6 +72,12 @@ namespace CalamityMod.Projectiles.Summon
         }
 
         public override bool MinionContactDamage() => true;
+
+        public override bool TileCollideStyle(ref int width, ref int height, ref bool fallThrough, ref Vector2 hitboxCenterFrac)
+        {
+            fallThrough = true; // Should always be able to fly through platforms
+            return base.TileCollideStyle(ref width, ref height, ref fallThrough, ref hitboxCenterFrac);
+        }
 
         public override bool OnTileCollide(Vector2 oldVelocity) => false;
     }

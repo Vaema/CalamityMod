@@ -1,7 +1,5 @@
-﻿using CalamityMod.NPCs;
-using CalamityMod.NPCs.Providence;
+﻿using CalamityMod.NPCs.Providence;
 using CalamityMod.Particles;
-using CalamityMod.World;
 using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.ID;

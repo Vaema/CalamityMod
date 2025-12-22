@@ -2,9 +2,7 @@
 using CalamityMod.Items.Placeables.Astral;
 using Microsoft.Xna.Framework;
 using Terraria;
-using Terraria.DataStructures;
 using Terraria.GameContent;
-using Terraria.ID;
 using Terraria.ModLoader;
 
 namespace CalamityMod.Tiles.Rubblemake.Astral

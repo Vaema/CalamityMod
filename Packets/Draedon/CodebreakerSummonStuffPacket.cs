@@ -1,15 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.IO;
 using CalamityMod.World;
 using Terraria;
 
 namespace CalamityMod.Packets
 {
-    public sealed class CodebreakerSummonStuffPacket : CalamityPacket
+    internal sealed class CodebreakerSummonStuffPacket : CalamityPacket
     {
         public static CodebreakerSummonStuffPacket Instance { get; private set; }
 

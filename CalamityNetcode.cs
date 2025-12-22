@@ -1,103 +1,38 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Diagnostics.CodeAnalysis;
 using System.IO;
-using System.Linq;
-using System.Reflection;
-using System.Runtime.InteropServices.JavaScript;
-using CalamityMod.Events;
-using CalamityMod.Items;
-using CalamityMod.Items.Potions.Alcohol;
-using CalamityMod.NPCs;
-using CalamityMod.NPCs.NormalNPCs;
-using CalamityMod.NPCs.Providence;
-using CalamityMod.NPCs.TownNPCs;
 using CalamityMod.Packets;
-using CalamityMod.Systems;
-using CalamityMod.TileEntities;
-using CalamityMod.World;
 using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.DataStructures;
 using Terraria.ID;
 using Terraria.ModLoader;
-using Terraria.ModLoader.Core;
 
 namespace CalamityMod
 {
     public class CalamityNetcode : ModSystem
     {
-        private static CalamityPacket[] _PacketRegistry;
+        private static CalamityPacket[] _PacketRegistry = new CalamityPacket[256]; // This should allow to use 0-255 range (full byte range)
 
-        public override void OnModLoad()
+        internal static void RegisterHandler(CalamityPacket handler)
         {
-            _PacketRegistry = new CalamityPacket[256]; // This should allow to use 0-255 range (full byte range)
+            var msgType = handler.MessageType;
+            var existingHandler = _PacketRegistry[msgType];
 
-            ReflectionHelper.IterateEveryModsTypes<CalamityPacket>(action: type =>
+            if (existingHandler != null)
             {
-                try
-                {
-                    if (Activator.CreateInstance(type) is not CalamityPacket packetHandler)
-                        return;
+                CalamityMod.Log.Error($"Packet instance has already registered by other type!" +
+                    $" [Failed On: '{handler.GetType().FullName}'" +
+                    $" Current Owner: '{existingHandler.GetType().FullName}'," +
+                    $" msgTypeToRegister: '{msgType}']");
+                return;
+            }
 
-                    var msgType = packetHandler.MessageType;
-                    var existingHandler = _PacketRegistry[msgType];
-                    if (existingHandler != null)
-                    {
-                        CalamityMod.Instance.Logger.Error($"Packet instance has already registered by other type!" +
-                            $" [Failed On: '{type.FullName}'" +
-                            $" Current Owner: '{existingHandler.GetType().FullName}'," +
-                            $" msgTypeToRegister: '{msgType}']");
-                        return;
-                    }
-
-                    _PacketRegistry[packetHandler.MessageType] = packetHandler;
-
-                    var instanceProperty = type.GetProperty("Instance", BindingFlags.Public | BindingFlags.Static | BindingFlags.NonPublic);
-                    if (instanceProperty is not null)
-                    {
-                        if (instanceProperty.PropertyType.IsAssignableFrom(type))
-                        {
-                            instanceProperty.SetValue(null, packetHandler);
-                            packetHandler._Prop_Static_Instance = instanceProperty; // We saving this for Unload Steps
-                        }
-                        else
-                        {
-                            CalamityMod.Instance.Logger.Error($"Packet instance's 'Instance' property is not asssignable with given type!" +
-                                $" [Failed On: '{type.FullName}']");
-                        }
-                    }
-
-                    // We should not print error message if "Instance" property is missing
-                    // Addons still can assign them with OnLoaded overload, and it's up to their implementation
-                    // Still, Calamity's Standard is having "Instance" property for every packet types
-
-                    packetHandler.OnLoaded();
-                }
-                catch (Exception e)
-                {
-                    CalamityMod.Instance.Logger.Error($"Exception was thrown while loading for Packets! {e}");
-                    return;
-                }
-            });
+            _PacketRegistry[msgType] = handler;
         }
 
         public override void OnModUnload()
         {
-            if (_PacketRegistry is not null)
-            {
-                foreach (var packetHandler in _PacketRegistry)
-                {
-                    if (packetHandler is null)
-                        continue;
-
-                    packetHandler.OnUnloaded();
-                    packetHandler._Prop_Static_Instance?.SetValue(null, null);
-                    packetHandler._Prop_Static_Instance = null;
-                }
-
-                _PacketRegistry = null;
-            }
+            _PacketRegistry = null;
         }
 
         public static void HandlePacket(Mod mod, BinaryReader reader, int whoAmI)
@@ -117,18 +52,18 @@ namespace CalamityMod
                     // Throw an exception now instead of allowing the network stream to corrupt.
                     //
 
-                    CalamityMod.Instance.Logger.Error($"Failed to parse Calamity packet: No Calamity packet exists with ID {msgType}.");
+                    CalamityMod.Log.Error($"Failed to parse Calamity packet: No Calamity packet exists with ID {msgType}.");
                     throw new Exception("Failed to parse Calamity packet: Invalid Calamity packet ID.");
                 }
             }
             catch (Exception e)
             {
                 if (e is EndOfStreamException eose)
-                    CalamityMod.Instance.Logger.Error("Failed to parse Calamity packet: Packet was too short, missing data, or otherwise corrupt.", eose);
+                    CalamityMod.Log.Error("Failed to parse Calamity packet: Packet was too short, missing data, or otherwise corrupt.", eose);
                 else if (e is ObjectDisposedException ode)
-                    CalamityMod.Instance.Logger.Error("Failed to parse Calamity packet: Packet reader disposed or destroyed.", ode);
+                    CalamityMod.Log.Error("Failed to parse Calamity packet: Packet reader disposed or destroyed.", ode);
                 else if (e is IOException ioe)
-                    CalamityMod.Instance.Logger.Error("Failed to parse Calamity packet: An unknown I/O error occurred.", ioe);
+                    CalamityMod.Log.Error("Failed to parse Calamity packet: An unknown I/O error occurred.", ioe);
                 else
                     throw; // this either will crash the game or be caught by TML's packet policing
             }
@@ -184,14 +119,6 @@ namespace CalamityMod
             NetMessage.SendData(MessageID.SyncNPC, toClient, ignoreClient, null, npcWhoAmI);
         }
 
-        public static void SyncCalamityWorldDifficulties(int sender)
-        {
-            if (Main.netMode == NetmodeID.SinglePlayer)
-                return;
-
-            SyncDifficultiesPacket.Send();
-        }
-
         public static void NewNPC_ClientSide(Vector2 spawnPosition, int npcType, Player player)
         {
             if (Main.netMode == NetmodeID.SinglePlayer)
@@ -215,9 +142,9 @@ namespace CalamityMod
         CooldownAddition,
         CooldownRemoval,
         SyncCooldownDictionary,
+        ExaltationDirection,
 
         // Syncs for specific bosses or entities
-        SyncDestroyerLaserColor,
         SyncCalamityNPCAIArray,
         SyncVanillaNPCLocalAIArray,
         SpawnSuperDummy,
@@ -267,22 +194,21 @@ namespace CalamityMod
 
         // Mouse Controls syncs
         RightClickSync,
+        MouseRotationSync,
         MousePositionSync,
 
         // World state sync
-        SyncDifficulties,
+        SwitchToDifficulty,
 
         // Music events
         MusicEventSyncRequest,
         MusicEventSyncResponse,
-        
+
         // Bandit Reforge Refund
         BanditStolenMoneySync,
         WantToRefundReforges,
 
         // Player Draw Effect Parameters
-        SyncPlayerDrawParameter,
-
-        Reserved = 150
+        SyncPlayerDrawParameter
     }
 }

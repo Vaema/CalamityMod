@@ -1,14 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using CalamityMod.NPCs.Cryogen;
-using CalamityMod.World;
+﻿using CalamityMod.NPCs.Cryogen;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using ReLogic.Content;
 using Terraria;
-using Terraria.GameContent;
 using Terraria.GameContent.UI.BigProgressBar;
-using Terraria.ID;
 using Terraria.ModLoader;
 using static Terraria.ModLoader.ModContent;
 

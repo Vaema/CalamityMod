@@ -27,7 +27,7 @@ namespace CalamityMod.Items.Weapons.Summon
             Item.width = 42;
             Item.height = 42;
             Item.damage = 142;
-            Item.useAnimation = Item.useTime = 20;
+            Item.useAnimation = Item.useTime = 24;
             Item.knockBack = 4f;
             Item.mana = 10;
             Item.buffType = ModContent.BuffType<StellarTorusBuff>();

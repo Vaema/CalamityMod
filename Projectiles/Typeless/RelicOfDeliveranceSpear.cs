@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.IO;
 using CalamityMod.CalPlayer;
 using CalamityMod.Dusts;
 using CalamityMod.Items.Weapons.Typeless;
@@ -49,7 +48,6 @@ namespace CalamityMod.Projectiles.Typeless
         public bool inTiles = false;
         public float respawnMult = 0;
 
-        int postHitTimer = 0;
         public Color bColor = Color.White;
         public SlotId digSoundSlot;
         public int digFXCooldown = 0;
@@ -117,12 +115,12 @@ namespace CalamityMod.Projectiles.Typeless
             }
 
             // Immediately die if the Owner is not holding the spear
-            if (Owner.ActiveItem() == null)
+            if (Owner.HeldItem == null)
             {
                 KillProj();
                 return;
             }
-            if (Owner.ActiveItem().type != ModContent.ItemType<RelicOfDeliverance>())
+            if (Owner.HeldItem.type != ModContent.ItemType<RelicOfDeliverance>())
             {
                 KillProj();
                 return;
@@ -251,7 +249,7 @@ namespace CalamityMod.Projectiles.Typeless
                                 SoundEngine.PlaySound(sound3 with { Volume = 0.7f, Pitch = 0.4f, MaxInstances = 3 }, Projectile.Center);
                         }
                         if (driftPower > 1)
-                            Owner.Calamity().GeneralScreenShakePower = (driftPower == 2 ? 6 : 9);
+                            Owner.SetScreenshake(driftPower == 2 ? 6 : 9);
                         else if (driftBadMult > 0.15f)
                             driftBadMult -= 0.15f;
                             

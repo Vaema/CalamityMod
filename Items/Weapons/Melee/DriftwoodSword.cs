@@ -29,7 +29,7 @@ namespace CalamityMod.Items.Weapons.Melee
         public override void MeleeEffects(Player player, Rectangle hitbox)
         {
             if (IsPlayerInContactWithWater(player))
-                Dust.NewDust(new Vector2(hitbox.X, hitbox.Y), hitbox.Width, hitbox.Height, 160);
+                Dust.NewDust(new Vector2(hitbox.X, hitbox.Y), hitbox.Width, hitbox.Height, DustID.MagnetSphere);
         }
 
         public override float UseSpeedMultiplier(Player player) => IsPlayerInContactWithWater(player) ? 1.66f : 1f;

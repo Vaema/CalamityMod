@@ -178,7 +178,7 @@ namespace CalamityMod.Projectiles.Typeless
             Owner.grapCount = 0;
             for (int i = 0; i < 1000; i++)
             {
-                if (Main.projectile[i].active && Main.projectile[i].owner == Owner.whoAmI && Main.projectile[i].aiStyle == 7 && !(Main.projectile[i].whoAmI == Projectile.whoAmI))
+                if (Main.projectile[i].active && Main.projectile[i].owner == Owner.whoAmI && Main.projectile[i].aiStyle == ProjAIStyleID.Hook && !(Main.projectile[i].whoAmI == Projectile.whoAmI))
                     Main.projectile[i].Kill();
             }
 
@@ -222,12 +222,12 @@ namespace CalamityMod.Projectiles.Typeless
             }
         }
 
-        public float PrimWidthFunction(float completionRatio)
+        public float PrimWidthFunction(float completionRatio, Vector2 vertexPos)
         {
             return 1.6f;
         }
 
-        public Color PrimColorFunction(float completionRatio)
+        public Color PrimColorFunction(float completionRatio, Vector2 vertexPos)
         {
             Color EndColor = Color.GreenYellow;
 

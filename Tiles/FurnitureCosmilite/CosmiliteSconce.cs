@@ -2,7 +2,6 @@
 using Terraria;
 using Terraria.DataStructures;
 using Terraria.ID;
-using Terraria.Localization;
 using Terraria.ModLoader;
 using Terraria.ObjectData;
 
@@ -64,7 +63,7 @@ namespace CalamityMod.Tiles.FurnitureCosmilite
 
         public override void HitWire(int i, int j)
         {
-            CalamityUtils.LightHitWire(Type, i, j, 1, 3);
+            FurnitureCommon.LightHitWire(Type, i, j, 1, 3);
         }
     }
 }

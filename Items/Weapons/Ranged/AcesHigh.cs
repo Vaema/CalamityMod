@@ -15,6 +15,7 @@ namespace CalamityMod.Items.Weapons.Ranged
     {
         public int shots = 0;
         public new string LocalizationCategory => "Items.Weapons.Ranged";
+
         public override void SetDefaults()
         {
             Item.width = 48;
@@ -38,18 +39,11 @@ namespace CalamityMod.Items.Weapons.Ranged
             Item.shootSpeed = 24f;
             Item.shoot = ModContent.ProjectileType<CardHeart>();
             Item.useAmmo = AmmoID.Bullet;
+            Item.consumeAmmoOnLastShotOnly = true;
         }
 
-        public override Vector2? HoldoutOffset()
-        {
-            return new Vector2(-5, 0);
-        }
-        public override bool CanConsumeAmmo(Item ammo, Player player)
-        {
-            if (Main.rand.Next(0, 100) < 80)
-                return false;
-            return true;
-        }
+        public override Vector2? HoldoutOffset() => new Vector2(-5, 0);
+
         public override void AddRecipes()
         {
             CreateRecipe().

@@ -1,7 +1,6 @@
 ﻿using CalamityMod.Particles;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using rail;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
@@ -140,7 +139,7 @@ namespace CalamityMod.Projectiles.Magic
             {
                 for (int i = 0; i < 2; i++)
                 {
-                    Dust chargefull = Dust.NewDustPerfect(Projectile.Center, 267);
+                    Dust chargefull = Dust.NewDustPerfect(Projectile.Center, DustID.RainbowMk2);
                     chargefull.velocity = new Vector2(3, 3).RotatedByRandom(100) * Main.rand.NextFloat(0.2f, 0.8f);
                     chargefull.scale = Main.rand.NextFloat(0.35f, 0.8f);
                     chargefull.noGravity = true;
@@ -162,7 +161,7 @@ namespace CalamityMod.Projectiles.Magic
                     }
                     for (int i = 0; i < 6; i++)
                     {
-                        Dust chargefull = Dust.NewDustPerfect(Projectile.Center, 278);
+                        Dust chargefull = Dust.NewDustPerfect(Projectile.Center, DustID.FireworksRGB);
                         chargefull.velocity = Projectile.velocity.RotatedByRandom(0.25f) * Main.rand.NextFloat(0.6f, 2f);
                         chargefull.scale = Main.rand.NextFloat(0.65f, 0.9f);
                         chargefull.noGravity = true;
@@ -183,7 +182,7 @@ namespace CalamityMod.Projectiles.Magic
                     }
                     if (time > 30 && Main.rand.NextBool(12))
                     {
-                        Dust chargefull = Dust.NewDustPerfect(Projectile.Center, 267);
+                        Dust chargefull = Dust.NewDustPerfect(Projectile.Center, DustID.RainbowMk2);
                         chargefull.velocity = Projectile.velocity * Main.rand.NextFloat(-2, 2);
                         chargefull.scale = Main.rand.NextFloat(0.95f, 1.4f);
                         chargefull.noGravity = true;

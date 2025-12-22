@@ -1,14 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.IO;
 using CalamityMod.Events;
 
 namespace CalamityMod.Packets
 {
-    public sealed class BossRushStartTimerPacket : CalamityPacket
+    internal sealed class BossRushStartTimerPacket : CalamityPacket
     {
         public static BossRushStartTimerPacket Instance { get; private set; }
 

@@ -1,12 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Collections.Generic;
+using CalamityMod.NPCs.DevourerofGods;
 using CalamityMod.NPCs.ExoMechs.Ares;
-using Steamworks;
 using Terraria;
-using Terraria.DataStructures;
 using Terraria.ID;
 using Terraria.ModLoader;
 
@@ -21,6 +16,8 @@ namespace CalamityMod.NPCs
         #region Draw Parameters
         public static bool[] DrawingMiracleBlight { get; private set; }
         public static bool[] DrawingPolarity { get; private set; }
+        public static bool[] DrawingDoGDeathAnimation { get; private set; }
+        public static int DoGDeathAnimationTimer { get; private set; }
         #endregion
 
         #region Filtering Fields
@@ -47,38 +44,53 @@ namespace CalamityMod.NPCs
         {
             DrawingMiracleBlight = new bool[Main.maxNPCs + 1];
             DrawingPolarity = new bool[Main.maxNPCs + 1];
+            DrawingDoGDeathAnimation = new bool[Main.maxNPCs + 1];
         }
 
         public override void Unload()
         {
             DrawingMiracleBlight = null;
             DrawingPolarity = null;
+            DrawingDoGDeathAnimation = null;
         }
         #endregion
 
         public override void SetDefaults(NPC entity) => ResetParameters(entity);
-        public override bool PreAI(NPC npc)
-        {
-            if (npc is null)
-                return true;
-
-            var whoAmI = npc.whoAmI;
-            DrawingMiracleBlight[whoAmI] = ShouldDrawMiracleBlight(npc);
-            DrawingPolarity[whoAmI] = ShouldDrawPolarity(npc);
-
-            return true;
-        }
-
         public static void ResetParameters(NPC npc)
         {
             if (npc is null)
                 return;
 
+            if (npc.whoAmI < 0 || npc.whoAmI >= Main.maxNPCs)
+                return;
+
             var whoAmI = npc.whoAmI;
             DrawingMiracleBlight[whoAmI] = false;
             DrawingPolarity[whoAmI] = false;
+            DrawingDoGDeathAnimation[whoAmI] = false;
         }
 
+        public override bool PreAI(NPC npc)
+        {
+            if (npc is null)
+                return true;
+
+            if (npc.whoAmI < 0 || npc.whoAmI >= Main.maxNPCs)
+                return true;
+
+            var whoAmI = npc.whoAmI;
+            DrawingMiracleBlight[whoAmI] = ShouldDrawMiracleBlight(npc);
+            DrawingPolarity[whoAmI] = ShouldDrawPolarity(npc);
+            DrawingDoGDeathAnimation[whoAmI] = ShouldDrawDoGDeathAnimation(npc);
+            return true;
+        }
+
+        public static void PostUpdateNPCs()
+        {
+            DoGDeathAnimationTimer = GetDoGDeathTimer();
+        }
+
+        #region Miracle Blight Effect
         public static bool ShouldDrawMiracleBlight(NPC npc)
         {
             if (npc is null || !npc.active)
@@ -97,7 +109,7 @@ namespace CalamityMod.NPCs
                 return false;
 
             // Safety check for weird MP bug when getting global npcs.
-            if (!npc.TryGetGlobalNPCSafer<CalamityGlobalNPC>(out var calNPC) || !npc.TryGetGlobalNPCSafer<CalamityPolarityNPC>(out var polNPC))
+            if (!npc.TryGetGlobalNPC<CalamityGlobalNPC>(out var calNPC) || !npc.TryGetGlobalNPC<CalamityPolarityNPC>(out var polNPC))
                 return false;
 
             // Do not draw if the npc does not have miracle blight, or has the polarity effect.
@@ -110,14 +122,16 @@ namespace CalamityMod.NPCs
 
             return true;
         }
+        #endregion
 
+        #region Polarity Effect
         public static bool ShouldDrawPolarity(NPC npc)
         {
             if (npc is null || !npc.active)
                 return false;
 
             // Safety check for weird MP bug when getting global npcs.
-            if (!npc.TryGetGlobalNPCSafer<CalamityGlobalNPC>(out var calNPC) || !npc.TryGetGlobalNPCSafer<CalamityPolarityNPC>(out var polNPC))
+            if (!npc.TryGetGlobalNPC<CalamityGlobalNPC>(out var calNPC) || !npc.TryGetGlobalNPC<CalamityPolarityNPC>(out var polNPC))
                 return false;
 
             // I don't know who would be using this while also inflicting miracle blight, but in that rare case, do not draw these.
@@ -130,5 +144,50 @@ namespace CalamityMod.NPCs
 
             return true;
         }
+        #endregion
+
+        #region DoG Death Animation
+        public static bool ShouldDrawDoGDeathAnimation(NPC npc)
+        {
+            // Do not draw inactive npcs, or ones with weird MP types less than or equal to 0.
+            if (npc == null || !npc.active || npc.type <= NPCID.None)
+                return false;
+
+            if (npc.type != ModContent.NPCType<DevourerofGodsHead>() && npc.type != ModContent.NPCType<DevourerofGodsBody>() && npc.type != ModContent.NPCType<DevourerofGodsTail>())
+                return false;
+
+            // Do not draw if Death Animation did not triggered
+            if (GetDoGDeathTimer() <= 0)
+                return false;
+
+            return true;
+        }
+
+        public static int GetDoGDeathTimer()
+        {
+            if (!Main.npc.IndexInRange(CalamityGlobalNPC.DoGHead))
+                return 0;
+
+            var head = Main.npc[CalamityGlobalNPC.DoGHead].ModNPC<DevourerofGodsHead>();
+            if (head == null)
+                return 0;
+
+            // Don't draw if DoG hasn't started it's death animation yet.
+            if (head.DeathAnimationTimer <= 0)
+                return 0;
+
+            return head.DeathAnimationTimer;
+        }
+        #endregion
+
+        #region PostUpdateNPCs Hook
+        private sealed class PostUpdateNPCsHook : ModSystem
+        {
+            public override void PostUpdateNPCs()
+            {
+                CalamityDrawParameterNPC.PostUpdateNPCs();
+            }
+        }
+        #endregion
     }
 }

@@ -1,6 +1,5 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using System;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
@@ -42,7 +41,7 @@ namespace CalamityMod.Projectiles.Ranged
             for (int i = 0; i < 2; i++)
             {
                 Vector2 dustPosition = new Vector2(Projectile.position.X + Main.rand.NextFloat(0f, Projectile.width), Projectile.position.Y + Main.rand.NextFloat(0f, Projectile.height));
-                Dust frostDust = Dust.NewDustPerfect(dustPosition, 16, Vector2.Zero, 0, default, 0.45f);
+                Dust frostDust = Dust.NewDustPerfect(dustPosition, DustID.Cloud, Vector2.Zero, 0, default, 0.45f);
                 frostDust.noGravity = true;
             }
             Lighting.AddLight(Projectile.Center, 0.4f, 0.4f, 0.4f);

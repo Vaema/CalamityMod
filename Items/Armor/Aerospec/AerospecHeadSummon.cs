@@ -1,7 +1,5 @@
 ﻿using CalamityMod.Buffs.Summon;
-using CalamityMod.CalPlayer;
 using CalamityMod.Items.Materials;
-using CalamityMod.Items.Potions.Alcohol;
 using CalamityMod.Projectiles.Summon;
 using Terraria;
 using Terraria.ID;
@@ -34,20 +32,13 @@ namespace CalamityMod.Items.Armor.Aerospec
             Item.defense = 2; //13
         }
 
-        public override bool IsArmorSet(Item head, Item body, Item legs)
-        {
-            return body.type == ModContent.ItemType<AerospecBreastplate>() && legs.type == ModContent.ItemType<AerospecLeggings>();
-        }
+        public override bool IsArmorSet(Item head, Item body, Item legs) => body.type == ModContent.ItemType<AerospecBreastplate>() && legs.type == ModContent.ItemType<AerospecLeggings>();
 
-        public override void ArmorSetShadows(Player player)
-        {
-            player.armorEffectDrawShadow = true;
-        }
+        public override void ArmorSetShadows(Player player) => player.armorEffectDrawShadow = true;
 
         public override void UpdateArmorSet(Player player)
         {
-            player.setBonus = this.GetLocalization("SetBonus").Format(SetBonusMinionSlotBoost, SetBonusSummonDamageBoost.ToPercent())
-            + "\n" + CalamityUtils.GetTextFromModItem<AerospecBreastplate>("CommonSetBonus").Format(AerospecBreastplate.SetBonusHurtDamageThreshold);
+            player.setBonus = this.GetLocalization("SetBonus").Format(SetBonusMinionSlotBoost, SetBonusSummonDamageBoost.ToPercent(), AerospecBreastplate.SetBonusHurtDamageThreshold);
             var modPlayer = player.Calamity();
             modPlayer.valkyrie = true;
             modPlayer.aeroSet = true;

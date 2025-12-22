@@ -1,13 +1,12 @@
-﻿using Terraria;
-using Terraria.ModLoader;
+﻿using CalamityMod.Graphics;
+using CalamityMod.Systems.Graphic;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using System;
 using ReLogic.Content;
-using Terraria.ID;
-using CalamityMod.Graphics;
-using System.Reflection;
+using Terraria;
 using Terraria.Graphics.Shaders;
+using Terraria.ID;
+using Terraria.ModLoader;
 
 namespace CalamityMod.Backgrounds
 {
@@ -24,10 +23,15 @@ namespace CalamityMod.Backgrounds
                 return;
             }
 
-            On_Main.CheckMonoliths += DrawToTarget;
+            GeneralDrawLayerSystem.OnPrepareDraw += DrawToTarget;
             On_Main.DrawBackgroundBlackFill += On_Main_DrawBackgroundBlackFill;
 
             Main.QueueMainThreadAction(() => WaterDistortionTarget = new(true, ManagedRenderTarget.CreateScreenSizedTarget));
+        }
+
+        public override void Unload()
+        {
+            GeneralDrawLayerSystem.OnPrepareDraw -= DrawToTarget;
         }
 
         /// <summary>
@@ -51,7 +55,8 @@ namespace CalamityMod.Backgrounds
                     for (int j = 0; j < drawLimitY; j++)
                     {
                         Point pos = drawPoint + new Point(i, j);
-                        if (Main.tile[pos.X, pos.Y].Slope != SlopeType.Solid)
+                        if (!Main.tile[pos.X, pos.Y].HasTile &&
+                            Main.tile[pos.X, pos.Y].WallType == WallID.None)
                             Lighting.AddLight(pos.X, pos.Y, TorchID.White, 0.1f);
                     }
                 }
@@ -67,8 +72,8 @@ namespace CalamityMod.Backgrounds
                     {
                         Point pos = drawPoint + new Point(i, j);
                         if (!Main.tile[pos.X, pos.Y].HasTile &&
-    Main.tile[pos.X, pos.Y].WallType == 0 &&
-    Main.tile[pos.X, pos.Y].LiquidAmount == 0)
+                            Main.tile[pos.X, pos.Y].WallType == WallID.None &&
+                            Main.tile[pos.X, pos.Y].LiquidAmount == 0)
                             Lighting.AddLight(pos.X, pos.Y, TorchID.White, 0.2f);
                     }
                 }
@@ -84,7 +89,7 @@ namespace CalamityMod.Backgrounds
                     {
                         Point pos = drawPoint + new Point(i, j);
                         if (!Main.tile[pos.X, pos.Y].HasTile &&
-                        Main.tile[pos.X, pos.Y].WallType == 0)
+                        Main.tile[pos.X, pos.Y].WallType == WallID.None)
                             Lighting.AddLight(pos.X, pos.Y, TorchID.White, 0.2f);
                     }
                 }
@@ -100,18 +105,36 @@ namespace CalamityMod.Backgrounds
                     {
                         Point pos = drawPoint + new Point(i, j);
                         if (!Main.tile[pos.X, pos.Y].HasTile &&
-                        Main.tile[pos.X, pos.Y].WallType == 0)
+                            Main.tile[pos.X, pos.Y].WallType == WallID.None)
                             Lighting.AddLight(pos.X, pos.Y, TorchID.White, 0.2f);
+                    }
+                }
+            }
+            if (!Main.dedServ && (Main.LocalPlayer.InModBiome(ModContent.GetInstance<BiomeManagers.BasaltGullyBiome>())))
+            {
+                int drawLimitX = Main.screenWidth / 16;
+                int drawLimitY = Main.screenHeight / 16;
+                Point drawPoint = (Main.screenPosition / 16).ToPoint();
+                for (int i = 0; i < drawLimitX; i++)
+                {
+                    for (int j = 0; j < drawLimitY; j++)
+                    {
+                        Point pos = drawPoint + new Point(i, j);
+                        if (pos.Y >= Main.maxTilesY - 450)
+                        {
+                            if (!Main.tile[pos.X, pos.Y].HasTile &&
+                                Main.tile[pos.X, pos.Y].WallType == WallID.None)
+                                Lighting.AddLight(pos.X, pos.Y, TorchID.Red, 0.6f);
+                        }
                     }
                 }
             }
         }
 
-        private void DrawToTarget(On_Main.orig_CheckMonoliths orig)
+        private void DrawToTarget()
         {
             if (Main.gameMenu)
             {
-                orig();
                 return;
             }
 
@@ -129,8 +152,6 @@ namespace CalamityMod.Backgrounds
 
             Main.graphics.GraphicsDevice.SetRenderTarget(null);
             CurrentlyRendering = false;
-
-            orig();
         }
 
         private void On_Main_DrawBackgroundBlackFill(On_Main.orig_DrawBackgroundBlackFill orig, Main self)

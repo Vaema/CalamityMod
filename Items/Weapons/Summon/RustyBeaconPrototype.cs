@@ -22,7 +22,7 @@ namespace CalamityMod.Items.Weapons.Summon
             Item.height = 20;
             Item.mana = 10;
             Item.damage = 8;
-            Item.useAnimation = Item.useTime = 34;
+            Item.useAnimation = Item.useTime = 30;
             Item.useStyle = ItemUseStyleID.HoldUp;
             Item.noMelee = true;
             Item.knockBack = 0.5f;
@@ -33,6 +33,7 @@ namespace CalamityMod.Items.Weapons.Summon
             Item.shoot = ModContent.ProjectileType<RustyDrone>();
             Item.shootSpeed = 10f;
             Item.DamageType = DamageClass.Summon;
+            Item.sentry = true;
         }
 
         public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)

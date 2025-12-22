@@ -34,9 +34,9 @@ namespace CalamityMod.Items.Potions
 
         public override void AddRecipes()
         {
-            CreateRecipe(3).
-                AddIngredient(ItemID.BottledWater, 3).
-                AddIngredient(ItemID.Frog).
+            CreateRecipe().
+                AddIngredient(ItemID.BottledWater).
+                AddIngredient(ItemID.PinkGel).
                 AddIngredient(ItemID.Moonglow).
                 AddTile(TileID.Bottles).
                 Register();

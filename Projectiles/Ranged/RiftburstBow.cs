@@ -60,7 +60,7 @@ namespace CalamityMod.Projectiles.Ranged
                 fullSpeed = true;
                 int arg_1EF4_0 = (int)Projectile.ai[0] / (delayCompare - fireSpeedCompare * fireSpeed);
             }
-            bool canUseItem = !player.CantUseHoldout() && player.HasAmmo(player.ActiveItem());
+            bool canUseItem = !player.CantUseHoldout() && player.HasAmmo(player.HeldItem);
             if (Projectile.localAI[0] > 0f)
             {
                 Projectile.localAI[0] -= 1f;
@@ -79,13 +79,13 @@ namespace CalamityMod.Projectiles.Ranged
             {
                 int ammoType = ProjectileID.WoodenArrowFriendly;
                 float scaleFactor11 = 14f;
-                int weaponDamage2 = player.GetWeaponDamage(player.ActiveItem());
-                float weaponKnockback2 = player.ActiveItem().knockBack;
+                int weaponDamage2 = player.GetWeaponDamage(player.HeldItem);
+                float weaponKnockback2 = player.HeldItem.knockBack;
                 if (canUseItem)
                 {
-                    player.PickAmmo(player.ActiveItem(), out ammoType, out scaleFactor11, out weaponDamage2, out weaponKnockback2, out _);
-                    weaponKnockback2 = player.GetWeaponKnockback(player.ActiveItem(), weaponKnockback2);
-                    float scaleFactor12 = player.ActiveItem().shootSpeed * Projectile.scale;
+                    player.PickAmmo(player.HeldItem, out ammoType, out scaleFactor11, out weaponDamage2, out weaponKnockback2, out _);
+                    weaponKnockback2 = player.GetWeaponKnockback(player.HeldItem, weaponKnockback2);
+                    float scaleFactor12 = player.HeldItem.shootSpeed * Projectile.scale;
                     Vector2 shootDirection = Main.screenPosition + new Vector2((float)Main.mouseX, (float)Main.mouseY) - playerRotation;
                     if (player.gravDir == -1f)
                     {

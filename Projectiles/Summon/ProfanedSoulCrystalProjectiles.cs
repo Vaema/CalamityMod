@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.IO;
 using CalamityMod.Buffs.Summon.Whips;
-using CalamityMod.Items.Potions.Alcohol;
 using CalamityMod.NPCs.Providence;
 using CalamityMod.NPCs.SupremeCalamitas;
 using CalamityMod.Particles;
@@ -15,7 +14,6 @@ using Terraria.GameContent;
 using Terraria.ID;
 using Terraria.ModLoader;
 using static CalamityMod.Items.Accessories.ProfanedSoulCrystal;
-using static Humanizer.In;
 using Vector2 = Microsoft.Xna.Framework.Vector2;
 
 namespace CalamityMod.Projectiles.Summon
@@ -1521,7 +1519,7 @@ namespace CalamityMod.Projectiles.Summon
             else
             {
                 owner.Calamity().profanedCrystalAnim = -1;
-                owner.Calamity().GeneralScreenShakePower = 5f;
+                owner.SetScreenshake(5f);
                 DetermineTransformationEligibility(owner);
                 if (!Main.dedServ)
                 {

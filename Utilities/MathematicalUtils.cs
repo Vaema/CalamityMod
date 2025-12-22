@@ -1,10 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Security.Cryptography.Xml;
-using Microsoft.CodeAnalysis;
 using Microsoft.Xna.Framework;
-using ReLogic.Threading;
 using Terraria;
 
 namespace CalamityMod

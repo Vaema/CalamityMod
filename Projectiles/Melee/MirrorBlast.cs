@@ -4,7 +4,6 @@ using System.IO;
 using CalamityMod.Particles;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using Steamworks;
 using Terraria;
 using Terraria.Audio;
 using Terraria.ID;
@@ -142,6 +141,12 @@ namespace CalamityMod.Projectiles.Melee
             else
             {
                 float homingStrength = 0.025f; // Adjust this value for stronger or weaker homing
+                if (Projectile.timeLeft < 1000)
+                    homingStrength *= 2f;
+                if (Projectile.timeLeft < 800)
+                    homingStrength *= 2f;
+                if (Projectile.timeLeft < 600)
+                    homingStrength *= 2f;
                 NPC target = FindClosestNPC(3200f);
                 if (target != null)
                 {
@@ -154,7 +159,7 @@ namespace CalamityMod.Projectiles.Melee
                     GeneralParticleHandler.SpawnParticle(smoke);
                     if (Main.rand.NextBool(5))
                     {
-                        Dust trailDust = Dust.NewDustPerfect(Projectile.Center + Main.rand.NextVector2Circular(5, 5) - Projectile.velocity, 66);
+                        Dust trailDust = Dust.NewDustPerfect(Projectile.Center + Main.rand.NextVector2Circular(5, 5) - Projectile.velocity, DustID.RainbowTorch);
                         trailDust.scale = Main.rand.NextFloat(0.7f, 0.85f);
                         trailDust.velocity = -Projectile.velocity * Main.rand.NextFloat(0.3f, 0.5f);
                         trailDust.color = Main.rand.NextBool() ? Color.AliceBlue : Color.SkyBlue;

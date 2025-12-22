@@ -1,7 +1,4 @@
 ﻿using System;
-using CalamityMod.Buffs.DamageOverTime;
-using CalamityMod.Events;
-using CalamityMod.NPCs;
 using CalamityMod.NPCs.Providence;
 using CalamityMod.Particles;
 using CalamityMod.World;

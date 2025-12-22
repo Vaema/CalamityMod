@@ -1,9 +1,7 @@
 ﻿using System.Collections.Generic;
-using System.Linq;
 using CalamityMod.Items.Materials;
 using CalamityMod.Projectiles.Melee.Yoyos;
 using CalamityMod.Rarities;
-using CalamityMod.World;
 using Terraria;
 using Terraria.ID;
 using Terraria.Localization;

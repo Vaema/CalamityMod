@@ -222,7 +222,7 @@ namespace CalamityMod.UI.Rippers
                 }
 
                 // When the mouse is released, save the config and destroy the drag offset.
-                if (ms.LeftButton == ButtonState.Released)
+                if (rageDragOffset.HasValue && ms.LeftButton == ButtonState.Released)
                 {
                     rageDragOffset = null;
                     CalamityClientConfig.Instance.SaveChanges();
@@ -264,7 +264,7 @@ namespace CalamityMod.UI.Rippers
                 }
 
                 // When the mouse is released, save the config and destroy the drag offset.
-                if (ms.LeftButton == ButtonState.Released)
+                if (adrenDragOffset.HasValue && ms.LeftButton == ButtonState.Released)
                 {
                     adrenDragOffset = null;
                     CalamityClientConfig.Instance.SaveChanges();

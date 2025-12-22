@@ -1,11 +1,8 @@
-﻿using System;
-using CalamityMod.Particles;
+﻿using CalamityMod.Particles;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using ReLogic.Utilities;
 using Terraria;
 using Terraria.Audio;
-using Terraria.Graphics.Renderers;
 using Terraria.ID;
 using Terraria.ModLoader;
 
@@ -75,7 +72,7 @@ namespace CalamityMod.Projectiles.Melee
             }
             if (Main.rand.NextBool(13))
             {
-                Dust dust2 = Dust.NewDustPerfect(Projectile.Center + Main.rand.NextVector2Circular(20, 20), 278, -Projectile.velocity.RotatedByRandom(0.5f) * Main.rand.NextFloat(0.2f, 3));
+                Dust dust2 = Dust.NewDustPerfect(Projectile.Center + Main.rand.NextVector2Circular(20, 20), DustID.FireworksRGB, -Projectile.velocity.RotatedByRandom(0.5f) * Main.rand.NextFloat(0.2f, 3));
                 dust2.scale = Main.rand.NextFloat(0.55f, 0.85f);
                 dust2.noGravity = true;
                 dust2.color = Main.rand.NextBool(3) ? Color.AliceBlue : Color.DodgerBlue;

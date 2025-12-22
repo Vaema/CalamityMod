@@ -1,8 +1,6 @@
-﻿using System.Collections.Generic;
-using CalamityMod.Systems;
+﻿using CalamityMod.Systems;
 using CalamityMod.Tiles.Ores;
 using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Graphics;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
@@ -13,7 +11,7 @@ namespace CalamityMod.Tiles.Crags
     {
         private const short subsheetWidth = 450;
         private const short subsheetHeight = 198;
-        
+
         public override void SetStaticDefaults()
         {
             Main.tileSolid[Type] = true;
@@ -27,7 +25,7 @@ namespace CalamityMod.Tiles.Crags
             MineResist = 2f;
             MinPick = 100;
             AddMapEntry(new Color(53, 33, 56));
-            this.RegisterUniversalMerge(TileID.Ash, "CalamityMod/Tiles/Merges/AshMerge");
+            this.RegisterBlendMergeWith(TileID.Ash);
         }
 
         public override bool CreateDust(int i, int j, ref int type)

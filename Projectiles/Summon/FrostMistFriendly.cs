@@ -51,7 +51,7 @@ namespace CalamityMod.Projectiles.Summon
                     }
                 }
                 Projectile.ai[1] = 1f;
-                SoundEngine.PlaySound(SoundID.Item30, Projectile.position);
+                SoundEngine.PlaySound(SoundID.Item30 with { Volume = 0.5f }, Projectile.position);
             }
             if (Projectile.localAI[0] == 0f)
             {

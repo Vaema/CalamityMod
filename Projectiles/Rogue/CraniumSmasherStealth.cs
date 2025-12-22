@@ -75,8 +75,7 @@ namespace CalamityMod.Projectiles.Rogue
             if (Main.myPlayer == Projectile.owner)
                 Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center, Vector2.Zero, ModContent.ProjectileType<CraniumSMASH>(), (int)(Projectile.damage * 1.5f), 0f, Projectile.owner, 0f, 1f);
             SoundEngine.PlaySound(SoundID.Item14, Projectile.Center);
-            if (Main.LocalPlayer.Calamity().GeneralScreenShakePower < 3.5f)
-                Main.LocalPlayer.Calamity().GeneralScreenShakePower = 3.5f;
+            Main.LocalPlayer.SetScreenshake(3.5f);
 
             if (!Main.dedServ)
             {

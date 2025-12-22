@@ -7,10 +7,9 @@ using CalamityMod.Items.Armor.Vanity;
 using CalamityMod.Items.LoreItems;
 using CalamityMod.Items.Materials;
 using CalamityMod.Items.Placeables.Furniture.BossRelics;
-using CalamityMod.Items.Placeables.Furniture.DevPaintings;
+using CalamityMod.Items.Placeables.Furniture.Paintings;
 using CalamityMod.Items.Placeables.Furniture.Trophies;
 using CalamityMod.Items.TreasureBags;
-using CalamityMod.Items.TreasureBags.MiscGrabBags;
 using CalamityMod.Items.Weapons.Magic;
 using CalamityMod.Items.Weapons.Melee;
 using CalamityMod.Items.Weapons.Ranged;
@@ -18,7 +17,6 @@ using CalamityMod.Items.Weapons.Rogue;
 using CalamityMod.Items.Weapons.Summon;
 using CalamityMod.NPCs.AquaticScourge;
 using CalamityMod.Projectiles.Boss;
-using CalamityMod.Projectiles.Enemy;
 using CalamityMod.World;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
@@ -84,7 +82,7 @@ namespace CalamityMod.NPCs.DesertScourge
             NPCID.Sets.MPAllowedEnemies[Type] = true;
         }
 
-        public static int SpitDamage = 8; // 32
+        public static int SpitDamage = 10; // 40
 
         public override void SetDefaults()
         {
@@ -95,7 +93,7 @@ namespace CalamityMod.NPCs.DesertScourge
             NPC.width = 104;
             NPC.height = 104;
 
-            NPC.LifeMaxNERB(4200, 5000, 1150000);
+            NPC.LifeMaxNERB(4000, 5000, 1150000);
             if (Main.getGoodWorld)
                 NPC.lifeMax *= 2;
             NPC.aiStyle = -1;
@@ -123,7 +121,7 @@ namespace CalamityMod.NPCs.DesertScourge
 
         public override void BossHeadSlot(ref int index)
         {
-            if ((NPC.AnyNPCs(ModContent.NPCType<DesertNuisanceHead>()) || NPC.AnyNPCs(ModContent.NPCType<DesertNuisanceHeadYoung>())) && !CalamityWorld.death)
+            if ((NPC.AnyNPCs(ModContent.NPCType<DesertNuisanceHead>()) || NPC.AnyNPCs(ModContent.NPCType<DesertNuisanceHeadYoung>())))
                 index = -1;
         }
 
@@ -167,7 +165,7 @@ namespace CalamityMod.NPCs.DesertScourge
             bool death = CalamityWorld.death || BossRushEvent.BossRushActive;
 
             // Check for Nuisances
-            bool hide = (NPC.AnyNPCs(ModContent.NPCType<DesertNuisanceHead>()) || NPC.AnyNPCs(ModContent.NPCType<DesertNuisanceHeadYoung>())) && !death;
+            bool hide = (NPC.AnyNPCs(ModContent.NPCType<DesertNuisanceHead>()) || NPC.AnyNPCs(ModContent.NPCType<DesertNuisanceHeadYoung>()));
             if (hide)
             {
                 NPC.Calamity().newAI[0] = 0f;
@@ -940,8 +938,8 @@ namespace CalamityMod.NPCs.DesertScourge
                 string key2 = "Mods.CalamityMod.Status.Progression.SandstormTrigger";
                 Color messageColor2 = Color.PaleGoldenrod;
 
-                CalamityUtils.DisplayLocalizedText(key, messageColor);
-                CalamityUtils.DisplayLocalizedText(key2, messageColor2);
+                CalamityUtils.BroadcastLocalizedText(key, messageColor);
+                CalamityUtils.BroadcastLocalizedText(key2, messageColor2);
 
                 if (!Terraria.GameContent.Events.Sandstorm.Happening)
                     CalamityWorld.StartSandstorm();
@@ -995,11 +993,9 @@ namespace CalamityMod.NPCs.DesertScourge
                 normalOnly.Add(DropHelper.PerPlayer(ModContent.ItemType<PearlShard>(), 1, 25, 30));
 
                 // Equipment
-                normalOnly.Add(DropHelper.PerPlayer(ModContent.ItemType<OceanCrest>()));
+                // 16NOV2025: Ozzatron: item has been chosen as the "Expert gatekept" item for this Calamity boss
+                // normalOnly.Add(DropHelper.PerPlayer(ModContent.ItemType<OceanCrest>()));
                 normalOnly.Add(ModContent.ItemType<SandCloak>(), DropHelper.NormalWeaponDropRateFraction);
-
-                // Fishing
-                normalOnly.Add(ModContent.ItemType<SandyAnglingKit>());
             }
 
             // Trophy (always directly from boss, never in bag)
@@ -1052,7 +1048,6 @@ namespace CalamityMod.NPCs.DesertScourge
         {
             if (hurtInfo.Damage > 0)
             {
-                target.AddBuff(BuffID.Bleeding, 600);
                 NPC.ai[3] = 1f;
                 NPC.ForceNetUpdate();
             }

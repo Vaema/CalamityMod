@@ -1,6 +1,5 @@
 ﻿using System;
 using CalamityMod.Buffs.StatDebuffs;
-using CalamityMod.NPCs.OldDuke;
 using CalamityMod.Particles;
 using Microsoft.Xna.Framework;
 using Terraria;

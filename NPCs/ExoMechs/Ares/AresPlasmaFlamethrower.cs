@@ -1,7 +1,6 @@
 ﻿using System;
 using System.IO;
 using CalamityMod.Events;
-using CalamityMod.Items.Weapons.DraedonsArsenal;
 using CalamityMod.NPCs.ExoMechs.Thanatos;
 using CalamityMod.Particles;
 using CalamityMod.Projectiles.Boss;
@@ -82,8 +81,8 @@ namespace CalamityMod.NPCs.ExoMechs.Ares
             }
         }
 
-        public static int FireballDamage = 85; // 340
-        public static int BoltDamage = 75; // 300
+        public static int FireballDamage = 80; // 320
+        public static int BoltDamage = 70; // 280
 
         public override void SetDefaults()
         {
@@ -93,7 +92,7 @@ namespace CalamityMod.NPCs.ExoMechs.Ares
             NPC.height = 90;
             NPC.defense = 100;
             NPC.DR_NERD(0.35f);
-            NPC.LifeMaxNERB(1250000, 1495000, 650000);
+            NPC.LifeMaxNERB(1000000, 1495000, 650000);
             NPC.aiStyle = -1;
             AIType = -1;
             NPC.Opacity = 0f;

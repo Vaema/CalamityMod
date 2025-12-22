@@ -2,6 +2,8 @@ BabyCannonballJellyfish.DisplayName: Baby Cannonball Jellyfish
 Bloatfish.DisplayName: Bloatfish
 BobbitWormHead.DisplayName: Bobbit Worm
 BoxJellyfish.DisplayName: Box Jellyfish
+Burrower.DisplayName: Burrower
+BurrowerHitbox.DisplayName: Burrower
 CannonballJellyfish.DisplayName: Cannonball Jellyfish
 ChaoticPuffer.DisplayName: Chaotic Puffer
 ColossalSquid.DisplayName: Colossal Squid
@@ -144,7 +146,6 @@ AquaticAberration.DisplayName: Aquatic Aberration
 Leviathan.DisplayName: The Leviathan
 LeviathanStart.DisplayName: ???
 AeroSlime.DisplayName: Aero Slime
-ArmoredDiggerHead.DisplayName: Armored Digger
 MechanizedSerpent: Mechanized Serpent
 AuroraSpirit.DisplayName: Aurora Spirit
 BloomSlime.DisplayName: Bloom Slime
@@ -171,9 +172,7 @@ Frogfish.DisplayName: Frogfish
 Horse.DisplayName: Earth Elemental
 IceClasper.DisplayName: Ice Clasper
 ImpiousImmolator.DisplayName: Impious Immolator
-KingSlimeJewelEmerald.DisplayName: Emerald Jewel
 KingSlimeJewelRuby.DisplayName: Ruby Jewel
-KingSlimeJewelSapphire.DisplayName: Sapphire Jewel
 LavaSlimeNoLavaDrop.DisplayName: Lava Slime
 MantisShrimp.DisplayName: Mantis Shrimp
 OverloadedSoldier.DisplayName: Overloaded Soldier
@@ -271,6 +270,7 @@ GhostBell.DisplayName: Ghost Bell
 GiantClam.DisplayName: Giant Clam
 Clamitas: Clamitas
 SupremeClamitas: Supreme Clamitas
+GildedAxolotl.DisplayName: Gilded Axolotl
 GoldBabyGhostBell: Gold Baby Ghost Bell
 GoldPolypPanasea: Gold Polyp Panasea
 GoldPrismaticGuppy: Gold Prismatic Guppy
@@ -564,3 +564,4 @@ SeaKing: {
 WildBumblebirb.DisplayName: Wild Bumblebirb
 DraconicSwarmer.DisplayName: Draconic Swarmer
 Dragonfolly.DisplayName: Dragonfolly
+Shoreskipper.DisplayName: Shoreskipper

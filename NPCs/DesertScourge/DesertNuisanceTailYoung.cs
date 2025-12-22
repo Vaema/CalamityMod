@@ -182,12 +182,6 @@ namespace CalamityMod.NPCs.DesertScourge
             NPC.lifeMax = (int)(NPC.lifeMax * 0.7f * balance);
         }
 
-        public override void OnHitPlayer(Player target, Player.HurtInfo hurtInfo)
-        {
-            if (hurtInfo.Damage > 0)
-                target.AddBuff(BuffID.Bleeding, 60);
-        }
-
         public override Color? GetAlpha(Color drawColor)
         {
             if (Main.zenithWorld)

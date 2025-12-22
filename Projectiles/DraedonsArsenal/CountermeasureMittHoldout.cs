@@ -385,12 +385,13 @@ namespace CalamityMod.Projectiles.DraedonsArsenal
             float damageMult = 25;
             foreach (NPC npc in Main.ActiveNPCs)
             {
-                if (!npc.dontTakeDamage && (Main.zenithWorld || Utils.Distance(npc.Center, palmBlastPos) <= (80 + Math.Max(npc.width / 2, npc.height / 2))))
+                if (!npc.dontTakeDamage && Utils.Distance(npc.Center, palmBlastPos) <= (80 + Math.Max(npc.width / 2, npc.height / 2)))
                 {
                     hitAnything = true;
                     Vector2 pos = Vector2.Lerp(npc.Center, Projectile.Center, 0.35f);
                     Vector2 vel = Vector2.Lerp(Projectile.Center.DirectionTo(npc.Center), alteredRotation.ToRotationVector2(), 0.5f);
-                    Projectile.NewProjectile(Projectile.GetSource_FromThis(), pos, vel, ModContent.ProjectileType<CountermeasurePalmBlast>(), (int)(Projectile.damage * damageMult), 0, Projectile.owner, 0, npc.whoAmI);
+                    if (Main.myPlayer == Projectile.owner)
+                        Projectile.NewProjectile(Projectile.GetSource_FromThis(), pos, vel, ModContent.ProjectileType<CountermeasurePalmBlast>(), (int)(Projectile.damage * damageMult), 0, Projectile.owner, 0, npc.whoAmI);
                     if (oneFx)
                     {
                         for (int i = 0; i < 25; i++)
@@ -425,7 +426,7 @@ namespace CalamityMod.Projectiles.DraedonsArsenal
                 SoundStyle aud = new("CalamityMod/Sounds/Item/MittHit");
                 for (int i = 0; i < 2; i++)
                     SoundEngine.PlaySound(aud with { Volume = 0.8f, Pitch = 0, MaxInstances = 2 }, Projectile.Center);
-                Owner.Calamity().GeneralScreenShakePower = 8f;
+                Owner.SetScreenshake(8f);
             }
             else
             {

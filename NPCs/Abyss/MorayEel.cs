@@ -1,11 +1,9 @@
 ﻿using System.IO;
 using CalamityMod.BiomeManagers;
 using CalamityMod.Items.Placeables.Banners;
-using CalamityMod.Items.Weapons.Melee;
 using CalamityMod.NPCs.NormalNPCs;
 using Terraria;
 using Terraria.GameContent.Bestiary;
-using Terraria.GameContent.ItemDropRules;
 using Terraria.ID;
 using Terraria.ModLoader;
 using Terraria.ModLoader.Utilities;
@@ -113,7 +111,7 @@ namespace CalamityMod.NPCs.Abyss
 
         public override void ModifyNPCLoot(NPCLoot npcLoot)
         {
-            npcLoot.Add(ItemID.Flipper, 8);
+            npcLoot.Add(ItemID.Flipper, 15);
         }
 
         public override void HitEffect(NPC.HitInfo hit)

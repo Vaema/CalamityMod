@@ -1,8 +1,6 @@
 ﻿using System;
 using System.IO;
 using CalamityMod.Items.Weapons.Ranged;
-using CalamityMod.Projectiles.Melee;
-using CalamityMod.Projectiles.Typeless;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria;
@@ -82,8 +80,8 @@ namespace CalamityMod.Projectiles.Ranged
                     SoundEngine.PlaySound(SoundID.Item92, Projectile.Center);
 
                     float shootSpeed = 12f;
-                    int damage = player.GetWeaponDamage(player.ActiveItem());
-                    float knockBack = player.ActiveItem().knockBack;
+                    int damage = player.GetWeaponDamage(player.HeldItem);
+                    float knockBack = player.HeldItem.knockBack;
 
                     Projectile.velocity = Main.screenPosition - playerPosition;
                     Projectile.velocity.X += Main.mouseX;

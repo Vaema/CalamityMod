@@ -4,7 +4,6 @@ using System.IO;
 using CalamityMod.Events;
 using CalamityMod.Graphics.Primitives;
 using CalamityMod.Items.Potions;
-using CalamityMod.Items.Weapons.DraedonsArsenal;
 using CalamityMod.NPCs.ExoMechs.Ares;
 using CalamityMod.NPCs.ExoMechs.Thanatos;
 using CalamityMod.Projectiles.Boss;
@@ -144,20 +143,20 @@ namespace CalamityMod.NPCs.ExoMechs.Apollo
             }
         }
 
-        public static int FireballDamage = 85; // 340
-        public static int BoltDamage = 75; // 300
-        public static int RocketDamage = 100; // 400
+        public static int FireballDamage = 80; // 320
+        public static int BoltDamage = 70; // 280
+        public static int RocketDamage = 95; // 380
 
         public override void SetDefaults()
         {
             NPC.Calamity().canBreakPlayerDefense = true;
-            NPC.damage = 250; // 500
+            NPC.damage = 240; // 480
             NPC.npcSlots = 5f;
             NPC.width = 204;
             NPC.height = 226;
             NPC.defense = 100;
             NPC.DR_NERD(0.25f);
-            NPC.LifeMaxNERB(1250000, 1495000, 650000);
+            NPC.LifeMaxNERB(1000000, 1495000, 650000);
             NPC.aiStyle = -1;
             AIType = -1;
             NPC.Opacity = 0f;
@@ -1482,18 +1481,18 @@ namespace CalamityMod.NPCs.ExoMechs.Apollo
             NPC.frame = new Rectangle(NPC.width * frameX, NPC.height * frameY, NPC.width, NPC.height);
         }
 
-        public float FlameTrailWidthFunction(float completionRatio) => MathHelper.SmoothStep(21f, 8f, completionRatio) * ChargeComboFlash;
+        public float FlameTrailWidthFunction(float completionRatio, Vector2 vertexPos) => MathHelper.SmoothStep(21f, 8f, completionRatio) * ChargeComboFlash;
 
-        public float FlameTrailWidthFunctionBig(float completionRatio) => MathHelper.SmoothStep(34f, 12f, completionRatio) * ChargeComboFlash;
+        public float FlameTrailWidthFunctionBig(float completionRatio, Vector2 vertexPos) => MathHelper.SmoothStep(34f, 12f, completionRatio) * ChargeComboFlash;
 
-        public static float RibbonTrailWidthFunction(float completionRatio)
+        public static float RibbonTrailWidthFunction(float completionRatio, Vector2 vertexPos)
         {
             float baseWidth = Utils.GetLerpValue(1f, 0.54f, completionRatio, true) * 5f;
             float endTipWidth = CalamityUtils.Convert01To010(Utils.GetLerpValue(0.96f, 0.89f, completionRatio, true)) * 2.4f;
             return baseWidth + endTipWidth;
         }
 
-        public Color FlameTrailColorFunction(float completionRatio)
+        public Color FlameTrailColorFunction(float completionRatio, Vector2 vertexPos)
         {
             float trailOpacity = Utils.GetLerpValue(0.8f, 0.27f, completionRatio, true) * Utils.GetLerpValue(0f, 0.067f, completionRatio, true);
             Color startingColor = Color.Lerp(Color.White, Color.Cyan, 0.27f);
@@ -1502,7 +1501,7 @@ namespace CalamityMod.NPCs.ExoMechs.Apollo
             return CalamityUtils.MulticolorLerp(completionRatio, startingColor, middleColor, endColor) * ChargeComboFlash * trailOpacity;
         }
 
-        public Color FlameTrailColorFunctionBig(float completionRatio)
+        public Color FlameTrailColorFunctionBig(float completionRatio, Vector2 vertexPos)
         {
             float trailOpacity = Utils.GetLerpValue(0.8f, 0.27f, completionRatio, true) * Utils.GetLerpValue(0f, 0.067f, completionRatio, true) * 0.56f;
             Color startingColor = Color.Lerp(Color.White, Color.Cyan, 0.25f);
@@ -1513,7 +1512,7 @@ namespace CalamityMod.NPCs.ExoMechs.Apollo
             return color;
         }
 
-        public Color RibbonTrailColorFunction(float completionRatio)
+        public Color RibbonTrailColorFunction(float completionRatio, Vector2 vertexPos)
         {
             Color startingColor = new Color(34, 40, 48);
             Color endColor = new Color(40, 160, 32);
@@ -1649,7 +1648,7 @@ namespace CalamityMod.NPCs.ExoMechs.Apollo
                         for (int i = 0; i < 4; i++)
                         {
                             Vector2 drawOffset = (MathHelper.TwoPi * i / 4f).ToRotationVector2() * 8f;
-                            PrimitiveRenderer.RenderTrail(drawPositions, new(FlameTrailWidthFunctionBig, FlameTrailColorFunctionBig, (_) => drawOffset, shader: GameShaders.Misc["CalamityMod:ImpFlameTrail"]), 70);
+                            PrimitiveRenderer.RenderTrail(drawPositions, new(FlameTrailWidthFunctionBig, FlameTrailColorFunctionBig, (_,_) => drawOffset, shader: GameShaders.Misc["CalamityMod:ImpFlameTrail"]), 70);
                         }
                     }
                     else
@@ -1736,7 +1735,7 @@ namespace CalamityMod.NPCs.ExoMechs.Apollo
         public override void HitEffect(NPC.HitInfo hit)
         {
             for (int k = 0; k < 3; k++)
-                Dust.NewDust(NPC.position, NPC.width, NPC.height, 107, 0f, 0f, 100, new Color(0, 255, 255), 1f);
+                Dust.NewDust(NPC.position, NPC.width, NPC.height, DustID.Terra, 0f, 0f, 100, new Color(0, 255, 255), 1f);
 
             if (NPC.soundDelay == 0)
             {
@@ -1748,14 +1747,14 @@ namespace CalamityMod.NPCs.ExoMechs.Apollo
             {
                 for (int num193 = 0; num193 < 2; num193++)
                 {
-                    Dust.NewDust(NPC.position, NPC.width, NPC.height, 107, 0f, 0f, 100, new Color(0, 255, 255), 1.5f);
+                    Dust.NewDust(NPC.position, NPC.width, NPC.height, DustID.Terra, 0f, 0f, 100, new Color(0, 255, 255), 1.5f);
                 }
                 for (int i = 0; i < 20; i++)
                 {
-                    int plasmaDust = Dust.NewDust(NPC.position, NPC.width, NPC.height, 107, 0f, 0f, 0, new Color(0, 255, 255), 2.5f);
+                    int plasmaDust = Dust.NewDust(NPC.position, NPC.width, NPC.height, DustID.Terra, 0f, 0f, 0, new Color(0, 255, 255), 2.5f);
                     Main.dust[plasmaDust].noGravity = true;
                     Main.dust[plasmaDust].velocity *= 3f;
-                    plasmaDust = Dust.NewDust(NPC.position, NPC.width, NPC.height, 107, 0f, 0f, 100, new Color(0, 255, 255), 1.5f);
+                    plasmaDust = Dust.NewDust(NPC.position, NPC.width, NPC.height, DustID.Terra, 0f, 0f, 100, new Color(0, 255, 255), 1.5f);
                     Main.dust[plasmaDust].velocity *= 2f;
                     Main.dust[plasmaDust].noGravity = true;
                 }

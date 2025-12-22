@@ -1,19 +1,15 @@
-﻿using System.Reflection;
-using CalamityMod.Items.Tools.ClimateChange;
+﻿using CalamityMod.Items.Tools.ClimateChange;
 using CalamityMod.NPCs.ExoMechs;
 using CalamityMod.NPCs.ExoMechs.Apollo;
 using CalamityMod.NPCs.ExoMechs.Ares;
 using CalamityMod.NPCs.ExoMechs.Artemis;
 using CalamityMod.NPCs.ExoMechs.Thanatos;
-using CalamityMod.Systems;
 using Microsoft.Xna.Framework;
 using Terraria;
-using Terraria.DataStructures;
 using Terraria.GameContent.Creative;
 using Terraria.GameContent.Events;
 using Terraria.ID;
 using Terraria.ModLoader;
-using Terraria.Utilities;
 
 namespace CalamityMod.World
 {
@@ -34,11 +30,6 @@ namespace CalamityMod.World
         /// Worlds created before the Draedon Update will not lock specific Draedon's Arsenal recipes behind Schematics.
         /// </summary>
         public static bool IsWorldAfterDraedonUpdate = false;
-        /// <summary>
-        /// Stores the pre-Hardmode ore types that this world generated with.<br/>
-        /// Is not actually used for any world gen tasks, and is only used to change the item sprite of the Suspicious Scrap item.
-        /// </summary>
-        public static ushort[] OreTypes = new ushort[4];
 
         // Modes
         /// <summary> If true, the world is in Revengeance Mode. </summary>
@@ -67,13 +58,11 @@ namespace CalamityMod.World
             if (Main.GameModeInfo.IsJourneyMode)
             {
                 CreativePowers.DifficultySliderPower power = CreativePowerManager.Instance.GetPower<CreativePowers.DifficultySliderPower>();
-                float level = (float)DifficultyModeSystem.journeySliderCacheField.GetValue(power);
+                float level = power._sliderCurrentValueCache;
                 return level == 1f;
             }
 
-            FieldInfo findInfo = typeof(Main).GetField("_currentGameModeInfo", BindingFlags.Static | BindingFlags.NonPublic);
-            GameModeData data = (GameModeData)findInfo.GetValue(null);
-            return data.IsMasterMode;
+            return Main._currentGameModeInfo.IsMasterMode;
         }
 
         // Sunken Sea

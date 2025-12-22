@@ -12,7 +12,7 @@ namespace CalamityMod.Projectiles.Typeless
         public new string LocalizationCategory => "Projectiles.Typeless";
         public override string Texture => "Terraria/Images/Projectile_" + ProjectileID.OrnamentFriendly;
 
-        internal static readonly SoundStyle JingleSound = new("CalamityMod/Sounds/Item/FestiveJingle") { PitchVariance = 0.5f };
+        internal static readonly SoundStyle JingleSound = new("CalamityMod/Sounds/Item/FestiveJingle") { Volume = 0.25f, PitchVariance = 0.5f };
 
         public override void SetStaticDefaults() => Main.projFrames[Type] = Main.projFrames[ProjectileID.OrnamentFriendly];
 
@@ -75,7 +75,7 @@ namespace CalamityMod.Projectiles.Typeless
                 if (Vector2.Distance(player.Center, Projectile.Bottom) < 32f && player.wingTimeMax > 0f)
                 {
                     player.wingTime = MathHelper.Clamp(player.wingTime + 75f, 0f, player.wingTimeMax);
-                    SoundEngine.PlaySound(SoundID.Item29, player.Center);
+                    SoundEngine.PlaySound(SoundID.Item29 with { Volume = 0.25f }, player.Center);
                     Projectile.Kill();
 
                     int dustType = DustID.GemRuby - Projectile.frame;

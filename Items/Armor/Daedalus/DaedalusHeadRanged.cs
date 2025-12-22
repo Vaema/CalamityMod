@@ -1,5 +1,4 @@
-﻿using CalamityMod.CalPlayer;
-using CalamityMod.Items.Materials;
+﻿using CalamityMod.Items.Materials;
 using Terraria;
 using Terraria.ID;
 using Terraria.Localization;
@@ -15,11 +14,11 @@ namespace CalamityMod.Items.Armor.Daedalus
 
         public static float RangedDamageBoost = 0.13f;
         public static int RangedCritBoost = 7;
-        // NOTE: Ammo conservation is a bool so the number is manually added in the tooltip and equip
-        public override LocalizedText Tooltip => base.Tooltip.WithFormatArgs(RangedDamageBoost.ToPercent(), RangedCritBoost);
+        public static float AmmoReduction = 0.8f;
+        public override LocalizedText Tooltip => base.Tooltip.WithFormatArgs(RangedDamageBoost.ToPercent(), RangedCritBoost, (1f - AmmoReduction).ToPercent());
 
         // Set Bonus
-        public static int ShardDamage = 60;
+        public static int ShardDamage => CalamityUtils.ScaleWithDifficulty(30);
 
         public override void SetDefaults()
         {
@@ -47,9 +46,10 @@ namespace CalamityMod.Items.Armor.Daedalus
 
         public override void UpdateEquip(Player player)
         {
+            var modPlayer = player.Calamity();
+            modPlayer.ammoCost *= AmmoReduction;
             player.GetDamage<RangedDamageClass>() += RangedDamageBoost;
             player.GetCritChance<RangedDamageClass>() += RangedCritBoost;
-            player.ammoCost80 = true;
         }
 
         public override void AddRecipes()

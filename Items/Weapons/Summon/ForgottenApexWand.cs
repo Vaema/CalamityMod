@@ -26,7 +26,7 @@ namespace CalamityMod.Items.Weapons.Summon
             Item.knockBack = 4f;
             Item.mana = 10;
             Item.damage = 28;
-            Item.useAnimation = Item.useTime = 25;
+            Item.useAnimation = Item.useTime = 36;
             Item.buffType = ModContent.BuffType<AncientMineralSharkBuff>();
             Item.shoot = ModContent.ProjectileType<ApexShark>();
         }

@@ -1,5 +1,4 @@
-﻿using Terraria.ID;
-using Terraria.ModLoader;
+﻿using Terraria.ModLoader;
 namespace CalamityMod.Items.Placeables.DraedonStructures
 {
     public class RustedShelf : ModItem, ILocalizedModType

@@ -29,7 +29,7 @@ namespace CalamityMod.NPCs.Leviathan
 
         public override void SetDefaults()
         {
-            NPC.damage = 45; // 90
+            NPC.damage = 50; // 100
             NPC.aiStyle = -1;
             AIType = -1;
             NPC.noTileCollide = true;
@@ -98,14 +98,6 @@ namespace CalamityMod.NPCs.Leviathan
         public override bool CanHitPlayer(Player target, ref int cooldownSlot) => NPC.ai[1] == 0f && NPC.alpha <= 100;
 
         public override Color? GetAlpha(Color drawColor) => NPC.ai[1] == 1f ? Color.Transparent : new Color(200, 200, 200, drawColor.A) * NPC.Opacity;
-
-        public override void OnHitPlayer(Player target, Player.HurtInfo hurtInfo)
-        {
-            if (NPC.ai[1] == 1f || hurtInfo.Damage <= 0)
-                return;
-
-            target.AddBuff(BuffID.Frostburn, 240, true);
-        }
 
         public override bool CheckActive() => false;
 

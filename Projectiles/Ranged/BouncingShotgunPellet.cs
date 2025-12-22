@@ -50,7 +50,7 @@ namespace CalamityMod.Projectiles.Ranged
                 // If the index is not default, smart bounce in the direction of that enemy.
                 if (index != -1)
                 {
-                    Projectile.velocity = CalamityUtils.CalculatePredictiveAimToTargetMaxUpdates(Projectile.Center, Main.npc[index], owner.ActiveItem().shootSpeed, 3);
+                    Projectile.velocity = CalamityUtils.CalculatePredictiveAimToTargetMaxUpdates(Projectile.Center, Main.npc[index], owner.HeldItem.shootSpeed, 3);
                 }
                 return false;
             }

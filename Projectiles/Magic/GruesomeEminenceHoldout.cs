@@ -48,7 +48,7 @@ namespace CalamityMod.Projectiles.Magic
             Lighting.AddLight(Projectile.Center, 0.13f, 0f, 0.05f);
 
             // Also emit dust.
-            Dust ghostlyMagic = Dust.NewDustPerfect(Projectile.Top + Main.rand.NextVector2Circular(5f, 5f) + Vector2.UnitX * Projectile.direction * 7f, 267);
+            Dust ghostlyMagic = Dust.NewDustPerfect(Projectile.Top + Main.rand.NextVector2Circular(5f, 5f) + Vector2.UnitX * Projectile.direction * 7f, DustID.RainbowMk2);
             ghostlyMagic.color = Color.Lerp(Color.DarkRed, Color.Fuchsia, Main.rand.NextFloat(0.7f));
             ghostlyMagic.color = Color.Lerp(ghostlyMagic.color, Color.Black, 0.5f);
             ghostlyMagic.velocity = -Vector2.UnitY.RotatedBy(0.44f) * Main.rand.NextFloat(0.8f, 2f);

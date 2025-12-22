@@ -1,10 +1,5 @@
-﻿using CalamityMod.Buffs.DamageOverTime;
-using CalamityMod.Buffs.StatDebuffs;
-using CalamityMod.Items.Ammo;
-using CalamityMod.Items.Weapons.Rogue;
-using CalamityMod.Particles;
+﻿using CalamityMod.Particles;
 using CalamityMod.Projectiles.Ranged;
-using CalamityMod.Projectiles.Typeless;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria;

@@ -31,43 +31,23 @@ namespace CalamityMod.Items.Potions.Alcohol
 
         public override void SetDefaults()
         {
-            Item.DefaultToFood(14, 44, ModContent.BuffType<WhiteWineBuff>(), CalamityUtils.MinutesToFrames(5), true);
+            Item.DefaultToFood(14, 44, ModContent.BuffType<WhiteWineBuff>(), CalamityUtils.MinutesToFrames(6), true);
             Item.value = Item.sellPrice(silver: 40);
             Item.rare = ItemRarityID.LightPurple;
         }
 
         public override void OnConsumeItem(Player player)
         {
-            if (PlayerInput.Triggers.JustPressed.QuickBuff)
-            {
-                player.statMana += Item.healMana;
-                if (player.statMana > player.statManaMax2)
-                {
-                    player.statMana = player.statManaMax2;
-                }
-                player.AddBuff(BuffID.ManaSickness, Player.manaSickTime, true);
-                if (Main.myPlayer == player.whoAmI)
-                {
-                    player.ManaEffect(Item.healMana);
-                }
-            }
             player.AddBuff(Item.buffType, Item.buffTime);
         }
         public override void AddRecipes()
         {
-            CreateRecipe().
-                AddIngredient(ItemID.Ale).
-                AddIngredient<HallowedOre>(3).
+            CreateRecipe(12).
+                AddIngredient(ItemID.Bottle, 12).
+                AddIngredient(ItemID.GiantHarpyFeather).
+                AddIngredient<StarblightSoot>(10).
                 AddTile(TileID.Kegs).
                 Register();
-
-            CreateRecipe().
-                AddIngredient(ItemID.BottledWater).
-                AddIngredient<BloodOrb>(5).
-                AddIngredient<HallowedOre>().
-                AddTile(TileID.AlchemyTable).
-                Register()
-                .DisableDecraft();
         }
     }
 }

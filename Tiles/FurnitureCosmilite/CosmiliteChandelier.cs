@@ -42,7 +42,7 @@ namespace CalamityMod.Tiles.FurnitureCosmilite
 
         public override void HitWire(int i, int j)
         {
-            CalamityUtils.LightHitWire(Type, i, j, 3, 3);
+            FurnitureCommon.LightHitWire(Type, i, j, 3, 3);
         }
     }
 }

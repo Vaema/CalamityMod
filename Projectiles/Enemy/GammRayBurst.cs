@@ -1,6 +1,5 @@
 ﻿using System;
 using System.IO;
-using System.Linq;
 using CalamityMod.Buffs.DamageOverTime;
 using CalamityMod.Graphics.Primitives;
 using CalamityMod.NPCs.AcidRain;
@@ -95,9 +94,9 @@ namespace CalamityMod.Projectiles.Enemy
                 Projectile.frame = (Projectile.frame + 1) % Main.projFrames[Type];
         }
 
-        public float LaserWidthFunction(float _) => Projectile.scale * Projectile.width + 180;
+        public float LaserWidthFunction(float _, Vector2 vertexPos) => Projectile.scale * Projectile.width + 180;
 
-        public static Color LaserColorFunction(float completionRatio)
+        public static Color LaserColorFunction(float completionRatio, Vector2 vertexPos)
         {
             float colorInterpolant = (float)Math.Sin(Main.GlobalTimeWrappedHourly * -3.2f + completionRatio * 23f) * 0.5f + 0.5f;
             return Color.Lerp(Color.LightGreen, Color.Lime, colorInterpolant * 0.67f);

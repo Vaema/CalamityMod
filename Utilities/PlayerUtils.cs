@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Reflection;
 using CalamityMod.Balancing;
 using CalamityMod.CalPlayer;
 using CalamityMod.Cooldowns;
@@ -9,8 +8,7 @@ using CalamityMod.Enums;
 using CalamityMod.Events;
 using CalamityMod.Items.Accessories;
 using CalamityMod.Items.Armor;
-using CalamityMod.Items.Armor.Statigel;
-using CalamityMod.Items.Potions.Alcohol;
+using CalamityMod.Items.Armor.GodSlayer;
 using CalamityMod.Systems.Collections;
 using CalamityMod.World;
 using Microsoft.Xna.Framework;
@@ -316,6 +314,19 @@ namespace CalamityMod
             }
             return ConditionMet;
         }
+
+        /// <summary>
+        /// Disables the default wing flap sound from vanilla; this is to stop custom wings playing this sound when they shouldnt
+        /// This must be called each update (eg, in the wings item UpdateAccessory method)
+        /// </summary>
+        /// <param name="player">The Player to disable the sound on</param>
+        public static void DisableWingFlapSound(this Player player)
+        {
+            // vanilla plays a flap sound for all wings barring a few hardcoded exceptions
+            // the flapSound flag is used to see if the sound *has been* played, so we set it to true here to prevent it from playing 
+            player.flapSound = true;
+        }
+
         #endregion
 
         #region Location and Biomes
@@ -336,8 +347,6 @@ namespace CalamityMod
         public static bool InSunkenSea(this Player player) => player.Calamity().ZoneSunkenSea;
 
         public static bool InSulphur(this Player player) => player.Calamity().ZoneSulphur;
-
-        public static bool InFloralParadise(this Player player) => player.Calamity().ZoneFloralParadise;
 
         public static bool InAstral(this Player player, int biome = 0) //1 is above ground, 2 is underground, 3 is desert
         {
@@ -383,11 +392,11 @@ namespace CalamityMod
         // TODO -- Wrong. This should return false for weapons which emit true melee projectiles e.g. Arkhalis
         public static bool HoldingProjectileMeleeWeapon(this Player player)
         {
-            Item item = player.ActiveItem();
+            Item item = player.HeldItem;
             return item.CountsAsClass<MeleeDamageClass>() && item.shoot != ProjectileID.None;
         }
 
-        public static bool HoldingTrueMeleeWeapon(this Player player) => player.ActiveItem().IsTrueMelee();
+        public static bool HoldingTrueMeleeWeapon(this Player player) => player.HeldItem.IsTrueMelee();
 
         public static bool InventoryHas(this Player player, params int[] items)
         {
@@ -437,10 +446,8 @@ namespace CalamityMod
             CalamityPlayer modPlayer = player.Calamity();
 
             int extraIFrames = 0;
-            if (modPlayer.godSlayerThrowing && hurtInfo.Damage > 80)
-                extraIFrames += 30;
-            if (modPlayer.statigelSet && hurtInfo.Damage > StatigelArmor.SetBonusHurtDamageThreshold)
-                extraIFrames += StatigelArmor.SetBonusIFrameExtension;
+            if (modPlayer.godSlayerThrowing && hurtInfo.Damage > GodSlayerHeadRogue.SetBonusHurtDamageThreshold)
+                extraIFrames += GodSlayerHeadRogue.ExtraIFrames;
 
             // Deific Amulet provides 10 to 40 bonus immunity frames when you get hit which scale with your missing health.
             // If you only take 1 damage, you get 5 iframes.
@@ -594,17 +601,13 @@ namespace CalamityMod
                 player.hurtCooldowns[i] = 0;
         }
 
-        private static readonly FieldInfo hurtInfoDamageField = typeof(HurtInfo).GetField("_damage", BindingFlags.Instance | BindingFlags.NonPublic);
-
         /// <summary>
         /// Lifted from Fargo's. Sets the damage and knockback of an incoming hit to zero, making it not affect the player.
         /// </summary>
         /// <param name="hurtInfo">The HurtInfo instance to nullify.</param>
         public static void NullifyHit(ref this HurtInfo hurtInfo)
         {
-            object unboxedHurtInfo = hurtInfo;
-            hurtInfoDamageField.SetValue(unboxedHurtInfo, 0);
-            hurtInfo = (Player.HurtInfo)unboxedHurtInfo;
+            hurtInfo._damage = 0;
             hurtInfo.Knockback = 0;
         }
         #endregion
@@ -626,7 +629,7 @@ namespace CalamityMod
 
             // Limit the amount of heal to the player's max health
             amount = Math.Min(amount, player.statLifeMax2 - player.statLife);
-            
+
             // As well as the physical cap to how much HP can be healed
             amount = Math.Min(amount, BalancingConstants.LifeStealCap);
 
@@ -678,7 +681,7 @@ namespace CalamityMod
 
             // Limit the amount of heal to the target player's max health
             amount = Math.Min(amount, lowestHealthCheck);
-            
+
             // As well as the physical cap to how much HP can be healed
             amount = Math.Min(amount, BalancingConstants.LifeStealCap);
 
@@ -978,7 +981,7 @@ namespace CalamityMod
         public static Vector2 ClampedMouseWorld(this Player player)
         {
             Vector2 mouseWorld = player.Calamity().mouseWorld;
-            
+
             // Clamp each axis
             mouseWorld.X = mouseWorld.X >= player.MountedCenter.X ? MathF.Min(mouseWorld.X, player.MountedCenter.X + 960f) : MathF.Max(mouseWorld.X, player.MountedCenter.X - 960f);
             mouseWorld.Y = mouseWorld.Y >= player.MountedCenter.Y ? MathF.Min(mouseWorld.Y, player.MountedCenter.Y + 540f) : MathF.Max(mouseWorld.Y, player.MountedCenter.Y - 540f);

@@ -91,7 +91,7 @@ namespace CalamityMod.Items.Weapons.Melee
 
         public override void UpdateEquips()
         {
-            if (Player.ActiveItem().type == ModContent.ItemType<StygianShield>())
+            if (Player.HeldItem.type == ModContent.ItemType<StygianShield>())
             {
                 Player.hasRaisableShield = true;
                 Player.statDefense += StygianShield.HeldDefense;
@@ -111,7 +111,7 @@ namespace CalamityMod.Items.Weapons.Melee
         // Overrides every other shield in accessories
         public override void UpdateVisibleVanityAccessories()
         {
-            if (Player.ActiveItem().type == ModContent.ItemType<StygianShield>())
+            if (Player.HeldItem.type == ModContent.ItemType<StygianShield>())
             {
                 Player.shield = EquipLoader.GetEquipSlot(Mod, "StygianShield", EquipType.Shield);
                 Player.cShield = 0;

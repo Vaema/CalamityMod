@@ -1,5 +1,4 @@
-﻿using System;
-using CalamityMod.Buffs.DamageOverTime;
+﻿using CalamityMod.Buffs.DamageOverTime;
 using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.ID;
@@ -36,19 +35,7 @@ namespace CalamityMod.Projectiles.Summon
 
         public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
         {
-            int totalSageSpirits = Main.player[Projectile.owner].ownedProjectileCounts[ModContent.ProjectileType<SageSpirit>()];
-
-            // A slightly-smoothened curve that's a little less potent than a linear curve.
-            // Has the potential to eventually surpass a linear curve, but this is infeasible, only happening
-            // at around 344 allocated slots.
-            float averageDamageMultiplier = (float)(Math.Pow(totalSageSpirits, 0.9D) + Math.Pow(totalSageSpirits, 1.13D)) * 0.5f;
-
-            // 1 slot provides 25 DoT.
-            // 2 slots provide 50 DoT.
-            // 3 slots provide 76 DoT.
-            // [...]
-            // 9 slots provide 240 DoT.
-            int sagePoisonDamage = (int)(SagePoison.debuffData.EnemyLostRegen * averageDamageMultiplier);
+            int sagePoisonDamage = (int)(SagePoison.debuffData.EnemyLostRegen * Main.player[Projectile.owner].ownedProjectileCounts[ModContent.ProjectileType<SageSpirit>()]);
             target.AddBuff(ModContent.BuffType<SagePoison>(), 300);
             target.Calamity().sagePoisonDamage = sagePoisonDamage;
         }

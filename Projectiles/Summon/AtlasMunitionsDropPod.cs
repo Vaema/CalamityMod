@@ -1,6 +1,4 @@
 ﻿using System.Collections.Generic;
-using CalamityMod.Buffs.Summon;
-using CalamityMod.CalPlayer;
 using CalamityMod.NPCs.ExoMechs.Thanatos;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
@@ -127,7 +125,7 @@ namespace CalamityMod.Projectiles.Summon
             }
 
             SoundEngine.PlaySound(SoundID.DD2_ExplosiveTrapExplode, Projectile.Center);
-            Owner.Calamity().GeneralScreenShakePower = Utils.Remap(Owner.Distance(Projectile.Center), 1800f, 1000f, 0f, 4.5f);
+            Owner.SetScreenshake(Utils.Remap(Owner.Distance(Projectile.Center), 1800f, 1000f, 0f, 4.5f));
         }
 
         // As a means of obscuring contents when they spawn (such as ensuring that the minigun doesn't seem to pop into existence), this projectile draws above most other projectiles.

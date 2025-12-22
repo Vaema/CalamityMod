@@ -1,5 +1,4 @@
 ﻿using CalamityMod.Buffs.Alcohol;
-using CalamityMod.Items.Accessories.Vanity;
 using CalamityMod.Items.Materials;
 using Microsoft.Xna.Framework;
 using Terraria;
@@ -31,7 +30,7 @@ namespace CalamityMod.Items.Potions.Alcohol
 
         public override void SetDefaults()
         {
-            Item.DefaultToFood(30, 42, ModContent.BuffType<PurpleHazeBuff>(), CalamityUtils.MinutesToFrames(15), true);
+            Item.DefaultToFood(30, 42, ModContent.BuffType<PurpleHazeBuff>(), CalamityUtils.MinutesToFrames(6), true);
 
             Item.value = Item.sellPrice(silver: 30);
             Item.rare = ItemRarityID.LightRed;
@@ -39,21 +38,11 @@ namespace CalamityMod.Items.Potions.Alcohol
 
         public override void AddRecipes()
         {
-            CreateRecipe().
-                AddIngredient(ItemID.Ale).
-                AddIngredient(ItemID.PixieDust, 10).
-                AddIngredient(ItemID.CrystalShard, 5).
-                AddIngredient(ItemID.UnicornHorn).
+            CreateRecipe(6).
+                AddIngredient(ItemID.Bottle, 6).
+                AddIngredient(ItemID.Plum).
                 AddTile(TileID.Kegs).
                 Register();
-
-            CreateRecipe().
-                AddIngredient(ItemID.Ale).
-                AddIngredient<BloodOrb>(15).
-                AddIngredient(ItemID.CrystalShard).
-                AddTile(TileID.AlchemyTable).
-                Register()
-                .DisableDecraft();
         }
     }
 }

@@ -14,7 +14,7 @@ namespace CalamityMod.Systems
 
         #region Post NPC Updating
         // TODO -- Apply caching to this process. For now most of the looping issues should be eradicated but it can be reduced further.
-        public override void PostUpdateNPCs() => CalamityGlobalNPC.ResetTownNPCNameBools();
+        public override void PostUpdateNPCs() => CalamityGlobalTownNPC.ResetTownNPCNameBools();
         #endregion
 
         #region Tile Entity Time Handler

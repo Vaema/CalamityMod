@@ -1,8 +1,5 @@
-﻿using CalamityMod.NPCs;
-using CalamityMod.NPCs.Crabulon;
-using CalamityMod.NPCs.SupremeCalamitas;
+﻿using CalamityMod.NPCs.Crabulon;
 using Terraria;
-using Terraria.ID;
 using Terraria.ModLoader;
 
 namespace CalamityMod.Systems

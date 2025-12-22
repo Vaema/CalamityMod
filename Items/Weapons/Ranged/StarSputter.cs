@@ -1,5 +1,4 @@
 ﻿using CalamityMod.Items.Weapons.Magic;
-using CalamityMod.Items.Weapons.Rogue;
 using CalamityMod.Projectiles.Ranged;
 using Microsoft.Xna.Framework;
 using Terraria;
@@ -13,10 +12,6 @@ namespace CalamityMod.Items.Weapons.Ranged
     {
         public new string LocalizationCategory => "Items.Weapons.Ranged";
         private int counter = 0;
-        public override void SetStaticDefaults()
-        {
-            ItemID.Sets.ShimmerTransformToItem[Type] = ModContent.ItemType<StarShower>();
-        }
         public override void SetDefaults()
         {
             Item.width = 80;
@@ -37,19 +32,10 @@ namespace CalamityMod.Items.Weapons.Ranged
             Item.shoot = ModContent.ProjectileType<SputterComet>();
             Item.shootSpeed = 15f;
             Item.useAmmo = AmmoID.FallenStar;
+            Item.consumeAmmoOnFirstShotOnly = true;
         }
 
-        public override Vector2? HoldoutOffset()
-        {
-            return new Vector2(-5, 0);
-        }
-
-        public override bool CanConsumeAmmo(Item ammo, Player player) //consume ammo only once per round
-        {
-            if (counter == 1 || counter == 2 || counter == 4 || counter == 5 || counter == 7 || counter == 8 || counter == 10 || counter == 11)
-                return false;
-            return true;
-        }
+        public override Vector2? HoldoutOffset() => new Vector2(-5, 0);
 
         public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)
         {

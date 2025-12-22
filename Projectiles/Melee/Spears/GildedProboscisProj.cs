@@ -1,17 +1,12 @@
 ﻿using System;
-using CalamityMod.Balancing;
 using CalamityMod.Buffs.DamageOverTime;
-using CalamityMod.CalPlayer.Dashes;
 using CalamityMod.Items.Weapons.Melee;
 using CalamityMod.Particles;
 using CalamityMod.Projectiles.BaseProjectiles;
-using CalamityMod.Projectiles.Healing;
 using Microsoft.Xna.Framework;
 using Terraria;
-using Terraria.Audio;
 using Terraria.DataStructures;
 using Terraria.ID;
-using Terraria.Localization;
 using Terraria.ModLoader;
 
 namespace CalamityMod.Projectiles.Melee.Spears
@@ -95,7 +90,7 @@ namespace CalamityMod.Projectiles.Melee.Spears
                 else
                 {
                     if (timer == StartupTime - 1)
-                        Projectile.damage = (int)(Projectile.damage * 0.75 * (channelCharge / 60f)); //scales from 0x to 3.75x power
+                        Projectile.damage = (int)(Projectile.damage * 0.75 * (channelCharge / 75f)); //scales from 0x to 3x power
                 }
                 //Make the sprite rotation look right in game
                 Projectile.rotation -= (MathHelper.PiOver2) * (angle.X > 0 ? 1 : -1);
@@ -265,7 +260,16 @@ namespace CalamityMod.Projectiles.Melee.Spears
         public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
         {
             target.AddBuff(ModContent.BuffType<VermillionFlux>(), 900);
-            Main.player[Projectile.owner].SpawnLifeStealProjectile(target, Projectile, ProjectileID.VampireHeal, (int)Math.Round(hit.Damage * 0.002));
+            Main.player[Projectile.owner].SpawnLifeStealProjectile(target, Projectile, ProjectileID.VampireHeal, (int)Math.Round(hit.Damage * 0.0015));
+            if (Projectile.damage > 1)
+                Projectile.damage = (int)(Projectile.damage * 0.85f);
+        }
+        public override void ModifyHitNPC(NPC target, ref NPC.HitModifiers modifiers)
+        {
+            modifiers.SetCrit();
+
+            float critDamage = Math.Min(Main.player[Projectile.owner].GetTotalCritChance(Projectile.DamageType) * 0.01f, 1f);
+            modifiers.SourceDamage *= 1 + critDamage;
         }
     }
 }

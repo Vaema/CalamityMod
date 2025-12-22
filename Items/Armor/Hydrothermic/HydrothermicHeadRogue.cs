@@ -1,5 +1,4 @@
-﻿using CalamityMod.CalPlayer;
-using CalamityMod.Items.Materials;
+﻿using CalamityMod.Items.Materials;
 using Terraria;
 using Terraria.ID;
 using Terraria.Localization;
@@ -44,7 +43,7 @@ namespace CalamityMod.Items.Armor.Hydrothermic
 
         public override void UpdateArmorSet(Player player)
         {
-            player.setBonus = this.GetLocalization("SetBonus").Format(SetBonusRogueStealth.ToStealth(), VolleyCooldown.FramesToSeconds()) + "\n" + CalamityUtils.GetTextFromModItem<HydrothermicArmor>("CommonSetBonus").Format(HydrothermicArmor.InfernoHealthThreshold.ToPercent());
+            player.setBonus = this.GetLocalization("SetBonus").Format(SetBonusRogueStealth.ToStealth(), VolleyCooldown.FramesToSeconds(), HydrothermicArmor.InfernoHealthThreshold.ToPercent());
             var modPlayer = player.Calamity();
             modPlayer.ataxiaBlaze = true;
             modPlayer.ataxiaVolley = true;

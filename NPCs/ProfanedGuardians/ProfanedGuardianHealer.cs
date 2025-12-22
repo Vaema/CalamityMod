@@ -1,9 +1,8 @@
 ﻿using System;
 using System.IO;
-using CalamityMod.Buffs.DamageOverTime;
 using CalamityMod.Dusts;
 using CalamityMod.Events;
-using CalamityMod.Items;
+using CalamityMod.Items.Tools;
 using CalamityMod.NPCs.Providence;
 using CalamityMod.Projectiles.Boss;
 using CalamityMod.World;
@@ -50,6 +49,7 @@ namespace CalamityMod.NPCs.ProfanedGuardians
             Main.npcFrameCount[Type] = 10;
             NPCID.Sets.TrailingMode[Type] = 1;
             NPCID.Sets.BossBestiaryPriority.Add(Type);
+            NPCID.Sets.NeedsExpertScaling[Type] = true;
             NPCID.Sets.NPCBestiaryDrawModifiers value = new NPCID.Sets.NPCBestiaryDrawModifiers()
             {
                 PortraitPositionXOverride = 0,
@@ -67,8 +67,8 @@ namespace CalamityMod.NPCs.ProfanedGuardians
             }
         }
 
-        public static int CrystalDamage = 55; // 220
-        public static int StarDamage = 55; // 220; HolyBurnOrb
+        public static int CrystalDamage = 48; // 192
+        public static int StarDamage = 54; // 216; HolyBurnOrb
 
         public static int StarHeal = Main.expertMode ? 50 : 35; // HolyLight
 
@@ -76,14 +76,14 @@ namespace CalamityMod.NPCs.ProfanedGuardians
         {
             NPC.BossBar = Main.BigBossProgressBar.NeverValid;
             NPC.Calamity().canBreakPlayerDefense = true;
-            NPC.damage = 100; // 200
+            NPC.damage = 0; // No contact damage
             NPC.npcSlots = 3f;
             NPC.aiStyle = -1;
             NPC.width = 228;
             NPC.height = 164;
             NPC.defense = 30;
             NPC.DR_NERD(0.2f);
-            NPC.LifeMaxNERB(60000, 72000, 50000);
+            NPC.LifeMaxNERB(48000, 72000, 50000);
             NPC.knockBackResist = 0f;
             NPC.noGravity = true;
             NPC.noTileCollide = true;
@@ -134,9 +134,6 @@ namespace CalamityMod.NPCs.ProfanedGuardians
         public override void AI()
         {
             CalamityGlobalNPC.doughnutBossHealer = NPC.whoAmI;
-
-            // Avoid cheap bullshit
-            NPC.damage = 0;
 
             Lighting.AddLight((int)((NPC.position.X + (NPC.width / 2)) / 16f), (int)((NPC.position.Y + (NPC.height / 2)) / 16f), 1.1f, 0.9f, 0f);
 

@@ -1,15 +1,13 @@
 ﻿using System;
 using System.IO;
-using CalamityMod.Buffs.DamageOverTime;
 using CalamityMod.Events;
-using CalamityMod.Items.Accessories;
 using CalamityMod.Items.Accessories.Wings;
 using CalamityMod.Items.Armor.Vanity;
 using CalamityMod.Items.LoreItems;
 using CalamityMod.Items.Materials;
 using CalamityMod.Items.Pets;
 using CalamityMod.Items.Placeables.Furniture.BossRelics;
-using CalamityMod.Items.Placeables.Furniture.DevPaintings;
+using CalamityMod.Items.Placeables.Furniture.Paintings;
 using CalamityMod.Items.Placeables.Furniture.Trophies;
 using CalamityMod.Items.Potions;
 using CalamityMod.Items.SummonItems;
@@ -19,11 +17,9 @@ using CalamityMod.Items.Weapons.Melee;
 using CalamityMod.Items.Weapons.Ranged;
 using CalamityMod.Items.Weapons.Rogue;
 using CalamityMod.Items.Weapons.Summon;
-using CalamityMod.NPCs.Bumblebirb;
 using CalamityMod.NPCs.TownNPCs;
 using CalamityMod.Particles;
 using CalamityMod.Projectiles.Boss;
-using CalamityMod.Projectiles.Rogue;
 using CalamityMod.Tiles.Ores;
 using CalamityMod.World;
 using Microsoft.Xna.Framework;
@@ -97,23 +93,23 @@ namespace CalamityMod.NPCs.Yharon
             }
         }
 
-        public static int FlareDamage = 72; // 288; FlareBomb, FlareDust, FlareDust2
-        public static int FireballDamage = 72; // 288
-        public static int TornadoDamage = 90; // 360; Flarenado, Infernado, Infernado2
+        public static int FlareDamage = 66; // 264; FlareBomb, FlareDust, FlareDust2
+        public static int FireballDamage = 66; // 264
+        public static int TornadoDamage = 85; // 340; Flarenado, Infernado, Infernado2
         public static int BordernadoDamage = 125; // 500; SkyFlareRevenge
 
         // GFB exclusive
-        public static int VortexDamage = 90; // 360
+        public static int VortexDamage = 85; // 340
 
         public override void SetDefaults()
         {
             NPC.Calamity().canBreakPlayerDefense = true;
-            NPC.damage = 220; // 440
+            NPC.damage = 210; // 420
             NPC.npcSlots = 50f;
             NPC.width = 200;
             NPC.height = 200;
             NPC.defense = 90;
-            NPC.LifeMaxNERB(1300000, 1560000, 740000);
+            NPC.LifeMaxNERB(1000000, 1560000, 740000);
             NPC.knockBackResist = 0f;
             NPC.aiStyle = -1;
             AIType = -1;
@@ -1637,7 +1633,7 @@ namespace CalamityMod.NPCs.Yharon
                 string key = "Mods.CalamityMod.Status.Boss.FlameText";
                 Color messageColor = Color.Orange;
 
-                CalamityUtils.DisplayLocalizedText(key, messageColor);
+                CalamityUtils.BroadcastLocalizedText(key, messageColor);
             }
 
             int setDamage = contactDamage;
@@ -2987,7 +2983,8 @@ namespace CalamityMod.NPCs.Yharon
                 normalOnly.Add(DropHelper.PerPlayer(ModContent.ItemType<YharonSoulFragment>(), 1, 35, 40));
 
                 // Equipment
-                normalOnly.Add(DropHelper.PerPlayer(ModContent.ItemType<YharimsGift>()));
+                // 16NOV2025: Ozzatron: item has been chosen as the "Expert gatekept" item for this Calamity boss
+                // normalOnly.Add(DropHelper.PerPlayer(ModContent.ItemType<YharimsGift>()));
                 normalOnly.Add(DropHelper.PerPlayer(ModContent.ItemType<WingsofRebirth>()));
             }
 
@@ -3021,7 +3018,7 @@ namespace CalamityMod.NPCs.Yharon
             if (BossRushEvent.BossRushActive)
                 return;
 
-            CalamityGlobalNPC.SetNewShopVariable(new int[] { ModContent.NPCType<Bandit>() }, DownedBossSystem.downedYharon);
+            CalamityGlobalTownNPC.SetNewShopVariable(new int[] { ModContent.NPCType<Bandit>() }, DownedBossSystem.downedYharon);
             CalamityGlobalNPC.SetNewBossJustDowned(NPC);
 
             // If Yharon has not been killed yet, notify players of Auric Ore
@@ -3031,7 +3028,7 @@ namespace CalamityMod.NPCs.Yharon
 
                 string key = "Mods.CalamityMod.Status.Progression.AuricOreText";
                 Color messageColor = Color.Gold;
-                CalamityUtils.DisplayLocalizedText(key, messageColor);
+                CalamityUtils.BroadcastLocalizedText(key, messageColor);
             }
 
             // Mark Yharon as dead

@@ -1,14 +1,11 @@
-﻿using System.Collections.Generic;
-using CalamityMod.Systems;
+﻿using CalamityMod.Systems;
 using CalamityMod.Tiles.Abyss.AbyssAmbient;
 using CalamityMod.Walls;
 using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Graphics;
 using Terraria;
 using Terraria.Audio;
 using Terraria.GameContent.Metadata;
 using Terraria.ID;
-using Terraria.Localization;
 using Terraria.ModLoader;
 
 namespace CalamityMod.Tiles.Abyss
@@ -29,13 +26,13 @@ namespace CalamityMod.Tiles.Abyss
             CalamityUtils.MergeWithGeneral(Type);
             CalamityUtils.MergeWithAbyss(Type);
 
-            DustType = 2;
+            DustType = DustID.Grass;
             AddMapEntry(new Color(84, 102, 39), CalamityUtils.GetItemName<Items.Placeables.Abyss.PlantyMush>());
             HitSound = MineSound;
 
-            this.RegisterUniversalMerge(TileID.Dirt, "CalamityMod/Tiles/Merges/DirtMerge");
-            this.RegisterUniversalMerge(TileID.Stone, "CalamityMod/Tiles/Merges/StoneMerge");
-            this.RegisterUniversalMerge(ModContent.TileType<AbyssGravel>(), "CalamityMod/Tiles/Merges/AbyssGravelMerge");
+            this.RegisterBlendMergeWith(TileID.Dirt);
+            this.RegisterBlendMergeWith(TileID.Stone);
+            this.RegisterBlendMergeWith(ModContent.TileType<AbyssGravel>());
         }
 
         int animationFrameWidth = 234;

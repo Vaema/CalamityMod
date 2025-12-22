@@ -1,11 +1,9 @@
-﻿using CalamityMod.CalPlayer;
+﻿using System.Collections.Generic;
+using CalamityMod.CalPlayer;
 using Terraria;
 using Terraria.ID;
-using Terraria.ModLoader;
-using Microsoft.Xna.Framework;
 using Terraria.Localization;
-using System.Collections.Generic;
-using System;
+using Terraria.ModLoader;
 
 namespace CalamityMod.Items.Accessories
 {
@@ -13,6 +11,13 @@ namespace CalamityMod.Items.Accessories
     public class Regenerator : ModItem, ILocalizedModType
     {
         public new string LocalizationCategory => "Items.Accessories";
+
+        public static float HealthRatioCap = 0.5f;
+        public static int FramesPerHeal = 8;
+        public static int RegenTimeBoost = 4; // on top of +1/s regular increment
+        public static float RegenToDamageRatio = 0.015f; // per regen point
+        public override LocalizedText Tooltip => base.Tooltip.WithFormatArgs(HealthRatioCap.ToPercent(), (60 / (float)FramesPerHeal).Round());
+
         public override void SetDefaults()
         {
             Item.width = 34;

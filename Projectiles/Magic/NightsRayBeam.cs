@@ -1,5 +1,6 @@
 ﻿using Microsoft.Xna.Framework;
 using Terraria;
+using Terraria.ID;
 using Terraria.ModLoader;
 namespace CalamityMod.Projectiles.Magic
 {
@@ -35,7 +36,7 @@ namespace CalamityMod.Projectiles.Magic
                 for (int i = 0; i < 2; i++)
                 {
                     Vector2 dustSpawnPos = Projectile.position - Projectile.velocity * i / 2f;
-                    Dust corruptMagic = Dust.NewDustPerfect(dustSpawnPos, 27);
+                    Dust corruptMagic = Dust.NewDustPerfect(dustSpawnPos, DustID.Shadowflame);
                     corruptMagic.color = Color.Lerp(Color.Fuchsia, Color.Magenta, Main.rand.NextFloat(0.6f));
                     corruptMagic.scale = Main.rand.NextFloat(0.96f, 1.04f);
                     corruptMagic.noGravity = true;

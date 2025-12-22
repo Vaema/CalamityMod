@@ -1,7 +1,6 @@
 ﻿using System;
 using CalamityMod.Buffs.DamageOverTime;
 using CalamityMod.Dusts;
-using CalamityMod.Skies;
 using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.Audio;
@@ -53,7 +52,7 @@ namespace CalamityMod.Projectiles.Summon
                         Projectile.velocity += (Vector2.One * 0.3f).RotatedByRandom(100);
                         SoundStyle heartbeat = new("CalamityMod/Sounds/Item/Heartbeat");
                         SoundEngine.PlaySound(heartbeat with { Volume = 0.5f, MaxInstances = -1 }, player.Center);
-                        player.Calamity().GeneralScreenShakePower = 6.5f * Utils.GetLerpValue(600, 0, GFBTimer);
+                        player.SetScreenshake(6.5f * Utils.GetLerpValue(600, 0, GFBTimer));
                         Projectile.velocity *= 0.99f;
                     }
                     GFBTimer--;
@@ -112,7 +111,7 @@ namespace CalamityMod.Projectiles.Summon
                                 SoundStyle heartbeat = new("CalamityMod/Sounds/Item/Heartbeat");
                                 SoundEngine.PlaySound(heartbeat with { Volume = 0.8f, MaxInstances = -1 }, player.Center);
                             }
-                            player.Calamity().GeneralScreenShakePower = 4.5f;
+                            player.SetScreenshake(4.5f);
                         }
                         Projectile.Center = player.Center;
                         SoundEngine.PlaySound(SoundID.NPCDeath20 with { Volume = 0.35f, MaxInstances = -1 }, Projectile.Center);

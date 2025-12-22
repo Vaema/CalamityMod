@@ -2,7 +2,6 @@
 using CalamityMod.Projectiles.Melee.Shortswords;
 using CalamityMod.Rarities;
 using CalamityMod.Tiles.Furniture.CraftingStations;
-using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
 
@@ -37,7 +36,7 @@ namespace CalamityMod.Items.Weapons.Melee
         public override void AddRecipes()
         {
             CreateRecipe().
-                AddIngredient<StarburstShiv>().
+                AddIngredient<Lightspeed>().
                 AddIngredient<CosmiliteBar>(8).
                 AddTile<CosmicAnvil>().
                 Register();

@@ -1,15 +1,11 @@
-﻿using CalamityMod.Balancing;
-using System;
-using CalamityMod.Buffs.DamageOverTime;
+﻿using CalamityMod.Buffs.DamageOverTime;
 using CalamityMod.Projectiles.Melee;
 using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
-using CalamityMod.Particles;
 using CalamityMod.Projectiles.Healing;
-using System.Reflection.Metadata;
-using Terraria.Audio;
+
 namespace CalamityMod.Projectiles.Rogue
 {
     public class BloodsoakedCrashax : ModProjectile, ILocalizedModType

@@ -86,7 +86,7 @@ namespace CalamityMod.NPCs.ExoMechs.Ares
         }
 
         public static int NukeDamage = 135; // 540
-        public static int SparkDamage = 75; // 300
+        public static int SparkDamage = 70; // 280
 
         public override void SetDefaults()
         {
@@ -96,7 +96,7 @@ namespace CalamityMod.NPCs.ExoMechs.Ares
             NPC.height = 120;
             NPC.defense = 100;
             NPC.DR_NERD(0.35f);
-            NPC.LifeMaxNERB(1250000, 1495000, 650000);
+            NPC.LifeMaxNERB(1000000, 1495000, 650000);
             NPC.aiStyle = -1;
             AIType = -1;
             NPC.Opacity = 0f;

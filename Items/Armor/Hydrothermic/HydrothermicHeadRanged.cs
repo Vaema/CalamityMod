@@ -1,5 +1,4 @@
-﻿using CalamityMod.CalPlayer;
-using CalamityMod.Items.Materials;
+﻿using CalamityMod.Items.Materials;
 using Terraria;
 using Terraria.ID;
 using Terraria.Localization;
@@ -15,8 +14,8 @@ namespace CalamityMod.Items.Armor.Hydrothermic
 
         public static float RangedDamageBoost = 0.12f;
         public static int RangedCritBoost = 10;
-        // NOTE: Ammo conservation is a bool so the number is manually added in the tooltip and equip
-        public override LocalizedText Tooltip => base.Tooltip.WithFormatArgs(RangedDamageBoost.ToPercent(), RangedCritBoost);
+        public static float AmmoReduction = 0.75f;
+        public override LocalizedText Tooltip => base.Tooltip.WithFormatArgs(RangedDamageBoost.ToPercent(), RangedCritBoost, (1f - AmmoReduction).ToPercent());
 
         // Set Bonus
         public static int FlareCooldown = CalamityUtils.SecondsToFrames(0.33f);
@@ -41,7 +40,7 @@ namespace CalamityMod.Items.Armor.Hydrothermic
 
         public override void UpdateArmorSet(Player player)
         {
-            player.setBonus = this.GetLocalization("SetBonus").Format(FlareCooldown.FramesToSeconds()) + "\n" + CalamityUtils.GetTextFromModItem<HydrothermicArmor>("CommonSetBonus").Format(HydrothermicArmor.InfernoHealthThreshold.ToPercent());
+            player.setBonus = this.GetLocalization("SetBonus").Format(FlareCooldown.FramesToSeconds(), HydrothermicArmor.InfernoHealthThreshold.ToPercent());
             var modPlayer = player.Calamity();
             modPlayer.ataxiaBlaze = true;
             modPlayer.ataxiaBolt = true;
@@ -49,9 +48,10 @@ namespace CalamityMod.Items.Armor.Hydrothermic
 
         public override void UpdateEquip(Player player)
         {
+            var modPlayer = player.Calamity();
+            modPlayer.ammoCost *= AmmoReduction;
             player.GetDamage<RangedDamageClass>() += RangedDamageBoost;
             player.GetCritChance<RangedDamageClass>() += RangedCritBoost;
-            player.ammoCost75 = true;
         }
 
         public override void AddRecipes()

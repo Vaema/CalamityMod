@@ -1,11 +1,6 @@
 ﻿using System;
-using System.Diagnostics;
-using System.Security.Cryptography;
-using CalamityMod.NPCs;
-using Microsoft.Xna.Framework.Graphics;
-using ReLogic.Content;
+using Microsoft.Xna.Framework;
 using Terraria;
-using Terraria.GameContent;
 using Terraria.ID;
 using Terraria.ModLoader;
 
@@ -22,11 +17,13 @@ namespace CalamityMod.DataStructures
                 BuffID.CursedInferno, DebuffData.CursedInferno,
                 BuffID.ShadowFlame, DebuffData.Shadowflame,
                 BuffID.Daybreak, DebuffData.Daybroken,
+                BuffID.Burning, DebuffData.Burning,
                 BuffID.Frostburn, DebuffData.Frostburn,
                 BuffID.Frostburn2, DebuffData.Frostbite,
                 BuffID.Poisoned, DebuffData.Poisoned,
                 BuffID.Venom, DebuffData.AcidVenom,
-                BuffID.Electrified, DebuffData.Electrified
+                BuffID.Electrified, DebuffData.Electrified,
+                BuffID.Oiled, DebuffData.Oiled
             );
     }
     public class DebuffData
@@ -184,6 +181,21 @@ namespace CalamityMod.DataStructures
             output.Flat = Modifer.Flat * scaling;
             return output;
         }
+        /// <summary>
+        /// Applies a scaling amount to a StatModifier but ensures all changes end up positive
+        /// </summary>
+        /// <param name="Modifer"></param>
+        /// <param name="scaling"></param>
+        /// <returns></returns>
+        public static StatModifier ForceModifierPositiveWithScaling(StatModifier Modifer, float scaling)
+        {
+            StatModifier output = new();
+            output += MathHelper.Max((Modifer.Additive - 1) * scaling,0);
+            output *= MathHelper.Max(1 + (Modifer.Multiplicative - 1) * scaling,1);
+            output.Base = MathHelper.Max(Modifer.Base * scaling,0);
+            output.Flat = MathHelper.Max(Modifer.Flat * scaling, 0);
+            return output;
+        }
 
         /// <summary>
         /// UNIMPLEMENTED. WILL BE IN A FUTURE PR
@@ -245,11 +257,10 @@ namespace CalamityMod.DataStructures
         }
         #region Special Regen Functions
         /// <summary>
-        /// 18OCT2023: Ozzatron: im not gonna sugarcoat it
-        /// vanilla debuff damage from Daybreak impales scales linearly up to 8 for 800 DPS
-        /// instead of allowing this entire 800 DPS to be multiplied by heat weakness + heat DoT bonuses,
-        /// each Daybreak spear beyond the first is only affected 25% as much by weaknesses or resistances.
-        /// This also stops Daybreak's DPS from being utterly shafted by heat resistance.
+        /// 18OCT2023: Ozzatron: im not gonna sugarcoat it<br/>
+        /// Vanilla debuff damage from Daybreak impales scales linearly up to 8 for 800 DPS.<br/>
+        /// Instead of allowing this entire 800 DPS to be multiplied by heat weakness + heat DoT bonuses, additional Daybreak spears beyond the first do not contribute to weaknesses or resistances.<br/>
+        /// This also stops Daybreak's DPS from being utterly shafted by heat resistance.<br/>
         /// As no other weapon can stack Daybroken, this has no effect on other weapons (they count as "1 Daybreak spear")
         /// </summary>
         /// <param name="npc"></param>
@@ -260,22 +271,21 @@ namespace CalamityMod.DataStructures
         {
             var cnpc = npc.Calamity();
             int numImpaledSpears = 0;
-            for (int k = 0; k < Main.maxProjectiles; k++)
+            foreach (Projectile k in Main.ActiveProjectiles)
             {
-                if (Main.projectile[k].active && Main.projectile[k].type == ProjectileID.Daybreak && Main.projectile[k].ai[0] == 1f && Main.projectile[k].ai[1] == npc.whoAmI)
+                if (k.type == ProjectileID.Daybreak && k.ai[0] == 1f && k.ai[1] == npc.whoAmI)
                     numImpaledSpears++;
             }
 
             // If there are no Daybreak impaled spears, Daybroken has 1x potency (it was applied some other way)
-            float daybrokenMultiplier = numImpaledSpears <= 1 ? 1f : (1f + 0.25f * (numImpaledSpears - 1));
             int adjustedSpears = Math.Max(1, numImpaledSpears);
-            int baseDaybreakDoTValue = (int)(npc.Calamity().ActiveHeatDebuffMultiplier.ApplyTo(Daybroken.EnemyLostRegen * adjustedSpears) + npc.Calamity().ActiveHeatDebuffMultiplier.ApplyTo(Daybroken.EnemyLostRegen * 0.25f * (adjustedSpears - 1)));
-            var totalDPSAdjusted = baseDaybreakDoTValue - Daybroken.EnemyVanillaRegenToCancelOut*numImpaledSpears;
+            int baseDaybreakDoTValue = (int)(npc.Calamity().ActiveHeatDebuffMultiplier.ApplyTo(Daybroken.EnemyLostRegen) + (Daybroken.EnemyLostRegen * (adjustedSpears - 1)));
+            int totalDPSAdjusted = baseDaybreakDoTValue - Daybroken.EnemyVanillaRegenToCancelOut*numImpaledSpears;
             if (numImpaledSpears == 0)
             {
                 totalDPSAdjusted -= Daybroken.EnemyVanillaRegenToCancelOut;
             }
-            npc.Calamity().ApplyDPSDebuff((int)(totalDPSAdjusted), (int)Math.Max(baseDaybreakDoTValue * Daybroken.MultiplierDamageTickSize, Daybroken.MinimumDamageTickSize), ref npc.lifeRegen, ref damage);
+            npc.Calamity().ApplyDPSDebuff(totalDPSAdjusted, (int)Math.Max(baseDaybreakDoTValue * Daybroken.MultiplierDamageTickSize, Daybroken.MinimumDamageTickSize), ref npc.lifeRegen, ref damage);
         }
         /// <summary>
         /// Apply Oiled DoT.
@@ -362,6 +372,11 @@ namespace CalamityMod.DataStructures
             EnemyVanillaRegenToCancelOut = 200,
             HeatDebuffScaling = 1,
             NPCLifeRegenMethod = DaybrokenRegen
+        };
+        // Provided purely to classify it as a heat debuff
+        public static DebuffData Burning = new DebuffData()
+        {
+            HeatDebuffScaling = 1
         };
         public static DebuffData Frostburn = new DebuffData()
         {

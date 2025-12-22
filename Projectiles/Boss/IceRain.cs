@@ -5,7 +5,6 @@ using CalamityMod.NPCs.Cryogen;
 using CalamityMod.World;
 using Microsoft.Xna.Framework;
 using Terraria;
-using Terraria.Audio;
 using Terraria.ID;
 using Terraria.ModLoader;
 

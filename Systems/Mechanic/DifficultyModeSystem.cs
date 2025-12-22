@@ -7,7 +7,6 @@ using CalamityMod.UI.ModeIndicator;
 using CalamityMod.World;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using Newtonsoft.Json.Linq;
 using ReLogic.Content;
 using Terraria;
 using Terraria.Audio;
@@ -29,7 +28,6 @@ namespace CalamityMod.Systems
         public static List<DifficultyMode[]> DifficultyTiers; //Difficulty modes grouped together by difficulty
         public static int MostAlternateDifficulties; //The most alternate difficulties at any tier that exists. Used to know the widest space to take in the ui
 
-        public static FieldInfo journeySliderCacheField; // The current value of the journey mode difficulty slider
         public static MethodInfo journeyDifficultyUpdateMethod; // The method which updates difficulty modes in journey mode
 
         public override void OnModLoad()
@@ -41,8 +39,6 @@ namespace CalamityMod.Systems
                                                         ModContent.GetInstance<MasterDifficulty>(), ModContent.GetInstance<RevengeanceDifficulty>(),
                                                         ModContent.GetInstance<DeathDifficulty>() };
 
-            // Reflect private journey difficulty slider info
-            journeySliderCacheField = typeof(CreativePowers.DifficultySliderPower).GetField("_sliderCurrentValueCache", BindingFlags.Instance | BindingFlags.NonPublic);
             journeyDifficultyUpdateMethod = typeof(CreativePowers.DifficultySliderPower).GetMethod("UpdateInfoFromSliderValueCache", BindingFlags.Instance | BindingFlags.NonPublic);
 
             CalculateDifficultyData();
@@ -65,7 +61,7 @@ namespace CalamityMod.Systems
                             // vanilla game mode in classic, but cal difficulty >= expert
                             if (GetCurrentDifficulty == ModContent.GetInstance<DeathDifficulty>() || GetCurrentDifficulty == ModContent.GetInstance<RevengeanceDifficulty>())
                             {
-                                ModeIndicatorUI.SwitchToDifficulty(ModContent.GetInstance<NoDifficulty>());
+                                ModeIndicatorUI.SwitchToDifficulty(ModContent.GetInstance<NoDifficulty>(), broadcast: true);
                             }
                             break;
                         }
@@ -74,7 +70,7 @@ namespace CalamityMod.Systems
                             // if death was activated, change it to revengence
                             if (GetCurrentDifficulty == ModContent.GetInstance<DeathDifficulty>())
                             {
-                                ModeIndicatorUI.SwitchToDifficulty(ModContent.GetInstance<RevengeanceDifficulty>());
+                                ModeIndicatorUI.SwitchToDifficulty(ModContent.GetInstance<RevengeanceDifficulty>(), broadcast: true);
                             }
                             break;
                         }
@@ -83,7 +79,7 @@ namespace CalamityMod.Systems
                             // if revengence and master both activated, change it to death
                             if (GetCurrentDifficulty != ModContent.GetInstance<DeathDifficulty>() && CalamityWorld.revenge)
                             {
-                                ModeIndicatorUI.SwitchToDifficulty(ModContent.GetInstance<DeathDifficulty>());
+                                ModeIndicatorUI.SwitchToDifficulty(ModContent.GetInstance<DeathDifficulty>(), broadcast: true);
                             }
                             break;
                         }
@@ -96,7 +92,7 @@ namespace CalamityMod.Systems
                 if (power.GetIsUnlocked())
                 {
                     int effectiveVanillaDifficulty;
-                    var sliderValue = (float)journeySliderCacheField.GetValue(power);
+                    var sliderValue = power._sliderCurrentValueCache;
                     if (sliderValue == 1)
                     {
                         effectiveVanillaDifficulty = GameModeID.Master;
@@ -117,7 +113,7 @@ namespace CalamityMod.Systems
                 HandleExternalGameModeChange(Main.GameMode);
             }
         }
-        
+
 
         public static DifficultyMode GetCurrentDifficulty
         {
@@ -175,17 +171,17 @@ namespace CalamityMod.Systems
 
         public static void AlignJourneyDifficultySlider()
         {
-            if(Main.GameMode != GameModeID.Creative)
+            if (Main.GameMode != GameModeID.Creative)
             {
                 // I have to throw an unhandled exception here to make you alerted to bugs while developing
                 // If this is tested and working, turn it into a silent warning before release
                 throw new ArgumentException("DifficultyModeSystemAlignJourneyDifficultySlider(): must be invoked in journey mode");
             }
             CreativePowers.DifficultySliderPower power = CreativePowerManager.Instance.GetPower<CreativePowers.DifficultySliderPower>();
-            var oldValue = (float)journeySliderCacheField.GetValue(power);
-            if (compatitableValueRanges.ContainsKey(_newGameModeID))
+            var oldValue = power._sliderCurrentValueCache;
+            if (compatitableValueRanges.TryGetValue(_newGameModeID, out var value))
             {
-                var (low, high) = compatitableValueRanges[_newGameModeID];
+                var (low, high) = value;
                 float valueToSet;
                 if (oldValue >= low && oldValue < high)
                 {
@@ -195,7 +191,7 @@ namespace CalamityMod.Systems
                 {
                     valueToSet = low;
                 }
-                journeySliderCacheField.SetValue(power, valueToSet);
+                power._sliderCurrentValueCache = valueToSet;
                 journeyDifficultyUpdateMethod.Invoke(power, null);
             }
             else
@@ -239,8 +235,9 @@ namespace CalamityMod.Systems
 
     public abstract class DifficultyMode : ModType
     {
-        protected override void Register()
+        protected sealed override void Register()
         {
+            ModTypeLookup<DifficultyMode>.Register(this);
             // This is registered in DifficultyModeSystem.OnModLoad
             // Note that DifficultyModeSystem.Load can't ensure system is loaded after all modes
         }
@@ -254,19 +251,19 @@ namespace CalamityMod.Systems
         protected Asset<Texture2D> _textureDisabled;
         public abstract Asset<Texture2D> TextureDisabled { get; }
         protected SoundStyle? _activationSound;
-        public abstract SoundStyle ActivationSound{ get; }
+        public abstract SoundStyle ActivationSound { get; }
         public abstract int BackBoneGameModeID { get; }
         internal int _difficultyTier;
-        public abstract float DifficultyScale{ get; }
+        public abstract float DifficultyScale { get; }
 
         public new abstract LocalizedText Name { get; }
-        public abstract Color ChatTextColor{ get; }
-        public abstract LocalizedText ShortDescription{ get; }
+        public abstract Color ChatTextColor { get; }
+        public abstract LocalizedText ShortDescription { get; }
         public virtual LocalizedText ExpandedDescription => LocalizedText.Empty;
 
-        public abstract LocalizedText FTWName{ get; }
-        public abstract Color FTWTextColor{ get; }
-        
+        public abstract LocalizedText FTWName { get; }
+        public abstract Color FTWTextColor { get; }
+
 
         /// <summary>
         /// Used to know which difficulties to toggle on when selecting a particular difficulty.
@@ -359,7 +356,7 @@ namespace CalamityMod.Systems
     {
         public override bool Enabled
         {
-            get =>  Main.getGoodWorld ? CalamityWorld.LegendaryMode : Main.masterMode;
+            get => Main.getGoodWorld ? CalamityWorld.LegendaryMode : Main.masterMode;
             set
             {
                 if (!Main.GameModeInfo.IsJourneyMode)
@@ -374,7 +371,7 @@ namespace CalamityMod.Systems
         }
 
         public override Asset<Texture2D> Texture => _texture ??= ModContent.Request<Texture2D>("CalamityMod/UI/ModeIndicator/ModeIndicator_Master");
-        
+
         public override Asset<Texture2D> TextureDisabled => _textureDisabled ??= ModContent.Request<Texture2D>("CalamityMod/UI/ModeIndicator/ModeIndicator_Master_Off");
 
         public override SoundStyle ActivationSound => _activationSound ??= SoundID.NPCDeath10;

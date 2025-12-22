@@ -1,5 +1,4 @@
 ﻿using CalamityMod.Items.Materials;
-using CalamityMod.Tiles.Furniture.CraftingStations;
 using Terraria;
 using Terraria.ID;
 using Terraria.Localization;
@@ -16,8 +15,6 @@ namespace CalamityMod.Items.Armor.Statigel
         public override LocalizedText Tooltip => base.Tooltip.WithFormatArgs(CritBoost);
 
         // Common Set Bonus
-        public static int SetBonusHurtDamageThreshold = 100;
-        public static int SetBonusIFrameExtension = 30;
         public static float SetBonusJumpSpeedBoost = 0.6f;
         public static float SetBonusJumpHeightPercentBoost = 0.3334f;
 

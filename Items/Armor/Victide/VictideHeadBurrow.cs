@@ -1,5 +1,4 @@
 ﻿using System;
-using CalamityMod.CalPlayer;
 using CalamityMod.Items.Materials;
 using Microsoft.Xna.Framework;
 using Terraria;
@@ -22,7 +21,7 @@ namespace CalamityMod.Items.Armor.Victide
         public static float BaseBurrowSpeed = 9f; // 46 mph
         public static float SubmergedBurrowSpeed = 12f; // 61 mph
         public static float BaseAcceleration = 0.4f; // For reference, base player running acceleration is 0.08
-        public static int BurrowDuration = CalamityUtils.SecondsToFrames(8);
+        public static int BurrowDuration = CalamityUtils.SecondsToFrames(7);
         public static int BurrowCooldown = CalamityUtils.SecondsToFrames(30);
 
         public override void SetDefaults()
@@ -31,7 +30,7 @@ namespace CalamityMod.Items.Armor.Victide
             Item.height = 18;
             Item.value = CalamityGlobalItem.RarityGreenBuyPrice;
             Item.rare = ItemRarityID.Green;
-            Item.defense = 5; // 14
+            Item.defense = 3; // 10
         }
 
         public override bool IsArmorSet(Item head, Item body, Item legs) => body.type == ModContent.ItemType<VictideBreastplate>() && legs.type == ModContent.ItemType<VictideGreaves>();

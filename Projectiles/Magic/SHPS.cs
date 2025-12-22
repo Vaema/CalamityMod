@@ -3,6 +3,7 @@ using System.Linq;
 using CalamityMod.DataStructures;
 using CalamityMod.Graphics.Primitives;
 using CalamityMod.Particles;
+using CalamityMod.Enums;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria;
@@ -196,7 +197,7 @@ namespace CalamityMod.Projectiles.Magic
 
         public override bool PreDraw(ref Color lightColor) => false;
 
-        public float SoulWidthFunction(float completion)
+        public float SoulWidthFunction(float completion, Vector2 _)
         {
             float width;
             float maxBodyWidth = Projectile.scale * 24f;
@@ -209,13 +210,13 @@ namespace CalamityMod.Projectiles.Magic
             return width;
         }
 
-        public Color SoulColorFunction(float completion)
+        public Color SoulColorFunction(float completion, Vector2 _)
         {
             Color tipColor = Color.Lerp(SHPB.FindColorForSoul((int)Projectile.ai[0]), Color.Transparent, Utils.GetLerpValue(0.8f, 1f, completion, true));
             return Color.Lerp(SHPB.FindColorForSoul((int)Projectile.ai[0]), tipColor, completion);
         }
 
-        public float SoulCoreWidthFunction(float completion)
+        public float SoulCoreWidthFunction(float completion, Vector2 _)
         {
             float width;
             float maxBodyWidth = Projectile.scale * 14f;
@@ -228,22 +229,22 @@ namespace CalamityMod.Projectiles.Magic
             return width;
         }
 
-        public Color SoulCoreColorFunction(float completion)
+        public Color SoulCoreColorFunction(float completion, Vector2 _)
         {
             Color tipColor = Color.Lerp(Color.White, Color.Transparent, Utils.GetLerpValue(0.8f, 1f, completion, true));
             return Color.Lerp(Color.White, tipColor, completion);
         }
 
-        public void RenderPixelatedPrimitives(SpriteBatch spriteBatch, PixelationPrimitiveLayer layer)
+        public void RenderPixelatedPrimitives(SpriteBatch spriteBatch, GeneralDrawLayer layer)
         {
             // Render the main trail for the body for the soul.
             GameShaders.Misc["CalamityMod:ImpFlameTrail"].SetShaderTexture(ModContent.Request<Texture2D>("CalamityMod/ExtraTextures/Trails/ScarletDevilStreak"));
-            PrimitiveRenderer.RenderTrail(Projectile.oldPos, new(SoulWidthFunction, SoulColorFunction, (_) => Projectile.Size * 0.5f, true, true, GameShaders.Misc["CalamityMod:ImpFlameTrail"]), Projectile.oldPos.Length * 2);
+            PrimitiveRenderer.RenderTrail(Projectile.oldPos, new(SoulWidthFunction, SoulColorFunction, (_,_) => Projectile.Size * 0.5f, true, true, GameShaders.Misc["CalamityMod:ImpFlameTrail"]), Projectile.oldPos.Length * 2);
 
             // Render a smaller, pure white trail in the same position to represent the glowing white core of the soul.
             Vector2[] soulCoreLength = Projectile.oldPos.Take(8).ToArray();
             GameShaders.Misc["CalamityMod:ImpFlameTrail"].SetShaderTexture(ModContent.Request<Texture2D>("CalamityMod/ExtraTextures/Trails/SylvestaffStreak"));
-            PrimitiveRenderer.RenderTrail(soulCoreLength, new(SoulCoreWidthFunction, SoulCoreColorFunction, (_) => Projectile.Size * 0.5f, true, true, GameShaders.Misc["CalamityMod:ImpFlameTrail"]), soulCoreLength.Length * 2);
+            PrimitiveRenderer.RenderTrail(soulCoreLength, new(SoulCoreWidthFunction, SoulCoreColorFunction, (_,_) => Projectile.Size * 0.5f, true, true, GameShaders.Misc["CalamityMod:ImpFlameTrail"]), soulCoreLength.Length * 2);
         }
     }
 }

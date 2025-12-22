@@ -32,7 +32,7 @@ namespace CalamityMod.NPCs.Polterghast
             }
         }
 
-        public static int ShotDamage = 60; // 240
+        public static int ShotDamage = 55; // 220
 
         public override void SetDefaults()
         {
@@ -263,7 +263,7 @@ namespace CalamityMod.NPCs.Polterghast
                         int randTileY = playerTileY + Main.rand.Next(-randPlayerRadius, randPlayerRadius + 1);
                         try
                         {
-                            if (WorldGen.SolidTile(randTileX, randTileY) || Main.tile[randTileX, randTileY].WallType > 0 || chargePhase)
+                            if (WorldGen.SolidTile(randTileX, randTileY) || Main.tile[randTileX, randTileY].WallType > WallID.None || chargePhase)
                             {
                                 canMoveToTile = true;
                                 NPC.ai[0] = randTileX;

@@ -1,5 +1,4 @@
-﻿using CalamityMod.CalPlayer;
-using CalamityMod.ExtraJumps;
+﻿using CalamityMod.ExtraJumps;
 using CalamityMod.Items.Materials;
 using CalamityMod.Items.Placeables.FurnitureAcidwood;
 using Terraria;

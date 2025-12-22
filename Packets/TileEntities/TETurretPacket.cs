@@ -1,20 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Reflection.Metadata;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.IO;
 using CalamityMod.TileEntities;
-using CalamityMod.Tiles.FurnitureStatigel;
 using Microsoft.Xna.Framework;
 using Terraria;
-using Terraria.DataStructures;
-using Terraria.ModLoader;
 
 namespace CalamityMod.Packets
 {
-    public sealed class TETurretPacket : CalamityPacket
+    internal sealed class TETurretPacket : CalamityPacket
     {
         public static TETurretPacket Instance { get; private set; }
 

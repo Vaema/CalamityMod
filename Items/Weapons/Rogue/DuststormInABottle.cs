@@ -57,7 +57,7 @@ namespace CalamityMod.Items.Weapons.Rogue
         {
             CreateRecipe().
                 AddIngredient(ItemID.SandstorminaBottle).
-                AddIngredient<AncientBoneDust>(10).
+                AddIngredient(ItemID.AncientCloth,5).
                 AddIngredient<GrandScale>().
                 AddTile(TileID.MythrilAnvil).
                 Register();

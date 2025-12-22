@@ -21,6 +21,10 @@ namespace CalamityMod.Items.Weapons.DraedonsArsenal
 
         public int FiringTimer = 30;
 
+        public override void SetStaticDefaults()
+        {
+            ItemID.Sets.IsRangedSpecialistWeapon[Type] = true;
+        }
         public override void SetDefaults()
         {
             Item.width = 100;
