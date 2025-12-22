@@ -236,8 +236,7 @@ namespace CalamityMod.Systems
                 ItemID.EbonstoneBlock,
                 ItemID.CrimstoneBlock,
                 ItemID.PearlstoneBlock,
-                ItemType<AstralStone>(),
-                ItemType<Stohne>()
+                ItemType<AstralStone>()
             });
             AnyStoneBlock = RecipeGroup.RegisterGroup("AnyStoneBlock", group);
 
@@ -1574,15 +1573,6 @@ namespace CalamityMod.Systems
             // Pulse Bow
             Recipe r = Recipe.Create(ItemID.PulseBow);
             r.AddIngredient(ItemID.ShroomiteBar, 16);
-            r.AddTile(TileID.MythrilAnvil);
-            r.Register();
-            r.DisableDecraft();
-
-            // Rod of Discord
-            r = Recipe.Create(ItemID.RodofDiscord);
-            r.AddIngredient(ItemID.SoulofLight, 30);
-            r.AddIngredient(ItemID.CrystalShard, 25);
-            r.AddIngredient(ItemID.ChaosFish, 5);
             r.AddTile(TileID.MythrilAnvil);
             r.Register();
             r.DisableDecraft();

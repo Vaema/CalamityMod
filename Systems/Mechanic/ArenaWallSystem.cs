@@ -53,7 +53,7 @@ namespace CalamityMod.Systems.Mechanic
             /// <summary>
             /// The despawn logic to kill this box. Only runs when RemovalCondition is true. Return true to delete the box from ActiveBoxes.
             /// </summary>
-            public Func<Box,bool> DespawnAction = (box) => true;
+            public Func<Box, bool> DespawnAction = (box) => true;
 
             public bool PullPlayerWhenSizeChanged => false;
             public void DrawBoxWithOffset(float Offset, float Thickness, Color color)
@@ -112,7 +112,7 @@ namespace CalamityMod.Systems.Mechanic
                 DepthStencilState.None,
                 RasterizerState.CullNone,
                 null,
-                Main.GameViewMatrix.ZoomMatrix
+                Main.Transform
             );
             foreach (var box in ActiveBoxes)
             {
@@ -144,7 +144,7 @@ namespace CalamityMod.Systems.Mechanic
                         ActiveBoxes.Remove(box);
                         i--;
                     }
-                        
+
                     continue;
                 }
 

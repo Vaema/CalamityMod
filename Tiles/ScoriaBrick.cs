@@ -10,8 +10,6 @@ namespace CalamityMod.Tiles
     [LegacyName("ChaoticBrick")]
     public class ScoriaBrick : GlowMaskTile
     {
-        public override string GlowMaskAsset => "CalamityMod/Tiles/ScoriaBrickGlow";
-
         int subsheetHeight = 72;
 
         public override void SetupStatic()

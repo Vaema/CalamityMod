@@ -4,8 +4,10 @@ using CalamityMod.NPCs.NormalNPCs;
 using CalamityMod.Projectiles.Boss;
 using CalamityMod.World;
 using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
 using Terraria;
 using Terraria.Audio;
+using Terraria.GameContent;
 using Terraria.ID;
 using Terraria.ModLoader;
 
@@ -940,6 +942,79 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
             }
 
             return false;
+        }
+
+        public override void PostDraw(Mod mod, SpriteBatch spriteBatch, Vector2 screenPos, Color drawColor)
+        {
+            // Percent life remaining
+            float lifeRatio = NPC.life / (float)NPC.lifeMax;
+            Texture2D npcTexture = TextureAssets.Npc[NPC.type].Value;
+            SpriteEffects spriteEffects = NPC.spriteDirection == 1 ? SpriteEffects.FlipHorizontally : SpriteEffects.None;
+            var originalColor = NPC.GetAlpha(drawColor);
+            Color newColor = new Color(100, 255, 100, 255);
+            Vector2 glowOffset = Vector2.UnitY * -4f;
+            Vector2 drawPosition = NPC.Center - screenPos + new Vector2(0, NPC.gfxOffY) + glowOffset;
+            var origin = NPC.frame.Size() / 2;
+
+            bool phase2 = lifeRatio <= 0.5f;
+            if (!phase2)
+            {
+                float telegraphTimer = Math.Abs(NPC.ai[1]);
+                bool startSeedGatlingSporeGasTelegraph = NPC.ai[1] > SeedGatlingColorChangeGateValue;
+                bool endSeedGatlingSporeGasTelegraph = NPC.ai[1] < -SeedGatlingDuration + SeedGatlingColorChangeDuration;
+                if (startSeedGatlingSporeGasTelegraph)
+                {
+                    float telegraphScalar = MathHelper.Clamp((telegraphTimer - SeedGatlingColorChangeGateValue) / SeedGatlingColorChangeDuration, 0f, 1f);
+                    Color telegraphColor = Color.Lerp(originalColor, newColor, telegraphScalar);
+                    spriteBatch.Draw(npcTexture, drawPosition, NPC.frame, telegraphColor, NPC.rotation, origin, NPC.scale, spriteEffects, 0f);
+                }
+
+                // -300 to -120
+                else if (endSeedGatlingSporeGasTelegraph)
+                {
+                    float telegraphScalar = MathHelper.Clamp((telegraphTimer - (SeedGatlingDuration - SeedGatlingColorChangeDuration)) / SeedGatlingColorChangeDuration, 0f, 1f);
+                    Color telegraphColor = Color.Lerp(originalColor, newColor, telegraphScalar);
+                    spriteBatch.Draw(npcTexture, drawPosition, NPC.frame, telegraphColor, NPC.rotation, origin, NPC.scale, spriteEffects, 0f);
+                }
+            }
+            else
+            {
+                float telegraphTimer = Math.Abs(NPC.ai[3]);
+                bool startChargeTelegraph = NPC.ai[3] > ChargeTelegraphColorChangeGateValue;
+                bool endChargeTelegraph = NPC.ai[3] <= -2f;
+                if (startChargeTelegraph)
+                {
+                    float telegraphScalar = MathHelper.Clamp((telegraphTimer - ChargeTelegraphColorChangeGateValue) / SeedGatlingColorChangeDuration, 0f, 1f);
+                    Color telegraphColor = Color.Lerp(originalColor, newColor, telegraphScalar);
+                    spriteBatch.Draw(npcTexture, drawPosition, NPC.frame, telegraphColor, NPC.rotation, origin, NPC.scale, spriteEffects, 0f);
+                }
+
+                // -195 to -2
+                else if (endChargeTelegraph)
+                {
+                    float telegraphScalar = MathHelper.Clamp((Math.Abs(StopChargeGateValue) - telegraphTimer) / Math.Abs(StopChargeGateValue), 0f, 1f);
+                    Color telegraphColor = Color.Lerp(originalColor, newColor, telegraphScalar);
+
+                    if (CalamityClientConfig.Instance.Afterimages)
+                    {
+                        int afterimageAmount = 10;
+                        int afterImageIncrement = 2;
+                        for (int j = 0; j < afterimageAmount; j += afterImageIncrement)
+                        {
+                            Color afterimageColor = telegraphColor;
+                            afterimageColor = Color.Lerp(afterimageColor, originalColor, 0.5f);
+                            afterimageColor = NPC.GetAlpha(afterimageColor);
+                            afterimageColor *= (afterimageAmount - j) / 15f;
+                            Vector2 afterimagePos = NPC.oldPos[j] + new Vector2(NPC.width, NPC.height) / 2f - screenPos;
+                            afterimagePos -= new Vector2(npcTexture.Width, npcTexture.Height / Main.npcFrameCount[NPC.type]) * NPC.scale / 2f;
+                            afterimagePos += origin * NPC.scale + new Vector2(0f, NPC.gfxOffY) + glowOffset;
+                            spriteBatch.Draw(npcTexture, afterimagePos, NPC.frame, afterimageColor, NPC.rotation, origin, NPC.scale, spriteEffects, 0f);
+                        }
+                    }
+
+                    spriteBatch.Draw(npcTexture, drawPosition, NPC.frame, telegraphColor, NPC.rotation, origin, NPC.scale, spriteEffects, 0f);
+                }
+            }
         }
 
         public class HookAI : VanillaAIOverride

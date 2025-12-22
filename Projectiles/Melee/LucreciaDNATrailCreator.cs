@@ -51,11 +51,15 @@ namespace CalamityMod.Projectiles.Melee
             float sineWave = (float)Math.Cos(trailTimer * frequency);
 
             // Calculate offset based on the pattern of the sinewave and subtract the proj's dimensions to be accurate
-            Vector2 offsetLeft = (perpendicular * amplitude * sineWave) - new Vector2(Projectile.width, Projectile.height);
-            Vector2 offsetRight = (-perpendicular * amplitude * sineWave) - new Vector2(Projectile.width, Projectile.height);
+            Vector2 offsetLeft = (perpendicular * amplitude * sineWave);
+            Vector2 offsetRight = (-perpendicular * amplitude * sineWave);
 
-            oldPositionsLeft.Add(Projectile.Center + offsetLeft);
-            oldPositionsRight.Add(Projectile.Center + offsetRight);
+            Vector2 adjustedOffsetLeft = offsetLeft - new Vector2(Projectile.width, Projectile.height);
+            Vector2 adjustedOffsetRight = offsetRight - new Vector2(Projectile.width, Projectile.height);
+
+            // Store newest trail positions as points to render later
+            oldPositionsLeft.Add(Projectile.Center + adjustedOffsetLeft);
+            oldPositionsRight.Add(Projectile.Center + adjustedOffsetRight);
 
             // The timer will now correctly decrease once per AI update.
             middleStreakTimer--;
@@ -72,9 +76,22 @@ namespace CalamityMod.Projectiles.Melee
                 GeneralParticleHandler.SpawnParticle(spark2);
             }
 
+            // Chance to spawn small light particles along the trail
+            if (trailTimer % 7 == 0 && Main.rand.NextBool())
+            {
+                // Use the unmodified offsets to align particle positions w/ the prim trails
+                Vector2 purpleTrailOrigin = Projectile.Center + offsetLeft;
+                Vector2 blueTrailOrigin = Projectile.Center + offsetRight;
 
-            // Remove old positions after 120
-            int maxTrailLength = 120;
+                Particle purpleLightEmission = new SquishyLightParticle(purpleTrailOrigin, -Projectile.velocity.RotatedByRandom(MathHelper.PiOver4 * 0.5f) * Main.rand.NextFloat(2f, 4f), Main.rand.NextFloat(0.3f, 0.6f), Color.MediumPurple, Main.rand.Next(18, 46), 1, 1.5f);
+                Particle blueLightEmission = new SquishyLightParticle(blueTrailOrigin, -Projectile.velocity.RotatedByRandom(MathHelper.PiOver4 * 0.5f) * Main.rand.NextFloat(2f, 4f), Main.rand.NextFloat(0.3f, 0.6f), Color.CornflowerBlue, Main.rand.Next(18, 46), 1, 1.5f);
+
+                GeneralParticleHandler.SpawnParticle(blueLightEmission);
+                GeneralParticleHandler.SpawnParticle(purpleLightEmission);
+            }
+
+            // Remove old positions after 150
+            int maxTrailLength = 150;
             if (oldPositionsLeft.Count > maxTrailLength)
                 oldPositionsLeft.RemoveAt(0);
             if (oldPositionsRight.Count > maxTrailLength)

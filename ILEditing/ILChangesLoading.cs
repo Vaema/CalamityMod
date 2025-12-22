@@ -55,15 +55,6 @@ namespace CalamityMod.ILEditing
             IL_TileDrawing.DrawTrees += DrawTreeGlowMask;
             On_TileDrawing.DrawBasicTile += DrawTreeTrunkAndCactusGlowMask;
 
-            // Graphics (GeneralDrawLayer detours)
-            On_Main.DrawBackgroundBlackFill += GeneralDrawLayer_DrawToLayer_BeforeAllTiles;
-            On_Main.DoDraw_Tiles_Solid += GeneralDrawLayer_DrawToLayer_BeforeSolidTiles;
-            On_Main.DoDraw_DrawNPCsOverTiles += GeneralDrawLayer_DrawToLayer_NPCs;
-            On_Main.DrawProjectiles += GeneralDrawLayer_DrawToLayer_Projectiles;
-            On_Main.DrawPlayers_AfterProjectiles += GeneralDrawLayer_DrawToLayer_AfterPlayers;
-            On_Main.DrawDust += GeneralDrawLayer_DrawToLayer_AfterDusts;
-            On_Main.DrawInfernoRings += GeneralDrawLayer_DrawToLayer_AfterEverything;
-
             // NPC behavior
             IL_Main.UpdateTime += PermitNighttimeTownNPCSpawning;
             On_Main.UpdateTime_SpawnTownNPCs += AlterTownNPCSpawnRate;
@@ -145,7 +136,6 @@ namespace CalamityMod.ILEditing
             IL_UIWorldCreation.AddWorldSizeOptions += SwapSmallDescriptionKey;
             On_WorldGen.MakeDungeon += LimitDungeonEntranceXPosition;
             IL_WorldGen.DungeonHalls += LimitDungeonHallsXPosition;
-            IL_JunglePass.GenerateFinishingTouches += AddStohne;
 
             // Removal of vanilla stupidity
             IL_Player.StatusFromNPC += RemoveExpertBrainRandomDebuffs;

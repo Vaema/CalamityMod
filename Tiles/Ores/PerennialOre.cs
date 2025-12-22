@@ -12,8 +12,6 @@ namespace CalamityMod.Tiles.Ores
     {
         public const int AnimationFrameWidth = 234;
 
-        public override string GlowMaskAsset => "CalamityMod/Tiles/Ores/PerennialOreGlow";
-
         public override void SetupStatic()
         {
             Main.tileLighted[Type] = true;
@@ -25,7 +23,6 @@ namespace CalamityMod.Tiles.Ores
             Main.tileShine2[Type] = true;
 
             CalamityUtils.MergeWithGeneral(Type);
-            CalamityUtils.MergeWithFloralParadise(Type);
 
             TileID.Sets.Ore[Type] = true;
             TileID.Sets.OreMergesWithMud[Type] = true;

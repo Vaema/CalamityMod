@@ -24,7 +24,6 @@ namespace CalamityMod.Items.Weapons.Magic
         public override void SetStaticDefaults()
         {
             Item.staff[Type] = true;
-            ItemID.Sets.ShimmerTransformToItem[Type] = ModContent.ItemType<VoidEaterMarionette>();
         }
         public override void SetDefaults()
         {

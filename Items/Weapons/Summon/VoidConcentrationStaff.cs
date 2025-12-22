@@ -17,7 +17,6 @@ namespace CalamityMod.Items.Weapons.Summon
         public override void SetStaticDefaults()
         {
             ItemID.Sets.StaffMinionSlotsRequired[Type] = 3f;
-            ItemID.Sets.ShimmerTransformToItem[Type] = ModContent.ItemType<MirrorBlade>();
         }
 
         public override void SetDefaults()

@@ -1,5 +1,5 @@
 ﻿using System.IO;
-using CalamityMod.Items;
+using CalamityMod.Items.Tools;
 using Terraria;
 
 namespace CalamityMod.Packets

@@ -11,11 +11,6 @@ namespace CalamityMod.Items.Weapons.Ranged
     public class Barinade : ModItem, ILocalizedModType
     {
         public new string LocalizationCategory => "Items.Weapons.Ranged";
-
-        public override void SetStaticDefaults()
-        {
-            ItemID.Sets.ShimmerTransformToItem[Type] = ModContent.ItemType<SandstreamScepter>();
-        }
         public override void SetDefaults()
         {
             Item.width = 52;

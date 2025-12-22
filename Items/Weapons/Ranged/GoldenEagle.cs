@@ -11,10 +11,6 @@ namespace CalamityMod.Items.Weapons.Ranged
     {
         public new string LocalizationCategory => "Items.Weapons.Ranged";
         private const float Spread = 0.0425f;
-        public override void SetStaticDefaults()
-        {
-            ItemID.Sets.ShimmerTransformToItem[Type] = ModContent.ItemType<RougeSlash>();
-        }
         public override void SetDefaults()
         {
             Item.width = 46;

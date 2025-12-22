@@ -24,11 +24,11 @@ namespace CalamityMod.Tiles.Furniture
             num = fail ? 1 : 3;
         }
 
-        public override void ModifySittingTargetInfo(int i, int j, ref TileRestingInfo info) => CalamityUtils.ChairSitInfo(i, j, ref info);
+        public override void ModifySittingTargetInfo(int i, int j, ref TileRestingInfo info) => FurnitureCommon.ChairSitInfo(i, j, ref info);
 
-        public override bool RightClick(int i, int j) => CalamityUtils.ChairRightClick(i, j);
+        public override bool RightClick(int i, int j) => FurnitureCommon.ChairRightClick(i, j);
 
-        public override void MouseOver(int i, int j) => CalamityUtils.ChairMouseOver(i, j, ModContent.ItemType<ThaumaticChair>());
+        public override void MouseOver(int i, int j) => FurnitureCommon.ChairMouseOver(i, j, ModContent.ItemType<ThaumaticChair>());
 
         public override bool HasSmartInteract(int i, int j, SmartInteractScanSettings settings)
         {

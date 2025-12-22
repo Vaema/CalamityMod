@@ -13,7 +13,7 @@ namespace CalamityMod.Tiles.AstralSnow
 {
     public class AstralSnow : GlowMaskTile
     {
-        public override string GlowMaskAsset => "CalamityMod/Tiles/AstralSnow/AstralSnowLightmask";
+        public override string GlowMaskAsset => $"{Texture}Lightmask";
 
         public override void SetupStatic()
         {

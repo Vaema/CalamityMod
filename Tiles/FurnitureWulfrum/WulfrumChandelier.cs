@@ -95,7 +95,7 @@ namespace CalamityMod.Tiles.FurnitureWulfrum
 
         public override void HitWire(int i, int j)
         {
-            CalamityUtils.LightHitWire(Type, i, j, 3, 2);
+            FurnitureCommon.LightHitWire(Type, i, j, 3, 2);
         }
     }
 }

@@ -3,7 +3,7 @@ using System.IO;
 using CalamityMod.Buffs.DamageOverTime;
 using CalamityMod.Dusts;
 using CalamityMod.Events;
-using CalamityMod.Items;
+using CalamityMod.Items.Tools;
 using CalamityMod.NPCs.Providence;
 using CalamityMod.Projectiles.Boss;
 using CalamityMod.Utilities.Daybreak;

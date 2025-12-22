@@ -46,7 +46,7 @@ namespace CalamityMod.Projectiles.Typeless
             // Number of clouds and their damage scale based on what accessory in the upgrade path triggered it (damage is set when the spawner is created)
             if (Main.myPlayer == Projectile.owner)
             {
-                int cloudAmt = EffectStrength == 3f ? 11 : EffectStrength == 2f ? 7 : 5;
+                int cloudAmt = EffectStrength == 3f ? 5 : EffectStrength == 2f ? 3 : 2;
                 for (int c = -(cloudAmt - 1) / 2; c <= (cloudAmt - 1) / 2; c++)
                 {
                     Vector2 cloudVelocity = c == 0 ? Vector2.Zero : Vector2.UnitX.RotatedByRandom(MathHelper.Pi / 72f) * Main.rand.NextFloat(3f, 9.5f);

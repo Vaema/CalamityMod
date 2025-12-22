@@ -19,7 +19,6 @@ namespace CalamityMod.Items.Weapons.Ranged
         {
             ItemID.Sets.AnimatesAsSoul[Type] = true;
             Main.RegisterItemAnimation(Type, new DrawAnimationVertical(5, 9));
-            ItemID.Sets.ShimmerTransformToItem[Type] = ModContent.ItemType<Volterion>();
         }
         public override void SetDefaults()
         {

@@ -9,8 +9,6 @@ namespace CalamityMod.Tiles.Abyss.AbyssAmbient
 {
     public class BulbTree1 : GlowMaskTile
     {
-        public override string GlowMaskAsset => "CalamityMod/Tiles/Abyss/AbyssAmbient/BulbTree1Glow";
-
         public override void SetupStatic()
         {
             Main.tileLighted[Type] = true;
@@ -49,13 +47,7 @@ namespace CalamityMod.Tiles.Abyss.AbyssAmbient
         }
     }
 
-    public class BulbTree2 : BulbTree1
-    {
-        public override string GlowMaskAsset => "CalamityMod/Tiles/Abyss/AbyssAmbient/BulbTree2Glow";
-    }
+    public class BulbTree2 : BulbTree1;
 
-    public class BulbTree3 : BulbTree1
-    {
-        public override string GlowMaskAsset => "CalamityMod/Tiles/Abyss/AbyssAmbient/BulbTree3Glow";
-    }
+    public class BulbTree3 : BulbTree1;
 }

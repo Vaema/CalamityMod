@@ -13,10 +13,7 @@ namespace CalamityMod.Items.Weapons.Magic
     public class GhastlyVisage : ModItem, ILocalizedModType
     {
         public new string LocalizationCategory => "Items.Weapons.Magic";
-        public override void SetStaticDefaults()
-        {
-            ItemID.Sets.ShimmerTransformToItem[Type] = ModContent.ItemType<EtherealSubjugator>();
-        }
+
         public override void SetDefaults()
         {
             Item.width = 32;

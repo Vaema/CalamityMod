@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using CalamityMod.Enums;
+using CalamityMod.Systems.Graphic;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria;
@@ -60,7 +61,8 @@ namespace CalamityMod.Graphics.Primitives
                 PixelationTarget_AfterEverything = new(true, CreatePixelTarget);
             });
 
-            On_Main.CheckMonoliths += DrawToTargets;
+            GeneralDrawLayerSystem.OnDrawLayer += DrawTargetScaled;
+            GeneralDrawLayerSystem.OnPrepareDraw += DrawToTargets;
             //On_Main.DrawBackgroundBlackFill += DrawTarget_BeforeAllTiles;
             //On_Main.DoDraw_Tiles_Solid += DrawTarget_BeforeSolidTiles;
             //On_Main.DoDraw_DrawNPCsOverTiles += DrawTarget_NPCs;
@@ -75,16 +77,16 @@ namespace CalamityMod.Graphics.Primitives
             if (Main.dedServ)
                 return;
 
-            On_Main.CheckMonoliths -= DrawToTargets;
+            GeneralDrawLayerSystem.OnDrawLayer -= DrawTargetScaled;
+            GeneralDrawLayerSystem.OnPrepareDraw -= DrawToTargets;
         }
         #endregion
 
         #region Drawing To Targets
-        private void DrawToTargets(On_Main.orig_CheckMonoliths orig)
+        private void DrawToTargets()
         {
             if (Main.gameMenu)
             {
-                orig();
                 return;
             }
 
@@ -167,7 +169,6 @@ namespace CalamityMod.Graphics.Primitives
             Main.instance.GraphicsDevice.SetRenderTarget(null);
 
             CurrentlyRendering = false;
-            orig();
         }
 
         private static void DrawPrimsToRenderTarget(RenderTarget2D renderTarget, GeneralDrawLayer layer, List<IPixelatedPrimitiveRenderer> pixelPrimitives)
@@ -188,15 +189,11 @@ namespace CalamityMod.Graphics.Primitives
         #endregion
 
         #region Target Drawing
-        internal static void DrawTargetScaled(GeneralDrawLayer drawLayer, bool startSpritebatch = true)
+        private static void DrawTargetScaled(GeneralDrawLayer drawLayer)
         {
-            if (startSpritebatch)
-                Main.spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, SamplerState.PointClamp, DepthStencilState.None, Main.Rasterizer, null, Main.GameViewMatrix.TransformationMatrix);
-            
+            Main.spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, SamplerState.PointClamp, DepthStencilState.None, Main.Rasterizer, null, Main.GameViewMatrix.TransformationMatrix);
             Main.spriteBatch.Draw(ReturnAssociatedRenderTarget(drawLayer), Vector2.Zero, null, Color.White, 0f, Vector2.Zero, 2f, SpriteEffects.None, 0f);
-            
-            if (startSpritebatch)
-                Main.spriteBatch.End();
+            Main.spriteBatch.End();
         }
 
         private static RenderTarget2D ReturnAssociatedRenderTarget(GeneralDrawLayer drawLayer)

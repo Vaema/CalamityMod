@@ -11,10 +11,6 @@ namespace CalamityMod.Items.Weapons.Rogue
 {
     public class Mycoroot : RogueWeapon
     {
-        public override void SetStaticDefaults()
-        {
-            ItemID.Sets.ShimmerTransformToItem[Type] = ModContent.ItemType<MycelialClaws>();
-        }
         public override void SetDefaults()
         {
             Item.width = 32;

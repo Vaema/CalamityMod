@@ -9,8 +9,6 @@ namespace CalamityMod.Tiles.Plates
 {
     public class Onyxplate : GlowMaskTile
     {
-        public override string GlowMaskAsset => "CalamityMod/Tiles/Plates/OnyxplateGlow";
-
         public override void SetupStatic()
         {
             Main.tileSolid[Type] = true;

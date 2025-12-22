@@ -15,79 +15,87 @@ namespace CalamityMod.UI.ResourceSets
     {
         // Most of this is taken from ExampleMod. See that for additional explanations.
         private Dictionary<string, Asset<Texture2D>> vanillaAssetCache = new();
-        public string baseFolder = "CalamityMod/UI/ResourceSets/";
+
+        // Vanilla texture paths
+        const string fancyFolder = "Images/UI/PlayerResourceSets/FancyClassic/";
+        const string barsFolder = "Images/UI/PlayerResourceSets/HorizontalBars/";
+
+        private Asset<Texture2D> FancyHeartFill => field ??= Main.Assets.Request<Texture2D>(fancyFolder + "Heart_Fill");
+        private Asset<Texture2D> FancyHeartFillB => field ??= Main.Assets.Request<Texture2D>(fancyFolder + "Heart_Fill_B");
+        private Asset<Texture2D> FancyStarFill => field ??= Main.Assets.Request<Texture2D>(fancyFolder + "Star_Fill");
+
+        private Asset<Texture2D> BarMPFill => field ??= Main.Assets.Request<Texture2D>(barsFolder + "MP_Fill");
+        private Asset<Texture2D> BarHPFill => field ??= Main.Assets.Request<Texture2D>(barsFolder + "HP_Fill");
+        private Asset<Texture2D> BarHPFillHoney => field ??= Main.Assets.Request<Texture2D>(barsFolder + "HP_Fill_Honey");
 
         // Determines which health UI to draw based on player upgrades.
-        public string LifeTexturePath()
+        public static CalamityUIResourceSet GetLifeTextureSet()
         {
-            string folder = $"{baseFolder}HP";
             CalamityPlayer modPlayer = Main.LocalPlayer.Calamity();
             if (modPlayer.chaliceOfTheBloodGod) // dozezoze - Chalice gets it's own heart color to make bleed indicator contrast consistent, and also because it looks cool
-                return folder + "Chalice";
+                return CalamityUIResourceSets.HPChalice;
             if (modPlayer.sStrawberry)
-                return folder + "SacredStrawberry";
+                return CalamityUIResourceSets.HPSacredStrawberry;
             if (modPlayer.tCloudberry)
-                return folder + "TaintedCloudberry";
+                return CalamityUIResourceSets.HPTaintedCloudberry;
             if (modPlayer.mFruit)
-                return folder + "MiracleFruit";
+                return CalamityUIResourceSets.HPMiracleFruit;
             if (modPlayer.sTangerine)
-                return folder + "SanguineTangerine";
-            return string.Empty;
+                return CalamityUIResourceSets.HPSanguineTangerine;
+            return null;
         }
 
         // Determines which mana UI to draw based on player upgrades.
-        public string ManaTexturePath()
+        public static CalamityUIResourceSet GetManaTextureSet()
         {
-            string folder = $"{baseFolder}MP";
             CalamityPlayer modPlayer = Main.LocalPlayer.Calamity();
             if (Main.LocalPlayer.statMana < 0)
-                return folder + "ManaBurn";
+                return CalamityUIResourceSets.MPManaBurn;
             if (modPlayer.pHeart)
-                return folder + "PhantomHeart";
+                return CalamityUIResourceSets.MPPhantomHeart;
             if (modPlayer.eCore)
-                return folder + "EtherealCore";
+                return CalamityUIResourceSets.MPEtherealCore;
             if (modPlayer.cShard)
-                return folder + "CometShard";
-            return string.Empty;
+                return CalamityUIResourceSets.MPCometShard;
+            return null;
         }
 
         public override void PostDrawResource(ResourceOverlayDrawContext context)
         {
             Asset<Texture2D> asset = context.texture;
-            // Vanilla texture paths
-            string fancyFolder = "Images/UI/PlayerResourceSets/FancyClassic/";
-            string barsFolder = "Images/UI/PlayerResourceSets/HorizontalBars/";
 
-            if (ManaTexturePath() != string.Empty)
+            var manaTextureSet = GetManaTextureSet();
+            if (manaTextureSet != null)
             {
                 // Draw stars for Classic and Fancy
-                if (asset == TextureAssets.Mana || CompareAssets(asset, fancyFolder + "Star_Fill"))
+                if (asset == TextureAssets.Mana || asset == FancyStarFill)
                 {
-                    context.texture = ModContent.Request<Texture2D>(ManaTexturePath() + "Star");
+                    context.texture = manaTextureSet.Star;
                     context.Draw();
                 }
                 // Draw mana bars
-                else if (CompareAssets(asset, barsFolder + "MP_Fill"))
+                else if (asset == BarMPFill)
                 {
-                    context.texture = ModContent.Request<Texture2D>(ManaTexturePath() + "Bar");
+                    context.texture = manaTextureSet.Bar;
                     context.Draw();
                 }
             }
 
-            if (LifeTexturePath() == string.Empty)
-                return;
-
-            // Draw hearts for Classic and Fancy
-            if (asset == TextureAssets.Heart || asset == TextureAssets.Heart2 || CompareAssets(asset, fancyFolder + "Heart_Fill") || CompareAssets(asset, fancyFolder + "Heart_Fill_B"))
+            var lifeTextureSet = GetLifeTextureSet();
+            if (lifeTextureSet != null)
             {
-                context.texture = ModContent.Request<Texture2D>(LifeTexturePath() + "Heart");
-                context.Draw();
-            }
-            // Draw health bars
-            else if (CompareAssets(asset, barsFolder + "HP_Fill") || CompareAssets(asset, barsFolder + "HP_Fill_Honey"))
-            {
-                context.texture = ModContent.Request<Texture2D>(LifeTexturePath() + "Bar");
-                context.Draw();
+                // Draw hearts for Classic and Fancy
+                if (asset == TextureAssets.Heart || asset == TextureAssets.Heart2 || asset == FancyHeartFill || asset == FancyHeartFillB)
+                {
+                    context.texture = lifeTextureSet.Heart;
+                    context.Draw();
+                }
+                // Draw health bars
+                else if (asset == BarHPFill || asset == BarHPFillHoney)
+                {
+                    context.texture = lifeTextureSet.Bar;
+                    context.Draw();
+                }
             }
         }
 
@@ -145,7 +153,7 @@ namespace CalamityMod.UI.ResourceSets
                     GraphicsDevice _graphicsDevice = Main.graphics.GraphicsDevice;
                     var barOverlay = new Texture2D(_graphicsDevice, width, 12);
                     Color[] barTextureData = new Color[12 * 12];
-                    ModContent.Request<Texture2D>("CalamityMod/UI/ResourceSets/HPChaliceBleedBar").Value.GetData(barTextureData);
+                    CalamityUIResourceSets.HPChaliceBleed.Bar.Value.GetData(barTextureData);
                     var pixelsPerLife = 12f / snapshot.LifePerSegment;
                     int deadPixels = (int)Math.Floor((snapshot.LifeMax - snapshot.Life) * pixelsPerLife);
                     var bleedPixels = Math.Round(bleed * pixelsPerLife);
@@ -171,7 +179,7 @@ namespace CalamityMod.UI.ResourceSets
                 }
                 else if (drawType == 1) //default heart
                 {
-                    Texture2D heartTexture = ModContent.Request<Texture2D>("CalamityMod/UI/ResourceSets/HPChaliceBleedHeart").Value;
+                    Texture2D heartTexture = CalamityUIResourceSets.HPChaliceBleed.Heart.Value;
                     for (int i = 0; i < hearts; i++)
                     {
                         Vector2 PosOffset = new Vector2((i >= 10 ? i - 10 : i) * 26, Math.Min(MathF.Floor(i / 10), 1) * 26);
@@ -183,7 +191,7 @@ namespace CalamityMod.UI.ResourceSets
                 }
                 else if (drawType == 2) //fancy heart. this is the same as default but with different distances between hearts
                 {
-                    Texture2D heartTexture = ModContent.Request<Texture2D>("CalamityMod/UI/ResourceSets/HPChaliceBleedHeart").Value;
+                    Texture2D heartTexture = CalamityUIResourceSets.HPChaliceBleed.Heart.Value;
                     for (int i = 0; i < hearts; i++)
                     {
                         Vector2 PosOffset = new Vector2((i >= 10 ? i - 10 : i) * 24, Math.Min(MathF.Floor(i / 10), 1) * 28);
@@ -197,6 +205,7 @@ namespace CalamityMod.UI.ResourceSets
             // This is where Mana Burn is drawn
             else if (Player.statMana < 0)
             {
+                var manaSet = GetManaTextureSet();
                 var mana = -Player.statMana;
                 var stars = snapshot.AmountOfManaStars;
                 int drawType = -1; //0 - bars 1- regular heart 2 - fancy heart
@@ -238,10 +247,12 @@ namespace CalamityMod.UI.ResourceSets
 
                     // This works by dynamically creating a texture that it then draws over the life bar.
                     int width = 12 * stars;
+                    if (width < 1)
+                        width = 1;
                     GraphicsDevice _graphicsDevice = Main.graphics.GraphicsDevice;
                     var barOverlay = new Texture2D(_graphicsDevice, width, 12);
-                    Color[] barTextureData = new Color[12*12];
-                    ModContent.Request<Texture2D>(ManaTexturePath() + "Bar").Value.GetData(barTextureData);
+                    Color[] barTextureData = new Color[12 * 12];
+                    manaSet.Bar.Value.GetData(barTextureData);
                     var pixelsPerLife = 12f / snapshot.ManaPerSegment;
                     int deadPixels = (int)Math.Floor((snapshot.ManaMax + snapshot.Mana) * pixelsPerLife);
                     var bleedPixels = Math.Round(mana * pixelsPerLife);
@@ -256,7 +267,7 @@ namespace CalamityMod.UI.ResourceSets
                         var bleedCol = Color.Transparent;
                         if ((i_MOD_width < bleedPixels + deadPixels) && !(i_MOD_width < deadPixels))
                         {
-                            bleedCol = barTextureData[((i % 12)+(i/width)*12)];
+                            bleedCol = barTextureData[((i % 12) + (i / width) * 12)];
                         }
                         textureData[i] = bleedCol;
 
@@ -267,10 +278,10 @@ namespace CalamityMod.UI.ResourceSets
                 }
                 else if (drawType == 1) //default heart
                 {
-                    Texture2D heartTexture = ModContent.Request<Texture2D>(ManaTexturePath() + "Star").Value;
+                    Texture2D heartTexture = manaSet.Star.Value;
                     for (int i = 0; i < stars; i++)
                     {
-                        Vector2 PosOffset = new Vector2(0, 28*i);
+                        Vector2 PosOffset = new Vector2(0, 28 * i);
                         var opacity = Math.Clamp(-(i * snapshot.ManaPerSegment - snapshot.Mana) / snapshot.ManaPerSegment, -100, 100);
                         if ((i) * snapshot.ManaPerSegment > -snapshot.Mana) opacity = 0f;
                         opacity = Math.Clamp(-((i * snapshot.ManaPerSegment - (float)mana) / snapshot.ManaPerSegment), 0, 1);
@@ -279,10 +290,10 @@ namespace CalamityMod.UI.ResourceSets
                 }
                 else if (drawType == 2) //fancy heart. this is the same as default but with different distances between hearts
                 {
-                    Texture2D heartTexture = ModContent.Request<Texture2D>(ManaTexturePath() + "Star").Value;
+                    Texture2D heartTexture = manaSet.Star.Value;
                     for (int i = 0; i < stars; i++)
                     {
-                        Vector2 PosOffset = new Vector2(0, 22*i);
+                        Vector2 PosOffset = new Vector2(0, 22 * i);
                         var opacity = Math.Clamp(-(i * snapshot.ManaPerSegment - snapshot.Mana) / snapshot.ManaPerSegment, -100, 100);
                         if ((i) * snapshot.ManaPerSegment > -snapshot.Mana) opacity = 0f;
                         opacity = Math.Clamp(-((i * snapshot.ManaPerSegment - (float)mana) / snapshot.ManaPerSegment), 0, 1);
@@ -291,14 +302,6 @@ namespace CalamityMod.UI.ResourceSets
                 }
             }
 
-        }
-
-        private bool CompareAssets(Asset<Texture2D> currentAsset, string compareAssetPath)
-        {
-            if (!vanillaAssetCache.TryGetValue(compareAssetPath, out var asset))
-                asset = vanillaAssetCache[compareAssetPath] = Main.Assets.Request<Texture2D>(compareAssetPath);
-
-            return currentAsset == asset;
         }
     }
 }

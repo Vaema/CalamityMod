@@ -98,8 +98,23 @@ namespace CalamityMod.Graphics.Primitives
 
         public override void OnModUnload()
         {
-            WireframeEffect?.Dispose();
-            WireframeEffect = null;
+            Main.QueueMainThreadAction(() =>
+            {
+                MainPositions = null;
+                MainVertices = null;
+                MainIndices = null;
+                MainCompletionRatios = null;
+                MainTangents = null;
+                MainNormals = null;
+                WireframeVertices = null;
+                NonSmoothIndexScratch = null;
+                VertexBuffer?.Dispose();
+                VertexBuffer = null;
+                IndexBuffer?.Dispose();
+                IndexBuffer = null;
+                WireframeEffect?.Dispose();
+                WireframeEffect = null;
+            });
         }
 
         private static void PerformPixelationSafetyChecks(PrimitiveSettings settings)
@@ -593,27 +608,27 @@ namespace CalamityMod.Graphics.Primitives
                     return Vector2.Lerp(p1, p2, t);
 
                 case PrimitiveSmoothingType.Cardinal:
-                {
-                    float tension = MathHelper.Clamp(settings.SmoothingTension, -1f, 1f);
-                    float scale = (1f - tension) * 0.5f;
-                    Vector2 m0 = (p2 - p0) * scale;
-                    Vector2 m1 = (p3 - p1) * scale;
-                    return EvaluateHermiteSpan(p1, p2, m0, m1, t);
-                }
+                    {
+                        float tension = MathHelper.Clamp(settings.SmoothingTension, -1f, 1f);
+                        float scale = (1f - tension) * 0.5f;
+                        Vector2 m0 = (p2 - p0) * scale;
+                        Vector2 m1 = (p3 - p1) * scale;
+                        return EvaluateHermiteSpan(p1, p2, m0, m1, t);
+                    }
 
                 case PrimitiveSmoothingType.Hermite:
-                {
-                    Vector2 m0 = 0.5f * (p2 - p0);
-                    Vector2 m1 = 0.5f * (p3 - p1);
-                    return EvaluateHermiteSpan(p1, p2, m0, m1, t);
-                }
+                    {
+                        Vector2 m0 = 0.5f * (p2 - p0);
+                        Vector2 m1 = 0.5f * (p3 - p1);
+                        return EvaluateHermiteSpan(p1, p2, m0, m1, t);
+                    }
 
                 case PrimitiveSmoothingType.CubicBezier:
-                {
-                    Vector2 handle1 = p1 + (p2 - p0) / 3f;
-                    Vector2 handle2 = p2 - (p3 - p1) / 3f;
-                    return EvaluateBezierSpan(p1, handle1, handle2, p2, t);
-                }
+                    {
+                        Vector2 handle1 = p1 + (p2 - p0) / 3f;
+                        Vector2 handle2 = p2 - (p3 - p1) / 3f;
+                        return EvaluateBezierSpan(p1, handle1, handle2, p2, t);
+                    }
 
                 default:
                     return Vector2.CatmullRom(p0, p1, p2, p3, t);
@@ -677,49 +692,49 @@ namespace CalamityMod.Graphics.Primitives
             switch (MainSettings.JoinStyle)
             {
                 case PrimitiveJoinStyle.Smooth:
-                {
-                    Vector2 averageNormal = (prevNormal + defaultNormal + nextNormal) * (1f / 3f);
-                    if (averageNormal.LengthSquared() <= Epsilon)
-                        averageNormal = defaultNormal;
+                    {
+                        Vector2 averageNormal = (prevNormal + defaultNormal + nextNormal) * (1f / 3f);
+                        if (averageNormal.LengthSquared() <= Epsilon)
+                            averageNormal = defaultNormal;
 
-                    Vector2 offset = averageNormal.SafeNormalize(defaultNormal) * halfWidth;
-                    left = currentPosition - offset;
-                    right = currentPosition + offset;
-                    effectiveHalfWidth = halfWidth;
-                    return;
-                }
+                        Vector2 offset = averageNormal.SafeNormalize(defaultNormal) * halfWidth;
+                        left = currentPosition - offset;
+                        right = currentPosition + offset;
+                        effectiveHalfWidth = halfWidth;
+                        return;
+                    }
 
                 case PrimitiveJoinStyle.Miter:
-                {
-                    Vector2 prev = prevNormal.SafeNormalize(defaultNormal);
-                    Vector2 next = nextNormal.SafeNormalize(defaultNormal);
-                    Vector2 miter = prev + next;
-                    if (miter.LengthSquared() <= Epsilon)
-                        miter = defaultNormal;
+                    {
+                        Vector2 prev = prevNormal.SafeNormalize(defaultNormal);
+                        Vector2 next = nextNormal.SafeNormalize(defaultNormal);
+                        Vector2 miter = prev + next;
+                        if (miter.LengthSquared() <= Epsilon)
+                            miter = defaultNormal;
 
-                    miter = miter.SafeNormalize(defaultNormal);
-                    float denom = Vector2.Dot(miter, next);
-                    if (Math.Abs(denom) < Epsilon)
-                        denom = denom >= 0f ? Epsilon : -Epsilon;
+                        miter = miter.SafeNormalize(defaultNormal);
+                        float denom = Vector2.Dot(miter, next);
+                        if (Math.Abs(denom) < Epsilon)
+                            denom = denom >= 0f ? Epsilon : -Epsilon;
 
-                    float miterLength = halfWidth / denom;
-                    float maxLength = halfWidth * MainSettings.JoinMiterLimit;
-                    miterLength = MathHelper.Clamp(miterLength, -maxLength, maxLength);
-                    Vector2 offset = miter * miterLength;
-                    left = currentPosition - offset;
-                    right = currentPosition + offset;
-                    effectiveHalfWidth = Math.Max(Math.Abs(miterLength), Epsilon);
-                    return;
-                }
+                        float miterLength = halfWidth / denom;
+                        float maxLength = halfWidth * MainSettings.JoinMiterLimit;
+                        miterLength = MathHelper.Clamp(miterLength, -maxLength, maxLength);
+                        Vector2 offset = miter * miterLength;
+                        left = currentPosition - offset;
+                        right = currentPosition + offset;
+                        effectiveHalfWidth = Math.Max(Math.Abs(miterLength), Epsilon);
+                        return;
+                    }
 
                 default:
-                {
-                    Vector2 offset = defaultNormal * halfWidth;
-                    left = currentPosition - offset;
-                    right = currentPosition + offset;
-                    effectiveHalfWidth = halfWidth;
-                    return;
-                }
+                    {
+                        Vector2 offset = defaultNormal * halfWidth;
+                        left = currentPosition - offset;
+                        right = currentPosition + offset;
+                        effectiveHalfWidth = halfWidth;
+                        return;
+                    }
             }
         }
 

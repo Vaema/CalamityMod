@@ -26,8 +26,31 @@ using static Terraria.ModLoader.ModContent;
 
 namespace CalamityMod.NPCs;
 
-public sealed class CalamityVanillaAIOverrideNPC : GlobalNPC
+public static class VanillaAIOverrideExtension
 {
+    extension(NPC npc)
+    {
+        public bool TryGetAIOverride<AI>(out AI aiInstance) where AI : VanillaAIOverride, new()
+        {
+            if (!npc.TryGetGlobalNPC<CalamityVanillaAIOverrideNPC>(out var aiOverrideNPC))
+            {
+                aiInstance = null;
+                return false;
+            }
+
+            aiInstance = aiOverrideNPC.AIOverride as AI;
+            return aiInstance != null;
+        }
+    }
+}
+
+public sealed partial class CalamityVanillaAIOverrideNPC : GlobalNPC
+{
+    /// <summary>
+    /// Toggle Entire System. External mods can toggle this out if they want.
+    /// </summary>
+    public static bool Enabled { get; set; } = true;
+
     /// <summary>
     /// Specify the AI Override to work with. This handles AI, SendExtraAI and ReceiveExtraAI in instaned manner.
     /// </summary>
@@ -863,16 +886,18 @@ public sealed class CalamityVanillaAIOverrideNPC : GlobalNPC
 
     public override void SetDefaults(NPC npc)
     {
-        // Clients will get their instance in ReceiveExtraAI
-        if (Main.netMode != NetmodeID.MultiplayerClient)
-        {
-            AIOverride = GetVanillaAIOverrideToApply(npc);
+        if (!Enabled)
+            return;
 
-            if (AIOverride != null)
-            {
-                AIOverride.NPC = npc;
-                AIOverride.SetDefaults(Mod);
-            }
+        // Clients will get their instance in ReceiveExtraAI
+        if (Main.netMode == NetmodeID.MultiplayerClient)
+            return;
+
+        AIOverride = GetVanillaAIOverrideToApply(npc);
+        if (AIOverride != null)
+        {
+            AIOverride.NPC = npc;
+            AIOverride.SetDefaults(Mod);
         }
     }
 
@@ -880,11 +905,19 @@ public sealed class CalamityVanillaAIOverrideNPC : GlobalNPC
 
     public override void OnSpawn(NPC npc, IEntitySource source)
     {
+        if (!Enabled)
+            return;
+
         AIOverride?.OnSpawn(Mod);
     }
 
     public override bool PreAI(NPC npc)
     {
+        if (!Enabled)
+            return base.PreAI(npc);
+
+        bool result = true;
+        result &= GlobalPreAI(npc);
         if (AIOverride != null)
         {
             if (AIOverride.DisableMultiplayerSmoothing)
@@ -892,32 +925,61 @@ public sealed class CalamityVanillaAIOverrideNPC : GlobalNPC
                 npc.netOffset = Vector2.Zero;
             }
 
-            return AIOverride.AI(Mod);
+            result &= AIOverride.AI(Mod);
         }
+        return result;
+    }
 
-        return base.PreAI(npc);
+    public override void AI(NPC npc)
+    {
+        if (!Enabled)
+            return;
+
+        GlobalAI(npc);
     }
 
     public override void PostAI(NPC npc)
     {
+        if (!Enabled)
+            return;
+
         AIOverride?.PostAI(Mod);
     }
 
     public override void HitEffect(NPC npc, NPC.HitInfo hit)
     {
+        if (!Enabled)
+            return;
+
         AIOverride?.HitEffect(Mod, hit);
     }
 
     public override void FindFrame(NPC npc, int frameHeight)
     {
+        if (!Enabled)
+            return;
+
         AIOverride?.FindFrame(Mod, frameHeight);
     }
 
     public override bool PreDraw(NPC npc, SpriteBatch spriteBatch, Vector2 screenPos, Color drawColor)
     {
-        if (AIOverride != null)
-            return AIOverride.PreDraw(Mod, spriteBatch, screenPos, drawColor);
-        return base.PreDraw(npc, spriteBatch, screenPos, drawColor);
+        if (!Enabled)
+            base.PreDraw(npc, spriteBatch, screenPos, drawColor);
+
+        bool result = true;
+        result &= GlobalPreDraw(npc, spriteBatch, screenPos, drawColor);
+        result &= AIOverride?.PreDraw(Mod, spriteBatch, screenPos, drawColor) ?? true;
+        return result;
+    }
+
+    public override void PostDraw(NPC npc, SpriteBatch spriteBatch, Vector2 screenPos, Color drawColor)
+    {
+        if (!Enabled)
+            return;
+
+        GlobalPostDraw(npc, spriteBatch, screenPos, drawColor);
+        AIOverride?.PostDraw(Mod, spriteBatch, screenPos, drawColor);
     }
 
     #endregion

@@ -9,8 +9,6 @@ namespace CalamityMod.Tiles.Plates
 {
     public class Elumplate : GlowMaskTile
     {
-        public override string GlowMaskAsset => "CalamityMod/Tiles/Plates/ElumplateGlow";
-
         public override void SetupStatic()
         {
             Main.tileSolid[Type] = true;

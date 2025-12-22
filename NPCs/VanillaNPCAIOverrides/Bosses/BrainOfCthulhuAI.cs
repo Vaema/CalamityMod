@@ -2,8 +2,10 @@
 using CalamityMod.Events;
 using CalamityMod.World;
 using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
 using Terraria;
 using Terraria.Audio;
+using Terraria.GameContent;
 using Terraria.ID;
 using Terraria.ModLoader;
 
@@ -940,6 +942,67 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                 }
 
                 return false;
+            }
+
+            public override void PostDraw(Mod mod, SpriteBatch spriteBatch, Vector2 screenPos, Color drawColor)
+            {
+                // Telegraph for charge and blood shots
+                if (NPC.crimsonBoss < 0)
+                    return;
+
+                var halfSize = NPC.frame.Size() / 2;
+                SpriteEffects spriteEffects = NPC.spriteDirection == 1 ? SpriteEffects.FlipHorizontally : SpriteEffects.None;
+
+                bool brainIsInPhase2 = Main.npc[NPC.crimsonBoss].ai[0] < 0f;
+                if (brainIsInPhase2)
+                {
+                    var currentColor = NPC.GetAlpha(drawColor);
+                    float opacity = (1f - Main.npc[NPC.crimsonBoss].life / (float)Main.npc[NPC.crimsonBoss].lifeMax) * 2f;
+                    opacity *= opacity;
+                    if (Main.getGoodWorld)
+                        opacity = 1f;
+
+                    opacity = MathHelper.Clamp(opacity, 0f, 1f);
+                    currentColor.R = (byte)(currentColor.R * opacity);
+                    currentColor.G = (byte)(currentColor.G * opacity);
+                    currentColor.B = (byte)(currentColor.B * opacity);
+                    currentColor.A = (byte)(currentColor.A * opacity);
+                    int totalAfterimages = 4;
+                    for (int i = 0; i < totalAfterimages; i++)
+                    {
+                        Vector2 position = NPC.position;
+                        float distanceFromTargetX = Math.Abs(NPC.Center.X - Main.LocalPlayer.Center.X);
+                        float distanceFromTargetY = Math.Abs(NPC.Center.Y - Main.LocalPlayer.Center.Y);
+                        if (i == 0 || i == 2)
+                            position.X = Main.LocalPlayer.Center.X + distanceFromTargetX;
+                        else
+                            position.X = Main.LocalPlayer.Center.X - distanceFromTargetX;
+
+                        position.X -= NPC.width / 2;
+                        if (i == 0 || i == 1)
+                            position.Y = Main.LocalPlayer.Center.Y + distanceFromTargetY;
+                        else
+                            position.Y = Main.LocalPlayer.Center.Y - distanceFromTargetY;
+
+                        position.Y -= NPC.height / 2;
+
+                        int width = TextureAssets.Npc[NPC.type] is null ? 0 : TextureAssets.Npc[NPC.type].Width();
+                        int height = TextureAssets.Npc[NPC.type] is null ? 0 : TextureAssets.Npc[NPC.type].Height();
+                        spriteBatch.Draw(TextureAssets.Npc[NPC.type].Value, new Vector2(position.X - screenPos.X + NPC.width / 2 - width * NPC.scale / 2f + halfSize.X * NPC.scale, position.Y - screenPos.Y + (float)NPC.height - (float)height * NPC.scale / (float)Main.npcFrameCount[NPC.type] + 4f + halfSize.Y * NPC.scale + NPC.gfxOffY), NPC.frame, currentColor, NPC.rotation, halfSize, NPC.scale, spriteEffects, 0f);
+                    }
+                }
+
+                float beginTelegraphGateValue = TimeBeforeCreeperAttack - CreeperTelegraphTime;
+                if (NPC.ai[1] > beginTelegraphGateValue || NPC.ai[0] == 1f)
+                {
+                    float colorScale = NPC.ai[0] == 1f ? 1f : MathHelper.Clamp((NPC.ai[1] - beginTelegraphGateValue) / CreeperTelegraphTime, 0f, 1f);
+                    Color drawColor2 = new Color(150, 30, 30, 0) * colorScale;
+                    for (int i = 0; i < 2; i++)
+                    {
+                        spriteBatch.Draw(TextureAssets.Npc[NPC.type].Value, NPC.Center - screenPos + new Vector2(0, NPC.gfxOffY), NPC.frame,
+                            drawColor2, NPC.rotation, halfSize, NPC.scale, spriteEffects, 0f);
+                    }
+                }
             }
         }
 

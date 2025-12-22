@@ -34,7 +34,6 @@ namespace CalamityMod.Items.Weapons.Summon
         public override void SetStaticDefaults()
         {
             ItemID.Sets.StaffMinionSlotsRequired[Type] = 3f;
-            ItemID.Sets.ShimmerTransformToItem[Type] = ModContent.ItemType<ToxicantTwister>();
         }
 
         public override void SetDefaults()
