@@ -398,7 +398,7 @@ GrandMarquisBait: {
 
 // Bobbers
 ScrapBobber: {
-	DisplayName: Wulfrum Scrap Bobber
+	DisplayName: Wulfrum Bobber
 	Tooltip:
 		'''
 		Provides a fishing minigame
@@ -409,7 +409,7 @@ ScrapBobber: {
 }
 
 NavystoneBobber: {
-	DisplayName: Navystone Bobber
+	DisplayName: Sunken Sinker
 	Tooltip:
 		'''
 		{$ItemTooltip.FishingBobber}
@@ -420,7 +420,7 @@ NavystoneBobber: {
 }
 
 SkylineBobber: {
-	DisplayName: Skyline Bobber
+	DisplayName: Acrobatic Bobber
 	Tooltip:
 		'''
 		{$ItemTooltip.FishingBobber}
@@ -433,7 +433,7 @@ SkylineBobber: {
 }
 
 PerennialBobber: {
-	DisplayName: Bobber of the Wild
+	DisplayName: Feral Bobber
 	Tooltip:
 		'''
 		{$ItemTooltip.FishingBobber}
@@ -445,7 +445,7 @@ PerennialBobber: {
 }
 
 ScoriaBobber: {
-	DisplayName: Thermal Bobber
+	DisplayName: Volcanic Sinker
 	Tooltip:
 		'''
 		{$ItemTooltip.FishingBobber}
