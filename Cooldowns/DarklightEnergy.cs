@@ -11,13 +11,13 @@ using static Terraria.ModLoader.ModContent;
 
 namespace CalamityMod.Cooldowns
 {
-    public class LucreciaEnergy : CooldownHandler
+    public class DarklightEnergy : CooldownHandler
     {
         private float AdjustedCompletion => instance.timeLeft / (float)Lucrecia.MaxEnergy;
         private Color TextColor => Color.MediumPurple;
         private Color TextBorderColor = Color.AntiqueWhite;
 
-        public static new string ID => "LucreciaEnergy";
+        public static new string ID => "DarklightEnergy";
         public override bool CanTickDown => false;
         public override bool ShouldDisplay => instance.player.HeldItem.type == ItemType<Lucrecia>();
         public override LocalizedText DisplayName => CalamityUtils.GetText($"UI.Cooldowns.{ID}");

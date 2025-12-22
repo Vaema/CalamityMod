@@ -655,6 +655,7 @@ namespace CalamityMod
                     shader._uImage0 = texture;
                     break;
                 case 1:
+                    shader._uImage1 = texture;
                     break;
             }
             return shader;

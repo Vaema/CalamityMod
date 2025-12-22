@@ -12,7 +12,7 @@ namespace CalamityMod.Projectiles.Typeless
     public class FriendlyLaserWallBeam : ModProjectile, ILocalizedModType
     {
         public override string Texture => "CalamityMod/Projectiles/InvisibleProj";
-        public new string LocalizationCategory => "Projectiles.Boss";
+        public new string LocalizationCategory => "Projectiles.Typeless";
         public float time = 0;
         public ref float attackSpeed => ref Projectile.ai[0];
         public ref float laserType => ref Projectile.ai[1];

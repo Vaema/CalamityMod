@@ -482,7 +482,7 @@ namespace CalamityMod.Systems
 
                                 if (isGoldChest)
                                 {
-                                    chest.item[inventoryIndex].SetDefaults(ModContent.ItemType<EnchantedBladeStaff>());
+                                    chest.item[inventoryIndex].SetDefaults(ModContent.ItemType<EnchantedKnifeStaff>());
                                     chest.item[inventoryIndex].Prefix(-1);
                                     break;
                                 }
