@@ -180,12 +180,8 @@ namespace CalamityMod.CalPlayer
             ScrapBobber,
             NavystoneBobber,
             SkylineBobber,
-            CragsBobber,
-            CryonicBobber,
             PerennialBobber,
             ScoriaBobber,
-            UelibloomBobber,
-            CosmiliteBobber,
             DevourerofCods //Not a fishing minigame but uses the same code as the rest
         }
         public FishingMinigames SelectedFishingMinigame = FishingMinigames.None;

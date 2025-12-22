@@ -365,7 +365,7 @@ TheDevourerofCods: {
 	Tooltip:
 		'''
 		Fires ten lines at once. Line never snaps and can fish from lava
-Hooked items stay hooked forever
+		Hooked items stay hooked forever
 		Common fish are automatically consumed while fishing
 		Consuming fish allows a bobber to hook a new item and feeds the user
 		'The devourer was once just an Eater of Shoals'
@@ -420,11 +420,6 @@ NavystoneBobber: {
 		'''
 }
 
-CragsBobber: {
-	DisplayName: Charred Bobber
-	Tooltip: Increases fishing power by 10
-}
-
 SkylineBobber: {
 	DisplayName: Skyline Bobber
 	Tooltip:
@@ -436,11 +431,6 @@ SkylineBobber: {
 		Touching a ring hooks an item onto the bobber
 		Bobbers will automatically reel in hooked items upon landing back in the water
 		'''
-}
-
-CryonicBobber: {
-	DisplayName: Crystalline Bobber
-	Tooltip: Increases fishing power by 10
 }
 
 PerennialBobber: {
@@ -466,19 +456,5 @@ ScoriaBobber: {
 		Moving while fishing instead moves your bobbers
 		Rifts appear over time in liquids, containing an item
 		When bobbers touch a rift, they automatically reel in the item within
-		'''
-}
-
-UelibloomBobber: {
-	DisplayName: Blooming Bobber
-	Tooltip: Increases fishing power by 10
-}
-
-CosmiliteBobber: {
-	DisplayName: Hyperdeath Fish Catcher
-	Tooltip:
-		'''
-		Increases fishing power by 10
-		[c/E7A7FF:'A FISH DOES NOT FEAR DEATH!']
 		'''
 }
