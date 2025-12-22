@@ -21,14 +21,15 @@ namespace CalamityMod.Items.Accessories
 
         public override void UpdateAccessory(Player player, bool hideVisual)
         {
-            player.fishingSkill += 10 + (int)((1f + (player.statLifeMax2 - player.statLife) * 0.25f));
+            player.accFishingBobber = true;
+            player.fishingSkill += (int)((player.statLifeMax2 - player.statLife) * 0.25f);
             player.Calamity().SelectedFishingMinigame = CalamityPlayer.FishingMinigames.PerennialBobber;
         }
         public override void AddRecipes()
         {
             CreateRecipe().
                 AddIngredient(ItemID.FishingBobber).
-                AddIngredient<PerennialBar>(2).
+                AddIngredient<PerennialBar>(5).
                 AddTile(TileID.MythrilAnvil).
                 Register();
         }

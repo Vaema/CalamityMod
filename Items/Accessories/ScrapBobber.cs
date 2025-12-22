@@ -21,13 +21,12 @@ namespace CalamityMod.Items.Accessories
 
         public override void UpdateAccessory(Player player, bool hideVisual)
         {
-            player.fishingSkill += 5;
             player.Calamity().SelectedFishingMinigame = CalamityPlayer.FishingMinigames.ScrapBobber;
         }
         public override void AddRecipes()
         {
             CreateRecipe().
-                AddIngredient<WulfrumMetalScrap>(2).
+                AddIngredient<WulfrumMetalScrap>(5).
                 AddTile(TileID.Anvils).
                 Register();
         }

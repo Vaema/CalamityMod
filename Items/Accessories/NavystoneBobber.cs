@@ -22,7 +22,7 @@ namespace CalamityMod.Items.Accessories
 
         public override void UpdateAccessory(Player player, bool hideVisual)
         {
-            player.fishingSkill += 10;
+            player.accFishingBobber = true;
             player.Calamity().SelectedFishingMinigame = CalamityPlayer.FishingMinigames.NavystoneBobber;
         }
         public override void AddRecipes()
@@ -30,7 +30,7 @@ namespace CalamityMod.Items.Accessories
             CreateRecipe().
                 AddIngredient(ItemID.FishingBobber).
                 AddIngredient<PearlShard>().
-                AddIngredient<Navystone>(2).
+                AddIngredient<Navystone>(5).
                 AddTile(TileID.Anvils).
                 Register();
         }

@@ -21,14 +21,14 @@ namespace CalamityMod.Items.Fishing
 
         public override void UpdateAccessory(Player player, bool hideVisual)
         {
-            player.fishingSkill += 10;
+            player.accFishingBobber = true;
             player.Calamity().SelectedFishingMinigame = CalamityPlayer.FishingMinigames.SkylineBobber;
         }
         public override void AddRecipes()
         {
             CreateRecipe().
                 AddIngredient(ItemID.FishingBobber).
-                AddIngredient<AerialiteBar>(2).
+                AddIngredient<AerialiteBar>(5).
                 AddIngredient(ItemID.Feather).
                 AddTile(TileID.Anvils).
                 Register();

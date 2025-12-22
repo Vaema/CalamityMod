@@ -401,7 +401,6 @@ ScrapBobber: {
 	DisplayName: Wulfrum Scrap Bobber
 	Tooltip:
 		'''
-		Increases fishing power by 5
 		Provides a fishing minigame
 		Move in the indicated direction while fishing to catch items
 		The rod empowers the longer you go without a mistake, speeding it up
@@ -413,7 +412,7 @@ NavystoneBobber: {
 	DisplayName: Navystone Bobber
 	Tooltip:
 		'''
-		Increases fishing power by 10
+		{$ItemTooltip.FishingBobber}
 		Provides a fishing minigame
 		The bobber will float at your height underwater, allowing underwater fishing
 		Move in the indicated direction while fishing to catch items
@@ -424,7 +423,7 @@ SkylineBobber: {
 	DisplayName: Skyline Bobber
 	Tooltip:
 		'''
-		Increases fishing power by 10
+		{$ItemTooltip.FishingBobber}
 		Provides a fishing minigame
 		Moving while fishing instead moves your bobbers
 		Rings appear over time above the water's surface
@@ -437,11 +436,10 @@ PerennialBobber: {
 	DisplayName: Bobber of the Wild
 	Tooltip:
 		'''
-		Increases fishing power by 10
+		{$ItemTooltip.FishingBobber}
 		Gains fishing power the more life you have lost
 		Provides a fishing minigame
-		Press <right> to drain life
-		Draining life speeds up catches
+		Hold <right> while catching fish to drain life and speed up catches
 		Bobbers can hook onto enemies, dealing damage when life is drained
 		'''
 }
@@ -450,7 +448,7 @@ ScoriaBobber: {
 	DisplayName: Thermal Bobber
 	Tooltip:
 		'''
-		Increases fishing power by 10
+		{$ItemTooltip.FishingBobber}
 		Allows fishing in lava
 		Provides a fishing minigame
 		Moving while fishing instead moves your bobbers
