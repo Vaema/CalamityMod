@@ -236,7 +236,7 @@ namespace CalamityMod.NPCs.AcidRain
             if (segmentPositions.Length >= 2)
             {
                 float tailRotation = (segmentPositions[^2] - segmentPositions[^1]).ToRotation() + MathHelper.Pi;
-                Vector2 tailDrawPosition = segmentPositions[^1] - tailRotation.ToRotationVector2() * 4f;
+                Vector2 tailDrawPosition = segmentPositions[^1] - tailRotation.ToRotationVector2() * 4f - screenPos;
                 SpriteEffects tailDirection = NPC.velocity.X < 0f ? SpriteEffects.None : SpriteEffects.FlipVertically;
                 Main.EntitySpriteDraw(tailTexture, tailDrawPosition, tailArea, NPC.GetAlpha(Color.White), tailRotation, tailArea.Size() * new Vector2(0f, 0.5f), NPC.scale, tailDirection, 0);
                 PrimitiveRenderer.RenderTrail(segmentPositions, new(SegmentWidthFunction, (_,_) => NPC.GetAlpha(Color.White), pixelate: false, shader: GameShaders.Misc["CalamityMod:PrimitiveTexture"]), 36);
