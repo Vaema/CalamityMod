@@ -45,7 +45,6 @@ namespace CalamityMod.Items.Potions.Alcohol
             CreateRecipe(12).
                 AddIngredient(ItemID.Bottle, 12).
                 AddIngredient(ItemID.GiantHarpyFeather).
-                AddIngredient<StarblightSoot>(10).
                 AddTile(TileID.Kegs).
                 Register();
         }
