@@ -71,7 +71,7 @@ internal readonly record struct EffectChainEntry(
         return new EffectChainEntry(shaderData, parameters);
     }
 
-    private static Action ApplyEffectFunc(Effect effect, string? pass = null)
+    private static Action ApplyEffectFunc(Effect effect, string pass = null)
     {
         return () => effect.CurrentTechnique.Passes[pass ?? effect.CurrentTechnique.Passes.First().Name].Apply();
     }
