@@ -13,7 +13,7 @@ namespace CalamityMod.Projectiles.Magic
     public class HyperdeathRiftScepterBeam : ModProjectile, ILocalizedModType
     {
         public override string Texture => "CalamityMod/Projectiles/InvisibleProj";
-        public new string LocalizationCategory => "Projectiles.Boss";
+        public new string LocalizationCategory => "Projectiles.Magic";
         public float time = 0;
         public ref float attackSpeed => ref Projectile.ai[0];
         public ref float laserType => ref Projectile.ai[2];

@@ -7,18 +7,18 @@ using Microsoft.Xna.Framework.Graphics;
 using Terraria;
 using Terraria.GameContent;
 using Terraria.ID;
-using static CalamityMod.Items.Weapons.Summon.EnchantedBladeStaff;
+using static CalamityMod.Items.Weapons.Summon.EnchantedKnifeStaff;
 using static Terraria.ModLoader.ModContent;
 
 namespace CalamityMod.Projectiles.Summon
 {
-    public class EnchantedBladeSummon : BaseMinionProjectile
+    public class EnchantedKnifeSummon : BaseMinionProjectile
     {
-        public override int AssociatedProjectileTypeID => ProjectileType<EnchantedBladeSummon>();
+        public override int AssociatedProjectileTypeID => ProjectileType<EnchantedKnifeSummon>();
 
-        public override int AssociatedBuffTypeID => BuffType<EnchantedBladeStaffBuff>();
+        public override int AssociatedBuffTypeID => BuffType<EnchantedKnifeStaffBuff>();
 
-        public override ref bool AssociatedMinionBool => ref ModdedOwner.EnchantedBladeStaffBool;
+        public override ref bool AssociatedMinionBool => ref ModdedOwner.EnchantedKnifeStaffBool;
 
         public override bool PreHardmodeMinionTileVision => true;
 
@@ -144,7 +144,7 @@ namespace CalamityMod.Projectiles.Summon
                     Projectile.GetSource_FromThis(),
                     spawnPosition,
                     predictiveDirection,
-                    ProjectileType<EnchantedBladeStaffProjectile>(),
+                    ProjectileType<EnchantedKnifeStaffProjectile>(),
                     Projectile.damage,
                     Projectile.knockBack,
                     Projectile.owner);

@@ -7,7 +7,7 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.Items.Weapons.Summon
 {
-    public class EnchantedBladeStaff : ModItem, ILocalizedModType
+    public class EnchantedKnifeStaff : ModItem, ILocalizedModType
     {
         public static float SwingTime = 20f;
         public static float SwingWait = 10f;
@@ -23,7 +23,7 @@ namespace CalamityMod.Items.Weapons.Summon
         {
             Item.damage = 10;
             Item.DamageType = DamageClass.Summon;
-            Item.shoot = ModContent.ProjectileType<EnchantedBladeSummon>();
+            Item.shoot = ModContent.ProjectileType<EnchantedKnifeSummon>();
             Item.knockBack = 2f;
 
             Item.useTime = Item.useAnimation = 15;
