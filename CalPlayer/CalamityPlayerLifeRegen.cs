@@ -442,16 +442,6 @@ namespace CalamityMod.CalPlayer
                     Player.lifeRegenTime += 1800;
                 }
             }
-
-            //If a player had a life regen hindering debuff, add 30 seconds to their regen time when under Tequila Sunrise
-            //This stacks with all other post-debuff boosts due to Tequila Sunrise increasing DoT damage taken
-            if (tequilaSunrise)
-            {
-                if (hadLifeRegenHinderingDebuff && !hasLifeRegenHinderingDebuff)
-                {
-                    Player.lifeRegenTime += 1800;
-                }
-            }
             #endregion
 
             // During Silva revive or God Slayer dash, all negative life regen is canceled

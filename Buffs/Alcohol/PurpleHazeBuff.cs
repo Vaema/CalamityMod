@@ -4,7 +4,7 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.Buffs.Alcohol
 {
-    public class PurpleHazeBuff : ModBuff //FIX THIS DOZE - Hybrid Stealth
+    public class PurpleHazeBuff : ModBuff
     {
         public override void SetStaticDefaults()
         {
