@@ -1523,7 +1523,6 @@ namespace CalamityMod.CalPlayer
         public bool necrosteocytesDudes = false;
         public bool gammaHead = false;
         public bool tundraFlameBlossom = false;
-        public bool starSwallowerPetFroge = false;
         public bool snakeEyes = false;
         public bool poleWarper = false;
         public bool aqueousHunterDrone = false;
@@ -1553,7 +1552,7 @@ namespace CalamityMod.CalPlayer
         public bool KalandraMirror = false;
         public bool StellarTorus = false;
         public bool LiliesOfFinalityBool = false;
-        public bool EnchantedBladeStaffBool = false;
+        public bool EnchantedKnifeStaffBool = false;
         public bool AmphibiansGuitarBool = false;
         #endregion
 
@@ -2701,7 +2700,6 @@ namespace CalamityMod.CalPlayer
             necrosteocytesDudes = false;
             gammaHead = false;
             tundraFlameBlossom = false;
-            starSwallowerPetFroge = false;
             snakeEyes = false;
             poleWarper = false;
             aqueousHunterDrone = false;
@@ -2726,7 +2724,7 @@ namespace CalamityMod.CalPlayer
             KalandraMirror = false;
             StellarTorus = false;
             LiliesOfFinalityBool = false;
-            EnchantedBladeStaffBool = false;
+            EnchantedKnifeStaffBool = false;
             AmphibiansGuitarBool = false;
             #endregion
 
