@@ -102,8 +102,8 @@ namespace CalamityMod.Projectiles.Summon
                 offset.X *= Projectile.spriteDirection;
                 var star = new BloomParticle(SiriusPos + offset * Projectile.scale - (Owner.oldVelocity * Math.Clamp(offset.Length() * 0.001f,0,1) ), Vector2.Zero, Color.SkyBlue * ((Owner.miscCounter + flashOffset) % flashMod < 5 ? 0.75f : 1f), 2*SiriusScale * intensity, 2*SiriusScale * intensity, 2, false);
                 var star2 = new CustomSpark(SiriusPos + offset * Projectile.scale - (Owner.oldVelocity * Math.Clamp(offset.Length() * 0.001f, 0, 1)), Vector2.UnitX.RotatedBy(MathHelper.Pi * (Owner.miscCounter/300f)) * 0.1f, "CalamityMod/Particles/Sparkle", false, 2, 10*SiriusScale * intensity, Color.SkyBlue, Vector2.One);
-                GeneralParticleHandler.SpawnParticle(star,true,Enums.GeneralDrawLayer.AfterProjectiles); 
-                GeneralParticleHandler.SpawnParticle(star2, true, Enums.GeneralDrawLayer.AfterProjectiles);
+                GeneralParticleHandler.SpawnParticle(star,false,Enums.GeneralDrawLayer.AfterProjectiles); 
+                GeneralParticleHandler.SpawnParticle(star2, false, Enums.GeneralDrawLayer.AfterProjectiles);
             }
             SpawnStar(0,new Vector2(0f, 0f), 1.5f, 0,300); //Sirius
             SpawnStar(2, new Vector2(-118f, 217f), 0.75f, 40); //bottom
@@ -238,8 +238,6 @@ namespace CalamityMod.Projectiles.Summon
                 var color = Color.SkyBlue * 0.75f * ((MathF.Sin(Main.GlobalTimeWrappedHourly) + 1) * 0.25f + 0.5f);
                 CalamityUtils.DrawLineBetter(Main.spriteBatch, SiriusPos+point1 * Projectile.scale - (Owner.oldVelocity * Math.Clamp(point1.Length() * 0.001f, 0, 1)), SiriusPos+point2* Projectile.scale - (Owner.oldVelocity * Math.Clamp(point2.Length() * 0.001f, 0, 1)), color, 2f);
             }
-            PixelationManager.AddPixelatedDrawer(drawLayer: Enums.GeneralDrawLayer.AfterProjectiles, drawAction: (matrix) =>
-            {
                 ConnectStars(4, new Vector2(0f, 0f), new Vector2(119f, 32f)); //Sirius - Front Foot
                 ConnectStars(2, new Vector2(0f, 0f), new Vector2(-118f, 217f)); //Sirius - Bottom
 
@@ -253,7 +251,6 @@ namespace CalamityMod.Projectiles.Summon
                 ConnectStars(8, new Vector2(-62f, 11f), new Vector2(-101f, -23f)); // Neck - Head
                 ConnectStars(8, new Vector2(-101f, -23f), new Vector2(-50f, -103f)); // Head - Nose
                 ConnectStars(7, new Vector2(-50f, -103f), new Vector2(-62f, 11f)); // Nose - Neck
-            });
             return false;
         }
         #endregion

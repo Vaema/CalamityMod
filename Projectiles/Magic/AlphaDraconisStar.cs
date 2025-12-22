@@ -39,7 +39,28 @@ namespace CalamityMod.Projectiles.Magic
             float velLength = Projectile.velocity.Length();
             if (Projectile.ai[2] == 0)
             {
-                Projectile.velocity += Projectile.DirectionTo(goalPos) * 0.15f;
+                float maxDist = 57600; //240^2
+                NPC target = null;
+                foreach (var item in Main.ActiveNPCs)
+                {
+                    if (item.CanBeChasedBy(item) && item.DistanceSQ(goalPos) < maxDist)
+                    {
+                        maxDist = item.DistanceSQ(goalPos);
+                        target = item;
+                    }
+                }
+                if (target != null)
+                {
+                    goalPos = target.Center;
+                    Projectile.ai[0] = goalPos.X;
+                    Projectile.ai[1] = goalPos.Y;
+                    Projectile.Calamity().HomingTarget = target.whoAmI;
+                } else
+                {
+                    Projectile.Calamity().HomingTarget = -1;
+                }
+
+                    Projectile.velocity += Projectile.DirectionTo(goalPos);
                 Projectile.velocity.Normalize();
                 if (Projectile.velocity.HasNaNs())
                     Projectile.velocity = Vector2.UnitY;
@@ -51,6 +72,7 @@ namespace CalamityMod.Projectiles.Magic
             }
             else
             {
+                Projectile.Calamity().HomingTarget = -1;
                 Projectile.velocity *= 0.98f;
                 if (Projectile.velocity.Length() < 1 && Projectile.ai[2] == 1)
                     Projectile.Kill();
@@ -59,7 +81,7 @@ namespace CalamityMod.Projectiles.Magic
                     Projectile.rotation += 0.05f;
                     Projectile.scale = MathHelper.Min(Projectile.scale + 0.02f, 1);
                     Player closestPlayer = null;
-                    float closestDis = 200;
+                    float closestDis = 320;
                     foreach (var player in Main.ActivePlayers)
                     {
                         var dis = Projectile.Distance(player.Center);
@@ -86,11 +108,15 @@ namespace CalamityMod.Projectiles.Magic
         {
             if (Projectile.ai[2] == 0)
             {
-                if (Main.rand.NextFloat() <= 0.4f) //40% chance to become pick-up-able stars
+                if (Main.rand.NextFloat() <= 0.5f) //50% chance to become pick-up-able stars
+                {
                     Projectile.ai[2] = 2;
+                    Projectile.timeLeft = 600 * Projectile.MaxUpdates;
+                }
                 else
                     Projectile.ai[2] = 1;
                 Projectile.velocity *= Main.rand.NextFloat(0.9f, 1.1f);
+                Projectile.netUpdate = true;
             }
         }
 

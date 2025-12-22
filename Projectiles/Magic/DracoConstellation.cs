@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using CalamityMod.Buffs.DamageOverTime;
-using CalamityMod.Systems.Graphic.PixelationSystem;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using ReLogic.Content;
@@ -99,22 +98,27 @@ namespace CalamityMod.Projectiles.Magic
                 Segments.Add(new(this, 0.1560f, MathHelper.TwoPi * 0.9f));
                 Segments.Add(new(this, 0.1458f, MathHelper.TwoPi * 0.85f));
                 Segments.Add(new(this, 0.0733f, MathHelper.TwoPi * 0.9f));
-            };
+            }
+            ;
             if (Projectile.timeLeft <= 240 && Projectile.timeLeft > 60)
             {
                 Projectile.timeLeft++;
                 NPC target = null;
-                if (Main.player[Projectile.owner].HasMinionAttackTargetNPC)
+                if (Projectile.ai[2] > 0)
+                {
+                    target = Main.npc[(int)Projectile.ai[2]];
+                }
+                else if (Main.player[Projectile.owner].HasMinionAttackTargetNPC)
                 {
                     target = Main.npc[Main.player[Projectile.owner].MinionAttackTargetNPC];
                 }
-                float targetDistance = 800;
-                if (target == null || Projectile.localNPCImmunity[target.whoAmI] > 0 || target.dontTakeDamage)
+                float targetDistance = 1600;
+                if (target == null || !target.CanBeChasedBy(Projectile))
                     target = null;
                 if (target == null)
                     foreach (var item in Main.ActiveNPCs)
                     {
-                        if (item.dontTakeDamage || Projectile.localNPCImmunity[item.whoAmI] > 0 || item.Distance(Main.player[Projectile.owner].Center) > 1200)
+                        if (!item.CanBeChasedBy(Projectile) || Projectile.localNPCImmunity[item.whoAmI] > 0 || item.Distance(Main.player[Projectile.owner].Center) > 1200)
                             continue;
                         var dis = Projectile.Distance(item.Center);
                         if (dis < targetDistance)
@@ -127,11 +131,16 @@ namespace CalamityMod.Projectiles.Magic
                 {
                     float velLength = Projectile.velocity.Length();
                     Projectile.velocity += Projectile.DirectionTo(target.Center) * 0.5f;
+                    Projectile.ai[2] = target.whoAmI + 1;
                 }
-                else if (Projectile.Distance(Main.player[Projectile.owner].Center) > 300)
+                else
                 {
-                    float velLength = Projectile.velocity.Length();
-                    Projectile.velocity += Projectile.DirectionTo(Main.player[Projectile.owner].Center) * 0.5f;
+                    Projectile.ai[2] = 0;
+                    if (Projectile.Distance(Main.player[Projectile.owner].Center) > 300)
+                    {
+                        float velLength = Projectile.velocity.Length();
+                        Projectile.velocity += Projectile.DirectionTo(Main.player[Projectile.owner].Center) * 0.5f;
+                    }
                 }
                 if (Projectile.velocity.Length() > 5)
                     Projectile.velocity *= 0.98f;
@@ -197,44 +206,41 @@ namespace CalamityMod.Projectiles.Magic
         }
         public override bool PreDraw(ref Color lightColor)
         {
-            PixelationManager.AddPixelatedDrawer(drawLayer: Enums.GeneralDrawLayer.AfterProjectiles, defaultBlendState: BlendState.Additive, drawAction: (matrix) =>
+            var tex = TextureAssets.Projectile[Type].Value;
+            var connectioncolor = Color.SkyBlue * ((MathF.Sin(Main.GlobalTimeWrappedHourly) + 1) * 0.125f + 0.75f);
+            for (var i = 0; i < Segments.Count; i++)
             {
-                var tex = TextureAssets.Projectile[Type].Value;
-                var connectioncolor = Color.SkyBlue * ((MathF.Sin(Main.GlobalTimeWrappedHourly) + 1) * 0.125f + 0.75f);
-                    for (var i = 0; i < Segments.Count; i++)
-                    {
-                        if (i == 0)
-                        {
-                            CalamityUtils.DrawLineBetter(Main.spriteBatch, Projectile.Center, Segments[i].Center, connectioncolor, 2 * Projectile.scale);
-                        }
-                        if (Segments.IndexInRange(i + 1))
-                        {
-                            var nextSegment = Segments[i + 1];
-                            CalamityUtils.DrawLineBetter(Main.spriteBatch, Segments[i].Center, nextSegment.Center, connectioncolor, 2 * Projectile.scale);
-                        }
-                        Main.spriteBatch.Draw(GetGlowTex(), Segments[i].Center - Main.screenPosition, null, Color.SkyBlue, 0, GetGlowTex().Size() * 0.5f, 0.2f * Projectile.scale, SpriteEffects.None, 0);
+                if (i == 0)
+                {
+                    CalamityUtils.DrawLineBetter(Main.spriteBatch, Projectile.Center, Segments[i].Center, connectioncolor, 2 * Projectile.scale);
+                }
+                if (Segments.IndexInRange(i + 1))
+                {
+                    var nextSegment = Segments[i + 1];
+                    CalamityUtils.DrawLineBetter(Main.spriteBatch, Segments[i].Center, nextSegment.Center, connectioncolor, 2 * Projectile.scale);
+                }
+                Main.spriteBatch.Draw(GetGlowTex(), Segments[i].Center - Main.screenPosition, null, Color.SkyBlue, 0, GetGlowTex().Size() * 0.5f, 0.2f * Projectile.scale, SpriteEffects.None, 0);
 
-                        Main.spriteBatch.Draw(tex, Segments[i].Center - Main.screenPosition, null, Color.White, 0 * Segments[i].followDistance * 5f * Main.GlobalTimeWrappedHourly, tex.Size() * 0.5f, 0.75f * Projectile.scale, SpriteEffects.None, 0);
-                    }
-                    void DrawHeadStar(Vector2 offsetPercentage)
-                    {
-                        Main.spriteBatch.Draw(GetGlowTex(), Projectile.Center + offsetPercentage.RotatedBy(Projectile.rotation - MathHelper.PiOver2) * TailLength - Main.screenPosition, null, Color.SkyBlue, 0, GetGlowTex().Size() * 0.5f, 0.2f * Projectile.scale, SpriteEffects.None, 0);
-                        Main.spriteBatch.Draw(tex, Projectile.Center + offsetPercentage.RotatedBy(Projectile.rotation - MathHelper.PiOver2) * TailLength - Main.screenPosition, null, Color.White, 0 * Math.Abs(offsetPercentage.X) * 5f * Main.GlobalTimeWrappedHourly, tex.Size() * 0.5f, 0.75f * Projectile.scale, SpriteEffects.None, 0);
-                    }
-                    void connectOffsets(Vector2 offset1, Vector2 offset2)
-                    {
-                        CalamityUtils.DrawLineBetter(Main.spriteBatch, Projectile.Center + offset1.RotatedBy(Projectile.rotation - MathHelper.PiOver2) * TailLength, Projectile.Center + offset2.RotatedBy(Projectile.rotation - MathHelper.PiOver2) * TailLength, connectioncolor, 2 * Projectile.scale);
+                Main.spriteBatch.Draw(tex, Segments[i].Center - Main.screenPosition, null, Color.White, 0 * Segments[i].followDistance * 5f * Main.GlobalTimeWrappedHourly, tex.Size() * 0.5f, 0.75f * Projectile.scale, SpriteEffects.None, 0);
+            }
+            void DrawHeadStar(Vector2 offsetPercentage)
+            {
+                Main.spriteBatch.Draw(GetGlowTex(), Projectile.Center + offsetPercentage.RotatedBy(Projectile.rotation - MathHelper.PiOver2) * TailLength - Main.screenPosition, null, Color.SkyBlue, 0, GetGlowTex().Size() * 0.5f, 0.2f * Projectile.scale, SpriteEffects.None, 0);
+                Main.spriteBatch.Draw(tex, Projectile.Center + offsetPercentage.RotatedBy(Projectile.rotation - MathHelper.PiOver2) * TailLength - Main.screenPosition, null, Color.White, 0 * Math.Abs(offsetPercentage.X) * 5f * Main.GlobalTimeWrappedHourly, tex.Size() * 0.5f, 0.75f * Projectile.scale, SpriteEffects.None, 0);
+            }
+            void connectOffsets(Vector2 offset1, Vector2 offset2)
+            {
+                CalamityUtils.DrawLineBetter(Main.spriteBatch, Projectile.Center + offset1.RotatedBy(Projectile.rotation - MathHelper.PiOver2) * TailLength, Projectile.Center + offset2.RotatedBy(Projectile.rotation - MathHelper.PiOver2) * TailLength, connectioncolor, 2 * Projectile.scale);
 
-                    }
-                    connectOffsets(new(), new(-0.0425f, 0.0637f));
-                    connectOffsets(new(), new(0.0307f, 0.0418f));
-                    connectOffsets(new(-0.0425f, 0.0637f), new(0.0168f, 0.0791f));
-                    connectOffsets(new(0.0307f, 0.0418f), new(0.0168f, 0.0791f));
-                    DrawHeadStar(new());
-                    DrawHeadStar(new(-0.0425f, 0.0637f));
-                    DrawHeadStar(new(0.0307f, 0.0418f));
-                    DrawHeadStar(new(0.0168f, 0.0791f));
-            });
+            }
+            connectOffsets(new(), new(-0.0425f, 0.0637f));
+            connectOffsets(new(), new(0.0307f, 0.0418f));
+            connectOffsets(new(-0.0425f, 0.0637f), new(0.0168f, 0.0791f));
+            connectOffsets(new(0.0307f, 0.0418f), new(0.0168f, 0.0791f));
+            DrawHeadStar(new());
+            DrawHeadStar(new(-0.0425f, 0.0637f));
+            DrawHeadStar(new(0.0307f, 0.0418f));
+            DrawHeadStar(new(0.0168f, 0.0791f));
             return false;
         }
 

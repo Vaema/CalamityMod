@@ -62,7 +62,7 @@ namespace CalamityMod.Items.Weapons.Magic
                     Projectile.NewProjectile(source, player.Center + new Vector2(-125,-100), -Vector2.Zero, ModContent.ProjectileType<DracoConstellation>(), damage, knockback, player.whoAmI);
                 return false;
             }
-            var mousePos = player.Calamity().mouseWorld + new Vector2(player.direction * -64);
+            var mousePos = player.Calamity().mouseWorld;
             var dir = player.DirectionTo(mousePos);
             for (var i = 0; i < 3; i++)
                 Projectile.NewProjectile(source, new Vector2(mousePos.X,player.Center.Y) + new Vector2(Main.rand.Next(500, 1300) * -player.direction, Main.rand.Next(-800,-600)), Vector2.UnitX * player.direction * velocity.Length(), type, damage, knockback, player.whoAmI, mousePos.X, mousePos.Y);
