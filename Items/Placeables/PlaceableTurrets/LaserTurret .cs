@@ -31,6 +31,7 @@ namespace CalamityMod.Items.Placeables.PlaceableTurrets
                 AddIngredient<EssenceofSunlight>(12).
                 AddCondition(ArsenalTierGatedRecipe.ConstructRecipeCondition(2, out Func<bool> condition), condition).
                 AddTile(TileID.MythrilAnvil).
+                SortBeforeFirstRecipesOf(ModContent.ItemType<HostileLaserTurret>()).
                 Register();
         }
     }

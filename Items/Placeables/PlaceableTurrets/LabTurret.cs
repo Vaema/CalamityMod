@@ -28,6 +28,7 @@ namespace CalamityMod.Items.Placeables.PlaceableTurrets
                 AddIngredient<DubiousPlating>(20).
                 AddCondition(ArsenalTierGatedRecipe.ConstructRecipeCondition(1, out Func<bool> condition), condition).
                 AddTile(TileID.Anvils).
+                SortBeforeFirstRecipesOf(ModContent.ItemType<HostileLabTurret>()).
                 Register();
         }
     }

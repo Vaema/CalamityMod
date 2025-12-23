@@ -31,6 +31,7 @@ namespace CalamityMod.Items.Placeables.PlaceableTurrets
                 AddIngredient<InfectedArmorPlating>(12).
                 AddCondition(ArsenalTierGatedRecipe.ConstructRecipeCondition(3, out Func<bool> condition), condition).
                 AddTile(TileID.MythrilAnvil).
+                SortBeforeFirstRecipesOf(ModContent.ItemType<HostilePlagueTurret>()).
                 Register();
         }
     }
