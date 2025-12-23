@@ -59,7 +59,6 @@ CosmicTentacle.DisplayName: Dark Tentacle
 CryoBlast.DisplayName: Cryo Blast
 DarkSparkBeam.DisplayName: Dark Spark Beam
 DarkSparkPrism.DisplayName: Dark Crystal
-HyperdeathRiftScepterBeam.DisplayName: Hypderdeath Rift Ripper
 DeathValleyDusterProjectile.DisplayName: Death Valley Duster
 DeathhailBeam.DisplayName: Deathhail Beam
 EelDrop.DisplayName: Acid Eel Drop
@@ -101,7 +100,7 @@ HellfireExplosionFriendly.DisplayName: Explosion
 HellwingBat.DisplayName: Ashen Hellwing
 HolyFlame.DisplayName: Holy Flame
 HolyLaser.DisplayName: Holy Laser
-HyperdeathRiftScepterBeam.DisplayName: Hyperdeath Rift Scepter Beam
+HyperdeathRiftScepterBeam.DisplayName: Hyperdeath Rift Ripper
 IceBarrageMain.DisplayName: Ice Barrage
 IceBlock.DisplayName: Ice Barrage Block
 IceBlockIcicle.DisplayName: Ice Barrage Icicle

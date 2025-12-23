@@ -352,7 +352,7 @@ namespace CalamityMod.CalPlayer
             }
 
             // Permafrost's Concoction increases life regen while afflicted with a fire debuff
-            if (permafrostsConcoction && Player.buffType.Any(l => BuffDatasets.DebuffDataset[l].HeatDebuffScaling > 0))
+            if (permafrostsConcoction && Player.buffType.Any(l => BuffDatasets.DebuffDataset[l] is not null && BuffDatasets.DebuffDataset[l].HeatDebuffScaling > 0))
             {
                 if (Player.lifeRegenTime < 900)
                     Player.lifeRegenTime = 900;

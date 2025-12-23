@@ -173,6 +173,7 @@ namespace CalamityMod.NPCs
             "Dinkleberg", // <@!581993958037520404> (hyperionzx)
             "Wamy", // Fab added this name with no Discord ID. May be a donor who has no Discord account.
             "Baggute", // <@!535140564174110720> (thebaggutegamer)
+            "Jacob Bryson", // <@!879794107218817026> (.melongun)
         ];
         private static readonly string[] MechanicNames =
         [
