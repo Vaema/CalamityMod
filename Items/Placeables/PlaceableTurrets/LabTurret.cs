@@ -16,7 +16,7 @@ namespace CalamityMod.Items.Placeables.PlaceableTurrets
         {
             Item.DefaultToPlaceableTile(ModContent.TileType<PlayerLabTurret>());
 
-            Item.value = Item.sellPrice(gold: 1);
+            Item.value = Item.sellPrice(silver: 50);
             Item.rare = ItemRarityID.Orange;
         }
 
@@ -28,6 +28,7 @@ namespace CalamityMod.Items.Placeables.PlaceableTurrets
                 AddIngredient<DubiousPlating>(20).
                 AddCondition(ArsenalTierGatedRecipe.ConstructRecipeCondition(1, out Func<bool> condition), condition).
                 AddTile(TileID.Anvils).
+                SortBeforeFirstRecipesOf(ModContent.ItemType<HostileLabTurret>()).
                 Register();
         }
     }

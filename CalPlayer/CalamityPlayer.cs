@@ -912,6 +912,7 @@ namespace CalamityMod.CalPlayer
         public double chaliceDamagePointPartialProgress = 0D;
         public int chaliceBleedoutToApplyOnHurt = 0;
         public int chaliceHitOriginalDamage = 0;
+        public bool chaliceHeartStyle = false;
 
         public bool elementalHeart = false;
         public bool crownJewel = false;
@@ -2281,6 +2282,7 @@ namespace CalamityMod.CalPlayer
             bloodPact = false;
             bloodflareCore = false;
             chaliceOfTheBloodGod = false;
+            chaliceHeartStyle = false;
             chaliceBleedoutToApplyOnHurt = 0; // Resets every frame so it doesn't improperly carry over between hits
             elementalHeart = false;
             crownJewel = false;
