@@ -90,17 +90,7 @@ namespace CalamityMod
         public static void FindAndReplaceAll(this List<TooltipLine> tooltips, string replacedKey, string newKey)
         {
             foreach (TooltipLine line in tooltips)
-            {
-                if (!line.Text.Contains(replacedKey))
-                    continue;
-                //loops only 100 times at max per tooltip line to prevent any infinite loops
-                for (var i = 0; i < 100; i++)
-                {
-                    line.Text = line.Text.Replace(replacedKey, newKey);
-                    if (!line.Text.Contains(replacedKey))
-                        break;
-                }
-            }
+                line.Text = line.Text.Replace(replacedKey, newKey);
         }
 
         /// <summary>

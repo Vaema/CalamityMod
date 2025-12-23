@@ -140,7 +140,7 @@ namespace CalamityMod
         /// <typeparam name="T">The base type of the collection.</typeparam>
         /// <param name="collection">The collection.</param>
         /// <param name="type">The type to search for.</param>
-        public static bool ContainsType<T>(this IEnumerable<T> collection, Type type) => collection.Any(entry => entry.GetType() == type.GetType());
+        public static bool ContainsType<T>(this IEnumerable<T> collection, Type type) => collection.Any(entry => entry.GetType() == type);
 
         /// <summary>
         /// Calculates the sound volume and panning for a sound which is played at the specified location in the game world.<br/>
@@ -156,7 +156,7 @@ namespace CalamityMod
 
             if (soundPos.X == -1f || soundPos.Y == -1f)
                 volume = 1f;
-            else if (WorldGen.gen || Main.dedServ || Main.dedServ)
+            else if (WorldGen.gen || Main.dedServ)
                 volume = 0f;
             else
             {
@@ -273,12 +273,12 @@ namespace CalamityMod
             for (int i = 0; i < originalText.Length; i++)
             {
                 for (int j = 0; j < 37; j++)
-                {
+            {
                     if (TextKeys[j] == originalText[i])
                     {
                         morseText += MorseKeys[j];
                         break;
-                    }
+                }
                 }
             }
 
