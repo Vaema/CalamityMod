@@ -154,13 +154,13 @@ namespace CalamityMod.Projectiles.Summon
         public static Asset<Texture2D> circle;
         public override bool PreDraw(ref Color lightColor)
         {
+            //Sigil
+            var spTex = TextureAssets.Projectile[Type].Value;
+            Main.spriteBatch.Draw(spTex, Projectile.Center - Main.screenPosition, null, Color.White, Main.GlobalTimeWrappedHourly, spTex.Size() * 0.5f, 0.75f, SpriteEffects.None, 0);
+            
             using (Main.spriteBatch.Scope())
             {
                 Main.spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.Additive, SamplerState.PointClamp, DepthStencilState.None, Main.Rasterizer, null, Main.GameViewMatrix.TransformationMatrix);
-
-                //Sigil
-                var spTex = TextureAssets.Projectile[Type].Value;
-                Main.spriteBatch.Draw(spTex, Projectile.Center - Main.screenPosition, null, Color.White, Main.GlobalTimeWrappedHourly, spTex.Size() * 0.5f, 0.75f, SpriteEffects.None, 0);
                 //Sunlines
                 int count = (int)((Projectile.minionSlots - 1) / 3) * 2 + 2;
                 for (var i = 0; i < count; i++)
