@@ -3621,7 +3621,6 @@ namespace CalamityMod.CalPlayer
                     Player.manaRegenCount += 20; // 20 mana per second, even while using an item
                     if (Player.HeldItem.mana > 0) 
                     {
-                        Main.NewText(Player.HeldItem.mana / (float)Player.HeldItem.useTime);
                         Player.GetDamage<MagicDamageClass>() += 0.5f + MathHelper.Max(0.1f,Player.HeldItem.mana / (float)Player.HeldItem.useTime);
                     }
                     Player.GetDamage<GenericDamageClass>() -= 0.5f;
