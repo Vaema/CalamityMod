@@ -3,7 +3,9 @@ using CalamityMod.BiomeManagers;
 using CalamityMod.Items.Placeables.Banners;
 using CalamityMod.Items.Weapons.Magic;
 using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
 using Terraria;
+using Terraria.GameContent;
 using Terraria.GameContent.Bestiary;
 using Terraria.ID;
 using Terraria.ModLoader;
@@ -21,7 +23,6 @@ namespace CalamityMod.NPCs.SunkenSea
         {
             NPCID.Sets.NPCBestiaryDrawModifiers value = new NPCID.Sets.NPCBestiaryDrawModifiers()
             {
-                CustomTexturePath = "CalamityMod/ExtraTextures/Bestiary/SeaSerpent_Bestiary",
                 PortraitPositionXOverride = 40,
                 PortraitPositionYOverride = 20
             };
@@ -314,6 +315,46 @@ namespace CalamityMod.NPCs.SunkenSea
                     Gore.NewGore(NPC.GetSource_Death(), NPC.position, NPC.velocity, Mod.Find<ModGore>("SeaSerpentGore1").Type, 1f);
                 }
             }
+        }
+
+        public override bool PreDraw(SpriteBatch spriteBatch, Vector2 screenPos, Color drawColor)
+        {
+            if (NPC.IsABestiaryIconDummy)
+            {
+                Texture2D texture = TextureAssets.Npc[Type].Value;
+                Texture2D[] bodyTextures = [
+                    TextureAssets.Npc[ModContent.NPCType<SeaSerpent2>()].Value,
+                    TextureAssets.Npc[ModContent.NPCType<SeaSerpent3>()].Value,
+                    TextureAssets.Npc[ModContent.NPCType<SeaSerpent4>()].Value,
+                    TextureAssets.Npc[ModContent.NPCType<SeaSerpent5>()].Value
+                ];
+
+                // Reimplementation of CalamityUtils.DrawAnimatedBestiaryWorm but tweaked due to body texture logic
+                NPC.frame = texture.Frame();
+                // Buffers the segment position and rotations
+                float offset = -0.2f;
+                float rotationStrength = 0.3f;
+                int segmentSpacing = 22;
+                int animationSpeed = 2;
+                float range = 10;
+                float wormTimer = NPC.Calamity().bestiaryWormTimer;
+                // Draw the body segments
+                for (int i = 6; i > 0; i--)
+                {
+                    // The first segment is slightly closer to keep up with the head
+                    float bodyOffset = i == 1 ? i * segmentSpacing * 0.4f : i * segmentSpacing - segmentSpacing * 0.5f;
+
+                    // Body segment logic here genuinely sucks because of each texture being programmed as separate NPC types, this directly copies body spawning logic
+                    Texture2D toUse = (i == 2 || i == 3) ? bodyTextures[1] : bodyTextures[0];
+                    spriteBatch.Draw(toUse, NPC.position + new Vector2(bodyOffset, MathF.Sin((wormTimer + offset * i) * animationSpeed) * range), toUse.Frame(1, 1, 0, 0), NPC.GetAlpha(drawColor), NPC.rotation - MathHelper.PiOver2 - MathF.Cos((wormTimer + offset * i) * animationSpeed) * MathHelper.PiOver4 * rotationStrength, toUse.Size() / 2, NPC.scale, SpriteEffects.None, 0f);
+                }
+                // Draw the head
+                spriteBatch.Draw(texture, NPC.position + new Vector2(0f, MathF.Sin(wormTimer * animationSpeed) * range), NPC.frame, NPC.GetAlpha(drawColor), NPC.rotation - MathHelper.PiOver2 - MathF.Cos(wormTimer * animationSpeed) * MathHelper.PiOver4 * rotationStrength, new Vector2(texture.Width * 0.5f, texture.Height), NPC.scale, SpriteEffects.None, 0f);
+
+                return false;
+            }
+
+            return true;
         }
     }
 }
