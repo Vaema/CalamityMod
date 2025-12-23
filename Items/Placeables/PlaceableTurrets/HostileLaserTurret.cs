@@ -17,7 +17,7 @@ namespace CalamityMod.Items.Placeables.PlaceableTurrets
         {
             Item.DefaultToPlaceableTile(ModContent.TileType<Tiles.DraedonStructures.HostileLaserTurret>());
 
-            Item.value = Item.sellPrice(gold: 2);
+            Item.value = Item.sellPrice(silver: 50);
             Item.rare = ItemRarityID.Pink;
         }
 
