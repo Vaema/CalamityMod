@@ -230,7 +230,12 @@ namespace CalamityMod.NPCs.Perforator
             else
                 wormsAlive = 0;
 
-            NPC.Calamity().DR = wormsAlive * 0.3f;
+            NPC.Calamity().DR = wormsAlive * 0.5f;
+            if (NPC.Calamity().DR >= 0.999f)
+            {
+                NPC.Calamity().DR = 0.999f;
+                NPC.Calamity().unbreakableDR = true;
+            }
 
             if (Main.netMode != NetmodeID.MultiplayerClient && wormSpawnStateTimer == 0f)
             {
