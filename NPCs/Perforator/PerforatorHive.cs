@@ -231,6 +231,8 @@ namespace CalamityMod.NPCs.Perforator
                 wormsAlive = 0;
 
             NPC.Calamity().DR = wormsAlive * 0.5f;
+            if (wormsAlive >= 1)
+                NPC.Calamity().CurrentlyIncreasingDefenseOrDR = true;
             if (NPC.Calamity().DR >= 0.999f)
             {
                 NPC.Calamity().DR = 0.999f;
