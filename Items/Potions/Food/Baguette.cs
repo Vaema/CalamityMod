@@ -1,11 +1,12 @@
 ﻿using CalamityMod.Buffs.Potions;
 using Microsoft.Xna.Framework;
 using Terraria;
+using Terraria.DataStructures;
 using Terraria.ID;
 using Terraria.Localization;
 using Terraria.ModLoader;
 
-namespace CalamityMod.Items.Potions
+namespace CalamityMod.Items.Potions.Food
 {
     public class Baguette : ModItem, ILocalizedModType
     {
@@ -18,11 +19,13 @@ namespace CalamityMod.Items.Potions
         public override void SetStaticDefaults()
         {
             Item.ResearchUnlockCount = 5;
+            Main.RegisterItemAnimation(Type, new DrawAnimationVertical(int.MaxValue, 3));
             ItemID.Sets.FoodParticleColors[Type] = new Color[3] {
                 new Color(231, 137, 159),
                 new Color(179, 104, 56),
                 new Color(108, 47, 16)
             };
+            ItemID.Sets.IsFood[Type] = true;
         }
 
         public override void SetDefaults()

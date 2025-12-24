@@ -1,9 +1,10 @@
 ﻿using Microsoft.Xna.Framework;
 using Terraria;
+using Terraria.DataStructures;
 using Terraria.ID;
 using Terraria.ModLoader;
 
-namespace CalamityMod.Items.Potions
+namespace CalamityMod.Items.Potions.Food
 {
     public class DeliciousMeat : ModItem, ILocalizedModType
     {
@@ -11,10 +12,12 @@ namespace CalamityMod.Items.Potions
         public override void SetStaticDefaults()
         {
             Item.ResearchUnlockCount = 5;
+            Main.RegisterItemAnimation(Type, new DrawAnimationVertical(int.MaxValue, 3));
             ItemID.Sets.FoodParticleColors[Type] = new Color[2] {
                 new Color(147, 197, 206),
                 new Color(94, 131, 168),
             };
+            ItemID.Sets.IsFood[Type] = true;
         }
         public override void SetDefaults()
         {

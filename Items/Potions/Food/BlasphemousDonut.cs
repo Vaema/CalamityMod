@@ -1,9 +1,10 @@
 ﻿using Microsoft.Xna.Framework;
 using Terraria;
+using Terraria.DataStructures;
 using Terraria.ID;
 using Terraria.ModLoader;
 
-namespace CalamityMod.Items.Potions
+namespace CalamityMod.Items.Potions.Food
 {
     public class BlasphemousDonut : ModItem, ILocalizedModType
     {
@@ -11,11 +12,13 @@ namespace CalamityMod.Items.Potions
         public override void SetStaticDefaults()
         {
             Item.ResearchUnlockCount = 5;
+            Main.RegisterItemAnimation(Type, new DrawAnimationVertical(int.MaxValue, 3));
             ItemID.Sets.FoodParticleColors[Type] = new Color[3] {
                 new Color(122, 66, 59),
                 new Color(206, 116, 59),
                 new Color(198, 153, 113)
             };
+            ItemID.Sets.IsFood[Type] = true;
         }
         public override void SetDefaults()
         {
