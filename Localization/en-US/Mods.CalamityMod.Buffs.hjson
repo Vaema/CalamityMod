@@ -1672,3 +1672,8 @@ SeaKingsAssurance: {
 	DisplayName: Sea King's Assurance
 	Description: If you're seeing this, something assuredly went horribly wrong
 }
+
+CnidarianSummonTagBuff: {
+	DisplayName: Cnidarian Summon Tag Buff
+	Description: you are not seeing this.
+}

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using CalamityMod.Buffs.Summon.Whips;
 using CalamityMod.DataStructures;
 using CalamityMod.Graphics.Primitives;
 using CalamityMod.Particles;
@@ -211,6 +212,7 @@ namespace CalamityMod.Projectiles.Summon
             {
                 SoundEngine.PlaySound(SlapSound with { Volume = SlapSound.Volume * centrifugalForce + 0.8f }, target.position);
                 Owner.MinionAttackTargetNPC = target.whoAmI;
+                target.AddBuff(BuffType<CnidarianSummonTagBuff>(), 240);
             }
 
         }

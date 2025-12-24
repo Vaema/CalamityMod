@@ -120,14 +120,6 @@ namespace CalamityMod.DataStructures
         {
         }
         /// <summary>
-        /// Due to how Firecracker works, this allows it to work with crit accessories.
-        /// </summary>
-        public static void FirecrackerModifyHit(Projectile proj, NPC npc, ref NPC.HitModifiers modifiers, ref float tagDamageMult, ref float critChance)
-        {
-            modifiers.ScalingBonusDamage += (Firecracker.MultiplicativeTagDamage + Firecracker.UnlistedMultiplicativeTagDamage) * tagDamageMult;
-            modifiers.CritDamage += Firecracker.TagCritDamage;
-        }
-        /// <summary>
         /// This is replaced by custom tag on hit effects. Does nothing.
         /// </summary>
         public static void BlankOnHit(NPC npc, Projectile projectile, NPC.HitInfo hit, int damagedone) { }
@@ -136,35 +128,33 @@ namespace CalamityMod.DataStructures
         #region Vanilla whip stats
         public static SummonTag LeatherWhip = new SummonTag(ItemID.BlandWhip)
         {
-            FlatTagDamage = 4,
+            FlatTagDamage = 2,
             UnlistedTagDamage = -4 //Negative value cancels out vanilla tag damage
         };
         public static SummonTag Snapthorn = new SummonTag(ItemID.ThornWhip)
         {
-            FlatTagDamage = 4,
+            FlatTagDamage = 1,
             UnlistedTagDamage = -6 //Negative value cancels out vanilla tag damage
         };
         public static SummonTag SpinalTap = new SummonTag(ItemID.BoneWhip)
         {
-            FlatTagDamage = 5,
+            FlatTagDamage = 4,
             UnlistedTagDamage = -7 //Negative value cancels out vanilla tag damage
         };
         public static SummonTag Firecracker = new SummonTag(ItemID.FireWhip)
         {
-            MultiplicativeTagDamage = 1f,
-            TagCritDamage = -1f,
-            TagModifyHitEffects = FirecrackerModifyHit,
+            TagCritChance = 1f, //Since we make firecracker do 2x damage, I make this apply as a crit for the ability to proc crit accessories and for visual style points
             UnlistedMultiplicativeTagDamage = -1.75f, //Cancels out the vanilla firecracker tag damage
             AutoDrawTooltip = false
         };
         public static SummonTag CoolWhip = new SummonTag(ItemID.CoolWhip)
         {
-            FlatTagDamage = 8,
+            FlatTagDamage = 6,
             UnlistedTagDamage = -6 //Negative value cancels out vanilla tag damage
         };
         public static SummonTag Durendal = new SummonTag(ItemID.SwordWhip)
         {
-            FlatTagDamage = 5,
+            FlatTagDamage = 4,
             TagCritChance = 0.05f,
             UnlistedTagDamage = -9 //Negative value cancels out vanilla tag damage
         };
@@ -175,13 +165,13 @@ namespace CalamityMod.DataStructures
         };
         public static SummonTag DarkHarvest = new SummonTag(ItemID.ScytheWhip)
         {
-            FlatTagDamage = 14,
+            FlatTagDamage = 10,
             UnlistedTagDamage = -10, //Negative value cancels out vanilla tag damage
             //This has a unique on hit effect from vanilla.
         };
         public static SummonTag Kaleidoscope = new SummonTag(ItemID.RainbowWhip)
         {
-            FlatTagDamage = 10,
+            FlatTagDamage = 8,
             TagCritChance = 0.10f,
             UnlistedTagDamage = -20 //Negative value cancels out vanilla tag damage
         };

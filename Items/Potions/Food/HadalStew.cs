@@ -3,11 +3,12 @@ using CalamityMod.Items.Fishing.BrimstoneCragCatches;
 using CalamityMod.Items.Placeables.Abyss;
 using Microsoft.Xna.Framework;
 using Terraria;
+using Terraria.DataStructures;
 using Terraria.ID;
 using Terraria.Localization;
 using Terraria.ModLoader;
 
-namespace CalamityMod.Items.Potions
+namespace CalamityMod.Items.Potions.Food
 {
     [LegacyName("SunkenStew")]
     public class HadalStew : ModItem, ILocalizedModType
@@ -21,6 +22,7 @@ namespace CalamityMod.Items.Potions
         public override void SetStaticDefaults()
         {
             Item.ResearchUnlockCount = 30;
+            Main.RegisterItemAnimation(Type, new DrawAnimationVertical(int.MaxValue, 3));
             // Even though this uses the drinking animation, it does not use DrinkParticleColors
             // This is so that dusts fly out (like Bowl of Soup) instead of drip down (like Apple Juice)
             ItemID.Sets.FoodParticleColors[Type] = new Color[4] {
@@ -29,6 +31,7 @@ namespace CalamityMod.Items.Potions
                 new Color(235, 156, 117),
                 new Color(89, 54, 46)
             };
+            ItemID.Sets.IsFood[Type] = true;
         }
 
         public override void SetDefaults()
