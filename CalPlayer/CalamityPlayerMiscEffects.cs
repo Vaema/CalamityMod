@@ -3621,12 +3621,6 @@ namespace CalamityMod.CalPlayer
                 }
             }
 
-            if (moscowMule)
-            {
-                Player.GetDamage<GenericDamageClass>() += MoscowMule.DamageBoost;
-                Player.GetCritChance<GenericDamageClass>() += MoscowMule.CritBoost;
-            }
-
             if (whiteWine)
             {
                 Player.wingTimeMax = (int)(Player.wingTimeMax * (1f - WhiteWine.FlightTimeLoss));
