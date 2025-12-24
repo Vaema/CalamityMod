@@ -780,6 +780,7 @@ namespace CalamityMod.CalPlayer
         public bool fishingStation = false;
         public bool rBrain = false;
         public bool bloodyWormTooth = false;
+        public bool ivDrip = false;
         /// <summary> NOT the primary Affliction variable, used instead for the Afflicted buff which is given to teammates. </summary>
         public bool afflicted = false;
         public bool chiRegen = false;
@@ -2205,6 +2206,7 @@ namespace CalamityMod.CalPlayer
             fishingStation = false;
             rBrain = false;
             bloodyWormTooth = false;
+            ivDrip = false;
             vexation = false;
             badgeOfBravery = false;
             // Clear the Warbanner "cooldown" if not wearing Warbanner. This has absolutely zero effect for a casual player, but is useful for resetting the cooldown's duration.
