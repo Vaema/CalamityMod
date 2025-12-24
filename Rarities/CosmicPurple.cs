@@ -28,9 +28,12 @@ namespace CalamityMod.Rarities
             var fontSize = font.MeasureString(text);
             var center = fontSize / 2f;
 
+            // this was intended behavior. i'm commenting it out for now because it seems like people do not like it.
+            /*
             if (Item.expert)
                 textColor = Main.DiscoColor;
-
+            */
+            
             var glowPosition = new Vector2(X + center.X, Y + center.Y / 1.5f);
             textColor.A = 0;
             float pulsing = 2.5f + (float)Math.Sin(time * 5f);
@@ -53,8 +56,18 @@ namespace CalamityMod.Rarities
             if (!renderTextSparkles)
                 return;
 
-            // This is very expensive, however using Main.rand makes the sparkles incredibly jittery so I am just going to leave it for now
-            var rand = new UnifiedRandom(Main.LocalPlayer.name.GetHashCode() + (int)(center.X + center.Y));
+            static int Hash(int x)
+            {
+                x ^= x >> 16;
+                x *= unchecked((int)0x7feb352d);
+                x ^= x >> 15;
+                x *= unchecked((int)0x846ca68b);
+                x ^= x >> 16;
+                return x;
+            }
+
+            // why was this using a string hash previously??????
+            var rand = new UnifiedRandom(Hash((int)(center.X + center.Y)));
 
             int sparkleCount = rand.Next((int)fontSize.X / 7, (int)fontSize.X / 5) + 1;
             var color2 = lightColor;

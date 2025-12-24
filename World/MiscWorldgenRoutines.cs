@@ -1,6 +1,7 @@
 ﻿using System;
 using CalamityMod.Items.Materials;
 using CalamityMod.Items.Potions;
+using CalamityMod.Items.Potions.Food;
 using CalamityMod.Tiles.Abyss;
 using CalamityMod.Tiles.Astral;
 using CalamityMod.Tiles.FurnitureAuric;

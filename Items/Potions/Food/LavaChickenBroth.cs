@@ -3,10 +3,11 @@ using CalamityMod.Rarities;
 using ReLogic.Utilities;
 using Terraria;
 using Terraria.Audio;
+using Terraria.DataStructures;
 using Terraria.ID;
 using Terraria.ModLoader;
 
-namespace CalamityMod.Items.Potions
+namespace CalamityMod.Items.Potions.Food
 {
     [LegacyName("Fabsoup")]
     public class LavaChickenBroth : ModItem, ILocalizedModType
@@ -14,6 +15,12 @@ namespace CalamityMod.Items.Potions
         public new string LocalizationCategory => "Items.Potions";
         public static readonly SoundStyle UseSound = new("CalamityMod/Sounds/Item/SoupConsumption");
         public SlotId DrinkSoundSlot;
+
+        public override void SetStaticDefaults()
+        {
+            Main.RegisterItemAnimation(Type, new DrawAnimationVertical(int.MaxValue, 3));
+            ItemID.Sets.IsFood[Type] = true;
+        }
 
         public override void SetDefaults()
         {
@@ -26,7 +33,7 @@ namespace CalamityMod.Items.Potions
             Item.useAnimation = 901;
             Item.useTime = 901;
             Item.UseSound = null;
-            Item.useStyle = ItemUseStyleID.DrinkLiquid;
+            Item.useStyle = ItemUseStyleID.EatFood;
             Item.useTurn = true;
         }
         public override bool? UseItem(Player player)

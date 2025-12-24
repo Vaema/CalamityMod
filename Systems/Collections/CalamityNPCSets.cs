@@ -209,7 +209,8 @@ namespace CalamityMod.Systems.Collections
         public static bool[] DoCheckDeadRegardlessRealLife = Factory.CreateBoolSet(NPCType<DevourerofGodsBody>(), NPCType<DevourerofGodsTail>());
 
         /// <summary>
-        /// If <see langword="true"/> for an NPC type, <see cref="CalamityUtils.IsAnEnemy(NPC, bool, bool, bool)"/> Does not count specified NPC as Enemy
+        /// If <see langword="true"/> for an NPC type, <see cref="CalamityUtils.IsAnEnemy(NPC, bool, bool, bool)"/> will not count this NPC as an enemy.<br/>
+        /// Defaults to <see langword="false"/>.
         /// </summary>
         public static bool[] DontCountAsEnemy = Factory.CreateBoolSet(NPCID.TargetDummy, NPCType<SuperDummyNPC>());
 

@@ -788,6 +788,7 @@ namespace CalamityMod.CalPlayer
         public bool fishingStation = false;
         public bool rBrain = false;
         public bool bloodyWormTooth = false;
+        public bool ivDrip = false;
         /// <summary> NOT the primary Affliction variable, used instead for the Afflicted buff which is given to teammates. </summary>
         public bool afflicted = false;
         public bool chiRegen = false;
@@ -924,6 +925,7 @@ namespace CalamityMod.CalPlayer
         public double chaliceDamagePointPartialProgress = 0D;
         public int chaliceBleedoutToApplyOnHurt = 0;
         public int chaliceHitOriginalDamage = 0;
+        public bool chaliceHeartStyle = false;
 
         public bool elementalHeart = false;
         public bool crownJewel = false;
@@ -1539,7 +1541,6 @@ namespace CalamityMod.CalPlayer
         public bool necrosteocytesDudes = false;
         public bool gammaHead = false;
         public bool tundraFlameBlossom = false;
-        public bool starSwallowerPetFroge = false;
         public bool snakeEyes = false;
         public bool poleWarper = false;
         public bool aqueousHunterDrone = false;
@@ -1569,7 +1570,7 @@ namespace CalamityMod.CalPlayer
         public bool KalandraMirror = false;
         public bool StellarTorus = false;
         public bool LiliesOfFinalityBool = false;
-        public bool EnchantedBladeStaffBool = false;
+        public bool EnchantedKnifeStaffBool = false;
         public bool AmphibiansGuitarBool = false;
         #endregion
 
@@ -2229,6 +2230,7 @@ namespace CalamityMod.CalPlayer
             fishingStation = false;
             rBrain = false;
             bloodyWormTooth = false;
+            ivDrip = false;
             vexation = false;
             badgeOfBravery = false;
             // Clear the Warbanner "cooldown" if not wearing Warbanner. This has absolutely zero effect for a casual player, but is useful for resetting the cooldown's duration.
@@ -2298,6 +2300,7 @@ namespace CalamityMod.CalPlayer
             bloodPact = false;
             bloodflareCore = false;
             chaliceOfTheBloodGod = false;
+            chaliceHeartStyle = false;
             chaliceBleedoutToApplyOnHurt = 0; // Resets every frame so it doesn't improperly carry over between hits
             elementalHeart = false;
             crownJewel = false;
@@ -2721,7 +2724,6 @@ namespace CalamityMod.CalPlayer
             necrosteocytesDudes = false;
             gammaHead = false;
             tundraFlameBlossom = false;
-            starSwallowerPetFroge = false;
             snakeEyes = false;
             poleWarper = false;
             aqueousHunterDrone = false;
@@ -2746,7 +2748,7 @@ namespace CalamityMod.CalPlayer
             KalandraMirror = false;
             StellarTorus = false;
             LiliesOfFinalityBool = false;
-            EnchantedBladeStaffBool = false;
+            EnchantedKnifeStaffBool = false;
             AmphibiansGuitarBool = false;
             #endregion
 

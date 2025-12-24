@@ -63,7 +63,8 @@ namespace CalamityMod.Items.Weapons.Rogue
         {
             CreateRecipe().
                 AddIngredient(ItemID.Grenade, 15).
-                AddIngredient(ItemID.Pumpkin, 10).
+                AddIngredient(ItemID.Pumpkin, 30).
+                AddIngredient(ItemID.PumpkinSeed, 5).
                 AddTile(TileID.Anvils).
                 Register();
         }
