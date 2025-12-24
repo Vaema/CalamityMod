@@ -11,9 +11,9 @@ namespace CalamityMod.Projectiles.Boss
     public class UnstableEbonianGlob : ModProjectile, ILocalizedModType
     {
         public new string LocalizationCategory => "Projectiles.Boss";
-
         public override void SetDefaults()
         {
+            Projectile.Calamity().DealsDefenseDamage = true;
             Projectile.width = 30;
             Projectile.height = 30;
             Projectile.hostile = true;
@@ -28,16 +28,9 @@ namespace CalamityMod.Projectiles.Boss
 
         public override void AI()
         {
-            Vector3 light = new Vector3(0.5f, 0.1f, 0.5f) * Projectile.Opacity;
-            Lighting.AddLight(Projectile.Center, light.X, light.Y, light.Z);
-
-            if (Projectile.velocity.Length() < 12f && (Main.expertMode || BossRushEvent.BossRushActive || Projectile.ai[0] == 1f))
+            if (Projectile.velocity.Length() < 12f && (Main.expertMode || BossRushEvent.BossRushActive))
             {
                 float velocityMult = CalamityWorld.death ? 1.015f : CalamityWorld.revenge ? 1.0125f : Main.expertMode ? 1.01f : 1.005f;
-
-                if (Projectile.ai[0] == 1f)
-                    velocityMult += 0.02f;
-
                 Projectile.velocity *= velocityMult;
             }
 
@@ -48,7 +41,7 @@ namespace CalamityMod.Projectiles.Boss
             {
                 Color dustColor = Color.Lavender;
                 dustColor.A = 150;
-                int dust = Dust.NewDust(Projectile.position + Projectile.velocity, Projectile.width, Projectile.height, DustID.TintableDust, 0f, 0f, 0, dustColor);
+                int dust = Dust.NewDust(Projectile.position + Projectile.velocity, Projectile.width, Projectile.height, DustID.TintableDust, 0f, 0f, Projectile.alpha, dustColor);
                 Main.dust[dust].noGravity = true;
             }
 
@@ -61,7 +54,10 @@ namespace CalamityMod.Projectiles.Boss
 
         public override bool PreDraw(ref Color lightColor)
         {
-            CalamityUtils.DrawAfterimagesCentered(Projectile, ProjectileID.Sets.TrailingMode[Type], lightColor, 1);
+            lightColor.R = (byte)(255 * Projectile.Opacity);
+            lightColor.G = (byte)(255 * Projectile.Opacity);
+            lightColor.B = (byte)(255 * Projectile.Opacity);
+            CalamityUtils.DrawAfterimagesCentered(Projectile, ProjectileID.Sets.TrailingMode[Projectile.type], lightColor, 1);
             return false;
         }
     }
