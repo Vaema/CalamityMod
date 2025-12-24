@@ -42,6 +42,7 @@ using CalamityMod.Items.PermanentBoosters;
 using CalamityMod.Items.Placeables.Furniture;
 using CalamityMod.Items.Potions;
 using CalamityMod.Items.Potions.Alcohol;
+using CalamityMod.Items.Tools;
 using CalamityMod.Items.Tools.ClimateChange;
 using CalamityMod.Items.TreasureBags.MiscGrabBags;
 using CalamityMod.Items.VanillaArmorChanges;
@@ -52,16 +53,19 @@ using CalamityMod.Items.Weapons.Rogue;
 using CalamityMod.Items.Weapons.Summon;
 using CalamityMod.NPCs;
 using CalamityMod.NPCs.ProfanedGuardians;
+using CalamityMod.NPCs.Ravager;
 using CalamityMod.Particles;
 using CalamityMod.Projectiles.BaseProjectiles;
 using CalamityMod.Projectiles.Boss;
 using CalamityMod.Projectiles.Melee;
+using CalamityMod.Projectiles.Melee.Shortswords;
 using CalamityMod.Projectiles.Ranged;
 using CalamityMod.Projectiles.Rogue;
 using CalamityMod.Projectiles.Summon;
 using CalamityMod.Projectiles.Typeless;
 using CalamityMod.Systems;
 using CalamityMod.Systems.Collections;
+using CalamityMod.Systems.Mechanic;
 using CalamityMod.World;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
@@ -79,9 +83,6 @@ using Terraria.ModLoader.IO;
 using Terraria.Net;
 using static Terraria.Main;
 using static Terraria.ModLoader.ModContent;
-using CalamityMod.Projectiles.Melee.Shortswords;
-using CalamityMod.NPCs.Ravager;
-using CalamityMod.Items.Tools;
 
 namespace CalamityMod.CalPlayer
 {
@@ -203,7 +204,7 @@ namespace CalamityMod.CalPlayer
         /// <summary>
         /// A cooldown for losing Starbursts over time, reset by holding Stratus items or having Sirius spawned
         /// </summary>
-        public int HasStratusItemCooldown = 0;
+        public int StratusStarburstResetTimer = 0;
         /// <summary>
         /// Duration of Stratus Sphere's Starshield
         /// </summary>
@@ -2111,10 +2112,10 @@ namespace CalamityMod.CalPlayer
             if (Starshield > 0)
             {
                 Starshield--;
-                HasStratusItemCooldown = (int)MathHelper.Max(300,HasStratusItemCooldown);
+                StratusStarburstResetTimer = (int)MathHelper.Max(300,StratusStarburstResetTimer);
             }
-            if (HasStratusItemCooldown > 0)
-                HasStratusItemCooldown--;
+            if (StratusStarburstResetTimer > 0)
+                StratusStarburstResetTimer--;
             else if (StratusStarburst > 0)
                 StratusStarburst--;
             if (StratusStarburst > MaxStratusStarburst)
@@ -2161,7 +2162,7 @@ namespace CalamityMod.CalPlayer
                 oneCount -= 10;
             }
             AvaliableStarburst = avaliableStarpower;
-            if (HasStratusItemCooldown > 0)
+            if (StratusStarburstResetTimer > 0)
             {
                 if (cooldowns.TryGetValue(Starburst.ID, out var cooldown))
                 {
@@ -4791,21 +4792,6 @@ namespace CalamityMod.CalPlayer
 
         public override void PostUpdate()
         {
-
-            for (var i = 0; i < StarburstEntities.Count; i++)
-            {
-                StarburstEntity star = StarburstEntities[i];
-                star.AI(Player, i);
-                star.UpdatePosition();
-                star.UpdateAnimation();
-                var safeStarLooper = star.MergeChildren.ToList();
-                foreach (var ministar in safeStarLooper)
-                {
-                    ministar.AI(Player, i);
-                    ministar.UpdatePosition();
-                    ministar.UpdateAnimation();
-                }
-            }
 
             if (subtitletext != null)
             {

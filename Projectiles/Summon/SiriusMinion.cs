@@ -6,6 +6,7 @@ using CalamityMod.DataStructures;
 using CalamityMod.Items.Weapons.Summon;
 using CalamityMod.Particles;
 using CalamityMod.Systems.Graphic.PixelationSystem;
+using CalamityMod.Systems.Mechanic;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using rail;
@@ -74,7 +75,7 @@ namespace CalamityMod.Projectiles.Summon
             if (target is not null && Owner.miscCounter % 30 == 0) {
 
                 if (moddedOwner.StratusStarburst <= CalamityPlayer.MaxStratusStarburst)
-                    moddedOwner.StarburstEntities.Add(new DataStructures.StarburstEntity(Projectile.Center));
+                    moddedOwner.StarburstEntities.Add(new StarburstEntity(Projectile.Center));
                 moddedOwner.StratusStarburst++;
             }
             Lighting.AddLight(Projectile.Center, 0.5f, 0.5f, 1f); // Passively makes blue light.
@@ -129,7 +130,7 @@ namespace CalamityMod.Projectiles.Summon
                 if (moddedOwner.sirius)
                 {
                     Projectile.timeLeft = 2;
-                    moddedOwner.HasStratusItemCooldown = (int)MathHelper.Max(moddedOwner.HasStratusItemCooldown, 60);
+                    moddedOwner.StratusStarburstResetTimer = (int)MathHelper.Max(moddedOwner.StratusStarburstResetTimer, 60);
                 }
             }
         }
@@ -210,7 +211,7 @@ namespace CalamityMod.Projectiles.Summon
                             {
                                 Vector2 velocity = Projectile.Center.DirectionTo(target.Center) * 10;
                                 float damageMod = 40;
-                                Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center + velocity, velocity, ModContent.ProjectileType<SiriusQuazar>(), (int)(Projectile.damage * damageMod), Projectile.knockBack, Projectile.owner, 1);
+                                Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center + velocity, velocity, ModContent.ProjectileType<SiriusQuasar>(), (int)(Projectile.damage * damageMod), Projectile.knockBack, Projectile.owner, 1);
                             }
                         moddedOwner.StratusStarburst -= 50;
                         Projectile.ai[2] = 0;

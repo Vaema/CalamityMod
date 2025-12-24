@@ -5,6 +5,7 @@ using CalamityMod.Items.Weapons.Melee;
 using CalamityMod.Particles;
 using CalamityMod.Projectiles.BaseProjectiles;
 using CalamityMod.Sounds;
+using CalamityMod.Utilities.Daybreak;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria;
@@ -75,10 +76,14 @@ namespace CalamityMod.Projectiles.Melee.Shortswords
         {
             var tex = ModContent.Request<Texture2D>("CalamityMod/Particles/GlowBlade").Value;
             var sparkAngle = angle.RotatedBy(MathHelper.Pi);
-            Main.spriteBatch.SafeBegin(SpriteSortMode.Immediate, BatchSetting.Additive, null, Main.GameViewMatrix.TransformationMatrix, () =>
+
+            using (Main.spriteBatch.Scope())
             {
+                Main.spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.Additive, SamplerState.PointClamp, DepthStencilState.None, Main.Rasterizer, null, Main.GameViewMatrix.TransformationMatrix);
                 Main.spriteBatch.Draw(tex, Projectile.Center + sparkAngle * -10 - Main.screenPosition, null, Color.SkyBlue * 0.75f, sparkAngle.ToRotation() + MathHelper.PiOver2, new Vector2(tex.Width * 0.5f,tex.Height), new Vector2(0.85f, MathHelper.Lerp(0.1f, 1.4f, SwingCompletion)) * Projectile.scale * 0.04f, SpriteEffects.None, 1);
-            });
+
+                Main.spriteBatch.End();
+            }
 
             var tex2 = TextureAssets.Projectile[Type].Value;
             Main.spriteBatch.Draw(tex2, Projectile.Center + new Vector2(0, Projectile.gfxOffY) - Main.screenPosition, null, Color.SkyBlue * 1f, Projectile.rotation, tex2.Size() * 0.5f, Projectile.scale, Projectile.spriteDirection == 1 ? SpriteEffects.None : SpriteEffects.FlipHorizontally, 1);
@@ -88,10 +93,12 @@ namespace CalamityMod.Projectiles.Melee.Shortswords
         public override void PostDraw(Color lightColor)
         {
             var tex2 = ModContent.Request<Texture2D>("CalamityMod/Projectiles/Melee/GalileoGladiusGlow").Value;
-            Main.spriteBatch.SafeBegin(SpriteSortMode.Immediate, BatchSetting.Additive, null, Main.GameViewMatrix.TransformationMatrix, () =>
+            using (Main.spriteBatch.Scope())
             {
+                Main.spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.Additive, SamplerState.PointClamp, DepthStencilState.None, Main.Rasterizer, null, Main.GameViewMatrix.TransformationMatrix);
                 Main.spriteBatch.Draw(tex2, Projectile.Center + new Vector2(0, Projectile.gfxOffY) - Main.screenPosition, null, Color.SkyBlue * 0.75f, Projectile.rotation, tex2.Size() * 0.5f, Projectile.scale, Projectile.spriteDirection == 1 ? SpriteEffects.None : SpriteEffects.FlipHorizontally, 1);
-            });
+                Main.spriteBatch.End();
+            }
         }
         public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
         {

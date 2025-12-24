@@ -2,6 +2,7 @@
 using System;
 using CalamityMod.Buffs.DamageOverTime;
 using CalamityMod.Particles;
+using CalamityMod.Utilities.Daybreak;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria;
@@ -97,8 +98,9 @@ namespace CalamityMod.Projectiles.Melee
                 CalamityUtils.DrawLineBetter(Main.spriteBatch, SiriusPos + point1.RotatedBy(Projectile.rotation) * Projectile.scale, SiriusPos + point2.RotatedBy(Projectile.rotation) * Projectile.scale, color * Projectile.Opacity, 3);
             }
             //Order is back of tail to front. Last four are the head
-            Main.spriteBatch.SafeBegin(SpriteSortMode.Immediate, BatchSetting.Additive, null, Main.GameViewMatrix.TransformationMatrix, () =>
+            using (Main.spriteBatch.Scope())
             {
+                Main.spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.Additive, SamplerState.PointClamp, DepthStencilState.None, Main.Rasterizer, null, Main.GameViewMatrix.TransformationMatrix);
                 ConnectStars(new Vector2(-255, 77), new Vector2(-176, 71));
                 ConnectStars(new Vector2(-176, 71), new Vector2(-236, 142));
                 ConnectStars(new Vector2(-236, 142), new Vector2(-188, 197));
@@ -110,7 +112,8 @@ namespace CalamityMod.Projectiles.Melee
                 ConnectStars(new Vector2(99, -166), new Vector2(243, -237));
                 ConnectStars(new Vector2(99, -166), new Vector2(243, -163));
                 ConnectStars(new Vector2(99, -166), new Vector2(246, -97));
-            });
+                Main.spriteBatch.End();
+            }
             return false;
         }
 

@@ -8,6 +8,7 @@ using CalamityMod.Projectiles.BaseProjectiles;
 using CalamityMod.Projectiles.Pets;
 using CalamityMod.Projectiles.Rogue;
 using CalamityMod.Sounds;
+using CalamityMod.Utilities.Daybreak;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria;
@@ -240,15 +241,17 @@ namespace CalamityMod.Projectiles.Melee.Shortswords
             float size = intensity/32f;
             intensity *= intensitymult;
             var color = Color.SkyBlue * 0.75f * ((MathF.Sin(Main.GlobalTimeWrappedHourly) + 1) * 0.25f + 0.5f);
-            Main.spriteBatch.SafeBegin(SpriteSortMode.Immediate, BatchSetting.Additive, null, Main.GameViewMatrix.TransformationMatrix, () =>
+            using (Main.spriteBatch.Scope())
             {
+                Main.spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.Additive, SamplerState.PointClamp, DepthStencilState.None, Main.Rasterizer, null, Main.GameViewMatrix.TransformationMatrix);
                 for (var i = 1; i < offsets.Count; i++)
                 {
                     var p1 = Vector2.Lerp(point1, point2, i / (float)(offsets.Count - 1)) + new Vector2(0, intensity).RotatedBy(point1.DirectionTo(point2).ToRotation()) * MathF.Sin(Projectile.ai[2] * 0.01f * offsets[i].Item2 + offsets[i].Item1);
                     var p2 = Vector2.Lerp(point1, point2, (i - 1) / (float)(offsets.Count - 1)) + new Vector2(0, intensity).RotatedBy(point1.DirectionTo(point2).ToRotation()) * MathF.Sin(Projectile.ai[2] * 0.01f * offsets[i - 1].Item2 + offsets[i - 1].Item1);
                     CalamityUtils.DrawLineBetter(Main.spriteBatch, p1, p2, color, 2 * size);
                 }
-            });
+                Main.spriteBatch.End();
+            }
             return base.PreDraw(ref lightColor);
         }
 

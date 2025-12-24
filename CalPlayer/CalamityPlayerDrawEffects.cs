@@ -15,8 +15,9 @@ using CalamityMod.Projectiles.Ranged;
 using CalamityMod.Projectiles.Summon;
 using CalamityMod.Projectiles.Typeless;
 using CalamityMod.Systems.Collections;
-using CalamityMod.Utilities.Daybreak;
 using CalamityMod.Systems.Graphic.PixelationSystem;
+using CalamityMod.Systems.Mechanic;
+using CalamityMod.Utilities.Daybreak;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria;
@@ -72,34 +73,6 @@ namespace CalamityMod.CalPlayer
                 AndromedaMechLayer.DrawTheStupidFuckingRobot(ref drawInfo);
 
             CalamityPlayer calamityPlayer = Player.Calamity();
-            //Stratus Starburst visuals
-            if (StarburstEntities.Count > 0 && drawInfo.shadow == 0f)
-            {
-                PixelationManager.AddPixelatedDrawer(drawLayer: Enums.GeneralDrawLayer.AfterProjectiles, defaultBlendState: BlendState.Additive, drawAction: (matrix) =>
-                {
-                    //This uses the same star and glow textures that the constellations use, so we're just getting the static textures Draco uses to prevent needless requests
-                    var tex = TextureAssets.Projectile[ModContent.ProjectileType<DracoConstellation>()].Value;
-                    var glowTex = DracoConstellation.GetGlowTex();
-                        for (var i = 0; i < StarburstEntities.Count; i++)
-                        {
-                            StarburstEntity star = StarburstEntities[i];
-                            var color = star.color;
-                            var value = star.value;
-                            value -= star.MergeChildren.Count;
-                            var ScaleMod = MathHelper.Lerp(0.4f, 0.8f, value / 10f);
-
-                            Main.spriteBatch.Draw(glowTex, star.Center - Main.screenPosition, null, star.color * 0.66f, 0, glowTex.Size() * 0.5f, 0.2f * star.scale * ScaleMod, SpriteEffects.None, 1);
-                            Main.spriteBatch.Draw(tex, star.Center - Main.screenPosition, null, star.color * 0.66f, MathHelper.WrapAngle(Main.GlobalTimeWrappedHourly + i), tex.Size() * 0.5f, 0.75f * star.scale * ScaleMod, SpriteEffects.None, 1);
-                            for (var i2 = 0; i2 < star.MergeChildren.Count; i2++)
-                            {
-                                var ministar = star.MergeChildren[i2];
-                                ScaleMod = MathHelper.Lerp(0.4f, 0.8f, ministar.value / 10f);
-                                Main.spriteBatch.Draw(glowTex, ministar.Center - Main.screenPosition, null, ministar.color * 0.66f, 0, glowTex.Size() * 0.5f, 0.2f * ministar.scale * ScaleMod, SpriteEffects.None, 1);
-                                Main.spriteBatch.Draw(tex, ministar.Center - Main.screenPosition, null, ministar.color * 0.66f, MathHelper.WrapAngle(Main.GlobalTimeWrappedHourly + i), tex.Size() * 0.5f, 0.75f * ministar.scale * ScaleMod, SpriteEffects.None, 1);
-                            }
-                        }
-                });
-            }
 
             if (Starshield > 0 && drawInfo.shadow == 0)
             {
@@ -115,7 +88,6 @@ namespace CalamityMod.CalPlayer
                     //Draw the bloom circle
 
                     Texture2D telegraphBase = StratusBlackHole.GetTransparentBloomTex();
-                    //Main.EntitySpriteDraw(telegraphBase, drawPosition, null, Color.DarkSlateBlue * opacity, 0, telegraphBase.Size() / 2f, size * 1.5f * opacity / telegraphBase.Width, 0, 0);
 
                     //Draw the inner particles
                     Main.spriteBatch.EnterShaderRegion(matrix: matrix);
@@ -123,7 +95,6 @@ namespace CalamityMod.CalPlayer
                     GameShaders.Misc["CalamityMod:OtherworldBarrierDistortion"].UseSaturation(0.2f);
                     GameShaders.Misc["CalamityMod:OtherworldBarrierDistortion"].SetShaderTexture(ModContent.Request<Texture2D>("CalamityMod/ExtraTextures/GreyscaleGradients/MeltyNoiseHighContrast"), 1);
                     GameShaders.Misc["CalamityMod:OtherworldBarrierDistortion"].Apply();
-                    //telegraphBase = ModContent.Request<Texture2D>("CalamityMod/Particles/BloomCircle").Value;
                     Main.EntitySpriteDraw(telegraphBase, drawPosition, null, Color.DarkSlateBlue * opacity, 0, telegraphBase.Size() / 2f, size * 2f * opacity / telegraphBase.Width, 0, 0);
 
                     //Draw the outer particles

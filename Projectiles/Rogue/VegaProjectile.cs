@@ -1,6 +1,7 @@
 ﻿using System;
 using CalamityMod.Buffs.DamageOverTime;
 using CalamityMod.CalPlayer;
+using CalamityMod.Systems.Mechanic;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria;
@@ -99,7 +100,7 @@ namespace CalamityMod.Projectiles.Rogue
             {
                 Main.player[Projectile.owner].Calamity().StratusStarburst++;
                 if (Main.player[Projectile.owner].Calamity().StratusStarburst <= CalamityPlayer.MaxStratusStarburst)
-                    Main.player[Projectile.owner].Calamity().StarburstEntities.Add(new DataStructures.StarburstEntity(Projectile.Center));
+                    Main.player[Projectile.owner].Calamity().StarburstEntities.Add(new StarburstEntity(Projectile.Center));
             }
         }
 

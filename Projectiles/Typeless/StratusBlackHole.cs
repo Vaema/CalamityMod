@@ -1,6 +1,7 @@
 ﻿using CalamityMod.CalPlayer;
 using CalamityMod.Items.Accessories;
 using CalamityMod.Systems.Graphic.PixelationSystem;
+using CalamityMod.Systems.Mechanic;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria;
@@ -61,8 +62,8 @@ namespace CalamityMod.Projectiles.Typeless
                 {
                     player.Calamity().StratusStarburst++;
                     if (player.Calamity().StratusStarburst <= CalamityPlayer.MaxStratusStarburst)
-                        player.Calamity().StarburstEntities.Add(new DataStructures.StarburstEntity(Projectile.Center));
-                    player.Calamity().HasStratusItemCooldown = (int)MathHelper.Max(player.Calamity().HasStratusItemCooldown, 180);
+                        player.Calamity().StarburstEntities.Add(new StarburstEntity(Projectile.Center));
+                    player.Calamity().StratusStarburstResetTimer = (int)MathHelper.Max(player.Calamity().StratusStarburstResetTimer, 180);
                 }
             }
         }

@@ -82,7 +82,7 @@ namespace CalamityMod.Projectiles.Magic
                 Projectile.timeLeft > 60)
             {
                 Main.player[Projectile.owner].Calamity().StratusStarburst--;
-                Main.player[Projectile.owner].Calamity().HasStratusItemCooldown = (int)MathHelper.Max(Main.player[Projectile.owner].Calamity().HasStratusItemCooldown, 240);
+                Main.player[Projectile.owner].Calamity().StratusStarburstResetTimer = (int)MathHelper.Max(Main.player[Projectile.owner].Calamity().StratusStarburstResetTimer, 240);
             }
             if (Segments.Count <= 0)
             {

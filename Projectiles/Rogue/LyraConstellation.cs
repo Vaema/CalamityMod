@@ -2,6 +2,7 @@
 using System;
 using CalamityMod.Buffs.DamageOverTime;
 using CalamityMod.Particles;
+using CalamityMod.Utilities.Daybreak;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using rail;
@@ -84,8 +85,9 @@ namespace CalamityMod.Projectiles.Rogue
                 var color = Color.SkyBlue * 0.75f * ((MathF.Sin(Main.GlobalTimeWrappedHourly) + 1) * 0.25f + 0.5f);
                 CalamityUtils.DrawLineBetter(Main.spriteBatch, SiriusPos + point1.RotatedBy(Projectile.rotation) * Projectile.scale - (Owner.oldVelocity * Math.Clamp(point1.Length() * 0.001f, 0, 1)), SiriusPos + point2.RotatedBy(Projectile.rotation) * Projectile.scale - (Owner.oldVelocity * Math.Clamp(point2.Length() * 0.001f, 0, 1)), color, 3);
             }
-            Main.spriteBatch.SafeBegin(SpriteSortMode.Immediate, BatchSetting.Additive, null, Main.GameViewMatrix.TransformationMatrix, () =>
+            using (Main.spriteBatch.Scope())
             {
+                Main.spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.Additive, SamplerState.PointClamp, DepthStencilState.None, Main.Rasterizer, null, Main.GameViewMatrix.TransformationMatrix);
                 ConnectStars(new Vector2(0f, 0f), new Vector2(75, -60)); //Center - Vega
                 ConnectStars(new Vector2(0f, 0f), new Vector2(3, -102)); //Center - Top
                 ConnectStars(new Vector2(0f, 0f), new Vector2(-96, 35)); //Center - Left
@@ -93,7 +95,8 @@ namespace CalamityMod.Projectiles.Rogue
                 ConnectStars(new Vector2(75, -60), new Vector2(3, -102)); //Vega - Top
                 ConnectStars(new Vector2(-144, 239), new Vector2(-96, 35)); //Bottom L - Left
                 ConnectStars(new Vector2(-144, 239), new Vector2(-52, 207)); //Bottom L - Bottom R
-            });
+                Main.spriteBatch.End();
+            }
             return false;
         }
 

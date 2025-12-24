@@ -36,7 +36,7 @@ namespace CalamityMod.Items.Weapons.Melee
         }
         public override void HoldItem(Player player)
         {
-            player.Calamity().HasStratusItemCooldown = (int)MathHelper.Max(player.Calamity().HasStratusItemCooldown, 600);
+            player.Calamity().StratusStarburstResetTimer = (int)MathHelper.Max(player.Calamity().StratusStarburstResetTimer, 600);
         }
 
         public override bool AltFunctionUse(Player player)

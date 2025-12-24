@@ -7,7 +7,7 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.Projectiles.Summon
 {
-    public class SiriusQuazar : ModProjectile, ILocalizedModType
+    public class SiriusQuasar : ModProjectile, ILocalizedModType
     {
         public new string LocalizationCategory => "Projectiles.Summon";
         public override string Texture => "CalamityMod/Projectiles/InvisibleProj";
@@ -37,7 +37,7 @@ namespace CalamityMod.Projectiles.Summon
 
         public override void AI()
         {
-            //Sirius Quazar AI
+            //Sirius Quasar AI
 
             Projectile.rotation = Projectile.velocity.ToRotation();
             Time++;

@@ -28,7 +28,7 @@ namespace CalamityMod.Cooldowns
         public static new string ID => "Starburst";
         public override bool CanTickDown => false;
         public override LocalizedText DisplayName => CalamityUtils.GetText($"UI.Cooldowns.{ID}");
-        public override bool ShouldDisplay => instance.player.Calamity().HasStratusItemCooldown > 0;
+        public override bool ShouldDisplay => instance.player.Calamity().StratusStarburstResetTimer > 0;
         public override string Texture => "CalamityMod/Cooldowns/" + ID;
 
         public override Color CooldownStartColor => IsEmpty ? Color.DimGray : Color.Lerp(Color.SkyBlue, Color.DeepSkyBlue, instance.Completion);
@@ -36,8 +36,6 @@ namespace CalamityMod.Cooldowns
         public override void DrawExpanded(SpriteBatch spriteBatch, Vector2 position, float opacity, float scale)
         {
             base.DrawExpanded(spriteBatch, position, opacity, scale);
-
-            //CalamityUtils.DrawBorderStringEightWay(spriteBatch, FontAssets.MouseText.Value, MathHelper.Min(instance.player.Calamity().StratusStarburst,CalamityPlayer.MaxStratusStarburst).ToString(), position + TextPosition, TextColor, TextBorderColor); 
             var value = CalamityPlayer.MaxStratusStarburst - instance.timeLeft;
             float Xoffset = value > 9 ? value > 99 ? -12.5f : -10f : -5;
             CalamityUtils.DrawBorderStringEightWay(spriteBatch, FontAssets.MouseText.Value, (value).ToString(), position + new Vector2(Xoffset, 4) * scale, TextColor, TextBorderColor, scale);

@@ -68,7 +68,7 @@ namespace CalamityMod.Items.Weapons.Ranged
                     Projectile.NewProjectile(player.GetSource_ItemUse(Item),player.Center,Vector2.Zero,Item.shoot,0,0,player.whoAmI);
                 }
             }
-            player.Calamity().HasStratusItemCooldown = (int)MathHelper.Max(player.Calamity().HasStratusItemCooldown, 600);
+            player.Calamity().StratusStarburstResetTimer = (int)MathHelper.Max(player.Calamity().StratusStarburstResetTimer, 600);
             player.Calamity().ammoCost *= 0.5f;
         }
 

@@ -5,6 +5,7 @@ using CalamityMod.DataStructures;
 using CalamityMod.Particles;
 using CalamityMod.Projectiles.BaseProjectiles;
 using CalamityMod.Projectiles.Summon;
+using CalamityMod.Systems.Mechanic;
 using Microsoft.Build.Evaluation;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
@@ -196,7 +197,7 @@ namespace CalamityMod.Projectiles.Melee
 
         public override bool PreDraw(ref Color lightColor)
         {
-            var startPos = Main.player[Projectile.owner].Center + Main.player[Projectile.owner].DirectionTo(Projectile.Center) * 20f;// + Main.OffsetsPlayerOnhand[Main.player[Projectile.owner].bodyFrame.Y / 56] * 2f;
+            var startPos = Main.player[Projectile.owner].Center + Main.player[Projectile.owner].DirectionTo(Projectile.Center) * 20f;
             var endPos = Projectile.Center;
             var rotation = Projectile.DirectionFrom(startPos).ToRotation() - MathHelper.PiOver2;
             var tex = TextureAssets.Projectile[Type].Value;
