@@ -41,25 +41,17 @@ namespace CalamityMod
         /// <param name="targetHitbox">The hitbox of the target to check.</param>
         public static bool CircularHitboxCollision(Vector2 centerCheckPosition, float radius, Rectangle targetHitbox)
         {
-            // If the center intersects the hitbox, return true immediately
-            Rectangle center = new Rectangle((int)centerCheckPosition.X, (int)centerCheckPosition.Y, 1, 1);
-            if (center.Intersects(targetHitbox))
-                return true;
 
-            float topLeftDistance = Vector2.Distance(centerCheckPosition, targetHitbox.TopLeft());
-            float topRightDistance = Vector2.Distance(centerCheckPosition, targetHitbox.TopRight());
-            float bottomLeftDistance = Vector2.Distance(centerCheckPosition, targetHitbox.BottomLeft());
-            float bottomRightDistance = Vector2.Distance(centerCheckPosition, targetHitbox.BottomRight());
+            if (radius <= 0f)
+                return false;
 
-            float distanceToClosestPoint = topLeftDistance;
-            if (topRightDistance < distanceToClosestPoint)
-                distanceToClosestPoint = topRightDistance;
-            if (bottomLeftDistance < distanceToClosestPoint)
-                distanceToClosestPoint = bottomLeftDistance;
-            if (bottomRightDistance < distanceToClosestPoint)
-                distanceToClosestPoint = bottomRightDistance;
+            float closestX = MathHelper.Clamp(centerCheckPosition.X, targetHitbox.Left, targetHitbox.Right);
+            float closestY = MathHelper.Clamp(centerCheckPosition.Y, targetHitbox.Top, targetHitbox.Bottom);
 
-            return distanceToClosestPoint <= radius;
+            float dx = centerCheckPosition.X - closestX;
+            float dy = centerCheckPosition.Y - closestY;
+
+            return (dx * dx + dy * dy) <= (radius * radius);
         }
 
         /// <summary>
