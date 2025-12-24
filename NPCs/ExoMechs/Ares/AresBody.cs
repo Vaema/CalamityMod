@@ -11,6 +11,7 @@ using CalamityMod.Items.Placeables.Furniture.BossRelics;
 using CalamityMod.Items.Placeables.Furniture.Paintings;
 using CalamityMod.Items.Placeables.Furniture.Trophies;
 using CalamityMod.Items.Potions;
+using CalamityMod.Items.Potions.Food;
 using CalamityMod.Items.Tools.SpawnBlocker;
 using CalamityMod.Items.TreasureBags;
 using CalamityMod.Items.Weapons.Melee;

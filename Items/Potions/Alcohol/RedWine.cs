@@ -1,5 +1,6 @@
 ﻿using CalamityMod.Buffs.Alcohol;
 using CalamityMod.Items.Materials;
+using CalamityMod.Items.Potions.Food;
 using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.ID;

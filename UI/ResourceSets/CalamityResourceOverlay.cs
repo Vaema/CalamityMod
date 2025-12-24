@@ -32,7 +32,7 @@ namespace CalamityMod.UI.ResourceSets
         public static CalamityUIResourceSet GetLifeTextureSet()
         {
             CalamityPlayer modPlayer = Main.LocalPlayer.Calamity();
-            if (modPlayer.chaliceOfTheBloodGod) // dozezoze - Chalice gets it's own heart color to make bleed indicator contrast consistent, and also because it looks cool
+            if (modPlayer.chaliceHeartStyle) // dozezoze - Chalice gets it's own heart color to make bleed indicator contrast consistent, and also because it looks cool
                 return CalamityUIResourceSets.HPChalice;
             if (modPlayer.sStrawberry)
                 return CalamityUIResourceSets.HPSacredStrawberry;
@@ -107,7 +107,7 @@ namespace CalamityMod.UI.ResourceSets
 
             if (drawingLife)
             {
-                if (!CalPlayer.chaliceOfTheBloodGod)
+                if (!CalPlayer.chaliceHeartStyle)
                     return;
                 var bleed = CalPlayer.chaliceBleedoutBuffer;
                 var hearts = snapshot.AmountOfLifeHearts;
@@ -158,24 +158,24 @@ namespace CalamityMod.UI.ResourceSets
                     int deadPixels = (int)Math.Floor((snapshot.LifeMax - snapshot.Life) * pixelsPerLife);
                     var bleedPixels = Math.Round(bleed * pixelsPerLife);
 
-                    Color[] textureData = new Color[width * 12];
+                        Color[] textureData = new Color[width * 12];
 
-                    // doze 19MAR2025 - I don't know if I could optimize this any further without switching to shaders.
-                    // I don't expect performance issues, but at some point might be worth adding a config to disable the indicator in case of lag or accessibility concerns 
-                    for (int i = 0; i < textureData.Length; i++)
-                    {
-                        var i_MOD_width = i % width; //minor optimization, calculated here once instead of twice in the loop.
-                        var bleedCol = Color.Transparent;
-                        if ((i_MOD_width < bleedPixels + deadPixels) && !(i_MOD_width < deadPixels))
+                        // doze 19MAR2025 - I don't know if I could optimize this any further without switching to shaders.
+                        // I don't expect performance issues, but at some point might be worth adding a config to disable the indicator in case of lag or accessibility concerns 
+                        for (int i = 0; i < textureData.Length; i++)
                         {
-                            bleedCol = barTextureData[((i % 12) + (i / width) * 12)];
+                            var i_MOD_width = i % width; //minor optimization, calculated here once instead of twice in the loop.
+                            var bleedCol = Color.Transparent;
+                            if ((i_MOD_width < bleedPixels + deadPixels) && !(i_MOD_width < deadPixels))
+                            {
+                                bleedCol = barTextureData[((i % 12) + (i / width) * 12)];
+                            }
+                            textureData[i] = bleedCol;
+
                         }
-                        textureData[i] = bleedCol;
 
-                    }
-
-                    barOverlay.SetData(textureData);
-                    Main.spriteBatch.Draw(barOverlay, position, null, Color.White, 0, new Vector2(width, 0), 1, SpriteEffects.None, 1);
+                        barOverlay.SetData(textureData);
+                        Main.spriteBatch.Draw(barOverlay, position, null, Color.White, 0, new Vector2(width, 0), 1, SpriteEffects.None, 1);
                 }
                 else if (drawType == 1) //default heart
                 {

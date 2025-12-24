@@ -14,6 +14,7 @@ using CalamityMod.Items.Fishing.BrimstoneCragCatches;
 using CalamityMod.Items.Placeables.Furniture;
 using CalamityMod.Items.Potions;
 using CalamityMod.Items.Potions.Alcohol;
+using CalamityMod.Items.Potions.Food;
 using CalamityMod.NPCs;
 using CalamityMod.Projectiles.Typeless;
 using CalamityMod.Systems;
@@ -195,6 +196,8 @@ namespace CalamityMod.CalPlayer
                 if (CalamityBuffSets.AlcoholStrength.TryGetValue(buff, out int level))
                     alcoholPoisonLevel += level;
             }
+            if (Player.Calamity().ivDrip) // +1 stack of poisoning while IV Drip is equipped
+                alcoholPoisonLevel++;
             if (vodka)
                 totalNegativeLifeRegen += Vodka.RegenLoss;
             if (redWine)
@@ -352,7 +355,7 @@ namespace CalamityMod.CalPlayer
             }
 
             // Permafrost's Concoction increases life regen while afflicted with a fire debuff
-            if (permafrostsConcoction && Player.buffType.Any(l => BuffDatasets.DebuffDataset[l].HeatDebuffScaling > 0))
+            if (permafrostsConcoction && Player.buffType.Any(l => BuffDatasets.DebuffDataset[l] is not null && BuffDatasets.DebuffDataset[l].HeatDebuffScaling > 0))
             {
                 if (Player.lifeRegenTime < 900)
                     Player.lifeRegenTime = 900;
