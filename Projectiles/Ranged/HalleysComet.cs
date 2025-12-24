@@ -97,7 +97,6 @@ namespace CalamityMod.Projectiles.Ranged
                 dust.noGravity = true;
             }
             Projectile.ai[1] = 1;
-            //Main.player[Projectile.owner].Calamity().HalleyHitCooldown += 15;
             if (Projectile.penetrate == 5)
             {
                 var cplay = Main.player[Projectile.owner].Calamity();

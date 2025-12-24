@@ -175,7 +175,6 @@ namespace CalamityMod.CalPlayer
                 }
                 for (var i = 0; i < 5; i++)
                     Main.spriteBatch.Draw(circleTex, Player.Center + (Vector2.UnitX * Player.direction).RotatedBy(Player.itemRotation) * (48 + scale * 96) - Main.screenPosition, null, Color.Black * ((i + 1) / 5f) * (CalamityClientConfig.Instance.Photosensitivity ? 0.2f : 1f), 0, circleTex.Size() * 0.5f, scale * 2.2f * (0.5f + 0.5f * (1 - (i) / 5f)), SpriteEffects.None, 0);
-                //GeneralParticleHandler.SpawnParticle(new DirectionalPulseRing(player.Center + Vector2.UnitX.RotatedBy(player.itemRotation) * (48 + scale*96), Vector2.Zero, Color.Cyan, Vector2.One, 0, scale, scale, 3));
             }
 
             // Drawing for Odd Mushroom's clone effects

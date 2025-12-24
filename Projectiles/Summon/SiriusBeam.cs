@@ -117,7 +117,6 @@ namespace CalamityMod.Projectiles.Summon
             float curveRatio = 0.25f;
             var positions = Projectile.oldPos.ToList();
             positions.RemoveAll(x => x == Vector2.Zero);
-            //completion *= positions.Count() / (float)ProjectileID.Sets.TrailCacheLength[Type];
 
             if (completion < curveRatio)
                 width = MathF.Sin(completion / curveRatio * MathHelper.PiOver2) * maxBodyWidth + curveRatio;
