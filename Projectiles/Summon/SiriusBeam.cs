@@ -3,6 +3,7 @@ using System.Linq;
 using CalamityMod.Buffs.DamageOverTime;
 using CalamityMod.Graphics.Primitives;
 using CalamityMod.Particles;
+using CalamityMod.Utilities.Daybreak;
 using CalamityMod.Utilities.Daybreak.Buffers;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
@@ -84,7 +85,7 @@ namespace CalamityMod.Projectiles.Summon
 
         public override bool PreDraw(ref Color lightColor)
         {
-            Main.spriteBatch.End();
+            Main.spriteBatch.End(out var ss);
 
             var device = Main.instance.GraphicsDevice;
             using var lease = RenderTargetPool.Shared.Rent(
@@ -108,7 +109,7 @@ namespace CalamityMod.Projectiles.Summon
             Main.spriteBatch.Draw(lease.Target, Vector2.Zero, null, Color.White, 0f, Vector2.Zero, 2f, SpriteEffects.None, 0f);
             Main.spriteBatch.End();
 
-            Main.spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, Main.DefaultSamplerState, DepthStencilState.None, Main.Rasterizer, null, Main.GameViewMatrix.TransformationMatrix);
+            Main.spriteBatch.Begin(ss);
 
             return false;
         }
