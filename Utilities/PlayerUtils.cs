@@ -469,15 +469,6 @@ namespace CalamityMod
             // This stacks with the above Deific Amulet effect
             if (modPlayer.rampartOfDeities && hurtInfo.Damage > 200)
                 extraIFrames += 30;
-
-            if (modPlayer.purpleHaze)
-            {
-                if (hurtInfo.Damage == 1)
-                    extraIFrames += 5;
-                else
-                    extraIFrames += 10;
-            }
-
             return extraIFrames;
         }
 

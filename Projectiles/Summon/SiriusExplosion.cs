@@ -230,7 +230,6 @@ namespace CalamityMod.Projectiles.Summon
         {
             return new Color(255 - Projectile.alpha, 255 - Projectile.alpha, 255 - Projectile.alpha, 0);
         }
-
         public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone) => target.AddBuff(ModContent.BuffType<Voidfrost>(), 180);
     }
 }

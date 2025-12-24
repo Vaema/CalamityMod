@@ -657,13 +657,6 @@ namespace CalamityMod.CalPlayer
             if (proj.Calamity().stealthStrike && proj.CountsAsClass<RogueDamageClass>())
                 modifiers.SourceDamage *= (float)bonusStealthDamage + 1; // Default bonusStealthDamage is 0, a 1 has to be added to take the damage of the weapon.
 
-            // Screwdriver adds 5% bonus damage to all piercing projectiles.
-            if (screwdriver)
-            {
-                if (proj.penetrate > 1 || proj.penetrate == -1)
-                    modifiers.ScalingBonusDamage += Screwdriver.PiercingDamageBuff;
-            }
-
             if (Player.Calamity().scionsCurio && proj.CountsAsClass<RangedDamageClass>())
                 target.Calamity().scionsCurioEffected = true;
 
@@ -1906,6 +1899,27 @@ namespace CalamityMod.CalPlayer
                     info.Damage -= spongeDamageBlocked;
                 }
 
+
+                //Stratus Starshield
+                if (Starshield > 0 && StratusStarburst > 0 && !shieldsFullyAbsorbedHit)
+                {
+                    bool thisShieldCanFullyAbsorb = StratusStarburst >= info.Damage;
+                    int damageblocked = Math.Min(StratusStarburst, info.Damage);
+                    totalDamageBlocked += damageblocked;
+                    StratusStarburst -= info.Damage;
+                    shieldsTookHit = true;
+                    if (StratusStarburst <= 0)
+                    {
+                        StratusStarburst = 0;
+                        SoundEngine.PlaySound(SoundID.DD2_CrystalCartImpact, Player.Center);
+                        Player.Calamity().GeneralScreenShakePower += anyShieldBroke ? 0.5f : 2f;
+                        anyShieldBroke = true;
+                    }
+                    if (thisShieldCanFullyAbsorb)
+                        shieldsFullyAbsorbedHit = true;
+                    info.Damage -= damageblocked;
+                }
+
                 // If any shields took damage, there is some code that must be run.
                 if (shieldsTookHit)
                 {
@@ -1994,7 +2008,6 @@ namespace CalamityMod.CalPlayer
                     nextHitDealsDefenseDamage = false;
                 }
             }
-
             // Chalice of the Blood God is implemented as a dirty modifier.
             //
             // Chalice of the Blood God does nothing to a hit that was just fully blocked by shields.
@@ -2023,9 +2036,9 @@ namespace CalamityMod.CalPlayer
             bool hasIFrames = Player.HasIFrames();
 
             // If the player was just hit by something capable of dealing defense damage, then apply defense damage.
-            // Bloodflare Core makes every hit deal defense damage (to enable its function).
+            // Bloodflare Core or Moonshine makes every hit deal defense damage (to enable its function).
             // Defense damage is not applied if the player has iframes or godmode.
-            bool hitCanApplyDefenseDamage = nextHitDealsDefenseDamage || bloodflareCore;
+            bool hitCanApplyDefenseDamage = nextHitDealsDefenseDamage || bloodflareCore || moonshine;
             bool defenseDamageShouldApply = hitCanApplyDefenseDamage && !hasIFrames && !Player.creativeGodMode;
 
             // 15AUG2024: Ozzatron: External flag which completely disables defense damage. This overrides Bloodflare Core.
@@ -2033,19 +2046,25 @@ namespace CalamityMod.CalPlayer
 
             if (defenseDamageShouldApply && externalFlagsAppropriate)
             {
+                double specialDefenseDmgMinimum = 0;
                 double halfDefense = Player.statDefense / 2.0;
+                if (bloodflareCore)
+                    specialDefenseDmgMinimum += halfDefense;
+                if (moonshine) //Moonshine also halves defense damage recovery alongside forcing 50% of defense as defense damage
+                    specialDefenseDmgMinimum += halfDefense;
                 int netMitigation = hurtInfo.SourceDamage - hurtInfo.Damage;
                 double standardDefenseDamage = netMitigation * defenseDamageRatio;
 
-                // Bloodflare Core overrides standard defense damage if it would be less than half of the player's total defense.
-                if (bloodflareCore && standardDefenseDamage < halfDefense)
+                // Bloodflare Core or Moonshine overrides standard defense damage if it would be less than half of the player's total defense.
+                // They stack together for 100% lost defense
+                if (specialDefenseDmgMinimum > 0 && standardDefenseDamage < specialDefenseDmgMinimum)
                 {
-                    // In this case, forcibly deal half of the player's total defense as defense damage. This ignores ratios.
-                    DealDefenseDamage((int)halfDefense, true);
+                    // In this case, forcibly deal the proportion of the player's total defense as defense damage. This ignores ratios.
+                    DealDefenseDamage((int)specialDefenseDmgMinimum, true);
 
                     // Set up Bloodflare Core's heal over time. Any in-progress heals are overwritten if they would have a shorter duration.
-                    if (bloodflareCoreRemainingHealOverTime < halfDefense)
-                        bloodflareCoreRemainingHealOverTime = (int)halfDefense;
+                    if (bloodflareCore && bloodflareCoreRemainingHealOverTime < specialDefenseDmgMinimum)
+                        bloodflareCoreRemainingHealOverTime = (int)specialDefenseDmgMinimum;
 
                     // Play a sound and make dust to signify that defense has been shattered
                     SoundEngine.PlaySound(SoundID.DD2_MonkStaffGroundImpact, Player.Center);

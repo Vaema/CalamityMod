@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using CalamityMod.Balancing;
 using CalamityMod.Buffs.DamageOverTime;
+using CalamityMod.Buffs.Potions;
 using CalamityMod.Buffs.StatBuffs;
 using CalamityMod.Buffs.StatDebuffs;
 using CalamityMod.Buffs.Summon;
@@ -622,6 +623,15 @@ namespace CalamityMod.CalPlayer
                     Projectile.NewProjectile(Player.GetSource_FromThis(), Player.Center, Vector2.Zero, ModContent.ProjectileType<SandCloakVeil>(), 13, 2.5f, Player.whoAmI);
                     SoundEngine.PlaySound(SoundID.Item45, Player.Center);
                 }
+            }
+
+
+            if (cinnamonRoll)
+            {
+                if (dashStart)
+                    Player.velocity.X *= 3;
+                else if  (Player.dashDelay == -1)
+                    Player.velocity.X *= 0.8f;
             }
 
             if (Player.dashDelay == -1)
@@ -3575,74 +3585,40 @@ namespace CalamityMod.CalPlayer
             if (Player.chilled)
                 Player.moveSpeed *= 1f + (1f / 6f);
 
-            if (purpleHaze)
-                Player.GetDamage<GenericDamageClass>() += PurpleHaze.DamageBoost;
-
-            if (vodka)
+            if (purpleHazeStealthTimer > 0)
             {
-                Player.GetDamage<GenericDamageClass>() += Vodka.DamageBoost;
-                Player.GetCritChance<GenericDamageClass>() += Vodka.CritBoost;
-            }
-
-            if (moonshine)
-            {
-                Player.statDefense += Moonshine.DefenseBoost;
-                Player.endurance += Moonshine.DamageReductionBoost;
-            }
-
-            if (rum)
-                Player.moveSpeed += Rum.MoveSpeedBoost;
-
-            if (whiskey)
-            {
-                Player.GetDamage<GenericDamageClass>() += Whiskey.DamageBoost;
-                Player.GetCritChance<GenericDamageClass>() += Whiskey.CritBoost;
+                //this is so janky looking but it's the only way I could get it to work properly
+                if (!(StealthStrikeAvailable() && Player.HeldItem.DamageType == RogueDamageClass.Instance))
+                    Player.GetDamage(DamageClass.Generic) += PurpleHaze.DamageBoost;
+                else 
+                    stealthDamage -= PurpleHaze.StealthDamageLoss;
             }
 
             if (everclear)
                 Player.GetDamage<GenericDamageClass>() += Everclear.DamageBoost;
 
-            if (bloodyMary)
-            {
-                if (Main.bloodMoon)
-                {
-                    Player.GetDamage<GenericDamageClass>() += BloodyMary.DamageBoost;
-                    Player.moveSpeed += BloodyMary.MoveSpeedBoost;
-                }
-            }
-
-            if (tequila)
-            {
-                if (Main.dayTime)
-                {
-                    Player.statDefense += Tequila.DefenseBoost;
-                    Player.GetCritChance<GenericDamageClass>() += Tequila.CritBoost;
-                }
-            }
-
-            if (tequilaSunrise)
-            {
-                if (Main.dayTime)
-                {
-                    Player.statDefense += TequilaSunrise.DefenseBoost;
-                    Player.GetCritChance<GenericDamageClass>() += TequilaSunrise.CritBoost;
-                }
-            }
 
             if (caribbeanRum)
-                Player.moveSpeed += CaribbeanRum.MoveSpeedBoost;
-
-            if (cinnamonRoll)
             {
-                Player.manaRegenDelayBonus += CinnamonRoll.ManaRegenDelayBonus;
-                Player.manaRegenBonus += CinnamonRoll.ManaRegenBonus;
+                Player.gravity *= CaribbeanRum.GravityMultiplier;
+                Player.moveSpeed += CaribbeanRum.MoveSpeedBoost;
             }
 
             if (starBeamRye)
             {
-                Player.GetDamage<MagicDamageClass>() += StarBeamRye.MagicDamageBoost;
-                Player.manaCost -= StarBeamRye.ManaCostReduction;
-                Player.statManaMax2 += StarBeamRye.MaxManaBoost;
+                Player.manaFlower = false;
+                Player.ClearBuff(ModContent.BuffType<AstralInjectionBuff>());
+                if (!Player.manaSick)
+                {
+                    Player.manaRegenCount -= Player.manaRegen;
+                    Player.manaRegenDelay = 0;
+                    Player.manaRegenCount += 20; // 20 mana per second, even while using an item
+                    if (Player.HeldItem.mana > 0) 
+                    {
+                        Player.GetDamage<MagicDamageClass>() += 0.5f + MathHelper.Max(0.1f,Player.HeldItem.mana / (float)Player.HeldItem.useTime);
+                    }
+                    Player.GetDamage<GenericDamageClass>() -= 0.5f;
+                }
             }
 
             if (moscowMule)
@@ -3652,7 +3628,32 @@ namespace CalamityMod.CalPlayer
             }
 
             if (whiteWine)
-                Player.GetDamage<MagicDamageClass>() += WhiteWine.MagicDamageBoost;
+            {
+                Player.wingTimeMax = (int)(Player.wingTimeMax * (1f - WhiteWine.FlightTimeLoss));
+
+                float bonus = 0f;
+                float MaxDistance = 640f;
+                NPC closestTarget = Player.Center.ClosestNPCAt(MaxDistance * 7); // extra range is to account for bonus range from massive targets
+                if (closestTarget != null)
+                {
+                    float generousHitboxWidth = Math.Max(closestTarget.Hitbox.Width / 2f, closestTarget.Hitbox.Height / 2f) + 100; // Adds some room so max bonus isnt when you're ON the hitbox
+                    bonus = Utils.Remap(Utils.Distance(Player.Center, closestTarget.Center), MaxDistance + generousHitboxWidth, generousHitboxWidth, 0, 1, true);
+                }
+                else
+                    bonus = 0;
+                whiteWineTimer += bonus * WhiteWine.FlightTimeRecoveryAmount;
+                while (whiteWineTimer > 1)
+                {
+                    if (Player.wingTime < Player.wingTimeMax)
+                        Player.wingTime++;
+                    whiteWineTimer--;
+                }
+             }
+
+            if (redWine)
+            {
+                Player.wingTimeMax = (int)(Player.wingTimeMax * (1f - RedWine.FlightTimeLoss));
+            }
 
             if (giantPearl)
             {
@@ -3792,7 +3793,7 @@ namespace CalamityMod.CalPlayer
             if (molluskLegs)
                 Player.velocity.X *= 0.995f;
 
-            if ((warped || caribbeanRum) && !Player.slowFall && !Player.mount.Active)
+            if ((warped) && !Player.slowFall && !Player.mount.Active)
             {
                 float velocityYMultiplier = 1.01f;
                 Player.velocity.Y *= velocityYMultiplier;
@@ -4842,7 +4843,7 @@ namespace CalamityMod.CalPlayer
                         {
                             totalDefenseDamage = 0;
                             defenseDamageRecoveryFrames = 0;
-                            totalDefenseDamageRecoveryFrames = DefenseDamageBaseRecoveryTime;
+                            totalDefenseDamageRecoveryFrames = DefenseDamageBaseRecoveryTime * (moonshine ? 2 : 1);
                             defenseDamageDelayFrames = 0;
                         }
                     }
@@ -4873,87 +4874,11 @@ namespace CalamityMod.CalPlayer
 
             // Multiplicative defense reductions.
             // These are done last because they need to be after the defense lower cap at 0.
-            if (purpleHaze)
-            {
-                if (Player.statDefense > 0)
-                    Player.statDefense -= (int)(Player.statDefense * PurpleHaze.DefenseLossPercent);
-            }
-
-            if (vodka)
-            {
-                if (Player.statDefense > 0)
-                    Player.statDefense -= (int)(Player.statDefense * Vodka.DefenseLossPercent);
-            }
-
-            if (grapeBeer)
-            {
-                if (Player.statDefense > 0)
-                    Player.statDefense -= (int)(Player.statDefense * GrapeBeer.DefenseLossPercent);
-            }
-
-            if (rum)
-            {
-                if (Player.statDefense > 0)
-                    Player.statDefense -= (int)(Player.statDefense * Rum.DefenseLossPercent);
-            }
-
-            if (whiskey)
-            {
-                if (Player.statDefense > 0)
-                    Player.statDefense -= (int)(Player.statDefense * Whiskey.DefenseLossPercent);
-            }
-
             if (everclear)
             {
                 if (Player.statDefense > 0)
                     Player.statDefense -= (int)(Player.statDefense * Everclear.DefenseLossPercent);
             }
-
-            if (bloodyMary)
-            {
-                if (Main.bloodMoon)
-                {
-                    if (Player.statDefense > 0)
-                        Player.statDefense -= (int)(Player.statDefense * BloodyMary.DefenseLossPercent);
-                }
-            }
-
-            if (caribbeanRum)
-            {
-                if (Player.statDefense > 0)
-                    Player.statDefense -= (int)(Player.statDefense * CaribbeanRum.DefenseLossPercent);
-            }
-
-            if (cinnamonRoll)
-            {
-                if (Player.statDefense > 0)
-                    Player.statDefense -= (int)(Player.statDefense * CinnamonRoll.DefenseLossPercent);
-            }
-
-            if (margarita)
-            {
-                if (Player.statDefense > 0)
-                    Player.statDefense -= (int)(Player.statDefense * Margarita.DefenseLossPercent);
-            }
-
-            if (starBeamRye)
-            {
-                if (Player.statDefense > 0)
-                    Player.statDefense -= (int)(Player.statDefense * StarBeamRye.DefenseLossPercent);
-            }
-
-            if (whiteWine)
-            {
-                if (Player.statDefense > 0)
-                    Player.statDefense -= (int)(Player.statDefense * WhiteWine.DefenseLossPercent);
-            }
-
-            if (Player.HasBuff(BuffID.Tipsy))
-            {
-                if (Player.statDefense > 0)
-                    Player.statDefense -= (int)(Player.statDefense * 0.05);
-            }
-
             if (DesertProwlerHat.ShroudedInSmoke(Player, out _))
                 Player.statDefense -= (int)(Player.statDefense * DesertProwlerHat.SmokeDefenseMult);
         }
@@ -5187,8 +5112,6 @@ namespace CalamityMod.CalPlayer
 
                     if (item.type == ModContent.ItemType<HadalStew>())
                         CalamityUtils.ConsumeItemViaQuickBuff(Player, item, HadalStew.BuffType, HadalStew.BuffDuration, true);
-                    if (item.type == ModContent.ItemType<Margarita>())
-                        CalamityUtils.ConsumeItemViaQuickBuff(Player, item, Margarita.BuffType, CalamityUtils.MinutesToFrames(Margarita.MinuteDuration), false);
                 }
             }
         }

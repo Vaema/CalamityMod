@@ -32,26 +32,18 @@ namespace CalamityMod.Items.Potions.Alcohol
 
         public override void SetDefaults()
         {
-            Item.DefaultToFood(32, 32, ModContent.BuffType<MoscowMuleBuff>(), CalamityUtils.MinutesToFrames(8), true);
+            Item.DefaultToFood(32, 32, ModContent.BuffType<MoscowMuleBuff>(), CalamityUtils.MinutesToFrames(6), true);
 
             Item.value = Item.sellPrice(gold: 1);
             Item.rare = ItemRarityID.Yellow;
         }
         public override void AddRecipes()
         {
-            CreateRecipe().
-                AddIngredient(ItemID.Ale).
-                AddIngredient<ScoriaOre>(3).
+            CreateRecipe(6).
+                AddIngredient(ItemID.Bottle, 6).
+                AddIngredient<TitanHeart>().
                 AddTile(TileID.Kegs).
                 Register();
-
-            CreateRecipe().
-                AddIngredient(ItemID.BottledWater).
-                AddIngredient<BloodOrb>(5).
-                AddIngredient<ScoriaOre>().
-                AddTile(TileID.AlchemyTable).
-                Register()
-                .DisableDecraft();
         }
     }
 }

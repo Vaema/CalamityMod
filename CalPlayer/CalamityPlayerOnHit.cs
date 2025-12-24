@@ -240,7 +240,25 @@ namespace CalamityMod.CalPlayer
             if (proj.type != ProjectileType<MythrilFlare>())
                 MythrilArmorSetChange.OnHitEffects(target, damageDone, Player);
 
-            if (witheringWeaponEnchant)
+            if (moscowMule)
+            {
+                var center = Player.Center;
+                if (proj.IsMinionOrSentryRelated)
+                    center = proj.Center;
+                Vector2 launchVel = Utils.DirectionTo(center, target.Center);
+                target.MoveNPC(launchVel, proj.knockBack, true);
+            }
+
+            if (moscowMule || bloodyMary)
+            {
+                if (!(PierceResistNPC.exemptProjectiles.Contains(proj.type) || (PierceResistNPC.singleHitboxExemptProjectiles.ContainsKey(proj.type) && PierceResistNPC.singleHitboxExemptProjectiles[proj.type])))
+                {
+                    proj.damage = (int)(proj.damage * (moscowMule ? 0.8f : 1f) * (bloodyMary ? 0.75f : 1f));
+                }
+
+            }
+
+                if (witheringWeaponEnchant)
                 witheringDamageDone += (int)(damageDone * (hit.Crit ? 2D : 1D));
             cgn.TypelessDebuffMultiplier = TypelessDebuffMultiplier;
             cgn.HeatDebuffMultiplier = HeatDebuffMultiplier;

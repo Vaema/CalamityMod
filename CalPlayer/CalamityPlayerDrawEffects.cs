@@ -4,19 +4,26 @@ using CalamityMod.Buffs.DamageOverTime;
 using CalamityMod.Buffs.StatBuffs;
 using CalamityMod.Buffs.StatDebuffs;
 using CalamityMod.CalPlayer.DrawLayers;
+using CalamityMod.DataStructures;
 using CalamityMod.Dusts;
 using CalamityMod.Items.Weapons.Magic;
 using CalamityMod.Items.Weapons.Ranged;
 using CalamityMod.NPCs.DevourerofGods;
 using CalamityMod.Particles;
+using CalamityMod.Projectiles.Magic;
+using CalamityMod.Projectiles.Ranged;
+using CalamityMod.Projectiles.Summon;
 using CalamityMod.Projectiles.Typeless;
 using CalamityMod.Systems.Collections;
+using CalamityMod.Systems.Graphic.PixelationSystem;
+using CalamityMod.Systems.Mechanic;
 using CalamityMod.Utilities.Daybreak;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria;
 using Terraria.DataStructures;
 using Terraria.GameContent;
+using Terraria.Graphics.Shaders;
 using Terraria.ID;
 using Terraria.ModLoader;
 
@@ -60,6 +67,41 @@ namespace CalamityMod.CalPlayer
 
             CalamityPlayer calamityPlayer = Player.Calamity();
 
+            if (Starshield > 0 && drawInfo.shadow == 0)
+            {
+                var color = Color.Lerp(Color.DeepSkyBlue, Color.LightSkyBlue, (StratusStarburst / (float)MaxStratusStarburst));
+                var opacity = MathHelper.Min(MathHelper.Min(Starshield / 30f, 1f), (3600 - Starshield) / 30f);
+                float size = 80 + 32 * (StratusStarburst / (float)MaxStratusStarburst);
+
+                Vector2 drawPosition = Player.Center + new Vector2(0, Player.gfxOffY) - Main.screenPosition;
+
+                PixelationManager.AddPixelatedDrawer(drawLayer: Enums.GeneralDrawLayer.AfterProjectiles, drawAction: (matrix) =>
+                {
+                    #region AoE
+                    //Draw the bloom circle
+
+                    Texture2D telegraphBase = StratusBlackHole.GetTransparentBloomTex();
+
+                    //Draw the inner particles
+                    Main.spriteBatch.EnterShaderRegion(matrix: matrix);
+                    GameShaders.Misc["CalamityMod:OtherworldBarrierDistortion"].UseOpacity(0.5f);
+                    GameShaders.Misc["CalamityMod:OtherworldBarrierDistortion"].UseSaturation(0.2f);
+                    GameShaders.Misc["CalamityMod:OtherworldBarrierDistortion"].SetShaderTexture(ModContent.Request<Texture2D>("CalamityMod/ExtraTextures/GreyscaleGradients/MeltyNoiseHighContrast"), 1);
+                    GameShaders.Misc["CalamityMod:OtherworldBarrierDistortion"].Apply();
+                    Main.EntitySpriteDraw(telegraphBase, drawPosition, null, Color.DarkSlateBlue * opacity, 0, telegraphBase.Size() / 2f, size * 2f * opacity / telegraphBase.Width, 0, 0);
+
+                    //Draw the outer particles
+                    Main.spriteBatch.EnterShaderRegion(matrix: matrix);
+                    GameShaders.Misc["CalamityMod:OtherworldBarrierDistortion"].UseOpacity(0.25f);
+                    GameShaders.Misc["CalamityMod:OtherworldBarrierDistortion"].UseSaturation(0.1f);
+                    GameShaders.Misc["CalamityMod:OtherworldBarrierDistortion"].SetShaderTexture(ModContent.Request<Texture2D>("CalamityMod/ExtraTextures/GreyscaleGradients/Neurons"), 1);
+                    GameShaders.Misc["CalamityMod:OtherworldBarrierDistortion"].Apply();
+                    telegraphBase = ModContent.Request<Texture2D>("CalamityMod/Particles/HighResFoggyCircleHardEdge").Value;
+                    Main.EntitySpriteDraw(telegraphBase, drawPosition, null, Color.SkyBlue * opacity, 0, telegraphBase.Size() / 2f, size * opacity / telegraphBase.Width, 0, 0);
+                    Main.spriteBatch.ExitShaderRegion(matrix);
+                    #endregion
+                });
+            }
             //DoG Boss Cursor
             DevourerofGodsHead DoG = null;
             foreach (var item in Main.ActiveNPCs)
@@ -91,7 +133,7 @@ namespace CalamityMod.CalPlayer
                         Main.spriteBatch.Draw(tex, Player.Center + Player.DirectionTo(DoG.NPC.Center) * 196 * Math.Min(dis / 2400f, 2) - Main.screenPosition, null, Color.White * 0.9f * Math.Clamp(MathHelper.Lerp(0, 1, (dis - 600) / 300), 0, 1), DoG.NPC.rotation, tex.Size() / 2f, 1, SpriteEffects.None, 0);
                     }
                 }
-                
+
             }
 
             //Charge animation for Thread of Eradication
@@ -125,8 +167,7 @@ namespace CalamityMod.CalPlayer
                     Main.spriteBatch.End();
                 }
                 for (var i = 0; i < 5; i++)
-                Main.spriteBatch.Draw(circleTex, Player.Center + (Vector2.UnitX * Player.direction).RotatedBy(Player.itemRotation) * (48 + scale * 96) - Main.screenPosition, null, Color.Black * ((i+1)/5f) * ( CalamityClientConfig.Instance.Photosensitivity ? 0.2f : 1f), 0, circleTex.Size() * 0.5f, scale* 2.2f * (0.5f + 0.5f * (1- (i)/5f)), SpriteEffects.None, 0);
-                //GeneralParticleHandler.SpawnParticle(new DirectionalPulseRing(player.Center + Vector2.UnitX.RotatedBy(player.itemRotation) * (48 + scale*96), Vector2.Zero, Color.Cyan, Vector2.One, 0, scale, scale, 3));
+                    Main.spriteBatch.Draw(circleTex, Player.Center + (Vector2.UnitX * Player.direction).RotatedBy(Player.itemRotation) * (48 + scale * 96) - Main.screenPosition, null, Color.Black * ((i + 1) / 5f) * (CalamityClientConfig.Instance.Photosensitivity ? 0.2f : 1f), 0, circleTex.Size() * 0.5f, scale * 2.2f * (0.5f + 0.5f * (1 - (i) / 5f)), SpriteEffects.None, 0);
             }
 
             // Drawing for Odd Mushroom's clone effects

@@ -1,4 +1,5 @@
-﻿using Terraria;
+﻿using CalamityMod.Items.Potions.Alcohol;
+using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
 
@@ -16,7 +17,14 @@ namespace CalamityMod.Buffs.Alcohol
 
         public override void Update(Player player, ref int buffIndex)
         {
-            player.Calamity().margarita = true;
+            var cplayer = player.Calamity();
+            cplayer.margarita = true;
+            cplayer.HeatDebuffMultiplier -= Margarita.DebuffLoss;
+            cplayer.SicknessDebuffMultiplier -= Margarita.DebuffLoss;
+            cplayer.ColdDebuffMultiplier -= Margarita.DebuffLoss;
+            cplayer.WaterDebuffMultiplier -= Margarita.DebuffLoss;
+            cplayer.ElectricDebuffMultiplier -= Margarita.DebuffLoss;
+            cplayer.TypelessDebuffMultiplier -= Margarita.DebuffLoss;
         }
     }
 }

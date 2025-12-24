@@ -42,6 +42,7 @@ using CalamityMod.Items.PermanentBoosters;
 using CalamityMod.Items.Placeables.Furniture;
 using CalamityMod.Items.Potions;
 using CalamityMod.Items.Potions.Alcohol;
+using CalamityMod.Items.Tools;
 using CalamityMod.Items.Tools.ClimateChange;
 using CalamityMod.Items.TreasureBags.MiscGrabBags;
 using CalamityMod.Items.VanillaArmorChanges;
@@ -52,16 +53,19 @@ using CalamityMod.Items.Weapons.Rogue;
 using CalamityMod.Items.Weapons.Summon;
 using CalamityMod.NPCs;
 using CalamityMod.NPCs.ProfanedGuardians;
+using CalamityMod.NPCs.Ravager;
 using CalamityMod.Particles;
 using CalamityMod.Projectiles.BaseProjectiles;
 using CalamityMod.Projectiles.Boss;
 using CalamityMod.Projectiles.Melee;
+using CalamityMod.Projectiles.Melee.Shortswords;
 using CalamityMod.Projectiles.Ranged;
 using CalamityMod.Projectiles.Rogue;
 using CalamityMod.Projectiles.Summon;
 using CalamityMod.Projectiles.Typeless;
 using CalamityMod.Systems;
 using CalamityMod.Systems.Collections;
+using CalamityMod.Systems.Mechanic;
 using CalamityMod.World;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
@@ -79,8 +83,6 @@ using Terraria.ModLoader.IO;
 using Terraria.Net;
 using static Terraria.Main;
 using static Terraria.ModLoader.ModContent;
-using CalamityMod.NPCs.Ravager;
-using CalamityMod.Items.Tools;
 
 namespace CalamityMod.CalPlayer
 {
@@ -175,18 +177,37 @@ namespace CalamityMod.CalPlayer
         public enum FishingMinigames
         {
             None,
-            WulfrumRod,
-            NavyFishingRod,
-            HeronRod,
-            SlurperPole,
-            VerstaltiteFishingRod,
-            FeralDoubleRod,
-            RiftReeler,
-            EarlyBloomRod,
-            TheDevourerOfCods
+            ScrapBobber,
+            NavystoneBobber,
+            SkylineBobber,
+            PerennialBobber,
+            ScoriaBobber,
+            DevourerofCods //Not a fishing minigame but uses the same code as the rest
         }
         public FishingMinigames SelectedFishingMinigame = FishingMinigames.None;
         public bool countsAsAnyWet => (Player.armor[0].type == ItemID.FishBowl || Player.wetCount > 0 || Player.wet || Player.honeyWet || Player.lavaWet);
+
+        /// <summary>
+        /// How many Starbursts the player has
+        /// </summary>
+        public int StratusStarburst = 0;
+        public int AvaliableStarburst = 0;
+        public static int MaxStratusStarburst = 100;
+        /// <summary>
+        /// Used for Halley's Inferno to generate starbursts
+        /// </summary>
+        public float HalleyAccuracyCounter = 0;
+        public float StarburstSpawnFrameCounter = 0;
+        /// <summary>
+        /// A cooldown for losing Starbursts over time, reset by holding Stratus items or having Sirius spawned
+        /// </summary>
+        public int StratusStarburstResetTimer = 0;
+        /// <summary>
+        /// Duration of Stratus Sphere's Starshield
+        /// </summary>
+        public int Starshield = 0;
+
+        public List<StarburstEntity> StarburstEntities = new();
 
         public CombatText subtitletext = null;
         public Color[] subtitleColors = new Color[] { Color.White, Color.White };
@@ -198,6 +219,14 @@ namespace CalamityMod.CalPlayer
         public StatModifier SicknessDebuffMultiplier = new();
         public StatModifier WaterDebuffMultiplier = new();
         public StatModifier ElectricDebuffMultiplier = new();
+
+        public int TimeHoldingMelee = 0;
+        public int TimeHoldingRanged = 0;
+        public int TimeHoldingMagic = 0;
+        public int TimeHoldingSummon = 0;
+        public int TimeHoldingRogue = 0;
+        public int TimeHoldingClassless = 0;
+
         #endregion
 
         #region Speedrun Timer
@@ -667,7 +696,7 @@ namespace CalamityMod.CalPlayer
         #endregion
 
         #region Energy Shields
-        public bool HasAnyEnergyShield => roverDrive || lunicCorpsSet || ((pSoulArtifact && !profanedCrystal) || profanedCrystalBuffs) || sponge;
+        public bool HasAnyEnergyShield => roverDrive || lunicCorpsSet || ((pSoulArtifact && !profanedCrystal) || profanedCrystalBuffs) || sponge || Starshield > 0;
         public bool freeDodgeFromShieldAbsorption = false;
         public bool drawnAnyShieldThisFrame = false;
 
@@ -848,6 +877,10 @@ namespace CalamityMod.CalPlayer
         public bool lAmbergrisVisual = false;
         public bool tortShell = false;
         public bool absorber = false;
+        public bool hadLifeRegenHinderingDebuff = false;
+        public bool alwaysHoneyRegen = false;
+        public float alwaysHoneyRegenAmount = 0;
+        public bool honeyTurboRegen = false;
         public bool honeyDewHalveDebuffs = false;
         public bool livingDewHalveDebuffs = false;
         public int jewelBonusDefense = 0;
@@ -1342,6 +1375,7 @@ namespace CalamityMod.CalPlayer
         public bool isNearbyBoss = false;
         public bool flaskBrimstone = false;
         public bool purpleHaze = false;
+        public int purpleHazeStealthTimer = 0;
         public bool mushy = false;
         public bool PinkJellyRegen = false;
         public bool GreenJellyRegen = false;
@@ -1367,7 +1401,9 @@ namespace CalamityMod.CalPlayer
         public bool baguette = false;
         public bool vodka = false;
         public bool redWine = false;
+        public float redWineStoredY = 0;
         public bool grapeBeer = false;
+        public int grapeBeerTimer = 0;
         public bool moonshine = false;
         public bool rum = false;
         public bool whiskey = false;
@@ -1384,6 +1420,7 @@ namespace CalamityMod.CalPlayer
         public bool screwdriver = false;
         public bool moscowMule = false;
         public bool whiteWine = false;
+        public float whiteWineTimer = 0;
         public bool evergreenGin = false;
         public bool tranquilityCandle = false;
         public bool chaosCandle = false;
@@ -2018,7 +2055,7 @@ namespace CalamityMod.CalPlayer
             if (fleshKnuckles)
                 Player.statLifeMax2 += 25;
 
-            int percentMaxLifeIncrease = 0;
+                int percentMaxLifeIncrease = 0;
             // Blood Pact and Chalice of the Blood God stack their HP bonuses if you want to equip both
             if (bloodPact)
                 percentMaxLifeIncrease += 25;
@@ -2068,6 +2105,81 @@ namespace CalamityMod.CalPlayer
             alcoholPoisonLevel = 0;
             noLifeRegen = false;
 
+            //Stratus Starburst amount management
+
+            if (HalleyAccuracyCounter > HalleysInferno.MaxAccuracy)
+                HalleyAccuracyCounter = HalleysInferno.MaxAccuracy;
+            if (HalleyAccuracyCounter < 0)
+                HalleyAccuracyCounter = 0;
+            while (StarburstSpawnFrameCounter >= 1)
+            {
+                StratusStarburst++;
+                StarburstSpawnFrameCounter--;
+            }
+            if (Starshield > 0)
+            {
+                Starshield--;
+                StratusStarburstResetTimer = (int)MathHelper.Max(300,StratusStarburstResetTimer);
+            }
+            if (StratusStarburstResetTimer > 0)
+                StratusStarburstResetTimer--;
+            else if (StratusStarburst > 0)
+                StratusStarburst--;
+            if (StratusStarburst > MaxStratusStarburst)
+                StratusStarburst = MaxStratusStarburst;
+            var starpower = 0;
+            var avaliableStarpower = 0;
+            var oneCount = 0;
+            Vector2 starSpawnPos = Player.Center;
+            for (var i = 0; i < StarburstEntities.Count(); i++)
+            {
+                starpower += StarburstEntities[i].value;
+                if (StarburstEntities[i].AICooldown <= 0)
+                    avaliableStarpower += StarburstEntities[i].value;
+                if (starpower > StratusStarburst)
+                {
+                    var deadStar = StarburstEntities[i];
+                    starpower -= deadStar.value;
+                    StarburstEntities.RemoveAt(i);
+                    starSpawnPos = deadStar.Center;
+                    i--;
+                    continue;
+                }
+                if (StarburstEntities[i].value == 1)
+                    oneCount++;
+            }
+            while (starpower < StratusStarburst)
+            {
+                StarburstEntities.Add(new(starSpawnPos));
+                oneCount++;
+                starpower++;
+                avaliableStarpower++;
+            }
+            while (oneCount >= 10)
+            {
+                var bigStar = StarburstEntities.First(x => x.value == 1);
+                bigStar.value = 10;
+                for (var i = 0; i < 9; i++)
+                {
+                    var star = StarburstEntities.Last(x => x.value == 1);
+                    bigStar.MergeChildren.Add(star);
+                    star.MergeTarget = bigStar;
+                    StarburstEntities.Remove(star);
+                }
+                oneCount -= 10;
+            }
+            AvaliableStarburst = avaliableStarpower;
+            if (StratusStarburstResetTimer > 0)
+            {
+                if (cooldowns.TryGetValue(Starburst.ID, out var cooldown))
+                {
+                    cooldown.timeLeft = MaxStratusStarburst - StratusStarburst;
+                }
+                else
+                {
+                    Player.AddCooldown(Starburst.ID, MaxStratusStarburst);
+                }
+            }
             // Shields. Has to intentionally be above resetting accessories and armor or the shields would clear instantly
             if (!roverDrive)
                 RoverDriveShieldDurability = 0;
@@ -2551,6 +2663,8 @@ namespace CalamityMod.CalPlayer
             amidiasBlessing = false;
             flaskBrimstone = false;
             purpleHaze = false;
+            if (purpleHazeStealthTimer > 0)
+                purpleHazeStealthTimer--;
             shine = false;
             anechoicCoating = false;
             mushy = false;
@@ -2565,6 +2679,8 @@ namespace CalamityMod.CalPlayer
             vodka = false;
             redWine = false;
             grapeBeer = false;
+            if (grapeBeerTimer > 0)
+                grapeBeerTimer--;
             moonshine = false;
             rum = false;
             whiskey = false;
@@ -4205,7 +4321,7 @@ namespace CalamityMod.CalPlayer
             // Reset The Evolution's same projectile DR if unequipped or the cooldown ends
             if (!evolution || !Player.HasCooldown(GlobalDodge.ID))
                 projTypeJustHitBy = -1;
-        }
+            }
         #endregion
 
         #region PreUpdate
@@ -4318,6 +4434,19 @@ namespace CalamityMod.CalPlayer
                 }
             }
 
+            //Multiply vertical speed
+            if (redWine)
+            {
+                if (Player.velocity.Y > 0.2f || Player.velocity.Y < -0.2f)
+                {
+                    redWineStoredY = Player.velocity.Y;
+                    Player.velocity.Y *= 1 + RedWine.VerticalSpeedBoost;
+                }
+                else
+                {
+                    redWineStoredY = 0;
+                }
+            }
             // Remove acceleration when using the exo chair.
             if (Player.whoAmI == Main.myPlayer && ExoChair)
             {
@@ -4551,7 +4680,8 @@ namespace CalamityMod.CalPlayer
                         Player.AddCooldown(LifeSteal.ID, duration);
                 }
             }
-
+            if (moonshine)
+                Player.statLifeMax2 = (int)(Player.statLifeMax2 * (1 + Moonshine.MaxLifePercentBoost));
             ForceVariousEffects();
         }
         #endregion
@@ -4559,6 +4689,104 @@ namespace CalamityMod.CalPlayer
         #region PostUpdateEquips
         public override void PostUpdateEquips()
         {
+
+            var item = Player.HeldItem;
+            if (!(item.IsAir || item.damage <= 0))
+            {
+                if (item.DamageType.CountsAsClass(DamageClass.Melee))
+                {
+                    TimeHoldingMelee++;
+                    if (TimeHoldingMelee > Whiskey.TimeToDischarge)
+                        TimeHoldingMelee = (int)Whiskey.TimeToDischarge;
+                    if (whiskey)
+                    {
+                        Player.GetDamage(DamageClass.Melee) += MathHelper.Lerp(Whiskey.MaxDamageBoost, Whiskey.MinDamageBoost, TimeHoldingMelee / Whiskey.TimeToDischarge);
+                    }
+                } else
+                {
+                    TimeHoldingMelee -= 2;
+                    if (TimeHoldingMelee < 0)
+                        TimeHoldingMelee = 0;
+                }
+                if (item.DamageType.CountsAsClass(DamageClass.Ranged))
+                {
+                    TimeHoldingRanged++;
+                    if (TimeHoldingRanged > Whiskey.TimeToDischarge)
+                        TimeHoldingRanged = (int)Whiskey.TimeToDischarge; 
+                    if (whiskey)
+                    {
+                        Player.GetDamage(DamageClass.Ranged) += MathHelper.Lerp(Whiskey.MaxDamageBoost, Whiskey.MinDamageBoost, TimeHoldingRanged / Whiskey.TimeToDischarge);
+                    }
+                }
+                else
+                {
+                    TimeHoldingRanged -= 2;
+                    if (TimeHoldingRanged < 0)
+                        TimeHoldingRanged = 0;
+                }
+                if (item.DamageType.CountsAsClass(DamageClass.Magic))
+                {
+                    TimeHoldingMagic++;
+                    if (TimeHoldingMagic > Whiskey.TimeToDischarge)
+                        TimeHoldingMagic = (int)Whiskey.TimeToDischarge;
+                    if (whiskey)
+                    {
+                        Player.GetDamage(DamageClass.Magic) += MathHelper.Lerp(Whiskey.MaxDamageBoost, Whiskey.MinDamageBoost, TimeHoldingMagic / Whiskey.TimeToDischarge);
+                    }
+                }
+                else
+                {
+                    TimeHoldingMagic -= 2;
+                    if (TimeHoldingMagic < 0)
+                        TimeHoldingMagic = 0;
+                }
+                if (item.DamageType.CountsAsClass(DamageClass.Summon))
+                {
+                    TimeHoldingSummon++;
+                    if (TimeHoldingSummon > Whiskey.TimeToDischarge)
+                        TimeHoldingSummon = (int)Whiskey.TimeToDischarge;
+                    if (whiskey)
+                    {
+                        Player.GetDamage(DamageClass.Summon) += MathHelper.Lerp(Whiskey.MaxDamageBoost, Whiskey.MinDamageBoost, TimeHoldingSummon / Whiskey.TimeToDischarge);
+                    }
+                }
+                else
+                {
+                    TimeHoldingSummon -= 2;
+                    if (TimeHoldingSummon < 0)
+                        TimeHoldingSummon = 0;
+                }
+                if (item.DamageType.CountsAsClass(RogueDamageClass.Instance))
+                {
+                    TimeHoldingRogue++;
+                    if (TimeHoldingRogue > Whiskey.TimeToDischarge)
+                        TimeHoldingRogue = (int)Whiskey.TimeToDischarge;
+                    if (whiskey)
+                    {
+                        Player.GetDamage(RogueDamageClass.Instance) += MathHelper.Lerp(Whiskey.MaxDamageBoost, Whiskey.MinDamageBoost, TimeHoldingRogue / Whiskey.TimeToDischarge);
+                    }
+                }
+                else
+                {
+                    TimeHoldingRogue -= 2;
+                    if (TimeHoldingRogue < 0)
+                        TimeHoldingRogue = 0;
+                }
+            } else
+            {
+                if (TimeHoldingMelee-- < 0)
+                    TimeHoldingMelee = 0;
+                if (TimeHoldingRanged-- < 0)
+                    TimeHoldingRanged = 0;
+                if (TimeHoldingMagic-- < 0)
+                    TimeHoldingMagic = 0;
+                if (TimeHoldingSummon-- < 0)
+                    TimeHoldingSummon = 0;
+                if (TimeHoldingRogue-- < 0)
+                    TimeHoldingRogue = 0;
+            }
+
+
             // PostUpdateMiscEffects runs after the cap has been applied. Do NOT put mining speed stuff there.
             // Ancient Chisel nerf (also affects Hand of Creation)
             if (Player.chiselSpeed)
@@ -4642,6 +4870,12 @@ namespace CalamityMod.CalPlayer
 
         public override void PostUpdate()
         {
+            //reset the stored Y value for red wine's increased vertical speed
+            if (redWine && (redWineStoredY > 0.2f || redWineStoredY < -0.2f) && (Player.velocity.Y > 0.2f || Player.velocity.Y < -0.2f))
+            {
+                Player.velocity.Y = redWineStoredY;
+            }
+
 
             if (subtitletext != null)
             {
@@ -4815,15 +5049,6 @@ namespace CalamityMod.CalPlayer
         {
             // Adding to StatModifier adds to the additive multiplier
             bool rogue = item.CountsAsClass<RogueDamageClass>();
-
-            if (whiskey)
-                knockback += Whiskey.KnockbackBoost;
-
-            if (tequila && Main.dayTime)
-                knockback += Tequila.KnockbackBoost;
-
-            if (tequilaSunrise && Main.dayTime)
-                knockback += TequilaSunrise.KnockbackBoost;
 
             if (moscowMule)
                 knockback += MoscowMule.KnockbackBoost;
@@ -5005,7 +5230,13 @@ namespace CalamityMod.CalPlayer
         {
             if (bladeArmEnchant)
                 return false;
-
+            if (purpleHaze)
+            {
+                if (item.CountsAsClass<RogueDamageClass>() && StealthStrikeAvailable())
+                {
+                    purpleHazeStealthTimer = 300;
+                }
+            }
             if (veneratedLocket)
             {
                 var LocketSource = Player.GetSource_Accessory(FindAccessory(ItemType<VeneratedLocket>()));
@@ -5760,7 +5991,6 @@ namespace CalamityMod.CalPlayer
                 }
             }
         }
-
         #endregion
 
         #region Misc Stuff

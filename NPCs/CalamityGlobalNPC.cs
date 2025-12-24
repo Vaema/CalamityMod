@@ -4391,6 +4391,11 @@ namespace CalamityMod.NPCs
                 spawnRate = (int)(spawnRate * 0.25); // 4x spawn rate
                 maxSpawns = (int)(maxSpawns * 4f);
             }
+            if (player.Calamity().bloodyMary)
+            {
+                spawnRate = (int)(spawnRate * 0.142); // ~7x spawn rate
+                maxSpawns = (int)(maxSpawns * 5f); // Only 5x the cap, however
+            }
 
             // Reductions
             if (player.Calamity().tranquilityCandle)
