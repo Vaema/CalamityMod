@@ -1017,6 +1017,11 @@ namespace CalamityMod.Items
             return "";
         }
 
+        public override void ModifyItemScale(Item item, Player player, ref float scale)
+        {
+            if (item.CountsAsClass<MeleeDamageClass>() && player.HasBuff(BuffID.Tipsy))
+                scale += 0.15f;
+        }
         public override void UpdateArmorSet(Player player, string set)
         {
             CalamityPlayer modPlayer = player.Calamity();

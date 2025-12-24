@@ -5,7 +5,7 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.Buffs.Alcohol
 {
-    public class FireballBuff : ModBuff
+    public class ManhattanBuff : ModBuff
     {
         public override void SetStaticDefaults()
         {
@@ -18,9 +18,8 @@ namespace CalamityMod.Buffs.Alcohol
         public override void Update(Player player, ref int buffIndex)
         {
             var cplayer = player.Calamity();
-            cplayer.fireball = true;
-            cplayer.HeatDebuffMultiplier += Fireball.DebuffBoost;
-            cplayer.SicknessDebuffMultiplier -= Fireball.DebuffLoss;
+            cplayer.ColdDebuffMultiplier += Manhattan.DebuffBoost;
+            cplayer.WaterDebuffMultiplier -= Manhattan.DebuffLoss;
         }
     }
 }

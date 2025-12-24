@@ -198,6 +198,14 @@ namespace CalamityMod.CalPlayer
         public StatModifier SicknessDebuffMultiplier = new();
         public StatModifier WaterDebuffMultiplier = new();
         public StatModifier ElectricDebuffMultiplier = new();
+
+        public int TimeHoldingMelee = 0;
+        public int TimeHoldingRanged = 0;
+        public int TimeHoldingMagic = 0;
+        public int TimeHoldingSummon = 0;
+        public int TimeHoldingRogue = 0;
+        public int TimeHoldingClassless = 0;
+
         #endregion
 
         #region Speedrun Timer
@@ -848,6 +856,10 @@ namespace CalamityMod.CalPlayer
         public bool lAmbergrisVisual = false;
         public bool tortShell = false;
         public bool absorber = false;
+        public bool hadLifeRegenHinderingDebuff = false;
+        public bool alwaysHoneyRegen = false;
+        public float alwaysHoneyRegenAmount = 0;
+        public bool honeyTurboRegen = false;
         public bool honeyDewHalveDebuffs = false;
         public bool livingDewHalveDebuffs = false;
         public int jewelBonusDefense = 0;
@@ -1349,6 +1361,7 @@ namespace CalamityMod.CalPlayer
         public bool isNearbyBoss = false;
         public bool flaskBrimstone = false;
         public bool purpleHaze = false;
+        public int purpleHazeStealthTimer = 0;
         public bool mushy = false;
         public bool fortunesFavor = false;
         public bool PinkJellyRegen = false;
@@ -1375,7 +1388,9 @@ namespace CalamityMod.CalPlayer
         public bool baguette = false;
         public bool vodka = false;
         public bool redWine = false;
+        public float redWineStoredY = 0;
         public bool grapeBeer = false;
+        public int grapeBeerTimer = 0;
         public bool moonshine = false;
         public bool rum = false;
         public bool whiskey = false;
@@ -1392,6 +1407,7 @@ namespace CalamityMod.CalPlayer
         public bool screwdriver = false;
         public bool moscowMule = false;
         public bool whiteWine = false;
+        public float whiteWineTimer = 0;
         public bool evergreenGin = false;
         public bool tranquilityCandle = false;
         public bool chaosCandle = false;
@@ -2563,6 +2579,8 @@ namespace CalamityMod.CalPlayer
             amidiasBlessing = false;
             flaskBrimstone = false;
             purpleHaze = false;
+            if (purpleHazeStealthTimer > 0)
+                purpleHazeStealthTimer--;
             shine = false;
             anechoicCoating = false;
             mushy = false;
@@ -2578,6 +2596,8 @@ namespace CalamityMod.CalPlayer
             vodka = false;
             redWine = false;
             grapeBeer = false;
+            if (grapeBeerTimer > 0)
+                grapeBeerTimer--;
             moonshine = false;
             rum = false;
             whiskey = false;
@@ -4260,7 +4280,7 @@ namespace CalamityMod.CalPlayer
             // Reset The Evolution's same projectile DR if unequipped or the cooldown ends
             if (!evolution || !Player.HasCooldown(GlobalDodge.ID))
                 projTypeJustHitBy = -1;
-        }
+            }
         #endregion
 
         #region PreUpdate
@@ -4373,6 +4393,19 @@ namespace CalamityMod.CalPlayer
                 }
             }
 
+            //Multiply vertical speed
+            if (redWine)
+            {
+                if (Player.velocity.Y > 0.2f || Player.velocity.Y < -0.2f)
+                {
+                    redWineStoredY = Player.velocity.Y;
+                    Player.velocity.Y *= 1 + RedWine.VerticalSpeedBoost;
+                }
+                else
+                {
+                    redWineStoredY = 0;
+                }
+            }
             // Remove acceleration when using the exo chair.
             if (Player.whoAmI == Main.myPlayer && ExoChair)
             {
@@ -4606,7 +4639,8 @@ namespace CalamityMod.CalPlayer
                         Player.AddCooldown(LifeSteal.ID, duration);
                 }
             }
-
+            if (moonshine)
+                Player.statLifeMax2 = (int)(Player.statLifeMax2 * (1 + Moonshine.MaxLifePercentBoost));
             ForceVariousEffects();
         }
         #endregion
@@ -4614,6 +4648,104 @@ namespace CalamityMod.CalPlayer
         #region PostUpdateEquips
         public override void PostUpdateEquips()
         {
+
+            var item = Player.HeldItem;
+            if (!(item.IsAir || item.damage <= 0))
+            {
+                if (item.DamageType.CountsAsClass(DamageClass.Melee))
+                {
+                    TimeHoldingMelee++;
+                    if (TimeHoldingMelee > Whiskey.TimeToDischarge)
+                        TimeHoldingMelee = (int)Whiskey.TimeToDischarge;
+                    if (whiskey)
+                    {
+                        Player.GetDamage(DamageClass.Melee) += MathHelper.Lerp(Whiskey.MaxDamageBoost, Whiskey.MinDamageBoost, TimeHoldingMelee / Whiskey.TimeToDischarge);
+                    }
+                } else
+                {
+                    TimeHoldingMelee -= 2;
+                    if (TimeHoldingMelee < 0)
+                        TimeHoldingMelee = 0;
+                }
+                if (item.DamageType.CountsAsClass(DamageClass.Ranged))
+                {
+                    TimeHoldingRanged++;
+                    if (TimeHoldingRanged > Whiskey.TimeToDischarge)
+                        TimeHoldingRanged = (int)Whiskey.TimeToDischarge; 
+                    if (whiskey)
+                    {
+                        Player.GetDamage(DamageClass.Ranged) += MathHelper.Lerp(Whiskey.MaxDamageBoost, Whiskey.MinDamageBoost, TimeHoldingRanged / Whiskey.TimeToDischarge);
+                    }
+                }
+                else
+                {
+                    TimeHoldingRanged -= 2;
+                    if (TimeHoldingRanged < 0)
+                        TimeHoldingRanged = 0;
+                }
+                if (item.DamageType.CountsAsClass(DamageClass.Magic))
+                {
+                    TimeHoldingMagic++;
+                    if (TimeHoldingMagic > Whiskey.TimeToDischarge)
+                        TimeHoldingMagic = (int)Whiskey.TimeToDischarge;
+                    if (whiskey)
+                    {
+                        Player.GetDamage(DamageClass.Magic) += MathHelper.Lerp(Whiskey.MaxDamageBoost, Whiskey.MinDamageBoost, TimeHoldingMagic / Whiskey.TimeToDischarge);
+                    }
+                }
+                else
+                {
+                    TimeHoldingMagic -= 2;
+                    if (TimeHoldingMagic < 0)
+                        TimeHoldingMagic = 0;
+                }
+                if (item.DamageType.CountsAsClass(DamageClass.Summon))
+                {
+                    TimeHoldingSummon++;
+                    if (TimeHoldingSummon > Whiskey.TimeToDischarge)
+                        TimeHoldingSummon = (int)Whiskey.TimeToDischarge;
+                    if (whiskey)
+                    {
+                        Player.GetDamage(DamageClass.Summon) += MathHelper.Lerp(Whiskey.MaxDamageBoost, Whiskey.MinDamageBoost, TimeHoldingSummon / Whiskey.TimeToDischarge);
+                    }
+                }
+                else
+                {
+                    TimeHoldingSummon -= 2;
+                    if (TimeHoldingSummon < 0)
+                        TimeHoldingSummon = 0;
+                }
+                if (item.DamageType.CountsAsClass(RogueDamageClass.Instance))
+                {
+                    TimeHoldingRogue++;
+                    if (TimeHoldingRogue > Whiskey.TimeToDischarge)
+                        TimeHoldingRogue = (int)Whiskey.TimeToDischarge;
+                    if (whiskey)
+                    {
+                        Player.GetDamage(RogueDamageClass.Instance) += MathHelper.Lerp(Whiskey.MaxDamageBoost, Whiskey.MinDamageBoost, TimeHoldingRogue / Whiskey.TimeToDischarge);
+                    }
+                }
+                else
+                {
+                    TimeHoldingRogue -= 2;
+                    if (TimeHoldingRogue < 0)
+                        TimeHoldingRogue = 0;
+                }
+            } else
+            {
+                if (TimeHoldingMelee-- < 0)
+                    TimeHoldingMelee = 0;
+                if (TimeHoldingRanged-- < 0)
+                    TimeHoldingRanged = 0;
+                if (TimeHoldingMagic-- < 0)
+                    TimeHoldingMagic = 0;
+                if (TimeHoldingSummon-- < 0)
+                    TimeHoldingSummon = 0;
+                if (TimeHoldingRogue-- < 0)
+                    TimeHoldingRogue = 0;
+            }
+
+
             // PostUpdateMiscEffects runs after the cap has been applied. Do NOT put mining speed stuff there.
             // Ancient Chisel nerf (also affects Hand of Creation)
             if (Player.chiselSpeed)
@@ -4697,6 +4829,12 @@ namespace CalamityMod.CalPlayer
 
         public override void PostUpdate()
         {
+            //reset the stored Y value for red wine's increased vertical speed
+            if (redWine && (redWineStoredY > 0.2f || redWineStoredY < -0.2f) && (Player.velocity.Y > 0.2f || Player.velocity.Y < -0.2f))
+            {
+                Player.velocity.Y = redWineStoredY;
+            }
+
 
             if (subtitletext != null)
             {
@@ -4879,15 +5017,6 @@ namespace CalamityMod.CalPlayer
             // Adding to StatModifier adds to the additive multiplier
             bool rogue = item.CountsAsClass<RogueDamageClass>();
 
-            if (whiskey)
-                knockback += Whiskey.KnockbackBoost;
-
-            if (tequila && Main.dayTime)
-                knockback += Tequila.KnockbackBoost;
-
-            if (tequilaSunrise && Main.dayTime)
-                knockback += TequilaSunrise.KnockbackBoost;
-
             if (moscowMule)
                 knockback += MoscowMule.KnockbackBoost;
 
@@ -5068,7 +5197,13 @@ namespace CalamityMod.CalPlayer
         {
             if (bladeArmEnchant)
                 return false;
-
+            if (purpleHaze)
+            {
+                if (item.CountsAsClass<RogueDamageClass>() && StealthStrikeAvailable())
+                {
+                    purpleHazeStealthTimer = 300;
+                }
+            }
             if (veneratedLocket)
             {
                 var LocketSource = Player.GetSource_Accessory(FindAccessory(ItemType<VeneratedLocket>()));
@@ -5823,7 +5958,6 @@ namespace CalamityMod.CalPlayer
                 }
             }
         }
-
         #endregion
 
         #region Misc Stuff
