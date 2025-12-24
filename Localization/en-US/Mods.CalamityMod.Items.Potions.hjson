@@ -283,7 +283,7 @@ MoscowMule: {
 	DisplayName: Moscow Mule
 	Tooltip:
 		'''
-		{0}% increased knockback, all attacks infict heavy knockback
+		{0}% increased knockback, all attacks inflict heavy knockback
 		Reduces the effectiveness of piercing weapons
 		{$Common.AlcoholWarning}
 		'''
