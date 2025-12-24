@@ -14,7 +14,7 @@ namespace CalamityMod.Items.Potions.Alcohol
         public new string LocalizationCategory => "Items.Potions";
 
         public static float KnockbackBoost = 0.5f;
-        public override LocalizedText Tooltip => base.Tooltip.WithFormatArgs(DamageBoost.ToPercent(), KnockbackBoost.ToPercent(), CritBoost, RegenLoss.ToRegenPerSecond());
+        public override LocalizedText Tooltip => base.Tooltip.WithFormatArgs(KnockbackBoost.ToPercent());
 
         public override void SetStaticDefaults()
         {
