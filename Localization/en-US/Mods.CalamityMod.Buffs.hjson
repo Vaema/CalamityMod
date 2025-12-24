@@ -102,7 +102,7 @@ VodkaBuff: {
 
 WhiskeyBuff: {
 	DisplayName: Whiskey
-	Description: Increased damage when spawwing weapons
+	Description: Increased damage when swapping weapons
 }
 
 WhiteWineBuff: {

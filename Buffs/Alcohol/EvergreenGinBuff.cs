@@ -17,11 +17,12 @@ namespace CalamityMod.Buffs.Alcohol
 
         public override void Update(Player player, ref int buffIndex)
         {
-            player.Calamity().evergreenGin = true;
-            player.Calamity().SicknessDebuffMultiplier += EvergreenGin.DebuffBoost;
-            player.Calamity().WaterDebuffMultiplier += EvergreenGin.DebuffBoost;
-            player.Calamity().ElectricDebuffMultiplier -= EvergreenGin.DebuffLoss;
-            player.Calamity().HeatDebuffMultiplier -= EvergreenGin.DebuffLoss;
+            var cplayer = player.Calamity();
+            cplayer.evergreenGin = true;
+            cplayer.SicknessDebuffMultiplier += EvergreenGin.DebuffBoost;
+            cplayer.WaterDebuffMultiplier += EvergreenGin.DebuffBoost;
+            cplayer.ElectricDebuffMultiplier -= EvergreenGin.DebuffLoss;
+            cplayer.HeatDebuffMultiplier -= EvergreenGin.DebuffLoss;
         }
     }
 }

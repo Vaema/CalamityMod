@@ -17,13 +17,14 @@ namespace CalamityMod.Buffs.Alcohol
 
         public override void Update(Player player, ref int buffIndex)
         {
-            player.Calamity().margarita = true;
-            player.Calamity().HeatDebuffMultiplier -= Margarita.DebuffLoss;
-            player.Calamity().SicknessDebuffMultiplier -= Margarita.DebuffLoss;
-            player.Calamity().ColdDebuffMultiplier -= Margarita.DebuffLoss;
-            player.Calamity().WaterDebuffMultiplier -= Margarita.DebuffLoss;
-            player.Calamity().ElectricDebuffMultiplier -= Margarita.DebuffLoss;
-            player.Calamity().TypelessDebuffMultiplier -= Margarita.DebuffLoss;
+            var cplayer = player.Calamity();
+            cplayer.margarita = true;
+            cplayer.HeatDebuffMultiplier -= Margarita.DebuffLoss;
+            cplayer.SicknessDebuffMultiplier -= Margarita.DebuffLoss;
+            cplayer.ColdDebuffMultiplier -= Margarita.DebuffLoss;
+            cplayer.WaterDebuffMultiplier -= Margarita.DebuffLoss;
+            cplayer.ElectricDebuffMultiplier -= Margarita.DebuffLoss;
+            cplayer.TypelessDebuffMultiplier -= Margarita.DebuffLoss;
         }
     }
 }

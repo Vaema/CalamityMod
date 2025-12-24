@@ -17,13 +17,14 @@ namespace CalamityMod.Buffs.Alcohol
 
         public override void Update(Player player, ref int buffIndex)
         {
-            player.Calamity().vodka = true;
-            player.Calamity().TypelessDebuffMultiplier += Vodka.DebuffBoost;
-            player.Calamity().HeatDebuffMultiplier -= Vodka.DebuffLoss;
-            player.Calamity().ColdDebuffMultiplier -= Vodka.DebuffLoss;
-            player.Calamity().SicknessDebuffMultiplier -= Vodka.DebuffLoss;
-            player.Calamity().WaterDebuffMultiplier -= Vodka.DebuffLoss;
-            player.Calamity().ElectricDebuffMultiplier -= Vodka.DebuffLoss;
+            var cplayer = player.Calamity();
+            cplayer.vodka = true;
+            cplayer.TypelessDebuffMultiplier += Vodka.DebuffBoost;
+            cplayer.HeatDebuffMultiplier -= Vodka.DebuffLoss;
+            cplayer.ColdDebuffMultiplier -= Vodka.DebuffLoss;
+            cplayer.SicknessDebuffMultiplier -= Vodka.DebuffLoss;
+            cplayer.WaterDebuffMultiplier -= Vodka.DebuffLoss;
+            cplayer.ElectricDebuffMultiplier -= Vodka.DebuffLoss;
         }
     }
 }

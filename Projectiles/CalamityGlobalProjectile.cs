@@ -193,13 +193,13 @@ namespace CalamityMod.Projectiles
         /// <summary>
         /// Causes a projectile to use both Static and Local iframes when set
         /// </summary>
-        public bool HybridIframes = false;
+        public bool hybridIframes = false;
 
         /// <summary>
         /// Whether or not this proj was spawned with grape beer on
         /// this does NOT mean it has grape beer homing!
         /// </summary>
-        public bool GrapeBeer = false;
+        public bool grapeBeer = false;
 
         /// <summary>
         /// Variable used for storing the actual amount of extra updates a projectile has.<br/>
@@ -325,7 +325,7 @@ namespace CalamityMod.Projectiles
                 conditionalHomingRange = 600;
                 if (projectile.timeLeft > 300 * projectile.MaxUpdates)
                     projectile.timeLeft = 300 * projectile.MaxUpdates;
-                HybridIframes = true;
+                hybridIframes = true;
                 projectile.localNPCHitCooldown = -1;
                 projectile.usesLocalNPCImmunity = true;
                 Main.player[projectile.owner].Calamity().grapeBeerTimer++;
@@ -339,7 +339,7 @@ namespace CalamityMod.Projectiles
                         if (player.heldProj != projectile.whoAmI && projectile.aiStyle != ProjAIStyleID.HeldProjectile && projectile.damage > 0 && player.Calamity().grapeBeerTimer < 5)
                             ApplyGrapeBeer();
                         else
-                            GrapeBeer = true;
+                            grapeBeer = true;
                     }
                 }
             }
@@ -355,12 +355,12 @@ namespace CalamityMod.Projectiles
             else if (source is EntitySource_Parent { Entity: Projectile parent })
             {
                 //Grape Beer homing
-                if (parent.Calamity().GrapeBeer)
+                if (parent.Calamity().grapeBeer)
                 {
                     if (Main.player[projectile.owner].heldProj != projectile.whoAmI && projectile.aiStyle != ProjAIStyleID.HeldProjectile && projectile.damage > 0 && Main.player[projectile.owner].Calamity().grapeBeerTimer < 5)
                         ApplyGrapeBeer();
                     else
-                        GrapeBeer = true;
+                        grapeBeer = true;
                 }
 
                 // Nerf Crystal bullet shard damage by 45%
@@ -422,7 +422,7 @@ namespace CalamityMod.Projectiles
         public override bool PreAI(Projectile projectile)
         {
             ///Apply Hybrid iframes
-            if (HybridIframes)
+            if (hybridIframes)
             {
                 projectile.usesIDStaticNPCImmunity = true;
                 projectile.usesLocalNPCImmunity = true;
@@ -4633,7 +4633,7 @@ namespace CalamityMod.Projectiles
         public override void OnHitNPC(Projectile projectile, NPC target, NPC.HitInfo hit, int damageDone)
         {
             //Manage Hybrid iframes
-            if (HybridIframes && (projectile.penetrate != 1 || projectile.appliesImmunityTimeOnSingleHits))
+            if (hybridIframes && (projectile.penetrate != 1 || projectile.appliesImmunityTimeOnSingleHits))
             {
                 projectile.localNPCImmunity[target.whoAmI] = projectile.localNPCHitCooldown;
                 Projectile.perIDStaticNPCImmunity[projectile.type][target.whoAmI] = Main.GameUpdateCount + (uint)projectile.idStaticNPCHitCooldown;
@@ -4769,7 +4769,7 @@ namespace CalamityMod.Projectiles
         public override bool? CanHitNPC(Projectile projectile, NPC target)
         {
 
-            if (HybridIframes && (projectile.localNPCImmunity[target.whoAmI] != 0 || Projectile.perIDStaticNPCImmunity[projectile.type][target.whoAmI] > Main.GameUpdateCount))
+            if (hybridIframes && (projectile.localNPCImmunity[target.whoAmI] != 0 || Projectile.perIDStaticNPCImmunity[projectile.type][target.whoAmI] > Main.GameUpdateCount))
                 return false;
             if (target.Calamity().IsArmored() && HomingTarget > -1 && HomingTarget != target.whoAmI)
                 return false;

@@ -17,9 +17,10 @@ namespace CalamityMod.Buffs.Alcohol
 
         public override void Update(Player player, ref int buffIndex)
         {
-            player.Calamity().fireball = true;
-            player.Calamity().HeatDebuffMultiplier += Fireball.DebuffBoost;
-            player.Calamity().SicknessDebuffMultiplier -= Fireball.DebuffLoss;
+            var cplayer = player.Calamity();
+            cplayer.fireball = true;
+            cplayer.HeatDebuffMultiplier += Fireball.DebuffBoost;
+            cplayer.SicknessDebuffMultiplier -= Fireball.DebuffLoss;
         }
     }
 }

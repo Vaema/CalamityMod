@@ -2048,7 +2048,7 @@ namespace CalamityMod.CalPlayer
                 double halfDefense = Player.statDefense / 2.0;
                 if (bloodflareCore)
                     specialDefenseDmgMinimum += halfDefense;
-                if (moonshine)
+                if (moonshine) //Moonshine also halves defense damage recovery alongside forcing 50% of defense as defense damage
                     specialDefenseDmgMinimum += halfDefense;
                 int netMitigation = hurtInfo.SourceDamage - hurtInfo.Damage;
                 double standardDefenseDamage = netMitigation * defenseDamageRatio;

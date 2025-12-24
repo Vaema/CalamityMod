@@ -17,10 +17,10 @@ namespace CalamityMod.Buffs.Alcohol
 
         public override void Update(Player player, ref int buffIndex)
         {
-            player.Calamity().tequila = true;
-
-            player.Calamity().ElectricDebuffMultiplier += Tequila.DebuffBoost;
-            player.Calamity().ColdDebuffMultiplier -= Tequila.DebuffLoss;
+            var cplayer = player.Calamity();
+            cplayer.tequila = true;
+            cplayer.ElectricDebuffMultiplier += Tequila.DebuffBoost;
+            cplayer.ColdDebuffMultiplier -= Tequila.DebuffLoss;
         }
     }
 }

@@ -17,8 +17,9 @@ namespace CalamityMod.Buffs.Alcohol
 
         public override void Update(Player player, ref int buffIndex)
         {
-            player.Calamity().ColdDebuffMultiplier += Manhattan.DebuffBoost;
-            player.Calamity().WaterDebuffMultiplier -= Manhattan.DebuffLoss;
+            var cplayer = player.Calamity();
+            cplayer.ColdDebuffMultiplier += Manhattan.DebuffBoost;
+            cplayer.WaterDebuffMultiplier -= Manhattan.DebuffLoss;
         }
     }
 }

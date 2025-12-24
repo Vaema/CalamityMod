@@ -273,7 +273,8 @@ Moonshine: {
 	Tooltip:
 		'''
 		Increases maximum health by {0}%
-		Attacks always take at least half your defense worth of defense damage, and slows defense damage recovery slightly
+		Attacks always take at least half your defense worth of defense damage
+		Defense damage takes twice as long to recover
 		{$Common.AlcoholWarning}
 		'''
 }
@@ -282,7 +283,7 @@ MoscowMule: {
 	DisplayName: Moscow Mule
 	Tooltip:
 		'''
-		{0}% increased knockback, all attacks infict Heavy Knockback
+		{0}% increased knockback, all attacks infict heavy knockback
 		Reduces the effectiveness of piercing weapons
 		{$Common.AlcoholWarning}
 		'''
