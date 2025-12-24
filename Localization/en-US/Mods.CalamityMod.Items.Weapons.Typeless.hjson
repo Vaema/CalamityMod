@@ -79,7 +79,7 @@ StratusSphere: {
 	DisplayName: Stratus Sphere
 	Tooltip:
 		'''
-		Launches a singularity which influnces creatures in a large area around it
+		Launches a singularity which exerts influence on all entities in a large area around it
 		Influenced players gain Starbursts over time, while enemies instead take damage
 		<right> to cause Starbursts to form a barrier, causing you to lose Starbursts instead of health
 		Launching the singluarity deactivates the barrier, and creating a barrier deactivates the singularity
