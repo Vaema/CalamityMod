@@ -428,7 +428,8 @@ namespace CalamityMod.Projectiles
                 projectile.usesLocalNPCImmunity = true;
             }
 
-            if (projectile.bobber && projectile.type != ModContent.ProjectileType<VictideBobber>() && RunFishingMinigames(projectile))
+            // 24DEC2025: Ozzatron: victide bobber culled with SSO
+            if (projectile.bobber /*&& projectile.type != ProjectileType<VictideBobber>()*/ && RunFishingMinigames(projectile))
                 return false;
 
             //Reset the Homing Target immediately before AI can re-set it on applicable projectiles
