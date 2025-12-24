@@ -1917,6 +1917,27 @@ namespace CalamityMod.CalPlayer
                     info.Damage -= spongeDamageBlocked;
                 }
 
+
+                //Stratus Starshield
+                if (Starshield > 0 && StratusStarburst > 0 && !shieldsFullyAbsorbedHit)
+                {
+                    bool thisShieldCanFullyAbsorb = StratusStarburst >= info.Damage;
+                    int damageblocked = Math.Min(StratusStarburst, info.Damage);
+                    totalDamageBlocked += damageblocked;
+                    StratusStarburst -= info.Damage;
+                    shieldsTookHit = true;
+                    if (StratusStarburst <= 0)
+                    {
+                        StratusStarburst = 0;
+                        SoundEngine.PlaySound(SoundID.DD2_CrystalCartImpact, Player.Center);
+                        Player.Calamity().GeneralScreenShakePower += anyShieldBroke ? 0.5f : 2f;
+                        anyShieldBroke = true;
+                    }
+                    if (thisShieldCanFullyAbsorb)
+                        shieldsFullyAbsorbedHit = true;
+                    info.Damage -= damageblocked;
+                }
+
                 // If any shields took damage, there is some code that must be run.
                 if (shieldsTookHit)
                 {
@@ -2005,7 +2026,6 @@ namespace CalamityMod.CalPlayer
                     nextHitDealsDefenseDamage = false;
                 }
             }
-
             // Chalice of the Blood God is implemented as a dirty modifier.
             //
             // Chalice of the Blood God does nothing to a hit that was just fully blocked by shields.

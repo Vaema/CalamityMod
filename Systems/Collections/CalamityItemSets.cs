@@ -120,7 +120,7 @@ namespace CalamityMod.Systems.Collections
         /// Currently unused, and exists as an objective classification for the sake of the Wiki.<br/>
         /// Defaults to <see langword="false"/>.
         /// </summary>
-        public static bool[] RogueJavelin = Factory.CreateBoolSet(ItemType<AntlionSkewer>(), ItemType<CrystalPiercer>(), ItemType<EclipsesFall>(), ItemType<IchorSpear>(), ItemType<NightsGaze>(),
+        public static bool[] RogueJavelin = Factory.CreateBoolSet(ItemType<AntlionSkewer>(), ItemType<CrystalPiercer>(), ItemType<EclipsesFall>(), ItemType<IchorSpear>(), ItemType<Vega>(),
                 ItemType<PalladiumJavelin>(), ItemType<PhantasmalRuin>(), ItemType<ProfanedPartisan>(), ItemType<RealityRupture>(), ItemType<ScarletDevil>(), ItemType<ScourgeoftheDesert>(), 
                 ItemType<ScourgeoftheSeas>(), ItemType<ShardofAntumbra>(), ItemType<SpearofDestiny>(), ItemType<SpearofPaleolith>(), ItemType<Turbulance>(), ItemType<TheAtomSplitter>(), ItemType<WaveSkipper>(), 
                 ItemType<Wrathwing>());

@@ -178,12 +178,14 @@ ChronomancersScythe: {
 		'''
 }
 
-ClamorNoctus: {
-	DisplayName: Clamor Noctus
+AlphaDraconis: {
+	DisplayName: Alpha Draconis
 	Tooltip:
 		'''
-		Fires night wyverns and stars from the sky that stick to enemies and tiles and explode
-		'Let the sky fall'
+		Calls down a meteor shower towards the cursor
+		Successful hits sometimes create Starbursts that can be picked up
+		<right> with enough Starbursts to summon Draco to protect you
+		Draco burns Starbursts over time, and can be disspelled with <right>
 		'''
 }
 

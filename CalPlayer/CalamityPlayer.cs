@@ -42,6 +42,7 @@ using CalamityMod.Items.PermanentBoosters;
 using CalamityMod.Items.Placeables.Furniture;
 using CalamityMod.Items.Potions;
 using CalamityMod.Items.Potions.Alcohol;
+using CalamityMod.Items.Tools;
 using CalamityMod.Items.Tools.ClimateChange;
 using CalamityMod.Items.TreasureBags.MiscGrabBags;
 using CalamityMod.Items.VanillaArmorChanges;
@@ -52,16 +53,19 @@ using CalamityMod.Items.Weapons.Rogue;
 using CalamityMod.Items.Weapons.Summon;
 using CalamityMod.NPCs;
 using CalamityMod.NPCs.ProfanedGuardians;
+using CalamityMod.NPCs.Ravager;
 using CalamityMod.Particles;
 using CalamityMod.Projectiles.BaseProjectiles;
 using CalamityMod.Projectiles.Boss;
 using CalamityMod.Projectiles.Melee;
+using CalamityMod.Projectiles.Melee.Shortswords;
 using CalamityMod.Projectiles.Ranged;
 using CalamityMod.Projectiles.Rogue;
 using CalamityMod.Projectiles.Summon;
 using CalamityMod.Projectiles.Typeless;
 using CalamityMod.Systems;
 using CalamityMod.Systems.Collections;
+using CalamityMod.Systems.Mechanic;
 using CalamityMod.World;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
@@ -79,8 +83,6 @@ using Terraria.ModLoader.IO;
 using Terraria.Net;
 using static Terraria.Main;
 using static Terraria.ModLoader.ModContent;
-using CalamityMod.NPCs.Ravager;
-using CalamityMod.Items.Tools;
 
 namespace CalamityMod.CalPlayer
 {
@@ -187,6 +189,28 @@ namespace CalamityMod.CalPlayer
         }
         public FishingMinigames SelectedFishingMinigame = FishingMinigames.None;
         public bool countsAsAnyWet => (Player.armor[0].type == ItemID.FishBowl || Player.wetCount > 0 || Player.wet || Player.honeyWet || Player.lavaWet);
+
+        /// <summary>
+        /// How many Starbursts the player has
+        /// </summary>
+        public int StratusStarburst = 0;
+        public int AvaliableStarburst = 0;
+        public static int MaxStratusStarburst = 100;
+        /// <summary>
+        /// Used for Halley's Inferno to generate starbursts
+        /// </summary>
+        public float HalleyAccuracyCounter = 0;
+        public float StarburstSpawnFrameCounter = 0;
+        /// <summary>
+        /// A cooldown for losing Starbursts over time, reset by holding Stratus items or having Sirius spawned
+        /// </summary>
+        public int StratusStarburstResetTimer = 0;
+        /// <summary>
+        /// Duration of Stratus Sphere's Starshield
+        /// </summary>
+        public int Starshield = 0;
+
+        public List<StarburstEntity> StarburstEntities = new();
 
         public CombatText subtitletext = null;
         public Color[] subtitleColors = new Color[] { Color.White, Color.White };
@@ -675,7 +699,7 @@ namespace CalamityMod.CalPlayer
         #endregion
 
         #region Energy Shields
-        public bool HasAnyEnergyShield => roverDrive || lunicCorpsSet || ((pSoulArtifact && !profanedCrystal) || profanedCrystalBuffs) || sponge;
+        public bool HasAnyEnergyShield => roverDrive || lunicCorpsSet || ((pSoulArtifact && !profanedCrystal) || profanedCrystalBuffs) || sponge || Starshield > 0;
         public bool freeDodgeFromShieldAbsorption = false;
         public bool drawnAnyShieldThisFrame = false;
 
@@ -2042,7 +2066,7 @@ namespace CalamityMod.CalPlayer
             if (fleshKnuckles)
                 Player.statLifeMax2 += 25;
 
-            int percentMaxLifeIncrease = 0;
+                int percentMaxLifeIncrease = 0;
             // Blood Pact and Chalice of the Blood God stack their HP bonuses if you want to equip both
             if (bloodPact)
                 percentMaxLifeIncrease += 25;
@@ -2092,6 +2116,81 @@ namespace CalamityMod.CalPlayer
             alcoholPoisonLevel = 0;
             noLifeRegen = false;
 
+            //Stratus Starburst amount management
+
+            if (HalleyAccuracyCounter > HalleysInferno.MaxAccuracy)
+                HalleyAccuracyCounter = HalleysInferno.MaxAccuracy;
+            if (HalleyAccuracyCounter < 0)
+                HalleyAccuracyCounter = 0;
+            while (StarburstSpawnFrameCounter >= 1)
+            {
+                StratusStarburst++;
+                StarburstSpawnFrameCounter--;
+            }
+            if (Starshield > 0)
+            {
+                Starshield--;
+                StratusStarburstResetTimer = (int)MathHelper.Max(300,StratusStarburstResetTimer);
+            }
+            if (StratusStarburstResetTimer > 0)
+                StratusStarburstResetTimer--;
+            else if (StratusStarburst > 0)
+                StratusStarburst--;
+            if (StratusStarburst > MaxStratusStarburst)
+                StratusStarburst = MaxStratusStarburst;
+            var starpower = 0;
+            var avaliableStarpower = 0;
+            var oneCount = 0;
+            Vector2 starSpawnPos = Player.Center;
+            for (var i = 0; i < StarburstEntities.Count(); i++)
+            {
+                starpower += StarburstEntities[i].value;
+                if (StarburstEntities[i].AICooldown <= 0)
+                    avaliableStarpower += StarburstEntities[i].value;
+                if (starpower > StratusStarburst)
+                {
+                    var deadStar = StarburstEntities[i];
+                    starpower -= deadStar.value;
+                    StarburstEntities.RemoveAt(i);
+                    starSpawnPos = deadStar.Center;
+                    i--;
+                    continue;
+                }
+                if (StarburstEntities[i].value == 1)
+                    oneCount++;
+            }
+            while (starpower < StratusStarburst)
+            {
+                StarburstEntities.Add(new(starSpawnPos));
+                oneCount++;
+                starpower++;
+                avaliableStarpower++;
+            }
+            while (oneCount >= 10)
+            {
+                var bigStar = StarburstEntities.First(x => x.value == 1);
+                bigStar.value = 10;
+                for (var i = 0; i < 9; i++)
+                {
+                    var star = StarburstEntities.Last(x => x.value == 1);
+                    bigStar.MergeChildren.Add(star);
+                    star.MergeTarget = bigStar;
+                    StarburstEntities.Remove(star);
+                }
+                oneCount -= 10;
+            }
+            AvaliableStarburst = avaliableStarpower;
+            if (StratusStarburstResetTimer > 0)
+            {
+                if (cooldowns.TryGetValue(Starburst.ID, out var cooldown))
+                {
+                    cooldown.timeLeft = MaxStratusStarburst - StratusStarburst;
+                }
+                else
+                {
+                    Player.AddCooldown(Starburst.ID, MaxStratusStarburst);
+                }
+            }
             // Shields. Has to intentionally be above resetting accessories and armor or the shields would clear instantly
             if (!roverDrive)
                 RoverDriveShieldDurability = 0;

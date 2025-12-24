@@ -712,9 +712,11 @@ Sirius: {
 	DisplayName: Sirius
 	Tooltip:
 		'''
-		Summons the brightest star in the night sky to shine upon your foes
-		There can only be one star at a time
-		Requires 6 minion slots
+		Summons the brightest star in the sky, Sirius, to protect you
+		Continue summoning to complete Canis Major
+		Repeated summons increase its power greatly, even after the constellation is complete
+		Sirius passively generates Starbursts when near enemies
+		When Starbursts are full, Sirius consumes them to launch a powerful piercing quasar
 		'''
 }
 
