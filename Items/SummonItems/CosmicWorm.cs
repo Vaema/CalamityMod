@@ -2,6 +2,8 @@
 using CalamityMod.Items.Materials;
 using CalamityMod.NPCs.DevourerofGods;
 using CalamityMod.Rarities;
+using CalamityMod.UI.DialogueDisplay;
+using CalamityMod.UI.DialogueDisplay.DisplayEffects;
 using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.ID;
@@ -49,7 +51,7 @@ namespace CalamityMod.Items.SummonItems
             string spawnText = Language.GetTextValue(key);
             Color messageColor = Color.Cyan;
             Main.NewText(spawnText, messageColor);
-
+            /*
             var subtitleID = CombatText.NewText(player.Hitbox, messageColor, spawnText, true);
             if (subtitleID < Main.maxCombatText)
             {
@@ -57,8 +59,11 @@ namespace CalamityMod.Items.SummonItems
                 localPlayer.subtitletext = Main.combatText[subtitleID];
                 localPlayer.subtitleColors = [Color.Cyan, Color.Fuchsia];
             }
+            */
 
-            CalamityUtils.SpawnBossOnPosUsingItem<DevourerofGodsHead>(player, (int)player.Center.X, (int)player.Center.Y - 1600, DevourerofGodsHead.SpawnSound);
+            NPC n = CalamityUtils.SpawnBossOnPosUsingItem<DevourerofGodsHead>(player, (int)player.Center.X, (int)player.Center.Y - 1600, DevourerofGodsHead.SpawnSound);
+
+            DialogueDisplaySystem.StartDialogue("DevourerOfGodsPhases", n, 0, 120, false, new BossText());
             return true;
         }
 
