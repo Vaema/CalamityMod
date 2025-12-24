@@ -7,6 +7,7 @@ AlcoholPoisoning: {
 BloodyMaryBuff: {
 	DisplayName: Bloody Mary
 	Description: Increased enemy spawn rates, reduced piercing weapon effectiveness
+}
 
 CaribbeanRumBuff: {
 	DisplayName: Caribbean Rum
@@ -31,6 +32,7 @@ EverclearBuff: {
 EvergreenGinBuff: {
 	DisplayName: Evergreen Gin
 	Description: Sickness and water debuff damage increased, electric and heat debuff damage reduced
+}
 
 FireballBuff: {
 	DisplayName: Fireball
@@ -45,6 +47,7 @@ GrapeBeerBuff: {
 MargaritaBuff: {
 	DisplayName: Margarita
 	Description: Reduced duration to most harmful debuffs, reduced damage dealt to enemies from debuffs
+}
 
 MoonshineBuff: {
 	DisplayName: Moonshine
@@ -64,6 +67,7 @@ OldFashionedBuff: {
 RedWineBuff: {
 	DisplayName: Red Wine
 	Description: Increased vertical speed, reduced flight time
+}
 
 RumBuff: {
 	DisplayName: Rum
