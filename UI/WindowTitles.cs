@@ -15,6 +15,9 @@ namespace CalamityMod.UI
         private static bool loaded = false; 
         public override void PostSetupContent()
         {
+            if (Main.dedServ)
+                return;
+
             // the other method involving some terraria intrinsic function didn't work, so i'm just ignoring it
             var vanillaTitles = Language.FindAll(new Regex("^GameTitle\\.")).ToList();
             var customTitles = Language.FindAll(new Regex("^Mods\\.CalamityMod\\.UI\\.WindowTitle\\.")).ToList();
@@ -34,6 +37,9 @@ namespace CalamityMod.UI
 
         public override void Unload()
         {
+            if (Main.dedServ)
+                return;
+
             Platform.Get<IWindowService>().SetUnicodeTitle(Main.instance.Window, Lang.GetRandomGameTitle());
             Platform.Get<IWindowService>().SetIcon(Main.instance.Window);
 
