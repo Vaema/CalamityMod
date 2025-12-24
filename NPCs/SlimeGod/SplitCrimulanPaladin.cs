@@ -705,7 +705,7 @@ namespace CalamityMod.NPCs.SlimeGod
                         Main.npc[slimeSpawn].velocity.Y = (float)Main.rand.Next(-30, 1) * 0.1f;
                         Main.npc[slimeSpawn].ai[0] = (float)(-1000 * Main.rand.Next(3));
                         Main.npc[slimeSpawn].ai[1] = 0f;
-                        if (Main.netMode == NetmodeID.Server && slimeSpawn < Main.maxNPCs)
+                        if (Main.dedServ && slimeSpawn < Main.maxNPCs)
                             NetMessage.SendData(MessageID.SyncNPC, -1, -1, null, slimeSpawn, 0f, 0f, 0f, 0, 0, 0);
                     }
                 }
