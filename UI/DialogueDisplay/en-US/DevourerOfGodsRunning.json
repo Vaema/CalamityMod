@@ -25,13 +25,13 @@
   "Pages": [
     {
       "Lines": [
-        "[Colors(2, 0.5, 00FFFF, FF00FF):You can't run forever!]"
+        "[Scale(1.5):[Colors(2, 0.5, 00FFFF, FF00FF):You can't run forever!]]"
       ]
     },
 
     {
       "Lines": [
-        "[Shaking:[Colors(2, 0.5, 00FFFF, FF00FF):WHAT'S THE PROBLEM?! CAN'T RUN ANYMORE?!]]"
+        "[Shaking:[Scale(1.5):[Colors(2, 0.5, 00FFFF, FF00FF):WHAT'S THE PROBLEM?! CAN'T RUN ANYMORE?!]]]"
       ]
     }
   ]
