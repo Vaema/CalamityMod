@@ -63,7 +63,7 @@ namespace CalamityMod.Items.SummonItems
 
             NPC n = CalamityUtils.SpawnBossOnPosUsingItem<DevourerofGodsHead>(player, (int)player.Center.X, (int)player.Center.Y - 1600, DevourerofGodsHead.SpawnSound);
 
-            DialogueDisplaySystem.StartDialogue("DevourerOfGodsPhases", n, 0, 120, false, new BossText());
+            DialogueDisplaySystem.StartDialogue("DevourerOfGods.Phases", n, 0, 120, false, new BossText());
             return true;
         }
 
