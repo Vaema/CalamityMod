@@ -2,8 +2,8 @@
 using CalamityMod.CalPlayer;
 using CalamityMod.Items.Fishing.AstralCatches;
 using CalamityMod.Items.Fishing.BrimstoneCragCatches;
-using CalamityMod.Items.Materials;
 using CalamityMod.Items.Placeables.Abyss;
+using CalamityMod.Items.Materials;
 using CalamityMod.Projectiles.Typeless;
 using CalamityMod.Rarities;
 using CalamityMod.Tiles.Furniture.CraftingStations;
@@ -54,30 +54,18 @@ namespace CalamityMod.Items.Fishing.FishingRods
             Item.shoot = ModContent.ProjectileType<DevourerofCodsBobber>();
             Item.value = CalamityGlobalItem.RarityDarkBlueBuyPrice;
             Item.rare = ModContent.RarityType<CosmicPurple>();
-            Item.accessory = true;
         }
 
-        public override bool AllowPrefix(int pre)
-        {
-            if (pre == 0)
-                return true;
-            return false;
-        }
-
-        public override bool CanReforge()
-        {
-            return false;
-        }
         public override void HoldItem(Player player)
         {
             if (player.Calamity().SelectedFishingMinigame == CalamityPlayer.FishingMinigames.None)
-                player.Calamity().SelectedFishingMinigame = CalamityPlayer.FishingMinigames.TheDevourerOfCods;
+                player.Calamity().SelectedFishingMinigame = CalamityPlayer.FishingMinigames.DevourerofCods;
             player.accFishingLine = true;
         }
 
         public override void UpdateEquip(Player player)
         {
-            player.Calamity().SelectedFishingMinigame = CalamityPlayer.FishingMinigames.TheDevourerOfCods;
+            player.Calamity().SelectedFishingMinigame = CalamityPlayer.FishingMinigames.DevourerofCods;
         }
 
         public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)

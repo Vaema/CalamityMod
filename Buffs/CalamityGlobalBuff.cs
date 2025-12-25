@@ -62,7 +62,8 @@ namespace CalamityMod.Buffs
             {
                 player.statDefense += 4;
                 player.GetCritChance<MeleeDamageClass>() -= 2;
-                player.GetAttackSpeed<MeleeDamageClass>() -= 0.1f;
+                player.GetAttackSpeed<MeleeDamageClass>() -= 0.2f;
+                player.GetDamage<MeleeDamageClass>() -= 0.1f;
             }
             else if (type == BuffID.WellFed)
             {

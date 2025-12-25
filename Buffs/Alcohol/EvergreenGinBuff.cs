@@ -1,4 +1,5 @@
-﻿using Terraria;
+﻿using CalamityMod.Items.Potions.Alcohol;
+using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
 
@@ -16,9 +17,12 @@ namespace CalamityMod.Buffs.Alcohol
 
         public override void Update(Player player, ref int buffIndex)
         {
-            player.Calamity().evergreenGin = true;
-            player.Calamity().SicknessDebuffMultiplier += 0.25f;
-            player.Calamity().WaterDebuffMultiplier += 0.25f;
+            var cplayer = player.Calamity();
+            cplayer.evergreenGin = true;
+            cplayer.SicknessDebuffMultiplier += EvergreenGin.DebuffBoost;
+            cplayer.WaterDebuffMultiplier += EvergreenGin.DebuffBoost;
+            cplayer.ElectricDebuffMultiplier -= EvergreenGin.DebuffLoss;
+            cplayer.HeatDebuffMultiplier -= EvergreenGin.DebuffLoss;
         }
     }
 }

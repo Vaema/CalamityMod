@@ -13,10 +13,10 @@ namespace CalamityMod.NPCs
 {
     public sealed class PierceResistNPC : GlobalNPC
     {
-        private static HashSet<int> exemptProjectiles;
-        private static HashSet<int> pierceResistNPC;
-        private static HashSet<int> singleHitboxNPC;
-        private static Dictionary<int, bool> singleHitboxExemptProjectiles;
+        internal static HashSet<int> exemptProjectiles;
+        internal static HashSet<int> pierceResistNPC;
+        internal static HashSet<int> singleHitboxNPC;
+        internal static Dictionary<int, bool> singleHitboxExemptProjectiles;
 
         public override void Load()
         {

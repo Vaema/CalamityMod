@@ -47,6 +47,9 @@ namespace CalamityMod.Projectiles.Ranged
 
         public override void AI()
         {
+            //This is so Grape Beer works properly with them
+            if (targeted != null && Projectile.localNPCImmunity[targeted.whoAmI] == -1)
+                Projectile.localNPCImmunity[targeted.whoAmI] = 15 * Projectile.extraUpdates;
             float rate = Main.GlobalTimeWrappedHourly * 5;
             List<Color> eColors = new List<Color>()
             {

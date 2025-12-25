@@ -24,6 +24,8 @@ using CalamityMod.NPCs.TownNPCs;
 using CalamityMod.Particles;
 using CalamityMod.Projectiles.Boss;
 using CalamityMod.Projectiles.Melee.Yoyos;
+using CalamityMod.UI.DialogueDisplay;
+using CalamityMod.UI.DialogueDisplay.DisplayEffects;
 using CalamityMod.Utilities.Daybreak;
 using CalamityMod.World;
 using Microsoft.Xna.Framework;
@@ -36,7 +38,6 @@ using Terraria.GameContent.Bestiary;
 using Terraria.GameContent.Events;
 using Terraria.GameContent.ItemDropRules;
 using Terraria.ID;
-using Terraria.Localization;
 using Terraria.ModLoader;
 
 namespace CalamityMod.NPCs.DevourerofGods
@@ -625,11 +626,14 @@ namespace CalamityMod.NPCs.DevourerofGods
                 {
                     string key = "Mods.CalamityMod.Status.Boss.DoGPhase2";
                     Color messageColor = Color.Cyan;
+                    CalamityUtils.BroadcastLocalizedText(key, messageColor);
+                    /*                    
                     var ctid = CombatText.NewText(NPC.Hitbox, messageColor, Language.GetTextValue(key), true);
                     if (ctid < Main.maxCombatText)
                         player.Calamity().subtitletext = Main.combatText[ctid];
                     player.Calamity().subtitleColors = new Color[] { Color.Cyan, Color.Fuchsia };
-                    CalamityUtils.BroadcastLocalizedText(key, messageColor);
+                    */
+                    DialogueDisplaySystem.StartDialogue("DevourerOfGodsPhases", NPC, 2, 120, false, new BossText());
                 }
             }
 
@@ -799,11 +803,14 @@ namespace CalamityMod.NPCs.DevourerofGods
                                     {
                                         string key = "Mods.CalamityMod.Status.Boss.DoGPhase3";
                                         Color messageColor = Color.Cyan;
+                                        CalamityUtils.BroadcastLocalizedText(key, messageColor);
+                                        /*                                        
                                         var ctid = CombatText.NewText(NPC.Hitbox, messageColor, Language.GetTextValue(key), true);
                                         if (ctid < Main.maxCombatText)
                                             player.Calamity().subtitletext = Main.combatText[ctid];
                                         player.Calamity().subtitleColors = new Color[] { Color.Cyan, Color.Fuchsia };
-                                        CalamityUtils.BroadcastLocalizedText(key, messageColor);
+                                        */
+                                        DialogueDisplaySystem.StartDialogue("DevourerOfGodsPhases", NPC, 3, 120, false, new BossText());
                                     }
 
                                     spawnedGuardians3 = true;
@@ -1458,11 +1465,15 @@ namespace CalamityMod.NPCs.DevourerofGods
                         {
                             string key = "Mods.CalamityMod.Status.Boss.DoGSubphase1";
                             Color messageColor = Color.Cyan;
+                            CalamityUtils.BroadcastLocalizedText(key, messageColor);
+
+                            /*
                             int ctid = CombatText.NewText(NPC.Hitbox, messageColor, Language.GetTextValue(key), true);
                             if (ctid < Main.maxCombatText)
                                 player.Calamity().subtitletext = Main.combatText[ctid];
                             player.Calamity().subtitleColors = new Color[] { Color.Cyan, Color.Fuchsia };
-                            CalamityUtils.BroadcastLocalizedText(key, messageColor);
+                            */
+                            DialogueDisplaySystem.StartDialogue("DevourerOfGodsPhases", NPC, 1, 120, false, new BossText());
                         }
 
                         NPC.TargetClosest();
@@ -2742,6 +2753,7 @@ namespace CalamityMod.NPCs.DevourerofGods
 
             if (target.Calamity().dogTextCooldown <= 0 && !BossRushEvent.BossRushActive)
             {
+                /*
                 string[] headHitKeys = new string[]
                 {
                     "Mods.CalamityMod.Status.Boss.DoGHead1",
@@ -2757,56 +2769,63 @@ namespace CalamityMod.NPCs.DevourerofGods
                     "Mods.CalamityMod.Status.Boss.DoGHead11",
                     "Mods.CalamityMod.Status.Boss.DoGHead12",
                     "Mods.CalamityMod.Status.Boss.DoGHead13",
-
-
                 };
                 Color messageColor = Color.Cyan;
                 Rectangle location = new Rectangle((int)NPC.position.X, (int)NPC.position.Y, NPC.width, NPC.height);
+                */
                 var counter = target.Calamity().DoGHeadHitCounter;
-                string text = headHitKeys[Main.rand.Next(10, 13)];
+                string DialogueGroup;
+                int DialogueIndex;
                 if (target.statLife - hurtInfo.Damage <= 0)
                 {
+                    DialogueGroup = "DevourerOfGodsDeath";
                     if (counter == 0)
                         if (NPC.GetLifePercent() <= 0.25f)
-                            text = "Mods.CalamityMod.Status.Boss.DoGHeadDeath5"; //All that running just to die to a single touch?
+                            DialogueIndex = 4;// text = "Mods.CalamityMod.Status.Boss.DoGHeadDeath5"; //All that running just to die to a single touch?
                         else
-                            text = "Mods.CalamityMod.Status.Boss.DoGHeadDeath1"; //Tasteless slop.
+                            DialogueIndex = 0;// text = "Mods.CalamityMod.Status.Boss.DoGHeadDeath1"; //Tasteless slop.
                     else if (NPC.GetLifePercent() <= 0.25f || counter >= 10)
-                        text = "Mods.CalamityMod.Status.Boss.DoGHeadDeath4"; //WEAK.
+                        DialogueIndex = 3;// text = "Mods.CalamityMod.Status.Boss.DoGHeadDeath4"; //WEAK.
                     else if (Phase2Started)
-                        text = "Mods.CalamityMod.Status.Boss.DoGHeadDeath3"; //And STAY dead!
+                        DialogueIndex = 2;// text = "Mods.CalamityMod.Status.Boss.DoGHeadDeath3"; //And STAY dead!
                     else if (!spawnedGuardians)
-                        text = "Mods.CalamityMod.Status.Boss.DoGHeadDeath1"; //Tasteless slop.
+                        DialogueIndex = 0;// text = "Mods.CalamityMod.Status.Boss.DoGHeadDeath1"; //Tasteless slop.
                     else
-                        text = "Mods.CalamityMod.Status.Boss.DoGHeadDeath2"; //A feast worthy of a god!
+                        DialogueIndex = 1;// text = "Mods.CalamityMod.Status.Boss.DoGHeadDeath2"; //A feast worthy of a god!
                 }
                 else
                 {
                     if (counter == 0 && Phase2Started)
                     {
+                        DialogueGroup = "DevourerOfGodsRunning";
                         if (NPC.GetLifePercent() <= 0.25f)
-                            text = "Mods.CalamityMod.Status.Boss.DoGHeadRunning2"; //WHAT'S THE PROBLEM?! CAN'T RUN ANYMORE?!
+                            DialogueIndex = 1;// text = "Mods.CalamityMod.Status.Boss.DoGHeadRunning2"; //WHAT'S THE PROBLEM?! CAN'T RUN ANYMORE?!
                         else
-                            text = "Mods.CalamityMod.Status.Boss.DoGHeadRunning"; //You can't run forever!
+                            DialogueIndex = 0;// text = "Mods.CalamityMod.Status.Boss.DoGHeadRunning"; //You can't run forever!
                     }
                     else
                     {
+                        DialogueGroup = "DevourerOfGodsHead";
                         if (counter > 9)
-                            text = headHitKeys[Main.rand.Next(10, 13)]; //DogHead11-13
+                            DialogueIndex = Main.rand.Next(10, 13);// text = headHitKeys[Main.rand.Next(10, 13)]; //DogHead11-13
                         else if (counter == 9)
-                            text = headHitKeys[9]; //DogHead10
+                            DialogueIndex = 10;//text = headHitKeys[9]; //DogHead10
                         else if (counter > 4)
-                            text = headHitKeys[Main.rand.Next(4, 9)]; //DogHead5-9
+                            DialogueIndex = Main.rand.Next(4, 9);//text = headHitKeys[Main.rand.Next(4, 9)]; //DogHead5-9
                         else
-                            text = headHitKeys[Main.rand.Next(0, 4)]; //DogHead1-4
+                            DialogueIndex = Main.rand.Next(0, 4);//text = headHitKeys[Main.rand.Next(0, 4)]; //DogHead1-4
                     }
                 }
 
+                /*
                 var ctid = CombatText.NewText(location, messageColor, Language.GetTextValue(text), true);
                 if (ctid < Main.maxCombatText)
                     target.Calamity().subtitletext = Main.combatText[ctid];
                 target.Calamity().subtitleColors = new Color[] { Color.Cyan, Color.Fuchsia };
                 target.Calamity().dogTextCooldown = 60;
+                */
+
+                DialogueDisplaySystem.StartDialogue(DialogueGroup, NPC, DialogueIndex, 60, false, new BossText());
             }
             target.Calamity().DoGHeadHitCounter++;
         }

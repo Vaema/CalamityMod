@@ -26,30 +26,6 @@ namespace CalamityMod.Items.Fishing.FishingRods
             Item.shoot = ModContent.ProjectileType<EarlyBloomBobber>();
             Item.value = CalamityGlobalItem.RarityTurquoiseBuyPrice;
             Item.rare = ModContent.RarityType<Turquoise>();
-            Item.accessory = true;
-        }
-
-        public override bool AllowPrefix(int pre)
-        {
-            if (pre == 0)
-                return true;
-            return false;
-        }
-
-        public override bool CanReforge()
-        {
-            return false;
-        }
-        public override void HoldItem(Player player)
-        {
-            player.accFishingLine = true;
-            if (player.Calamity().SelectedFishingMinigame == CalamityPlayer.FishingMinigames.None)
-                player.Calamity().SelectedFishingMinigame = CalamityPlayer.FishingMinigames.EarlyBloomRod;
-        }
-
-        public override void UpdateEquip(Player player)
-        {
-            player.Calamity().SelectedFishingMinigame = CalamityPlayer.FishingMinigames.EarlyBloomRod;
         }
 
         public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)

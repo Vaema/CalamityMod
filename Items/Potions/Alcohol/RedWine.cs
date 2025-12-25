@@ -13,10 +13,9 @@ namespace CalamityMod.Items.Potions.Alcohol
     {
         public new string LocalizationCategory => "Items.Potions";
 
-        public static int HealValue = 200;
-        public static int RegenLoss = 1;
-        public static int SecondDuration = 30;
-        public override LocalizedText Tooltip => base.Tooltip.WithFormatArgs(RegenLoss.ToRegenPerSecond(), SecondDuration);
+        public static float VerticalSpeedBoost = 0.1f;
+        public static float FlightTimeLoss = 0.25f;
+        public override LocalizedText Tooltip => base.Tooltip.WithFormatArgs(VerticalSpeedBoost.ToPercent(), FlightTimeLoss.ToPercent());
 
         public override void SetStaticDefaults()
         {
@@ -30,37 +29,18 @@ namespace CalamityMod.Items.Potions.Alcohol
 
         public override void SetDefaults()
         {
-            Item.DefaultToHealingPotion(14, 48, HealValue);
+            Item.DefaultToFood(14, 48, ModContent.BuffType<RedWineBuff>(), CalamityUtils.MinutesToFrames(6));
 
             Item.value = Item.sellPrice(silver: 30);
             Item.rare = ItemRarityID.LightRed;
         }
-
-        public override void GetHealLife(Player player, bool quickHeal, ref int healValue)
-        {
-            healValue = player.Calamity().baguette ? Baguette.RedWineBuffedHealValue : HealValue;
-        }
-
-        public override void OnConsumeItem(Player player)
-        {
-            player.AddBuff(ModContent.BuffType<RedWineBuff>(), CalamityUtils.SecondsToFrames(SecondDuration));
-        }
         public override void AddRecipes()
         {
-            CreateRecipe(10).
-                AddIngredient(ItemID.Bottle, 10).
-                AddIngredient(ItemID.Grapes).
-                AddIngredient<StarblightSoot>(5).
+            CreateRecipe(12).
+                AddIngredient(ItemID.Bottle, 12).
+                AddIngredient(ItemID.FireFeather).
                 AddTile(TileID.Kegs).
                 Register();
-
-            CreateRecipe().
-                AddIngredient(ItemID.BottledWater).
-                AddIngredient<BloodOrb>(5).
-                AddIngredient<StarblightSoot>().
-                AddTile(TileID.AlchemyTable).
-                Register()
-                .DisableDecraft();
         }
     }
 }
