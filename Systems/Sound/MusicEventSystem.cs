@@ -33,7 +33,7 @@ namespace CalamityMod.Systems
 
         public static Thread EventTrackerThread { get; set; } = null;
 
-        public static List<string> PlayedEvents { get; set; } = [];
+        public static HashSet<string> PlayedEvents { get; set; } = [];
 
         public static List<MusicEventEntry> EventCollection { get; set; } = [];
 
@@ -243,8 +243,9 @@ namespace CalamityMod.Systems
         public override void SaveWorldData(TagCompound tag)
         {
             tag["calamityPlayedMusicEventCount"] = PlayedEvents.Count;
-            for (int i = 0; i < PlayedEvents.Count; i++)
-                tag[$"calamityPlayedMusicEvent{i}"] = PlayedEvents[i];
+            int i = 0;
+            foreach (string playedEvent in PlayedEvents)
+                tag[$"calamityPlayedMusicEvent{i++}"] = playedEvent;
         }
 
         public override void LoadWorldData(TagCompound tag)
