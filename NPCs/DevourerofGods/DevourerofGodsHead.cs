@@ -33,12 +33,14 @@ using Microsoft.Xna.Framework.Graphics;
 using ReLogic.Content;
 using Terraria;
 using Terraria.Audio;
+using Terraria.DataStructures;
 using Terraria.GameContent;
 using Terraria.GameContent.Bestiary;
 using Terraria.GameContent.Events;
 using Terraria.GameContent.ItemDropRules;
 using Terraria.Graphics.Shaders;
 using Terraria.ID;
+using Terraria.Localization;
 using Terraria.ModLoader;
 
 namespace CalamityMod.NPCs.DevourerofGods
@@ -302,6 +304,15 @@ namespace CalamityMod.NPCs.DevourerofGods
         {
             if (Phase2Started && NPC.localAI[2] <= 60f)
                 rotation = NPC.rotation;
+        }
+
+        public override void OnSpawn(IEntitySource source)
+        {
+            string key = "Mods.CalamityMod.Status.Boss.DoGSpawn";
+            Color messageColor = Color.Cyan;
+            CalamityUtils.BroadcastLocalizedText(key, messageColor);
+
+            DialogueDisplaySystem.StartDialogue("DevourerOfGods.Phases", NPC, 0, 120, false, new BossText());
         }
 
         public override void SendExtraAI(BinaryWriter writer)
@@ -2860,7 +2871,7 @@ namespace CalamityMod.NPCs.DevourerofGods
                 target.Calamity().dogTextCooldown = 60;
                 */
 
-                DialogueDisplaySystem.StartDialogue(DialogueGroup, NPC, DialogueIndex, 60, false, new BossText());
+                DialogueDisplaySystem.StartDialogueOnClient(DialogueGroup, NPC, DialogueIndex, 60, false, new BossText());
             }
             target.Calamity().DoGHeadHitCounter++;
         }
