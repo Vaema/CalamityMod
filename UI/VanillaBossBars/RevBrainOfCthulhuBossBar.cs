@@ -1,4 +1,4 @@
-﻿using CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses;
+﻿using CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses.BrainOfCthulhu;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using ReLogic.Content;
