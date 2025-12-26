@@ -34,17 +34,6 @@ namespace CalamityMod.Systems
         #region ModifyWorldGenTasks
         public override void ModifyWorldGenTasks(List<GenPass> tasks, ref double totalWeight)
         {
-            // Better Underworld (similar to Don't Dig Up seed but with some adjustments)
-            int underworldIndex = tasks.FindIndex(genpass => genpass.Name.Equals("Underworld"));
-            if (underworldIndex != -1)
-            {
-                tasks[underworldIndex] = new PassLegacy("Underworld", (progress, config) =>
-                {
-                    progress.Message = Language.GetOrRegister("Mods.CalamityMod.UI.BetterUnderworld").Value;
-                    CustomUnderworld.NewUnderworld();
-                });
-            }
-
             // Replace the shimmer gen to make it place sanely
             int shimmerIndex = tasks.FindIndex(genpass => genpass.Name.Equals("Shimmer"));
             if (shimmerIndex != -1)
@@ -60,18 +49,6 @@ namespace CalamityMod.Systems
             int underworldStructuresIndex = tasks.FindIndex(genpass => genpass.Name.Equals("Smooth World"));
             if (underworldStructuresIndex != -1)
             {
-                tasks.Insert(underworldStructuresIndex + 1, new PassLegacy("Underworld Structures", (progress, config) =>
-                {
-                    progress.Message = Language.GetOrRegister("Mods.CalamityMod.UI.UnderworldStructures").Value;
-                    CustomUnderworld.NewUnderworldStructures();
-
-                    progress.Message = Language.GetOrRegister("Mods.CalamityMod.UI.UnderworldTreesAndGrass").Value;
-                    CustomUnderworld.AshTreesAndGrass();
-
-                    progress.Message = Language.GetOrRegister("Mods.CalamityMod.UI.UnderworldGeyserTraps").Value;
-                    CustomUnderworld.PlaceGeyserTraps();
-                }));
-
                 // Generate the Shimmer Shrine directly above the center of the underground Shimmer lake
                 tasks.Insert(underworldStructuresIndex + 2, new PassLegacy("Shimmer Shrine", (progress, config) =>
                 {
