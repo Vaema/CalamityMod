@@ -4,6 +4,7 @@ using Microsoft.Xna.Framework.Graphics;
 using Terraria;
 using Terraria.ModLoader;
 using Terraria.ModLoader.IO;
+using Terraria.WorldBuilding;
 
 namespace CalamityMod.NPCs.VanillaNPCAIOverrides
 {
@@ -43,7 +44,19 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides
 
         }
 
+        public virtual bool? CanBeHitByProjectile(Mod mod, Projectile projectile) => null;
+
+        public virtual void ModifyHitByItem(Mod mod, Player player, Item item, ref NPC.HitModifiers modifiers) { }
+
+        public virtual void ModifyHitByProjectile(Mod mod, Projectile projectile, ref NPC.HitModifiers modifiers) { }
+
+        public virtual void OnHitByItem(Mod mod, Player player, Item item, NPC.HitInfo hit, int damageDone) { }
+
+        public virtual void OnHitByProjectile(Mod mod, Projectile projectile, NPC.HitInfo hit, int damageDone) { }
+
         public virtual void HitEffect(Mod mod, NPC.HitInfo hit) { }
+
+        public virtual bool PreKill(Mod mod) => true;
 
         public virtual void FindFrame(Mod mod, int frameHeight) { }
 

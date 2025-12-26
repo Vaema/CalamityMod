@@ -300,6 +300,11 @@ namespace CalamityMod.Projectiles
 
         public int HomingTarget = -1;
 
+        /// <summary>
+        /// Flag used during Rev+ Brain of Cthulhu to denote projectiles that were spawned prior to its Illusion Trick attack starting.
+        /// </summary>
+        public bool IgnoreBoCIllusions = false;
+
         #region On Spawn
         public override void OnSpawn(Projectile projectile, IEntitySource source)
         {

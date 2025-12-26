@@ -946,12 +946,60 @@ public sealed partial class CalamityVanillaAIOverrideNPC : GlobalNPC
         AIOverride?.PostAI(Mod);
     }
 
+    public override bool? CanBeHitByProjectile(NPC npc, Projectile projectile)
+    {
+        if (!Enabled)
+            return base.CanBeHitByProjectile(npc, projectile);
+
+        return AIOverride?.CanBeHitByProjectile(Mod, projectile);
+    }
+
     public override void HitEffect(NPC npc, NPC.HitInfo hit)
     {
         if (!Enabled)
             return;
 
         AIOverride?.HitEffect(Mod, hit);
+    }
+
+    public override void ModifyHitByItem(NPC npc, Player player, Item item, ref NPC.HitModifiers modifiers)
+    {
+        if (!Enabled)
+            return;
+
+        AIOverride?.ModifyHitByItem(Mod, player, item, ref modifiers);
+    }
+
+    public override void ModifyHitByProjectile(NPC npc, Projectile projectile, ref NPC.HitModifiers modifiers)
+    {
+        if (!Enabled)
+            return;
+
+        AIOverride?.ModifyHitByProjectile(Mod, projectile, ref modifiers);
+    }
+
+    public override void OnHitByItem(NPC npc, Player player, Item item, NPC.HitInfo hit, int damageDone)
+    {
+        if (!Enabled)
+            return;
+
+        AIOverride?.OnHitByItem(Mod, player, item, hit, damageDone);
+    }
+
+    public override void OnHitByProjectile(NPC npc, Projectile projectile, NPC.HitInfo hit, int damageDone)
+    {
+        if (!Enabled)
+            return;
+
+        AIOverride?.OnHitByProjectile(Mod, projectile, hit, damageDone);
+    }
+
+    public override bool PreKill(NPC npc)
+    {
+        if (!Enabled || AIOverride == null)
+            return base.PreKill(npc);
+
+        return AIOverride.PreKill(Mod);
     }
 
     public override void FindFrame(NPC npc, int frameHeight)
