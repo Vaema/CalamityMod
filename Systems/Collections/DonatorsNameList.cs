@@ -60,10 +60,10 @@ namespace CalamityMod.Systems.Collections
                 "drake093104",
                 "Entrian",
                 "Equinoxux",
-                "EternalGrayson",
                 "FishBread",
                 "goo",
                 "Grant Curtiss",
+                "GrayAeternum", // previously "EternalGrayson"
                 "haefer.goat.oats",
                 "Halleyvetica",
                 "Hamsting",
