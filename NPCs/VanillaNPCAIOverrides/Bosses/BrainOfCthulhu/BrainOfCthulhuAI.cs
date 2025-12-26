@@ -205,12 +205,12 @@ public class BrainOfCthulhuAI : VanillaAIOverride
         UndergroundSpawnAnimation = -2,
         SurfaceSpawnAnimation,
         //Phase 1
-        Idle,
+        Phase1Idle,
         CreeperSwipes,
-        CreeperCrush,
+        CreeperSwings,
         CreeperOrbit,
         CreeperSpiral,
-        DesperateOnslaught,
+        TelekineticOnslaught,
         Stunned,
         //Phase Transition
         Phase2TransitionClosed,
@@ -227,7 +227,7 @@ public class BrainOfCthulhuAI : VanillaAIOverride
     }
 
     internal BrainAIState AIState { get => (BrainAIState)NPC.ai[0]; set => NPC.ai[0] = (float)value; }
-    internal BrainAIState PreviousAttack = BrainAIState.Idle;
+    internal BrainAIState PreviousAttack = BrainAIState.Phase1Idle;
     internal ref float Time => ref NPC.ai[1];
     internal ref float DespawnTime => ref NPC.ai[2];
     internal ref float AnimationTime => ref NPC.ai[3];
@@ -247,6 +247,21 @@ public class BrainOfCthulhuAI : VanillaAIOverride
     internal Vector2 AttackPosition = Vector2.Zero;
     internal List<BrainAIState> availableAttacks = [];
     internal List<float> AttackList = [];
+
+    private Player Target => Main.player[NPC.target];
+
+    private static float CreeperHPRatio { get
+        {
+            float ratio = 0f;
+            foreach (NPC creeper in Main.npc.Where(n => n.active && n.type == NPCID.Creeper))
+                ratio += creeper.life / (float)creeper.lifeMax;
+            if (ratio != 0f)
+                ratio /= GetBrainOfCthuluCreepersCountRevDeath();
+            return ratio;
+        }
+    }
+
+    private static float CreeperAmountRatio => NPC.CountNPCS(NPCID.Creeper) / (float)GetBrainOfCthuluCreepersCountRevDeath();
 
     public override void SetDefaults(Mod mod)
     {
@@ -292,7 +307,7 @@ public class BrainOfCthulhuAI : VanillaAIOverride
         NPC.dontTakeDamage = true;
 
         AIState = onSurface ? BrainAIState.SurfaceSpawnAnimation : BrainAIState.UndergroundSpawnAnimation;
-        PreviousAttack = BrainAIState.Idle;
+        PreviousAttack = BrainAIState.Phase1Idle;
         SpawnDelay = SummonedViaItem ? 2 : 60;
         if (SummonedViaItem)
             SpawnTime = -1;
@@ -338,13 +353,11 @@ public class BrainOfCthulhuAI : VanillaAIOverride
             options.finishThemOff = true;
             CalamityUtils.CalamityTargeting(NPC, options);
         }
-
-        Player target = Main.player[NPC.target];
         #endregion
 
         #region Despawn
         // Despawn check
-        bool despawn = (target.dead || !target.ZoneCrimson) && !BossRushEvent.BossRushActive;
+        bool despawn = (Target.dead || !Target.ZoneCrimson) && !BossRushEvent.BossRushActive;
 
         // Despawn
         if (despawn)
@@ -360,7 +373,7 @@ public class BrainOfCthulhuAI : VanillaAIOverride
 
         if (Main.netMode != NetmodeID.MultiplayerClient)
         {
-            if (target.Distance(NPC.Center) > DespawnRange)
+            if (Target.Distance(NPC.Center) > DespawnRange)
             {
                 NPC.active = false;
                 NPC.life = 0;
@@ -379,16 +392,6 @@ public class BrainOfCthulhuAI : VanillaAIOverride
             NPC.HitSound = StunnedHit;
         else
             NPC.HitSound = SoundID.NPCHit9;
-        #endregion
-
-        #region Health Ratios
-        float CreeperHPRatio = 0f;
-        foreach (NPC creeper in Main.npc.Where(n => n.active && n.type == NPCID.Creeper))
-            CreeperHPRatio += creeper.life / (float)creeper.lifeMax;
-        if (CreeperHPRatio != 0f)
-            CreeperHPRatio /= GetBrainOfCthuluCreepersCountRevDeath();
-
-        float CreeperAmountRatio = NPC.CountNPCS(NPCID.Creeper) / (float)GetBrainOfCthuluCreepersCountRevDeath();
         #endregion
 
         #region Forced State Changes
@@ -419,1969 +422,64 @@ public class BrainOfCthulhuAI : VanillaAIOverride
             #region Spawn Animations
             case BrainAIState.UndergroundSpawnAnimation:
             case BrainAIState.SurfaceSpawnAnimation:
-                if (SpawnTime != 0) //BoC should begin appearing
-                {
-                    float d = Main.LocalPlayer.DistanceSQ(NPC.Center);
-                    float distanceScaleFactor = 1;
-                    if (d > 592900) //770^2
-                        distanceScaleFactor = 1 / (1 + (((float)Math.Sqrt(d) - 770) / 32f));
-
-                    float spawnCounter = Time - Math.Abs(SpawnTime);
-
-                    if (spawnCounter < 180)
-                    {
-                        float shakeIntensity = CalamityUtils.CircOutEasing(spawnCounter / 180f, 1) * 3f * distanceScaleFactor;
-                        Main.LocalPlayer.SetScreenshake(shakeIntensity);
-                        for (int i = 0; i < shakeIntensity; i++)
-                        {
-                            Point start = target.Center.ToTileCoordinates() + new Point(Main.rand.Next(-64, 65), 48);
-                            for (int j = 0; j < 96; j++)
-                            {
-                                Point current = start - new Point(0, j);
-                                if (!Main.tile[current].IsTileSolid() && Main.tile[current - new Point(0, 1)].TileType == TileID.Crimstone)
-                                    Dust.NewDust(current.ToWorldCoordinates(0, -16), 16, 16, DustID.Crimstone, 0, 3);
-                            }
-                        }
-                    }
-                    if (spawnCounter == 180)
-                        NPC.velocity = Vector2.UnitY * (AIState == BrainAIState.UndergroundSpawnAnimation ? 32 : -50);
-                    else if (spawnCounter > 180)
-                    {
-                        NPC.velocity *= 0.955f;
-
-                        if (spawnCounter == 240)
-                        {
-                            SoundEngine.PlaySound(IntroRoar, NPC.Center);
-
-                            if (Main.netMode == NetmodeID.SinglePlayer)
-                                Main.NewText(Language.GetTextValue("Announcement.HasAwoken", NPC.TypeName), 175, 75);
-                            else if (Main.dedServ)
-                                ChatHelper.BroadcastChatMessage(NetworkText.FromKey("Announcement.HasAwoken", NPC.TypeName), new Color(175, 75, 255));
-                        }
-
-                        if (spawnCounter > 240 && spawnCounter < 390)
-                        {
-                            BrainOfCthulhuSystem.ScreenBlurStrength = 0.5f;// 0.5f;
-                            if (spawnCounter < 250)
-                                BrainOfCthulhuSystem.ScreenBlurStrength = MathHelper.Lerp(0, 0.5f, (spawnCounter - 240) / 10f);
-
-                            NPC.frameCounter += 1f;
-
-                            BoCDrawOffset = Main.rand.NextVector2Circular(4, 4);
-
-                            for (int i = 0; i < 3; i++)
-                            {
-                                Point start = target.Center.ToTileCoordinates() + new Point(Main.rand.Next(-64, 65), 48);
-                                for (int j = 0; j < 96; j++)
-                                {
-                                    Point current = start - new Point(0, j);
-                                    if (!Main.tile[current].IsTileSolid() && Main.tile[current - new Point(0, 1)].TileType == TileID.Crimstone)
-                                        Dust.NewDust(current.ToWorldCoordinates(0, -16), 16, 16, DustID.Crimstone, 0, 3);
-                                }
-                            }
-
-                            Main.LocalPlayer.SetScreenshake(6 * BrainOfCthulhuSystem.ScreenBlurStrength * distanceScaleFactor);
-
-                            if (spawnCounter % 15 == 0)
-                            {
-                                BossRoar pulse = new(NPC.Center, Color.Black, Main.rand.NextFloatDirection(), 0.1f, 3f, 30);
-                                GeneralParticleHandler.SpawnParticle(pulse);
-                            }
-                        }
-                        else if (spawnCounter >= 390 && spawnCounter <= 420)
-                        {
-                            BrainOfCthulhuSystem.ScreenBlurStrength = MathHelper.Lerp(0.5f, 0f, (spawnCounter - 390) / 30f);
-                            BoCDrawOffset *= 0.75f;
-                        }
-                        else if (spawnCounter > 420)
-                        {
-                            BrainOfCthulhuSystem.ScreenBlurStrength = 0f;
-                            BoCDrawOffset = Vector2.Zero;
-                            AIState = BrainAIState.Idle;
-                            ResetAttackValues();
-                            Time = -1;
-                            SpawnTime = -1;
-                            Main.musicFade[Main.curMusic] = 1f;
-                            break;
-                        }
-                    }
-                }
-                if (AttackCounter < GetBrainOfCthuluCreepersCountRevDeath())
-                {
-                    if (SpawnTime == 0)
-                        NPC.Center = target.Center + Vector2.UnitY * (AIState == BrainAIState.UndergroundSpawnAnimation ? -900 : 900);
-
-                    if (SpawnDelay <= 0)
-                    {
-                        foreach (NPC creeper in Main.ActiveNPCs)
-                        {
-                            if (creeper.type != NPCID.Creeper)
-                                continue;
-                            creeper.netUpdate = true;
-                        }
-
-                        bool targetLeft = AttackCounter % 2 == 0;
-                        List<NPC> creepers = Main.npc.Where(n => n.active && n.type == NPCID.Creeper && n.AIOverride<CreeperAI>().Time == -1 && n.AIOverride<CreeperAI>().CreeperID % 2 == (targetLeft ? 0 : 1)).ToList();
-
-                        int rand;
-
-                        if (creepers.Count > 0)
-                            rand = Main.rand.Next(creepers.Count);
-                        else
-                        {
-                            creepers = Main.npc.Where(n => n.active && n.type == NPCID.Creeper && n.AIOverride<CreeperAI>().Time == -1).ToList();
-                            rand = Main.rand.Next(creepers.Count);
-                        }
-
-                        if (creepers.Count > 0)
-                        {
-                            NPC creeper = creepers[rand];
-                            creeper.AIOverride<CreeperAI>().Time = 0;
-
-                            AttackCounter++;
-
-                            if (SummonedViaItem)
-                                SpawnDelay = 2;
-                            else
-                                switch (AttackCounter)
-                                {
-                                    case 1:
-                                        SpawnDelay = 90;
-                                        break;
-                                    case 2:
-                                    case 3:
-                                    case 4:
-                                        SpawnDelay = 24;
-                                        break;
-                                    case 5:
-                                        SpawnDelay = 60;
-                                        break;
-                                    case 6:
-                                    case 7:
-                                    case 8:
-                                        SpawnDelay = 24;
-                                        break;
-                                    case 9:
-                                        SpawnDelay = 60;
-                                        break;
-                                    default:
-                                        SpawnDelay = 4;
-                                        break;
-                                }
-                        }
-                        else
-                            SpawnTime = Time;
-                    }
-                    else
-                        SpawnDelay--;
-                }
-                else if (SpawnTime == 0)
-                    SpawnTime = Time;
+                SpawnAnimation();
                 break;
             #endregion
-
+            
             #region Phase 1
-            case BrainAIState.Idle:
-                float speed;
-
-                #region Attack Selection
-                if (CreeperHPRatio <= DesperateOnslaughtCreeperHealthGate)
-                {
-                    Time = -1;
-                    AIState = BrainAIState.DesperateOnslaught;
-                    AttackSign = Main.rand.NextBool() ? -1 : 1;
-                    NPC.netUpdate = true;
-                }
-                else if (Time > IdlePeriodDuration)
-                {
-                    Time = -1;
-
-                    ResetAttackValues();
-                    
-                    if (availableAttacks.Count == 0)
-                    {
-                        availableAttacks = [BrainAIState.CreeperSwipes, BrainAIState.CreeperCrush, BrainAIState.CreeperOrbit, BrainAIState.CreeperSpiral];
-                        if (PreviousAttack != BrainAIState.Idle)
-                            availableAttacks.Remove(PreviousAttack);
-                    }
-                    
-                    int pick = Main.rand.Next(availableAttacks.Count);
-                    AIState = availableAttacks[pick];
-                    availableAttacks.RemoveAt(pick);
-                    PreviousAttack = AIState;
-
-                    foreach (NPC creep in Main.npc.Where(n => n.active && n.type == NPCID.Creeper))
-                        creep.AIOverride<CreeperAI>().Time = -1;
-
-                    NPC.netUpdate = true;
-                    foreach (NPC creeper in Main.ActiveNPCs)
-                    {
-                        if (creeper.type != NPCID.Creeper)
-                            continue;
-                        creeper.netUpdate = true;
-                    }
-                }
-                #endregion
-
-                /*
-                #region Creeper Attacks
-                if (AttackCounter > 0)
-                    AttackCounter--;
-                else if (Time < IdlePeriodDuration - 120)
-                {
-                    if (Time >= 30)
-                    {
-                        bool targetLeft = target.Center.X < NPC.Center.X;
-                        List<NPC> creepers = Main.npc.Where(n => n.active && n.type == NPCID.Creeper && n.AIOverride<CreeperAI>().Time == -1 && n.AIOverride<CreeperAI>().CreeperID % 2 == (targetLeft ? 0 : 1)).ToList();
-                        if (creepers.Count == 0)
-                            creepers = Main.npc.Where(n => n.active && n.type == NPCID.Creeper && n.AIOverride<CreeperAI>().Time == -1).ToList();
-
-                        if (creepers.Count > 0)
-                        {
-                            int rand = Main.rand.Next(creepers.Count);
-
-                            NPC creeper = creepers[rand];
-                            creeper.AIOverride<CreeperAI>().Time = 0;
-                        }
-                    }
-                    AttackCounter = (int)MathHelper.Lerp(CreeperChargeDelayMax, CreeperChargeDelayMin, 1 - CreeperAmountRatio);
-                }
-                #endregion
-                */
-
-                #region Movement
-                if (Time == 0)
-                {
-                    AttackSign = Main.rand.NextBool() ? -1 : 1;
-                    NPC.netUpdate = true;
-                    foreach (NPC creeper in Main.ActiveNPCs)
-                    {
-                        if (creeper.type != NPCID.Creeper)
-                            continue;
-                        creeper.netUpdate = true;
-                    }
-                }
-
-                float rotateDir = AttackSign;
-                Vector2 fromTarget = NPC.DirectionFrom(target.Center);
-                Vector2 dir = fromTarget.RotatedBy(Math.Sin(Time / 60f) * rotateDir) * new Vector2(2, 1);
-                float rayDist = CalamityUtils.PreciseDistanceToTileCollisionHit(target.Center, dir.ToRotation(), 360, 1);
-                Vector2 offset = dir * (rayDist - NPC.width);
-                Vector2 goalPos = target.Center + offset;
-                float distSQ = NPC.DistanceSQ(goalPos);
-                if (distSQ > 129600)
-                {
-                    NPC.velocity = NPC.DirectionTo(goalPos) * (4 + (NPC.Distance(goalPos) - 360) / 64f);
-                }
-                else if (distSQ <= 2048)
-                {
-                    NPC.velocity *= 0.9f;
-                }
-                else if (NPC.velocity.LengthSquared() < 16f)
-                {
-                    NPC.velocity += NPC.DirectionTo(goalPos).SafeNormalize(Vector2.Zero) * 0.15f;
-                }
-                else
-                {
-                    NPC.velocity = NPC.DirectionTo(goalPos).SafeNormalize(Vector2.Zero) * 6f;
-                }
-                #endregion
-
+            case BrainAIState.Phase1Idle:
+                Phase1Idle();
                 break;
-            case BrainAIState.DesperateOnslaught:
-                #region Movement
-                if (Collision.SolidCollision(NPC.position, NPC.width, NPC.height))
-                {
-                    NPC.velocity = NPC.DirectionTo(target.Center) * 4f;
-                    Time = -1;
-                }
-                else if (NPC.DistanceSQ(target.Center) > 230400)
-                    NPC.velocity = NPC.DirectionTo(target.Center) * (NPC.Distance(target.Center) - 480) / 128f;
-                else
-                    NPC.velocity *= 0.9f;
-                #endregion
-
-                float wrappedCounter = Time % 90;
-
-                if (Time <= 60)
-                {
-                    if (Time == 0)
-                        SoundEngine.PlaySound(Roar, NPC.Center);
-                    if (Time < 30)
-                    {
-                        BrainOfCthulhuSystem.ScreenBlurStrength = 0.5f;
-
-                        NPC.frameCounter += 1f;
-
-                        for (int i = 0; i < 3; i++)
-                        {
-                            Point start = target.Center.ToTileCoordinates() + new Point(Main.rand.Next(-64, 65), 48);
-                            for (int j = 0; j < 96; j++)
-                            {
-                                Point current = start - new Point(0, j);
-                                if (!Main.tile[current].IsTileSolid() && Main.tile[current - new Point(0, 1)].TileType == TileID.Crimstone)
-                                    Dust.NewDust(current.ToWorldCoordinates(0, -16), 16, 16, DustID.Crimstone, 0, 3);
-                            }
-                        }
-
-                        float d = Main.LocalPlayer.DistanceSQ(NPC.Center);
-                        float distanceScaleFactor = 1;
-                        if (d > 592900) //770^2
-                            distanceScaleFactor = 1 / (1 + (((float)Math.Sqrt(d) - 770) / 32f));
-
-                        Main.LocalPlayer.SetScreenshake(4 * BrainOfCthulhuSystem.ScreenBlurStrength * distanceScaleFactor);
-
-                        if (Time % 15 == 0)
-                        {
-                            BossRoar pulse = new(NPC.Center, Color.Black, Main.rand.NextFloatDirection(), 0.1f, 3f, 30);
-                            GeneralParticleHandler.SpawnParticle(pulse);
-                        }
-                    }
-                    else
-                    {
-                        BrainOfCthulhuSystem.ScreenBlurStrength = MathHelper.Lerp(0.5f, 0, CalamityUtils.CircOutEasing((Time - 30) / 30f, 1));
-                    }
-                }
-                else
-                {
-                    BrainOfCthulhuSystem.ScreenBlurStrength = 0f;
-                    if (wrappedCounter == 65)
-                    {
-                        int checkCount = 8;
-                        float wallDist = CalamityUtils.PreciseDistanceToTileCollisionHit(NPC.Center, AttackSign == -1 ? MathHelper.Pi : 0, 480 + NPC.width) - NPC.width;
-                        Vector2[] starts = new Vector2[checkCount];
-                        for (int i = 0; i < checkCount; i++)
-                        {
-                            float completion = (i + 1) / (float)(checkCount + 1);
-                            starts[i] = NPC.Center + (Vector2.UnitX * ((wallDist * completion) + NPC.width) * AttackSign);
-                        }
-
-                        Vector2[] ends = new Vector2[checkCount];
-                        List<Vector2> goodEnds = [];
-                        List<Vector2> farEnds = [];
-                        List<Vector2> closeEnds = [];
-
-                        for (int i = 0; i < checkCount; i++)
-                        {
-                            float maxDist = 960;
-                            float floorDist = CalamityUtils.PreciseDistanceToTileCollisionHit(NPC.Center, Vector2.UnitY.ToRotation(), maxDist);
-                            ends[i] = starts[i] + (Vector2.UnitY * (floorDist + 48));
-                            if (floorDist >= 600)
-                                farEnds.Add(ends[i]);
-                            else if (floorDist > 240)
-                                goodEnds.Add(ends[i]);
-                            else
-                                closeEnds.Add(ends[i]);
-                        }
-
-                        Vector2 chosenEnd;
-
-                        if (goodEnds.Count > 0)
-                            chosenEnd = goodEnds[Main.rand.Next(goodEnds.Count)];
-                        else if (closeEnds.Count > 0)
-                            chosenEnd = closeEnds[Main.rand.Next(closeEnds.Count)];
-                        else
-                            chosenEnd = farEnds[Main.rand.Next(farEnds.Count)];
-
-                        if (Main.netMode != NetmodeID.MultiplayerClient)
-                            Projectile.NewProjectile(NPC.GetSource_FromThis(), chosenEnd, Vector2.Zero, ModContent.ProjectileType<TelekineticEnemyGrab>(), 10, 0.5f);
-
-                        AttackSign *= -1;
-                    }
-                }
+            case BrainAIState.TelekineticOnslaught:
+                TelekineticOnslaught();
                 break;
             case BrainAIState.Stunned:
-                #region Movement
-                NPC.velocity = NPC.velocity.ClampMagnitude(0f, 6f);
-                fromTarget = (NPC.Center - target.Center).SafeNormalize(Vector2.UnitX);
-                if (Time == 0)
-                {
-                    NPC.velocity = fromTarget * 4f;
-                    SoundEngine.PlaySound(ShieldDown, NPC.Center);
-                }
-
-                if (NPC.velocity != Vector2.Zero)
-                {
-                    if (Time >= StunDuration)
-                        NPC.velocity *= 0.8f;
-                    else
-                        NPC.velocity *= 0.93f;
-                }
-
-                if (Time < StunDuration)
-                    NPC.position.Y += (float)Math.Sin(Time / 8f) * 2 * (1 - MathHelper.Clamp((Time - (StunDuration - 30)) / 30f, 0f, 1f));
-
-                if (Time <= StunDuration - 30)
-                {
-                    if (AttackTime > 0)
-                    {
-                        float kbCounter = 30 - AttackTime;
-                        if (kbCounter < 10)
-                        {
-                            float lerp = CalamityUtils.SineOutEasing(kbCounter / 10f, 1);
-                            NPC.rotation = AttackRotation.AngleLerp(-AttackRotation, lerp);
-                        }
-                        else
-                        {
-                            float lerp = CalamityUtils.SineInOutEasing((kbCounter - 10) / 20f, 1);
-                            NPC.rotation = (-AttackRotation).AngleLerp(0, lerp);
-                        }
-
-                    }
-                    else if (Math.Abs(NPC.oldVelocity.X) < Math.Abs(NPC.velocity.X) || Time <= 0)
-                    {
-                        AttackRotation = NPC.rotation;
-                        TeleportTime = 0;
-                    }
-                    else
-                    {
-                        TeleportTime++;
-                        NPC.rotation = MathHelper.Lerp(AttackRotation, MathHelper.Pi / 24f * NPC.oldVelocity.X, CalamityUtils.CircOutEasing(MathHelper.Clamp(TeleportTime / 30f, 0f, 1f), 1));
-                    }
-                }
-                #endregion
-
-                #region Tile Collision
-                if (Time < StunDuration)
-                {
-                    if (Collision.SolidCollision(NPC.position, NPC.width, NPC.height))
-                    {
-                        NPC.velocity = NPC.DirectionTo(target.Center) * 4f;
-                    }
-                    else if (Collision.SolidCollision(NPC.position + NPC.velocity, NPC.width, NPC.height))
-                    {
-                        if (NPC.velocity.X != NPC.oldVelocity.X)
-                            NPC.velocity.X = -NPC.oldVelocity.X;
-                        if (NPC.velocity.Y != NPC.oldVelocity.Y)
-                            NPC.velocity.Y = -NPC.oldVelocity.Y;
-                        //NPC.velocity *= 2f;
-                        NPC.velocity = NPC.velocity.ClampMagnitude(0f, 8f);
-                        AttackTime = 30;
-                        AttackRotation = NPC.rotation;
-                    }
-
-                    if (AttackTime > 0)
-                    {
-                        NPC.knockBackResist = 0f;
-                        AttackTime--;
-                        if (AttackTime == 0)
-                        {
-                            NPC.velocity = Vector2.Zero;
-                            AttackRotation = 0;
-                        }
-                    }
-                    else
-                        NPC.knockBackResist = 1f;
-                }
-                #endregion
-
-                BrainOfCthulhuSystem.ScreenBlurStrength = 0f;
-
-                NPC.dontTakeDamage = false;
-
-                if (Time <= 15)
-                {
-                    float lerp = Time / 15f;
-                    ShieldOpacity = 1 - CalamityUtils.CircOutEasing(lerp, 1);
-                    ShieldScale = MathHelper.Lerp(1f, 1.5f, lerp);
-                }
-
-                #region Recovery
-                if (OnSecondCreeperPhase && Time == StunDuration - 30)
-                {
-                    AIState = BrainAIState.Phase2TransitionClosed;
-                    Time = -1;
-                    TeleportTime = 0;
-                    break;
-                }
-
-                if (Time > StunDuration - 30)
-                {
-                    NPC.rotation = NPC.rotation.AngleLerp(0f, CalamityUtils.SineInOutEasing((Time - (StunDuration - 30)) / 30f, 1));
-                    if (Time == StunDuration - 15)
-                        SoundEngine.PlaySound(ShieldUp, NPC.Center);
-                }
-
-                if (Time >= StunDuration)
-                {
-                    if (NPC.velocity.X < 0.001f && NPC.velocity.X < 0.001f)
-                        NPC.velocity = Vector2.Zero;
-
-                    int creeperRate = 5;
-                    wrappedCounter = (Time - StunDuration) % creeperRate;
-                    int spawnTime = GetBrainOfCthuluCreepersCountRevDeath() / 2 * creeperRate;
-
-                    if (Time == StunDuration)
-                        AttackCounter = GetBrainOfCthuluCreepersCountRevDeath() - 1;
-
-                    NPC.knockBackResist = 0f;
-                    NPC.dontTakeDamage = true;
-                    NPC.rotation = 0f;
-
-                    float shieldAppearTime = 15f;
-
-                    float lerp = MathHelper.Clamp((Time - StunDuration) / shieldAppearTime, 0f, 1f);
-                    if (lerp >= 1)
-                    {
-                        ShieldOpacity = 1f;
-                        ShieldScale = 1f;
-                    }
-                    else
-                    {
-                        ShieldOpacity = CalamityUtils.CircOutEasing(lerp, 1);
-                        ShieldScale = MathHelper.Lerp(1.5f, 1f, CalamityUtils.SineOutEasing(lerp, 1));
-                    }
-
-                    if (AttackCounter == -1 && Time > StunDuration + spawnTime + 30)
-                    {
-                        OnSecondCreeperPhase = true;
-                        AIState = BrainAIState.Idle;
-                        Time = -1;
-                    }
-                    else if (AttackCounter > -1 && wrappedCounter == 0)
-                    {
-                        for (int i = 0; i < 2; i++)
-                        {
-                            dir = Vector2.UnitY.RotatedBy((AttackCounter % 2 == 0 ? 1 : -1) * (MathHelper.Pi / 16f + ((MathHelper.Pi - MathHelper.Pi / 8f) * (AttackCounter / 2f / (GetBrainOfCthuluCreepersCountRevDeath() / 2f)))));
-                            Vector2 spawnPos = NPC.Center + (dir * 72f);
-                            if (Main.netMode != NetmodeID.MultiplayerClient)
-                            {
-                                NPC creeper = NPC.NewNPCDirect(NPC.GetSource_FromAI(), spawnPos, NPCID.Creeper, NPC.whoAmI, AttackCounter, ai2: -1, ai3: 1);
-                                creeper.velocity = dir * 24f;
-                            }
-
-                            for (int j = 0; j < 3; j++)
-                            {
-                                BloodParticle p = new(spawnPos, dir.RotatedBy(Main.rand.NextFloat(-MathHelper.Pi / 6f, MathHelper.Pi / 6f)) * Main.rand.NextFloat(8f, 12f), 32, 1f, Color.Red);
-                                GeneralParticleHandler.SpawnParticle(p);
-                            }
-                            BloodParticle2 p2 = new(spawnPos, dir * 10f, 16, 0.5f, Color.Red);
-                            GeneralParticleHandler.SpawnParticle(p2);
-
-                            if (!Main.dedServ)
-                            {
-                                BrainOfCthulhuSystem.VerletTendrils[(int)AttackCounter] = [];
-                                for (int j = 0; j < 28; j++)
-                                    BrainOfCthulhuSystem.VerletTendrils[(int)AttackCounter].Add(new(NPC.Center));
-                            }
-
-                            AttackCounter--;
-                            if (AttackCounter <= -1)
-                                break;
-                        }
-
-                        SoundEngine.PlaySound(SoundID.NPCHit9, NPC.Center);
-                    }
-                }
-                #endregion
-                
+                Stunned();
                 break;
             case BrainAIState.CreeperSwipes:
-                //Hand Size check to determine if 1 hand variant should be used
-                if (Time == 0)
-                {
-                    int leftAmt = 0;
-                    int rightAmt = 0;
-                    foreach (NPC creeper in Main.ActiveNPCs)
-                    {
-                        if (creeper.type != NPCID.Creeper)
-                            continue;
-
-                        if (creeper.AIOverride<CreeperAI>().CreeperID % 2 == 0)
-                            leftAmt++;
-                        else
-                            rightAmt++;
-                    }
-
-                    if (leftAmt > 5 && rightAmt > 5)
-                    {
-                        AttackSign = Main.rand.NextBool() ? -1 : 1;
-                        AttackFlag = false;
-                    }
-                    else
-                        AttackFlag = true;
-                    
-                    NPC.netUpdate = true;
-                    AttackList.Clear();
-                }
-
-                float wrappedCount = Time % (SwipeDuration + SwipeDelay);
-
-                if (Time >= SwipesStartupDuration)
-                {
-                    NPC.damage = NPC.defDamage;
-                    if (wrappedCount == 0)
-                    {
-                        bool useEven = Main.rand.NextBool();
-
-                        bool anyActivated = false;
-
-                        foreach (NPC Npc in Main.ActiveNPCs)
-                        {
-                            if (Npc.type != NPCID.Creeper)
-                                continue;
-
-                            if (AttackFlag || Npc.AIOverride<CreeperAI>().CreeperID % 2 == 0! ^ useEven)
-                            {
-                                AttackList.Add(Npc.whoAmI);
-                                //Npc.AIOverride<CreeperAI>().Time = 0;
-                                anyActivated = true;
-                            }
-                        }
-
-                        if (!anyActivated)
-                            foreach (NPC Npc in Main.ActiveNPCs)
-                            {
-                                if (Npc.type != NPCID.Creeper)
-                                    continue;
-
-                                AttackList.Add(Npc.whoAmI);
-                                //Npc.AIOverride<CreeperAI>().Time = 0;
-                            }
-
-                        NPC.netUpdate = true;
-                    }
-                    else if (wrappedCount == SwipeDuration)
-                    {
-                        AttackSign *= -1;
-                        AttackList.Clear();
-                        NPC.netUpdate = true;
-                    }
-
-                    if (wrappedCount > 1 && wrappedCount <= SwipeIchorDelay && Time % 3 == 0) // Telegraphs ichor rain w/ dripping particles
-                    {
-                        Vector2 spawnPosition = NPC.Center;
-                        spawnPosition.Y += Main.rand.NextFloat(38, 50);
-                        spawnPosition.X += Main.rand.NextFloat(-56, 56);
-
-                        BloodParticle blood = new BloodParticle(spawnPosition, Main.rand.NextVector2Unit() * Main.rand.NextFloat(1.5f, 2.5f), Main.rand.Next(30, 40), Main.rand.NextFloat(0.6f, 1f), Color.Gold);
-                        GeneralParticleHandler.SpawnParticle(blood);              
-                    }
-
-                    if (wrappedCount < 60f) // Vibrates during telegraph
-                    {
-                        Vector2 vibrationVector = Main.rand.NextVector2CircularEdge(1, 1) * MathHelper.Lerp(0f, 12f, CalamityUtils.CircInEasing(wrappedCount / 80f, 1));
-
-                        BoCDrawOffset = vibrationVector;
-                    }
-                    else if (wrappedCount > 60f && wrappedCount < 80f) // Droops down when starting to fire ichor shots
-                    {
-                        float progress = (wrappedCount - 60f) / 20f;
-                        BoCDrawOffset = new Vector2(0, MathHelper.Lerp(10, 0, 1f - (float)Math.Pow(1f - progress, 3f)));
-                    }
-
-                    if (Main.netMode != NetmodeID.MultiplayerClient)
-                        if (wrappedCount > SwipeIchorDelay && wrappedCount <= SwipeDuration && Time % 2 == 0)
-                            Projectile.NewProjectile(NPC.GetSource_FromThis(), NPC.Center + new Vector2(Main.rand.NextFloat(-72, 72), 56), Vector2.UnitY.RotatedBy(Main.rand.NextFloat(-MathHelper.Pi / 4f, MathHelper.Pi / 4f)) * 4f, ProjectileID.GoldenShowerHostile, IchorShotDamage, 0.5f);
-
-                    if (Time >= SwipesStartupDuration + ((SwipeDuration + SwipeDelay) * SwipeAmount))
-                    {
-                        Time = 0;
-                        AIState = BrainAIState.Idle;
-                        NPC.netUpdate = true;
-                        AttackList.Clear();
-                    }
-                }
-                else
-                    NPC.damage = 0;
-
-                #region Movement
-                goalPos = target.Center + (Vector2.UnitY * -270);
-                distSQ = NPC.DistanceSQ(goalPos);
-                if ((Time > SwipesStartupDuration && wrappedCount > 30 && wrappedCount <= SwipeDuration) || NPC.DistanceSQ(goalPos) <= 2048)
-                    NPC.velocity *= 0.9f;
-                else if (distSQ > 14400)
-                    NPC.velocity = NPC.DirectionTo(goalPos) * (8 + (NPC.Distance(goalPos) - 120) / 16f);
-                else
-                    NPC.velocity = NPC.DirectionTo(goalPos).SafeNormalize(Vector2.UnitX * -target.direction) * (8f * distSQ / 14400f);
-                #endregion
+                CreeperSwipes();
                 break;
-            case BrainAIState.CreeperCrush:
-                #region Movement
-                Vector2 goalDir = Vector2.Zero;
-                fromTarget = NPC.Center - target.Center;
-                if (Math.Abs(fromTarget.X) > Math.Abs(fromTarget.Y))
-                    goalDir = Vector2.UnitX * Math.Sign(fromTarget.X);
-                else
-                    goalDir = Vector2.UnitY * Math.Sign(fromTarget.Y);
-
-                goalPos = target.Center + (goalDir * 360) - (Vector2.UnitY * 32);
-                if (NPC.DistanceSQ(goalPos) <= 2048)
-                    NPC.velocity *= 0.9f;
-                else if (NPC.velocity.LengthSquared() <= 56.25f) //7.5^2
-                    NPC.velocity += NPC.DirectionTo(goalPos).SafeNormalize(Vector2.UnitX * -target.direction) * 0.5f;
-                else
-                    NPC.velocity = NPC.DirectionTo(goalPos).SafeNormalize(Vector2.UnitX * -target.direction) * 8f;
-                #endregion
-
-                float delay = OnSecondCreeperPhase ? StrongSwipeDelay : LightSwipeDelay;
-                if(Time == 0)
-                    AttackList.Clear();
-
-                if (Time > delay)
-                {
-                    foreach (NPC creeper in Main.npc.Where(n => n.active && n.type == NPCID.Creeper && n.AIOverride<CreeperAI>().Time == -1 && !AttackList.Contains(n.whoAmI)))
-                        creeper.position += NPC.velocity;
-
-                    int crushCount;
-                    int attackDelay;
-                    if (!OnSecondCreeperPhase)
-                    {
-                        crushCount = LightSwipeAmount;
-                        attackDelay = LightSwipeDuration;
-                    }
-                    else
-                    {
-                        crushCount = StrongSwipeAmount;
-                        attackDelay = StrongSwipeDuration;
-                    }
-                    int attackDur = attackDelay * crushCount;
-
-                    if (Time < delay + attackDur && Time % attackDelay == 0)
-                    {
-                        List<NPC> creepers = Main.npc.Where(n => n.active && n.type == NPCID.Creeper && n.AIOverride<CreeperAI>().Time == -1 && !AttackList.Contains(n.whoAmI)).ToList();
-                        if (creepers.Count > 1)
-                        {
-                            float rotation;
-                            if (!OnSecondCreeperPhase)
-                            {
-                                rotation = target.velocity.ToRotation();
-                                if (target.velocity == Vector2.Zero)
-                                    rotation = target.direction == 1 ? 0 : MathHelper.Pi;
-                                rotation += Main.rand.NextFloat(-MathHelper.PiOver4 / 2f, MathHelper.PiOver4 / 2f);
-                            }
-                            else
-                                rotation = Main.rand.NextFloat(0, MathHelper.TwoPi);
-
-                            int rand = Main.rand.Next(creepers.Count);
-                            NPC first = creepers[rand];
-                            CreeperAI creeper1 = first.AIOverride<CreeperAI>();
-                            AttackList.Add(first.whoAmI);
-                            //creeper1.Time = 0;
-                            creeper1.AttackAngle = rotation;
-                            creepers.RemoveAt(rand);
-
-                            NPC second = creepers[Main.rand.Next(creepers.Count)];
-                            CreeperAI creeper2 = second.AIOverride<CreeperAI>();
-                            AttackList.Add(second.whoAmI);
-                            //creeper2.Time = 0;
-                            creeper2.AttackAngle = rotation + MathHelper.Pi;
-
-                            creeper1.PartnerIndex = second.whoAmI;
-                            creeper2.PartnerIndex = first.whoAmI;
-                        }
-
-                        NPC.netUpdate = true;
-                        foreach (NPC creeper in Main.ActiveNPCs)
-                        {
-                            if (creeper.type != NPCID.Creeper)
-                                continue;
-                            creeper.netUpdate = true;
-                        }
-                    }
-
-                    if (Time > delay + attackDur + attackDelay)
-                    {
-                        Time = 0;
-                        AIState = BrainAIState.Idle;
-                        AttackList.Clear();
-                        //foreach (NPC creep in Main.npc.Where(n => n.active && n.type == NPCID.Creeper))
-                        //    creep.AIOverride<CreeperAI>().Time = -1;
-                    }
-                }
+            case BrainAIState.CreeperSwings:
+                CreeperSwings();
                 break;
             case BrainAIState.CreeperOrbit:
-                #region Movement
-                fromTarget = (NPC.Center - target.Center).SafeNormalize(Vector2.UnitX);
-                goalPos = target.Center + (fromTarget * 440) - (Vector2.UnitY * 32);
-                distSQ = NPC.DistanceSQ(goalPos);
-                if (distSQ > 14400)
-                    NPC.velocity = NPC.DirectionTo(goalPos) * (4 + (NPC.Distance(goalPos) - 120) / 16f);
-                else
-                    NPC.velocity = NPC.DirectionTo(goalPos).SafeNormalize(Vector2.Zero) * (2 + (2f * (distSQ / 14400)));
-                #endregion
-
-                if (Time == 0)
-                {
-                    AttackSign = Main.rand.NextBool() ? -1 : 1;
-                    NPC.netUpdate = true;
-                    foreach (NPC creeper in Main.ActiveNPCs)
-                    {
-                        if (creeper.type != NPCID.Creeper)
-                            continue;
-                        creeper.netUpdate = true;
-                    }
-                }
-
-                if (Time >= OrbitDuration + 30)
-                {
-                    Time = -1;
-                    AIState = BrainAIState.Idle;
-                    AttackList.Clear();
-                    foreach (NPC creep in Main.ActiveNPCs)
-                    {
-                        if (creep.type == NPCID.Creeper)
-                            creep.AIOverride<CreeperAI>().Time = -1;
-                    }
-                }
-                else if (Time >= OrbitAttackInterval && Time < OrbitDuration && Time % OrbitAttackInterval == 0)
-                {
-                    List<NPC> creepers = Main.npc.Where(n => n.active && n.type == NPCID.Creeper).ToList();
-                    if (creepers.Count > 0)
-                    {
-                        int rand = Main.rand.Next(creepers.Count);
-                        for (int i = 0; i < OrbitAttackParticipantCount; i++)
-                        {
-                            if (rand >= creepers.Count)
-                                rand -= creepers.Count;
-                            NPC creeper = creepers[rand];
-                            AttackList.Add(creeper.whoAmI);
-                            //creeper.AIOverride<CreeperAI>().Time = 0;
-                            rand += (int)Math.Round(creepers.Count / (float)OrbitAttackParticipantCount);
-                        }
-
-                        NPC.netUpdate = true;
-                        foreach (NPC creeper in Main.ActiveNPCs)
-                        {
-                            if (creeper.type != NPCID.Creeper)
-                                continue;
-                            creeper.netUpdate = true;
-                        }
-                    }
-                }
+                CreeperOrbit();
                 break;
             case BrainAIState.CreeperSpiral:
-                if (Time == 0)
-                {
-                    AttackSign = Main.rand.NextBool() ? -1 : 1;
-                    AttackRotation = 0;
-                    NPC.netUpdate = true;
-                    foreach (NPC creeper in Main.ActiveNPCs)
-                    {
-                        if (creeper.type != NPCID.Creeper)
-                            continue;
-                        creeper.netUpdate = true;
-                    }
-                }
-                float startTimePerRev = MathHelper.Lerp(StartingTimePerRevolutionMax, StartingTimePerRevolutionMin, 1 - CreeperAmountRatio);
-                float endTimePerRev = MathHelper.Lerp(EndingTimePerRevolutionMax, EndingTimePerRevolutionMin, 1 - CreeperAmountRatio);
-                float timePerRev = MathHelper.Lerp(startTimePerRev, endTimePerRev, MathHelper.Clamp((Time - SpeedUpDelayTime) / (SpiralDuration - SpeedUpDelayTime - SpeedUpExtensionTime), 0f, 1f));
-                if (Time > SpiralDuration - 30)
-                    timePerRev *= MathHelper.Lerp(1f, 10f, CalamityUtils.CircOutEasing((Time - (SpiralDuration - 30)) / 30f, 1));
-                else if (Time < SpiralSetupTime)
-                    timePerRev *= MathHelper.Lerp(1f, 10f, CalamityUtils.CircInEasing(Time / SpiralSetupTime, 1));
-
-                float rotToAdd = MathHelper.TwoPi / timePerRev * AttackSign;
-                if (OnSecondCreeperPhase)
-                {
-                    float attackComplationRatio = Time / SpiralDuration;
-                    float lerp = Utils.GetLerpValue(TurnAroundRatio - (TurnAroundDurationRatio / 2f), TurnAroundRatio + (TurnAroundDurationRatio / 2f), attackComplationRatio, true);
-                    rotToAdd *= MathHelper.Lerp(1, -1, lerp);
-                }
-                AttackRotation += rotToAdd;
-
-                if (NPC.DistanceSQ(target.Center) > 57600)
-                    NPC.velocity = NPC.DirectionTo(target.Center) * (NPC.Distance(target.Center) - 240) / 32f;
-                else
-                    NPC.velocity *= 0.9f;
-
-                if (Time > SpiralDuration)
-                {
-                    Time = -1;
-                    AIState = BrainAIState.Idle;
-                    foreach (NPC creep in Main.ActiveNPCs)
-                    {
-                        if (creep.type == NPCID.Creeper)
-                            creep.AIOverride<CreeperAI>().Time = -1;
-                    }
-                }
+                CreeperSpiral();
                 break;
             #endregion
 
             #region Phase Transition
             case BrainAIState.Phase2TransitionClosed:
             case BrainAIState.Phase2TransitionOpen:
-                NPC.dontTakeDamage = true;
-                NPC.rotation *= 0.9f;
-                TeleportTime = 0;
-
-                float animCounter = Time - 60;
-                if (animCounter >= 0)
-                {
-                    if (animCounter == 0)
-                        NPC.velocity = Vector2.UnitY * 2f;
-                    else if (animCounter < 60)
-                        NPC.velocity *= 0.99f;
-                    else if (animCounter == 60)
-                        NPC.velocity = Vector2.UnitY * -8f;
-                    else if (animCounter == 65)
-                    {
-                        AIState = BrainAIState.Phase2TransitionOpen;
-                        PreviousAttack = BrainAIState.Idle;
-                        availableAttacks.Clear();
-
-                        SoundEngine.PlaySound(SoundID.NPCHit1, NPC.Center);
-
-                        if (!Main.dedServ)
-                        {
-                            //Spawns all of BoC's Phase Transition Gores (GoreIDs 392 -> 395)
-                            for (int i = 392; i <= 395; i++)
-                                Gore.NewGore(NPC.GetSource_FromAI(), NPC.position, Main.rand.NextVector2Circular(6f, 6f), i);
-                        }
-
-                        for (int j = 0; j < 20; j++)
-                            Dust.NewDustPerfect(Main.rand.NextVector2FromRectangle(NPC.Hitbox), DustID.Blood, Main.rand.NextVector2Circular(6f, 6f));
-
-                        for (int i = 1; i <= 3; i++)
-                        {
-                            Color color = i switch
-                            {
-                                1 => Color.Yellow,
-                                2 => Color.Orange,
-                                _ => Color.Red,
-                            };
-                            PulseRing ring = new(NPC.Center, NPC.velocity * 0.5f, color, 0f, 1f + i * 0.5f, 24);
-                            GeneralParticleHandler.SpawnParticle(ring);
-                        }
-
-                        BoCAfterImages = [];
-
-                        SoundEngine.PlaySound(Roar, NPC.Center);
-                    }
-                    else
-                        NPC.velocity *= 0.9f;
-
-                    if (animCounter < 60f)
-                        BoCDrawOffset = Main.rand.NextVector2CircularEdge(1, 1) * MathHelper.Lerp(0f, 16f, CalamityUtils.CircInEasing(animCounter / 60f, 1));
-                    else if (animCounter < 70f)
-                        BoCDrawOffset = Main.rand.NextVector2CircularEdge(1, 1) * MathHelper.Lerp(16f, 0f, CalamityUtils.CircOutEasing((animCounter - 60) / 10f, 1));
-
-                    if (animCounter >= 120f)
-                    {
-                        Time = 0;
-                        ResetAttackValues();
-                        AIState = BrainAIState.Phase2Idle;
-                        NPC.dontTakeDamage = false;
-                    }
-                }
-                else
-                {
-                    NPC.velocity *= 0.8f;
-
-                    #region Tile Collision
-                    if (Collision.SolidCollision(NPC.position, NPC.width, NPC.height))
-                    {
-                        NPC.velocity = NPC.DirectionTo(target.Center) * 4f;
-                    }
-                    else if (Collision.SolidCollision(NPC.position + NPC.velocity, NPC.width, NPC.height))
-                    {
-                        if (NPC.velocity.X != NPC.oldVelocity.X)
-                            NPC.velocity.X = -NPC.oldVelocity.X;
-                        if (NPC.velocity.Y != NPC.oldVelocity.Y)
-                            NPC.velocity.Y = -NPC.oldVelocity.Y;
-                        NPC.velocity *= 2f;
-                        NPC.velocity = NPC.velocity.ClampMagnitude(0f, 8f);
-                    }
-                    #endregion
-                }
+                PhaseTransition();
                 break;
             #endregion
 
             #region Phase 2
             case BrainAIState.Phase2Idle:
-                //goes from 3 at full health to 1 at low health
-                int chases = (int)Math.Ceiling(MaxChases * (NPC.life / (float)NPC.lifeMax));
-
-                NPC.rotation = NPC.velocity.X / 6f * MathHelper.Pi / 8f;
-
-                if(Time == ChaseTime - 5)
-                    AttackCounter++;
-
-                if (Time <= ChaseTime)
-                {
-                    float speedUp = MathHelper.Clamp((Time - 10) / 10f, 0f, 1f);
-                    float slowDown = 1 - MathHelper.Clamp((Time - (ChaseTime - 15)) / 15f, 0f, 1f);
-                    float angleChange = MathHelper.Lerp(MathHelper.Pi / 24f, 0f, MathHelper.Clamp(Time / (ChaseTime * 0.666f), 0f, 1f));
-                    NPC.velocity = NPC.velocity.RotateDirectionTowards(NPC.DirectionTo(target.Center).ToRotation(), angleChange) * (MathHelper.Lerp(3f, 18f, Time / ChaseTime) * speedUp * slowDown);
-
-                    if (Time == ChaseTime)
-                    {
-                        Vector2 direction = target.velocity.SafeNormalize(Vector2.UnitX * target.direction).RotatedBy(Main.rand.NextFloat(-MathHelper.Pi / 3f, MathHelper.Pi / 3f));
-                        AttackPosition = target.Center + (direction * DefaultTeleportDistance);
-                        BoCAfterImages = [];
-                        NPC.netUpdate = true;
-                    }
-                    else
-                    {
-                        TeleportTime = 0;
-                        NPC.Opacity = 1f;
-                    }
-                }
-                else
-                {
-                    TeleportDuration = IdleTeleportDuration;
-
-                    Vector2 endPoint = AttackPosition;
-
-                    NPC.velocity = Vector2.Zero;
-
-                    if (Time < ChaseTime + (TeleportDuration / 2f))
-                    {
-                        if (Time % 4 == 0)
-                        {
-                            Vector2 startPoint = NPC.Center;
-
-                            Vector2 direction = endPoint - startPoint;
-                            float curveIntensity = Main.rand.NextFloat(-0.2f, 0.2f);
-                            Vector2 perpindicular = direction.RotatedBy(MathHelper.PiOver2);
-
-                            Vector2 controlPoint1 = startPoint + (direction * 0.25f) + (perpindicular * curveIntensity);
-                            Vector2 controlPoint2 = startPoint + (direction * 0.75f) + (perpindicular * curveIntensity);
-
-                            BezierCurve path = new BezierCurve(startPoint, controlPoint1, controlPoint2, endPoint);
-
-                            BrainOfCthulhuAfterImage afterimage = new(path, NPC.rotation, Vector2.One, (int)(ChaseTime + (TeleportDuration * 0.75f) - Time), BoCFrame);
-                            BoCAfterImages.Add(afterimage);
-                            GeneralParticleHandler.SpawnParticle(afterimage);
-                        }
-                        TeleportTime++;
-                    }
-                    else if (Time == ChaseTime + (TeleportDuration / 2f) && !AttackFlag)
-                    {
-                        Vector2 start = NPC.Center;
-                        NPC.Center = endPoint;
-                        AttackFlag = true;
-                        NPC.netUpdate = true;
-                    }
-                    else
-                    {
-                        TeleportTime--;
-                        if (TeleportTime < 0)
-                        {
-                            TeleportTime = 0;
-                            Time = -1;
-                            AttackFlag = false;
-
-                            #region Attack Selection
-                            if (AttackCounter >= chases) //Pick attack
-                            {
-                                NPC.rotation = 0;
-                                ResetAttackValues();
-
-                                if (availableAttacks.Count == 0)
-                                {
-                                    bool quickChoice = Main.rand.NextBool();
-                                    availableAttacks = [
-                                        BrainAIState.Bloodletting,
-                                        quickChoice ? BrainAIState.SanguineScythes : BrainAIState.IllusionDash,
-                                        Main.rand.NextBool() ? BrainAIState.Phase2Idle : BrainAIState.Bloodletting,
-                                        quickChoice ? BrainAIState.IllusionDash : BrainAIState.SanguineScythes,
-                                        BrainAIState.IllusionTrick
-                                    ];
-                                }
-
-                                AIState = availableAttacks[0];
-                                availableAttacks.RemoveAt(0);
-                                PreviousAttack = AIState;
-
-                                if (AIState == BrainAIState.SanguineScythes)
-                                {
-                                    Time = -31;
-                                    BoCAfterImages = [];
-                                }
-
-                                NPC.netUpdate = true;
-                            }
-                            #endregion
-                        }
-                    }
-
-                    NPC.Opacity = 1 - (TeleportTime / (TeleportDuration / 2f));
-                }
+                Phase2Idle();
                 break;
             case BrainAIState.Bloodletting:
-                float endTime = Time - BloodlettingDuration;
-
-                #region Main Attack
-                if (endTime < 0)
-                {
-                    NPC.rotation = (float)Math.Sin(Time / 8f) * MathHelper.Pi / 8f;
-                    BoCDrawOffset = Vector2.Zero;
-
-                    if (Time > BloodshotRate) //Doesnt fire first bloodshot
-                    {
-                        if (Time % IchorRate == 0)
-                        {
-                            if (Time % (IchorRate * 2) == 0)
-                                SoundEngine.PlaySound(SoundID.Item17, NPC.Center);
-                            if (Main.netMode != NetmodeID.MultiplayerClient)
-                                Projectile.NewProjectile(NPC.GetSource_FromThis(), NPC.Center + NPC.velocity + Main.rand.NextVector2Circular(72, 72), new Vector2(Main.rand.NextFloat(-IchorSpread, IchorSpread), -IchorVelocity), ModContent.ProjectileType<IchorShower>(), IchorShotDamage, 0.5f);
-                        }
-
-                        if (Main.netMode != NetmodeID.MultiplayerClient)
-                            if (Time % BloodshotRate == 0)
-                            {
-                                dir = NPC.DirectionTo(target.Center);
-
-                                for (int i = -2; i <= 2; i++)
-                                {
-                                    Vector2 initialDir = dir.RotatedBy(i * MathHelper.Pi / 4f);
-                                    Projectile.NewProjectile(NPC.GetSource_FromThis(), NPC.Center, initialDir * BloodshotVelocity, ProjectileID.BloodNautilusShot, BloodShotDamage, 0.5f, ai0: dir.ToRotation() + MathHelper.TwoPi, ai1: initialDir.ToRotation());
-                                }
-
-                                if (death)
-                                {
-                                    Vector2 initialDir = dir.RotatedBy(MathHelper.Pi / 6f);
-                                    Projectile.NewProjectile(NPC.GetSource_FromThis(), NPC.Center, initialDir * BloodshotVelocity / 2f, ProjectileID.BloodNautilusShot, BloodShotDamage, 0.5f, ai0: dir.ToRotation() + MathHelper.TwoPi, ai1: initialDir.ToRotation());
-                                    initialDir = dir.RotatedBy(-MathHelper.Pi / 6f);
-                                    Projectile.NewProjectile(NPC.GetSource_FromThis(), NPC.Center, initialDir * BloodshotVelocity / 2f, ProjectileID.BloodNautilusShot, BloodShotDamage, 0.5f, ai0: dir.ToRotation() + MathHelper.TwoPi, ai1: initialDir.ToRotation());
-                                }
-                            }
-
-                        
-                    }
-                }
-                #endregion
-
-                #region Attack End
-                else
-                {
-                    NPC.rotation *= 0.9f;
-
-                    if (endTime == 0)
-                        SoundEngine.PlaySound(Roar, NPC.Center);
-                    if (endTime >= DashPrepTime)
-                    {
-                        if (endTime < DashPrepTime + DashReelbackTime)
-                        {
-                            float reelBackSpeedExponent = 2.6f;
-                            float reelBackCompletion = Utils.GetLerpValue(0f, 30, endTime - DashPrepTime, true);
-                            float reelBackSpeed = MathHelper.Lerp(4f, 16f, MathF.Pow(reelBackCompletion, reelBackSpeedExponent));
-                            Vector2 reelBackVelocity = Vector2.UnitY * -reelBackSpeed;
-                            NPC.velocity = Vector2.Lerp(NPC.velocity, reelBackVelocity, 0.25f);
-                        }
-                        else if (endTime == DashPrepTime + 20)
-                            NPC.velocity = Vector2.UnitY * DashVelocity;
-
-                        if (endTime >= DashPrepTime + DashReelbackTime && Time % DashScytheRate == 0)
-                        {
-                            if (Main.netMode != NetmodeID.MultiplayerClient)
-                            {
-                                Projectile.NewProjectile(NPC.GetSource_FromThis(), NPC.Center, Vector2.UnitX * 16f, ModContent.ProjectileType<BloodScythe>(), BloodScytheDamage, 0.5f);
-                                Projectile.NewProjectile(NPC.GetSource_FromThis(), NPC.Center, Vector2.UnitX * -16f, ModContent.ProjectileType<BloodScythe>(), BloodScytheDamage, 0.5f);
-                            }
-                        }
-
-                        if (endTime > DashPrepTime + DashReelbackTime + DashDuration)
-                        {
-                            NPC.rotation = 0;
-                            SetupForNextAttack();
-                            break;
-                        }
-                    }
-                }
-                #endregion
-
-                #region Movement
-
-                if (endTime < 0)
-                {
-                    if (Time == 0)
-                    {
-                        AttackPosition = NPC.Center;
-                        if (NPC.Center.X < target.Center.X)
-                            AttackSign = -1;
-                        else
-                            AttackSign = 1;
-                    }
-
-                    float waveValue = Time * MathHelper.Pi / BloodshotRate;
-                    goalPos = target.Center + new Vector2((float)Math.Cos(waveValue) * HoverDistance.X * AttackSign, (float)(-0.5f * Math.Cos(2 * waveValue) + 0.5f) * -HoverDistance.Y);
-                    NPC.velocity = Vector2.Zero;
-                    if (Time < 30f)
-                        NPC.Center = Vector2.Lerp(AttackPosition, goalPos, CalamityUtils.SineOutEasing(Time / 30f, 1));
-                    else
-                        NPC.Center = goalPos;
-                }
-                else if (endTime < DashPrepTime)
-                {
-                    if (endTime == 0)
-                        NPC.velocity = Vector2.UnitX * AttackSign * 8f;
-                    else
-                    {
-                        goalPos = target.Center - Vector2.UnitY * HoverEndHeight;
-                        Vector2 accel = new Vector2(0.5f, 1.5f);
-
-                        NPC.velocity += NPC.DirectionTo(goalPos).SafeNormalize(Vector2.Zero) * accel;
-                        NPC.velocity = NPC.velocity.ClampMagnitude(0f, 8f);
-                    }
-                }
-                #endregion
-
+                Bloodletting();
                 break;
             case BrainAIState.SanguineScythes:
-                #region Attack Ending
-                if (AttackCounter > SanguineTeleportCount)
-                {
-                    if (Time == SanguineAttackEndDelay)
-                    {
-                        SoundEngine.PlaySound(Roar, NPC.Center);
-                        bool left = target.Center.X > NPC.Center.X;
-                        NPC.velocity = Vector2.UnitX * (left ? 18 : -18);
-                        NPC.rotation = MathHelper.Pi / 8f * (left ? 1 : -1);
-                    }
-                    if (Time > SanguineAttackEndDelay + SanguineAttackEndDuration)
-                    {
-                        NPC.velocity *= 0.8f;
-                        NPC.rotation *= 0.8f;
-                    }
-                    else if (Time >= SanguineAttackEndDelay && Time % SanguineAttackEndIchorRate == 0)
-                    {
-                        if (Main.netMode != NetmodeID.MultiplayerClient)
-                        {
-                            Projectile.NewProjectile(NPC.GetSource_FromThis(), NPC.Center, new Vector2(Math.Sign(NPC.velocity.X), -2f), ModContent.ProjectileType<IchorShower>(), IchorShotDamage, 0.5f);
-                            Projectile.NewProjectile(NPC.GetSource_FromThis(), NPC.Center, new Vector2(Math.Sign(NPC.velocity.X), -6f), ModContent.ProjectileType<IchorShower>(), IchorShotDamage, 0.5f);
-                        }
-                    }
-
-                    if (Time > SanguineAttackEndDelay + SanguineAttackEndDuration + 10)
-                        SetupForNextAttack();
-                }
-                #endregion
-                #region Attack Start
-                else if (Time < 0)
-                {
-                    if(Time == -25)
-                        NPC.netUpdate = true;
-
-                    if (Time == -24)
-                    {
-                        SoundEngine.PlaySound(Roar, NPC.Center);
-
-                        for (int i = 1; i <= 3; i++)
-                        {
-                            Color color = i switch
-                            {
-                                1 => Color.Yellow,
-                                2 => Color.Orange,
-                                _ => Color.Red,
-                            };
-                            PulseRing ring = new(NPC.Center, NPC.velocity * 0.5f, color, 0f, 1f + i * 0.5f, 24);
-                            GeneralParticleHandler.SpawnParticle(ring);
-                        }
-                    }
-                    if (Time == -1)
-                    {
-                        Vector2 direction = target.velocity.SafeNormalize(Vector2.UnitX * target.direction).RotatedBy(Main.rand.NextFloat(-MathHelper.Pi / 3f, MathHelper.Pi / 3f));
-                        float distance = SanguineTeleportDistance;
-                        AttackPosition = target.Center + (direction * distance);
-                        NPC.netUpdate = true;
-                    }
-                }
-                #endregion
-                #region Teleport
-                else
-                {
-                    TeleportDuration = SanguineTeleportDuration;
-
-                    Vector2 endPoint = AttackPosition;
-
-                    if (Time < (TeleportDuration / 2f))
-                    {
-                        if (Time % 4 == 0)
-                        {
-                            Vector2 startPoint = NPC.Center;
-
-                            Vector2 direction = endPoint - startPoint;
-                            float curveIntensity = Main.rand.NextFloat(-0.2f, 0.2f);
-                            Vector2 perpindicular = direction.RotatedBy(MathHelper.PiOver2);
-
-                            Vector2 controlPoint1 = startPoint + (direction * 0.25f) + (perpindicular * curveIntensity);
-                            Vector2 controlPoint2 = startPoint + (direction * 0.75f) + (perpindicular * curveIntensity);
-
-                            BezierCurve path = new BezierCurve(startPoint, controlPoint1, controlPoint2, endPoint);
-
-                            BrainOfCthulhuAfterImage afterimage = new(path, NPC.rotation, Vector2.One, (int)((TeleportDuration * 0.75f) - Time), BoCFrame);
-                            BoCAfterImages.Add(afterimage);
-                            GeneralParticleHandler.SpawnParticle(afterimage);
-                        }
-                        TeleportTime++;
-                    }
-                    else if (Time == (TeleportDuration / 2f) && !AttackFlag)
-                    {
-                        Vector2 start = NPC.Center;
-                        NPC.Center = endPoint;
-                        AttackFlag = true;
-                        NPC.netUpdate = true;
-                    }
-                    else
-                    {
-                        TeleportTime--;
-                        if (TeleportTime < 0)
-                        {
-                            TeleportTime = 0;
-                            Time = -1;
-                            AttackFlag = false;
-                            AttackCounter++;
-
-                            if (AttackCounter <= SanguineTeleportCount)
-                            {
-                                SoundStyle explosion = new("CalamityMod/Sounds/Custom/Ravager/RavagerMissileExplosion")
-                                {
-                                    Volume = 0.5f
-                                };
-                                SoundEngine.PlaySound(explosion, NPC.Center);
-
-                                for (int i = 0; i < SanguineScytheCount; i++)
-                                {
-                                    float initalSpeed = 16f;
-                                    if (death && i % 2 == 0)
-                                        initalSpeed /= 2f;
-
-                                    if (Main.netMode != NetmodeID.MultiplayerClient)
-                                        Projectile.NewProjectile(NPC.GetSource_FromThis(), NPC.Center, Vector2.UnitX.RotatedBy(MathHelper.TwoPi / SanguineScytheCount * i) * initalSpeed, ModContent.ProjectileType<BloodScythe>(), BloodScytheDamage, 0.5f);
-                                }
-                            }
-
-                            Vector2 direction;
-                            if (AttackCounter < SanguineTeleportCount)
-                            {
-                                direction = Main.rand.NextFloat(0f, MathHelper.TwoPi).ToRotationVector2();
-                                AttackPosition = target.Center + (direction * SanguineTeleportDistance);
-                            }
-                            else
-                            {
-                                direction = Vector2.UnitX * (Main.rand.NextBool() ? -1 : 1);
-                                AttackPosition = target.Center + (direction * SanguineFinalTeleportOffset.X) + (Vector2.UnitY * -SanguineFinalTeleportOffset.Y);
-                            }
-
-                            NPC.netUpdate = true;
-
-                            BoCAfterImages = [];
-                            NPC.Opacity = 1f;
-                        }
-                    }
-
-                    NPC.Opacity = 1 - (TeleportTime / (TeleportDuration / 2f));
-                }
-                #endregion
+                SanguineScythes();
                 break;
             case BrainAIState.CrimsonEyes:
-                #region Attack Start
-                if (Time <= 30)
-                {
-                    if (Time >= 6 && Time <= 12)
-                    {
-                        if (Time == 6)
-                        {
-                            SoundEngine.PlaySound(Roar, NPC.Center);
-
-                            for (int i = 1; i <= 3; i++)
-                            {
-                                Color color = i switch
-                                {
-                                    1 => Color.Yellow,
-                                    2 => Color.Orange,
-                                    _ => Color.Red,
-                                };
-                                PulseRing ring = new(NPC.Center, NPC.velocity * 0.5f, color, 0f, 1f + i * 0.5f, 24);
-                                GeneralParticleHandler.SpawnParticle(ring);
-                            }
-
-                            CalamityUtils.AddScreenshakeAt(NPC.Center, 10f);
-                        }
-
-                        for (int i = 0; i < 12; i++)
-                        {
-                            Point start = target.Center.ToTileCoordinates() + new Point(Main.rand.Next(-64, 65), 48);
-                            for (int j = 0; j < 96; j++)
-                            {
-                                Point current = start - new Point(0, j);
-                                if (!Main.tile[current].IsTileSolid() && Main.tile[current - new Point(0, 1)].IsTileSolid())
-                                    Dust.NewDust(current.ToWorldCoordinates(0, 0), 16, 16, DustID.Crimstone, 0, 3);
-                            }
-                        }
-                    }
-                }
-                #endregion
-                #region Attack
-                else
-                {
-                    #region Eye Spawning
-                    if (Time < CrimsonEyeAttackDuration && CalamityUtils.CountProjectiles(ModContent.ProjectileType<CrimsonEye>()) < CrimsonEyeCap && Time % CrimsonEyeRate == 0)
-                    {
-                        Vector2 spawnPos = target.Center;
-                        int i = 0;
-                        for (i = 0; i <= 32; i++)
-                        {
-                            spawnPos = target.Center + Main.rand.NextVector2Circular(256, 256);
-
-                            if (Collision.IsWorldPointSolid(spawnPos))
-                                continue;
-
-                            bool alreadyFilled = false;
-                            foreach (Projectile p in Main.ActiveProjectiles)
-                            {
-                                if (p.type != ModContent.ProjectileType<CrimsonEye>())
-                                    continue;
-
-                                Rectangle hitbox = new((int)spawnPos.X - 50, (int)spawnPos.Y - 18, 100, 36);
-
-                                if (p.Hitbox.Intersects(hitbox))
-                                {
-                                    alreadyFilled = true;
-                                    break;
-                                }
-                            }
-
-                            if (alreadyFilled)
-                                continue;
-
-                            if (Collision.CanHitLine(spawnPos, 1, 1, target.position, target.width, target.height))
-                                break;
-                        }
-
-                        if (i == 32)
-                            spawnPos = target.Center;
-
-                        if (Main.netMode != NetmodeID.MultiplayerClient)
-                            Projectile.NewProjectile(NPC.GetSource_FromThis(), spawnPos, Vector2.Zero, ModContent.ProjectileType<CrimsonEye>(), CrimsonEyeDamage, 0f);
-                    }
-                    #endregion
-
-                    #region Early Movement
-                    if (Time < 180)
-                    {
-                        float dist = 210;
-
-                        fromTarget = (NPC.Center - target.Center).SafeNormalize(Vector2.UnitX);
-                        goalPos = target.Center + (fromTarget * dist) - (Vector2.UnitY * 32);
-                        if (NPC.DistanceSQ(goalPos) <= 2048)
-                            NPC.velocity *= 0.9f;
-                        else if (NPC.velocity.LengthSquared() < 16f) //7.5^2
-                            NPC.velocity += NPC.DirectionTo(goalPos).SafeNormalize(Vector2.Zero) * 0.1f;
-                        else
-                            NPC.velocity = NPC.DirectionTo(goalPos).SafeNormalize(Vector2.Zero) * 4f;
-                    }
-                    #endregion
-
-                    #region Scythe Movement + Attack
-                    else
-                    {
-                        if (Time < CrimsonEyeAttackIdleDuration)
-                            NPC.velocity *= 0.9f;
-                        if (Time >= CrimsonEyeAttackIdleDuration + CrimsonEyeAttackSetUpDuration && Time < CrimsonEyeAttackDuration)
-                        {
-                            if (Time == CrimsonEyeAttackIdleDuration + CrimsonEyeAttackSetUpDuration)
-                                NPC.velocity = NPC.DirectionTo(target.Center);
-
-                            bool onSurface = target.Center.Y / 16f < Main.worldSurface;
-                            speed = onSurface ? 10f : 8f;
-                            if (Time < CrimsonEyeAttackIdleDuration + CrimsonEyeAttackSetUpDuration + CrimsonEyeAttackBuildUpDuration)
-                            {
-                                float lerp = CalamityUtils.SineInEasing((Time - (CrimsonEyeAttackIdleDuration + CrimsonEyeAttackSetUpDuration)) / CrimsonEyeAttackBuildUpDuration, 1);
-                                speed = MathHelper.Lerp(0f, speed, lerp);
-                            }
-
-                            float turnAmt = TurnAccelerationMultiplier * ((NPC.Distance(target.Center) - TurnAccelerationDistanceBuffer) / TurnAccelerationDistanceDivisor);
-
-                            NPC.velocity = NPC.velocity.RotateDirectionTowards(NPC.AngleTo(target.Center), turnAmt) * speed;
-                        }
-                        else
-                        {
-                            NPC.velocity *= 0.9f;
-
-                            if (Time == CrimsonEyeAttackDuration)
-                            {
-                                foreach (Projectile p in Main.ActiveProjectiles)
-                                {
-                                    if (p.type != ModContent.ProjectileType<CrimsonEye>())
-                                        continue;
-
-                                    p.timeLeft = 60;
-                                }
-                            }
-
-                            if (Time > CrimsonEyeAttackDuration + CrimsonEyeAttackEndDuration)
-                                SetupForNextAttack();
-                        }
-
-                        if (Time == CrimsonEyeAttackIdleDuration)
-                        {
-                            SoundStyle explosion = new("CalamityMod/Sounds/Custom/Ravager/RavagerMissileExplosion");
-                            explosion.Volume = 0.5f;
-
-                            SoundEngine.PlaySound(explosion, NPC.Center);
-                            if (Main.netMode != NetmodeID.MultiplayerClient)
-                            {
-                                float projCount = 10;
-                                for (int i = 0; i < projCount; i++)
-                                    Projectile.NewProjectile(NPC.GetSource_FromThis(), NPC.Center, Vector2.Zero, ModContent.ProjectileType<CirclingBloodScythe>(), BloodScytheDamage, 0.5f, -1, MathHelper.TwoPi / projCount * i);
-                            }
-                        }
-                    }
-                    #endregion
-                }
-                #endregion
+                CrimsonEyes();
                 break;
             case BrainAIState.IllusionDash:
-                #region Attack Start
-                if (Time < IllusionDashTeleportDuration)
-                {
-                    if (Time == 0)
-                    {
-                        AttackPosition = target.Center;
-                        AttackRotation = Main.rand.NextFloat(0, MathHelper.TwoPi);
-                        NPC.netUpdate = true;
-                    }
-
-                    TeleportDuration = IllusionDashTeleportDuration;
-
-                    Vector2 endPoint = AttackPosition + (AttackRotation.ToRotationVector2() * IllusionDashTeleportDistance);
-
-                    if (Time < (TeleportDuration / 2f))
-                    {
-                        if (Time % 4 == 0)
-                        {
-                            Vector2 startPoint = NPC.Center;
-
-                            for (int i = 0; i < (death ? 8 : 4); i++)
-                            {
-                                Vector2 myEndPoint = AttackPosition + ((AttackRotation + (death ? MathHelper.PiOver4 : MathHelper.PiOver2) * i).ToRotationVector2() * IllusionDashTeleportDistance);
-                                Vector2 direction = myEndPoint - startPoint;
-
-                                float curveIntensity = Main.rand.NextFloat(-0.2f, 0.2f);
-                                Vector2 perpindicular = direction.RotatedBy(MathHelper.PiOver2);
-
-                                Vector2 controlPoint1 = startPoint + (direction * 0.25f) + (perpindicular * curveIntensity);
-                                Vector2 controlPoint2 = startPoint + (direction * 0.75f) + (perpindicular * curveIntensity);
-
-                                BezierCurve path = new BezierCurve(startPoint, controlPoint1, controlPoint2, myEndPoint);
-
-                                BrainOfCthulhuAfterImage afterimage = new(path, NPC.rotation, Vector2.One, (int)((TeleportDuration * 0.75f) - Time), BoCFrame);
-                                BoCAfterImages.Add(afterimage);
-                                GeneralParticleHandler.SpawnParticle(afterimage);
-                            }
-                        }
-                        TeleportTime++;
-                    }
-                    else if (Time == (TeleportDuration / 2f) && !AttackFlag)
-                    {
-                        AttackFlag = true;
-
-                        for (int i = 0; i < (death ? 8 : 4); i++)
-                        {
-                            float rot = AttackRotation + (death ? MathHelper.PiOver4 : MathHelper.PiOver2) * i;
-                            Vector2 spawnPos = AttackPosition + (rot.ToRotationVector2() * IllusionDashTeleportDistance);
-                            if (i == 0)
-                                NPC.Center = spawnPos;
-                            else if (Main.netMode != NetmodeID.MultiplayerClient)
-                                NPC.NewNPCDirect(NPC.GetSource_FromThis(), spawnPos, ModContent.NPCType<BrainIllusion>(), 0, 15, 30, rot).netUpdate = true;
-                        }
-
-                        NPC.netUpdate = true;
-                    }
-                    else
-                        TeleportTime--;
-
-                    NPC.Opacity = 1 - (TeleportTime / (TeleportDuration / 2f));
-                }
-                #endregion
-                else
-                {
-                    float startTime = Time - IllusionDashTeleportDuration;
-
-                    if (startTime == 0)
-                    {
-                        AttackPosition = NPC.Center;
-                        TeleportTime = 0;
-                        AttackFlag = false;
-
-                        BoCAfterImages = [];
-                        NPC.Opacity = 1f;
-
-                        GenericSparkle sparkle = new(NPC.Center, Vector2.Zero, Color.Yellow, Color.Orange, 2f, 12, needed: true);
-                        GeneralParticleHandler.SpawnParticle(sparkle);
-
-                        NPC.netUpdate = true;
-
-                        foreach (NPC n in Main.ActiveNPCs)
-                            if (n.type == ModContent.NPCType<BrainIllusion>())
-                                n.netUpdate = true;
-                    }
-                    if (startTime < 30)
-                    {
-                        float lerp = startTime / 30f;
-                        float circleDist = MathHelper.Lerp(IllusionDashTeleportDistance, IllusionDashCloseInDistance, CalamityUtils.SineOutEasing(lerp, 1));
-                        NPC.Center = Vector2.Lerp(AttackPosition, target.Center + (AttackRotation.ToRotationVector2() * circleDist), lerp);
-                        AttackRotation += MathHelper.Lerp(0f, IllusionDashStartingSpinSpeed, CalamityUtils.SineInEasing(lerp, 1));
-                    }
-                    else if (startTime <= 30 + IllusionDashSpinDuration)
-                    {
-                        NPC.Center = target.Center + AttackRotation.ToRotationVector2() * IllusionDashCloseInDistance;
-
-                        AttackRotation += MathHelper.Lerp(IllusionDashStartingSpinSpeed, 0f, CalamityUtils.SineOutEasing((startTime - 30) / (float)IllusionDashSpinDuration, 1));
-                    }
-                    else if (startTime < 30 + IllusionDashSpinDuration + 30)
-                    {
-                        float reelBackSpeedExponent = 2.6f;
-                        float reelBackCompletion = Utils.GetLerpValue(0f, 30, startTime - 130, true);
-                        float reelBackSpeed = MathHelper.Lerp(2.5f, 16f, MathF.Pow(reelBackCompletion, reelBackSpeedExponent));
-                        Vector2 reelBackVelocity = (AttackRotation + MathHelper.Pi).ToRotationVector2() * -reelBackSpeed;
-                        NPC.velocity = Vector2.Lerp(NPC.velocity, reelBackVelocity, 0.25f);
-                    }
-                    else if (startTime <= 30 + IllusionDashSpinDuration + 30 + IllusionDashFakeoutTeleportDuration) //176
-                    {
-                        NPC.velocity = Vector2.Zero;
-
-                        if (startTime == 30 + IllusionDashSpinDuration + 30)
-                        {
-                            AttackPosition = target.Center;
-                            AttackRotation = AttackRotation + MathHelper.Pi + Main.rand.NextFloat(-MathHelper.PiOver2, MathHelper.PiOver2);
-                            NPC.netUpdate = true;
-                        }
-
-                        wrappedCounter = startTime - (30 + IllusionDashSpinDuration + 30);
-
-                        TeleportDuration = IllusionDashFakeoutTeleportDuration;
-
-                        Vector2 endPoint = AttackPosition + (AttackRotation.ToRotationVector2() * 270);
-
-                        if (wrappedCounter < (TeleportDuration / 2f))
-                        {
-                            if (wrappedCounter % 2 == 0)
-                            {
-                                Vector2 startPoint = NPC.Center;
-
-                                Vector2 direction = endPoint - startPoint;
-
-                                float curveIntensity = Main.rand.NextFloat(-0.2f, 0.2f);
-                                Vector2 perpindicular = direction.RotatedBy(MathHelper.PiOver2);
-
-                                Vector2 controlPoint1 = startPoint + (direction * 0.25f) + (perpindicular * curveIntensity);
-                                Vector2 controlPoint2 = startPoint + (direction * 0.75f) + (perpindicular * curveIntensity);
-
-                                BezierCurve path = new BezierCurve(startPoint, controlPoint1, controlPoint2, endPoint);
-
-                                BrainOfCthulhuAfterImage afterimage = new(path, NPC.rotation, Vector2.One, (int)((TeleportDuration * 0.75f) - wrappedCounter), BoCFrame);
-                                BoCAfterImages.Add(afterimage);
-                                GeneralParticleHandler.SpawnParticle(afterimage);
-                            }
-                            TeleportTime++;
-                        }
-                        else if (wrappedCounter == (int)(TeleportDuration / 2f) && !AttackFlag)
-                        {
-                            AttackFlag = true;
-                            NPC.Center = endPoint;
-                        }
-                        else
-                        {
-                            TeleportTime--;
-                            if (TeleportTime <= 0)
-                            {
-                                TeleportTime = 0;
-                                BoCAfterImages = [];
-                                ResetAttackValues();
-                                NPC.Opacity = 1f;
-                                NPC.netUpdate = true;
-                                AttackRotation = NPC.AngleTo(target.Center);
-                            }
-                        }
-
-                        NPC.Opacity = 1 - (TeleportTime / (TeleportDuration / 2f));
-                    }
-                    else if (startTime < 90 + IllusionDashSpinDuration + 30 + IllusionDashFakeoutTeleportDuration + 30)
-                    {
-                        NPC.velocity *= 0.9f;
-                        if(startTime % 15 == 0)
-                        {
-                            for (int i = 0; i < 2; i++)
-                            {
-                                dir = NPC.DirectionTo(target.Center);
-                                if (Main.netMode != NetmodeID.MultiplayerClient)
-                                {
-                                    Vector2 initialDir = dir.RotatedBy(Main.rand.NextFloat(-MathHelper.Pi / 4f, MathHelper.Pi / 4f));
-                                    Projectile.NewProjectile(NPC.GetSource_FromThis(), NPC.Center, initialDir * Main.rand.NextFloat(10f, 25f), ProjectileID.BloodNautilusShot, BloodShotDamage, 0.5f, ai0: dir.ToRotation() + MathHelper.TwoPi, ai1: initialDir.ToRotation());
-                                }
-                                    NPC.velocity -= dir * 2f;
-                            }
-                        }
-                    }
-                    else if(startTime >= 135 + IllusionDashSpinDuration + 30 + IllusionDashFakeoutTeleportDuration + 30)
-                    {
-                        foreach (NPC n in Main.ActiveNPCs)
-                            if (n.type == ModContent.NPCType<BrainIllusion>())
-                                n.active = false;
-
-                        SetupForNextAttack();
-                    }
-                }
-
-                
+                IllusionDash();
                 break;
             case BrainAIState.IllusionTrick:
-                if (Time >= 90)
-                {
-                    if (Time == 90)
-                    {
-                        foreach(Projectile p in Main.ActiveProjectiles)
-                        {
-                            if (!p.friendly)
-                                continue;
-
-                            p.Calamity().IgnoreBoCIllusions = true;
-                        }
-
-                        int brainAngleSlot = Main.rand.Next(0, IllusionTrickAngleGroups);
-                        int brainDistSlot = Main.rand.Next(0, IllusionTrickGroupSize);
-
-                        if (Main.netMode != NetmodeID.MultiplayerClient)
-                            for (int a = 0; a < IllusionTrickAngleGroups; a++)
-                                for (int d = 0; d < IllusionTrickGroupSize; d++)
-                                {
-                                    if (a != brainAngleSlot || d != brainDistSlot)
-                                        NPC.NewNPC(NPC.GetSource_FromThis(), 0, 0, ModContent.NPCType<FalseBrain>(), 0, MathHelper.TwoPi / IllusionTrickAngleGroups * a, FalseBrain.TimeDivisor / IllusionTrickGroupSize * d);
-                                }
-
-                        AttackTime = (int)(FalseBrain.TimeDivisor / IllusionTrickGroupSize * brainDistSlot);
-                        AttackRotation = MathHelper.TwoPi / IllusionTrickAngleGroups * brainAngleSlot;
-                        AttackFlag = false;
-                        AttackPosition = target.Center;
-
-                        NPC.ShowNameOnHover = false;
-                        NPC.netUpdate = true;
-                    }
-
-                    NPC.damage = 0;
-
-                    if (AttackFlag)
-                    {
-                        if (AttackCounter == 0)
-                        {
-                            NPC.ShowNameOnHover = true;
-                            foreach (NPC npc in Main.npc)
-                            {
-                                if (npc.type != ModContent.NPCType<FalseBrain>())
-                                    continue;
-                                npc.ModNPC<FalseBrain>().BeenHit = true;
-                            }
-
-                            NPC.velocity = NPC.DirectionFrom(target.Center) * 8f;
-                        }
-                        else
-                            NPC.velocity *= 0.95f;
-
-                        if (AttackCounter >= IllusionTrickStunDuration)
-                        {
-                            NPC.damage = NPC.defDamage;
-                            SetupForNextAttack();
-                            NPC.Opacity = 1f;
-                            TeleportTime = 0;                             
-                            break;
-                        }
-
-                        AttackCounter++;
-                    }
-                    else if(Time >= IllusionTrickTimeLimit) //Players have failed to find the real BoC within the time limit
-                    {
-                        if (Time == IllusionTrickTimeLimit)
-                        {
-                            foreach (Player p in Main.ActivePlayers)
-                            {
-                                if (p.Distance(NPC.Center) > DespawnRange)
-                                    continue;
-
-                                AttackList.Add(p.whoAmI);
-                            }
-
-                            foreach (NPC n in Main.ActiveNPCs)
-                            {
-                                if (n.type != ModContent.NPCType<FalseBrain>())
-                                    continue;
-
-                                n.ModNPC<FalseBrain>().BeenHit = true;
-                            }
-
-                            for (int i = 1; i <= 3; i++)
-                            {
-                                Color color = i switch
-                                {
-                                    1 => Color.Yellow,
-                                    2 => Color.Orange,
-                                    _ => Color.Red,
-                                };
-                                PulseRing ring = new(NPC.Center, NPC.velocity * 0.5f, color, 0f, 1f + i * 0.5f, 24);
-                                GeneralParticleHandler.SpawnParticle(ring);
-                            }
-                        }
-                        else if(Time % 30 == 0)
-                        {
-                            if (AttackList.Count > 0)
-                            {
-                                if (Main.netMode != NetmodeID.MultiplayerClient)
-                                    Projectile.NewProjectile(NPC.GetSource_FromThis(), NPC.Center, Vector2.Zero, ModContent.ProjectileType<TelekineticBlast>(), 0, 0f, -1, AttackList[0], 2f);
-                                AttackList.RemoveAt(0);
-                            }
-                            else
-                            {
-                                Vector2 direction = target.velocity.SafeNormalize(Vector2.UnitX * target.direction).RotatedBy(Main.rand.NextFloat(-MathHelper.Pi / 3f, MathHelper.Pi / 3f));
-                                float distance = DefaultTeleportDistance;
-                                AttackPosition = target.Center + (direction * distance);
-                                BoCAfterImages = [];
-                                NPC.Opacity = 1f;
-                                TeleportTime = 0;
-                                Time = ChaseTime - 1;
-                                NPC.damage = NPC.defDamage;
-                                NPC.netUpdate = true;
-                                ResetAttackValues();
-
-                                AIState = BrainAIState.Phase2Idle;
-                            }
-                        }
-                    }
-                    else
-                    {
-                        CachedRatio = (float)Math.Cos(AttackTime * MathHelper.TwoPi / FalseBrain.TimeDivisor);
-
-                        float lerp = CalamityUtils.SineInOutEasing(MathHelper.Clamp((Time - 150) / 30f, 0f, 1f), 1);
-                        float baseDist = 240;
-                        float circleDist = 480;
-                        if (Time - 150 < 30f)
-                        {
-                            baseDist = MathHelper.Lerp(480, 240, lerp);
-                            circleDist = MathHelper.Lerp(240, 480, lerp);
-                        }
-                        NPC.Center = AttackPosition + Vector2.UnitX.RotatedBy(AttackRotation) * (baseDist + (circleDist * ((float)Math.Sin(-AttackTime * MathHelper.TwoPi / FalseBrain.TimeDivisor) / 2f + 0.5f)));
-                        NPC.Center += Vector2.UnitX.RotatedBy(AttackRotation + MathHelper.PiOver2) * (90 * (float)Math.Cos(AttackTime * MathHelper.TwoPi / FalseBrain.TimeDivisor));
-                        NPC.Opacity = 1f;
-                        AttackCounter = 0;
-                    }                    
-                }
-                else if (Time <= 60)
-                {
-                    TeleportDuration = 60;
-                    TeleportTime++;
-                    NPC.Opacity = 1 - (Time / 60f);
-
-                    if (Time < 50)
-                    {
-                        Vector2 startPoint = NPC.Center;
-                        Vector2 endPoint = NPC.Center + Vector2.UnitX.RotatedBy(Main.rand.NextFloat(0, MathHelper.TwoPi)) * Main.rand.NextFloat(240, 480);
-
-                        Vector2 direction = endPoint - startPoint;
-                        float curveIntensity = Main.rand.NextFloat(-0.2f, 0.2f);
-                        Vector2 perpindicular = direction.RotatedBy(MathHelper.PiOver2);
-
-                        Vector2 controlPoint1 = startPoint + (direction * 0.25f) + (perpindicular * curveIntensity);
-                        Vector2 controlPoint2 = startPoint + (direction * 0.75f) + (perpindicular * curveIntensity);
-
-                        BezierCurve path = new BezierCurve(startPoint, controlPoint1, controlPoint2, endPoint);
-
-                        BrainOfCthulhuAfterImage afterimage = new(path, NPC.rotation, Vector2.One, (int)(60 - Time), BoCFrame);
-                        BoCAfterImages.Add(afterimage);
-                        GeneralParticleHandler.SpawnParticle(afterimage);
-                    }
-                }
-                else
-                {
-                    NPC.Opacity = 0f;
-                    BoCAfterImages = [];
-                }
-
-                if (Time >= 180)
-                    AttackTime++;
-                else if (Time >= 150)
-                    AttackTime += (Time - 150) / 30f;
+                IllusionTrick();
                 break;
             #endregion
 
             case BrainAIState.DeathAnimation:
-                if (Time == 0)
-                    NPC.velocity = NPC.DirectionFrom(target.Center) * 6f;
-                else
-                    NPC.velocity *= 0.95f;
-
-                NPC.rotation = MathHelper.Pi / 24f * NPC.oldVelocity.X;
-                TeleportTime *= 0.6f;
-                if (TeleportTime < 0.005f)
-                    TeleportTime = 0;
-                BoCDrawOffset *= 0.6f;
-                NPC.Opacity = BringOpacityTo(NPC.Opacity, 1, 0.1f);
-
-                (float angle, Vector2 offset, int time)[] bloodGushingData = [
-                    (MathHelper.Pi / 6f, new(18, 12), 90),
-                    (MathHelper.Pi, new(-30, -10), 150),
-                    (-MathHelper.Pi / 4f, new(20, -40), 180),
-                    (MathHelper.Pi + MathHelper.Pi / 4f, new(-20, -40), 200),
-                    (MathHelper.Pi / 1.75f, new(-5, 22), 210)
-                ];
-
-                for (int i = 0; i < bloodGushingData.Length; i++)
-                {
-                    if (Time >= bloodGushingData[i].time)
-                    {
-                        if (Time == bloodGushingData[i].time)
-                        {
-                            Vector2 bloodDir = bloodGushingData[i].angle.ToRotationVector2();
-                            BloodParticle2 p2 = new(NPC.Center + bloodGushingData[i].offset.RotatedBy(NPC.rotation), bloodDir * 7.5f, 16, 0.5f, Color.Red);
-                            GeneralParticleHandler.SpawnParticle(p2);
-                            NPC.velocity = bloodDir * -4f;
-
-                            SoundStyle explosion = new("CalamityMod/Sounds/Custom/Ravager/RavagerMissileExplosion")
-                            {
-                                Volume = 0.5f,
-                                Pitch = i / (float)(bloodGushingData.Length - 1)
-                            };
-                            SoundEngine.PlaySound(explosion, NPC.Center);
-
-                            Main.LocalPlayer.SetScreenshake(1f);
-                        }
-
-                        for (int j = 0; j < 2; j++)
-                        {
-                            BloodParticle p = new(NPC.Center + bloodGushingData[i].offset.RotatedBy(NPC.rotation), (bloodGushingData[i].angle + Main.rand.NextFloat(-MathHelper.Pi / 10f, MathHelper.Pi / 10f)).ToRotationVector2() * Main.rand.NextFloat(5f, 10f), 32, 1f, Color.Red);
-                            GeneralParticleHandler.SpawnParticle(p);
-                        }
-                    }
-
-                }
-
-                if (Time >= 215)
-                {
-                    SoundStyle explosion = new("CalamityMod/Sounds/Custom/Ravager/RavagerMissileExplosion");
-                    SoundEngine.PlaySound(explosion, NPC.Center);
-
-                    Main.LocalPlayer.SetScreenshake(2f);
-
-                    int pCount = 10;
-                    for (int i = 0; i < pCount; i++)
-                    {
-                        float initalSpeed = 24f;
-                        Vector2 pVelo = Vector2.UnitX.RotatedBy(MathHelper.TwoPi / pCount * i) * initalSpeed;
-
-                        for (int j = 0; j < 2; j++)
-                        {
-                            BloodParticle p = new(NPC.Center, pVelo.RotatedBy(Main.rand.NextFloat(-MathHelper.Pi / 6f, MathHelper.Pi / 6f)) * Main.rand.NextFloat(0.5f, 1f), 32, 1f, Color.Red);
-                            GeneralParticleHandler.SpawnParticle(p);
-                        }
-                        BloodParticle2 p2 = new(NPC.Center, pVelo * 0.75f, 16, 0.5f, Color.Red);
-                        GeneralParticleHandler.SpawnParticle(p2);
-                    }
-
-                    NPC.dontTakeDamage = false;
-                    if(Main.netMode != NetmodeID.MultiplayerClient)
-                        NPC.StrikeInstantKill();
-                }
-
-                float animationCompletion = Time / 215f;
-                NPC.frameCounter += 2 * animationCompletion;
-
-                if (Main.rand.NextFloat(0.5f, 1f) < animationCompletion)
-                {
-                    Vector2 edgeBloodDir = Main.rand.NextVector2CircularEdge(1, 1);
-                    BloodParticle b = new(NPC.Center + (edgeBloodDir * NPC.Size * 0.75f), edgeBloodDir.RotatedBy(Main.rand.NextFloat(-MathHelper.Pi / 10f, MathHelper.Pi / 10f)) * Main.rand.NextFloat(2f, 4f), 16, 0.75f, Color.Red);
-                    GeneralParticleHandler.SpawnParticle(b);
-                }
+                DeathAnimation();
                 break;
         }
 
@@ -2424,6 +522,1996 @@ public class BrainOfCthulhuAI : VanillaAIOverride
 
         return false;
     }
+
+    #region Attacks + Animations
+    
+    private void SpawnAnimation()
+    {
+        if (SpawnTime != 0) //BoC should begin appearing
+        {
+            float d = Main.LocalPlayer.DistanceSQ(NPC.Center);
+            float distanceScaleFactor = 1;
+            if (d > 592900) //770^2
+                distanceScaleFactor = 1 / (1 + (((float)Math.Sqrt(d) - 770) / 32f));
+
+            float spawnCounter = Time - Math.Abs(SpawnTime);
+
+            if (spawnCounter < 180)
+            {
+                float shakeIntensity = CalamityUtils.CircOutEasing(spawnCounter / 180f, 1) * 3f * distanceScaleFactor;
+                Main.LocalPlayer.SetScreenshake(shakeIntensity);
+                for (int i = 0; i < shakeIntensity; i++)
+                {
+                    Point start = Target.Center.ToTileCoordinates() + new Point(Main.rand.Next(-64, 65), 48);
+                    for (int j = 0; j < 96; j++)
+                    {
+                        Point current = start - new Point(0, j);
+                        if (!Main.tile[current].IsTileSolid() && Main.tile[current - new Point(0, 1)].TileType == TileID.Crimstone)
+                            Dust.NewDust(current.ToWorldCoordinates(0, -16), 16, 16, DustID.Crimstone, 0, 3);
+                    }
+                }
+            }
+            if (spawnCounter == 180)
+                NPC.velocity = Vector2.UnitY * (AIState == BrainAIState.UndergroundSpawnAnimation ? 32 : -50);
+            else if (spawnCounter > 180)
+            {
+                NPC.velocity *= 0.955f;
+
+                if (spawnCounter == 240)
+                {
+                    SoundEngine.PlaySound(IntroRoar, NPC.Center);
+
+                    if (Main.netMode == NetmodeID.SinglePlayer)
+                        Main.NewText(Language.GetTextValue("Announcement.HasAwoken", NPC.TypeName), 175, 75);
+                    else if (Main.dedServ)
+                        ChatHelper.BroadcastChatMessage(NetworkText.FromKey("Announcement.HasAwoken", NPC.TypeName), new Color(175, 75, 255));
+                }
+
+                if (spawnCounter > 240 && spawnCounter < 390)
+                {
+                    BrainOfCthulhuSystem.ScreenBlurStrength = 0.5f;// 0.5f;
+                    if (spawnCounter < 250)
+                        BrainOfCthulhuSystem.ScreenBlurStrength = MathHelper.Lerp(0, 0.5f, (spawnCounter - 240) / 10f);
+
+                    NPC.frameCounter += 1f;
+
+                    BoCDrawOffset = Main.rand.NextVector2Circular(4, 4);
+
+                    for (int i = 0; i < 3; i++)
+                    {
+                        Point start = Target.Center.ToTileCoordinates() + new Point(Main.rand.Next(-64, 65), 48);
+                        for (int j = 0; j < 96; j++)
+                        {
+                            Point current = start - new Point(0, j);
+                            if (!Main.tile[current].IsTileSolid() && Main.tile[current - new Point(0, 1)].TileType == TileID.Crimstone)
+                                Dust.NewDust(current.ToWorldCoordinates(0, -16), 16, 16, DustID.Crimstone, 0, 3);
+                        }
+                    }
+
+                    Main.LocalPlayer.SetScreenshake(6 * BrainOfCthulhuSystem.ScreenBlurStrength * distanceScaleFactor);
+
+                    if (spawnCounter % 15 == 0)
+                    {
+                        BossRoar pulse = new(NPC.Center, Color.Black, Main.rand.NextFloatDirection(), 0.1f, 3f, 30);
+                        GeneralParticleHandler.SpawnParticle(pulse);
+                    }
+                }
+                else if (spawnCounter >= 390 && spawnCounter <= 420)
+                {
+                    BrainOfCthulhuSystem.ScreenBlurStrength = MathHelper.Lerp(0.5f, 0f, (spawnCounter - 390) / 30f);
+                    BoCDrawOffset *= 0.75f;
+                }
+                else if (spawnCounter > 420)
+                {
+                    BrainOfCthulhuSystem.ScreenBlurStrength = 0f;
+                    BoCDrawOffset = Vector2.Zero;
+                    AIState = BrainAIState.Phase1Idle;
+                    ResetAttackValues();
+                    Time = -1;
+                    SpawnTime = -1;
+                    Main.musicFade[Main.curMusic] = 1f;
+                    return;
+                }
+            }
+        }
+        if (AttackCounter < GetBrainOfCthuluCreepersCountRevDeath())
+        {
+            if (SpawnTime == 0)
+                NPC.Center = Target.Center + Vector2.UnitY * (AIState == BrainAIState.UndergroundSpawnAnimation ? -900 : 900);
+
+            if (SpawnDelay <= 0)
+            {
+                foreach (NPC creeper in Main.ActiveNPCs)
+                {
+                    if (creeper.type != NPCID.Creeper)
+                        continue;
+                    creeper.netUpdate = true;
+                }
+
+                bool targetLeft = AttackCounter % 2 == 0;
+                List<NPC> creepers = Main.npc.Where(n => n.active && n.type == NPCID.Creeper && n.AIOverride<CreeperAI>().Time == -1 && n.AIOverride<CreeperAI>().CreeperID % 2 == (targetLeft ? 0 : 1)).ToList();
+
+                int rand;
+
+                if (creepers.Count > 0)
+                    rand = Main.rand.Next(creepers.Count);
+                else
+                {
+                    creepers = Main.npc.Where(n => n.active && n.type == NPCID.Creeper && n.AIOverride<CreeperAI>().Time == -1).ToList();
+                    rand = Main.rand.Next(creepers.Count);
+                }
+
+                if (creepers.Count > 0)
+                {
+                    NPC creeper = creepers[rand];
+                    creeper.AIOverride<CreeperAI>().Time = 0;
+
+                    AttackCounter++;
+
+                    if (SummonedViaItem)
+                        SpawnDelay = 2;
+                    else
+                        switch (AttackCounter)
+                        {
+                            case 1:
+                                SpawnDelay = 90;
+                                break;
+                            case 2:
+                            case 3:
+                            case 4:
+                                SpawnDelay = 24;
+                                break;
+                            case 5:
+                                SpawnDelay = 60;
+                                break;
+                            case 6:
+                            case 7:
+                            case 8:
+                                SpawnDelay = 24;
+                                break;
+                            case 9:
+                                SpawnDelay = 60;
+                                break;
+                            default:
+                                SpawnDelay = 4;
+                                break;
+                        }
+                }
+                else
+                    SpawnTime = Time;
+            }
+            else
+                SpawnDelay--;
+        }
+        else if (SpawnTime == 0)
+            SpawnTime = Time;
+    }
+
+    #region Phase 1
+
+    private void Phase1Idle()
+    {
+        #region Attack Selection
+        if (CreeperHPRatio <= DesperateOnslaughtCreeperHealthGate)
+        {
+            Time = -1;
+            AIState = BrainAIState.TelekineticOnslaught;
+            AttackSign = Main.rand.NextBool() ? -1 : 1;
+            NPC.netUpdate = true;
+        }
+        else if (Time > IdlePeriodDuration)
+        {
+            Time = -1;
+
+            ResetAttackValues();
+
+            if (availableAttacks.Count == 0)
+            {
+                availableAttacks = [BrainAIState.CreeperSwipes, BrainAIState.CreeperSwings, BrainAIState.CreeperOrbit, BrainAIState.CreeperSpiral];
+                if (PreviousAttack != BrainAIState.Phase1Idle)
+                    availableAttacks.Remove(PreviousAttack);
+            }
+
+            int pick = Main.rand.Next(availableAttacks.Count);
+            AIState = availableAttacks[pick];
+            availableAttacks.RemoveAt(pick);
+            PreviousAttack = AIState;
+
+            foreach (NPC creep in Main.npc.Where(n => n.active && n.type == NPCID.Creeper))
+                creep.AIOverride<CreeperAI>().Time = -1;
+
+            NPC.netUpdate = true;
+            foreach (NPC creeper in Main.ActiveNPCs)
+            {
+                if (creeper.type != NPCID.Creeper)
+                    continue;
+                creeper.netUpdate = true;
+            }
+        }
+        #endregion
+
+        /*
+        #region Creeper Attacks
+        if (AttackCounter > 0)
+            AttackCounter--;
+        else if (Time < IdlePeriodDuration - 120)
+        {
+            if (Time >= 30)
+            {
+                bool targetLeft = target.Center.X < NPC.Center.X;
+                List<NPC> creepers = Main.npc.Where(n => n.active && n.type == NPCID.Creeper && n.AIOverride<CreeperAI>().Time == -1 && n.AIOverride<CreeperAI>().CreeperID % 2 == (targetLeft ? 0 : 1)).ToList();
+                if (creepers.Count == 0)
+                    creepers = Main.npc.Where(n => n.active && n.type == NPCID.Creeper && n.AIOverride<CreeperAI>().Time == -1).ToList();
+
+                if (creepers.Count > 0)
+                {
+                    int rand = Main.rand.Next(creepers.Count);
+
+                    NPC creeper = creepers[rand];
+                    creeper.AIOverride<CreeperAI>().Time = 0;
+                }
+            }
+            AttackCounter = (int)MathHelper.Lerp(CreeperChargeDelayMax, CreeperChargeDelayMin, 1 - CreeperAmountRatio);
+        }
+        #endregion
+        */
+
+        #region Movement
+        if (Time == 0)
+        {
+            AttackSign = Main.rand.NextBool() ? -1 : 1;
+            NPC.netUpdate = true;
+            foreach (NPC creeper in Main.ActiveNPCs)
+            {
+                if (creeper.type != NPCID.Creeper)
+                    continue;
+                creeper.netUpdate = true;
+            }
+        }
+
+        float rotateDir = AttackSign;
+        Vector2 fromTarget = NPC.DirectionFrom(Target.Center);
+        Vector2 dir = fromTarget.RotatedBy(Math.Sin(Time / 60f) * rotateDir) * new Vector2(2, 1);
+        float rayDist = CalamityUtils.PreciseDistanceToTileCollisionHit(Target.Center, dir.ToRotation(), 360, 1);
+        Vector2 offset = dir * (rayDist - NPC.width);
+        Vector2 goalPos = Target.Center + offset;
+        float distSQ = NPC.DistanceSQ(goalPos);
+        if (distSQ > 129600)
+        {
+            NPC.velocity = NPC.DirectionTo(goalPos) * (4 + (NPC.Distance(goalPos) - 360) / 64f);
+        }
+        else if (distSQ <= 2048)
+        {
+            NPC.velocity *= 0.9f;
+        }
+        else if (NPC.velocity.LengthSquared() < 16f)
+        {
+            NPC.velocity += NPC.DirectionTo(goalPos).SafeNormalize(Vector2.Zero) * 0.15f;
+        }
+        else
+        {
+            NPC.velocity = NPC.DirectionTo(goalPos).SafeNormalize(Vector2.Zero) * 6f;
+        }
+        #endregion
+    }
+
+    private void TelekineticOnslaught()
+    {
+        #region Movement
+        if (Collision.SolidCollision(NPC.position, NPC.width, NPC.height))
+        {
+            NPC.velocity = NPC.DirectionTo(Target.Center) * 4f;
+            Time = -1;
+        }
+        else if (NPC.DistanceSQ(Target.Center) > 230400)
+            NPC.velocity = NPC.DirectionTo(Target.Center) * (NPC.Distance(Target.Center) - 480) / 128f;
+        else
+            NPC.velocity *= 0.9f;
+        #endregion
+
+        float wrappedCounter = Time % 90;
+
+        if (Time <= 60)
+        {
+            if (Time == 0)
+                SoundEngine.PlaySound(Roar, NPC.Center);
+            if (Time < 30)
+            {
+                BrainOfCthulhuSystem.ScreenBlurStrength = 0.5f;
+
+                NPC.frameCounter += 1f;
+
+                for (int i = 0; i < 3; i++)
+                {
+                    Point start = Target.Center.ToTileCoordinates() + new Point(Main.rand.Next(-64, 65), 48);
+                    for (int j = 0; j < 96; j++)
+                    {
+                        Point current = start - new Point(0, j);
+                        if (!Main.tile[current].IsTileSolid() && Main.tile[current - new Point(0, 1)].TileType == TileID.Crimstone)
+                            Dust.NewDust(current.ToWorldCoordinates(0, -16), 16, 16, DustID.Crimstone, 0, 3);
+                    }
+                }
+
+                float d = Main.LocalPlayer.DistanceSQ(NPC.Center);
+                float distanceScaleFactor = 1;
+                if (d > 592900) //770^2
+                    distanceScaleFactor = 1 / (1 + (((float)Math.Sqrt(d) - 770) / 32f));
+
+                Main.LocalPlayer.SetScreenshake(4 * BrainOfCthulhuSystem.ScreenBlurStrength * distanceScaleFactor);
+
+                if (Time % 15 == 0)
+                {
+                    BossRoar pulse = new(NPC.Center, Color.Black, Main.rand.NextFloatDirection(), 0.1f, 3f, 30);
+                    GeneralParticleHandler.SpawnParticle(pulse);
+                }
+            }
+            else
+            {
+                BrainOfCthulhuSystem.ScreenBlurStrength = MathHelper.Lerp(0.5f, 0, CalamityUtils.CircOutEasing((Time - 30) / 30f, 1));
+            }
+        }
+        else
+        {
+            BrainOfCthulhuSystem.ScreenBlurStrength = 0f;
+            if (wrappedCounter == 65)
+            {
+                int checkCount = 8;
+                float wallDist = CalamityUtils.PreciseDistanceToTileCollisionHit(NPC.Center, AttackSign == -1 ? MathHelper.Pi : 0, 480 + NPC.width) - NPC.width;
+                Vector2[] starts = new Vector2[checkCount];
+                for (int i = 0; i < checkCount; i++)
+                {
+                    float completion = (i + 1) / (float)(checkCount + 1);
+                    starts[i] = NPC.Center + (Vector2.UnitX * ((wallDist * completion) + NPC.width) * AttackSign);
+                }
+
+                Vector2[] ends = new Vector2[checkCount];
+                List<Vector2> goodEnds = [];
+                List<Vector2> farEnds = [];
+                List<Vector2> closeEnds = [];
+
+                for (int i = 0; i < checkCount; i++)
+                {
+                    float maxDist = 960;
+                    float floorDist = CalamityUtils.PreciseDistanceToTileCollisionHit(NPC.Center, Vector2.UnitY.ToRotation(), maxDist);
+                    ends[i] = starts[i] + (Vector2.UnitY * (floorDist + 48));
+                    if (floorDist >= 600)
+                        farEnds.Add(ends[i]);
+                    else if (floorDist > 240)
+                        goodEnds.Add(ends[i]);
+                    else
+                        closeEnds.Add(ends[i]);
+                }
+
+                Vector2 chosenEnd;
+
+                if (goodEnds.Count > 0)
+                    chosenEnd = goodEnds[Main.rand.Next(goodEnds.Count)];
+                else if (closeEnds.Count > 0)
+                    chosenEnd = closeEnds[Main.rand.Next(closeEnds.Count)];
+                else
+                    chosenEnd = farEnds[Main.rand.Next(farEnds.Count)];
+
+                if (Main.netMode != NetmodeID.MultiplayerClient)
+                    Projectile.NewProjectile(NPC.GetSource_FromThis(), chosenEnd, Vector2.Zero, ModContent.ProjectileType<TelekineticEnemyGrab>(), 10, 0.5f);
+
+                AttackSign *= -1;
+            }
+        }
+    }
+
+    private void Stunned()
+    {
+        #region Movement
+        NPC.velocity = NPC.velocity.ClampMagnitude(0f, 6f);
+        if (Time == 0)
+        {
+            NPC.velocity = (NPC.Center - Target.Center).SafeNormalize(Vector2.UnitX) * 4f;
+            SoundEngine.PlaySound(ShieldDown, NPC.Center);
+        }
+
+        if (NPC.velocity != Vector2.Zero)
+        {
+            if (Time >= StunDuration)
+                NPC.velocity *= 0.8f;
+            else
+                NPC.velocity *= 0.93f;
+        }
+
+        if (Time < StunDuration)
+            NPC.position.Y += (float)Math.Sin(Time / 8f) * 2 * (1 - MathHelper.Clamp((Time - (StunDuration - 30)) / 30f, 0f, 1f));
+
+        if (Time <= StunDuration - 30)
+        {
+            if (AttackTime > 0)
+            {
+                float kbCounter = 30 - AttackTime;
+                if (kbCounter < 10)
+                {
+                    float lerp = CalamityUtils.SineOutEasing(kbCounter / 10f, 1);
+                    NPC.rotation = AttackRotation.AngleLerp(-AttackRotation, lerp);
+                }
+                else
+                {
+                    float lerp = CalamityUtils.SineInOutEasing((kbCounter - 10) / 20f, 1);
+                    NPC.rotation = (-AttackRotation).AngleLerp(0, lerp);
+                }
+
+            }
+            else if (Math.Abs(NPC.oldVelocity.X) < Math.Abs(NPC.velocity.X) || Time <= 0)
+            {
+                AttackRotation = NPC.rotation;
+                TeleportTime = 0;
+            }
+            else
+            {
+                TeleportTime++;
+                NPC.rotation = MathHelper.Lerp(AttackRotation, MathHelper.Pi / 24f * NPC.oldVelocity.X, CalamityUtils.CircOutEasing(MathHelper.Clamp(TeleportTime / 30f, 0f, 1f), 1));
+            }
+        }
+        #endregion
+
+        #region Tile Collision
+        if (Time < StunDuration)
+        {
+            if (Collision.SolidCollision(NPC.position, NPC.width, NPC.height))
+            {
+                NPC.velocity = NPC.DirectionTo(Target.Center) * 4f;
+            }
+            else if (Collision.SolidCollision(NPC.position + NPC.velocity, NPC.width, NPC.height))
+            {
+                if (NPC.velocity.X != NPC.oldVelocity.X)
+                    NPC.velocity.X = -NPC.oldVelocity.X;
+                if (NPC.velocity.Y != NPC.oldVelocity.Y)
+                    NPC.velocity.Y = -NPC.oldVelocity.Y;
+                //NPC.velocity *= 2f;
+                NPC.velocity = NPC.velocity.ClampMagnitude(0f, 8f);
+                AttackTime = 30;
+                AttackRotation = NPC.rotation;
+            }
+
+            if (AttackTime > 0)
+            {
+                NPC.knockBackResist = 0f;
+                AttackTime--;
+                if (AttackTime == 0)
+                {
+                    NPC.velocity = Vector2.Zero;
+                    AttackRotation = 0;
+                }
+            }
+            else
+                NPC.knockBackResist = 1f;
+        }
+        #endregion
+
+        BrainOfCthulhuSystem.ScreenBlurStrength = 0f;
+
+        NPC.dontTakeDamage = false;
+
+        if (Time <= 15)
+        {
+            float lerp = Time / 15f;
+            ShieldOpacity = 1 - CalamityUtils.CircOutEasing(lerp, 1);
+            ShieldScale = MathHelper.Lerp(1f, 1.5f, lerp);
+        }
+
+        #region Recovery
+        if (OnSecondCreeperPhase && Time == StunDuration - 30)
+        {
+            AIState = BrainAIState.Phase2TransitionClosed;
+            Time = -1;
+            TeleportTime = 0;
+            return;
+        }
+
+        if (Time > StunDuration - 30)
+        {
+            NPC.rotation = NPC.rotation.AngleLerp(0f, CalamityUtils.SineInOutEasing((Time - (StunDuration - 30)) / 30f, 1));
+            if (Time == StunDuration - 15)
+                SoundEngine.PlaySound(ShieldUp, NPC.Center);
+        }
+
+        if (Time >= StunDuration)
+        {
+            if (NPC.velocity.X < 0.001f && NPC.velocity.X < 0.001f)
+                NPC.velocity = Vector2.Zero;
+
+            int creeperRate = 5;
+            float wrappedCounter = (Time - StunDuration) % creeperRate;
+            int spawnTime = GetBrainOfCthuluCreepersCountRevDeath() / 2 * creeperRate;
+
+            if (Time == StunDuration)
+                AttackCounter = GetBrainOfCthuluCreepersCountRevDeath() - 1;
+
+            NPC.knockBackResist = 0f;
+            NPC.dontTakeDamage = true;
+            NPC.rotation = 0f;
+
+            float shieldAppearTime = 15f;
+
+            float lerp = MathHelper.Clamp((Time - StunDuration) / shieldAppearTime, 0f, 1f);
+            if (lerp >= 1)
+            {
+                ShieldOpacity = 1f;
+                ShieldScale = 1f;
+            }
+            else
+            {
+                ShieldOpacity = CalamityUtils.CircOutEasing(lerp, 1);
+                ShieldScale = MathHelper.Lerp(1.5f, 1f, CalamityUtils.SineOutEasing(lerp, 1));
+            }
+
+            if (AttackCounter == -1 && Time > StunDuration + spawnTime + 30)
+            {
+                OnSecondCreeperPhase = true;
+                AIState = BrainAIState.Phase1Idle;
+                Time = -1;
+            }
+            else if (AttackCounter > -1 && wrappedCounter == 0)
+            {
+                for (int i = 0; i < 2; i++)
+                {
+                    Vector2 dir = Vector2.UnitY.RotatedBy((AttackCounter % 2 == 0 ? 1 : -1) * (MathHelper.Pi / 16f + ((MathHelper.Pi - MathHelper.Pi / 8f) * (AttackCounter / 2f / (GetBrainOfCthuluCreepersCountRevDeath() / 2f)))));
+                    Vector2 spawnPos = NPC.Center + (dir * 72f);
+                    if (Main.netMode != NetmodeID.MultiplayerClient)
+                    {
+                        NPC creeper = NPC.NewNPCDirect(NPC.GetSource_FromAI(), spawnPos, NPCID.Creeper, NPC.whoAmI, AttackCounter, ai2: -1, ai3: 1);
+                        creeper.velocity = dir * 24f;
+                    }
+
+                    for (int j = 0; j < 3; j++)
+                    {
+                        BloodParticle p = new(spawnPos, dir.RotatedBy(Main.rand.NextFloat(-MathHelper.Pi / 6f, MathHelper.Pi / 6f)) * Main.rand.NextFloat(8f, 12f), 32, 1f, Color.Red);
+                        GeneralParticleHandler.SpawnParticle(p);
+                    }
+                    BloodParticle2 p2 = new(spawnPos, dir * 10f, 16, 0.5f, Color.Red);
+                    GeneralParticleHandler.SpawnParticle(p2);
+
+                    if (!Main.dedServ)
+                    {
+                        BrainOfCthulhuSystem.VerletTendrils[(int)AttackCounter] = [];
+                        for (int j = 0; j < 28; j++)
+                            BrainOfCthulhuSystem.VerletTendrils[(int)AttackCounter].Add(new(NPC.Center));
+                    }
+
+                    AttackCounter--;
+                    if (AttackCounter <= -1)
+                        return;
+                }
+
+                SoundEngine.PlaySound(SoundID.NPCHit9, NPC.Center);
+            }
+        }
+        #endregion
+    }
+
+    private void CreeperSwipes()
+    {
+        //Hand Size check to determine if 1 hand variant should be used
+        if (Time == 0)
+        {
+            int leftAmt = 0;
+            int rightAmt = 0;
+            foreach (NPC creeper in Main.ActiveNPCs)
+            {
+                if (creeper.type != NPCID.Creeper)
+                    continue;
+
+                if (creeper.AIOverride<CreeperAI>().CreeperID % 2 == 0)
+                    leftAmt++;
+                else
+                    rightAmt++;
+            }
+
+            if (leftAmt > 5 && rightAmt > 5)
+            {
+                AttackSign = Main.rand.NextBool() ? -1 : 1;
+                AttackFlag = false;
+            }
+            else
+                AttackFlag = true;
+
+            NPC.netUpdate = true;
+            AttackList.Clear();
+        }
+
+        float wrappedCount = Time % (SwipeDuration + SwipeDelay);
+
+        if (Time >= SwipesStartupDuration)
+        {
+            NPC.damage = NPC.defDamage;
+            if (wrappedCount == 0)
+            {
+                bool useEven = Main.rand.NextBool();
+
+                bool anyActivated = false;
+
+                foreach (NPC Npc in Main.ActiveNPCs)
+                {
+                    if (Npc.type != NPCID.Creeper)
+                        continue;
+
+                    if (AttackFlag || Npc.AIOverride<CreeperAI>().CreeperID % 2 == 0! ^ useEven)
+                    {
+                        AttackList.Add(Npc.whoAmI);
+                        //Npc.AIOverride<CreeperAI>().Time = 0;
+                        anyActivated = true;
+                    }
+                }
+
+                if (!anyActivated)
+                    foreach (NPC Npc in Main.ActiveNPCs)
+                    {
+                        if (Npc.type != NPCID.Creeper)
+                            continue;
+
+                        AttackList.Add(Npc.whoAmI);
+                        //Npc.AIOverride<CreeperAI>().Time = 0;
+                    }
+
+                NPC.netUpdate = true;
+            }
+            else if (wrappedCount == SwipeDuration)
+            {
+                AttackSign *= -1;
+                AttackList.Clear();
+                NPC.netUpdate = true;
+            }
+
+            if (wrappedCount > 1 && wrappedCount <= SwipeIchorDelay && Time % 3 == 0) // Telegraphs ichor rain w/ dripping particles
+            {
+                Vector2 spawnPosition = NPC.Center;
+                spawnPosition.Y += Main.rand.NextFloat(38, 50);
+                spawnPosition.X += Main.rand.NextFloat(-56, 56);
+
+                BloodParticle blood = new BloodParticle(spawnPosition, Main.rand.NextVector2Unit() * Main.rand.NextFloat(1.5f, 2.5f), Main.rand.Next(30, 40), Main.rand.NextFloat(0.6f, 1f), Color.Gold);
+                GeneralParticleHandler.SpawnParticle(blood);
+            }
+
+            if (wrappedCount < 60f) // Vibrates during telegraph
+            {
+                Vector2 vibrationVector = Main.rand.NextVector2CircularEdge(1, 1) * MathHelper.Lerp(0f, 12f, CalamityUtils.CircInEasing(wrappedCount / 80f, 1));
+
+                BoCDrawOffset = vibrationVector;
+            }
+            else if (wrappedCount > 60f && wrappedCount < 80f) // Droops down when starting to fire ichor shots
+            {
+                float progress = (wrappedCount - 60f) / 20f;
+                BoCDrawOffset = new Vector2(0, MathHelper.Lerp(10, 0, 1f - (float)Math.Pow(1f - progress, 3f)));
+            }
+
+            if (Main.netMode != NetmodeID.MultiplayerClient)
+                if (wrappedCount > SwipeIchorDelay && wrappedCount <= SwipeDuration && Time % 2 == 0)
+                    Projectile.NewProjectile(NPC.GetSource_FromThis(), NPC.Center + new Vector2(Main.rand.NextFloat(-72, 72), 56), Vector2.UnitY.RotatedBy(Main.rand.NextFloat(-MathHelper.Pi / 4f, MathHelper.Pi / 4f)) * 4f, ProjectileID.GoldenShowerHostile, IchorShotDamage, 0.5f);
+
+            if (Time >= SwipesStartupDuration + ((SwipeDuration + SwipeDelay) * SwipeAmount))
+            {
+                Time = 0;
+                AIState = BrainAIState.Phase1Idle;
+                NPC.netUpdate = true;
+                AttackList.Clear();
+            }
+        }
+        else
+            NPC.damage = 0;
+
+        #region Movement
+        
+        Vector2 goalPos = Target.Center + (Vector2.UnitY * -270);
+        float distSQ = NPC.DistanceSQ(goalPos);
+        if ((Time > SwipesStartupDuration && wrappedCount > 30 && wrappedCount <= SwipeDuration) || NPC.DistanceSQ(goalPos) <= 2048)
+            NPC.velocity *= 0.9f;
+        else if (distSQ > 14400)
+            NPC.velocity = NPC.DirectionTo(goalPos) * (8 + (NPC.Distance(goalPos) - 120) / 16f);
+        else
+            NPC.velocity = NPC.DirectionTo(goalPos).SafeNormalize(Vector2.UnitX * -Target.direction) * (8f * distSQ / 14400f);
+        #endregion
+    }
+
+    private void CreeperSwings()
+    {
+        #region Movement
+        Vector2 goalDir = Vector2.Zero;
+        Vector2 fromTarget = NPC.Center - Target.Center;
+        if (Math.Abs(fromTarget.X) > Math.Abs(fromTarget.Y))
+            goalDir = Vector2.UnitX * Math.Sign(fromTarget.X);
+        else
+            goalDir = Vector2.UnitY * Math.Sign(fromTarget.Y);
+
+        Vector2 goalPos = Target.Center + (goalDir * 360) - (Vector2.UnitY * 32);
+        if (NPC.DistanceSQ(goalPos) <= 2048)
+            NPC.velocity *= 0.9f;
+        else if (NPC.velocity.LengthSquared() <= 56.25f) //7.5^2
+            NPC.velocity += NPC.DirectionTo(goalPos).SafeNormalize(Vector2.UnitX * -Target.direction) * 0.5f;
+        else
+            NPC.velocity = NPC.DirectionTo(goalPos).SafeNormalize(Vector2.UnitX * -Target.direction) * 8f;
+        #endregion
+
+        float delay = OnSecondCreeperPhase ? StrongSwipeDelay : LightSwipeDelay;
+        if (Time == 0)
+            AttackList.Clear();
+
+        if (Time > delay)
+        {
+            foreach (NPC creeper in Main.npc.Where(n => n.active && n.type == NPCID.Creeper && n.AIOverride<CreeperAI>().Time == -1 && !AttackList.Contains(n.whoAmI)))
+                creeper.position += NPC.velocity;
+
+            int crushCount;
+            int attackDelay;
+            if (!OnSecondCreeperPhase)
+            {
+                crushCount = LightSwipeAmount;
+                attackDelay = LightSwipeDuration;
+            }
+            else
+            {
+                crushCount = StrongSwipeAmount;
+                attackDelay = StrongSwipeDuration;
+            }
+            int attackDur = attackDelay * crushCount;
+
+            if (Time < delay + attackDur && Time % attackDelay == 0)
+            {
+                List<NPC> creepers = Main.npc.Where(n => n.active && n.type == NPCID.Creeper && n.AIOverride<CreeperAI>().Time == -1 && !AttackList.Contains(n.whoAmI)).ToList();
+                if (creepers.Count > 1)
+                {
+                    float rotation;
+                    if (!OnSecondCreeperPhase)
+                    {
+                        rotation = Target.velocity.ToRotation();
+                        if (Target.velocity == Vector2.Zero)
+                            rotation = Target.direction == 1 ? 0 : MathHelper.Pi;
+                        rotation += Main.rand.NextFloat(-MathHelper.PiOver4 / 2f, MathHelper.PiOver4 / 2f);
+                    }
+                    else
+                        rotation = Main.rand.NextFloat(0, MathHelper.TwoPi);
+
+                    int rand = Main.rand.Next(creepers.Count);
+                    NPC first = creepers[rand];
+                    CreeperAI creeper1 = first.AIOverride<CreeperAI>();
+                    AttackList.Add(first.whoAmI);
+                    //creeper1.Time = 0;
+                    creeper1.AttackAngle = rotation;
+                    creepers.RemoveAt(rand);
+
+                    NPC second = creepers[Main.rand.Next(creepers.Count)];
+                    CreeperAI creeper2 = second.AIOverride<CreeperAI>();
+                    AttackList.Add(second.whoAmI);
+                    //creeper2.Time = 0;
+                    creeper2.AttackAngle = rotation + MathHelper.Pi;
+
+                    creeper1.PartnerIndex = second.whoAmI;
+                    creeper2.PartnerIndex = first.whoAmI;
+                }
+
+                NPC.netUpdate = true;
+                foreach (NPC creeper in Main.ActiveNPCs)
+                {
+                    if (creeper.type != NPCID.Creeper)
+                        continue;
+                    creeper.netUpdate = true;
+                }
+            }
+
+            if (Time > delay + attackDur + attackDelay)
+            {
+                Time = 0;
+                AIState = BrainAIState.Phase1Idle;
+                AttackList.Clear();
+                //foreach (NPC creep in Main.npc.Where(n => n.active && n.type == NPCID.Creeper))
+                //    creep.AIOverride<CreeperAI>().Time = -1;
+            }
+        }
+    }
+
+    private void CreeperOrbit()
+    {
+        #region Movement
+        Vector2 fromTarget = (NPC.Center - Target.Center).SafeNormalize(Vector2.UnitX);
+        Vector2 goalPos = Target.Center + (fromTarget * 440) - (Vector2.UnitY * 32);
+        float distSQ = NPC.DistanceSQ(goalPos);
+        if (distSQ > 14400)
+            NPC.velocity = NPC.DirectionTo(goalPos) * (4 + (NPC.Distance(goalPos) - 120) / 16f);
+        else
+            NPC.velocity = NPC.DirectionTo(goalPos).SafeNormalize(Vector2.Zero) * (2 + (2f * (distSQ / 14400)));
+        #endregion
+
+        if (Time == 0)
+        {
+            AttackSign = Main.rand.NextBool() ? -1 : 1;
+            NPC.netUpdate = true;
+            foreach (NPC creeper in Main.ActiveNPCs)
+            {
+                if (creeper.type != NPCID.Creeper)
+                    continue;
+                creeper.netUpdate = true;
+            }
+        }
+
+        if (Time >= OrbitDuration + 30)
+        {
+            Time = -1;
+            AIState = BrainAIState.Phase1Idle;
+            AttackList.Clear();
+            foreach (NPC creep in Main.ActiveNPCs)
+            {
+                if (creep.type == NPCID.Creeper)
+                    creep.AIOverride<CreeperAI>().Time = -1;
+            }
+        }
+        else if (Time >= OrbitAttackInterval && Time < OrbitDuration && Time % OrbitAttackInterval == 0)
+        {
+            List<NPC> creepers = Main.npc.Where(n => n.active && n.type == NPCID.Creeper).ToList();
+            if (creepers.Count > 0)
+            {
+                int rand = Main.rand.Next(creepers.Count);
+                for (int i = 0; i < OrbitAttackParticipantCount; i++)
+                {
+                    if (rand >= creepers.Count)
+                        rand -= creepers.Count;
+                    NPC creeper = creepers[rand];
+                    AttackList.Add(creeper.whoAmI);
+                    //creeper.AIOverride<CreeperAI>().Time = 0;
+                    rand += (int)Math.Round(creepers.Count / (float)OrbitAttackParticipantCount);
+                }
+
+                NPC.netUpdate = true;
+                foreach (NPC creeper in Main.ActiveNPCs)
+                {
+                    if (creeper.type != NPCID.Creeper)
+                        continue;
+                    creeper.netUpdate = true;
+                }
+            }
+        }
+    }
+
+    private void CreeperSpiral()
+    {
+
+        if (Time == 0)
+        {
+            AttackSign = Main.rand.NextBool() ? -1 : 1;
+            AttackRotation = 0;
+            NPC.netUpdate = true;
+            foreach (NPC creeper in Main.ActiveNPCs)
+            {
+                if (creeper.type != NPCID.Creeper)
+                    continue;
+                creeper.netUpdate = true;
+            }
+        }
+        float startTimePerRev = MathHelper.Lerp(StartingTimePerRevolutionMax, StartingTimePerRevolutionMin, 1 - CreeperAmountRatio);
+        float endTimePerRev = MathHelper.Lerp(EndingTimePerRevolutionMax, EndingTimePerRevolutionMin, 1 - CreeperAmountRatio);
+        float timePerRev = MathHelper.Lerp(startTimePerRev, endTimePerRev, MathHelper.Clamp((Time - SpeedUpDelayTime) / (SpiralDuration - SpeedUpDelayTime - SpeedUpExtensionTime), 0f, 1f));
+        if (Time > SpiralDuration - 30)
+            timePerRev *= MathHelper.Lerp(1f, 10f, CalamityUtils.CircOutEasing((Time - (SpiralDuration - 30)) / 30f, 1));
+        else if (Time < SpiralSetupTime)
+            timePerRev *= MathHelper.Lerp(1f, 10f, CalamityUtils.CircInEasing(Time / SpiralSetupTime, 1));
+
+        float rotToAdd = MathHelper.TwoPi / timePerRev * AttackSign;
+        if (OnSecondCreeperPhase)
+        {
+            float attackComplationRatio = Time / SpiralDuration;
+            float lerp = Utils.GetLerpValue(TurnAroundRatio - (TurnAroundDurationRatio / 2f), TurnAroundRatio + (TurnAroundDurationRatio / 2f), attackComplationRatio, true);
+            rotToAdd *= MathHelper.Lerp(1, -1, lerp);
+        }
+        AttackRotation += rotToAdd;
+
+        if (NPC.DistanceSQ(Target.Center) > 57600)
+            NPC.velocity = NPC.DirectionTo(Target.Center) * (NPC.Distance(Target.Center) - 240) / 32f;
+        else
+            NPC.velocity *= 0.9f;
+
+        if (Time > SpiralDuration)
+        {
+            Time = -1;
+            AIState = BrainAIState.Phase1Idle;
+            foreach (NPC creep in Main.ActiveNPCs)
+            {
+                if (creep.type == NPCID.Creeper)
+                    creep.AIOverride<CreeperAI>().Time = -1;
+            }
+        }
+    }
+    
+    #endregion
+
+    private void PhaseTransition()
+    {
+        NPC.dontTakeDamage = true;
+        NPC.rotation *= 0.9f;
+        TeleportTime = 0;
+
+        float animCounter = Time - 60;
+        if (animCounter >= 0)
+        {
+            if (animCounter == 0)
+                NPC.velocity = Vector2.UnitY * 2f;
+            else if (animCounter < 60)
+                NPC.velocity *= 0.99f;
+            else if (animCounter == 60)
+                NPC.velocity = Vector2.UnitY * -8f;
+            else if (animCounter == 65)
+            {
+                AIState = BrainAIState.Phase2TransitionOpen;
+                PreviousAttack = BrainAIState.Phase1Idle;
+                availableAttacks.Clear();
+
+                SoundEngine.PlaySound(SoundID.NPCHit1, NPC.Center);
+
+                if (!Main.dedServ)
+                {
+                    //Spawns all of BoC's Phase Transition Gores (GoreIDs 392 -> 395)
+                    for (int i = 392; i <= 395; i++)
+                        Gore.NewGore(NPC.GetSource_FromAI(), NPC.position, Main.rand.NextVector2Circular(6f, 6f), i);
+                }
+
+                for (int j = 0; j < 20; j++)
+                    Dust.NewDustPerfect(Main.rand.NextVector2FromRectangle(NPC.Hitbox), DustID.Blood, Main.rand.NextVector2Circular(6f, 6f));
+
+                for (int i = 1; i <= 3; i++)
+                {
+                    Color color = i switch
+                    {
+                        1 => Color.Yellow,
+                        2 => Color.Orange,
+                        _ => Color.Red,
+                    };
+                    PulseRing ring = new(NPC.Center, NPC.velocity * 0.5f, color, 0f, 1f + i * 0.5f, 24);
+                    GeneralParticleHandler.SpawnParticle(ring);
+                }
+
+                BoCAfterImages = [];
+
+                SoundEngine.PlaySound(Roar, NPC.Center);
+            }
+            else
+                NPC.velocity *= 0.9f;
+
+            if (animCounter < 60f)
+                BoCDrawOffset = Main.rand.NextVector2CircularEdge(1, 1) * MathHelper.Lerp(0f, 16f, CalamityUtils.CircInEasing(animCounter / 60f, 1));
+            else if (animCounter < 70f)
+                BoCDrawOffset = Main.rand.NextVector2CircularEdge(1, 1) * MathHelper.Lerp(16f, 0f, CalamityUtils.CircOutEasing((animCounter - 60) / 10f, 1));
+
+            if (animCounter >= 120f)
+            {
+                Time = 0;
+                ResetAttackValues();
+                AIState = BrainAIState.Phase2Idle;
+                NPC.dontTakeDamage = false;
+            }
+        }
+        else
+        {
+            NPC.velocity *= 0.8f;
+
+            #region Tile Collision
+            if (Collision.SolidCollision(NPC.position, NPC.width, NPC.height))
+            {
+                NPC.velocity = NPC.DirectionTo(Target.Center) * 4f;
+            }
+            else if (Collision.SolidCollision(NPC.position + NPC.velocity, NPC.width, NPC.height))
+            {
+                if (NPC.velocity.X != NPC.oldVelocity.X)
+                    NPC.velocity.X = -NPC.oldVelocity.X;
+                if (NPC.velocity.Y != NPC.oldVelocity.Y)
+                    NPC.velocity.Y = -NPC.oldVelocity.Y;
+                NPC.velocity *= 2f;
+                NPC.velocity = NPC.velocity.ClampMagnitude(0f, 8f);
+            }
+            #endregion
+        }
+    }
+
+    #region Phase 2
+
+    private void Phase2Idle()
+    {
+        //goes from 3 at full health to 1 at low health
+        int chases = (int)Math.Ceiling(MaxChases * (NPC.life / (float)NPC.lifeMax));
+
+        NPC.rotation = NPC.velocity.X / 6f * MathHelper.Pi / 8f;
+
+        if (Time == ChaseTime - 5)
+            AttackCounter++;
+
+        if (Time <= ChaseTime)
+        {
+            float speedUp = MathHelper.Clamp((Time - 10) / 10f, 0f, 1f);
+            float slowDown = 1 - MathHelper.Clamp((Time - (ChaseTime - 15)) / 15f, 0f, 1f);
+            float angleChange = MathHelper.Lerp(MathHelper.Pi / 24f, 0f, MathHelper.Clamp(Time / (ChaseTime * 0.666f), 0f, 1f));
+            NPC.velocity = NPC.velocity.RotateDirectionTowards(NPC.DirectionTo(Target.Center).ToRotation(), angleChange) * (MathHelper.Lerp(3f, 18f, Time / ChaseTime) * speedUp * slowDown);
+
+            if (Time == ChaseTime)
+            {
+                Vector2 direction = Target.velocity.SafeNormalize(Vector2.UnitX * Target.direction).RotatedBy(Main.rand.NextFloat(-MathHelper.Pi / 3f, MathHelper.Pi / 3f));
+                AttackPosition = Target.Center + (direction * DefaultTeleportDistance);
+                BoCAfterImages = [];
+                NPC.netUpdate = true;
+            }
+            else
+            {
+                TeleportTime = 0;
+                NPC.Opacity = 1f;
+            }
+        }
+        else
+        {
+            TeleportDuration = IdleTeleportDuration;
+
+            Vector2 endPoint = AttackPosition;
+
+            NPC.velocity = Vector2.Zero;
+
+            if (Time < ChaseTime + (TeleportDuration / 2f))
+            {
+                if (Time % 4 == 0)
+                {
+                    Vector2 startPoint = NPC.Center;
+
+                    Vector2 direction = endPoint - startPoint;
+                    float curveIntensity = Main.rand.NextFloat(-0.2f, 0.2f);
+                    Vector2 perpindicular = direction.RotatedBy(MathHelper.PiOver2);
+
+                    Vector2 controlPoint1 = startPoint + (direction * 0.25f) + (perpindicular * curveIntensity);
+                    Vector2 controlPoint2 = startPoint + (direction * 0.75f) + (perpindicular * curveIntensity);
+
+                    BezierCurve path = new BezierCurve(startPoint, controlPoint1, controlPoint2, endPoint);
+
+                    BrainOfCthulhuAfterImage afterimage = new(path, NPC.rotation, Vector2.One, (int)(ChaseTime + (TeleportDuration * 0.75f) - Time), BoCFrame);
+                    BoCAfterImages.Add(afterimage);
+                    GeneralParticleHandler.SpawnParticle(afterimage);
+                }
+                TeleportTime++;
+            }
+            else if (Time == ChaseTime + (TeleportDuration / 2f) && !AttackFlag)
+            {
+                Vector2 start = NPC.Center;
+                NPC.Center = endPoint;
+                AttackFlag = true;
+                NPC.netUpdate = true;
+            }
+            else
+            {
+                TeleportTime--;
+                if (TeleportTime < 0)
+                {
+                    TeleportTime = 0;
+                    Time = -1;
+                    AttackFlag = false;
+
+                    #region Attack Selection
+                    if (AttackCounter >= chases) //Pick attack
+                    {
+                        NPC.rotation = 0;
+                        ResetAttackValues();
+
+                        if (availableAttacks.Count == 0)
+                        {
+                            bool quickChoice = Main.rand.NextBool();
+                            availableAttacks = [
+                                BrainAIState.Bloodletting,
+                                        quickChoice ? BrainAIState.SanguineScythes : BrainAIState.IllusionDash,
+                                        Main.rand.NextBool() ? BrainAIState.Phase2Idle : BrainAIState.Bloodletting,
+                                        quickChoice ? BrainAIState.IllusionDash : BrainAIState.SanguineScythes,
+                                        BrainAIState.IllusionTrick
+                            ];
+                        }
+
+                        AIState = availableAttacks[0];
+                        availableAttacks.RemoveAt(0);
+                        PreviousAttack = AIState;
+
+                        if (AIState == BrainAIState.SanguineScythes)
+                        {
+                            Time = -31;
+                            BoCAfterImages = [];
+                        }
+
+                        NPC.netUpdate = true;
+                    }
+                    #endregion
+                }
+            }
+
+            NPC.Opacity = 1 - (TeleportTime / (TeleportDuration / 2f));
+        }
+    }
+
+    private void Bloodletting()
+    {
+        float endTime = Time - BloodlettingDuration;
+
+        #region Main Attack
+        if (endTime < 0)
+        {
+            NPC.rotation = (float)Math.Sin(Time / 8f) * MathHelper.Pi / 8f;
+            BoCDrawOffset = Vector2.Zero;
+
+            if (Time > BloodshotRate) //Doesnt fire first bloodshot
+            {
+                if (Time % IchorRate == 0)
+                {
+                    if (Time % (IchorRate * 2) == 0)
+                        SoundEngine.PlaySound(SoundID.Item17, NPC.Center);
+                    if (Main.netMode != NetmodeID.MultiplayerClient)
+                        Projectile.NewProjectile(NPC.GetSource_FromThis(), NPC.Center + NPC.velocity + Main.rand.NextVector2Circular(72, 72), new Vector2(Main.rand.NextFloat(-IchorSpread, IchorSpread), -IchorVelocity), ModContent.ProjectileType<IchorShower>(), IchorShotDamage, 0.5f);
+                }
+
+                if (Main.netMode != NetmodeID.MultiplayerClient)
+                    if (Time % BloodshotRate == 0)
+                    {
+                        Vector2 dir = NPC.DirectionTo(Target.Center);
+
+                        for (int i = -2; i <= 2; i++)
+                        {
+                            Vector2 initialDir = dir.RotatedBy(i * MathHelper.Pi / 4f);
+                            Projectile.NewProjectile(NPC.GetSource_FromThis(), NPC.Center, initialDir * BloodshotVelocity, ProjectileID.BloodNautilusShot, BloodShotDamage, 0.5f, ai0: dir.ToRotation() + MathHelper.TwoPi, ai1: initialDir.ToRotation());
+                        }
+
+                        if (CalamityWorld.death)
+                        {
+                            Vector2 initialDir = dir.RotatedBy(MathHelper.Pi / 6f);
+                            Projectile.NewProjectile(NPC.GetSource_FromThis(), NPC.Center, initialDir * BloodshotVelocity / 2f, ProjectileID.BloodNautilusShot, BloodShotDamage, 0.5f, ai0: dir.ToRotation() + MathHelper.TwoPi, ai1: initialDir.ToRotation());
+                            initialDir = dir.RotatedBy(-MathHelper.Pi / 6f);
+                            Projectile.NewProjectile(NPC.GetSource_FromThis(), NPC.Center, initialDir * BloodshotVelocity / 2f, ProjectileID.BloodNautilusShot, BloodShotDamage, 0.5f, ai0: dir.ToRotation() + MathHelper.TwoPi, ai1: initialDir.ToRotation());
+                        }
+                    }
+
+
+            }
+        }
+        #endregion
+
+        #region Attack End
+        else
+        {
+            NPC.rotation *= 0.9f;
+
+            if (endTime == 0)
+                SoundEngine.PlaySound(Roar, NPC.Center);
+            if (endTime >= DashPrepTime)
+            {
+                if (endTime < DashPrepTime + DashReelbackTime)
+                {
+                    float reelBackSpeedExponent = 2.6f;
+                    float reelBackCompletion = Utils.GetLerpValue(0f, 30, endTime - DashPrepTime, true);
+                    float reelBackSpeed = MathHelper.Lerp(4f, 16f, MathF.Pow(reelBackCompletion, reelBackSpeedExponent));
+                    Vector2 reelBackVelocity = Vector2.UnitY * -reelBackSpeed;
+                    NPC.velocity = Vector2.Lerp(NPC.velocity, reelBackVelocity, 0.25f);
+                }
+                else if (endTime == DashPrepTime + 20)
+                    NPC.velocity = Vector2.UnitY * DashVelocity;
+
+                if (endTime >= DashPrepTime + DashReelbackTime && Time % DashScytheRate == 0)
+                {
+                    if (Main.netMode != NetmodeID.MultiplayerClient)
+                    {
+                        Projectile.NewProjectile(NPC.GetSource_FromThis(), NPC.Center, Vector2.UnitX * 16f, ModContent.ProjectileType<BloodScythe>(), BloodScytheDamage, 0.5f);
+                        Projectile.NewProjectile(NPC.GetSource_FromThis(), NPC.Center, Vector2.UnitX * -16f, ModContent.ProjectileType<BloodScythe>(), BloodScytheDamage, 0.5f);
+                    }
+                }
+
+                if (endTime > DashPrepTime + DashReelbackTime + DashDuration)
+                {
+                    NPC.rotation = 0;
+                    SetupForNextAttack();
+                    return;
+                }
+            }
+        }
+        #endregion
+
+        #region Movement
+
+        if (endTime < 0)
+        {
+            if (Time == 0)
+            {
+                AttackPosition = NPC.Center;
+                if (NPC.Center.X < Target.Center.X)
+                    AttackSign = -1;
+                else
+                    AttackSign = 1;
+            }
+
+            float waveValue = Time * MathHelper.Pi / BloodshotRate;
+            Vector2 goalPos = Target.Center + new Vector2((float)Math.Cos(waveValue) * HoverDistance.X * AttackSign, (float)(-0.5f * Math.Cos(2 * waveValue) + 0.5f) * -HoverDistance.Y);
+            NPC.velocity = Vector2.Zero;
+            if (Time < 30f)
+                NPC.Center = Vector2.Lerp(AttackPosition, goalPos, CalamityUtils.SineOutEasing(Time / 30f, 1));
+            else
+                NPC.Center = goalPos;
+        }
+        else if (endTime < DashPrepTime)
+        {
+            if (endTime == 0)
+                NPC.velocity = Vector2.UnitX * AttackSign * 8f;
+            else
+            {
+                Vector2 goalPos = Target.Center - Vector2.UnitY * HoverEndHeight;
+                Vector2 accel = new Vector2(0.5f, 1.5f);
+
+                NPC.velocity += NPC.DirectionTo(goalPos).SafeNormalize(Vector2.Zero) * accel;
+                NPC.velocity = NPC.velocity.ClampMagnitude(0f, 8f);
+            }
+        }
+        #endregion
+    }
+
+    private void SanguineScythes()
+    {
+        #region Attack Ending
+        if (AttackCounter > SanguineTeleportCount)
+        {
+            if (Time == SanguineAttackEndDelay)
+            {
+                SoundEngine.PlaySound(Roar, NPC.Center);
+                bool left = Target.Center.X > NPC.Center.X;
+                NPC.velocity = Vector2.UnitX * (left ? 18 : -18);
+                NPC.rotation = MathHelper.Pi / 8f * (left ? 1 : -1);
+            }
+            if (Time > SanguineAttackEndDelay + SanguineAttackEndDuration)
+            {
+                NPC.velocity *= 0.8f;
+                NPC.rotation *= 0.8f;
+            }
+            else if (Time >= SanguineAttackEndDelay && Time % SanguineAttackEndIchorRate == 0)
+            {
+                if (Main.netMode != NetmodeID.MultiplayerClient)
+                {
+                    Projectile.NewProjectile(NPC.GetSource_FromThis(), NPC.Center, new Vector2(Math.Sign(NPC.velocity.X), -2f), ModContent.ProjectileType<IchorShower>(), IchorShotDamage, 0.5f);
+                    Projectile.NewProjectile(NPC.GetSource_FromThis(), NPC.Center, new Vector2(Math.Sign(NPC.velocity.X), -6f), ModContent.ProjectileType<IchorShower>(), IchorShotDamage, 0.5f);
+                }
+            }
+
+            if (Time > SanguineAttackEndDelay + SanguineAttackEndDuration + 10)
+                SetupForNextAttack();
+        }
+        #endregion
+        #region Attack Start
+        else if (Time < 0)
+        {
+            if (Time == -25)
+                NPC.netUpdate = true;
+
+            if (Time == -24)
+            {
+                SoundEngine.PlaySound(Roar, NPC.Center);
+
+                for (int i = 1; i <= 3; i++)
+                {
+                    Color color = i switch
+                    {
+                        1 => Color.Yellow,
+                        2 => Color.Orange,
+                        _ => Color.Red,
+                    };
+                    PulseRing ring = new(NPC.Center, NPC.velocity * 0.5f, color, 0f, 1f + i * 0.5f, 24);
+                    GeneralParticleHandler.SpawnParticle(ring);
+                }
+            }
+            if (Time == -1)
+            {
+                Vector2 direction = Target.velocity.SafeNormalize(Vector2.UnitX * Target.direction).RotatedBy(Main.rand.NextFloat(-MathHelper.Pi / 3f, MathHelper.Pi / 3f));
+                float distance = SanguineTeleportDistance;
+                AttackPosition = Target.Center + (direction * distance);
+                NPC.netUpdate = true;
+            }
+        }
+        #endregion
+        #region Teleport
+        else
+        {
+            TeleportDuration = SanguineTeleportDuration;
+
+            Vector2 endPoint = AttackPosition;
+
+            if (Time < (TeleportDuration / 2f))
+            {
+                if (Time % 4 == 0)
+                {
+                    Vector2 startPoint = NPC.Center;
+
+                    Vector2 direction = endPoint - startPoint;
+                    float curveIntensity = Main.rand.NextFloat(-0.2f, 0.2f);
+                    Vector2 perpindicular = direction.RotatedBy(MathHelper.PiOver2);
+
+                    Vector2 controlPoint1 = startPoint + (direction * 0.25f) + (perpindicular * curveIntensity);
+                    Vector2 controlPoint2 = startPoint + (direction * 0.75f) + (perpindicular * curveIntensity);
+
+                    BezierCurve path = new BezierCurve(startPoint, controlPoint1, controlPoint2, endPoint);
+
+                    BrainOfCthulhuAfterImage afterimage = new(path, NPC.rotation, Vector2.One, (int)((TeleportDuration * 0.75f) - Time), BoCFrame);
+                    BoCAfterImages.Add(afterimage);
+                    GeneralParticleHandler.SpawnParticle(afterimage);
+                }
+                TeleportTime++;
+            }
+            else if (Time == (TeleportDuration / 2f) && !AttackFlag)
+            {
+                Vector2 start = NPC.Center;
+                NPC.Center = endPoint;
+                AttackFlag = true;
+                NPC.netUpdate = true;
+            }
+            else
+            {
+                TeleportTime--;
+                if (TeleportTime < 0)
+                {
+                    TeleportTime = 0;
+                    Time = -1;
+                    AttackFlag = false;
+                    AttackCounter++;
+
+                    if (AttackCounter <= SanguineTeleportCount)
+                    {
+                        SoundStyle explosion = new("CalamityMod/Sounds/Custom/Ravager/RavagerMissileExplosion")
+                        {
+                            Volume = 0.5f
+                        };
+                        SoundEngine.PlaySound(explosion, NPC.Center);
+
+                        for (int i = 0; i < SanguineScytheCount; i++)
+                        {
+                            float initalSpeed = 16f;
+                            if (CalamityWorld.death && i % 2 == 0)
+                                initalSpeed /= 2f;
+
+                            if (Main.netMode != NetmodeID.MultiplayerClient)
+                                Projectile.NewProjectile(NPC.GetSource_FromThis(), NPC.Center, Vector2.UnitX.RotatedBy(MathHelper.TwoPi / SanguineScytheCount * i) * initalSpeed, ModContent.ProjectileType<BloodScythe>(), BloodScytheDamage, 0.5f);
+                        }
+                    }
+
+                    Vector2 direction;
+                    if (AttackCounter < SanguineTeleportCount)
+                    {
+                        direction = Main.rand.NextFloat(0f, MathHelper.TwoPi).ToRotationVector2();
+                        AttackPosition = Target.Center + (direction * SanguineTeleportDistance);
+                    }
+                    else
+                    {
+                        direction = Vector2.UnitX * (Main.rand.NextBool() ? -1 : 1);
+                        AttackPosition = Target.Center + (direction * SanguineFinalTeleportOffset.X) + (Vector2.UnitY * -SanguineFinalTeleportOffset.Y);
+                    }
+
+                    NPC.netUpdate = true;
+
+                    BoCAfterImages = [];
+                    NPC.Opacity = 1f;
+                }
+            }
+
+            NPC.Opacity = 1 - (TeleportTime / (TeleportDuration / 2f));
+        }
+        #endregion
+    }
+
+    //Unused
+    private void CrimsonEyes()
+    {
+        #region Attack Start
+        if (Time <= 30)
+        {
+            if (Time >= 6 && Time <= 12)
+            {
+                if (Time == 6)
+                {
+                    SoundEngine.PlaySound(Roar, NPC.Center);
+
+                    for (int i = 1; i <= 3; i++)
+                    {
+                        Color color = i switch
+                        {
+                            1 => Color.Yellow,
+                            2 => Color.Orange,
+                            _ => Color.Red,
+                        };
+                        PulseRing ring = new(NPC.Center, NPC.velocity * 0.5f, color, 0f, 1f + i * 0.5f, 24);
+                        GeneralParticleHandler.SpawnParticle(ring);
+                    }
+
+                    CalamityUtils.AddScreenshakeAt(NPC.Center, 10f);
+                }
+
+                for (int i = 0; i < 12; i++)
+                {
+                    Point start = Target.Center.ToTileCoordinates() + new Point(Main.rand.Next(-64, 65), 48);
+                    for (int j = 0; j < 96; j++)
+                    {
+                        Point current = start - new Point(0, j);
+                        if (!Main.tile[current].IsTileSolid() && Main.tile[current - new Point(0, 1)].IsTileSolid())
+                            Dust.NewDust(current.ToWorldCoordinates(0, 0), 16, 16, DustID.Crimstone, 0, 3);
+                    }
+                }
+            }
+        }
+        #endregion
+        #region Attack
+        else
+        {
+            #region Eye Spawning
+            if (Time < CrimsonEyeAttackDuration && CalamityUtils.CountProjectiles(ModContent.ProjectileType<CrimsonEye>()) < CrimsonEyeCap && Time % CrimsonEyeRate == 0)
+            {
+                Vector2 spawnPos = Target.Center;
+                int i = 0;
+                for (i = 0; i <= 32; i++)
+                {
+                    spawnPos = Target.Center + Main.rand.NextVector2Circular(256, 256);
+
+                    if (Collision.IsWorldPointSolid(spawnPos))
+                        continue;
+
+                    bool alreadyFilled = false;
+                    foreach (Projectile p in Main.ActiveProjectiles)
+                    {
+                        if (p.type != ModContent.ProjectileType<CrimsonEye>())
+                            continue;
+
+                        Rectangle hitbox = new((int)spawnPos.X - 50, (int)spawnPos.Y - 18, 100, 36);
+
+                        if (p.Hitbox.Intersects(hitbox))
+                        {
+                            alreadyFilled = true;
+                            break;
+                        }
+                    }
+
+                    if (alreadyFilled)
+                        continue;
+
+                    if (Collision.CanHitLine(spawnPos, 1, 1, Target.position, Target.width, Target.height))
+                        break;
+                }
+
+                if (i == 32)
+                    spawnPos = Target.Center;
+
+                if (Main.netMode != NetmodeID.MultiplayerClient)
+                    Projectile.NewProjectile(NPC.GetSource_FromThis(), spawnPos, Vector2.Zero, ModContent.ProjectileType<CrimsonEye>(), CrimsonEyeDamage, 0f);
+            }
+            #endregion
+
+            #region Early Movement
+            if (Time < 180)
+            {
+                float dist = 210;
+
+                Vector2 fromTarget = (NPC.Center - Target.Center).SafeNormalize(Vector2.UnitX);
+                Vector2 goalPos = Target.Center + (fromTarget * dist) - (Vector2.UnitY * 32);
+                if (NPC.DistanceSQ(goalPos) <= 2048)
+                    NPC.velocity *= 0.9f;
+                else if (NPC.velocity.LengthSquared() < 16f) //7.5^2
+                    NPC.velocity += NPC.DirectionTo(goalPos).SafeNormalize(Vector2.Zero) * 0.1f;
+                else
+                    NPC.velocity = NPC.DirectionTo(goalPos).SafeNormalize(Vector2.Zero) * 4f;
+            }
+            #endregion
+
+            #region Scythe Movement + Attack
+            else
+            {
+                if (Time < CrimsonEyeAttackIdleDuration)
+                    NPC.velocity *= 0.9f;
+                if (Time >= CrimsonEyeAttackIdleDuration + CrimsonEyeAttackSetUpDuration && Time < CrimsonEyeAttackDuration)
+                {
+                    if (Time == CrimsonEyeAttackIdleDuration + CrimsonEyeAttackSetUpDuration)
+                        NPC.velocity = NPC.DirectionTo(Target.Center);
+
+                    bool onSurface = Target.Center.Y / 16f < Main.worldSurface;
+                    float speed = onSurface ? 10f : 8f;
+                    if (Time < CrimsonEyeAttackIdleDuration + CrimsonEyeAttackSetUpDuration + CrimsonEyeAttackBuildUpDuration)
+                    {
+                        float lerp = CalamityUtils.SineInEasing((Time - (CrimsonEyeAttackIdleDuration + CrimsonEyeAttackSetUpDuration)) / CrimsonEyeAttackBuildUpDuration, 1);
+                        speed = MathHelper.Lerp(0f, speed, lerp);
+                    }
+
+                    float turnAmt = TurnAccelerationMultiplier * ((NPC.Distance(Target.Center) - TurnAccelerationDistanceBuffer) / TurnAccelerationDistanceDivisor);
+
+                    NPC.velocity = NPC.velocity.RotateDirectionTowards(NPC.AngleTo(Target.Center), turnAmt) * speed;
+                }
+                else
+                {
+                    NPC.velocity *= 0.9f;
+
+                    if (Time == CrimsonEyeAttackDuration)
+                    {
+                        foreach (Projectile p in Main.ActiveProjectiles)
+                        {
+                            if (p.type != ModContent.ProjectileType<CrimsonEye>())
+                                continue;
+
+                            p.timeLeft = 60;
+                        }
+                    }
+
+                    if (Time > CrimsonEyeAttackDuration + CrimsonEyeAttackEndDuration)
+                        SetupForNextAttack();
+                }
+
+                if (Time == CrimsonEyeAttackIdleDuration)
+                {
+                    SoundStyle explosion = new("CalamityMod/Sounds/Custom/Ravager/RavagerMissileExplosion");
+                    explosion.Volume = 0.5f;
+
+                    SoundEngine.PlaySound(explosion, NPC.Center);
+                    if (Main.netMode != NetmodeID.MultiplayerClient)
+                    {
+                        float projCount = 10;
+                        for (int i = 0; i < projCount; i++)
+                            Projectile.NewProjectile(NPC.GetSource_FromThis(), NPC.Center, Vector2.Zero, ModContent.ProjectileType<CirclingBloodScythe>(), BloodScytheDamage, 0.5f, -1, MathHelper.TwoPi / projCount * i);
+                    }
+                }
+            }
+            #endregion
+        }
+        #endregion
+    }
+
+    private void IllusionDash()
+    {
+        #region Attack Start
+        if (Time < IllusionDashTeleportDuration)
+        {
+            if (Time == 0)
+            {
+                AttackPosition = Target.Center;
+                AttackRotation = Main.rand.NextFloat(0, MathHelper.TwoPi);
+                NPC.netUpdate = true;
+            }
+
+            TeleportDuration = IllusionDashTeleportDuration;
+
+            if (Time < (TeleportDuration / 2f))
+            {
+                if (Time % 4 == 0)
+                {
+                    Vector2 startPoint = NPC.Center;
+
+                    for (int i = 0; i < (CalamityWorld.death ? 8 : 4); i++)
+                    {
+                        Vector2 myEndPoint = AttackPosition + ((AttackRotation + (CalamityWorld.death ? MathHelper.PiOver4 : MathHelper.PiOver2) * i).ToRotationVector2() * IllusionDashTeleportDistance);
+                        Vector2 direction = myEndPoint - startPoint;
+
+                        float curveIntensity = Main.rand.NextFloat(-0.2f, 0.2f);
+                        Vector2 perpindicular = direction.RotatedBy(MathHelper.PiOver2);
+
+                        Vector2 controlPoint1 = startPoint + (direction * 0.25f) + (perpindicular * curveIntensity);
+                        Vector2 controlPoint2 = startPoint + (direction * 0.75f) + (perpindicular * curveIntensity);
+
+                        BezierCurve path = new BezierCurve(startPoint, controlPoint1, controlPoint2, myEndPoint);
+
+                        BrainOfCthulhuAfterImage afterimage = new(path, NPC.rotation, Vector2.One, (int)((TeleportDuration * 0.75f) - Time), BoCFrame);
+                        BoCAfterImages.Add(afterimage);
+                        GeneralParticleHandler.SpawnParticle(afterimage);
+                    }
+                }
+                TeleportTime++;
+            }
+            else if (Time == (TeleportDuration / 2f) && !AttackFlag)
+            {
+                AttackFlag = true;
+
+                for (int i = 0; i < (CalamityWorld.death ? 8 : 4); i++)
+                {
+                    float rot = AttackRotation + (CalamityWorld.death ? MathHelper.PiOver4 : MathHelper.PiOver2) * i;
+                    Vector2 spawnPos = AttackPosition + (rot.ToRotationVector2() * IllusionDashTeleportDistance);
+                    if (i == 0)
+                        NPC.Center = spawnPos;
+                    else if (Main.netMode != NetmodeID.MultiplayerClient)
+                        NPC.NewNPCDirect(NPC.GetSource_FromThis(), spawnPos, ModContent.NPCType<BrainIllusion>(), 0, 15, 30, rot).netUpdate = true;
+                }
+
+                NPC.netUpdate = true;
+            }
+            else
+                TeleportTime--;
+
+            NPC.Opacity = 1 - (TeleportTime / (TeleportDuration / 2f));
+        }
+        #endregion
+        else
+        {
+            float startTime = Time - IllusionDashTeleportDuration;
+
+            if (startTime == 0)
+            {
+                AttackPosition = NPC.Center;
+                TeleportTime = 0;
+                AttackFlag = false;
+
+                BoCAfterImages = [];
+                NPC.Opacity = 1f;
+
+                GenericSparkle sparkle = new(NPC.Center, Vector2.Zero, Color.Yellow, Color.Orange, 2f, 12, needed: true);
+                GeneralParticleHandler.SpawnParticle(sparkle);
+
+                NPC.netUpdate = true;
+
+                foreach (NPC n in Main.ActiveNPCs)
+                    if (n.type == ModContent.NPCType<BrainIllusion>())
+                        n.netUpdate = true;
+            }
+            if (startTime < 30)
+            {
+                float lerp = startTime / 30f;
+                float circleDist = MathHelper.Lerp(IllusionDashTeleportDistance, IllusionDashCloseInDistance, CalamityUtils.SineOutEasing(lerp, 1));
+                NPC.Center = Vector2.Lerp(AttackPosition, Target.Center + (AttackRotation.ToRotationVector2() * circleDist), lerp);
+                AttackRotation += MathHelper.Lerp(0f, IllusionDashStartingSpinSpeed, CalamityUtils.SineInEasing(lerp, 1));
+            }
+            else if (startTime <= 30 + IllusionDashSpinDuration)
+            {
+                NPC.Center = Target.Center + AttackRotation.ToRotationVector2() * IllusionDashCloseInDistance;
+
+                AttackRotation += MathHelper.Lerp(IllusionDashStartingSpinSpeed, 0f, CalamityUtils.SineOutEasing((startTime - 30) / (float)IllusionDashSpinDuration, 1));
+            }
+            else if (startTime < 30 + IllusionDashSpinDuration + 30)
+            {
+                float reelBackSpeedExponent = 2.6f;
+                float reelBackCompletion = Utils.GetLerpValue(0f, 30, startTime - 130, true);
+                float reelBackSpeed = MathHelper.Lerp(2.5f, 16f, MathF.Pow(reelBackCompletion, reelBackSpeedExponent));
+                Vector2 reelBackVelocity = (AttackRotation + MathHelper.Pi).ToRotationVector2() * -reelBackSpeed;
+                NPC.velocity = Vector2.Lerp(NPC.velocity, reelBackVelocity, 0.25f);
+            }
+            else if (startTime <= 30 + IllusionDashSpinDuration + 30 + IllusionDashFakeoutTeleportDuration) //176
+            {
+                NPC.velocity = Vector2.Zero;
+
+                if (startTime == 30 + IllusionDashSpinDuration + 30)
+                {
+                    AttackPosition = Target.Center;
+                    AttackRotation = AttackRotation + MathHelper.Pi + Main.rand.NextFloat(-MathHelper.PiOver2, MathHelper.PiOver2);
+                    NPC.netUpdate = true;
+                }
+
+                float wrappedCounter = startTime - (30 + IllusionDashSpinDuration + 30);
+
+                TeleportDuration = IllusionDashFakeoutTeleportDuration;
+
+                Vector2 endPoint = AttackPosition + (AttackRotation.ToRotationVector2() * 270);
+
+                if (wrappedCounter < (TeleportDuration / 2f))
+                {
+                    if (wrappedCounter % 2 == 0)
+                    {
+                        Vector2 startPoint = NPC.Center;
+
+                        Vector2 direction = endPoint - startPoint;
+
+                        float curveIntensity = Main.rand.NextFloat(-0.2f, 0.2f);
+                        Vector2 perpindicular = direction.RotatedBy(MathHelper.PiOver2);
+
+                        Vector2 controlPoint1 = startPoint + (direction * 0.25f) + (perpindicular * curveIntensity);
+                        Vector2 controlPoint2 = startPoint + (direction * 0.75f) + (perpindicular * curveIntensity);
+
+                        BezierCurve path = new BezierCurve(startPoint, controlPoint1, controlPoint2, endPoint);
+
+                        BrainOfCthulhuAfterImage afterimage = new(path, NPC.rotation, Vector2.One, (int)((TeleportDuration * 0.75f) - wrappedCounter), BoCFrame);
+                        BoCAfterImages.Add(afterimage);
+                        GeneralParticleHandler.SpawnParticle(afterimage);
+                    }
+                    TeleportTime++;
+                }
+                else if (wrappedCounter == (int)(TeleportDuration / 2f) && !AttackFlag)
+                {
+                    AttackFlag = true;
+                    NPC.Center = endPoint;
+                }
+                else
+                {
+                    TeleportTime--;
+                    if (TeleportTime <= 0)
+                    {
+                        TeleportTime = 0;
+                        BoCAfterImages = [];
+                        ResetAttackValues();
+                        NPC.Opacity = 1f;
+                        NPC.netUpdate = true;
+                        AttackRotation = NPC.AngleTo(Target.Center);
+                    }
+                }
+
+                NPC.Opacity = 1 - (TeleportTime / (TeleportDuration / 2f));
+            }
+            else if (startTime < 90 + IllusionDashSpinDuration + 30 + IllusionDashFakeoutTeleportDuration + 30)
+            {
+                NPC.velocity *= 0.9f;
+                if (startTime % 15 == 0)
+                {
+                    for (int i = 0; i < 2; i++)
+                    {
+                        Vector2 dir = NPC.DirectionTo(Target.Center);
+                        if (Main.netMode != NetmodeID.MultiplayerClient)
+                        {
+                            Vector2 initialDir = dir.RotatedBy(Main.rand.NextFloat(-MathHelper.Pi / 4f, MathHelper.Pi / 4f));
+                            Projectile.NewProjectile(NPC.GetSource_FromThis(), NPC.Center, initialDir * Main.rand.NextFloat(10f, 25f), ProjectileID.BloodNautilusShot, BloodShotDamage, 0.5f, ai0: dir.ToRotation() + MathHelper.TwoPi, ai1: initialDir.ToRotation());
+                        }
+                        NPC.velocity -= dir * 2f;
+                    }
+                }
+            }
+            else if (startTime >= 135 + IllusionDashSpinDuration + 30 + IllusionDashFakeoutTeleportDuration + 30)
+            {
+                foreach (NPC n in Main.ActiveNPCs)
+                    if (n.type == ModContent.NPCType<BrainIllusion>())
+                        n.active = false;
+
+                SetupForNextAttack();
+            }
+        }
+    }
+
+    private void IllusionTrick()
+    {
+        if (Time >= 90)
+        {
+            if (Time == 90)
+            {
+                foreach (Projectile p in Main.ActiveProjectiles)
+                {
+                    if (!p.friendly)
+                        continue;
+
+                    p.Calamity().IgnoreBoCIllusions = true;
+                }
+
+                int brainAngleSlot = Main.rand.Next(0, IllusionTrickAngleGroups);
+                int brainDistSlot = Main.rand.Next(0, IllusionTrickGroupSize);
+
+                if (Main.netMode != NetmodeID.MultiplayerClient)
+                    for (int a = 0; a < IllusionTrickAngleGroups; a++)
+                        for (int d = 0; d < IllusionTrickGroupSize; d++)
+                        {
+                            if (a != brainAngleSlot || d != brainDistSlot)
+                                NPC.NewNPC(NPC.GetSource_FromThis(), 0, 0, ModContent.NPCType<FalseBrain>(), 0, MathHelper.TwoPi / IllusionTrickAngleGroups * a, FalseBrain.TimeDivisor / IllusionTrickGroupSize * d);
+                        }
+
+                AttackTime = (int)(FalseBrain.TimeDivisor / IllusionTrickGroupSize * brainDistSlot);
+                AttackRotation = MathHelper.TwoPi / IllusionTrickAngleGroups * brainAngleSlot;
+                AttackFlag = false;
+                AttackPosition = Target.Center;
+
+                NPC.ShowNameOnHover = false;
+                NPC.netUpdate = true;
+            }
+
+            NPC.damage = 0;
+
+            if (AttackFlag)
+            {
+                if (AttackCounter == 0)
+                {
+                    NPC.ShowNameOnHover = true;
+                    foreach (NPC npc in Main.npc)
+                    {
+                        if (npc.type != ModContent.NPCType<FalseBrain>())
+                            continue;
+                        npc.ModNPC<FalseBrain>().BeenHit = true;
+                    }
+
+                    NPC.velocity = NPC.DirectionFrom(Target.Center) * 8f;
+                }
+                else
+                    NPC.velocity *= 0.95f;
+
+                if (AttackCounter >= IllusionTrickStunDuration)
+                {
+                    NPC.damage = NPC.defDamage;
+                    SetupForNextAttack();
+                    NPC.Opacity = 1f;
+                    TeleportTime = 0;
+                    return;
+                }
+
+                AttackCounter++;
+            }
+            else if (Time >= IllusionTrickTimeLimit) //Players have failed to find the real BoC within the time limit
+            {
+                if (Time == IllusionTrickTimeLimit)
+                {
+                    foreach (Player p in Main.ActivePlayers)
+                    {
+                        if (p.Distance(NPC.Center) > DespawnRange)
+                            continue;
+
+                        AttackList.Add(p.whoAmI);
+                    }
+
+                    foreach (NPC n in Main.ActiveNPCs)
+                    {
+                        if (n.type != ModContent.NPCType<FalseBrain>())
+                            continue;
+
+                        n.ModNPC<FalseBrain>().BeenHit = true;
+                    }
+
+                    for (int i = 1; i <= 3; i++)
+                    {
+                        Color color = i switch
+                        {
+                            1 => Color.Yellow,
+                            2 => Color.Orange,
+                            _ => Color.Red,
+                        };
+                        PulseRing ring = new(NPC.Center, NPC.velocity * 0.5f, color, 0f, 1f + i * 0.5f, 24);
+                        GeneralParticleHandler.SpawnParticle(ring);
+                    }
+                }
+                else if (Time % 30 == 0)
+                {
+                    if (AttackList.Count > 0)
+                    {
+                        if (Main.netMode != NetmodeID.MultiplayerClient)
+                            Projectile.NewProjectile(NPC.GetSource_FromThis(), NPC.Center, Vector2.Zero, ModContent.ProjectileType<TelekineticBlast>(), 0, 0f, -1, AttackList[0], 2f);
+                        AttackList.RemoveAt(0);
+                    }
+                    else
+                    {
+                        Vector2 direction = Target.velocity.SafeNormalize(Vector2.UnitX * Target.direction).RotatedBy(Main.rand.NextFloat(-MathHelper.Pi / 3f, MathHelper.Pi / 3f));
+                        float distance = DefaultTeleportDistance;
+                        AttackPosition = Target.Center + (direction * distance);
+                        BoCAfterImages = [];
+                        NPC.Opacity = 1f;
+                        TeleportTime = 0;
+                        Time = ChaseTime - 1;
+                        NPC.damage = NPC.defDamage;
+                        NPC.netUpdate = true;
+                        ResetAttackValues();
+
+                        AIState = BrainAIState.Phase2Idle;
+                    }
+                }
+            }
+            else
+            {
+                CachedRatio = (float)Math.Cos(AttackTime * MathHelper.TwoPi / FalseBrain.TimeDivisor);
+
+                float lerp = CalamityUtils.SineInOutEasing(MathHelper.Clamp((Time - 150) / 30f, 0f, 1f), 1);
+                float baseDist = 240;
+                float circleDist = 480;
+                if (Time - 150 < 30f)
+                {
+                    baseDist = MathHelper.Lerp(480, 240, lerp);
+                    circleDist = MathHelper.Lerp(240, 480, lerp);
+                }
+                NPC.Center = AttackPosition + Vector2.UnitX.RotatedBy(AttackRotation) * (baseDist + (circleDist * ((float)Math.Sin(-AttackTime * MathHelper.TwoPi / FalseBrain.TimeDivisor) / 2f + 0.5f)));
+                NPC.Center += Vector2.UnitX.RotatedBy(AttackRotation + MathHelper.PiOver2) * (90 * (float)Math.Cos(AttackTime * MathHelper.TwoPi / FalseBrain.TimeDivisor));
+                NPC.Opacity = 1f;
+                AttackCounter = 0;
+            }
+        }
+        else if (Time <= 60)
+        {
+            TeleportDuration = 60;
+            TeleportTime++;
+            NPC.Opacity = 1 - (Time / 60f);
+
+            if (Time < 50)
+            {
+                Vector2 startPoint = NPC.Center;
+                Vector2 endPoint = NPC.Center + Vector2.UnitX.RotatedBy(Main.rand.NextFloat(0, MathHelper.TwoPi)) * Main.rand.NextFloat(240, 480);
+
+                Vector2 direction = endPoint - startPoint;
+                float curveIntensity = Main.rand.NextFloat(-0.2f, 0.2f);
+                Vector2 perpindicular = direction.RotatedBy(MathHelper.PiOver2);
+
+                Vector2 controlPoint1 = startPoint + (direction * 0.25f) + (perpindicular * curveIntensity);
+                Vector2 controlPoint2 = startPoint + (direction * 0.75f) + (perpindicular * curveIntensity);
+
+                BezierCurve path = new BezierCurve(startPoint, controlPoint1, controlPoint2, endPoint);
+
+                BrainOfCthulhuAfterImage afterimage = new(path, NPC.rotation, Vector2.One, (int)(60 - Time), BoCFrame);
+                BoCAfterImages.Add(afterimage);
+                GeneralParticleHandler.SpawnParticle(afterimage);
+            }
+        }
+        else
+        {
+            NPC.Opacity = 0f;
+            BoCAfterImages = [];
+        }
+
+        if (Time >= 180)
+            AttackTime++;
+        else if (Time >= 150)
+            AttackTime += (Time - 150) / 30f;
+    }
+
+    #endregion
+
+    private void DeathAnimation()
+    {
+        if (Time == 0)
+            NPC.velocity = NPC.DirectionFrom(Target.Center) * 6f;
+        else
+            NPC.velocity *= 0.95f;
+
+        NPC.rotation = MathHelper.Pi / 24f * NPC.oldVelocity.X;
+        TeleportTime *= 0.6f;
+        if (TeleportTime < 0.005f)
+            TeleportTime = 0;
+        BoCDrawOffset *= 0.6f;
+        NPC.Opacity = BringOpacityTo(NPC.Opacity, 1, 0.1f);
+
+        (float angle, Vector2 offset, int time)[] bloodGushingData = [
+            (MathHelper.Pi / 6f, new(18, 12), 90),
+                    (MathHelper.Pi, new(-30, -10), 150),
+                    (-MathHelper.Pi / 4f, new(20, -40), 180),
+                    (MathHelper.Pi + MathHelper.Pi / 4f, new(-20, -40), 200),
+                    (MathHelper.Pi / 1.75f, new(-5, 22), 210)
+        ];
+
+        for (int i = 0; i < bloodGushingData.Length; i++)
+        {
+            if (Time >= bloodGushingData[i].time)
+            {
+                if (Time == bloodGushingData[i].time)
+                {
+                    Vector2 bloodDir = bloodGushingData[i].angle.ToRotationVector2();
+                    BloodParticle2 p2 = new(NPC.Center + bloodGushingData[i].offset.RotatedBy(NPC.rotation), bloodDir * 7.5f, 16, 0.5f, Color.Red);
+                    GeneralParticleHandler.SpawnParticle(p2);
+                    NPC.velocity = bloodDir * -4f;
+
+                    SoundStyle explosion = new("CalamityMod/Sounds/Custom/Ravager/RavagerMissileExplosion")
+                    {
+                        Volume = 0.5f,
+                        Pitch = i / (float)(bloodGushingData.Length - 1)
+                    };
+                    SoundEngine.PlaySound(explosion, NPC.Center);
+
+                    Main.LocalPlayer.SetScreenshake(1f);
+                }
+
+                for (int j = 0; j < 2; j++)
+                {
+                    BloodParticle p = new(NPC.Center + bloodGushingData[i].offset.RotatedBy(NPC.rotation), (bloodGushingData[i].angle + Main.rand.NextFloat(-MathHelper.Pi / 10f, MathHelper.Pi / 10f)).ToRotationVector2() * Main.rand.NextFloat(5f, 10f), 32, 1f, Color.Red);
+                    GeneralParticleHandler.SpawnParticle(p);
+                }
+            }
+
+        }
+
+        if (Time >= 215)
+        {
+            SoundStyle explosion = new("CalamityMod/Sounds/Custom/Ravager/RavagerMissileExplosion");
+            SoundEngine.PlaySound(explosion, NPC.Center);
+
+            Main.LocalPlayer.SetScreenshake(2f);
+
+            int pCount = 10;
+            for (int i = 0; i < pCount; i++)
+            {
+                float initalSpeed = 24f;
+                Vector2 pVelo = Vector2.UnitX.RotatedBy(MathHelper.TwoPi / pCount * i) * initalSpeed;
+
+                for (int j = 0; j < 2; j++)
+                {
+                    BloodParticle p = new(NPC.Center, pVelo.RotatedBy(Main.rand.NextFloat(-MathHelper.Pi / 6f, MathHelper.Pi / 6f)) * Main.rand.NextFloat(0.5f, 1f), 32, 1f, Color.Red);
+                    GeneralParticleHandler.SpawnParticle(p);
+                }
+                BloodParticle2 p2 = new(NPC.Center, pVelo * 0.75f, 16, 0.5f, Color.Red);
+                GeneralParticleHandler.SpawnParticle(p2);
+            }
+
+            NPC.dontTakeDamage = false;
+            if (Main.netMode != NetmodeID.MultiplayerClient)
+                NPC.StrikeInstantKill();
+        }
+
+        float animationCompletion = Time / 215f;
+        NPC.frameCounter += 2 * animationCompletion;
+
+        if (Main.rand.NextFloat(0.5f, 1f) < animationCompletion)
+        {
+            Vector2 edgeBloodDir = Main.rand.NextVector2CircularEdge(1, 1);
+            BloodParticle b = new(NPC.Center + (edgeBloodDir * NPC.Size * 0.75f), edgeBloodDir.RotatedBy(Main.rand.NextFloat(-MathHelper.Pi / 10f, MathHelper.Pi / 10f)) * Main.rand.NextFloat(2f, 4f), 16, 0.75f, Color.Red);
+            GeneralParticleHandler.SpawnParticle(b);
+        }
+    }
+
+    #endregion
 
     public override void SendExtraAI(BitWriter bitWriter, BinaryWriter binaryWriter)
     {
