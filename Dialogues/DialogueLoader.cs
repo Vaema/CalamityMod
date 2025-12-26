@@ -51,6 +51,12 @@ internal class DialogueLoader : ModSystem
 
     private static IEnumerable<DialogueTextDataEntry> GetDialogueTextDatas(Mod mod, GameCulture targetCulture)
     {
+        if (mod == null)
+            yield break;
+
+        if (mod.File == null)
+            yield break;
+
         foreach (var file in mod.File)
         {
             if (!Path.GetExtension(file.Name).Equals(".json", StringComparison.InvariantCultureIgnoreCase))
