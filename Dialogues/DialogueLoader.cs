@@ -99,7 +99,7 @@ internal class DialogueLoader : ModSystem
                 }
                 catch (Exception e)
                 {
-                    CalamityMod.Log.Error($"Error while exporting DialogueTextData entry: {e}");
+                    CalamityMod.Log.Error($"Error while exporting DialogueTextData entry ({CalamityMod.Instance}::{entry.FilePath}): {e}");
                 }
             }
         });
@@ -133,13 +133,13 @@ internal class DialogueLoader : ModSystem
             {
                 if (!_DialogueLookup.TryGetValue(entry.DialogueKey, out var oldEntry))
                 {
-                    CalamityMod.Log.Warn($"Dialogue Localization was detected but original Dialogue file does not exists. This will not be applied! : '{entry.FilePath}'");
+                    CalamityMod.Log.Warn($"Dialogue Localization was detected but original Dialogue file does not exists. This will not be applied! : '{mod.Name}::{entry.FilePath}'");
                     continue;
                 }
 
                 if (entry.Data.Revision != oldEntry.Data.Revision)
                 {
-                    CalamityMod.Log.Warn($"Dialogue Localization was detected but revision mismatches. This will not be applied! : '{entry.FilePath}'");
+                    CalamityMod.Log.Warn($"Dialogue Localization was detected but revision mismatches. This will not be applied! : '{mod.Name}::{entry.FilePath}'");
                     continue;
                 }
 
@@ -188,7 +188,7 @@ internal class DialogueLoader : ModSystem
                 }
                 catch (Exception e)
                 {
-                    CalamityMod.Log.Error($"Error while reading DialogueTextData entry: {e}");
+                    CalamityMod.Log.Error($"Error while reading DialogueTextData entry ({mod.Name}::{file.Name}): {e}");
                 }
             }
 
