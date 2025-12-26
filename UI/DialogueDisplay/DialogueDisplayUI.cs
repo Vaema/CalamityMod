@@ -1,25 +1,23 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Globalization;
-using System.IO;
 using System.Linq;
 using System.Net.Sockets;
 using System.Text.Json;
 using System.Text.Json.Serialization;
+using CalamityMod.Dialogues;
 using CalamityMod.Packets;
 using CalamityMod.UI.DialogueDisplay.DialogueEvents;
 using CalamityMod.UI.DialogueDisplay.DisplayEffects;
 using CalamityMod.UI.DialogueDisplay.TextEffects;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using Microsoft.Xna.Framework.Input;
 using ReLogic.Content;
 using ReLogic.Graphics;
 using Terraria;
 using Terraria.Audio;
 using Terraria.GameContent;
 using Terraria.ID;
-using Terraria.Localization;
 using Terraria.ModLoader;
 using Terraria.UI;
 using Terraria.UI.Chat;
@@ -536,7 +534,7 @@ namespace CalamityMod.UI.DialogueDisplay
                         foreach (string s in returnString)
                             storedLen += s.Length;
 
-                        Pauses.Add(index - storedLen - 1, Params[0]);                       
+                        Pauses.Add(index - storedLen - 1, Params[0]);
                     }
                     else
                     {
@@ -985,15 +983,6 @@ namespace CalamityMod.UI.DialogueDisplay
                 UI?.Update(gameTime);
         }
 
-        public static DialogueTextData Deserialize(string name)
-        {
-            string json = Language.GetTextValue("Mods.CalamityMod.Dialogue." + name);
-
-            DialogueTextData data = JsonSerializer.Deserialize<DialogueTextData>(json);
-
-            return data;
-        }
-
         public static Color GetColorFromHex(string hex)
         {
             System.Drawing.Color color = System.Drawing.ColorTranslator.FromHtml('#' + hex);
@@ -1008,8 +997,8 @@ namespace CalamityMod.UI.DialogueDisplay
         /// </summary>
         public static int GetSlot(string name)
         {
-            foreach(var pair in DialogueDisplayUI.Dialogues)
-                if(pair.Value.name == name)
+            foreach (var pair in DialogueDisplayUI.Dialogues)
+                if (pair.Value.name == name)
                     return pair.Key;
             return -1;
         }
@@ -1078,7 +1067,11 @@ namespace CalamityMod.UI.DialogueDisplay
             State ??= new();
             effects ??= new DisplayEffect();
 
-            DialogueTextData textData = Deserialize(name);
+            if (!DialogueLoader.TryGetDialogue(name, out var textData))
+            {
+                CalamityMod.Log.Error($"Unable to find Dialogue Data for given name: '{name}'");
+                return -1;
+            }
 
             if (startIndex >= textData.PageCount)
                 startIndex = textData.PageCount - 1;
@@ -1135,7 +1128,11 @@ namespace CalamityMod.UI.DialogueDisplay
             State ??= new ();
             effects ??= new DisplayEffect();
 
-            DialogueTextData textData = Deserialize(name);
+            if (!DialogueLoader.TryGetDialogue(name, out var textData))
+            {
+                CalamityMod.Log.Error($"Unable to find Dialogue Data for given name: '{name}'");
+                return -1;
+            }
 
             if (startIndex >= textData.PageCount)
                 startIndex = textData.PageCount - 1;
