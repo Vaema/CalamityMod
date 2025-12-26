@@ -1198,6 +1198,11 @@ namespace CalamityMod.UI.DialogueDisplay
         public int PunctuationDelayCap { get; init; }
         public Dictionary<string, PunctuationData> PunctuationDelays { get; init; }
 
+        /// <summary>
+        /// Only used for DialogueLoader
+        /// </summary>
+        public int Revision { get; init; }
+
         [JsonConstructor]
         public DialogueTextData(DialoguePage[] Pages, int Page = 0, string DefaultColor = null, string DefaultSpeaker = null, int DefaultScale = 1, Alignment AlignType = 0, int TextDelay = 3, PunctuationData BasePunctuationDelay = null, int PunctuationDelayCap = 60, Dictionary<string, PunctuationData> PunctuationDelays = null)
         {

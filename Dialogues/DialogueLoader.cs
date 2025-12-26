@@ -78,20 +78,21 @@ internal class DialogueLoader : ModSystem
 
         cursor.EmitLdloc(modLdloc);
         cursor.EmitLdloc(pathLdloc);
-        cursor.EmitDelegate((Mod mod, string path) =>
+        cursor.EmitDelegate((Mod mod, string basePath) =>
         {
             if (mod != CalamityMod.Instance)
                 return;
-
-            var exportPath = Path.Combine(path, "Dialogues", "en-US");
-            if (!Directory.Exists(exportPath)) Directory.CreateDirectory(exportPath);
 
             foreach (var entry in GetDialogueTextDatas(CalamityMod.Instance, GameCulture.DefaultCulture, skipDeserializeData: true))
             {
                 try
                 {
+                    var destFilePath = Path.Combine(basePath, entry.FilePath);
+                    var destDir = Path.GetDirectoryName(destFilePath);
+                    if (!Directory.Exists(destDir)) Directory.CreateDirectory(destDir);
+
                     using var stream = CalamityMod.Instance.File.GetStream(entry.FilePath);
-                    using var fileStream = File.OpenWrite(Path.Combine(exportPath, Path.GetFileName(entry.FilePath)));
+                    using var fileStream = File.OpenWrite(destFilePath);
                     using var writer = new StreamWriter(fileStream, Encoding.UTF8);
                     using var reader = new StreamReader(stream, Encoding.UTF8);
                     writer.Write(reader.ReadToEnd());
@@ -130,8 +131,17 @@ internal class DialogueLoader : ModSystem
         {
             foreach (var entry in GetDialogueTextDatas(mod, activeCulture))
             {
-                if (!_DialogueLookup.ContainsKey(entry.DialogueKey))
+                if (!_DialogueLookup.TryGetValue(entry.DialogueKey, out var oldEntry))
+                {
+                    CalamityMod.Log.Warn($"Dialogue Localization was detected but original Dialogue file does not exists. This will not be applied! : '{entry.FilePath}'");
                     continue;
+                }
+
+                if (entry.Data.Revision != oldEntry.Data.Revision)
+                {
+                    CalamityMod.Log.Warn($"Dialogue Localization was detected but revision mismatches. This will not be applied! : '{entry.FilePath}'");
+                    continue;
+                }
 
                 _DialogueLookup[entry.DialogueKey] = entry;
             }
@@ -184,7 +194,6 @@ internal class DialogueLoader : ModSystem
 
             if (data != null || skipDeserializeData)
             {
-                CalamityMod.Log.Info($"Found Dialogue Item: '{mod.Name}', '{file.Name}', '{prefix}', '{culture.Name}'");
                 yield return new DialogueTextDataEntry(file.Name, dialogueKey, data);
             }
         }
