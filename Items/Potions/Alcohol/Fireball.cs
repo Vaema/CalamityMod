@@ -37,8 +37,8 @@ namespace CalamityMod.Items.Potions.Alcohol
         public override void AddRecipes()
         {
 
-            CreateRecipe(6).
-                AddIngredient(ItemID.Bottle, 6).
+            CreateRecipe(10).
+                AddIngredient(ItemID.Bottle, 10).
                 AddIngredient(ItemID.LivingFireBlock, 50).
                 AddIngredient<StarblightSoot>(10).
                 AddTile(TileID.Kegs).

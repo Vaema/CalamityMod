@@ -36,8 +36,8 @@ namespace CalamityMod.Items.Potions.Alcohol
         }
         public override void AddRecipes()
         {
-            CreateRecipe(12).
-                AddIngredient(ItemID.Bottle, 12).
+            CreateRecipe(20).
+                AddIngredient(ItemID.Bottle, 20).
                 AddIngredient(ItemID.FireFeather).
                 AddTile(TileID.Kegs).
                 Register();
