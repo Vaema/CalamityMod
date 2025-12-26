@@ -16,7 +16,7 @@ namespace CalamityMod.Items.Potions.Alcohol
         public static float MinDamageBoost = -0.15f;
         public static float TimeToDischarge = 600;
         public static float TimeToRecharge = 300;
-        public override LocalizedText Tooltip => base.Tooltip.WithFormatArgs(MaxDamageBoost.ToPercent(), MinDamageBoost.ToPercent(), (TimeToDischarge/60).ToString("0.##"), (TimeToRecharge/60).ToString("0.##"));
+        public override LocalizedText Tooltip => base.Tooltip.WithFormatArgs(MinDamageBoost.ToPercent(), MaxDamageBoost.ToPercent(), (TimeToDischarge/60).ToString("0.##"), (TimeToRecharge/60).ToString("0.##"));
 
         public override void SetStaticDefaults()
         {
