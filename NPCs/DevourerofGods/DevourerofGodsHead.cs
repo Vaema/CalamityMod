@@ -2502,7 +2502,7 @@ namespace CalamityMod.NPCs.DevourerofGods
                 spriteBatch.Draw(mainJawGlowTexture, jawDrawPosition, null, NPC.GetAlpha(Color.White), NPC.rotation + JawRotation * i, jawOrigin, NPC.scale, jawSpriteEffect, 0f);
 
                 // Draw the additional special jaw textures above these for the Rift Dash attack.
-                if (GodSlayerDashJawFadeProgress > 0.02f && !DoGDeathAnimationRenderer.ValidToDraw(NPC))
+                if (GodSlayerDashJawFadeProgress > 0.02f && CalamityDrawParameterNPC.DoGDeathAnimationTimer <= 0)
                 {
                     using (spriteBatch.Scope())
                     {
