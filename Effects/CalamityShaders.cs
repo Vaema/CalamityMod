@@ -252,6 +252,7 @@ namespace CalamityMod.Effects
 
         #region Big E's Shaders
         internal static Asset<Effect> SeaPrismColorBlendingShader;
+        internal static Asset<Effect> Dissolve;
         #endregion
 
         internal static Asset<Effect> SunkenSeaMenuLogoWater;
@@ -499,6 +500,9 @@ namespace CalamityMod.Effects
             #region Loading Big E's Shaders
             SeaPrismColorBlendingShader = LoadShader("SeaPrismColorBlending");
             RegisterMiscShader(SeaPrismColorBlendingShader, "SeaPrismBlendingPass", "SeaPrismColorBlending");
+
+            Dissolve = LoadShader("Dissolve");
+            RegisterMiscShader(Dissolve, "DissolvePass", "Dissolve");
             #endregion
 
             SunkenSeaMenuLogoWater = LoadShader("UI/SunkenSeaMenuLogoWater");
