@@ -44,6 +44,11 @@ GrapeBeerBuff: {
 	Description: Ranged projectiles  gain homing, reduced critical strike damage
 }
 
+ManhattanBuff: {
+	DisplayName: Manhattan
+	Description: Cold debuff damage increased, water debuff damage reduced
+}
+
 MargaritaBuff: {
 	DisplayName: Margarita
 	Description: Reduced duration to most harmful debuffs, reduced damage dealt to enemies from debuffs
@@ -91,7 +96,7 @@ TequilaBuff: {
 
 TequilaSunriseBuff: {
 	DisplayName: Tequila Sunrise
-	Description: Increased regeneration, increased damage taken from debuffs
+	Description: Increased life regeneration, increased damage taken from debuffs
 }
 
 Trippy: {
@@ -1643,11 +1648,6 @@ PopoNoselessBuff: {
 	Description: Your nose has been stolen!
 }
 
-ManhattanBuff: {
-	DisplayName: Manhattan
-	Description: Cold debuff damage increased, water debuff damage reduced
-}
-
 Daybroken: {
 	DisplayName: Daybroken
 	ItemTooltip: Heat - 100 DPS
@@ -1670,5 +1670,5 @@ SeaKingsAssurance: {
 
 CnidarianSummonTagBuff: {
 	DisplayName: Cnidarian Summon Tag Buff
-	Description: you are not seeing this.
+	Description: you are not seeing this
 }

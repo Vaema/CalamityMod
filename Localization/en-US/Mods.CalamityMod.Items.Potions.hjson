@@ -224,6 +224,7 @@ EvergreenGin: {
 		'''
 		{0}% increased Water and Sickness debuff damage
 		{1}% decreased Electric and Heat debuff damage
+		{$Common.AlcoholWarning}
 		'''
 }
 
@@ -303,8 +304,8 @@ OldFashioned: {
 	DisplayName: Old Fashioned
 	Tooltip:
 		'''
-		{0}% increase to most non-weapon, non-debuff damage
-		{1}% decreased weapon damage
+		Multiplies most non-weapon, non-debuff damage by {0}x
+		Multiplies all weapon damage by {1}x
 		{$Common.AlcoholWarning}
 		'''
 }
