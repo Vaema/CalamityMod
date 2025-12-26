@@ -159,7 +159,7 @@ namespace CalamityMod.Projectiles.Summon
                 if (completion >= 1)
                     color = Color.LightBlue;
 
-                float count = MathHelper.Min((Projectile.minionSlots-1) * 2, 40);
+                float count = MathHelper.Min((Projectile.minionSlots) * 2, 40);
                 for (var i = 0; i < count; i++)
                 {
                     var comp = (i / count);

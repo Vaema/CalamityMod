@@ -293,6 +293,16 @@ namespace CalamityMod
 
         public static List<Point> GetIntersectingPointsInLine(Vector2 start, Vector2 end) => GetIntersectingPointsInLine(start.ToTileCoordinates(), end.ToTileCoordinates());
 
+        /// <summary>
+        ///     Rotates a vector towards targetAngle by at most maxChange and normalizes the vector.
+        /// </summary>
+        public static Vector2 RotateDirectionTowards(this Vector2 vec, float targetAngle, float maxChange) => vec.ToRotation().AngleTowards(targetAngle, maxChange).ToRotationVector2();
+
+        /// <summary>
+        ///     Rotates a vector towards targetAngle by at most maxChange.
+        /// </summary>
+        public static Vector2 RotateTowards(this Vector2 vec, float targetAngle, float maxChange) => vec.RotateDirectionTowards(targetAngle, maxChange) * vec.Length();
+
         #region Easings
         /// <summary>
         /// Gets a value from 0 to 1 and returns an eased value.

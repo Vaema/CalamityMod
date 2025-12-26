@@ -21,8 +21,8 @@ namespace CalamityMod.Packets
             int trackCount = MusicEventSystem.PlayedEvents.Count;
             packet.Write(trackCount);
 
-            for (int i = 0; i < trackCount; i++)
-                packet.Write(MusicEventSystem.PlayedEvents[i]);
+            foreach (string playedEvent in MusicEventSystem.PlayedEvents)
+                packet.Write(playedEvent);
 
             packet.Send(toClient, ignoreClient);
         }

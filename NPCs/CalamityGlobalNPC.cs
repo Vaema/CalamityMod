@@ -63,6 +63,7 @@ using CalamityMod.Tiles.FurnitureAuric;
 using CalamityMod.Tiles.Ores;
 using CalamityMod.UI;
 using CalamityMod.UI.DebuffSystem;
+using CalamityMod.UI.VanillaBossBars;
 using CalamityMod.Walls.DraedonStructures;
 using CalamityMod.World;
 using Microsoft.Xna.Framework;
@@ -1212,6 +1213,10 @@ namespace CalamityMod.NPCs
             npc.SetDebuffImmunities();
 
             VulnerabilitiesAndResistances(npc);
+
+            //Gives Brain of Cthulhu a unique boss bar in Rev+ where Creepers contribute to a Shield rather than additional Health
+            if (npc.type == NPCID.BrainofCthulhu && CalamityWorld.revenge)
+                npc.BossBar = GetInstance<RevBrainOfCthulhuBossBar>();
         }
 
         public override bool? CanFallThroughPlatforms(NPC npc)
@@ -1257,10 +1262,10 @@ namespace CalamityMod.NPCs
                     npc.lifeMax *= 4;
                     break;
                 case NPCID.BrainofCthulhu:
-                    npc.lifeMax *= 2;
+                    npc.lifeMax = (int)Math.Round(npc.lifeMax * 1.75);
                     break;
                 case NPCID.Creeper:
-                    npc.lifeMax = (int)Math.Round(npc.lifeMax * 1.4);
+                    npc.lifeMax = (int)Math.Round(npc.lifeMax * 1.1);
                     break;
                 case NPCID.QueenBee:
                     npc.lifeMax = (int)Math.Round(npc.lifeMax * 1.8);

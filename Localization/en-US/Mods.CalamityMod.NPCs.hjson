@@ -1,5 +1,6 @@
 BabyCannonballJellyfish.DisplayName: Baby Cannonball Jellyfish
 Bloatfish.DisplayName: Bloatfish
+BrainIllusion.DisplayName: Brain Illusion
 BobbitWormHead.DisplayName: Bobbit Worm
 BoxJellyfish.DisplayName: Box Jellyfish
 Burrower.DisplayName: Burrower
@@ -11,7 +12,10 @@ TinySquid: Tiny Squid
 Cuttlefish.DisplayName: Cuttlefish
 DevilFish.DisplayName: Devil Fish
 DevilFishAlt.DisplayName: Devil Fish
+DraconicSwarmer.DisplayName: Draconic Swarmer
+Dragonfolly.DisplayName: Dragonfolly
 EidolonWyrmHead.DisplayName: Eidolon Wyrm
+FalseBrain.DisplayName: False Brain
 GiantSquid.DisplayName: Giant Squid
 GulperEelHead.DisplayName: Gulper Eel
 Laserfish.DisplayName: Laserfish
@@ -20,9 +24,11 @@ MirageJelly.DisplayName: Mirage Jelly
 MorayEel.DisplayName: Moray Eel
 OarfishHead.DisplayName: Oarfish
 ReaperShark.DisplayName: Reaper Shark
+Shoreskipper.DisplayName: Shoreskipper
 SlabCrab.DisplayName: Slab Crab
 ToxicMinnow.DisplayName: Toxic Minnow
 Viperfish.DisplayName: Viperfish
+WildBumblebirb.DisplayName: Wild Bumblebirb
 AcidEel.DisplayName: Acid Eel
 BabyFlakCrab.DisplayName: Baby Flak Crab
 BloodwormNormal.DisplayName: Bloodworm
@@ -525,7 +531,3 @@ SeaKing: {
 		Princess_LovesNPC: "{NPCName} always smiles when I'm nearby, I like being around him just for that!"
 	}
 }
-
-WildBumblebirb.DisplayName: Wild Bumblebirb
-DraconicSwarmer.DisplayName: Draconic Swarmer
-Dragonfolly.DisplayName: Dragonfolly

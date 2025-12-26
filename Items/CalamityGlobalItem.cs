@@ -729,6 +729,7 @@ namespace CalamityMod.Items
                     return true;
                 }
             }
+            
             return base.UseItem(item, player);
         }
 

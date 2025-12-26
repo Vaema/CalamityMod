@@ -3,6 +3,7 @@ using System.IO;
 using CalamityMod.Buffs.DamageOverTime;
 using CalamityMod.Dusts;
 using CalamityMod.Events;
+using CalamityMod.Graphics.Metaballs;
 using CalamityMod.Items.Accessories;
 using CalamityMod.Items.Armor.Vanity;
 using CalamityMod.Items.LoreItems;
@@ -41,6 +42,8 @@ namespace CalamityMod.NPCs.CalClone
         public static readonly SoundStyle BulletHellWarning = new("CalamityMod/Sounds/Custom/CalamitasClone/BulletHellEnding");
         public static readonly SoundStyle BulletHellEnd = new("CalamityMod/Sounds/Custom/CalamitasClone/BulletHellEnd");
         public static readonly SoundStyle ChargeSound = new("CalamityMod/Sounds/Custom/CalamitasClone/CalCloneDash", 3);
+        public static readonly SoundStyle CalamitousFireballSound = new SoundStyle("CalamityMod/Sounds/Custom/CalamitasClone/CalClone_BigFireballBit", 4) with {MaxInstances = 4};
+        public static readonly SoundStyle CalamitousExplosionSound = new SoundStyle("CalamityMod/Sounds/Custom/CalamitasClone/CalClone_Explosion", 3) with { MaxInstances = 4 };
         public SlotId BulletHellWarnSlot;
 
         public ArenaWallSystem.Box ArenaBox = null;
@@ -756,7 +759,7 @@ namespace CalamityMod.NPCs.CalClone
                     if (NPC.localAI[1] >= 120f)
                     {
                         NPC.localAI[1] = 0f;
-                        SoundEngine.PlaySound(BrimstoneElemental.BrimstoneElemental.HellfireballSound, NPC.Center);
+                        SoundEngine.PlaySound(CalamitousFireballSound, NPC.Center);
 
                         float projectileVelocity = expertMode ? 14f : 12.5f;
                         int type = ModContent.ProjectileType<CalamitousFireball>();
@@ -801,7 +804,7 @@ namespace CalamityMod.NPCs.CalClone
                         else
                         {
                             Projectile.NewProjectile(NPC.GetSource_FromAI(), NPC.Center + offset, fireballVelocity, type, damage, 0f, Main.myPlayer, 1f);
-                            SoundEngine.PlaySound(SoundID.Item20, NPC.Center);
+                            SoundEngine.PlaySound(CalamitousFireballSound, NPC.Center);
                         }
                     }
                 }
@@ -860,7 +863,12 @@ namespace CalamityMod.NPCs.CalClone
                 }
                 else
                 {
-
+                    //VFX
+                    for (var i = 0; i < 5; i++)
+                    {
+                        var p = CalamitasMetaball.SpawnParticle(NPC.Center + NPC.velocity + (NPC.rotation + MathHelper.PiOver2).ToRotationVector2().RotatedByRandom(1f) * 64f, NPC.velocity.RotatedByRandom(0.25f) * 0.5f, 32f);
+                        p.SizeScaling = 0.9f;
+                    }
                     NPC.rotation = (float)Math.Atan2(NPC.velocity.Y, NPC.velocity.X) - MathHelper.PiOver2;
 
                     // Leave behind slow hellblasts in Death Mode
@@ -909,11 +917,13 @@ namespace CalamityMod.NPCs.CalClone
                     // Lines converge inward
                     if (Main.rand.NextBool(3))
                     {
+
                         Vector2 dustVel2 = (Vector2.UnitX).RotatedByRandom(100) * Main.rand.NextFloat(23f, 28f);
-                        Dust dust2 = Dust.NewDustPerfect(NPC.Center + dustVel2.SafeNormalize(Vector2.UnitX) * 420, ModContent.DustType<SquashDust>(), -dustVel2 * 1.2f, 0, default, Main.rand.NextFloat(1.4f, 2.35f));
-                        dust2.noGravity = true;
-                        dust2.fadeIn = 0.8f;
-                        dust2.color = Color.Crimson;
+
+                        var p = CalamitasMetaball.SpawnParticle(NPC.Center + dustVel2.SafeNormalize(Vector2.UnitX) * 420, -dustVel2 * 1.2f, 16f * Main.rand.NextFloat(1.4f, 2.35f));
+                        p.Scale = new(1f, 0.33f);
+                        p.rotation = p.Velocity.ToRotation();
+                        p.SizeScaling = 0.95f;
                     }
                 }
 

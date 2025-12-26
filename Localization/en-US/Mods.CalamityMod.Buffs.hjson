@@ -41,7 +41,12 @@ FireballBuff: {
 
 GrapeBeerBuff: {
 	DisplayName: Grape Beer
-	Description: Ranged projectiles  gain homing, reduced critical strike damage
+	Description: Ranged projectiles gain homing, reduced critical strike damage
+}
+
+ManhattanBuff: {
+	DisplayName: Manhattan
+	Description: Cold debuff damage increased, water debuff damage reduced
 }
 
 ManhattanBuff: {

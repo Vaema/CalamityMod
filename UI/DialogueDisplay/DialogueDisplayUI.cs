@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Text.Json;
@@ -9,6 +10,7 @@ using CalamityMod.UI.DialogueDisplay.DisplayEffects;
 using CalamityMod.UI.DialogueDisplay.TextEffects;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using Microsoft.Xna.Framework.Input;
 using ReLogic.Content;
 using ReLogic.Graphics;
 using Terraria;
@@ -19,6 +21,7 @@ using Terraria.Localization;
 using Terraria.ModLoader;
 using Terraria.UI;
 using Terraria.UI.Chat;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 using static ReLogic.Graphics.DynamicSpriteFont;
 
 namespace CalamityMod.UI.DialogueDisplay
@@ -485,21 +488,21 @@ namespace CalamityMod.UI.DialogueDisplay
                             {
                                 if (ID == "Colors")
                                 {
-                                    if (float.TryParse(Param, out float result))
+                                    if (float.TryParse(Param, NumberStyles.Float | NumberStyles.AllowThousands, CultureInfo.InvariantCulture, out float result))
                                         Params.Add(result);
                                     else
                                         ColorParams.Add(Param);
                                 }
                                 else if (ID == "BorderColors")
                                 {
-                                    if (float.TryParse(Param, out float result))
+                                    if (float.TryParse(Param, NumberStyles.Float | NumberStyles.AllowThousands, CultureInfo.InvariantCulture, out float result))
                                         Params.Add(result);
                                     else
                                         BorderColorParams.Add(Param);
                                 }
                                 else
                                 {
-                                    if (float.TryParse(Param, out float result))
+                                    if (float.TryParse(Param, NumberStyles.Float | NumberStyles.AllowThousands, CultureInfo.InvariantCulture, out float result))
                                         Params.Add(result);
                                     else
                                         throw new Exception("Invalid Parameter found");
@@ -939,29 +942,9 @@ namespace CalamityMod.UI.DialogueDisplay
 
         public static DialogueTextData Deserialize(string name)
         {
-            string activeExtension = LanguageManager.Instance.ActiveCulture.Name;
-            string path = "UI/DialogueDisplay/" + activeExtension + "/" + name + ".json";
+            string json = Language.GetTextValue("Mods.CalamityMod.Dialogue." + name);
 
-            // Fall back to english if not found
-            if (!CalamityMod.Instance.FileExists(path))
-                path = "UI/DialogueDisplay/en-US/" + name + ".json";
-
-            // Throw if we cant find english either
-            if (!CalamityMod.Instance.FileExists(path))
-                throw new FileNotFoundException($"Could not find the dialog file {path}.");
-
-            Stream stream = CalamityMod.Instance.GetFileStream(path);
-
-            DialogueTextData data = JsonSerializer.Deserialize<DialogueTextData>(stream);
-
-            stream.Close();
-
-            Console.WriteLine($"=== DESERIALIZATION DEBUG ===");
-            Console.WriteLine($"DefaultColor: {data.DefaultColor}");
-            Console.WriteLine($"DefaultSpeaker: {data.DefaultSpeaker}");
-            Console.WriteLine($"AlignType: {data.AlignType}");
-            Console.WriteLine($"AlignType as int: {(int)data.AlignType}");
-            Console.WriteLine($"Expected: Center (1)");
+            DialogueTextData data = JsonSerializer.Deserialize<DialogueTextData>(json);
 
             return data;
         }

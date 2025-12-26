@@ -37,6 +37,7 @@ using Terraria.GameContent;
 using Terraria.GameContent.Bestiary;
 using Terraria.GameContent.Events;
 using Terraria.GameContent.ItemDropRules;
+using Terraria.Graphics.Shaders;
 using Terraria.ID;
 using Terraria.ModLoader;
 
@@ -633,7 +634,7 @@ namespace CalamityMod.NPCs.DevourerofGods
                         player.Calamity().subtitletext = Main.combatText[ctid];
                     player.Calamity().subtitleColors = new Color[] { Color.Cyan, Color.Fuchsia };
                     */
-                    DialogueDisplaySystem.StartDialogue("DevourerOfGodsPhases", NPC, 2, 120, false, new BossText());
+                    DialogueDisplaySystem.StartDialogue("DevourerOfGods.Phases", NPC, 2, 120, false, new BossText());
                 }
             }
 
@@ -810,7 +811,7 @@ namespace CalamityMod.NPCs.DevourerofGods
                                             player.Calamity().subtitletext = Main.combatText[ctid];
                                         player.Calamity().subtitleColors = new Color[] { Color.Cyan, Color.Fuchsia };
                                         */
-                                        DialogueDisplaySystem.StartDialogue("DevourerOfGodsPhases", NPC, 3, 120, false, new BossText());
+                                        DialogueDisplaySystem.StartDialogue("DevourerOfGods.Phases", NPC, 3, 120, false, new BossText());
                                     }
 
                                     spawnedGuardians3 = true;
@@ -1473,7 +1474,7 @@ namespace CalamityMod.NPCs.DevourerofGods
                                 player.Calamity().subtitletext = Main.combatText[ctid];
                             player.Calamity().subtitleColors = new Color[] { Color.Cyan, Color.Fuchsia };
                             */
-                            DialogueDisplaySystem.StartDialogue("DevourerOfGodsPhases", NPC, 1, 120, false, new BossText());
+                            DialogueDisplaySystem.StartDialogue("DevourerOfGods.Phases", NPC, 1, 120, false, new BossText());
                         }
 
                         NPC.TargetClosest();
@@ -2436,6 +2437,8 @@ namespace CalamityMod.NPCs.DevourerofGods
             return realSpot;
         }
 
+        Vector2 noiseOffset = Vector2.Zero;
+
         public override bool PreDraw(SpriteBatch spriteBatch, Vector2 screenPos, Color drawColor)
         {
             bool actuallyInPhaseTwo = (Phase2Started && NPC.localAI[2] <= 60f);
@@ -2449,6 +2452,32 @@ namespace CalamityMod.NPCs.DevourerofGods
             {
                 NPC.Opacity = 1f;
                 return CalamityUtils.DrawAnimatedBestiaryWorm(spriteBatch, NPC, drawColor, TextureP2_Full.Value, DevourerofGodsBody.TextureP2.Value, 4, 26, 0.5f, new Vector2(30, 10), 2, 20);
+            }
+
+            bool shouldUseShader = CalamityDrawParameterNPC.DoGDeathAnimationTimer != 0;
+            SpriteBatchSnapshot snap = new(spriteBatch);
+
+            if (shouldUseShader)
+            {
+                if (noiseOffset == Vector2.zeroVector)
+                    noiseOffset = NPC.Center;
+
+                Main.spriteBatch.End(out snap);
+                Main.spriteBatch.Begin(SpriteSortMode.Immediate, BlendState.NonPremultiplied, SamplerState.LinearWrap, DepthStencilState.Default, RasterizerState.CullNone, null, Main.GameViewMatrix.ZoomMatrix);
+
+                MiscShaderData dissolveShader = GameShaders.Misc["CalamityMod:Dissolve"];
+                Texture2D dissolveTexture = ModContent.Request<Texture2D>("CalamityMod/ExtraTextures/GreyscaleGradients/HarshNoise").Value;
+
+                dissolveShader.Shader.Parameters["noiseScale"].SetValue(0.5f);
+                dissolveShader.Shader.Parameters["dissolveIntensity"].SetValue(CalamityDrawParameterNPC.DoGDeathAnimationTimer / 600f);
+                dissolveShader.Shader.Parameters["sampleOffset"].SetValue(noiseOffset * 0.5f);
+                dissolveShader.Shader.Parameters["transitionColor"].SetValue(SpecialMoveColor.ToVector4());
+                dissolveShader.Shader.Parameters["transitionOffset"].SetValue(0.05f);
+
+                Main.instance.GraphicsDevice.Textures[1] = dissolveTexture;
+                Main.instance.GraphicsDevice.SamplerStates[1] = SamplerState.LinearWrap;
+
+                dissolveShader.Apply();
             }
 
             SpriteEffects spriteEffects = (NPC.spriteDirection == 1) ? SpriteEffects.FlipHorizontally : SpriteEffects.None;
@@ -2499,6 +2528,12 @@ namespace CalamityMod.NPCs.DevourerofGods
             mainGlowTexture = actuallyInPhaseTwo ? TextureP2_Glow_Cyan.Value : Texture_Glow_Cyan.Value;
             glowmaskColor = Color.Lerp(Color.White, Color.Cyan, 0.5f);
             spriteBatch.Draw(mainGlowTexture, drawPosition, NPC.frame, NPC.GetAlpha(glowmaskColor), NPC.rotation, halfSizeTexture, NPC.scale, spriteEffects, 0f);
+
+            if (shouldUseShader)
+            {
+                Main.spriteBatch.End();
+                Main.spriteBatch.Begin(snap);
+            }
 
             return false;
         }
@@ -2778,7 +2813,7 @@ namespace CalamityMod.NPCs.DevourerofGods
                 int DialogueIndex;
                 if (target.statLife - hurtInfo.Damage <= 0)
                 {
-                    DialogueGroup = "DevourerOfGodsDeath";
+                    DialogueGroup = "DevourerOfGods.Death";
                     if (counter == 0)
                         if (NPC.GetLifePercent() <= 0.25f)
                             DialogueIndex = 4;// text = "Mods.CalamityMod.Status.Boss.DoGHeadDeath5"; //All that running just to die to a single touch?
@@ -2797,7 +2832,7 @@ namespace CalamityMod.NPCs.DevourerofGods
                 {
                     if (counter == 0 && Phase2Started)
                     {
-                        DialogueGroup = "DevourerOfGodsRunning";
+                        DialogueGroup = "DevourerOfGods.Running";
                         if (NPC.GetLifePercent() <= 0.25f)
                             DialogueIndex = 1;// text = "Mods.CalamityMod.Status.Boss.DoGHeadRunning2"; //WHAT'S THE PROBLEM?! CAN'T RUN ANYMORE?!
                         else
@@ -2805,7 +2840,7 @@ namespace CalamityMod.NPCs.DevourerofGods
                     }
                     else
                     {
-                        DialogueGroup = "DevourerOfGodsHead";
+                        DialogueGroup = "DevourerOfGods.Head";
                         if (counter > 9)
                             DialogueIndex = Main.rand.Next(10, 13);// text = headHitKeys[Main.rand.Next(10, 13)]; //DogHead11-13
                         else if (counter == 9)
