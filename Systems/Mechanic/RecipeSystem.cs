@@ -1544,6 +1544,7 @@ namespace CalamityMod.Systems
             //Bobber
             r = Recipe.Create(ItemID.FishingBobber);
             r.AddIngredient<Driftwood>(10);
+            r.AddIngredient(ItemID.BlackPearl);
             r.AddRecipeGroup("IronBar");
             r.AddTile(TileID.Anvils);
             r.Register();
