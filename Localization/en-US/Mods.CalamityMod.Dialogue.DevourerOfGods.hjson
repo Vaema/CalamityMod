@@ -47,7 +47,7 @@ Phases:
 
 	    {
 	      "Lines": [
-	        "[Shaking:[Scale(1.5):[Colors(2, 0.5, 00FFFF, FF00FF):A GOD DOES NOT FEAR DEATH!]]]"
+	        "[Colors(2, 0.5, 00FFFF, FF00FF):[Shaking:[Scale(1.5):A]]][Colors(2, 0.5, FF00FF, 00FFFF):[Shaking(5):[Scale(2): [Pause(0.33)]GOD]]][Colors(2, 0.5, 00FFFF, FF00FF):[Shaking:[Scale(1.5): DOES NOT FEAR]]][Colors(2, 0.5, FF00FF, 00FFFF):[Shaking(5):[Scale(2): [Pause(0.33)]DEATH!]]]"
 	      ]
 	    }
 	  ]
@@ -58,6 +58,7 @@ Death:
 	{
 	  "DefaultColor": "6383FF",
 	  "DefaultSpeaker": "DevourerOfGods",
+	     "AlignType": 1,
 
 	  "TextDelay": 2,
 	  "BasePunctuationDelay": {
@@ -119,6 +120,7 @@ Head:
 	{
 	  "DefaultColor": "6383FF",
 	  "DefaultSpeaker": "DevourerOfGods",
+	     "AlignType": 1,
 
 	  "TextDelay": 2,
 	  "BasePunctuationDelay": {
@@ -230,6 +232,7 @@ Running:
 	{
 	  "DefaultColor": "6383FF",
 	  "DefaultSpeaker": "DevourerOfGods",
+	     "AlignType": 1,
 
 	  "TextDelay": 2,
 	  "BasePunctuationDelay": {
