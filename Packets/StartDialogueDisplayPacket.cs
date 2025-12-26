@@ -42,7 +42,7 @@ namespace CalamityMod.Packets
             packet.Send(toClient, ignoreClient);
         }
 
-        public enum EntityType
+        public enum EntityType : byte
         {
             NPC,
             Player,
@@ -59,7 +59,7 @@ namespace CalamityMod.Packets
 
             packet.Write(name);
             packet.WriteFlags(progressDialogue, true);
-            packet.WriteFlags(type == EntityType.NPC, type == EntityType.Player);
+            packet.Write((byte)type);
             packet.Write(entity);
             packet.Write(index);
             packet.Write(uptime);
@@ -72,36 +72,16 @@ namespace CalamityMod.Packets
         public override void HandlePacket(in BinaryReader packet, int sender)
         {
             // Only receive info as clients
-            if (Main.netMode != NetmodeID.MultiplayerClient)
-            {
-                packet.ReadString();
-                packet.ReadFlags(out _, out bool n);
-
-                if (n)
-                {
-                    packet.ReadFlags(out _, out _);
-                    packet.ReadInt32();
-                }
-                else
-                    packet.ReadPackedVector2();
-
-                packet.ReadInt32();
-                packet.ReadInt32();
-                packet.ReadByte();
-                packet.ReadSingle();
-                return;
-            }
 
             string name = packet.ReadString();
             packet.ReadFlags(out bool progressDialogue, out bool hasEntity);
 
             int entity = -1;
             Vector2 pos = Vector2.zeroVector;
-            bool isNpc = false;
-            bool isPlayer = false;
+            EntityType type = EntityType.NPC;
             if (hasEntity)
             {
-                packet.ReadFlags(out isNpc, out isPlayer);
+                type = (EntityType)packet.ReadByte();
                 entity = packet.ReadInt32();
             }
             else
@@ -112,10 +92,23 @@ namespace CalamityMod.Packets
             byte effect = packet.ReadByte();
             float wrapWidth = packet.ReadSingle();
 
+            if (Main.netMode != NetmodeID.MultiplayerClient)
+                return;
+
             DisplayEffect de = GetEffect((DisplayEffectID)effect);
 
             if (hasEntity)
-                StartDialogueOnClient(name, isNpc ? Main.npc[entity] : isPlayer ? Main.player[entity] : Main.projectile.FirstOrDefault(p => p.identity == entity), index, uptime, progressDialogue, de, wrapWidth);
+            {
+                Entity e = type switch
+                {
+                    EntityType.NPC => Main.npc[entity],
+                    EntityType.Player => Main.player[entity],
+                    EntityType.Projectile => Main.projectile.FirstOrDefault(p => p.identity == entity),
+                    _ => null
+                };
+
+                StartDialogueOnClient(name, e, index, uptime, progressDialogue, de, wrapWidth);
+            }
             else
                 StartDialogueOnClient(name, pos, index, uptime, progressDialogue, de, wrapWidth);
 
