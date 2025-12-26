@@ -2,29 +2,118 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 using System.Text.Json;
 using CalamityMod.UI.DialogueDisplay;
+using MonoMod.Cil;
+using MonoMod.RuntimeDetour;
 using Terraria.Localization;
 using Terraria.ModLoader;
 
 namespace CalamityMod.Dialogues;
 
-internal record DialogueTextDataEntry(string FilePath, string DialogueKey, DialogueTextData Data);
+internal record DialogueTextDataEntry(
+    string FilePath,
+    string DialogueKey,
+    DialogueTextData Data
+    );
 
 internal class DialogueLoader : ModSystem
 {
     private const string DialogueFilePrefix = "CalamityDialogue.";
 
-    private static readonly Dictionary<string, DialogueTextData> _DialogueLookup = [];
+    private static readonly Dictionary<string, DialogueTextDataEntry> _DialogueLookup = [];
 
-    public override void Load() => _DialogueLookup.Clear();
+    private ILHook _ExtractLocalizationHook;
 
-    public override void Unload() => _DialogueLookup.Clear();
+    public override void Load()
+    {
+        _DialogueLookup.Clear();
+
+        var method = typeof(LocalizationLoader).GetMethod(nameof(LocalizationLoader.ExtractLocalizationFiles), BindingFlags.NonPublic | BindingFlags.Public | BindingFlags.Static);
+        if (method != null)
+        {
+            _ExtractLocalizationHook = new ILHook(method, ExtractDialogueFilesPatch);
+            _ExtractLocalizationHook.Apply();
+        }
+    }
+
+    public override void Unload()
+    {
+        _DialogueLookup.Clear();
+
+        if (_ExtractLocalizationHook != null)
+        {
+            _ExtractLocalizationHook.Undo();
+            _ExtractLocalizationHook.Dispose();
+            _ExtractLocalizationHook = null;
+        }
+    }
+
+    private static void ExtractDialogueFilesPatch(ILContext il)
+    {
+        var cursor = new ILCursor(il);
+
+        int pathLdloc = -1;
+        int modLdloc = -1;
+        if (!cursor.TryGotoNext(MoveType.After,
+            i => i.MatchLdloc(out modLdloc), // Mod mod
+            i => i.MatchLdloc(out pathLdloc), // string path
+            i => i.MatchCallOrCallvirt(out _), // GameCulture ActiveCulture
+            i => i.MatchCallOrCallvirt(typeof(LocalizationLoader), nameof(LocalizationLoader.UpdateLocalizationFilesForMod))))
+        {
+            CalamityMod.Log.ILFailure("Force Extract Dialogue Files", $"Unable to locate {nameof(LocalizationLoader.UpdateLocalizationFilesForMod)} call");
+        }
+
+        if (modLdloc == -1)
+        {
+            CalamityMod.Log.ILFailure("Force Extract Dialogue Files", $"Unable to locate ldloc index for mod");
+        }
+
+        if (pathLdloc == -1)
+        {
+            CalamityMod.Log.ILFailure("Force Extract Dialogue Files", $"Unable to locate ldloc index for path");
+        }
+
+        cursor.EmitLdloc(modLdloc);
+        cursor.EmitLdloc(pathLdloc);
+        cursor.EmitDelegate((Mod mod, string path) =>
+        {
+            if (mod != CalamityMod.Instance)
+                return;
+
+            var exportPath = Path.Combine(path, "Dialogues", "en-US");
+            if (!Directory.Exists(exportPath)) Directory.CreateDirectory(exportPath);
+
+            foreach (var entry in GetDialogueTextDatas(CalamityMod.Instance, GameCulture.DefaultCulture, skipDeserializeData: true))
+            {
+                try
+                {
+                    using var stream = CalamityMod.Instance.File.GetStream(entry.FilePath);
+                    using var fileStream = File.OpenWrite(Path.Combine(exportPath, Path.GetFileName(entry.FilePath)));
+                    using var writer = new StreamWriter(fileStream, Encoding.UTF8);
+                    using var reader = new StreamReader(stream, Encoding.UTF8);
+                    writer.Write(reader.ReadToEnd());
+                }
+                catch (Exception e)
+                {
+                    CalamityMod.Log.Error($"Error while exporting DialogueTextData entry: {e}");
+                }
+            }
+        });
+    }
 
     public static bool TryGetDialogue(string dialogueKey, out DialogueTextData data)
     {
-        return _DialogueLookup.TryGetValue(dialogueKey, out data);
+        if (_DialogueLookup.TryGetValue(dialogueKey, out var entry))
+        {
+            data = entry.Data;
+            return true;
+        }
+
+        data = null;
+        return false;
     }
 
     public override void OnLocalizationsLoaded()
@@ -33,7 +122,7 @@ internal class DialogueLoader : ModSystem
 
         foreach (var entry in GetDialogueTextDatas(Mod, GameCulture.DefaultCulture))
         {
-            _DialogueLookup[entry.DialogueKey] = entry.Data;
+            _DialogueLookup[entry.DialogueKey] = entry;
         }
 
         var activeCulture = LanguageManager.Instance.ActiveCulture;
@@ -44,12 +133,12 @@ internal class DialogueLoader : ModSystem
                 if (!_DialogueLookup.ContainsKey(entry.DialogueKey))
                     continue;
 
-                _DialogueLookup[entry.DialogueKey] = entry.Data;
+                _DialogueLookup[entry.DialogueKey] = entry;
             }
         }
     }
 
-    private static IEnumerable<DialogueTextDataEntry> GetDialogueTextDatas(Mod mod, GameCulture targetCulture)
+    private static IEnumerable<DialogueTextDataEntry> GetDialogueTextDatas(Mod mod, GameCulture targetCulture, bool skipDeserializeData = false)
     {
         if (mod == null)
             yield break;
@@ -80,17 +169,20 @@ internal class DialogueLoader : ModSystem
                 continue;
 
             DialogueTextData data = null;
-            try
+            if (!skipDeserializeData)
             {
-                using var stream = new StreamReader(mod.File.GetStream(file), Encoding.UTF8);
-                data = JsonSerializer.Deserialize<DialogueTextData>(stream.BaseStream);
-            }
-            catch (Exception e)
-            {
-                CalamityMod.Log.Error($"Error while reading DialogueTextData entry: {e}");
+                try
+                {
+                    using var stream = new StreamReader(mod.File.GetStream(file), Encoding.UTF8);
+                    data = JsonSerializer.Deserialize<DialogueTextData>(stream.BaseStream);
+                }
+                catch (Exception e)
+                {
+                    CalamityMod.Log.Error($"Error while reading DialogueTextData entry: {e}");
+                }
             }
 
-            if (data != null)
+            if (data != null || skipDeserializeData)
             {
                 CalamityMod.Log.Info($"Found Dialogue Item: '{mod.Name}', '{file.Name}', '{prefix}', '{culture.Name}'");
                 yield return new DialogueTextDataEntry(file.Name, dialogueKey, data);
