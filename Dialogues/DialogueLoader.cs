@@ -5,25 +5,31 @@ using System.Linq;
 using System.Reflection;
 using System.Text;
 using System.Text.Json;
+using System.Text.RegularExpressions;
 using CalamityMod.UI.DialogueDisplay;
+using CalamityMod.Utilities;
 using MonoMod.Cil;
 using MonoMod.RuntimeDetour;
+using Terraria;
 using Terraria.Localization;
 using Terraria.ModLoader;
+using Terraria.ModLoader.Core;
 
 namespace CalamityMod.Dialogues;
 
 internal record DialogueTextDataEntry(
+    Mod ProviderMod,
     string FilePath,
     string DialogueKey,
     DialogueTextData Data
     );
 
-internal class DialogueLoader : ModSystem
+internal partial class DialogueLoader : ModSystem
 {
     private const string DialogueFilePrefix = "CalamityDialogue.";
 
     private static readonly Dictionary<string, DialogueTextDataEntry> _DialogueLookup = [];
+    private static readonly Dictionary<Mod, MainThreadedFileSystemWatcher> _Watchers = [];
 
     private ILHook _ExtractLocalizationHook;
 
@@ -39,6 +45,35 @@ internal class DialogueLoader : ModSystem
         }
     }
 
+    public override void PostSetupContent()
+    {
+        foreach (var mod in ModLoader.Mods)
+        {
+            string path = Path.Combine(ModCompile.ModSourcePath, mod.Name);
+            if (!Directory.Exists(path))
+                continue;
+
+            var watcher = new MainThreadedFileSystemWatcher()
+            {
+                Path = path,
+                Filter = "*.json",
+                FileNameFilter = CalamityDialogueFileRegex(),
+                NotifyFilter = NotifyFilters.FileName | NotifyFilters.LastWrite,
+                IncludeSubdirectories = true
+            };
+            watcher.Changed += (o, arg) =>
+            {
+                HandleFileUpdate(mod, arg.FullPath);
+            };
+            watcher.Renamed += (o, arg) =>
+            {
+                HandleFileUpdate(mod, arg.FullPath);
+            };
+            watcher.EnableRaisingEvents = true;
+            _Watchers[mod] = watcher;
+        }
+    }
+
     public override void Unload()
     {
         _DialogueLookup.Clear();
@@ -49,6 +84,14 @@ internal class DialogueLoader : ModSystem
             _ExtractLocalizationHook.Dispose();
             _ExtractLocalizationHook = null;
         }
+
+        foreach (var watcher in _Watchers.Values)
+        {
+            watcher.EnableRaisingEvents = false;
+            watcher.Dispose();
+        }
+
+        _Watchers.Clear();
     }
 
     private static void ExtractDialogueFilesPatch(ILContext il)
@@ -148,6 +191,35 @@ internal class DialogueLoader : ModSystem
         }
     }
 
+    private static void HandleFileUpdate(Mod mod, string filePath)
+    {
+        if (!TryGetDialogueFileInfo(filePath, out _, out _, out var dialogueKey))
+            return;
+
+        if (!_DialogueLookup.TryGetValue(dialogueKey, out var existingEntry))
+            return;
+
+        if (existingEntry.ProviderMod != mod)
+            return;
+
+        try
+        {
+            using var stream = new StreamReader(File.OpenRead(filePath), Encoding.UTF8);
+            _DialogueLookup[dialogueKey] = existingEntry with
+            {
+                Data = JsonSerializer.Deserialize<DialogueTextData>(stream.BaseStream)
+            };
+
+            var hotreloadedMessage = $"Dialogue entry has hot reloaded: '{dialogueKey}', from source: '{filePath}'";
+            CalamityMod.Log.Info(hotreloadedMessage);
+            if (!Main.gameMenu) Main.NewText(hotreloadedMessage);
+        }
+        catch (Exception e)
+        {
+            CalamityMod.Log.Error($"Error while hot reloading DialogueTextData entry ({filePath}): {e}");
+        }
+    }
+
     private static IEnumerable<DialogueTextDataEntry> GetDialogueTextDatas(Mod mod, GameCulture targetCulture, bool skipDeserializeData = false)
     {
         if (mod == null)
@@ -158,19 +230,7 @@ internal class DialogueLoader : ModSystem
 
         foreach (var file in mod.File)
         {
-            if (!Path.GetExtension(file.Name).Equals(".json", StringComparison.InvariantCultureIgnoreCase))
-                continue;
-
-            if (!LocalizationLoader.TryGetCultureAndPrefixFromPath(file.Name, out var culture, out var prefix))
-                continue;
-
-            string fileName = Path.GetFileNameWithoutExtension(file.Name);
-            string dialogueKey;
-            if (fileName.StartsWith($"{prefix}_{DialogueFilePrefix}", StringComparison.InvariantCultureIgnoreCase))
-                dialogueKey = fileName[$"{prefix}_{DialogueFilePrefix}".Length..];
-            else if (fileName.StartsWith(DialogueFilePrefix, StringComparison.InvariantCultureIgnoreCase))
-                dialogueKey = fileName[DialogueFilePrefix.Length..];
-            else
+            if (!TryGetDialogueFileInfo(file.Name, out var culture, out var prefix, out var dialogueKey))
                 continue;
 
             // Explictly Allow Default Culture File.
@@ -194,8 +254,35 @@ internal class DialogueLoader : ModSystem
 
             if (data != null || skipDeserializeData)
             {
-                yield return new DialogueTextDataEntry(file.Name, dialogueKey, data);
+                yield return new DialogueTextDataEntry(mod, file.Name, dialogueKey, data);
             }
         }
     }
+
+    private static bool TryGetDialogueFileInfo(string filePath, out GameCulture culture, out string prefix, out string dialogueKey)
+    {
+        if (!Path.GetExtension(filePath).Equals(".json", StringComparison.InvariantCultureIgnoreCase))
+            goto EXIT_INVALID;
+
+        if (!LocalizationLoader.TryGetCultureAndPrefixFromPath(filePath, out culture, out prefix))
+            goto EXIT_INVALID;
+
+        string fileName = Path.GetFileNameWithoutExtension(filePath);
+        if (fileName.StartsWith($"{prefix}_{DialogueFilePrefix}", StringComparison.InvariantCultureIgnoreCase))
+            dialogueKey = fileName[$"{prefix}_{DialogueFilePrefix}".Length..];
+        else if (fileName.StartsWith(DialogueFilePrefix, StringComparison.InvariantCultureIgnoreCase))
+            dialogueKey = fileName[DialogueFilePrefix.Length..];
+        else
+            goto EXIT_INVALID;
+        return true;
+
+EXIT_INVALID:
+        culture = null;
+        prefix = null;
+        dialogueKey = null;
+        return false;
+    }
+
+    [GeneratedRegex(@".*?CalamityDialogue\..+?\.jsonc?$", RegexOptions.IgnoreCase)]
+    private static partial Regex CalamityDialogueFileRegex();
 }
