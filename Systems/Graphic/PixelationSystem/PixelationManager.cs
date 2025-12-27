@@ -168,7 +168,7 @@ namespace CalamityMod.Systems.Graphic.PixelationSystem
         {
             foreach (var blendStateTargetPair in targetCollection)
             {
-                using (blendStateTargetPair.Value.Scope())
+                using (blendStateTargetPair.Value.Scope(clearColor: Color.Transparent))
                 {
                     Main.spriteBatch.Begin(default, blendStateTargetPair.Key, Main.DefaultSamplerState, DepthStencilState.None, Main.Rasterizer, null, pixelationMatrix);
 

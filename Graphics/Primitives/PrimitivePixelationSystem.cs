@@ -174,7 +174,7 @@ namespace CalamityMod.Graphics.Primitives
         {
             // Swap to the target regardless, in order to clear any leftover content from last frame. Not doing this results in the final frame lingering once it stops rendering.
 
-            using (renderTarget.Scope())
+            using (renderTarget.Scope(clearColor: Color.Transparent))
             {
                 if (pixelPrimitives.Any())
                 {

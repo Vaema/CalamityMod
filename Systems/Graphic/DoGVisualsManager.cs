@@ -159,12 +159,12 @@ namespace CalamityMod.Systems.Graphic
             if (ShouldDrawToBackgroundTargets)
             {
                 // Draw the background which'll be displayed inside the rift onto a render target.
-                using (DistortionRiftBackgroundContentsTarget.Scope())
+                using (DistortionRiftBackgroundContentsTarget.Scope(clearColor: Color.Transparent))
                 {
                     DrawDistortionRiftBackground();
                 }
 
-                using (DistortionRiftPrimitivesTarget.Scope())
+                using (DistortionRiftPrimitivesTarget.Scope(clearColor: Color.Transparent))
                 {
                     Main.spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, SamplerState.LinearWrap, DepthStencilState.None, Main.Rasterizer, null, CalamityUtils.BackgroundMatrix);
 
@@ -179,7 +179,7 @@ namespace CalamityMod.Systems.Graphic
             if (ShouldDrawToForegroundTarget)
             {
                 // Draw the background which'll be displayed for all distortion-related effects done in the foreground (same layer as the player).
-                using (DistortionForegroundContentsTarget.Scope())
+                using (DistortionForegroundContentsTarget.Scope(clearColor: Color.Transparent))
                 {
                     DrawDistortionForeground();
                 }

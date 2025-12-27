@@ -165,7 +165,7 @@ namespace CalamityMod.Graphics.Renderers.CalamityRenderers
                     continue;
 
                 // Swap to the assosiated target and call the interface method.
-                using (target.Scope())
+                using (target.Scope(clearColor: Color.Transparent))
                 {
                     renderer.DrawDyeableShader(spriteBatch);
                 }

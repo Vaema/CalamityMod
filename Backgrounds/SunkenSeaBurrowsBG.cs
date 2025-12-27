@@ -141,7 +141,7 @@ namespace CalamityMod.Backgrounds
 
             CurrentlyRendering = true;
 
-            using (WaterDistortionTarget.Scope())
+            using (WaterDistortionTarget.Scope(clearColor: Color.Transparent))
             {
                 // 13MAY2025: fryzahh: Note that when other Sunken Sea backgrounds are implemented they should use this same system.
                 // Leaving this here for other programmers, in case I don't get to doing this myself.
