@@ -10,6 +10,7 @@ using CalamityMod.Particles;
 using CalamityMod.Projectiles.Boss.BrainOfCthulhu;
 using CalamityMod.Utilities.Daybreak;
 using CalamityMod.World;
+using Microsoft.CodeAnalysis;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using ReLogic.Content;
@@ -263,10 +264,10 @@ public class BrainOfCthulhuAI : VanillaAIOverride
 
     private static float CreeperAmountRatio => NPC.CountNPCS(NPCID.Creeper) / (float)GetBrainOfCthuluCreepersCountRevDeath();
 
+    public override bool EnableMultiplayerSmoothingAheadOfAI => true;
+
     public override void SetDefaults(Mod mod)
     {
-        DisableMultiplayerSmoothing = true;
-
         BoCDrawOffset = Vector2.Zero;
         ShieldOpacity = 1f;
         ShieldScale = 1f;
@@ -290,8 +291,6 @@ public class BrainOfCthulhuAI : VanillaAIOverride
 
     public override void OnSpawn(Mod mod)
     {
-        DisableMultiplayerSmoothing = true;
-
         if (NPC.target < 0 || NPC.target == Main.maxPlayers || Main.player[NPC.target].dead || !Main.player[NPC.target].active)
         {
             // Ignore tank players, target low HP players, Brain is smart
@@ -304,6 +303,7 @@ public class BrainOfCthulhuAI : VanillaAIOverride
         bool onSurface = target.Center.Y / 16 < Main.worldSurface;
 
         NPC.Center = target.Center + Vector2.UnitY * (onSurface ? 900 : -900);
+        DisableMultiplayerSmoothing = true;
         NPC.dontTakeDamage = true;
 
         AIState = onSurface ? BrainAIState.SurfaceSpawnAnimation : BrainAIState.UndergroundSpawnAnimation;
@@ -341,8 +341,6 @@ public class BrainOfCthulhuAI : VanillaAIOverride
             NPC.damage = 0;
         else
             NPC.damage = NPC.defDamage;
-
-        bool death = CalamityWorld.death || BossRushEvent.BossRushActive;
 
         #region Targeting
         if (NPC.target < 0 || NPC.target == Main.maxPlayers || Main.player[NPC.target].dead || !Main.player[NPC.target].active)
@@ -617,7 +615,10 @@ public class BrainOfCthulhuAI : VanillaAIOverride
         if (AttackCounter < GetBrainOfCthuluCreepersCountRevDeath())
         {
             if (SpawnTime == 0)
+            {
                 NPC.Center = Target.Center + Vector2.UnitY * (AIState == BrainAIState.UndergroundSpawnAnimation ? -900 : 900);
+                DisableMultiplayerSmoothing = true;
+            }
 
             if (SpawnDelay <= 0)
             {
@@ -1328,6 +1329,17 @@ public class BrainOfCthulhuAI : VanillaAIOverride
             }
         }
 
+        if (Time < OrbitSetupDuration)
+        {
+            AttackPosition = Target.Center;
+        }
+        else
+        {
+            float prox = Target.DistanceSQ(AttackPosition);
+            if (prox > 65536) //256^2
+                AttackPosition += Target.DirectionFrom(AttackPosition) * (((float)Math.Sqrt(prox) - 256) / 16f);
+        }
+
         if (Time >= OrbitDuration + 30)
         {
             Time = -1;
@@ -1569,6 +1581,7 @@ public class BrainOfCthulhuAI : VanillaAIOverride
             {
                 Vector2 start = NPC.Center;
                 NPC.Center = endPoint;
+                DisableMultiplayerSmoothing = true;
                 AttackFlag = true;
                 NPC.netUpdate = true;
             }
@@ -1719,6 +1732,7 @@ public class BrainOfCthulhuAI : VanillaAIOverride
             float waveValue = Time * MathHelper.Pi / BloodshotRate;
             Vector2 goalPos = Target.Center + new Vector2((float)Math.Cos(waveValue) * HoverDistance.X * AttackSign, (float)(-0.5f * Math.Cos(2 * waveValue) + 0.5f) * -HoverDistance.Y);
             NPC.velocity = Vector2.Zero;
+            DisableMultiplayerSmoothing = true;
             if (Time < 30f)
                 NPC.Center = Vector2.Lerp(AttackPosition, goalPos, CalamityUtils.SineOutEasing(Time / 30f, 1));
             else
@@ -1833,6 +1847,7 @@ public class BrainOfCthulhuAI : VanillaAIOverride
             {
                 Vector2 start = NPC.Center;
                 NPC.Center = endPoint;
+                DisableMultiplayerSmoothing = true;
                 AttackFlag = true;
                 NPC.netUpdate = true;
             }
@@ -2099,7 +2114,10 @@ public class BrainOfCthulhuAI : VanillaAIOverride
                     float rot = AttackRotation + (CalamityWorld.death ? MathHelper.PiOver4 : MathHelper.PiOver2) * i;
                     Vector2 spawnPos = AttackPosition + (rot.ToRotationVector2() * IllusionDashTeleportDistance);
                     if (i == 0)
+                    {
                         NPC.Center = spawnPos;
+                        DisableMultiplayerSmoothing = true;
+                    }
                     else if (Main.netMode != NetmodeID.MultiplayerClient)
                         NPC.NewNPCDirect(NPC.GetSource_FromThis(), spawnPos, ModContent.NPCType<BrainIllusion>(), 0, 15, 30, rot).netUpdate = true;
                 }
@@ -2140,11 +2158,12 @@ public class BrainOfCthulhuAI : VanillaAIOverride
                 float circleDist = MathHelper.Lerp(IllusionDashTeleportDistance, IllusionDashCloseInDistance, CalamityUtils.SineOutEasing(lerp, 1));
                 NPC.Center = Vector2.Lerp(AttackPosition, Target.Center + (AttackRotation.ToRotationVector2() * circleDist), lerp);
                 AttackRotation += MathHelper.Lerp(0f, IllusionDashStartingSpinSpeed, CalamityUtils.SineInEasing(lerp, 1));
+                DisableMultiplayerSmoothing = true;
             }
             else if (startTime <= 30 + IllusionDashSpinDuration)
             {
                 NPC.Center = Target.Center + AttackRotation.ToRotationVector2() * IllusionDashCloseInDistance;
-
+                DisableMultiplayerSmoothing = true;
                 AttackRotation += MathHelper.Lerp(IllusionDashStartingSpinSpeed, 0f, CalamityUtils.SineOutEasing((startTime - 30) / (float)IllusionDashSpinDuration, 1));
             }
             else if (startTime < 30 + IllusionDashSpinDuration + 30)
@@ -2198,6 +2217,7 @@ public class BrainOfCthulhuAI : VanillaAIOverride
                 {
                     AttackFlag = true;
                     NPC.Center = endPoint;
+                    DisableMultiplayerSmoothing = true;
                 }
                 else
                 {
@@ -2379,6 +2399,7 @@ public class BrainOfCthulhuAI : VanillaAIOverride
                 NPC.Center = AttackPosition + Vector2.UnitX.RotatedBy(AttackRotation) * (baseDist + (circleDist * ((float)Math.Sin(-AttackTime * MathHelper.TwoPi / FalseBrain.TimeDivisor) / 2f + 0.5f)));
                 NPC.Center += Vector2.UnitX.RotatedBy(AttackRotation + MathHelper.PiOver2) * (90 * (float)Math.Cos(AttackTime * MathHelper.TwoPi / FalseBrain.TimeDivisor));
                 NPC.Opacity = 1f;
+                DisableMultiplayerSmoothing = true;
                 AttackCounter = 0;
             }
         }

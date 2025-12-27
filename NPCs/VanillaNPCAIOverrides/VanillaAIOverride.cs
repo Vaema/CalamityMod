@@ -12,6 +12,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides
     {
         public NPC NPC { get; set; }
         public bool DisableMultiplayerSmoothing { get; set; }
+        public virtual bool EnableMultiplayerSmoothingAheadOfAI => false;
 
         public void Load(Mod mod)
         {
