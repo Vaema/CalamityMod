@@ -151,10 +151,9 @@ namespace CalamityMod.Backgrounds
                 DrawBurrowsBG();
 
                 Main.spriteBatch.End();
-
-                Main.graphics.GraphicsDevice.SetRenderTarget(null);
-                CurrentlyRendering = false;
             }
+
+            CurrentlyRendering = false;
         }
 
         private void On_Main_DrawBackgroundBlackFill(On_Main.orig_DrawBackgroundBlackFill orig, Main self)

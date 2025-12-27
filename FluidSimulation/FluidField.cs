@@ -96,14 +96,14 @@ namespace CalamityMod.FluidSimulation
 
         internal void ApplyThingToTarget(RenderTarget2D currentField, Action shaderPreparationsAction)
         {
-            Main.instance.GraphicsDevice.SetRenderTarget(TemporaryAuxilaryTarget);
-            Main.instance.GraphicsDevice.Clear(Color.Transparent);
+            using (TemporaryAuxilaryTarget.Scope(clearColor: Color.Transparent))
+            {
+                Main.spriteBatch.Begin(SpriteSortMode.Immediate, BlendState.AlphaBlend, Main.DefaultSamplerState, DepthStencilState.None, Main.Rasterizer, null, Matrix.Identity);
 
-            Main.spriteBatch.Begin(SpriteSortMode.Immediate, BlendState.AlphaBlend, Main.DefaultSamplerState, DepthStencilState.None, Main.Rasterizer, null, Matrix.Identity);
-
-            shaderPreparationsAction();
-            Main.spriteBatch.Draw(currentField, currentField.Bounds, Color.White);
-            Main.spriteBatch.End();
+                shaderPreparationsAction();
+                Main.spriteBatch.Draw(currentField, currentField.Bounds, Color.White);
+                Main.spriteBatch.End();
+            }
 
             currentField.CopyContentsFrom(TemporaryAuxilaryTarget);
         }
@@ -202,8 +202,7 @@ namespace CalamityMod.FluidSimulation
             });
 
             // Clear the Poisson values and then calculate them, for use in the divergence clearance pass.
-            Main.instance.GraphicsDevice.SetRenderTarget(DivergencePoissonField);
-            Main.instance.GraphicsDevice.Clear(Color.Transparent);
+            using (DivergencePoissonField.Scope(clearColor: Color.Transparent)) { }
 
             for (int i = 0; i < GaussSeidelIterations; i++)
             {
@@ -275,16 +274,14 @@ namespace CalamityMod.FluidSimulation
 
         public void UpdateOutputTarget()
         {
-            Main.instance.GraphicsDevice.SetRenderTarget(OutputTarget);
-            Main.instance.GraphicsDevice.Clear(Color.Transparent);
-
-            Main.spriteBatch.Begin(SpriteSortMode.Immediate, BlendState.AlphaBlend, SamplerState.LinearClamp, DepthStencilState.None, Main.Rasterizer, null, Matrix.Identity);
-            Main.instance.GraphicsDevice.Textures[5] = ColorField.NextState.Target;
-            CalamityShaders.FluidShaders.Value.CurrentTechnique.Passes["DrawFluidPass"].Apply();
-            Main.spriteBatch.Draw(DensityField.NextState.Target, Vector2.Zero, null, Color.White, 0f, Vector2.Zero, 1f, 0, 0f);
-            Main.spriteBatch.End();
-
-            Main.instance.GraphicsDevice.SetRenderTarget(null);
+            using (OutputTarget.Scope(clearColor: Color.Transparent))
+            {
+                Main.spriteBatch.Begin(SpriteSortMode.Immediate, BlendState.AlphaBlend, SamplerState.LinearClamp, DepthStencilState.None, Main.Rasterizer, null, Matrix.Identity);
+                Main.instance.GraphicsDevice.Textures[5] = ColorField.NextState.Target;
+                CalamityShaders.FluidShaders.Value.CurrentTechnique.Passes["DrawFluidPass"].Apply();
+                Main.spriteBatch.Draw(DensityField.NextState.Target, Vector2.Zero, null, Color.White, 0f, Vector2.Zero, 1f, 0, 0f);
+                Main.spriteBatch.End();
+            }
         }
 
         public void Dispose()

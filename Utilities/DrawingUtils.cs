@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 using System.Text;
+using CalamityMod.Utilities.Daybreak.Buffers;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using ReLogic.Content;
@@ -356,16 +357,14 @@ namespace CalamityMod
         /// </summary>
         public static void CopyContentsFrom(this RenderTarget2D to, RenderTarget2D from)
         {
-            Main.instance.GraphicsDevice.SetRenderTarget(to);
-            Main.instance.GraphicsDevice.Clear(Color.Transparent);
+            using (to.Scope(clearColor: Color.Transparent))
+            {
+                Main.spriteBatch.Begin(SpriteSortMode.Immediate, BlendState.AlphaBlend, Main.DefaultSamplerState, DepthStencilState.None, Main.Rasterizer, null, Matrix.Identity);
+                Main.spriteBatch.Draw(from, Vector2.Zero, null, Color.White);
+                Main.spriteBatch.End();
+            }
 
-            Main.spriteBatch.Begin(SpriteSortMode.Immediate, BlendState.AlphaBlend, Main.DefaultSamplerState, DepthStencilState.None, Main.Rasterizer, null, Matrix.Identity);
-            Main.spriteBatch.Draw(from, Vector2.Zero, null, Color.White);
-            Main.spriteBatch.End();
-
-            Main.instance.GraphicsDevice.SetRenderTarget(from);
-            Main.instance.GraphicsDevice.Clear(Color.Transparent);
-            Main.instance.GraphicsDevice.SetRenderTarget(null);
+            using (from.Scope(clearColor: Color.Transparent)) { }
         }
 
         /// <summary>
