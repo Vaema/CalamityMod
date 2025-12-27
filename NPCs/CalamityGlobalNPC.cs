@@ -5331,10 +5331,6 @@ namespace CalamityMod.NPCs
                 // Only draw the NPC if told to by the miracle blight drawer.
                 if (MiracleBlightRenderer.ValidToDraw(npc))
                     return MiracleBlightRenderer.ActuallyDoPreDraw;
-
-                // Only draw DoG's death animation when told to by the renderer.
-                if (DoGDeathAnimationRenderer.ValidToDraw(npc))
-                    return DoGDeathAnimationRenderer.ActuallyDoPreDraw;
             }
 
             if (Main.zenithWorld)

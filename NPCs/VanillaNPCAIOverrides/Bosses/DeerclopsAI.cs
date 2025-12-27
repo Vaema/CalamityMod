@@ -235,7 +235,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                     if (NPC.velocity.Y == 0f && NPC.velocity.X == 0f && useShadowHandAttack)
                     {
                         NPC.velocity.X = 0f;
-                        NPC.ai[0] = 5f;
+                        NPC.ai[0] = targetData.Center.Y < NPC.Center.Y - 50f ? 5f : 3f;
                         NPC.ai[1] = 0f;
                         NPC.localAI[1] = 0f;
                         calamityGlobalNPC.newAI[0] -= 1f;

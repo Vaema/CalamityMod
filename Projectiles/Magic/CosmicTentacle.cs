@@ -83,11 +83,11 @@ namespace CalamityMod.Projectiles.Magic
                     scaling = Utils.GetLerpValue(0, scalingTimerMax, scalingTimer, true);
                     float sharpScaling = Utils.GetLerpValue(scalingTimerMax * 0.7f, scalingTimerMax, scalingTimer, true);
 
-                    if (targetDist < 1400f)
+                    if (targetDist < 1400f && Projectile.timeLeft % 2 == 0)
                     {
                         Particle spark = new CustomSpark(Projectile.Center, -Projectile.velocity * 0.05f, "CalamityMod/Particles/GlowSpark2", false, 12, 0.07f * scaling, Color.Black * 0.85f, new Vector2(1.7f - (1 - sharpScaling), 0.9f + (1 - sharpScaling) * 2), false);
                         GeneralParticleHandler.SpawnParticle(spark);
-                        Particle spark2 = new CustomSpark(Projectile.Center, -Projectile.velocity * 0.05f, "CalamityMod/Particles/GlowSpark", false, 12, 0.035f * scaling, Color.LightGreen * 0.55f, new Vector2(1.7f - (1 - sharpScaling), 0.9f + (1 - sharpScaling) * 2));
+                        Particle spark2 = new CustomSpark(Projectile.Center, -Projectile.velocity * 0.05f, "CalamityMod/Particles/GlowSpark", false, 12, 0.035f * scaling, Color.LightGreen * 0.75f, new Vector2(1.7f - (1 - sharpScaling), 0.9f + (1 - sharpScaling) * 2));
                         GeneralParticleHandler.SpawnParticle(spark2);
                     }
                     if (Main.rand.NextBool(6))

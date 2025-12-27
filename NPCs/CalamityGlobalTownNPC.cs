@@ -119,6 +119,7 @@ namespace CalamityMod.NPCs
         [
             "Sylux", // <@!331812782183809025> (gonkachino)
             "Nemesis", // <@!1104036024063107082> (yashimayamanata)
+            "Univerze", // <@!1256376346536448150> (unizumi02)
         ];
         private static readonly string[] DemolitionistNames =
         [
@@ -269,7 +270,6 @@ namespace CalamityMod.NPCs
         private static readonly string[] TaxCollectorNames =
         [
             "Emmett",
-            "Casino King Gray", // <@!555512087711973390> (eternalgrayson)
         ];
         private static readonly string[] TravelingMerchantNames =
         [
@@ -379,7 +379,10 @@ namespace CalamityMod.NPCs
             "Milo", // <@!401849201597874179> (maskedmilo)
             "Octo", // <@!796112889353994281> (octolinggrimm)
         ];
-        private static readonly string[] TownCatSiameseNames = null;
+        private static readonly string[] TownCatSiameseNames =
+        [
+            "Conductor", // <@!555512087711973390> (grayaeternum)
+        ];
         private static readonly string[] TownCatBlackNames =
         [
             "Bear", // <@!183424826407518208> (lilac_vrt_olligoci)
