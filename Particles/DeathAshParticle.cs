@@ -66,23 +66,22 @@ namespace CalamityMod.Particles
                 Main.spriteBatch.Begin(SpriteSortMode.Immediate, BlendState.AlphaBlend, Main.DefaultSamplerState, DepthStencilState.None, Main.Rasterizer, null, Matrix.Identity);
 
                 // Draw the NPC to the temporary render target so that all of its drawcode is localized, and then get the colors from the results.
-                Main.instance.GraphicsDevice.SetRenderTarget(PendingNPCsToDraw[npc]);
-                Main.instance.GraphicsDevice.Clear(Color.Transparent);
-
-                Vector2 oldPosition = npc.position;
-                npc.oldPos = new Vector2[npc.oldPos.Length];
-                npc.position = Main.screenPosition + new Vector2(Main.screenWidth, Main.screenHeight) * 0.5f;
-                try
+                using (PendingNPCsToDraw[npc].Scope(clearColor: Color.Transparent))
                 {
-                    Main.instance.DrawNPC(npc.whoAmI, true);
-                }
-                catch { }
-                npc.position = oldPosition;
-                npc.Opacity = 0f;
+                    Vector2 oldPosition = npc.position;
+                    npc.oldPos = new Vector2[npc.oldPos.Length];
+                    npc.position = Main.screenPosition + new Vector2(Main.screenWidth, Main.screenHeight) * 0.5f;
+                    try
+                    {
+                        Main.instance.DrawNPC(npc.whoAmI, true);
+                    }
+                    catch { }
+                    npc.position = oldPosition;
+                    npc.Opacity = 0f;
 
-                Main.spriteBatch.End();
+                    Main.spriteBatch.End();
+                }
             }
-            Main.instance.GraphicsDevice.SetRenderTarget(null);
         }
 
         public static void CreateAshesFromNPC(NPC npc, Vector2 velocityOverride)

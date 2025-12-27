@@ -105,12 +105,12 @@ namespace CalamityMod.FluidSimulation
                 Main.spriteBatch.End();
             }
 
-            currentField.CopyContentsFrom(TemporaryAuxilaryTarget);
+            currentField.CopyContentsFrom(TemporaryAuxilaryTarget.Target);
         }
 
         internal void FlushQueueToTarget(FluidFieldState field)
         {
-            ApplyThingToTarget(field.NextState, () =>
+            ApplyThingToTarget(field.NextState.Target, () =>
             {
                 int batchIndex = 0;
                 int pixelCount = field.PendingChanges.Count;
@@ -167,7 +167,7 @@ namespace CalamityMod.FluidSimulation
         internal void CalculateDiffusion(float diffusionFactor, FluidFieldState field, bool colors = false)
         {
             diffusionFactor *= DeltaTime * Size;
-            ApplyThingToTarget(field.NextState, () =>
+            ApplyThingToTarget(field.NextState.Target, () =>
             {
                 Main.instance.GraphicsDevice.Textures[1] = field.PreviousState.Target;
                 CalamityShaders.FluidShaders.Value.Parameters["size"].SetValue(Size);
@@ -194,7 +194,7 @@ namespace CalamityMod.FluidSimulation
         internal void ClearDivergence(RenderTarget2D velocities)
         {
             // Calculate divergence.
-            ApplyThingToTarget(DivergenceField, () =>
+            ApplyThingToTarget(DivergenceField.Target, () =>
             {
                 Main.instance.GraphicsDevice.Textures[2] = velocities;
                 CalamityShaders.FluidShaders.Value.Parameters["size"].SetValue(Size);
@@ -206,7 +206,7 @@ namespace CalamityMod.FluidSimulation
 
             for (int i = 0; i < GaussSeidelIterations; i++)
             {
-                ApplyThingToTarget(DivergencePoissonField, () =>
+                ApplyThingToTarget(DivergencePoissonField.Target, () =>
                 {
                     Main.instance.GraphicsDevice.Textures[1] = DivergencePoissonField.Target;
                     Main.instance.GraphicsDevice.Textures[2] = velocities;
@@ -254,22 +254,22 @@ namespace CalamityMod.FluidSimulation
         {
             CalculateDiffusion(Viscosity, VelocityField);
             if (!ShouldSkipDivergenceClearingStep)
-                ClearDivergence(VelocityField.NextState);
+                ClearDivergence(VelocityField.NextState.Target);
 
-            CalculateAdvection(VelocityField.NextState, VelocityField.PreviousState, VelocityField.PreviousState);
+            CalculateAdvection(VelocityField.NextState.Target, VelocityField.PreviousState.Target, VelocityField.PreviousState.Target);
             if (!ShouldSkipDivergenceClearingStep)
-                ClearDivergence(VelocityField.NextState);
+                ClearDivergence(VelocityField.NextState.Target);
         }
 
         internal void UpdateDensityFields()
         {
             CalculateDiffusion(DiffusionFactor, DensityField);
             DensityField.SwapState();
-            CalculateAdvection(DensityField.PreviousState, DensityField.NextState, VelocityField.NextState);
+            CalculateAdvection(DensityField.PreviousState.Target, DensityField.NextState.Target, VelocityField.NextState.Target);
 
             CalculateDiffusion(DiffusionFactor, ColorField, true);
             ColorField.SwapState();
-            CalculateAdvection(ColorField.PreviousState, ColorField.NextState, VelocityField.NextState, true);
+            CalculateAdvection(ColorField.PreviousState.Target, ColorField.NextState.Target, VelocityField.NextState.Target, true);
         }
 
         public void UpdateOutputTarget()
@@ -318,7 +318,7 @@ namespace CalamityMod.FluidSimulation
 
             Main.spriteBatch.Begin(SpriteSortMode.Immediate, BlendState.AlphaBlend, SamplerState.LinearClamp, DepthStencilState.None, Main.Rasterizer, null, drawPerspective);
 
-            shaderPreparations?.Invoke(OutputTarget);
+            shaderPreparations?.Invoke(OutputTarget.Target);
 
             Main.spriteBatch.Draw(OutputTarget.Target, drawPosition, null, Color.White, 0f, OutputTarget.Target.Size() * 0.5f, Scale, 0, 0f);
             Main.spriteBatch.End();

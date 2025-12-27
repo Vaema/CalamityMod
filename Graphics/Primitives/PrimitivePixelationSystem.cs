@@ -155,17 +155,15 @@ namespace CalamityMod.Graphics.Primitives
 
             CurrentlyRendering = true;
 
-            DrawPrimsToRenderTarget(PixelationTarget_BeforeAllTiles, GeneralDrawLayer.BeforeAllTiles, beforeAllTiles);
-            DrawPrimsToRenderTarget(PixelationTarget_BeforeSolidTiles, GeneralDrawLayer.BeforeSolidTiles, beforeSolidTiles);
-            DrawPrimsToRenderTarget(PixelationTarget_BeforeNPCs, GeneralDrawLayer.BeforeNPCs, beforeNPCs);
-            DrawPrimsToRenderTarget(PixelationTarget_AfterNPCs, GeneralDrawLayer.AfterNPCs, afterNPCs);
-            DrawPrimsToRenderTarget(PixelationTarget_BeforeProjectiles, GeneralDrawLayer.BeforeProjectiles, beforeProjectiles);
-            DrawPrimsToRenderTarget(PixelationTarget_AfterProjectiles, GeneralDrawLayer.AfterProjectiles, afterProjectiles);
-            DrawPrimsToRenderTarget(PixelationTarget_AfterPlayers, GeneralDrawLayer.AfterPlayers, afterPlayers);
-            DrawPrimsToRenderTarget(PixelationTarget_AfterDusts, GeneralDrawLayer.AfterDusts, afterDusts);
-            DrawPrimsToRenderTarget(PixelationTarget_AfterEverything, GeneralDrawLayer.AfterEverything, afterEverything);
-
-            Main.instance.GraphicsDevice.SetRenderTarget(null);
+            DrawPrimsToRenderTarget(PixelationTarget_BeforeAllTiles.Target, GeneralDrawLayer.BeforeAllTiles, beforeAllTiles);
+            DrawPrimsToRenderTarget(PixelationTarget_BeforeSolidTiles.Target, GeneralDrawLayer.BeforeSolidTiles, beforeSolidTiles);
+            DrawPrimsToRenderTarget(PixelationTarget_BeforeNPCs.Target, GeneralDrawLayer.BeforeNPCs, beforeNPCs);
+            DrawPrimsToRenderTarget(PixelationTarget_AfterNPCs.Target, GeneralDrawLayer.AfterNPCs, afterNPCs);
+            DrawPrimsToRenderTarget(PixelationTarget_BeforeProjectiles.Target, GeneralDrawLayer.BeforeProjectiles, beforeProjectiles);
+            DrawPrimsToRenderTarget(PixelationTarget_AfterProjectiles.Target, GeneralDrawLayer.AfterProjectiles, afterProjectiles);
+            DrawPrimsToRenderTarget(PixelationTarget_AfterPlayers.Target, GeneralDrawLayer.AfterPlayers, afterPlayers);
+            DrawPrimsToRenderTarget(PixelationTarget_AfterDusts.Target, GeneralDrawLayer.AfterDusts, afterDusts);
+            DrawPrimsToRenderTarget(PixelationTarget_AfterEverything.Target, GeneralDrawLayer.AfterEverything, afterEverything);
 
             CurrentlyRendering = false;
         }
@@ -201,15 +199,15 @@ namespace CalamityMod.Graphics.Primitives
         {
             return drawLayer switch
             {
-                GeneralDrawLayer.BeforeAllTiles => PixelationTarget_BeforeAllTiles,
-                GeneralDrawLayer.BeforeSolidTiles => PixelationTarget_BeforeSolidTiles,
-                GeneralDrawLayer.BeforeNPCs => PixelationTarget_BeforeNPCs,
-                GeneralDrawLayer.AfterNPCs => PixelationTarget_AfterNPCs,
-                GeneralDrawLayer.BeforeProjectiles => PixelationTarget_BeforeProjectiles,
-                GeneralDrawLayer.AfterProjectiles => PixelationTarget_AfterProjectiles,
-                GeneralDrawLayer.AfterPlayers => PixelationTarget_AfterPlayers,
-                GeneralDrawLayer.AfterDusts => PixelationTarget_AfterDusts,
-                _ => PixelationTarget_AfterEverything
+                GeneralDrawLayer.BeforeAllTiles => PixelationTarget_BeforeAllTiles.Target,
+                GeneralDrawLayer.BeforeSolidTiles => PixelationTarget_BeforeSolidTiles.Target,
+                GeneralDrawLayer.BeforeNPCs => PixelationTarget_BeforeNPCs.Target,
+                GeneralDrawLayer.AfterNPCs => PixelationTarget_AfterNPCs.Target,
+                GeneralDrawLayer.BeforeProjectiles => PixelationTarget_BeforeProjectiles.Target,
+                GeneralDrawLayer.AfterProjectiles => PixelationTarget_AfterProjectiles.Target,
+                GeneralDrawLayer.AfterPlayers => PixelationTarget_AfterPlayers.Target,
+                GeneralDrawLayer.AfterDusts => PixelationTarget_AfterDusts.Target,
+                _ => PixelationTarget_AfterEverything.Target
             };
         }
         #endregion

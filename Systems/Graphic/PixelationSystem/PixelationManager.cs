@@ -159,8 +159,6 @@ namespace CalamityMod.Systems.Graphic.PixelationSystem
                 DrawCollectionsToTarget(PixelTargets_AfterPlayers, PixelationMatrix, ActivePixelatedDrawers_AfterPlayers);
                 DrawCollectionsToTarget(PixelTargets_AfterDusts, PixelationMatrix, ActivePixelatedDrawers_AfterDusts);
                 DrawCollectionsToTarget(PixelTargets_AfterEverything, PixelationMatrix, ActivePixelatedDrawers_AfterEverything);
-
-                Main.graphics.GraphicsDevice.SetRenderTarget(null);
             }
         }
 
