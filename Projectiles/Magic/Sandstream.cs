@@ -107,7 +107,7 @@ namespace CalamityMod.Projectiles.Magic
                 float rot = MathHelper.ToRadians(i * rotFactor);
                 Vector2 offset = new Vector2(Main.rand.NextFloat(0.5f, 1.5f), 0).RotatedBy(rot * Main.rand.NextFloat(1.1f, 9.1f));
                 Vector2 velOffset = new Vector2(Main.rand.NextFloat(0.5f, 1.5f), 0).RotatedBy(rot * Main.rand.NextFloat(1.1f, 9.1f));
-                Dust dust = Dust.NewDustPerfect(target.Center + offset, Main.rand.NextBool(3) ? 288 : 121, new Vector2(velOffset.X, velOffset.Y));
+                Dust dust = Dust.NewDustPerfect(target.Center + offset, Main.rand.NextBool(3) ? 288 : 207, new Vector2(velOffset.X, velOffset.Y));
                 dust.noGravity = false;
                 dust.velocity = velOffset;
                 dust.scale = Main.rand.NextFloat(0.5f, 0.8f);
@@ -125,7 +125,7 @@ namespace CalamityMod.Projectiles.Magic
                 Vector2 velOffset = new Vector2(Main.rand.NextFloat(1.5f, 5.5f), 0).RotatedBy(rot * Main.rand.NextFloat(3.1f, 9.1f));
                 MediumMistParticle SandCloud = new MediumMistParticle(Projectile.Center + offset, velOffset * Main.rand.NextFloat(1.5f, 3f), Color.Peru, Color.PeachPuff, Main.rand.NextFloat(0.9f, 1.2f), 160f, Main.rand.NextFloat(0.03f, -0.03f));
                 GeneralParticleHandler.SpawnParticle(SandCloud);
-                Dust dust = Dust.NewDustPerfect(Projectile.Center + offset, Main.rand.NextBool() ? 288 : 121, new Vector2(velOffset.X, velOffset.Y));
+                Dust dust = Dust.NewDustPerfect(Projectile.Center + offset, Main.rand.NextBool() ? 288 : 207, new Vector2(velOffset.X, velOffset.Y));
                 dust.noGravity = false;
                 dust.velocity = velOffset;
                 dust.scale = Main.rand.NextFloat(1.2f, 1.6f);
