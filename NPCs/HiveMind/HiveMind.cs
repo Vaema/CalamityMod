@@ -1063,7 +1063,7 @@ namespace CalamityMod.NPCs.HiveMind
                             NPC.damage = NPC.defDamage;
 
                             phase2timer++;
-                            if (phase2timer == (int)(arcTime / (death ? 15f : 20f)))
+                            if (phase2timer % 30 == (int)(arcTime / (death ? 15f : 20f)))
                             {
                                 phase2timer = 0;
                                 NPC.ai[0] += 1f;
