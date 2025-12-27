@@ -165,8 +165,10 @@ namespace CalamityMod.Graphics.Renderers.CalamityRenderers
                     continue;
 
                 // Swap to the assosiated target and call the interface method.
-                target.SwapTo();
-                renderer.DrawDyeableShader(spriteBatch);
+                using (target.Scope())
+                {
+                    renderer.DrawDyeableShader(spriteBatch);
+                }
             }
         }
 

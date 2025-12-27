@@ -140,19 +140,21 @@ namespace CalamityMod.Backgrounds
             }
 
             CurrentlyRendering = true;
-            WaterDistortionTarget.SwapTo();
 
-            // 13MAY2025: fryzahh: Note that when other Sunken Sea backgrounds are implemented they should use this same system.
-            // Leaving this here for other programmers, in case I don't get to doing this myself.
-            Main.spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, SamplerState.LinearClamp, DepthStencilState.None, Main.Rasterizer, null, CalamityUtils.BackgroundMatrix);
+            using (WaterDistortionTarget.Scope())
+            {
+                // 13MAY2025: fryzahh: Note that when other Sunken Sea backgrounds are implemented they should use this same system.
+                // Leaving this here for other programmers, in case I don't get to doing this myself.
+                Main.spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, SamplerState.LinearClamp, DepthStencilState.None, Main.Rasterizer, null, CalamityUtils.BackgroundMatrix);
 
-            DrawShoresBG();
-            DrawBurrowsBG();
+                DrawShoresBG();
+                DrawBurrowsBG();
 
-            Main.spriteBatch.End();
+                Main.spriteBatch.End();
 
-            Main.graphics.GraphicsDevice.SetRenderTarget(null);
-            CurrentlyRendering = false;
+                Main.graphics.GraphicsDevice.SetRenderTarget(null);
+                CurrentlyRendering = false;
+            }
         }
 
         private void On_Main_DrawBackgroundBlackFill(On_Main.orig_DrawBackgroundBlackFill orig, Main self)

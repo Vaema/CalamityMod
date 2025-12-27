@@ -159,29 +159,31 @@ namespace CalamityMod.Systems.Graphic
             if (ShouldDrawToBackgroundTargets)
             {
                 // Draw the background which'll be displayed inside the rift onto a render target.
-                DistortionRiftBackgroundContentsTarget.SwapTo();
-                DrawDistortionRiftBackground();
+                using (DistortionRiftBackgroundContentsTarget.Scope())
+                {
+                    DrawDistortionRiftBackground();
+                }
 
-                Main.spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, SamplerState.LinearWrap, DepthStencilState.None, Main.Rasterizer, null, CalamityUtils.BackgroundMatrix);
+                using (DistortionRiftPrimitivesTarget.Scope())
+                {
+                    Main.spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, SamplerState.LinearWrap, DepthStencilState.None, Main.Rasterizer, null, CalamityUtils.BackgroundMatrix);
 
-                // Draw the primitives which comprise the rift to another render target.
-                DistortionRiftPrimitivesTarget.SwapTo();                
-                if (SkyManager.Instance["CalamityMod:DevourerofGodsHead"].IsActive())
-                    (SkyManager.Instance["CalamityMod:DevourerofGodsHead"] as DoGSky).DrawRiftToRenderTarget();
+                    // Draw the primitives which comprise the rift to another render target.
+                    if (SkyManager.Instance["CalamityMod:DevourerofGodsHead"].IsActive())
+                        (SkyManager.Instance["CalamityMod:DevourerofGodsHead"] as DoGSky).DrawRiftToRenderTarget();
 
-                Main.spriteBatch.End();
+                    Main.spriteBatch.End();
+                }
             }
 
             if (ShouldDrawToForegroundTarget)
             {
                 // Draw the background which'll be displayed for all distortion-related effects done in the foreground (same layer as the player).
-                DistortionForegroundContentsTarget.SwapTo();
-                DrawDistortionForeground();
+                using (DistortionForegroundContentsTarget.Scope())
+                {
+                    DrawDistortionForeground();
+                }
             }
-
-            // Reset the current render target at the end of the method once any targets are being drawn to.
-            if (ShouldDrawToForegroundTarget || ShouldDrawToBackgroundTargets)
-                Main.instance.GraphicsDevice.SetRenderTarget(null);
         }
 
         #region Distortion Background Drawing
