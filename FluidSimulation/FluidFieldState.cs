@@ -21,9 +21,6 @@ namespace CalamityMod.FluidSimulation
 
         public void SwapState() => Utils.Swap(ref PreviousState, ref NextState);
 
-        public RenderTarget2D FieldColorCreateCondition(int screen, int height) =>
-            new(Main.instance.GraphicsDevice, Size, Size, true, FieldContents, DepthFormat.Depth24, 0, RenderTargetUsage.PreserveContents);
-
         public FluidFieldState(int size, SurfaceFormat fieldContents = SurfaceFormat.Color)
         {
             if (Main.dedServ)
@@ -32,8 +29,9 @@ namespace CalamityMod.FluidSimulation
             Size = size;
             FieldContents = fieldContents;
 
-            PreviousState = new(false, FieldColorCreateCondition, false);
-            NextState = new(false, FieldColorCreateCondition, false);
+            var descriptor = new RenderTargetDescriptor(FieldContents, DepthFormat.Depth24, 0, RenderTargetUsage.PreserveContents, true);
+            PreviousState = RenderTargetPool.Shared.Rent(Main.instance.GraphicsDevice, Size, Size, descriptor);
+            NextState = RenderTargetPool.Shared.Rent(Main.instance.GraphicsDevice, Size, Size, descriptor);
         }
     }
 }

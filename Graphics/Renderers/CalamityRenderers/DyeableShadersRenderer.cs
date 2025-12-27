@@ -189,10 +189,10 @@ namespace CalamityMod.Graphics.Renderers.CalamityRenderers
 
                 // If it is dyeable, and a dye exists, apply it. This has null safety, as dyeShader can be null here.
                 if (renderer.ShaderIsDyeable && Dyes.TryGetValue(renderer, out var dyeID) && dyeID > 0)
-                    GameShaders.Armor.Apply(dyeID, null, new(target, Vector2.Zero, new Rectangle(0, 0, target.Width, target.Height), Color.White));
+                    GameShaders.Armor.Apply(dyeID, null, new(target.Target, Vector2.Zero, new Rectangle(0, 0, target.Target.Width, target.Target.Height), Color.White));
 
                 // Draw the assosiated target that has been drawn to.
-                spriteBatch.Draw(target, Vector2.Zero, Color.White with { A = 0 });
+                spriteBatch.Draw(target.Target, Vector2.Zero, Color.White with { A = 0 });
             }
 
             spriteBatch.End();

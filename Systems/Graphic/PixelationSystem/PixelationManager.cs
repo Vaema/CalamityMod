@@ -194,7 +194,7 @@ namespace CalamityMod.Systems.Graphic.PixelationSystem
                 Main.spriteBatch.Begin(default, keyValuePair.Key, SamplerState.PointClamp, DepthStencilState.None, Main.Rasterizer, null, Main.GameViewMatrix.TransformationMatrix);
 
                 float targetScale = 1f / PixelationResolution;
-                Main.spriteBatch.Draw(keyValuePair.Value, Vector2.Zero, null, Color.White, 0f, Vector2.Zero, targetScale, SpriteEffects.None, 0f);
+                Main.spriteBatch.Draw(keyValuePair.Value.Target, Vector2.Zero, null, Color.White, 0f, Vector2.Zero, targetScale, SpriteEffects.None, 0f);
                 Main.spriteBatch.End();
             }
         }
@@ -241,42 +241,42 @@ namespace CalamityMod.Systems.Graphic.PixelationSystem
             {
                 case GeneralDrawLayer.BeforeAllTiles:
                     if (!PixelTargets_BeforeAllTiles.ContainsKey(blendState))
-                        Main.QueueMainThreadAction(() => PixelTargets_BeforeAllTiles[blendState] = ScreenspaceTargetPool.Shared.Rent(Main.instance.GraphicsDevice, (w, h) => ((int)(w * PixelationResolution), (int)(h * PixelationResolution))))
+                        Main.QueueMainThreadAction(() => PixelTargets_BeforeAllTiles[blendState] = ScreenspaceTargetPool.Shared.Rent(Main.instance.GraphicsDevice, (w, h) => ((int)(w * PixelationResolution), (int)(h * PixelationResolution))));
                     break;
 
                 case GeneralDrawLayer.BeforeSolidTiles:
                     if (!PixelTargets_BeforeSolidTiles.ContainsKey(blendState))
-                        Main.QueueMainThreadAction(() => PixelTargets_BeforeSolidTiles[blendState] = ScreenspaceTargetPool.Shared.Rent(Main.instance.GraphicsDevice, (w, h) => ((int)(w * PixelationResolution), (int)(h * PixelationResolution))))
+                        Main.QueueMainThreadAction(() => PixelTargets_BeforeSolidTiles[blendState] = ScreenspaceTargetPool.Shared.Rent(Main.instance.GraphicsDevice, (w, h) => ((int)(w * PixelationResolution), (int)(h * PixelationResolution))));
                     break;
 
                 case GeneralDrawLayer.BeforeNPCs:
                     if (!PixelTargets_BeforeNPCs.ContainsKey(blendState))
-                        Main.QueueMainThreadAction(() => PixelTargets_BeforeNPCs[blendState] = ScreenspaceTargetPool.Shared.Rent(Main.instance.GraphicsDevice, (w, h) => ((int)(w * PixelationResolution), (int)(h * PixelationResolution))))
+                        Main.QueueMainThreadAction(() => PixelTargets_BeforeNPCs[blendState] = ScreenspaceTargetPool.Shared.Rent(Main.instance.GraphicsDevice, (w, h) => ((int)(w * PixelationResolution), (int)(h * PixelationResolution))));
                     break;
 
                 case GeneralDrawLayer.AfterNPCs:
                     if (!PixelTargets_AfterNPCs.ContainsKey(blendState))
-                        Main.QueueMainThreadAction(() => PixelTargets_AfterNPCs[blendState] = ScreenspaceTargetPool.Shared.Rent(Main.instance.GraphicsDevice, (w, h) => ((int)(w * PixelationResolution), (int)(h * PixelationResolution))))
+                        Main.QueueMainThreadAction(() => PixelTargets_AfterNPCs[blendState] = ScreenspaceTargetPool.Shared.Rent(Main.instance.GraphicsDevice, (w, h) => ((int)(w * PixelationResolution), (int)(h * PixelationResolution))));
                     break;
 
                 case GeneralDrawLayer.BeforeProjectiles:
                     if (!PixelTargets_BeforeProjectiles.ContainsKey(blendState))
-                        Main.QueueMainThreadAction(() => PixelTargets_BeforeProjectiles[blendState] = ScreenspaceTargetPool.Shared.Rent(Main.instance.GraphicsDevice, (w, h) => ((int)(w * PixelationResolution), (int)(h * PixelationResolution))))
+                        Main.QueueMainThreadAction(() => PixelTargets_BeforeProjectiles[blendState] = ScreenspaceTargetPool.Shared.Rent(Main.instance.GraphicsDevice, (w, h) => ((int)(w * PixelationResolution), (int)(h * PixelationResolution))));
                     break;
 
                 case GeneralDrawLayer.AfterProjectiles:
                     if (!PixelTargets_AfterProjectiles.ContainsKey(blendState))
-                        Main.QueueMainThreadAction(() => PixelTargets_AfterProjectiles[blendState] = ScreenspaceTargetPool.Shared.Rent(Main.instance.GraphicsDevice, (w, h) => ((int)(w * PixelationResolution), (int)(h * PixelationResolution))))
+                        Main.QueueMainThreadAction(() => PixelTargets_AfterProjectiles[blendState] = ScreenspaceTargetPool.Shared.Rent(Main.instance.GraphicsDevice, (w, h) => ((int)(w * PixelationResolution), (int)(h * PixelationResolution))));
                     break;
 
                 case GeneralDrawLayer.AfterPlayers:
                     if (!PixelTargets_AfterPlayers.ContainsKey(blendState))
-                        Main.QueueMainThreadAction(() => PixelTargets_AfterPlayers[blendState] = ScreenspaceTargetPool.Shared.Rent(Main.instance.GraphicsDevice, (w, h) => ((int)(w * PixelationResolution), (int)(h * PixelationResolution))))
+                        Main.QueueMainThreadAction(() => PixelTargets_AfterPlayers[blendState] = ScreenspaceTargetPool.Shared.Rent(Main.instance.GraphicsDevice, (w, h) => ((int)(w * PixelationResolution), (int)(h * PixelationResolution))));
                     break;
 
                 case GeneralDrawLayer.AfterDusts:
                     if (!PixelTargets_AfterDusts.ContainsKey(blendState))
-                        Main.QueueMainThreadAction(() => PixelTargets_AfterDusts[blendState] = ScreenspaceTargetPool.Shared.Rent(Main.instance.GraphicsDevice, (w, h) => ((int)(w * PixelationResolution), (int)(h * PixelationResolution))))
+                        Main.QueueMainThreadAction(() => PixelTargets_AfterDusts[blendState] = ScreenspaceTargetPool.Shared.Rent(Main.instance.GraphicsDevice, (w, h) => ((int)(w * PixelationResolution), (int)(h * PixelationResolution))));
                     break;
 
                 case GeneralDrawLayer.AfterEverything:

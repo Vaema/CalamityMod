@@ -82,7 +82,7 @@ namespace CalamityMod.Graphics.Renderers
         /// Draw the target here. By default, just draws the target.
         /// </summary>
         /// <param name="spriteBatch"></param>
-        public virtual void DrawTarget(SpriteBatch spriteBatch) => spriteBatch.Draw(MainTarget, Vector2.Zero, Color.White);
+        public virtual void DrawTarget(SpriteBatch spriteBatch) => spriteBatch.Draw(MainTarget.Target, Vector2.Zero, Color.White);
         #endregion
     }
 }

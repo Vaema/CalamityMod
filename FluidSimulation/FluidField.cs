@@ -169,7 +169,7 @@ namespace CalamityMod.FluidSimulation
             diffusionFactor *= DeltaTime * Size;
             ApplyThingToTarget(field.NextState, () =>
             {
-                Main.instance.GraphicsDevice.Textures[1] = field.PreviousState;
+                Main.instance.GraphicsDevice.Textures[1] = field.PreviousState.Target;
                 CalamityShaders.FluidShaders.Value.Parameters["size"].SetValue(Size);
                 CalamityShaders.FluidShaders.Value.Parameters["diffusionFactor"].SetValue(diffusionFactor);
                 CalamityShaders.FluidShaders.Value.Parameters["handlingColors"].SetValue(colors);
@@ -209,9 +209,9 @@ namespace CalamityMod.FluidSimulation
             {
                 ApplyThingToTarget(DivergencePoissonField, () =>
                 {
-                    Main.instance.GraphicsDevice.Textures[1] = DivergencePoissonField;
+                    Main.instance.GraphicsDevice.Textures[1] = DivergencePoissonField.Target;
                     Main.instance.GraphicsDevice.Textures[2] = velocities;
-                    Main.instance.GraphicsDevice.Textures[4] = DivergenceField;
+                    Main.instance.GraphicsDevice.Textures[4] = DivergenceField.Target;
                     CalamityShaders.FluidShaders.Value.Parameters["size"].SetValue(Size);
                     CalamityShaders.FluidShaders.Value.CurrentTechnique.Passes["PerformPoissonIterationPass"].Apply();
                 });
@@ -220,7 +220,7 @@ namespace CalamityMod.FluidSimulation
             ApplyThingToTarget(velocities, () =>
             {
                 Main.instance.GraphicsDevice.Textures[1] = velocities;
-                Main.instance.GraphicsDevice.Textures[3] = DivergencePoissonField;
+                Main.instance.GraphicsDevice.Textures[3] = DivergencePoissonField.Target;
                 CalamityShaders.FluidShaders.Value.CurrentTechnique.Passes["ClearDivergencePass"].Apply();
             });
         }
@@ -279,9 +279,9 @@ namespace CalamityMod.FluidSimulation
             Main.instance.GraphicsDevice.Clear(Color.Transparent);
 
             Main.spriteBatch.Begin(SpriteSortMode.Immediate, BlendState.AlphaBlend, SamplerState.LinearClamp, DepthStencilState.None, Main.Rasterizer, null, Matrix.Identity);
-            Main.instance.GraphicsDevice.Textures[5] = ColorField.NextState;
+            Main.instance.GraphicsDevice.Textures[5] = ColorField.NextState.Target;
             CalamityShaders.FluidShaders.Value.CurrentTechnique.Passes["DrawFluidPass"].Apply();
-            Main.spriteBatch.Draw(DensityField.NextState, Vector2.Zero, null, Color.White, 0f, Vector2.Zero, 1f, 0, 0f);
+            Main.spriteBatch.Draw(DensityField.NextState.Target, Vector2.Zero, null, Color.White, 0f, Vector2.Zero, 1f, 0, 0f);
             Main.spriteBatch.End();
 
             Main.instance.GraphicsDevice.SetRenderTarget(null);
@@ -323,7 +323,7 @@ namespace CalamityMod.FluidSimulation
 
             shaderPreparations?.Invoke(OutputTarget);
 
-            Main.spriteBatch.Draw(OutputTarget, drawPosition, null, Color.White, 0f, OutputTarget.Size * 0.5f, Scale, 0, 0f);
+            Main.spriteBatch.Draw(OutputTarget.Target, drawPosition, null, Color.White, 0f, OutputTarget.Target.Size() * 0.5f, Scale, 0, 0f);
             Main.spriteBatch.End();
 
             if (needsToCallEnd)

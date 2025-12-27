@@ -110,7 +110,7 @@ namespace CalamityMod.Graphics.Metaballs
                     metaball.PrepareShaderForTarget(i);
 
                     // Draw the metaball's raw contents with the shader.
-                    Main.spriteBatch.Draw(metaball.LayerTargets[i], Vector2.Zero, Color.White);
+                    Main.spriteBatch.Draw(metaball.LayerTargets[i].Target, Vector2.Zero, Color.White);
                 }
             }
 
