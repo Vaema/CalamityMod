@@ -11,6 +11,7 @@ using CalamityMod.NPCs.PlagueEnemies;
 using CalamityMod.NPCs.PrimordialWyrm;
 using CalamityMod.NPCs.VanillaNPCAIOverrides;
 using CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses;
+using CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses.BrainOfCthulhu;
 using CalamityMod.NPCs.VanillaNPCAIOverrides.MiniBosses;
 using CalamityMod.NPCs.VanillaNPCAIOverrides.RegularEnemies;
 using CalamityMod.Systems.Collections;
@@ -144,7 +145,7 @@ public sealed partial class CalamityVanillaAIOverrideNPC : GlobalNPC
                 case NPCID.BrainofCthulhu:
                     return new BrainOfCthulhuAI();
                 case NPCID.Creeper:
-                    return new BrainOfCthulhuAI.CreeperAI();
+                    return new CreeperAI();
 
                 case NPCID.QueenBee:
                     return new QueenBeeAI();

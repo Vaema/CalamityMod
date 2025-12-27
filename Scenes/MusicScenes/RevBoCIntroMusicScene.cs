@@ -1,5 +1,5 @@
 ﻿using System;
-using CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses;
+using CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses.BrainOfCthulhu;
 using CalamityMod.World;
 using Terraria;
 using Terraria.ID;
@@ -56,7 +56,7 @@ namespace CalamityMod.Scenes.MusicScenes
             return revBrain.SpawnTime != 0 && (revBrain.Time - Math.Abs(revBrain.SpawnTime) < 420);
         }
 
-        public override int Music => RevBoCSystem.PreviousMusic >= 0 ? RevBoCSystem.PreviousMusic : MusicID.Crimson; //Keeps the music that was playing prior to BoC being spawned
+        public override int Music => BrainOfCthulhuSystem.PreviousMusic >= 0 ? BrainOfCthulhuSystem.PreviousMusic : MusicID.Crimson; //Keeps the music that was playing prior to BoC being spawned
 
         public override SceneEffectPriority Priority => SceneEffectPriority.BossMedium;
     }
