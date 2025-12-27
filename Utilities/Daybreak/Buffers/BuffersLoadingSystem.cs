@@ -64,6 +64,6 @@ public class BuffersLoadingSystem : ModSystem
         orig(self);
 
         ScreenspaceTargetPool.Shared.ResizeCachedTargets(self.GraphicsDevice);
-        ManagedRenderTarget.Shared.ResizeTargets();
+        ManagedRenderTargetPool.Shared.ResizeTargets();
     }
 }

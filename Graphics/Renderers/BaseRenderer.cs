@@ -2,6 +2,7 @@
 using CalamityMod.Enums;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using Terraria;
 using Terraria.ModLoader;
 
 namespace CalamityMod.Graphics.Renderers
@@ -46,7 +47,13 @@ namespace CalamityMod.Graphics.Renderers
 
         public sealed override void SetupContent() => SetStaticDefaults();
 
-        public sealed override void SetStaticDefaults() => MainTarget = new(true, ManagedRenderTarget.CreateScreenSizedTarget);
+        public sealed override void SetStaticDefaults()
+        {
+            Main.QueueMainThreadAction(() =>
+            {
+                MainTarget = new(true, ManagedRenderTarget.CreateScreenSizedTarget);
+            });
+        }
 
         /// <summary>
         /// Called from <see cref="ModSystem.PreUpdateEntities"/>.

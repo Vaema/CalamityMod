@@ -29,9 +29,13 @@ internal sealed class ManagedRenderTargetPool : RenderTargetPool
         lease.Target.Dispose();
     }
 
-    public void Return(ManagedRenderTarget managedRt)
+    public void Return(ManagedRenderTarget managedRt, bool preserveCollection)
     {
-        _ = managedTargets.Remove(managedRt);
+        if (!preserveCollection)
+        {
+            _ = managedTargets.Remove(managedRt);
+        }
+
         Return(managedRt.lease);
     }
 
@@ -39,7 +43,7 @@ internal sealed class ManagedRenderTargetPool : RenderTargetPool
     {
         foreach (var target in managedTargets)
         {
-            target.Dispose();
+            target.Dispose(preserveCollection: true);
         }
 
         managedTargets.Clear();
@@ -115,11 +119,16 @@ public class ManagedRenderTarget : IDisposable
 
     public void Dispose()
     {
+        Dispose(preserveCollection: false);
+    }
+
+    public void Dispose(bool preserveCollection)
+    {
         if (IsDisposed)
             return;
 
         IsDisposed = true;
-        ManagedRenderTargetPool.Shared.Return(this);
+        ManagedRenderTargetPool.Shared.Return(this, preserveCollection);
     }
 
     // Does nothing
