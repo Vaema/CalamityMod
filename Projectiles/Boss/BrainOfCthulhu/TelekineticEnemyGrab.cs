@@ -180,24 +180,26 @@ public class TelekineticEnemyGrab : ModProjectile, ILocalizedModType
     {
         writer.Write(throwSign);
 
-        writer.WritePackedVector2(throwPos);
+        writer.WriteVector2(throwPos);
 
-        writer.WritePackedVector2(holdPos);
+        writer.WriteVector2(holdPos);
     }
 
     public override void ReceiveExtraAI(BinaryReader reader)
     {
         throwSign = reader.ReadInt32();
 
-        throwPos = reader.ReadPackedVector2();
+        throwPos = reader.ReadVector2();
 
-        holdPos = reader.ReadPackedVector2();
+        holdPos = reader.ReadVector2();
     }
 
-    public override bool OnTileCollide(Vector2 oldVelocity)
+    public override bool OnTileCollide(Vector2 oldVelocity) => true;
+
+    public override void OnKill(int timeLeft)
     {
         Vector2 velocity = Projectile.velocity.RotatedBy(MathHelper.Pi) / 8f;
-        Vector2 pos = Projectile.Center;
+        Vector2 pos = Projectile.Center + Projectile.velocity;
 
         switch (enemyID)
         {
@@ -236,8 +238,6 @@ public class TelekineticEnemyGrab : ModProjectile, ILocalizedModType
                 SoundEngine.PlaySound(SoundID.NPCDeath2 with { Volume = 0.175f }, pos);
                 break;
         }
-
-        return true;
     }
 
     bool evenRed = false;

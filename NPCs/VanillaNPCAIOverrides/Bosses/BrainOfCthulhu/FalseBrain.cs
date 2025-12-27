@@ -70,6 +70,9 @@ public class FalseBrain : ModNPC, ILocalizedModType
         NPC brain = Main.npc[NPC.crimsonBoss];
         NPC.GivenName = brain.GivenOrTypeName + $": {brain.life}/{brain.lifeMax}";
 
+        if (brain.AIOverride<BrainOfCthulhuAI>().AttackFlag)
+            BeenHit = true;
+
         if (BeenHit)
         {
             NPC.dontTakeDamage = true;
