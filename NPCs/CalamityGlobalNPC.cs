@@ -2447,12 +2447,6 @@ namespace CalamityMod.NPCs
                     npc.chaseable = false;
                     break;
 
-                // Fix drawing issues with Golem's Free Head
-                case NPCID.GolemHeadFree:
-                    npc.width = 88;
-                    npc.height = 90;
-                    break;
-
                 // Make Core hitbox bigger
                 case NPCID.MartianSaucerCore:
                     npc.width *= 2;
