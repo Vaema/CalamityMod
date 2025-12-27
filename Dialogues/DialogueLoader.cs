@@ -26,7 +26,7 @@ internal record DialogueTextDataEntry(
 
 internal partial class DialogueLoader : ModSystem
 {
-    private const string DialogueFilePrefix = "CalamityDialogue.";
+    private const string DialogueFilePrefix = "Dialogue.";
 
     private static readonly Dictionary<string, DialogueTextDataEntry> _DialogueLookup = [];
     private static readonly Dictionary<Mod, MainThreadedFileSystemWatcher> _Watchers = [];
@@ -123,10 +123,7 @@ internal partial class DialogueLoader : ModSystem
         cursor.EmitLdloc(pathLdloc);
         cursor.EmitDelegate((Mod mod, string basePath) =>
         {
-            if (mod != CalamityMod.Instance)
-                return;
-
-            foreach (var entry in GetDialogueTextDatas(CalamityMod.Instance, GameCulture.DefaultCulture, skipDeserializeData: true))
+            foreach (var entry in GetDialogueTextEntries(mod, GameCulture.DefaultCulture, skipDeserializeData: true))
             {
                 try
                 {
@@ -134,7 +131,7 @@ internal partial class DialogueLoader : ModSystem
                     var destDir = Path.GetDirectoryName(destFilePath);
                     if (!Directory.Exists(destDir)) Directory.CreateDirectory(destDir);
 
-                    using var stream = CalamityMod.Instance.File.GetStream(entry.FilePath);
+                    using var stream = mod.File.GetStream(entry.FilePath);
                     using var fileStream = File.OpenWrite(destFilePath);
                     using var writer = new StreamWriter(fileStream, Encoding.UTF8);
                     using var reader = new StreamReader(stream, Encoding.UTF8);
@@ -142,7 +139,7 @@ internal partial class DialogueLoader : ModSystem
                 }
                 catch (Exception e)
                 {
-                    CalamityMod.Log.Error($"Error while exporting DialogueTextData entry ({CalamityMod.Instance}::{entry.FilePath}): {e}");
+                    CalamityMod.Log.Error($"Error while exporting DialogueTextData entry ({mod.Name}::{entry.FilePath}): {e}");
                 }
             }
         });
@@ -164,30 +161,48 @@ internal partial class DialogueLoader : ModSystem
     {
         _DialogueLookup.Clear();
 
-        foreach (var entry in GetDialogueTextDatas(Mod, GameCulture.DefaultCulture))
+        // Mods should be sorted by dependency order.
+        foreach (var entry in GetDialogueTextEntiresForAllMods(GameCulture.DefaultCulture))
         {
+            if (_DialogueLookup.TryGetValue(entry.DialogueKey, out var oldEntry))
+            {
+                if (entry.Data.Revision != oldEntry.Data.Revision)
+                {
+                    CalamityMod.Log.Warn($"Dialogue Localization was detected but revision mismatches. This will not be applied! : '{entry.ProviderMod.Name}::{entry.FilePath}'");
+                    continue;
+                }
+            }
+
             _DialogueLookup[entry.DialogueKey] = entry;
         }
 
         var activeCulture = LanguageManager.Instance.ActiveCulture;
-        foreach (var mod in ModLoader.Mods.Where(mod => mod != Mod))
+        if (activeCulture == GameCulture.DefaultCulture)
+            return;
+
+        foreach (var entry in GetDialogueTextEntiresForAllMods(activeCulture))
         {
-            foreach (var entry in GetDialogueTextDatas(mod, activeCulture))
+            var mod = entry.ProviderMod;
+
+            if (!_DialogueLookup.TryGetValue(entry.DialogueKey, out var oldEntry))
             {
-                if (!_DialogueLookup.TryGetValue(entry.DialogueKey, out var oldEntry))
-                {
-                    CalamityMod.Log.Warn($"Dialogue Localization was detected but original Dialogue file does not exists. This will not be applied! : '{mod.Name}::{entry.FilePath}'");
-                    continue;
-                }
-
-                if (entry.Data.Revision != oldEntry.Data.Revision)
-                {
-                    CalamityMod.Log.Warn($"Dialogue Localization was detected but revision mismatches. This will not be applied! : '{mod.Name}::{entry.FilePath}'");
-                    continue;
-                }
-
-                _DialogueLookup[entry.DialogueKey] = entry;
+                CalamityMod.Log.Warn($"Dialogue Localization was detected but original Dialogue file does not exists. This will not be applied! : '{mod.Name}::{entry.FilePath}'");
+                continue;
             }
+
+            // Skip if entry is from same file.
+            if (oldEntry.ProviderMod == entry.ProviderMod && oldEntry.FilePath == entry.FilePath)
+            {
+                continue;
+            }
+
+            if (oldEntry.Data.Revision != entry.Data.Revision)
+            {
+                CalamityMod.Log.Warn($"Dialogue Localization was detected but revision mismatches. This will not be applied! : '{mod.Name}::{entry.FilePath}'");
+                continue;
+            }
+
+            _DialogueLookup[entry.DialogueKey] = entry;
         }
     }
 
@@ -220,7 +235,14 @@ internal partial class DialogueLoader : ModSystem
         }
     }
 
-    private static IEnumerable<DialogueTextDataEntry> GetDialogueTextDatas(Mod mod, GameCulture targetCulture, bool skipDeserializeData = false)
+    private static IEnumerable<DialogueTextDataEntry> GetDialogueTextEntiresForAllMods(GameCulture targetCulture, bool skipDeserializeData = false)
+    {
+        return ModLoader.Mods
+            .Where(mod => mod.File != null)
+            .SelectMany(mod => GetDialogueTextEntries(mod, targetCulture, skipDeserializeData));
+    }
+
+    private static IEnumerable<DialogueTextDataEntry> GetDialogueTextEntries(Mod mod, GameCulture targetCulture, bool skipDeserializeData = false)
     {
         if (mod == null)
             yield break;
@@ -233,9 +255,7 @@ internal partial class DialogueLoader : ModSystem
             if (!TryGetDialogueFileInfo(file.Name, out var culture, out var prefix, out var dialogueKey))
                 continue;
 
-            // Explictly Allow Default Culture File.
-            // This is for Translation mod that made for non-specified culture
-            if (culture != targetCulture && culture != GameCulture.DefaultCulture)
+            if (culture != targetCulture)
                 continue;
 
             DialogueTextData data = null;
@@ -286,6 +306,6 @@ EXIT_INVALID:
         return false;
     }
 
-    [GeneratedRegex(@".*?CalamityDialogue\..+?\.jsonc?$", RegexOptions.IgnoreCase)]
+    [GeneratedRegex(@"Dialogue\..+?\.jsonc?$", RegexOptions.IgnoreCase)]
     private static partial Regex CalamityDialogueFileRegex();
 }
