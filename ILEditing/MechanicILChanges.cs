@@ -1153,7 +1153,7 @@ namespace CalamityMod.ILEditing
             orig(self, drawData, solidLayer, waterStyleOverride, screenPosition, screenOffset, tileX, tileY);
 
             var type = drawData.typeCache;
-            if (type < 0 || type >= GlowMaskTile.LookupLength)
+            if (type >= GlowMaskTile.LookupLength)
                 return;
 
             var glowMaskTile = GlowMaskTile.InstanceLookup[type];
