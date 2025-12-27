@@ -269,12 +269,15 @@ internal partial class DialogueLoader : ModSystem
 
         string fileName = Path.GetFileNameWithoutExtension(filePath);
         if (fileName.StartsWith($"{prefix}_{DialogueFilePrefix}", StringComparison.InvariantCultureIgnoreCase))
+        {
             dialogueKey = fileName[$"{prefix}_{DialogueFilePrefix}".Length..];
+            return true;
+        }
         else if (fileName.StartsWith(DialogueFilePrefix, StringComparison.InvariantCultureIgnoreCase))
+        {
             dialogueKey = fileName[DialogueFilePrefix.Length..];
-        else
-            goto EXIT_INVALID;
-        return true;
+            return true;
+        }
 
 EXIT_INVALID:
         culture = null;
