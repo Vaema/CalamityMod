@@ -818,6 +818,7 @@ namespace CalamityMod
         /// </summary>
         /// <param name="target">The render target to swap to</param>
         /// <param name="flushColor">The color to clear the screen with. Transparent by default</param>
+        [Obsolete("Use RenderTargetScope")]
         public static void SwapTo(this RenderTarget2D target, Color? flushColor = null)
         {
             // If we are in the menu, a server, or any of these are null, return.
