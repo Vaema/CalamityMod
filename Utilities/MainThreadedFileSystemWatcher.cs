@@ -61,10 +61,10 @@ namespace CalamityMod.Utilities
             _FSW = new();
             _FSW.Changed += (o, arg) =>
             {
-                if (DateTime.Now - _LastChangedEventDateTime < ChangedEventCooldown)
+                if ((DateTime.Now - _LastChangedEventDateTime) < ChangedEventCooldown)
                     return;
 
-                if (!(FileNameFilter?.IsMatch(System.IO.Path.GetFileName(arg.Name)) ?? true))
+                if (FileNameFilter != null && !FileNameFilter.IsMatch(System.IO.Path.GetFileName(arg.Name)))
                     return;
 
                 Main.QueueMainThreadAction(() => Changed?.Invoke(o, arg));
@@ -73,10 +73,10 @@ namespace CalamityMod.Utilities
 
             _FSW.Renamed += (o, arg) =>
             {
-                if (DateTime.Now - _LastRenamedEventDateTime < RenamedEventCooldown)
+                if ((DateTime.Now - _LastRenamedEventDateTime) < RenamedEventCooldown)
                     return;
 
-                if (!(FileNameFilter?.IsMatch(System.IO.Path.GetFileName(arg.Name)) ?? true))
+                if (FileNameFilter != null && !FileNameFilter.IsMatch(System.IO.Path.GetFileName(arg.Name)))
                     return;
 
                 Main.QueueMainThreadAction(() => Renamed?.Invoke(o, arg));
