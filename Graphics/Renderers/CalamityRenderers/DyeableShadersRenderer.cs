@@ -3,6 +3,7 @@ using System.Linq;
 using CalamityMod.DataStructures;
 using CalamityMod.Enums;
 using CalamityMod.Utilities.Daybreak;
+using CalamityMod.Utilities.Daybreak.Buffers;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria;
@@ -14,7 +15,7 @@ namespace CalamityMod.Graphics.Renderers.CalamityRenderers
     public class DyeableShadersRenderer : BaseRenderer
     {
         #region Fields/Properties
-        public static Dictionary<IDyeableShaderRenderer, ManagedRenderTarget> Targets
+        public static Dictionary<IDyeableShaderRenderer, RenderTargetLease> Targets
         {
             get;
             private set;
@@ -131,7 +132,7 @@ namespace CalamityMod.Graphics.Renderers.CalamityRenderers
             {
                 // If it doesn't have a dictonary entry, create one.
                 if (!Targets.ContainsKey(renderer))
-                    Main.QueueMainThreadAction(() => Targets[renderer] = new(true, ManagedRenderTarget.CreateScreenSizedTarget));
+                    Main.QueueMainThreadAction(() => Targets[renderer] = ScreenspaceTargetPool.Shared.Rent(Main.instance.GraphicsDevice));
             });
 
             // Mark this item as drawable this frame.

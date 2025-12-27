@@ -1,5 +1,6 @@
 ﻿using CalamityMod.Graphics;
 using CalamityMod.Systems.Graphic;
+using CalamityMod.Utilities.Daybreak.Buffers;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using ReLogic.Content;
@@ -12,7 +13,7 @@ namespace CalamityMod.Backgrounds
 {
     public class SunkenSeaBurrowsBG : ModSystem
     {
-        private static ManagedRenderTarget WaterDistortionTarget;
+        private static RenderTargetLease WaterDistortionTarget;
 
         private static bool CurrentlyRendering { get; set; }
 
@@ -26,7 +27,7 @@ namespace CalamityMod.Backgrounds
             GeneralDrawLayerSystem.OnPrepareDraw += DrawToTarget;
             On_Main.DrawBackgroundBlackFill += On_Main_DrawBackgroundBlackFill;
 
-            Main.QueueMainThreadAction(() => WaterDistortionTarget = new(true, ManagedRenderTarget.CreateScreenSizedTarget));
+            Main.QueueMainThreadAction(() => WaterDistortionTarget = ScreenspaceTargetPool.Shared.Rent(Main.instance.GraphicsDevice));
         }
 
         public override void Unload()

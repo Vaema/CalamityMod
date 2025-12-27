@@ -70,7 +70,7 @@ namespace CalamityMod.Graphics.Metaballs
                 metaball.PrepareSpriteBatch(Main.spriteBatch);
 
                 // Draw the raw contents of the metaball to each of its render targets.
-                foreach (ManagedRenderTarget target in metaball.LayerTargets)
+                foreach (var target in metaball.LayerTargets)
                 {
                     gd.SetRenderTarget(target);
                     gd.Clear(Color.Transparent);

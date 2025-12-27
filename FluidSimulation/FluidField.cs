@@ -1,6 +1,7 @@
 ﻿using System;
 using CalamityMod.Effects;
 using CalamityMod.Graphics;
+using CalamityMod.Utilities.Daybreak.Buffers;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria;
@@ -12,11 +13,11 @@ namespace CalamityMod.FluidSimulation
     // Please do not change this system too much without contacting me first. -Dominic
     public class FluidField : IDisposable
     {
-        internal ManagedRenderTarget TemporaryAuxilaryTarget;
+        internal RenderTargetLease TemporaryAuxilaryTarget;
 
-        internal ManagedRenderTarget DivergenceField;
+        internal RenderTargetLease DivergenceField;
 
-        internal ManagedRenderTarget DivergencePoissonField;
+        internal RenderTargetLease DivergencePoissonField;
 
         internal FluidFieldState VelocityField;
 
@@ -24,7 +25,7 @@ namespace CalamityMod.FluidSimulation
 
         internal FluidFieldState ColorField;
 
-        internal ManagedRenderTarget OutputTarget;
+        internal RenderTargetLease OutputTarget;
 
         public float Viscosity;
 
@@ -71,8 +72,7 @@ namespace CalamityMod.FluidSimulation
         }
 
         // A surface format of Vector4 is used here to allow for both 0-1 ranged colors and other things at the same time.
-        public RenderTarget2D FluidCreateCondition(int screen, int height) =>
-            new(Main.instance.GraphicsDevice, Size, Size, true, SurfaceFormat.Vector4, DepthFormat.Depth24, 0, RenderTargetUsage.PreserveContents);
+        public static RenderTargetDescriptor FluidDescriptor => new RenderTargetDescriptor(SurfaceFormat.Vector4, DepthFormat.Depth24, 0, RenderTargetUsage.PreserveContents, true);
 
         internal FluidField(int size, float scale, float viscosity, float diffusionFactor, float dissipationFactor)
         {
@@ -86,12 +86,12 @@ namespace CalamityMod.FluidSimulation
             DensityField = new(size);
             ColorField = new(size);
 
-            TemporaryAuxilaryTarget = new(false, FluidCreateCondition, false);
+            TemporaryAuxilaryTarget = RenderTargetPool.Shared.Rent(Main.instance.GraphicsDevice, Size, Size, FluidDescriptor);
 
-            DivergenceField = new(false, FluidCreateCondition, false);
-            DivergencePoissonField = new(false, FluidCreateCondition, false);
+            DivergenceField = RenderTargetPool.Shared.Rent(Main.instance.GraphicsDevice, Size, Size, FluidDescriptor);
+            DivergencePoissonField = RenderTargetPool.Shared.Rent(Main.instance.GraphicsDevice, Size, Size, FluidDescriptor);
 
-            OutputTarget = new(false, FluidCreateCondition, false);
+            OutputTarget = RenderTargetPool.Shared.Rent(Main.instance.GraphicsDevice, Size, Size, FluidDescriptor);
         }
 
         internal void ApplyThingToTarget(RenderTarget2D currentField, Action shaderPreparationsAction)

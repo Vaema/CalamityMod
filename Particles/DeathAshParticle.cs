@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using CalamityMod.Graphics;
+using CalamityMod.Utilities.Daybreak.Buffers;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria;
@@ -10,7 +11,7 @@ namespace CalamityMod.Particles
 {
     public class DeathAshParticle
     {
-        internal static Dictionary<NPC, ManagedRenderTarget> PendingNPCsToDraw = new();
+        internal static Dictionary<NPC, RenderTargetLease> PendingNPCsToDraw = new();
         internal static BasicEffect basicShader = null;
         internal static VertexPositionColorTexture[] VertexCache = new VertexPositionColorTexture[PrimitiveBatchSize * 4];
         internal static short[] IndexCache = new short[PrimitiveBatchSize * 6];
@@ -91,7 +92,7 @@ namespace CalamityMod.Particles
                 return;
 
             VelOverride = velocityOverride;
-            PendingNPCsToDraw[npc] = new(true, ManagedRenderTarget.CreateScreenSizedTarget);
+            PendingNPCsToDraw[npc] = ScreenspaceTargetPool.Shared.Rent(Main.instance.GraphicsDevice);
         }
 
         public static Dictionary<Vector2, Color> GetColorCacheFromTexture(Texture2D texture, Rectangle? frame = null, bool pruneForEfficency = false)

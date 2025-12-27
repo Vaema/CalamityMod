@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using CalamityMod.Graphics;
+using CalamityMod.Utilities.Daybreak.Buffers;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria;
 
@@ -8,9 +9,9 @@ namespace CalamityMod.FluidSimulation
     // Calculations for these are done primarily on the GPU in shaders for performance-sake.
     public class FluidFieldState
     {
-        public ManagedRenderTarget PreviousState;
+        public RenderTargetLease PreviousState;
 
-        public ManagedRenderTarget NextState;
+        public RenderTargetLease NextState;
 
         public Queue<PixelQueueValue> PendingChanges = new();
 

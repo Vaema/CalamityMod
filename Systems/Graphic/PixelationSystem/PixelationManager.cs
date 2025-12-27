@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using CalamityMod.Enums;
 using CalamityMod.Graphics;
+using CalamityMod.Utilities.Daybreak.Buffers;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria;
@@ -12,15 +13,15 @@ namespace CalamityMod.Systems.Graphic.PixelationSystem
 {
     public class PixelationManager : ModSystem
     {
-        private static Dictionary<BlendState, ManagedRenderTarget> PixelTargets_BeforeAllTiles;
-        private static Dictionary<BlendState, ManagedRenderTarget> PixelTargets_BeforeSolidTiles;
-        private static Dictionary<BlendState, ManagedRenderTarget> PixelTargets_BeforeNPCs;
-        private static Dictionary<BlendState, ManagedRenderTarget> PixelTargets_AfterNPCs;
-        private static Dictionary<BlendState, ManagedRenderTarget> PixelTargets_BeforeProjectiles;
-        private static Dictionary<BlendState, ManagedRenderTarget> PixelTargets_AfterProjectiles;
-        private static Dictionary<BlendState, ManagedRenderTarget> PixelTargets_AfterPlayers;
-        private static Dictionary<BlendState, ManagedRenderTarget> PixelTargets_AfterDusts;
-        private static Dictionary<BlendState, ManagedRenderTarget> PixelTargets_AfterEverything;
+        private static Dictionary<BlendState, RenderTargetLease> PixelTargets_BeforeAllTiles;
+        private static Dictionary<BlendState, RenderTargetLease> PixelTargets_BeforeSolidTiles;
+        private static Dictionary<BlendState, RenderTargetLease> PixelTargets_BeforeNPCs;
+        private static Dictionary<BlendState, RenderTargetLease> PixelTargets_AfterNPCs;
+        private static Dictionary<BlendState, RenderTargetLease> PixelTargets_BeforeProjectiles;
+        private static Dictionary<BlendState, RenderTargetLease> PixelTargets_AfterProjectiles;
+        private static Dictionary<BlendState, RenderTargetLease> PixelTargets_AfterPlayers;
+        private static Dictionary<BlendState, RenderTargetLease> PixelTargets_AfterDusts;
+        private static Dictionary<BlendState, RenderTargetLease> PixelTargets_AfterEverything;
 
         private static List<PixelatedDrawer> ActivePixelatedDrawers_BeforeAllTiles;
         private static List<PixelatedDrawer> ActivePixelatedDrawers_BeforeSolidTiles;
@@ -50,11 +51,6 @@ namespace CalamityMod.Systems.Graphic.PixelationSystem
                    * Matrix.CreateTranslation(Main.GameViewMatrix.Translation.X * PixelationResolution, Main.GameViewMatrix.Translation.Y * PixelationResolution, 0f);
             }
         }
-
-        /// <summary>
-        /// Creates a render target at a ratio of the screen's current dimensions based on <see cref="PixelationResolution"/>.
-        /// </summary>
-        internal static RenderTarget2D CreatePixelTarget(int width, int height) => new(Main.graphics.GraphicsDevice, (int)(width * PixelationResolution), (int)(height * PixelationResolution));
 
         public override void Load()
         {
@@ -168,7 +164,7 @@ namespace CalamityMod.Systems.Graphic.PixelationSystem
             }
         }
 
-        private static void DrawCollectionsToTarget(Dictionary<BlendState, ManagedRenderTarget> targetCollection, Matrix pixelationMatrix, List<PixelatedDrawer> drawerCollection)
+        private static void DrawCollectionsToTarget(Dictionary<BlendState, RenderTargetLease> targetCollection, Matrix pixelationMatrix, List<PixelatedDrawer> drawerCollection)
         {
             foreach (var blendStateTargetPair in targetCollection)
             {
@@ -221,9 +217,9 @@ namespace CalamityMod.Systems.Graphic.PixelationSystem
             return drawerCollection;
         }
 
-        private static Dictionary<BlendState, ManagedRenderTarget> ReturnAssociatedTargetCollection(GeneralDrawLayer drawLayer)
+        private static Dictionary<BlendState, RenderTargetLease> ReturnAssociatedTargetCollection(GeneralDrawLayer drawLayer)
         {
-            Dictionary<BlendState, ManagedRenderTarget> targetCollection = drawLayer switch
+            Dictionary<BlendState, RenderTargetLease> targetCollection = drawLayer switch
             {
                 GeneralDrawLayer.BeforeAllTiles => PixelTargets_BeforeAllTiles,
                 GeneralDrawLayer.BeforeSolidTiles => PixelTargets_BeforeSolidTiles,
@@ -245,47 +241,47 @@ namespace CalamityMod.Systems.Graphic.PixelationSystem
             {
                 case GeneralDrawLayer.BeforeAllTiles:
                     if (!PixelTargets_BeforeAllTiles.ContainsKey(blendState))
-                        Main.QueueMainThreadAction(() => PixelTargets_BeforeAllTiles[blendState] = new(true, CreatePixelTarget));
+                        Main.QueueMainThreadAction(() => PixelTargets_BeforeAllTiles[blendState] = ScreenspaceTargetPool.Shared.Rent(Main.instance.GraphicsDevice, (w, h) => ((int)(w * PixelationResolution), (int)(h * PixelationResolution))))
                     break;
 
                 case GeneralDrawLayer.BeforeSolidTiles:
                     if (!PixelTargets_BeforeSolidTiles.ContainsKey(blendState))
-                        Main.QueueMainThreadAction(() => PixelTargets_BeforeSolidTiles[blendState] = new(true, CreatePixelTarget));
+                        Main.QueueMainThreadAction(() => PixelTargets_BeforeSolidTiles[blendState] = ScreenspaceTargetPool.Shared.Rent(Main.instance.GraphicsDevice, (w, h) => ((int)(w * PixelationResolution), (int)(h * PixelationResolution))))
                     break;
 
                 case GeneralDrawLayer.BeforeNPCs:
                     if (!PixelTargets_BeforeNPCs.ContainsKey(blendState))
-                        Main.QueueMainThreadAction(() => PixelTargets_BeforeNPCs[blendState] = new(true, CreatePixelTarget));
+                        Main.QueueMainThreadAction(() => PixelTargets_BeforeNPCs[blendState] = ScreenspaceTargetPool.Shared.Rent(Main.instance.GraphicsDevice, (w, h) => ((int)(w * PixelationResolution), (int)(h * PixelationResolution))))
                     break;
 
                 case GeneralDrawLayer.AfterNPCs:
                     if (!PixelTargets_AfterNPCs.ContainsKey(blendState))
-                        Main.QueueMainThreadAction(() => PixelTargets_AfterNPCs[blendState] = new(true, CreatePixelTarget));
+                        Main.QueueMainThreadAction(() => PixelTargets_AfterNPCs[blendState] = ScreenspaceTargetPool.Shared.Rent(Main.instance.GraphicsDevice, (w, h) => ((int)(w * PixelationResolution), (int)(h * PixelationResolution))))
                     break;
 
                 case GeneralDrawLayer.BeforeProjectiles:
                     if (!PixelTargets_BeforeProjectiles.ContainsKey(blendState))
-                        Main.QueueMainThreadAction(() => PixelTargets_BeforeProjectiles[blendState] = new(true, CreatePixelTarget));
+                        Main.QueueMainThreadAction(() => PixelTargets_BeforeProjectiles[blendState] = ScreenspaceTargetPool.Shared.Rent(Main.instance.GraphicsDevice, (w, h) => ((int)(w * PixelationResolution), (int)(h * PixelationResolution))))
                     break;
 
                 case GeneralDrawLayer.AfterProjectiles:
                     if (!PixelTargets_AfterProjectiles.ContainsKey(blendState))
-                        Main.QueueMainThreadAction(() => PixelTargets_AfterProjectiles[blendState] = new(true, CreatePixelTarget));
+                        Main.QueueMainThreadAction(() => PixelTargets_AfterProjectiles[blendState] = ScreenspaceTargetPool.Shared.Rent(Main.instance.GraphicsDevice, (w, h) => ((int)(w * PixelationResolution), (int)(h * PixelationResolution))))
                     break;
 
                 case GeneralDrawLayer.AfterPlayers:
                     if (!PixelTargets_AfterPlayers.ContainsKey(blendState))
-                        Main.QueueMainThreadAction(() => PixelTargets_AfterPlayers[blendState] = new(true, CreatePixelTarget));
+                        Main.QueueMainThreadAction(() => PixelTargets_AfterPlayers[blendState] = ScreenspaceTargetPool.Shared.Rent(Main.instance.GraphicsDevice, (w, h) => ((int)(w * PixelationResolution), (int)(h * PixelationResolution))))
                     break;
 
                 case GeneralDrawLayer.AfterDusts:
                     if (!PixelTargets_AfterDusts.ContainsKey(blendState))
-                        Main.QueueMainThreadAction(() => PixelTargets_AfterDusts[blendState] = new(true, CreatePixelTarget));
+                        Main.QueueMainThreadAction(() => PixelTargets_AfterDusts[blendState] = ScreenspaceTargetPool.Shared.Rent(Main.instance.GraphicsDevice, (w, h) => ((int)(w * PixelationResolution), (int)(h * PixelationResolution))))
                     break;
 
                 case GeneralDrawLayer.AfterEverything:
                     if (!PixelTargets_AfterEverything.ContainsKey(blendState))
-                        Main.QueueMainThreadAction(() => PixelTargets_AfterEverything[blendState] = new(true, CreatePixelTarget));
+                        Main.QueueMainThreadAction(() => PixelTargets_AfterEverything[blendState] = ScreenspaceTargetPool.Shared.Rent(Main.instance.GraphicsDevice, (w, h) => ((int)(w * PixelationResolution), (int)(h * PixelationResolution))));
                     break;
             }
         }

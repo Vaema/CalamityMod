@@ -1,5 +1,6 @@
 ﻿using System;
 using CalamityMod.Enums;
+using CalamityMod.Utilities.Daybreak.Buffers;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria;
@@ -26,7 +27,7 @@ namespace CalamityMod.Graphics.Renderers
         /// <summary>
         /// The target that the visual is drawn to. Automatically handled.
         /// </summary>
-        public ManagedRenderTarget MainTarget
+        public RenderTargetLease MainTarget
         {
             get;
             private set;
@@ -51,7 +52,7 @@ namespace CalamityMod.Graphics.Renderers
         {
             Main.QueueMainThreadAction(() =>
             {
-                MainTarget = new(true, ManagedRenderTarget.CreateScreenSizedTarget);
+                MainTarget = ScreenspaceTargetPool.Shared.Rent(Main.instance.GraphicsDevice);
             });
         }
 

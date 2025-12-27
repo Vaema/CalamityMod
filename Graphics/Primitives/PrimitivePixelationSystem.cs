@@ -2,6 +2,7 @@
 using System.Linq;
 using CalamityMod.Enums;
 using CalamityMod.Systems.Graphic;
+using CalamityMod.Utilities.Daybreak.Buffers;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria;
@@ -12,25 +13,23 @@ namespace CalamityMod.Graphics.Primitives
     public class PrimitivePixelationSystem : ModSystem
     {
         #region Fields/Properties
-        private static ManagedRenderTarget PixelationTarget_BeforeAllTiles;
+        private static RenderTargetLease PixelationTarget_BeforeAllTiles;
 
-        private static ManagedRenderTarget PixelationTarget_BeforeSolidTiles;
+        private static RenderTargetLease PixelationTarget_BeforeSolidTiles;
 
-        private static ManagedRenderTarget PixelationTarget_BeforeNPCs;
+        private static RenderTargetLease PixelationTarget_BeforeNPCs;
 
-        private static ManagedRenderTarget PixelationTarget_AfterNPCs;
+        private static RenderTargetLease PixelationTarget_AfterNPCs;
 
-        private static ManagedRenderTarget PixelationTarget_BeforeProjectiles;
+        private static RenderTargetLease PixelationTarget_BeforeProjectiles;
 
-        private static ManagedRenderTarget PixelationTarget_AfterProjectiles;
+        private static RenderTargetLease PixelationTarget_AfterProjectiles;
 
-        private static ManagedRenderTarget PixelationTarget_AfterPlayers;
+        private static RenderTargetLease PixelationTarget_AfterPlayers;
 
-        private static ManagedRenderTarget PixelationTarget_AfterDusts;
+        private static RenderTargetLease PixelationTarget_AfterDusts;
 
-        private static ManagedRenderTarget PixelationTarget_AfterEverything;
-
-        private static RenderTarget2D CreatePixelTarget(int width, int height) => new(Main.instance.GraphicsDevice, width / 2, height / 2);
+        private static RenderTargetLease PixelationTarget_AfterEverything;
 
         /// <summary>
         /// Whether the system is currently rendering any primitives.
@@ -50,15 +49,15 @@ namespace CalamityMod.Graphics.Primitives
 
             Main.QueueMainThreadAction(() =>
             {
-                PixelationTarget_BeforeAllTiles = new(true, CreatePixelTarget);
-                PixelationTarget_BeforeSolidTiles = new(true, CreatePixelTarget);
-                PixelationTarget_BeforeNPCs = new(true, CreatePixelTarget);
-                PixelationTarget_AfterNPCs = new(true, CreatePixelTarget);
-                PixelationTarget_BeforeProjectiles = new(true, CreatePixelTarget);
-                PixelationTarget_AfterProjectiles = new(true, CreatePixelTarget);
-                PixelationTarget_AfterPlayers = new(true, CreatePixelTarget);
-                PixelationTarget_AfterDusts = new(true, CreatePixelTarget);
-                PixelationTarget_AfterEverything = new(true, CreatePixelTarget);
+                PixelationTarget_BeforeAllTiles = ScreenspaceTargetPool.Shared.Rent(Main.instance.GraphicsDevice, (w, h) => (w / 2, h / 2));
+                PixelationTarget_BeforeSolidTiles = ScreenspaceTargetPool.Shared.Rent(Main.instance.GraphicsDevice, (w, h) => (w / 2, h / 2));
+                PixelationTarget_BeforeNPCs = ScreenspaceTargetPool.Shared.Rent(Main.instance.GraphicsDevice, (w, h) => (w / 2, h / 2));
+                PixelationTarget_AfterNPCs = ScreenspaceTargetPool.Shared.Rent(Main.instance.GraphicsDevice, (w, h) => (w / 2, h / 2));
+                PixelationTarget_BeforeProjectiles = ScreenspaceTargetPool.Shared.Rent(Main.instance.GraphicsDevice, (w, h) => (w / 2, h / 2));
+                PixelationTarget_AfterProjectiles = ScreenspaceTargetPool.Shared.Rent(Main.instance.GraphicsDevice, (w, h) => (w / 2, h / 2));
+                PixelationTarget_AfterPlayers = ScreenspaceTargetPool.Shared.Rent(Main.instance.GraphicsDevice, (w, h) => (w / 2, h / 2));
+                PixelationTarget_AfterDusts = ScreenspaceTargetPool.Shared.Rent(Main.instance.GraphicsDevice, (w, h) => (w / 2, h / 2));
+                PixelationTarget_AfterEverything = ScreenspaceTargetPool.Shared.Rent(Main.instance.GraphicsDevice, (w, h) => (w / 2, h / 2));
             });
 
             GeneralDrawLayerSystem.OnDrawLayer += DrawTargetScaled;
