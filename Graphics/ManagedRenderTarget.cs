@@ -9,6 +9,7 @@ namespace CalamityMod.Graphics
     /// Wrapper class for <see cref="RenderTarget2D"/> that safely handles resizing, unloading and auto-disposal if not currently in use to save
     /// on GPU memory.
     /// </summary>
+    [Obsolete("ManagedRenderTarget is obsolete; developers should use RenderTarget2Ds and RenderTargetLeases")]
     public class ManagedRenderTarget : IDisposable
     {
         private RenderTarget2D target;
