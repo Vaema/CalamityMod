@@ -12,7 +12,7 @@ using Terraria.ModLoader;
 namespace CalamityMod.Items.Weapons.Rogue
 {
     [LegacyName("NightsGaze")]
-    public class Vega : RogueWeapon, IHoldShiftTooltipItem
+    public class Vega : RogueWeapon
     {
         public static int StarburstCost = 20;
         public override void SetDefaults()
