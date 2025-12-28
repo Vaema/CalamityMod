@@ -49,11 +49,6 @@ ManhattanBuff: {
 	Description: Cold debuff damage increased, water debuff damage reduced
 }
 
-ManhattanBuff: {
-	DisplayName: Manhattan
-	Description: Cold debuff damage increased, water debuff damage reduced
-}
-
 MargaritaBuff: {
 	DisplayName: Margarita
 	Description: Reduced duration to most harmful debuffs, reduced damage dealt to enemies from debuffs
