@@ -186,7 +186,7 @@ internal partial class DialogueLoader : ModSystem
 
             if (!_DialogueLookup.TryGetValue(entry.DialogueKey, out var oldEntry))
             {
-                CalamityMod.Log.Warn($"Dialogue Localization was detected but original Dialogue file does not exists. This will not be applied! : '{mod.Name}::{entry.FilePath}'");
+                CalamityMod.Log.Warn($"Dialogue Localization was detected but original Dialogue file does not exist. This will not be applied! : '{mod.Name}::{entry.FilePath}'");
                 continue;
             }
 
@@ -225,7 +225,7 @@ internal partial class DialogueLoader : ModSystem
                 Data = JsonSerializer.Deserialize<DialogueTextData>(stream.BaseStream)
             };
 
-            var hotreloadedMessage = $"Dialogue entry has hot reloaded: '{dialogueKey}', from source: '{filePath}'";
+            var hotreloadedMessage = $"Dialogue entry has been hot reloaded: '{dialogueKey}', from source: '{filePath}'";
             CalamityMod.Log.Info(hotreloadedMessage);
             if (!Main.gameMenu) Main.NewText(hotreloadedMessage);
         }
