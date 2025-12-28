@@ -46,6 +46,8 @@ public class BrainOfCthulhuAI : VanillaAIOverride
 
     #region Balancing Values
 
+    internal static int BrainIllusionDamage => 15;
+
     #region Projectile Damage Values
     internal static int BloodShotDamage => 12; // 48
     internal static int BloodScytheDamage => 12; // 48
@@ -2103,7 +2105,7 @@ public class BrainOfCthulhuAI : VanillaAIOverride
                         DisableMultiplayerSmoothing = true;
                     }
                     else if (Main.netMode != NetmodeID.MultiplayerClient)
-                        NPC.NewNPCDirect(NPC.GetSource_FromThis(), spawnPos, ModContent.NPCType<BrainIllusion>(), 0, 15, 30, rot).netUpdate = true;
+                        NPC.NewNPCDirect(NPC.GetSource_FromThis(), spawnPos, ModContent.NPCType<BrainIllusion>(), 0, BrainIllusionDamage, 30, rot).netUpdate = true;
                 }
 
                 NPC.netUpdate = true;
