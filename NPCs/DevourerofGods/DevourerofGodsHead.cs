@@ -645,7 +645,7 @@ namespace CalamityMod.NPCs.DevourerofGods
                         player.Calamity().subtitletext = Main.combatText[ctid];
                     player.Calamity().subtitleColors = new Color[] { Color.Cyan, Color.Fuchsia };
                     */
-                    DialogueDisplaySystem.StartDialogue("CalamityMod.DevourerOfGods.Phases", NPC, 2, 120, false, new BossText());
+                    DialogueDisplaySystem.StartDialogue("Mods.CalamityMod.DevourerOfGods.Phases", NPC, 2, 120, false, new BossText());
                 }
             }
 
@@ -822,7 +822,7 @@ namespace CalamityMod.NPCs.DevourerofGods
                                             player.Calamity().subtitletext = Main.combatText[ctid];
                                         player.Calamity().subtitleColors = new Color[] { Color.Cyan, Color.Fuchsia };
                                         */
-                                        DialogueDisplaySystem.StartDialogue("CalamityMod.DevourerOfGods.Phases", NPC, 3, 120, false, new BossText());
+                                        DialogueDisplaySystem.StartDialogue("Mods.CalamityMod.DevourerOfGods.Phases", NPC, 3, 120, false, new BossText());
                                     }
 
                                     spawnedGuardians3 = true;
@@ -1485,7 +1485,7 @@ namespace CalamityMod.NPCs.DevourerofGods
                                 player.Calamity().subtitletext = Main.combatText[ctid];
                             player.Calamity().subtitleColors = new Color[] { Color.Cyan, Color.Fuchsia };
                             */
-                            DialogueDisplaySystem.StartDialogue("CalamityMod.DevourerOfGods.Phases", NPC, 1, 120, false, new BossText());
+                            DialogueDisplaySystem.StartDialogue("Mods.CalamityMod.DevourerOfGods.Phases", NPC, 1, 120, false, new BossText());
                         }
 
                         NPC.TargetClosest();
