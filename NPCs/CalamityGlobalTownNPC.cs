@@ -1347,6 +1347,7 @@ namespace CalamityMod.NPCs
                 .InsertAfter(ItemID.MusicBoxCredits, interlude3Box.Type, CalamityConditions.DownedYharon)
                 .InsertAfter(ItemID.MusicBoxCredits, eulogyBox.Type, CalamityConditions.DownedDevourerOfGods)
                 .AddWithCustomValue(ItemID.PrincessWeapon, Item.buyPrice(platinum: 1), Condition.Hardmode)
+                .AddWithCustomValue(ItemType<ForgivenessPainting>(), Item.buyPrice(gold: 15), Condition.NpcIsPresent(NPCType<BrimstoneWitch>()))
                 .Add<LanternCenter>();
             }
 
