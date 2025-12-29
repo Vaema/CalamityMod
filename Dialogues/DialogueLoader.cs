@@ -12,7 +12,6 @@ using MonoMod.Cil;
 using Terraria;
 using Terraria.Localization;
 using Terraria.ModLoader;
-using Terraria.ModLoader.Core;
 
 namespace CalamityMod.Dialogues;
 
@@ -45,7 +44,10 @@ internal partial class DialogueLoader : ModSystem
     {
         foreach (var mod in ModLoader.Mods)
         {
-            string path = Path.Combine(ModCompile.ModSourcePath, mod.Name);
+            if (mod.File == null)
+                continue;
+
+            var path = mod.SourceFolder;
             if (!Directory.Exists(path))
                 continue;
 
