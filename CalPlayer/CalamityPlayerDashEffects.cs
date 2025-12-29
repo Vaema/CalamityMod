@@ -158,9 +158,6 @@ namespace CalamityMod.CalPlayer
 
                 if (HasCustomDash)
                 {
-                    // Vortex Booster automatically re-engages Vortex armor's stealth after a delay when dashing
-                    if (Player.wingsLogic == (int)VanillaWingID.WingsVortex && Player.vortexStealthActive)
-                        vortexBoosterStealthDelay = 60;
                     Player.vortexStealthActive = false;
 
                     // Decide the player's facing direction.
