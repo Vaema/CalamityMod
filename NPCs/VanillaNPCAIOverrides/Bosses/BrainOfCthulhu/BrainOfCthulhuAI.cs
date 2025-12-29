@@ -271,6 +271,7 @@ public class BrainOfCthulhuAI : VanillaAIOverride
 
     public override void SetDefaults(Mod mod)
     {
+        NPC.damage = NPC.defDamage = 64;
         BoCDrawOffset = Vector2.Zero;
         ShieldOpacity = 1f;
         ShieldScale = 1f;

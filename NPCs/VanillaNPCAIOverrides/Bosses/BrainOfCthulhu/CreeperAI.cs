@@ -67,6 +67,11 @@ public class CreeperAI : VanillaAIOverride
 
     public override bool EnableMultiplayerSmoothingAheadOfAI => true;
 
+    public override void SetDefaults(Mod mod)
+    {
+        NPC.damage = NPC.defDamage = 64;
+    }
+
     public override bool AI(Mod mod)
     {
         #region Despawn
