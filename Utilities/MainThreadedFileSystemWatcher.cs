@@ -138,6 +138,8 @@ internal sealed class MainThreadedFileSystemWatcher : IDisposable
         void ILoadable.Unload()
         {
             Main.OnTickForThirdPartySoftwareOnly -= Tick;
+            _WatchersList?.Clear();
+            _Watchers = [];
         }
 
         private void Tick()
