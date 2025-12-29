@@ -1,107 +1,177 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.IO;
 using System.Text.RegularExpressions;
 using Terraria;
+using Terraria.ModLoader;
 
-namespace CalamityMod.Utilities
+namespace CalamityMod.Utilities;
+
+internal sealed class MainThreadedFileSystemWatcher : IDisposable
 {
-    internal sealed class MainThreadedFileSystemWatcher : IDisposable
+    public string Path
     {
-        public string Path
+        get => _FSW.Path;
+        set => _FSW.Path = value;
+    }
+
+    public string Filter
+    {
+        get => _FSW.Filter;
+        set => _FSW.Filter = value;
+    }
+
+    public Collection<string> Filters
+    {
+        get => _FSW.Filters;
+    }
+
+    public NotifyFilters NotifyFilter
+    {
+        get => _FSW.NotifyFilter;
+        set => _FSW.NotifyFilter = value;
+    }
+
+    public bool IncludeSubdirectories
+    {
+        get => _FSW.IncludeSubdirectories;
+        set => _FSW.IncludeSubdirectories = value;
+    }
+
+    public bool EnableRaisingEvents
+    {
+        get => _FSW.EnableRaisingEvents;
+        set => _FSW.EnableRaisingEvents = value;
+    }
+
+    public Regex FileNameFilter { get; set; } = null;
+
+    public event Action<FileSystemEventArgs> Changed;
+    public event Action<RenamedEventArgs> Renamed;
+
+    private Dictionary<string, FileSystemEventArgs> _ChangedQueue = [];
+    private Dictionary<string, RenamedEventArgs> _RenamedQueue = [];
+
+    private FileSystemWatcher _FSW;
+    private bool _HasQueueInFrame = false;
+    private bool _Disposed;
+
+    public MainThreadedFileSystemWatcher()
+    {
+        _FSW = new();
+        _FSW.Changed += (o, arg) =>
         {
-            get => _FSW.Path;
-            set => _FSW.Path = value;
-        }
+            if (FileNameFilter != null && !FileNameFilter.IsMatch(System.IO.Path.GetFileName(arg.Name)))
+                return;
 
-        public string Filter
-        {
-            get => _FSW.Filter;
-            set => _FSW.Filter = value;
-        }
-
-        public Collection<string> Filters
-        {
-            get => _FSW.Filters;
-        }
-
-        public NotifyFilters NotifyFilter
-        {
-            get => _FSW.NotifyFilter;
-            set => _FSW.NotifyFilter = value;
-        }
-
-        public bool IncludeSubdirectories
-        {
-            get => _FSW.IncludeSubdirectories;
-            set => _FSW.IncludeSubdirectories = value;
-        }
-
-        public bool EnableRaisingEvents
-        {
-            get => _FSW.EnableRaisingEvents;
-            set => _FSW.EnableRaisingEvents = value;
-        }
-
-        public Regex FileNameFilter { get; set; } = null;
-
-        public event FileSystemEventHandler Changed;
-        public event RenamedEventHandler Renamed;
-
-        public TimeSpan ChangedEventCooldown { get; set; } = TimeSpan.FromSeconds(0.1f);
-        public TimeSpan RenamedEventCooldown { get; set; } = TimeSpan.FromSeconds(0.1f);
-
-        private FileSystemWatcher _FSW;
-        private DateTime _LastChangedEventDateTime = DateTime.Now;
-        private DateTime _LastRenamedEventDateTime = DateTime.Now;
-        private bool disposedValue;
-
-        public MainThreadedFileSystemWatcher()
-        {
-            _FSW = new();
-            _FSW.Changed += (o, arg) =>
+            lock (_ChangedQueue)
             {
-                if ((DateTime.Now - _LastChangedEventDateTime) < ChangedEventCooldown)
-                    return;
+                _ChangedQueue[arg.FullPath] = arg;
+                _HasQueueInFrame = true;
+            }
+        };
 
-                if (FileNameFilter != null && !FileNameFilter.IsMatch(System.IO.Path.GetFileName(arg.Name)))
-                    return;
+        _FSW.Renamed += (o, arg) =>
+        {
+            if (FileNameFilter != null && !FileNameFilter.IsMatch(System.IO.Path.GetFileName(arg.Name)))
+                return;
 
-                Main.QueueMainThreadAction(() => Changed?.Invoke(o, arg));
-                _LastChangedEventDateTime = DateTime.Now;
-            };
-
-            _FSW.Renamed += (o, arg) =>
+            lock (_RenamedQueue)
             {
-                if ((DateTime.Now - _LastRenamedEventDateTime) < RenamedEventCooldown)
-                    return;
+                _RenamedQueue[arg.FullPath] = arg;
+                _HasQueueInFrame = true;
+            }
+        };
 
-                if (FileNameFilter != null && !FileNameFilter.IsMatch(System.IO.Path.GetFileName(arg.Name)))
-                    return;
+        MainThreadedFileSystemWatcherSystem.Register(this);
+    }
 
-                Main.QueueMainThreadAction(() => Renamed?.Invoke(o, arg));
-                _LastRenamedEventDateTime = DateTime.Now;
-            };
+    private void Dispose(bool disposing)
+    {
+        if (!_Disposed)
+        {
+            if (disposing)
+            {
+                _FSW?.Dispose();
+            }
+
+            _FSW = null;
+            _Disposed = true;
+            _ChangedQueue?.Clear();
+            _RenamedQueue?.Clear();
+            _ChangedQueue = null;
+            _RenamedQueue = null;
+            _HasQueueInFrame = false;
+            MainThreadedFileSystemWatcherSystem.Unregister(this);
+        }
+    }
+
+    public void Dispose()
+    {
+        Dispose(disposing: true);
+        GC.SuppressFinalize(this);
+    }
+
+    private sealed class MainThreadedFileSystemWatcherSystem : ILoadable
+    {
+        private static MainThreadedFileSystemWatcher[] _Watchers = [];
+        private static HashSet<MainThreadedFileSystemWatcher> _WatchersList = [];
+
+        public static void Register(MainThreadedFileSystemWatcher watcher)
+        {
+            _WatchersList.Add(watcher);
+            _Watchers = [.. _WatchersList];
         }
 
-        private void Dispose(bool disposing)
+        public static void Unregister(MainThreadedFileSystemWatcher watcher)
         {
-            if (!disposedValue)
-            {
-                if (disposing)
-                {
-                    _FSW?.Dispose();
-                }
+            _WatchersList.Remove(watcher);
+            _Watchers = [.. _WatchersList];
+        }
 
-                _FSW = null;
-                disposedValue = true;
+        void ILoadable.Load(Mod mod)
+        {
+            Main.OnTickForThirdPartySoftwareOnly += Tick;
+        }
+
+        void ILoadable.Unload()
+        {
+            Main.OnTickForThirdPartySoftwareOnly -= Tick;
+        }
+
+        private void Tick()
+        {
+            foreach (var watcher in _Watchers)
+            {
+                if (!watcher._HasQueueInFrame)
+                    continue;
+
+                HandleQueuedEvents(watcher);
             }
         }
 
-        public void Dispose()
+        private static void HandleQueuedEvents(MainThreadedFileSystemWatcher watcher)
         {
-            Dispose(disposing: true);
-            GC.SuppressFinalize(this);
+            lock (watcher._ChangedQueue)
+            {
+                foreach (var changed in watcher._ChangedQueue.Values)
+                {
+                    watcher.Changed?.Invoke(changed);
+                }
+                watcher._ChangedQueue.Clear();
+            }
+
+            lock (watcher._RenamedQueue)
+            {
+                foreach (var renamed in watcher._RenamedQueue.Values)
+                {
+                    watcher.Renamed?.Invoke(renamed);
+                }
+                watcher._RenamedQueue.Clear();
+            }
+
+            watcher._HasQueueInFrame = false;
         }
     }
 }

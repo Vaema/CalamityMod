@@ -57,11 +57,11 @@ internal partial class DialogueLoader : ModSystem
                 NotifyFilter = NotifyFilters.FileName | NotifyFilters.LastWrite,
                 IncludeSubdirectories = true
             };
-            watcher.Changed += (o, arg) =>
+            watcher.Changed += (arg) =>
             {
                 HandleFileUpdate(mod, arg.FullPath);
             };
-            watcher.Renamed += (o, arg) =>
+            watcher.Renamed += (arg) =>
             {
                 HandleFileUpdate(mod, arg.FullPath);
             };
