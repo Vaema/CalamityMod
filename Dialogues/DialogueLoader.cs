@@ -9,7 +9,6 @@ using System.Text.RegularExpressions;
 using CalamityMod.UI.DialogueDisplay;
 using CalamityMod.Utilities;
 using MonoMod.Cil;
-using MonoMod.RuntimeDetour;
 using Terraria;
 using Terraria.Localization;
 using Terraria.ModLoader;
@@ -31,8 +30,6 @@ internal partial class DialogueLoader : ModSystem
     private static readonly Dictionary<string, DialogueTextDataEntry> _DialogueLookup = [];
     private static readonly Dictionary<Mod, MainThreadedFileSystemWatcher> _Watchers = [];
 
-    private ILHook _ExtractLocalizationHook;
-
     public override void Load()
     {
         _DialogueLookup.Clear();
@@ -40,8 +37,7 @@ internal partial class DialogueLoader : ModSystem
         var method = typeof(LocalizationLoader).GetMethod(nameof(LocalizationLoader.ExtractLocalizationFiles), BindingFlags.NonPublic | BindingFlags.Public | BindingFlags.Static);
         if (method != null)
         {
-            _ExtractLocalizationHook = new ILHook(method, ExtractDialogueFilesPatch);
-            _ExtractLocalizationHook.Apply();
+            MonoModHooks.Modify(method, ExtractDialogueFilesPatch);
         }
     }
 
@@ -77,13 +73,6 @@ internal partial class DialogueLoader : ModSystem
     public override void Unload()
     {
         _DialogueLookup.Clear();
-
-        if (_ExtractLocalizationHook != null)
-        {
-            _ExtractLocalizationHook.Undo();
-            _ExtractLocalizationHook.Dispose();
-            _ExtractLocalizationHook = null;
-        }
 
         foreach (var watcher in _Watchers.Values)
         {
