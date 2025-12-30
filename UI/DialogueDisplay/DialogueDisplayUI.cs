@@ -696,42 +696,37 @@ namespace CalamityMod.UI.DialogueDisplay
                         {
                             if (!lockDelay)
                             {
+                                char currentChar = Text[textIndex];
                                 PunctuationData data = new();
+
                                 if (DialoguePage.BasePunctuationDelay != null)
                                     data = DialoguePage.BasePunctuationDelay;
 
                                 if (DialoguePage.PunctuationDelays != null)
                                 {
-                                    if (DialoguePage.PunctuationDelays.TryGetValue(Text[textIndex].ToString(), out var value))
-                                        data = value;
-                                    else if (DialoguePage.PunctuationDelays.TryGetValue(Text[textIndex].ToString(), out value))
+                                    if (DialoguePage.PunctuationDelays.TryGetValue(currentChar.ToString(), out var value))
                                         data = value;
                                 }
 
-                                switch (Text[textIndex])
+                                UnicodeCategory category = char.GetUnicodeCategory(currentChar);
+                                bool shouldApplyDelay = false;
+
+                                if (category >= UnicodeCategory.ConnectorPunctuation && category <= UnicodeCategory.OtherPunctuation)
                                 {
-                                    case '.':
-                                    case '?':
-                                    case '!':
-                                    case ';':
-                                    case ':':
-                                    case ',':
-                                        if (data.ForceSet)
-                                            storedDelay = data.Delay;
-                                        else
-                                            storedDelay += data.Delay;
-                                        break;
-                                    case '-':
-                                    case '–':
-                                    case '—':
-                                        if (textIndex == Text.Length - 1 || Text[textIndex + 1] == ' ')
-                                        {
-                                            if (data.ForceSet)
-                                                storedDelay = data.Delay;
-                                            else
-                                                storedDelay += data.Delay;
-                                        }
-                                        break;
+                                    bool hasLetterBefore = textIndex > 0 && char.IsLetter(Text[textIndex - 1]);
+                                    bool hasLetterAfter = textIndex < Text.Length - 1 && char.IsLetter(Text[textIndex + 1]);
+                                    bool isMidWord = hasLetterBefore && hasLetterAfter;
+
+                                    if (!isMidWord)
+                                        shouldApplyDelay = true;
+                                }
+
+                                if (shouldApplyDelay)
+                                {
+                                    if (data.ForceSet)
+                                        storedDelay = data.Delay;
+                                    else
+                                        storedDelay += data.Delay;
                                 }
 
                                 if (data.Locks)
