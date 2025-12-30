@@ -48,13 +48,12 @@ public class BrainOfCthulhuSystem : ModSystem
     {
         orig(self);
 
-        if (NPC.crimsonBoss == -1 || !CalamityWorld.revenge)
+        if (NPC.crimsonBoss == -1 || !CalamityWorld.revenge || !Main.npc[NPC.crimsonBoss].active || !Main.npc[NPC.crimsonBoss].TryGetAIOverride<BrainOfCthulhuAI>(out var brainAI))
             return;
 
         if (previousMusic < 0 || previousMusic >= Main.musicFade.Length)
             return;
 
-        var brainAI = Main.npc[NPC.crimsonBoss].AIOverride<BrainOfCthulhuAI>();
         // The last part leaves one frame at the end of the spawn animation where the boss music starts playing, so that it can be instantly maxed out
         if (brainAI.AIState < 0 && (brainAI.Time - Math.Abs(brainAI.SpawnTime) < 420))
         {

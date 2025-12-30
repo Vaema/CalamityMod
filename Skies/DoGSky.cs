@@ -415,8 +415,8 @@ namespace CalamityMod.Skies
         {
             // Impose the distortion rift contents onto the primitives via shader.
             var metaballShader = CalamityShaders.MetaballEdgeShader;
-            Texture2D distortionRiftContents = DoGVisualsManager.DistortionRiftBackgroundContentsTarget;
-            Texture2D distortionRift = DoGVisualsManager.DistortionRiftPrimitivesTarget;
+            Texture2D distortionRiftContents = DoGVisualsManager.DistortionRiftBackgroundContentsTarget.Target;
+            Texture2D distortionRift = DoGVisualsManager.DistortionRiftPrimitivesTarget.Target;
 
             Vector2 screenSize = new(Main.screenWidth, Main.screenHeight);
 

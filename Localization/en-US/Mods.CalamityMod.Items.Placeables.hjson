@@ -887,7 +887,7 @@ CalamityCanvas2024: {
 
 ForgivenessPainting: {
 	DisplayName: Forgiveness
-	Tooltip: D. User
+	Tooltip: "'D. User'"
 }
 
 ThankYouPainting: {

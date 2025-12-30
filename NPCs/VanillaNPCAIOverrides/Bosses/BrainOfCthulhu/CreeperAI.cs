@@ -46,7 +46,7 @@ public class CreeperAI : VanillaAIOverride
 
     float bossCounter => bocAI.Time;
 
-    bool evenID => CreeperID % 2 == 0;
+    internal bool evenID => CreeperID % 2 == 0;
 
     int creeperCount
     {
@@ -64,6 +64,13 @@ public class CreeperAI : VanillaAIOverride
     float CreeperAmountRatio => creeperCount / (float)GetBrainOfCthuluCreepersCountRevDeath();
 
     bool useBossAIState = true;
+
+    public override bool EnableMultiplayerSmoothingAheadOfAI => true;
+
+    public override void SetDefaults(Mod mod)
+    {
+        NPC.damage = NPC.defDamage = 36; // 64 (1.8x expert scaling)
+    }
 
     public override bool AI(Mod mod)
     {
@@ -213,29 +220,18 @@ public class CreeperAI : VanillaAIOverride
 
     private void TelekineticOnslaught()
     {
-        if (Time == 0 || AttackPosition == Vector2.Zero)
-        {
-            Vector2 dir = Vector2.UnitX.RotatedBy(Main.rand.NextFloat(-MathHelper.TwoPi / 3f, MathHelper.TwoPi / 3f)) * (evenID ? -1 : 1);
-            AttackAngle = dir.ToRotation();
-            float rayDist = CalamityUtils.PreciseDistanceToTileCollisionHit(brain.Center, AttackAngle, 800, 4);
-            AttackPosition = (dir * (rayDist - 64));
-            NPC.netUpdate = true;
-        }
-
         if (Time > 0)
         {
-            Vector2 goalLocation = brain.Center + AttackPosition;
-
-            if (WorldGen.SolidOrSlopedTile(goalLocation.ToTileCoordinates().X, goalLocation.ToTileCoordinates().Y))
+            Point tileCoords = AttackPosition.ToTileCoordinates();
+            if (WorldGen.SolidOrSlopedTile(tileCoords.X, tileCoords.Y))
             {
                 float rayDist = CalamityUtils.PreciseDistanceToTileCollisionHit(brain.Center, AttackAngle, 800, 4);
-                AttackPosition = (AttackAngle.ToRotationVector2() * (rayDist - 64));
-                goalLocation = brain.Center + AttackPosition;
+                AttackPosition = brain.Center +  (AttackAngle.ToRotationVector2() * (rayDist - 64));
             }
 
-            if (NPC.DistanceSQ(goalLocation) > 4096)
+            if (NPC.DistanceSQ(AttackPosition) > 4096)
             {
-                NPC.velocity += NPC.DirectionTo(goalLocation);
+                NPC.velocity += NPC.DirectionTo(AttackPosition);
                 NPC.velocity = NPC.velocity.ClampMagnitude(0f, 10f);
             }
             else
@@ -259,7 +255,7 @@ public class CreeperAI : VanillaAIOverride
             AIState = CreeperAIState.Idle;
         }
 
-        if (brain.AIOverride<BrainOfCthulhuAI>().AttackList.Contains(NPC.whoAmI))
+        if (brain.AIOverride<BrainOfCthulhuAI>().AttackList.Contains((byte)NPC.whoAmI))
         {
             if (Time < 0)
                 Time = 0;
@@ -329,6 +325,7 @@ public class CreeperAI : VanillaAIOverride
                     goalLocation.X += MathHelper.Lerp(0f, 900f, CalamityUtils.SineInOutEasing(MathHelper.Clamp((Time - (brain.AIOverride<BrainOfCthulhuAI>().SwipeDelay + 5)) / 55f, 0f, 1f), 1)) * (handSide == -1 ? 1 : -1);
 
                 NPC.Center = Vector2.Lerp(NPC.Center, goalLocation, MathHelper.Clamp((Time - brain.AIOverride<BrainOfCthulhuAI>().SwipeDelay) / 10f, 0f, 1f));
+                DisableMultiplayerSmoothing = true;
             }
 
             Time++;
@@ -337,10 +334,14 @@ public class CreeperAI : VanillaAIOverride
 
     private void CreeperSwings()
     {
-        if (brain.AIOverride<BrainOfCthulhuAI>().AttackList.Contains(NPC.whoAmI))
+        if (brain.AIOverride<BrainOfCthulhuAI>().AttackList.Contains((byte)NPC.whoAmI))
         {
             if (Time < 0)
+            {
                 Time = 0;
+                NPC.netUpdate = true;
+                AttackPosition = NPC.Center;
+            }
         }
         else
         {
@@ -370,12 +371,11 @@ public class CreeperAI : VanillaAIOverride
 
                 if (Time <= positioningTime)
                 {
-                    if (AttackPosition == Vector2.Zero)
-                        AttackPosition = NPC.Center;
                     Vector2 goalPosition = sharedTarget.Center - dashDir * 128;
                     goalPosition += dashDir.RotatedBy(MathHelper.PiOver2) * 16;
                     NPC.Center = Vector2.Lerp(AttackPosition, goalPosition, CalamityUtils.SineOutEasing(MathHelper.Clamp(Time / (float)LightSwipeTravelTime, 0f, 1f), 1));
                     NPC.velocity = Vector2.Zero;
+                    DisableMultiplayerSmoothing = true;
                 }
                 else
                 {
@@ -404,7 +404,7 @@ public class CreeperAI : VanillaAIOverride
                         {
                             NPC.damage = 0;
                             Time = -1;
-                            brain.AIOverride<BrainOfCthulhuAI>().AttackList.Remove(NPC.whoAmI);
+                            brain.AIOverride<BrainOfCthulhuAI>().AttackList.Remove((byte)NPC.whoAmI);
                             AttackPosition = Vector2.Zero;
                             ConnectionOpacity = BringOpacityTo(ConnectionOpacity, 0f);
                             return;
@@ -423,6 +423,7 @@ public class CreeperAI : VanillaAIOverride
                     Vector2 goalPosition = sharedTarget.Center - dashDir * 128;
                     NPC.Center = Vector2.Lerp(AttackPosition, goalPosition, CalamityUtils.SineOutEasing(MathHelper.Clamp(Time / (float)StrongSwipeTravelTime, 0f, 1f), 1));
                     NPC.velocity = Vector2.Zero;
+                    DisableMultiplayerSmoothing = true;
                 }
                 else
                 {
@@ -452,6 +453,7 @@ public class CreeperAI : VanillaAIOverride
                             float moveDist = 196;
                             NPC.Center = Vector2.Lerp(AttackPosition, AttackPosition + dashDir * moveDist, (Time - (positioningTime + reelbackTime)) / swingTime);
                             NPC.velocity = Vector2.Zero;
+                            DisableMultiplayerSmoothing = true;
                             if (Time == (positioningTime + reelbackTime + swingTime))
                             {
                                 SoundEngine.PlaySound(SoundID.DD2_MonkStaffGroundImpact, NPC.Center);
@@ -481,7 +483,7 @@ public class CreeperAI : VanillaAIOverride
                     {
                         NPC.damage = 0;
                         Time = -1;
-                        brain.AIOverride<BrainOfCthulhuAI>().AttackList.Remove(NPC.whoAmI);
+                        brain.AIOverride<BrainOfCthulhuAI>().AttackList.Remove((byte)NPC.whoAmI);
                         AttackPosition = Vector2.Zero;
                         ConnectionOpacity = BringOpacityTo(ConnectionOpacity, 0.5f);
                         return;
@@ -500,13 +502,17 @@ public class CreeperAI : VanillaAIOverride
         {
             CachedValue1 = MathHelper.TwoPi / creeperCount * localCreeperID;
             AttackAngle = 0;
+            NPC.netUpdate = true;
         }
         float dist = OrbitStandardRadius + ((float)Math.Sin((CachedValue1 * 7) + bossCounter / 20f) * 24);
 
-        if (brain.AIOverride<BrainOfCthulhuAI>().AttackList.Contains(NPC.whoAmI))
+        if (brain.AIOverride<BrainOfCthulhuAI>().AttackList.Contains((byte)NPC.whoAmI))
         {
             if (Time < 0)
+            {
                 Time = 0;
+                NPC.netUpdate = true;
+            }
         }
         else
         {
@@ -528,7 +534,7 @@ public class CreeperAI : VanillaAIOverride
                 if (Time > OrbitAttackInterval)
                 {
                     Time = -2;
-                    brain.AIOverride<BrainOfCthulhuAI>().AttackList.Remove(NPC.whoAmI);
+                    brain.AIOverride<BrainOfCthulhuAI>().AttackList.Remove((byte)NPC.whoAmI);
                 }
             }
             ConnectionOpacity = BringOpacityTo(ConnectionOpacity, 1f, 0.1f);
@@ -540,38 +546,21 @@ public class CreeperAI : VanillaAIOverride
         float slowDown = (1 - MathHelper.Clamp((bossCounter - OrbitDuration) / 30f, 0f, 1f));
         AttackAngle += (BaseRotationSpeed * (MathHelper.Lerp(1f, 0.5f, CreeperAmountRatio) + (bocAI.OnSecondCreeperPhase ? 1f : 0.5f))) * slowDown * bocAI.AttackSign;
         Vector2 rotation = Vector2.UnitX.RotatedBy(CachedValue1 + AttackAngle) * dist;
-        Player target = Main.player[brain.target];
 
         if (bossCounter < OrbitSetupDuration)
         {
             NPC.damage = 0;
-
+            
             if (bossCounter == 0)
                 AttackPosition = NPC.Center;
-            Vector2 goalLocation = target.Center + rotation;
-            if (bossCounter < OrbitSetupDuration)
-                NPC.Center = Vector2.Lerp(AttackPosition, goalLocation, CalamityUtils.SineOutEasing(bossCounter / OrbitSetupDuration, 1));
-            else
-                NPC.Center = goalLocation;
+            NPC.Center = Vector2.Lerp(AttackPosition, bocAI.AttackPosition + rotation, CalamityUtils.SineOutEasing(bossCounter / OrbitSetupDuration, 1));
+            DisableMultiplayerSmoothing = true;
         }
         else
         {
             NPC.damage = NPC.defDamage;
-
-            if (bossCounter <= OrbitSetupDuration + 10)
-            {
-                float lerp = CalamityUtils.SineOutEasing((bossCounter - OrbitSetupDuration) / 10f, 1);
-                AttackPosition = Vector2.Lerp(target.Center, AttackPosition, lerp);
-            }
-            else
-            {
-                float prox = target.Distance(AttackPosition);
-                if (prox > 256)
-                    AttackPosition += target.DirectionFrom(AttackPosition) * ((prox - 256) / 16f);
-            }
-
-            Vector2 goalLocation = AttackPosition + rotation;
-            NPC.Center = goalLocation;
+            NPC.Center = bocAI.AttackPosition + rotation;
+            DisableMultiplayerSmoothing = true;
         }
     }
 
@@ -581,11 +570,12 @@ public class CreeperAI : VanillaAIOverride
 
         if (bossCounter == 0)
         {
-            AttackPosition = Vector2.Zero;
+            AttackPosition = NPC.Center;
             List<NPC> myGroup = Main.npc.Where(n => n.active && n.type == NPCID.Creeper && (n.ai[0] % TendrilCount) + 1 == tendrilID).ToList();
             CachedValue1 = myGroup.IndexOf(NPC);
             CachedValue2 = myGroup.Count;
             AttackAngle = 0;
+            NPC.netUpdate = true;
         }
 
         int index = (int)CachedValue1;
@@ -606,6 +596,7 @@ public class CreeperAI : VanillaAIOverride
         if (bossCounter >= SpiralSetupTime)
         {
             NPC.Center = position;
+            DisableMultiplayerSmoothing = true;
 
             NPC.damage = NPC.defDamage;
             NPC.knockBackResist = 0f;
@@ -616,11 +607,10 @@ public class CreeperAI : VanillaAIOverride
             NPC.velocity *= 0.66f;
         else
         {
-            if (AttackPosition == Vector2.Zero)
-                AttackPosition = NPC.Center;
             NPC.velocity = Vector2.Zero;
             float lerp = (bossCounter - (SpiralSetupTime / 10f)) / (float)(SpiralSetupTime * 0.9f);
             NPC.Center = Vector2.Lerp(AttackPosition, position, CalamityUtils.SineInOutEasing(MathHelper.Clamp(lerp, 0f, 1f), 1));
+            DisableMultiplayerSmoothing = true;
         }
     }
 
@@ -703,8 +693,7 @@ public class CreeperAI : VanillaAIOverride
         binaryWriter.Write(CachedValue2);
         binaryWriter.Write(PartnerIndex);
 
-        binaryWriter.WritePackedVector2(AttackPosition);
-
+        binaryWriter.WritePackedWorldPosition(AttackPosition);
     }
 
     public override void ReceiveExtraAI(BitReader bitReader, BinaryReader binaryReader)
@@ -713,7 +702,7 @@ public class CreeperAI : VanillaAIOverride
         CachedValue2 = binaryReader.ReadInt32();
         PartnerIndex = binaryReader.ReadInt32();
 
-        AttackPosition = binaryReader.ReadPackedVector2();
+        AttackPosition = binaryReader.ReadPackedWorldPosition();
     }
 
     public override void HitEffect(Mod mod, NPC.HitInfo hit)

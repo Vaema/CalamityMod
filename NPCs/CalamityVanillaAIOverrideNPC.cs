@@ -921,12 +921,14 @@ public sealed partial class CalamityVanillaAIOverrideNPC : GlobalNPC
         result &= GlobalPreAI(npc);
         if (AIOverride != null)
         {
+            result &= AIOverride.AI(Mod);
+
             if (AIOverride.DisableMultiplayerSmoothing)
             {
                 npc.netOffset = Vector2.Zero;
+                if (AIOverride.EnableMultiplayerSmoothingAheadOfAI)
+                    AIOverride.DisableMultiplayerSmoothing = false;
             }
-
-            result &= AIOverride.AI(Mod);
         }
         return result;
     }

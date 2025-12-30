@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -29,6 +30,8 @@ public class BrainIllusion : ModNPC, ILocalizedModType
     ref float TeleportDuration => ref NPC.localAI[0];
 
     ref float TeleportTime => ref NPC.ai[3];
+
+    private Vector2 OldPos = Vector2.zeroVector;
 
     public override void SetStaticDefaults()
     {
@@ -92,16 +95,17 @@ public class BrainIllusion : ModNPC, ILocalizedModType
         {
             if (Time == 30)
             {
-                NPC.oldPos[0] = NPC.Center;
+                OldPos = NPC.Center;
                 TeleportTime = 0;
                 AttackValue = 0;
                 NPC.Opacity = 1f;
+                NPC.netUpdate = true;
             }
             if (Time < 60)
             {
                 float lerp = (Time - 30) / 30f;
                 float circleDist = MathHelper.Lerp(BrainOfCthulhuAI.IllusionDashTeleportDistance, BrainOfCthulhuAI.IllusionDashCloseInDistance, CalamityUtils.SineInOutEasing(lerp, 1));
-                NPC.Center = Vector2.Lerp(NPC.oldPos[0], target.Center + (Angle.ToRotationVector2() * circleDist), lerp);
+                NPC.Center = Vector2.Lerp(OldPos, target.Center + (Angle.ToRotationVector2() * circleDist), lerp);
                 Angle += MathHelper.Lerp(0f, BrainOfCthulhuAI.IllusionDashStartingSpinSpeed, CalamityUtils.SineInEasing(lerp, 1));
             }
             else if (Time <= 60f + BrainOfCthulhuAI.IllusionDashSpinDuration)
@@ -131,6 +135,16 @@ public class BrainIllusion : ModNPC, ILocalizedModType
         }
 
         Time++;
+    }
+
+    public override void SendExtraAI(BinaryWriter writer)
+    {
+        writer.WritePackedWorldPosition(OldPos);
+    }
+
+    public override void ReceiveExtraAI(BinaryReader reader)
+    {
+        OldPos = reader.ReadPackedWorldPosition();
     }
 
     public override void FindFrame(int frameHeight)

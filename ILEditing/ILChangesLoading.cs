@@ -107,7 +107,7 @@ namespace CalamityMod.ILEditing
             IL_Projectile.Damage += VanillaBossResistChanges;
             IL_Projectile.AI_099_2 += LimitTerrarianProjectiles;
             IL_Projectile.AI_120_StardustGuardian += StardustGuardianAttackBuffs;
-            IL_Player.UpdateArmorSets += SolarWingsDashChange;
+            On_Player.ConsumeSolarFlare += SolarWingsDashChange;
             IL_Player.UpdateBuffs += UpdateBuffsBalancingChanges;
             IL_Player.ApplyVanillaHurtEffectModifiers += RemoveBeetleAndSolarFlareMultiplicativeDR;
 

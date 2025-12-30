@@ -890,8 +890,6 @@ namespace CalamityMod.CalPlayer
         {
             var source = proj.GetSource_FromThis();
 
-            if (npcCheck)
-            {
                 if (phantomicArtifact)
                 {
                     int restoreBuff = BuffType<PhantomicRegen>();
@@ -903,10 +901,10 @@ namespace CalamityMod.CalPlayer
                         empowerBuff,
                         shieldBuff
                     });
-                    Player.AddBuff(buffType, 60);
+                    Player.AddBuff(buffType, 120);
                     if (buffType == restoreBuff)
                     {
-                        if (phantomicHeartRegen == 1000 && Player.ownedProjectileCounts[ProjectileType<PhantomicHeart>()] == 0 && Main.rand.NextBool(20))
+                        if (phantomicHeartRegen == 1000 && Player.ownedProjectileCounts[ProjectileType<PhantomicHeart>()] == 0)
                         {
                             Vector2 target = proj.Center;
                             target.Y += Main.rand.Next(-50, 50);
@@ -916,10 +914,10 @@ namespace CalamityMod.CalPlayer
                     }
                     else if (buffType == empowerBuff)
                     {
-                        if (Player.ownedProjectileCounts[ProjectileType<PhantomicDagger>()] < 3 && Main.rand.NextBool(10))
+                        if (Player.ownedProjectileCounts[ProjectileType<PhantomicDagger>()] < 3 && Main.rand.NextBool(4))
                         {
                             int damage = (int)Player.GetTotalDamage<SummonDamageClass>().ApplyTo(100);
-                            Projectile.NewProjectile(source, proj.position, proj.velocity, ProjectileType<PhantomicDagger>(), damage, 1f, Player.whoAmI);
+                            Projectile.NewProjectile(source, Player.Center, new Vector2(Player.velocity.X,Player.velocity.Y-10).RotatedByRandom(0.3f), ProjectileType<PhantomicDagger>(), damage, 1f, Player.whoAmI);
                         }
                     }
                     else
@@ -936,7 +934,7 @@ namespace CalamityMod.CalPlayer
                         BuffType<HallowedRuneRegeneration>(),
                         BuffType<HallowedRuneDefense>()
                     });
-                    Player.AddBuff(buffType, 60);
+                    Player.AddBuff(buffType, 120);
                 }
                 else if (sGlyph)
                 {
@@ -946,9 +944,8 @@ namespace CalamityMod.CalPlayer
                         BuffType<SpiritRegen>(),
                         BuffType<SpiritDefense>()
                     });
-                    Player.AddBuff(buffType, 60);
+                    Player.AddBuff(buffType, 120);
                 }
-            }
 
             // Fearmonger set gains regen duration when any minion lands any hit
             if (fearmongerSet)
@@ -1003,10 +1000,13 @@ namespace CalamityMod.CalPlayer
                     if (hallowedRuneCooldown <= 0)
                     {
                         hallowedRuneCooldown = 180;
-                        Vector2 spawnPosition = position - new Vector2(0f, 920f).RotatedByRandom(0.3f);
+                        for (var i = 0; i < 3; i++)
+                        {
+                            Vector2 spawnPosition = position - new Vector2(0f, 920f).RotatedByRandom(0.3f);
                         float speed = Main.rand.NextFloat(17f, 23f);
                         int hallowedDamage = (int)Player.GetTotalDamage<SummonDamageClass>().ApplyTo(50);
-                        Projectile.NewProjectile(source, spawnPosition, Vector2.Normalize(position - spawnPosition) * speed, ProjectileType<HallowedStarSummon>(), hallowedDamage, 3f, proj.owner);
+                            Projectile.NewProjectile(source, spawnPosition, Vector2.Normalize(position - spawnPosition) * speed, ProjectileType<HallowedStarSummon>(), hallowedDamage, 3f, proj.owner);
+                        }
                     }
                 }
             }

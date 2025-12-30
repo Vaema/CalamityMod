@@ -59,7 +59,7 @@ namespace CalamityMod.Systems
                     case GameModeID.Normal:
                         {
                             // vanilla game mode in classic, but cal difficulty >= expert
-                            if (GetCurrentDifficulty == ModContent.GetInstance<DeathDifficulty>() || GetCurrentDifficulty == ModContent.GetInstance<RevengeanceDifficulty>())
+                            if (GetCurrentDifficulty.CountAs<DeathDifficulty>() || GetCurrentDifficulty.CountAs<RevengeanceDifficulty>())
                             {
                                 ModeIndicatorUI.SwitchToDifficulty(ModContent.GetInstance<NoDifficulty>(), broadcast: true);
                             }
@@ -68,7 +68,7 @@ namespace CalamityMod.Systems
                     case GameModeID.Expert:
                         {
                             // if death was activated, change it to revengence
-                            if (GetCurrentDifficulty == ModContent.GetInstance<DeathDifficulty>())
+                            if (GetCurrentDifficulty.CountAs<DeathDifficulty>())
                             {
                                 ModeIndicatorUI.SwitchToDifficulty(ModContent.GetInstance<RevengeanceDifficulty>(), broadcast: true);
                             }
@@ -77,7 +77,7 @@ namespace CalamityMod.Systems
                     case GameModeID.Master:
                         {
                             // if revengence and master both activated, change it to death
-                            if (GetCurrentDifficulty != ModContent.GetInstance<DeathDifficulty>() && CalamityWorld.revenge)
+                            if (!GetCurrentDifficulty.CountAs<DeathDifficulty>() && CalamityWorld.revenge)
                             {
                                 ModeIndicatorUI.SwitchToDifficulty(ModContent.GetInstance<DeathDifficulty>(), broadcast: true);
                             }
@@ -241,6 +241,7 @@ namespace CalamityMod.Systems
             // This is registered in DifficultyModeSystem.OnModLoad
             // Note that DifficultyModeSystem.Load can't ensure system is loaded after all modes
         }
+
         public abstract bool Enabled
         {
             get; set;
@@ -271,6 +272,16 @@ namespace CalamityMod.Systems
         public virtual bool RequiresDifficulty(DifficultyMode mode) => false;
 
         public virtual int[] FavoredDifficultyAtTier(int tier) => [0];
+
+        public virtual bool IsBasedOn(DifficultyMode mode) => false;
+
+        public bool CountAs<Difficulty>() where Difficulty : DifficultyMode => CountAs(ModContent.GetInstance<Difficulty>());
+        public bool CountAs(DifficultyMode mode)
+        {
+            if (mode == this) return true;
+            if (IsBasedOn(mode)) return true;
+            return false;
+        }
     }
 
     public class NoDifficulty : DifficultyMode

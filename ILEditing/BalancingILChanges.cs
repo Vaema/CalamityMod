@@ -497,7 +497,7 @@ namespace CalamityMod.ILEditing
         }
         #endregion
 
-        #region SoC Buffs & Vortex Booster Keeping Stealth
+        #region Shield of Cthulhu Buffs
         private static void DashMovementEdits(On_Player.orig_DashMovement orig, Player self)
         {
             //This is a modified version of Vanilla's Shield of Cthulhu dash collision checks
@@ -562,16 +562,7 @@ namespace CalamityMod.ILEditing
                     }
                 }
             }
-
-            // Allows for Vortex Booster to automatically re-engage Vortex armor's stealth after a delay when dashing
-            bool vortexStealth = self.vortexStealthActive;
             orig(self);
-
-            if (self.wingsLogic == (int)VanillaWingID.WingsVortex)
-            {
-                if (vortexStealth && !self.vortexStealthActive)
-                    self.Calamity().vortexBoosterStealthDelay = 60;
-            }
         }
         #endregion
 
@@ -601,9 +592,9 @@ namespace CalamityMod.ILEditing
             cursor.Emit(OpCodes.Ldc_I4, (int)VanillaWingID.WingsStardust);
             cursor.Emit(OpCodes.Bne_Un, label);
 
-            cursor.Emit(OpCodes.Ldc_R4, 900f);
+            cursor.Emit(OpCodes.Ldc_R4, 960f);
             cursor.Emit(OpCodes.Stloc, 4);
-            cursor.Emit(OpCodes.Ldc_R4, 900f);
+            cursor.Emit(OpCodes.Ldc_R4, 960f);
             cursor.Emit(OpCodes.Stloc, 5);
 
             cursor.MarkLabel(label);
@@ -623,26 +614,18 @@ namespace CalamityMod.ILEditing
         }
         #endregion
 
-        #region Solar Wings Change to Solar Flare Armor Dash
-        private static void SolarWingsDashChange(ILContext il)
+        #region Solar Wings Change to Solar Flare Armor
+        private static bool SolarWingsDashChange(On_Player.orig_ConsumeSolarFlare orig, Player self)
         {
-            // Make Solar Wings always allow using Solar Flare armor's dash.
-            var cursor = new ILCursor(il);
-
-            // Genuinely how the fuck is this the only OR opcode in the entire method
-            if (!cursor.TryGotoNext(MoveType.After, i => i.MatchOr()))
+            // Solar Wings restore flight time when Solar Flare armor's shield explodes
+            // This can trigger from either ramming enemies or taking damage
+            if (orig(self))
             {
-                LogFailure("Solar Dash Change", "Could not locate the OR opcode.");
-                return;
+                if (self.wingsLogic == (int)VanillaWingID.WingsSolar)
+                    self.wingTime += 60;
+                return true;
             }
-
-            // Add an additional check for if the player is wearing Solar Wings.
-            cursor.Emit(OpCodes.Ldarg_0);
-            cursor.Emit(OpCodes.Ldfld, typeof(Player).GetField("wingsLogic"));
-            cursor.Emit(OpCodes.Ldc_I4, (int)VanillaWingID.WingsSolar);
-            cursor.EmitCeq();
-            // Then OR it.
-            cursor.EmitOr();
+            return false;
         }
         #endregion
 

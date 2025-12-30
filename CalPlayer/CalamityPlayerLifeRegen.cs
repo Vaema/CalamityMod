@@ -579,7 +579,7 @@ namespace CalamityMod.CalPlayer
             if (silvaSet)
                 Player.lifeRegen += SilvaArmor.SetBonusRegenBoost;
 
-            if (phantomicHeartRegen <= 720 && phantomicHeartRegen >= 600)
+            if (phantomicHeartRegen > 0 && phantomicHeartRegen < 1000)
             {
                 Player.lifeRegen += PhantomicArtifact.RegenBoost;
                 if (Main.rand.NextBool())

@@ -209,6 +209,8 @@ namespace CalamityMod
         WantToRefundReforges,
 
         // Player Draw Effect Parameters
-        SyncPlayerDrawParameter
+        SyncPlayerDrawParameter,
+
+        DialogueDisplayStart,
     }
 }

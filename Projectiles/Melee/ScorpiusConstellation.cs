@@ -14,7 +14,7 @@ namespace CalamityMod.Projectiles.Melee
 {
     public class ScorpiusConstellation : ModProjectile, ILocalizedModType
     {
-        public new string LocalizationCategory => "Projectiles.Rogue";
+        public new string LocalizationCategory => "Projectiles.Melee";
         public override string Texture => "CalamityMod/Projectiles/InvisibleProj";
         public static int lifetime = 150;
 

@@ -9,6 +9,8 @@ namespace CalamityMod.UI.DialogueDisplay.DisplayEffects
 
         public virtual bool FadeWhenTooFar => true;
 
+        public virtual bool DespawnWithAttachedNPC => true;
+
         public virtual float FadeBuffer => 150f;
 
         public virtual float FadeDistance => 150f;

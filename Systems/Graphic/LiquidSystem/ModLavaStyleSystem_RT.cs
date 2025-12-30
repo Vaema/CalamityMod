@@ -1,4 +1,5 @@
-﻿using Microsoft.Xna.Framework;
+﻿using CalamityMod.Utilities.Daybreak.Buffers;
+using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using ReLogic.Content;
 using Terraria;
@@ -58,32 +59,33 @@ namespace CalamityMod.Systems.Graphic.LiquidSystem
             if (!Initialized || !TextureArrayReady || Main.gameMenu)
                 return;
 
-            var graphicsDevice = Main.instance.GraphicsDevice;
-            graphicsDevice.SetRenderTarget(LavaRT);
-            graphicsDevice.Clear(Color.Transparent);
-            Begin();
-            DrawTextures(Textures);
-            End();
+            using (LavaRT.Scope(clearColor: Color.Transparent))
+            {
+                Begin();
+                DrawTextures(Textures);
+                End();
+            }
 
-            graphicsDevice.SetRenderTarget(LavaBlockRT);
-            graphicsDevice.Clear(Color.Transparent);
-            Begin();
-            DrawTextures(BlockTextures);
-            End();
+            using (LavaBlockRT.Scope(clearColor: Color.Transparent))
+            {
+                Begin();
+                DrawTextures(BlockTextures);
+                End();
+            }
 
-            graphicsDevice.SetRenderTarget(LavaSlopeRT);
-            graphicsDevice.Clear(Color.Transparent);
-            Begin();
-            DrawTextures(SlopeTextures);
-            End();
+            using (LavaSlopeRT.Scope(clearColor: Color.Transparent))
+            {
+                Begin();
+                DrawTextures(SlopeTextures);
+                End();
+            }
 
-            graphicsDevice.SetRenderTarget(LavaWaterfallRT);
-            graphicsDevice.Clear(Color.Transparent);
-            Begin();
-            DrawTextures(WaterfallTextures);
-            End();
-            
-            graphicsDevice.SetRenderTarget(null);
+            using (LavaWaterfallRT.Scope(clearColor: Color.Transparent))
+            {
+                Begin();
+                DrawTextures(WaterfallTextures);
+                End();
+            }
         }
 
         private static readonly BlendState ActualAdditive = new()
