@@ -63,6 +63,7 @@ public class BrainOfCthulhuAI : VanillaAIOverride
     #endregion
 
     internal static float DespawnRangeSQ => 36000000f;
+    internal static float DespawnRange => 6000f;
 
     #region Phase 1 Attack Values
 
@@ -251,7 +252,7 @@ public class BrainOfCthulhuAI : VanillaAIOverride
     internal Vector2 AttackPosition = Vector2.Zero;
     internal List<BrainAIState> availableAttacks = [];
     internal List<byte> AttackList = [];
-    internal List<int> TargetsList = [];
+    internal HashSet<int> TargetsList = [];
 
     private Player Target => Main.player[NPC.target];
 
@@ -354,6 +355,7 @@ public class BrainOfCthulhuAI : VanillaAIOverride
             CalamityTargetingParameters options = CalamityTargetingParameters.BossDefaults;
             options.aggroRatio = -1f;
             options.finishThemOff = true;
+            options.maxSearchRange = DespawnRange;
             CalamityUtils.CalamityTargeting(NPC, options);
         }
         #endregion
@@ -870,10 +872,7 @@ public class BrainOfCthulhuAI : VanillaAIOverride
             {
                 if (Main.netMode != NetmodeID.SinglePlayer)
                 {
-                    if (TargetsList.Count == 0)
-                        TargetsList = GetAllValidTargets(NPC.Center);
-
-                    NPC.target = TargetsList[Main.rand.Next(TargetsList.Count)];
+                    NPC.target = GetAllValidTargets(NPC.Center)[Main.rand.Next(TargetsList.Count)];
                     NPC.netUpdate = true;
                 }
 
@@ -1135,6 +1134,7 @@ public class BrainOfCthulhuAI : VanillaAIOverride
 
             NPC.netUpdate = true;
             AttackList.Clear();
+            TargetsList.Clear();
         }
 
         float wrappedCount = Time % (SwipeDuration + SwipeDelay);
@@ -1171,6 +1171,17 @@ public class BrainOfCthulhuAI : VanillaAIOverride
                         //Npc.AIOverride<CreeperAI>().Time = 0;
                     }
 
+                CalamityTargetingParameters options = CalamityTargetingParameters.BossDefaults;
+                options.aggroRatio = -1f;
+                options.finishThemOff = true;
+
+                var available = 
+
+                options.excludedPlayers = TargetsList;
+                options.maxSearchRange = DespawnRange;
+                NPC.CalamityTargeting(options);
+
+                TargetsList.Add(NPC.target);
                 NPC.netUpdate = true;
             }
             else if (wrappedCount == SwipeDuration)
@@ -1337,6 +1348,64 @@ public class BrainOfCthulhuAI : VanillaAIOverride
             AttackSign = Main.rand.NextBool() ? -1 : 1;
             AttackPosition = Target.Center;
             NPC.netUpdate = true;
+
+            if (Main.netMode != NetmodeID.SinglePlayer)
+            {
+                List<int> extraTargets = GetAllValidTargets(NPC.Center);
+                extraTargets.Remove(NPC.target);
+
+                int targetCount = extraTargets.Count;
+                int creepersPerExtraPlayer = CalamityWorld.death ? 3 : 2;
+                int creepersDesired = targetCount * creepersPerExtraPlayer;
+                int creepersAlive = NPC.CountNPCS(NPCID.Creeper);
+                int creepersToSpare = creepersAlive - 4;
+                for (int i = 0; i < creepersPerExtraPlayer; i++)
+                {
+                    if (creepersToSpare >= creepersDesired || creepersPerExtraPlayer == 1)
+                        break;
+
+                    if (creepersToSpare < creepersDesired && creepersPerExtraPlayer > 1)
+                    {
+                        creepersPerExtraPlayer--;
+                        creepersDesired = targetCount * creepersPerExtraPlayer;
+                    }
+                }
+                int creepersSparedForTarget = 0;
+
+                foreach (NPC n in Main.ActiveNPCs)
+                {
+                    if (n.type != NPCID.Creeper)
+                        continue;
+
+                    n.TryGetAIOverride<CreeperAI>(out var creeper);
+                    if (creepersDesired > 0 && creepersToSpare > 0)
+                    {
+                        creeper.CachedValue2 = extraTargets[0];
+                        creepersToSpare--;
+                        creepersDesired--;
+
+                        if (++creepersSparedForTarget >= creepersPerExtraPlayer)
+                        {
+                            extraTargets.RemoveAt(0);
+                            creepersSparedForTarget = 0;
+                        }
+
+                    }
+                    else
+                        creeper.CachedValue2 = -1;
+                }
+            }
+            else
+            {
+                foreach (NPC n in Main.ActiveNPCs)
+                {
+                    if (n.type != NPCID.Creeper)
+                        continue;
+
+                    n.TryGetAIOverride<CreeperAI>(out var creeper);
+                    creeper.CachedValue2 = -1;
+                }
+            }
         }
 
         if (Time < OrbitSetupDuration)

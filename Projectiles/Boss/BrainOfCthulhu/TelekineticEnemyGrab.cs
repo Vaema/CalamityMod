@@ -26,6 +26,7 @@ public class TelekineticEnemyGrab : ModProjectile, ILocalizedModType
     int throwSign = 0;
     Vector2 throwPos = Vector2.Zero;
     Vector2 holdPos;
+    int MyTarget = -1;
 
     ref float Time => ref Projectile.ai[0];
     ref float StunTime => ref Projectile.ai[1];
@@ -57,6 +58,8 @@ public class TelekineticEnemyGrab : ModProjectile, ILocalizedModType
         int[] enemyIDs = [NPCID.FaceMonster, NPCID.Crimera, NPCID.BloodCrawler];
         enemyID = enemyIDs[enemyID];
 
+        MyTarget = Main.npc[NPC.crimsonBoss].target;
+
         Projectile.netUpdate = true;
     }
 
@@ -78,7 +81,7 @@ public class TelekineticEnemyGrab : ModProjectile, ILocalizedModType
         if (throwing)
         {
             if (throwSign == 0)
-                throwSign = Math.Sign(Projectile.Center.X - Main.npc[NPC.crimsonBoss].Center.X) * -Math.Sign(Main.player[Main.npc[NPC.crimsonBoss].target].Center.Y - Main.npc[NPC.crimsonBoss].Center.Y);
+                throwSign = Math.Sign(Projectile.Center.X - Main.npc[NPC.crimsonBoss].Center.X) * -Math.Sign(Main.player[MyTarget].Center.Y - Main.npc[NPC.crimsonBoss].Center.Y);
         }
         bool thrown = throwTime > 90;
 
@@ -113,7 +116,7 @@ public class TelekineticEnemyGrab : ModProjectile, ILocalizedModType
                 {
                     if (throwTime <= 30)
                         throwPos = (Projectile.Center + Projectile.velocity) - (Main.npc[NPC.crimsonBoss].Center + Main.npc[NPC.crimsonBoss].velocity);
-                    Vector2 target = Main.player[Main.npc[NPC.crimsonBoss].target].Center;
+                    Vector2 target = Main.player[MyTarget].Center;
                     Vector2 throwDir = (target - (throwPos + (Main.npc[NPC.crimsonBoss].Center + Main.npc[NPC.crimsonBoss].velocity))).SafeNormalize(Vector2.UnitY);
 
                     if (throwTime >= 30 && throwTime <= 90)

@@ -93,13 +93,13 @@ public class CreeperAI : VanillaAIOverride
 
         List<BrainAIState> bossAIStatesToUse = [
             BrainAIState.UndergroundSpawnAnimation,
-                    BrainAIState.SurfaceSpawnAnimation,
-                    BrainAIState.Stunned,
-                    BrainAIState.CreeperSwipes,
-                    BrainAIState.CreeperSwings,
-                    BrainAIState.CreeperOrbit,
-                    BrainAIState.CreeperSpiral,
-                    BrainAIState.TelekineticOnslaught
+            BrainAIState.SurfaceSpawnAnimation,
+            BrainAIState.Stunned,
+            BrainAIState.CreeperSwipes,
+            BrainAIState.CreeperSwings,
+            BrainAIState.CreeperOrbit,
+            BrainAIState.CreeperSpiral,
+            BrainAIState.TelekineticOnslaught
         ];
         useBossAIState = bossAIStatesToUse.Contains(bocAI.AIState) && bossCounter >= 0;
 
@@ -498,6 +498,12 @@ public class CreeperAI : VanillaAIOverride
 
     private void CreeperOrbit()
     {
+        if(Main.netMode != NetmodeID.SinglePlayer && CachedValue2 != -1)
+        {
+            CreeperCharge();
+            return;
+        }
+
         if (bossCounter == 0)
         {
             CachedValue1 = MathHelper.TwoPi / creeperCount * localCreeperID;
@@ -574,12 +580,14 @@ public class CreeperAI : VanillaAIOverride
             List<NPC> myGroup = Main.npc.Where(n => n.active && n.type == NPCID.Creeper && (n.ai[0] % TendrilCount) + 1 == tendrilID).ToList();
             CachedValue1 = myGroup.IndexOf(NPC);
             CachedValue2 = myGroup.Count;
+            
             AttackAngle = 0;
             NPC.netUpdate = true;
         }
 
         int index = (int)CachedValue1;
         int groupCount = CachedValue2;
+        bool isLast = groupCount > 1 && index == (groupCount - 1);
         float placementRatio = (index + 1) / (float)(groupCount + 1);
 
         float spiralAngle = bocAI.AttackRotation;
@@ -592,7 +600,8 @@ public class CreeperAI : VanillaAIOverride
         float goalRadius = TendrilStartDistance + (TendrilLength * placementRatio);
         goalRadius += (float)Math.Sin(bossCounter / 20f) * MathHelper.Lerp(MaxCreeperSway, 0, groupCount / (float)(GetBrainOfCthuluCreepersCountRevDeath() / 3)) * (index % 2 == 0 ? -1 : 1);
 
-        Vector2 position = brain.Center + (AttackAngle.ToRotationVector2() * goalRadius);
+        Vector2 angleVec = AttackAngle.ToRotationVector2();
+        Vector2 position = brain.Center + (angleVec * goalRadius);
         if (bossCounter >= SpiralSetupTime)
         {
             NPC.Center = position;
@@ -612,6 +621,9 @@ public class CreeperAI : VanillaAIOverride
             NPC.Center = Vector2.Lerp(AttackPosition, position, CalamityUtils.SineInOutEasing(MathHelper.Clamp(lerp, 0f, 1f), 1));
             DisableMultiplayerSmoothing = true;
         }
+
+        if (Main.dedServ && isLast && bossCounter % 5 == 0) //These projectiles are multiplayer exclusive to punish players outside the spiral
+            Projectile.NewProjectile(NPC.GetSource_FromThis(), NPC.Center, angleVec * 12f, ProjectileID.BloodShot, BloodShotDamage, 0f); //explicitly does no knockback to allow player to more easily get back in the spiral
     }
 
     private void CreeperIdle()
@@ -637,10 +649,9 @@ public class CreeperAI : VanillaAIOverride
         AttackPosition = Vector2.Zero;
     }
 
-    //Unused
     private void CreeperCharge()
     {
-        Player target = Main.player[NPC.target];
+        Player target = Main.player[CachedValue2];
 
         if (Time < CreeperChargePositioningTime)
         {
@@ -662,14 +673,14 @@ public class CreeperAI : VanillaAIOverride
                 float reelBackSpeedExponent = 2.6f;
                 float reelBackCompletion = Utils.GetLerpValue(0f, CreeperChargeWindUpTime, Time - CreeperChargePositioningTime, true);
                 float reelBackSpeed = MathHelper.Lerp(2.5f, 16f, MathF.Pow(reelBackCompletion, reelBackSpeedExponent));
-                Vector2 reelBackVelocity = NPC.DirectionTo(Main.player[brain.target].Center) * -reelBackSpeed;
+                Vector2 reelBackVelocity = NPC.DirectionTo(target.Center) * -reelBackSpeed;
                 NPC.velocity = Vector2.Lerp(NPC.velocity, reelBackVelocity, 0.25f);
 
                 if (Time == CreeperChargePositioningTime + CreeperChargeWindUpTime - 5)
                     SoundEngine.PlaySound(SoundID.DD2_MonkStaffSwing, NPC.Center);
             }
             else if (Time == CreeperChargePositioningTime + CreeperChargeWindUpTime)
-                NPC.velocity = NPC.DirectionTo(Main.player[brain.target].Center) * 24;
+                NPC.velocity = NPC.DirectionTo(target.Center) * 24;
             else
             {
                 NPC.velocity *= 0.975f;

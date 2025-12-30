@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using CalamityMod.Balancing;
@@ -88,6 +89,9 @@ namespace CalamityMod
         //
         // Generally this doesn't need to be set to true, as bosses will never have collideX or collideY set to true.
         public bool forceNetUpdate = false;
+
+        // Player indexes put into this list will not be considered for targetting.
+        public HashSet<int> excludedPlayers = [];
 
         public CalamityTargetingParameters()
         {
