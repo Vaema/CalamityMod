@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using CalamityMod.Graphics;
+using CalamityMod.Utilities.Daybreak.Buffers;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria;
@@ -10,7 +11,7 @@ namespace CalamityMod.Particles
 {
     public class DeathAshParticle
     {
-        internal static Dictionary<NPC, ManagedRenderTarget> PendingNPCsToDraw = new();
+        internal static Dictionary<NPC, RenderTargetLease> PendingNPCsToDraw = new();
         internal static BasicEffect basicShader = null;
         internal static VertexPositionColorTexture[] VertexCache = new VertexPositionColorTexture[PrimitiveBatchSize * 4];
         internal static short[] IndexCache = new short[PrimitiveBatchSize * 6];
@@ -65,23 +66,22 @@ namespace CalamityMod.Particles
                 Main.spriteBatch.Begin(SpriteSortMode.Immediate, BlendState.AlphaBlend, Main.DefaultSamplerState, DepthStencilState.None, Main.Rasterizer, null, Matrix.Identity);
 
                 // Draw the NPC to the temporary render target so that all of its drawcode is localized, and then get the colors from the results.
-                Main.instance.GraphicsDevice.SetRenderTarget(PendingNPCsToDraw[npc]);
-                Main.instance.GraphicsDevice.Clear(Color.Transparent);
-
-                Vector2 oldPosition = npc.position;
-                npc.oldPos = new Vector2[npc.oldPos.Length];
-                npc.position = Main.screenPosition + new Vector2(Main.screenWidth, Main.screenHeight) * 0.5f;
-                try
+                using (PendingNPCsToDraw[npc].Scope(clearColor: Color.Transparent))
                 {
-                    Main.instance.DrawNPC(npc.whoAmI, true);
-                }
-                catch { }
-                npc.position = oldPosition;
-                npc.Opacity = 0f;
+                    Vector2 oldPosition = npc.position;
+                    npc.oldPos = new Vector2[npc.oldPos.Length];
+                    npc.position = Main.screenPosition + new Vector2(Main.screenWidth, Main.screenHeight) * 0.5f;
+                    try
+                    {
+                        Main.instance.DrawNPC(npc.whoAmI, true);
+                    }
+                    catch { }
+                    npc.position = oldPosition;
+                    npc.Opacity = 0f;
 
-                Main.spriteBatch.End();
+                    Main.spriteBatch.End();
+                }
             }
-            Main.instance.GraphicsDevice.SetRenderTarget(null);
         }
 
         public static void CreateAshesFromNPC(NPC npc, Vector2 velocityOverride)
@@ -91,7 +91,7 @@ namespace CalamityMod.Particles
                 return;
 
             VelOverride = velocityOverride;
-            PendingNPCsToDraw[npc] = new(true, ManagedRenderTarget.CreateScreenSizedTarget);
+            PendingNPCsToDraw[npc] = ScreenspaceTargetPool.Shared.Rent(Main.instance.GraphicsDevice);
         }
 
         public static Dictionary<Vector2, Color> GetColorCacheFromTexture(Texture2D texture, Rectangle? frame = null, bool pruneForEfficency = false)

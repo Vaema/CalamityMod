@@ -29,8 +29,8 @@ namespace CalamityMod.Projectiles.Summon
         public int Time = 0;
         public override void SetDefaults()
         {
-            Projectile.width = 42;
-            Projectile.height = 42;
+            Projectile.width = 30;
+            Projectile.height = 28;
             Projectile.localNPCHitCooldown = 15;
             base.SetDefaults();
         }
@@ -70,7 +70,7 @@ namespace CalamityMod.Projectiles.Summon
                     float rot = MathHelper.ToRadians(i * rotFactor);
                     Vector2 offset = new Vector2(Main.rand.NextFloat(1.5f, 4f), 0).RotatedBy(rot * Main.rand.NextFloat(3.1f, 9.1f));
                     Vector2 velOffset = new Vector2(Main.rand.NextFloat(1.5f, 4f), 0).RotatedBy(rot * Main.rand.NextFloat(3.1f, 9.1f));
-                    Dust dust = Dust.NewDustPerfect(Projectile.Center + offset, Main.rand.NextBool(3) ? 216 : 121, new Vector2(velOffset.X, velOffset.Y));
+                    Dust dust = Dust.NewDustPerfect(Projectile.Center + offset, Main.rand.NextBool(3) ? 216 : 207, new Vector2(velOffset.X, velOffset.Y));
                     dust.noGravity = true;
                     dust.velocity = velOffset;
                     dust.scale = Main.rand.NextFloat(1.3f, 1.9f);
@@ -176,7 +176,7 @@ namespace CalamityMod.Projectiles.Summon
                 {
                     for (int i = 0; i <= 5; i++)
                     {
-                        Dust dust = Dust.NewDustPerfect(Projectile.Center - Projectile.velocity, Main.rand.NextBool(3) ? 216 : 121, Projectile.velocity.RotatedByRandom(MathHelper.ToRadians(15f)) * Main.rand.NextFloat(0.05f, 0.4f), 0, default, Main.rand.NextFloat(1.3f, 1.8f));
+                        Dust dust = Dust.NewDustPerfect(Projectile.Center - Projectile.velocity, Main.rand.NextBool(3) ? 216 : 207, Projectile.velocity.RotatedByRandom(MathHelper.ToRadians(15f)) * Main.rand.NextFloat(0.05f, 0.4f), 0, default, Main.rand.NextFloat(1.3f, 1.8f));
                         dust.noGravity = true;
                     }
                     SoundEngine.PlaySound(SoundID.DD2_SkeletonHurt with { Pitch = 0.5f }, Projectile.Center);
@@ -194,7 +194,7 @@ namespace CalamityMod.Projectiles.Summon
                     float rot = MathHelper.ToRadians(i * rotFactor);
                     Vector2 offset = new Vector2(Main.rand.NextFloat(0.5f, 2.5f), 0).RotatedBy(rot * Main.rand.NextFloat(1.1f, 9.1f));
                     Vector2 velOffset = new Vector2(Main.rand.NextFloat(0.5f, 2.5f), 0).RotatedBy(rot * Main.rand.NextFloat(1.1f, 9.1f));
-                    Dust dust = Dust.NewDustPerfect(Projectile.Center + offset, Main.rand.NextBool(3) ? 216 : 121, new Vector2(velOffset.X, velOffset.Y));
+                    Dust dust = Dust.NewDustPerfect(Projectile.Center + offset, Main.rand.NextBool(3) ? 216 : 207, new Vector2(velOffset.X, velOffset.Y));
                     dust.noGravity = true;
                     dust.velocity = velOffset;
                     dust.scale = Main.rand.NextFloat(1.3f, 1.8f);

@@ -4,7 +4,6 @@ using Microsoft.Xna.Framework.Graphics;
 using Terraria;
 using Terraria.ModLoader;
 using Terraria.ModLoader.IO;
-using Terraria.WorldBuilding;
 
 namespace CalamityMod.NPCs.VanillaNPCAIOverrides
 {
@@ -12,16 +11,22 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides
     {
         public NPC NPC { get; set; }
         public bool DisableMultiplayerSmoothing { get; set; }
+        public virtual bool EnableMultiplayerSmoothingAheadOfAI => false;
 
-        public void Load(Mod mod)
+        void ILoadable.Load(Mod mod)
         {
             CalamityVanillaAIOverrideNPC.RegisterNetID(this);
+            Load();
         }
 
-        public void Unload()
+        void ILoadable.Unload()
         {
-
+            Unload();
         }
+
+        public virtual void Load() { }
+
+        public virtual void Unload() { }
 
         public abstract bool AI(Mod mod);
 

@@ -165,7 +165,6 @@ namespace CalamityMod.NPCs.CalClone
             writer.Write(NPC.localAI[0]);
             writer.Write(NPC.localAI[1]);
             writer.Write(NPC.localAI[2]);
-            writer.Write(NPC.localAI[3]);
             for (int i = 0; i < 4; i++)
                 writer.Write(NPC.Calamity().newAI[i]);
         }
@@ -176,7 +175,6 @@ namespace CalamityMod.NPCs.CalClone
             NPC.localAI[0] = reader.ReadSingle();
             NPC.localAI[1] = reader.ReadSingle();
             NPC.localAI[2] = reader.ReadSingle();
-            NPC.localAI[3] = reader.ReadSingle();
             for (int i = 0; i < 4; i++)
                 NPC.Calamity().newAI[i] = reader.ReadSingle();
         }
@@ -499,16 +497,17 @@ namespace CalamityMod.NPCs.CalClone
             if (NPC.localAI[0] == 1f)
             {
                 NPC.localAI[0] = 0f;
-                NPC.localAI[2] = Main.rand.Next(-50, 51);
-                NPC.localAI[3] = Main.rand.Next(-300, 301);
+                NPC.localAI[2] = Main.rand.Next(-300, 301);
                 NPC.netUpdate = true;
             }
 
             // Add a bit of randomness to the destination
             if (death)
             {
-                destination.X += NPC.ai[1] == 0f ? NPC.localAI[3] : NPC.localAI[2];
-                destination.Y += NPC.ai[1] == 0f ? NPC.localAI[2] : NPC.localAI[3];
+                if (NPC.ai[1] == 0f)
+                    destination.X += NPC.localAI[2];
+                else
+                    destination.Y += NPC.localAI[2];
             }
 
             // How far Cal Clone is from where she's supposed to be

@@ -1,8 +1,16 @@
-﻿using CalamityMod.DataStructures;
+﻿using System.Collections.Generic;
+using CalamityMod.DataStructures;
+using CalamityMod.NPCs;
+using CalamityMod.NPCs.ExoMechs.Ares;
 using CalamityMod.Particles;
+using CalamityMod.Utilities.Daybreak;
+using CalamityMod.Utilities.Daybreak.Buffers;
 using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
+using ReLogic.Content;
 using Terraria;
 using Terraria.DataStructures;
+using Terraria.Graphics.Shaders;
 using Terraria.ID;
 using Terraria.ModLoader;
 
@@ -14,6 +22,33 @@ namespace CalamityMod.Buffs.DamageOverTime
         {
             EnemyLostRegen = 3000
         };
+
+        public static Asset<Texture2D> ShaderTexture => field ??= ModContent.Request<Texture2D>("CalamityMod/ExtraTextures/GreyscaleGradients/Neurons");
+
+        public static List<int> ExcludedNPCsForShader => new()
+        {
+            // TODO: Remove this list if possible
+
+            // List the reason why the NPC(s) are excluded :)
+
+            // The particle sets break with the visuals and this is the easiest way to fix this that isn't stupidly complex.
+            ModContent.NPCType<AresBody>(),
+            ModContent.NPCType<AresGaussNuke>(),
+            ModContent.NPCType<AresLaserCannon>(),
+            ModContent.NPCType<AresPlasmaFlamethrower>(),
+            ModContent.NPCType<AresTeslaCannon>(),
+
+            // Breaks with being behind tiles, and causes a funny interaction where his head goes behind his neck.
+            NPCID.MoonLordCore,
+            NPCID.MoonLordHand,
+            NPCID.MoonLordHead
+        };
+
+        public override void Load()
+        {
+            On_Main.DrawNPC += DrawForNPC;
+        }
+
         public override void SetStaticDefaults()
         {
             Main.debuff[Type] = true;
@@ -94,6 +129,45 @@ namespace CalamityMod.Buffs.DamageOverTime
 
                 Particle exoEnergy = new GlowSparkParticle(npc.Center + npc.velocity * 3 + velOffset * 1.5f, -velOffset * 0.25f, false, 4, 0.008f, sparkColor, new Vector2(0.6f, 1.2f));
                 GeneralParticleHandler.SpawnParticle(exoEnergy);
+            }
+        }
+
+        private static void DrawForNPC(On_Main.orig_DrawNPC orig, Main self, int iNPCIndex, bool behindTiles)
+        {
+            var npc = Main.npc[iNPCIndex];
+
+            if (!CalamityDrawParameterNPC.DrawingMiracleBlight[npc.whoAmI])
+            {
+                orig(self, iNPCIndex, behindTiles);
+                return;
+            }
+
+            if (ExcludedNPCsForShader.Contains(npc.type))
+            {
+                orig(self, iNPCIndex, behindTiles);
+                return;
+            }
+
+            using (Main.spriteBatch.Scope())
+            {
+                using var lease = ScreenspaceTargetPool.Shared.Rent(Main.instance.GraphicsDevice);
+                using (lease.Scope(clearColor: Color.Transparent))
+                {
+                    Main.spriteBatch.Begin(SpriteSortMode.Immediate, BlendState.AlphaBlend, SamplerState.PointClamp, DepthStencilState.None, Main.Rasterizer, null, Main.Transform);
+                    orig(self, iNPCIndex, behindTiles);
+                    Main.spriteBatch.End();
+                }
+
+                Main.spriteBatch.Begin(SpriteSortMode.Immediate, BlendState.AlphaBlend, SamplerState.PointClamp, DepthStencilState.None, RasterizerState.CullCounterClockwise);
+
+                var blightShader = GameShaders.Misc["CalamityMod:MiracleBlight"];
+                blightShader.UseImage1(ShaderTexture);
+                blightShader.UseOpacity(0.7f);
+                blightShader.Apply();
+
+                Main.spriteBatch.Draw(lease.Target, Vector2.Zero, Color.White);
+
+                Main.spriteBatch.End();
             }
         }
     }

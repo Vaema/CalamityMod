@@ -4,7 +4,6 @@ using System.IO;
 using CalamityMod.Buffs.StatDebuffs;
 using CalamityMod.Dusts;
 using CalamityMod.Events;
-using CalamityMod.Graphics.Renderers.CalamityRenderers;
 using CalamityMod.Items.Armor.Vanity;
 using CalamityMod.Items.LoreItems;
 using CalamityMod.Items.Materials;
@@ -33,6 +32,7 @@ using Microsoft.Xna.Framework.Graphics;
 using ReLogic.Content;
 using Terraria;
 using Terraria.Audio;
+using Terraria.DataStructures;
 using Terraria.GameContent;
 using Terraria.GameContent.Bestiary;
 using Terraria.GameContent.Events;
@@ -302,6 +302,15 @@ namespace CalamityMod.NPCs.DevourerofGods
         {
             if (Phase2Started && NPC.localAI[2] <= 60f)
                 rotation = NPC.rotation;
+        }
+
+        public override void OnSpawn(IEntitySource source)
+        {
+            string key = "Mods.CalamityMod.Status.Boss.DoGSpawn";
+            Color messageColor = Color.Cyan;
+            CalamityUtils.BroadcastLocalizedText(key, messageColor);
+
+            DialogueDisplaySystem.StartDialogue("Mods.CalamityMod.DevourerOfGods.Phases", NPC, 0, 120, false, new BossText());
         }
 
         public override void SendExtraAI(BinaryWriter writer)
@@ -634,7 +643,7 @@ namespace CalamityMod.NPCs.DevourerofGods
                         player.Calamity().subtitletext = Main.combatText[ctid];
                     player.Calamity().subtitleColors = new Color[] { Color.Cyan, Color.Fuchsia };
                     */
-                    DialogueDisplaySystem.StartDialogue("DevourerOfGods.Phases", NPC, 2, 120, false, new BossText());
+                    DialogueDisplaySystem.StartDialogue("Mods.CalamityMod.DevourerOfGods.Phases", NPC, 2, 120, false, new BossText());
                 }
             }
 
@@ -811,7 +820,7 @@ namespace CalamityMod.NPCs.DevourerofGods
                                             player.Calamity().subtitletext = Main.combatText[ctid];
                                         player.Calamity().subtitleColors = new Color[] { Color.Cyan, Color.Fuchsia };
                                         */
-                                        DialogueDisplaySystem.StartDialogue("DevourerOfGods.Phases", NPC, 3, 120, false, new BossText());
+                                        DialogueDisplaySystem.StartDialogue("Mods.CalamityMod.DevourerOfGods.Phases", NPC, 3, 120, false, new BossText());
                                     }
 
                                     spawnedGuardians3 = true;
@@ -1474,7 +1483,7 @@ namespace CalamityMod.NPCs.DevourerofGods
                                 player.Calamity().subtitletext = Main.combatText[ctid];
                             player.Calamity().subtitleColors = new Color[] { Color.Cyan, Color.Fuchsia };
                             */
-                            DialogueDisplaySystem.StartDialogue("DevourerOfGods.Phases", NPC, 1, 120, false, new BossText());
+                            DialogueDisplaySystem.StartDialogue("Mods.CalamityMod.DevourerOfGods.Phases", NPC, 1, 120, false, new BossText());
                         }
 
                         NPC.TargetClosest();
@@ -2502,7 +2511,7 @@ namespace CalamityMod.NPCs.DevourerofGods
                 spriteBatch.Draw(mainJawGlowTexture, jawDrawPosition, null, NPC.GetAlpha(Color.White), NPC.rotation + JawRotation * i, jawOrigin, NPC.scale, jawSpriteEffect, 0f);
 
                 // Draw the additional special jaw textures above these for the Rift Dash attack.
-                if (GodSlayerDashJawFadeProgress > 0.02f && !DoGDeathAnimationRenderer.ValidToDraw(NPC))
+                if (GodSlayerDashJawFadeProgress > 0.02f && CalamityDrawParameterNPC.DoGDeathAnimationTimer <= 0)
                 {
                     using (spriteBatch.Scope())
                     {
@@ -2813,7 +2822,7 @@ namespace CalamityMod.NPCs.DevourerofGods
                 int DialogueIndex;
                 if (target.statLife - hurtInfo.Damage <= 0)
                 {
-                    DialogueGroup = "DevourerOfGods.Death";
+                    DialogueGroup = "Mods.CalamityMod.DevourerOfGods.Death";
                     if (counter == 0)
                         if (NPC.GetLifePercent() <= 0.25f)
                             DialogueIndex = 4;// text = "Mods.CalamityMod.Status.Boss.DoGHeadDeath5"; //All that running just to die to a single touch?
@@ -2832,7 +2841,7 @@ namespace CalamityMod.NPCs.DevourerofGods
                 {
                     if (counter == 0 && Phase2Started)
                     {
-                        DialogueGroup = "DevourerOfGods.Running";
+                        DialogueGroup = "Mods.CalamityMod.DevourerOfGods.Running";
                         if (NPC.GetLifePercent() <= 0.25f)
                             DialogueIndex = 1;// text = "Mods.CalamityMod.Status.Boss.DoGHeadRunning2"; //WHAT'S THE PROBLEM?! CAN'T RUN ANYMORE?!
                         else
@@ -2840,7 +2849,7 @@ namespace CalamityMod.NPCs.DevourerofGods
                     }
                     else
                     {
-                        DialogueGroup = "DevourerOfGods.Head";
+                        DialogueGroup = "Mods.CalamityMod.DevourerOfGods.Head";
                         if (counter > 9)
                             DialogueIndex = Main.rand.Next(10, 13);// text = headHitKeys[Main.rand.Next(10, 13)]; //DogHead11-13
                         else if (counter == 9)
@@ -2860,7 +2869,7 @@ namespace CalamityMod.NPCs.DevourerofGods
                 target.Calamity().dogTextCooldown = 60;
                 */
 
-                DialogueDisplaySystem.StartDialogue(DialogueGroup, NPC, DialogueIndex, 60, false, new BossText());
+                DialogueDisplaySystem.StartDialogueOnClient(DialogueGroup, NPC, DialogueIndex, 60, false, new BossText());
             }
             target.Calamity().DoGHeadHitCounter++;
         }

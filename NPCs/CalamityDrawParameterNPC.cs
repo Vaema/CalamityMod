@@ -16,7 +16,6 @@ namespace CalamityMod.NPCs
         #region Draw Parameters
         public static bool[] DrawingMiracleBlight { get; private set; }
         public static bool[] DrawingPolarity { get; private set; }
-        public static bool[] DrawingDoGDeathAnimation { get; private set; }
         public static int DoGDeathAnimationTimer { get; private set; }
         #endregion
 
@@ -44,14 +43,12 @@ namespace CalamityMod.NPCs
         {
             DrawingMiracleBlight = new bool[Main.maxNPCs + 1];
             DrawingPolarity = new bool[Main.maxNPCs + 1];
-            DrawingDoGDeathAnimation = new bool[Main.maxNPCs + 1];
         }
 
         public override void Unload()
         {
             DrawingMiracleBlight = null;
             DrawingPolarity = null;
-            DrawingDoGDeathAnimation = null;
         }
         #endregion
 
@@ -67,7 +64,6 @@ namespace CalamityMod.NPCs
             var whoAmI = npc.whoAmI;
             DrawingMiracleBlight[whoAmI] = false;
             DrawingPolarity[whoAmI] = false;
-            DrawingDoGDeathAnimation[whoAmI] = false;
         }
 
         public override bool PreAI(NPC npc)
@@ -81,7 +77,6 @@ namespace CalamityMod.NPCs
             var whoAmI = npc.whoAmI;
             DrawingMiracleBlight[whoAmI] = ShouldDrawMiracleBlight(npc);
             DrawingPolarity[whoAmI] = ShouldDrawPolarity(npc);
-            DrawingDoGDeathAnimation[whoAmI] = ShouldDrawDoGDeathAnimation(npc);
             return true;
         }
 

@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using CalamityMod.Utilities.Daybreak.Buffers;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria;
@@ -62,19 +63,16 @@ namespace CalamityMod.Systems
                 var renderTarget = BakedBlendTexture;
                 if (renderTarget != null && !renderTarget.IsDisposed && !renderTarget.IsContentLost)
                 {
-                    graphicsDevice.SetRenderTarget(renderTarget);
-                    if (_ShouldClearRT)
+                    using (renderTarget.Scope(clearColor: _ShouldClearRT ? Color.Transparent : null))
                     {
-                        graphicsDevice.Clear(Color.Transparent);
                         _ShouldClearRT = false;
+
+                        Main.spriteBatch.Begin(SpriteSortMode.Immediate, BlendState.AlphaBlend, SamplerState.PointClamp, DepthStencilState.None, RasterizerState.CullNone);
+
+                        BakeBlendTextureCache(v);
+
+                        Main.spriteBatch.End();
                     }
-
-                    Main.spriteBatch.Begin(SpriteSortMode.Immediate, BlendState.AlphaBlend, SamplerState.PointClamp, DepthStencilState.None, RasterizerState.CullNone);
-
-                    BakeBlendTextureCache(v);
-
-                    Main.spriteBatch.End();
-                    graphicsDevice.SetRenderTarget(null);
 
                     _RequestedVariants[variant] = false;
                     _IsBaked[variant] = true;

@@ -1,3 +1,4 @@
+﻿using CalamityMod.Graphics;
 using Terraria;
 using Terraria.ModLoader;
 
@@ -44,6 +45,7 @@ public class BuffersLoadingSystem : ModSystem
                 // Dispose shared pools.
                 RenderTargetPool.Shared.Dispose();
                 ScreenspaceTargetPool.Shared.Dispose();
+                ManagedRenderTargetPool.Shared.Dispose();
             }
         );
     }
@@ -62,5 +64,6 @@ public class BuffersLoadingSystem : ModSystem
         orig(self);
 
         ScreenspaceTargetPool.Shared.ResizeCachedTargets(self.GraphicsDevice);
+        ManagedRenderTargetPool.Shared.ResizeTargets();
     }
 }

@@ -1,27 +1,25 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Globalization;
-using System.IO;
 using System.Linq;
-using System.Text.Json;
 using System.Text.Json.Serialization;
+using CalamityMod.Dialogues;
+using CalamityMod.Packets;
 using CalamityMod.UI.DialogueDisplay.DialogueEvents;
 using CalamityMod.UI.DialogueDisplay.DisplayEffects;
 using CalamityMod.UI.DialogueDisplay.TextEffects;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using Microsoft.Xna.Framework.Input;
 using ReLogic.Content;
 using ReLogic.Graphics;
 using Terraria;
 using Terraria.Audio;
 using Terraria.GameContent;
 using Terraria.ID;
-using Terraria.Localization;
 using Terraria.ModLoader;
 using Terraria.UI;
 using Terraria.UI.Chat;
-using static System.Runtime.InteropServices.JavaScript.JSType;
+using static CalamityMod.Packets.StartDialogueDisplayPacket;
 using static ReLogic.Graphics.DynamicSpriteFont;
 
 namespace CalamityMod.UI.DialogueDisplay
@@ -63,8 +61,13 @@ namespace CalamityMod.UI.DialogueDisplay
                 {
                     if (dialog.entity.active)
                         dialog.ui.Position = dialog.entity.Center;
-                    else
+                    else if (ui.DisplayEffects.DespawnWithAttachedNPC)
                         dialog.ui.ClosingDialogue = true;
+                    else
+                    {
+                        dialog.ui.Position = dialog.entity.Center;
+                        dialog.entity = null;
+                    }
                 }
 
                 if (dialog.upTime != -1)
@@ -528,7 +531,7 @@ namespace CalamityMod.UI.DialogueDisplay
                         foreach (string s in returnString)
                             storedLen += s.Length;
 
-                        Pauses.Add(index - storedLen - 1, Params[0]);                       
+                        Pauses.Add(index - storedLen - 1, Params[0]);
                     }
                     else
                     {
@@ -911,6 +914,43 @@ namespace CalamityMod.UI.DialogueDisplay
 
         internal static UserInterface UI;
 
+        public enum DisplayEffectID
+        {
+            Invalid = -1,
+            None,
+            AlwaysOnScreen,
+            BossText,
+            Built,
+            WhisperingPearls
+        }
+
+        public static DisplayEffectID GetID(object obj)
+        {
+            if (obj is not DisplayEffect)
+                return DisplayEffectID.Invalid;
+
+            return obj switch
+            {
+                AlwaysOnScreen => DisplayEffectID.AlwaysOnScreen,
+                BossText => DisplayEffectID.BossText,
+                BuiltEffect => DisplayEffectID.Built,
+                WhisperingPearlEffects => DisplayEffectID.WhisperingPearls,
+                _ => DisplayEffectID.None
+            };
+        }
+
+        public static DisplayEffect GetEffect(DisplayEffectID id)
+        {
+            return id switch
+            {
+                DisplayEffectID.AlwaysOnScreen => new AlwaysOnScreen(),
+                DisplayEffectID.BossText => new BossText(),
+                DisplayEffectID.Built => new BuiltEffect(),
+                DisplayEffectID.WhisperingPearls => new WhisperingPearlEffects(),
+                _ => new DisplayEffect()
+            };
+        }
+
         public override void Load()
         {
             if (!Main.dedServ)
@@ -940,15 +980,6 @@ namespace CalamityMod.UI.DialogueDisplay
                 UI?.Update(gameTime);
         }
 
-        public static DialogueTextData Deserialize(string name)
-        {
-            string json = Language.GetTextValue("Mods.CalamityMod.Dialogue." + name);
-
-            DialogueTextData data = JsonSerializer.Deserialize<DialogueTextData>(json);
-
-            return data;
-        }
-
         public static Color GetColorFromHex(string hex)
         {
             System.Drawing.Color color = System.Drawing.ColorTranslator.FromHtml('#' + hex);
@@ -963,8 +994,8 @@ namespace CalamityMod.UI.DialogueDisplay
         /// </summary>
         public static int GetSlot(string name)
         {
-            foreach(var pair in DialogueDisplayUI.Dialogues)
-                if(pair.Value.name == name)
+            foreach (var pair in DialogueDisplayUI.Dialogues)
+                if (pair.Value.name == name)
                     return pair.Key;
             return -1;
         }
@@ -1009,13 +1040,35 @@ namespace CalamityMod.UI.DialogueDisplay
         /// </summary>
         /// <param name="name">The name of the dialogue's localization key</param>
         /// <param name="startPosition">The position of the text in the world</param>
-        public static int StartDialogue(string name, Vector2 startPosition, int startIndex = 0, int Uptime = -1, bool progressDialogue = true, DisplayEffect effects = null, float wrapWidth = -1)
+        public static int StartDialogue(string name, Vector2 startPosition, int startIndex = 0, int Uptime = -1, bool progressDialogue = true, DisplayEffect effects = null, float wrapWidth = -1, int toClient = -1, int ignoreClient = -1)
         {
+            if (Main.dedServ)
+            {
+                StartDialogueDisplayPacket.Send(name, progressDialogue, startPosition, startIndex, Uptime, GetID(effects), wrapWidth, toClient, ignoreClient);
+                return -1;
+            }
+            else if (Main.netMode == NetmodeID.SinglePlayer)
+            {
+                return StartDialogueOnClient(name, startPosition, startIndex, Uptime, progressDialogue, effects, wrapWidth);
+            }
+
+            return -1;
+        }
+
+        public static int StartDialogueOnClient(string name, Vector2 startPosition, int startIndex = 0, int Uptime = -1, bool progressDialogue = true, DisplayEffect effects = null, float wrapWidth = -1)
+        {
+            if (Main.dedServ)
+                return -1;
+
             UI ??= new();
             State ??= new();
             effects ??= new DisplayEffect();
 
-            DialogueTextData textData = Deserialize(name);
+            if (!DialogueLoader.TryGetDialogue(name, out var textData))
+            {
+                CalamityMod.Log.Error($"Unable to find Dialogue Data for given name: '{name}'");
+                return -1;
+            }
 
             if (startIndex >= textData.PageCount)
                 startIndex = textData.PageCount - 1;
@@ -1048,13 +1101,35 @@ namespace CalamityMod.UI.DialogueDisplay
         /// <param name="name">The name of the dialogue's localization key</param>
         /// <param name="entity">The entity this dialogue will appear with</param>
         /// <param name="Uptime">The entity this dialogue will appear with</param>
-        public static int StartDialogue(string name, Entity entity, int startIndex = 0, int Uptime = -1, bool progressDialogue = true, DisplayEffect effects = null, float wrapWidth = -1)
+        public static int StartDialogue(string name, Entity entity, int startIndex = 0, int Uptime = -1, bool progressDialogue = true, DisplayEffect effects = null, float wrapWidth = -1, int toClient = -1, int ignoreClient = -1)
         {
+            if (Main.dedServ)
+            {
+                StartDialogueDisplayPacket.Send(name, progressDialogue, entity is NPC ? EntityType.NPC : entity is Player ? EntityType.Player : EntityType.Projectile, entity is Projectile p ? p.identity : entity.whoAmI, startIndex, Uptime, GetID(effects), wrapWidth, toClient, ignoreClient);
+                return -1;
+            }
+            else if (Main.netMode == NetmodeID.SinglePlayer)
+            {
+                return StartDialogueOnClient(name, entity, startIndex, Uptime, progressDialogue, effects, wrapWidth);
+            }
+
+            return -1;
+        }
+
+        public static int StartDialogueOnClient(string name, Entity entity, int startIndex = 0, int Uptime = -1, bool progressDialogue = true, DisplayEffect effects = null, float wrapWidth = -1)
+        {
+            if (Main.dedServ)
+                return -1;
+
             UI ??= new();
             State ??= new();
             effects ??= new DisplayEffect();
 
-            DialogueTextData textData = Deserialize(name);
+            if (!DialogueLoader.TryGetDialogue(name, out var textData))
+            {
+                CalamityMod.Log.Error($"Unable to find Dialogue Data for given name: '{name}'");
+                return -1;
+            }
 
             if (startIndex >= textData.PageCount)
                 startIndex = textData.PageCount - 1;
@@ -1119,6 +1194,11 @@ namespace CalamityMod.UI.DialogueDisplay
         public PunctuationData BasePunctuationDelay { get; init; }
         public int PunctuationDelayCap { get; init; }
         public Dictionary<string, PunctuationData> PunctuationDelays { get; init; }
+
+        /// <summary>
+        /// Only used for DialogueLoader
+        /// </summary>
+        public int Revision { get; init; }
 
         [JsonConstructor]
         public DialogueTextData(DialoguePage[] Pages, int Page = 0, string DefaultColor = null, string DefaultSpeaker = null, int DefaultScale = 1, Alignment AlignType = 0, int TextDelay = 3, PunctuationData BasePunctuationDelay = null, int PunctuationDelayCap = 60, Dictionary<string, PunctuationData> PunctuationDelays = null)

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using CalamityMod.Effects;
 using CalamityMod.Systems;
+using CalamityMod.Utilities.Daybreak.Buffers;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using ReLogic.Content;
@@ -170,40 +171,39 @@ namespace CalamityMod.MainMenu
         {
             sb.End();
 
-            Main.instance.GraphicsDevice.SetRenderTarget(logoWaterFillTarget);
-            Main.instance.GraphicsDevice.Clear(Color.Transparent);
+            using (logoWaterFillTarget.Scope(clearColor: Color.Transparent))
+            {
+                sb.Begin(SpriteSortMode.Immediate, BlendState.AlphaBlend, SamplerState.PointClamp, DepthStencilState.None, RasterizerState.CullCounterClockwise, null, Matrix.Identity);
 
-            sb.Begin(SpriteSortMode.Immediate, BlendState.AlphaBlend, SamplerState.PointClamp, DepthStencilState.None, RasterizerState.CullCounterClockwise, null, Matrix.Identity);
+                var fillShader = CalamityShaders.SunkenSeaMenuLogoWater.Value;
+                fillShader.Parameters["uImageSize"]?.SetValue(LogoWaterFill.Size());
+                fillShader.Parameters["uTexture0"]?.SetValue(WorleyInverted.Value);
+                fillShader.Parameters["uBubbleTexture"]?.SetValue(Perlin.Value);
+                //fillShader.Parameters["uFillAmount"]?.SetValue(0.75f + (MathF.Sin(Main.GlobalTimeWrappedHourly) / 2f) * 0.25f);
+                fillShader.Parameters["uFillAmount"]?.SetValue(0.75f);
+                fillShader.Parameters["uWaveStrength"]?.SetValue(2.5f);
+                fillShader.Parameters["uWaveOffset"]?.SetValue(0.6f);
+                fillShader.Parameters["uSubtract"]?.SetValue(0.4f);
+                fillShader.Parameters["uTime"]?.SetValue(Main.GlobalTimeWrappedHourly);
+                fillShader.Parameters["uFillColor"]?.SetValue(new Color(67, 187, 204, 255 / 2).ToVector4() * 0.7f);
+                fillShader.Parameters["uEdgeColor"]?.SetValue(new Color(16, 99, 112, 255 / 2).ToVector4() * 0.7f);
+                fillShader.Parameters["uLineColor"]?.SetValue(new Color(179, 255, 255, 255 / 2).ToVector4() * 0.7f);
+                fillShader.CurrentTechnique.Passes[0].Apply();
 
-            var fillShader = CalamityShaders.SunkenSeaMenuLogoWater.Value;
-            fillShader.Parameters["uImageSize"]?.SetValue(LogoWaterFill.Size());
-            fillShader.Parameters["uTexture0"]?.SetValue(WorleyInverted.Value);
-            fillShader.Parameters["uBubbleTexture"]?.SetValue(Perlin.Value);
-            //fillShader.Parameters["uFillAmount"]?.SetValue(0.75f + (MathF.Sin(Main.GlobalTimeWrappedHourly) / 2f) * 0.25f);
-            fillShader.Parameters["uFillAmount"]?.SetValue(0.75f);
-            fillShader.Parameters["uWaveStrength"]?.SetValue(2.5f);
-            fillShader.Parameters["uWaveOffset"]?.SetValue(0.6f);
-            fillShader.Parameters["uSubtract"]?.SetValue(0.4f);
-            fillShader.Parameters["uTime"]?.SetValue(Main.GlobalTimeWrappedHourly);
-            fillShader.Parameters["uFillColor"]?.SetValue(new Color(67, 187, 204, 255 / 2).ToVector4() * 0.7f);
-            fillShader.Parameters["uEdgeColor"]?.SetValue(new Color(16, 99, 112, 255 / 2).ToVector4() * 0.7f);
-            fillShader.Parameters["uLineColor"]?.SetValue(new Color(179, 255, 255, 255 / 2).ToVector4() * 0.7f);
-            fillShader.CurrentTechnique.Passes[0].Apply();
+                sb.Draw(LogoWaterFill.Value, Vector2.Zero, Color.White);
 
-            sb.Draw(LogoWaterFill.Value, Vector2.Zero, Color.White);
-
-            sb.End();
+                sb.End();
+            }
 
             Main.pixelShader.CurrentTechnique.Passes[0].Apply();
 
-            Main.instance.GraphicsDevice.SetRenderTarget(logoTarget);
-            Main.instance.GraphicsDevice.Clear(Color.Transparent);
-            sb.Begin(SpriteSortMode.Immediate, BlendState.AlphaBlend, SamplerState.PointClamp, DepthStencilState.None, RasterizerState.CullCounterClockwise, null, Matrix.Identity);
+            using (logoTarget.Scope(clearColor: Color.Transparent))
+            {
+                sb.Begin(SpriteSortMode.Immediate, BlendState.AlphaBlend, SamplerState.PointClamp, DepthStencilState.None, RasterizerState.CullCounterClockwise, null, Matrix.Identity);
+                sb.Draw(logoWaterFillTarget, new Vector2(406, 48), Color.White);
+                sb.End();
+            }
 
-            sb.Draw(logoWaterFillTarget, new Vector2(406, 48), Color.White);
-
-            sb.End();
-            Main.instance.GraphicsDevice.SetRenderTarget(null);
             sb.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, SamplerState.LinearClamp, DepthStencilState.None, RasterizerState.CullCounterClockwise, null, Main.UIScaleMatrix);
         }
 

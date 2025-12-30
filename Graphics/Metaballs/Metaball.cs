@@ -2,6 +2,7 @@
 using System.Linq;
 using CalamityMod.Effects;
 using CalamityMod.Enums;
+using CalamityMod.Utilities.Daybreak.Buffers;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria;
@@ -11,7 +12,7 @@ namespace CalamityMod.Graphics.Metaballs
 {
     public abstract class Metaball : ModType
     {
-        internal List<ManagedRenderTarget> LayerTargets = new();
+        internal List<RenderTargetLease> LayerTargets = new();
 
         /// <summary>
         /// Required utility that is used to determine whether this metaball has anything to draw.<br></br>
@@ -145,7 +146,7 @@ namespace CalamityMod.Graphics.Metaballs
                 // Load render targets.
                 int layerCount = Layers.Count();
                 for (int i = 0; i < layerCount; i++)
-                    LayerTargets.Add(new(true, ManagedRenderTarget.CreateScreenSizedTarget));
+                    LayerTargets.Add(ScreenspaceTargetPool.Shared.Rent(Main.instance.GraphicsDevice));
             });
         }
 

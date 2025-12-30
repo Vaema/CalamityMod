@@ -20,6 +20,7 @@ namespace CalamityMod.NPCs.PrimordialWyrm
         public override LocalizedText DisplayName => CalamityUtils.GetText("NPCs.PrimordialWyrmHead.DisplayName");
         public override void SetStaticDefaults()
         {
+            NPCID.Sets.NeedsExpertScaling[Type] = true;
             this.HideFromBestiary();
             if (!Main.dedServ)
             {

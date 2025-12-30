@@ -2,6 +2,7 @@
 using System.Linq;
 using CalamityMod.Enums;
 using CalamityMod.Systems.Graphic;
+using CalamityMod.Utilities.Daybreak.Buffers;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria;
@@ -70,20 +71,19 @@ namespace CalamityMod.Graphics.Metaballs
                 metaball.PrepareSpriteBatch(Main.spriteBatch);
 
                 // Draw the raw contents of the metaball to each of its render targets.
-                foreach (ManagedRenderTarget target in metaball.LayerTargets)
+                foreach (var target in metaball.LayerTargets)
                 {
-                    gd.SetRenderTarget(target);
-                    gd.Clear(Color.Transparent);
-                    metaball.DrawInstances();
+                    using (target.Scope(clearColor: Color.Transparent))
+                    {
+                        metaball.DrawInstances();
 
-                    // Flush metaball contents to its render target and reset the sprite batch for the next iteration.
-                    Main.spriteBatch.End();
-                    Main.spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, SamplerState.PointClamp, DepthStencilState.Default, Main.Rasterizer, null, Main.Transform);
+                        // Flush metaball contents to its render target and reset the sprite batch for the next iteration.
+                        Main.spriteBatch.End();
+                        Main.spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, SamplerState.PointClamp, DepthStencilState.Default, Main.Rasterizer, null, Main.Transform);
+                    }
                 }
             }
 
-            // Return to the backbuffer and end the sprite batch.
-            gd.SetRenderTarget(null);
             Main.spriteBatch.End();
         }
 
@@ -110,7 +110,7 @@ namespace CalamityMod.Graphics.Metaballs
                     metaball.PrepareShaderForTarget(i);
 
                     // Draw the metaball's raw contents with the shader.
-                    Main.spriteBatch.Draw(metaball.LayerTargets[i], Vector2.Zero, Color.White);
+                    Main.spriteBatch.Draw(metaball.LayerTargets[i].Target, Vector2.Zero, Color.White);
                 }
             }
 

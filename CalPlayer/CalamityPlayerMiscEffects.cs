@@ -388,6 +388,13 @@ namespace CalamityMod.CalPlayer
                 Lighting.AddLight(Player.Center, Color.MediumOrchid.ToVector3());
             }
 
+            // Restore flight time during Vortex stealth with Vortex Booster
+            if (Player.vortexStealthActive && Player.wingsLogic == (int)VanillaWingID.WingsVortex)
+            {
+                if (Player.wingTime > 0 && Player.miscCounter % 3 == 0)
+                    Player.wingTime++;
+            }
+
             if (Player.HeldItem.type == ModContent.ItemType<Lucrecia>() && darklightEnergy > 0)
             {
                 if (darklightEnergy == Lucrecia.MaxEnergy && !darklightEnergyPaused)
@@ -2317,12 +2324,6 @@ namespace CalamityMod.CalPlayer
                 hurtSoundTimer--;
             if (wingProjectileCooldown > 0)
                 wingProjectileCooldown--;
-            if (vortexBoosterStealthDelay > 0)
-            {
-                vortexBoosterStealthDelay--;
-                if (vortexBoosterStealthDelay == 1 && Player.setVortex)
-                    Player.vortexStealthActive = true;
-            }
             if (hallowedRuneCooldown > 0)
                 hallowedRuneCooldown--;
             if (sulphurBubbleCooldown > 0)

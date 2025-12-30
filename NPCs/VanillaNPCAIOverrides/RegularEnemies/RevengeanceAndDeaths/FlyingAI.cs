@@ -269,9 +269,9 @@ public static partial class RevengeanceAndDeathAI
                 }
 
                 if (targetData.Center.X - NPC.Center.X > 0f)
-                    NPC.spriteDirection = -1;
-                else
                     NPC.spriteDirection = 1;
+                else
+                    NPC.spriteDirection = -1;
 
                 NPC.rotation = NPC.velocity.X * 0.1f;
 

@@ -3,6 +3,7 @@ using System.Linq;
 using CalamityMod.Enums;
 using CalamityMod.Systems.Graphic;
 using CalamityMod.Utilities.Daybreak;
+using CalamityMod.Utilities.Daybreak.Buffers;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria;
@@ -93,9 +94,8 @@ namespace CalamityMod.Graphics.Renderers
                     continue;
 
                 using (Main.spriteBatch.Scope())
+                using (renderer.MainTarget.Scope(clearColor: Color.Transparent))
                 {
-                    Main.instance.GraphicsDevice.SetRenderTarget(renderer.MainTarget);
-                    Main.instance.GraphicsDevice.Clear(Color.Transparent);
                     Main.spriteBatch.Begin(
                         SpriteSortMode.Deferred,
                         BlendState.AlphaBlend,
@@ -109,8 +109,6 @@ namespace CalamityMod.Graphics.Renderers
                     Main.spriteBatch.End();
                 }
             }
-
-            Main.instance.GraphicsDevice.SetRenderTarget(null);
         }
         #endregion
     }

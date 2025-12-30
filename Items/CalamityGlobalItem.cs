@@ -1467,9 +1467,9 @@ namespace CalamityMod.Items
             if (player.Calamity().victideSnailSet)
                 grabRange += VictideHeadSnail.SetBonusGrabRangeBoost;
 
-            // Nebula boosters have greater pickup range while using Nebula Mantle.
-            if (player.wingsLogic == (int)VanillaWingID.WingsNebula && ItemID.Sets.NebulaPickup[item.type])
-                grabRange *= 2;
+            // Nebula boosters have greater pickup range while hovering with Nebula Mantle.
+            if (player.wingsLogic == (int)VanillaWingID.WingsNebula && player.wingTime > 0f && player.controlJump && player.TryingToHoverDown && ItemID.Sets.NebulaPickup[item.type])
+                grabRange *= 3;
         }
         #endregion
 
