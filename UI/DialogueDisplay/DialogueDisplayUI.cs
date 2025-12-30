@@ -2,8 +2,6 @@
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
-using System.Net.Sockets;
-using System.Text.Json;
 using System.Text.Json.Serialization;
 using CalamityMod.Dialogues;
 using CalamityMod.Packets;
@@ -21,7 +19,6 @@ using Terraria.ID;
 using Terraria.ModLoader;
 using Terraria.UI;
 using Terraria.UI.Chat;
-using static System.Runtime.InteropServices.JavaScript.JSType;
 using static CalamityMod.Packets.StartDialogueDisplayPacket;
 using static ReLogic.Graphics.DynamicSpriteFont;
 
@@ -1124,8 +1121,8 @@ namespace CalamityMod.UI.DialogueDisplay
             if (Main.dedServ)
                 return -1;
 
-            UI ??= new ();
-            State ??= new ();
+            UI ??= new();
+            State ??= new();
             effects ??= new DisplayEffect();
 
             if (!DialogueLoader.TryGetDialogue(name, out var textData))
@@ -1144,9 +1141,9 @@ namespace CalamityMod.UI.DialogueDisplay
             };
 
             int slot;
-                for (slot = 0; slot <= DialogueDisplayUI.Dialogues.Count; slot++)
-                    if (!DialogueDisplayUI.Dialogues.ContainsKey(slot))
-                        break;
+            for (slot = 0; slot <= DialogueDisplayUI.Dialogues.Count; slot++)
+                if (!DialogueDisplayUI.Dialogues.ContainsKey(slot))
+                    break;
 
             DialogueDisplayUI.Dialogues.Add(slot, (name, display, textData, entity, Uptime));
 
