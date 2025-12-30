@@ -12,6 +12,7 @@ using CalamityMod.Items.Placeables.Astral;
 using CalamityMod.Items.Placeables.Crags;
 using CalamityMod.Items.Placeables.Furniture;
 using CalamityMod.Items.Placeables.Furniture.Fountains;
+using CalamityMod.Items.Placeables.Furniture.Paintings;
 using CalamityMod.Items.Potions;
 using CalamityMod.Items.Potions.Alcohol;
 using CalamityMod.Items.SummonItems.Invasion;
