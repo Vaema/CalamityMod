@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using CalamityMod.Balancing;
@@ -90,7 +91,7 @@ namespace CalamityMod
         public bool forceNetUpdate = false;
 
         // Player indexes put into this list will not be considered for targetting.
-        public int[] excludedPlayers = [];
+        public HashSet<int> excludedPlayers = [];
 
         public CalamityTargetingParameters()
         {
@@ -459,7 +460,7 @@ namespace CalamityMod
 
                 // If either targeting method succeeded, then this target is being engaged.
                 bool engageThisTarget = preferSameFound || standardTargetingRequirementsMet;
-                if (engageThisTarget && !targetShouldBeExcluded)
+                if (engageThisTarget)
                 {
                     anyTargetAvailable = true;
                     tankMinionProjectileID = -1; // Reset any Stardust Guardian aggro because a real player was found.
