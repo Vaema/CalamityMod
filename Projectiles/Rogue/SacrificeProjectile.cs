@@ -66,7 +66,7 @@ namespace CalamityMod.Projectiles.Rogue
             {
                 for (int i = 0; i < 60; i++)
                 {
-                    Dust blood = Dust.NewDustPerfect(Projectile.Center + Main.rand.NextVector2Circular(50f, 50f), 267);
+                    Dust blood = Dust.NewDustPerfect(Projectile.Center + Main.rand.NextVector2Circular(50f, 50f), DustID.RainbowMk2);
                     blood.velocity = Main.rand.NextVector2Circular(3f, 3f);
                     blood.noGravity = true;
                     blood.color = Color.Lerp(Color.Red, Color.DarkRed, Main.rand.NextFloat(0.25f, 1f));

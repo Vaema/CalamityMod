@@ -20,7 +20,7 @@ namespace CalamityMod.Items.Accessories
 
         // "Despite the seemingly insane numbers here, I think this item might actually be underpowered"
         // hindsight: the item was not underpowered. Ozzatron 05NOV2021
-        // Memes 03SEP2024: Old comments kept for record.
+        // 03SEP2024: Old comments kept for record.
 
         #region Balancing Variables
 

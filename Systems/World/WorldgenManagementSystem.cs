@@ -4,10 +4,7 @@ using CalamityMod.Items.Accessories.Vanity;
 using CalamityMod.Items.SummonItems;
 using CalamityMod.Items.Weapons.Rogue;
 using CalamityMod.Items.Weapons.Summon;
-using CalamityMod.Tiles.AstralSnow;
-using CalamityMod.Tiles.Ores;
 using CalamityMod.World;
-using CalamityMod.World.Minibiomes;
 using CalamityMod.World.Planets;
 using Microsoft.Xna.Framework;
 using Terraria;
@@ -132,14 +129,6 @@ namespace CalamityMod.Systems
                     progress.Message = Language.GetOrRegister("Mods.CalamityMod.UI.BetterJungleTemple").Value;
                     CustomTemple.NewJungleTemple();
                 });
-
-                // Floral Paradise Biome
-                tasks.Insert(jungleTempleIndex + 1, new PassLegacy("FloralParadise", (progress, config) =>
-                {
-                    progress.Message = "Growing a floral paradise underground";
-                    if (FloralParadiseMinibiome.SHOULD_GENERATE)
-                        FloralParadiseMinibiome.GenerateInstances();
-                }));
             }
 
             // Improved Golem Arena
@@ -205,7 +194,7 @@ namespace CalamityMod.Systems
                             }
                         }
                     }
-                        
+
                 }));
             }
 
@@ -515,7 +504,7 @@ namespace CalamityMod.Systems
 
                                 if (isGoldChest)
                                 {
-                                    chest.item[inventoryIndex].SetDefaults(ModContent.ItemType<EnchantedBladeStaff>());
+                                    chest.item[inventoryIndex].SetDefaults(ModContent.ItemType<EnchantedKnifeStaff>());
                                     chest.item[inventoryIndex].Prefix(-1);
                                     break;
                                 }

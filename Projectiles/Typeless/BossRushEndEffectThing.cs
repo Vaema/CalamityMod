@@ -1,5 +1,5 @@
 ﻿using CalamityMod.Events;
-using CalamityMod.Items;
+using CalamityMod.Items.Placeables;
 using CalamityMod.Systems;
 using Microsoft.Xna.Framework;
 using Terraria;

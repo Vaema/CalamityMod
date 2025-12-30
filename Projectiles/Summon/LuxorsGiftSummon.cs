@@ -1,5 +1,4 @@
 ﻿using System;
-using CalamityMod.CalPlayer;
 using CalamityMod.Dusts;
 using CalamityMod.Particles;
 using Microsoft.Xna.Framework;

@@ -30,7 +30,7 @@ namespace CalamityMod.Tiles.Ores
             TileID.Sets.OreMergesWithMud[Type] = true;
 
             MinPick = 110;
-            DustType = 173;
+            DustType = DustID.ShadowbeamStaff;
             AddMapEntry(new Color(255, 153, 255), CreateMapEntryName());
             MineResist = 3f;
             HitSound = SoundID.Tink;

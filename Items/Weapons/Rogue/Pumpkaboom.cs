@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using CalamityMod.Items.Materials;
-using CalamityMod.Items.Placeables.SunkenSea;
-using CalamityMod.Projectiles.Rogue;
+﻿using CalamityMod.Projectiles.Rogue;
 using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.DataStructures;
@@ -67,7 +63,8 @@ namespace CalamityMod.Items.Weapons.Rogue
         {
             CreateRecipe().
                 AddIngredient(ItemID.Grenade, 15).
-                AddIngredient(ItemID.Pumpkin, 10).
+                AddIngredient(ItemID.Pumpkin, 30).
+                AddIngredient(ItemID.PumpkinSeed, 5).
                 AddTile(TileID.Anvils).
                 Register();
         }

@@ -1,15 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using CalamityMod.Items;
+﻿using System.IO;
+using CalamityMod.Items.Tools;
 using Terraria;
 
 namespace CalamityMod.Packets
 {
-    public sealed class DeleteAllSuperDummiesPacket : CalamityPacket
+    internal sealed class DeleteAllSuperDummiesPacket : CalamityPacket
     {
         public static DeleteAllSuperDummiesPacket Instance { get; private set; }
 

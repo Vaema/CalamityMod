@@ -1,6 +1,7 @@
 ﻿using System.ComponentModel;
 using System.Runtime.Serialization;
 using CalamityMod.Enums;
+using CalamityMod.Systems;
 using CalamityMod.UI;
 using CalamityMod.UI.DraedonsArsenal;
 using CalamityMod.UI.Rippers;
@@ -81,6 +82,10 @@ namespace CalamityMod
         [DefaultValue(1.0f)]
         [Range(0.0f, 1.0f)]
         public float EnergyShieldOpacity { get; set; }
+
+        [BackgroundColor(192, 54, 64, 192)]
+        [DefaultValue(TileBlendingQuality.Normal)]
+        public TileBlendingQuality TileTextureBlendingQuality { get; set; }
 
         #endregion
 

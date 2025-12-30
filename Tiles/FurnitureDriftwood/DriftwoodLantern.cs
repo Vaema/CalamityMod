@@ -13,7 +13,7 @@ namespace CalamityMod.Tiles.FurnitureDriftwood
 
         public override bool CreateDust(int i, int j, ref int type)
         {
-            Dust.NewDust(new Vector2(i, j) * 16f, 16, 16, 235, 0f, 0f, 1, new Color(255, 255, 255), 1f);
+            Dust.NewDust(new Vector2(i, j) * 16f, 16, 16, DustID.LifeDrain, 0f, 0f, 1, new Color(255, 255, 255), 1f);
             return false;
         }
 
@@ -40,7 +40,7 @@ namespace CalamityMod.Tiles.FurnitureDriftwood
 
         public override void HitWire(int i, int j)
         {
-            CalamityUtils.LightHitWire(Type, i, j, 1, 2);
+            FurnitureCommon.LightHitWire(Type, i, j, 1, 2);
         }
     }
 }

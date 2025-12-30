@@ -2,8 +2,6 @@
 using System.Collections.Generic;
 using CalamityMod.CalPlayer;
 using CalamityMod.Dusts;
-using CalamityMod.Items.Potions.Alcohol;
-using CalamityMod.Projectiles.Boss;
 using CalamityMod.Projectiles.Typeless;
 using Microsoft.Xna.Framework;
 using Terraria;

@@ -30,7 +30,6 @@ namespace CalamityMod.Items.Weapons.Melee
             ItemID.Sets.AnimatesAsSoul[Type] = true;
             ItemID.Sets.ItemsThatAllowRepeatedRightClick[Type] = true;
             base.SetStaticDefaults();
-            ItemID.Sets.ShimmerTransformToItem[Type] = ModContent.ItemType<VoidConcentrationStaff>();
         }
         public override void SetDefaults()
         {

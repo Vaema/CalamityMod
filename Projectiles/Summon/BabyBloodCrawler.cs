@@ -46,6 +46,20 @@ namespace CalamityMod.Projectiles.Summon
             return true;
         }
 
+        private bool _hadSpiderMinion = false;
+        public override bool PreAI()
+        {
+            var owner = Main.player[Projectile.owner];
+            _hadSpiderMinion = owner.spiderMinion;
+            owner.spiderMinion = false;
+            return true;
+        }
+
+        public override void PostAI()
+        {
+            Main.player[Projectile.owner].spiderMinion = _hadSpiderMinion;
+        }
+
         public override void AI()
         {
             if (bloodCooldown > 0)

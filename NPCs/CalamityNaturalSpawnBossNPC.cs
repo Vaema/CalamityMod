@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Linq;
 using CalamityMod.NPCs.AcidRain;
 using CalamityMod.NPCs.Astral;
 using CalamityMod.NPCs.NormalNPCs;
@@ -48,6 +44,15 @@ namespace CalamityMod.NPCs
         {
             _PolterghastTriggerNPCS = null;
             _GreatSharkTriggerNPCS = null;
+        }
+
+        private sealed class ClearWorldHook : ModSystem
+        {
+            public override void ClearWorld()
+            {
+                ghostKillCount = 0;
+                sharkKillCount = 0;
+            }
         }
 
         public override void OnKill(NPC npc)

@@ -27,7 +27,7 @@ namespace CalamityMod.Tiles.Abyss
 
             TileID.Sets.CanBeDugByShovel[Type] = true;
 
-            DustType = 32;
+            DustType = DustID.Sand;
             AddMapEntry(new Color(150, 100, 50));
             HitSound = SoundID.Dig;
 
@@ -77,7 +77,7 @@ namespace CalamityMod.Tiles.Abyss
                                 {
                                     for (int m = tileLocationY - ambientObjectDetectRadius; m <= tileLocationY + ambientObjectDetectRadius; m++)
                                     {
-                                        if (Main.tile[l, m].HasTile && Main.tile[l, m].TileType == 81)
+                                        if (Main.tile[l, m].HasTile && Main.tile[l, m].TileType == TileID.Coral)
                                             ambientObjectAmt++;
                                     }
                                 }
@@ -99,7 +99,7 @@ namespace CalamityMod.Tiles.Abyss
                                 {
                                     for (int m = tileLocationY - ambientObjectDetectRadius; m <= tileLocationY + ambientObjectDetectRadius; m++)
                                     {
-                                        if (Main.tile[l, m].HasTile && Main.tile[l, m].TileType == 324)
+                                        if (Main.tile[l, m].HasTile && Main.tile[l, m].TileType == TileID.BeachPiles)
                                             ambientObjectAmt++;
                                     }
                                 }

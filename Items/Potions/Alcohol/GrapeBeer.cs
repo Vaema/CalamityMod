@@ -12,9 +12,8 @@ namespace CalamityMod.Items.Potions.Alcohol
     {
         public new string LocalizationCategory => "Items.Potions";
 
-        public static float DefenseLossPercent = 0.03f;
-        public static int SecondDuration = 15;
-        public override LocalizedText Tooltip => base.Tooltip.WithFormatArgs(DefenseLossPercent.ToPercent(), SecondDuration);
+        public static float CritLoss = 10;
+        public override LocalizedText Tooltip => base.Tooltip.WithFormatArgs(CritLoss);
 
         public override void SetStaticDefaults()
         {
@@ -28,15 +27,10 @@ namespace CalamityMod.Items.Potions.Alcohol
 
         public override void SetDefaults()
         {
-            Item.DefaultToHealingPotion(12, 28, 100);
+            Item.DefaultToFood(12, 28, ModContent.BuffType<GrapeBeerBuff>(), CalamityUtils.MinutesToFrames(6), true);
 
             Item.value = Item.sellPrice(silver: 3);
             Item.rare = ItemRarityID.LightRed;
-        }
-
-        public override void OnConsumeItem(Player player)
-        {
-            player.AddBuff(ModContent.BuffType<GrapeBeerBuff>(), CalamityUtils.SecondsToFrames(SecondDuration));
         }
 
         public override void AddRecipes()
@@ -44,17 +38,8 @@ namespace CalamityMod.Items.Potions.Alcohol
             CreateRecipe(10).
                 AddIngredient(ItemID.Bottle, 10).
                 AddIngredient(ItemID.Grapes).
-                AddIngredient<StarblightSoot>(5).
                 AddTile(TileID.Kegs).
                 Register();
-
-            CreateRecipe().
-                AddIngredient(ItemID.BottledWater).
-                AddIngredient<BloodOrb>(5).
-                AddIngredient<StarblightSoot>().
-                AddTile(TileID.AlchemyTable).
-                Register()
-                .DisableDecraft();
         }
     }
 }

@@ -180,7 +180,7 @@ namespace CalamityMod.Projectiles.Summon
             {
                 Vector2 dustDrawPosition = Vector2.Lerp(start, end, i / 74f);
 
-                Dust magic = Dust.NewDustPerfect(dustDrawPosition, 267);
+                Dust magic = Dust.NewDustPerfect(dustDrawPosition, DustID.RainbowMk2);
                 magic.velocity = -Vector2.UnitY * Main.rand.NextFloat(0.2f, 0.235f);
                 magic.color = Color.LightCyan;
                 magic.color.A = 0;

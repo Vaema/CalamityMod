@@ -1,8 +1,6 @@
 ﻿using System.Collections.Generic;
 using CalamityMod.Items.Weapons.Magic;
 using CalamityMod.NPCs.DevourerofGods;
-using CalamityMod.Particles;
-using CalamityMod.Projectiles.Ranged;
 using CalamityMod.Projectiles.Typeless;
 using CalamityMod.Rarities;
 using Microsoft.Xna.Framework;
@@ -10,7 +8,6 @@ using Microsoft.Xna.Framework.Graphics;
 using Terraria;
 using Terraria.DataStructures;
 using Terraria.ID;
-using Terraria.Localization;
 using Terraria.ModLoader;
 
 namespace CalamityMod.Items.Weapons.Ranged
@@ -22,10 +19,6 @@ namespace CalamityMod.Items.Weapons.Ranged
         public override void ModifyTooltips(List<TooltipLine> tooltips)
         {
             tooltips.FindAndReplaceAll("ff00ff", Utils.Hex3(DevourerofGodsHead.SpecialMoveColor));
-        }
-        public override void SetStaticDefaults()
-        {
-            ItemID.Sets.ShimmerTransformToItem[Type] = ModContent.ItemType<HyperdeathRiftScepter>();
         }
         public override void SetDefaults()
         {

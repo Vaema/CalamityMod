@@ -1,17 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using CalamityMod.Systems;
-using Terraria.ModLoader;
+﻿using System.IO;
 using Terraria;
 using Terraria.ID;
 
 namespace CalamityMod.Packets
 {
-    public sealed class MusicEventSyncRequestPacket : CalamityPacket
+    internal sealed class MusicEventSyncRequestPacket : CalamityPacket
     {
         public static MusicEventSyncRequestPacket Instance { get; private set; }
 

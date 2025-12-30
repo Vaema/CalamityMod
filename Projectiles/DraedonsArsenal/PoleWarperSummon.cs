@@ -88,7 +88,7 @@ namespace CalamityMod.Projectiles.DraedonsArsenal
             {
                 float angle = MathHelper.TwoPi / 45f * i;
                 Vector2 velocity = angle.ToRotationVector2() * 4f;
-                Dust dust = Dust.NewDustPerfect(Projectile.Center + velocity * 2.75f, 261, velocity);
+                Dust dust = Dust.NewDustPerfect(Projectile.Center + velocity * 2.75f, DustID.AncientLight, velocity);
                 dust.noGravity = true;
             }
         }

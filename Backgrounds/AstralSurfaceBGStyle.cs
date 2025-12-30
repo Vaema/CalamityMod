@@ -1,20 +1,16 @@
-﻿using Microsoft.Xna.Framework.Graphics;
-using Microsoft.Xna.Framework;
-using System.Reflection;
-using System;
-using Terraria.Graphics.Effects;
-using Terraria;
-using Terraria.ModLoader;
+﻿using System;
 using CalamityMod.Skies;
+using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
+using Terraria;
+using Terraria.Graphics.Effects;
+using Terraria.ModLoader;
 
 namespace CalamityMod.Backgrounds
 {
     //this is just a blank background, so each custom background will draw over it
     public class AstralSurfaceBGStyle : ModSurfaceBackgroundStyle
     {
-        internal static readonly FieldInfo screenOffField = typeof(Main).GetField("screenOff", BindingFlags.Instance | BindingFlags.NonPublic);
-        internal static readonly FieldInfo scAdjField = typeof(Main).GetField("scAdj", BindingFlags.Instance | BindingFlags.NonPublic);
-        internal static readonly FieldInfo COSBMAplhaField = typeof(Main).GetField("ColorOfSurfaceBackgroundsModified", BindingFlags.Static | BindingFlags.NonPublic);
         readonly int FrontBGYOffset = 275; //Offsets for the height positioning. Make these 0 for backgrounds that want to be the same as treeline backgrounds (backgrounds that have the front 3 layers as trees)
         readonly int CloseBGYOffset = 175;
         readonly int MiddleBGYOffset = 475;
@@ -50,9 +46,9 @@ namespace CalamityMod.Backgrounds
 
         public override bool PreDrawCloseBackground(SpriteBatch spriteBatch) //Taken from vanilla to draw the front 3 layers, edited to fit tmod and astral background needs
         {
-            float screenOff = (float)screenOffField.GetValue(Main.instance);
-            float scAdj = (float)scAdjField.GetValue(Main.instance);
-            Color COSBMAplha = (Color)COSBMAplhaField.GetValue(null);
+            float screenOff = Main.instance.screenOff;
+            float scAdj = Main.instance.scAdj;
+            Color COSBMAplha = Main.ColorOfSurfaceBackgroundsModified;
             Color ColorOfSurfaceBackgroundsModified = new Color(63, 51, 90, COSBMAplha.A); //Astral Biome Coloration with the alpha as the background fade
             bool canBGDraw = false;
             if ((!Main.remixWorld || (Main.gameMenu && !WorldGen.remixWorldGen)) && (!WorldGen.remixWorldGen || !WorldGen.drunkWorldGen))

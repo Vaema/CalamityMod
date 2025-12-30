@@ -4,13 +4,24 @@ using Microsoft.Xna.Framework.Graphics;
 using Terraria;
 using Terraria.ModLoader;
 using Terraria.ModLoader.IO;
+using Terraria.WorldBuilding;
 
 namespace CalamityMod.NPCs.VanillaNPCAIOverrides
 {
-    public abstract class VanillaAIOverride
+    public abstract class VanillaAIOverride : ILoadable
     {
         public NPC NPC { get; set; }
         public bool DisableMultiplayerSmoothing { get; set; }
+
+        public void Load(Mod mod)
+        {
+            CalamityVanillaAIOverrideNPC.RegisterNetID(this);
+        }
+
+        public void Unload()
+        {
+
+        }
 
         public abstract bool AI(Mod mod);
 
@@ -33,11 +44,25 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides
 
         }
 
+        public virtual bool? CanBeHitByProjectile(Mod mod, Projectile projectile) => null;
+
+        public virtual void ModifyHitByItem(Mod mod, Player player, Item item, ref NPC.HitModifiers modifiers) { }
+
+        public virtual void ModifyHitByProjectile(Mod mod, Projectile projectile, ref NPC.HitModifiers modifiers) { }
+
+        public virtual void OnHitByItem(Mod mod, Player player, Item item, NPC.HitInfo hit, int damageDone) { }
+
+        public virtual void OnHitByProjectile(Mod mod, Projectile projectile, NPC.HitInfo hit, int damageDone) { }
+
         public virtual void HitEffect(Mod mod, NPC.HitInfo hit) { }
+
+        public virtual bool PreKill(Mod mod) => true;
 
         public virtual void FindFrame(Mod mod, int frameHeight) { }
 
         public virtual bool PreDraw(Mod mod, SpriteBatch spriteBatch, Vector2 screenPos, Color drawColor) => true;
+
+        public virtual void PostDraw(Mod mod, SpriteBatch spriteBatch, Vector2 screenPos, Color drawColor) { }
 
         /// <summary>
         /// This Method should be Implemented If we added our custom field to AI Overrides

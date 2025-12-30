@@ -5,7 +5,6 @@ using System.Threading;
 using CalamityMod.Buffs.DamageOverTime;
 using CalamityMod.Dusts;
 using CalamityMod.Events;
-using CalamityMod.Items.Accessories;
 using CalamityMod.Items.Armor.Vanity;
 using CalamityMod.Items.LoreItems;
 using CalamityMod.Items.Mounts;
@@ -103,7 +102,7 @@ namespace CalamityMod.NPCs.AstrumAureus
             NPC.height = 374;
             NPC.defense = 40;
             NPC.DR_NERD(0.1f);
-            NPC.LifeMaxNERB(100000, 120000, 740000); // 30 seconds in boss rush
+            NPC.LifeMaxNERB(75000, 120000, 740000); // 30 seconds in boss rush
             NPC.aiStyle = -1;
             AIType = -1;
             NPC.knockBackResist = 0f;

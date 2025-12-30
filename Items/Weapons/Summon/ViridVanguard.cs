@@ -1,5 +1,4 @@
-﻿using System.IO;
-using CalamityMod.Buffs.Summon;
+﻿using CalamityMod.Buffs.Summon;
 using CalamityMod.Items.Materials;
 using CalamityMod.Packets;
 using CalamityMod.Projectiles.Summon;

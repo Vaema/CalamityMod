@@ -5,6 +5,7 @@ using CalamityMod.Systems;
 using CalamityMod.Tiles.Abyss;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using ReLogic.Content;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
@@ -13,8 +14,17 @@ namespace CalamityMod.Tiles.SunkenSea
 {
     public class PinkPearlPile : ModTile
     {
+        public Asset<Texture2D> GlintTexture;
+
+        public Vector2 GlintDir;
+
         public override void SetStaticDefaults()
         {
+            GlintTexture = ModContent.Request<Texture2D>(Texture + "_Glint");
+
+            GlintDir = new Vector2(1f, -1f);
+            GlintDir.Normalize();
+
             Main.tileSolid[Type] = true;
             Main.tileBlockLight[Type] = true;
             Main.tileLighted[Type] = true;
@@ -55,15 +65,11 @@ namespace CalamityMod.Tiles.SunkenSea
             return TileFramingSystem.BetterGemsparkFraming(i, j, resetFrame);
         }
 
-        private static float GetFade1(int i, int j)
+        public override void PostTileFrame(int i, int j, int up, int down, int left, int right, int upLeft, int upRight, int downLeft, int downRight)
         {
-            return (MathF.Sin(Main.GlobalTimeWrappedHourly * 0.2f) + 1f) / 2f;
+            Main.tile[i, j].Get<TileSpecialDrawData>().Flag0 = !Main.tile[i - 1, j].HasTile || !Main.tile[i + 1, j].HasTile || !Main.tile[i, j - 1].HasTile || !Main.tile[i, j + 1].HasTile;
         }
 
-        private static float GetFade2(int i, int j)
-        {
-            return (MathF.Sin(Main.GlobalTimeWrappedHourly * 0.1f + i * 0.08f - j * 0.05f) + 1f) / 2f;
-        }
         public override void PostDraw(int i, int j, SpriteBatch spriteBatch)
         {
             //IF this glint effect below runs poorly on lower end PC's we should keep it as a setting for those with good PC's
@@ -78,7 +84,7 @@ namespace CalamityMod.Tiles.SunkenSea
             Rectangle sourceRect = new Rectangle(frameX, frameY, 16, 16);
 
 
-            Texture2D GlintTex = ModContent.Request<Texture2D>("CalamityMod/Tiles/SunkenSea/PinkPearlPile_Glint").Value;
+            Texture2D GlintTex = GlintTexture.Value;
 
             Vector2 glintDir = new Vector2(1f, -1f);
             glintDir.Normalize();
@@ -89,31 +95,29 @@ namespace CalamityMod.Tiles.SunkenSea
 
             // this sets the length between the glints diagonally 
             float screenDiagonalLength = Vector2.Dot(new Vector2(Main.screenWidth, Main.screenHeight), glintDir);
-            float[] beamCenters = new float[]
-            {
-              screenDiagonalLength * 0.05f, // upper glint
-              screenDiagonalLength * 0.5f,  // middle glint
-              screenDiagonalLength * 1.05f  // lower glint
-            };
 
             float stripeWidth = 100f;
+            Color lightColor = Lighting.GetColor(i, j) * 6;
 
-            foreach (float bc in beamCenters)
+            DrawGlint(screenDiagonalLength * 0.05f);
+            DrawGlint(screenDiagonalLength * 0.5f);
+            DrawGlint(screenDiagonalLength * 1.05f);
+
+            void DrawGlint(float beamCenter)
             {
-                float dist = Math.Abs(projection - bc);
-                float strength = MathHelper.Clamp(1f - dist / stripeWidth, 0f, 1f);
+                float dist = Math.Abs(projection - beamCenter);
+                float strength = MathHelper.Clamp(1f - dist / stripeWidth, 0f, 1f) * 0.4f;
 
                 if (strength > 0f)
                 {
-                    spriteBatch.Draw(GlintTex, position, sourceRect, (Lighting.GetColor(i, j) * 6) * (strength * 0.4f), 0f, Vector2.Zero, 1f, SpriteEffects.None, 0f);
+                    spriteBatch.Draw(GlintTexture.Value, position, sourceRect, lightColor * strength, 0f, Vector2.Zero, 1f, SpriteEffects.None, 0f);
                 }
             }
         }
+
         public override void ModifyLight(int i, int j, ref float r, ref float g, ref float b)
         {
-            // figure out if the tile is exposed - taken from the coral tiles
-            if (Main.tile[i, j] == null ||
-                (Main.tile[i - 1, j].HasTile && Main.tile[i + 1, j].HasTile && Main.tile[i, j - 1].HasTile && Main.tile[i, j + 1].HasTile))
+            if (!Main.tile[i, j].Get<TileSpecialDrawData>().Flag0)
                 return;
 
             // get in-game lighting color at this tile
@@ -133,19 +137,16 @@ namespace CalamityMod.Tiles.SunkenSea
             float projection = Vector2.Dot(screenPos, glintDir);
             float screenDiagonalLength = Vector2.Dot(new Vector2(Main.screenWidth, Main.screenHeight), glintDir);
 
-            float[] beamCenters =
-            {
-             screenDiagonalLength * 0.05f,
-             screenDiagonalLength * 0.5f,
-             screenDiagonalLength * 1.05f
-          };
-
             float stripeWidth = 100f;
             float maxStrength = 0f;
 
-            foreach (float bc in beamCenters)
+            UpdateMaxStrength(screenDiagonalLength * 0.05f);
+            UpdateMaxStrength(screenDiagonalLength * 0.5f);
+            UpdateMaxStrength(screenDiagonalLength * 1.05f);
+
+            void UpdateMaxStrength(float beamCenter)
             {
-                float dist = Math.Abs(projection - bc);
+                float dist = Math.Abs(projection - beamCenter);
                 float strength = MathHelper.Clamp(1f - dist / stripeWidth, 0f, 1f);
                 if (strength > maxStrength)
                     maxStrength = strength;

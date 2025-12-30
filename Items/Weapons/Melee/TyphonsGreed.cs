@@ -1,7 +1,6 @@
 ﻿using CalamityMod.Items.Materials;
 using CalamityMod.Items.Placeables.Abyss;
 using CalamityMod.Projectiles.Melee;
-using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
 

@@ -1,7 +1,5 @@
-﻿using CalamityMod.Balancing;
-using CalamityMod.DataStructures;
+﻿using CalamityMod.DataStructures;
 using CalamityMod.Projectiles.Rogue;
-using CalamityMod.Projectiles.Summon;
 using Terraria;
 using Terraria.ModLoader;
 

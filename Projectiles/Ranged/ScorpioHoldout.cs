@@ -106,7 +106,7 @@ namespace CalamityMod.Projectiles.Ranged
 
                 for (int i = 0; i < 2; i++)
                 {
-                    Dust dust = Dust.NewDustPerfect(position, 303, velocity * 0.5f, 200, default, Main.rand.NextFloat(0.9f, 1.3f));
+                    Dust dust = Dust.NewDustPerfect(position, DustID.SteampunkSteam, velocity * 0.5f, 200, default, Main.rand.NextFloat(0.9f, 1.3f));
                     dust.noGravity = false;
                 }
             }

@@ -1,12 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Diagnostics.CodeAnalysis;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Diagnostics.CodeAnalysis;
+using CalamityMod.Systems.Collections;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria;
-using Terraria.DataStructures;
 using Terraria.ModLoader;
 
 namespace CalamityMod.Systems
@@ -21,6 +16,27 @@ namespace CalamityMod.Systems
             public override void PostSetupTileMerge()
             {
                 TileBlendMergeSystem.SetupMergeData();
+            }
+
+            public override void PostDraw(int i, int j, int type, SpriteBatch spriteBatch)
+            {
+                if (CalamityClientConfig.Instance.TileTextureBlendingQuality == TileBlendingQuality.Disable)
+                    return;
+
+                if (CalamityTileSets.DrawBlendMergeAfterSolidTile[type])
+                    return;
+
+                if (!WorldGen.InWorld(i, j))
+                    return;
+
+                var tile = Main.tile[i, j];
+                if (!tile.Get<TileSpecialDrawData>().HasBlendMergeData)
+                    return;
+
+                if (!TryGetBlendingRefData(i, j, out var blendRefs))
+                    return;
+
+                DrawOnTile(tile, i, j, in blendRefs);
             }
 
             public override bool TileFrame(int i, int j, int type, ref bool resetFrame, ref bool noBreak)

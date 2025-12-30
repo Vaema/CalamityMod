@@ -1,18 +1,13 @@
-﻿using System;
-using System.IO;
-using CalamityMod.Buffs.DamageOverTime;
-using CalamityMod.Buffs.StatDebuffs;
+﻿using System.IO;
 using CalamityMod.Dusts;
 using CalamityMod.Events;
-using CalamityMod.Graphics.Renderers.CalamityRenderers;
-using CalamityMod.Projectiles.Boss;
 using CalamityMod.Projectiles.Melee.Yoyos;
+using CalamityMod.Utilities.Daybreak;
 using CalamityMod.World;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using ReLogic.Content;
 using Terraria;
-using Terraria.Audio;
 using Terraria.GameContent;
 using Terraria.Graphics.Shaders;
 using Terraria.ID;
@@ -276,12 +271,40 @@ namespace CalamityMod.NPCs.DevourerofGods
                 segmentVelocity *= 1.1f;
         }
 
+        Vector2 noiseOffset = Vector2.Zero;
+
         public override bool PreDraw(SpriteBatch spriteBatch, Vector2 screenPos, Color drawColor)
         {
             if (NPC.realLife < 0 || NPC.realLife >= Main.maxNPCs || Main.npc[NPC.realLife] is null)
                 return true;
             if (Main.npc[NPC.realLife].type != ModContent.NPCType<DevourerofGodsHead>())
                 return true;
+
+            bool shouldUseShader = CalamityDrawParameterNPC.DoGDeathAnimationTimer != 0;
+            SpriteBatchSnapshot snap = new(spriteBatch);
+
+            if (shouldUseShader)
+            {
+                if (noiseOffset == Vector2.zeroVector)
+                    noiseOffset = NPC.Center;
+
+                Main.spriteBatch.End(out snap);
+                Main.spriteBatch.Begin(SpriteSortMode.Immediate, BlendState.NonPremultiplied, SamplerState.LinearWrap, DepthStencilState.Default, RasterizerState.CullNone, null, Main.GameViewMatrix.ZoomMatrix);
+
+                MiscShaderData dissolveShader = GameShaders.Misc["CalamityMod:Dissolve"];
+                Texture2D dissolveTexture = ModContent.Request<Texture2D>("CalamityMod/ExtraTextures/GreyscaleGradients/HarshNoise").Value;
+
+                dissolveShader.Shader.Parameters["noiseScale"].SetValue(0.25f);
+                dissolveShader.Shader.Parameters["dissolveIntensity"].SetValue(CalamityDrawParameterNPC.DoGDeathAnimationTimer / 600f);
+                dissolveShader.Shader.Parameters["sampleOffset"].SetValue(noiseOffset * 0.5f);
+                dissolveShader.Shader.Parameters["transitionColor"].SetValue(DevourerofGodsHead.SpecialMoveColor.ToVector4());
+                dissolveShader.Shader.Parameters["transitionOffset"].SetValue(0.05f);
+
+                Main.instance.GraphicsDevice.Textures[1] = dissolveTexture;
+                Main.instance.GraphicsDevice.SamplerStates[1] = SamplerState.LinearWrap;
+
+                dissolveShader.Apply();
+            }
 
             SpriteEffects spriteEffects = SpriteEffects.None;
             if (NPC.spriteDirection == 1)
@@ -311,11 +334,20 @@ namespace CalamityMod.NPCs.DevourerofGods
                 spriteBatch.Draw(texture2D15, drawLocation, NPC.frame, glowmaskColor2, NPC.rotation, halfSizeTexture, NPC.scale, spriteEffects, 0f);
             }
 
+            if (shouldUseShader)
+            {
+                Main.spriteBatch.End();
+                Main.spriteBatch.Begin(snap);
+            }
+
             return false;
         }
 
         public override bool CanHitPlayer(Player target, ref int cooldownSlot)
         {
+
+            if (Main.npc[(int)NPC.ai[2]].dontTakeDamage)
+                return false;
             cooldownSlot = ImmunityCooldownID.Bosses;
 
             Rectangle targetHitbox = target.Hitbox;

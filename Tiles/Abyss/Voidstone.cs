@@ -1,4 +1,5 @@
-﻿using CalamityMod.Sounds;
+﻿using CalamityMod.ExtraTextures.GreyscaleGradients;
+using CalamityMod.Sounds;
 using CalamityMod.Systems;
 using CalamityMod.Tiles.Abyss.AbyssAmbient;
 using Microsoft.Xna.Framework;
@@ -11,13 +12,10 @@ namespace CalamityMod.Tiles.Abyss
 {
     public class Voidstone : GlowMaskTile
     {
-        public override string GlowMaskAsset => "CalamityMod/Tiles/Abyss/Voidstone_Glowmask";
-        public GrayscaleTexture2D NoiseTexture;
+        public override string GlowMaskAsset => $"{Texture}_Glowmask";
 
         public override void SetupStatic()
         {
-            NoiseTexture = new("CalamityMod/ExtraTextures/GreyscaleGradients/BlobbyNoise");
-
             Main.tileSolid[Type] = true;
             Main.tileBlockLight[Type] = true;
             Main.tileBrick[Type] = true;
@@ -34,12 +32,6 @@ namespace CalamityMod.Tiles.Abyss
             this.RegisterBlendMergeWith(TileID.Dirt);
             this.RegisterBlendMergeWith(TileID.Stone);
             this.RegisterBlendMergeWith(ModContent.TileType<PyreMantle>());
-        }
-
-        public override void OnUnload()
-        {
-            NoiseTexture?.Unload();
-            NoiseTexture = null;
         }
 
         int animationFrameWidth = 234;
@@ -85,7 +77,7 @@ namespace CalamityMod.Tiles.Abyss
         public override Color GetGlowMaskColor(int i, int j, TileDrawInfo drawData)
         {
             int time = (int)(Main.timeForVisualEffects * 0.11);
-            float brightness = 1.0f - NoiseTexture.GetRepeat((i * 100) + time, (j * 100) + time);
+            float brightness = 1.0f - GreyscaleGradient.BlobbyNoise.GetRepeat((i * 100) + time, (j * 100) + time);
             brightness -= 0.55f;
             return new Color(brightness, brightness, brightness);
         }

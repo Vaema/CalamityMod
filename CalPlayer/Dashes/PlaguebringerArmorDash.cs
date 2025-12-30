@@ -12,11 +12,16 @@ namespace CalamityMod.CalPlayer.Dashes
 {
     public class PlaguebringerArmorDash : PlayerDashEffect
     {
-        public static new string ID => "Plaguebringer Armor";
+        public static new string ID { get; private set; }
 
         public override DashCollisionType CollisionType => DashCollisionType.NoCollision;
 
         public override bool IsOmnidirectional => false;
+
+        public override void Load()
+        {
+            ID = DashID;
+        }
 
         public override float CalculateDashSpeed(Player player) => 19f;
 

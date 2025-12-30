@@ -5,7 +5,6 @@ using CalamityMod.Tiles.FurnitureMonolith;
 using CalamityMod.Tiles.Ores;
 using CalamityMod.Walls;
 using CalamityMod.Walls.UnsafeWalls;
-using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
 using static Terraria.ModLoader.ModContent;

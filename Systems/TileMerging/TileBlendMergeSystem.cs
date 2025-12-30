@@ -1,8 +1,6 @@
 ﻿using System;
-using System.Reflection;
-using MonoMod.Cil;
+using Microsoft.Xna.Framework;
 using Terraria;
-using Terraria.GameContent.Drawing;
 using Terraria.ID;
 using Terraria.ModLoader;
 
@@ -20,51 +18,15 @@ namespace CalamityMod.Systems
         {
             // Draw Code
             On_Main.DrawTiles += OnDrawTiles;
-            IL_TileDrawing.Draw += MakeQualityRequirementUpdateHook;
+            Main.OnPreDraw += UpdateBaking;
         }
 
         public override void Unload()
         {
+            Main.OnPreDraw -= UpdateBaking;
             _TileBlendable = null;
             _TileBlendLooselyFillDiagonal = null;
             _TileTypeToBlendTextureSlot = null;
-        }
-
-        private void MakeQualityRequirementUpdateHook(ILContext il)
-        {
-            const string midQualityRequirementField = "_mediumQualityLightingRequirement";
-            const string highQualityRequirementField = "_highQualityLightingRequirement";
-            const string getScreenDrawAreaMethod = "GetScreenDrawArea";
-
-            var cursor = new ILCursor(il);
-
-            if (!cursor.TryGotoNext(MoveType.After, x => x.MatchCallOrCallvirt<TileDrawing>(getScreenDrawAreaMethod)))
-            {
-                CalamityMod.Log.ILFailure("QualityRequirementHook", $"{getScreenDrawAreaMethod} call is missing!");
-                return;
-            }
-
-            var type = typeof(TileDrawing);
-            var mediumReqField = type.GetField(midQualityRequirementField, BindingFlags.NonPublic | BindingFlags.Instance);
-            var highReqField = type.GetField(highQualityRequirementField, BindingFlags.NonPublic | BindingFlags.Instance);
-
-            if (mediumReqField == null)
-            {
-                CalamityMod.Log.ILFailure("QualityRequirementHook", $"{midQualityRequirementField} field is missing!");
-                return;
-            }
-
-            if (highReqField == null)
-            {
-                CalamityMod.Log.ILFailure("QualityRequirementHook", $"{highQualityRequirementField} field is missing!");
-                return;
-            }
-
-            cursor.EmitLdarg0(); // self
-            cursor.EmitLdfld(highReqField); // self.highReqField
-            cursor.EmitLdarg0(); // self
-            cursor.EmitLdfld(mediumReqField); // self.mediumReqField
-            cursor.EmitDelegate(OnQualityRequirementUpdate); // call (highReq, mediumReq)
         }
 
         public override void ResizeArrays()
@@ -97,7 +59,16 @@ namespace CalamityMod.Systems
         {
             foreach (var blendTexture in TileBlendTextureLoader.AllTextures)
             {
-                blendTexture.BakeBlendTexture(blendTexture.TextureAsset.Value);
+                blendTexture.ClearBakeCache();
+            }
+        }
+
+        private static void UpdateBaking(GameTime obj)
+        {
+            TileBlendTexture.BakedCountInFrame = 0;
+            foreach (var blendTexture in TileBlendTextureLoader.AllTextures)
+            {
+                blendTexture.BakeRequestedBlendTextureCache();
             }
         }
         #endregion

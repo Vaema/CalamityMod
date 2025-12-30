@@ -1,5 +1,4 @@
-﻿using System.Collections.Generic;
-using System.Linq;
+﻿using System.Linq;
 using CalamityMod.Buffs.StatDebuffs;
 using CalamityMod.CalPlayer;
 using CalamityMod.Items.Materials;
@@ -86,9 +85,9 @@ namespace CalamityMod.Items.Weapons.Summon
                         if (!visuals)
                             return false;
 
-                        Dust warningDust = Dust.NewDustPerfect(pos.ToVector2() * 16f + Vector2.One * 8f, 127, Scale: 1.2f);
+                        Dust warningDust = Dust.NewDustPerfect(pos.ToVector2() * 16f + Vector2.One * 8f, DustID.Flare, Scale: 1.2f);
 
-                        warningDust = Dust.NewDustPerfect(pos.ToVector2() * 16f + Vector2.One * 8f, 114, Vector2.Zero, Scale: 1.4f);
+                        warningDust = Dust.NewDustPerfect(pos.ToVector2() * 16f + Vector2.One * 8f, DustID.CrimsonSpray, Vector2.Zero, Scale: 1.4f);
                         warningDust.noGravity = true;
                     }
                 }

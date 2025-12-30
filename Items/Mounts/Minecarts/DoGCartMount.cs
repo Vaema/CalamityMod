@@ -47,7 +47,7 @@ namespace CalamityMod.Items.Mounts.Minecarts
             offsetDirection *= new Vector2(Main.rand.NextBool().ToDirectionInt(), 1f) * 13f;
             dustPosition += offsetDirection;
 
-            Dust spark = Dust.NewDustPerfect(dustPosition, 234);
+            Dust spark = Dust.NewDustPerfect(dustPosition, DustID.BoneTorch);
             spark.velocity = Main.rand.NextVector2Circular(4f, 4f);
             spark.velocity.X *= Main.rand.NextFloat(0.25f, 1f);
             spark.velocity.Y -= Main.rand.NextFloat(1.25f, 3f);

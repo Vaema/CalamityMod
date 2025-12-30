@@ -5,7 +5,6 @@ using Terraria.ObjectData;
 using Terraria.DataStructures;
 using Terraria.Enums;
 using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Graphics;
 
 namespace CalamityMod.Tiles.SunkenSea.Ambient
 {
@@ -27,7 +26,7 @@ namespace CalamityMod.Tiles.SunkenSea.Ambient
 			TileObjectData.newTile.DrawYOffset = 3;
 			TileObjectData.addTile(Type);
             AddMapEntry(new Color(0, 62, 84));
-            DustType = 96;
+            DustType = DustID.BlueMoss;
             HitSound = SoundID.Dig;
 		}
 	}
@@ -50,7 +49,7 @@ namespace CalamityMod.Tiles.SunkenSea.Ambient
 			TileObjectData.newTile.DrawYOffset = 3;
 			TileObjectData.addTile(Type);
             AddMapEntry(new Color(0, 62, 84));
-            DustType = 96;
+            DustType = DustID.BlueMoss;
             HitSound = SoundID.Dig;
 		}
 	}

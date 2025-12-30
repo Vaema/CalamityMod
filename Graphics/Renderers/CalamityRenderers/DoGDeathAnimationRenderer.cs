@@ -1,10 +1,13 @@
-﻿using CalamityMod.Enums;
+﻿using System;
+using CalamityMod.Enums;
 using CalamityMod.NPCs;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using ReLogic.Content;
 using Terraria;
 using Terraria.Graphics.Shaders;
 using Terraria.ID;
+using Terraria.ModLoader;
 
 namespace CalamityMod.Graphics.Renderers.CalamityRenderers
 {
@@ -21,10 +24,12 @@ namespace CalamityMod.Graphics.Renderers.CalamityRenderers
 
         public override GeneralDrawLayer Layer => GeneralDrawLayer.AfterNPCs;
 
-        public override bool ShouldDraw => !Main.gameMenu && CalamityDrawParameterNPC.DoGDeathAnimationTimer > 0;
+        public override bool ShouldDraw => false;//!Main.gameMenu && CalamityDrawParameterNPC.DoGDeathAnimationTimer > 0;
 
         public static bool ValidToDraw(NPC npc)
         {
+            return false;
+            /*
             // Do not draw inactive npcs, or ones with weird MP types less than or equal to 0.
             if (!npc.active || npc.type <= NPCID.None)
                 return false;
@@ -33,6 +38,7 @@ namespace CalamityMod.Graphics.Renderers.CalamityRenderers
                 return false;
 
             return true;
+            */
         }
 
         public override void DrawToTarget(SpriteBatch spriteBatch)
@@ -59,21 +65,11 @@ namespace CalamityMod.Graphics.Renderers.CalamityRenderers
 
         public override void DrawTarget(SpriteBatch spriteBatch)
         {
-            var disintegrationShader = GameShaders.Misc["CalamityMod:DoGDisintegration"].Shader;
-            Vector2 screenSize = new(Main.screenWidth, Main.screenHeight);
-            Vector2 worldPosition = Main.screenPosition / MainTarget.Size;
-            float disintegrationProgress = CalamityDrawParameterNPC.DoGDeathAnimationTimer / 600f;
+            
+            spriteBatch.Draw(MainTarget, Vector2.Zero, Color.White);
 
-            disintegrationShader.Parameters["disintegrationProgress"].SetValue(disintegrationProgress);
-            disintegrationShader.Parameters["disintegrationScale"].SetValue(1.75f);
-            disintegrationShader.Parameters["worldPosition"].SetValue(new Vector2(worldPosition.X, worldPosition.Y));
-            disintegrationShader.Parameters["pixelSize"].SetValue(screenSize * 0.5f);
-
-            Main.instance.GraphicsDevice.Textures[1] = Main.Assets.Request<Texture2D>("Images/Misc/Perlin").Value;
-            Main.instance.GraphicsDevice.SamplerStates[1] = SamplerState.LinearWrap;
-
-            disintegrationShader.Techniques[0].Passes[0].Apply();
-            Main.spriteBatch.Draw(MainTarget, Vector2.Zero, Color.White);
+            spriteBatch.End();
+            spriteBatch.Begin(SpriteSortMode.Immediate, BlendState.AlphaBlend, Main.DefaultSamplerState, DepthStencilState.None, RasterizerState.CullCounterClockwise);
         }
     }
 }

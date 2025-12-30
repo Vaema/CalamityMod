@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using CalamityMod.CalPlayer;
 using CalamityMod.Events;
-using CalamityMod.Items;
 using CalamityMod.NPCs;
 using CalamityMod.NPCs.TownNPCs;
 using CalamityMod.Systems;
@@ -968,9 +967,9 @@ namespace CalamityMod
         #region Town NPC Alert support
         public static void RegisterTownNPCShop(int id, Predicate<Player> getShop, Action<Player, bool> setShop)
         {
-            if (!CalamityGlobalNPC.npcAlertList.Contains((id, getShop, setShop)))
+            if (!CalamityGlobalTownNPC.npcAlertList.Contains((id, getShop, setShop)))
             {
-                CalamityGlobalNPC.npcAlertList.Add((id, getShop, setShop));
+                CalamityGlobalTownNPC.npcAlertList.Add((id, getShop, setShop));
             }
         }
         #endregion
@@ -1028,7 +1027,7 @@ namespace CalamityMod
                 case "Ectoheart": player.Calamity().adrenalineBoostThree = value; break;
 
                 case "CelestialOnion": player.Calamity().extraAccessoryML = value; break;
-            };
+            }
         }
         #endregion
 
@@ -1790,6 +1789,21 @@ namespace CalamityMod
                         return null;
                     }
 
+                case "GetVanillaAIOverrideEnabled":
+                    {
+                        return CalamityVanillaAIOverrideNPC.Enabled;
+                    }
+
+                case "SetVanillaAIOverrideEnabled":
+                    {
+                        if (args.Length < 1)
+                            return new ArgumentNullException(nameof(args), "ERROR: Must specify a bool parameter");
+                        if (args[0] is not bool aiOverrideEnabled)
+                            return new ArgumentException("ERROR: The third argument to \"SetVanillaAIOverrideEnabled\" must be a bool.");
+                        CalamityVanillaAIOverrideNPC.Enabled = aiOverrideEnabled;
+                        return null;
+                    }
+
                 case "GetCalamityAI":
                 case "GetNewAI":
                     {
@@ -2174,7 +2188,7 @@ namespace CalamityMod
                             return new ArgumentException("ERROR: The first argument to \"SetNewShopVariable\" must be an integer array of npc ids that should be alerted.");
                         if (args.Length != 3 || args[2] is not bool alreadySet)
                             return new ArgumentException("ERROR: The second argument to \"SetNewShopVariable\" Must be a bool that determines if the shop alert should show.");
-                        CalamityGlobalNPC.SetNewShopVariable(npcs, alreadySet);
+                        CalamityGlobalTownNPC.SetNewShopVariable(npcs, alreadySet);
                         return null;
                     }
 

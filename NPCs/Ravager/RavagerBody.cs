@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO;
+using System.Linq;
 using CalamityMod.Buffs.StatDebuffs;
 using CalamityMod.Events;
 using CalamityMod.Items.Accessories;
@@ -17,7 +18,6 @@ using CalamityMod.Items.Weapons.Ranged;
 using CalamityMod.Items.Weapons.Rogue;
 using CalamityMod.Items.Weapons.Summon;
 using CalamityMod.Projectiles.Boss;
-using CalamityMod.Projectiles.Enemy;
 using CalamityMod.UI.VanillaBossBars;
 using CalamityMod.World;
 using Microsoft.Xna.Framework;
@@ -88,7 +88,7 @@ namespace CalamityMod.NPCs.Ravager
             NPC.defense = 55;
             NPC.value = Item.buyPrice(gold: 25);
             NPC.DR_NERD(0.35f);
-            NPC.LifeMaxNERB(45000, 54000, 460000);
+            NPC.LifeMaxNERB(30000, 54000, 460000);
             if (DownedBossSystem.downedProvidence && !BossRushEvent.BossRushActive)
             {
                 NPC.damage = (int)(NPC.damage * 1.5);
@@ -508,7 +508,7 @@ namespace CalamityMod.NPCs.Ravager
                         player = Main.player[NPC.target];
 
                         bool shouldFall = player.position.Y >= NPC.Bottom.Y;
-                        float velocityXBoost = !anyHeadActive ? 6f : death ? 6f * (1f - lifeRatio) : 4f * (1f - lifeRatio);
+                        float velocityXBoost = !anyHeadActive ? 6f : 4f * (1f - lifeRatio);
                         float velocityX = 4f + velocityXBoost;
 
                         if (velocityY != 16)
@@ -541,13 +541,13 @@ namespace CalamityMod.NPCs.Ravager
                             {
                                 velocityX *= 2f;
                                 if (!shouldFall)
-                                    velocityY *= 0.5f;
+                                    velocityY *= 0.75f;
                             }
                             else if (calamityGlobalNPC.newAI[0] % 2f == 0f)
                             {
                                 velocityX *= 1.5f;
                                 if (!shouldFall)
-                                    velocityY *= 0.75f;
+                                    velocityY *= 1f;
                             }
                         }
 
@@ -585,7 +585,7 @@ namespace CalamityMod.NPCs.Ravager
 
                     if (Main.netMode != NetmodeID.MultiplayerClient)
                     {
-                        bool anyRockPillars = NPC.AnyNPCs(ModContent.NPCType<RockPillar>());
+                        bool anyRockPillars = Main.npc.Any(x => x.active && x.type == ModContent.NPCType<RockPillar>() && x.ai[1] < 2);
                         bool anyFlamePillars = NPC.AnyNPCs(ModContent.NPCType<FlamePillar>());
 
                         if (expertMode)
@@ -594,24 +594,35 @@ namespace CalamityMod.NPCs.Ravager
                             {
                                 if (n.type == ModContent.NPCType<RockPillar>() && n.ai[0] == 0f)
                                 {
-                                    n.ai[1] = -1f;
+                                    n.ai[1]++;
                                     n.direction = NPC.direction;
                                     n.netUpdate = true;
                                 }
                             }
 
                             int spawnDistance = 360;
+                            SoundEngine.PlaySound(PillarSound, NPC.Center);
+                            if (death && phase2)
+                            {
+                                spawnDistance = 300;
+                                var index = NPC.NewNPC(NPC.GetSource_FromAI(), (int)(player.Center.X), (int)player.Center.Y - spawnDistance - 100, ModContent.NPCType<RockPillar>());
+                                if (Main.npc.IndexInRange(index))
+                                {
+                                    var npc = Main.npc[index];
+                                    (int, int) H_W = (npc.height, npc.width);
+                                    npc.position = npc.Center;
+                                    npc.height = H_W.Item2;
+                                    npc.width = H_W.Item1;
+                                    npc.rotation = -MathHelper.PiOver2;
+                                    npc.Center = npc.position;
+                                    npc.ModNPC.DrawOffsetY = npc.width / 2 - npc.height / 2;
 
-                            if (!anyRockPillars || !anyFlamePillars)
-                            {
-                                SoundEngine.PlaySound(PillarSound, NPC.Center);
+                                }
                             }
-                            if (!anyRockPillars || Main.getGoodWorld)
-                            {
-                                NPC.NewNPC(NPC.GetSource_FromAI(), (int)(player.Center.X - spawnDistance * 1.25f), (int)player.Center.Y - 100, ModContent.NPCType<RockPillar>());
-                                NPC.NewNPC(NPC.GetSource_FromAI(), (int)(player.Center.X + spawnDistance * 1.25f), (int)player.Center.Y - 100, ModContent.NPCType<RockPillar>());
-                            }
-                            else if (!anyFlamePillars || Main.getGoodWorld)
+                            NPC.NewNPC(NPC.GetSource_FromAI(), (int)(player.Center.X - spawnDistance * 1.25f), (int)player.Center.Y - 100, ModContent.NPCType<RockPillar>());
+                            NPC.NewNPC(NPC.GetSource_FromAI(), (int)(player.Center.X + spawnDistance * 1.25f), (int)player.Center.Y - 100, ModContent.NPCType<RockPillar>());
+
+                            if (!anyFlamePillars && !phase2)
                             {
                                 float distanceMultiplier = finalPhase ? 2.5f : 2f;
                                 NPC.NewNPC(NPC.GetSource_FromAI(), (int)player.Center.X - (int)(spawnDistance * distanceMultiplier), (int)player.Center.Y - 100, ModContent.NPCType<FlamePillar>());
@@ -682,7 +693,7 @@ namespace CalamityMod.NPCs.Ravager
                     else
                         calamityGlobalNPC.newAI[2] = player.direction;
 
-                    float maxOffsetScale = death ? 320f : 240f;
+                    float maxOffsetScale = 240f;
                     float maxOffset = maxOffsetScale * (1f - lifeRatio);
                     float offset = phase2 ? maxOffset * calamityGlobalNPC.newAI[2] : 0f;
                     int quarterWidth = (int)(NPC.width * 0.25f);
@@ -724,7 +735,7 @@ namespace CalamityMod.NPCs.Ravager
 
                             if (NPC.Bottom.Y < player.position.Y)
                             {
-                                float fallSpeedBoost = !anyHeadActive ? 0.9f : death ? 0.9f * (1f - lifeRatio) : 0.6f * (1f - lifeRatio);
+                                float fallSpeedBoost = !anyHeadActive ? 0.9f : 0.6f * (1f - lifeRatio);
                                 float fallSpeed = 0.6f + fallSpeedBoost;
 
                                 if (calamityGlobalNPC.newAI[1] > 1f)
@@ -739,7 +750,7 @@ namespace CalamityMod.NPCs.Ravager
                         float velocityMult = 1.8f;
                         float velocityXChange = 0.2f + Math.Abs(NPC.Center.X - player.Center.X) * 0.001f;
 
-                        float velocityXBoost = !anyHeadActive ? 6f : death ? 6f * (1f - lifeRatio) : 4f * (1f - lifeRatio);
+                        float velocityXBoost = !anyHeadActive ? 6f : 4f * (1f - lifeRatio);
                         float velocityXCap = 8f + velocityXBoost + Math.Abs(NPC.Center.X - player.Center.X) * 0.001f;
 
                         if (!rightClawActive)

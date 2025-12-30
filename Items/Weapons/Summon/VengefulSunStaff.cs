@@ -1,6 +1,5 @@
 ﻿using System.Linq;
 using CalamityMod.Buffs.Summon;
-using CalamityMod.Items.Materials;
 using CalamityMod.Projectiles.Summon;
 using Microsoft.Xna.Framework;
 using Terraria;
@@ -18,7 +17,7 @@ namespace CalamityMod.Items.Weapons.Summon
         {
             Item.width = 72;
             Item.height = 72;
-            Item.damage = 30;
+            Item.damage = 40;
             Item.mana = 10;
             Item.useAnimation = Item.useTime = 36;
             Item.useStyle = ItemUseStyleID.Swing;

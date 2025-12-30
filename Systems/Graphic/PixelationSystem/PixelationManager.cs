@@ -81,7 +81,8 @@ namespace CalamityMod.Systems.Graphic.PixelationSystem
             ActivePixelatedDrawers_AfterDusts = [];
             ActivePixelatedDrawers_AfterEverything = [];
 
-            On_Main.CheckMonoliths += PrepareTargets;
+            GeneralDrawLayerSystem.OnDrawLayerLate += DrawPixelatedTargets;
+            GeneralDrawLayerSystem.OnPrepareDraw += PrepareTargets;
         }
 
         public override void Unload()
@@ -148,7 +149,7 @@ namespace CalamityMod.Systems.Graphic.PixelationSystem
             ReturnAssociatedDrawerCollection(drawLayer).Add(drawer);
         }
 
-        private static void PrepareTargets(On_Main.orig_CheckMonoliths orig)
+        private static void PrepareTargets()
         {
             if (!Main.gameMenu && !Main.dedServ)
             {
@@ -165,10 +166,8 @@ namespace CalamityMod.Systems.Graphic.PixelationSystem
 
                 Main.graphics.GraphicsDevice.SetRenderTarget(null);
             }
-
-            orig();
         }
-   
+
         private static void DrawCollectionsToTarget(Dictionary<BlendState, ManagedRenderTarget> targetCollection, Matrix pixelationMatrix, List<PixelatedDrawer> drawerCollection)
         {
             foreach (var blendStateTargetPair in targetCollection)
@@ -191,20 +190,17 @@ namespace CalamityMod.Systems.Graphic.PixelationSystem
             drawerCollection.Clear();
         }
 
-        internal static void DrawPixelatedTargets(GeneralDrawLayer drawLayer)
+        private static void DrawPixelatedTargets(GeneralDrawLayer drawLayer)
         {
             var targetCollection = ReturnAssociatedTargetCollection(drawLayer);
-            Main.spriteBatch.SafeAction(() =>
+            foreach (var keyValuePair in targetCollection)
             {
-                foreach (var keyValuePair in targetCollection)
-                {
-                    Main.spriteBatch.TryEnd();
-                    Main.spriteBatch.TryBegin(default, keyValuePair.Key, SamplerState.PointClamp, DepthStencilState.None, Main.Rasterizer, null, Main.GameViewMatrix.TransformationMatrix);
+                Main.spriteBatch.Begin(default, keyValuePair.Key, SamplerState.PointClamp, DepthStencilState.None, Main.Rasterizer, null, Main.GameViewMatrix.TransformationMatrix);
 
-                    float targetScale = 1f / PixelationResolution;
-                    Main.spriteBatch.Draw(keyValuePair.Value, Vector2.Zero, null, Color.White, 0f, Vector2.Zero, targetScale, SpriteEffects.None, 0f);
-                }
-            });
+                float targetScale = 1f / PixelationResolution;
+                Main.spriteBatch.Draw(keyValuePair.Value, Vector2.Zero, null, Color.White, 0f, Vector2.Zero, targetScale, SpriteEffects.None, 0f);
+                Main.spriteBatch.End();
+            }
         }
 
         private static List<PixelatedDrawer> ReturnAssociatedDrawerCollection(GeneralDrawLayer drawLayer)

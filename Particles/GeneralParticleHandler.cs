@@ -1,8 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Runtime.Serialization;
+using System.Runtime.CompilerServices;
 using CalamityMod.Enums;
+using CalamityMod.Systems.Graphic;
 using CalamityMod.Systems.Graphic.PixelationSystem;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
@@ -49,7 +50,7 @@ namespace CalamityMod.Particles
         /// <summary>
         /// The individual, autoloaded textures of each particle type defined across all mods, identified by the ID of the respective particle.
         /// </summary>
-        internal static Dictionary<int, Texture2D> particleTexturesByIDs;
+        internal static Dictionary<int, Asset<Texture2D>> particleTexturesByIDs;
 
         // Collections for tracking particles active in the world.
         private static List<Particle> activeParticles;
@@ -67,6 +68,7 @@ namespace CalamityMod.Particles
         public override void PostSetupContent()
         {
             Type baseParticleType = typeof(Particle);
+#pragma warning disable CS0618 // Type or member is obsolete
             ReflectionHelper.IterateEveryModsTypes<Particle>(action: type =>
             {
                 int ID = particleIDsByTypes.Count; //Get the ID of the particle
@@ -76,15 +78,14 @@ namespace CalamityMod.Particles
                 // 'UnintializedObject' is allowed to use here as it's only read for Texture string Property
                 // But do NOT EVER use it's instance as they are literally Uninitialized.
                 // It might cause unintended behaviour if we do that.
-#pragma warning disable SYSLIB0050
-                Particle instance = (Particle)FormatterServices.GetUninitializedObject(type);
-#pragma warning restore SYSLIB0050
+                Particle instance = (Particle)RuntimeHelpers.GetUninitializedObject(type);
 
                 string texturePath = type.Namespace.Replace('.', '/') + "/" + type.Name;
                 if (instance.Texture != "")
                     texturePath = instance.Texture;
-                particleTexturesByIDs[ID] = ModContent.Request<Texture2D>(texturePath, AssetRequestMode.ImmediateLoad).Value;
+                particleTexturesByIDs[ID] = ModContent.Request<Texture2D>(texturePath, instance.TextureRequestMode);
             });
+#pragma warning restore CS0618 // Type or member is obsolete
         }
 
         public override void Load()
@@ -100,6 +101,8 @@ namespace CalamityMod.Particles
             particlesToDraw = [];
             particlesToDraw_Pixelated = [];
             particlesToDraw_CustomShader = [];
+
+            GeneralDrawLayerSystem.OnDrawLayer += DrawParticleCollectionsAtSpecificLayer;
         }
 
         public override void Unload()
@@ -243,7 +246,7 @@ namespace CalamityMod.Particles
             if (Main.dedServ)
                 return null;
 
-            return particleTexturesByIDs[type];
+            return particleTexturesByIDs[type].Value;
         }
 
         public static void Update()
@@ -276,11 +279,11 @@ namespace CalamityMod.Particles
             }
 
             //Clear out particles whose time is up
-            activeParticles.RemoveAll(particle => 
+            activeParticles.RemoveAll(particle =>
             {
                 if ((particle.Time >= particle.Lifetime && particle.SetLifetime) || particlesToKill.Contains(particle))
                 {
-                    ReturnAssociatedDrawCollection(particle).Remove(particle); 
+                    ReturnAssociatedDrawCollection(particle).Remove(particle);
                     return true;
                 }
                 return false;
@@ -289,7 +292,7 @@ namespace CalamityMod.Particles
             particlesToKill.Clear();
         }
 
-        internal static void DrawParticleCollectionsAtSpecificLayer(GeneralDrawLayer drawLayer)
+        private static void DrawParticleCollectionsAtSpecificLayer(GeneralDrawLayer drawLayer)
         {
             if (Main.dedServ)
                 return;
@@ -337,7 +340,7 @@ namespace CalamityMod.Particles
                         lightColor = particle.Color.MultiplyRGB(Lighting.GetColor((particle.Position / 16).ToPoint()));
 
                     Rectangle frame = particleTexturesByIDs[particle.Type].Frame(1, particle.FrameVariants, 0, particle.Variant);
-                    Main.spriteBatch.Draw(particleTexturesByIDs[particle.Type], particle.Position - Main.screenPosition, frame, lightColor, particle.Rotation, frame.Size() * 0.5f, particle.Scale, SpriteEffects.None, 0f);
+                    Main.spriteBatch.Draw(particleTexturesByIDs[particle.Type].Value, particle.Position - Main.screenPosition, frame, lightColor, particle.Rotation, frame.Size() * 0.5f, particle.Scale, SpriteEffects.None, 0f);
                 }
 
                 // Since the switch case directly modifies the particle position, this resets it to the proper location
@@ -364,7 +367,7 @@ namespace CalamityMod.Particles
                             foreach (Particle particle in particlesAtSpecifiedLayer)
                                 DrawParticleInstance(particle);
                         }
-                        
+
                     }, drawLayer, keyValuePair.Key);
                 }
                 else

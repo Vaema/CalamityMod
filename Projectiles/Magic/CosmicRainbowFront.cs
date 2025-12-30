@@ -1,6 +1,4 @@
-﻿using System;
-using CalamityMod.Projectiles.Ranged;
-using Microsoft.Xna.Framework;
+﻿using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.ModLoader;
 

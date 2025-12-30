@@ -1,7 +1,5 @@
-﻿using System.Collections.Generic;
-using CalamityMod.World;
+﻿using CalamityMod.World;
 using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Graphics;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
@@ -18,7 +16,7 @@ namespace CalamityMod.Tiles.Abyss
             CalamityUtils.MergeWithGeneral(Type);
             CalamityUtils.MergeWithAbyss(Type);
 
-            DustType = 32;
+            DustType = DustID.Sand;
             AddMapEntry(new Color(113, 90, 71));
             HitSound = SoundID.Dig;
 

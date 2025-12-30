@@ -15,12 +15,17 @@ namespace CalamityMod.CalPlayer.Dashes
 {
     public class AsgardianAegisDash : PlayerDashEffect
     {
-        public static new string ID => "Asgardian Aegis";
+        public static new string ID { get; private set; }
 
         public override DashCollisionType CollisionType => DashCollisionType.ShieldSlam;
         public override bool IsOmnidirectional => false;
         public int Time = 0;
         public bool PostHit = false;
+
+        public override void Load()
+        {
+            ID = DashID;
+        }
 
         public override float CalculateDashSpeed(Player player) => 23.3f;
 

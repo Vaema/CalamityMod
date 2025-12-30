@@ -1,11 +1,6 @@
 ﻿using System;
-using System.Diagnostics.Metrics;
-using System.Threading;
 using CalamityMod.Items.Materials;
 using CalamityMod.Projectiles.Ranged;
-using CalamityMod.Rarities;
-using CalamityMod.Sounds;
-using CalamityMod.Tiles.Furniture.CraftingStations;
 using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.Audio;

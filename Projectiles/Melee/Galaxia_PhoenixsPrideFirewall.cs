@@ -1,12 +1,10 @@
-﻿using CalamityMod.CalPlayer;
-using CalamityMod.Graphics.Primitives;
+﻿using CalamityMod.Graphics.Primitives;
 using CalamityMod.Items.Weapons.Melee;
 using CalamityMod.Particles;
 using CalamityMod.Enums;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using System;
-using System.IO;
 using Terraria;
 using Terraria.Graphics.Shaders;
 using Terraria.ID;
@@ -80,8 +78,8 @@ namespace CalamityMod.Projectiles.Melee
                 ref _);
         }
 
-        public float WidthFunction(float completionRatio) => MathF.Max(50f * Scale * (MathF.Pow(1f - completionRatio, 2) * 2.75f), 0.35f);
-        public Color ColorFunction(float completionRatio) => Color.Orange * (completionRatio > 0.1f ? 1f : completionRatio * 10f);
+        public float WidthFunction(float completionRatio, Vector2 vertexPos) => MathF.Max(50f * Scale * (MathF.Pow(1f - completionRatio, 2) * 2.75f), 0.35f);
+        public Color ColorFunction(float completionRatio, Vector2 vertexPos) => Color.Orange * (completionRatio > 0.1f ? 1f : completionRatio * 10f);
         public void RenderPixelatedPrimitives(SpriteBatch spritebatch, GeneralDrawLayer layer)
         {
             GameShaders.Misc["CalamityMod:Bordernado"].UseSaturation(-0.2f);

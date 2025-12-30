@@ -11,8 +11,6 @@ namespace CalamityMod.Tiles.Ores
     [LegacyName("ChaoticOre")]
     public class ScoriaOre : GlowMaskTile
     {
-        public override string GlowMaskAsset => "CalamityMod/Tiles/Ores/ScoriaOreGlow";
-
         public override void SetupStatic()
         {
             Main.tileLighted[Type] = true;
@@ -25,7 +23,7 @@ namespace CalamityMod.Tiles.Ores
 
             TileID.Sets.Ore[Type] = true;
 
-            DustType = 105;
+            DustType = DustID.Water_BloodMoon;
             AddMapEntry(new Color(167, 80, 22), CreateMapEntryName());
             MineResist = 3f;
             MinPick = 210;

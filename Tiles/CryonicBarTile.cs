@@ -1,6 +1,7 @@
 ﻿using CalamityMod.Items.Materials;
 using Microsoft.Xna.Framework;
 using Terraria;
+using Terraria.ID;
 using Terraria.ModLoader;
 
 namespace CalamityMod.Tiles
@@ -10,7 +11,7 @@ namespace CalamityMod.Tiles
         public override void SetStaticDefaults()
         {
             this.SetUpBar(ModContent.ItemType<CryonicBar>(), new Color(138, 43, 226));
-            DustType = 44;
+            DustType = DustID.JungleSpore;
         }
 
         public override bool CreateDust(int i, int j, ref int type)

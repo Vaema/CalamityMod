@@ -17,7 +17,7 @@ namespace CalamityMod.Tiles.DraedonStructures
             CalamityUtils.MergeWithGeneral(Type);
 
             HitSound = CommonCalamitySounds.PlatingMine;
-            DustType = 32;
+            DustType = DustID.Sand;
             MinPick = 30;
             AddMapEntry(new Color(128, 90, 77));
 

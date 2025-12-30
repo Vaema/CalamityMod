@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Reflection;
 using CalamityMod.Balancing;
 using CalamityMod.CalPlayer;
 using CalamityMod.Cooldowns;
@@ -10,7 +9,6 @@ using CalamityMod.Events;
 using CalamityMod.Items.Accessories;
 using CalamityMod.Items.Armor;
 using CalamityMod.Items.Armor.GodSlayer;
-using CalamityMod.Items.Potions.Alcohol;
 using CalamityMod.Systems.Collections;
 using CalamityMod.World;
 using Microsoft.Xna.Framework;
@@ -312,8 +310,6 @@ namespace CalamityMod
 
         public static bool InSulphur(this Player player) => player.Calamity().ZoneSulphur;
 
-        public static bool InFloralParadise(this Player player) => player.Calamity().ZoneFloralParadise;
-
         public static bool InAstral(this Player player, int biome = 0) //1 is above ground, 2 is underground, 3 is desert
         {
             switch (biome)
@@ -435,15 +431,6 @@ namespace CalamityMod
             // This stacks with the above Deific Amulet effect
             if (modPlayer.rampartOfDeities && hurtInfo.Damage > 200)
                 extraIFrames += 30;
-
-            if (modPlayer.purpleHaze)
-            {
-                if (hurtInfo.Damage == 1)
-                    extraIFrames += 5;
-                else
-                    extraIFrames += 10;
-            }
-
             return extraIFrames;
         }
 
@@ -576,17 +563,13 @@ namespace CalamityMod
                 player.hurtCooldowns[i] = 0;
         }
 
-        private static readonly FieldInfo hurtInfoDamageField = typeof(HurtInfo).GetField("_damage", BindingFlags.Instance | BindingFlags.NonPublic);
-
         /// <summary>
         /// Lifted from Fargo's. Sets the damage and knockback of an incoming hit to zero, making it not affect the player.
         /// </summary>
         /// <param name="hurtInfo">The HurtInfo instance to nullify.</param>
         public static void NullifyHit(ref this HurtInfo hurtInfo)
         {
-            object unboxedHurtInfo = hurtInfo;
-            hurtInfoDamageField.SetValue(unboxedHurtInfo, 0);
-            hurtInfo = (Player.HurtInfo)unboxedHurtInfo;
+            hurtInfo._damage = 0;
             hurtInfo.Knockback = 0;
         }
         #endregion
@@ -608,7 +591,7 @@ namespace CalamityMod
 
             // Limit the amount of heal to the player's max health
             amount = Math.Min(amount, player.statLifeMax2 - player.statLife);
-            
+
             // As well as the physical cap to how much HP can be healed
             amount = Math.Min(amount, BalancingConstants.LifeStealCap);
 
@@ -660,7 +643,7 @@ namespace CalamityMod
 
             // Limit the amount of heal to the target player's max health
             amount = Math.Min(amount, lowestHealthCheck);
-            
+
             // As well as the physical cap to how much HP can be healed
             amount = Math.Min(amount, BalancingConstants.LifeStealCap);
 
@@ -960,7 +943,7 @@ namespace CalamityMod
         public static Vector2 ClampedMouseWorld(this Player player)
         {
             Vector2 mouseWorld = player.Calamity().mouseWorld;
-            
+
             // Clamp each axis
             mouseWorld.X = mouseWorld.X >= player.MountedCenter.X ? MathF.Min(mouseWorld.X, player.MountedCenter.X + 960f) : MathF.Max(mouseWorld.X, player.MountedCenter.X - 960f);
             mouseWorld.Y = mouseWorld.Y >= player.MountedCenter.Y ? MathF.Min(mouseWorld.Y, player.MountedCenter.Y + 540f) : MathF.Max(mouseWorld.Y, player.MountedCenter.Y - 540f);

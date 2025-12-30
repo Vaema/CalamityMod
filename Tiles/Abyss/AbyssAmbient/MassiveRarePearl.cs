@@ -19,7 +19,7 @@ namespace CalamityMod.Tiles.Abyss.AbyssAmbient
             TileObjectData.newTile.DrawYOffset = 2;
             TileObjectData.addTile(Type);
             AddMapEntry(new Color(106, 80, 102));
-            DustType = 33;
+            DustType = DustID.Water;
 
             base.SetStaticDefaults();
         }

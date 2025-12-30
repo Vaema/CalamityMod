@@ -177,7 +177,7 @@ namespace CalamityMod.NPCs.AcidRain
             {
                 for (int i = 0; i < 4; i++)
                 {
-                    Dust rock = Dust.NewDustPerfect(NPC.Center + Main.rand.NextVector2Circular(75f, 75f), 1);
+                    Dust rock = Dust.NewDustPerfect(NPC.Center + Main.rand.NextVector2Circular(75f, 75f), DustID.Stone);
                     rock.color = Color.Yellow;
                     rock.velocity = (NPC.Center - rock.position) * Main.rand.NextFloat(0.06f, 0.09f);
                     rock.scale = Main.rand.NextFloat(1f, 1.3f);
@@ -400,7 +400,7 @@ namespace CalamityMod.NPCs.AcidRain
                     // Create some charge dust.
                     if (AttackTimer > digReapperTime && AttackTimer < digReapperTime + chargeupTelegraphTime)
                     {
-                        Dust chargeupDust = Dust.NewDustPerfect(NPC.Center, 267);
+                        Dust chargeupDust = Dust.NewDustPerfect(NPC.Center, DustID.RainbowMk2);
                         chargeupDust.position -= Vector2.UnitY.RotatedByRandom(MathHelper.TwoPi) * NPC.height * 0.4f;
                         chargeupDust.velocity = -Vector2.UnitY.RotatedByRandom(0.31f) * Main.rand.NextFloat(2f, 6f);
                         chargeupDust.color = Color.Lerp(Color.Green, Color.Yellow, Main.rand.NextFloat());
@@ -415,7 +415,7 @@ namespace CalamityMod.NPCs.AcidRain
                         SoundEngine.PlaySound(SoundID.Zombie104, NPC.Center);
                         for (int i = 0; i < 40; i++)
                         {
-                            Dust burstDust = Dust.NewDustPerfect(NPC.Center + Main.rand.NextVector2Circular(75f, 75f), 267);
+                            Dust burstDust = Dust.NewDustPerfect(NPC.Center + Main.rand.NextVector2Circular(75f, 75f), DustID.RainbowMk2);
                             burstDust.velocity = Main.rand.NextVector2Unit() * Main.rand.NextFloat(2f, 6f);
                             burstDust.color = Color.Lerp(Color.Green, Color.Yellow, Main.rand.NextFloat());
                             burstDust.scale = Main.rand.NextFloat(1.1f, 1.45f);

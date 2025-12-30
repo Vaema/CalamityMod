@@ -86,7 +86,7 @@ namespace CalamityMod.Projectiles.DraedonsArsenal
                 Vector2 laserSpawnPosition = Projectile.Center + Projectile.velocity * (LaserLength - 14f);
                 for (int i = 0; i < 3; i++)
                 {
-                    Dust dust = Dust.NewDustPerfect(laserSpawnPosition + Main.rand.NextVector2Circular(8f, 8f), 261);
+                    Dust dust = Dust.NewDustPerfect(laserSpawnPosition + Main.rand.NextVector2Circular(8f, 8f), DustID.AncientLight);
                     dust.velocity = Main.rand.NextVector2CircularEdge(9f, 9f) * Main.rand.NextFloat(0.3f, 1f);
                     dust.color = Color.Lerp(Color.Crimson, Color.Red, Main.rand.NextFloat());
                     dust.noGravity = true;

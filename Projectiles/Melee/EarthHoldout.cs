@@ -1,6 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Runtime.ConstrainedExecution;
+﻿using System.Collections.Generic;
 using CalamityMod.Buffs.DamageOverTime;
 using CalamityMod.Items.Weapons.Melee;
 using CalamityMod.NPCs;
@@ -11,7 +9,7 @@ using Microsoft.Xna.Framework.Graphics;
 using ReLogic.Content;
 using Terraria;
 using Terraria.Audio;
-using Terraria.DataStructures;
+using Terraria.ID;
 using Terraria.Localization;
 using Terraria.ModLoader;
 
@@ -242,7 +240,7 @@ namespace CalamityMod.Projectiles.Melee
                             GenericSparkle sparker = new GenericSparkle(Owner.Center + (new Vector2(270 * (1 + bladeFade * 0.6f), 0).RotatedBy(FinalRotation + MathHelper.ToRadians(-45)).RotatedByRandom(0.3f)), Vector2.Zero, Color.White, mainColor, Main.rand.NextFloat(0.5f, 0.7f), 11, Main.rand.NextFloat(-0.1f, 0.1f), 2.68f);
                             GeneralParticleHandler.SpawnParticle(sparker);
 
-                            Dust dust2 = Dust.NewDustPerfect(Owner.Center + (new Vector2(270 * (1 + bladeFade * 0.6f), 0).RotatedBy(FinalRotation + MathHelper.ToRadians(-45)).RotatedByRandom(0.3f)), 278, dustVel);
+                            Dust dust2 = Dust.NewDustPerfect(Owner.Center + (new Vector2(270 * (1 + bladeFade * 0.6f), 0).RotatedBy(FinalRotation + MathHelper.ToRadians(-45)).RotatedByRandom(0.3f)), DustID.FireworksRGB, dustVel);
                             dust2.scale = Main.rand.NextFloat(0.65f, 1.05f);
                             dust2.noGravity = true;
                             dust2.color = Color.Lerp(Color.White, mainColor, 0.5f);
@@ -334,7 +332,7 @@ namespace CalamityMod.Projectiles.Melee
                 for (int i = 0; i < MathHelper.Clamp(10 - Projectile.numHits * 2, 2, 10); i++)
                 {
                     float power = Main.rand.NextFloat(0.2f, 0.8f);
-                    Dust dust2 = Dust.NewDustPerfect(target.Center, 278, (Utils.DirectionTo(Owner.Center, Owner.Calamity().mouseWorld)).RotatedByRandom(power) * (Main.rand.NextFloat(10f, 35f) * ( 1 - power)));
+                    Dust dust2 = Dust.NewDustPerfect(target.Center, DustID.FireworksRGB, (Utils.DirectionTo(Owner.Center, Owner.Calamity().mouseWorld)).RotatedByRandom(power) * (Main.rand.NextFloat(10f, 35f) * ( 1 - power)));
                     dust2.scale = Main.rand.NextFloat(0.55f, 0.85f) * scaleFactor;
                     dust2.noGravity = true;
                     dust2.color = Color.Lerp(Color.White, mainColor, 0.5f);

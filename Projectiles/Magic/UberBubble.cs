@@ -1,5 +1,4 @@
-﻿using CalamityMod.Dusts;
-using CalamityMod.Items.Weapons.Magic;
+﻿using CalamityMod.Items.Weapons.Magic;
 using CalamityMod.Particles;
 using Microsoft.Xna.Framework;
 using Terraria;

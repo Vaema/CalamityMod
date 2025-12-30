@@ -39,7 +39,7 @@ namespace CalamityMod.Projectiles.Ranged
                 float initialSpeed = Main.rand.NextFloat(2.5f, 4.5f);
                 for (int i = 0; i < 12; i++)
                 {
-                    Dust crystalShard = Dust.NewDustPerfect(Projectile.Center, 267);
+                    Dust crystalShard = Dust.NewDustPerfect(Projectile.Center, DustID.RainbowMk2);
                     crystalShard.velocity = (MathHelper.TwoPi * i / 12f).ToRotationVector2() * initialSpeed * Main.rand.NextFloat(0.6f, 1f);
                     crystalShard.velocity = crystalShard.velocity.RotatedByRandom(0.37f);
                     crystalShard.scale = 1.25f;
@@ -59,7 +59,7 @@ namespace CalamityMod.Projectiles.Ranged
             float initialSpeed = Main.rand.NextFloat(2.5f, 4.5f);
             for (int i = 0; i < 16; i++)
             {
-                Dust crystalShard = Dust.NewDustPerfect(Projectile.Center, 267);
+                Dust crystalShard = Dust.NewDustPerfect(Projectile.Center, DustID.RainbowMk2);
                 crystalShard.velocity = (MathHelper.TwoPi * i / 16f).ToRotationVector2() * initialSpeed;
                 crystalShard.scale = 1.25f;
                 crystalShard.color = Color.ForestGreen;

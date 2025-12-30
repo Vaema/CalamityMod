@@ -1,6 +1,7 @@
 ﻿using CalamityMod.Buffs.Placeables;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using ReLogic.Content;
 using Terraria;
 using Terraria.DataStructures;
 using Terraria.ModLoader;
@@ -9,6 +10,8 @@ namespace CalamityMod.Tiles.Furniture
 {
     public class ChaosCandle : ModTile
     {
+        public Asset<Texture2D> FlameTexture;
+
         public override void SetStaticDefaults()
         {
             this.SetUpCandle(ModContent.ItemType<Items.Placeables.Furniture.ChaosCandle>(), false, false);
@@ -50,7 +53,7 @@ namespace CalamityMod.Tiles.Furniture
 
         public override void HitWire(int i, int j)
         {
-            CalamityUtils.LightHitWire(Type, i, j, 1, 1);
+            FurnitureCommon.LightHitWire(Type, i, j, 1, 1);
         }
 
         public override void DrawEffects(int i, int j, SpriteBatch spriteBatch, ref TileDrawInfo drawData)
@@ -61,12 +64,13 @@ namespace CalamityMod.Tiles.Furniture
 
         public override void PostDraw(int i, int j, SpriteBatch spriteBatch)
         {
-            CalamityUtils.DrawFlameEffect(ModContent.Request<Texture2D>("CalamityMod/Tiles/Furniture/ChaosCandleFlame").Value, i, j);
+            FlameTexture ??= ModContent.Request<Texture2D>("CalamityMod/Tiles/Furniture/ChaosCandleFlame");
+            CalamityUtils.DrawFlameEffect(FlameTexture.Value, i, j);
         }
 
         public override bool RightClick(int i, int j)
         {
-            CalamityUtils.LightHitWire(Type, i, j, 1, 1);
+            FurnitureCommon.LightHitWire(Type, i, j, 1, 1);
             return true;
         }
     }

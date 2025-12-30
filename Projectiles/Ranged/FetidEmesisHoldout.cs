@@ -144,7 +144,7 @@ namespace CalamityMod.Projectiles.Ranged
                     SoundEngine.PlaySound(tired with { Pitch = -0.2f }, Projectile.Center);
                     for (int i = 0; i <= 12; i++)
                     {
-                        Dust dust = Dust.NewDustPerfect(GunTipPosition, 303, smokeVel.RotatedByRandom(0.4f) * Main.rand.NextFloat(0.2f, 1f), 80, default, Main.rand.NextFloat(0.4f, 1.3f));
+                        Dust dust = Dust.NewDustPerfect(GunTipPosition, DustID.SteampunkSteam, smokeVel.RotatedByRandom(0.4f) * Main.rand.NextFloat(0.2f, 1f), 80, default, Main.rand.NextFloat(0.4f, 1.3f));
                         dust.noGravity = false;
                         dust.color = Color.White;
                     }

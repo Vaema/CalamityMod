@@ -1,17 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.IO;
 using CalamityMod.TileEntities;
-using Terraria.DataStructures;
-using Terraria.ID;
 using Terraria;
 
 namespace CalamityMod.Packets
 {
-    public sealed class TECanvasPaintingPacket : CalamityPacket
+    internal sealed class TECanvasPaintingPacket : CalamityPacket
     {
         public static TECanvasPaintingPacket Instance { get; private set; }
 

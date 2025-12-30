@@ -12,7 +12,6 @@ using CalamityMod.Dusts;
 using CalamityMod.Enums;
 using CalamityMod.Events;
 using CalamityMod.Items.Accessories;
-using CalamityMod.Items.Accessories.Vanity;
 using CalamityMod.Items.Armor.Aerospec;
 using CalamityMod.Items.Armor.Bloodflare;
 using CalamityMod.Items.Armor.Daedalus;
@@ -27,8 +26,6 @@ using CalamityMod.Items.Armor.Sulphurous;
 using CalamityMod.Items.Armor.Tarragon;
 using CalamityMod.Items.Armor.Victide;
 using CalamityMod.Items.Armor.Wulfrum;
-using CalamityMod.Items.Mounts;
-using CalamityMod.Items.Placeables.Furniture;
 using CalamityMod.Items.Potions;
 using CalamityMod.Items.Potions.Alcohol;
 using CalamityMod.Items.VanillaArmorChanges;
@@ -43,7 +40,6 @@ using CalamityMod.NPCs.Providence;
 using CalamityMod.NPCs.SupremeCalamitas;
 using CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses;
 using CalamityMod.Particles;
-using CalamityMod.Projectiles.Melee;
 using CalamityMod.Projectiles.Ranged;
 using CalamityMod.Projectiles.Rogue;
 using CalamityMod.Projectiles.Typeless;
@@ -239,7 +235,7 @@ namespace CalamityMod.CalPlayer
                 {
                     for (int i = 0; i < 40; i++)
                     {
-                        Dust dust = Dust.NewDustPerfect(Player.Center + Utils.NextVector2Circular(Main.rand, 60f, 90f), 133);
+                        Dust dust = Dust.NewDustPerfect(Player.Center + Utils.NextVector2Circular(Main.rand, 60f, 90f), DustID.Firework_Yellow);
                         dust.velocity = Utils.NextVector2Circular(Main.rand, 4f, 4f);
                         dust.noGravity = true;
                         dust.scale = Main.rand.NextFloat(1.2f, 1.35f);
@@ -660,13 +656,6 @@ namespace CalamityMod.CalPlayer
             if (proj.Calamity().stealthStrike && proj.CountsAsClass<RogueDamageClass>())
                 modifiers.SourceDamage *= (float)bonusStealthDamage + 1; // Default bonusStealthDamage is 0, a 1 has to be added to take the damage of the weapon.
 
-            // Screwdriver adds 5% bonus damage to all piercing projectiles.
-            if (screwdriver)
-            {
-                if (proj.penetrate > 1 || proj.penetrate == -1)
-                    modifiers.ScalingBonusDamage += Screwdriver.PiercingDamageBuff;
-            }
-
             if (Player.Calamity().scionsCurio && proj.CountsAsClass<RangedDamageClass>())
                 target.Calamity().scionsCurioEffected = true;
 
@@ -877,6 +866,22 @@ namespace CalamityMod.CalPlayer
         #region Modify Hit By Proj
         public override void ModifyHitByProjectile(Projectile proj, ref Player.HurtModifiers modifiers)
         {
+            //This goes first so it activated before dodges or any other effects, as these projectiles aren't supposed to "hit" the player, but just inflict debuffs
+            if (CalamityWorld.revenge)
+            {
+                if (proj.type == ProjectileID.CultistBossIceMist && proj.ai[1] == 1f) // Main ice mists only; no shards
+                {
+                    Player.AddBuff(BuffID.Frozen, 120);
+                    modifiers.Cancel();
+                    return;
+                }
+                else if (proj.type == ProjectileID.CultistBossIceMist && proj.ai[1] != 1f) // Ice Mist shards
+                {
+                    Player.AddBuff(BuffID.Chilled, 240);
+                    modifiers.Cancel();
+                    return;
+                }
+            }
             if (!CalamityProjectileSets.ShouldNotBeReflected[proj.type] && proj.active && !proj.friendly && proj.hostile && proj.damage > 0 && !modifiers.PvP)
             {
                 double dodgeDamageGateValuePercent = 0.05;
@@ -1172,7 +1177,7 @@ namespace CalamityMod.CalPlayer
 
                     if (i % 3 == 0)
                     {
-                        Dust dust = Dust.NewDustPerfect(fxPos, 278, dustVel, 0, default, Main.rand.NextFloat(0.75f, 1.1f));
+                        Dust dust = Dust.NewDustPerfect(fxPos, DustID.FireworksRGB, dustVel, 0, default, Main.rand.NextFloat(0.75f, 1.1f));
                         dust.noGravity = true;
                         dust.color = Color.Gold;
                         dust.noGravity = false;
@@ -1329,10 +1334,6 @@ namespace CalamityMod.CalPlayer
                     {
                         Player.AddBuff(ModContent.BuffType<Daybroken>(), 180);
                     }
-                    else if (proj.type == ProjectileID.CultistBossIceMist && proj.ai[1] == 1f) // Main ice mists only; no shards
-                    {
-                        Player.AddBuff(BuffID.Chilled, 180);
-                    }
                     else if (proj.type == ProjectileID.CultistBossLightningOrbArc)
                     {
                         Player.AddBuff(BuffID.Electrified, 180);
@@ -1408,7 +1409,7 @@ namespace CalamityMod.CalPlayer
                 {
                     Particle spark2 = new LineParticle(Player.Center, new Vector2(8, 8).RotatedByRandom(100) * Main.rand.NextFloat(0.5f, 1f), false, 20, Main.rand.NextFloat(0.5f, 1.1f), Main.rand.NextBool() ? Color.Coral : Color.DarkTurquoise);
                     GeneralParticleHandler.SpawnParticle(spark2);
-                    Dust dust2 = Dust.NewDustPerfect(Player.Center, 267, new Vector2(8, 8).RotatedByRandom(100) * Main.rand.NextFloat(0.5f, 1f));
+                    Dust dust2 = Dust.NewDustPerfect(Player.Center, DustID.RainbowMk2, new Vector2(8, 8).RotatedByRandom(100) * Main.rand.NextFloat(0.5f, 1f));
                     dust2.scale = Main.rand.NextFloat(0.75f, 1.2f);
                     dust2.noGravity = true;
                     dust2.color = Main.rand.NextBool() ? Color.Coral : Color.DarkTurquoise;
@@ -1744,7 +1745,7 @@ namespace CalamityMod.CalPlayer
                     modifiers.DisableSound();
                 }
 
-                SoundEngine.PlaySound(Main.zenithWorld ? ShieldoftheOcean.ParrySoundGFB : ShieldoftheOcean.ParrySound, Player.Center);
+                SoundEngine.PlaySound(ShieldoftheOcean.ParrySound, Player.Center);
                 Player.AddCooldown(ParryCooldown.ID, 1200, false, "shieldoftheocean");
                 ShieldoftheOcean.ActivateParry(Player);
             }
@@ -1916,6 +1917,27 @@ namespace CalamityMod.CalPlayer
                     info.Damage -= spongeDamageBlocked;
                 }
 
+
+                //Stratus Starshield
+                if (Starshield > 0 && StratusStarburst > 0 && !shieldsFullyAbsorbedHit)
+                {
+                    bool thisShieldCanFullyAbsorb = StratusStarburst >= info.Damage;
+                    int damageblocked = Math.Min(StratusStarburst, info.Damage);
+                    totalDamageBlocked += damageblocked;
+                    StratusStarburst -= info.Damage;
+                    shieldsTookHit = true;
+                    if (StratusStarburst <= 0)
+                    {
+                        StratusStarburst = 0;
+                        SoundEngine.PlaySound(SoundID.DD2_CrystalCartImpact, Player.Center);
+                        Player.Calamity().GeneralScreenShakePower += anyShieldBroke ? 0.5f : 2f;
+                        anyShieldBroke = true;
+                    }
+                    if (thisShieldCanFullyAbsorb)
+                        shieldsFullyAbsorbedHit = true;
+                    info.Damage -= damageblocked;
+                }
+
                 // If any shields took damage, there is some code that must be run.
                 if (shieldsTookHit)
                 {
@@ -2004,7 +2026,6 @@ namespace CalamityMod.CalPlayer
                     nextHitDealsDefenseDamage = false;
                 }
             }
-
             // Chalice of the Blood God is implemented as a dirty modifier.
             //
             // Chalice of the Blood God does nothing to a hit that was just fully blocked by shields.
@@ -2033,9 +2054,9 @@ namespace CalamityMod.CalPlayer
             bool hasIFrames = Player.HasIFrames();
 
             // If the player was just hit by something capable of dealing defense damage, then apply defense damage.
-            // Bloodflare Core makes every hit deal defense damage (to enable its function).
+            // Bloodflare Core or Moonshine makes every hit deal defense damage (to enable its function).
             // Defense damage is not applied if the player has iframes or godmode.
-            bool hitCanApplyDefenseDamage = nextHitDealsDefenseDamage || bloodflareCore;
+            bool hitCanApplyDefenseDamage = nextHitDealsDefenseDamage || bloodflareCore || moonshine;
             bool defenseDamageShouldApply = hitCanApplyDefenseDamage && !hasIFrames && !Player.creativeGodMode;
 
             // 15AUG2024: Ozzatron: External flag which completely disables defense damage. This overrides Bloodflare Core.
@@ -2043,19 +2064,25 @@ namespace CalamityMod.CalPlayer
 
             if (defenseDamageShouldApply && externalFlagsAppropriate)
             {
+                double specialDefenseDmgMinimum = 0;
                 double halfDefense = Player.statDefense / 2.0;
+                if (bloodflareCore)
+                    specialDefenseDmgMinimum += halfDefense;
+                if (moonshine) //Moonshine also halves defense damage recovery alongside forcing 50% of defense as defense damage
+                    specialDefenseDmgMinimum += halfDefense;
                 int netMitigation = hurtInfo.SourceDamage - hurtInfo.Damage;
                 double standardDefenseDamage = netMitigation * defenseDamageRatio;
 
-                // Bloodflare Core overrides standard defense damage if it would be less than half of the player's total defense.
-                if (bloodflareCore && standardDefenseDamage < halfDefense)
+                // Bloodflare Core or Moonshine overrides standard defense damage if it would be less than half of the player's total defense.
+                // They stack together for 100% lost defense
+                if (specialDefenseDmgMinimum > 0 && standardDefenseDamage < specialDefenseDmgMinimum)
                 {
-                    // In this case, forcibly deal half of the player's total defense as defense damage. This ignores ratios.
-                    DealDefenseDamage((int)halfDefense, true);
+                    // In this case, forcibly deal the proportion of the player's total defense as defense damage. This ignores ratios.
+                    DealDefenseDamage((int)specialDefenseDmgMinimum, true);
 
                     // Set up Bloodflare Core's heal over time. Any in-progress heals are overwritten if they would have a shorter duration.
-                    if (bloodflareCoreRemainingHealOverTime < halfDefense)
-                        bloodflareCoreRemainingHealOverTime = (int)halfDefense;
+                    if (bloodflareCore && bloodflareCoreRemainingHealOverTime < specialDefenseDmgMinimum)
+                        bloodflareCoreRemainingHealOverTime = (int)specialDefenseDmgMinimum;
 
                     // Play a sound and make dust to signify that defense has been shattered
                     SoundEngine.PlaySound(SoundID.DD2_MonkStaffGroundImpact, Player.Center);
@@ -2620,7 +2647,7 @@ namespace CalamityMod.CalPlayer
             }
             if (Main.myPlayer == Player.whoAmI)
             {
-                Player.trashItem.SetDefaults(0, false);
+                Player.trashItem.SetDefaults(ItemID.None, false);
                 if (Player.difficulty == PlayerDifficultyID.SoftCore || Player.difficulty == PlayerDifficultyID.Creative)
                 {
                     for (int i = 0; i < 59; i++)
@@ -2640,7 +2667,7 @@ namespace CalamityMod.CalPlayer
                             {
                                 NetMessage.SendData(MessageID.SyncItem, -1, -1, null, droppedLargeGem, 0f, 0f, 0f, 0, 0, 0);
                             }
-                            Player.inventory[i].SetDefaults(0, false);
+                            Player.inventory[i].SetDefaults(ItemID.None, false);
                         }
                     }
                 }

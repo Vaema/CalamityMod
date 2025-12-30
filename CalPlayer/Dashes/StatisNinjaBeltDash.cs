@@ -1,20 +1,23 @@
-﻿using System;
-using CalamityMod.Dusts;
+﻿using CalamityMod.Dusts;
 using CalamityMod.Enums;
 using CalamityMod.Particles;
 using Microsoft.Xna.Framework;
 using Terraria;
-using Terraria.ID;
 using Terraria.ModLoader;
 
 namespace CalamityMod.CalPlayer.Dashes
 {
     public class StatisNinjaBeltDash : PlayerDashEffect
     {
-        public static new string ID => "Statis' Ninja Belt";
+        public static new string ID { get; private set; }
         public override DashCollisionType CollisionType => DashCollisionType.NoCollision;
         public override bool IsOmnidirectional => false;
         public int Time = 0;
+
+        public override void Load()
+        {
+            ID = DashID;
+        }
 
         public override float CalculateDashSpeed(Player player) => (48f);
 
@@ -56,7 +59,7 @@ namespace CalamityMod.CalPlayer.Dashes
             dust2.fadeIn = 0.5f;
 
             player.velocity.X *= 0.93f;
-            
+
             if (player.velocity.X > 140)
             {
                 player.velocity.X = 140;

@@ -26,7 +26,6 @@ using Terraria.ModLoader;
 using Terraria.ModLoader.Utilities;
 using Terraria.Utilities;
 using CalamityMod.Items.Placeables.Banners;
-using CalamityMod.Items.Potions.Alcohol;
 
 namespace CalamityMod.NPCs.SunkenSea
 {
@@ -182,6 +181,7 @@ namespace CalamityMod.NPCs.SunkenSea
             AddScavengerItem(black, ItemID.GoldenCrate, 1, () => !Main.hardMode, 0.02f);
             AddScavengerItem(black, ItemID.GoldenCrateHard, 1, () => Main.hardMode, 0.02f);
             AddScavengerItem(black, ItemID.WaterWalkingBoots, 1, 0.05f);
+            AddScavengerItem(black, ItemID.FishingBobber, 1, 0.05f);
             AddScavengerItem(black, ItemID.JellyfishNecklace, 1, 0.05f);
             AddScavengerItem(white, ModContent.ItemType<SerpentsBite>(), 1, 0.05f);
             //AddScavengerItem(black, ItemID.Nachos, 1, 0.05f); insert food item

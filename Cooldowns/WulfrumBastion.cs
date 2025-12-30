@@ -6,6 +6,7 @@ using Microsoft.Xna.Framework.Graphics;
 using Terraria;
 using Terraria.Audio;
 using Terraria.Graphics.Shaders;
+using Terraria.ID;
 using Terraria.Localization;
 using static Terraria.ModLoader.ModContent;
 
@@ -33,7 +34,7 @@ namespace CalamityMod.Cooldowns
             for (int i = 0; i < 6; i++)
             {
                 Vector2 dustDirection = Main.rand.NextVector2CircularEdge(1f, 1f);
-                Dust d = Dust.NewDustPerfect(instance.player.Center + dustDirection * Main.rand.NextFloat(0.4f, 10f), 226, dustDirection * Main.rand.NextFloat(1f, 4f), 100, Color.Transparent, Main.rand.NextFloat(0.8f, 1.2f));
+                Dust d = Dust.NewDustPerfect(instance.player.Center + dustDirection * Main.rand.NextFloat(0.4f, 10f), DustID.Electric, dustDirection * Main.rand.NextFloat(1f, 4f), 100, Color.Transparent, Main.rand.NextFloat(0.8f, 1.2f));
                 d.noGravity = true;
                 d.noLight = true;
                 d.fadeIn = 1f;

@@ -1,6 +1,4 @@
-﻿using Terraria.ModLoader.Config;
-
-namespace CalamityMod.Enums
+﻿namespace CalamityMod.Enums
 {
     public enum SetBonusDoubleTapOptions
     {

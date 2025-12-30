@@ -6,10 +6,7 @@ using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
 using System;
-using CalamityMod.Items.Weapons.Melee;
-using CalamityMod.Projectiles.Boss;
 using Terraria.Audio;
-using CalamityMod.Items.Weapons.Rogue;
 using CalamityMod.Items.Weapons.Magic;
 
 namespace CalamityMod.Items.Weapons.Ranged
@@ -22,7 +19,6 @@ namespace CalamityMod.Items.Weapons.Ranged
         {
             ItemID.Sets.IsRangedSpecialistWeapon[Type] = true;
             ItemID.Sets.ItemsThatAllowRepeatedRightClick[Type] = true;
-            ItemID.Sets.ShimmerTransformToItem[Type] = ModContent.ItemType<VitriolicViper>();
         }
         public override void SetDefaults()
         {

@@ -1,9 +1,7 @@
 ﻿using System;
-using CalamityMod.Buffs.DamageOverTime;
 using CalamityMod.Buffs.StatDebuffs;
 using CalamityMod.Items.Weapons.Rogue;
 using CalamityMod.Particles;
-using CalamityMod.Projectiles.Typeless;
 using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.Audio;
@@ -225,8 +223,9 @@ namespace CalamityMod.Projectiles.Rogue
             {
                 SoundEngine.PlaySound(SoundID.Item27, Projectile.Center);
                 Vector2 splinterVel = Projectile.velocity.RotatedByRandom(MathHelper.Pi / 12f);
-                Gore.NewGore(Projectile.GetSource_Death(), Projectile.Center, splinterVel, Mod.Find<ModGore>("FrostcrushValariGore1").Type);
-                Gore.NewGore(Projectile.GetSource_Death(), Projectile.Center, splinterVel, Mod.Find<ModGore>("FrostcrushValariGore2").Type);
+
+                for (int i = 1; i <= 5; i++)
+                    Gore.NewGore(Projectile.GetSource_Death(), Projectile.Center, splinterVel, Mod.Find<ModGore>($"FrostcrushValariGore{i}").Type);
             }
         }
 

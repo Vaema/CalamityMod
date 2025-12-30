@@ -38,12 +38,17 @@ namespace CalamityMod.Tiles.SunkenSea
 
         public override void ModifyLight(int i, int j, ref float r, ref float g, ref float b)
         {
-            if (!Main.tile[i - 1, j].HasTile || !Main.tile[i + 1, j].HasTile || !Main.tile[i, j - 1].HasTile || !Main.tile[i, j + 1].HasTile)
+            if (Main.tile[i, j].Get<TileSpecialDrawData>().Flag0)
             {
                 r = 0.81f;
                 g = 0.32f;
                 b = 0.54f;
             }
+        }
+
+        public override void PostTileFrame(int i, int j, int up, int down, int left, int right, int upLeft, int upRight, int downLeft, int downRight)
+        {
+            Main.tile[i, j].Get<TileSpecialDrawData>().Flag0 = !Main.tile[i - 1, j].HasTile || !Main.tile[i + 1, j].HasTile || !Main.tile[i, j - 1].HasTile || !Main.tile[i, j + 1].HasTile;
         }
 
         public override bool TileFrame(int i, int j, ref bool resetFrame, ref bool noBreak)

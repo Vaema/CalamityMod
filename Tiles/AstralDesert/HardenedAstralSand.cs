@@ -18,7 +18,7 @@ namespace CalamityMod.Tiles.AstralDesert
             CalamityUtils.MergeAstralTiles(Type);
 
 
-            DustType = 108;
+            DustType = DustID.RainCloud;
 
             AddMapEntry(new Color(128, 128, 158));
 

@@ -85,7 +85,7 @@ namespace CalamityMod.Projectiles.Magic
             {
                 for (int i = 0; i < 80; i++)
                 {
-                    Dust dust = Dust.NewDustPerfect(Projectile.Center, 263);
+                    Dust dust = Dust.NewDustPerfect(Projectile.Center, DustID.PortalBolt);
                     dust.color = CalamityUtils.MulticolorLerp((Main.rand.NextFloat(0.4f) + Main.GlobalTimeWrappedHourly * 0.4f) % 0.999f, RainbowPartyCannon.ColorSet);
                     dust.scale = Main.rand.NextFloat(0.6f, 0.9f);
                     dust.velocity = Vector2.UnitY.RotatedByRandom(MathHelper.TwoPi) * Main.rand.NextFloat(12f, 16f);

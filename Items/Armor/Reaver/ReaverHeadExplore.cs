@@ -1,7 +1,4 @@
-﻿using CalamityMod.Buffs.Pets;
-using CalamityMod.CalPlayer;
-using CalamityMod.Items.Materials;
-using CalamityMod.Projectiles.Typeless;
+﻿using CalamityMod.Items.Materials;
 using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.ID;

@@ -18,7 +18,6 @@ namespace CalamityMod.Items.Weapons.Summon
         {
             Item.staff[Type] = true;
             ItemID.Sets.StaffMinionSlotsRequired[Type] = 2f;
-            ItemID.Sets.ShimmerTransformToItem[Type] = ModContent.ItemType<Oblivion>();
         }
 
         public override void SetDefaults()

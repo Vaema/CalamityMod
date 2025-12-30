@@ -34,7 +34,7 @@ namespace CalamityMod.Projectiles.Melee
             if (Time == 0f)
             {
                 // Makeshift metal-blood explosion sound that is good enough ig
-                SoundEngine.PlaySound(new("CalamityMod/Sounds/Custom/Ravager/RavagerStomp", 2) { Pitch = -0.75f, PitchVariance = 0.5f }, Projectile.Center);
+                SoundEngine.PlaySound(new SoundStyle("CalamityMod/Sounds/Custom/Ravager/RavagerStomp", 2) { Pitch = -0.75f, PitchVariance = 0.5f }, Projectile.Center);
 
                 for (int i = 0; i < 5; i++)
                 {

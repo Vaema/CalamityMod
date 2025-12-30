@@ -1,13 +1,11 @@
 ﻿using System;
 using CalamityMod.Buffs.DamageOverTime;
-using CalamityMod.Enums;
 using CalamityMod.NPCs;
 using CalamityMod.Particles;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria;
 using Terraria.Audio;
-using Terraria.GameContent.Achievements;
 using Terraria.ID;
 using Terraria.ModLoader;
 
@@ -106,7 +104,7 @@ namespace CalamityMod.Projectiles.Melee
                 Particle blood = new PointParticle(spawnPos, (Projectile.velocity * 30).RotatedByRandom(0.3f) * Main.rand.NextFloat(0.2f, 0.9f) + new Vector2(0, Main.rand.NextFloat(-7, -2 + 1)), true, 25, Main.rand.NextFloat(0.7f, 1.2f), (Main.rand.NextBool() ? Color.Green : Color.Purple) * 0.5f, false);
                 GeneralParticleHandler.SpawnParticle(blood);
 
-                Dust dust = Dust.NewDustPerfect(spawnPos, 263, (Projectile.velocity * 50).RotatedByRandom(0.3f) * Main.rand.NextFloat(0.05f, 0.9f), 0, default, Main.rand.NextFloat(0.6f, 0.95f));
+                Dust dust = Dust.NewDustPerfect(spawnPos, DustID.PortalBolt, (Projectile.velocity * 50).RotatedByRandom(0.3f) * Main.rand.NextFloat(0.05f, 0.9f), 0, default, Main.rand.NextFloat(0.6f, 0.95f));
                 dust.noGravity = true;
                 dust.color = Color.White;
             }

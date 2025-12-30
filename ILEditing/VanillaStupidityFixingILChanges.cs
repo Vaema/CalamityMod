@@ -19,15 +19,14 @@ using Terraria.GameContent.Drawing;
 using Terraria.GameContent.ItemDropRules;
 using Terraria.GameInput;
 using Terraria.Graphics.Effects;
-using Terraria.Graphics.CameraModifiers;
 using Terraria.ID;
 using Terraria.ModLoader;
-using ReLogic.Utilities;
 
 namespace CalamityMod.ILEditing
 {
     public partial class ILChanges
     {
+        [Obsolete("Use 'Main.instance.TilesRenderer.Wind' Instead. This property is included in the Calamity source code only for historic value.", error: true)]
         public static WindGrid Windgrid
         {
             get;
@@ -184,21 +183,27 @@ namespace CalamityMod.ILEditing
         #endregion
 
         #region Prevent Lava Slime Dropping Lava
-        private static void PreventLavaSlimeLavaDrop(ILContext il)
+        private static void PreventLavaSlimeLavaDrop(On_NPC.orig_HitEffect_HitInfo orig, NPC self, NPC.HitInfo hit)
         {
-            // Disable Lava Slimes dropping lava if its respective config is enabled.
-            var cursor = new ILCursor(il);
-
-            // Go to the check for Remix world.
-            if (!cursor.TryGotoNext(MoveType.Before, i => i.MatchLdsfld<Main>("remixWorld")))
+            if (self.type != NPCID.LavaSlime || !CalamityServerConfig.Instance.RemoveLavaDropsFromLavaSlimes)
             {
-                LogFailure("Prevent Lava Slime Dropping Lava", "Could not find the check for Remix World.");
+                orig(self, hit);
                 return;
             }
 
-            // Add an additional check for the config.
-            cursor.Remove();
-            cursor.EmitDelegate<Func<bool>>(() => CalamityServerConfig.Instance.RemoveLavaDropsFromLavaSlimes || Main.remixWorld);
+            int tileX = (int)(self.Center.X / 16);
+            int tileY = (int)(self.Center.Y / 16);
+            Tile tile = Framing.GetTileSafely(tileX, tileY);
+            if (tile.LiquidAmount != 0)
+            {
+                orig(self, hit);
+                return;
+            }
+
+            byte originalAmount = tile.LiquidAmount;
+            tile.LiquidAmount = 255;
+            orig(self, hit);
+            tile.LiquidAmount = originalAmount;
         }
         #endregion
 
@@ -863,7 +868,8 @@ namespace CalamityMod.ILEditing
             {
                 var center = Main.screenHeight / 2;
                 Main.mouseY = center - (Main.mouseY - center);
-            };
+            }
+            ;
         }
         private static void UI_Unflip_Start(On_Main.orig_DrawPlayerChatBubbles orig, Main self)
         {

@@ -1,17 +1,14 @@
 ﻿using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 using CalamityMod.Buffs.Summon;
 using CalamityMod.Items.Weapons.Rogue;
 using CalamityMod.NPCs.DevourerofGods;
 using CalamityMod.Projectiles.Summon;
 using CalamityMod.Rarities;
-using Microsoft.CodeAnalysis.Operations;
 using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.DataStructures;
 using Terraria.ID;
-using Terraria.Localization;
 using Terraria.ModLoader;
 
 namespace CalamityMod.Items.Weapons.Summon
@@ -26,10 +23,6 @@ namespace CalamityMod.Items.Weapons.Summon
         public override void ModifyTooltips(List<TooltipLine> tooltips)
         {
             tooltips.FindAndReplaceAll("ff00ff", Utils.Hex3(DevourerofGodsHead.SpecialMoveColor));
-        }
-        public override void SetStaticDefaults()
-        {
-            ItemID.Sets.ShimmerTransformToItem[Type] = ModContent.ItemType<DimensionTearingDisk>();
         }
         public override void SetDefaults()
         {

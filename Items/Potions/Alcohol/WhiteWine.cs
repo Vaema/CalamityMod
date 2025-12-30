@@ -14,10 +14,9 @@ namespace CalamityMod.Items.Potions.Alcohol
     {
         public new string LocalizationCategory => "Items.Potions";
 
-        public static float MagicDamageBoost = 0.08f;
-        public static float DefenseLossPercent = 0.06f;
-        public static int RegenLoss = 2;
-        public override LocalizedText Tooltip => base.Tooltip.WithFormatArgs(MagicDamageBoost.ToPercent(), DefenseLossPercent.ToPercent(), RegenLoss.ToRegenPerSecond());
+        public static float FlightTimeRecoveryAmount = 0.66f;
+        public static float FlightTimeLoss = 0.5f;
+        public override LocalizedText Tooltip => base.Tooltip.WithFormatArgs(FlightTimeLoss.ToPercent());
 
         public override void SetStaticDefaults()
         {
@@ -32,45 +31,22 @@ namespace CalamityMod.Items.Potions.Alcohol
 
         public override void SetDefaults()
         {
-            Item.DefaultToFood(14, 44, ModContent.BuffType<WhiteWineBuff>(), CalamityUtils.MinutesToFrames(5), true);
-            Item.healMana = 300;
-
+            Item.DefaultToFood(14, 44, ModContent.BuffType<WhiteWineBuff>(), CalamityUtils.MinutesToFrames(6), true);
             Item.value = Item.sellPrice(silver: 40);
             Item.rare = ItemRarityID.LightPurple;
         }
 
         public override void OnConsumeItem(Player player)
         {
-            if (PlayerInput.Triggers.JustPressed.QuickBuff)
-            {
-                player.statMana += Item.healMana;
-                if (player.statMana > player.statManaMax2)
-                {
-                    player.statMana = player.statManaMax2;
-                }
-                player.AddBuff(BuffID.ManaSickness, Player.manaSickTime, true);
-                if (Main.myPlayer == player.whoAmI)
-                {
-                    player.ManaEffect(Item.healMana);
-                }
-            }
             player.AddBuff(Item.buffType, Item.buffTime);
         }
         public override void AddRecipes()
         {
-            CreateRecipe().
-                AddIngredient(ItemID.Ale).
-                AddIngredient<HallowedOre>(3).
+            CreateRecipe(20).
+                AddIngredient(ItemID.Bottle, 20).
+                AddIngredient(ItemID.GiantHarpyFeather).
                 AddTile(TileID.Kegs).
                 Register();
-
-            CreateRecipe().
-                AddIngredient(ItemID.BottledWater).
-                AddIngredient<BloodOrb>(5).
-                AddIngredient<HallowedOre>().
-                AddTile(TileID.AlchemyTable).
-                Register()
-                .DisableDecraft();
         }
     }
 }

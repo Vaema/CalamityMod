@@ -1,5 +1,4 @@
-﻿using System;
-using CalamityMod.Dusts;
+﻿using CalamityMod.Dusts;
 using CalamityMod.Particles;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
@@ -214,7 +213,7 @@ namespace CalamityMod.Projectiles.Rogue
             }
             for (int i = 0; i < (25 * sizeBonus); i++)
             {
-                Dust dust = Dust.NewDustPerfect(Projectile.Center, 278);
+                Dust dust = Dust.NewDustPerfect(Projectile.Center, DustID.FireworksRGB);
                 dust.noGravity = false;
                 dust.velocity = new Vector2(18, 18).RotatedByRandom(100) * Main.rand.NextFloat(0.3f, 1f) * sizeBonus;
                 dust.scale = Main.rand.NextFloat(0.8f, 1.2f);

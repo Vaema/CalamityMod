@@ -13,7 +13,8 @@ AddedTooltip: {
 	*/
 	TitanGloveLine: 10% increased true melee damage
 	YoyoGlove: Secondary yoyos will do 50% less damage
-	EyeoftheGolem: 20% increased critical strike damage
+	// Also used by Sniper Scope
+	EyeoftheGolem: 15% increased critical strike damage
 	RifleScope: The scope effect can be toggled with visibility
 	ArcaneFlower: 5% increased magic damage
 	HellfireTreads:
@@ -215,7 +216,7 @@ EditedTooltip: {
 	ArcheryPotion: 5% increased arrow damage and 20% increased arrow speed
 	AleSake:
 		'''
-		Increases melee damage by 10% and reduces defense by 5%
+		Increases melee weapon scale by 15%, but decreases melee speed by 10%
 		Counts as an alcohol for Alcohol Poisoning
 		{$Common.AlcoholWarning}
 		'''

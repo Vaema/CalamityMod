@@ -1,11 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using CalamityMod.Balancing;
 using CalamityMod.Buffs.StatDebuffs;
 using CalamityMod.Graphics.Primitives;
 using CalamityMod.Items.Weapons.Melee;
-using CalamityMod.Projectiles.Healing;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria;
@@ -221,9 +219,9 @@ namespace CalamityMod.Projectiles.Melee
             return false;
         }
 
-        public float SlashWidthFunction(float completionRatio) => Projectile.scale * 22f;
+        public float SlashWidthFunction(float completionRatio, Vector2 vertexPos) => Projectile.scale * 22f;
 
-        public Color SlashColorFunction(float completionRatio) => Color.Lime * Utils.GetLerpValue(0.9f, 0.4f, completionRatio, true) * Projectile.Opacity;
+        public Color SlashColorFunction(float completionRatio, Vector2 vertexPos) => Color.Lime * Utils.GetLerpValue(0.9f, 0.4f, completionRatio, true) * Projectile.Opacity;
 
         public IEnumerable<Vector2> GenerateSlashPoints()
         {
@@ -248,7 +246,7 @@ namespace CalamityMod.Projectiles.Melee
             PrepareSlashShader(Direction == 1);
 
             if (SwingCompletionAtStartOfTrail > SwingCompletionRatio)
-                PrimitiveRenderer.RenderTrail(GenerateSlashPoints().ToArray(), new(SlashWidthFunction, SlashColorFunction, (_) => Projectile.Center, shader: GameShaders.Misc["CalamityMod:ExobladeSlash"]), 95);
+                PrimitiveRenderer.RenderTrail(GenerateSlashPoints().ToArray(), new(SlashWidthFunction, SlashColorFunction, (_,_) => Projectile.Center, shader: GameShaders.Misc["CalamityMod:ExobladeSlash"]), 95);
 
             Main.spriteBatch.ExitShaderRegion();
         }

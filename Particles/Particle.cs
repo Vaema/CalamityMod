@@ -1,10 +1,11 @@
 ﻿using CalamityMod.Enums;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using ReLogic.Content;
 
 namespace CalamityMod.Particles
 {
-    public class Particle
+    public abstract class Particle
     {
         /// <summary>
         /// The ID of the particle type as registered by <see cref="GeneralParticleHandler"/> when the mod loads.
@@ -76,6 +77,12 @@ namespace CalamityMod.Particles
         /// Can be accessed via <see cref="GeneralParticleHandler.GetTexture(int)"/>.
         /// </remarks>
         public virtual string Texture => "";
+
+        /// <summary>
+        /// <see cref="AssetRequestMode"/> for how <see cref="Texture"/> should be autoloaded.<br/>
+        /// Defaults to <see cref="AssetRequestMode.AsyncLoad"/>
+        /// </summary>
+        public virtual AssetRequestMode TextureRequestMode => AssetRequestMode.AsyncLoad;
 
         /// <summary>
         /// The maximum amount of frames this particle's spritesheet has vertically.

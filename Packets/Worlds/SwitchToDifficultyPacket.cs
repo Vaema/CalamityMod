@@ -6,7 +6,7 @@ using Terraria;
 
 namespace CalamityMod.Packets
 {
-    public sealed class SwitchToDifficultyPacket : CalamityPacket
+    internal sealed class SwitchToDifficultyPacket : CalamityPacket
     {
         public static SwitchToDifficultyPacket Instance { get; private set; }
 

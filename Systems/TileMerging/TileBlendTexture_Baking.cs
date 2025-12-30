@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Collections.Generic;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria;
@@ -12,57 +8,125 @@ namespace CalamityMod.Systems
 {
     public abstract partial class TileBlendTexture : ModTexturedType
     {
-        #region Sheet Baking Process
-        internal void BakeBlendTexture(Texture2D texture)
+        internal static int BakedCountInFrame = 0;
+
+        private bool[] _IsBaked = new bool[VariantCount];
+        private bool[] _RequestedVariants = new bool[VariantCount];
+        private bool _IsRequestedAny = false;
+        private bool _IsSheetRequested = false;
+        private bool _ShouldClearRT = true;
+
+        internal void ClearBakeCache()
         {
-            // It's baking moment
-            Main.QueueMainThreadAction(() =>
-            {
-                BakeBlendTexture_Inner(texture);
-            });
+            _IsBaked = new bool[VariantCount];
+            _RequestedVariants = new bool[VariantCount];
+            _IsRequestedAny = false;
+            _ShouldClearRT = true;
         }
 
-        private void BakeBlendTexture_Inner(Texture2D texture)
+        internal void RequestBake(int sheetIndex)
         {
+            if (!_IsBaked[sheetIndex])
+            {
+                _RequestedVariants[sheetIndex] = true;
+                _IsRequestedAny = true;
+            }
+        }
+
+        #region Sheet Baking Process
+        internal void BakeRequestedBlendTextureCache()
+        {
+            if (!_IsRequestedAny)
+                return;
+
+            if (!TextureAsset.IsLoaded)
+                return;
+
+            var texture = TextureAsset.Value;
             if (texture == null)
-                throw new ArgumentNullException(nameof(texture), "Texture is Null!");
+                return;
 
             if (texture.IsDisposed)
-                throw new ArgumentException(paramName: nameof(texture), message: "Texture is Disposed!");
+                return;
 
+            var graphicsDevice = Main.instance.GraphicsDevice;
             for (int v = 0; v < VariantCount; v++)
             {
-                var renderTarget = BlendTextures[v];
-                var graphicsDevice = Main.instance.GraphicsDevice;
-                graphicsDevice.SetRenderTarget(renderTarget);
-                graphicsDevice.Clear(Color.Transparent);
+                int variant = v;
+                if (!_RequestedVariants[variant])
+                    continue;
 
-                Main.spriteBatch.SafeBegin(SpriteSortMode.Immediate, BatchSetting.AlphaBlend, null, Matrix.Identity, () =>
+                if (BakedCountInFrame >= 3)
+                    continue;
+
+                var renderTarget = BakedBlendTexture;
+                if (renderTarget != null && !renderTarget.IsDisposed && !renderTarget.IsContentLost)
                 {
-                    for (int i = 0; i < 256; i++)
+                    graphicsDevice.SetRenderTarget(renderTarget);
+                    if (_ShouldClearRT)
                     {
-                        var drawPos = SideFlagsToPositionInSheet((byte)i);
-                        var mergeSides = (BlendSideFlags)i;
-
-                        // Easy cases, It match on Shape Lookup Sheet Directly
-                        if (_ShapeLookup.TryGetValue(mergeSides, out var rects))
-                        {
-                            Main.spriteBatch.Draw(texture, drawPos, rects[v], Color.White, 0.0f, Vector2.Zero, 1.0f, SpriteEffects.None, 0.0f);
-                            continue;
-                        }
-
-                        var extractedShapes = ConsumeMergeSides(mergeSides);
-                        foreach (var shape in extractedShapes)
-                        {
-                            if (_ShapeLookup.TryGetValue(shape, out var shapeRects))
-                            {
-                                Main.spriteBatch.Draw(texture, drawPos, shapeRects[v], Color.White, 0.0f, Vector2.Zero, 1.0f, SpriteEffects.None, 0.0f);
-                            }
-                        }
+                        graphicsDevice.Clear(Color.Transparent);
+                        _ShouldClearRT = false;
                     }
-                });
 
-                graphicsDevice.SetRenderTarget(null);
+                    Main.spriteBatch.Begin(SpriteSortMode.Immediate, BlendState.AlphaBlend, SamplerState.PointClamp, DepthStencilState.None, RasterizerState.CullNone);
+
+                    BakeBlendTextureCache(v);
+
+                    Main.spriteBatch.End();
+                    graphicsDevice.SetRenderTarget(null);
+
+                    _RequestedVariants[variant] = false;
+                    _IsBaked[variant] = true;
+                }
+                else if (!_IsSheetRequested)
+                {
+                    _IsSheetRequested = true;
+                    Main.QueueMainThreadAction(() =>
+                    {
+                        BakedBlendTexture = new(
+                                Main.instance.GraphicsDevice,
+                                BlendTextureWidth,
+                                BlendTextureFullHeight,
+                                mipMap: false,
+                                preferredFormat: SurfaceFormat.Color,
+                                preferredDepthFormat: DepthFormat.None,
+                                preferredMultiSampleCount: 0,
+                                usage: RenderTargetUsage.PreserveContents);
+
+                        _IsSheetRequested = false;
+                    });
+                }
+
+                BakedCountInFrame++;
+            }
+
+            foreach (var requested in _RequestedVariants)
+                _IsRequestedAny |= requested;
+        }
+
+        internal void BakeBlendTextureCache(int randomFrame)
+        {
+            for (int i = 0; i < 256; i++)
+            {
+                var mergeSides = (BlendSideFlags)i;
+                var sheetPosition = _SheetPositionLookup[new SheetPositionKey(mergeSides, (byte)randomFrame)];
+
+                // If it's basic shape, pull it from base texture instead
+                if (sheetPosition.IsUsingBaseTexture)
+                {
+                    continue;
+                }
+
+                var drawPos = sheetPosition.GetDrawPosition();
+                var extractedShapes = ConsumeMergeSides(mergeSides);
+                foreach (var shape in extractedShapes)
+                {
+                    if (_BasicShapeLookup.TryGetValue(shape, out var shapeRects))
+                    {
+                        Main.spriteBatch.Draw(TextureAsset.Value, drawPos, shapeRects[randomFrame], Color.White, 0.0f, Vector2.Zero, 1.0f, SpriteEffects.None, 0.0f);
+                    }
+                }
             }
         }
 
@@ -91,16 +155,14 @@ namespace CalamityMod.Systems
         #endregion
 
         #region Utils
-        public static Rectangle SideFlagsToSheetRect(byte data)
+        public bool TryGetDrawingInfo(SheetPositionKey key, out Texture2D texture, out Rectangle sourceRect)
         {
-            int y = Math.DivRem(data, 16, out int x);
-            return new Rectangle(x * BlendTextureFrameWidth, y * BlendTextureFrameHeight, 16, 16);
-        }
+            var pos = _SheetPositionLookup[key];
 
-        public static Vector2 SideFlagsToPositionInSheet(byte data)
-        {
-            int y = Math.DivRem(data, 16, out int x);
-            return new Vector2(x * BlendTextureFrameWidth, y * BlendTextureFrameHeight);
+            sourceRect = pos.GetDrawRect();
+            texture = pos.IsUsingBaseTexture ? TextureAsset.Value : BakedBlendTexture;
+
+            return texture != null;
         }
         #endregion
     }

@@ -18,13 +18,13 @@ using CalamityMod.Items.Armor.Tarragon;
 using CalamityMod.Items.Armor.Victide;
 using CalamityMod.Items.Potions;
 using CalamityMod.Items.Potions.Alcohol;
+using CalamityMod.Items.Tools;
 using CalamityMod.Items.VanillaArmorChanges;
 using CalamityMod.Items.Weapons.Magic;
 using CalamityMod.Items.Weapons.Melee;
 using CalamityMod.Items.Weapons.Summon;
 using CalamityMod.NPCs.Other;
 using CalamityMod.NPCs.TownNPCs;
-using CalamityMod.Packets;
 using CalamityMod.Particles;
 using CalamityMod.Projectiles.Healing;
 using CalamityMod.Projectiles.Magic;
@@ -36,7 +36,6 @@ using CalamityMod.Systems.Collections;
 using CalamityMod.Tiles.Furniture.CraftingStations;
 using CalamityMod.UI;
 using CalamityMod.UI.CalamitasEnchants;
-using CalamityMod.World;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria;
@@ -46,7 +45,6 @@ using Terraria.GameContent;
 using Terraria.ID;
 using Terraria.ModLoader;
 using Terraria.ModLoader.IO;
-using Terraria.Utilities;
 using static Terraria.ModLoader.ModContent;
 
 namespace CalamityMod.Items
@@ -55,16 +53,18 @@ namespace CalamityMod.Items
     {
         public override bool InstancePerEntity => true;
 
-        // TODO -- split out a separate GlobalItem for rogue behavior?
-        /// <summary> Tracks the stealth strike damage modifier for this item, derived from its prefix. </summary>
-        internal float StealthStrikePrefixBonus;
+        private BitsByte flag0 = 0;
 
         #region Chargeable Item Variables
         /// <summary>
         /// If set to true, this item will consume <see cref="Charge"/> on use.<br/>
         /// Be sure to also set <see cref="MaxCharge"/> and <see cref="ChargePerUse"/>.
         /// </summary>
-        public bool UsesCharge = false;
+        public bool UsesCharge
+        {
+            get => flag0[0];
+            set => flag0[0] = value;
+        }
         /// <summary> The current charge value of this item. </summary>
         public float Charge = 0f;
         /// <summary> The maximum charge value of this item. Should only be set if <see cref="UsesCharge"/> is set to true. </summary>
@@ -88,7 +88,11 @@ namespace CalamityMod.Items
 
         #region Enchantment Variables
         /// <summary> If set to true, this item cannot receive enchantments from the Brimstone Witch. </summary>
-        public bool CannotBeEnchanted = false;
+        public bool CannotBeEnchanted
+        {
+            get => flag0[1];
+            set => flag0[1] = value;
+        }
         /// <summary> Stores the current enchantment placed on this item. If set to null, this item has no enchantment. </summary>
         public Enchantment? AppliedEnchantment = null;
         /// <summary>
@@ -117,29 +121,31 @@ namespace CalamityMod.Items
         /// Set to true if this item can only be obtained in Revengeance Mode.<br/>
         /// Adds "Revengeance" to the bottom of the item's tooltip.
         /// </summary>
-        public bool revengeanceItem = false;
+        public bool revengeanceItem
+        {
+            get => flag0[2];
+            set => flag0[2] = value;
+        }
         /// <summary>
         /// Set to true if this item is dedicated to a Patreon donator.<br/>
         /// Adds "- Donor Item -" to the bottom of the item's tooltip.
         /// </summary>
-        public bool donorItem = false;
+        public bool donorItem
+        {
+            get => flag0[3];
+            set => flag0[3] = value;
+        }
         /// <summary>
         /// Set to true if this item is dedicated to a Calamity developer.<br/>
         /// Adds "- Dev Item -" to the bottom of the item's tooltip.
         /// </summary>
-        public bool devItem = false;
-        /// <summary>
-        /// If set to a value greater than 1, applies a multiplier to the item's grab range.<br/>
-        /// Used by coin items spawned from hitting ricoshot coins.
-        /// </summary>
-        public float grabRangeMultiplier = 1f;
+        public bool devItem
+        {
+            get => flag0[4];
+            set => flag0[4] = value;
+        }
 
         public static readonly Color ExhumedTooltipColor = new Color(198, 27, 64);
-
-        public CalamityGlobalItem()
-        {
-            StealthStrikePrefixBonus = 0f;
-        }
 
         // Ozzatron 21MAY2022: This function is required by TML 1.4's new clone behavior.
         // This behavior is sadly mandatory because there are a few places in vanilla Terraria which use cloning.
@@ -152,8 +158,8 @@ namespace CalamityMod.Items
         {
             CalamityGlobalItem myClone = (CalamityGlobalItem)base.Clone(item, itemClone);
 
-            // Rogue
-            myClone.StealthStrikePrefixBonus = StealthStrikePrefixBonus;
+            // BitFlags
+            myClone.flag0 = flag0;
 
             // Charge (Draedon's Arsenal)
             myClone.UsesCharge = UsesCharge;
@@ -163,15 +169,8 @@ namespace CalamityMod.Items
             myClone.ChargePerAltUse = ChargePerAltUse;
 
             // Enchantments
-            myClone.CannotBeEnchanted = CannotBeEnchanted;
             myClone.AppliedEnchantment = AppliedEnchantment.HasValue ? AppliedEnchantment.Value : null;
             myClone.DischargeEnchantExhaustion = DischargeEnchantExhaustion;
-
-            // Miscellaneous
-            myClone.revengeanceItem = revengeanceItem;
-            myClone.donorItem = donorItem;
-            myClone.devItem = devItem;
-            myClone.grabRangeMultiplier = grabRangeMultiplier;
 
             return myClone;
         }
@@ -715,6 +714,7 @@ namespace CalamityMod.Items
                     return true;
                 }
             }
+            
             return base.UseItem(item, player);
         }
 
@@ -968,6 +968,8 @@ namespace CalamityMod.Items
             // This assume all items with a damage hit is a weapon. There appears to be no edge cases for this thus far
             if (player.Calamity().oldFashioned)
                 modifiers.SourceDamage *= OldFashioned.DamageReductionMultiplier;
+            if (player.Calamity().ivDrip)
+                modifiers.SourceDamage *= IVDripOnTheRocks.DamageReductionMultiplier;
         }
 
         public override void OnHitNPC(Item item, Player player, NPC target, NPC.HitInfo hit, int damageDone)
@@ -1016,6 +1018,11 @@ namespace CalamityMod.Items
             return "";
         }
 
+        public override void ModifyItemScale(Item item, Player player, ref float scale)
+        {
+            if (item.CountsAsClass<MeleeDamageClass>() && player.HasBuff(BuffID.Tipsy))
+                scale += 0.15f;
+        }
         public override void UpdateArmorSet(Player player, string set)
         {
             CalamityPlayer modPlayer = player.Calamity();
@@ -1218,13 +1225,13 @@ namespace CalamityMod.Items
 
             if (item.type == ItemID.EyeoftheGolem)
             {
-                player.Calamity().critDamage += 0.2f;
+                player.Calamity().critDamage += 0.15f;
             }
             if (item.type == ItemID.SniperScope)
             {
                 player.GetDamage<RangedDamageClass>() -= 0.1f; //Total 0% damage
                 player.GetCritChance<RangedDamageClass>() += 2; //Total 12% crit
-                player.Calamity().critDamage += 0.2f;
+                player.Calamity().critDamage += 0.15f;
             }
 
             if (item.type == ItemID.FireGauntlet)
@@ -1451,8 +1458,8 @@ namespace CalamityMod.Items
         public override void GrabRange(Item item, Player player, ref int grabRange)
         {
             // First, apply the grab range multiplier.
-            if (grabRangeMultiplier > 1f)
-                grabRange = (int)(grabRangeMultiplier * grabRange);
+            if (item.TryGetGlobalItem<GrabRangeGlobalItem>(out var grabRangeItem) && grabRangeItem.grabRangeMultiplier > 1f)
+                grabRange = (int)(grabRangeItem.grabRangeMultiplier * grabRange);
 
             // Then, apply flat grab range boosts.
             if (player.Calamity().reaverExplore)
@@ -1600,9 +1607,6 @@ namespace CalamityMod.Items
         private static int cachedForgeID = -1;
         public override void OnCreated(Item item, ItemCreationContext context)
         {
-            // ChoosePrefix also happens on craft so go reset it here too
-            storedPrefix = -1;
-
             // 05JUL2024: Ozzatron: Register the usage of Draedon's Forge for the purposes of his dialogue.
             // This was moved out of an On edit in the DraedonsForge item for Magic Storage compatibility.
             Player p = Main.LocalPlayer;
@@ -1610,73 +1614,6 @@ namespace CalamityMod.Items
                 cachedForgeID = TileType<DraedonsForge>();
             if (context is RecipeItemCreationContext && p.adjTile[cachedForgeID])
                 p.Calamity().HasCraftedDraedonsForge = true;
-        }
-        #endregion
-
-        #region Reforge Mechanic Rework
-        private static int storedPrefix = -1;
-        public override void PreReforge(Item item)
-        {
-            StealthStrikePrefixBonus = 0f;
-            storedPrefix = item.prefix;
-        }
-
-        // Ozzatron 31AUG2022: total rework to the reforge rework for mod compatibility
-        // you can now disable the rework with config in case it isn't enough to solve your conflicts
-        // removed data saved on items; reforging is now a coalescing flowchart that has no RNG
-        public override int ChoosePrefix(Item item, UnifiedRandom rand)
-        {
-            if (storedPrefix == -1 && item.CountsAsClass<RogueDamageClass>() && (item.maxStack == 1 || item.AllowReforgeForStackableItem))
-            {
-                // Crafting (or first reforge of) a rogue weapon has a 75% chance for a random modifier, this check is done by vanilla
-                // Negative modifiers have a 66.66% chance of being voided, Annoying modifier is intentionally ignored by vanilla
-                int prefix = CalamityUtils.RandomRoguePrefix();
-                bool keepPrefix = !CalamityUtils.NegativeRoguePrefix(prefix) || Main.rand.NextBool(3);
-                return keepPrefix ? prefix : 0;
-            }
-
-            if (Main.gameMenu)
-                return -1;
-
-            if (item.accessory)
-            {
-                return CalamityUtils.GetAccessoryReforge(item, rand, storedPrefix);
-            }
-            else
-            {
-                if (CalamityServerConfig.Instance.RemoveReforgeRNG && storedPrefix != -1)
-                {
-                    return CalamityUtils.GetReworkedReforge(item, rand, storedPrefix);
-                }
-            }
-
-            return -1;
-        }
-
-        public override void PostReforge(Item item)
-        {
-            storedPrefix = -1;
-            // Bandit steals 20% of the total price of the reforge if she's around.
-            if (NPC.AnyNPCs(NPCType<Bandit>()))
-            {
-                // Calculate the item's reforge cost.
-                int value = item.value;
-                Player p = Main.LocalPlayer;
-                ItemLoader.ReforgePrice(item, ref value, ref p.discountAvailable);
-
-                // Steal 20% of that money.
-                int stolen = value / 5;
-                CalamityWorld.MoneyStolenByBandit += stolen;
-
-                // Increment the reforge counter to allow the Bandit to refund
-                // Also triggers Tinkerer dialogue that hints to the player that money is being stolen
-                CalamityWorld.Reforges++;
-
-                if (Main.netMode == NetmodeID.MultiplayerClient)
-                {
-                    BanditStolenMoneySyncPacket.Send(stolen);
-                }
-            }
         }
         #endregion
 

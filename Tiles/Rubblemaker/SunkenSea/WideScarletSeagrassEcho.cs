@@ -11,7 +11,7 @@ namespace CalamityMod.Tiles.Rubblemaker.SunkenSea
         public override void SetStaticDefaults()
         {
             base.SetStaticDefaults();
-            RegisterItemDrop(ModContent.ItemType<PolypSand>(), Type, 0, 1, 2, 3);
+            RegisterItemDrop(ModContent.ItemType<PolypSand>(), Type);
             FlexibleTileWand.RubblePlacementMedium.AddVariations(ModContent.ItemType<PolypSand>(), Type, 0, 1, 2, 3);
         }
     }

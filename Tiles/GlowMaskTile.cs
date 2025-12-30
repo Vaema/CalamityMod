@@ -1,12 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Microsoft.Xna.Framework;
-using Terraria;
+﻿using Microsoft.Xna.Framework;
 using Terraria.DataStructures;
-using Terraria.ID;
 using Terraria.ModLoader;
 
 namespace CalamityMod.Tiles
@@ -29,7 +22,7 @@ namespace CalamityMod.Tiles
         public bool GlowMaskAffectedByLight = true;
         public bool GlowMaskCanBeCulled = true;
 
-        public abstract string GlowMaskAsset { get; }
+        public virtual string GlowMaskAsset => $"{Texture}Glow";
 
         public sealed override void SetStaticDefaults()
         {

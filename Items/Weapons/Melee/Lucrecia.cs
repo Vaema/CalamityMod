@@ -2,7 +2,6 @@
 using CalamityMod.Items.Materials;
 using CalamityMod.Projectiles.BaseProjectiles;
 using CalamityMod.Projectiles.Melee;
-using CalamityMod.Projectiles.Melee.Spears;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
@@ -15,7 +14,7 @@ namespace CalamityMod.Items.Weapons.Melee
 
         public static int MaxEnergy = 100;
 
-        public override int ProjectileType => ModContent.ProjectileType<LucreciaProj>();
+        public override int ProjectileType => ModContent.ProjectileType<LucreciaHoldout>();
 
         public override void SetDefaults()
         {
@@ -46,13 +45,13 @@ namespace CalamityMod.Items.Weapons.Melee
 
         public override void HoldItem(Player player)
         {
-            if (player.Calamity().cooldowns.TryGetValue(LucreciaEnergy.ID, out var cooldown))
+            if (player.Calamity().cooldowns.TryGetValue(DarklightEnergy.ID, out var cooldown))
             {
-                cooldown.timeLeft = player.Calamity().lucreciaEnergy;
+                cooldown.timeLeft = player.Calamity().darklightEnergy;
             }
             else
             {
-                player.AddCooldown(LucreciaEnergy.ID, 0);
+                player.AddCooldown(DarklightEnergy.ID, 0);
             }
         }
 

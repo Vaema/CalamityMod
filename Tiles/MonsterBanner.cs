@@ -1,12 +1,9 @@
-﻿using CalamityMod.Items.Placeables.Banners;
-using CalamityMod.NPCs.Abyss;
+﻿using CalamityMod.NPCs.Abyss;
 using CalamityMod.NPCs.AcidRain;
-using CalamityMod.NPCs.AquaticScourge;
 using CalamityMod.NPCs.Astral;
 using CalamityMod.NPCs.Crags;
 using CalamityMod.NPCs.Deconstructors;
 using CalamityMod.NPCs.DraedonLabThings;
-using CalamityMod.NPCs.Leviathan;
 using CalamityMod.NPCs.NormalNPCs;
 using CalamityMod.NPCs.PlagueEnemies;
 using CalamityMod.NPCs.SulphurousSea;
@@ -471,9 +468,9 @@ namespace CalamityMod.Tiles
                 case 131:
                     npc = NPCType<CarrionSwallower>();
                     break;
-                /* case 132:
-                    npc = NPCType<GildedAxolotl>(); // NOT YET IMPLEMENTED. Banner sprite is already on the mastersheet and associated with this case/position.
-                    break; */
+                case 132:
+                    npc = NPCType<GildedAxolotl>();
+                    break;
                 /* case 133:
                     npc = NPCType<Grubbolt>(); // NOT YET IMPLEMENTED. Banner sprite is already on the mastersheet and associated with this case/position.
                     break; */

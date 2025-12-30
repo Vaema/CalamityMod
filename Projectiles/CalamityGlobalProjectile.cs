@@ -19,9 +19,9 @@ using CalamityMod.Items.Armor.Reaver;
 using CalamityMod.Items.Potions.Alcohol;
 using CalamityMod.Items.VanillaArmorChanges;
 using CalamityMod.NPCs;
-using CalamityMod.NPCs.NormalNPCs;
 using CalamityMod.NPCs.PlagueEnemies;
 using CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses;
+using CalamityMod.NPCs.NormalNPCs;
 using CalamityMod.Particles;
 using CalamityMod.Projectiles.Boss;
 using CalamityMod.Projectiles.Healing;
@@ -192,6 +192,17 @@ namespace CalamityMod.Projectiles
         public float conditionalHomingRange = 0f;
 
         /// <summary>
+        /// Causes a projectile to use both Static and Local iframes when set
+        /// </summary>
+        public bool hybridIframes = false;
+
+        /// <summary>
+        /// Whether or not this proj was spawned with grape beer on
+        /// this does NOT mean it has grape beer homing!
+        /// </summary>
+        public bool grapeBeer = false;
+
+        /// <summary>
         /// Variable used for storing the actual amount of extra updates a projectile has.<br/>
         /// This is NOT set automatically, and must be set whenever it is needed.
         /// </summary>
@@ -290,6 +301,11 @@ namespace CalamityMod.Projectiles
 
         public int HomingTarget = -1;
 
+        /// <summary>
+        /// Flag used during Rev+ Brain of Cthulhu to denote projectiles that were spawned prior to its Illusion Trick attack starting.
+        /// </summary>
+        public bool IgnoreBoCIllusions = false;
+
         #region On Spawn
         public override void OnSpawn(Projectile projectile, IEntitySource source)
         {
@@ -309,16 +325,50 @@ namespace CalamityMod.Projectiles
                 projectile.Calamity().supercritHits = -1;
             }
 
+            void ApplyGrapeBeer()
+            {
+
+                conditionalHomingRange = 600;
+                if (projectile.timeLeft > 300 * projectile.MaxUpdates)
+                    projectile.timeLeft = 300 * projectile.MaxUpdates;
+                hybridIframes = true;
+                projectile.localNPCHitCooldown = -1;
+                projectile.usesLocalNPCImmunity = true;
+                Main.player[projectile.owner].Calamity().grapeBeerTimer++;
+            }
+            if (source is EntitySource_ItemUse_WithAmmo {Item: Item item})
+            {
+                if (source is EntitySource_Parent { Entity: Player player })
+                {
+                    if (player.Calamity().grapeBeer && (item.useAmmo == AmmoID.Bullet || item.useAmmo == AmmoID.Arrow || item.useAmmo == AmmoID.Dart || item.useAmmo == AmmoID.Rocket))
+                    {
+                        if (player.heldProj != projectile.whoAmI && projectile.aiStyle != ProjAIStyleID.HeldProjectile && projectile.damage > 0 && player.Calamity().grapeBeerTimer < 5)
+                            ApplyGrapeBeer();
+                        else
+                            grapeBeer = true;
+                    }
+                }
+            }
+
             if (source is EntitySource_Parent { Entity: NPC npc })
             {
                 if (!npc.friendly)
                     ParentNPCIndex = npc.whoAmI;
             }
             //
-            // SPECIFIC PROJECTILE BALANCE CHANGES
+            // SPECIFIC PROJECTILE BALANCE CHANGES (and Grape Beer homing)
             //
             else if (source is EntitySource_Parent { Entity: Projectile parent })
             {
+                //Grape Beer homing
+                if (parent.Calamity().grapeBeer)
+                {
+                    if (Main.player[projectile.owner].heldProj != projectile.whoAmI && projectile.aiStyle != ProjAIStyleID.HeldProjectile && projectile.damage > 0 && Main.player[projectile.owner].Calamity().grapeBeerTimer < 5)
+                        ApplyGrapeBeer();
+                    else
+                        grapeBeer = true;
+                }
+
                 // Nerf Crystal bullet shard damage by 45%
                 // Vanilla crystal shards deal 50% of the bullet's damage which is absurd, this nerfs them to 27.5%
                 if (parent.type == ProjectileID.CrystalBullet && projectile.type == ProjectileID.CrystalShard)
@@ -382,17 +432,24 @@ namespace CalamityMod.Projectiles
             if (ProjectileID.Sets.LightPet[projectile.type] && Main.LocalPlayer.Calamity().ZoneAbyss)
                 EnhancedDarknessSystem.lights.Add(new() { center = projectile.Center, texture = ModContent.Request<Texture2D>("CalamityMod/Particles/BloomCircle"), scale = 1 });
 
+            ///Apply Hybrid iframes
+            if (hybridIframes)
+            {
+                projectile.usesIDStaticNPCImmunity = true;
+                projectile.usesLocalNPCImmunity = true;
+            }
+
             if (projectile.bobber && projectile.type != ModContent.ProjectileType<VictideBobber>() && RunFishingMinigames(projectile))
                 return false;
             //Reset the Homing Target immediately before AI can re-set it on applicable projectiles
             HomingTarget = -1;
             #region Vanilla Summons AI Changes
 
-            //
-            // MINION AI CHANGES:
-            //
+                //
+                // MINION AI CHANGES:
+                //
 
-            // Hornet Staff's minion changes.
+                // Hornet Staff's minion changes.
             if (projectile.type == ProjectileID.Hornet)
                 return HornetMinionAI.DoHornetMinionAI(projectile);
 
@@ -2492,42 +2549,16 @@ namespace CalamityMod.Projectiles
                         Vector2 vector11 = Main.player[num103].Center - projectile.Center;
                         float scaleFactor2 = projectile.velocity.Length();
                         vector11.Normalize();
+                        if (vector11.HasNaNs())
+                            vector11 = Vector2.Zero;
                         vector11 *= scaleFactor2;
                         projectile.velocity = (projectile.velocity * 20f + vector11) / 21f;
                         projectile.velocity.Normalize();
                         projectile.velocity *= scaleFactor2;
+                        projectile.velocity *= 0.99f;
 
-                        // Fly away from other Ice Mists in Master
-                        if (death)
-                        {
-                            float pushForce = 0.06f;
-                            float pushDistance = 120f;
-                            for (int k = 0; k < Main.maxProjectiles; k++)
-                            {
-                                Projectile otherProj = Main.projectile[k];
-                                // Short circuits to make the loop as fast as possible
-                                if (!otherProj.active || k == projectile.whoAmI)
-                                    continue;
-
-                                // If the other projectile is indeed the same owned by the same player and they're too close, nudge them away
-                                bool sameProjType = otherProj.type == projectile.type;
-                                float taxicabDist = Vector2.Distance(projectile.Center, otherProj.Center);
-                                if (sameProjType && taxicabDist < pushDistance)
-                                {
-                                    if (projectile.position.X < otherProj.position.X)
-                                        projectile.velocity.X -= pushForce;
-                                    else
-                                        projectile.velocity.X += pushForce;
-
-                                    if (projectile.position.Y < otherProj.position.Y)
-                                        projectile.velocity.Y -= pushForce;
-                                    else
-                                        projectile.velocity.Y += pushForce;
-                                }
-                            }
-                        }
-
-                        if (projectile.ai[0] % (death ? 30f : 60f) == 0f && Main.netMode != NetmodeID.MultiplayerClient)
+                        
+                        if (projectile.ai[0] % (death ? 20f : 30f) == 0f && Main.netMode != NetmodeID.MultiplayerClient)
                         {
                             Vector2 vector50 = projectile.rotation.ToRotationVector2();
                             Projectile.NewProjectile(projectile.GetSource_FromThis(), projectile.Center, vector50, projectile.type, projectile.damage, projectile.knockBack, projectile.owner);
@@ -3025,7 +3056,7 @@ namespace CalamityMod.Projectiles
             //If hooking an NPC, this is set to the NPC ID but negative. Still need to find how this gets treated upon reeling in.
             switch (owner.Calamity().SelectedFishingMinigame)
             {
-                case CalamityPlayer.FishingMinigames.WulfrumRod:
+                case CalamityPlayer.FishingMinigames.ScrapBobber:
                     {
                         if (CatchTime < 0 || (isReelingIn == 1 && CaughtItemID > 0))
                         {
@@ -3136,7 +3167,7 @@ namespace CalamityMod.Projectiles
                     }
 
 
-                case CalamityPlayer.FishingMinigames.RiftReeler:
+                case CalamityPlayer.FishingMinigames.ScoriaBobber:
                     {
                         if (PersistentFishingData == -1)
                         {
@@ -3243,7 +3274,7 @@ namespace CalamityMod.Projectiles
                     }
 
 
-                case CalamityPlayer.FishingMinigames.FeralDoubleRod:
+                case CalamityPlayer.FishingMinigames.PerennialBobber:
                     if (projectile.ai[0] == 0)
                     {
                         if (projectile.wet) //Fishing in water
@@ -3304,7 +3335,7 @@ namespace CalamityMod.Projectiles
                     break;
 
 
-                case CalamityPlayer.FishingMinigames.NavyFishingRod:
+                case CalamityPlayer.FishingMinigames.NavystoneBobber:
                     {
                         if (CatchTime < 0 || (isReelingIn == 1 && CaughtItemID > 0))
                         {
@@ -3423,7 +3454,7 @@ namespace CalamityMod.Projectiles
                     }
 
 
-                case CalamityPlayer.FishingMinigames.TheDevourerOfCods:
+                case CalamityPlayer.FishingMinigames.DevourerofCods: //Technically not a fishing minigame, but the code is already all here
                     var fishToEat = TheDevourerofCods.FishToEat;
                     if (projectile.ai[1] < -1)
                     {
@@ -3469,7 +3500,7 @@ namespace CalamityMod.Projectiles
                     return false;
 
 
-                case CalamityPlayer.FishingMinigames.HeronRod:
+                case CalamityPlayer.FishingMinigames.SkylineBobber:
                     {
                         if (CatchTime < 0 || (isReelingIn == 1 && CaughtItemID > 0))
                         {
@@ -4472,9 +4503,28 @@ namespace CalamityMod.Projectiles
             CalamityPlayer modPlayer = player.Calamity();
 
             // Old Fashioned buffs (or debuffs) apply if the player has Old Fashioned
+            // IV Drip on the Rocks inherits the same logic as Old Fashioned
             if (modPlayer.oldFashioned && buffedByOldFashioned.HasValue)
                 modifiers.SourceDamage *= buffedByOldFashioned.Value ? OldFashioned.DamageBoostMultiplier : OldFashioned.DamageReductionMultiplier;
+            if (modPlayer.ivDrip && buffedByOldFashioned.HasValue)
+                modifiers.SourceDamage *= buffedByOldFashioned.Value ? IVDripOnTheRocks.DamageBoostMultiplier : IVDripOnTheRocks.DamageReductionMultiplier;
 
+            if (modPlayer.rum && projectile.DamageType.CountsAsClass(DamageClass.Summon))
+            {
+                if (projectile.minion || ProjectileID.Sets.MinionShot[projectile.type])
+                {
+                    modifiers.SourceDamage *= Rum.MinionBoost;
+                }
+                else
+                    modifiers.SourceDamage *= Rum.NonMinionBoost;
+            }
+            if (modPlayer.moscowMule || modPlayer.bloodyMary)
+            {
+                if (projectile.DamageType == DamageClass.Summon || (PierceResistNPC.exemptProjectiles.Contains(projectile.type) || (PierceResistNPC.singleHitboxExemptProjectiles.ContainsKey(projectile.type) && PierceResistNPC.singleHitboxExemptProjectiles[projectile.type])))
+                {
+                    modifiers.SourceDamage *= ((modPlayer.moscowMule ? 0.7f : 1f) * (modPlayer.bloodyMary ? 0.33f : 1f));
+                }
+            }
             if (projectile.type == ProjectileID.JoustingLance || projectile.type == ProjectileID.HallowJoustingLance || projectile.type == ProjectileID.ShadowJoustingLance)
             {
                 // The vanilla damage Jousting Lance multiplier is as follows. Calamity overrides this with a new formula
@@ -4596,6 +4646,12 @@ namespace CalamityMod.Projectiles
         #region On Hit NPC
         public override void OnHitNPC(Projectile projectile, NPC target, NPC.HitInfo hit, int damageDone)
         {
+            //Manage Hybrid iframes
+            if (hybridIframes && (projectile.penetrate != 1 || projectile.appliesImmunityTimeOnSingleHits))
+            {
+                projectile.localNPCImmunity[target.whoAmI] = projectile.localNPCHitCooldown;
+                Projectile.perIDStaticNPCImmunity[projectile.type][target.whoAmI] = Main.GameUpdateCount + (uint)projectile.idStaticNPCHitCooldown;
+            }
             if (BloodstoneOrbValue > 0)
                 Projectile.NewProjectile(projectile.GetSource_OnHit(target), projectile.Center, projectile.velocity.SafeNormalize(Vector2.Zero) * Math.Min(((projectile.velocity.Length() * projectile.MaxUpdates) / 4f), 4f) * Main.rand.NextFloat(0.75f, 1.25f), ModContent.ProjectileType<BloodstoneHealOrb>(), BloodstoneOrbValue, 0f, Main.player[projectile.owner].whoAmI);
             //Mana Burn
@@ -4726,6 +4782,9 @@ namespace CalamityMod.Projectiles
 
         public override bool? CanHitNPC(Projectile projectile, NPC target)
         {
+
+            if (hybridIframes && (projectile.localNPCImmunity[target.whoAmI] != 0 || Projectile.perIDStaticNPCImmunity[projectile.type][target.whoAmI] > Main.GameUpdateCount))
+                return false;
             if (target.Calamity().IsArmored() && HomingTarget > -1 && HomingTarget != target.whoAmI)
                 return false;
             return null;

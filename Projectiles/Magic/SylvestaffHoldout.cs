@@ -197,12 +197,12 @@ namespace CalamityMod.Projectiles.Magic
         /// <summary>
         ///     The function responsible for dictating the width of this staff's ribbons.
         /// </summary>
-        private float RibbonWidthFunction(float completionRatio) => Projectile.scale * Utils.GetLerpValue(0f, 0.2f, completionRatio, true) * 3.6f;
+        private float RibbonWidthFunction(float completionRatio, Vector2 vertexPos) => Projectile.scale * Utils.GetLerpValue(0f, 0.2f, completionRatio, true) * 3.6f;
 
         /// <summary>
         ///     The function responsible for dictating the color of this staff's ribbons.
         /// </summary>
-        private Color RibbonColorFunction(float completionRatio)
+        private Color RibbonColorFunction(float completionRatio, Vector2 vertexPos)
         {
             Color light = Lighting.GetColor(RibbonAttachPoint.ToTileCoordinates());
             return Projectile.GetAlpha(light);

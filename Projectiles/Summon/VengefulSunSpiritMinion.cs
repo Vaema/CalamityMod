@@ -1,6 +1,6 @@
-﻿using System;
-using CalamityMod.Buffs.Summon;
+﻿using CalamityMod.Buffs.Summon;
 using CalamityMod.CalPlayer;
+using CalamityMod.Utilities.Daybreak;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using ReLogic.Content;
@@ -152,13 +152,14 @@ namespace CalamityMod.Projectiles.Summon
             }
             Main.spriteBatch.Draw(spTex, Projectile.Center - Main.screenPosition, null, Color.White, Main.GlobalTimeWrappedHourly, spTex.Size() * 0.5f, 0.75f, SpriteEffects.None, 0);
             Main.spriteBatch.Draw(whiteTex, Projectile.Center - Main.screenPosition, null, Color.Black * completion, Main.GlobalTimeWrappedHourly, spTex.Size() * 0.5f, 0.75f, SpriteEffects.None, 0);
-            Main.spriteBatch.SafeBegin(SpriteSortMode.Deferred, BatchSetting.Additive, null, Main.GameViewMatrix.TransformationMatrix, () =>
+            using (Main.spriteBatch.Scope())
             {
+                Main.spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.Additive, SamplerState.PointClamp, DepthStencilState.None, Main.Rasterizer, null, Main.GameViewMatrix.TransformationMatrix);
                 color = Color.Lerp(Color.Yellow, Color.OrangeRed, completion);
                 if (completion >= 1)
                     color = Color.LightBlue;
 
-                float count = MathHelper.Min((Projectile.minionSlots-1) * 2, 40);
+                float count = MathHelper.Min((Projectile.minionSlots) * 2, 40);
                 for (var i = 0; i < count; i++)
                 {
                     var comp = (i / count);
@@ -167,7 +168,8 @@ namespace CalamityMod.Projectiles.Summon
                         offset = 8 - offset;
                     CalamityUtils.DrawLineBetter(Main.spriteBatch, Projectile.Center + new Vector2(26 + offset, 0).RotatedBy(MathHelper.TwoPi * comp - Main.GlobalTimeWrappedHourly), Projectile.Center + new Vector2(40 + offset, 0).RotatedBy(MathHelper.TwoPi * comp - Main.GlobalTimeWrappedHourly),  color, 1f);
                 }
-            });
+                Main.spriteBatch.End();
+            }
 
             return false;
         }

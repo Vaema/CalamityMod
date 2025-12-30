@@ -1,5 +1,5 @@
 ﻿using System;
-using CalamityMod.Items;
+using CalamityMod.CalPlayer;
 using CalamityMod.Items.Weapons.Magic;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
@@ -7,7 +7,6 @@ using Microsoft.Xna.Framework.Input;
 using ReLogic.Content;
 using Terraria;
 using Terraria.ModLoader;
-using CalamityMod.CalPlayer;
 
 namespace CalamityMod.UI.DraedonsArsenal
 {
@@ -131,7 +130,7 @@ namespace CalamityMod.UI.DraedonsArsenal
                 }
 
                 // When the mouse is released, save the config and destroy the drag offset.
-                if (ms.LeftButton == ButtonState.Released)
+                if (dragOffset.HasValue && ms.LeftButton == ButtonState.Released)
                 {
                     dragOffset = null;
                     CalamityClientConfig.Instance.SaveChanges();

@@ -1,5 +1,4 @@
-﻿using System;
-using CalamityMod.Buffs.Summon;
+﻿using CalamityMod.Buffs.Summon;
 using CalamityMod.Items.Weapons.Rogue;
 using CalamityMod.Projectiles.Summon;
 using Microsoft.Xna.Framework;
@@ -13,10 +12,6 @@ namespace CalamityMod.Items.Weapons.Summon
     public class GastricBelcherStaff : ModItem, ILocalizedModType
     {
         public new string LocalizationCategory => "Items.Weapons.Summon";
-        public override void SetStaticDefaults()
-        {
-            ItemID.Sets.ShimmerTransformToItem[Type] = ModContent.ItemType<Whitewater>();
-        }
         public override void SetDefaults()
         {
             Item.width = 66;

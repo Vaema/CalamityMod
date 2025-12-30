@@ -63,6 +63,7 @@ namespace CalamityMod.Items.Accessories
             // Health boost intentionally stacks with Blood Pact.
             // This accessory's bleedout buffer clearing effect intentionally stacks with Blood Pact's healing potion boost.
             modPlayer.chaliceOfTheBloodGod = true;
+            modPlayer.chaliceHeartStyle = !hideVisual;
         }
 
         public override void AddRecipes()

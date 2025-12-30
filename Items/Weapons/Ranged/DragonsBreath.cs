@@ -1,10 +1,7 @@
-﻿using System;
-using CalamityMod.Items.Weapons.Magic;
-using CalamityMod.Items.Weapons.Rogue;
+﻿using CalamityMod.Items.Weapons.Magic;
 using CalamityMod.Projectiles.Ranged;
 using CalamityMod.Rarities;
 using Microsoft.Xna.Framework;
-using ReLogic.Utilities;
 using Terraria;
 using Terraria.Audio;
 using Terraria.DataStructures;
@@ -25,11 +22,6 @@ namespace CalamityMod.Items.Weapons.Ranged
         public static readonly SoundStyle WeldingStart = new("CalamityMod/Sounds/Item/DragonsBreathStrongStart") { Volume = 1.75f };
         public static readonly SoundStyle WeldingBurn = new("CalamityMod/Sounds/Item/WeldingBurn") { Volume = 0.65f };
         public static readonly SoundStyle WeldingShoot = new("CalamityMod/Sounds/Item/WeldingShoot") { Volume = 0.45f };
-
-        public override void SetStaticDefaults()
-        {
-            ItemID.Sets.ShimmerTransformToItem[Type] = ModContent.ItemType<PhoenixFlameBarrage>();
-        }
         public override void SetDefaults()
         {
             Item.width = 124;

@@ -1,17 +1,12 @@
 ﻿using CalamityMod.Effects;
 using CalamityMod.Graphics;
-using CalamityMod.NPCs.DevourerofGods;
 using CalamityMod.Skies;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework;
-using ReLogic.Content;
 using Terraria.GameContent;
 using Terraria.Graphics.Effects;
 using Terraria;
 using Terraria.ModLoader;
-using System.Collections.Generic;
-using Terraria.ID;
-using System;
 using CalamityMod.Graphics.Metaballs;
 using System.Linq;
 

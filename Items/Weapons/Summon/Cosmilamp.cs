@@ -24,7 +24,6 @@ namespace CalamityMod.Items.Weapons.Summon
         public override void SetStaticDefaults()
         {
             ItemID.Sets.StaffMinionSlotsRequired[Type] = 2f;
-            ItemID.Sets.ShimmerTransformToItem[Type] = ModContent.ItemType<CosmicKunai>();
         }
 
         public override void SetDefaults()

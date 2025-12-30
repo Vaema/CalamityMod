@@ -237,7 +237,7 @@ public static partial class RevengeanceAndDeathAI
                 // Emit feather dust from center when about to shoot
                 if (NPC.ai[0] > HarpyFeatherGateValue - HarpyFeatherTelegraphTime)
                 {
-                    Dust dust = Dust.NewDustDirect(NPC.Center + Main.rand.NextVector2CircularEdge(5f, 5f), 1, 1, 172, 0f, 0f, 0, default, 1.5f);
+                    Dust dust = Dust.NewDustDirect(NPC.Center + Main.rand.NextVector2CircularEdge(5f, 5f), 1, 1, DustID.DungeonWater, 0f, 0f, 0, default, 1.5f);
                     dust.noGravity = true;
                     dust.velocity *= 0f;
                 }
@@ -247,7 +247,7 @@ public static partial class RevengeanceAndDeathAI
                 // Emit shadowflame dust from center when about to shoot
                 if (NPC.ai[0] > DemonScytheGateValue - DemonScytheTelegraphTime)
                 {
-                    Dust dust = Dust.NewDustDirect(NPC.position, NPC.width, NPC.height, 27, 0f, 0f, 100, default, 3f);
+                    Dust dust = Dust.NewDustDirect(NPC.position, NPC.width, NPC.height, DustID.Shadowflame, 0f, 0f, 100, default, 3f);
                     dust.noGravity = true;
                     dust.velocity *= 0f;
                 }
@@ -257,7 +257,7 @@ public static partial class RevengeanceAndDeathAI
                 // Emit shadowflame dust from center when about to shoot
                 if (NPC.ai[0] > RedDevilTridentGateValue - RedDevilTridentTelegraphTime)
                 {
-                    Dust dust = Dust.NewDustDirect(NPC.position, NPC.width, NPC.height, 27, 0f, 0f, 100, default, 3f);
+                    Dust dust = Dust.NewDustDirect(NPC.position, NPC.width, NPC.height, DustID.Shadowflame, 0f, 0f, 100, default, 3f);
                     dust.noGravity = true;
                     dust.velocity *= 0f;
                 }

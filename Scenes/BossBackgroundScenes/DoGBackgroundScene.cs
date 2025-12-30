@@ -1,5 +1,4 @@
-﻿using CalamityMod.NPCs;
-using CalamityMod.NPCs.DevourerofGods;
+﻿using CalamityMod.NPCs.DevourerofGods;
 using Terraria;
 using Terraria.Graphics.Effects;
 using Terraria.ModLoader;

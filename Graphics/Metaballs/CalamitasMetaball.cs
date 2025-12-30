@@ -24,6 +24,8 @@ namespace CalamityMod.Graphics.Metaballs
             public float rotation = 0;
 
             public float SizeScaling = 0.85f;
+
+            public Vector2 Scale = Vector2.One;
             bool firstFrame = true;
 
             public Particle(Vector2 center, Vector2 velocity, float size)
@@ -108,7 +110,7 @@ namespace CalamityMod.Graphics.Metaballs
                 Vector2 drawPosition = particle.Center - Main.screenPosition;
                 Vector2 origin = texture2d.Size() * 0.5f;
                 Vector2 scale = Vector2.One * particle.Size / texture2d.Width;
-                Main.spriteBatch.Draw(texture2d, drawPosition, null, Color.White, particle.rotation, origin, scale, SpriteEffects.None, 0f);
+                Main.spriteBatch.Draw(texture2d, drawPosition, null, Color.White, particle.rotation, origin, particle.Scale*scale, SpriteEffects.None, 0f);
             }
         }
     }

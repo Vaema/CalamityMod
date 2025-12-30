@@ -1,15 +1,11 @@
 ﻿using System;
 using System.Linq;
 using CalamityMod.Buffs.Alcohol;
-using CalamityMod.Buffs.DamageOverTime;
-using CalamityMod.Buffs.Placeables;
 using CalamityMod.Buffs.StatBuffs;
 using CalamityMod.CalPlayer.Dashes;
-using CalamityMod.Cooldowns;
 using CalamityMod.DataStructures;
 using CalamityMod.Enums;
 using CalamityMod.Items.Accessories;
-using CalamityMod.Items.Accessories.Wings;
 using CalamityMod.Items.Armor.Fearmonger;
 using CalamityMod.Items.Armor.Reaver;
 using CalamityMod.Items.Armor.Silva;
@@ -18,6 +14,7 @@ using CalamityMod.Items.Fishing.BrimstoneCragCatches;
 using CalamityMod.Items.Placeables.Furniture;
 using CalamityMod.Items.Potions;
 using CalamityMod.Items.Potions.Alcohol;
+using CalamityMod.Items.Potions.Food;
 using CalamityMod.NPCs;
 using CalamityMod.Projectiles.Typeless;
 using CalamityMod.Systems;
@@ -199,34 +196,10 @@ namespace CalamityMod.CalPlayer
                 if (CalamityBuffSets.AlcoholStrength.TryGetValue(buff, out int level))
                     alcoholPoisonLevel += level;
             }
-            if (vodka)
-                totalNegativeLifeRegen += Vodka.RegenLoss;
-            if (redWine)
-                totalNegativeLifeRegen += baguette ? Baguette.RedWineBuffedRegenLoss : RedWine.RegenLoss;
-            if (moonshine)
-                totalNegativeLifeRegen += Moonshine.RegenLoss;
-            if (fireball)
-                totalNegativeLifeRegen += Fireball.RegenLoss;
+            if (Player.Calamity().ivDrip) // +1 stack of poisoning while IV Drip is equipped
+                alcoholPoisonLevel++;
             if (everclear)
                 totalNegativeLifeRegen += Everclear.RegenLoss;
-            if (bloodyMary)
-                totalNegativeLifeRegen += BloodyMary.RegenLoss;
-            if (tequila)
-                totalNegativeLifeRegen += Tequila.RegenLoss;
-            if (tequilaSunrise)
-                totalNegativeLifeRegen += TequilaSunrise.RegenLoss;
-            if (screwdriver)
-                totalNegativeLifeRegen += Screwdriver.RegenLoss;
-            if (margarita)
-                totalNegativeLifeRegen += Margarita.RegenLoss;
-            if (starBeamRye)
-                totalNegativeLifeRegen += StarBeamRye.RegenLoss;
-            if (moscowMule)
-                totalNegativeLifeRegen += MoscowMule.RegenLoss;
-            if (whiteWine)
-                totalNegativeLifeRegen += WhiteWine.RegenLoss;
-            if (evergreenGin)
-                totalNegativeLifeRegen += EvergreenGin.RegenLoss;
 
             // Blanket effect for all alcohols
             if (alcoholPoisonLevel > 0)
@@ -295,8 +268,12 @@ namespace CalamityMod.CalPlayer
             // At the last second, Reaver defense helm reduces DoT debuffs by 20%
             if (reaverDefense)
                 totalNegativeLifeRegen -= (int)(totalNegativeLifeRegen * ReaverHeadTank.SetBonusDebuffDamageReduction);
+            if (tequilaSunrise)
+                totalNegativeLifeRegen = (int)(totalNegativeLifeRegen * TequilaSunrise.DoTMultiplier);
 
             Player.lifeRegen -= (int)totalNegativeLifeRegen;
+
+            bool hasLifeRegenHinderingDebuff = Player.lifeRegenTime == 0;
 
             #region Life Regen That Works Even During DoT Debuffs
             if (honeyDewHalveDebuffs)
@@ -356,7 +333,7 @@ namespace CalamityMod.CalPlayer
             }
 
             // Permafrost's Concoction increases life regen while afflicted with a fire debuff
-            if (permafrostsConcoction && Player.buffType.Any(l => BuffDatasets.DebuffDataset[l].HeatDebuffScaling > 0))
+            if (permafrostsConcoction && Player.buffType.Any(l => BuffDatasets.DebuffDataset[l] is not null && BuffDatasets.DebuffDataset[l].HeatDebuffScaling > 0))
             {
                 if (Player.lifeRegenTime < 900)
                     Player.lifeRegenTime = 900;
@@ -458,6 +435,16 @@ namespace CalamityMod.CalPlayer
                 if (Player.buffType.Any(i => CalamityBuffSets.IsDebuff[i]))
                     Player.lifeRegen += 3;
             }
+
+            //If a player had a life regen hindering debuff, add 30 seconds to their regen time when under Tequila Sunrise
+            //This stacks with all other post-debuff boosts due to Tequila Sunrise increasing DoT damage taken
+            if (tequilaSunrise)
+            {
+                if (hadLifeRegenHinderingDebuff && !hasLifeRegenHinderingDebuff)
+                {
+                    Player.lifeRegenTime += 1800;
+                }
+            }
             #endregion
 
             // During Silva revive or God Slayer dash, all negative life regen is canceled
@@ -531,18 +518,15 @@ namespace CalamityMod.CalPlayer
             // Chalice of the Blood God bleedout
             // The bleedout is applied by directly reducing the player's health. It is not canceled by anything.
             ChaliceOfTheBloodGod.HandleBleedout(Player);
+
+            //Finally, update the state of hadLifeRegenHinderingDebuff for next frame.
+            hadLifeRegenHinderingDebuff = hasLifeRegenHinderingDebuff;
         }
         #endregion
 
         #region Update Life Regen
         public override void UpdateLifeRegen()
         {
-            if (rum)
-                Player.lifeRegen += Rum.RegenBoost;
-
-            if (caribbeanRum)
-                Player.lifeRegen += CaribbeanRum.RegenBoost;
-
             if (mushy)
                 Player.lifeRegen += Mushy.RegenBoost;
 
@@ -561,6 +545,9 @@ namespace CalamityMod.CalPlayer
 
             if (sRegen)
                 Player.lifeRegen += SpiritGlyph.RegenBoost;
+
+            if (fortunesFavor)
+                Player.lifeRegen += FortunesFavor.FortunesFavorRegenBoost;
 
             if (PinkJellyRegen)
                 Player.lifeRegen += LifeJelly.AuraRegenBoost;

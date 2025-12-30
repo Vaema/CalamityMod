@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
 using CalamityMod.Events;
 using CalamityMod.Projectiles.Boss;
@@ -883,7 +882,7 @@ namespace CalamityMod.NPCs.SlimeGod
             dustColor.A = 150;
 
             for (int k = 0; k < 5; k++)
-                Dust.NewDust(NPC.position, NPC.width, NPC.height, 4, hit.HitDirection, -1f, 0, dustColor, 1f);
+                Dust.NewDust(NPC.position, NPC.width, NPC.height, DustID.TintableDust, hit.HitDirection, -1f, 0, dustColor, 1f);
 
             if (NPC.life <= 0)
             {

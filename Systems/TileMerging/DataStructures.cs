@@ -1,5 +1,4 @@
-﻿using System;
-using Terraria;
+﻿using Microsoft.Xna.Framework;
 
 namespace CalamityMod.Systems
 {
@@ -104,34 +103,61 @@ namespace CalamityMod.Systems
         ShapeU_RightEmpty_DownEnd = ShapeI_Up | ShapeI_Down_End | ShapeI_Left,
     }
 
+    public readonly struct SheetPositionKey(BlendSideFlags blendSides, byte randomFrameIndex)
+    {
+        public ushort Key { get; init; } = (ushort)((int)blendSides + (randomFrameIndex * 256));
+        public BlendSideFlags BlendSides => (BlendSideFlags)(byte)(Key % 256);
+        public byte RandomFrameIndex => (byte)(Key / 256);
+
+        public static implicit operator int(SheetPositionKey key) => key.Key;
+    }
+
+    public readonly struct SheetPosition
+    {
+        public readonly byte X;
+        public readonly byte Y;
+        public readonly sbyte BakedSheetIndex;
+
+        public SheetPosition(int x, int y, sbyte bakedSheetIndex = -1)
+        {
+            BakedSheetIndex = bakedSheetIndex;
+            if (IsUsingBaseTexture)
+            {
+                X = (byte)(x / 18);
+                Y = (byte)(y / 18);
+            }
+            else
+            {
+                X = (byte)(x / TileBlendTexture.BlendTextureFrameWidth);
+                Y = (byte)(y / TileBlendTexture.BlendTextureFrameHeight);
+            }
+        }
+
+        public readonly Vector2 GetDrawPosition()
+        {
+            if (IsUsingBaseTexture) return new Vector2(X * 18.0f, Y * 18.0f);
+            else return new Vector2(X * TileBlendTexture.BlendTextureFrameWidth, Y * TileBlendTexture.BlendTextureFrameHeight);
+        }
+
+        public readonly Rectangle GetDrawRect()
+        {
+            if (IsUsingBaseTexture) return new Rectangle(X * 18, Y * 18, 16, 16);
+            else return new Rectangle(X * TileBlendTexture.BlendTextureFrameWidth, Y * TileBlendTexture.BlendTextureFrameHeight, 16, 16);
+        }
+
+        public readonly bool IsUsingBaseTexture => BakedSheetIndex < 0;
+    }
+
     public struct TileBlendingRef(ushort sheetIdx, byte blendData)
     {
         public ushort SheetIndex = sheetIdx;
         public byte BlendData = blendData;
     }
 
-    public struct TileBlendingRefLengthData : ITileData
+    public enum TileBlendingQuality
     {
-        public const int MaxLength = 8;
-
-        private byte DataLength;
-
-        public void Clear()
-        {
-            DataLength = 0b0000_0000;
-        }
-
-        public void SetLength(int length)
-        {
-            if (length < 0 || length > byte.MaxValue)
-                throw new ArgumentOutOfRangeException(nameof(length));
-
-            DataLength = (byte)length;
-        }
-
-        public readonly int GetLength()
-        {
-            return DataLength;
-        }
+        Disable,
+        Normal,
+        High
     }
 }

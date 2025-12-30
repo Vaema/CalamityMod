@@ -1,13 +1,10 @@
 ﻿using System;
 using System.IO;
-using CalamityMod.Buffs.DamageOverTime;
 using CalamityMod.Events;
 using CalamityMod.Items.Accessories;
-using CalamityMod.Items.Ammo;
 using CalamityMod.Items.Armor.Vanity;
 using CalamityMod.Items.Fishing.BrimstoneCragCatches;
 using CalamityMod.Items.LoreItems;
-using CalamityMod.Items.Materials;
 using CalamityMod.Items.Pets;
 using CalamityMod.Items.Placeables.Furniture.BossRelics;
 using CalamityMod.Items.Placeables.Furniture.Paintings;
@@ -84,7 +81,7 @@ namespace CalamityMod.NPCs.Perforator
             NPC.width = Width;
             NPC.height = Height;
             NPC.defense = 4;
-            NPC.LifeMaxNERB(4800, 5750, 270000);
+            NPC.LifeMaxNERB(4000, 5750, 270000);
             NPC.aiStyle = -1;
             AIType = -1;
             NPC.knockBackResist = 0f;
@@ -233,7 +230,14 @@ namespace CalamityMod.NPCs.Perforator
             else
                 wormsAlive = 0;
 
-            NPC.Calamity().DR = wormsAlive * 0.3f;
+            NPC.Calamity().DR = wormsAlive * 0.5f;
+            if (wormsAlive >= 1)
+                NPC.Calamity().CurrentlyIncreasingDefenseOrDR = true;
+            if (NPC.Calamity().DR >= 0.999f)
+            {
+                NPC.Calamity().DR = 0.999f;
+                NPC.Calamity().unbreakableDR = true;
+            }
 
             if (Main.netMode != NetmodeID.MultiplayerClient && wormSpawnStateTimer == 0f)
             {

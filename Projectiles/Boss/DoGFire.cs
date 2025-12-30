@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Linq;
 using CalamityMod.Buffs.DamageOverTime;
-using CalamityMod.DataStructures;
 using CalamityMod.Graphics.Primitives;
 using CalamityMod.Particles;
 using CalamityMod.Enums;
@@ -30,7 +29,7 @@ namespace CalamityMod.Projectiles.Boss
 
         public override void SetStaticDefaults()
         {
-            ProjectileID.Sets.TrailCacheLength[Type] = 14;
+            ProjectileID.Sets.TrailCacheLength[Type] = 10;
             ProjectileID.Sets.TrailingMode[Type] = 2;
         }
         public override void SetDefaults()
@@ -116,7 +115,7 @@ namespace CalamityMod.Projectiles.Boss
 
         public override bool PreDraw(ref Color lightColor) => false;
 
-        public float FireWidthFunction(float completion)
+        public float FireWidthFunction(float completion, Vector2 vertexPos)
         {
             float width;
             float maxBodyWidth = 72f * Projectile.scale;
@@ -134,14 +133,14 @@ namespace CalamityMod.Projectiles.Boss
             return width + additionalPulseWidth;
         }
 
-        public Color FireColorFunction(float completion)
+        public Color FireColorFunction(float completion, Vector2 vertexPos)
         {
             Color mainColor = IsAPassiveFireball ? Color.Cyan : Color.Purple * 1.3f;
             Color endColor = Color.Lerp(mainColor, Color.Transparent, Utils.GetLerpValue(0.8f, 1f, completion, true));
             return Color.Lerp(mainColor, endColor, completion);
         }
 
-        public float FireCoreWidthFunction(float completion)
+        public float FireCoreWidthFunction(float completion, Vector2 vertexPos)
         {
             float width;
             float maxBodyWidth = Projectile.scale * (IsAPassiveFireball ? 24f : 64f);
@@ -154,7 +153,7 @@ namespace CalamityMod.Projectiles.Boss
             return width;
         }
 
-        public Color FireCoreColorFunction(float completion)
+        public Color FireCoreColorFunction(float completion, Vector2 vertexPos)
         {
             Color mainColor = IsAPassiveFireball ? Color.SkyBlue : Color.Fuchsia;
             Color tipColor = Color.Lerp(mainColor, Color.Transparent, Utils.GetLerpValue(0.8f, 1f, completion, true));
@@ -166,12 +165,12 @@ namespace CalamityMod.Projectiles.Boss
         {
             // Render the main trail for the body for the flame.
             GameShaders.Misc["CalamityMod:ImpFlameTrail"].SetShaderTexture(ModContent.Request<Texture2D>("CalamityMod/ExtraTextures/Trails/ScarletDevilStreak"));
-            PrimitiveRenderer.RenderTrail(Projectile.oldPos, new(FireWidthFunction, FireColorFunction, (_) => Projectile.Size * 0.5f + Projectile.velocity.SafeNormalize(Vector2.Zero)*24f, true, true, GameShaders.Misc["CalamityMod:ImpFlameTrail"]), Projectile.oldPos.Length + 32);
+            PrimitiveRenderer.RenderTrail(Projectile.oldPos, new(FireWidthFunction, FireColorFunction, (_,_) => Projectile.Size * 0.5f + Projectile.velocity.SafeNormalize(Vector2.Zero)*24f, true, true, GameShaders.Misc["CalamityMod:ImpFlameTrail"]), Projectile.oldPos.Length + 12);
 
             // Render a smaller, pure white trail in the same position to represent the glowing core of the flame.
-            Vector2[] fireCoreLength = Projectile.oldPos.Take(IsAPassiveFireball ? 8 : 10).ToArray();
+            int coreLength = IsAPassiveFireball ? 6 : 7;
             GameShaders.Misc["CalamityMod:ImpFlameTrail"].SetShaderTexture(ModContent.Request<Texture2D>("CalamityMod/ExtraTextures/Trails/SylvestaffStreak"));
-            PrimitiveRenderer.RenderTrail(fireCoreLength, new(FireCoreWidthFunction, FireCoreColorFunction, (_) => Projectile.Size * 0.5f + Projectile.velocity.SafeNormalize(Vector2.Zero) * 24f, true, true, GameShaders.Misc["CalamityMod:ImpFlameTrail"]), fireCoreLength.Length + 24);
+            PrimitiveRenderer.RenderTrail(Projectile.oldPos[..coreLength], new(FireCoreWidthFunction, FireCoreColorFunction, (_,_) => Projectile.Size * 0.5f + Projectile.velocity.SafeNormalize(Vector2.Zero) * 24f, true, true, GameShaders.Misc["CalamityMod:ImpFlameTrail"]), coreLength + 8);
         }
     }
 }

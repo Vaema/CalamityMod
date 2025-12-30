@@ -7,6 +7,7 @@ using CalamityMod.Items.Weapons.Ranged;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria;
+using Terraria.ID;
 using Terraria.ModLoader;
 
 namespace CalamityMod.Projectiles.Ranged
@@ -183,7 +184,7 @@ namespace CalamityMod.Projectiles.Ranged
                 return;
 
             for (int i = 0; i < 10; i++)
-                Dust.NewDustPerfect(Projectile.Center, 171, Main.rand.NextVector2CircularEdge(4f, 4f)).noGravity = true;
+                Dust.NewDustPerfect(Projectile.Center, DustID.Venom, Main.rand.NextVector2CircularEdge(4f, 4f)).noGravity = true;
         }
 
         public override bool PreDraw(ref Color lightColor)

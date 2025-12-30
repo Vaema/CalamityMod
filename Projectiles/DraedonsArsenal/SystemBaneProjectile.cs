@@ -2,6 +2,7 @@
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria;
+using Terraria.ID;
 using Terraria.ModLoader;
 
 namespace CalamityMod.Projectiles.DraedonsArsenal
@@ -43,7 +44,7 @@ namespace CalamityMod.Projectiles.DraedonsArsenal
             // Generate idle sparks.
             if (Time % 15f == 0f)
             {
-                Dust dust = Dust.NewDustPerfect(Projectile.Center, 229);
+                Dust dust = Dust.NewDustPerfect(Projectile.Center, DustID.Vortex);
                 dust.velocity = Main.rand.NextVector2Circular(10f, 10f);
                 dust.fadeIn = 1.05f;
                 dust.noGravity = true;

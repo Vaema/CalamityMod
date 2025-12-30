@@ -1,4 +1,5 @@
 ﻿using System;
+using System.IO;
 using CalamityMod.Events;
 using CalamityMod.Particles;
 using CalamityMod.Projectiles.Boss;
@@ -10,13 +11,13 @@ using Terraria.DataStructures;
 using Terraria.Enums;
 using Terraria.ID;
 using Terraria.ModLoader;
+using Terraria.ModLoader.IO;
 
 namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
 {
     public class DestroyerAI : VanillaAIOverride
     {
         public const float DRIncreaseTime = 600f;
-        public const float DeathModeLaserBreathGateValue = 800f;
         public const float LaserTelegraphTime = 120f;
         public const float SparkTelegraphTime = 30f;
         public const float FlightPhaseGateValue = 900f;
@@ -37,6 +38,22 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
 
         // Rev+ exclusive
         public static int LaserDamage = 25; // 100 (buffed); Applies to all Rev+ lasers
+
+        /// <summary>
+        /// Destroyer laser colors, used for telegraphs.<br/>
+        /// None = -1, Red = 0, Green = 1, Cyan = 2
+        /// </summary>
+        public sbyte LaserColor = -1;
+
+        public override void SendExtraAI(BitWriter bitWriter, BinaryWriter binaryWriter)
+        {
+            binaryWriter.Write(LaserColor);
+        }
+
+        public override void ReceiveExtraAI(BitReader bitReader, BinaryReader binaryReader)
+        {
+            LaserColor = binaryReader.ReadSByte();
+        }
 
         public override bool AI(Mod mod)
         {
@@ -189,9 +206,6 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                 brokenSegmentAggressionMultiplier += (1f - MathHelper.Clamp(numProbeSegments / (float)totalSegments, 0f, 1f)) * 0.25f;
             }
 
-            // Death Mode laser spit bool
-            bool spitLaserSpreads = death;
-
             // Height of the box used to calculate whether The Destroyer should fly at its target or not
             int noFlyZoneBoxHeight = death ? 1500 : 1800;
 
@@ -266,33 +280,33 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
             // Fire lasers
             if (NPC.type == NPCID.TheDestroyerBody)
             {
-                bool ableToFireLaser = calamityGlobalNPC.destroyerLaserColor != -1;
+                bool ableToFireLaser = LaserColor != -1;
 
                 // Set laser color and type
-                if (calamityGlobalNPC.destroyerLaserColor == -1 && !probeLaunched)
+                if (LaserColor == -1 && !probeLaunched)
                 {
                     int random = phase3 ? 4 : phase2 ? 3 : 2;
                     switch (Main.rand.Next(random))
                     {
                         case 0:
                         case 1:
-                            calamityGlobalNPC.destroyerLaserColor = 0;
+                            LaserColor = 0;
                             break;
                         case 2:
-                            calamityGlobalNPC.destroyerLaserColor = 1;
+                            LaserColor = 1;
                             break;
                         case 3:
-                            calamityGlobalNPC.destroyerLaserColor = 2;
+                            LaserColor = 2;
                             break;
                     }
 
-                    NPC.SyncDestroyerLaserColor();
+                    NPC.netUpdate = true;
                 }
 
                 if (probeLaunched && ableToFireLaser)
                 {
-                    calamityGlobalNPC.destroyerLaserColor = -1;
-                    NPC.SyncDestroyerLaserColor();
+                    LaserColor = -1;
+                    NPC.netUpdate = true;
                 }
 
                 // Laser rate of fire
@@ -308,7 +322,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                 }
 
                 Color telegraphColor = Color.Transparent;
-                switch (calamityGlobalNPC.destroyerLaserColor)
+                switch (LaserColor)
                 {
                     case 0:
                         telegraphColor = Color.Red;
@@ -383,7 +397,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
 
                         // Set projectile damage and type
                         int projectileType = ProjectileID.DeathLaser;
-                        switch (calamityGlobalNPC.destroyerLaserColor)
+                        switch (LaserColor)
                         {
                             default:
                             case 0:
@@ -412,15 +426,15 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
 
                         if (death)
                         {
-                            calamityGlobalNPC.destroyerLaserColor = -1;
-                            NPC.SyncDestroyerLaserColor();
+                            LaserColor = -1;
+                            NPC.netUpdate = true;
                         }
                     }
 
                     if (!death)
                     {
-                        calamityGlobalNPC.destroyerLaserColor = -1;
-                        NPC.SyncDestroyerLaserColor();
+                        LaserColor = -1;
+                        NPC.netUpdate = true;
                     }
                 }
             }
@@ -519,37 +533,15 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
 
                 // Telegraph for the laser breath and body lasers
                 float telegraphProgress = 0f;
-                if (calamityGlobalNPC.destroyerLaserColor != -1)
+                if (LaserColor != -1)
                 {
-                    if (NPC.type == NPCID.TheDestroyer && spitLaserSpreads)
-                    {
-                        float telegraphGateValue = DeathModeLaserBreathGateValue - LaserTelegraphTime;
-                        if (calamityGlobalNPC.newAI[0] > telegraphGateValue)
-                        {
-                            switch (calamityGlobalNPC.destroyerLaserColor)
-                            {
-                                default:
-                                case 0:
-                                    break;
-
-                                case 1:
-                                    telegraphColor = new Vector3(0.1f, 0.3f, 0.05f);
-                                    break;
-
-                                case 2:
-                                    telegraphColor = new Vector3(0.05f, 0.2f, 0.2f);
-                                    break;
-                            }
-                            telegraphProgress = MathHelper.Clamp((calamityGlobalNPC.newAI[0] - telegraphGateValue) / LaserTelegraphTime, 0f, 1f);
-                        }
-                    }
-                    else if (NPC.type == NPCID.TheDestroyerBody)
+                    if (NPC.type == NPCID.TheDestroyerBody)
                     {
                         float shootProjectileTime = (CalamityWorld.death || BossRushEvent.BossRushActive) ? 400f : 450f;
                         float telegraphGateValue = shootProjectileTime - LaserTelegraphTime;
                         if (calamityGlobalNPC.newAI[0] > telegraphGateValue)
                         {
-                            switch (calamityGlobalNPC.destroyerLaserColor)
+                            switch (LaserColor)
                             {
                                 default:
                                 case 0:

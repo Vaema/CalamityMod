@@ -277,8 +277,8 @@ namespace CalamityMod.Schematics
         // In 1.4.4, it's 347, but this can be acquired the normal way.
         public const ushort TML_14_WallID_Count = 316;
 
-        // A generous buffer of 16 megabytes is the default for schematics. If this somehow isn't big enough, they can get bigger.
-        private const int SchematicBufferStartingSize = 16777216;
+        // A buffer of 16 kilobytes is the default for schematics. If this isn't big enough, they can get bigger.
+        private const int SchematicBufferStartingSize = 1024 * 16;
 
         // If true, written schematics will have all data GZip compressed except for the magic number header.
         public static bool UseCompression = true;

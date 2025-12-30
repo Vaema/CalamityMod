@@ -9,7 +9,6 @@ using CalamityMod.DataStructures;
 using CalamityMod.Items.Accessories;
 using CalamityMod.Items.Accessories.Vanity;
 using CalamityMod.Items.Armor.Demonshade;
-using CalamityMod.Items.PermanentBoosters;
 using CalamityMod.Items.Tools;
 using CalamityMod.Items.VanillaArmorChanges;
 using CalamityMod.Items.Weapons.Magic;
@@ -857,10 +856,6 @@ namespace CalamityMod.Items
                 EditTooltipByNum(0, (line) => line.Text = line.Text.Replace("3%", "6%"));
                 EditTooltipByNum(0, (line) => line.Text += AddedTooltip("CrimsonArmorPieces"));
             }
-
-            // Meteor
-            if (item.type == ItemID.MeteorHelmet || item.type == ItemID.MeteorSuit || item.type == ItemID.MeteorLeggings)
-                EditTooltipByNum(0, (line) => line.Text = line.Text.Replace("9%", "8%"));
 
             // Magic Hat nerf
             if (item.type == ItemID.MagicHat)

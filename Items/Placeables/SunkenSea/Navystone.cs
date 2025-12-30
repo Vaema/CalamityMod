@@ -1,6 +1,5 @@
 ﻿using CalamityMod.Items.Placeables.FurnitureNavystone;
 using CalamityMod.Items.Placeables.Walls;
-using CalamityMod.Tiles.Furniture.CraftingStations;
 using Terraria.ID;
 using Terraria.ModLoader;
 namespace CalamityMod.Items.Placeables.SunkenSea

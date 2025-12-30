@@ -55,6 +55,7 @@ FusionFeederBanner.DisplayName: "{$Items.Placeables.FormattedBannerName}"
 GammaSlimeBanner.DisplayName: "{$Items.Placeables.FormattedBannerName}"
 GhostBellBanner.DisplayName: "{$Items.Placeables.FormattedBannerName}"
 GiantSquidBanner.DisplayName: "{$Items.Placeables.FormattedBannerName}"
+GildedAxolotlBanner.DisplayName: "{$Items.Placeables.FormattedBannerName}"
 GnasherBanner.DisplayName: "{$Items.Placeables.FormattedBannerName}"
 GulperEelBanner.DisplayName: "{$Items.Placeables.FormattedBannerName}"
 HadarianBanner.DisplayName: "{$Items.Placeables.FormattedBannerName}"
@@ -400,6 +401,18 @@ ReinforcedCrateItem: {
 	Tooltip: ""
 }
 
+Rock: {
+	DisplayName: Rock
+	Tooltip:
+		'''
+		When the battle was finally over, the dust having just began to settle
+		Where even the stone refused the course of time, there sat a monk
+		Who dared to question history and stare into fate
+		'What is the true price of the past being ever eternal?
+		Why must our future forever haunt us?'
+		'''
+}
+
 RustedPipes: {
 	DisplayName: Rusted Pipes
 	Tooltip: ""
@@ -690,7 +703,7 @@ AltarOfTheAccursedItem: {
 	Tooltip:
 		'''
 		Offer [i:CalamityMod/AshesofCalamity] {$Items.Materials.AshesofCalamity.DisplayName} at this altar to summon the Witch
-		Doing so will create a square arena of blocks, with the altar at its center
+		Doing so will create a square arena, with the altar at its center
 		The Witch enrages while you are outside of the arena
 		Hovering over the altar while using ruler measurements will display a temporary arena box
 		{$CommonItemTooltip.SpecialCrafting}
@@ -4662,5 +4675,10 @@ BasaltSlab: {
 
 UnsafeNavystoneWall: {
 	DisplayName: Unsafe Navystone Wall
+	Tooltip: ""
+}
+
+MossyStone: {
+	DisplayName: Mossy Stone
 	Tooltip: ""
 }

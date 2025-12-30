@@ -1,13 +1,12 @@
-﻿using Terraria;
-using Terraria.ModLoader;
+﻿using CalamityMod.Graphics;
+using CalamityMod.Systems.Graphic;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using System;
 using ReLogic.Content;
-using Terraria.ID;
-using CalamityMod.Graphics;
-using System.Reflection;
+using Terraria;
 using Terraria.Graphics.Shaders;
+using Terraria.ID;
+using Terraria.ModLoader;
 
 namespace CalamityMod.Backgrounds
 {
@@ -24,10 +23,15 @@ namespace CalamityMod.Backgrounds
                 return;
             }
 
-            On_Main.CheckMonoliths += DrawToTarget;
+            GeneralDrawLayerSystem.OnPrepareDraw += DrawToTarget;
             On_Main.DrawBackgroundBlackFill += On_Main_DrawBackgroundBlackFill;
 
             Main.QueueMainThreadAction(() => WaterDistortionTarget = new(true, ManagedRenderTarget.CreateScreenSizedTarget));
+        }
+
+        public override void Unload()
+        {
+            GeneralDrawLayerSystem.OnPrepareDraw -= DrawToTarget;
         }
 
         /// <summary>
@@ -52,7 +56,7 @@ namespace CalamityMod.Backgrounds
                     {
                         Point pos = drawPoint + new Point(i, j);
                         if (!Main.tile[pos.X, pos.Y].HasTile &&
-                            Main.tile[pos.X, pos.Y].WallType == 0)
+                            Main.tile[pos.X, pos.Y].WallType == WallID.None)
                             Lighting.AddLight(pos.X, pos.Y, TorchID.White, 0.1f);
                     }
                 }
@@ -68,7 +72,7 @@ namespace CalamityMod.Backgrounds
                     {
                         Point pos = drawPoint + new Point(i, j);
                         if (!Main.tile[pos.X, pos.Y].HasTile &&
-                            Main.tile[pos.X, pos.Y].WallType == 0 &&
+                            Main.tile[pos.X, pos.Y].WallType == WallID.None &&
                             Main.tile[pos.X, pos.Y].LiquidAmount == 0)
                             Lighting.AddLight(pos.X, pos.Y, TorchID.White, 0.2f);
                     }
@@ -85,7 +89,7 @@ namespace CalamityMod.Backgrounds
                     {
                         Point pos = drawPoint + new Point(i, j);
                         if (!Main.tile[pos.X, pos.Y].HasTile &&
-                        Main.tile[pos.X, pos.Y].WallType == 0)
+                        Main.tile[pos.X, pos.Y].WallType == WallID.None)
                             Lighting.AddLight(pos.X, pos.Y, TorchID.White, 0.2f);
                     }
                 }
@@ -101,7 +105,7 @@ namespace CalamityMod.Backgrounds
                     {
                         Point pos = drawPoint + new Point(i, j);
                         if (!Main.tile[pos.X, pos.Y].HasTile &&
-                            Main.tile[pos.X, pos.Y].WallType == 0)
+                            Main.tile[pos.X, pos.Y].WallType == WallID.None)
                             Lighting.AddLight(pos.X, pos.Y, TorchID.White, 0.2f);
                     }
                 }
@@ -119,19 +123,18 @@ namespace CalamityMod.Backgrounds
                         if (pos.Y >= Main.maxTilesY - 450)
                         {
                             if (!Main.tile[pos.X, pos.Y].HasTile &&
-                                Main.tile[pos.X, pos.Y].WallType == 0)
+                                Main.tile[pos.X, pos.Y].WallType == WallID.None)
                                 Lighting.AddLight(pos.X, pos.Y, TorchID.Red, 0.6f);
-                            }
+                        }
                     }
                 }
             }
         }
 
-        private void DrawToTarget(On_Main.orig_CheckMonoliths orig)
+        private void DrawToTarget()
         {
             if (Main.gameMenu)
             {
-                orig();
                 return;
             }
 
@@ -149,8 +152,6 @@ namespace CalamityMod.Backgrounds
 
             Main.graphics.GraphicsDevice.SetRenderTarget(null);
             CurrentlyRendering = false;
-
-            orig();
         }
 
         private void On_Main_DrawBackgroundBlackFill(On_Main.orig_DrawBackgroundBlackFill orig, Main self)

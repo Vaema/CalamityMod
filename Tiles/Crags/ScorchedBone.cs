@@ -1,8 +1,5 @@
-﻿using System.Collections.Generic;
-using CalamityMod.Systems;
-using CalamityMod.Tiles.Ores;
+﻿using CalamityMod.Systems;
 using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Graphics;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
@@ -24,7 +21,7 @@ namespace CalamityMod.Tiles.Crags
             CalamityUtils.MergeWithHell(Type);
             CalamityUtils.SetMerge(Type, ModContent.TileType<BrimstoneSlag>());
 
-            DustType = 155;
+            DustType = DustID.Ambient_DarkBrown;
             HitSound = SoundID.Dig;
             MinPick = 100;
             AddMapEntry(new Color(87, 62, 67));

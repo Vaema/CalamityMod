@@ -1,14 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.IO;
 using CalamityMod.Events;
 
 namespace CalamityMod.Packets
 {
-    public sealed class BossRushStagePacket : CalamityPacket
+    internal sealed class BossRushStagePacket : CalamityPacket
     {
         public static BossRushStagePacket Instance { get; private set; }
 

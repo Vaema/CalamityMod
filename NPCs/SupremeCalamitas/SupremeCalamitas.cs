@@ -5,8 +5,6 @@ using System.Linq;
 using CalamityMod.Dusts;
 using CalamityMod.Events;
 using CalamityMod.Graphics.Metaballs;
-using CalamityMod.Items;
-using CalamityMod.Items.Accessories;
 using CalamityMod.Items.Armor.Vanity;
 using CalamityMod.Items.Fishing.FishingRods;
 using CalamityMod.Items.LoreItems;
@@ -22,6 +20,7 @@ using CalamityMod.Items.Weapons.Melee;
 using CalamityMod.Items.Weapons.Ranged;
 using CalamityMod.Items.Weapons.Rogue;
 using CalamityMod.Items.Weapons.Summon;
+using CalamityMod.Items.Weapons.Typeless;
 using CalamityMod.NPCs.Bumblebirb;
 using CalamityMod.NPCs.DevourerofGods;
 using CalamityMod.NPCs.TownNPCs;
@@ -61,7 +60,23 @@ namespace CalamityMod.NPCs.SupremeCalamitas
             Count = 7
         }
 
-        public static Color CurrentColor => CalamityGlobalNPC.SCal >= 0 && Main.npc[CalamityGlobalNPC.SCal].active && Main.npc[CalamityGlobalNPC.SCal].ModNPC<SupremeCalamitas>().ArenaBox is not null ? Main.npc[CalamityGlobalNPC.SCal].ModNPC<SupremeCalamitas>().ArenaBox.borderColor : SupremeCalamitas.AcceptanceColor;
+        public static Color CurrentColor
+        {
+            get
+            {
+                if (CalamityGlobalNPC.SCal < 0)
+                    return AcceptanceColor;
+
+                var npc = Main.npc[CalamityGlobalNPC.SCal];
+                if (npc == null || !npc.active)
+                    return AcceptanceColor;
+
+                if (npc.ModNPC is not SupremeCalamitas calamitas || calamitas.ArenaBox is null)
+                    return AcceptanceColor;
+
+                return calamitas.ArenaBox.borderColor;
+            }
+        }
         public static Color GriefColor => Color.Crimson;
         public static Color LamentColor => Color.RoyalBlue;
         public static Color EpiphanyColor => new Color(219, 75, 2);
@@ -272,7 +287,7 @@ namespace CalamityMod.NPCs.SupremeCalamitas
             NPC.defense = 100;
             NPC.DR_NERD(normalDR);
             NPC.value = Item.buyPrice(platinum: 3);
-            NPC.LifeMaxNERB(960000, 1150000, 900000);
+            NPC.LifeMaxNERB(750000, 1150000, 900000);
             NPC.aiStyle = -1;
             AIType = -1;
             NPC.knockBackResist = 0f;
@@ -523,7 +538,7 @@ namespace CalamityMod.NPCs.SupremeCalamitas
             if (NPC.dontTakeDamage && !hasDoneDeathAnim) // Dust visuals for shield when immune
             {
                 Vector2 sustVel = new Vector2(-78 * Main.rand.NextFloat(0.95f, 1.05f), 0).RotatedBy(rotateToPlayer + MathHelper.PiOver2).RotatedByRandom(1.4);
-                Dust sust = Dust.NewDustPerfect(NPC.Center + sustVel, 269, sustVel * Main.rand.NextFloat(0.001f, 0.03f));
+                Dust sust = Dust.NewDustPerfect(NPC.Center + sustVel, DustID.Sandnado, sustVel * Main.rand.NextFloat(0.001f, 0.03f));
                 sust.noGravity = true;
                 sust.scale = Main.rand.NextFloat(0.5f, 0.9f);
                 sust.alpha = 200;
@@ -565,7 +580,7 @@ namespace CalamityMod.NPCs.SupremeCalamitas
                     // Emit dust off the skull at the position of its eye socket.
                     for (float num6 = 1f; num6 < 16f; num6 += 1f)
                     {
-                        Dust dust = Dust.NewDustPerfect(NPC.Center, 182);
+                        Dust dust = Dust.NewDustPerfect(NPC.Center, DustID.TheDestroyer);
                         dust.position = Vector2.Lerp(NPC.position, NPC.oldPosition, num6 / 16f) + NPC.Size * 0.5f;
                         dust.position += shieldRotation.ToRotationVector2() * 42f;
                         dust.position += (shieldRotation - MathHelper.PiOver2).ToRotationVector2() * (float)Math.Cos(NPC.velocity.ToRotation()) * -4f;
@@ -683,20 +698,20 @@ namespace CalamityMod.NPCs.SupremeCalamitas
 
             void UpdateArena(ArenaWallSystem.Box box)
             {
-                var x = 1f/TextureAssets.MagicPixel.Height();
-                var p = ScalArenaMetaball.SpawnParticle((box.TopLeft + box.BottomLeft) * 0.5f - new Vector2(box.borderThickness*0.5f + 2,0), Vector2.Zero, 1);
+                var x = 1f / TextureAssets.MagicPixel.Height();
+                var p = ScalArenaMetaball.SpawnParticle((box.TopLeft + box.BottomLeft) * 0.5f - new Vector2(box.borderThickness * 0.5f + 2, 0), Vector2.Zero, 1);
                 p.SizeScaling = 0;
                 p.TextureToUse = TextureAssets.MagicPixel.Value;
-                p.Scale = new Vector2(box.borderThickness-6, box.borderThickness*2 + box.Size.Y-4);
+                p.Scale = new Vector2(box.borderThickness - 6, box.borderThickness * 2 + box.Size.Y - 4);
                 p.Scale.Y *= x;
-                
+
                 p = ScalArenaMetaball.SpawnParticle((box.TopRight + box.BottomRight) * 0.5f + new Vector2(box.borderThickness * 0.5f + 2, 0), Vector2.Zero, 1);
                 p.SizeScaling = 0;
                 p.TextureToUse = TextureAssets.MagicPixel.Value;
                 p.Scale = new Vector2(box.borderThickness - 6, box.borderThickness * 2 + box.Size.Y - 4);
                 p.Scale.Y *= x;
 
-                p = ScalArenaMetaball.SpawnParticle((box.TopRight + box.TopLeft) * 0.5f - new Vector2(0,box.borderThickness * 0.5f + 2), Vector2.Zero, 1);
+                p = ScalArenaMetaball.SpawnParticle((box.TopRight + box.TopLeft) * 0.5f - new Vector2(0, box.borderThickness * 0.5f + 2), Vector2.Zero, 1);
                 p.SizeScaling = 0;
                 p.TextureToUse = TextureAssets.MagicPixel.Value;
                 p.Scale = new Vector2(box.borderThickness * 2 + box.Size.X - 4, box.borderThickness - 6);
@@ -1299,7 +1314,7 @@ namespace CalamityMod.NPCs.SupremeCalamitas
                     fust.scale = Main.rand.NextFloat(0.3f, 0.8f);
                     if (Main.rand.NextBool())
                     {
-                        Dust sust = Dust.NewDustPerfect(NPC.Center + velOffset, 269, velOffset * Main.rand.NextFloat(0.01f, 0.1f));
+                        Dust sust = Dust.NewDustPerfect(NPC.Center + velOffset, DustID.Sandnado, velOffset * Main.rand.NextFloat(0.01f, 0.1f));
                         sust.noGravity = true;
                         sust.scale = Main.rand.NextFloat(0.2f, 0.6f);
                         sust.alpha = 200;
@@ -3192,7 +3207,7 @@ namespace CalamityMod.NPCs.SupremeCalamitas
                     SparkParticle spark5 = new SparkParticle(NPC.Center - offset - NPC.velocity.SafeNormalize(Vector2.UnitY) * 15f, -NPC.velocity * 0.85f, false, 10, 1.9f * MathHelper.Clamp(Utils.GetLerpValue(120, 0, dashVisualCounter), 0.5f, 1.1f), Main.rand.NextBool() ? Color.Red : Color.Lerp(Color.Red, Color.Magenta, 0.5f));
                     GeneralParticleHandler.SpawnParticle(spark5);
 
-                    Dust dashDust = Dust.NewDustPerfect(NPC.Center + Main.rand.NextVector2Circular(NPC.width, NPC.height), 182);
+                    Dust dashDust = Dust.NewDustPerfect(NPC.Center + Main.rand.NextVector2Circular(NPC.width, NPC.height), DustID.TheDestroyer);
                     dashDust.noGravity = true;
                     dashDust.velocity = -NPC.velocity.RotatedByRandom(0.15f) * Main.rand.NextFloat(0.9f, 1.2f);
                     dashDust.scale = Main.rand.NextFloat(0.6f, 1.4f);
@@ -3229,7 +3244,7 @@ namespace CalamityMod.NPCs.SupremeCalamitas
             {
                 Vector2 leftDustPosition = Vector2.CatmullRom(armPosition + Vector2.UnitY * 1000f, armPosition, heartSpawnPosition, heartSpawnPosition + Vector2.UnitY * 1000f, castCompletion);
 
-                Dust castMagicDust = Dust.NewDustPerfect(leftDustPosition, 267);
+                Dust castMagicDust = Dust.NewDustPerfect(leftDustPosition, DustID.RainbowMk2);
                 castMagicDust.scale = 1.67f;
                 castMagicDust.velocity = Main.rand.NextVector2CircularEdge(0.2f, 0.2f);
                 castMagicDust.fadeIn = 0.67f;
@@ -3386,12 +3401,12 @@ namespace CalamityMod.NPCs.SupremeCalamitas
                     SparkParticle spark2 = new SparkParticle(cataclysmSpawnPosition, new Vector2(5, 5).RotatedByRandom(100) * Main.rand.NextFloat(0.5f, 1.5f), false, 35, Main.rand.NextFloat(1.2f, 1.45f), Main.rand.NextBool() ? new Color(80, 21, 77) : Color.Red);
                     GeneralParticleHandler.SpawnParticle(spark2);
 
-                    Dust catastrophedust = Dust.NewDustPerfect(catastropheSpawnPosition, 279, new Vector2(9, 9).RotatedByRandom(100) * Main.rand.NextFloat(0.1f, 1.5f));
+                    Dust catastrophedust = Dust.NewDustPerfect(catastropheSpawnPosition, DustID.SilverFlame, new Vector2(9, 9).RotatedByRandom(100) * Main.rand.NextFloat(0.1f, 1.5f));
                     catastrophedust.noGravity = true;
                     catastrophedust.scale = Main.rand.NextFloat(1.5f, 1.85f);
                     catastrophedust.color = Color.DeepSkyBlue;
 
-                    Dust cataclysmdust = Dust.NewDustPerfect(cataclysmSpawnPosition, 279, new Vector2(9, 9).RotatedByRandom(100) * Main.rand.NextFloat(0.1f, 1.5f));
+                    Dust cataclysmdust = Dust.NewDustPerfect(cataclysmSpawnPosition, DustID.SilverFlame, new Vector2(9, 9).RotatedByRandom(100) * Main.rand.NextFloat(0.1f, 1.5f));
                     cataclysmdust.noGravity = true;
                     cataclysmdust.scale = Main.rand.NextFloat(1.5f, 1.85f);
                     cataclysmdust.color = new Color(80, 21, 77);

@@ -100,7 +100,7 @@ namespace CalamityMod.Projectiles.Melee
         public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
         {
             Player player = Main.player[Projectile.owner];
-            target.AddBuff(ModContent.BuffType<Voidfrost>(), 180);
+            target.AddBuff(ModContent.BuffType<Nightwither>(), 180);
             target.AddBuff(ModContent.BuffType<GlacialState>(), 60);
             if (Projectile.localAI[1] <= 0f && Projectile.owner == Main.myPlayer)
             {

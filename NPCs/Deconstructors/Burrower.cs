@@ -3,15 +3,14 @@ using System.Collections.Generic;
 using System.Linq;
 using CalamityMod.Buffs.DamageOverTime;
 using CalamityMod.Effects;
-using CalamityMod.Items.Accessories;
 using CalamityMod.Items.Materials;
 using CalamityMod.Items.Placeables.Banners;
-using CalamityMod.Items.Weapons.Summon;
 using CalamityMod.NPCs.ExoMechs.Thanatos;
 using CalamityMod.Particles;
 using CalamityMod.Projectiles.Typeless;
 using CalamityMod.Sounds;
 using CalamityMod.Systems;
+using CalamityMod.Systems.Mechanic;
 using CalamityMod.Tiles.Ores;
 using Microsoft.Xna.Framework;
 using Terraria;
@@ -294,13 +293,11 @@ namespace CalamityMod.NPCs.Deconstructors
 
             foreach (var p in vein)
             {
-                bool isOuter = false;
                 foreach (var offset in new[] { new Point(1, 0), new Point(-1, 0), new Point(0, 1), new Point(0, -1) })
                 {
                     Point neighbor = p + offset;
                     if (!veinSet.Contains(neighbor))
                     {
-                        isOuter = true;
                         if (neighbor.X >= 0 && neighbor.X < Main.maxTilesX && neighbor.Y >= 0 && neighbor.Y < Main.maxTilesY)
                         {
                             var tile = Main.tile[neighbor];
@@ -429,8 +426,8 @@ namespace CalamityMod.NPCs.Deconstructors
                             NPC.velocity = Vector2.Zero;
                             NPC.rotation = SecondaryVector.DirectionTo(TargetVector).ToRotation() + MathHelper.PiOver2;
 
-                            if (Main.netMode != NetmodeID.Server && !(TilePingerSystem.tileEffects["BurrowerPing"].Active))
-                                TilePingerSystem.AddPing("BurrowerPing", NPC.Center, player);
+                            if (Main.netMode != NetmodeID.Server && !(BurrowerPingTileEffect.Instance.Active))
+                                TilePingerSystem.AddPing(BurrowerPingTileEffect.Instance, NPC.Center, player);
                             for (int i = 0; i < 1; i++)
                             {
                                 int sparkLifetime = Main.rand.Next(10, 20);
@@ -478,7 +475,7 @@ namespace CalamityMod.NPCs.Deconstructors
                                 NPC.velocity *= 0.75f;
                                 foreach (var item in Segments)
                                 {
-                                    if (!Collision.SolidCollision(item.Center - new Vector2(19,17),38,38,true))
+                                    if (!Collision.SolidCollision(item.Center - new Vector2(19, 17), 38, 38, true))
                                         item.Center.Y += 2f;
                                 }
                             }
@@ -564,7 +561,7 @@ namespace CalamityMod.NPCs.Deconstructors
             {
                 return 0f;
             }
-            return SpawnCondition.Cavern.Chance * (Main.projectile.Any(x=> x.active && x.type == ModContent.ProjectileType<WulfrumLureSignal>()) ? 5f : 0.05f);
+            return SpawnCondition.Cavern.Chance * (Main.projectile.Any(x => x.active && x.type == ModContent.ProjectileType<WulfrumLureSignal>()) ? 5f : 0.01f);
         }
     }
 }

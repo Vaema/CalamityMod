@@ -1,10 +1,8 @@
 ﻿using CalamityMod.DataStructures;
-using CalamityMod.Particles;
 using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.DataStructures;
 using Terraria.ID;
-using Terraria.Localization;
 using Terraria.ModLoader;
 
 namespace CalamityMod.Buffs.DamageOverTime
@@ -50,7 +48,7 @@ namespace CalamityMod.Buffs.DamageOverTime
             }
             if (Main.rand.NextBool(4))
             {
-                Dust dust = Dust.NewDustPerfect(modPlayer.RandomDebuffVisualSpot, 18);
+                Dust dust = Dust.NewDustPerfect(modPlayer.RandomDebuffVisualSpot, DustID.CorruptGibs);
                 dust.noGravity = true;
                 dust.velocity = Vector2.Zero;
                 dust.alpha = 90;

@@ -6,6 +6,7 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using ReLogic.Content;
 using Terraria;
+using Terraria.GameContent;
 using Terraria.ID;
 using Terraria.ModLoader;
 
@@ -13,14 +14,12 @@ namespace CalamityMod.Tiles.SunkenSea
 {
     public class SuperheatedObsidian : ModTile
     {
-        public Asset<Texture2D> TileTexture;
         public Asset<Texture2D> GlintTexture;
 
         public Vector2 GlintDir;
 
         public override void SetStaticDefaults()
         {
-            TileTexture = ModContent.Request<Texture2D>(Texture + "_Tile");
             GlintTexture = ModContent.Request<Texture2D>(Texture + "_Glint");
 
             GlintDir = new Vector2(1f, 1f);
@@ -71,14 +70,10 @@ namespace CalamityMod.Tiles.SunkenSea
             Main.tileBlockLight[Type] = false;
 
             Tile tile = Main.tile[i, j];
-            int xPos = i % 1;
-            int yPos = j % 1;
-            int frameXOffset = xPos * 1;
-            int frameYOffset = yPos * 1;
-            Rectangle frame = new Rectangle(tile.TileFrameX + frameXOffset, tile.TileFrameY + frameYOffset, 16, 16);
+            Rectangle frame = new Rectangle(tile.TileFrameX, tile.TileFrameY, 16, 16);
 
             Color color = Lighting.GetColor(i, j) * transparency;
-            TileFramingSystem.SlopedGlowmask(in tile, i, j, TileTexture.Value, frame, CalamityUtils.ApplyPaint(Main.tile[i, j].TileColor, color, false), default);
+            TileFramingSystem.SlopedGlowmask(in tile, i, j, TextureAssets.Tile[Type].Value, frame, CalamityUtils.ApplyPaint(tile.TileColor, color, false), default);
 
             //IF this glint effect below runs poorly on lower end PC's we should keep it as a setting for those with good PC's
 
@@ -109,7 +104,8 @@ namespace CalamityMod.Tiles.SunkenSea
                     spriteBatch.Draw(GlintTexture.Value, position, frame, lightColor * strength, 0f, Vector2.Zero, 1f, SpriteEffects.None, 0f);
                 }
             }
-            return true;
+
+            return false;
         }
     }
 }

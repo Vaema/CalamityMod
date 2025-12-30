@@ -1,9 +1,7 @@
 ﻿using System;
-using System.Runtime.Intrinsics.X86;
 using CalamityMod.Buffs.DamageOverTime;
 using CalamityMod.Items.Weapons.Ranged;
 using CalamityMod.Particles;
-using Humanizer;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using ReLogic.Utilities;
@@ -264,7 +262,7 @@ namespace CalamityMod.Projectiles.Ranged
                 Particle smoke = new HeavySmokeParticle(tipPosition, smokeVel, PUNISHMENTMODE ? Color.Red : StaticEffectsColor, Main.rand.Next(40, 60 + 1), Main.rand.NextFloat(0.3f, 0.6f), 0.5f, Main.rand.NextFloat(-0.2f, 0.2f), Main.rand.NextBool(), required: true);
                 GeneralParticleHandler.SpawnParticle(smoke);
 
-                Dust dust = Dust.NewDustPerfect(tipPosition, 303, smokeVel.RotatedByRandom(0.1f), 80, default, Main.rand.NextFloat(0.4f, 1.3f));
+                Dust dust = Dust.NewDustPerfect(tipPosition, DustID.SteampunkSteam, smokeVel.RotatedByRandom(0.1f), 80, default, Main.rand.NextFloat(0.4f, 1.3f));
                 dust.noGravity = false;
                 dust.color = PUNISHMENTMODE ? Color.Red : Color.White;
             }
@@ -306,7 +304,7 @@ namespace CalamityMod.Projectiles.Ranged
                 if (PostFireCooldown > 15)
                 {
                     Vector2 dustVel = Projectile.velocity.RotatedByRandom(100) * Main.rand.NextFloat(5.1f, 25.8f);
-                    Dust dust = Dust.NewDustPerfect(tipPosition + dustVel * 5, 267, -dustVel * 0.5f, 0, default, Main.rand.NextFloat(0.5f, 1f));
+                    Dust dust = Dust.NewDustPerfect(tipPosition + dustVel * 5, DustID.RainbowMk2, -dustVel * 0.5f, 0, default, Main.rand.NextFloat(0.5f, 1f));
                     dust.noGravity = true;
                     dust.color = mainColor;
                 }

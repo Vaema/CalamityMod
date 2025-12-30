@@ -1,8 +1,5 @@
 ﻿using System;
-using CalamityMod.CalPlayer;
-using CalamityMod.Cooldowns;
 using CalamityMod.Items.Materials;
-using CalamityMod.Items.Placeables;
 using CalamityMod.Rarities;
 using Microsoft.Xna.Framework;
 using Terraria;

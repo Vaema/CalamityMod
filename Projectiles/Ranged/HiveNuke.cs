@@ -1,8 +1,5 @@
-﻿using System;
-using System.Net.Sockets;
-using CalamityMod.Buffs.DamageOverTime;
+﻿using CalamityMod.Buffs.DamageOverTime;
 using CalamityMod.Particles;
-using CalamityMod.Projectiles.Rogue;
 using CalamityMod.Projectiles.Typeless;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
@@ -136,7 +133,7 @@ namespace CalamityMod.Projectiles.Ranged
                     Color smokeColor = Color.Lerp(Color.Black, Color.Lime, 0.25f);
                     Particle smoke = new HeavySmokeParticle(Projectile.Center - Projectile.velocity * 2, -Projectile.velocity * Main.rand.NextFloat(0.2f, 0.6f), smokeColor * 0.65f, 9, Main.rand.NextFloat(0.45f, 0.6f), 0.23f, Main.rand.NextFloat(-0.2f, 0.2f), false);
                     GeneralParticleHandler.SpawnParticle(smoke);
-                    Dust dust = Dust.NewDustPerfect(Projectile.Center + Main.rand.NextVector2Circular(10, 10) - Projectile.velocity * 2.5f, 303, -Projectile.velocity.RotatedByRandom(0.05f) * Main.rand.NextFloat(0.2f, 0.9f), 0, default, Main.rand.NextFloat(0.9f, 1.6f));
+                    Dust dust = Dust.NewDustPerfect(Projectile.Center + Main.rand.NextVector2Circular(10, 10) - Projectile.velocity * 2.5f, DustID.SteampunkSteam, -Projectile.velocity.RotatedByRandom(0.05f) * Main.rand.NextFloat(0.2f, 0.9f), 0, default, Main.rand.NextFloat(0.9f, 1.6f));
                     dust.noGravity = false;
                     dust.color = Color.Black;
                     dust.alpha = Main.rand.Next(90, 220 + 1);
@@ -182,7 +179,7 @@ namespace CalamityMod.Projectiles.Ranged
             {
                 if (Main.zenithWorld)
                 {
-                    SoundStyle bees = new("CalamityMod/Sounds/Custom/BEES/bees", 13);
+                    SoundStyle bees = new("CalamityMod/Sounds/Custom/BEES/bees", 12);
                     SoundEngine.PlaySound(bees with { Volume = 1.5f }, Projectile.Center);
                     SoundStyle fire = new("CalamityMod/Sounds/Item/TheHiveNuke");
                     SoundEngine.PlaySound(fire with { Volume = 0.35f }, Projectile.Center);
@@ -235,7 +232,7 @@ namespace CalamityMod.Projectiles.Ranged
                     }
                     else
                     {
-                        Dust dust = Dust.NewDustPerfect(Projectile.Center, 303, new Vector2(35, 35).RotatedByRandom(100) * Main.rand.NextFloat(0.05f, 0.8f), 0, default, Main.rand.NextFloat(0.9f, 1.7f));
+                        Dust dust = Dust.NewDustPerfect(Projectile.Center, DustID.SteampunkSteam, new Vector2(35, 35).RotatedByRandom(100) * Main.rand.NextFloat(0.05f, 0.8f), 0, default, Main.rand.NextFloat(0.9f, 1.7f));
                         dust.noGravity = false;
                         dust.color = Color.Black;
                         dust.alpha = Main.rand.Next(90, 220 + 1);

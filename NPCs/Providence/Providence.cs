@@ -15,6 +15,7 @@ using CalamityMod.Items.Placeables.Furniture.BossRelics;
 using CalamityMod.Items.Placeables.Furniture.Paintings;
 using CalamityMod.Items.Placeables.Furniture.Trophies;
 using CalamityMod.Items.Potions;
+using CalamityMod.Items.Potions.Food;
 using CalamityMod.Items.SummonItems;
 using CalamityMod.Items.TreasureBags;
 using CalamityMod.Items.Weapons.Magic;
@@ -28,6 +29,7 @@ using CalamityMod.Projectiles.Boss;
 using CalamityMod.Projectiles.Summon;
 using CalamityMod.Projectiles.Typeless;
 using CalamityMod.Tiles.Ores;
+using CalamityMod.Utilities.Daybreak;
 using CalamityMod.World;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
@@ -255,7 +257,7 @@ namespace CalamityMod.NPCs.Providence
             NPC.height = 450;
             NPC.defense = 50;
             NPC.DR_NERD(normalDR);
-            NPC.LifeMaxNERB(312500, 375000, 1250000); // Old HP - 440000, 500000
+            NPC.LifeMaxNERB(250000, 375000, 1250000); // Old HP - 440000, 500000
             NPC.knockBackResist = 0f;
             NPC.aiStyle = -1;
             AIType = -1;
@@ -2403,13 +2405,15 @@ namespace CalamityMod.NPCs.Providence
                 shieldEffect.Parameters["shieldEdgeColor"].SetValue(edgeColor.ToVector3());
 
                 var matrix = Main.GameViewMatrix.TransformationMatrix;
-                Main.spriteBatch.SafeBegin(SpriteSortMode.Immediate, BatchSetting.Additive, shieldEffect, matrix, () =>
+                using (Main.spriteBatch.Scope())
                 {
+                    Main.spriteBatch.Begin(SpriteSortMode.Immediate, BlendState.Additive, SamplerState.PointClamp, DepthStencilState.None, Main.Rasterizer, shieldEffect, matrix);
                     // Fetch shield heat overlay texture (this is the neutrons fed to the shader)
                     Texture2D heatTex = ModContent.Request<Texture2D>("CalamityMod/ExtraTextures/GreyscaleGradients/Neurons2").Value;
                     Vector2 pos = NPC.Center + NPC.gfxOffY * Vector2.UnitY - Main.screenPosition;
                     Main.spriteBatch.Draw(heatTex, shieldDrawPos, null, Color.White, 0, heatTex.Size() / 2f, shieldScale * scaleMult * 0.5f, 0, 0);
-                });
+                    Main.spriteBatch.End();
+                }
             }
             return false;
         }
@@ -2638,28 +2642,56 @@ namespace CalamityMod.NPCs.Providence
     /// </summary>
     public class ProvItemFloating : GlobalItem
     {
-        public override void Load()
+        // Leaving this for mod compatibility
+        public static readonly List<int> FlameItemTypes = [];
+
+        public override void SetStaticDefaults()
         {
-            On_CommonCode.ModifyItemDropFromNPC += On_CommonCode_ModifyItemDropFromNPC;
+            FlameItemTypes.AddRange([
+                // Resources
+                ModContent.ItemType<UnholyEssence>(),
+                ModContent.ItemType<DivineGeode>(),
+                ModContent.ItemType<MarkofProvidence>(),
+                ModContent.ItemType<ProvidenceBag>(),
+
+                // Weapons
+                ModContent.ItemType<HolyCollider>(),
+                ModContent.ItemType<BurningRevelation>(),
+                ModContent.ItemType<BlissfulBombardier>(),
+                ModContent.ItemType<TelluricGlare>(),
+                ModContent.ItemType<PurgeGuzzler>(),
+                ModContent.ItemType<DazzlingStabberStaff>(),
+                ModContent.ItemType<MoltenAmputator>(),
+                ModContent.ItemType<PristineFury>(),
+
+                // Equipment
+                ModContent.ItemType<ElysianWings>(),
+                ModContent.ItemType<ElysianAegis>(),
+                ModContent.ItemType<BlazingCore>(),
+                ModContent.ItemType<ProfanedSoulCrystal>(),
+
+                // Vanity
+                ModContent.ItemType<ProfanedMoonlightDye>(),
+                ModContent.ItemType<ProvidenceMask>(),
+                ModContent.ItemType<ThankYouPainting>(),
+                ModContent.ItemType<ProvidenceTrophy>(),
+                ModContent.ItemType<ProvidenceRelic>(),
+                ModContent.ItemType<LoreProvidence>(),
+
+                // GFB
+                ModContent.ItemType<AscendantSpiritEssence>(),
+                ModContent.ItemType<BlasphemousDonut>()
+            ]);
         }
 
-        public override void Unload()
+        public override bool AppliesToEntity(Item entity, bool lateInstantiation)
         {
-            On_CommonCode.ModifyItemDropFromNPC -= On_CommonCode_ModifyItemDropFromNPC;
-        }
+            if (FlameItemTypes.Contains(entity.type))
+            {
+                return true;
+            }
 
-        private void On_CommonCode_ModifyItemDropFromNPC(On_CommonCode.orig_ModifyItemDropFromNPC orig, NPC npc, int itemIndex)
-        {
-            if (npc.type == ModContent.NPCType<Providence>() && !BossRushEvent.BossRushActive)
-            {
-                Main.item[itemIndex].GetGlobalItem<ProvItemFloating>().HolyFlame = 2f;
-                if ((npc.ModNPC as Providence).hasBeenGivenFullPower)
-                    Main.item[itemIndex].GetGlobalItem<ProvItemFloating>().ProviWasEnraged = true;
-            }
-            else
-            {
-                orig(npc, itemIndex);
-            }
+            return false;
         }
 
         public override bool InstancePerEntity => true;
@@ -2667,6 +2699,27 @@ namespace CalamityMod.NPCs.Providence
         public float HolyFlame = 0f;
         public float FlameTimer = 0f;
         public bool ProviWasEnraged = false;
+
+        public override void OnSpawn(Item item, IEntitySource source)
+        {
+            if (!BossRushEvent.BossRushActive && source is EntitySource_Loot loot && loot.Entity is NPC npc && npc.ModNPC is Providence provi)
+            {
+                HolyFlame = 2f;
+                ProviWasEnraged = provi.hasBeenGivenFullPower;
+            }
+        }
+
+        public override void NetSend(Item item, BinaryWriter writer)
+        {
+            writer.Write((Half)HolyFlame);
+            writer.Write(ProviWasEnraged);
+        }
+
+        public override void NetReceive(Item item, BinaryReader reader)
+        {
+            HolyFlame = (float)reader.ReadHalf();
+            ProviWasEnraged = reader.ReadBoolean();
+        }
 
         public override void Update(Item item, ref float gravity, ref float maxFallSpeed)
         {

@@ -1,8 +1,6 @@
 ﻿using CalamityMod.NPCs.Abyss;
 using CalamityMod.NPCs.Astral;
 using CalamityMod.NPCs.Crags;
-using CalamityMod.NPCs.HiveMind;
-using CalamityMod.NPCs.NormalNPCs;
 using Terraria.ID;
 using Terraria.ModLoader;
 using static Terraria.ModLoader.ModContent;

@@ -1,7 +1,6 @@
 ﻿using System;
 using CalamityMod.Buffs.DamageOverTime;
 using CalamityMod.Dusts;
-using CalamityMod.Skies;
 using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.Audio;

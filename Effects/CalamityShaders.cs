@@ -1,7 +1,6 @@
 ﻿using CalamityMod.Skies;
 using Microsoft.Xna.Framework.Graphics;
 using ReLogic.Content;
-using Terraria;
 using Terraria.Graphics.Effects;
 using Terraria.Graphics.Shaders;
 using Terraria.ModLoader;
@@ -257,7 +256,12 @@ namespace CalamityMod.Effects
         #endregion
 
         #region Big E's Shaders
+        internal static Asset<Effect> RadialBlur;
+
         internal static Asset<Effect> SeaPrismColorBlendingShader;
+        internal static Asset<Effect> Dissolve;
+
+        internal static Asset<Effect> BrainOfCthulhuForcefield;
         #endregion
 
         internal static Asset<Effect> SunkenSeaMenuLogoWater;
@@ -506,8 +510,17 @@ namespace CalamityMod.Effects
             #endregion
 
             #region Loading Big E's Shaders
+            RadialBlur = LoadShader("ScreenShaders/RadialBlur");
+            RegisterScreenShader(RadialBlur, "RadialBlurPass", "RadialBlurShader");
+
             SeaPrismColorBlendingShader = LoadShader("SeaPrismColorBlending");
             RegisterMiscShader(SeaPrismColorBlendingShader, "SeaPrismBlendingPass", "SeaPrismColorBlending");
+
+            Dissolve = LoadShader("Dissolve");
+            RegisterMiscShader(Dissolve, "DissolvePass", "Dissolve");
+
+            BrainOfCthulhuForcefield = LoadShader("ScreenShaders/BrainOfCthulhuForcefield");
+            RegisterScreenShader(BrainOfCthulhuForcefield, "BoCShieldPass", "BrainOfCthulhuForcefield");
             #endregion
 
             SunkenSeaMenuLogoWater = LoadShader("UI/SunkenSeaMenuLogoWater");

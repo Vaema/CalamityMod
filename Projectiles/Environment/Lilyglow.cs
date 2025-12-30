@@ -8,7 +8,7 @@ namespace CalamityMod.Projectiles.Environment
     public class Lilyglow : ModProjectile, ILocalizedModType
     {
         public new string LocalizationCategory => "Projectiles.Misc";
-        public override string Texture => "CalamityMod/Projectiles/InvisibleProj";
+        public override string Texture => "CalamityMod/ExtraTextures/TinyGreyscaleCircle";
 
         public ref float Direction => ref Projectile.ai[0];
 
@@ -20,7 +20,7 @@ namespace CalamityMod.Projectiles.Environment
             Projectile.tileCollide = false;
             Projectile.timeLeft = 600;
             Projectile.penetrate = 1;
-            Projectile.scale = Main.rand?.NextFloat(0.02f, 0.035f) ?? 0.03f;
+            Projectile.scale = Main.rand?.NextFloat(0.03f, 0.055f) ?? 0.04f;
             Projectile.Size /= Projectile.scale;
         }
 

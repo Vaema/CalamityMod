@@ -1,6 +1,5 @@
 ﻿using CalamityMod.Buffs.Summon;
 using CalamityMod.Items.Weapons.Melee;
-using CalamityMod.Items.Weapons.Rogue;
 using CalamityMod.Projectiles.Summon;
 using CalamityMod.Rarities;
 using Microsoft.Xna.Framework;
@@ -18,7 +17,6 @@ namespace CalamityMod.Items.Weapons.Summon
         public override void SetStaticDefaults()
         {
             ItemID.Sets.StaffMinionSlotsRequired[Type] = 3f;
-            ItemID.Sets.ShimmerTransformToItem[Type] = ModContent.ItemType<MirrorBlade>();
         }
 
         public override void SetDefaults()

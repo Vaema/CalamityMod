@@ -11,7 +11,7 @@ namespace CalamityMod.Tiles.Abyss
 {
     public class PyreMantleMolten : GlowMaskTile
     {
-        public override string GlowMaskAsset => "CalamityMod/Tiles/Abyss/PyreMantleMolten_Glowmask";
+        public override string GlowMaskAsset => $"{Texture}_Glowmask";
 
         public override void SetupStatic()
         {
