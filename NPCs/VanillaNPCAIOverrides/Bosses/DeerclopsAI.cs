@@ -1,12 +1,16 @@
 ﻿using System;
 using CalamityMod.Events;
+using CalamityMod.Systems.Graphic;
 using CalamityMod.World;
 using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
 using Terraria;
 using Terraria.Audio;
 using Terraria.DataStructures;
 using Terraria.Enums;
+using Terraria.GameContent;
 using Terraria.Graphics.CameraModifiers;
+using Terraria.Graphics.Shaders;
 using Terraria.ID;
 using Terraria.ModLoader;
 
@@ -30,6 +34,64 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
         // Rev+ exclusive
         public static int IceSpikeDamage = 16; // 64 (buffed from 52)
         public static int HandDamage = 13; // 52 (buffed from 40)
+
+        public override void Load()
+        {
+            GeneralDrawLayerSystem.OnAfterEverything += DrawDeerclopsShadow;
+        }
+
+        public override void Unload()
+        {
+            GeneralDrawLayerSystem.OnAfterEverything -= DrawDeerclopsShadow;
+        }
+
+        private static void DrawDeerclopsShadow()
+        {
+            bool shouldDraw;
+            var deerclopsInactive = false;
+            if (NPC.deerclopsBoss >= 0 && NPC.deerclopsBoss.WithinBounds(Main.npc.Length))
+            {
+                shouldDraw = Main.npc[NPC.deerclopsBoss].HasValidTarget;
+            }
+            else
+            {
+                shouldDraw = borderScalar > 0f;
+                deerclopsInactive = true;
+            }
+
+            if (shouldDraw)
+            {
+                var minRadius = innerBorder;
+                var maxRadius = outerBorder;
+
+                // Begin drawing the shadow
+                var blackTile = TextureAssets.MagicPixel;
+
+                var shader = GameShaders.Misc["CalamityMod:DeerclopsShadowShader"].Shader;
+                shader.Parameters["minRadius"].SetValue(minRadius);
+                shader.Parameters["maxRadius"].SetValue(maxRadius);
+                shader.Parameters["anchorPoint"].SetValue(lastDeerclopsPosition);
+                shader.Parameters["screenPosition"].SetValue(Main.screenPosition);
+                shader.Parameters["screenSize"].SetValue(Main.ScreenSize.ToVector2());
+                shader.Parameters["maxOpacity"].SetValue(borderScalar);
+
+                Main.spriteBatch.Begin(SpriteSortMode.Immediate, BlendState.NonPremultiplied, Main.DefaultSamplerState, DepthStencilState.None, Main.Rasterizer, shader, Main.Transform);
+
+                Rectangle rekt = new(Main.screenWidth / 2, Main.screenHeight / 2, Main.screenWidth, Main.screenHeight);
+                Main.spriteBatch.Draw(blackTile.Value, rekt, null, default, 0f, blackTile.Value.Size() * 0.5f, 0, 0f);
+
+                // Shadow drawing complete
+                Main.spriteBatch.End();
+            }
+
+            if (deerclopsInactive)
+            {
+                // Push the border away and fade out when deerclops is deadge
+                borderScalar = MathHelper.Clamp(borderScalar - 0.015f, 0f, 1f);
+                innerBorder += 30f;
+                outerBorder += 30f;
+            }
+        }
 
         public override bool AI(Mod mod)
         {
