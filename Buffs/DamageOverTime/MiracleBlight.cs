@@ -136,13 +136,13 @@ namespace CalamityMod.Buffs.DamageOverTime
         {
             var npc = Main.npc[iNPCIndex];
 
-            if (ExcludedNPCsForShader.Contains(npc.type))
+            if (!CalamityDrawParameterNPC.DrawingMiracleBlight[npc.whoAmI])
             {
                 orig(self, iNPCIndex, behindTiles);
                 return;
             }
 
-            if (!CalamityDrawParameterNPC.DrawingMiracleBlight[npc.whoAmI])
+            if (ExcludedNPCsForShader.Contains(npc.type))
             {
                 orig(self, iNPCIndex, behindTiles);
                 return;
