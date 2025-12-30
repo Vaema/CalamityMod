@@ -62,7 +62,7 @@ public class BrainOfCthulhuAI : VanillaAIOverride
     internal static float Phase2HealthGate => 0.5f; //When BoC's health % falls below this value, it will begin entering Phase 2
     #endregion
 
-    internal static float DespawnRange => 6000f;
+    internal static float DespawnRangeSQ => 36000000f;
 
     #region Phase 1 Attack Values
 
@@ -251,6 +251,7 @@ public class BrainOfCthulhuAI : VanillaAIOverride
     internal Vector2 AttackPosition = Vector2.Zero;
     internal List<BrainAIState> availableAttacks = [];
     internal List<byte> AttackList = [];
+    internal List<int> TargetsList = [];
 
     private Player Target => Main.player[NPC.target];
 
@@ -375,7 +376,7 @@ public class BrainOfCthulhuAI : VanillaAIOverride
 
         if (Main.netMode != NetmodeID.MultiplayerClient)
         {
-            if (Target.Distance(NPC.Center) > DespawnRange)
+            if (Target.DistanceSQ(NPC.Center) > DespawnRangeSQ)
             {
                 NPC.active = false;
                 NPC.life = 0;
@@ -867,6 +868,15 @@ public class BrainOfCthulhuAI : VanillaAIOverride
             BrainOfCthulhuSystem.ScreenBlurStrength = 0f;
             if (wrappedCounter == 65)
             {
+                if (Main.netMode != NetmodeID.SinglePlayer)
+                {
+                    if (TargetsList.Count == 0)
+                        TargetsList = GetAllValidTargets(NPC.Center);
+
+                    NPC.target = TargetsList[Main.rand.Next(TargetsList.Count)];
+                    NPC.netUpdate = true;
+                }
+
                 int checkCount = 8;
                 float wallDist = CalamityUtils.PreciseDistanceToTileCollisionHit(NPC.Center, AttackSign == -1 ? MathHelper.Pi : 0, 480 + NPC.width) - NPC.width;
                 Vector2[] starts = new Vector2[checkCount];
@@ -2313,7 +2323,7 @@ public class BrainOfCthulhuAI : VanillaAIOverride
                 {
                     foreach (Player p in Main.ActivePlayers)
                     {
-                        if (p.Distance(NPC.Center) > DespawnRange)
+                        if (p.DistanceSQ(NPC.Center) > DespawnRangeSQ)
                             continue;
 
                         AttackList.Add((byte)p.whoAmI);
@@ -2746,6 +2756,23 @@ public class BrainOfCthulhuAI : VanillaAIOverride
         return false;
     }
 
+    public static int GetBrainOfCthuluCreepersCountRevDeath() => CalamityWorld.death ? 30 : 21;
+
+    public static List<int> GetAllValidTargets(Vector2 brainPosition)
+    {
+        List<int> validTargets = [];
+
+        foreach(Player p in Main.ActivePlayers)
+        {
+            if(ValidateTarget(p, brainPosition))
+                validTargets.Add(p.whoAmI);
+        }
+
+        return validTargets;
+    }
+
+    public static bool ValidateTarget(Player p, Vector2 brainPosition) => !p.dead && p.Center.DistanceSQ(brainPosition) <= DespawnRangeSQ;
+
     internal static float BringOpacityTo(float currentOpacity, float goalOpacity, float changeAmount = 0.025f)
     {
         if (currentOpacity == goalOpacity)
@@ -2848,5 +2875,4 @@ public class BrainOfCthulhuAI : VanillaAIOverride
         AttackCounter = 0;
     }
 
-    public static int GetBrainOfCthuluCreepersCountRevDeath() => CalamityWorld.death ? 30 : 21;
 }
