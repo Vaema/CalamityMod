@@ -4,7 +4,6 @@ using System.IO;
 using CalamityMod.Buffs.StatDebuffs;
 using CalamityMod.Dusts;
 using CalamityMod.Events;
-using CalamityMod.Graphics.Renderers.CalamityRenderers;
 using CalamityMod.Items.Armor.Vanity;
 using CalamityMod.Items.LoreItems;
 using CalamityMod.Items.Materials;
@@ -40,7 +39,6 @@ using Terraria.GameContent.Events;
 using Terraria.GameContent.ItemDropRules;
 using Terraria.Graphics.Shaders;
 using Terraria.ID;
-using Terraria.Localization;
 using Terraria.ModLoader;
 
 namespace CalamityMod.NPCs.DevourerofGods
@@ -312,7 +310,7 @@ namespace CalamityMod.NPCs.DevourerofGods
             Color messageColor = Color.Cyan;
             CalamityUtils.BroadcastLocalizedText(key, messageColor);
 
-            DialogueDisplaySystem.StartDialogue("DevourerOfGods.Phases", NPC, 0, 120, false, new BossText());
+            DialogueDisplaySystem.StartDialogue("Mods.CalamityMod.DevourerOfGods.Phases", NPC, 0, 120, false, new BossText());
         }
 
         public override void SendExtraAI(BinaryWriter writer)
