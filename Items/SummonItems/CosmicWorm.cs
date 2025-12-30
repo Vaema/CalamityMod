@@ -2,12 +2,8 @@
 using CalamityMod.Items.Materials;
 using CalamityMod.NPCs.DevourerofGods;
 using CalamityMod.Rarities;
-using CalamityMod.UI.DialogueDisplay;
-using CalamityMod.UI.DialogueDisplay.DisplayEffects;
-using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.ID;
-using Terraria.Localization;
 using Terraria.ModLoader;
 
 namespace CalamityMod.Items.SummonItems
@@ -48,8 +44,6 @@ namespace CalamityMod.Items.SummonItems
                 return true;
 
             NPC n = CalamityUtils.SpawnBossOnPosUsingItem<DevourerofGodsHead>(player, (int)player.Center.X, (int)player.Center.Y - 1600, DevourerofGodsHead.SpawnSound);
-
-            DialogueDisplaySystem.StartDialogue("Mods.CalamityMod.DevourerOfGods.Phases", n, 0, 120, false, new BossText());
             return true;
         }
 
