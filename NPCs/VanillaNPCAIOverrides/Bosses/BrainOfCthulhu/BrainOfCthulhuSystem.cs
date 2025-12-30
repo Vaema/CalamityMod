@@ -19,6 +19,8 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses.BrainOfCthulhu;
 
 public class BrainOfCthulhuSystem : ModSystem
 {
+    public static bool IsBrainOfCthulhuTextureVanilla => _vanillaBoCTexture;
+    private static bool _vanillaBoCTexture = true;
     internal static Asset<Texture2D> tendril;
     private static Texture2D tendrilGlow = null;
     private static Texture2D brainGlow = null;
@@ -34,9 +36,7 @@ public class BrainOfCthulhuSystem : ModSystem
     public override void OnModLoad()
     {
         if (!Main.dedServ)
-        {
             tendril = ModContent.Request<Texture2D>("Terraria/Images/Chain12");
-        }
 
         On_NPC.SpawnBoss += SpawnBrainNoMessage;
         On_Player.ItemCheck_UseBossSpawners += BlockRoar;
@@ -146,6 +146,7 @@ public class BrainOfCthulhuSystem : ModSystem
             tex.SetData(ColorArray);
             tendrilGlow = tex;
         }
+
         return tendrilGlow;
     }
 
@@ -185,6 +186,36 @@ public class BrainOfCthulhuSystem : ModSystem
             creeperGlow = tex;
         }
         return creeperGlow;
+    }
+
+    public override void OnWorldLoad()
+    {
+        Main.QueueMainThreadAction(() =>
+        {
+            var reference = ModContent.Request<Texture2D>("CalamityMod/NPCs/VanillaNPCAIOverrides/Bosses/BrainOfCthulhu/ReferenceBrainOfCthulhu", AssetRequestMode.ImmediateLoad).Value;
+
+            Main.instance.LoadNPC(NPCID.BrainofCthulhu);
+            var usedTexture = TextureAssets.Npc[NPCID.BrainofCthulhu].Value;
+
+            int refSize = reference.Width * reference.Height;
+            var referenceArray = new Color[refSize];
+            reference.GetData(referenceArray);
+
+            int texSize = usedTexture.Width * usedTexture.Height;
+            var textureArray = new Color[texSize];
+            usedTexture.GetData(textureArray);
+
+            bool match = true;
+
+            for (var i = 0; i < referenceArray.Length; i++)
+                if (referenceArray[i] != textureArray[i])
+                {
+                    match = false;
+                    break;
+                }
+
+            _vanillaBoCTexture = match;
+        });
     }
 
     public override void PostUpdateNPCs()
