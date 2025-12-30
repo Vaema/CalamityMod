@@ -47,6 +47,9 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
 
         private static void DrawDeerclopsShadow()
         {
+            if (Main.gameMenu)
+                return;
+
             bool shouldDraw;
             var deerclopsInactive = false;
             if (NPC.deerclopsBoss >= 0 && NPC.deerclopsBoss.WithinBounds(Main.npc.Length))
