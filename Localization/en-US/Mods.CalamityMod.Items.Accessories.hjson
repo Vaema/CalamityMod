@@ -180,7 +180,7 @@ AquaticHeart: {
 		'''
 		Wow, you can swim now!
 		Being underwater increases max speed and acceleration by {0}%
-		Greatly reduces breath loss and provides a small amount of light in the abyss
+		Greatly reduces breath loss and reduces the darkness intensity in the abyss
 		Attackers are inflicted with [cbuff:CalamityMod/GlacialState]
 		Gain a fragile ice barrier that grants {1}% damage reduction for one hit
 		The ice shield regenerates after {2} seconds
@@ -299,7 +299,6 @@ BlazingCore: {
 		Upon shattering, holy stars spiral outwards and damage taken is negated
 		After shattering, this damage reduction effect goes on cooldown
 		Damage parried whilst on cooldown summons additional healing stars, and will not be reduced
-		{$Common.AbyssLightLevel2}
 		'''
 }
 
@@ -851,7 +850,7 @@ GiantPearl: {
 		You have a light aura around you
 		Enemies within the aura are slowed down
 		Enemies that remain within the aura are bombarded by homing prism shards
-		{$Common.AbyssLightLevel1}
+		{$Common.AbyssGlow}
 		'''
 }
 
@@ -1828,10 +1827,10 @@ StatMeter: {
 	MiscStats: Aggro: {0} | Luck: {1}%
 	AbyssStats:
 		'''
-		Abyss Light Strength: {0}
-		Breath Loss Rate: {1}
-		Life Lost Per Tick at Zero Breath: {2}
-		Defense Lost From Pressure: {3}
+		Abyss Darkness: {0} | Player Glow: {1}x | Flashlight Width: {2}x
+		Breath Loss Rate: {3}
+		Life Lost Per Tick at Zero Breath: {4}
+		Defense Lost From Pressure: {5}
 		'''
 	AbyssStatsHidden: Abyss stats are only displayed while in the Abyss
 }
@@ -1912,7 +1911,7 @@ TheCamper: {
 		You deal 50% less damage unless stationary
 		Standing still grants buffs depending on held item, and creates a damaging aura around you
 		While moving, you regenerate health as if standing still
-		{$Common.AbyssLightLevel1}
+		{$Common.AbyssGlow} when standing still
 		'In rest may we find victory'
 		'''
 }

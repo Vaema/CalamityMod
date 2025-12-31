@@ -4813,10 +4813,6 @@ namespace CalamityMod.NPCs
             if (npc.type == NPCID.Deerclops)
             {
                 DeerclopsAI.hasTargetBeenInRange = false;
-                DeerclopsAI.borderDelay = 7f * 60f;
-                DeerclopsAI.borderScalar = 0f;
-                DeerclopsAI.innerBorder = DeerclopsAI.MaxDRIncreaseDistance * 5f;
-                DeerclopsAI.outerBorder = DeerclopsAI.MaxDRIncreaseDistance * 5f;
             }
 
             // Despawn Blazing Wheels and Spike Balls when a boss spawns so they're not annoying and stay in the arena
