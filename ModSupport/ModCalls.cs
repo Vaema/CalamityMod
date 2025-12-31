@@ -1200,12 +1200,6 @@ namespace CalamityMod
                         return null;
                     }
 
-                case "GetLight":
-                case "GetLightLevel":
-                case "GetLightStrength":
-                case "GetAbyssLight":
-                case "GetAbyssLightLevel":
-                case "GetAbyssLightStrength":
                 case "GetDarkness":
                 case "GetAbyssDarkness":
                 case "GetDarknessIntensity":

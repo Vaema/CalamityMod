@@ -250,6 +250,9 @@ namespace CalamityMod.CalPlayer
         #endregion
 
         #region External variables -- Not used by Calamity, only via Mod.Call or reflection
+        [Obsolete("No longer does anything in the new abyss light system")]
+        public int externalAbyssLight = 0;
+
         public float externalBreathTickBoost = 0f;
         public float externalFlightTimeMultBoost = 0f;
 
@@ -4940,9 +4943,11 @@ namespace CalamityMod.CalPlayer
             {
                 //Main aura
                 EnhancedDarknessSystem.lights.Add(new(center: Player.Center, scale: 4 * abyssPlayerGlowMultiplier));
-                
+
                 //Flashlight
-                EnhancedDarknessSystem.lights.Add(new(center: Player.Center + Player.DirectionTo(mouseWorld) * 750f, rotation: Player.DirectionTo(Main.MouseWorld).ToRotation() - MathHelper.PiOver2, vectorScale: new Vector2(0.75f * abyssFlashlightWidthMultiplier, 0.75f), texture: Request<Texture2D>("CalamityMod/Particles/BloomLineFade") ));
+                //Due to being in postUpdate we need to adjust the mousepos for the player's movement that will have happened
+                var mouseworld = Main.MouseWorld + Player.position - Player.oldPosition;
+                EnhancedDarknessSystem.lights.Add(new(center: Player.Center + Player.DirectionTo(mouseworld) * 750f, rotation: Player.DirectionTo(mouseworld).ToRotation() - MathHelper.PiOver2, vectorScale: new Vector2(0.75f * abyssFlashlightWidthMultiplier, 0.75f), texture: Request<Texture2D>("CalamityMod/Particles/BloomLineFade")));
             }
 
     

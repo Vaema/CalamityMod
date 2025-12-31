@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
-using System.Reflection;
+using CalamityMod.Utilities.Daybreak;
+using CalamityMod.Utilities.Daybreak.Buffers;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using ReLogic.Content;
@@ -32,15 +33,12 @@ namespace CalamityMod.Graphics
                 this.rotation = rotation;
             }
         }
-        ManagedRenderTarget rt = null;
 
         public static List<LightSource> lights = new();
         public override void OnModLoad()
         {
             On_OverlayManager.Draw += DrawShadowOverlay;
             On_LightingEngine.UpdateLightDecay += AdjustTransmissiveness;
-            RenderTargetManager.RenderTargetUpdateLoopEvent += PrepareTargets;
-            rt = new ManagedRenderTarget(true, ManagedRenderTarget.CreateScreenSizedTarget);
         }
 
         private void DrawShadowOverlay(On_OverlayManager.orig_Draw orig, OverlayManager self, SpriteBatch spriteBatch, RenderLayers layer, bool beginSpriteBatch)
@@ -55,52 +53,50 @@ namespace CalamityMod.Graphics
                 return;
             var mp = Main.LocalPlayer.Calamity();
 
-            var gd = Main.graphics.GraphicsDevice;
-            Main.spriteBatch.SafeBegin(SpriteSortMode.Immediate, BatchSetting.AlphaBlend, null, Main.GameViewMatrix.TransformationMatrix, () =>
+            var device = Main.instance.GraphicsDevice;
+            using var lease = RenderTargetPool.Shared.Rent(
+                device,
+                Main.screenWidth / 2,
+                Main.screenHeight / 2,
+                RenderTargetDescriptor.Default
+            );
+
+            using (lease.Scope(clearColor: Color.Black))
             {
-                Main.spriteBatch.EnterShaderRegion();
+                Main.spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.Additive, SamplerState.PointClamp, DepthStencilState.Default, Main.Rasterizer, null, Matrix.Identity);
+                foreach (var item in lights)
+                {
+                    Main.spriteBatch.Draw(item.texture.Value, (item.center - Main.screenPosition) * 0.5f, null, Color.White, item.rotation, item.texture.Size() * 0.5f, item.vectorScale * item.scale * 0.5f, SpriteEffects.None, 0);
+                }
+                Main.spriteBatch.End();
+            }
+
+            using (Main.spriteBatch.Scope())
+            {
+                Main.spriteBatch.Begin(SpriteSortMode.Immediate, BlendState.AlphaBlend, SamplerState.PointClamp, DepthStencilState.None, Main.Rasterizer, null, Main.GameViewMatrix.TransformationMatrix);
                 var shader = GameShaders.Misc["CalamityMod:DozeLightingShader"];
                 shader.UseOpacity(mp.darknessIntensity);
                 shader.Apply();
-                Main.spriteBatch.Draw(rt, Main.screenLastPosition - Main.screenPosition, Color.White);
-                Main.spriteBatch.ExitShaderRegion();
-            });
+                Main.spriteBatch.Draw(lease.Target, Vector2.Zero, null, Color.White, 0, Vector2.Zero, 2, 0, 0);
+                spriteBatch.End();
+            }
         }
-        private static readonly FastField<LightingEngine, LightMap> Fld_WorkingLightMap = new("_workingLightMap", BindingFlags.Instance | BindingFlags.NonPublic);
 
 
+        private const float VanillaWaterLightMult = 0.91f; //Vanilla water light multiplier.
         private void AdjustTransmissiveness(On_LightingEngine.orig_UpdateLightDecay orig, LightingEngine self)
         {
             orig(self);
 
-            if (Fld_WorkingLightMap != null)
+            var mp = Main.LocalPlayer.Calamity();
+            LightMap map = self._workingLightMap;
+            if (mp.ZoneAbyss)
             {
-                var mp = Main.LocalPlayer.Calamity();
-                LightMap map = Fld_WorkingLightMap.Get(self);
-                if (mp.ZoneAbyss)
-                {
-                    //This converts the light decay amount from the amount it normally is in water into the amount it normally is in air, depending on the intensity of the abyss darkness.
-                    //This is to offset the abyss darkness system to make the parts that are supposed to be visible easier to see.
-                    //Dividing by 0.91 brings the water back to 100% transmissiveness with the original color
-                    map.LightDecayThroughWater = Vector3.Lerp(map.LightDecayThroughWater, (map.LightDecayThroughWater / 0.91f) * 0.95f, MathHelper.Clamp(mp.darknessIntensity, 0, 1));
-                }
+                //This converts the light decay amount from the amount it normally is in water into the amount it normally is in air, depending on the intensity of the abyss darkness.
+                //This is to offset the abyss darkness system to make the parts that are supposed to be visible easier to see.
+                //Dividing by 0.91 brings the water back to 100% transmissiveness with the original color
+                map.LightDecayThroughWater = Vector3.Lerp(map.LightDecayThroughWater, (map.LightDecayThroughWater / VanillaWaterLightMult) * 0.95f, MathHelper.Clamp(mp.darknessIntensity, 0, 1));
             }
-        }
-
-        private void PrepareTargets()
-        {
-            //This system works by drawing all the light sources additively onto a plain black RenderTarget.
-            //The shader then uses this as an opacity mask, where black = opaque and white = transparent.
-            var gd = Main.instance.GraphicsDevice;
-            gd.SetRenderTarget(rt);
-            gd.Clear(Color.Black);
-            Main.spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.Additive, SamplerState.PointClamp, DepthStencilState.Default, Main.Rasterizer, null, Matrix.Identity);
-            foreach (var item in lights)
-            {
-                Main.spriteBatch.Draw(item.texture.Value, item.center - Main.screenPosition, null, Color.White, item.rotation, item.texture.Size() * 0.5f, item.vectorScale * item.scale, SpriteEffects.None, 0);
-            }
-            Main.spriteBatch.End();
-            gd.SetRenderTarget(null);
         }
 
         public override void OnWorldUnload()
