@@ -253,6 +253,7 @@ public class TelekineticEnemyGrab : ModProjectile, ILocalizedModType
             int[] enemyIDs = [NPCID.FaceMonster, NPCID.Crimera, NPCID.BloodCrawler];
             foreach (int id in enemyIDs)
             {
+                Main.instance.LoadNPC(id);
                 var baseTex = TextureAssets.Npc[id];
                 var glow = new Texture2D(Main.graphics.GraphicsDevice, baseTex.Value.Width, baseTex.Value.Height);
 
