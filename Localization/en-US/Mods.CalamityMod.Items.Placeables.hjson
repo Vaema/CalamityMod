@@ -814,16 +814,6 @@ ExoObelisk: {
 	Tooltip: "'Energize the atmosphere with exo energy.'"
 }
 
-ForgottenNobleStatue: {
-	DisplayName: Forgotten Noble Statue
-	Tooltip: ""
-}
-
-ForgottenScholarStatue: {
-	DisplayName: Forgotten Scholar Statue
-	Tooltip: ""
-}
-
 FrigidMonolith: {
 	DisplayName: Frigid Monolith
 	Tooltip: "'Enchant the sky with frosty auroras.'"
@@ -836,11 +826,6 @@ KelpTorch: {
 
 OldDukeMonolith: {
 	DisplayName: Elden Diorama
-	Tooltip: ""
-}
-
-OtonilouStatue: {
-	DisplayName: Otonilou Memorial
 	Tooltip: ""
 }
 
@@ -950,11 +935,6 @@ SpitefulCandle: {
 SulphurousTorch: {
 	DisplayName: Sulphurous Torch
 	Tooltip: Can be placed in water
-}
-
-SunkenIdol: {
-	DisplayName: Sunken Idol
-	Tooltip: ""
 }
 
 ThaumaticChair: {
