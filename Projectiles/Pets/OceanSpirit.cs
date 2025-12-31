@@ -75,7 +75,7 @@ namespace CalamityMod.Projectiles.Pets
                     Projectile.frame = sleepy ? 16 : 8;
                 }
             }
-            underwater = player.IsUnderwater();
+            underwater = player.Calamity().countsAsAnyWet;
             if (underwater)
             {
                 if (Main.LocalPlayer.Calamity().ZoneAbyss)
