@@ -803,10 +803,6 @@ namespace CalamityMod.NPCs.HiveMind
                         // Use an attack sooner if being hit
                         if (NPC.justHit)
                             phase2timer -= 4;
-
-                        // Use an attack sooner if target is close
-                        if (NPC.Distance(player.Center) < 160f)
-                            phase2timer -= 2;
                     }
 
                     if (phase2timer <= -180) // No stalling drift mode forever
