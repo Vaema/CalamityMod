@@ -54,6 +54,7 @@ using Terraria.Utilities;
 using Terraria.WorldBuilding;
 using static Terraria.ModLoader.ModContent;
 using NanotechProjectile = CalamityMod.Projectiles.Typeless.Nanotech;
+using CalamityMod.Graphics;
 
 namespace CalamityMod.Projectiles
 {
@@ -426,6 +427,11 @@ namespace CalamityMod.Projectiles
         #region Pre AI
         public override bool PreAI(Projectile projectile)
         {
+            //Light Pets will add light to the abyss darkness.
+            //This uses local player on purpose, as the abyss darkness system is entirely client side.
+            if (ProjectileID.Sets.LightPet[projectile.type] && Main.LocalPlayer.Calamity().ZoneAbyss)
+                EnhancedDarknessSystem.lights.Add(new() { center = projectile.Center, texture = ModContent.Request<Texture2D>("CalamityMod/Particles/BloomCircle"), scale = 1 });
+
             ///Apply Hybrid iframes
             if (hybridIframes)
             {

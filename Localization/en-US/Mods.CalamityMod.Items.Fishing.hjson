@@ -178,8 +178,9 @@ RustedJingleBell: {
 	DisplayName: Rusted Jingle Bell
 	Tooltip:
 		'''
-		Summons a baby ghost bell light pet
+		Summons a baby ghost bell to light the way for you
 		Provides a moderate amount of light while underwater
+        {$Common.AbyssLightLevel}
 		'''
 }
 

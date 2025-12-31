@@ -3030,7 +3030,7 @@ namespace CalamityMod.CalPlayer
         #region Abyss Effects
         private void AbyssEffects()
         {
-            int lightStrength = Player.GetCurrentAbyssLightLevel();
+            Player.SetAbyssLightLevels();
 
             if (ZoneAbyss)
             {
@@ -3048,42 +3048,7 @@ namespace CalamityMod.CalPlayer
                     double depthRatioFromAbyssLayer1 = playerAbyssDepthFromLayer1 / totalAbyssDepthFromLayer1;
 
                     // Darkness strength scales smoothly with how deep you are.
-                    float darknessStrength = (float)depthRatio;
-
-                    // Reduce the power of abyss darkness based on your light level.
-                    float multiplier = 1f;
-                    switch (lightStrength)
-                    {
-                        case 0:
-                            break;
-                        case 1:
-                            multiplier = 0.85f;
-                            break;
-                        case 2:
-                            multiplier = 0.7f;
-                            break;
-                        case 3:
-                            multiplier = 0.55f;
-                            break;
-                        case 4:
-                            multiplier = 0.4f;
-                            break;
-                        case 5:
-                            multiplier = 0.25f;
-                            break;
-                        case 6:
-                            multiplier = 0.15f;
-                            break;
-                        case 7:
-                            multiplier = 0.1f;
-                            break;
-                        default:
-                            multiplier = 0.05f;
-                            break;
-                    }
-
-                    // Modify darkness variable
-                    caveDarkness = darknessStrength * multiplier;
+                    darknessIntensity = abyssDarkness + (float)depthRatio * 3;
 
                     // Nebula Headcrab darkness effect
                     if (!Player.headcovered)
@@ -3223,26 +3188,6 @@ namespace CalamityMod.CalPlayer
 
                                 // Reduce the power of Signus darkness based on your light level.
                                 float multiplier = 1f;
-                                switch (Main.LocalPlayer.GetCurrentAbyssLightLevel())
-                                {
-                                    case 0:
-                                        break;
-                                    case 1:
-                                    case 2:
-                                        multiplier = 0.75f;
-                                        break;
-                                    case 3:
-                                    case 4:
-                                        multiplier = 0.5f;
-                                        break;
-                                    case 5:
-                                    case 6:
-                                        multiplier = 0.25f;
-                                        break;
-                                    default:
-                                        multiplier = 0f;
-                                        break;
-                                }
 
                                 float signusDarkness = signusLifeRatio * multiplier;
                                 darkRatio = MathHelper.Clamp(signusDarkness, 0f, 1f);
@@ -3301,7 +3246,7 @@ namespace CalamityMod.CalPlayer
             // Aquatic Emblem bonus
             if (aquaticEmblem)
             {
-                if (countsAsAnyWet && !Player.lavaWet && !Player.honeyWet && !Player.mount.Active)
+                if (countsAsAnyWet && !Player.lavaWet && !Player.honeyWet)
                 {
                     if (aquaticBoost < AquaticEmblem.TimeToReachMaxBoost)
                     {
@@ -3319,12 +3264,13 @@ namespace CalamityMod.CalPlayer
                     aquaticBoost--;
                     if (aquaticBoost <= 0f)
                         aquaticBoost = 0f;
-                    if (Player.mount.Active)
-                        aquaticBoost = 0f;
                 }
-
-                Player.statDefense += (int)Utils.Remap(aquaticBoost, 0, AquaticEmblem.TimeToReachMaxBoost, 0, AquaticEmblem.MaxDefenseBoost);
-                Player.moveSpeed -= Utils.Remap(aquaticBoost, 0, AquaticEmblem.TimeToReachMaxBoost, 0, AquaticEmblem.MaxMoveSpeedReduction);
+                //Because mounts are unchanged by move speed we also don'y let them have the defense.
+                if (!Player.mount.Active)
+                {
+                    Player.statDefense += (int)Utils.Remap(aquaticBoost, 0, AquaticEmblem.TimeToReachMaxBoost, 0, AquaticEmblem.MaxDefenseBoost);
+                    Player.moveSpeed -= Utils.Remap(aquaticBoost, 0, AquaticEmblem.TimeToReachMaxBoost, 0, AquaticEmblem.MaxMoveSpeedReduction);
+                }
             }
             else
                 aquaticBoost = 0f;

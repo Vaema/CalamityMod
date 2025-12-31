@@ -47,7 +47,7 @@ namespace CalamityMod.NPCs.HiveMind
         {
             string normalIconPath = "CalamityMod/NPCs/HiveMind/HiveMind_Head_Boss";
             string phase2IconPath = "CalamityMod/NPCs/HiveMind/HiveMindP2_Head_Boss";
-            
+
             normalIconIndex = CalamityMod.Instance.AddBossHeadTexture(normalIconPath, -1);
             phase2IconIndex = CalamityMod.Instance.AddBossHeadTexture(phase2IconPath, -1);
         }
@@ -277,10 +277,6 @@ namespace CalamityMod.NPCs.HiveMind
                 frameHeight = frameHeight_P2;
             }
 
-            // Update NPC Size accordingly
-            NPC.width = frameWidth;
-            NPC.height = frameHeight - 2; //Phase 1 Sprite have 2 pixel margin
-
             NPC.frameCounter += 1.0; // Update each 6 ticks
             if (NPC.frameCounter >= 6.0)
             {
@@ -416,6 +412,10 @@ namespace CalamityMod.NPCs.HiveMind
 
         public override void AI()
         {
+            // Update NPC Size according to Phase Changes
+            NPC.width = frameWidth;
+            NPC.height = frameHeight - 2; //Phase 1 Sprite have 2 pixel margin
+
             // Get a target
             if (NPC.target < 0 || NPC.target == Main.maxPlayers || Main.player[NPC.target].dead || !Main.player[NPC.target].active)
                 NPC.TargetClosest();
@@ -803,10 +803,6 @@ namespace CalamityMod.NPCs.HiveMind
                         // Use an attack sooner if being hit
                         if (NPC.justHit)
                             phase2timer -= 4;
-
-                        // Use an attack sooner if target is close
-                        if (NPC.Distance(player.Center) < 160f)
-                            phase2timer -= 2;
                     }
 
                     if (phase2timer <= -180) // No stalling drift mode forever
