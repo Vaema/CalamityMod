@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using CalamityMod.CalPlayer;
+using CalamityMod.Utilities.Daybreak;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using ReLogic.Content;
@@ -147,35 +148,27 @@ namespace CalamityMod.UI.ResourceSets
                 }
                 if (drawType == 0) //bars
                 {
+                    int width = snapshot.AmountOfLifeHearts * 12;
+                    float pixelsPerLife = 12f / snapshot.LifePerSegment;
+                    int deadPixels = (int)MathF.Floor((snapshot.LifeMax - snapshot.Life) * pixelsPerLife);
+                    int bleedPixels = (int)MathF.Ceiling((float)bleed * pixelsPerLife);
+                    bleedPixels = Math.Min(bleedPixels, width - deadPixels);
 
-                    // This works by dynamically creating a texture that it then draws over the life bar.
-                    int width = 12 * snapshot.AmountOfLifeHearts;
-                    GraphicsDevice _graphicsDevice = Main.graphics.GraphicsDevice;
-                    var barOverlay = new Texture2D(_graphicsDevice, width, 12);
-                    Color[] barTextureData = new Color[12 * 12];
-                    CalamityUIResourceSets.HPChaliceBleed.Bar.Value.GetData(barTextureData);
-                    var pixelsPerLife = 12f / snapshot.LifePerSegment;
-                    int deadPixels = (int)Math.Floor((snapshot.LifeMax - snapshot.Life) * pixelsPerLife);
-                    var bleedPixels = Math.Round(bleed * pixelsPerLife);
+                    if (bleedPixels < 0)
+                        return;
 
-                        Color[] textureData = new Color[width * 12];
+                    int barMaxStatX = (int)position.X - width;
+                    int drawX = barMaxStatX + deadPixels;
 
-                        // doze 19MAR2025 - I don't know if I could optimize this any further without switching to shaders.
-                        // I don't expect performance issues, but at some point might be worth adding a config to disable the indicator in case of lag or accessibility concerns 
-                        for (int i = 0; i < textureData.Length; i++)
-                        {
-                            var i_MOD_width = i % width; //minor optimization, calculated here once instead of twice in the loop.
-                            var bleedCol = Color.Transparent;
-                            if ((i_MOD_width < bleedPixels + deadPixels) && !(i_MOD_width < deadPixels))
-                            {
-                                bleedCol = barTextureData[((i % 12) + (i / width) * 12)];
-                            }
-                            textureData[i] = bleedCol;
-
-                        }
-
-                        barOverlay.SetData(textureData);
-                        Main.spriteBatch.Draw(barOverlay, position, null, Color.White, 0, new Vector2(width, 0), 1, SpriteEffects.None, 1);
+                    using (Main.spriteBatch.Scope())
+                    {
+                        var bleedDrawPos = new Vector2(drawX, position.Y);
+                        var bleedDrawRect = new Rectangle(deadPixels % 12, 0, bleedPixels, 12);
+                        var bleedDrawOrigin = new Vector2(0, 0);
+                        Main.spriteBatch.Begin(SpriteSortMode.Immediate, BlendState.AlphaBlend, SamplerState.LinearWrap, DepthStencilState.None, RasterizerState.CullCounterClockwise, null, Main.UIScaleMatrix);
+                        Main.spriteBatch.Draw(CalamityUIResourceSets.HPChaliceBleed.Bar.Value, bleedDrawPos, bleedDrawRect, Color.White, 0, bleedDrawOrigin, 1, SpriteEffects.None, 1);
+                        Main.spriteBatch.End();
+                    }
                 }
                 else if (drawType == 1) //default heart
                 {
@@ -244,37 +237,21 @@ namespace CalamityMod.UI.ResourceSets
                 }
                 if (drawType == 0) //bars
                 {
+                    float pixelsPerStar = 12f / snapshot.ManaPerSegment;
+                    int bleedPixels = (int)MathF.Ceiling((float)mana * pixelsPerStar);
 
-                    // This works by dynamically creating a texture that it then draws over the life bar.
-                    int width = 12 * stars;
-                    if (width < 1)
-                        width = 1;
-                    GraphicsDevice _graphicsDevice = Main.graphics.GraphicsDevice;
-                    var barOverlay = new Texture2D(_graphicsDevice, width, 12);
-                    Color[] barTextureData = new Color[12 * 12];
-                    manaSet.Bar.Value.GetData(barTextureData);
-                    var pixelsPerLife = 12f / snapshot.ManaPerSegment;
-                    int deadPixels = (int)Math.Floor((snapshot.ManaMax + snapshot.Mana) * pixelsPerLife);
-                    var bleedPixels = Math.Round(mana * pixelsPerLife);
+                    if (bleedPixels < 0)
+                        return;
 
-                    Color[] textureData = new Color[width * 12];
-
-                    // doze 19MAR2025 - I don't know if I could optimize this any further without switching to shaders.
-                    // I don't expect performance issues, but at some point might be worth adding a config to disable the indicator in case of lag or accessibility concerns 
-                    for (int i = 0; i < textureData.Length; i++)
+                    using (Main.spriteBatch.Scope())
                     {
-                        var i_MOD_width = i % width; //minor optimization, calculated here once instead of twice in the loop.
-                        var bleedCol = Color.Transparent;
-                        if ((i_MOD_width < bleedPixels + deadPixels) && !(i_MOD_width < deadPixels))
-                        {
-                            bleedCol = barTextureData[((i % 12) + (i / width) * 12)];
-                        }
-                        textureData[i] = bleedCol;
-
+                        var bleedDrawPos = new Vector2(position.X, position.Y);
+                        var bleedDrawRect = new Rectangle(-(bleedPixels % 12), 0, bleedPixels, 12);
+                        var bleedDrawOrigin = new Vector2(bleedPixels, 0);
+                        Main.spriteBatch.Begin(SpriteSortMode.Immediate, BlendState.AlphaBlend, SamplerState.LinearWrap, DepthStencilState.None, RasterizerState.CullCounterClockwise, null, Main.UIScaleMatrix);
+                        Main.spriteBatch.Draw(CalamityUIResourceSets.MPManaBurn.Bar.Value, bleedDrawPos, bleedDrawRect, Color.White, 0, bleedDrawOrigin, 1, SpriteEffects.None, 1);
+                        Main.spriteBatch.End();
                     }
-
-                    barOverlay.SetData(textureData);
-                    Main.spriteBatch.Draw(barOverlay, position, null, Color.White, 0, new Vector2(width, 0), 1, SpriteEffects.None, 1);
                 }
                 else if (drawType == 1) //default heart
                 {
