@@ -698,6 +698,8 @@ public class BrainOfCthulhuAI : VanillaAIOverride
 
     private void Phase1Idle()
     {
+        BrainOfCthulhuSystem.ScreenBlurStrength = 0f;
+
         #region Attack Selection
         if (CreeperHPRatio <= DesperateOnslaughtCreeperHealthGate)
         {
