@@ -168,82 +168,44 @@ namespace CalamityMod
         /// Calculates and returns the player's total light strength. This is used for Abyss darkness, among other things.<br/>
         /// The Stat Meter also reports this stat.
         /// </summary>
-        /// <returns>The player's total light strength.</returns>
-        public static int GetCurrentAbyssLightLevel(this Player player)
+        public static void SetAbyssLightLevels(this Player player)
         {
             CalamityPlayer mp = player.Calamity();
-            int light = mp.externalAbyssLight;
             bool underwater = player.IsUnderwater();
             bool miningHelmet = player.head == ArmorIDs.Head.MiningHelmet || player.head == ArmorIDs.Head.UltraBrightHelmet;
-
-            // The campfire bonus does not apply while in the Abyss.
-            if (!mp.ZoneAbyss && (player.HasBuff(BuffID.Campfire) || Main.SceneMetrics.HasCampfire))
-                light += 1;
-            if (mp.camper) // inherits Campfire so it is +2 in practice
-                light += 1;
+            //Things that include darkness multipliers
+            if (mp.camper)
+                mp.abyssPlayerGlowMultiplier += Utils.Remap(player.velocity.Length(), 0, 5, 1, 0);
             if (miningHelmet)
-                light += 1;
-            if (player.hasMagiluminescence)
-                light += 1;
-            if (player.lightOrb)
-                light += 1;
-            if (player.crimsonHeart)
-                light += 1;
-            if (player.magicLantern)
-                light += 1;
+                mp.abyssPlayerGlowMultiplier += 0.2f;
+            if (player.nightVision)
+                mp.abyssDarkness -= 0.4f;
             if (mp.giantPearl)
-                light += 1;
-            if (mp.radiator)
-                light += 1;
-            if (mp.bendyPet)
-                light += 1;
-            if (mp.sparks)
-                light += 1;
-            if (mp.thiefsDime)
-                light += 1;
+                mp.abyssPlayerGlowMultiplier += 0.2f;
             if (mp.fathomSwarmerVisage)
-                light += 1;
+            {
+                mp.abyssDarkness -= 0.2f;
+                mp.abyssPlayerGlowMultiplier += 0.2f;
+                mp.abyssFlashlightWidthMultiplier += 0.5f;
+            }
             if (mp.aquaticHeart)
-                light += 1;
-            if (mp.purity) // does not stack with downgrades
-                light += 2;
-            else if (mp.rOoze || mp.aAmpoule) // the two "yellow lights" do not stack with each other
-                light += 1;
-            if (mp.aquaticEmblem && underwater)
-                light += 1;
-            if (player.arcticDivingGear && underwater) // inherited by abyssal diving gear/suit. jellyfish necklace is inherited so arctic diving gear is really +2
-                light += 1;
+                mp.abyssDarkness -= 0.1f;
             if (mp.jellyfishNecklace && underwater) // inherited by jellyfish diving gear and higher
-                light += 1;
+                mp.abyssPlayerGlowMultiplier += 0.2f;
             if (mp.reaverExplore)
-                light += 2;
+            {
+                mp.abyssDarkness -= 0.2f;
+                mp.abyssPlayerGlowMultiplier += 0.2f;
+                mp.abyssFlashlightWidthMultiplier += 0.5f;
+            }
             if (mp.shine)
-                light += 2;
-            if (mp.blazingCore)
-                light += 2;
-            if (player.redFairy || player.greenFairy || player.blueFairy)
-                light += 2;
-            if (mp.babyGhostBell)
-                light += underwater ? 2 : 1;
-            if (player.petFlagDD2Ghost)
-                light += 2;
-            if (mp.sirenPet)
-                light += underwater ? 3 : 1;
-            if (player.petFlagPumpkingPet)
-                light += 3;
-            if (player.petFlagGolemPet)
-                light += 3;
-            if (player.petFlagFairyQueenPet)
-                light += 3;
-            if (player.wisp)
-                light += 3;
-            if (player.suspiciouslookingTentacle)
-                light += 3;
+                mp.abyssPlayerGlowMultiplier += 0.2f;
+            if (mp.babyGhostBell && underwater)
+                mp.abyssDarkness -= 0.1f;
+            if (mp.sirenPet && underwater)
+                mp.abyssDarkness -= 0.2f;
             if (mp.littleLightPet)
-                light += 3;
-            if (mp.profanedCrystalBuffs && !mp.ZoneAbyss)
-                light += (Main.dayTime || player.lavaWet) ? 2 : 1; // not sure how you'd be in lava in the abyss but go ham I guess
-            return light;
+                mp.abyssDarkness -= 0.4f;
         }
 
         /// <summary>

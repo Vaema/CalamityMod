@@ -1,9 +1,11 @@
 ﻿using System;
 using CalamityMod.Events;
+using CalamityMod.Graphics;
 using CalamityMod.Systems.Graphic;
 using CalamityMod.World;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using ReLogic.Content;
 using Terraria;
 using Terraria.Audio;
 using Terraria.DataStructures;
@@ -18,15 +20,11 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
 {
     public class DeerclopsAI : VanillaAIOverride
     {
-        public static bool shouldDrawEnrageBorder = true;
         public static bool hasTargetBeenInRange = true;
         public const float IncreaseDRTriggerDistance = 750f;
         public const float MaxDRIncreaseDistance = 1200f;
-        public static float borderDelay = 10f * 60f;
-        public static float innerBorder = 750f;
-        public static float outerBorder = 1200f;
-        public static float borderScalar = 0f;
-        public static Vector2 lastDeerclopsPosition;
+        public static float borderScale = 5f;
+        public static string ArenaTexPath = "CalamityMod/Particles/LargeBloom";
 
         // Vanilla values
         public static int DebrisDamage = 18; // 72
@@ -35,66 +33,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
         public static int IceSpikeDamage = 16; // 64 (buffed from 52)
         public static int HandDamage = 13; // 52 (buffed from 40)
 
-        public override void Load()
-        {
-            GeneralDrawLayerSystem.OnAfterEverything += DrawDeerclopsShadow;
-        }
-
-        public override void Unload()
-        {
-            GeneralDrawLayerSystem.OnAfterEverything -= DrawDeerclopsShadow;
-        }
-
-        private static void DrawDeerclopsShadow()
-        {
-            if (Main.gameMenu)
-                return;
-
-            bool shouldDraw;
-            var deerclopsInactive = false;
-            if (NPC.deerclopsBoss >= 0 && NPC.deerclopsBoss.WithinBounds(Main.npc.Length))
-            {
-                shouldDraw = Main.npc[NPC.deerclopsBoss].HasValidTarget;
-            }
-            else
-            {
-                shouldDraw = borderScalar > 0f;
-                deerclopsInactive = true;
-            }
-
-            if (shouldDraw)
-            {
-                var minRadius = innerBorder;
-                var maxRadius = outerBorder;
-
-                // Begin drawing the shadow
-                var blackTile = TextureAssets.MagicPixel;
-
-                var shader = GameShaders.Misc["CalamityMod:DeerclopsShadowShader"].Shader;
-                shader.Parameters["minRadius"].SetValue(minRadius);
-                shader.Parameters["maxRadius"].SetValue(maxRadius);
-                shader.Parameters["anchorPoint"].SetValue(lastDeerclopsPosition);
-                shader.Parameters["screenPosition"].SetValue(Main.screenPosition);
-                shader.Parameters["screenSize"].SetValue(Main.ScreenSize.ToVector2());
-                shader.Parameters["maxOpacity"].SetValue(borderScalar);
-
-                Main.spriteBatch.Begin(SpriteSortMode.Immediate, BlendState.NonPremultiplied, Main.DefaultSamplerState, DepthStencilState.None, Main.Rasterizer, shader, Main.Transform);
-
-                Rectangle rekt = new(Main.screenWidth / 2, Main.screenHeight / 2, Main.screenWidth, Main.screenHeight);
-                Main.spriteBatch.Draw(blackTile.Value, rekt, null, default, 0f, blackTile.Value.Size() * 0.5f, 0, 0f);
-
-                // Shadow drawing complete
-                Main.spriteBatch.End();
-            }
-
-            if (deerclopsInactive)
-            {
-                // Push the border away and fade out when deerclops is deadge
-                borderScalar = MathHelper.Clamp(borderScalar - 0.015f, 0f, 1f);
-                innerBorder += 30f;
-                outerBorder += 30f;
-            }
-        }
+        public static Asset<Texture2D> ArenaTex;
 
         public override bool AI(Mod mod)
         {
@@ -116,7 +55,6 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
             if (NPC.target.WithinBounds(Main.player.Length) && Main.player[NPC.target].dead)
             {
                 hasTargetBeenInRange = false;
-                borderScalar = 0.9f;
             }
 
             // Target data
@@ -134,8 +72,6 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
             float dustAndDRScalar = Utils.Remap(NPC.localAI[3], 0f, 30f, 0f, 1f);
             calamityGlobalNPC.DR = MathHelper.Lerp(0f, 0.9f, dustAndDRScalar);
 
-            if (borderDelay > 0f)
-                borderDelay -= 1f;
 
             if (dustAndDRScalar > 0f)
             {
@@ -150,29 +86,10 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
             {
                 // Target entered the border for the first time
                 hasTargetBeenInRange = true;
-                if (borderDelay > 120f)
-                    borderDelay = 120f;
             }
-            if (innerBorder != IncreaseDRTriggerDistance || MaxDRIncreaseDistance != outerBorder)
-            {
-                // Adjust the border IF the new value is lower (helps prevent jumping if you enter the border early while it's on screen but not finished zooming in)
-                var LerpValue = Utils.GetLerpValue(hasTargetBeenInRange ? 120f : 180f, 0f, borderDelay, true);
-                var newInner = MathHelper.Lerp(MaxDRIncreaseDistance * 5f, IncreaseDRTriggerDistance, LerpValue);
-                if (newInner < innerBorder)
-                    innerBorder = newInner;
-                var newOuter = MathHelper.Lerp(MaxDRIncreaseDistance * 5f, MaxDRIncreaseDistance, LerpValue);
-                if (newOuter < outerBorder)
-                    outerBorder = newOuter;
-            }
-            if ((hasTargetBeenInRange && borderScalar < 1f) || borderDelay > 0f)
-            {
-                // Fade in, with full opacity only available after being inside the border for the first time
-                borderScalar = MathHelper.Clamp(borderScalar + 0.015f, 0f, hasTargetBeenInRange ? 1f : 0.9f);
-            }
-            shouldDrawEnrageBorder = CalamityWorld.revenge || CalamityWorld.death;
 
             // Set the last deerclops position (used only for post-death border shenanigans)
-            lastDeerclopsPosition = NPC.Center;
+            Main.LocalPlayer.Calamity().lastDeerclopsPosition = NPC.Center;
 
             // Spawn settings
             if (NPC.homeTileX == -1 && NPC.homeTileY == -1)
