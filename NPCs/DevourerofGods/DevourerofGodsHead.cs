@@ -2822,7 +2822,7 @@ namespace CalamityMod.NPCs.DevourerofGods
                 int DialogueIndex;
                 if (target.statLife - hurtInfo.Damage <= 0)
                 {
-                    DialogueGroup = "DevourerOfGods.Death";
+                    DialogueGroup = "Mods.CalamityMod.DevourerOfGods.Death";
                     if (counter == 0)
                         if (NPC.GetLifePercent() <= 0.25f)
                             DialogueIndex = 4;// text = "Mods.CalamityMod.Status.Boss.DoGHeadDeath5"; //All that running just to die to a single touch?
@@ -2841,7 +2841,7 @@ namespace CalamityMod.NPCs.DevourerofGods
                 {
                     if (counter == 0 && Phase2Started)
                     {
-                        DialogueGroup = "DevourerOfGods.Running";
+                        DialogueGroup = "Mods.CalamityMod.DevourerOfGods.Running";
                         if (NPC.GetLifePercent() <= 0.25f)
                             DialogueIndex = 1;// text = "Mods.CalamityMod.Status.Boss.DoGHeadRunning2"; //WHAT'S THE PROBLEM?! CAN'T RUN ANYMORE?!
                         else
@@ -2849,7 +2849,7 @@ namespace CalamityMod.NPCs.DevourerofGods
                     }
                     else
                     {
-                        DialogueGroup = "DevourerOfGods.Head";
+                        DialogueGroup = "Mods.CalamityMod.DevourerOfGods.Head";
                         if (counter > 9)
                             DialogueIndex = Main.rand.Next(10, 13);// text = headHitKeys[Main.rand.Next(10, 13)]; //DogHead11-13
                         else if (counter == 9)
