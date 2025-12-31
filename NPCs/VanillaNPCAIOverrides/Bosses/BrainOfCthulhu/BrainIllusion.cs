@@ -71,7 +71,7 @@ public class BrainIllusion : ModNPC, ILocalizedModType
             return;
         }
         NPC brain = Main.npc[NPC.crimsonBoss];
-        Player target = Main.player[brain.target];
+        Player target = Main.player[NPC.target];
         NPC.GivenName = brain.GivenOrTypeName + $": {brain.life}/{brain.lifeMax}";
 
         #region Attack Start
@@ -173,17 +173,18 @@ public class BrainIllusion : ModNPC, ILocalizedModType
     {
         Vector2 drawPos = NPC.Center + (Vector2.UnitY * 16) - Main.screenPosition;
         Vector2 scale = Vector2.One;
+        float opacityMult = Main.LocalPlayer.whoAmI == NPC.target ? 1f : 0.5f;
 
         if (TeleportTime != 0)
         {
             //Color glowColor = Color.White * (teleportCounter / 30f);
             scale = Vector2.Lerp(Vector2.One, new Vector2(0.5f + ((float)Math.Cos(Time / (TeleportDuration / 2f) * MathHelper.TwoPi) / 2f + 0.5f), 0.5f + ((float)Math.Sin(Time / (TeleportDuration / 2f) * MathHelper.TwoPi) / 2f + 0.5f)), CalamityUtils.SineInOutEasing(TeleportTime / (TeleportDuration / 2f), 1));
 
-            spriteBatch.Draw(TextureAssets.Npc[NPCID.BrainofCthulhu].Value, drawPos, NPC.frame, Lighting.GetColor(NPC.Center.ToTileCoordinates()) * NPC.Opacity, NPC.rotation, NPC.frame.Size() * 0.5f, scale * NPC.scale, 0, 0);
+            spriteBatch.Draw(TextureAssets.Npc[NPCID.BrainofCthulhu].Value, drawPos, NPC.frame, Lighting.GetColor(NPC.Center.ToTileCoordinates()) * NPC.Opacity * opacityMult, NPC.rotation, NPC.frame.Size() * 0.5f, scale * NPC.scale, 0, 0);
             //spriteBatch.Draw(GetBrainGlow(), drawPos, npc.frame, glowColor, npc.rotation, npc.frame.Size() * 0.5f, scale, 0, 0);
         }
         else
-            spriteBatch.Draw(TextureAssets.Npc[NPCID.BrainofCthulhu].Value, drawPos, NPC.frame, Lighting.GetColor(NPC.Center.ToTileCoordinates()) * NPC.Opacity, NPC.rotation, NPC.frame.Size() * 0.5f, scale * NPC.scale, 0, 0);
+            spriteBatch.Draw(TextureAssets.Npc[NPCID.BrainofCthulhu].Value, drawPos, NPC.frame, Lighting.GetColor(NPC.Center.ToTileCoordinates()) * NPC.Opacity * opacityMult, NPC.rotation, NPC.frame.Size() * 0.5f, scale * NPC.scale, 0, 0);
         return false;
     }
 }
