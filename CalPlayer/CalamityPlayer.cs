@@ -957,8 +957,6 @@ namespace CalamityMod.CalPlayer
         public int PurityHealSlowdownFrames = 0;
         public bool harpyRing = false;
         public bool angelTreads = false;
-        /// <summary> Counter variable used for automatically re-engaging Vortex armor's stealth with Vortex Booster. </summary>
-        public int vortexBoosterStealthDelay = 0;
         /// <summary> Makes Flesh Knuckles and its upgrades increase the player's max health. </summary>
         public bool fleshKnuckles = false;
         public bool ironBoots = false;
@@ -3380,7 +3378,6 @@ namespace CalamityMod.CalPlayer
             persecutedEnchantSummonTimer = 0;
             momentumCapacitorTime = 0;
             momentumCapacitorBoost = 0f;
-            vortexBoosterStealthDelay = 0;
             LungingDown = false;
 
             chaliceBleedoutBuffer = 0D;
@@ -4468,6 +4465,7 @@ namespace CalamityMod.CalPlayer
         }
         #endregion
 
+        #region OnExtraJumpStarted
         public override void OnExtraJumpStarted(ExtraJump jump, ref bool playSound)
         {
             if (rainSet && Player.whoAmI == Main.myPlayer)
@@ -4475,6 +4473,7 @@ namespace CalamityMod.CalPlayer
                 RainArmorSetChange.SpawnRainArmorJump(Player);
             }
         }
+        #endregion
 
         #region PreUpdateMovement
         public override void PreUpdateMovement()

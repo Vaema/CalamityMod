@@ -51,10 +51,13 @@ public abstract class BaseRenderer : ModType
 
     public sealed override void SetStaticDefaults()
     {
-        Main.QueueMainThreadAction(() =>
+        if (!Main.dedServ)
         {
-            MainTarget = ScreenspaceTargetPool.Shared.Rent(Main.instance.GraphicsDevice);
-        });
+            Main.QueueMainThreadAction(() =>
+            {
+                MainTarget = ScreenspaceTargetPool.Shared.Rent(Main.instance.GraphicsDevice);
+            });
+        }
     }
 
     /// <summary>

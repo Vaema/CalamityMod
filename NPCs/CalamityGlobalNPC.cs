@@ -12,7 +12,6 @@ using CalamityMod.DataStructures;
 using CalamityMod.Dusts;
 using CalamityMod.Events;
 using CalamityMod.Graphics.Metaballs;
-using CalamityMod.Graphics.Renderers.CalamityRenderers;
 using CalamityMod.Items.Accessories;
 using CalamityMod.Items.Accessories.Vanity;
 using CalamityMod.Items.Armor.PlagueReaper;
@@ -1271,111 +1270,149 @@ namespace CalamityMod.NPCs
         #region Revengeance and Death Mode Stat Changes
         private void RevDeathStatChanges(NPC npc, Mod mod)
         {
+            // Health changes (disabled in Boss Rush)
+            if (!BossRushEvent.BossRushActive)
+            {
+                switch (npc.type)
+                {
+                    case NPCID.KingSlime:
+                        npc.lifeMax = (int)Math.Round(npc.lifeMax * 1.5);
+                        break;
+                    case NPCID.EyeofCthulhu:
+                        npc.lifeMax = (int)Math.Round(npc.lifeMax * 1.5);
+                        break;
+                    case NPCID.ServantofCthulhu:
+                        npc.lifeMax *= 4;
+                        break;
+                    case NPCID.BrainofCthulhu:
+                        npc.lifeMax = (int)Math.Round(npc.lifeMax * 1.75);
+                        break;
+                    case NPCID.Creeper:
+                        npc.lifeMax = (int)Math.Round(npc.lifeMax * 1.1);
+                        break;
+                    case NPCID.QueenBee:
+                        npc.lifeMax = (int)Math.Round(npc.lifeMax * 1.8);
+                        break;
+                    case NPCID.Bee:
+                    case NPCID.BeeSmall:
+                        if (CalamityPlayer.areThereAnyDamnBosses)
+                            npc.lifeMax = (int)Math.Round(npc.lifeMax * 1.5);
+                        break;
+                    case NPCID.Deerclops:
+                        npc.lifeMax = (int)Math.Round(npc.lifeMax * 1.4);
+                        break;
+                    case NPCID.SkeletronHand:
+                        npc.lifeMax = (int)Math.Round(npc.lifeMax * (CalamityWorld.death ? 0.5 : 0.75));
+                        break;
+                    case NPCID.WallofFlesh:
+                    case NPCID.WallofFleshEye:
+                        npc.lifeMax *= 2;
+                        break;
+                    case NPCID.QueenSlimeBoss:
+                        npc.lifeMax = (int)Math.Round(npc.lifeMax * 1.8);
+                        break;
+                    case NPCID.Retinazer:
+                        npc.lifeMax = (int)Math.Round(npc.lifeMax * 1.4);
+                        break;
+                    case NPCID.Spazmatism:
+                        npc.lifeMax = (int)Math.Round(npc.lifeMax * 1.3);
+                        break;
+                    case NPCID.Probe:
+                        if (CalamityWorld.death)
+                            npc.lifeMax *= 2;
+                        break;
+                    case NPCID.SkeletronPrime:
+                        npc.lifeMax = (int)Math.Round(npc.lifeMax * 1.2);
+                        break;
+                    case NPCID.PrimeCannon:
+                    case NPCID.PrimeSaw:
+                    case NPCID.PrimeVice:
+                    case NPCID.PrimeLaser:
+                        npc.lifeMax = (int)Math.Round(npc.lifeMax * 0.65);
+                        break;
+                    case NPCID.Plantera:
+                        npc.lifeMax = (int)Math.Round(npc.lifeMax * 2.85);
+                        break;
+                    case NPCID.PlanterasTentacle:
+                        npc.lifeMax = (int)Math.Round(npc.lifeMax * 0.5);
+                        break;
+                    case NPCID.Golem:
+                        npc.lifeMax = (int)Math.Round(npc.lifeMax * 3.2);
+                        break;
+                    case NPCID.GolemHead:
+                        npc.lifeMax = (int)Math.Round(npc.lifeMax * 1.28);
+                        break;
+                    case NPCID.GolemFistLeft:
+                    case NPCID.GolemFistRight:
+                        npc.lifeMax = (int)Math.Round(npc.lifeMax * 0.75);
+                        break;
+                    case NPCID.DukeFishron:
+                        npc.lifeMax = (int)Math.Round(npc.lifeMax * 2.3);
+                        break;
+                    case NPCID.Sharkron:
+                    case NPCID.Sharkron2:
+                        npc.lifeMax *= 5;
+                        break;
+                    case NPCID.HallowBoss:
+                        npc.lifeMax = (int)Math.Round(npc.lifeMax * 1.7);
+                        break;
+                    case NPCID.CultistBoss:
+                        npc.lifeMax *= 3;
+                        break;
+                    case NPCID.AncientCultistSquidhead:
+                        npc.lifeMax = (int)Math.Round(npc.lifeMax * 1.8);
+                        break;
+                    case NPCID.MoonLordCore:
+                        npc.lifeMax = (int)Math.Round(npc.lifeMax * 2.2);
+                        break;
+                    case NPCID.MoonLordHand:
+                    case NPCID.MoonLordHead:
+                    case NPCID.MoonLordLeechBlob:
+                        npc.lifeMax = (int)Math.Round(npc.lifeMax * 1.2);
+                        break;
+                }
+
+                if (npc.type >= NPCID.CultistDragonHead && npc.type <= NPCID.CultistDragonTail)
+                {
+                    npc.lifeMax = (int)Math.Round(npc.lifeMax * 2.4);
+                }
+                else if (CalamityNPCTypeSets.Destroyer.Contains(npc.type))
+                {
+                    npc.lifeMax = (int)Math.Round(npc.lifeMax * 1.25);
+                }
+                else if (CalamityNPCTypeSets.EaterOfWorlds.Contains(npc.type))
+                {
+                    npc.lifeMax = (int)Math.Round(npc.lifeMax * 1.4);
+                }
+            }
+
+            // Other stat changes
             switch (npc.type)
             {
                 case NPCID.KingSlime:
                     npc.scale = CalamityWorld.death ? (Main.getGoodWorld ? 6f : 2.5f) : (Main.getGoodWorld ? 3f : 1.5f);
-                    npc.lifeMax = (int)Math.Round(npc.lifeMax * 1.5);
-                    break;
-                case NPCID.EyeofCthulhu:
-                    npc.lifeMax = (int)Math.Round(npc.lifeMax * 1.5);
-                    break;
-                case NPCID.ServantofCthulhu:
-                    npc.lifeMax *= 4;
-                    break;
-                case NPCID.BrainofCthulhu:
-                    npc.lifeMax = (int)Math.Round(npc.lifeMax * 1.75);
-                    break;
-                case NPCID.Creeper:
-                    npc.lifeMax = (int)Math.Round(npc.lifeMax * 1.1);
                     break;
                 case NPCID.QueenBee:
-                    npc.lifeMax = (int)Math.Round(npc.lifeMax * 1.8);
                     npc.defense = 14;
                     npc.defDefense = npc.defense;
                     break;
                 case NPCID.Bee:
                 case NPCID.BeeSmall:
                     if (CalamityPlayer.areThereAnyDamnBosses)
-                    {
-                        npc.lifeMax = (int)Math.Round(npc.lifeMax * 1.5);
                         npc.scale *= 1.25f;
-                    }
-                    break;
-                case NPCID.Deerclops:
-                    npc.lifeMax = (int)Math.Round(npc.lifeMax * 1.4);
-                    break;
-                case NPCID.SkeletronHand:
-                    npc.lifeMax = (int)Math.Round(npc.lifeMax * (CalamityWorld.death ? 0.5 : 0.75));
-                    break;
-                case NPCID.WallofFlesh:
-                case NPCID.WallofFleshEye:
-                    npc.lifeMax *= 2;
-                    break;
-                case NPCID.QueenSlimeBoss:
-                    npc.lifeMax = (int)Math.Round(npc.lifeMax * 1.8);
-                    break;
-                case NPCID.Retinazer:
-                    npc.lifeMax = (int)Math.Round(npc.lifeMax * 1.4);
-                    break;
-                case NPCID.Spazmatism:
-                    npc.lifeMax = (int)Math.Round(npc.lifeMax * 1.3);
                     break;
                 case NPCID.Probe:
-                    if (CalamityWorld.death)
-                        npc.lifeMax *= 2;
                     npc.scale *= Main.zenithWorld ? 2f : 1.2f;
-                    break;
-                case NPCID.SkeletronPrime:
-                    npc.lifeMax = (int)Math.Round(npc.lifeMax * 1.2);
                     break;
                 case NPCID.PrimeCannon:
                 case NPCID.PrimeSaw:
                 case NPCID.PrimeVice:
                 case NPCID.PrimeLaser:
-                    npc.lifeMax = (int)Math.Round(npc.lifeMax * 0.65);
                     npc.scale *= 1.15f;
-                    break;
-                case NPCID.Plantera:
-                    npc.lifeMax = (int)Math.Round(npc.lifeMax * 2.85);
-                    break;
-                case NPCID.PlanterasTentacle:
-                    npc.lifeMax = (int)Math.Round(npc.lifeMax * 0.5);
-                    break;
-                case NPCID.Golem:
-                    npc.lifeMax = (int)Math.Round(npc.lifeMax * 3.2);
-                    break;
-                case NPCID.GolemHead:
-                    npc.lifeMax = (int)Math.Round(npc.lifeMax * 1.28);
                     break;
                 case NPCID.GolemFistLeft:
                 case NPCID.GolemFistRight:
-                    npc.lifeMax = (int)Math.Round(npc.lifeMax * 0.75);
                     npc.scale *= 1.15f;
-                    break;
-                case NPCID.DukeFishron:
-                    npc.lifeMax = (int)Math.Round(npc.lifeMax * 2.3);
-                    break;
-                case NPCID.Sharkron:
-                case NPCID.Sharkron2:
-                    npc.lifeMax *= 5;
-                    break;
-                case NPCID.HallowBoss:
-                    npc.lifeMax = (int)Math.Round(npc.lifeMax * 1.7);
-                    break;
-                case NPCID.CultistBoss:
-                    npc.lifeMax *= 3;
-                    break;
-                case NPCID.AncientCultistSquidhead:
-                    npc.lifeMax = (int)Math.Round(npc.lifeMax * 1.8);
-                    break;
-                case NPCID.MoonLordCore:
-                    npc.lifeMax = (int)Math.Round(npc.lifeMax * 2.2);
-                    break;
-                case NPCID.MoonLordHand:
-                case NPCID.MoonLordHead:
-                case NPCID.MoonLordLeechBlob:
-                    npc.lifeMax = (int)Math.Round(npc.lifeMax * 1.2);
                     break;
                 case NPCID.Mothron:
                     npc.scale *= 1.25f;
@@ -1392,18 +1429,12 @@ namespace CalamityMod.NPCs
                     break;
             }
 
-            if (npc.type >= NPCID.CultistDragonHead && npc.type <= NPCID.CultistDragonTail)
+            if (CalamityNPCTypeSets.Destroyer.Contains(npc.type))
             {
-                npc.lifeMax = (int)Math.Round(npc.lifeMax * 2.4);
-            }
-            else if (CalamityNPCTypeSets.Destroyer.Contains(npc.type))
-            {
-                npc.lifeMax = (int)Math.Round(npc.lifeMax * 1.25);
                 npc.scale *= Main.zenithWorld ? 2f : 1.2f;
             }
             else if (CalamityNPCTypeSets.EaterOfWorlds.Contains(npc.type))
             {
-                npc.lifeMax = (int)Math.Round(npc.lifeMax * 1.4);
                 if (CalamityWorld.death)
                     npc.scale *= 1.1f;
             }
@@ -5380,10 +5411,6 @@ namespace CalamityMod.NPCs
                 }
                 else
                     ManaBurnFireDrawer = null;
-
-                // Only draw the NPC if told to by the miracle blight drawer.
-                if (MiracleBlightRenderer.ValidToDraw(npc))
-                    return MiracleBlightRenderer.ActuallyDoPreDraw;
             }
 
             if (Main.zenithWorld)

@@ -7,8 +7,9 @@ namespace CalamityMod.UI.DialogueDisplay.DisplayEffects
 {
     public class BossText : DisplayEffect
     {
-        Vector2 lastPosition = Vector2.Zero;
         public override bool FadeWhenTooFar => false;
+
+        public override bool DespawnWithAttachedNPC => false;
 
         public override Vector2 TextOffsetFromStart(Vector2 startPos, Vector2 textSize)
         {

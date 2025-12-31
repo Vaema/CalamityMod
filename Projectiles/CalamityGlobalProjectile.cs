@@ -4547,8 +4547,8 @@ namespace CalamityMod.Projectiles
             }
 
             // Stardust Wings buff the Stardust Guardian's damage
-            if (player.wingsLogic == (int)VanillaWingID.WingsStardust && projectile.type == ProjectileID.StardustGuardian)
-                modifiers.SourceDamage *= 2f;
+            if (player.wingsLogic == (int)VanillaWingID.WingsStardust && player.wingTime > 0f && projectile.type == ProjectileID.StardustGuardian)
+                modifiers.SourceDamage *= MathF.Max(1f, MathHelper.Lerp(4f, 1f, player.wingTime / (float)player.wingTimeMax));
 
             // If applicable, use ricoshot bonus damage
             if (totalRicoshotDamageBonus > 0f)

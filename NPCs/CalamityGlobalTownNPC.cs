@@ -895,7 +895,7 @@ namespace CalamityMod.NPCs
         #region NPC Chat
         public override void GetChat(NPC npc, ref string chat)
         {
-            int permadong = NPC.FindFirstNPC(NPCType<Archmage>());
+            int permafrost = NPC.FindFirstNPC(NPCType<Archmage>());
             int seahorse = NPC.FindFirstNPC(NPCType<SeaKing>());
             int thief = NPC.FindFirstNPC(NPCType<Bandit>());
             int angelstatue = NPC.FindFirstNPC(NPCID.Merchant);
@@ -959,8 +959,8 @@ namespace CalamityMod.NPCs
                     break;
 
                 case NPCID.DyeTrader:
-                    if (Main.rand.NextBool(5) && permadong != -1)
-                        chat = CalamityUtils.GetText("Vanilla.DyeTraderChat.Archmage").Format(Main.npc[permadong].GivenName);
+                    if (Main.rand.NextBool(5) && permafrost != -1)
+                        chat = CalamityUtils.GetText("Vanilla.DyeTraderChat.Archmage").Format(Main.npc[permafrost].GivenName);
                     else if (Main.rand.NextBool(5))
                         chat = CalamityUtils.GetTextValue("Vanilla.DyeTraderChat.Normal");
                     break;
@@ -1010,8 +1010,8 @@ namespace CalamityMod.NPCs
                         chat = CalamityUtils.GetTextValue("Vanilla.PainterChat.Crimson");
                     if (Main.rand.NextBool(4) && Main.LocalPlayer.ZoneSnow)
                     {
-                        if (Main.rand.NextBool() && permadong != -1)
-                            chat = CalamityUtils.GetText("Vanilla.PainterChat.Archmage").Format(Main.npc[permadong].GivenName);
+                        if (Main.rand.NextBool() && permafrost != -1)
+                            chat = CalamityUtils.GetText("Vanilla.PainterChat.Archmage").Format(Main.npc[permafrost].GivenName);
                         else
                             chat = CalamityUtils.GetTextValue("Vanilla.PainterChat.Tundra");
                     }
@@ -1347,6 +1347,7 @@ namespace CalamityMod.NPCs
                 .InsertAfter(ItemID.MusicBoxCredits, interlude3Box.Type, CalamityConditions.DownedYharon)
                 .InsertAfter(ItemID.MusicBoxCredits, eulogyBox.Type, CalamityConditions.DownedDevourerOfGods)
                 .AddWithCustomValue(ItemID.PrincessWeapon, Item.buyPrice(platinum: 1), Condition.Hardmode)
+                .AddWithCustomValue(ItemType<ForgivenessPainting>(), Item.buyPrice(gold: 15), Condition.NpcIsPresent(NPCType<BrimstoneWitch>()))
                 .Add<LanternCenter>();
             }
 
