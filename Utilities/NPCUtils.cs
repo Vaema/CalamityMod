@@ -414,9 +414,10 @@ namespace CalamityMod
                     continue;
 
                 // ForceSwitch targeting. If the same player from last time is iterated over, just ignore them.
+                // Player exclusion. If the player is to be excluded, do not consider them.
                 bool sameTargetAsLastTime = p.whoAmI == npc.oldTarget;
                 bool notSinglePlayer = Main.netMode != NetmodeID.SinglePlayer;
-                if (options.targetType == NPCTargetType.ForceSwitch && notSinglePlayer && sameTargetAsLastTime)
+                if (notSinglePlayer && (options.excludedPlayers.Contains(p.whoAmI) || (options.targetType == NPCTargetType.ForceSwitch && sameTargetAsLastTime)))
                     continue;
 
                 //
