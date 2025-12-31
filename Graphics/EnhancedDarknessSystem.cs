@@ -21,16 +21,18 @@ namespace CalamityMod.Graphics
             public Vector2 vectorScale = Vector2.One;
             public Vector2 center = Main.LocalPlayer.Center;
             public float rotation = 0;
+            public float opacity = 1;
 
             public LightSource() { }
 
-            public LightSource(Vector2? center = null, Asset<Texture2D> texture = null, float scale = 1, float rotation = 0, Vector2? vectorScale = null)
+            public LightSource(Vector2? center = null, Asset<Texture2D> texture = null, float scale = 1, float rotation = 0, Vector2? vectorScale = null, float opacity = 1)
             {
                 this.texture = texture ?? ModContent.Request<Texture2D>("CalamityMod/Particles/BloomCircle");
                 this.scale = scale;
                 this.vectorScale = vectorScale ?? Vector2.One;
                 this.center = center ?? Main.LocalPlayer.Center;
                 this.rotation = rotation;
+                this.opacity = opacity;
             }
         }
 
@@ -66,7 +68,7 @@ namespace CalamityMod.Graphics
                 Main.spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.Additive, SamplerState.PointClamp, DepthStencilState.Default, Main.Rasterizer, null, Matrix.Identity);
                 foreach (var item in lights)
                 {
-                    Main.spriteBatch.Draw(item.texture.Value, (item.center - Main.screenPosition) * 0.5f, null, Color.White, item.rotation, item.texture.Size() * 0.5f, item.vectorScale * item.scale * 0.5f, SpriteEffects.None, 0);
+                    Main.spriteBatch.Draw(item.texture.Value, (item.center - Main.screenPosition) * 0.5f, null, Color.White * item.opacity, item.rotation, item.texture.Size() * 0.5f, item.vectorScale * item.scale * 0.5f, SpriteEffects.None, 0);
                 }
                 Main.spriteBatch.End();
             }

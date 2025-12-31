@@ -55,6 +55,7 @@ using CalamityMod.Items.Weapons.Summon;
 using CalamityMod.NPCs;
 using CalamityMod.NPCs.ProfanedGuardians;
 using CalamityMod.NPCs.Ravager;
+using CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses;
 using CalamityMod.Particles;
 using CalamityMod.Projectiles.BaseProjectiles;
 using CalamityMod.Projectiles.Boss;
@@ -745,7 +746,13 @@ namespace CalamityMod.CalPlayer
         public float abyssDarkness = 0f;
         public float abyssPlayerGlowMultiplier = 1f;
         public float abyssFlashlightWidthMultiplier = 1f;
+
+        #endregion
+
+        #region Light System
         public float darknessIntensity = 0;
+
+        public Vector2? lastDeerclopsPosition;
         #endregion
 
         #region Permanent Buff
@@ -2922,10 +2929,10 @@ namespace CalamityMod.CalPlayer
             abyssDarkness = 0;
             abyssPlayerGlowMultiplier = 1;
             abyssFlashlightWidthMultiplier = 1;
-            darknessIntensity = 0;
+            darknessIntensity = MathHelper.Max(darknessIntensity-0.05f,0);
             #endregion
 
-            EnchantHeldItemEffects(Player, Player.Calamity(), Player.HeldItem);
+                EnchantHeldItemEffects(Player, Player.Calamity(), Player.HeldItem);
         }
         #endregion
 
@@ -4950,7 +4957,27 @@ namespace CalamityMod.CalPlayer
                 EnhancedDarknessSystem.lights.Add(new(center: Player.Center + Player.DirectionTo(mouseworld) * 750f, rotation: Player.DirectionTo(mouseworld).ToRotation() - MathHelper.PiOver2, vectorScale: new Vector2(0.75f * abyssFlashlightWidthMultiplier, 0.75f), texture: Request<Texture2D>("CalamityMod/Particles/BloomLineFade")));
             }
 
-    
+            if (lastDeerclopsPosition.HasValue)
+            {
+                //While deer is alive and the player is nearby, make it dark
+                if (Main.npc.Any(x => x.active && x.type == NPCID.Deerclops) && Player.DistanceSQ(lastDeerclopsPosition.Value) < 10240000) //3200^2, or 00 tiles
+                {
+                    darknessIntensity = MathHelper.Min(Main.LocalPlayer.Calamity().darknessIntensity + 0.06f, 1f); ;
+                }
+
+                //Add the main light circle for the arena
+                DeerclopsAI.ArenaTex ??= ModContent.Request<Texture2D>(DeerclopsAI.ArenaTexPath);
+                EnhancedDarknessSystem.lights.Add(new(lastDeerclopsPosition.Value, scale: DeerclopsAI.borderScale, texture: DeerclopsAI.ArenaTex));
+
+                //we draw light around the player when far away so they have some visibility, although very small. This is especially nice in multiplayer. we scale opacity with distance bc it looks better
+                EnhancedDarknessSystem.lights.Add(new EnhancedDarknessSystem.LightSource(scale: 0.75f, opacity: MathHelper.Clamp(Main.LocalPlayer.DistanceSQ(lastDeerclopsPosition.Value) / (409600 /*640^2*/), 0, 1)));
+
+                if (darknessIntensity == 0)
+                {
+                    lastDeerclopsPosition = null;
+                }
+            }
+
             //reset the stored Y value for red wine's increased vertical speed
             if (redWine && (redWineStoredY > 0.2f || redWineStoredY < -0.2f) && (Player.velocity.Y > 0.2f || Player.velocity.Y < -0.2f))
             {

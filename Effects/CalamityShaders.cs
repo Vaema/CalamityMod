@@ -204,7 +204,6 @@ namespace CalamityMod.Effects
         #region Amber's Shaders
         internal static Asset<Effect> PrimitiveClearShader;
         internal static Asset<Effect> HolyInfernoShader;
-        internal static Asset<Effect> DeerclopsShadowShader;
         #endregion
 
         #region YuH's Shaders
@@ -464,9 +463,6 @@ namespace CalamityMod.Effects
 
             HolyInfernoShader = LoadShader("ScreenShaders/HolyInfernoShader");
             RegisterMiscShader(HolyInfernoShader, "InfernoPass", "HolyInfernoShader");
-
-            DeerclopsShadowShader = LoadShader("ScreenShaders/DeerclopsShadowShader");
-            RegisterMiscShader(DeerclopsShadowShader, "ShadowPass", "DeerclopsShadowShader");
 
             #endregion
 
