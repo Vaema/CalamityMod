@@ -1175,9 +1175,11 @@ public class BrainOfCthulhuAI : VanillaAIOverride
                 options.aggroRatio = -1f;
                 options.finishThemOff = true;
 
-                var available = 
-
-                options.excludedPlayers = TargetsList;
+                var available = GetAllValidTargets(NPC.Center);
+                if (!available.Any(p => !TargetsList.Contains(p)))
+                    TargetsList.Clear();
+                else
+                    options.excludedPlayers = TargetsList;
                 options.maxSearchRange = DespawnRange;
                 NPC.CalamityTargeting(options);
 
@@ -1243,6 +1245,9 @@ public class BrainOfCthulhuAI : VanillaAIOverride
 
     private void CreeperSwings()
     {
+        var available = Main.netMode == NetmodeID.SinglePlayer ? [Main.LocalPlayer.whoAmI] : GetAllValidTargets(NPC.Center);
+        NPC.damage = 0;
+
         #region Movement
         Vector2 goalDir = Vector2.Zero;
         Vector2 fromTarget = NPC.Center - Target.Center;
@@ -1317,6 +1322,20 @@ public class BrainOfCthulhuAI : VanillaAIOverride
 
                     creeper1.PartnerIndex = second.whoAmI;
                     creeper2.PartnerIndex = first.whoAmI;
+
+                    if (Main.netMode != NetmodeID.SinglePlayer)
+                    {
+                        CalamityTargetingParameters options = CalamityTargetingParameters.BossDefaults;
+                        options.aggroRatio = -1f;
+                        options.finishThemOff = true;
+
+                        if (!available.Any(p => !TargetsList.Contains(p)))
+                            TargetsList.Clear();
+                        else
+                            options.excludedPlayers = TargetsList;
+                        options.maxSearchRange = DespawnRange;
+                        NPC.CalamityTargeting(options);
+                    }
                 }
 
                 NPC.netUpdate = true;
@@ -1325,6 +1344,7 @@ public class BrainOfCthulhuAI : VanillaAIOverride
             if (Time > delay + attackDur + attackDelay)
             {
                 Time = 0;
+                NPC.damage = NPC.defDamage;
                 AIState = BrainAIState.Phase1Idle;
                 AttackList.Clear();
             }
