@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using CalamityMod.DataStructures;
+using CalamityMod.Scenes.MusicScenes;
 using CalamityMod.World;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
@@ -341,7 +342,6 @@ public class BrainOfCthulhuSystem : ModSystem
 
         if (previousMusic == -1)
             previousMusic = MusicID.Crimson;
-
     }
 }
 
