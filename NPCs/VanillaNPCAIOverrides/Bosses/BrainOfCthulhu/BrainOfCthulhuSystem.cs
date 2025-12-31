@@ -190,32 +190,35 @@ public class BrainOfCthulhuSystem : ModSystem
 
     public override void OnWorldLoad()
     {
-        Main.QueueMainThreadAction(() =>
+        if (!Main.dedServ)
         {
-            var reference = ModContent.Request<Texture2D>("CalamityMod/NPCs/VanillaNPCAIOverrides/Bosses/BrainOfCthulhu/ReferenceBrainOfCthulhu", AssetRequestMode.ImmediateLoad).Value;
+            Main.QueueMainThreadAction(() =>
+            {
+                var reference = ModContent.Request<Texture2D>("CalamityMod/NPCs/VanillaNPCAIOverrides/Bosses/BrainOfCthulhu/ReferenceBrainOfCthulhu", AssetRequestMode.ImmediateLoad).Value;
 
-            Main.instance.LoadNPC(NPCID.BrainofCthulhu);
-            var usedTexture = TextureAssets.Npc[NPCID.BrainofCthulhu].Value;
+                Main.instance.LoadNPC(NPCID.BrainofCthulhu);
+                var usedTexture = TextureAssets.Npc[NPCID.BrainofCthulhu].Value;
 
-            int refSize = reference.Width * reference.Height;
-            var referenceArray = new Color[refSize];
-            reference.GetData(referenceArray);
+                int refSize = reference.Width * reference.Height;
+                var referenceArray = new Color[refSize];
+                reference.GetData(referenceArray);
 
-            int texSize = usedTexture.Width * usedTexture.Height;
-            var textureArray = new Color[texSize];
-            usedTexture.GetData(textureArray);
+                int texSize = usedTexture.Width * usedTexture.Height;
+                var textureArray = new Color[texSize];
+                usedTexture.GetData(textureArray);
 
-            bool match = true;
+                bool match = true;
 
-            for (var i = 0; i < referenceArray.Length; i++)
-                if (referenceArray[i] != textureArray[i])
-                {
-                    match = false;
-                    break;
-                }
+                for (var i = 0; i < referenceArray.Length; i++)
+                    if (referenceArray[i] != textureArray[i])
+                    {
+                        match = false;
+                        break;
+                    }
 
-            _vanillaBoCTexture = match;
-        });
+                _vanillaBoCTexture = match;
+            });
+        }
     }
 
     public override void PostUpdateNPCs()

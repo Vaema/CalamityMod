@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using CalamityMod.Buffs.DamageOverTime;
 using CalamityMod.DataStructures;
+using CalamityMod.Enums;
 using CalamityMod.Events;
 using CalamityMod.NPCs;
 using CalamityMod.Particles;
@@ -31,11 +32,11 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses.BrainOfCthulhu;
 
 public class BrainOfCthulhuAI : VanillaAIOverride
 {
-    private static SoundStyle StunnedHit = new("CalamityMod/Sounds/Custom/BrainOfCthulhu/BoC_Rev_Stun_Hit", 3);
-    private static SoundStyle ShieldDown = new("CalamityMod/Sounds/Custom/BrainOfCthulhu/BoC_Rev_Shield_Down");
-    private static SoundStyle ShieldUp = new("CalamityMod/Sounds/Custom/BrainOfCthulhu/BoC_Rev_Shield_Up");
-    private static SoundStyle IntroRoar = new("CalamityMod/Sounds/Custom/BrainOfCthulhu/BoC_Rev_Roar");
-    private static SoundStyle Roar = new("CalamityMod/Sounds/Custom/BrainOfCthulhu/BoC_Rev_Short_Roar");
+    private static SoundStyle StunnedHit = new SoundStyle("CalamityMod/Sounds/Custom/BrainOfCthulhu/BoC_Rev_Stun_Hit", 3);
+    private static SoundStyle ShieldDown = new SoundStyle("CalamityMod/Sounds/Custom/BrainOfCthulhu/BoC_Rev_Shield_Down") with { PauseBehavior = PauseBehavior.PauseWithGame };
+    private static SoundStyle ShieldUp = new SoundStyle("CalamityMod/Sounds/Custom/BrainOfCthulhu/BoC_Rev_Shield_Up") with { PauseBehavior = PauseBehavior.PauseWithGame };
+    private static SoundStyle IntroRoar = new SoundStyle("CalamityMod/Sounds/Custom/BrainOfCthulhu/BoC_Rev_Roar") with { PauseBehavior = PauseBehavior.PauseWithGame };
+    private static SoundStyle Roar = new SoundStyle("CalamityMod/Sounds/Custom/BrainOfCthulhu/BoC_Rev_Short_Roar") with { PauseBehavior =  PauseBehavior.PauseWithGame};
 
     internal static bool SummonedViaItem = false;
     internal List<Particle> BoCAfterImages = [];
@@ -1174,16 +1175,22 @@ public class BrainOfCthulhuAI : VanillaAIOverride
                 CalamityTargetingParameters options = CalamityTargetingParameters.BossDefaults;
                 options.aggroRatio = -1f;
                 options.finishThemOff = true;
+                options.maxSearchRange = DespawnRange;
+                //options.targetType = NPCTargetType.ForceSwitch;
 
                 var available = GetAllValidTargets(NPC.Center);
-                if (!available.Any(p => !TargetsList.Contains(p)))
-                    TargetsList.Clear();
-                else
+                if (available.Any(p => !TargetsList.Contains(p)))
                     options.excludedPlayers = TargetsList;
-                options.maxSearchRange = DespawnRange;
+                else
+                {
+                    TargetsList.Clear();
+                    options.excludedPlayers = [NPC.target];
+                }
+
                 NPC.CalamityTargeting(options);
 
                 TargetsList.Add(NPC.target);
+
                 NPC.netUpdate = true;
             }
             else if (wrappedCount == SwipeDuration)
@@ -1328,13 +1335,20 @@ public class BrainOfCthulhuAI : VanillaAIOverride
                         CalamityTargetingParameters options = CalamityTargetingParameters.BossDefaults;
                         options.aggroRatio = -1f;
                         options.finishThemOff = true;
-
-                        if (!available.Any(p => !TargetsList.Contains(p)))
-                            TargetsList.Clear();
-                        else
-                            options.excludedPlayers = TargetsList;
                         options.maxSearchRange = DespawnRange;
+                        //options.targetType = NPCTargetType.ForceSwitch;
+
+                        if (available.Any(p => !TargetsList.Contains(p)))
+                            options.excludedPlayers = TargetsList;
+                        else
+                        {
+                            TargetsList.Clear();
+                            options.excludedPlayers = [NPC.target];
+                        }
+
                         NPC.CalamityTargeting(options);
+
+                        TargetsList.Add(NPC.target);
                     }
                 }
 
@@ -1404,12 +1418,14 @@ public class BrainOfCthulhuAI : VanillaAIOverride
                         creepersToSpare--;
                         creepersDesired--;
 
+                        creeper.Time -= 30 * creepersSparedForTarget;
+
                         if (++creepersSparedForTarget >= creepersPerExtraPlayer)
                         {
                             extraTargets.RemoveAt(0);
                             creepersSparedForTarget = 0;
                         }
-
+                        AttackCounter++;
                     }
                     else
                         creeper.CachedValue2 = -1;
@@ -1452,18 +1468,18 @@ public class BrainOfCthulhuAI : VanillaAIOverride
         }
         else if (Time >= OrbitAttackInterval && Time < OrbitDuration && Time % OrbitAttackInterval == 0)
         {
-            List<NPC> creepers = Main.npc.Where(n => n.active && n.type == NPCID.Creeper).ToList();
-            if (creepers.Count > 0)
+            List<NPC> mainOrbitMembers = Main.npc.Where(n => n.active && n.type == NPCID.Creeper && n.TryGetAIOverride<CreeperAI>(out var ai) && ai.CachedValue2 == -1).ToList();
+            if (mainOrbitMembers.Count > 0)
             {
-                int rand = Main.rand.Next(creepers.Count);
+                int rand = Main.rand.Next(mainOrbitMembers.Count);
                 for (int i = 0; i < OrbitAttackParticipantCount; i++)
                 {
-                    if (rand >= creepers.Count)
-                        rand -= creepers.Count;
-                    NPC creeper = creepers[rand];
+                    if (rand >= mainOrbitMembers.Count)
+                        rand -= mainOrbitMembers.Count;
+                    NPC creeper = mainOrbitMembers[rand];
                     AttackList.Add((byte)creeper.whoAmI);
                     //creeper.AIOverride<CreeperAI>().Time = 0;
-                    rand += (int)Math.Round(creepers.Count / (float)OrbitAttackParticipantCount);
+                    rand += (int)Math.Round(mainOrbitMembers.Count / (float)OrbitAttackParticipantCount);
                 }
 
                 NPC.netUpdate = true;
