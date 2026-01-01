@@ -1137,6 +1137,8 @@ public class BrainOfCthulhuAI : VanillaAIOverride
             else
                 AttackFlag = true;
 
+            NPC.damage = 0;
+
             NPC.netUpdate = true;
             AttackList.Clear();
             TargetsSet.Clear();
@@ -1219,6 +1221,7 @@ public class BrainOfCthulhuAI : VanillaAIOverride
                 Time = 0;
                 AIState = BrainAIState.Phase1Idle;
                 NPC.netUpdate = true;
+                NPC.damage = NPC.defDamage;
                 AttackList.Clear();
             }
         }
@@ -1352,6 +1355,8 @@ public class BrainOfCthulhuAI : VanillaAIOverride
             AttackPosition = Target.Center;
             NPC.netUpdate = true;
 
+            NPC.damage = 0;
+
             if (Main.netMode != NetmodeID.SinglePlayer)
             {
                 List<int> extraTargets = GetAllValidTargets(NPC.Center);
@@ -1429,6 +1434,7 @@ public class BrainOfCthulhuAI : VanillaAIOverride
             Time = -1;
             AIState = BrainAIState.Phase1Idle;
             AttackList.Clear();
+            NPC.damage = NPC.defDamage;
             foreach (NPC creep in Main.ActiveNPCs)
             {
                 if (creep.type == NPCID.Creeper)
@@ -1724,8 +1730,8 @@ public class BrainOfCthulhuAI : VanillaAIOverride
                 NPC.netUpdate = true;
             }
 
-            //Make sure we have an accurate view on who the furthest players are by updating every 1/2 second
-            if(Main.netMode != NetmodeID.SinglePlayer && Time % 30 == 0)
+            //Make sure we have an accurate view on who the furthest players
+            if(Main.netMode != NetmodeID.SinglePlayer && Time % 5 == 0)
             {
                 var targets = GetAllValidTargets(NPC.Center);
                 Player furthestLeft = null;
@@ -1794,6 +1800,8 @@ public class BrainOfCthulhuAI : VanillaAIOverride
             NPC.rotation = (float)Math.Sin(Time / 8f) * MathHelper.Pi / 8f;
             BoCDrawOffset = Vector2.Zero;
 
+            NPC.damage = 0;
+
             if (Time > BloodshotRate) //Doesnt fire first bloodshot
             {
                 if (Time % IchorRate == 0)
@@ -1844,6 +1852,8 @@ public class BrainOfCthulhuAI : VanillaAIOverride
         else
         {
             NPC.rotation *= 0.9f;
+
+            NPC.damage = NPC.defDamage;
 
             if (endTime == 0)
                 SoundEngine.PlaySound(Roar, NPC.Center);
