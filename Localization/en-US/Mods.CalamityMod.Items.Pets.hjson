@@ -26,6 +26,15 @@ BrimstoneJewel: {
 		'''
 }
 
+BurrowerController: {
+	DisplayName: Burrower Beacon
+	Tooltip:
+        '''
+        Requests a friendly burrower to follow you around and illuminate ores
+        Counts as a light pet
+        '''
+}
+
 CharredRelic: {
 	DisplayName: Charred Relic
 	Tooltip: Contains a small amount of brimstone

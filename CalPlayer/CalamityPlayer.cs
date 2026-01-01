@@ -546,6 +546,7 @@ namespace CalamityMod.CalPlayer
         #endregion
 
         #region Pet
+        public bool burrowerPet = false;
         public bool thirdSage = false;
         public bool perfmini = false;
         public bool akato = false;
@@ -2220,6 +2221,7 @@ namespace CalamityMod.CalPlayer
             perfmini = false;
             akato = false;
             yharonPet = false;
+            burrowerPet = false;
             leviPet = false;
             plaguebringerBab = false;
             rotomPet = false;
