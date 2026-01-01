@@ -54,10 +54,7 @@ public class BrainIllusion : ModNPC, ILocalizedModType
         NPC.npcSlots = 0f;
         NPC.netAlways = true;
         Music = MusicID.Boss3;
-    }
 
-    public override void OnSpawn(IEntitySource source)
-    {
         TeleportDuration = AttackValue;
         AttackValue = 0;
         TeleportTime = Time;
@@ -169,11 +166,13 @@ public class BrainIllusion : ModNPC, ILocalizedModType
     public override bool? CanBeHitByItem(Player player, Item item) => false;
     public override bool? CanBeHitByProjectile(Projectile projectile) => false;
 
+    public override bool CanHitPlayer(Player target, ref int cooldownSlot) => target.whoAmI == NPC.target;
+
     public override bool PreDraw(SpriteBatch spriteBatch, Vector2 screenPos, Color drawColor)
     {
         Vector2 drawPos = NPC.Center + (Vector2.UnitY * 16) - Main.screenPosition;
         Vector2 scale = Vector2.One;
-        float opacityMult = Main.LocalPlayer.whoAmI == NPC.target ? 1f : 0.5f;
+        float opacityMult = Main.LocalPlayer.whoAmI == NPC.target ? 1f : 0.25f;
 
         if (TeleportTime != 0)
         {
