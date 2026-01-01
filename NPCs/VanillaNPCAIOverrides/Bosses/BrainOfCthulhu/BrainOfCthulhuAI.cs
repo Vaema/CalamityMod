@@ -1635,6 +1635,8 @@ public class BrainOfCthulhuAI : VanillaAIOverride
 
             if (Time == ChaseTime)
             {
+                if (Main.netMode != NetmodeID.SinglePlayer)
+                    SelectNewTarget();
                 Vector2 direction = Target.velocity.SafeNormalize(Vector2.UnitX * Target.direction).RotatedBy(Main.rand.NextFloat(-MathHelper.Pi / 3f, MathHelper.Pi / 3f));
                 AttackPosition = Target.Center + (direction * DefaultTeleportDistance);
                 BoCAfterImages = [];
@@ -1679,8 +1681,6 @@ public class BrainOfCthulhuAI : VanillaAIOverride
             {
                 Vector2 start = NPC.Center;
                 NPC.Center = endPoint;
-                if (Main.netMode != NetmodeID.SinglePlayer)
-                    SelectNewTarget();
                 DisableMultiplayerSmoothing = true;
                 AttackFlag = true;
                 NPC.netUpdate = true;
