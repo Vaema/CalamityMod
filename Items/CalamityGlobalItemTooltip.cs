@@ -352,7 +352,7 @@ namespace CalamityMod.Items
         #region Rarity Coloration
         private static void ApplyRarityColor(Item item, TooltipLine nameLine)
         {
-            if (item.type == ModContent.ItemType<HeartoftheElements>() || item.type == ModContent.ItemType<TheCommunity>())
+            if (item.type == ModContent.ItemType<TheCommunity>())
                 nameLine.OverrideColor = new Color(Main.DiscoR, Main.DiscoG, Main.DiscoB);
 
             // Developer items
