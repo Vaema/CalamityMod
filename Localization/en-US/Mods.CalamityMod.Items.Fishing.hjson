@@ -175,7 +175,7 @@ RustedJingleBell: {
 		'''
 		Summons a baby ghost bell to light the way for you
 		Provides a moderate amount of light while underwater
-        {$Common.AbyssLightLevel}
+		{$Common.AbyssLightLevel}
 		'''
 }
 

@@ -163,7 +163,7 @@ StrangeOrb: {
 		'''
 		Summons a miniature Ocean Spirit light pet
 		Provides a large amount of light while underwater
-        {$Common.AbyssLightLevel}
+		{$Common.AbyssLightLevel}
 		'''
 }
 
