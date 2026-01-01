@@ -35,7 +35,7 @@ namespace CalamityMod.Projectiles.Boss
 
             if (Projectile.timeLeft % 3 == 0)
             {
-                FlameExplosion blast = new(Projectile.Center, Vector2.Zero, Color.Orange, Vector2.One, Main.rand.NextFloat(MathHelper.TwoPi), 0.1f, 0.17f, 15, 0.7f);
+                FlameExplosion blast = new(Projectile.Center, Vector2.Zero, Color.Orange, Vector2.One, Main.rand.NextFloat(MathHelper.TwoPi), 0.1f, 0.25f, 15, 0.7f);
                 GeneralParticleHandler.SpawnParticle(blast);
             }
 
