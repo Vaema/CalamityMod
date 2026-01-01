@@ -69,7 +69,8 @@ public class CreeperAI : VanillaAIOverride
 
     public override void SetDefaults(Mod mod)
     {
-        NPC.damage = NPC.defDamage = 36; // 64 (1.8x expert scaling)
+        NPC.defDamage = 36; // 64 (1.8x expert scaling)
+        NPC.damage = 0;
     }
 
     public override bool AI(Mod mod)
