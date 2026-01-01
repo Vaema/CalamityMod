@@ -2630,6 +2630,8 @@ public class BrainOfCthulhuAI : VanillaAIOverride
         else
             NPC.velocity *= 0.95f;
 
+        NPC.damage = 0;
+
         NPC.rotation = MathHelper.Pi / 24f * NPC.oldVelocity.X;
         TeleportTime *= 0.6f;
         if (TeleportTime < 0.005f)
