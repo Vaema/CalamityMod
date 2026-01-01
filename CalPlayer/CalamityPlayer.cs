@@ -1508,7 +1508,7 @@ namespace CalamityMod.CalPlayer
         public bool hCrab = false;
         /// <summary> Heart of the Elements. </summary>
         public bool allElementals = false;
-        /// <summary> Hearts of the Elements; however, the minions will not attack. </summary>
+        /// <summary> Heart of the Elements; however, the minions will not attack. </summary>
         public bool allElementalsVanity = false;
         /// <summary> Silva armor's Silva Crystal. </summary>
         public bool sCrystal = false;
