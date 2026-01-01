@@ -178,7 +178,8 @@ namespace CalamityMod.Projectiles.Pets
             }
             else
             {
-                onScreen = Collision.CheckAABBvAABBCollision(Projectile.position, Projectile.Size, player.Center - new Vector2(990, 600), new Vector2(1980, 1200));
+                //Terraria forces the game view to never go above 1920x1200px, regardless of actual resolution. This code marks the "off screen box" to match that maximum size game viewport. (960x600 is half of 1920x1200)
+                onScreen = Collision.CheckAABBvAABBCollision(Projectile.position, Projectile.Size, player.Center - new Vector2(960, 600), new Vector2(1920, 1200));
             }
             bool noGravity = (!onScreen || Projectile.wet || Collision.SolidCollision(Projectile.position, Projectile.width, Projectile.height, true));
             switch (ActiveAttackState)
