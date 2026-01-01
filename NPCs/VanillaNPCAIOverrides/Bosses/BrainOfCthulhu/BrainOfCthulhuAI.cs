@@ -236,16 +236,15 @@ public class BrainOfCthulhuAI : VanillaAIOverride
     internal BrainAIState PreviousAttack = BrainAIState.Phase1Idle;
     internal ref float Time => ref NPC.ai[1];
     internal ref float DespawnTime => ref NPC.ai[2];
-    internal ref float AnimationTime => ref NPC.ai[3];
+    internal ref float CachedRatio => ref NPC.ai[3];
     internal float TeleportTime = 0;
     internal float TeleportDuration = 0;
     internal float SpawnTime = 0;
     internal int SpawnDelay = 0;
     internal bool OnSecondCreeperPhase = false;
 
-    internal float CachedRatio = 0f;
     private bool isNegative = false;
-    internal int AttackSign { get => isNegative ? -1 : 1; set => isNegative = value == -1 ? true : false; }
+    internal int AttackSign { get => isNegative ? -1 : 1; set => isNegative = value == -1; }
     internal float AttackRotation = 0;
     internal float AttackTime = 0;
     internal int AttackCounter = 0;
@@ -364,6 +363,15 @@ public class BrainOfCthulhuAI : VanillaAIOverride
         #region Despawn
         // Despawn check
         bool despawn = (Target.dead || !Target.ZoneCrimson) && !BossRushEvent.BossRushActive;
+        if(despawn)
+        {
+            var v = GetAllValidTargets(NPC.Center);
+            if(v.Count > 0)
+            {
+                despawn = false;
+                NPC.target = v[0];
+            }
+        }
 
         // Despawn
         if (despawn)
@@ -1721,25 +1729,28 @@ public class BrainOfCthulhuAI : VanillaAIOverride
         {
             if (Time == 0)
             {
-                AttackPosition = NPC.Center;
+                AttackPosition = Vector2.zeroVector;
                 if (NPC.Center.X < Target.Center.X)
                     AttackSign = -1;
                 else
                     AttackSign = 1;
 
+                CachedRatio = float.MaxValue;
+                AttackTime = float.MaxValue;
+
                 NPC.netUpdate = true;
             }
 
             //Make sure we have an accurate view on who the furthest players
-            if(Main.netMode != NetmodeID.SinglePlayer && Time % 5 == 0)
+            if (Main.netMode != NetmodeID.SinglePlayer && Time % 2 == 0)
             {
-                var targets = GetAllValidTargets(NPC.Center);
                 Player furthestLeft = null;
                 Player furthestRight = null;
                 Player highestUp = null;
-                foreach (int who in targets)
+                foreach (int who in GetAllValidTargets(NPC.Center))
                 {
                     Player p = Main.player[who];
+
                     if (furthestLeft == null || p.Center.X < furthestLeft.Center.X)
                         furthestLeft = p;
 
@@ -1753,7 +1764,7 @@ public class BrainOfCthulhuAI : VanillaAIOverride
                 AttackList.Clear();
                 AttackList.Add((byte)furthestLeft.whoAmI);
                 AttackList.Add((byte)furthestRight.whoAmI);
-                AttackList.Add((byte)furthestRight.whoAmI);
+                AttackList.Add((byte)highestUp.whoAmI);
             }
 
             float waveValue = Time * MathHelper.Pi / BloodshotRate;
@@ -1769,7 +1780,35 @@ public class BrainOfCthulhuAI : VanillaAIOverride
                 Vector2 hoverCenter = (furthestLeft.Center + furthestRight.Center) / 2f;
                 float xDist = furthestRight.Center.X - furthestLeft.Center.X;
                 float yDist = hoverCenter.Y - highestUp.Center.Y;
-                goalPos = hoverCenter + new Vector2((float)Math.Cos(waveValue) * (HoverDistance.X + xDist) * AttackSign, (float)(-0.5f * Math.Cos(2 * waveValue) + 0.5f) * -(HoverDistance.Y + yDist));
+
+                if (AttackPosition == Vector2.zeroVector)
+                    AttackPosition = hoverCenter;
+                else
+                    AttackPosition += (hoverCenter - AttackPosition) / 30f;
+
+                if (CachedRatio == float.MaxValue || Math.Abs(xDist - CachedRatio) < 0.01f)
+                    CachedRatio = xDist;
+                else
+                    CachedRatio += (xDist - CachedRatio) / 30f;
+
+                if (AttackTime == float.MaxValue || Math.Abs(yDist - AttackTime) < 0.01f)
+                    AttackTime = yDist;
+                    AttackTime += (yDist - AttackTime) / 30f;
+
+                CalamityUtils.BroadcastLocalizedText("Furthest Left Player: " + furthestLeft.name + ", Center: " + furthestLeft.Center);
+                CalamityUtils.BroadcastLocalizedText("Furthest Right Player: " + furthestRight.name + ", Center: " + furthestRight.Center);
+                CalamityUtils.BroadcastLocalizedText("Furthest Up Player: " + highestUp.name + ", Center: " + highestUp.Center);
+                CalamityUtils.BroadcastLocalizedText("-------------------------------------------------------");
+                CalamityUtils.BroadcastLocalizedText("Current Hover Center: " + AttackPosition + ", Goal Hover Center: " + hoverCenter);
+                CalamityUtils.BroadcastLocalizedText("Current xDist: " + CachedRatio + ", Goal xDist: " + xDist);
+                CalamityUtils.BroadcastLocalizedText("Current yDist: " + AttackTime + ", Goal yDist: " + yDist);
+                CalamityUtils.BroadcastLocalizedText("-------------------------------------------------------");
+
+                float xMag = (HoverDistance.X + CachedRatio);
+                float yMag = (HoverDistance.Y + AttackTime);
+                Vector2 destination = AttackPosition + new Vector2((float)Math.Cos(waveValue) * xMag * AttackSign, (float)(-0.5f * Math.Cos(2 * waveValue) + 0.5f) * -yMag);
+
+                goalPos = destination;
             }
 
             NPC.velocity = Vector2.Zero;
@@ -2743,8 +2782,6 @@ public class BrainOfCthulhuAI : VanillaAIOverride
             binaryWriter.Write(SpawnDelay);
         }
 
-        binaryWriter.Write(CachedRatio);
-
         binaryWriter.WriteFlags(OnSecondCreeperPhase, isNegative, AttackFlag);
 
         binaryWriter.Write(AttackRotation);
@@ -2776,8 +2813,6 @@ public class BrainOfCthulhuAI : VanillaAIOverride
             SpawnTime = binaryReader.ReadSingle();
             SpawnDelay = binaryReader.ReadInt32();
         }
-
-        CachedRatio = binaryReader.ReadSingle();
 
         binaryReader.ReadFlags(out OnSecondCreeperPhase, out isNegative, out AttackFlag);
 
@@ -2925,7 +2960,7 @@ public class BrainOfCthulhuAI : VanillaAIOverride
                 drawBrain = false;
 
                 falseBrains.Add(NPC);
-                falseBrains.Sort((a, b) =>
+                falseBrains.Sort((Comparison<NPC>)((a, b) =>
                 {
                     float aValue;
                     float bValue;
@@ -2941,7 +2976,7 @@ public class BrainOfCthulhuAI : VanillaAIOverride
                         bValue = b.AIOverride<BrainOfCthulhuAI>().CachedRatio;
 
                     return aValue.CompareTo(bValue);
-                });
+                }));
 
                 foreach (NPC n in falseBrains)
                 {
@@ -2974,7 +3009,7 @@ public class BrainOfCthulhuAI : VanillaAIOverride
         return validTargets;
     }
 
-    public static bool ValidateTarget(Player p, Vector2 brainPosition) => !p.dead && p.Center.DistanceSQ(brainPosition) <= DespawnRangeSQ;
+    public static bool ValidateTarget(Player p, Vector2 brainPosition) => !p.dead && p.ZoneCrimson && p.Center.DistanceSQ(brainPosition) <= DespawnRangeSQ;
 
     private void SelectNewTarget()
     {
