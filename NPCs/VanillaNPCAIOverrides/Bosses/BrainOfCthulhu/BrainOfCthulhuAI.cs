@@ -868,9 +868,7 @@ public class BrainOfCthulhuAI : VanillaAIOverride
                 }
             }
             else
-            {
                 BrainOfCthulhuSystem.ScreenBlurStrength = MathHelper.Lerp(0.5f, 0, CalamityUtils.CircOutEasing((Time - 30) / 30f, 1));
-            }
         }
         else
         {
@@ -879,7 +877,7 @@ public class BrainOfCthulhuAI : VanillaAIOverride
             {
                 if (Main.netMode != NetmodeID.SinglePlayer)
                 {
-                    NPC.target = GetAllValidTargets(NPC.Center)[Main.rand.Next(TargetsSet.Count)];
+                    SelectNewTarget();
                     NPC.netUpdate = true;
                 }
 
@@ -1746,9 +1744,10 @@ public class BrainOfCthulhuAI : VanillaAIOverride
                         highestUp = p;
                 }
 
-                AttackList[0] = (byte)furthestLeft.whoAmI;
-                AttackList[1] = (byte)furthestRight.whoAmI;
-                AttackList[2] = (byte)furthestRight.whoAmI;
+                AttackList.Clear();
+                AttackList.Add((byte)furthestLeft.whoAmI);
+                AttackList.Add((byte)furthestRight.whoAmI);
+                AttackList.Add((byte)furthestRight.whoAmI);
             }
 
             float waveValue = Time * MathHelper.Pi / BloodshotRate;
@@ -1809,7 +1808,7 @@ public class BrainOfCthulhuAI : VanillaAIOverride
                         Player furthestLeft = Main.player[AttackList[0]];
                         Player furthestRight = Main.player[AttackList[1]];
                         float xDist = furthestRight.Center.X - furthestLeft.Center.X;
-                        int projCount = (int)(xDist / 128);
+                        int projCount = 1 + (int)(xDist / 360);
 
                         for(int i = 0; i < projCount; i++)
                             Projectile.NewProjectile(NPC.GetSource_FromThis(), NPC.Center + NPC.velocity + Main.rand.NextVector2Circular(72, 72), new Vector2(Main.rand.NextFloat(-IchorSpread, IchorSpread), -IchorVelocity), ModContent.ProjectileType<IchorShower>(), IchorShotDamage, 0.5f);
@@ -2512,13 +2511,11 @@ public class BrainOfCthulhuAI : VanillaAIOverride
             {
                 if (Time == IllusionTrickTimeLimit)
                 {
-                    foreach (Player p in Main.ActivePlayers)
-                    {
-                        if (p.DistanceSQ(NPC.Center) > DespawnRangeSQ)
-                            continue;
+                    var targets = GetAllValidTargets(NPC.Center);
 
-                        AttackList.Add((byte)p.whoAmI);
-                    }
+                    AttackList.Clear();
+                    foreach (int p in targets)
+                        AttackList.Add((byte)p);
 
                     foreach (NPC n in Main.ActiveNPCs)
                     {
@@ -2539,6 +2536,8 @@ public class BrainOfCthulhuAI : VanillaAIOverride
                         PulseRing ring = new(NPC.Center, NPC.velocity * 0.5f, color, 0f, 1f + i * 0.5f, 24);
                         GeneralParticleHandler.SpawnParticle(ring);
                     }
+
+                    NPC.netUpdate = true;
                 }
                 else if (Time % 30 == 0)
                 {
@@ -2546,6 +2545,7 @@ public class BrainOfCthulhuAI : VanillaAIOverride
                     {
                         if (Main.netMode != NetmodeID.MultiplayerClient)
                             Projectile.NewProjectile(NPC.GetSource_FromThis(), NPC.Center, Vector2.Zero, ModContent.ProjectileType<TelekineticBlast>(), 0, 0f, -1, AttackList[0], 2f);
+
                         AttackList.RemoveAt(0);
                     }
                     else
