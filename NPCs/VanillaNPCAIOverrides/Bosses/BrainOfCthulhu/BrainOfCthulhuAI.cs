@@ -1254,8 +1254,21 @@ public class BrainOfCthulhuAI : VanillaAIOverride
         NPC.damage = 0;
 
         #region Movement
-        Vector2 goalDir = Vector2.Zero;
-        Vector2 fromTarget = NPC.Center - Target.Center;
+        Vector2 fromTarget;
+        if (Main.netMode == NetmodeID.SinglePlayer)
+            fromTarget = NPC.Center - Target.Center;          
+        else
+        {
+            Vector2 averagePlayerPos = Vector2.zeroVector;
+            List<int> targets = GetAllValidTargets(NPC.Center);
+            foreach (var p in targets)
+                averagePlayerPos += Main.player[p].Center;
+            averagePlayerPos /= targets.Count;
+
+            fromTarget = NPC.Center - averagePlayerPos;
+        }
+
+        Vector2 goalDir;
         if (Math.Abs(fromTarget.X) > Math.Abs(fromTarget.Y))
             goalDir = Vector2.UnitX * Math.Sign(fromTarget.X);
         else
