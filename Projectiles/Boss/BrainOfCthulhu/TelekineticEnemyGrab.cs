@@ -44,6 +44,8 @@ public class TelekineticEnemyGrab : ModProjectile, ILocalizedModType
         Projectile.timeLeft = 1200;
         Projectile.damage = 10;
         Projectile.hostile = true;
+        if(NPC.crimsonBoss != -1)
+            MyTarget = Main.npc[NPC.crimsonBoss].target;
     }
 
     public override void OnSpawn(IEntitySource source)

@@ -35,7 +35,7 @@ public class TelekineticBlast : ModProjectile, ILocalizedModType
     Player target => Main.player[(int)Projectile.ai[0]];
     float debuffMultiplier => Projectile.ai[1];
 
-    public override void OnSpawn(IEntitySource source)
+    public override void AI()
     {
         for (int i = 0; i < 6; i++)
         {
@@ -58,5 +58,6 @@ public class TelekineticBlast : ModProjectile, ILocalizedModType
         target.AddBuff(ModContent.BuffType<BurningBlood>(), timeToAdd);
 
         target.Calamity().adrenaline = 0;
+        Projectile.active = false;
     }
 }
