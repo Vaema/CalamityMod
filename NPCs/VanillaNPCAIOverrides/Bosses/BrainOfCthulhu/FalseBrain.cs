@@ -48,7 +48,7 @@ public class FalseBrain : ModNPC, ILocalizedModType
         NPC.localAI[0] = Main.rand.Next(7);
 
         if(BrainOfCthulhuSystem.IsBrainOfCthulhuTextureVanilla)
-            NPC.localAI[1] = 1 + Main.rand.NextFloat(-0.5f, 0.5f);
+            NPC.localAI[1] = 1 + Main.rand.NextFloat(-0.25f, 0.25f);
         else
             NPC.localAI[1] = 1 + (Main.rand.NextFloat(0.25f, 0.75f) * (Main.rand.NextBool() ? -1 : 1));
     }

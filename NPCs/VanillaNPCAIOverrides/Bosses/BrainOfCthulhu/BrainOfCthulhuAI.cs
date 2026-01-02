@@ -185,7 +185,7 @@ public class BrainOfCthulhuAI : VanillaAIOverride
     #region Illusion Dash
     internal static float IllusionDashTeleportDistance => 300f;
     internal static int IllusionDashTeleportDuration => 30;
-    internal static float IllusionDashCloseInDistance => 300f;
+    internal static float IllusionDashCloseInDistance => 280f;
     internal static float IllusionDashStartingSpinSpeed => 0.125f;
     internal static int IllusionDashSpinDuration => 100;
     internal static int IllusionDashFakeoutTeleportDuration => 16;
@@ -1883,9 +1883,9 @@ public class BrainOfCthulhuAI : VanillaAIOverride
                         if (CalamityWorld.death)
                         {
                             Vector2 initialDir = dir.RotatedBy(MathHelper.Pi / 6f);
-                            Projectile.NewProjectile(NPC.GetSource_FromThis(), NPC.Center, initialDir * BloodshotVelocity / 2f, ProjectileID.BloodNautilusShot, BloodShotDamage, 0.5f, ai0: dir.ToRotation() + MathHelper.TwoPi, ai1: initialDir.ToRotation());
+                            Projectile.NewProjectile(NPC.GetSource_FromThis(), NPC.Center, initialDir * BloodshotVelocity / 2.1f, ProjectileID.BloodNautilusShot, BloodShotDamage, 0.5f, ai0: dir.ToRotation() + MathHelper.TwoPi, ai1: initialDir.ToRotation());
                             initialDir = dir.RotatedBy(-MathHelper.Pi / 6f);
-                            Projectile.NewProjectile(NPC.GetSource_FromThis(), NPC.Center, initialDir * BloodshotVelocity / 2f, ProjectileID.BloodNautilusShot, BloodShotDamage, 0.5f, ai0: dir.ToRotation() + MathHelper.TwoPi, ai1: initialDir.ToRotation());
+                            Projectile.NewProjectile(NPC.GetSource_FromThis(), NPC.Center, initialDir * BloodshotVelocity / 2.1f, ProjectileID.BloodNautilusShot, BloodShotDamage, 0.5f, ai0: dir.ToRotation() + MathHelper.TwoPi, ai1: initialDir.ToRotation());
                         }
                     }
 
@@ -2345,7 +2345,7 @@ public class BrainOfCthulhuAI : VanillaAIOverride
                 BoCAfterImages = [];
                 NPC.Opacity = 1f;
 
-                GenericSparkle sparkle = new(NPC.Center, Vector2.Zero, Color.Yellow, Color.Orange, 2f, 12, needed: true);
+                GenericSparkle sparkle = new(NPC.Center, Vector2.Zero, Color.Yellow, Color.Orange, 2f, 16, needed: true);
                 GeneralParticleHandler.SpawnParticle(sparkle);
 
                 NPC.netUpdate = true;
@@ -2370,11 +2370,18 @@ public class BrainOfCthulhuAI : VanillaAIOverride
             }
             else if (startTime < 30 + IllusionDashSpinDuration + 30)
             {
-                float reelBackSpeedExponent = 2.6f;
-                float reelBackCompletion = Utils.GetLerpValue(0f, 30, startTime - 130, true);
-                float reelBackSpeed = MathHelper.Lerp(2.5f, 16f, MathF.Pow(reelBackCompletion, reelBackSpeedExponent));
-                Vector2 reelBackVelocity = (AttackRotation + MathHelper.Pi).ToRotationVector2() * -reelBackSpeed;
-                NPC.velocity = Vector2.Lerp(NPC.velocity, reelBackVelocity, 0.25f);
+                if (startTime < 30 + IllusionDashSpinDuration + 15)
+                {
+                    float reelBackSpeedExponent = 2.6f;
+                    float reelBackCompletion = Utils.GetLerpValue(0f, 30, startTime - 130, true);
+                    float reelBackSpeed = MathHelper.Lerp(2.5f, 16f, MathF.Pow(reelBackCompletion, reelBackSpeedExponent));
+                    Vector2 reelBackVelocity = (AttackRotation + MathHelper.Pi).ToRotationVector2() * -reelBackSpeed;
+                    NPC.velocity = Vector2.Lerp(NPC.velocity, reelBackVelocity, 0.25f);
+                }
+                else if (startTime == 30 + IllusionDashSpinDuration + 15)
+                    NPC.velocity = (AttackRotation + MathHelper.Pi).ToRotationVector2() * -32;
+                else
+                    NPC.velocity *= 0.9f;
             }
             else if (startTime <= 30 + IllusionDashSpinDuration + 30 + IllusionDashFakeoutTeleportDuration) //176
             {
