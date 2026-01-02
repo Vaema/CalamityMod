@@ -71,13 +71,12 @@ public class BrainOfCthulhuSystem : ModSystem
     {
         orig(self);
 
-        if (NPC.crimsonBoss == -1 || !CalamityWorld.revenge)
+        if (NPC.crimsonBoss == -1 || !CalamityWorld.revenge || !Main.npc[NPC.crimsonBoss].TryGetAIOverride<BrainOfCthulhuAI>(out var brainAI))
             return;
 
         if (previousMusic < 0 || previousMusic >= Main.musicFade.Length)
             return;
 
-        var brainAI = Main.npc[NPC.crimsonBoss].AIOverride<BrainOfCthulhuAI>();
         // The last part leaves one frame at the end of the spawn animation where the boss music starts playing, so that it can be instantly maxed out
         if (brainAI.AIState < 0 && (brainAI.Time - Math.Abs(brainAI.SpawnTime) < 420))
         {
@@ -334,7 +333,7 @@ public class BrainOfCthulhuSystem : ModSystem
     {
         if (Main.netMode != NetmodeID.Server)
         {
-            if (NPC.crimsonBoss == -1 || !CalamityWorld.revenge || Main.npc[NPC.crimsonBoss].ai[0] >= (float)BrainOfCthulhuAI.BrainAIState.Phase2TransitionClosed)
+            if (NPC.crimsonBoss == -1 || !CalamityWorld.revenge || Main.npc[NPC.crimsonBoss].ai[0] >= (float)BrainOfCthulhuAI.BrainAIState.Phase2TransitionClosed || !Main.npc[NPC.crimsonBoss].TryGetAIOverride<BrainOfCthulhuAI>(out var ai))
             {
                 Filters.Scene["CalamityMod:BrainOfCthulhuForcefield"].GetShader().UseOpacity(0);
                 if (Filters.Scene["CalamityMod:BrainOfCthulhuForcefield"].IsActive())
@@ -347,8 +346,8 @@ public class BrainOfCthulhuSystem : ModSystem
 
                 NPC target = Main.npc[NPC.crimsonBoss];
                 Vector2 targetPos = target.Center;
-                float shieldOpacity = target.AIOverride<BrainOfCthulhuAI>().ShieldOpacity;
-                float shieldScale = target.AIOverride<BrainOfCthulhuAI>().ShieldScale;
+                float shieldOpacity = ai.ShieldOpacity;
+                float shieldScale = ai.ShieldScale;
                 targetPos = Vector2.Transform(targetPos - Main.screenPosition, Main.GameViewMatrix.ZoomMatrix) / Main.ScreenSize.ToVector2();
 
                 Texture2D voronoi = ModContent.Request<Texture2D>("CalamityMod/ExtraTextures/GreyscaleGradients/VoronoiShapes3").Value;
