@@ -81,7 +81,7 @@ public class BrainOfCthulhuAI : VanillaAIOverride
     #region Creeper Swipes
     internal static int SwipesStartupDuration => 120;
     internal int SwipeDuration => 60 + SwipeDelay;
-    internal int SwipeDelay => AttackFlag ? 30 : CalamityWorld.death ? 30 : 45;
+    internal int SwipeDelay => AttackFlag ? 30 : CalamityWorld.death ? 35 : 45;
     internal static int SwipeAmount => 4;
     internal int SwipeIchorDelay => 30 + SwipeDelay;
     #endregion
