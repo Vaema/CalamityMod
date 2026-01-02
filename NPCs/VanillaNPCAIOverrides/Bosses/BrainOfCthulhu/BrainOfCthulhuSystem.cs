@@ -253,38 +253,49 @@ public class BrainOfCthulhuSystem : ModSystem
                     //Tendril's creeper is dead, dangle and reel in.
                     if (!creeper.active || creeper.type != NPCID.Creeper)
                     {
+                        float reelInTime = 180;
                         VerletTendrils[index].reelInTimer++;
 
-                        if(vTendril.Count <= 1)
+                        float reelRatio = CalamityUtils.CircInEasing(VerletTendrils[index].reelInTimer / reelInTime, 1);
+                        float reelInSegementedRatio = reelRatio * 28;
+                        float segmentRatio = MathF.Truncate(reelInSegementedRatio);
+
+                        if (reelRatio >= 1 || VerletTendrils[index].tendril.Count <= 1)
                         {
-                            vTendril = [];
+                            VerletTendrils[index].tendril.Clear();
                             index++;
                             continue;
                         }
 
-                        if (VerletTendrils[index].reelInTimer > 10)
+                        for(int i = 0; i < 28; i++)
                         {
-                            startPoint.Y -= MathHelper.Lerp(0, 16, VerletTendrils[index].reelInTimer / 30f);
-                            VerletTendrils[index].reelInTimer = -1;
-                            vTendril.RemoveAt(0);
+                            var seg = vTendril[i];
+                            
+                            if (i <= reelInSegementedRatio)
+                            {
+                                seg.position = startPoint;
+                                seg.oldPosition = startPoint;
+                                seg.locked = true;
+                                continue;
+                            }
+
+                            seg.position += Main.npc[NPC.crimsonBoss].velocity;
+                            seg.oldPosition += Main.npc[NPC.crimsonBoss].velocity;
+
+                            if (i == MathF.Ceiling(reelRatio))
+                            {
+                                seg.position = startPoint - (Vector2.unitYVector * MathHelper.Lerp(0, 16, segmentRatio));
+                            }
+                            seg.locked = false;
                         }
 
-                        vTendril[0].position = startPoint;
-                        vTendril[0].locked = true;
-                        vTendril[^1].locked = false;
-
-                        if (vTendril.Count >= 10 && Main.rand.NextBool(3))
+                        if (reelRatio < 0.75f && Main.rand.NextBool(3))
                         {
                             Vector2 dir = (vTendril[^1].position - vTendril[^2].position).SafeNormalize(Vector2.unitYVector);
-                            BloodParticle p = new(vTendril[^2].position, dir.RotatedBy(Main.rand.NextFloat(-MathHelper.Pi / 10f, MathHelper.Pi / 10f)) * Main.rand.NextFloat(4f, 8f), 16, Main.rand.NextFloat(0.5f, 0.75f), Color.Red);
+                            BloodParticle p = new(vTendril[^2].position, dir.RotatedBy(Main.rand.NextFloat(-MathHelper.Pi / 10f, MathHelper.Pi / 10f)) * Main.rand.NextFloat(4f, 8f), 16, Main.rand.NextFloat(0.5f, 0.75f), Color.Red * 0.75f);
                             GeneralParticleHandler.SpawnParticle(p);
                         }
 
-                        foreach(var seg in vTendril)
-                        {
-                            seg.position += Main.npc[NPC.crimsonBoss].velocity;
-                            seg.oldPosition += Main.npc[NPC.crimsonBoss].velocity;
-                        }
                         VerletSimulatedSegment.SimpleSimulation(vTendril, 16, 10, 1.5f);
 
                         index++;

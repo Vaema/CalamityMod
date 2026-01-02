@@ -54,10 +54,14 @@ public class BrainIllusion : ModNPC, ILocalizedModType
         NPC.npcSlots = 0f;
         NPC.netAlways = true;
         Music = MusicID.Boss3;
+    }
 
+    public override void OnSpawn(IEntitySource source)
+    {
         TeleportDuration = AttackValue;
         AttackValue = 0;
         TeleportTime = Time;
+        NPC.netUpdate = true;
     }
 
     public override void AI()

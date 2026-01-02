@@ -1028,6 +1028,11 @@ public class BrainOfCthulhuAI : VanillaAIOverride
             ShieldOpacity = 1 - CalamityUtils.CircOutEasing(lerp, 1);
             ShieldScale = MathHelper.Lerp(1f, 1.5f, lerp);
         }
+        if(Time > 15 && Time < StunDuration)
+        {
+            ShieldOpacity = 0f;
+            ShieldScale = 1.5f;
+        }
 
         #region Recovery
         if (OnSecondCreeperPhase && Time == StunDuration - 30)
@@ -1806,15 +1811,6 @@ public class BrainOfCthulhuAI : VanillaAIOverride
                     AttackTime = yDist;
                     AttackTime += (yDist - AttackTime) / 30f;
 
-                CalamityUtils.BroadcastLocalizedText("Furthest Left Player: " + furthestLeft.name + ", Center: " + furthestLeft.Center);
-                CalamityUtils.BroadcastLocalizedText("Furthest Right Player: " + furthestRight.name + ", Center: " + furthestRight.Center);
-                CalamityUtils.BroadcastLocalizedText("Furthest Up Player: " + highestUp.name + ", Center: " + highestUp.Center);
-                CalamityUtils.BroadcastLocalizedText("-------------------------------------------------------");
-                CalamityUtils.BroadcastLocalizedText("Current Hover Center: " + AttackPosition + ", Goal Hover Center: " + hoverCenter);
-                CalamityUtils.BroadcastLocalizedText("Current xDist: " + CachedRatio + ", Goal xDist: " + xDist);
-                CalamityUtils.BroadcastLocalizedText("Current yDist: " + AttackTime + ", Goal yDist: " + yDist);
-                CalamityUtils.BroadcastLocalizedText("-------------------------------------------------------");
-
                 float xMag = (HoverDistance.X + CachedRatio);
                 float yMag = (HoverDistance.Y + AttackTime);
                 Vector2 destination = AttackPosition + new Vector2((float)Math.Cos(waveValue) * xMag * AttackSign, (float)(-0.5f * Math.Cos(2 * waveValue) + 0.5f) * -yMag);
@@ -2305,7 +2301,7 @@ public class BrainOfCthulhuAI : VanillaAIOverride
                         DisableMultiplayerSmoothing = true;
                     }
                     else if (Main.netMode != NetmodeID.MultiplayerClient)
-                        NPC.NewNPCDirect(NPC.GetSource_FromThis(), spawnPos, ModContent.NPCType<BrainIllusion>(), 0, BrainIllusionDamage, 30, rot).target = NPC.target;
+                        NPC.NewNPCDirect(NPC.GetSource_FromThis(), spawnPos, ModContent.NPCType<BrainIllusion>(), 0, 15, 30, rot).target = NPC.target;
                 }
 
                 if(Main.netMode != NetmodeID.SinglePlayer)
@@ -2323,7 +2319,7 @@ public class BrainOfCthulhuAI : VanillaAIOverride
                             Vector2 spawnPos = p.Center + (rot.ToRotationVector2() * IllusionDashTeleportDistance);
 
                             if (Main.netMode != NetmodeID.MultiplayerClient)
-                                NPC.NewNPCDirect(NPC.GetSource_FromThis(), spawnPos, ModContent.NPCType<BrainIllusion>(), 0, BrainIllusionDamage, 30, rot).target = p.whoAmI;
+                                NPC.NewNPCDirect(NPC.GetSource_FromThis(), spawnPos, ModContent.NPCType<BrainIllusion>(), 0, 15, 30, rot).target = p.whoAmI;
                         }
                     }
                 }

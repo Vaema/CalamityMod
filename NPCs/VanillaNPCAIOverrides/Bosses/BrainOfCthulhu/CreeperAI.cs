@@ -753,7 +753,7 @@ public class CreeperAI : VanillaAIOverride
         for (int i = 0; i < 5; i++)
         {
             Vector2 dir = (verletTendril[^1].position - verletTendril[^2].position).SafeNormalize(Vector2.unitYVector);
-            BloodParticle p = new(verletTendril[^2].position, dir.RotatedBy(Main.rand.NextFloat(-MathHelper.Pi / 10f, MathHelper.Pi / 10f)) * Main.rand.NextFloat(6f, 10f), 32, Main.rand.NextFloat(0.5f, 1f), Color.Yellow);
+            BloodParticle p = new(verletTendril[^2].position, dir.RotatedBy(Main.rand.NextFloat(-MathHelper.Pi / 10f, MathHelper.Pi / 10f)) * Main.rand.NextFloat(6f, 10f), 24, Main.rand.NextFloat(0.5f, 1f), Color.Yellow * 0.75f);
             GeneralParticleHandler.SpawnParticle(p);
         }
     }
