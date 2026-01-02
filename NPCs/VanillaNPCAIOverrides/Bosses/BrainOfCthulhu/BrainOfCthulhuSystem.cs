@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using CalamityMod.DataStructures;
+using CalamityMod.Particles;
 using CalamityMod.Scenes.MusicScenes;
 using CalamityMod.World;
 using Microsoft.Xna.Framework;
@@ -29,7 +30,7 @@ public class BrainOfCthulhuSystem : ModSystem
 
     internal static float ScreenBlurStrength = 0f;
 
-    internal static List<VerletSimulatedSegment>[] VerletTendrils = new List<VerletSimulatedSegment>[BrainOfCthulhuAI.GetBrainOfCthuluCreepersCountRevDeath()];
+    internal static (int creeper, List<VerletSimulatedSegment> tendril, int reelInTimer)[] VerletTendrils;
 
     private static int previousMusic = -1;
     public static int PreviousMusic => previousMusic;
@@ -231,32 +232,88 @@ public class BrainOfCthulhuSystem : ModSystem
         {
             if (NPC.crimsonBoss != -1 && CalamityWorld.revenge && Main.npc[NPC.crimsonBoss].ai[0] < (float)BrainOfCthulhuAI.BrainAIState.Phase2TransitionClosed)
             {
-                List<NPC> creepers = Main.npc.Where(n => n.active && n.type == NPCID.Creeper).ToList();
+                bool shouldSpawnTendrilIfNeeded = Main.npc[NPC.crimsonBoss].ai[0] == (float)BrainOfCthulhuAI.BrainAIState.Stunned;
 
-                foreach (NPC creeper in creepers)
+                //Handles sim for tendrils attached to creepers
+                int index = 0;
+                foreach (var member in VerletTendrils)
                 {
-                    int creeperID = (int)creeper.ai[0];
+                    NPC creeper = Main.npc[member.creeper];
 
                     Vector2 startPoint = Main.npc[NPC.crimsonBoss].Center + Vector2.UnitY * 32;
 
-                    float creeperRatio = creeperID / (float)BrainOfCthulhuAI.GetBrainOfCthuluCreepersCountRevDeath();
-                    if (creeperID % 2 == 0)
+                    float creeperRatio = index / (float)BrainOfCthulhuAI.GetBrainOfCthuluCreepersCountRevDeath();
+                    if (index % 2 == 0)
                         startPoint += new Vector2(MathHelper.Lerp(-24, 0, creeperRatio), 0);
                     else
                         startPoint += new Vector2(MathHelper.Lerp(24, 0, creeperRatio), 0);
 
-                    Vector2 endPoint = creeper.Center;
+                    List<VerletSimulatedSegment> vTendril = VerletTendrils[index].tendril;
 
-                    List<VerletSimulatedSegment> tendril = VerletTendrils[creeperID];
-                    if (tendril is null || tendril.Count == 0)
+                    //Tendril's creeper is dead, dangle and reel in.
+                    if (!creeper.active || creeper.type != NPCID.Creeper)
+                    {
+                        VerletTendrils[index].reelInTimer++;
+
+                        if(vTendril.Count <= 1)
+                        {
+                            vTendril = [];
+                            index++;
+                            continue;
+                        }
+
+                        if (VerletTendrils[index].reelInTimer > 10)
+                        {
+                            startPoint.Y -= MathHelper.Lerp(0, 16, VerletTendrils[index].reelInTimer / 30f);
+                            VerletTendrils[index].reelInTimer = -1;
+                            vTendril.RemoveAt(0);
+                        }
+
+                        vTendril[0].position = startPoint;
+                        vTendril[0].locked = true;
+                        vTendril[^1].locked = false;
+
+                        if (vTendril.Count >= 10 && Main.rand.NextBool(3))
+                        {
+                            Vector2 dir = (vTendril[^1].position - vTendril[^2].position).SafeNormalize(Vector2.unitYVector);
+                            BloodParticle p = new(vTendril[^2].position, dir.RotatedBy(Main.rand.NextFloat(-MathHelper.Pi / 10f, MathHelper.Pi / 10f)) * Main.rand.NextFloat(4f, 8f), 16, Main.rand.NextFloat(0.5f, 0.75f), Color.Red);
+                            GeneralParticleHandler.SpawnParticle(p);
+                        }
+
+                        foreach(var seg in vTendril)
+                        {
+                            seg.position += Main.npc[NPC.crimsonBoss].velocity;
+                            seg.oldPosition += Main.npc[NPC.crimsonBoss].velocity;
+                        }
+                        VerletSimulatedSegment.SimpleSimulation(vTendril, 16, 10, 1.5f);
+
+                        index++;
+                        continue;
+                    }
+
+                    VerletTendrils[index].reelInTimer = -1;
+
+                    //Tendril is gone/getting reeled in, attach to newly spawned creeper.
+                    if (vTendril.Count < 28 && shouldSpawnTendrilIfNeeded)
+                    {
+                        BrainOfCthulhuSystem.VerletTendrils[index] = new(creeper.whoAmI, [], -1);
+                        for (int j = 0; j < 28; j++)
+                            BrainOfCthulhuSystem.VerletTendrils[index].tendril.Add(new(creeper.Center));
+                    }
+
+                    Vector2 endPoint = creeper.Center;
+                    index++;
+
+                    if (vTendril is null || vTendril.Count == 0)
                         continue;
 
-                    tendril[0].position = startPoint;
-                    tendril[0].locked = true;
-                    tendril[^1].position = endPoint;
-                    tendril[^1].locked = true;
+                    vTendril[0].position = startPoint;
+                    vTendril[0].locked = true;
+                    vTendril[^1].position = endPoint;
+                    vTendril[^1].locked = true;
 
-                    VerletSimulatedSegment.SimpleSimulation(tendril, 16, 10, 3);
+                    VerletSimulatedSegment.SimpleSimulation(vTendril, 16, 10, 3);
+
                 }
             }
         }

@@ -282,7 +282,7 @@ public class BrainOfCthulhuAI : VanillaAIOverride
         if (!Main.dedServ)
         {
             int brainOfCthuluCreepersCount = GetBrainOfCthuluCreepersCountRevDeath();
-            BrainOfCthulhuSystem.VerletTendrils = new List<VerletSimulatedSegment>[brainOfCthuluCreepersCount];
+            BrainOfCthulhuSystem.VerletTendrils = new (int creeper, List<VerletSimulatedSegment> tendril, int reelInTimer)[brainOfCthuluCreepersCount];
 
             for (int i = 0; i < brainOfCthuluCreepersCount; i++)
             {
@@ -290,7 +290,7 @@ public class BrainOfCthulhuAI : VanillaAIOverride
                 for (int j = 0; j < 28; j++)
                     tendril.Add(new(NPC.Center));
 
-                BrainOfCthulhuSystem.VerletTendrils[i] = tendril;
+                BrainOfCthulhuSystem.VerletTendrils[i].tendril = tendril;
             }
         }
     }
@@ -1101,12 +1101,7 @@ public class BrainOfCthulhuAI : VanillaAIOverride
                     BloodParticle2 p2 = new(spawnPos, dir * 10f, 16, 0.5f, Color.Red);
                     GeneralParticleHandler.SpawnParticle(p2);
 
-                    if (!Main.dedServ)
-                    {
-                        BrainOfCthulhuSystem.VerletTendrils[(int)AttackCounter] = [];
-                        for (int j = 0; j < 28; j++)
-                            BrainOfCthulhuSystem.VerletTendrils[(int)AttackCounter].Add(new(NPC.Center));
-                    }
+                    
 
                     AttackCounter--;
                     if (AttackCounter <= -1)
@@ -1742,7 +1737,7 @@ public class BrainOfCthulhuAI : VanillaAIOverride
         {
             if (Time == 0)
             {
-                AttackPosition = Vector2.zeroVector;
+                AttackPosition = NPC.Center;
                 if (NPC.Center.X < Target.Center.X)
                     AttackSign = -1;
                 else
@@ -1753,6 +1748,9 @@ public class BrainOfCthulhuAI : VanillaAIOverride
 
                 NPC.netUpdate = true;
             }
+
+            if (Time == 30)
+                AttackPosition = Vector2.zeroVector;
 
             //Make sure we have an accurate view on who the furthest players
             if (Main.netMode != NetmodeID.SinglePlayer && Time % 2 == 0)
@@ -2919,30 +2917,49 @@ public class BrainOfCthulhuAI : VanillaAIOverride
             List<NPC> creepers = Main.npc.Where(n => n.active && n.type == NPCID.Creeper).ToList();
             creepers.Sort((a, b) => b.DistanceSQ(NPC.Center).CompareTo(a.DistanceSQ(NPC.Center)));
 
-            int c = 0;
-            foreach (NPC creeper in creepers)
+            var tendrils = BrainOfCthulhuSystem.VerletTendrils.ToList();
+            tendrils.Sort((a, b) => {
+                int bIndex = creepers.IndexOf(Main.npc[b.creeper]);
+                if (bIndex == -1)
+                    bIndex = int.MaxValue;
+                int aIndex = creepers.IndexOf(Main.npc[a.creeper]);
+                if (aIndex == -1)
+                    aIndex = int.MaxValue;
+                return bIndex.CompareTo(aIndex);
+            });
+
+            foreach (var v in tendrils)
             {
-                List<VerletSimulatedSegment> curvePoints = BrainOfCthulhuSystem.VerletTendrils[creeper.AIOverride<CreeperAI>().CreeperID];
+                List<VerletSimulatedSegment> curvePoints = v.tendril;
                 if (curvePoints is null)
                     continue;
 
-                float glowIntensity = creeper.AIOverride<CreeperAI>().ConnectionOpacity;
+                NPC creeper = Main.npc[v.creeper];
+                if (creeper == null || !creeper.active || creeper.type != NPCID.Creeper)
+                    creeper = null;
+
+                float glowIntensity = creeper == null ? 0 : creeper.AIOverride<CreeperAI>().ConnectionOpacity;
                 Color ichorLess = Color.Lerp(Color.Transparent, Color.OrangeRed * 0.333f, glowIntensity);
                 Color ichorful = Color.Lerp(Color.OrangeRed * 0.25f, Color.Orange * 0.666f, glowIntensity);
 
                 for (int i = 0; i < curvePoints.Count; i++)
                 {
                     Vector2 start = curvePoints[i].position;
-                    Vector2 end = i == curvePoints.Count - 1 ? creeper.Center : curvePoints[i + 1].position;
+                    Vector2 end = i == curvePoints.Count - 1 ? (creeper == null ? curvePoints[i].position : creeper.Center) : curvePoints[i + 1].position;
                     Vector2 center = (end + start) / 2f;
                     start -= Main.screenPosition;
                     end -= Main.screenPosition;
 
                     float rotation = (end - start).ToRotation() - MathHelper.PiOver2;
 
-                    float flowTime = creeper.AIOverride<CreeperAI>().FlowTime;
-                    float flowAmt = creeper.AIOverride<CreeperAI>().FlowAmount;
-                    float ichorRatio = CalamityUtils.ExpInEasing((float)Math.Sin((flowTime + (i * flowAmt)) * 2f) / 2f + 0.5f, 1);
+                    float ichorRatio = 0;
+
+                    if (creeper != null)
+                    {
+                        float flowTime = creeper.AIOverride<CreeperAI>().FlowTime;
+                        float flowAmt = creeper.AIOverride<CreeperAI>().FlowAmount;
+                        ichorRatio = CalamityUtils.ExpInEasing((float)Math.Sin((flowTime + (i * flowAmt)) * 2f) / 2f + 0.5f, 1);
+                    }
 
                     Color glowColor = Color.Lerp(ichorLess, ichorful, ichorRatio);
 
@@ -2952,8 +2969,6 @@ public class BrainOfCthulhuAI : VanillaAIOverride
                     spriteBatch.Draw(BrainOfCthulhuSystem.tendril.Value, start, null, Lighting.GetColor(center.ToTileCoordinates()) * NPC.Opacity, rotation, BrainOfCthulhuSystem.tendril.Size() * Vector2.UnitX * 0.5f, tendrilScale, SpriteEffects.None, 0f);
                     spriteBatch.Draw(BrainOfCthulhuSystem.GetTendrilGlow(), start, null, glowColor * NPC.Opacity, rotation, BrainOfCthulhuSystem.GetTendrilGlow().Size() * Vector2.UnitX * 0.5f, tendrilScale, SpriteEffects.None, 0f);
                 }
-
-                c++;
             }
 
             foreach (NPC creeper in creepers)

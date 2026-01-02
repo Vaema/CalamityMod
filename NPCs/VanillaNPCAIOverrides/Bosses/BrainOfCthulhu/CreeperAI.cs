@@ -89,6 +89,8 @@ public class CreeperAI : VanillaAIOverride
             CalamityUtils.CalamityTargeting(NPC, default);
         #endregion
 
+        BrainOfCthulhuSystem.VerletTendrils[CreeperID].creeper = NPC.whoAmI;
+
         if (bocAI.AIState < 0)
             NPC.damage = 0;
 
@@ -743,28 +745,16 @@ public class CreeperAI : VanillaAIOverride
 
     public override void HitEffect(Mod mod, NPC.HitInfo hit)
     {
-        if (NPC.life <= 0)
+        List<VerletSimulatedSegment> verletTendril = BrainOfCthulhuSystem.VerletTendrils[CreeperID].tendril;
+        verletTendril[^1].position = NPC.Center;
+        verletTendril[^1].oldPosition = NPC.Center;
+        verletTendril[^1].locked = false;
+
+        for (int i = 0; i < 5; i++)
         {
-            List<VerletSimulatedSegment> verletTendril = BrainOfCthulhuSystem.VerletTendrils[NPC.AIOverride<CreeperAI>().CreeperID];
-            if (verletTendril is null)
-                return;
-
-            for (int i = 0; i < verletTendril.Count; i++)
-            {
-                Vector2 start = verletTendril[i].position;
-                Vector2 end = i == verletTendril.Count - 1 ? NPC.Center : verletTendril[i + 1].position;
-
-                float rotation = (end - start).ToRotation();
-
-                float dist = Vector2.Distance(start, end);
-                Vector2 scale = new(1f, dist / BrainOfCthulhuSystem.tendril.Height());
-
-                BrokenTendril gore = new(start, Vector2.UnitY.RotatedBy(Main.rand.NextFloat(-MathHelper.PiOver4, MathHelper.PiOver4)) * -Main.rand.NextFloat(2f, 4f), rotation, scale, 60);
-                GeneralParticleHandler.SpawnParticle(gore);
-
-            }
-
-            BrainOfCthulhuSystem.VerletTendrils[NPC.AIOverride<CreeperAI>().CreeperID] = [];
+            Vector2 dir = (verletTendril[^1].position - verletTendril[^2].position).SafeNormalize(Vector2.unitYVector);
+            BloodParticle p = new(verletTendril[^2].position, dir.RotatedBy(Main.rand.NextFloat(-MathHelper.Pi / 10f, MathHelper.Pi / 10f)) * Main.rand.NextFloat(6f, 10f), 32, Main.rand.NextFloat(0.5f, 1f), Color.Yellow);
+            GeneralParticleHandler.SpawnParticle(p);
         }
     }
 
