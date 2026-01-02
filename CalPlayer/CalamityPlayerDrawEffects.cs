@@ -132,7 +132,7 @@ namespace CalamityMod.CalPlayer
                 else
                 {
                     var dis = Player.Distance(DoG.NPC.Center);
-                    if ((DoG.NPC.ai[3] < 3 || !DoG.Phase2Started) && DoG.NPC.Opacity > 0.5f && !DoG.Dying)
+                    if ((DoG.NPC.ai[3] < 3 || !DoG.Phase2Started) && DoG.NPC.Opacity > 0.5f && !DoG.Dying && !drawInfo.drawPlayer.isDisplayDollOrInanimate)
                     {
                         string phase1IconPath = "CalamityMod/NPCs/DevourerofGods/DevourerofGodsHead_Head_Boss";
                         string phase2IconPath = "CalamityMod/NPCs/DevourerofGods/DevourerofGodsHead_P2_Head_Boss";
