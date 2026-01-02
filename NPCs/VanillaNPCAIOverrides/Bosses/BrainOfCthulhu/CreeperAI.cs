@@ -69,8 +69,7 @@ public class CreeperAI : VanillaAIOverride
 
     public override void SetDefaults(Mod mod)
     {
-        NPC.defDamage = 36; // 64 (1.8x expert scaling)
-        NPC.damage = 0;
+        NPC.damage = NPC.defDamage = 36; // 64 (1.8x expert scaling)
     }
 
     public override bool AI(Mod mod)
@@ -91,7 +90,7 @@ public class CreeperAI : VanillaAIOverride
 
         BrainOfCthulhuSystem.VerletTendrils[CreeperID].creeper = NPC.whoAmI;
 
-        if (bocAI.AIState < 0)
+        if (bocAI.AIState < BrainAIState.SurfaceSpawnAnimation)
             NPC.damage = 0;
 
         List<BrainAIState> bossAIStatesToUse = [
