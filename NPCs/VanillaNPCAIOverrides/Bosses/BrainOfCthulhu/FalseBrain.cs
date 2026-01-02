@@ -45,7 +45,7 @@ public class FalseBrain : ModNPC, ILocalizedModType
         NPC.ShowNameOnHover = false;
         Music = MusicID.Boss3;
 
-        NPC.localAI[0] = Main.rand.Next(5);
+        NPC.localAI[0] = Main.rand.Next(7);
 
         if(BrainOfCthulhuSystem.IsBrainOfCthulhuTextureVanilla)
             NPC.localAI[1] = 1 + Main.rand.NextFloat(-0.5f, 0.5f);
@@ -176,7 +176,7 @@ public class FalseBrain : ModNPC, ILocalizedModType
         if (BrainOfCthulhuSystem.IsBrainOfCthulhuTextureVanilla)
         {
             tex = TextureAssets.Npc[Type].Value;
-            frame = tex.Frame(5, 4, Variant, (int)NPC.frameCounter);
+            frame = tex.Frame(7, 4, Variant, (int)NPC.frameCounter);
         }
         else
         {
@@ -199,6 +199,12 @@ public class FalseBrain : ModNPC, ILocalizedModType
                     break;
                 case 4:
                     drawColor = Color.Lerp(drawColor, Color.Yellow.MultiplyRGB(drawColor), 0.5f);
+                    break;
+                case 5:
+                    scaleAddition = new(0.1625f, 0.1625f);
+                    break;
+                case 6:
+                    scaleAddition = new(-0.1625f, -0.1625f);
                     break;
 
             }
