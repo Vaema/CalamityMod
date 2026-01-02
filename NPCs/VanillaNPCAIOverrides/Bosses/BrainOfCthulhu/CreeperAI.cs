@@ -744,16 +744,19 @@ public class CreeperAI : VanillaAIOverride
 
     public override void HitEffect(Mod mod, NPC.HitInfo hit)
     {
-        List<VerletSimulatedSegment> verletTendril = BrainOfCthulhuSystem.VerletTendrils[CreeperID].tendril;
-        verletTendril[^1].position = NPC.Center;
-        verletTendril[^1].oldPosition = NPC.Center;
-        verletTendril[^1].locked = false;
-
-        for (int i = 0; i < 5; i++)
+        if (NPC.life <= 0)
         {
-            Vector2 dir = (verletTendril[^1].position - verletTendril[^2].position).SafeNormalize(Vector2.unitYVector);
-            BloodParticle p = new(verletTendril[^2].position, dir.RotatedBy(Main.rand.NextFloat(-MathHelper.Pi / 10f, MathHelper.Pi / 10f)) * Main.rand.NextFloat(6f, 10f), 24, Main.rand.NextFloat(0.5f, 1f), Color.Yellow * 0.75f);
-            GeneralParticleHandler.SpawnParticle(p);
+            List<VerletSimulatedSegment> verletTendril = BrainOfCthulhuSystem.VerletTendrils[CreeperID].tendril;
+            verletTendril[^1].position = NPC.Center;
+            verletTendril[^1].oldPosition = NPC.Center;
+            verletTendril[^1].locked = false;
+
+            for (int i = 0; i < 5; i++)
+            {
+                Vector2 dir = (verletTendril[^1].position - verletTendril[^2].position).SafeNormalize(Vector2.unitYVector);
+                BloodParticle p = new(verletTendril[^2].position, dir.RotatedBy(Main.rand.NextFloat(-MathHelper.Pi / 10f, MathHelper.Pi / 10f)) * Main.rand.NextFloat(6f, 10f), 24, Main.rand.NextFloat(0.5f, 1f), Color.Yellow * 0.75f);
+                GeneralParticleHandler.SpawnParticle(p);
+            }
         }
     }
 
