@@ -1,4 +1,5 @@
 ﻿using System;
+using CalamityMod.NPCs;
 using CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses.BrainOfCthulhu;
 using CalamityMod.World;
 using Terraria;
@@ -20,10 +21,11 @@ namespace CalamityMod.Scenes.MusicScenes
 
             NPC brain = Main.npc[NPC.crimsonBoss];
 
-            if ((BrainAIState)brain.ai[0] > BrainOfCthulhuAI.BrainAIState.SurfaceSpawnAnimation) //BoC isn't doing its spawn animation
+            if ((BrainAIState)brain.ai[0] > BrainAIState.SurfaceSpawnAnimation) //BoC isn't doing its spawn animation
                 return false;
 
-            BrainOfCthulhuAI revBrain = brain.AIOverride<BrainOfCthulhuAI>();
+            if (!brain.TryGetAIOverride<BrainOfCthulhuAI>(out var revBrain))
+                return false;
 
             // BoC has sent out all its Creepers
             // The second part leaves one frame at the end of the animation where the boss music starts playing, so that it can be instantly maxed out
@@ -47,10 +49,11 @@ namespace CalamityMod.Scenes.MusicScenes
 
             NPC brain = Main.npc[NPC.crimsonBoss];
 
-            if ((BrainAIState)brain.ai[0] > BrainOfCthulhuAI.BrainAIState.SurfaceSpawnAnimation) //BoC isn't doing its spawn animation
+            if ((BrainAIState)brain.ai[0] > BrainAIState.SurfaceSpawnAnimation) //BoC isn't doing its spawn animation
                 return false;
 
-            BrainOfCthulhuAI revBrain = brain.AIOverride<BrainOfCthulhuAI>();
+            if (!brain.TryGetAIOverride<BrainOfCthulhuAI>(out var revBrain))
+                return false;
 
             // BoC hasnt sent out all its Creepers yet
             return revBrain.SpawnTime == 0;
