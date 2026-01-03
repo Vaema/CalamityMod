@@ -229,7 +229,7 @@ public class BrainOfCthulhuSystem : ModSystem
 
         if (Main.netMode != NetmodeID.Server)
         {
-            if (NPC.crimsonBoss != -1 && CalamityWorld.revenge && Main.npc[NPC.crimsonBoss].ai[0] < (float)BrainOfCthulhuAI.BrainAIState.Phase2TransitionClosed)
+            if (NPC.crimsonBoss != -1 && CalamityWorld.revenge && Main.npc[NPC.crimsonBoss].ai[0] <= (float)BrainOfCthulhuAI.BrainAIState.Phase2TransitionOpen)
             {
                 bool shouldSpawnTendrilIfNeeded = Main.npc[NPC.crimsonBoss].ai[0] == (float)BrainOfCthulhuAI.BrainAIState.Stunned;
 

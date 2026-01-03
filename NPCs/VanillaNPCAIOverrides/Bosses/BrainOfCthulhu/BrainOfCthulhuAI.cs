@@ -37,6 +37,7 @@ public class BrainOfCthulhuAI : VanillaAIOverride
     private static SoundStyle ShieldUp = new SoundStyle("CalamityMod/Sounds/Custom/BrainOfCthulhu/BoC_Rev_Shield_Up") with { PauseBehavior = PauseBehavior.PauseWithGame };
     private static SoundStyle IntroRoar = new SoundStyle("CalamityMod/Sounds/Custom/BrainOfCthulhu/BoC_Rev_Roar") with { PauseBehavior = PauseBehavior.PauseWithGame };
     private static SoundStyle Roar = new SoundStyle("CalamityMod/Sounds/Custom/BrainOfCthulhu/BoC_Rev_Short_Roar") with { PauseBehavior =  PauseBehavior.PauseWithGame};
+    public static SoundStyle Laugh = new SoundStyle("CalamityMod/Sounds/Custom/BrainOfCthulhu/BoC_Rev_Laugh") with { PauseBehavior = PauseBehavior.PauseWithGame };
 
     internal static bool SummonedViaItem = false;
     internal List<Particle> BoCAfterImages = [];
@@ -1558,7 +1559,13 @@ public class BrainOfCthulhuAI : VanillaAIOverride
                 }
 
                 for (int j = 0; j < 20; j++)
+                {
+                    Vector2 edgeBloodDir = Main.rand.NextVector2CircularEdge(1, 1);
+                    BloodParticle b = new(NPC.Center - (Vector2.unitYVector * 32) + (edgeBloodDir * new Vector2(16, 24)), edgeBloodDir.RotatedBy(Main.rand.NextFloat(-MathHelper.Pi / 10f, MathHelper.Pi / 10f)) * Main.rand.NextFloat(4f, 8f), 24, 0.75f, Color.Red);
+                    GeneralParticleHandler.SpawnParticle(b);
+
                     Dust.NewDustPerfect(Main.rand.NextVector2FromRectangle(NPC.Hitbox), DustID.Blood, Main.rand.NextVector2Circular(6f, 6f));
+                }
 
                 for (int i = 1; i <= 3; i++)
                 {
@@ -1571,7 +1578,7 @@ public class BrainOfCthulhuAI : VanillaAIOverride
                     PulseRing ring = new(NPC.Center, NPC.velocity * 0.5f, color, 0f, 1f + i * 0.5f, 24);
                     GeneralParticleHandler.SpawnParticle(ring);
                 }
-
+                
                 BoCAfterImages = [];
 
                 SoundEngine.PlaySound(Roar, NPC.Center);
@@ -2345,7 +2352,7 @@ public class BrainOfCthulhuAI : VanillaAIOverride
                 BoCAfterImages = [];
                 NPC.Opacity = 1f;
 
-                GenericSparkle sparkle = new(NPC.Center, Vector2.Zero, Color.Yellow, Color.Orange, 2f, 16, needed: true);
+                GenericSparkle sparkle = new(NPC.Center + new Vector2(16, -8), Vector2.Zero, Color.Yellow, Color.Orange, 2f, 16, needed: true);
                 GeneralParticleHandler.SpawnParticle(sparkle);
 
                 NPC.netUpdate = true;
@@ -2912,7 +2919,7 @@ public class BrainOfCthulhuAI : VanillaAIOverride
 
     public override bool PreDraw(Mod mod, SpriteBatch spriteBatch, Vector2 screenPos, Color drawColor)
     {
-        bool phase1 = AIState < BrainAIState.Phase2TransitionClosed;
+        bool phase1 = AIState <= BrainAIState.Phase2TransitionOpen;
         bool drawBrain = true;
 
         if (phase1)
