@@ -725,7 +725,7 @@ namespace CalamityMod.UI.DialogueDisplay
                                 storedDelay = (int)(pause * 60);
                         }
 
-                        int delayToUse = (textIndex < Text.Length - 1 && IsPunctuation(Text[textIndex + 1])) ? inPunctuationDelay : textDelay;
+                        int delayToUse = (IsPunctuation(Text[textIndex]) && textIndex > 0 && IsPunctuation(Text[textIndex - 1])) ? inPunctuationDelay : textDelay;
 
                         delay = ((Text[textIndex] == ' ' || Text[textIndex] == '\n') && storedDelay > 0 ? delayToUse + storedDelay : delayToUse);
 
