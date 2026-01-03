@@ -71,7 +71,7 @@ namespace CalamityMod.Projectiles.Ranged
 
             // Decide where to position the laserbeam.
             Vector2 circlePointDirection = Projectile.velocity.SafeNormalize(Vector2.UnitX * Owner.direction);
-            Projectile.Center = VoidragonHoldout.ModProjectile<VoidragonHoldout>().GunTipPosition;
+            Projectile.Center = VoidragonHoldout.ModProjectile<VoidragonHoldout>().GunTipPosition - ((Projectile.velocity * 55).RotatedBy(-0.02f * Projectile.direction));
 
             LaserLength = MaxLaserLength;
 
@@ -141,7 +141,7 @@ namespace CalamityMod.Projectiles.Ranged
         {
             float width;
             float maxBodyWidth = Projectile.scale * 75f;
-            float shrinkRatio = 0.1f;
+            float shrinkRatio = 0.275f;
 
             if (completionRatio < shrinkRatio)
                 width = MathF.Sin(completionRatio / shrinkRatio * MathHelper.PiOver2) * maxBodyWidth + shrinkRatio;

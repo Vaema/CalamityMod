@@ -6,11 +6,13 @@ using CalamityMod.Particles;
 using CalamityMod.Projectiles.Typeless;
 using CalamityMod.Tiles.Abyss;
 using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
 using Terraria;
 using Terraria.Audio;
 using Terraria.DataStructures;
 using Terraria.ID;
 using Terraria.ModLoader;
+using static tModPorter.ProgressUpdate;
 namespace CalamityMod.Projectiles.Ranged
 {
     public class SeaDragonRocket : ModProjectile, ILocalizedModType
@@ -18,6 +20,8 @@ namespace CalamityMod.Projectiles.Ranged
         public new string LocalizationCategory => "Projectiles.Ranged";
         public override void SetStaticDefaults() => ProjectileID.Sets.CultistIsResistantTo[Type] = true;
         public ref float time => ref Projectile.ai[0];
+        private bool beginStretchAnim = false;
+        private float progress = -1;
         public bool attacking => Projectile.ai[1] == 5; //  If the missile is launched at the enemy
         public ref float moveSpeed => ref Projectile.ai[2]; // Some speed variation applied to the missiles based on spawn order
         public override void SetDefaults()
@@ -31,6 +35,7 @@ namespace CalamityMod.Projectiles.Ranged
             Projectile.DamageType = DamageClass.Ranged;
             Projectile.ignoreWater = true;
             Projectile.tileCollide = false;
+            Projectile.scale = 0.25f;
         }
 
         public override void AI()
@@ -74,6 +79,13 @@ namespace CalamityMod.Projectiles.Ranged
                 Particle Star = new CritSpark(Projectile.Center, -Projectile.velocity * Main.rand.NextFloat(0.3f, 0.5f), Color.SkyBlue, Main.rand.NextBool(3) ? Color.SeaGreen : Color.SkyBlue, Main.rand.NextFloat(0.4f, 0.7f), 30, 0.1f, 3f);
                 GeneralParticleHandler.SpawnParticle(Star);
             }
+
+            if (progress >= 0f && progress < 1f) // For spawn animation
+                progress += 0.04f;
+
+            if (Projectile.scale < 1f)
+                Projectile.scale += 0.05f;
+
             time++;
         }
 
@@ -87,6 +99,7 @@ namespace CalamityMod.Projectiles.Ranged
                 ring.scale = Main.rand.NextFloat(0.5f, 0.7f);
                 ring.color = Color.CornflowerBlue;
             }
+            beginStretchAnim = true;
         }
 
         public override void OnKill(int timeLeft)
@@ -127,5 +140,62 @@ namespace CalamityMod.Projectiles.Ranged
             }
         }
         public override bool? CanDamage() => (attacking ? null : false); // Can't hit if not attacking
+
+
+        public override bool PreDraw(ref Color lightColor)
+        {
+            if (beginStretchAnim)
+            {
+                progress = 0f;
+                beginStretchAnim = false;
+            }
+
+            if (progress >= 0f) // Squash n' stretch on spawn
+            {
+                float stretchFactorX, stretchFactorY;
+
+                if (progress < 0.5f) // Stretch
+                {
+                    float completion = progress / 0.5f;
+                    stretchFactorX = MathHelper.Lerp(1.6f, 0.7f, completion);
+                    stretchFactorY = MathHelper.Lerp(0.7f, 1.6f, completion);
+                }
+                else // Squash
+                {
+                    float completion = (progress - 0.5f) / 0.5f;
+                    stretchFactorX = MathHelper.Lerp(0.7f, 1f, completion);
+                    stretchFactorY = MathHelper.Lerp(1.6f, 1f, completion);
+                }
+
+                if (progress >= 1f)
+                {
+                    stretchFactorX = 1f;
+                    stretchFactorY = 1f;
+                    progress = -1f;
+                }
+
+                Texture2D texture = ModContent.Request<Texture2D>(Texture).Value;
+                Vector2 origin = new Vector2(texture.Width * 0.5f, texture.Height * 0.5f);
+                Vector2 finalScale = new Vector2(stretchFactorX, stretchFactorY) * Projectile.scale;
+                Vector2 finalPos = Projectile.Center - Main.screenPosition;
+
+                Main.spriteBatch.Draw(texture, finalPos, null, lightColor, Projectile.rotation, origin, finalScale, SpriteEffects.None, 0f);
+
+                return false;
+            }
+
+            Texture2D mainTexture = ModContent.Request<Texture2D>(Texture).Value;
+            SpriteEffects spriteEffects = SpriteEffects.None;
+            Vector2 drawOrigin = mainTexture.Size() / 2f;
+            float drawScale = Projectile.scale;
+            float drawRotation = Projectile.rotation;
+            Vector2 drawPosition = Projectile.Center - Main.screenPosition;
+
+            Main.spriteBatch.Draw(mainTexture, drawPosition, null, lightColor * (1f - Projectile.alpha / 255f), drawRotation, drawOrigin, drawScale, spriteEffects, 0f);
+
+            return false;
+        }
+
+
     }
 }
