@@ -820,7 +820,9 @@ namespace CalamityMod.NPCs.DevourerofGods
                                             player.Calamity().subtitletext = Main.combatText[ctid];
                                         player.Calamity().subtitleColors = new Color[] { Color.Cyan, Color.Fuchsia };
                                         */
-                                        DialogueDisplaySystem.StartDialogue("Mods.CalamityMod.DevourerOfGods.Phases", NPC, 3, 120, false, new BossText());
+                                        Vector2 start = GetRiftLocation();
+
+                                        DialogueDisplaySystem.StartDialogue("Mods.CalamityMod.DevourerOfGods.Phases", start, 3, 120, false, new BossText());
                                     }
 
                                     spawnedGuardians3 = true;
