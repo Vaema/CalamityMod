@@ -1,14 +1,13 @@
-﻿using CalamityMod.BiomeManagers;
+﻿using System;
+using System.Collections.Generic;
+using CalamityMod.BiomeManagers;
 using CalamityMod.DataStructures;
-using CalamityMod.Items.Placeables;
+using CalamityMod.Items.Placeables.Banners;
 using CalamityMod.Particles;
 using CalamityMod.Projectiles.Enemy;
-using CalamityMod.Walls;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using ReLogic.Content;
-using System;
-using System.Collections.Generic;
 using Terraria;
 using Terraria.Audio;
 using Terraria.DataStructures;
@@ -16,6 +15,7 @@ using Terraria.GameContent;
 using Terraria.GameContent.Bestiary;
 using Terraria.ID;
 using Terraria.ModLoader;
+using Terraria.ModLoader.Utilities;
 
 namespace CalamityMod.NPCs.SunkenSea
 {    
@@ -63,13 +63,9 @@ namespace CalamityMod.NPCs.SunkenSea
             NPC.DeathSound = SoundID.NPCDeath3;
             NPC.chaseable = false;
             NPC.noTileCollide = true;
-           // Banner = NPC.type;
-            //BannerItem = ModContent.ItemType<JellyghoulBanner>();
-            SpawnModBiomes = new int[1] { ModContent.GetInstance<SunkenSeaBiome>().Type };
-
-            // Scale stats in Expert and Master
-            CalamityGlobalNPC.AdjustExpertModeStatScaling(NPC);
-            CalamityGlobalNPC.AdjustMasterModeStatScaling(NPC);
+            Banner = NPC.type;
+            BannerItem = ModContent.ItemType<JellyghoulBanner>();
+            SpawnModBiomes = new int[1] { ModContent.GetInstance<TimelessShoresBiome>().Type };
         }
 
         public override void SetBestiary(BestiaryDatabase database, BestiaryEntry bestiaryEntry)
@@ -82,7 +78,7 @@ namespace CalamityMod.NPCs.SunkenSea
 
         public override void OnSpawn(IEntitySource source)
         {
-            NPC.Center -= new Vector2(Main.rand.NextFloat(-16 * 16, 16 * 16), Main.rand.NextFloat(4 * 16, 16 * 16));
+            NPC.position -= new Vector2(Main.rand.NextFloat(-16 * 16, 16 * 16), Main.rand.NextFloat(4 * 16, 16 * 16));
         }
         public override void AI()
         {
@@ -110,8 +106,7 @@ namespace CalamityMod.NPCs.SunkenSea
                 NPC.ai[1]++;
 
                 float screenShakePower = 2 * Utils.GetLerpValue(500f, 0f, NPC.Distance(Main.LocalPlayer.Center), true);
-                if (Main.LocalPlayer.Calamity().GeneralScreenShakePower < screenShakePower)
-                    Main.LocalPlayer.Calamity().GeneralScreenShakePower = screenShakePower;
+                Main.LocalPlayer.SetScreenshake(screenShakePower);
 
                 // After 1 second, stop shaking and set the scream on cooldown
                 if (NPC.ai[1] > 60)
@@ -131,6 +126,7 @@ namespace CalamityMod.NPCs.SunkenSea
             }
             if (NPC.ai[2] >= 1)
             {
+                NPC.chaseable = true;
                 NPC.TargetClosest(false);
                 NPC.ai[3]++;
                 if (NPC.ai[3] >= 120 + (NPC.localAI[1] * 10))
@@ -146,8 +142,8 @@ namespace CalamityMod.NPCs.SunkenSea
             }
             if (Main.rand.NextBool(80))
             { 
-            Particle ash = new SquareAshParticle(Main.rand.NextVector2FromRectangle(NPC.getRect()), new Vector2(0, 2), Main.rand.Next(100, 200), Main.rand.NextFloat(0.8f, 1.2f), new Color(50, 50, 50));
-            GeneralParticleHandler.SpawnParticle(ash);
+                Particle ash = new SquareAshParticle(Main.rand.NextVector2FromRectangle(NPC.getRect()), new Vector2(0, 2), Main.rand.Next(100, 200), Main.rand.NextFloat(0.8f, 1.2f), new Color(50, 50, 50));
+                GeneralParticleHandler.SpawnParticle(ash);
             }
         }
 
@@ -161,16 +157,11 @@ namespace CalamityMod.NPCs.SunkenSea
 
         public override float SpawnChance(NPCSpawnInfo spawnInfo)
         {
-            Tile tile = Framing.GetTileSafely(spawnInfo.SpawnTileX, spawnInfo.SpawnTileY);
-
-            return !spawnInfo.Player.Calamity().clamity && tile.WallType == ModContent.WallType<RunestoneWall>() ? 0.05f : 0f;
-
-            //fuck this
-            //if (spawnInfo.Player.Calamity().ZoneSunkenSeaShores && !spawnInfo.Player.Calamity().clamity && tile.WallType == ModContent.WallType<RunestoneWall>())
-            //{
-            //    return 0.05f;
-            //}
-            //return 0f;
+            if (spawnInfo.Player.Calamity().ZoneTimelessShores && !spawnInfo.Water && !spawnInfo.Player.Calamity().clamity)
+            {
+                return SpawnCondition.Cavern.Chance * 0.9f;
+            }
+            return 0f;
         }
 
         public override void HitEffect(NPC.HitInfo hit)
@@ -186,6 +177,7 @@ namespace CalamityMod.NPCs.SunkenSea
                     Dust.NewDust(NPC.position, NPC.width, NPC.height, DustID.SpectreStaff, hit.HitDirection, -1f, 0, Color.DarkGray * 0.2f, 1f);
                 }
             }
+            CalamityUtils.SpawnGores(NPC, "Jellyghoul", 2);
         }
 
         public override void OnKill()

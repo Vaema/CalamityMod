@@ -3,9 +3,8 @@ using System.IO;
 using CalamityMod.Balancing;
 using CalamityMod.Buffs.StatDebuffs;
 using CalamityMod.Items.Pets;
-using CalamityMod.Items.Potions;
+using CalamityMod.Items.Potions.Food;
 using CalamityMod.Projectiles.Boss;
-using CalamityMod.World;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using ReLogic.Content;
@@ -63,7 +62,7 @@ namespace CalamityMod.NPCs.Other
             NPC.defense = 100;
             NPC.lifeMax = 2500000;
             NPC.knockBackResist = 0f;
-            NPC.value = Item.buyPrice(100, 0, 0, 0);
+            NPC.value = Item.buyPrice(platinum: 100);
             NPC.HitSound = SoundID.NPCHit13;
             NPC.DeathSound = null;
             NPC.boss = true;
@@ -501,7 +500,7 @@ namespace CalamityMod.NPCs.Other
             {
                 string key = "Mods.CalamityMod.Status.Boss.EdgyBossText8";
                 Color messageColor = Color.Cyan;
-                CalamityUtils.DisplayLocalizedText(key, messageColor);
+                CalamityUtils.BroadcastLocalizedText(key, messageColor);
 
                 // The hit which triggers antibutcher has its damage capped at 1, then THE LORDE heals for 1 so that it doesn't take any net damage.
                 modifiers.SetMaxDamage(1);
@@ -521,7 +520,7 @@ namespace CalamityMod.NPCs.Other
             {
                 string key = "Mods.CalamityMod.Status.Boss.EdgyBossText8";
                 Color messageColor = Color.Cyan;
-                CalamityUtils.DisplayLocalizedText(key, messageColor);
+                CalamityUtils.BroadcastLocalizedText(key, messageColor);
 
                 // The hit which triggers antibutcher has its damage capped at 1, then THE LORDE heals for 1 so that it doesn't take any net damage.
                 modifiers.SetMaxDamage(1);
@@ -584,8 +583,7 @@ namespace CalamityMod.NPCs.Other
         public override void ModifyNPCLoot(NPCLoot npcLoot)
         {
             double pisquaredover6 = Math.Pow(MathHelper.Pi, 2) / 6;
-            npcLoot.AddIf(() => CalamityWorld.LegendaryMode && CalamityWorld.revenge, ModContent.ItemType<SuspiciousLookingNOU>()); // guaranteed in legendarev mode
-            npcLoot.AddIf(() => !(CalamityWorld.LegendaryMode && CalamityWorld.revenge), ModContent.ItemType<SuspiciousLookingNOU>(), 27); // otherwise 1 in 27
+            npcLoot.Add(ModContent.ItemType<SuspiciousLookingNOU>());
             npcLoot.Add(ModContent.ItemType<DeliciousMeat>(), 1, 22, (int)(pisquaredover6 * 100));
         }
     }

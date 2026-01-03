@@ -1,4 +1,6 @@
 ﻿using CalamityMod.Buffs.Alcohol;
+using CalamityMod.Items.Materials;
+using CalamityMod.Items.Placeables.Ores;
 using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.ID;
@@ -10,13 +12,6 @@ namespace CalamityMod.Items.Potions.Alcohol
     public class CinnamonRoll : ModItem, ILocalizedModType
     {
         public new string LocalizationCategory => "Items.Potions";
-
-        // Mana has a stupid formula so it won't go into the tooltip
-        public static float ManaRegenDelayBonus = 1f;
-        public static int ManaRegenBonus = 10;
-        public static float HeatDebuffBoost = 0.5f;
-        public static float DefenseLossPercent = 0.1f;
-        public override LocalizedText Tooltip => base.Tooltip.WithFormatArgs((1f + HeatDebuffBoost).ToString(), DefenseLossPercent.ToPercent());
 
         public override void SetStaticDefaults()
         {
@@ -30,10 +25,18 @@ namespace CalamityMod.Items.Potions.Alcohol
 
         public override void SetDefaults()
         {
-            Item.DefaultToFood(18, 32, ModContent.BuffType<CinnamonRollBuff>(), CalamityUtils.MinutesToFrames(8), true);
-            // Cirrus overcharges: 10% sell value instead of 20%
+            Item.DefaultToFood(18, 32, ModContent.BuffType<CinnamonRollBuff>(), CalamityUtils.MinutesToFrames(6), true);
+
             Item.value = Item.sellPrice(gold: 1);
             Item.rare = ItemRarityID.Yellow;
+        }
+        public override void AddRecipes()
+        {
+            CreateRecipe(10).
+                AddIngredient(ItemID.Bottle, 10).
+                AddIngredient(ItemID.TurtleShell).
+                AddTile(TileID.Kegs).
+                Register();
         }
     }
 }

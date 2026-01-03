@@ -25,7 +25,6 @@ namespace CalamityMod.NPCs.Other
             NPC.lifeMax = 25000;
             NPC.noGravity = true;
             NPC.noTileCollide = true;
-            NPC.value = 0f;
             NPC.knockBackResist = 0f;
             NPC.netAlways = true;
             NPC.aiStyle = -1;

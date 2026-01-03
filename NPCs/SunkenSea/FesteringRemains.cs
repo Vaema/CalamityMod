@@ -1,6 +1,5 @@
 ﻿using CalamityMod.BiomeManagers;
 using CalamityMod.Particles;
-using CalamityMod.Items.Placeables.Banners;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using System.Collections.Generic;
@@ -11,6 +10,7 @@ using Terraria.ID;
 using Terraria.ModLoader;
 using Terraria.ModLoader.Utilities;
 using System.IO;
+using CalamityMod.Items.Materials;
 
 namespace CalamityMod.NPCs.SunkenSea
 {
@@ -31,7 +31,7 @@ namespace CalamityMod.NPCs.SunkenSea
             //Banner = NPC.type;
             //BannerItem = ModContent.ItemType<AlphaSeaMinnowBanner>();
             NPC.chaseable = false;
-            SpawnModBiomes = new int[1] { ModContent.GetInstance<SunkenSeaBiome>().Type };
+            SpawnModBiomes = new int[1] { ModContent.GetInstance<TimelessShoresBiome>().Type };
         }
 
         public override void SetBestiary(BestiaryDatabase database, BestiaryEntry bestiaryEntry)
@@ -72,7 +72,7 @@ namespace CalamityMod.NPCs.SunkenSea
                             bonePos = NPC.Center + new Vector2(Main.rand.Next(-extraDistX, extraDistX + 1), Main.rand.Next(-extraDistY, extraDistY + 1));
                         }
                     }
-                    Particle bone = new ChumBone(bonePos, Vector2.Zero, NPC.GetAlpha(Color.White), Main.rand.NextFloat(-MathHelper.PiOver4, MathHelper.PiOver4), Main.rand.NextFloat(0.8f, 1.6f), 4, Main.rand.NextBool(), Main.rand.NextBool());
+                    Particle bone = new ChumBone(bonePos, Vector2.Zero, NPC.GetAlpha(Color.White), Main.rand.NextFloat(-MathHelper.PiOver4, MathHelper.PiOver4), Main.rand.NextFloat(0.8f, 1.6f), 4, Main.rand.NextBool());
                     GeneralParticleHandler.SpawnParticle(bone);
                     // Add to a list of bones
                     bones.Add(bone);
@@ -142,7 +142,7 @@ namespace CalamityMod.NPCs.SunkenSea
         {
             if (spawnInfo.Player.Calamity().ZoneTimelessShores && !spawnInfo.Water && !spawnInfo.Player.Calamity().clamity)
             {
-                return SpawnCondition.Cavern.Chance * 0.6f;
+                return SpawnCondition.Cavern.Chance * 0.4f;
             }
             return 0f;
         }
@@ -157,6 +157,7 @@ namespace CalamityMod.NPCs.SunkenSea
             {
                 SoundEngine.PlaySound(SoundID.DD2_SkeletonHurt with { Volume = 0.8f, Pitch = 1.2f }, NPC.position);
             }
+            CalamityUtils.SpawnGores(NPC, "FesteringRemains", 1);
         }
 
         public override bool PreDraw(SpriteBatch spriteBatch, Vector2 screenPos, Color drawColor)
@@ -178,6 +179,10 @@ namespace CalamityMod.NPCs.SunkenSea
                 spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, Main.DefaultSamplerState, DepthStencilState.None, Main.Rasterizer, null, Main.GameViewMatrix.TransformationMatrix);
             }
             return true;
+        }
+        public override void ModifyNPCLoot(NPCLoot npcLoot)
+        {
+            npcLoot.Add(ModContent.ItemType<WillOWisp>(), 1, 1, 2);
         }
     }
 }

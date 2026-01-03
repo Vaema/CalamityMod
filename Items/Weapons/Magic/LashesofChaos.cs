@@ -1,4 +1,5 @@
 ﻿using CalamityMod.Dusts;
+using CalamityMod.Items.Weapons.Summon;
 using CalamityMod.Particles;
 using CalamityMod.Projectiles.Magic;
 using Microsoft.Xna.Framework;
@@ -16,7 +17,6 @@ namespace CalamityMod.Items.Weapons.Magic
 
         public int FiringMode = 0; // 0 = hellfireballs, 1 = hellblasts
         public int ProjectilesFired = 0;
-
         public override void SetDefaults()
         {
             Item.width = 28;

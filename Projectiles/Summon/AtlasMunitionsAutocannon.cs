@@ -7,7 +7,6 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria;
 using Terraria.Audio;
-using Terraria.ID;
 using Terraria.ModLoader;
 
 namespace CalamityMod.Projectiles.Summon
@@ -184,7 +183,7 @@ namespace CalamityMod.Projectiles.Summon
 
             // Be picked up by nearby players if they right click and are holding the appropriate item.
             bool rightClick = Main.mouseRight && Main.mouseRightRelease;
-            if (Main.LocalPlayer.WithinRange(Projectile.Center, AtlasMunitionsBeacon.PickupRange) && rightClick && Main.LocalPlayer.ActiveItem().type == ModContent.ItemType<AtlasMunitionsBeacon>() && CannonIsMounted)
+            if (Main.LocalPlayer.WithinRange(Projectile.Center, AtlasMunitionsBeacon.PickupRange) && rightClick && Main.LocalPlayer.HeldItem.type == ModContent.ItemType<AtlasMunitionsBeacon>() && CannonIsMounted)
             {
                 Projectile heldCannon = Projectile.NewProjectileDirect(Projectile.GetSource_FromThis(), Main.LocalPlayer.Center, Vector2.UnitX, ModContent.ProjectileType<AtlasMunitionsAutocannonHeld>(), Projectile.damage, Projectile.knockBack, Main.myPlayer);
                 heldCannon.ModProjectile<AtlasMunitionsAutocannonHeld>().HeatInterpolant = HeatInterpolant * 0.65f;

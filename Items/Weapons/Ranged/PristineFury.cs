@@ -60,7 +60,7 @@ namespace CalamityMod.Items.Weapons.Ranged
         public override float UseTimeMultiplier(Player player) => player.altFunctionUse == 2 ? 0.5f : 1f;
         public override void HoldItem(Player player)
         {
-            int max = player.Calamity().furyFuelMax;
+            int max = CalamityPlayer.FuryFuelMax;
             if (player.Calamity().cooldowns.TryGetValue(FuryFuel.ID, out var cooldown))
             {
                 cooldown.timeLeft = max - player.Calamity().furyFuel;
@@ -70,10 +70,8 @@ namespace CalamityMod.Items.Weapons.Ranged
                 player.AddCooldown(FuryFuel.ID, max);
             }
         }
-        public override bool CanConsumeAmmo(Item ammo, Player player)
-        {
-            return (player.altFunctionUse != 2); // Right click doesn't use ammo, it's crystal powder not gel
-        }
+        public override bool CanConsumeAmmo(Item ammo, Player player) => player.altFunctionUse != 2; // Right click doesn't use ammo, it's crystal powder not gel
+
         public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)
         {
             if (player.altFunctionUse == 2)
@@ -99,7 +97,7 @@ namespace CalamityMod.Items.Weapons.Ranged
                 Trail = !Trail;
                 for (int i = 0; i <= 2; i++)
                 {
-                    Dust dust = Dust.NewDustPerfect(position + velocity * 3f + new Vector2(0, -3), 158, velocity.RotatedBy(0.25f * player.direction).RotatedByRandom(0.35f) * Main.rand.NextFloat(0.5f, 2.5f), 0, default, Main.rand.NextFloat(1.6f, 2f));
+                    Dust dust = Dust.NewDustPerfect(position + velocity * 3f + new Vector2(0, -3), DustID.OrangeTorch, velocity.RotatedBy(0.25f * player.direction).RotatedByRandom(0.35f) * Main.rand.NextFloat(0.5f, 2.5f), 0, default, Main.rand.NextFloat(1.6f, 2f));
                     dust.noGravity = true;
                 }
                 CritSpark spark = new CritSpark(position + velocity * 3f + new Vector2(0, -3), velocity.RotatedBy(0.25f * player.direction).RotatedByRandom(0.25f) * Main.rand.NextFloat(0.2f, 1.8f), Main.rand.NextBool() ? Color.DarkOrange : Color.OrangeRed, Color.OrangeRed, 0.9f, 18, 2f, 1.9f);

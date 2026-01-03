@@ -1,6 +1,4 @@
-﻿using CalamityMod.Buffs.DamageOverTime;
-using CalamityMod.Items.Materials;
-using CalamityMod.Items.Tools;
+﻿using CalamityMod.Items.Materials;
 using CalamityMod.Items.Weapons.Magic;
 using CalamityMod.Projectiles.Melee;
 using CalamityMod.Rarities;
@@ -8,7 +6,6 @@ using CalamityMod.Tiles.Furniture.CraftingStations;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria;
-using Terraria.DataStructures;
 using Terraria.ID;
 using Terraria.ModLoader;
 
@@ -17,34 +14,13 @@ namespace CalamityMod.Items.Weapons.Melee
     public class PrismaticBreaker : ModItem, ILocalizedModType
     {
         public new string LocalizationCategory => "Items.Weapons.Melee";
-        internal static readonly Color[] colors = new Color[]
-        {
-            new Color(255, 0, 0, 50), //Red
-            new Color(255, 128, 0, 50), //Orange
-            new Color(255, 255, 0, 50), //Yellow
-            new Color(128, 255, 0, 50), //Lime
-            new Color(0, 255, 0, 50), //Green
-            new Color(0, 255, 128, 50), //Turquoise
-            new Color(0, 255, 255, 50), //Cyan
-            new Color(0, 128, 255, 50), //Light Blue
-            new Color(0, 0, 255, 50), //Blue
-            new Color(128, 0, 255, 50), //Purple
-            new Color(255, 0, 255, 50), //Fuschia
-            new Color(255, 0, 128, 50) //Hot Pink
-        };
 
-        public override void SetStaticDefaults()
-        {
-            Item.staff[Type] = true;
-
-            ItemID.Sets.ItemsThatAllowRepeatedRightClick[Type] = true;
-        }
-
+        public override void SetStaticDefaults() => Item.staff[Type] = true;
         public override void SetDefaults()
         {
             Item.width = 50;
             Item.height = 50;
-            Item.damage = 490;
+            Item.damage = 425;
             Item.useStyle = ItemUseStyleID.Shoot;
             Item.useAnimation = Item.useTime = 13;
             Item.reuseDelay = 30;
@@ -56,7 +32,7 @@ namespace CalamityMod.Items.Weapons.Melee
             Item.shoot = ModContent.ProjectileType<PrismaticBreakerHoldout>();
             Item.shootSpeed = 14f;
             Item.value = CalamityGlobalItem.RarityDarkBlueBuyPrice;
-            Item.rare = ModContent.RarityType<DarkBlue>();
+            Item.rare = ModContent.RarityType<CosmicPurple>();
             Item.Calamity().donorItem = true;
         }
 

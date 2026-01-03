@@ -61,14 +61,14 @@ namespace CalamityMod.NPCs.SunkenSea
             NPC.DeathSound = SoundID.NPCDeath6;
             NPC.noTileCollide = true;
             NPC.alpha = 120;
-            //Banner = NPC.type;
-            //BannerItem = ModContent.ItemType<LostShoalBanner>();
+            Banner = NPC.type;
+            BannerItem = ModContent.ItemType<LostShoalBanner>();
             NPC.chaseable = false;
             NPC.catchItem = ItemID.AshBlock; // yeah this is intentional
             NPC.Calamity().VulnerableToHeat = false;
             NPC.Calamity().VulnerableToSickness = false;
             NPC.Calamity().VulnerableToWater = false;
-            SpawnModBiomes = new int[1] { ModContent.GetInstance<SunkenSeaBiome>().Type };
+            SpawnModBiomes = new int[1] { ModContent.GetInstance<TimelessShoresBiome>().Type };
         }
 
         public override void SetBestiary(BestiaryDatabase database, BestiaryEntry bestiaryEntry)
@@ -87,7 +87,6 @@ namespace CalamityMod.NPCs.SunkenSea
             {
                 Variant = (int)ShoalColor.Gold;
                 NPC.catchItem = ItemID.GoldCoin;
-                NPC.value = 10000;
             }
 
             RandomOpacityOffset = Main.rand.NextFloat(MathHelper.TwoPi);
@@ -188,7 +187,7 @@ namespace CalamityMod.NPCs.SunkenSea
             if (Role == 0)
             {                
                 // the amount of fish to spawn
-                int fishCount = 5;
+                int fishCount = Main.rand.Next(3, 6);
                 for (int i = 0; i < fishCount; i++)
                 {
                     int n = NPC.NewNPC(NPC.GetSource_FromThis(), (int)NPC.Center.X, (int)NPC.Center.Y, ModContent.NPCType<LostShoal>());

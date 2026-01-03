@@ -1,9 +1,7 @@
-﻿using System.Collections.Generic;
+﻿using CalamityMod.Sounds;
 using CalamityMod.Systems;
 using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Graphics;
 using Terraria;
-using Terraria.Audio;
 using Terraria.ID;
 using Terraria.ModLoader;
 
@@ -11,8 +9,6 @@ namespace CalamityMod.Tiles.DraedonStructures
 {
     public class RustedPlating : ModTile
     {
-        public static readonly SoundStyle MinePlatingSound = new("CalamityMod/Sounds/Custom/PlatingMine", 3);
-        
         public override void SetStaticDefaults()
         {
             Main.tileSolid[Type] = true;
@@ -20,13 +16,13 @@ namespace CalamityMod.Tiles.DraedonStructures
 
             CalamityUtils.MergeWithGeneral(Type);
 
-            HitSound = MinePlatingSound;
-            DustType = 32;
+            HitSound = CommonCalamitySounds.PlatingMine;
+            DustType = DustID.Sand;
             MinPick = 30;
             AddMapEntry(new Color(128, 90, 77));
 
-            this.RegisterUniversalMerge(TileID.Dirt, "CalamityMod/Tiles/Merges/DirtMerge");
-            this.RegisterUniversalMerge(TileID.Stone, "CalamityMod/Tiles/Merges/StoneMerge");
+            this.RegisterBlendMergeWith(TileID.Dirt);
+            this.RegisterBlendMergeWith(TileID.Stone);
         }
 
         public override bool CanExplode(int i, int j) => false;

@@ -21,10 +21,9 @@ namespace CalamityMod.Items.Weapons.Melee
             Item.width = 86;
             Item.height = 72;
             Item.DamageType = DamageClass.MeleeNoSpeed;
-            Item.damage = 1300;
+            Item.damage = 1180;
             Item.knockBack = 14f;
-            Item.useAnimation = 48;
-            Item.useTime = 48;
+            Item.useTime = Item.useAnimation = 48;
             Item.autoReuse = true;
             Item.noMelee = true;
             Item.noUseGraphic = true;
@@ -32,7 +31,7 @@ namespace CalamityMod.Items.Weapons.Melee
             Item.useStyle = ItemUseStyleID.Swing;
             Item.UseSound = SoundID.Item1;
 
-            Item.rare = ModContent.RarityType<DarkBlue>();
+            Item.rare = ModContent.RarityType<CosmicPurple>();
             Item.value = CalamityGlobalItem.RarityDarkBlueBuyPrice;
 
             Item.shoot = ModContent.ProjectileType<GalaxySmasherHammer>();

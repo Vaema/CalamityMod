@@ -1,6 +1,8 @@
 ﻿using System;
+using CalamityMod.Systems.Graphic.PixelationSystem;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using ReLogic.Content;
 using Terraria;
 using Terraria.ModLoader;
 
@@ -8,7 +10,16 @@ namespace CalamityMod.Dusts
 {
     public class UnstableDust : ModDust
     {
+        public static Asset<Texture2D> GlowStar { get; private set; }
+
         public override string Texture => "CalamityMod/Projectiles/InvisibleProj";
+
+        public override void Load()
+        {
+            if (!Main.dedServ)
+                GlowStar = ModContent.Request<Texture2D>("CalamityMod/Particles/FullStar");
+        }
+
         public override void OnSpawn(Dust dust)
         {
             dust.scale *= Main.rand.NextFloat(0.8f, 1f);
@@ -41,23 +52,45 @@ namespace CalamityMod.Dusts
 
             return false;
         }
+
         public override bool PreDraw(Dust dust)
         {
-            Vector2 dustCenter = dust.position + new Vector2(0.25f, 0.25f);
-
-            Texture2D bloom = ModContent.Request<Texture2D>("CalamityMod/Particles/FullStar").Value;
-
             Vector2 squash = new Vector2(0.4f, 1);
             float texScaling = 6;
 
-            Main.EntitySpriteDraw(bloom, dustCenter - Main.screenPosition, null, dust.color with { A = 0 } * Utils.GetLerpValue(255, 0, dust.alpha), dust.rotation, bloom.Size() * 0.5f, squash * dust.scale * 0.1f * texScaling, SpriteEffects.None, 0);
+            Main.spriteBatch.Draw(GlowStar.Value, dust.position - Main.screenPosition, null, dust.color with { A = 0 } * Utils.GetLerpValue(255, 0, dust.alpha), dust.rotation, GlowStar.Size() * 0.5f, squash * dust.scale * 0.1f * texScaling, SpriteEffects.None, 0);
             if (dust.alpha < 1)
-                Main.EntitySpriteDraw(bloom, dustCenter - Main.screenPosition, null, dust.color with { A = 0 } * 0.85f * Utils.GetLerpValue(255, 0, dust.alpha), dust.rotation, bloom.Size() * 0.5f, squash * dust.scale * 0.04f * texScaling, SpriteEffects.None, 0);
+                Main.spriteBatch.Draw(GlowStar.Value, dust.position - Main.screenPosition, null, dust.color with { A = 0 } * 0.85f * Utils.GetLerpValue(255, 0, dust.alpha), dust.rotation, GlowStar.Size() * 0.5f, squash * dust.scale * 0.04f * texScaling, SpriteEffects.None, 0);
             if (!dust.noLight)
             {
-                Main.EntitySpriteDraw(bloom, dustCenter - Main.screenPosition, null, Color.Lerp(dust.color, Color.White, 0.3f) with { A = 0 } * Utils.GetLerpValue(255, 0, dust.alpha), dust.rotation, bloom.Size() * 0.5f, squash * dust.scale * 0.025f * texScaling, SpriteEffects.None, 0);
+                Main.spriteBatch.Draw(GlowStar.Value, dust.position - Main.screenPosition, null, Color.Lerp(dust.color, Color.White, 0.3f) with { A = 0 } * Utils.GetLerpValue(255, 0, dust.alpha), dust.rotation, GlowStar.Size() * 0.5f, squash * dust.scale * 0.025f * texScaling, SpriteEffects.None, 0);
             }
             return false;
+        }
+    }
+
+    public class UnstableDustPixelated : UnstableDust
+    {
+        public override string Texture => "CalamityMod/Projectiles/InvisibleProj";
+
+        public override bool PreDraw(Dust dust)
+        {
+            PixelationManager.AddPixelatedDrawer((_) => DrawPixelated(dust), Enums.GeneralDrawLayer.AfterDusts);
+            return false;
+        }
+
+        private static void DrawPixelated(Dust dust)
+        {
+            Vector2 squash = new Vector2(0.4f, 1);
+            float texScaling = 6;
+
+            Main.spriteBatch.Draw(GlowStar.Value, dust.position - Main.screenPosition, null, dust.color with { A = 0 } * Utils.GetLerpValue(255, 0, dust.alpha), dust.rotation, GlowStar.Size() * 0.5f, squash * dust.scale * 0.1f * texScaling, SpriteEffects.None, 0);
+            if (dust.alpha < 1)
+                Main.spriteBatch.Draw(GlowStar.Value, dust.position - Main.screenPosition, null, dust.color with { A = 0 } * 0.85f * Utils.GetLerpValue(255, 0, dust.alpha), dust.rotation, GlowStar.Size() * 0.5f, squash * dust.scale * 0.04f * texScaling, SpriteEffects.None, 0);
+            if (!dust.noLight)
+            {
+                Main.spriteBatch.Draw(GlowStar.Value, dust.position - Main.screenPosition, null, Color.Lerp(dust.color, Color.White, 0.3f) with { A = 0 } * Utils.GetLerpValue(255, 0, dust.alpha), dust.rotation, GlowStar.Size() * 0.5f, squash * dust.scale * 0.025f * texScaling, SpriteEffects.None, 0);
+            }
         }
     }
 }

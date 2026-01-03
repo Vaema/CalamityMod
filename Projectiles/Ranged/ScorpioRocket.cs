@@ -155,8 +155,8 @@ namespace CalamityMod.Projectiles.Ranged
 
         public override bool? CanDamage() => Time >= TimeToLaunch ? null : false;
 
-        public float TrailWidthFunction(float completionRatio) => Utils.Remap(completionRatio, 0f, 0.8f, 6f, 0f);
-        public Color TrailColorFunction(float completionRatio) => Color.Lerp(EffectsColor, StaticEffectsColor * 0.75f, Utils.GetLerpValue(0f, 0.5f, completionRatio)) * Utils.GetLerpValue(255f, 0f, Projectile.alpha);
+        public float TrailWidthFunction(float completionRatio, Vector2 vertexPos) => Utils.Remap(completionRatio, 0f, 0.8f, 6f, 0f);
+        public Color TrailColorFunction(float completionRatio, Vector2 vertexPos) => Color.Lerp(EffectsColor, StaticEffectsColor * 0.75f, Utils.GetLerpValue(0f, 0.5f, completionRatio)) * Utils.GetLerpValue(255f, 0f, Projectile.alpha);
 
         public override bool PreDraw(ref Color lightColor)
         {
@@ -171,8 +171,8 @@ namespace CalamityMod.Projectiles.Ranged
             if (Time >= TimeToLaunch)
             {
                 // 29FEB2024: Ozzatron: hopefully ported this correctly to the new prim system by Toasty
-                GameShaders.Misc["CalamityMod:TrailStreak"].SetShaderTexture(Request<Texture2D>("CalamityMod/ExtraTextures/Trails/FabstaffStreak"));
-                PrimitiveRenderer.RenderTrail(Projectile.oldPos, new(TrailWidthFunction, TrailColorFunction, (_) => Projectile.Size * 0.5f, smoothen: false, shader: GameShaders.Misc["CalamityMod:TrailStreak"]), 25);
+                GameShaders.Misc["CalamityMod:TrailStreak"].SetShaderTexture(Request<Texture2D>("CalamityMod/ExtraTextures/Trails/SylvestaffStreak"));
+                PrimitiveRenderer.RenderTrail(Projectile.oldPos, new(TrailWidthFunction, TrailColorFunction, (_,_) => Projectile.Size * 0.5f, smoothen: false, shader: GameShaders.Misc["CalamityMod:TrailStreak"]), 25);
             }
 
             Main.EntitySpriteDraw(texture, drawPosition, frame, drawColor, drawRotation, rotationPoint, Projectile.scale, SpriteEffects.None);

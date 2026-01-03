@@ -23,15 +23,15 @@ namespace CalamityMod.Items.Weapons.DraedonsArsenal
             Item.width = 38;
             Item.height = 24;
             Item.shootSpeed = 10f;
-            Item.damage = 310;
+            Item.damage = 207;
             Item.mana = 12;
-            Item.useAnimation = Item.useTime = 9;
+            Item.useAnimation = Item.useTime = 24;
             Item.useStyle = ItemUseStyleID.HoldUp;
             Item.noMelee = true;
             Item.knockBack = 8f;
 
             Item.value = CalamityGlobalItem.RarityDarkBlueBuyPrice;
-            Item.rare = ModContent.RarityType<DarkBlue>();
+            Item.rare = ModContent.RarityType<CosmicPurple>();
 
             Item.UseSound = SoundID.Item15;
             Item.autoReuse = true;
@@ -41,7 +41,7 @@ namespace CalamityMod.Items.Weapons.DraedonsArsenal
 
             modItem.UsesCharge = true;
             modItem.MaxCharge = 250f;
-            modItem.ChargePerUse = 1.25f;
+            modItem.ChargePerUse = 1f;
             modItem.ChargePerAltUse = 0f;
         }
 

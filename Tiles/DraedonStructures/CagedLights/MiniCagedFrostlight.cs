@@ -1,21 +1,17 @@
-﻿using System;
-using CalamityMod.Items.Placeables.DraedonStructures.CagedLights;
+﻿using CalamityMod.Items.Placeables.DraedonStructures.CagedLights;
 using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.ID;
-using Terraria.Localization;
 using Terraria.ModLoader;
 using Terraria.DataStructures;
 using Terraria.Enums;
 using Terraria.ObjectData;
-using Terraria.Audio;
+using CalamityMod.Sounds;
 
 namespace CalamityMod.Tiles.DraedonStructures.CagedLights
 {
     public class MiniCagedFrostlight : ModTile
     {
-        public static readonly SoundStyle MinePlatingSound = new("CalamityMod/Sounds/Custom/PlatingMine", 3);
-
         public override void SetStaticDefaults()
         {
             Main.tileLighted[Type] = true;
@@ -23,8 +19,8 @@ namespace CalamityMod.Tiles.DraedonStructures.CagedLights
             Main.tileFrameImportant[Type] = true;
             Main.tileObsidianKill[Type] = false;
 
-            HitSound = MinePlatingSound;
-            DustType = 247;
+            HitSound = CommonCalamitySounds.PlatingMine;
+            DustType = DustID.PlatinumCoin;
 
             AddToArray(ref TileID.Sets.RoomNeeds.CountsAsTorch);
             AddMapEntry(new Color(48, 201, 214), CalamityUtils.GetItemName<MiniCagedFrostlightItem>());
@@ -73,7 +69,7 @@ namespace CalamityMod.Tiles.DraedonStructures.CagedLights
         }
         public override void HitWire(int i, int j)
         {
-            CalamityUtils.LightHitWire(Type, i, j, 1, 1);
+            FurnitureCommon.LightHitWire(Type, i, j, 1, 1);
         }
 
         public override void ModifyLight(int i, int j, ref float r, ref float g, ref float b)

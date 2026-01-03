@@ -4,7 +4,6 @@ using CalamityMod.Items.Materials;
 using CalamityMod.Items.Placeables.Banners;
 using CalamityMod.Projectiles.Rogue;
 using CalamityMod.Sounds;
-using CalamityMod.World;
 using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.GameContent.Bestiary;
@@ -55,19 +54,15 @@ namespace CalamityMod.NPCs.NormalNPCs
             NPC.width = 40;
             NPC.height = 40;
             NPC.defense = 5;
-            NPC.lifeMax = 23;
+            NPC.lifeMax = 25;
             NPC.knockBackResist = 0.15f;
-            NPC.value = Item.buyPrice(0, 0, 0, 75);
+            NPC.value = Item.buyPrice(copper: 75);
             NPC.HitSound = WulfrumAmplifier.Hit;
             NPC.DeathSound = CommonCalamitySounds.WulfrumNPCDeathSound;
             Banner = NPC.type;
             BannerItem = ModContent.ItemType<WulfrumGyratorBanner>();
             NPC.Calamity().VulnerableToSickness = false;
             NPC.Calamity().VulnerableToElectricity = true;
-
-            // Scale stats in Expert and Master
-            CalamityGlobalNPC.AdjustExpertModeStatScaling(NPC);
-            CalamityGlobalNPC.AdjustMasterModeStatScaling(NPC);
         }
 
         public override void SetBestiary(BestiaryDatabase database, BestiaryEntry bestiaryEntry)
@@ -132,8 +127,8 @@ namespace CalamityMod.NPCs.NormalNPCs
                     NPC.direction = direction;
                     NPC.ForceNetUpdate();
                 }
-                //GOTTA GO FAST (Legendary only)
-                if (CalamityWorld.LegendaryMode)
+                //GOTTA GO FAST (FTW only)
+                if (Main.getGoodWorld)
                 {
                     NPC.velocity *= 1.01f;
                     //Overcharged

@@ -13,9 +13,7 @@ namespace CalamityMod.Rarities
         {
             -2 => ItemRarityID.Purple,
             -1 => ModContent.RarityType<Turquoise>(),
-            1 => ModContent.RarityType<DarkBlue>(),
-            2 => ModContent.RarityType<Violet>(),
-            _ => Type,
+            _ => Type, // Cannot reach Cosmic Purple or Burnished Auric
         };
     }
 }

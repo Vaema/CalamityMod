@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using CalamityMod.BiomeManagers;
 using CalamityMod.DataStructures;
 using CalamityMod.Graphics.Primitives;
+using CalamityMod.Items.Placeables.Banners;
 using CalamityMod.Particles;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
@@ -43,10 +44,9 @@ namespace CalamityMod.NPCs.SunkenSea
             NPC.DeathSound = SoundID.DD2_SkeletonDeath;
             NPC.noGravity = true;
             NPC.noTileCollide = true;
-            SpawnModBiomes = new int[1] { ModContent.GetInstance<SunkenSeaBiome>().Type };
-            // Scale stats in Expert and Master
-            CalamityGlobalNPC.AdjustExpertModeStatScaling(NPC);
-            CalamityGlobalNPC.AdjustMasterModeStatScaling(NPC);
+            SpawnModBiomes = new int[1] { ModContent.GetInstance<TimelessShoresBiome>().Type };
+            Banner = NPC.type;
+            BannerItem = ModContent.ItemType<HauntedChumBanner>();
         }
 
         public override void AI()
@@ -195,19 +195,19 @@ namespace CalamityMod.NPCs.SunkenSea
             NPC.ForceNetUpdate();
         }
 
-        internal float WidthFunction(float completionRatio)
+        internal float WidthFunction(float completionRatio, Vector2 vertexPos)
         {
             return MathHelper.Clamp(((float)Math.Cos(completionRatio * 60)) + 2, 1, 2) / 2;
         }
 
-        internal Color ColorFunction(float completionRatio)
+        internal Color ColorFunction(float completionRatio, Vector2 vertexPos)
         {
             return (int)(completionRatio * 100) % 2 == 0 ? new Color(69, 52, 0) : new Color();
         }
 
-        internal float BackgroundWidthFunction(float completionRatio) => WidthFunction(completionRatio) * 3f;
+        internal float BackgroundWidthFunction(float completionRatio, Vector2 vertexPos) => WidthFunction(completionRatio, vertexPos) * 3f;
 
-        internal Color BackgroundColorFunction(float completionRatio)
+        internal Color BackgroundColorFunction(float completionRatio, Vector2 vertexPos)
         {
             return Color.Black;
         }

@@ -1,6 +1,4 @@
-﻿using CalamityMod.Items.Placeables.Astral;
-using CalamityMod.Tiles.Furniture.CraftingStations;
-using Terraria;
+﻿using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
 namespace CalamityMod.Items.Placeables.FurnitureMonolith
@@ -18,7 +16,7 @@ namespace CalamityMod.Items.Placeables.FurnitureMonolith
         {
             CreateRecipe().
                 AddIngredient<AstralMonolith>(14).
-                AddTile<MonolithAmalgam>().
+                AddTile(TileID.Sawmill).
                 Register();
         }
     }

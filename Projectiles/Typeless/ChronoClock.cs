@@ -1,6 +1,4 @@
-﻿using System.IO;
-using CalamityMod.Buffs.StatBuffs;
-using CalamityMod.CalPlayer;
+﻿using CalamityMod.Buffs.StatBuffs;
 using CalamityMod.Particles;
 using Microsoft.Xna.Framework;
 using Terraria;

@@ -1,6 +1,9 @@
 ﻿using CalamityMod.Buffs.StatDebuffs;
 using CalamityMod.Dusts;
+using CalamityMod.NPCs.OldDuke;
 using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
+using ReLogic.Content;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
@@ -38,12 +41,29 @@ namespace CalamityMod.Projectiles.Boss
             }
         }
 
+        public override bool PreDraw(ref Color lightColor)
+        {
+            // There are two of each draw call because it makes the additive glow a bit brighter
+            Asset<Texture2D> tex = ModContent.Request<Texture2D>(Texture);
+            for (int i = 0; i < 5; i++)
+            {
+                Main.EntitySpriteDraw(tex.Value, Projectile.Center - (Projectile.velocity * i) - Main.screenPosition, tex.Frame(), OldDuke.GlowColor, Projectile.rotation, tex.Frame().Center(), MathHelper.Lerp(1.5f, 0.2f, (float)i / 5f), SpriteEffects.None);
+                Main.EntitySpriteDraw(tex.Value, Projectile.Center - (Projectile.velocity * i) - Main.screenPosition, tex.Frame(), OldDuke.GlowColor, Projectile.rotation, tex.Frame().Center(), MathHelper.Lerp(1.5f, 0.2f, (float)i / 5f), SpriteEffects.None);
+            }
+            Main.EntitySpriteDraw(tex.Value, Projectile.Center - Main.screenPosition, tex.Frame(), OldDuke.GlowColor, Projectile.rotation, tex.Frame().Center(), 1.5f, SpriteEffects.None);
+            Main.EntitySpriteDraw(tex.Value, Projectile.Center - Main.screenPosition, tex.Frame(), OldDuke.GlowColor, Projectile.rotation, tex.Frame().Center(), 1.5f, SpriteEffects.None);
+
+            Projectile.DrawBackglow(OldDuke.GlowColor, 4f);
+
+            return base.PreDraw(ref lightColor);
+        }
+
         public override void OnHitPlayer(Player target, Player.HurtInfo info)
         {
             if (info.Damage <= 0)
                 return;
 
-            target.AddBuff(ModContent.BuffType<Irradiated>(), 120);
+            target.AddBuff(ModContent.BuffType<Irradiated>(), 360);
         }
 
         public override void OnKill(int timeLeft)

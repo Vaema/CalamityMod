@@ -1,9 +1,7 @@
 ﻿using CalamityMod.Buffs.DamageOverTime;
 using CalamityMod.Buffs.StatDebuffs;
-using CalamityMod.Dusts;
 using CalamityMod.Particles;
 using CalamityMod.Systems;
-using Microsoft.CodeAnalysis;
 using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.Audio;
@@ -32,7 +30,6 @@ namespace CalamityMod.Projectiles.Ranged
             Projectile.penetrate = Main.zenithWorld ? 3 : 1;
             Projectile.extraUpdates = 2;
             Projectile.timeLeft = 300;
-            Projectile.Calamity().pointBlankShotDuration = CalamityGlobalProjectile.DefaultPointBlankDuration;
         }
         public override void AI()
         {

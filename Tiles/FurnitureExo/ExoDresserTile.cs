@@ -1,6 +1,7 @@
 ﻿using CalamityMod.Items.Placeables.FurnitureExo;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using ReLogic.Content;
 using Terraria;
 using Terraria.GameContent.ObjectInteractions;
 using Terraria.ID;
@@ -11,10 +12,12 @@ namespace CalamityMod.Tiles.FurnitureExo
 {
     public class ExoDresserTile : ModTile
     {
+        public Asset<Texture2D> GlowTexture;
+
         public override void SetStaticDefaults()
         {
             this.SetUpDresser(ModContent.ItemType<ExoDresser>());
-            AddMapEntry(new Color(191, 142, 111), CalamityUtils.GetItemName<ExoDresser>(), CalamityUtils.GetMapChestName);
+            AddMapEntry(new Color(191, 142, 111), CalamityUtils.GetItemName<ExoDresser>(), FurnitureCommon.GetMapChestName);
         }
 
         public override bool CanExplode(int i, int j) => false;
@@ -27,10 +30,10 @@ namespace CalamityMod.Tiles.FurnitureExo
         public override void NumDust(int i, int j, bool fail, ref int num) => num = fail ? 1 : 3;
 
         public override LocalizedText DefaultContainerName(int frameX, int frameY) => CalamityUtils.GetItemName<ExoDresser>();
-        public override void MouseOver(int i, int j) => CalamityUtils.DresserMouseOver<ExoDresser>();
-        public override void MouseOverFar(int i, int j) => CalamityUtils.DresserMouseFar<ExoDresser>();
+        public override void MouseOver(int i, int j) => FurnitureCommon.DresserMouseOver<ExoDresser>();
+        public override void MouseOverFar(int i, int j) => FurnitureCommon.DresserMouseFar<ExoDresser>();
         public override void KillMultiTile(int i, int j, int frameX, int frameY) => Chest.DestroyChest(i, j);
-        public override bool RightClick(int i, int j) => CalamityUtils.DresserRightClick();
+        public override bool RightClick(int i, int j) => FurnitureCommon.DresserRightClick();
 
         public override void PostDraw(int i, int j, SpriteBatch spriteBatch)
         {
@@ -39,7 +42,10 @@ namespace CalamityMod.Tiles.FurnitureExo
 
             int xFrameOffset = Main.tile[i, j].TileFrameX;
             int yFrameOffset = Main.tile[i, j].TileFrameY;
-            Texture2D glowmask = ModContent.Request<Texture2D>("CalamityMod/Tiles/FurnitureExo/ExoDresserGlow").Value;
+
+            GlowTexture ??= ModContent.Request<Texture2D>("CalamityMod/Tiles/FurnitureExo/ExoDresserGlow");
+            Texture2D glowmask = GlowTexture.Value;
+
             Vector2 drawOffest = Main.drawToScreen ? Vector2.Zero : new Vector2(Main.offScreenRange);
             Vector2 drawPosition = new Vector2(i * 16 - Main.screenPosition.X, j * 16 - Main.screenPosition.Y) + drawOffest;
             Color drawColour = Color.White;

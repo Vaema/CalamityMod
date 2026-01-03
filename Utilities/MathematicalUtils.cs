@@ -1,9 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Security.Cryptography.Xml;
 using Microsoft.Xna.Framework;
-using ReLogic.Threading;
 using Terraria;
 
 namespace CalamityMod
@@ -225,6 +222,37 @@ namespace CalamityMod
         /// <param name="x">The input value.</param>
         public static int DirectionalSign(this float x) => (x > 0f).ToDirectionInt();
 
+
+        /// <summary>
+        ///     Approximates the derivative of a function at a given point based on a central-difference formula.
+        /// </summary>
+        /// <param name="fx">The function to take the derivative of.</param>
+        /// <param name="x">The value to evaluate the derivative at.</param>
+        public static double ApproximateDerivative(this Func<double, double> fx, double x)
+        {
+            double left = fx(x + 1e-7);
+            double right = fx(x - 1e-7);
+            return (left - right) * 5e6;
+        }
+
+        /// <summary>
+        ///     Searches for an approximate for a root of a given function.
+        /// </summary>
+        /// <param name="fx">The function to find the root for.</param>
+        /// <param name="initialGuess">The initial guess for what the root could be.</param>
+        /// <param name="iterations">The amount of iterations to perform. The higher this is, the more generally accurate the result will be.</param>
+        public static double IterativelySearchForRoot(Func<double, double> fx, double initialGuess, int iterations)
+        {
+            double result = initialGuess;
+            for (int i = 0; i < iterations; i++)
+            {
+                double derivative = (float)fx.ApproximateDerivative(result);
+                result -= fx(result) / derivative;
+            }
+
+            return result;
+        }
+
         public static List<Point> GetIntersectingPointsInLine(Point start, Point end)
         {
             List<Point> intersectingCells = [];
@@ -237,6 +265,9 @@ namespace CalamityMod
 
             while (true)
             {
+                if (!WorldGen.InWorld(start.X, start.Y))
+                    break;
+                
                 // Add the current cell to the list
                 intersectingCells.Add(start);
 
@@ -261,6 +292,16 @@ namespace CalamityMod
         }
 
         public static List<Point> GetIntersectingPointsInLine(Vector2 start, Vector2 end) => GetIntersectingPointsInLine(start.ToTileCoordinates(), end.ToTileCoordinates());
+
+        /// <summary>
+        ///     Rotates a vector towards targetAngle by at most maxChange and normalizes the vector.
+        /// </summary>
+        public static Vector2 RotateDirectionTowards(this Vector2 vec, float targetAngle, float maxChange) => vec.ToRotation().AngleTowards(targetAngle, maxChange).ToRotationVector2();
+
+        /// <summary>
+        ///     Rotates a vector towards targetAngle by at most maxChange.
+        /// </summary>
+        public static Vector2 RotateTowards(this Vector2 vec, float targetAngle, float maxChange) => vec.RotateDirectionTowards(targetAngle, maxChange) * vec.Length();
 
         #region Easings
         /// <summary>
@@ -398,6 +439,17 @@ namespace CalamityMod
                 break;
             }
             return ratio;
+        }
+        /// <summary>
+        /// Xyk's version of easing in and out<br />
+        /// Returns an eased version of a 0 - 1 lerp value.
+        /// </summary>
+        /// <param name="lerpValue">The 0 - 1 lerp input</param>
+        /// <param name="inPower">The intensisty of the easing in.</param>
+        /// /// <param name="outPower">The intensisty of the easing out.</param>
+        public static float EaseInOutExp(float lerpValue, float inPower, float outPower)
+        {
+            return (lerpValue < 0.5f ? (float)Math.Pow(Utils.GetLerpValue(0, 0.5f, lerpValue, true), inPower) * 0.5f : 0.5f + (1 - (float)Math.Pow(Utils.GetLerpValue(1, 0.5f, lerpValue, true), outPower)) * 0.5f);
         }
 
         #endregion

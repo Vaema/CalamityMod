@@ -1,24 +1,16 @@
-﻿using System;
-using CalamityMod.Items.Accessories;
-using CalamityMod.Items.Weapons.Melee;
-using CalamityMod.Items.Weapons.Ranged;
-using Microsoft.Xna.Framework;
+﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria;
-using Terraria.Audio;
 using Terraria.GameContent;
-using Terraria.Graphics.Shaders;
-using Terraria.ID;
 using Terraria.Localization;
-using static Terraria.ModLoader.ModContent;
 
 namespace CalamityMod.Cooldowns
 {
     public class WarbanneroftheRighteousBuff : CooldownHandler
     {
-        public float CompletionPercentage => Utils.GetLerpValue(80, 0, instance.timeLeft);
+        public float CompletionPercentage => Utils.GetLerpValue(70, 0, instance.timeLeft);
         private bool IsEmpty => CompletionPercentage == 0;
-        private float TextXOffset => (instance.timeLeft <= 20 ? -11 : -18f);
+        private float TextXOffset => instance.timeLeft <= 20 ? -11f : -18f;
         private Vector2 TextPosition => new(TextXOffset, 15);
         private Color TextColor => Color.White;
         private Color TextBorderColor => Color.Black;
@@ -36,14 +28,14 @@ namespace CalamityMod.Cooldowns
         {
             base.DrawExpanded(spriteBatch, position, opacity, scale);
 
-            CalamityUtils.DrawBorderStringEightWay(spriteBatch, FontAssets.MouseText.Value, (-instance.timeLeft + 20).ToString() + "%", position + TextPosition, TextColor, TextBorderColor);
+            CalamityUtils.DrawBorderStringEightWay(spriteBatch, FontAssets.MouseText.Value, (-instance.timeLeft + 15).ToString() + "%", position + TextPosition, TextColor, TextBorderColor);
         }
 
         public override void DrawCompact(SpriteBatch spriteBatch, Vector2 position, float opacity, float scale)
         {
             base.DrawCompact(spriteBatch, position, opacity, scale);
 
-            CalamityUtils.DrawBorderStringEightWay(spriteBatch, FontAssets.MouseText.Value, (-instance.timeLeft + 20).ToString() + "%", position + TextPosition, TextColor, TextBorderColor);
+            CalamityUtils.DrawBorderStringEightWay(spriteBatch, FontAssets.MouseText.Value, (-instance.timeLeft + 15).ToString() + "%", position + TextPosition, TextColor, TextBorderColor);
         }
     }
 }

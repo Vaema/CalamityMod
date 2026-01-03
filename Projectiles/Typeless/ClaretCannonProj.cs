@@ -1,7 +1,4 @@
-﻿using CalamityMod.Balancing;
-using System;
-using CalamityMod.Buffs.DamageOverTime;
-using CalamityMod.Dusts;
+﻿using CalamityMod.Buffs.DamageOverTime;
 using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.Audio;
@@ -24,9 +21,9 @@ namespace CalamityMod.Projectiles.Typeless
             Projectile.friendly = true;
             Projectile.alpha = 0;
             Projectile.penetrate = 1;
-            Projectile.timeLeft = 600;
             Projectile.DamageType = AverageDamageClass.Instance;
-            Projectile.extraUpdates = 1;
+            Projectile.MaxUpdates = 2;
+            Projectile.timeLeft = 120 * Projectile.MaxUpdates;
             Projectile.aiStyle = 0;
         }
 

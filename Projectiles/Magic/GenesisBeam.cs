@@ -3,7 +3,6 @@ using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.Audio;
 using Terraria.ModLoader;
-using Terraria.WorldBuilding;
 
 namespace CalamityMod.Projectiles.Magic
 {

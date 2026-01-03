@@ -23,8 +23,7 @@ namespace CalamityMod.Tiles.Rubblemaker.SunkenSea
         {
             base.SetStaticDefaults();
             RegisterItemDrop(ModContent.ItemType<LimeCoral>(), Type, 0);
-            // TODO: Currently the larger Digitate Corals do not work
-            //FlexibleTileWand.RubblePlacementLarge.AddVariations(ModContent.ItemType<LimeCoral>(), Type, 0);
+            FlexibleTileWand.RubblePlacementLarge.AddVariations(ModContent.ItemType<LimeCoral>(), Type, 0);
         }
     }
     public class TallDigitateCoral3Echo : TallDigitateCoral3
@@ -34,7 +33,7 @@ namespace CalamityMod.Tiles.Rubblemaker.SunkenSea
         {
             base.SetStaticDefaults();
             RegisterItemDrop(ModContent.ItemType<LimeCoral>(), Type, 0);
-            //FlexibleTileWand.RubblePlacementLarge.AddVariations(ModContent.ItemType<LimeCoral>(), Type, 0);
+            FlexibleTileWand.RubblePlacementLarge.AddVariations(ModContent.ItemType<LimeCoral>(), Type, 0);
         }
     }
     public class TallDigitateCoral4Echo : TallDigitateCoral4
@@ -44,7 +43,7 @@ namespace CalamityMod.Tiles.Rubblemaker.SunkenSea
         {
             base.SetStaticDefaults();
             RegisterItemDrop(ModContent.ItemType<LimeCoral>(), Type, 0);
-            //FlexibleTileWand.RubblePlacementLarge.AddVariations(ModContent.ItemType<LimeCoral>(), Type, 0);
+            FlexibleTileWand.RubblePlacementLarge.AddVariations(ModContent.ItemType<LimeCoral>(), Type, 0);
         }
     }
 }

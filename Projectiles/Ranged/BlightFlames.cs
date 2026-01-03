@@ -59,7 +59,7 @@ namespace CalamityMod.Projectiles.Ranged
             {
                 for (int i = 0; i <= 8; i++)
                 {
-                    Dust dust = Dust.NewDustPerfect(Projectile.Center, 91, Projectile.velocity * 0.6f);
+                    Dust dust = Dust.NewDustPerfect(Projectile.Center, DustID.GemDiamond, Projectile.velocity * 0.6f);
                     dust.scale = Main.rand.NextFloat(1.1f, 1.9f);
                     dust.velocity = Projectile.velocity.RotatedByRandom(0.3f) * Main.rand.NextFloat(0.3f, 2.1f);
                     dust.noGravity = true;
@@ -72,7 +72,7 @@ namespace CalamityMod.Projectiles.Ranged
             {
                 for (int i = 0; i <= 3; i++)
                 {
-                    Dust dust = Dust.NewDustPerfect(Projectile.Center, 220, Projectile.velocity * 0.6f);
+                    Dust dust = Dust.NewDustPerfect(Projectile.Center, DustID.FireworkFountain_Green, Projectile.velocity * 0.6f);
                     dust.scale = Main.rand.NextFloat(0.4f, 1.2f);
                     dust.velocity = Projectile.velocity.RotatedByRandom(0.3f) * Main.rand.NextFloat(0.3f, 2.1f);
                     dust.noGravity = false;
@@ -80,13 +80,13 @@ namespace CalamityMod.Projectiles.Ranged
             }
             if (Main.rand.NextBool(4) && Time > 135 && !postTileHit && !postEnemyHit)
             {
-                Dust dust = Dust.NewDustPerfect(Projectile.Center + Main.rand.NextVector2Circular(145, 145), 220, Vector2.Zero);
+                Dust dust = Dust.NewDustPerfect(Projectile.Center + Main.rand.NextVector2Circular(145, 145), DustID.FireworkFountain_Green, Vector2.Zero);
                 dust.scale = Main.rand.NextFloat(0.2f, 0.4f);
                 dust.noGravity = true;
             }
             if (Main.rand.NextBool(20) && (postTileHit || postEnemyHit))
             {
-                Dust dust = Dust.NewDustPerfect(Projectile.Center + Main.rand.NextVector2Circular(145, 145), 220, Vector2.Zero);
+                Dust dust = Dust.NewDustPerfect(Projectile.Center + Main.rand.NextVector2Circular(145, 145), DustID.FireworkFountain_Green, Vector2.Zero);
                 dust.scale = Main.rand.NextFloat(0.4f, 1.2f);
                 dust.noGravity = true;
             }

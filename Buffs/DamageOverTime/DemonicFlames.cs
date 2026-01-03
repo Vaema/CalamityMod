@@ -1,7 +1,7 @@
 ﻿using System;
+using CalamityMod.DataStructures;
 using CalamityMod.Dusts;
 using CalamityMod.Particles;
-using CalamityMod.Projectiles.Pets;
 using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.DataStructures;
@@ -12,6 +12,17 @@ namespace CalamityMod.Buffs.DamageOverTime
 {
     public class DemonicFlames : ModBuff
     {
+        public static DebuffData debuffData = new DebuffData()
+        {
+            EnemyLostRegen = 60, //Unused in the method, this is the amount of DoT from Forbidden Oathblade demon flames
+            HeatDebuffScaling = 1, //Unused in the method, but kept so other things can know this is a heat debuff
+            NPCLifeRegenMethod = DemonFlamesNPCLifeRegen
+        };
+        public static void DemonFlamesNPCLifeRegen(NPC npc, int buffType, ref int buffIndex, ref int damage)
+        {
+            int baseDemonicFlamesDoTValue = (int)Math.Max(npc.Calamity().ActiveHeatDebuffMultiplier.ApplyTo(npc.Calamity().demonicFlamesBonusDamage), npc.Calamity().demonicFlamesBonusDamage);
+            npc.Calamity().ApplyDPSDebuff(baseDemonicFlamesDoTValue, baseDemonicFlamesDoTValue / 15, ref npc.lifeRegen, ref damage);
+        }
         public override void SetStaticDefaults()
         {
             Main.debuff[Type] = true;
@@ -27,10 +38,7 @@ namespace CalamityMod.Buffs.DamageOverTime
 
         public override void Update(NPC npc, ref int buffIndex)
         {
-            if (npc.Calamity().demonicFlames < npc.buffTime[buffIndex])
-                npc.Calamity().demonicFlames = npc.buffTime[buffIndex];
-            npc.DelBuff(buffIndex);
-            buffIndex--;
+            npc.Calamity().demonicFlames = true;
         }
 
         internal static void DrawEffects(PlayerDrawSet drawInfo, bool hasDebuffResistance = false)

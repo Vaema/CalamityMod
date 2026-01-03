@@ -31,7 +31,7 @@ namespace CalamityMod.Projectiles.Rogue
             Lighting.AddLight(Projectile.Center, 0f, 0.25f, 0f);
 
             if (Main.rand.NextBool(5))
-                Dust.NewDust(Projectile.position + Projectile.velocity, Projectile.width, Projectile.height, DustID.JungleSpore, Projectile.velocity.X * 0.5f, Projectile.velocity.Y * 0.5f);
+                Dust.NewDust(Projectile.position + Projectile.velocity, Projectile.width, Projectile.height, DustID.ChlorophyteWeapon, Projectile.velocity.X * 0.5f, Projectile.velocity.Y * 0.5f);
 
             if (Projectile.Calamity().stealthStrike)
             {
@@ -39,8 +39,8 @@ namespace CalamityMod.Projectiles.Rogue
                 if (Projectile.timeLeft < 240)
                     Projectile.Kill();
 
-                Projectile.localAI[0] += Main.rand.Next(0, 3);
-                if (Projectile.localAI[0] >= 10f)
+                Projectile.localAI[0] += Main.rand.Next(1, 3);
+                if (Projectile.localAI[0] >= 20f)
                 {
                     Projectile.localAI[0] = 0f;
                     Vector2 flowerSpawnPosition = Projectile.Center + Main.rand.NextVector2Square(-10f, 10f);
@@ -58,7 +58,6 @@ namespace CalamityMod.Projectiles.Rogue
         }
 
         public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone) => target.AddBuff(BuffID.Venom, 120);
-
         public override void OnHitPlayer(Player target, Player.HurtInfo info) => target.AddBuff(BuffID.Venom, 120);
     }
 }

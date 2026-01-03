@@ -1,9 +1,8 @@
 ﻿using System;
 using System.IO;
-using CalamityMod.Events;
 using CalamityMod.NPCs;
+using CalamityMod.NPCs.ExoMechs.Ares;
 using CalamityMod.Sounds;
-using CalamityMod.World;
 using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.Audio;
@@ -26,7 +25,6 @@ namespace CalamityMod.Projectiles.Boss
 
         public override void SetDefaults()
         {
-            Projectile.Calamity().DealsDefenseDamage = true;
             Projectile.width = 36;
             Projectile.height = 36;
             Projectile.hostile = true;
@@ -35,7 +33,7 @@ namespace CalamityMod.Projectiles.Boss
             Projectile.penetrate = -1;
             Projectile.Opacity = 0f;
             CooldownSlot = ImmunityCooldownID.Bosses;
-            Projectile.timeLeft = BossRushEvent.BossRushActive ? 96 : timeLeft;
+            Projectile.timeLeft = timeLeft;
         }
 
         public override void SendExtraAI(BinaryWriter writer)
@@ -58,7 +56,7 @@ namespace CalamityMod.Projectiles.Boss
             }
 
             int fadeInTime = 3;
-            Projectile.Opacity = MathHelper.Clamp(1f - ((Projectile.timeLeft - ((BossRushEvent.BossRushActive ? 96 : timeLeft) - fadeInTime)) / (float)fadeInTime), 0f, 1f);
+            Projectile.Opacity = MathHelper.Clamp(1f - ((Projectile.timeLeft - (timeLeft - fadeInTime)) / (float)fadeInTime), 0f, 1f);
 
             Lighting.AddLight(Projectile.Center, 0f, 0.6f * Projectile.Opacity, 0f);
 
@@ -126,14 +124,6 @@ namespace CalamityMod.Projectiles.Boss
 
         public override bool CanHitPlayer(Player target) => Projectile.Opacity == 1f;
 
-        public override void OnHitPlayer(Player target, Player.HurtInfo info)
-        {
-            if (info.Damage <= 0 || Projectile.Opacity != 1f)
-                return;
-
-            target.AddBuff(BuffID.CursedInferno, 180);
-        }
-
         public override bool PreDraw(ref Color lightColor)
         {
             lightColor.R = (byte)(255 * Projectile.Opacity);
@@ -163,7 +153,7 @@ namespace CalamityMod.Projectiles.Boss
                 }
 
                 // Plasma bolts
-                int totalProjectiles = BossRushEvent.BossRushActive ? 12 : 8;
+                int totalProjectiles = 8;
 
                 // Reduce the total amount of projectiles by half if Ares Plasma Arm is shooting them and in deathray phase and not the last mech
                 if (Projectile.ai[0] == -1f)
@@ -179,7 +169,7 @@ namespace CalamityMod.Projectiles.Boss
                 for (int k = 0; k < totalProjectiles; k++)
                 {
                     Vector2 velocity2 = spinningPoint.RotatedBy(radians * k);
-                    Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center, velocity2, type, (int)Math.Round(Projectile.damage * 0.8), 0f, Main.myPlayer);
+                    Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center, velocity2, type, AresPlasmaFlamethrower.BoltDamage, 0f, Main.myPlayer);
                 }
             }
 

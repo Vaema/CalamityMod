@@ -71,8 +71,8 @@ namespace CalamityMod.Projectiles.Magic
                 {
                     time = 600;
                 }
-
-                targeted = Projectile.Center.ClosestNPCAt(950);
+                if (targeted == null || targeted.life <= 0)
+                    targeted = Projectile.Center.ClosestNPCAt(950);
                 CalamityUtils.HomeInOnSelectedNPC(Projectile, targeted, true, 0.15f, 6, 0.98f, accelerate: true);
 
                 if (time < 550 && targeted == null)
@@ -102,7 +102,7 @@ namespace CalamityMod.Projectiles.Magic
         }
         public override void ModifyHitNPC(NPC target, ref NPC.HitModifiers modifiers)
         {
-            modifiers.SourceDamage *= (launched ? 1f : 0.4f);
+            modifiers.SourceDamage *= (launched ? 1f : 0.3f);
 
             Player Owner = Main.player[Projectile.owner];
 
@@ -121,7 +121,7 @@ namespace CalamityMod.Projectiles.Magic
         {
             for (int i = 0; i <= 2; i++)
             {
-                Dust dust = Dust.NewDustPerfect(Projectile.Center, 175, (Projectile.velocity * 3).RotatedByRandom(0.6f) * Main.rand.NextFloat(0.1f, 0.8f), 100, default, Main.rand.NextFloat(0.8f, 1.3f));
+                Dust dust = Dust.NewDustPerfect(Projectile.Center, DustID.SpectreStaff, (Projectile.velocity * 3).RotatedByRandom(0.6f) * Main.rand.NextFloat(0.1f, 0.8f), 100, default, Main.rand.NextFloat(0.8f, 1.3f));
                 dust.noGravity = true;
             }
         }

@@ -43,7 +43,7 @@ namespace CalamityMod.Projectiles.Melee
                 {
                     StarTimer = 0f;
                     SoundEngine.PlaySound(SoundID.Item43 with { Volume = 0.6f }, Projectile.Center);
-                    for (int i = 0; i < 4; i++)
+                    for (int i = 0; i < 3; i++)
                     {
                         float clampedChargeTime = MathHelper.Clamp(Timer / LaserChargeTime, 0f, 1f);
                         float starOffset = MathHelper.Lerp(MathHelper.Pi / 6f, 0f, clampedChargeTime);

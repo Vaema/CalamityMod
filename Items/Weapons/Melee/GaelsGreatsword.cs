@@ -42,7 +42,7 @@ namespace CalamityMod.Items.Weapons.Melee
             Item.autoReuse = true;
 
             Item.value = CalamityGlobalItem.RarityVioletBuyPrice;
-            Item.rare = ModContent.RarityType<Violet>();
+            Item.rare = ModContent.RarityType<BurnishedAuric>();
             Item.Calamity().devItem = true;
 
             Item.shoot = ModContent.ProjectileType<GaelSkull>();
@@ -55,7 +55,7 @@ namespace CalamityMod.Items.Weapons.Melee
         public override void MeleeEffects(Player player, Rectangle hitbox)
         {
             var source = player.GetSource_ItemUse(Item);
-            if (CalamityUtils.CountOwnedProjectiles(ModContent.ProjectileType<LightningThing>(), player.whoAmI) < 3 &&
+            if (player.ownedProjectileCounts[ModContent.ProjectileType<LightningThing>()] < 3 &&
                 player.statLife <= player.statLifeMax2 * 0.5f &&
                 Main.myPlayer == player.whoAmI)
             {
@@ -80,7 +80,7 @@ namespace CalamityMod.Items.Weapons.Melee
                         Vector2 dustSpawn = t.ToRotationVector2() * r * Item.Size;
                         if (dustSpawn.X > Item.width / 2)
                         {
-                            Dust.NewDustPerfect(player.MountedCenter + dustSpawn.RotatedBy(player.itemRotation) * player.direction, 218, Vector2.Zero).noGravity = true;
+                            Dust.NewDustPerfect(player.MountedCenter + dustSpawn.RotatedBy(player.itemRotation) * player.direction, DustID.Rain_BloodMoon, Vector2.Zero).noGravity = true;
                         }
                         else
                         {

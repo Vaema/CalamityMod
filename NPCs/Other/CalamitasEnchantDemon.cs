@@ -30,10 +30,9 @@ namespace CalamityMod.NPCs.Other
             NPC.DeathSound = SoundID.NPCDeath18;
             NPC.noGravity = true;
             NPC.noTileCollide = true;
-            NPC.value = 0f;
             NPC.knockBackResist = 0f;
             NPC.netAlways = true;
-            NPC.aiStyle = 0;
+            NPC.aiStyle = NPCAIStyleID.FaceClosestPlayer;
             NPC.Calamity().DoesNotDisappearInBossRush = true;
             NPC.Calamity().VulnerableToHeat = false;
             NPC.Calamity().VulnerableToCold = true;

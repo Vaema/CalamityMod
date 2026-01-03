@@ -1,5 +1,4 @@
 // Damageable
-ArtifactOfResilienceBulwark.DisplayName: Artifact of Resilience
 MarniteRepulsionHitbox.DisplayName: Repulsion Matrix
 // Draedon's Arsenal
 AerialTrackerLaser.DisplayName: Laser
@@ -8,14 +7,16 @@ AnomalysNanogunHoldout.DisplayName: The Anomaly's Nanogun
 AnomalysNanogunMPFBBoom.DisplayName: MPFB Explosion
 AnomalysNanogunMPFBDevastator.DisplayName: MPFB Devastator
 AnomalysNanogunPlasmaBeam.DisplayName: Plasma Beam
-GatlingLaserShot.DisplayName: Gatling Laser
+AqueousHunterDroneSummon.DisplayName: Plasma Shrimp
+AugerHoldout.DisplayName: P-GSS Auger
+AugerSlash.DisplayName: Auger Slash
+AugerPull.DisplayName: Auger Pull
+CountermeasurePalmBlast.DisplayName: Palm Blast
 GaussEnergy.DisplayName: Gauss Energy
 GaussFlux.DisplayName: Gauss Flux
-GaussPistolShot.DisplayName: Gauss Shot
 ImmolationArrow.DisplayName: Immolation Arrow
 ImmolationBurst.DisplayName: Immolation Burst
 ImmolationSpray.DisplayName: Immolation Spray
-LaserRifleShot.DisplayName: Laser Rifle
 MassivePlasmaExplosion.DisplayName: Plasma Explosion
 MountedScannerLaser.DisplayName: Deathray
 MountedScannerSummon.DisplayName: Mounted Scanner
@@ -37,19 +38,20 @@ PulseRifleShot.DisplayName: Pulse Bolt
 PulseTurret.DisplayName: Pulse Turret
 PulseTurretShot.DisplayName: Pulse Bolt
 ShortCircuitHook.DisplayName: Short Circuit Hook
+ShrimpPlasmaMissile.DisplayName: Plasma Shrimp Missile
 SnakeEyesSummon.DisplayName: Snake Eyes
 SnakeEyesProjectile.DisplayName: Inescapable Bolt
-StarSwallowerAcid.DisplayName: Acid
-StarSwallowerSummon.DisplayName: Pet Froge
 SystemBaneLightning.DisplayName: Lightning
 SystemBaneProjectile.DisplayName: System Bane
 TeslaCannonShot.DisplayName: Tesla Beam
-UnstableMatter.DisplayName: Unstable Matter
 VoltageStream.DisplayName: Voltage Stream
+VulcanProjectile.DisplayName: Vulcan Shot
+VulcanSpear.DisplayName: Vulcan Harpoon
 WavePounderBoom.DisplayName: Explosion
 WavePounderProjectile.DisplayName: Wave Pounder
 // Environmental
 AcidDrop.DisplayName: Acid
+BarrelCactusProjectile.DisplayName: Barrel Cactus
 BrimstoneGeyser.DisplayName: Smoke
 GeyserTelegraph.DisplayName: Geyser
 HotSteam.DisplayName: Steam
@@ -76,4 +78,3 @@ PlagueShot.DisplayName: Plague Shot
 PlagueShotBuffer.DisplayName: Plague Shot
 WaterShot.DisplayName: Water Shot
 WaterShotBuffer.DisplayName: Water Shot
-FrequencyManipulatorEnergy.DisplayName: Frequency Manipulator Energy

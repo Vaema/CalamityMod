@@ -1,21 +1,16 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using CalamityMod.Items.Accessories;
 using CalamityMod.Items.Mounts;
 using CalamityMod.Items.Placeables.Furniture;
-using CalamityMod.Items.Placeables.SunkenSea;
-using CalamityMod.Items.Potions;
 using CalamityMod.Items.Potions.Alcohol;
+using CalamityMod.Items.Potions.Food;
 using CalamityMod.Items.SummonItems;
 using CalamityMod.Items.Weapons.Magic;
 using CalamityMod.Items.Weapons.Melee;
 using CalamityMod.Schematics;
 using CalamityMod.Tiles;
-using CalamityMod.Tiles.Crags;
-using CalamityMod.Tiles.DraedonStructures;
 using CalamityMod.Tiles.FurnitureVoid;
-using CalamityMod.Tiles.SunkenSea;
 using CalamityMod.Walls;
 using Microsoft.Xna.Framework;
 using Terraria;
@@ -47,8 +42,7 @@ namespace CalamityMod.World
             }
             if (tile.TileType == TileType<Tiles.SunkenSea.Navystone>() ||
             tile.TileType == TileType<Tiles.SunkenSea.EutrophicSand>() ||
-            tile.WallType == WallType<NavystoneWall>() ||
-            tile.WallType == WallType<EutrophicSandWall>())
+            tile.WallType == WallType<NavystoneWall>())
             {
                 return true;
             }
@@ -66,7 +60,7 @@ namespace CalamityMod.World
                 new ChestItem(ItemID.RottenChunk, WorldGen.genRand.Next(24, 28 + 1)),
                 new ChestItem(ItemID.CorruptionKey, 1),
                 new ChestItem(ItemID.CorruptTorch, WorldGen.genRand.Next(100, 110 + 1)),
-                new ChestItem(ItemID.GoldCoin, WorldGen.genRand.Next(20, 24 + 1)),
+                new ChestItem(ItemID.GoldCoin, WorldGen.genRand.Next(8, 10 + 1)),
                 new ChestItem(ItemID.HealingPotion, WorldGen.genRand.Next(10, 12 + 1)),
                 new ChestItem(potionType, WorldGen.genRand.Next(10, 12 + 1)),
             };
@@ -80,7 +74,7 @@ namespace CalamityMod.World
                 new ChestItem(ItemID.RottenChunk, WorldGen.genRand.Next(24, 28 + 1)),
                 new ChestItem(ItemID.CorruptionKey, 1),
                 new ChestItem(ItemID.CorruptTorch, WorldGen.genRand.Next(100, 110 + 1)),
-                new ChestItem(ItemID.GoldCoin, WorldGen.genRand.Next(20, 24 + 1)),
+                new ChestItem(ItemID.GoldCoin, WorldGen.genRand.Next(8, 10 + 1)),
                 new ChestItem(evil, 1),
                 new ChestItem(ItemID.RedPotion, WorldGen.genRand.Next(1, 2 + 1)),
                 new ChestItem(ItemID.GasTrap,1),
@@ -156,7 +150,7 @@ namespace CalamityMod.World
                 new ChestItem(ItemID.Vertebrae, WorldGen.genRand.Next(24, 28 + 1)),
                 new ChestItem(ItemID.CrimsonKey, 1),
                 new ChestItem(ItemID.CrimsonTorch, WorldGen.genRand.Next(100, 110 + 1)),
-                new ChestItem(ItemID.GoldCoin, WorldGen.genRand.Next(20, 24 + 1)),
+                new ChestItem(ItemID.GoldCoin, WorldGen.genRand.Next(8, 10 + 1)),
                 new ChestItem(ItemID.HealingPotion, WorldGen.genRand.Next(10, 12 + 1)),
                 new ChestItem(potionType, WorldGen.genRand.Next(10, 12 + 1)),
             };
@@ -171,7 +165,7 @@ namespace CalamityMod.World
                 new ChestItem(ItemID.Vertebrae, WorldGen.genRand.Next(24, 28 + 1)),
                 new ChestItem(ItemID.CrimsonKey, 1),
                 new ChestItem(ItemID.CrimsonTorch, WorldGen.genRand.Next(100, 110 + 1)),
-                new ChestItem(ItemID.GoldCoin, WorldGen.genRand.Next(20, 24 + 1)),
+                new ChestItem(ItemID.GoldCoin, WorldGen.genRand.Next(8, 10 + 1)),
                 new ChestItem(ItemType<BloodyMary>(), WorldGen.genRand.Next(2, 2 + 1)),
                 new ChestItem(ItemID.RedPotion, WorldGen.genRand.Next(1, 2 + 1)),
                 new ChestItem(ItemID.GasTrap, 1),
@@ -249,7 +243,7 @@ namespace CalamityMod.World
                 new ChestItem(ItemType<Items.Placeables.SunkenSea.PrismShard>(), WorldGen.genRand.Next(6, 8 + 1)),
                 new ChestItem(ItemID.DungeonDesertKey, 1),
                 new ChestItem(ItemID.DesertTorch, WorldGen.genRand.Next(100, 110 + 1)),
-                new ChestItem(ItemID.GoldCoin, WorldGen.genRand.Next(20, 24 + 1)),
+                new ChestItem(ItemID.GoldCoin, WorldGen.genRand.Next(8, 10 + 1)),
                 new ChestItem(ItemID.HealingPotion, WorldGen.genRand.Next(10, 12 + 1)),
                 new ChestItem(potionType, WorldGen.genRand.Next(10, 12 + 1)),
             };
@@ -262,7 +256,7 @@ namespace CalamityMod.World
                 new ChestItem(ItemType<Items.Placeables.SunkenSea.PrismShard>(), WorldGen.genRand.Next(6, 8 + 1)),
                 new ChestItem(ItemID.DungeonDesertKey, 1),
                 new ChestItem(ItemID.DesertTorch, WorldGen.genRand.Next(100, 110 + 1)),
-                new ChestItem(ItemID.GoldCoin, WorldGen.genRand.Next(20, 24 + 1)),
+                new ChestItem(ItemID.GoldCoin, WorldGen.genRand.Next(8, 10 + 1)),
                 new ChestItem(ItemType<SpelunkersAmulet>(), 1),
                 new ChestItem(ItemID.RedPotion, WorldGen.genRand.Next(1, 2 + 1)),
                 new ChestItem(golfClub, 1), //Implying that the golfer messed with the loot but forgot this, OR its trapped
@@ -272,6 +266,7 @@ namespace CalamityMod.World
             for (int i = 0; i < contents.Count; i++)
             {
                 chest.item[i].SetDefaults(contents[i].Type);
+                chest.item[i].Prefix(-1);
                 chest.item[i].stack = contents[i].Stack;
             }
         }
@@ -332,7 +327,7 @@ namespace CalamityMod.World
                 new ChestItem(ItemType<UnstableGraniteCore>(), 1),
                 new ChestItem(ItemID.Geode, WorldGen.genRand.Next(6, 8 + 1)),
                 new ChestItem(ItemID.BlueTorch, WorldGen.genRand.Next(100, 110 + 1)),
-                new ChestItem(ItemID.GoldCoin, WorldGen.genRand.Next(20, 24 + 1)),
+                new ChestItem(ItemID.GoldCoin, WorldGen.genRand.Next(8, 10 + 1)),
                 new ChestItem(ItemID.HealingPotion, WorldGen.genRand.Next(10, 12 + 1)),
                 new ChestItem(potionType, WorldGen.genRand.Next(Main.zenithWorld ? 1 : 10, (Main.zenithWorld ? 2 : 12) + 1)),
                 new ChestItem((Main.rand.NextBool() && Main.zenithWorld) ? ItemID.GasTrap : ItemID.Granite, Main.zenithWorld ? 1 : WorldGen.genRand.Next(7,15+1)),
@@ -341,6 +336,7 @@ namespace CalamityMod.World
             for (int i = 0; i < contents.Count; i++)
             {
                 chest.item[i].SetDefaults(contents[i].Type);
+                chest.item[i].Prefix(-1);
                 chest.item[i].stack = contents[i].Stack;
             }
         }
@@ -441,7 +437,7 @@ namespace CalamityMod.World
                 new ChestItem(ItemID.FlinxFur, WorldGen.genRand.Next(6, 8 + 1)),
                 new ChestItem(ItemID.FrozenKey, 1),
                 new ChestItem(ItemID.IceTorch, WorldGen.genRand.Next(100, 110 + 1)),
-                new ChestItem(ItemID.GoldCoin, WorldGen.genRand.Next(20, 24 + 1)),
+                new ChestItem(ItemID.GoldCoin, WorldGen.genRand.Next(8, 10 + 1)),
                 new ChestItem(ItemID.HealingPotion, WorldGen.genRand.Next(10, 12 + 1)),
                 new ChestItem(foodType, WorldGen.genRand.Next(10, 12 + 1)),
             };
@@ -454,7 +450,7 @@ namespace CalamityMod.World
                 new ChestItem(ItemID.FlinxFur, WorldGen.genRand.Next(6, 8 + 1)),
                 new ChestItem(ItemID.FrozenKey, 1),
                 new ChestItem(ItemID.IceTorch, WorldGen.genRand.Next(100, 110 + 1)),
-                new ChestItem(ItemID.GoldCoin, WorldGen.genRand.Next(20, 24 + 1)),
+                new ChestItem(ItemID.GoldCoin, WorldGen.genRand.Next(8, 10 + 1)),
                 new ChestItem(ItemID.Eggnog, WorldGen.genRand.Next(10, 12 + 1)),
                 new ChestItem(ItemType<DeliciousMeat>(), WorldGen.genRand.Next(200, 349 + 1)),
                 new ChestItem(Main.rand.NextBool() ? ItemID.GasTrap : ItemID.Marshmallow, 1)
@@ -525,7 +521,7 @@ namespace CalamityMod.World
                 new ChestItem(ItemType<GladiatorsLocket>(), 1),
                 new ChestItem(GenVars.goldBar == TileID.Gold ? ItemID.GoldBar : ItemID.PlatinumBar, WorldGen.genRand.Next(12, 15 + 1)),
                 new ChestItem(ItemID.WhiteTorch, WorldGen.genRand.Next(100, 110 + 1)),
-                new ChestItem(ItemID.GoldCoin, WorldGen.genRand.Next(20, 24 + 1)),
+                new ChestItem(ItemID.GoldCoin, WorldGen.genRand.Next(8, 10 + 1)),
                 new ChestItem(ItemID.HealingPotion, WorldGen.genRand.Next(10, 12 + 1)),
                 new ChestItem(potionType, WorldGen.genRand.Next(Main.zenithWorld ? 1 : 10, (Main.zenithWorld ? 2 : 12) + 1)),
                 new ChestItem((Main.rand.NextBool() && Main.zenithWorld) ? ItemID.GasTrap : ItemID.Marble, Main.zenithWorld ? 1 : WorldGen.genRand.Next(7,15+1)),
@@ -534,6 +530,7 @@ namespace CalamityMod.World
             for (int i = 0; i < contents.Count; i++)
             {
                 chest.item[i].SetDefaults(contents[i].Type);
+                chest.item[i].Prefix(-1);
                 chest.item[i].stack = contents[i].Stack;
             }
         }
@@ -645,7 +642,7 @@ namespace CalamityMod.World
                 new ChestItem(ItemType<FungalSymbiote>(), 1),
                 new ChestItem(ItemID.TruffleWorm, 3),
                 new ChestItem(ItemID.MushroomTorch, WorldGen.genRand.Next(100, 110 + 1)),
-                new ChestItem(ItemID.GoldCoin, WorldGen.genRand.Next(20, 24 + 1)),
+                new ChestItem(ItemID.GoldCoin, WorldGen.genRand.Next(8, 10 + 1)),
                 new ChestItem(ItemID.HealingPotion, WorldGen.genRand.Next(10, 12 + 1)),
                 new ChestItem(potionType, WorldGen.genRand.Next(10, 12 + 1)),
                 };
@@ -658,8 +655,8 @@ namespace CalamityMod.World
                 {
                 new ChestItem(ItemType<FungalSymbiote>(), 1),
                 new ChestItem(ItemID.TruffleWorm, 3),
-                new ChestItem(ItemID.MushroomTorch, WorldGen.genRand.Next(50, 60 + 1)),
-                new ChestItem(ItemID.GoldCoin, WorldGen.genRand.Next(4, 6 + 1)),
+                new ChestItem(ItemID.MushroomTorch, WorldGen.genRand.Next(100, 110 + 1)),
+                new ChestItem(ItemID.GoldCoin, WorldGen.genRand.Next(8, 10 + 1)),
                 new ChestItem(ItemType<OddMushroom>(), WorldGen.genRand.Next(2, 3 + 1)),
                 new ChestItem(ItemID.RedPotion, WorldGen.genRand.Next(1, 2 + 1)),
                 new ChestItem(ItemID.GasTrap, 1)
@@ -670,6 +667,7 @@ namespace CalamityMod.World
             for (int i = 0; i < contents.Count; i++)
             {
                 chest.item[i].SetDefaults(contents[i].Type);
+                chest.item[i].Prefix(-1);
                 chest.item[i].stack = contents[i].Stack;
             }
         }
@@ -752,7 +750,7 @@ namespace CalamityMod.World
                 new ChestItem(ItemType<TrinketofChi>(), 1),
                 new ChestItem(ItemID.PinkGel, WorldGen.genRand.Next(12, 15 + 1)),
                 new ChestItem(ItemID.Torch, WorldGen.genRand.Next(50, 60 + 1)),
-                new ChestItem(ItemID.GoldCoin, WorldGen.genRand.Next(4, 6 + 1)),
+                new ChestItem(ItemID.GoldCoin, WorldGen.genRand.Next(2, 4 + 1)),
                 new ChestItem(Main.zenithWorld ? ItemID.RestorationPotion : ItemID.LesserHealingPotion, WorldGen.genRand.Next(10, 12 + 1)),
                 new ChestItem(potionType, WorldGen.genRand.Next(10, 12 + 1)),
                 new ChestItem(Main.zenithWorld ? ItemID.GasTrap : ItemID.Mushroom, Main.zenithWorld ? 1 : WorldGen.genRand.Next(5,9+1)),
@@ -761,6 +759,7 @@ namespace CalamityMod.World
             for (int i = 0; i < contents.Count; i++)
             {
                 chest.item[i].SetDefaults(contents[i].Type);
+                chest.item[i].Prefix(-1);
                 chest.item[i].stack = contents[i].Stack;
             }
         }
@@ -883,36 +882,27 @@ namespace CalamityMod.World
         {
             int tries = 0;
             string mapKey = Main.rand.NextBool() ?  RoxcaliburShrineKey1 : RoxcaliburShrineKey2;
+            Vector2 schematicSize = new Vector2(TileMaps[mapKey].GetLength(0), TileMaps[mapKey].GetLength(1));
 
             do
             {
                 int placementPositionX = WorldGen.genRand.Next((int)(Main.maxTilesX * 0.15f), (int)(Main.maxTilesX * 0.85f));
-                // Ensure that the shrine doesn't generate too close to the center of the world
-                    do
-                    {
-                        placementPositionX = WorldGen.genRand.Next((int)(Main.maxTilesX * 0.15f), (int)(Main.maxTilesX * 0.85f));
-                    }
-                    while (placementPositionX > (int)(Main.maxTilesX * 0.4f) && placementPositionX < (int)(Main.maxTilesX * 0.6f));
-                
                 int placementPositionY = WorldGen.genRand.Next((int)(Main.maxTilesY * 0.75f), Main.UnderworldLayer-50); //Lava layer
                 
                 Point placementPoint = new Point(placementPositionX, placementPositionY);
-
-                Vector2 schematicSize = new Vector2(TileMaps[mapKey].GetLength(0), TileMaps[mapKey].GetLength(1));
-                int extraArea = 0; 
                 int yExtraArea = 10;
                 bool canGenerateInLocation = true;
 
-                for (int x = placementPoint.X - extraArea; x < placementPoint.X + schematicSize.X + extraArea; x++)
+                for (int x = placementPoint.X; x < placementPoint.X + schematicSize.X; x++)
                 {
                     for (int y = placementPoint.Y; y < placementPoint.Y + schematicSize.Y + yExtraArea; y++)
                     {
                         Tile tile = CalamityUtils.ParanoidTileRetrieval(x, y);
 
                         //Avoid shacks, jungle and mushroom biomes
-                        if (tile.TileType == TileID.WoodBlock || tile.TileType == TileID.Mud || tile.TileType == ModContent.TileType<VernalSoil>())
+                        if (tile.TileType == TileID.WoodBlock || tile.TileType == TileID.Mud || tile.TileType == TileType<VernalSoil>())
                             canGenerateInLocation = false;
-
+                            
                         //Try to not be in a place with lava on the top half or above the shrine
                         if (ShouldAvoidLocation(new Point(x, y-20), true))
                             canGenerateInLocation = false;
@@ -920,7 +910,6 @@ namespace CalamityMod.World
                         //Check for the rest of the structure
                         if (ShouldAvoidLocation(new Point(x, y), false))
                             canGenerateInLocation = false;
-
                     }
                 }
                 if ((!canGenerateInLocation || !structures.CanPlace(new Rectangle(placementPoint.X, placementPoint.Y, (int)schematicSize.X, (int)schematicSize.Y))) && !Main.remixWorld)
@@ -934,10 +923,10 @@ namespace CalamityMod.World
                     PlaceSchematic<Action<Chest>>(mapKey, new Point(placementPoint.X, placementPoint.Y), SchematicAnchor.TopLeft, ref _);
                     //Do not get eaten by other structures or Fargo's instabridge
                     CalamityUtils.AddProtectedStructure(new Rectangle(placementPoint.X, placementPoint.Y, (int)schematicSize.X, (int)schematicSize.Y), 4);
-                    break;
+                    return;
                 }
             } while (tries <= 100000);
-            CalamityMod.Instance.Logger.Debug("Rox Shrine failed to generate");
+            CalamityMod.Log.Debug("Rox Shrine failed to generate");
         }
         #endregion
 
@@ -1010,7 +999,7 @@ namespace CalamityMod.World
                 new ChestItem(ItemType<Terminus>(), 1),
                 new ChestItem(dropType, 1),
                 new ChestItem(ItemType<VoidTorch>(), WorldGen.genRand.Next(100, 110 + 1)),
-                new ChestItem(ItemID.GoldCoin, WorldGen.genRand.Next(20, 24 + 1)),
+                new ChestItem(ItemID.GoldCoin, WorldGen.genRand.Next(8, 10 + 1)),
                 new ChestItem(ItemType<HadalStew>(), WorldGen.genRand.Next(10, 12 + 1)),
                 new ChestItem(potionType, WorldGen.genRand.Next(10, 12 + 1)),
             };

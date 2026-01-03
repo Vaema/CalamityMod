@@ -1,11 +1,7 @@
 ﻿using System;
 using System.IO;
-using CalamityMod.Buffs.DamageOverTime;
-using CalamityMod.Events;
-using CalamityMod.NPCs;
 using CalamityMod.NPCs.Providence;
 using CalamityMod.Particles;
-using CalamityMod.World;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria;
@@ -55,7 +51,7 @@ namespace CalamityMod.Projectiles.Boss
 
         public override void AI()
         {
-            ProvUtils.ApplyGFBDamage(Projectile, 120, 20);
+            ProvUtils.ApplyGFBDamage(Projectile, 120, 10);
 
             Lighting.AddLight(Projectile.Center, 0.45f * Projectile.Opacity, 0.35f * Projectile.Opacity, 0f);
 

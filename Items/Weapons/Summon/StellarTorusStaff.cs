@@ -1,4 +1,5 @@
-﻿using CalamityMod.Items.Materials;
+﻿using CalamityMod.Buffs.Summon;
+using CalamityMod.Items.Materials;
 using CalamityMod.Projectiles.Summon;
 using CalamityMod.Rarities;
 using Microsoft.Xna.Framework;
@@ -26,9 +27,10 @@ namespace CalamityMod.Items.Weapons.Summon
             Item.width = 42;
             Item.height = 42;
             Item.damage = 142;
-            Item.useAnimation = Item.useTime = 20;
+            Item.useAnimation = Item.useTime = 24;
             Item.knockBack = 4f;
             Item.mana = 10;
+            Item.buffType = ModContent.BuffType<StellarTorusBuff>();
             Item.shoot = ModContent.ProjectileType<StellarTorusSummon>();
 
             Item.noMelee = true;
@@ -43,11 +45,9 @@ namespace CalamityMod.Items.Weapons.Summon
 
         public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)
         {
-            int minion = Projectile.NewProjectile(source, player.ClampedMouseWorld(), Main.rand.NextVector2Circular(2f, 2f), ModContent.ProjectileType<StellarTorusSummon>(), damage, knockback, player.whoAmI);
-
-            if (Main.projectile.IndexInRange(minion))
-                Main.projectile[minion].originalDamage = Item.OriginalDamage;
-
+            player.AddBuff(Item.buffType, 2);
+            var minion = Projectile.NewProjectileDirect(source, player.ClampedMouseWorld(), Main.rand.NextVector2Circular(2f, 2f), ModContent.ProjectileType<StellarTorusSummon>(), damage, knockback, player.whoAmI);
+            minion.originalDamage = Item.OriginalDamage;
             return false;
         }
 

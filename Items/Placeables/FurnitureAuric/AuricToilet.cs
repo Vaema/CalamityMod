@@ -6,7 +6,6 @@ using CalamityMod.Rarities;
 using CalamityMod.Tiles.Furniture.CraftingStations;
 using CalamityMod.Tiles.FurnitureAuric;
 using Terraria;
-using Terraria.ID;
 using Terraria.ModLoader;
 namespace CalamityMod.Items.Placeables.FurnitureAuric
 {
@@ -17,7 +16,7 @@ namespace CalamityMod.Items.Placeables.FurnitureAuric
         {
             Item.DefaultToPlaceableTile(ModContent.TileType<AuricToiletTile>());
             Item.value = Item.sellPrice(gold: 40);
-            Item.rare = ModContent.RarityType<Violet>(); // Most special shitter gets most preferential treatment
+            Item.rare = ModContent.RarityType<BurnishedAuric>(); // Most special shitter gets most preferential treatment
         }
 
         public override void AddRecipes()

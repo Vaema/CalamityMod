@@ -1,17 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
-using CalamityMod.Buffs.DamageOverTime;
 using CalamityMod.Buffs.StatBuffs;
-using CalamityMod.Buffs.StatDebuffs;
 using CalamityMod.Dusts;
 using CalamityMod.Items.Accessories;
-using CalamityMod.Particles;
 using CalamityMod.Systems.Collections;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria;
 using Terraria.Audio;
-using Terraria.ID;
 using Terraria.ModLoader;
 
 namespace CalamityMod.Projectiles.Healing
@@ -61,7 +57,7 @@ namespace CalamityMod.Projectiles.Healing
                         for (int l = 0; l < Player.MaxBuffs; l++)
                         {
                             int buffID = player.buffType[l];
-                            if (player.buffTime[l] > 2 && DebuffsList.Includes(buffID))
+                            if (player.buffTime[l] > 2 && CalamityBuffSets.IsDebuff[buffID])
                             {
                                 player.buffTime[l] *= 0;
                             }

@@ -1,6 +1,4 @@
 ﻿using System.Collections.Generic;
-using CalamityMod.CalPlayer;
-using CalamityMod.Items.Accessories.Vanity;
 using CalamityMod.Particles;
 using CalamityMod.Rarities;
 using Microsoft.Xna.Framework;
@@ -35,9 +33,6 @@ namespace CalamityMod.Items.Accessories.Wings
 
         public override void UpdateAccessory(Player player, bool hideVisual)
         {
-            CalamityPlayer modPlayer = player.Calamity();
-            player.noFallDmg = true;
-
             if (!hideVisual)
                 DrawWingEffects(player);
         }

@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using CalamityMod.CustomRecipes;
-using CalamityMod.Items.Materials;
-using CalamityMod.Items.Placeables;
+﻿using CalamityMod.Items.Materials;
 using CalamityMod.Items.Weapons.DraedonsArsenal;
 using CalamityMod.Projectiles.Rogue;
 using CalamityMod.Rarities;
@@ -32,7 +28,7 @@ namespace CalamityMod.Items.Weapons.Rogue
             Item.knockBack = 3f;
 
             Item.value = CalamityGlobalItem.RarityVioletBuyPrice;
-            Item.rare = ModContent.RarityType<Violet>();
+            Item.rare = ModContent.RarityType<BurnishedAuric>();
 
             Item.noMelee = true;
             Item.noUseGraphic = true;
@@ -72,7 +68,7 @@ namespace CalamityMod.Items.Weapons.Rogue
         public override void AddRecipes()
         {
             CreateRecipe().
-                AddIngredient<Eradicator>().
+                AddIngredient<DimensionTearingDisk>().
                 AddIngredient<AerialTracker>().
                 AddIngredient<AuricBar>(5).
                 AddTile<CosmicAnvil>().

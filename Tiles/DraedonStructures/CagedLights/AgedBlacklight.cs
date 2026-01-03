@@ -1,34 +1,29 @@
-﻿using System;
+﻿using CalamityMod.ExtraTextures.GreyscaleGradients;
 using CalamityMod.Items.Placeables.DraedonStructures.CagedLights;
+using CalamityMod.Sounds;
 using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
 using Terraria;
-using Terraria.ID;
-using Terraria.Localization;
-using Terraria.ModLoader;
 using Terraria.DataStructures;
 using Terraria.Enums;
+using Terraria.ID;
+using Terraria.ModLoader;
 using Terraria.ObjectData;
-using Terraria.Audio;
-using Microsoft.Xna.Framework.Graphics;
 
 namespace CalamityMod.Tiles.DraedonStructures.CagedLights
 {
     public class AgedBlacklight : ModTile
     {
-        public static readonly SoundStyle MinePlatingSound = new("CalamityMod/Sounds/Custom/PlatingMine", 3);
-        internal static GrayscaleTexture1D PulseGradient;
-
         public override void SetStaticDefaults()
         {
-            PulseGradient = new("CalamityMod/Tiles/Plates/OnyxplatePulse");
-
             Main.tileLighted[Type] = true;
             Main.tileNoFail[Type] = true;
             Main.tileFrameImportant[Type] = true;
             Main.tileObsidianKill[Type] = false;
+            RegisterItemDrop(ModContent.ItemType<AgedBlacklightItem>());
 
-            HitSound = MinePlatingSound;
-            DustType = 173;
+            HitSound = CommonCalamitySounds.PlatingMine;
+            DustType = DustID.ShadowbeamStaff;
 
             AddToArray(ref TileID.Sets.RoomNeeds.CountsAsTorch);
             AddMapEntry(new Color(48, 201, 214), CalamityUtils.GetItemName<CagedLablightItem>());
@@ -36,7 +31,7 @@ namespace CalamityMod.Tiles.DraedonStructures.CagedLights
 
             // Attach to ground
             TileObjectData.newTile.CopyFrom(TileObjectData.Style2x2);
-            TileObjectData.newTile.StyleHorizontal = true; 
+            TileObjectData.newTile.StyleHorizontal = true;
             TileObjectData.newTile.StyleMultiplier = 10; // total 10 frames, all should be same "itemStyle"
             TileObjectData.newTile.StyleWrapLimit = 2; // only 1 placement alternative per row
             TileObjectData.newTile.Origin = new Point16(0, 1);
@@ -77,15 +72,10 @@ namespace CalamityMod.Tiles.DraedonStructures.CagedLights
         }
         public override void PostDraw(int i, int j, SpriteBatch spriteBatch)
         {
-            float brightness = PulseGradient.GetRepeat((int)Main.GameUpdateCount);
+            float brightness = GreyscaleGradient.OnyxplatePulse.GetRepeat((int)Main.GameUpdateCount);
             brightness = MathHelper.Clamp(brightness, 0.2f, 0.6f);
 
             Lighting.AddLight(new Vector2(i * 16, j * 16), 182f / 255f * brightness, 28f / 255f * brightness, 232f / 255f * brightness);
-        }
-
-        public override void KillMultiTile(int i, int j, int frameX, int frameY)
-        {
-            Item.NewItem(new EntitySource_TileBreak(i, j), i * 16, j * 16, 32, 48, ModContent.ItemType<AgedBlacklightItem>());
         }
     }
 }

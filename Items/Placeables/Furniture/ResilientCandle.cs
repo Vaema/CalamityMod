@@ -16,8 +16,7 @@ namespace CalamityMod.Items.Placeables.Furniture
         public override void SetDefaults()
         {
             Item.DefaultToPlaceableTile(ModContent.TileType<Tiles.Furniture.PurpleCandle>());
-            // Cirrus overcharges: 10% sell value instead of 20%
-            Item.value = Item.sellPrice(gold: 20);
+            Item.value = Item.buyPrice(gold: 25); // Sold by Wizard
             Item.rare = ItemRarityID.Pink;
         }
     }

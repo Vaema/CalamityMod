@@ -37,7 +37,6 @@ namespace CalamityMod.Projectiles.Ranged
             Projectile.localNPCHitCooldown = -1;
             Projectile.aiStyle = ProjAIStyleID.Arrow;
             AIType = ProjectileID.Bullet;
-            Projectile.Calamity().pointBlankShotDuration = CalamityGlobalProjectile.DefaultPointBlankDuration;
         }
 
         public override void AI()
@@ -109,12 +108,11 @@ namespace CalamityMod.Projectiles.Ranged
                     dust.scale = Main.rand.NextFloat(0.75f, 1.1f);
                     dust.noGravity = true;
                 }
-                //SoundEngine.PlaySound(SoundID.Shatter with { Volume = 0.4f, Pitch = 0.1f + 0.1f * bounces }, Projectile.Center);
                 SoundEngine.PlaySound(SoundID.Item50 with { Volume = 0.3f, Pitch = -0.2f + 0.4f * bounces, MaxInstances = 15 }, Projectile.Center);
             }
             for (int i = 0; i < 2; i++)
             {
-                Particle blastRing = new CustomPulse(Projectile.Center, Vector2.Zero, Color.White, "CalamityMod/Particles/BloomCircle", Vector2.One, Main.rand.NextFloat(-10, 10), 0.2f * (i), 0.45f * (i), 9, true);
+                Particle blastRing = new CustomPulse(Projectile.Center, Vector2.Zero, Color.White, "CalamityMod/Particles/BloomCircle", Vector2.One, Main.rand.NextFloat(-10, 10), 0.2f * (i), 0.45f * (i), 9, true, makeLight: 0);
                 GeneralParticleHandler.SpawnParticle(blastRing);
             }
             float rot = Main.rand.NextFloat(-5, 5);
@@ -126,9 +124,10 @@ namespace CalamityMod.Projectiles.Ranged
                 dust.fadeIn = 1.5f;
                 dust.noGravity = true;
                 dust.color = Color.White;
+                dust.noLightEmittence = true;
             }
-            // Doesn't actually do damage, just an aoe for confustion infliction and knockback
-            Projectile flash = Projectile.NewProjectileDirect(Projectile.GetSource_FromThis(), Projectile.Center, Vector2.Zero, ModContent.ProjectileType<FlashRoundFlash>(), 5, 0f, Projectile.owner);
+            // Doesn't actually do damage, just an aoe for knockback
+            Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center, Vector2.Zero, ModContent.ProjectileType<FlashRoundFlash>(), 5, 0f, Projectile.owner);
         }
         public override bool OnTileCollide(Vector2 oldVelocity)
         {
@@ -165,6 +164,11 @@ namespace CalamityMod.Projectiles.Ranged
                 Projectile.localNPCImmunity[i] = 0;
             bounces--;
             return false;
+        }
+        public override void ModifyHitNPC(NPC target, ref NPC.HitModifiers modifiers)
+        {
+            float damageMult = (Projectile.numHits == 0 ? 1 : 0.3f);
+            modifiers.SourceDamage *= damageMult;
         }
         public override void OnKill(int timeLeft)
         {

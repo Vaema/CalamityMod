@@ -1,6 +1,5 @@
 ﻿using CalamityMod.NPCs;
 using CalamityMod.NPCs.Yharon;
-using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
 

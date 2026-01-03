@@ -1,13 +1,16 @@
-﻿using System.IO;
+﻿using System;
+using System.IO;
 using CalamityMod.Buffs.DamageOverTime;
+using CalamityMod.Buffs.StatDebuffs;
 using CalamityMod.Dusts;
 using CalamityMod.Events;
-using CalamityMod.NPCs.CalamityAIs.CalamityBossAIs;
+using CalamityMod.Projectiles.Boss;
 using CalamityMod.World;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using ReLogic.Content;
 using Terraria;
+using Terraria.Audio;
 using Terraria.GameContent;
 using Terraria.ID;
 using Terraria.Localization;
@@ -51,9 +54,13 @@ namespace CalamityMod.NPCs.AstrumDeus
             }
         }
 
+        public static int LaserDamage = 30; // 120
+        public static int HelixLaserDamage = 40; // 160
+        public static int MineDamage = 40; // 160
+
         public override void SetDefaults()
         {
-            NPC.GetNPCDamage();
+            NPC.damage = 70; // 140
             NPC.npcSlots = 5f;
             NPC.width = 38;
             NPC.height = 44;
@@ -64,9 +71,7 @@ namespace CalamityMod.NPCs.AstrumDeus
             AIType = -1;
             NPC.knockBackResist = 0f;
 
-            if (BossRushEvent.BossRushActive)
-                NPC.scale *= 1.5f;
-            else if (CalamityWorld.death)
+            if (CalamityWorld.death || BossRushEvent.BossRushActive)
                 NPC.scale *= 1.4f;
             else if (CalamityWorld.revenge)
                 NPC.scale *= 1.35f;
@@ -84,9 +89,6 @@ namespace CalamityMod.NPCs.AstrumDeus
             NPC.dontCountMe = true;
             NPC.Calamity().VulnerableToHeat = true;
             NPC.Calamity().VulnerableToSickness = false;
-
-            // Scale HP in Master
-            CalamityGlobalNPC.AdjustMasterModeStatScaling(NPC, true);
         }
 
         public override void SendExtraAI(BinaryWriter writer)
@@ -112,7 +114,309 @@ namespace CalamityMod.NPCs.AstrumDeus
 
         public override void AI()
         {
-            AstrumDeusAI.VanillaAstrumDeusAI(NPC, Mod, false);
+            CalamityGlobalNPC calamityGlobalNPC = NPC.Calamity();
+
+            // Difficulty variables
+            bool expertMode = Main.expertMode || BossRushEvent.BossRushActive;
+            bool revenge = CalamityWorld.revenge || BossRushEvent.BossRushActive;
+            bool death = CalamityWorld.death || BossRushEvent.BossRushActive;
+
+            // Deus cannot hit for 3 seconds or while invulnerable
+            bool doNotDealDamage = calamityGlobalNPC.newAI[1] < 180f || NPC.dontTakeDamage;
+            if (doNotDealDamage)
+                NPC.damage = 0;
+            else
+                NPC.damage = NPC.defDamage;
+
+            // Get a target
+            if (NPC.target < 0 || NPC.target == Main.maxPlayers || Main.player[NPC.target].dead || !Main.player[NPC.target].active)
+                NPC.TargetClosest();
+
+            Player player = Main.player[NPC.target];
+
+            bool increaseSpeed = Vector2.Distance(player.Center, NPC.Center) > CalamityGlobalNPC.CatchUpDistance200Tiles;
+            bool increaseSpeedMore = Vector2.Distance(player.Center, NPC.Center) > CalamityGlobalNPC.CatchUpDistance350Tiles;
+
+            // Inflict Extreme Gravity to nearby players
+            if (revenge)
+            {
+                if (!Main.dedServ)
+                {
+                    if (!Main.LocalPlayer.dead && Main.LocalPlayer.active && Vector2.Distance(Main.LocalPlayer.Center, NPC.Center) < CalamityGlobalNPC.CatchUpDistance350Tiles)
+                        Main.LocalPlayer.AddBuff(ModContent.BuffType<DoGExtremeGravity>(), 2);
+                }
+            }
+
+            // Life
+            float lifeRatio = NPC.life / (float)NPC.lifeMax;
+
+            // Phases based on life percentage
+            bool halfHealth = lifeRatio < 0.5f;
+            bool doubleWormPhase = calamityGlobalNPC.newAI[0] != 0f;
+            bool startFlightPhase = lifeRatio < 0.8f || death || doubleWormPhase;
+            bool phase2 = lifeRatio < 0.5f && doubleWormPhase && expertMode;
+            bool phase3 = lifeRatio < 0.2f && doubleWormPhase && expertMode;
+            bool splittingMines = lifeRatio < 0.7f;
+            bool movingMines = lifeRatio < 0.3f && doubleWormPhase && expertMode;
+            bool deathModeEnragePhase_Head = calamityGlobalNPC.newAI[0] == 3f;
+            bool deathModeEnragePhase_BodyAndTail = false;
+
+            // 5 seconds of resistance in phase 2, 10 seconds in phase 1, to prevent spawn killing
+            float resistanceTime = doubleWormPhase ? 300f : 600f;
+
+            calamityGlobalNPC.CurrentlyIncreasingDefenseOrDR = calamityGlobalNPC.newAI[1] < resistanceTime;
+
+            // Flight timer
+            float aiSwitchTimer = doubleWormPhase ? (Main.getGoodWorld ? 600f : 1200f) : (Main.getGoodWorld ? 900f : 1800f);
+
+            calamityGlobalNPC.newAI[3] += 1f;
+            if (calamityGlobalNPC.newAI[3] >= aiSwitchTimer)
+                calamityGlobalNPC.newAI[3] = 0f;
+            // Sound effect for swapping between attack behaviors in phase 2
+            if (doubleWormPhase && calamityGlobalNPC.newAI[3] % aiSwitchTimer == 0f && !(deathModeEnragePhase_Head || deathModeEnragePhase_BodyAndTail))
+                SoundEngine.PlaySound(AstrumDeusHead.SplitSound with { Pitch = -0.2f, Volume = 0.9f }, player.Center);
+
+            // Phase for flying at the player
+            bool flyAtTarget = calamityGlobalNPC.newAI[3] >= (aiSwitchTimer * 0.5f) && startFlightPhase;
+
+            // Length of worms
+            int phase1Length = death ? 80 : revenge ? 70 : expertMode ? 60 : 50;
+            int phase2Length = death ? 40 : revenge ? 35 : expertMode ? 30 : 25;
+            int gfbLength = death ? 8 : revenge ? 7 : expertMode ? 6 : 5;
+            int maxLength = Main.zenithWorld && doubleWormPhase ? gfbLength : doubleWormPhase ? phase2Length : phase1Length;
+
+            // Become gradually more pissed as more worms are killed
+            int gfbMaxWormCount = 10;
+            int gfbWormCount = 0;
+            if (Main.zenithWorld)
+                gfbWormCount = NPC.CountNPCS(ModContent.NPCType<AstrumDeusHead>());
+            if (gfbWormCount > gfbMaxWormCount)
+                gfbWormCount = gfbMaxWormCount;
+
+            // Copy dontTakeDamage and Opacity from head
+            NPC.dontTakeDamage = Main.npc[(int)NPC.ai[2]].dontTakeDamage;
+            NPC.Opacity = Main.npc[(int)NPC.ai[2]].Opacity;
+            deathModeEnragePhase_BodyAndTail = Main.npc[(int)NPC.ai[2]].Calamity().newAI[0] == 3f;
+            if (deathModeEnragePhase_BodyAndTail)
+            {
+                NPC.defense = 25;
+                calamityGlobalNPC.DR = 0.15f;
+            }
+
+            // Set worm variable
+            if (NPC.ai[2] > 0f)
+                NPC.realLife = (int)NPC.ai[2];
+
+            // Alpha effects
+            if (Main.npc[(int)NPC.ai[1]].alpha < 128 && !NPC.dontTakeDamage)
+            {
+                NPC.alpha -= 42;
+                if (NPC.alpha < 0)
+                    NPC.alpha = 0;
+            }
+
+            // Check if other segments are still alive, if not, die
+            bool shouldDespawn = true;
+            int headType = ModContent.NPCType<AstrumDeusHead>();
+            for (int i = 0; i < Main.maxNPCs; i++)
+            {
+                if (Main.npc[i].type != headType || !Main.npc[i].active)
+                    continue;
+                shouldDespawn = false;
+                break;
+            }
+            if (shouldDespawn)
+            {
+                if (Main.npc.IndexInRange((int)NPC.ai[1]) && Main.npc[(int)NPC.ai[1]].active && Main.npc[(int)NPC.ai[1]].life > 0)
+                    shouldDespawn = false;
+            }
+            if (shouldDespawn)
+            {
+                NPC.life = 0;
+                NPC.HitEffect(0, 10.0);
+                NPC.checkDead();
+                NPC.active = false;
+                NPC.ForceNetUpdate(false);
+            }
+
+            // Direction
+            if (NPC.velocity.X < 0f)
+                NPC.spriteDirection = -1;
+            else if (NPC.velocity.X > 0f)
+                NPC.spriteDirection = 1;
+
+            if (NPC.life > Main.npc[(int)NPC.ai[1]].life)
+                NPC.life = Main.npc[(int)NPC.ai[1]].life;
+
+            bool hasJustSpawned = calamityGlobalNPC.newAI[1] < resistanceTime * 0.4f && !doubleWormPhase; // Speed boost for the first 4 seconds after spawning
+            float segmentVelocity = hasJustSpawned ? 25f : deathModeEnragePhase_Head ? 19f : death ? 17.5f : 16f;
+
+            float segmentVelocityBoost = 5f * (1f - lifeRatio);
+            segmentVelocity += segmentVelocityBoost;
+            if (gfbWormCount > 0)
+                segmentVelocity += (gfbMaxWormCount - gfbWormCount) * 0.444f;
+
+            if (revenge)
+            {
+                float revMultiplier = 1.1f;
+                segmentVelocity *= revMultiplier;
+            }
+
+            // Shoot lasers
+            NPC.localAI[0] += 1f;
+
+            int shootTime = (doubleWormPhase && expertMode) ? 2 : 1;
+            float shootProjectile = (doubleWormPhase && expertMode) ? 200 : 400;
+            float timer = NPC.ai[0] + 15f;
+            float divisor = timer + shootProjectile;
+            bool canFireProjectiles = NPC.Opacity >= 1f;
+            bool shootGodRays = phase2 || deathModeEnragePhase_BodyAndTail;
+
+            if (canFireProjectiles)
+            {
+                if (!flyAtTarget || deathModeEnragePhase_BodyAndTail)
+                {
+                    float laserDivisor = (phase2 && !deathModeEnragePhase_BodyAndTail) ? 4f : 2f;
+                    if (NPC.localAI[0] % divisor == 0f && NPC.ai[0] % laserDivisor == 0f)
+                    {
+                        NPC.TargetClosest();
+
+                        if (Main.netMode != NetmodeID.MultiplayerClient)
+                        {
+                            if (deathModeEnragePhase_BodyAndTail)
+                            {
+                                Vector2 velocity = Vector2.Zero;
+                                if (movingMines)
+                                {
+                                    Vector2 randomMineMovement = new Vector2(Main.rand.Next(-100, 101), Main.rand.Next(-100, 101));
+                                    randomMineMovement.Normalize();
+                                    randomMineMovement *= Main.rand.Next(90, 121) * 0.01f;
+                                    velocity = randomMineMovement;
+                                }
+
+                                int type = ModContent.ProjectileType<DeusMine>();
+                                float split = (splittingMines && NPC.ai[0] % 3f == 0f) ? 1f : 0f;
+                                Projectile.NewProjectile(NPC.GetSource_FromAI(), NPC.Center, velocity, type, MineDamage, 0f, Main.myPlayer, split, 0f);
+                            }
+                        }
+
+                        if (Vector2.Distance(player.Center, NPC.Center) > 80f)
+                        {
+                            if (Main.netMode != NetmodeID.MultiplayerClient)
+                            {
+                                float deusLaserSpeed = death ? 16f : revenge ? 14f : 13f;
+                                if (gfbWormCount > 0)
+                                    deusLaserSpeed += (gfbMaxWormCount - gfbWormCount) * 0.444f;
+
+                                Vector2 deusLaserCenter = NPC.Center;
+                                float deusLaserTargetX = player.Center.X - deusLaserCenter.X;
+                                float deusLaserTargetY = player.Center.Y - deusLaserCenter.Y;
+                                float deusLaserTargetDist = (float)Math.Sqrt(deusLaserTargetX * deusLaserTargetX + deusLaserTargetY * deusLaserTargetY);
+                                deusLaserTargetDist = deusLaserSpeed / deusLaserTargetDist;
+                                deusLaserTargetX *= deusLaserTargetDist;
+                                deusLaserTargetY *= deusLaserTargetDist;
+                                deusLaserCenter.X += deusLaserTargetX * 5f;
+                                deusLaserCenter.Y += deusLaserTargetY * 5f;
+
+                                Vector2 shootDirection = new Vector2(deusLaserTargetX, deusLaserTargetY).SafeNormalize(Vector2.UnitY);
+                                Vector2 laserVelocity = shootDirection * deusLaserSpeed;
+
+                                int type = shootGodRays ? ModContent.ProjectileType<AstralGodRay>() : ModContent.ProjectileType<AstralShot2>();
+                                int damage = shootGodRays ? HelixLaserDamage : LaserDamage;
+                                if (shootGodRays)
+                                {
+                                    SoundEngine.PlaySound(AstrumDeusHead.GodRaySound, NPC.Center);
+                                    // Waving beams need to start offset so they cross each other neatly.
+                                    float waveSideOffset = Main.rand.NextFloat(9f, 14f);
+                                    Vector2 perp = shootDirection.RotatedBy(-MathHelper.PiOver2) * waveSideOffset;
+
+                                    for (int i = -1; i <= 1; i += 2)
+                                    {
+                                        Vector2 laserStartPos = deusLaserCenter + i * perp + Main.rand.NextVector2CircularEdge(6f, 6f);
+                                        Projectile godRay = Projectile.NewProjectileDirect(NPC.GetSource_FromAI(), laserStartPos, laserVelocity, type, damage, 0f, Main.myPlayer, player.Center.X, player.Center.Y);
+
+                                        // Tell this Phased God Ray exactly which way it should be waving.
+                                        godRay.localAI[1] = i * 0.5f;
+                                    }
+                                }
+                                else
+                                {
+                                    SoundEngine.PlaySound(AstrumDeusHead.LaserSound, NPC.Center);
+                                    Projectile.NewProjectile(NPC.GetSource_FromAI(), deusLaserCenter, laserVelocity, type, damage, 0f, Main.myPlayer, player.Center.X, player.Center.Y);
+                                }
+                            }
+                        }
+                    }
+                }
+                else
+                {
+                    if (NPC.localAI[0] % divisor == 0f && NPC.ai[0] % 2f == 0f)
+                    {
+                        Vector2 velocity = Vector2.Zero;
+                        if (movingMines)
+                        {
+                            Vector2 randomMineMovement = new Vector2(Main.rand.Next(-100, 101), Main.rand.Next(-100, 101));
+                            randomMineMovement.Normalize();
+                            randomMineMovement *= Main.rand.Next(30, 121) * 0.01f;
+                            velocity = randomMineMovement;
+                        }
+
+                        int type = ModContent.ProjectileType<DeusMine>();
+                        float split = (splittingMines && NPC.ai[0] % 3f == 0f) ? 1f : 0f;
+                        Projectile.NewProjectile(NPC.GetSource_FromAI(), NPC.Center, velocity, type, MineDamage, 0f, Main.myPlayer, split, 0f);
+                    }
+                }
+            }
+
+            // Follow the head
+            Vector2 segmentCenter = NPC.Center;
+            float segmentTargetX = player.Center.X;
+            float segmentTargetY = player.Center.Y;
+            segmentTargetX = (int)(segmentTargetX / 16f) * 16;
+            segmentTargetY = (int)(segmentTargetY / 16f) * 16;
+            segmentCenter.X = (int)(segmentCenter.X / 16f) * 16;
+            segmentCenter.Y = (int)(segmentCenter.Y / 16f) * 16;
+            segmentTargetX -= segmentCenter.X;
+            segmentTargetY -= segmentCenter.Y;
+
+            if (NPC.ai[1] > 0f && NPC.ai[1] < Main.npc.Length)
+            {
+                try
+                {
+                    segmentCenter = NPC.Center;
+                    segmentTargetX = Main.npc[(int)NPC.ai[1]].Center.X - segmentCenter.X;
+                    segmentTargetY = Main.npc[(int)NPC.ai[1]].Center.Y - segmentCenter.Y;
+                }
+                catch
+                {
+                }
+
+                NPC.rotation = (float)Math.Atan2(segmentTargetY, segmentTargetX) + MathHelper.PiOver2;
+                float segmentTargetDist = (float)Math.Sqrt(segmentTargetX * segmentTargetX + segmentTargetY * segmentTargetY);
+                int segmentWidth = NPC.width;
+                segmentTargetDist = (segmentTargetDist - segmentWidth) / segmentTargetDist;
+                segmentTargetX *= segmentTargetDist;
+                segmentTargetY *= segmentTargetDist;
+                NPC.velocity = Vector2.Zero;
+                NPC.position.X = NPC.position.X + segmentTargetX;
+                NPC.position.Y = NPC.position.Y + segmentTargetY;
+
+                if (segmentTargetX < 0f)
+                    NPC.spriteDirection = -1;
+                else if (segmentTargetX > 0f)
+                    NPC.spriteDirection = 1;
+            }
+
+            // Play spawn sound on Deus on the first frame because otherwise the sound wouldn't play properly in multiplayer
+            if (calamityGlobalNPC.newAI[1] == 0f && !doubleWormPhase)
+            {
+                SoundEngine.PlaySound(AstrumDeusHead.SpawnSound, NPC.Center);
+                calamityGlobalNPC.newAI[1] = 1f;
+            }
+
+            // 5 seconds of resistance in phase 2, 10 seconds in phase 1, to prevent spawn killing
+            if (calamityGlobalNPC.newAI[1] < resistanceTime && ((NPC.position - NPC.oldPosition).Length() > 2f || calamityGlobalNPC.newAI[1] > 1f))
+                calamityGlobalNPC.newAI[1] += 1f;
         }
 
         public override bool PreDraw(SpriteBatch spriteBatch, Vector2 screenPos, Color drawColor)
@@ -259,7 +563,6 @@ namespace CalamityMod.NPCs.AstrumDeus
         public override void ApplyDifficultyAndPlayerScaling(int numPlayers, float balance, float bossAdjustment)
         {
             NPC.lifeMax = (int)(NPC.lifeMax * 0.8f * balance * bossAdjustment);
-            NPC.damage = (int)(NPC.damage * NPC.GetExpertDamageMultiplier());
         }
     }
 }

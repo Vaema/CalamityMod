@@ -1,6 +1,5 @@
 ﻿using CalamityMod.Items.BaseItems;
 using CalamityMod.Projectiles.Melee;
-using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
 
@@ -12,8 +11,8 @@ namespace CalamityMod.Items.Weapons.Melee
 
         public override void SetDefaults()
         {
-            Item.width = 86;
-            Item.height = 98;
+            Item.width = 92;
+            Item.height = 106;
             Item.damage = 120;
             Item.DamageType = TrueMeleeDamageClass.Instance;
             Item.useStyle = ItemUseStyleID.Shoot;

@@ -1,4 +1,4 @@
-﻿using CalamityMod.Items.Materials;
+﻿using CalamityMod.Items.Weapons.Magic;
 using CalamityMod.Projectiles.Ranged;
 using Microsoft.Xna.Framework;
 using Terraria;
@@ -29,7 +29,6 @@ namespace CalamityMod.Items.Weapons.Ranged
             Item.shootSpeed = 12f;
             Item.shoot = ModContent.ProjectileType<PlagueArrow>();
             Item.useAmmo = AmmoID.Arrow;
-            Item.Calamity().canFirePointBlankShots = true;
         }
 
         public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)
@@ -48,16 +47,6 @@ namespace CalamityMod.Items.Weapons.Ranged
                 }
             }
             return false;
-        }
-
-        public override void AddRecipes()
-        {
-            CreateRecipe().
-                AddIngredient(ItemID.BeesKnees).
-                AddIngredient<InfectedArmorPlating>(5).
-                AddIngredient<PlagueCellCanister>(10).
-                AddTile(TileID.MythrilAnvil).
-                Register();
         }
     }
 }

@@ -114,17 +114,15 @@ namespace CalamityMod.Projectiles.Boss
             Vector2 dustSpawnPos = Projectile.Center + Projectile.velocity * (Projectile.localAI[1] - 14f);
 
             // Fire brimstone darts along the laser
-            bool bossRush = BossRushEvent.BossRushActive;
-            bool death = CalamityWorld.death || bossRush;
+            bool death = CalamityWorld.death || BossRushEvent.BossRushActive;
             if (Main.npc[(int)Projectile.ai[1]].ai[1] == 210f && Projectile.owner == Main.myPlayer && Main.npc[(int)Projectile.ai[1]].ai[0] == 5)
             {
                 Vector2 velocity = Projectile.velocity;
                 velocity.Normalize();
-                float distanceBetweenProjectiles = Main.zenithWorld ? 360 : bossRush ? 72f : 144f;
+                float distanceBetweenProjectiles = Main.zenithWorld ? 360 : 144f;
                 Vector2 fireFrom = new Vector2(Main.npc[(int)Projectile.ai[1]].Center.X + (Main.npc[(int)Projectile.ai[1]].spriteDirection > 0 ? 34f : -34f), Main.npc[(int)Projectile.ai[1]].Center.Y - 74f) + velocity * distanceBetweenProjectiles;
                 int projectileAmt = (int)(Projectile.localAI[1] / distanceBetweenProjectiles);
                 int type = ModContent.ProjectileType<BrimstoneBarrage>();
-                int damage = (int)Math.Round(Projectile.damage * 0.6);
                 float projectileVelocityToPass = 12f;
 
                 for (int i = 0; i < projectileAmt; i++)
@@ -134,10 +132,8 @@ namespace CalamityMod.Projectiles.Boss
                     for (int j = 0; j < totalProjectiles; j++)
                     {
                         Vector2 projVelocity = Projectile.velocity.RotatedBy(radians * j + MathHelper.PiOver2);
-                        int proj = Projectile.NewProjectile(Projectile.GetSource_FromThis(), fireFrom, projVelocity, type, damage, 0f, Main.myPlayer, death ? 2f : 1f, 0f, projectileVelocityToPass);
+                        int proj = Projectile.NewProjectile(Projectile.GetSource_FromThis(), fireFrom, projVelocity, type, BrimstoneElemental.DartDamage, 0f, Main.myPlayer, death ? 2f : 1f, 0f, projectileVelocityToPass);
                         Main.projectile[proj].tileCollide = true;
-                        if (CalamityWorld.LegendaryMode && CalamityWorld.revenge)
-                            Main.projectile[proj].extraUpdates += 1;
                     }
                     fireFrom += velocity * distanceBetweenProjectiles;
                 }
@@ -235,7 +231,7 @@ namespace CalamityMod.Projectiles.Boss
             if (info.Damage <= 0)
                 return;
 
-            target.AddBuff(ModContent.BuffType<BrimstoneFlames>(), 150);
+            target.AddBuff(ModContent.BuffType<BrimstoneFlames>(), 240);
         }
 
         public override bool CanHitPlayer(Player target) => Projectile.scale >= 0.5f;

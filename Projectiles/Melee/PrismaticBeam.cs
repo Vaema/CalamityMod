@@ -78,7 +78,7 @@ namespace CalamityMod.Projectiles.Melee
 
         public override float DetermineLaserLength()
         {
-            return DetermineLaserLength_CollideWithTiles(5);
+            return DetermineLaserLength_CollideWithTiles();
         }
 
         public override bool PreAI()

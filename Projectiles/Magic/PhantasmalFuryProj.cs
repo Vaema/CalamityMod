@@ -64,8 +64,8 @@ namespace CalamityMod.Projectiles.Magic
                     Projectile.penetrate = 1;
                     launched = true;
                 }
-
-                targeted = Projectile.Center.ClosestNPCAt(950);
+                if (targeted == null || targeted.life <= 0)
+                    targeted = Projectile.Center.ClosestNPCAt(950);
                 CalamityUtils.HomeInOnSelectedNPC(Projectile, targeted, true, 0.15f, 6, 0.98f, accelerate: true);
 
                 if (time < 550 && targeted == null)
@@ -90,7 +90,7 @@ namespace CalamityMod.Projectiles.Magic
             if (time > 5)
             {
                 Vector2 dustPos = Projectile.Center + (MathHelper.Pi + dustRotation + MathHelper.PiOver2).ToRotationVector2() * 10f * Projectile.scale;
-                Dust dust = Dust.NewDustPerfect(dustPos, 175, (MathHelper.Pi + dustRotation * Math.Sign(Projectile.velocity.Length())).ToRotationVector2() * 2);
+                Dust dust = Dust.NewDustPerfect(dustPos, DustID.SpectreStaff, (MathHelper.Pi + dustRotation * Math.Sign(Projectile.velocity.Length())).ToRotationVector2() * 2);
                 dust.noGravity = false;
                 dust.scale = Main.rand.NextFloat(0.75f, 1.2f);
                 dust.alpha = Main.rand.Next(100, 170 + 1);
@@ -100,7 +100,7 @@ namespace CalamityMod.Projectiles.Magic
         }
         public override void ModifyHitNPC(NPC target, ref NPC.HitModifiers modifiers)
         {
-            modifiers.SourceDamage *= (launched ? 1f : 0.4f);
+            modifiers.SourceDamage *= (launched ? 1f : 0.3f);
 
             Player Owner = Main.player[Projectile.owner];
 
@@ -118,7 +118,7 @@ namespace CalamityMod.Projectiles.Magic
         {
             for (int i = 0; i <= 3; i++)
             {
-                Dust dust = Dust.NewDustPerfect(Projectile.Center, 175, (Projectile.velocity * 6).RotatedByRandom(0.4f) * Main.rand.NextFloat(0.1f, 0.8f), 100, default, Main.rand.NextFloat(1.2f, 1.8f));
+                Dust dust = Dust.NewDustPerfect(Projectile.Center, DustID.SpectreStaff, (Projectile.velocity * 6).RotatedByRandom(0.4f) * Main.rand.NextFloat(0.1f, 0.8f), 100, default, Main.rand.NextFloat(1.2f, 1.8f));
                 dust.noGravity = true;
                 Dust chargefull = Dust.NewDustPerfect(Projectile.Center, Main.rand.NextBool(4) ? 278 : 267);
                 chargefull.velocity = Projectile.velocity.RotatedByRandom(0.25f) * Main.rand.NextFloat(1f, 4);

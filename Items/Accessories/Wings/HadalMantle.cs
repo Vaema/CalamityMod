@@ -1,5 +1,4 @@
-﻿using CalamityMod.Items.Armor.Hydrothermic;
-using CalamityMod.Items.Materials;
+﻿using CalamityMod.Items.Materials;
 using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.DataStructures;
@@ -48,7 +47,6 @@ namespace CalamityMod.Items.Accessories.Wings
                 }
                 Main.dust[flightDust].shader = GameShaders.Armor.GetSecondaryShader(player.cWings, player);
             }
-            player.noFallDmg = true;
         }
 
         public override void AddRecipes()

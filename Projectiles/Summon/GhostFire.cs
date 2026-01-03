@@ -1,5 +1,4 @@
 ﻿using System;
-using CalamityMod.CalPlayer;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria;
@@ -36,7 +35,10 @@ namespace CalamityMod.Projectiles.Summon
             Projectile.DamageType = DamageClass.Summon;
         }
         public override bool? CanDamage() => ableToHit ? (bool?)null : false;
-
+        public override bool? CanHitNPC(NPC target)
+        {
+            return target.CanBeChasedBy() ? null : false;
+        }
         public override void AI()
         {
             Player player = Main.player[Projectile.owner];

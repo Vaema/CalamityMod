@@ -1,10 +1,8 @@
 ﻿using CalamityMod.Items.Placeables.SunkenSea;
 using Microsoft.Xna.Framework;
-using System;
 using Terraria;
 using Terraria.GameContent;
 using Terraria.ID;
-using Terraria.Localization;
 using Terraria.ModLoader;
 using Terraria.ObjectData;
 
@@ -31,18 +29,9 @@ namespace CalamityMod.Tiles.Rubblemaker.SunkenSea
 
         public override void ModifyLight(int i, int j, ref float r, ref float g, ref float b)
         {
-            float brightness = 0.7f;
-            float declareThisHereToPreventRunningTheSameCalculationMultipleTimes = Main.GameUpdateCount * 0.01f;
-            brightness *= (float)MathF.Sin(-j / 8f + declareThisHereToPreventRunningTheSameCalculationMultipleTimes + i);
-            brightness *= (float)MathF.Sin(-i / 8f + declareThisHereToPreventRunningTheSameCalculationMultipleTimes + j);
-            brightness += 0.4f;
-            brightness = MathHelper.Clamp(brightness, 0.1f, 0.5f);
-            r = 85f / 255f;
-            b = 151f / 255f;
-            g = 196f / 255f;
-            r *= brightness;
-            g *= brightness;
-            b *= brightness;
+            r = 0.11f;
+            g = 0.29f;
+            b = 0.57f;
         }
 
         public override void NumDust(int i, int j, bool fail, ref int num)

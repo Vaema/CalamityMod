@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using CalamityMod.Buffs.Summon;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using ReLogic.Content;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
@@ -215,6 +214,8 @@ namespace CalamityMod.Projectiles.Summon
             return false;
 
         }
+
+        public override bool MinionContactDamage() => true;
 
         public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone) => target.AddBuff(BuffID.ShadowFlame, 300);
     }

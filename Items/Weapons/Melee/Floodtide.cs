@@ -1,5 +1,4 @@
 ﻿using CalamityMod.Items.Materials;
-using CalamityMod.Items.Placeables;
 using CalamityMod.Projectiles.Melee;
 using Microsoft.Xna.Framework;
 using Terraria;
@@ -16,10 +15,9 @@ namespace CalamityMod.Items.Weapons.Melee
         {
             Item.width = 80;
             Item.height = 92;
-            Item.damage = 91;
+            Item.damage = 85;
             Item.DamageType = DamageClass.Melee;
-            Item.useTime = 21;
-            Item.useAnimation = 21;
+            Item.useTime = Item.useAnimation = 24;
             Item.useTurn = true;
             Item.useStyle = ItemUseStyleID.Swing;
             Item.knockBack = 6f;

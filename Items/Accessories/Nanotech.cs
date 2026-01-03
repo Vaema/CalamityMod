@@ -3,13 +3,13 @@ using CalamityMod.Items.Materials;
 using CalamityMod.Rarities;
 using CalamityMod.Tiles.Furniture.CraftingStations;
 using Terraria;
-using Terraria.ID;
 using Terraria.ModLoader;
 
 namespace CalamityMod.Items.Accessories
 {
     public class Nanotech : ModItem, ILocalizedModType
     {
+        //The stealth damage boost is handled in CalamityPlayer for some reason, maybe someone didn't want em to stack?
         public new string LocalizationCategory => "Items.Accessories";
         public override void SetDefaults()
         {
@@ -17,7 +17,7 @@ namespace CalamityMod.Items.Accessories
             Item.height = 46;
             Item.value = CalamityGlobalItem.RarityDarkBlueBuyPrice;
             Item.accessory = true;
-            Item.rare = ModContent.RarityType<DarkBlue>();
+            Item.rare = ModContent.RarityType<CosmicPurple>();
         }
 
         public override void UpdateAccessory(Player player, bool hideVisual)

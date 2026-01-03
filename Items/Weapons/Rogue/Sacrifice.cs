@@ -1,4 +1,5 @@
-﻿using CalamityMod.NPCs.NormalNPCs;
+﻿using CalamityMod.Items.Weapons.Melee;
+using CalamityMod.NPCs.NormalNPCs;
 using CalamityMod.Projectiles.Rogue;
 using CalamityMod.Rarities;
 using Microsoft.Xna.Framework;
@@ -26,7 +27,7 @@ namespace CalamityMod.Items.Weapons.Rogue
             Item.shootSpeed = 16f;
             Item.DamageType = RogueDamageClass.Instance;
 
-            Item.rare = ModContent.RarityType<Violet>();
+            Item.rare = ModContent.RarityType<BurnishedAuric>();
             Item.value = CalamityGlobalItem.RarityVioletBuyPrice;
         }
 

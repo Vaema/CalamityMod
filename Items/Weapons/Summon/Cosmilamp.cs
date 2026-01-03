@@ -1,4 +1,6 @@
-﻿using CalamityMod.Projectiles.Summon;
+﻿using CalamityMod.Items.Weapons.Rogue;
+using CalamityMod.Buffs.Summon;
+using CalamityMod.Projectiles.Summon;
 using CalamityMod.Rarities;
 using Microsoft.Xna.Framework;
 using Terraria;
@@ -19,7 +21,10 @@ namespace CalamityMod.Items.Weapons.Summon
 
         public const float LanternSummonCost = 2f;
 
-        public override void SetStaticDefaults() => ItemID.Sets.StaffMinionSlotsRequired[Type] = 2f;
+        public override void SetStaticDefaults()
+        {
+            ItemID.Sets.StaffMinionSlotsRequired[Type] = 2f;
+        }
 
         public override void SetDefaults()
         {
@@ -27,7 +32,7 @@ namespace CalamityMod.Items.Weapons.Summon
             Item.height = 60;
             Item.damage = 127;
             Item.mana = 10;
-            Item.useAnimation = Item.useTime = 15;
+            Item.useAnimation = Item.useTime = 24;
             Item.useStyle = ItemUseStyleID.Swing;
             Item.noMelee = true;
             Item.knockBack = 4f;
@@ -35,8 +40,8 @@ namespace CalamityMod.Items.Weapons.Summon
             Item.rare = ModContent.RarityType<Turquoise>();
             Item.UseSound = SoundID.Item44;
             Item.autoReuse = true;
+            Item.buffType = ModContent.BuffType<CosmilampBuff>();
             Item.shoot = ModContent.ProjectileType<CosmilampMinion>();
-            Item.shootSpeed = 10f;
             Item.DamageType = DamageClass.Summon;
         }
 
@@ -44,26 +49,22 @@ namespace CalamityMod.Items.Weapons.Summon
 
         public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)
         {
-            if (player.altFunctionUse != 2)
-            {
-                // Reset the timer for all lamps, to re-align the formation.
-                foreach (Projectile pro in Main.ActiveProjectiles)
-                {
-                    if (pro.type == type && pro.owner == player.whoAmI)
-                    {
-                        pro.ModProjectile<CosmilampMinion>().Timer = 0f;
-                        pro.netUpdate = true;
-                    }
-                }
+            player.AddBuff(Item.buffType, 2);
 
-                int existingLamps = player.ownedProjectileCounts[type];
-                int p = Projectile.NewProjectile(source, player.ClampedMouseWorld(), Vector2.Zero, type, damage, knockback, player.whoAmI);
-                if (Main.projectile.IndexInRange(p))
+            // Reset the timer for all lamps, to re-align the formation.
+            foreach (Projectile pro in Main.ActiveProjectiles)
+            {
+                if (pro.type == type && pro.owner == player.whoAmI)
                 {
-                    Main.projectile[p].originalDamage = Item.damage;
-                    Main.projectile[p].ai[0] = existingLamps;
+                    pro.ModProjectile<CosmilampMinion>().Timer = 0f;
+                    pro.netUpdate = true;
                 }
             }
+
+            int existingLamps = player.ownedProjectileCounts[type];
+            var minion = Projectile.NewProjectileDirect(source, player.ClampedMouseWorld(), Vector2.Zero, type, damage, knockback, player.whoAmI);
+            minion.originalDamage = Item.damage;
+            minion.ai[0] = existingLamps;
             return false;
         }
     }

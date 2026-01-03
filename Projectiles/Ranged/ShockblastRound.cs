@@ -1,5 +1,4 @@
 ﻿using System;
-using CalamityMod.Balancing;
 using CalamityMod.Projectiles.Healing;
 using Microsoft.Xna.Framework;
 using Terraria;
@@ -29,7 +28,6 @@ namespace CalamityMod.Projectiles.Ranged
             Projectile.light = 0.5f;
             Projectile.extraUpdates = 3;
             AIType = ProjectileID.Bullet;
-            Projectile.Calamity().pointBlankShotDuration = CalamityGlobalProjectile.DefaultPointBlankDuration;
         }
 
         public override bool OnTileCollide(Vector2 oldVelocity)
@@ -82,14 +80,7 @@ namespace CalamityMod.Projectiles.Ranged
                 Main.projectile[proj].scale = (Projectile.ai[1] * 0.5f) + 1f;
             }
 
-            int heal = (int)Math.Round(hit.Damage * 0.05);
-            if (heal > BalancingConstants.LifeStealCap)
-                heal = BalancingConstants.LifeStealCap;
-
-            if (Main.LocalPlayer.lifeSteal <= 0f || heal <= 0 || target.lifeMax <= 5)
-                return;
-
-            CalamityGlobalProjectile.SpawnLifeStealProjectile(Projectile, Main.player[Projectile.owner], heal, ModContent.ProjectileType<TransfusionTrail>(), BalancingConstants.LifeStealRange);
+            Main.player[Projectile.owner].SpawnLifeStealProjectile(target, Projectile, ModContent.ProjectileType<TransfusionTrail>(), (int)Math.Round(hit.Damage * 0.05));
         }
     }
 }

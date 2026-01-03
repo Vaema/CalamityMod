@@ -1,5 +1,4 @@
-﻿using CalamityMod.Tiles.Furniture.CraftingStations;
-using Terraria;
+﻿using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
 namespace CalamityMod.Items.Placeables.FurnitureBotanic
@@ -18,7 +17,7 @@ namespace CalamityMod.Items.Placeables.FurnitureBotanic
             CreateRecipe().
                 AddIngredient<UelibloomBrick>(15).
                 AddIngredient(ItemID.Silk, 5).
-                AddTile<BotanicPlanter>().
+                AddTile(TileID.LivingLoom).
                 Register();
         }
     }

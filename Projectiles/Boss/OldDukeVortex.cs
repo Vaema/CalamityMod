@@ -1,8 +1,10 @@
 ﻿using System;
 using CalamityMod.Buffs.StatDebuffs;
-using CalamityMod.Dusts;
-using CalamityMod.World;
+using CalamityMod.Particles;
 using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
+using ReLogic.Content;
+using ReLogic.Utilities;
 using Terraria;
 using Terraria.Audio;
 using Terraria.ID;
@@ -12,23 +14,29 @@ namespace CalamityMod.Projectiles.Boss
 {
     public class OldDukeVortex : ModProjectile, ILocalizedModType
     {
+        Vector2 cen = Vector2.Zero;
+
         public new string LocalizationCategory => "Projectiles.Boss";
-        public static readonly SoundStyle SpawnSound = new("CalamityMod/Sounds/Custom/OldDukeVortex");
+        public static SoundStyle SpawnSound = new("CalamityMod/Sounds/Custom/OldDukeVortex");
+        public SlotId SoundId;
 
         public override void SetStaticDefaults()
         {
-            ProjectileID.Sets.TrailCacheLength[Type] = 6;
-            ProjectileID.Sets.TrailingMode[Type] = 0;
+            SpawnSound.MaxInstances = 50;
+
+            ProjectileID.Sets.TrailCacheLength[Projectile.type] = 6;
+            ProjectileID.Sets.TrailingMode[Projectile.type] = 0;
         }
 
         public override void SetDefaults()
         {
+            SoundId = SoundEngine.PlaySound(SpawnSound with { IsLooped = true, MaxInstances = 20 }, Projectile.Center, _ => new ProjectileAudioTracker(Projectile).IsActiveAndInGame());
             Projectile.Calamity().DealsDefenseDamage = true;
             Projectile.width = 408;
             Projectile.height = 408;
             Projectile.scale = 0.004f;
             Projectile.hostile = true;
-            Projectile.alpha = 255;
+            Projectile.alpha = 0;
             Projectile.penetrate = -1;
             Projectile.tileCollide = false;
             Projectile.ignoreWater = true;
@@ -38,6 +46,13 @@ namespace CalamityMod.Projectiles.Boss
 
         public override void AI()
         {
+            if (Projectile.localAI[1] == 0)
+            {
+                cen = Projectile.Center;
+                Projectile.localAI[1] = 1;
+            }
+            Projectile.position = cen - (new Vector2(Projectile.width / 2) * Projectile.scale);
+
             if (Main.zenithWorld)
             {
                 if (Projectile.scale < 2f)
@@ -56,7 +71,7 @@ namespace CalamityMod.Projectiles.Boss
                         if (Projectile.alpha < 255)
                             Projectile.alpha += 3;
 
-                        Projectile.scale += 0.012f;
+                        Projectile.scale -= 0.012f;
                     }
                 }
             }
@@ -80,7 +95,7 @@ namespace CalamityMod.Projectiles.Boss
                         if (Projectile.alpha < 255)
                             Projectile.alpha += 3;
 
-                        Projectile.scale += 0.012f;
+                        Projectile.scale -= 0.012f;
                         Projectile.width = Projectile.height = (int)(408f * Projectile.scale);
                     }
                     else
@@ -88,69 +103,81 @@ namespace CalamityMod.Projectiles.Boss
                 }
             }
 
-            Projectile.velocity = Vector2.Normalize(new Vector2(Projectile.ai[0], Projectile.ai[1]) - Projectile.Center) * 1.5f;
+            float distanceRequired = 800f * Projectile.scale;
+            float succPower = Main.zenithWorld ? 1f : 0.5f;
+            foreach (Player player in Main.ActivePlayers)
+            {
+                float distance = Vector2.Distance(player.Center, cen);
+                if (distance < distanceRequired && player.grappling[0] == -1)
+                {
+                    if (Collision.CanHit(cen, 1, 1, player.Center, 1, 1))
+                    {
+                        float distanceRatio = distance / distanceRequired;
+
+                        float wingTimeSet = (float)Math.Ceiling((float)player.wingTimeMax * 0.5f * distanceRatio);
+                        if (player.wingTime > wingTimeSet)
+                            player.wingTime = wingTimeSet;
+
+                        float multiplier = 1f - distanceRatio;
+                        if (player.Center.X < cen.X)
+                            player.velocity.X += succPower * multiplier;
+                        else
+                            player.velocity.X -= succPower * multiplier;
+                    }
+                }
+            }
+
+            Projectile.ai[0]++;
+
+            if (Projectile.ai[0] % 10 == 1)
+            {
+                GeneralParticleHandler.SpawnParticle(new CustomPulse(cen, Vector2.Zero, new Color(55, 195, 0, 20), "CalamityMod/Particles/DustyCircleHardEdge", Vector2.One, Main.rand.NextFloat(MathHelper.TwoPi), Projectile.scale * 0.9f, Projectile.scale * 0.4f, 40));
+            }
+
+            if (Projectile.timeLeft <= 85)
+            {
+                Projectile.localAI[2] += 1f / 85f;
+            }
+            Projectile.velocity = Vector2.Zero;
 
             Projectile.rotation -= 0.1f * (float)(1D - (Projectile.alpha / 255D));
 
             float lightAmt = 2f * Projectile.scale;
-            Lighting.AddLight(Projectile.Center, lightAmt, lightAmt * 2f, lightAmt);
+            Lighting.AddLight(cen, lightAmt, lightAmt * 2f, lightAmt);
 
-            if (Projectile.soundDelay == 0)
+            float maxdist = 1200;
+
+            if (SoundEngine.TryGetActiveSound(SoundId, out var Sound) && Sound.IsPlaying)
             {
-                Projectile.soundDelay = 174;
-                SoundEngine.PlaySound(SpawnSound, Projectile.Center);
+                Sound.Position = cen;
+                Sound.Volume = Projectile.scale;
+                Sound.Pitch = MathHelper.Lerp(0f, -1f, (MathHelper.Clamp((Projectile.Distance(Main.LocalPlayer.Center) - 800) / maxdist, 0f, 1f) + (-Projectile.scale + 1)));
             }
 
             if (Projectile.timeLeft > 85)
             {
-                int numDust = (int)(0.2f * MathHelper.TwoPi * 408f * Projectile.scale);
-                float angleIncrement = MathHelper.TwoPi / (float)numDust;
-                Vector2 dustOffset = new Vector2(408f * Projectile.scale, 0f);
-                dustOffset = dustOffset.RotatedByRandom(MathHelper.TwoPi);
+                Vector2 vec2 = cen + new Vector2(Main.rand.NextFloat(320, 540) * Projectile.scale, 0).RotatedByRandom(MathHelper.TwoPi);
 
-                int var = (int)(408f * Projectile.scale);
-                for (int i = 0; i < numDust; i++)
-                {
-                    if (Main.rand.NextBool(var))
-                    {
-                        dustOffset = dustOffset.RotatedBy(angleIncrement);
-                        int dust = Dust.NewDust(Projectile.Center, 1, 1, (int)CalamityDusts.SulphurousSeaAcid);
-                        Main.dust[dust].position = Projectile.Center + dustOffset;
-                        Main.dust[dust].noGravity = true;
-                        Main.dust[dust].velocity = Vector2.Normalize(Projectile.Center - Main.dust[dust].position) * 24f;
-                        Main.dust[dust].scale = Projectile.scale * 3f;
-                    }
-                }
-
-                float distanceRequired = 800f * Projectile.scale;
-                float succPower = Main.zenithWorld ? 1f : 0.5f;
-                foreach (Player player in Main.ActivePlayers)
-                {
-                    float distance = Vector2.Distance(player.Center, Projectile.Center);
-                    if (distance < distanceRequired && player.grappling[0] == -1)
-                    {
-                        if (Collision.CanHit(Projectile.Center, 1, 1, player.Center, 1, 1))
-                        {
-                            float distanceRatio = distance / distanceRequired;
-
-                            float wingTimeSet = (float)Math.Ceiling((float)player.wingTimeMax * 0.5f * distanceRatio);
-                            if (player.wingTime > wingTimeSet)
-                                player.wingTime = wingTimeSet;
-
-                            float multiplier = 1f - distanceRatio;
-                            if (player.Center.X < Projectile.Center.X)
-                                player.velocity.X += succPower * multiplier;
-                            else
-                                player.velocity.X -= succPower * multiplier;
-                        }
-                    }
-                }
+                GeneralParticleHandler.SpawnParticle(new SparkParticle(vec2, (cen - vec2) / 20, false, 10, Main.rand.NextFloat(0.5f, 1f), Color.LimeGreen, true));
             }
         }
 
         public override bool PreDraw(ref Color lightColor)
         {
-            CalamityUtils.DrawAfterimagesCentered(Projectile, ProjectileID.Sets.TrailingMode[Type], lightColor, 1);
+            Asset<Texture2D> Tex = ModContent.Request<Texture2D>(Texture);
+
+            float sc = MathHelper.Lerp(1, 0, Projectile.localAI[2]);
+
+            float alphaLerp = MathHelper.Lerp(1f, 0f, (float)Projectile.alpha / 255f);
+
+            Main.EntitySpriteDraw(Tex.Value, cen - Main.screenPosition, Tex.Frame(), new Color(0f, 0f, 0f, 0.4f).MultiplyRGBA(new Color(alphaLerp, alphaLerp, alphaLerp, alphaLerp)), -Projectile.rotation / 2 * (4 + 1), Tex.Frame().Center(), 1.61f * Projectile.scale * sc, SpriteEffects.None);
+
+            for (int i = 2; i >= 0; i--)
+            {
+                float lerp = (float)i / 3f;
+
+                Main.EntitySpriteDraw(Tex.Value, cen - Main.screenPosition, Tex.Frame(), Color.Lerp(new Color(5, 155, 95, 100), new Color(255, 255, 255, 55), lerp).MultiplyRGBA(new Color(alphaLerp, alphaLerp, alphaLerp, alphaLerp)), -Projectile.rotation / 2 * (i + 1), Tex.Frame().Center(), MathHelper.Lerp(1f, 1.7f, lerp) * Projectile.scale * sc, SpriteEffects.None);
+            }
             return false;
         }
 

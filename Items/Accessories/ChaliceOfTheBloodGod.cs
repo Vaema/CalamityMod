@@ -42,7 +42,8 @@ namespace CalamityMod.Items.Accessories
             Item.width = Item.height = 32;
             Item.accessory = true;
             Item.value = CalamityGlobalItem.RarityDarkBlueBuyPrice;
-            Item.rare = ModContent.RarityType<DarkBlue>();
+            Item.rare = ModContent.RarityType<CosmicPurple>();
+            Item.expert = true;
         }
 
         public override void UpdateAccessory(Player player, bool hideVisual)
@@ -62,6 +63,7 @@ namespace CalamityMod.Items.Accessories
             // Health boost intentionally stacks with Blood Pact.
             // This accessory's bleedout buffer clearing effect intentionally stacks with Blood Pact's healing potion boost.
             modPlayer.chaliceOfTheBloodGod = true;
+            modPlayer.chaliceHeartStyle = !hideVisual;
         }
 
         public override void AddRecipes()

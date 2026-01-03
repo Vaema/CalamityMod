@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.IO;
-using CalamityMod.BiomeManagers;
 using CalamityMod.Enums;
+using CalamityMod.Items.Critters;
 using CalamityMod.Items.Placeables.Banners;
 using CalamityMod.Particles;
 using Microsoft.Xna.Framework;
@@ -36,26 +36,28 @@ namespace CalamityMod.NPCs.SunkenSea
                 SpriteDirection = -1
             };
             NPCID.Sets.NPCBestiaryDrawOffset[Type] = value;
+            NPCID.Sets.CountsAsCritter[Type] = true;
             base.SetStaticDefaults();
         }
 
         public override void SetDefaults()
         {
+            base.SetDefaults();
             NPC.npcSlots = 0.5f;
             NPC.aiStyle = -1;
             AIType = -1;
-            NPC.damage = 5;
+            NPC.damage = 0;
             NPC.width = 44;
             NPC.height = 22;
             NPC.defense = 0;
-            NPC.lifeMax = 50;
+            NPC.lifeMax = 5;
             NPC.knockBackResist = 0.5f;
-            NPC.value = Item.buyPrice(0, 0, 0, 50);
             NPC.HitSound = SoundID.NPCHit1;
             NPC.DeathSound = SoundID.NPCDeath1;
+            NPC.chaseable = false;
             Banner = NPC.type;
             BannerItem = ModContent.ItemType<SeaFloatyBanner>();
-            SpawnModBiomes = new int[1] { ModContent.GetInstance<SunkenSeaBiome>().Type };
+            NPC.catchItem = ModContent.ItemType<SeaFloatyItem>();
         }
 
         public override void SetBestiary(BestiaryDatabase database, BestiaryEntry bestiaryEntry)
@@ -172,6 +174,8 @@ namespace CalamityMod.NPCs.SunkenSea
             return NPC.HasSight(p.Center) && Vector2.DistanceSquared(NPC.Center, p.Center) < 360f * 360f;
         }
 
+        public override bool CanBeHitByNPC(NPC attacker) => PredatorIDs.Contains(attacker.type);
+
         public override void FindFrame(int frameHeight)
         {
             NPC.frameCounter += hasBeenHit ? 0.3f : 0.15f;
@@ -201,13 +205,8 @@ namespace CalamityMod.NPCs.SunkenSea
                 {
                     Dust.NewDust(NPC.position, NPC.width, NPC.height, DustID.BlueCrystalShard, hit.HitDirection, -1f, 0, default, 1f);
                 }
-                if (!Main.dedServ)
-                {
-                    Gore.NewGore(NPC.GetSource_Death(), NPC.position, NPC.velocity, Mod.Find<ModGore>("SeaFloatyGore1").Type, 1f);
-                    Gore.NewGore(NPC.GetSource_Death(), NPC.position, NPC.velocity, Mod.Find<ModGore>("SeaFloatyGore2").Type, 1f);
-                    Gore.NewGore(NPC.GetSource_Death(), NPC.position, NPC.velocity, Mod.Find<ModGore>("SeaFloatyGore3").Type, 1f);
-                }
             }
+            CalamityUtils.SpawnGores(NPC, "SeaFloaty", 1);
         }
     }
 }

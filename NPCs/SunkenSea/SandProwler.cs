@@ -1,5 +1,4 @@
-﻿using CalamityMod.BiomeManagers;
-using CalamityMod.Enums;
+﻿using CalamityMod.Enums;
 using CalamityMod.Items.Placeables.Banners;
 using CalamityMod.Items.Weapons.Magic;
 using Microsoft.Xna.Framework;
@@ -93,6 +92,7 @@ namespace CalamityMod.NPCs.SunkenSea
 
         public override void SetDefaults()
         {
+            base.SetDefaults();
             NPC.damage = 50;
             NPC.width = 30;
             NPC.height = 24; 
@@ -101,22 +101,22 @@ namespace CalamityMod.NPCs.SunkenSea
             NPC.aiStyle = -1;
             AIType = -1;
             NPC.knockBackResist = 0f;
-            NPC.value = Item.buyPrice(0, 0, 20, 0);
+            NPC.value = Item.buyPrice(silver: 20);
             NPC.behindTiles = true;
             NPC.noGravity = true;
             NPC.noTileCollide = true;
             NPC.HitSound = SoundID.NPCHit1;
             NPC.DeathSound = SoundID.NPCDeath1;
             NPC.netAlways = true;
+            NPC.chaseable = false;
             Banner = NPC.type;
-            BannerItem = ModContent.ItemType<SeaSerpentBanner>();
+            BannerItem = ModContent.ItemType<SandProwlerBanner>();
             NPC.Calamity().VulnerableToHeat = false;
             NPC.Calamity().VulnerableToSickness = true;
             NPC.Calamity().VulnerableToElectricity = true;
             NPC.Calamity().VulnerableToWater = false;
             NPC.waterMovementSpeed = 1;
             NPC.GravityIgnoresLiquid = true;
-            SpawnModBiomes = new int[1] { ModContent.GetInstance<SunkenSeaBiome>().Type };
         }
 
         public override void SetBestiary(BestiaryDatabase database, BestiaryEntry bestiaryEntry)
@@ -149,7 +149,7 @@ namespace CalamityMod.NPCs.SunkenSea
             {
                 if (Main.rand.NextBool())
                 {
-                    Dust dust = Dust.NewDustDirect(NPC.position, NPC.width, NPC.height, 204, 0f, 0f, 150, default(Color), 0.3f);
+                    Dust dust = Dust.NewDustDirect(NPC.position, NPC.width, NPC.height, DustID.TreasureSparkle, 0f, 0f, 150, default(Color), 0.3f);
                     dust.fadeIn = 0.75f;
                     dust.velocity *= 0.1f;
                     dust.noLight = true;
@@ -459,7 +459,7 @@ namespace CalamityMod.NPCs.SunkenSea
             bool shouldDespawn = true;
             for (int i = 0; i < Main.maxNPCs; i++)
             {
-                if (Main.npc[i].active && Main.npc[i].type == ModContent.NPCType<SandProwler>())
+                if (Main.npc[i].active && Main.npc[i].type == ModContent.NPCType<SandProwler>() && Main.npc[i].ai[3] == 0)
                 {
                     shouldDespawn = false;
                     break;
@@ -599,6 +599,24 @@ namespace CalamityMod.NPCs.SunkenSea
         public override bool CanHitNPC(NPC target)
         {
             return IsHead;
+        }
+
+        public override void OnHitByProjectile(Projectile projectile, NPC.HitInfo hit, int damageDone)
+        {
+            PlayerHurt();
+        }
+
+        public override void OnHitByItem(Player player, Item item, NPC.HitInfo hit, int damageDone)
+        {
+            PlayerHurt();
+        }
+
+        public void PlayerHurt()
+        {
+            if (IsHead)
+                NPC.chaseable = true;
+            else
+                Main.npc[NPC.realLife].chaseable = true;
         }
 
         public override void ModifyNPCLoot(NPCLoot npcLoot) => DefineSandProwlerLoot(npcLoot);

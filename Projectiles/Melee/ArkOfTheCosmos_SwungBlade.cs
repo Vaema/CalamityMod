@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO;
+using System.Linq;
 using CalamityMod.Items.Weapons.Melee;
 using CalamityMod.Particles;
 using CalamityMod.Sounds;
@@ -230,9 +231,7 @@ namespace CalamityMod.Projectiles.Melee
                 {
                     Particle snapSpark = new GenericSparkle(Projectile.Center, Owner.velocity - Utils.SafeNormalize(Projectile.velocity, Vector2.Zero), Color.White, Color.OrangeRed, Main.rand.NextFloat(1f, 2f), 10 + Main.rand.Next(10), 0.1f, 3f);
                     GeneralParticleHandler.SpawnParticle(snapSpark);
-
-                    if (Main.LocalPlayer.Calamity().GeneralScreenShakePower < 3)
-                        Main.LocalPlayer.Calamity().GeneralScreenShakePower = 3;
+                    Main.LocalPlayer.SetScreenshake(3f);
 
                     if (Owner.whoAmI == Main.myPlayer)
                     {
@@ -273,6 +272,15 @@ namespace CalamityMod.Projectiles.Melee
                     float extraRotations = (direction.ToRotation() + MathHelper.PiOver4 > Projectile.velocity.ToRotation()) ? -MathHelper.TwoPi : 0f;
 
                     Projectile.rotation = MathHelper.Lerp(Projectile.velocity.ToRotation(), direction.ToRotation() + extraRotations, orientateProperly);
+                    if (ChanceMissed == 0f && Owner.controlUseTile && ThrowCompletion > 0.99f)
+                    {
+                        ArkoftheCosmos sword = (Owner.HeldItem.ModItem as ArkoftheCosmos);
+                        Projectile parrier = Main.projectile.FirstOrDefault(p => p.active && p.owner == Owner.whoAmI && p.type == ProjectileType<ArkoftheCosmosParryHoldout>(), null);
+                        if (sword is not null && parrier is null)
+                        {
+                            int parryID = Projectile.NewProjectile(Owner.GetSource_ItemUse(sword.Item), Owner.Center, Owner.DirectionTo(Projectile.Center), ModContent.ProjectileType<ArkoftheCosmosParryHoldout>(), 0, 0, Owner.whoAmI);
+                        }
+                    }
                 }
 
                 //Sharticles
@@ -435,9 +443,7 @@ namespace CalamityMod.Projectiles.Melee
         {
             if (Combo == 3f)
             {
-                if (Main.LocalPlayer.Calamity().GeneralScreenShakePower < 3)
-                    Main.LocalPlayer.Calamity().GeneralScreenShakePower = 3;
-
+                Main.LocalPlayer.SetScreenshake(3f);
                 SoundEngine.PlaySound(SoundID.Item84, Projectile.Center);
 
                 Vector2 sliceDirection = Utils.SafeNormalize(direction, Vector2.One) * 40;

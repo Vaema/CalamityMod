@@ -7,6 +7,7 @@ using Microsoft.Xna.Framework.Graphics;
 using ReLogic.Content;
 using Terraria;
 using Terraria.Audio;
+using Terraria.ID;
 using Terraria.ModLoader;
 using static System.MathF;
 using static CalamityMod.Items.Weapons.Summon.LiliesOfFinality;
@@ -145,8 +146,6 @@ namespace CalamityMod.Projectiles.Summon
                 fallThrough = Projectile.Bottom.Y < Owner.Top.Y;
             return true;
         }
-
-        public override bool? CanDamage() => false;
 
         #endregion
 
@@ -330,7 +329,7 @@ namespace CalamityMod.Projectiles.Summon
                 7);
             GeneralParticleHandler.SpawnParticle(shootRing);
 
-            SoundEngine.PlaySound(new("CalamityMod/Sounds/Custom/ElsterShot", 4) { Volume = 0.3f }, Projectile.Center);
+            SoundEngine.PlaySound(new SoundStyle("CalamityMod/Sounds/Custom/ElsterShot", 4) { Volume = 0.3f }, Projectile.Center);
         }
 
         private void ElevationDust(bool shootingState)
@@ -474,7 +473,7 @@ namespace CalamityMod.Projectiles.Summon
             bool behindBackWall = false;
             Tile tileSafely = Framing.GetTileSafely(Projectile.Center);
             if (tileSafely != null)
-                behindBackWall = tileSafely.WallType > 0;
+                behindBackWall = tileSafely.WallType > WallID.None;
             if (behindBackWall)
                 storming = false;
 

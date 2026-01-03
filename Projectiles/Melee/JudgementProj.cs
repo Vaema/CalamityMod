@@ -1,4 +1,4 @@
-﻿using CalamityMod.Buffs.DamageOverTime;
+﻿using CalamityMod.Dusts;
 using CalamityMod.Particles;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
@@ -26,7 +26,7 @@ namespace CalamityMod.Projectiles.Melee
             Projectile.tileCollide = false;
             Projectile.timeLeft = 450;
             Projectile.DamageType = DamageClass.Melee;
-            Projectile.extraUpdates = 9;
+            Projectile.extraUpdates = 14;
             Projectile.usesLocalNPCImmunity = true;
             Projectile.localNPCHitCooldown = -1;
         }
@@ -49,10 +49,10 @@ namespace CalamityMod.Projectiles.Melee
                 Projectile.scale += 0.0026f;
                 hitboxSize += 0.4525f;
                 Projectile.velocity *= 0.995f;
-                // Spawn 3
-                if (time % 50 == 0 && time > 10)
+                // Spawn 2
+                if (time % 85 == 0 && time > 10)
                 {
-                    Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center + Main.rand.NextVector2Circular(hitboxSize * 0.8f, hitboxSize * 0.8f) - Projectile.velocity * 2, (-Projectile.velocity * 3).RotatedByRandom(0.9f), ModContent.ProjectileType<StarofJudgement>(), (int)(Projectile.damage * 0.2f), 3f, Projectile.owner, 0f);
+                    Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center + Main.rand.NextVector2Circular(hitboxSize * 0.8f, hitboxSize * 0.8f) - Projectile.velocity * 2, (-Projectile.velocity * 3).RotatedByRandom(0.9f), ModContent.ProjectileType<StarofJudgement>(), (int)(Projectile.damage * 0.35f), 3f, Projectile.owner, 0f);
                 }
             }
             else
@@ -80,7 +80,7 @@ namespace CalamityMod.Projectiles.Melee
 
                 if (Main.rand.NextBool(3))
                 {
-                    Dust trailDust = Dust.NewDustPerfect(Projectile.Center + Main.rand.NextVector2Circular(hitboxSize, hitboxSize) - Projectile.velocity * 2, 66);
+                    Dust trailDust = Dust.NewDustPerfect(Projectile.Center + Main.rand.NextVector2Circular(hitboxSize, hitboxSize) - Projectile.velocity * 2, ModContent.DustType<SquashDust>());
                     trailDust.scale = Main.rand.NextFloat(0.7f, 0.85f) - (time < 150 ? 0 : time * 0.001f);
                     trailDust.velocity = -Projectile.velocity * Main.rand.NextFloat(0.85f, 1.5f);
                     trailDust.color = Main.rand.NextBool() ? Color.MediumPurple : Color.MediumOrchid;
@@ -102,11 +102,10 @@ namespace CalamityMod.Projectiles.Melee
         {
             Texture2D tex = ModContent.Request<Texture2D>(Texture).Value;
             float waveFade = Utils.GetLerpValue(0, 300, Projectile.timeLeft);
-            Main.spriteBatch.Draw(tex, Projectile.Center - Main.screenPosition, null, mainColor with { A = 0 } * fadeOut, Projectile.rotation, tex.Size() / 2f, new Vector2(1 - (0.2f * waveFade), 1 + (0.45f * waveFade)) * Projectile.scale, SpriteEffects.None, 0);
+            for (int i = 0; i < 5; i++)
+                Main.spriteBatch.Draw(tex, Projectile.Center - Main.screenPosition + (Projectile.rotation + MathHelper.PiOver2).ToRotationVector2() * 9 * i, null, mainColor with { A = 0 } * fadeOut * 0.6f, Projectile.rotation, tex.Size() / 2f, new Vector2(1 - (0.2f * waveFade) + 0.01f * i, 1 + (0.45f * waveFade) - 0.06f * i) * Projectile.scale, SpriteEffects.None, 0);
             return false;
         }
-
-        public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone) => target.AddBuff(ModContent.BuffType<Nightwither>(), 180);
         public override void ModifyHitNPC(NPC target, ref NPC.HitModifiers modifiers)
         {
             if (Projectile.numHits > 0)

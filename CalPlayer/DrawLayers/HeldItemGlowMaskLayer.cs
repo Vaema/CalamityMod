@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using CalamityMod.Items.SummonItems;
 using CalamityMod.Items.Weapons.DraedonsArsenal;
 using CalamityMod.Items.Weapons.Magic;
@@ -10,7 +9,6 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria;
 using Terraria.DataStructures;
-using Terraria.GameContent;
 using Terraria.ID;
 using Terraria.ModLoader;
 using Terraria.UI;
@@ -35,6 +33,8 @@ namespace CalamityMod.CalPlayer.DrawLayers
             if (itemType < ItemID.Count)
                 return;
 
+            Color color = new Color(250, 250, 250, heldItem.alpha);
+
             // This is ugly and I don't give a fuck.
             // If you want it to look better, do it yourself.
             Texture2D glowMask = default;
@@ -52,18 +52,16 @@ namespace CalamityMod.CalPlayer.DrawLayers
                 glowMask = ModContent.Request<Texture2D>("CalamityMod/Items/Weapons/Ranged/CleansingBlazeGlow").Value;
             else if (itemType == ModContent.ItemType<CosmicImmaterializer>())
                 glowMask = ModContent.Request<Texture2D>("CalamityMod/Items/Weapons/Summon/CosmicImmaterializerGlow").Value;
-            else if (itemType == ModContent.ItemType<DeathhailStaff>())
-                glowMask = ModContent.Request<Texture2D>("CalamityMod/Items/Weapons/Magic/DeathhailStaffGlow").Value;
-            else if (itemType == ModContent.ItemType<Deathwind>())
-                glowMask = ModContent.Request<Texture2D>("CalamityMod/Items/Weapons/Ranged/DeathwindGlow").Value;
+            else if (itemType == ModContent.ItemType<HyperdeathRiftScepter>())
+                glowMask = ModContent.Request<Texture2D>("CalamityMod/Items/Weapons/Magic/HyperdeathRiftScepterGlow").Value;
+            else if (itemType == ModContent.ItemType<ThreadOfEradication>())
+                glowMask = ModContent.Request<Texture2D>("CalamityMod/Items/Weapons/Ranged/ThreadOfEradicationGlow").Value;
             else if (itemType == ModContent.ItemType<EssenceFlayer>())
                 glowMask = ModContent.Request<Texture2D>("CalamityMod/Items/Weapons/Melee/EssenceFlayerGlow").Value;
             else if (itemType == ModContent.ItemType<EtherealSubjugator>())
                 glowMask = ModContent.Request<Texture2D>("CalamityMod/Items/Weapons/Summon/EtherealSubjugatorGlow").Value;
-            else if (itemType == ModContent.ItemType<Excelsus>())
-                glowMask = ModContent.Request<Texture2D>("CalamityMod/Items/Weapons/Melee/ExcelsusGlow").Value;
-            else if (itemType == ModContent.ItemType<IridescentExcalibur>())
-                glowMask = ModContent.Request<Texture2D>("CalamityMod/Items/Weapons/Melee/IridescentExcaliburGlow").Value;
+            else if (itemType == ModContent.ItemType<MawOfInfinity>())
+                glowMask = ModContent.Request<Texture2D>("CalamityMod/Items/Weapons/Melee/MawOfInfinityGlow").Value;
             else if (itemType == ModContent.ItemType<FatesReveal>())
                 glowMask = ModContent.Request<Texture2D>("CalamityMod/Items/Weapons/Magic/FatesRevealGlow").Value;
             else if (itemType == ModContent.ItemType<GreatswordofJudgement>())
@@ -75,7 +73,10 @@ namespace CalamityMod.CalPlayer.DrawLayers
             else if (itemType == ModContent.ItemType<NecroplasmicBeacon>())
                 glowMask = ModContent.Request<Texture2D>("CalamityMod/Items/SummonItems/NecroplasmicBeaconGlow").Value;
             else if (itemType == ModContent.ItemType<Orderbringer>())
+            {
+                color = Color.Lerp(Color.White, drawPlayer.Calamity().lightRGB, 0.75f) with { A = 0 };
                 glowMask = ModContent.Request<Texture2D>("CalamityMod/Items/Weapons/Melee/OrderbringerGlow").Value;
+            }
             else if (itemType == ModContent.ItemType<Photosynthesis>())
                 glowMask = ModContent.Request<Texture2D>("CalamityMod/Items/Weapons/Magic/PhotosynthesisGlow").Value;
             else if (itemType == ModContent.ItemType<PlantationStaff>())
@@ -86,8 +87,8 @@ namespace CalamityMod.CalPlayer.DrawLayers
                 glowMask = ModContent.Request<Texture2D>("CalamityMod/Items/Weapons/DraedonsArsenal/PulseRifleGlow").Value;
             else if (itemType == ModContent.ItemType<SoulPiercer>())
                 glowMask = ModContent.Request<Texture2D>("CalamityMod/Items/Weapons/Magic/SoulPiercerGlow").Value;
-            else if (itemType == ModContent.ItemType<StarburstShiv>())
-                glowMask = ModContent.Request<Texture2D>("CalamityMod/Items/Weapons/Melee/StarburstShivGlow").Value;
+            else if (itemType == ModContent.ItemType<Lightspeed>())
+                glowMask = ModContent.Request<Texture2D>("CalamityMod/Items/Weapons/Melee/LightspeedGlow").Value;
             else if (itemType == ModContent.ItemType<SubsumingVortex>())
                 glowMask = ModContent.Request<Texture2D>("CalamityMod/Items/Weapons/Magic/SubsumingVortexSmallGlow").Value;
             else if (itemType == ModContent.ItemType<TerrorBlade>())
@@ -132,7 +133,7 @@ namespace CalamityMod.CalPlayer.DrawLayers
                 drawInfo.itemColor = drawInfo.itemColor.MultiplyRGBA(new Color(Vector4.Lerp(Vector4.One, new Vector4(0f, 0.12f, 0.16f, 0f), 1f - stealth)));
             }
 
-            bool inUse = drawPlayer.itemAnimation > 0 && heldItem.useStyle != 0;
+            bool inUse = drawPlayer.itemAnimation > 0 && heldItem.useStyle != ItemUseStyleID.None;
             bool visuallyHeld = heldItem.holdStyle != 0 && !drawPlayer.pulley;
             if (!drawPlayer.CanVisuallyHoldItem(heldItem))
                 visuallyHeld = false;
@@ -140,7 +141,6 @@ namespace CalamityMod.CalPlayer.DrawLayers
             if (drawInfo.shadow != 0f || drawPlayer.frozen || !(inUse || visuallyHeld) || itemType <= 0 || drawPlayer.dead || heldItem.noUseGraphic || (drawPlayer.wet && heldItem.noWet) || (drawPlayer.happyFunTorchTime && drawPlayer.inventory[drawPlayer.selectedItem].createTile == TileID.Torches && drawPlayer.itemAnimation == 0))
                 return;
 
-            Color color = new Color(250, 250, 250, heldItem.alpha);
             Vector2 originOffset = Vector2.Zero;
 
             // Use to adjust glow mask draw offset and color.

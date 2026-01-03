@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using CalamityMod.Dusts;
 using CalamityMod.Items.Weapons.DraedonsArsenal;
 using CalamityMod.Particles;
+using CalamityMod.Sounds;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria;
@@ -258,7 +259,7 @@ namespace CalamityMod.Projectiles.DraedonsArsenal
         }
         public override bool OnTileCollide(Vector2 oldVelocity)
         {
-            SoundStyle sound = new("CalamityMod/Sounds/Custom/VoidstoneMine", 3);
+            SoundStyle sound = CommonCalamitySounds.VoidstoneMine with { Volume = 1 };
             SoundEngine.PlaySound(sound with { Volume = 0.3f, Pitch = -0.25f - 0.1f * tileHits, MaxInstances = 6 }, Projectile.Center);
 
             if (Projectile.velocity.X != oldVelocity.X)
@@ -277,7 +278,7 @@ namespace CalamityMod.Projectiles.DraedonsArsenal
         }
         public void Explode()
         {
-            Owner.Calamity().GeneralScreenShakePower = 3.5f * (Projectile.Calamity().stealthStrike ? 2 : 1);
+            Owner.SetScreenshake(3.5f * (Projectile.Calamity().stealthStrike ? 2 : 1));
 
             int spin = Main.rand.NextBool() ? -1 : 1;
             for (int i = 0; i < 8; i++)

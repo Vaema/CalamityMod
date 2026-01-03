@@ -22,7 +22,7 @@ namespace CalamityMod.Items.Weapons.DraedonsArsenal
             Item.width = 54;
             Item.height = 38;
             Item.DamageType = DamageClass.Magic;
-            Item.damage = 49;
+            Item.damage = 42;
             Item.knockBack = 3f;
             Item.useTime = 64;
             Item.useAnimation = 64;
@@ -37,7 +37,7 @@ namespace CalamityMod.Items.Weapons.DraedonsArsenal
             Item.rare = ItemRarityID.Orange;
 
             Item.shoot = ModContent.ProjectileType<PulsePistolShot>();
-            Item.shootSpeed = 8.2f;
+            Item.shootSpeed = 8f;
         }
 
         public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)

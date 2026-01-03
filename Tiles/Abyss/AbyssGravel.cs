@@ -1,8 +1,6 @@
-﻿using System.Collections.Generic;
-using CalamityMod.Systems;
+﻿using CalamityMod.Systems;
 using CalamityMod.Tiles.Abyss.AbyssAmbient;
 using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Graphics;
 using Terraria;
 using Terraria.Audio;
 using Terraria.ID;
@@ -28,10 +26,10 @@ namespace CalamityMod.Tiles.Abyss
             MineResist = 5f;
             MinPick = 65;
             HitSound = MineSound;
-            DustType = 33;
+            DustType = DustID.Water;
 
-            this.RegisterUniversalMerge(TileID.Dirt, "CalamityMod/Tiles/Merges/DirtMerge");
-            this.RegisterUniversalMerge(TileID.Stone, "CalamityMod/Tiles/Merges/StoneMerge");
+            this.RegisterBlendMergeWith(TileID.Dirt);
+            this.RegisterBlendMergeWith(TileID.Stone);
         }
 
         public override bool CanExplode(int i, int j)

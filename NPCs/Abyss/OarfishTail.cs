@@ -22,7 +22,7 @@ namespace CalamityMod.NPCs.Abyss
             NPC.width = 14; //28
             NPC.height = 16; //28
             NPC.defense = 30;
-            NPC.lifeMax = 5000;
+            NPC.lifeMax = 4000;
             NPC.aiStyle = -1; //new
             AIType = -1; //new
             NPC.knockBackResist = 0f;
@@ -41,10 +41,6 @@ namespace CalamityMod.NPCs.Abyss
             NPC.Calamity().VulnerableToSickness = true;
             NPC.Calamity().VulnerableToElectricity = true;
             NPC.Calamity().VulnerableToWater = false;
-
-            // Scale stats in Expert and Master
-            CalamityGlobalNPC.AdjustExpertModeStatScaling(NPC);
-            CalamityGlobalNPC.AdjustMasterModeStatScaling(NPC);
         }
 
         public override bool? DrawHealthBar(byte hbPosition, ref float scale, ref Vector2 position)

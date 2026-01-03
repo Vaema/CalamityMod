@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.IO;
 using CalamityMod.CalPlayer;
 using CalamityMod.Cooldowns;
 using Terraria;
@@ -11,7 +6,7 @@ using Terraria.ID;
 
 namespace CalamityMod.Packets
 {
-    public sealed class CooldownAdditionPacket : CalamityPacket
+    internal sealed class CooldownAdditionPacket : CalamityPacket
     {
         public static CooldownAdditionPacket Instance { get; private set; }
 

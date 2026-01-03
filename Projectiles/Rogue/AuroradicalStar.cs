@@ -1,7 +1,6 @@
 ﻿using System;
 using CalamityMod.Buffs.DamageOverTime;
 using CalamityMod.Dusts;
-using CalamityMod.Projectiles.Melee;
 using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.Audio;
@@ -12,11 +11,11 @@ namespace CalamityMod.Projectiles.Rogue
     public class AuroradicalStar : ModProjectile, ILocalizedModType
     {
         public new string LocalizationCategory => "Projectiles.Rogue";
-        public int[] dustTypes = new int[]
-        {
+        public int[] dustTypes =
+        [
             ModContent.DustType<AstralBlue>(),
             ModContent.DustType<AstralOrange>()
-        };
+        ];
 
         public override void SetStaticDefaults()
         {
@@ -107,39 +106,26 @@ namespace CalamityMod.Projectiles.Rogue
             }
         }
 
-        public override bool PreDraw(ref Color lightColor)
-        {
-            CalamityUtils.DrawAfterimagesCentered(Projectile, ProjectileID.Sets.TrailingMode[Type], lightColor, 1);
-            return false;
-        }
-
-        public override Color? GetAlpha(Color lightColor) => new Color(200, 200, 200, Projectile.alpha);
-
         public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
         {
             target.AddBuff(ModContent.BuffType<AstralInfectionDebuff>(), 180);
-            OnHitEffect(target.Center, target.width);
+            OnHitEffect(target);
         }
-
-        private void OnHitEffect(Vector2 targetPos, int width)
-        {
-            if (Projectile.Calamity().stealthStrike && Main.myPlayer == Projectile.owner)
-            {
-                Vector2 pos = new Vector2(targetPos.X + width * 0.5f + Main.rand.Next(-201, 201), Main.screenPosition.Y - 600f - Main.rand.Next(50));
-                Vector2 velocity = (targetPos - pos) / 40f;
-                int comet = Projectile.NewProjectile(Projectile.GetSource_FromThis(), pos, velocity, ModContent.ProjectileType<LeonidCometBig>(), (int)(Projectile.damage * 1.25), Projectile.knockBack, Projectile.owner);
-                if (comet.WithinBounds(Main.maxProjectiles))
-                {
-                    Main.projectile[comet].DamageType = RogueDamageClass.Instance;
-                    Main.projectile[comet].Calamity().lineColor = Main.rand.Next(3);
-                }
-            }
-        }
-
         public override void OnHitPlayer(Player target, Player.HurtInfo info)
         {
             target.AddBuff(ModContent.BuffType<AstralInfectionDebuff>(), 180);
-            OnHitEffect(target.Center, target.width);
+            OnHitEffect(target);
+        }
+        private void OnHitEffect(Entity target)
+        {
+            if (Projectile.Calamity().stealthStrike && Main.myPlayer == Projectile.owner)
+            {
+                Vector2 pos = new Vector2(target.Center.X + Main.rand.Next(-201, 201), Main.screenPosition.Y - 600f - Main.rand.Next(50));
+                Vector2 meteorVel = CalamityUtils.CalculatePredictiveAimToTargetMaxUpdates(pos, target, 20f, 3);
+                int comet = Projectile.NewProjectile(Projectile.GetSource_FromThis(), pos, meteorVel, ModContent.ProjectileType<LeonidCometBig>(), (int)(Projectile.damage * 1.25f), Projectile.knockBack, Projectile.owner);
+                if (comet.WithinBounds(Main.maxProjectiles))
+                    Main.projectile[comet].DamageType = RogueDamageClass.Instance;
+            }
         }
 
         public override void OnKill(int timeLeft)
@@ -166,5 +152,12 @@ namespace CalamityMod.Projectiles.Rogue
                 }
             }
         }
+
+        public override bool PreDraw(ref Color lightColor)
+        {
+            CalamityUtils.DrawAfterimagesCentered(Projectile, ProjectileID.Sets.TrailingMode[Type], lightColor, 1);
+            return false;
+        }
+        public override Color? GetAlpha(Color lightColor) => new Color(200, 200, 200, Projectile.alpha);
     }
 }

@@ -26,7 +26,7 @@ namespace CalamityMod.Items.Ammo
             Item.consumable = true;
             Item.knockBack = 3f;
             Item.value = Item.sellPrice(copper: 28);
-            Item.rare = ModContent.RarityType<DarkBlue>();
+            Item.rare = ModContent.RarityType<CosmicPurple>();
             Item.shoot = ModContent.ProjectileType<GodSlayerSlugProj>();
             Item.shootSpeed = 6f;
             Item.ammo = ItemID.MusketBall;

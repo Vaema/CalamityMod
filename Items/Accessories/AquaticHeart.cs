@@ -1,45 +1,33 @@
-﻿using System;
-using System.Collections.Generic;
-using CalamityMod.CalPlayer;
+﻿using System.Collections.Generic;
+using CalamityMod.Items.BaseItems;
 using Terraria;
+using Terraria.Audio;
 using Terraria.ID;
+using Terraria.Localization;
 using Terraria.ModLoader;
 
 namespace CalamityMod.Items.Accessories
 {
     [LegacyName("SirensHeart")]
-    public class AquaticHeart : ModItem, ILocalizedModType
+    public class AquaticHeart : TransformationAccessory, ILocalizedModType
     {
         public new string LocalizationCategory => "Items.Accessories";
 
         public static float WaterSpeedBoost = 0.15f;
-        public static double IceShieldAllDamageReduction = 0.2D;
+        public static float IceShieldDamageReductionBoost = 0.2f;
+        public static int IceShieldCooldown = CalamityUtils.SecondsToFrames(30);
+        public static LocalizedText FullTooltip => CalamityUtils.GetText("Items.Accessories.AquaticHeart.FullTooltip").WithFormatArgs(WaterSpeedBoost.ToPercent(), IceShieldDamageReductionBoost.ToPercent(), IceShieldCooldown.FramesToSeconds());
 
-        public override void Load()
-        {
-            // All code below runs only if we're not loading on a server
-            if (!Main.dedServ)
-            {
-                // Add equip textures
-                EquipLoader.AddEquipTexture(Mod, "CalamityMod/Items/Accessories/AquaticTrans_Head", EquipType.Head, this);
-                EquipLoader.AddEquipTexture(Mod, "CalamityMod/Items/Accessories/AquaticTrans_Body", EquipType.Body, this);
-                EquipLoader.AddEquipTexture(Mod, "CalamityMod/Items/Accessories/AquaticTrans_Legs", EquipType.Legs, this);
-            }
-        }
+        public override string AssetPath => "CalamityMod/Items/Accessories/";
+        public override (EquipType, string, string)[] EquipSlots =>
+        [
+            (EquipType.Head, "AquaticTrans", null),
+            (EquipType.Body, "AquaticTrans", null),
+            (EquipType.Legs, "AquaticTrans", null),
+            (EquipType.Face, null, null), //results in setting this equip slot to -1
+        ];
 
-        public override void SetStaticDefaults()
-        {
-            if (!Main.dedServ)
-            {
-                int equipSlotHead = EquipLoader.GetEquipSlot(Mod, Name, EquipType.Head);
-                int equipSlotBody = EquipLoader.GetEquipSlot(Mod, Name, EquipType.Body);
-                int equipSlotLegs = EquipLoader.GetEquipSlot(Mod, Name, EquipType.Legs);
-                ArmorIDs.Head.Sets.DrawHead[equipSlotHead] = false;
-                ArmorIDs.Body.Sets.HidesTopSkin[equipSlotBody] = true;
-                ArmorIDs.Body.Sets.HidesArms[equipSlotBody] = true;
-                ArmorIDs.Legs.Sets.HidesBottomSkin[equipSlotLegs] = true;
-            }
-        }
+        public override (SoundStyle sound, int delay)? HurtSound(Player p) => (SoundID.FemaleHit, 10);
 
         public override void SetDefaults()
         {
@@ -50,23 +38,11 @@ namespace CalamityMod.Items.Accessories
             Item.rare = ItemRarityID.LightRed;
         }
 
-        public override void UpdateAccessory(Player player, bool hideVisual)
-        {
-            CalamityPlayer modPlayer = player.Calamity();
-            modPlayer.aquaticHeart = true;
-            if (hideVisual)
-                modPlayer.aquaticHeartHide = true;
-        }
-
-        public override void UpdateVanity(Player player)
-        {
-            player.Calamity().aquaticHeartHide = false;
-            player.Calamity().aquaticHeartForce = true;
-        }
+        public override void UpdateAccessory(Player player, bool hideVisual) => player.Calamity().aquaticHeart = true;
 
         public override void ModifyTooltips(List<TooltipLine> tooltips)
         {
-            string statusTooltip = this.GetLocalizedValue(NPC.downedBoss3 ? "FullTooltip" : "LockedTooltip");
+            string statusTooltip = NPC.downedBoss3 ? FullTooltip.ToString() : this.GetLocalizedValue("LockedTooltip");
             tooltips.FindAndReplace("[STATUS]", statusTooltip);
         }
     }

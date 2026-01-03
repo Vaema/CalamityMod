@@ -18,7 +18,7 @@ namespace CalamityMod.Items.Weapons.Ranged
         public static readonly SoundStyle Fire = new("CalamityMod/Sounds/Item/MagnaCannonShot") { PitchVariance = 0.3f, Volume = 0.4f };
 
         public static int AftershotCooldownFrames = 30;
-        public static int FullChargeFrames = 138; //126 frames is durration of charge sound
+        public static int FullChargeFrames = 138; //126 frames is duration of charge sound
 
         public new string LocalizationCategory => "Items.Weapons.Ranged";
 
@@ -28,7 +28,7 @@ namespace CalamityMod.Items.Weapons.Ranged
         {
             Item.width = 56;
             Item.height = 34;
-            Item.damage = 30;
+            Item.damage = 25;
             Item.DamageType = DamageClass.Ranged;
             Item.useAnimation = Item.useTime = AftershotCooldownFrames;
             Item.useStyle = ItemUseStyleID.Shoot;
@@ -42,7 +42,6 @@ namespace CalamityMod.Items.Weapons.Ranged
             Item.autoReuse = false;
             Item.shootSpeed = 12f;
             Item.shoot = ModContent.ProjectileType<MagnaCannonHoldout>();
-            Item.Calamity().canFirePointBlankShots = true;
         }
 
         public override bool CanUseItem(Player player) => player.ownedProjectileCounts[Item.shoot] <= 0;

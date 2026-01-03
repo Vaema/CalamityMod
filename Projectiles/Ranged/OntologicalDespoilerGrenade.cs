@@ -126,7 +126,7 @@ namespace CalamityMod.Projectiles.Ranged
 
             if (explode)
             {
-                Owner.Calamity().GeneralScreenShakePower = 8.5f;
+                Owner.SetScreenshake(8.5f);
                 float power = 1.5f;
 
                 for (int i = 0; i < 55; i++)
@@ -172,7 +172,7 @@ namespace CalamityMod.Projectiles.Ranged
                 SoundStyle fire2 = new("CalamityMod/Sounds/Item/ShadowboltReflect");
                 SoundEngine.PlaySound(fire2 with { Volume = 0.9f, Pitch = -0.4f}, Projectile.Center);
 
-                Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center, Vector2.Zero, ModContent.ProjectileType<OntoligicalDespoilerBurst>(), (int)(Projectile.damage * 14f), Projectile.knockBack * 3, Projectile.owner, 0, 0, 0);
+                Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center, Vector2.Zero, ModContent.ProjectileType<OntoligicalDespoilerBurst>(), (int)(Projectile.damage * 12f), 0, Projectile.owner, 0, 0, 0);
             }
             else
             {
@@ -198,6 +198,13 @@ namespace CalamityMod.Projectiles.Ranged
             if (Owner.shirtColor == Color.White)
                 useColor = new Color(Main.DiscoR, Main.DiscoG, Main.DiscoB);
             return useColor;
+        }
+        public override void ModifyHitNPC(NPC target, ref NPC.HitModifiers modifiers)
+        {
+            modifiers.SetCrit();
+            Player Owner = Main.player[Projectile.owner];
+            float critDamage = Math.Min(Owner.GetTotalCritChance(Projectile.DamageType) * 0.01f, 1f);
+            modifiers.SourceDamage *= 1 + critDamage;
         }
         public override bool PreDraw(ref Color lightColor)
         {

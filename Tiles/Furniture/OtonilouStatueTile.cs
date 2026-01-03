@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using CalamityMod.Items.Placeables.Furniture;
+﻿using CalamityMod.Items.Placeables.Furniture;
 using Terraria.DataStructures;
 using Terraria.Enums;
 using Terraria.ID;

@@ -2,7 +2,7 @@
 using CalamityMod.Items.Armor.Vanity;
 using CalamityMod.Items.Materials;
 using CalamityMod.Items.Pets;
-using CalamityMod.Items.Placeables.Furniture.DevPaintings;
+using CalamityMod.Items.Placeables.Furniture.Paintings;
 using CalamityMod.Items.Weapons.Magic;
 using CalamityMod.Items.Weapons.Melee;
 using CalamityMod.Items.Weapons.Ranged;
@@ -67,8 +67,8 @@ namespace CalamityMod.Items.TreasureBags
             itemLoot.Add(DropHelper.CalamityStyle(DropHelper.BagWeaponDropRateFraction, new int[]
             {
                 ModContent.ItemType<Virulence>(),
-                ModContent.ItemType<BlightSpewer>(),
                 ModContent.ItemType<TheHive>(),
+                ModContent.ItemType<Malevolence>(),
                 ModContent.ItemType<PlagueStaff>(),
                 ModContent.ItemType<FuelCellBundle>(),
                 ModContent.ItemType<InfectedRemote>(),

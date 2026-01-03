@@ -1,9 +1,10 @@
-﻿using CalamityMod.Projectiles.Summon;
+﻿using CalamityMod.Buffs.Summon;
+using CalamityMod.Items.Weapons.Rogue;
+using CalamityMod.Projectiles.Summon;
 using CalamityMod.Rarities;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria;
-using Terraria.Audio;
 using Terraria.DataStructures;
 using Terraria.ID;
 using Terraria.ModLoader;
@@ -22,12 +23,12 @@ namespace CalamityMod.Items.Weapons.Summon
             Item.UseSound = SoundID.DD2_DarkMageHealImpact;
             Item.DamageType = DamageClass.Summon;
             Item.mana = 10;
-            Item.damage = 127;
+            Item.damage = 43; 
             Item.knockBack = 2f;
             Item.autoReuse = true;
-            Item.useAnimation = Item.useTime = 15;
+            Item.useAnimation = Item.useTime = 24;
+            Item.buffType = ModContent.BuffType<DazzlingStabberBuff>();
             Item.shoot = ModContent.ProjectileType<DazzlingStabber>();
-            Item.shootSpeed = 13f;
 
             Item.value = CalamityGlobalItem.RarityTurquoiseBuyPrice;
             Item.rare = ModContent.RarityType<Turquoise>();
@@ -38,17 +39,15 @@ namespace CalamityMod.Items.Weapons.Summon
         }
         public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)
         {
-            if (player.altFunctionUse != 2)
+            player.AddBuff(Item.buffType, 2);
+
+            for (int i = 0; i < 3; i++)
             {
-                for (int i = 0; i < 3; i++)
-                {
-                    int p = Projectile.NewProjectile(source, player.ClampedMouseWorld(), Vector2.Zero, type, damage, knockback, player.whoAmI, 0, 0, i + 1);
-                    if (Main.projectile.IndexInRange(p))
-                        Main.projectile[p].originalDamage = Item.damage;
-                }
+                var minion = Projectile.NewProjectileDirect(source, player.ClampedMouseWorld(), Vector2.Zero, type, damage, knockback, player.whoAmI, 0, 0, i + 1);
+                minion.originalDamage = Item.damage;
             }
             float angleMax = MathHelper.ToRadians(360f);
-            if (CalamityUtils.CountOwnedProjectiles(type, player.whoAmI) == 1)
+            if (player.ownedProjectileCounts[type] == 1)
                 angleMax = 0f;
             float index = 1f;
             if (player.ownedProjectileCounts[Item.shoot] > 30)
@@ -60,7 +59,7 @@ namespace CalamityMod.Items.Weapons.Summon
             {
                 if (p.type == type && p.owner == player.whoAmI)
                 {
-                    p.ai[1] = (index / CalamityUtils.CountOwnedProjectiles(type, player.whoAmI)) * angleMax - angleMax / 2f;
+                    p.ai[1] = index / player.ownedProjectileCounts[type] * angleMax - angleMax / 2f;
                     p.netUpdate = true;
                     index++;
                 }

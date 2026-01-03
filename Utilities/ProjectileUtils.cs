@@ -2,8 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using CalamityMod.Projectiles.Magic;
-using CalamityMod.Projectiles.Melee.Yoyos;
-using CalamityMod.Projectiles.Rogue;
 using CalamityMod.Projectiles.Typeless;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
@@ -38,9 +36,22 @@ namespace CalamityMod
 
             return false;
         }
+        public static bool AnyOwnedProjectiles(int projectileID, int ownerID)
+        {
+            // Efficiently loop through all projectiles, using a specially designed continue continue that attempts to minimize the amount of OR
+            // checks per iteration.
+            foreach (Projectile p in Main.ActiveProjectiles)
+            {
+                if (p.type != projectileID || p.owner != ownerID)
+                    continue;
+
+                return true;
+            }
+
+            return false;
+        }
 
         public static int CountProjectiles(int projectileID) => Main.projectile.Count(proj => proj.type == projectileID && proj.active);
-        public static int CountOwnedProjectiles(int projectileID, int ownerID) => Main.projectile.Count(proj => proj.active && proj.type == projectileID && proj.owner == ownerID);
 
         public static int CountHookProj() => Main.projectile.Count(proj => Main.projHook[proj.type] && proj.ai[0] == 2f && proj.active && proj.owner == Main.myPlayer);
 
@@ -107,7 +118,51 @@ namespace CalamityMod
         public static void ExpandHitboxBy(this Projectile projectile, Vector2 newSize) => projectile.ExpandHitboxBy((int)newSize.X, (int)newSize.Y);
         public static void ExpandHitboxBy(this Projectile projectile, float expandRatio) => projectile.ExpandHitboxBy((int)(projectile.width * expandRatio), (int)(projectile.height * expandRatio));
 
-        public static void HomeInOnNPC(Projectile projectile, bool ignoreTiles, float distanceRequired, float homingVelocity, float inertia)
+        /// <summary>
+        /// Prevents a projectile from colliding with tiles until it's no longer inside tiles.<br />
+        /// Useful for large projectiles that would otherwise collide with tiles instantly after spawning.<br />
+        /// Make sure to set Projectile.tileCollide = false; in the projectile's SetDefaults before calling this function in the projectile's AI.
+        /// </summary>
+        public static void PreventTileCollisionUntilHitboxIsOutsideOfTiles(Projectile projectile)
+        {
+            if (!projectile.tileCollide)
+            {
+                bool canCollide = true;
+                Vector2 tilePosition;
+                Point tilePositionPoint;
+                Tile tileSafely;
+                float increment = 16f;
+                float offset = increment * 2f;
+                float startIndexX = projectile.position.X - increment;
+                float endIndexX = startIndexX + offset + projectile.width;
+                float startIndexY = projectile.position.Y - increment;
+                float endIndexY = projectile.position.Y + offset + projectile.height;
+                for (float i = startIndexX; i < endIndexX; i += increment)
+                {
+                    if (!canCollide)
+                        break;
+
+                    for (float j = startIndexY; j < endIndexY; j += increment)
+                    {
+                        tilePosition.X = i;
+                        tilePosition.Y = j;
+                        tilePositionPoint = tilePosition.ToTileCoordinates();
+                        tileSafely = Framing.GetTileSafely(tilePositionPoint);
+                        bool isInSolidTile = tileSafely.HasUnactuatedTile && Main.tileSolid[tileSafely.TileType] && !Main.tileSolidTop[tileSafely.TileType] && !TileID.Sets.Platforms[tileSafely.TileType];
+                        if (isInSolidTile)
+                        {
+                            canCollide = false;
+                            break;
+                        }
+                    }
+                }
+
+                if (canCollide)
+                    projectile.tileCollide = true;
+            }
+        }
+
+        public static void HomeInOnNPC(Projectile projectile, bool ignoreTiles, float distanceRequired, float homingVelocity, float inertia, bool respectIFrames = false)
         {
             if (!projectile.friendly)
                 return;
@@ -126,10 +181,12 @@ namespace CalamityMod
             foreach (NPC n in Main.ActiveNPCs)
             {
                 float extraDistance = (n.width / 2) + (n.height / 2);
-                if (!n.CanBeChasedBy(projectile, false) || !projectile.WithinRange(n.Center, maxDistance + extraDistance))
+                if (!n.CanBeChasedBy(projectile, false) || !projectile.WithinRange(n.Center, maxDistance + extraDistance) || (respectIFrames && (projectile.localNPCImmunity[n.whoAmI] > 0 || projectile.localNPCImmunity[n.whoAmI] == -1 || n.immune[projectile.owner] > 0)))
                     continue;
 
                 float currentNPCDist = Vector2.Distance(n.Center, projectile.Center);
+                if (respectIFrames && Projectile.perIDStaticNPCImmunity[projectile.type][n.whoAmI] > Main.GameUpdateCount)
+                    currentNPCDist += 1600; //Prioritize things that don't currently have iframes, but still home in on stuff that has static iframes if needed.
                 if ((currentNPCDist < npcDistCompare) && (ignoreTiles || Collision.CanHit(projectile.Center, 1, 1, n.Center, 1, 1)))
                 {
                     npcDistCompare = currentNPCDist;
@@ -151,7 +208,8 @@ namespace CalamityMod
                 // Home in on the target.
                 Vector2 homeDirection = (destination - projectile.Center).SafeNormalize(Vector2.UnitY);
                 projectile.velocity = (projectile.velocity * inertia + homeDirection * homingVelocity) / (inertia + 1f);
-            }
+                projectile.Calamity().HomingTarget = index;
+    }
             else
             {
                 // Set amount of extra updates to default amount.
@@ -179,6 +237,7 @@ namespace CalamityMod
                     projectile.velocity = projectile.velocity * inertia + moveToNPC * homingVelocity;
                 else
                     projectile.velocity *= overspeedReduction;
+                projectile.Calamity().HomingTarget = targetedNPC.whoAmI;
             }
             if (targetedNPC == null && projectile.velocity.Length() < maxSpeed && accelerate)
                 projectile.velocity *= 1.0055f;
@@ -282,9 +341,8 @@ namespace CalamityMod
             Vector2 spawnPosition = new Vector2(x, y);
             Vector2 velocity = targetPos - spawnPosition;
             velocity.X += Main.rand.NextFloat(-xVariance, xVariance);
-            float speed = projSpeed;
             float targetDist = velocity.Length();
-            targetDist = speed / targetDist;
+            targetDist = projSpeed / targetDist;
             velocity.X *= targetDist;
             velocity.Y *= targetDist;
             return Projectile.NewProjectileDirect(source, spawnPosition, velocity, projType, damage, knockback, owner);
@@ -647,10 +705,15 @@ namespace CalamityMod
             Vector2 drawPosition = ((xPos == 0 && yPos == 0) ? projectile.Center : new Vector2(xPos, yPos)) - Main.screenPosition;
             Vector2 origin = frame.Value.Size() * 0.5f;
             Color backAfterimageColor = backglowColor * projectile.Opacity;
+
+            SpriteEffects spriteEffects = SpriteEffects.None;
+            if (projectile.spriteDirection == -1 && effects == SpriteEffects.None) spriteEffects = SpriteEffects.FlipHorizontally;
+            else spriteEffects = effects;
+
             for (int i = 0; i < 10; i++)
             {
                 Vector2 drawOffset = (MathHelper.TwoPi * i / 10f).ToRotationVector2() * backglowArea;
-                Main.spriteBatch.Draw(texture, drawPosition + drawOffset, frame, backAfterimageColor, projectile.rotation, origin, projectile.scale, effects, 0f);
+                Main.spriteBatch.Draw(texture, drawPosition + drawOffset, frame, backAfterimageColor, projectile.rotation, origin, projectile.scale, spriteEffects, 0f);
             }
         }
 
@@ -664,12 +727,16 @@ namespace CalamityMod
             Vector2 drawPosition = projectile.Center - Main.screenPosition;
             Vector2 origin = frame.Value.Size() * 0.5f;
             Color backAfterimageColor = backglowColor * projectile.Opacity;
+
+            SpriteEffects spriteEffects = SpriteEffects.None;
+            if (projectile.spriteDirection == -1) spriteEffects = SpriteEffects.FlipHorizontally;
+
             for (int i = 0; i < 10; i++)
             {
                 Vector2 off = Vector2.Zero;
                 if (offset != null) off += offset.Value;
                 Vector2 drawOffset = (MathHelper.TwoPi * i / 10f).ToRotationVector2() * backglowArea;
-                Main.spriteBatch.Draw(texture, drawPosition + drawOffset + off, frame, backAfterimageColor, projectile.rotation, origin, scale, 0, 0f);
+                Main.spriteBatch.Draw(texture, drawPosition + drawOffset + off, frame, backAfterimageColor, projectile.rotation, origin, scale, spriteEffects, 0f);
             }
         }
 
@@ -683,8 +750,12 @@ namespace CalamityMod
             Vector2 drawPosition = ((xPos == 0 && yPos == 0) ? projectile.Center : new Vector2(xPos, yPos)) - Main.screenPosition;
             Vector2 origin = frame.Value.Size() * 0.5f;
 
-            projectile.DrawBackglow(backglowColor, backglowArea, texture, frame, effects, xPos, yPos);
-            Main.spriteBatch.Draw(texture, drawPosition, frame, projectile.GetAlpha(lightColor), projectile.rotation, origin, projectile.scale, effects, 0f);
+            SpriteEffects spriteEffects = SpriteEffects.None;
+            if (projectile.spriteDirection == -1 && effects == SpriteEffects.None) spriteEffects = SpriteEffects.FlipHorizontally;
+            else spriteEffects = effects;
+
+            projectile.DrawBackglow(backglowColor, backglowArea, texture, frame, spriteEffects, xPos, yPos);
+            Main.spriteBatch.Draw(texture, drawPosition, frame, projectile.GetAlpha(lightColor), projectile.rotation, origin, projectile.scale, spriteEffects, 0f);
         }
 
         public static void DrawStarTrail(this Projectile projectile, Color outer, Color inner, float auraHeight = 10f)
@@ -774,7 +845,6 @@ namespace CalamityMod
 
         private static readonly List<int> vanillaBlastImmuneTiles = new List<int>()
         {
-            TileID.DemonAltar,
             TileID.Cobalt,
             TileID.Mythril,
             TileID.Adamantite,
@@ -783,8 +853,7 @@ namespace CalamityMod
             TileID.Titanium,
             TileID.Chlorophyte,
             TileID.LihzahrdBrick,
-            TileID.LihzahrdAltar,
-            TileID.DesertFossil
+            TileID.LihzahrdAltar
         };
 
         public static void ExplodeTiles(this Projectile p, int explosionRadius, bool respectStandardBlastImmunity = true, IEnumerable<int> customBlastImmuneTiles = null, IEnumerable<int> customBlastImmuneWalls = null)
@@ -847,6 +916,13 @@ namespace CalamityMod
                 // Conditionally toss in Hellstone if it's not Hardmode yet.
                 if (!Main.hardMode)
                     blastImmuneTiles.Add(TileID.Hellstone);
+
+                // Also spikes in FTW
+                if (Main.getGoodWorld)
+                {
+                    blastImmuneTiles.Add(TileID.Spikes);
+                    blastImmuneTiles.Add(TileID.WoodenSpikes);
+                }
             }
 
             // If specified, add custom blast immune tiles.

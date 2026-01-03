@@ -10,7 +10,6 @@ using Terraria;
 using Terraria.Audio;
 using Terraria.DataStructures;
 using Terraria.ID;
-using Terraria.Localization;
 using Terraria.ModLoader;
 using Terraria.ObjectData;
 
@@ -20,7 +19,6 @@ namespace CalamityMod.Tiles.Astral
     {
         public const int Width = 5;
         public const int Height = 4;
-        public static readonly Color FailColor = new Color(237, 93, 83);
 
         public static readonly SoundStyle UseSound = new("CalamityMod/Sounds/Custom/AstralBeaconUse");
 
@@ -69,12 +67,6 @@ namespace CalamityMod.Tiles.Astral
                 return true;
 
             bool usingStarcore = Main.LocalPlayer.HasItem(ModContent.ItemType<Starcore>());
-
-            if (Main.IsItDay())
-            {
-                CalamityUtils.DisplayLocalizedText("Mods.CalamityMod.Status.Boss.DeusAltarRejectNightText", FailColor);
-                return false;
-            }
 
             Vector2 ritualSpawnPosition = new Vector2(left + Width / 2, top).ToWorldCoordinates();
             ritualSpawnPosition += new Vector2(0f, -24f);

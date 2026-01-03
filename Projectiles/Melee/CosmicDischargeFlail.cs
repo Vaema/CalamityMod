@@ -10,7 +10,7 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.Projectiles.Melee
 {
-    public class CosmicDischargeFlail : BaseWhipProjectile, ILocalizedModType
+    public class CosmicDischargeFlail : BaseFlailProjectile, ILocalizedModType
     {
         public new string LocalizationCategory => "Projectiles.Melee";
         public override void SetDefaults()
@@ -23,10 +23,10 @@ namespace CalamityMod.Projectiles.Melee
             Projectile.tileCollide = false;
             Projectile.DamageType = DamageClass.MeleeNoSpeed;
             Projectile.ignoreWater = true;
+            Projectile.MaxUpdates = 2;
             Projectile.usesLocalNPCImmunity = true;
-            Projectile.localNPCHitCooldown = 6;
+            Projectile.localNPCHitCooldown = 6 * Projectile.MaxUpdates;
             Projectile.coldDamage = true;
-            Projectile.extraUpdates = 1;
         }
 
         public override Color SpecialDrawColor => new Color(150, 255, 255);
@@ -100,7 +100,7 @@ namespace CalamityMod.Projectiles.Melee
         public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
         {
             Player player = Main.player[Projectile.owner];
-            target.AddBuff(ModContent.BuffType<Voidfrost>(), 180);
+            target.AddBuff(ModContent.BuffType<Nightwither>(), 180);
             target.AddBuff(ModContent.BuffType<GlacialState>(), 60);
             if (Projectile.localAI[1] <= 0f && Projectile.owner == Main.myPlayer)
             {

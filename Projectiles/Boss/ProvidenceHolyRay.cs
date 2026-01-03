@@ -1,6 +1,5 @@
 ﻿using System;
 using System.IO;
-using CalamityMod.NPCs;
 using CalamityMod.NPCs.ProfanedGuardians;
 using CalamityMod.NPCs.Providence;
 using CalamityMod.Particles;
@@ -9,7 +8,6 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using ReLogic.Content;
 using Terraria;
-using Terraria.DataStructures;
 using Terraria.Enums;
 using Terraria.ID;
 using Terraria.ModLoader;
@@ -85,7 +83,7 @@ namespace CalamityMod.Projectiles.Boss
             }
 
             if (projScale == 1f)
-                ProvUtils.ApplyGFBDamage(Projectile, 400, 20);
+                ProvUtils.ApplyGFBDamage(Projectile, 240, 20);
 
             Projectile.scale = (float)Math.Sin(Projectile.localAI[0] * MathHelper.Pi / (scissorLasers ? 100f : 180f)) * 10f * projScale;
             if (Projectile.scale > projScale)
@@ -240,7 +238,7 @@ namespace CalamityMod.Projectiles.Boss
             if (info.Damage <= 0 || target.creativeGodMode)
                 return;
 
-            ProvUtils.ApplyDebuffs(target, 400);
+            ProvUtils.ApplyDebuffs(target, 240);
         }
 
         public override bool CanHitPlayer(Player target) => Projectile.scale >= 0.5f;

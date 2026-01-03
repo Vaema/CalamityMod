@@ -3,11 +3,10 @@ using System.Collections.Generic;
 using CalamityMod.Events;
 using CalamityMod.NPCs;
 using CalamityMod.NPCs.SupremeCalamitas;
-using CalamityMod.Projectiles.Boss;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using ReLogic.Content;
 using Terraria;
-using Terraria.GameContent;
 using Terraria.Graphics.Effects;
 using Terraria.ModLoader;
 
@@ -15,8 +14,6 @@ namespace CalamityMod.Skies
 {
     public class SCalSky : CustomSky
     {
-        public Color cinderColortoBe = Color.Red;
-        public Color cinderColor = Color.Red;
         public class Cinder
         {
             public int Time;
@@ -27,6 +24,7 @@ namespace CalamityMod.Skies
             public Color DrawColor;
             public Vector2 Velocity;
             public Vector2 Center;
+            public float Opacity = 0;
 
             public Cinder(int lifetime, int identity, float depth, Color color, Vector2 startingPosition, Vector2 startingVelocity)
             {
@@ -43,6 +41,8 @@ namespace CalamityMod.Skies
         private float intensity = 0f;
         private int SCalIndex = -1;
         public List<Cinder> Cinders = new List<Cinder>();
+        private Asset<Texture2D> backgroundTex;
+        private Asset<Texture2D> cinderTex;
 
         public static bool RitualDramaProjectileIsPresent
         {
@@ -124,64 +124,48 @@ namespace CalamityMod.Skies
 
         public override void Update(GameTime gameTime)
         {
+            intensity = GetIntensity();
             if (SCalIndex == -1)
-            {
                 UpdateSCalIndex();
-                if (SCalIndex == -1)
-                    isActive = false;
-            }
 
-            if (!Main.npc.IndexInRange(CalamityGlobalNPC.SCal) || Main.npc[CalamityGlobalNPC.SCal].type != ModContent.NPCType<SupremeCalamitas>())
-                isActive = false;
+            if (!Main.npc.IndexInRange(CalamityGlobalNPC.SCal) || Main.npc[CalamityGlobalNPC.SCal].type != ModContent.NPCType<SupremeCalamitas>() || SCalIndex == -1)
+            {
+                intensity -= 0.1f;
+                if (intensity <= 0)
+                    isActive = false;
+                return;
+            }
 
             static Color selectCinderColor()
             {
-                if (!Main.npc.IndexInRange(CalamityGlobalNPC.SCal) || Main.npc[CalamityGlobalNPC.SCal].type != ModContent.NPCType<SupremeCalamitas>())
-                    return Color.Transparent;
-
-                NPC scal = Main.npc[CalamityGlobalNPC.SCal];
-                bool cirrus = scal.ModNPC<SupremeCalamitas>().cirrus;
-                float lifeRatio = scal.life / (float)scal.lifeMax;
-
-                if (NPC.AnyNPCs(ModContent.NPCType<SupremeCatastrophe>()) == true && NPC.AnyNPCs(ModContent.NPCType<SupremeCataclysm>()) == false)
-                    return Color.Lerp(Color.MediumTurquoise, Color.Cyan, Main.rand.NextFloat(0.2f, 0.9f));
-                if (NPC.AnyNPCs(ModContent.NPCType<SupremeCataclysm>()) == true && NPC.AnyNPCs(ModContent.NPCType<SupremeCatastrophe>()) == false)
-                    return Color.Lerp(Color.Magenta, Color.MediumVioletRed, Main.rand.NextFloat(0.2f, 0.9f));
-                if (NPC.AnyNPCs(ModContent.NPCType<SupremeCatastrophe>()) == true && NPC.AnyNPCs(ModContent.NPCType<SupremeCataclysm>()) == true)
-                    return Color.Lerp(Color.Red, Color.IndianRed, Main.rand.NextFloat(0f, 1f));
-
-                if (lifeRatio > 0.5f)
-                    return Color.Lerp(cirrus ? Color.Pink : Color.Red, cirrus ? Color.Violet : Color.Crimson, Main.rand.NextFloat(0f, 1f));
-                else if (lifeRatio > 0.3f || scal.ModNPC<SupremeCalamitas>().postMusicHit == false)
-                    return Color.Lerp(cirrus ? Color.Cyan : Color.Red, cirrus ? Color.DarkCyan : Color.Magenta, Main.rand.NextFloat(0f, 0.7f));
-                else if (lifeRatio > 0.01f)
-                    return Color.Lerp(cirrus ? Color.Pink : Color.Red, cirrus ? Color.Green : Color.Yellow, Main.rand.NextFloat(0f, 0.88f));
-                else
-                    return Color.Lerp(Color.Gray, Color.White, Main.rand.NextFloat(0f, 0.65f));
+                return SupremeCalamitas.CurrentColor;
             }
 
             // Randomly add cinders.
-            if (Main.rand.NextBool(CinderReleaseChance))
+            if (Main.rand.NextBool(CinderReleaseChance) && CalamityGlobalNPC.SCal >= 0)
             {
-                int lifetime = Main.rand.Next(285, 445);
+                var box = Main.npc[CalamityGlobalNPC.SCal].ModNPC<SupremeCalamitas>().ArenaBox;
+                int lifetime = Main.rand.Next(485, 645);
                 float depth = Main.rand.NextFloat(1.8f, 5f);
-                Vector2 startingPosition = Main.screenPosition + new Vector2(Main.screenWidth * Main.rand.NextFloat(-0.1f, 1.1f), Main.screenHeight * 1.05f);
+                Vector2 startingPosition = Main.screenPosition + new Vector2(Main.screenWidth * Main.rand.NextFloat(-0.1f, 1.1f), Main.screenHeight * Main.rand.NextFloat(-0.1f, 1.1f));
+                startingPosition = Main.rand.NextVector2FromRectangle(box.HitboxRectangle) + new Vector2(0, 180);
+                startingPosition = Vector2.Lerp(box.BottomLeft, box.BottomRight, Main.rand.NextFloat());
                 Vector2 startingVelocity = -Vector2.UnitY.RotatedByRandom(0.91f);
                 Cinders.Add(new Cinder(lifetime, Cinders.Count, depth, selectCinderColor(), startingPosition, startingVelocity));
             }
-            if ((!Main.npc.IndexInRange(CalamityGlobalNPC.SCal) || Main.npc[CalamityGlobalNPC.SCal].type != ModContent.NPCType<SupremeCalamitas>()) == false)
+            else if ((!Main.npc.IndexInRange(CalamityGlobalNPC.SCal) || Main.npc[CalamityGlobalNPC.SCal].type != ModContent.NPCType<SupremeCalamitas>()) == false)
             {
                 NPC scal = Main.npc[CalamityGlobalNPC.SCal];
                 if (scal.ModNPC<SupremeCalamitas>().musicSyncCounter == 0)
                 {
                     for (int i = 0; i < 70; i++)
-                    { 
+                    {
                         int lifetime = Main.rand.Next(285, 445);
                         float depth = Main.rand.NextFloat(1.8f, 5f);
                         Vector2 startingPosition = Main.screenPosition + new Vector2(Main.screenWidth * Main.rand.NextFloat(-0.1f, 1.1f), Main.screenHeight * Main.rand.NextFloat(1.05f, 1.45f));
                         Vector2 startingVelocity = -Vector2.UnitY.RotatedByRandom(0.91f) * Main.rand.NextFloat(0.5f, 2.5f);
 
-                        Cinders.Add(new Cinder(lifetime, Cinders.Count, depth, selectCinderColor(), startingPosition, startingVelocity));
+                        Cinders.Add(new Cinder(lifetime, Cinders.Count, depth, SupremeCalamitas.LamentColor, startingPosition, startingVelocity));
                     }
                 }
             }
@@ -189,6 +173,8 @@ namespace CalamityMod.Skies
             // Update all cinders.
             for (int i = 0; i < Cinders.Count; i++)
             {
+                if (Cinders[i].Opacity < 1)
+                    Cinders[i].Opacity += 0.1f;
                 Cinders[i].Scale = Utils.GetLerpValue(Cinders[i].Lifetime, Cinders[i].Lifetime / 3, Cinders[i].Time, true) * 1.5f;
                 Cinders[i].Scale *= MathHelper.Lerp(0.6f, 0.9f, Cinders[i].IdentityIndex % 6f / 6f);
 
@@ -211,7 +197,7 @@ namespace CalamityMod.Skies
                 return OverridingIntensity;
 
             OverridingIntensity = 0f;
-            if (UpdateSCalIndex())
+            if (UpdateSCalIndex() && SCalIndex > -1)
             {
                 float x = 0f;
                 if (SCalIndex != -1)
@@ -221,7 +207,7 @@ namespace CalamityMod.Skies
                 return (1f - Utils.SmoothStep(4500f, 9000f, x)) * intensityFactor;
             }
 
-            return 0f;
+            return intensity;
         }
 
         public override Color OnTileColor(Color inColor) => new(Vector4.Lerp(new Vector4(0.5f, 0.8f, 1f, 1f), inColor.ToVector4(), 1f - GetIntensity()));
@@ -241,54 +227,49 @@ namespace CalamityMod.Skies
         {
             if (maxDepth >= 0 && minDepth < 0)
             {
+                var viewport = Main.graphics.GraphicsDevice.Viewport;
+                var tex = CalamityUtils.GetTextureEfficient(ref backgroundTex, "CalamityMod/Skies/CalamitasBackground").Value;
+
+                //We add 2 to the repeat count as a buffer for the texture position offset, to ensure the screen is always fully covered.
+                float repeatX = (float)viewport.Width / tex.Width + 2;
+                float repeatY = (float)viewport.Height / tex.Height + 2;
+
                 float intensity = GetIntensity();
-                spriteBatch.Draw(TextureAssets.BlackTile.Value, new Rectangle(0, 0, Main.screenWidth * 2, Main.screenHeight * 2), Color.Black * intensity);
+                //This ratio is the scale of one viewport pixel to one game pixel. Needed to accomodate for different resolutions and zoom levels.
+                //Changing zoom while this is on does cause the background to move rapidly while zoom is being changed since the screen position is changing. This is more effort to fix than it's worth.
+                //Changing zoom also does not change the scale of the background texture, leaving it full-size regardless of zoom. Once again, more work than it's worth.
+                Vector2 ViewportToGamesizeRatio = new Vector2(viewport.Width, viewport.Height) / new Vector2(Main.screenWidth, Main.screenHeight) * Main.GameZoomTarget;
+
+                //This is the offset the texture has from the screen position. Subtracting the player postion is needed for it to move with the player like a background shouls. Also accounts for parallax setting.
+                Point posOffset = new Vector2(MathF.Sin((Main.GlobalTimeWrappedHourly) * 0.03f + MathHelper.PiOver2) * 10 * tex.Width, MathF.Cos((Main.GlobalTimeWrappedHourly) * 0.1f + MathHelper.PiOver2) * 17 * tex.Height).ToPoint() - (Main.LocalPlayer.position * ViewportToGamesizeRatio * Main.caveParallax).ToPoint();
+
+                //Using a modulo to clamp the offset to within one texture size - the looping of the modulo looks seamless due to the texture looping
+                posOffset.X = posOffset.X % tex.Width;
+                posOffset.Y = posOffset.Y % tex.Height;
+
+                Rectangle dest = new Rectangle(posOffset.X - tex.Width, posOffset.Y - tex.Height, (int)(tex.Width * repeatX), (int)(tex.Height * repeatY));
+
+                //We need the texture to loop, so we use a linearwrap sampler state. We draw it one extra texture size in all directions around the screen to provide buffer for the posOffset.
+                spriteBatch.End();
+                spriteBatch.Begin(SpriteSortMode.Immediate, BlendState.AlphaBlend, SamplerState.LinearWrap, DepthStencilState.None, RasterizerState.CullCounterClockwise);
+
+                spriteBatch.Draw(
+                    tex,
+                    destinationRectangle: dest,
+                    sourceRectangle: new Rectangle(0, 0, (int)(tex.Width * repeatX), (int)(tex.Height * repeatY)),
+                    color: Color.White * intensity
+                );
             }
-
-            if (!Main.npc.IndexInRange(CalamityGlobalNPC.SCal) || Main.npc[CalamityGlobalNPC.SCal].type != ModContent.NPCType<SupremeCalamitas>())
-            {
-                cinderColortoBe = Color.Transparent;
-                cinderColor = Color.Transparent;
-                return;
-            }
-
-            NPC scal = Main.npc[CalamityGlobalNPC.SCal];
-            bool cirrus = scal.ModNPC<SupremeCalamitas>().cirrus;
-            float lifeRatio = scal.life / (float)scal.lifeMax;
-
-            if (lifeRatio > 0.5f)
-                cinderColortoBe = Color.Lerp(cirrus ? Color.Pink : Color.Red, cirrus ? Color.Violet : Color.Crimson, Main.rand.NextFloat(0f, 1f));
-            else if (lifeRatio > 0.3f || scal.ModNPC<SupremeCalamitas>().postMusicHit == false)
-                cinderColortoBe = Color.Lerp(cirrus ? Color.Cyan : Color.Red, cirrus ? Color.DarkCyan : Color.Magenta, Main.rand.NextFloat(0f, 0.7f));
-            else if (lifeRatio > 0.01f)
-                cinderColortoBe = Color.Lerp(cirrus ? Color.Pink : Color.Red, cirrus ? Color.Green : Color.Yellow, Main.rand.NextFloat(0f, 0.88f));
-            else
-                cinderColortoBe = Color.Lerp(Color.Gray, Color.White, Main.rand.NextFloat(0.8f));
-
-            if (NPC.AnyNPCs(ModContent.NPCType<SupremeCatastrophe>()) == true && NPC.AnyNPCs(ModContent.NPCType<SupremeCataclysm>()) == false)
-                cinderColortoBe = Color.Lerp(Color.MediumTurquoise, Color.Cyan, Main.rand.NextFloat(0.2f, 0.9f));
-            if (NPC.AnyNPCs(ModContent.NPCType<SupremeCataclysm>()) == true && NPC.AnyNPCs(ModContent.NPCType<SupremeCatastrophe>()) == false)
-                cinderColortoBe = Color.Lerp(Color.Magenta, Color.MediumVioletRed, Main.rand.NextFloat(0.2f, 0.9f));
-            if (NPC.AnyNPCs(ModContent.NPCType<SupremeCatastrophe>()) == true && NPC.AnyNPCs(ModContent.NPCType<SupremeCataclysm>()) == true)
-                cinderColortoBe = Color.Lerp(Color.Red, Color.IndianRed, Main.rand.NextFloat(0f, 1f));
-
-            cinderColor = Color.Lerp(cinderColor, cinderColortoBe, 0.0067f);
 
             // Draw cinders.
-            Texture2D cinderTexture = ModContent.Request<Texture2D>("CalamityMod/Skies/CalamitasCinder").Value;
+
+            var cinderTexture = CalamityUtils.GetTextureEfficient(ref cinderTex, "CalamityMod/ExtraTextures/SmallGreyscaleCircle").Value;
             for (int i = 0; i < Cinders.Count; i++)
             {
+                float OpacityMult = 0.1f + 0.3f * ((MathF.Sin(Cinders[i].Time * 0.1f + Cinders[i].IdentityIndex) + 1) * 0.5f);
                 Vector2 drawPosition = Cinders[i].Center - Main.screenPosition;
-                Color offsetDrawColor = cinderColor * 0.56f;
-                offsetDrawColor.A = 0;
                 Vector2 cinderOrigin = cinderTexture.Size() * 0.5f;
-                for (int j = 0; j < 3; j++)
-                {
-                    Vector2 offsetDrawPosition = drawPosition + (MathHelper.TwoPi * j / 3f).ToRotationVector2() * 1.4f;
-                    spriteBatch.Draw(cinderTexture, offsetDrawPosition, null, offsetDrawColor, 0f, cinderOrigin, Cinders[i].Scale * 1.5f, SpriteEffects.None, 0f);
-                }
-
-                spriteBatch.Draw(cinderTexture, drawPosition, null, Cinders[i].DrawColor, 0f, cinderOrigin, Cinders[i].Scale, SpriteEffects.None, 0f);
+                spriteBatch.Draw(cinderTexture, drawPosition, null, Cinders[i].DrawColor * Cinders[i].Opacity * OpacityMult, 0f, cinderOrigin, Cinders[i].Scale * 0.15f, SpriteEffects.None, 0f);
             }
         }
 

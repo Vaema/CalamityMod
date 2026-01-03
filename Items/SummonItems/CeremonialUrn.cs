@@ -19,7 +19,7 @@ namespace CalamityMod.Items.SummonItems
         {
             Item.width = 34;
             Item.height = 54;
-            Item.rare = ModContent.RarityType<Violet>();
+            Item.rare = ModContent.RarityType<BurnishedAuric>();
         }
 
         public override void ModifyResearchSorting(ref ContentSamples.CreativeHelper.ItemGroup itemGroup)

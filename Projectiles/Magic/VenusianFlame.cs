@@ -119,7 +119,7 @@ namespace CalamityMod.Projectiles.Magic
             }
             if (Main.rand.NextBool(14))
             {
-                int venusDust2 = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, 278, 0f, 0f, 0, default, Main.rand.NextFloat(0.3f, 0.5f));
+                int venusDust2 = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.FireworksRGB, 0f, 0f, 0, default, Main.rand.NextFloat(0.3f, 0.5f));
                 Dust dust2 = Main.dust[venusDust2];
                 dust2.position.X -= 2f;
                 dust2.position.Y += 2f;

@@ -140,6 +140,7 @@ namespace CalamityMod.Projectiles.BaseProjectiles
         public override void SetStaticDefaults()
         {
             Main.projFrames[Type] = AnimationFrames;
+            // IMPORTANT: Setting Main.projPet disables projectile damage! If you are making a charging minion, be sure to override the MinionContactDamage hook
             Main.projPet[Type] = true;
             ProjectileID.Sets.MinionSacrificable[Type] = true;
             ProjectileID.Sets.MinionTargettingFeature[Type] = true;

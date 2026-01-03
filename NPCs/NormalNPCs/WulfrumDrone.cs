@@ -1,12 +1,10 @@
-﻿using System;
-using System.IO;
+﻿using System.IO;
 using CalamityMod.Items.Accessories;
 using CalamityMod.Items.Materials;
 using CalamityMod.Items.Placeables.Banners;
 using CalamityMod.Sounds;
 using CalamityMod.World;
 using Microsoft.Xna.Framework;
-using Mono.Cecil;
 using Terraria;
 using Terraria.Audio;
 using Terraria.GameContent.Bestiary;
@@ -70,9 +68,9 @@ namespace CalamityMod.NPCs.NormalNPCs
             NPC.width = 32;
             NPC.height = 32;
             NPC.defense = 4;
-            NPC.lifeMax = 27;
+            NPC.lifeMax = 25;
             NPC.knockBackResist = 0.35f;
-            NPC.value = Item.buyPrice(0, 0, 0, 80);
+            NPC.value = Item.buyPrice(copper: 80);
             NPC.noGravity = true;
             NPC.noTileCollide = true;
             NPC.HitSound = WulfrumAmplifier.Hit;
@@ -81,10 +79,6 @@ namespace CalamityMod.NPCs.NormalNPCs
             BannerItem = ModContent.ItemType<WulfrumDroneBanner>();
             NPC.Calamity().VulnerableToSickness = false;
             NPC.Calamity().VulnerableToElectricity = true;
-
-            // Scale stats in Expert and Master
-            CalamityGlobalNPC.AdjustExpertModeStatScaling(NPC);
-            CalamityGlobalNPC.AdjustMasterModeStatScaling(NPC);
         }
 
         public override void SetBestiary(BestiaryDatabase database, BestiaryEntry bestiaryEntry)
@@ -180,7 +174,7 @@ namespace CalamityMod.NPCs.NormalNPCs
                     if (Main.zenithWorld)
                     {
                         int spread = 15;
-                        for (int times = CalamityWorld.LegendaryMode ? 3 : 2; times > 0; times--)
+                        for (int times = 3; times > 0; times--)
                         {
                             Vector2 velocity = NPC.SafeDirectionTo(player.Center, Vector2.UnitY) * 6f;
                             Vector2 perturbedspeed = new Vector2(velocity.X + Main.rand.Next(-2, 3), velocity.Y + Main.rand.Next(-2, 3)).RotatedBy(MathHelper.ToRadians(spread));
@@ -211,7 +205,7 @@ namespace CalamityMod.NPCs.NormalNPCs
             // Generate idle dust
             if (!Main.dedServ)
             {
-                Dust dust = Dust.NewDustPerfect(NPC.Bottom, 229);
+                Dust dust = Dust.NewDustPerfect(NPC.Bottom, DustID.Vortex);
                 dust.color = Color.Green;
                 dust.scale = 0.675f;
             }

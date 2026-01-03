@@ -1,4 +1,4 @@
-﻿using System;
+﻿using CalamityMod.Buffs.Summon;
 using CalamityMod.Items.Materials;
 using CalamityMod.Projectiles.Summon;
 using Microsoft.Xna.Framework;
@@ -19,7 +19,7 @@ namespace CalamityMod.Items.Weapons.Summon
             Item.height = 20;
             Item.damage = 16;
             Item.mana = 10;
-            Item.useAnimation = Item.useTime = 34;
+            Item.useAnimation = Item.useTime = 36;
             Item.useStyle = ItemUseStyleID.HoldUp;
             Item.noMelee = true;
             Item.knockBack = 0.5f;
@@ -27,8 +27,8 @@ namespace CalamityMod.Items.Weapons.Summon
             Item.rare = ItemRarityID.Blue;
             Item.UseSound = SoundID.Item15; //phaseblade sound effect
             Item.autoReuse = true;
+            Item.buffType = ModContent.BuffType<WulfrumDroidBuff>();
             Item.shoot = ModContent.ProjectileType<WulfrumDroid>();
-            Item.shootSpeed = 10f;
             Item.DamageType = DamageClass.Summon;
         }
 
@@ -40,22 +40,16 @@ namespace CalamityMod.Items.Weapons.Summon
 
         public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)
         {
-            if (player.altFunctionUse != 2)
-            {
-                position = player.ClampedMouseWorld();
-                velocity.X = 0;
-                velocity.Y = 0;
-                int droid = Projectile.NewProjectile(source, position, velocity, type, damage, knockback, player.whoAmI, 0f, 1f);
-                if (Main.projectile.IndexInRange(droid))
-                    Main.projectile[droid].originalDamage = Item.damage;
-            }
+            player.AddBuff(Item.buffType, 2);
+            var minion = Projectile.NewProjectileDirect(source, player.ClampedMouseWorld(), Vector2.Zero, type, damage, knockback, player.whoAmI, 0f, 1f);
+            minion.originalDamage = Item.damage;
             return false;
         }
 
         public override void AddRecipes()
         {
             CreateRecipe().
-                AddIngredient<WulfrumMetalScrap>(9).
+                AddIngredient<WulfrumMetalScrap>(10).
                 AddTile(TileID.Anvils).
                 Register();
         }
@@ -94,7 +88,7 @@ namespace CalamityMod.Items.Weapons.Summon
             {
                 Vector2 dustPos = Player.position + (Player.height * Main.rand.NextFloat(0.7f, 1f) + Player.gfxOffY) * Vector2.UnitY + Vector2.UnitX * Main.rand.NextFloat() * Player.width;
 
-                Dust chust = Dust.NewDustPerfect(dustPos, 274, -Vector2.UnitY * Main.rand.NextFloat(1.4f, 7f) + Player.velocity, Alpha: 100, Scale: Main.rand.NextFloat(1.2f, 1.8f));
+                Dust chust = Dust.NewDustPerfect(dustPos, DustID.ApprenticeStorm, -Vector2.UnitY * Main.rand.NextFloat(1.4f, 7f) + Player.velocity, Alpha: 100, Scale: Main.rand.NextFloat(1.2f, 1.8f));
                 chust.noGravity = true;
                 chust.noLight = true;
             }

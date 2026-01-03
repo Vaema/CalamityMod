@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using CalamityMod.Particles;
-using CalamityMod.Projectiles.Melee;
+﻿using CalamityMod.Particles;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria;
@@ -50,7 +47,7 @@ namespace CalamityMod.Projectiles.Ranged
             if (Time == EmpowerTime)
             {
                 Projectile.penetrate = 1;
-                Projectile.damage = (int)((Projectile.damage / Math.Pow(DamageFalloff, Projectile.numHits)) * 1.6f); // 7/4
+                Projectile.damage = (int)(Projectile.originalDamage * 1.6f);
                 Projectile.velocity *= 0f;
                 Projectile.rotation = Main.rand.NextFloat(0f, MathHelper.TwoPi);
 

@@ -6,8 +6,6 @@ using Microsoft.Xna.Framework.Graphics;
 using ReLogic.Utilities;
 using Terraria;
 using Terraria.Audio;
-using Terraria.DataStructures;
-using Terraria.GameContent;
 using Terraria.ID;
 using Terraria.ModLoader;
 
@@ -49,7 +47,7 @@ namespace CalamityMod.Projectiles.Typeless
         public static int Lifetime = 400;
         public static int DigTime = 350;
         public static float DigSpeed = 1.5f;
-        public static int MaxPickPower = 160;
+        public static int MaxPickPower = 1000;
         public static float ClearSpaceDiagonal = 50;
 
         public override void SetDefaults()
@@ -185,7 +183,7 @@ namespace CalamityMod.Projectiles.Typeless
 
             for (int i = 0; i < sparkCount; i++)
             {
-                Dust.NewDustPerfect(Projectile.Center, 226, Main.rand.NextVector2Circular(18f, 18f), Scale: Main.rand.NextFloat(0.4f, 1f));
+                Dust.NewDustPerfect(Projectile.Center, DustID.Electric, Main.rand.NextVector2Circular(18f, 18f), Scale: Main.rand.NextFloat(0.4f, 1f));
             }
         }
 

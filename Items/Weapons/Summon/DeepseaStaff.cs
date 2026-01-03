@@ -1,4 +1,6 @@
-﻿using CalamityMod.Projectiles.Summon;
+﻿using CalamityMod.Buffs.Summon;
+using CalamityMod.Items.Weapons.Rogue;
+using CalamityMod.Projectiles.Summon;
 using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.DataStructures;
@@ -15,7 +17,7 @@ namespace CalamityMod.Items.Weapons.Summon
             Item.width = Item.height = 44;
             Item.damage = 40;
             Item.mana = 10;
-            Item.useAnimation = Item.useTime = 25;
+            Item.useAnimation = Item.useTime = 36;
             Item.useStyle = ItemUseStyleID.Swing;
             Item.noMelee = true;
             Item.knockBack = 2f;
@@ -23,20 +25,16 @@ namespace CalamityMod.Items.Weapons.Summon
             Item.rare = ItemRarityID.Pink;
             Item.UseSound = SoundID.Item44;
             Item.autoReuse = true;
+            Item.buffType = ModContent.BuffType<AquaticStar>();
             Item.shoot = ModContent.ProjectileType<AquaticStarMinion>();
             Item.DamageType = DamageClass.Summon;
         }
 
         public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)
         {
-            if (player.altFunctionUse != 2)
-            {
-                position = player.ClampedMouseWorld();
-                velocity = Vector2.Zero;
-                int p = Projectile.NewProjectile(source, position, velocity, type, damage, knockback, player.whoAmI);
-                if (Main.projectile.IndexInRange(p))
-                    Main.projectile[p].originalDamage = Item.damage;
-            }
+            player.AddBuff(Item.buffType, 2);
+            var minion = Projectile.NewProjectileDirect(source, player.ClampedMouseWorld(), Vector2.Zero, type, damage, knockback, player.whoAmI);
+            minion.originalDamage = Item.damage;
             return false;
         }
     }

@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using CalamityMod.Particles;
-using CalamityMod.Projectiles.Typeless;
+﻿using CalamityMod.Particles;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria;
@@ -55,8 +52,7 @@ namespace CalamityMod.Projectiles.Rogue
 
         public override void OnKill(int timeLeft)
         {
-            if (Main.LocalPlayer.Calamity().GeneralScreenShakePower < 3f)
-                Main.LocalPlayer.Calamity().GeneralScreenShakePower = 3f;
+            Main.LocalPlayer.SetScreenshake(3f);
             SoundEngine.PlaySound(new SoundStyle("CalamityMod/Sounds/Item/HellbornImpact"), Projectile.Center);
 
             Projectile.ExpandHitboxBy(300);

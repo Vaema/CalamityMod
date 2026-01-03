@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using CalamityMod.CustomRecipes;
-using CalamityMod.Items.DraedonMisc;
 using CalamityMod.Items.Materials;
 using CalamityMod.Items.Placeables.PlaceableTurrets;
 using CalamityMod.Items.SummonItems;
@@ -64,7 +63,7 @@ namespace CalamityMod.Items.DraedonMisc
                     rangedDisplay.OverrideColor = new Color(236, 255, 31);
                     list.Insert(insertIndex + 2, rangedDisplay);
 
-                    int mageItem = ModContent.ItemType<GatlingLaser>();
+                    int mageItem = ModContent.ItemType<CountermeasureMitt>();
                     TooltipLine mageDisplay = new TooltipLine(this.Mod, "CalamityMod:MageDisplay", $"[i:{mageItem}] {CalamityUtils.GetItemName(mageItem)}");
                     mageDisplay.OverrideColor = new Color(255, 64, 31);
                     list.Insert(insertIndex + 3, mageDisplay);

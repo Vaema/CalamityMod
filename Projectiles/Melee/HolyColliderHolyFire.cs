@@ -18,7 +18,7 @@ namespace CalamityMod.Projectiles.Melee
         public bool setStats = true;
         public static int statMax = 8;
         public int setStatTimer = statMax;
-        public int time = 0;
+        public ref float time => ref Projectile.ai[1];
         public override void SetStaticDefaults()
         {
             Main.projFrames[Type] = 4;
@@ -44,10 +44,13 @@ namespace CalamityMod.Projectiles.Melee
         public override void AI()
         {
             Player Owner = Main.player[Projectile.owner];
-            if (Projectile.ai[2] == 5 && time > 10 && Projectile.ai[0] != 10)
+            int hitTime = 13; // Time to pass before it can be launched
+
+            if (Projectile.ai[2] == 5 && time >= hitTime && Projectile.ai[0] != 10)
                 isLaunched = true;
             else
                 Projectile.ai[2] = 0;
+            
 
             Projectile.scale = Utils.GetLerpValue(0, 40, Projectile.timeLeft, true);
 
@@ -67,7 +70,7 @@ namespace CalamityMod.Projectiles.Melee
                         float starAngle = Main.rand.NextFloat(-0.9f, 0.9f);
                         for (int i = 0; i < 4; i++)
                         {
-                            Dust chargefull = Dust.NewDustPerfect(Projectile.Center, 278);
+                            Dust chargefull = Dust.NewDustPerfect(Projectile.Center, DustID.FireworksRGB);
                             Vector2 vel = (MathHelper.TwoPi * i / 4f).ToRotationVector2().RotatedBy(starAngle) * 8f;
 
                             Particle pulse = new GlowSparkParticle(Projectile.Center, vel, false, 10, 0.08f, Color.Orange, new Vector2(3.2f, 0.9f), true, true, 0.9f);
@@ -154,7 +157,7 @@ namespace CalamityMod.Projectiles.Melee
             Player Owner = Main.player[Projectile.owner];
             if (isLaunched && Projectile.scale > 0.2f)
             {
-                Owner.Calamity().GeneralScreenShakePower = 9f;
+                Owner.SetScreenshake(9f);
 
                 SoundStyle sound = new("CalamityMod/Sounds/Item/HolyColliderProjectileHit");
                 SoundEngine.PlaySound(sound with { Volume = 1f }, Projectile.Center);

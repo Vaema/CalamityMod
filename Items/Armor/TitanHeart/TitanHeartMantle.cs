@@ -1,7 +1,7 @@
-﻿using CalamityMod.Items.Materials;
-using CalamityMod.Items.Placeables.Astral;
+﻿using CalamityMod.Items.Placeables.FurnitureMonolith;
 using Terraria;
 using Terraria.ID;
+using Terraria.Localization;
 using Terraria.ModLoader;
 
 namespace CalamityMod.Items.Armor.TitanHeart
@@ -10,9 +10,13 @@ namespace CalamityMod.Items.Armor.TitanHeart
     public class TitanHeartMantle : ModItem, ILocalizedModType
     {
         public new string LocalizationCategory => "Items.Armor.Hardmode";
+
+        public static float RogueDamageBoost = 0.1f;
+        public static float RogueKnockbackBoost = 0.5f;
+        public override LocalizedText Tooltip => base.Tooltip.WithFormatArgs(RogueDamageBoost.ToPercent(), RogueKnockbackBoost.ToPercent());
+
         public override void SetStaticDefaults()
         {
-
             if (Main.dedServ)
                 return;
 
@@ -28,13 +32,13 @@ namespace CalamityMod.Items.Armor.TitanHeart
             Item.height = 18;
             Item.value = CalamityGlobalItem.RarityLightRedBuyPrice;
             Item.rare = ItemRarityID.LightRed;
-            Item.defense = 17;
+            Item.defense = 14;
         }
 
         public override void UpdateEquip(Player player)
         {
             player.Calamity().titanHeartMantle = true;
-            player.GetDamage<ThrowingDamageClass>() += 0.05f;
+            player.GetDamage<ThrowingDamageClass>() += RogueDamageBoost;
         }
 
         public override void AddRecipes()

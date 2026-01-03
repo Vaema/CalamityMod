@@ -1,10 +1,12 @@
 ﻿using System;
-using CalamityMod.Buffs.StatDebuffs;
 using CalamityMod.Dusts;
 using CalamityMod.Events;
+using CalamityMod.Particles;
 using CalamityMod.Projectiles.Boss;
 using CalamityMod.World;
 using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
+using ReLogic.Content;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
@@ -18,12 +20,15 @@ namespace CalamityMod.NPCs.OldDuke
             this.HideFromBestiary();
         }
 
+        public static int ToothDamage = 55; // 220
+        public static int CloudDamage = 70; // 280
+
         public override void SetDefaults()
         {
             NPC.Calamity().canBreakPlayerDefense = true;
+            NPC.damage = 120; // 240
             NPC.aiStyle = -1;
             AIType = -1;
-            NPC.GetNPCDamage();
             NPC.width = 40;
             NPC.height = 40;
             NPC.defense = 0;
@@ -42,20 +47,15 @@ namespace CalamityMod.NPCs.OldDuke
             NPC.Calamity().VulnerableToSickness = false;
             NPC.Calamity().VulnerableToElectricity = true;
             NPC.Calamity().VulnerableToWater = false;
-
-            // Scale stats in Expert and Master
-            CalamityGlobalNPC.AdjustExpertModeStatScaling(NPC);
-            CalamityGlobalNPC.AdjustMasterModeStatScaling(NPC);
         }
 
         public override void AI()
         {
             Lighting.AddLight((int)((NPC.position.X + (NPC.width / 2)) / 16f), (int)((NPC.position.Y + (NPC.height / 2)) / 16f), 0.65f, 0.55f, 0f);
 
-            bool bossRush = BossRushEvent.BossRushActive;
-            bool expertMode = Main.expertMode || bossRush;
-            bool revenge = CalamityWorld.revenge || bossRush;
-            bool death = CalamityWorld.death || bossRush;
+            bool expertMode = Main.expertMode || BossRushEvent.BossRushActive;
+            bool revenge = CalamityWorld.revenge || BossRushEvent.BossRushActive;
+            bool death = CalamityWorld.death || BossRushEvent.BossRushActive;
 
             NPC.rotation += NPC.velocity.X * 0.05f;
 
@@ -114,7 +114,7 @@ namespace CalamityMod.NPCs.OldDuke
             float velocity = death ? 14f : revenge ? 13f : 12f;
             if (expertMode)
             {
-                float speedUpMult = bossRush ? 0.01f : 0.005f;
+                float speedUpMult = 0.005f;
                 velocity += Vector2.Distance(player.Center, NPC.Center) * speedUpMult;
             }
 
@@ -144,7 +144,7 @@ namespace CalamityMod.NPCs.OldDuke
             NPC.velocity.X = (NPC.velocity.X * inertia + targetXDist) / (inertia + 1f);
             NPC.velocity.Y = (NPC.velocity.Y * inertia + targetYDist) / (inertia + 1f);
 
-            float toothBallAccel = bossRush ? 0.65f : 0.5f;
+            float toothBallAccel = 0.5f;
             foreach (var n in Main.ActiveNPCs)
             {
                 if (n.whoAmI != NPC.whoAmI && n.type == NPC.type)
@@ -167,6 +167,15 @@ namespace CalamityMod.NPCs.OldDuke
 
         public override void OnKill()
         {
+            for (int i = 0; i < 15; i++)
+            {
+                float sc = Main.rand.NextFloat(1f, 3f);
+                Vector2 vel = new Vector2(Main.rand.NextFloat(10, 25), 0).RotatedByRandom(MathHelper.TwoPi);
+
+                GeneralParticleHandler.SpawnParticle(new CustomSpark(NPC.Center, vel, "CalamityMod/Projectiles/Boss/OldDukeToothBallSpike", true, 40, sc + 0.5f, OldDuke.GlowColor, Vector2.One));
+                GeneralParticleHandler.SpawnParticle(new CustomSpark(NPC.Center, vel, "CalamityMod/Projectiles/Boss/OldDukeToothBallSpike", true, 40, sc, Color.White, Vector2.One, false, affectedByLight: true));
+            }
+
             int closestPlayer = Player.FindClosest(NPC.Center, 1, 1);
             if (Main.rand.NextBool(8) && Main.player[closestPlayer].statLife < Main.player[closestPlayer].statLifeMax2)
                 Item.NewItem(NPC.GetSource_Loot(), (int)NPC.position.X, (int)NPC.position.Y, NPC.width, NPC.height, ItemID.Heart);
@@ -176,7 +185,6 @@ namespace CalamityMod.NPCs.OldDuke
                 int totalProjectiles = CalamityWorld.death ? 5 : CalamityWorld.revenge ? 4 : 3;
                 float radians = MathHelper.TwoPi / totalProjectiles;
                 int type = ModContent.ProjectileType<OldDukeToothBallSpike>();
-                int damage = NPC.GetProjectileDamage(type);
                 float velocity = 10f;
                 double angleA = radians * 0.5;
                 double angleB = MathHelper.ToRadians(90f) - angleA;
@@ -185,14 +193,13 @@ namespace CalamityMod.NPCs.OldDuke
                 for (int k = 0; k < totalProjectiles; k++)
                 {
                     Vector2 toothSpikeRotation = spinningPoint.RotatedBy(radians * k);
-                    Projectile.NewProjectile(NPC.GetSource_FromAI(), NPC.Center, toothSpikeRotation * 0.1f, type, damage, 0f, Main.myPlayer, toothSpikeRotation.X, toothSpikeRotation.Y);
+                    Projectile.NewProjectile(NPC.GetSource_FromAI(), NPC.Center, toothSpikeRotation * 0.1f, type, ToothDamage, 0f, Main.myPlayer, toothSpikeRotation.X, toothSpikeRotation.Y);
                 }
 
                 if (Main.expertMode)
                 {
                     type = ModContent.ProjectileType<SandPoisonCloudOldDuke>();
-                    damage = NPC.GetProjectileDamage(type);
-                    Projectile.NewProjectile(NPC.GetSource_FromAI(), NPC.Center, Vector2.Zero, type, damage, 0f, Main.myPlayer);
+                    Projectile.NewProjectile(NPC.GetSource_FromAI(), NPC.Center, Vector2.Zero, type, CloudDamage, 0f, Main.myPlayer);
                 }
             }
 
@@ -204,14 +211,9 @@ namespace CalamityMod.NPCs.OldDuke
                     int type = ModContent.ProjectileType<OldDukeGore>();
                     for (int i = 0; i < 2; i++)
                         Projectile.NewProjectile(NPC.GetSource_Death(), NPC.Center.X + Main.rand.Next(-spawnX, spawnX), NPC.Center.Y,
-                            Main.rand.Next(-1, 2), Main.rand.Next(-6, -3), type, NPC.damage / 2, 0f, Main.myPlayer);
+                            Main.rand.Next(-1, 2), Main.rand.Next(-6, -3), type, OldDuke.GoreDamage, 0f, Main.myPlayer);
                 }
             }
-        }
-
-        public override void ApplyDifficultyAndPlayerScaling(int numPlayers, float balance, float bossAdjustment)/* tModPorter Note: bossLifeScale -> balance (bossAdjustment is different, see the docs for details) */
-        {
-            NPC.damage = (int)(NPC.damage * NPC.GetExpertDamageMultiplier());
         }
 
         public override bool CanHitPlayer(Player target, ref int cooldownSlot)
@@ -220,10 +222,31 @@ namespace CalamityMod.NPCs.OldDuke
             return true;
         }
 
-        public override void OnHitPlayer(Player target, Player.HurtInfo hurtInfo)
+        public override bool PreDraw(SpriteBatch spriteBatch, Vector2 screenPos, Color drawColor)
         {
-            if (hurtInfo.Damage > 0)
-                target.AddBuff(ModContent.BuffType<Irradiated>(), 240);
+            float velDist = NPC.velocity.Length();
+
+            Vector2 vel = NPC.velocity;
+            vel.Normalize();
+
+            if (velDist > 5)
+            {
+                float sc = velDist - 5;
+                if (Main.rand.NextBool(3))
+                    GeneralParticleHandler.SpawnParticle(new SparkParticle(NPC.Center + new Vector2(Main.rand.NextFloat(5, 30), 0).RotatedBy(Main.rand.NextFloat(MathHelper.TwoPi)), NPC.velocity, false, 20, Main.rand.NextFloat(0.5f, 1.5f), OldDuke.GlowColor, true));
+            }
+
+            if (Main.rand.NextBool(3))
+                GeneralParticleHandler.SpawnParticle(new MediumMistParticle(NPC.Center, -(vel * 4f).RotatedBy(Main.rand.NextFloat(-MathHelper.PiOver4, MathHelper.PiOver4)), OldDuke.GlowColor, Color.DarkSlateGray, Main.rand.NextFloat(0.5f, 1.5f), 150f));
+
+            Asset<Texture2D> tex = ModContent.Request<Texture2D>(Texture);
+            for (int i = 0; i < 360; i += 90)
+            {
+                Main.EntitySpriteDraw(tex.Value, NPC.Center + new Vector2(0, 4) - Main.screenPosition + new Vector2(4, 0).RotatedBy(MathHelper.ToRadians(i)), tex.Frame(), OldDuke.GlowColor, NPC.rotation, tex.Frame().Center(), NPC.scale, SpriteEffects.None);
+                Main.EntitySpriteDraw(tex.Value, NPC.Center + new Vector2(0, 4) - Main.screenPosition + new Vector2(8, 0).RotatedBy(MathHelper.ToRadians(i)), tex.Frame(), OldDuke.GlowColor, NPC.rotation, tex.Frame().Center(), NPC.scale, SpriteEffects.None);
+            }
+
+            return base.PreDraw(spriteBatch, screenPos, drawColor);
         }
 
         public override void HitEffect(NPC.HitInfo hit)

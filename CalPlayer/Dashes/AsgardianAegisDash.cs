@@ -8,18 +8,24 @@ using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.DataStructures;
 using Terraria.Graphics.Shaders;
+using Terraria.ID;
 using Terraria.ModLoader;
 
 namespace CalamityMod.CalPlayer.Dashes
 {
     public class AsgardianAegisDash : PlayerDashEffect
     {
-        public static new string ID => "Asgardian Aegis";
+        public static new string ID { get; private set; }
 
         public override DashCollisionType CollisionType => DashCollisionType.ShieldSlam;
         public override bool IsOmnidirectional => false;
         public int Time = 0;
         public bool PostHit = false;
+
+        public override void Load()
+        {
+            ID = DashID;
+        }
 
         public override float CalculateDashSpeed(Player player) => 23.3f;
 
@@ -29,26 +35,39 @@ namespace CalamityMod.CalPlayer.Dashes
             PostHit = false;
         }
 
+        public override void DashStartupEffects(Player player)
+        {
+            player.velocity *= 0.9f;
+        }
+
         public override void MidDashEffects(Player player, ref float dashSpeed, ref float dashSpeedDecelerationFactor, ref float runSpeedDecelerationFactor)
         {
             Time += 2;
             float radiusFactor = MathHelper.Lerp(0f, 1f, Utils.GetLerpValue(2f, 2.5f, Time, true));
-            for (int i = 0; i < 3; i++)
+            if (DashTimeAdjustedForStartup <= 18)
             {
-                float offsetRotationAngle = player.velocity.ToRotation() + Time / 5f;
-                float radius = (15f + (float)Math.Cos(Time / 3f) * 12f) * radiusFactor;
-                Vector2 dustPosition = player.Center - player.velocity * 2;
-                dustPosition += offsetRotationAngle.ToRotationVector2().RotatedBy(i / 5f * MathHelper.TwoPi) * radius;
-                Dust dust = Dust.NewDustPerfect(dustPosition, Main.rand.NextBool(5) ? 181 : 295);
-                dust.alpha = 220;
-                dust.noGravity = true;
-                dust.velocity = player.velocity * 0.8f;
-                dust.scale = Main.rand.NextFloat(1.7f, 2.0f);
-                dust.shader = GameShaders.Armor.GetSecondaryShader(player.cShield, player);
-                Dust dust2 = Dust.NewDustPerfect(player.Center + new Vector2(Main.rand.NextFloat(-6f, 6f), Main.rand.NextFloat(-15f, 15f)) + (player.velocity * 1.5f), Main.rand.NextBool(8) ? 180 : 295, -player.velocity.RotatedByRandom(MathHelper.ToRadians(30f)) * Main.rand.NextFloat(0.1f, 0.8f), 0, default, Main.rand.NextFloat(1.7f, 1.9f));
-                dust2.alpha = 170;
-                dust2.noGravity = true;
-                dust2.shader = GameShaders.Armor.GetSecondaryShader(player.cShield, player);
+                for (int d = 0; d < 2; d++)
+                {
+                    Dust hFlameDust = Dust.NewDustPerfect(player.Center + new Vector2(Main.rand.NextFloat(-6f, 6f), Main.rand.NextFloat(-15f, 15f)) - (player.velocity * 1.2f), Main.rand.NextBool(8) ? 180 : 295, -player.velocity.RotatedByRandom(MathHelper.ToRadians(10f)) * Main.rand.NextFloat(0.1f, 0.8f), 0, default, Main.rand.NextFloat(1.8f, 2.8f));
+                    hFlameDust.shader = GameShaders.Armor.GetSecondaryShader(player.cShield, player);
+                    hFlameDust.noGravity = hFlameDust.type == 180 ? false : true;
+                    hFlameDust.fadeIn = 0.5f;
+                    if (hFlameDust.type == 180)
+                    {
+                        hFlameDust.scale = Main.rand.NextFloat(0.8f, 1.2f);
+                        hFlameDust.velocity += new Vector2(0, -2.5f) * Main.rand.NextFloat(0.8f, 1.2f);
+                    }
+
+                    Dust dust = Dust.NewDustPerfect(player.Center + Main.rand.NextVector2Circular(6, 6) - player.velocity * 2, DustID.FrostStaff);
+                    dust.velocity = -player.velocity * Main.rand.NextFloat(0.6f, 1.4f);
+                    dust.scale = Main.rand.NextFloat(0.9f, 1.4f);
+                    dust.noGravity = true;
+                    if (d < 1)
+                    {
+                        Particle spark = new CustomSpark(player.Center + new Vector2(Main.rand.NextFloat(-6f, 6f), Main.rand.NextFloat(-15f, 15f)) - (player.velocity * 1.2f), -player.velocity.RotatedByRandom(MathHelper.ToRadians(10f)) * Main.rand.NextFloat(0.1f, 0.8f), "CalamityMod/Particles/ProvidenceMarkParticle", false, 17, Main.rand.NextFloat(1.15f, 1.25f), Main.rand.NextBool() ? Color.Fuchsia : Color.Cyan, new Vector2(1.3f, 0.5f), true, false, 0, false, false, Main.rand.NextFloat(0.4f, 0.5f));
+                        GeneralParticleHandler.SpawnParticle(spark);
+                    }
+                }
             }
 
             // Dash at a faster speed than the default value.
@@ -57,9 +76,11 @@ namespace CalamityMod.CalPlayer.Dashes
 
         public override void OnHitEffects(Player player, NPC npc, IEntitySource source, ref DashHitContext hitContext)
         {
+            if (DashTimeAdjustedForStartup > 18)
+                return;
             if (!PostHit)
             {
-                player.Calamity().GeneralScreenShakePower = 5f;
+                player.SetScreenshake(5f);
                 PostHit = true;
             }
 

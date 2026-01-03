@@ -1,8 +1,6 @@
 ﻿using CalamityMod.Buffs.Summon;
 using CalamityMod.CalPlayer;
-using CalamityMod.Items.Potions.Alcohol;
 using CalamityMod.Projectiles.Summon;
-using CalamityMod.Rarities;
 using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.DataStructures;
@@ -36,7 +34,7 @@ namespace CalamityMod.Items.Accessories
         public override bool CanEquipAccessory(Player player, int slot, bool modded)
         {
             CalamityPlayer modPlayer = player.Calamity();
-            if (modPlayer.brimstoneWaifu || modPlayer.sandWaifu || modPlayer.sandBoobWaifu || modPlayer.cloudWaifu || modPlayer.sirenWaifu)
+            if (modPlayer.brimElemental || modPlayer.sandElemental || modPlayer.rareSandElemental || modPlayer.cloudElemental || modPlayer.waterElemental)
             {
                 return false;
             }
@@ -49,7 +47,7 @@ namespace CalamityMod.Items.Accessories
                 Lighting.AddLight((int)player.Center.X / 16, (int)player.Center.Y / 16, Main.DiscoR / 255f, Main.DiscoG / 255f, Main.DiscoB / 255f);
 
             CalamityPlayer modPlayer = player.Calamity();
-            modPlayer.allWaifus = true;
+            modPlayer.allElementals = true;
             modPlayer.elementalHeart = true;
 
             int brimmy = ProjectileType<BrimstoneElementalMinion>();
@@ -113,7 +111,7 @@ namespace CalamityMod.Items.Accessories
         public override void UpdateVanity(Player player)
         {
             CalamityPlayer modPlayer = player.Calamity();
-            modPlayer.allWaifusVanity = true;
+            modPlayer.allElementalsVanity = true;
             // modPlayer.elementalHeart = true;
 
             int brimmy = ProjectileType<BrimstoneElementalMinion>();
@@ -178,8 +176,8 @@ namespace CalamityMod.Items.Accessories
         public override void AddRecipes()
         {
             CreateRecipe().
-                AddIngredient<WifeinaBottle>().
-                AddIngredient<WifeinaBottlewithBoobs>().
+                AddIngredient<ElementalinaBottle>().
+                AddIngredient<RareElementalinaBottle>().
                 AddIngredient<PearlofEnthrallment>().
                 AddIngredient<EyeoftheStorm>().
                 AddIngredient<RoseStone>().

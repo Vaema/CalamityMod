@@ -1,13 +1,24 @@
 ﻿using CalamityMod.Dusts;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using ReLogic.Content;
 using Terraria;
+using Terraria.GameContent.Drawing;
 using Terraria.ModLoader;
 
 namespace CalamityMod.Tiles.FurnitureMonolith
 {
     public class MonolithLantern : ModTile
     {
+        public Asset<Texture2D> FlameTexture;
+        public Asset<Texture2D> GlowTexture;
+
+        public override void Load()
+        {
+            FlameTexture = ModContent.Request<Texture2D>(Texture + "Flame");
+            GlowTexture = ModContent.Request<Texture2D>(Texture + "Glow");
+        }
+
         public override void SetStaticDefaults() => this.SetUpLantern(ModContent.ItemType<Items.Placeables.FurnitureMonolith.MonolithLantern>(), true);
         public override bool PreDraw(int i, int j, SpriteBatch spriteBatch) => CalamityUtils.DrawSwayingMultiTile(i, j);
 
@@ -22,22 +33,7 @@ namespace CalamityMod.Tiles.FurnitureMonolith
             num = fail ? 1 : 3;
         }
 
-        public override void PostDraw(int i, int j, SpriteBatch spriteBatch)
-        {
-            if (Main.tile[i, j].IsTileActuallyInvisible())
-                return;
-
-            int xPos = Main.tile[i, j].TileFrameX;
-            int yPos = Main.tile[i, j].TileFrameY;
-            Texture2D glowmask = ModContent.Request<Texture2D>("CalamityMod/Tiles/FurnitureMonolith/MonolithLanternGlow").Value;
-            Color drawColour = CalamityUtils.ApplyPaint(Main.tile[i, j].TileColor, new Color(100, 100, 100, 100));
-            Vector2 zero = Main.drawToScreen ? Vector2.Zero : new Vector2(Main.offScreenRange);
-            Vector2 drawOffset = new Vector2(i * 16 - Main.screenPosition.X, j * 16 - Main.screenPosition.Y) + zero;
-            Main.spriteBatch.Draw(glowmask, drawOffset, new Rectangle?(new Rectangle(xPos, yPos, 18, 18)), drawColour, 0.0f, Vector2.Zero, 1f, SpriteEffects.None, 0.0f);
-
-            Texture2D glowmaskBright = ModContent.Request<Texture2D>("CalamityMod/Tiles/FurnitureMonolith/MonolithLanternFlame").Value;
-            Main.spriteBatch.Draw(glowmaskBright, drawOffset, new Rectangle?(new Rectangle(xPos, yPos, 18, 18)), Color.White, 0.0f, Vector2.Zero, 1f, SpriteEffects.None, 0.0f);
-        }
+        public override void AdjustMultiTileVineParameters(int i, int j, ref float? overrideWindCycle, ref float windPushPowerX, ref float windPushPowerY, ref bool dontRotateTopTiles, ref float totalWindMultiplier, ref Texture2D glowTexture, ref Color glowColor) => glowTexture = GlowTexture.Value;
 
         public override void ModifyLight(int i, int j, ref float r, ref float g, ref float b)
         {
@@ -55,9 +51,24 @@ namespace CalamityMod.Tiles.FurnitureMonolith
             }
         }
 
+        public override void GetTileFlameData(int i, int j, ref TileDrawing.TileFlameData tileFlameData)
+        {
+            ulong flameSeed = Main.TileFrameSeed ^ (ulong)(((long)i << 32) | (uint)j);
+            tileFlameData.flameSeed = flameSeed;
+            tileFlameData.flameTexture = FlameTexture.Value;
+            tileFlameData.flameColor = new Color(102, 115, 128, 0);
+            tileFlameData.flameCount = 1;
+            tileFlameData.flameRangeXMin = -10;
+            tileFlameData.flameRangeXMax = 11;
+            tileFlameData.flameRangeYMin = -10;
+            tileFlameData.flameRangeYMax = 11;
+            tileFlameData.flameRangeMultX = 0f;
+            tileFlameData.flameRangeMultY = 0f;
+        }
+
         public override void HitWire(int i, int j)
         {
-            CalamityUtils.LightHitWire(Type, i, j, 1, 2);
+            FurnitureCommon.LightHitWire(Type, i, j, 1, 2);
         }
     }
 }

@@ -1,9 +1,7 @@
-﻿using CalamityMod.Buffs.StatDebuffs;
-using CalamityMod.Items.BaseItems;
+﻿using CalamityMod.Items.BaseItems;
 using CalamityMod.Items.Materials;
-using CalamityMod.Items.Placeables;
+using CalamityMod.Items.Placeables.FurnitureAcidwood;
 using CalamityMod.Projectiles.Melee;
-using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
 
@@ -35,7 +33,7 @@ namespace CalamityMod.Items.Weapons.Melee
         public override void AddRecipes()
         {
             CreateRecipe().
-                AddIngredient<AcidwoodSword>().
+                AddIngredient<Acidwood>(15).
                 AddIngredient<SulphuricScale>(12).
                 AddTile(TileID.Anvils).
                 Register();

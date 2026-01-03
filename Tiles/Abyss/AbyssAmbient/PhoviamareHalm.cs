@@ -1,9 +1,5 @@
-﻿using System;
-using CalamityMod.Dusts;
-using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Graphics;
+﻿using Microsoft.Xna.Framework;
 using Terraria;
-using Terraria.DataStructures;
 using Terraria.GameContent.Metadata;
 using Terraria.ID;
 using Terraria.ModLoader;
@@ -43,17 +39,13 @@ namespace CalamityMod.Tiles.Abyss.AbyssAmbient
 
         public override void ModifyLight(int i, int j, ref float r, ref float g, ref float b)
         {
-            float brightness = 0.7f;
-            float declareThisHereToPreventRunningTheSameCalculationMultipleTimes = Main.GameUpdateCount * 0.01f;
-            brightness *= (float)MathF.Sin(-j / 8f + declareThisHereToPreventRunningTheSameCalculationMultipleTimes + i);
-            brightness *= (float)MathF.Sin(-i / 8f + declareThisHereToPreventRunningTheSameCalculationMultipleTimes + j);
-            brightness += 0.7f;
-            r = 0.55f;
-            g = 0.24f;
-            b = 0.08f;
-            r *= brightness;
-            g *= brightness;
-            b *= brightness;
+            Tile tile = Framing.GetTileSafely(i, j);
+            if (tile.TileFrameY <= 36)
+            {
+                r = 0.55f;
+                g = 0.24f;
+                b = 0.08f;
+            }
         }
     }
 }

@@ -1,4 +1,6 @@
-﻿using CalamityMod.Buffs.DamageOverTime;
+﻿using System;
+using System.Linq;
+using CalamityMod.Buffs.DamageOverTime;
 using CalamityMod.Items.Weapons.Ranged;
 using CalamityMod.Particles;
 using Microsoft.Xna.Framework;
@@ -73,11 +75,17 @@ namespace CalamityMod.Projectiles.Ranged
 
             if (Projectile.FinalExtraUpdate())
                 Lighting.AddLight(Projectile.Center, Color.MediumBlue.ToVector3() * 0.4f);
+
+            if (Projectile.timeLeft == 1 && Projectile.ai[1] < 1)
+            {
+                Main.player[Projectile.owner].Calamity().HalleyAccuracyCounter -= HalleysInferno.LostAccuracyPerMiss;
+            }
         }
 
         public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
         {
-            target.AddBuff(ModContent.BuffType<Voidfrost>(), 450);
+            //Doze - Originally I gave this long Voidfrost infiction due to flamethrowers in vanilla being long debuff infliction items
+            //This has been undone as Voidfrost is now inflicted more sparingly but is more powerful. On-tier it's exclusively used by Stratus items consuming Starbursts
             SoundEngine.PlaySound(HalleysInferno.Hit, Projectile.Center);
 
             // Dust emission on hit
@@ -87,6 +95,14 @@ namespace CalamityMod.Projectiles.Ranged
                 dust.scale = Main.rand.NextFloat(1.1f, 1.9f);
                 dust.velocity = Projectile.velocity.RotatedByRandom(0.5f) * Main.rand.NextFloat(0.2f, 2.1f);
                 dust.noGravity = true;
+            }
+            Projectile.ai[1] = 1;
+            if (Projectile.penetrate == 5)
+            {
+                var cplay = Main.player[Projectile.owner].Calamity();
+                cplay.HalleyAccuracyCounter++;
+                cplay.HalleyAccuracyCounter = MathF.Min(HalleysInferno.MaxAccuracy, cplay.HalleyAccuracyCounter);
+                Main.player[Projectile.owner].Calamity().StarburstSpawnFrameCounter += cplay.HalleyAccuracyCounter / HalleysInferno.MaxAccuracy * HalleysInferno.MaxStarburstPerComet;
             }
         }
 

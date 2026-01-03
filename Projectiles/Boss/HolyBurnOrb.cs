@@ -1,16 +1,11 @@
 ﻿using System;
-using CalamityMod.Buffs.DamageOverTime;
 using CalamityMod.Dusts;
-using CalamityMod.Events;
-using CalamityMod.NPCs;
 using CalamityMod.NPCs.Providence;
 using CalamityMod.Particles;
-using CalamityMod.World;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria;
 using Terraria.Audio;
-using Terraria.DataStructures;
 using Terraria.ID;
 using Terraria.ModLoader;
 
@@ -42,9 +37,6 @@ namespace CalamityMod.Projectiles.Boss
 
             Lighting.AddLight(Projectile.Center, 0.45f, 0.35f, 0f);
 
-            if (Projectile.ai[0] == 0f && BossRushEvent.BossRushActive)
-                Projectile.velocity *= 1.25f;
-
             if (!started)
             {
                 Color cl = ProvUtils.GetProjectileColor(255);
@@ -60,7 +52,7 @@ namespace CalamityMod.Projectiles.Boss
                     Projectile.timeLeft = 160;
             }
 
-            if (CalamityWorld.LegendaryMode && CalamityWorld.revenge)
+            if (Main.getGoodWorld)
             {
                 if (Projectile.velocity.Length() < 12f && Projectile.ai[1] == 0f)
                 {

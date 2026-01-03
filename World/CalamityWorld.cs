@@ -1,5 +1,4 @@
-﻿using System.Reflection;
-using CalamityMod.Items.Tools.ClimateChange;
+﻿using CalamityMod.Items.Tools.ClimateChange;
 using CalamityMod.NPCs.ExoMechs;
 using CalamityMod.NPCs.ExoMechs.Apollo;
 using CalamityMod.NPCs.ExoMechs.Ares;
@@ -7,11 +6,10 @@ using CalamityMod.NPCs.ExoMechs.Artemis;
 using CalamityMod.NPCs.ExoMechs.Thanatos;
 using Microsoft.Xna.Framework;
 using Terraria;
-using Terraria.DataStructures;
+using Terraria.GameContent.Creative;
 using Terraria.GameContent.Events;
 using Terraria.ID;
 using Terraria.ModLoader;
-using Terraria.Utilities;
 
 namespace CalamityMod.World
 {
@@ -32,11 +30,6 @@ namespace CalamityMod.World
         /// Worlds created before the Draedon Update will not lock specific Draedon's Arsenal recipes behind Schematics.
         /// </summary>
         public static bool IsWorldAfterDraedonUpdate = false;
-        /// <summary>
-        /// Stores the pre-Hardmode ore types that this world generated with.<br/>
-        /// Is not actually used for any world gen tasks, and is only used to change the item sprite of the Suspicious Scrap item.
-        /// </summary>
-        public static ushort[] OreTypes = new ushort[4];
 
         // Modes
         /// <summary> If true, the world is in Revengeance Mode. </summary>
@@ -52,13 +45,24 @@ namespace CalamityMod.World
         /// <summary> Evaluates to whether vanilla's "Legendary Mode" is enabled (Master Mode on For the Worthy). </summary>
         public static bool LegendaryMode => Main.getGoodWorld && ReflectMasterMode();
 
+        /// <summary>
+        /// Evaluates to whether "Malice Mode" is enabled (Death Mode on For the Worthy).<br/>
+        /// Note that the effects of this difficulty are unaffiliated with the removed Malice Mode.
+        /// </summary>
+        public static bool MaliceMode => Main.getGoodWorld && ReflectMasterMode() && revenge;
+
         // FTW automatically bumps difficulties up and has no proper check for Master since a world generated in Expert Mode will be classified as Master
         // Therefore gotta reflect!
         public static bool ReflectMasterMode()
         {
-            FieldInfo findInfo = typeof(Main).GetField("_currentGameModeInfo", BindingFlags.Static | BindingFlags.NonPublic);
-            GameModeData data = (GameModeData)findInfo.GetValue(null);
-            return data.IsMasterMode;
+            if (Main.GameModeInfo.IsJourneyMode)
+            {
+                CreativePowers.DifficultySliderPower power = CreativePowerManager.Instance.GetPower<CreativePowers.DifficultySliderPower>();
+                float level = power._sliderCurrentValueCache;
+                return level == 1f;
+            }
+
+            return Main._currentGameModeInfo.IsMasterMode;
         }
 
         // Sunken Sea
@@ -73,8 +77,6 @@ namespace CalamityMod.World
 
         /// <summary> If true, the Bandit has lived in this world. Used to ensure their spawn condition is not required on subsequent respawns. </summary>
         public static bool spawnedBandit = false;
-        /// <summary> If true, the Drunk Princess has lived in this world. Used to ensure her spawn condition is not required on subsequent respawns. </summary>
-        public static bool spawnedCirrus = false;
         /// <summary> If true, the Archmage has lived in a house in this world. Solely used as a condition for dialogue. </summary>
         public static bool foundHomePermafrost = false;
 

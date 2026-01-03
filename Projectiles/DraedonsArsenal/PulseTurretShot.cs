@@ -38,8 +38,8 @@ namespace CalamityMod.Projectiles.DraedonsArsenal
                     float angle = Projectile.velocity.ToRotation() + MathHelper.PiOver2;
                     float pulse = (float)Math.Sin(Projectile.ai[0] + MathHelper.TwoPi / 3f * i);
                     Vector2 offset = angle.ToRotationVector2().RotatedBy(MathHelper.TwoPi / 3f * i) * pulse * 7f;
-                    Dust.NewDustPerfect(Projectile.Center + offset, 234, Vector2.Zero).noGravity = true;
-                    Dust.NewDustPerfect(Projectile.Center - offset, 234, Vector2.Zero).noGravity = true;
+                    Dust.NewDustPerfect(Projectile.Center + offset, DustID.BoneTorch, Vector2.Zero).noGravity = true;
+                    Dust.NewDustPerfect(Projectile.Center - offset, DustID.BoneTorch, Vector2.Zero).noGravity = true;
                 }
             }
             if (Projectile.ai[1] == 1f)
@@ -67,14 +67,14 @@ namespace CalamityMod.Projectiles.DraedonsArsenal
                         {
                             Dust dust = Dust.NewDustPerfect(Projectile.Center +
                                 Vector2.UnitY.RotatedBy(j / (float)SpiralRings * MathHelper.TwoPi * direction).RotatedBy(i / (float)SpiralPrecision * MathHelper.TwoPi / SpiralRings * direction) *
-                                36f * i / SpiralPrecision, 173);
+                                36f * i / SpiralPrecision, DustID.ShadowbeamStaff);
                             dust.velocity = Projectile.SafeDirectionTo(dust.position) * 2.4f;
                             dust.scale = 1.6f;
                             dust.noGravity = true;
 
                             dust = Dust.NewDustPerfect(Projectile.Center +
                                 Vector2.UnitY.RotatedBy(j / (float)SpiralRings * MathHelper.TwoPi * direction).RotatedBy(i / (float)SpiralPrecision * MathHelper.TwoPi / SpiralRings * direction) *
-                                36f * i / SpiralPrecision, 173);
+                                36f * i / SpiralPrecision, DustID.ShadowbeamStaff);
                             dust.velocity = Projectile.DirectionFrom(dust.position) * 4f;
                             dust.scale = 1.6f;
                             dust.noGravity = true;

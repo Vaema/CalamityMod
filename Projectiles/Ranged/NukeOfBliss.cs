@@ -190,7 +190,7 @@ namespace CalamityMod.Projectiles.Ranged
                 }
                 else
                 {
-                    Dust l = Dust.NewDustPerfect(Projectile.Center, 278);
+                    Dust l = Dust.NewDustPerfect(Projectile.Center, DustID.FireworksRGB);
                     l.velocity = new Vector2(5, 5).RotatedByRandom(100) * blastRadiusVisual * Main.rand.NextFloat(0.4f, 1f);
                     l.scale = Main.rand.NextFloat(0.6f, 0.8f) * blastRadiusVisual * 0.2f * (i % 2 == 0 ? 2.2f : 1.8f);
                     l.noGravity = false;

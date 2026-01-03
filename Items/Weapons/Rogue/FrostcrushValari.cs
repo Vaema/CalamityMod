@@ -1,5 +1,4 @@
-﻿using CalamityMod.CalPlayer;
-using CalamityMod.Items.Materials;
+﻿using CalamityMod.Items.Materials;
 using CalamityMod.Items.Placeables.Abyss;
 using CalamityMod.Projectiles.Rogue;
 using Microsoft.Xna.Framework;
@@ -16,11 +15,11 @@ namespace CalamityMod.Items.Weapons.Rogue
 
         public override void SetDefaults()
         {
-            Item.width = 32;
-            Item.height = 46;
-            Item.damage = 89;
+            Item.width = 34;
+            Item.height = 58;
+            Item.damage = 81;
             Item.DamageType = RogueDamageClass.Instance;
-            Item.useTime = Item.useAnimation = 17;
+            Item.useTime = Item.useAnimation = 19;
             Item.knockBack = 12;
 
             Item.value = CalamityGlobalItem.RarityLimeBuyPrice;
@@ -37,9 +36,6 @@ namespace CalamityMod.Items.Weapons.Rogue
         // Terraria seems to really dislike high crit values in SetDefaults
         public override void ModifyWeaponCrit(Player player, ref float crit) => crit += 16;
 
-        public override float StealthDamageMultiplier => 0.9f;
-        public override float StealthKnockbackMultiplier => 0.3333f;
-
         public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)
         {
             if (player.Calamity().StealthStrikeAvailable())
@@ -48,7 +44,7 @@ namespace CalamityMod.Items.Weapons.Rogue
                 if (proj.WithinBounds(Main.maxProjectiles))
                 {
                     Main.projectile[proj].Calamity().stealthStrike = true;
-                    Main.projectile[proj].penetrate = 5;
+                    Main.projectile[proj].penetrate = 4;
                 } 
                 return false;
             }

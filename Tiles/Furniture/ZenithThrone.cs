@@ -7,7 +7,6 @@ using Terraria.GameContent.ObjectInteractions;
 using Terraria.ID;
 using Terraria.Localization;
 using Terraria.ModLoader;
-using static CalamityMod.Tiles.BaseTiles.BranchDrawer;
 using Terraria.ObjectData;
 
 namespace CalamityMod.Tiles.Furniture
@@ -75,9 +74,9 @@ namespace CalamityMod.Tiles.Furniture
             info.AnchorTilePosition.Y = j;
         }
 
-        public override bool RightClick(int i, int j) => CalamityUtils.ChairRightClick(i, j);
+        public override bool RightClick(int i, int j) => FurnitureCommon.ChairRightClick(i, j);
 
-        public override void MouseOver(int i, int j) => CalamityUtils.BenchMouseOver(i, j, ModContent.ItemType<Items.Placeables.Furniture.ZenithThrone>());
+        public override void MouseOver(int i, int j) => FurnitureCommon.BenchMouseOver(i, j, ModContent.ItemType<Items.Placeables.Furniture.ZenithThrone>());
 
         public override bool HasSmartInteract(int i, int j, SmartInteractScanSettings settings)
         {

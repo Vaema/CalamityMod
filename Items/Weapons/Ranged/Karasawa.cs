@@ -33,7 +33,7 @@ namespace CalamityMod.Items.Weapons.Ranged
             Item.noMelee = true;
 
             Item.value = CalamityGlobalItem.RarityDarkBlueBuyPrice;
-            Item.rare = ModContent.RarityType<DarkBlue>();
+            Item.rare = ModContent.RarityType<CosmicPurple>();
             Item.Calamity().donorItem = true;
 
             Item.shoot = ModContent.ProjectileType<KarasawaShot>();
@@ -41,10 +41,7 @@ namespace CalamityMod.Items.Weapons.Ranged
             Item.useAmmo = AmmoID.Bullet;
         }
 
-        public override bool CanUseItem(Player player)
-        {
-            return CalamityGlobalItem.HasEnoughAmmo(player, Item, 5);
-        }
+        public override bool CanUseItem(Player player) => CalamityGlobalItem.HasEnoughAmmo(player, Item, 5);
 
         public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)
         {
@@ -57,20 +54,13 @@ namespace CalamityMod.Items.Weapons.Ranged
 
             // Consume 5 ammo per shot
             CalamityGlobalItem.ConsumeAdditionalAmmo(player, Item, 5);
-
             return false;
         }
 
         // Disable vanilla ammo consumption
-        public override bool CanConsumeAmmo(Item ammo, Player player)
-        {
-            return false;
-        }
+        public override bool CanConsumeAmmo(Item ammo, Player player) => false;
 
-        public override Vector2? HoldoutOffset()
-        {
-            return new Vector2(-20, 0);
-        }
+        public override Vector2? HoldoutOffset() => new Vector2(-20, 0);
 
         public override void AddRecipes()
         {

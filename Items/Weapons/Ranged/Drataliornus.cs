@@ -24,7 +24,7 @@ namespace CalamityMod.Items.Weapons.Ranged
         {
             Item.width = 64;
             Item.height = 84;
-            Item.damage = 136;
+            Item.damage = 129;
             Item.knockBack = 1f;
             Item.shootSpeed = 18f;
             Item.useStyle = ItemUseStyleID.Shoot;
@@ -42,7 +42,7 @@ namespace CalamityMod.Items.Weapons.Ranged
             Item.useTurn = false;
             Item.useAmmo = AmmoID.Arrow;
             Item.autoReuse = true;
-            Item.rare = ModContent.RarityType<Violet>();
+            Item.rare = ModContent.RarityType<BurnishedAuric>();
         }
 
         public override bool AltFunctionUse(Player player)

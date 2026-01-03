@@ -1,19 +1,13 @@
 ﻿using System;
 using CalamityMod.Buffs.DamageOverTime;
 using CalamityMod.Buffs.StatDebuffs;
-using CalamityMod.CalPlayer;
-using CalamityMod.MainMenu;
 using CalamityMod.Particles;
-using CalamityMod.Systems;
-using CalamityMod.World;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using rail;
 using Terraria;
 using Terraria.Audio;
 using Terraria.ID;
 using Terraria.ModLoader;
-using CalamityMod.Projectiles.Typeless;
 using CalamityMod.NPCs.SunkenSea;
 using CalamityMod.Tiles.Abyss;
 

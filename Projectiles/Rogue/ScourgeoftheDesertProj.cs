@@ -59,7 +59,7 @@ namespace CalamityMod.Projectiles.Rogue
 
             if (Main.rand.NextBool(2))
             {
-                Dust dust = Dust.NewDustPerfect(Projectile.Center + Main.rand.NextVector2Circular(20, 20), Main.rand.NextBool() ? 288 : 121);
+                Dust dust = Dust.NewDustPerfect(Projectile.Center + Main.rand.NextVector2Circular(20, 20), Main.rand.NextBool() ? 288 : 207);
                 dust.scale = Main.rand.NextFloat(0.3f, 0.55f);
                 dust.noGravity = true;
                 dust.velocity = -Projectile.velocity * 0.5f;
@@ -86,7 +86,7 @@ namespace CalamityMod.Projectiles.Rogue
                 SoundEngine.PlaySound(SoundID.NPCHit11 with { Volume = 1.3f, Pitch = 1.1f }, Projectile.Center);
                 for (int i = 0; i <= 25; i++)
                 {
-                    Dust dust = Dust.NewDustPerfect(Projectile.Center - Projectile.velocity * 6.5f, Main.rand.NextBool() ? 121 : 216, Projectile.velocity.RotatedByRandom(MathHelper.ToRadians(30f)) * Main.rand.NextFloat(0.3f, 0.9f), 0, default, Main.rand.NextFloat(1.3f, 1.8f));
+                    Dust dust = Dust.NewDustPerfect(Projectile.Center - Projectile.velocity * 6.5f, Main.rand.NextBool() ? 207 : 216, Projectile.velocity.RotatedByRandom(MathHelper.ToRadians(30f)) * Main.rand.NextFloat(0.3f, 0.9f), 0, default, Main.rand.NextFloat(1.3f, 1.8f));
                     dust.noGravity = true;
                 }
                 PostExitTiles = true;
@@ -176,7 +176,7 @@ namespace CalamityMod.Projectiles.Rogue
                 {
                     for (int i = 0; i <= 25; i++)
                     {
-                        Dust dust = Dust.NewDustPerfect(Projectile.Center + Projectile.velocity * 3, Main.rand.NextBool() ? 121 : 216, -Projectile.velocity.RotatedByRandom(MathHelper.ToRadians(30f)) * Main.rand.NextFloat(0.3f, 0.9f), 0, default, Main.rand.NextFloat(1.3f, 1.8f));
+                        Dust dust = Dust.NewDustPerfect(Projectile.Center + Projectile.velocity * 3, Main.rand.NextBool() ? 207 : 216, -Projectile.velocity.RotatedByRandom(MathHelper.ToRadians(30f)) * Main.rand.NextFloat(0.3f, 0.9f), 0, default, Main.rand.NextFloat(1.3f, 1.8f));
                         dust.noGravity = true;
                     }
                     Projectile.velocity = SavedOldVelocity * 0.7f;
@@ -209,7 +209,7 @@ namespace CalamityMod.Projectiles.Rogue
         {
             for (int i = 0; i <= 25; i++)
             {
-                Dust dust = Dust.NewDustPerfect(Projectile.Center - Projectile.velocity, Main.rand.NextBool(3) ? 216 : 121, Projectile.velocity.RotatedByRandom(MathHelper.ToRadians(15f)) * Main.rand.NextFloat(0.05f, 2.2f), 0, default, Main.rand.NextFloat(1.5f, 2.8f));
+                Dust dust = Dust.NewDustPerfect(Projectile.Center - Projectile.velocity, Main.rand.NextBool(3) ? 216 : 207, Projectile.velocity.RotatedByRandom(MathHelper.ToRadians(15f)) * Main.rand.NextFloat(0.05f, 2.2f), 0, default, Main.rand.NextFloat(1.5f, 2.8f));
                 dust.noGravity = true;
             }
         }

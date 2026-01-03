@@ -7,7 +7,7 @@ using Terraria;
 using Terraria.GameContent.Bestiary;
 using Terraria.ID;
 using Terraria.ModLoader;
-using Terraria.ModLoader.Utilities;
+
 namespace CalamityMod.NPCs.AcidRain
 {
     public class BloodwormNormal : ModNPC

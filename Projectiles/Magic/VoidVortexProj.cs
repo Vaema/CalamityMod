@@ -1,11 +1,7 @@
-﻿using System;
-using CalamityMod.Buffs.DamageOverTime;
-using CalamityMod.Items.Weapons.Magic;
+﻿using CalamityMod.Buffs.DamageOverTime;
 using CalamityMod.Particles;
-using CalamityMod.Projectiles.Ranged;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using Mono.Cecil;
 using Terraria;
 using Terraria.Audio;
 using Terraria.ID;
@@ -66,7 +62,7 @@ namespace CalamityMod.Projectiles.Magic
                 CalamityUtils.HomeInOnNPC(Projectile, true, 1000f, 15, MathHelper.Clamp(100f - time * 0.3f, 40, 100));
                 if (Main.rand.NextBool())
                 {
-                    Dust dust2 = Dust.NewDustPerfect(Projectile.Center, 226, -Projectile.velocity * Main.rand.NextFloat(0.05f, 0.3f));
+                    Dust dust2 = Dust.NewDustPerfect(Projectile.Center, DustID.Electric, -Projectile.velocity * Main.rand.NextFloat(0.05f, 0.3f));
                     dust2.scale = Main.rand.NextFloat(0.35f, 0.75f);
                     dust2.noGravity = true;
                 }
@@ -98,7 +94,7 @@ namespace CalamityMod.Projectiles.Magic
                     Projectile.alpha = 0;
                     for (int k = 0; k < 25; k++)
                     {
-                        Dust dust2 = Dust.NewDustPerfect(Projectile.Center, 226, new Vector2(15, 15).RotatedByRandom(100) * Main.rand.NextFloat(0.05f, 0.8f));
+                        Dust dust2 = Dust.NewDustPerfect(Projectile.Center, DustID.Electric, new Vector2(15, 15).RotatedByRandom(100) * Main.rand.NextFloat(0.05f, 0.8f));
                         dust2.scale = Main.rand.NextFloat(0.45f, 0.95f);
                         dust2.noGravity = true;
                     }
@@ -145,13 +141,16 @@ namespace CalamityMod.Projectiles.Magic
                 Projectile.ExpandHitboxBy(400);
                 Projectile.Damage();
 
-                for (int k = 0; k < 12; k++)
+                if (Main.myPlayer == Projectile.owner)
                 {
-                    Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center, new Vector2(10, 10).RotatedByRandom(100) * Main.rand.NextFloat(0.4f, 0.55f), ModContent.ProjectileType<VoidVortexProj>(), Projectile.damage / 6, 0f, Main.myPlayer, 0f, 0f, 3f);
+                    for (int k = 0; k < 12; k++)
+                    {
+                        Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center, new Vector2(10, 10).RotatedByRandom(100) * Main.rand.NextFloat(0.4f, 0.55f), ModContent.ProjectileType<VoidVortexProj>(), Projectile.damage / 6, 0f, Main.myPlayer, 0f, 0f, 3f);
+                    }
                 }
                 for (int k = 0; k < 40; k++)
                 {
-                    Dust dust2 = Dust.NewDustPerfect(Projectile.Center, 226, new Vector2(25, 25).RotatedByRandom(100) * Main.rand.NextFloat(0.05f, 0.8f));
+                    Dust dust2 = Dust.NewDustPerfect(Projectile.Center, DustID.Electric, new Vector2(25, 25).RotatedByRandom(100) * Main.rand.NextFloat(0.05f, 0.8f));
                     dust2.scale = Main.rand.NextFloat(0.65f, 1.15f);
                     dust2.noGravity = true;
                 }
@@ -164,7 +163,7 @@ namespace CalamityMod.Projectiles.Magic
             {
                 for (int k = 0; k < 7; k++)
                 {
-                    Dust dust2 = Dust.NewDustPerfect(Projectile.Center, 226, new Vector2(5, 5).RotatedByRandom(100) * Main.rand.NextFloat(0.05f, 0.8f));
+                    Dust dust2 = Dust.NewDustPerfect(Projectile.Center, DustID.Electric, new Vector2(5, 5).RotatedByRandom(100) * Main.rand.NextFloat(0.05f, 0.8f));
                     dust2.scale = Main.rand.NextFloat(0.45f, 0.75f);
                     dust2.noGravity = true;
                 }

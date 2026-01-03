@@ -1,34 +1,28 @@
-﻿using System;
+﻿using CalamityMod.ExtraTextures.GreyscaleGradients;
 using CalamityMod.Items.Placeables.DraedonStructures.CagedLights;
+using CalamityMod.Sounds;
 using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
 using Terraria;
-using Terraria.ID;
-using Terraria.Localization;
-using Terraria.ModLoader;
 using Terraria.DataStructures;
 using Terraria.Enums;
+using Terraria.ID;
+using Terraria.ModLoader;
 using Terraria.ObjectData;
-using Terraria.Audio;
-using Microsoft.Xna.Framework.Graphics;
 
 namespace CalamityMod.Tiles.DraedonStructures.CagedLights
 {
     public class MiniAgedFloodlight : ModTile
     {
-        public static readonly SoundStyle MinePlatingSound = new("CalamityMod/Sounds/Custom/PlatingMine", 3);
-        internal static GrayscaleTexture1D PulseGradient;
-
         public override void SetStaticDefaults()
         {
-            PulseGradient = new("CalamityMod/Tiles/Plates/NavyplatePulse");
-
             Main.tileLighted[Type] = true;
             Main.tileNoFail[Type] = true;
             Main.tileFrameImportant[Type] = true;
             Main.tileObsidianKill[Type] = false;
 
-            HitSound = MinePlatingSound;
-            DustType = 187;
+            HitSound = CommonCalamitySounds.PlatingMine;
+            DustType = DustID.BlueFlare;
 
             AddToArray(ref TileID.Sets.RoomNeeds.CountsAsTorch);
             AddMapEntry(new Color(48, 201, 214), CalamityUtils.GetItemName<MiniAgedFloodlightItem>());
@@ -78,7 +72,7 @@ namespace CalamityMod.Tiles.DraedonStructures.CagedLights
 
         public override void PostDraw(int i, int j, SpriteBatch spriteBatch)
         {
-            float brightness = PulseGradient.GetRepeat((int)Main.GameUpdateCount);
+            float brightness = GreyscaleGradient.NavyplatePulse.GetRepeat((int)Main.GameUpdateCount);
             brightness = MathHelper.Clamp(brightness, 0.2f, 0.6f);
 
             Lighting.AddLight(new Vector2(i * 16, j * 16), 105f / 255f * brightness, 195f / 255f * brightness, 193f / 255f * brightness);

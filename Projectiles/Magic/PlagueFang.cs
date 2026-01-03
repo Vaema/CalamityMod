@@ -1,5 +1,4 @@
-﻿using System;
-using CalamityMod.Buffs.DamageOverTime;
+﻿using CalamityMod.Buffs.DamageOverTime;
 using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.Audio;
@@ -78,7 +77,10 @@ namespace CalamityMod.Projectiles.Magic
 
         public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
         {
-            target.AddBuff(ModContent.BuffType<Plague>(), 180);
+            //Doze - I gave this long debuff infliction times due to the lack of weapons that inflict debuffs for a decent time
+            //Most common vanilla debuffs have a way to inflict them for 15, 20, or even 30 seconds
+            //Poison and Venom staff in vanilla do 30 seconds, so this should too as it's a spiritual successor to them.
+            target.AddBuff(ModContent.BuffType<Plague>(), CalamityUtils.SecondsToFrames(30));
         }
     }
 }

@@ -4,7 +4,6 @@ using CalamityMod.NPCs.PlaguebringerGoliath;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria;
-using Terraria.GameContent;
 using Terraria.ID;
 using Terraria.ModLoader;
 
@@ -53,7 +52,7 @@ namespace CalamityMod.Projectiles.Boss
             if (info.Damage <= 0)
                 return;
 
-            target.AddBuff(ModContent.BuffType<Plague>(), 90);
+            target.AddBuff(ModContent.BuffType<Plague>(), 120);
         }
 
         public override bool PreDraw(ref Color lightColor)

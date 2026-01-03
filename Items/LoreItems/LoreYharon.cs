@@ -1,6 +1,5 @@
 ﻿using CalamityMod.Items.Placeables.Furniture.Trophies;
 using CalamityMod.Rarities;
-using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
 
@@ -19,7 +18,7 @@ namespace CalamityMod.Items.LoreItems
             Item.width = 20;
             Item.height = 20;
             Item.consumable = false;
-            Item.rare = ModContent.RarityType<DarkBlue>();
+            Item.rare = ModContent.RarityType<BurnishedAuric>();
         }
 
         public override void AddRecipes()

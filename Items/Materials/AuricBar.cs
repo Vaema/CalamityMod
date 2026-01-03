@@ -1,7 +1,6 @@
 ﻿using CalamityMod.Items.Placeables.Ores;
 using CalamityMod.Rarities;
 using CalamityMod.Tiles;
-using CalamityMod.Tiles.Furniture.CraftingStations;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using ReLogic.Content;
@@ -32,7 +31,7 @@ namespace CalamityMod.Items.Materials
             ItemID.Sets.SortingPriorityMaterials[Type] = 120;
             ItemID.Sets.AnimatesAsSoul[Type] = true;
             ItemID.Sets.ItemNoGravity[Type] = true;
-            Main.RegisterItemAnimation(Type, new DrawAnimationVertical(5, 12));
+            Main.RegisterItemAnimation(Type, new DrawAnimationVertical(5, 4));
         }
 
         public override void Unload()
@@ -44,7 +43,7 @@ namespace CalamityMod.Items.Materials
         {
             Item.DefaultToPlaceableTile(ModContent.TileType<AuricTeslaBar>());
             Item.value = Item.sellPrice(gold: 7);
-            Item.rare = ModContent.RarityType<Violet>();
+            Item.rare = ModContent.RarityType<BurnishedAuric>();
         }
 
         public override void UseStyle(Player player, Rectangle heldItemFrame)

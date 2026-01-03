@@ -1,4 +1,5 @@
-﻿using CalamityMod.Projectiles.Rogue;
+﻿using CalamityMod.Items.Weapons.Melee;
+using CalamityMod.Projectiles.Rogue;
 using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.DataStructures;
@@ -11,7 +12,6 @@ namespace CalamityMod.Items.Weapons.Rogue
     {
         public static float Knockback = 5f;
         public static float Speed = 15f;
-
         public override void SetDefaults()
         {
             Item.width = 14;

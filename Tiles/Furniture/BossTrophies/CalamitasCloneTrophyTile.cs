@@ -1,9 +1,4 @@
-﻿using CalamityMod.Items.Placeables.Furniture.Trophies;
-using Microsoft.Xna.Framework;
-using Terraria;
-using Terraria.DataStructures;
-using Terraria.Localization;
-using Terraria.ModLoader;
+﻿using Terraria.ModLoader;
 
 namespace CalamityMod.Tiles.Furniture.BossTrophies
 {

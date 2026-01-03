@@ -1,16 +1,15 @@
 ﻿using System;
 using CalamityMod.CalPlayer;
-using CalamityMod.Enums;
 using CalamityMod.Events;
 using CalamityMod.NPCs;
 using CalamityMod.NPCs.ExoMechs;
-using CalamityMod.NPCs.NormalNPCs;
 using CalamityMod.NPCs.PrimordialWyrm;
 using CalamityMod.Projectiles.Boss;
 using CalamityMod.Tiles;
 using CalamityMod.Tiles.Abyss;
 using CalamityMod.Tiles.Crags;
 using CalamityMod.Tiles.SunkenSea;
+using CalamityMod.Tiles.SunkenSea.Ambient;
 using CalamityMod.Walls;
 using CalamityMod.World;
 using Microsoft.Xna.Framework;
@@ -68,7 +67,9 @@ namespace CalamityMod.Systems
 
             // Handle Acid Rain update logic.
             if (AcidRainEvent.AcidRainEventIsOngoing)
+            {
                 AcidRainEvent.Update();
+            }
             else
             {
                 if (AcidRainEvent.TimeSinceEventStarted != 0)
@@ -95,7 +96,7 @@ namespace CalamityMod.Systems
             {
                 string key = Main.zenithWorld ? "Mods.CalamityMod.Status.Boss.AprilFoolsGFB" : "Mods.CalamityMod.Status.Boss.AprilFools";
                 Color messageColor = Color.Crimson;
-                CalamityUtils.DisplayLocalizedText(key, messageColor);
+                CalamityUtils.BroadcastLocalizedText(key, messageColor);
             }
 
             // Disable sandstorms if the Desert Scourge is still alive and Hardmode hasn't begun.
@@ -112,6 +113,9 @@ namespace CalamityMod.Systems
                 CalamityGlobalNPC.AttemptToSpawnLabCritters(p);
                 CalamityGlobalNPC.AttemptToSpawnLavaNPCs(p);
             }
+
+            // Spawn the Old Man if Skeletron hasn't been defeated and there is no Old Man, it takes too fucking long otherwise.
+            TrySpawnOldMan();
 
             // Make the cultist countdown happen much more quickly.
             if (Main.netMode != NetmodeID.MultiplayerClient)
@@ -382,6 +386,9 @@ namespace CalamityMod.Systems
                                         if (tileType == TileType<Voidstone>())
                                             tileType2 = TileType<LumenylCrystals>();
 
+                                        if (tileType == TileType<Shellstone>())
+                                            tileType2 = TileType<SmallCorals>();
+
                                         bool canPlaceBasedOnAttached = true;
                                         if (tileType2 == TileType<SeaPrismCrystals>() && !isSunkenSeaTile)
                                             canPlaceBasedOnAttached = false;
@@ -442,7 +449,7 @@ namespace CalamityMod.Systems
                                     int tileTypeToPlaceThickness = 3;
                                     bool placeLilies = true;
 
-                                    // Do not change this number, ever. - Fabsol
+                                    // Apparently this is a reference!
                                     int minDistanceFromOtherLilies = 66;
 
                                     for (int k = x - minDistanceFromOtherLilies; k < x + minDistanceFromOtherLilies; k += 2)
@@ -564,6 +571,25 @@ namespace CalamityMod.Systems
             }
 
             return usingCorrectPlanterBox;
+        }
+        #endregion
+
+        #region Handle Old Man Spawn
+        public static void TrySpawnOldMan()
+        {
+            if (Main.netMode == NetmodeID.MultiplayerClient || NPC.downedBoss3 || Main.dayTime)
+                return;
+
+            if (NPC.AnyNPCs(NPCID.OldMan))
+                return;
+
+            if (NPC.AnyNPCs(NPCID.SkeletronHead))
+                return;
+
+            int oldMan = NPC.NewNPC(NPC.GetSource_TownSpawn(), Main.dungeonX * 16 + 8, Main.dungeonY * 16, NPCID.OldMan);
+            Main.npc[oldMan].homeless = false;
+            Main.npc[oldMan].homeTileX = Main.dungeonX;
+            Main.npc[oldMan].homeTileY = Main.dungeonY;
         }
         #endregion
 

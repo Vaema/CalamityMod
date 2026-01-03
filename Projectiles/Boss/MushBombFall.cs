@@ -1,5 +1,4 @@
 ﻿using System;
-using CalamityMod.Events;
 using CalamityMod.World;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
@@ -76,8 +75,8 @@ namespace CalamityMod.Projectiles.Boss
 
             Lighting.AddLight(Projectile.Center, 0f, 0.15f, 0.3f);
 
-            float velocityYLimit = Projectile.ai[0] == 1f ? 1f : BossRushEvent.BossRushActive ? 12f : CalamityWorld.death ? 6f : 5f;
-            float velocityYIncrement = Projectile.ai[0] == 1f ? 0.1f : BossRushEvent.BossRushActive ? 0.24f : CalamityWorld.death ? 0.12f : 0.1f;
+            float velocityYLimit = Projectile.ai[0] == 1f ? 1f : CalamityWorld.death ? 6f : 5f;
+            float velocityYIncrement = Projectile.ai[0] == 1f ? 0.1f : CalamityWorld.death ? 0.12f : 0.1f;
             if (Projectile.velocity.Y < velocityYLimit)
                 Projectile.velocity.Y += velocityYIncrement;
 

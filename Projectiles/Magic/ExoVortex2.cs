@@ -92,14 +92,14 @@ namespace CalamityMod.Projectiles.Magic
             behindProjectiles.Add(index);
         }
 
-        public float PrimitiveWidthFunction(float completionRatio)
+        public float PrimitiveWidthFunction(float completionRatio, Vector2 vertexPos)
         {
             float width = Projectile.width * 0.6f;
             width *= MathHelper.SmoothStep(0.6f, 1f, Utils.GetLerpValue(0f, 0.3f, completionRatio, true));
             return width;
         }
 
-        public Color PrimitiveTrailColor(float completionRatio)
+        public Color PrimitiveTrailColor(float completionRatio, Vector2 vertexPos)
         {
             float hue = Hue % 1f + HueShiftAcrossAfterimages;
             if (hue >= 0.99f)
@@ -110,7 +110,7 @@ namespace CalamityMod.Projectiles.Magic
             return c * Utils.GetLerpValue(0.04f, 0.2f, completionRatio, true) * velocityOpacityFadeout;
         }
 
-        public Vector2 PrimitiveOffsetFunction(float completionRatio) => Projectile.Size * 0.5f + Projectile.velocity.SafeNormalize(Vector2.Zero) * Projectile.scale * 2f;
+        public Vector2 PrimitiveOffsetFunction(float completionRatio, Vector2 _) => Projectile.Size * 0.5f + Projectile.velocity.SafeNormalize(Vector2.Zero) * Projectile.scale * 2f;
 
         public override bool PreDraw(ref Color lightColor)
         {

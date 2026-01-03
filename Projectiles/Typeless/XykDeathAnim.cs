@@ -1,10 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using CalamityMod.Graphics.Metaballs;
-using CalamityMod.Particles;
-using CalamityMod.World;
+﻿using CalamityMod.Particles;
 using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Graphics;
 using Terraria;
 using Terraria.Audio;
 using Terraria.ID;
@@ -17,7 +12,7 @@ namespace CalamityMod.Projectiles.Typeless
         public new string LocalizationCategory => "Projectiles.Typeless";
         public ref float time => ref Projectile.ai[0];
         public int endTime = 25;
-        public override string Texture => "CalamityMod/Items/LabFinders/RedSeekingMechanism";
+        public override string Texture => "CalamityMod/Projectiles/InvisibleProj";
 
         public override void SetStaticDefaults()
         {
@@ -39,20 +34,7 @@ namespace CalamityMod.Projectiles.Typeless
         {
             Player Owner = Main.player[Projectile.owner];
             bool Orange = Owner.Calamity().XykVisualsOrange;
-            Color effectColor = Orange ? Color.Gold : Color.DodgerBlue;
-
-            float rate = Main.GlobalTimeWrappedHourly * 22;
-            List<Color> eColors = new List<Color>()
-                {
-                    Orange ? Color.OrangeRed : Color.DodgerBlue,
-                    Orange ? Color.Gold : Color.Cyan,
-                    Orange ? Color.Orange : Color.RoyalBlue
-                };
-
-            int colorIndex = (int)(rate / 2 % eColors.Count);
-            Color currentColor = eColors[colorIndex];
-            Color nextColor = eColors[(colorIndex + 1) % eColors.Count];
-            effectColor = Color.Lerp(currentColor, nextColor, rate % 2f > 1f ? 1f : rate % 1f);
+            Color effectColor = Owner.Calamity().XykFXColor;
 
             if (time == 0)
             {
@@ -71,7 +53,7 @@ namespace CalamityMod.Projectiles.Typeless
                     velOffset *= Main.rand.NextFloat(15, 30) * fade;
                     Particle energy = new SparkParticle(Projectile.Center + velOffset * 2.5f, -velOffset * Main.rand.NextFloat(0.08f, 0.12f) * 1.5f, false, 14, Main.rand.NextFloat(1.1f, 1.25f) - 0.2f * fade, effectColor);
                     GeneralParticleHandler.SpawnParticle(energy);
-                    Dust dust = Dust.NewDustPerfect(Projectile.Center + velOffset * 2.5f, 278, -velOffset * Main.rand.NextFloat(0.08f, 0.12f) * 1.5f, 0, default, Main.rand.NextFloat(0.4f, 0.6f));
+                    Dust dust = Dust.NewDustPerfect(Projectile.Center + velOffset * 2.5f, DustID.FireworksRGB, -velOffset * Main.rand.NextFloat(0.08f, 0.12f) * 1.5f, 0, default, Main.rand.NextFloat(0.4f, 0.6f));
                     dust.noGravity = true;
                     dust.color = effectColor;
                 }

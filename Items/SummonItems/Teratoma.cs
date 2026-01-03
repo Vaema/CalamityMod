@@ -46,7 +46,7 @@ namespace CalamityMod.Items.SummonItems
         {
             CreateRecipe().
                 AddIngredient(ItemID.DemoniteBar, 3).
-                AddIngredient<RottenMatter>(7).
+                AddIngredient<AerialiteBar>(7).
                 AddIngredient(ItemID.RottenChunk, 13).
                 AddTile(TileID.DemonAltar).
                 AddDecraftCondition(CalamityConditions.DownedHiveMind).

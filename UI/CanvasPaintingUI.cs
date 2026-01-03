@@ -8,7 +8,6 @@ using Terraria.Audio;
 using Terraria.DataStructures;
 using Terraria.GameContent;
 using Terraria.ID;
-using Terraria.ModLoader;
 
 namespace CalamityMod.UI
 {
@@ -63,11 +62,9 @@ namespace CalamityMod.UI
             float paintingFrameScale = painting.scale;
             Vector2 paintingFramePosition = painting.framePosition;
 
-            bool hideUI = Main.keyState.IsKeyDown(Keys.LeftShift);
+            bool hideUI = Main.keyState.PressingShift();
 
-            Texture2D tex = TextureAssets.Tile[ModContent.TileType<Tiles.Furniture.CalamityCanvas2023Tile>()].Value;
-            if (p.CurrentlyViewedCanvasType == 1)
-                tex = TextureAssets.Tile[ModContent.TileType<Tiles.Furniture.CalamityCanvas2024Tile>()].Value;
+            Texture2D tex = TextureAssets.Tile[p.CurrentlyViewedCanvasType].Value;
 
             // This is the length and width of the UI box, which is a square
             float dimension = Main.screenHeight * 0.66f;

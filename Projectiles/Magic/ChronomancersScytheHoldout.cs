@@ -1,12 +1,8 @@
-﻿using System;
-using CalamityMod.Buffs.StatDebuffs;
-using CalamityMod.Particles;
+﻿using CalamityMod.Buffs.StatDebuffs;
 using CalamityMod.Projectiles.Typeless;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria;
-using Terraria.Audio;
-using Terraria.ID;
 using Terraria.ModLoader;
 
 namespace CalamityMod.Projectiles.Magic
@@ -43,6 +39,10 @@ namespace CalamityMod.Projectiles.Magic
         public override void AI()
         {
             Owner.ChangeDir((int)Projectile.ai[2]);
+
+            Player player = Main.player[Projectile.owner];
+            if (player is null || player.dead)
+                Projectile.Kill();
 
             Projectile.velocity = Vector2.Zero;
 

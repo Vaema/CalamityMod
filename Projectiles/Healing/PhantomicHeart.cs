@@ -25,6 +25,7 @@ namespace CalamityMod.Projectiles.Healing
             Projectile.width = 28;
             Projectile.height = 42;
             Projectile.friendly = true;
+            Projectile.tileCollide = false;
             Projectile.alpha = 20;
             Projectile.penetrate = -1;
             Projectile.timeLeft = 600;
@@ -68,7 +69,7 @@ namespace CalamityMod.Projectiles.Healing
                 if (player.whoAmI == Main.myPlayer)
                 {
                     CalamityPlayer calPlayer = player.Calamity();
-                    calPlayer.phantomicHeartRegen = 720;
+                    calPlayer.phantomicHeartRegen = 600;
                     Projectile.Kill();
                 }
             }

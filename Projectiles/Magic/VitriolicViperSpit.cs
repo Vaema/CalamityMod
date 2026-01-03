@@ -1,12 +1,10 @@
 ﻿using System;
-using CalamityMod.Buffs.DamageOverTime;
 using CalamityMod.Buffs.StatDebuffs;
 using CalamityMod.Dusts;
 using CalamityMod.Particles;
 using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.Audio;
-using Terraria.ID;
 using Terraria.ModLoader;
 
 namespace CalamityMod.Projectiles.Magic
@@ -49,7 +47,7 @@ namespace CalamityMod.Projectiles.Magic
             }
 
             if (time > 3)
-                Projectile.Center += offset * direction;
+                Projectile.Center += offset * direction * Utils.GetLerpValue(3, 10, time, true);
 
             if (time > 3 && targetDist < 1400)
             {

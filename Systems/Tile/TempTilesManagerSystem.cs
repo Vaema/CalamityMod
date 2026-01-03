@@ -101,6 +101,18 @@ namespace CalamityMod.Systems
             return ManagedTiles.Find(t => t.position == position).timeleft;
         }
 
+        public override void PostWorldLoad()
+        {
+            for (int i = 0; i < Main.maxTilesX; i++)
+            {
+                for (int j = 0; j < Main.maxTilesY; j++)
+                {
+                    if (TemporaryTileIDs.Contains(Main.tile[i, j].TileType))
+                        WorldGen.KillTile(i, j);
+                }
+            }
+        }
+
         public override void OnWorldUnload()
         {
             ManagedTiles = new List<TemporaryTile>();

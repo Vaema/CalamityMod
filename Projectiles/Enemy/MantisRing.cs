@@ -20,7 +20,6 @@ namespace CalamityMod.Projectiles.Enemy
 
         public override void SetDefaults()
         {
-            Projectile.Calamity().DealsDefenseDamage = true;
             Projectile.knockBack = 3f;
             Projectile.width = 72;
             Projectile.height = 30;

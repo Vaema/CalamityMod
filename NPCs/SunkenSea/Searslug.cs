@@ -1,7 +1,5 @@
-﻿using CalamityMod.BiomeManagers;
-using CalamityMod.Items.Critters;
+﻿using CalamityMod.Items.Critters;
 using CalamityMod.Items.Placeables.Banners;
-using CalamityMod.Tiles.SunkenSea.Ambient;
 using Microsoft.Xna.Framework;
 using System.IO;
 using Terraria;
@@ -11,50 +9,59 @@ using Terraria.ModLoader;
 using Terraria.ModLoader.Utilities;
 using Terraria.Audio;
 using Terraria.DataStructures;
-using rail;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria.GameContent;
 using CalamityMod.Particles;
-using CalamityMod.Graphics.Metaballs;
 using ReLogic.Content;
+using CalamityMod.Enums;
+using System.Collections.Generic;
 
 namespace CalamityMod.NPCs.SunkenSea
 {
-    public class Searslug : ModNPC
+    public class Searslug : SunkenSeaNPC
     {
         public bool Skinwalker => NPC.Calamity()?.newAI[0] == 1;
         public static Asset<Texture2D> glowTexture;
 
         public override void Load() => glowTexture = ModContent.Request<Texture2D>(Texture + "Glow");
 
+        protected override SunkenSeaBiomeFlags BiomeDesignation => SunkenSeaBiomeFlags.BasaltGully;
+
+        protected override List<int> PreyIDs => new();
+
+        protected override List<int> PredatorIDs => new()
+        {
+            ModContent.NPCType<Steampod>()
+        };
+
         public override void SetStaticDefaults()
         {
+            base.SetStaticDefaults();
             Main.npcFrameCount[Type] = 7;
         }
         public override void SetDefaults()
         {
+            base.SetDefaults();
             NPC.aiStyle = NPCAIStyleID.Snail;
-            AIType = NPCID.Snail;
             NPC.damage = 0;
             NPC.width = 56;
             NPC.height = 42;
             NPC.defense = 0;
             NPC.lifeMax = 20;
             NPC.knockBackResist = 0f;
-            NPC.value = Item.buyPrice(0, 0, 10, 0);
             NPC.lavaImmune = true;
             NPC.noGravity = false;
             NPC.noTileCollide = false;
             NPC.HitSound = SoundID.NPCHit38;
             NPC.DeathSound = SoundID.NPCDeath1;
             NPC.GravityIgnoresLiquid = true;
-            //Banner = NPC.type;
-            //BannerItem = ModContent.ItemType<SearslugBanner>();
+            NPC.chaseable = false;
+            Banner = NPC.type;
+            BannerItem = ModContent.ItemType<SearslugBanner>();
             NPC.catchItem = ModContent.ItemType<SearslugItem>();
             NPC.Calamity().VulnerableToHeat = false;
             NPC.Calamity().VulnerableToCold = true;
             NPC.Calamity().VulnerableToWater = true;
-            SpawnModBiomes = new int[1] { ModContent.GetInstance<SunkenSeaBiome>().Type };
         }
 
         public override void ReceiveExtraAI(BinaryReader reader)
@@ -134,10 +141,11 @@ namespace CalamityMod.NPCs.SunkenSea
                 }
             }
         }
+        public override bool CanBeHitByNPC(NPC attacker) => PredatorIDs.Contains(attacker.type);
 
         public override float SpawnChance(NPCSpawnInfo spawnInfo)
         {
-            if (spawnInfo.Player.Calamity().ZoneBasaltGully && spawnInfo.Water && !spawnInfo.Player.Calamity().clamity)
+            if (spawnInfo.Player.Calamity().ZoneBasaltGully && !spawnInfo.Player.Calamity().clamity)
             {
                 return SpawnCondition.Cavern.Chance * 0.2f;
             }
@@ -150,6 +158,7 @@ namespace CalamityMod.NPCs.SunkenSea
             {
                 Dust.NewDust(NPC.position, NPC.width, NPC.height, DustID.LavaMoss, hit.HitDirection, -1f, 0, default, 1f);
             }
+            CalamityUtils.SpawnGores(NPC, "Searslug", 2);
         }
 
         public override bool PreDraw(SpriteBatch spriteBatch, Vector2 screenPos, Color drawColor)
@@ -179,7 +188,7 @@ namespace CalamityMod.NPCs.SunkenSea
             // Wear protection!
             if (failed)
             {
-                player.AddBuff(BuffID.OnFire3, CalamityUtils.SecondsToFrames(5));
+                player.AddBuff(BuffID.OnFire, CalamityUtils.SecondsToFrames(5));
             }
         }
     }

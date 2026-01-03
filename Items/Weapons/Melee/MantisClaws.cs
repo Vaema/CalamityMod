@@ -1,17 +1,8 @@
-﻿using CalamityMod.Projectiles.Typeless;
-using Microsoft.Xna.Framework;
+﻿using CalamityMod.Items.BaseItems;
+using CalamityMod.Projectiles.Melee;
 using Terraria;
 using Terraria.ID;
-using CalamityMod.Items.BaseItems;
 using Terraria.ModLoader;
-using CalamityMod.Projectiles.BaseProjectiles;
-using Microsoft.Xna.Framework.Graphics;
-using ReLogic.Content;
-using CalamityMod.Balancing;
-using Terraria.Audio;
-using CalamityMod.Projectiles.Melee;
-using System;
-using CalamityMod.Particles;
 
 namespace CalamityMod.Items.Weapons.Melee
 {
@@ -20,10 +11,9 @@ namespace CalamityMod.Items.Weapons.Melee
         public new string LocalizationCategory => "Items.Weapons.Melee";
         public override void SetDefaults()
         {
-            base.SetDefaults();
             Item.width = 26;
             Item.height = 20;
-            Item.damage = 111;
+            Item.damage = 75;
             Item.DamageType = DamageClass.Melee;
             Item.useAnimation = Item.useTime = 25;
             Item.knockBack = 0.25f;
@@ -39,5 +29,6 @@ namespace CalamityMod.Items.Weapons.Melee
         }
 
         public override bool AltFunctionUse(Player player) => true;
+        public override bool MeleePrefix() => true;
     }
 }

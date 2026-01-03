@@ -1,6 +1,4 @@
 ﻿using System;
-using CalamityMod.Dusts;
-using CalamityMod.Items.Ammo;
 using CalamityMod.NPCs;
 using CalamityMod.Particles;
 using Microsoft.Xna.Framework;
@@ -115,7 +113,8 @@ namespace CalamityMod.Projectiles.Ranged
             modNPC.hyperiusDamage += Math.Max(Projectile.damage * (crit ? 2 : 1) - 1, 1);
 
             modifiers.DisableCrit();
-            Projectile.damage = 1;
+            modifiers.SourceDamage *= 0;
+            modifiers.FinalDamage.Flat = 0.1f;
             modifiers.HideCombatText();
         }
     }

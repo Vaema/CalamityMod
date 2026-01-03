@@ -1,5 +1,4 @@
-﻿using System;
-using CalamityMod.Items.Weapons.Melee;
+﻿using CalamityMod.Items.Weapons.Melee;
 using CalamityMod.NPCs;
 using CalamityMod.Particles;
 using CalamityMod.Projectiles.BaseProjectiles;
@@ -8,7 +7,7 @@ using Microsoft.Xna.Framework.Graphics;
 using ReLogic.Content;
 using Terraria;
 using Terraria.Audio;
-using Terraria.DataStructures;
+using Terraria.ID;
 using Terraria.Localization;
 using Terraria.ModLoader;
 
@@ -167,7 +166,7 @@ namespace CalamityMod.Projectiles.Melee
                     {
                         for (int i = 0; i < 2; i++)
                         {
-                            Dust dust2 = Dust.NewDustPerfect(Owner.Center + (new Vector2(150, 0).RotatedBy(FinalRotation + MathHelper.ToRadians(-45)).RotatedByRandom(0.3f)), 278, Vector2.One.RotatedByRandom(100) * Main.rand.NextFloat(0.5f, 2));
+                            Dust dust2 = Dust.NewDustPerfect(Owner.Center + (new Vector2(150, 0).RotatedBy(FinalRotation + MathHelper.ToRadians(-45)).RotatedByRandom(0.3f)), DustID.FireworksRGB, Vector2.One.RotatedByRandom(100) * Main.rand.NextFloat(0.5f, 2));
                             dust2.scale = Main.rand.NextFloat(0.55f, 0.85f);
                             dust2.noGravity = true;
                             dust2.color = Main.rand.NextBool() ? Color.Silver : Color.Gold;
@@ -194,7 +193,7 @@ namespace CalamityMod.Projectiles.Melee
             int heal = (int)(MathHelper.Clamp(7 - Projectile.numHits * 5, 1, 7));
             if (Projectile.numHits < 5)
             {
-                Owner.HealPlayer(heal);
+                Owner.DoLifestealDirect(target, heal);
             }
 
             Vector2 launchVel = Utils.DirectionTo(Owner.Center, Owner.Calamity().mouseWorld);

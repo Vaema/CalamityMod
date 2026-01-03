@@ -1,5 +1,4 @@
-﻿using CalamityMod.Tiles.Furniture.CraftingStations;
-using CalamityMod.Tiles.FurnitureSilva;
+﻿using CalamityMod.Tiles.FurnitureSilva;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
@@ -18,7 +17,7 @@ namespace CalamityMod.Items.Placeables.FurnitureSilva
         {
             CreateRecipe().
                 AddIngredient<SilvaCrystal>(6).
-                AddTile<SilvaBasin>().
+                AddTile(TileID.GlassKiln).
                 Register();
         }
     }

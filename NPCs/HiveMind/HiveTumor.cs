@@ -1,5 +1,4 @@
-﻿using CalamityMod.World;
-using Microsoft.Xna.Framework;
+﻿using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.GameContent.Bestiary;
 using Terraria.ID;
@@ -25,7 +24,7 @@ namespace CalamityMod.NPCs.HiveMind
             NPC.width = 30; //324
             NPC.height = 30; //216
             NPC.defense = 0;
-            NPC.lifeMax = (CalamityWorld.LegendaryMode && CalamityWorld.revenge) ? 10 : 1000;
+            NPC.lifeMax = Main.zenithWorld ? 10 : 1000;
             NPC.knockBackResist = 0f;
             NPC.chaseable = false;
             NPC.HitSound = SoundID.NPCHit1;
@@ -80,7 +79,7 @@ namespace CalamityMod.NPCs.HiveMind
                             type = ModContent.NPCType<DankCreeper>();
                             break;
                         case 4:
-                            type = ModContent.NPCType<HiveBlob2>();
+                            type = ModContent.NPCType<HiveBlob>();
                             break;
                         default:
                             break;
@@ -131,7 +130,7 @@ namespace CalamityMod.NPCs.HiveMind
                 {
                     Dust.NewDust(NPC.position, NPC.width, NPC.height, DustID.Demonite, hit.HitDirection, -1f, 0, default, 1f);
                 }
-                if (Main.netMode != NetmodeID.MultiplayerClient && (!NPC.AnyNPCs(ModContent.NPCType<HiveMind>()) || (CalamityWorld.LegendaryMode && CalamityWorld.revenge)))
+                if (Main.netMode != NetmodeID.MultiplayerClient && (!NPC.AnyNPCs(ModContent.NPCType<HiveMind>()) || Main.zenithWorld))
                 {
                     Vector2 spawnAt = NPC.Bottom;
                     NPC.NewNPC(NPC.GetSource_Death(), (int)spawnAt.X, (int)spawnAt.Y, ModContent.NPCType<HiveMind>());

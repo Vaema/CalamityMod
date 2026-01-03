@@ -16,7 +16,7 @@ namespace CalamityMod.Items.Placeables.Furniture.CraftingStations
         {
             Item.DefaultToPlaceableTile(ModContent.TileType<SCalAltarLarge>());
             Item.value = Item.sellPrice(gold: 40);
-            Item.rare = ModContent.RarityType<Violet>();
+            Item.rare = ModContent.RarityType<BurnishedAuric>();
         }
 
         public override void ModifyResearchSorting(ref ContentSamples.CreativeHelper.ItemGroup itemGroup)

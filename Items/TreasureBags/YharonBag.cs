@@ -3,7 +3,7 @@ using CalamityMod.Items.Accessories.Wings;
 using CalamityMod.Items.Armor.Vanity;
 using CalamityMod.Items.Materials;
 using CalamityMod.Items.Pets;
-using CalamityMod.Items.Placeables.Furniture.DevPaintings;
+using CalamityMod.Items.Placeables.Furniture.Paintings;
 using CalamityMod.Items.Weapons.Magic;
 using CalamityMod.Items.Weapons.Melee;
 using CalamityMod.Items.Weapons.Ranged;
@@ -78,7 +78,7 @@ namespace CalamityMod.Items.TreasureBags
             itemLoot.Add(ModContent.ItemType<YharimsCrystal>(), 10);
 
             // Equipment
-            itemLoot.Add(ModContent.ItemType<DrewsWings>());
+            itemLoot.Add(ModContent.ItemType<WingsofRebirth>());
             itemLoot.Add(ModContent.ItemType<YharimsGift>());
             itemLoot.AddRevBagAccessories();
 

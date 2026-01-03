@@ -1,6 +1,5 @@
 ﻿using System;
 using System.IO;
-using CalamityMod.Buffs.DamageOverTime;
 using CalamityMod.Dusts;
 using CalamityMod.NPCs;
 using CalamityMod.NPCs.ExoMechs.Ares;
@@ -226,14 +225,6 @@ namespace CalamityMod.Projectiles.Boss
                 return true;
             }
             return false;
-        }
-
-        public override void OnHitPlayer(Player target, Player.HurtInfo info)
-        {
-            if (info.Damage <= 0)
-                return;
-
-            target.AddBuff(ModContent.BuffType<BrimstoneFlames>(), 150);
         }
 
         public override bool CanHitPlayer(Player target) => Projectile.scale >= 0.5f;

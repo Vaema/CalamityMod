@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Text;
 using CalamityMod.CalPlayer;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
@@ -125,7 +124,7 @@ namespace CalamityMod.UI
                 }
 
                 if (changed)
-                    CalamityClientConfig.SaveConfig();
+                    CalamityClientConfig.Instance.SaveChanges();
                 return;
             }
 
@@ -172,10 +171,10 @@ namespace CalamityMod.UI
                 }
 
                 // When the mouse is released, save the config and destroy the drag offset.
-                if (ms.LeftButton == ButtonState.Released)
+                if (dragOffset.HasValue && ms.LeftButton == ButtonState.Released)
                 {
                     dragOffset = null;
-                    CalamityClientConfig.SaveConfig();
+                    CalamityClientConfig.Instance.SaveChanges();
                 }
             }
         }
@@ -237,9 +236,9 @@ namespace CalamityMod.UI
                 Vector2 origin = new Vector2(correctBorder.Width * 0.5f, (correctBorder.Height / FlightAnimFrames) * 0.5f);
                 float xOffset = (correctBorder.Width - flightBarAnimTexture.Width) / 2f;
                 int frameHeight = (flightBarAnimTexture.Height / FlightAnimFrames) - 1;
-                Vector2 sizeDiffOffset = new Vector2(xOffset, -37f);
+                Vector2 sizeDiffOffset = new Vector2(xOffset, -37f) * uiScale;
                 Rectangle animCropRect = new Rectangle(0, (frameHeight + 1) * FlightAnimFrame, flightBarAnimTexture.Width, frameHeight);
-                spriteBatch.Draw(flightBarAnimTexture, screenPos + sizeDiffOffset, animCropRect, Color.White, 0f, origin * Main.UIScale, uiScale, SpriteEffects.None, 0);
+                spriteBatch.Draw(flightBarAnimTexture, screenPos + sizeDiffOffset, animCropRect, Color.White, 0f, origin, uiScale, SpriteEffects.None, 0);
             }
         }
 

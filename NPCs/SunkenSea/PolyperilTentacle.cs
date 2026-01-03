@@ -7,7 +7,6 @@ using System.Collections.Generic;
 using System.IO;
 using Terraria;
 using Terraria.Audio;
-using Terraria.DataStructures;
 using Terraria.GameContent;
 using Terraria.ID;
 using Terraria.Localization;
@@ -62,12 +61,8 @@ namespace CalamityMod.NPCs.SunkenSea
 
             NPC.HitSound = SoundID.NPCHit1;
             NPC.DeathSound = SoundID.NPCDeath1;
-            NPC.value = 0;
             // Banner = NPC.type;
             // BannerItem = ModContent.ItemType<PolyperilBanner>();
-            // Scale stats in Expert and Master
-            CalamityGlobalNPC.AdjustExpertModeStatScaling(NPC);
-            CalamityGlobalNPC.AdjustMasterModeStatScaling(NPC);
         }
 
         public override void SendExtraAI(BinaryWriter writer)
@@ -240,10 +235,10 @@ namespace CalamityMod.NPCs.SunkenSea
             // Color is based on parent color
             Color col = parent.ai[1] switch
             {
-                1 => new Color(27, 233, 255),
-                2 => new Color(7, 255, 204),
-                3 => Color.Cyan,
-                _ => new Color(255, 220, 248)
+                1 => new Color(27, 190, 255),
+                2 => new Color(7, 255, 180),
+                3 => new Color(122, 255, 240),
+                _ => new Color(255, 140, 248)
             };
 
             // Desaturate as parent's health lowers

@@ -1,5 +1,4 @@
 ﻿using System;
-using CalamityMod.Balancing;
 using CalamityMod.Enums;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
@@ -63,7 +62,7 @@ namespace CalamityMod.Projectiles.Healing
         public void PassiveBehavior()
         {
             float maxYVelocity = 2f;
-            CalamityUtils.StickToTiles(Projectile, false, false);
+            CommonProjectileAI.StickToTiles(Projectile, false, false);
             Projectile.velocity.X *= 0.99f;
             if (Projectile.velocity.Y < maxYVelocity)
                 Projectile.velocity.Y += 0.02f;

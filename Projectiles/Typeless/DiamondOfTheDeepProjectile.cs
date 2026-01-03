@@ -2,12 +2,19 @@
 using System.Collections.Generic;
 using CalamityMod.Buffs.DamageOverTime;
 using CalamityMod.Dusts;
+using CalamityMod.Items.Accessories;
+using CalamityMod.Items.Placeables.Abyss;
+using CalamityMod.NPCs.AstrumDeus;
 using CalamityMod.Particles;
+using CalamityMod.Projectiles.Boss;
+using CalamityMod.Sounds;
+using CalamityMod.Tiles.Ores;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using ReLogic.Content;
 using Terraria;
 using Terraria.Audio;
+using Terraria.GameContent;
 using Terraria.ID;
 using Terraria.ModLoader;
 
@@ -277,9 +284,9 @@ namespace CalamityMod.Projectiles.Typeless
                         {
                             if (visuals)
                             {
-                                SoundStyle fire = new("CalamityMod/Sounds/Custom/AstrumDeus/AstrumDeusGodRay");
+                                SoundStyle fire = AstrumDeusHead.GodRaySound;
                                 SoundEngine.PlaySound(fire with { Volume = 0.3f, Pitch = (Main.rand.NextFloat(-0.6f, -0.5f) + projType * 0.1f) }, Projectile.Center);
-                                SoundStyle fire2 = new("CalamityMod/Sounds/Item/VoidDash");
+                                SoundStyle fire2 = StatisVoidSash.VoidDash;
                                 SoundEngine.PlaySound(fire2 with { Volume = 0.3f, Pitch = (Main.rand.NextFloat(0.2f, 0.4f) + projType * 0.1f) }, Projectile.Center);
                             }
 
@@ -400,9 +407,9 @@ namespace CalamityMod.Projectiles.Typeless
             {
                 if (visuals)
                 {
-                    SoundStyle s = new("CalamityMod/Sounds/Custom/AstrumDeus/DeusMineExplode");
+                    SoundStyle s = DeusMine.ExplodeSound;
                     SoundEngine.PlaySound(s with { Volume = 0.7f, Pitch = (Main.rand.NextFloat(0.3f, 0.4f)) }, Projectile.Center);
-                    SoundStyle fire2 = new("CalamityMod/Sounds/Item/VoidDash");
+                    SoundStyle fire2 = StatisVoidSash.VoidDash;
                     SoundEngine.PlaySound(fire2 with { Volume = 0.4f, Pitch = Main.rand.NextFloat(-0.2f, -0.3f) }, Projectile.Center);
 
                     for (int i = 0; i < 15; i++)
@@ -462,7 +469,7 @@ namespace CalamityMod.Projectiles.Typeless
             {
                 if (visuals)
                 {
-                    SoundStyle s = new("CalamityMod/Sounds/Custom/AuricMine", 3);
+                    SoundStyle s = AuricOre.MineSound;
                     SoundEngine.PlaySound(s with { Volume = 0.5f, Pitch = (-0.3f + Projectile.numHits * 0.1f), MaxInstances = 6 }, Projectile.Center);
                 }
 
@@ -476,8 +483,8 @@ namespace CalamityMod.Projectiles.Typeless
             {
                 modifiers.SourceDamage *= 0.33f; // Deals less damage but hits multiple times
                 if (visuals)
-                { 
-                    SoundStyle s = new("CalamityMod/Sounds/Custom/VoidstoneMine", 3);
+                {
+                    SoundStyle s = CommonCalamitySounds.VoidstoneMine with { Volume = 1 };
                     SoundEngine.PlaySound(s with { Volume = 0.6f, Pitch = (-0.3f + Projectile.numHits * 0.1f) }, Projectile.Center);
                 }
 
@@ -516,22 +523,22 @@ namespace CalamityMod.Projectiles.Typeless
             float sine = (float)Math.Sin((Main.GlobalTimeWrappedHourly * 10) / MathHelper.Pi);
             Vector2 squash = new Vector2(Utils.Remap(Projectile.velocity.Length(), 1, 5, 1, 0.6f), Utils.Remap(Projectile.velocity.Length(), 1, 5, 1, 2f));
 
-            Asset<Texture2D> block = ModContent.Request<Texture2D>("CalamityMod/Items/Placeables/Abyss/AbyssGravel");
+            Asset<Texture2D> block = TextureAssets.Item[ModContent.ItemType<AbyssGravel>()];
             switch (projType) // 0 = gravel/vines, 1 = hadal/hydrothermic, 2 = void/lumenyl
             {
                 case 0:
                     {
-                        block = ModContent.Request<Texture2D>("CalamityMod/Items/Placeables/Abyss/AbyssGravel");
+                        block = TextureAssets.Item[ModContent.ItemType<AbyssGravel>()];
                         break;
                     }
                 case 1:
                     {
-                        block = ModContent.Request<Texture2D>("CalamityMod/Items/Placeables/Abyss/PyreMantle");
+                        block = TextureAssets.Item[ModContent.ItemType<PyreMantle>()];
                         break;
                     }
                 case 2:
                     {
-                        block = ModContent.Request<Texture2D>("CalamityMod/Items/Placeables/Abyss/Voidstone");
+                        block = TextureAssets.Item[ModContent.ItemType<Voidstone>()];
                         break;
                     }
             }

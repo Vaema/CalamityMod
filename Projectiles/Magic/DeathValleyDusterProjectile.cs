@@ -1,15 +1,13 @@
 ﻿using System;
 using CalamityMod.Buffs.StatBuffs;
-using CalamityMod.Buffs.StatDebuffs;
-using CalamityMod.DataStructures;
 using CalamityMod.Particles;
-using Microsoft.CodeAnalysis;
 using Microsoft.Xna.Framework;
 using Terraria.Audio;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
 using System.Collections.Generic;
+
 namespace CalamityMod.Projectiles.Magic
 {
     public class DeathValleyDusterProjectile : ModProjectile, ILocalizedModType
@@ -34,7 +32,7 @@ namespace CalamityMod.Projectiles.Magic
             Projectile.tileCollide = false;
             Projectile.DamageType = DamageClass.Magic;
             Projectile.penetrate = -1;
-            Projectile.extraUpdates = 4;
+            Projectile.extraUpdates = 7;
             Projectile.timeLeft = 400;
             Projectile.usesLocalNPCImmunity = true;
             Projectile.localNPCHitCooldown = -1;
@@ -60,7 +58,7 @@ namespace CalamityMod.Projectiles.Magic
                         if (buffList[playerIndex] == false)
                         {
                             buffList[playerIndex] = true;
-                            player.AddBuff(ModContent.BuffType<SandsWindBuff>(), 600);
+                            player.AddBuff(ModContent.BuffType<SandsWindBuff>(), 720);
 
                             int Dusts = 12;
                             float radians = MathHelper.TwoPi / Dusts;
@@ -68,10 +66,10 @@ namespace CalamityMod.Projectiles.Magic
                             for (int i = 0; i < Dusts; i++)
                             {
                                 Vector2 dustVelocity = spinningPoint.RotatedBy(radians * i) * 12.5f;
-                                Dust dust = Dust.NewDustPerfect(player.Center, 262, dustVelocity, 0, default, 0.9f);
+                                Dust dust = Dust.NewDustPerfect(player.Center, DustID.AmberBolt, dustVelocity, 0, default, 0.9f);
                                 dust.noGravity = true;
 
-                                Dust dust2 = Dust.NewDustPerfect(player.Center, 262, dustVelocity * 0.6f, 0, default, 1.2f);
+                                Dust dust2 = Dust.NewDustPerfect(player.Center, DustID.AmberBolt, dustVelocity * 0.6f, 0, default, 1.2f);
                                 dust2.noGravity = true;
                             }
 
@@ -141,7 +139,6 @@ namespace CalamityMod.Projectiles.Magic
 
             Projectile.rotation += Main.rand.NextFloat(0.01f, 0.18f) * (float)Projectile.direction * Projectile.Opacity * rotDirection;
 
-
             if (Projectile.timeLeft <= 45)
             {
                 Projectile.extraUpdates = 1;
@@ -152,15 +149,37 @@ namespace CalamityMod.Projectiles.Magic
         }
         public override void ModifyHitNPC(NPC target, ref NPC.HitModifiers modifiers)
         {
-            if (Projectile.numHits > 0)
-                Projectile.damage = (int)(Projectile.damage * 0.95f);
-            if (Projectile.damage < 1)
-                Projectile.damage = 1;
+            float minMult = 0.25f;
+            int hitsToMinMult = 6;
+            float damageMult = Utils.Remap(Projectile.numHits, 0, hitsToMinMult, 1, minMult, true);
+            if (Projectile.numHits == 0)
+            {
+                Player Owner = Main.player[Projectile.owner];
+                Owner.SetScreenshake(3.5f);
+                damageMult += 0.5f;
+                for (int i = 0; i < 3; i++)
+                    SoundEngine.PlaySound(SoundID.DD2_MonkStaffGroundImpact with { Volume = 0.9f, Pitch = -0.4f + i * 0.25f, MaxInstances = 3 }, Projectile.Center);
+                for (int i = 0; i < 14; i++)
+                {
+                    float range = Main.rand.NextFloat(-0.5f, 0.5f);
+                    float power = 1 - Math.Abs(range);
+                    Vector2 vel = Projectile.velocity.SafeNormalize(Vector2.UnitX).RotatedBy(range) * Main.rand.NextFloat(45, 50) * power;
+                    MediumMistParticle SandCloud = new MediumMistParticle(Projectile.Center, vel, Color.Peru, Color.PeachPuff, Main.rand.NextFloat(1.7f, 2.3f), 120f, Main.rand.NextFloat(0.03f, -0.03f));
+                    GeneralParticleHandler.SpawnParticle(SandCloud);
+                    for (int b = 0; b < 5; b++)
+                    {
+                        Color clr = Color.Lerp((Main.rand.NextBool() ? Color.Peru : Color.PeachPuff), Color.Black, Main.rand.NextFloat(0.25f, 0.45f));
+                        Particle sand = new CustomSpark(Projectile.Center, vel.RotatedByRandom(0.4f) * Main.rand.NextFloat(0.4f, 0.9f) * power, "CalamityMod/Particles/SmallSmoke", false, Main.rand.Next(15, 25 + 1), Projectile.scale * Main.rand.NextFloat(0.08f, 0.14f) * 7, clr, new Vector2(1, Main.rand.NextFloat(0.2f, 2f)), false, extraRotation: Main.rand.NextFloat(-4, 4), spin: Main.rand.NextFloat(-0.8f, 0.8f), affectedByLight: true);
+                        GeneralParticleHandler.SpawnParticle(sand);
+                    }
+                }
+            }
+            modifiers.SourceDamage *= damageMult;
         }
 
         public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
         {
-            if (Projectile.numHits >= 3 && Projectile.timeLeft > 45)
+            if (Projectile.numHits >= 5 && Projectile.timeLeft > 45)
             {
                 Projectile.timeLeft = 45;
                 Projectile.velocity *= 0.4f;

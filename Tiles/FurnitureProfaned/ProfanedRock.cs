@@ -2,7 +2,6 @@
 using CalamityMod.Dusts.Furniture;
 using CalamityMod.Systems;
 using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Graphics;
 using Terraria;
 using Terraria.DataStructures;
 using Terraria.ID;
@@ -13,8 +12,6 @@ namespace CalamityMod.Tiles.FurnitureProfaned
     public class ProfanedRock : GlowMaskTile
     {
         public const int AnimationFrameWidth = 288;
-
-        public override string GlowMaskAsset => "CalamityMod/Tiles/FurnitureProfaned/ProfanedRockGlow";
 
         public override void SetupStatic()
         {
@@ -32,7 +29,7 @@ namespace CalamityMod.Tiles.FurnitureProfaned
             AddMapEntry(new Color(84, 38, 33));
         }
 
-        
+
 
         public override bool CreateDust(int i, int j, ref int type)
         {

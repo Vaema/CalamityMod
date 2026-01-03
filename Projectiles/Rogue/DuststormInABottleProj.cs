@@ -68,11 +68,8 @@ namespace CalamityMod.Projectiles.Rogue
                     Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center, stealth ? velocity * 1.2f : velocity, ModContent.ProjectileType<DuststormCloud>(), 0, 0, Projectile.owner, stealth ? 1f : 0f, (float)Main.rand.Next(-45, 1));
                 }
                 int hitbox = Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center, Vector2.Zero, ModContent.ProjectileType<DuststormCloudHitbox>(), Projectile.damage, Projectile.knockBack * 0.5f, Projectile.owner);
-                if (hitbox.WithinBounds(Main.maxProjectiles) && Projectile.Calamity().stealthStrike) //Inherit stealth flag and less iframes
-                {
+                if (hitbox.WithinBounds(Main.maxProjectiles) && Projectile.Calamity().stealthStrike) //Inherit stealth flag
                     Main.projectile[hitbox].ai[1] = 1;
-                    Main.projectile[hitbox].idStaticNPCHitCooldown = DuststormInABottle.StealthIframes;
-                }
             }
         }
     }

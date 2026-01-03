@@ -1,4 +1,5 @@
-﻿using Terraria.ID;
+﻿using CalamityMod.Projectiles.Typeless;
+using Terraria.ID;
 using Terraria.ModLoader;
 
 namespace CalamityMod.Items.Placeables.SunkenSea
@@ -11,8 +12,16 @@ namespace CalamityMod.Items.Placeables.SunkenSea
         {
             Item.ResearchUnlockCount = 100;
             ItemID.Sets.ShimmerTransformToItem[Type] = ModContent.ItemType<Shellstone>();
+
+            //+5 flat damage
+            ItemID.Sets.SandgunAmmoProjectileData[Type] = new(ModContent.ProjectileType<DuneSandBallGun>(), 5);
         }
 
-        public override void SetDefaults() => Item.DefaultToPlaceableTile(ModContent.TileType<Tiles.SunkenSea.Dunesand>());
+        public override void SetDefaults()
+        {
+            Item.DefaultToPlaceableTile(ModContent.TileType<Tiles.SunkenSea.Dunesand>());
+            Item.ammo = AmmoID.Sand;
+            Item.notAmmo = true;
+        }
     }
 }

@@ -3,12 +3,12 @@ using CalamityMod.Dusts;
 using CalamityMod.Gores.Trees;
 using CalamityMod.Items.Materials;
 using CalamityMod.Items.Potions.Food;
+using CalamityMod.Items.Tools;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using ReLogic.Content;
 using Terraria;
 using Terraria.DataStructures;
-using Terraria.Enums;
 using Terraria.GameContent;
 using Terraria.ID;
 using Terraria.ModLoader;
@@ -56,7 +56,7 @@ namespace CalamityMod.Tiles.AstralDesert
             return Color.White * MathHelper.Lerp(0.05f, 0.75f, brightness);
         }
 
-        public override int DropWood() => ModContent.ItemType<Items.Placeables.Astral.AstralMonolith>();
+        public override int DropWood() => ModContent.ItemType<Items.Placeables.FurnitureMonolith.AstralMonolith>();
 
         public override int CreateDust() => ModContent.DustType<AstralBasic>();
 
@@ -71,6 +71,16 @@ namespace CalamityMod.Tiles.AstralDesert
         // Returning false at the end prevents vanilla behavior as the default is palm tree behavior which can include undesirable stuff like seagulls
         public override bool Shake(int x, int y, ref bool createLeaves)
         {
+            // 33% chance to drop extra fruit when using Feller of Evergreens
+            Vector2 worldPosition = new Vector2(x, y).ToWorldCoordinates();
+            Player nearestPlayer = Main.player[Player.FindClosest(worldPosition, 16, 16)];
+            if (nearestPlayer.active && nearestPlayer.HeldItem.type == ModContent.ItemType<FellerofEvergreens>() && WorldGen.genRand.NextBool(3))
+            {
+                int treeDropItemType = WorldGen.genRand.NextBool() ? (WorldGen.genRand.NextBool() ? ItemID.Coconut : ItemID.Banana)
+                    : (WorldGen.genRand.NextBool() ? ModContent.ItemType<Barberry>() : ModContent.ItemType<Lotus>());
+                Item.NewItem(WorldGen.GetItemSource_FromTreeShake(x, y), x * 16, y * 16, 16, 16, treeDropItemType);
+            }
+
             int randAmt = Main.rand.Next(1, 3);
 
             if (Main.getGoodWorld && Main.rand.NextBool(15))
@@ -123,12 +133,12 @@ namespace CalamityMod.Tiles.AstralDesert
                     type = ItemID.FallenStar;
                 Item.NewItem(WorldGen.GetItemSource_FromTreeShake(x, y), new Vector2(x, y) * 16, type, randAmt);
             }
-            else if (Main.rand.Next(36) < 5) // Vanilla palm fruit logic goes first
+            else if (Main.rand.NextBool(12)) // Vanilla palm fruit logic goes first
             {
                 int fruitType = Main.rand.NextBool() ? ItemID.Coconut : ItemID.Banana;
                 Item.NewItem(WorldGen.GetItemSource_FromTreeShake(x, y), new Vector2(x, y) * 16, fruitType);
             }
-            else if (Main.rand.Next(36) < 5)
+            else if (Main.rand.NextBool(12))
             {
                 int fruitType = Main.rand.NextBool() ? ModContent.ItemType<Barberry>() : ModContent.ItemType<Lotus>();
                 Item.NewItem(WorldGen.GetItemSource_FromTreeShake(x, y), new Vector2(x, y) * 16, fruitType);

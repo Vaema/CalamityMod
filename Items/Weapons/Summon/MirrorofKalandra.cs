@@ -1,4 +1,5 @@
-﻿using CalamityMod.Items.Materials;
+﻿using CalamityMod.Buffs.Summon;
+using CalamityMod.Items.Materials;
 using CalamityMod.Projectiles.Summon.MirrorofKalandraMinions;
 using CalamityMod.Rarities;
 using Microsoft.Xna.Framework;
@@ -20,19 +21,19 @@ namespace CalamityMod.Items.Weapons.Summon
 
         public static float Axe_MinRamSpeed = 30f;
         public static float Axe_MaxRamSpeed = 50f;
-        public static int Axe_IFrames = 15;
+        public static int Axe_IFrames = 20;
         public static float Axe_SpinSpeed = 25f; // In degrees per frame.
 
         public static float Purple_MinRamSpeed = 40f;
         public static float Purple_MaxRamSpeed = 60f;
-        public static int Purple_IFrames = 23;
-        public static float Purple_BlastDMGModifier = 2.25f;
+        public static int Purple_IFrames = 28;
+        public static float Purple_BlastDMGModifier = 2f;
         public static float Purple_BlastFireRate = 240f; // In frames.
         public static int Purple_BlastSize = 300;
         public static int Purple_BlastChargeTime = 10;
         public static float Purple_SpinSpeed = 25f; // In degrees per frame.
 
-        public static int Scimitar_IFrames = 36; // Note that the effective iframes are half of this number, since the weapon is given an extra update while attacking.
+        public static int Scimitar_IFrames = 40; // Note that the effective iframes are half of this number, since the weapon is given an extra update while attacking.
 
         public static int Wind_BowChargeTime = 5; // Therefore, the higher the time, the slower the fire rate will be, and viceversa.
         public static float Wind_ArrowSpeed = 5f;
@@ -49,10 +50,11 @@ namespace CalamityMod.Items.Weapons.Summon
         {
             Item.width = 58;
             Item.height = 50;
-            Item.damage = 317;
-            Item.useAnimation = Item.useTime = 30;
+            Item.damage = 256;
+            Item.useAnimation = Item.useTime = 24;
             Item.knockBack = 4f;
             Item.mana = 10;
+            Item.buffType = ModContent.BuffType<KalandraMirrorBuff>();
             Item.shoot = ModContent.ProjectileType<AtzirisDisfavor>();
 
             Item.autoReuse = true;
@@ -61,7 +63,7 @@ namespace CalamityMod.Items.Weapons.Summon
             Item.DamageType = DamageClass.Summon;
             Item.useStyle = ItemUseStyleID.Shoot;
             Item.UseSound = SoundID.Item4;
-            Item.rare = ModContent.RarityType<DarkBlue>();
+            Item.rare = ModContent.RarityType<CosmicPurple>();
             Item.value = CalamityGlobalItem.RarityDarkBlueBuyPrice;
         }
 
@@ -71,6 +73,7 @@ namespace CalamityMod.Items.Weapons.Summon
 
         public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)
         {
+            player.AddBuff(Item.buffType, 2);
             if (player.ownedProjectileCounts[ModContent.ProjectileType<AtzirisDisfavor>()] == 1)
             {
                 type = ModContent.ProjectileType<HopeShredder>();
@@ -82,9 +85,9 @@ namespace CalamityMod.Items.Weapons.Summon
                     type = ModContent.ProjectileType<Starforge>();
             }
 
-            int minion = Projectile.NewProjectile(source, player.Center, Vector2.Zero, type, damage, knockback, player.whoAmI);
-            if (Main.projectile.IndexInRange(minion))
-                Main.projectile[minion].rotation = -MathHelper.PiOver2;
+            var minion = Projectile.NewProjectileDirect(source, player.Center, Vector2.Zero, type, damage, knockback, player.whoAmI);
+            minion.rotation = -MathHelper.PiOver2;
+            minion.originalDamage = Item.damage;
 
             return false;
         }

@@ -1,9 +1,7 @@
-﻿
+﻿using CalamityMod.ExtraTextures.GreyscaleGradients;
+using CalamityMod.Sounds;
 using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Graphics;
-using ReLogic.Content;
 using Terraria;
-using Terraria.Audio;
 using Terraria.DataStructures;
 using Terraria.ID;
 using Terraria.ModLoader;
@@ -13,31 +11,17 @@ namespace CalamityMod.Tiles.Plates
     [LegacyName("Chaosplate")]
     public class Havocplate : GlowMaskTile
     {
-        public override string GlowMaskAsset => "CalamityMod/Tiles/Plates/HavocplateGlow";
-
-        public static readonly SoundStyle MinePlatingSound = new("CalamityMod/Sounds/Custom/PlatingMine", 3);
-
-        internal static GrayscaleTexture1D PulseGradient;
-
         public override void SetupStatic()
         {
-            PulseGradient = new("CalamityMod/Tiles/Plates/HavocplatePulse");
-
             Main.tileSolid[Type] = true;
             Main.tileMergeDirt[Type] = true;
             Main.tileBlockLight[Type] = true;
 
             CalamityUtils.MergeWithGeneral(Type);
 
-            HitSound = MinePlatingSound;
+            HitSound = CommonCalamitySounds.PlatingMine;
             MineResist = 1f;
             AddMapEntry(new Color(235, 108, 108));
-        }
-
-        public override void OnUnload()
-        {
-            PulseGradient?.Unload();
-            PulseGradient = null;
         }
 
         public override bool CreateDust(int i, int j, ref int type)
@@ -54,7 +38,7 @@ namespace CalamityMod.Tiles.Plates
 
         public override Color GetGlowMaskColor(int i, int j, TileDrawInfo drawData)
         {
-            float brightness = PulseGradient.GetRepeat((int)Main.GameUpdateCount);
+            float brightness = GreyscaleGradient.HavocplatePulse.GetRepeat((int)Main.GameUpdateCount);
             brightness = 0.04f + (brightness * 0.156f);
             return Color.White * brightness;
         }

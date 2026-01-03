@@ -3,7 +3,6 @@ using CalamityMod.Items.Weapons.Melee;
 using CalamityMod.NPCs;
 using CalamityMod.Particles;
 using CalamityMod.Projectiles.BaseProjectiles;
-using CalamityMod.Projectiles.Melee;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria;
@@ -24,7 +23,7 @@ namespace CalamityMod.Projectiles.Melee.MaceFlails
         // This flail only runs through one state (spin), thereby making most parameters unnecessary to fill out
         public override int AssociatedItemID => ModContent.ItemType<UrchinMace>();
         public override int SpinIFrames => 15;
-        public override float SpinHitboxRadius => 64f;
+        public override float SpinHitboxRadius => 56f;
         public override float SpinVerticalFactor => 1f; // This flail moves circular
         public override float LaunchSpeed => 22f;
 
@@ -61,7 +60,7 @@ namespace CalamityMod.Projectiles.Melee.MaceFlails
                     for (int i = 0; i < 25; i++)
                     {
                         Vector2 dustPos = Owner.position + Main.rand.NextVector2FromRectangle(Owner.Hitbox);
-                        Dust dust = Dust.NewDustPerfect(dustPos, 176, Vector2.UnitY * -5f * Main.rand.NextFloat(1f, 2f) + Owner.velocity, Scale: Main.rand.NextFloat(1f, 2f));
+                        Dust dust = Dust.NewDustPerfect(dustPos, DustID.BubbleBurst_Blue, Vector2.UnitY * -5f * Main.rand.NextFloat(1f, 2f) + Owner.velocity, Scale: Main.rand.NextFloat(1f, 2f));
                         dust.noGravity = true;
                     }
                 }
@@ -79,7 +78,7 @@ namespace CalamityMod.Projectiles.Melee.MaceFlails
                 {
                     float angle = i / (float)dustCount * MathHelper.TwoPi + offset;
                     Vector2 dustPos = Owner.MountedCenter + angle.ToRotationVector2() * 40f * WindupProgress;
-                    Dust dust = Dust.NewDustPerfect(dustPos, 176, (angle - MathHelper.PiOver2 * Owner.direction).ToRotationVector2() * 5f + Owner.velocity, Scale: Main.rand.NextFloat(1f, 2f));
+                    Dust dust = Dust.NewDustPerfect(dustPos, DustID.BubbleBurst_Blue, (angle - MathHelper.PiOver2 * Owner.direction).ToRotationVector2() * 5f + Owner.velocity, Scale: Main.rand.NextFloat(1f, 2f));
                     dust.noGravity = true;
                 }
             }
@@ -134,17 +133,17 @@ namespace CalamityMod.Projectiles.Melee.MaceFlails
             Texture2D whirlpoolTexture = TextureAssets.Projectile[ModContent.ProjectileType<RedtideWhirlpool>()].Value;
 
             float WindupProgress = MathHelper.Clamp(StateTimer, 0, MaxWindup) / MaxWindup;
-            float whirlpoolScale = MathHelper.Clamp(WindupProgress * 3f - 0.4f, 0f, 1f) * 2f;
+            float whirlpoolScale = MathHelper.Clamp(WindupProgress * 3f - 0.4f, 0f, 1f) * 1.6f;
             float whirlpoolOpacity = WindupProgress * 0.2f + MathF.Sin(Main.GlobalTimeWrappedHourly * 3f) * 0.1f;
             float whirlpoolRotation = StateTimer * 0.34f * Owner.direction;
             SpriteEffects flip = Owner.direction < 0 ? SpriteEffects.None : SpriteEffects.FlipHorizontally;
 
-            Main.EntitySpriteDraw(whirlpoolTexture, Owner.MountedCenter - Main.screenPosition, null, Lighting.GetColor((int)Owner.MountedCenter.X / 16, (int)Owner.MountedCenter.Y / 16) * whirlpoolOpacity * 0.3f, whirlpoolRotation * 1.2f, whirlpoolTexture.Size() / 2f, whirlpoolScale, flip, 0);
-            Main.EntitySpriteDraw(whirlpoolTexture, Owner.MountedCenter - Main.screenPosition, null, Lighting.GetColor((int)Owner.MountedCenter.X / 16, (int)Owner.MountedCenter.Y / 16) * whirlpoolOpacity, whirlpoolRotation, whirlpoolTexture.Size() / 2f, whirlpoolScale, flip, 0);
+            Main.EntitySpriteDraw(whirlpoolTexture, Owner.MountedCenter - Main.screenPosition, null, Lighting.GetColor((int)Owner.MountedCenter.X / 16, (int)Owner.MountedCenter.Y / 16) * whirlpoolOpacity * 0.3f, whirlpoolRotation * 1.2f, whirlpoolTexture.Size() * 0.5f, whirlpoolScale, flip);
+            Main.EntitySpriteDraw(whirlpoolTexture, Owner.MountedCenter - Main.screenPosition, null, Lighting.GetColor((int)Owner.MountedCenter.X / 16, (int)Owner.MountedCenter.Y / 16) * whirlpoolOpacity, whirlpoolRotation, whirlpoolTexture.Size() * 0.5f, whirlpoolScale, flip);
 
             Vector2 handleOrigin = new Vector2(0, maceTexture.Height);
             float maceRotation = Projectile.rotation + MathHelper.PiOver4;
-            Main.EntitySpriteDraw(maceTexture, Projectile.Center - Main.screenPosition, null, Projectile.GetAlpha(lightColor), maceRotation, handleOrigin, Projectile.scale, SpriteEffects.None, 0);
+            Main.EntitySpriteDraw(maceTexture, Projectile.Center - Main.screenPosition, null, Projectile.GetAlpha(lightColor), maceRotation, handleOrigin, Projectile.scale, SpriteEffects.None);
             return false;
         }
     }

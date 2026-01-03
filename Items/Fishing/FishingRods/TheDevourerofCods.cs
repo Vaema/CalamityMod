@@ -1,4 +1,9 @@
-﻿using CalamityMod.Items.Materials;
+﻿using System.Collections.Generic;
+using CalamityMod.CalPlayer;
+using CalamityMod.Items.Fishing.AstralCatches;
+using CalamityMod.Items.Fishing.BrimstoneCragCatches;
+using CalamityMod.Items.Placeables.Abyss;
+using CalamityMod.Items.Materials;
 using CalamityMod.Projectiles.Typeless;
 using CalamityMod.Rarities;
 using CalamityMod.Tiles.Furniture.CraftingStations;
@@ -12,6 +17,24 @@ namespace CalamityMod.Items.Fishing.FishingRods
 {
     public class TheDevourerofCods : ModItem, ILocalizedModType
     {
+        public static List<int> FishToEat = new List<int>()
+                    {
+                        ItemID.Bass,
+                        ItemID.AtlanticCod,
+                        ItemID.Flounder,
+                        ItemID.NeonTetra,
+                        ItemID.RedSnapper,
+                        ItemID.RockLobster,
+                        ItemID.Salmon,
+                        ItemID.Shrimp,
+                        ItemID.Trout,
+                        ItemID.Tuna,
+                        ModContent.ItemType<CharredLasher>(),
+                        ModContent.ItemType<CragBullhead>(),
+                        ModContent.ItemType<ProcyonidPrawn>(),
+                        ModContent.ItemType<TwinklingPollox>(),
+                        ModContent.ItemType<PlantyMush>()
+    };
         public new string LocalizationCategory => "Items.Fishing";
         public override void SetStaticDefaults()
         {
@@ -30,12 +53,19 @@ namespace CalamityMod.Items.Fishing.FishingRods
             Item.shootSpeed = 20f;
             Item.shoot = ModContent.ProjectileType<DevourerofCodsBobber>();
             Item.value = CalamityGlobalItem.RarityDarkBlueBuyPrice;
-            Item.rare = ModContent.RarityType<DarkBlue>();
+            Item.rare = ModContent.RarityType<CosmicPurple>();
         }
 
         public override void HoldItem(Player player)
         {
+            if (player.Calamity().SelectedFishingMinigame == CalamityPlayer.FishingMinigames.None)
+                player.Calamity().SelectedFishingMinigame = CalamityPlayer.FishingMinigames.DevourerofCods;
             player.accFishingLine = true;
+        }
+
+        public override void UpdateEquip(Player player)
+        {
+            player.Calamity().SelectedFishingMinigame = CalamityPlayer.FishingMinigames.DevourerofCods;
         }
 
         public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)

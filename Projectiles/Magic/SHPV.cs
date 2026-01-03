@@ -87,17 +87,29 @@ namespace CalamityMod.Projectiles.Magic
                 {
                     if (Timer % 5 == 0f)
                     {
-                        if (Owner.HeldItem.ModItem is SHPC shpc && shpc.storedSoulpower > 0)
+                        if (Owner.HeldItem.ModItem is SHPC shpc)
                         {
                             SoundEngine.PlaySound(CommonCalamitySounds.ELRFireSound, Owner.Center);
                             Vector2 laserPos = TipPosition + Vector2.UnitY.RotatedBy(Projectile.rotation) * Main.rand.NextFloat(-7f, 7f);
                             Vector2 laserVel = Utils.DirectionTo(Owner.Center, Owner.Calamity().mouseWorld) * 20f;
-                            Projectile.NewProjectile(Projectile.GetSource_FromThis(), laserPos, laserVel, ModContent.ProjectileType<SHPL>(), Projectile.damage, 3f, Projectile.owner, SoulColors[0]);
+                            Projectile.NewProjectile(Projectile.GetSource_FromThis(), laserPos, laserVel, ModContent.ProjectileType<SHPL>(), (int)(Projectile.damage * 1.35f), 3f, Projectile.owner, SoulColors[0]);
 
                             if (ConsumeSoul)
                             {
                                 SoulColors.RemoveAt(0);
-                                shpc.storedSoulpower--;
+                                if (shpc.storedSoulpower > 0)
+                                    shpc.storedSoulpower--;
+                                else if (SHPC.FindSoulForAmmo(Owner) != -1)
+                                {
+                                    int soulType = SHPC.FindSoulForAmmo(Owner);
+                                    Owner.ConsumeItem(soulType);
+                                    shpc.storedSoulType = soulType;
+                                    shpc.storedSoulpower = SHPC.ShotsPerSoul;
+                                }
+                                else
+                                {
+                                    SoulColors.Clear();
+                                }
                             }
                             ConsumeSoul = !ConsumeSoul;
                         }
@@ -191,7 +203,7 @@ namespace CalamityMod.Projectiles.Magic
             // Draw souls around the gun as a sort of indicator of how many you have sucked in
             if (SoulColors.Count > 0)
             {
-                Texture2D sq = SoulSquare.Value;
+                Texture2D orbitingSoulTexture = SoulSquare.Value;
                 for (int i = 0; i < SoulColors.Count; i++)
                 {
                     int soulsInRing = SoulColors.Count > MaxSoulsRing ? (SoulColors.Count - i > SoulColors.Count % MaxSoulsRing ? MaxSoulsRing : SoulColors.Count % MaxSoulsRing) : SoulColors.Count;
@@ -203,7 +215,10 @@ namespace CalamityMod.Projectiles.Magic
                     // Makes the souls disappear when they go "behind" the gun
                     bool shouldDraw = posOffset.RotatedBy(-rotation).X <= 2.7f;
                     if (shouldDraw)
-                        Main.EntitySpriteDraw(sq, soulPosition + posOffset - Main.screenPosition, null, SHPB.FindColorForSoul((int)SoulColors[i]), 0f, sq.Size() / 2f, 1f, SpriteEffects.None);
+                    {
+                        Main.EntitySpriteDraw(orbitingSoulTexture, soulPosition + posOffset - Main.screenPosition, null, SHPB.FindColorForSoul((int)SoulColors[i]), 0f, orbitingSoulTexture.Size() * 0.5f, 1f, SpriteEffects.None);
+                        Main.EntitySpriteDraw(orbitingSoulTexture, soulPosition + posOffset - Main.screenPosition, null, Color.White, 0f, orbitingSoulTexture.Size() * 0.5f, 0.5f, SpriteEffects.None);
+                    }
                 }
             }
             return false;

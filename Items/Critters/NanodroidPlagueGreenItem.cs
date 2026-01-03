@@ -1,7 +1,6 @@
 ﻿using CalamityMod.NPCs.DraedonLabThings;
 using CalamityMod.Rarities;
 using Terraria;
-using Terraria.ID;
 using Terraria.ModLoader;
 
 namespace CalamityMod.Items.Critters

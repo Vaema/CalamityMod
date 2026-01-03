@@ -1,11 +1,9 @@
-﻿using CalamityMod.Items.Placeables.Banners;
-using CalamityMod.NPCs.Abyss;
+﻿using CalamityMod.NPCs.Abyss;
 using CalamityMod.NPCs.AcidRain;
-using CalamityMod.NPCs.AquaticScourge;
 using CalamityMod.NPCs.Astral;
 using CalamityMod.NPCs.Crags;
+using CalamityMod.NPCs.Deconstructors;
 using CalamityMod.NPCs.DraedonLabThings;
-using CalamityMod.NPCs.Leviathan;
 using CalamityMod.NPCs.NormalNPCs;
 using CalamityMod.NPCs.PlagueEnemies;
 using CalamityMod.NPCs.SulphurousSea;
@@ -108,7 +106,7 @@ namespace CalamityMod.Tiles
                     npc = NPCType<AuroraSpirit>();
                     break;
                 case 11:
-                    npc = NPCType<WildBumblefuck>(); // There's also the boss variant but I dont think we want banners to affect them?
+                    npc = NPCType<WildBumblebirb>(); // There's also the boss variant but I dont think we want banners to affect them?
                     break;
                 /*case 12:
                     npc = NPCType<Unused>(); - Formerly Sea Urchin
@@ -306,7 +304,7 @@ namespace CalamityMod.Tiles
                     npc = NPCType<Horse>();
                     break;
                 case 77:
-                    npc = NPCType<ArmoredDiggerHead>();
+                    npc = NPCType<Burrower>();
                     break;
                 case 78:
                     npc = NPCType<Melter>();
@@ -386,14 +384,14 @@ namespace CalamityMod.Tiles
                 case 103:
                     npc = NPCType<SeaFloaty>();
                     break;
-                /*case 104:
-                    npc = NPCType<Unused>(); - Formerly Blinded Angler
-                    break*/
+                case 104:
+                    npc = NPCType<LazarusLampfish>();
+                    break;
                 case 105:
                     npc = NPCType<SeaMinnow>();
                     break;
                 case 106:
-                    npc = NPCType<SandProwlerNested>();
+                    npc = NPCType<SandProwler>();
                     break;
                 /*case 107:
                     npc = NPCType<Unused>(); - Formerly Giant Clam
@@ -467,6 +465,69 @@ namespace CalamityMod.Tiles
                 case 130:
                     npc = NPCType<Probesnout>();
                     break;
+                case 131:
+                    npc = NPCType<CarrionSwallower>();
+                    break;
+                case 132:
+                    npc = NPCType<GildedAxolotl>();
+                    break;
+                /* case 133:
+                    npc = NPCType<Grubbolt>(); // NOT YET IMPLEMENTED. Banner sprite is already on the mastersheet and associated with this case/position.
+                    break; */
+                case 134:
+                    npc = NPCType<HauntedChum>();
+                    break;
+                case 135:
+                    npc = NPCType<Jellyghoul>();
+                    break;
+                case 136:
+                    npc = NPCType<KelpieSeadragon>();
+                    break;
+                case 137:
+                    npc = NPCType<Leerslug>();
+                    break;
+                case 138:
+                    npc = NPCType<LostShoal>();
+                    break;
+                /* case 139:
+                    npc = NPCType<MirageNewt>(); // NOT YET IMPLEMENTED. Banner sprite is already on the mastersheet and associated with this case/position.
+                    break; */
+                /* case 140:
+                    npc = NPCType<Panasea>(); // NOT YET IMPLEMENTED. Banner sprite is already on the mastersheet and associated with this case/position.
+                    break; */
+                case 141:
+                    npc = NPCType<PearlpodWhite>(); // Logic should be applying to other variants
+                    break;
+                case 142:
+                    npc = NPCType<StormlionSentry>();
+                    break;
+                case 143:
+                    npc = NPCType<PodobooKoi>();
+                    break;
+                case 144:
+                    npc = NPCType<Polyperil>();
+                    break;
+                case 145:
+                    npc = NPCType<PrismaticGuppy>();
+                    break;
+                case 146:
+                    npc = NPCType<Scavenger>();
+                    break;
+                case 147:
+                    npc = NPCType<Searslug>();
+                    break;
+                case 148:
+                    npc = NPCType<Shoreskipper>();
+                    break;
+                case 149:
+                    npc = NPCType<Slugbun>();
+                    break;
+                case 150:
+                    npc = NPCType<Steampod>();
+                    break;
+                /* case 151:
+                    npc = NPCType<StormlionScout>(); // NOT YET IMPLEMENTED. Banner sprite is already on the mastersheet and associated with this case/position.
+                    break; */
                 default:
                     break;
             }

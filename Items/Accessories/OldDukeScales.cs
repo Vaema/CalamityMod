@@ -1,6 +1,5 @@
 ﻿using CalamityMod.Cooldowns;
 using CalamityMod.Rarities;
-using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.Audio;
 using Terraria.ModLoader;
@@ -23,12 +22,14 @@ namespace CalamityMod.Items.Accessories
             Item.accessory = true;
             Item.value = CalamityGlobalItem.RarityPureGreenBuyPrice;
             Item.rare = ModContent.RarityType<PureGreen>();
+            Item.expert = true;
         }
 
         public override void UpdateAccessory(Player player, bool hideVisual)
         {
             OldDukeScalesPlayer modPlayer = player.GetModPlayer<OldDukeScalesPlayer>();
             modPlayer.OldDukeScalesOn = true;
+            player.noKnockback = true;
         }
     }
 

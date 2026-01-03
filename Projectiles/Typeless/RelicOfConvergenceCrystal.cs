@@ -1,9 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
-using CalamityMod.Buffs.StatBuffs;
 using CalamityMod.Dusts;
 using CalamityMod.Enums;
-using CalamityMod.Items;
+using CalamityMod.Items.Tools;
 using CalamityMod.Particles;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;

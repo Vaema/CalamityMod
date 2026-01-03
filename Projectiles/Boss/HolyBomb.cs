@@ -1,13 +1,11 @@
-﻿using System;
-using System.IO;
-using CalamityMod.Buffs.DamageOverTime;
-using CalamityMod.NPCs;
+﻿using CalamityMod.NPCs.ProfanedGuardians;
 using CalamityMod.NPCs.Providence;
 using CalamityMod.Particles;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria;
 using Terraria.Audio;
+using Terraria.DataStructures;
 using Terraria.ID;
 using Terraria.ModLoader;
 
@@ -16,6 +14,7 @@ namespace CalamityMod.Projectiles.Boss
     public class HolyBomb : ModProjectile, ILocalizedModType
     {
         float SquishAnimation = 1f;
+        public int FireDamage = 0;
 
         public new string LocalizationCategory => "Projectiles.Boss";
         public override void SetStaticDefaults()
@@ -35,9 +34,19 @@ namespace CalamityMod.Projectiles.Boss
             CooldownSlot = ImmunityCooldownID.Bosses;
         }
 
+        public override void OnSpawn(IEntitySource source)
+        {
+            FireDamage = Providence.FireDamage.CalculateProvidenceDamage();
+
+            if (source is EntitySource_Parent { Entity: NPC parent })
+            {
+                if (parent.type == ModContent.NPCType<ProfanedGuardianDefender>())
+                    FireDamage = ProfanedGuardianDefender.FireDamage;
+            }
+        }
         public override void AI()
         {
-            ProvUtils.ApplyGFBDamage(Projectile, 160, 20);
+            ProvUtils.ApplyGFBDamage(Projectile, 120, 20);
 
             Lighting.AddLight(Projectile.Center, 0.45f, 0.35f, 0f);
 
@@ -62,7 +71,7 @@ namespace CalamityMod.Projectiles.Boss
                 SquishAnimation = 0f;
 
                 if (Projectile.owner == Main.myPlayer)
-                    Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center.X, Projectile.Center.Y, 0f, velocityY, ModContent.ProjectileType<HolyFlare>(), (int)Math.Round(Projectile.damage * 0.75), Projectile.knockBack, Projectile.owner, 0f, 0f);
+                    Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center.X, Projectile.Center.Y, 0f, velocityY, ModContent.ProjectileType<HolyFlare>(), FireDamage, Projectile.knockBack, Projectile.owner, 0f, 0f);
             }
 
             if (Projectile.ai[1] == 0f)
@@ -129,7 +138,7 @@ namespace CalamityMod.Projectiles.Boss
             if (info.Damage <= 0 || target.creativeGodMode)
                 return;
 
-            ProvUtils.ApplyDebuffs(target, 160);
+            ProvUtils.ApplyDebuffs(target, 120);
         }
     }
 }

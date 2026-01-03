@@ -1,5 +1,4 @@
-﻿using CalamityMod.Tiles.Furniture.CraftingStations;
-using CalamityMod.Tiles.FurnitureWulfrum;
+﻿using CalamityMod.Tiles.FurnitureWulfrum;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
@@ -19,7 +18,7 @@ namespace CalamityMod.Items.Placeables.FurnitureWulfrum
         {
             CreateRecipe().
                 AddIngredient<WulfrumPlating>(10).
-                AddTile<WulfrumLabstation>().
+                AddTile(TileID.HeavyWorkBench).
                 Register();
         }
     }

@@ -1,7 +1,6 @@
 ﻿using CalamityMod.NPCs;
 using Microsoft.Xna.Framework;
 using Terraria;
-using Terraria.Audio;
 using Terraria.ID;
 using Terraria.ModLoader;
 
@@ -29,7 +28,6 @@ namespace CalamityMod.Projectiles.Ranged
             Projectile.penetrate = 1;
             Projectile.timeLeft = 600;
             Projectile.extraUpdates = 1;
-            Projectile.Calamity().pointBlankShotDuration = CalamityGlobalProjectile.DefaultPointBlankDuration;
         }
 
         public override bool PreDraw(ref Color lightColor)
@@ -71,7 +69,7 @@ namespace CalamityMod.Projectiles.Ranged
         {
             for (int k = 0; k < 4; k++)
             {
-                Dust dust = Dust.NewDustPerfect(Projectile.Center, 223, Projectile.velocity.RotatedByRandom(0.5) * Main.rand.NextFloat(0.1f, 0.9f));
+                Dust dust = Dust.NewDustPerfect(Projectile.Center, DustID.FireworkFountain_Pink, Projectile.velocity.RotatedByRandom(0.5) * Main.rand.NextFloat(0.1f, 0.9f));
                 dust.noGravity = true;
                 dust.scale = Main.rand.NextFloat(0.5f, 0.7f);
             }

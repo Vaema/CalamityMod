@@ -3,7 +3,6 @@ using CalamityMod.Rarities;
 using CalamityMod.Tiles.Furniture.CraftingStations;
 using CalamityMod.Tiles.Furniture.Monoliths;
 using Terraria;
-using Terraria.ID;
 using Terraria.ModLoader;
 namespace CalamityMod.Items.Placeables.Furniture.Monoliths
 {
@@ -14,7 +13,7 @@ namespace CalamityMod.Items.Placeables.Furniture.Monoliths
         {
             Item.DefaultToPlaceableTile(ModContent.TileType<DraconicIncenseTile>());
             Item.value = Item.sellPrice(gold: 75);
-            Item.rare = ModContent.RarityType<Violet>();
+            Item.rare = ModContent.RarityType<BurnishedAuric>();
             Item.accessory = true;
             Item.vanity = true;
         }

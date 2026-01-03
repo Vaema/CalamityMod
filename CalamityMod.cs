@@ -1,16 +1,15 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Reflection;
 using System.Runtime.CompilerServices;
 using CalamityMod.FluidSimulation;
 using CalamityMod.Items;
+using CalamityMod.MainMenu;
 using CalamityMod.Particles;
 using CalamityMod.Projectiles;
+using log4net;
 using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.ModLoader;
-using Terraria.ModLoader.Config;
 
 [assembly: InternalsVisibleTo("CalTestHelpers")]
 [assembly: InternalsVisibleTo("InfernumMode")]
@@ -19,10 +18,6 @@ namespace CalamityMod
     public class CalamityMod : Mod
     {
         #region External Flags
-        // External flag to disable non-Revengeance boss AI edits
-        // This can be edited by other mods using reflection to prevent compatibility issues
-        public static bool ExternalFlag_DisableNonRevBossAI = false;
-
         // External flag to disable Defense Damage
         // This can be edited by other mods using reflection if desired
         // Note that this flag trumps Bloodflare Core and will stop that accessory from working properly.
@@ -33,11 +28,14 @@ namespace CalamityMod
         internal static CalamityMod Instance => _Instance ??= ModContent.GetInstance<CalamityMod>();
         private static CalamityMod _Instance;
 
+        // This should not be named as 'Logger' as it hides Instance Property 'Logger'
+        internal static ILog Log => Instance.Logger;
+
         #region Load
         public override void Load()
         {
             // Initialize the EnemyStats struct as early as it is safe to do so
-            NPCStats.Load();
+            NPCStats.LoadDebuffs();
 
             // Initialize Calamity Balance, since it is tightly coupled with the remaining systems
             CalamityGlobalItem.LoadTweaks();
@@ -50,12 +48,18 @@ namespace CalamityMod
                 Main.QueueMainThreadAction(() => Main.OnPreDraw += PrepareRenderTargets);
             }
         }
+
+        public override void PostSetupContent()
+        {
+            // Force open certain ModMenus for various reasons and the added flair of "Hey! Something big has happened! Check it out!"
+            CalamityMainMenu_Sunken.ForceMenuStyle();
+        }
         #endregion
 
         #region Unload
         public override void Unload()
         {
-            NPCStats.Unload();
+            NPCStats.UnloadDebuffs();
             CalamityGlobalItem.UnloadTweaks();
             CalamityGlobalProjectile.UnloadTweaks();
 

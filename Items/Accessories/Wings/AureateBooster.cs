@@ -36,6 +36,8 @@ namespace CalamityMod.Items.Accessories.Wings
 
         public override void UpdateAccessory(Player player, bool hideVisual)
         {
+            player.DisableWingFlapSound();
+
             if (player.controlJump && player.wingTime > 0f && player.jump == 0 && player.velocity.Y != 0f && !hideVisual)
             {
                 player.rocketDelay2--;
@@ -85,7 +87,6 @@ namespace CalamityMod.Items.Accessories.Wings
                     }
                 }
             }
-            player.noFallDmg = true;
         }
 
         public override void AdditionalFlightMovement(Player player, ref float ascentWhenFalling, ref float ascentWhenRising, ref float maxCanAscendMultiplier, ref float maxAscentMultiplier, ref float constantAscend)

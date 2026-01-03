@@ -1,7 +1,7 @@
-﻿using CalamityMod.Systems;
+﻿using CalamityMod.Sounds;
+using CalamityMod.Systems;
 using Microsoft.Xna.Framework;
 using Terraria;
-using Terraria.Audio;
 using Terraria.ID;
 using Terraria.ModLoader;
 
@@ -9,7 +9,6 @@ namespace CalamityMod.Tiles.DraedonStructures
 {
     public class HazardChevronPanels : ModTile
     {
-        public static readonly SoundStyle MinePlatingSound = new("CalamityMod/Sounds/Custom/PlatingMine", 3);
         public override void SetStaticDefaults()
         {
             Main.tileSolid[Type] = true;
@@ -22,8 +21,8 @@ namespace CalamityMod.Tiles.DraedonStructures
             CalamityUtils.SetMerge(Type, ModContent.TileType<AgedLaboratoryDoorClosed>());
             CalamityUtils.SetMerge(Type, ModContent.TileType<LaboratoryPanels>());
 
-            HitSound = MinePlatingSound;
-            DustType = 19;
+            HitSound = CommonCalamitySounds.PlatingMine;
+            DustType = DustID.Sunflower;
             MinPick = 30;
             AddMapEntry(new Color(163, 150, 73));
         }

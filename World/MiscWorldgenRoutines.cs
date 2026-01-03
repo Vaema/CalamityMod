@@ -1,25 +1,14 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Reflection;
-using CalamityMod.Items.Accessories;
 using CalamityMod.Items.Materials;
 using CalamityMod.Items.Potions;
-using CalamityMod.Items.Weapons.Rogue;
-using CalamityMod.Tiles;
+using CalamityMod.Items.Potions.Food;
 using CalamityMod.Tiles.Abyss;
 using CalamityMod.Tiles.Astral;
-using CalamityMod.Tiles.Crags;
-using CalamityMod.Tiles.FurnitureAncient;
 using CalamityMod.Tiles.FurnitureAuric;
-using CalamityMod.Tiles.Ores;
-using CalamityMod.Walls;
 using Microsoft.Xna.Framework;
 using Terraria;
-using Terraria.GameContent.Generation;
 using Terraria.ID;
-using Terraria.IO;
 using Terraria.ModLoader;
-using Terraria.Utilities;
 using Terraria.WorldBuilding;
 
 namespace CalamityMod.World
@@ -63,6 +52,7 @@ namespace CalamityMod.World
                     return;
 
                 c.item[itemIndex].SetDefaults(id, false);
+                c.item[itemIndex].Prefix(-1);
 
                 // Don't set quantity unless quantity is specified
                 if (minQuantity > 0)
@@ -140,6 +130,93 @@ namespace CalamityMod.World
                 PutItemInChest(ref chest, WorldGen.genRand.Next(potions), 1, 2, WorldGen.genRand.NextBool());
                 PutItemInChest(ref chest, ItemID.RecallPotion, 1, 2, WorldGen.genRand.NextBool());
                 PutItemInChest(ref chest, ItemID.GoldCoin, 1, 2);
+            }
+        }
+        #endregion
+
+        #region Tunnel Tools
+        public static void CreateTunnel(int startX, int startY, int endX, int endY, int width = 6, int tileType = TileID.Dirt)
+        {
+            int dx = endX - startX;
+            int dy = endY - startY;
+            int steps = Math.Max(Math.Abs(dx), Math.Abs(dy));
+
+            for (int i = 0; i <= steps; i++)
+            {
+                float t = (float)i / steps;
+                int x = (int)(startX + dx * t);
+                int y = (int)(startY + dy * t);
+
+                // Draw a small circular path
+                for (int xi = -width; xi <= width; xi++)
+                {
+                    for (int yi = -width; yi <= width; yi++)
+                    {
+                        if (xi * xi + yi * yi <= width * width)
+                        {
+                            int tileX = x + xi;
+                            int tileY = y + yi;
+
+                            if (WorldGen.InWorld(tileX, tileY))
+                            {
+                                Tile tTile = Main.tile[tileX, tileY];
+                                tTile.HasTile = true;
+                                tTile.TileType = (ushort)tileType;
+                                WorldGen.SquareTileFrame(tileX, tileY);
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        public static void ClearTunnel(int startX, int startY, int endX, int endY, int width = 3, int wallType = WallID.Dirt, int liquidType = LiquidID.Water, bool liquidOn = true, bool wallOn = true)
+        {
+            int dx = endX - startX;
+            int dy = endY - startY;
+            int steps = Math.Max(Math.Abs(dx), Math.Abs(dy));
+
+            for (int i = 0; i <= steps; i++)
+            {
+                float t = (float)i / steps;
+                int x = (int)(startX + dx * t);
+                int y = (int)(startY + dy * t);
+
+                for (int xi = -width; xi <= width; xi++)
+                {
+                    for (int yi = -width; yi <= width; yi++)
+                    {
+                        if (xi * xi + yi * yi <= width * width)
+                        {
+                            int tileX = x + xi;
+                            int tileY = y + yi;
+
+                            if (WorldGen.InWorld(tileX, tileY))
+                            {
+                                Tile tTile = Main.tile[tileX, tileY];
+                                tTile.HasTile = false;
+                                if (wallOn)
+                                {
+                                    tTile.WallType = (ushort)wallType;
+                                }
+
+                                tTile.LiquidAmount = 0;
+
+                                WorldGen.SquareWallFrame(tileX, tileY);
+
+                                // Optional: Add liquid with low chance
+                                if (liquidOn)
+                                {
+                                    if (WorldGen.genRand.NextBool(10))
+                                    {
+                                        tTile.LiquidAmount = 100;
+                                        tTile.LiquidType = liquidType;
+                                        WorldGen.SquareTileFrame(tileX, tileY);
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
             }
         }
         #endregion

@@ -1,5 +1,4 @@
-﻿using System;
-using CalamityMod.Items.Ammo;
+﻿using CalamityMod.Items.Ammo;
 using CalamityMod.Items.Materials;
 using CalamityMod.Projectiles.Ranged;
 using CalamityMod.Rarities;
@@ -38,7 +37,6 @@ namespace CalamityMod.Items.Weapons.Ranged
             Item.shootSpeed = 12f;
             Item.shoot = ModContent.ProjectileType<AngelicBeam>();
             Item.useAmmo = AmmoID.Bullet;
-            Item.Calamity().canFirePointBlankShots = true;
         }
 
         public override Vector2? HoldoutOffset()
@@ -64,7 +62,7 @@ namespace CalamityMod.Items.Weapons.Ranged
                 Projectile.NewProjectile(source, position + velocity.SafeNormalize(Vector2.Zero) * 16f, randomVelocity, type, damage, knockback, player.whoAmI);
             }
 
-            // Spawn a beam from the sky ala Deathhail Staff or Lunar Flare
+            // Spawn a beam from the sky ala Hyperdeath Rift Scepter or Lunar Flare
             // This is more powerful if Hallow-Point Rounds (either naturally used or converted) are fired
             bool empowered = type == ModContent.ProjectileType<HallowPointRoundProj>();
             float laserSpeed = 8f;

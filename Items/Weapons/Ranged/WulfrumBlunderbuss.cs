@@ -53,7 +53,6 @@ namespace CalamityMod.Items.Weapons.Ranged
             Item.autoReuse = false;
             Item.shoot = ModContent.ProjectileType<Projectiles.Ranged.WulfrumScrapBullet>();
             Item.shootSpeed = 15f;
-            Item.Calamity().canFirePointBlankShots = true;
         }
 
         public override void HoldItem(Player player)
@@ -107,8 +106,7 @@ namespace CalamityMod.Items.Weapons.Ranged
 
         public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)
         {
-            if (player.Calamity().GeneralScreenShakePower < 3f)
-                player.Calamity().GeneralScreenShakePower = 3f;
+            player.SetScreenshake(3f);
 
             // 14NOV2024: Ozzatron: clamped mouse position unnecessary due to the result being clamped
             float aimLength = (Main.MouseWorld - player.MountedCenter).Length();
@@ -185,7 +183,7 @@ namespace CalamityMod.Items.Weapons.Ranged
         public override void AddRecipes()
         {
             CreateRecipe().
-                AddIngredient<WulfrumMetalScrap>(9).
+                AddIngredient<WulfrumMetalScrap>(10).
                 AddTile(TileID.Anvils).
                 Register();
         }

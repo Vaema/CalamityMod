@@ -1,18 +1,15 @@
-﻿using CalamityMod.BiomeManagers;
-using CalamityMod.Items.Placeables.Banners;
+﻿using System.Collections.Generic;
+using System.IO;
+using CalamityMod.Enums;
 using CalamityMod.Items.Critters;
+using CalamityMod.Pathfinding;
 using Microsoft.Xna.Framework;
 using Terraria;
+using Terraria.DataStructures;
 using Terraria.GameContent.Bestiary;
 using Terraria.ID;
 using Terraria.ModLoader;
 using Terraria.ModLoader.Utilities;
-using Terraria.DataStructures;
-using CalamityMod.NPCs.CalamityAIs.CalamityRegularEnemyAIs;
-using CalamityMod.Enums;
-using System.Collections.Generic;
-using Steamworks;
-using System.IO;
 
 namespace CalamityMod.NPCs.SunkenSea
 {
@@ -27,19 +24,23 @@ namespace CalamityMod.NPCs.SunkenSea
         public ref float CurrentBehavior => ref NPC.ai[1];
 
         public static int IdleRandomMovementUnlikeliness = 250;
-        public static int IdleMinPathDistance = 600;
+        public static int IdleMinPathDistance = 100;
         public static int IdleMaxPathDistance = 1200;
 
         public static int FleeTileAnticipationDistance = 64;
 
         public Vector2 randomPathPoint;
 
+        public bool instantiated = false;
+
         protected override List<int> PreyIDs => new List<int>();
 
         protected override List<int> PredatorIDs => new List<int>() {
             ModContent.NPCType<Sharkoon>(),
             ModContent.NPCType<Polyperil>(),
-            ModContent.NPCType<PolyperilTentacle>()
+            ModContent.NPCType<PolyperilTentacle>(),
+            ModContent.NPCType<LazarusLampfish>(),
+            ModContent.NPCType<GhostBell>()
         };
 
         protected override SunkenSeaBiomeFlags BiomeDesignation => SunkenSeaBiomeFlags.RadiantReefs | SunkenSeaBiomeFlags.GleamingBurrows;
@@ -54,6 +55,7 @@ namespace CalamityMod.NPCs.SunkenSea
 
         public override void SetDefaults()
         {
+            base.SetDefaults();
             NPC.npcSlots = 0.5f;
             NPC.noGravity = true;
             NPC.damage = 0;
@@ -73,7 +75,6 @@ namespace CalamityMod.NPCs.SunkenSea
             NPC.Calamity().VulnerableToWater = false;
             NPC.chaseable = false;
             NPC.catchItem = (short)ModContent.ItemType<AlphaSeaMinnowItem>();
-            SpawnModBiomes = new int[1] { ModContent.GetInstance<SunkenSeaBiome>().Type };
         }
 
         public override void SetBestiary(BestiaryDatabase database, BestiaryEntry bestiaryEntry)
@@ -93,12 +94,12 @@ namespace CalamityMod.NPCs.SunkenSea
             }
             NPC.TargetClosest(false);
             // Spawn a shoal of minnows
-            int fishCount = Main.rand.Next(5, 10);
+            int fishCount = Main.rand.Next(2, 7);
             // More spawn in the Radiant Reefs
             if (NPC.HasPlayerTarget)
             {
                 if (Main.player[NPC.target].Calamity().ZoneRadiantReefs)
-                    fishCount += 5;
+                    fishCount += 3;
             }
             for (int i = 0; i < fishCount; i++)
             {
@@ -107,15 +108,16 @@ namespace CalamityMod.NPCs.SunkenSea
                 int n = NPC.NewNPC(NPC.GetSource_FromThis(), (int)NPC.Center.X, (int)NPC.Center.Y, minnowtype);
                 Main.npc[n].ai[2] = NPC.whoAmI; // makes the spawned minnow recognize this one as the alpha
             }
-            pathfinding = new PathfindingManager(NPC)
-            {
-                Acceleration = 0.6f,
-                MaxSpeed = 4f,
-            };
         }
 
         public override void AI()
         {
+            if (pathfinding == null)
+            {
+                pathfinding = new PathfindingManager(this);
+                Acceleration = 0.6f;
+                MaxSpeed = 4f;
+            }
             if (NPC.wet)
             {
                 switch (CurrentBehavior)
@@ -144,7 +146,7 @@ namespace CalamityMod.NPCs.SunkenSea
         public void IdleBehavior()
         {
             // At random, the mob will choose a random nearby point and pathfind there.
-            pathfinding.DoPathfinding(new(NPC.Center, NPC.Center + Main.rand.NextVector2Unit() * Main.rand.Next(IdleMinPathDistance, IdleMaxPathDistance), SunkenSeaTileValidity));
+            pathfinding.DoPathfinding(new(this, NPC.Center, NPC.Center + Main.rand.NextVector2Unit() * Main.rand.Next(IdleMinPathDistance, IdleMaxPathDistance), SunkenSeaTileValidity));
         }
 
         public void FleeBehavior()
@@ -153,29 +155,30 @@ namespace CalamityMod.NPCs.SunkenSea
             if (CurrentPredator == null)
             {
                 CurrentBehavior = (int)PhaseType.Idle;
-                pathfinding.MaxSpeed = 4;
+                MaxSpeed = 4f;
                 return;
             }
 
-            pathfinding.MaxSpeed = 8;
+            MaxSpeed = 8f;
 
             // While it doesn't have any obstacles in front of it, run away in a straight line.
             // Try to manuever if there are any obstacles.
-            if (!Main.tile[(NPC.Center + NPC.DirectionFrom(CurrentPredator.Center) * FleeTileAnticipationDistance).ToTileCoordinates()].IsTileSolid())
+            Point lookAheadPosition = (NPC.Center + NPC.DirectionFrom(CurrentPredator.Center) * FleeTileAnticipationDistance).ToTileCoordinates();
+            if (!CalamityUtils.ParanoidTileRetrieval(lookAheadPosition.X, lookAheadPosition.Y).IsTileSolid())
             {
-                NPC.velocity += NPC.DirectionFrom(CurrentPredator.Center) * pathfinding.Acceleration;
+                NPC.velocity += NPC.DirectionFrom(CurrentPredator.Center) * Acceleration;
                 pathfinding.ClearResults();
 
                 // Cap the speed if MaxSpeed has been surpassed.
-                if (NPC.velocity.LengthSquared() > pathfinding.MaxSpeed * pathfinding.MaxSpeed)
-                    NPC.velocity = Vector2.Normalize(NPC.velocity) * pathfinding.MaxSpeed;
+                if (NPC.velocity.LengthSquared() > MaxSpeed * MaxSpeed)
+                    NPC.velocity = Vector2.Normalize(NPC.velocity) * MaxSpeed;
             }
             else
             {
                 float distanceFromAvoided = Vector2.Distance(NPC.Center, CurrentPredator.Center);
                 randomPathPoint = NPC.Center + Main.rand.NextVector2Unit() * Utils.Remap(distanceFromAvoided, 0f, 960f, 80f, 3200f);
                 NPC.netUpdate = true;
-                pathfinding.DoPathfinding(new(NPC.Center, randomPathPoint, SunkenSeaTileValidity));
+                pathfinding.DoPathfinding(new(this, NPC.Center, randomPathPoint, SunkenSeaTileValidity));
             }
         }
 
@@ -238,7 +241,11 @@ namespace CalamityMod.NPCs.SunkenSea
         {
             if (spawnInfo.Player.Calamity().ZoneSunkenSea && spawnInfo.Water && !spawnInfo.Player.Calamity().clamity)
             {
-                return SpawnCondition.CaveJellyfish.Chance * 0.6f;
+                if (spawnInfo.Player.Calamity().ZoneRadiantReefs)
+                    return SpawnCondition.CaveJellyfish.Chance * 0.6f;
+                if (spawnInfo.Player.Calamity().ZoneGleamingBurrows)
+                    return SpawnCondition.CaveJellyfish.Chance * 0.3f;
+
             }
             return 0f;
         }
@@ -247,8 +254,9 @@ namespace CalamityMod.NPCs.SunkenSea
         {
             for (int k = 0; k < 5; k++)
             {
-                Dust.NewDust(NPC.position, NPC.width, NPC.height, 68, hit.HitDirection, -1f, 0, default, 1f);
+                Dust.NewDust(NPC.position, NPC.width, NPC.height, DustID.BlueCrystalShard, hit.HitDirection, -1f, 0, default, 1f);
             }
+            CalamityUtils.SpawnGores(NPC, "AlphaSeaMinnow", 2);
         }
         public override bool CanBeHitByNPC(NPC attacker) => PredatorIDs.Contains(attacker.type);
 
@@ -274,14 +282,17 @@ namespace CalamityMod.NPCs.SunkenSea
             base.SetDefaults();
             NPC.rarity = 3;
             NPC.catchItem = ModContent.ItemType<AlphaSeaMinnowGoldItem>();
-            NPC.value = 100000;
         }
 
         public override float SpawnChance(NPCSpawnInfo spawnInfo)
         {
             if (spawnInfo.Player.Calamity().ZoneSunkenSea && spawnInfo.Water && !spawnInfo.Player.Calamity().clamity)
             {
-                return SpawnCondition.CaveJellyfish.Chance * 0.03f;
+                if (spawnInfo.Player.Calamity().ZoneRadiantReefs)
+                    return SpawnCondition.CaveJellyfish.Chance * 0.2f;
+                if (spawnInfo.Player.Calamity().ZoneGleamingBurrows)
+                    return SpawnCondition.CaveJellyfish.Chance * 0.05f;
+
             }
             return 0f;
         }

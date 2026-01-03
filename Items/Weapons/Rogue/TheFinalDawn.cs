@@ -24,7 +24,7 @@ namespace CalamityMod.Items.Weapons.Rogue
             Item.knockBack = 4;
 
             Item.value = CalamityGlobalItem.RarityVioletBuyPrice;
-            Item.rare = RarityType<Violet>();
+            Item.rare = RarityType<BurnishedAuric>();
             Item.Calamity().donorItem = true;
 
             Item.autoReuse = false;

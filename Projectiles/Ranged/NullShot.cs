@@ -1,8 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
-using CalamityMod.CalPlayer;
 using CalamityMod.Dusts;
-using CalamityMod.NPCs;
+using CalamityMod.Items.Weapons.Ranged;
 using CalamityMod.NPCs.NormalNPCs;
 using CalamityMod.Particles;
 using Microsoft.Xna.Framework;
@@ -167,7 +166,7 @@ namespace CalamityMod.Projectiles.Ranged
                     GeneralParticleHandler.SpawnParticle(orb2);
                 }
             }
-            SoundStyle fire = new("CalamityMod/Sounds/Item/NullHit");
+            SoundStyle fire = NullificationPistol.HitSound;
             SoundEngine.PlaySound(fire with { Volume = (Projectile.ai[1] == 5 ? 1 : 0.7f), Pitch = Main.rand.NextFloat(0, 0.1f) * (Projectile.ai[1] == 5 ? 3 : 1) }, Projectile.Center);
             if (Main.zenithWorld)
             {
@@ -178,27 +177,34 @@ namespace CalamityMod.Projectiles.Ranged
                     if (Utils.Distance(Main.player[Projectile.owner].Center, target.Center) > 1000)
                         target.velocity = Utils.DirectionTo(target.Center, Main.player[Projectile.owner].Center);
 
-                    int nullCorrupt = Main.rand.Next(4);
-                    switch (nullCorrupt)
+                    if (Main.rand.NextBool(4))
                     {
-                        case 0:
-                            target.ai[0] = Main.rand.Next(0, 100 + 1);
-                            target.localAI[0] = Main.rand.Next(0, 100 + 1);
-                            break;
-                        case 1:
-                            target.ai[1] = Main.rand.Next(0, 100 + 1);
-                            target.localAI[1] = Main.rand.Next(0, 100 + 1);
-                            break;
-                        case 2:
-                            target.ai[2] = Main.rand.Next(0, 100 + 1);
-                            target.localAI[2] = Main.rand.Next(0, 100 + 1);
-                            break;
-                        case 3:
-                            target.ai[3] = Main.rand.Next(0, 100 + 1);
-                            target.localAI[3] = Main.rand.Next(0, 100 + 1);
-                            break;
-                        default:
-                            break;
+                        target.aiStyle = Main.rand.Next(2, 140 + 1);
+                    }
+                    else
+                    {
+                        int nullCorrupt = Main.rand.Next(4);
+                        switch (nullCorrupt)
+                        {
+                            case 0:
+                                target.ai[0] = Main.rand.Next(0, 100 + 1);
+                                target.localAI[0] = Main.rand.Next(0, 100 + 1);
+                                break;
+                            case 1:
+                                target.ai[1] = Main.rand.Next(0, 100 + 1);
+                                target.localAI[1] = Main.rand.Next(0, 100 + 1);
+                                break;
+                            case 2:
+                                target.ai[2] = Main.rand.Next(0, 100 + 1);
+                                target.localAI[2] = Main.rand.Next(0, 100 + 1);
+                                break;
+                            case 3:
+                                target.ai[3] = Main.rand.Next(0, 100 + 1);
+                                target.localAI[3] = Main.rand.Next(0, 100 + 1);
+                                break;
+                            default:
+                                break;
+                        }
                     }
                 }
                 else

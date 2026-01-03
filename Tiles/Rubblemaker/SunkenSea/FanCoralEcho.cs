@@ -1,10 +1,9 @@
 ﻿using CalamityMod.Items.Placeables.SunkenSea;
-using CalamityMod.Waters;
 using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.Enums;
 using Terraria.GameContent;
-using Terraria.Localization;
+using Terraria.ID;
 using Terraria.ModLoader;
 using Terraria.ObjectData;
 
@@ -21,18 +20,12 @@ namespace CalamityMod.Tiles.Rubblemaker.SunkenSea
             TileObjectData.newTile.CopyFrom(TileObjectData.Style3x3);
             TileObjectData.newTile.Direction = TileObjectDirection.None;
             TileObjectData.addTile(Type);
-            DustType = 253;
+            DustType = DustID.TsunamiInABottle;
             AddMapEntry(new Color(54, 69, 72));
             RegisterItemDrop(ModContent.ItemType<CyanCoral>());
             FlexibleTileWand.RubblePlacementLarge.AddVariations(ModContent.ItemType<CyanCoral>(), Type, 0);
 
             base.SetStaticDefaults();
-        }
-
-        public override void NearbyEffects(int i, int j, bool closer)
-        {
-            if (!Main.dedServ)
-                Main.SceneMetrics.ActiveFountainColor = SunkenSeaBurrowsWater.Type;
         }
 
         public override void NumDust(int i, int j, bool fail, ref int num)
@@ -42,9 +35,9 @@ namespace CalamityMod.Tiles.Rubblemaker.SunkenSea
 
         public override void ModifyLight(int i, int j, ref float r, ref float g, ref float b)
         {
-            r = 225f / 255f;
-            g = 255f / 255f;
-            b = 255f / 255f;
+            r = 0.88f;
+            g = 1f;
+            b = 1f;
         }
     }
 }

@@ -1,32 +1,20 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using ReLogic.Content;
 using Terraria;
-using Terraria.DataStructures;
+using Terraria.GameContent.Drawing;
 using Terraria.ID;
-using Terraria.Localization;
 using Terraria.ModLoader;
-using Terraria.ObjectData;
 
 namespace CalamityMod.Tiles.FurnitureWulfrum
 {
     public class WulfrumLantern : ModTile
     {
-        public override void SetStaticDefaults()
-        {
-            Main.tileLighted[Type] = true;
-            Main.tileFrameImportant[Type] = true;
-            TileObjectData.newTile.CopyFrom(TileObjectData.Style1x2Top);
-            TileObjectData.newTile.Height = 3;
-            TileObjectData.newTile.CoordinateHeights = new int[] { 16, 16, 16 };
-            TileObjectData.newTile.StyleLineSkip = 2;
-            TileObjectData.addTile(Type);
-            AddToArray(ref TileID.Sets.RoomNeeds.CountsAsTorch);
-            AddMapEntry(new Color(251, 235, 127), Language.GetText("MapObject.Lantern"));
+        public Asset<Texture2D> FlameTexture;
 
-            TileID.Sets.DisableSmartCursor[Type] = true;
-            AdjTiles = new int[] { TileID.HangingLanterns };
-        }
+        public override void Load() => FlameTexture = ModContent.Request<Texture2D>(Texture + "Flame");
 
+        public override void SetStaticDefaults() => this.SetUpLantern(ModContent.ItemType<Items.Placeables.FurnitureWulfrum.WulfrumLantern>());
         public override bool PreDraw(int i, int j, SpriteBatch spriteBatch) => CalamityUtils.DrawSwayingMultiTile(i, j);
 
         public override bool CanExplode(int i, int j) => false;
@@ -58,14 +46,24 @@ namespace CalamityMod.Tiles.FurnitureWulfrum
             }
         }
 
-        public override void HitWire(int i, int j)
+        public override void GetTileFlameData(int i, int j, ref TileDrawing.TileFlameData tileFlameData)
         {
-            CalamityUtils.LightHitWire(Type, i, j, 1, 3);
+            ulong flameSeed = Main.TileFrameSeed ^ (ulong)(((long)i << 32) | (uint)j);
+            tileFlameData.flameSeed = flameSeed;
+            tileFlameData.flameTexture = FlameTexture.Value;
+            tileFlameData.flameColor = new Color(102, 115, 128, 0);
+            tileFlameData.flameCount = 3;
+            tileFlameData.flameRangeXMin = -10;
+            tileFlameData.flameRangeXMax = 11;
+            tileFlameData.flameRangeYMin = -10;
+            tileFlameData.flameRangeYMax = 11;
+            tileFlameData.flameRangeMultX = 0.1f;
+            tileFlameData.flameRangeMultY = 0.1f;
         }
 
-        public override void PostDraw(int i, int j, SpriteBatch spriteBatch)
+        public override void HitWire(int i, int j)
         {
-            CalamityUtils.DrawFlameEffect(ModContent.Request<Texture2D>("CalamityMod/Tiles/FurnitureWulfrum/WulfrumLanternFlame").Value, i, j);
+            FurnitureCommon.LightHitWire(Type, i, j, 1, 3);
         }
     }
 }

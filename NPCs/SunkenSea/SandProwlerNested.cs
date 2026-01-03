@@ -1,22 +1,16 @@
-﻿using System;
-using CalamityMod.BiomeManagers;
-using CalamityMod.DataStructures;
+﻿using CalamityMod.DataStructures;
 using CalamityMod.Items.Placeables.Banners;
-using CalamityMod.Items.Weapons.Magic;
-using CalamityMod.World;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using System.Collections.Generic;
 using System.IO;
 using Terraria;
 using Terraria.Audio;
-using Terraria.DataStructures;
 using Terraria.GameContent;
 using Terraria.ID;
 using Terraria.ModLoader;
 using Terraria.ModLoader.Utilities;
 using Terraria.GameContent.Bestiary;
-using CalamityMod.NPCs.Crags;
 using CalamityMod.Enums;
 
 namespace CalamityMod.NPCs.SunkenSea
@@ -88,24 +82,20 @@ namespace CalamityMod.NPCs.SunkenSea
             NPC.aiStyle = -1;
             AIType = -1;
             NPC.knockBackResist = 0f;
-            NPC.value = Item.buyPrice(0, 0, 20, 0);
+            NPC.value = Item.buyPrice(silver: 20);
             NPC.behindTiles = true;
             NPC.noGravity = true;
             NPC.noTileCollide = true;
             NPC.HitSound = SoundID.NPCHit1;
             NPC.DeathSound = SoundID.NPCDeath1;
+            NPC.chaseable = false;
             NPC.netAlways = true;
-            Banner = NPC.type;
-            BannerItem = ModContent.ItemType<SeaSerpentBanner>();
+            Banner = ModContent.NPCType<SandProwler>();
+            BannerItem = ModContent.ItemType<SandProwlerBanner>();
             NPC.Calamity().VulnerableToHeat = false;
             NPC.Calamity().VulnerableToSickness = true;
             NPC.Calamity().VulnerableToElectricity = true;
             NPC.Calamity().VulnerableToWater = false;
-            SpawnModBiomes = new int[1] { ModContent.GetInstance<SunkenSeaBiome>().Type };
-
-            // Scale stats in Expert and Master
-            CalamityGlobalNPC.AdjustExpertModeStatScaling(NPC);
-            CalamityGlobalNPC.AdjustMasterModeStatScaling(NPC);
 
             NPC.waterMovementSpeed = 1f;
         }
@@ -125,6 +115,7 @@ namespace CalamityMod.NPCs.SunkenSea
             writer.Write(InitialSnapDirection);
             writer.Write(CurrentSnapDirection);
             writer.Write(NPC.Calamity().newAI[1]);
+            writer.Write(NPC.chaseable);
         }
 
         public override void ReceiveExtraAI(BinaryReader reader)
@@ -134,6 +125,7 @@ namespace CalamityMod.NPCs.SunkenSea
             InitialSnapDirection = reader.ReadSingle();
             CurrentSnapDirection = reader.ReadSingle();
             NPC.Calamity().newAI[1] = reader.ReadSingle();
+            NPC.chaseable = reader.ReadBoolean();
         }
 
         public override void AI()
@@ -231,7 +223,7 @@ namespace CalamityMod.NPCs.SunkenSea
             // Also emit some particle effects as an indicator.
             if (InHidingSpot)
             {
-                Dust sparkle = Dust.NewDustDirect(TileCoordsToHideIn.ToWorldCoordinates(0, 0), 16, 16, 261);
+                Dust sparkle = Dust.NewDustDirect(TileCoordsToHideIn.ToWorldCoordinates(0, 0), 16, 16, DustID.AncientLight);
                 sparkle.color = Color.Orange;
                 sparkle.velocity = Main.rand.NextVector2Circular(4f, 4f);
                 sparkle.noGravity = true;
@@ -346,6 +338,21 @@ namespace CalamityMod.NPCs.SunkenSea
                 SnapTimer = 1f;
                 NPC.netUpdate = true;
             }
+        }
+
+        public override void OnHitByProjectile(Projectile projectile, NPC.HitInfo hit, int damageDone)
+        {
+            PlayerHurt();
+        }
+
+        public override void OnHitByItem(Player player, Item item, NPC.HitInfo hit, int damageDone)
+        {
+            PlayerHurt();
+        }
+
+        public void PlayerHurt()
+        {
+            NPC.chaseable = true;
         }
 
         public override void FindFrame(int frameHeight)

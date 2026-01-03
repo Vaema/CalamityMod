@@ -3,10 +3,8 @@ using System.IO;
 using CalamityMod.Items.Accessories;
 using CalamityMod.Items.Materials;
 using CalamityMod.Items.Placeables.Banners;
-using CalamityMod.Projectiles.Pets;
 using CalamityMod.Projectiles.Rogue;
 using CalamityMod.Sounds;
-using CalamityMod.World;
 using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.Audio;
@@ -79,7 +77,7 @@ namespace CalamityMod.NPCs.NormalNPCs
             NPC.height = 38;
             NPC.defense = 4;
             NPC.lifeMax = 25;
-            NPC.value = Item.buyPrice(0, 0, 1, 0);
+            NPC.value = Item.buyPrice(silver: 1);
             NPC.HitSound = WulfrumAmplifier.Hit;
             NPC.DeathSound = CommonCalamitySounds.WulfrumNPCDeathSound;
             NPC.noGravity = true;
@@ -88,10 +86,6 @@ namespace CalamityMod.NPCs.NormalNPCs
             BannerItem = ModContent.ItemType<WulfrumHovercraftBanner>();
             NPC.Calamity().VulnerableToSickness = false;
             NPC.Calamity().VulnerableToElectricity = true;
-
-            // Scale stats in Expert and Master
-            CalamityGlobalNPC.AdjustExpertModeStatScaling(NPC);
-            CalamityGlobalNPC.AdjustMasterModeStatScaling(NPC);
         }
 
         public override void SetBestiary(BestiaryDatabase database, BestiaryEntry bestiaryEntry)
@@ -179,7 +173,7 @@ namespace CalamityMod.NPCs.NormalNPCs
                 {
                     for (int i = 0; i < 2; i++)
                     {
-                        Dust.NewDustPerfect(NPC.Center + Main.rand.NextVector2Circular(8f, 8f), 226).scale = 0.7f;
+                        Dust.NewDustPerfect(NPC.Center + Main.rand.NextVector2Circular(8f, 8f), DustID.Electric).scale = 0.7f;
                     }
                 }
 
@@ -321,8 +315,8 @@ namespace CalamityMod.NPCs.NormalNPCs
                         }
                     }
                 }
-                //Become a spark piñata in Legendary
-                if (CalamityWorld.LegendaryMode && Supercharged)
+                //Become a spark piñata in FTW
+                if (Main.getGoodWorld && Supercharged)
                 {
                     for (int Sparks = Main.rand.Next(2, 5); Sparks > 0; Sparks--)
                     {

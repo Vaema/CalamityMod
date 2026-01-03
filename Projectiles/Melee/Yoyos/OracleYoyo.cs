@@ -111,7 +111,7 @@ namespace CalamityMod.Projectiles.Melee.Yoyos
             if (AuraCharge <= SuperchargeThreshold)
             {
                 Vector2 vel = new Vector2(45, 45).RotatedByRandom(100);
-                Dust dust = Dust.NewDustPerfect(Projectile.Center + vel, 213, Vector2.Zero, 0, default, Main.rand.NextFloat(2.2f, 2.4f));
+                Dust dust = Dust.NewDustPerfect(Projectile.Center + vel, DustID.MinecartSpark, Vector2.Zero, 0, default, Main.rand.NextFloat(2.2f, 2.4f));
                 dust.noGravity = true;
             }
 

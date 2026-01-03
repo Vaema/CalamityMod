@@ -1,22 +1,20 @@
-﻿using System;
-using CalamityMod.Items.Placeables.DraedonStructures.CagedLights;
+﻿using CalamityMod.Sounds;
+using CalamityMod.Systems;
 using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
+using ReLogic.Content;
 using Terraria;
-using Terraria.ID;
-using Terraria.Localization;
-using Terraria.ModLoader;
 using Terraria.DataStructures;
 using Terraria.Enums;
+using Terraria.ID;
+using Terraria.ModLoader;
 using Terraria.ObjectData;
-using Terraria.Audio;
-using CalamityMod.Systems;
-using Microsoft.Xna.Framework.Graphics;
 
 namespace CalamityMod.Tiles.FurnitureWulfrum
 {
     public class WulfrumWallMountedBulb : ModTile
     {
-        public static readonly SoundStyle MinePlatingSound = new("CalamityMod/Sounds/Custom/PlatingMine", 3);
+        public Asset<Texture2D> GlowTexture;
 
         public override void SetStaticDefaults()
         {
@@ -25,8 +23,8 @@ namespace CalamityMod.Tiles.FurnitureWulfrum
             Main.tileFrameImportant[Type] = true;
             Main.tileObsidianKill[Type] = false;
 
-            HitSound = MinePlatingSound;
-            DustType = 299;
+            HitSound = CommonCalamitySounds.PlatingMine;
+            DustType = DustID.KryptonMoss;
 
             AddToArray(ref TileID.Sets.RoomNeeds.CountsAsTorch);
             AddMapEntry(new Color(92, 187, 99), CalamityUtils.GetItemName<Items.Placeables.FurnitureWulfrum.WulfrumWallMountedBulb>());
@@ -34,7 +32,7 @@ namespace CalamityMod.Tiles.FurnitureWulfrum
 
             // Attach to ground
             TileObjectData.newTile.CopyFrom(TileObjectData.Style2x2);
-            TileObjectData.newTile.StyleHorizontal = true; 
+            TileObjectData.newTile.StyleHorizontal = true;
             TileObjectData.newTile.StyleMultiplier = 10; // total 10 frames, all should be same "itemStyle"
             TileObjectData.newTile.StyleWrapLimit = 2; // only 1 placement alternative per row
             TileObjectData.newTile.Origin = new Point16(0, 1);
@@ -76,7 +74,7 @@ namespace CalamityMod.Tiles.FurnitureWulfrum
 
         public override void HitWire(int i, int j)
         {
-            CalamityUtils.LightHitWire(Type, i, j, 2, 2);
+            FurnitureCommon.LightHitWire(Type, i, j, 2, 2);
         }
 
         public override void ModifyLight(int i, int j, ref float r, ref float g, ref float b)
@@ -99,22 +97,13 @@ namespace CalamityMod.Tiles.FurnitureWulfrum
             if (Main.tile[i, j].IsTileActuallyInvisible())
                 return;
 
-            float brightness = MathHelper.Clamp(0.2f - (j / 680), 0f, 0.2f);
-
-            float time = Main.GameUpdateCount;
-            float waveScale1 = time * 0.094f;
-            int scalar = i - (j / 2);
-            float wave1 = waveScale1 * -50 + scalar * 12;
-            float wave1angle = 0.30f + 0.25f * MathF.Sin(MathHelper.ToRadians(wave1));
-
-            float transparency = 0.05f + wave1angle;
-
-            Texture2D tex = ModContent.Request<Texture2D>("CalamityMod/Tiles/FurnitureWulfrum/WulfrumWallMountedBulb_Glow").Value;
+            GlowTexture ??= ModContent.Request<Texture2D>("CalamityMod/Tiles/FurnitureWulfrum/WulfrumWallMountedBulb_Glow");
+            Texture2D tex = GlowTexture.Value;
 
             Tile tile = Main.tile[i, j];
             Rectangle frame = new Rectangle(tile.TileFrameX, tile.TileFrameY, 16, 16);
 
-            TileFramingSystem.SlopedGlowmask(in tile, i, j, tex, frame, CalamityUtils.ApplyPaint(Main.tile[i, j].TileColor, Color.White * transparency, false), default);
+            TileFramingSystem.SlopedGlowmask(in tile, i, j, tex, frame, CalamityUtils.ApplyPaint(Main.tile[i, j].TileColor, Color.White, false), default);
         }
         public override void KillMultiTile(int i, int j, int frameX, int frameY)
         {

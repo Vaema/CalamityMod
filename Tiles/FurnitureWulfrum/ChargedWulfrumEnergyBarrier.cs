@@ -2,10 +2,9 @@
 using CalamityMod.Systems;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using ReLogic.Content;
 using Terraria;
-using Terraria.DataStructures;
 using Terraria.ID;
-using Terraria.Localization;
 using Terraria.ModLoader;
 
 namespace CalamityMod.Tiles.FurnitureWulfrum
@@ -14,6 +13,9 @@ namespace CalamityMod.Tiles.FurnitureWulfrum
     public class ChargedWulfrumEnergyBarrier : ModTile
     {
         public static int TypeCache;
+
+        public Asset<Texture2D> ReflectTexture;
+
         public override void SetStaticDefaults()
         {
             TypeCache = Type;
@@ -25,7 +27,7 @@ namespace CalamityMod.Tiles.FurnitureWulfrum
             CalamityUtils.MergeWithGeneral(Type);
             CalamityUtils.MergeDecorativeTiles(Type);
 
-            DustType = 108;
+            DustType = DustID.RainCloud;
             AddMapEntry(new Color(112, 244, 244));
             HitSound = SoundID.Shatter;
         }
@@ -63,13 +65,14 @@ namespace CalamityMod.Tiles.FurnitureWulfrum
             float wave1angle = 0.30f + 0.25f * MathF.Sin(MathHelper.ToRadians(wave1));
 
             float transparency = 0.05f + wave1angle;
-            
+
 
             // Must be set here 
             TileID.Sets.DrawsWalls[Type] = true;
             Main.tileNoSunLight[Type] = false;
 
-            Texture2D tex = ModContent.Request<Texture2D>("CalamityMod/Tiles/FurnitureWulfrum/ChargedWulfrumEnergyBarrierReflect").Value;
+            ReflectTexture ??= ModContent.Request<Texture2D>("CalamityMod/Tiles/FurnitureWulfrum/ChargedWulfrumEnergyBarrierReflect");
+            Texture2D tex = ReflectTexture.Value;
 
             Tile tile = Main.tile[i, j];
             Rectangle frame = new Rectangle(tile.TileFrameX, tile.TileFrameY, 16, 16);

@@ -77,21 +77,24 @@ namespace CalamityMod.NPCs.ExoMechs.Ares
             this.HideFromBestiary();
             NPCID.Sets.TrailingMode[Type] = 3;
             NPCID.Sets.TrailCacheLength[Type] = NPC.oldPos.Length;
+            NPCID.Sets.NeedsExpertScaling[Type] = true;
             if (!Main.dedServ)
             {
                 GlowTexture = ModContent.Request<Texture2D>(Texture + "Glow", AssetRequestMode.AsyncLoad);
             }
         }
 
+        public static int OrbDamage = 80; // 320
+
         public override void SetDefaults()
         {
+            NPC.damage = 0; // No contact damage
             NPC.npcSlots = 5f;
-            NPC.damage = 100;
             NPC.width = 172;
             NPC.height = 108;
             NPC.defense = 100;
             NPC.DR_NERD(0.35f);
-            NPC.LifeMaxNERB(1250000, 1495000, 650000);
+            NPC.LifeMaxNERB(1000000, 1495000, 650000);
             NPC.aiStyle = -1;
             AIType = -1;
             NPC.Opacity = 0f;
@@ -104,9 +107,6 @@ namespace CalamityMod.NPCs.ExoMechs.Ares
             NPC.hide = true;
             NPC.Calamity().VulnerableToSickness = false;
             NPC.Calamity().VulnerableToElectricity = true;
-
-            // Scale HP in Master
-            CalamityGlobalNPC.AdjustMasterModeStatScaling(NPC, true);
         }
 
         public override void SendExtraAI(BinaryWriter writer)
@@ -146,10 +146,9 @@ namespace CalamityMod.NPCs.ExoMechs.Ares
             }
 
             // Difficulty modes
-            bool bossRush = BossRushEvent.BossRushActive;
-            bool death = CalamityWorld.death || bossRush;
-            bool revenge = CalamityWorld.revenge || bossRush;
-            bool expertMode = Main.expertMode || bossRush;
+            bool death = CalamityWorld.death || BossRushEvent.BossRushActive;
+            bool revenge = CalamityWorld.revenge || BossRushEvent.BossRushActive;
+            bool expertMode = Main.expertMode || BossRushEvent.BossRushActive;
 
             // Percent life remaining
             float lifeRatio = Main.npc[CalamityGlobalNPC.draedonExoMechPrime].life / (float)Main.npc[CalamityGlobalNPC.draedonExoMechPrime].lifeMax;
@@ -238,7 +237,7 @@ namespace CalamityMod.NPCs.ExoMechs.Ares
                 NPC.localAI[0] = 0f;
 
             // Predictiveness
-            float predictionAmt = bossRush ? 40f : death ? 30f : revenge ? 27.5f : expertMode ? 25f : 20f;
+            float predictionAmt = death ? 30f : revenge ? 27.5f : expertMode ? 25f : 20f;
             if (nerfedAttacks)
                 predictionAmt *= 0.5f;
             if (passivePhase)
@@ -341,7 +340,7 @@ namespace CalamityMod.NPCs.ExoMechs.Ares
             Vector2 destination = Main.npc[CalamityGlobalNPC.draedonExoMechPrime].Center + (calamityGlobalNPC_Body.newAI[0] == (float)AresBody.Phase.Deathrays ? offset2 : offset);
 
             // Velocity and acceleration values
-            float baseVelocityMult = (shouldGetBuffedByBerserkPhase ? 0.25f : 0f) + (bossRush ? 1.15f : death ? 1.1f : revenge ? 1.075f : expertMode ? 1.05f : 1f);
+            float baseVelocityMult = (shouldGetBuffedByBerserkPhase ? 0.25f : 0f) + (death ? 1.1f : revenge ? 1.075f : expertMode ? 1.05f : 1f);
             float baseVelocity = (enraged ? 38f : 30f) * baseVelocityMult;
             baseVelocity *= 1f + Main.npc[(int)NPC.ai[2]].localAI[2];
 
@@ -354,8 +353,8 @@ namespace CalamityMod.NPCs.ExoMechs.Ares
             bool canFire = Vector2.Distance(NPC.Center, Main.player[targetIndex].Center) > 320f || calamityGlobalNPC_Body.newAI[0] != (float)AresBody.Phase.Deathrays;
 
             // Telegraph duration for deathray spiral
-            float deathrayTelegraphDuration = bossRush ? AresBody.deathrayTelegraphDuration_BossRush : death ? AresBody.deathrayTelegraphDuration_Death :
-                revenge ? AresBody.deathrayTelegraphDuration_Rev : expertMode ? AresBody.deathrayTelegraphDuration_Expert : AresBody.deathrayTelegraphDuration_Normal;
+            float deathrayTelegraphDuration = death ? AresBody.deathrayTelegraphDuration_Death : revenge ? AresBody.deathrayTelegraphDuration_Rev :
+                expertMode ? AresBody.deathrayTelegraphDuration_Expert : AresBody.deathrayTelegraphDuration_Normal;
 
             // Variable to cancel tesla orb firing
             bool doNotFire = calamityGlobalNPC_Body.newAI[1] == (float)AresBody.SecondaryPhase.PassiveAndImmune ||
@@ -443,10 +442,9 @@ namespace CalamityMod.NPCs.ExoMechs.Ares
                             if (Main.netMode != NetmodeID.MultiplayerClient)
                             {
                                 int type = ModContent.ProjectileType<AresTeslaOrb>();
-                                int damage = NPC.GetProjectileDamage(type);
                                 Vector2 orbOffset = Vector2.Normalize(teslaOrbVelocity) * 40f + Vector2.UnitY * 8f;
                                 float identity = fireMoreOrbs ? -2f : calamityGlobalNPC.newAI[3] + (calamityGlobalNPC.newAI[2] - teslaOrbTelegraphDuration) / divisor;
-                                Projectile.NewProjectile(NPC.GetSource_FromAI(), NPC.Center + orbOffset, teslaOrbVelocity, type, damage, 0f, Main.myPlayer, identity);
+                                Projectile.NewProjectile(NPC.GetSource_FromAI(), NPC.Center + orbOffset, teslaOrbVelocity, type, OrbDamage, 0f, Main.myPlayer, identity);
                             }
 
                             // Recoil
@@ -483,8 +481,6 @@ namespace CalamityMod.NPCs.ExoMechs.Ares
                     telSound.Stop();
             }
         }
-
-        public override bool CanHitPlayer(Player target, ref int cooldownSlot) => false;
 
         public override void FindFrame(int frameHeight)
         {
@@ -696,7 +692,6 @@ namespace CalamityMod.NPCs.ExoMechs.Ares
         public override void ApplyDifficultyAndPlayerScaling(int numPlayers, float balance, float bossAdjustment)
         {
             NPC.lifeMax = (int)(NPC.lifeMax * 0.8f * balance * bossAdjustment);
-            NPC.damage = (int)(NPC.damage * 0.8f);
         }
     }
 }

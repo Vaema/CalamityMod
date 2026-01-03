@@ -68,7 +68,7 @@ namespace CalamityMod.Projectiles.Ranged
 
             // If no arrows are loaded, spawn a bit of dust to indicate it's not ready yet.
             // Spawn the same dust if the max number of arrows have been loaded or the player ran out of ammos to load.
-            if (ArrowsLoaded <= 0f || ArrowsLoaded >= Condemnation.MaxLoadedArrows || !Owner.HasAmmo(Owner.ActiveItem()))
+            if (ArrowsLoaded <= 0f || ArrowsLoaded >= Condemnation.MaxLoadedArrows || !Owner.HasAmmo(Owner.HeldItem))
                 SpawnCannotLoadArrowsDust(GunTipPosition);
 
             if (Owner.HasAmmo(HeldItem))
@@ -123,7 +123,7 @@ namespace CalamityMod.Projectiles.Ranged
                     Vector2 end = nextAngle.ToRotationVector2();
                     for (int j = 0; j < 40; j++)
                     {
-                        Dust starDust = Dust.NewDustPerfect(GunTipPosition, 267);
+                        Dust starDust = Dust.NewDustPerfect(GunTipPosition, DustID.RainbowMk2);
                         starDust.scale = 2.5f;
                         starDust.velocity = Vector2.Lerp(start, end, j / 40f) * 16f;
                         starDust.color = Color.Crimson;
@@ -135,7 +135,7 @@ namespace CalamityMod.Projectiles.Ranged
 
             for (int i = 0; i < 36; i++)
             {
-                Dust chargeMagic = Dust.NewDustPerfect(GunTipPosition, 267);
+                Dust chargeMagic = Dust.NewDustPerfect(GunTipPosition, DustID.RainbowMk2);
                 chargeMagic.velocity = (MathHelper.TwoPi * i / 36f).ToRotationVector2() * 5f + Owner.velocity;
                 chargeMagic.scale = Main.rand.NextFloat(1f, 1.5f);
                 chargeMagic.color = Color.Violet;
@@ -150,7 +150,7 @@ namespace CalamityMod.Projectiles.Ranged
 
             for (int i = 0; i < 2; i++)
             {
-                Dust chargeMagic = Dust.NewDustPerfect(GunTipPosition + Main.rand.NextVector2Circular(20f, 20f), 267);
+                Dust chargeMagic = Dust.NewDustPerfect(GunTipPosition + Main.rand.NextVector2Circular(20f, 20f), DustID.RainbowMk2);
                 chargeMagic.velocity = (GunTipPosition - chargeMagic.position) * 0.1f + Owner.velocity;
                 chargeMagic.scale = Main.rand.NextFloat(1f, 1.5f);
                 chargeMagic.color = Projectile.GetAlpha(Color.White);

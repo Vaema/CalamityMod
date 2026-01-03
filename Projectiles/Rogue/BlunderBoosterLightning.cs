@@ -1,5 +1,4 @@
-﻿using System;
-using CalamityMod.Buffs.DamageOverTime;
+﻿using CalamityMod.Buffs.DamageOverTime;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria;
@@ -14,6 +13,8 @@ namespace CalamityMod.Projectiles.Rogue
         public new string LocalizationCategory => "Projectiles.Rogue";
         public static int frameWidth = 12;
         public static int frameHeight = 26;
+        public int dir = 0;
+        public float intensity = 0;
 
         public override void SetStaticDefaults()
         {
@@ -23,15 +24,17 @@ namespace CalamityMod.Projectiles.Rogue
 
         public override void SetDefaults()
         {
-            Projectile.width = 10;
-            Projectile.height = 10;
+            Projectile.width = 40;
+            Projectile.height = 40;
             Projectile.friendly = true;
             Projectile.tileCollide = false;
             Projectile.penetrate = 1;
-            Projectile.timeLeft = 120;
+            Projectile.extraUpdates = 2;
+            Projectile.timeLeft = 290;
             Projectile.DamageType = RogueDamageClass.Instance;
             Projectile.usesLocalNPCImmunity = true;
-            Projectile.localNPCHitCooldown = 15;
+            Projectile.localNPCHitCooldown = -1;
+            Projectile.ArmorPenetration = 15;
         }
 
         public override void AI()
@@ -49,43 +52,20 @@ namespace CalamityMod.Projectiles.Rogue
 
             Projectile.rotation = Projectile.velocity.ToRotation() + MathHelper.PiOver2;
 
-            if (Projectile.timeLeft < 55 && Projectile.ai[1] != 1f)
-            {
-                Projectile.tileCollide = true;
-            }
-
             Projectile.ai[1]++;
-            if (Projectile.ai[1] >= 15f)
-            {
-                float minDist = 999f;
-                int index = -1;
-                foreach (NPC npc in Main.ActiveNPCs)
-                {
-                    if (npc.CanBeChasedBy(Projectile, false))
-                    {
-                        float dist = (Projectile.Center - npc.Center).Length();
-                        if (dist < minDist)
-                        {
-                            minDist = dist;
-                            index = npc.whoAmI;
-                        }
-                    }
-                }
 
-                Vector2 velocityNew;
-                if (minDist < 999f && index != -1)
-                {
-                    velocityNew = Main.npc[index].Center - Projectile.Center;
-                    velocityNew.Normalize();
-                    velocityNew *= 2f;
-                    Projectile.velocity += velocityNew;
-                    if (Projectile.velocity.Length() > 10f)
-                    {
-                        Projectile.velocity.Normalize();
-                        Projectile.velocity *= 10f;
-                    }
-                }
+            if (dir == 0)
+            {
+                Projectile.timeLeft -= Main.rand.Next(5, 20 + 1);
+                dir = Main.rand.NextBool() ? -1 : 1;
+                intensity = Main.rand.NextFloat(0.2f, 1.2f);
             }
+
+
+            if (Projectile.timeLeft < 190)
+                CalamityUtils.HomeInOnSelectedNPC(Projectile, Projectile.Center.ClosestNPCAt(1500), true, 0.65f * intensity, 8, 0.98f, 0.99f, true);
+            else
+                Projectile.velocity = Projectile.velocity.RotatedBy(0.04f * dir * intensity) * Main.rand.NextFloat(0.985f, 1f);
         }
 
         public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)

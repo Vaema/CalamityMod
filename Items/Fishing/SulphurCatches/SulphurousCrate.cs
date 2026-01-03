@@ -1,5 +1,6 @@
 ﻿using CalamityMod.Items.Accessories;
 using CalamityMod.Items.Placeables.Furniture;
+using CalamityMod.Items.Tools.SpawnBlocker;
 using CalamityMod.Items.Weapons.Summon;
 using CalamityMod.Tiles.Abyss;
 using Terraria;
@@ -48,7 +49,7 @@ namespace CalamityMod.Items.Fishing.SulphurCatches
                 ModContent.ItemType<BrokenWaterFilter>(),
                 ModContent.ItemType<EffigyOfDecay>(),
                 ModContent.ItemType<RustyBeaconPrototype>(),
-                ModContent.ItemType<RustyMedallion>()
+                ModContent.ItemType<ScionsCurio>()
             ));
 
             itemLoot.AddBiomeCrateLootRules(false);

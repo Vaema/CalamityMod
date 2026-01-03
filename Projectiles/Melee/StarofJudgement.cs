@@ -1,12 +1,11 @@
 ﻿using Microsoft.Xna.Framework;
 using Terraria;
-using Terraria.Audio;
 using Terraria.ID;
 using CalamityMod.Particles;
 using Terraria.ModLoader;
 using Microsoft.Xna.Framework.Graphics;
 using System;
-using CalamityMod.Buffs.DamageOverTime;
+using CalamityMod.Dusts;
 
 namespace CalamityMod.Projectiles.Melee
 {
@@ -40,31 +39,37 @@ namespace CalamityMod.Projectiles.Melee
         {
             if (time == 0)
             {
-                Projectile.scale = (Projectile.ai[2] == 1 ? 0.75f : 0.5f);
                 mainColor = Main.rand.NextBool() ? Color.MediumPurple : Color.MediumOrchid;
+                Projectile.scale = (Projectile.ai[2] == 1 ? 0.75f : 0.5f);
                 if (Projectile.ai[2] == 1)
                 {
-                    Projectile.localNPCHitCooldown = 7;
-                    Projectile.penetrate = 4;
+                    Projectile.localNPCHitCooldown = -1;
+                    Projectile.penetrate = 1;
+                    Projectile.extraUpdates = 1;
                 }
             }
             Projectile.rotation += (Projectile.velocity.X + MathF.Abs(Projectile.velocity.Y) * Projectile.direction) * 0.01f;
 
             if (Projectile.ai[2] == 1)
             {
-                CalamityUtils.HomeInOnNPC(Projectile, true, 900f, 25, MathHelper.Clamp(30 - time, 15, 30));
-                if (Main.rand.NextBool(4) && Projectile.numHits < 1)
+                if (time > 18)
                 {
-                    Particle spark = new GlowOrbParticle(Projectile.Center + Main.rand.NextVector2Circular(7, 7) - Projectile.velocity, -Projectile.velocity * Main.rand.NextFloat(0.5f, 0.8f), false, 13, 1f, mainColor * 0.5f);
+                    CalamityUtils.HomeInOnNPC(Projectile, true, 900f, 25, MathHelper.Clamp(30 - time, 15, 30));
+                }
+                else
+                    Projectile.velocity = Projectile.velocity.RotatedBy(0.085f * Projectile.ai[1]);
+                if (time % 2 == 0)
+                {
+                    Particle spark = new CustomSpark(Projectile.Center, Projectile.velocity * 0.2f, "CalamityMod/Particles/BloomCircle", false, 13, 0.35f, mainColor * 0.75f, new Vector2(0.8f, 1.35f), true, false, shrinkSpeed: 0.3f);
                     GeneralParticleHandler.SpawnParticle(spark);
                 }
             }
-            else if (time > 15)
+            if (Projectile.ai[2] != 1 && time > 10)
             {
                 CalamityUtils.HomeInOnNPC(Projectile, true, 700f * (Projectile.numHits > 1 ? 2 : 1), 20, 20f * (Projectile.numHits > 1 ? 5 : 1));
                 if (Main.rand.NextBool(3))
                 {
-                    Dust trailDust = Dust.NewDustPerfect(Projectile.Center + Main.rand.NextVector2Circular(5, 5) - Projectile.velocity, 66);
+                    Dust trailDust = Dust.NewDustPerfect(Projectile.Center + Main.rand.NextVector2Circular(5, 5) - Projectile.velocity, ModContent.DustType<SquashDust>());
                     trailDust.scale = Main.rand.NextFloat(0.7f, 0.85f);
                     trailDust.velocity = -Projectile.velocity * Main.rand.NextFloat(0.3f, 0.5f);
                     trailDust.color = Main.rand.NextBool() ? Color.MediumPurple : Color.MediumOrchid;
@@ -84,18 +89,19 @@ namespace CalamityMod.Projectiles.Melee
             Vector2 rotationPoint = texture.Size() * 0.5f;
             CalamityUtils.DrawAfterimagesCentered(Projectile, ProjectileID.Sets.TrailingMode[Type], drawColor * 0.5f, 1, texture, true, true);
             Main.EntitySpriteDraw(texture, drawPosition, null, drawColor, drawRotation, rotationPoint, Projectile.scale, SpriteEffects.None);
+            Main.EntitySpriteDraw(texture, drawPosition, null, Color.White with { A = 0 }, drawRotation, rotationPoint, Projectile.scale * 0.8f, SpriteEffects.None);
             return false;
         }
         public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
         {
-            int buffType = Projectile.ai[2] == 1f ? ModContent.BuffType<Voidfrost>() : ModContent.BuffType<Nightwither>();
-            target.AddBuff(buffType, 60);
+            if (!target.CanBeChasedBy())
+                Projectile.penetrate++;
 
             if (Projectile.ai[2] == 0)
             {
                 Projectile.timeLeft = 180;
                 time = 0;
-                Projectile.velocity *= 1.2f;
+                Projectile.velocity *= 1.1f;
             }
         }
         public override void OnKill(int timeLeft)
