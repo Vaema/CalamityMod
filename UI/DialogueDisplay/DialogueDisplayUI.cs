@@ -1041,6 +1041,8 @@ namespace CalamityMod.UI.DialogueDisplay
             DialogueDisplayUI.DialoguesToRemove.Add(slot);
         }
 
+        public static bool ContainsDialogueKey(string key) => DialogueDisplayUI.Dialogues.Any(d => d.Value.name == key);
+
         /// <summary>
         /// Creates a dialogue instance in the world
         /// </summary>
