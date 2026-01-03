@@ -17,7 +17,7 @@ float4 uShaderSpecificData;
 float4 AdjustPixelPosition(float4 sampleColor : COLOR0, float2 coords : TEXCOORD0) : COLOR0
 {
     // Drift to offset the noisemap. X multiplier is a prime number to ensure the "loop time" of this is very high, it takes 100 uTime to return to the original state
-    float2 drift = float2(uTime * uRotation, uTime * uSaturation);
+    float2 drift = float2(0.23 * uTime * uSaturation, uTime * uSaturation);
     
     //This is the uv distance from the center of the texture
     float2 uvOffsetFromCenter = (coords - 0.5);
@@ -38,16 +38,8 @@ float4 AdjustPixelPosition(float4 sampleColor : COLOR0, float2 coords : TEXCOORD
     // I would like to be able to draw directly additive, but I have been unable to make that work and this has worked well. 
     float4 distortedColor = tex2D(uImage0, modifiedCoords);
     distortedColor.a = distortedColor.x;
-    distortedColor *= uDirection;
-    
-    float4 drawColor = sampleColor;
-    float4 borderColor = sampleColor;
-    borderColor.rgb = uSecondaryColor;
-    
-    if(dist > 0.4)
-        drawColor = lerp(sampleColor, borderColor, (dist - 0.4) / 0.1);
 
-    return distortedColor * drawColor * mask;
+    return distortedColor * sampleColor * mask;
 }
 
 
