@@ -179,7 +179,7 @@ Cnidarian: {
 	Tooltip:
 		'''
 		Fishes up an electric jellyfish
-		Periodically sends out sparks to electrocute nearby enemies.
+		Periodically sends out sparks to electrocute nearby enemies
 		[c/5C95A1:'From looking at their less sapient brethren, the Old Kingdom's inhabitants adapted tools and weapons designed for underwater efficiency.]
 		[c/5C95A1:The electric properties of ghost bells remain useful even after death, having been commonly used as conduits.']
 		'''

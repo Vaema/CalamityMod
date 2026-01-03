@@ -4,6 +4,7 @@ using System.Linq;
 using CalamityMod.Buffs.DamageOverTime;
 using CalamityMod.Effects;
 using CalamityMod.Items.Materials;
+using CalamityMod.Items.Pets;
 using CalamityMod.Items.Placeables.Banners;
 using CalamityMod.NPCs.ExoMechs.Thanatos;
 using CalamityMod.Particles;
@@ -190,26 +191,6 @@ namespace CalamityMod.NPCs.Deconstructors
         public Vector2 TargetVector = Vector2.Zero;
         public Vector2 SecondaryVector = Vector2.Zero;
         public float StoredValue = 0;
-        void TurnTowards(Vector2 goal, float offset = 0, float maxSpeed = 1)
-        {
-            float goal2 = (goal - NPC.Center).ToRotation() + offset;
-            maxSpeed *= (float)Math.PI / 180f;
-            var dif = MathF.Atan2(MathF.Sin(goal2 - VelocityRotation), MathF.Cos(goal2 - VelocityRotation));
-            if (dif < 0)
-            {
-                if (-dif > maxSpeed)
-                    VelocityRotation -= maxSpeed;
-                else
-                    VelocityRotation += dif;
-            }
-            else
-            {
-                if (dif > maxSpeed)
-                    VelocityRotation += maxSpeed;
-                else
-                    VelocityRotation += dif;
-            }
-        }
         #endregion
 
         public void SwitchAttackState(AttackState State, float Substate = 0, bool resetVector = true)
@@ -227,10 +208,9 @@ namespace CalamityMod.NPCs.Deconstructors
             MainTimer++;
             UpdateSegments();
         }
-        public List<List<Point>> FindOreVeins()
+        public static List<List<Point>> FindOreVeins(Point wormTile)
         {
             List<List<Point>> oreVeins = new();
-            var wormTile = NPC.Center.ToTileCoordinates();
             HashSet<Point> visited = new();
 
             for (int x = -30; x <= 30; x++)
@@ -355,7 +335,7 @@ namespace CalamityMod.NPCs.Deconstructors
                         {
                             if (Main.rand.NextBool())
                             {
-                                var veins = FindOreVeins();
+                                var veins = FindOreVeins(NPC.Center.ToTileCoordinates());
                                 while (veins.Count > 0)
                                 {
                                     var targetVein = veins[Main.rand.Next(veins.Count)];
@@ -533,6 +513,7 @@ namespace CalamityMod.NPCs.Deconstructors
         {
             npcLoot.Add(ModContent.ItemType<MysteriousCircuitry>(), 1, 4, 8);
             npcLoot.Add(ModContent.ItemType<DubiousPlating>(), 1, 4, 8);
+            npcLoot.Add(ModContent.ItemType<BurrowerController>(), 10);
             npcLoot.Add(ItemID.CopperOre, 2, 6, 32);
             npcLoot.Add(ItemID.TinOre, 2, 6, 32);
             npcLoot.Add(ItemID.IronOre, 2, 6, 32);

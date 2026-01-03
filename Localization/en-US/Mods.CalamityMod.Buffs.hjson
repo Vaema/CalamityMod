@@ -1200,6 +1200,11 @@ BrittleStar: {
 	Description: The brittle star will protect you
 }
 
+BurrowerBuff: {
+	DisplayName: Burrower
+	Description: A friendly burrower answered your call
+}
+
 CalamarisLamentBuff: {
 	DisplayName: Calamari
 	Description: Time to transport all of your foes to stupid squid jail!

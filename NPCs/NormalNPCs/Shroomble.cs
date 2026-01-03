@@ -105,7 +105,7 @@ namespace CalamityMod.NPCs.NormalNPCs
 
         public override float SpawnChance(NPCSpawnInfo spawnInfo)
         {
-            if (spawnInfo.Player.Calamity().ZoneSulphur || spawnInfo.Player.Calamity().ZoneSunkenSea)
+            if (!spawnInfo.Player.ZonePurity)
             {
                 return 0f;
             }
@@ -153,7 +153,7 @@ namespace CalamityMod.NPCs.NormalNPCs
             }
         }
 
-        public override void ModifyNPCLoot(NPCLoot npcLoot) => npcLoot.Add(ItemID.Mushroom, 1, 1, 4);
+        public override void ModifyNPCLoot(NPCLoot npcLoot) => npcLoot.Add(ItemID.Mushroom);
 
         public override void HitEffect(NPC.HitInfo hit)
         {

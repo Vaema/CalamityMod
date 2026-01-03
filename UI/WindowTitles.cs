@@ -18,33 +18,38 @@ namespace CalamityMod.UI
             if (Main.dedServ)
                 return;
 
-            // the other method involving some terraria intrinsic function didn't work, so i'm just ignoring it
-            var vanillaTitles = Language.FindAll(new Regex("^GameTitle\\.")).ToList();
-            var customTitles = Language.FindAll(new Regex("^Mods\\.CalamityMod\\.UI\\.WindowTitle\\.")).ToList();
+            Main.QueueMainThreadAction(() =>
+            {
+                // the other method involving some terraria intrinsic function didn't work, so i'm just ignoring it
+                var vanillaTitles = Language.FindAll(new Regex("^GameTitle\\.")).ToList();
+                var customTitles = Language.FindAll(new Regex("^Mods\\.CalamityMod\\.UI\\.WindowTitle\\.")).ToList();
 
-            var allTitles = new List<LocalizedText>();
-            allTitles.AddRange(vanillaTitles);
-            allTitles.AddRange(customTitles);
-            
-            _calamityModifiedText ??= allTitles[Main.rand.Next(allTitles.Count)];
-            
-            // this is what vanilla terraria does to set it's title, so i'm replicating that here
-            Platform.Get<IWindowService>().SetUnicodeTitle(Main.instance.Window, _calamityModifiedText.Value);
-            Platform.Get<IWindowService>().SetIcon(Main.instance.Window);
+                var allTitles = new List<LocalizedText>();
+                allTitles.AddRange(vanillaTitles);
+                allTitles.AddRange(customTitles);
 
-            loaded = true;
+                _calamityModifiedText ??= allTitles[Main.rand.Next(allTitles.Count)];
+
+                // this is what vanilla terraria does to set it's title, so i'm replicating that here
+                Platform.Get<IWindowService>().SetUnicodeTitle(Main.instance.Window, _calamityModifiedText.Value);
+                Platform.Get<IWindowService>().SetIcon(Main.instance.Window);
+
+                loaded = true;
+            });
         }
 
         public override void Unload()
         {
             if (Main.dedServ)
                 return;
-
+            Main.QueueMainThreadAction(() =>
+            {
             Platform.Get<IWindowService>().SetUnicodeTitle(Main.instance.Window, Lang.GetRandomGameTitle());
             Platform.Get<IWindowService>().SetIcon(Main.instance.Window);
 
             _calamityModifiedText = null;
             loaded = false;
+            });
             base.Unload();
         }
     }

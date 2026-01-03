@@ -176,7 +176,7 @@ namespace CalamityMod.Systems
 
             // Move spawn point in Celebrationmk10 to not be in the Sulphurous Sea
             int spawnPointIndex = tasks.FindIndex(genpass => genpass.Name.Equals("Spawn Point"));
-            if (spawnPointIndex != -1 && WorldGen.tenthAnniversaryWorldGen && !WorldGen.getGoodWorldGen)
+            if (spawnPointIndex != -1 && WorldGen.tenthAnniversaryWorldGen && !WorldGen.remixWorldGen)
             {
                 tasks.Insert(spawnPointIndex + 1, new PassLegacy("Fix Tenth Anniversary Spawn", (progress, config) =>
                 {

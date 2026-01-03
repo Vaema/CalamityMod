@@ -293,6 +293,7 @@ namespace CalamityMod.NPCs
             "Aeroni", // <@!348174404984766465> (aeroni) (previously: toxin)
             "Mixcoatl", // <@!284775927294984203> (.sharzz)
             "Amnesia Wapers", // <@!326821498323075073> (retardedadvicefromaretard)
+            "Tequila", // <@!889175547744239677> (thecrispistofnuggets)
         ];
         private static readonly string[] WizardNames =
         [

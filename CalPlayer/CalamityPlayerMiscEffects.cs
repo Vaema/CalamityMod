@@ -3253,7 +3253,7 @@ namespace CalamityMod.CalPlayer
             // Aquatic Emblem bonus
             if (aquaticEmblem)
             {
-                if (countsAsAnyWet && !Player.lavaWet && !Player.honeyWet && !Player.mount.Active)
+                if (countsAsAnyWet && !Player.lavaWet && !Player.honeyWet)
                 {
                     if (aquaticBoost < AquaticEmblem.TimeToReachMaxBoost)
                     {
@@ -3271,12 +3271,13 @@ namespace CalamityMod.CalPlayer
                     aquaticBoost--;
                     if (aquaticBoost <= 0f)
                         aquaticBoost = 0f;
-                    if (Player.mount.Active)
-                        aquaticBoost = 0f;
                 }
-
-                Player.statDefense += (int)Utils.Remap(aquaticBoost, 0, AquaticEmblem.TimeToReachMaxBoost, 0, AquaticEmblem.MaxDefenseBoost);
-                Player.moveSpeed -= Utils.Remap(aquaticBoost, 0, AquaticEmblem.TimeToReachMaxBoost, 0, AquaticEmblem.MaxMoveSpeedReduction);
+                //Because mounts are unchanged by move speed we also don'y let them have the defense.
+                if (!Player.mount.Active)
+                {
+                    Player.statDefense += (int)Utils.Remap(aquaticBoost, 0, AquaticEmblem.TimeToReachMaxBoost, 0, AquaticEmblem.MaxDefenseBoost);
+                    Player.moveSpeed -= Utils.Remap(aquaticBoost, 0, AquaticEmblem.TimeToReachMaxBoost, 0, AquaticEmblem.MaxMoveSpeedReduction);
+                }
             }
             else
                 aquaticBoost = 0f;

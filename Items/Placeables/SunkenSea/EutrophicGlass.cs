@@ -1,4 +1,5 @@
-﻿using Terraria.ID;
+﻿using CalamityMod.Items.Placeables.Walls;
+using Terraria.ID;
 using Terraria.ModLoader;
 
 namespace CalamityMod.Items.Placeables.SunkenSea
@@ -18,6 +19,12 @@ namespace CalamityMod.Items.Placeables.SunkenSea
             CreateRecipe().
                 AddIngredient<EutrophicSand>(2).
                 AddTile(TileID.Furnaces).
+                Register();
+
+            CreateRecipe().
+                AddIngredient<EutrophicGlassWall>(4).
+                AddTile(TileID.WorkBenches).
+                DisableDecraft().
                 Register();
         }
     }

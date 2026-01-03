@@ -76,6 +76,7 @@ using Terraria.GameContent;
 using Terraria.GameContent.Achievements;
 using Terraria.GameContent.Bestiary;
 using Terraria.GameContent.Events;
+using Terraria.GameContent.UI.BigProgressBar;
 using Terraria.Graphics.Shaders;
 using Terraria.ID;
 using Terraria.ModLoader;
@@ -1235,9 +1236,13 @@ namespace CalamityMod.NPCs
 
             VulnerabilitiesAndResistances(npc);
 
-            //Gives Brain of Cthulhu a unique boss bar in Rev+ where Creepers contribute to a Shield rather than additional Health
+            // Gives Brain of Cthulhu a unique boss bar in Rev+ where Creepers contribute to a Shield rather than additional Health
             if (npc.type == NPCID.BrainofCthulhu && CalamityWorld.revenge)
                 npc.BossBar = GetInstance<RevBrainOfCthulhuBossBar>();
+            // Replaces Moon Lord's boss bar in Rev+ to fix a health counting bug with the eyes after being killed
+            bool hasBar = Main.BigBossProgressBar.TryGetSpecialVanillaBossBar(npc.type, out IBigProgressBar bar);
+            if (hasBar && bar is MoonLordProgressBar && CalamityWorld.revenge)
+                npc.BossBar = GetInstance<RevMoonLordBossBar>();
         }
 
         public override bool? CanFallThroughPlatforms(NPC npc)

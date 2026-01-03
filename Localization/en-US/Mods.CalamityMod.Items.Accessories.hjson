@@ -318,7 +318,7 @@ BloodPact: {
 		'''
 		Increases max HP by 25%
 		Grants immunity to Bleeding, Burning Blood and Heavy Bleeding
-		Healing Potions are 25% more effective
+		Healing Potions are 33% more effective
 		'''
 }
 
