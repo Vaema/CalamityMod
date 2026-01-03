@@ -1,4 +1,5 @@
 ﻿using CalamityMod.Items.Materials;
+using CalamityMod.Items.Pets;
 using CalamityMod.Items.SummonItems;
 using CalamityMod.Projectiles.Summon;
 using CalamityMod.Rarities;
@@ -75,6 +76,7 @@ namespace CalamityMod.Items.Weapons.Summon
         public override void AddRecipes()
         {
             CreateRecipe().
+                AddIngredient<BurrowerController>().
                 AddIngredient<Abombination>().
                 AddIngredient<ShadowspecBar>(5).
                 AddTile<DraedonsForge>().

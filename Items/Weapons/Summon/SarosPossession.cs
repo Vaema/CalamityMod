@@ -2,6 +2,7 @@
 using CalamityMod.Buffs.Summon;
 using CalamityMod.Items.Materials;
 using CalamityMod.Projectiles.Summon;
+using CalamityMod.Rarities;
 using CalamityMod.Tiles.Furniture.CraftingStations;
 using Microsoft.Xna.Framework;
 using Terraria;
@@ -24,13 +25,14 @@ namespace CalamityMod.Items.Weapons.Summon
             Item.useStyle = ItemUseStyleID.Swing;
             Item.noMelee = true;
             Item.knockBack = 1.15f;
-            Item.value = CalamityGlobalItem.RarityBlueBuyPrice;
-            Item.rare = ItemRarityID.Blue;
             Item.UseSound = SoundID.Item44;
             Item.buffType = ModContent.BuffType<SarosPossessionBuff>();
             Item.shoot = ModContent.ProjectileType<SarosAura>();
             Item.DamageType = DamageClass.Summon;
             Item.channel = true;
+
+            Item.value = CalamityGlobalItem.RarityVioletBuyPrice;
+            Item.rare = ModContent.RarityType<BurnishedAuric>();
         }
 
         public override bool CanUseItem(Player player)

@@ -33,8 +33,8 @@ namespace CalamityMod.Projectiles.Rogue
         public int maxStealthHits = 5; // How many bounces the stealth strike has. This does not include the inital and final hit, so be sure to take those into account if you adjust this.
 
         public Color mainColor = Color.White;
-        public Color c1 = new Color(121, 240, 17);
-        public Color c2 = new Color(0, 208, 240);
+        public Color c1 = Color.Turquoise;
+        public Color c2 = Color.Orchid;
 
         public NPC lastHitTarget;
         public override void SetDefaults()

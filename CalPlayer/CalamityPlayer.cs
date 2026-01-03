@@ -546,6 +546,7 @@ namespace CalamityMod.CalPlayer
         #endregion
 
         #region Pet
+        public bool burrowerPet = false;
         public bool thirdSage = false;
         public bool perfmini = false;
         public bool akato = false;
@@ -2220,6 +2221,7 @@ namespace CalamityMod.CalPlayer
             perfmini = false;
             akato = false;
             yharonPet = false;
+            burrowerPet = false;
             leviPet = false;
             plaguebringerBab = false;
             rotomPet = false;
@@ -5731,13 +5733,6 @@ namespace CalamityMod.CalPlayer
 
                 return false;
             }
-
-            if ((CalamityWorld.death || BossRushEvent.BossRushActive) && areThereAnyDamnBosses)
-            {
-                chatText = CalamityUtils.GetTextValue("Vanilla.NurseChat.HealNotAllowed");
-                return false;
-            }
-
             return true;
         }
 
@@ -5754,6 +5749,8 @@ namespace CalamityMod.CalPlayer
 
             if (price > 0)
             {
+                if (CalamityWorld.death)
+                    price *= 2;
                 if (areThereAnyDamnBosses)
                     price *= 5;
 
