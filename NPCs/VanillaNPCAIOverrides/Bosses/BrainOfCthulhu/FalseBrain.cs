@@ -137,7 +137,7 @@ public class FalseBrain : ModNPC, ILocalizedModType
             }
 
             BeenHit = true;
-            SoundEngine.PlaySound(SoundID.Zombie105, NPC.Center); //LC Laugh
+            SoundEngine.PlaySound(BrainOfCthulhuAI.Laugh, NPC.Center);
             fool.AddBuff(BuffID.Darkness, 900);
             fool.AddBuff(BuffID.Bleeding, 900);
             fool.AddBuff(BuffID.Confused, 60);
