@@ -1318,8 +1318,7 @@ namespace CalamityMod.NPCs
                 .InsertAfter(ItemID.OasisFountain, ItemType<SulphurousFountainItem>())
                 .InsertAfter(ItemID.OasisFountain, ItemType<AbyssFountainItem>())
                 .InsertAfter(ItemID.OasisFountain, ItemType<AstralFountainItem>())
-                .InsertAfter(ItemID.OasisFountain, ItemType<BrimstoneLavaFountainItem>())
-                .AddWithCustomValue(ItemID.ButterflyDust, Item.buyPrice(gold: 25), Condition.DownedGolem);
+                .InsertAfter(ItemID.OasisFountain, ItemType<BrimstoneLavaFountainItem>());
             }
 
             if (type == NPCID.PartyGirl)
