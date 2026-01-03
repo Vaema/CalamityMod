@@ -1230,10 +1230,7 @@ namespace CalamityMod.NPCs
                 shop.AddWithCustomValue(ItemType<M1Garand>(), Item.buyPrice(gold: 20), Condition.DownedSkeletron)
                 .Add<P90>(Condition.Hardmode)
                 .AddWithCustomValue(ItemID.Boomstick, Item.buyPrice(gold: 25), Condition.DownedQueenBee)
-                .AddWithCustomValue(ItemID.Uzi, Item.buyPrice(gold: 50), Condition.DownedPlantera)
-                .AddWithCustomValue(ItemID.TacticalShotgun, Item.buyPrice(platinum: 1), Condition.DownedGolem)
-                .AddWithCustomValue(ItemID.SniperRifle, Item.buyPrice(platinum: 1), Condition.DownedGolem)
-                .AddWithCustomValue(ItemID.RifleScope, Item.buyPrice(platinum: 1), Condition.DownedGolem);
+                .AddWithCustomValue(ItemID.Uzi, Item.buyPrice(gold: 50), Condition.DownedPlantera);
             }
 
             if (type == NPCID.Stylist)
@@ -1247,8 +1244,7 @@ namespace CalamityMod.NPCs
 
             if (type == NPCID.Cyborg)
             {
-                shop.AddWithCustomValue(ItemID.RocketLauncher, Item.buyPrice(platinum: 1), Condition.DownedGolem)
-                .Add<MartianDistressRemote>(Condition.DownedGolem)
+                shop.Add<MartianDistressRemote>(Condition.DownedGolem)
                 .Add<LionHeart>(CalamityConditions.DownedPolterghast);
             }
 
@@ -1310,10 +1306,6 @@ namespace CalamityMod.NPCs
             {
                 shop.Add<HowlsHeart>()
                 .AddWithCustomValue(ItemID.MagicMissile, Item.buyPrice(gold: 25))
-                .AddWithCustomValue(ItemID.SpectreStaff, Item.buyPrice(platinum: 1), Condition.DownedGolem)
-                .AddWithCustomValue(ItemID.InfernoFork, Item.buyPrice(platinum: 1), Condition.DownedGolem)
-                .AddWithCustomValue(ItemID.ShadowbeamStaff, Item.buyPrice(platinum: 1), Condition.DownedGolem)
-                .AddWithCustomValue(ItemID.MagnetSphere, Item.buyPrice(platinum: 1), Condition.DownedGolem)
                 .Add<ResilientCandle>()
                 .Add<SpitefulCandle>()
                 .Add<VigorousCandle>()
