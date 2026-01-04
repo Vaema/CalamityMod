@@ -261,6 +261,7 @@ namespace CalamityMod.Effects
 
         internal static Asset<Effect> SeaPrismColorBlendingShader;
         internal static Asset<Effect> Dissolve;
+        internal static Asset<Effect> PaletteSwap;
 
         internal static Asset<Effect> BrainOfCthulhuForcefield;
         #endregion
@@ -524,6 +525,9 @@ namespace CalamityMod.Effects
 
             Dissolve = LoadShader("Dissolve");
             RegisterMiscShader(Dissolve, "DissolvePass", "Dissolve");
+
+            PaletteSwap = LoadShader("PaletteSwap");
+            RegisterMiscShader(PaletteSwap, "PaletteSwapPass", "PaletteSwap");
 
             BrainOfCthulhuForcefield = LoadShader("ScreenShaders/BrainOfCthulhuForcefield");
             RegisterScreenShader(BrainOfCthulhuForcefield, "BoCShieldPass", "BrainOfCthulhuForcefield");
