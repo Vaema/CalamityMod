@@ -166,7 +166,6 @@ ZergPotion: {
 	Tooltip: Vastly increases enemy spawn rate
 }
 
-// Very normal Keg crafts
 BloodyMary: {
 	DisplayName: Bloody Mary
 	Tooltip:
@@ -376,7 +375,7 @@ Vodka: {
 	Tooltip:
 		'''
 		{0}% increased Typeless debuff damage
-		{1}% decreased other debuff damage
+		{1}% decreased elemental debuff damage
 		{$Common.AlcoholWarning}
 		'''
 }

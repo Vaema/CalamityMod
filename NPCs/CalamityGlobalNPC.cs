@@ -6268,7 +6268,6 @@ namespace CalamityMod.NPCs
                 case NPCID.GoblinSummoner:
                 case NPCID.GoblinSorcerer:
                 case NPCID.PirateCaptain:
-                case NPCID.Scutlix:
                 case NPCID.MartianSaucerCore:
                 case NPCID.TorchGod:
                 case NPCID.EyeofCthulhu:
