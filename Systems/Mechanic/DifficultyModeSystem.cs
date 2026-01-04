@@ -492,6 +492,8 @@ namespace CalamityMod.Systems
             set
             {
                 CalamityWorld.revenge = value;
+                if (value && !Main.GameModeInfo.IsJourneyMode)
+                    Main.GameMode = BackBoneGameModeID;
             }
         }
 
@@ -543,7 +545,11 @@ namespace CalamityMod.Systems
                     CalamityWorld.death = value;
                 }
                 else
+                {
                     CalamityWorld.death = value;
+                    if (value && !Main.GameModeInfo.IsJourneyMode)
+                        Main.GameMode = BackBoneGameModeID;
+                }
             }
         }
 
