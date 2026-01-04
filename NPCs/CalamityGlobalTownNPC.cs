@@ -184,6 +184,7 @@ namespace CalamityMod.NPCs
             "Robin", // <@!654737510030639112> (altzeus)
             "Curly", // <@!673092101780668416> (curly4830)
             "Cobalt", // <@!132962828922388481> (cobalt_44)
+            "Dizzetriya", // <@!719818245665980517> (dizzykbity)
         ];
         private static readonly string[] MerchantNames =
         [
