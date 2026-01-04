@@ -415,6 +415,7 @@ WulfrumDiggingTurtle: {
 		'''
 		Throws a rickety mining contraption to dig out a small tunnel
 		In case of an emergency, press <right> to instantly detonate all your digging turtles
+		The turtle scales with your pickaxe power
 		'''
 }
 
