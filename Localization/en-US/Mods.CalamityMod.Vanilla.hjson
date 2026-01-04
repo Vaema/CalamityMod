@@ -19,7 +19,7 @@ AddedTooltip: {
 	ArcaneFlower: 5% increased magic damage
 	HellfireTreads:
 		'''
-		Multiplies all fire-based debuff damage by 1.5x, does not stack with downgrades
+		50% increased Heat debuff damage, does not stack with downgrades
 		All attacks inflict Hellfire
 		'''
 	FairyBoots:
@@ -200,7 +200,7 @@ EditedTooltip: {
 		'''
 	FlameWakerBoots:
 		'''
-		Multiplies all fire-based debuff damage by 1.25x
+		25% increased Heat debuff damage
 		All attacks light enemies on fire
 		'Never get cold feet again'
 		'''
