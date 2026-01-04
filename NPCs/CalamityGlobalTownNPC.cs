@@ -309,6 +309,7 @@ namespace CalamityMod.NPCs
             "Nextdoor Psycho", // <@!173261518572486656> (nextdoorpsycho)
             "Mike Cyclops", // <@!702327497475227741> (seichoseicho)
             "Derin", // <@!466703979695308820> (god_15)
+            "Umbara", // <@!450062421294579712> (umbaraeclipse)
         ];
         private static readonly string[] ZoologistNames =
         [
