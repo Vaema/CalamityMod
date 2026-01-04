@@ -206,6 +206,7 @@ namespace CalamityMod.NPCs
         [
             "Arin", // <@!268169458302976012> (kiyotu)
             "Typhäne", // <@!222064016107896832> (typhane.)
+            "Charlotte Linlin", // <@!563406464522125323> (vixcalibur)
         ];
         private static readonly string[] PirateNames =
         [
