@@ -65,8 +65,8 @@ Affliction: {
 	Tooltip: Gives all teammates +{0} HP/s life regen, +{1}% max life, {2}% damage reduction, {3} defense and {4}% increased damage
 }
 
-AlchemicalFlask: {
-	DisplayName: Alchemical Flask
+AlchemicalDecanter: {
+	DisplayName: Alchemical Decanter
 	Tooltip:
 		'''
 		All attacks inflict the [cbuff:CalamityMod/Plague] and reduces damage taken from the [cbuff:CalamityMod/Plague] by {0}%
@@ -435,8 +435,8 @@ CorrosiveSpine: {
 		'''
 }
 
-CorruptFlask: {
-	DisplayName: Corrupt Flask
+UnholyTonic: {
+	DisplayName: Unholy Tonic
 	Tooltip:
 		'''
 		Increases damage reduction by 4% and defense by 6 while in the corruption
@@ -462,9 +462,8 @@ CrawCarapace: {
 		Attackers take damage and are inflicted with Crumbling
 		'''
 }
-
-CrimsonFlask: {
-	DisplayName: Crimson Flask
+ViciousTonic: {
+	DisplayName: Vicious Tonic
 	Tooltip:
 		'''
 		Increases damage reduction by 4% and defense by 6 while in the crimson

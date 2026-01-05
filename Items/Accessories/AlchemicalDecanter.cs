@@ -7,7 +7,7 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.Items.Accessories
 {
-    public class AlchemicalFlask : ModItem, ILocalizedModType
+    public class AlchemicalDecanter : ModItem, ILocalizedModType
     {
         public new string LocalizationCategory => "Items.Accessories";
 
