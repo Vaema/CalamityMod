@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using CalamityMod.Buffs.DamageOverTime;
+using CalamityMod.Utilities.Daybreak;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using ReLogic.Content;
@@ -206,41 +207,46 @@ namespace CalamityMod.Projectiles.Magic
         }
         public override bool PreDraw(ref Color lightColor)
         {
-            var tex = TextureAssets.Projectile[Type].Value;
-            var connectioncolor = Color.SkyBlue * ((MathF.Sin(Main.GlobalTimeWrappedHourly) + 1) * 0.125f + 0.75f);
-            for (var i = 0; i < Segments.Count; i++)
+            using (Main.spriteBatch.Scope())
             {
-                if (i == 0)
+                Main.spriteBatch.Begin(SpriteSortMode.Immediate, BlendState.Additive,SamplerState.PointClamp,DepthStencilState.None,Main.Rasterizer,null,Main.Transform);
+                var tex = TextureAssets.Projectile[Type].Value;
+                var connectioncolor = Color.SkyBlue * ((MathF.Sin(Main.GlobalTimeWrappedHourly) + 1) * 0.125f + 0.75f);
+                for (var i = 0; i < Segments.Count; i++)
                 {
-                    CalamityUtils.DrawLineBetter(Main.spriteBatch, Projectile.Center, Segments[i].Center, connectioncolor, 2 * Projectile.scale);
+                    if (i == 0)
+                    {
+                        CalamityUtils.DrawLineBetter(Main.spriteBatch, Projectile.Center, Segments[i].Center, connectioncolor, 2 * Projectile.scale);
+                    }
+                    if (Segments.IndexInRange(i + 1))
+                    {
+                        var nextSegment = Segments[i + 1];
+                        CalamityUtils.DrawLineBetter(Main.spriteBatch, Segments[i].Center, nextSegment.Center, connectioncolor, 2 * Projectile.scale);
+                    }
+                    Main.spriteBatch.Draw(GetGlowTex(), Segments[i].Center - Main.screenPosition, null, Color.SkyBlue, 0, GetGlowTex().Size() * 0.5f, 0.2f * Projectile.scale, SpriteEffects.None, 0);
+
+                    Main.spriteBatch.Draw(tex, Segments[i].Center - Main.screenPosition, null, Color.White, 0 * Segments[i].followDistance * 5f * Main.GlobalTimeWrappedHourly, tex.Size() * 0.5f, 0.75f * Projectile.scale, SpriteEffects.None, 0);
                 }
-                if (Segments.IndexInRange(i + 1))
+                void DrawHeadStar(Vector2 offsetPercentage)
                 {
-                    var nextSegment = Segments[i + 1];
-                    CalamityUtils.DrawLineBetter(Main.spriteBatch, Segments[i].Center, nextSegment.Center, connectioncolor, 2 * Projectile.scale);
+                    Main.spriteBatch.Draw(GetGlowTex(), Projectile.Center + offsetPercentage.RotatedBy(Projectile.rotation - MathHelper.PiOver2) * TailLength - Main.screenPosition, null, Color.SkyBlue, 0, GetGlowTex().Size() * 0.5f, 0.2f * Projectile.scale, SpriteEffects.None, 0);
+                    Main.spriteBatch.Draw(tex, Projectile.Center + offsetPercentage.RotatedBy(Projectile.rotation - MathHelper.PiOver2) * TailLength - Main.screenPosition, null, Color.White, 0 * Math.Abs(offsetPercentage.X) * 5f * Main.GlobalTimeWrappedHourly, tex.Size() * 0.5f, 0.75f * Projectile.scale, SpriteEffects.None, 0);
                 }
-                Main.spriteBatch.Draw(GetGlowTex(), Segments[i].Center - Main.screenPosition, null, Color.SkyBlue, 0, GetGlowTex().Size() * 0.5f, 0.2f * Projectile.scale, SpriteEffects.None, 0);
+                void connectOffsets(Vector2 offset1, Vector2 offset2)
+                {
+                    CalamityUtils.DrawLineBetter(Main.spriteBatch, Projectile.Center + offset1.RotatedBy(Projectile.rotation - MathHelper.PiOver2) * TailLength, Projectile.Center + offset2.RotatedBy(Projectile.rotation - MathHelper.PiOver2) * TailLength, connectioncolor, 2 * Projectile.scale);
 
-                Main.spriteBatch.Draw(tex, Segments[i].Center - Main.screenPosition, null, Color.White, 0 * Segments[i].followDistance * 5f * Main.GlobalTimeWrappedHourly, tex.Size() * 0.5f, 0.75f * Projectile.scale, SpriteEffects.None, 0);
+                }
+                connectOffsets(new(), new(-0.0425f, 0.0637f));
+                connectOffsets(new(), new(0.0307f, 0.0418f));
+                connectOffsets(new(-0.0425f, 0.0637f), new(0.0168f, 0.0791f));
+                connectOffsets(new(0.0307f, 0.0418f), new(0.0168f, 0.0791f));
+                DrawHeadStar(new());
+                DrawHeadStar(new(-0.0425f, 0.0637f));
+                DrawHeadStar(new(0.0307f, 0.0418f));
+                DrawHeadStar(new(0.0168f, 0.0791f));
+                Main.spriteBatch.End();
             }
-            void DrawHeadStar(Vector2 offsetPercentage)
-            {
-                Main.spriteBatch.Draw(GetGlowTex(), Projectile.Center + offsetPercentage.RotatedBy(Projectile.rotation - MathHelper.PiOver2) * TailLength - Main.screenPosition, null, Color.SkyBlue, 0, GetGlowTex().Size() * 0.5f, 0.2f * Projectile.scale, SpriteEffects.None, 0);
-                Main.spriteBatch.Draw(tex, Projectile.Center + offsetPercentage.RotatedBy(Projectile.rotation - MathHelper.PiOver2) * TailLength - Main.screenPosition, null, Color.White, 0 * Math.Abs(offsetPercentage.X) * 5f * Main.GlobalTimeWrappedHourly, tex.Size() * 0.5f, 0.75f * Projectile.scale, SpriteEffects.None, 0);
-            }
-            void connectOffsets(Vector2 offset1, Vector2 offset2)
-            {
-                CalamityUtils.DrawLineBetter(Main.spriteBatch, Projectile.Center + offset1.RotatedBy(Projectile.rotation - MathHelper.PiOver2) * TailLength, Projectile.Center + offset2.RotatedBy(Projectile.rotation - MathHelper.PiOver2) * TailLength, connectioncolor, 2 * Projectile.scale);
-
-            }
-            connectOffsets(new(), new(-0.0425f, 0.0637f));
-            connectOffsets(new(), new(0.0307f, 0.0418f));
-            connectOffsets(new(-0.0425f, 0.0637f), new(0.0168f, 0.0791f));
-            connectOffsets(new(0.0307f, 0.0418f), new(0.0168f, 0.0791f));
-            DrawHeadStar(new());
-            DrawHeadStar(new(-0.0425f, 0.0637f));
-            DrawHeadStar(new(0.0307f, 0.0418f));
-            DrawHeadStar(new(0.0168f, 0.0791f));
             return false;
         }
 

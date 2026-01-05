@@ -120,7 +120,7 @@ namespace CalamityMod.Items.Weapons.Melee
             Item.rare = RarityType<Turquoise>();
             Item.shoot = ProjectileID.PurificationPowder;
             Item.shootSpeed = 24f;
-            Item.reuseDelay = 30;
+            Item.reuseDelay = 12;
         }
 
         #region saving and syncing attunements

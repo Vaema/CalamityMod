@@ -1,6 +1,6 @@
 // Put their internal name here
 NPCName: {
-	Guide: Once tasked with shepherding the Wall of Flesh, the Guide is a godlike figure in Demon folklore. However, the former warlock apprentice now savors a humble life, mentoring adventurers with his sharp intuition.
+	Guide: Once tasked with shepherding the Wall of Flesh, the Guide is a godlike figure in Demon folklore. However, the former warlock apprentice now savors a humble life, offering useful advice and crafting recipes.
 	Dryad: The Dryad practices the art of Life Magic, pioneered by Silva. She is connected with nature and can analyze its purity worldwide. She sells seeds, too!
 	Mechanic: The Mechanic was imprisoned for sticking her nose where she shouldn't. She sells wiring and tools for putting together anything imaginable.
 	EmpressButterfly: These familiars conjured by the Empress draw power from their surroundings and later bring it to their master. They remind her of a lost loved one, and should one perish in the chaos of night, she shall unleash her full fury upon the attacker.
@@ -56,13 +56,12 @@ NPCName: {
 	RaggedCaster: "{$CommonEntries.RaggedCaster}"
 	RaggedCasterOpenCoat: "{$CommonEntries.RaggedCaster}"
 	DungeonGuardian: The Old Man is cursed to never leave nor enter the Dungeon, much less die. Whoever crosses paths with him and dares to descend into those halls shall not pass!
-	BoneSerpentHead: Mighty serpentine beasts ruled hell since before history, later led by the exiled Flame Dragon. For said alliance, their obsidian scales were turned to Ash shortly after his demise. Now their skeletal husks remain, forced to protect the demonic territory using stolen Azafurian spells.
+	BoneSerpentHead: Mighty serpentine beasts ruled hell since before history, but after the demise of their liege, godly wrath had their obsidian scales immolated. Now only their skeletal husks remain, forced by stolen spells to protect demonic territory.
 	Demon: Despite being a primitive civilization, demons populate most of the underworld. Unlike their lesser brothers, they cast shadow magic rather than hell magic.
 	VoodooDemon: Demons have several religious practices, especially sacrifices. They worship the Wall of Flesh ever since it started roaming the underworld, using offerings to draw it closer.
-	RedDevil: Conjuring potent spears of dark magic, these elite demons look after the adventurer that destroyed their perceived deity.
+	RedDevil: Conjuring potent spears of dark magic, these elite demons hunt after the adventurer that destroyed their perceived deity.
 	WyvernHead: Deeply in tune with the magic of the world, these serpentine dragons guard the skyward ruins of Chrysadia on behalf of the Storm Dragon. Now, their duty calls louder as divine essence surges through the land.
-	Harpy: Winged, demi-human creatures from distant southward mountains who came to inhabit Chrysadia after its tragic downfall. They defend their new territory fiercely against invaders with their razor-sharp feathers.
-	Scutlix: One of the few creatures left in the Martian homeworld, these creatures function similarly to horses. That is, if horses could fire lasers from their eyes.
+	Harpy: Winged, demi-human creatures from distant southward mountains who came to inhabit the sky archipelago after the ruin of its old civilization. They defend their new territory fiercely against invaders with their razor-sharp feathers.
 	MartianProbe: Sensing growing power on the planet, otherworldly beings send space-age technology to scan for valuable resources.
 	SeekerHead: Godly magicks have unleashed the dark influences that gave birth to the Eater of Worlds, producing smaller, but just as deadly worms.
 	DesertDjinn: Buried in these caves lie cryptic artifacts older than Ilmeris, their origins swept away by the sands of time. Corrupted by divine magicks, the once friendly djinns within them now reemerge, full of hostility.
@@ -82,7 +81,7 @@ NPCName: {
 	Spazmatism: A pair of mechanical eyes built by Draedon for reconnaissance and assassination, Spazmatism chases at high speed, exhaling cursed flames.
 	TheDestroyer: Despite being made with repurposed mining equipment, the Destroyer was built for fighting other deities in single combat, decorated in laser-armed probes, which detach from its body when damaged.
 	SkeletronPrime: Built with the express purpose of inciting fear into the hearts of any god worshiper, this machine has more arms than ever before, and a variety of fierce weapons.
-	Plantera: A creation of the Vernal Pass meant to replace Braelor in his absence. They harnessed dead animal souls to give it life, but the span of such magic was far larger than anticipated. It didn't take long for the Plantera to grow out of control and slaughter its masters.
+	Plantera: A dormant, yet powerful floral guardian grown by the elders of the Vernal Pass, using volatile animal souls as nourishment. Unshackled in a fit of herbage carnage, its reach now spans the entire jungle.
 	HallowBoss: Despite their parentage, children of gods do not inherit a shred of their power. The Empress chose to claim power for herself by siphoning it from other places and beings. She found a perfect candidate in the Hallow due to its unstable nature, and is now transformed into a mighty fae.
 	Golem: A remarkable display of ingenuity constructed by the Lihzahrd race. Seeking light after they hid away in their temple out of shame for driving their goddess away, they built this construct. Powered by solar energy cells, it is ready to guard the Temple.
 	DukeFishron: An aquatic-evolved species which lives in isolation in the depths of the ocean. Despite their shortcomings, they still share blood with the dragons of old, claiming near complete dominion over the oceans. Legends claim it only surfaces in search of a rare, savory type of worm.

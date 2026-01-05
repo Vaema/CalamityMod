@@ -17,7 +17,7 @@ namespace CalamityMod.World
             var schematic = TileMaps[mapKey];
 
             int placementPositionX = (int)GenVars.shimmerPosition.X;
-            int placementPositionY = (int)Main.worldSurface - 250;
+            int placementPositionY = (int)Main.worldSurface - 300;
             int offset = 28;
 
             while (!Main.tile[placementPositionX, placementPositionY].HasTile)
@@ -39,7 +39,7 @@ namespace CalamityMod.World
             {
                 new ChestItem(ItemID.AngelStatue, 1),
                 new ChestItem(WorldGen.genRand.NextBool() ? ItemID.LifeCrystal : ItemID.ManaCrystal, 1),
-                new ChestItem(GenVars.goldBar == TileID.Gold ? ItemID.GoldBar : ItemID.PlatinumBar, WorldGen.genRand.Next(5, 16)),
+                new ChestItem(GenVars.gold == TileID.Gold ? ItemID.GoldBar : ItemID.PlatinumBar, WorldGen.genRand.Next(5, 16)),
                 new ChestItem(ItemID.CanOfWorms, WorldGen.genRand.Next(3, 5)),
                 new ChestItem(ItemID.HealingPotion, WorldGen.genRand.Next(5, 11)),
                 new ChestItem(ItemID.LuckPotionGreater, WorldGen.genRand.Next(1, 3)),

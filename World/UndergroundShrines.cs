@@ -882,36 +882,27 @@ namespace CalamityMod.World
         {
             int tries = 0;
             string mapKey = Main.rand.NextBool() ?  RoxcaliburShrineKey1 : RoxcaliburShrineKey2;
+            Vector2 schematicSize = new Vector2(TileMaps[mapKey].GetLength(0), TileMaps[mapKey].GetLength(1));
 
             do
             {
                 int placementPositionX = WorldGen.genRand.Next((int)(Main.maxTilesX * 0.15f), (int)(Main.maxTilesX * 0.85f));
-                // Ensure that the shrine doesn't generate too close to the center of the world
-                    do
-                    {
-                        placementPositionX = WorldGen.genRand.Next((int)(Main.maxTilesX * 0.15f), (int)(Main.maxTilesX * 0.85f));
-                    }
-                    while (placementPositionX > (int)(Main.maxTilesX * 0.4f) && placementPositionX < (int)(Main.maxTilesX * 0.6f));
-                
                 int placementPositionY = WorldGen.genRand.Next((int)(Main.maxTilesY * 0.75f), Main.UnderworldLayer-50); //Lava layer
                 
                 Point placementPoint = new Point(placementPositionX, placementPositionY);
-
-                Vector2 schematicSize = new Vector2(TileMaps[mapKey].GetLength(0), TileMaps[mapKey].GetLength(1));
-                int extraArea = 0; 
                 int yExtraArea = 10;
                 bool canGenerateInLocation = true;
 
-                for (int x = placementPoint.X - extraArea; x < placementPoint.X + schematicSize.X + extraArea; x++)
+                for (int x = placementPoint.X; x < placementPoint.X + schematicSize.X; x++)
                 {
                     for (int y = placementPoint.Y; y < placementPoint.Y + schematicSize.Y + yExtraArea; y++)
                     {
                         Tile tile = CalamityUtils.ParanoidTileRetrieval(x, y);
 
                         //Avoid shacks, jungle and mushroom biomes
-                        if (tile.TileType == TileID.WoodBlock || tile.TileType == TileID.Mud || tile.TileType == ModContent.TileType<VernalSoil>())
+                        if (tile.TileType == TileID.WoodBlock || tile.TileType == TileID.Mud || tile.TileType == TileType<VernalSoil>())
                             canGenerateInLocation = false;
-
+                            
                         //Try to not be in a place with lava on the top half or above the shrine
                         if (ShouldAvoidLocation(new Point(x, y-20), true))
                             canGenerateInLocation = false;
@@ -919,7 +910,6 @@ namespace CalamityMod.World
                         //Check for the rest of the structure
                         if (ShouldAvoidLocation(new Point(x, y), false))
                             canGenerateInLocation = false;
-
                     }
                 }
                 if ((!canGenerateInLocation || !structures.CanPlace(new Rectangle(placementPoint.X, placementPoint.Y, (int)schematicSize.X, (int)schematicSize.Y))) && !Main.remixWorld)
@@ -933,7 +923,7 @@ namespace CalamityMod.World
                     PlaceSchematic<Action<Chest>>(mapKey, new Point(placementPoint.X, placementPoint.Y), SchematicAnchor.TopLeft, ref _);
                     //Do not get eaten by other structures or Fargo's instabridge
                     CalamityUtils.AddProtectedStructure(new Rectangle(placementPoint.X, placementPoint.Y, (int)schematicSize.X, (int)schematicSize.Y), 4);
-                    break;
+                    return;
                 }
             } while (tries <= 100000);
             CalamityMod.Log.Debug("Rox Shrine failed to generate");

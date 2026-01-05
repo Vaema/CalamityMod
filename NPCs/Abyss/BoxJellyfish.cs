@@ -220,7 +220,7 @@ namespace CalamityMod.NPCs.Abyss
 
         public override void ModifyNPCLoot(NPCLoot npcLoot)
         {
-            npcLoot.Add(ItemID.JellyfishNecklace, 25);
+            npcLoot.Add(ItemID.JellyfishNecklace, 30);
             var postSkeletron = npcLoot.DefineConditionalDropSet(() => NPC.downedBoss3);
             postSkeletron.Add(ItemDropRule.NormalvsExpert(ModContent.ItemType<AbyssShocker>(), 50, 40));
         }

@@ -16,6 +16,8 @@ namespace CalamityMod.Projectiles.Magic
         public float fadeIn = 0;
         public bool launch = true;
         public Color bColor = Color.OrangeRed;
+        public int launchTime = 0;
+        public Vector2 endPoint;
         public new string LocalizationCategory => "Projectiles.Magic";
         public override void SetDefaults()
         {
@@ -23,7 +25,7 @@ namespace CalamityMod.Projectiles.Magic
             Projectile.height = 16;
             Projectile.friendly = true;
             Projectile.penetrate = -1;
-            Projectile.timeLeft = 240;
+            Projectile.timeLeft = 500;
             Projectile.extraUpdates = 2;
             Projectile.tileCollide = false;
             Projectile.DamageType = DamageClass.Magic;
@@ -37,7 +39,7 @@ namespace CalamityMod.Projectiles.Magic
             Vector2 mouse = Owner.Calamity().mouseWorld;
             fadeIn = Utils.GetLerpValue(0, Owner.itemAnimationMax * 0.5f * Projectile.MaxUpdates, time, true);
             float velFade = Utils.GetLerpValue(1.5f, 6.5f, Projectile.velocity.Length(), true);
-            Vector2 velocity = Utils.DirectionTo(Owner.Center, mouse) * Owner.HeldItem.shootSpeed;
+            Vector2 velocity = Utils.DirectionTo(Owner.Center, mouse) * 8f;
             Projectile.scale = fadeIn * 1.5f;
             if (fadeIn < 1) // Hold the projectile in front of the player while they case the spell
             {
@@ -49,8 +51,9 @@ namespace CalamityMod.Projectiles.Magic
                 {
                     Projectile.tileCollide = true;
 
-                    Vector2 staticSpeed = Utils.DirectionTo(Owner.Center, mouse) * Utils.Distance(Owner.Center, Owner.ClampedMouseWorld()) * 0.0165f;
+                    Vector2 staticSpeed = Utils.DirectionTo(Owner.Center, mouse) * Utils.Distance(Projectile.Center, Owner.ClampedMouseWorld()) * 0.0165f;
                     Projectile.velocity = staticSpeed;
+                    endPoint = Owner.ClampedMouseWorld();
 
                     SoundEngine.PlaySound(new SoundStyle("CalamityMod/Sounds/Item/HalleysInfernoShoot") with { Volume = 0.45f, Pitch = 0.3f }, Projectile.Center);
                     for (int i = 0; i < 20; i++)
@@ -73,7 +76,7 @@ namespace CalamityMod.Projectiles.Magic
                     launch = false;
                 }
 
-                if (Main.rand.NextBool(10) && velFade > 0.1f)
+                if (Main.rand.NextBool(8) && launchTime < 56)
                 {
                     Particle fx = new CustomSpark(Projectile.Center + Main.rand.NextVector2Circular(8, 8), -Projectile.velocity * 0.9f, "CalamityMod/Particles/FireTypeParticle", false, 32, 1.15f, Color.Lerp(bColor, Color.Red, 0.5f), new Vector2(0.8f, 1f), true, false);
                     GeneralParticleHandler.SpawnParticle(fx);
@@ -91,13 +94,16 @@ namespace CalamityMod.Projectiles.Magic
                 GeneralParticleHandler.SpawnParticle(trail);
             }
 
-            if (Projectile.timeLeft < 120)
-            {
-                Projectile.velocity *= 0.98f;
-            }
-
             Projectile.rotation += 0.3f * Projectile.direction;
             time++;
+            if (!launch)
+            {
+                Projectile.Center = Vector2.Lerp(Projectile.Center, endPoint, 0.035f);
+                Projectile.velocity *= 0.9f;
+                launchTime++;
+                if (launchTime >= (Owner.itemAnimationMax + 28))
+                    Projectile.Kill();
+            }
         }
         public override void ModifyHitNPC(NPC target, ref NPC.HitModifiers modifiers)
         {

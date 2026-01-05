@@ -9,11 +9,6 @@ namespace CalamityMod.Items.Weapons.Rogue
 {
     public class HardenedHoneycomb : RogueWeapon
     {
-        public override void SetStaticDefaults()
-        {
-            Item.ResearchUnlockCount = 99;
-        }
-
         public override void SetDefaults()
         {
             Item.width = 30;

@@ -29,7 +29,7 @@ namespace CalamityMod.Projectiles.Ranged
             Projectile.ignoreWater = true;
             Projectile.DamageType = DamageClass.Ranged;
             Projectile.penetrate = 1;
-            Projectile.MaxUpdates = 4;
+            Projectile.MaxUpdates = 6;
             Projectile.timeLeft = 60 * Projectile.MaxUpdates;
             Projectile.usesLocalNPCImmunity = true;
             Projectile.localNPCHitCooldown = -1;
@@ -42,28 +42,7 @@ namespace CalamityMod.Projectiles.Ranged
         {
             if (drawColor == Color.Black)
             {
-                switch (Main.rand.Next(1, 7))
-                {
-                    case 1:
-                        drawColor = Color.HotPink;
-                        break;
-                    case 2:
-                        drawColor = Color.Yellow;
-                        break;
-                    case 3:
-                        drawColor = Color.LimeGreen;
-                        break;
-                    case 4:
-                        drawColor = Color.SkyBlue;
-                        break;
-                    case 5:
-                        drawColor = Color.Lavender;
-                        break;
-                    case 6:
-
-                        drawColor = Color.White;
-                        break;
-                }
+                
             }
             Projectile.rotation += Projectile.direction * 0.05f;
             if (Projectile.FinalExtraUpdate())
@@ -90,7 +69,7 @@ namespace CalamityMod.Projectiles.Ranged
         {
             if (drawColor == Color.Black)
             {
-                switch (Main.rand.Next(1, 7))
+                switch (Projectile.ai[0])
                 {
                     case 1:
                         drawColor = Color.HotPink;

@@ -190,7 +190,7 @@ namespace CalamityMod.NPCs.SunkenSea
 
         public override void ModifyNPCLoot(NPCLoot npcLoot)
         {
-            npcLoot.Add(ItemID.JellyfishNecklace, 25);
+            npcLoot.Add(ItemID.JellyfishNecklace, 30);
             LeadingConditionRule postDS = npcLoot.DefineConditionalDropSet(DropHelper.PostDS());
             postDS.Add(ModContent.ItemType<VoltaicJelly>(), 5);
         }

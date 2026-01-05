@@ -103,7 +103,7 @@ namespace CalamityMod.NPCs.NormalNPCs
 
             // Ouch, don't get hit twice in a row :)
             if (hurtInfo.Damage > 0)
-                target.AddBuff(BuffID.BrokenArmor, 300, true);
+                target.AddBuff(BuffID.BrokenArmor, 600, true);
         }
 
         public override void FindFrame(int frameHeight)

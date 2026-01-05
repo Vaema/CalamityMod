@@ -36,8 +36,10 @@ namespace CalamityMod.Projectiles.Magic
         {
             if (mainColor == Color.White)
             {
+                if (Projectile.ai[1] == -1)
+                    mainColor = Color.Turquoise;
                 if (Projectile.ai[1] == 0)
-                    mainColor = Color.HotPink;
+                    mainColor = Color.Orchid;
                 if (Projectile.ai[1] == 1)
                     mainColor = Color.MediumSlateBlue;
                 if (Projectile.ai[1] == 2)

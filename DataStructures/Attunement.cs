@@ -570,7 +570,7 @@ namespace CalamityMod.DataStructures
             item.shootSpeed = 12f;
             item.UseSound = null;
             item.noMelee = true;
-            item.reuseDelay = 30;
+            item.reuseDelay = 12;
         }
     }
 
@@ -595,7 +595,7 @@ namespace CalamityMod.DataStructures
             item.shootSpeed = 12f;
             item.UseSound = null;
             item.noMelee = true;
-            item.reuseDelay = 30;
+            item.reuseDelay = 12;
         }
     }
 
@@ -646,7 +646,7 @@ namespace CalamityMod.DataStructures
             item.shootSpeed = 12f;
             item.UseSound = null;
             item.noMelee = true;
-            item.reuseDelay = 30;
+            item.reuseDelay = 12;
         }
     }
 
