@@ -917,7 +917,7 @@ public sealed partial class CalamityVanillaAIOverrideNPC : GlobalNPC
             {
                 NPC = npc,
                 NPCType = npc.type,
-                InRevengenceWorld = CalamityWorld.revenge,
+                InRevengeanceWorld = CalamityWorld.revenge,
                 InDeathWorld = CalamityWorld.death,
                 InBossRush = BossRushEvent.BossRushActive,
                 OverrideToApply = AIOverride
