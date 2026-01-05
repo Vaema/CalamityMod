@@ -59,6 +59,12 @@ public sealed partial class CalamityVanillaAIOverrideNPC : GlobalNPC
     public static HashSet<int> GlobalChangeBlacklist { get; set; } = [];
 
     /// <summary>
+    /// Hook to Modify AI Overrides on External mods demand.<br/>
+    /// Modifying <see cref="VanillaAIOverrideContext.OverrideToApply"/> will result in NPCs to use that specific AI.
+    /// </summary>
+    public static event Action<VanillaAIOverrideContext> ModifyAIOverride;
+
+    /// <summary>
     /// Specify the AI Override to work with. This handles AI, SendExtraAI and ReceiveExtraAI in instaned manner.
     /// </summary>
     public VanillaAIOverride AIOverride = null;
@@ -891,6 +897,8 @@ public sealed partial class CalamityVanillaAIOverrideNPC : GlobalNPC
     public override void Unload()
     {
         NetIDLookup.Clear();
+        GlobalChangeBlacklist.Clear();
+        ModifyAIOverride = null;
     }
 
     public override void SetDefaults(NPC npc)
@@ -903,6 +911,21 @@ public sealed partial class CalamityVanillaAIOverrideNPC : GlobalNPC
             return;
 
         AIOverride = GetVanillaAIOverrideToApply(npc);
+        if (ModifyAIOverride != null)
+        {
+            var context = new VanillaAIOverrideContext()
+            {
+                NPC = npc,
+                NPCType = npc.type,
+                InRevengenceWorld = CalamityWorld.revenge,
+                InDeathWorld = CalamityWorld.death,
+                InBossRush = BossRushEvent.BossRushActive,
+                OverrideToApply = AIOverride
+            };
+            ModifyAIOverride.Invoke(context);
+            AIOverride = context.OverrideToApply;
+        }
+
         if (AIOverride != null)
         {
             AIOverride.NPC = npc;
