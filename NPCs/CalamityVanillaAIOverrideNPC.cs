@@ -56,7 +56,7 @@ public sealed partial class CalamityVanillaAIOverrideNPC : GlobalNPC
     /// Blacklist for non difficulty specific AI changes. External mods can add NPC type to opt-out global changes.
     /// <para>Example: Destroyer Probe's Telegraph Drawing</para>
     /// </summary>
-    public static HashSet<int> GlobalChangeBlacklist { get; set; } = [];
+    public static HashSet<int> GlobalChangeBlacklist { get; private set; } = [];
 
     /// <summary>
     /// Hook to Modify AI Overrides on External mods demand.<br/>
