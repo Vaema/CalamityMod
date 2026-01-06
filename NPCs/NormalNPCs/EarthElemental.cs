@@ -15,7 +15,7 @@ using Terraria.ModLoader.Utilities;
 
 namespace CalamityMod.NPCs.NormalNPCs
 {
-    public class Horse : ModNPC
+    public class EarthElemental : ModNPC
     {
         public override void SetStaticDefaults()
         {
@@ -60,7 +60,7 @@ namespace CalamityMod.NPCs.NormalNPCs
             bestiaryEntry.Info.AddRange(new IBestiaryInfoElement[]
             {
                 BestiaryDatabaseNPCsPopulator.CommonTags.SpawnConditions.Biomes.Caverns,
-                new FlavorTextBestiaryInfoElement("Mods.CalamityMod.Bestiary.Horse")
+                new FlavorTextBestiaryInfoElement("Mods.CalamityMod.Bestiary.EarthElemental")
             });
         }
 

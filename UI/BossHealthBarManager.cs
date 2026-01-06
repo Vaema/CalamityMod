@@ -271,7 +271,7 @@ namespace CalamityMod.UI
 
                 // Hardmode Modded.
                 NPCType<CloudElemental>(),
-                NPCType<Horse>(),
+                NPCType<EarthElemental>(),
                 NPCType<GreatSandShark>(),
                 NPCType<PlaguebringerMiniboss>(),
                 NPCType<Cataclysm>(), //Clone's brothers
