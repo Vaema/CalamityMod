@@ -11,6 +11,7 @@ namespace CalamityMod.Items.Potions.Food
         public new string LocalizationCategory => "Items.Potions";
         public override void SetStaticDefaults()
         {
+            ItemID.Sets.ShimmerTransformToItem[Type] = ModContent.ItemType<DeliciousMeat>();
             Item.ResearchUnlockCount = 5;
             Main.RegisterItemAnimation(Type, new DrawAnimationVertical(int.MaxValue, 3));
             ItemID.Sets.FoodParticleColors[Type] = new Color[2] {
