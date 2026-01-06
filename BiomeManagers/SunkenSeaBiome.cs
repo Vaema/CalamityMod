@@ -63,8 +63,8 @@ namespace CalamityMod.BiomeManagers
 
         public override bool IsBiomeActive(Player player)
         {
-            return BiomeTileCounterSystem.SunkenSeaBurrowsTiles > 1000 || BiomeTileCounterSystem.SunkenSeaPolypTiles > 1000 ||
-            BiomeTileCounterSystem.SunkenSeaReefsTiles > 1000 || BiomeTileCounterSystem.SunkenSeaShoresTiles > 1000;
+            return BiomeTileCounterSystem.SunkenSeaBurrowsTiles > 200 || BiomeTileCounterSystem.SunkenSeaPolypTiles > 200 ||
+            BiomeTileCounterSystem.SunkenSeaReefsTiles > 200 || BiomeTileCounterSystem.SunkenSeaShoresTiles > 200;
         }
     }
 }
