@@ -21,9 +21,9 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.Projectiles.Melee.Shortswords
 {
-    public class GalileoGladiusThrown : ModProjectile
+    public class GalileoGladiusThrown : ModProjectile, ILocalizedModType
     {
-        public override LocalizedText DisplayName => CalamityUtils.GetItemName<GalileoGladius>();
+        public new string LocalizationCategory => "Projectiles.Melee";
         public Player Owner => Main.player[Projectile.owner];
         public override string Texture => "CalamityMod/Items/Weapons/Melee/GalileoGladius";
 
@@ -100,7 +100,7 @@ namespace CalamityMod.Projectiles.Melee.Shortswords
             else
             {
                 Projectile.rotation = Projectile.velocity.ToRotation() + MathHelper.PiOver4;
-                if (Projectile.Distance(Owner.Center) > 900)
+                if (Projectile.Distance(Owner.Center) > 1000)
                 {
                     Projectile.ai[1] = 1;
                 }
@@ -143,8 +143,21 @@ namespace CalamityMod.Projectiles.Melee.Shortswords
                     Projectile.damage *= 20;
                     Projectile.Damage();
                     Owner.Calamity().StratusStarburst -= 10;
+                    for (int i = 0; i < 3; i++)
+                    {
+                        float moveDuration = Main.rand.Next(5, 15);
+                        var proj = Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center, (Projectile.rotation + MathHelper.PiOver4*3).ToRotationVector2().RotatedByRandom(0.4f) * Main.rand.NextFloat(0.75f, 1.25f), ModContent.ProjectileType<VegaStar>(), Projectile.originalDamage, Projectile.knockBack, Projectile.owner, 0f, moveDuration);
+                        if (Main.projectile.IndexInRange(proj))
+                        {
+                            Main.projectile[proj].DamageType = DamageClass.Melee;
+                            Main.projectile[proj].usesIDStaticNPCImmunity = false;
+                            Main.projectile[proj].usesLocalNPCImmunity = true;
+                            Main.projectile[proj].localNPCHitCooldown = 20;
+                        }
+                    }
                     Projectile.velocity = (Projectile.rotation - MathHelper.PiOver4).ToRotationVector2() * -15;
                     SoundEngine.PlaySound(SoundID.DD2_MonkStaffGroundImpact, Owner.Center);
+                    
                 }
                 stabbedNPC = null;
             }
@@ -219,7 +232,7 @@ namespace CalamityMod.Projectiles.Melee.Shortswords
                 stabbedNPC = target;
                 NPCOffset = Projectile.Center - target.Center;
             }
-            target.AddBuff(ModContent.BuffType<Voidfrost>(), 300);
+            target.AddBuff(ModContent.BuffType<Voidfrost>(), 600);
         }
 
         List<(float, float)> offsets = new()

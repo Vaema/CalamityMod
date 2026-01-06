@@ -24,7 +24,7 @@ namespace CalamityMod.Projectiles.Magic
             Projectile.width = 22;
             Projectile.height = 24;
             Projectile.friendly = true;
-            Projectile.penetrate = -1;
+            Projectile.penetrate = 5;
             Projectile.DamageType = DamageClass.Magic;
             Projectile.extraUpdates = 4;
             Projectile.usesLocalNPCImmunity = true;
@@ -32,6 +32,7 @@ namespace CalamityMod.Projectiles.Magic
             Projectile.scale = 0.5f;
             Projectile.tileCollide = false;
             Projectile.timeLeft = Projectile.MaxUpdates * 300;
+            Projectile.stopsDealingDamageAfterPenetrateHits = true;
         }
 
         public override void AI()

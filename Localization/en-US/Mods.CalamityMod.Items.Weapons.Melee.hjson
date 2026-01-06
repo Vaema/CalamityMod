@@ -313,7 +313,7 @@ CrescentMoon: {
 		Throws a lunar flail that releases homing moons at the apex of its path
 		Holding <left> spins the flail around you, generating Starbursts
 		With 20 Starbursts, hold <left> again after throwing the flail to cause it to explode
-		Instead of releasing moons, this explosion summons Scorpius to do immense damage
+		Instead of releasing moons, this explosion summons Scorpius to do immense damage and inflict [cbuff:CalamityMod/Voidfrost]
 		'''
 }
 
@@ -622,7 +622,7 @@ GalileoGladius: {
 	Tooltip:
 		'''
 		Rapidly stabs in front of the player, generating Starbursts on hit
-		<right> to throw the gladius on a constellation chain, impaling foes
+		<right> to throw the gladius on a constellation chain, impaling foes and inflicting [cbuff:CalamityMod/Voidfrost]
 		When the blade is impaled, use <left> or <right> to free it
 		<left> pulls it free and deals high damage, consuming 10 Starbursts
 		<right> pulls youself to the blade, allowing you to jump off the foe

@@ -462,6 +462,7 @@ CrawCarapace: {
 		Attackers take damage and are inflicted with Crumbling
 		'''
 }
+
 ViciousTonic: {
 	DisplayName: Vicious Tonic
 	Tooltip:

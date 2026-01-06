@@ -538,8 +538,8 @@ HalleysInferno: {
 	Tooltip:
 		'''
 		Fires a burst of intensely concentrated lunar fire jets
-		Generates Starbursts over time when hitting enemies
-		<right> to rapid-fire Starbursts
+		<right> to rapid-fire Starbursts that inflict [cbuff:CalamityMod/Voidfrost]
+		Generates Starbursts when hitting enemies, depending on your accuracy
 		Uses gel for ammo
 		'Halley arrived sooner than expected'
 		'''

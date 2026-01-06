@@ -314,7 +314,7 @@ VermillionFlux: {
 Voidfrost: {
 	DisplayName: Voidfrost
 	Description: The emptiness of space devours all warmth and life
-	ItemTooltip: Cold - 100 DPS
+	ItemTooltip: Cold - 200 DPS
 }
 
 VulnerabilityHex: {

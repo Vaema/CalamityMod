@@ -58,6 +58,13 @@ namespace CalamityMod.Projectiles.Melee
                 CalamityUtils.HomeInOnNPC(Projectile, true, 600f, 12f, 20f, true);
         }
 
+        public override bool? CanHitNPC(NPC target)
+        {
+            if (target.CanBeChasedBy(Projectile, false) && target.Calamity().IsArmored())
+                return false;
+            return base.CanHitNPC(target);
+        }
+
         public override void OnKill(int timeLeft)
         {
             for (int i = 0; i < 5; i++)

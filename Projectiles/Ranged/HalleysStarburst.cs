@@ -97,7 +97,7 @@ namespace CalamityMod.Projectiles.Ranged
 
         public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
         {
-            target.AddBuff(ModContent.BuffType<Voidfrost>(), 30);
+            target.AddBuff(ModContent.BuffType<Voidfrost>(), 75);
             SoundEngine.PlaySound(SoundID.DD2_CrystalCartImpact, Projectile.Center);
 
             // Dust emission on hit

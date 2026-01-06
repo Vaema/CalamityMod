@@ -19,7 +19,7 @@ namespace CalamityMod.Items.Weapons.Ranged
         public static readonly SoundStyle ShootSound = new("CalamityMod/Sounds/Item/HalleysInfernoShoot") { Volume = 0.68f };
         public static readonly SoundStyle Hit = new("CalamityMod/Sounds/Item/HalleysInfernoHit") { Volume = 0.75f };
         public static float MaxStarburstPerComet => 1;
-        public static float MaxStarburstPerStar => 0.5f;
+        public static float MaxStarburstPerStar => 0.33f;
         public static float LostAccuracyPerMiss => 5;
         public static float MaxAccuracy => 50;
 

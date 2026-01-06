@@ -68,7 +68,7 @@ CosmicShivBlade.DisplayName: Cosmic Beam
 CosmicShivTrail.DisplayName: Cosmic Shiv Trail
 CosmicSpiritBomb.DisplayName: Cosmic Bomb
 CrescentMoonFlail.DisplayName: Crescent Moon
-CrescentMoonProj.DisplayName: Crescent Moon
+CrescentMoonProj.DisplayName: Seeking Moon
 CrystylCrusherRay.DisplayName: Crystyl Crusher Ray
 Cyclone.DisplayName: Cyclone
 DarkBall.DisplayName: Dark Ball
@@ -133,6 +133,7 @@ GalaxySmasherHammer.DisplayName: Galaxy Smasher
 GalaxySmasherMini.DisplayName: Cosmic Shard
 GalileosMoon.DisplayName: Crescent Moon
 GalileosPlanet.DisplayName: Planet
+GalileoGladiusThrown.DisplayName: Galileo Gladius (Thrown)
 GayBeam.DisplayName: Iridescent Beam
 GelWave.DisplayName: Gelitic Wave
 GemTechYellowShard.DisplayName: Trireme's Yellow Gem

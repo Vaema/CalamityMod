@@ -715,8 +715,8 @@ Sirius: {
 		Summons the brightest star in the sky, Sirius, to protect you
 		Continue summoning to complete Canis Major
 		Repeated summons increase its power greatly, even after the constellation is complete
-		Sirius passively generates Starbursts when near enemies
-		When Starbursts are full, Sirius consumes them to launch a powerful piercing quasar
+		Sirius passively generates Starbursts when targeting enemies
+		When Starbursts are full, Sirius consumes them to launch a powerful piercing quasar that inflicts [cbuff:CalamityMod/Voidfrost]
 		'''
 }
 

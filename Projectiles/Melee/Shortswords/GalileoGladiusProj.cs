@@ -80,7 +80,7 @@ namespace CalamityMod.Projectiles.Melee.Shortswords
             using (Main.spriteBatch.Scope())
             {
                 Main.spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.Additive, SamplerState.PointClamp, DepthStencilState.None, Main.Rasterizer, null, Main.GameViewMatrix.TransformationMatrix);
-                Main.spriteBatch.Draw(tex, Projectile.Center + sparkAngle * -10 - Main.screenPosition, null, Color.SkyBlue * 0.75f, sparkAngle.ToRotation() + MathHelper.PiOver2, new Vector2(tex.Width * 0.5f,tex.Height), new Vector2(0.85f, MathHelper.Lerp(0.1f, 1.4f, SwingCompletion)) * Projectile.scale * 0.04f, SpriteEffects.None, 1);
+                Main.spriteBatch.Draw(tex, Projectile.Center + sparkAngle * -10 - Main.screenPosition, null, Color.SkyBlue * 0.75f, sparkAngle.ToRotation() + MathHelper.PiOver2, new Vector2(tex.Width * 0.5f,tex.Height), new Vector2(0.85f, MathHelper.Lerp(0.1f, 1.55f, SwingCompletion)) * Projectile.scale * 0.04f, SpriteEffects.None, 1);
 
                 Main.spriteBatch.End();
             }
@@ -106,7 +106,7 @@ namespace CalamityMod.Projectiles.Melee.Shortswords
         }
         public override bool? Colliding(Rectangle projHitbox, Rectangle targetHitbox)
         {
-            var lineCollisionLength = 160;
+            var lineCollisionLength = 192;
             var player = Main.player[Projectile.owner];
             var armcenter = player.Center - new Vector2(5 * player.direction, 2);
             var swordDir = armcenter.DirectionTo(Projectile.Center);
