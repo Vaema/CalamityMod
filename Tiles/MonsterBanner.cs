@@ -301,7 +301,7 @@ namespace CalamityMod.Tiles
                     npc = NPCType<Unused>(); - Formerly Cosmic Elemental
                     break*/
                 case 76:
-                    npc = NPCType<Horse>();
+                    npc = NPCType<EarthElemental>();
                     break;
                 case 77:
                     npc = NPCType<Burrower>();
