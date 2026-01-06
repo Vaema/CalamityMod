@@ -203,12 +203,12 @@ namespace CalamityMod.CalPlayer
             if (Player.HeldItem.type != ModContent.ItemType<SaharaSlicers>())
                 saharaSlicersBolts = 0;
 
-            if (Player.whoAmI == Main.myPlayer && Player.HeldItem.type == ModContent.ItemType<Starfleet>() && (Player.ownedProjectileCounts[ModContent.ProjectileType<StarfleetHoldout>()] == 0) && !Player.dead)
+            if (Player.whoAmI == Main.myPlayer && Player.HeldItem.type == ModContent.ItemType<Starfleet>() && (Player.ownedProjectileCounts[ModContent.ProjectileType<StarfleetHoldout>()] == 0) && !Player.dead && !Main.mapFullscreen && !Player.mouseInterface)
             {
                 int damage = (int)Player.GetTotalDamage<RangedDamageClass>().ApplyTo(Player.HeldItem.damage);
                 Projectile.NewProjectile(Player.GetSource_FromThis(), Player.Center, Player.Center.DirectionTo(Player.Calamity().mouseWorld), ModContent.ProjectileType<StarfleetHoldout>(), damage, Player.HeldItem.knockBack, Player.whoAmI);
             }
-            if (Player.whoAmI == Main.myPlayer && Player.HeldItem.type == ModContent.ItemType<Starmada>() && (Player.ownedProjectileCounts[ModContent.ProjectileType<StarmadaHoldout>()] == 0) && !Player.dead)
+            if (Player.whoAmI == Main.myPlayer && Player.HeldItem.type == ModContent.ItemType<Starmada>() && (Player.ownedProjectileCounts[ModContent.ProjectileType<StarmadaHoldout>()] == 0) && !Player.dead && !Main.mapFullscreen && !Player.mouseInterface)
             {
                 int damage = (int)Player.GetTotalDamage<RangedDamageClass>().ApplyTo(Player.HeldItem.damage);
                 Projectile.NewProjectile(Player.GetSource_FromThis(), Player.Center, Player.Center.DirectionTo(Player.Calamity().mouseWorld), ModContent.ProjectileType<StarmadaHoldout>(), damage, Player.HeldItem.knockBack, Player.whoAmI);
@@ -2237,8 +2237,6 @@ namespace CalamityMod.CalPlayer
                 raiderSoundCooldown--;
             if (astralStarRainCooldown > 0)
                 astralStarRainCooldown--;
-            if (AbaddonCooldown > 0)
-                AbaddonCooldown--;
             if (VoidCooldown > 0)
                 VoidCooldown--;
             if (ursaSergeantCooldown > 0)

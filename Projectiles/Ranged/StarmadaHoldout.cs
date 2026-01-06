@@ -91,7 +91,7 @@ namespace CalamityMod.Projectiles.Ranged
             shake = MathHelper.Lerp(shake, 0, 0.05f);
             frontRecoil = MathHelper.Lerp(frontRecoil, 0, 0.11f);
 
-            if ((Owner.HeldItem.type != ItemType<Starmada>() && doingNothing) || Owner.dead)
+            if ((Owner.HeldItem.type != ItemType<Starmada>() && doingNothing) || (doingNothing && (Main.mapFullscreen || Owner.mouseInterface)) || Owner.dead)
             {
                 Projectile.Kill();
                 return;
