@@ -28,6 +28,7 @@ using Terraria.ID;
 using Terraria.Localization;
 using Terraria.ModLoader;
 using Terraria.UI.Chat;
+using static CalamityMod.CalamityUtils;
 
 namespace CalamityMod.Items
 {
@@ -352,7 +353,7 @@ namespace CalamityMod.Items
         #region Rarity Coloration
         private static void ApplyRarityColor(Item item, TooltipLine nameLine)
         {
-            if (item.type == ModContent.ItemType<HeartoftheElements>() || item.type == ModContent.ItemType<TheCommunity>())
+            if (item.type == ModContent.ItemType<TheCommunity>())
                 nameLine.OverrideColor = new Color(Main.DiscoR, Main.DiscoG, Main.DiscoB);
 
             // Developer items
@@ -1635,7 +1636,35 @@ namespace CalamityMod.Items
 
                 return false;
             }
+            // IV Drip tooltip FX
+            if (line.Mod == "Terraria" && item.type == ModContent.ItemType<IVDripOnTheRocks>() && line.Name == "Tooltip4")
+            {
+                Vector2 basePosition = new Vector2(line.X, line.Y);
 
+                Main.spriteBatch.End();
+                Main.spriteBatch.Begin(SpriteSortMode.Immediate, BlendState.Additive, null, null, null, null, Main.UIScaleMatrix);
+
+                for (int i = 0; i < 3; i++) // Draw 3 lines of differing opacity, color, and displacement.
+                {
+                    float timer = (float)Math.Sin(Main.GlobalTimeWrappedHourly + 1f) / 2f;
+
+                    float angle = (Main.GlobalTimeWrappedHourly * 2f) + (i * MathHelper.TwoPi / 3f);
+                    float radius = timer * (3f + i * 6f);
+                    Vector2 offset = new Vector2((float)Math.Cos(angle) * 1.7f, (float)Math.Sin(angle) * 1f) * radius; // Offset in an elliptical pattern
+                    Vector2 pos = basePosition + offset;
+
+                    Color color = MulticolorLerp(Math.Abs(timer + (i * 0.2f)) % 1f, Color.LightBlue, Color.LightGreen, (i == 3) ? Color.Blue : (i == 2) ? Color.Red : Color.White);
+                    float opacity = 1f - (i * 0.2f);
+                    float rotation = line.Rotation + (timer * (Main.GlobalTimeWrappedHourly * 0.00001f)); // This precision is intended
+
+                    ChatManager.DrawColorCodedStringWithShadow(Main.spriteBatch, line.Font, line.Text, pos, color * opacity, rotation, line.Origin, line.BaseScale, line.MaxWidth, line.Spread);
+                }
+
+                Main.spriteBatch.End();
+                Main.spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, null, null, null, null, Main.UIScaleMatrix);
+
+                return false;
+            }
             if (line.Mod == "Terraria" && item.type == ModContent.ItemType<OntologicalDespoiler>() && (line.Name == "Tooltip1" || line.Name == "Tooltip2" || line.Name == "Tooltip4" || line.Name == "Tooltip5" || line.Name == "Tooltip7"))
             {
                 Color rarityColor = Color.Black;

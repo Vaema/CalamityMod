@@ -104,11 +104,9 @@ namespace CalamityMod.NPCs
                 #region Sky / Space
                 // Harpy
                 // Sky Glaze @ 3.33% IF Eye of Cthulhu dead
-                // Giant Harpy Feather @ 1.25% (0.67% in Vanilla)
                 // Essence of Sunlight @ 50% IF Hardmode and not statue spawned
                 case NPCID.Harpy:
                     postEoC.Add(ModContent.ItemType<SkyGlaze>(), 30);
-                    npcLoot.ChangeDropRate(ItemID.GiantHarpyFeather, 1, 80);
                     hardmode.AddIf(() => !npc.SpawnedFromStatue, ModContent.ItemType<EssenceofSunlight>(), 2);
                     break;
 
@@ -150,13 +148,13 @@ namespace CalamityMod.NPCs
                     break;
 
                 // Medusa
-                // Pocket Mirror @ 10% Normal, 20% Expert+
+                // Pocket Mirror @ 7.14% Normal, 14.29% Expert+ (2.5% Normal, 5% Expert+ in vanilla)
                 case NPCID.Medusa:
                     // Remove the vanilla loot rule for Pocket Mirror.
                     npcLoot.RemoveWhere((rule) => rule is CommonDrop conditionalRule && conditionalRule.itemId == ItemID.PocketMirror);
 
                     // Define a replacement rule which has an increased chance.
-                    npcLoot.Add(ItemDropRule.NormalvsExpert(ItemID.PocketMirror, 10, 5));
+                    npcLoot.Add(ItemDropRule.NormalvsExpert(ItemID.PocketMirror, 14, 7));
                     break;
 
                 // Tim
@@ -167,23 +165,16 @@ namespace CalamityMod.NPCs
 
                 // Skeleton Archer
                 // Magic Quiver @ 5% (2.5% in Vanilla)
-                // Marrow @ 2.5% (0.5% in Vanilla)
+                // Marrow @ 2% (0.5% in Vanilla)
                 case NPCID.SkeletonArcher:
                     npcLoot.ChangeDropRate(ItemID.MagicQuiver, 1, 20);
-                    npcLoot.ChangeDropRate(ItemID.Marrow, 1, 40);
+                    npcLoot.ChangeDropRate(ItemID.Marrow, 1, 50);
                     break;
 
                 // Armored Skeleton
-                // Beam Sword @ 2.5% (0.67% in Vanilla)
+                // Beam Sword @ 2% (0.67% in Vanilla)
                 case NPCID.ArmoredSkeleton:
-                    npcLoot.ChangeDropRate(ItemID.BeamSword, 1, 40);
-                    break;
-
-                // Black Recluse
-                // Poison Staff @ 5% (2.5% in Vanilla)
-                case NPCID.BlackRecluse:
-                case NPCID.BlackRecluseWall:
-                    npcLoot.ChangeDropRate(ItemID.PoisonStaff, 1, 20);
+                    npcLoot.ChangeDropRate(ItemID.BeamSword, 1, 50);
                     break;
 
                 // Mimic
@@ -397,23 +388,24 @@ namespace CalamityMod.NPCs
                 #region Aquatic / Ocean
                 // Pink Jellyfish
                 // Life Jelly @ 10% Normal, 14.29% Expert+
+                // Jellyfish Necklace @ 3.33% (1% in vanilla)
                 case NPCID.PinkJellyfish:
                     npcLoot.Add(ItemDropRule.NormalvsExpert(ModContent.ItemType<LifeJelly>(), 10, 7));
-                    npcLoot.ChangeDropRate(ItemID.JellyfishNecklace, 1, 25);
+                    npcLoot.ChangeDropRate(ItemID.JellyfishNecklace, 1, 30);
                     break;
 
                 // Blue Jellyfish
                 // Cleansing Jelly @ 10% Normal, 14.29% Expert+
                 case NPCID.BlueJellyfish:
                     npcLoot.Add(ItemDropRule.NormalvsExpert(ModContent.ItemType<CleansingJelly>(), 10, 7));
-                    npcLoot.ChangeDropRate(ItemID.JellyfishNecklace, 1, 25);
+                    npcLoot.ChangeDropRate(ItemID.JellyfishNecklace, 1, 30);
                     break;
 
                 // Green Jellyfish
                 // Vital Jelly @ 12.5% Normal, 20% Expert+
                 case NPCID.GreenJellyfish:
                     npcLoot.Add(ItemDropRule.NormalvsExpert(ModContent.ItemType<VitalJelly>(), 8, 5));
-                    npcLoot.ChangeDropRate(ItemID.JellyfishNecklace, 1, 25);
+                    npcLoot.ChangeDropRate(ItemID.JellyfishNecklace, 1, 30);
                     break;
 
                 // Piranha, Arapaima, Blood Feeder
@@ -435,10 +427,10 @@ namespace CalamityMod.NPCs
                     break;
 
                 // Blood Jelly, Fungo Fish
-                // Jellyfish Necklace @ 1%
+                // Jellyfish Necklace @ 3.33%
                 case NPCID.BloodJelly:
                 case NPCID.FungoFish:
-                    npcLoot.Add(ItemID.JellyfishNecklace, 25);
+                    npcLoot.Add(ItemID.JellyfishNecklace, 30);
                     break;
                 #endregion
 

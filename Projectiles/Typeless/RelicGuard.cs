@@ -87,7 +87,7 @@ namespace CalamityMod.Projectiles.Typeless
         }
         public override bool PreDraw(ref Color lightColor)
         {
-            Texture2D rTexture = ModContent.Request<Texture2D>("CalamityMod/Items/RelicOfResilience").Value;
+            Texture2D rTexture = ModContent.Request<Texture2D>("CalamityMod/Items/Tools/RelicOfResilience").Value;
             Texture2D bTexture = ModContent.Request<Texture2D>("CalamityMod/Particles/BloomCircle").Value;
             Color drawColor = bColor;
             float CDScale = Utils.GetLerpValue(300, 0, Owner.Calamity().rOfResilienceCooldown, true);

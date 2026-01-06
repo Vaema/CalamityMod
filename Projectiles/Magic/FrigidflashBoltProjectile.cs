@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Net;
 using CalamityMod.Dusts;
 using CalamityMod.Items.Weapons.Magic;
 using CalamityMod.Particles;
@@ -23,6 +24,8 @@ namespace CalamityMod.Projectiles.Magic
         public Color fireColor = Color.OrangeRed;
         public Color iceColor = Color.DeepSkyBlue;
         public SlotId chargeSound;
+        public int launchTime = 0;
+        public Vector2 endPoint;
         public override void SetDefaults()
         {
             Projectile.width = 20;
@@ -43,7 +46,7 @@ namespace CalamityMod.Projectiles.Magic
             Lighting.AddLight(Projectile.Center, lightColor.ToVector3());
             Vector2 mouse = Owner.Calamity().mouseWorld;
             fadeIn = launch ? Utils.GetLerpValue(0, Owner.itemAnimationMax * 0.5f * Projectile.MaxUpdates, time, true) : 1;
-            Vector2 velocity = Utils.DirectionTo(Owner.Center, mouse) * Owner.HeldItem.shootSpeed;
+            Vector2 velocity = Utils.DirectionTo(Owner.Center, mouse) * 10;
             Projectile.scale = fadeIn * (bigMagic ? 1.3f : 1);
             if (fadeIn < 1) // Hold the projectile in front of the player while they case the spell
             {
@@ -71,6 +74,7 @@ namespace CalamityMod.Projectiles.Magic
                     Projectile.tileCollide = true;
                     Vector2 staticSpeed = Utils.DirectionTo(Owner.Center, mouse) * Utils.Distance(Owner.Center, Owner.ClampedMouseWorld()) * 0.01f;
                     Projectile.velocity = (bigMagic ? staticSpeed : velocity);
+                    endPoint = Owner.ClampedMouseWorld();
 
                     SoundEngine.PlaySound(FrigidflashBolt.UseSound with { Volume = 1f, Pitch = (bigMagic ? -0.15f : 0.15f) }, Projectile.Center);
                     if (bigMagic)
@@ -97,7 +101,7 @@ namespace CalamityMod.Projectiles.Magic
                     launch = false;
                 }
 
-                if (Main.rand.NextBool(8))
+                if (Main.rand.NextBool(bigMagic ? 3 : 8) && launchTime < 56)
                 {
                     bool type = Main.rand.NextBool();
                     Particle fx = new CustomSpark(Projectile.Center + Main.rand.NextVector2Circular(12, 12), -Projectile.velocity * 0.3f, type ? "CalamityMod/Particles/FireTypeParticle" : "CalamityMod/Particles/IceTypeParticle", false, 32, 0.9f, type ? fireColor : iceColor, new Vector2(0.8f, 1f), true, false, shrinkSpeed: type ? 0.2f : 0);
@@ -112,9 +116,13 @@ namespace CalamityMod.Projectiles.Magic
             }
             if (bigMagic)
             {
-                if (Projectile.timeLeft < 145)
+                if (!launch)
                 {
-                    Projectile.velocity *= 0.98f;
+                    Projectile.Center = Vector2.Lerp(Projectile.Center, endPoint, 0.035f);
+                    Projectile.velocity *= 0.9f;
+                    launchTime++;
+                    if (launchTime >= (Owner.itemAnimationMax * 2.5f + 28))
+                        Projectile.Kill();
                 }
             }
             else
