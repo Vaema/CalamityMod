@@ -944,6 +944,9 @@ namespace CalamityMod.CalPlayer
         public bool toxicHeart = false;
         public bool toxicHeartVisuals = false;
         public bool abaddon = false;
+        public int abaddonCooldown = 0;
+        public bool abaddonEffectVisual = false;
+        public float abaddonFlameDamage = 0;
 
         public bool aeroStone = false;
         public bool lifejelly = false;
@@ -1236,7 +1239,6 @@ namespace CalamityMod.CalPlayer
         public int tailFrame = 0;
         public bool astralStarRain = false;
         public int astralStarRainCooldown = 0;
-        public int AbaddonCooldown = 0;
         public int VoidCooldown = 0;
         public int ursaSergeantCooldown = 0;
         public int AlchFlaskCooldown = 0;
@@ -2509,6 +2511,8 @@ namespace CalamityMod.CalPlayer
             spiritOrigin = false;
             spiritOriginVanity = false;
             critDamage = 0;
+            if (abaddonCooldown > 0)
+                abaddonCooldown--;
 
 
             astralStarRain = false;
@@ -3047,7 +3051,6 @@ namespace CalamityMod.CalPlayer
             gSabatonTempJumpSpeed = 0;
             rOfDelivarenceRam = false;
             astralStarRainCooldown = 0;
-            AbaddonCooldown = 0;
             VoidCooldown = 0;
             AlchFlaskCooldown = 0;
             ascendantInsigniaCooldown = 0;
@@ -4916,9 +4919,16 @@ namespace CalamityMod.CalPlayer
                 }
             }
 
+            if (Player.Calamity().abaddon || Player.Calamity().voidOfExtinction)
+            {
+                Player.Calamity().abaddonFlameDamage = (1 + Player.GetTotalCritChance(Player.GetBestClass()) * 0.01f * (Player.Calamity().voidOfExtinction ? VoidofExtinction.critScaling : Abaddon.critScaling));
+            }
+            else
+                Player.Calamity().abaddonFlameDamage = 0;
+
             // True melee damage from various vanilla equipment placed here.
 
-            // Titan Glove and ALL upgrades.
+                // Titan Glove and ALL upgrades.
             if (Player.kbGlove)
                 Player.GetDamage<TrueMeleeDamageClass>() += 0.1f;
 

@@ -443,7 +443,7 @@ namespace CalamityMod.CalPlayer
 
             if (calamityPlayer.brimstoneFlames && drawInfo.shadow == 0f)
             {
-                bool resistsBrimstoneFlames = abaddon; // Looks weaker if you have Abaddon equipped
+                bool resistsBrimstoneFlames = (abaddon || voidOfExtinction); // Looks weaker if you have Abaddon or VoE equipped
                 BrimstoneFlames.DrawEffects(drawInfo, resistsBrimstoneFlames);
             }
 

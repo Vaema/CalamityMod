@@ -12,8 +12,9 @@ namespace CalamityMod.Buffs.DamageOverTime
     {
         public static DebuffData debuffData = new DebuffData()
         {
-            EnemyLostRegen = 60,
-            HeatDebuffScaling = 1
+            EnemyLostRegen = 60, // This can be adjusted by a few sources
+            HeatDebuffScaling = 1,
+            NPCLifeRegenMethod = BrimstoneFlamesNPCLifeRegen
         };
         public override void SetStaticDefaults()
         {
@@ -22,6 +23,29 @@ namespace CalamityMod.Buffs.DamageOverTime
             Main.buffNoSave[Type] = true;
             BuffID.Sets.LongerExpertDebuff[Type] = true;
             BuffDatasets.DebuffDataset[Type] = debuffData;
+        }
+        public static void BrimstoneFlamesNPCLifeRegen(NPC npc, int buffType, ref int buffIndex, ref int damage)
+        {
+            var cnpc = npc.Calamity();
+            bool effected = (cnpc.abaddonEffected || cnpc.voidOfExtinctionEffected);
+            bool strong = cnpc.voidOfExtinctionEffected;
+            int baseBrimstoneFlamesDoTValue = (int)debuffData.EnemyLostRegen;
+            if (effected)
+            {
+                for (int playerIndex = 0; playerIndex < Main.maxPlayers; playerIndex++)
+                {
+                    Player player = Main.player[playerIndex];
+                    if (player.active)
+                    {
+                        float improvedDamage = baseBrimstoneFlamesDoTValue * player.Calamity().abaddonFlameDamage;
+                        if (improvedDamage > baseBrimstoneFlamesDoTValue && (player.Calamity().abaddon || player.Calamity().voidOfExtinction))
+                        {
+                            baseBrimstoneFlamesDoTValue = (int)improvedDamage;
+                        }
+                    }
+                }
+            }
+            cnpc.ApplyDPSDebuff(baseBrimstoneFlamesDoTValue, baseBrimstoneFlamesDoTValue / 20, ref npc.lifeRegen, ref damage);
         }
 
         public override void Update(Player player, ref int buffIndex)
