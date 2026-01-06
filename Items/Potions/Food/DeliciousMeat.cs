@@ -1,4 +1,5 @@
-﻿using Microsoft.Xna.Framework;
+﻿using CalamityMod.Items.Tools;
+using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.DataStructures;
 using Terraria.ID;
@@ -11,7 +12,7 @@ namespace CalamityMod.Items.Potions.Food
         public new string LocalizationCategory => "Items.Potions";
         public override void SetStaticDefaults()
         {
-            ItemID.Sets.ShimmerTransformToItem[Type] = ModContent.ItemType<DeliciousMeat>();
+            ItemID.Sets.ShimmerTransformToItem[Type] = ModContent.ItemType<DisgustingMeat>();
             Item.ResearchUnlockCount = 5;
             Main.RegisterItemAnimation(Type, new DrawAnimationVertical(int.MaxValue, 3));
             ItemID.Sets.FoodParticleColors[Type] = new Color[2] {
