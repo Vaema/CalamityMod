@@ -20,7 +20,7 @@ namespace CalamityMod.Systems.Collections
         public static bool[] CanBeReplacedByAbyssGeneration = Factory.CreateBoolSet();
 
         /// <summary>
-        /// If <see langword="true"/> for a tile type, It does not draw BlendMerge on PostDraw hook. Instead it will be drawn after every solid tiles has drawn to screen<br/>
+        /// If <see langword="true"/> for a tile type, it will not perform its BlendMerge in the PostDraw hook, and instead will be drawn after every solid tile has been drawn to the screen.<br/>
         /// Defaults to <see langword="false"/>.
         /// </summary>
         public static bool[] DrawBlendMergeAfterSolidTile = Factory.CreateBoolSet(TileType<SeaPrism>());
