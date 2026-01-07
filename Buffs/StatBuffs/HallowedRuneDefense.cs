@@ -7,7 +7,7 @@ namespace CalamityMod.Buffs.StatBuffs
 {
     public class HallowedRuneDefense : ModBuff
     {
-        public override LocalizedText Description => base.Description.WithFormatArgs(HallowedRune.DefenseBoost, HallowedRune.DamageReductionBoost.ToPercent());
+        public override LocalizedText Description => base.Description.WithFormatArgs(HallowedRune.DefenseBoost);
 
         public override void SetStaticDefaults()
         {
@@ -20,7 +20,6 @@ namespace CalamityMod.Buffs.StatBuffs
         public override void Update(Player player, ref int buffIndex)
         {
             player.statDefense += HallowedRune.DefenseBoost;
-            player.endurance += HallowedRune.DamageReductionBoost; // TODO -- is this applied too late to be affected by the DR softcap?
         }
     }
 }
