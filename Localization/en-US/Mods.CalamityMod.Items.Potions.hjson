@@ -93,7 +93,7 @@ HadalStew: {
 	Tooltip:
 		'''
 		Only gives [S] seconds of {$BuffName.PotionSickness}
-		{$CommonItemTooltip.MediumStats}
+		{$CommonItemTooltip.MajorStats}
 		{$CommonItemTooltip.MinuteDuration}
 		'''
 }
