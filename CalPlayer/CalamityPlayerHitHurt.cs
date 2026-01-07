@@ -56,6 +56,7 @@ using Terraria.GameContent.Creative;
 using Terraria.ID;
 using Terraria.Localization;
 using Terraria.ModLoader;
+using CalamityMod.Projectiles.Melee;
 
 namespace CalamityMod.CalPlayer
 {
@@ -923,15 +924,16 @@ namespace CalamityMod.CalPlayer
                     // The Evolution
                     if (evolution)
                     {
-                        proj.hostile = false;
-                        proj.friendly = true;
-                        proj.damage = 10 * actualProjDamage;
-                        proj.velocity *= -2f;
-                        proj.extraUpdates += 1;
-                        proj.penetrate = 1;
+                        if (Player.whoAmI == Main.myPlayer)
+                        {
+                            for (var i = 0; i < 10; i++)
+                            {
+                                Projectile.NewProjectile(Player.GetSource_Accessory(ContentSamples.ItemsByType[ModContent.ItemType<TheEvolution>()]), Player.Center + Vector2.UnitX.RotatedBy(MathHelper.TwoPi * (i / 10f)), Vector2.Zero, ModContent.ProjectileType<MirrorBlast>(), CalamityUtils.ScaleWithDifficulty(proj.damage * 50), 5, Main.myPlayer,1);
+                            }
+                        }
 
-                        // 17APR2024: Ozzatron: The Evolution is a reflect which also functions as a dodge. It uses vanilla dodge iframes and benefits from Cross Necklace.
-                        int evolutionIFrames = Player.ComputeReflectIFrames();
+                        //Doze - This gives the same iframes as vanilla dodges, including accounting for cross necklace.
+                        int evolutionIFrames = Player.ComputeDodgeIFrames();
                         Player.GiveUniversalIFrames(evolutionIFrames, true);
 
                         modifiers.Cancel();

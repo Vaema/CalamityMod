@@ -75,6 +75,20 @@ namespace CalamityMod.Projectiles.Melee
         {
             if (!hasSpawned)
             {
+                if (Projectile.ai[0] != 0)
+                {
+                    //This is used when spawned by Evolution.
+                    //Setting AP so high guarantees we get the full dmg of the projectile.
+                    Projectile.ArmorPenetration = 1000;
+                    hasSpawned = true;
+                    shardShield = 0;
+                    isShard = false;
+                    Projectile.timeLeft = 1200;
+                    Projectile.velocity = Projectile.DirectionTo(player.Center) * -20f;
+                    Projectile.DamageType = DamageClass.Generic;
+                    Projectile.CritChance = 0;
+                    return;
+                }
                 shardNum = player.ownedProjectileCounts[Projectile.type];
                 hasSpawned = true;
                 shardNum = 0;

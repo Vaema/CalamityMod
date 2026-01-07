@@ -448,7 +448,6 @@ CounterScarf: {
 	DisplayName: Counter Scarf
 	Tooltip:
 		'''
-		10% increased true melee damage
 		Grants the ability to dash; dashing into an attack will cause you to dodge it
 		After a successful dodge you must wait 30 seconds before you can dodge again
 		'''
@@ -1881,7 +1880,6 @@ TheAmalgam: {
 	DisplayName: The Amalgam
 	Tooltip:
 		'''
-		10% increased damage
 		All attacks inflict a variety of debuffs, 200% increased elemental debuff damage
 		Most buffs last twice as long, and persist after dying
 		Taking damage confuses nearby enemies and spawns a dank creeper
@@ -1938,9 +1936,9 @@ TheEvolution: {
 	DisplayName: The Evolution
 	Tooltip:
 		'''
-		Reflects projectiles that hit you, negating their damage and dealing 10x damage to enemies
-		{$Common.ReflectInformation}
-		Reflecting a projectile grants maximum natural life regen for 10 seconds
+		Dodges projectiles that hit you, reflecting highly damaging mirror shards back at enemies
+		{$Common.DodgeInformation}
+		Dodging a projectile grants maximum natural life regen for 10 seconds
 		Getting hit by the same enemy projectile type during cooldown will resist its damage by 25%
 		'''
 }
