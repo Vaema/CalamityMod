@@ -883,7 +883,7 @@ namespace CalamityMod.CalPlayer
                     return;
                 }
             }
-            if (!CalamityProjectileSets.ShouldNotBeReflected[proj.type] && proj.active && !proj.friendly && proj.hostile && proj.damage > 0 && !modifiers.PvP)
+            if (proj.active && proj.hostile && proj.damage > 0)
             {
                 double dodgeDamageGateValuePercent = 0.05;
                 int dodgeDamageGateValue = (int)Math.Round(Player.statLifeMax2 * dodgeDamageGateValuePercent);
@@ -926,9 +926,9 @@ namespace CalamityMod.CalPlayer
                     {
                         if (Player.whoAmI == Main.myPlayer)
                         {
-                            for (var i = 0; i < 10; i++)
+                            for (var i = 0; i < 5; i++)
                             {
-                                Projectile.NewProjectile(Player.GetSource_Accessory(ContentSamples.ItemsByType[ModContent.ItemType<TheEvolution>()]), Player.Center + Vector2.UnitX.RotatedBy(MathHelper.TwoPi * (i / 10f)), Vector2.Zero, ModContent.ProjectileType<MirrorBlast>(), CalamityUtils.ScaleWithDifficulty(proj.damage * 50), 5, Main.myPlayer,1);
+                                Projectile.NewProjectile(Player.GetSource_Accessory(ContentSamples.ItemsByType[ModContent.ItemType<TheEvolution>()]), Player.Center + Vector2.UnitX.RotatedBy(MathHelper.TwoPi * (i / 10f)), Vector2.Zero, ModContent.ProjectileType<MirrorBlast>(), actualProjDamage * 50, 5, Main.myPlayer,1);
                             }
                         }
 
@@ -945,7 +945,7 @@ namespace CalamityMod.CalPlayer
 
                         return;
                     }
-                    else if (daedalusReflect)
+                    else if (daedalusReflect && !CalamityProjectileSets.ShouldNotBeReflected[proj.type] && !modifiers.PvP && !proj.friendly)
                     {
                         proj.hostile = false;
                         proj.friendly = true;
