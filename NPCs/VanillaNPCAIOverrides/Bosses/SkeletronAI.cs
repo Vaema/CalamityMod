@@ -470,9 +470,6 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                     else
                         NPC.rotation = NPC.velocity.X / 15f;
 
-                    // Force net updates every frame during this movement to avoid despawning in multiplayer
-                    // I'm doing this because npc.ai[2] changes every frame and that's used to calculate Skeletron's velocity here
-                    NPC.ForceNetUpdate();
                     return false;
                 }
 
