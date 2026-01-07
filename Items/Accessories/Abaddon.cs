@@ -36,7 +36,7 @@ namespace CalamityMod.Items.Accessories
         {
             Player player = Main.LocalPlayer;
             if (Main.LocalPlayer != null)
-                list.FindAndReplace("[DAMAGE]", ((int)(BrimstoneFlames.debuffData.EnemyLostRegen / 2 * player.Calamity().abaddonFlameDamage)).ToString() + " DPS");
+                list.FindAndReplace("[DAMAGE]", ((int)(BrimstoneFlames.debuffData.EnemyLostRegen / 2 * player.Calamity().abaddonFlameDamage)).ToString());
         }
     }
 }

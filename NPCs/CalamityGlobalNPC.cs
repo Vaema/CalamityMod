@@ -292,6 +292,7 @@ namespace CalamityMod.NPCs
         public bool brimstoneFlames = false;
         public bool demonicFlames = false;
         public int demonicFlamesBonusDamage = 0;
+        public int demonicFlamesClearTimer = 0;
         public bool holyFlames = false;
         public bool plague = false;
         public bool armorCrunch = false;
@@ -570,6 +571,7 @@ namespace CalamityMod.NPCs
             myClone.brimstoneFlames = brimstoneFlames;
             myClone.demonicFlames = demonicFlames;
             myClone.demonicFlamesBonusDamage = demonicFlamesBonusDamage;
+            myClone.demonicFlamesClearTimer = demonicFlamesClearTimer;
             myClone.holyFlames = holyFlames;
             myClone.plague = plague;
             myClone.armorCrunch = armorCrunch;
@@ -773,8 +775,6 @@ namespace CalamityMod.NPCs
             if (scionsCurioEffected)
                 irradiatedContactBoost = 2f;
             brimstoneFlames = false;
-            if (!demonicFlames)
-                demonicFlamesBonusDamage = 0;
             demonicFlames = false;
             holyFlames = false;
             plague = false;
@@ -3377,6 +3377,14 @@ namespace CalamityMod.NPCs
                 if (!Collision.CanHit(npc.position, npc.width, npc.height, Main.player[npc.target].position, Main.player[npc.target].width, Main.player[npc.target].head))
                     npc.ai[3] = 0f;
             }
+
+            if (demonicFlames)
+                demonicFlamesClearTimer = 0;
+            else
+                demonicFlamesClearTimer++;
+            if (demonicFlamesClearTimer >= 2)
+                demonicFlamesBonusDamage = 0;
+
             if (warbannerBurnTimer > 0)
                 warbannerBurnTimer--;
             if (warbannerBurnTimer == 0 && warbannerBurnMarked)

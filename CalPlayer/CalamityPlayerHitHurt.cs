@@ -762,25 +762,28 @@ namespace CalamityMod.CalPlayer
         public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
         {
             NPC npc = target;
-            if ((target.Calamity().abaddonEffected || target.Calamity().voidOfExtinctionEffected) && hit.Crit && abaddonCooldown == 0)
+            if ((npc.Calamity().abaddonEffected || npc.Calamity().voidOfExtinctionEffected) && hit.Crit && abaddonCooldown == 0)
             {
-                bool strong = target.Calamity().voidOfExtinctionEffected;
-                abaddonCooldown = 60;
-                float areaOfEffect = (strong ? 1000 : 500);
+                bool strong = npc.Calamity().voidOfExtinctionEffected;
+                float areaOfEffect = (strong ? 1200 : 600);
                 if (Main.netMode != NetmodeID.MultiplayerClient)
                 {
                     Color color1 = Color.Crimson;
                     Color color2 = Color.OrangeRed;
+                    int debuffTime = (strong ? 180 : 90);
                     int targetNum = 0;
-                    int maxTargetNum = strong ? 12 : 8;
+                    int maxTargetNum = strong ? 8 : 5;
                     int startDir = Main.rand.NextBool() ? 1 : -1;
                     for (int r = 0; r < Main.maxNPCs; r++)
                     {
                         NPC targeted = Main.npc[r];
 
-                        if (targeted != null && targeted.CanBeChasedBy() && Vector2.Distance(targeted.Center, npc.Center) <= areaOfEffect && targetNum < maxTargetNum)
+                        if (targeted != null && targeted != npc && targeted.CanBeChasedBy() && Vector2.Distance(targeted.Center, npc.Center) <= areaOfEffect && targetNum < maxTargetNum)
                         {
-                            Vector2 start = npc.Center;
+                            targeted.Calamity().voidOfExtinctionEffected = npc.Calamity().voidOfExtinctionEffected;
+                            targeted.Calamity().abaddonEffected = npc.Calamity().abaddonEffected;
+
+                            Vector2 start = npc.Center + Main.rand.NextVector2Circular(npc.width / 2, npc.height / 2);
                             Vector2 end = targeted.Center;
                             Color color = Main.rand.NextBool() ? color2 : color1;
 
@@ -808,10 +811,10 @@ namespace CalamityMod.CalPlayer
                                 if (dustDivisor < 2)
                                     dustDivisor = 2;
 
-                                Vector2 dustLineStart = targeted.Center;
-                                Vector2 dustLineEnd = npc.Center;
+                                Vector2 dustLineStart = start;
+                                Vector2 dustLineEnd = end;
                                 Vector2 currentDustPos = default;
-                                Vector2 dustVel = npc.Center.DirectionTo(targeted.Center);
+                                Vector2 dustVel = start.DirectionTo(end);
                                 int startingPoint = Main.rand.Next(0, 400 + 1);
                                 Vector2 lastDustPos = default;
                                 for (int i = 0; i < maxDusts; i++)
@@ -844,9 +847,7 @@ namespace CalamityMod.CalPlayer
                                     u++;
                             }
 
-                            int debuffTime = (strong ? 180 : 90);
                             npc.AddBuff(ModContent.BuffType<BrimstoneFlames>(), debuffTime);
-
                             
                             float bestDamage = 0;
                             // Find all the debuffs on the enemy
@@ -854,7 +855,11 @@ namespace CalamityMod.CalPlayer
                             {
                                 int type = npc.buffType[index];
                                 var debuffData = BuffDatasets.DebuffDataset[type];
-                                if (debuffData != null)
+
+                                // Calculate the brimstone flames damage to see if the debuffs can be transfered
+                                int bFlamesDamage = Math.Max((int)(BrimstoneFlames.debuffData.EnemyLostRegen * bestDamage), (int)BrimstoneFlames.debuffData.EnemyLostRegen);
+
+                                if (CalamityBuffSets.IsDebuff[type])
                                 {
                                     // Find the player who has the accessory
                                     for (int playerIndex = 0; playerIndex < Main.maxPlayers; playerIndex++)
@@ -866,16 +871,29 @@ namespace CalamityMod.CalPlayer
                                                 bestDamage = player.Calamity().abaddonFlameDamage;
                                         }
                                     }
-                                    // Calculate the brimstone flames damage to see if the debuffs can be transfered
-                                    int bFlamesDamage = Math.Max((int)(60 * bestDamage), 60);
-                                    if (debuffData.EnemyLostRegen <= bFlamesDamage)
+                                    
+                                    if (debuffData == null || debuffData.EnemyLostRegen <= bFlamesDamage)
                                         targeted.AddBuff(type, debuffTime);
                                 }
+                                // Edge case fixes for Shred and Demonic Flames
+                                if (npc.Calamity().somaShredStacks > 0 && Shred.BaseDamage <= bFlamesDamage)
+                                    targeted.AddBuff(ModContent.BuffType<Shred>(), debuffTime);
+                                int demonicFlames = ModContent.GetModBuff(ModContent.BuffType<DemonicFlames>()).Type;
+                                if (npc.HasBuff(demonicFlames))
+                                    targeted.Calamity().demonicFlamesBonusDamage = npc.Calamity().demonicFlamesBonusDamage;
                             }
-
                             targetNum++;
                         }
                     }
+                    if (targetNum == 0)
+                    {
+                        npc.AddBuff(ModContent.BuffType<BrimstoneFlames>(), debuffTime);
+                        Color color = Main.rand.NextBool() ? color2 : color1;
+                        Particle spark2 = new CustomSpark(npc.Center, Vector2.Zero, "CalamityMod/Particles/BloomCircle", false, 18, 0.55f, color * (Player.Calamity().abaddonEffectVisual ? 1 : 0.3f), Vector2.One, true, true, glowOpacity: 0.85f);
+                        GeneralParticleHandler.SpawnParticle(spark2);
+                        
+                    }
+                    abaddonCooldown = targetNum * 12;
                 }
             }
         }

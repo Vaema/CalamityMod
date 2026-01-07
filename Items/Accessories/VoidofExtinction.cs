@@ -13,9 +13,9 @@ namespace CalamityMod.Items.Accessories
     {
         public new string LocalizationCategory => "Items.Accessories";
 
-        public static int CritBoost = 13;
+        public static int CritBoost = 8;
         public static float critScaling = 7; // How effective crit chance is at increasing debuff damage
-        public static float critDamageBoostPerDebuff = 0.03f; // 3% increased crit damage per debuff
+        public static float critDamageBoostPerDebuff = 0.02f; // 2% increased crit damage per debuff
         public override LocalizedText Tooltip => base.Tooltip.WithFormatArgs(CritBoost, Abaddon.BrimstoneFlamesReduction.ToPercent());
 
         public override void SetDefaults()
