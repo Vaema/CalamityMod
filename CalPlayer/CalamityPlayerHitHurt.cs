@@ -937,7 +937,6 @@ namespace CalamityMod.CalPlayer
                         Player.GiveUniversalIFrames(evolutionIFrames, true);
 
                         modifiers.Cancel();
-                        evolutionLifeRegenCounter = 600;
                         projTypeJustHitBy = proj.type;
 
                         int cooldownDuration = (int)MathHelper.Lerp(BalancingConstants.EvolutionReflectCooldownMin, BalancingConstants.EvolutionReflectCooldownMax, cooldownDurationScalar);

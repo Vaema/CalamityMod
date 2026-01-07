@@ -935,7 +935,6 @@ namespace CalamityMod.CalPlayer
         public bool seraphTracers = false;
         public bool frostFlare = false;
         public bool evolution = false;
-        public int evolutionLifeRegenCounter = 0;
         public bool nanotech = false;
         public bool deadshotBrooch = false;
         public bool shadowMinions = false;

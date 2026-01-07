@@ -567,12 +567,6 @@ namespace CalamityMod.CalPlayer
             if (trinketOfChi || chiRegen)
                 Player.lifeRegen += 2;
 
-            if (evolutionLifeRegenCounter > 0)
-            {
-                if (Player.lifeRegenTime < 3600f)
-                    Player.lifeRegenTime = 3600f;
-            }
-
             if (darkSunRing)
             {
                 if (Main.eclipse || Main.dayTime)

@@ -1936,9 +1936,8 @@ TheEvolution: {
 	DisplayName: The Evolution
 	Tooltip:
 		'''
-		Dodges projectiles that hit you, reflecting highly damaging mirror shards back at enemies
+		Allows you to dodge projectiles, reflecting highly damaging mirror shards back at enemies
 		{$Common.DodgeInformation}
-		Dodging a projectile grants maximum natural life regen for 10 seconds
 		Getting hit by the same enemy projectile type during cooldown will resist its damage by 25%
 		'''
 }
