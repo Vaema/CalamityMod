@@ -928,7 +928,7 @@ namespace CalamityMod.CalPlayer
                         {
                             for (var i = 0; i < 5; i++)
                             {
-                                Projectile.NewProjectile(Player.GetSource_Accessory(ContentSamples.ItemsByType[ModContent.ItemType<TheEvolution>()]), Player.Center + Vector2.UnitX.RotatedBy(MathHelper.TwoPi * (i / 10f)), Vector2.Zero, ModContent.ProjectileType<MirrorBlast>(), actualProjDamage * 50, 5, Main.myPlayer,1);
+                                Projectile.NewProjectile(Player.GetSource_Accessory(ContentSamples.ItemsByType[ModContent.ItemType<TheEvolution>()]), Player.Center + Vector2.UnitX.RotatedBy(MathHelper.TwoPi * (i / 10f)), Vector2.Zero, ModContent.ProjectileType<MirrorBlast>(), (int)MathHelper.Min(actualProjDamage,1000) * 50, 5, Main.myPlayer,1);
                             }
                         }
 
