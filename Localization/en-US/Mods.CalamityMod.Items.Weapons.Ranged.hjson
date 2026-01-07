@@ -540,6 +540,7 @@ HalleysInferno: {
 		Fires a burst of intensely concentrated lunar fire jets
 		<right> to rapid-fire Starbursts that inflict [cbuff:CalamityMod/Voidfrost]
 		Generates Starbursts when hitting enemies, depending on your accuracy
+        Increases view range by 33% while held
 		Uses gel for ammo
 		'Halley arrived sooner than expected'
 		'''
