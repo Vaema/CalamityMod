@@ -755,9 +755,9 @@ EvasionScarf: {
 	DisplayName: Evasion Scarf
 	Tooltip:
 		'''
-		15% increased true melee damage
 		Grants the ability to dash; dashing into an attack will cause you to dodge it
 		After a successful dodge you must wait 30 seconds before you can dodge again
+        Has a shorter dash cooldown than most dashes
 		'''
 }
 
