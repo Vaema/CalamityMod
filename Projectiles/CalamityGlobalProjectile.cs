@@ -439,7 +439,7 @@ namespace CalamityMod.Projectiles
                 projectile.usesLocalNPCImmunity = true;
             }
 
-            if (projectile.bobber && projectile.type != ModContent.ProjectileType<VictideBobber>() && RunFishingMinigames(projectile))
+            if (projectile.bobber && projectile.type != ProjectileType<VictideBobber>() && RunFishingMinigames(projectile))
                 return false;
             //Reset the Homing Target immediately before AI can re-set it on applicable projectiles
             HomingTarget = -1;
@@ -2933,7 +2933,7 @@ namespace CalamityMod.Projectiles
             //Make sure Victide Snail actually fishes when using a minigame rod
             foreach (var item in Main.ActiveProjectiles)
             {
-                if (item.type == ModContent.ProjectileType<VictideSeaSnail>() && item.owner == projectile.owner)
+                if (item.type == ProjectileType<VictideSeaSnail>() && item.owner == projectile.owner)
                     item.ModProjectile<VictideSeaSnail>().PlayerFishingTimer = 600;
             }
             #region Utilities
@@ -3184,13 +3184,28 @@ namespace CalamityMod.Projectiles
                         {
                             owner.Calamity().ShouldHideControls = true;
                             if (owner.Calamity().pressedUp)
+                            {
                                 projectile.velocity.Y -= 0.125f;
+                                projectile.netUpdate = true;
+                            }
+
                             if (owner.Calamity().pressedDown)
+                            {
                                 projectile.velocity.Y += 0.125f;
+                                projectile.netUpdate = true;
+                            }
+
                             if (owner.Calamity().pressedLeft)
+                            {
                                 projectile.velocity.X -= 0.125f;
+                                projectile.netUpdate = true;
+                            }
+
                             if (owner.Calamity().pressedRight)
+                            {
                                 projectile.velocity.X += 0.125f;
+                                projectile.netUpdate = true;
+                            }
                         }
                         projectile.velocity *= 0.975f;
 
@@ -3538,15 +3553,35 @@ namespace CalamityMod.Projectiles
                         {
 
                             if (owner.Calamity().pressedUp && projectile.velocity.Y < 0)
+                            {
                                 projectile.velocity.Y -= 0.3f;
+                                projectile.netUpdate = true;
+                            }
+
                             if (owner.Calamity().pressedUp && Waterline.Y < projectile.Center.Y)
+                            {
                                 projectile.velocity.Y -= 0.3f;
+                                projectile.netUpdate = true;
+                            }
+
                             if (owner.Calamity().pressedDown)
+                            {
                                 projectile.velocity.Y += 0.25f;
+                                projectile.netUpdate = true;
+                            }
+
                             if (owner.Calamity().pressedLeft)
+                            {
                                 projectile.velocity.X -= 0.25f;
+                                projectile.netUpdate = true;
+                            }
+
                             if (owner.Calamity().pressedRight)
+                            {
                                 projectile.velocity.X += 0.25f;
+                                projectile.netUpdate = true;
+                            }
+
                             if (Waterline.Y <= projectile.Center.Y - 8)
                                 TimerToCatch -= Main.rand.Next(1, 5);
                             if (TimerToCatch <= 0)
