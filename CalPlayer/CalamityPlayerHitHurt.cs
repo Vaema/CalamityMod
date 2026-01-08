@@ -883,7 +883,7 @@ namespace CalamityMod.CalPlayer
                     return;
                 }
             }
-            if (proj.active && proj.hostile && proj.damage > 0)
+            if (proj.active && proj.hostile && modifiers.Dodgeable && proj.damage > 0)
             {
                 double dodgeDamageGateValuePercent = 0.05;
                 int dodgeDamageGateValue = (int)Math.Round(Player.statLifeMax2 * dodgeDamageGateValuePercent);
