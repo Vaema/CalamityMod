@@ -214,5 +214,7 @@ namespace CalamityMod
         DialogueDisplayStart,
 
         WulfrumAcrobaticsSync,
+        WulfrumAcrobaticsJumpSync,
+        WulfrumAcrobaticsLengthSync,
     }
 }
