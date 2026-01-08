@@ -1,13 +1,18 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
+using System.Net.Sockets;
 using CalamityMod.DataStructures;
 using CalamityMod.Items.Materials;
+using CalamityMod.Packets;
 using CalamityMod.Projectiles.Typeless;
+using CalamityMod.World;
 using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.Audio;
 using Terraria.DataStructures;
+using Terraria.GameContent.UI;
 using Terraria.GameInput;
 using Terraria.ID;
 using Terraria.ModLoader;
@@ -23,7 +28,6 @@ namespace CalamityMod.Items.Accessories
         public static readonly SoundStyle GrabSound = new("CalamityMod/Sounds/Custom/WulfrumHookGrapple") { Volume = 0.7f, MaxInstances = 1, SoundLimitBehavior = SoundLimitBehavior.ReplaceOldest };
         public static readonly SoundStyle ReleaseSound = new("CalamityMod/Sounds/Custom/WulfrumHookDisengage") { Volume = 0.7f, MaxInstances = 1, SoundLimitBehavior = SoundLimitBehavior.ReplaceOldest };
 
-
         public override void SetDefaults()
         {
             Item.width = 20;
@@ -31,6 +35,11 @@ namespace CalamityMod.Items.Accessories
             Item.value = CalamityGlobalItem.RarityBlueBuyPrice;
             Item.accessory = true;
             Item.rare = ItemRarityID.Blue;
+        }
+
+        public override bool CanUseItem(Player player)
+        {
+            return player.TryGetModPlayer<WulfrumPackPlayer>(out var mp) && mp.hookCooldown <= 0;
         }
 
         public override void UpdateAccessory(Player player, bool hideVisual)
@@ -73,6 +82,7 @@ namespace CalamityMod.Items.Accessories
         }
 
         //Prevent players with a wulfrum pack to spawn any non-wulfrum hooks.
+        /*
         public override void OnSpawn(Projectile projectile, IEntitySource source)
         {
             Player owner = Main.player[projectile.owner];
@@ -80,7 +90,7 @@ namespace CalamityMod.Items.Accessories
             {
                 projectile.active = false;
             }
-        }
+        }*/
     }
 
     public class WulfrumPackPlayer : ModPlayer
@@ -225,6 +235,104 @@ namespace CalamityMod.Items.Accessories
         }
 
         public bool PlayerOnGround => Collision.SolidCollision(Player.position + Vector2.UnitY * 2f * Player.gravDir, Player.width, Player.height, false);
+
+        public override void Load()
+        {
+            base.Load();
+
+            // On_Player.QuickGrapple_GetItemToUse += QuickGrapple_GetItemToUse_PrioritizeAcrobaticsPack;
+            On_Player.QuickGrapple += QuickGrapple_UseCustomGrapple;
+        }
+
+        private static void QuickGrapple_UseCustomGrapple(On_Player.orig_QuickGrapple orig, Player self)
+        {
+            if (!self.TryGetModPlayer<WulfrumPackPlayer>(out var mp) || !mp.WulfrumPackEquipped)
+            {
+                orig(self);
+                return;
+            }
+
+            if (mp.hookCooldown > 0)
+            {
+                return;
+            }
+
+            if (self.frozen || self.tongued || self.webbed || self.stoned || self.dead)
+            {
+                return;
+            }
+
+            if (PlayerInput.GrappleAndInteractAreShared)
+            {
+                if (Main.HoveringOverAnNPC || Main.SmartInteractShowingGenuine || Main.SmartInteractShowingFake || (WiresUI.Settings.DrawToolModeUI && PlayerInput.UsingGamepad))
+                {
+                    return;
+                }
+
+                var ctrlTile = self.controlUseTile;
+                var ctrlItem = self.controlUseItem;
+                if (!ctrlTile && !ctrlItem)
+                {
+                    return;
+                }
+
+                var tile = Framing.GetTileSafely(Player.tileTargetX, Player.tileTargetY);
+                if ((tile.HasTile && (tile.TileType is 4 or 33 or 372 or 174 or 646 or 49)) || (self.HeldItem.type == ItemID.PortalGun && PlayerInput.UsingGamepad))
+                {
+                    return;
+                }
+            }
+
+            if (self.noItems)
+            {
+                return;
+            }
+
+            if (self.mount.Active)
+            {
+                self.mount.Dismount(self);
+            }
+
+            self.UpdateBlacklistedTilesForGrappling();
+
+            foreach (var proj in Main.ActiveProjectiles)
+            {
+                if (proj.owner != self.whoAmI || proj.aiStyle != ProjAIStyleID.Hook || proj.type == ProjectileType<WulfrumHook>())
+                {
+                    continue;
+                }
+
+                proj.Kill();
+            }
+
+            if (Main.projectile.Count(n => n.active && n.owner == self.whoAmI && n.type == ProjectileType<WulfrumHook>()) <= 1)
+            {
+                SoundEngine.PlaySound(WulfrumAcrobaticsPack.ShootSound, self.Center);
+
+                // 14NOV2024: Ozzatron: clamped mouse position unnecessary, only used for direction
+                Vector2 velocity = (Main.MouseWorld - self.Center).SafeNormalize(Vector2.One) * mp.ActualLaunchVelocity;
+                Projectile.NewProjectile(self.GetSource_ItemUse(mp.PackItem), self.Center, velocity, ProjectileType<WulfrumHook>(), 0, 0, self.whoAmI);
+
+                float angleToRightBelow = velocity.AngleBetween(Vector2.UnitY);
+                if (angleToRightBelow < MathHelper.PiOver2) //Put a cooldown on hooking down below. 
+                {
+                    int extraCooldown = (int)(Utils.GetLerpValue(MathHelper.PiOver2, 0f, angleToRightBelow) * 15); //Get more cooldown the straightest down youre aiming
+                    mp.hookCooldown = 15 + extraCooldown;
+                }
+            }
+        }
+
+        /*
+        private static Item QuickGrapple_GetItemToUse_PrioritizeAcrobaticsPack(On_Player.orig_QuickGrapple_GetItemToUse orig, Player self)
+        {
+            if (self.TryGetModPlayer<WulfrumPackPlayer>(out var mPlayer) && mPlayer.WulfrumPackEquipped && mPlayer.PackItem is not null)
+            {
+                return mPlayer.PackItem;
+            }
+
+            return orig(self);
+        }
+        */
 
         public override void ResetEffects()
         {
@@ -529,7 +637,8 @@ namespace CalamityMod.Items.Accessories
             if (!WulfrumPackEquipped)
                 return;
 
-            //Shoot a new hook 
+            //Shoot a new hook
+            /*
             if (triggersSet.Grapple && Player.releaseHook)
             {
                 //Clear any previous non-wulfrum hooks / Any hooks that just got shot (should already be handled by the global proj
@@ -560,11 +669,16 @@ namespace CalamityMod.Items.Accessories
                     }
                 }
             }
+            */
+
+            bool setControlUpFalse = false;
             if (Grappled && triggersSet.Up)
             {
                 SwingLength -= (strongerReel ? StaticHookReelSpeed : ReelSpeed);
                 Player.controlUp = false; //This is required to stop the player from bouncing off platforms when falling down and reeling in. Also prevents gravity swapping while hooked.
+                setControlUpFalse = true;
             }
+
             if (triggersSet.Down) //Static Hook doesn't effect this speed because it would be faster than your fall speed and feel janky.
             {
                 float length = ActualMaxLength;
@@ -575,9 +689,12 @@ namespace CalamityMod.Items.Accessories
                         SwingLength = length;
                 }
             }
+
             //Jumping out of the hook
             if (triggersSet.Jump && Player.releaseJump)
             {
+                var syncData = new WulfrumAcrobaticsJumpSync.Data();
+
                 foreach (Projectile p in Main.ActiveProjectiles)
                 {
                     if (p.owner != Player.whoAmI || p.type != ProjectileType<WulfrumHook>())
@@ -586,9 +703,10 @@ namespace CalamityMod.Items.Accessories
                     //Only clear hooks that are attached to stuff
                     if (p.ModProjectile is WulfrumHook claw && claw.State == WulfrumHook.HookState.Grappling)
                     {
-
                         float angleToUpright = (Player.Center - p.Center).AngleBetween(-Vector2.UnitY);
                         bool canJumpOffHook = angleToUpright > MathHelper.PiOver2 || Player.Distance(p.Center) < 38;// Don't do any jump stuff if the player is jumping from above the hook.
+
+                        syncData = syncData with { CanJumpOffHook = canJumpOffHook };
 
                         if (canJumpOffHook)
                         {
@@ -630,6 +748,28 @@ namespace CalamityMod.Items.Accessories
                     }
                 }
 
+                if (Main.netMode == NetmodeID.MultiplayerClient)
+                {
+                    WulfrumAcrobaticsJumpSync.Send(
+                        syncData with
+                        {
+                            PlayerWhoAmI = (byte)Player.whoAmI,
+                            SwingLength = SwingLength,
+                            PlayerVelocity = Player.velocity,
+                            PlayerJump = Player.jump,
+                            SetControlUpFalse = setControlUpFalse,
+                        }
+                    );
+                }
+            }
+            else
+            {
+                if (Main.netMode == NetmodeID.MultiplayerClient)
+                {
+                    WulfrumAcrobaticsLengthSync.Send(
+                        new WulfrumAcrobaticsLengthSync.Data((byte)Player.whoAmI, SwingLength, setControlUpFalse)
+                    );
+                }  
             }
         }
 
@@ -643,6 +783,187 @@ namespace CalamityMod.Items.Accessories
                 hookCache = Player.grappling[0];
                 Player.grappling[0] = -1;
                 Player.grapCount = 0;
+            }
+        }
+    }
+
+    internal sealed class WulfrumAcrobaticsSync : CalamityPacket
+    {
+        public static WulfrumAcrobaticsSync Instance { get; private set; }
+
+        public override byte MessageType => (byte)CalamityModMessageType.WulfrumAcrobaticsSync;
+
+        public static void Send(Player player, WulfrumPackPlayer mPlayer, Projectile proj, int toClient = -1, int ignoreClient = -1)
+        {
+            Send(
+                (byte)player.whoAmI,
+                mPlayer.SwingLength,
+                mPlayer.OldPosition,
+                proj.Center,
+                (byte)proj.whoAmI
+            );
+        }
+
+        private static void Send(
+            byte playerWhoAmI,
+            float swingLength,
+            Vector2 playerOldPos,
+            Vector2 projCenter,
+            byte projWhoAmI,
+            int toClient = -1,
+            int ignoreClient = -1
+        )
+        {
+            var packet = Instance.CreateBasePacket();
+            packet.Write(playerWhoAmI);
+            packet.Write(swingLength);
+            packet.WriteVector2(playerOldPos);
+            packet.WriteVector2(projCenter);
+            packet.Write(projWhoAmI);
+            packet.Send(toClient, ignoreClient);
+        }
+
+        public override void HandlePacket(in BinaryReader packet, int sender)
+        {
+            var playerWhoAmI = packet.ReadByte();
+            var swingLength = packet.ReadSingle();
+            var playerOldPos = packet.ReadVector2();
+            var projCenter = packet.ReadVector2();
+            var projWhoAmI = packet.ReadByte();
+
+            if (Main.player[playerWhoAmI].TryGetModPlayer<WulfrumPackPlayer>(out var mPlayer))
+            {
+                mPlayer.SwingLength = swingLength;
+                mPlayer.OldPosition = playerOldPos;
+                mPlayer.SetSegments(projCenter);
+                mPlayer.Grapple = projWhoAmI;
+            }
+
+            if (Main.netMode == NetmodeID.Server)
+            {
+                Send(
+                    playerWhoAmI,
+                    swingLength,
+                    playerOldPos,
+                    projCenter,
+                    projWhoAmI,
+                    ignoreClient: sender
+                );
+            }
+        }
+    }
+
+    internal sealed class WulfrumAcrobaticsJumpSync : CalamityPacket
+    {
+        public readonly record struct Data(
+            byte PlayerWhoAmI,
+            float SwingLength,
+            bool CanJumpOffHook,
+            Vector2 PlayerVelocity,
+            int PlayerJump,
+            bool SetControlUpFalse
+        );
+
+        public static WulfrumAcrobaticsJumpSync Instance { get; private set; }
+
+        public override byte MessageType => (byte)CalamityModMessageType.WulfrumAcrobaticsJumpSync;
+
+        public static void Send(Data data, int toClient = -1, int ignoreClient = -1)
+        {
+            var packet = Instance.CreateBasePacket();
+            packet.Write(data.PlayerWhoAmI);
+            packet.Write(data.SwingLength);
+            packet.Write(data.CanJumpOffHook);
+            packet.WriteVector2(data.PlayerVelocity);
+            packet.Write(data.PlayerJump);
+            packet.Write(data.SetControlUpFalse);
+            packet.Send(toClient, ignoreClient);
+        }
+
+        public override void HandlePacket(in BinaryReader packet, int sender)
+        {
+            var playerWhoAmI = packet.ReadByte();
+            var swingLength = packet.ReadSingle();
+            var canJumpOffHook = packet.ReadBoolean();
+            var playerVelocity = packet.ReadVector2();
+            var playerJump = packet.ReadInt32();
+            var setControlUpFalse = packet.ReadBoolean();
+
+            var player = Main.player[playerWhoAmI];
+            if (player.TryGetModPlayer<WulfrumPackPlayer>(out var mPlayer))
+            {
+                mPlayer.SwingLength = swingLength;
+            }
+
+            if (canJumpOffHook)
+            {
+                player.jump = playerJump;
+                player.velocity = playerVelocity;
+            }
+            else
+            {
+                player.releaseJump = false;
+            }
+
+            if (setControlUpFalse)
+            {
+                player.controlUp = false;
+            }
+
+            if (Main.netMode == NetmodeID.Server)
+            {
+                Send(
+                    new Data(playerWhoAmI, swingLength, canJumpOffHook, playerVelocity, playerJump, setControlUpFalse),
+                    ignoreClient: sender
+                );
+            }
+        }
+    }
+
+    internal sealed class WulfrumAcrobaticsLengthSync : CalamityPacket
+    {
+        public readonly record struct Data(
+            byte PlayerWhoAmI,
+            float SwingLength,
+            bool SetControlUpFalse
+        );
+
+        public static WulfrumAcrobaticsLengthSync Instance { get; private set; }
+
+        public override byte MessageType => (byte)CalamityModMessageType.WulfrumAcrobaticsLengthSync;
+
+        public static void Send(Data data, int toClient = -1, int ignoreClient = -1)
+        {
+            var packet = Instance.CreateBasePacket();
+            packet.Write(data.PlayerWhoAmI);
+            packet.Write(data.SwingLength);
+            packet.Write(data.SetControlUpFalse);
+            packet.Send(toClient, ignoreClient);
+        }
+
+        public override void HandlePacket(in BinaryReader packet, int sender)
+        {
+            var playerWhoAmI = packet.ReadByte();
+            var swingLength = packet.ReadSingle();
+            var setControlUpFalse = packet.ReadBoolean();
+
+            var player = Main.player[playerWhoAmI];
+            if (player.TryGetModPlayer<WulfrumPackPlayer>(out var mPlayer))
+            {
+                mPlayer.SwingLength = swingLength;
+            }
+
+            if (setControlUpFalse)
+            {
+                player.controlUp = false;
+            }
+
+            if (Main.netMode == NetmodeID.Server)
+            {
+                Send(
+                    new Data(playerWhoAmI, swingLength, setControlUpFalse),
+                    ignoreClient: sender
+                );
             }
         }
     }
