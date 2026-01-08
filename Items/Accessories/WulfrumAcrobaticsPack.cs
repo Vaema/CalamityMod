@@ -671,10 +671,12 @@ namespace CalamityMod.Items.Accessories
             }
             */
 
+            bool setControlUpFalse = false;
             if (Grappled && triggersSet.Up)
             {
                 SwingLength -= (strongerReel ? StaticHookReelSpeed : ReelSpeed);
                 Player.controlUp = false; //This is required to stop the player from bouncing off platforms when falling down and reeling in. Also prevents gravity swapping while hooked.
+                setControlUpFalse = true;
             }
 
             if (triggersSet.Down) //Static Hook doesn't effect this speed because it would be faster than your fall speed and feel janky.
@@ -755,6 +757,7 @@ namespace CalamityMod.Items.Accessories
                             SwingLength = SwingLength,
                             PlayerVelocity = Player.velocity,
                             PlayerJump = Player.jump,
+                            SetControlUpFalse = setControlUpFalse,
                         }
                     );
                 }
@@ -764,7 +767,7 @@ namespace CalamityMod.Items.Accessories
                 if (Main.netMode == NetmodeID.MultiplayerClient)
                 {
                     WulfrumAcrobaticsLengthSync.Send(
-                        new WulfrumAcrobaticsLengthSync.Data((byte)Player.whoAmI, SwingLength)
+                        new WulfrumAcrobaticsLengthSync.Data((byte)Player.whoAmI, SwingLength, setControlUpFalse)
                     );
                 }  
             }
@@ -857,7 +860,8 @@ namespace CalamityMod.Items.Accessories
             float SwingLength,
             bool CanJumpOffHook,
             Vector2 PlayerVelocity,
-            int PlayerJump
+            int PlayerJump,
+            bool SetControlUpFalse
         );
 
         public static WulfrumAcrobaticsJumpSync Instance { get; private set; }
@@ -872,6 +876,7 @@ namespace CalamityMod.Items.Accessories
             packet.Write(data.CanJumpOffHook);
             packet.WriteVector2(data.PlayerVelocity);
             packet.Write(data.PlayerJump);
+            packet.Write(data.SetControlUpFalse);
             packet.Send(toClient, ignoreClient);
         }
 
@@ -882,6 +887,7 @@ namespace CalamityMod.Items.Accessories
             var canJumpOffHook = packet.ReadBoolean();
             var playerVelocity = packet.ReadVector2();
             var playerJump = packet.ReadInt32();
+            var setControlUpFalse = packet.ReadBoolean();
 
             var player = Main.player[playerWhoAmI];
             if (player.TryGetModPlayer<WulfrumPackPlayer>(out var mPlayer))
@@ -899,10 +905,15 @@ namespace CalamityMod.Items.Accessories
                 player.releaseJump = false;
             }
 
+            if (setControlUpFalse)
+            {
+                player.controlUp = false;
+            }
+
             if (Main.netMode == NetmodeID.Server)
             {
                 Send(
-                    new Data(playerWhoAmI, swingLength, canJumpOffHook, playerVelocity, playerJump),
+                    new Data(playerWhoAmI, swingLength, canJumpOffHook, playerVelocity, playerJump, setControlUpFalse),
                     ignoreClient: sender
                 );
             }
@@ -913,7 +924,8 @@ namespace CalamityMod.Items.Accessories
     {
         public readonly record struct Data(
             byte PlayerWhoAmI,
-            float SwingLength
+            float SwingLength,
+            bool SetControlUpFalse
         );
 
         public static WulfrumAcrobaticsLengthSync Instance { get; private set; }
@@ -925,6 +937,7 @@ namespace CalamityMod.Items.Accessories
             var packet = Instance.CreateBasePacket();
             packet.Write(data.PlayerWhoAmI);
             packet.Write(data.SwingLength);
+            packet.Write(data.SetControlUpFalse);
             packet.Send(toClient, ignoreClient);
         }
 
@@ -932,16 +945,23 @@ namespace CalamityMod.Items.Accessories
         {
             var playerWhoAmI = packet.ReadByte();
             var swingLength = packet.ReadSingle();
+            var setControlUpFalse = packet.ReadBoolean();
 
-            if (Main.player[playerWhoAmI].TryGetModPlayer<WulfrumPackPlayer>(out var mPlayer))
+            var player = Main.player[playerWhoAmI];
+            if (player.TryGetModPlayer<WulfrumPackPlayer>(out var mPlayer))
             {
                 mPlayer.SwingLength = swingLength;
+            }
+
+            if (setControlUpFalse)
+            {
+                player.controlUp = false;
             }
 
             if (Main.netMode == NetmodeID.Server)
             {
                 Send(
-                    new Data(playerWhoAmI, swingLength),
+                    new Data(playerWhoAmI, swingLength, setControlUpFalse),
                     ignoreClient: sender
                 );
             }
