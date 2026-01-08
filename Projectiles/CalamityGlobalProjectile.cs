@@ -3073,9 +3073,12 @@ namespace CalamityMod.Projectiles
                         var totalTime = 60 - speedup;
                         if (TimerToCatch + 90 >= 160 - owner.HeldItem.fishingPole && CatchTime >= 0)
                         {
+                            // TODO: Implications of rand here?
                             if (PersistentFishingData == 0)
                                 PersistentFishingData = Main.rand.NextBool() ? 1 : -1;
                             var timer = TimerToCatch - 160 - owner.HeldItem.fishingPole;
+
+                            // TODO: Fine for others to see?
                             SmallSplashAtOffset(new Vector2(200 * PersistentFishingData * (timer / 90f), 0));
                         }
                         if (TimerToCatch >= 160 - owner.HeldItem.fishingPole && CatchTime >= 0)
@@ -3091,10 +3094,16 @@ namespace CalamityMod.Projectiles
                         }
                         if (CatchTime < 0 && CatchTime % totalTime == 0)
                         {
+                            // TODO: Fine for others to see?
                             Splash();
+                            // TODO: Implications of rand here?
                             PersistentFishingData = Main.rand.Next(0, 4);
-                            var particle = new CustomSpark(projectile.Center, Vector2.UnitX.RotatedBy(PersistentFishingData * MathHelper.PiOver2) * 10, "CalamityMod/Particles/HighResHollowCircleHardEdgeAlt", false, 45 - speedup, 0.04f, Color.Blue, new(1, 2), shrinkSpeed: -0.2f);
-                            GeneralParticleHandler.SpawnParticle(particle);
+
+                            if (owner.whoAmI == Main.myPlayer)
+                            {
+                                var particle = new CustomSpark(projectile.Center, Vector2.UnitX.RotatedBy(PersistentFishingData * MathHelper.PiOver2) * 10, "CalamityMod/Particles/HighResHollowCircleHardEdgeAlt", false, 45 - speedup, 0.04f, Color.Blue, new(1, 2), shrinkSpeed: -0.2f);
+                                GeneralParticleHandler.SpawnParticle(particle);
+                            }
                         }
                         if (CatchTime < 0 && CatchTime % totalTime == -15)
                         {
@@ -3121,16 +3130,18 @@ namespace CalamityMod.Projectiles
                             }
                             else
                             {
-
-                                if (playerDir >= 0)
+                                if (owner.whoAmI == Main.myPlayer)
                                 {
-                                    var particle = new CustomSpark(projectile.Center, Vector2.UnitX.RotatedBy(playerDir * MathHelper.PiOver2) * 10, "CalamityMod/Particles/HighResHollowCircleHardEdgeAlt", false, 15, 0.04f, Color.Red, new(1, 2), shrinkSpeed: -0.2f);
-                                    GeneralParticleHandler.SpawnParticle(particle);
-                                }
-                                else
-                                {
-                                    var particle = new CustomSpark(projectile.Center, Vector2.Zero, "CalamityMod/Particles/HighResHollowCircleHardEdge", false, 15, 0.06f, Color.Red, Vector2.One);
-                                    GeneralParticleHandler.SpawnParticle(particle);
+                                    if (playerDir >= 0)
+                                    {
+                                        var particle = new CustomSpark(projectile.Center, Vector2.UnitX.RotatedBy(playerDir * MathHelper.PiOver2) * 10, "CalamityMod/Particles/HighResHollowCircleHardEdgeAlt", false, 15, 0.04f, Color.Red, new(1, 2), shrinkSpeed: -0.2f);
+                                        GeneralParticleHandler.SpawnParticle(particle);
+                                    }
+                                    else
+                                    {
+                                        var particle = new CustomSpark(projectile.Center, Vector2.Zero, "CalamityMod/Particles/HighResHollowCircleHardEdge", false, 15, 0.06f, Color.Red, Vector2.One);
+                                        GeneralParticleHandler.SpawnParticle(particle);
+                                    }
                                 }
                                 TimerToCatch = 0;
                                 CatchTime = 0;
@@ -3152,8 +3163,6 @@ namespace CalamityMod.Projectiles
                         }
                         if (projectile.ai[0] == 0)
                         {
-
-
                             projectile.ai[1] = CatchTime;
                             projectile.localAI[1] = TimerToCatch;
                             if (CaughtItemID != -1 && isReelingIn == 0)
@@ -3217,32 +3226,35 @@ namespace CalamityMod.Projectiles
                                 projectile.FishingCheck();
                                 if (projectile.ai[1] < 0)
                                 {
-
                                     CaughtItemID = (int)projectile.localAI[1];
                                     projectile.ai[1] = 0;
                                     projectile.localAI[1] = 0;
-                                    for (var i = 0; i < 1000; i++)
+
+                                    if (owner.whoAmI == Main.myPlayer)
                                     {
-                                        var vectorToCheck = projectile.Center + new Vector2(Main.rand.Next(-200, 201), Main.rand.Next(-200, 201));
-                                        var tileCoordsToCheck = vectorToCheck.ToSafeTileCoordinates();
-                                        if (new Rectangle((int)Main.screenPosition.X, (int)Main.screenPosition.Y, Main.screenWidth, Main.screenHeight).Contains((int)vectorToCheck.X, (int)vectorToCheck.Y) && !Main.tile[tileCoordsToCheck.X, tileCoordsToCheck.Y].IsTileSolid() && Main.tile[tileCoordsToCheck.X, tileCoordsToCheck.Y].LiquidAmount > 0)
+                                        for (var i = 0; i < 1000; i++)
                                         {
-                                            if (projectile.localAI[2] >= 1)
+                                            var vectorToCheck = projectile.Center + new Vector2(Main.rand.Next(-200, 201), Main.rand.Next(-200, 201));
+                                            var tileCoordsToCheck = vectorToCheck.ToSafeTileCoordinates();
+                                            if (new Rectangle((int)Main.screenPosition.X, (int)Main.screenPosition.Y, Main.screenWidth, Main.screenHeight).Contains((int)vectorToCheck.X, (int)vectorToCheck.Y) && !Main.tile[tileCoordsToCheck.X, tileCoordsToCheck.Y].IsTileSolid() && Main.tile[tileCoordsToCheck.X, tileCoordsToCheck.Y].LiquidAmount > 0)
                                             {
-                                                int customSonarText = (int)(projectile.localAI[2] - 1);
-                                                if (Main.popupText[customSonarText].sonar)
+                                                if (projectile.localAI[2] >= 1)
                                                 {
-                                                    Main.popupText[customSonarText].position = vectorToCheck - FontAssets.MouseText.Value.MeasureString(Main.popupText[customSonarText].name) / 2f;
+                                                    int customSonarText = (int)(projectile.localAI[2] - 1);
+                                                    if (Main.popupText[customSonarText].sonar)
+                                                    {
+                                                        Main.popupText[customSonarText].position = vectorToCheck - FontAssets.MouseText.Value.MeasureString(Main.popupText[customSonarText].name) / 2f;
+                                                    }
                                                 }
+                                                PersistentFishingDataVector2 = vectorToCheck;
+                                                TimerToCatch = 600;
+                                                break;
                                             }
-                                            PersistentFishingDataVector2 = vectorToCheck;
-                                            TimerToCatch = 600;
-                                            break;
                                         }
                                     }
                                 }
                             }
-                            if (PersistentFishingDataVector2 != Vector2.Zero)
+                            if (PersistentFishingDataVector2 != Vector2.Zero && owner.whoAmI == Main.myPlayer)
                             {
                                 Dust.NewDustPerfect(PersistentFishingDataVector2, DustID.Smoke);
                                 if (Main.rand.NextBool(3))
@@ -3254,7 +3266,7 @@ namespace CalamityMod.Projectiles
                             }
 
                             //When in lava, give the bobber a particle over it to show its location
-                            if (projectile.lavaWet)
+                            if (projectile.lavaWet && owner.whoAmI == Main.myPlayer)
                             {
                                 var particle = new CustomSpark(projectile.Center, Vector2.Zero, "CalamityMod/Particles/HighResHollowCircleHardEdge", false, 2, 0.01f, Color.DarkGray, Vector2.One);
                                 GeneralParticleHandler.SpawnParticle(particle);
@@ -3381,10 +3393,13 @@ namespace CalamityMod.Projectiles
                         {
                             if (PersistentFishingData == 0)
                                 PersistentFishingData = Main.rand.NextBool() ? 1 : -1;
-                            var timer = TimerToCatch - 300;
-                            SmallSplashAtOffset(new Vector2(200 * PersistentFishingData * (timer / 90f), 0));
 
-                            SmallDustAtOffset(new Vector2(200 * PersistentFishingData * (timer / 90f), 0), DustID.BlueCrystalShard);
+                            if (owner.whoAmI == Main.myPlayer)
+                            {
+                                var timer = TimerToCatch - 300;
+                                SmallSplashAtOffset(new Vector2(200 * PersistentFishingData * (timer / 90f), 0));
+                                SmallDustAtOffset(new Vector2(200 * PersistentFishingData * (timer / 90f), 0), DustID.BlueCrystalShard);
+                            }
                         }
                         if (TimerToCatch >= 300 && CatchTime >= 0)
                         {
@@ -3397,7 +3412,7 @@ namespace CalamityMod.Projectiles
                             }
                             TimerToCatch = 0;
                         }
-                        if (CatchTime < 0 && CatchTime % totalTime == 0)
+                        if (CatchTime < 0 && CatchTime % totalTime == 0 && owner.whoAmI == Main.myPlayer)
                         {
                             Splash();
                             PersistentFishingData = Main.rand.Next(0, 2);
@@ -3421,16 +3436,18 @@ namespace CalamityMod.Projectiles
                             }
                             else
                             {
-
-                                if (playerDir >= 0)
+                                if (owner.whoAmI == Main.myPlayer)
                                 {
-                                    var particle = new CustomSpark(projectile.Center, Vector2.UnitX.RotatedBy(playerDir * MathHelper.Pi) * 10, "CalamityMod/Particles/HighResHollowCircleHardEdgeAlt", false, 15, 0.04f, Color.Red, new(1, 2), shrinkSpeed: -0.2f);
-                                    GeneralParticleHandler.SpawnParticle(particle);
-                                }
-                                else
-                                {
-                                    var particle = new CustomSpark(projectile.Center, Vector2.Zero, "CalamityMod/Particles/HighResHollowCircleHardEdge", false, 15, 0.06f, Color.Red, Vector2.One);
-                                    GeneralParticleHandler.SpawnParticle(particle);
+                                    if (playerDir >= 0)
+                                    {
+                                        var particle = new CustomSpark(projectile.Center, Vector2.UnitX.RotatedBy(playerDir * MathHelper.Pi) * 10, "CalamityMod/Particles/HighResHollowCircleHardEdgeAlt", false, 15, 0.04f, Color.Red, new(1, 2), shrinkSpeed: -0.2f);
+                                        GeneralParticleHandler.SpawnParticle(particle);
+                                    }
+                                    else
+                                    {
+                                        var particle = new CustomSpark(projectile.Center, Vector2.Zero, "CalamityMod/Particles/HighResHollowCircleHardEdge", false, 15, 0.06f, Color.Red, Vector2.One);
+                                        GeneralParticleHandler.SpawnParticle(particle);
+                                    }
                                 }
                                 TimerToCatch = 0;
                                 CatchTime = 0;
@@ -3544,7 +3561,7 @@ namespace CalamityMod.Projectiles
                             projectile.velocity *= 0.99f;
 
                         //When in lava, give the bobber a particle over it to show its location
-                        if (projectile.lavaWet)
+                        if (projectile.lavaWet && owner.whoAmI == Main.myPlayer)
                         {
                             var particle = new CustomSpark(projectile.Center, Vector2.Zero, "CalamityMod/Particles/HighResHollowCircleHardEdge", false, 2, 0.01f, Color.DarkGray, Vector2.One);
                             GeneralParticleHandler.SpawnParticle(particle);
@@ -3614,7 +3631,7 @@ namespace CalamityMod.Projectiles
                                     }
                                 }
                             }
-                            if (PersistentFishingDataVector2 != Vector2.Zero && owner.miscCounter % 15 == 0)
+                            if (PersistentFishingDataVector2 != Vector2.Zero && owner.miscCounter % 15 == 0 && owner.whoAmI == Main.myPlayer)
                             {
 
                                 var particle = new CustomSpark(PersistentFishingDataVector2, Vector2.Zero, "CalamityMod/Particles/HighResHollowCircleHardEdge", false, 25, 0.02f, Color.Green, Vector2.One);
