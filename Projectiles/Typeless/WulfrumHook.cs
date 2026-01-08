@@ -225,7 +225,7 @@ namespace CalamityMod.Projectiles.Typeless
             if (tileVisualHitbox.HasValue)
                 Projectile.Center = tileVisualHitbox.Value.Center.ToVector2();
 
-            if (Owner.whoAmI == Main.myPlayer)
+            if (Owner.whoAmI == Main.myPlayer && Main.netMode == NetmodeID.MultiplayerClient)
             {
                 Projectile.netUpdate = true;
                 NetMessage.SendData(MessageID.PlayerControls, -1, -1, null, Owner.whoAmI);
