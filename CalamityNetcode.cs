@@ -212,5 +212,7 @@ namespace CalamityMod
         SyncPlayerDrawParameter,
 
         DialogueDisplayStart,
+
+        WulfrumAcrobaticsSync,
     }
 }

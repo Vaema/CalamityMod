@@ -1,9 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
+using System.Net.Sockets;
 using CalamityMod.DataStructures;
 using CalamityMod.Items.Materials;
+using CalamityMod.Packets;
 using CalamityMod.Projectiles.Typeless;
+using CalamityMod.World;
 using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.Audio;
@@ -22,7 +26,6 @@ namespace CalamityMod.Items.Accessories
         public static readonly SoundStyle ShootSound = new("CalamityMod/Sounds/Custom/WulfrumHookShoot") { Volume = 0.7f, MaxInstances = 1, SoundLimitBehavior = SoundLimitBehavior.ReplaceOldest };
         public static readonly SoundStyle GrabSound = new("CalamityMod/Sounds/Custom/WulfrumHookGrapple") { Volume = 0.7f, MaxInstances = 1, SoundLimitBehavior = SoundLimitBehavior.ReplaceOldest };
         public static readonly SoundStyle ReleaseSound = new("CalamityMod/Sounds/Custom/WulfrumHookDisengage") { Volume = 0.7f, MaxInstances = 1, SoundLimitBehavior = SoundLimitBehavior.ReplaceOldest };
-
 
         public override void SetDefaults()
         {
@@ -73,6 +76,7 @@ namespace CalamityMod.Items.Accessories
         }
 
         //Prevent players with a wulfrum pack to spawn any non-wulfrum hooks.
+        /*
         public override void OnSpawn(Projectile projectile, IEntitySource source)
         {
             Player owner = Main.player[projectile.owner];
@@ -80,7 +84,7 @@ namespace CalamityMod.Items.Accessories
             {
                 projectile.active = false;
             }
-        }
+        }*/
     }
 
     public class WulfrumPackPlayer : ModPlayer
@@ -225,6 +229,40 @@ namespace CalamityMod.Items.Accessories
         }
 
         public bool PlayerOnGround => Collision.SolidCollision(Player.position + Vector2.UnitY * 2f * Player.gravDir, Player.width, Player.height, false);
+
+        public override void Load()
+        {
+            base.Load();
+
+            /*
+            On_Player.QuickGrapple += (orig, self) =>
+            {
+                var player = self.GetModPlayer<WulfrumPackPlayer>();
+                if (!player.WulfrumPackEquipped)
+                {
+                    orig(self);
+                    return;
+                }
+
+                if (player.hookCooldown > 0)
+                {
+
+                }
+            };
+            */
+
+            On_Player.QuickGrapple_GetItemToUse += QuickGrapple_GetItemToUse_PrioritizeAcrobaticsPack;
+        }
+
+        private static Item QuickGrapple_GetItemToUse_PrioritizeAcrobaticsPack(On_Player.orig_QuickGrapple_GetItemToUse orig, Player self)
+        {
+            if (self.TryGetModPlayer<WulfrumPackPlayer>(out var mPlayer) && mPlayer.WulfrumPackEquipped && mPlayer.PackItem is not null)
+            {
+                return mPlayer.PackItem;
+            }
+
+            return orig(self);
+        }
 
         public override void ResetEffects()
         {
@@ -643,6 +681,72 @@ namespace CalamityMod.Items.Accessories
                 hookCache = Player.grappling[0];
                 Player.grappling[0] = -1;
                 Player.grapCount = 0;
+            }
+        }
+    }
+
+    internal sealed class WulfrumAcrobaticsSync : CalamityPacket
+    {
+        public static WulfrumAcrobaticsSync Instance { get; private set; }
+
+        public override byte MessageType => (byte)CalamityModMessageType.WulfrumAcrobaticsSync;
+
+        public static void Send(Player player, WulfrumPackPlayer mPlayer, Projectile proj, int toClient = -1, int ignoreClient = -1)
+        {
+            Send(
+                (byte)player.whoAmI,
+                mPlayer.SwingLength,
+                mPlayer.OldPosition,
+                proj.Center,
+                (byte)proj.whoAmI
+            );
+        }
+
+        private static void Send(
+            byte playerWhoAmI,
+            float swingLength,
+            Vector2 playerOldPos,
+            Vector2 projCenter,
+            byte projWhoAmI,
+            int toClient = -1,
+            int ignoreClient = -1
+        )
+        {
+            var packet = Instance.CreateBasePacket();
+            packet.Write(playerWhoAmI);
+            packet.Write(swingLength);
+            packet.WriteVector2(playerOldPos);
+            packet.WriteVector2(projCenter);
+            packet.Write(projWhoAmI);
+            packet.Send(toClient, ignoreClient);
+        }
+
+        public override void HandlePacket(in BinaryReader packet, int sender)
+        {
+            var playerWhoAmI = packet.ReadByte();
+            var swingLength = packet.ReadSingle();
+            var playerOldPos = packet.ReadVector2();
+            var projCenter = packet.ReadVector2();
+            var projWhoAmI = packet.ReadByte();
+
+            if (Main.player[playerWhoAmI].TryGetModPlayer<WulfrumPackPlayer>(out var mPlayer))
+            {
+                mPlayer.SwingLength = swingLength;
+                mPlayer.OldPosition = playerOldPos;
+                mPlayer.SetSegments(projCenter);
+                mPlayer.Grapple = projWhoAmI;
+            }
+
+            if (Main.netMode == NetmodeID.Server)
+            {
+                Send(
+                    playerWhoAmI,
+                    swingLength,
+                    playerOldPos,
+                    projCenter,
+                    projWhoAmI,
+                    ignoreClient: sender
+                );
             }
         }
     }
