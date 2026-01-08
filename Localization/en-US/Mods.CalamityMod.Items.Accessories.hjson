@@ -3,8 +3,8 @@ Abaddon: {
 	Tooltip:
 		'''
 		{$CommonItemTooltip.PercentIncreasedCritChance}
-		Critical strikes burn enemies with [cbuff:CalamityMod/BrimstoneFlames] that scales off of your crit chance
-		When crit, enemies spread all debuffs they are afflicted with that are weaker than your [cbuff:CalamityMod/BrimstoneFlames] to nearby enemies
+		Critical strikes burn enemies with [cbuff:CalamityMod/BrimstoneFlames] that scales off of your critical strike chance
+		When critically hit, enemies spread all debuffs they are afflicted with that are weaker than your [cbuff:CalamityMod/BrimstoneFlames] to nearby enemies
 		Reduces damage taken from [cbuff:CalamityMod/BrimstoneFlames] by {1}%
 		Current [cbuff:CalamityMod/BrimstoneFlames] damage: [DAMAGE] DPS
 		'''
@@ -2063,9 +2063,9 @@ VoidofExtinction: {
 	Tooltip:
 		'''
 		{$CommonItemTooltip.PercentIncreasedCritChance}
-		Critical strikes burn enemies with [cbuff:CalamityMod/BrimstoneFlames] that greatly scales off of your crit chance
-		When crit, enemies spread all debuffs they are afflicted with that are weaker than your [cbuff:CalamityMod/BrimstoneFlames] to nearby enemies
-		Crits deal an additional 2% damage per debuff on the enemy
+		Critical strikes burn enemies with [cbuff:CalamityMod/BrimstoneFlames] that greatly scales off of your critical strike chance
+		When critically hit, enemies spread all debuffs they are afflicted with that are weaker than your [cbuff:CalamityMod/BrimstoneFlames] to nearby enemies
+		Critical strikes deal an additional 2% damage per debuff on the enemy
 		Reduces damage taken from [cbuff:CalamityMod/BrimstoneFlames] by {1}%
 		Current [cbuff:CalamityMod/BrimstoneFlames] damage: [DAMAGE] DPS
 		'''
