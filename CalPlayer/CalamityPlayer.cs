@@ -3447,8 +3447,9 @@ namespace CalamityMod.CalPlayer
                 if (Player.armor[i].type == itemID)
                     return Player.armor[i];
             }
-            return new Item();
+            return ContentSamples.ItemsByType[itemID];
         }
+        public Item FindAccessory<T>() where T : ModItem => FindAccessory(ItemType<T>());
 
         public override void ProcessTriggers(TriggersSet triggersSet)
         {
@@ -3458,7 +3459,7 @@ namespace CalamityMod.CalPlayer
 
             if (ascendantInsignia && Main.myPlayer == Player.whoAmI && CalamityKeybinds.AscendantInsigniaHotKey.JustPressed && ascendantInsigniaCooldown <= 0)
             {
-                var source = Player.GetSource_Accessory(FindAccessory(ItemType<AscendantInsignia>()));
+                var source = Player.GetSource_Accessory(FindAccessory<AscendantInsignia>());
                 Projectile.NewProjectile(source, Player.Center - Vector2.UnitY * 45f, Vector2.Zero, ProjectileType<AscendantAura>(), 0, 0f);
                 SoundEngine.PlaySound(new SoundStyle("CalamityMod/Sounds/Item/AscendantActivate"));
                 ascendantInsigniaCooldown = AscendantInsignia.AbilityCooldown;
@@ -3556,7 +3557,7 @@ namespace CalamityMod.CalPlayer
                         angelAmt += 1f;
                 }
 
-                var source = Player.GetSource_Accessory(FindAccessory(ItemType<AngelicAlliance>()));
+                var source = Player.GetSource_Accessory(FindAccessory<AngelicAlliance>());
                 for (int projIndex = 0; projIndex < angelAmt; projIndex++)
                 {
                     Projectile proj = Main.projectile[projIndex];
@@ -4099,7 +4100,7 @@ namespace CalamityMod.CalPlayer
                 }
                 if (Player.statMana >= stormMana && !Player.silence)
                 {
-                    var source = Player.GetSource_ItemUse(ContentSamples.ItemsByType[ItemType<ForbiddenCirclet>()]);
+                    var source = Player.GetSource_ItemUse(FindAccessory<ForbiddenCirclet>());
                     Player.manaRegenDelay = (int)Player.maxRegenDelay;
                     Player.statMana -= stormMana;
 
@@ -4370,7 +4371,7 @@ namespace CalamityMod.CalPlayer
                         // Check if player hit some form of solid resistance (the ground)
                         if (0 == Player.velocity.Y)
                         {
-                            var source = Player.GetSource_Accessory(FindAccessory(ItemType<InterstellarStompers>()));
+                            var source = Player.GetSource_Accessory(FindAccessory<InterstellarStompers>());
                             // Spawn explosion. ai[0] is used for transferring the recorded falling time
 
                             int damage = Player.CalcIntDamage<MeleeDamageClass>(InterstellarStompers.SlamDamage);
@@ -5356,7 +5357,7 @@ namespace CalamityMod.CalPlayer
             }
             if (veneratedLocket)
             {
-                var LocketSource = Player.GetSource_Accessory(FindAccessory(ItemType<VeneratedLocket>()));
+                var LocketSource = Player.GetSource_Accessory(FindAccessory<VeneratedLocket>());
                 if (item.CountsAsClass<RogueDamageClass>())
                 {
                     if (!CalamityItemSets.DisablesVeneratedLocketEffect[item.type])
