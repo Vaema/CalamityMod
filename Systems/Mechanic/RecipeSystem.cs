@@ -14,6 +14,7 @@ using CalamityMod.Items.Placeables.FurnitureDriftwood;
 using CalamityMod.Items.Placeables.FurnitureAcidwood;
 using CalamityMod.Items.Placeables.Crags;
 using CalamityMod.Items.Placeables.SunkenSea;
+using CalamityMod.Items.Potions.Food;
 using CalamityMod.Items.Tools;
 using CalamityMod.Items.Weapons.Melee;
 using CalamityMod.Tiles.Furniture.CraftingStations;
@@ -50,13 +51,27 @@ namespace CalamityMod.Systems
             RecipeGroup firefly = RecipeGroup.recipeGroups[RecipeGroupID.Fireflies];
             firefly.ValidItems.Add(ItemType<TwinklerItem>());
 
-            // Astral, Sunken Sea and Sulphurous Sea Sand is Sand
+            RecipeGroup fruit = RecipeGroup.recipeGroups[RecipeGroupID.Fruit];
+            fruit.ValidItems.Add(ItemType<Barberry>());
+            fruit.ValidItems.Add(ItemType<Cometfruit>());
+            fruit.ValidItems.Add(ItemType<Jackfruit>());
+            fruit.ValidItems.Add(ItemType<Lotus>());
+            fruit.ValidItems.Add(ItemType<Mangosteen>());
+            fruit.ValidItems.Add(ItemType<Salak>());
+
+            // Astral, Sunken Sea and Sulphurous Sea sand are Sand
+            // This recipe group also naturally includes Hardened Sand, but not Sandstone
             RecipeGroup sand = RecipeGroup.recipeGroups[RecipeGroupID.Sand];
             sand.ValidItems.Add(ItemType<AstralSand>());
+            sand.ValidItems.Add(ItemType<HardenedAstralSand>());
+            sand.ValidItems.Add(ItemType<Dunesand>());
             sand.ValidItems.Add(ItemType<EutrophicSand>());
+            sand.ValidItems.Add(ItemType<HardenedEutrophicSand>());
+            sand.ValidItems.Add(ItemType<PolypSand>());
+            sand.ValidItems.Add(ItemType<VolcanicSand>());
             sand.ValidItems.Add(ItemType<SulphurousSand>());
 
-            // Acidwood is Wood
+            // Acidwood and Driftwood are Wood
             RecipeGroup wood = RecipeGroup.recipeGroups[RecipeGroupID.Wood];
             wood.ValidItems.Add(ItemType<Acidwood>());
             wood.ValidItems.Add(ItemType<Driftwood>());
