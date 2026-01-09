@@ -1297,6 +1297,9 @@ namespace CalamityMod.CalPlayer
                 }
             }
 
+            if (brittleStar && brittleStarBuffMode)
+                Player.statDefense += 4 * Player.ownedProjectileCounts[ModContent.ProjectileType<BrittleStarMinion>()];
+
             // Reduce the rate of recovery of the Lifesteal variable
             // Classic Mode: 36 HP/s to 12 HP/s
             // Expert Mode: 30 HP/s to 9 HP/s
