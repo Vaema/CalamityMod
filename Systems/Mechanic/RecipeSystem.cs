@@ -984,12 +984,12 @@ namespace CalamityMod.Systems
             r.DisableDecraft();
 
             // Helium Moss Brick
-            r = Recipe.Create(ItemID.VioletMossBlock, 10);
-            r.AddIngredient(ItemID.VioletMoss);
+            r = Recipe.Create(ItemID.RainbowMossBlock, 10);
+            r.AddIngredient(ItemID.RainbowMoss);
             r.AddIngredient<AstralClay>(10);
             r.AddTile(TileID.Furnaces);
             r.Register();
-            r.SortAfterFirstRecipesOf(ItemID.VioletMossBlock);
+            r.SortAfterFirstRecipesOf(ItemID.RainbowMossBlock);
             r.DisableDecraft();
 
             // Krypton Moss Brick
@@ -1011,12 +1011,12 @@ namespace CalamityMod.Systems
             r.DisableDecraft();
 
             // Neon Moss Brick
-            r = Recipe.Create(ItemID.RainbowMossBlock, 10);
-            r.AddIngredient(ItemID.RainbowMoss);
+            r = Recipe.Create(ItemID.VioletMossBlock, 10);
+            r.AddIngredient(ItemID.VioletMoss);
             r.AddIngredient<AstralClay>(10);
             r.AddTile(TileID.Furnaces);
             r.Register();
-            r.SortAfterFirstRecipesOf(ItemID.RainbowMossBlock);
+            r.SortAfterFirstRecipesOf(ItemID.VioletMossBlock);
             r.DisableDecraft();
 
             // Pink Vase
