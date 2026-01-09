@@ -41,7 +41,7 @@ namespace CalamityMod.Projectiles.Melee.Shortswords
             Projectile.extraUpdates = 3;
         }
 
-        public override void Spawn(IEntitySource source)
+        public override void Spawn()
         {
             angle = angle.RotatedByRandom(0.25f);
         }

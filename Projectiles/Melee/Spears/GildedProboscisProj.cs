@@ -36,7 +36,7 @@ namespace CalamityMod.Projectiles.Melee.Spears
             Projectile.extraUpdates = 5; //ExtraUpdates help make the VFX smoother
             Projectile.noEnchantmentVisuals = true;
         }
-        public override void Spawn(IEntitySource source)
+        public override void Spawn()
         {
             //This sets variables for the spear in general, as well as the secondary attack
             //The secondary attack is the "default" because it was coded first

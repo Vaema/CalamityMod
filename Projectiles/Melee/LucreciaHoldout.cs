@@ -52,7 +52,7 @@ namespace CalamityMod.Projectiles.Melee
             Projectile.width = Projectile.height = 54;
         }
 
-        public override void Spawn(IEntitySource source)
+        public override void Spawn()
         {
             var player = Main.player[Projectile.owner];
             var modplayer = player.GetModPlayer<BaseSwordHoldoutPlayer>();
@@ -179,12 +179,13 @@ namespace CalamityMod.Projectiles.Melee
                     Projectile.scale = baseScale * MathHelper.Lerp(0.9f, 1.4f, eased);
 
                     // VFX vars
-                    Vector2 mousePosition = Main.MouseWorld;
+                    Vector2 mousePosition = player.Calamity().mouseWorld;
                     Vector2 fireDirection = Vector2.Normalize(mousePosition - player.Center);
 
                     if (!trailFXTriggered)
                     {
-                        Projectile.NewProjectile(Projectile.GetSource_FromThis(), player.Center, fireDirection * 5, ModContent.ProjectileType<LucreciaDNATrailCreator>(), Projectile.damage * 8, Projectile.knockBack, Projectile.owner, 0f, 0f);
+                        if (Main.myPlayer == Projectile.owner)
+                            Projectile.NewProjectile(Projectile.GetSource_FromThis(), player.Center, fireDirection * 5, ModContent.ProjectileType<LucreciaDNATrailCreator>(), Projectile.damage * 8, Projectile.knockBack, Projectile.owner, 0f, 0f);
                         
                         SoundStyle swish = new("CalamityMod/Sounds/Custom/MeatySlash");
                         SoundEngine.PlaySound(swish with { Volume = 0.3f, Pitch = Main.rand.NextFloat(0.1f, 0.2f) }, Projectile.Center);
