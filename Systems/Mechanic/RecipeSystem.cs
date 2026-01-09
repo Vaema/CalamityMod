@@ -671,7 +671,7 @@ namespace CalamityMod.Systems
                 Register()
                 .DisableDecraft();
 
-            AddAstralClayRecipes();
+            AddAstralRecipeVariants();
             AddBloodOrbPotionRecipes();
             AddCookedFood();
             AddMiscItemRecipes();
@@ -953,13 +953,22 @@ namespace CalamityMod.Systems
         }
         #endregion
 
-        #region Astral Clay
-        private static void AddAstralClayRecipes()
+        #region Astral Recipe Variants
+        private static void AddAstralRecipeVariants()
         {
+            #region Astral Clay
             // Intentionally excluding Red Brick and Red Stucco recipes
+            // Argon Moss Brick
+            Recipe r = Recipe.Create(ItemID.ArgonMossBlock, 10);
+            r.AddIngredient(ItemID.ArgonMoss);
+            r.AddIngredient<AstralClay>(10);
+            r.AddTile(TileID.Furnaces);
+            r.Register();
+            r.SortAfterFirstRecipesOf(ItemID.ArgonMossBlock);
+            r.DisableDecraft();
 
             // Bowl
-            Recipe r = Recipe.Create(ItemID.Bowl);
+            r = Recipe.Create(ItemID.Bowl);
             r.AddIngredient<AstralClay>(2);
             r.AddTile(TileID.Furnaces);
             r.Register();
@@ -972,6 +981,42 @@ namespace CalamityMod.Systems
             r.AddTile(TileID.Furnaces);
             r.Register();
             r.SortAfterFirstRecipesOf(ItemID.ClayPot);
+            r.DisableDecraft();
+
+            // Helium Moss Brick
+            r = Recipe.Create(ItemID.VioletMossBlock, 10);
+            r.AddIngredient(ItemID.VioletMoss);
+            r.AddIngredient<AstralClay>(10);
+            r.AddTile(TileID.Furnaces);
+            r.Register();
+            r.SortAfterFirstRecipesOf(ItemID.VioletMossBlock);
+            r.DisableDecraft();
+
+            // Krypton Moss Brick
+            r = Recipe.Create(ItemID.KryptonMossBlock, 10);
+            r.AddIngredient(ItemID.KryptonMoss);
+            r.AddIngredient<AstralClay>(10);
+            r.AddTile(TileID.Furnaces);
+            r.Register();
+            r.SortAfterFirstRecipesOf(ItemID.KryptonMossBlock);
+            r.DisableDecraft();
+
+            // Lava Moss Brick
+            r = Recipe.Create(ItemID.LavaMossBlock, 10);
+            r.AddIngredient(ItemID.LavaMoss);
+            r.AddIngredient<AstralClay>(10);
+            r.AddTile(TileID.Furnaces);
+            r.Register();
+            r.SortAfterFirstRecipesOf(ItemID.LavaMossBlock);
+            r.DisableDecraft();
+
+            // Neon Moss Brick
+            r = Recipe.Create(ItemID.RainbowMossBlock, 10);
+            r.AddIngredient(ItemID.RainbowMoss);
+            r.AddIngredient<AstralClay>(10);
+            r.AddTile(TileID.Furnaces);
+            r.Register();
+            r.SortAfterFirstRecipesOf(ItemID.RainbowMossBlock);
             r.DisableDecraft();
 
             // Pink Vase
@@ -1007,6 +1052,84 @@ namespace CalamityMod.Systems
             r.Register();
             r.SortAfterFirstRecipesOf(ItemID.RoninHat);
             r.DisableDecraft();
+
+            // Xenon Moss Brick
+            r = Recipe.Create(ItemID.XenonMossBlock, 10);
+            r.AddIngredient(ItemID.XenonMoss);
+            r.AddIngredient<AstralClay>(10);
+            r.AddTile(TileID.Furnaces);
+            r.Register();
+            r.SortAfterFirstRecipesOf(ItemID.XenonMossBlock);
+            r.DisableDecraft();
+            #endregion
+
+            #region Astral Dirt
+            // Intentionally excluding a ton of pure dirt recipes ie. Dirt Bombs, Walls
+            // Floret Protector set
+            r = Recipe.Create(ItemID.FloretProtectorHelmet);
+            r.AddIngredient(ItemID.Glass, 20);
+            r.AddIngredient<AstralDirt>(10);
+            r.AddIngredient(ItemID.Daybloom);
+            r.AddTile(TileID.Loom);
+            r.Register();
+            r.SortAfterFirstRecipesOf(ItemID.FloretProtectorHelmet);
+            r.DisableDecraft();
+
+            r = Recipe.Create(ItemID.FloretProtectorChestplate);
+            r.AddIngredient(ItemID.Silk, 20);
+            r.AddIngredient<AstralDirt>(15);
+            r.AddTile(TileID.Loom);
+            r.Register();
+            r.SortAfterFirstRecipesOf(ItemID.FloretProtectorChestplate);
+            r.DisableDecraft();
+
+            r = Recipe.Create(ItemID.FloretProtectorLegs);
+            r.AddIngredient(ItemID.Silk, 20);
+            r.AddIngredient<AstralDirt>(15);
+            r.AddTile(TileID.Loom);
+            r.Register();
+            r.SortAfterFirstRecipesOf(ItemID.FloretProtectorLegs);
+            r.DisableDecraft();
+            #endregion
+
+            #region Astral Ice
+            // Ice Torch
+            r = Recipe.Create(ItemID.IceTorch, 3);
+            r.AddIngredient(ItemID.Torch, 3);
+            r.AddIngredient<AstralIce>();
+            r.Register();
+            r.SortAfterFirstRecipesOf(ItemID.IceTorch);
+            r.DisableDecraft();
+            #endregion
+
+            #region Astral Snow
+            // Frozen Banana Daiquiri
+            r = Recipe.Create(ItemID.BananaDaiquiri);
+            r.AddIngredient(ItemID.Banana);
+            r.AddIngredient(ItemID.Bottle);
+            r.AddIngredient<AstralSnow>();
+            r.AddTile(TileID.CookingPots);
+            r.Register();
+            r.SortAfterFirstRecipesOf(ItemID.BananaDaiquiri);
+            r.DisableDecraft();
+
+            // Snowball
+            r = Recipe.Create(ItemID.Snowball, 15);
+            r.AddIngredient<AstralSnow>();
+            r.Register();
+            r.SortAfterFirstRecipesOf(ItemID.Snowball);
+            r.DisableDecraft();
+            #endregion
+
+            #region Hardened Astral Sand
+            // Desert Torch
+            r = Recipe.Create(ItemID.DesertTorch, 3);
+            r.AddIngredient(ItemID.Torch, 3);
+            r.AddIngredient<HardenedAstralSand>();
+            r.Register();
+            r.SortAfterFirstRecipesOf(ItemID.DesertTorch);
+            r.DisableDecraft();
+            #endregion
         }
         #endregion
 
