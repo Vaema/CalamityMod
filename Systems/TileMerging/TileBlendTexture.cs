@@ -1,5 +1,4 @@
-﻿using System;
-using Microsoft.Xna.Framework.Graphics;
+﻿using Microsoft.Xna.Framework.Graphics;
 using ReLogic.Content;
 using Terraria;
 using Terraria.ModLoader;
@@ -26,13 +25,14 @@ namespace CalamityMod.Systems
 
         public const int BlendTextureWidth = BlendTextureFrameWidth * BlendTextureXCount;
         public const int BlendTextureHeight = BlendTextureFrameHeight * BlendTextureYCount;
+        public const int BlendTextureFullHeight = BlendTextureHeight * VariantCount;
         #endregion
 
 
         #region Properties
         public Asset<Texture2D> TextureAsset { get; private set; }
         public int Slot { get; private set; } = -1;
-        public RenderTarget2D[] BlendTextures { get; private set; } // dimension: [3]
+        public RenderTarget2D BakedBlendTexture { get; private set; }
         #endregion
 
 
@@ -50,7 +50,7 @@ namespace CalamityMod.Systems
             ModTypeLookup<TileBlendTexture>.Register(this);
             Slot = TileBlendTextureLoader.Register(this);
             TextureAsset = ModContent.Request<Texture2D>(Texture);
-            BlendTextures = new RenderTarget2D[VariantCount];
+            BakedBlendTexture = null;
         }
 
         public sealed override void SetupContent()
@@ -62,22 +62,8 @@ namespace CalamityMod.Systems
         {
             Main.QueueMainThreadAction(() =>
             {
-                if (BlendTextures is not null)
-                {
-                    foreach (var rt in BlendTextures)
-                    {
-                        if (rt is null)
-                            continue;
-
-                        if (rt.IsDisposed)
-                            continue;
-
-                        rt.Dispose();
-                    }
-
-                    Array.Clear(BlendTextures);
-                    BlendTextures = null;
-                }
+                BakedBlendTexture?.Dispose();
+                BakedBlendTexture = null;
             });
 
             PostUnload();

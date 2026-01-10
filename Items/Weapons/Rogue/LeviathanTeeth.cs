@@ -9,10 +9,6 @@ namespace CalamityMod.Items.Weapons.Rogue
 {
     public class LeviathanTeeth : RogueWeapon
     {
-        public override void SetStaticDefaults()
-        {
-            ItemID.Sets.ShimmerTransformToItem[Type] = ModContent.ItemType<Whitewater>();
-        }
         public override void SetDefaults()
         {
             Item.width = 36;

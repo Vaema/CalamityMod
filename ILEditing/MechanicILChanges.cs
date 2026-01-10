@@ -7,9 +7,6 @@ using CalamityMod.DataStructures;
 using CalamityMod.Enums;
 using CalamityMod.Events;
 using CalamityMod.FluidSimulation;
-using CalamityMod.Graphics.Metaballs;
-using CalamityMod.Graphics.Primitives;
-using CalamityMod.Graphics.Renderers;
 using CalamityMod.Items.Accessories;
 using CalamityMod.Items.Armor.Wulfrum;
 using CalamityMod.Items.Critters;
@@ -27,12 +24,11 @@ using CalamityMod.Projectiles;
 using CalamityMod.Projectiles.Ranged;
 using CalamityMod.Projectiles.Typeless;
 using CalamityMod.Systems;
-using CalamityMod.Systems.Graphic.PixelationSystem;
 using CalamityMod.Systems.Mechanic;
 using CalamityMod.Tiles;
+using CalamityMod.Utilities.Daybreak;
 using CalamityMod.Walls;
 using CalamityMod.Walls.UnsafeWalls;
-using CalamityMod.Waterfalls;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Mono.Cecil.Cil;
@@ -798,22 +794,12 @@ namespace CalamityMod.ILEditing
         #region Custom DoDraw Changes
         private static void CustomDoDrawChanges(ILContext il)
         {
-            // This IL edit accomplishes two things:
-            // 1. Calls a helper function for drawing the fog in the Floral Paradise.
-            // 2. Allows for drawing additive blend projectiles using IAdditiveDrawer.
+            // Allows for drawing additive blend projectiles using IAdditiveDrawer.
             ILCursor cursor = new ILCursor(il);
 
-            // First, Floral Paradise fog.
+            // Move before the place we want to inject code.
             if (!cursor.TryGotoNext(MoveType.Before, i => i.MatchCallOrCallvirt<Main>("DrawInfernoRings")))
                 return;
-
-            cursor.EmitDelegate<Action>(() =>
-            {
-                if (!Main.dedServ && BiomeTileCounterSystem.FloralParadiseTiles > 0)
-                    DrawFog(Utils.GetLerpValue(0f, 250f, BiomeTileCounterSystem.FloralParadiseTiles, true));
-            });
-
-            // Then, additive drawing.
             if (!cursor.TryGotoNext(MoveType.After, i => i.MatchCall<ScreenObstruction>("Draw")))
                 return;
 
@@ -837,98 +823,6 @@ namespace CalamityMod.ILEditing
 
                 Main.spriteBatch.SetBlendState(BlendState.AlphaBlend);
             });
-        }
-
-        private static void DrawFog(float intensity)
-        {
-            Main.spriteBatch.EnterShaderRegion();
-            WaterfallRenderer.DrawWaterfalls();
-
-            Texture2D fogTexture = ModContent.Request<Texture2D>("Terraria/Images/Misc/Perlin").Value;
-            Vector2 scale = new Vector2(Main.screenWidth, Main.screenHeight) / fogTexture.Size();
-
-            Main.spriteBatch.End();
-            Main.spriteBatch.Begin(SpriteSortMode.Immediate, BlendState.AlphaBlend, Main.DefaultSamplerState, DepthStencilState.None, Main.Rasterizer, null, Main.GameViewMatrix.TransformationMatrix);
-            GameShaders.Misc["CalamityMod:Fog"].UseOpacity(intensity * 0.74f);
-            GameShaders.Misc["CalamityMod:Fog"].UseColor(Color.Lerp(Color.Lime, Color.Black, 0.85f));
-            GameShaders.Misc["CalamityMod:Fog"].UseSaturation(1.67f);
-            GameShaders.Misc["CalamityMod:Fog"].Shader.Parameters["fogMovementSpeed"].SetValue(1.75f);
-            GameShaders.Misc["CalamityMod:Fog"].Apply();
-
-            Main.spriteBatch.Draw(fogTexture, Vector2.Zero, null, Color.White, 0f, Vector2.Zero, scale, SpriteEffects.None, 0f);
-
-            Main.spriteBatch.End();
-            Main.spriteBatch.Begin();
-        }
-        #endregion
-
-        #region GeneralDrawLayer Systems Drawing
-        private static void GeneralDrawLayer_DrawForSupportedSystems(GeneralDrawLayer drawLayer)
-        {
-            Main.spriteBatch.TryEnd();
-            GeneralParticleHandler.DrawParticleCollectionsAtSpecificLayer(drawLayer);
-
-            Main.spriteBatch.TryEnd();
-            Main.spriteBatch.TryBegin(SpriteSortMode.Immediate, BlendState.AlphaBlend, SamplerState.PointWrap, DepthStencilState.None, Main.Rasterizer, null, Main.GameViewMatrix.TransformationMatrix);
-            MetaballManager.DrawMetaballs(drawLayer);
-
-            Main.spriteBatch.TryEnd();
-            PrimitivePixelationSystem.DrawTargetScaled(drawLayer);
-
-            PixelationManager.DrawPixelatedTargets(drawLayer);
-
-
-            Main.spriteBatch.TryEnd();
-            RendererManager.DrawRendererAtLayer(drawLayer);
-
-        }
-
-        private static void GeneralDrawLayer_DrawToLayer_BeforeAllTiles(On_Main.orig_DrawBackgroundBlackFill orig, Main self)
-        {
-            GeneralDrawLayer_DrawForSupportedSystems(GeneralDrawLayer.BeforeAllTiles);
-            // TODO: [SAFEACTION] this is a bandaid solution, but almost assuredly the method call here does not always correct state
-            Main.spriteBatch.TryBegin(SpriteSortMode.Deferred, BlendState.AlphaBlend, SamplerState.PointWrap, DepthStencilState.None, Main.Rasterizer, null, Main.GameViewMatrix.TransformationMatrix);
-            orig(self);
-        }
-
-        private static void GeneralDrawLayer_DrawToLayer_BeforeSolidTiles(On_Main.orig_DoDraw_Tiles_Solid orig, Main self)
-        {
-            GeneralDrawLayer_DrawForSupportedSystems(GeneralDrawLayer.BeforeSolidTiles);
-            orig(self);
-        }
-
-        private static void GeneralDrawLayer_DrawToLayer_NPCs(On_Main.orig_DoDraw_DrawNPCsOverTiles orig, Main self)
-        {
-            GeneralDrawLayer_DrawForSupportedSystems(GeneralDrawLayer.BeforeNPCs);
-            orig(self);
-            GeneralDrawLayer_DrawForSupportedSystems(GeneralDrawLayer.AfterNPCs);
-        }
-
-        private static void GeneralDrawLayer_DrawToLayer_Projectiles(On_Main.orig_DrawProjectiles orig, Main self)
-        {
-            GeneralDrawLayer_DrawForSupportedSystems(GeneralDrawLayer.BeforeProjectiles);
-            orig(self);
-            GeneralDrawLayer_DrawForSupportedSystems(GeneralDrawLayer.AfterProjectiles);
-        }
-
-        private static void GeneralDrawLayer_DrawToLayer_AfterPlayers(On_Main.orig_DrawPlayers_AfterProjectiles orig, Main self)
-        {
-            orig(self);
-            GeneralDrawLayer_DrawForSupportedSystems(GeneralDrawLayer.AfterPlayers);
-        }
-
-        private static void GeneralDrawLayer_DrawToLayer_AfterDusts(On_Main.orig_DrawDust orig, Main self)
-        {
-            orig(self);
-            GeneralDrawLayer_DrawForSupportedSystems(GeneralDrawLayer.AfterDusts);
-        }
-
-        private static void GeneralDrawLayer_DrawToLayer_AfterEverything(On_Main.orig_DrawInfernoRings orig, Main self)
-        {
-            orig(self);
-            GeneralDrawLayer_DrawForSupportedSystems(GeneralDrawLayer.AfterEverything);
-            // TODO: [SAFEACTION] this is a bandaid solution, but almost assuredly the method call here does not always correct state
-            Main.spriteBatch.TryBegin(SpriteSortMode.Deferred, BlendState.AlphaBlend, SamplerState.PointWrap, DepthStencilState.None, Main.Rasterizer, null, Main.GameViewMatrix.TransformationMatrix);
         }
         #endregion
 
@@ -992,7 +886,7 @@ namespace CalamityMod.ILEditing
                 return;
             }
             cursor.Emit(OpCodes.Pop);
-            cursor.Emit<CalamityGlobalNPC>(OpCodes.Call, $"get_{nameof(CalamityGlobalNPC.TotalTaxesPerNPC)}");
+            cursor.Emit<CalamityGlobalTownNPC>(OpCodes.Call, $"get_{nameof(CalamityGlobalTownNPC.TotalTaxesPerNPC)}");
 
             if (!cursor.TryGotoNext(MoveType.After, i => i.MatchCall<Item>(nameof(Item.buyPrice))))
             {
@@ -1000,7 +894,7 @@ namespace CalamityMod.ILEditing
                 return;
             }
             cursor.Emit(OpCodes.Pop);
-            cursor.Emit<CalamityGlobalNPC>(OpCodes.Call, $"get_{nameof(CalamityGlobalNPC.TaxesToCollectLimit)}");
+            cursor.Emit<CalamityGlobalTownNPC>(OpCodes.Call, $"get_{nameof(CalamityGlobalTownNPC.TaxesToCollectLimit)}");
         }
         #endregion
 
@@ -1259,7 +1153,7 @@ namespace CalamityMod.ILEditing
             orig(self, drawData, solidLayer, waterStyleOverride, screenPosition, screenOffset, tileX, tileY);
 
             var type = drawData.typeCache;
-            if (type < 0 || type >= GlowMaskTile.LookupLength)
+            if (type >= GlowMaskTile.LookupLength)
                 return;
 
             var glowMaskTile = GlowMaskTile.InstanceLookup[type];
@@ -1424,31 +1318,6 @@ namespace CalamityMod.ILEditing
             }
             else
                 orig(self);
-        }
-        #endregion
-
-        #region Add Stohne to the Jungle
-        private static void AddStohne(ILContext il)
-        {
-            var cursor = new ILCursor(il);
-
-            if (!cursor.TryGotoNext(MoveType.Before,
-                c => c.MatchLdcI4(out var tileType) && tileType == TileID.Stone,
-                c => c.MatchLdcI4(out _), // bool addTile
-                c => c.MatchLdcR8(out _), // double speedX
-                c => c.MatchLdcR8(out _), // double speedY
-                c => c.MatchLdcI4(out _), // bool noYChange
-                c => c.MatchLdcI4(out _), // bool overRide
-                c => c.MatchLdcI4(out _), // int ignoreTileType
-                c => c.MatchCallOrCallvirt<WorldGen>(nameof(WorldGen.TileRunner))))
-            {
-                LogFailure("Add Stohne To Jungle", "Could not locate the TileRunner call for Stone");
-                return;
-            }
-
-            // Replace Next Instruction to Ldc.I4 :: Stohne
-            cursor.Next.OpCode = OpCodes.Ldc_I4;
-            cursor.Next.Operand = ModContent.TileType<Stohne>();
         }
         #endregion
 

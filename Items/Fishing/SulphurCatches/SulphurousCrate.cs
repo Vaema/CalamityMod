@@ -1,5 +1,6 @@
 ﻿using CalamityMod.Items.Accessories;
 using CalamityMod.Items.Placeables.Furniture;
+using CalamityMod.Items.Tools.SpawnBlocker;
 using CalamityMod.Items.Weapons.Summon;
 using CalamityMod.Tiles.Abyss;
 using Terraria;

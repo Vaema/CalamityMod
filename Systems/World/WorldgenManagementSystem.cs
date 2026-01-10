@@ -5,7 +5,6 @@ using CalamityMod.Items.SummonItems;
 using CalamityMod.Items.Weapons.Rogue;
 using CalamityMod.Items.Weapons.Summon;
 using CalamityMod.World;
-using CalamityMod.World.Minibiomes;
 using CalamityMod.World.Planets;
 using Microsoft.Xna.Framework;
 using Terraria;
@@ -130,14 +129,6 @@ namespace CalamityMod.Systems
                     progress.Message = Language.GetOrRegister("Mods.CalamityMod.UI.BetterJungleTemple").Value;
                     CustomTemple.NewJungleTemple();
                 });
-
-                // Floral Paradise Biome
-                tasks.Insert(jungleTempleIndex + 1, new PassLegacy("FloralParadise", (progress, config) =>
-                {
-                    progress.Message = "Growing a floral paradise underground";
-                    if (FloralParadiseMinibiome.SHOULD_GENERATE)
-                        FloralParadiseMinibiome.GenerateInstances();
-                }));
             }
 
             // Improved Golem Arena
@@ -185,7 +176,7 @@ namespace CalamityMod.Systems
 
             // Move spawn point in Celebrationmk10 to not be in the Sulphurous Sea
             int spawnPointIndex = tasks.FindIndex(genpass => genpass.Name.Equals("Spawn Point"));
-            if (spawnPointIndex != -1 && WorldGen.tenthAnniversaryWorldGen && !WorldGen.getGoodWorldGen)
+            if (spawnPointIndex != -1 && WorldGen.tenthAnniversaryWorldGen && !WorldGen.remixWorldGen)
             {
                 tasks.Insert(spawnPointIndex + 1, new PassLegacy("Fix Tenth Anniversary Spawn", (progress, config) =>
                 {
@@ -203,7 +194,7 @@ namespace CalamityMod.Systems
                             }
                         }
                     }
-                        
+
                 }));
             }
 
@@ -513,7 +504,7 @@ namespace CalamityMod.Systems
 
                                 if (isGoldChest)
                                 {
-                                    chest.item[inventoryIndex].SetDefaults(ModContent.ItemType<EnchantedBladeStaff>());
+                                    chest.item[inventoryIndex].SetDefaults(ModContent.ItemType<EnchantedKnifeStaff>());
                                     chest.item[inventoryIndex].Prefix(-1);
                                     break;
                                 }
@@ -550,111 +541,6 @@ namespace CalamityMod.Systems
                         {
                             chest.item[0].SetDefaults(ModContent.ItemType<Kylie>());
                             chest.item[0].Prefix(-1);
-                        }
-                    }
-
-                    // Give Dead Man's Chests better loot.
-                    if (isDeadManChest)
-                    {
-                        for (int inventoryIndex = 0; inventoryIndex < 40; inventoryIndex++)
-                        {
-                            // Cavern Dead Man's Chests
-                            if (chest.y > GenVars.lavaLine || (chest.y <= GenVars.lavaLine && Main.remixWorld))
-                            {
-                                if (chest.item[inventoryIndex].type == ItemID.Dynamite)
-                                    chest.item[inventoryIndex].SetDefaults(ItemID.StickyDynamite);
-
-                                if (chest.item[inventoryIndex].type == ItemID.JestersArrow)
-                                {
-                                    chest.item[inventoryIndex].SetDefaults(ItemID.HolyArrow);
-                                    chest.item[inventoryIndex].stack = WorldGen.genRand.Next(25, 51);
-                                }
-
-                                if (chest.item[inventoryIndex].type == ItemID.SilverBar ||
-                                    chest.item[inventoryIndex].type == ItemID.TungstenBar ||
-                                    chest.item[inventoryIndex].type == ItemID.GoldBar ||
-                                    chest.item[inventoryIndex].type == ItemID.PlatinumBar)
-                                    chest.item[inventoryIndex].stack = WorldGen.genRand.Next(6, 16);
-
-                                if (chest.item[inventoryIndex].type == ItemID.FlamingArrow)
-                                {
-                                    chest.item[inventoryIndex].SetDefaults(ItemID.HellfireArrow);
-                                    chest.item[inventoryIndex].stack = WorldGen.genRand.Next(25, 51);
-                                }
-
-                                if (chest.item[inventoryIndex].type == ItemID.ThrowingKnife)
-                                {
-                                    chest.item[inventoryIndex].SetDefaults(ItemID.PoisonedKnife);
-                                    chest.item[inventoryIndex].stack = WorldGen.genRand.Next(25, 51);
-                                }
-
-                                if (chest.item[inventoryIndex].type == ItemID.HealingPotion)
-                                {
-                                    chest.item[inventoryIndex].SetDefaults(ItemID.RestorationPotion);
-                                    chest.item[inventoryIndex].stack = WorldGen.genRand.Next(3, 6);
-                                }
-
-                                if (chest.item[inventoryIndex].type == ItemID.RecallPotion)
-                                    chest.item[inventoryIndex].SetDefaults(ItemID.PotionOfReturn);
-
-                                if (chest.item[inventoryIndex].type == ItemID.Torch)
-                                {
-                                    chest.item[inventoryIndex].SetDefaults(ItemID.UltrabrightTorch);
-                                    chest.item[inventoryIndex].stack = WorldGen.genRand.Next(15, 30);
-                                }
-
-                                if (chest.item[inventoryIndex].type == ItemID.Glowstick)
-                                {
-                                    chest.item[inventoryIndex].SetDefaults(ItemID.SpelunkerGlowstick);
-                                    chest.item[inventoryIndex].stack = WorldGen.genRand.Next(15, 30);
-                                }
-
-                                if (chest.item[inventoryIndex].type == ItemID.GoldCoin)
-                                    chest.item[inventoryIndex].stack = WorldGen.genRand.Next(2, 4);
-                            }
-
-                            // Underground Dead Man's Chests
-                            else
-                            {
-                                if (chest.item[inventoryIndex].type == ItemID.Bomb)
-                                {
-                                    chest.item[inventoryIndex].SetDefaults(ItemID.StickyBomb);
-                                    chest.item[inventoryIndex].stack = WorldGen.genRand.Next(10, 20);
-                                }
-
-                                if (chest.item[inventoryIndex].type == ItemID.Rope)
-                                    chest.item[inventoryIndex].stack = WorldGen.genRand.Next(100, 201);
-
-                                if (chest.item[inventoryIndex].type == ItemID.IronBar ||
-                                    chest.item[inventoryIndex].type == ItemID.LeadBar ||
-                                    chest.item[inventoryIndex].type == ItemID.SilverBar ||
-                                    chest.item[inventoryIndex].type == ItemID.TungstenBar)
-                                    chest.item[inventoryIndex].stack = WorldGen.genRand.Next(10, 20);
-
-                                if (chest.item[inventoryIndex].type == ItemID.WoodenArrow)
-                                {
-                                    chest.item[inventoryIndex].SetDefaults(ItemID.FlamingArrow);
-                                    chest.item[inventoryIndex].stack = WorldGen.genRand.Next(25, 50);
-                                }
-
-                                if (chest.item[inventoryIndex].type == ItemID.Shuriken)
-                                {
-                                    chest.item[inventoryIndex].SetDefaults(ItemID.ThrowingKnife);
-                                    chest.item[inventoryIndex].stack = WorldGen.genRand.Next(25, 50);
-                                }
-
-                                if (chest.item[inventoryIndex].type == ItemID.LesserHealingPotion)
-                                {
-                                    chest.item[inventoryIndex].SetDefaults(ItemID.HealingPotion);
-                                    chest.item[inventoryIndex].stack = WorldGen.genRand.Next(3, 6);
-                                }
-
-                                if (chest.item[inventoryIndex].type == ItemID.SilverCoin)
-                                {
-                                    chest.item[inventoryIndex].SetDefaults(ItemID.GoldCoin);
-                                    chest.item[inventoryIndex].stack = WorldGen.genRand.Next(1, 3);
-                                }
-                            }
                         }
                     }
 

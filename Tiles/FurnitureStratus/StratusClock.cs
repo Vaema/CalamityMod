@@ -21,7 +21,7 @@ namespace CalamityMod.Tiles.FurnitureStratus
 
         public override bool RightClick(int x, int y)
         {
-            return CalamityUtils.ClockRightClick();
+            return FurnitureCommon.ClockRightClick();
         }
 
         public override void NearbyEffects(int i, int j, bool closer)
@@ -37,6 +37,6 @@ namespace CalamityMod.Tiles.FurnitureStratus
             num = fail ? 1 : 3;
         }
 
-        public override void MouseOver(int i, int j) => CalamityUtils.MouseOver(i, j, ModContent.ItemType<Items.Placeables.FurnitureStratus.StratusClock>());
+        public override void MouseOver(int i, int j) => FurnitureCommon.MouseOver(i, j, ModContent.ItemType<Items.Placeables.FurnitureStratus.StratusClock>());
     }
 }

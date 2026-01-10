@@ -259,7 +259,7 @@ namespace CalamityMod.Projectiles.Melee
                 // Apply tile collison damage (is boosted on GFB and even further if both final bosses are gone)
                 float damageMults = ((DownedBossSystem.downedCalamitas && DownedBossSystem.downedExoMechs) ? 5 : 1) * (Main.zenithWorld ? 77 : 1) * (rightClicked ? 3 : 1);
                 int damage = (int)(Projectile.damage * damageMults);
-                target.FlungNPC().ApplyCollisionDamage(target, Owner, damage, launchVel * launchPower, 5f, true);
+                target.GetGlobalNPC<CalamityTileCollisionHarmNPC>().ApplyCollisionDamage(target, Owner, damage, launchVel * launchPower, 5f, true);
             }
 
             if (Projectile.numHits < 3)

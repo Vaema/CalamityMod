@@ -12,12 +12,9 @@ namespace CalamityMod.Items.Potions.Alcohol
     {
         public new string LocalizationCategory => "Items.Potions";
 
-        public static int MaxManaBoost = 50;
-        public static float MagicDamageBoost = 0.08f;
-        public static float ManaCostReduction = 0.1f;
-        public static float DefenseLossPercent = 0.06f;
-        public static int RegenLoss = 2;
-        public override LocalizedText Tooltip => base.Tooltip.WithFormatArgs(MaxManaBoost, MagicDamageBoost.ToPercent(), ManaCostReduction.ToPercent(), DefenseLossPercent.ToPercent(), RegenLoss.ToRegenPerSecond());
+        public static float MaxManaBoost = 0.5f;
+        public static float ManaRegenBoost = 2f;
+        public override LocalizedText Tooltip => base.Tooltip.WithFormatArgs(ManaRegenBoost.ToPercent(),(1-MaxManaBoost).ToPercent());
 
         public override void SetStaticDefaults()
         {
@@ -32,27 +29,18 @@ namespace CalamityMod.Items.Potions.Alcohol
 
         public override void SetDefaults()
         {
-            Item.DefaultToFood(20, 34, ModContent.BuffType<StarBeamRyeBuff>(), CalamityUtils.MinutesToFrames(8), true);
+            Item.DefaultToFood(20, 34, ModContent.BuffType<StarBeamRyeBuff>(), CalamityUtils.MinutesToFrames(6), true);
 
             Item.value = Item.sellPrice(silver: 80);
             Item.rare = ItemRarityID.Lime;
         }
         public override void AddRecipes()
         {
-            CreateRecipe().
-                AddIngredient(ItemID.Ale).
-                AddIngredient<StarblightSoot>(5).
-                AddIngredient<AureusCell>().
+            CreateRecipe(10).
+                AddIngredient(ItemID.Bottle, 10).
+                AddIngredient(ItemID.Starfruit).
                 AddTile(TileID.Kegs).
                 Register();
-
-            CreateRecipe().
-                AddIngredient(ItemID.BottledWater).
-                AddIngredient<BloodOrb>(5).
-                AddIngredient<AureusCell>().
-                AddTile(TileID.AlchemyTable).
-                Register()
-                .DisableDecraft();
         }
     }
 }

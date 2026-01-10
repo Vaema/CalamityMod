@@ -1,9 +1,12 @@
 ﻿using System;
 using CalamityMod.Events;
+using CalamityMod.ExtraTextures;
 using CalamityMod.World;
 using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
 using Terraria;
 using Terraria.Audio;
+using Terraria.GameContent;
 using Terraria.ID;
 using Terraria.ModLoader;
 
@@ -880,6 +883,30 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                 }
 
                 return false;
+            }
+
+            public override void PostDraw(Mod mod, SpriteBatch spriteBatch, Vector2 screenPos, Color drawColor)
+            {
+                // Laser telegraph
+                bool enraged = NPC.localAI[3] > 0f;
+                float eyeTelegraphGateValue = LaserShootGateValue - LaserShootTelegraphTime;
+                if (NPC.localAI[1] > eyeTelegraphGateValue || NPC.localAI[2] > 0f || enraged)
+                {
+                    Texture2D glowTexture = CalamityClientConfig.Instance.EnableVanillaTextureEdits ? ExtraTextureRefs.WallOfFleshEyeGlowmask.Value : TextureAssets.Npc[NPC.type].Value;
+                    var halfSize = NPC.frame.Size() / 2;
+                    SpriteEffects spriteEffects = NPC.spriteDirection == 1 ? SpriteEffects.FlipHorizontally : SpriteEffects.None;
+
+                    float colorScale = enraged ? MathHelper.Clamp(NPC.localAI[3] / EnragedLaserFiringDuration, 0f, 1f) :
+                        NPC.localAI[2] > 0f ? 1f - ((NPC.localAI[2] - 1f) / TotalLasersPerBarrage) :
+                        MathHelper.Clamp((NPC.localAI[1] - eyeTelegraphGateValue) / LaserShootTelegraphTime, 0f, 1f);
+
+                    Color drawColor2 = new Color(100, 0, 200, 192) * colorScale;
+                    for (int i = 0; i < 2; i++)
+                    {
+                        spriteBatch.Draw(glowTexture, NPC.Center - screenPos + new Vector2(0, NPC.gfxOffY), NPC.frame,
+                            drawColor2, NPC.rotation, halfSize, NPC.scale, spriteEffects, 0f);
+                    }
+                }
             }
         }
     }

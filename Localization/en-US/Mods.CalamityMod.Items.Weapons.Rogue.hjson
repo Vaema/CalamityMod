@@ -302,6 +302,15 @@ DesecratedWater: {
 		'''
 }
 
+DimensionTearingDisk: {
+	DisplayName: Dimension-Tearing Disk
+	Tooltip:
+		'''
+		Throws a disk that tears space in the direction of the nearest enemy
+		Stealth strikes stick to enemies and unleash [c/ff00ff:God's Bane Doombeam Array]
+		'''
+}
+
 DoomsdayDevice: {
 	DisplayName: Doomsday Device
 	Tooltip:
@@ -381,15 +390,6 @@ Equanimity: {
 		Throws a confusing boomerang that ricochets between enemies
 		Enemy hits alternate summoning homing light shards or piercing dark shards
 		Stealth strikes cause an alternating explosion of light or dark on every ricochet, empowering the opposite color of shard
-		'''
-}
-
-DimensionTearingDisk: {
-	DisplayName: Dimension-Tearing Disk
-	Tooltip:
-		'''
-		Throws a disk that tears space in the direction of the nearest enemy
-		Stealth strikes stick to enemies and unleash [c/ff00ff:God's Bane Doombeam Array]
 		'''
 }
 
@@ -805,16 +805,6 @@ NastyCholla: {
 		Explodes into cactus spikes after roughly 3 seconds
 		Can hurt town NPCs
 		Stealth strikes throw four at once
-		'''
-}
-
-NightsGaze: {
-	DisplayName: Night's Gaze
-	Tooltip:
-		'''
-		Strike your foes with this spear of the night
-		Throws a spear that shatters when it hits an enemy
-		Stealth strikes cause the spear to summon homing stars as it flies
 		'''
 }
 
@@ -1332,6 +1322,18 @@ Valediction: {
 		'''
 		Throws a homing reaper scythe
 		Stealth strikes spawn razorblade typhoons on enemy hits
+		'''
+}
+
+Vega: {
+	DisplayName: Vega
+	Tooltip:
+		'''
+		Throws a spear that shatters into star fragments on impact and generates Starbursts
+		Stealth strikes conjure an image of Lyra to deal immense damage in an area
+		<right> to consume 20 Starbursts and immediately perform a stealth strike, regardless of your current Stealth
+		This strike calls all star fragments to attack the damaged foe and inflicts [cbuff:CalamityMod/Voidfrost]
+		'The final song of a misunderstood genius... or just a madman'
 		'''
 }
 

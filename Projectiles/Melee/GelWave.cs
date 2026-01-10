@@ -1,6 +1,5 @@
 ﻿using Microsoft.Xna.Framework;
 using Terraria;
-using Terraria.Audio;
 using Terraria.ID;
 using Terraria.ModLoader;
 
@@ -10,7 +9,6 @@ namespace CalamityMod.Projectiles.Melee
     {
         public new string LocalizationCategory => "Projectiles.Melee";
 
-        public static readonly SoundStyle UseSound = new("CalamityMod/Sounds/Item/GeliticBladeWave");
 
         public override void SetStaticDefaults()
         {
@@ -34,11 +32,6 @@ namespace CalamityMod.Projectiles.Melee
 
         public override void AI()
         {
-            if (Projectile.localAI[0] == 0f)
-            {
-                SoundEngine.PlaySound(UseSound with { Volume = 3f, PitchVariance = 0.25f }, Projectile.position);
-                Projectile.localAI[0] += 1f;
-            }
             Lighting.AddLight(Projectile.Center, Color.Blue.ToVector3());
             Projectile.rotation = Projectile.velocity.ToRotation();
             if (Main.rand.NextBool(10))

@@ -17,7 +17,6 @@ namespace CalamityMod.Items.Weapons.Ranged
         {
             ItemID.Sets.ItemsThatAllowRepeatedRightClick[Type] = true;
             ItemID.Sets.IsRangedSpecialistWeapon[Type] = true;
-            ItemID.Sets.ShimmerTransformToItem[Type] = ModContent.ItemType<SeethingDischarge>();
         }
         public override void SetDefaults()
         {

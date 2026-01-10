@@ -11,6 +11,7 @@ using CalamityMod.NPCs.PlagueEnemies;
 using CalamityMod.NPCs.PrimordialWyrm;
 using CalamityMod.NPCs.VanillaNPCAIOverrides;
 using CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses;
+using CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses.BrainOfCthulhu;
 using CalamityMod.NPCs.VanillaNPCAIOverrides.MiniBosses;
 using CalamityMod.NPCs.VanillaNPCAIOverrides.RegularEnemies;
 using CalamityMod.Systems.Collections;
@@ -26,8 +27,43 @@ using static Terraria.ModLoader.ModContent;
 
 namespace CalamityMod.NPCs;
 
-public sealed class CalamityVanillaAIOverrideNPC : GlobalNPC
+public static class VanillaAIOverrideExtension
 {
+    extension(NPC npc)
+    {
+        public bool TryGetAIOverride<AI>(out AI aiInstance) where AI : VanillaAIOverride, new()
+        {
+            if (!npc.TryGetGlobalNPC<CalamityVanillaAIOverrideNPC>(out var aiOverrideNPC))
+            {
+                aiInstance = null;
+                return false;
+            }
+
+            aiInstance = aiOverrideNPC.AIOverride as AI;
+            return aiInstance != null;
+        }
+    }
+}
+
+public sealed partial class CalamityVanillaAIOverrideNPC : GlobalNPC
+{
+    /// <summary>
+    /// Toggle Entire System. External mods can toggle this out if they want.
+    /// </summary>
+    public static bool Enabled { get; set; } = true;
+
+    /// <summary>
+    /// Blacklist for non difficulty specific AI changes. External mods can add NPC type to opt-out global changes.
+    /// <para>Example: Destroyer Probe's Telegraph Drawing</para>
+    /// </summary>
+    public static HashSet<int> GlobalChangeBlacklist { get; private set; } = [];
+
+    /// <summary>
+    /// Hook to Modify AI Overrides on External mods demand.<br/>
+    /// Modifying <see cref="VanillaAIOverrideContext.OverrideToApply"/> will result in NPCs to use that specific AI.
+    /// </summary>
+    public static event Action<VanillaAIOverrideContext> ModifyAIOverride;
+
     /// <summary>
     /// Specify the AI Override to work with. This handles AI, SendExtraAI and ReceiveExtraAI in instaned manner.
     /// </summary>
@@ -121,7 +157,7 @@ public sealed class CalamityVanillaAIOverrideNPC : GlobalNPC
                 case NPCID.BrainofCthulhu:
                     return new BrainOfCthulhuAI();
                 case NPCID.Creeper:
-                    return new BrainOfCthulhuAI.CreeperAI();
+                    return new CreeperAI();
 
                 case NPCID.QueenBee:
                     return new QueenBeeAI();
@@ -850,6 +886,8 @@ public sealed class CalamityVanillaAIOverrideNPC : GlobalNPC
     }
     #endregion
 
+    internal static bool IsGlobalChangeBlacklisted(NPC npc) => GlobalChangeBlacklist.Contains(npc.type);
+
     internal static void RegisterNetID(VanillaAIOverride aiOverride)
     {
         var id = NetIDLookup.Count + 1;
@@ -859,20 +897,39 @@ public sealed class CalamityVanillaAIOverrideNPC : GlobalNPC
     public override void Unload()
     {
         NetIDLookup.Clear();
+        GlobalChangeBlacklist.Clear();
+        ModifyAIOverride = null;
     }
 
     public override void SetDefaults(NPC npc)
     {
-        // Clients will get their instance in ReceiveExtraAI
-        if (Main.netMode != NetmodeID.MultiplayerClient)
-        {
-            AIOverride = GetVanillaAIOverrideToApply(npc);
+        if (!Enabled)
+            return;
 
-            if (AIOverride != null)
+        // Clients will get their instance in ReceiveExtraAI
+        if (Main.netMode == NetmodeID.MultiplayerClient)
+            return;
+
+        AIOverride = GetVanillaAIOverrideToApply(npc);
+        if (ModifyAIOverride != null)
+        {
+            var context = new VanillaAIOverrideContext()
             {
-                AIOverride.NPC = npc;
-                AIOverride.SetDefaults(Mod);
-            }
+                NPC = npc,
+                NPCType = npc.type,
+                InRevengeanceWorld = CalamityWorld.revenge,
+                InDeathWorld = CalamityWorld.death,
+                InBossRush = BossRushEvent.BossRushActive,
+                OverrideToApply = AIOverride
+            };
+            ModifyAIOverride.Invoke(context);
+            AIOverride = context.OverrideToApply;
+        }
+
+        if (AIOverride != null)
+        {
+            AIOverride.NPC = npc;
+            AIOverride.SetDefaults(Mod);
         }
     }
 
@@ -880,44 +937,131 @@ public sealed class CalamityVanillaAIOverrideNPC : GlobalNPC
 
     public override void OnSpawn(NPC npc, IEntitySource source)
     {
+        if (!Enabled)
+            return;
+
         AIOverride?.OnSpawn(Mod);
     }
 
     public override bool PreAI(NPC npc)
     {
+        if (!Enabled)
+            return base.PreAI(npc);
+
+        bool result = true;
+        if (!IsGlobalChangeBlacklisted(npc)) result &= GlobalPreAI(npc);
         if (AIOverride != null)
         {
+            result &= AIOverride.AI(Mod);
+
             if (AIOverride.DisableMultiplayerSmoothing)
             {
                 npc.netOffset = Vector2.Zero;
+                if (AIOverride.EnableMultiplayerSmoothingAheadOfAI)
+                    AIOverride.DisableMultiplayerSmoothing = false;
             }
-
-            return AIOverride.AI(Mod);
         }
+        return result;
+    }
 
-        return base.PreAI(npc);
+    public override void AI(NPC npc)
+    {
+        if (!Enabled)
+            return;
+
+        if (!IsGlobalChangeBlacklisted(npc)) GlobalAI(npc);
     }
 
     public override void PostAI(NPC npc)
     {
+        if (!Enabled)
+            return;
+
         AIOverride?.PostAI(Mod);
+    }
+
+    public override bool? CanBeHitByProjectile(NPC npc, Projectile projectile)
+    {
+        if (!Enabled)
+            return base.CanBeHitByProjectile(npc, projectile);
+
+        return AIOverride?.CanBeHitByProjectile(Mod, projectile);
     }
 
     public override void HitEffect(NPC npc, NPC.HitInfo hit)
     {
+        if (!Enabled)
+            return;
+
         AIOverride?.HitEffect(Mod, hit);
+    }
+
+    public override void ModifyHitByItem(NPC npc, Player player, Item item, ref NPC.HitModifiers modifiers)
+    {
+        if (!Enabled)
+            return;
+
+        AIOverride?.ModifyHitByItem(Mod, player, item, ref modifiers);
+    }
+
+    public override void ModifyHitByProjectile(NPC npc, Projectile projectile, ref NPC.HitModifiers modifiers)
+    {
+        if (!Enabled)
+            return;
+
+        AIOverride?.ModifyHitByProjectile(Mod, projectile, ref modifiers);
+    }
+
+    public override void OnHitByItem(NPC npc, Player player, Item item, NPC.HitInfo hit, int damageDone)
+    {
+        if (!Enabled)
+            return;
+
+        AIOverride?.OnHitByItem(Mod, player, item, hit, damageDone);
+    }
+
+    public override void OnHitByProjectile(NPC npc, Projectile projectile, NPC.HitInfo hit, int damageDone)
+    {
+        if (!Enabled)
+            return;
+
+        AIOverride?.OnHitByProjectile(Mod, projectile, hit, damageDone);
+    }
+
+    public override bool PreKill(NPC npc)
+    {
+        if (!Enabled || AIOverride == null)
+            return base.PreKill(npc);
+
+        return AIOverride.PreKill(Mod);
     }
 
     public override void FindFrame(NPC npc, int frameHeight)
     {
+        if (!Enabled)
+            return;
+
         AIOverride?.FindFrame(Mod, frameHeight);
     }
 
     public override bool PreDraw(NPC npc, SpriteBatch spriteBatch, Vector2 screenPos, Color drawColor)
     {
-        if (AIOverride != null)
-            return AIOverride.PreDraw(Mod, spriteBatch, screenPos, drawColor);
-        return base.PreDraw(npc, spriteBatch, screenPos, drawColor);
+        if (!Enabled)
+            base.PreDraw(npc, spriteBatch, screenPos, drawColor);
+
+        bool result = true;
+        if (!IsGlobalChangeBlacklisted(npc)) result &= GlobalPreDraw(npc, spriteBatch, screenPos, drawColor);
+        result &= AIOverride?.PreDraw(Mod, spriteBatch, screenPos, drawColor) ?? true;
+        return result;
+    }
+
+    public override void PostDraw(NPC npc, SpriteBatch spriteBatch, Vector2 screenPos, Color drawColor)
+    {
+        if (!Enabled)
+            return;
+
+        if (!IsGlobalChangeBlacklisted(npc)) GlobalPostDraw(npc, spriteBatch, screenPos, drawColor);
+        AIOverride?.PostDraw(Mod, spriteBatch, screenPos, drawColor);
     }
 
     #endregion

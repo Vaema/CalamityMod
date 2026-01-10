@@ -14,6 +14,7 @@ using CalamityMod.Items.Placeables.FurnitureDriftwood;
 using CalamityMod.Items.Placeables.FurnitureAcidwood;
 using CalamityMod.Items.Placeables.Crags;
 using CalamityMod.Items.Placeables.SunkenSea;
+using CalamityMod.Items.Potions.Food;
 using CalamityMod.Items.Tools;
 using CalamityMod.Items.Weapons.Melee;
 using CalamityMod.Tiles.Furniture.CraftingStations;
@@ -50,13 +51,27 @@ namespace CalamityMod.Systems
             RecipeGroup firefly = RecipeGroup.recipeGroups[RecipeGroupID.Fireflies];
             firefly.ValidItems.Add(ItemType<TwinklerItem>());
 
-            // Astral, Sunken Sea and Sulphurous Sea Sand is Sand
+            RecipeGroup fruit = RecipeGroup.recipeGroups[RecipeGroupID.Fruit];
+            fruit.ValidItems.Add(ItemType<Barberry>());
+            fruit.ValidItems.Add(ItemType<Cometfruit>());
+            fruit.ValidItems.Add(ItemType<Jackfruit>());
+            fruit.ValidItems.Add(ItemType<Lotus>());
+            fruit.ValidItems.Add(ItemType<Mangosteen>());
+            fruit.ValidItems.Add(ItemType<Salak>());
+
+            // Astral, Sunken Sea and Sulphurous Sea sand are Sand
+            // This recipe group also naturally includes Hardened Sand, but not Sandstone
             RecipeGroup sand = RecipeGroup.recipeGroups[RecipeGroupID.Sand];
             sand.ValidItems.Add(ItemType<AstralSand>());
+            sand.ValidItems.Add(ItemType<HardenedAstralSand>());
+            sand.ValidItems.Add(ItemType<Dunesand>());
             sand.ValidItems.Add(ItemType<EutrophicSand>());
+            sand.ValidItems.Add(ItemType<HardenedEutrophicSand>());
+            sand.ValidItems.Add(ItemType<PolypSand>());
+            sand.ValidItems.Add(ItemType<VolcanicSand>());
             sand.ValidItems.Add(ItemType<SulphurousSand>());
 
-            // Acidwood is Wood
+            // Acidwood and Driftwood are Wood
             RecipeGroup wood = RecipeGroup.recipeGroups[RecipeGroupID.Wood];
             wood.ValidItems.Add(ItemType<Acidwood>());
             wood.ValidItems.Add(ItemType<Driftwood>());
@@ -236,8 +251,7 @@ namespace CalamityMod.Systems
                 ItemID.EbonstoneBlock,
                 ItemID.CrimstoneBlock,
                 ItemID.PearlstoneBlock,
-                ItemType<AstralStone>(),
-                ItemType<Stohne>()
+                ItemType<AstralStone>()
             });
             AnyStoneBlock = RecipeGroup.RegisterGroup("AnyStoneBlock", group);
 
@@ -657,7 +671,7 @@ namespace CalamityMod.Systems
                 Register()
                 .DisableDecraft();
 
-            AddAstralClayRecipes();
+            AddAstralRecipeVariants();
             AddBloodOrbPotionRecipes();
             AddCookedFood();
             AddMiscItemRecipes();
@@ -939,13 +953,22 @@ namespace CalamityMod.Systems
         }
         #endregion
 
-        #region Astral Clay
-        private static void AddAstralClayRecipes()
+        #region Astral Recipe Variants
+        private static void AddAstralRecipeVariants()
         {
+            #region Astral Clay
             // Intentionally excluding Red Brick and Red Stucco recipes
+            // Argon Moss Brick
+            Recipe r = Recipe.Create(ItemID.ArgonMossBlock, 10);
+            r.AddIngredient(ItemID.ArgonMoss);
+            r.AddIngredient<AstralClay>(10);
+            r.AddTile(TileID.Furnaces);
+            r.Register();
+            r.SortAfterFirstRecipesOf(ItemID.ArgonMossBlock);
+            r.DisableDecraft();
 
             // Bowl
-            Recipe r = Recipe.Create(ItemID.Bowl);
+            r = Recipe.Create(ItemID.Bowl);
             r.AddIngredient<AstralClay>(2);
             r.AddTile(TileID.Furnaces);
             r.Register();
@@ -958,6 +981,42 @@ namespace CalamityMod.Systems
             r.AddTile(TileID.Furnaces);
             r.Register();
             r.SortAfterFirstRecipesOf(ItemID.ClayPot);
+            r.DisableDecraft();
+
+            // Helium Moss Brick
+            r = Recipe.Create(ItemID.RainbowMossBlock, 10);
+            r.AddIngredient(ItemID.RainbowMoss);
+            r.AddIngredient<AstralClay>(10);
+            r.AddTile(TileID.Furnaces);
+            r.Register();
+            r.SortAfterFirstRecipesOf(ItemID.RainbowMossBlock);
+            r.DisableDecraft();
+
+            // Krypton Moss Brick
+            r = Recipe.Create(ItemID.KryptonMossBlock, 10);
+            r.AddIngredient(ItemID.KryptonMoss);
+            r.AddIngredient<AstralClay>(10);
+            r.AddTile(TileID.Furnaces);
+            r.Register();
+            r.SortAfterFirstRecipesOf(ItemID.KryptonMossBlock);
+            r.DisableDecraft();
+
+            // Lava Moss Brick
+            r = Recipe.Create(ItemID.LavaMossBlock, 10);
+            r.AddIngredient(ItemID.LavaMoss);
+            r.AddIngredient<AstralClay>(10);
+            r.AddTile(TileID.Furnaces);
+            r.Register();
+            r.SortAfterFirstRecipesOf(ItemID.LavaMossBlock);
+            r.DisableDecraft();
+
+            // Neon Moss Brick
+            r = Recipe.Create(ItemID.VioletMossBlock, 10);
+            r.AddIngredient(ItemID.VioletMoss);
+            r.AddIngredient<AstralClay>(10);
+            r.AddTile(TileID.Furnaces);
+            r.Register();
+            r.SortAfterFirstRecipesOf(ItemID.VioletMossBlock);
             r.DisableDecraft();
 
             // Pink Vase
@@ -993,6 +1052,84 @@ namespace CalamityMod.Systems
             r.Register();
             r.SortAfterFirstRecipesOf(ItemID.RoninHat);
             r.DisableDecraft();
+
+            // Xenon Moss Brick
+            r = Recipe.Create(ItemID.XenonMossBlock, 10);
+            r.AddIngredient(ItemID.XenonMoss);
+            r.AddIngredient<AstralClay>(10);
+            r.AddTile(TileID.Furnaces);
+            r.Register();
+            r.SortAfterFirstRecipesOf(ItemID.XenonMossBlock);
+            r.DisableDecraft();
+            #endregion
+
+            #region Astral Dirt
+            // Intentionally excluding a ton of pure dirt recipes ie. Dirt Bombs, Walls
+            // Floret Protector set
+            r = Recipe.Create(ItemID.FloretProtectorHelmet);
+            r.AddIngredient(ItemID.Glass, 20);
+            r.AddIngredient<AstralDirt>(10);
+            r.AddIngredient(ItemID.Daybloom);
+            r.AddTile(TileID.Loom);
+            r.Register();
+            r.SortAfterFirstRecipesOf(ItemID.FloretProtectorHelmet);
+            r.DisableDecraft();
+
+            r = Recipe.Create(ItemID.FloretProtectorChestplate);
+            r.AddIngredient(ItemID.Silk, 20);
+            r.AddIngredient<AstralDirt>(15);
+            r.AddTile(TileID.Loom);
+            r.Register();
+            r.SortAfterFirstRecipesOf(ItemID.FloretProtectorChestplate);
+            r.DisableDecraft();
+
+            r = Recipe.Create(ItemID.FloretProtectorLegs);
+            r.AddIngredient(ItemID.Silk, 20);
+            r.AddIngredient<AstralDirt>(15);
+            r.AddTile(TileID.Loom);
+            r.Register();
+            r.SortAfterFirstRecipesOf(ItemID.FloretProtectorLegs);
+            r.DisableDecraft();
+            #endregion
+
+            #region Astral Ice
+            // Ice Torch
+            r = Recipe.Create(ItemID.IceTorch, 3);
+            r.AddIngredient(ItemID.Torch, 3);
+            r.AddIngredient<AstralIce>();
+            r.Register();
+            r.SortAfterFirstRecipesOf(ItemID.IceTorch);
+            r.DisableDecraft();
+            #endregion
+
+            #region Astral Snow
+            // Frozen Banana Daiquiri
+            r = Recipe.Create(ItemID.BananaDaiquiri);
+            r.AddIngredient(ItemID.Banana);
+            r.AddIngredient(ItemID.Bottle);
+            r.AddIngredient<AstralSnow>();
+            r.AddTile(TileID.CookingPots);
+            r.Register();
+            r.SortAfterFirstRecipesOf(ItemID.BananaDaiquiri);
+            r.DisableDecraft();
+
+            // Snowball
+            r = Recipe.Create(ItemID.Snowball, 15);
+            r.AddIngredient<AstralSnow>();
+            r.Register();
+            r.SortAfterFirstRecipesOf(ItemID.Snowball);
+            r.DisableDecraft();
+            #endregion
+
+            #region Hardened Astral Sand
+            // Desert Torch
+            r = Recipe.Create(ItemID.DesertTorch, 3);
+            r.AddIngredient(ItemID.Torch, 3);
+            r.AddIngredient<HardenedAstralSand>();
+            r.Register();
+            r.SortAfterFirstRecipesOf(ItemID.DesertTorch);
+            r.DisableDecraft();
+            #endregion
         }
         #endregion
 
@@ -1541,6 +1678,14 @@ namespace CalamityMod.Systems
             r.AddRecipeGroup("IronBar", 5);
             r.AddTile(TileID.Anvils);
             r.Register();
+
+            //Bobber
+            r = Recipe.Create(ItemID.FishingBobber);
+            r.AddIngredient<Driftwood>(10);
+            r.AddIngredient(ItemID.BlackPearl);
+            r.AddRecipeGroup("IronBar");
+            r.AddTile(TileID.Anvils);
+            r.Register();
         }
         #endregion
 
@@ -1574,15 +1719,6 @@ namespace CalamityMod.Systems
             // Pulse Bow
             Recipe r = Recipe.Create(ItemID.PulseBow);
             r.AddIngredient(ItemID.ShroomiteBar, 16);
-            r.AddTile(TileID.MythrilAnvil);
-            r.Register();
-            r.DisableDecraft();
-
-            // Rod of Discord
-            r = Recipe.Create(ItemID.RodofDiscord);
-            r.AddIngredient(ItemID.SoulofLight, 30);
-            r.AddIngredient(ItemID.CrystalShard, 25);
-            r.AddIngredient(ItemID.ChaosFish, 5);
             r.AddTile(TileID.MythrilAnvil);
             r.Register();
             r.DisableDecraft();

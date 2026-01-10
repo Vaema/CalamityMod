@@ -78,7 +78,7 @@ namespace CalamityMod.Projectiles.Typeless
 
         public override void AI()
         {
-            Lighting.AddLight(Projectile.Center, Color.GreenYellow.ToVector3());
+            Lighting.AddLight(Projectile.Center, Color.GreenYellow.ToVector3()*0.75f);
 
             //Idle chainsaw sounds
             if ((!SoundEngine.TryGetActiveSound(IdlingSoundSlot, out var idleSoundOut)))

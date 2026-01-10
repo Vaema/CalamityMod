@@ -155,7 +155,17 @@ namespace CalamityMod.Projectiles.Ranged
                 inverseTimer--;
 
             // Changing Mode
-            if (Projectile.ai[2] >= 10)
+            if (Projectile.ai[2] == 20)
+            {
+                Projectile.frame = 6;
+                ShotsLoaded = 0;
+                if (Time == 0)
+                {
+                    Projectile.timeLeft = (int)(AftershotCooldownFrames * 1.5f);
+                    OffsetLengthFromArm = 45f;
+                }
+            }
+            else if (Projectile.ai[2] >= 10)
             {
                 ShotsLoaded = 0;
                 if (Time == 0)
@@ -272,14 +282,14 @@ namespace CalamityMod.Projectiles.Ranged
                                 for (int i = 0; i < 3; i++)
                                 {
                                     float angle = i == 0 ? -0.25f : i == 2 ? 0.25f : 0;
-                                    Projectile.NewProjectile(Projectile.GetSource_FromThis(), GunTipPosition, fireVec.RotatedBy(angle) * (1 - Math.Abs(angle * 0.25f)), ModContent.ProjectileType<OntologicalDespoilerShot>(), (int)(Projectile.damage / 1.2f), Projectile.knockBack, Projectile.owner, 0, 0, i);
+                                    Projectile.NewProjectile(Projectile.GetSource_FromThis(), GunTipPosition, fireVec.RotatedBy(angle) * (1 - Math.Abs(angle * 0.25f)), ModContent.ProjectileType<OntologicalDespoilerShot>(), (int)(Projectile.damage), Projectile.knockBack, Projectile.owner, 0, 0, i);
                                 }
                             }
                             else
                             {
                                 for (int i = 0; i < 2; i++)
                                 {
-                                    Projectile.NewProjectile(Projectile.GetSource_FromThis(), GunTipPosition, fireVec.RotatedByRandom(0.45f) * Main.rand.NextFloat(0.8f, 1f), ModContent.ProjectileType<OntologicalDespoilerShot>(), (int)(Projectile.damage / 2.5f), Projectile.knockBack, Projectile.owner, 0, 0, 5);
+                                    Projectile.NewProjectile(Projectile.GetSource_FromThis(), GunTipPosition, fireVec.RotatedByRandom(0.45f) * Main.rand.NextFloat(0.8f, 1f), ModContent.ProjectileType<OntologicalDespoilerShot>(), (int)(Projectile.damage / 4f), Projectile.knockBack, Projectile.owner, 0, 0, 5);
                                 }
                             }
                         }
@@ -453,7 +463,7 @@ namespace CalamityMod.Projectiles.Ranged
             SpriteEffects flipSprite = (Projectile.spriteDirection * Owner.gravDir == -1) ? SpriteEffects.FlipHorizontally : SpriteEffects.None;
             if (!Owner.CantUseHoldout())
             {
-                float rumble = MathHelper.Clamp(CurrentChargingFrames, 0f, Charge2Frames);
+                float rumble = (Projectile.ai[2] == 20 ? 200 : MathHelper.Clamp(CurrentChargingFrames, 0f, Charge2Frames));
                 drawPosition += Main.rand.NextVector2Circular(rumble / 120f, rumble / 120f);
             }
 

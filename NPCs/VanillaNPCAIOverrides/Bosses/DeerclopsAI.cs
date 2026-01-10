@@ -1,12 +1,18 @@
 ﻿using System;
 using CalamityMod.Events;
+using CalamityMod.Graphics;
+using CalamityMod.Systems.Graphic;
 using CalamityMod.World;
 using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
+using ReLogic.Content;
 using Terraria;
 using Terraria.Audio;
 using Terraria.DataStructures;
 using Terraria.Enums;
+using Terraria.GameContent;
 using Terraria.Graphics.CameraModifiers;
+using Terraria.Graphics.Shaders;
 using Terraria.ID;
 using Terraria.ModLoader;
 
@@ -14,15 +20,11 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
 {
     public class DeerclopsAI : VanillaAIOverride
     {
-        public static bool shouldDrawEnrageBorder = true;
         public static bool hasTargetBeenInRange = true;
         public const float IncreaseDRTriggerDistance = 750f;
         public const float MaxDRIncreaseDistance = 1200f;
-        public static float borderDelay = 10f * 60f;
-        public static float innerBorder = 750f;
-        public static float outerBorder = 1200f;
-        public static float borderScalar = 0f;
-        public static Vector2 lastDeerclopsPosition;
+        public static float borderScale = 5f;
+        public static string ArenaTexPath = "CalamityMod/Particles/LargeBloom";
 
         // Vanilla values
         public static int DebrisDamage = 18; // 72
@@ -30,6 +32,8 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
         // Rev+ exclusive
         public static int IceSpikeDamage = 16; // 64 (buffed from 52)
         public static int HandDamage = 13; // 52 (buffed from 40)
+
+        public static Asset<Texture2D> ArenaTex;
 
         public override bool AI(Mod mod)
         {
@@ -51,7 +55,6 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
             if (NPC.target.WithinBounds(Main.player.Length) && Main.player[NPC.target].dead)
             {
                 hasTargetBeenInRange = false;
-                borderScalar = 0.9f;
             }
 
             // Target data
@@ -69,8 +72,6 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
             float dustAndDRScalar = Utils.Remap(NPC.localAI[3], 0f, 30f, 0f, 1f);
             calamityGlobalNPC.DR = MathHelper.Lerp(0f, 0.9f, dustAndDRScalar);
 
-            if (borderDelay > 0f)
-                borderDelay -= 1f;
 
             if (dustAndDRScalar > 0f)
             {
@@ -85,29 +86,10 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
             {
                 // Target entered the border for the first time
                 hasTargetBeenInRange = true;
-                if (borderDelay > 120f)
-                    borderDelay = 120f;
             }
-            if (innerBorder != IncreaseDRTriggerDistance || MaxDRIncreaseDistance != outerBorder)
-            {
-                // Adjust the border IF the new value is lower (helps prevent jumping if you enter the border early while it's on screen but not finished zooming in)
-                var LerpValue = Utils.GetLerpValue(hasTargetBeenInRange ? 120f : 180f, 0f, borderDelay, true);
-                var newInner = MathHelper.Lerp(MaxDRIncreaseDistance * 5f, IncreaseDRTriggerDistance, LerpValue);
-                if (newInner < innerBorder)
-                    innerBorder = newInner;
-                var newOuter = MathHelper.Lerp(MaxDRIncreaseDistance * 5f, MaxDRIncreaseDistance, LerpValue);
-                if (newOuter < outerBorder)
-                    outerBorder = newOuter;
-            }
-            if ((hasTargetBeenInRange && borderScalar < 1f) || borderDelay > 0f)
-            {
-                // Fade in, with full opacity only available after being inside the border for the first time
-                borderScalar = MathHelper.Clamp(borderScalar + 0.015f, 0f, hasTargetBeenInRange ? 1f : 0.9f);
-            }
-            shouldDrawEnrageBorder = CalamityWorld.revenge || CalamityWorld.death;
 
             // Set the last deerclops position (used only for post-death border shenanigans)
-            lastDeerclopsPosition = NPC.Center;
+            Main.LocalPlayer.Calamity().lastDeerclopsPosition = NPC.Center;
 
             // Spawn settings
             if (NPC.homeTileX == -1 && NPC.homeTileY == -1)
@@ -235,7 +217,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                     if (NPC.velocity.Y == 0f && NPC.velocity.X == 0f && useShadowHandAttack)
                     {
                         NPC.velocity.X = 0f;
-                        NPC.ai[0] = 5f;
+                        NPC.ai[0] = targetData.Center.Y < NPC.Center.Y - 50f ? 5f : 3f;
                         NPC.ai[1] = 0f;
                         NPC.localAI[1] = 0f;
                         calamityGlobalNPC.newAI[0] -= 1f;

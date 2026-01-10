@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using CalamityMod.Balancing;
 using CalamityMod.Buffs.DamageOverTime;
+using CalamityMod.Buffs.Potions;
 using CalamityMod.Buffs.StatBuffs;
 using CalamityMod.Buffs.StatDebuffs;
 using CalamityMod.Buffs.Summon;
@@ -38,6 +39,7 @@ using CalamityMod.Items.Mounts.Minecarts;
 using CalamityMod.Items.Placeables.Furniture;
 using CalamityMod.Items.Potions;
 using CalamityMod.Items.Potions.Alcohol;
+using CalamityMod.Items.Potions.Food;
 using CalamityMod.Items.Tools;
 using CalamityMod.Items.VanillaArmorChanges;
 using CalamityMod.Items.Weapons.Magic;
@@ -142,9 +144,6 @@ namespace CalamityMod.CalPlayer
             // Check if schematics are present on the mouse, for the sake of registering their recipes.
             CheckIfMouseItemIsSchematic();
 
-            // Do environmental effects.
-            DoEnvironmentalEffects();
-
             // Handle Androomba's Right Click function
             AndroombaRightClick();
 
@@ -204,12 +203,12 @@ namespace CalamityMod.CalPlayer
             if (Player.HeldItem.type != ModContent.ItemType<SaharaSlicers>())
                 saharaSlicersBolts = 0;
 
-            if (Player.whoAmI == Main.myPlayer && Player.HeldItem.type == ModContent.ItemType<Starfleet>() && (Player.ownedProjectileCounts[ModContent.ProjectileType<StarfleetHoldout>()] == 0) && !Player.dead)
+            if (Player.whoAmI == Main.myPlayer && Player.HeldItem.type == ModContent.ItemType<Starfleet>() && (Player.ownedProjectileCounts[ModContent.ProjectileType<StarfleetHoldout>()] == 0) && !Player.dead && !Main.mapFullscreen && !Player.mouseInterface)
             {
                 int damage = (int)Player.GetTotalDamage<RangedDamageClass>().ApplyTo(Player.HeldItem.damage);
                 Projectile.NewProjectile(Player.GetSource_FromThis(), Player.Center, Player.Center.DirectionTo(Player.Calamity().mouseWorld), ModContent.ProjectileType<StarfleetHoldout>(), damage, Player.HeldItem.knockBack, Player.whoAmI);
             }
-            if (Player.whoAmI == Main.myPlayer && Player.HeldItem.type == ModContent.ItemType<Starmada>() && (Player.ownedProjectileCounts[ModContent.ProjectileType<StarmadaHoldout>()] == 0) && !Player.dead)
+            if (Player.whoAmI == Main.myPlayer && Player.HeldItem.type == ModContent.ItemType<Starmada>() && (Player.ownedProjectileCounts[ModContent.ProjectileType<StarmadaHoldout>()] == 0) && !Player.dead && !Main.mapFullscreen && !Player.mouseInterface)
             {
                 int damage = (int)Player.GetTotalDamage<RangedDamageClass>().ApplyTo(Player.HeldItem.damage);
                 Projectile.NewProjectile(Player.GetSource_FromThis(), Player.Center, Player.Center.DirectionTo(Player.Calamity().mouseWorld), ModContent.ProjectileType<StarmadaHoldout>(), damage, Player.HeldItem.knockBack, Player.whoAmI);
@@ -389,50 +388,68 @@ namespace CalamityMod.CalPlayer
                 Lighting.AddLight(Player.Center, Color.MediumOrchid.ToVector3());
             }
 
-            if (Player.HeldItem.type == ModContent.ItemType<Lucrecia>() && lucreciaEnergy > 0)
+            // Restore flight time during Vortex stealth with Vortex Booster
+            if (Player.vortexStealthActive && Player.wingsLogic == (int)VanillaWingID.WingsVortex)
             {
-                if (lucreciaEnergy == Lucrecia.MaxEnergy && !lucreciaEnergyPaused)
+                if (Player.wingTime > 0 && Player.miscCounter % 3 == 0)
+                    Player.wingTime++;
+            }
+
+            if (Player.HeldItem.type == ModContent.ItemType<Lucrecia>() && darklightEnergy > 0)
+            {
+                if (darklightEnergy == Lucrecia.MaxEnergy && !darklightEnergyPaused)
                 {
-                    lucreciaEnergyPaused = true;
-                    lucreciaEnergyTimer = 0;
+                    darklightEnergyPaused = true;
+                    darklightEnergyTimer = 0;
                 }
 
-                lucreciaEnergyTimer++;
+                darklightEnergyTimer++;
 
                 // If the energy is at max, pause for 180 ticks
-                if (lucreciaEnergyPaused)
+                if (darklightEnergyPaused)
                 {
-                    if (lucreciaEnergyTimer >= 1 && !lucreciaEnergyMaxSFXPlayed)
+                    if (darklightEnergyTimer >= 1 && !darklightEnergyMaxFXPlayed)
                     {
-                        SoundEngine.PlaySound(SoundID.Item79 with { Volume = 1.6f, Pitch = 0.4f }, Player.Center);
-                        lucreciaEnergyMaxSFXPlayed = true;
+                        SoundStyle maxEnergyReached = new("CalamityMod/Sounds/Custom/AbilitySounds/DarklightEnergyCharged");
+                        SoundEngine.PlaySound(maxEnergyReached with { Volume = 0.9f }, Player.Center);
 
+                        for (int i = 0; i < 10; i++) // Circular ring of particles burst from player
+                        {
+                            float angle = MathHelper.TwoPi * (i / 10f);
+                            Vector2 spawnDirection = angle.ToRotationVector2();
+                            Vector2 velocity = spawnDirection * 14f;
+
+                            CritSpark spark = new CritSpark(Player.Center + spawnDirection * 3f, velocity, Color.Lerp(Color.CornflowerBlue, Color.MediumPurple, Main.rand.NextFloat(1f)), Color.White * 0.33f, 1.2f, 12, 0.3f, 1.2f);
+                            GeneralParticleHandler.SpawnParticle(spark);
+                        }
+                        darklightEnergyMaxFXPlayed = true;
                     }
+
                     // If the pause is Done, resume decrementing.
-                    if (lucreciaEnergyTimer >= 180)
+                    if (darklightEnergyTimer >= 180)
                     {
-                        lucreciaEnergyPaused = false;
-                        lucreciaEnergyTimer = 0;
-                        lucreciaEnergy--;
+                        darklightEnergyPaused = false;
+                        darklightEnergyTimer = 0;
+                        darklightEnergy--;
                     }
                 }
                 else // Decrementing
                 {
-                    lucreciaEnergyMaxSFXPlayed = false;
+                    darklightEnergyMaxFXPlayed = false;
                     // Once every 20 ticks
-                    if (lucreciaEnergyTimer >= 20)
+                    if (darklightEnergyTimer >= 20)
                     {
-                        lucreciaEnergy--;
-                        lucreciaEnergyTimer = 0;
+                        darklightEnergy--;
+                        darklightEnergyTimer = 0;
                     }
                 }
             }
             else
             {
                 // Reset all energy variables when not holding the weapon
-                lucreciaEnergyTimer = 0;
-                lucreciaEnergyPaused = false;
-                lucreciaEnergy = 0;
+                darklightEnergyTimer = 0;
+                darklightEnergyPaused = false;
+                darklightEnergy = 0;
             }
 
             if (Player.HeldItem.type == ModContent.ItemType<Lightspeed>() && elementalMastery > 0)
@@ -450,9 +467,19 @@ namespace CalamityMod.CalPlayer
                 {
                     if (elementalMasteryTimer >= 1 && !elementalMasterySFXPlayed)
                     {
-                        SoundEngine.PlaySound(SoundID.Item79 with { Volume = 1.6f, Pitch = 0.4f }, Player.Center);
-                        elementalMasterySFXPlayed = true;
+                        SoundStyle maxEnergyReached = new("CalamityMod/Sounds/Custom/AbilitySounds/DarklightEnergyCharged");
+                        SoundEngine.PlaySound(maxEnergyReached with { Volume = 0.9f }, Player.Center);
 
+                        for (int i = 0; i < 10; i++) // Circular ring of particles burst from player
+                        {
+                            float angle = MathHelper.TwoPi * (i / 10f);
+                            Vector2 spawnDirection = angle.ToRotationVector2();
+                            Vector2 velocity = spawnDirection * 14f;
+
+                            CritSpark spark = new CritSpark(Player.Center + spawnDirection * 3f, velocity, Color.Lerp(Color.CornflowerBlue, Color.MediumPurple, Main.rand.NextFloat(1f)), Color.White * 0.33f, 1.2f, 12, 0.3f, 1.2f);
+                            GeneralParticleHandler.SpawnParticle(spark);
+                        }
+                        elementalMasterySFXPlayed = true;
                     }
                     // If the pause is Done, resume decrementing.
                     if (elementalMasteryTimer >= 180)
@@ -603,6 +630,15 @@ namespace CalamityMod.CalPlayer
                     Projectile.NewProjectile(Player.GetSource_FromThis(), Player.Center, Vector2.Zero, ModContent.ProjectileType<SandCloakVeil>(), 13, 2.5f, Player.whoAmI);
                     SoundEngine.PlaySound(SoundID.Item45, Player.Center);
                 }
+            }
+
+
+            if (cinnamonRoll)
+            {
+                if (dashStart)
+                    Player.velocity.X *= 3;
+                else if  (Player.dashDelay == -1)
+                    Player.velocity.X *= 0.8f;
             }
 
             if (Player.dashDelay == -1)
@@ -1261,6 +1297,9 @@ namespace CalamityMod.CalPlayer
                 }
             }
 
+            if (brittleStar && brittleStarBuffMode)
+                Player.statDefense += 4 * Player.ownedProjectileCounts[ModContent.ProjectileType<BrittleStarMinion>()];
+
             // Reduce the rate of recovery of the Lifesteal variable
             // Classic Mode: 36 HP/s to 12 HP/s
             // Expert Mode: 30 HP/s to 9 HP/s
@@ -1748,9 +1787,10 @@ namespace CalamityMod.CalPlayer
 
                         if (p.type == ModContent.ProjectileType<TransformerBlob>() && p.owner == Player.whoAmI)
                         {
-                            float insanityValue = ((p.ai[1] % 10) + 1);
+                            int blobNum = Player.ownedProjectileCounts[ModContent.ProjectileType<TransformerBlob>()] + 1;
+                            float insanityValue = (p.ai[1] % 10);
                             if (p.ai[0] == layer)
-                                p.ai[2] = insanityValue / Player.ownedProjectileCounts[ModContent.ProjectileType<TransformerBlob>()] * (angleMax) - (angleMax) / 2f;
+                                p.ai[2] = (insanityValue / blobNum) * angleMax - angleMax / 2f;
 
                             p.netUpdate = true;
                         }
@@ -1799,9 +1839,10 @@ namespace CalamityMod.CalPlayer
 
                                 if (p.type == ModContent.ProjectileType<TransformerBlob>() && p.owner == Player.whoAmI)
                                 {
-                                    float insanityValue = (p.ai[1] % 10) + 1;
+                                    int blobNum = Player.ownedProjectileCounts[ModContent.ProjectileType<TransformerBlob>()] + 1;
+                                    float insanityValue = (p.ai[1] % 10);
                                     if (p.ai[0] == layer)
-                                        p.ai[2] = insanityValue / Player.ownedProjectileCounts[ModContent.ProjectileType<TransformerBlob>()] * angleMax - angleMax / 2f;
+                                        p.ai[2] = (insanityValue / blobNum) * angleMax - angleMax / 2f;
 
                                     p.netUpdate = true;
                                     index++;
@@ -2201,8 +2242,6 @@ namespace CalamityMod.CalPlayer
                 raiderSoundCooldown--;
             if (astralStarRainCooldown > 0)
                 astralStarRainCooldown--;
-            if (AbaddonCooldown > 0)
-                AbaddonCooldown--;
             if (VoidCooldown > 0)
                 VoidCooldown--;
             if (ursaSergeantCooldown > 0)
@@ -2282,18 +2321,10 @@ namespace CalamityMod.CalPlayer
                 xerocDmg = 0f;
             if (hideOfDeusMeleeBoostTimer > 0)
                 hideOfDeusMeleeBoostTimer--;
-            if (evolutionLifeRegenCounter > 0)
-                evolutionLifeRegenCounter--;
             if (hurtSoundTimer > 0)
                 hurtSoundTimer--;
             if (wingProjectileCooldown > 0)
                 wingProjectileCooldown--;
-            if (vortexBoosterStealthDelay > 0)
-            {
-                vortexBoosterStealthDelay--;
-                if (vortexBoosterStealthDelay == 1 && Player.setVortex)
-                    Player.vortexStealthActive = true;
-            }
             if (hallowedRuneCooldown > 0)
                 hallowedRuneCooldown--;
             if (sulphurBubbleCooldown > 0)
@@ -3004,35 +3035,10 @@ namespace CalamityMod.CalPlayer
         }
         #endregion
 
-        #region Biome Effects
-        public void DrawPollenInFloralParadise()
-        {
-            if (!ZoneFloralParadise || !Main.rand.NextBool(7) || Main.dedServ)
-                return;
-
-            for (int i = 0; i < 15; i++)
-            {
-                Vector2 dustSpawnPosition = Player.Center + Main.rand.NextVector2Square(-360f, 360f);
-                dustSpawnPosition.Y += 200f;
-                Tile tile = CalamityUtils.ParanoidTileRetrieval((int)(dustSpawnPosition.X / 16f), (int)(dustSpawnPosition.Y / 16f));
-                if (WorldGen.SolidTile(tile) || tile.LiquidAmount > 0)
-                    continue;
-
-                Dust pollen = Dust.NewDustPerfect(dustSpawnPosition, DustID.AncientLight);
-                pollen.velocity = Main.rand.NextVector2Circular(0.4f, 0.4f);
-                pollen.scale = Main.rand.NextFloat(0.8f, 1f);
-                pollen.fadeIn = 2f;
-                pollen.color = Color.YellowGreen;
-                pollen.noGravity = true;
-                break;
-            }
-        }
-        #endregion Biome Effects
-
         #region Abyss Effects
         private void AbyssEffects()
         {
-            int lightStrength = Player.GetCurrentAbyssLightLevel();
+            Player.SetAbyssLightLevels();
 
             if (ZoneAbyss)
             {
@@ -3050,42 +3056,7 @@ namespace CalamityMod.CalPlayer
                     double depthRatioFromAbyssLayer1 = playerAbyssDepthFromLayer1 / totalAbyssDepthFromLayer1;
 
                     // Darkness strength scales smoothly with how deep you are.
-                    float darknessStrength = (float)depthRatio;
-
-                    // Reduce the power of abyss darkness based on your light level.
-                    float multiplier = 1f;
-                    switch (lightStrength)
-                    {
-                        case 0:
-                            break;
-                        case 1:
-                            multiplier = 0.85f;
-                            break;
-                        case 2:
-                            multiplier = 0.7f;
-                            break;
-                        case 3:
-                            multiplier = 0.55f;
-                            break;
-                        case 4:
-                            multiplier = 0.4f;
-                            break;
-                        case 5:
-                            multiplier = 0.25f;
-                            break;
-                        case 6:
-                            multiplier = 0.15f;
-                            break;
-                        case 7:
-                            multiplier = 0.1f;
-                            break;
-                        default:
-                            multiplier = 0.05f;
-                            break;
-                    }
-
-                    // Modify darkness variable
-                    caveDarkness = darknessStrength * multiplier;
+                    darknessIntensity = abyssDarkness + (float)depthRatio * 3;
 
                     // Nebula Headcrab darkness effect
                     if (!Player.headcovered)
@@ -3225,26 +3196,6 @@ namespace CalamityMod.CalPlayer
 
                                 // Reduce the power of Signus darkness based on your light level.
                                 float multiplier = 1f;
-                                switch (Main.LocalPlayer.GetCurrentAbyssLightLevel())
-                                {
-                                    case 0:
-                                        break;
-                                    case 1:
-                                    case 2:
-                                        multiplier = 0.75f;
-                                        break;
-                                    case 3:
-                                    case 4:
-                                        multiplier = 0.5f;
-                                        break;
-                                    case 5:
-                                    case 6:
-                                        multiplier = 0.25f;
-                                        break;
-                                    default:
-                                        multiplier = 0f;
-                                        break;
-                                }
 
                                 float signusDarkness = signusLifeRatio * multiplier;
                                 darkRatio = MathHelper.Clamp(signusDarkness, 0f, 1f);
@@ -3303,7 +3254,7 @@ namespace CalamityMod.CalPlayer
             // Aquatic Emblem bonus
             if (aquaticEmblem)
             {
-                if (countsAsAnyWet && !Player.lavaWet && !Player.honeyWet && !Player.mount.Active)
+                if (countsAsAnyWet && !Player.lavaWet && !Player.honeyWet)
                 {
                     if (aquaticBoost < AquaticEmblem.TimeToReachMaxBoost)
                     {
@@ -3321,12 +3272,13 @@ namespace CalamityMod.CalPlayer
                     aquaticBoost--;
                     if (aquaticBoost <= 0f)
                         aquaticBoost = 0f;
-                    if (Player.mount.Active)
-                        aquaticBoost = 0f;
                 }
-
-                Player.statDefense += (int)Utils.Remap(aquaticBoost, 0, AquaticEmblem.TimeToReachMaxBoost, 0, AquaticEmblem.MaxDefenseBoost);
-                Player.moveSpeed -= Utils.Remap(aquaticBoost, 0, AquaticEmblem.TimeToReachMaxBoost, 0, AquaticEmblem.MaxMoveSpeedReduction);
+                //Because mounts are unchanged by move speed we also don'y let them have the defense.
+                if (!Player.mount.Active)
+                {
+                    Player.statDefense += (int)Utils.Remap(aquaticBoost, 0, AquaticEmblem.TimeToReachMaxBoost, 0, AquaticEmblem.MaxDefenseBoost);
+                    Player.moveSpeed -= Utils.Remap(aquaticBoost, 0, AquaticEmblem.TimeToReachMaxBoost, 0, AquaticEmblem.MaxMoveSpeedReduction);
+                }
             }
             else
                 aquaticBoost = 0f;
@@ -3588,84 +3540,69 @@ namespace CalamityMod.CalPlayer
             if (Player.chilled)
                 Player.moveSpeed *= 1f + (1f / 6f);
 
-            if (purpleHaze)
-                Player.GetDamage<GenericDamageClass>() += PurpleHaze.DamageBoost;
-
-            if (vodka)
+            if (purpleHazeStealthTimer > 0)
             {
-                Player.GetDamage<GenericDamageClass>() += Vodka.DamageBoost;
-                Player.GetCritChance<GenericDamageClass>() += Vodka.CritBoost;
-            }
-
-            if (moonshine)
-            {
-                Player.statDefense += Moonshine.DefenseBoost;
-                Player.endurance += Moonshine.DamageReductionBoost;
-            }
-
-            if (rum)
-                Player.moveSpeed += Rum.MoveSpeedBoost;
-
-            if (whiskey)
-            {
-                Player.GetDamage<GenericDamageClass>() += Whiskey.DamageBoost;
-                Player.GetCritChance<GenericDamageClass>() += Whiskey.CritBoost;
+                //this is so janky looking but it's the only way I could get it to work properly
+                if (!(StealthStrikeAvailable() && Player.HeldItem.DamageType == RogueDamageClass.Instance))
+                    Player.GetDamage(DamageClass.Generic) += PurpleHaze.DamageBoost;
+                else 
+                    stealthDamage -= PurpleHaze.StealthDamageLoss;
             }
 
             if (everclear)
                 Player.GetDamage<GenericDamageClass>() += Everclear.DamageBoost;
 
-            if (bloodyMary)
-            {
-                if (Main.bloodMoon)
-                {
-                    Player.GetDamage<GenericDamageClass>() += BloodyMary.DamageBoost;
-                    Player.moveSpeed += BloodyMary.MoveSpeedBoost;
-                }
-            }
-
-            if (tequila)
-            {
-                if (Main.dayTime)
-                {
-                    Player.statDefense += Tequila.DefenseBoost;
-                    Player.GetCritChance<GenericDamageClass>() += Tequila.CritBoost;
-                }
-            }
-
-            if (tequilaSunrise)
-            {
-                if (Main.dayTime)
-                {
-                    Player.statDefense += TequilaSunrise.DefenseBoost;
-                    Player.GetCritChance<GenericDamageClass>() += TequilaSunrise.CritBoost;
-                }
-            }
 
             if (caribbeanRum)
-                Player.moveSpeed += CaribbeanRum.MoveSpeedBoost;
-
-            if (cinnamonRoll)
             {
-                Player.manaRegenDelayBonus += CinnamonRoll.ManaRegenDelayBonus;
-                Player.manaRegenBonus += CinnamonRoll.ManaRegenBonus;
+                Player.gravity *= CaribbeanRum.GravityMultiplier;
+                Player.moveSpeed += CaribbeanRum.MoveSpeedBoost;
             }
 
             if (starBeamRye)
             {
-                Player.GetDamage<MagicDamageClass>() += StarBeamRye.MagicDamageBoost;
-                Player.manaCost -= StarBeamRye.ManaCostReduction;
-                Player.statManaMax2 += StarBeamRye.MaxManaBoost;
-            }
-
-            if (moscowMule)
-            {
-                Player.GetDamage<GenericDamageClass>() += MoscowMule.DamageBoost;
-                Player.GetCritChance<GenericDamageClass>() += MoscowMule.CritBoost;
+                Player.manaFlower = false;
+                Player.ClearBuff(ModContent.BuffType<AstralInjectionBuff>());
+                if (!Player.manaSick)
+                {
+                    Player.manaRegenCount -= Player.manaRegen;
+                    Player.manaRegenDelay = 0;
+                    Player.manaRegenCount += 20; // 20 mana per second, even while using an item
+                    if (Player.HeldItem.mana > 0) 
+                    {
+                        Player.GetDamage<MagicDamageClass>() += 0.5f + MathHelper.Max(0.1f,Player.HeldItem.mana / (float)Player.HeldItem.useTime);
+                    }
+                    Player.GetDamage<GenericDamageClass>() -= 0.5f;
+                }
             }
 
             if (whiteWine)
-                Player.GetDamage<MagicDamageClass>() += WhiteWine.MagicDamageBoost;
+            {
+                Player.wingTimeMax = (int)(Player.wingTimeMax * (1f - WhiteWine.FlightTimeLoss));
+
+                float bonus = 0f;
+                float MaxDistance = 640f;
+                NPC closestTarget = Player.Center.ClosestNPCAt(MaxDistance * 7); // extra range is to account for bonus range from massive targets
+                if (closestTarget != null)
+                {
+                    float generousHitboxWidth = Math.Max(closestTarget.Hitbox.Width / 2f, closestTarget.Hitbox.Height / 2f) + 100; // Adds some room so max bonus isnt when you're ON the hitbox
+                    bonus = Utils.Remap(Utils.Distance(Player.Center, closestTarget.Center), MaxDistance + generousHitboxWidth, generousHitboxWidth, 0, 1, true);
+                }
+                else
+                    bonus = 0;
+                whiteWineTimer += bonus * WhiteWine.FlightTimeRecoveryAmount;
+                while (whiteWineTimer > 1)
+                {
+                    if (Player.wingTime < Player.wingTimeMax)
+                        Player.wingTime++;
+                    whiteWineTimer--;
+                }
+             }
+
+            if (redWine)
+            {
+                Player.wingTimeMax = (int)(Player.wingTimeMax * (1f - RedWine.FlightTimeLoss));
+            }
 
             if (giantPearl)
             {
@@ -3808,7 +3745,7 @@ namespace CalamityMod.CalPlayer
             if (molluskLegs)
                 Player.velocity.X *= 0.995f;
 
-            if ((warped || caribbeanRum) && !Player.slowFall && !Player.mount.Active)
+            if ((warped) && !Player.slowFall && !Player.mount.Active)
             {
                 float velocityYMultiplier = 1.01f;
                 Player.velocity.Y *= velocityYMultiplier;
@@ -4506,7 +4443,7 @@ namespace CalamityMod.CalPlayer
             int lucreciaItemID = ModContent.ItemType<Lucrecia>();
             int lightspeedItemID = ModContent.ItemType<Lightspeed>();
 
-            if (Player.HeldItem.type == lucreciaItemID && lucreciaEnergy > 0)
+            if (Player.HeldItem.type == lucreciaItemID && darklightEnergy > 0)
             {
                 lucreciaParticleTimer--;
 
@@ -4514,7 +4451,7 @@ namespace CalamityMod.CalPlayer
                 if (lucreciaParticleTimer <= 0)
                 {
                     // Reset the timer (spawn rate depends on energy)
-                    lucreciaParticleTimer = (int)(20 - 15 * (lucreciaEnergy / 60));
+                    lucreciaParticleTimer = (int)(20 - 15 * (darklightEnergy / 60));
 
                     float radius = Main.rand.NextFloat(160f, 190f); // Distance from center
                     float spawnAngle = Main.rand.NextFloat(MathHelper.TwoPi); // Random angle along the whole radius
@@ -4522,13 +4459,13 @@ namespace CalamityMod.CalPlayer
                     Vector2 spawnPosition = Player.Center + spawnAngle.ToRotationVector2() * radius;
 
                     // Scale opacity with energy
-                    float opacity = lucreciaEnergy / (float)Lucrecia.MaxEnergy;
+                    float opacity = darklightEnergy / (float)Lucrecia.MaxEnergy;
                     Color color = Main.rand.NextBool() ? Color.MediumPurple : Color.CornflowerBlue;
-                    color *= opacity;
+                    color *= opacity * 0.5f;
 
-                    if (lucreciaEnergy >= 100)
+                    if (darklightEnergy >= 100)
                     {
-                        color *= 1.6f; // Brighter
+                        color *= 2.4f; // Way brighter
                     }
 
                     Vector2 dummyVelocity = Vector2.Zero; // We dont want the argument where this is used to have influence on the actual path
@@ -4557,11 +4494,11 @@ namespace CalamityMod.CalPlayer
                     // Scale opacity with energy
                     float opacity = elementalMastery / (float)Lightspeed.MaxEnergy;
                     Color color = Main.rand.NextBool() ? Color.Aqua : Color.OrangeRed;
-                    color *= opacity;
+                    color *= opacity * 0.5f;
 
                     if (elementalMastery >= 100)
                     {
-                        color *= 1.6f; // Brighter
+                        color *= 2.4f; // Way brighter
                     }
 
                     Vector2 dummyVelocity = Vector2.Zero; // We dont want the argument where this is used to have influence on the actual path
@@ -4858,7 +4795,7 @@ namespace CalamityMod.CalPlayer
                         {
                             totalDefenseDamage = 0;
                             defenseDamageRecoveryFrames = 0;
-                            totalDefenseDamageRecoveryFrames = DefenseDamageBaseRecoveryTime;
+                            totalDefenseDamageRecoveryFrames = DefenseDamageBaseRecoveryTime * (moonshine ? 2 : 1);
                             defenseDamageDelayFrames = 0;
                         }
                     }
@@ -4889,87 +4826,11 @@ namespace CalamityMod.CalPlayer
 
             // Multiplicative defense reductions.
             // These are done last because they need to be after the defense lower cap at 0.
-            if (purpleHaze)
-            {
-                if (Player.statDefense > 0)
-                    Player.statDefense -= (int)(Player.statDefense * PurpleHaze.DefenseLossPercent);
-            }
-
-            if (vodka)
-            {
-                if (Player.statDefense > 0)
-                    Player.statDefense -= (int)(Player.statDefense * Vodka.DefenseLossPercent);
-            }
-
-            if (grapeBeer)
-            {
-                if (Player.statDefense > 0)
-                    Player.statDefense -= (int)(Player.statDefense * GrapeBeer.DefenseLossPercent);
-            }
-
-            if (rum)
-            {
-                if (Player.statDefense > 0)
-                    Player.statDefense -= (int)(Player.statDefense * Rum.DefenseLossPercent);
-            }
-
-            if (whiskey)
-            {
-                if (Player.statDefense > 0)
-                    Player.statDefense -= (int)(Player.statDefense * Whiskey.DefenseLossPercent);
-            }
-
             if (everclear)
             {
                 if (Player.statDefense > 0)
                     Player.statDefense -= (int)(Player.statDefense * Everclear.DefenseLossPercent);
             }
-
-            if (bloodyMary)
-            {
-                if (Main.bloodMoon)
-                {
-                    if (Player.statDefense > 0)
-                        Player.statDefense -= (int)(Player.statDefense * BloodyMary.DefenseLossPercent);
-                }
-            }
-
-            if (caribbeanRum)
-            {
-                if (Player.statDefense > 0)
-                    Player.statDefense -= (int)(Player.statDefense * CaribbeanRum.DefenseLossPercent);
-            }
-
-            if (cinnamonRoll)
-            {
-                if (Player.statDefense > 0)
-                    Player.statDefense -= (int)(Player.statDefense * CinnamonRoll.DefenseLossPercent);
-            }
-
-            if (margarita)
-            {
-                if (Player.statDefense > 0)
-                    Player.statDefense -= (int)(Player.statDefense * Margarita.DefenseLossPercent);
-            }
-
-            if (starBeamRye)
-            {
-                if (Player.statDefense > 0)
-                    Player.statDefense -= (int)(Player.statDefense * StarBeamRye.DefenseLossPercent);
-            }
-
-            if (whiteWine)
-            {
-                if (Player.statDefense > 0)
-                    Player.statDefense -= (int)(Player.statDefense * WhiteWine.DefenseLossPercent);
-            }
-
-            if (Player.HasBuff(BuffID.Tipsy))
-            {
-                if (Player.statDefense > 0)
-                    Player.statDefense -= (int)(Player.statDefense * 0.05);
-            }
-
             if (DesertProwlerHat.ShroudedInSmoke(Player, out _))
                 Player.statDefense -= (int)(Player.statDefense * DesertProwlerHat.SmokeDefenseMult);
         }
@@ -5203,8 +5064,6 @@ namespace CalamityMod.CalPlayer
 
                     if (item.type == ModContent.ItemType<HadalStew>())
                         CalamityUtils.ConsumeItemViaQuickBuff(Player, item, HadalStew.BuffType, HadalStew.BuffDuration, true);
-                    if (item.type == ModContent.ItemType<Margarita>())
-                        CalamityUtils.ConsumeItemViaQuickBuff(Player, item, Margarita.BuffType, CalamityUtils.MinutesToFrames(Margarita.MinuteDuration), false);
                 }
             }
         }

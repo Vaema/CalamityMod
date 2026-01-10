@@ -7,8 +7,6 @@ namespace CalamityMod.Tiles.FurnitureCosmilite
 {
     public class CosmiliteBrick : GlowMaskTile
     {
-        public override string GlowMaskAsset => "CalamityMod/Tiles/FurnitureCosmilite/CosmiliteBrickGlow";
-
         public override void SetupStatic()
         {
             Main.tileSolid[Type] = true;

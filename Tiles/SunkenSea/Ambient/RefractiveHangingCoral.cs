@@ -23,7 +23,7 @@ namespace CalamityMod.Tiles.SunkenSea.Ambient
             DustType = DustID.Grass;
             HitSound = SoundID.Grass;
         }
-        
+
         public override void KillTile(int i, int j, ref bool fail, ref bool effectOnly, ref bool noItem)
         {
             Tile tile = Framing.GetTileSafely(i, j + 1);
@@ -35,10 +35,10 @@ namespace CalamityMod.Tiles.SunkenSea.Ambient
         {
             Tile tileAbove = Framing.GetTileSafely(i, j - 1);
             int type = -1;
-            if (tileAbove.HasTile && !tileAbove.BottomSlope) 
+            if (tileAbove.HasTile && !tileAbove.BottomSlope)
                 type = tileAbove.TileType;
 
-            if (type == ModContent.TileType<Shellstone>() || type == Type) 
+            if (type == ModContent.TileType<Shellstone>() || type == Type)
                 return true;
 
             WorldGen.KillTile(i, j);
@@ -65,14 +65,15 @@ namespace CalamityMod.Tiles.SunkenSea.Ambient
         {
             // Quite possibly some of the laggiest calculations I've ever seen
             float brightness = 0.9f;
-            brightness *= (float)MathF.Sin(-j / 40f + Main.GameUpdateCount * 0.01f + i);
-            Color lilac = new Color(126, 94, 252);
-            Color mint = new Color(96, 252, 186);
-            Color value = Color.Lerp(lilac, mint, (MathF.Sin(j / 30f + Main.GameUpdateCount * 0.017f + -i / 40f) + 1f) / 2f);
-            Color value1 = Color.Lerp(lilac, mint, (MathF.Sin((-j - 100) / 40f + Main.GameUpdateCount * 0.014f + i / 20f) + 1f) / 2f);
-            r = (value.R + value1.R) / 450f;
-            g = (value.G + value1.G) / 450f;
-            b = (value.B + value1.B) / 450f;
+            float time = Main.GlobalTimeWrappedHourly * 60.0f;
+            brightness *= MathF.Sin(-j / 40f + time * 0.01f + i);
+            Vector3 lilac = new(0.4941f, 0.3686f, 0.9882f);
+            Vector3 mint = new(0.3764f, 0.9882f, 0.7294f);
+            Vector3 value = Vector3.Lerp(lilac, mint, (MathF.Sin(j / 30f + time * 0.017f + -i / 40f) + 1f) * 0.5f);
+            Vector3 value1 = Vector3.Lerp(lilac, mint, (MathF.Sin((-j - 100) / 40f + time * 0.014f + i / 20f) + 1f) * 0.5f);
+            r = (value.X + value1.X) / 450f;
+            g = (value.Y + value1.Y) / 450f;
+            b = (value.Z + value1.Z) / 450f;
             r *= brightness;
             g *= brightness;
             b *= brightness;
@@ -85,14 +86,14 @@ namespace CalamityMod.Tiles.SunkenSea.Ambient
             {
                 bool PlaceVine = false;
                 int Test = j;
-                while (Test > j - 10) 
+                while (Test > j - 10)
                 {
                     Tile testTile = Framing.GetTileSafely(i, Test);
-                    if (testTile.BottomSlope) 
+                    if (testTile.BottomSlope)
                     {
                         break;
                     }
-                    else if (!testTile.HasTile || testTile.TileType != ModContent.TileType<Shellstone>()) 
+                    else if (!testTile.HasTile || testTile.TileType != ModContent.TileType<Shellstone>())
                     {
                         Test--;
                         continue;
@@ -100,13 +101,13 @@ namespace CalamityMod.Tiles.SunkenSea.Ambient
                     PlaceVine = true;
                     break;
                 }
-                
-                if (PlaceVine) 
+
+                if (PlaceVine)
                 {
                     tileBelow.TileType = Type;
                     tileBelow.HasTile = true;
                     WorldGen.SquareTileFrame(i, j + 1, true);
-                    if (Main.dedServ) 
+                    if (Main.dedServ)
                         NetMessage.SendTileSquare(-1, i, j + 1, 3, TileChangeType.None);
                 }
             }

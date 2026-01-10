@@ -145,7 +145,6 @@ namespace CalamityMod
         ExaltationDirection,
 
         // Syncs for specific bosses or entities
-        SyncDestroyerLaserColor,
         SyncCalamityNPCAIArray,
         SyncVanillaNPCLocalAIArray,
         SpawnSuperDummy,
@@ -212,6 +211,10 @@ namespace CalamityMod
         // Player Draw Effect Parameters
         SyncPlayerDrawParameter,
 
-        Reserved = 150
+        DialogueDisplayStart,
+
+        WulfrumAcrobaticsSync,
+        WulfrumAcrobaticsJumpSync,
+        WulfrumAcrobaticsLengthSync,
     }
 }

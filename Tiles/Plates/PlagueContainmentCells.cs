@@ -1,4 +1,5 @@
-﻿using CalamityMod.Sounds;
+﻿using CalamityMod.ExtraTextures.GreyscaleGradients;
+using CalamityMod.Sounds;
 using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.DataStructures;
@@ -8,13 +9,8 @@ namespace CalamityMod.Tiles.Plates
 {
     public class PlagueContainmentCells : GlowMaskTile
     {
-        public override string GlowMaskAsset => "CalamityMod/Tiles/Plates/PlagueContainmentCellsGlow";
-
-        internal static GrayscaleTexture1D PulseGradient;
         public override void SetupStatic()
         {
-            PulseGradient = new("CalamityMod/Tiles/Plates/PlagueContainmentCellsPulse");
-
             Main.tileSolid[Type] = true;
             Main.tileMergeDirt[Type] = true;
             Main.tileBlockLight[Type] = true;
@@ -24,12 +20,6 @@ namespace CalamityMod.Tiles.Plates
             HitSound = CommonCalamitySounds.PlatingMine;
             MineResist = 1f;
             AddMapEntry(new Color(128, 188, 67));
-        }
-
-        public override void OnUnload()
-        {
-            PulseGradient?.Unload();
-            PulseGradient = null;
         }
 
         public override bool CreateDust(int i, int j, ref int type)
@@ -51,7 +41,7 @@ namespace CalamityMod.Tiles.Plates
 
         public override Color GetGlowMaskColor(int i, int j, TileDrawInfo drawData)
         {
-            float brightness = PulseGradient.GetRepeat((int)Main.GameUpdateCount);
+            float brightness = GreyscaleGradient.PlagueContainmentCellsPulse.GetRepeat((int)Main.GameUpdateCount);
             brightness = 0.04f + (brightness * 0.156f);
             return Color.White * brightness;
         }

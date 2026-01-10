@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Threading;
 using CalamityMod.Events;
-using CalamityMod.Items;
 using CalamityMod.Items.Accessories;
 using CalamityMod.Items.Accessories.Vanity;
 using CalamityMod.Items.Fishing;
@@ -10,6 +9,7 @@ using CalamityMod.Items.LoreItems;
 using CalamityMod.Items.Materials;
 using CalamityMod.Items.PermanentBoosters;
 using CalamityMod.Items.Pets;
+using CalamityMod.Items.Placeables;
 using CalamityMod.Items.Placeables.Furniture.Paintings;
 using CalamityMod.Items.Potions;
 using CalamityMod.Items.Potions.Alcohol;
@@ -31,6 +31,7 @@ using Terraria.Audio;
 using Terraria.GameContent.ItemDropRules;
 using Terraria.ID;
 using Terraria.ModLoader;
+using static CalamityMod.NPCs.CalamityGlobalTownNPC;
 
 namespace CalamityMod.NPCs
 {
@@ -103,11 +104,9 @@ namespace CalamityMod.NPCs
                 #region Sky / Space
                 // Harpy
                 // Sky Glaze @ 3.33% IF Eye of Cthulhu dead
-                // Giant Harpy Feather @ 1.25% (0.67% in Vanilla)
                 // Essence of Sunlight @ 50% IF Hardmode and not statue spawned
                 case NPCID.Harpy:
                     postEoC.Add(ModContent.ItemType<SkyGlaze>(), 30);
-                    npcLoot.ChangeDropRate(ItemID.GiantHarpyFeather, 1, 80);
                     hardmode.AddIf(() => !npc.SpawnedFromStatue, ModContent.ItemType<EssenceofSunlight>(), 2);
                     break;
 
@@ -149,13 +148,13 @@ namespace CalamityMod.NPCs
                     break;
 
                 // Medusa
-                // Pocket Mirror @ 10% Normal, 20% Expert+
+                // Pocket Mirror @ 7.14% Normal, 14.29% Expert+ (2.5% Normal, 5% Expert+ in vanilla)
                 case NPCID.Medusa:
                     // Remove the vanilla loot rule for Pocket Mirror.
                     npcLoot.RemoveWhere((rule) => rule is CommonDrop conditionalRule && conditionalRule.itemId == ItemID.PocketMirror);
 
                     // Define a replacement rule which has an increased chance.
-                    npcLoot.Add(ItemDropRule.NormalvsExpert(ItemID.PocketMirror, 10, 5));
+                    npcLoot.Add(ItemDropRule.NormalvsExpert(ItemID.PocketMirror, 14, 7));
                     break;
 
                 // Tim
@@ -166,23 +165,16 @@ namespace CalamityMod.NPCs
 
                 // Skeleton Archer
                 // Magic Quiver @ 5% (2.5% in Vanilla)
-                // Marrow @ 2.5% (0.5% in Vanilla)
+                // Marrow @ 2% (0.5% in Vanilla)
                 case NPCID.SkeletonArcher:
                     npcLoot.ChangeDropRate(ItemID.MagicQuiver, 1, 20);
-                    npcLoot.ChangeDropRate(ItemID.Marrow, 1, 40);
+                    npcLoot.ChangeDropRate(ItemID.Marrow, 1, 50);
                     break;
 
                 // Armored Skeleton
-                // Beam Sword @ 2.5% (0.67% in Vanilla)
+                // Beam Sword @ 2% (0.67% in Vanilla)
                 case NPCID.ArmoredSkeleton:
-                    npcLoot.ChangeDropRate(ItemID.BeamSword, 1, 40);
-                    break;
-
-                // Black Recluse
-                // Poison Staff @ 5% (2.5% in Vanilla)
-                case NPCID.BlackRecluse:
-                case NPCID.BlackRecluseWall:
-                    npcLoot.ChangeDropRate(ItemID.PoisonStaff, 1, 20);
+                    npcLoot.ChangeDropRate(ItemID.BeamSword, 1, 50);
                     break;
 
                 // Mimic
@@ -396,23 +388,24 @@ namespace CalamityMod.NPCs
                 #region Aquatic / Ocean
                 // Pink Jellyfish
                 // Life Jelly @ 10% Normal, 14.29% Expert+
+                // Jellyfish Necklace @ 3.33% (1% in vanilla)
                 case NPCID.PinkJellyfish:
                     npcLoot.Add(ItemDropRule.NormalvsExpert(ModContent.ItemType<LifeJelly>(), 10, 7));
-                    npcLoot.ChangeDropRate(ItemID.JellyfishNecklace, 1, 25);
+                    npcLoot.ChangeDropRate(ItemID.JellyfishNecklace, 1, 30);
                     break;
 
                 // Blue Jellyfish
                 // Cleansing Jelly @ 10% Normal, 14.29% Expert+
                 case NPCID.BlueJellyfish:
                     npcLoot.Add(ItemDropRule.NormalvsExpert(ModContent.ItemType<CleansingJelly>(), 10, 7));
-                    npcLoot.ChangeDropRate(ItemID.JellyfishNecklace, 1, 25);
+                    npcLoot.ChangeDropRate(ItemID.JellyfishNecklace, 1, 30);
                     break;
 
                 // Green Jellyfish
                 // Vital Jelly @ 12.5% Normal, 20% Expert+
                 case NPCID.GreenJellyfish:
                     npcLoot.Add(ItemDropRule.NormalvsExpert(ModContent.ItemType<VitalJelly>(), 8, 5));
-                    npcLoot.ChangeDropRate(ItemID.JellyfishNecklace, 1, 25);
+                    npcLoot.ChangeDropRate(ItemID.JellyfishNecklace, 1, 30);
                     break;
 
                 // Piranha, Arapaima, Blood Feeder
@@ -434,10 +427,10 @@ namespace CalamityMod.NPCs
                     break;
 
                 // Blood Jelly, Fungo Fish
-                // Jellyfish Necklace @ 1%
+                // Jellyfish Necklace @ 3.33%
                 case NPCID.BloodJelly:
                 case NPCID.FungoFish:
-                    npcLoot.Add(ItemID.JellyfishNecklace, 25);
+                    npcLoot.Add(ItemID.JellyfishNecklace, 30);
                     break;
                 #endregion
 
@@ -699,7 +692,7 @@ namespace CalamityMod.NPCs
                 case NPCID.Drippler:
                     postEoC.Add(ModContent.ItemType<BloodOrb>(), 4);
                     break;
-                
+
                 //Hardmode enemies drop orbs even if EoC is not dead
                 //99% of players will not encounter this and challenge runners will appreciate it
                 case NPCID.Clown:
@@ -1279,7 +1272,7 @@ namespace CalamityMod.NPCs
 
                     // GFB Lavaproof Bug Net and Alchemical Flask drop
                     GFB.Add(DropHelper.PerPlayer(ItemID.FireproofBugNet), hideLootReport: true);
-                    GFB.Add(DropHelper.PerPlayer(ModContent.ItemType<AlchemicalFlask>()), hideLootReport: true);
+                    GFB.Add(DropHelper.PerPlayer(ModContent.ItemType<AlchemicalDecanter>()), hideLootReport: true);
 
                     // Lore
                     npcLoot.AddConditionalPerPlayer(() => !NPC.downedQueenBee, ModContent.ItemType<LoreQueenBee>(), desc: DropHelper.FirstKillText);
@@ -1701,12 +1694,12 @@ namespace CalamityMod.NPCs
                         }
                     }
                     catch (ArgumentNullException) { }
-                    DukeEditFailed:
+DukeEditFailed:
 
-                    // 16NOV2025: Ozzatron: following overwhelming dev vote, Expert+ drops are NOT available in Classic
-                    // npcLoot.AddNormalOnly(DropHelper.PerPlayer(ItemID.ShrimpyTruffle));
+// 16NOV2025: Ozzatron: following overwhelming dev vote, Expert+ drops are NOT available in Classic
+// npcLoot.AddNormalOnly(DropHelper.PerPlayer(ItemID.ShrimpyTruffle));
 
-                    // Would be in the bag otherwise
+// Would be in the bag otherwise
                     npcLoot.AddNormalOnly(ModContent.ItemType<BrinyBaron>(), 10);
                     npcLoot.AddNormalOnly(ModContent.ItemType<ThankYouPainting>(), ThankYouPainting.DropInt);
 
@@ -1735,8 +1728,6 @@ namespace CalamityMod.NPCs
                     GFB.Add(DropHelper.PerPlayer(ModContent.ItemType<FishboneBoomerang>()), hideLootReport: true);
                     GFB.Add(DropHelper.PerPlayer(ModContent.ItemType<FishofEleum>(), 1, 1, 9999), true);
                     GFB.Add(DropHelper.PerPlayer(ModContent.ItemType<FishofFlight>(), 1, 1, 9999), true);
-                    GFB.Add(DropHelper.PerPlayer(ModContent.ItemType<FishofLight>(), 1, 1, 9999), true);
-                    GFB.Add(DropHelper.PerPlayer(ModContent.ItemType<FishofNight>(), 1, 1, 9999), true);
 
                     // Lore
                     npcLoot.AddConditionalPerPlayer(() => !NPC.downedFishron, ModContent.ItemType<LoreDukeFishron>(), desc: DropHelper.FirstKillText);

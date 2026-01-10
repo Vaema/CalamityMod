@@ -17,7 +17,6 @@ namespace CalamityMod.Tiles.FurnitureWulfrum
             {
                 GlowTexture = ModContent.Request<Texture2D>("CalamityMod/Tiles/FurnitureWulfrum/WulfrumPlatform_Glow", AssetRequestMode.ImmediateLoad).Value;
             }
-
             this.SetUpPlatform(ModContent.ItemType<Items.Placeables.FurnitureWulfrum.WulfrumPlatform>(), true);
         }
 

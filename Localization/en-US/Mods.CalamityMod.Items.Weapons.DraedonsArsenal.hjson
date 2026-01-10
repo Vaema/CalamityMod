@@ -18,7 +18,7 @@ AqueousHunterDrone: {
 		<right> while holding any summon weapon to command the shrimp to launch a vertical missile barrage
 		Vertical missiles aim towards your cursor and leave a lingering blast if they hit solid ground
 		Each shrimp uses 4 minion slots
-		[c/1FBFF:'When pursuing the adherents of Gods, Yharim believed no stone should be left unturned.]
+		[c/1FBFF:'When pursuing the adherents of gods, Yharim believed no stone should be left unturned.]
 		[c/1FBFF:Weaponry for underwater contingencies was an unusually heavy focus, but no models ever saw deployment.']
 		'''
 }
@@ -105,6 +105,19 @@ Nidhogg: {
 		This charge attack can not be interrupted once started and has a long cooldown
 		[c/1FFBFF:'Many soldiers underestimate the destructive capabilities of magnetism.]
 		[c/1FFBFF:This railgun has reliably pulled in skeptics of its crushing efficiency.']
+		'''
+}
+
+PhalanxSurge: {
+	DisplayName: W-LSR: Phalanx Surge
+	Tooltip:
+		'''
+		Fires a spread of lasers
+		Holding <right> charges the weapon, allowing it to thrust forward and impale enemies with an energy spear
+		Holding <left> when firing the charge attack will launch you forward at high speeds and deal extra damage
+		Using the charged attack has a short cooldown
+		[c/1FFBFF:'There was much call from Yharim's forces for close range armaments.]
+		[c/1FFBFF:A laser lance with which to gore their foes was met with thunderous applause.']
 		'''
 }
 
@@ -199,19 +212,6 @@ PulseTurretRemote: {
 		'''
 }
 
-PhalanxSurge: {
-	DisplayName: W-LSR: Phalanx Surge
-	Tooltip:
-		'''
-		Fires a spread of lasers
-		Holding <right> charges the weapon, allowing it to thrust forward and impale enemies with an energy spear
-		Holding <left> when firing the charge attack will launch you forward at high speeds and deal extra damage
-		Using the charged attack has a short cooldown
-		[c/1FFBFF:'There was much call from Yharim's forces for close range armaments.]
-		[c/1FFBFF:A laser lance with which to gore their foes was met with thunderous applause.']
-		'''
-}
-
 ShortCircuit: {
 	DisplayName: P-TSL: Short Circuit
 	Tooltip:
@@ -264,15 +264,6 @@ TheAnomalysNanogun: {
 		'''
 }
 
-WavePounder: {
-	DisplayName: Wave Pounder
-	Tooltip:
-		'''
-		Throws a bomb which explodes into a agonizingly forceful shockwave
-		Stealth strikes emit absurdly powerful shockwaves
-		'''
-}
-
 Vulcan: {
 	DisplayName: R-GSS: Vulcan
 	Tooltip:
@@ -283,5 +274,14 @@ Vulcan: {
 		When a harpoon expires, all magnetized shots launch at nearby enemies with increased damage
 		[c/1FFBFF:'Originally a ceiling mounted mining beam, the removal of its battery reduced its heft only marginally.]
 		[c/1FFBFF:It saw little use and many complaints from the battlemage corps.']
+		'''
+}
+
+WavePounder: {
+	DisplayName: Wave Pounder
+	Tooltip:
+		'''
+		Throws a bomb which explodes into a agonizingly forceful shockwave
+		Stealth strikes emit absurdly powerful shockwaves
 		'''
 }

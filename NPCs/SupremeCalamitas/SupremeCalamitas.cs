@@ -5,7 +5,6 @@ using System.Linq;
 using CalamityMod.Dusts;
 using CalamityMod.Events;
 using CalamityMod.Graphics.Metaballs;
-using CalamityMod.Items;
 using CalamityMod.Items.Armor.Vanity;
 using CalamityMod.Items.Fishing.FishingRods;
 using CalamityMod.Items.LoreItems;
@@ -21,6 +20,7 @@ using CalamityMod.Items.Weapons.Melee;
 using CalamityMod.Items.Weapons.Ranged;
 using CalamityMod.Items.Weapons.Rogue;
 using CalamityMod.Items.Weapons.Summon;
+using CalamityMod.Items.Weapons.Typeless;
 using CalamityMod.NPCs.Bumblebirb;
 using CalamityMod.NPCs.DevourerofGods;
 using CalamityMod.NPCs.TownNPCs;
@@ -60,7 +60,23 @@ namespace CalamityMod.NPCs.SupremeCalamitas
             Count = 7
         }
 
-        public static Color CurrentColor => CalamityGlobalNPC.SCal >= 0 && Main.npc[CalamityGlobalNPC.SCal].active && Main.npc[CalamityGlobalNPC.SCal].ModNPC<SupremeCalamitas>().ArenaBox is not null ? Main.npc[CalamityGlobalNPC.SCal].ModNPC<SupremeCalamitas>().ArenaBox.borderColor : SupremeCalamitas.AcceptanceColor;
+        public static Color CurrentColor
+        {
+            get
+            {
+                if (CalamityGlobalNPC.SCal < 0)
+                    return AcceptanceColor;
+
+                var npc = Main.npc[CalamityGlobalNPC.SCal];
+                if (npc == null || !npc.active)
+                    return AcceptanceColor;
+
+                if (npc.ModNPC is not SupremeCalamitas calamitas || calamitas.ArenaBox is null)
+                    return AcceptanceColor;
+
+                return calamitas.ArenaBox.borderColor;
+            }
+        }
         public static Color GriefColor => Color.Crimson;
         public static Color LamentColor => Color.RoyalBlue;
         public static Color EpiphanyColor => new Color(219, 75, 2);
@@ -682,20 +698,20 @@ namespace CalamityMod.NPCs.SupremeCalamitas
 
             void UpdateArena(ArenaWallSystem.Box box)
             {
-                var x = 1f/TextureAssets.MagicPixel.Height();
-                var p = ScalArenaMetaball.SpawnParticle((box.TopLeft + box.BottomLeft) * 0.5f - new Vector2(box.borderThickness*0.5f + 2,0), Vector2.Zero, 1);
+                var x = 1f / TextureAssets.MagicPixel.Height();
+                var p = ScalArenaMetaball.SpawnParticle((box.TopLeft + box.BottomLeft) * 0.5f - new Vector2(box.borderThickness * 0.5f + 2, 0), Vector2.Zero, 1);
                 p.SizeScaling = 0;
                 p.TextureToUse = TextureAssets.MagicPixel.Value;
-                p.Scale = new Vector2(box.borderThickness-6, box.borderThickness*2 + box.Size.Y-4);
+                p.Scale = new Vector2(box.borderThickness - 6, box.borderThickness * 2 + box.Size.Y - 4);
                 p.Scale.Y *= x;
-                
+
                 p = ScalArenaMetaball.SpawnParticle((box.TopRight + box.BottomRight) * 0.5f + new Vector2(box.borderThickness * 0.5f + 2, 0), Vector2.Zero, 1);
                 p.SizeScaling = 0;
                 p.TextureToUse = TextureAssets.MagicPixel.Value;
                 p.Scale = new Vector2(box.borderThickness - 6, box.borderThickness * 2 + box.Size.Y - 4);
                 p.Scale.Y *= x;
 
-                p = ScalArenaMetaball.SpawnParticle((box.TopRight + box.TopLeft) * 0.5f - new Vector2(0,box.borderThickness * 0.5f + 2), Vector2.Zero, 1);
+                p = ScalArenaMetaball.SpawnParticle((box.TopRight + box.TopLeft) * 0.5f - new Vector2(0, box.borderThickness * 0.5f + 2), Vector2.Zero, 1);
                 p.SizeScaling = 0;
                 p.TextureToUse = TextureAssets.MagicPixel.Value;
                 p.Scale = new Vector2(box.borderThickness * 2 + box.Size.X - 4, box.borderThickness - 6);

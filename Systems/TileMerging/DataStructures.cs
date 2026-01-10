@@ -103,19 +103,20 @@ namespace CalamityMod.Systems
         ShapeU_RightEmpty_DownEnd = ShapeI_Up | ShapeI_Down_End | ShapeI_Left,
     }
 
-    public struct SheetPositionKey(BlendSideFlags blendSides, byte randomFrameIndex)
+    public readonly struct SheetPositionKey(BlendSideFlags blendSides, byte randomFrameIndex)
     {
-        public BlendSideFlags BlendSides = blendSides;
-        public byte RandomFrameIndex = randomFrameIndex;
+        public ushort Key { get; init; } = (ushort)((int)blendSides + (randomFrameIndex * 256));
+        public BlendSideFlags BlendSides => (BlendSideFlags)(byte)(Key % 256);
+        public byte RandomFrameIndex => (byte)(Key / 256);
 
-        public static implicit operator int(SheetPositionKey key) => (int)key.BlendSides + (key.RandomFrameIndex * byte.MaxValue);
+        public static implicit operator int(SheetPositionKey key) => key.Key;
     }
 
-    public struct SheetPosition
+    public readonly struct SheetPosition
     {
-        public byte X;
-        public byte Y;
-        public sbyte BakedSheetIndex;
+        public readonly byte X;
+        public readonly byte Y;
+        public readonly sbyte BakedSheetIndex;
 
         public SheetPosition(int x, int y, sbyte bakedSheetIndex = -1)
         {
@@ -151,5 +152,12 @@ namespace CalamityMod.Systems
     {
         public ushort SheetIndex = sheetIdx;
         public byte BlendData = blendData;
+    }
+
+    public enum TileBlendingQuality
+    {
+        Disable,
+        Normal,
+        High
     }
 }

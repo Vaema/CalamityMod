@@ -26,6 +26,7 @@ namespace CalamityMod.ILEditing
 {
     public partial class ILChanges
     {
+        [Obsolete("Use 'Main.instance.TilesRenderer.Wind' Instead. This property is included in the Calamity source code only for historic value.", error: true)]
         public static WindGrid Windgrid
         {
             get;
@@ -867,7 +868,8 @@ namespace CalamityMod.ILEditing
             {
                 var center = Main.screenHeight / 2;
                 Main.mouseY = center - (Main.mouseY - center);
-            };
+            }
+            ;
         }
         private static void UI_Unflip_Start(On_Main.orig_DrawPlayerChatBubbles orig, Main self)
         {

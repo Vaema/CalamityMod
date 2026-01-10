@@ -1,8 +1,9 @@
-﻿using CalamityMod.Buffs.DamageOverTime;
+﻿using System.Collections.Generic;
+using CalamityMod.Buffs.DamageOverTime;
+using CalamityMod.NPCs;
 using CalamityMod.Particles;
 using CalamityMod.Projectiles.Typeless;
 using Microsoft.Xna.Framework;
-using System.Collections.Generic;
 using Terraria;
 using Terraria.Audio;
 using Terraria.ID;
@@ -84,10 +85,11 @@ namespace CalamityMod.Items.Accessories
                     npc.MoveNPC(Vector2.Normalize(shoveVelocity), shoveVelocity.Length(), true);
 
                     int scaledFallDamage = CalamityUtils.ScaleWithDifficulty(ShoveFallBaseDamage);
+                    var flungNPC = npc.GetGlobalNPC<CalamityTileCollisionHarmNPC>();
                     if (empowered)
-                        npc.FlungNPC().ApplyCollisionDamage(npc, player, scaledFallDamage, shoveVelocity * 0.5f, 5f, true);
+                        flungNPC.ApplyCollisionDamage(npc, player, scaledFallDamage, shoveVelocity * 0.5f, 5f, true);
                     else
-                        npc.FlungNPC().ApplyForcedVelocity(npc, player, shoveVelocity * 0.5f, true);
+                        flungNPC.ApplyForcedVelocity(npc, player, shoveVelocity * 0.5f, true);
 
                     for (int i = -1; i <= 1; i++)
                     {

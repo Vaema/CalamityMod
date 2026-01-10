@@ -13,9 +13,10 @@ namespace CalamityMod.Items.Potions.Alcohol
     {
         public new string LocalizationCategory => "Items.Potions";
 
-        public static float DamageBoost = 0.08f;
-        public static float DefenseLossPercent = 0.05f;
-        public override LocalizedText Tooltip => base.Tooltip.WithFormatArgs(DamageBoost.ToPercent(), DefenseLossPercent.ToPercent());
+        public static float DamageBoost = 0.25f;
+        public static float StealthDamageLoss = 0.25f;
+
+        public override LocalizedText Tooltip => base.Tooltip.WithFormatArgs(DamageBoost.ToPercent(),StealthDamageLoss.ToPercent());
 
         public override void SetStaticDefaults()
         {
@@ -29,7 +30,7 @@ namespace CalamityMod.Items.Potions.Alcohol
 
         public override void SetDefaults()
         {
-            Item.DefaultToFood(30, 42, ModContent.BuffType<PurpleHazeBuff>(), CalamityUtils.MinutesToFrames(15), true);
+            Item.DefaultToFood(30, 42, ModContent.BuffType<PurpleHazeBuff>(), CalamityUtils.MinutesToFrames(6), true);
 
             Item.value = Item.sellPrice(silver: 30);
             Item.rare = ItemRarityID.LightRed;
@@ -37,21 +38,11 @@ namespace CalamityMod.Items.Potions.Alcohol
 
         public override void AddRecipes()
         {
-            CreateRecipe().
-                AddIngredient(ItemID.Ale).
-                AddIngredient(ItemID.PixieDust, 10).
-                AddIngredient(ItemID.CrystalShard, 5).
-                AddIngredient(ItemID.UnicornHorn).
+            CreateRecipe(10).
+                AddIngredient(ItemID.Bottle, 10).
+                AddIngredient(ItemID.Plum).
                 AddTile(TileID.Kegs).
                 Register();
-
-            CreateRecipe().
-                AddIngredient(ItemID.Ale).
-                AddIngredient<BloodOrb>(15).
-                AddIngredient(ItemID.CrystalShard).
-                AddTile(TileID.AlchemyTable).
-                Register()
-                .DisableDecraft();
         }
     }
 }

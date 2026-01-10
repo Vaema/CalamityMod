@@ -18,6 +18,7 @@ BallisticPoisonCloud.DisplayName: Ballistic Cloud
 BarrelShrapnel.DisplayName: Barrel Shrapnel
 BileExplosion.DisplayName: Bile
 BlastBarrelProjectile.DisplayName: Blast Barrel
+BlazingStarOrbital.DisplayName: Orbital Blazing Star
 BlazingStarProj.DisplayName: Blazing Star
 BloodsoakedCrashax.DisplayName: Bloodsoaked Crasher
 BlueFlamePillar.DisplayName: Flame Pillar
@@ -122,6 +123,7 @@ GacruxianProj.DisplayName: Gacruxian Mollusk
 GelDartProjectile.DisplayName: Gel Dart
 GhoulishGougerBoomerang.DisplayName: Ghoulish Gouger
 GildedDaggerProj.DisplayName: Gilded Dagger
+GlaiveOrbital.DisplayName: Orbital Glaive
 GlaiveProj.DisplayName: Glaive
 GleamingDaggerProj.DisplayName: Gleaming Dagger
 GodsParanoiaDart.DisplayName: God's Paranoia Dart
@@ -163,6 +165,7 @@ LostSoulFriendly.DisplayName: Lost Soul
 LuminousShard.DisplayName: Stardust Shard
 LunarKunaiProj.DisplayName: Lunar Kunai
 LuxorsGiftRogue.DisplayName: Luxor's Rogue
+LyraConstellation.DisplayName: Lyra Constellation
 MalachiteBolt.DisplayName: Malachite
 MalachiteProj.DisplayName: Malachite
 MalachiteStealth.DisplayName: Malachite
@@ -181,9 +184,6 @@ NanoblackSplit.DisplayName: Nanoblack Blade
 NanoblackStealthSplit.DisplayName: Nanoblack Afterimage
 NastyChollaBol.DisplayName: Nasty Cholla
 NastyChollaNeedle.DisplayName: Cactus Needle
-NightsGazeProjectile.DisplayName: Night's Gaze
-NightsGazeSpark.DisplayName: Night's Gaze Spark
-NightsGazeStar.DisplayName: Night's Gaze Star
 OrichalcumSpikedGemstoneProjectile.DisplayName: Orichalcum Gemstone
 PalladiumJavelinProjectile.DisplayName: Palladium Javelin
 PartisanExplosion.DisplayName: Profaned Explosion
@@ -313,6 +313,9 @@ ValariBoomerang.DisplayName: Frostcrush Valari
 Valaricicle.DisplayName: Valaricicle
 Valaricicle2.DisplayName: Valaricicle
 ValedictionBoomerang.DisplayName: Valediction
+VegaProjectile.DisplayName: Vega
+VegaSpark.DisplayName: Vega Spark
+VegaStar.DisplayName: Vega Star
 VeneratedKnife.DisplayName: Venerated Knife
 WaveSkipperProjectile.DisplayName: Wave Skipper
 WebBallBol.DisplayName: Web Ball
@@ -323,5 +326,3 @@ WrathwingCinder.DisplayName: Wrathwing Eruption
 WrathwingFireball.DisplayName: Wrathwing Fireball
 WrathwingSpear.DisplayName: Wrathwing
 WulfrumKnifeProj.DisplayName: Wulfrum Knife
-GlaiveOrbital.DisplayName: Glaive Orbital
-BlazingStarOrbital.DisplayName: Blazing Star Orbital

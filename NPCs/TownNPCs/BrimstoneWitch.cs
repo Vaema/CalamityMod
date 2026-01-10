@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using CalamityMod.BiomeManagers;
 using CalamityMod.Dusts;
 using CalamityMod.Events;
-using CalamityMod.Items;
+using CalamityMod.Items.Tools;
 using CalamityMod.Projectiles.Magic;
 using CalamityMod.Systems.Collections;
 using CalamityMod.UI.CalamitasEnchants;

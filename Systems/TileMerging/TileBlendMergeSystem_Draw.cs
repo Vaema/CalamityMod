@@ -38,7 +38,7 @@ namespace CalamityMod.Systems
         {
             orig(self, solidLayer, forRenderTargets, intoRenderTargets, waterStyleOverride);
 
-            if (!solidLayer)
+            if (!solidLayer || CalamityClientConfig.Instance.TileTextureBlendingQuality == TileBlendingQuality.Disable)
                 return;
 
             var screenPosition = Main.Camera.UnscaledPosition;
@@ -54,10 +54,10 @@ namespace CalamityMod.Systems
                         continue;
 
                     var tile = Main.tile[x, y];
-                    if (!CalamityTileSets.DrawBlendMergeAfterSolidTile[tile.TileType])
+                    if (!tile.Get<TileSpecialDrawData>().HasBlendMergeData)
                         continue;
 
-                    if (!tile.Get<TileSpecialDrawData>().HasBlendMergeData)
+                    if (!CalamityTileSets.DrawBlendMergeAfterSolidTile[tile.TileType])
                         continue;
 
                     if (!TryGetBlendingRefData(x, y, out var blendRefs))
@@ -81,22 +81,25 @@ namespace CalamityMod.Systems
             // Sliced Rendering
             int sliceLength = 0;
             Rectangle[] sliceRects = null;
-            Color[] colorSliceBuffer = ColorSliceBuffer.Value;
+            Color[] colorSliceBuffer = null;
 
             // Is HalfBlock condition is also in vanilla, so we follow that
-            if (Lighting.NotRetro && !tile.IsHalfBlock && !TileID.Sets.DontDrawTileSliced[tileType])
+            var silcedConfigEnabled = CalamityClientConfig.Instance.TileTextureBlendingQuality == TileBlendingQuality.High;
+            if (silcedConfigEnabled && Lighting.NotRetro && !tile.IsHalfBlock && !TileID.Sets.DontDrawTileSliced[tileType])
             {
                 var tileRenderer = Main.instance.TilesRenderer;
                 if (tileLight.IsAnyChannelGreaterThan(tileRenderer._highQualityLightingRequirement))
                 {
                     sliceLength = 9;
                     sliceRects = Rects9Slice;
+                    colorSliceBuffer = ColorSliceBuffer.Value;
                     Lighting.GetColor9Slice(tileX, tileY, ref colorSliceBuffer);
                 }
                 else if (tileLight.IsAnyChannelGreaterThan(tileRenderer._mediumQualityLightingRequirement))
                 {
                     sliceLength = 4;
                     sliceRects = Rects4Slice;
+                    colorSliceBuffer = ColorSliceBuffer.Value;
                     Lighting.GetColor4Slice(tileX, tileY, ref colorSliceBuffer);
                 }
             }

@@ -14,10 +14,6 @@ namespace CalamityMod.Items.Weapons.Magic
         public new string LocalizationCategory => "Items.Weapons.Magic";
 
         public int DartTimer = 0;
-        public override void SetStaticDefaults()
-        {
-            ItemID.Sets.ShimmerTransformToItem[Type] = ModContent.ItemType<DormantBrimseeker>();
-        }
         public override void SetDefaults()
         {
             Item.width = 28;

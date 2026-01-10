@@ -9,8 +9,6 @@ namespace CalamityMod.Tiles.Abyss.AbyssAmbient
 {
     public class AbyssGiantKelp4 : GlowMaskTile
     {
-        public override string GlowMaskAsset => "CalamityMod/Tiles/Abyss/AbyssAmbient/AbyssGiantKelp4Glow";
-
         public override void SetupStatic()
         {
             Main.tileLighted[Type] = true;

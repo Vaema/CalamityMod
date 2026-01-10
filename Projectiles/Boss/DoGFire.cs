@@ -29,7 +29,7 @@ namespace CalamityMod.Projectiles.Boss
 
         public override void SetStaticDefaults()
         {
-            ProjectileID.Sets.TrailCacheLength[Type] = 14;
+            ProjectileID.Sets.TrailCacheLength[Type] = 10;
             ProjectileID.Sets.TrailingMode[Type] = 2;
         }
         public override void SetDefaults()
@@ -165,12 +165,12 @@ namespace CalamityMod.Projectiles.Boss
         {
             // Render the main trail for the body for the flame.
             GameShaders.Misc["CalamityMod:ImpFlameTrail"].SetShaderTexture(ModContent.Request<Texture2D>("CalamityMod/ExtraTextures/Trails/ScarletDevilStreak"));
-            PrimitiveRenderer.RenderTrail(Projectile.oldPos, new(FireWidthFunction, FireColorFunction, (_,_) => Projectile.Size * 0.5f + Projectile.velocity.SafeNormalize(Vector2.Zero)*24f, true, true, GameShaders.Misc["CalamityMod:ImpFlameTrail"]), Projectile.oldPos.Length + 32);
+            PrimitiveRenderer.RenderTrail(Projectile.oldPos, new(FireWidthFunction, FireColorFunction, (_,_) => Projectile.Size * 0.5f + Projectile.velocity.SafeNormalize(Vector2.Zero)*24f, true, true, GameShaders.Misc["CalamityMod:ImpFlameTrail"]), Projectile.oldPos.Length + 12);
 
             // Render a smaller, pure white trail in the same position to represent the glowing core of the flame.
-            Vector2[] fireCoreLength = Projectile.oldPos.Take(IsAPassiveFireball ? 8 : 10).ToArray();
+            int coreLength = IsAPassiveFireball ? 6 : 7;
             GameShaders.Misc["CalamityMod:ImpFlameTrail"].SetShaderTexture(ModContent.Request<Texture2D>("CalamityMod/ExtraTextures/Trails/SylvestaffStreak"));
-            PrimitiveRenderer.RenderTrail(fireCoreLength, new(FireCoreWidthFunction, FireCoreColorFunction, (_,_) => Projectile.Size * 0.5f + Projectile.velocity.SafeNormalize(Vector2.Zero) * 24f, true, true, GameShaders.Misc["CalamityMod:ImpFlameTrail"]), fireCoreLength.Length + 24);
+            PrimitiveRenderer.RenderTrail(Projectile.oldPos[..coreLength], new(FireCoreWidthFunction, FireCoreColorFunction, (_,_) => Projectile.Size * 0.5f + Projectile.velocity.SafeNormalize(Vector2.Zero) * 24f, true, true, GameShaders.Misc["CalamityMod:ImpFlameTrail"]), coreLength + 8);
         }
     }
 }

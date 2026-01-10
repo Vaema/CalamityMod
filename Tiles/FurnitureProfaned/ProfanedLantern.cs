@@ -64,7 +64,7 @@ namespace CalamityMod.Tiles.FurnitureProfaned
 
         public override void HitWire(int i, int j)
         {
-            CalamityUtils.LightHitWire(Type, i, j, 1, 2);
+            FurnitureCommon.LightHitWire(Type, i, j, 1, 2);
         }
 
         public override void DrawEffects(int i, int j, SpriteBatch spriteBatch, ref TileDrawInfo drawData)

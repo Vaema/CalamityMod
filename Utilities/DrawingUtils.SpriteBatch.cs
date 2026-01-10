@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Reflection;
+using CalamityMod.Utilities.Daybreak;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria;
@@ -41,6 +42,7 @@ namespace CalamityMod
         /// <param name="effect"></param>
         /// <param name="transformMatrix"></param>
         /// <param name="batchCallback"></param>
+        [Obsolete("Use SpriteBatch.Begin, SpriteBatchScope, or SpriteBatchSnapshot")]
         public static void SafeBegin(this SpriteBatch spriteBatch, SpriteSortMode sortMode,
             BatchSetting settings,
             Effect effect,
@@ -51,12 +53,11 @@ namespace CalamityMod
             if (spriteBatch is null)
                 return;
 
-            spriteBatch.GetParameters(out var parameters);
-            spriteBatch.TryEnd();
+            spriteBatch.End(out var ss);
             
             spriteBatch.Begin(sortMode, settings.blendState, settings.samplerState, settings.depthStencilState, settings.rasterizerState ?? Main.Rasterizer, effect, transformMatrix);
             batchCallback?.Invoke();
-            spriteBatch.Restart(parameters);
+            spriteBatch.Restart(ss);
         }
 
         [Obsolete("This is violative of spritebatch's control flow and will eventually be removed")]
@@ -91,109 +92,6 @@ namespace CalamityMod
             {
                 spriteBatch.End();
                 return true;
-            }
-        }
-
-        internal readonly record struct SpritebatchParameters(
-            BlendState BlendState,
-            SpriteSortMode SortMode,
-            DepthStencilState DepthStencilState,
-            SamplerState SamplerState, 
-            RasterizerState RasterizerState,
-            Effect Effect,
-            Matrix TransformMatrix
-        );
-
-        internal static void End(this SpriteBatch spriteBatch, out SpritebatchParameters parameters)
-        {
-            spriteBatch.GetParameters(out parameters);
-            
-            spriteBatch.End();
-        }
-
-        internal static void GetParameters(this SpriteBatch spriteBatch, out SpritebatchParameters parameters)
-        {
-            parameters = new SpritebatchParameters(
-                spriteBatch.blendState,
-                spriteBatch.sortMode,
-                spriteBatch.depthStencilState,
-                spriteBatch.samplerState,
-                spriteBatch.rasterizerState,
-                spriteBatch.customEffect,
-                spriteBatch.transformMatrix
-            );
-        }
-        
-        internal static void Begin(this SpriteBatch spriteBatch, in SpritebatchParameters parameters)
-        {
-            spriteBatch.Begin(parameters.SortMode,
-                parameters.BlendState, 
-                parameters.SamplerState, 
-                parameters.DepthStencilState, 
-                parameters.RasterizerState,
-                parameters.Effect,
-                parameters.TransformMatrix);
-        }
-
-        internal static void Restart(this SpriteBatch spriteBatch)
-        {
-            spriteBatch.End(out var sp);
-            spriteBatch.Begin(in sp);
-        }
-        
-        internal static void Restart(this SpriteBatch spriteBatch, in SpritebatchParameters parameters)
-        {
-            spriteBatch.End();
-            spriteBatch.Begin(parameters);
-        }
-
-        internal class SpritebatchScope : IDisposable
-        {
-            private readonly SpritebatchParameters _parameters;
-            private readonly SpriteBatch _sb;
-            /// <summary>
-            /// Takes in a spritebatch and gets <see cref="SpritebatchParameters"/> from it without ending or otherwise mutating it.
-            /// </summary>
-            /// <param name="sb"></param>
-            public SpritebatchScope(SpriteBatch sb)
-            {
-                _sb = sb;
-                _sb.GetParameters(out _parameters);
-            }
-            /// <summary>
-            /// Takes in a spritebatch and gets <see cref="SpritebatchParameters"/> from it before restarting it with the input <see cref="SpritebatchParameters"/>.
-            /// </summary>
-            /// <param name="sb"></param>
-            /// <param name="parameters"></param>
-            public SpritebatchScope(SpriteBatch sb, SpritebatchParameters parameters)
-            {
-                _sb = sb;
-                _sb.GetParameters(out _parameters);
-                _sb.Restart(parameters);
-            }
-            /// <summary>
-            /// SafeBegin equivalent; takes in a <see cref="SpriteBatch"/>, gets <see cref="SpritebatchParameters"/> from it, and then uses the <see cref="SpriteBatch"/> and other parameters to start a new <see cref="SpriteBatch"/>.
-            /// </summary>
-            /// <param name="sb"></param>
-            /// <param name="sortMode"></param>
-            /// <param name="settings"></param>
-            /// <param name="effect"></param>
-            /// <param name="transformMatrix"></param>
-            public SpritebatchScope(SpriteBatch sb, SpriteSortMode sortMode, BatchSetting settings, Effect effect, Matrix transformMatrix)
-            {
-                _sb = sb;
-                _sb.End(out _parameters);
-                _sb.Begin(sortMode, settings.blendState, settings.samplerState, settings.depthStencilState, settings.rasterizerState ?? Main.Rasterizer, effect, transformMatrix);
-            }
-
-            ~SpritebatchScope()
-            {
-                Dispose();
-            }
-            
-            public void Dispose()
-            {
-                _sb.Restart(_parameters);
             }
         }
     }

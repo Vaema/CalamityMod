@@ -12,10 +12,6 @@ namespace CalamityMod.Items.Weapons.Ranged
     {
         public new string LocalizationCategory => "Items.Weapons.Ranged";
         private int counter = 0;
-        public override void SetStaticDefaults()
-        {
-            ItemID.Sets.ShimmerTransformToItem[Type] = ModContent.ItemType<StarShower>();
-        }
         public override void SetDefaults()
         {
             Item.width = 80;

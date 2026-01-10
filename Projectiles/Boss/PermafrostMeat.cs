@@ -12,7 +12,7 @@ namespace CalamityMod.Projectiles.Boss
     {
         public new string LocalizationCategory => "Projectiles.Boss";
 
-        public override string Texture => "CalamityMod/Items/Potions/DeliciousMeat";
+        public override string Texture => "CalamityMod/Items/Potions/Food/DeliciousMeat";
 
         public override void SetDefaults()
         {

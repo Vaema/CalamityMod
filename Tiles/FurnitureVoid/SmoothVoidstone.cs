@@ -10,8 +10,6 @@ namespace CalamityMod.Tiles.FurnitureVoid
 {
     public class SmoothVoidstone : GlowMaskTile
     {
-        public override string GlowMaskAsset => "CalamityMod/Tiles/FurnitureVoid/SmoothVoidstoneGlow";
-
         public override void SetupStatic()
         {
             Main.tileSolid[Type] = true;

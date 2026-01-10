@@ -2,6 +2,7 @@
 using CalamityMod.Items.Pets;
 using CalamityMod.Items.Placeables.Furniture;
 using CalamityMod.Items.Tools.ClimateChange;
+using CalamityMod.Items.Tools.SpawnBlocker;
 using CalamityMod.Items.Weapons.Magic;
 using CalamityMod.Items.Weapons.Melee;
 using CalamityMod.Items.Weapons.Ranged;

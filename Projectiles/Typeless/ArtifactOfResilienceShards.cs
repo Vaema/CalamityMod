@@ -176,6 +176,10 @@ namespace CalamityMod.Projectiles.Typeless
         }
         public override void ModifyHitNPC(NPC target, ref NPC.HitModifiers modifiers)
         {
+            bool crit = Main.rand.Next(0, 100 + 1) < Owner.GetTotalCritChance(Owner.GetBestClass());
+            if (crit)
+                modifiers.SetCrit();
+
             modifiers.SourceDamage *= (isAttacking ? 1 : 0.45f);
             if (isAttacking)
                 target.AddBuff(ModContent.BuffType<ProfanedWeakness>(), 520);

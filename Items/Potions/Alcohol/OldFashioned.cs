@@ -35,19 +35,11 @@ namespace CalamityMod.Items.Potions.Alcohol
         }
         public override void AddRecipes()
         {
-            CreateRecipe().
-                AddIngredient(ItemID.Ale).
-                AddIngredient(ItemID.Ectoplasm).
+            CreateRecipe(10).
+                AddIngredient(ItemID.Bottle, 10).
+                AddIngredient(ItemID.Grapefruit).
                 AddTile(TileID.Kegs).
                 Register();
-
-            CreateRecipe().
-                AddIngredient(ItemID.BottledWater).
-                AddIngredient<BloodOrb>(5).
-                AddIngredient(ItemID.Ectoplasm).
-                AddTile(TileID.AlchemyTable).
-                Register()
-                .DisableDecraft();
         }
     }
 }

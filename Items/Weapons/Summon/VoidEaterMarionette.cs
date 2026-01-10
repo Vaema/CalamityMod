@@ -24,10 +24,6 @@ namespace CalamityMod.Items.Weapons.Summon
         {
             tooltips.FindAndReplaceAll("ff00ff", Utils.Hex3(DevourerofGodsHead.SpecialMoveColor));
         }
-        public override void SetStaticDefaults()
-        {
-            ItemID.Sets.ShimmerTransformToItem[Type] = ModContent.ItemType<DimensionTearingDisk>();
-        }
         public override void SetDefaults()
         {
             Item.width = 68;

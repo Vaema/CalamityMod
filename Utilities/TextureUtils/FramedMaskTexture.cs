@@ -91,11 +91,8 @@ namespace CalamityMod
 
             _HasMaskContent = new bool[FrameXCount * FrameYCount];
 
-            var colData = Texture.GetColorsFromTexture();
-
-            // Interesting case, not sure if this will even happens
-            if (colData is null)
-                return;
+            Color[] colData = new Color[_TextureWidth * _TextureHeight];
+            Texture.GetData(colData);
 
             Parallel.For(0, FrameXCount * FrameYCount, (i) =>
             {
@@ -118,7 +115,7 @@ namespace CalamityMod
 
                     for (int y = yStart; y < yEnd; y++)
                     {
-                        Color col = colData[x, y];
+                        Color col = colData[x + (y * _TextureWidth)];
                         if (col.A >= 1)
                         {
                             frameHasData = true;

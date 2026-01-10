@@ -195,7 +195,7 @@ namespace CalamityMod.Systems.Collections
                 NPCType<DesertNuisanceHead>(), NPCType<DesertNuisanceBody>(), NPCType<DesertNuisanceTail>(), NPCType<DesertNuisanceHeadYoung>(), NPCType<DesertNuisanceBodyYoung>(),
                 NPCType<DesertNuisanceTailYoung>(), NPCType<GiantClam>(), NPCType<PerforatorHeadLarge>(), NPCType<PerforatorHeadMedium>(), NPCType<PerforatorHeadSmall>(),
                 NPCType<PerforatorBodyLarge>(), NPCType<PerforatorBodyMedium>(), NPCType<PerforatorBodySmall>(), NPCType<PerforatorTailLarge>(), NPCType<PerforatorTailMedium>(),
-                NPCType<PerforatorTailSmall>(), NPCType<EbonianPaladin>(), NPCType<CrimulanPaladin>(), NPCType<SplitEbonianPaladin>(), NPCType<SplitCrimulanPaladin>(), NPCType<Horse>(),
+                NPCType<PerforatorTailSmall>(), NPCType<EbonianPaladin>(), NPCType<CrimulanPaladin>(), NPCType<SplitEbonianPaladin>(), NPCType<SplitCrimulanPaladin>(), NPCType<EarthElemental>(),
                 NPCType<CloudElemental>(), NPCType<CryogenShield>(), NPCType<AquaticScourgeHead>(), NPCType<AquaticScourgeBody>(), NPCType<AquaticScourgeBodyAlt>(), NPCType<AquaticScourgeTail>(),
                 NPCType<CragmawMire>(), NPCType<Cataclysm>(), NPCType<Catastrophe>(), NPCType<SoulSeeker>(), NPCType<GreatSandShark>(), NPCType<AnahitasIceShield>(), NPCType<AureusSpawn>(),
                 NPCType<PlaguebringerMiniboss>(), NPCType<PlagueHomingMissile>(), NPCType<PlagueMine>(), NPCType<RavagerClawLeft>(), NPCType<RavagerClawRight>(), NPCType<RavagerLegLeft>(),
@@ -209,7 +209,8 @@ namespace CalamityMod.Systems.Collections
         public static bool[] DoCheckDeadRegardlessRealLife = Factory.CreateBoolSet(NPCType<DevourerofGodsBody>(), NPCType<DevourerofGodsTail>());
 
         /// <summary>
-        /// If <see langword="true"/> for an NPC type, <see cref="CalamityUtils.IsAnEnemy(NPC, bool, bool, bool)"/> Does not count specified NPC as Enemy
+        /// If <see langword="true"/> for an NPC type, <see cref="CalamityUtils.IsAnEnemy(NPC, bool, bool, bool)"/> will not count this NPC as an enemy.<br/>
+        /// Defaults to <see langword="false"/>.
         /// </summary>
         public static bool[] DontCountAsEnemy = Factory.CreateBoolSet(NPCID.TargetDummy, NPCType<SuperDummyNPC>());
 
@@ -234,9 +235,9 @@ namespace CalamityMod.Systems.Collections
             { NPCType<KingSlimeJewelRuby>(), 21000 },
             { NPCID.EyeofCthulhu, 450000 }, // 30 seconds
             { NPCID.ServantofCthulhu, 6000 },
-            { NPCID.EaterofWorldsHead, 10000 }, // 30 seconds + immunity timer at start
-            { NPCID.EaterofWorldsBody, 10000 },
-            { NPCID.EaterofWorldsTail, 10000 },
+            { NPCID.EaterofWorldsHead, 15000 }, // 30 seconds + immunity timer at start
+            { NPCID.EaterofWorldsBody, 15000 },
+            { NPCID.EaterofWorldsTail, 15000 },
             { NPCID.BrainofCthulhu, 100000 }, // 30 seconds with creepers
             { NPCID.Creeper, 10000 },
             { NPCID.QueenBee, 315000 }, // 30 seconds

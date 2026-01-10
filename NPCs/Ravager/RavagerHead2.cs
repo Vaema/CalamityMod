@@ -50,6 +50,7 @@ namespace CalamityMod.NPCs.Ravager
             }
             NPC.Calamity().VulnerableToSickness = false;
             NPC.Calamity().VulnerableToWater = true;
+            NPC.dontTakeDamage = true;
         }
 
         public override void AI()
@@ -121,17 +122,6 @@ namespace CalamityMod.NPCs.Ravager
                         SoundEngine.PlaySound(RavagerHead.MissileSound, NPC.Center);
                         type = ModContent.ProjectileType<RavagerNuke>();
                         Projectile.NewProjectile(NPC.GetSource_FromAI(), NPC.Center, Vector2.Normalize(player.Center - NPC.Center) * projectileVelocity * 0.25f, type, RavagerHead.NukeDamage + (provy ? RavagerHead.PostProviNukeBuff : 0), 0f, Main.myPlayer, Main.npc[CalamityGlobalNPC.scavenger].target, 0f);
-                    }
-                }
-                else
-                {
-                    if (NPC.ai[1] % 40f == 0f)
-                    {
-                        if (Main.netMode != NetmodeID.MultiplayerClient)
-                        {
-                            SoundEngine.PlaySound(SoundID.Item33, NPC.Center);
-                            Projectile.NewProjectile(NPC.GetSource_FromAI(), NPC.Center, Vector2.Normalize(player.Center - NPC.Center) * projectileVelocity, type, HomingDartDamage + (provy ? PostProviDartBuff : 0), 0f, Main.myPlayer, 0f, -1f);
-                        }
                     }
                 }
             }

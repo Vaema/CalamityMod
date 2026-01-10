@@ -2,10 +2,8 @@
 using CalamityMod.Items.Materials;
 using CalamityMod.NPCs.DevourerofGods;
 using CalamityMod.Rarities;
-using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.ID;
-using Terraria.Localization;
 using Terraria.ModLoader;
 
 namespace CalamityMod.Items.SummonItems
@@ -45,20 +43,7 @@ namespace CalamityMod.Items.SummonItems
             if (Main.dedServ)
                 return true;
 
-            string key = "Mods.CalamityMod.Status.Boss.DoGSpawn";
-            string spawnText = Language.GetTextValue(key);
-            Color messageColor = Color.Cyan;
-            Main.NewText(spawnText, messageColor);
-
-            var subtitleID = CombatText.NewText(player.Hitbox, messageColor, spawnText, true);
-            if (subtitleID < Main.maxCombatText)
-            {
-                var localPlayer = Main.LocalPlayer.Calamity();
-                localPlayer.subtitletext = Main.combatText[subtitleID];
-                localPlayer.subtitleColors = [Color.Cyan, Color.Fuchsia];
-            }
-
-            CalamityUtils.SpawnBossOnPosUsingItem<DevourerofGodsHead>(player, (int)player.Center.X, (int)player.Center.Y - 1600, DevourerofGodsHead.SpawnSound);
+            NPC n = CalamityUtils.SpawnBossOnPosUsingItem<DevourerofGodsHead>(player, (int)player.Center.X, (int)player.Center.Y - 1600, DevourerofGodsHead.SpawnSound);
             return true;
         }
 

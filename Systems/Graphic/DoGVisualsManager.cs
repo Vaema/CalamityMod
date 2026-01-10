@@ -1,14 +1,15 @@
-﻿using CalamityMod.Effects;
+﻿using System.Linq;
+using CalamityMod.Effects;
 using CalamityMod.Graphics;
+using CalamityMod.Graphics.Metaballs;
 using CalamityMod.Skies;
-using Microsoft.Xna.Framework.Graphics;
+using CalamityMod.Utilities.Daybreak.Buffers;
 using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
+using Terraria;
 using Terraria.GameContent;
 using Terraria.Graphics.Effects;
-using Terraria;
 using Terraria.ModLoader;
-using CalamityMod.Graphics.Metaballs;
-using System.Linq;
 
 namespace CalamityMod.Systems.Graphic
 {
@@ -35,17 +36,17 @@ namespace CalamityMod.Systems.Graphic
         /// <summary>
         /// The actual effects and contents seen inside the rift in the background of DoG's fight.
         /// </summary>
-        public static ManagedRenderTarget DistortionRiftBackgroundContentsTarget { get; private set; }
+        public static RenderTargetLease DistortionRiftBackgroundContentsTarget { get; private set; }
 
         /// <summary>
         /// The primitives used to make up the shape of the rift seen in the background of DoG's fight.
         /// </summary>
-        public static ManagedRenderTarget DistortionRiftPrimitivesTarget { get; private set; }
+        public static RenderTargetLease DistortionRiftPrimitivesTarget { get; private set; }
 
         /// <summary>
         /// The actual effects and contents seen inside of certain attacks used by DoG. Also used for DoG's distortion metaballs.
         /// </summary>
-        public static ManagedRenderTarget DistortionForegroundContentsTarget { get; private set; }
+        public static RenderTargetLease DistortionForegroundContentsTarget { get; private set; }
 
         public override void OnModLoad()
         {
@@ -62,9 +63,9 @@ namespace CalamityMod.Systems.Graphic
 
             Main.QueueMainThreadAction(() =>
             {
-                DistortionRiftBackgroundContentsTarget = new(true, ManagedRenderTarget.CreateScreenSizedTarget);
-                DistortionRiftPrimitivesTarget = new(true, ManagedRenderTarget.CreateScreenSizedTarget);
-                DistortionForegroundContentsTarget = new(true, ManagedRenderTarget.CreateScreenSizedTarget);
+                DistortionRiftBackgroundContentsTarget = ScreenspaceTargetPool.Shared.Rent(Main.instance.GraphicsDevice);
+                DistortionRiftPrimitivesTarget = ScreenspaceTargetPool.Shared.Rent(Main.instance.GraphicsDevice);
+                DistortionForegroundContentsTarget = ScreenspaceTargetPool.Shared.Rent(Main.instance.GraphicsDevice);
             });
             RenderTargetManager.RenderTargetUpdateLoopEvent += PrepareTargets;
         }
@@ -158,29 +159,31 @@ namespace CalamityMod.Systems.Graphic
             if (ShouldDrawToBackgroundTargets)
             {
                 // Draw the background which'll be displayed inside the rift onto a render target.
-                DistortionRiftBackgroundContentsTarget.SwapTo();
-                DrawDistortionRiftBackground();
+                using (DistortionRiftBackgroundContentsTarget.Scope(clearColor: Color.Transparent))
+                {
+                    DrawDistortionRiftBackground();
+                }
 
-                Main.spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, SamplerState.LinearWrap, DepthStencilState.None, Main.Rasterizer, null, CalamityUtils.BackgroundMatrix);
+                using (DistortionRiftPrimitivesTarget.Scope(clearColor: Color.Transparent))
+                {
+                    Main.spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, SamplerState.LinearWrap, DepthStencilState.None, Main.Rasterizer, null, CalamityUtils.BackgroundMatrix);
 
-                // Draw the primitives which comprise the rift to another render target.
-                DistortionRiftPrimitivesTarget.SwapTo();                
-                if (SkyManager.Instance["CalamityMod:DevourerofGodsHead"].IsActive())
-                    (SkyManager.Instance["CalamityMod:DevourerofGodsHead"] as DoGSky).DrawRiftToRenderTarget();
+                    // Draw the primitives which comprise the rift to another render target.
+                    if (SkyManager.Instance["CalamityMod:DevourerofGodsHead"].IsActive())
+                        (SkyManager.Instance["CalamityMod:DevourerofGodsHead"] as DoGSky).DrawRiftToRenderTarget();
 
-                Main.spriteBatch.End();
+                    Main.spriteBatch.End();
+                }
             }
 
             if (ShouldDrawToForegroundTarget)
             {
                 // Draw the background which'll be displayed for all distortion-related effects done in the foreground (same layer as the player).
-                DistortionForegroundContentsTarget.SwapTo();
-                DrawDistortionForeground();
+                using (DistortionForegroundContentsTarget.Scope(clearColor: Color.Transparent))
+                {
+                    DrawDistortionForeground();
+                }
             }
-
-            // Reset the current render target at the end of the method once any targets are being drawn to.
-            if (ShouldDrawToForegroundTarget || ShouldDrawToBackgroundTargets)
-                Main.instance.GraphicsDevice.SetRenderTarget(null);
         }
 
         #region Distortion Background Drawing

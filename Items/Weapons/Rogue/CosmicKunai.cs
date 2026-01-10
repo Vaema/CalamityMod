@@ -12,10 +12,6 @@ namespace CalamityMod.Items.Weapons.Rogue
 {
     public class CosmicKunai : RogueWeapon
     {
-        public override void SetStaticDefaults()
-        {
-            ItemID.Sets.ShimmerTransformToItem[Type] = ModContent.ItemType<Cosmilamp>();
-        }
         public override void SetDefaults()
         {
             Item.width = 26;

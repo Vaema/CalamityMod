@@ -446,6 +446,9 @@ namespace CalamityMod.NPCs.Leviathan
                 NPC.rotation = NPC.velocity.X * 0.02f;
                 NPC.spriteDirection = NPC.direction;
 
+                // Remove projectile telegraph
+                DrawProjectileTelegraphTimer = 0;
+
                 Vector2 anahitaPos = NPC.Center;
                 float playerXDist = player.position.X + (player.width / 2) - anahitaPos.X;
                 float playerYDist = player.position.Y + (player.height / 2) - 200f * NPC.scale - anahitaPos.Y;
@@ -788,12 +791,8 @@ namespace CalamityMod.NPCs.Leviathan
                     NPC.spriteDirection = NPC.direction;
                 }
 
-                float phaseTimer = 300f;
-                phaseTimer -= 50f * enrageScale;
-                if (!leviAlive || phase4)
-                    phaseTimer -= 150f * (1f - lifeRatio);
-
-                if (NPC.ai[1] >= phaseTimer)
+                // End behavior after attacking twice
+                if (NPC.ai[1] > attackDivisor * 2)
                 {
                     NPC.ai[0] = -1f;
                     NPC.ai[1] = 2f;

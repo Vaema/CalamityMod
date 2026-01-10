@@ -304,17 +304,17 @@ namespace CalamityMod.NPCs.CeaselessVoid
                     }
 
                     // Slowly die in final phase and then implode
-                    // This phase lasts 20 seconds
+                    // This phase lasts 20 seconds, 60 seconds in GFB
                     if (theBigSucc && calamityGlobalNPC.newAI[1] % 60f == 0f)
                     {
+                        int damageIncrement = NPC.lifeMax / (Main.zenithWorld ? 600 : 200);
                         if (Main.netMode != NetmodeID.MultiplayerClient)
                         {
-                            int damageAmt = NPC.lifeMax / 200;
-                            NPC.life -= damageAmt;
-                            NPC.DamageEffect(damageAmt);
+                            NPC.life -= damageIncrement;
+                            NPC.DamageEffect(damageIncrement);
                         }
 
-                        if (NPC.life <= (NPC.lifeMax / 40) && !playedbuildsound)
+                        if (NPC.life <= (damageIncrement * 5) && !playedbuildsound)
                         {
                             SoundEngine.PlaySound(BuildupSound, NPC.Center);
                             playedbuildsound = true;
@@ -580,15 +580,15 @@ namespace CalamityMod.NPCs.CeaselessVoid
 
             // Spawn more Dark Energies as the fight progresses
             if (calamityGlobalNPC.newAI[0] == 0f && NPC.life > 0)
-                calamityGlobalNPC.newAI[0] = NPC.lifeMax;
+                calamityGlobalNPC.newAI[0] = 1f;
 
             if (NPC.life > 0)
             {
                 int healthGateValue = (int)(NPC.lifeMax * 0.3);
-                if ((NPC.life + healthGateValue) < calamityGlobalNPC.newAI[0])
+                if (((NPC.life + healthGateValue) / (float)NPC.lifeMax) < calamityGlobalNPC.newAI[0])
                 {
                     NPC.TargetClosest();
-                    calamityGlobalNPC.newAI[0] = NPC.life;
+                    calamityGlobalNPC.newAI[0] -= 0.3f;
                     calamityGlobalNPC.newAI[1] = 0f;
                     calamityGlobalNPC.newAI[2] = 0f;
                     calamityGlobalNPC.newAI[3] = 0f;

@@ -445,6 +445,10 @@ namespace CalamityMod.Projectiles.Typeless
         }
         public override void ModifyHitNPC(NPC target, ref NPC.HitModifiers modifiers)
         {
+            bool crit = Main.rand.Next(0, 100 + 1) < Owner.GetTotalCritChance(Owner.GetBestClass());
+            if (crit)
+                modifiers.SetCrit();
+
             float minMult = 0.15f;
             int hitsToMinMult = 15;
             float damageMult = Utils.Remap(hitCountDamageSource, 0, hitsToMinMult, 1, minMult, true);

@@ -71,7 +71,7 @@ namespace CalamityMod.Tiles.FurnitureMarnite
 
         public override bool RightClick(int i, int j)
         {
-            CalamityUtils.RightClickBreak(i, j);
+            FurnitureCommon.RightClickBreak(i, j);
             return true;
         }
         //This should probably give torch luck in granite AND marble biomes, this was originally planned for Catalyst

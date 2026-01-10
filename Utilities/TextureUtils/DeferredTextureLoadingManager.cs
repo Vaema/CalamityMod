@@ -8,12 +8,14 @@ namespace CalamityMod
     {
         private static readonly List<IDeferredLoadTexture> Textures = [];
         private static readonly List<IDeferredLoadTexture> TexturesToRemove = [];
+        private static bool HasItem = false;
 
         public static void Enqueue(IDeferredLoadTexture texture)
         {
             Main.QueueMainThreadAction(() =>
             {
                 Textures.Add(texture);
+                HasItem = true;
             });
         }
 
@@ -29,6 +31,9 @@ namespace CalamityMod
 
         private static void DoUpdate()
         {
+            if (!HasItem)
+                return;
+
             int limitPerTick = 2;
             foreach (var texture in Textures)
             {
@@ -39,7 +44,7 @@ namespace CalamityMod
                     limitPerTick--;
                 }
 
-                if (limitPerTick < 0)
+                if (limitPerTick <= 0)
                 {
                     break;
                 }
@@ -51,6 +56,7 @@ namespace CalamityMod
             }
 
             TexturesToRemove.Clear();
+            HasItem = Textures.Count != 0;
         }
     }
 }

@@ -1,6 +1,8 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using CalamityMod.Enums;
+using CalamityMod.Systems.Graphic;
+using CalamityMod.Utilities.Daybreak.Buffers;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria;
@@ -12,10 +14,11 @@ namespace CalamityMod.Graphics.Metaballs
     {
         internal static readonly List<Metaball> metaballs = new();
 
-        public override void OnModLoad()
+        public override void Load()
         {
             // Prepare event subscribers.
-            RenderTargetManager.RenderTargetUpdateLoopEvent += PrepareMetaballTargets;
+            GeneralDrawLayerSystem.OnPrepareDraw += PrepareMetaballTargets;
+            GeneralDrawLayerSystem.OnDrawLayer += DrawMetaballs;
         }
 
         public override void OnModUnload()
@@ -55,7 +58,7 @@ namespace CalamityMod.Graphics.Metaballs
                 return;
 
             // Prepare the sprite batch for drawing. Metaballs may restart the sprite batch via PrepareSpriteBatch if their implementation requires it.
-            Main.spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, SamplerState.PointClamp, DepthStencilState.Default, Main.Rasterizer, null, Matrix.Identity);
+            Main.spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, SamplerState.PointClamp, DepthStencilState.Default, Main.Rasterizer, null, Main.Transform);
 
             var gd = Main.instance.GraphicsDevice;
             foreach (Metaball metaball in activeMetaballs)
@@ -68,20 +71,19 @@ namespace CalamityMod.Graphics.Metaballs
                 metaball.PrepareSpriteBatch(Main.spriteBatch);
 
                 // Draw the raw contents of the metaball to each of its render targets.
-                foreach (ManagedRenderTarget target in metaball.LayerTargets)
+                foreach (var target in metaball.LayerTargets)
                 {
-                    gd.SetRenderTarget(target);
-                    gd.Clear(Color.Transparent);
-                    metaball.DrawInstances();
+                    using (target.Scope(clearColor: Color.Transparent))
+                    {
+                        metaball.DrawInstances();
 
-                    // Flush metaball contents to its render target and reset the sprite batch for the next iteration.
-                    Main.spriteBatch.End();
-                    Main.spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, SamplerState.PointClamp, DepthStencilState.Default, Main.Rasterizer, null, Matrix.Identity);
+                        // Flush metaball contents to its render target and reset the sprite batch for the next iteration.
+                        Main.spriteBatch.End();
+                        Main.spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, SamplerState.PointClamp, DepthStencilState.Default, Main.Rasterizer, null, Main.Transform);
+                    }
                 }
             }
 
-            // Return to the backbuffer and end the sprite batch.
-            gd.SetRenderTarget(null);
             Main.spriteBatch.End();
         }
 
@@ -96,8 +98,10 @@ namespace CalamityMod.Graphics.Metaballs
         /// Draws all metaballs of a given <see cref="GeneralDrawLayer"/>. Used for layer ordering reasons.
         /// </summary>
         /// <param name="layerType">The layer type to draw with.</param>
-        internal static void DrawMetaballs(GeneralDrawLayer layerType)
+        private static void DrawMetaballs(GeneralDrawLayer layerType)
         {
+            Main.spriteBatch.Begin(SpriteSortMode.Immediate, BlendState.AlphaBlend, SamplerState.PointWrap, DepthStencilState.None, RasterizerState.CullCounterClockwise);
+
             foreach (Metaball metaball in metaballs.Where(m => m.DrawLayer == layerType && m.AnythingToDraw))
             {
                 for (int i = 0; i < metaball.LayerTargets.Count; i++)
@@ -106,9 +110,11 @@ namespace CalamityMod.Graphics.Metaballs
                     metaball.PrepareShaderForTarget(i);
 
                     // Draw the metaball's raw contents with the shader.
-                    Main.spriteBatch.Draw(metaball.LayerTargets[i], Main.screenLastPosition - Main.screenPosition, Color.White);
+                    Main.spriteBatch.Draw(metaball.LayerTargets[i].Target, Vector2.Zero, Color.White);
                 }
             }
+
+            Main.spriteBatch.End();
         }
     }
 }

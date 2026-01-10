@@ -2,6 +2,8 @@
 using System.Linq;
 using CalamityMod.DataStructures;
 using CalamityMod.Enums;
+using CalamityMod.Utilities.Daybreak;
+using CalamityMod.Utilities.Daybreak.Buffers;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria;
@@ -13,7 +15,7 @@ namespace CalamityMod.Graphics.Renderers.CalamityRenderers
     public class DyeableShadersRenderer : BaseRenderer
     {
         #region Fields/Properties
-        public static Dictionary<IDyeableShaderRenderer, ManagedRenderTarget> Targets
+        public static Dictionary<IDyeableShaderRenderer, RenderTargetLease> Targets
         {
             get;
             private set;
@@ -130,7 +132,7 @@ namespace CalamityMod.Graphics.Renderers.CalamityRenderers
             {
                 // If it doesn't have a dictonary entry, create one.
                 if (!Targets.ContainsKey(renderer))
-                    Main.QueueMainThreadAction(() => Targets[renderer] = new(true, ManagedRenderTarget.CreateScreenSizedTarget));
+                    Main.QueueMainThreadAction(() => Targets[renderer] = ScreenspaceTargetPool.Shared.Rent(Main.instance.GraphicsDevice));
             });
 
             // Mark this item as drawable this frame.
@@ -163,8 +165,10 @@ namespace CalamityMod.Graphics.Renderers.CalamityRenderers
                     continue;
 
                 // Swap to the assosiated target and call the interface method.
-                target.SwapTo();
-                renderer.DrawDyeableShader(spriteBatch);
+                using (target.Scope(clearColor: Color.Transparent))
+                {
+                    renderer.DrawDyeableShader(spriteBatch);
+                }
             }
         }
 
@@ -177,22 +181,24 @@ namespace CalamityMod.Graphics.Renderers.CalamityRenderers
             if (RenderersToDrawThisFrame.Count <= 0)
                 return;
 
-            var matrix = Main.GameViewMatrix.TransformationMatrix;
-            Main.spriteBatch.SafeBegin(SpriteSortMode.Immediate, BatchSetting.AlphaBlend, null, matrix, () =>
+            spriteBatch.End();
+            spriteBatch.Begin(SpriteSortMode.Immediate, BlendState.AlphaBlend, SamplerState.PointClamp, DepthStencilState.None, RasterizerState.CullCounterClockwise);
+
+            foreach (var renderer in RenderersToDrawThisFrame)
             {
-                foreach (var renderer in RenderersToDrawThisFrame)
-                {
-                    if (!Targets.TryGetValue(renderer, out var target))
-                        continue;
+                if (!Targets.TryGetValue(renderer, out var target))
+                    continue;
 
-                    // If it is dyeable, and a dye exists, apply it. This has null safety, as dyeShader can be null here.
-                    if (renderer.ShaderIsDyeable && Dyes.TryGetValue(renderer, out var dyeID) && dyeID > 0)
-                        GameShaders.Armor.Apply(dyeID, null, new(target, Vector2.Zero, new Rectangle(0, 0, target.Width, target.Height), Color.White));
+                // If it is dyeable, and a dye exists, apply it. This has null safety, as dyeShader can be null here.
+                if (renderer.ShaderIsDyeable && Dyes.TryGetValue(renderer, out var dyeID) && dyeID > 0)
+                    GameShaders.Armor.Apply(dyeID, null, new(target.Target, Vector2.Zero, new Rectangle(0, 0, target.Target.Width, target.Target.Height), Color.White));
 
-                    // Draw the assosiated target that has been drawn to.
-                    spriteBatch.Draw(target, Vector2.Zero, Color.White with { A = 0 });
-                }
-            });
+                // Draw the assosiated target that has been drawn to.
+                spriteBatch.Draw(target.Target, Vector2.Zero, Color.White with { A = 0 });
+            }
+
+            spriteBatch.End();
+            spriteBatch.Begin(SpriteSortMode.Immediate, BlendState.AlphaBlend, Main.DefaultSamplerState, DepthStencilState.None, RasterizerState.CullCounterClockwise);
         }
         #endregion
     }

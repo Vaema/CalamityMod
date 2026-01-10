@@ -16,7 +16,6 @@ namespace CalamityMod.NPCs
         #region Draw Parameters
         public static bool[] DrawingMiracleBlight { get; private set; }
         public static bool[] DrawingPolarity { get; private set; }
-        public static bool[] DrawingDoGDeathAnimation { get; private set; }
         public static int DoGDeathAnimationTimer { get; private set; }
         #endregion
 
@@ -44,14 +43,12 @@ namespace CalamityMod.NPCs
         {
             DrawingMiracleBlight = new bool[Main.maxNPCs + 1];
             DrawingPolarity = new bool[Main.maxNPCs + 1];
-            DrawingDoGDeathAnimation = new bool[Main.maxNPCs + 1];
         }
 
         public override void Unload()
         {
             DrawingMiracleBlight = null;
             DrawingPolarity = null;
-            DrawingDoGDeathAnimation = null;
         }
         #endregion
 
@@ -67,7 +64,6 @@ namespace CalamityMod.NPCs
             var whoAmI = npc.whoAmI;
             DrawingMiracleBlight[whoAmI] = false;
             DrawingPolarity[whoAmI] = false;
-            DrawingDoGDeathAnimation[whoAmI] = false;
         }
 
         public override bool PreAI(NPC npc)
@@ -81,7 +77,6 @@ namespace CalamityMod.NPCs
             var whoAmI = npc.whoAmI;
             DrawingMiracleBlight[whoAmI] = ShouldDrawMiracleBlight(npc);
             DrawingPolarity[whoAmI] = ShouldDrawPolarity(npc);
-            DrawingDoGDeathAnimation[whoAmI] = ShouldDrawDoGDeathAnimation(npc);
             return true;
         }
 
@@ -109,7 +104,7 @@ namespace CalamityMod.NPCs
                 return false;
 
             // Safety check for weird MP bug when getting global npcs.
-            if (!npc.TryGetGlobalNPCSafer<CalamityGlobalNPC>(out var calNPC) || !npc.TryGetGlobalNPCSafer<CalamityPolarityNPC>(out var polNPC))
+            if (!npc.TryGetGlobalNPC<CalamityGlobalNPC>(out var calNPC) || !npc.TryGetGlobalNPC<CalamityPolarityNPC>(out var polNPC))
                 return false;
 
             // Do not draw if the npc does not have miracle blight, or has the polarity effect.
@@ -131,7 +126,7 @@ namespace CalamityMod.NPCs
                 return false;
 
             // Safety check for weird MP bug when getting global npcs.
-            if (!npc.TryGetGlobalNPCSafer<CalamityGlobalNPC>(out var calNPC) || !npc.TryGetGlobalNPCSafer<CalamityPolarityNPC>(out var polNPC))
+            if (!npc.TryGetGlobalNPC<CalamityGlobalNPC>(out var calNPC) || !npc.TryGetGlobalNPC<CalamityPolarityNPC>(out var polNPC))
                 return false;
 
             // I don't know who would be using this while also inflicting miracle blight, but in that rare case, do not draw these.

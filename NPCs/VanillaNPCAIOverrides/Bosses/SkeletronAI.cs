@@ -2,8 +2,10 @@
 using CalamityMod.Events;
 using CalamityMod.World;
 using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
 using Terraria;
 using Terraria.Audio;
+using Terraria.GameContent;
 using Terraria.ID;
 using Terraria.ModLoader;
 
@@ -743,6 +745,25 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
             return false;
         }
 
+        public override void PostDraw(Mod mod, SpriteBatch spriteBatch, Vector2 screenPos, Color drawColor)
+        {
+            // Telegraph for charges
+            float beginTelegraphGateValue = ChargeGateValue - ChargeTelegraphTime;
+            if (NPC.localAI[1] > beginTelegraphGateValue)
+            {
+                float colorScale = MathHelper.Clamp((NPC.localAI[1] - beginTelegraphGateValue) / ChargeTelegraphTime, 0f, 1f);
+                Color drawColor2 = new Color(150, 150, 150, 0) * colorScale;
+                var halfSize = NPC.frame.Size() / 2;
+                SpriteEffects spriteEffects = NPC.spriteDirection == 1 ? SpriteEffects.FlipHorizontally : SpriteEffects.None;
+
+                for (int i = 0; i < 2; i++)
+                {
+                    spriteBatch.Draw(TextureAssets.Npc[NPC.type].Value, NPC.Center - screenPos + new Vector2(0, NPC.gfxOffY), NPC.frame,
+                        drawColor2, NPC.rotation, halfSize, NPC.scale, spriteEffects, 0f);
+                }
+            }
+        }
+
         public class SkeletronHandAI : VanillaAIOverride
         {
             public override bool AI(Mod mod)
@@ -1063,6 +1084,28 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses
                 }
 
                 return false;
+            }
+
+            public override void PostDraw(Mod mod, SpriteBatch spriteBatch, Vector2 screenPos, Color drawColor)
+            {
+                var calNPC = NPC.GetGlobalNPC<CalamityGlobalNPC>();
+                float beginTelegraphGateValue = HandSlapGateValue - HandSlapTelegraphTime;
+                if (calNPC.newAI[2] > beginTelegraphGateValue)
+                {
+                    float colorScale = MathHelper.Clamp((calNPC.newAI[2] - beginTelegraphGateValue) / HandSlapTelegraphTime, 0f, 1f);
+                    Color drawColor2 = new Color(150, 150, 150, 0) * colorScale;
+                    var halfSize = NPC.frame.Size() / 2;
+                    SpriteEffects spriteEffects = SpriteEffects.None;
+                    if (NPC.spriteDirection == 1)
+                        spriteEffects = SpriteEffects.FlipHorizontally;
+
+                    Vector2 glowOffset = Vector2.UnitY * 8f;
+                    for (int i = 0; i < 2; i++)
+                    {
+                        spriteBatch.Draw(TextureAssets.Npc[NPC.type].Value, NPC.Center - screenPos + new Vector2(0, NPC.gfxOffY) - glowOffset, NPC.frame,
+                            drawColor2, NPC.rotation, halfSize, NPC.scale, spriteEffects, 0f);
+                    }
+                }
             }
         }
 

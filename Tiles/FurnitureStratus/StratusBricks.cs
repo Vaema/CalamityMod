@@ -9,8 +9,6 @@ namespace CalamityMod.Tiles.FurnitureStratus
 {
     public class StratusBricks : GlowMaskTile
     {
-        public override string GlowMaskAsset => "CalamityMod/Tiles/FurnitureStratus/StratusBricksGlow";
-
         public override void SetupStatic()
         {
             Main.tileSolid[Type] = true;

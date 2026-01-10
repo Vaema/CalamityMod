@@ -15,9 +15,8 @@ namespace CalamityMod.Tiles.Abyss
         public override void SetStaticDefaults()
         {
             TileType = (ushort)ModContent.TileType<RustyChestTile>();
-
             this.SetUpChest(ModContent.ItemType<RustyChest>());
-            AddMapEntry(new Color(113, 90, 71), CalamityUtils.GetItemName<RustyChest>(), CalamityUtils.GetMapChestName);
+            AddMapEntry(new Color(113, 90, 71), CalamityUtils.GetItemName<RustyChest>(), FurnitureCommon.GetMapChestName);
         }
 
         public override bool CreateDust(int i, int j, ref int type)
@@ -29,9 +28,9 @@ namespace CalamityMod.Tiles.Abyss
         public override void NumDust(int i, int j, bool fail, ref int num) => num = fail ? 1 : 3;
 
         public override LocalizedText DefaultContainerName(int frameX, int frameY) => CalamityUtils.GetItemName<RustyChest>();
-        public override void MouseOver(int i, int j) => CalamityUtils.ChestMouseOver<RustyChest>(i, j);
-        public override void MouseOverFar(int i, int j) => CalamityUtils.ChestMouseFar<RustyChest>(i, j);
+        public override void MouseOver(int i, int j) => FurnitureCommon.ChestMouseOver<RustyChest>(i, j);
+        public override void MouseOverFar(int i, int j) => FurnitureCommon.ChestMouseFar<RustyChest>(i, j);
         public override void KillMultiTile(int i, int j, int frameX, int frameY) => Chest.DestroyChest(i, j);
-        public override bool RightClick(int i, int j) => CalamityUtils.ChestRightClick(i, j);
+        public override bool RightClick(int i, int j) => FurnitureCommon.ChestRightClick(i, j);
     }
 }

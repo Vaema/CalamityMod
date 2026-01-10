@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using CalamityMod.Utilities.Daybreak.Buffers;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria;
@@ -13,12 +14,15 @@ namespace CalamityMod.Systems
         private bool[] _IsBaked = new bool[VariantCount];
         private bool[] _RequestedVariants = new bool[VariantCount];
         private bool _IsRequestedAny = false;
+        private bool _IsSheetRequested = false;
+        private bool _ShouldClearRT = true;
 
         internal void ClearBakeCache()
         {
             _IsBaked = new bool[VariantCount];
             _RequestedVariants = new bool[VariantCount];
             _IsRequestedAny = false;
+            _ShouldClearRT = true;
         }
 
         internal void RequestBake(int sheetIndex)
@@ -56,33 +60,39 @@ namespace CalamityMod.Systems
                 if (BakedCountInFrame >= 3)
                     continue;
 
-                var renderTarget = BlendTextures[variant];
+                var renderTarget = BakedBlendTexture;
                 if (renderTarget != null && !renderTarget.IsDisposed && !renderTarget.IsContentLost)
                 {
-                    graphicsDevice.SetRenderTarget(renderTarget);
-                    Main.spriteBatch.Begin(SpriteSortMode.Immediate, BlendState.AlphaBlend, SamplerState.PointClamp, DepthStencilState.None, RasterizerState.CullNone);
+                    using (renderTarget.Scope(clearColor: _ShouldClearRT ? Color.Transparent : null))
+                    {
+                        _ShouldClearRT = false;
 
-                    BakeBlendTextureCache(v);
+                        Main.spriteBatch.Begin(SpriteSortMode.Immediate, BlendState.AlphaBlend, SamplerState.PointClamp, DepthStencilState.None, RasterizerState.CullNone);
 
-                    Main.spriteBatch.End();
-                    graphicsDevice.SetRenderTarget(null);
+                        BakeBlendTextureCache(v);
+
+                        Main.spriteBatch.End();
+                    }
 
                     _RequestedVariants[variant] = false;
                     _IsBaked[variant] = true;
                 }
-                else
+                else if (!_IsSheetRequested)
                 {
+                    _IsSheetRequested = true;
                     Main.QueueMainThreadAction(() =>
                     {
-                        BlendTextures[variant] = new(
+                        BakedBlendTexture = new(
                                 Main.instance.GraphicsDevice,
                                 BlendTextureWidth,
-                                BlendTextureHeight,
+                                BlendTextureFullHeight,
                                 mipMap: false,
                                 preferredFormat: SurfaceFormat.Color,
                                 preferredDepthFormat: DepthFormat.None,
                                 preferredMultiSampleCount: 0,
                                 usage: RenderTargetUsage.PreserveContents);
+
+                        _IsSheetRequested = false;
                     });
                 }
 
@@ -93,12 +103,12 @@ namespace CalamityMod.Systems
                 _IsRequestedAny |= requested;
         }
 
-        internal void BakeBlendTextureCache(int sheetIndex)
+        internal void BakeBlendTextureCache(int randomFrame)
         {
             for (int i = 0; i < 256; i++)
             {
                 var mergeSides = (BlendSideFlags)i;
-                var sheetPosition = _SheetPositionLookup[new SheetPositionKey(mergeSides, (byte)sheetIndex)];
+                var sheetPosition = _SheetPositionLookup[new SheetPositionKey(mergeSides, (byte)randomFrame)];
 
                 // If it's basic shape, pull it from base texture instead
                 if (sheetPosition.IsUsingBaseTexture)
@@ -112,7 +122,7 @@ namespace CalamityMod.Systems
                 {
                     if (_BasicShapeLookup.TryGetValue(shape, out var shapeRects))
                     {
-                        Main.spriteBatch.Draw(TextureAsset.Value, drawPos, shapeRects[sheetIndex], Color.White, 0.0f, Vector2.Zero, 1.0f, SpriteEffects.None, 0.0f);
+                        Main.spriteBatch.Draw(TextureAsset.Value, drawPos, shapeRects[randomFrame], Color.White, 0.0f, Vector2.Zero, 1.0f, SpriteEffects.None, 0.0f);
                     }
                 }
             }
@@ -148,13 +158,7 @@ namespace CalamityMod.Systems
             var pos = _SheetPositionLookup[key];
 
             sourceRect = pos.GetDrawRect();
-            texture = pos.BakedSheetIndex switch
-            {
-                0 => BlendTextures[0],
-                1 => BlendTextures[1],
-                2 => BlendTextures[2],
-                _ => TextureAsset.Value
-            };
+            texture = pos.IsUsingBaseTexture ? TextureAsset.Value : BakedBlendTexture;
 
             return texture != null;
         }

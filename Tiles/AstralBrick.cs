@@ -14,8 +14,6 @@ namespace CalamityMod.Tiles
         private const short subsheetWidth = 324;
         private const short subsheetHeight = 90;
 
-        public override string GlowMaskAsset => "CalamityMod/Tiles/AstralBrickGlow";
-
         public override void SetupStatic()
         {
             Main.tileSolid[Type] = true;

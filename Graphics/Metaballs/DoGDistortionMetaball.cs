@@ -74,7 +74,7 @@ namespace CalamityMod.Graphics.Metaballs
             metaballShader.Value.Parameters["edgeColor"]?.SetValue(EdgeColor.ToVector4());
             metaballShader.Value.Parameters["singleFrameScreenOffset"]?.SetValue((Main.screenLastPosition - Main.screenPosition) / screenSize);
 
-            gd.Textures[1] = DoGVisualsManager.DistortionForegroundContentsTarget;
+            gd.Textures[1] = DoGVisualsManager.DistortionForegroundContentsTarget.Target;
             gd.SamplerStates[1] = SamplerState.LinearWrap;
 
             metaballShader.Value.CurrentTechnique.Passes[0].Apply();

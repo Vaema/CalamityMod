@@ -29,6 +29,8 @@ namespace CalamityMod.Projectiles.Summon
             Projectile.penetrate = 1;
             Projectile.tileCollide = false;
             Projectile.DamageType = DamageClass.Summon;
+            Projectile.extraUpdates = 4;
+            Projectile.stopsDealingDamageAfterPenetrateHits = true;
         }
 
         public override void AI()

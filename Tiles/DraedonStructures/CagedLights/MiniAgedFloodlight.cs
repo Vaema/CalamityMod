@@ -1,24 +1,21 @@
-﻿using CalamityMod.Items.Placeables.DraedonStructures.CagedLights;
+﻿using CalamityMod.ExtraTextures.GreyscaleGradients;
+using CalamityMod.Items.Placeables.DraedonStructures.CagedLights;
+using CalamityMod.Sounds;
 using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
 using Terraria;
-using Terraria.ID;
-using Terraria.ModLoader;
 using Terraria.DataStructures;
 using Terraria.Enums;
+using Terraria.ID;
+using Terraria.ModLoader;
 using Terraria.ObjectData;
-using Microsoft.Xna.Framework.Graphics;
-using CalamityMod.Sounds;
 
 namespace CalamityMod.Tiles.DraedonStructures.CagedLights
 {
     public class MiniAgedFloodlight : ModTile
     {
-        internal static GrayscaleTexture1D PulseGradient;
-
         public override void SetStaticDefaults()
         {
-            PulseGradient = new("CalamityMod/Tiles/Plates/NavyplatePulse");
-
             Main.tileLighted[Type] = true;
             Main.tileNoFail[Type] = true;
             Main.tileFrameImportant[Type] = true;
@@ -75,7 +72,7 @@ namespace CalamityMod.Tiles.DraedonStructures.CagedLights
 
         public override void PostDraw(int i, int j, SpriteBatch spriteBatch)
         {
-            float brightness = PulseGradient.GetRepeat((int)Main.GameUpdateCount);
+            float brightness = GreyscaleGradient.NavyplatePulse.GetRepeat((int)Main.GameUpdateCount);
             brightness = MathHelper.Clamp(brightness, 0.2f, 0.6f);
 
             Lighting.AddLight(new Vector2(i * 16, j * 16), 105f / 255f * brightness, 195f / 255f * brightness, 193f / 255f * brightness);

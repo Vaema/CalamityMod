@@ -15,10 +15,6 @@ namespace CalamityMod.Items.Weapons.Melee
     public class HolyCollider : CustomUseProjItem, ILocalizedModType
     {
         public new string LocalizationCategory => "Items.Weapons.Melee";
-        public override void SetStaticDefaults()
-        {
-            ItemID.Sets.ShimmerTransformToItem[Type] = ModContent.ItemType<BlissfulBombardier>();
-        }
         public override void SetDefaults()
         {
             Item.width = 114;

@@ -3,6 +3,7 @@ using System.IO;
 using CalamityMod.Buffs.DamageOverTime;
 using CalamityMod.Dusts;
 using CalamityMod.Events;
+using CalamityMod.Graphics.Metaballs;
 using CalamityMod.Items.Accessories;
 using CalamityMod.Items.Armor.Vanity;
 using CalamityMod.Items.LoreItems;
@@ -41,6 +42,8 @@ namespace CalamityMod.NPCs.CalClone
         public static readonly SoundStyle BulletHellWarning = new("CalamityMod/Sounds/Custom/CalamitasClone/BulletHellEnding");
         public static readonly SoundStyle BulletHellEnd = new("CalamityMod/Sounds/Custom/CalamitasClone/BulletHellEnd");
         public static readonly SoundStyle ChargeSound = new("CalamityMod/Sounds/Custom/CalamitasClone/CalCloneDash", 3);
+        public static readonly SoundStyle CalamitousFireballSound = new SoundStyle("CalamityMod/Sounds/Custom/CalamitasClone/CalClone_BigFireballBit", 4) with {MaxInstances = 4};
+        public static readonly SoundStyle CalamitousExplosionSound = new SoundStyle("CalamityMod/Sounds/Custom/CalamitasClone/CalClone_Explosion", 3) with { MaxInstances = 4 };
         public SlotId BulletHellWarnSlot;
 
         public ArenaWallSystem.Box ArenaBox = null;
@@ -96,7 +99,7 @@ namespace CalamityMod.NPCs.CalClone
             if (lifeRatio < 0.1f && !inBulletHell && CalamityWorld.death)
                 baseSize *= MathHelper.Lerp(Main.getGoodWorld ? 0.22f : 0.4f, 1f, lifeRatio * 10f); // Scale down the lower health calclone has. Much lower bound on FTW.
 
-            return baseSize + new Vector4(-22, 0 ,22,0);
+            return baseSize + new Vector4(-22, 0, 22, 0);
         }
         public override void SetStaticDefaults()
         {
@@ -162,7 +165,6 @@ namespace CalamityMod.NPCs.CalClone
             writer.Write(NPC.localAI[0]);
             writer.Write(NPC.localAI[1]);
             writer.Write(NPC.localAI[2]);
-            writer.Write(NPC.localAI[3]);
             for (int i = 0; i < 4; i++)
                 writer.Write(NPC.Calamity().newAI[i]);
         }
@@ -173,7 +175,6 @@ namespace CalamityMod.NPCs.CalClone
             NPC.localAI[0] = reader.ReadSingle();
             NPC.localAI[1] = reader.ReadSingle();
             NPC.localAI[2] = reader.ReadSingle();
-            NPC.localAI[3] = reader.ReadSingle();
             for (int i = 0; i < 4; i++)
                 NPC.Calamity().newAI[i] = reader.ReadSingle();
         }
@@ -496,16 +497,17 @@ namespace CalamityMod.NPCs.CalClone
             if (NPC.localAI[0] == 1f)
             {
                 NPC.localAI[0] = 0f;
-                NPC.localAI[2] = Main.rand.Next(-50, 51);
-                NPC.localAI[3] = Main.rand.Next(-300, 301);
+                NPC.localAI[2] = Main.rand.Next(-300, 301);
                 NPC.netUpdate = true;
             }
 
             // Add a bit of randomness to the destination
             if (death)
             {
-                destination.X += NPC.ai[1] == 0f ? NPC.localAI[3] : NPC.localAI[2];
-                destination.Y += NPC.ai[1] == 0f ? NPC.localAI[2] : NPC.localAI[3];
+                if (NPC.ai[1] == 0f)
+                    destination.X += NPC.localAI[2];
+                else
+                    destination.Y += NPC.localAI[2];
             }
 
             // How far Cal Clone is from where she's supposed to be
@@ -756,7 +758,7 @@ namespace CalamityMod.NPCs.CalClone
                     if (NPC.localAI[1] >= 120f)
                     {
                         NPC.localAI[1] = 0f;
-                        SoundEngine.PlaySound(BrimstoneElemental.BrimstoneElemental.HellfireballSound, NPC.Center);
+                        SoundEngine.PlaySound(CalamitousFireballSound, NPC.Center);
 
                         float projectileVelocity = expertMode ? 14f : 12.5f;
                         int type = ModContent.ProjectileType<CalamitousFireball>();
@@ -801,7 +803,7 @@ namespace CalamityMod.NPCs.CalClone
                         else
                         {
                             Projectile.NewProjectile(NPC.GetSource_FromAI(), NPC.Center + offset, fireballVelocity, type, damage, 0f, Main.myPlayer, 1f);
-                            SoundEngine.PlaySound(SoundID.Item20, NPC.Center);
+                            SoundEngine.PlaySound(CalamitousFireballSound, NPC.Center);
                         }
                     }
                 }
@@ -860,7 +862,12 @@ namespace CalamityMod.NPCs.CalClone
                 }
                 else
                 {
-
+                    //VFX
+                    for (var i = 0; i < 5; i++)
+                    {
+                        var p = CalamitasMetaball.SpawnParticle(NPC.Center + NPC.velocity + (NPC.rotation + MathHelper.PiOver2).ToRotationVector2().RotatedByRandom(1f) * 64f, NPC.velocity.RotatedByRandom(0.25f) * 0.5f, 32f);
+                        p.SizeScaling = 0.9f;
+                    }
                     NPC.rotation = (float)Math.Atan2(NPC.velocity.Y, NPC.velocity.X) - MathHelper.PiOver2;
 
                     // Leave behind slow hellblasts in Death Mode
@@ -909,11 +916,13 @@ namespace CalamityMod.NPCs.CalClone
                     // Lines converge inward
                     if (Main.rand.NextBool(3))
                     {
+
                         Vector2 dustVel2 = (Vector2.UnitX).RotatedByRandom(100) * Main.rand.NextFloat(23f, 28f);
-                        Dust dust2 = Dust.NewDustPerfect(NPC.Center + dustVel2.SafeNormalize(Vector2.UnitX) * 420, ModContent.DustType<SquashDust>(), -dustVel2 * 1.2f, 0, default, Main.rand.NextFloat(1.4f, 2.35f));
-                        dust2.noGravity = true;
-                        dust2.fadeIn = 0.8f;
-                        dust2.color = Color.Crimson;
+
+                        var p = CalamitasMetaball.SpawnParticle(NPC.Center + dustVel2.SafeNormalize(Vector2.UnitX) * 420, -dustVel2 * 1.2f, 16f * Main.rand.NextFloat(1.4f, 2.35f));
+                        p.Scale = new(1f, 0.33f);
+                        p.rotation = p.Velocity.ToRotation();
+                        p.SizeScaling = 0.95f;
                     }
                 }
 
@@ -1071,7 +1080,7 @@ namespace CalamityMod.NPCs.CalClone
 
             CalamityGlobalNPC.SetNewBossJustDowned(NPC);
 
-            CalamityGlobalNPC.SetNewShopVariable(new int[] { ModContent.NPCType<Bandit>() }, DownedBossSystem.downedCalamitasClone);
+            CalamityGlobalTownNPC.SetNewShopVariable(new int[] { ModContent.NPCType<Bandit>() }, DownedBossSystem.downedCalamitasClone);
 
             // Mark the Calamitas Clone as dead
             DownedBossSystem.downedCalamitasClone = true;

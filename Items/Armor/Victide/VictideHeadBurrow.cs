@@ -47,7 +47,7 @@ namespace CalamityMod.Items.Armor.Victide
         {
             player.Calamity().victideBurrowHead = true;
             player.moveSpeed += MoveSpeedAccelerationBoost;
-            if (player.IsUnderwater())
+            if (player.Calamity().countsAsAnyWet)
                 player.gills = true;
         }
 

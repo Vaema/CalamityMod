@@ -1,4 +1,5 @@
-﻿using Microsoft.Xna.Framework;
+﻿using System;
+using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using ReLogic.Content;
 using Terraria;
@@ -40,32 +41,35 @@ namespace CalamityMod.Tiles.SunkenSea.Ambient
 
         public override void ModifyLight(int i, int j, ref float r, ref float g, ref float b)
         {
-            float pulse = 0.95f + 0.15f * (0.5f + 0.5f * (float)System.Math.Sin(Main.GlobalTimeWrappedHourly * 4.2f));
+            float pulse = 0.95f + 0.15f * (0.5f + 0.5f * MathF.Sin(Main.GlobalTimeWrappedHourly * 4.2f));
             r = 0.1f * pulse;
             g = 0.3f * pulse;
             b = 0.8f * pulse;
         }
-        public override void PostDraw(int i, int j, SpriteBatch spriteBatch)
+        public override bool PreDraw(int i, int j, SpriteBatch spriteBatch)
         {
-            if (Main.tile[i, j].IsTileActuallyInvisible())
-                return;
-            float pulse = 0.95f + 0.15f * (float)System.Math.Sin(Main.GlobalTimeWrappedHourly * 4.2f);
+            var tile = Main.tile[i, j];
+            if (tile.IsTileActuallyInvisible())
+                return false;
 
-            int xFrameOffset = Main.tile[i, j].TileFrameX;
-            int yFrameOffset = Main.tile[i, j].TileFrameY;
+            float pulse = 0.95f + 0.15f * MathF.Sin(Main.GlobalTimeWrappedHourly * 4.2f);
+
+            int xFrameOffset = tile.TileFrameX;
+            int yFrameOffset = tile.TileFrameY;
             Texture2D glowmask = TextureAssets.Tile[Type].Value;
             Vector2 drawOffest = Main.drawToScreen ? Vector2.Zero : new Vector2(Main.offScreenRange);
             Vector2 drawPosition = new Vector2(i * 16 - Main.screenPosition.X, j * 16 - Main.screenPosition.Y) + drawOffest;
             Color drawColour = Color.White * pulse;
-            Tile trackTile = Main.tile[i, j];
 
-            if (!trackTile.IsHalfBlock && trackTile.Slope == 0)
+            if (!tile.IsHalfBlock && tile.Slope == 0)
                 spriteBatch.Draw(glowmask, drawPosition, new Rectangle(xFrameOffset, yFrameOffset, 18, 18), drawColour, 0.0f, Vector2.Zero, 1f, SpriteEffects.None, 0.0f);
-            else if (trackTile.IsHalfBlock)
+            else if (tile.IsHalfBlock)
                 spriteBatch.Draw(glowmask, drawPosition + new Vector2(0f, 8f), new Rectangle(xFrameOffset, yFrameOffset, 18, 8), drawColour, 0.0f, Vector2.Zero, 1f, SpriteEffects.None, 0.0f);
 
             CenterTexture ??= ModContent.Request<Texture2D>("CalamityMod/Tiles/SunkenSea/Ambient/LargeShoresFlower_Center");
             CalamityUtils.DrawFlameEffect(CenterTexture.Value, i, j, 2);
+
+            return false;
         }
     }
 }

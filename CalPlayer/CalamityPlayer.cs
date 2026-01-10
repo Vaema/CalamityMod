@@ -13,6 +13,7 @@ using CalamityMod.DataStructures;
 using CalamityMod.Dusts;
 using CalamityMod.Events;
 using CalamityMod.FluidSimulation;
+using CalamityMod.Graphics;
 using CalamityMod.Items;
 using CalamityMod.Items.Accessories;
 using CalamityMod.Items.Accessories.Vanity;
@@ -42,6 +43,7 @@ using CalamityMod.Items.PermanentBoosters;
 using CalamityMod.Items.Placeables.Furniture;
 using CalamityMod.Items.Potions;
 using CalamityMod.Items.Potions.Alcohol;
+using CalamityMod.Items.Tools;
 using CalamityMod.Items.Tools.ClimateChange;
 using CalamityMod.Items.TreasureBags.MiscGrabBags;
 using CalamityMod.Items.VanillaArmorChanges;
@@ -52,16 +54,20 @@ using CalamityMod.Items.Weapons.Rogue;
 using CalamityMod.Items.Weapons.Summon;
 using CalamityMod.NPCs;
 using CalamityMod.NPCs.ProfanedGuardians;
+using CalamityMod.NPCs.Ravager;
+using CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses;
 using CalamityMod.Particles;
 using CalamityMod.Projectiles.BaseProjectiles;
 using CalamityMod.Projectiles.Boss;
 using CalamityMod.Projectiles.Melee;
+using CalamityMod.Projectiles.Melee.Shortswords;
 using CalamityMod.Projectiles.Ranged;
 using CalamityMod.Projectiles.Rogue;
 using CalamityMod.Projectiles.Summon;
 using CalamityMod.Projectiles.Typeless;
 using CalamityMod.Systems;
 using CalamityMod.Systems.Collections;
+using CalamityMod.Systems.Mechanic;
 using CalamityMod.World;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
@@ -173,18 +179,37 @@ namespace CalamityMod.CalPlayer
         public enum FishingMinigames
         {
             None,
-            WulfrumRod,
-            NavyFishingRod,
-            HeronRod,
-            SlurperPole,
-            VerstaltiteFishingRod,
-            FeralDoubleRod,
-            RiftReeler,
-            EarlyBloomRod,
-            TheDevourerOfCods
+            ScrapBobber,
+            NavystoneBobber,
+            SkylineBobber,
+            PerennialBobber,
+            ScoriaBobber,
+            DevourerofCods //Not a fishing minigame but uses the same code as the rest
         }
         public FishingMinigames SelectedFishingMinigame = FishingMinigames.None;
         public bool countsAsAnyWet => (Player.armor[0].type == ItemID.FishBowl || Player.wetCount > 0 || Player.wet || Player.honeyWet || Player.lavaWet);
+
+        /// <summary>
+        /// How many Starbursts the player has
+        /// </summary>
+        public int StratusStarburst = 0;
+        public int AvaliableStarburst = 0;
+        public static int MaxStratusStarburst = 100;
+        /// <summary>
+        /// Used for Halley's Inferno to generate starbursts
+        /// </summary>
+        public float HalleyAccuracyCounter = 0;
+        public float StarburstSpawnFrameCounter = 0;
+        /// <summary>
+        /// A cooldown for losing Starbursts over time, reset by holding Stratus items or having Sirius spawned
+        /// </summary>
+        public int StratusStarburstResetTimer = 0;
+        /// <summary>
+        /// Duration of Stratus Sphere's Starshield
+        /// </summary>
+        public int Starshield = 0;
+
+        public List<StarburstEntity> StarburstEntities = new();
 
         public CombatText subtitletext = null;
         public Color[] subtitleColors = new Color[] { Color.White, Color.White };
@@ -196,6 +221,14 @@ namespace CalamityMod.CalPlayer
         public StatModifier SicknessDebuffMultiplier = new();
         public StatModifier WaterDebuffMultiplier = new();
         public StatModifier ElectricDebuffMultiplier = new();
+
+        public int TimeHoldingMelee = 0;
+        public int TimeHoldingRanged = 0;
+        public int TimeHoldingMagic = 0;
+        public int TimeHoldingSummon = 0;
+        public int TimeHoldingRogue = 0;
+        public int TimeHoldingClassless = 0;
+
         #endregion
 
         #region Speedrun Timer
@@ -218,7 +251,9 @@ namespace CalamityMod.CalPlayer
         #endregion
 
         #region External variables -- Not used by Calamity, only via Mod.Call or reflection
+        [Obsolete("No longer does anything in the new abyss light system")]
         public int externalAbyssLight = 0;
+
         public float externalBreathTickBoost = 0f;
         public float externalFlightTimeMultBoost = 0f;
 
@@ -284,10 +319,10 @@ namespace CalamityMod.CalPlayer
         public int deadSunCounter = 6;
         public int DragonsBreathAudioCooldown = 0;
         public int DragonsBreathAudioCooldown2 = 0;
-        public int lucreciaEnergy = 0;
-        public int lucreciaEnergyTimer = 0;
-        public bool lucreciaEnergyPaused = false;
-        public bool lucreciaEnergyMaxSFXPlayed = false;
+        public int darklightEnergy = 0;
+        public int darklightEnergyTimer = 0;
+        public bool darklightEnergyPaused = false;
+        public bool darklightEnergyMaxFXPlayed = false;
         private int lucreciaParticleTimer = 0;
         public int elementalMastery = 0;
         public int elementalMasteryTimer = 0;
@@ -511,6 +546,7 @@ namespace CalamityMod.CalPlayer
         #endregion
 
         #region Pet
+        public bool burrowerPet = false;
         public bool thirdSage = false;
         public bool perfmini = false;
         public bool akato = false;
@@ -666,7 +702,7 @@ namespace CalamityMod.CalPlayer
         #endregion
 
         #region Energy Shields
-        public bool HasAnyEnergyShield => roverDrive || lunicCorpsSet || ((pSoulArtifact && !profanedCrystal) || profanedCrystalBuffs) || sponge;
+        public bool HasAnyEnergyShield => roverDrive || lunicCorpsSet || ((pSoulArtifact && !profanedCrystal) || profanedCrystalBuffs) || sponge || Starshield > 0;
         public bool freeDodgeFromShieldAbsorption = false;
         public bool drawnAnyShieldThisFrame = false;
 
@@ -707,6 +743,18 @@ namespace CalamityMod.CalPlayer
         public int abyssLifeLostAtZeroBreathStat = 0;
         /// <summary> The amount which defense is reduced while in the Abyss. </summary>
         public int abyssDefenseLossStat = 0;
+
+        //These stats are for the abyss darkness system.
+        public float abyssDarkness = 0f;
+        public float abyssPlayerGlowMultiplier = 1f;
+        public float abyssFlashlightWidthMultiplier = 1f;
+
+        #endregion
+
+        #region Light System
+        public float darknessIntensity = 0;
+
+        public Vector2? lastDeerclopsPosition;
         #endregion
 
         #region Permanent Buff
@@ -779,6 +827,7 @@ namespace CalamityMod.CalPlayer
         public bool fishingStation = false;
         public bool rBrain = false;
         public bool bloodyWormTooth = false;
+        public bool ivDrip = false;
         /// <summary> NOT the primary Affliction variable, used instead for the Afflicted buff which is given to teammates. </summary>
         public bool afflicted = false;
         public bool chiRegen = false;
@@ -846,6 +895,10 @@ namespace CalamityMod.CalPlayer
         public bool lAmbergrisVisual = false;
         public bool tortShell = false;
         public bool absorber = false;
+        public bool hadLifeRegenHinderingDebuff = false;
+        public bool alwaysHoneyRegen = false;
+        public float alwaysHoneyRegenAmount = 0;
+        public bool honeyTurboRegen = false;
         public bool honeyDewHalveDebuffs = false;
         public bool livingDewHalveDebuffs = false;
         public int jewelBonusDefense = 0;
@@ -883,7 +936,6 @@ namespace CalamityMod.CalPlayer
         public bool seraphTracers = false;
         public bool frostFlare = false;
         public bool evolution = false;
-        public int evolutionLifeRegenCounter = 0;
         public bool nanotech = false;
         public bool deadshotBrooch = false;
         public bool shadowMinions = false;
@@ -911,6 +963,7 @@ namespace CalamityMod.CalPlayer
         public double chaliceDamagePointPartialProgress = 0D;
         public int chaliceBleedoutToApplyOnHurt = 0;
         public int chaliceHitOriginalDamage = 0;
+        public bool chaliceHeartStyle = false;
 
         public bool elementalHeart = false;
         public bool crownJewel = false;
@@ -921,8 +974,6 @@ namespace CalamityMod.CalPlayer
         public int PurityHealSlowdownFrames = 0;
         public bool harpyRing = false;
         public bool angelTreads = false;
-        /// <summary> Counter variable used for automatically re-engaging Vortex armor's stealth with Vortex Booster. </summary>
-        public int vortexBoosterStealthDelay = 0;
         /// <summary> Makes Flesh Knuckles and its upgrades increase the player's max health. </summary>
         public bool fleshKnuckles = false;
         public bool ironBoots = false;
@@ -1346,6 +1397,7 @@ namespace CalamityMod.CalPlayer
         public bool isNearbyBoss = false;
         public bool flaskBrimstone = false;
         public bool purpleHaze = false;
+        public int purpleHazeStealthTimer = 0;
         public bool mushy = false;
         public bool fortunesFavor = false;
         public bool PinkJellyRegen = false;
@@ -1372,7 +1424,9 @@ namespace CalamityMod.CalPlayer
         public bool baguette = false;
         public bool vodka = false;
         public bool redWine = false;
+        public float redWineStoredY = 0;
         public bool grapeBeer = false;
+        public int grapeBeerTimer = 0;
         public bool moonshine = false;
         public bool rum = false;
         public bool whiskey = false;
@@ -1389,6 +1443,7 @@ namespace CalamityMod.CalPlayer
         public bool screwdriver = false;
         public bool moscowMule = false;
         public bool whiteWine = false;
+        public float whiteWineTimer = 0;
         public bool evergreenGin = false;
         public bool tranquilityCandle = false;
         public bool chaosCandle = false;
@@ -1462,7 +1517,7 @@ namespace CalamityMod.CalPlayer
         public bool hCrab = false;
         /// <summary> Heart of the Elements. </summary>
         public bool allElementals = false;
-        /// <summary> Hearts of the Elements; however, the minions will not attack. </summary>
+        /// <summary> Heart of the Elements; however, the minions will not attack. </summary>
         public bool allElementalsVanity = false;
         /// <summary> Silva armor's Silva Crystal. </summary>
         public bool sCrystal = false;
@@ -1522,7 +1577,6 @@ namespace CalamityMod.CalPlayer
         public bool necrosteocytesDudes = false;
         public bool gammaHead = false;
         public bool tundraFlameBlossom = false;
-        public bool starSwallowerPetFroge = false;
         public bool snakeEyes = false;
         public bool poleWarper = false;
         public bool aqueousHunterDrone = false;
@@ -1552,7 +1606,7 @@ namespace CalamityMod.CalPlayer
         public bool KalandraMirror = false;
         public bool StellarTorus = false;
         public bool LiliesOfFinalityBool = false;
-        public bool EnchantedBladeStaffBool = false;
+        public bool EnchantedKnifeStaffBool = false;
         public bool AmphibiansGuitarBool = false;
         #endregion
 
@@ -1582,13 +1636,11 @@ namespace CalamityMod.CalPlayer
         public bool ZoneAbyssLayer3 => Player.InModBiome<AbyssLayer3Biome>();
         public bool ZoneAbyssLayer4 => Player.InModBiome<AbyssLayer4Biome>();
 
-        public bool ZoneFloralParadise => Player.InModBiome<FloralParadiseBiome>();
-
         public bool ZoneCalamity => Player.InModBiome<BrimstoneCragsBiome>();
 
         public bool ZoneAstral => Player.InModBiome<AstralInfectionBiome>() && !ZoneAbyss;
 
-        public bool InAnyCalamityBiome => ZoneAbyss || ZoneCalamity || ZoneFloralParadise || ZoneSulphur || ZoneSunkenSea || ZoneAstral;
+        public bool InAnyCalamityBiome => ZoneAbyss || ZoneCalamity || ZoneSulphur || ZoneSunkenSea || ZoneAstral;
 
         public bool abyssDeath = false;
         public int abyssBreathCD;
@@ -2026,7 +2078,7 @@ namespace CalamityMod.CalPlayer
             if (fleshKnuckles)
                 Player.statLifeMax2 += 25;
 
-            int percentMaxLifeIncrease = 0;
+                int percentMaxLifeIncrease = 0;
             // Blood Pact and Chalice of the Blood God stack their HP bonuses if you want to equip both
             if (bloodPact)
                 percentMaxLifeIncrease += 25;
@@ -2065,7 +2117,6 @@ namespace CalamityMod.CalPlayer
 
             DashID = string.Empty;
 
-            externalAbyssLight = 0;
             externalBreathTickBoost = 0f;
             externalFlightTimeMultBoost = 0f;
             externalRageEnabled = externalAdrenalineEnabled = null;
@@ -2076,6 +2127,81 @@ namespace CalamityMod.CalPlayer
             alcoholPoisonLevel = 0;
             noLifeRegen = false;
 
+            //Stratus Starburst amount management
+
+            if (HalleyAccuracyCounter > HalleysInferno.MaxAccuracy)
+                HalleyAccuracyCounter = HalleysInferno.MaxAccuracy;
+            if (HalleyAccuracyCounter < 0)
+                HalleyAccuracyCounter = 0;
+            while (StarburstSpawnFrameCounter >= 1)
+            {
+                StratusStarburst++;
+                StarburstSpawnFrameCounter--;
+            }
+            if (Starshield > 0)
+            {
+                Starshield--;
+                StratusStarburstResetTimer = (int)MathHelper.Max(300,StratusStarburstResetTimer);
+            }
+            if (StratusStarburstResetTimer > 0)
+                StratusStarburstResetTimer--;
+            else if (StratusStarburst > 0)
+                StratusStarburst--;
+            if (StratusStarburst > MaxStratusStarburst)
+                StratusStarburst = MaxStratusStarburst;
+            var starpower = 0;
+            var avaliableStarpower = 0;
+            var oneCount = 0;
+            Vector2 starSpawnPos = Player.Center;
+            for (var i = 0; i < StarburstEntities.Count(); i++)
+            {
+                starpower += StarburstEntities[i].value;
+                if (StarburstEntities[i].AICooldown <= 0)
+                    avaliableStarpower += StarburstEntities[i].value;
+                if (starpower > StratusStarburst)
+                {
+                    var deadStar = StarburstEntities[i];
+                    starpower -= deadStar.value;
+                    StarburstEntities.RemoveAt(i);
+                    starSpawnPos = deadStar.Center;
+                    i--;
+                    continue;
+                }
+                if (StarburstEntities[i].value == 1)
+                    oneCount++;
+            }
+            while (starpower < StratusStarburst)
+            {
+                StarburstEntities.Add(new(starSpawnPos));
+                oneCount++;
+                starpower++;
+                avaliableStarpower++;
+            }
+            while (oneCount >= 10)
+            {
+                var bigStar = StarburstEntities.First(x => x.value == 1);
+                bigStar.value = 10;
+                for (var i = 0; i < 9; i++)
+                {
+                    var star = StarburstEntities.Last(x => x.value == 1);
+                    bigStar.MergeChildren.Add(star);
+                    star.MergeTarget = bigStar;
+                    StarburstEntities.Remove(star);
+                }
+                oneCount -= 10;
+            }
+            AvaliableStarburst = avaliableStarpower;
+            if (StratusStarburstResetTimer > 0)
+            {
+                if (cooldowns.TryGetValue(Starburst.ID, out var cooldown))
+                {
+                    cooldown.timeLeft = MaxStratusStarburst - StratusStarburst;
+                }
+                else
+                {
+                    Player.AddCooldown(Starburst.ID, MaxStratusStarburst);
+                }
+            }
             // Shields. Has to intentionally be above resetting accessories and armor or the shields would clear instantly
             if (!roverDrive)
                 RoverDriveShieldDurability = 0;
@@ -2095,6 +2221,7 @@ namespace CalamityMod.CalPlayer
             perfmini = false;
             akato = false;
             yharonPet = false;
+            burrowerPet = false;
             leviPet = false;
             plaguebringerBab = false;
             rotomPet = false;
@@ -2215,6 +2342,7 @@ namespace CalamityMod.CalPlayer
             fishingStation = false;
             rBrain = false;
             bloodyWormTooth = false;
+            ivDrip = false;
             vexation = false;
             badgeOfBravery = false;
             // Clear the Warbanner "cooldown" if not wearing Warbanner. This has absolutely zero effect for a casual player, but is useful for resetting the cooldown's duration.
@@ -2284,6 +2412,7 @@ namespace CalamityMod.CalPlayer
             bloodPact = false;
             bloodflareCore = false;
             chaliceOfTheBloodGod = false;
+            chaliceHeartStyle = false;
             chaliceBleedoutToApplyOnHurt = 0; // Resets every frame so it doesn't improperly carry over between hits
             elementalHeart = false;
             crownJewel = false;
@@ -2562,6 +2691,8 @@ namespace CalamityMod.CalPlayer
             amidiasBlessing = false;
             flaskBrimstone = false;
             purpleHaze = false;
+            if (purpleHazeStealthTimer > 0)
+                purpleHazeStealthTimer--;
             shine = false;
             anechoicCoating = false;
             mushy = false;
@@ -2577,6 +2708,8 @@ namespace CalamityMod.CalPlayer
             vodka = false;
             redWine = false;
             grapeBeer = false;
+            if (grapeBeerTimer > 0)
+                grapeBeerTimer--;
             moonshine = false;
             rum = false;
             whiskey = false;
@@ -2703,7 +2836,6 @@ namespace CalamityMod.CalPlayer
             necrosteocytesDudes = false;
             gammaHead = false;
             tundraFlameBlossom = false;
-            starSwallowerPetFroge = false;
             snakeEyes = false;
             poleWarper = false;
             aqueousHunterDrone = false;
@@ -2728,7 +2860,7 @@ namespace CalamityMod.CalPlayer
             KalandraMirror = false;
             StellarTorus = false;
             LiliesOfFinalityBool = false;
-            EnchantedBladeStaffBool = false;
+            EnchantedKnifeStaffBool = false;
             AmphibiansGuitarBool = false;
             #endregion
 
@@ -2795,7 +2927,15 @@ namespace CalamityMod.CalPlayer
             disablePerfCystSpawns = false;
             disableVoodooSpawns = false;
 
-            EnchantHeldItemEffects(Player, Player.Calamity(), Player.HeldItem);
+
+            #region Abyss
+            abyssDarkness = 0;
+            abyssPlayerGlowMultiplier = 1;
+            abyssFlashlightWidthMultiplier = 1;
+            darknessIntensity = MathHelper.Max(darknessIntensity-0.05f,0);
+            #endregion
+
+                EnchantHeldItemEffects(Player, Player.Calamity(), Player.HeldItem);
         }
         #endregion
 
@@ -2923,7 +3063,6 @@ namespace CalamityMod.CalPlayer
             rOfResilienceEffect = 0;
             demonSwordKillMode = false;
 
-            externalAbyssLight = 0;
             externalBreathTickBoost = 0f;
             externalFlightTimeMultBoost = 0f;
             externalColdImmunity = externalHeatImmunity = false;
@@ -3258,13 +3397,12 @@ namespace CalamityMod.CalPlayer
             burningSeaBurnOut = 0;
             flareGunOverheat = 0;
             hellbornShots = 0;
-            lucreciaEnergy = 0;
+            darklightEnergy = 0;
             elementalMastery = 0;
             garandShots = 0;
             persecutedEnchantSummonTimer = 0;
             momentumCapacitorTime = 0;
             momentumCapacitorBoost = 0f;
-            vortexBoosterStealthDelay = 0;
             LungingDown = false;
 
             chaliceBleedoutBuffer = 0D;
@@ -3311,8 +3449,9 @@ namespace CalamityMod.CalPlayer
                 if (Player.armor[i].type == itemID)
                     return Player.armor[i];
             }
-            return new Item();
+            return ContentSamples.ItemsByType[itemID];
         }
+        public Item FindAccessory<T>() where T : ModItem => FindAccessory(ItemType<T>());
 
         public override void ProcessTriggers(TriggersSet triggersSet)
         {
@@ -3322,7 +3461,7 @@ namespace CalamityMod.CalPlayer
 
             if (ascendantInsignia && Main.myPlayer == Player.whoAmI && CalamityKeybinds.AscendantInsigniaHotKey.JustPressed && ascendantInsigniaCooldown <= 0)
             {
-                var source = Player.GetSource_Accessory(FindAccessory(ItemType<AscendantInsignia>()));
+                var source = Player.GetSource_Accessory(FindAccessory<AscendantInsignia>());
                 Projectile.NewProjectile(source, Player.Center - Vector2.UnitY * 45f, Vector2.Zero, ProjectileType<AscendantAura>(), 0, 0f);
                 SoundEngine.PlaySound(new SoundStyle("CalamityMod/Sounds/Item/AscendantActivate"));
                 ascendantInsigniaCooldown = AscendantInsignia.AbilityCooldown;
@@ -3420,7 +3559,7 @@ namespace CalamityMod.CalPlayer
                         angelAmt += 1f;
                 }
 
-                var source = Player.GetSource_Accessory(FindAccessory(ItemType<AngelicAlliance>()));
+                var source = Player.GetSource_Accessory(FindAccessory<AngelicAlliance>());
                 for (int projIndex = 0; projIndex < angelAmt; projIndex++)
                 {
                     Projectile proj = Main.projectile[projIndex];
@@ -3963,7 +4102,7 @@ namespace CalamityMod.CalPlayer
                 }
                 if (Player.statMana >= stormMana && !Player.silence)
                 {
-                    var source = Player.GetSource_ItemUse(ContentSamples.ItemsByType[ItemType<ForbiddenCirclet>()]);
+                    var source = Player.GetSource_ItemUse(FindAccessory<ForbiddenCirclet>());
                     Player.manaRegenDelay = (int)Player.maxRegenDelay;
                     Player.statMana -= stormMana;
 
@@ -4234,7 +4373,7 @@ namespace CalamityMod.CalPlayer
                         // Check if player hit some form of solid resistance (the ground)
                         if (0 == Player.velocity.Y)
                         {
-                            var source = Player.GetSource_Accessory(FindAccessory(ItemType<InterstellarStompers>()));
+                            var source = Player.GetSource_Accessory(FindAccessory<InterstellarStompers>());
                             // Spawn explosion. ai[0] is used for transferring the recorded falling time
 
                             int damage = Player.CalcIntDamage<MeleeDamageClass>(InterstellarStompers.SlamDamage);
@@ -4260,7 +4399,7 @@ namespace CalamityMod.CalPlayer
             // Reset The Evolution's same projectile DR if unequipped or the cooldown ends
             if (!evolution || !Player.HasCooldown(GlobalDodge.ID))
                 projTypeJustHitBy = -1;
-        }
+            }
         #endregion
 
         #region PreUpdate
@@ -4352,6 +4491,7 @@ namespace CalamityMod.CalPlayer
         }
         #endregion
 
+        #region OnExtraJumpStarted
         public override void OnExtraJumpStarted(ExtraJump jump, ref bool playSound)
         {
             if (rainSet && Player.whoAmI == Main.myPlayer)
@@ -4359,6 +4499,7 @@ namespace CalamityMod.CalPlayer
                 RainArmorSetChange.SpawnRainArmorJump(Player);
             }
         }
+        #endregion
 
         #region PreUpdateMovement
         public override void PreUpdateMovement()
@@ -4373,6 +4514,19 @@ namespace CalamityMod.CalPlayer
                 }
             }
 
+            //Multiply vertical speed
+            if (redWine)
+            {
+                if (Player.velocity.Y > 0.2f || Player.velocity.Y < -0.2f)
+                {
+                    redWineStoredY = Player.velocity.Y;
+                    Player.velocity.Y *= 1 + RedWine.VerticalSpeedBoost;
+                }
+                else
+                {
+                    redWineStoredY = 0;
+                }
+            }
             // Remove acceleration when using the exo chair.
             if (Player.whoAmI == Main.myPlayer && ExoChair)
             {
@@ -4405,6 +4559,158 @@ namespace CalamityMod.CalPlayer
 
                 if (CalamityKeybinds.ExoChairSlowdownHotkey.Current)
                     Player.velocity *= 0.5f;
+            }
+
+            foreach (var npc in Main.ActiveNPCs)
+            {
+                //This is the ravager rock pillar collision logic. It should only apply to rock pillars that are mostly opaque to ensure players don't get stopped by invisible pillars right when they spawn.
+                //This could also potentially be limited to only run with the pillar is stationary if desired.
+                if (npc.type == ModContent.NPCType<RockPillar>() && npc.Opacity > 0.9f && npc.damage < 1)
+                {
+                    bool LandedOnPlayer = false;
+                    float origX = Player.velocity.X;
+                    float origY = Player.velocity.Y;
+                    npc.position += npc.velocity;
+                    bool intersectPreVel = false;
+                    Player.position += Player.velocity;
+
+                    if (Player.Hitbox.Intersects(npc.Hitbox))
+                        intersectPreVel = true;
+                    Player.position -= Player.velocity;
+                    if (intersectPreVel)
+                    {
+                        Player.position += npc.velocity;
+                        if (Collision.SolidCollision(Player.position, Player.Hitbox.Width, Player.Hitbox.Height) || Main.npc.Any(x => x.active && x.type == ModContent.NPCType<RockPillar>() && x.Opacity > 0.9f && x.whoAmI != npc.whoAmI && x.Hitbox.Intersects(Player.Hitbox)))
+                        {
+                            npc.damage = npc.defDamage;
+                            npc.ai[0] = 1;
+                            LandedOnPlayer = true;
+                            Player.position -= npc.velocity;
+                        }
+                    }
+                    npc.position -= npc.velocity;
+
+                    if (!LandedOnPlayer)
+                    {
+                        //Yes, testing intercepts on th X, Y, and X+Y individually has a purpose. It makes it far more stable and consistent.
+                        bool intersectX = false;
+                        Player.position.X += Player.velocity.X;
+                        if (Player.Hitbox.Intersects(npc.Hitbox))
+                            intersectX = true;
+                        Player.position.X -= Player.velocity.X;
+                        bool intersectY = false;
+                        Player.position.Y += Player.velocity.Y;
+                        if (Player.Hitbox.Intersects(npc.Hitbox))
+                            intersectY = true;
+                        Player.position.Y -= Player.velocity.Y;
+                        bool intersect = false;
+                        //We only bother checking the X+Y together if individually they return false.
+                        //This accounts for moving diagonal onto a corner.
+                        if (!intersectX && !intersectY)
+                        {
+                            Player.position += Player.velocity;
+                            if (Player.Hitbox.Intersects(npc.Hitbox))
+                                intersect = true;
+                            Player.position -= Player.velocity;
+                        }
+                        if (intersectX || intersect)
+                        {
+                            //This checks if the player is to the left of the pillar
+                            if (Player.Center.X < npc.Center.X)
+                            {
+                                float playerEdge = Player.Hitbox.X + Player.Hitbox.Width;
+                                float pillarEdge = npc.Hitbox.X;
+                                float goalEdge = playerEdge + Player.velocity.X;
+                                if (goalEdge > pillarEdge)
+                                {
+                                    Player.velocity.X += pillarEdge - goalEdge;
+                                    if (Player.velocity.X < 0)
+                                        if (!Collision.SolidCollision(Player.position + new Vector2(Player.velocity.X, 0), Player.Hitbox.Width, Player.Hitbox.Height))
+                                        {
+                                            Player.position.X += Player.velocity.X;
+                                            Player.velocity.X = 0;
+                                        }
+                                        else
+                                        {
+                                            Player.velocity.X = origX;
+                                        }
+                                }
+                            }
+                            //This is for if the player is to the right of the pillar
+                            else
+                            {
+                                float playerEdge = Player.Hitbox.X;
+                                float pillarEdge = npc.Hitbox.X + npc.Hitbox.Width;
+                                float goalEdge = playerEdge + Player.velocity.X;
+                                if (goalEdge < pillarEdge)
+                                {
+                                    Player.velocity.X += pillarEdge - goalEdge;
+                                    if (Player.velocity.X > 0)
+                                        if (!Collision.SolidCollision(Player.position + new Vector2(Player.velocity.X, 0), Player.Hitbox.Width, Player.Hitbox.Height))
+                                        {
+                                            Player.position.X += Player.velocity.X;
+                                            Player.velocity.X = 0;
+                                        }
+                                        else
+                                        {
+                                            Player.velocity.X = origX;
+                                        }
+                                }
+                            }
+                        }
+                        //For the vertical axis, we don't distinguish between top and bottom, and always move players to the top
+                        //This is so being placed inside a pillar teleports a player to the top, which applies primarily to teleporting or pillar spawning
+                        //Additionally, this is set to only work when the pillar is stationary vertically to prevent janky interations when pillars are moving.
+                        if ((intersectY || intersect))
+                        {
+                            if (Player.Center.Y < npc.Center.Y)
+                            {
+                                float playerEdge = Player.Hitbox.Y + Player.Hitbox.Height;
+                                float pillarEdge = npc.Hitbox.Y;
+                                float goalEdge = playerEdge + Player.velocity.Y;
+                                if (goalEdge > pillarEdge)
+                                {
+                                    Player.velocity.Y += pillarEdge - goalEdge;
+                                    if (Player.velocity.Y < 0)
+                                        if (!Collision.SolidCollision(Player.position + new Vector2(0, Player.velocity.Y), Player.Hitbox.Width, Player.Hitbox.Height))
+                                        {
+                                            Player.position.Y += Player.velocity.Y;
+                                            Player.velocity.Y = 0;
+                                        }
+                                        else
+                                        {
+                                            Player.velocity.Y = origY;
+                                        }
+                                }
+                            }
+                            else
+                            {
+                                float playerEdge = Player.Hitbox.Y;
+                                float pillarEdge = npc.Hitbox.Y + npc.Hitbox.Height;
+                                float goalEdge = playerEdge + Player.velocity.Y;
+                                if (goalEdge < pillarEdge)
+                                {
+                                    Player.velocity.Y += pillarEdge - goalEdge;
+                                    if (Player.velocity.Y > 0)
+                                        if (!Collision.SolidCollision(Player.position + new Vector2(0, Player.velocity.Y), Player.Hitbox.Width, Player.Hitbox.Height))
+                                        {
+                                            Player.position.Y += Player.velocity.Y;
+                                            Player.velocity.Y = 0;
+                                        }
+                                        else
+                                        {
+                                            Player.velocity.Y = origY;
+                                        }
+                                }
+                            }
+                        }
+                        //This is to guarantee we can stand on top of rock pillars instead of looking like we're "floating" on top of them.
+                        if (intersectY && Player.velocity.Y < 0.25f && Player.velocity.Y > -0.25f)
+                        {
+                            Player.velocity.Y = 0;
+                        }
+                    }
+                }
             }
         }
         #endregion
@@ -4454,7 +4760,8 @@ namespace CalamityMod.CalPlayer
                         Player.AddCooldown(LifeSteal.ID, duration);
                 }
             }
-
+            if (moonshine)
+                Player.statLifeMax2 = (int)(Player.statLifeMax2 * (1 + Moonshine.MaxLifePercentBoost));
             ForceVariousEffects();
         }
         #endregion
@@ -4462,6 +4769,104 @@ namespace CalamityMod.CalPlayer
         #region PostUpdateEquips
         public override void PostUpdateEquips()
         {
+
+            var item = Player.HeldItem;
+            if (!(item.IsAir || item.damage <= 0))
+            {
+                if (item.DamageType.CountsAsClass(DamageClass.Melee))
+                {
+                    TimeHoldingMelee++;
+                    if (TimeHoldingMelee > Whiskey.TimeToDischarge)
+                        TimeHoldingMelee = (int)Whiskey.TimeToDischarge;
+                    if (whiskey)
+                    {
+                        Player.GetDamage(DamageClass.Melee) += MathHelper.Lerp(Whiskey.MaxDamageBoost, Whiskey.MinDamageBoost, TimeHoldingMelee / Whiskey.TimeToDischarge);
+                    }
+                } else
+                {
+                    TimeHoldingMelee -= 2;
+                    if (TimeHoldingMelee < 0)
+                        TimeHoldingMelee = 0;
+                }
+                if (item.DamageType.CountsAsClass(DamageClass.Ranged))
+                {
+                    TimeHoldingRanged++;
+                    if (TimeHoldingRanged > Whiskey.TimeToDischarge)
+                        TimeHoldingRanged = (int)Whiskey.TimeToDischarge; 
+                    if (whiskey)
+                    {
+                        Player.GetDamage(DamageClass.Ranged) += MathHelper.Lerp(Whiskey.MaxDamageBoost, Whiskey.MinDamageBoost, TimeHoldingRanged / Whiskey.TimeToDischarge);
+                    }
+                }
+                else
+                {
+                    TimeHoldingRanged -= 2;
+                    if (TimeHoldingRanged < 0)
+                        TimeHoldingRanged = 0;
+                }
+                if (item.DamageType.CountsAsClass(DamageClass.Magic))
+                {
+                    TimeHoldingMagic++;
+                    if (TimeHoldingMagic > Whiskey.TimeToDischarge)
+                        TimeHoldingMagic = (int)Whiskey.TimeToDischarge;
+                    if (whiskey)
+                    {
+                        Player.GetDamage(DamageClass.Magic) += MathHelper.Lerp(Whiskey.MaxDamageBoost, Whiskey.MinDamageBoost, TimeHoldingMagic / Whiskey.TimeToDischarge);
+                    }
+                }
+                else
+                {
+                    TimeHoldingMagic -= 2;
+                    if (TimeHoldingMagic < 0)
+                        TimeHoldingMagic = 0;
+                }
+                if (item.DamageType.CountsAsClass(DamageClass.Summon))
+                {
+                    TimeHoldingSummon++;
+                    if (TimeHoldingSummon > Whiskey.TimeToDischarge)
+                        TimeHoldingSummon = (int)Whiskey.TimeToDischarge;
+                    if (whiskey)
+                    {
+                        Player.GetDamage(DamageClass.Summon) += MathHelper.Lerp(Whiskey.MaxDamageBoost, Whiskey.MinDamageBoost, TimeHoldingSummon / Whiskey.TimeToDischarge);
+                    }
+                }
+                else
+                {
+                    TimeHoldingSummon -= 2;
+                    if (TimeHoldingSummon < 0)
+                        TimeHoldingSummon = 0;
+                }
+                if (item.DamageType.CountsAsClass(RogueDamageClass.Instance))
+                {
+                    TimeHoldingRogue++;
+                    if (TimeHoldingRogue > Whiskey.TimeToDischarge)
+                        TimeHoldingRogue = (int)Whiskey.TimeToDischarge;
+                    if (whiskey)
+                    {
+                        Player.GetDamage(RogueDamageClass.Instance) += MathHelper.Lerp(Whiskey.MaxDamageBoost, Whiskey.MinDamageBoost, TimeHoldingRogue / Whiskey.TimeToDischarge);
+                    }
+                }
+                else
+                {
+                    TimeHoldingRogue -= 2;
+                    if (TimeHoldingRogue < 0)
+                        TimeHoldingRogue = 0;
+                }
+            } else
+            {
+                if (TimeHoldingMelee-- < 0)
+                    TimeHoldingMelee = 0;
+                if (TimeHoldingRanged-- < 0)
+                    TimeHoldingRanged = 0;
+                if (TimeHoldingMagic-- < 0)
+                    TimeHoldingMagic = 0;
+                if (TimeHoldingSummon-- < 0)
+                    TimeHoldingSummon = 0;
+                if (TimeHoldingRogue-- < 0)
+                    TimeHoldingRogue = 0;
+            }
+
+
             // PostUpdateMiscEffects runs after the cap has been applied. Do NOT put mining speed stuff there.
             // Ancient Chisel nerf (also affects Hand of Creation)
             if (Player.chiselSpeed)
@@ -4545,6 +4950,44 @@ namespace CalamityMod.CalPlayer
 
         public override void PostUpdate()
         {
+            if (ZoneAbyss && Main.netMode != NetmodeID.Server)
+            {
+                //Main aura
+                EnhancedDarknessSystem.lights.Add(new(center: Player.Center, scale: 4 * abyssPlayerGlowMultiplier));
+
+                //Flashlight
+                //Due to being in postUpdate we need to adjust the mousepos for the player's movement that will have happened
+                var mouseworld = Main.MouseWorld + Player.position - Player.oldPosition;
+                EnhancedDarknessSystem.lights.Add(new(center: Player.Center + Player.DirectionTo(mouseworld) * 750f, rotation: Player.DirectionTo(mouseworld).ToRotation() - MathHelper.PiOver2, vectorScale: new Vector2(0.75f * abyssFlashlightWidthMultiplier, 0.75f), texture: Request<Texture2D>("CalamityMod/Particles/BloomLineFade")));
+            }
+
+            if (lastDeerclopsPosition.HasValue)
+            {
+                //While deer is alive and the player is nearby, make it dark
+                if (Main.npc.Any(x => x.active && x.type == NPCID.Deerclops) && Player.DistanceSQ(lastDeerclopsPosition.Value) < 10240000) //3200^2, or 00 tiles
+                {
+                    darknessIntensity = MathHelper.Min(Main.LocalPlayer.Calamity().darknessIntensity + 0.06f, 1f); ;
+                }
+
+                //Add the main light circle for the arena
+                DeerclopsAI.ArenaTex ??= ModContent.Request<Texture2D>(DeerclopsAI.ArenaTexPath);
+                EnhancedDarknessSystem.lights.Add(new(lastDeerclopsPosition.Value, scale: DeerclopsAI.borderScale, texture: DeerclopsAI.ArenaTex));
+
+                //we draw light around the player when far away so they have some visibility, although very small. This is especially nice in multiplayer. we scale opacity with distance bc it looks better
+                EnhancedDarknessSystem.lights.Add(new EnhancedDarknessSystem.LightSource(scale: 0.75f, opacity: MathHelper.Clamp(Main.LocalPlayer.DistanceSQ(lastDeerclopsPosition.Value) / (409600 /*640^2*/), 0, 1)));
+
+                if (darknessIntensity == 0)
+                {
+                    lastDeerclopsPosition = null;
+                }
+            }
+
+            //reset the stored Y value for red wine's increased vertical speed
+            if (redWine && (redWineStoredY > 0.2f || redWineStoredY < -0.2f) && (Player.velocity.Y > 0.2f || Player.velocity.Y < -0.2f))
+            {
+                Player.velocity.Y = redWineStoredY;
+            }
+
 
             if (subtitletext != null)
             {
@@ -4712,13 +5155,13 @@ namespace CalamityMod.CalPlayer
         #region Get Weapon Damage And KB
         public override void ModifyWeaponDamage(Item item, ref StatModifier damage)
         {
-            if (item.CountsAsClass<RogueDamageClass>())
+            if (item.CountsAsClass<RogueDamageClass>() && item.TryGetGlobalItem<RogueGlobalItem>(out var rogueItem))
             {
                 // Apply weapon modifier stealth strike damage bonus
                 // 01OCT2023: Ozzatron: This is a multiplicative bonus because it is a prefix.
                 // It should be equivalent to x1.15 (or whatever multiplier) on the base damage of the weapon for stealth only.
-                if (item.Calamity().StealthStrikePrefixBonus != 0f && StealthStrikeAvailable())
-                    damage *= item.Calamity().StealthStrikePrefixBonus; // This number centers on 1f, so 1.15f = 1.15x damage.
+                if (rogueItem.StealthStrikePrefixBonus != 0f && StealthStrikeAvailable())
+                    damage *= rogueItem.StealthStrikePrefixBonus; // This number centers on 1f, so 1.15f = 1.15x damage.
             }
         }
 
@@ -4726,15 +5169,6 @@ namespace CalamityMod.CalPlayer
         {
             // Adding to StatModifier adds to the additive multiplier
             bool rogue = item.CountsAsClass<RogueDamageClass>();
-
-            if (whiskey)
-                knockback += Whiskey.KnockbackBoost;
-
-            if (tequila && Main.dayTime)
-                knockback += Tequila.KnockbackBoost;
-
-            if (tequilaSunrise && Main.dayTime)
-                knockback += TequilaSunrise.KnockbackBoost;
 
             if (moscowMule)
                 knockback += MoscowMule.KnockbackBoost;
@@ -4916,10 +5350,16 @@ namespace CalamityMod.CalPlayer
         {
             if (bladeArmEnchant)
                 return false;
-
+            if (purpleHaze)
+            {
+                if (item.CountsAsClass<RogueDamageClass>() && StealthStrikeAvailable())
+                {
+                    purpleHazeStealthTimer = 300;
+                }
+            }
             if (veneratedLocket)
             {
-                var LocketSource = Player.GetSource_Accessory(FindAccessory(ItemType<VeneratedLocket>()));
+                var LocketSource = Player.GetSource_Accessory(FindAccessory<VeneratedLocket>());
                 if (item.CountsAsClass<RogueDamageClass>())
                 {
                     if (!CalamityItemSets.DisablesVeneratedLocketEffect[item.type])
@@ -5295,13 +5735,6 @@ namespace CalamityMod.CalPlayer
 
                 return false;
             }
-
-            if ((CalamityWorld.death || BossRushEvent.BossRushActive) && areThereAnyDamnBosses)
-            {
-                chatText = CalamityUtils.GetTextValue("Vanilla.NurseChat.HealNotAllowed");
-                return false;
-            }
-
             return true;
         }
 
@@ -5318,6 +5751,8 @@ namespace CalamityMod.CalPlayer
 
             if (price > 0)
             {
+                if (CalamityWorld.death)
+                    price *= 2;
                 if (areThereAnyDamnBosses)
                     price *= 5;
 
@@ -5671,7 +6106,6 @@ namespace CalamityMod.CalPlayer
                 }
             }
         }
-
         #endregion
 
         #region Misc Stuff

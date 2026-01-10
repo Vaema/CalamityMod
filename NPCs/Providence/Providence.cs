@@ -15,6 +15,7 @@ using CalamityMod.Items.Placeables.Furniture.BossRelics;
 using CalamityMod.Items.Placeables.Furniture.Paintings;
 using CalamityMod.Items.Placeables.Furniture.Trophies;
 using CalamityMod.Items.Potions;
+using CalamityMod.Items.Potions.Food;
 using CalamityMod.Items.SummonItems;
 using CalamityMod.Items.TreasureBags;
 using CalamityMod.Items.Weapons.Magic;
@@ -27,7 +28,9 @@ using CalamityMod.Particles;
 using CalamityMod.Projectiles.Boss;
 using CalamityMod.Projectiles.Summon;
 using CalamityMod.Projectiles.Typeless;
+using CalamityMod.Systems.Graphic;
 using CalamityMod.Tiles.Ores;
+using CalamityMod.Utilities.Daybreak;
 using CalamityMod.World;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
@@ -39,6 +42,7 @@ using Terraria.DataStructures;
 using Terraria.GameContent;
 using Terraria.GameContent.Bestiary;
 using Terraria.GameContent.ItemDropRules;
+using Terraria.Graphics.Shaders;
 using Terraria.ID;
 using Terraria.Localization;
 using Terraria.ModLoader;
@@ -246,6 +250,16 @@ namespace CalamityMod.NPCs.Providence
         public static int RayDamage = 100; // 400
 
         public static int StarHeal = Main.expertMode ? 50 : 35; // HolyLight
+
+        public override void Load()
+        {
+            GeneralDrawLayerSystem.OnBeforeAllTiles += DrawHolyInferno;
+        }
+
+        public override void Unload()
+        {
+            GeneralDrawLayerSystem.OnBeforeAllTiles -= DrawHolyInferno;
+        }
 
         public override void SetDefaults()
         {
@@ -2403,13 +2417,15 @@ namespace CalamityMod.NPCs.Providence
                 shieldEffect.Parameters["shieldEdgeColor"].SetValue(edgeColor.ToVector3());
 
                 var matrix = Main.GameViewMatrix.TransformationMatrix;
-                Main.spriteBatch.SafeBegin(SpriteSortMode.Immediate, BatchSetting.Additive, shieldEffect, matrix, () =>
+                using (Main.spriteBatch.Scope())
                 {
+                    Main.spriteBatch.Begin(SpriteSortMode.Immediate, BlendState.Additive, SamplerState.PointClamp, DepthStencilState.None, Main.Rasterizer, shieldEffect, matrix);
                     // Fetch shield heat overlay texture (this is the neutrons fed to the shader)
                     Texture2D heatTex = ModContent.Request<Texture2D>("CalamityMod/ExtraTextures/GreyscaleGradients/Neurons2").Value;
                     Vector2 pos = NPC.Center + NPC.gfxOffY * Vector2.UnitY - Main.screenPosition;
                     Main.spriteBatch.Draw(heatTex, shieldDrawPos, null, Color.White, 0, heatTex.Size() / 2f, shieldScale * scaleMult * 0.5f, 0, 0);
-                });
+                    Main.spriteBatch.End();
+                }
             }
             return false;
         }
@@ -2510,6 +2526,64 @@ namespace CalamityMod.NPCs.Providence
                 if (frameUsed >= totalSheets)
                     frameUsed = 0;
             }
+        }
+
+        private static Asset<Texture2D> DiagonalNoise => field ??= ModContent.Request<Texture2D>("CalamityMod/ExtraTextures/GreyscaleGradients/HarshNoise");
+        private static Asset<Texture2D> UpwardPerlinNoise => field ??= ModContent.Request<Texture2D>("CalamityMod/ExtraTextures/GreyscaleGradients/Perlin");
+        private static Asset<Texture2D> UpwardNoise => field ??= ModContent.Request<Texture2D>("CalamityMod/ExtraTextures/GreyscaleGradients/MeltyNoise");
+
+        private static void DrawHolyInferno()
+        {
+            if (Main.gameMenu || !shouldDrawInfernoBorder)
+                return;
+
+            if (CalamityGlobalNPC.holyBoss == -1)
+                return;
+
+            var npc = Main.npc[CalamityGlobalNPC.holyBoss];
+            var borderDistance = borderRadius;
+            if (!npc.active || !npc.HasValidTarget)
+                return;
+
+            var target = Main.LocalPlayer;
+            var holyInfernoIntensity = target.Calamity().holyInfernoFadeIntensity;
+            var prov = npc.ModNPC<Providence>();
+            if (prov == null)
+                return;
+
+            //Begin drawing the inferno
+            var blackTile = TextureAssets.MagicPixel;
+
+            var maxOpacity = 1f;
+            if (prov.Dying)
+            {
+                //Death animation timer ends at 345f.
+                maxOpacity = MathHelper.Lerp(1f, 0f, Utils.GetLerpValue(0f, 344f, prov.DeathAnimationTimer));
+            }
+
+            var shader = GameShaders.Misc["CalamityMod:HolyInfernoShader"].Shader;
+            shader.Parameters["colorMult"].SetValue(prov.hasBeenGivenFullPower ? 7.65f : 7.35f); //I want you to know it took considerable restraint to deliberately misspell colour.
+            shader.Parameters["time"].SetValue(Main.GlobalTimeWrappedHourly);
+            shader.Parameters["radius"].SetValue(borderDistance);
+            shader.Parameters["anchorPoint"].SetValue(npc.Center);
+            shader.Parameters["screenPosition"].SetValue(Main.screenPosition);
+            shader.Parameters["screenSize"].SetValue(Main.ScreenSize.ToVector2());
+            shader.Parameters["burnIntensity"].SetValue(holyInfernoIntensity);
+            shader.Parameters["playerPosition"].SetValue(target.Center);
+            shader.Parameters["maxOpacity"].SetValue(maxOpacity);
+            shader.Parameters["day"].SetValue(!prov.hasBeenGivenFullPower);
+
+            Main.spriteBatch.GraphicsDevice.Textures[1] = DiagonalNoise.Value;
+            Main.spriteBatch.GraphicsDevice.Textures[2] = UpwardNoise.Value;
+            Main.spriteBatch.GraphicsDevice.Textures[3] = UpwardPerlinNoise.Value;
+
+            Main.spriteBatch.Begin(SpriteSortMode.Immediate, BlendState.Additive, SamplerState.LinearWrap, DepthStencilState.None, Main.Rasterizer, shader, Main.Transform);
+
+            Rectangle rekt = new(Main.screenWidth / 2, Main.screenHeight / 2, Main.screenWidth, Main.screenHeight);
+            Main.spriteBatch.Draw(blackTile.Value, rekt, null, default, 0f, blackTile.Value.Size() * 0.5f, 0, 0f);
+
+            //Inferno drawing complete
+            Main.spriteBatch.End();
         }
 
         public override bool? DrawHealthBar(byte hbPosition, ref float scale, ref Vector2 position)

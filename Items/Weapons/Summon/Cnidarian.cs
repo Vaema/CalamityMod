@@ -1,6 +1,9 @@
 ﻿using System.Linq;
+using CalamityMod.Buffs.Summon.Whips;
+using CalamityMod.DataStructures;
 using CalamityMod.Items.Materials;
 using CalamityMod.Projectiles.Summon;
+using CalamityMod.Systems.Collections;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria;
@@ -14,6 +17,17 @@ namespace CalamityMod.Items.Weapons.Summon
     {
         public new string LocalizationCategory => "Items.Weapons.Summon";
         public override string Texture => "CalamityMod/Items/Weapons/Summon/CnidarianFishingRod";
+
+        public static SummonTag summonTag = new()
+        {
+            FlatTagDamage = 2
+        };
+
+        public override void SetStaticDefaults()
+        {
+            summonTag.TagItem = Type;
+            CalamityBuffSets.SummonTagDebuff.Add(BuffType<CnidarianSummonTagBuff>(), summonTag);
+        }
 
         public override void SetDefaults()
         {

@@ -204,7 +204,6 @@ namespace CalamityMod.Effects
         #region Amber's Shaders
         internal static Asset<Effect> PrimitiveClearShader;
         internal static Asset<Effect> HolyInfernoShader;
-        internal static Asset<Effect> DeerclopsShadowShader;
         #endregion
 
         #region YuH's Shaders
@@ -212,6 +211,11 @@ namespace CalamityMod.Effects
         #endregion
 
         #region Doze's Shaders
+        /// <summary>
+        /// The shader used for Abyss's custom light system.
+        /// Basically works by turning textures into an opacity mask
+        /// </summary>
+        internal static Asset<Effect> DozeLightingShader;
         /// <summary>
         /// Flips the screen. Used for Gravity Globe.
         /// </summary>
@@ -251,7 +255,12 @@ namespace CalamityMod.Effects
         #endregion
 
         #region Big E's Shaders
+        internal static Asset<Effect> RadialBlur;
+
         internal static Asset<Effect> SeaPrismColorBlendingShader;
+        internal static Asset<Effect> Dissolve;
+
+        internal static Asset<Effect> BrainOfCthulhuForcefield;
         #endregion
 
         internal static Asset<Effect> SunkenSeaMenuLogoWater;
@@ -455,9 +464,6 @@ namespace CalamityMod.Effects
             HolyInfernoShader = LoadShader("ScreenShaders/HolyInfernoShader");
             RegisterMiscShader(HolyInfernoShader, "InfernoPass", "HolyInfernoShader");
 
-            DeerclopsShadowShader = LoadShader("ScreenShaders/DeerclopsShadowShader");
-            RegisterMiscShader(DeerclopsShadowShader, "ShadowPass", "DeerclopsShadowShader");
-
             #endregion
 
             #region Loading YuH's Shaders
@@ -466,6 +472,9 @@ namespace CalamityMod.Effects
             #endregion
 
             #region Loading Doze's Shaders
+            DozeLightingShader = LoadShader("DozeLightingShader");
+            RegisterMiscShader(DozeLightingShader, "ShadowPass", "DozeLightingShader");
+
             FlipScreenShader = LoadShader("ScreenShaders/FlipScreen");
             RegisterScreenShader(FlipScreenShader, "FlipTheScreen", "FlipScreen",EffectPriority.VeryHigh);
 
@@ -497,8 +506,17 @@ namespace CalamityMod.Effects
             #endregion
 
             #region Loading Big E's Shaders
+            RadialBlur = LoadShader("ScreenShaders/RadialBlur");
+            RegisterScreenShader(RadialBlur, "RadialBlurPass", "RadialBlurShader");
+
             SeaPrismColorBlendingShader = LoadShader("SeaPrismColorBlending");
             RegisterMiscShader(SeaPrismColorBlendingShader, "SeaPrismBlendingPass", "SeaPrismColorBlending");
+
+            Dissolve = LoadShader("Dissolve");
+            RegisterMiscShader(Dissolve, "DissolvePass", "Dissolve");
+
+            BrainOfCthulhuForcefield = LoadShader("ScreenShaders/BrainOfCthulhuForcefield");
+            RegisterScreenShader(BrainOfCthulhuForcefield, "BoCShieldPass", "BrainOfCthulhuForcefield");
             #endregion
 
             SunkenSeaMenuLogoWater = LoadShader("UI/SunkenSeaMenuLogoWater");

@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.IO;
 using CalamityMod.Events;
 using CalamityMod.Graphics.Primitives;
-using CalamityMod.Items;
 using CalamityMod.Items.Armor.Vanity;
 using CalamityMod.Items.LoreItems;
 using CalamityMod.Items.Materials;
@@ -12,6 +11,8 @@ using CalamityMod.Items.Placeables.Furniture.BossRelics;
 using CalamityMod.Items.Placeables.Furniture.Paintings;
 using CalamityMod.Items.Placeables.Furniture.Trophies;
 using CalamityMod.Items.Potions;
+using CalamityMod.Items.Potions.Food;
+using CalamityMod.Items.Tools.SpawnBlocker;
 using CalamityMod.Items.TreasureBags;
 using CalamityMod.Items.Weapons.Melee;
 using CalamityMod.Items.Weapons.Ranged;
@@ -185,6 +186,7 @@ namespace CalamityMod.NPCs.ExoMechs.Ares
         {
             NPCID.Sets.TrailingMode[Type] = 3;
             NPCID.Sets.TrailCacheLength[Type] = NPC.oldPos.Length;
+            NPCID.Sets.NeedsExpertScaling[Type] = true;
             NPCID.Sets.BossBestiaryPriority.Add(Type);
             NPCID.Sets.NPCBestiaryDrawModifiers value = new NPCID.Sets.NPCBestiaryDrawModifiers()
             {

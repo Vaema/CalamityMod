@@ -1,6 +1,7 @@
 ﻿using System.IO;
 using CalamityMod.Buffs.DamageOverTime;
 using CalamityMod.Graphics.Metaballs;
+using CalamityMod.NPCs.CalClone;
 using Terraria;
 using Terraria.Audio;
 using Terraria.ID;
@@ -39,7 +40,7 @@ namespace CalamityMod.Projectiles.Boss
             Lighting.AddLight(Projectile.Center, 0.75f, 0f, 0f);
             if (Projectile.localAI[0] == 0f)
             {
-                SoundEngine.PlaySound(SoundID.Item20, Projectile.Center);
+                SoundEngine.PlaySound(CalamitasClone.CalamitousExplosionSound, Projectile.Center);
                 Projectile.localAI[0] += 1f;
             }
             bool xflag = false;

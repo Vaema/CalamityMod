@@ -13,14 +13,13 @@ namespace CalamityMod.Items.Potions.Alcohol
         public new string LocalizationCategory => "Items.Potions";
 
         public static int BuffType = ModContent.BuffType<MargaritaBuff>();
-        public static float DefenseLossPercent = 0.06f;
-        public static int RegenLoss = 1;
-        public static int MinuteDuration = 3;
-        public override LocalizedText Tooltip => base.Tooltip.WithFormatArgs(DefenseLossPercent.ToPercent(), RegenLoss.ToRegenPerSecond(), MinuteDuration);
+        public static float DebuffLoss = 0.5f;
+        public static int MinuteDuration = 3; 
+        public override LocalizedText Tooltip => base.Tooltip.WithFormatArgs(DebuffLoss.ToPercent());
 
         public override void SetStaticDefaults()
         {
-            Item.ResearchUnlockCount = 30;
+            Item.ResearchUnlockCount = 20;
             ItemID.Sets.DrinkParticleColors[Type] = new Color[3] {
                 new Color(219, 227, 191),
                 new Color(186, 189, 147),
@@ -30,31 +29,19 @@ namespace CalamityMod.Items.Potions.Alcohol
 
         public override void SetDefaults()
         {
-            Item.DefaultToHealingPotion(28, 40, 200);
+            Item.DefaultToFood(28, 40, ModContent.BuffType<MargaritaBuff>(), CalamityUtils.MinutesToFrames(6), true);
 
             Item.value = Item.sellPrice(silver: 60);
             Item.rare = ItemRarityID.Lime;
         }
-
-        public override void OnConsumeItem(Player player)
-        {
-            player.AddBuff(BuffType, CalamityUtils.MinutesToFrames(MinuteDuration));
-        }
         public override void AddRecipes()
         {
-            CreateRecipe().
-                AddIngredient(ItemID.Ale).
-                AddIngredient<LivingShard>().
+            CreateRecipe(10).
+                AddIngredient(ItemID.Bottle, 10).
+                AddIngredient(ItemID.DarkShard).
+                AddIngredient<StarblightSoot>(10).
                 AddTile(TileID.Kegs).
                 Register();
-
-            CreateRecipe().
-                AddIngredient(ItemID.BottledWater).
-                AddIngredient<BloodOrb>(5).
-                AddIngredient<LivingShard>().
-                AddTile(TileID.AlchemyTable).
-                Register()
-                .DisableDecraft();
         }
     }
 }

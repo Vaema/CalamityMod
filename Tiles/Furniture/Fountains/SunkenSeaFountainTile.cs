@@ -45,12 +45,12 @@ namespace CalamityMod.Tiles.Furniture.Fountains
 
         public override void HitWire(int i, int j)
         {
-            CalamityUtils.LightHitWire(Type, i, j, 2, 4);
+            FurnitureCommon.LightHitWire(Type, i, j, 2, 4);
         }
 
         public override bool RightClick(int i, int j)
         {
-            CalamityUtils.LightHitWire(Type, i, j, 2, 4);
+            FurnitureCommon.LightHitWire(Type, i, j, 2, 4);
             SoundEngine.PlaySound(SoundID.Mech, new Vector2(i * 16, j * 16));
             return true;
         }

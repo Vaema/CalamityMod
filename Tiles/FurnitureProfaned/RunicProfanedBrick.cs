@@ -12,8 +12,6 @@ namespace CalamityMod.Tiles.FurnitureProfaned
     {
         public const int AnimationFrameWidth = 234;
 
-        public override string GlowMaskAsset => "CalamityMod/Tiles/FurnitureProfaned/RunicProfanedBrickGlow";
-
         public override void SetupStatic()
         {
             Main.tileSolid[Type] = true;

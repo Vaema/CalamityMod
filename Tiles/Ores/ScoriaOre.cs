@@ -11,8 +11,6 @@ namespace CalamityMod.Tiles.Ores
     [LegacyName("ChaoticOre")]
     public class ScoriaOre : GlowMaskTile
     {
-        public override string GlowMaskAsset => "CalamityMod/Tiles/Ores/ScoriaOreGlow";
-
         public override void SetupStatic()
         {
             Main.tileLighted[Type] = true;
