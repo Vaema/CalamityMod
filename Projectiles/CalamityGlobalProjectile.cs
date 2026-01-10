@@ -327,14 +327,12 @@ namespace CalamityMod.Projectiles
 
             void ApplyGrapeBeer()
             {
-
                 conditionalHomingRange = 600;
                 if (projectile.timeLeft > 300 * projectile.MaxUpdates)
                     projectile.timeLeft = 300 * projectile.MaxUpdates;
                 hybridIframes = true;
                 projectile.localNPCHitCooldown = -1;
                 projectile.usesLocalNPCImmunity = true;
-                Main.player[projectile.owner].Calamity().grapeBeerTimer++;
             }
             if (source is EntitySource_ItemUse_WithAmmo {Item: Item item})
             {

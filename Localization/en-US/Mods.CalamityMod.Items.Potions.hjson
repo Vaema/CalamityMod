@@ -241,7 +241,6 @@ GrapeBeer: {
 	Tooltip:
 		'''
 		Bullets, Arrows, Darts, and Rockets gain homing
-		If many are fired at the same time, this only applies to five of them
 		{0}% reduced critical strike damage
 		{$Common.AlcoholWarning}
 		'''
