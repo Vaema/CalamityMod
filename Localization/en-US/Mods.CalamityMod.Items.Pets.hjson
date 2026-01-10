@@ -107,6 +107,11 @@ HermitsBoxofOneHundredMedicines: {
 		'''
 }
 
+IronBall: {
+	DisplayName: Iron Ball
+	Tooltip: Summons a living iron ball
+}
+
 JoyfulHeart: {
 	DisplayName: Joyful Heart
 	Tooltip: It's oddly warm. Attracts the forbidden one
@@ -125,11 +130,6 @@ LittleLight: {
 		{$Common.AbyssLightLevel}
 		'It's been looking for you for a long time'
 		'''
-}
-
-MagnetizedOrb: {
-	DisplayName: Magnetized Orb
-	Tooltip: Summons a living iron ball
 }
 
 McNuggets: {

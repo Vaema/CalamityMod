@@ -611,7 +611,7 @@ namespace CalamityMod.World
         #endregion
 
         #region Cavern Lab
-        public static void FillCavernLaboratoryChest(Chest chest, int useless, bool placedMagnetOrb)
+        public static void FillCavernLaboratoryChest(Chest chest, int useless, bool placedIronBall)
         {
             int potionType = Utils.SelectRandom(WorldGen.genRand, ItemID.EndurancePotion, ItemID.GravitationPotion, ItemID.HeartreachPotion, ItemID.LifeforcePotion);
             List<ChestItem> contents = new List<ChestItem>()
@@ -626,9 +626,9 @@ namespace CalamityMod.World
                 new ChestItem(ModContent.ItemType<LabSeekingMechanism>(), 1),
             };
 
-            if (!placedMagnetOrb)
+            if (!placedIronBall)
             {
-                contents.Insert(0, new ChestItem(ModContent.ItemType<MagnetizedOrb>(), 1));
+                contents.Insert(0, new ChestItem(ModContent.ItemType<IronBall>(), 1));
             }
 
             for (int i = 0; i < contents.Count; i++)

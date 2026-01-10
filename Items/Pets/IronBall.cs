@@ -7,7 +7,7 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.Items.Pets
 {
-    public class MagnetizedOrb : ModItem, ILocalizedModType
+    public class IronBall : ModItem, ILocalizedModType
     {
         public new string LocalizationCategory => "Items.Pets";
         public override void SetDefaults()
