@@ -54,7 +54,7 @@ namespace CalamityMod.Items.VanillaArmorChanges
             int flareDamage = CalamityUtils.DamageSoftCap(originalDamage * 0.3, FlareDamageSoftcap);
 
             Vector2 flareSpawnPosition = victim.Center + Main.rand.NextVector2Circular(10f, 10f);
-            Projectile.NewProjectile(owner.GetSource_ItemUse(owner.HeldItem), flareSpawnPosition, Vector2.Zero, ModContent.ProjectileType<MythrilFlare>(), flareDamage, 0f, owner.whoAmI);
+            Projectile.NewProjectile(owner.GetSource_OnHit(victim), flareSpawnPosition, Vector2.Zero, ModContent.ProjectileType<MythrilFlare>(), flareDamage, 0f, owner.whoAmI);
         }
     }
 }

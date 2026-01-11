@@ -72,11 +72,9 @@ namespace CalamityMod.Projectiles.DraedonsArsenal
                 // Update the damage of the holdout projectile constantly so that it decreases as charge decreases, even while in use.
                 Projectile.damage = Owner.GetWeaponDamage(heldItem);
 
-                // Check if the player's held item still has sufficient charge. If so, and they're still using it, take a tiny bit of charge from it.
                 CalamityGlobalItem modItem = heldItem.Calamity();
-                if ((Owner.channel || Owner.Calamity().mouseRight) && modItem.Charge >= HydraulicVoltCrasher.HoldoutChargeUse)
+                if ((Owner.channel || Owner.Calamity().mouseRight))
                 {
-                    modItem.Charge -= HydraulicVoltCrasher.HoldoutChargeUse;
 
                     float speed = Owner.inventory[Owner.selectedItem].shootSpeed * Projectile.scale;
                     // 14NOV2024: Ozzatron: clamped mouse position unnecessary, only used for direction

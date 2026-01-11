@@ -314,7 +314,7 @@ VermillionFlux: {
 Voidfrost: {
 	DisplayName: Voidfrost
 	Description: The emptiness of space devours all warmth and life
-	ItemTooltip: Cold - 100 DPS
+	ItemTooltip: Cold - 200 DPS
 }
 
 VulnerabilityHex: {
@@ -825,7 +825,7 @@ GreenJellyRegen: {
 
 HallowedRuneDefense: {
 	DisplayName: Hallowed Defense
-	Description: Increased defense by {0} and damage reduction by {1}%
+	Description: Increased defense by {0}
 }
 
 HallowedRunePower: {
@@ -868,7 +868,7 @@ PhantomicShield: {
 	DisplayName: Phantomic Shield
 	Description:
 		'''
-		Defense increased by {0} and damage reduction increased by {1}%
+		Increased defense by {0}
 		An ephemeral bulwark protects you
 		'''
 }

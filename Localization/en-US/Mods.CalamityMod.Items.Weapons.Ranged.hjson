@@ -543,8 +543,9 @@ HalleysInferno: {
 	Tooltip:
 		'''
 		Fires a burst of intensely concentrated lunar fire jets
-		Generates Starbursts over time when hitting enemies
-		<right> to rapid-fire Starbursts
+		<right> to rapid-fire Starbursts that inflict [cbuff:CalamityMod/Voidfrost]
+		Generates Starbursts when hitting enemies, depending on your accuracy
+		Increases view range by 33% while held
 		Uses gel for ammo
 		'Halley arrived sooner than expected'
 		'''
@@ -970,7 +971,7 @@ PristineFury: {
 		'''
 		'I and many others lost everything in this world's darkest hour.
 		I saw a beast descend from the heavens. A hulking cosmic monstrosity that heralded countless angels of death.
-		My family was torn from me by them, and my people forsake me. Even our supposed protectors did nothing to aid us.
+		My family was torn from me, my people forsake me. Even our supposed protectors did nothing to aid us.
 		And thus I swore to those I lost that I would do what is right, that my blaze's light would dwarf even that of Zeratros' Sun;
 		That one day, this cruel world would know nothing less than My perfect fury.'
 		'''

@@ -56,8 +56,8 @@ namespace CalamityMod.Projectiles.Melee
         {
             isShard = reader.ReadBoolean();
             hasSpawned = reader.ReadBoolean();
-            shardNum = reader.Read();
-            shardShield = reader.Read();
+            shardNum = reader.ReadInt32();
+            shardShield = reader.ReadInt32();
         }
         public override bool? CanDamage()
         {
@@ -73,8 +73,24 @@ namespace CalamityMod.Projectiles.Melee
         }
         public override void AI()
         {
+            player.Calamity().mouseWorldListener = true;
             if (!hasSpawned)
             {
+                Projectile.netUpdate = true;
+                if (Projectile.ai[0] != 0)
+                {
+                    //This is used when spawned by Evolution.
+                    //Setting AP so high guarantees we get the full dmg of the projectile.
+                    Projectile.ArmorPenetration = 1000;
+                    hasSpawned = true;
+                    shardShield = 0;
+                    isShard = false;
+                    Projectile.timeLeft = 1200;
+                    Projectile.velocity = Projectile.DirectionTo(player.Center) * -20f;
+                    Projectile.DamageType = DamageClass.Generic;
+                    Projectile.CritChance = 0;
+                    return;
+                }
                 shardNum = player.ownedProjectileCounts[Projectile.type];
                 hasSpawned = true;
                 shardNum = 0;
@@ -83,6 +99,7 @@ namespace CalamityMod.Projectiles.Melee
                     if (proj.active && proj.type == ModContent.ProjectileType<MirrorBlast>() && proj.owner == Projectile.owner)
                     {
                         (proj.ModProjectile as MirrorBlast).shardNum++;
+                        proj.netUpdate = true;
                     }
                 }
             }
@@ -94,6 +111,7 @@ namespace CalamityMod.Projectiles.Melee
                     isShard = false;
                     Projectile.timeLeft = 1200;
                     Projectile.velocity = Projectile.DirectionTo(player.Center) * -20f;
+                    Projectile.netUpdate = true;
                     return;
                 }
                 List<Vector2> positions = new List<Vector2>() //Hardcoded positions for the mirror shield shards so we can make it look nice

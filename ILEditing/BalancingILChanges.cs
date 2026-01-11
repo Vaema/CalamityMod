@@ -1,6 +1,7 @@
 ﻿using System;
 using CalamityMod.Balancing;
 using CalamityMod.Enums;
+using CalamityMod.Projectiles.Boss;
 using Microsoft.Xna.Framework;
 using Mono.Cecil.Cil;
 using MonoMod.Cil;
@@ -671,6 +672,18 @@ namespace CalamityMod.ILEditing
             // AND with 0 (false) so that the Ice Spike is never considered to be hitting the player and thus never trigger the Frozen debuff.
             cursor.Emit(OpCodes.Ldc_I4_0);
             cursor.Emit(OpCodes.And);
+        }
+        #endregion
+
+        #region Make GFB Nurse Meteor Undodgeable
+        private static bool GFBNurseMeteorUndodgeable(On_Projectile.orig_IsDamageDodgable orig, Projectile self)
+        {
+            // Make the Leviathan meteor that spawns when talking to the Nurse in GFB undodgeable
+            // Unfortunately the Dodgeable value in HurtModifiers cannot be set in the hook, thus On editing a vanilla function
+            if (self.type == ModContent.ProjectileType<LeviathanBomb>() && self.damage == 9999)
+                return false;
+            else
+                return orig(self);
         }
         #endregion
     }

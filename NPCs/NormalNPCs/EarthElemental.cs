@@ -15,6 +15,7 @@ using Terraria.ModLoader.Utilities;
 
 namespace CalamityMod.NPCs.NormalNPCs
 {
+    [LegacyName("Horse")]
     public class EarthElemental : ModNPC
     {
         public override void SetStaticDefaults()

@@ -42,10 +42,6 @@ namespace CalamityMod.Items.Weapons.DraedonsArsenal
             Item.shoot = ModContent.ProjectileType<PlasmaGrenadeProjectile>();
             Item.shootSpeed = 11f;
             Item.DamageType = RogueDamageClass.Instance;
-
-            modItem.UsesCharge = true;
-            modItem.MaxCharge = 250f;
-            modItem.ChargePerUse = 0.2f;
         }
 
         public override float StealthVelocityMultiplier => 1.2f;

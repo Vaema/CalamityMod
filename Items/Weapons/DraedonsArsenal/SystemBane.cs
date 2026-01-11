@@ -19,8 +19,6 @@ namespace CalamityMod.Items.Weapons.DraedonsArsenal
 
         public override void SetDefaults()
         {
-            CalamityGlobalItem modItem = Item.Calamity();
-
             Item.width = 42;
             Item.height = 36;
             Item.damage = 45;
@@ -38,10 +36,6 @@ namespace CalamityMod.Items.Weapons.DraedonsArsenal
 
             Item.shootSpeed = 16f;
             Item.shoot = ModContent.ProjectileType<SystemBaneProjectile>();
-
-            modItem.UsesCharge = true;
-            modItem.MaxCharge = 135f;
-            modItem.ChargePerUse = 0.085f;
         }
 
         public override bool CanUseItem(Player player) => player.ownedProjectileCounts[Item.shoot] < MaxDeployedProjectiles;
