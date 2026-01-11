@@ -61,15 +61,19 @@ namespace CalamityMod.Projectiles.Ranged
             return true;
         }
 
+
+        //Doze - Flamethrowers in vanilla are long debuff infliction tools (20 seconds of their debuff).
+        //I am applying this as the base for Cal flamethrowers, with shorter times being the exception instead of the rule
+        //Due to Spark Spreader's tier, I am making this be random of 5-20 seconds
         public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
         {
-            target.AddBuff(BuffID.OnFire, 60 * Main.rand.Next(1, 4));
+            target.AddBuff(BuffID.OnFire, 60 * Main.rand.Next(5, 20));
             SpawnSparks(5);
         }
 
         public override void OnHitPlayer(Player target, Player.HurtInfo info)
         {
-            target.AddBuff(BuffID.OnFire, 60 * Main.rand.Next(1, 4));
+            target.AddBuff(BuffID.OnFire, 60 * Main.rand.Next(5, 20));
             SpawnSparks(5);
         }
 
