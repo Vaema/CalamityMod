@@ -1711,7 +1711,7 @@ namespace CalamityMod.CalPlayer
             }
             if (rOfResilienceEffect > 0)
             {
-                if (Player.Calamity().mouseRight && rOfResilienceCooldown == 0)
+                if (Player.Calamity().mouseRight && !Player.mouseInterface && rOfResilienceCooldown == 0)
                 {
                     int cooldownTime = (Player.Calamity().profanedSoulRelicBuff ? 300 : 600);
                     rOfResilienceCooldown = cooldownTime;
