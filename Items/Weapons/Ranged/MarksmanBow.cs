@@ -13,10 +13,12 @@ namespace CalamityMod.Items.Weapons.Ranged
         {
             Item.width = 36;
             Item.height = 110;
-            Item.damage = 35;
+            Item.damage = 39;
             Item.DamageType = DamageClass.Ranged;
-            Item.useTime = 18;
-            Item.useAnimation = 18;
+            Item.useTime = 5;
+            Item.useAnimation = 15;
+            Item.useLimitPerAnimation = 3;
+            Item.reuseDelay = 10;
             Item.useStyle = ItemUseStyleID.Shoot;
             Item.noMelee = true;
             Item.knockBack = 6f;
@@ -29,11 +31,10 @@ namespace CalamityMod.Items.Weapons.Ranged
             Item.value = CalamityGlobalItem.RarityYellowBuyPrice;
             Item.rare = ItemRarityID.Yellow;
             Item.Calamity().donorItem = true;
-            Item.Calamity().canFirePointBlankShots = true;
         }
 
         // Terraria seems to really dislike high crit values in SetDefaults
-        public override void ModifyWeaponCrit(Player player, ref float crit) => crit += 20;
+        public override void ModifyWeaponCrit(Player player, ref float crit) => crit += 10;
 
         public override Vector2? HoldoutOffset() => new Vector2(-4, 0);
 
@@ -43,20 +44,16 @@ namespace CalamityMod.Items.Weapons.Ranged
             if (CalamityUtils.CheckWoodenAmmo(type, player))
                 type = ProjectileID.JestersArrow;
 
-            for (int i = 0; i < 3; i++)
+            float SpeedX = velocity.X + Main.rand.NextFloat(-0.5f, 0.5f);
+            float SpeedY = velocity.Y + Main.rand.NextFloat(-0.5f, 0.5f);
+            int arrow = Projectile.NewProjectile(source, position, new Vector2(SpeedX, SpeedY), type, damage, knockback, player.whoAmI);
+            Main.projectile[arrow].noDropItem = true;
+            if (type == ProjectileID.JestersArrow)
             {
-                int randomExtraUpdates = Main.rand.Next(3);
-                float SpeedX = velocity.X + Main.rand.NextFloat(-10f, 10f) * 0.05f;
-                float SpeedY = velocity.Y + Main.rand.NextFloat(-10f, 10f) * 0.05f;
-                int arrow = Projectile.NewProjectile(source, position.X, position.Y, SpeedX, SpeedY, type, damage, knockback, player.whoAmI);
-                Main.projectile[arrow].noDropItem = true;
-                Main.projectile[arrow].extraUpdates += randomExtraUpdates; //0 to 2 extra updates
-                if (type == ProjectileID.JestersArrow)
-                {
-                    Main.projectile[arrow].localNPCHitCooldown = 10 * (randomExtraUpdates + 1);
-                    Main.projectile[arrow].usesLocalNPCImmunity = true;
-                    Main.projectile[arrow].tileCollide = false;
-                }
+                Main.projectile[arrow].localNPCHitCooldown = 12 * Main.projectile[arrow].MaxUpdates;
+                Main.projectile[arrow].usesLocalNPCImmunity = true;
+                Main.projectile[arrow].usesIDStaticNPCImmunity = false;
+                Main.projectile[arrow].tileCollide = false;
             }
             return false;
         }

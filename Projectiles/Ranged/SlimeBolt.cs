@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using CalamityMod.Particles;
-using CalamityMod.Projectiles.Melee;
+﻿using CalamityMod.Particles;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria;

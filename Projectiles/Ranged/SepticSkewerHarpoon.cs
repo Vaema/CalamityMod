@@ -2,7 +2,6 @@
 using System.Linq;
 using CalamityMod.Buffs.DamageOverTime;
 using CalamityMod.DataStructures;
-using CalamityMod.Items.Weapons.Melee;
 using CalamityMod.NPCs;
 using CalamityMod.Particles;
 using Microsoft.Xna.Framework;
@@ -74,7 +73,6 @@ namespace CalamityMod.Projectiles.Ranged
             Projectile.localNPCHitCooldown = -1;
             Projectile.extraUpdates = 1;
             Projectile.timeLeft = 900;
-            Projectile.Calamity().pointBlankShotDuration = CalamityGlobalProjectile.DefaultPointBlankDuration;
         }
 
         public override void AI()
@@ -174,7 +172,7 @@ namespace CalamityMod.Projectiles.Ranged
                                 GeneralParticleHandler.SpawnParticle(spark);
                             }
 
-                            Dust dust = Dust.NewDustPerfect(Projectile.Center, 5, vel * 3, 100, default, Main.rand.NextFloat(0.8f, 1.4f));
+                            Dust dust = Dust.NewDustPerfect(Projectile.Center, DustID.Blood, vel * 3, 100, default, Main.rand.NextFloat(0.8f, 1.4f));
                             dust.noGravity = true;
                         }
 
@@ -208,7 +206,7 @@ namespace CalamityMod.Projectiles.Ranged
                                 GeneralParticleHandler.SpawnParticle(orb7);
                             }
 
-                            Owner.Calamity().GeneralScreenShakePower = 8.5f;
+                            Owner.SetScreenshake(8.5f);
                         }
 
                         SoundStyle die = new("CalamityMod/Sounds/NPCKilled/PerfLargeDeath");
@@ -231,12 +229,12 @@ namespace CalamityMod.Projectiles.Ranged
                             for (int r = 0; r < 2; r++)
                             {
                                 Vector2 vel2 = (Vector2.One * -28).RotatedByRandom(100) * Main.rand.NextFloat(0.1f, 0.8f) * intensity;
-                                Dust dust = Dust.NewDustPerfect(Projectile.Center, 5, vel2, 100, default, Main.rand.NextFloat(0.9f, 1.7f));
+                                Dust dust = Dust.NewDustPerfect(Projectile.Center, DustID.Blood, vel2, 100, default, Main.rand.NextFloat(0.9f, 1.7f));
                                 dust.noGravity = false;
                             }
                             if (strongEnemy)
                             {
-                                Dust dust5 = Dust.NewDustPerfect(Projectile.Center, 278, vel * 0.6f, 0, Color.Red, Main.rand.NextFloat(0.7f, 0.9f));
+                                Dust dust5 = Dust.NewDustPerfect(Projectile.Center, DustID.FireworksRGB, vel * 0.6f, 0, Color.Red, Main.rand.NextFloat(0.7f, 0.9f));
                                 dust5.noGravity = false;
                             }
                         }
@@ -360,7 +358,7 @@ namespace CalamityMod.Projectiles.Ranged
                     Particle spark2 = new LineParticle(Projectile.Center, sparkvelocity2, false, 40, sparkScale2, Main.rand.NextBool() ? bColor : Color.Green);
                     GeneralParticleHandler.SpawnParticle(spark2);
 
-                    Dust dust = Dust.NewDustPerfect(Projectile.Center, 5, sparkvelocity2, 100, default, Main.rand.NextFloat(0.8f, 1.4f));
+                    Dust dust = Dust.NewDustPerfect(Projectile.Center, DustID.Blood, sparkvelocity2, 100, default, Main.rand.NextFloat(0.8f, 1.4f));
                     dust.noGravity = true;
                 }
 

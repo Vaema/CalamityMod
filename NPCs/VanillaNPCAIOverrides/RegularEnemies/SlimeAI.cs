@@ -10,12 +10,8 @@ using Terraria.ModLoader;
 
 namespace CalamityMod.NPCs.VanillaNPCAIOverrides.RegularEnemies
 {
-    public static class SlimeAI
+    public class SlimeAI : VanillaAIOverride
     {
-        public const float SpikedSlimeSpikeBarrageGateValue = 30f;
-        public const float SpikedSlimeSpikeGateValue = 50f;
-        public const float SpikedSlimeSpikeTelegraphTime = 30f;
-
         public static void ChooseRandomItem(out int dropItem)
         {
             // Use a fallback of -1.
@@ -90,34 +86,34 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.RegularEnemies
             }
         }
 
-        public static bool BuffedSlimeAI(NPC npc, Mod mod)
+        public override bool AI(Mod mod)
         {
-            bool isSpikedSlime = npc.type == NPCID.SlimeSpiked || npc.type == NPCID.SpikedIceSlime || npc.type == NPCID.SpikedJungleSlime || npc.type == ModContent.NPCType<CryoSlime>();
-            bool isLavaSlime = npc.type == NPCID.LavaSlime || npc.type == ModContent.NPCType<InfernalCongealment>();
-            bool canShootProjectile = npc.type == NPCID.SpikedIceSlime || npc.type == NPCID.SlimeSpiked || npc.type == NPCID.SpikedJungleSlime;
+            bool isSpikedSlime = NPC.type == NPCID.SlimeSpiked || NPC.type == NPCID.SpikedIceSlime || NPC.type == NPCID.SpikedJungleSlime || NPC.type == ModContent.NPCType<CryoSlime>();
+            bool isLavaSlime = NPC.type == NPCID.LavaSlime || NPC.type == ModContent.NPCType<InfernalCongealment>();
+            bool canShootProjectile = NPC.type == NPCID.SpikedIceSlime || NPC.type == NPCID.SlimeSpiked || NPC.type == NPCID.SpikedJungleSlime;
             int projectileShootType = -1;
             float projectileShootSpeedFactor = 1f;
 
-            if (npc.type == NPCID.SpikedIceSlime)
+            if (NPC.type == NPCID.SpikedIceSlime)
                 projectileShootType = ProjectileID.IceSpike;
-            if (npc.type == NPCID.SlimeSpiked)
+            if (NPC.type == NPCID.SlimeSpiked)
                 projectileShootType = ProjectileID.SpikedSlimeSpike;
-            if (npc.type == NPCID.SpikedJungleSlime)
+            if (NPC.type == NPCID.SpikedJungleSlime)
             {
                 projectileShootType = ProjectileID.JungleSpike;
-                projectileShootSpeedFactor *= 1.5f;
+                projectileShootSpeedFactor *= 0.6f;
             }
 
-            ref float jumpDelay = ref npc.ai[0];
-            ref float dropItemID = ref npc.ai[1];
-            ref float targetResetCountdown = ref npc.ai[2];
-            ref float projectileShootCountdown = ref npc.localAI[0];
+            ref float jumpDelay = ref NPC.ai[0];
+            ref float dropItemID = ref NPC.ai[1];
+            ref float targetResetCountdown = ref NPC.ai[2];
+            ref float projectileShootCountdown = ref NPC.localAI[0];
 
-            if (npc.type == NPCID.BlueSlime && (dropItemID == 1f || dropItemID == 2f || dropItemID == 3f))
+            if (NPC.type == NPCID.BlueSlime && (dropItemID == 1f || dropItemID == 2f || dropItemID == 3f))
                 dropItemID = -1f;
 
             // Determine what the slime holds, if anything. This does not apply to slimes that are have no money tp drop.
-            if (npc.type == NPCID.BlueSlime && dropItemID == 0f && Main.netMode != NetmodeID.MultiplayerClient && npc.value > 0f)
+            if (NPC.type == NPCID.BlueSlime && dropItemID == 0f && Main.netMode != NetmodeID.MultiplayerClient && NPC.value > 0f)
             {
                 dropItemID = -1f;
 
@@ -125,32 +121,32 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.RegularEnemies
                 {
                     ChooseRandomItem(out int dropItem);
                     dropItemID = dropItem;
-                    npc.netUpdate = true;
+                    NPC.netUpdate = true;
                 }
             }
 
             // Decide colors for rainbow slimes.
-            if (npc.type == NPCID.RainbowSlime)
+            if (NPC.type == NPCID.RainbowSlime)
             {
-                Lighting.AddLight(npc.Center / 16, Main.DiscoColor.ToVector3() * -1f);
-                npc.color.R = (byte)Main.DiscoR;
-                npc.color.G = (byte)Main.DiscoG;
-                npc.color.B = (byte)Main.DiscoB;
-                npc.color.A = 100;
-                npc.alpha = 175;
+                Lighting.AddLight(NPC.Center / 16, Main.DiscoColor.ToVector3() * -1f);
+                NPC.color.R = (byte)Main.DiscoR;
+                NPC.color.G = (byte)Main.DiscoG;
+                NPC.color.B = (byte)Main.DiscoB;
+                NPC.color.A = 100;
+                NPC.alpha = 175;
             }
 
             // Have corrupt slimes emit demonite dust.
-            if (npc.type == NPCID.CorruptSlime && Main.rand.NextBool(30))
+            if (NPC.type == NPCID.CorruptSlime && Main.rand.NextBool(30))
             {
-                Dust demonite = Dust.NewDustDirect(npc.position, npc.width, npc.height, DustID.Demonite, 0f, 0f, npc.alpha, npc.color, 1f);
+                Dust demonite = Dust.NewDustDirect(NPC.position, NPC.width, NPC.height, DustID.Demonite, 0f, 0f, NPC.alpha, NPC.color, 1f);
                 demonite.velocity *= 0.3f;
             }
 
             // Have ice slimes emit snow dust.
-            if ((npc.type == NPCID.IceSlime || npc.type == NPCID.SpikedIceSlime) && Main.rand.NextBool(10))
+            if ((NPC.type == NPCID.IceSlime || NPC.type == NPCID.SpikedIceSlime) && Main.rand.NextBool(10))
             {
-                Dust snow = Dust.NewDustDirect(npc.position, npc.width, npc.height, DustID.Snow, 0f, 0f, 0, default, 1f);
+                Dust snow = Dust.NewDustDirect(NPC.position, NPC.width, NPC.height, DustID.Snow, 0f, 0f, 0, default, 1f);
                 snow.noGravity = true;
                 snow.velocity *= 0.1f;
             }
@@ -158,10 +154,10 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.RegularEnemies
             if (isLavaSlime)
             {
                 // Emit orange light.
-                Lighting.AddLight((int)(npc.Center.X / 16f), (int)(npc.Center.Y / 16f), 1f, 0.3f, 0.1f);
+                Lighting.AddLight((int)(NPC.Center.X / 16f), (int)(NPC.Center.Y / 16f), 1f, 0.3f, 0.1f);
 
                 // And fire. dust.
-                int idx = Dust.NewDust(npc.position, npc.width, npc.height, DustID.Torch, npc.velocity.X * 0.2f, npc.velocity.Y * 0.2f, 100, default, 1.7f);
+                int idx = Dust.NewDust(NPC.position, NPC.width, NPC.height, DustID.Torch, NPC.velocity.X * 0.2f, NPC.velocity.Y * 0.2f, 100, default, 1.7f);
                 Main.dust[idx].noGravity = true;
             }
 
@@ -172,19 +168,19 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.RegularEnemies
                 if (projectileShootCountdown > 0f)
                     projectileShootCountdown--;
 
-                float distanceFromTarget = npc.Distance(Main.player[npc.target].Center);
-                bool noTilesInWayOfTarget = Collision.CanHit(npc.position, npc.width, npc.height, Main.player[npc.target].position, Main.player[npc.target].width, Main.player[npc.target].height);
+                float distanceFromTarget = NPC.Distance(Main.player[NPC.target].Center);
+                bool noTilesInWayOfTarget = Collision.CanHit(NPC.position, NPC.width, NPC.height, Main.player[NPC.target].position, Main.player[NPC.target].width, Main.player[NPC.target].height);
 
                 // If not in water, the target can be hit by this NPC, and they're close and in a line of sight, release projectiles.
-                if (!npc.wet && !Main.player[npc.target].npcTypeNoAggro[npc.type] && noTilesInWayOfTarget && distanceFromTarget < 200f && npc.velocity.Y == 0f)
+                if (!NPC.wet && !Main.player[NPC.target].npcTypeNoAggro[NPC.type] && noTilesInWayOfTarget && distanceFromTarget < 200f && NPC.velocity.Y == 0f)
                 {
                     jumpDelay = -40f;
-                    npc.velocity.X *= 0.9f;
+                    NPC.velocity.X *= 0.9f;
 
                     if (Main.netMode != NetmodeID.MultiplayerClient && projectileShootCountdown <= 0f)
                     {
-                        var source = npc.GetSource_FromAI();
-                        if (Main.expertMode && distanceFromTarget < 120f)
+                        var source = NPC.GetSource_FromAI();
+                        if (distanceFromTarget < 120f)
                         {
                             for (int i = 0; i < 5; i++)
                             {
@@ -192,60 +188,29 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.RegularEnemies
                                 spikeShootVelocity *= Main.rand.NextVector2Square(0.75f, 1.25f);
                                 spikeShootVelocity.Normalize();
                                 spikeShootVelocity *= Main.rand.NextFloat(3.5f, 4.5f) * projectileShootSpeedFactor;
-                                int proj = Projectile.NewProjectile(source, npc.Center, spikeShootVelocity, projectileShootType, 9, 0f, Main.myPlayer);
+                                int proj = Projectile.NewProjectile(source, NPC.Center, spikeShootVelocity, projectileShootType, 9, 0f, Main.myPlayer);
                                 if (CalamityWorld.death)
                                     Main.projectile[proj].extraUpdates += 1;
 
-                                projectileShootCountdown = SpikedSlimeSpikeBarrageGateValue;
+                                projectileShootCountdown = 30f;
                             }
                         }
                         else
                         {
-                            Vector2 velocity = npc.SafeDirectionTo(Main.player[npc.target].Center - Vector2.UnitY * (npc.type == NPCID.SpikedJungleSlime ? 10f : 100f)) * projectileShootSpeedFactor * (CalamityWorld.death ? 3.25f : CalamityWorld.revenge ? 5.5f : 4.5f);
-                            int proj = Projectile.NewProjectile(source, npc.Center, velocity, projectileShootType, 9, 0f, Main.myPlayer);
+                            Vector2 velocity = NPC.SafeDirectionTo(Main.player[NPC.target].Center - Vector2.UnitY * 100f) * projectileShootSpeedFactor * (CalamityWorld.death ? 3.25f : CalamityWorld.revenge ? 5.5f : 4.5f);
+                            int proj = Projectile.NewProjectile(source, NPC.Center, velocity, projectileShootType, 9, 0f, Main.myPlayer);
                             if (CalamityWorld.death)
                             {
                                 Main.projectile[proj].extraUpdates += 1;
                                 Main.projectile[proj].timeLeft = 1200;
                             }
 
-                            projectileShootCountdown = SpikedSlimeSpikeGateValue;
+                            projectileShootCountdown = 50f;
                         }
                     }
                 }
                 else
-                    projectileShootCountdown = SpikedSlimeSpikeGateValue;
-
-                if (npc.type == NPCID.SpikedIceSlime)
-                {
-                    // Emit dust from center when about to shoot
-                    if (projectileShootCountdown <= SpikedSlimeSpikeTelegraphTime)
-                    {
-                        Dust dust = Dust.NewDustDirect(npc.position, npc.width, npc.height, 135, 0f, 0f, 100, default, 3f);
-                        dust.noGravity = true;
-                        dust.velocity *= 0f;
-                    }
-                }
-                else if (npc.type == NPCID.SpikedJungleSlime)
-                {
-                    // Emit dust from center when about to shoot
-                    if (projectileShootCountdown <= SpikedSlimeSpikeTelegraphTime)
-                    {
-                        Dust dust = Dust.NewDustDirect(npc.position, npc.width, npc.height, 61, 0f, 0f, 0, default, 3f);
-                        dust.noGravity = true;
-                        dust.velocity *= 0f;
-                    }
-                }
-                else if (npc.type == NPCID.SlimeSpiked)
-                {
-                    // Emit dust from center when about to shoot
-                    if (projectileShootCountdown <= SpikedSlimeSpikeTelegraphTime)
-                    {
-                        Dust dust = Dust.NewDustDirect(npc.position, npc.width, npc.height, 4, 0f, 0f, 0, new Color(78, 136, 255, 150), 1.5f);
-                        dust.noGravity = true;
-                        dust.velocity *= 0f;
-                    }
-                }
+                    projectileShootCountdown = 50f;
             }
 
             // Decrement the target reset counter.
@@ -253,69 +218,69 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.RegularEnemies
                 targetResetCountdown--;
 
             // Rise to the top of water.
-            if (npc.wet)
-                DoWaterHoverBehavior(npc, isLavaSlime, ref targetResetCountdown);
+            if (NPC.wet)
+                DoWaterHoverBehavior(NPC, isLavaSlime, ref targetResetCountdown);
 
-            npc.aiAction = 0;
+            NPC.aiAction = 0;
 
             // Initialize with short jumps.
             if (targetResetCountdown == 0f)
             {
                 jumpDelay = -100f;
                 targetResetCountdown = 1f;
-                npc.TargetClosest();
+                NPC.TargetClosest();
             }
 
             // Avoid cheap bullshit
             if (!isSpikedSlime)
-                npc.damage = (npc.velocity.Y == 0f || npc.velocity.Length() < 3f) ? 0 : npc.defDamage;
+                NPC.damage = (NPC.velocity.Y == 0f || NPC.velocity.Length() < 3f) ? 0 : NPC.defDamage;
 
-            if (npc.velocity.Y == 0f)
+            if (NPC.velocity.Y == 0f)
             {
                 // Slide out of blocks if stuck.
-                if (npc.collideY && npc.oldVelocity.Y != 0f && Collision.SolidCollision(npc.position, npc.width, npc.height))
-                    npc.position.X -= npc.velocity.X + npc.direction;
+                if (NPC.collideY && NPC.oldVelocity.Y != 0f && Collision.SolidCollision(NPC.position, NPC.width, NPC.height))
+                    NPC.position.X -= NPC.velocity.X + NPC.direction;
 
-                if (npc.ai[3] == npc.position.X)
+                if (NPC.ai[3] == NPC.position.X)
                 {
-                    npc.direction *= -1;
+                    NPC.direction *= -1;
                     targetResetCountdown = 200f;
                 }
 
-                npc.ai[3] = 0f;
+                NPC.ai[3] = 0f;
 
                 // Slow down horizontally until stopping.
-                npc.velocity.X *= 0.8f;
-                if (Math.Abs(npc.velocity.X) < 0.1f)
-                    npc.velocity.X = 0f;
+                NPC.velocity.X *= 0.8f;
+                if (Math.Abs(NPC.velocity.X) < 0.1f)
+                    NPC.velocity.X = 0f;
 
                 // Slimes jump more quickly overall when the slime rain event is ongoing.
                 jumpDelay += (Main.slimeRain ? 4f : 3f) * (CalamityWorld.death ? 2f : 1f);
 
-                if (npc.type == NPCID.HoppinJack || npc.type == NPCID.GoldenSlime)
+                if (NPC.type == NPCID.HoppinJack || NPC.type == NPCID.GoldenSlime)
                     jumpDelay += 10f;
 
                 if (isLavaSlime)
                     jumpDelay += 2f;
 
-                if (npc.type == NPCID.DungeonSlime || npc.type == ModContent.NPCType<CryoSlime>() || npc.type == ModContent.NPCType<CrimulanBlightSlime>() ||
-                    npc.type == ModContent.NPCType<EbonianBlightSlime>())
+                if (NPC.type == NPCID.DungeonSlime || NPC.type == ModContent.NPCType<CryoSlime>() || NPC.type == ModContent.NPCType<CrimulanBlightSlime>() ||
+                    NPC.type == ModContent.NPCType<EbonianBlightSlime>())
                 {
                     jumpDelay += 3f;
                 }
 
-                if (npc.type == NPCID.RainbowSlime)
+                if (NPC.type == NPCID.RainbowSlime)
                     jumpDelay += 2f;
 
-                if (npc.type == NPCID.IlluminantSlime)
+                if (NPC.type == NPCID.IlluminantSlime)
                     jumpDelay += 2f;
 
-                if (npc.type == NPCID.Crimslime)
+                if (NPC.type == NPCID.Crimslime)
                     jumpDelay += 1f;
 
                 // The fuck? This is from vanilla, presumably. I'll leave it alone in the event that it's some dumb spaghetti.
-                if (npc.type == NPCID.CorruptSlime)
-                    jumpDelay += npc.scale >= 0f ? 4f : 1f;
+                if (NPC.type == NPCID.CorruptSlime)
+                    jumpDelay += NPC.scale >= 0f ? 4f : 1f;
 
                 int jumpType = 0;
                 if (jumpDelay >= 0f)
@@ -328,30 +293,30 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.RegularEnemies
                     jumpType = 3;
 
                 if (jumpType > 0)
-                    DoJump(npc, jumpType, isLavaSlime, ref targetResetCountdown, out jumpDelay);
+                    DoJump(NPC, jumpType, isLavaSlime, ref targetResetCountdown, out jumpDelay);
 
                 else if (jumpDelay >= -30f)
                 {
-                    npc.aiAction = 1;
+                    NPC.aiAction = 1;
                     return false;
                 }
             }
-            else if (npc.target < Main.maxPlayers && ((npc.direction == 1 && npc.velocity.X < 3f) || (npc.direction == -1 && npc.velocity.X > -3f)))
+            else if (NPC.target < Main.maxPlayers && ((NPC.direction == 1 && NPC.velocity.X < 3f) || (NPC.direction == -1 && NPC.velocity.X > -3f)))
             {
-                if (npc.collideX && Math.Abs(npc.velocity.X) == 0.2f)
+                if (NPC.collideX && Math.Abs(NPC.velocity.X) == 0.2f)
                 {
-                    npc.position.X -= 1.4f * npc.direction;
+                    NPC.position.X -= 1.4f * NPC.direction;
                 }
-                if (npc.collideY && npc.oldVelocity.Y != 0f && Collision.SolidCollision(npc.position, npc.width, npc.height))
+                if (NPC.collideY && NPC.oldVelocity.Y != 0f && Collision.SolidCollision(NPC.position, NPC.width, NPC.height))
                 {
-                    npc.position.X -= npc.velocity.X + npc.direction;
+                    NPC.position.X -= NPC.velocity.X + NPC.direction;
                 }
-                if ((npc.direction == -1 && npc.velocity.X < 0.01) || (npc.direction == 1 && npc.velocity.X > -0.01))
+                if ((NPC.direction == -1 && NPC.velocity.X < 0.01) || (NPC.direction == 1 && NPC.velocity.X > -0.01))
                 {
-                    npc.velocity.X += 0.2f * (float)npc.direction;
+                    NPC.velocity.X += 0.2f * (float)NPC.direction;
                     return false;
                 }
-                npc.velocity.X *= 0.93f;
+                NPC.velocity.X *= 0.93f;
             }
             return false;
         }
@@ -407,7 +372,7 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.RegularEnemies
         {
             // Move up if tiles are hit on the Y axis.
             if (npc.collideY)
-                npc.velocity.Y = -(CalamityWorld.death ? 4f : CalamityWorld.revenge ? 3f : 2f);
+                npc.velocity.Y = -(CalamityWorld.death ? 4f : 3f);
 
             if (npc.velocity.Y < 0f && npc.ai[3] == npc.position.X)
             {
@@ -418,8 +383,8 @@ namespace CalamityMod.NPCs.VanillaNPCAIOverrides.RegularEnemies
             if (npc.velocity.Y > 0f)
                 npc.ai[3] = npc.position.X;
 
-            float riseSpeed = CalamityWorld.death ? 0.6f : CalamityWorld.revenge ? 0.55f : 0.5f;
-            float maxRiseSpeed = CalamityWorld.death ? 6f : CalamityWorld.revenge ? 5f : 4f;
+            float riseSpeed = CalamityWorld.death ? 0.6f : 0.55f;
+            float maxRiseSpeed = CalamityWorld.death ? 6f : 5f;
             if (isLavaSlime)
             {
                 riseSpeed += 0.2f;

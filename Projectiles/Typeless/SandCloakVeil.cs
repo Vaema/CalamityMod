@@ -1,6 +1,5 @@
 ﻿using CalamityMod.DataStructures;
 using CalamityMod.Items.Accessories;
-using CalamityMod.NPCs;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria;
@@ -39,7 +38,7 @@ namespace CalamityMod.Projectiles.Typeless
             if (posDiff.Length() <= Radius)
             {
                 BuffedPlayer.Calamity().getSandCloakAccelBoost = true;
-                BuffedPlayer.statDefense += 10;
+                BuffedPlayer.statDefense += SandCloak.SandVeilDefenseBoost;
             }
             else
                 BuffedPlayer.Calamity().getSandCloakAccelBoost = false;

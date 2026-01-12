@@ -1,10 +1,7 @@
-﻿using System.Collections.Generic;
-using CalamityMod.Projectiles.Typeless;
+﻿using CalamityMod.Projectiles.Typeless;
 using CalamityMod.Tiles.Astral;
 using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Graphics;
 using Terraria;
-using Terraria.DataStructures;
 using Terraria.GameContent.Metadata;
 using Terraria.ID;
 using Terraria.ModLoader;
@@ -26,7 +23,7 @@ namespace CalamityMod.Tiles.AstralDesert
             CalamityUtils.MergeWithDesert(Type);
             CalamityUtils.MergeAstralTiles(Type);
 
-            DustType = 108;
+            DustType = DustID.RainCloud;
 
             AddMapEntry(new Color(187, 220, 237));
 
@@ -37,10 +34,10 @@ namespace CalamityMod.Tiles.AstralDesert
             TileID.Sets.Falling[Type] = true;
             TileID.Sets.FallingBlockProjectile[Type] = new TileID.Sets.FallingBlockProjectileInfo(ModContent.ProjectileType<AstralSandBallFalling>(), 15);
 
-            this.RegisterUniversalMerge(TileID.Dirt, "CalamityMod/Tiles/Merges/DirtMerge");
-            this.RegisterUniversalMerge(TileID.Stone, "CalamityMod/Tiles/Merges/StoneMerge");
-            this.RegisterUniversalMerge(ModContent.TileType<AstralDirt>(), "CalamityMod/Tiles/Merges/AstralDirtMerge");
-            this.RegisterUniversalMerge(TileID.Sand, "CalamityMod/Tiles/Merges/SandMerge");
+            this.RegisterBlendMergeWith(TileID.Dirt);
+            this.RegisterBlendMergeWith(TileID.Stone);
+            this.RegisterBlendMergeWith(ModContent.TileType<AstralDirt>());
+            this.RegisterBlendMergeWith(TileID.Sand);
         }
 
         public override void NumDust(int i, int j, bool fail, ref int num)
@@ -55,7 +52,7 @@ namespace CalamityMod.Tiles.AstralDesert
 
         public override void WalkDust(ref int dustType, ref bool makeDust, ref Color color)
         {
-            DustType = 108;
+            DustType = DustID.RainCloud;
         }
 
         public override bool IsTileBiomeSightable(int i, int j, ref Color sightColor)

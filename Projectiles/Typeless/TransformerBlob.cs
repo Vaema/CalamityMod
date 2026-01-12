@@ -10,7 +10,6 @@ using Terraria;
 using Terraria.Audio;
 using Terraria.ID;
 using Terraria.ModLoader;
-using Terraria.ModLoader.IO;
 
 namespace CalamityMod.Projectiles.Typeless
 {
@@ -142,7 +141,7 @@ namespace CalamityMod.Projectiles.Typeless
                 {
                     Projectile.netUpdate = true;
                     if (visuals)
-                        Owner.Calamity().GeneralScreenShakePower = 3.5f;
+                        Owner.SetScreenshake(3.5f);
                     Projectile.numHits = 0;
                     Projectile.velocity = Utils.DirectionTo(Owner.Center, Owner.Calamity().mouseWorld) * 12;
                     Projectile.extraUpdates = 8;
@@ -163,7 +162,7 @@ namespace CalamityMod.Projectiles.Typeless
                     if (visuals)
                     { 
                         SoundStyle fire = new("CalamityMod/Sounds/Item/OmicronBeam");
-                        SoundEngine.PlaySound(fire with { Volume = 0.3f, Pitch = Main.rand.NextFloat(0.3f, 0.5f) + Projectile.ai[1] * 0.015f, MaxInstances = -1 }, Projectile.Center);
+                        SoundEngine.PlaySound(fire with { Volume = 0.3f, Pitch = Math.Clamp(Main.rand.NextFloat(0.1f, 0.2f) + Projectile.ai[1] * 0.02f, 0, 1), MaxInstances = 1 }, Projectile.Center);
                     }
                 }
                 else if (poweredTimer == 0)

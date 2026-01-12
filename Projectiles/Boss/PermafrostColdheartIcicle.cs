@@ -1,6 +1,6 @@
 ﻿using System;
-using CalamityMod.Buffs.StatDebuffs;
 using CalamityMod.Graphics.Primitives;
+using CalamityMod.Items.Weapons.Typeless;
 using CalamityMod.NPCs.SupremeCalamitas;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
@@ -16,7 +16,7 @@ namespace CalamityMod.Projectiles.Boss
     {
         public new string LocalizationCategory => "Projectiles.Boss";
 
-        public override string Texture => "CalamityMod/Items/ColdheartIcicle";
+        public override string Texture => ModContent.GetInstance<ColdheartIcicle>().Texture;
 
         public const int Lifetime = 80;
 
@@ -129,9 +129,9 @@ namespace CalamityMod.Projectiles.Boss
 
         public override Color? GetAlpha(Color lightColor) => Color.Cyan;
 
-        internal float WidthFunction(float completionRatio) => Projectile.scale * 24f * (1f - Utils.GetLerpValue(0.7f, 1f, completionRatio, true)) + 1f;
+        internal float WidthFunction(float completionRatio, Vector2 vertexPos) => Projectile.scale * 24f * (1f - Utils.GetLerpValue(0.7f, 1f, completionRatio, true)) + 1f;
 
-        internal Color ColorFunction(float completionRatio) => Color.Cyan * Projectile.Opacity;
+        internal Color ColorFunction(float completionRatio, Vector2 vertexPos) => Color.Cyan * Projectile.Opacity;
 
         public override bool PreDraw(ref Color lightColor)
         {
@@ -155,7 +155,7 @@ namespace CalamityMod.Projectiles.Boss
             Main.spriteBatch.EnterShaderRegion();
             GameShaders.Misc["CalamityMod:PrismaticStreak"].SetShaderTexture(ModContent.Request<Texture2D>("CalamityMod/ExtraTextures/Trails/ScarletDevilStreak"));
 
-            PrimitiveRenderer.RenderTrail(Projectile.oldPos, new(WidthFunction, ColorFunction, (_) => Projectile.Size * 0.5f + generalOffset, shader: GameShaders.Misc["CalamityMod:PrismaticStreak"]), 65);
+            PrimitiveRenderer.RenderTrail(Projectile.oldPos, new(WidthFunction, ColorFunction, (_, _) => Projectile.Size * 0.5f + generalOffset, shader: GameShaders.Misc["CalamityMod:PrismaticStreak"]), 65);
             Main.spriteBatch.ExitShaderRegion();
             return true;
         }

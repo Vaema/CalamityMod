@@ -1,5 +1,5 @@
-﻿using CalamityMod.Projectiles.Magic;
-using Microsoft.Xna.Framework;
+﻿using CalamityMod.Items.Weapons.Summon;
+using CalamityMod.Projectiles.Magic;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;

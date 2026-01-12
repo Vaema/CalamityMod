@@ -54,7 +54,7 @@ namespace CalamityMod.Projectiles.Boss
             }
         }
 
-        internal Color ColorFunction(float completionRatio)
+        internal Color ColorFunction(float completionRatio, Vector2 vertexPos)
         {
             return Color.Lerp(Color.Yellow, Color.Yellow, completionRatio);
         }
@@ -87,7 +87,7 @@ namespace CalamityMod.Projectiles.Boss
                 drawPoints[i] = Vector2.Lerp(top, bottom, i / (float)(drawPoints.Length - 1));
 
             drawPoints[drawPoints.Length - 1] = bottom;
-            PrimitiveRenderer.RenderTrail(drawPoints, new((_) => Projectile.width * 0.5f + 16f, ColorFunction, shader: GameShaders.Misc["CalamityMod:Bordernado"]), 85);
+            PrimitiveRenderer.RenderTrail(drawPoints, new((_,_) => Projectile.width * 0.5f + 16f, ColorFunction, shader: GameShaders.Misc["CalamityMod:Bordernado"]), 85);
 
             Main.spriteBatch.ExitShaderRegion();
             Main.spriteBatch.EnterShaderRegion();
@@ -113,7 +113,7 @@ namespace CalamityMod.Projectiles.Boss
             if (info.Damage <= 0)
                 return;
 
-            target.AddBuff(ModContent.BuffType<Dragonfire>(), 150);
+            target.AddBuff(ModContent.BuffType<Dragonfire>(), 180);
         }
     }
 }

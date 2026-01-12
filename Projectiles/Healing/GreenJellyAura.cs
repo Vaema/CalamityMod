@@ -1,14 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using CalamityMod.Buffs.DamageOverTime;
+﻿using System.Collections.Generic;
 using CalamityMod.Buffs.StatBuffs;
-using CalamityMod.Buffs.StatDebuffs;
-using CalamityMod.Dusts;
 using CalamityMod.Items.Accessories;
 using CalamityMod.Particles;
 using CalamityMod.Systems.Collections;
 using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Graphics;
 using Terraria;
 using Terraria.Audio;
 using Terraria.ID;
@@ -60,7 +55,7 @@ namespace CalamityMod.Projectiles.Healing
                         for (int l = 0; l < Player.MaxBuffs; l++)
                         {
                             int buffID = player.buffType[l];
-                            if (player.buffTime[l] > 2 && DebuffsList.Includes(buffID))
+                            if (player.buffTime[l] > 2 && CalamityBuffSets.IsDebuff[buffID])
                             {
                                 player.buffTime[l] *= 0;
                             }
@@ -102,14 +97,14 @@ namespace CalamityMod.Projectiles.Healing
 
                 for (int i = 0; i < 2; i++)
                 {
-                    Dust dust = Dust.NewDustPerfect(Projectile.Center + Main.rand.NextVector2CircularEdge(232f, 232f), 298);
+                    Dust dust = Dust.NewDustPerfect(Projectile.Center + Main.rand.NextVector2CircularEdge(232f, 232f), DustID.JungleTorch);
                     dust.scale = Main.rand.NextFloat(2.2f, 3.3f);
                     dust.noGravity = true;
                 }
 
                 for (int i = 0; i < 1; i++)
                 {
-                    Dust dust = Dust.NewDustPerfect(Projectile.Center + Main.rand.NextVector2Circular(225f, 225f), 298);
+                    Dust dust = Dust.NewDustPerfect(Projectile.Center + Main.rand.NextVector2Circular(225f, 225f), DustID.JungleTorch);
                     dust.scale = Main.rand.NextFloat(0.8f, 1.3f);
                     dust.noGravity = true;
                 }

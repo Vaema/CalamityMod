@@ -1,15 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.IO;
 using CalamityMod.TileEntities;
-using Terraria.DataStructures;
 
 namespace CalamityMod.Packets
 {
-    public sealed class TELabHologramProjectorPacket : CalamityPacket
+    internal sealed class TELabHologramProjectorPacket : CalamityPacket
     {
         public static TELabHologramProjectorPacket Instance { get; private set; }
 

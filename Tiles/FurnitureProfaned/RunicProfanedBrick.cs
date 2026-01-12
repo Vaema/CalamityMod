@@ -1,8 +1,6 @@
 ﻿
 using CalamityMod.Dusts.Furniture;
-using CalamityMod.Systems;
 using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Graphics;
 using Terraria;
 using Terraria.DataStructures;
 using Terraria.ID;
@@ -13,8 +11,6 @@ namespace CalamityMod.Tiles.FurnitureProfaned
     public class RunicProfanedBrick : GlowMaskTile
     {
         public const int AnimationFrameWidth = 234;
-
-        public override string GlowMaskAsset => "CalamityMod/Tiles/FurnitureProfaned/RunicProfanedBrickGlow";
 
         public override void SetupStatic()
         {

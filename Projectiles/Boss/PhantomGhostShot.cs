@@ -1,6 +1,5 @@
 ﻿using System;
 using System.IO;
-using CalamityMod.Buffs.StatDebuffs;
 using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.Audio;
@@ -64,14 +63,6 @@ namespace CalamityMod.Projectiles.Boss
                 if (Projectile.alpha < 30)
                     Projectile.alpha = 30;
             }
-        }
-
-        public override void OnHitPlayer(Player target, Player.HurtInfo info)
-        {
-            if (info.Damage <= 0)
-                return;
-
-            target.AddBuff(ModContent.BuffType<WhisperingDeath>(), 120);
         }
 
         public override Color? GetAlpha(Color lightColor)

@@ -3,10 +3,8 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria;
 using Terraria.DataStructures;
-using Terraria.GameContent.Drawing;
 using Terraria.GameContent.Metadata;
 using Terraria.ID;
-using Terraria.Localization;
 using Terraria.ModLoader;
 
 namespace CalamityMod.Tiles.Abyss
@@ -23,7 +21,7 @@ namespace CalamityMod.Tiles.Abyss
             Main.tileNoSunLight[Type] = false;
             AddMapEntry(new Color(0, 50, 0));
             HitSound = SoundID.Grass;
-            DustType = 2;
+            DustType = DustID.Grass;
             TileID.Sets.IsVine[Type] = true;
             TileID.Sets.ReplaceTileBreakDown[Type] = true;
             TileID.Sets.VineThreads[Type] = true;

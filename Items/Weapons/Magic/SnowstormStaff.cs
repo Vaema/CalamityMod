@@ -1,5 +1,5 @@
-﻿using CalamityMod.Projectiles.Magic;
-using Terraria;
+﻿using CalamityMod.Items.Weapons.Rogue;
+using CalamityMod.Projectiles.Magic;
 using Terraria.ID;
 using Terraria.ModLoader;
 

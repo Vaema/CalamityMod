@@ -23,9 +23,9 @@ namespace CalamityMod.Items.Weapons.DraedonsArsenal
             Item.width = 38;
             Item.height = 24;
             Item.shootSpeed = 10f;
-            Item.damage = 310;
+            Item.damage = 207;
             Item.mana = 12;
-            Item.useAnimation = Item.useTime = 9;
+            Item.useAnimation = Item.useTime = 24;
             Item.useStyle = ItemUseStyleID.HoldUp;
             Item.noMelee = true;
             Item.knockBack = 8f;
@@ -38,11 +38,6 @@ namespace CalamityMod.Items.Weapons.DraedonsArsenal
             Item.shoot = ModContent.ProjectileType<PoleWarperSummon>();
             Item.shootSpeed = 10f;
             Item.DamageType = DamageClass.Summon;
-
-            modItem.UsesCharge = true;
-            modItem.MaxCharge = 250f;
-            modItem.ChargePerUse = 1.25f;
-            modItem.ChargePerAltUse = 0f;
         }
 
         public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockBack)

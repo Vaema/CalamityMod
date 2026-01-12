@@ -1,11 +1,9 @@
 ﻿using System.IO;
 using CalamityMod.BiomeManagers;
 using CalamityMod.Items.Placeables.Banners;
-using CalamityMod.Items.Weapons.Melee;
 using CalamityMod.NPCs.NormalNPCs;
 using Terraria;
 using Terraria.GameContent.Bestiary;
-using Terraria.GameContent.ItemDropRules;
 using Terraria.ID;
 using Terraria.ModLoader;
 using Terraria.ModLoader.Utilities;
@@ -34,10 +32,10 @@ namespace CalamityMod.NPCs.Abyss
             NPC.width = 136;
             NPC.height = 40;
             NPC.defense = 8;
-            NPC.lifeMax = 450;
+            NPC.lifeMax = 360;
             NPC.aiStyle = -1;
             AIType = -1;
-            NPC.value = Item.buyPrice(0, 0, 4, 0);
+            NPC.value = Item.buyPrice(silver: 4);
             NPC.HitSound = SoundID.NPCHit1;
             NPC.DeathSound = SoundID.NPCDeath1;
             NPC.knockBackResist = 0.75f;
@@ -49,10 +47,6 @@ namespace CalamityMod.NPCs.Abyss
             NPC.Calamity().VulnerableToElectricity = true;
             NPC.Calamity().VulnerableToWater = false;
             SpawnModBiomes = new int[1] { ModContent.GetInstance<AbyssLayer1Biome>().Type };
-
-            // Scale stats in Expert and Master
-            CalamityGlobalNPC.AdjustExpertModeStatScaling(NPC);
-            CalamityGlobalNPC.AdjustMasterModeStatScaling(NPC);
         }
 
         public override void SetBestiary(BestiaryDatabase database, BestiaryEntry bestiaryEntry)
@@ -117,7 +111,7 @@ namespace CalamityMod.NPCs.Abyss
 
         public override void ModifyNPCLoot(NPCLoot npcLoot)
         {
-            npcLoot.Add(ItemID.Flipper, 8);
+            npcLoot.Add(ItemID.Flipper, 15);
         }
 
         public override void HitEffect(NPC.HitInfo hit)

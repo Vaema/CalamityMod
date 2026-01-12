@@ -1,5 +1,4 @@
-﻿using CalamityMod.Buffs.DamageOverTime;
-using CalamityMod.CalPlayer;
+﻿using CalamityMod.CalPlayer;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
@@ -25,6 +24,7 @@ namespace CalamityMod.Items.Accessories
             CalamityPlayer modPlayer = player.Calamity();
             modPlayer.sSpiritAmulet = true;
             modPlayer.sSpiritAmuletVisual = !hideVisual;
+            modPlayer.WaterDebuffMultiplier += 0.35f;
         }
     }
 }

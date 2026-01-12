@@ -1,5 +1,4 @@
-﻿using System;
-using CalamityMod.Items.Materials;
+﻿using CalamityMod.Items.Materials;
 using CalamityMod.Items.Placeables.Abyss;
 using CalamityMod.Projectiles.Rogue;
 using Microsoft.Xna.Framework;
@@ -16,7 +15,7 @@ namespace CalamityMod.Items.Weapons.Rogue
         {
             Item.width = 30;
             Item.height = 38;
-            Item.damage = 72;
+            Item.damage = 57;
             Item.noMelee = true;
             Item.noUseGraphic = true;
             Item.useAnimation = Item.useTime = 26;

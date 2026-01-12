@@ -1,7 +1,6 @@
 ﻿using System;
 using System.IO;
 using CalamityMod.BiomeManagers;
-using CalamityMod.Buffs.StatDebuffs;
 using CalamityMod.Dusts;
 using CalamityMod.Events;
 using CalamityMod.Projectiles.Boss;
@@ -11,7 +10,6 @@ using Microsoft.Xna.Framework.Graphics;
 using Terraria;
 using Terraria.Audio;
 using Terraria.GameContent;
-using Terraria.GameContent.Bestiary;
 using Terraria.ID;
 using Terraria.ModLoader;
 
@@ -28,11 +26,11 @@ namespace CalamityMod.NPCs.OldDuke
         public override void SetDefaults()
         {
             NPC.Calamity().canBreakPlayerDefense = true;
+            NPC.damage = 120; // 240
             NPC.aiStyle = -1;
             AIType = -1;
             NPC.width = 44;
             NPC.height = 44;
-            NPC.GetNPCDamage();
             NPC.defense = 100;
             NPC.lifeMax = 6000;
             if (BossRushEvent.BossRushActive)
@@ -52,10 +50,6 @@ namespace CalamityMod.NPCs.OldDuke
             NPC.Calamity().VulnerableToElectricity = true;
             NPC.Calamity().VulnerableToWater = false;
             SpawnModBiomes = new int[1] { ModContent.GetInstance<SulphurousSeaBiome>().Type };
-
-            // Scale stats in Expert and Master
-            CalamityGlobalNPC.AdjustExpertModeStatScaling(NPC);
-            CalamityGlobalNPC.AdjustMasterModeStatScaling(NPC);
         }
 
         public override void SendExtraAI(BinaryWriter writer)
@@ -74,10 +68,9 @@ namespace CalamityMod.NPCs.OldDuke
         {
             Lighting.AddLight((int)((NPC.position.X + (NPC.width / 2)) / 16f), (int)((NPC.position.Y + (NPC.height / 2)) / 16f), 0.7f * NPC.Opacity, 0.9f * NPC.Opacity, 0f);
 
-            bool bossRush = BossRushEvent.BossRushActive;
-            bool expertMode = Main.expertMode || bossRush;
-            bool revenge = CalamityWorld.revenge || bossRush;
-            bool death = CalamityWorld.death || bossRush;
+            bool expertMode = Main.expertMode || BossRushEvent.BossRushActive;
+            bool revenge = CalamityWorld.revenge || BossRushEvent.BossRushActive;
+            bool death = CalamityWorld.death || BossRushEvent.BossRushActive;
 
             if (NPC.target < 0 || NPC.target == Main.maxPlayers || Main.player[NPC.target].dead)
             {
@@ -106,12 +99,12 @@ namespace CalamityMod.NPCs.OldDuke
             // Fly up
             bool upwardAI = NPC.ai[3] < 0f;
 
-            float flyTowardTargetGateValue = bossRush ? 60f : death ? 70f : revenge ? 75f : expertMode ? 80f : 90f;
-            float extraTime = bossRush ? 60f : death ? 70f : revenge ? 75f : expertMode ? 80f : 90f;
+            float flyTowardTargetGateValue = death ? 70f : revenge ? 75f : expertMode ? 80f : 90f;
+            float extraTime = death ? 70f : revenge ? 75f : expertMode ? 80f : 90f;
             float aiGateValue = flyTowardTargetGateValue + extraTime;
             float dieGateValue = aiGateValue + extraTime * 4f;
             float fallDownGateValue = aiGateValue + extraTime;
-            float maxVelocity = bossRush ? 22f : death ? 20f : revenge ? 19f : expertMode ? 18f : 16f;
+            float maxVelocity = death ? 20f : revenge ? 19f : expertMode ? 18f : 16f;
 
             if (NPC.ai[0] == 0f)
             {
@@ -146,7 +139,7 @@ namespace CalamityMod.NPCs.OldDuke
                     Vector2 targetDistance = Main.player[NPC.target].Center - NPC.Center;
                     targetDistance.Normalize();
                     targetDistance *= scaleFactor2;
-                    float inertia = bossRush ? 20f : death ? 23f : revenge ? 25f : expertMode ? 27f : 30f;
+                    float inertia = death ? 23f : revenge ? 25f : expertMode ? 27f : 30f;
                     NPC.velocity = (NPC.velocity * (inertia - 1f) + targetDistance) / inertia;
                     NPC.velocity.Normalize();
                     NPC.velocity *= scaleFactor2;
@@ -212,22 +205,16 @@ namespace CalamityMod.NPCs.OldDuke
             if (Main.rand.NextBool(8) && Main.player[closestPlayer].statLife < Main.player[closestPlayer].statLifeMax2)
                 Item.NewItem(NPC.GetSource_Loot(), (int)NPC.position.X, (int)NPC.position.Y, NPC.width, NPC.height, ItemID.Heart);
 
-            if (Main.netMode != NetmodeID.MultiplayerClient && CalamityWorld.LegendaryMode)
+            if (Main.netMode != NetmodeID.MultiplayerClient && Main.getGoodWorld)
             {
                 int spawnX = NPC.width / 2;
                 int type = ModContent.ProjectileType<OldDukeGore>();
-                int damage = NPC.GetProjectileDamage(type);
                 for (int i = 0; i < 10; i++)
                 {
                     Projectile.NewProjectile(NPC.GetSource_FromAI(), NPC.Center.X + Main.rand.Next(-spawnX, spawnX), NPC.Center.Y,
-                        Main.rand.Next(-3, 4), Main.rand.Next(-12, -6), type, damage, 0f, Main.myPlayer);
+                        Main.rand.Next(-3, 4), Main.rand.Next(-12, -6), type, OldDuke.GoreDamage, 0f, Main.myPlayer);
                 }
             }
-        }
-
-        public override void ApplyDifficultyAndPlayerScaling(int numPlayers, float balance, float bossAdjustment)/* tModPorter Note: bossLifeScale -> balance (bossAdjustment is different, see the docs for details) */
-        {
-            NPC.damage = (int)(NPC.damage * NPC.GetExpertDamageMultiplier());
         }
 
         public override bool PreDraw(SpriteBatch spriteBatch, Vector2 screenPos, Color drawColor)
@@ -271,12 +258,6 @@ namespace CalamityMod.NPCs.OldDuke
         {
             cooldownSlot = ImmunityCooldownID.Bosses;
             return NPC.Opacity == 1f;
-        }
-
-        public override void OnHitPlayer(Player target, Player.HurtInfo hurtInfo)
-        {
-            if (hurtInfo.Damage > 0)
-                target.AddBuff(ModContent.BuffType<Irradiated>(), 240);
         }
 
         public override void HitEffect(NPC.HitInfo hit)

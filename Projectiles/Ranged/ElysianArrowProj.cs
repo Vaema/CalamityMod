@@ -23,7 +23,6 @@ namespace CalamityMod.Projectiles.Ranged
             Projectile.timeLeft = 1200;
             Projectile.extraUpdates = 2;
             Projectile.aiStyle = ProjAIStyleID.Arrow;
-            Projectile.Calamity().pointBlankShotDuration = CalamityGlobalProjectile.DefaultPointBlankDuration;
         }
 
         public override void AI()
@@ -88,7 +87,7 @@ namespace CalamityMod.Projectiles.Ranged
                     dust.alpha = 235;
                     if (Main.rand.NextBool())
                     {
-                        Dust dust2 = Dust.NewDustPerfect(Projectile.Center, 303, new Vector2(3, 3).RotatedByRandom(100) * Main.rand.NextFloat(0.5f, 1.5f));
+                        Dust dust2 = Dust.NewDustPerfect(Projectile.Center, DustID.SteampunkSteam, new Vector2(3, 3).RotatedByRandom(100) * Main.rand.NextFloat(0.5f, 1.5f));
                         dust2.noGravity = true;
                         dust2.scale = Main.rand.NextFloat(0.8f, 1.5f);
                         dust2.alpha = 70;
@@ -96,7 +95,7 @@ namespace CalamityMod.Projectiles.Ranged
                 }
                 for (int k = 0; k < 2; k++)
                 {
-                    Dust dust = Dust.NewDustPerfect(Projectile.Center, 278, Projectile.velocity.RotatedByRandom(0.4) * Main.rand.NextFloat(0.5f, 1.5f));
+                    Dust dust = Dust.NewDustPerfect(Projectile.Center, DustID.FireworksRGB, Projectile.velocity.RotatedByRandom(0.4) * Main.rand.NextFloat(0.5f, 1.5f));
                     dust.noGravity = false;
                     dust.scale = Main.rand.NextFloat(0.85f, 1f);
                     dust.color = Main.rand.NextBool() ? Color.Orange : Color.Khaki;

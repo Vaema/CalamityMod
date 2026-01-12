@@ -4,6 +4,7 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria;
 using Terraria.GameContent;
+using Terraria.Localization;
 using Terraria.ModLoader;
 
 namespace CalamityMod.Items.Accessories
@@ -11,6 +12,11 @@ namespace CalamityMod.Items.Accessories
     public class ArcFlashRing : ModItem, ILocalizedModType
     {
         public new string LocalizationCategory => "Items.Accessories";
+
+        public static int LightningSpawnPercent = 5;
+        public static float LightningDamageMult = 3f;
+        public override LocalizedText Tooltip => base.Tooltip.WithFormatArgs(LightningSpawnPercent, LightningDamageMult);
+
         public override void SetDefaults()
         {
             Item.width = 56;
@@ -18,6 +24,7 @@ namespace CalamityMod.Items.Accessories
             Item.value = CalamityGlobalItem.RarityTurquoiseBuyPrice;
             Item.rare = ModContent.RarityType<Turquoise>();
             Item.accessory = true;
+            Item.expert = true;
         }
 
         public override void UpdateAccessory(Player player, bool hideVisual)

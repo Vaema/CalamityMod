@@ -7,7 +7,6 @@ CalamityClientConfig: {
 		UI: UI Changes
 		MeterPositions: Meter Positions
 		MusicToggles: Music Toggles
-		Multithreading: Multi-Threading
 	}
 
 	AbyssLayer3Alt: {
@@ -51,15 +50,6 @@ CalamityClientConfig: {
 			'''
 	}
 
-	CalamityArmorSetBonusDoubleTap: {
-		Label: "[i:CalamityMod/DesertProwlerHat] Calamity Armor Set Bonuses Can Use Vanilla Hotkey"
-		Tooltip:
-			'''
-			Allows Calamity armor set bonuses to be triggered by the vanilla double-tap DOWN hotkey (or UP depending on your settings).
-			Also allows vanilla armor set bonuses to be triggered by Calamity's armor set bonus hotkey.
-			'''
-	}
-
 	ChargeMeter: {
 		Label: "[i:CalamityMod/DraedonPowerCell] Display Charge Meter"
 		Tooltip:
@@ -89,11 +79,7 @@ CalamityClientConfig: {
 
 	CooldownDisplay: {
 		Label: "[i:CalamityMod/NebulousCore] Cooldown Rack Display Mode"
-		Tooltip:
-			'''
-			Adds the Cooldown Rack which displays all important cooldowns right underneath buffs and debuffs.
-			Set this to 1 to display the Cooldown Rack in compact mode, and to 0 to hide it entirely.
-			'''
+		Tooltip: Adds the Cooldown Rack which displays all important cooldowns right underneath buffs and debuffs.
 	}
 
 	DebuffDisplay: {
@@ -133,11 +119,21 @@ CalamityClientConfig: {
 			'''
 	}
 
+	FancyBackgroundVisuals: {
+		Label: "[i:CalamityMod/BlueDistortedMonolith] Toggle Fancy Background Visuals"
+		Tooltip:
+			'''
+			Controls whether or not fancy background visuals will be displayed during certain parts of the game, such as boss fights.
+			When disabled, a simplified version of the main visual will be displayed in certain cases.
+			Recommended to have disabled if you struggle with visibility issues or low performance.
+			'''
+	}
+
 	FasterFallHotkey: {
 		Label: "[i:CalamityMod/BallAndChain] Enable Fast Falling"
 		Tooltip:
 			'''
-			When enabled, you can hold the DOWN key while in the air to accelerate downwards faster.
+			When enabled, you can hold the {$Key.DOWN} key while in the air to accelerate downwards faster.
 			This config does not increase your maximum falling speed, just how quickly you accelerate to it.
 			Calamity is balanced around this setting being enabled.
 			'''
@@ -171,19 +167,15 @@ CalamityClientConfig: {
 			'''
 	}
 
-	Interlude1: {
-		Label: "[i:CalamityModMusic/Interlude1MusicBox] Interlude 1"
-		Tooltip: Plays Calamity Mod OST - "Silence before the storms", after Calamitas Clone has been defeated.
-	}
-
-	Interlude2: {
-		Label: "[i:CalamityModMusic/Interlude2MusicBox] Interlude 2"
-		Tooltip: Plays Calamity Mod OST - "Storms before the catastrophes", after the Moon Lord has been defeated.
-	}
-
-	Interlude3: {
-		Label: "[i:CalamityModMusic/Interlude3MusicBox] Interlude 3"
-		Tooltip: Plays Calamity Mod OST - "Catastrophes before the calamity", after Yharon has been defeated.
+	Interludes: {
+		Label: "[i:CalamityModMusic/Interlude1MusicBox] Interludes"
+		Tooltip:
+			'''
+			Enables the playing of three interlude tracks in-game:
+			Plays Calamity Mod OST - "Silence before the storms", after Calamitas Clone has been defeated.
+			Plays Calamity Mod OST - "Storms before the catastrophes", after the Moon Lord has been defeated.
+			Plays Calamity Mod OST - "Catastrophes before the calamity", after Yharon has been defeated.
+			'''
 	}
 
 	MeterPosLock: {
@@ -252,6 +244,11 @@ CalamityClientConfig: {
 			[c/FF232C:All screen-shake visuals are balanced around a value of 1.]
 			[c/FF232C:Higher values may be nauseating or otherwise bad for some.]
 			'''
+	}
+
+	SetBonusDoubleTap: {
+		Label: "[i:VortexHelmet] Allow Double Tap for Armor Set Bonuses"
+		Tooltip: Allows all armor set bonuses to be triggered by the vanilla double-tap {$Key.DOWN} hotkey (or {$Key.UP} depending on your settings).
 	}
 
 	ShopNewAlert: {
@@ -371,6 +368,11 @@ CalamityClientConfig: {
 			'''
 	}
 
+	TileTextureBlendingQuality: {
+		Label: "[i:GlowPaint] Tile Merge Soft Blending"
+		Tooltip: Changes the quality of the soft-blending renderer used when different types of tiles merge together.
+	}
+
 	VanillaCooldownDisplay: {
 		Label: "[i:HealingPotion] Display Vanilla Cooldowns"
 		Tooltip:
@@ -388,21 +390,6 @@ CalamityClientConfig: {
 	WikiStatusMessage: {
 		Label: "[i:Book] Wiki Status Message"
 		Tooltip: Enable or disable the status message promoting the Official Calamity Wiki that plays on world entry.
-	}
-
-	MultiThreadingType: {
-		Label: Sunken Sea Multi-Threading Option
-		Tooltip:
-			'''
-			Option 0 will disable worldgen multi-threading.
-			Option 1 will enable ReLogic's multi-threading.
-			Option 2 will enable custom multi-threading.
-			'''
-	}
-
-	SunkenSeaMultiThreading: {
-		Label: Sunken Sea Multi Threading
-		Tooltip: ""
 	}
 }
 
@@ -463,7 +450,7 @@ CalamityServerConfig: {
 		Label: "[i:Pwnhammer] Early Hardmode Progression Rework"
 		Tooltip:
 			'''
-			Demon Altars no longer spawn ores and crimson/corruption blocks when broken.
+			Demon Altars no longer spawn ores when broken.
 			Wall of Flesh spawns Cobalt and Palladium ore on first kill.
 			The first mech boss you fight has 20% (10% in Expert and Master) less HP and damage and spawns Mythril and Orichalcum ore on first kill.
 			The second mech boss you fight has 10% (5% in Expert and Master) less HP and damage and spawns Adamantite and Titanium ore on first kill.
@@ -528,7 +515,7 @@ CalamityServerConfig: {
 
 	RemoveLavaDropsFromLavaSlimes: {
 		Label: "[i:LavaWaders] Remove Lava Drops From Lava Slimes"
-		Tooltip: When enabled, Lava Slimes will be replaced with a new Lava Slime that no longer drops lava.
+		Tooltip: When enabled, Lava Slimes will be prevented from dropping lava in Expert Mode.
 	}
 
 	RemoveReforgeRNG: {
@@ -549,6 +536,15 @@ CalamityServerConfig: {
 			'''
 	}
 
+	SimplifyAccessoryReforge: {
+		Label: "[i:Autohammer] Simplify Accessory Reforging"
+		Tooltip:
+			'''
+			Makes accessory reforging simpler by restricting options to the following prefixes:
+			          - Warding, Menacing, Lucky, Quick, Violent, Arcane, Silent, Invigorating, Dauntless
+			'''
+	}
+
 	TownNPCSpawnRateMultiplier: {
 		Label: "[i:GuideVoodooDoll] Town NPC Spawn Rate Multiplier"
 		Tooltip:
@@ -564,6 +560,67 @@ CalamityServerConfig: {
 			'''
 			When enabled, town NPCs can spawn and respawn at night.
 			This includes the Old Man.
+			'''
+	}
+}
+
+CooldownDisplayOptions: {
+	Tooltip: ""
+
+	Full: {
+		Label: Full
+		Tooltip: Displays a circular bar around an icon which indicates cooldown duration
+	}
+
+	Compact: {
+		Label: Compact
+		Tooltip: Displays a gradient over an icon which indicates cooldown duration
+	}
+
+	Hidden: {
+		Label: Hidden
+		Tooltip: ""
+	}
+}
+
+SetBonusDoubleTapOptions: {
+	Tooltip: ""
+
+	On: {
+		Label: Always On
+		Tooltip: Always enables double-tap. Can be used in conjunction with Calamity's {$Keybinds.ArmorSetBonus.DisplayName} hotkey.
+	}
+
+	Auto: {
+		Label: Auto
+		Tooltip: Automatically turns off double-tap as long as Calamity's {$Keybinds.ArmorSetBonus.DisplayName} hotkey is bound.
+	}
+
+	Off: {
+		Label: Always Off
+		Tooltip: Always disables double-tap. Can be used to completely disable set bonus activation.
+	}
+}
+
+TileBlendingQuality: {
+	Tooltip: ""
+
+	Disable: {
+		Label: Disabled
+		Tooltip: Tile texture soft blending is disabled.
+	}
+
+	Normal: {
+		Label: Enabled
+		Tooltip: Tile texture soft blending is enabled.
+	}
+
+	High: {
+		Label: Enabled + Slices
+		Tooltip:
+			'''
+			Tile texture soft blending is enabled and uses sliced rendering.
+			[c/F05A5A:Not recommended for low-end devices.]
 			'''
 	}
 }

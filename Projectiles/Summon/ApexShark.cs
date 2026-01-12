@@ -19,6 +19,7 @@ namespace CalamityMod.Projectiles.Summon
         public override void SetStaticDefaults()
         {
             Main.projFrames[Type] = 8;
+            Main.projPet[Type] = true;
             ProjectileID.Sets.MinionSacrificable[Type] = true;
             ProjectileID.Sets.MinionTargettingFeature[Type] = true;
         }
@@ -239,6 +240,8 @@ namespace CalamityMod.Projectiles.Summon
 
         }
 
+        public override bool MinionContactDamage() => HitCooldown == 0;
+
         public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
         {
             if (Main.rand.NextBool(3))
@@ -252,15 +255,6 @@ namespace CalamityMod.Projectiles.Summon
             Main.projectile[sand].DamageType = DamageClass.Summon;
             Projectile.netUpdate = true;
             HitCooldown = 20;
-        }
-
-        public override bool? CanHitNPC(NPC target)
-        {
-            if (HitCooldown == 0)
-            {
-                return null;
-            }
-            return false;
         }
     }
 }

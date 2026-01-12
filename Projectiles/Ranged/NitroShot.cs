@@ -1,5 +1,4 @@
 ﻿using System;
-using CalamityMod.Buffs.StatDebuffs;
 using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.Audio;
@@ -27,7 +26,6 @@ namespace CalamityMod.Projectiles.Ranged
             Projectile.timeLeft = 600;
             Projectile.usesLocalNPCImmunity = true;
             Projectile.localNPCHitCooldown = -1;
-            Projectile.Calamity().pointBlankShotDuration = CalamityGlobalProjectile.DefaultPointBlankDuration;
         }
 
         public override void AI()
@@ -42,7 +40,7 @@ namespace CalamityMod.Projectiles.Ranged
             {
                 for (int i = 0; i <= 15; i++)
                 {
-                    Dust dust = Dust.NewDustPerfect(Projectile.position, 87, (Projectile.velocity).RotatedByRandom(MathHelper.ToRadians(30f)) * Main.rand.NextFloat(0.1f, 0.8f), 0, default, Main.rand.NextFloat(0.6f, 1.1f));
+                    Dust dust = Dust.NewDustPerfect(Projectile.position, DustID.GemTopaz, (Projectile.velocity).RotatedByRandom(MathHelper.ToRadians(30f)) * Main.rand.NextFloat(0.1f, 0.8f), 0, default, Main.rand.NextFloat(0.6f, 1.1f));
                     dust.noGravity = true;
                 }
             }
@@ -75,7 +73,7 @@ namespace CalamityMod.Projectiles.Ranged
 
             for (int i = 0; i <= 10; i++)
             {
-                Dust dust = Dust.NewDustPerfect(Projectile.position, 87, (Projectile.velocity).RotatedByRandom(MathHelper.ToRadians(15f)) * Main.rand.NextFloat(0.1f, 0.8f), 0, default, Main.rand.NextFloat(0.6f, 1.1f));
+                Dust dust = Dust.NewDustPerfect(Projectile.position, DustID.GemTopaz, (Projectile.velocity).RotatedByRandom(MathHelper.ToRadians(15f)) * Main.rand.NextFloat(0.1f, 0.8f), 0, default, Main.rand.NextFloat(0.6f, 1.1f));
                 dust.noGravity = true;
             }
 

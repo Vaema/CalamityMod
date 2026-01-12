@@ -15,6 +15,7 @@ namespace CalamityMod.Projectiles.Summon
         public override void SetStaticDefaults()
         {
             Main.projFrames[Type] = 11;
+            Main.projPet[Type] = true;
             ProjectileID.Sets.MinionSacrificable[Type] = true;
             ProjectileID.Sets.MinionTargettingFeature[Type] = true;
         }
@@ -45,6 +46,20 @@ namespace CalamityMod.Projectiles.Summon
             return true;
         }
 
+        private bool _hadSpiderMinion = false;
+        public override bool PreAI()
+        {
+            var owner = Main.player[Projectile.owner];
+            _hadSpiderMinion = owner.spiderMinion;
+            owner.spiderMinion = false;
+            return true;
+        }
+
+        public override void PostAI()
+        {
+            Main.player[Projectile.owner].spiderMinion = _hadSpiderMinion;
+        }
+
         public override void AI()
         {
             if (bloodCooldown > 0)
@@ -52,19 +67,6 @@ namespace CalamityMod.Projectiles.Summon
 
             Player player = Main.player[Projectile.owner];
             CalamityPlayer modPlayer = player.Calamity();
-
-            foreach (Projectile proj in Main.ActiveProjectiles)
-            {
-                // Short circuits to make the loop as fast as possible
-                if (proj.owner != Projectile.owner || !proj.minion || proj.Calamity().lineColor != 1)
-                    continue;
-                if (proj.type == Projectile.type)
-                {
-                    proj.Calamity().lineColor = 2;
-                }
-            }
-            if (Projectile.Calamity().lineColor == 0)
-                Projectile.Calamity().lineColor = 1;
 
             if (dust == 0f)
             {
@@ -95,6 +97,8 @@ namespace CalamityMod.Projectiles.Summon
                 }
             }
         }
+
+        public override bool MinionContactDamage() => true;
 
         public override bool OnTileCollide(Vector2 oldVelocity) => false;
 

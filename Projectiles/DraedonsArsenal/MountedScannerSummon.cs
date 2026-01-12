@@ -28,6 +28,7 @@ namespace CalamityMod.Projectiles.DraedonsArsenal
 
         public override void SetStaticDefaults()
         {
+            Main.projPet[Type] = true;
             ProjectileID.Sets.MinionSacrificable[Type] = true;
             ProjectileID.Sets.MinionTargettingFeature[Type] = true;
             ProjectileID.Sets.NeedsUUID[Type] = true;
@@ -114,6 +115,5 @@ namespace CalamityMod.Projectiles.DraedonsArsenal
                 SoundEngine.PlaySound(CommonCalamitySounds.LaserCannonSound, Projectile.Center);
             }
         }
-        public override bool? CanDamage() => false;
     }
 }

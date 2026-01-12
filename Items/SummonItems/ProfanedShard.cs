@@ -1,5 +1,4 @@
-﻿using System.Collections.Generic;
-using CalamityMod.Events;
+﻿using CalamityMod.Events;
 using CalamityMod.Items.Materials;
 using CalamityMod.NPCs.ProfanedGuardians;
 using Terraria;

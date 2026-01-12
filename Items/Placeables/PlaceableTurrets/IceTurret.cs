@@ -17,7 +17,7 @@ namespace CalamityMod.Items.Placeables.PlaceableTurrets
         {
             Item.DefaultToPlaceableTile(ModContent.TileType<PlayerIceTurret>());
 
-            Item.value = Item.sellPrice(gold: 2);
+            Item.value = Item.sellPrice(silver: 50);
             Item.rare = ItemRarityID.Pink;
         }
 
@@ -31,6 +31,7 @@ namespace CalamityMod.Items.Placeables.PlaceableTurrets
                 AddIngredient<EssenceofEleum>(12).
                 AddCondition(ArsenalTierGatedRecipe.ConstructRecipeCondition(2, out Func<bool> condition), condition).
                 AddTile(TileID.MythrilAnvil).
+                SortBeforeFirstRecipesOf(ModContent.ItemType<HostileIceTurret>()).
                 Register();
         }
     }

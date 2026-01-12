@@ -1,4 +1,5 @@
 ﻿using CalamityMod.Buffs.StatBuffs;
+using CalamityMod.Items.Weapons.Melee;
 using CalamityMod.Projectiles.Rogue;
 using Microsoft.Xna.Framework;
 using Terraria;
@@ -44,10 +45,11 @@ namespace CalamityMod.Items.Weapons.Rogue
                 {
                     if (other.dead)
                         continue;
+
                     if ((other.team == player.team && player.team != 0) || player.whoAmI == other.whoAmI)
                     {
                         if (player.Distance(other.Center) <= 800f)
-                            other.AddBuff(ModContent.BuffType<Mushy>(), 900);
+                            other.AddBuff(ModContent.BuffType<Mushy>(), 900, quiet: false);
                     }
                 }
             }

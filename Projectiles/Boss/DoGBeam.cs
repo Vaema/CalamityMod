@@ -1,6 +1,4 @@
-﻿using System;
-using CalamityMod.World;
-using Microsoft.Xna.Framework;
+﻿using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.ModLoader;
 
@@ -25,7 +23,7 @@ namespace CalamityMod.Projectiles.Boss
             Projectile.penetrate = 1;
             Projectile.timeLeft = 960;
 
-            if (CalamityWorld.LegendaryMode)
+            if (Main.zenithWorld)
                 Projectile.extraUpdates = 1;
         }
 

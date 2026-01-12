@@ -1,9 +1,8 @@
 ﻿using CalamityMod.Projectiles.Ranged;
-using CalamityMod.Projectiles.Rogue;
 using Microsoft.Xna.Framework;
 using Terraria;
-using Terraria.DataStructures;
 using Terraria.ID;
+using Terraria.Localization;
 using Terraria.ModLoader;
 
 namespace CalamityMod.Items.Weapons.Ranged
@@ -11,6 +10,9 @@ namespace CalamityMod.Items.Weapons.Ranged
     public class SpectralstormCannon : ModItem, ILocalizedModType
     {
         public new string LocalizationCategory => "Items.Weapons.Ranged";
+
+        public static int AmmoSavedPercent = 33;
+        public override LocalizedText Tooltip => base.Tooltip.WithFormatArgs(AmmoSavedPercent);
 
         // This is intentionally stored on the item instead of the holdout to prevent swapping items to instantly reset the heat
         // This could be theoretically exploited using multiple items, but the heat dissipates fast enough that I can't really care
@@ -53,13 +55,9 @@ namespace CalamityMod.Items.Weapons.Ranged
                     BuiltUpHeat = 0;
             }
         }
-        public override bool CanUseItem(Player player) => player.ownedProjectileCounts[Item.shoot] <= 0;
-        public override bool CanConsumeAmmo(Item ammo, Player player) => player.ownedProjectileCounts[Item.shoot] > 0; // Spawning the holdout cannot consume ammo
-        public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)
-        {
-            Projectile.NewProjectile(source, position, velocity, ModContent.ProjectileType<SpectralstormCannonHoldout>(), damage, knockback, player.whoAmI);
-            return false;
-        }
+        public override bool CanUseItem(Player player) => player.ownedProjectileCounts[Item.shoot] <= 0 && !player.Calamity().mouseRight;
+        public override bool CanConsumeAmmo(Item ammo, Player player) => player.ownedProjectileCounts[Item.shoot] > 0 && Main.rand.Next(100) >= AmmoSavedPercent;
+        public override void ModifyShootStats(Player player, ref Vector2 position, ref Vector2 velocity, ref int type, ref int damage, ref float knockback) => type = Item.shoot;
 
         public override void AddRecipes()
         {

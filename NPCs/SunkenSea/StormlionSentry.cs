@@ -1,12 +1,10 @@
 ﻿using System;
 using System.IO;
 using CalamityMod.BiomeManagers;
-using CalamityMod.Dusts;
 using CalamityMod.Items.Materials;
-using CalamityMod.Items.Weapons.Summon;
+using CalamityMod.Items.Placeables.Banners;
 using CalamityMod.Projectiles.Enemy;
 using CalamityMod.Projectiles.Magic;
-using CalamityMod.Projectiles.Rogue;
 using CalamityMod.Projectiles.Summon;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
@@ -76,6 +74,7 @@ namespace CalamityMod.NPCs.SunkenSea
             NPC.damage = 15;
             NPC.defense = 3;
             NPC.knockBackResist = 0f;
+            NPC.value = Item.buyPrice(silver: 1);
             NPC.HitSound = Effects.StormlionEffects.Hit;
             NPC.DeathSound = Effects.StormlionEffects.Killed;
             NPC.noGravity = true;
@@ -87,8 +86,8 @@ namespace CalamityMod.NPCs.SunkenSea
             attackFeedback = 1;
             headRot = -MathHelper.PiOver2;
 
-            //Banner = NPC.type;
-            //BannerItem = ModContent.ItemType<StormlionSentryBanner>();
+            Banner = NPC.type;
+            BannerItem = ModContent.ItemType<StormlionSentryBanner>();
         }
 
         public override void SendExtraAI(BinaryWriter writer)
@@ -172,7 +171,7 @@ namespace CalamityMod.NPCs.SunkenSea
                 {
                     SoundEngine.PlaySound(Effects.StormlionEffects.Attack with { Volume = 1f, Pitch = Main.rand.NextFloat(-0.1f, 0.1f) }, NPC.Center);
 
-                    Projectile.NewProjectile(NPC.GetSource_FromThis(), attackPosition, (headRot.ToRotationVector2() * 12), ModContent.ProjectileType<StormlionSentryBullet>(), NPC.damage, 0f, Main.myPlayer);
+                    Projectile.NewProjectile(NPC.GetSource_FromThis(), attackPosition, (headRot.ToRotationVector2() * 12), ModContent.ProjectileType<StormlionSentryBullet>(), 15, 0f, Main.myPlayer);
                     for (int i = 0; i <= 12; i++)
                     {
                         float variance = Main.rand.NextFloat(-0.6f, 0.6f);
@@ -231,7 +230,7 @@ namespace CalamityMod.NPCs.SunkenSea
                     if (time % 2 == 0)
                     {
                         SoundEngine.PlaySound(Effects.StormlionEffects.Attack with { Volume = 0.2f, Pitch = 0.4f * sine, MaxInstances = 30 }, NPC.Center);
-                        Projectile proj = Projectile.NewProjectileDirect(NPC.GetSource_FromThis(), attackPosition, (headRot.ToRotationVector2() * 6), ModContent.ProjectileType<StormlionSentryBullet>(), NPC.damage * target.statLifeMax2, 0f, Main.myPlayer);
+                        Projectile proj = Projectile.NewProjectileDirect(NPC.GetSource_FromThis(), attackPosition, (headRot.ToRotationVector2() * 6), ModContent.ProjectileType<StormlionSentryBullet>(), 15 * target.statLifeMax2, 0f, Main.myPlayer);
                         proj.friendly = true;
                         proj.hostile = false;
                     }
@@ -275,16 +274,7 @@ namespace CalamityMod.NPCs.SunkenSea
                     bool type = !Main.rand.NextBool(3);
                     int dust = Dust.NewDust(NPC.position, NPC.width, NPC.height, type ? Effects.StormlionEffects.EnergyDust : Effects.StormlionEffects.FleshDust, hit.HitDirection, -1f, 0, type ? Effects.StormlionEffects.EnergyColor : Effects.StormlionEffects.FleshColor, Main.rand.NextFloat(0.7f, 1.1f));
                 }
-                // Gores go here once they're done
-                /*
-                if (!Main.dedServ)
-                {
-                    Gore.NewGore(NPC.GetSource_Death(), NPC.position, NPC.velocity, Mod.Find<ModGore>("StormlionSentry").Type, 1f);
-                    Gore.NewGore(NPC.GetSource_Death(), NPC.position, NPC.velocity, Mod.Find<ModGore>("StormlionSentry2").Type, 1f);
-                    Gore.NewGore(NPC.GetSource_Death(), NPC.position, NPC.velocity, Mod.Find<ModGore>("StormlionSentry3").Type, 1f);
-                    Gore.NewGore(NPC.GetSource_Death(), NPC.position, NPC.velocity, Mod.Find<ModGore>("StormlionSentry4").Type, 1f);
-                }
-                */
+                CalamityUtils.SpawnGores(NPC, "StormlionSentry", 3);
             }
         }
         public override bool CanHitPlayer(Player target, ref int cooldownSlot)
@@ -293,9 +283,12 @@ namespace CalamityMod.NPCs.SunkenSea
         }
         public override float SpawnChance(NPCSpawnInfo spawnInfo)
         {
-            if (spawnInfo.Player.Calamity().ZoneTimelessShores && !spawnInfo.Water && !spawnInfo.Player.Calamity().clamity)
+            Vector2 spawnPosition = new Vector2(spawnInfo.SpawnTileX * 16 + 8, spawnInfo.SpawnTileY * 16);
+            bool npcOnTiles = Collision.SolidCollision(spawnPosition + Vector2.UnitY * 50, 20, 20);
+
+            if (spawnInfo.Player.Calamity().ZoneTimelessShores && !spawnInfo.Water && !spawnInfo.Player.Calamity().clamity && npcOnTiles)
             {
-                return SpawnCondition.Cavern.Chance * 0.7f;
+                return SpawnCondition.Cavern.Chance * 8f;
             }
             return 0f;
         }

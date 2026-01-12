@@ -1,5 +1,4 @@
 ﻿using CalamityMod.Projectiles.Magic;
-using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
 
@@ -12,7 +11,7 @@ namespace CalamityMod.Items.Weapons.Magic
         {
             Item.width = 28;
             Item.height = 24;
-            Item.damage = 90;
+            Item.damage = 80;
             Item.DamageType = DamageClass.Magic;
             Item.mana = 18;
             Item.useTime = 28;

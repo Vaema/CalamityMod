@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using CalamityMod.Cooldowns;
 using CalamityMod.Items.BaseItems;
-using CalamityMod.Items.Potions.Alcohol;
 using CalamityMod.Projectiles.Summon;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
@@ -68,7 +67,7 @@ namespace CalamityMod.Items.Armor.Wulfrum
                 if (!WulfrumHat.HasArmorSet(player))
                 {
                     Item.type = ItemID.None;
-                    Item.SetDefaults(0);
+                    Item.SetDefaults(ItemID.None);
                     Item.stack = 0;
 
                     Main.mouseItem = new Item();

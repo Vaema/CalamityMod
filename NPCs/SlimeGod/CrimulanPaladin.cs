@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
 using CalamityMod.Events;
 using CalamityMod.Projectiles.Boss;
@@ -28,17 +27,18 @@ namespace CalamityMod.NPCs.SlimeGod
             this.HideFromBestiary();
         }
 
+        public static int BigSpikeDamage = 15; // 60
+
         public override void SetDefaults()
         {
             NPC.Calamity().canBreakPlayerDefense = true;
-            NPC.GetNPCDamage();
+            NPC.damage = 42; // 84
             NPC.width = Width;
             NPC.height = Height;
             NPC.defense = 12;
             NPC.LifeMaxNERB(7500, 9000, 160000);
             NPC.BossBar = Main.BigBossProgressBar.NeverValid;
             NPC.knockBackResist = 0f;
-            NPC.value = 0f;
             NPC.Opacity = 1f;
             NPC.lavaImmune = false;
             NPC.noGravity = false;
@@ -49,9 +49,6 @@ namespace CalamityMod.NPCs.SlimeGod
             AIType = -1;
             NPC.Calamity().VulnerableToHeat = true;
             NPC.Calamity().VulnerableToSickness = false;
-
-            // Scale HP in Master
-            CalamityGlobalNPC.AdjustMasterModeStatScaling(NPC, true);
         }
 
         public override void SendExtraAI(BinaryWriter writer)
@@ -82,10 +79,9 @@ namespace CalamityMod.NPCs.SlimeGod
             CalamityGlobalNPC calamityGlobalNPC = NPC.Calamity();
 
             CalamityGlobalNPC.slimeGodRed = NPC.whoAmI;
-            bool bossRush = BossRushEvent.BossRushActive;
-            bool expertMode = Main.expertMode || bossRush;
-            bool revenge = CalamityWorld.revenge || bossRush;
-            bool death = CalamityWorld.death || NPC.localAI[1] == 1f || bossRush;
+            bool expertMode = Main.expertMode || BossRushEvent.BossRushActive;
+            bool revenge = CalamityWorld.revenge || BossRushEvent.BossRushActive;
+            bool death = CalamityWorld.death || NPC.localAI[1] == 1f || BossRushEvent.BossRushActive;
 
             float lifeRatio = NPC.life / (float)NPC.lifeMax;
 
@@ -97,7 +93,7 @@ namespace CalamityMod.NPCs.SlimeGod
             if (NPC.localAI[1] == 1f)
             {
                 NPC.defense = NPC.defDefense + 24;
-                setDamage += 25;
+                setDamage += SlimeGodCore.PossessionDamageBoost;
             }
 
             // Used for landing squash and stretch
@@ -112,10 +108,10 @@ namespace CalamityMod.NPCs.SlimeGod
             addedStretch = -landingRecoil;
 
             // Used for teleporting
-            float scale = CalamityWorld.LegendaryMode ? 0.6f : 1f;
+            float scale = Main.getGoodWorld ? 0.8f : 1f;
 
             // How fast the slime slams down
-            float slamVelocity = bossRush ? 20f : death ? 16f : revenge ? 15f : expertMode ? 14f : 12f;
+            float slamVelocity = death ? 16f : revenge ? 15f : expertMode ? 14f : 12f;
 
             // Used for how fast the slime animates
             NPC.aiAction = 0;
@@ -155,7 +151,7 @@ namespace CalamityMod.NPCs.SlimeGod
             if (lifeRatio <= 0.5f && Main.netMode != NetmodeID.MultiplayerClient && expertMode)
             {
                 // Spread of random globs in meme mode
-                if (CalamityWorld.LegendaryMode)
+                if (Main.zenithWorld)
                 {
                     int type = ModContent.ProjectileType<UnstableCrimulanGlob>();
                     for (int i = 0; i < 30; i++)
@@ -188,7 +184,6 @@ namespace CalamityMod.NPCs.SlimeGod
                 // Spread of spikes
                 float projectileVelocity = 2f;
                 int type2 = ModContent.ProjectileType<CrimulanSpike>();
-                int damage = NPC.GetProjectileDamage(type2);
                 Vector2 spawnLocation = new Vector2(NPC.Center.X, NPC.Center.Y + 50f * NPC.scale);
                 Vector2 destination = (new Vector2(NPC.Center.X, NPC.Center.Y - 100f) - NPC.Center).SafeNormalize(Vector2.UnitY);
                 destination *= projectileVelocity;
@@ -223,7 +218,7 @@ namespace CalamityMod.NPCs.SlimeGod
                         Main.dust[slimeDust].noGravity = true;
                     }
 
-                    Projectile.NewProjectile(NPC.GetSource_FromAI(), projectileLocation, perturbedSpeed, type2, damage, 0f, Main.myPlayer, maxVelocity, acceleration, spikeType);
+                    Projectile.NewProjectile(NPC.GetSource_FromAI(), projectileLocation, perturbedSpeed, type2, BigSpikeDamage, 0f, Main.myPlayer, maxVelocity, acceleration, spikeType);
                 }
 
                 // Die
@@ -240,9 +235,6 @@ namespace CalamityMod.NPCs.SlimeGod
                 if (Main.npc[CalamityGlobalNPC.slimeGodPurple].active)
                     enraged = false;
             }
-
-            if (bossRush)
-                enraged = true;
 
             if (NPC.localAI[1] != 1f)
             {
@@ -342,7 +334,7 @@ namespace CalamityMod.NPCs.SlimeGod
                 }
             }
 
-            float distanceSpeedBoost = NPC.Distance(player.Center) * (bossRush ? 0.008f : 0.005f);
+            float distanceSpeedBoost = NPC.Distance(player.Center) * 0.005f;
 
             if (NPC.ai[0] == 0f)
             {
@@ -569,7 +561,6 @@ namespace CalamityMod.NPCs.SlimeGod
                             // Spread of spikes
                             float projectileVelocity = 2f;
                             int type2 = ModContent.ProjectileType<CrimulanSpike>();
-                            int damage = NPC.GetProjectileDamage(type2);
                             Vector2 spawnLocation = new Vector2(NPC.Center.X, NPC.Center.Y + 50f * NPC.scale);
                             Vector2 destination = (new Vector2(NPC.Center.X, NPC.Center.Y - 100f) - NPC.Center).SafeNormalize(Vector2.UnitY);
                             destination *= projectileVelocity;
@@ -604,7 +595,7 @@ namespace CalamityMod.NPCs.SlimeGod
                                     Main.dust[slimeDust].noGravity = true;
                                 }
 
-                                Projectile.NewProjectile(NPC.GetSource_FromAI(), projectileLocation, perturbedSpeed, type2, damage, 0f, Main.myPlayer, maxVelocity, acceleration, spikeType);
+                                Projectile.NewProjectile(NPC.GetSource_FromAI(), projectileLocation, perturbedSpeed, type2, BigSpikeDamage, 0f, Main.myPlayer, maxVelocity, acceleration, spikeType);
                             }
                         }
 
@@ -719,7 +710,7 @@ namespace CalamityMod.NPCs.SlimeGod
 
                 NPC.aiAction = 1;
                 NPC.ai[1] += 1f;
-                float teleportTime = bossRush ? 20f : death ? 30f : 40f;
+                float teleportTime = death ? 30f : 40f;
                 scale = MathHelper.Clamp((teleportTime - NPC.ai[1]) / teleportTime, 0f, 1f);
                 scale = 0.5f + scale * 0.5f;
                 if (NPC.ai[1] >= teleportTime && Main.netMode != NetmodeID.MultiplayerClient)
@@ -752,7 +743,7 @@ namespace CalamityMod.NPCs.SlimeGod
                 NPC.damage = 0;
 
                 NPC.ai[1] += 1f;
-                float teleportEndTime = bossRush ? 10f : death ? 15f : 20f;
+                float teleportEndTime = death ? 15f : 20f;
                 scale = MathHelper.Clamp(NPC.ai[1] / teleportEndTime, 0f, 1f);
                 scale = 0.5f + scale * 0.5f;
                 if (NPC.ai[1] >= teleportEndTime && Main.netMode != NetmodeID.MultiplayerClient)
@@ -891,7 +882,7 @@ namespace CalamityMod.NPCs.SlimeGod
             dustColor.A = 150;
 
             for (int k = 0; k < 5; k++)
-                Dust.NewDust(NPC.position, NPC.width, NPC.height, 4, hit.HitDirection, -1f, 0, dustColor, 1f);
+                Dust.NewDust(NPC.position, NPC.width, NPC.height, DustID.TintableDust, hit.HitDirection, -1f, 0, dustColor, 1f);
 
             if (NPC.life <= 0)
             {
@@ -925,12 +916,6 @@ namespace CalamityMod.NPCs.SlimeGod
         public override void ApplyDifficultyAndPlayerScaling(int numPlayers, float balance, float bossAdjustment)
         {
             NPC.lifeMax = (int)(NPC.lifeMax * 0.8f * balance * bossAdjustment);
-        }
-
-        public override void OnHitPlayer(Player target, Player.HurtInfo hurtInfo)
-        {
-            if (hurtInfo.Damage > 0)
-                target.AddBuff(BuffID.Darkness, 360);
         }
     }
 }

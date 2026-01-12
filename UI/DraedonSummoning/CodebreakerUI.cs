@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Text;
 using CalamityMod.Items.DraedonMisc;
-using CalamityMod.Items.Materials;
+using CalamityMod.Items.Pets;
 using CalamityMod.NPCs.ExoMechs;
 using CalamityMod.Packets;
 using CalamityMod.Systems.Collections;
@@ -168,13 +168,13 @@ namespace CalamityMod.UI.DraedonSummoning
             // Draw the cell payment slot icon.
             Texture2D emptyCellIconTexture = ModContent.Request<Texture2D>("CalamityMod/UI/DraedonsArsenal/PowerCellSlot_Empty").Value;
             Texture2D occupiedCellIconTexture = ModContent.Request<Texture2D>("CalamityMod/UI/DraedonsArsenal/PowerCellSlot_Filled").Value;
-            Texture2D bloodSampleIconTexture = ModContent.Request<Texture2D>("CalamityMod/Items/Materials/BloodSample").Value;
+            Texture2D bloodyVeinIconTexture = ModContent.Request<Texture2D>("CalamityMod/Items/Pets/BloodyVein").Value;
             Texture2D cellTexture = emptyCellIconTexture;
             if (codebreakerTileEntity.InputtedCellCount > 0)
             {
-                if (codebreakerTileEntity.ContainsBloodSample)
+                if (codebreakerTileEntity.ContainsBloodyVein)
                 {
-                    cellTexture = bloodSampleIconTexture;
+                    cellTexture = bloodyVeinIconTexture;
                 }
                 else
                 {
@@ -194,7 +194,7 @@ namespace CalamityMod.UI.DraedonSummoning
                 DisplayNotStrongEnoughErrorText(schematicSlotDrawCenter + new Vector2(-24f, 56f));
 
             // Handle decryption costs.
-            else if (codebreakerTileEntity.HeldSchematicID != 0 && codebreakerTileEntity.DecryptionCountdown == 0 && !codebreakerTileEntity.ContainsBloodSample)
+            else if (codebreakerTileEntity.HeldSchematicID != 0 && codebreakerTileEntity.DecryptionCountdown == 0 && !codebreakerTileEntity.ContainsBloodyVein)
             {
                 int cost = codebreakerTileEntity.DecryptionCellCost;
                 DisplayCostText(costDisplayLocation, cost);
@@ -247,8 +247,8 @@ namespace CalamityMod.UI.DraedonSummoning
             // Create a temporary item for drawing purposes.
             // If cells are present, make the item reflect that.
             Item temporaryPowerCell = new Item();
-            if (codebreakerTileEntity.ContainsBloodSample)
-                temporaryPowerCell.SetDefaults(ModContent.ItemType<BloodSample>());
+            if (codebreakerTileEntity.ContainsBloodyVein)
+                temporaryPowerCell.SetDefaults(ModContent.ItemType<BloodyVein>());
             else
                 temporaryPowerCell.SetDefaults(ModContent.ItemType<DraedonPowerCell>());
 
@@ -313,7 +313,7 @@ namespace CalamityMod.UI.DraedonSummoning
             if (Main.mouseLeft && Main.mouseLeftRelease && codebreakerTileEntity.DecryptionCountdown <= 0)
             {
                 int powercellID = ModContent.ItemType<DraedonPowerCell>();
-                int sampleID = ModContent.ItemType<BloodSample>();
+                int sampleID = ModContent.ItemType<BloodyVein>();
                 short cellStackDiff = 0;
                 bool shouldPlaySound = true;
 
@@ -323,7 +323,7 @@ namespace CalamityMod.UI.DraedonSummoning
                     cellStackDiff = (short)-Math.Min(temporaryItem.stack, temporaryItem.maxStack);
                     Player p = Main.LocalPlayer;
                     var source = p.GetSource_TileInteraction(codebreakerTileEntity.Position.X, codebreakerTileEntity.Position.Y);
-                    p.QuickSpawnItem(source, codebreakerTileEntity.ContainsBloodSample ? sampleID : powercellID, -cellStackDiff);
+                    p.QuickSpawnItem(source, codebreakerTileEntity.ContainsBloodyVein ? sampleID : powercellID, -cellStackDiff);
 
                     // Do not play a sound in this situation. The player is going to pick up the dropped cells in a few frames, which will make sound.
                     shouldPlaySound = false;
@@ -333,7 +333,7 @@ namespace CalamityMod.UI.DraedonSummoning
                 else
                 {
                     bool holdingPowercell = playerHandItem.type == powercellID || (playerHandItem.type == sampleID && Main.zenithWorld);
-                    bool powercellsinserted = !codebreakerTileEntity.ContainsBloodSample && temporaryItem.stack > 0;
+                    bool powercellsinserted = !codebreakerTileEntity.ContainsBloodyVein && temporaryItem.stack > 0;
                     bool cansummon = codebreakerTileEntity.ReadyToSummonDraedon && CalamityWorld.AbleToSummonDraedon;
 
                     // If the player's held power cells can be stacked on top of what's already in the codeberaker, then stack them.
@@ -347,7 +347,7 @@ namespace CalamityMod.UI.DraedonSummoning
                             {
                                 SoundEngine.PlaySound(BloodSound, codebreakerTileEntity.Center);
                             }
-                            codebreakerTileEntity.ContainsBloodSample = true;
+                            codebreakerTileEntity.ContainsBloodyVein = true;
 
                             int spaceLeft = TECodebreaker.MaxCellCapacity - temporaryItem.stack;
 
@@ -362,7 +362,7 @@ namespace CalamityMod.UI.DraedonSummoning
                         // If theres nothing inside or there are cells inside, cells can be inserted
                         if (playerHandItem.type == powercellID && (temporaryItem.stack == 0 || powercellsinserted))
                         {
-                            codebreakerTileEntity.ContainsBloodSample = false;
+                            codebreakerTileEntity.ContainsBloodyVein = false;
 
                             int spaceLeft = TECodebreaker.MaxCellCapacity - temporaryItem.stack;
 
@@ -387,7 +387,7 @@ namespace CalamityMod.UI.DraedonSummoning
                         playerHandItem.stack = -cellStackDiff;
                         temporaryItem.TurnToAir();
                         AwaitingDecryptionTextClose = false;
-                        codebreakerTileEntity.ContainsBloodSample = false;
+                        codebreakerTileEntity.ContainsBloodyVein = false;
                     }
                 }
 
@@ -637,7 +637,7 @@ namespace CalamityMod.UI.DraedonSummoning
 
             Rectangle clickArea = Utils.CenteredRectangle(drawPosition, contactButton.Size() * VerificationButtonScale);
 
-            float iconrotation = codebreakerTileEntity.ContainsBloodSample ? Main.GlobalTimeWrappedHourly * 20f : 0f;
+            float iconrotation = codebreakerTileEntity.ContainsBloodyVein ? Main.GlobalTimeWrappedHourly * 20f : 0f;
 
             // Check if the mouse is hovering over the contact button area.
             if (MouseScreenArea.Intersects(clickArea))
@@ -652,7 +652,7 @@ namespace CalamityMod.UI.DraedonSummoning
                 {
                     CalamityWorld.DraedonSummonCountdown = CalamityWorld.DraedonSummonCountdownMax;
                     CalamityWorld.DraedonSummonPosition = codebreakerTileEntity.Center + new Vector2(-8f, -100f);
-                    if (Main.zenithWorld && codebreakerTileEntity.ContainsBloodSample)
+                    if (Main.zenithWorld && codebreakerTileEntity.ContainsBloodyVein)
                     {
                         CalamityWorld.DraedonMechdusa = true;
                     }
@@ -677,7 +677,7 @@ namespace CalamityMod.UI.DraedonSummoning
             string contactTextKey = "Contact";
             if (DownedBossSystem.downedExoMechs)
                 contactTextKey = "Summon";
-            if (codebreakerTileEntity.ContainsBloodSample)
+            if (codebreakerTileEntity.ContainsBloodyVein)
                 contactTextKey = "Evoke";
             string contactText = CalamityUtils.GetTextValue("UI." + contactTextKey);
 

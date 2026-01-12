@@ -37,7 +37,6 @@ namespace CalamityMod.Projectiles.Ranged
             Projectile.localNPCHitCooldown = -1;
             Projectile.aiStyle = ProjAIStyleID.Arrow;
             AIType = ProjectileID.Bullet;
-            Projectile.Calamity().pointBlankShotDuration = CalamityGlobalProjectile.DefaultPointBlankDuration;
         }
 
         public override void AI()
@@ -127,8 +126,8 @@ namespace CalamityMod.Projectiles.Ranged
                 dust.color = Color.White;
                 dust.noLightEmittence = true;
             }
-            // Doesn't actually do damage, just an aoe for confustion infliction and knockback
-            Projectile flash = Projectile.NewProjectileDirect(Projectile.GetSource_FromThis(), Projectile.Center, Vector2.Zero, ModContent.ProjectileType<FlashRoundFlash>(), 5, 0f, Projectile.owner);
+            // Doesn't actually do damage, just an aoe for knockback
+            Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center, Vector2.Zero, ModContent.ProjectileType<FlashRoundFlash>(), 5, 0f, Projectile.owner);
         }
         public override bool OnTileCollide(Vector2 oldVelocity)
         {

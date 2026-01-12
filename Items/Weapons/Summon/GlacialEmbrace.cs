@@ -18,12 +18,13 @@ namespace CalamityMod.Items.Weapons.Summon
             Item.height = 50;
             Item.damage = 48;
             Item.mana = 10;
-            Item.useAnimation = Item.useTime = 24;
+            Item.useAnimation = Item.useTime = 36;
             Item.useStyle = ItemUseStyleID.HoldUp;
             Item.noMelee = true;
             Item.knockBack = 4.5f;
             Item.UseSound = SoundID.Item30;
             Item.autoReuse = true;
+            Item.buffType = ModContent.BuffType<GlacialEmbraceBuff>();
             Item.shoot = ModContent.ProjectileType<GlacialEmbracePointyThing>();
             Item.shootSpeed = 10f;
             Item.DamageType = DamageClass.Summon;
@@ -44,11 +45,10 @@ namespace CalamityMod.Items.Weapons.Summon
             }
             if (player.altFunctionUse != 2 && totalMinionSlots < player.maxMinions)
             {
-                player.AddBuff(ModContent.BuffType<GlacialEmbraceBuff>(), 120, true);
+                player.AddBuff(Item.buffType, 2);
                 position = player.ClampedMouseWorld();
-                int p = Projectile.NewProjectile(source, position, Vector2.Zero, type, damage, knockback, player.whoAmI);
-                if (Main.projectile.IndexInRange(p))
-                    Main.projectile[p].originalDamage = Item.damage;
+                var minion = Projectile.NewProjectileDirect(source, player.ClampedMouseWorld(), Vector2.Zero, type, damage, knockback, player.whoAmI);
+                minion.originalDamage = Item.damage;
                 int pointyThingCount = 0;
                 foreach (Projectile pro in Main.ActiveProjectiles)
                 {

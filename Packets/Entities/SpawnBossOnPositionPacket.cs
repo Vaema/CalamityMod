@@ -1,16 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.IO;
 using Terraria;
-using Terraria.DataStructures;
-using Terraria.ID;
 
 namespace CalamityMod.Packets
 {
-    public sealed class SpawnBossOnPositionPacket : CalamityPacket
+    internal sealed class SpawnBossOnPositionPacket : CalamityPacket
     {
         public static SpawnBossOnPositionPacket Instance { get; private set; }
 
@@ -40,7 +33,7 @@ namespace CalamityMod.Packets
             int spawnedNPCIdx = NPC.NewNPC(NPC.GetBossSpawnSource(targetIndex), x, y, npcType, Start: 1);
             if (spawnedNPCIdx >= Main.maxNPCs)
                 return;
-            
+
             NPC npc = Main.npc[spawnedNPCIdx];
             npc.timeLeft *= 20;
             npc.target = targetIndex;

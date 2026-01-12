@@ -11,7 +11,6 @@ using CalamityMod.Tiles.SunkenSea;
 using CalamityMod.Tiles.SunkenSea.Ambient;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using ReLogic.Content;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
@@ -91,8 +90,8 @@ namespace CalamityMod.Systems
             (ushort)ModContent.TileType<AbyssKelp>(),
             (ushort)ModContent.TileType<TenebrisRemnant>(),
             (ushort)ModContent.TileType<PhoviamareHalm>(),
-            (ushort)ModContent.TileType<SmallCorals>(),
             (ushort)ModContent.TileType<LongScarletSeagrass>(),
+            (ushort)ModContent.TileType<SunkenKelp>(),
         ];
 
         private static int[][] PlantValidGrounds;
@@ -121,7 +120,6 @@ namespace CalamityMod.Systems
             PlantValidGrounds[ModContent.TileType<AbyssKelp>()] = new int[1] { ModContent.TileType<AbyssGravel>() };
             PlantValidGrounds[ModContent.TileType<TenebrisRemnant>()] = new int[1] { ModContent.TileType<Voidstone>() };
             PlantValidGrounds[ModContent.TileType<PhoviamareHalm>()] = new int[2] { ModContent.TileType<PyreMantle>(), ModContent.TileType<PyreMantleMolten>() };
-            PlantValidGrounds[ModContent.TileType<SmallCorals>()] = new int[1] { ModContent.TileType<EutrophicSand>() };
 
             VineToGrass = new Dictionary<ushort, ushort>
             {

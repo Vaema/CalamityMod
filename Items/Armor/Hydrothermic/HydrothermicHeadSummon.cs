@@ -1,10 +1,9 @@
 ﻿using CalamityMod.Buffs.Summon;
-using CalamityMod.CalPlayer;
 using CalamityMod.Items.Materials;
-using CalamityMod.Items.Potions.Alcohol;
 using CalamityMod.Projectiles.Summon;
 using Terraria;
 using Terraria.ID;
+using Terraria.Localization;
 using Terraria.ModLoader;
 
 namespace CalamityMod.Items.Armor.Hydrothermic
@@ -14,6 +13,14 @@ namespace CalamityMod.Items.Armor.Hydrothermic
     public class HydrothermicHeadSummon : ModItem, ILocalizedModType
     {
         public new string LocalizationCategory => "Items.Armor.Hardmode";
+
+        public static int MinionSlotBoost = 1;
+        public static float SummonDamageBoost = 0.1f;
+        public override LocalizedText Tooltip => base.Tooltip.WithFormatArgs(MinionSlotBoost, SummonDamageBoost.ToPercent());
+
+        // Set Bonus
+        public static int SetBonusMinionSlotBoost = 1;
+        public static float SetBonusSummonDamageBoost = 0.25f;
         public static int VentDamage = 190;
 
         public override void SetDefaults()
@@ -25,10 +32,7 @@ namespace CalamityMod.Items.Armor.Hydrothermic
             Item.defense = 6; //40
         }
 
-        public override bool IsArmorSet(Item head, Item body, Item legs)
-        {
-            return body.type == ModContent.ItemType<HydrothermicArmor>() && legs.type == ModContent.ItemType<HydrothermicSubligar>();
-        }
+        public override bool IsArmorSet(Item head, Item body, Item legs) => body.type == ModContent.ItemType<HydrothermicArmor>() && legs.type == ModContent.ItemType<HydrothermicSubligar>();
 
         public override void ArmorSetShadows(Player player)
         {
@@ -38,7 +42,7 @@ namespace CalamityMod.Items.Armor.Hydrothermic
 
         public override void UpdateArmorSet(Player player)
         {
-            player.setBonus = this.GetLocalizedValue("SetBonus") + "\n" + CalamityUtils.GetTextValueFromModItem<HydrothermicArmor>("CommonSetBonus");
+            player.setBonus = this.GetLocalization("SetBonus").Format(SetBonusMinionSlotBoost, SetBonusSummonDamageBoost.ToPercent(), HydrothermicArmor.InfernoHealthThreshold.ToPercent());
             var modPlayer = player.Calamity();
             modPlayer.ataxiaBlaze = true;
             modPlayer.chaosSpirit = true;
@@ -58,16 +62,14 @@ namespace CalamityMod.Items.Armor.Hydrothermic
                         Main.projectile[p].originalDamage = VentDamage;
                 }
             }
-            player.GetDamage<SummonDamageClass>() += 0.4f;
-            player.maxMinions += 2;
+            player.maxMinions += SetBonusMinionSlotBoost;
+            player.GetDamage<SummonDamageClass>() += SetBonusSummonDamageBoost;
         }
 
         public override void UpdateEquip(Player player)
         {
-            player.GetDamage<SummonDamageClass>() += 0.05f;
-            player.GetKnockback<SummonDamageClass>() += 1.5f;
-            player.lavaImmune = true;
-            player.buffImmune[BuffID.OnFire] = true;
+            player.maxMinions += MinionSlotBoost;
+            player.GetDamage<SummonDamageClass>() += SummonDamageBoost;
         }
 
         public override void AddRecipes()

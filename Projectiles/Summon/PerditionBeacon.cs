@@ -80,7 +80,7 @@ namespace CalamityMod.Projectiles.Summon
         internal void AttackTarget()
         {
             // Release cinders around the target.
-            Dust cinder = Dust.NewDustPerfect(Target.Center + Main.rand.NextVector2Circular(800f, 800f), 6);
+            Dust cinder = Dust.NewDustPerfect(Target.Center + Main.rand.NextVector2Circular(800f, 800f), DustID.Torch);
             cinder.velocity = Vector2.UnitY * -Main.rand.NextFloat(3f, 7f);
             cinder.scale = 1f + cinder.velocity.Length() * 0.17f;
             cinder.noGravity = true;
@@ -121,7 +121,7 @@ namespace CalamityMod.Projectiles.Summon
 
             for (int i = 0; i < 55; i++)
             {
-                Dust fire = Dust.NewDustPerfect(Projectile.Center + Main.rand.NextVector2Circular(35f, 35f), 267);
+                Dust fire = Dust.NewDustPerfect(Projectile.Center + Main.rand.NextVector2Circular(35f, 35f), DustID.RainbowMk2);
                 fire.velocity = Vector2.Lerp(fire.velocity, Vector2.UnitY * -Main.rand.NextFloat(3.5f, 6f), 0.5f);
                 fire.color = Color.Lerp(Color.Orange, Color.Red, Main.rand.NextFloat(0f, 0.67f));
                 fire.scale = Main.rand.NextFloat(1.2f, 1.5f);

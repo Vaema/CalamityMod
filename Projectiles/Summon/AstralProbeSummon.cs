@@ -40,6 +40,7 @@ namespace CalamityMod.Projectiles.Summon
 
         public override void SetStaticDefaults()
         {
+            Main.projPet[Type] = true;
             ProjectileID.Sets.MinionSacrificable[Type] = true;
             ProjectileID.Sets.MinionTargettingFeature[Type] = true;
         }
@@ -116,7 +117,7 @@ namespace CalamityMod.Projectiles.Summon
             }
         }
 
-        public void LookInCorrectDirection(NPC target) // I feel really fucking proud of how organized I made it. ~Memes
+        public void LookInCorrectDirection(NPC target)
         {
             Vector2 lookHere = (target is not null) ? target.Center : Main.MouseWorld; // Looks at the mouse if there's no enemy, if there is one, it'll look at the enemy.
             int direction = (lookHere.X - Projectile.Center.X > 0).ToDirectionInt(); // If the target is at it's right, look at the right, if not, at it's left.
@@ -149,8 +150,6 @@ namespace CalamityMod.Projectiles.Summon
                     TimerForShooting++;
             }
         }
-
-        public override bool? CanDamage() => false;
 
         #endregion
     }

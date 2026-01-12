@@ -1,6 +1,7 @@
 ﻿using CalamityMod.Items.Materials;
 using Terraria;
 using Terraria.ID;
+using Terraria.Localization;
 using Terraria.ModLoader;
 
 namespace CalamityMod.Items.Armor.PlagueReaper
@@ -9,6 +10,11 @@ namespace CalamityMod.Items.Armor.PlagueReaper
     public class PlagueReaperStriders : ModItem, ILocalizedModType
     {
         public new string LocalizationCategory => "Items.Armor.Hardmode";
+
+        public static int RangedCritBoost = 8;
+        public static float MoveSpeedBoost = 0.15f;
+        public override LocalizedText Tooltip => base.Tooltip.WithFormatArgs(RangedCritBoost, MoveSpeedBoost.ToPercent());
+
         public override void SetDefaults()
         {
             Item.width = 18;
@@ -20,8 +26,8 @@ namespace CalamityMod.Items.Armor.PlagueReaper
 
         public override void UpdateEquip(Player player)
         {
-            player.GetCritChance<RangedDamageClass>() += 3;
-            player.moveSpeed += 0.15f;
+            player.GetCritChance<RangedDamageClass>() += RangedCritBoost;
+            player.moveSpeed += MoveSpeedBoost;
         }
 
         public override void AddRecipes()

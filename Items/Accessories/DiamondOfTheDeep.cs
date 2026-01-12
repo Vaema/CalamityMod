@@ -1,7 +1,5 @@
-﻿using CalamityMod.Buffs.DamageOverTime;
-using CalamityMod.CalPlayer;
+﻿using CalamityMod.CalPlayer;
 using CalamityMod.Items.Materials;
-using CalamityMod.Items.Placeables;
 using CalamityMod.Items.Placeables.Abyss;
 using Terraria;
 using Terraria.ID;
@@ -28,6 +26,7 @@ namespace CalamityMod.Items.Accessories
             CalamityPlayer modPlayer = player.Calamity();
             modPlayer.dOfTheDeep = true;
             modPlayer.dOfTheDeepVisual = !hideVisual;
+            modPlayer.WaterDebuffMultiplier += 0.75f;
         }
 
         public override void AddRecipes()

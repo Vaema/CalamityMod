@@ -1,5 +1,4 @@
-﻿using CalamityMod.Items.Materials;
-using CalamityMod.Projectiles.Typeless;
+﻿using CalamityMod.Projectiles.Typeless;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
@@ -34,8 +33,8 @@ namespace CalamityMod.Items.Weapons.Typeless
             Item.noMelee = true;
             Item.noUseGraphic = true;
             Item.UseSound = SoundID.Item1;
-            Item.value = CalamityGlobalItem.RarityOrangeBuyPrice / 10; // Crafted 10 at a time
-            Item.rare = ItemRarityID.Orange;
+            Item.value = Item.sellPrice(silver: 4); // Identical to Dynamite
+            Item.rare = ItemRarityID.Blue;
         }
 
         public override void ModifyResearchSorting(ref ContentSamples.CreativeHelper.ItemGroup itemGroup)

@@ -176,8 +176,7 @@ namespace CalamityMod.Projectiles.Melee
                 SoundEngine.PlaySound(SoundID.Item165 with { Pitch = -1 }, Projectile.Center);
                 Projectile.ai[2] = 40;
                 float screenShakePower = 3 * Utils.GetLerpValue(1300f, 0f, target.Distance(Main.LocalPlayer.Center), true);
-                if (Main.LocalPlayer.Calamity().GeneralScreenShakePower < screenShakePower)
-                    Main.LocalPlayer.Calamity().GeneralScreenShakePower = screenShakePower;
+                Main.LocalPlayer.SetScreenshake(screenShakePower);
             }
         }
     }

@@ -4,6 +4,7 @@ AegisBeam.DisplayName: Aegis Beam
 AegisBlast.DisplayName: Aegis Blast
 AegisBlast2.DisplayName: Aegis Blast
 AegisFlame.DisplayName: Aegis Flame
+AmidiasTridentBoltProj.DisplayName: Trident Bolt
 AmidiasWhirlpool.DisplayName: Whirlpool
 AncientBeam.DisplayName: Ancient Beam
 AncientStar.DisplayName: Ancient Star
@@ -67,7 +68,7 @@ CosmicShivBlade.DisplayName: Cosmic Beam
 CosmicShivTrail.DisplayName: Cosmic Shiv Trail
 CosmicSpiritBomb.DisplayName: Cosmic Bomb
 CrescentMoonFlail.DisplayName: Crescent Moon
-CrescentMoonProj.DisplayName: Crescent Moon
+CrescentMoonProj.DisplayName: Seeking Moon
 CrystylCrusherRay.DisplayName: Crystyl Crusher Ray
 Cyclone.DisplayName: Cyclone
 DarkBall.DisplayName: Dark Ball
@@ -85,7 +86,6 @@ DepthCrusherProjectile.DisplayName: Depth Crusher
 DepthCrusherSplitProjectile.DisplayName: Depth Crusher Jet
 DevilsDevastationThrownBlade.DisplayName: Devils Devastation Thrown Blade
 DevilsSunriseCyclone.DisplayName: Devil's Sunrise
-DNA.DisplayName: DNA
 DracoBeam.DisplayName: Draconic Beam
 DracoBeam2.DisplayName: Draconic Beam
 DraconicSpark.DisplayName: Draconic Spark
@@ -106,9 +106,8 @@ EntropicFlechette.DisplayName: Entropic Flechette
 EonBolt.DisplayName: Eon Bolt
 EssenceScythe.DisplayName: Essence Scythe
 ExaltedOathbladeThrownBlade.DisplayName: Exalted Oathblade Thrown Blade
-ExcelsusBlue.DisplayName: Excelsus
-ExcelsusMain.DisplayName: Excelsus
-ExcelsusPink.DisplayName: Excelsus
+MawOfInfinityHoldout.DisplayName: Maw of Infinity
+MawOfInfinityJaws.DisplayName: Divinity Devourer
 Exobeam.DisplayName: Exobeam
 ExobeamSlash.DisplayName: Exobeam Slash
 ExobeamSlashCreator.DisplayName: Anime Sword Effect
@@ -134,6 +133,7 @@ GalaxySmasherHammer.DisplayName: Galaxy Smasher
 GalaxySmasherMini.DisplayName: Cosmic Shard
 GalileosMoon.DisplayName: Crescent Moon
 GalileosPlanet.DisplayName: Planet
+GalileoGladiusThrown.DisplayName: Galileo Gladius (Thrown)
 GayBeam.DisplayName: Iridescent Beam
 GelWave.DisplayName: Gelitic Wave
 GemTechYellowShard.DisplayName: Trireme's Yellow Gem
@@ -147,6 +147,7 @@ GrandGuardianBoom.DisplayName: Cosmic Burst
 GreenWater.DisplayName: Greentide Tooth
 GrovetendersEntanglingVines.DisplayName: Entangling Growth
 GrovetendersTouch.DisplayName: Grovetender's Touch
+GildedProboscisProj.DisplayName: Gilded Proboscis
 HeavensMight.DisplayName: Heaven's Might
 HeavensMonolith.DisplayName: Heaven's Monolith
 HellionSpike.DisplayName: Hellion Spike
@@ -156,19 +157,28 @@ IllustriousKnife.DisplayName: Illustrious Knife
 InsidiousHarpoon.DisplayName: Insidious Harpoon
 JudgementProj.DisplayName: JUDGEMENT
 LamentationsOfTheChained.DisplayName: Lamentations of the Chained
-LaserFountain.DisplayName: Laser Fountain
 LifeScythe.DisplayName: Lifehunt Scythe
 LightBeam.DisplayName: Light Beam
 LightningThing.DisplayName: Lightning
+LightspeedDashHitbox.DisplayName: Lightspeed Rupture
+LightspeedHoldout.DisplayName: Lightspeed
+LightspeedM1Hitbox.DisplayName: Lightspeed Stab
+LucreciaBolt.DisplayName: Lucrecia Bolt
+LucreciaDNATrailCreator.DisplayName: Darklight Comet Trail
+LucreciaHoldout.DisplayName: Lucrecia
 LuxorsGiftMelee.DisplayName: Luxor's Melee
 MantisClawHoldout.DisplayName: Mantis Claw
 MantisClawJet.DisplayName: Mantis Claw Jet
 MantisClawSlash.DisplayName: Mantis Claw Slash
 MicrowaveAura.DisplayName: Microwave Radiation
 MirrorBlast.DisplayName: Mirror Blast
+MirrorBladeProjectile.DisplayName: Mirror Blade
+MirrorBladeSlash.DisplayName: Mirror Blade Slash
+MirrorBladeSlashCreator.DisplayName: Mirror Blade Slash Creator
 MonstrousKnife.DisplayName: Monstrous Knife
 MourningSkull.DisplayName: Mourning Skull
 MourningstarFlail.DisplayName: Mourningstar
+MutilatorSwordProj.DisplayName: The Mutilator
 Nebudust.DisplayName: Nebulash Dust
 NebulashFlail.DisplayName: Nebulash
 NebulaShot.DisplayName: Nebula Shot
@@ -218,6 +228,7 @@ SanguineFury.DisplayName: Sanguine Fury
 SanguineFuryDash.DisplayName: Shredding Lunge
 SanguineFuryWheel.DisplayName: Sanguine Bladewheel
 ScorcherExplosion.DisplayName: Scorching Crystal Blast
+ScorpiusConstellation.DisplayName: Scorpius Constellation
 ScourgeoftheCosmosMini.DisplayName: Miniature Cosmic Scourge
 ScourgeoftheCosmosProj.DisplayName: Cosmic Scourge
 SeekingScorcherProj.DisplayName: Scorching Seeker
@@ -230,8 +241,6 @@ SpatialSpear2.DisplayName: Elemental Spear
 SpatialSpear3.DisplayName: Elemental Spear
 SpatialSpear4.DisplayName: Elemental Spear
 SpineOfThanatosProjectile.DisplayName: Spine of Thanatos
-StarburstBeam.DisplayName: Star Shiv
-StarburstSHIV.DisplayName: SHIV
 StarnightBeam.DisplayName: Starnight Beam
 StarofJudgement.DisplayName: Star of Judgement
 StarofOrder.DisplayName: Star of Order
@@ -302,7 +311,3 @@ WulfrumScrew.DisplayName: Wulfrum Screw
 WulfrumScrewdriverProj.DisplayName: Wulfrum Screwdriver
 YinYoDark.DisplayName: Dark Shard
 YinYoLight.DisplayName: Light Shard
-MutilatorSwordProj.DisplayName: The Mutilator
-MirrorBladeProjectile.DisplayName: Mirror Blade
-MirrorBladeSlash.DisplayName: Mirror Blade Slash
-MirrorBladeSlashCreator.DisplayName: Mirror Blade Slash Creator

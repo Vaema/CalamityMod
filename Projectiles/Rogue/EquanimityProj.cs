@@ -1,12 +1,10 @@
-﻿using CalamityMod.Projectiles.Melee;
-using System;
+﻿using System;
 using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.Audio;
 using Terraria.ID;
 using Terraria.ModLoader;
 using static CalamityMod.CalamityUtils;
-using System.Collections.Generic;
 using CalamityMod.Particles;
 using CalamityMod.Items.Weapons.Typeless;
 using CalamityMod.Items.Weapons.Ranged;

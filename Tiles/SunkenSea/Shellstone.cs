@@ -15,20 +15,32 @@ namespace CalamityMod.Tiles.SunkenSea
 
             Main.tileSolid[Type] = true;
             Main.tileBlockLight[Type] = true;
+            TileID.Sets.HasSlopeFrames[Type] = true;
 
             CalamityUtils.MergeWithGeneral(Type);
             CalamityUtils.MergeWithDesert(Type);
 
-            TileID.Sets.HasSlopeFrames[Type] = true;
             TileID.Sets.ChecksForMerge[Type] = true;
             HitSound = SoundID.Tink;
             DustType = DustID.CorruptPlants;
             AddMapEntry(new Color(123, 127, 170));
 
-            this.RegisterUniversalMerge(ModContent.TileType<Navystone>(), "CalamityMod/Tiles/Merges/NavystoneMerge");
+            //Sand merges
+            this.RegisterBlendMergeWith(ModContent.TileType<VolcanicSand>());
+            this.RegisterBlendMergeWith(TileID.Sandstone);
+            this.RegisterBlendMergeWith(TileID.Sand);
+            this.RegisterBlendMergeWith(TileID.HardenedSand);
+            //Normal merges
+            this.RegisterBlendMergeWith(TileID.Stone);
+            this.RegisterBlendMergeWith(TileID.Dirt);
+            this.RegisterBlendMergeWith(TileID.Ash);
+            this.RegisterBlendMergeWith(TileID.Mud);
         }
 
-        public override bool TileFrame(int i, int j, ref bool resetFrame, ref bool noBreak) => TileFramingSystem.BetterGemsparkFraming(i, j, resetFrame);
+        public override bool TileFrame(int i, int j, ref bool resetFrame, ref bool noBreak)
+        {
+            return TileFramingSystem.BetterGemsparkFraming(i, j, resetFrame);
+        }
 
         public override void RandomUpdate(int i, int j)
         {

@@ -1,5 +1,4 @@
-﻿using CalamityMod.BiomeManagers;
-using CalamityMod.Items.Critters;
+﻿using CalamityMod.Items.Critters;
 using CalamityMod.Items.Placeables.Banners;
 using CalamityMod.Tiles.SunkenSea.Ambient;
 using Microsoft.Xna.Framework;
@@ -13,7 +12,6 @@ using Terraria.Audio;
 using CalamityMod.Enums;
 using System.Collections.Generic;
 using System;
-using CalamityMod.Projectiles.Ranged;
 
 namespace CalamityMod.NPCs.SunkenSea
 {
@@ -36,6 +34,8 @@ namespace CalamityMod.NPCs.SunkenSea
         public abstract float SpawnRate { get; }
         public abstract int ItemType { get; }
 
+        public abstract string GoreName { get; }
+
         public ref float CurrentPhase => ref NPC.Calamity().newAI[0];
 
         public ref float BiteCount => ref NPC.Calamity().newAI[1];
@@ -57,16 +57,12 @@ namespace CalamityMod.NPCs.SunkenSea
             NPC.defense = 0;
             NPC.lifeMax = 20;
             NPC.knockBackResist = 0f;
-            NPC.value = Item.buyPrice(0, 0, 5, 0);
             NPC.lavaImmune = false;
             NPC.noGravity = false;
             NPC.noTileCollide = false; 
             NPC.HitSound = SoundID.NPCHit38;
             NPC.DeathSound = SoundID.NPCDeath1;
             NPC.GravityIgnoresLiquid = true;
-            AIType = NPCID.Snail;
-            //Banner = NPC.type;
-            //BannerItem = ModContent.ItemType<PearlpodBanner>();
             NPC.catchItem = ItemType;
             NPC.Calamity().VulnerableToHeat = false;
             NPC.Calamity().VulnerableToSickness = true;
@@ -363,6 +359,7 @@ namespace CalamityMod.NPCs.SunkenSea
             {
                 Dust.NewDust(NPC.position, NPC.width, NPC.height, DustID.Coralstone, hit.HitDirection, -1f, 0, default, 1f);
             }
+            CalamityUtils.SpawnGores(NPC, GoreName, 3);
         }
     }
 
@@ -373,8 +370,16 @@ namespace CalamityMod.NPCs.SunkenSea
             base.SetStaticDefaults();
             Main.npcFrameCount[Type] = 4;
         }
+        public override void SetDefaults()
+        {
+            base.SetDefaults();
+            Banner = ModContent.NPCType<PearlpodWhite>();
+            BannerItem = ModContent.ItemType<PearlpodBanner>();
+        }
         public override float SpawnRate => 0.6f;
         public override int ItemType => ModContent.ItemType<PearlpodItem>();
+
+        public override string GoreName => "PearlpodWhite";
     }
     public class PearlpodPink : Pearlpod
     {
@@ -384,9 +389,16 @@ namespace CalamityMod.NPCs.SunkenSea
             this.HideFromBestiary();
             Main.npcFrameCount[Type] = 4;
         }
-
+        public override void SetDefaults()
+        {
+            base.SetDefaults();
+            Banner = ModContent.NPCType<PearlpodWhite>();
+            BannerItem = ModContent.ItemType<PearlpodBanner>();
+        }
         public override float SpawnRate => 0.05f;
         public override int ItemType => ModContent.ItemType<PearlpodPinkItem>();
+
+        public override string GoreName => "PearlpodPink";
     }
     public class PearlpodBlack : Pearlpod
     {
@@ -396,7 +408,15 @@ namespace CalamityMod.NPCs.SunkenSea
             this.HideFromBestiary();
             Main.npcFrameCount[Type] = 4;
         }
+        public override void SetDefaults()
+        {
+            base.SetDefaults();
+            Banner = ModContent.NPCType<PearlpodWhite>();
+            BannerItem = ModContent.ItemType<PearlpodBanner>();
+        }
         public override float SpawnRate => 0.2f;
         public override int ItemType => ModContent.ItemType<PearlpodBlackItem>();
+
+        public override string GoreName => "PearlpodBlack";
     }
 }

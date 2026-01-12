@@ -2,9 +2,9 @@ Abaddon: {
 	DisplayName: Abaddon
 	Tooltip:
 		'''
-		8% increased critical strike chance
-		Critical strikes explode, causing nearby enemies to ignite with Brimstone Flames
-		Reduces the damage of the Brimstone Flames debuff by 50%
+		{$CommonItemTooltip.PercentIncreasedCritChance}
+		Critical strikes explode, igniting nearby foes with [cbuff:CalamityMod/BrimstoneFlames]
+		Reduces damage taken from [cbuff:CalamityMod/BrimstoneFlames] by {1}%
 		'''
 }
 
@@ -26,14 +26,11 @@ AbyssalDivingSuit: {
 		'''
 		Transforms the holder into an armored diver:
 		Increases max movement speed and acceleration while underwater, but reduces it outside of water
-		The suit's armored plates increase damage reduction by 15%
-		Wearing this suit grants 15% damage reduction for hits under 50 damage
-		The suit can absorb up to 3 hits over 50 damage, and will take 3 minutes to regenerate
 		Grants the ability to swim, extends underwater breathing, emits light underwater, and improves mobility on ice
 		Provides a moderate amount of light, reduces breath loss, and reduces damage caused by drowning in the abyss
 		Abyss creatures are less likely to see you, mitigates the abyss' defense reduction, and lets you sink faster in liquids
-		Grants immunity to the sulphurous waters and Crush Depth's increased breath loss
-		Grants resistance to the increased breath loss caused by Hadopelagic Pressure
+		Grants immunity to the sulphurous waters and [cbuff:CalamityMod/CrushDepth]'s increased breath loss
+		Grants resistance to the increased breath loss caused by [cbuff:CalamityMod/HadopelagicPressure]
 		'''
 }
 
@@ -42,7 +39,7 @@ AbyssalMirror: {
 	Tooltip:
 		'''
 		Enemies are less likely to target you, even in the abyss
-		Generate stealth 25% faster when standing still and 12% faster while moving
+		Generate stealth {0}% faster when standing still and {1}% faster while moving
 		Grants the ability to dodge attacks, releasing a cloud of lumenyl fluid which damages and stuns nearby enemies
 		'''
 	HoldShiftTooltip:
@@ -57,7 +54,7 @@ AeroStone: {
 	DisplayName: Aero Stone
 	Tooltip:
 		'''
-		Provides an additional 50 flight time
+		Provides an additional {0} seconds of flight time
 		You slowly recover flight time while in the air while not flying or gliding
 		'One of the ancient relics'
 		'''
@@ -65,16 +62,16 @@ AeroStone: {
 
 Affliction: {
 	DisplayName: Affliction
-	Tooltip: Gives all teammates +0.5 HP/s life regen, +10% max life, 7% damage reduction, 13 defense and 10% increased damage
+	Tooltip: Gives all teammates +{0} HP/s life regen, +{1}% max life, {2}% damage reduction, {3} defense and {4}% increased damage
 }
 
-AlchemicalFlask: {
-	DisplayName: Alchemical Flask
+AlchemicalDecanter: {
+	DisplayName: Alchemical Decanter
 	Tooltip:
 		'''
-		All attacks inflict the Plague and reduces damage taken from the Plague by 50%
+		All attacks inflict the [cbuff:CalamityMod/Plague] and reduces damage taken from the [cbuff:CalamityMod/Plague] by {0}%
 		Projectiles spawn plague seekers on enemy hits
-		Releases plague bees when damaged and douses you in honey 
+		Releases plague bees and douses you in [cbuff:Honey] when damaged
 		'''
 }
 
@@ -82,7 +79,7 @@ AlluringBait: {
 	DisplayName: Alluring Bait
 	Tooltip:
 		'''
-		Increases fishing power by 10
+		Increases fishing power by {0}
 		Increases the yield of potion ingredient fish
 		'''
 }
@@ -91,7 +88,6 @@ AmalgamatedBrain: {
 	DisplayName: Amalgamated Brain
 	Tooltip:
 		'''
-		5% increased damage
 		Taking damage confuses nearby enemies and spawns a dank creeper
 		The dank creeper flies above you, exploding into several shaderain clouds
 		Grants the ability to dodge attacks
@@ -104,9 +100,9 @@ AmbrosialAmpoule: {
 	DisplayName: Ambrosial Ampoule
 	Tooltip:
 		'''
-		+50 max life
-		Grants +2 to +6 HP/s life regen based on missing health
-		Standing still grants +1.5 HP/s life regen and +1 HP/s life regen when inflicted with a damage debuff
+		+{0} max life
+		Grants +{1} to +{2} HP/s life regen based on missing health
+		Grants the [cbuff:Honey] buff
 		Current boost: +[REGEN] HP/s
 		Fire and sickness debuff durations are halved
 		You emit yellow light if visibility is enabled
@@ -117,7 +113,7 @@ AncientFossil: {
 	DisplayName: Ancient Fossil
 	Tooltip:
 		'''
-		Increases mining speed by 10%
+		Increases mining speed by {0}%
 		Provides immunity to damage from falling blocks
 		'''
 }
@@ -137,13 +133,13 @@ AngelicAlliance: {
 		'''
 		Call upon the force of heaven to empower your attacks and minions
 		Courage, Enlightenment, Bliss. United in Judgement
-		+2 max minions, 15% increased summon damage, and 8% increased damage to all other classes
-		+2 HP/s life regen while airborne using wings
-		Press [KEY] to grace yourself in divinity for 15 seconds
-		While Divine Bless is active, for every minion you have, an archangel shall be summoned to aid you in combat
-		Each spawned angel will instantly restore 2 HP
-		All minion attacks inflict Banishing Fire, and you are granted a flat 4 HP/s regen
-		This effect has a cooldown of 1 minute
+		+{0} max minions, {1}% increased summon damage, and {2}% increased damage to all other classes
+		+{3} HP/s life regen while flight time is partially or fully expended
+		Press [KEY] to grace yourself with the [cbuff:CalamityMod/DivineBless] buff for {4} seconds
+		While active, an archangel is summoned for every minion you have
+		Archangels vaporize foes with heavenly light and each restore {5} HP upon spawning
+		Minion attacks inflict [cbuff:CalamityMod/BanishingFire], and you gain a flat {6} HP/s regen
+		This effect has a cooldown of {7} minute
 		'''
 }
 
@@ -151,10 +147,11 @@ AngelTreads: {
 	DisplayName: Angel Treads
 	Tooltip:
 		'''
-		36% increased running acceleration
-		Increased flight time and grants rocket flight
-		Provides water walking and extra mobility on ice
-		Grants immunity to On Fire! and temporary immunity to lava
+		Allows flight, super fast running, and extra mobility on ice
+		{0}% increased movement speed and {1}% increased flight time
+		Provides the ability to walk on water, honey & lava
+		Grants immunity to fire blocks and {2} seconds of immunity to lava
+		Reduces damage from touching lava
 		'Extreme speed!'
 		'''
 }
@@ -164,9 +161,9 @@ AquaticEmblem: {
 	Tooltip:
 		'''
 		Most ocean enemies become friendly and allows breathing underwater
-		Being underwater boosts your defense over time, and slows movement speed
-		The defense boost and movement speed reduction slowly vanish outside of water
-		Maximum defense boost is 50 and movement speed reduction is 10%
+		Being underwater gradually increases defense but slows movement speed over {0} seconds
+		This effect slowly vanishes outside of water and resets while mounted
+		Maximum defense boost is {1} and movement speed reduction is {2}%
 		Provides a small amount of light and moderately reduces breath loss in the abyss
 		'''
 }
@@ -182,11 +179,11 @@ AquaticHeart: {
 	FullTooltip:
 		'''
 		Wow, you can swim now!
-		Being underwater increases max speed and acceleration by 15%
-		Greatly reduces breath loss and provides a small amount of light in the abyss
-		Attackers are inflicted with Glacial State
-		Gain a fragile ice barrier that grants 20% damage reduction for one hit
-		The ice shield regenerates after 30 seconds
+		Being underwater increases max speed and acceleration by {0}%
+		Greatly reduces breath loss and reduces the darkness intensity in the abyss
+		Attackers are inflicted with [cbuff:CalamityMod/GlacialState]
+		Gain a fragile ice barrier that grants {1}% damage reduction for one hit
+		The ice shield regenerates after {2} seconds
 		'''
 }
 
@@ -194,7 +191,7 @@ ArcFlashRing: {
 	DisplayName: Arc Flash Ring
 	Tooltip:
 		'''
-		Attacks have a 6% chance to call down a lightning bolt for 4x damage
+		Attacks have a {0}% chance to call down a lightning bolt for {1}x damage
 		The chance is reduced for each enemy an attack hits
 		The bolt's damage is based on non-crit damage, but can itself crit 
 		Bolts are transparent and silent if visibility is disabled
@@ -205,9 +202,9 @@ ArchaicPowder: {
 	DisplayName: Archaic Powder
 	Tooltip:
 		'''
-		Increases mining speed by 30%
+		Increases mining speed by {0}%
 		Provides immunity to damage from falling blocks and dart traps
-		65% resistance to all damage from traps
+		{1}% resistance to all damage from traps
 		Does not stack with downgrades
 		'''
 }
@@ -216,9 +213,9 @@ AscendantInsignia: {
 	DisplayName: Ascendant Insignia
 	Tooltip:
 		'''
-		Increases wing flight time by 50%, movement and jump speed by 15%, and acceleration by 1.5x
-		Pressing [KEY] grants you the power of ascension, providing infinite flight time for 4 seconds
-		Ascension has a 40 second cooldown
+		Increases wing flight time by {0}%, movement and jump speed by {1}%, and acceleration by {2}x
+		Pressing [KEY] grants you the power of ascension, providing infinite flight time for {3} seconds
+		Ascension has a {4} second cooldown
 		'''
 }
 
@@ -226,17 +223,9 @@ AsgardianAegis: {
 	DisplayName: Asgardian Aegis
 	Tooltip:
 		'''
+		{$Common.KnockbackImmunity}
 		Allows the ability to dash, empowered by a cosmic inferno
 		This dash can ram through enemies without taking damage
-		Grants immunity to knockback and fire blocks, as well as multiple debuffs
-		'''
-	HoldShiftTooltip:
-		'''
-		  On Fire!, Hellfire, Burning, Chilled, Frozen, Frostburn, Frostbite, Weak,
-		  Broken Armor, Bleeding, Poisoned, Acid Venom, Sulphuric Poisoning, Slow, Confused,
-		  Silenced, Cursed, Darkness, Webbed, Mighty Wind, Stoned, Armor Crunch, Blackout,
-		  Brain Rot, Burning Blood, Heavy Bleeding, Laceration, Cursed Inferno, Brimstone Flames,
-		  Shadowflame, Daybroken, Nightwither, Holy Flames, Voidfrost, God Slayer Inferno
 		'''
 }
 
@@ -244,15 +233,9 @@ AsgardsValor: {
 	DisplayName: Asgard's Valor
 	Tooltip:
 		'''
+		{$Common.KnockbackImmunity}
 		Allows the ability to ram dash
 		This dash can ram through enemies without taking damage
-		Grants immunity to knockback and fire blocks, as well as multiple debuffs
-		'''
-	HoldShiftTooltip:
-		'''
-		  On Fire!, Hellfire, Chilled, Frozen, Frostburn, Frostbite, Weak,
-		  Broken Armor, Bleeding, Poisoned, Slow, Confused, Silenced, Cursed,
-		  Darkness, Mighty Wind, Stoned, Brimstone Flames, Burning
 		'''
 }
 
@@ -288,7 +271,7 @@ BatholithBangle: {
 	Tooltip:
 		'''
 		Magic enemy hits create a powerful granite flash that always critically strikes
-		This effect has a 10 second cooldown, but is halved if the flash kills an enemy
+		This effect has a 10 second cooldown
 		Visual and audio effects are reduced if visibility is disabled
 		[c/0189D7:'The solid granite radiates energy throughout your body']
 		'''
@@ -309,14 +292,13 @@ BlazingCore: {
 	DisplayName: Blazing Core
 	Tooltip:
 		'''
-		Grants immunity to knockback
+		{$Common.KnockbackImmunity}
 		The searing core of the Profaned Goddess
 		Pressing [KEY] will activate a parry, encasing you in luminous profaned crystal
 		Being hit shortly after encasement will shatter the crystal
 		Upon shattering, holy stars spiral outwards and damage taken is negated
 		After shattering, this damage reduction effect goes on cooldown
 		Damage parried whilst on cooldown summons additional healing stars, and will not be reduced
-		{$Common.AbyssLightLevel2}
 		'''
 }
 
@@ -324,7 +306,7 @@ BloodflareCore: {
 	DisplayName: Bloodflare Core
 	Tooltip:
 		'''
-		Grants immunity to knockback
+		{$Common.KnockbackImmunity}
 		Recovering defense damage heals you, each defense recovered gives 1 HP
 		Taking damage converts at least half of your total defense in defense damage
 		'''
@@ -336,13 +318,13 @@ BloodPact: {
 		'''
 		Increases max HP by 25%
 		Grants immunity to Bleeding, Burning Blood and Heavy Bleeding
-		Healing Potions are 25% more effective
+		Healing Potions are 33% more effective
 		'''
 }
 
 BloodstainedGlove: {
 	DisplayName: Bloodstained Glove
-	Tooltip: Stealth strikes have +8 armor penetration and heal for 2 HP
+	Tooltip: Stealth strikes have +8 armor penetration and heal for 5 HP
 }
 
 BloodyWormScarf: {
@@ -361,8 +343,8 @@ BloomStone: {
 		'''
 		Healing Potions are 50% more effective, but provide their healing over time
 		Grappling hooks retract and pull the player 50% faster, and grow a flower at hookpoints
-		Touching a flower makes it burst into pollen which gives a temporary 6% damage reduction boost
-		The damage reduction boost increases to 12% while receiving healing over time
+		Touching a flower makes it burst into pollen which gives a temporary boost to potion healing over time
+		Potion healing slows drastically when at full health
 		'One of the ancient relics'
 		'''
 }
@@ -414,10 +396,13 @@ ChaosStone: {
 	DisplayName: Chaos Stone
 	Tooltip:
 		'''
-		Mana Sickness from drinking mana potions is replaced by Mana Burn
-		Mana Burn deals damage over time relative to the intensity of the debuff
-		This debuff does not reduce your magic damage
-		'One of the ancient relics'
+		Disables automatic potion consumption
+		Items that consume mana can be used even without the required mana amount
+		Mana usage can overflow into negative mana, causing you to receive [Mana Burn]
+		The lower your mana, the more intense the manafire burns
+		Attacks while you have [Mana Burn] inflict [Mana Burn] on enemies
+		Every 50 negative mana increases [Mana Burn] by 1% of the attack's damage
+		Negative Mana is capped at your maximum mana amount
 		'''
 }
 
@@ -434,7 +419,7 @@ CoinofDeceit: {
 	DisplayName: Coin of Deceit
 	Tooltip:
 		'''
-		Stealth strikes only expend 85% of your max stealth
+		Stealth strikes only expend 90% of your max stealth
 		6% increased rogue crit chance
 		'''
 }
@@ -444,14 +429,14 @@ CorrosiveSpine: {
 	Tooltip:
 		'''
 		5% increased movement speed
-		Multiplies all sickness and water-related debuff damage by 1.25x
+		25% increased Sickness and Water debuff damage
 		All attacks irradiate enemies and reduces the severity of the sulphuric waters
 		You burst into radioactive clouds when struck
 		'''
 }
 
-CorruptFlask: {
-	DisplayName: Corrupt Flask
+UnholyTonic: {
+	DisplayName: Unholy Tonic
 	Tooltip:
 		'''
 		Increases damage reduction by 4% and defense by 6 while in the corruption
@@ -463,7 +448,6 @@ CounterScarf: {
 	DisplayName: Counter Scarf
 	Tooltip:
 		'''
-		10% increased true melee damage
 		Grants the ability to dash; dashing into an attack will cause you to dodge it
 		After a successful dodge you must wait 30 seconds before you can dodge again
 		'''
@@ -478,8 +462,8 @@ CrawCarapace: {
 		'''
 }
 
-CrimsonFlask: {
-	DisplayName: Crimson Flask
+ViciousTonic: {
+	DisplayName: Vicious Tonic
 	Tooltip:
 		'''
 		Increases damage reduction by 4% and defense by 6 while in the crimson
@@ -493,7 +477,6 @@ CrownJewel: {
 		'''
 		+1 HP/s life regen
 		You gain an additional +1.5 HP/s life regen while afflicted with any debuff
-		Massively boosts natural life regen while afflicted with any debuff
 		'''
 }
 
@@ -501,7 +484,7 @@ CryoStone: {
 	DisplayName: Cryo Stone
 	Tooltip:
 		'''
-		Multiplies all cold-based debuff damage by 1.5x
+		50% increased Cold debuff damage
 		Creates a rotating ice shield around you that damages and slows down enemies on contact
 		'One of the ancient relics'
 		'''
@@ -545,7 +528,7 @@ DarkSunRing: {
 	DisplayName: Dark Sun Ring
 	Tooltip:
 		'''
-		Grants immunity to knockback
+		{$Common.KnockbackImmunity}
 		12% increased damage
 		+0.5 HP/s life regen and +2 max minions
 		Increased minion knockback
@@ -554,8 +537,8 @@ DarkSunRing: {
 	HoldShiftTooltip:
 		'''
 		  During the day, grants +2 HP/s life regen
-		  During the night, grants +20 defense
-		  During an eclipse, grants +1 HP/s life regen and +10 defense
+		  During the night, grants +16 defense
+		  During an eclipse, grants +1 HP/s life regen and +8 defense
 		'''
 	FlavorTooltip: "'Contains the power of the dark sun'"
 }
@@ -584,10 +567,11 @@ DeificAmulet: {
 	DisplayName: Deific Amulet
 	Tooltip:
 		'''
-		Causes stars to fall and increases length of invincibility after taking damage
-		Grants bonus invincibility frames based on your missing health
-		This effect scales from 10 frames at full HP to 40 frames at 25% or less HP
+		Releases a burst of homing star-bees[TOGGLE] and drenches you in [cbuff:Honey] after taking damage
+		Increases the length of invincibility, with it increasing even more when at low health
+		[c/aaaaaa:Shift-<right> this item in your inventory to toggle] [i:PanicNecklace] [c/aaaaaa:Panic Necklace's effect]
 		'''
+	ToggleEffect: ", increases movement speed,"
 }
 
 DepthCharm: {
@@ -596,6 +580,22 @@ DepthCharm: {
 		'''
 		Reduces the damage caused by drowning in the abyss
 		Removes the increased breath loss of Crush Depth
+		'''
+}
+
+DiamondOfTheDeep: {
+	DisplayName: Diamond of the Deep
+	Tooltip:
+		'''
+		60% increased Water debuff damage
+		Slowly accrue up to three different abyssal spirits
+		Dash to disperse the spirits and have them attack enemies
+		When dispersed [c/CB7AD7:below 50% life], the spirits support you instead
+		The spirits appear in order and have different effects based on color:
+		[c/3CB371: Explodes on impact and inflicts Crush Depth] / [c/CB7AD7:Heals for 8 HP]
+		[c/FF4500: Pierces enemies and inflicts Hellfire] / [c/CB7AD7:Increases defense by 10 temporarily]
+		[c/1E90FF: Hits multiple times and inflicts Hadopelagic Pressure] / [c/CB7AD7:Heals 5% of max HP]
+		Spirits are transparent and silent when visibility is toggled off
 		'''
 }
 
@@ -612,8 +612,8 @@ DraedonsHeart: {
 	DisplayName: Draedon's Heart
 	Tooltip:
 		'''
+		{$Common.KnockbackImmunity}
 		{0}% reduced contact damage from enemies
-		Grants immunity to knockback
 		[NANODESC]
 		With full Nanomachines, press [KEY] to heal {1} health over {2} {^2:second;seconds}
 		While healing, you take [DR]% less damage
@@ -686,7 +686,7 @@ ElectriciansGlove: {
 	DisplayName: Electrician's Glove
 	Tooltip:
 		'''
-		Stealth strikes summon sparks on enemy hits and heal you for 2 HP
+		Stealth strikes summon sparks on enemy hits and heal you for 10 HP
 		Stealth strikes also have +8 armor penetration and deal 8% more damage
 		'''
 }
@@ -704,20 +704,20 @@ ElementalGauntlet: {
 		'''
 }
 
+ElementalinaBottle: {
+	DisplayName: Elemental in a Bottle
+	Tooltip: Summons a sand elemental to fight for you
+}
+
 ElysianAegis: {
 	DisplayName: Elysian Aegis
 	Tooltip:
 		'''
+		{$Common.KnockbackImmunity}
 		Allows the ability to dash, empowered by holy fire
 		This dash can ram through enemies without taking damage
-		Grants immunity to knockback, fire blocks, as well as multiple debuffs
+		'Blessed by the Profaned Flame'
 		'''
-	HoldShiftTooltip:
-		'''
-		  On Fire!, Hellfire, Cursed Inferno, Shadowflame, Daybroken,
-		  Holy Flames, Brimstone Flames, Burning
-		'''
-	FlavorTooltip: "'Blessed by the Profaned Flame'"
 }
 
 EnchantedPearl: {
@@ -746,7 +746,8 @@ EtherealTalisman: {
 		15% increased magic damage, 5% increased magic critical strike chance
 		+150 max mana and 10% decreased mana usage
 		Increases pickup range for mana stars
-		You automatically use mana potions when needed if visibility is on
+		You automatically use mana potions when needed
+		[c/aaaaaa:Shift-<right> in your inventory to toggle] [i:ManaFlower] [c/aaaaaa:Mana Flower's effect]
 		'''
 }
 
@@ -754,9 +755,9 @@ EvasionScarf: {
 	DisplayName: Evasion Scarf
 	Tooltip:
 		'''
-		15% increased true melee damage
 		Grants the ability to dash; dashing into an attack will cause you to dodge it
 		After a successful dodge you must wait 30 seconds before you can dodge again
+		Has a shorter dash cooldown than most dashes
 		'''
 }
 
@@ -783,7 +784,7 @@ FlameLickedShell: {
 	DisplayName: Flame-Licked Shell
 	Tooltip:
 		'''
-		Grants immunity to knockback
+		{$Common.KnockbackImmunity}
 		Pressing [KEY] will activate a parry, encasing you in rocks
 		Being hit shortly after encasement will implode the rocks
 		Upon implosion, a ring of brimstone hellfire is launched outwards and you receive 90% DR for that hit
@@ -817,7 +818,7 @@ FrostFlare: {
 		All attacks and projectiles inflict Frostbite
 		Grants immunity to Frostburn, Chilled and Frozen
 		Being above 50% life grants 10% increased damage
-		Being below 50% life grants 20 defense and 15% increased max movement speed and acceleration
+		Being below 50% life grants 15 defense and 15% increased max movement speed and acceleration
 		Grants resistance against cold attacks
 		'''
 }
@@ -836,7 +837,7 @@ FungalSymbiote: {
 	Tooltip:
 		'''
 		You grow mushrooms on the grass beneath you
-		Consuming mushrooms provides the Mushy buff, granting 8 defense and +1 HP/s life regen
+		Consuming mushrooms provides the Mushy buff, granting 5 defense and +1 HP/s life regen
 		10% increased damage while you have the Mushy buff
 		'''
 }
@@ -848,7 +849,7 @@ GiantPearl: {
 		You have a light aura around you
 		Enemies within the aura are slowed down
 		Enemies that remain within the aura are bombarded by homing prism shards
-		{$Common.AbyssLightLevel1}
+		{$Common.AbyssGlow}
 		'''
 }
 
@@ -865,7 +866,7 @@ GiantTortoiseShell: {
 	DisplayName: Giant Tortoise Shell
 	Tooltip:
 		'''
-		Grants immunity to knockback
+		{$Common.KnockbackImmunity}
 		5% increased damage reduction and 10% reduced dash velocity
 		Taking a hit restores dash velocity and reduces defense and damage reduction for 3 seconds
 		'''
@@ -882,7 +883,11 @@ GladiatorsLocket: {
 
 GloveOfPrecision: {
 	DisplayName: Glove of Precision
-	Tooltip: Decreases rogue attack speed by 15%, but increases damage by 10%, crit by 15% and velocity by 15%
+	Tooltip:
+		'''
+		Decreases rogue attack speed by 15%
+		Increases rogue damage and critical strike chance by 10%, and velocity by 15%
+		'''
 }
 
 GloveOfRecklessness: {
@@ -915,7 +920,7 @@ HallowedRune: {
 	HoldShiftTooltip:
 		'''
 		[c/8ce0ff:  Hallowed Power] [c/ccf1ff: grants 10% increased summon damage and rains stars on enemies]
-		[c/d08aff:  Hallowed Defense] [c/eed4ff: grants 8 defense and 4% damage reduction]
+		[c/d08aff:  Hallowed Defense] [c/eed4ff: grants 5 defense]
 		[c/ff8cb5:  Hallowed Regen] [c/ffccde: grants +1.5 HP/s life regen]
 		'''
 }
@@ -943,10 +948,9 @@ HideofAstrumDeus: {
 	DisplayName: Hide of Astrum Deus
 	Tooltip:
 		'''
-		Taking damage or inflicting true melee strikes drops an immense amount of astral stars from the sky
-		Taking damage temporarily increases true melee damage by 30%
+		True melee strikes drops astral stars from the sky
+		Releases an explosion and temporarily increases true melee damage by 30% when damaged
 		Boost duration scales with the amount of damage you took, up to 10 seconds
-		Attackers take damage and are inflicted with Astral Infection
 		Nullifies the Astral Infection debuff
 		'''
 }
@@ -955,9 +959,8 @@ HoneyDew: {
 	DisplayName: Honey Dew
 	Tooltip:
 		'''
-		+30 max life
-		Grants +1 HP/s life regen, and +1 HP/s life regen when inflicted with a damaging debuff
-		Standing still in Honey grants +1.5 HP/s life regen
+		+10 max life
+		Grants the Honey buff
 		Sickness debuff durations are halved
 		'''
 }
@@ -986,10 +989,9 @@ InfectedJewel: {
 	Tooltip:
 		'''
 		Passively grants +1 HP/s life regen
-		Grants 16 defense and +2 HP/s life regen while afflicted with any debuff
-		Massively boosts natural life regen while afflicted with any debuff
+		Grants 12 defense and +2 HP/s life regen while afflicted with any debuff
 		Granted defense fades away quickly when not afflicted with any debuffs
-		Each debuff beyond the first grants 5 additional defense
+		Each debuff beyond the first grants 4 additional defense
 		Nullifies the Astral Infection debuff
 		'A beautiful gemstone tarnished by spaceborne rot'
 		'''
@@ -999,8 +1001,9 @@ InkBomb: {
 	DisplayName: Ink Bomb
 	Tooltip:
 		'''
-		Throws several ink bombs when hit that explode into ink
-		Gain a lot of stealth and confuse enemies when struck
+		Stealth generates 7% faster
+		Throws several ink bombs when hit that explode into ink and confuse enemies
+		Gain a lot of stealth when struck
 		This effect has a 20 second cooldown before it can occur again
 		'''
 }
@@ -1010,7 +1013,7 @@ InterstellarStompers: {
 	Tooltip:
 		'''
 		6% increased movement speed, 20% increased jump speed, and negates fall damage
-		Hold DOWN to increase your maximum fall speed
+		Hold {$Key.DOWN} to increase your maximum fall speed
 		Pressing [KEY] while midair charges up a superspeed slam over 0.33 seconds
 		While falling, you ram through enemies and don't take contact damage
 		Once you hit the ground, you create an explosion at your feet 
@@ -1023,10 +1026,22 @@ IronBoots: {
 	DisplayName: Iron Boots
 	Tooltip:
 		'''
-		Hold DOWN to increase your maximum fall speed, even in water
+		Hold {$Key.DOWN} to increase your maximum fall speed, even in water
 		Upon hitting the ground, a shockwave is created at your feet 
 		The shockwave scales in both damage and size the longer you fall for
 		Negates fall damage
+		'''
+}
+
+IVDripOnTheRocks: {
+	DisplayName: IV Drip on the Rocks
+	Tooltip:
+		'''
+		Multiplies most non-weapon, non-debuff damage by {0}x
+		Multiplies all weapon damage by {1}x
+		Counts as an alcohol stack toward Alcohol Poisoning
+		{$Common.AlcoholWarning}
+		'(drunken mumbling)'
 		'''
 }
 
@@ -1076,26 +1091,9 @@ LivingDew: {
 	DisplayName: Living Dew
 	Tooltip:
 		'''
-		+50 max life
-		Grants +1 HP/s life regen and an additional 1 HP/s life regen when inflicted with a damaging debuff
-		Standing still in Honey grants +1.5 HP/s life regen
+		+25 max life
+		Grants the Honey buff
 		Fire and sickness debuff durations are halved
-		'''
-}
-
-DiamondOfTheDeep: {
-	DisplayName: Diamond of the Deep
-	Tooltip:
-		'''
-		Multiplies all water debuff damage by 1.75x
-		Slowly accrue up to three different abyssal spirits
-		Dash to disperse the spirits and have them attack enemies
-		When dispersed [c/CB7AD7:below 50% life], the spirits support you instead
-		The spirits appear in order and have different effects based on color:
-		[c/3CB371: Explodes on impact and inflicts Crush Depth] / [c/CB7AD7:Heals for 8 HP]
-		[c/FF4500: Pierces enemies and inflicts Hellfire] / [c/CB7AD7:Increases defense by 15 temporarily]
-		[c/1E90FF: Hits multiple times and inflicts Hadopelagic Pressure] / [c/CB7AD7:Heals 5% of max HP]
-		Spirits are transparent and silent when visibility is toggled off
 		'''
 }
 
@@ -1249,7 +1247,7 @@ OldDukeScales: {
 	DisplayName: Old Duke's Scales
 	Tooltip:
 		'''
-		Grants immunity to knockback
+		{$Common.KnockbackImmunity}
 		10% increased damage reduction, max movement speed, and acceleration
 		25% increased dash velocity and length
 		Adds a stamina tracker to the cooldown rack
@@ -1272,7 +1270,6 @@ OrnateShield: {
 		'''
 		Allows the ability to dash
 		This dash can ram through enemies without taking damage
-		Grants immunity to Chilled, Frostburn, Frostbite, and Frozen
 		'''
 }
 
@@ -1307,7 +1304,7 @@ PhantomicArtifact: {
 	HoldShiftTooltip:
 		'''
 		[c/8ce0ff:  Phantomic Empowerment] [c/ccf1ff: grants 10% increased summon damage and throws knives at enemies]
-		[c/d08aff:  Phantomic Shield] [c/eed4ff: grants 10 defense, 5% damage reduction and a 20% damage reduction bulwark]
+		[c/d08aff:  Phantomic Shield] [c/eed4ff: grants 10 defense and a 20% damage reduction bulwark]
 		[c/ff8cb5:  Phantomic Regen] [c/ffccde: grants 1 HP/s life regen and occasionally drops phantom hearts which grant an additional 1 HP/s life regen]
 		'''
 }
@@ -1385,7 +1382,7 @@ ProtolithBangle: {
 	Tooltip:
 		'''
 		Ranged enemy hits create a marble flash that always critically strikes and can hit multiple enemies
-		This effect has a 7 second cooldown, but is halved if the flash kills the first enemy it hits
+		This effect has a 7 second cooldown
 		Visual and audio effects are reduced if visibility is disabled
 		[c/C5B965:'The cold marble against your wrist puts your mind at ease']
 		'''
@@ -1415,12 +1412,12 @@ Radiance: {
 		'''
 	HoldShiftTooltip:
 		'''
-		[c/CDF69C:Grants +2 to +6 HP/s life regen based on missing health]
+		[c/CDF69C:Grants +2 to +5 HP/s life regen based on missing health]
 		[c/CDF69C:Recover an additional 6 HP/s while inflicted with a debuff]
 		[c/CDF69C:This eventually slows to 1.33 HP/s when debuffed for an extended time period]
-		[c/CDF69C:Standing still provides +2 HP/s life regen and faster natural regen recovery]
-		[c/CDF69C:+20 defense and faster natural regen recovery while afflicted with any debuff]
-		[c/CDF69C:Each additional debuff grants 8 defense, which slowly decays while not debuffed]
+		[c/CDF69C:Grants the Honey buff]
+		[c/CDF69C:Grants 15 defense while afflicted with any debuff]
+		[c/CDF69C:Each additional debuff grants 5 defense, which slowly decays while not debuffed]
 		[c/CDF69C:Weak damaging debuffs are harmless and halves the duration of most other debuffs]
 		'''
 }
@@ -1429,7 +1426,7 @@ RadiantOoze: {
 	DisplayName: Radiant Ooze
 	Tooltip:
 		'''
-		Grants +2 to +6 HP/s life regen based on missing health
+		Grants +{0} to +{1} HP/s life regen based on missing health
 		Current boost: +[REGEN] HP/s
 		You emit yellow light if visibility is enabled
 		'''
@@ -1444,13 +1441,22 @@ RampartofDeities: {
 	DisplayName: Rampart of Deities
 	Tooltip:
 		'''
-		Causes stars to fall and increases length of invincibility after taking damage
-		Grants bonus invincibility frames based on your missing health
-		This effect scales from 10 frames at full HP to 40 frames at 25% or less HP
-		Being struck for over 200 damage grants 30 additional invincibility frames
-		Grants immunity to knockback
-		Puts a shell around the owner when below 50% life that reduces damage taken
-		Absorbs 25% of damage done to players on your team when above 25% life
+		{$Common.KnockbackImmunity}
+		Releases a blast of homing star-bees[TOGGLE] and drenches you in [cbuff:Honey] after taking damage
+		Increases the length of invincibility, with it increasing even more when at low health or taking high damage attacks
+		Reduces damage taken by 25% when below 50% life
+		Absorbs 25% of damage done to players on your team when you are above 25% life
+		[c/aaaaaa:Shift-<right> this item in your inventory to toggle] [i:PanicNecklace] [c/aaaaaa:Panic Necklace's effect]
+		'''
+	ToggleEffect: ", increases movement speed,"
+}
+
+RareElementalinaBottle: {
+	DisplayName: Rare Elemental in a Bottle
+	Tooltip:
+		'''
+		Summons a sand elemental to heal you
+		;D
 		'''
 }
 
@@ -1464,13 +1470,13 @@ ReaperToothNecklace: {
 		'''
 }
 
-Regenator: {
-	DisplayName: Regenator
+Regenerator: {
+	DisplayName: Regenerator
 	Tooltip:
 		'''
-		Your health cannot exceed 50% of its maximum
+		Your health cannot exceed {0}% of its maximum
 		Increases length of invincibility after taking damage
-		Provides powerful special life regen to heal you for 8.5 HP/s
+		Provides powerful special life regen to heal you for {1} HP/s
 		All normal life regen is negated and converted into damage 
 		Current damage boost: [DAMAGE]%
 		'''
@@ -1490,7 +1496,6 @@ RottenBrain: {
 	DisplayName: Rotten Brain
 	Tooltip:
 		'''
-		5% increased damage
 		Taking damage spawns a dank creeper
 		The dank creeper flies above you, exploding into several shaderain clouds
 		'''
@@ -1505,9 +1510,9 @@ RoverDrive: {
 	DisplayName: Rover Drive
 	Tooltip:
 		'''
-		Gain a barrier with 20 health, which grants 10 defense while active
+		Gain a barrier with {0} health
 		[ADREN]
-		If depleted, the barrier's health regenerates after not receiving damage for 10 seconds
+		The barrier will regenerate {1} seconds after being hit, taking {2} seconds to completely regenerate
 		Getting hit resets the timer
 		Can also be scrapped at an extractinator
 		'''
@@ -1529,7 +1534,7 @@ SandCloak: {
 		'''
 		Dashing creates a large protective sand veil which damages enemies inside it
 		The sand veil lasts 15 seconds, but dissipates early if you dash again
-		The veil slowly follows you, and any player inside it gains 10 defense and 1.75x acceleration
+		The veil slowly follows you, and any player inside it gains 4 defense and 1.75x acceleration
 		After dissipating, the sand veil has a 15 second cooldown before it can be used again
 		'''
 }
@@ -1558,7 +1563,7 @@ ScuttlersJewel: {
 	DisplayName: Scuttler's Jewel
 	Tooltip:
 		'''
-		Stealth strike projectiles spawn a jewel spike when destroyed
+		Stealth strike projectiles spawn a jewel spike on hit or when destroyed
 		Can also be broken down at an extractinator
 		'''
 }
@@ -1570,7 +1575,7 @@ SeaSpiritAmulet: {
 		Slowly accumulate up to eight spirit orbs that follow you
 		Spirits disperse when dashing
 		If below 50% life, they will heal you, otherwise they will attack nearby enemies
-		Multiplies all water debuff damage by 1.35x
+		35% increased Water debuff damage
 		Spirit orbs are transparent and silent if visibility is disabled
 		'''
 }
@@ -1682,7 +1687,7 @@ SpiritGlyph: {
 	HoldShiftTooltip:
 		'''
 		[c/8ce0ff:  Spirit Power] [c/ccf1ff:grants 10% increased summon damage]
-		[c/d08aff:  Spirit Defense] [c/eed4ff:grants 6 defense and 3% damage reduction]
+		[c/d08aff:  Spirit Defense] [c/eed4ff:grants 3 defense]
 		[c/ff8cb5:  Spirit Regen] [c/ffccde:grants +1 HP/s life regeneration]
 		'''
 }
@@ -1731,12 +1736,13 @@ StatisNinjaBelt: {
 	DisplayName: Statis' Ninja Belt
 	Tooltip:
 		'''
-		Provides a high-speed dash that scales with your movement speed
+		Provides a high-speed dash
 		10% increased movement speed, 32% increased jump speed, allows auto-jump, and negates fall damage
 		Increases movement acceleration and deceleration by 1.6x
-		Grants the ability to swim, climb walls, and dodge attacks
-		Consecutive dashes in the same direction reduce dash speed
+		Grants the ability to swim[TOGGLE] and dodge attacks
+		[c/aaaaaa:Shift-<right> this item in your inventory to toggle the] [i:ClimbingClaws] [c/aaaaaa:Climbing Claws]
 		'''
+	ToggleEffect: ", climb walls,"
 	HoldShiftTooltip: "{$Common.DodgeInformation}"
 }
 
@@ -1744,13 +1750,14 @@ StatisVoidSash: {
 	DisplayName: Statis' Void Sash
 	Tooltip:
 		'''
-		Provides a high-speed dash that scales with your movement speed
+		Provides a high-speed dash
 		20% increased movement speed, 32% increased jump speed, allows auto-jump, and negates fall damage
 		Increases movement acceleration and deceleration by 1.85x
-		Grants the ability to swim, climb walls, and dodge attacks
+		Grants the ability to swim[TOGGLE] and dodge attacks
 		Visual effects are reduced if visibility is disabled
-		Consecutive dashes in the same direction reduce dash speed
+		[c/aaaaaa:Shift-<right> this item in your inventory to toggle the] [i:ClimbingClaws] [c/aaaaaa:Climbing Claws]
 		'''
+	ToggleEffect: ", climb walls,"
 	HoldShiftTooltip: "{$Common.DodgeInformation}"
 }
 
@@ -1819,10 +1826,10 @@ StatMeter: {
 	MiscStats: Aggro: {0} | Luck: {1}%
 	AbyssStats:
 		'''
-		Abyss Light Strength: {0}
-		Breath Loss Rate: {1}
-		Life Lost Per Tick at Zero Breath: {2}
-		Defense Lost From Pressure: {3}
+		Abyss Darkness: {0} | Player Glow: {1}x | Flashlight Width: {2}x
+		Breath Loss Rate: {3}
+		Life Lost Per Tick at Zero Breath: {4}
+		Defense Lost From Pressure: {5}
 		'''
 	AbyssStatsHidden: Abyss stats are only displayed while in the Abyss
 }
@@ -1842,7 +1849,7 @@ SupremeBaitTackleBoxFishingStation: {
 		'''
 		Increases fishing power by 50
 		Fishing line will never break and decreases chance of bait consumption
-		Allows fishing in lava and detects hooked fish
+		Allows fishing in lava
 		'''
 }
 
@@ -1860,8 +1867,8 @@ TheAbsorber: {
 	DisplayName: The Absorber
 	Tooltip:
 		'''
+		{$Common.KnockbackImmunity}
 		{0}% increased movement and jump speed
-		Grants immunity to knockback
 		Attackers take immense damage and are afflicted with a crippling sickness debuff
 		Using a healing potion will spawn a green aura that lasts for {1} seconds
 		Walking into the aura removes all debuffs once and grants {2} HP/s regen, {3}% damage, and {4}% damage reduction
@@ -1873,8 +1880,7 @@ TheAmalgam: {
 	DisplayName: The Amalgam
 	Tooltip:
 		'''
-		10% increased damage
-		All attacks inflict a variety of debuffs and multiplies all elemental debuff damage by 3x
+		All attacks inflict a variety of debuffs, 200% increased elemental debuff damage
 		Most buffs last twice as long, and persist after dying
 		Taking damage confuses nearby enemies and spawns a dank creeper
 		The dank creeper flies above you, exploding into several shaderain clouds
@@ -1903,7 +1909,7 @@ TheCamper: {
 		You deal 50% less damage unless stationary
 		Standing still grants buffs depending on held item, and creates a damaging aura around you
 		While moving, you regenerate health as if standing still
-		{$Common.AbyssLightLevel1}
+		{$Common.AbyssGlow} when standing still
 		'In rest may we find victory'
 		'''
 }
@@ -1930,9 +1936,8 @@ TheEvolution: {
 	DisplayName: The Evolution
 	Tooltip:
 		'''
-		Reflects projectiles that hit you, negating their damage and dealing 10x damage to enemies
-		{$Common.ReflectInformation}
-		Reflecting a projectile grants maximum natural life regen for 10 seconds
+		Allows you to dodge projectiles, reflecting highly damaging mirror shards back at enemies
+		{$Common.DodgeInformation}
 		Getting hit by the same enemy projectile type during cooldown will resist its damage by 25%
 		'''
 }
@@ -1950,11 +1955,11 @@ TheSponge: {
 	DisplayName: The Sponge
 	Tooltip:
 		'''
-		Grants immunity to knockback
-		Gain a barrier with 180 health
-		The barrier grants 20 defense and 10% damage reduction while active
+		{$Common.KnockbackImmunity}
+		Gain a barrier with {0} health
+		The barrier grants {1}% damage reduction while active
 		[ADREN]
-		The barrier will regenerate 8 seconds after being hit, taking 10 seconds to completely regenerate
+		The barrier will regenerate {2} seconds after being hit, taking {3} seconds to completely regenerate
 		Getting hit resets the timer
 		'''
 	ShieldAdren: Halved Adrenaline loss if all damage is absorbed
@@ -1987,7 +1992,7 @@ ToxicHeart: {
 		'''
 		Your heart beats with the plague, pulsing outside of your body
 		Pulse frequency scale with regen, and pulses that kill enemies pulse again to heal you
-		Multiplies all sickness debuff damage by 1.5x
+		50% increased Sickness debuff damage
 		Effects are transparent and silent if visibility is disabled
 		'''
 }
@@ -1998,7 +2003,7 @@ TrinketofChi: {
 		'''
 		Increases damage reduction by 8% if you avoid taking damage for 10 seconds
 		This buff expires on hit
-		+1 HP/s life regen for teammates
+		+1 HP/s life regen for you and your teammates
 		'''
 }
 
@@ -2052,9 +2057,9 @@ VoidofExtinction: {
 	DisplayName: Void of Extinction
 	Tooltip:
 		'''
-		13% increased critical strike chance
-		Critical strikes explode, igniting enemies with Brimstone Flames
-		Reduces the damage of the Brimstone Flames debuff by 50%
+		{$CommonItemTooltip.PercentIncreasedCritChance}
+		Critical strikes explode, igniting nearby foes with [cbuff:CalamityMod/BrimstoneFlames]
+		Reduces damage taken from [cbuff:CalamityMod/BrimstoneFlames] by {1}%
 		'''
 }
 
@@ -2071,25 +2076,11 @@ WarbanneroftheRighteous: {
 	DisplayName: Warbanner of the Righteous
 	Tooltip:
 		'''
-		Grants a scaling damage boost based on how close you are to enemies
-		Maximum damage boost is 20%, minimum damage boost is -30%
+		Multiplies all damage based on how close you are to enemies
+		Maximum damage boost is 15%, minimum damage boost is -15%
 		Emit a blazing aura that burns and repels nearby enemies
 		Enemies take increasing damage the closer they are to you and the longer they are near you
 		Effects are transparent and silent if visibility is disabled
-		'''
-}
-
-WifeinaBottle: {
-	DisplayName: Elemental in a Bottle
-	Tooltip: Summons a sand elemental to fight for you
-}
-
-WifeinaBottlewithBoobs: {
-	DisplayName: Rare Elemental in a Bottle
-	Tooltip:
-		'''
-		Summons a sand elemental to heal you
-		;D
 		'''
 }
 
@@ -2101,9 +2092,9 @@ WulfrumAcrobaticsPack: {
 		This slingshot's stats scale with your equipped hook
 		If the hook has special effects, the slingshot also benefits from them
 		The slingshot allows for advanced rope-swinging physics
-		Hold UP or DOWN to retract or extend the slingshot's rope
+		Hold {$Key.UP} or {$Key.DOWN} to retract or extend the slingshot's rope
 		Automatically grapples nearby walls if a lethal fall is detected
-		This safety feature won't activate if DOWN is held
+		This safety feature won't activate if {$Key.DOWN} is held
 		8% increased movement speed
 		'''
 }
@@ -2123,7 +2114,7 @@ YharimsGift: {
 	DisplayName: Yharim's Gift
 	Tooltip:
 		'''
-		Grants immunity to knockback
+		{$Common.KnockbackImmunity}
 		Flaming meteors rain down after getting hit
 		Volatile dragon dust trails behind you
 		Increases damage and movement speed by 15%
@@ -2176,15 +2167,6 @@ Popo: {
 		Transforms the holder into a snowman
 		'Don't let the demons steal your nose'
 		'''
-}
-
-PunchCard: {
-	DisplayName: Punch Card
-	Tooltip: "[c/842593:'Please... please get world record...']"
-	// These are used to spawn the item via chat -- both must be all lower case for the detection to work
-	SpawnText1: it's late
-	SpawnText1Alt: its late
-	SpawnText2: go to bed
 }
 
 SharkyPlush: {

@@ -1,5 +1,4 @@
-﻿using CalamityMod.Items.Placeables.FurnitureWulfrum;
-using Microsoft.Xna.Framework;
+﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using ReLogic.Content;
 using Terraria;
@@ -18,7 +17,6 @@ namespace CalamityMod.Tiles.FurnitureWulfrum
             {
                 GlowTexture = ModContent.Request<Texture2D>("CalamityMod/Tiles/FurnitureWulfrum/AnodizedWulfrumPlatform_Glow", AssetRequestMode.ImmediateLoad).Value;
             }
-
             this.SetUpPlatform(ModContent.ItemType<Items.Placeables.FurnitureWulfrum.AnodizedWulfrumPlatform>(), true);
         }
 

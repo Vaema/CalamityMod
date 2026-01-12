@@ -1,5 +1,4 @@
 ﻿using CalamityMod.CalPlayer;
-using CalamityMod.Items.Materials;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
@@ -13,17 +12,17 @@ namespace CalamityMod.Items.Accessories
         {
             Item.width = 20;
             Item.height = 20;
-            Item.value = CalamityGlobalItem.RarityGreenBuyPrice;
-            Item.rare = ItemRarityID.Green;
+            Item.value = CalamityGlobalItem.RarityOrangeBuyPrice;
+            Item.rare = ItemRarityID.Orange;
             Item.accessory = true;
         }
 
         public override void UpdateAccessory(Player player, bool hideVisual)
         {
-            player.statLifeMax2 += 30;
+            player.statLifeMax2 += 10;
+            if (!player.HasBuff(BuffID.Honey))
+                player.AddBuff(BuffID.Honey, 2);
             CalamityPlayer modPlayer = player.Calamity();
-            modPlayer.alwaysHoneyRegen = true;
-            modPlayer.honeyTurboRegen = true;
             modPlayer.honeyDewHalveDebuffs = true;
         }
 

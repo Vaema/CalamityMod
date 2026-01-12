@@ -1,16 +1,11 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using CalamityMod.Buffs.DamageOverTime;
 using CalamityMod.CalPlayer;
 using CalamityMod.Cooldowns;
 using CalamityMod.NPCs;
 using CalamityMod.NPCs.NormalNPCs;
-using CalamityMod.Projectiles.Summon;
 using CalamityMod.Projectiles.Typeless;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using Mono.Cecil;
 using Terraria;
 using Terraria.DataStructures;
 using Terraria.GameContent;
@@ -26,7 +21,7 @@ namespace CalamityMod.Items.Accessories
     public class WarbanneroftheRighteous : ModItem, ILocalizedModType
     {
         public new string LocalizationCategory => "Items.Accessories";
-        internal const float MaxBonus = 0.5f;
+        internal const float MaxBonus = 0.3f;
         internal const float MaxDistance = 700f;
 
         public override void SetStaticDefaults()
@@ -42,6 +37,7 @@ namespace CalamityMod.Items.Accessories
             Item.value = CalamityGlobalItem.RarityPurpleBuyPrice;
             Item.rare = ItemRarityID.Purple;
             Item.accessory = true;
+            Item.expert = true;
         }
 
         public override void UpdateAccessory(Player player, bool hideVisual)
@@ -57,18 +53,15 @@ namespace CalamityMod.Items.Accessories
             }
 
             int maxValue = (int)(MaxBonus * 100);
-            float bonus = CalculateBonus(player) - 0.3f;
-            float displayBonus = (int)((bonus + 0.3f) * 100); // Should range from 0 to the maxValue
+            float bonus = CalculateBonus(player) - 0.15f;
+            float displayBonus = (int)((bonus + 0.15f) * 100); // Should range from 0 to the maxValue
 
             if (player.Calamity().cooldowns.TryGetValue(WarbanneroftheRighteousBuff.ID, out var cooldown))
                 cooldown.timeLeft = maxValue - (int)displayBonus;
             else
                 player.AddCooldown(WarbanneroftheRighteousBuff.ID, maxValue);
 
-            if (bonus > 0)
-                player.GetDamage<GenericDamageClass>() += bonus;
-            else
-                player.GetDamage<GenericDamageClass>() += bonus;
+            player.Calamity().warbannerDamageMult = bonus;
 
             int targetCount = 0;
             foreach (NPC npc in Main.ActiveNPCs) // More targets gradually reduces the burn damage for ALL targets
@@ -100,7 +93,7 @@ namespace CalamityMod.Items.Accessories
                     {
                         modNPC.warbannerBurnIntensity = intensity;
                         modNPC.warbannerBurnDirection = Utils.DirectionTo(player.Center, nPC.Center);
-                        int burnDamage = (int)player.GetBestClassDamage().ApplyTo(45 * damageMult); // There is up to a 3x multiplier on this damage depending on distance from the enemy
+                        int burnDamage = (int)player.GetBestClassDamage().ApplyTo(37 * damageMult); // There is up to a 3x multiplier on this damage depending on distance from the enemy
                         modNPC.warbannerBurnDamage = burnDamage;
                         modNPC.warbannerBurnStacks++;
                         modNPC.warbannerBurnTimer = 180;

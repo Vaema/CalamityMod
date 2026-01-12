@@ -1,27 +1,21 @@
-﻿using CalamityMod.BiomeManagers;
+﻿using System;
+using System.Collections.Generic;
+using System.IO;
 using CalamityMod.Enums;
-using CalamityMod.Items.Placeables;
 using CalamityMod.Items.Placeables.Banners;
-using CalamityMod.Particles;
+using CalamityMod.Pathfinding;
 using CalamityMod.Projectiles.Enemy;
-using CalamityMod.Projectiles.Ranged;
-using CalamityMod.World;
-using Microsoft.CodeAnalysis;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using ReLogic.Content;
-using System;
-using System.Collections.Generic;
-using System.IO;
 using Terraria;
 using Terraria.Audio;
-using Terraria.DataStructures;
 using Terraria.GameContent;
 using Terraria.GameContent.Bestiary;
-using Terraria.GameContent.ItemDropRules;
 using Terraria.ID;
 using Terraria.ModLoader;
 using Terraria.ModLoader.Utilities;
+
 namespace CalamityMod.NPCs.SunkenSea
 {
     public class LazarusLampfish : SunkenSeaNPC
@@ -91,20 +85,17 @@ namespace CalamityMod.NPCs.SunkenSea
             NPC.lifeMax = 400;
             NPC.aiStyle = -1;
             AIType = -1;
-            NPC.value = Item.buyPrice(0, 0, 10, 0);
+            NPC.value = Item.buyPrice(silver: 10);
             NPC.HitSound = SoundID.NPCHit1;
             NPC.DeathSound = SoundID.NPCDeath1;
             NPC.knockBackResist = 0.1f;
-            //Banner = NPC.type;
-            //BannerItem = ModContent.ItemType<LazarusLampfishBanner>(); LegacyName this to the BlindedAngler banner when it exists
+            Banner = NPC.type;
+            BannerItem = ModContent.ItemType<LazarusLampfishBanner>();
             NPC.chaseable = false;
             NPC.Calamity().VulnerableToHeat = false;
             NPC.Calamity().VulnerableToSickness = true;
             NPC.Calamity().VulnerableToElectricity = true;
             NPC.Calamity().VulnerableToWater = false;
-            // Scale stats in Expert and Master
-            CalamityGlobalNPC.AdjustExpertModeStatScaling(NPC);
-            CalamityGlobalNPC.AdjustMasterModeStatScaling(NPC);
         }
 
         public override void SetBestiary(BestiaryDatabase database, BestiaryEntry bestiaryEntry)
@@ -119,11 +110,9 @@ namespace CalamityMod.NPCs.SunkenSea
         {
             if (pathfinding == null)
             {
-                pathfinding = new PathfindingManager(NPC)
-                {
-                    Acceleration = 0.2f,
-                    MaxSpeed = 3f,
-                };
+                pathfinding = new PathfindingManager(this);
+                Acceleration = 0.2f;
+                MaxSpeed = 3f;
             }
             if (NPC.direction == 0)
             {
@@ -157,24 +146,11 @@ namespace CalamityMod.NPCs.SunkenSea
                             NPC.ai[2] = Main.rand.Next(13, 30);
 
                         // With sight, just go straight at him. Without it, try to pathfind over them.
-                        pathfinding.DoPathfinding(new(NPC.Center, CurrentPrey.Center, SunkenSeaTileValidity), forceNewTask: huntReady);
-                        pathfinding.CustomIdleBehavior = () =>
-                        {
-                            if (CurrentPrey != null)
-                            {
-                                NPC.velocity += NPC.DirectionTo(CurrentPrey.Center) * pathfinding.Acceleration;
-
-                                // Cap the speed if MaxSpeed has been surpassed.
-                                if (NPC.velocity.LengthSquared() > pathfinding.MaxSpeed * pathfinding.MaxSpeed)
-                                    NPC.velocity = Vector2.Normalize(NPC.velocity) * pathfinding.MaxSpeed;
-                            }
-                            else
-                                NPC.velocity *= 0.95f;
-                        };
+                        pathfinding.DoPathfinding(new(this, NPC.Center, CurrentPrey.Center, SunkenSeaTileValidity), forceNewTask: huntReady);
                     }
                     else
                     {
-                        pathfinding.DoPathfinding(new(NPC.Center, NPC.Center + Main.rand.NextVector2Unit() * Main.rand.Next(IdleMinPathDistance, IdleMaxPathDistance), SunkenSeaTileValidity));
+                        pathfinding.DoPathfinding(new(this, NPC.Center, NPC.Center + Main.rand.NextVector2Unit() * Main.rand.Next(IdleMinPathDistance, IdleMaxPathDistance), SunkenSeaTileValidity));
                     }
                     break;
                 case (int)PhaseType.Attacking:
@@ -184,12 +160,12 @@ namespace CalamityMod.NPCs.SunkenSea
                         CurrentPhase = (int)PhaseType.Idle;
                         Timer = 0;
                         NPC.ai[2] = 0;
-                        pathfinding.MaxSpeed = 3;
-                        pathfinding.Acceleration = 0.2f;
+                        MaxSpeed = 3;
+                        Acceleration = 0.2f;
                         break;
                     }
-                    pathfinding.MaxSpeed = 8;
-                    pathfinding.Acceleration = 0.3f;
+                    MaxSpeed = 8;
+                    Acceleration = 0.3f;
                     NPC.chaseable = true;
                     bool hasSight = Collision.CanHitLine(NPC.Center, 1, 1, currentTarget.Center, 1, 1);
                     // If the target is too far from its shooting range or a tile is in the way, move closer
@@ -200,20 +176,7 @@ namespace CalamityMod.NPCs.SunkenSea
                             NPC.ai[2] = Main.rand.Next(13, 30);
 
                         // With sight, just go straight at him. Without it, try to pathfind over them.
-                        pathfinding.DoPathfinding(new(NPC.Center, currentTarget.Center, SunkenSeaTileValidity), forceNewTask: restart);
-                        pathfinding.CustomIdleBehavior = () =>
-                        {
-                            if (currentTarget != null)
-                            {
-                                NPC.velocity += NPC.DirectionTo(currentTarget.Center) * pathfinding.Acceleration;
-
-                                // Cap the speed if MaxSpeed has been surpassed.
-                                if (NPC.velocity.LengthSquared() > pathfinding.MaxSpeed * pathfinding.MaxSpeed)
-                                    NPC.velocity = Vector2.Normalize(NPC.velocity) * pathfinding.MaxSpeed;
-                            }
-                            else
-                                NPC.velocity *= 0.95f;
-                        };
+                        pathfinding.DoPathfinding(new(this, NPC.Center, currentTarget.Center, SunkenSeaTileValidity), forceNewTask: restart);
 
                         NPC.ai[2]--;
                     }
@@ -231,7 +194,7 @@ namespace CalamityMod.NPCs.SunkenSea
                         {
                             if (Main.netMode != NetmodeID.MultiplayerClient)
                             {
-                                Projectile.NewProjectile(NPC.GetSource_FromThis(), NPC.Center + (NPC.rotation - (NPC.spriteDirection == 1 ? 0 : MathHelper.Pi)).ToRotationVector2() * 40, Vector2.Zero, ModContent.ProjectileType<AnglerFlash>(), (int)(NPC.damage * 0.5f), 1);
+                                Projectile.NewProjectile(NPC.GetSource_FromThis(), NPC.Center + (NPC.rotation - (NPC.spriteDirection == 1 ? 0 : MathHelper.Pi)).ToRotationVector2() * 40, Vector2.Zero, ModContent.ProjectileType<AnglerFlash>(), 20, 1);
                             }
                             SoundEngine.PlaySound(SoundID.NPCDeath7 with { Pitch = 0.4f }, NPC.Center);
                         }
@@ -251,8 +214,8 @@ namespace CalamityMod.NPCs.SunkenSea
                         {
                             CurrentPhase = currentTarget != null ? (int)PhaseType.Attacking : (int)PhaseType.Idle;
                             Timer = 0;
-                            pathfinding.MaxSpeed = 3;
-                            pathfinding.Acceleration = 0.2f;
+                            MaxSpeed = 3;
+                            Acceleration = 0.2f;
                             NPC.ai[2] = currentTarget != null ? 0 : 120;
                             break;
                         }
@@ -261,8 +224,8 @@ namespace CalamityMod.NPCs.SunkenSea
                             NPC.spriteDirection = NPC.direction *= -1;
                         }
                         Timer++;
-                        pathfinding.MaxSpeed = 8;
-                        pathfinding.Acceleration = 0.4f;
+                        MaxSpeed = 8;
+                        Acceleration = 0.4f;
 
                         if (Math.Abs(NPC.velocity.X) > 0)
                         {
@@ -277,19 +240,19 @@ namespace CalamityMod.NPCs.SunkenSea
                         // Try to manuever if there are any obstacles.
                         if (!Main.tile[(NPC.Center + NPC.DirectionFrom(currentTarget.Center) * FleeTileAnticipationDistance).ToTileCoordinates()].IsTileSolid())
                         {
-                            NPC.velocity += NPC.DirectionFrom(currentTarget.Center) * pathfinding.Acceleration;
+                            NPC.velocity += NPC.DirectionFrom(currentTarget.Center) * Acceleration;
                             pathfinding.ClearResults();
 
                             // Cap the speed if MaxSpeed has been surpassed.
-                            if (NPC.velocity.LengthSquared() > pathfinding.MaxSpeed * pathfinding.MaxSpeed)
-                                NPC.velocity = Vector2.Normalize(NPC.velocity) * pathfinding.MaxSpeed;
+                            if (NPC.velocity.LengthSquared() > MaxSpeed * MaxSpeed)
+                                NPC.velocity = Vector2.Normalize(NPC.velocity) * MaxSpeed;
                         }
                         else
                         {
                             float distanceFromAvoided = Vector2.Distance(NPC.Center, currentTarget.Center);
                             randomPathPoint = NPC.Center + Main.rand.NextVector2Unit() * Utils.Remap(distanceFromAvoided, 0f, 960f, 80f, 3200f);
                             NPC.netUpdate = true;
-                            pathfinding.DoPathfinding(new(NPC.Center, randomPathPoint, SunkenSeaTileValidity));
+                            pathfinding.DoPathfinding(new(this, NPC.Center, randomPathPoint, SunkenSeaTileValidity));
                         }
                         break;
                     }
@@ -347,6 +310,28 @@ namespace CalamityMod.NPCs.SunkenSea
 
         public override bool CanBeHitByNPC(NPC attacker) => PredatorIDs.Contains(attacker.type);
 
+        public override void AwaitingPathBehavior()
+        {
+            bool hasSight = false;
+            if (currentTarget != null)
+                hasSight = Collision.CanHitLine(NPC.Center, 1, 1, currentTarget.Center, 1, 1);
+            if (CurrentPhase == (int)PhaseType.Idle && CurrentPrey != null || CurrentPhase == (int)PhaseType.Attacking && currentTarget.Distance(NPC.Center) > 200 || !hasSight)
+            {
+                if (CurrentPrey != null)
+                {
+                    NPC.velocity += NPC.DirectionTo(CurrentPrey.Center) * Acceleration;
+
+                    // Cap the speed if MaxSpeed has been surpassed.
+                    if (NPC.velocity.LengthSquared() > MaxSpeed * MaxSpeed)
+                        NPC.velocity = Vector2.Normalize(NPC.velocity) * MaxSpeed;
+                }
+                else
+                    NPC.velocity *= 0.95f;
+            }
+            else
+                base.AwaitingPathBehavior();
+        }
+
         public override void SendExtraAI(BinaryWriter writer)
         {
             writer.WriteVector2(randomPathPoint);
@@ -379,6 +364,7 @@ namespace CalamityMod.NPCs.SunkenSea
                     Dust.NewDust(NPC.position, NPC.width, NPC.height, DustID.BlueCrystalShard, hit.HitDirection, -1f, 0, default, 1f);
                 }
             }
+            CalamityUtils.SpawnGores(NPC, "LazarusLampfish", 3);
         }
 
         public override bool PreDraw(SpriteBatch spriteBatch, Vector2 screenPos, Color drawColor)

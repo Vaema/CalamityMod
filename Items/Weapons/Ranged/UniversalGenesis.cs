@@ -1,5 +1,4 @@
 ﻿using System;
-using CalamityMod.Items.Accessories;
 using CalamityMod.Items.Materials;
 using CalamityMod.Projectiles.Ranged;
 using CalamityMod.Rarities;
@@ -15,11 +14,12 @@ namespace CalamityMod.Items.Weapons.Ranged
     public class UniversalGenesis : ModItem, ILocalizedModType
     {
         public new string LocalizationCategory => "Items.Weapons.Ranged";
+
         public override void SetDefaults()
         {
             Item.width = 158;
             Item.height = 60;
-            Item.damage = 192;
+            Item.damage = 180;
             Item.DamageType = DamageClass.Ranged;
             Item.useAnimation = Item.useTime = 26;
             Item.knockBack = 6.5f;
@@ -27,7 +27,6 @@ namespace CalamityMod.Items.Weapons.Ranged
             Item.shoot = ProjectileID.Bullet;
             Item.shootSpeed = 20f;
             Item.autoReuse = true;
-            Item.Calamity().canFirePointBlankShots = true;
 
             Item.noMelee = true;
             Item.UseSound = SoundID.Item38;
@@ -35,7 +34,6 @@ namespace CalamityMod.Items.Weapons.Ranged
             Item.value = CalamityGlobalItem.RarityDarkBlueBuyPrice;
             Item.rare = ModContent.RarityType<CosmicPurple>();
             Item.Calamity().donorItem = true;
-            Item.Calamity().canFirePointBlankShots = true;
         }
 
         public override Vector2? HoldoutOffset() => new Vector2(-50f, -8f);
@@ -57,38 +55,26 @@ namespace CalamityMod.Items.Weapons.Ranged
 
             // Stars from above
             float speed = Item.shootSpeed;
-            Vector2 spawnPos = player.RotatedRelativePoint(player.MountedCenter, true);
-            int starAmt = 6;
-            int starDmg = (int)(damage * 0.4);
+            int starAmt = 5;
+            int starDmg = (int)(damage * 0.5f);
             for (int i = 0; i < starAmt; i++)
             {
-                spawnPos = new Vector2(player.Center.X + (Main.rand.Next(201) * -(float)player.direction) + (Main.mouseX + Main.screenPosition.X - player.position.X), player.MountedCenter.Y - 600f);
+                Vector2 spawnPos = new Vector2(player.Center.X + (Main.rand.Next(201) * -player.direction) + (Main.mouseX + Main.screenPosition.X - player.position.X), player.MountedCenter.Y - 600f);
                 spawnPos.X = (spawnPos.X + player.Center.X) / 2f + Main.rand.Next(-200, 201);
                 spawnPos.Y -= 100 + i;
-                float xDist = Main.mouseX + Main.screenPosition.X - spawnPos.X;
-                float yDist = Main.mouseY + Main.screenPosition.Y - spawnPos.Y;
-                if (yDist < 0f)
-                {
-                    yDist *= -1f;
-                }
-                if (yDist < 20f)
-                {
-                    yDist = 20f;
-                }
-                float travelDist = (float)Math.Sqrt(xDist * xDist + yDist * yDist);
-                travelDist = speed / travelDist;
-                xDist *= travelDist;
-                yDist *= travelDist;
-                float xVel = xDist + Main.rand.NextFloat(-0.6f, 0.6f);
-                float yVel = yDist + Main.rand.NextFloat(-0.6f, 0.6f);
-                int star = Projectile.NewProjectile(source, spawnPos.X, spawnPos.Y, xVel, yVel, ModContent.ProjectileType<UniversalGenesisStar>(), starDmg, knockback, player.whoAmI, i, 1f);
+
+                Vector2 vel = new Vector2(Main.mouseX + Main.screenPosition.X - spawnPos.X, MathF.Abs(Main.mouseY + Main.screenPosition.Y - spawnPos.Y));
+                if (vel.Y < 20f)
+                    vel.Y = 20f;
+                vel = vel.SafeNormalize(Vector2.UnitY) * speed;
+                vel.X += Main.rand.NextFloat(-0.6f, 0.6f);
+                vel.Y += Main.rand.NextFloat(-0.6f, 0.6f);
+
+                int star = Projectile.NewProjectile(source, spawnPos, vel, ModContent.ProjectileType<UniversalGenesisStar>(), starDmg, knockback, player.whoAmI, i, 1f);
                 Main.projectile[star].extraUpdates = 2;
-                Main.projectile[star].localNPCHitCooldown = 30;
             }
             return false;
         }
-
-        public override bool CanConsumeAmmo(Item ammo, Player player) => Main.rand.NextBool();
 
         public override void AddRecipes()
         {

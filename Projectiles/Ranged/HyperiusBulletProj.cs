@@ -2,7 +2,6 @@
 using CalamityMod.Dusts;
 using CalamityMod.NPCs;
 using CalamityMod.Particles;
-using CalamityMod.Projectiles.Typeless;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using ReLogic.Content;
@@ -37,7 +36,6 @@ namespace CalamityMod.Projectiles.Ranged
             Projectile.tileCollide = false;
             AIType = ProjectileID.Bullet;
             Projectile.ignoreWater = true;
-            Projectile.Calamity().pointBlankShotDuration = CalamityGlobalProjectile.DefaultPointBlankDuration;
             Projectile.usesLocalNPCImmunity = true;
             Projectile.localNPCHitCooldown = -1;
         }

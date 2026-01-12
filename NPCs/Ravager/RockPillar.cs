@@ -1,8 +1,6 @@
 ﻿using CalamityMod.Buffs.StatDebuffs;
 using CalamityMod.Events;
-using CalamityMod.World;
 using Microsoft.Xna.Framework;
-using System;
 using Terraria;
 using Terraria.Audio;
 using Terraria.ID;
@@ -16,18 +14,18 @@ namespace CalamityMod.NPCs.Ravager
         public override void SetStaticDefaults()
         {
             this.HideFromBestiary();
+            NPCID.Sets.ImmuneToAllBuffs[Type] = true;
         }
 
         public override void SetDefaults()
         {
             NPC.Calamity().canBreakPlayerDefense = true;
-            NPC.GetNPCDamage();
+            NPC.damage = 90; // 180
             NPC.width = 60;
             NPC.height = 300;
             NPC.defense = 50;
             NPC.DR_NERD(0.3f);
             NPC.chaseable = false;
-            NPC.lifeMax = DownedBossSystem.downedProvidence ? 20000 : 5000;
             NPC.alpha = 255;
             NPC.aiStyle = -1;
             AIType = -1;
@@ -36,14 +34,23 @@ namespace CalamityMod.NPCs.Ravager
             NPC.DeathSound = SoundID.NPCDeath14;
             NPC.Calamity().VulnerableToSickness = false;
             NPC.Calamity().VulnerableToWater = true;
-
-            // Scale stats in Expert and Master
-            CalamityGlobalNPC.AdjustExpertModeStatScaling(NPC);
-            CalamityGlobalNPC.AdjustMasterModeStatScaling(NPC);
+            NPCID.Sets.ImmuneToAllBuffs[Type] = true;
+            NPC.lifeMax = 1800;
         }
 
+        //Disable dmg when stationary vertically or before jumping
+        public override bool CanHitPlayer(Player target, ref int cooldownSlot)
+        {
+            if (NPC.velocity.Y == 0 || NPC.ai[0] == 0f)
+                return false;
+            return base.CanHitPlayer(target, ref cooldownSlot);
+        }
         public override void AI()
         {
+            if (NPC.lifeMax > 1800)
+                NPC.lifeMax = 1800;
+            if (NPC.life > NPC.lifeMax)
+                NPC.life = NPC.lifeMax;
             if (CalamityGlobalNPC.scavenger < 0 || !Main.npc[CalamityGlobalNPC.scavenger].active)
             {
                 if (Main.netMode != NetmodeID.MultiplayerClient)
@@ -66,17 +73,13 @@ namespace CalamityMod.NPCs.Ravager
             }
             else
             {
-                if (DownedBossSystem.downedProvidence && !BossRushEvent.BossRushActive)
-                    NPC.damage = (int)(NPC.defDamage * 1.5);
-                else
-                    NPC.damage = NPC.defDamage;
             }
 
-            if (NPC.ai[0] == 0f)
+            if (NPC.ai[0] == 0)
             {
                 if (NPC.velocity.Y == 0f)
                 {
-                    if (NPC.ai[1] == -1f)
+                    if (NPC.ai[1] >= 2)
                     {
                         SoundEngine.PlaySound(SoundID.Item62, NPC.Center);
 
@@ -100,10 +103,14 @@ namespace CalamityMod.NPCs.Ravager
                         }
 
                         NPC.noTileCollide = true;
-                        NPC.velocity.X = (BossRushEvent.BossRushActive ? 15 : 12) * NPC.direction;
+                        if (NPC.rotation == 0)
+                            NPC.velocity.X = 12 * NPC.direction;
                         NPC.velocity.Y = -28.5f;
                         NPC.ai[0] = 1f;
-                        NPC.ai[1] = 0f;
+                        NPC.ai[1] = 0;
+                        NPC.damage = NPC.defDamage;
+                        if (DownedBossSystem.downedProvidence && !BossRushEvent.BossRushActive)
+                            NPC.damage = (int)(NPC.defDamage * 1.5);
                     }
                 }
             }
@@ -128,7 +135,7 @@ namespace CalamityMod.NPCs.Ravager
                 }
             }
         }
-        public override bool? CanFallThroughPlatforms() => NPC.target >= 0 && Main.player[NPC.target].position.Y > NPC.position.Y + NPC.height;
+        public override bool? CanFallThroughPlatforms() => NPC.ai[0] != 0 || ((NPC.alpha > 10) || (NPC.target >= 0 && Main.player[NPC.target].position.Y > NPC.position.Y + NPC.height));
         public override bool CheckActive() => false;
 
         public override void OnHitPlayer(Player target, Player.HurtInfo hurtInfo)
@@ -210,6 +217,41 @@ namespace CalamityMod.NPCs.Ravager
                     Main.dust[rockDust2].velocity *= 2f;
                 }
             }
+        }
+
+        public override void ModifyHitByItem(Player player, Item item, ref NPC.HitModifiers modifiers)
+        {
+            if (item.pick > 0)
+            {
+                modifiers.FlatBonusDamage += -10000;
+                modifiers.FinalDamage.Flat += item.pick - 1;
+                modifiers.SetCrit();
+            }
+            else
+            {
+                modifiers.SetMaxDamage(1);
+                modifiers.DisableCrit();
+                modifiers.HideCombatText();
+            }
+            base.ModifyHitByItem(player, item, ref modifiers);
+        }
+
+        public override void ModifyHitByProjectile(Projectile projectile, ref NPC.HitModifiers modifiers)
+        {
+            var item = Main.player[projectile.owner].HeldItem;
+            if (item.pick > 0 && projectile.CountsAsClass<MeleeDamageClass>())
+            {
+                modifiers.FlatBonusDamage += -10000;
+                modifiers.FinalDamage.Flat += item.pick - 1;
+                modifiers.SetCrit();
+            }
+            else
+            {
+                modifiers.SetMaxDamage(1); 
+                modifiers.DisableCrit();
+                modifiers.HideCombatText();
+            }
+            base.ModifyHitByProjectile(projectile, ref modifiers);
         }
     }
 }

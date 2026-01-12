@@ -1,6 +1,5 @@
 ﻿using System;
 using CalamityMod.Buffs.DamageOverTime;
-using CalamityMod.Buffs.StatDebuffs;
 using CalamityMod.Cooldowns;
 using CalamityMod.Dusts;
 using CalamityMod.Items.Weapons.Melee;
@@ -8,8 +7,6 @@ using CalamityMod.NPCs;
 using CalamityMod.Packets.Entities;
 using CalamityMod.Particles;
 using CalamityMod.Projectiles.BaseProjectiles;
-using CalamityMod.Projectiles.Ranged;
-using CalamityMod.Projectiles.Rogue;
 using CalamityMod.Projectiles.Typeless;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
@@ -64,6 +61,14 @@ namespace CalamityMod.Projectiles.Melee
             Projectile.localNPCHitCooldown = -1;
             Projectile.DamageType = TrueMeleeDamageClass.Instance;
         }
+        public override void OnSpawn(IEntitySource source)
+        {
+            base.OnSpawn(source);
+            // This is needed because EntitySource_ItemUse always sets Projectile.originalDamage to the item's damage,
+            // regardless of the value passed into the damage argument of NewProjectile.
+            // This results in continuous updating damage resetting the damage.
+            Projectile.originalDamage *= 15;
+        }
         public override void WhenSpawned()
         {
             IgnoreActiveAnimation = true;
@@ -88,7 +93,7 @@ namespace CalamityMod.Projectiles.Melee
             Owner.Calamity().demonSwordKillMode = false;
             if (lastHitTarget != null && lastHitTarget.life > 0 && lastHitTarget.active && Owner.HeldItem.type == AssignedItemID && Main.myPlayer == Projectile.owner)
             {
-                Owner.Calamity().GeneralScreenShakePower = 12.5f;
+                Owner.SetScreenshake(12.5f);
                 Particle blastRing = new CustomPulse(lastHitTarget.Center, Vector2.Zero, clr, "CalamityMod/Particles/HighResHollowCircleHardEdge", Vector2.One, Main.rand.NextFloat(-10, 10), 0.05f, 0.6f, 20, true);
                 GeneralParticleHandler.SpawnParticle(blastRing);
                 for (int i = 0; i < 4; i++)
@@ -97,6 +102,7 @@ namespace CalamityMod.Projectiles.Melee
                     Projectile.NewProjectileDirect(Projectile.GetSource_FromThis(), lastHitTarget.Center, vel.RotatedBy(MathHelper.ToRadians(45)), ModContent.ProjectileType<DevilsStrike>(), 0, 0f, Owner.whoAmI, 1, 0);
                 }
                 Projectile strike = Projectile.NewProjectileDirect(Projectile.GetSource_FromThis(), lastHitTarget.Center, Vector2.Zero, ModContent.ProjectileType<DirectStrike>(), (int)(Projectile.damage * 1.5f), 0f, Owner.whoAmI, lastHitTarget.whoAmI, 0);
+                strike.DamageType = DamageClass.Melee;
                 SoundStyle dieSound = new("CalamityMod/Sounds/Item/LanceofDestinyStrong");
                 SoundEngine.PlaySound(dieSound with { Volume = 0.9f, Pitch = 0.3f }, lastHitTarget.Center);
 
@@ -365,7 +371,7 @@ namespace CalamityMod.Projectiles.Melee
 
             if (Projectile.numHits == 0)
             {
-                Owner.Calamity().GeneralScreenShakePower = 12f;
+                Owner.SetScreenshake(12f);
                 for (int i = 0; i < 5; i++)
                     GeneralParticleHandler.SpawnParticle(new CustomSpark(target.Center + launchVel * 15, launchVel.RotatedBy((0.15f - 0.05f * i) * (i % 2 == 0 ? -1 : 1)) * (10 + 10 * i), "CalamityMod/Particles/DemonSigilParticle", false, 11, 0.7f - 0.15f * i, Main.rand.NextBool() ? clr : Color.MediumOrchid, new Vector2(1.5f, 1), extraRotation: MathHelper.ToRadians(i % 2 == 0 ? 90 : 0), shrinkSpeed: (i % 2 == 0 ? -0.8f : 0.8f)));
 

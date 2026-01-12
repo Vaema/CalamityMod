@@ -1,5 +1,4 @@
-﻿using CalamityMod.Balancing;
-using CalamityMod.Dusts;
+﻿using CalamityMod.Dusts;
 using CalamityMod.Particles;
 using Microsoft.Xna.Framework;
 using Terraria;
@@ -27,7 +26,6 @@ namespace CalamityMod.Projectiles.Ranged
             Projectile.DamageType = DamageClass.Ranged;
             Projectile.extraUpdates = 12;
             Projectile.timeLeft = Lifetime;
-            Projectile.Calamity().pointBlankShotDuration = CalamityGlobalProjectile.DefaultPointBlankDuration;
             Projectile.tileCollide = false;
         }
 
@@ -83,10 +81,9 @@ namespace CalamityMod.Projectiles.Ranged
         // Returns the amount of bonus damage that should be dealt. Boosts life regeneration appropriately as a side effect.
         private float OnHitEffect(Player owner, NPC target)
         {
-            // The bonus scales based on a rough estimate of how strong the hit is
-            // Caps at min 12 and max 720
-            float lifeRegenTimeBonus = 3600 * MathHelper.Clamp((Projectile.damage / target.lifeMax), 0.0035f, 0.2f);
-            owner.lifeRegenTime += (int)lifeRegenTimeBonus;
+            // Adds 3 frames to natural life regen on each hit
+            owner.lifeRegenTime += 3;
+
             // Provides up to 10% damage boost based on life regen time, caps at 3600
             float lifeRegenTimeContribution = Utils.GetLerpValue(0, 3600, owner.lifeRegenTime, true) * 0.1f;
             float finalDamageBoost = 1 + lifeRegenTimeContribution;

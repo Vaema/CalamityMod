@@ -1,4 +1,5 @@
-﻿using CalamityMod.Items.Materials;
+﻿using CalamityMod.CalPlayer;
+using CalamityMod.Items.Materials;
 using CalamityMod.Projectiles.Typeless;
 using Microsoft.Xna.Framework;
 using Terraria;
@@ -28,7 +29,7 @@ namespace CalamityMod.Items.Fishing.FishingRods
         public override void ModifyFishingLine(Projectile bobber, ref Vector2 lineOriginOffset, ref Color lineColor)
         {
             lineOriginOffset = new Vector2(35f, -27f);
-            lineColor = new Color(200, 200, 200, 100);
+            lineColor = Color.Lerp(Color.GreenYellow, Color.DeepSkyBlue, Main.player[bobber.owner].Calamity().consecutiveCaughtFish / 5f);
         }
 
         public override void AddRecipes()

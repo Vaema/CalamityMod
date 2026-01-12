@@ -206,7 +206,7 @@ namespace CalamityMod.Projectiles.Melee.Yoyos
 
                     SoundStyle explode = new("CalamityMod/Sounds/Custom/Providence/ProvidenceHolyBlastImpact");
                     SoundEngine.PlaySound(explode with { Volume = 0.5f, Pitch = 0.3f * power }, Projectile.Center);
-                    SoundStyle explode2 = new("CalamityMod/Sounds/Item/HeliumFlashReadyAlt");
+                    SoundStyle explode2 = new("CalamityMod/Sounds/Item/HeliumFlashReady");
                     SoundEngine.PlaySound(explode2 with { Volume = 0.7f, Pitch = 0.6f * power }, Projectile.Center);
                 }
             }

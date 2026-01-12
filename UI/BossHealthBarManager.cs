@@ -111,12 +111,7 @@ namespace CalamityMod.UI
                 BossMainHPBar = Request<Texture2D>("CalamityMod/UI/MiscTextures/BossHPMainBar", AssetRequestMode.ImmediateLoad).Value;
                 BossComboHPBar = Request<Texture2D>("CalamityMod/UI/MiscTextures/BossHPComboBar", AssetRequestMode.ImmediateLoad).Value;
                 BossSeperatorBar = Request<Texture2D>("CalamityMod/UI/MiscTextures/BossHPSeperatorBar", AssetRequestMode.ImmediateLoad).Value;
-
-                PlatformID id = Environment.OSVersion.Platform;
-                if (id == PlatformID.Win32NT)
-                    HPBarFont = Request<DynamicSpriteFont>("CalamityMod/Fonts/HPBarFont", AssetRequestMode.ImmediateLoad).Value;
-                else
-                    HPBarFont = FontAssets.MouseText.Value;
+                HPBarFont = Request<DynamicSpriteFont>("CalamityMod/Fonts/HPBarFont", AssetRequestMode.ImmediateLoad).Value;
             }
 
             OneToMany = new Dictionary<int, int[]>();
@@ -141,12 +136,11 @@ namespace CalamityMod.UI
             OneToMany[NPCID.PrimeCannon] = SkelePrime;
             OneToMany[NPCID.PrimeLaser] = SkelePrime;
 
-            int[] Golem = new int[] { NPCID.Golem, NPCID.GolemFistLeft, NPCID.GolemFistRight, NPCID.GolemHead, NPCID.GolemHeadFree };
+            int[] Golem = new int[] { NPCID.Golem, NPCID.GolemFistLeft, NPCID.GolemFistRight, NPCID.GolemHead };
             OneToMany[NPCID.Golem] = Golem;
             OneToMany[NPCID.GolemFistLeft] = Golem;
             OneToMany[NPCID.GolemFistRight] = Golem;
             OneToMany[NPCID.GolemHead] = Golem;
-            OneToMany[NPCID.GolemHeadFree] = Golem;
 
             int[] Saucer = new int[] { NPCID.MartianSaucerCore, NPCID.MartianSaucerTurret, NPCID.MartianSaucerCannon };
             OneToMany[NPCID.MartianSaucerCore] = Saucer;
@@ -277,10 +271,9 @@ namespace CalamityMod.UI
 
                 // Hardmode Modded.
                 NPCType<CloudElemental>(),
-                NPCType<Horse>(),
+                NPCType<EarthElemental>(),
                 NPCType<GreatSandShark>(),
                 NPCType<PlaguebringerMiniboss>(),
-                NPCType<ArmoredDiggerHead>(),
                 NPCType<Cataclysm>(), //Clone's brothers
                 NPCType<Catastrophe>(),
 

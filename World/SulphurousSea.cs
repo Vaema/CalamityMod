@@ -1,15 +1,16 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using CalamityMod.Items;
 using CalamityMod.Items.Accessories;
 using CalamityMod.Items.Placeables.Furniture;
+using CalamityMod.Items.Tools.SpawnBlocker;
 using CalamityMod.Items.Weapons.Summon;
 using CalamityMod.Schematics;
 using CalamityMod.Tiles.Abyss;
 using CalamityMod.Tiles.Abyss.AbyssAmbient;
 using CalamityMod.Tiles.Abyss.Stalactite;
 using CalamityMod.Walls;
+using CalamityMod.Walls.UnsafeWalls;
 using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.GameContent.RGB;
@@ -244,7 +245,7 @@ namespace CalamityMod.World
             int width = BiomeWidth + 1;
             int maxDepth = BlockDepth;
             ushort blockTileType = (ushort)ModContent.TileType<SulphurousSand>();
-            ushort wallID = (ushort)ModContent.WallType<SulphurousSandWall>();
+            ushort wallID = (ushort)ModContent.WallType<UnsafeSulphurousSandWall>();
 
             for (int i = 1; i < width; i++)
             {
@@ -301,7 +302,7 @@ namespace CalamityMod.World
                         OtherTilesForSulphSeaToDestroy.Contains(type))
                         CalamityUtils.ParanoidTileRetrieval(x, y).Get<TileWallWireStateData>().HasTile = false;
                     if (WallsForSulphSeaToDestroy.Contains(CalamityUtils.ParanoidTileRetrieval(x, y).WallType))
-                        CalamityUtils.ParanoidTileRetrieval(x, y).WallType = 0;
+                        CalamityUtils.ParanoidTileRetrieval(x, y).WallType = WallID.None;
                 }
             }
         }
@@ -326,7 +327,7 @@ namespace CalamityMod.World
                 for (int y = top; y < bottom; y++)
                 {
                     if (y >= top + DepthForWater)
-                        Main.tile[x, y + WorldGen.genRand.Next(22, 25)].WallType = (ushort)ModContent.WallType<SulphurousSandWall>();
+                        Main.tile[x, y + WorldGen.genRand.Next(22, 25)].WallType = (ushort)ModContent.WallType<UnsafeSulphurousSandWall>();
                     Main.tile[x, y].LiquidAmount = byte.MaxValue;
                     Main.tile[x, y].Get<TileWallWireStateData>().HasTile = false;
                 }
@@ -343,7 +344,7 @@ namespace CalamityMod.World
             int right = (int)(BiomeWidth * IslandWidthPercentage);
             int maxDepth = MaxTopWaterDepth;
             ushort blockTileType = (ushort)ModContent.TileType<SulphurousSand>();
-            ushort wallID = (ushort)ModContent.WallType<SulphurousSandWall>();
+            ushort wallID = (ushort)ModContent.WallType<UnsafeSulphurousSandWall>();
 
             for (int i = left; i < right; i++)
             {
@@ -384,7 +385,7 @@ namespace CalamityMod.World
             if (maxCaveWidth > 15)
                 maxCaveWidth = 15;
 
-            ushort wallID = (ushort)ModContent.WallType<SulphurousSandWall>();
+            ushort wallID = (ushort)ModContent.WallType<UnsafeSulphurousSandWall>();
 
             for (int i = 2; i < shallowWaterCaveCount; i++)
             {
@@ -441,7 +442,7 @@ namespace CalamityMod.World
         {
             int width = BiomeWidth;
             int depth = (int)(BlockDepth * 0.96f);
-            ushort wallID = (ushort)ModContent.WallType<SulphurousSandWall>();
+            ushort wallID = (ushort)ModContent.WallType<UnsafeSulphurousSandWall>();
 
             for (int c = 0; c < SpaghettiCaveCarveOutThresholds.Length; c++)
             {
@@ -485,7 +486,7 @@ namespace CalamityMod.World
         {
             int width = BiomeWidth;
             int depth = (int)(BlockDepth * 0.96f);
-            ushort wallID = (ushort)ModContent.WallType<SulphurousSandWall>();
+            ushort wallID = (ushort)ModContent.WallType<UnsafeSulphurousSandWall>();
 
             for (int c = 0; c < CheeseCaveCarveOutThresholds.Length; c++)
             {
@@ -818,7 +819,7 @@ namespace CalamityMod.World
             int beachWidth = WorldGen.genRand.Next(150, 190 + 1);
             var searchCondition = Searches.Chain(new Searches.Down(3000), new Conditions.IsSolid());
             ushort sandID = (ushort)ModContent.TileType<SulphurousSand>();
-            ushort wallID = (ushort)ModContent.WallType<SulphurousSandWall>();
+            ushort wallID = (ushort)ModContent.WallType<UnsafeSulphurousSandWall>();
 
             // Stop immediately if for some strange reason a valid tile could not be located for the beach starting point.
             if (!WorldUtils.Find(new Point(BiomeWidth + 4, Main.remixWorld ? YStart : (int)GenVars.worldSurfaceLow - 20), searchCondition, out Point determinedPoint))
@@ -958,7 +959,7 @@ namespace CalamityMod.World
                 // Create a log message if for some reason the schematic in question doesn't exist.
                 if (!wrappedSchematicArea.HasValue)
                 {
-                    CalamityMod.Instance.Logger.Warn($"Tried to place a schematic with name \"{schematicName}\". No matching schematic file found.");
+                    CalamityMod.Log.Warn($"Tried to place a schematic with name \"{schematicName}\". No matching schematic file found.");
                     continue;
                 }
 
@@ -1052,7 +1053,7 @@ namespace CalamityMod.World
         {
             int sandstoneSeed = WorldGen.genRand.Next();
             ushort sandstoneID = (ushort)ModContent.TileType<SulphurousSandstone>();
-            ushort sandstoneWallID = (ushort)ModContent.WallType<SulphurousSandstoneWall>();
+            ushort sandstoneWallID = (ushort)ModContent.WallType<UnsafeSulphurousSandstoneWall>();
 
             // Edge score evaluation function that determines the propensity a tile has to become sandstone.
             // This is based on how much nearby empty areas there are, allowing for "edges" to appear.
@@ -1256,7 +1257,7 @@ namespace CalamityMod.World
                     for (int dy = 0; dy < 2; dy++)
                     {
                         Main.tile[chestPoint.X + dx, chestPoint.Y - dy].LiquidAmount = 0;
-                        Main.tile[chestPoint.X + dx, chestPoint.Y - dy].WallType = (ushort)ModContent.WallType<SulphurousSandWallSafe>();
+                        Main.tile[chestPoint.X + dx, chestPoint.Y - dy].WallType = (ushort)ModContent.WallType<UnsafeSulphurousSandWall>();
                         Main.tile[chestPoint.X + dx, chestPoint.Y - dy].Get<TileWallWireStateData>().HasTile = false;
                     }
                 }
@@ -1578,7 +1579,7 @@ namespace CalamityMod.World
             int depth = BlockDepth;
             ushort columnID = (ushort)ModContent.TileType<SulphurousColumn>();
             ushort hardenedSandstoneWallID = (ushort)ModContent.WallType<HardenedSulphurousSandstoneWall>();
-            ushort sandWallID = (ushort)ModContent.WallType<SulphurousSandWall>();
+            ushort sandWallID = (ushort)ModContent.WallType<UnsafeSulphurousSandWall>();
             short variantFrameOffset = (short)(WorldGen.genRand.Next(3) * 36);
 
             for (int x = left; x < left + 2; x++)

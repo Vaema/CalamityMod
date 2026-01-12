@@ -1,6 +1,7 @@
 ﻿using CalamityMod.Items.Placeables.FurnitureSacrilegious;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using ReLogic.Content;
 using Terraria;
 using Terraria.GameContent.ObjectInteractions;
 using Terraria.ID;
@@ -12,10 +13,12 @@ namespace CalamityMod.Tiles.FurnitureSacrilegious
 {
     public class SacrilegiousChestTile : ModTile
     {
+        public Asset<Texture2D> GlowTexture;
+
         public override void SetStaticDefaults()
         {
             this.SetUpChest(ModContent.ItemType<SacrilegiousChest>(), true);
-            AddMapEntry(new Color(43, 19, 42), CalamityUtils.GetItemName<SacrilegiousChest>(), CalamityUtils.GetMapChestName);
+            AddMapEntry(new Color(43, 19, 42), CalamityUtils.GetItemName<SacrilegiousChest>(), FurnitureCommon.GetMapChestName);
         }
 
         public override bool CreateDust(int i, int j, ref int type)
@@ -27,10 +30,10 @@ namespace CalamityMod.Tiles.FurnitureSacrilegious
         public override void NumDust(int i, int j, bool fail, ref int num) => num = fail ? 1 : 3;
 
         public override LocalizedText DefaultContainerName(int frameX, int frameY) => CalamityUtils.GetItemName<SacrilegiousChest>();
-        public override void MouseOver(int i, int j) => CalamityUtils.ChestMouseOver<SacrilegiousChest>(i, j);
-        public override void MouseOverFar(int i, int j) => CalamityUtils.ChestMouseFar<SacrilegiousChest>(i, j);
+        public override void MouseOver(int i, int j) => FurnitureCommon.ChestMouseOver<SacrilegiousChest>(i, j);
+        public override void MouseOverFar(int i, int j) => FurnitureCommon.ChestMouseFar<SacrilegiousChest>(i, j);
         public override void KillMultiTile(int i, int j, int frameX, int frameY) => Chest.DestroyChest(i, j);
-        public override bool RightClick(int i, int j) => CalamityUtils.ChestRightClick(i, j);
+        public override bool RightClick(int i, int j) => FurnitureCommon.ChestRightClick(i, j);
 
         // Make the chest brighter the more stuff it has
         public override void PostDraw(int i, int j, SpriteBatch spriteBatch)
@@ -44,7 +47,9 @@ namespace CalamityMod.Tiles.FurnitureSacrilegious
             Tile tile = Main.tile[i, j];
             if (tile.IsTileActuallyInvisible())
                 return;
-            Texture2D texture = ModContent.Request<Texture2D>("CalamityMod/Tiles/FurnitureSacrilegious/SacrilegiousChestTileGlow").Value;
+
+            GlowTexture ??= ModContent.Request<Texture2D>("CalamityMod/Tiles/FurnitureSacrilegious/SacrilegiousChestTileGlow");
+            Texture2D texture = GlowTexture.Value;
 
             int x = i;
             int y = j;

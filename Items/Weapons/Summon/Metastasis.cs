@@ -1,4 +1,5 @@
-﻿using CalamityMod.Projectiles.Summon;
+﻿using CalamityMod.Buffs.Summon;
+using CalamityMod.Projectiles.Summon;
 using CalamityMod.Rarities;
 using Microsoft.Xna.Framework;
 using Terraria;
@@ -14,7 +15,7 @@ namespace CalamityMod.Items.Weapons.Summon
 
         public override void SetStaticDefaults()
         {
-            ItemID.Sets.ShimmerTransformToItem[Type] = ModContent.ItemType<StaffoftheMechworm>();
+            ItemID.Sets.ShimmerTransformToItem[Type] = ModContent.ItemType<VoidEaterMarionette>();
             ItemID.Sets.StaffMinionSlotsRequired[Type] = 4f;
         }
 
@@ -24,15 +25,15 @@ namespace CalamityMod.Items.Weapons.Summon
             Item.height = 78;
             Item.damage = 400;
             Item.mana = 10;
-            Item.useAnimation = Item.useTime = 10; // 9 because of useStyle 1
+            Item.useAnimation = Item.useTime = 24;
             Item.useStyle = ItemUseStyleID.Swing;
             Item.noMelee = true;
             Item.knockBack = 2f;
             Item.value = CalamityGlobalItem.RarityVioletBuyPrice;
             Item.rare = ModContent.RarityType<BurnishedAuric>();
             Item.UseSound = SoundID.DD2_BetsySummon;
+            Item.buffType = ModContent.BuffType<SepulcherMinionBuff>();
             Item.shoot = ModContent.ProjectileType<SepulcherMinion>();
-            Item.shootSpeed = 10f;
             Item.DamageType = DamageClass.Summon;
         }
 
@@ -40,9 +41,9 @@ namespace CalamityMod.Items.Weapons.Summon
 
         public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)
         {
-            int p = Projectile.NewProjectile(source, player.ClampedMouseWorld(), -Vector2.UnitY * 5f, type, damage, knockback, player.whoAmI);
-            if (Main.projectile.IndexInRange(p))
-                Main.projectile[p].originalDamage = Item.damage;
+            player.AddBuff(Item.buffType, 2);
+            var minion = Projectile.NewProjectileDirect(source, player.ClampedMouseWorld(), -Vector2.UnitY * 5f, type, damage, knockback, player.whoAmI);
+            minion.originalDamage = Item.damage;
             return false;
         }
     }

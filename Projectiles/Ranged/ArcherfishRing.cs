@@ -29,7 +29,6 @@ namespace CalamityMod.Projectiles.Ranged
             Projectile.MaxUpdates = 3;
             Projectile.usesLocalNPCImmunity = true;
             Projectile.localNPCHitCooldown = -1;
-            Projectile.Calamity().pointBlankShotDuration = CalamityGlobalProjectile.DefaultPointBlankDuration;
         }
 
         public override bool? Colliding(Rectangle projHitbox, Rectangle targetHitbox) => Projectile.RotatingHitboxCollision(targetHitbox);
@@ -83,7 +82,7 @@ namespace CalamityMod.Projectiles.Ranged
             for (float i = 0f; i < totalDusts; i++)
             {
                 Vector2 ringSpeed = new Vector2((float)Math.Cos(i / totalDusts * MathHelper.TwoPi), (float)Math.Sin(i / totalDusts * MathHelper.TwoPi) * 0.5f).RotatedBy(Projectile.rotation) * 4f * Projectile.scale;
-                Dust droplets = Dust.NewDustPerfect(Projectile.Center, 211, ringSpeed, 100);
+                Dust droplets = Dust.NewDustPerfect(Projectile.Center, DustID.Wet, ringSpeed, 100);
                 droplets.noGravity = true;
             }
         }

@@ -1,10 +1,9 @@
 ﻿using System.Linq;
 using CalamityMod.Cooldowns;
-using CalamityMod.Items.Accessories;
+using CalamityMod.Items.Weapons.Magic;
 using CalamityMod.Projectiles.Ranged;
 using Microsoft.Xna.Framework;
 using Terraria;
-using Terraria.Audio;
 using Terraria.DataStructures;
 using Terraria.ID;
 using Terraria.ModLoader;

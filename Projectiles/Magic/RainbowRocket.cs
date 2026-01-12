@@ -117,13 +117,13 @@ namespace CalamityMod.Projectiles.Magic
             return Color.White;
         }
 
-        internal Color ColorFunction(float completionRatio)
+        internal Color ColorFunction(float completionRatio, Vector2 vertexPos)
         {
             Color baseColor = Main.hslToRgb((Projectile.identity * 0.33f + completionRatio + Main.GlobalTimeWrappedHourly * 2f) % 1f, 1f, 0.54f);
             return Color.Lerp(GetRocketColor(), baseColor, MathHelper.Clamp(completionRatio * 0.8f, 0f, 1f)) * Projectile.Opacity;
         }
 
-        internal float WidthFunction(float completionRatio)
+        internal float WidthFunction(float completionRatio, Vector2 vertexPos)
         {
             float width;
             float maxWidthOutwardness = 8f;
@@ -137,7 +137,7 @@ namespace CalamityMod.Projectiles.Magic
         public override bool PreDraw(ref Color lightColor)
         {
             Projectile.oldPos[0] = Projectile.position + Projectile.velocity.SafeNormalize(Vector2.Zero) * 50f;
-            PrimitiveRenderer.RenderTrail(Projectile.oldPos, new(WidthFunction, ColorFunction, (_) => Projectile.Size * 0.5f + Projectile.velocity), 80);
+            PrimitiveRenderer.RenderTrail(Projectile.oldPos, new(WidthFunction, ColorFunction, (_,_) => Projectile.Size * 0.5f + Projectile.velocity), 80);
 
             Texture2D rocketTexture = Terraria.GameContent.TextureAssets.Projectile[Type].Value;
             Main.EntitySpriteDraw(rocketTexture,
@@ -240,7 +240,7 @@ namespace CalamityMod.Projectiles.Magic
                 velocity = velocity.RotatedBy(MathHelper.PiOver2); // Flip the petal velocity. It's tilted to the side normally.
                 velocity = velocity.RotatedBy(explosionOffsetAngle); // Account for the explosion offset angle that was determined at the start.
 
-                Dust dust = Dust.NewDustPerfect(center, 261);
+                Dust dust = Dust.NewDustPerfect(center, DustID.AncientLight);
                 dust.velocity = velocity * petalBurstSpeed;
                 dust.noGravity = true;
                 dust.color = balloonColor;
@@ -267,7 +267,7 @@ namespace CalamityMod.Projectiles.Magic
             BezierCurve bezierCurve = new BezierCurve(bezierControlPoints);
             for (int i = 0; i < evaluationPoints; i++)
             {
-                Dust dust = Dust.NewDustPerfect(center, 261);
+                Dust dust = Dust.NewDustPerfect(center, DustID.AncientLight);
                 dust.position = center + bezierCurve.Evaluate(i / (float)evaluationPoints).RotatedBy(offsetAngle) + Vector2.UnitY * petalBurstSpeed * 2f;
                 dust.velocity = Vector2.Zero;
                 dust.noGravity = true;
@@ -320,7 +320,7 @@ namespace CalamityMod.Projectiles.Magic
 
                 velocity = velocity.RotatedBy(offsetAngle); // Account for the explosion offset angle that was determined at the start.
 
-                Dust dust = Dust.NewDustPerfect(center, 261);
+                Dust dust = Dust.NewDustPerfect(center, DustID.AncientLight);
                 dust.velocity = velocity * appleBurstSpeed;
                 dust.noGravity = true;
                 dust.color = Color.Orange;
@@ -346,7 +346,7 @@ namespace CalamityMod.Projectiles.Magic
             BezierCurve bezierCurve = new BezierCurve(bezierControlPoints);
             for (int i = 0; i < evaluationPoints; i++)
             {
-                Dust dust = Dust.NewDustPerfect(center, 261);
+                Dust dust = Dust.NewDustPerfect(center, DustID.AncientLight);
                 dust.position = center + bezierCurve.Evaluate(i / (float)evaluationPoints).RotatedBy(offsetAngle);
                 dust.velocity = Vector2.Zero;
                 dust.noGravity = true;
@@ -383,7 +383,7 @@ namespace CalamityMod.Projectiles.Magic
                 velocity = velocity.RotatedBy(offsetAngle);
                 velocity *= 0.25f; // Normalization removes the spaces that make the vector petal-like and not circular, so multiplication must be utilized instead.
 
-                Dust dust = Dust.NewDustPerfect(center, 262);
+                Dust dust = Dust.NewDustPerfect(center, DustID.AmberBolt);
                 dust.velocity = velocity * butterflyBurstSpeed;
                 dust.noGravity = true;
                 dust.color = Color.Pink;
@@ -410,7 +410,7 @@ namespace CalamityMod.Projectiles.Magic
             BezierCurve bezierCurve = new BezierCurve(bezierControlPoints);
             for (int i = 0; i < evaluationPoints; i++)
             {
-                Dust dust = Dust.NewDustPerfect(center, 263);
+                Dust dust = Dust.NewDustPerfect(center, DustID.PortalBolt);
                 dust.position = center + bezierCurve.Evaluate(i / (float)evaluationPoints).RotatedBy(offsetAngle);
                 dust.velocity = Vector2.Zero;
                 dust.noGravity = true;
@@ -471,7 +471,7 @@ namespace CalamityMod.Projectiles.Magic
                 velocity *= diamondBurstSpeed;
                 velocity.X *= 0.667f;
 
-                Dust dust = Dust.NewDustPerfect(center, 263);
+                Dust dust = Dust.NewDustPerfect(center, DustID.PortalBolt);
                 dust.position = center;
                 dust.velocity = velocity;
                 dust.noGravity = true;
@@ -508,7 +508,7 @@ namespace CalamityMod.Projectiles.Magic
 
                 spawnOffset -= Vector2.UnitY.RotatedBy(offsetAngle) * 90f;
 
-                Dust dust = Dust.NewDustPerfect(center + spawnOffset, 263);
+                Dust dust = Dust.NewDustPerfect(center + spawnOffset, DustID.PortalBolt);
                 dust.velocity = Vector2.Zero;
                 dust.noGravity = true;
                 dust.scale = 2.7f;
@@ -545,7 +545,7 @@ namespace CalamityMod.Projectiles.Magic
                 Vector2 currentPosition = controlPoints[currentIndex];
                 Vector2 nextPosition = controlPoints[(currentIndex + 1) % controlPoints.Length];
 
-                Dust dust = Dust.NewDustPerfect(center, 263);
+                Dust dust = Dust.NewDustPerfect(center, DustID.PortalBolt);
                 dust.position = center + Vector2.Lerp(currentPosition, nextPosition, i / (float)evaluationPoints * controlPoints.Length % 0.999f).RotatedBy(offsetAngle) * 2f;
                 dust.position += Vector2.UnitY.RotatedBy(offsetAngle) * 138f;
                 dust.velocity = Vector2.Zero;
@@ -566,7 +566,7 @@ namespace CalamityMod.Projectiles.Magic
 
                 spawnOffset += Vector2.UnitY.RotatedBy(offsetAngle) * 30f;
 
-                Dust dust = Dust.NewDustPerfect(center + spawnOffset, 263);
+                Dust dust = Dust.NewDustPerfect(center + spawnOffset, DustID.PortalBolt);
                 dust.velocity = Vector2.Zero;
                 dust.noGravity = true;
                 dust.scale = 4f;
@@ -598,7 +598,7 @@ namespace CalamityMod.Projectiles.Magic
                 int pointsOnStarSegment = 35;
                 for (int j = 0; j < pointsOnStarSegment; j++)
                 {
-                    Dust dust = Dust.NewDustPerfect(center, 263);
+                    Dust dust = Dust.NewDustPerfect(center, DustID.PortalBolt);
                     dust.scale = 1.8f;
                     dust.velocity = Vector2.Lerp(start, end, j / (float)pointsOnStarSegment) * petalBurstSpeed;
                     dust.velocity.X *= 0.7f;
@@ -641,7 +641,7 @@ namespace CalamityMod.Projectiles.Magic
 
             for (int i = 0; i < evaluationPoints; i++)
             {
-                Dust dust = Dust.NewDustPerfect(center, 263);
+                Dust dust = Dust.NewDustPerfect(center, DustID.PortalBolt);
                 dust.position = center + bezierCurve.Evaluate(i / (float)evaluationPoints) * new Vector2(3f, 1.7f);
                 dust.velocity = Vector2.Zero;
                 dust.color = i >= evaluationPoints / 2 ? Color.Cyan : Color.SkyBlue;
@@ -684,7 +684,7 @@ namespace CalamityMod.Projectiles.Magic
                 velocity *= starBurstSpeed;
                 velocity.X *= 0.75f;
 
-                Dust dust = Dust.NewDustPerfect(center, 263);
+                Dust dust = Dust.NewDustPerfect(center, DustID.PortalBolt);
                 dust.position = center;
                 dust.velocity = velocity;
                 dust.noGravity = true;

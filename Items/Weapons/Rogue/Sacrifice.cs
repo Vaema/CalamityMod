@@ -1,4 +1,5 @@
-﻿using CalamityMod.NPCs.NormalNPCs;
+﻿using CalamityMod.Items.Weapons.Melee;
+using CalamityMod.NPCs.NormalNPCs;
 using CalamityMod.Projectiles.Rogue;
 using CalamityMod.Rarities;
 using Microsoft.Xna.Framework;

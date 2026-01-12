@@ -8,6 +8,9 @@ namespace CalamityMod.Items.Accessories
     public class CrawCarapace : ModItem, ILocalizedModType
     {
         public new string LocalizationCategory => "Items.Accessories";
+
+        public static int ThornsDamage => CalamityUtils.ScaleWithDifficulty(20);
+
         public override void SetDefaults()
         {
             Item.width = 28;
@@ -21,7 +24,6 @@ namespace CalamityMod.Items.Accessories
         {
             CalamityPlayer modPlayer = player.Calamity();
             modPlayer.crawCarapace = true;
-            player.thorns += 0.25f;
         }
     }
 }

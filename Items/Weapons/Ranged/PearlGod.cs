@@ -10,7 +10,6 @@ using Terraria.ModLoader;
 using CalamityMod.Rarities;
 using Terraria.Audio;
 using CalamityMod.Items.Materials;
-using Steamworks;
 
 namespace CalamityMod.Items.Weapons.Ranged
 {
@@ -39,7 +38,6 @@ namespace CalamityMod.Items.Weapons.Ranged
             Item.shootSpeed = 14f;
             Item.shoot = ProjectileID.PurificationPowder;
             Item.useAmmo = AmmoID.Bullet;
-            Item.Calamity().canFirePointBlankShots = true;
         }
 
         public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)
@@ -104,7 +102,7 @@ namespace CalamityMod.Items.Weapons.Ranged
                     int randomColor = Main.rand.Next(1, 3 + 1);
                     Color color = randomColor == 1 ? Color.LightBlue : randomColor == 2 ? Color.LightPink : Color.Khaki;
 
-                    Dust dust2 = Dust.NewDustPerfect(itemPosition + velocity.RotatedBy(-0.6 * player.direction) + velocity * 1.35f, 278, velocity.RotatedByRandom(0.25) * Main.rand.NextFloat(0.1f, 0.9f));
+                    Dust dust2 = Dust.NewDustPerfect(itemPosition + velocity.RotatedBy(-0.6 * player.direction) + velocity * 1.35f, DustID.FireworksRGB, velocity.RotatedByRandom(0.25) * Main.rand.NextFloat(0.1f, 0.9f));
                     dust2.noGravity = true;
                     dust2.scale = Main.rand.NextFloat(0.3f, 0.45f);
                     dust2.color = color;

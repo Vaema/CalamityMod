@@ -74,7 +74,7 @@ namespace CalamityMod.Systems
             // If the key already exists, log it as a warning and don't run any code.
             if (GlobalSaveDataKeys.Contains(key))
             {
-                CalamityMod.Instance.Logger.Error($"WARNING! A global save data key \"{key}\" which has already been registered is attempting to be registered again. " +
+                CalamityMod.Log.Error($"WARNING! A global save data key \"{key}\" which has already been registered is attempting to be registered again. " +
                     "Please report this to the Calamity Mod Team if you see this!");
                 return;
             }

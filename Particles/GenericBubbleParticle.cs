@@ -1,6 +1,4 @@
 ﻿using Microsoft.Xna.Framework;
-using Terraria;
-
 
 namespace CalamityMod.Particles
 {

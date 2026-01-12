@@ -1,14 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.IO;
 using Terraria;
 
 namespace CalamityMod.Packets
 {
-    public sealed class SyncVanillaNPCLocalAIArrayPacket : CalamityPacket
+    internal sealed class SyncVanillaNPCLocalAIArrayPacket : CalamityPacket
     {
         public static SyncVanillaNPCLocalAIArrayPacket Instance { get; private set; }
 

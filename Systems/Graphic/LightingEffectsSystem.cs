@@ -1,12 +1,10 @@
 ﻿using CalamityMod.CalPlayer;
-using CalamityMod.Enums;
 using CalamityMod.Events;
 using CalamityMod.NPCs;
 using CalamityMod.Skies;
 using CalamityMod.World;
 using Microsoft.Xna.Framework;
 using Terraria;
-using Terraria.GameContent.Events;
 using Terraria.Graphics.Effects;
 using Terraria.ModLoader;
 
@@ -36,33 +34,12 @@ namespace CalamityMod.Systems
                         {
                             float signusLifeRatio = 1f - (Main.npc[CalamityGlobalNPC.signus].life / Main.npc[CalamityGlobalNPC.signus].lifeMax);
 
-                            // Reduce the power of Signus darkness based on your light level.
                             float multiplier = 1f;
-                            switch (Main.LocalPlayer.GetCurrentAbyssLightLevel())
-                            {
-                                case 0:
-                                    break;
-                                case 1:
-                                case 2:
-                                    multiplier = 0.75f;
-                                    break;
-                                case 3:
-                                case 4:
-                                    multiplier = 0.5f;
-                                    break;
-                                case 5:
-                                case 6:
-                                    multiplier = 0.25f;
-                                    break;
-                                default:
-                                    multiplier = 0f;
-                                    break;
-                            }
 
                             // Total darkness
                             float signusDarkness = signusLifeRatio * multiplier;
                             darkRatio = MathHelper.Clamp(signusDarkness, 0f, 1f);
-                            scale += (CalamityWorld.LegendaryMode ? MaxGFBSignusDarkness : MaxSignusDarkness) * darkRatio;
+                            scale += (Main.zenithWorld ? MaxGFBSignusDarkness : MaxSignusDarkness) * darkRatio;
                         }
                     }
                 }

@@ -37,13 +37,12 @@ namespace CalamityMod.Projectiles.Boss
             Projectile.penetrate = -1;
 
             // Difficulty modes
-            bool bossRush = BossRushEvent.BossRushActive;
-            bool death = CalamityWorld.death || bossRush;
-            bool revenge = CalamityWorld.revenge || bossRush;
-            bool expertMode = Main.expertMode || bossRush;
+            bool death = CalamityWorld.death || BossRushEvent.BossRushActive;
+            bool revenge = CalamityWorld.revenge || BossRushEvent.BossRushActive;
+            bool expertMode = Main.expertMode || BossRushEvent.BossRushActive;
 
-            Projectile.timeLeft = bossRush ? 45 : death ? 60 : revenge ? 68 : expertMode ? 75 : 90;
-            if (CalamityWorld.LegendaryMode)
+            Projectile.timeLeft = death ? 60 : revenge ? 68 : expertMode ? 75 : 90;
+            if (Main.getGoodWorld)
                 Projectile.timeLeft /= 2;
         }
 
@@ -78,14 +77,13 @@ namespace CalamityMod.Projectiles.Boss
             }
 
             // Difficulty modes
-            bool bossRush = BossRushEvent.BossRushActive;
-            bool death = CalamityWorld.death || bossRush;
-            bool revenge = CalamityWorld.revenge || bossRush;
-            bool expertMode = Main.expertMode || bossRush;
+            bool death = CalamityWorld.death || BossRushEvent.BossRushActive;
+            bool revenge = CalamityWorld.revenge || BossRushEvent.BossRushActive;
+            bool expertMode = Main.expertMode || BossRushEvent.BossRushActive;
 
             // Determine opacity
-            float telegraphTotalTime = bossRush ? 45f : death ? 60f : revenge ? 68f : expertMode ? 75f : 90f;
-            if (CalamityWorld.LegendaryMode)
+            float telegraphTotalTime = death ? 60f : revenge ? 68f : expertMode ? 75f : 90f;
+            if (Main.getGoodWorld)
                 telegraphTotalTime *= 0.5f;
 
             Projectile.Opacity = Utils.GetLerpValue(0f, 6f, Projectile.timeLeft, true) * Utils.GetLerpValue(telegraphTotalTime, telegraphTotalTime - 6f, Projectile.timeLeft, true);
@@ -96,7 +94,7 @@ namespace CalamityMod.Projectiles.Boss
             return new Color(255, 255, 255, Projectile.alpha);
         }
 
-        public Color TelegraphPrimitiveColor(float completionRatio)
+        public Color TelegraphPrimitiveColor(float completionRatio, Vector2 vertexPos)
         {
             float opacity = MathHelper.Lerp(0.38f, 1.2f, Projectile.Opacity);
             opacity *= CalamityUtils.Convert01To010(completionRatio);
@@ -106,7 +104,7 @@ namespace CalamityMod.Projectiles.Boss
             return Color.Green * opacity;
         }
 
-        public float TelegraphPrimitiveWidth(float completionRatio)
+        public float TelegraphPrimitiveWidth(float completionRatio, Vector2 vertexPos)
         {
             return Projectile.Opacity * 15f;
         }
@@ -127,7 +125,7 @@ namespace CalamityMod.Projectiles.Boss
                 // It is not used anywhere else.
                 Projectile.ai[0] = i;
 
-                PrimitiveRenderer.RenderTrail(positions, new(TelegraphPrimitiveWidth, TelegraphPrimitiveColor, (_) => Projectile.Size * 0.5f, smoothen: false, shader: GameShaders.Misc["CalamityMod:Flame"]), 55);
+                PrimitiveRenderer.RenderTrail(positions, new(TelegraphPrimitiveWidth, TelegraphPrimitiveColor, (_,_) => Projectile.Size * 0.5f, smoothen: false, shader: GameShaders.Misc["CalamityMod:Flame"]), 55);
             }
             return false;
         }

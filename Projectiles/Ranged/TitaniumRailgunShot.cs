@@ -5,6 +5,7 @@ using Microsoft.Xna.Framework.Graphics;
 using ReLogic.Content;
 using Terraria;
 using Terraria.Enums;
+using Terraria.ID;
 using Terraria.ModLoader;
 
 namespace CalamityMod.Projectiles.Ranged
@@ -58,7 +59,7 @@ namespace CalamityMod.Projectiles.Ranged
                     float dustProgressAlongBeam = beamLength * Main.rand.NextFloat(0f, 0.8f);
                     Vector2 dustPosition = Projectile.Center + dustProgressAlongBeam * beamVector + beamVector.RotatedBy(MathHelper.PiOver2) * Main.rand.NextFloat(-6f, 6f) * Projectile.scale;
 
-                    Dust dust = Dust.NewDustPerfect(dustPosition, 187, beamVector * Main.rand.NextFloat(5f, 26f), 0, Color.White, 2.2f);
+                    Dust dust = Dust.NewDustPerfect(dustPosition, DustID.BlueFlare, beamVector * Main.rand.NextFloat(5f, 26f), 0, Color.White, 2.2f);
                     dust.noGravity = true;
                 }
 

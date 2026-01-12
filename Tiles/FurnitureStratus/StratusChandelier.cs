@@ -1,5 +1,4 @@
-﻿using CalamityMod.Dusts;
-using Microsoft.Xna.Framework;
+﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using ReLogic.Content;
 using Terraria;
@@ -65,7 +64,7 @@ namespace CalamityMod.Tiles.FurnitureStratus
 
         public override void HitWire(int i, int j)
         {
-            CalamityUtils.LightHitWire(Type, i, j, 3, 3);
+            FurnitureCommon.LightHitWire(Type, i, j, 3, 3);
         }
 
         public override void DrawEffects(int i, int j, SpriteBatch spriteBatch, ref TileDrawInfo drawData)

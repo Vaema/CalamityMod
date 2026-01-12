@@ -1,6 +1,8 @@
 ﻿using System;
 using CalamityMod.Balancing;
 using CalamityMod.Enums;
+using CalamityMod.Projectiles.Boss;
+using Microsoft.Xna.Framework;
 using Mono.Cecil.Cil;
 using MonoMod.Cil;
 using Terraria;
@@ -328,36 +330,6 @@ namespace CalamityMod.ILEditing
         }
         #endregion
 
-        #region Item Prefix Changes
-        private static void PrefixChanges(On_Player.orig_GrantPrefixBenefits orig, Player self, Item item)
-        {
-            orig(self, item);
-            // Defense accessory prefixes have slightly scaling defense boosts through progression
-            if (item.prefix >= PrefixID.Hard && item.prefix <= PrefixID.Warding)
-            {
-                if (DownedBossSystem.downedDoG)
-                    self.statDefense += 3;
-                else if (NPC.downedMoonlord)
-                    self.statDefense += 2;
-                else if (Main.hardMode)
-                    self.statDefense += 1;
-            }
-            // Hard / Guarding / Armored / Warding give 0.25% / 0.5% / 0.75% / 1% DR
-            if (item.prefix == PrefixID.Hard)
-                self.endurance += 0.0025f;
-            if (item.prefix == PrefixID.Guarding)
-                self.endurance += 0.005f;
-            if (item.prefix == PrefixID.Armored)
-                self.endurance += 0.0075f;
-            if (item.prefix == PrefixID.Warding)
-                self.endurance += 0.01f;
-
-            // Lucky prefix increases luck
-            if (item.prefix == PrefixID.Lucky)
-                self.Calamity().calamityBonusLuck += 0.05f;
-        }
-        #endregion
-
         #region Damage Variance Dampening and Luck Removal
         private static int AdjustDamageVariance(On_Main.orig_DamageVar_float_int_float orig, float dmg, int percent, float luck)
         {
@@ -526,18 +498,72 @@ namespace CalamityMod.ILEditing
         }
         #endregion
 
-        #region Vortex Booster Keeps Vortex Stealth When Dashing
-        private static void VortexBoosterKeepsVortexStealthWhenDashing(On_Player.orig_DashMovement orig, Player self)
+        #region Shield of Cthulhu Buffs
+        private static void DashMovementEdits(On_Player.orig_DashMovement orig, Player self)
         {
-            // Allows for Vortex Booster to automatically re-engage Vortex armor's stealth after a delay when dashing
-            bool vortexStealth = self.vortexStealthActive;
-            orig(self);
-
-            if (self.wingsLogic == (int)VanillaWingID.WingsVortex)
+            //This is a modified version of Vanilla's Shield of Cthulhu dash collision checks
+            //This is done to be able to adjust values as needed. Here we change the iframe amount and recoil velocity
+            if (self.dash == 2 && self.eocDash > 0 && self.eocHit < 0)
             {
-                if (vortexStealth && !self.vortexStealthActive)
-                    self.Calamity().vortexBoosterStealthDelay = 60;
+                Rectangle DashHitbox = new Rectangle((int)(self.position.X + self.velocity.X * 0.5 - 4.0), (int)(self.position.Y + self.velocity.Y * 0.5 - 4.0), self.width + 8, self.height + 8);
+                for (int i = 0; i < 200; i++)
+                {
+                    NPC hitNPC = Main.npc[i];
+                    if (!hitNPC.active || hitNPC.dontTakeDamage || hitNPC.friendly || (hitNPC.aiStyle == NPCAIStyleID.Fairy && !(hitNPC.ai[2] <= 1f)) || !self.CanNPCBeHitByPlayerOrPlayerProjectile(hitNPC))
+                    {
+                        continue;
+                    }
+                    Rectangle npcHitbox = hitNPC.getRect();
+                    if (DashHitbox.Intersects(npcHitbox) && (hitNPC.noTileCollide || self.CanHit(hitNPC)))
+                    {
+                        float dmg = self.GetTotalDamage(DamageClass.Melee).ApplyTo(self.Calamity().copyrightInfringementShield ? 300f : 30f);
+                        float kb = self.GetTotalKnockback(DamageClass.Melee).ApplyTo(self.Calamity().copyrightInfringementShield ? 12f : 9f);
+                        bool crit = false;
+                        if (Main.rand.Next(100) < self.GetTotalCritChance(DamageClass.Melee))
+                        {
+                            crit = true;
+                        }
+                        int direction = self.direction;
+                        if (self.velocity.X < 0f)
+                        {
+                            direction = -1;
+                        }
+                        if (self.velocity.X > 0f)
+                        {
+                            direction = 1;
+                        }
+                        self.eocHit = i;
+                        if (self.whoAmI == Main.myPlayer)
+                        {
+                            self.ApplyDamageToNPC(hitNPC, (int)dmg, kb, direction, crit, DamageClass.Melee);
+                        }
+                        self.eocDash = 10;
+                        self.dashDelay = BalancingConstants.OnShieldBonkCooldown;
+                        self.velocity.X = -direction * 9;
+                        self.velocity.Y = -4f;
+                        self.GiveImmuneTimeForCollisionAttack(8); //This is normally 4 in vanilla
+                        int heldDir = 0;
+                        if (self.controlLeft)
+                            heldDir--;
+                        if (self.controlRight)
+                            heldDir++;
+                        int dirSum = Math.Abs(direction + heldDir);
+                        switch (dirSum)
+                        {
+                            case 0: //Holding in direction of recoil
+                                self.velocity.X *= 1.75f;
+                                break;
+                            case 1: //Neutral direction
+                                self.velocity.X *= 1.5f;
+                                break;
+                            case 2: //Holding in direction of enemy
+                                self.velocity.X *= 1.25f;
+                                break;
+                        }
+                    }
+                }
             }
+            orig(self);
         }
         #endregion
 
@@ -567,9 +593,9 @@ namespace CalamityMod.ILEditing
             cursor.Emit(OpCodes.Ldc_I4, (int)VanillaWingID.WingsStardust);
             cursor.Emit(OpCodes.Bne_Un, label);
 
-            cursor.Emit(OpCodes.Ldc_R4, 900f);
+            cursor.Emit(OpCodes.Ldc_R4, 960f);
             cursor.Emit(OpCodes.Stloc, 4);
-            cursor.Emit(OpCodes.Ldc_R4, 900f);
+            cursor.Emit(OpCodes.Ldc_R4, 960f);
             cursor.Emit(OpCodes.Stloc, 5);
 
             cursor.MarkLabel(label);
@@ -589,26 +615,18 @@ namespace CalamityMod.ILEditing
         }
         #endregion
 
-        #region Solar Wings Change to Solar Flare Armor Dash
-        private static void SolarWingsDashChange(ILContext il)
+        #region Solar Wings Change to Solar Flare Armor
+        private static bool SolarWingsDashChange(On_Player.orig_ConsumeSolarFlare orig, Player self)
         {
-            // Make Solar Wings always allow using Solar Flare armor's dash.
-            var cursor = new ILCursor(il);
-
-            // Genuinely how the fuck is this the only OR opcode in the entire method
-            if (!cursor.TryGotoNext(MoveType.After, i => i.MatchOr()))
+            // Solar Wings restore flight time when Solar Flare armor's shield explodes
+            // This can trigger from either ramming enemies or taking damage
+            if (orig(self))
             {
-                LogFailure("Solar Dash Change", "Could not locate the OR opcode.");
-                return;
+                if (self.wingsLogic == (int)VanillaWingID.WingsSolar)
+                    self.wingTime += 60;
+                return true;
             }
-
-            // Add an additional check for if the player is wearing Solar Wings.
-            cursor.Emit(OpCodes.Ldarg_0);
-            cursor.Emit(OpCodes.Ldfld, typeof(Player).GetField("wingsLogic"));
-            cursor.Emit(OpCodes.Ldc_I4, (int)VanillaWingID.WingsSolar);
-            cursor.EmitCeq();
-            // Then OR it.
-            cursor.EmitOr();
+            return false;
         }
         #endregion
 
@@ -654,6 +672,18 @@ namespace CalamityMod.ILEditing
             // AND with 0 (false) so that the Ice Spike is never considered to be hitting the player and thus never trigger the Frozen debuff.
             cursor.Emit(OpCodes.Ldc_I4_0);
             cursor.Emit(OpCodes.And);
+        }
+        #endregion
+
+        #region Make GFB Nurse Meteor Undodgeable
+        private static bool GFBNurseMeteorUndodgeable(On_Projectile.orig_IsDamageDodgable orig, Projectile self)
+        {
+            // Make the Leviathan meteor that spawns when talking to the Nurse in GFB undodgeable
+            // Unfortunately the Dodgeable value in HurtModifiers cannot be set in the hook, thus On editing a vanilla function
+            if (self.type == ModContent.ProjectileType<LeviathanBomb>() && self.damage == 9999)
+                return false;
+            else
+                return orig(self);
         }
         #endregion
     }

@@ -163,11 +163,12 @@ namespace CalamityMod.Projectiles.Rogue
                             if (Projectile.velocity.Length() < storedStealthVel.Length())
                                 Projectile.velocity += Utils.DirectionTo(Projectile.Center, Owner.Center) * 0.1f;
                             Projectile.velocity *= 0.99f;
-                            if (time == 180) // Reset iframes when it starts to come back
+                            // CIT 26JUN2025: Removing its ability to deal damage again because it's overpowered
+                            /*if (time == 180)
                             {
                                 for (int i = 0; i < Main.maxNPCs; i++)
                                     Projectile.localNPCImmunity[i] = 0;
-                            }
+                            }*/
                             if (Projectile.timeLeft <= 240)
                             {
                                 impaleDist = Vector2.One; // This is so the projectile stops dealing damage
@@ -319,7 +320,7 @@ namespace CalamityMod.Projectiles.Rogue
                     SoundEngine.PlaySound(sound with { Volume = 0.7f, Pitch = Main.rand.NextFloat(0.15f, 0.25f) }, Projectile.Center);
                     SoundStyle sound2 = new("CalamityMod/Sounds/NPCHit/ExoHit3");
                     SoundEngine.PlaySound(sound2 with { Volume = 0.5f, Pitch = Main.rand.NextFloat(-0.1f, 0f) }, Projectile.Center);
-                    Owner.Calamity().GeneralScreenShakePower = 5.5f;
+                    Owner.SetScreenshake(5.5f);
                     Projectile.timeLeft = 300;
                     targeted = target;
                     impaleDist = (Projectile.Center - targeted.Center);
@@ -350,7 +351,7 @@ namespace CalamityMod.Projectiles.Rogue
                 }
                 else
                 {
-                    Owner.Calamity().GeneralScreenShakePower = 7f;
+                    Owner.SetScreenshake(7f);
                     SoundStyle soundBurst = new("CalamityMod/Sounds/Item/HolyBurst");
                     for (int i = 0; i < 3; i++)
                         SoundEngine.PlaySound(soundBurst with { Volume = 0.8f, Pitch = 0.2f * i, MaxInstances = 3 }, Projectile.Center);

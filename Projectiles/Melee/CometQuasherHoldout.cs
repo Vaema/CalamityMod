@@ -1,5 +1,4 @@
-﻿using System;
-using CalamityMod.Items.Weapons.Melee;
+﻿using CalamityMod.Items.Weapons.Melee;
 using CalamityMod.NPCs;
 using CalamityMod.Particles;
 using CalamityMod.Projectiles.BaseProjectiles;
@@ -8,7 +7,7 @@ using Microsoft.Xna.Framework.Graphics;
 using ReLogic.Content;
 using Terraria;
 using Terraria.Audio;
-using Terraria.DataStructures;
+using Terraria.ID;
 using Terraria.Localization;
 using Terraria.ModLoader;
 
@@ -173,7 +172,7 @@ namespace CalamityMod.Projectiles.Melee
                         }
                     }
 
-                    Dust dust2 = Dust.NewDustPerfect(Owner.Center + (new Vector2(120, 0).RotatedBy(FinalRotation + MathHelper.ToRadians(-45)).RotatedByRandom(0.3f)), 278, Vector2.One.RotatedByRandom(100) * Main.rand.NextFloat(0.5f, 1));
+                    Dust dust2 = Dust.NewDustPerfect(Owner.Center + (new Vector2(120, 0).RotatedBy(FinalRotation + MathHelper.ToRadians(-45)).RotatedByRandom(0.3f)), DustID.FireworksRGB, Vector2.One.RotatedByRandom(100) * Main.rand.NextFloat(0.5f, 1));
                     dust2.scale = Main.rand.NextFloat(0.55f, 0.85f);
                     dust2.noGravity = true;
                     dust2.color = Main.rand.NextBool(3) ? Color.AliceBlue : Color.DodgerBlue;
@@ -185,7 +184,7 @@ namespace CalamityMod.Projectiles.Melee
                     Particle orb = new CustomPulse(particlePos, particleVel * Main.rand.NextFloat(0.8f, 1.2f), Main.rand.NextBool(4) ? Color.AliceBlue : Color.DodgerBlue, "CalamityMod/Particles/HealingPlus", new Vector2(1f, 1f), Main.rand.NextFloat(-2, 2), Main.rand.NextFloat(0.8f, 1.2f), 0.2f, 23);
                     GeneralParticleHandler.SpawnParticle(orb);
 
-                    Dust dust2 = Dust.NewDustPerfect(Owner.Center + (new Vector2(75, 0).RotatedBy(FinalRotation + MathHelper.ToRadians(-45)).RotatedByRandom(0.3f)), 278, Vector2.One.RotatedByRandom(100) * Main.rand.NextFloat(0.5f, 1));
+                    Dust dust2 = Dust.NewDustPerfect(Owner.Center + (new Vector2(75, 0).RotatedBy(FinalRotation + MathHelper.ToRadians(-45)).RotatedByRandom(0.3f)), DustID.FireworksRGB, Vector2.One.RotatedByRandom(100) * Main.rand.NextFloat(0.5f, 1));
                     dust2.scale = Main.rand.NextFloat(0.55f, 0.85f);
                     dust2.noGravity = true;
                     dust2.color = Main.rand.NextBool(3) ? Color.AliceBlue : Color.DodgerBlue;
@@ -222,7 +221,7 @@ namespace CalamityMod.Projectiles.Melee
             if (spawnBoom)
             {
                 Vector2 spawnSpot = target.Center + new Vector2(Main.rand.NextFloat(-550, 550), Main.rand.NextFloat(-750, -950));
-                Projectile.NewProjectile(Projectile.GetSource_FromThis(), spawnSpot, Vector2.Zero, ModContent.ProjectileType<CometQuasherMeteor>(), (int)(Projectile.damage * 1.5f), 0, Projectile.owner, 0, 0, 4);
+                Projectile.NewProjectile(Projectile.GetSource_FromThis(), spawnSpot, Vector2.Zero, ModContent.ProjectileType<CometQuasherMeteor>(), (int)(Projectile.damage * 1.5f), 0, Projectile.owner, 0, Main.rand.Next(3), 4);
                 spawnBoom = false;
             }
         }

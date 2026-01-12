@@ -1,4 +1,6 @@
 ﻿using System.Collections.Generic;
+using CalamityMod.Items.Weapons.Ranged;
+using CalamityMod.NPCs.DevourerofGods;
 using CalamityMod.Projectiles.Melee.Yoyos;
 using CalamityMod.Rarities;
 using Terraria;
@@ -15,6 +17,12 @@ namespace CalamityMod.Items.Weapons.Melee
         public static float Reach = 720f;
         public static float Speed = 54f;
         public override LocalizedText Tooltip => base.Tooltip.WithFormatArgs(Reach.ToTiles(), Speed);
+        public override void ModifyTooltips(List<TooltipLine> tooltips)
+        {
+            tooltips.FindAndReplace("[GFB]", this.GetLocalizedValue(Main.zenithWorld ? "TooltipGFB" : "TooltipNormal"));
+            if (!Main.zenithWorld)
+                tooltips.FindAndReplaceAll("ff00ff", Utils.Hex3(DevourerofGodsHead.SpecialMoveColor));
+        }
 
         public override void SetStaticDefaults()
         {
@@ -28,7 +36,7 @@ namespace CalamityMod.Items.Weapons.Melee
             Item.width = 42;
             Item.height = 40;
             Item.DamageType = DamageClass.MeleeNoSpeed;
-            Item.damage = 222;
+            Item.damage = 475;
             Item.knockBack = 7.5f;
             Item.useTime = 20;
             Item.useAnimation = 20;
@@ -46,6 +54,7 @@ namespace CalamityMod.Items.Weapons.Melee
             Item.value = CalamityGlobalItem.RarityDarkBlueBuyPrice;
             Item.rare = ModContent.RarityType<CosmicPurple>();
         }
-        public override void ModifyTooltips(List<TooltipLine> list) => list.FindAndReplace("[GFB]", this.GetLocalizedValue(Main.zenithWorld ? "TooltipGFB" : "TooltipNormal"));
+
+        public override bool CanUseItem(Player player) => player.ownedProjectileCounts[Item.shoot] <= 0;
     }
 }

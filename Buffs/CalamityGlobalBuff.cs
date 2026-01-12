@@ -16,14 +16,14 @@ namespace CalamityMod.Buffs
         {
             // Globally remove summon tag buff stacking
             // Other mods need to add to this list because we genuinely don't have any way to tell this
-            if (SummonTagBuffList.Includes(type) && buffIndex > 0)
+            if (CalamityBuffSets.IsSummonTagBuff[type] && buffIndex > 0)
             {
                 for (int i = buffIndex; i >= 0; i--)
                 {
                     if (player.buffTime[i] > 0)
                     {
                         int buffID = player.buffType[i];
-                        if (SummonTagBuffList.Includes(buffID) && buffID != type)
+                        if (CalamityBuffSets.IsSummonTagBuff[buffID] && buffID != type)
                         {
                             player.DelBuff(i);
                             break;
@@ -35,10 +35,6 @@ namespace CalamityMod.Buffs
             if (type == BuffID.Archery)
             {
                 player.arrowDamage *= 0.955f;
-            }
-            else if (type == BuffID.Ironskin)
-            {
-                player.statDefense += CalamityUtils.GetScalingDefense(-1) - 8;
             }
             else if (type == BuffID.MagicPower)
             {
@@ -66,7 +62,8 @@ namespace CalamityMod.Buffs
             {
                 player.statDefense += 4;
                 player.GetCritChance<MeleeDamageClass>() -= 2;
-                player.GetAttackSpeed<MeleeDamageClass>() -= 0.1f;
+                player.GetAttackSpeed<MeleeDamageClass>() -= 0.2f;
+                player.GetDamage<MeleeDamageClass>() -= 0.1f;
             }
             else if (type == BuffID.WellFed)
             {
@@ -93,9 +90,13 @@ namespace CalamityMod.Buffs
             {
                 player.Calamity().shine = true;
             }
-            else if (type == BuffID.IceBarrier)
+
+            // Star in a Bottle provides Mana Regeneration Potion effect and cancels out the usual effect if you don't have it
+            else if (type == BuffID.StarInBottle && !player.manaRegenBuff)
             {
-                player.endurance -= 0.1f;
+                player.manaRegenBuff = true;
+                player.manaRegenDelayBonus -= 0.5f;
+                player.manaRegenBonus -= 10;
             }
 
             // Beetle Shell DR is a full compensation, as the vanilla multiplicative DR is removed entirely.
@@ -139,14 +140,14 @@ namespace CalamityMod.Buffs
         {
             // Globally remove summon tag debuff stacking, unless allowed in the SummonTag
             // Other mods need to add to this list because otherwise we can't tell which IsATag buff is actually for whips
-            if (SummonTagDebuffDict.TryGet(type, out var tag1) && !tag1.AllowsWhipStacking && buffIndex > 0)
+            if (CalamityBuffSets.SummonTagDebuff.TryGetValue(type, out var tag1) && !tag1.AllowsWhipStacking && buffIndex > 0)
             {
                 for (int i = buffIndex; i >= 0; i--)
                 {
                     if (npc.buffTime[i] > 0)
                     {
                         int buffID = npc.buffType[i];
-                        if (SummonTagDebuffDict.TryGet(buffID, out var tag2) && !tag2.AllowsWhipStacking && buffID != type)
+                        if (CalamityBuffSets.SummonTagDebuff.TryGetValue(buffID, out var tag2) && !tag2.AllowsWhipStacking && buffID != type)
                         {
                             npc.DelBuff(i);
                             break;
@@ -157,19 +158,13 @@ namespace CalamityMod.Buffs
 
             if (type == BuffID.Webbed)
             {
-                if (npc.Calamity().webbed < npc.buffTime[buffIndex])
-                    npc.Calamity().webbed = npc.buffTime[buffIndex];
-                if ((EnemyImmunitiesList.Includes(npc.type) || npc.boss) && npc.Calamity().debuffResistanceTimer <= 0)
-                    npc.Calamity().debuffResistanceTimer = CalamityGlobalNPC.slowingDebuffResistanceMin + npc.Calamity().webbed;
-                npc.DelBuff(buffIndex);
-                buffIndex--;
+                npc.Calamity().webbed = true;
+                if ((CalamityNPCSets.ResistSlowingDebuffsAndOtherSpecialEffects[npc.type] || npc.boss) && npc.Calamity().debuffResistanceTimer <= 0)
+                    npc.Calamity().debuffResistanceTimer = CalamityGlobalNPC.slowingDebuffResistanceMin + npc.buffTime[buffIndex];
             }
             if (type == BuffID.Electrified)
             {
-                if (npc.Calamity().electrified < npc.buffTime[buffIndex])
-                    npc.Calamity().electrified = npc.buffTime[buffIndex];
-                npc.DelBuff(buffIndex);
-                buffIndex--;
+                npc.Calamity().electrified = true;
             }
         }
 
@@ -208,18 +203,6 @@ namespace CalamityMod.Buffs
 
                 case BuffID.ChaosState:
                     tip = CalamityUtils.GetTextValue("Vanilla.BuffDescription.ChaosState");
-                    break;
-
-                case BuffID.IceBarrier:
-                    tip = tip.Replace("25", "15");
-                    break;
-
-                case BuffID.Ironskin:
-                    tip = tip.Replace("8", CalamityUtils.GetScalingDefense(-1).ToString());
-                    break;
-
-                case BuffID.LeafCrystal:
-                    tip = CalamityUtils.GetTextValue("Vanilla.BuffDescription.LeafCrystal");
                     break;
 
                 case BuffID.MagicPower:
@@ -265,10 +248,6 @@ namespace CalamityMod.Buffs
 
                 case BuffID.Swiftness:
                     tip = tip.Replace("25", "15");
-                    break;
-
-                case BuffID.Warmth:
-                    tip += "\n" + CalamityUtils.GetTextValue("Vanilla.BuffDescription.WarmthExtra");
                     break;
 
                 case BuffID.WeaponImbueConfetti:

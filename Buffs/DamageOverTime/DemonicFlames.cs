@@ -1,7 +1,7 @@
 ﻿using System;
+using CalamityMod.DataStructures;
 using CalamityMod.Dusts;
 using CalamityMod.Particles;
-using CalamityMod.Projectiles.Pets;
 using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.DataStructures;
@@ -12,12 +12,25 @@ namespace CalamityMod.Buffs.DamageOverTime
 {
     public class DemonicFlames : ModBuff
     {
+        public static DebuffData debuffData = new DebuffData()
+        {
+            EnemyLostRegen = 60, //Unused in the method, this is the amount of DoT from Forbidden Oathblade demon flames
+            HeatDebuffScaling = 1, //Unused in the method, but kept so other things can know this is a heat debuff
+            NPCLifeRegenMethod = DemonFlamesNPCLifeRegen
+        };
+        public static void DemonFlamesNPCLifeRegen(NPC npc, int buffType, ref int buffIndex, ref int damage)
+        {
+            int baseDemonicFlamesDoTValue = (int)Math.Max(npc.Calamity().ActiveHeatDebuffMultiplier.ApplyTo(npc.Calamity().demonicFlamesBonusDamage), npc.Calamity().demonicFlamesBonusDamage);
+            npc.Calamity().ApplyDPSDebuff(baseDemonicFlamesDoTValue, baseDemonicFlamesDoTValue / 15, ref npc.lifeRegen, ref damage);
+        }
         public override void SetStaticDefaults()
         {
             Main.debuff[Type] = true;
             Main.pvpBuff[Type] = true;
             Main.buffNoSave[Type] = true;
             BuffID.Sets.LongerExpertDebuff[Type] = true;
+            BuffDatasets.DebuffDataset[Type] = debuffData;
+
         }
 
         public override void Update(Player player, ref int buffIndex)
@@ -27,10 +40,7 @@ namespace CalamityMod.Buffs.DamageOverTime
 
         public override void Update(NPC npc, ref int buffIndex)
         {
-            if (npc.Calamity().demonicFlames < npc.buffTime[buffIndex])
-                npc.Calamity().demonicFlames = npc.buffTime[buffIndex];
-            npc.DelBuff(buffIndex);
-            buffIndex--;
+            npc.Calamity().demonicFlames = true;
         }
 
         internal static void DrawEffects(PlayerDrawSet drawInfo, bool hasDebuffResistance = false)
@@ -68,7 +78,7 @@ namespace CalamityMod.Buffs.DamageOverTime
                 for (int i = 0; i < 2; i++)
                 {
                     Vector2 sparkVel = new Vector2(Main.rand.NextFloat(-npc.width / 6, npc.width / 6), Main.rand.NextFloat(-npc.height / 20, -npc.height / 17));
-                    Particle sparks = new VelChangingSpark(npc.Center + new Vector2(Main.rand.NextFloat(-10f, 10f), npc.height / 2) + sparkVel * 0.5f, sparkVel + npc.velocity,  new Vector2(-sparkVel.X * 0.5f, sparkVel.Y * 2) * 3.5f, "CalamityMod/Particles/SmallBloom", Main.rand.Next(13, 20 + 1), Main.rand.NextFloat(0.1f, 0.25f) * MathHelper.Lerp(Math.Max(npc.height, npc.width) / 120, 0.5f, 0.7f), (Main.rand.NextBool() ? Color.MediumOrchid : Color.BlueViolet) * 0.75f, new Vector2(0.7f, 1), true, false, 0, false, 0.3f, 0.055f);
+                    Particle sparks = new VelChangingSpark(npc.Center + new Vector2(Main.rand.NextFloat(-10f, 10f), npc.height / 2) + sparkVel * 0.5f, sparkVel + npc.velocity, new Vector2(-sparkVel.X * 0.5f, sparkVel.Y * 2) * 3.5f, "CalamityMod/Particles/SmallBloom", Main.rand.Next(13, 20 + 1), Main.rand.NextFloat(0.1f, 0.25f) * MathHelper.Lerp(Math.Max(npc.height, npc.width) / 120, 0.5f, 0.7f), (Main.rand.NextBool() ? Color.MediumOrchid : Color.BlueViolet) * 0.75f, new Vector2(0.7f, 1), true, false, 0, false, 0.3f, 0.055f);
                     GeneralParticleHandler.SpawnParticle(sparks);
                 }
             }

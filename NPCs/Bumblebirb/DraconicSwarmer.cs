@@ -1,6 +1,5 @@
 ﻿using CalamityMod.Projectiles.Boss;
 using CalamityMod.Sounds;
-using CalamityMod.World;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria;
@@ -24,10 +23,10 @@ namespace CalamityMod.NPCs.Bumblebirb
 
         public override void SetDefaults()
         {
+            NPC.damage = 96; // 192
             NPC.npcSlots = 1f;
             NPC.aiStyle = -1;
             AIType = -1;
-            NPC.GetNPCDamage();
             NPC.width = 120;
             NPC.height = 80;
             NPC.defense = 20;
@@ -41,10 +40,6 @@ namespace CalamityMod.NPCs.Bumblebirb
             NPC.Calamity().VulnerableToHeat = true;
             NPC.Calamity().VulnerableToCold = true;
             NPC.Calamity().VulnerableToSickness = true;
-
-            // Scale stats in Expert and Master
-            CalamityGlobalNPC.AdjustExpertModeStatScaling(NPC);
-            CalamityGlobalNPC.AdjustMasterModeStatScaling(NPC);
         }
 
         public override void AI()
@@ -127,8 +122,6 @@ namespace CalamityMod.NPCs.Bumblebirb
                     swarmerIdleTargetDist.Normalize();
                     swarmerIdleTargetDist *= swarmerIdleSpeed;
                     NPC.velocity = (NPC.velocity * 29f + swarmerIdleTargetDist) / 30f;
-                    if (CalamityWorld.LegendaryMode && !Main.zenithWorld)
-                        NPC.velocity *= 1.15f;
                 }
                 else if (NPC.velocity.Length() > 2f)
                     NPC.velocity *= 0.95f;
@@ -175,8 +168,6 @@ namespace CalamityMod.NPCs.Bumblebirb
                     swarmerChargeTargetDist.Normalize();
                     swarmerChargeTargetDist *= swarmerChargeSpeed;
                     NPC.velocity = (NPC.velocity * (swarmerChargeVelMult - 1f) + swarmerChargeTargetDist) / swarmerChargeVelMult;
-                    if (CalamityWorld.LegendaryMode && !Main.zenithWorld)
-                        NPC.velocity *= 1.15f;
 
                     NPC.ForceNetUpdate();
 
@@ -203,8 +194,6 @@ namespace CalamityMod.NPCs.Bumblebirb
                     swarmerDecelerateTargetDist.Normalize();
                     swarmerDecelerateTargetDist *= swarmerDecelerateSpeed;
                     NPC.velocity = (NPC.velocity * (swarmerDecelerateVelMult - 1f) + swarmerDecelerateTargetDist) / swarmerDecelerateVelMult;
-                    if (CalamityWorld.LegendaryMode && !Main.zenithWorld)
-                        NPC.velocity *= 1.15f;
 
                     if (NPC.velocity.X < 0f)
                         NPC.direction = -1;
@@ -220,9 +209,6 @@ namespace CalamityMod.NPCs.Bumblebirb
                         NPC.damage = NPC.defDamage;
 
                         NPC.velocity = swarmerDecelerateTargetDist;
-                        if (CalamityWorld.LegendaryMode && !Main.zenithWorld)
-                            NPC.velocity *= 1.15f;
-
                         if (NPC.velocity.X < 0f)
                             NPC.direction = -1;
                         else
@@ -285,7 +271,7 @@ namespace CalamityMod.NPCs.Bumblebirb
                         Vector2 ai0 = NPC.Center - fireFrom;
                         float ai = Main.rand.Next(100);
                         Vector2 velocity = Vector2.Normalize(ai0.RotatedByRandom(MathHelper.PiOver4)) * 7f;
-                        Projectile.NewProjectile(NPC.GetSource_FromAI(), fireFrom.X, fireFrom.Y, velocity.X, velocity.Y, ModContent.ProjectileType<RedLightning>(), NPC.damage, 0f, Main.myPlayer, ai0.ToRotation(), ai);
+                        Projectile.NewProjectile(NPC.GetSource_FromAI(), fireFrom.X, fireFrom.Y, velocity.X, velocity.Y, ModContent.ProjectileType<RedLightning>(), Dragonfolly.LightningDamage, 0f, Main.myPlayer, ai0.ToRotation(), ai);
                     }
                 }
             }

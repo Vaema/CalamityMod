@@ -1,18 +1,17 @@
-﻿using CalamityMod.CalPlayer;
+﻿using System.Linq;
 using CalamityMod.Items.Materials;
 using Terraria;
+using Terraria.GameContent.Creative;
+using Terraria.GameContent.NetModules;
 using Terraria.ID;
 using Terraria.ModLoader;
+using Terraria.Net;
 
 namespace CalamityMod.Items.Tools.ClimateChange
 {
     public class Cosmolight : ModItem, ILocalizedModType
     {
         public new string LocalizationCategory => "Items.Tools";
-        // Hardcoded times set by the vanilla Journey Mode buttons.
-        // These are "halfway through day" and "halfway through night" respectively.
-        private const int NoonCutoff = 27000;
-        private const int MidnightCutoff = 16200;
 
         public override void SetDefaults()
         {
@@ -21,10 +20,11 @@ namespace CalamityMod.Items.Tools.ClimateChange
             Item.rare = ItemRarityID.LightRed;
             Item.useAnimation = 9;
             Item.useTime = 9;
-            Item.autoReuse = false; // Explicitly not autofire, since it can be used quickly now
+            Item.autoReuse = false;
             Item.useStyle = ItemUseStyleID.HoldUp;
             Item.UseSound = SoundID.Item60;
             Item.consumable = false;
+            Item.channel = true;
         }
 
         public override void ModifyResearchSorting(ref ContentSamples.CreativeHelper.ItemGroup itemGroup)
@@ -32,42 +32,51 @@ namespace CalamityMod.Items.Tools.ClimateChange
             itemGroup = (ContentSamples.CreativeHelper.ItemGroup)CalamityResearchSorting.ToolsOther;
         }
 
-        public override bool CanUseItem(Player player) => !CalamityPlayer.areThereAnyDamnBosses;
 
+        public override bool AltFunctionUse(Player player)
+        {
+            return true;
+        }
         public override bool? UseItem(Player player)
         {
-            //Only SinglePlayer or DedServ should change time to prevent unwanted race condition
-            if (Main.netMode == NetmodeID.MultiplayerClient)
-                return true;
-
-            // Early Morning -> Noon
-            if (Main.dayTime && Main.time < NoonCutoff)
-                Main.SkipToTime(NoonCutoff, true);
-
-            // Afternoon -> Dusk
-            else if (Main.dayTime)
-                Main.SkipToTime(0, false);
-
-            // Early Night -> Midnight
-            else if (!Main.dayTime && Main.time < MidnightCutoff)
-                Main.SkipToTime(MidnightCutoff, false);
-
-            // Late Night -> Dawn
-            else if (!Main.dayTime)
-                Main.SkipToTime(0, true);
-
+                if (Main.netMode != NetmodeID.Server && player == Main.LocalPlayer && (player.altFunctionUse == 2 || (CreativePowerManager.Instance.GetPower<CreativePowers.FreezeTime>().Enabled)))
+                {
+                    var power = CreativePowerManager.Instance.GetPower<CreativePowers.FreezeTime>();
+                    NetPacket packet = NetCreativePowersModule.PreparePacket(power.PowerId, 1);
+                    packet.Writer.Write(!power.Enabled);
+                    NetManager.Instance.SendToServerOrLoopback(packet);
+                }
             return true;
         }
 
         public override void AddRecipes()
         {
             CreateRecipe().
-                AddIngredient(ItemID.FallenStar, 10).
-                AddIngredient(ItemID.SoulofLight, 7).
-                AddIngredient(ItemID.SoulofNight, 7).
-                AddIngredient<EssenceofSunlight>(5).
-                AddTile(TileID.Anvils).
+                AddIngredient<Bakidon>().
+                AddIngredient(ItemID.Sundial).
+                AddIngredient<AstralBar>(3).
+                AddIngredient(ItemID.FragmentSolar, 15).
+                AddTile(TileID.DemonAltar).
                 Register();
+
+            CreateRecipe().
+                AddIngredient<Bakidon>().
+                AddIngredient(ItemID.Moondial).
+                AddIngredient<AstralBar>(3).
+                AddIngredient(ItemID.FragmentSolar, 15).
+                AddTile(TileID.DemonAltar).
+                Register();
+        }
+    }
+
+    public class CosmolightTimeRateChange : ModSystem
+    {
+        public override void ModifyTimeRate(ref double timeRate, ref double tileUpdateRate, ref double eventUpdateRate)
+        {
+            if (Main.player.Any(x => x.active && x.channel && x.altFunctionUse != 2 && x.HeldItem.type == ModContent.ItemType<Cosmolight>()))
+            {
+                timeRate *= 120;
+            }
         }
     }
 }

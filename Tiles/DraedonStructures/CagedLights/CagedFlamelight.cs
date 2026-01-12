@@ -1,14 +1,11 @@
-﻿using System;
-using CalamityMod.Items.Placeables.DraedonStructures.CagedLights;
+﻿using CalamityMod.Items.Placeables.DraedonStructures.CagedLights;
 using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.ID;
-using Terraria.Localization;
 using Terraria.ModLoader;
 using Terraria.DataStructures;
 using Terraria.Enums;
 using Terraria.ObjectData;
-using Terraria.Audio;
 using CalamityMod.Sounds;
 
 namespace CalamityMod.Tiles.DraedonStructures.CagedLights
@@ -21,9 +18,10 @@ namespace CalamityMod.Tiles.DraedonStructures.CagedLights
             Main.tileNoFail[Type] = true;
             Main.tileFrameImportant[Type] = true;
             Main.tileObsidianKill[Type] = false;
+            RegisterItemDrop(ModContent.ItemType<CagedFlamelightItem>());
 
             HitSound = CommonCalamitySounds.PlatingMine;
-            DustType = 60;
+            DustType = DustID.RedTorch;
 
             AddToArray(ref TileID.Sets.RoomNeeds.CountsAsTorch);
             AddMapEntry(new Color(48, 201, 214), CalamityUtils.GetItemName<CagedLablightItem>());
@@ -73,7 +71,7 @@ namespace CalamityMod.Tiles.DraedonStructures.CagedLights
 
         public override void HitWire(int i, int j)
         {
-            CalamityUtils.LightHitWire(Type, i, j, 2, 2);
+            FurnitureCommon.LightHitWire(Type, i, j, 2, 2);
         }
 
         public override void ModifyLight(int i, int j, ref float r, ref float g, ref float b)
@@ -90,11 +88,6 @@ namespace CalamityMod.Tiles.DraedonStructures.CagedLights
                 g = 0f;
                 b = 0f;
             }
-        }
-
-        public override void KillMultiTile(int i, int j, int frameX, int frameY)
-        {
-            Item.NewItem(new EntitySource_TileBreak(i, j), i * 16, j * 16, 32, 48, ModContent.ItemType<CagedFlamelightItem>());
         }
     }
 }

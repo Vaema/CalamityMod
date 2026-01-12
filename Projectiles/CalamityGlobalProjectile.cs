@@ -13,10 +13,15 @@ using CalamityMod.Events;
 using CalamityMod.ExtraTextures;
 using CalamityMod.Items.Accessories;
 using CalamityMod.Items.Ammo;
+using CalamityMod.Items.Fishing.FishingRods;
+using CalamityMod.Items.Armor.Daedalus;
+using CalamityMod.Items.Armor.Reaver;
 using CalamityMod.Items.Potions.Alcohol;
+using CalamityMod.Items.VanillaArmorChanges;
 using CalamityMod.NPCs;
-using CalamityMod.NPCs.NormalNPCs;
 using CalamityMod.NPCs.PlagueEnemies;
+using CalamityMod.NPCs.VanillaNPCAIOverrides.Bosses;
+using CalamityMod.NPCs.NormalNPCs;
 using CalamityMod.Particles;
 using CalamityMod.Projectiles.Boss;
 using CalamityMod.Projectiles.Healing;
@@ -27,6 +32,7 @@ using CalamityMod.Projectiles.Summon;
 using CalamityMod.Projectiles.Typeless;
 using CalamityMod.Projectiles.VanillaProjectileOverrides;
 using CalamityMod.Systems.Collections;
+using CalamityMod.Systems.Mechanic;
 using CalamityMod.Tiles.Abyss;
 using CalamityMod.Tiles.Astral;
 using CalamityMod.Tiles.AstralDesert;
@@ -48,6 +54,7 @@ using Terraria.Utilities;
 using Terraria.WorldBuilding;
 using static Terraria.ModLoader.ModContent;
 using NanotechProjectile = CalamityMod.Projectiles.Typeless.Nanotech;
+using CalamityMod.Graphics;
 
 namespace CalamityMod.Projectiles
 {
@@ -115,10 +122,17 @@ namespace CalamityMod.Projectiles
         /// If true, this projectile is able to spawn lightning while using Arc Flash Ring.<br/>
         /// This is set to false when lightning is procced, and is reset to true when the cooldown ends.
         /// </summary>
-        public bool spawnArcFlash = true;
+        public bool showArcFlash = true;
         /// <summary> Cooldown variable for Arc Flash Ring's lightning. Primarily used for lingering projectiles and minions. </summary>
         public int arcFlashCooldown = 0;
-
+        /// <summary>
+        /// The location of this projectile in an arena box, used for maintaining this when the arena box moves.
+        /// </summary>
+        public Vector2 arenaBoxPosition = Vector2.Zero;
+        /// <summary>
+        /// Which Box this projectile is attached to
+        /// </summary>
+        public ArenaWallSystem.Box arenaBox = null;
         /// <summary>
         /// If true, adds a brimstone trail to the projectile, and makes it inflict Brimstone Flames.<br/>
         /// Used by Animosity.
@@ -173,9 +187,20 @@ namespace CalamityMod.Projectiles
         public bool betterLifeBullet2 = false;
         /// <summary>
         /// If set to a value greater than 0, causes this projectile to gain homing with a range equal to the value in pixels.<br/>
-        /// Used by Arterial Assault.
+        /// Used by Arterial Assault, Deific Amulet's stars, and certain sand projectiles from the Sand Gun.
         /// </summary>
         public float conditionalHomingRange = 0f;
+
+        /// <summary>
+        /// Causes a projectile to use both Static and Local iframes when set
+        /// </summary>
+        public bool hybridIframes = false;
+
+        /// <summary>
+        /// Whether or not this proj was spawned with grape beer on
+        /// this does NOT mean it has grape beer homing!
+        /// </summary>
+        public bool grapeBeer = false;
 
         /// <summary>
         /// Variable used for storing the actual amount of extra updates a projectile has.<br/>
@@ -188,21 +213,6 @@ namespace CalamityMod.Projectiles
         /// Used for calculating pierce resist damage reduction.
         /// </summary>
         public int timesPierced = 0;
-
-        /// <summary>
-        /// If this projectile uses point-blank damage, this gets set to <see cref="DefaultPointBlankDuration"/>, then is decremented every frame.<br/>
-        /// If it reaches 0, this projectile can no longer deal point-blank damage.
-        /// </summary>
-        public int pointBlankShotDuration = 0;
-        /// <summary>
-        /// If this projectile uses point-blank damage, this value is incremented on every update by the distance the projectile traveled on that update.<br/>
-        /// If it exceeds <see cref="PointBlankShotDistanceLimit"/>, this projectile can no longer deal point-blank damage.
-        /// </summary>
-        public float pointBlankShotDistanceTravelled = 0f;
-        /// <summary> Constant variable which stores how many frames a projectile is allowed to deal point-blank damage. </summary>
-        public const int DefaultPointBlankDuration = 18;
-        /// <summary> Constant variable which stores the maximum distance a projectile can travel to deal point-blank damage, in pixels. </summary>
-        public const float PointBlankShotDistanceLimit = 240f; // 15 tiles
 
         // Empress of Light variables
         private const float EmpressRainbowStreakSpreadOutCutoff = 140f;
@@ -264,10 +274,6 @@ namespace CalamityMod.Projectiles
         /// <summary> Cooldown variable used to prevent projectiles from spawning orbs while in The Transformer's aura. </summary>
         public int TransformerTimer = 0;
 
-        // Note: Although this was intended for fishing line colors, I use this as an AI variable a lot because vanilla only has 4 that sometimes are already in use.  ~Ben
-        // TODO -- uses of this variable are undocumented and unstable. Remove it from the API surface.
-        public int lineColor = 0;
-
         /// <summary>
         /// There are several NPCs in Calamity which do not take damage from minions in certain circumstances.<br/>
         /// If true, this variable allows a projectile that deals summon damage to bypass this mechanic.
@@ -287,14 +293,20 @@ namespace CalamityMod.Projectiles
         /// <summary>
         /// Custom update priority.<br/>
         /// Calamity sorts projectiles by their update priority to fix otherwise absurdly difficult to resolve visual bugs on certain weapons.<br/>
-        /// Examples include Mechworm segments detaching or Rancor's laser beam being offset from the magic circle.
+        /// Examples include Void Eater Marionette segments detaching or Rancor's laser beam being offset from the magic circle.
         /// </summary>
         public float UpdatePriority = 0f;
 
         public int BloodstoneOrbValue = 0;
 
-        #region On Spawn
+        public int HomingTarget = -1;
 
+        /// <summary>
+        /// Flag used during Rev+ Brain of Cthulhu to denote projectiles that were spawned prior to its Illusion Trick attack starting.
+        /// </summary>
+        public bool IgnoreBoCIllusions = false;
+
+        #region On Spawn
         public override void OnSpawn(Projectile projectile, IEntitySource source)
         {
             // TODO -- it would be nice to move frame one hacks here, but this runs in the middle of NewProjectile
@@ -306,17 +318,82 @@ namespace CalamityMod.Projectiles
             if (sourceItem != null)
                 extorterBoost = true;
 
-            if (source is EntitySource_Parent { Entity: NPC npc })
-            {
-                if (!npc.friendly)
-                    ParentNPCIndex = npc.whoAmI;
-            }
-
             // Whenever the player has Daawnlight Spirit Origin, any ranged projectile will have the capacity to infintely supercrit.
             if (Main.player[projectile.owner].Calamity().spiritOrigin && projectile.CountsAsClass<RangedDamageClass>())
             {
                 projectile.CritChance += Main.player[projectile.owner].Calamity().spiritOriginCritBoost;
                 projectile.Calamity().supercritHits = -1;
+            }
+
+            void ApplyGrapeBeer()
+            {
+                conditionalHomingRange = 600;
+                if (projectile.timeLeft > 300 * projectile.MaxUpdates)
+                    projectile.timeLeft = 300 * projectile.MaxUpdates;
+                hybridIframes = true;
+                projectile.localNPCHitCooldown = -1;
+                projectile.usesLocalNPCImmunity = true;
+            }
+            if (source is EntitySource_ItemUse_WithAmmo {Item: Item item})
+            {
+                if (source is EntitySource_Parent { Entity: Player player })
+                {
+                    if (player.Calamity().grapeBeer && (item.useAmmo == AmmoID.Bullet || item.useAmmo == AmmoID.Arrow || item.useAmmo == AmmoID.Dart || item.useAmmo == AmmoID.Rocket))
+                    {
+                        if (player.heldProj != projectile.whoAmI && projectile.aiStyle != ProjAIStyleID.HeldProjectile && projectile.damage > 0 && player.Calamity().grapeBeerTimer < 5)
+                            ApplyGrapeBeer();
+                        else
+                            grapeBeer = true;
+                    }
+                }
+            }
+
+            if (source is EntitySource_Parent { Entity: NPC npc })
+            {
+                if (!npc.friendly)
+                    ParentNPCIndex = npc.whoAmI;
+            }
+            //
+            // SPECIFIC PROJECTILE BALANCE CHANGES (and Grape Beer homing)
+            //
+            else if (source is EntitySource_Parent { Entity: Projectile parent })
+            {
+                //Grape Beer homing
+                if (parent.Calamity().grapeBeer)
+                {
+                    if (Main.player[projectile.owner].heldProj != projectile.whoAmI && projectile.aiStyle != ProjAIStyleID.HeldProjectile && projectile.damage > 0 && Main.player[projectile.owner].Calamity().grapeBeerTimer < 5)
+                        ApplyGrapeBeer();
+                    else
+                        grapeBeer = true;
+                }
+
+                // Nerf Crystal bullet shard damage by 45%
+                // Vanilla crystal shards deal 50% of the bullet's damage which is absurd, this nerfs them to 27.5%
+                if (parent.type == ProjectileID.CrystalBullet && projectile.type == ProjectileID.CrystalShard)
+                    projectile.damage = (int)(projectile.damage * 0.55f);
+
+                // Nerf Mushroom Spear mushroom damage by 50%
+                if (parent.type == ProjectileID.MushroomSpear && projectile.type == ProjectileID.Mushroom)
+                    projectile.damage /= 2;
+
+                // Nerf Luminite Arrow trail damage by 50%
+                if (parent.type == ProjectileID.MoonlordArrow && projectile.type == ProjectileID.MoonlordArrowTrail)
+                    projectile.damage /= 2;
+
+                // Nerf Cursed Dart flame damage by 50%
+                if (parent.type == ProjectileID.CursedDart && projectile.type == ProjectileID.CursedDartFlame)
+                    projectile.damage /= 2;
+
+                // Nerf Chlorophyte armor's set bonus crystal damage by 30%
+                if (parent.type == ProjectileID.CrystalLeaf && projectile.type == ProjectileID.CrystalLeafShot)
+                    projectile.damage = (int)(projectile.damage * 0.7f);
+            }
+
+            if (source is EntitySource_OnHit e)
+            {
+                // Nerf Spectre armor's set bonus soul damage by 50%
+                if (e.Context == "SetBonus_GhostHurt")
+                    projectile.damage /= 2;
             }
         }
         public override void SendExtraAI(Projectile projectile, BitWriter bitWriter, BinaryWriter binaryWriter) => binaryWriter.Write(ParentNPCIndex);
@@ -348,13 +425,29 @@ namespace CalamityMod.Projectiles
         #region Pre AI
         public override bool PreAI(Projectile projectile)
         {
+            //Light Pets will add light to the abyss darkness.
+            //This uses local player on purpose, as the abyss darkness system is entirely client side.
+            if (ProjectileID.Sets.LightPet[projectile.type] && Main.LocalPlayer.Calamity().ZoneAbyss)
+                EnhancedDarknessSystem.lights.Add(new() { center = projectile.Center, texture = ModContent.Request<Texture2D>("CalamityMod/Particles/BloomCircle"), scale = 1 });
+
+            ///Apply Hybrid iframes
+            if (hybridIframes)
+            {
+                projectile.usesIDStaticNPCImmunity = true;
+                projectile.usesLocalNPCImmunity = true;
+            }
+
+            if (projectile.bobber && projectile.type != ProjectileType<VictideBobber>() && RunFishingMinigames(projectile))
+                return false;
+            //Reset the Homing Target immediately before AI can re-set it on applicable projectiles
+            HomingTarget = -1;
             #region Vanilla Summons AI Changes
 
-            //
-            // MINION AI CHANGES:
-            //
+                //
+                // MINION AI CHANGES:
+                //
 
-            // Hornet Staff's minion changes.
+                // Hornet Staff's minion changes.
             if (projectile.type == ProjectileID.Hornet)
                 return HornetMinionAI.DoHornetMinionAI(projectile);
 
@@ -375,12 +468,6 @@ namespace CalamityMod.Projectiles
                 return HoundiusShootiusFireballAI.DoHoundiusShootiusFireballAI(projectile);
 
             #endregion
-
-            if (!Main.player[projectile.owner].ActiveItem().IsAir && !Main.player[projectile.owner].ActiveItem().Calamity().canFirePointBlankShots)
-                pointBlankShotDuration = 0;
-
-            if (pointBlankShotDuration > 0)
-                pointBlankShotDuration--;
 
             // Reduce secondary yoyo damage if the player has Yoyo Glove
             // Brief behavior documentation of yoyo AI: ai[0, 1] are the x, y co-ords and localAI[0] is the airtime in frames
@@ -421,10 +508,6 @@ namespace CalamityMod.Projectiles
                     projectile.Kill();
             }
 
-            // Chlorophyte Crystal AI rework.
-            if (projectile.type == ProjectileID.CrystalLeaf)
-                return ChlorophyteCrystalAI.DoChlorophyteCrystalAI(projectile);
-
             if (projectile.minion && ExplosiveEnchantCountdown > 0)
             {
                 ExplosiveEnchantCountdown--;
@@ -435,7 +518,7 @@ namespace CalamityMod.Projectiles
                     if (Main.rand.NextBool(24))
                         SoundEngine.PlaySound(SoundID.DD2_BetsyFireballShot, projectile.Center);
 
-                    Dust fire = Dust.NewDustPerfect(projectile.Center + Main.rand.NextVector2Circular(projectile.width, projectile.height) * 0.42f, 267);
+                    Dust fire = Dust.NewDustPerfect(projectile.Center + Main.rand.NextVector2Circular(projectile.width, projectile.height) * 0.42f, DustID.RainbowMk2);
                     fire.color = Color.Lerp(Color.Orange, Color.Red, Main.rand.NextFloat(0.45f, 1f));
                     fire.scale = Main.rand.NextFloat(1.4f, 1.65f);
                     fire.fadeIn = 0.5f;
@@ -486,10 +569,10 @@ namespace CalamityMod.Projectiles
                 // Accelerate if fired in a spread from Skeletron in Rev+
                 if (revSkeletronAcceleratingSkull)
                 {
-                    float maxVelocity = BossRushEvent.BossRushActive ? 20f : CalamityWorld.death ? 18f : 15f;
+                    float maxVelocity = CalamityWorld.death ? 18f : 15f;
                     if (projectile.velocity.Length() < maxVelocity)
                     {
-                        float acceleration = BossRushEvent.BossRushActive ? 1.02f : 1.015f;
+                        float acceleration = 1.015f;
                         projectile.velocity *= acceleration;
                         if (projectile.velocity.Length() > maxVelocity)
                         {
@@ -528,7 +611,7 @@ namespace CalamityMod.Projectiles
                     num133 = Player.FindClosest(projectile.Center, 1, 1);
                     projectile.ai[1] += 1f;
                     float homingStartTime = revSkeletronPrimeHomingSkull ? 10f : 30f;
-                    float homingEndTime = BossRushEvent.BossRushActive ? 120f : CalamityWorld.death ? 105f : 90f;
+                    float homingEndTime = CalamityWorld.death ? 105f : 90f;
                     if (revSkeletronPrimeHomingSkull)
                         homingEndTime += 60f;
 
@@ -702,11 +785,6 @@ namespace CalamityMod.Projectiles
             {
                 if (projectile.localAI[0] == 0f)
                 {
-                    if (Main.masterMode && !CalamityPlayer.areThereAnyDamnBosses)
-                        projectile.damage = (int)Math.Round(projectile.damage * CalamityGlobalNPC.MasterModeEnemyDamageMultiplier);
-                    if (!CalamityPlayer.areThereAnyDamnBosses)
-                        projectile.damage = (int)Math.Round(projectile.damage * 0.65);
-
                     SoundEngine.PlaySound(SoundID.Item17, projectile.Center);
                     projectile.localAI[0] = 1f;
                     for (int i = 0; i < 8; i++)
@@ -735,11 +813,6 @@ namespace CalamityMod.Projectiles
             {
                 if (projectile.localAI[0] == 0f)
                 {
-                    if (Main.masterMode && !CalamityPlayer.areThereAnyDamnBosses)
-                        projectile.damage = (int)Math.Round(projectile.damage * CalamityGlobalNPC.MasterModeEnemyDamageMultiplier);
-                    if (!CalamityPlayer.areThereAnyDamnBosses)
-                        projectile.damage = (int)Math.Round(projectile.damage * 0.65);
-
                     SoundEngine.PlaySound(SoundID.Item171, projectile.Center);
                     projectile.localAI[0] = 1f;
                     for (int i = 0; i < 8; i++)
@@ -1019,112 +1092,9 @@ namespace CalamityMod.Projectiles
                 }
             }
 
-            else if (projectile.type == ProjectileID.Sharknado)
-            {
-                projectile.damage = projectile.GetProjectileDamage(NPCID.DukeFishron);
-
-                int num535 = 10;
-                int num536 = 15;
-                float num537 = 1f;
-                int num538 = 150;
-                int num539 = 42;
-
-                if (projectile.velocity.X != 0f)
-                    projectile.direction = (projectile.spriteDirection = -Math.Sign(projectile.velocity.X));
-
-                projectile.frameCounter++;
-                if (projectile.frameCounter > 2)
-                {
-                    projectile.frame++;
-                    projectile.frameCounter = 0;
-                }
-
-                if (projectile.frame >= 6)
-                    projectile.frame = 0;
-
-                if (projectile.localAI[0] == 0f && Main.myPlayer == projectile.owner)
-                {
-                    projectile.localAI[0] = 1f;
-                    projectile.position.X += projectile.width / 2;
-                    projectile.position.Y += projectile.height / 2;
-                    projectile.scale = ((float)(num535 + num536) - projectile.ai[1]) * num537 / (float)(num536 + num535);
-                    projectile.width = (int)((float)num538 * projectile.scale);
-                    projectile.height = (int)((float)num539 * projectile.scale);
-                    projectile.position.X -= projectile.width / 2;
-                    projectile.position.Y -= projectile.height / 2;
-                    projectile.netUpdate = true;
-                }
-
-                if (projectile.ai[1] != -1f)
-                {
-                    projectile.scale = ((float)(num535 + num536) - projectile.ai[1]) * num537 / (float)(num536 + num535);
-                    projectile.width = (int)((float)num538 * projectile.scale);
-                    projectile.height = (int)((float)num539 * projectile.scale);
-                }
-
-                int maxAlpha = 150;
-                int minAlpha = 60;
-                if (projectile.timeLeft > FishronSharknadoTotalDuration - FishronTornadoTimeBeforeDealingDamage)
-                {
-                    maxAlpha = 220;
-                    minAlpha = 180;
-                }
-
-                if (!Collision.SolidCollision(projectile.position, projectile.width, projectile.height))
-                {
-                    projectile.alpha -= 30;
-                    if (projectile.alpha < minAlpha)
-                        projectile.alpha = minAlpha;
-                }
-                else
-                {
-                    projectile.alpha += 30;
-                    if (projectile.alpha > maxAlpha)
-                        projectile.alpha = maxAlpha;
-                }
-
-                if (projectile.ai[0] > 0f)
-                    projectile.ai[0]--;
-
-                if (projectile.ai[0] == 1f && projectile.ai[1] > 0f && projectile.owner == Main.myPlayer)
-                {
-                    projectile.netUpdate = true;
-                    Vector2 center4 = projectile.Center;
-                    center4.Y -= (float)num539 * projectile.scale / 2f;
-                    float num540 = ((float)(num535 + num536) - projectile.ai[1] + 1f) * num537 / (float)(num536 + num535);
-                    center4.Y -= (float)num539 * num540 / 2f;
-                    center4.Y += 2f;
-                    Projectile.NewProjectile(projectile.GetSource_FromAI(), center4, projectile.velocity, projectile.type, projectile.damage, projectile.knockBack, projectile.owner, 10f, projectile.ai[1] - 1f);
-                    int num541 = 4;
-
-                    if ((int)projectile.ai[1] % num541 == 0 && projectile.ai[1] != 0f)
-                    {
-                        int num542 = NPCID.Sharkron;
-                        int num543 = NPC.NewNPC(projectile.GetSource_FromAI(), (int)center4.X, (int)center4.Y, num542);
-                        Main.npc[num543].velocity = projectile.velocity;
-                        Main.npc[num543].netUpdate = true;
-                    }
-                }
-
-                if (projectile.ai[0] <= 0f)
-                {
-                    float num544 = MathHelper.Pi / 30f;
-                    float num545 = (float)projectile.width / 5f;
-                    float num546 = (float)(Math.Cos(num544 * (0f - projectile.ai[0])) - 0.5) * num545;
-                    projectile.position.X -= num546 * (float)(-projectile.direction);
-                    projectile.ai[0]--;
-                    num546 = (float)(Math.Cos(num544 * (0f - projectile.ai[0])) - 0.5) * num545;
-                    projectile.position.X += num546 * (float)(-projectile.direction);
-                }
-
-                return false;
-            }
-
             // Larger cthulhunadoes
             else if (projectile.type == ProjectileID.Cthulunado)
             {
-                projectile.damage = projectile.GetProjectileDamage(NPCID.DukeFishron);
-
                 if (CalamityWorld.revenge || BossRushEvent.BossRushActive)
                 {
                     bool death = CalamityWorld.death || BossRushEvent.BossRushActive;
@@ -1544,7 +1514,7 @@ namespace CalamityMod.Projectiles
                     {
                         float x2 = projectile.position.X - projectile.velocity.X / (float)totalDust * (float)i;
                         float y2 = projectile.position.Y - projectile.velocity.Y / (float)totalDust * (float)i;
-                        int dust = Dust.NewDust(new Vector2(x2, y2), 1, 1, 75);
+                        int dust = Dust.NewDust(new Vector2(x2, y2), 1, 1, DustID.CursedTorch);
                         Main.dust[dust].alpha = projectile.alpha;
                         Main.dust[dust].position.X = x2;
                         Main.dust[dust].position.Y = y2;
@@ -2161,14 +2131,14 @@ namespace CalamityMod.Projectiles
                         projectile.rotation = projectile.velocity.ToRotation();
                         for (int dustIndex = 0; dustIndex < 5; dustIndex++)
                         {
-                            Dust dust = Dust.NewDustPerfect(projectile.Center + Main.rand.NextVector2Circular(24f, 24f), 16, projectile.velocity * MathHelper.Lerp(0.2f, 0.7f, Main.rand.NextFloat()));
+                            Dust dust = Dust.NewDustPerfect(projectile.Center + Main.rand.NextVector2Circular(24f, 24f), DustID.Cloud, projectile.velocity * MathHelper.Lerp(0.2f, 0.7f, Main.rand.NextFloat()));
                             dust.velocity += Main.rand.NextVector2Circular(0.5f, 0.5f);
                             dust.scale = 0.8f + Main.rand.NextFloat() * 0.5f;
                         }
 
                         for (int dustIndex = 0; dustIndex < 5; dustIndex++)
                         {
-                            Dust dust = Dust.NewDustPerfect(projectile.Center + Main.rand.NextVector2Circular(24f, 24f), 16, Main.rand.NextVector2Circular(2f, 2f) + projectile.velocity * MathHelper.Lerp(0.2f, 0.5f, Main.rand.NextFloat()));
+                            Dust dust = Dust.NewDustPerfect(projectile.Center + Main.rand.NextVector2Circular(24f, 24f), DustID.Cloud, Main.rand.NextVector2Circular(2f, 2f) + projectile.velocity * MathHelper.Lerp(0.2f, 0.5f, Main.rand.NextFloat()));
                             dust.velocity += Main.rand.NextVector2Circular(0.5f, 0.5f);
                             dust.scale = 0.8f + Main.rand.NextFloat() * 0.5f;
                             dust.fadeIn = 1f;
@@ -2269,7 +2239,7 @@ namespace CalamityMod.Projectiles
                         if (projectile.velocity.Y > 16f)
                             projectile.velocity.Y = 16f;
 
-                        if (CalamityWorld.LegendaryMode && projectile.velocity.Length() > 4f)
+                        if (Main.getGoodWorld && projectile.velocity.Length() > 4f)
                             projectile.velocity *= 0.985f;
 
                         return false;
@@ -2480,7 +2450,7 @@ namespace CalamityMod.Projectiles
                                 for (int k = 0; k < totalProjectiles; k++)
                                 {
                                     Vector2 velocity2 = spinningPoint.RotatedBy(radians * k);
-                                    Projectile.NewProjectile(projectile.GetSource_FromThis(), projectile.Center + Vector2.Normalize(velocity2) * 16f, velocity2, type, (int)Math.Round(projectile.damage * 0.8), 0f, Main.myPlayer);
+                                    Projectile.NewProjectile(projectile.GetSource_FromThis(), projectile.Center + Vector2.Normalize(velocity2) * 16f, velocity2, type, PlanteraAI.ThornBallSpikeDamage, 0f, Main.myPlayer);
                                 }
                             }
 
@@ -2537,110 +2507,6 @@ namespace CalamityMod.Projectiles
                     return false;
                 }
 
-                else if (projectile.type == ProjectileID.InfernoHostileBolt && projectile.ai[2] > 0f)
-                {
-                    if (projectile.localAI[0] == 0f)
-                    {
-                        SoundEngine.PlaySound(SoundID.Item20, projectile.position);
-                        projectile.localAI[0] += 1f;
-                    }
-
-                    bool killX = false;
-                    bool killY = false;
-                    if (projectile.velocity.X < 0f && projectile.position.X < projectile.ai[0])
-                        killX = true;
-
-                    if (projectile.velocity.X > 0f && projectile.position.X > projectile.ai[0])
-                        killX = true;
-
-                    if (projectile.velocity.Y < 0f && projectile.position.Y < projectile.ai[1])
-                        killY = true;
-
-                    if (projectile.velocity.Y > 0f && projectile.position.Y > projectile.ai[1])
-                        killY = true;
-
-                    if (killX && killY)
-                        projectile.Kill();
-
-                    for (int i = 0; i < 10; i++)
-                    {
-                        int dust = Dust.NewDust(projectile.position, projectile.width, projectile.height, DustID.IchorTorch, projectile.velocity.X * 0.2f, projectile.velocity.Y * 0.2f, 100, default, 1.6f);
-                        Main.dust[dust].noGravity = true;
-                        Main.dust[dust].velocity *= 0.3f;
-                        Main.dust[dust].velocity += projectile.velocity * 0.1f;
-                        if (CalamityWorld.LegendaryMode)
-                            Main.dust[dust].noLight = true;
-                    }
-
-                    Particle theSpark = new AltSparkParticle(projectile.Center, projectile.velocity * 0.06f + projectile.velocity * 0.1f, false, 40, 1f, new Color(255, 255, 100));
-                    GeneralParticleHandler.SpawnParticle(theSpark);
-
-                    return false;
-                }
-
-                else if (projectile.type == ProjectileID.InfernoHostileBlast && projectile.ai[2] > 0f)
-                {
-                    if (projectile.localAI[0] == 0f)
-                    {
-                        SoundEngine.PlaySound(SoundID.Item74, projectile.position);
-                        projectile.localAI[0] += 1f;
-                    }
-
-                    projectile.ai[0] += 1f;
-
-                    float totalDust = 20f;
-                    if (projectile.ai[0] > 540f)
-                        totalDust -= (projectile.ai[0] - 180f) / 2f;
-
-                    if (totalDust <= 0f)
-                    {
-                        totalDust = 0f;
-                        projectile.Kill();
-                    }
-
-                    float maxDustVelocityX = 10f;
-                    float maxDustVelocityY = 10f;
-                    float minDustSpeed = 3f;
-                    float maxDustSpeed = 8f;
-
-                    for (int i = 0; i < (int)totalDust; i++)
-                    {
-                        float dustVelocityX = Main.rand.NextFloat(-maxDustVelocityX, maxDustVelocityX);
-                        float dustVelocityY = Main.rand.NextFloat(-maxDustVelocityY, maxDustVelocityY);
-                        float randomDustSpeed = Main.rand.NextFloat(minDustSpeed, maxDustSpeed);
-                        float velocityLength = (float)Math.Sqrt(dustVelocityX * dustVelocityX + dustVelocityY * dustVelocityY);
-                        velocityLength = randomDustSpeed / velocityLength;
-                        dustVelocityX *= velocityLength;
-                        dustVelocityY *= velocityLength;
-                        Vector2 dustVelocity = new Vector2(dustVelocityX, dustVelocityY);
-                        Vector2 dustPosition = projectile.Center + new Vector2(Main.rand.NextFloat(-10f, 10f), Main.rand.NextFloat(-10f, 10f));
-                        int dust = Dust.NewDust(projectile.position, projectile.width, projectile.height, DustID.IchorTorch, 0f, 0f, 100, default, 1.8f);
-                        Main.dust[dust].noGravity = true;
-                        Main.dust[dust].position = dustPosition;
-                        Main.dust[dust].velocity = dustVelocity;
-                        if (CalamityWorld.LegendaryMode)
-                            Main.dust[dust].noLight = true;
-                    }
-
-                    float maxSparkVelocityX = 10f;
-                    float maxSparkVelocityY = 10f;
-                    float minSparkSpeed = 3f;
-                    float maxSparkSpeed = 7f;
-
-                    float sparkVelocityX = Main.rand.NextFloat(-maxSparkVelocityX, maxSparkVelocityX);
-                    float sparkVelocityY = Main.rand.NextFloat(-maxSparkVelocityY, maxSparkVelocityY);
-                    float randSparkSpeed = Main.rand.NextFloat(minSparkSpeed, maxSparkSpeed);
-                    float sparkLength = (float)Math.Sqrt(sparkVelocityX * sparkVelocityX + sparkVelocityY * sparkVelocityY);
-                    sparkLength = randSparkSpeed / sparkLength;
-                    sparkVelocityX *= sparkLength;
-                    sparkVelocityY *= sparkLength;
-
-                    Particle theSpark = new AltSparkParticle(projectile.Center, new Vector2(sparkVelocityX, sparkVelocityY), false, 40, 1f, new Color(255, 255, 100));
-                    GeneralParticleHandler.SpawnParticle(theSpark);
-
-                    return false;
-                }
-
                 else if (projectile.type == ProjectileID.AncientDoomProjectile)
                 {
                     if (projectile.velocity.Length() < 6f)
@@ -2681,42 +2547,16 @@ namespace CalamityMod.Projectiles
                         Vector2 vector11 = Main.player[num103].Center - projectile.Center;
                         float scaleFactor2 = projectile.velocity.Length();
                         vector11.Normalize();
+                        if (vector11.HasNaNs())
+                            vector11 = Vector2.Zero;
                         vector11 *= scaleFactor2;
                         projectile.velocity = (projectile.velocity * 20f + vector11) / 21f;
                         projectile.velocity.Normalize();
                         projectile.velocity *= scaleFactor2;
+                        projectile.velocity *= 0.99f;
 
-                        // Fly away from other Ice Mists in Master
-                        if (death)
-                        {
-                            float pushForce = 0.06f;
-                            float pushDistance = 120f;
-                            for (int k = 0; k < Main.maxProjectiles; k++)
-                            {
-                                Projectile otherProj = Main.projectile[k];
-                                // Short circuits to make the loop as fast as possible
-                                if (!otherProj.active || k == projectile.whoAmI)
-                                    continue;
-
-                                // If the other projectile is indeed the same owned by the same player and they're too close, nudge them away
-                                bool sameProjType = otherProj.type == projectile.type;
-                                float taxicabDist = Vector2.Distance(projectile.Center, otherProj.Center);
-                                if (sameProjType && taxicabDist < pushDistance)
-                                {
-                                    if (projectile.position.X < otherProj.position.X)
-                                        projectile.velocity.X -= pushForce;
-                                    else
-                                        projectile.velocity.X += pushForce;
-
-                                    if (projectile.position.Y < otherProj.position.Y)
-                                        projectile.velocity.Y -= pushForce;
-                                    else
-                                        projectile.velocity.Y += pushForce;
-                                }
-                            }
-                        }
-
-                        if (projectile.ai[0] % (death ? 30f : 60f) == 0f && Main.netMode != NetmodeID.MultiplayerClient)
+                        
+                        if (projectile.ai[0] % (death ? 20f : 30f) == 0f && Main.netMode != NetmodeID.MultiplayerClient)
                         {
                             Vector2 vector50 = projectile.rotation.ToRotationVector2();
                             Projectile.NewProjectile(projectile.GetSource_FromThis(), projectile.Center, vector50, projectile.type, projectile.damage, projectile.knockBack, projectile.owner);
@@ -2868,7 +2708,7 @@ namespace CalamityMod.Projectiles
                             return false;
                         }
 
-                        float velocityLimit = (death ? 28f : 24f) / MathHelper.Clamp(lineColor * 0.75f, 1f, 3f);
+                        float velocityLimit = (death ? 28f : 24f) / MathHelper.Clamp(projectile.ai[2] * 0.75f, 1f, 3f);
                         if (projectile.velocity.Length() < velocityLimit)
                             projectile.velocity *= 1.01f;
                     }
@@ -3060,6 +2900,779 @@ namespace CalamityMod.Projectiles
         }
         #endregion
 
+        #region Fishing Minigames
+        // All these fields are exclusively used for fishing minigames, so I declared them in this region for organization
+        /// <summary>
+        /// Reel state of bobber.<br/>
+        /// ai[0] in bobber AI.
+        /// </summary>
+        private float isReelingIn = 0;
+        /// <summary>
+        /// How long you have to catch a fish when bitten.<br/>
+        /// ai[1] in bobber AI.
+        /// </summary>
+        private float CatchTime = 0;
+        /// <summary>
+        /// How long until a fish bites.<br/>
+        /// LocalAI[1] in bobber AI.
+        /// </summary>
+        private float TimerToCatch = 0;
+        /// <summary> Item ID of hooked item for fishing minigames. </summary>
+        public int CaughtItemID = -1;
+        /// <summary> What this does depends on the fishing minigame. Used to store data between updates. </summary>
+        public float PersistentFishingData = -1;
+        /// <summary> <inheritdoc cref="PersistentFishingData"/> </summary>
+        public Vector2 PersistentFishingDataVector2 = Vector2.Zero;
+        public bool RunFishingMinigames(Projectile projectile)
+        {
+            var owner = Main.player[projectile.owner];
+            var cplayer = owner.Calamity();
+
+            //Make sure Victide Snail actually fishes when using a minigame rod
+            foreach (var item in Main.ActiveProjectiles)
+            {
+                if (item.type == ProjectileType<VictideSeaSnail>() && item.owner == projectile.owner)
+                    item.ModProjectile<VictideSeaSnail>().PlayerFishingTimer = 600;
+            }
+            #region Utilities
+            void SmallSplashAtOffset(Vector2 offset)
+            {
+                int num = Dust.NewDust(new Vector2(projectile.position.X - 6f, projectile.position.Y - 10f) + offset, projectile.width + 12, 24, Dust.dustWater());
+                Main.dust[num].velocity.Y -= 4f;
+                Main.dust[num].velocity.X *= 2.5f;
+                Main.dust[num].scale = 0.8f;
+                Main.dust[num].alpha = 100;
+                Main.dust[num].noGravity = true;
+            }
+            void SmallDustAtOffset(Vector2 offset, int dustID)
+            {
+                int num = Dust.NewDust(new Vector2(projectile.position.X - 6f, projectile.position.Y - 10f) + offset, projectile.width + 12, 24, dustID);
+                Main.dust[num].velocity.Y -= 4f;
+                Main.dust[num].velocity.X *= 2.5f;
+                Main.dust[num].scale = 0.8f;
+                Main.dust[num].alpha = 100;
+                Main.dust[num].noGravity = true;
+            }
+            void Splash()
+            {
+                for (int i = 0; i < 100; i++)
+                {
+                    int num = Dust.NewDust(new Vector2(projectile.position.X - 6f, projectile.position.Y - 10f), projectile.width + 12, 24, Dust.dustWater());
+                    Main.dust[num].velocity.Y -= 4f;
+                    Main.dust[num].velocity.X *= 2.5f;
+                    Main.dust[num].scale = 0.8f;
+                    Main.dust[num].alpha = 100;
+                    Main.dust[num].noGravity = true;
+                }
+
+                SoundEngine.PlaySound(SoundID.SplashWeak, projectile.Center);
+            }
+            void ReelTheBobberChecks()
+            {
+                if (projectile.localAI[1] == 1)
+                {
+                    if (Main.netMode != NetmodeID.MultiplayerClient)
+                    {
+                        NPC.SpawnOnPlayer(owner.whoAmI, 370);
+                    }
+                    projectile.ai[0] = 2f;
+                }
+                else if (projectile.localAI[1] < 1)
+                {
+                    Point point = default(Point);
+                    point = new Point((int)projectile.position.X, (int)projectile.position.Y);
+                    int num = (int)(0f - projectile.localAI[1]);
+                    if (num == 618)
+                    {
+                        point.Y += 64;
+                    }
+                    if (Main.netMode == NetmodeID.MultiplayerClient)
+                    {
+                        NetMessage.SendData(MessageID.FishOutNPC, -1, -1, null, point.X / 16, point.Y / 16, num);
+                    }
+                    else
+                    {
+                        if (num == 682)
+                        {
+                            NPC.unlockedSlimeRedSpawn = true;
+                        }
+                        NPC.NewNPC(new EntitySource_FishedOut(owner), point.X, point.Y, num);
+                        projectile.ai[0] = 2f;
+                        WorldGen.CheckAchievement_RealEstateAndTownSlimes();
+                    }
+                }
+                else if (Main.rand.NextBool(7) && !owner.accFishingLine)
+                {
+                    projectile.ai[0] = 2f;
+                    projectile.ai[1] = 0;
+                    projectile.localAI[1] = 0;
+                }
+                else
+                {
+                    projectile.ai[1] = projectile.localAI[1];
+                }
+                projectile.netUpdate = true;
+            }
+
+            Vector2 GetWaterLine()
+            {
+                Vector2 FoundWaterline = projectile.Center;
+                var tilePos = projectile.Center.ToTileCoordinates();
+                if (Main.tile[tilePos.X, tilePos.Y].LiquidAmount > 0)
+                {
+                    for (var i = 0; i < 1000; i++)
+                    {
+                        if (i <= 0 || i >= Main.maxTilesY || Main.tile[tilePos.X, tilePos.Y - i].LiquidAmount > 0)
+                            continue;
+                        FoundWaterline.Y = (tilePos.Y - i + 1) * 16f;
+                        FoundWaterline.Y += (1 - Main.tile[tilePos.X, tilePos.Y - i + 1].LiquidAmount / 255f) * 16f;
+                        break;
+                    }
+                }
+                else
+                {
+                    for (var i = 0; i < 1000; i++)
+                    {
+                        if (i <= 0 || i >= Main.maxTilesY || Main.tile[tilePos.X, tilePos.Y + i].LiquidAmount == 0)
+                            continue;
+                        FoundWaterline.Y = (tilePos.Y + i) * 16f;
+                        FoundWaterline.Y += (1 - Main.tile[tilePos.X, tilePos.Y + i].LiquidAmount / 255f) * 16f;
+                        break;
+                    }
+                }
+                return FoundWaterline;
+            }
+            #endregion
+            //Doze's notes on bobber AI
+
+            //ai[0] - Bobber state. 0: thrown/idle/bitten, 1: reeling in, 2: snapped
+            //ai[1] - Amount of time to reel in the bobber once a bite happens. Is negative and counts up
+            //When reeled in, this becomes the value of localAI[1] (ID of item/NPC)
+            //At 0, the bobber is just floating waiting for a bite
+            //localAI[1] - The timer for fish to try and bite the hook. When it exceeds 660, it resets to 0.
+            //If ai[1] is not 0, this is set to the item ID of the hooked item/NPC
+            //If hooking an NPC, this is set to the NPC ID but negative. Still need to find how this gets treated upon reeling in.
+            switch (owner.Calamity().SelectedFishingMinigame)
+            {
+                case CalamityPlayer.FishingMinigames.ScrapBobber:
+                    {
+                        if (CatchTime < 0 || (isReelingIn == 1 && CaughtItemID > 0))
+                        {
+                            owner.Calamity().ShouldHideControls = true;
+                        }
+                        if (isReelingIn != projectile.ai[0])
+                            return false;
+
+                        if (CatchTime < 0)
+                            CatchTime++;
+                        if (projectile.wet || (projectile.lavaWet && owner.accLavaFishing) || projectile.honeyWet)
+                            TimerToCatch++;
+                        var speedup = Math.Min(owner.Calamity().consecutiveCaughtFish * 5, 25);
+                        var totalTime = 60 - speedup;
+                        if (TimerToCatch + 90 >= 160 - owner.HeldItem.fishingPole && CatchTime >= 0)
+                        {
+                            // TODO: Implications of rand here?
+                            if (PersistentFishingData == 0)
+                                PersistentFishingData = Main.rand.NextBool() ? 1 : -1;
+                            var timer = TimerToCatch - 160 - owner.HeldItem.fishingPole;
+
+                            // TODO: Fine for others to see?
+                            SmallSplashAtOffset(new Vector2(200 * PersistentFishingData * (timer / 90f), 0));
+                        }
+                        if (TimerToCatch >= 160 - owner.HeldItem.fishingPole && CatchTime >= 0)
+                        {
+                            PersistentFishingData = 0;
+                            projectile.FishingCheck();
+                            if (projectile.ai[1] < 0)
+                            {
+                                CatchTime = -totalTime * 4;
+                                CaughtItemID = (int)projectile.localAI[1];
+                            }
+                            TimerToCatch = 0;
+                        }
+                        if (CatchTime < 0 && CatchTime % totalTime == 0)
+                        {
+                            // TODO: Fine for others to see?
+                            Splash();
+                            // TODO: Implications of rand here?
+                            PersistentFishingData = Main.rand.Next(0, 4);
+
+                            if (owner.whoAmI == Main.myPlayer)
+                            {
+                                var particle = new CustomSpark(projectile.Center, Vector2.UnitX.RotatedBy(PersistentFishingData * MathHelper.PiOver2) * 10, "CalamityMod/Particles/HighResHollowCircleHardEdgeAlt", false, 45 - speedup, 0.04f, Color.Blue, new(1, 2), shrinkSpeed: -0.2f);
+                                GeneralParticleHandler.SpawnParticle(particle);
+                            }
+                        }
+                        if (CatchTime < 0 && CatchTime % totalTime == -15)
+                        {
+                            var playerDir = -1;
+                            if (owner.Calamity().pressedUp)
+                            {
+                                playerDir = 3;
+                            }
+                            if (owner.Calamity().pressedLeft)
+                            {
+                                playerDir = 2;
+                            }
+                            if (owner.Calamity().pressedDown)
+                            {
+                                playerDir = 1;
+                            }
+                            if (owner.Calamity().pressedRight)
+                            {
+                                playerDir = 0;
+                            }
+                            if (playerDir == PersistentFishingData)
+                            {
+
+                            }
+                            else
+                            {
+                                if (owner.whoAmI == Main.myPlayer)
+                                {
+                                    if (playerDir >= 0)
+                                    {
+                                        var particle = new CustomSpark(projectile.Center, Vector2.UnitX.RotatedBy(playerDir * MathHelper.PiOver2) * 10, "CalamityMod/Particles/HighResHollowCircleHardEdgeAlt", false, 15, 0.04f, Color.Red, new(1, 2), shrinkSpeed: -0.2f);
+                                        GeneralParticleHandler.SpawnParticle(particle);
+                                    }
+                                    else
+                                    {
+                                        var particle = new CustomSpark(projectile.Center, Vector2.Zero, "CalamityMod/Particles/HighResHollowCircleHardEdge", false, 15, 0.06f, Color.Red, Vector2.One);
+                                        GeneralParticleHandler.SpawnParticle(particle);
+                                    }
+                                }
+                                TimerToCatch = 0;
+                                CatchTime = 0;
+                                CaughtItemID = -1;
+                                PersistentFishingData = 0;
+                                owner.Calamity().consecutiveCaughtFish = 0;
+                            }
+                        }
+                        if (CatchTime == -1)
+                        {
+                            projectile.localAI[1] = CaughtItemID;
+                            ReelTheBobberChecks();
+                            owner.Calamity().consecutiveCaughtFish++;
+                            if (projectile.ai[0] == 2)
+                                return false;
+                            isReelingIn = 1;
+                            CatchTime = (float)CaughtItemID;
+                            TimerToCatch = 0;
+                        }
+                        if (projectile.ai[0] == 0)
+                        {
+                            projectile.ai[1] = CatchTime;
+                            projectile.localAI[1] = TimerToCatch;
+                            if (CaughtItemID != -1 && isReelingIn == 0)
+                            {
+                                projectile.localAI[1] = 0;
+                                projectile.ai[1] = 0;
+                            }
+                            projectile.ai[0] = isReelingIn;
+                        }
+                        return false;
+                    }
+
+
+                case CalamityPlayer.FishingMinigames.ScoriaBobber:
+                    {
+                        if (PersistentFishingData == -1)
+                        {
+                            PersistentFishingData = 1;
+                            TimerToCatch = 300;
+                        }
+                        var Waterline = GetWaterLine();
+                        if (Waterline.Y >= projectile.Center.Y)
+                        {
+                            TimerToCatch = 300;
+                            projectile.velocity.Y += 0.4f;
+                        }
+                        else if (projectile.ai[0] == 0)
+                        {
+                            owner.Calamity().ShouldHideControls = true;
+                            if (owner.Calamity().pressedUp)
+                            {
+                                projectile.velocity.Y -= 0.125f;
+                                projectile.netUpdate = true;
+                            }
+
+                            if (owner.Calamity().pressedDown)
+                            {
+                                projectile.velocity.Y += 0.125f;
+                                projectile.netUpdate = true;
+                            }
+
+                            if (owner.Calamity().pressedLeft)
+                            {
+                                projectile.velocity.X -= 0.125f;
+                                projectile.netUpdate = true;
+                            }
+
+                            if (owner.Calamity().pressedRight)
+                            {
+                                projectile.velocity.X += 0.125f;
+                                projectile.netUpdate = true;
+                            }
+                        }
+                        projectile.velocity *= 0.975f;
+
+                        if (Waterline.Y <= projectile.Center.Y && projectile.ai[0] == 0 && !(projectile.lavaWet && !owner.accLavaFishing))
+                        {
+                            TimerToCatch -= Main.rand.Next(1, 5);
+                            if (TimerToCatch <= 0)
+                            {
+                                projectile.FishingCheck();
+                                if (projectile.ai[1] < 0)
+                                {
+                                    CaughtItemID = (int)projectile.localAI[1];
+                                    projectile.ai[1] = 0;
+                                    projectile.localAI[1] = 0;
+
+                                    if (owner.whoAmI == Main.myPlayer)
+                                    {
+                                        for (var i = 0; i < 1000; i++)
+                                        {
+                                            var vectorToCheck = projectile.Center + new Vector2(Main.rand.Next(-200, 201), Main.rand.Next(-200, 201));
+                                            var tileCoordsToCheck = vectorToCheck.ToSafeTileCoordinates();
+                                            if (new Rectangle((int)Main.screenPosition.X, (int)Main.screenPosition.Y, Main.screenWidth, Main.screenHeight).Contains((int)vectorToCheck.X, (int)vectorToCheck.Y) && !Main.tile[tileCoordsToCheck.X, tileCoordsToCheck.Y].IsTileSolid() && Main.tile[tileCoordsToCheck.X, tileCoordsToCheck.Y].LiquidAmount > 0)
+                                            {
+                                                if (projectile.localAI[2] >= 1)
+                                                {
+                                                    int customSonarText = (int)(projectile.localAI[2] - 1);
+                                                    if (Main.popupText[customSonarText].sonar)
+                                                    {
+                                                        Main.popupText[customSonarText].position = vectorToCheck - FontAssets.MouseText.Value.MeasureString(Main.popupText[customSonarText].name) / 2f;
+                                                    }
+                                                }
+                                                PersistentFishingDataVector2 = vectorToCheck;
+                                                TimerToCatch = 600;
+                                                break;
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                            if (PersistentFishingDataVector2 != Vector2.Zero && owner.whoAmI == Main.myPlayer)
+                            {
+                                Dust.NewDustPerfect(PersistentFishingDataVector2, DustID.Smoke);
+                                if (Main.rand.NextBool(3))
+                                {
+                                    Dust.NewDustPerfect(PersistentFishingDataVector2, DustID.Torch);
+                                }
+                                var particle = new HeavySmokeParticle(PersistentFishingDataVector2, Vector2.One.RotatedByRandom(6.28) * Main.rand.NextFloat(1f, 4f), Color.Lerp(Color.DarkOrange, Color.DarkGray, Main.rand.NextFloat()), 15, 0.2f, 1);
+                                GeneralParticleHandler.SpawnParticle(particle);
+                            }
+
+                            //When in lava, give the bobber a particle over it to show its location
+                            if (projectile.lavaWet && owner.whoAmI == Main.myPlayer)
+                            {
+                                var particle = new CustomSpark(projectile.Center, Vector2.Zero, "CalamityMod/Particles/HighResHollowCircleHardEdge", false, 2, 0.01f, Color.DarkGray, Vector2.One);
+                                GeneralParticleHandler.SpawnParticle(particle);
+                            }
+                            List<(Vector2, int)> validRifts = new();
+
+                            foreach (var item in Main.ActiveProjectiles)
+                            {
+                                if (item.bobber && projectile.type != ModContent.ProjectileType<VictideBobber>() && item.owner == projectile.owner && item.ai[0] == 0 && item.Calamity().PersistentFishingDataVector2 != Vector2.Zero)
+                                {
+                                    validRifts.Add((item.Calamity().PersistentFishingDataVector2, item.whoAmI));
+                                }
+                            }
+                            foreach (var item in validRifts)
+                            {
+                                if (projectile.Distance(item.Item1) < 16)
+                                {
+                                    projectile.localAI[1] = Main.projectile[item.Item2].Calamity().CaughtItemID;
+                                    ReelTheBobberChecks();
+                                    if (projectile.ai[0] < 2)
+                                        projectile.ai[0] = 1;
+                                    Main.projectile[item.Item2].Calamity().PersistentFishingDataVector2 = PersistentFishingDataVector2;
+                                    Main.projectile[item.Item2].Calamity().CaughtItemID = CaughtItemID;
+                                    break;
+                                }
+
+                            }
+                        }
+                        if (projectile.ai[0] == 0)
+                            return true;
+                        break;
+                    }
+
+
+                case CalamityPlayer.FishingMinigames.PerennialBobber:
+                    if (projectile.ai[0] == 0)
+                    {
+                        if (projectile.wet) //Fishing in water
+                        {
+
+                            projectile.extraUpdates = 0;
+                            if (cplayer.mouseRight && projectile.ai[1] == 0)
+                            {
+                                projectile.localAI[1] += 2;
+                                owner.lifeRegenCount -= 60; // -0.5 health per tick
+                            }
+                        }
+                        else //Attached to an enemy
+                        {
+                            if (PersistentFishingData >= 0 && Main.npc[(int)PersistentFishingData].active && projectile.Distance(Main.npc[(int)PersistentFishingData].Center + PersistentFishingDataVector2) < 128)
+                            {
+                                projectile.Center = Main.npc[(int)PersistentFishingData].Center + PersistentFishingDataVector2;
+                                projectile.velocity = Vector2.Zero;
+                                if (cplayer.mouseRight && projectile.ai[1] == 0 && owner.miscCounter % 10 == 0)
+                                {
+                                    owner.lifeRegenCount -= 600; // -5 health per 10 ticks
+                                    var projID = Projectile.NewProjectile(projectile.GetSource_FromThis(), Main.npc[(int)PersistentFishingData].Center, Vector2.Zero, ModContent.ProjectileType<DirectStrike>(), (int)owner.GetBestClassDamage().ApplyTo(owner.HeldItem.fishingPole + owner.fishingSkill + owner.ChooseAmmo(owner.HeldItem).bait), 0f, owner.whoAmI, Main.npc[(int)PersistentFishingData].whoAmI);
+                                    if (Main.projectile.IndexInRange(projID))
+                                    {
+                                        Main.projectile[projID].ArmorPenetration = 100; //This should ignore almost all armor
+                                    }
+                                }
+                                projectile.timeLeft++;
+
+                                projectile.extraUpdates = 0;
+                                return true;
+                            }
+                            else if (PersistentFishingData >= 0)
+                            {
+                                PersistentFishingData = -1;
+                                projectile.velocity.Y -= 3;
+                            }
+                            foreach (var item in Main.ActiveNPCs)
+                            {
+                                if (item.friendly || item.dontTakeDamage)
+                                    continue;
+                                if (projectile.Colliding(projectile.Hitbox, item.Hitbox))
+                                {
+                                    PersistentFishingDataVector2 = projectile.Center - item.Center;
+                                    PersistentFishingData = item.whoAmI;
+                                    break;
+                                }
+                            }
+                            if (PersistentFishingData == -1)
+                                projectile.extraUpdates = 1;
+                            else
+                                projectile.extraUpdates = 0;
+
+                        }
+                    }
+                    else if (projectile.ai[0] == 1)
+                        projectile.extraUpdates = 3;
+                    break;
+
+
+                case CalamityPlayer.FishingMinigames.NavystoneBobber:
+                    {
+                        if (CatchTime < 0 || (isReelingIn == 1 && CaughtItemID > 0))
+                        {
+                            owner.Calamity().ShouldHideControls = true;
+                        }
+                        if (isReelingIn != projectile.ai[0])
+                            return false;
+                        var waterline = GetWaterLine();
+                        var AdjustedOwnerWaterline = waterline;
+                        if (AdjustedOwnerWaterline.Y < owner.Center.Y)
+                            AdjustedOwnerWaterline.Y = owner.Center.Y;
+                        if (AdjustedOwnerWaterline.Y >= projectile.Center.Y)
+                        {
+                            projectile.velocity.Y += 0.4f;
+                        }
+                        else
+                        {
+                            projectile.velocity.Y -= 0.1f;
+                        }
+                        projectile.velocity *= 0.975f;
+                        if (CatchTime < 0)
+                            CatchTime++;
+                        if (projectile.wet || (projectile.lavaWet && owner.accLavaFishing) || projectile.honeyWet)
+                            TimerToCatch++;
+                        var speedup = 15;
+                        var totalTime = 60 - speedup;
+                        if (TimerToCatch + 90 >= 300 && CatchTime >= 0)
+                        {
+                            if (PersistentFishingData == 0)
+                                PersistentFishingData = Main.rand.NextBool() ? 1 : -1;
+
+                            if (owner.whoAmI == Main.myPlayer)
+                            {
+                                var timer = TimerToCatch - 300;
+                                SmallSplashAtOffset(new Vector2(200 * PersistentFishingData * (timer / 90f), 0));
+                                SmallDustAtOffset(new Vector2(200 * PersistentFishingData * (timer / 90f), 0), DustID.BlueCrystalShard);
+                            }
+                        }
+                        if (TimerToCatch >= 300 && CatchTime >= 0)
+                        {
+                            PersistentFishingData = 0;
+                            projectile.FishingCheck();
+                            if (projectile.ai[1] < 0)
+                            {
+                                CatchTime = -totalTime * 4;
+                                CaughtItemID = (int)projectile.localAI[1];
+                            }
+                            TimerToCatch = 0;
+                        }
+                        if (CatchTime < 0 && CatchTime % totalTime == 0 && owner.whoAmI == Main.myPlayer)
+                        {
+                            Splash();
+                            PersistentFishingData = Main.rand.Next(0, 2);
+                            var particle = new CustomSpark(projectile.Center, Vector2.UnitX.RotatedBy(PersistentFishingData * MathHelper.Pi) * 10, "CalamityMod/Particles/HighResHollowCircleHardEdgeAlt", false, 45 - speedup, 0.04f, Color.Blue, new(1, 2), shrinkSpeed: -0.2f);
+                            GeneralParticleHandler.SpawnParticle(particle);
+                        }
+                        if (CatchTime < 0 && CatchTime % totalTime == -15)
+                        {
+                            var playerDir = -1;
+                            if (owner.Calamity().pressedLeft)
+                            {
+                                playerDir = 1;
+                            }
+                            if (owner.Calamity().pressedRight)
+                            {
+                                playerDir = 0;
+                            }
+                            if (playerDir == PersistentFishingData)
+                            {
+
+                            }
+                            else
+                            {
+                                if (owner.whoAmI == Main.myPlayer)
+                                {
+                                    if (playerDir >= 0)
+                                    {
+                                        var particle = new CustomSpark(projectile.Center, Vector2.UnitX.RotatedBy(playerDir * MathHelper.Pi) * 10, "CalamityMod/Particles/HighResHollowCircleHardEdgeAlt", false, 15, 0.04f, Color.Red, new(1, 2), shrinkSpeed: -0.2f);
+                                        GeneralParticleHandler.SpawnParticle(particle);
+                                    }
+                                    else
+                                    {
+                                        var particle = new CustomSpark(projectile.Center, Vector2.Zero, "CalamityMod/Particles/HighResHollowCircleHardEdge", false, 15, 0.06f, Color.Red, Vector2.One);
+                                        GeneralParticleHandler.SpawnParticle(particle);
+                                    }
+                                }
+                                TimerToCatch = 0;
+                                CatchTime = 0;
+                                CaughtItemID = -1;
+                                PersistentFishingData = 0;
+                                owner.Calamity().consecutiveCaughtFish = 0;
+                            }
+                        }
+                        if (CatchTime == -1)
+                        {
+                            projectile.localAI[1] = CaughtItemID;
+                            ReelTheBobberChecks();
+                            owner.Calamity().consecutiveCaughtFish++;
+                            if (projectile.ai[0] == 2)
+                                return false;
+                            isReelingIn = 1;
+                            CatchTime = (float)CaughtItemID;
+                            TimerToCatch = 0;
+                        }
+                        if (projectile.ai[0] == 0)
+                        {
+
+
+                            projectile.ai[1] = CatchTime;
+                            projectile.localAI[1] = TimerToCatch;
+                            if (CaughtItemID != -1 && isReelingIn == 0)
+                            {
+                                projectile.localAI[1] = 0;
+                                projectile.ai[1] = 0;
+                            }
+                            projectile.ai[0] = isReelingIn;
+                        }
+                        if (projectile.ai[0] == 0)
+                            return true;
+                        break;
+                    }
+
+
+                case CalamityPlayer.FishingMinigames.DevourerofCods: //Technically not a fishing minigame, but the code is already all here
+                    var fishToEat = TheDevourerofCods.FishToEat;
+                    if (projectile.ai[1] < -1)
+                    {
+                        //Coonsuming a fish provides/increases the player's food buffs.
+                        if (fishToEat.Contains((int)projectile.localAI[1]))
+                        {
+                            projectile.ai[1] = 0;
+                            projectile.localAI[1] = 0;
+                            SoundEngine.PlaySound(SoundID.Item2, projectile.Center);
+                            //If the player doesn't have Ex. Stuffed, either give them Plenty Satisfied or inrease existing Plenty Satisfied duration
+                            if (!owner.HasBuff(BuffID.WellFed3))
+                            {
+
+                                if (owner.HasBuff(BuffID.WellFed2))
+                                {
+                                    var bIndex = owner.FindBuffIndex(BuffID.WellFed2);
+                                    if (owner.buffTime[bIndex] < CalamityUtils.MinutesToFrames(24)) 
+                                    {
+                                        owner.buffTime[bIndex] += 300;
+                                    }
+                                }
+                                else
+                                {
+
+                                    owner.AddBuff(BuffID.WellFed2, 300);
+                                }
+                            }
+                            else //If the player DOES have Ex. Stuffed, increase the duration of it
+                            {
+                                var bIndex = owner.FindBuffIndex(BuffID.WellFed3);
+                                if (owner.buffTime[bIndex] < CalamityUtils.MinutesToFrames(24)) //Requires fishing once per day if you'd like to keep free ExStuffed forever
+                                {
+                                    owner.buffTime[bIndex] += 300;
+                                }
+                            }
+                        }
+                        else //If the hooked item isn't consumable, make it stay hooked forever.
+                        {
+                            projectile.ai[1] = -30;
+                        }
+                    }
+
+                    return false;
+
+
+                case CalamityPlayer.FishingMinigames.SkylineBobber:
+                    {
+                        if (CatchTime < 0 || (isReelingIn == 1 && CaughtItemID > 0))
+                        {
+                            owner.Calamity().ShouldHideControls = true;
+                        }
+                        if (PersistentFishingData == -1)
+                        {
+                            PersistentFishingData = 1;
+                            TimerToCatch = 300;
+                        }
+                        var Waterline = GetWaterLine();
+                        if (Waterline.Y >= projectile.Center.Y)
+                        {
+                            projectile.velocity.Y += 0.4f;
+                        }
+                        else if (projectile.ai[0] <= 0)
+                        {
+                            projectile.velocity.Y -= 0.1f;
+                        }
+                        if (projectile.ai[0] <= 1)
+                        {
+                            owner.Calamity().ShouldHideControls = true;
+                        }
+                        projectile.velocity *= 0.975f;
+                        if (projectile.wet)
+                            projectile.velocity *= 0.99f;
+
+                        //When in lava, give the bobber a particle over it to show its location
+                        if (projectile.lavaWet && owner.whoAmI == Main.myPlayer)
+                        {
+                            var particle = new CustomSpark(projectile.Center, Vector2.Zero, "CalamityMod/Particles/HighResHollowCircleHardEdge", false, 2, 0.01f, Color.DarkGray, Vector2.One);
+                            GeneralParticleHandler.SpawnParticle(particle);
+                        }
+                        if (projectile.ai[0] == 0)
+                        {
+
+                            if (owner.Calamity().pressedUp && projectile.velocity.Y < 0)
+                            {
+                                projectile.velocity.Y -= 0.3f;
+                                projectile.netUpdate = true;
+                            }
+
+                            if (owner.Calamity().pressedUp && Waterline.Y < projectile.Center.Y)
+                            {
+                                projectile.velocity.Y -= 0.3f;
+                                projectile.netUpdate = true;
+                            }
+
+                            if (owner.Calamity().pressedDown)
+                            {
+                                projectile.velocity.Y += 0.25f;
+                                projectile.netUpdate = true;
+                            }
+
+                            if (owner.Calamity().pressedLeft)
+                            {
+                                projectile.velocity.X -= 0.25f;
+                                projectile.netUpdate = true;
+                            }
+
+                            if (owner.Calamity().pressedRight)
+                            {
+                                projectile.velocity.X += 0.25f;
+                                projectile.netUpdate = true;
+                            }
+
+                            if (Waterline.Y <= projectile.Center.Y - 8)
+                                TimerToCatch -= Main.rand.Next(1, 5);
+                            if (TimerToCatch <= 0)
+                            {
+                                projectile.FishingCheck();
+                                if (projectile.ai[1] < 0 && !(projectile.lavaWet && !owner.accLavaFishing))
+                                {
+
+                                    CaughtItemID = (int)projectile.localAI[1];
+                                    projectile.ai[1] = 0;
+                                    projectile.localAI[1] = 0;
+                                    for (var i = 0; i < 1000; i++)
+                                    {
+                                        var vectorToCheck = Waterline + new Vector2(Main.rand.Next(-200, 201), Main.rand.Next(-200, 32));
+                                        var tileCoordsToCheck = vectorToCheck.ToSafeTileCoordinates();
+                                        if (new Rectangle((int)Main.screenPosition.X, (int)Main.screenPosition.Y, Main.screenWidth, Main.screenHeight).Contains((int)vectorToCheck.X, (int)vectorToCheck.Y) && !Main.tile[tileCoordsToCheck.X, tileCoordsToCheck.Y].IsTileSolid() && Main.tile[tileCoordsToCheck.X, tileCoordsToCheck.Y].LiquidAmount == 0)
+                                        {
+                                            if (projectile.localAI[2] >= 1)
+                                            {
+                                                int customSonarText = (int)(projectile.localAI[2] - 1);
+                                                if (Main.popupText[customSonarText].sonar)
+                                                {
+                                                    Main.popupText[customSonarText].position = vectorToCheck - FontAssets.MouseText.Value.MeasureString(Main.popupText[customSonarText].name) / 2f;
+                                                }
+                                            }
+                                            PersistentFishingDataVector2 = vectorToCheck;
+                                            TimerToCatch = 600;
+                                            break;
+                                        }
+                                    }
+                                }
+                            }
+                            if (PersistentFishingDataVector2 != Vector2.Zero && owner.miscCounter % 15 == 0 && owner.whoAmI == Main.myPlayer)
+                            {
+
+                                var particle = new CustomSpark(PersistentFishingDataVector2, Vector2.Zero, "CalamityMod/Particles/HighResHollowCircleHardEdge", false, 25, 0.02f, Color.Green, Vector2.One);
+                                GeneralParticleHandler.SpawnParticle(particle);
+                            }
+                            List<(Vector2, int)> validRifts = new();
+
+                            foreach (var item in Main.ActiveProjectiles)
+                            {
+                                if (item.bobber && projectile.type != ModContent.ProjectileType<VictideBobber>() && item.owner == projectile.owner && item.ai[0] == 0 && item.Calamity().PersistentFishingDataVector2 != Vector2.Zero)
+                                {
+                                    validRifts.Add((item.Calamity().PersistentFishingDataVector2, item.whoAmI));
+                                }
+                            }
+                            foreach (var item in validRifts)
+                            {
+                                if (projectile.Distance(item.Item1) < 16)
+                                {
+                                    projectile.localAI[1] = Main.projectile[item.Item2].Calamity().CaughtItemID;
+                                    projectile.ai[0] = -1;
+                                    Main.projectile[item.Item2].Calamity().PersistentFishingDataVector2 = PersistentFishingDataVector2;
+                                    Main.projectile[item.Item2].Calamity().CaughtItemID = CaughtItemID;
+                                    break;
+                                }
+
+                            }
+                        }
+                        if (projectile.ai[0] == -1 && (Waterline.Y <= projectile.Center.Y || projectile.velocity.Length() < 0.5f))
+                        {
+                            ReelTheBobberChecks();
+                            if (projectile.ai[0] < 2)
+                                projectile.ai[0] = 1;
+                        }
+                        if (projectile.ai[0] == 0)
+                            return true;
+                        break;
+                    }
+
+            }
+            return false;
+        }
+        #endregion
+
         #region AI
         public override void AI(Projectile projectile)
         {
@@ -3073,97 +3686,6 @@ namespace CalamityMod.Projectiles
                     // Reduce Nail damage from Nailheads because they're stupid
                     if (projectile.type == ProjectileID.Nail && Main.expertMode)
                         projectile.damage /= 2;
-
-                    // Nerf all these Master Mode enemy projectiles
-                    if (Main.masterMode && !CalamityPlayer.areThereAnyDamnBosses)
-                    {
-                        switch (projectile.type)
-                        {
-                            case ProjectileID.DemonSickle:
-                            case ProjectileID.HarpyFeather:
-                            case ProjectileID.JavelinHostile:
-                            case ProjectileID.SalamanderSpit:
-                            case ProjectileID.SkeletonBone:
-                            case ProjectileID.IceSpike:
-                            case ProjectileID.JungleSpike:
-                            case ProjectileID.PinkLaser:
-                            case ProjectileID.FrostBlastHostile:
-                            case ProjectileID.GoldenShowerHostile:
-                            case ProjectileID.RainNimbus:
-                            case ProjectileID.FlamingArrow:
-                            case ProjectileID.BulletDeadeye:
-                            case ProjectileID.CannonballHostile:
-                            case ProjectileID.UnholyTridentHostile:
-                            case ProjectileID.FrostBeam:
-                            case ProjectileID.CursedFlameHostile:
-                            case ProjectileID.Stinger:
-                            case ProjectileID.BloodNautilusTears:
-                            case ProjectileID.RockGolemRock:
-                            case ProjectileID.IcewaterSpit:
-                            case ProjectileID.RocketSkeleton:
-                            case ProjectileID.SniperBullet:
-                            case ProjectileID.DrManFlyFlask:
-                            case ProjectileID.DesertDjinnCurse:
-                            case ProjectileID.InfernoHostileBlast:
-                            case ProjectileID.InfernoHostileBolt:
-                            case ProjectileID.Shadowflames:
-                            case ProjectileID.ShadowBeamHostile:
-                            case ProjectileID.PaladinsHammerHostile:
-                            case ProjectileID.LostSoulHostile:
-                            case ProjectileID.RuneBlast:
-                            case ProjectileID.DandelionSeed:
-                            case ProjectileID.SandnadoHostile:
-                            case ProjectileID.SandnadoHostileMark:
-                            case ProjectileID.SnowBallHostile:
-                            case ProjectileID.EyeLaser:
-                            case ProjectileID.Nail:
-                            case ProjectileID.BrainScramblerBolt:
-                            case ProjectileID.GigaZapperSpear:
-                            case ProjectileID.MartianWalkerLaser:
-                            case ProjectileID.RayGunnerLaser:
-                            case ProjectileID.MartianTurretBolt:
-                            case ProjectileID.NebulaSphere:
-                            case ProjectileID.NebulaLaser:
-                            case ProjectileID.NebulaBolt:
-                            case ProjectileID.StardustJellyfishSmall:
-                            case ProjectileID.StardustSoldierLaser:
-                            case ProjectileID.Twinkle:
-                            case ProjectileID.VortexAcid:
-                            case ProjectileID.VortexLaser:
-                            case ProjectileID.VortexLightning:
-                            case ProjectileID.VortexVortexLightning:
-                            case ProjectileID.FlamingWood:
-                            case ProjectileID.GreekFire1:
-                            case ProjectileID.GreekFire2:
-                            case ProjectileID.GreekFire3:
-                            case ProjectileID.FlamingScythe:
-                            case ProjectileID.OrnamentHostile:
-                            case ProjectileID.OrnamentHostileShrapnel:
-                            case ProjectileID.PineNeedleHostile:
-                            case ProjectileID.FrostShard:
-                            case ProjectileID.FrostWave:
-                            case ProjectileID.Missile:
-                            case ProjectileID.Present:
-                            case ProjectileID.Spike:
-                            case ProjectileID.SaucerDeathray:
-                            case ProjectileID.SaucerLaser:
-                            case ProjectileID.SaucerMissile:
-                            case ProjectileID.SaucerScrap:
-                            case ProjectileID.DD2GoblinBomb:
-                            case ProjectileID.DD2JavelinHostile:
-                            case ProjectileID.DD2JavelinHostileT3:
-                            case ProjectileID.DD2DarkMageBolt:
-                            case ProjectileID.DD2DrakinShot:
-                            case ProjectileID.DD2OgreSmash:
-                            case ProjectileID.DD2OgreSpit:
-                            case ProjectileID.DD2OgreStomp:
-                            case ProjectileID.DD2LightningBugZap:
-                            case ProjectileID.DD2BetsyFireball:
-                            case ProjectileID.DD2BetsyFlameBreath:
-                                projectile.damage = (int)Math.Round(projectile.damage * CalamityGlobalNPC.MasterModeEnemyDamageMultiplier);
-                                break;
-                        }
-                    }
 
                     // Nerf several Hardmode enemy projectiles because they deal way too much damage
                     if (!CalamityPlayer.areThereAnyDamnBosses)
@@ -3182,6 +3704,8 @@ namespace CalamityMod.Projectiles
                             case ProjectileID.FrostBeam:
                             case ProjectileID.CursedFlameHostile:
                             case ProjectileID.Stinger:
+                            case ProjectileID.BloodShot:
+                            case ProjectileID.BloodNautilusShot:
                             case ProjectileID.BloodNautilusTears:
                             case ProjectileID.RockGolemRock:
                             case ProjectileID.IcewaterSpit:
@@ -3214,22 +3738,19 @@ namespace CalamityMod.Projectiles
 
                 if (NPC.downedMoonlord)
                 {
-                    if (BuffedDungeonProjectilesList.Includes(projectile.type))
+                    if (CalamityProjectileSets.IsBuffedDungeonProjectile[projectile.type])
                     {
                         // ai[1] being set to 1 is done only by the Calamity usages of these projectiles in Skeletron and Skeletron Prime boss fights
                         bool isSkeletronBossProjectile = (projectile.type == ProjectileID.RocketSkeleton || projectile.type == ProjectileID.Shadowflames) && projectile.ai[1] > 0f;
 
-                        // These projectiles will not be buffed if Golem fires them
-                        bool isGolemBossProjectile = (projectile.type == ProjectileID.InfernoHostileBolt || projectile.type == ProjectileID.InfernoHostileBlast) && projectile.ai[2] > 0f;
-
-                        if (!isSkeletronBossProjectile && !isGolemBossProjectile)
+                        if (!isSkeletronBossProjectile)
                             projectile.damage += 30;
                     }
                 }
 
                 if (DownedBossSystem.downedDoG && (Main.pumpkinMoon || Main.snowMoon || Main.eclipse))
                 {
-                    if (EventProjectileBuffList.Includes(projectile.type))
+                    if (CalamityProjectileSets.IsBuffedEventProjectile[projectile.type])
                         projectile.damage += 15;
                 }
 
@@ -3237,7 +3758,7 @@ namespace CalamityMod.Projectiles
                 {
                     if (projectile.timeLeft > 570) //all of these have a time left of 600 or 660
                     {
-                        if (player.ActiveItem().type == ItemID.BeesKnees)
+                        if (player.HeldItem.type == ItemID.BeesKnees)
                             projectile.DamageType = DamageClass.Ranged;
                     }
                 }
@@ -3298,6 +3819,13 @@ namespace CalamityMod.Projectiles
             if (projectile.aiStyle == ProjAIStyleID.Flare && projectile.ai[2] == 1f && projectile.localAI[0] == 0f)
                 projectile.localAI[1]--;
 
+            // Hack to allow Desert Tiger minion to fall through platforms while attacking
+            if (projectile.type >= ProjectileID.StormTigerTier1 && projectile.type <= ProjectileID.StormTigerTier3)
+            {
+                if (projectile.ai[0] == 5f)
+                    projectile.tileCollide = false;
+            }
+
             // Jack O Lantern Launcher projectile tweak
             if (projectile.type == ProjectileID.JackOLantern)
             {
@@ -3310,6 +3838,7 @@ namespace CalamityMod.Projectiles
                 }
             }
 
+            #region Flail Extendo Hacks
             // Very hacky solution for making Dao of Pow's flail throw travel farther and faster
             if (projectile.type == ProjectileID.TheDaoofPow)
             {
@@ -3340,6 +3869,22 @@ namespace CalamityMod.Projectiles
                     }
                 }
             }
+            // And Flower Pow!
+            if (projectile.type == ProjectileID.FlowerPow)
+            {
+                if (projectile.ai[0] == 1f)
+                {
+                    if (projectile.ai[1] > 0f)
+                    {
+                        projectile.ai[2]++;
+                        if (projectile.ai[2] <= 5f) // When ai[1] reaches 12, it starts returning, so this makes it take an extra 5 frames to return
+                            projectile.ai[1]--;
+                    }
+                    else
+                        projectile.velocity *= 1.33f;
+                }
+            }
+            #endregion
 
             // Starfury stars never collide with tiles
             if (projectile.type == ProjectileID.Starfury)
@@ -3371,12 +3916,24 @@ namespace CalamityMod.Projectiles
                     projectile.velocity *= 1.0025f;
             }
 
+            // Sharknado is more translucent before dealing damage
+            if (projectile.type == ProjectileID.Sharknado)
+            {
+                if (projectile.timeLeft > FishronCthulhunadoTotalDuration - FishronTornadoTimeBeforeDealingDamage)
+                {
+                    if (projectile.alpha < 200)
+                        projectile.alpha = 200;
+                    if (projectile.alpha > 220)
+                        projectile.alpha = 220;
+                }
+            }
+
             // Accelerate for 1.5 seconds to full velocity
             if (projectile.type == ProjectileID.HallowBossLastingRainbow && (CalamityWorld.revenge || BossRushEvent.BossRushActive))
             {
                 int spreadOutTime = 90;
                 if (projectile.timeLeft > EmpressLastingRainbowTotalDuration - spreadOutTime)
-                    projectile.velocity *= BossRushEvent.BossRushActive ? 1.017078f : 1.015525f;
+                    projectile.velocity *= 1.015525f;
             }
 
             // Zapinator lasers cannot trigger their damage multiplier more than once
@@ -3458,36 +4015,6 @@ namespace CalamityMod.Projectiles
                         projectile.velocity += yeetVec * 40f;
                         SoundEngine.PlaySound(new SoundStyle("CalamityMod/Sounds/Custom/ExoMechs/TeslaShoot1") with { Pitch = 0.4f });
                     }
-                }
-            }
-
-            if (projectile.type == ProjectileID.OrnamentFriendly && lineColor == 1) //spawned by Festive Wings
-            {
-                Vector2 center = projectile.Center;
-                float maxDistance = 460f;
-                bool homeIn = false;
-
-                foreach (NPC n in Main.ActiveNPCs)
-                {
-                    if (n.CanBeChasedBy(projectile, false))
-                    {
-                        float extraDistance = (float)(n.width / 2) + (n.height / 2);
-
-                        bool canHit = Collision.CanHit(projectile.Center, 1, 1, n.Center, 1, 1);
-
-                        if (Vector2.Distance(n.Center, projectile.Center) < (maxDistance + extraDistance) && canHit)
-                        {
-                            center = n.Center;
-                            homeIn = true;
-                            break;
-                        }
-                    }
-                }
-
-                if (homeIn)
-                {
-                    Vector2 moveDirection = projectile.SafeDirectionTo(center, Vector2.UnitY);
-                    projectile.velocity = (projectile.velocity * 20f + moveDirection * 15f) / 21f;
                 }
             }
 
@@ -3576,18 +4103,14 @@ namespace CalamityMod.Projectiles
                         {
                             if (Main.player[projectile.owner].miscCounter % 30 == 0 && projectile.FinalExtraUpdate())
                             {
-                                if (projectile.owner == Main.myPlayer && player.ownedProjectileCounts[ProjectileID.CrystalShard] < 15)
+                                if (projectile.owner == Main.myPlayer && player.ownedProjectileCounts[ProjectileID.CrystalShard] < DaedalusHeadRogue.ShardCountLimit)
                                 {
-                                    // Daedalus Rogue Crystals: 2 x 25%, soft cap starts at 120 base damage
-                                    int crystalDamage = CalamityUtils.DamageSoftCap(projectile.damage * 0.25, 30);
+                                    int crystalDamage = CalamityUtils.DamageSoftCap(projectile.damage * DaedalusHeadRogue.ShardDamageRatio, DaedalusHeadRogue.ShardDamageSoftcap);
 
-                                    for (int i = 0; i < 2; i++)
-                                    {
-                                        Vector2 velocity = CalamityUtils.RandomVelocity(100f, 70f, 100f);
-                                        int shard = Projectile.NewProjectile(projectile.GetSource_FromThis(), projectile.Center, velocity, ProjectileID.CrystalShard, crystalDamage, 0f, projectile.owner);
-                                        if (shard.WithinBounds(Main.maxProjectiles))
-                                            Main.projectile[shard].DamageType = DamageClass.Generic;
-                                    }
+                                    Vector2 velocity = CalamityUtils.RandomVelocity(100f, 70f, 100f);
+                                    int shard = Projectile.NewProjectile(projectile.GetSource_FromThis(), projectile.Center, velocity, ProjectileID.CrystalShard, crystalDamage, 0f, projectile.owner);
+                                    if (shard.WithinBounds(Main.maxProjectiles))
+                                        Main.projectile[shard].DamageType = DamageClass.Generic;
                                 }
                             }
                         }
@@ -3737,17 +4260,17 @@ namespace CalamityMod.Projectiles
                         confetti.velocity.Y += Main.rand.Next(-50, 51) * 0.05f;
                     }
                 }
-                // Support to help things like holdout swords work with Arc Flash Ring
-                if (!spawnArcFlash && projectile.numHits == 0)
-                    spawnArcFlash = true;
+                // Support to help things like holdout swords look better with Arc Flash Ring
+                if (!showArcFlash && projectile.numHits == 0)
+                    showArcFlash = true;
                 // Cooldown for the arc flash so that long lasting projectiles (like dashing summons) can spawn multiple bolts
                 if (arcFlashCooldown >= 0)
                     arcFlashCooldown--;
                 if (arcFlashCooldown == 0)
-                    spawnArcFlash = true;
+                    showArcFlash = true;
                 if (conditionalHomingRange > 0f)
                 {
-                    CalamityUtils.HomeInOnNPC(projectile, !projectile.tileCollide, conditionalHomingRange, 12f, 20f);
+                    CalamityUtils.HomeInOnNPC(projectile, !projectile.tileCollide, conditionalHomingRange, 12f, 20f,true);
                 }
                 if (brimstoneBullets)
                 {
@@ -3827,7 +4350,7 @@ namespace CalamityMod.Projectiles
 
                         for (int i = 0; i < 2; ++i)
                         {
-                            Dust dust = Dust.NewDustPerfect(projectile.Center + projectile.velocity, 261, -projectile.velocity * Main.rand.NextFloat(0.1f, 0.9f));
+                            Dust dust = Dust.NewDustPerfect(projectile.Center + projectile.velocity, DustID.AncientLight, -projectile.velocity * Main.rand.NextFloat(0.1f, 0.9f));
                             dust.noGravity = true;
                             dust.scale = Main.rand.NextFloat(0.65f, 0.9f);
                             dust.alpha = 100;
@@ -3850,7 +4373,7 @@ namespace CalamityMod.Projectiles
 
                         for (int i = 0; i < 3; ++i)
                         {
-                            Dust dust = Dust.NewDustPerfect(projectile.Center + spawnOffset, 278, projectile.velocity * Main.rand.NextFloat(0.05f, 0.2f));
+                            Dust dust = Dust.NewDustPerfect(projectile.Center + spawnOffset, DustID.FireworksRGB, projectile.velocity * Main.rand.NextFloat(0.05f, 0.2f));
                             dust.noGravity = true;
                             dust.scale = Main.rand.NextFloat(0.35f, 0.45f);
                             dust.color = color;
@@ -3879,7 +4402,7 @@ namespace CalamityMod.Projectiles
 
                         for (int i = 0; i < 3; ++i)
                         {
-                            Dust dust = Dust.NewDustPerfect(projectile.Center + spawnOffset, 278, projectile.velocity * Main.rand.NextFloat(0.05f, 0.2f));
+                            Dust dust = Dust.NewDustPerfect(projectile.Center + spawnOffset, DustID.FireworksRGB, projectile.velocity * Main.rand.NextFloat(0.05f, 0.2f));
                             dust.noGravity = true;
                             dust.scale = Main.rand.NextFloat(0.35f, 0.45f);
                             dust.color = color;
@@ -3921,40 +4444,20 @@ namespace CalamityMod.Projectiles
             }
 
             // Spawn Bloom Stone flower on landed hooks
-            // Should only spawn if: Projectile is a hook, hook is grappled to a tile, the player is wearing Bloom Stone, no flower has been spawned from this hook, no pollen exists
+            // Should only spawn if: Projectile is a hook, hook is grappled to a tile, the player is wearing Bloom Stone, no flower has been spawned from this hook
             if (projectile.aiStyle == ProjAIStyleID.Hook && projectile.ai[0] == 2f &&
-                Main.player[projectile.owner].Calamity().bloomStone && !hookCanSpawnFlower &&
-                !CalamityUtils.AnyOwnedProjectiles(ProjectileType<BloomStoneFlower>(), projectile.owner))
+                Main.player[projectile.owner].Calamity().bloomStone && !hookCanSpawnFlower)
             {
                 hookCanSpawnFlower = true;
                 if (Main.myPlayer == projectile.owner)
                     Projectile.NewProjectile(projectile.GetSource_FromThis(), projectile.Center, Vector2.Zero, ProjectileType<BloomStoneFlower>(), 0, 0f, projectile.owner, projectile.whoAmI);
             }
 
-            // CIT 29JUN2024: Moved from PreAI to PostAI so that it is called every update instead of every frame.
-            // This makes the distance traveled increment more accurately for projectiles with extra updates, as previously projectiles with extra updates
-            // would add the distance traveled for the whole frame on the first update, making the distance checking much choppier.
-            if (pointBlankShotDistanceTravelled < PointBlankShotDistanceLimit)
-                pointBlankShotDistanceTravelled += projectile.velocity.Length();
-
-            // optimization to remove conversion X/Y loop for irrelevant projectiles
-            bool isConversionProjectile = projectile.type == ProjectileID.PurificationPowder
-                || projectile.type == ProjectileID.VilePowder
-                || projectile.type == ProjectileID.ViciousPowder
-                || projectile.type == ProjectileID.PureSpray
-                || projectile.type == ProjectileID.CorruptSpray
-                || projectile.type == ProjectileID.CrimsonSpray
-                || projectile.type == ProjectileID.HallowSpray
-                || projectile.type == ProjectileID.Fertilizer;
-            if (!isConversionProjectile)
-                return;
-
-            if (projectile.owner == Main.myPlayer/* && Main.netMode != NetmodeID.MultiplayerClient*/)
+            // Fertilizer
+            if (projectile.type == ProjectileID.Fertilizer && projectile.owner == Main.myPlayer/* && Main.netMode != NetmodeID.MultiplayerClient*/)
             {
                 int x = (int)(projectile.Center.X / 16f);
                 int y = (int)(projectile.Center.Y / 16f);
-
-                bool isPowder = projectile.type == ProjectileID.PurificationPowder || projectile.type == ProjectileID.VilePowder || projectile.type == ProjectileID.ViciousPowder;
 
                 if (!WorldGen.InWorld(x, y, 3))
                     return;
@@ -3963,47 +4466,27 @@ namespace CalamityMod.Projectiles
                 {
                     for (int j = y - 1; j <= y + 1; j++)
                     {
-                        if (projectile.type == ProjectileID.Fertilizer)
-                        {
-                            Tile tile = Main.tile[i, j];
+                        Tile tile = Main.tile[i, j];
 
-                            if (tile.TileType == ModContent.TileType<AstralTreeSapling>() || tile.TileType == ModContent.TileType<AstralSnowTreeSapling>())
-                            {
-                                bool isPlayerNear = WorldGen.PlayerLOS(i, j);
-                                bool success = WorldGen.GrowTree(i, j);
-                                if (success && isPlayerNear)
-                                    WorldGen.TreeGrowFXCheck(i, j);
-                            }
-                            else if (tile.TileType == ModContent.TileType<AstralPalmSapling>() || tile.TileType == ModContent.TileType<AcidWoodTreeSapling>())
-                            {
-                                bool isPlayerNear = WorldGen.PlayerLOS(i, j);
-                                bool success = WorldGen.GrowPalmTree(i, j);
-                                if (success && isPlayerNear)
-                                    WorldGen.TreeGrowFXCheck(i, j);
-                            }
-                            else if (tile.TileType == ModContent.TileType<SpineSapling>())
-                            {
-                                bool isPlayerNear = WorldGen.PlayerLOS(i, j);
-                                if (isPlayerNear && Main.tile[i, j + 1].TileType != ModContent.TileType<SpineSapling>())
-                                    SpineTree.Spawn(i, j, 22, 28, true);
-                            }
-                        }
-
-                        if (projectile.type == ProjectileID.PureSpray || projectile.type == ProjectileID.PurificationPowder)
+                        if (tile.TileType == ModContent.TileType<AstralTreeSapling>() || tile.TileType == ModContent.TileType<AstralSnowTreeSapling>())
                         {
-                            AstralBiome.ConvertFromAstral(i, j, ConvertType.Pure, !isPowder);
+                            bool isPlayerNear = WorldGen.PlayerLOS(i, j);
+                            bool success = WorldGen.GrowTree(i, j);
+                            if (success && isPlayerNear)
+                                WorldGen.TreeGrowFXCheck(i, j);
                         }
-                        if (projectile.type == ProjectileID.CorruptSpray || projectile.type == ProjectileID.VilePowder)
+                        else if (tile.TileType == ModContent.TileType<AstralPalmSapling>() || tile.TileType == ModContent.TileType<AcidWoodTreeSapling>())
                         {
-                            AstralBiome.ConvertFromAstral(i, j, ConvertType.Corrupt, !isPowder);
+                            bool isPlayerNear = WorldGen.PlayerLOS(i, j);
+                            bool success = WorldGen.GrowPalmTree(i, j);
+                            if (success && isPlayerNear)
+                                WorldGen.TreeGrowFXCheck(i, j);
                         }
-                        if (projectile.type == ProjectileID.CrimsonSpray || projectile.type == ProjectileID.ViciousPowder)
+                        else if (tile.TileType == ModContent.TileType<SpineSapling>())
                         {
-                            AstralBiome.ConvertFromAstral(i, j, ConvertType.Crimson, !isPowder);
-                        }
-                        if (projectile.type == ProjectileID.HallowSpray)
-                        {
-                            AstralBiome.ConvertFromAstral(i, j, ConvertType.Hallow);
+                            bool isPlayerNear = WorldGen.PlayerLOS(i, j);
+                            if (isPlayerNear && Main.tile[i, j + 1].TileType != ModContent.TileType<SpineSapling>())
+                                SpineTree.Spawn(i, j, 22, 28, true);
                         }
                         NetMessage.SendTileSquare(-1, i, j, 1, 1);
                     }
@@ -4017,31 +4500,46 @@ namespace CalamityMod.Projectiles
         {
             if (player.Calamity().bloomStoneHookVisuals)
             {
-                // Insert vine effect when spawning a hook
+                for (int i = 0; i < 8; i++)
+                {
+                    Particle floweyFromHitGameUndertale = new CustomSpark(player.Center, Utils.DirectionTo(player.Center, player.Calamity().mouseWorld).RotatedByRandom(0.6f) * Main.rand.NextFloat(4f, 11f), 
+                        "CalamityMod/Particles/MiniFlower", false, Main.rand.Next(65, 78 + 1), Main.rand.NextFloat(1.8f, 2.8f), 
+                        Color.Lerp(Color.HotPink, Color.Plum, Main.rand.NextFloat(0, 0.65f)), new Vector2(1f, 1f), true, extraRotation: Main.rand.NextFloat(0, MathHelper.TwoPi));
+                    GeneralParticleHandler.SpawnParticle(floweyFromHitGameUndertale);
+
+                    Dust pollenDust = Dust.NewDustPerfect(player.Center, DustType<SquashDust>());
+                    pollenDust.noLightEmittence = true;
+                    pollenDust.noGravity = true;
+                    pollenDust.scale = Main.rand.NextFloat(0.9f, 1.4f);
+                    pollenDust.color = Main.rand.NextBool() ? Color.Gold : Color.HotPink;
+                    pollenDust.velocity = Utils.DirectionTo(player.Center, player.Calamity().mouseWorld).RotatedByRandom(0.6f) * Main.rand.NextFloat(4f, 11f);
+                    pollenDust.fadeIn = -0.5f;
+                }
             }
         }
         public override void GrapplePullSpeed(Projectile projectile, Player player, ref float speed)
         {
             float mult = 1f;
             if (player.Calamity().reaverSpeed)
-                mult += 0.5f;
+                mult += ReaverHeadMobility.SetBonusHookBoost;
+            if (player.Calamity().tungstenArmorHookBoost)
+                mult += TungstenArmorSetChange.HookBoost;
             if (player.Calamity().bloomStone)
                 mult += 0.5f;
             speed *= mult;
 
-            // Visual flowers while being pulled
-            if (player.Calamity().bloomStoneHookVisuals && player.miscCounter % 5 == 0 && player.velocity.Length() > 2f)
+            if (player.velocity.Length() > 2f)
             {
-                Vector2 spawnPos = player.Center + Main.rand.NextVector2Circular(20f, 20f);
-                CustomSprite flowey = new(spawnPos, Vector2.Zero, 12, "CalamityMod/Projectiles/Magic/GleamingBolt", 0.425f, Color.White * 0.75f, 0f, false);
-                GeneralParticleHandler.SpawnParticle(flowey);
+                player.Calamity().hookPullVisuals = 60;
             }
         }
         public override void GrappleRetreatSpeed(Projectile projectile, Player player, ref float speed)
         {
             float mult = 1f;
             if (player.Calamity().reaverSpeed)
-                mult += 0.5f;
+                mult += ReaverHeadMobility.SetBonusHookBoost;
+            if (player.Calamity().tungstenArmorHookBoost)
+                mult += TungstenArmorSetChange.HookBoost;
             if (player.Calamity().bloomStone)
                 mult += 0.5f;
             speed *= mult;
@@ -4055,9 +4553,28 @@ namespace CalamityMod.Projectiles
             CalamityPlayer modPlayer = player.Calamity();
 
             // Old Fashioned buffs (or debuffs) apply if the player has Old Fashioned
+            // IV Drip on the Rocks inherits the same logic as Old Fashioned
             if (modPlayer.oldFashioned && buffedByOldFashioned.HasValue)
                 modifiers.SourceDamage *= buffedByOldFashioned.Value ? OldFashioned.DamageBoostMultiplier : OldFashioned.DamageReductionMultiplier;
+            if (modPlayer.ivDrip && buffedByOldFashioned.HasValue)
+                modifiers.SourceDamage *= buffedByOldFashioned.Value ? IVDripOnTheRocks.DamageBoostMultiplier : IVDripOnTheRocks.DamageReductionMultiplier;
 
+            if (modPlayer.rum && projectile.DamageType.CountsAsClass(DamageClass.Summon))
+            {
+                if (projectile.minion || ProjectileID.Sets.MinionShot[projectile.type])
+                {
+                    modifiers.SourceDamage *= Rum.MinionBoost;
+                }
+                else
+                    modifiers.SourceDamage *= Rum.NonMinionBoost;
+            }
+            if (modPlayer.moscowMule || modPlayer.bloodyMary)
+            {
+                if (projectile.DamageType == DamageClass.Summon || (PierceResistNPC.exemptProjectiles.Contains(projectile.type) || (PierceResistNPC.singleHitboxExemptProjectiles.ContainsKey(projectile.type) && PierceResistNPC.singleHitboxExemptProjectiles[projectile.type])))
+                {
+                    modifiers.SourceDamage *= ((modPlayer.moscowMule ? 0.7f : 1f) * (modPlayer.bloodyMary ? 0.33f : 1f));
+                }
+            }
             if (projectile.type == ProjectileID.JoustingLance || projectile.type == ProjectileID.HallowJoustingLance || projectile.type == ProjectileID.ShadowJoustingLance)
             {
                 // The vanilla damage Jousting Lance multiplier is as follows. Calamity overrides this with a new formula
@@ -4076,17 +4593,18 @@ namespace CalamityMod.Projectiles
                     projectile.damage = 1;
             }
 
-            // Heat Ray damage falloff
-            if (projectile.type == ProjectileID.HeatRay && projectile.numHits > 0)
+            // Super Star Shooter has damage falloff
+            if (projectile.type == ProjectileID.SuperStar)
             {
-                projectile.damage = (int)(projectile.damage * 0.9f);
+                if (projectile.numHits > 0)
+                    projectile.damage = (int)(projectile.damage * 0.95f);
                 if (projectile.damage < 1)
                     projectile.damage = 1;
             }
 
             // Stardust Wings buff the Stardust Guardian's damage
-            if (player.wingsLogic == (int)VanillaWingID.WingsStardust && projectile.type == ProjectileID.StardustGuardian)
-                modifiers.SourceDamage *= 2f;
+            if (player.wingsLogic == (int)VanillaWingID.WingsStardust && player.wingTime > 0f && projectile.type == ProjectileID.StardustGuardian)
+                modifiers.SourceDamage *= MathF.Max(1f, MathHelper.Lerp(4f, 1f, player.wingTime / (float)player.wingTimeMax));
 
             // If applicable, use ricoshot bonus damage
             if (totalRicoshotDamageBonus > 0f)
@@ -4101,7 +4619,9 @@ namespace CalamityMod.Projectiles
             else if (modPlayer.vampiricTalisman && projectile.Calamity().stealthStrike)
             {
                 target.AddBuff(BuffType<ArmorCrunch>(), VampiricTalisman.ArmorCrunchDebuffTime);
-                target.AddBuff(BuffType<HeavyBleeding>(), VampiricTalisman.HeavyBleedingDebuffTime);
+
+                if (!modPlayer.nanotech)
+                    target.AddBuff(BuffType<HeavyBleeding>(), VampiricTalisman.HeavyBleedingDebuffTime);
             }
 
             if (modPlayer.flamingItemEnchant && !projectile.minion && !projectile.npcProj && !projectile.Calamity().CreatedByPlayerDash)
@@ -4176,9 +4696,21 @@ namespace CalamityMod.Projectiles
         #region On Hit NPC
         public override void OnHitNPC(Projectile projectile, NPC target, NPC.HitInfo hit, int damageDone)
         {
+            //Manage Hybrid iframes
+            if (hybridIframes && (projectile.penetrate != 1 || projectile.appliesImmunityTimeOnSingleHits))
+            {
+                projectile.localNPCImmunity[target.whoAmI] = projectile.localNPCHitCooldown;
+                Projectile.perIDStaticNPCImmunity[projectile.type][target.whoAmI] = Main.GameUpdateCount + (uint)projectile.idStaticNPCHitCooldown;
+            }
             if (BloodstoneOrbValue > 0)
                 Projectile.NewProjectile(projectile.GetSource_OnHit(target), projectile.Center, projectile.velocity.SafeNormalize(Vector2.Zero) * Math.Min(((projectile.velocity.Length() * projectile.MaxUpdates) / 4f), 4f) * Main.rand.NextFloat(0.75f, 1.25f), ModContent.ProjectileType<BloodstoneHealOrb>(), BloodstoneOrbValue, 0f, Main.player[projectile.owner].whoAmI);
-
+            //Mana Burn
+            if (Main.player[projectile.owner].statMana < 0)
+            {
+                float burnRatio = (-Main.player[projectile.owner].statMana / 5000f); // -400 mana = +8% dmg, -700 mana = +14% dmg
+                target.Calamity().manaBurn += damageDone * burnRatio;
+                target.Calamity().playerManaBurnIntensity = -Main.player[projectile.owner].statMana / (float)Main.player[projectile.owner].statManaMax2;
+            }
             // Hyperius Overflow
             if (projectile.type != ProjectileType<HyperiusBulletProj>() && projectile.type != ProjectileType<HyperiusSplit>() && projectile.type != ProjectileType<HyperiusDamage>() && projectile.type != ProjectileType<HyperiusBleed>() && target.Calamity().hyperiusMarked)
             {
@@ -4201,21 +4733,23 @@ namespace CalamityMod.Projectiles
                     target.Calamity().hyperiusMarked = false;
                 }
             }
-
+            // Crystal Darts reset iframes on bouncing off an enemy
+            if (projectile.type == ProjectileID.CrystalDart)
+            {
+                projectile.ResetLocalNPCHitImmunity();
+                projectile.localNPCImmunity[target.whoAmI] = -1;
+            }
             // Implementation of shared static iframes.
             // If this projectile does not use static iframes, or is not registered to share them, then do nothing.
-            if (!projectile.usesIDStaticNPCImmunity || !SharedStaticIFrames.Includes(projectile.type))
-                return;
-
-            // Get the set of shared static iframe projectile types.
-            // If it's empty, then do nothing.
-            IList<int> sharedWithProjectiles = SharedStaticIFrames.GetSharedStaticIFrames(projectile.type);
-            if (sharedWithProjectiles.Count <= 0)
+            if (!projectile.usesIDStaticNPCImmunity || CalamityProjectileSets.SharedIDStaticIFrames[projectile.type] == -1)
                 return;
 
             // Apply the appropriate shared static iframes to all projectile types with which it is shared.
-            foreach (int projType in sharedWithProjectiles)
-                Projectile.perIDStaticNPCImmunity[projType][target.whoAmI] = Main.GameUpdateCount + (uint)projectile.idStaticNPCHitCooldown;
+            for (int proj = 0; proj < CalamityProjectileSets.SharedIDStaticIFrames.Length; proj++)
+            {
+                if (CalamityProjectileSets.SharedIDStaticIFrames[proj] == CalamityProjectileSets.SharedIDStaticIFrames[projectile.type])
+                    Projectile.perIDStaticNPCImmunity[proj][target.whoAmI] = Main.GameUpdateCount + (uint)projectile.idStaticNPCHitCooldown;
+            }
         }
         #endregion
 
@@ -4233,7 +4767,7 @@ namespace CalamityMod.Projectiles
                 case ProjectileID.DeerclopsIceSpike:
                     if (CalamityWorld.revenge || BossRushEvent.BossRushActive)
                     {
-                        float fadeInTime = 50f;
+                        float fadeInTime = 25f;
                         float fadeOutGateValue = death ? 90f : 65f;
                         return (projectile.ai[0] >= fadeInTime && projectile.ai[0] < fadeOutGateValue);
                     }
@@ -4295,6 +4829,28 @@ namespace CalamityMod.Projectiles
             }
             return true;
         }
+
+        public override bool? CanHitNPC(Projectile projectile, NPC target)
+        {
+
+            if (hybridIframes && (projectile.localNPCImmunity[target.whoAmI] != 0 || Projectile.perIDStaticNPCImmunity[projectile.type][target.whoAmI] > Main.GameUpdateCount))
+                return false;
+            if (target.Calamity().IsArmored() && HomingTarget > -1 && HomingTarget != target.whoAmI)
+                return false;
+            return null;
+        }
+        #endregion
+
+        #region TileCollide
+        public override bool OnTileCollide(Projectile projectile, Vector2 oldVelocity)
+        {
+            //Crystal Darts use -1 local that needs to reset whenever they bounce
+            if (projectile.type == ProjectileID.CrystalDart)
+            {
+                projectile.ResetLocalNPCHitImmunity();
+            }
+            return base.OnTileCollide(projectile, oldVelocity);
+        }
         #endregion
 
         #region Drawing
@@ -4307,14 +4863,15 @@ namespace CalamityMod.Projectiles
             {
                 if (projectile.ModProjectile is null || (projectile.ModProjectile != null && projectile.ModProjectile.CanHitPlayer(Main.LocalPlayer) && (projectile.ModProjectile.CanDamage() ?? true)))
                 {
-                    Color mainColor = Color.Lerp(Color.Crimson with { A = 0 }, Color.OrangeRed with { A = 0 }, ((Main.GlobalTimeWrappedHourly * 2) % 1f));
-                    return mainColor;
+                    Color mainColor = Color.Lerp(Color.Crimson with { A = 0 }, Color.OrangeRed with { A = 0 }, (Main.GlobalTimeWrappedHourly * 2) % 1f);
+                    Color actualDisplayColor = new Color(Math.Max(mainColor.R, lightColor.R), Math.Max(mainColor.G, lightColor.G), Math.Max(mainColor.B, lightColor.B));
+                    return actualDisplayColor;
                 }
             }
 
             if (projectile.type == ProjectileID.Skull && (projectile.ai[0] == -1f || projectile.ai[0] == -3f))
             {
-                float homingTime = BossRushEvent.BossRushActive ? 120f : CalamityWorld.death ? 105f : 90f;
+                float homingTime = CalamityWorld.death ? 105f : 90f;
                 if (projectile.ai[0] == -3f)
                     homingTime += 60f;
 
@@ -4389,8 +4946,6 @@ namespace CalamityMod.Projectiles
 
         public override bool PreDraw(Projectile projectile, ref Color lightColor)
         {
-            // This is used so that projectiles with specific PreDraws can still have Odd Mushroom clone drawing.
-            // If Odd Mushroom clone drawing is done manually due to using a different texture, just return false instead of setting this.
             bool shouldDrawBool = true;
 
             #region Vanilla Summons Drawing Changes
@@ -4427,7 +4982,7 @@ namespace CalamityMod.Projectiles
                 if (projectile.spriteDirection == -1)
                     spriteEffects = SpriteEffects.FlipHorizontally;
 
-                Main.EntitySpriteDraw(TextureAssets.Extra[98].Value, projectile.Center - Main.screenPosition + new Vector2(0f, projectile.gfxOffY) - projectile.velocity * projectile.scale * 0.5f, null, projectile.GetAlpha(new Color(vector41.X, vector41.Y, vector41.Z, vector41.W)), projectile.rotation + MathHelper.PiOver2, TextureAssets.Extra[98].Value.Size() / 2f, projectile.scale * 0.9f, spriteEffects);
+                Main.EntitySpriteDraw(TextureAssets.Extra[ExtrasID.SharpTears].Value, projectile.Center - Main.screenPosition + new Vector2(0f, projectile.gfxOffY) - projectile.velocity * projectile.scale * 0.5f, null, projectile.GetAlpha(new Color(vector41.X, vector41.Y, vector41.Z, vector41.W)), projectile.rotation + MathHelper.PiOver2, TextureAssets.Extra[ExtrasID.SharpTears].Value.Size() / 2f, projectile.scale * 0.9f, spriteEffects);
                 Color color49 = projectile.GetAlpha(Color.White) * Utils.Remap(projectile.ai[0], 0f, killGateValue, 0.5f, 0f);
                 color49.A = 0;
 
@@ -4445,8 +5000,6 @@ namespace CalamityMod.Projectiles
                 Texture2D crossbone = TextureAssets.Projectile[ProjectileID.BoneGloveProj].Value;
 
                 Main.spriteBatch.Draw(crossbone, projectile.Center - Main.screenPosition, null, projectile.GetAlpha(lightColor), projectile.rotation, crossbone.Size() / 2f, projectile.scale, projectile.spriteDirection == -1 ? SpriteEffects.FlipHorizontally : SpriteEffects.None, 0f);
-                if (Main.LocalPlayer.Calamity().trippy)
-                    OddMushroomProjectileDrawing(projectile, crossbone);
                 return false;
             }
 
@@ -4465,8 +5018,6 @@ namespace CalamityMod.Projectiles
                         spriteEffects = SpriteEffects.FlipHorizontally;
 
                     Main.spriteBatch.Draw(texture, projectile.Center - Main.screenPosition + new Vector2(0f, projectile.gfxOffY), rectangle, projectile.GetAlpha(lightColor), projectile.rotation, origin, projectile.scale, spriteEffects, 0f);
-                    if (Main.LocalPlayer.Calamity().trippy)
-                        OddMushroomProjectileDrawing(projectile, texture);
                     return false;
                 }
             }
@@ -4483,16 +5034,6 @@ namespace CalamityMod.Projectiles
                 shouldDrawBool = false;
             }
 
-            // Chlorophyte Crystal AI rework.
-            if (projectile.type == ProjectileID.CrystalLeaf)
-            {
-                ChlorophyteCrystalAI.DoChlorophyteCrystalDrawing(projectile);
-                shouldDrawBool = false;
-            }
-
-            if (Main.LocalPlayer.Calamity().trippy)
-                OddMushroomProjectileDrawing(projectile);
-
             if (Main.zenithWorld)
             {
                 if (NPC.AnyNPCs(NPCType<NPCs.CeaselessVoid.CeaselessVoid>()))
@@ -4506,141 +5047,12 @@ namespace CalamityMod.Projectiles
 
             return shouldDrawBool;
         }
-
-        private static void OddMushroomProjectileDrawing(Projectile projectile, Texture2D? tex = null)
-        {
-            Texture2D texture = tex ?? TextureAssets.Projectile[projectile.type].Value;
-
-            SpriteEffects spriteEffects = SpriteEffects.None;
-            if (projectile.spriteDirection == -1)
-                spriteEffects = SpriteEffects.FlipHorizontally;
-
-            Color rainbow = new Color(Main.DiscoR, Main.DiscoG, Main.DiscoB, Main.DiscoR);
-            Color alphaColor = projectile.GetAlpha(rainbow);
-            float RGBMult = 0.99f;
-            alphaColor.R = (byte)(alphaColor.R * RGBMult);
-            alphaColor.G = (byte)(alphaColor.G * RGBMult);
-            alphaColor.B = (byte)(alphaColor.B * RGBMult);
-            alphaColor.A = (byte)(alphaColor.A * RGBMult);
-            int totalAfterimages = Main.LocalPlayer.Calamity().trippyLevel == 3 ? 16 : (Main.LocalPlayer.Calamity().trippyLevel == 2 ? 12 : 4);
-            for (int i = 0; i < totalAfterimages; i++)
-            {
-                Vector2 position = projectile.position;
-                float distanceFromTargetX = Math.Abs(projectile.Center.X - Main.LocalPlayer.Center.X);
-                float distanceFromTargetY = Math.Abs(projectile.Center.Y - Main.LocalPlayer.Center.Y);
-
-                float smallDistanceMult = 0.48f;
-                float largeDistanceMult = 1.33f;
-                bool whatTheFuck = Main.LocalPlayer.Calamity().trippyLevel == 3;
-
-                switch (i)
-                {
-                    case 0:
-                        position.X = Main.LocalPlayer.Center.X - distanceFromTargetX;
-                        position.Y = Main.LocalPlayer.Center.Y - distanceFromTargetY;
-                        break;
-
-                    case 1:
-                        position.X = Main.LocalPlayer.Center.X + distanceFromTargetX;
-                        position.Y = Main.LocalPlayer.Center.Y - distanceFromTargetY;
-                        break;
-
-                    case 2:
-                        position.X = Main.LocalPlayer.Center.X + distanceFromTargetX;
-                        position.Y = Main.LocalPlayer.Center.Y + distanceFromTargetY;
-                        break;
-
-                    case 3:
-                        position.X = Main.LocalPlayer.Center.X - distanceFromTargetX;
-                        position.Y = Main.LocalPlayer.Center.Y + distanceFromTargetY;
-                        break;
-
-                    case 4: // 1 o'clock position
-                        position.X = Main.LocalPlayer.Center.X + (distanceFromTargetX * (whatTheFuck ? 1f : smallDistanceMult));
-                        position.Y = Main.LocalPlayer.Center.Y - (distanceFromTargetY * (whatTheFuck ? 0f : largeDistanceMult));
-                        break;
-
-                    case 5: // 4 o'clock position
-                        position.X = Main.LocalPlayer.Center.X + (distanceFromTargetX * (whatTheFuck ? 0f : largeDistanceMult));
-                        position.Y = Main.LocalPlayer.Center.Y + (distanceFromTargetY * (whatTheFuck ? 1f : smallDistanceMult));
-                        break;
-
-                    case 6: // 7 o'clock position
-                        position.X = Main.LocalPlayer.Center.X - (distanceFromTargetX * (whatTheFuck ? 1f : smallDistanceMult));
-                        position.Y = Main.LocalPlayer.Center.Y + (distanceFromTargetY * (whatTheFuck ? 0f : largeDistanceMult));
-                        break;
-
-                    case 7: // 10 o'clock position
-                        position.X = Main.LocalPlayer.Center.X - (distanceFromTargetX * (whatTheFuck ? 0f : largeDistanceMult));
-                        position.Y = Main.LocalPlayer.Center.Y - (distanceFromTargetY * (whatTheFuck ? 1f : smallDistanceMult));
-                        break;
-
-                    case 8: // 11 o'clock position
-                        position.X = Main.LocalPlayer.Center.X - (distanceFromTargetX * (whatTheFuck ? 0f : smallDistanceMult));
-                        position.Y = Main.LocalPlayer.Center.Y - (distanceFromTargetY * (whatTheFuck ? 0.5f : largeDistanceMult));
-                        break;
-
-                    case 9: // 2 o'clock position
-                        position.X = Main.LocalPlayer.Center.X + (distanceFromTargetX * (whatTheFuck ? 0.5f : largeDistanceMult));
-                        position.Y = Main.LocalPlayer.Center.Y - (distanceFromTargetY * (whatTheFuck ? 0f : smallDistanceMult));
-                        break;
-
-                    case 10: // 5 o'clock position
-                        position.X = Main.LocalPlayer.Center.X + (distanceFromTargetX * (whatTheFuck ? 0f : smallDistanceMult));
-                        position.Y = Main.LocalPlayer.Center.Y + (distanceFromTargetY * (whatTheFuck ? 0.5f : largeDistanceMult));
-                        break;
-
-                    case 11: // 8 o'clock position
-                        position.X = Main.LocalPlayer.Center.X - (distanceFromTargetX * (whatTheFuck ? 0.5f : largeDistanceMult));
-                        position.Y = Main.LocalPlayer.Center.Y + (distanceFromTargetY * (whatTheFuck ? 0f : smallDistanceMult));
-                        break;
-
-                    case 12:
-                        position.X = Main.LocalPlayer.Center.X - distanceFromTargetX * 0.5f;
-                        position.Y = Main.LocalPlayer.Center.Y - distanceFromTargetY * 0.5f;
-                        break;
-
-                    case 13:
-                        position.X = Main.LocalPlayer.Center.X + distanceFromTargetX * 0.5f;
-                        position.Y = Main.LocalPlayer.Center.Y - distanceFromTargetY * 0.5f;
-                        break;
-
-                    case 14:
-                        position.X = Main.LocalPlayer.Center.X + distanceFromTargetX * 0.5f;
-                        position.Y = Main.LocalPlayer.Center.Y + distanceFromTargetY * 0.5f;
-                        break;
-
-                    case 15:
-                        position.X = Main.LocalPlayer.Center.X - distanceFromTargetX * 0.5f;
-                        position.Y = Main.LocalPlayer.Center.Y + distanceFromTargetY * 0.5f;
-                        break;
-
-                    default:
-                        break;
-                }
-
-                position.X -= projectile.width / 2;
-                position.Y -= projectile.height / 2;
-
-                int frameHeight = texture.Height / Main.projFrames[projectile.type];
-                int currentframeHeight = frameHeight * projectile.frame;
-                Rectangle frame = new Rectangle(0, currentframeHeight, texture.Width, frameHeight);
-
-                Vector2 halfSize = frame.Size() / 2;
-
-                Main.spriteBatch.Draw(texture,
-                    new Vector2(position.X - Main.screenPosition.X + (float)(projectile.width / 2) - (float)TextureAssets.Projectile[projectile.type].Width() * projectile.scale / 2f + halfSize.X * projectile.scale,
-                    position.Y - Main.screenPosition.Y + (float)projectile.height - (float)TextureAssets.Projectile[projectile.type].Height() * projectile.scale / (float)Main.projFrames[projectile.type] + 4f + halfSize.Y * projectile.scale + projectile.gfxOffY),
-                    frame, alphaColor, projectile.rotation, halfSize, projectile.scale, spriteEffects, 0f);
-            }
-        }
         #endregion
 
         #region Pre Kill
         public override bool PreKill(Projectile projectile, int timeLeft)
         {
             bool revQueenBeeBeeHive = projectile.type == ProjectileID.BeeHive && (CalamityWorld.revenge || BossRushEvent.BossRushActive) && (projectile.ai[2] == 1f || CalamityWorld.death);
-            bool revGolemInferno = projectile.type == ProjectileID.InfernoHostileBolt && projectile.ai[2] > 0f;
 
             if (revQueenBeeBeeHive)
             {
@@ -4716,17 +5128,9 @@ namespace CalamityMod.Projectiles
                     if (Main.netMode != NetmodeID.SinglePlayer)
                         NetMessage.SendData(MessageID.KillProjectile, -1, -1, null, projectile.identity, projectile.owner);
                 }
-
-                else if (revGolemInferno)
-                {
-                    Projectile.NewProjectile(projectile.GetSource_FromThis(), projectile.Center, Vector2.Zero, ProjectileID.InfernoHostileBlast, projectile.damage, projectile.knockBack, projectile.owner, 0f, 0f, projectile.ai[2]);
-
-                    if (Main.netMode != NetmodeID.SinglePlayer)
-                        NetMessage.SendData(MessageID.KillProjectile, -1, -1, null, projectile.identity, projectile.owner);
-                }
             }
 
-            if (revQueenBeeBeeHive || revGolemInferno)
+            if (revQueenBeeBeeHive)
             {
                 projectile.active = false;
                 return false;
@@ -4774,46 +5178,8 @@ namespace CalamityMod.Projectiles
                             modPlayer.scuttlerCooldown = 30;
                         }
                     }
-
-                    if (projectile.type == ProjectileID.UnholyWater)
-                        Projectile.NewProjectile(projectile.GetSource_FromThis(), projectile.Center, Vector2.Zero, ProjectileType<WaterConvertor>(), 0, 0f, projectile.owner, 1f);
-
-                    if (projectile.type == ProjectileID.BloodWater)
-                        Projectile.NewProjectile(projectile.GetSource_FromThis(), projectile.Center, Vector2.Zero, ProjectileType<WaterConvertor>(), 0, 0f, projectile.owner, 2f);
-
-                    if (projectile.type == ProjectileID.HolyWater)
-                        Projectile.NewProjectile(projectile.GetSource_FromThis(), projectile.Center, Vector2.Zero, ProjectileType<WaterConvertor>(), 0, 0f, projectile.owner, 3f);
                 }
             }
-        }
-        #endregion
-
-        #region Life Steal
-        public static bool CanSpawnLifeStealProjectile(double healMultiplier, float healAmount) => healMultiplier > 0D && (int)healAmount > 0;
-
-        public static void SpawnLifeStealProjectile(Projectile projectile, Player player, float healAmount, int healProjectileType, float distanceRequired, float cooldownMultiplier = 1f)
-        {
-            if (Main.LocalPlayer.moonLeech)
-                return;
-
-            Main.LocalPlayer.lifeSteal -= healAmount * cooldownMultiplier;
-
-            float lowestHealthCheck = 0f;
-            int healTarget = projectile.owner;
-            foreach (Player otherPlayer in Main.ActivePlayers)
-            {
-                if (!otherPlayer.dead && ((!player.hostile && !otherPlayer.hostile) || player.team == otherPlayer.team))
-                {
-                    float playerDist = Vector2.Distance(projectile.Center, otherPlayer.Center);
-                    if (playerDist < distanceRequired && (otherPlayer.statLifeMax2 - otherPlayer.statLife) > lowestHealthCheck)
-                    {
-                        lowestHealthCheck = otherPlayer.statLifeMax2 - otherPlayer.statLife;
-                        healTarget = otherPlayer.whoAmI;
-                    }
-                }
-            }
-
-            Projectile.NewProjectile(projectile.GetSource_FromThis(), projectile.Center, Vector2.Zero, healProjectileType, 0, 0f, projectile.owner, healTarget, healAmount);
         }
         #endregion
     }

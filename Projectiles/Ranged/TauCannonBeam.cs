@@ -6,6 +6,7 @@ using Microsoft.Xna.Framework.Graphics;
 using ReLogic.Utilities;
 using Terraria;
 using Terraria.Audio;
+using Terraria.ID;
 using Terraria.ModLoader;
 using static CalamityMod.Projectiles.Ranged.TauCannonHoldout;
 using static Terraria.ModLoader.ModContent;
@@ -92,7 +93,7 @@ namespace CalamityMod.Projectiles.Ranged
             Vector2 effectsPosition = Vector2.Lerp(Projectile.Center, Projectile.Center + Projectile.velocity * LaserLength, Main.rand.NextFloat());
             Vector2 randomLineEffectPosition = effectsPosition + Main.rand.NextVector2Circular(40f * (IsStage3Laser ? 1.2f : 0.8f), 40f * (IsStage3Laser ? 1.2f : 0.8f));
 
-            Dust laserDust = Dust.NewDustPerfect(randomLineEffectPosition, 278, Projectile.velocity * Main.rand.NextFloat(5f, 40f), Scale: Main.rand.NextFloat(0.8f, 1.1f));
+            Dust laserDust = Dust.NewDustPerfect(randomLineEffectPosition, DustID.FireworksRGB, Projectile.velocity * Main.rand.NextFloat(5f, 40f), Scale: Main.rand.NextFloat(0.8f, 1.1f));
             laserDust.noGravity = true;
             laserDust.color = Main.rand.NextBool(3) ? color2 : color1;
 

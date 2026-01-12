@@ -21,7 +21,6 @@ namespace CalamityMod
 
         public static readonly Condition PlayerHasRogueArmor            = Create("HasRogueArmor",        () => Main.LocalPlayer.Calamity().rogueStealthMax > 0f && Main.LocalPlayer.Calamity().wearingRogueArmor);
         public static readonly Condition PlayerHasWings                 = Create("HasWings",             () => Main.LocalPlayer.wingTimeMax > 0);
-        public static readonly Condition PlayerAlcoholPoisoned          = Create("AlcoholPoison",        () => Main.LocalPlayer.Calamity().alcoholPoisoning);
 
         //
         // Calamity Event Flag conditions

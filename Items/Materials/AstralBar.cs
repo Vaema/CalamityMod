@@ -15,6 +15,7 @@ namespace CalamityMod.Items.Materials
             Item.ResearchUnlockCount = 25;
             ItemID.Sets.SortingPriorityMaterials[Type] = 99; // Luminite
             ItemID.Sets.AnimatesAsSoul[Type] = true;
+            ItemTrader.ChlorophyteExtractinator.AddOption_OneWay(Type, 1, ItemID.MeteoriteBar, 1);
             Main.RegisterItemAnimation(Type, new DrawAnimationVertical(5, 12));
         }
 

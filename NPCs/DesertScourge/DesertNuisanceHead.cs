@@ -3,8 +3,10 @@ using System.IO;
 using CalamityMod.Events;
 using CalamityMod.World;
 using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
 using Terraria;
 using Terraria.Audio;
+using Terraria.GameContent;
 using Terraria.GameContent.Bestiary;
 using Terraria.ID;
 using Terraria.ModLoader;
@@ -36,14 +38,13 @@ namespace CalamityMod.NPCs.DesertScourge
             NPCID.Sets.BossBestiaryPriority.Add(Type);
             NPCID.Sets.NPCBestiaryDrawModifiers value = new NPCID.Sets.NPCBestiaryDrawModifiers()
             {
-                Scale = 0.6f,
-                PortraitScale = 0.6f,
-                CustomTexturePath = "CalamityMod/ExtraTextures/Bestiary/DesertNuisance_Bestiary",
-                PortraitPositionXOverride = 40,
-                PortraitPositionYOverride = 40
+                Scale = 0.65f,
+                PortraitScale = 0.7f,
+                PortraitPositionXOverride = 0,
+                PortraitPositionYOverride = 0
             };
-            value.Position.X += 45;
-            value.Position.Y += 30;
+            value.Position.X += 0;
+            value.Position.Y -= 20;
             NPCID.Sets.NPCBestiaryDrawOffset[Type] = value;
             NPCID.Sets.MPAllowedEnemies[Type] = true;
             NPCID.Sets.CantTakeLunchMoney[Type] = true;
@@ -53,18 +54,18 @@ namespace CalamityMod.NPCs.DesertScourge
         {
             NPC.BossBar = Main.BigBossProgressBar.NeverValid;
             NPC.Calamity().canBreakPlayerDefense = true;
-            NPC.GetNPCDamage();
+            NPC.damage = 25; // 40 (1.6x expert scaling)
 
             NPC.defense = 3;
-            if (CalamityWorld.LegendaryMode)
+            if (Main.getGoodWorld)
                 NPC.defense += 19;
 
             NPC.width = 88;
             NPC.height = 88;
 
             NPC.LifeMaxNERB(1500, 1800, 40000);
-            if (CalamityWorld.LegendaryMode)
-                NPC.lifeMax = 4800;
+            if (Main.getGoodWorld)
+                NPC.lifeMax *= 2;
             NPC.aiStyle = -1;
             AIType = -1;
             NPC.knockBackResist = 0f;
@@ -78,9 +79,6 @@ namespace CalamityMod.NPCs.DesertScourge
             NPC.Calamity().VulnerableToCold = true;
             NPC.Calamity().VulnerableToSickness = true;
             NPC.Calamity().VulnerableToWater = true;
-
-            // Scale HP in Master
-            CalamityGlobalNPC.AdjustMasterModeStatScaling(NPC, true);
 
             if (Main.zenithWorld)
                 NPC.scale *= 2;
@@ -110,16 +108,15 @@ namespace CalamityMod.NPCs.DesertScourge
 
         public override void AI()
         {
-            bool bossRush = BossRushEvent.BossRushActive;
-            bool expertMode = Main.expertMode || bossRush;
-            bool revenge = CalamityWorld.revenge || bossRush;
-            bool death = CalamityWorld.death || bossRush;
+            bool expertMode = Main.expertMode || BossRushEvent.BossRushActive;
+            bool revenge = CalamityWorld.revenge || BossRushEvent.BossRushActive;
+            bool death = CalamityWorld.death || BossRushEvent.BossRushActive;
 
             // Become angry when the other Nuisance dies.
             bool getMad = (!NPC.AnyNPCs(ModContent.NPCType<DesertNuisanceHeadYoung>()) && revenge) || death;
 
             // Enrage
-            if (!Main.player[NPC.target].ZoneDesert && !bossRush)
+            if (!Main.player[NPC.target].ZoneDesert && !BossRushEvent.BossRushActive)
             {
                 if (biomeEnrageTimer > 0)
                     biomeEnrageTimer--;
@@ -127,12 +124,12 @@ namespace CalamityMod.NPCs.DesertScourge
             else
                 biomeEnrageTimer = CalamityGlobalNPC.biomeEnrageTimerMax;
 
-            bool biomeEnraged = biomeEnrageTimer <= 0 || bossRush;
+            bool biomeEnraged = biomeEnrageTimer <= 0;
 
-            float enrageScale = bossRush ? 1f : getMad ? 0.5f : 0f;
+            float enrageScale = getMad ? 0.5f : 0f;
             if (biomeEnraged)
             {
-                NPC.Calamity().CurrentlyEnraged = !bossRush;
+                NPC.Calamity().CurrentlyEnraged = true;
                 enrageScale += 2f;
             }
 
@@ -146,7 +143,7 @@ namespace CalamityMod.NPCs.DesertScourge
             speed += 0.085f * enrageScale;
             turnSpeed += 0.17f * enrageScale;
 
-            if (CalamityWorld.LegendaryMode)
+            if (Main.getGoodWorld)
             {
                 speed *= 1.1f;
                 turnSpeed *= 1.2f;
@@ -168,7 +165,7 @@ namespace CalamityMod.NPCs.DesertScourge
                 {
                     int previous = NPC.whoAmI;
                     int minLength = 8;
-                    if (CalamityWorld.LegendaryMode)
+                    if (Main.getGoodWorld)
                         minLength *= 2;
 
                     int bodyTypeAIVariable = 0;
@@ -272,7 +269,7 @@ namespace CalamityMod.NPCs.DesertScourge
                 NPC.spriteDirection = -1;
 
             float maxChaseSpeed = Main.zenithWorld ? SegmentVelocity_ZenithSeed :
-                CalamityWorld.LegendaryMode ? SegmentVelocity_GoodWorld :
+                Main.getGoodWorld ? SegmentVelocity_GoodWorld :
                 death ? SegmentVelocity_Death :
                 SegmentVelocity_Expert;
             maxChaseSpeed += maxChaseSpeed * 0.2f * (1f - lifeRatio);
@@ -297,12 +294,6 @@ namespace CalamityMod.NPCs.DesertScourge
                             Main.npc[a].active = false;
                     }
                 }
-            }
-
-            if (CalamityWorld.LegendaryMode)
-            {
-                speed *= 1.5f;
-                turnSpeed *= 1.5f;
             }
 
             Vector2 npcCenter = NPC.Center;
@@ -457,19 +448,6 @@ namespace CalamityMod.NPCs.DesertScourge
             if (NPC.Distance(destination) > (getMad ? 750f : 1000f))
                 NPC.velocity += (destination - NPC.Center).SafeNormalize(Vector2.UnitY) * turnSpeed;
 
-            // Calculate contact damage based on velocity
-            float minimalContactDamageVelocity = maxChaseSpeed * 0.25f;
-            float minimalDamageVelocity = maxChaseSpeed * 0.5f;
-            if (NPC.velocity.Length() <= minimalContactDamageVelocity)
-            {
-                NPC.damage = (int)Math.Round(NPC.defDamage * 0.5);
-            }
-            else
-            {
-                float velocityDamageScalar = MathHelper.Clamp((NPC.velocity.Length() - minimalContactDamageVelocity) / minimalDamageVelocity, 0f, 1f);
-                NPC.damage = (int)MathHelper.Lerp((float)Math.Round(NPC.defDamage * 0.5), NPC.defDamage, velocityDamageScalar);
-            }
-
             NPC.rotation = (float)Math.Atan2((double)NPC.velocity.Y, (double)NPC.velocity.X) + MathHelper.PiOver2;
 
             if (shouldFly)
@@ -597,16 +575,50 @@ namespace CalamityMod.NPCs.DesertScourge
             }
         }
 
+        public override bool PreDraw(SpriteBatch spriteBatch, Vector2 screenPos, Color drawColor)
+        {
+            if (NPC.IsABestiaryIconDummy)
+            {
+                Texture2D texture = TextureAssets.Npc[NPC.type].Value;
+                NPC.Opacity = 1f;
+                // Reimplementation of CalamityUtils.DrawAnimatedBestiaryWorm but tweaked due to this entity' animations
+                NPC.frame = texture.Frame();
+                // Buffers the segment position and rotations
+                float offset = -0.2f;
+                float startX = 60;
+                float startY = 70;
+                int segmentSpacing = 50;
+                int animationSpeed = 8;
+                float wormTimer = NPC.Calamity().bestiaryWormTimer;
+                int segCount = 3;
+                // Draw the body segments
+                for (int i = segCount; i > 0; i--)
+                {
+                    // The first segment is slightly closer to keep up with the head
+                    float bodyOffset = i * segmentSpacing - segmentSpacing * 0.5f;
+
+                    Texture2D toUse = i == 1 ? TextureAssets.Npc[ModContent.NPCType<DesertNuisanceBody>()].Value : DesertNuisanceBody.BodyTexture2.Value;
+                    int frameCount = i == 1 ? 7 : 1;
+                    spriteBatch.Draw(toUse, NPC.position + new Vector2(startX + bodyOffset, MathF.Sin((wormTimer + offset * i) * animationSpeed) * 2 + startY), toUse.Frame(1, frameCount, 0, 0), NPC.GetAlpha(drawColor), NPC.rotation - MathHelper.PiOver2 - MathF.Cos((wormTimer + offset * i) * animationSpeed) * MathHelper.PiOver4 * 0.075f, new Vector2(toUse.Width / 2, toUse.Height / (frameCount * 2)), NPC.scale, SpriteEffects.None, 0f);
+                }
+                // Draw the head
+                spriteBatch.Draw(texture, NPC.position + new Vector2(startX + 18, MathF.Sin(wormTimer * animationSpeed) * 2 + startY), texture.Frame(1, 7, 0, 0), NPC.GetAlpha(drawColor), NPC.rotation - MathHelper.PiOver2 - MathF.Cos(wormTimer * animationSpeed) * MathHelper.PiOver4 * 0.075f, new Vector2(texture.Width * 0.5f, texture.Height / 7), NPC.scale, SpriteEffects.None, 0f);
+
+                return false;
+            }
+            return true;
+        }
+
         public override void ApplyDifficultyAndPlayerScaling(int numPlayers, float balance, float bossAdjustment)
         {
             NPC.lifeMax = (int)(NPC.lifeMax * 0.7f * balance);
+            NPC.damage = (int)(NPC.damage * 0.8f);
         }
 
         public override void OnHitPlayer(Player target, Player.HurtInfo hurtInfo)
         {
             if (hurtInfo.Damage > 0)
             {
-                target.AddBuff(BuffID.Bleeding, 300);
                 NPC.ai[3] = 1f;
                 NPC.ForceNetUpdate();
             }

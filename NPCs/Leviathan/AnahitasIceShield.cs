@@ -29,16 +29,16 @@ namespace CalamityMod.NPCs.Leviathan
 
         public override void SetDefaults()
         {
+            NPC.damage = 50; // 100
             NPC.aiStyle = -1;
             AIType = -1;
             NPC.noTileCollide = true;
             NPC.coldDamage = true;
-            NPC.GetNPCDamage();
             NPC.width = 100;
             NPC.height = 100;
             NPC.defense = 10;
-            NPC.DR_NERD(0.5f);
-            NPC.lifeMax = BossRushEvent.BossRushActive ? 1000 : 650;
+            NPC.DR_NERD(0.25f);
+            NPC.lifeMax = BossRushEvent.BossRushActive ? 2000 : 750;
             NPC.alpha = 255;
             NPC.HitSound = SoundID.NPCHit5;
             NPC.DeathSound = SoundID.NPCDeath7;
@@ -46,7 +46,7 @@ namespace CalamityMod.NPCs.Leviathan
             NPC.Calamity().VulnerableToCold = false;
             NPC.Calamity().VulnerableToSickness = false;
 
-            if (CalamityWorld.LegendaryMode)
+            if (Main.getGoodWorld)
                 NPC.scale *= 0.8f;
         }
 
@@ -98,14 +98,6 @@ namespace CalamityMod.NPCs.Leviathan
         public override bool CanHitPlayer(Player target, ref int cooldownSlot) => NPC.ai[1] == 0f && NPC.alpha <= 100;
 
         public override Color? GetAlpha(Color drawColor) => NPC.ai[1] == 1f ? Color.Transparent : new Color(200, 200, 200, drawColor.A) * NPC.Opacity;
-
-        public override void OnHitPlayer(Player target, Player.HurtInfo hurtInfo)
-        {
-            if (NPC.ai[1] == 1f || hurtInfo.Damage <= 0)
-                return;
-
-            target.AddBuff(BuffID.Frostburn, 240, true);
-        }
 
         public override bool CheckActive() => false;
 

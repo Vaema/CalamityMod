@@ -1,13 +1,13 @@
 ﻿using System.ComponentModel;
-using System.Reflection;
 using System.Runtime.Serialization;
+using CalamityMod.Enums;
+using CalamityMod.Systems;
 using CalamityMod.UI;
 using CalamityMod.UI.DraedonsArsenal;
 using CalamityMod.UI.Rippers;
 using CalamityMod.UI.SulphurousWaterMeter;
 using Terraria;
 using Terraria.Localization;
-using Terraria.ModLoader;
 using Terraria.ModLoader.Config;
 
 namespace CalamityMod
@@ -27,39 +27,9 @@ namespace CalamityMod
             ParticleLimit = (int)Utils.Clamp(ParticleLimit, MinParticleLimit, MaxParticleLimit);
         }
 
-        internal static void SaveConfig()
-        {
-            // There is no current way to manually save a mod configuration file in tModLoader.
-            // The method which saves mod config files is private in ConfigManager, so reflection is used to invoke it.
-            try
-            {
-                MethodInfo saveMethodInfo = typeof(ConfigManager).GetMethod("Save", BindingFlags.Static | BindingFlags.NonPublic);
-                if (saveMethodInfo is not null)
-                    saveMethodInfo.Invoke(null, [Instance]);
-                else
-                    CalamityMod.Instance.Logger.Error("TML ConfigManager.Save reflection failed. Method signature has changed. Notify Calamity Devs if you see this in your log.");
-            }
-            catch
-            {
-                CalamityMod.Instance.Logger.Error("An error occurred while manually saving Calamity mod configuration. This may be due to a complex mod conflict. It is safe to ignore this error.");
-            }
-        }
-
-        #region Multi-Threading Settings
-        [Header("Multithreading")]
-
-        [BackgroundColor(192, 54, 64, 192)]
-        [SliderColor(224, 165, 56, 128)]
-        [Range(0f, 2f)]
-        [DefaultValue(0f)]
-        [Increment(1f)]
-        [DrawTicks]
-        public float SunkenSeaMultiThreading { get; set; } 
-        #endregion
-
         #region Graphics Changes
         [Header("Graphics")]
-        
+
         [BackgroundColor(192, 54, 64, 192)]
         [DefaultValue(false)]
         public bool DisableGravityScreenSwap { get; set; }
@@ -83,6 +53,10 @@ namespace CalamityMod
         [BackgroundColor(192, 54, 64, 192)]
         [DefaultValue(true)]
         public bool SunkenSeaBackgroundDistortion { get; set; }
+
+        [BackgroundColor(192, 54, 64, 192)]
+        [DefaultValue(true)]
+        public bool FancyBackgroundVisuals { get; set; }
 
         private const int MinParticleLimit = 500;
         private const int MaxParticleLimit = 10000;
@@ -108,6 +82,10 @@ namespace CalamityMod
         [DefaultValue(1.0f)]
         [Range(0.0f, 1.0f)]
         public float EnergyShieldOpacity { get; set; }
+
+        [BackgroundColor(192, 54, 64, 192)]
+        [DefaultValue(TileBlendingQuality.Normal)]
+        public TileBlendingQuality TileTextureBlendingQuality { get; set; }
 
         #endregion
 
@@ -135,12 +113,8 @@ namespace CalamityMod
         public bool DebuffDisplay { get; set; }
 
         [BackgroundColor(192, 54, 64, 192)]
-        [SliderColor(224, 165, 56, 128)]
-        [Range(0f, 2f)]
-        [DefaultValue(2f)]
-        [Increment(1f)]
-        [DrawTicks]
-        public float CooldownDisplay { get; set; }
+        [DefaultValue(CooldownDisplayOptions.Full)]
+        public CooldownDisplayOptions CooldownDisplay { get; set; }
 
         [BackgroundColor(192, 54, 64, 192)]
         [DefaultValue(true)]
@@ -271,15 +245,7 @@ namespace CalamityMod
 
         [BackgroundColor(192, 54, 64, 192)]
         [DefaultValue(true)]
-        public bool Interlude1 { get; set; }
-
-        [BackgroundColor(192, 54, 64, 192)]
-        [DefaultValue(true)]
-        public bool Interlude2 { get; set; }
-
-        [BackgroundColor(192, 54, 64, 192)]
-        [DefaultValue(true)]
-        public bool Interlude3 { get; set; }
+        public bool Interludes { get; set; }
 
         [BackgroundColor(192, 54, 64, 192)]
         [DefaultValue(true)]
@@ -299,8 +265,8 @@ namespace CalamityMod
         public bool FasterFallHotkey { get; set; }
 
         [BackgroundColor(192, 54, 64, 192)]
-        [DefaultValue(true)]
-        public bool CalamityArmorSetBonusDoubleTap { get; set; }
+        [DefaultValue(SetBonusDoubleTapOptions.Auto)]
+        public SetBonusDoubleTapOptions SetBonusDoubleTap { get; set; }
 
         [BackgroundColor(192, 54, 64, 192)]
         [DefaultValue(false)]
@@ -336,6 +302,11 @@ namespace CalamityMod
 
         [Header("Gameplay")]
         #region General Gameplay Changes
+
+        [BackgroundColor(192, 54, 64, 192)]
+        [DefaultValue(true)]
+        public bool SimplifyAccessoryReforge { get; set; }
+
         [BackgroundColor(192, 54, 64, 192)]
         [DefaultValue(true)]
         public bool RemoveReforgeRNG { get; set; }

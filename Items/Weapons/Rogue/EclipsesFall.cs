@@ -19,7 +19,7 @@ namespace CalamityMod.Items.Weapons.Rogue
             Item.height = 88;
             Item.damage = 500;
             Item.knockBack = 3.5f;
-            Item.useAnimation = Item.useTime = 22;
+            Item.useAnimation = Item.useTime = 24;
             Item.autoReuse = true;
             Item.DamageType = RogueDamageClass.Instance;
             Item.shootSpeed = 15f;
@@ -49,7 +49,7 @@ namespace CalamityMod.Items.Weapons.Rogue
         public override void AddRecipes()
         {
             CreateRecipe().
-                AddIngredient<NightsGaze>().
+                AddIngredient<Vega>().
                 AddIngredient<CosmiliteBar>(8).
                 AddIngredient<DarksunFragment>(8).
                 AddIngredient<SolarVeil>(12).

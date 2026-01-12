@@ -1,4 +1,5 @@
-﻿using CalamityMod.Items.Materials;
+﻿using CalamityMod.Buffs.Summon;
+using CalamityMod.Items.Materials;
 using CalamityMod.Projectiles.Summon;
 using CalamityMod.Rarities;
 using CalamityMod.Tiles.Furniture.CraftingStations;
@@ -17,17 +18,18 @@ namespace CalamityMod.Items.Weapons.Summon
         {
             Item.width = 58;
             Item.height = 60;
+            Item.damage = 190;
+            Item.DamageType = DamageClass.Summon;
+            Item.useAnimation = Item.useTime = 24;
+            Item.mana = 10;
+            Item.knockBack = 3f;
+
             Item.useStyle = ItemUseStyleID.Swing;
             Item.noMelee = true;
             Item.UseSound = SoundID.Item60;
-            Item.DamageType = DamageClass.Summon;
-            Item.mana = 10;
-            Item.damage = 232;
-            Item.knockBack = 3f;
             Item.autoReuse = true;
-            Item.useAnimation = Item.useTime = 10;
+            Item.buffType = ModContent.BuffType<EndoHydraBuff>();
             Item.shoot = ModContent.ProjectileType<EndoHydraBody>();
-            Item.shootSpeed = 10f;
 
             Item.value = CalamityGlobalItem.RarityDarkBlueBuyPrice;
             Item.rare = ModContent.RarityType<CosmicPurple>();
@@ -35,41 +37,38 @@ namespace CalamityMod.Items.Weapons.Summon
 
         public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)
         {
-            if (player.altFunctionUse != 2)
+            player.AddBuff(Item.buffType, 2);
+
+            bool bodyExists = false;
+            int bodyIndex = -1;
+            foreach (Projectile p in Main.ActiveProjectiles)
             {
-                bool bodyExists = false;
-                int bodyIndex = -1;
-                foreach (Projectile p in Main.ActiveProjectiles)
+                if (p.type == type && p.owner == player.whoAmI)
                 {
-                    if (p.type == type && p.owner == player.whoAmI)
-                    {
-                        bodyIndex = p.whoAmI;
-                        bodyExists = true;
-                        break;
-                    }
+                    bodyIndex = p.whoAmI;
+                    bodyExists = true;
+                    break;
                 }
-                if (bodyExists)
+            }
+            if (bodyExists)
+            {
+                var head = Projectile.NewProjectileDirect(source, player.Center, Main.rand.NextVector2Unit(), ModContent.ProjectileType<EndoHydraHead>(), damage, knockback, player.whoAmI, bodyIndex);
+                head.originalDamage = Item.damage;
+            }
+            else
+            {
+                bodyIndex = Projectile.NewProjectile(source, player.Center, Vector2.Zero, type, damage, knockback, player.whoAmI);
+                if (Main.projectile.IndexInRange(bodyIndex))
+                    Main.projectile[bodyIndex].originalDamage = Item.damage;
+                var head = Projectile.NewProjectileDirect(source, player.Center, Main.rand.NextVector2Unit(), ModContent.ProjectileType<EndoHydraHead>(), damage, knockback, player.whoAmI, bodyIndex);
+                head.originalDamage = Item.damage;
+                for (int i = 0; i < 72; i++)
                 {
-                    int p = Projectile.NewProjectile(source, player.Center, Main.rand.NextVector2Unit(), ModContent.ProjectileType<EndoHydraHead>(), damage, knockback, player.whoAmI, bodyIndex);
-                    if (Main.projectile.IndexInRange(p))
-                        Main.projectile[p].originalDamage = Item.damage;
-                }
-                else
-                {
-                    bodyIndex = Projectile.NewProjectile(source, player.Center, Vector2.Zero, type, damage, knockback, player.whoAmI);
-                    int head = Projectile.NewProjectile(source, player.Center, Main.rand.NextVector2Unit(), ModContent.ProjectileType<EndoHydraHead>(), damage, knockback, player.whoAmI, bodyIndex);
-                    if (Main.projectile.IndexInRange(bodyIndex))
-                        Main.projectile[bodyIndex].originalDamage = Item.damage;
-                    if (Main.projectile.IndexInRange(head))
-                        Main.projectile[head].originalDamage = Item.damage;
-                    for (int i = 0; i < 72; i++)
-                    {
-                        Dust dust = Dust.NewDustPerfect(Main.projectile[bodyIndex].Center, 113);
-                        dust.velocity = (MathHelper.TwoPi * Vector2.Dot((i / 72f * MathHelper.TwoPi).ToRotationVector2(), player.velocity.SafeNormalize(Vector2.UnitY).RotatedBy(i / 72f * -MathHelper.TwoPi))).ToRotationVector2();
-                        dust.velocity = dust.velocity.RotatedBy(i / 36f * MathHelper.TwoPi) * 8f;
-                        dust.noGravity = true;
-                        dust.scale = 1.9f;
-                    }
+                    Dust dust = Dust.NewDustPerfect(Main.projectile[bodyIndex].Center, DustID.MushroomSpray);
+                    dust.velocity = (MathHelper.TwoPi * Vector2.Dot((i / 72f * MathHelper.TwoPi).ToRotationVector2(), player.velocity.SafeNormalize(Vector2.UnitY).RotatedBy(i / 72f * -MathHelper.TwoPi))).ToRotationVector2();
+                    dust.velocity = dust.velocity.RotatedBy(i / 36f * MathHelper.TwoPi) * 8f;
+                    dust.noGravity = true;
+                    dust.scale = 1.9f;
                 }
             }
             return false;

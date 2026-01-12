@@ -1,43 +1,24 @@
 ﻿using CalamityMod.CalPlayer;
+using CalamityMod.Items.BaseItems;
 using CalamityMod.Rarities;
-using Microsoft.Xna.Framework;
 using Terraria;
-using Terraria.DataStructures;
-using Terraria.ID;
+using Terraria.GameContent.NetModules;
 using Terraria.ModLoader;
+using Terraria.Net;
 
 namespace CalamityMod.Items.Accessories.Vanity
 {
-    public class XyksBlessingOrange : ModItem, ILocalizedModType
+    public class XyksBlessingOrange : TransformationAccessory, ILocalizedModType
     {
         public new string LocalizationCategory => "Items.Accessories";
 
-        public override void Load()
-        {
-            if (!Main.dedServ)
-            {
-                EquipLoader.AddEquipTexture(Mod, "CalamityMod/Items/Accessories/Vanity/Xyk_Head2", EquipType.Head, this);
-                EquipLoader.AddEquipTexture(Mod, "CalamityMod/Items/Accessories/Vanity/Xyk_Body2", EquipType.Body, this);
-                EquipLoader.AddEquipTexture(Mod, "CalamityMod/Items/Accessories/Vanity/Xyk_Legs2", EquipType.Legs, this);
-                EquipLoader.AddEquipTexture(Mod, "CalamityMod/Projectiles/InvisibleProj", EquipType.Wings, this);
-            }
-        }
-
-        public override void SetStaticDefaults()
-        {
-            if (Main.dedServ)
-                return;
-
-            int equipSlotHead = EquipLoader.GetEquipSlot(Mod, Name, EquipType.Head);
-            ArmorIDs.Head.Sets.DrawHead[equipSlotHead] = true;
-
-            int equipSlotBody = EquipLoader.GetEquipSlot(Mod, Name, EquipType.Body);
-            ArmorIDs.Body.Sets.HidesTopSkin[equipSlotBody] = false;
-            ArmorIDs.Body.Sets.HidesArms[equipSlotBody] = true;
-
-            int equipSlotLegs = EquipLoader.GetEquipSlot(Mod, Name, EquipType.Legs);
-            ArmorIDs.Legs.Sets.HidesBottomSkin[equipSlotLegs] = true;
-        }
+        public override (EquipType, string, string)[] EquipSlots =>
+        [
+            (EquipType.Head, "Xyk2", null),
+            (EquipType.Body, "Xyk2", null),
+            (EquipType.Legs, "Xyk2", null),
+            (EquipType.Wings, null, null), //results in setting this equip slot to -1
+        ];
 
         public override void SetDefaults()
         {
@@ -56,7 +37,6 @@ namespace CalamityMod.Items.Accessories.Vanity
         }
         public override void UpdateVanity(Player player)
         {
-            player.GetModPlayer<XyksBlessingOrangePlayer>().vanityEquipped = true;
             CalamityPlayer modPlayer = player.Calamity();
             modPlayer.XykVisualsOrange = true;
         }
@@ -65,45 +45,25 @@ namespace CalamityMod.Items.Accessories.Vanity
         {
             if (!hideVisual)
             {
-                player.GetModPlayer<XyksBlessingOrangePlayer>().vanityEquipped = true;
                 CalamityPlayer modPlayer = player.Calamity();
                 modPlayer.XykVisualsOrange = true;
             }
         }
-    }
 
-    public class XyksBlessingOrangePlayer : ModPlayer
-    {
-        public bool vanityEquipped = false;
-
-        public override void ResetEffects()
+        // Also research the other variant
+        public override void OnResearched(bool fullyResearched)
         {
-            vanityEquipped = false;
-        }
-
-        public override void FrameEffects()
-        {
-            if (vanityEquipped)
+            if (fullyResearched)
             {
-                Player.legs = EquipLoader.GetEquipSlot(Mod, "XyksBlessingOrange", EquipType.Legs);
-                Player.body = EquipLoader.GetEquipSlot(Mod, "XyksBlessingOrange", EquipType.Body);
-                Player.head = EquipLoader.GetEquipSlot(Mod, "XyksBlessingOrange", EquipType.Head);
-                Player.wings = EquipLoader.GetEquipSlot(Mod, "XyksBlessingOrange", EquipType.Wings);
-            }
-        }
-
-        public override void ModifyDrawInfo(ref PlayerDrawSet drawInfo)
-        {
-            if (vanityEquipped)
-            {
-                drawInfo.drawPlayer.legs = EquipLoader.GetEquipSlot(Mod, "XyksBlessingOrange", EquipType.Legs);
-                drawInfo.legsGlowMask = -1;
-                drawInfo.legsOffset = Vector2.Zero;
-                drawInfo.drawPlayer.body = EquipLoader.GetEquipSlot(Mod, "XyksBlessingOrange", EquipType.Body);
-                drawInfo.bodyGlowMask = -1;
-                drawInfo.drawPlayer.head = EquipLoader.GetEquipSlot(Mod, "XyksBlessingOrange", EquipType.Head);
-                drawInfo.headGlowMask = -1;
-                drawInfo.helmetOffset = Vector2.Zero;
+                if (!Main.ServerSideCharacter)
+                {
+                    Main.LocalPlayerCreativeTracker.ItemSacrifices.RegisterItemSacrifice(ModContent.ItemType<XyksBlessingBlue>(), 1);
+                }
+                else
+                {
+                    NetPacket packet = NetCreativeUnlocksPlayerReportModule.SerializeSacrificeRequest(ModContent.ItemType<XyksBlessingBlue>(), 1);
+                    NetManager.Instance.SendToServerOrLoopback(packet);
+                }
             }
         }
     }

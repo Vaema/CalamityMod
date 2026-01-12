@@ -141,7 +141,7 @@ namespace CalamityMod.Projectiles.Melee
             if (whirlAttune)
                 attunement = AttunementSystem.FindOrNull(AttunementID.Whirlwind); //Putting holy check  at the end so it may override hallowed variants of biomes
 
-            //If the owner already had the attunement, break out of it (And unswap)
+            // If the owner already had the attunement, break out of it (And unswap)
             if (item.secondaryAttunement == attunement)
             {
                 SoundEngine.PlaySound(SoundID.DD2_LightningBugZap, Projectile.Center);
@@ -149,7 +149,6 @@ namespace CalamityMod.Projectiles.Melee
                 item.mainAttunement = attunement;
                 return;
             }
-            //Chunger
             var Sound = SoundEngine.PlaySound(CommonCalamitySounds.LightningSound with { Volume = CommonCalamitySounds.LightningSound.Volume * 0.4f }, Projectile.Center);
 
             Particle thunder = new ThunderBoltVFX(
@@ -161,9 +160,7 @@ namespace CalamityMod.Projectiles.Melee
                 15f);
             GeneralParticleHandler.SpawnParticle(thunder);
 
-            if (Main.LocalPlayer.Calamity().GeneralScreenShakePower < 5)
-                Main.LocalPlayer.Calamity().GeneralScreenShakePower = 5;
-
+            Main.LocalPlayer.SetScreenshake(5f);
             item.mainAttunement = attunement;
         }
 

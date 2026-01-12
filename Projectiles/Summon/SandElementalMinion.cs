@@ -41,7 +41,7 @@ namespace CalamityMod.Projectiles.Summon
         {
             Player player = Main.player[Projectile.owner];
             CalamityPlayer modPlayer = player.Calamity();
-            if (!modPlayer.sandWaifu && !modPlayer.allWaifus && !modPlayer.sandWaifuVanity && !modPlayer.allWaifusVanity)
+            if (!modPlayer.sandElemental && !modPlayer.allElementals && !modPlayer.sandElementalVanity && !modPlayer.allElementalsVanity)
             {
                 Projectile.active = false;
                 return;
@@ -51,9 +51,9 @@ namespace CalamityMod.Projectiles.Summon
             {
                 if (player.dead)
                 {
-                    modPlayer.sWaifu = false;
+                    modPlayer.sandEleBuff = false;
                 }
-                if (modPlayer.sWaifu)
+                if (modPlayer.sandEleBuff)
                 {
                     Projectile.timeLeft = 2;
                 }
@@ -68,7 +68,7 @@ namespace CalamityMod.Projectiles.Summon
                     Main.dust[dust].scale *= 1.15f;
                 }
             }
-            bool passive = modPlayer.sandWaifuVanity || modPlayer.allWaifusVanity;
+            bool passive = modPlayer.sandElementalVanity || modPlayer.allElementalsVanity;
             if (Math.Abs(Projectile.velocity.X) > 0.2f)
             {
                 Projectile.spriteDirection = -Projectile.direction;

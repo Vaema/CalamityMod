@@ -109,14 +109,14 @@ namespace CalamityMod.Projectiles.Magic
 
             for (int i = 0; i < 45; i++)
             {
-                Dust ectoplasm = Dust.NewDustPerfect(Projectile.Center + Main.rand.NextVector2Circular(100f, 100f) * (float)Math.Pow(BurstIntensity, 2D), 264);
+                Dust ectoplasm = Dust.NewDustPerfect(Projectile.Center + Main.rand.NextVector2Circular(100f, 100f) * (float)Math.Pow(BurstIntensity, 2D), DustID.PortalBoltTrail);
                 ectoplasm.velocity = Main.rand.NextVector2Circular(2f, 2f);
                 ectoplasm.color = Projectile.GetAlpha(Color.White);
                 ectoplasm.scale = MathHelper.Lerp(1.2f, 1.9f, BurstIntensity);
                 ectoplasm.noGravity = true;
                 ectoplasm.noLight = true;
 
-                ectoplasm = Dust.NewDustPerfect(Projectile.Center, 264);
+                ectoplasm = Dust.NewDustPerfect(Projectile.Center, DustID.PortalBoltTrail);
                 ectoplasm.velocity = (MathHelper.TwoPi * i / 45f).ToRotationVector2() * 6f;
                 ectoplasm.color = Projectile.GetAlpha(Color.White);
                 ectoplasm.scale = MathHelper.Lerp(1.2f, 1.9f, BurstIntensity);

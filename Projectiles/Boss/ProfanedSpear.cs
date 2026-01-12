@@ -1,6 +1,4 @@
-﻿using System;
-using CalamityMod.Buffs.DamageOverTime;
-using CalamityMod.NPCs;
+﻿using CalamityMod.Buffs.DamageOverTime;
 using CalamityMod.NPCs.Providence;
 using CalamityMod.Particles;
 using Microsoft.Xna.Framework;

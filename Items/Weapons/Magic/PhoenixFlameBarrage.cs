@@ -1,4 +1,5 @@
 ﻿using System;
+using CalamityMod.Items.Weapons.Summon;
 using CalamityMod.Projectiles.Magic;
 using CalamityMod.Rarities;
 using Microsoft.Xna.Framework;

@@ -3,6 +3,7 @@ using CalamityMod.Items.Placeables.Ores;
 using CalamityMod.Rarities;
 using Terraria;
 using Terraria.ID;
+using Terraria.Localization;
 using Terraria.ModLoader;
 
 namespace CalamityMod.Items.Armor.Prismatic
@@ -11,9 +12,16 @@ namespace CalamityMod.Items.Armor.Prismatic
     public class PrismaticRegalia : ModItem, ILocalizedModType
     {
         public new string LocalizationCategory => "Items.Armor.PostMoonLord";
+
+        public static float MagicDamageBoost = 0.15f;
+        public static int MagicCritBoost = 15; // NOTE: Tooltip shares this number with damage % as they're equal
+        public static float NonMagicDamageDecrease = 0.2f;
+        public static int RocketChanceDenominator = 20;
+        public static float RocketDamageRatio = 0.25f;
+        public override LocalizedText Tooltip => base.Tooltip.WithFormatArgs(MagicDamageBoost.ToPercent(), NonMagicDamageDecrease.ToPercent(), RocketChanceDenominator.GetChanceFromDenominator());
+
         public override void SetStaticDefaults()
         {
-
             if (Main.dedServ)
                 return;
 
@@ -37,12 +45,10 @@ namespace CalamityMod.Items.Armor.Prismatic
         public override void UpdateEquip(Player player)
         {
             player.Calamity().prismaticRegalia = true;
-            player.statLifeMax2 += 20;
-            player.statManaMax2 += 40;
-            player.GetDamage<MagicDamageClass>() += 0.12f;
-            player.GetCritChance<MagicDamageClass>() += 15;
-            player.GetDamage<GenericDamageClass>() -= 0.2f;
-            player.GetDamage<MagicDamageClass>() += 0.2f;
+            player.GetDamage<MagicDamageClass>() += MagicDamageBoost;
+            player.GetCritChance<MagicDamageClass>() += MagicCritBoost;
+            player.GetDamage<GenericDamageClass>() -= NonMagicDamageDecrease;
+            player.GetDamage<MagicDamageClass>() += NonMagicDamageDecrease;
         }
 
         public override void AddRecipes()

@@ -31,7 +31,6 @@ namespace CalamityMod.Projectiles.Ranged
             Projectile.extraUpdates = 1;
             Projectile.Opacity = 0f;
             Projectile.DamageType = DamageClass.Ranged;
-            Projectile.Calamity().pointBlankShotDuration = CalamityGlobalProjectile.DefaultPointBlankDuration;
         }
 
         public override void AI()
@@ -54,13 +53,13 @@ namespace CalamityMod.Projectiles.Ranged
             return true;
         }
 
-        internal Color ColorFunction(float completionRatio)
+        internal Color ColorFunction(float completionRatio, Vector2 vertexPos)
         {
             float fadeOpacity = Utils.GetLerpValue(0.94f, 0.54f, completionRatio, true) * Projectile.Opacity;
             return Color.Lerp(Color.Cyan, Color.White, 0.4f) * fadeOpacity;
         }
 
-        internal float WidthFunction(float completionRatio)
+        internal float WidthFunction(float completionRatio, Vector2 vertexPos)
         {
             float expansionCompletion = 1f - (float)Math.Pow(1f - Utils.GetLerpValue(0f, 0.3f, completionRatio, true), 2D);
             return MathHelper.Lerp(0f, 12f * Projectile.Opacity, expansionCompletion);
@@ -78,7 +77,7 @@ namespace CalamityMod.Projectiles.Ranged
             }
             for (int i = 0; i < 12; i++)
             {
-                Dust blood = Dust.NewDustPerfect(Projectile.Center, 5);
+                Dust blood = Dust.NewDustPerfect(Projectile.Center, DustID.Blood);
                 blood.velocity = Main.rand.NextVector2Circular(6f, 6f);
                 blood.scale *= Main.rand.NextFloat(0.7f, 1.3f);
                 blood.noGravity = true;
@@ -99,7 +98,7 @@ namespace CalamityMod.Projectiles.Ranged
             SpriteEffects direction = Projectile.spriteDirection == 1 ? SpriteEffects.None : SpriteEffects.FlipHorizontally;
 
             GameShaders.Misc["CalamityMod:TrailStreak"].SetShaderTexture(ModContent.Request<Texture2D>("CalamityMod/ExtraTextures/Trails/ScarletDevilStreak"));
-            PrimitiveRenderer.RenderTrail(Projectile.oldPos, new(WidthFunction, ColorFunction, (_) => Projectile.Size * 0.5f, shader: GameShaders.Misc["CalamityMod:TrailStreak"]), 60);
+            PrimitiveRenderer.RenderTrail(Projectile.oldPos, new(WidthFunction, ColorFunction, (_,_) => Projectile.Size * 0.5f, shader: GameShaders.Misc["CalamityMod:TrailStreak"]), 60);
             Main.EntitySpriteDraw(texture, drawPosition, frame, Projectile.GetAlpha(lightColor), Projectile.rotation, origin, Projectile.scale, direction, 0);
             return false;
         }

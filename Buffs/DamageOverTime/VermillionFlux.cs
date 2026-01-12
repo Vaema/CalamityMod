@@ -1,4 +1,5 @@
-﻿using CalamityMod.Particles;
+﻿using CalamityMod.DataStructures;
+using CalamityMod.Particles;
 using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.DataStructures;
@@ -9,12 +10,18 @@ namespace CalamityMod.Buffs.DamageOverTime
 {
     public class VermillionFlux : ModBuff
     {
+        public static DebuffData debuffData = new DebuffData(DebuffData.DebuffBehavior.Electric)
+        {
+            EnemyLostRegen = 100,
+            ElectricDebuffScaling = 1
+        };
         public override void SetStaticDefaults()
         {
             Main.debuff[Type] = true;
             Main.pvpBuff[Type] = true;
             Main.buffNoSave[Type] = true;
             BuffID.Sets.LongerExpertDebuff[Type] = true;
+            BuffDatasets.DebuffDataset[Type] = debuffData;
         }
 
         public override void Update(Player player, ref int buffIndex)
@@ -24,10 +31,7 @@ namespace CalamityMod.Buffs.DamageOverTime
 
         public override void Update(NPC npc, ref int buffIndex)
         {
-            if (npc.Calamity().vermillionFlux < npc.buffTime[buffIndex])
-                npc.Calamity().vermillionFlux = npc.buffTime[buffIndex];
-            npc.DelBuff(buffIndex);
-            buffIndex--;
+            npc.Calamity().vermillionFlux = true;
         }
 
         internal static void DrawEffects(PlayerDrawSet drawInfo)
@@ -57,7 +61,7 @@ namespace CalamityMod.Buffs.DamageOverTime
                 }
 
                 if (Main.rand.NextBool())
-                    Dust.NewDustPerfect(modPlayer.RandomDebuffVisualSpot, 219, new Vector2(4f, 4f).RotatedByRandom(100) * Main.rand.NextFloat(0.3f, 0.7f), 0, default, Main.rand.NextFloat(0.2f, 0.6f));
+                    Dust.NewDustPerfect(modPlayer.RandomDebuffVisualSpot, DustID.Fireworks, new Vector2(4f, 4f).RotatedByRandom(100) * Main.rand.NextFloat(0.3f, 0.7f), 0, default, Main.rand.NextFloat(0.2f, 0.6f));
             }
         }
 
@@ -83,7 +87,7 @@ namespace CalamityMod.Buffs.DamageOverTime
             }
 
             if (Main.rand.NextBool(3))
-                Dust.NewDustPerfect(npcSize, 219, new Vector2(4f, 4f).RotatedByRandom(100) * Main.rand.NextFloat(0.3f, 0.7f), 0, default, Main.rand.NextFloat(0.2f, 0.6f));
+                Dust.NewDustPerfect(npcSize, DustID.Fireworks, new Vector2(4f, 4f).RotatedByRandom(100) * Main.rand.NextFloat(0.3f, 0.7f), 0, default, Main.rand.NextFloat(0.2f, 0.6f));
 
             Lighting.AddLight(npc.Center, Color.Red.ToVector3());
         }

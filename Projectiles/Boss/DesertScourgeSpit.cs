@@ -1,7 +1,5 @@
-﻿using System;
-using System.IO;
+﻿using System.IO;
 using CalamityMod.Dusts;
-using CalamityMod.World;
 using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.Audio;
@@ -25,12 +23,10 @@ namespace CalamityMod.Projectiles.Boss
         {
             Projectile.width = 16;
             Projectile.height = 16;
-            if (CalamityWorld.LegendaryMode)
-                Projectile.scale = 2f;
             Projectile.hostile = true;
             Projectile.tileCollide = false;
             Projectile.penetrate = 1;
-            Projectile.timeLeft = CalamityWorld.LegendaryMode ? 900 : 600;
+            Projectile.timeLeft = 600;
             Projectile.aiStyle = ProjAIStyleID.Arrow;
             Projectile.alpha = 255;
         }

@@ -1,6 +1,5 @@
 ﻿using System;
 using System.IO;
-using CalamityMod.Buffs.DamageOverTime;
 using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.Audio;
@@ -66,14 +65,6 @@ namespace CalamityMod.Projectiles.Boss
         public override Color? GetAlpha(Color lightColor)
         {
             return new Color(100, 250, 250, Projectile.alpha);
-        }
-
-        public override void OnHitPlayer(Player target, Player.HurtInfo info)
-        {
-            if (info.Damage <= 0)
-                return;
-
-            target.AddBuff(ModContent.BuffType<Voidfrost>(), 80);
         }
     }
 }

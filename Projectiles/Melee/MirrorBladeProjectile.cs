@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using CalamityMod.Buffs.DamageOverTime;
 using CalamityMod.Items.Weapons.Melee;
 using CalamityMod.Projectiles.BaseProjectiles;
+using CalamityMod.Projectiles.Boss;
 using CalamityMod.Sounds;
 using Microsoft.Xna.Framework;
 using Terraria;
@@ -25,7 +26,7 @@ namespace CalamityMod.Projectiles.Melee
         public override bool drawSwordTrail => false;
         public override Color[] trailColors => new Color[] { Color.Red, Color.MediumPurple, Color.Purple }; public override int StartupTime { get; set; }
         public override int CooldownTime { get; set; }
-        public override bool AlternateSwings => true;
+        public override bool AlternateSwings => false;
         public bool SpawnShards = true;
 
         public override bool useMeleeSpeed => true;
@@ -41,7 +42,7 @@ namespace CalamityMod.Projectiles.Melee
             Projectile.extraUpdates = 3;
         }
 
-        public override void Spawn(IEntitySource source)
+        public override void Spawn()
         {
             var player = Main.player[Projectile.owner];
             var modplayer = player.GetModPlayer<BaseSwordHoldoutPlayer>();
@@ -71,11 +72,20 @@ namespace CalamityMod.Projectiles.Melee
             if (!inStartup && !inCooldown)
                 foreach (var proj in Main.ActiveProjectiles)
                 {
-                    if (proj.Hitbox.Intersects(Projectile.Hitbox) && proj.hostile && !reflectedProjectiles.Contains(proj.whoAmI))
+                    if (proj.type == ModContent.ProjectileType<DoGLaserWalls>() && proj.ModProjectile<DoGLaserWalls>().canDamage && !reflectedProjectiles.Contains(proj.whoAmI))
+                    {
+                        reflectedProjectiles.Add(proj.whoAmI);
+                        for (var i = 0; i < 3; i++)
+                        {
+                            Projectile.NewProjectile(Projectile.GetSource_FromThis(), proj.Center, proj.velocity * -1, ModContent.ProjectileType<MirrorBlast>(), (int)(Projectile.damage * 0.5f), Projectile.knockBack, Projectile.owner);
+                            SoundEngine.PlaySound(SoundID.DD2_WitherBeastCrystalImpact, Projectile.Center);
+                        }
+                    } 
+                    else if (proj.Hitbox.Intersects(Projectile.Hitbox) && proj.hostile && !reflectedProjectiles.Contains(proj.whoAmI))
                     {
                         reflectedProjectiles.Add(proj.whoAmI);
                         Projectile.NewProjectile(Projectile.GetSource_FromThis(), proj.Center, proj.velocity * -1, ModContent.ProjectileType<MirrorBlast>(), (int)(Projectile.damage * 0.5f), Projectile.knockBack, Projectile.owner);
-                        SoundEngine.PlaySound(SoundID.DD2_WitherBeastCrystalImpact,Projectile.Center);
+                        SoundEngine.PlaySound(SoundID.DD2_WitherBeastCrystalImpact, Projectile.Center);
                     }
                 }
                 
@@ -93,7 +103,7 @@ namespace CalamityMod.Projectiles.Melee
 
         public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
         {
-            target.AddBuff(ModContent.BuffType<Voidfrost>(), 300);
+            target.AddBuff(ModContent.BuffType<Nightwither>(), 300);
 
             //Ensures only two shards spawn on enemy hits. If you're wondering why this is needed, turn this off and fight Storm Weaver
             if (SpawnShards)
@@ -116,7 +126,7 @@ namespace CalamityMod.Projectiles.Melee
             SoundEngine.PlaySound(SoundID.DD2_WitherBeastCrystalImpact,Projectile.Center);
         }
         public override float trailOffset => 28;
-        public override float trailWidth(float completion)
+        public override float trailWidth(float completion, Vector2 vertexPos)
         {
             return 60;
         }

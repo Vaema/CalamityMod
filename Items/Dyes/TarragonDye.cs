@@ -1,13 +1,10 @@
-﻿using CalamityMod.Items.Materials;
-using CalamityMod.Items.Placeables.Ores;
-using CalamityMod.Items.TreasureBags.MiscGrabBags;
+﻿using CalamityMod.Items.Placeables.Ores;
 using CalamityMod.Rarities;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria;
 using Terraria.Graphics.Shaders;
 using Terraria.ID;
-using Terraria.ModLoader;
 using static Terraria.ModLoader.ModContent;
 
 namespace CalamityMod.Items.Dyes
@@ -16,6 +13,10 @@ namespace CalamityMod.Items.Dyes
     {
         public override ArmorShaderData ShaderDataToBind => new ArmorShaderData(Mod.Assets.Request<Effect>("Effects/Dyes/TarragonDyeShader"), "DyePass").
             UseColor(new Color(20, 117, 70)).UseSecondaryColor(new Color(28, 255, 55)).UseImage(Request<Texture2D>("CalamityMod/ExtraTextures/GreyscaleGradients/Bark"));
+        public override void SafeSetStaticDefaults()
+        {
+            Item.ResearchUnlockCount = 3;
+        }
 
         public override void SafeSetDefaults()
         {

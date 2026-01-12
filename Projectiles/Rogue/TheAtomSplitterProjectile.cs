@@ -93,7 +93,7 @@ namespace CalamityMod.Projectiles.Rogue
 
             for (float direction = -1f; direction <= 1f; direction += 2f)
             {
-                Dust prismaticEnergy = Dust.NewDustPerfect(tipPosition, 267);
+                Dust prismaticEnergy = Dust.NewDustPerfect(tipPosition, DustID.RainbowMk2);
                 prismaticEnergy.velocity = currentDirection.RotatedBy(direction * dustVelocityArcOffset) * -7f + Projectile.velocity;
                 prismaticEnergy.scale = 1.2f;
                 prismaticEnergy.color = dustColor;

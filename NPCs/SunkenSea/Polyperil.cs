@@ -1,4 +1,5 @@
 ﻿using CalamityMod.Enums;
+using CalamityMod.Items.Placeables.Banners;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using ReLogic.Content;
@@ -67,17 +68,14 @@ namespace CalamityMod.NPCs.SunkenSea
 
             NPC.HitSound = SoundID.NPCHit1;
             NPC.DeathSound = SoundID.NPCDeath1;
-            NPC.value = Item.buyPrice(0, 0, 5, 0);
-            // Banner = NPC.type;
-            // BannerItem = ModContent.ItemType<PolyperilBanner>();
+            NPC.value = Item.buyPrice(silver: 5);
+            Banner = NPC.type;
+            BannerItem = ModContent.ItemType<PolyperilBanner>();
 
             NPC.Calamity().VulnerableToHeat = false;
             NPC.Calamity().VulnerableToSickness = false;
             NPC.Calamity().VulnerableToElectricity = true;
             NPC.Calamity().VulnerableToWater = false;
-            // Scale stats in Expert and Master
-            CalamityGlobalNPC.AdjustExpertModeStatScaling(NPC);
-            CalamityGlobalNPC.AdjustMasterModeStatScaling(NPC);
         }
 
         public override void SendExtraAI(BinaryWriter writer)
@@ -143,6 +141,16 @@ namespace CalamityMod.NPCs.SunkenSea
                 {
                     Dust.NewDust(NPC.position, NPC.width, NPC.height, DustID.Coralstone, hit.HitDirection, -1f, 0, default, 1f);
                 }
+            }
+            if (Color < 3)
+            {
+                string goreName = Color switch
+                {
+                    1 => "PolyperilBlue",
+                    2 => "PolyperilGreen",
+                    _ => "PolyperilPink"
+                };
+                CalamityUtils.SpawnGores(NPC, goreName, 1);
             }
         }
 

@@ -1,7 +1,6 @@
-﻿using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Graphics;
+﻿using CalamityMod.Dusts;
+using Microsoft.Xna.Framework;
 using Terraria;
-using Terraria.Audio;
 using Terraria.ID;
 using Terraria.ModLoader;
 namespace CalamityMod.Projectiles.Ranged
@@ -24,10 +23,9 @@ namespace CalamityMod.Projectiles.Ranged
             Projectile.penetrate = 2;
             Projectile.timeLeft = 300;
             Projectile.DamageType = DamageClass.Ranged;
-            Projectile.Calamity().pointBlankShotDuration = CalamityGlobalProjectile.DefaultPointBlankDuration;
             Projectile.extraUpdates = 2;
             Projectile.usesLocalNPCImmunity = true;
-            Projectile.localNPCHitCooldown = 50;
+            Projectile.localNPCHitCooldown = -1;
             Projectile.tileCollide = false; // Custom tile collision since the hitbox is large
         }
 
@@ -37,12 +35,19 @@ namespace CalamityMod.Projectiles.Ranged
                 Projectile.Kill();
 
             Projectile.rotation = Projectile.velocity.ToRotation() + MathHelper.PiOver2;
-            Dust.NewDustPerfect(Projectile.Center, 162);
+            if (Main.rand.NextBool())
+            {
+                Dust dust = Dust.NewDustPerfect(Projectile.Center, ModContent.DustType<SquashDust>(), Vector2.One.RotatedByRandom(MathHelper.TwoPi) * 0.4f, 0, default, Main.rand.NextFloat(0.6f, 0.8f));
+                dust.noGravity = true;
+                dust.color = Main.rand.NextBool(3) ? Color.Orange : Color.OrangeRed;
+                dust.fadeIn = -0.5f;
+            }
+            
         }
 
         public override bool PreDraw(ref Color lightColor)
         {
-            CalamityUtils.DrawAfterimagesCentered(Projectile, ProjectileID.Sets.TrailingMode[Type], lightColor, 1);
+            CalamityUtils.DrawAfterimagesCentered(Projectile, ProjectileID.Sets.TrailingMode[Type], Color.Orange with { A = 0 }, 1);
             return false;
         }
         public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
@@ -53,8 +58,10 @@ namespace CalamityMod.Projectiles.Ranged
         {
             for (int i = 0; i <= 8; i++)
             {
-                Dust dust = Dust.NewDustPerfect(Projectile.position, 162, Projectile.velocity.RotatedByRandom(MathHelper.ToRadians(30f)) / 2, 0, default, Main.rand.NextFloat(1.6f, 2.3f));
-                dust.noGravity = false;
+                Dust dust = Dust.NewDustPerfect(Projectile.Center, ModContent.DustType<SquashDust>(), Projectile.velocity.RotatedByRandom(MathHelper.ToRadians(30f)) * Main.rand.NextFloat(0.6f, 1.3f), 0, default, Main.rand.NextFloat(1.6f, 2.3f));
+                dust.noGravity = true;
+                dust.color = Main.rand.NextBool(3) ? Color.Orange : Color.OrangeRed;
+                dust.fadeIn = 1.5f;
             }
         }
         public override bool? CanDamage() => base.CanDamage();

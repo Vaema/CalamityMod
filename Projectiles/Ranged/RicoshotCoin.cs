@@ -1,4 +1,5 @@
 ﻿using System;
+using CalamityMod.Items;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using ReLogic.Content;
@@ -243,7 +244,8 @@ namespace CalamityMod.Projectiles.Ranged
                     _ => ItemID.CopperCoin,
                 };
                 int coin = Item.NewItem(Projectile.GetSource_DropAsItem(), Projectile.Center, Vector2.One, itemID, noBroadcast: false);
-                Main.item[coin].Calamity().grabRangeMultiplier = UsedCoinGrabRangeMultiplier;
+                if (Main.item[coin].TryGetGlobalItem<GrabRangeGlobalItem>(out var grabRangeItem))
+                    grabRangeItem.grabRangeMultiplier = UsedCoinGrabRangeMultiplier;
 
                 // Sync this dropped coin in multiplayer.
                 if (Main.netMode == NetmodeID.MultiplayerClient)

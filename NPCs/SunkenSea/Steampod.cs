@@ -1,7 +1,4 @@
-﻿using CalamityMod.BiomeManagers;
-using CalamityMod.Items.Critters;
-using CalamityMod.Items.Placeables.Banners;
-using CalamityMod.Tiles.SunkenSea.Ambient;
+﻿using CalamityMod.Items.Placeables.Banners;
 using Microsoft.Xna.Framework;
 using System.IO;
 using Terraria;
@@ -10,7 +7,6 @@ using Terraria.GameContent.Bestiary;
 using Terraria.ModLoader;
 using Terraria.ModLoader.Utilities;
 using Terraria.Audio;
-using Terraria.DataStructures;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria.GameContent;
 using ReLogic.Content;
@@ -18,7 +14,6 @@ using CalamityMod.Enums;
 using System.Collections.Generic;
 using System;
 using CalamityMod.Particles;
-using Microsoft.CodeAnalysis.CSharp.Syntax;
 using CalamityMod.Items.Weapons.Ranged;
 
 namespace CalamityMod.NPCs.SunkenSea
@@ -79,22 +74,18 @@ namespace CalamityMod.NPCs.SunkenSea
             NPC.defense = 10;
             NPC.lifeMax = 200;
             NPC.knockBackResist = 0f;
-            NPC.value = Item.buyPrice(0, 0, 20, 0);
+            NPC.value = Item.buyPrice(silver: 20);
             NPC.lavaImmune = true;
             NPC.noGravity = false;
             NPC.noTileCollide = false;
             NPC.HitSound = SoundID.NPCHit38;
             NPC.DeathSound = SoundID.NPCDeath1;
             NPC.chaseable = false;
-            //Banner = NPC.type;
-            //BannerItem = ModContent.ItemType<SteampodBanner>();
+            Banner = NPC.type;
+            BannerItem = ModContent.ItemType<SteampodBanner>();
             NPC.Calamity().VulnerableToHeat = false;
             NPC.Calamity().VulnerableToWater = true;
             NPC.Calamity().VulnerableToCold = true;
-
-            // Scale stats in Expert and Master
-            CalamityGlobalNPC.AdjustExpertModeStatScaling(NPC);
-            CalamityGlobalNPC.AdjustMasterModeStatScaling(NPC);
         }
 
         public override void ReceiveExtraAI(BinaryReader reader)
@@ -483,7 +474,7 @@ namespace CalamityMod.NPCs.SunkenSea
         {
             if (hurtInfo.Damage <= 0)
                 return;
-            target.AddBuff(BuffID.OnFire3, 120);
+            target.AddBuff(BuffID.OnFire, 120);
         }
 
         public override void HitEffect(NPC.HitInfo hit)
@@ -492,6 +483,7 @@ namespace CalamityMod.NPCs.SunkenSea
             {
                 Dust.NewDust(NPC.position, NPC.width, NPC.height, DustID.Lava, hit.HitDirection, -1f, 0, default, 1f);
             }
+            CalamityUtils.SpawnGores(NPC, "Steampod", 3);
         }
 
         public override bool PreDraw(SpriteBatch spriteBatch, Vector2 screenPos, Color drawColor)

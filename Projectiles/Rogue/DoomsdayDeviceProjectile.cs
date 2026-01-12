@@ -33,8 +33,8 @@ namespace CalamityMod.Projectiles.Rogue
         public int maxStealthHits = 5; // How many bounces the stealth strike has. This does not include the inital and final hit, so be sure to take those into account if you adjust this.
 
         public Color mainColor = Color.White;
-        public Color c1 = new Color(121, 240, 17);
-        public Color c2 = new Color(0, 208, 240);
+        public Color c1 = Color.Turquoise;
+        public Color c2 = Color.Orchid;
 
         public NPC lastHitTarget;
         public override void SetDefaults()
@@ -314,7 +314,7 @@ namespace CalamityMod.Projectiles.Rogue
                     Particle pulse2 = new CustomSpark(Projectile.Center, -Projectile.velocity.SafeNormalize(Vector2.UnitX) * 2.5f, "CalamityMod/Particles/HollowCircleSoftEdge", false, 14, 0.175f * finalHitMult, c2 * 0.7f, new Vector2(2.5f, 2f), extraRotation: MathHelper.ToRadians(90), shrinkSpeed: 0.9f);
                     GeneralParticleHandler.SpawnParticle(pulse2);
 
-                    Owner.Calamity().GeneralScreenShakePower = 3;
+                    Owner.SetScreenshake(3f);
                 }
                 else // If there's no targets other than the currently hit one or the projectile is out of bounces, deal the final stronger blow.
                 {
@@ -349,7 +349,7 @@ namespace CalamityMod.Projectiles.Rogue
                     giveStealth = false;
                 }
 
-                Owner.Calamity().GeneralScreenShakePower = charge * (hasReachedFullCharge ? 1.2f : 0.8f) * finalHitMult;
+                Owner.SetScreenshake(charge * (hasReachedFullCharge ? 1.2f : 0.8f) * finalHitMult);
 
                 for (int i = 0; i <= 12 * finalHitMult; i++)
                 {

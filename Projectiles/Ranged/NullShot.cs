@@ -1,9 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
-using CalamityMod.CalPlayer;
 using CalamityMod.Dusts;
 using CalamityMod.Items.Weapons.Ranged;
-using CalamityMod.NPCs;
 using CalamityMod.NPCs.NormalNPCs;
 using CalamityMod.Particles;
 using Microsoft.Xna.Framework;
@@ -179,27 +177,34 @@ namespace CalamityMod.Projectiles.Ranged
                     if (Utils.Distance(Main.player[Projectile.owner].Center, target.Center) > 1000)
                         target.velocity = Utils.DirectionTo(target.Center, Main.player[Projectile.owner].Center);
 
-                    int nullCorrupt = Main.rand.Next(4);
-                    switch (nullCorrupt)
+                    if (Main.rand.NextBool(4))
                     {
-                        case 0:
-                            target.ai[0] = Main.rand.Next(0, 100 + 1);
-                            target.localAI[0] = Main.rand.Next(0, 100 + 1);
-                            break;
-                        case 1:
-                            target.ai[1] = Main.rand.Next(0, 100 + 1);
-                            target.localAI[1] = Main.rand.Next(0, 100 + 1);
-                            break;
-                        case 2:
-                            target.ai[2] = Main.rand.Next(0, 100 + 1);
-                            target.localAI[2] = Main.rand.Next(0, 100 + 1);
-                            break;
-                        case 3:
-                            target.ai[3] = Main.rand.Next(0, 100 + 1);
-                            target.localAI[3] = Main.rand.Next(0, 100 + 1);
-                            break;
-                        default:
-                            break;
+                        target.aiStyle = Main.rand.Next(2, 140 + 1);
+                    }
+                    else
+                    {
+                        int nullCorrupt = Main.rand.Next(4);
+                        switch (nullCorrupt)
+                        {
+                            case 0:
+                                target.ai[0] = Main.rand.Next(0, 100 + 1);
+                                target.localAI[0] = Main.rand.Next(0, 100 + 1);
+                                break;
+                            case 1:
+                                target.ai[1] = Main.rand.Next(0, 100 + 1);
+                                target.localAI[1] = Main.rand.Next(0, 100 + 1);
+                                break;
+                            case 2:
+                                target.ai[2] = Main.rand.Next(0, 100 + 1);
+                                target.localAI[2] = Main.rand.Next(0, 100 + 1);
+                                break;
+                            case 3:
+                                target.ai[3] = Main.rand.Next(0, 100 + 1);
+                                target.localAI[3] = Main.rand.Next(0, 100 + 1);
+                                break;
+                            default:
+                                break;
+                        }
                     }
                 }
                 else

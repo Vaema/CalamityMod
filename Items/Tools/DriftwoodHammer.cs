@@ -1,4 +1,4 @@
-﻿using CalamityMod.Items.Placeables.SunkenSea;
+﻿using CalamityMod.Items.Placeables.FurnitureDriftwood;
 using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.ID;
@@ -47,7 +47,7 @@ namespace CalamityMod.Items.Tools
             bool surface = player.Center.Y < Main.worldSurface * 16.0;
             bool GetEffects = ((Main.raining && surface) || player.dripping || (player.wet && !player.lavaWet && !player.honeyWet));
             if (GetEffects)
-                Dust.NewDust(new Vector2(hitbox.X, hitbox.Y), hitbox.Width, hitbox.Height, 160);
+                Dust.NewDust(new Vector2(hitbox.X, hitbox.Y), hitbox.Width, hitbox.Height, DustID.MagnetSphere);
         }
 
         public override void AddRecipes()

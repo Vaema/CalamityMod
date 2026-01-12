@@ -1,9 +1,7 @@
 ﻿using System;
 using CalamityMod.NPCs.Cryogen;
 using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Graphics;
 using Terraria;
-using Terraria.Audio;
 using Terraria.ID;
 using Terraria.ModLoader;
 
@@ -92,7 +90,6 @@ namespace CalamityMod.Projectiles.Boss
                 return;
 
             target.AddBuff(BuffID.Frostburn, 120, true);
-            target.AddBuff(BuffID.Chilled, 60, true);
         }
 
         public override bool PreDraw(ref Color lightColor)

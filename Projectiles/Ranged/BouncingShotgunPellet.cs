@@ -21,7 +21,6 @@ namespace CalamityMod.Projectiles.Ranged
             Projectile.aiStyle = ProjAIStyleID.Arrow;
             AIType = ProjectileID.BulletHighVelocity;
             Projectile.timeLeft = 180;
-            Projectile.Calamity().pointBlankShotDuration = CalamityGlobalProjectile.DefaultPointBlankDuration;
         }
 
         public override bool OnTileCollide(Vector2 oldVelocity)
@@ -51,7 +50,7 @@ namespace CalamityMod.Projectiles.Ranged
                 // If the index is not default, smart bounce in the direction of that enemy.
                 if (index != -1)
                 {
-                    Projectile.velocity = CalamityUtils.CalculatePredictiveAimToTargetMaxUpdates(Projectile.Center, Main.npc[index], owner.ActiveItem().shootSpeed, 3);
+                    Projectile.velocity = CalamityUtils.CalculatePredictiveAimToTargetMaxUpdates(Projectile.Center, Main.npc[index], owner.HeldItem.shootSpeed, 3);
                 }
                 return false;
             }

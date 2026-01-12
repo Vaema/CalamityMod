@@ -1,4 +1,4 @@
-﻿using CalamityMod.Particles;
+﻿using CalamityMod.DataStructures;
 using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.DataStructures;
@@ -9,12 +9,18 @@ namespace CalamityMod.Buffs.DamageOverTime
 {
     public class BrainRot : ModBuff
     {
+        public static DebuffData debuffData = new DebuffData()
+        {
+            EnemyLostRegen = 40,
+            SicknessDebuffScaling = 1
+        };
         public override void SetStaticDefaults()
         {
             Main.debuff[Type] = true;
             Main.pvpBuff[Type] = true;
             Main.buffNoSave[Type] = true;
             BuffID.Sets.LongerExpertDebuff[Type] = true;
+            BuffDatasets.DebuffDataset[Type] = debuffData;
         }
 
         public override void Update(Player player, ref int buffIndex)
@@ -24,10 +30,7 @@ namespace CalamityMod.Buffs.DamageOverTime
 
         public override void Update(NPC npc, ref int buffIndex)
         {
-            if (npc.Calamity().brainRot < npc.buffTime[buffIndex])
-                npc.Calamity().brainRot = npc.buffTime[buffIndex];
-            npc.DelBuff(buffIndex);
-            buffIndex--;
+            npc.Calamity().brainRot = true;
         }
 
         internal static void DrawEffects(PlayerDrawSet drawInfo)
@@ -45,7 +48,7 @@ namespace CalamityMod.Buffs.DamageOverTime
             }
             if (Main.rand.NextBool(4))
             {
-                Dust dust = Dust.NewDustPerfect(modPlayer.RandomDebuffVisualSpot, 18);
+                Dust dust = Dust.NewDustPerfect(modPlayer.RandomDebuffVisualSpot, DustID.CorruptGibs);
                 dust.noGravity = true;
                 dust.velocity = Vector2.Zero;
                 dust.alpha = 90;

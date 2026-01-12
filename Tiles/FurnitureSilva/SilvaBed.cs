@@ -25,8 +25,8 @@ namespace CalamityMod.Tiles.FurnitureSilva
 
         public override bool HasSmartInteract(int i, int j, SmartInteractScanSettings settings) => true;
 
-        public override bool RightClick(int i, int j) => CalamityUtils.BedRightClick(i, j);
+        public override bool RightClick(int i, int j) => FurnitureCommon.BedRightClick(i, j);
 
-        public override void MouseOver(int i, int j) => CalamityUtils.MouseOver(i, j, ModContent.ItemType<Items.Placeables.FurnitureSilva.SilvaBed>());
+        public override void MouseOver(int i, int j) => FurnitureCommon.MouseOver(i, j, ModContent.ItemType<Items.Placeables.FurnitureSilva.SilvaBed>());
     }
 }

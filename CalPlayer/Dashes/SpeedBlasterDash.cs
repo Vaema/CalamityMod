@@ -11,10 +11,15 @@ namespace CalamityMod.CalPlayer.Dashes
 {
     public class SpeedBlasterDash : PlayerDashEffect
     {
-        public static new string ID => "Speed Blaster";
+        public static new string ID { get; private set; }
         public override DashCollisionType CollisionType => DashCollisionType.NoCollision;
 
         public override bool IsOmnidirectional => true;
+
+        public override void Load()
+        {
+            ID = DashID;
+        }
 
         public override float CalculateDashSpeed(Player player) => 30f;
 

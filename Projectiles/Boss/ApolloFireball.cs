@@ -1,9 +1,8 @@
 ﻿using System;
 using System.IO;
-using CalamityMod.Events;
 using CalamityMod.NPCs;
+using CalamityMod.NPCs.ExoMechs.Apollo;
 using CalamityMod.Sounds;
-using CalamityMod.World;
 using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.Audio;
@@ -35,7 +34,7 @@ namespace CalamityMod.Projectiles.Boss
             Projectile.penetrate = -1;
             Projectile.Opacity = 0f;
             CooldownSlot = ImmunityCooldownID.Bosses;
-            Projectile.timeLeft = BossRushEvent.BossRushActive ? 48 : timeLeft;
+            Projectile.timeLeft = timeLeft;
         }
 
         public override void SendExtraAI(BinaryWriter writer)
@@ -55,7 +54,7 @@ namespace CalamityMod.Projectiles.Boss
                 Projectile.tileCollide = true;
 
             int fadeInTime = 3;
-            Projectile.Opacity = MathHelper.Clamp(1f - ((Projectile.timeLeft - ((BossRushEvent.BossRushActive ? 48 : timeLeft) - fadeInTime)) / (float)fadeInTime), 0f, 1f);
+            Projectile.Opacity = MathHelper.Clamp(1f - ((Projectile.timeLeft - (timeLeft - fadeInTime)) / (float)fadeInTime), 0f, 1f);
 
             Lighting.AddLight(Projectile.Center, 0f, 0.6f * Projectile.Opacity, 0f);
 
@@ -127,14 +126,6 @@ namespace CalamityMod.Projectiles.Boss
 
         public override bool CanHitPlayer(Player target) => Projectile.Opacity == 1f;
 
-        public override void OnHitPlayer(Player target, Player.HurtInfo info)
-        {
-            if (info.Damage <= 0 || Projectile.Opacity != 1f)
-                return;
-
-            target.AddBuff(BuffID.CursedInferno, 180);
-        }
-
         public override bool PreDraw(ref Color lightColor)
         {
             lightColor.R = (byte)(255 * Projectile.Opacity);
@@ -164,7 +155,7 @@ namespace CalamityMod.Projectiles.Boss
                 }
 
                 // Plasma bolts
-                int totalProjectiles = BossRushEvent.BossRushActive ? 6 : 4;
+                int totalProjectiles = 4;
                 float radians = MathHelper.TwoPi / totalProjectiles;
                 int type = ModContent.ProjectileType<AresPlasmaBolt>();
                 float velocity = 0.5f;
@@ -175,7 +166,7 @@ namespace CalamityMod.Projectiles.Boss
                 for (int k = 0; k < totalProjectiles; k++)
                 {
                     Vector2 velocity2 = spinningPoint.RotatedBy(radians * k);
-                    Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center, velocity2, type, (int)Math.Round(Projectile.damage * 0.8), 0f, Main.myPlayer);
+                    Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center, velocity2, type, Apollo.BoltDamage, 0f, Main.myPlayer);
                 }
             }
 

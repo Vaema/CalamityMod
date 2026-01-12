@@ -4,10 +4,9 @@ using System.Reflection;
 using CalamityMod.Events;
 using CalamityMod.Items.Fishing;
 using CalamityMod.Items.Materials;
-using CalamityMod.Items.TreasureBags.MiscGrabBags;
 using CalamityMod.NPCs.AcidRain;
 using CalamityMod.NPCs.NormalNPCs;
-using CalamityMod.NPCs.TownNPCs;
+using CalamityMod.Projectiles.Typeless;
 using CalamityMod.Walls;
 using CalamityMod.World;
 using Microsoft.Xna.Framework;
@@ -16,18 +15,18 @@ using MonoMod.Cil;
 using Terraria;
 using Terraria.Audio;
 using Terraria.DataStructures;
-using Terraria.GameContent;
 using Terraria.GameContent.Drawing;
 using Terraria.GameContent.ItemDropRules;
+using Terraria.GameInput;
+using Terraria.Graphics.Effects;
 using Terraria.ID;
 using Terraria.ModLoader;
-using Terraria.Graphics.Effects;
-using Terraria.GameInput;
 
 namespace CalamityMod.ILEditing
 {
     public partial class ILChanges
     {
+        [Obsolete("Use 'Main.instance.TilesRenderer.Wind' Instead. This property is included in the Calamity source code only for historic value.", error: true)]
         public static WindGrid Windgrid
         {
             get;
@@ -126,38 +125,13 @@ namespace CalamityMod.ILEditing
         }
         #endregion Reforge Requirement Relaxation
 
-        #region Remove Forced Inaccuracy from Chain Gun and Gatligator
-        private static void RemoveForcedInaccuracyFromChainGunAndGatligator(ILContext il)
-        {
-            var cursor = new ILCursor(il);
-
-            // Go to the load of the Chain Gun's item ID (1929).
-            if (!cursor.TryGotoNext(MoveType.AfterLabel, i => i.MatchLdcI4(1929)))
-            {
-                LogFailure("Remove Chain Gun and Gatligator Inaccuracy", "Could not locate the ID of the Chain Gun.");
-                return;
-            }
-
-            // Change this item ID check to check for -1048576. This will never occur.
-            cursor.Next.Operand = -1048576;
-
-            // Go to the load of the Gatligator's item ID (2270).
-            if (!cursor.TryGotoNext(MoveType.AfterLabel, i => i.MatchLdcI4(2270)))
-            {
-                LogFailure("Remove Chain Gun and Gatligator Inaccuracy", "Could not locate the ID of the Gatligator.");
-                return;
-            }
-
-            // Change this item ID check to check for -1048576. This will never occur.
-            cursor.Next.Operand = -1048576;
-        }
-        #endregion
-
         #region Prevention of Slime Rain Spawns When Near Bosses
         private static void PreventBossSlimeRainSpawns(On_NPC.orig_SlimeRainSpawns orig, int plr)
         {
-            if (!Main.player[plr].Calamity().isNearbyBoss && CalamityServerConfig.Instance.BossZen)
-                orig(plr);
+            if (CalamityServerConfig.Instance.BossZen && Main.player[plr].Calamity().isNearbyBoss)
+                return;
+
+            orig(plr);
         }
         #endregion Prevention of Slime Rain Spawns When Near Bosses
 
@@ -174,9 +148,35 @@ namespace CalamityMod.ILEditing
                 return;
             }
 
-            // Remove the Expert Mode check, and in its place put a check for the Zenith seed (Get fixed boi).
-            cursor.Emit(OpCodes.Pop);
-            cursor.Emit(OpCodes.Ldsfld, typeof(Main).GetField("zenithWorld"));
+            // AND with 0, so that Expert Mode is never considered active.
+            // Calamity implements something more sinister in GFB :)
+            cursor.Emit(OpCodes.Ldc_I4_0);
+            cursor.Emit(OpCodes.And);
+        }
+        #endregion
+
+        #region Prevent Lava Slime Dropping Lava
+        private static void PreventLavaSlimeLavaDrop(On_NPC.orig_HitEffect_HitInfo orig, NPC self, NPC.HitInfo hit)
+        {
+            if (self.type != NPCID.LavaSlime || !CalamityServerConfig.Instance.RemoveLavaDropsFromLavaSlimes)
+            {
+                orig(self, hit);
+                return;
+            }
+
+            int tileX = (int)(self.Center.X / 16);
+            int tileY = (int)(self.Center.Y / 16);
+            Tile tile = Framing.GetTileSafely(tileX, tileY);
+            if (tile.LiquidAmount != 0)
+            {
+                orig(self, hit);
+                return;
+            }
+
+            byte originalAmount = tile.LiquidAmount;
+            tile.LiquidAmount = 255;
+            orig(self, hit);
+            tile.LiquidAmount = originalAmount;
         }
         #endregion
 
@@ -216,6 +216,28 @@ namespace CalamityMod.ILEditing
         }
         #endregion
 
+        #region Make PunchCameraModifier Affected by Screenshake Config
+        private static void PunchCameraUsesScreenshakeConfig(ILContext il)
+        {
+            // Allow the screenshake from PunchCameraModifier to scale based on our screenshake power config.
+            var cursor = new ILCursor(il);
+
+            // There are 3 local variables that control the strength of the screenshake in separate ways, but they all get multiplied together at the end.
+            // Thus it doesn't matter at all which one is multiplied to. Here I chose num2.
+            if (!cursor.TryGotoNext(MoveType.After, i => i.MatchStloc2()))
+            {
+                LogFailure("Make PunchCameraModifier Affected by Screenshake Config", "Could not move to the location to inject code.");
+                return;
+            }
+
+            // Emit a delegate which grabs the value of the screenshake config. Then multiply the local variable by it.
+            cursor.Emit(OpCodes.Ldloc_1);
+            cursor.EmitDelegate<Func<float>>(() => CalamityClientConfig.Instance.ScreenshakePower);
+            cursor.Emit(OpCodes.Mul);
+            cursor.Emit(OpCodes.Stloc_1);
+        }
+        #endregion
+
         #region Make Meteorite Explodable
         private static void MakeMeteoriteExplodable(ILContext il)
         {
@@ -239,34 +261,6 @@ namespace CalamityMod.ILEditing
             cursor.Emit(OpCodes.Ldc_I4, TileID.HellstoneBrick); // This won't actually do anything since the ID is above Meteorite's and thus unreachable
         }
         #endregion
-
-        #region Make Windy Day Music Play Less Often
-        private static void MakeWindyDayMusicPlayLessOften(ILContext il)
-        {
-            // Make windy day theme only play when the wind speed is over 0.5f instead of 0.4f and make it stop when the wind dies down to below 0.44f instead of 0.34f.
-            var cursor = new ILCursor(il);
-
-            FieldInfo _minWindField = typeof(Main).GetField("_minWind", BindingFlags.NonPublic | BindingFlags.Static);
-
-            if (!cursor.TryGotoNext(MoveType.Before, i => i.MatchLdsfld(_minWindField))) // The min wind speed check that stops the windy day theme when the wind dies down enough.
-            {
-                LogFailure("Make Windy Day Music Play Less Often", "Could not locate the _minWind variable.");
-                return;
-            }
-            cursor.Remove();
-            cursor.Emit(OpCodes.Ldc_R4, 0.44f); // Change to 0.44f.
-
-            FieldInfo _maxWindField = typeof(Main).GetField("_maxWind", BindingFlags.NonPublic | BindingFlags.Static);
-
-            if (!cursor.TryGotoNext(MoveType.Before, i => i.MatchLdsfld(_maxWindField))) // The max wind speed check that causes the windy day theme to play.
-            {
-                LogFailure("Make Windy Day Music Play Less Often", "Could not locate the _maxWind variable.");
-                return;
-            }
-            cursor.Remove();
-            cursor.Emit(OpCodes.Ldc_R4, 0.5f); // Change to 0.5f.
-        }
-        #endregion Make Windy Day Music Play Less Often
 
         #region Change Blood Moon Max HP Requirements
         private static void BloodMoonsRequire200MaxLife(ILContext il)
@@ -333,6 +327,59 @@ namespace CalamityMod.ILEditing
         }
         #endregion
 
+        #region Allow Victide Bobber to Exist
+        private static void WhitelistVictideBobber(ILContext il)
+        {
+            var cursor = new ILCursor(il);
+
+            // Find the label which skips the "flag = true" that kills the projectile
+            ILLabel flagStorage = null;
+            if (!cursor.TryGotoNext(MoveType.After, x => x.MatchBeq(out flagStorage)))
+            {
+                LogFailure("Allow Victide Bobber to Exist", "Failed to properly navigate label to direct to");
+                return;
+            }
+
+            // Properly perform the skip if the projectile type is the Victide Bobber
+            cursor.Emit(OpCodes.Ldarg_0);
+            cursor.Emit(OpCodes.Ldfld, typeof(Projectile).GetField("type"));
+            cursor.Emit(OpCodes.Ldc_I4, ModContent.ProjectileType<VictideBobber>());
+            cursor.Emit(OpCodes.Beq_S, flagStorage);
+        }
+        #endregion
+
+        #region Prevent Victide Bobber from Jammming
+        private static bool PreventVictideBobberFromJamming(On_Player.orig_ItemCheck_CheckFishingBobbers orig, Player self, bool canUse)
+        {
+            // Run through the original stuff
+            canUse = orig(self, canUse);
+
+            int bobberCount = 0;
+            foreach (Projectile proj in Main.ActiveProjectiles)
+            {
+                if (proj.active && proj.owner == self.whoAmI && proj.bobber)
+                {
+                    bobberCount++;
+                    if (proj.type == ModContent.ProjectileType<VictideBobber>())
+                    {
+                        // Go back to casting if there's nothing loaded
+                        if (proj.ai[1] == 0f)
+                            proj.ai[0] = 0f;
+
+                        // Allow you to still use the fishing rod
+                        canUse = true;
+                    }
+                }
+            }
+
+            // Unless.. you have a bobber already that's NOT Victide, then back to disabling
+            if (canUse && bobberCount > 1)
+                canUse = false;
+
+            return canUse;
+        }
+        #endregion
+
         #region Prevent UFO Mount from Dismounting in Water
         private static void PreventUFODismountInWater(ILContext il)
         {
@@ -391,628 +438,134 @@ namespace CalamityMod.ILEditing
         #endregion Color Blighted Gel
 
         #region Improve Angler Quest Rewards
-        private static void ImproveAnglerRewards(On_Player.orig_GetAnglerReward orig, Player self, NPC angler, int questItemType)
+        private static void AddMoreGuaranteedAnglerRewards(On_Player.orig_GetAnglerReward_MainReward orig, Player self, List<Item> rewardItems, IEntitySource source, int questsDone, float rarityReduction, int questItemType, ref GetItemSettings anglerRewardSettings)
         {
-            orig(self, angler, questItemType);
-
-            EntitySource_Gift source = new EntitySource_Gift(angler);
-            int questsDone = self.anglerQuestsFinished;
-            float rarityReduction = 1f;
-            rarityReduction = (questsDone <= 50) ? (rarityReduction - questsDone * 0.01f) : ((questsDone <= 100) ? (0.5f - (questsDone - 50) * 0.005f) : ((questsDone > 150) ? 0.15f : (0.25f - (questsDone - 100) * 0.002f)));
-            rarityReduction *= 0.9f;
-            rarityReduction *= (float)(self.currentShoppingSettings.PriceAdjustment + 1.0) / 2f;
-
-            if (rarityReduction < 0.1f)
-                rarityReduction = 0.1f;
-
-            List<Item> rewardItems = new List<Item>();
-
-            GetItemSettings anglerRewardSettings = GetItemSettings.NPCEntityToPlayerInventorySettings;
-
+            // Adds several new guaranteed rewards for specific quests.
+            // These will replace the item that would have dropped via vanilla logic.
             Item item = new Item();
+            item.type = ItemID.None;
+            List<int> checkingList = [];
 
-            // GUARANTEED REWARDS
-
-            // BAIT
             switch (questsDone)
             {
-                case 0:
-                case 1:
-                case 2:
-                case 3:
-                case 4:
-                    item = new Item();
-                    item.SetDefaults(ItemID.Stinkbug);
-                    item.stack = Main.rand.Next(2, 6);
+                case 3: // High Test Fishing Line
+                    checkingList.Add(ItemID.HighTestFishingLine);
+                    if (self.DropAnglerAccByMissing(checkingList, 1f, out _, out int highTest))
+                        item.SetDefaults(highTest);
                     break;
-
-                case 5:
-                case 6:
-                case 7:
-                case 8:
-                case 9:
-                    item = new Item();
-                    item.SetDefaults(ItemID.ApprenticeBait);
-                    item.stack = Main.rand.Next(2, 6);
+                case 6: // Fisherman's Pocket Guide
+                    checkingList.Add(ItemID.FishermansGuide);
+                    if (self.DropAnglerAccByMissing(checkingList, 1f, out _, out int fishGuide))
+                        item.SetDefaults(fishGuide);
                     break;
-
-                case 10:
-                case 11:
-                case 12:
-                case 13:
-                case 14:
-                case 15:
-                    item = new Item();
-                    item.SetDefaults(Main.rand.NextBool() ? ItemID.Worm : ItemID.Maggot);
-                    item.stack = Main.rand.Next(2, 6);
+                case 10: // Angler armor
+                    Item vest = new Item(ItemID.AnglerVest); // Vanilla has a guaranteed reward for Angler Hat here. Calamity makes the other two pieces drop as well.
+                    rewardItems.Add(vest);
+                    Item pants = new Item(ItemID.AnglerPants); // This intentionally does not set the item variable, to allow vanilla logic to drop the Angler Hat.
+                    rewardItems.Add(pants);
                     break;
-
-                case 16:
-                case 17:
-                case 18:
-                case 19:
-                case 20:
-                    item = new Item();
-                    item.SetDefaults(ItemID.JourneymanBait);
-                    item.stack = Main.rand.Next(2, 6);
+                case 11: // Weather Radio
+                    checkingList.Add(ItemID.WeatherRadio);
+                    if (self.DropAnglerAccByMissing(checkingList, 1f, out _, out int radio))
+                        item.SetDefaults(radio);
                     break;
-
-                case 21:
-                case 22:
-                case 23:
-                case 24:
-                case 25:
-                case 26:
-                    item = new Item();
-                    item.SetDefaults(Main.rand.NextBool() ? ItemID.EnchantedNightcrawler : ItemID.Buggy);
-                    item.stack = Main.rand.Next(2, 6);
+                case 14: // Sextant
+                    checkingList.Add(ItemID.Sextant);
+                    if (self.DropAnglerAccByMissing(checkingList, 1f, out _, out int sextant))
+                        item.SetDefaults(sextant);
                     break;
-
-                case 27:
-                case 28:
-                case 29:
-                case 30:
-                    item = new Item();
-                    item.SetDefaults(ItemID.MasterBait);
-                    item.stack = Main.rand.Next(2, 6);
+                case 15: // Tackle Box
+                    checkingList.Add(ItemID.TackleBox);
+                    if (self.DropAnglerAccByMissing(checkingList, 1f, out _, out int tackle))
+                        item.SetDefaults(tackle);
                     break;
-
-                default:
-                    item = new Item();
-                    item.SetDefaults(ModContent.ItemType<GrandMarquisBait>());
-                    item.stack = Main.rand.Next(2, 6);
+                case 20: // Angler Earring
+                    checkingList.Add(ItemID.AnglerEarring);
+                    if (self.DropAnglerAccByMissing(checkingList, 1f, out _, out int earring))
+                        item.SetDefaults(earring);
                     break;
-            }
-
-            item.position = self.Center;
-            Item item2 = self.GetItem(self.whoAmI, item, anglerRewardSettings);
-            rewardItems.Add(item2);
-
-            // COINS
-            switch (questsDone)
-            {
-                case 0:
-                case 1:
-                case 2:
-                case 3:
-                case 4:
-                    item = new Item();
-                    item.SetDefaults(ItemID.GoldCoin);
-                    break;
-
-                case 5:
-                case 6:
-                case 7:
-                case 8:
-                case 9:
-                    item = new Item();
-                    item.SetDefaults(ItemID.GoldCoin);
-                    item.stack = 2;
-                    item = new Item();
-                    item.SetDefaults(ItemID.SilverCoin);
-                    item.stack = 50;
-                    break;
-
-                case 10:
-                case 11:
-                case 12:
-                case 13:
-                case 14:
-                    item = new Item();
-                    item.SetDefaults(ItemID.GoldCoin);
-                    item.stack = 4;
-                    break;
-
-                case 15:
-                case 16:
-                case 17:
-                case 18:
-                case 19:
-                    item = new Item();
-                    item.SetDefaults(ItemID.GoldCoin);
-                    item.stack = 6;
-                    break;
-
-                case 20:
-                case 21:
-                case 22:
-                case 23:
-                case 24:
-                case 25:
-                case 26:
-                case 27:
-                case 28:
-                case 29:
-                    item = new Item();
-                    item.SetDefaults(ItemID.GoldCoin);
-                    item.stack = 8;
-                    break;
-
-                default:
-                    item = new Item();
-                    item.SetDefaults(ItemID.GoldCoin);
-                    item.stack = 10;
-                    break;
-            }
-
-            item.position = self.Center;
-            item2 = self.GetItem(self.whoAmI, item, anglerRewardSettings);
-            rewardItems.Add(item2);
-
-            // PRIMARY ITEMS
-            switch (questsDone)
-            {
-                case 0:
-                case 1:
-                    item = new Item();
-                    item.SetDefaults(ModContent.ItemType<Spadefish>());
-                    rewardItems.Add(item);
-                    break;
-
-                case 2:
-                    item = new Item();
-                    item.SetDefaults(ModContent.ItemType<StuffedFish>());
-                    item.stack = Main.rand.Next(4, 10);
-                    rewardItems.Add(item);
-                    break;
-
-                case 3:
-                    item = new Item();
-                    item.SetDefaults(ItemID.HighTestFishingLine);
-                    rewardItems.Add(item);
-                    break;
-
-                case 4:
-                    item = new Item();
-                    item.SetDefaults(ItemID.FishHook);
-                    rewardItems.Add(item);
-                    break;
-
-                case 5:
-                    item = new Item();
-                    item.SetDefaults(ItemID.FuzzyCarrot);
-                    rewardItems.Add(item);
-                    break;
-
-                case 6:
-                    item = new Item();
-                    item.SetDefaults(ItemID.FishermansGuide);
-                    rewardItems.Add(item);
-                    break;
-
-                case 7:
-                    item = new Item();
-                    item.SetDefaults(ItemID.FishCostumeMask);
-                    rewardItems.Add(item);
-                    item = new Item();
-                    item.SetDefaults(ItemID.FishCostumeShirt);
-                    rewardItems.Add(item);
-                    item = new Item();
-                    item.SetDefaults(ItemID.FishCostumeFinskirt);
-                    rewardItems.Add(item);
-                    item = new Item();
-                    item.SetDefaults(ModContent.ItemType<SandyAnglingKit>());
-                    rewardItems.Add(item);
-                    break;
-
-                case 8:
-                    item = new Item();
-                    item.SetDefaults(ItemID.FishMinecart);
-                    rewardItems.Add(item);
-                    break;
-
-                case 9:
-                    item = new Item();
-                    item.SetDefaults(ItemID.SailfishBoots);
-                    rewardItems.Add(item);
-                    break;
-
-                case 10:
-                    item = new Item();
-                    item.SetDefaults(ItemID.AnglerHat);
-                    rewardItems.Add(item);
-                    item = new Item();
-                    item.SetDefaults(ItemID.AnglerVest);
-                    rewardItems.Add(item);
-                    item = new Item();
-                    item.SetDefaults(ItemID.AnglerPants);
-                    rewardItems.Add(item);
-                    break;
-
-                case 11:
-                    item = new Item();
-                    item.SetDefaults(ItemID.WeatherRadio);
-                    rewardItems.Add(item);
-                    break;
-
-                case 12:
-                    item = new Item();
-                    item.SetDefaults(ItemID.FishingBobber);
-                    rewardItems.Add(item);
-                    break;
-
-                case 13:
-                    item = new Item();
-                    item.SetDefaults(ItemID.SeashellHairpin);
-                    rewardItems.Add(item);
-                    item = new Item();
-                    item.SetDefaults(ItemID.MermaidAdornment);
-                    rewardItems.Add(item);
-                    item = new Item();
-                    item.SetDefaults(ItemID.MermaidTail);
-                    rewardItems.Add(item);
-                    item = new Item();
-                    item.SetDefaults(ModContent.ItemType<SandyAnglingKit>());
-                    rewardItems.Add(item);
-                    break;
-
-                case 14:
-                    item = new Item();
-                    item.SetDefaults(ItemID.Sextant);
-                    rewardItems.Add(item);
-                    break;
-
-                case 15:
-                    item = new Item();
-                    item.SetDefaults(ItemID.TackleBox);
-                    rewardItems.Add(item);
-                    break;
-
-                case 16:
-                    item = new Item();
-                    item.SetDefaults(ItemID.SuperAbsorbantSponge);
-                    rewardItems.Add(item);
-                    break;
-
-                case 17:
-                    item = new Item();
-                    item.SetDefaults(ItemID.LavaFishingHook);
-                    rewardItems.Add(item);
-                    break;
-
-                case 18:
-                    item = new Item();
-                    item.SetDefaults(ItemID.MagicConch);
-                    rewardItems.Add(item);
-                    break;
-
-                case 19:
-                    item = new Item();
-                    item.SetDefaults(ItemID.DemonConch);
-                    rewardItems.Add(item);
-                    break;
-
-                case 20:
-                    item = new Item();
-                    item.SetDefaults(ItemID.AnglerEarring);
-                    rewardItems.Add(item);
-                    break;
-
-                case 21:
-                    item = new Item();
-                    item.SetDefaults(ItemID.HoneyAbsorbantSponge);
-                    rewardItems.Add(item);
-                    break;
-
-                case 22:
-                    item = new Item();
-                    item.SetDefaults(ItemID.HotlineFishingHook);
-                    rewardItems.Add(item);
-                    break;
-
-                case 23:
-                    item = new Item();
-                    item.SetDefaults(ItemID.FrogLeg);
-                    rewardItems.Add(item);
-                    break;
-
-                case 24:
-                    item = new Item();
-                    item.SetDefaults(ItemID.SuperheatedBlood);
-                    rewardItems.Add(item);
-                    break;
-
-                case 25:
-                    item = new Item();
-                    item.SetDefaults(ItemID.BottomlessBucket);
-                    rewardItems.Add(item);
-                    break;
-
-                case 26:
-                    item = new Item();
+                case 26: // Enchanted Sundial
                     item.SetDefaults(ItemID.Sundial);
-                    rewardItems.Add(item);
                     break;
-
-                case 27:
-                    item = new Item();
-                    item.SetDefaults(ItemID.BottomlessHoneyBucket);
-                    rewardItems.Add(item);
-                    break;
-
-                case 28:
-                    item = new Item();
+                case 28: // Golden Bug Net
                     item.SetDefaults(ItemID.GoldenBugNet);
-                    rewardItems.Add(item);
                     break;
-
-                case 29:
-                    item = new Item();
-                    item.SetDefaults(ItemID.BottomlessLavaBucket);
-                    rewardItems.Add(item);
-                    break;
-
-                case 30:
-                    item = new Item();
-                    item.SetDefaults(ItemID.GoldenFishingRod);
-                    rewardItems.Add(item);
+                default:
                     break;
             }
 
-            // RANDOM DROPS
+            // If the quest is of a number that gives a guaranteed reward from Calamity, add it to the reward pool and skip vanilla logic.
+            if (item.type > ItemID.None)
+                rewardItems.Add(item);
+            else
+                orig(self, rewardItems, source, questsDone, rarityReduction, questItemType, ref anglerRewardSettings);
+        }
 
-            // Angling Kits
-            if (Main.rand.NextBool((int)(12f * rarityReduction)) && questsDone > 30)
+        private static void ImproveAnglerBaitReward(On_Player.orig_GetAnglerReward_Bait orig, Player self, List<Item> rewardItems, IEntitySource source, int questsDone, float rarityReduction, ref GetItemSettings anglerRewardSettings)
+        {
+            // Improves the bait reward given for Angler quests in three ways:
+            // 1. Makes bait reward be guaranteed.
+            // 2. Adds the ability for Grand Marquis Bait to be dropped.
+            // 3. Increases the amount of bait dropped.
+            // This entirely replaces the vanilla logic.
+
+            Item bait = new Item();
+            if (Main.rand.NextBool((int)(15f * rarityReduction)))
+                bait.SetDefaults(ModContent.ItemType<GrandMarquisBait>());
+            else if (Main.rand.NextBool((int)(10f * rarityReduction)))
+                bait.SetDefaults(ItemID.MasterBait);
+            else if (Main.rand.NextBool((int)(5f * rarityReduction)))
+                bait.SetDefaults(ItemID.JourneymanBait);
+            else
+                bait.SetDefaults(ItemID.ApprenticeBait);
+
+            bait.stack = 2;
+            if (Main.rand.Next(10) <= questsDone)
+                bait.stack++;
+            if (Main.rand.Next(20) <= questsDone)
+                bait.stack++;
+            if (Main.rand.Next(30) <= questsDone)
+                bait.stack++;
+            if (Main.rand.Next(40) <= questsDone)
+                bait.stack++;
+            if (Main.rand.Next(50) <= questsDone)
+                bait.stack++;
+
+            rewardItems.Add(bait);
+        }
+
+        private static void ImproveAnglerMoneyReward(On_Player.orig_GetAnglerReward_Money orig, Player self, List<Item> rewardItems, IEntitySource source, int questsDone, float rarityReduction, ref GetItemSettings anglerRewardSettings)
+        {
+            // Improves the logic for giving money to the player from Angler quests.
+            // This is accomplished via a higher starting amount, reduced variance, and not truncating off Silver Coins if giving Gold Coins.
+            // This entirely replaces the vanilla logic.
+
+            int moneyDrop = (questsDone + 70) / 2; // Vanilla uses 50
+            moneyDrop = (int)(moneyDrop * Main.rand.NextFloat(1f, 2f)); // Vanilla is 0.75x-3x
+            moneyDrop = (int)(moneyDrop * 1.5f); // Vanilla then arbitrarily multiplies the value by 1.5x
+            if (Main.hardMode)
+                moneyDrop *= 2;
+            if (Main.expertMode)
+                moneyDrop *= 2;
+            if (moneyDrop > 1000)
+                moneyDrop = 1000; // Vanilla has a cap of 10 Gold Coins, or 1000 Silver Coins.
+
+            // moneyDrop now contains the number of SILVER Coins to drop.
+            // Determine the number of Gold Coins to drop, if any.
+            if (moneyDrop >= 100)
             {
-                item = new Item();
-                item.SetDefaults(Main.hardMode ? ModContent.ItemType<BleachedAnglingKit>() : ModContent.ItemType<SandyAnglingKit>());
-                rewardItems.Add(item);
+                int goldDrop = moneyDrop / 100;
+                Item gold = new Item();
+                gold.SetDefaults(ItemID.GoldCoin);
+                gold.stack = goldDrop;
+                rewardItems.Add(gold);
             }
-
-            // Golden Fishing Rod
-            if (Main.rand.NextBool((int)(500f * rarityReduction)) && questsDone > 30)
-            {
-                item = new Item();
-                item.SetDefaults(ItemID.GoldenFishingRod);
-                rewardItems.Add(item);
-            }
-
-            // Hotline Fishing Hook
-            if (Main.rand.NextBool((int)(200f * rarityReduction)) && questsDone > 22)
-            {
-                item = new Item();
-                item.SetDefaults(ItemID.HotlineFishingHook);
-                rewardItems.Add(item);
-            }
-
-            // Angler Set
-            if (Main.rand.NextBool((int)(150f * rarityReduction)) && questsDone > 10)
-            {
-                item = new Item();
-                item.SetDefaults(ItemID.AnglerHat);
-                rewardItems.Add(item);
-                item = new Item();
-                item.SetDefaults(ItemID.AnglerVest);
-                rewardItems.Add(item);
-                item = new Item();
-                item.SetDefaults(ItemID.AnglerPants);
-                rewardItems.Add(item);
-            }
-
-            // Mermaid Set
-            if (Main.rand.NextBool((int)(150f * rarityReduction)) && questsDone > 13)
-            {
-                item = new Item();
-                item.SetDefaults(ItemID.SeashellHairpin);
-                rewardItems.Add(item);
-                item = new Item();
-                item.SetDefaults(ItemID.MermaidAdornment);
-                rewardItems.Add(item);
-                item = new Item();
-                item.SetDefaults(ItemID.MermaidTail);
-                rewardItems.Add(item);
-            }
-
-            // Fish Set
-            if (Main.rand.NextBool((int)(150f * rarityReduction)) && questsDone > 7)
-            {
-                item = new Item();
-                item.SetDefaults(ItemID.FishCostumeMask);
-                rewardItems.Add(item);
-                item = new Item();
-                item.SetDefaults(ItemID.FishCostumeShirt);
-                rewardItems.Add(item);
-                item = new Item();
-                item.SetDefaults(ItemID.FishCostumeFinskirt);
-                rewardItems.Add(item);
-            }
-
-            // Fin Wings
-            if (Main.rand.NextBool((int)(140f * rarityReduction)) && Main.hardMode && questsDone > 10)
-            {
-                item = new Item();
-                item.SetDefaults(ItemID.FinWings);
-                rewardItems.Add(item);
-            }
-
-            // Bottomless Water Bucket
-            if (Main.rand.NextBool((int)(140f * rarityReduction)) && questsDone > 25)
-            {
-                item = new Item();
-                item.SetDefaults(ItemID.BottomlessBucket);
-                rewardItems.Add(item);
-            }
-
-            // Bottomless Honey Bucket
-            if (Main.rand.NextBool((int)(140f * rarityReduction)) && questsDone > 27)
-            {
-                item = new Item();
-                item.SetDefaults(ItemID.BottomlessHoneyBucket);
-                rewardItems.Add(item);
-            }
-
-            // Bottomless Lava Bucket
-            if (Main.rand.NextBool((int)(140f * rarityReduction)) && questsDone > 29)
-            {
-                item = new Item();
-                item.SetDefaults(ItemID.BottomlessLavaBucket);
-                rewardItems.Add(item);
-            }
-
-            // Magic Conch
-            if (Main.rand.NextBool((int)(140f * rarityReduction)) && questsDone > 18)
-            {
-                item = new Item();
-                item.SetDefaults(ItemID.MagicConch);
-                rewardItems.Add(item);
-            }
-
-            // Demon Conch
-            if (Main.rand.NextBool((int)(140f * rarityReduction)) && questsDone > 19)
-            {
-                item = new Item();
-                item.SetDefaults(ItemID.DemonConch);
-                rewardItems.Add(item);
-            }
-
-            // Super Absorbant Sponge
-            if (Main.rand.NextBool((int)(140f * rarityReduction)) && questsDone > 16)
-            {
-                item = new Item();
-                item.SetDefaults(ItemID.SuperAbsorbantSponge);
-                rewardItems.Add(item);
-            }
-
-            // Honey Absorbant Sponge
-            if (Main.rand.NextBool((int)(140f * rarityReduction)) && questsDone > 21)
-            {
-                item = new Item();
-                item.SetDefaults(ItemID.SuperAbsorbantSponge);
-                rewardItems.Add(item);
-            }
-
-            // Golden Bug Net
-            if (Main.rand.NextBool((int)(140f * rarityReduction)) && questsDone > 28)
-            {
-                item = new Item();
-                item.SetDefaults(ItemID.GoldenBugNet);
-                rewardItems.Add(item);
-            }
-
-            // Fish Hook
-            if (Main.rand.NextBool((int)(120f * rarityReduction)) && questsDone > 4)
-            {
-                item = new Item();
-                item.SetDefaults(ItemID.FishHook);
-                rewardItems.Add(item);
-            }
-
-            // Minecarp
-            if (Main.rand.NextBool((int)(120f * rarityReduction)) && questsDone > 8)
-            {
-                item = new Item();
-                item.SetDefaults(ItemID.FishMinecart);
-                rewardItems.Add(item);
-            }
-
-            // Lava Shark
-            if (Main.rand.NextBool((int)(120f * rarityReduction)) && questsDone > 24)
-            {
-                item = new Item();
-                item.SetDefaults(ItemID.SuperheatedBlood);
-                rewardItems.Add(item);
-            }
-
-            // High Test Fishing Line
-            if (Main.rand.NextBool((int)(80f * rarityReduction)) && questsDone > 3)
-            {
-                item = new Item();
-                item.SetDefaults(ItemID.HighTestFishingLine);
-                rewardItems.Add(item);
-            }
-
-            // Angler Earring
-            if (Main.rand.NextBool((int)(80f * rarityReduction)) && questsDone > 20)
-            {
-                item = new Item();
-                item.SetDefaults(ItemID.AnglerEarring);
-                rewardItems.Add(item);
-            }
-
-            // Lavaproof Fishing Hook
-            if (Main.rand.NextBool((int)(80f * rarityReduction)) && questsDone > 17)
-            {
-                item = new Item();
-                item.SetDefaults(ItemID.LavaFishingHook);
-                rewardItems.Add(item);
-            }
-
-            // Tackle Box
-            if (Main.rand.NextBool((int)(80f * rarityReduction)) && questsDone > 15)
-            {
-                item = new Item();
-                item.SetDefaults(ItemID.TackleBox);
-                rewardItems.Add(item);
-            }
-
-            // Fisherman's Pocket Guide
-            if (Main.rand.NextBool((int)(60f * rarityReduction)) && questsDone > 6)
-            {
-                item = new Item();
-                item.SetDefaults(ItemID.FishermansGuide);
-                rewardItems.Add(item);
-            }
-
-            // Weather Radio
-            if (Main.rand.NextBool((int)(60f * rarityReduction)) && questsDone > 11)
-            {
-                item = new Item();
-                item.SetDefaults(ItemID.WeatherRadio);
-                rewardItems.Add(item);
-            }
-
-            // Sextant
-            if (Main.rand.NextBool((int)(60f * rarityReduction)) && questsDone > 14)
-            {
-                item = new Item();
-                item.SetDefaults(ItemID.Sextant);
-                rewardItems.Add(item);
-            }
-
-            // Fishing Bobber
-            if (Main.rand.NextBool((int)(50f * rarityReduction)) && questsDone > 12)
-            {
-                item = new Item();
-                item.SetDefaults(ItemID.FishingBobber);
-                rewardItems.Add(item);
-            }
-
-            PlayerLoader.AnglerQuestReward(self, rarityReduction, rewardItems);
-
-            foreach (Item rewardItem in rewardItems)
-            {
-                rewardItem.position = self.Center;
-
-                Item getItem = self.GetItem(self.whoAmI, rewardItem, GetItemSettings.NPCEntityToPlayerInventorySettings);
-
-                if (getItem.stack > 0)
-                {
-                    int number = Item.NewItem(source, (int)self.position.X, (int)self.position.Y, self.width, self.height, getItem.type, getItem.stack, noBroadcast: false, 0, noGrabDelay: true);
-
-                    if (Main.netMode == NetmodeID.MultiplayerClient)
-                        NetMessage.SendData(MessageID.SyncItem, -1, -1, null, number, 1f);
-                }
-            }
+            // Now the Silver Coins to drop.
+            int silverDrop = moneyDrop % 100;
+            Item silver = new Item();
+            silver.SetDefaults(ItemID.SilverCoin);
+            silver.stack = silverDrop;
+            rewardItems.Add(silver);
         }
         #endregion
 
@@ -1026,7 +579,7 @@ namespace CalamityMod.ILEditing
                 LogFailure("Use VisibleThroughWater Map Tile", "Could not locate call to Terraria.Map.TileMap::get_Item.");
                 return;
             }
-            
+
             int tileIndex = -1;
             if (!c.TryGotoNext(x => x.MatchStloc(out tileIndex)) || tileIndex == -1)
             {
@@ -1226,12 +779,13 @@ namespace CalamityMod.ILEditing
         private static void DelayGravity(On_Player.orig_UpdateControlHolds orig, Player Player)
         {
             var cplay = Player.Calamity();
-            if (CalamityKeybinds.SwitchGravityHotkey.GetAssignedKeys().Count != 0 && (Player.gravControl || Player.gravControl2) && !Player.mount.Active)
+            if (CalamityKeybinds.SwitchGravityHotkey.GetAssignedKeysOrEmpty().Count != 0 && (Player.gravControl || Player.gravControl2) && !Player.mount.Active)
             {
-                if (Player.controlUp && Player.releaseUp) {
+                if (Player.controlUp && Player.releaseUp)
+                {
                     Player.gravDir *= -1;
                 }
-                if (CalamityKeybinds.SwitchGravityHotkey.JustPressed) 
+                if (CalamityKeybinds.SwitchGravityHotkey.JustPressed)
                 {
                     Player.gravDir *= -1;
                     Player.fallStart = (int)(Player.position.Y / 16f);
@@ -1239,32 +793,39 @@ namespace CalamityMod.ILEditing
                     SoundEngine.PlaySound(SoundID.Item8, Player.position);
                 }
 
-                if (Player.forcedGravity > 0) {
-				    Player.gravDir = -1f;
-			}   
+                if (Player.forcedGravity > 0)
+                {
+                    Player.gravDir = -1f;
+                }
             }
-            
-            if (cplay.justChangedGravity) {
+
+            if (cplay.justChangedGravity)
+            {
                 Player.gravDir = cplay.oldGravDir;
             }
             cplay.justChangedGravity = cplay.oldGravDir != Player.gravDir;
-            
+
             cplay.oldGravDir = Player.gravDir;
             if (Main.netMode != NetmodeID.Server && !Main.gameMenu && CalamityClientConfig.Instance.DisableGravityScreenSwap)
             {
-            if (Player.gravDir == -1) {
-                if (!Filters.Scene["CalamityMod:FlipScreen"].IsActive()) {
-                    Filters.Scene.Activate("CalamityMod:FlipScreen");
-                    Filters.Scene["CalamityMod:FlipScreen"].Opacity = 1f;
+                if (Player.gravDir == -1)
+                {
+                    if (!Filters.Scene["CalamityMod:FlipScreen"].IsActive())
+                    {
+                        Filters.Scene.Activate("CalamityMod:FlipScreen");
+                        Filters.Scene["CalamityMod:FlipScreen"].Opacity = 1f;
 
+                    }
                 }
-            } else {
-                if (Filters.Scene["CalamityMod:FlipScreen"].IsActive()) {
-                    Filters.Scene["CalamityMod:FlipScreen"].Opacity = 0f;
-                    Filters.Scene.Deactivate("CalamityMod:FlipScreen");
+                else
+                {
+                    if (Filters.Scene["CalamityMod:FlipScreen"].IsActive())
+                    {
+                        Filters.Scene["CalamityMod:FlipScreen"].Opacity = 0f;
+                        Filters.Scene.Deactivate("CalamityMod:FlipScreen");
 
+                    }
                 }
-            }
             }
             if (cplay.justChangedGravity)
             {
@@ -1273,13 +834,15 @@ namespace CalamityMod.ILEditing
             orig(Player);
         }
 
-        private static void GravityMouse(On_PlayerInput.orig_SetZoom_MouseInWorld orig) {
+        private static void GravityMouse(On_PlayerInput.orig_SetZoom_MouseInWorld orig)
+        {
             orig();
             if (!Main.gameMenu && Filters.Scene["CalamityMod:FlipScreen"].IsActive())//((Main.LocalPlayer.gravDir == -1 && !Main.LocalPlayer.Calamity().justChangedGravity) || (Main.LocalPlayer.Calamity().oldGravDir == -1 && Main.LocalPlayer.Calamity().justChangedGravity))
             {
                 var center = Main.screenHeight / 2;
                 Main.mouseY = center - (Main.mouseY - center);
-            };
+            }
+            ;
         }
         private static void UI_Unflip_Start(On_Main.orig_DrawPlayerChatBubbles orig, Main self)
         {
@@ -1290,7 +853,7 @@ namespace CalamityMod.ILEditing
             }
             orig(self);
         }
-        
+
         private static void UI_Unflip_End(On_Main.orig_DrawInterface orig, Main self, GameTime gameTime)
         {
             orig(self, gameTime);

@@ -7,7 +7,6 @@ using CalamityMod.Items.Placeables.Abyss;
 using CalamityMod.Items.Placeables.Banners;
 using CalamityMod.Items.Potions;
 using CalamityMod.Items.Weapons.Rogue;
-using CalamityMod.World;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using ReLogic.Content;
@@ -55,7 +54,7 @@ namespace CalamityMod.NPCs.Abyss
             NPC.aiStyle = -1;
             AIType = -1;
             NPC.timeLeft = NPC.activeTime * 30;
-            NPC.value = Item.buyPrice(0, 25, 0, 0);
+            NPC.value = Item.buyPrice(gold: 25);
             NPC.HitSound = SoundID.NPCHit56;
             NPC.DeathSound = SoundID.NPCDeath60;
             NPC.knockBackResist = 0f;
@@ -70,10 +69,6 @@ namespace CalamityMod.NPCs.Abyss
 
             if (Main.zenithWorld) // legg
                 NPC.height = (int)(NPC.height * 1.5f);
-
-            // Scale stats in Expert and Master
-            CalamityGlobalNPC.AdjustExpertModeStatScaling(NPC);
-            CalamityGlobalNPC.AdjustMasterModeStatScaling(NPC);
         }
 
         public override void SetBestiary(BestiaryDatabase database, BestiaryEntry bestiaryEntry)
@@ -650,7 +645,7 @@ namespace CalamityMod.NPCs.Abyss
                     {
                         Vector2 direction = shorkCenter - player.Center;
                         direction.Normalize();
-                        Projectile.NewProjectile(NPC.GetSource_FromAI(), NPC.Center, direction * 10f, ProjectileID.DemonSickle, NPC.damage / 2, 0f, Main.myPlayer);
+                        Projectile.NewProjectile(NPC.GetSource_FromAI(), NPC.Center, direction * 10f, ProjectileID.DemonSickle, 80, 0f, Main.myPlayer);
                     }
                 }
             }

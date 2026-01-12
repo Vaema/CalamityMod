@@ -6,7 +6,6 @@ using CalamityMod.Items.Materials;
 using CalamityMod.Items.Placeables.Banners;
 using CalamityMod.Items.Weapons.Melee;
 using CalamityMod.Projectiles.Enemy;
-using CalamityMod.World;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using ReLogic.Content;
@@ -75,10 +74,9 @@ namespace CalamityMod.NPCs.NormalNPCs
             NPC.width = 80;
             NPC.height = 140;
             NPC.defense = 18;
-            NPC.DR_NERD(0.05f);
             NPC.lifeMax = 6000;
             NPC.knockBackResist = 0.05f;
-            NPC.value = Item.buyPrice(0, 1, 50, 0);
+            NPC.value = Item.buyPrice(gold: 1, silver: 50);
             NPC.HitSound = SoundID.NPCHit23;
             NPC.DeathSound = SoundID.NPCDeath39;
             NPC.noGravity = true;
@@ -91,10 +89,6 @@ namespace CalamityMod.NPCs.NormalNPCs
             NPC.Calamity().VulnerableToElectricity = false;
             NPC.Calamity().VulnerableToWater = false;
             NPC.Calamity().VulnerableToHeat = false;
-
-            // Scale stats in Expert and Master
-            CalamityGlobalNPC.AdjustExpertModeStatScaling(NPC);
-            CalamityGlobalNPC.AdjustMasterModeStatScaling(NPC);
         }
 
         public override void SetBestiary(BestiaryDatabase database, BestiaryEntry bestiaryEntry)

@@ -1,7 +1,5 @@
-﻿using CalamityMod.Buffs.StatDebuffs;
-using Terraria;
+﻿using Terraria;
 using Terraria.ID;
-using Terraria.ModLoader;
 
 namespace CalamityMod.Items.VanillaArmorChanges
 {
@@ -30,6 +28,7 @@ namespace CalamityMod.Items.VanillaArmorChanges
         public override void ApplyArmorSetBonus(Player player)
         {
             player.Calamity().eskimoSet = true;
+            player.Calamity().ColdDebuffMultiplier += 0.25f;
 
             player.buffImmune[BuffID.Frostburn] = true;
         }

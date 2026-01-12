@@ -2,13 +2,11 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using CalamityMod.Balancing;
 using CalamityMod.Buffs.StatDebuffs;
 using CalamityMod.Dusts;
 using CalamityMod.Graphics.Primitives;
 using CalamityMod.Items.Weapons.Melee;
 using CalamityMod.Particles;
-using CalamityMod.Projectiles.Healing;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using ReLogic.Content;
@@ -223,8 +221,8 @@ namespace CalamityMod.Projectiles.Melee
         {
             float _ = 0f;
             Vector2 start = Projectile.Center;
-            Vector2 end = start + SwordDirection * BladeLength * Projectile.scale;
-            return Collision.CheckAABBvLineCollision(targetHitbox.TopLeft(), targetHitbox.Size(), start, end, Projectile.scale * 30f, ref _);
+            Vector2 end = start + SwordDirection * (BladeLength + 50) * Projectile.scale; // Has an additional offset so that the hitbox to match the vfx
+            return Collision.CheckAABBvLineCollision(targetHitbox.TopLeft(), targetHitbox.Size(), start, end, State == SwingState.BonkDash ? Projectile.scale * 45 : Projectile.scale * 30f, ref _);
         }
 
         public void InitializationEffects(bool startInitialization)
@@ -326,7 +324,7 @@ namespace CalamityMod.Projectiles.Melee
             if (Main.rand.NextFloat() < RiskOfDust)
             {
                 Color dustColor = Main.hslToRgb(Main.rand.NextFloat(), 1f, 0.9f);
-                Dust must = Dust.NewDustPerfect(Owner.MountedCenter + SwordDirection * BladeLength * Projectile.scale * (float)Math.Pow(Main.rand.NextFloat(0.2f, 1f), 0.5f), 267, SwordDirection.RotatedBy(MathHelper.PiOver2 * Direction) * 2.6f, 0, dustColor);
+                Dust must = Dust.NewDustPerfect(Owner.MountedCenter + SwordDirection * BladeLength * Projectile.scale * (float)Math.Pow(Main.rand.NextFloat(0.2f, 1f), 0.5f), DustID.RainbowMk2, SwordDirection.RotatedBy(MathHelper.PiOver2 * Direction) * 2.6f, 0, dustColor);
 
                 must.scale = 0.3f;
                 must.fadeIn = Main.rand.NextFloat() * 1.2f;
@@ -344,7 +342,7 @@ namespace CalamityMod.Projectiles.Melee
                 float rotationAngle = MathHelper.PiOver4 * 0.3f * ((Timer - beamShootStart) / beamShootPeriod);
                 int boltDamage = (int)(Projectile.damage * Exoblade.NotTrueMeleeDamagePenalty);
                 Vector2 boltVelocity = Projectile.velocity.RotatedByRandom(MathHelper.PiOver4 * 0.3);
-                boltVelocity *= Owner.ActiveItem().shootSpeed;
+                boltVelocity *= Owner.HeldItem.shootSpeed;
 
                 Projectile.NewProjectile(Projectile.GetSource_FromAI(), Projectile.Center + boltVelocity * 5f, boltVelocity, ModContent.ProjectileType<Exobeam>(), boltDamage, Projectile.knockBack / 3f, Projectile.owner);
             }
@@ -373,13 +371,13 @@ namespace CalamityMod.Projectiles.Melee
             // Do the dash.
             else
             {
-                float rotationStrenght = MathHelper.PiOver4 * 0.05f * (float)Math.Pow(LungeProgression, 3);
+                float rotationStrength = MathHelper.PiOver4 * 0.05f * (float)Math.Pow(LungeProgression, 3);
                 float currentRotation = Projectile.velocity.ToRotation();
 
                 // 14NOV2024: Ozzatron: clamped mouse position unnecessary, only used for direction
                 float idealRotation = Owner.MountedCenter.DirectionTo(Owner.Calamity().mouseWorld).ToRotation();
 
-                Projectile.velocity = currentRotation.AngleTowards(idealRotation, rotationStrenght).ToRotationVector2();
+                Projectile.velocity = currentRotation.AngleTowards(idealRotation, rotationStrength).ToRotationVector2();
 
                 Owner.fallStart = (int)(Owner.position.Y / 16f);
 
@@ -393,7 +391,7 @@ namespace CalamityMod.Projectiles.Melee
                 if (Main.rand.NextBool())
                 {
                     Color dustColor = Main.hslToRgb(Main.rand.NextFloat(), 1f, 0.9f);
-                    Dust must = Dust.NewDustPerfect(Owner.MountedCenter + Main.rand.NextVector2Circular(20f, 20f), 267, SwordDirection * -2.6f, 0, dustColor);
+                    Dust must = Dust.NewDustPerfect(Owner.MountedCenter + Main.rand.NextVector2Circular(20f, 20f), DustID.RainbowMk2, SwordDirection * -2.6f, 0, dustColor);
                     must.scale = 0.3f;
                     must.fadeIn = Main.rand.NextFloat() * 1.2f;
                     must.noGravity = true;
@@ -425,11 +423,11 @@ namespace CalamityMod.Projectiles.Melee
             Projectile.rotation = Projectile.velocity.ToRotation() + MathHelper.PiOver4 * Direction;
         }
 
-        public float SlashWidthFunction(float completionRatio) => SquishAtProgress(RealProgressionAtTrailCompletion(completionRatio)) * Projectile.scale * 60.5f;
+        public float SlashWidthFunction(float completionRatio, Vector2 vertexPos) => SquishAtProgress(RealProgressionAtTrailCompletion(completionRatio)) * Projectile.scale * 60.5f;
 
-        public Color SlashColorFunction(float completionRatio) => Color.Lime * Utils.GetLerpValue(0.9f, 0.4f, completionRatio, true) * Projectile.Opacity;
+        public Color SlashColorFunction(float completionRatio, Vector2 vertexPos) => Color.Lime * Utils.GetLerpValue(0.9f, 0.4f, completionRatio, true) * Projectile.Opacity;
 
-        public float PierceWidthFunction(float completionRatio)
+        public float PierceWidthFunction(float completionRatio, Vector2 vertexPos)
         {
             float width = Utils.GetLerpValue(0f, 0.2f, completionRatio, true) * Projectile.scale * 50f;
             //Fade it out starkly near the end of the lunge
@@ -437,7 +435,7 @@ namespace CalamityMod.Projectiles.Melee
             return width;
         }
 
-        public Color PierceColorFunction(float completionRatio) => Color.Lime * Projectile.Opacity; //The trail color doesnt matter here
+        public Color PierceColorFunction(float completionRatio, Vector2 vertexPos) => Color.Lime * Projectile.Opacity; //The trail color doesnt matter here
 
         public List<Vector2> GenerateSlashPoints()
         {
@@ -447,7 +445,7 @@ namespace CalamityMod.Projectiles.Melee
             {
                 float progress = MathHelper.Lerp(Progression, TrailEndProgression, i / 40f);
 
-                result.Add(DirectionAtProgressScuffed(progress) * (BladeLength - 20f) * Projectile.scale);
+                result.Add(DirectionAtProgressScuffed(progress) * (BladeLength - 6f) * Projectile.scale);
             }
 
             return result;
@@ -480,7 +478,7 @@ namespace CalamityMod.Projectiles.Melee
             GameShaders.Misc["CalamityMod:ExobladeSlash"].Shader.Parameters["flipped"].SetValue(Direction == 1);
             GameShaders.Misc["CalamityMod:ExobladeSlash"].Apply();
 
-            PrimitiveRenderer.RenderTrail(GenerateSlashPoints(), new(SlashWidthFunction, SlashColorFunction, (_) => Projectile.Center, shader: GameShaders.Misc["CalamityMod:ExobladeSlash"]), 95);
+            PrimitiveRenderer.RenderTrail(GenerateSlashPoints(), new(SlashWidthFunction, SlashColorFunction, (_,_) => Projectile.Center, shader: GameShaders.Misc["CalamityMod:ExobladeSlash"]), 95);
 
             Main.spriteBatch.ExitShaderRegion();
         }
@@ -510,7 +508,7 @@ namespace CalamityMod.Projectiles.Melee
             int numPointsRendered = 30;
             int numPointsProvided = 60;
             var positionsToUse = Projectile.oldPos.Take(numPointsProvided).ToArray();
-            PrimitiveRenderer.RenderTrail(positionsToUse, new(PierceWidthFunction, PierceColorFunction, (_) => trailOffset, shader: GameShaders.Misc["CalamityMod:ExobladePierce"]), numPointsRendered);
+            PrimitiveRenderer.RenderTrail(positionsToUse, new(PierceWidthFunction, PierceColorFunction, (_,_) => trailOffset, shader: GameShaders.Misc["CalamityMod:ExobladePierce"]), numPointsRendered);
 
             Main.spriteBatch.ExitShaderRegion();
         }
@@ -576,6 +574,8 @@ namespace CalamityMod.Projectiles.Melee
                     origin.X = texture.Width;
                 }
 
+                Projectile.scale = MathHelper.Lerp(1f, 0.22f, MathF.Pow(LungeProgression, 7));
+
                 Main.EntitySpriteDraw(texture, drawPosition, null, Color.White, rotation, origin, Projectile.scale, direction, 0);
 
                 float energyPower = Utils.GetLerpValue(0f, 0.32f, Progression, true) * Utils.GetLerpValue(1f, 0.85f, Progression, true);
@@ -589,8 +589,8 @@ namespace CalamityMod.Projectiles.Melee
 
         public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
         {
-            ItemLoader.OnHitNPC(Owner.ActiveItem(), Owner, target, hit, damageDone);
-            NPCLoader.OnHitByItem(target, Owner, Owner.ActiveItem(), hit, damageDone);
+            ItemLoader.OnHitNPC(Owner.HeldItem, Owner, target, hit, damageDone);
+            NPCLoader.OnHitByItem(target, Owner, Owner.HeldItem, hit, damageDone);
             PlayerLoader.OnHitNPC(Owner, target, hit, damageDone);
 
             if (State == SwingState.BonkDash)
@@ -628,17 +628,7 @@ namespace CalamityMod.Projectiles.Melee
                     Projectile.NewProjectile(Projectile.GetSource_FromAI(), target.Center, Vector2.Zero, ModContent.ProjectileType<Exoboom>(), explosionDamage, 0f, Projectile.owner);
                 }
 
-                if (target.lifeMax <= 5 || Owner.lifeSteal <= 0)
-                    return;
-
-                int healAmt = (int)Math.Round(hit.Damage * 0.04);
-                if (healAmt > BalancingConstants.LifeStealCap)
-                    healAmt = BalancingConstants.LifeStealCap;
-
-                if (healAmt <= 0)
-                    return;
-
-                CalamityGlobalProjectile.SpawnLifeStealProjectile(Projectile, Owner, healAmt, ModContent.ProjectileType<ReaverHealOrb>(), BalancingConstants.LifeStealRange);
+                Owner.DoLifestealDirect(target, (int)Math.Round(hit.Damage * 0.04), 0.4f);
             }
         }
 

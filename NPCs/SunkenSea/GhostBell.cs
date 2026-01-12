@@ -1,20 +1,17 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using CalamityMod.BiomeManagers;
 using CalamityMod.Buffs.DamageOverTime;
 using CalamityMod.DataStructures;
 using CalamityMod.Enums;
 using CalamityMod.Items.Accessories;
 using CalamityMod.Items.Placeables.Banners;
-using CalamityMod.Particles;
+using CalamityMod.Pathfinding;
 using CalamityMod.Projectiles.Enemy;
-using CalamityMod.Sounds;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using ReLogic.Content;
 using Terraria;
-using Terraria.Audio;
 using Terraria.DataStructures;
 using Terraria.GameContent;
 using Terraria.GameContent.Bestiary;
@@ -95,7 +92,7 @@ namespace CalamityMod.NPCs.SunkenSea
             NPC.lifeMax = 120;
             NPC.knockBackResist = 0f;
             NPC.alpha = 100;
-            NPC.value = Item.buyPrice(0, 0, 1, 0);
+            NPC.value = Item.buyPrice(silver: 1);
             NPC.HitSound = SoundID.NPCHit25;
             NPC.DeathSound = SoundID.NPCDeath28;
             Banner = NPC.type;
@@ -104,10 +101,6 @@ namespace CalamityMod.NPCs.SunkenSea
             NPC.Calamity().VulnerableToSickness = true;
             NPC.Calamity().VulnerableToElectricity = false;
             NPC.Calamity().VulnerableToWater = false;
-
-            // Scale stats in Expert and Master
-            CalamityGlobalNPC.AdjustExpertModeStatScaling(NPC);
-            CalamityGlobalNPC.AdjustMasterModeStatScaling(NPC);
         }
 
         public override void SetBestiary(BestiaryDatabase database, BestiaryEntry bestiaryEntry)
@@ -163,13 +156,10 @@ namespace CalamityMod.NPCs.SunkenSea
         {
             if (pathfinding == null)
             {
-                pathfinding = new PathfindingManager(NPC)
-                {
-                    Acceleration = 0.1f,
-                    MaxSpeed = 1f,
-                };
+                pathfinding = new PathfindingManager(this);
+                Acceleration = 0.1f;
+                MaxSpeed = 1f;
             }
-
             CreateTentacles();
             NPC.ai[2]++;
 
@@ -243,7 +233,7 @@ namespace CalamityMod.NPCs.SunkenSea
                 {
                     if (Main.netMode != NetmodeID.MultiplayerClient)
                     {
-                        Projectile.NewProjectile(NPC.GetSource_FromThis(), NPC.Center, Vector2.Zero, ModContent.ProjectileType<GhostBellShock>(), (int)(NPC.damage * 0.5f), 0, ai1: NPC.whoAmI + 1);
+                        Projectile.NewProjectile(NPC.GetSource_FromThis(), NPC.Center, Vector2.Zero, ModContent.ProjectileType<GhostBellShock>(), 12, 0, ai1: NPC.whoAmI + 1);
                     }
                 }
                 // Reset
@@ -257,12 +247,12 @@ namespace CalamityMod.NPCs.SunkenSea
             // Move towards target
             else if (target != null)
             {
-                pathfinding.DoPathfinding(new PathfindingParameters(NPC.Center, target.Center, SunkenSeaTileValiditySizeless));
+                pathfinding.DoPathfinding(new PathfindingParameters(this, NPC.Center, target.Center, SunkenSeaTileValiditySizeless));
                 if (pathfinding.Path.Count > 0)
-                if (pathfinding.Path[^1].Distance(target.Center) > 300)
-                {
-                    pathfinding.ClearResults();
-                }
+                    if (pathfinding.Path[^1].Distance(target.Center) > 300)
+                    {
+                        pathfinding.ClearResults();
+                    }
                 if (Phase == (int)PhaseType.Angry)
                 {
                     if (target is Player && NPC.Distance(target.Center) < 300)
@@ -527,7 +517,7 @@ namespace CalamityMod.NPCs.SunkenSea
 
         public override void ModifyNPCLoot(NPCLoot npcLoot)
         {
-            npcLoot.Add(ItemID.JellyfishNecklace, 25);
+            npcLoot.Add(ItemID.JellyfishNecklace, 30);
             LeadingConditionRule postDS = npcLoot.DefineConditionalDropSet(DropHelper.PostDS());
             postDS.Add(ModContent.ItemType<VoltaicJelly>(), 5);
         }

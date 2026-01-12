@@ -1,9 +1,6 @@
 ﻿using System;
-using CalamityMod.Buffs.DamageOverTime;
 using CalamityMod.Enums;
 using CalamityMod.Items.Accessories;
-using CalamityMod.Particles;
-using CalamityMod.Projectiles.Typeless;
 using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.Audio;
@@ -16,43 +13,52 @@ namespace CalamityMod.CalPlayer.Dashes
 {
     public class AsgardsValorDash : PlayerDashEffect
     {
-        public static new string ID => "Asgard's Valor";
+        public static new string ID { get; private set; }
 
         public override DashCollisionType CollisionType => DashCollisionType.ShieldSlam;
 
         public override bool IsOmnidirectional => false;
 
+        public override void Load()
+        {
+            ID = DashID;
+        }
+
         public override float CalculateDashSpeed(Player player) => 16.9f;
 
-        public override void OnDashEffects(Player player)
+        public override void DashStartupEffects(Player player)
         {
-            // Nothing
+            player.velocity *= 0.9f;
         }
 
         public override void MidDashEffects(Player player, ref float dashSpeed, ref float dashSpeedDecelerationFactor, ref float runSpeedDecelerationFactor)
         {
+
+            // Dash at a faster speed than the default value.
+            dashSpeed = 12.5f;
             // Spawn fire dust around the player's body.
-            for (int d = 0; d < 4; d++)
+            if (DashTimeAdjustedForStartup > 14)
+                return;
+            for (int d = 0; d < 3; d++)
             {
                 Dust holyFireDashDust = Dust.NewDustDirect(player.position + Vector2.UnitY * 4f, player.width, player.height - 8, Main.rand.NextBool() ? 296 : 158, 0f, 0f, 0, default, 1.2f);
                 holyFireDashDust.velocity = -player.velocity * Main.rand.NextFloat(0.1f, 0.75f);
-                holyFireDashDust.scale *= Main.rand.NextFloat(1f, 1.2f);
+                holyFireDashDust.scale *= Main.rand.NextFloat(2f, 2.4f);
                 holyFireDashDust.shader = GameShaders.Armor.GetSecondaryShader(player.cShield, player);
                 holyFireDashDust.noGravity = true;
                 if (Main.rand.NextBool())
                     holyFireDashDust.fadeIn = 0.1f;
             }
-            if (Main.rand.NextBool(3))
-            {
-                Vector2 dustPosition = player.Center + new Vector2(Main.rand.NextFloat(-6f, 6f), Main.rand.NextFloat(-15f, 15f)) - (player.velocity * 1.7f);
-                Dust dust = Dust.NewDustPerfect(dustPosition, 222, -player.velocity * Main.rand.NextFloat(0.15f, 0.4f), 0, default, 0.5f);
-                dust.noGravity = false;
-                dust.shader = GameShaders.Armor.GetSecondaryShader(player.cShield, player);
-            }
+            Vector2 dustPosition = player.Center + new Vector2(Main.rand.NextFloat(-6f, 6f), Main.rand.NextFloat(-15f, 15f)) - (player.velocity * 1.7f);
+            Dust dust = Dust.NewDustPerfect(dustPosition, DustID.FireworkFountain_Yellow, -player.velocity * Main.rand.NextFloat(0.15f, 0.4f), 0, default, 0.5f);
+            dust.noGravity = false;
+            dust.shader = GameShaders.Armor.GetSecondaryShader(player.cShield, player);
         }
 
         public override void OnHitEffects(Player player, NPC npc, IEntitySource source, ref DashHitContext hitContext)
         {
+            if (DashTimeAdjustedForStartup > 14)
+                return;
             // Define hit context variables.
             int hitDirection = player.direction;
             if (player.velocity.X != 0f)
@@ -71,16 +77,16 @@ namespace CalamityMod.CalPlayer.Dashes
             for (int k = 0; k < Dusts; k++)
             {
                 Vector2 velocity = spinningPoint.RotatedBy(radians * k);
-                Dust dust = Dust.NewDustPerfect(npc.Center, 296, velocity * 3f, 0, default, 2.5f);
+                Dust dust = Dust.NewDustPerfect(npc.Center, DustID.CrimsonTorch, velocity * 3f, 0, default, 2.5f);
                 dust.noGravity = true;
                 dust.shader = GameShaders.Armor.GetSecondaryShader(player.cShield, player);
 
-                Dust dust2 = Dust.NewDustPerfect(npc.Center, 158, velocity * 5f, 0, default, 2.2f);
+                Dust dust2 = Dust.NewDustPerfect(npc.Center, DustID.OrangeTorch, velocity * 5f, 0, default, 2.2f);
                 dust2.noGravity = true;
                 dust2.shader = GameShaders.Armor.GetSecondaryShader(player.cShield, player);
                 dust2.color = Color.Salmon;
 
-                Dust dust3 = Dust.NewDustPerfect(npc.Center, 169, velocity * 7f, 0, default, 1.9f);
+                Dust dust3 = Dust.NewDustPerfect(npc.Center, DustID.IchorTorch, velocity * 7f, 0, default, 1.9f);
                 dust3.noGravity = true;
                 dust3.shader = GameShaders.Armor.GetSecondaryShader(player.cShield, player);
                 dust3.color = Color.SandyBrown;
@@ -88,7 +94,7 @@ namespace CalamityMod.CalPlayer.Dashes
             }
             for (int k = 0; k < 5; k++)
             {
-                Dust dust = Dust.NewDustPerfect(npc.Center, 222, new Vector2(0, -3.5f).RotatedByRandom(0.7f) * Main.rand.NextFloat(0.8f, 1.4f), 0, default, 1.2f);
+                Dust dust = Dust.NewDustPerfect(npc.Center, DustID.FireworkFountain_Yellow, new Vector2(0, -3.5f).RotatedByRandom(0.7f) * Main.rand.NextFloat(0.8f, 1.4f), 0, default, 1.2f);
                 dust.noGravity = false;
                 dust.shader = GameShaders.Armor.GetSecondaryShader(player.cShield, player);
             }

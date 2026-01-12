@@ -1,11 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using CalamityMod.BiomeManagers;
 using CalamityMod.Enums;
-using CalamityMod.Graphics.Primitives;
 using CalamityMod.Items.Placeables.Banners;
-using CalamityMod.Items.Weapons.Melee;
+using CalamityMod.Pathfinding;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using ReLogic.Content;
@@ -16,6 +14,7 @@ using Terraria.GameContent.Bestiary;
 using Terraria.ID;
 using Terraria.ModLoader;
 using Terraria.ModLoader.Utilities;
+
 namespace CalamityMod.NPCs.SunkenSea
 {
     public class EutrophicRay : SunkenSeaNPC
@@ -75,13 +74,12 @@ namespace CalamityMod.NPCs.SunkenSea
             NPC.height = 68;
             NPC.damage = 20;
             NPC.defense = 5;
-            NPC.DR_NERD(0.05f);
             NPC.lifeMax = 200;
             NPC.scale = 0.85f;
 
             NPC.noGravity = true;
             NPC.noTileCollide = false;
-            NPC.value = Item.buyPrice(0, 0, 1, 0);
+            NPC.value = Item.buyPrice(silver: 1);
             NPC.HitSound = SoundID.NPCHit1;
             NPC.DeathSound = SoundID.NPCDeath55;
             NPC.knockBackResist = 0.5f;
@@ -92,10 +90,6 @@ namespace CalamityMod.NPCs.SunkenSea
             NPC.Calamity().VulnerableToSickness = true;
             NPC.Calamity().VulnerableToElectricity = true;
             NPC.Calamity().VulnerableToWater = false;
-
-            // Scale stats in Expert and Master
-            CalamityGlobalNPC.AdjustExpertModeStatScaling(NPC);
-            CalamityGlobalNPC.AdjustMasterModeStatScaling(NPC);
         }
 
         public override void SetBestiary(BestiaryDatabase database, BestiaryEntry bestiaryEntry)
@@ -119,11 +113,9 @@ namespace CalamityMod.NPCs.SunkenSea
 
         public override void OnSpawn(IEntitySource source)
         {
-            pathfinding = new PathfindingManager(NPC)
-            {
-                MaxSpeed = 4.85f,
-                Acceleration = 0.5f
-            };
+            pathfinding = new PathfindingManager(this);
+            MaxSpeed = 4.85f;
+            Acceleration = 0.5f;
             CurrentBehavior = IdleBehavior;
         }
 
@@ -132,11 +124,9 @@ namespace CalamityMod.NPCs.SunkenSea
         {
             if (pathfinding == null)
             {
-                pathfinding = new PathfindingManager(NPC)
-                {
-                    MaxSpeed = 4.85f,
-                    Acceleration = 0.5f
-                };
+                pathfinding = new PathfindingManager(this);
+                MaxSpeed = 4.85f;
+                Acceleration = 0.5f;
             }
             CurrentBehavior?.Invoke();
 
@@ -165,7 +155,7 @@ namespace CalamityMod.NPCs.SunkenSea
             if (newBehavior == OutOfWaterBehavior)
                 NPC.noGravity = false;
 
-            pathfinding.MaxSpeed = newBehavior == FleeBehavior ? 6.5f : 5f;
+            MaxSpeed = newBehavior == FleeBehavior ? 6.5f : 5f;
         }
 
         private void IdleBehavior()
@@ -180,7 +170,7 @@ namespace CalamityMod.NPCs.SunkenSea
 
                 NPC.velocity *= 0.98f;
             }
-            pathfinding.DoPathfinding(new(NPC.Center, NPC.Center + Main.rand.NextVector2Unit() * Main.rand.NextFloat(200f, 800f), SunkenSeaTileValidity));
+            pathfinding.DoPathfinding(new(this, NPC.Center, NPC.Center + Main.rand.NextVector2Unit() * Main.rand.NextFloat(200f, 800f), SunkenSeaTileValidity));
         }
         private void AttackBehavior()
         {
@@ -242,19 +232,19 @@ namespace CalamityMod.NPCs.SunkenSea
             // Flee in a straight line if possible, otherwise pathfind away from the attacker.
             if (!Main.tile[(NPC.Center + NPC.DirectionFrom(AvoidedEntity.Center) * 64f).ToTileCoordinates()].IsTileSolid())
             {
-                NPC.velocity += NPC.DirectionFrom(AvoidedEntity.Center) * pathfinding.Acceleration;
+                NPC.velocity += NPC.DirectionFrom(AvoidedEntity.Center) * Acceleration;
                 pathfinding.ClearResults();
 
                 // Cap the speed if MaxSpeed has been surpassed.
-                if (NPC.velocity.LengthSquared() > pathfinding.MaxSpeed * pathfinding.MaxSpeed)
-                    NPC.velocity = Vector2.Normalize(NPC.velocity) * pathfinding.MaxSpeed;
+                if (NPC.velocity.LengthSquared() > MaxSpeed * MaxSpeed)
+                    NPC.velocity = Vector2.Normalize(NPC.velocity) * MaxSpeed;
             }
             else
             {
                 float distanceFromAvoided = Vector2.Distance(NPC.Center, AvoidedEntity.Center);
                 Vector2 pathPoint = NPC.Center + Main.rand.NextVector2Unit() * Utils.Remap(distanceFromAvoided, 0f, 960f, 80f, 3200f);
                 NPC.netUpdate = true;
-                pathfinding.DoPathfinding(new(NPC.Center, pathPoint, SunkenSeaTileValidity));
+                pathfinding.DoPathfinding(new(this, NPC.Center, pathPoint, SunkenSeaTileValidity));
             }
         }
         private void OutOfWaterBehavior()
@@ -402,14 +392,8 @@ namespace CalamityMod.NPCs.SunkenSea
                 {
                     Dust.NewDust(NPC.position, NPC.width, NPC.height, DustID.BlueCrystalShard, hit.HitDirection, -1f, 0, default, 1f);
                 }
-                if (!Main.dedServ)
-                {
-                    Gore.NewGore(NPC.GetSource_Death(), NPC.position, NPC.velocity, Mod.Find<ModGore>("RayGore1").Type, 1f);
-                    Gore.NewGore(NPC.GetSource_Death(), NPC.position, NPC.velocity, Mod.Find<ModGore>("RayGore2").Type, 1f);
-                    Gore.NewGore(NPC.GetSource_Death(), NPC.position, NPC.velocity, Mod.Find<ModGore>("RayGore3").Type, 1f);
-                    Gore.NewGore(NPC.GetSource_Death(), NPC.position, NPC.velocity, Mod.Find<ModGore>("RayGore4").Type, 1f);
-                }
             }
+            CalamityUtils.SpawnGores(NPC, "EutrophicRay", 2);
         }
     }
 }
