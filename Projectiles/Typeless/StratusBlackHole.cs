@@ -1,10 +1,13 @@
 ﻿using CalamityMod.CalPlayer;
 using CalamityMod.Items.Accessories;
+using CalamityMod.Items.Weapons.Typeless;
 using CalamityMod.Systems.Graphic.PixelationSystem;
 using CalamityMod.Systems.Mechanic;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using ReLogic.Utilities;
 using Terraria;
+using Terraria.Audio;
 using Terraria.Graphics.Shaders;
 using Terraria.ModLoader;
 
@@ -13,6 +16,9 @@ namespace CalamityMod.Projectiles.Typeless
     public class StratusBlackHole : ModProjectile, ILocalizedModType
     {
         public new string LocalizationCategory => "Projectiles.Typeless";
+
+        public SlotId LoopSoundSlot = SlotId.Invalid;
+
         public override void SetStaticDefaults()
         {
             Main.projFrames[Type] = 6;
@@ -66,7 +72,26 @@ namespace CalamityMod.Projectiles.Typeless
                     player.Calamity().StratusStarburstResetTimer = (int)MathHelper.Max(player.Calamity().StratusStarburstResetTimer, 180);
                 }
             }
+
+            if (!SoundEngine.TryGetActiveSound(LoopSoundSlot, out var sound))
+                LoopSoundSlot = SoundEngine.PlaySound(StratusSphere.LoopSound with { Volume = 1f }, Projectile.Center);
+            else
+                sound.Position = Projectile.Center; // Keep the sound consistently on the projectile
         }
+
+
+        private void StopLoop()
+        {
+            if (SoundEngine.TryGetActiveSound(LoopSoundSlot, out var sound))
+                sound.Stop();
+
+            LoopSoundSlot = SlotId.Invalid;
+        }
+        public override void OnKill(int timeLeft)
+        {
+            StopLoop();
+        }
+
         public override bool? Colliding(Rectangle projHitbox, Rectangle targetHitbox)
         {
             return targetHitbox.IntersectsConeFastInaccurate(Projectile.Center, 600, 0, MathHelper.TwoPi);

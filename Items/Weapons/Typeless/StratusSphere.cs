@@ -11,6 +11,7 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using ReLogic.Content;
 using Terraria;
+using Terraria.Audio;
 using Terraria.DataStructures;
 using Terraria.GameContent;
 using Terraria.Graphics.Effects;
@@ -23,6 +24,9 @@ namespace CalamityMod.Items.Weapons.Typeless
     public class StratusSphere : ModItem, ILocalizedModType
     {
         public new string LocalizationCategory => "Items.Weapons.Typeless";
+        public static readonly SoundStyle CastSound = new("CalamityMod/Sounds/Item/StratusSphereCast");
+        public static readonly SoundStyle LoopSound = new("CalamityMod/Sounds/Item/StratusSphereLoop");
+
         public override void SetDefaults()
         {
             Item.width = 48;
@@ -37,7 +41,7 @@ namespace CalamityMod.Items.Weapons.Typeless
             Item.knockBack = 5.5f;
             Item.value = CalamityGlobalItem.RarityTurquoiseBuyPrice;
             Item.rare = ModContent.RarityType<Turquoise>();
-            Item.UseSound = SoundID.Item40;
+            Item.UseSound = CastSound;
             Item.autoReuse = true;
             Item.shootSpeed = 20f;
             Item.shoot = ModContent.ProjectileType<StratusBlackHole>();
