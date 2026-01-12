@@ -67,13 +67,13 @@ namespace CalamityMod.Projectiles.Ranged
         //Due to Spark Spreader's tier, I am making this be random of 5-20 seconds
         public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
         {
-            target.AddBuff(BuffID.OnFire, 60 * Main.rand.Next(5, 20));
+            target.AddBuff(BuffID.OnFire, 60 * Main.rand.Next(5, 20+1));
             SpawnSparks(5);
         }
 
         public override void OnHitPlayer(Player target, Player.HurtInfo info)
         {
-            target.AddBuff(BuffID.OnFire, 60 * Main.rand.Next(5, 20));
+            target.AddBuff(BuffID.OnFire, 60 * Main.rand.Next(5, 20+1));
             SpawnSparks(5);
         }
 
