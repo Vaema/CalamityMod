@@ -132,7 +132,7 @@ namespace CalamityMod.Projectiles.Magic
         {
             if (Projectile.ai[2] == 0)
             {
-                if (Main.rand.NextFloat() <= 0.5f) //50% chance to become pick-up-able stars
+                if (Main.rand.NextFloat() <= 0.33f) //33% chance to become pick-up-able stars
                 {
                     Projectile.ai[2] = 2;
                     Projectile.timeLeft = 600 * Projectile.MaxUpdates;
@@ -146,10 +146,12 @@ namespace CalamityMod.Projectiles.Magic
 
         public override void OnKill(int timeLeft)
         {
-            for (int i = 0; i < 10; i++)
+            if (Projectile.ai[2] == 2)
+                return;
+            for (int i = 0; i < 4; i++)
             {
                 Dust dust = Dust.NewDustPerfect(Projectile.Center, ModContent.DustType<SquashDustPixelated>(), -Projectile.velocity);
-                dust.scale = Main.rand.NextFloat(0.4f, 1.1f);
+                dust.scale = Main.rand.NextFloat(0.4f, 0.6f);
                 dust.velocity = (new Vector2(10, 10).RotatedByRandom(100) * Main.rand.NextFloat(0.2f, 1f));
                 dust.color = Color.CadetBlue;
             }
