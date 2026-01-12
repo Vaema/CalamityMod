@@ -15,20 +15,6 @@ namespace CalamityMod.Items.Weapons.Ranged
 {
     public class HalleysInferno : ModItem, ILocalizedModType
     {
-        public class HalleyZoom : ModSystem
-        {
-            public static float halleyZoomAmount = 0;
-            public override void ModifyTransformMatrix(ref SpriteViewMatrix Transform)
-            {
-                if (Main.LocalPlayer.HeldItem.type == ModContent.ItemType<HalleysInferno>())
-                    halleyZoomAmount += 0.05f;
-                else
-                    halleyZoomAmount -= 0.05f;
-                halleyZoomAmount = MathHelper.Clamp(halleyZoomAmount, 0, 1);
-                    Transform.Zoom *= 1 - 0.25f*halleyZoomAmount;
-            }
-        }
-
         public new string LocalizationCategory => "Items.Weapons.Ranged";
 
         public static readonly SoundStyle ShootSound = new("CalamityMod/Sounds/Item/HalleysInfernoShoot") { Volume = 0.68f };
