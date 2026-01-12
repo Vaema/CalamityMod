@@ -77,7 +77,7 @@ namespace CalamityMod.CalPlayer
             if (Starshield > 0 && drawInfo.shadow == 0)
             {
                 var color = Color.Lerp(Color.DeepSkyBlue, Color.LightSkyBlue, (StratusStarburst / (float)MaxStratusStarburst));
-                var opacity = MathHelper.Min(MathHelper.Min(Starshield / 30f, 1f), (3600 - Starshield) / 30f);
+                var opacity = MathHelper.Min(MathHelper.Min(Starshield / 30f, 1f), (CalamityUtils.MinutesToFrames(10) - Starshield) / 30f);
                 float size = 80 + 32 * (StratusStarburst / (float)MaxStratusStarburst);
 
                 Vector2 drawPosition = Player.Center + new Vector2(0, Player.gfxOffY) - Main.screenPosition;
@@ -95,7 +95,7 @@ namespace CalamityMod.CalPlayer
                     GameShaders.Misc["CalamityMod:OtherworldBarrierDistortion"].UseSaturation(0.2f);
                     GameShaders.Misc["CalamityMod:OtherworldBarrierDistortion"].SetShaderTexture(ModContent.Request<Texture2D>("CalamityMod/ExtraTextures/GreyscaleGradients/MeltyNoiseHighContrast"), 1);
                     GameShaders.Misc["CalamityMod:OtherworldBarrierDistortion"].Apply();
-                    Main.EntitySpriteDraw(telegraphBase, drawPosition, null, Color.DarkSlateBlue * opacity, 0, telegraphBase.Size() / 2f, size * 2f * opacity / telegraphBase.Width, 0, 0);
+                    Main.EntitySpriteDraw(telegraphBase, drawPosition, null, Color.DarkSlateBlue * opacity, 0, telegraphBase.Size() / 2f, size * 1.5f * opacity / telegraphBase.Width, 0, 0);
 
                     //Draw the outer particles
                     Main.spriteBatch.EnterShaderRegion(matrix: matrix);

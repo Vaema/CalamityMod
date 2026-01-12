@@ -27,7 +27,7 @@ namespace CalamityMod.Items.Weapons.Typeless
         {
             Item.width = 48;
             Item.height = 30;
-            Item.damage = 500;
+            Item.damage = 400;
             Item.DamageType = AverageDamageClass.Instance;
             Item.useTime = 30;
             Item.useAnimation = 30;
@@ -81,7 +81,7 @@ namespace CalamityMod.Items.Weapons.Typeless
                     player.Calamity().Starshield = 30;
                 }
                 else
-                    player.Calamity().Starshield = 3600;
+                    player.Calamity().Starshield = CalamityUtils.MinutesToFrames(10);
             }
             else
             {
