@@ -43,14 +43,11 @@ namespace CalamityMod.Projectiles.Ranged
             Projectile.frame = Main.rand.Next(0, 6);
             Projectile.scale = 0.75f;
             Projectile.rotation += Main.rand.NextFloat(0, 3);
+            Projectile.stopsDealingDamageAfterPenetrateHits = true;
         }
 
         public override void AI()
         {
-            if (drawColor == Color.Black)
-            {
-                
-            }
             Projectile.rotation += Projectile.direction * 0.05f;
             if (Projectile.FinalExtraUpdate())
             {
@@ -69,7 +66,11 @@ namespace CalamityMod.Projectiles.Ranged
                 Projectile.frame = 0;
             if (Projectile.timeLeft == 1)
             {
-                Main.player[Projectile.owner].Calamity().HalleyAccuracyCounter -= HalleysInferno.LostAccuracyPerMiss;
+
+                for (var i = 0; i < 5; i++)
+                    GeneralParticleHandler.SpawnParticle(new GlowSparkParticle(Projectile.Center, Main.rand.NextVector2CircularEdge(10,10), false, 10, 0.02f, drawColor, new Vector2(0.5f, 1f)));
+                if (Projectile.damage != 0)
+                    Main.player[Projectile.owner].Calamity().HalleyAccuracyCounter -= HalleysInferno.LostAccuracyPerMiss;
             }
         }
         public override bool PreDraw(ref Color lightColor)
@@ -145,6 +146,8 @@ namespace CalamityMod.Projectiles.Ranged
             cplay.HalleyAccuracyCounter++;
             cplay.HalleyAccuracyCounter = MathF.Min(HalleysInferno.MaxAccuracy, cplay.HalleyAccuracyCounter);
             Main.player[Projectile.owner].Calamity().StarburstSpawnFrameCounter += cplay.HalleyAccuracyCounter / HalleysInferno.MaxAccuracy * HalleysInferno.MaxStarburstPerStar;
+            Projectile.velocity *= 0.25f;
+            Projectile.timeLeft = Projectile.MaxUpdates;
         }
 
         public override void OnHitPlayer(Player target, Player.HurtInfo info)
