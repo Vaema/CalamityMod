@@ -52,11 +52,8 @@ namespace CalamityMod.Projectiles.Ranged
         public override float OffsetYDownwards => 24f;
         public override float BaseOffsetY => -2f;
 
-
         public override float RecoilResolveSpeed => 0.12f;
-        private float currentRecoilRotation;
-        private float RecoilRotationAmount = 0.24f;
-        private float RotationResolveSpeed = 0.24f;
+        private float frontArmRotation = 0.14f;
         public ref float ShootingTimer => ref Projectile.ai[0];
 
         private const int BurstProjectiles = 4; // 4 Slagfire shots per burst
@@ -92,26 +89,18 @@ namespace CalamityMod.Projectiles.Ranged
 
             pistilJigglePhysicsTimer = MathHelper.Clamp(pistilJigglePhysicsTimer - 0.04f, 0, 1);
 
-            // Resolve upward component of recoil manually
-            ExtraFrontArmRotation = currentRecoilRotation;
-            if (currentRecoilRotation != 0f)
-                currentRecoilRotation = MathHelper.Lerp(currentRecoilRotation, 0f, RotationResolveSpeed);
+            // Set front arm to be angled slightly up toward the trigger
+            ExtraFrontArmRotation = frontArmRotation;
         }
 
         public void Shoot(Item item)
         {
+            // Create random spread 
             Vector2 projectileDirection = Projectile.velocity.SafeNormalize(Vector2.Zero);
+            Vector2 finalProjectileVelocity = projectileDirection.RotatedByRandom(MathHelper.ToRadians(11f)) * item.shootSpeed;
 
-            int damage = Owner.GetWeaponDamage(item);
-            float knockback = Owner.GetWeaponKnockback(item, item.knockBack);
-            int projectileType = ProjectileType<Slagfire>();
-            float projectileSpeed = item.shootSpeed;
-
-            // Random spread 
-            Vector2 finalProjectileVelocity = projectileDirection.RotatedByRandom(MathHelper.ToRadians(11f)) * projectileSpeed;
-
-            // Slagfire
-            Projectile.NewProjectile(Projectile.GetSource_FromThis(), GunTipPosition, finalProjectileVelocity, projectileType, damage, knockback, Projectile.owner);
+            // Spawn the main projectile
+            Projectile.NewProjectile(Projectile.GetSource_FromThis(), GunTipPosition, finalProjectileVelocity, ModContent.ProjectileType<Slagfire>(), Owner.GetWeaponDamage(item), Owner.GetWeaponKnockback(item, item.knockBack), Projectile.owner);
 
             if (Main.dedServ)
                 return;
@@ -120,7 +109,6 @@ namespace CalamityMod.Projectiles.Ranged
 
             // Translates arm back and upward to simulate recoil
             OffsetLengthFromArm -= 1f;
-            currentRecoilRotation -= RecoilRotationAmount;
 
             pistilJigglePhysicsTimer += 1;
 
@@ -133,8 +121,7 @@ namespace CalamityMod.Projectiles.Ranged
                 ModContent.DustType<LightDust>(),
                 projectileDirection.RotatedByRandom(MathHelper.PiOver4 * 1.2f) * Main.rand.NextFloat(2.5f, 9f),
                 newColor: Color.Red);
-                shootDust.noGravity = false;
-                
+                shootDust.noGravity = false;
             }
         }
 

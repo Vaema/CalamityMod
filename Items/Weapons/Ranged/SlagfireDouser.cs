@@ -42,8 +42,7 @@ namespace CalamityMod.Items.Weapons.Ranged
         {
             Projectile holdout = Projectile.NewProjectileDirect(source, player.MountedCenter, Vector2.Zero, ProjectileType<SlagfireDouserHoldout>(), damage, knockback, player.whoAmI);
 
-            // Seting its velocity like this is what aims to the mouse
-            holdout.velocity = (player.Calamity().mouseWorld - player.MountedCenter).SafeNormalize(Vector2.Zero);
+            holdout.velocity = (player.Calamity().mouseWorld - player.MountedCenter).SafeNormalize(Vector2.Zero); // Aim toward mouse
 
             return false; 
         }
