@@ -11,15 +11,12 @@ namespace CalamityMod.Items.Weapons.Ranged
 {
     public class SlagfireDouser : ModItem, ILocalizedModType
     {
-        public static int TimeBetweenBursts = 4; 
-        public static int ProjectilesPerBurst = 4;
-
         public new string LocalizationCategory => "Items.Weapons.Ranged";
         public override void SetDefaults()
         {
             Item.width = 104;
             Item.height = 34;
-            Item.damage = 12;
+            Item.damage = 10;
             Item.DamageType = DamageClass.Ranged;
             Item.useTime = 30;
             Item.useAnimation = 30; 

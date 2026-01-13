@@ -46,7 +46,7 @@ namespace CalamityMod.Projectiles.Ranged
             }
 
 
-            Color trailColor = new Color(214, 51, 70);
+            Color color = new(254, 63, 63);
 
             for (int i = 0; i < 3; i++)
             {
@@ -61,8 +61,8 @@ namespace CalamityMod.Projectiles.Ranged
                 false,
                 6,
                 0.04f,
-                trailColor * 0.85f,
-                new Vector2(0.8f, 1), // Scaling for the end
+                color * 0.85f,
+                new Vector2(0.45f, 0.9f), // Scaling for the end
                           shrinkSpeed: 0.4f);
                 GeneralParticleHandler.SpawnParticle(spark);
             }
@@ -79,7 +79,7 @@ namespace CalamityMod.Projectiles.Ranged
                 false,
                 8,
                 0.02f,
-                trailColor * 0.5f,
+                color * 0.5f,
                 new Vector2(0.5f, 0.8f),
                 shrinkSpeed: 0.3f);
                 GeneralParticleHandler.SpawnParticle(subtleSpark);
@@ -88,18 +88,14 @@ namespace CalamityMod.Projectiles.Ranged
             // Falling particles to appear as lava droplets, similar to speed blaster's falling dust
             if (Main.rand.NextBool(50))
             {
-
                 Vector2 spawnHere = Projectile.position;
                 spawnHere.Y = Projectile.Bottom.Y + 3f; // A little down
 
-                Color coreSlagColor = new Color(247, 111, 77);
-                Color outerSlagColor = new Color(242, 157, 170);
                 Vector2 particleVelocity = new Vector2(Main.rand.Next(-1, 1), 3);
 
-                Color particleColor = Color.Lerp(coreSlagColor, outerSlagColor, Main.rand.NextFloat());
 
                 GeneralParticleHandler.SpawnParticle(new WaterFlavoredParticle(spawnHere, particleVelocity, true, // Affected by gravity
-                Main.rand.Next(30, 50), Main.rand.NextFloat(0.4f, 0.65f), particleColor));
+                Main.rand.Next(30, 50), Main.rand.NextFloat(0.4f, 0.65f), new(220, 138, 138)));
             }
 
             if (Projectile.localAI[1] >= 10f)
@@ -122,40 +118,22 @@ namespace CalamityMod.Projectiles.Ranged
 
         public override bool OnTileCollide(Vector2 oldVelocity)
         {
-            Color coreSlagColor = new Color(247, 111, 77);
-            Color outerSlagColor = new Color(242, 157, 170);
+            Color innerColor = new(230, 198, 198);
+            Color outterColor = new(248, 63, 63);
 
-            Vector2 collisionPoint = Projectile.position;
+            Vector2 baseParticleDirection = new Vector2(Projectile.direction, 0).SafeNormalize(Vector2.UnitX * Projectile.direction);
 
-
-            //These adjustments are made to look more embedded into tiles instead of them seemingly floating above where they landed
-            if (oldVelocity.Y != 0f) // Hitting a horizontal surface
+            for (int i = 0; i < 4; i++)
             {
-                if (oldVelocity.Y > 0f)
-                    collisionPoint.Y = Projectile.Bottom.Y + 8f; // Spawn inside bottom edge
-                else
-                    collisionPoint.Y = Projectile.Top.Y - 8f; // Spawn inside top edge. Yes, this should also be negative.
-            }
-            if (oldVelocity.X != 0f) // Hitting a vertical surface
-            {
-                if (oldVelocity.X > 0f)
-                    collisionPoint.X = Projectile.Right.X + 2.5f; // Spawn slightly inside right edge of projectile
-                else
-                    collisionPoint.X = Projectile.Left.X - 2.5f; // Spawn slightly inside left edge of projectile
-            }
+                // This rotation makes it look like it's bursting out from a set point
+                Vector2 particleVelocity = baseParticleDirection.RotatedByRandom(MathHelper.ToRadians(50f)) * Main.rand.NextFloat(10f, 13f);
 
-            for (int i = 0; i < 3; i++)
-            {
-                Vector2 spawnPosition = collisionPoint + Main.rand.NextVector2Circular(2f, 2f); 
+                bool affectedByGravity = true;
+                int lifetime = Main.rand.Next(20, 45);
+                float scale = Main.rand.NextFloat(.3f, .7f);
 
-                Vector2 particleVelocity = oldVelocity.SafeNormalize(Vector2.Zero).RotatedByRandom(MathHelper.ToRadians(30f)) * Main.rand.NextFloat(0.5f, 1.5f);
-
-                particleVelocity.Y += Main.rand.NextFloat(0.5f, 1.5f);
-
-                Color particleColor = Color.Lerp(coreSlagColor, outerSlagColor, Main.rand.NextFloat());
-
-                GeneralParticleHandler.SpawnParticle(new WaterFlavoredParticle(spawnPosition, particleVelocity, true, // Has gravity
-                Main.rand.Next(40, 70), Main.rand.NextFloat(0.8f, 1.3f), particleColor));
+                GeneralParticleHandler.SpawnParticle(new WaterFlavoredParticle(Projectile.Center, particleVelocity, affectedByGravity, lifetime, scale * 1.15f, outterColor));
+                GeneralParticleHandler.SpawnParticle(new WaterFlavoredParticle(Projectile.Center, particleVelocity, affectedByGravity, lifetime, scale * 0.75f, innerColor));
             }
             Projectile.Kill();
             return true;
@@ -163,12 +141,11 @@ namespace CalamityMod.Projectiles.Ranged
 
         public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damage)
         {
-            Color coreSlagColor = new Color(247, 111, 77);
-            Color outerSlagColor = new Color(242, 157, 170);
+            Color innerColor = new(230, 198, 198);
+            Color outterColor = new(248, 63, 63);
 
             Vector2 baseParticleDirection = new Vector2(Projectile.direction, 0).SafeNormalize(Vector2.UnitX * Projectile.direction);
-            Vector2 initialSpawnPosition = target.Center + new Vector2(target.width / 2f * Projectile.direction + 15f * Projectile.direction, Main.rand.NextFloat(-target.height / 2f, target.height / 2f));
-
+            Vector2 initialSpawnPosition = target.Center + new Vector2(target.width / 2f * Projectile.direction + 4f * Projectile.direction, Main.rand.NextFloat(-target.height / 2f, target.height / 2f));
 
             for (int i = 0; i < 4; i++) 
             {
@@ -181,11 +158,10 @@ namespace CalamityMod.Projectiles.Ranged
                 int lifetime = Main.rand.Next(20, 45); 
                 float scale = Main.rand.NextFloat(.3f, .7f);
 
-                // Simple way to get a similar effect to what I want
-                // Ideally I would want there to be an inner glow + outer glow effect like with the projectile particles
-                Color particleColor = Color.Lerp(coreSlagColor, outerSlagColor, Main.rand.NextFloat());
+                GeneralParticleHandler.SpawnParticle(new WaterFlavoredParticle(finalSpawnPosition, particleVelocity, affectedByGravity, lifetime, scale * 1.15f, outterColor));
+                GeneralParticleHandler.SpawnParticle(new WaterFlavoredParticle(finalSpawnPosition, particleVelocity, affectedByGravity, lifetime, scale * 0.75f, innerColor));
 
-                GeneralParticleHandler.SpawnParticle(new WaterFlavoredParticle(finalSpawnPosition, particleVelocity, affectedByGravity, lifetime, scale, particleColor));
+
             }
 
             //WoF Spawning

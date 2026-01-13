@@ -1,13 +1,19 @@
 ﻿using System;
+using CalamityMod.Dusts;
+using CalamityMod.Dusts.WaterSplash;
 using CalamityMod.Items.Weapons.Ranged;
 using CalamityMod.Particles;
 using CalamityMod.Projectiles.BaseProjectiles;
+using CalamityMod.Projectiles.Boss;
+using CalamityMod.Projectiles.Rogue;
+using CalamityMod.Projectiles.Typeless;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using ReLogic.Content;
 using Terraria;
 using Terraria.Audio;
 using Terraria.ID;
+using Terraria.ModLoader;
 using static Terraria.ModLoader.ModContent;
 
 namespace CalamityMod.Projectiles.Ranged
@@ -22,9 +28,10 @@ namespace CalamityMod.Projectiles.Ranged
 
         public override string Texture => "CalamityMod/Projectiles/Ranged/SlagfireDouserHoldout";
         public static string TexturePathPistil => "CalamityMod/Projectiles/Ranged/SlagfireDouserPistil";
-
         private float pistilJigglePhysicsTimer = 0;
-        public override Vector2 GunTipPosition // There is likely a cleaner way to do this with the base gun holdout proj
+
+        // Positioning overrides
+        public override Vector2 GunTipPosition
         {
             get
             {
@@ -38,22 +45,25 @@ namespace CalamityMod.Projectiles.Ranged
                 return baseTip;
             }
         }
-
-        public override float RecoilResolveSpeed => 0.12f;
         public override float MaxOffsetLengthFromArm => 12f;
         public override float OffsetXUpwards => -25f;
         public override float OffsetXDownwards => -25f;
         public override float OffsetYUpwards => -24f;
         public override float OffsetYDownwards => 24f;
         public override float BaseOffsetY => -2f;
+
+
+        public override float RecoilResolveSpeed => 0.12f;
+        private float currentRecoilRotation;
+        private float RecoilRotationAmount = 0.24f;
+        private float RotationResolveSpeed = 0.24f;
         public ref float ShootingTimer => ref Projectile.ai[0];
 
         private const int BurstProjectiles = 4; // 4 Slagfire shots per burst
         private const int DelayBetweenShotsInBurst = 4;
 
-        public static int DustEffectsID { get; set; } = DustID.Ice_Red;
-        public static Color EffectsColor { get; set; } = Color.MediumVioletRed;
-        public static Color StaticEffectsColor { get; set; } = Color.MediumVioletRed;
+        public static Color EffectsColor { get; set; } = Color.MediumVioletRed * 1.3f;
+        public static Color StaticEffectsColor { get; set; } = Color.MediumVioletRed * 1.3f;
 
         public override void HoldoutAI()
         {
@@ -76,25 +86,16 @@ namespace CalamityMod.Projectiles.Ranged
                 {
                     Shoot(HeldItem);
                 }
-
-                if (Main.rand.NextBool(3))
-                {
-                    Vector2 projectileDirection = Projectile.velocity.SafeNormalize(Vector2.Zero);
-
-                    Vector2 position = GunTipPosition - Projectile.velocity * 5; // Position near the gun tip
-                    Vector2 velocity = projectileDirection.RotatedByRandom(MathHelper.ToRadians(0.25f)) * Main.rand.NextFloat(0.9f, 1.9f);
-
-                    SquishyLightParticle energy = new(position, velocity, Main.rand.NextFloat(0.18f, 0.22f), StaticEffectsColor, Main.rand.Next(3, 5 + 1), 1, 1.5f);
-                    GeneralParticleHandler.SpawnParticle(energy);
-
-                    Dust dust = Dust.NewDustPerfect(position, DustEffectsID, velocity, 0, default, Main.rand.NextFloat(1.2f, 1.7f));
-                    dust.noGravity = true;
-                }
             }
 
             ShootingTimer++; // Once per tick
 
             pistilJigglePhysicsTimer = MathHelper.Clamp(pistilJigglePhysicsTimer - 0.04f, 0, 1);
+
+            // Resolve upward component of recoil manually
+            ExtraFrontArmRotation = currentRecoilRotation;
+            if (currentRecoilRotation != 0f)
+                currentRecoilRotation = MathHelper.Lerp(currentRecoilRotation, 0f, RotationResolveSpeed);
         }
 
         public void Shoot(Item item)
@@ -112,40 +113,29 @@ namespace CalamityMod.Projectiles.Ranged
             // Slagfire
             Projectile.NewProjectile(Projectile.GetSource_FromThis(), GunTipPosition, finalProjectileVelocity, projectileType, damage, knockback, Projectile.owner);
 
-            // Saves resources for dedicated servers from here
             if (Main.dedServ)
                 return;
 
-            SoundEngine.PlaySound(SoundID.Item61, Projectile.Center);
+            SoundEngine.PlaySound(SoundID.Item61 with { Volume = 0.9f, Pitch = 0.125f }, Projectile.Center);
 
-            // Apply recoil by decreasing the offset length from the arm
+            // Translates arm back and upward to simulate recoil
             OffsetLengthFromArm -= 1f;
+            currentRecoilRotation -= RecoilRotationAmount;
+
             pistilJigglePhysicsTimer += 1;
 
 
-            int dustAmount = Main.rand.Next(10, 15 + 1);
+            int dustAmount = Main.rand.Next(3, 6);
             for (int i = 0; i < dustAmount; i++)
             {
                 Dust shootDust = Dust.NewDustPerfect(
                 GunTipPosition,
-                DustEffectsID,
-                projectileDirection.RotatedByRandom(MathHelper.PiOver4) * Main.rand.NextFloat(3f, 8f)); // Dust spread for visual effect
-                shootDust.noGravity = true;
-                shootDust.noLight = true;
-                shootDust.noLightEmittence = true;
+                ModContent.DustType<LightDust>(),
+                projectileDirection.RotatedByRandom(MathHelper.PiOver4 * 1.2f) * Main.rand.NextFloat(2.5f, 9f),
+                newColor: Color.Red);
+                shootDust.noGravity = false;
+                
             }
-
-            // Pulse FX
-            Particle shootPulse = new DirectionalPulseRing(
-            GunTipPosition,
-      Vector2.Zero, // Pulse doesn't need initial velocity
-            Color.Gray * 0.7f,
-            new Vector2(0.5f, 1f),
-            Projectile.rotation,
-      0.1f,
-            0.4f,
-            20);
-            GeneralParticleHandler.SpawnParticle(shootPulse);
         }
 
         public override bool PreDraw(ref Color lightColor)
