@@ -2205,3 +2205,8 @@ XyksBlessingOrange: {
 		[c/E1B65F:Prove that it was never a waste.']
 		'''
 }
+
+V8Engine: {
+	DisplayName: V8 Engine
+	Tooltip: ""
+}

@@ -935,6 +935,7 @@ namespace CalamityMod.CalPlayer
         public bool seraphTracers = false;
         public bool frostFlare = false;
         public bool evolution = false;
+        public bool v8Engine = false;
         public bool nanotech = false;
         public bool deadshotBrooch = false;
         public bool shadowMinions = false;
@@ -2371,6 +2372,7 @@ namespace CalamityMod.CalPlayer
             amalgam = false;
             frostFlare = false;
             evolution = false;
+            v8Engine = false;
             nanotech = false;
             deadshotBrooch = false;
             tesla = false;
@@ -3761,6 +3763,14 @@ namespace CalamityMod.CalPlayer
 
             // Trigger for pressing the God Slayer dash key
             if (CalamityKeybinds.GodSlayerDashHotKey.JustPressed)
+            {
+                if (godSlayer && !Player.pulley && Player.grappling[0] == -1 && !Player.tongued && !Player.mount.Active && !Player.HasCooldown(GodSlayerDash.ID) && Player.dashDelay == 0)
+                {
+                    godSlayerDashHotKeyPressed = true;
+                }
+            }
+
+            if (CalamityKeybinds.DashHotkey.JustPressed)
             {
                 if (godSlayer && !Player.pulley && Player.grappling[0] == -1 && !Player.tongued && !Player.mount.Active && !Player.HasCooldown(GodSlayerDash.ID) && Player.dashDelay == 0)
                 {

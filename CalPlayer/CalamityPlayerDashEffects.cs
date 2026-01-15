@@ -231,7 +231,7 @@ namespace CalamityMod.CalPlayer
             }
 
             // Handle first-frame effects.
-            else if (HasCustomDash && !Player.mount.Active)
+            else if (HasCustomDash && (!Player.mount.Active || DashID == V8EngineDash.ID))
             {
                 UsedDash.dashTime = 0;
                 if (DoADash(UsedDash.CalculateDashSpeed(Player)))
