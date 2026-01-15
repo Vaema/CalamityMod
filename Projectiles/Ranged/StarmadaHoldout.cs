@@ -28,14 +28,14 @@ namespace CalamityMod.Projectiles.Ranged
 
         public int time = 0;
         public int lastUseTime = 0;
-        public int perfectLeniancy = 2;
+        public static int perfectLeniancy = 2;
+        public static int goodLeniancy = perfectLeniancy + 6;
+        public static int starburstPerfectTime = 23;
         public float frontRecoil = 0;
-        public int goodLeniancy => perfectLeniancy + 6;
         public ref float shootingCooldown => ref Projectile.ai[0];
         public ref float starburstTimer => ref Projectile.ai[1];
         public int extendedCooldown => (int)(lastUseTime * 1.2f);
         public int perfectCooldown => (int)(lastUseTime * 1.5f);
-        public int starburstPerfectTime = 23;
         public float recoilIntensity = 0;
         public int recoilTimerMax = 62;
         public Vector2 recoilDirection;

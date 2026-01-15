@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using CalamityMod.Dusts;
 using CalamityMod.Items.Weapons.Ranged;
 using CalamityMod.Particles;
@@ -27,13 +28,14 @@ namespace CalamityMod.Projectiles.Ranged
 
         public int time = 0;
         public int lastUseTime = 0;
-        public int perfectLeniancy = 2;
-        public int goodLeniancy => perfectLeniancy + 6;
+        public static int perfectLeniancy = 2;
+        public static int goodLeniancy = perfectLeniancy + 6;
+        public static int starburstPerfectTime = 23;
         public ref float shootingCooldown => ref Projectile.ai[0];
         public ref float starburstTimer => ref Projectile.ai[1];
         public int extendedCooldown => (int)(lastUseTime * 1.2f);
         public int naildriverCooldown => (int)(lastUseTime * 1.5f);
-        public int starburstPerfectTime = 23;
+        
         public float recoilIntensity = 0;
         public int recoilTimerMax = 62;
         public Vector2 recoilDirection;
@@ -54,6 +56,15 @@ namespace CalamityMod.Projectiles.Ranged
             Projectile.friendly = true;
             Projectile.DamageType = DamageClass.Ranged;
             Projectile.tileCollide = false;
+        }
+        public override void SendExtraAIHoldout(BinaryWriter writer)
+        {
+            writer.Write(lastUseTime);
+        }
+
+        public override void ReceiveExtraAIHoldout(BinaryReader reader)
+        {
+            lastUseTime = reader.ReadInt32();
         }
         public override void HoldoutAI()
         {
@@ -97,6 +108,7 @@ namespace CalamityMod.Projectiles.Ranged
                 FireShotgun();
             if (rightShootChecks)
             {
+                Projectile.netUpdate = true;
                 SoundStyle test = new("CalamityMod/Sounds/Item/StarfleetStarburst");
                 SoundEngine.PlaySound(test with { Volume = 1f, Pitch = 0f }, Projectile.Center);
                 starburstTimer++;
@@ -149,6 +161,7 @@ namespace CalamityMod.Projectiles.Ranged
         }
         public void FireShotgun()
         {
+            Projectile.netUpdate = true;
             // 50% chance to not consume ammo
             Owner.PickAmmo(HeldItem, out _, out _, out _, out _, out _, Main.rand.NextBool());
 
