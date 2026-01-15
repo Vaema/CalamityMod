@@ -47,7 +47,7 @@ namespace CalamityMod.Projectiles.Ranged
             }
 
             revSpeed = Utils.Remap(revFrames, 0, maxFrames - 120, 1, 20, true);
-            if (shootingTimer >= initialFireTime && revFrames < maxFrames && secondShot)
+            if (shootingTimer >= initialFireTime && revFrames < maxFrames && secondShot && Owner.whoAmI == Main.myPlayer)
             {
                 Owner.PickAmmo(Owner.HeldItem, out int bulletAMMO, out float SpeedNoUse, out int bulletDamage, out float kBackNoUse, out _);
                 
@@ -56,7 +56,7 @@ namespace CalamityMod.Projectiles.Ranged
 
                 Vector2 shootVelocity = Projectile.velocity.SafeNormalize(Vector2.UnitY) * 19;
 
-                if (Main.myPlayer == Projectile.owner)
+                if (Owner.whoAmI == Main.myPlayer)
                 {
                     float spread = 0.045f * Utils.GetLerpValue(0, maxFrames, revFrames, true);
                     Projectile.NewProjectile(Projectile.GetSource_FromThis(), GunTipPosition, (shootVelocity).RotatedByRandom(spread), bulletAMMO, Projectile.damage / 2, Projectile.knockBack, Projectile.owner);
@@ -76,10 +76,11 @@ namespace CalamityMod.Projectiles.Ranged
             {
                 Owner.PickAmmo(Owner.HeldItem, out int bulletAMMO, out float SpeedNoUse, out int bulletDamage, out float kBackNoUse, out _);
                 Vector2 shootVelocity = Projectile.velocity.SafeNormalize(Vector2.UnitY) * 19;
-                if (Main.myPlayer == Projectile.owner)
+                if (Owner.whoAmI == Main.myPlayer)
                 {
                     float spread = 0.045f * Utils.GetLerpValue(0, maxFrames, revFrames, true);
                     Projectile.NewProjectile(Projectile.GetSource_FromThis(), GunTipPosition, (shootVelocity).RotatedByRandom(spread).RotatedByRandom(0.04f), bulletAMMO, Projectile.damage / 2, Projectile.knockBack, Projectile.owner);
+                    Projectile.netUpdate = true;
                 }
                 shootingTimer = 0;
                 secondShot = true;
@@ -89,7 +90,7 @@ namespace CalamityMod.Projectiles.Ranged
             revFrames++;
             shineScale *= 0.77f;
 
-            if (revFrames >= maxFrames && !isTired || (Owner.Calamity().mouseRight && revFrames > 2 ))
+            if ((revFrames >= maxFrames && !isTired || (Owner.Calamity().mouseRight && revFrames > 2 )) && Owner.whoAmI == Main.myPlayer)
             {
                 Owner.SetScreenshake(6.5f);
                 OffsetLengthFromArm -= 35f;

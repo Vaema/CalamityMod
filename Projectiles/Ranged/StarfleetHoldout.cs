@@ -60,11 +60,13 @@ namespace CalamityMod.Projectiles.Ranged
         public override void SendExtraAIHoldout(BinaryWriter writer)
         {
             writer.Write(lastUseTime);
+            writer.Write(Projectile.spriteDirection);
         }
 
         public override void ReceiveExtraAIHoldout(BinaryReader reader)
         {
             lastUseTime = reader.ReadInt32();
+            Projectile.spriteDirection = reader.ReadInt32();
         }
         public override void HoldoutAI()
         {
@@ -95,8 +97,8 @@ namespace CalamityMod.Projectiles.Ranged
                 return;
             }
             bool hasAmmo = Owner.PickAmmo(HeldItem, out _, out _, out _, out _, out _, true);
-            bool leftShootChecks = (Main.mouseLeft && !Main.mapFullscreen && !Owner.mouseInterface && shootingCooldown == 0) && hasAmmo;
-            bool rightShootChecks = Owner.Calamity().mouseRight && !Main.mapFullscreen && !Owner.mouseInterface && starburstCooldown == 0 && starburstTimer == 0;
+            bool leftShootChecks = Owner.whoAmI == Main.myPlayer && (Main.mouseLeft && !Main.mapFullscreen && !Owner.mouseInterface && shootingCooldown == 0) && hasAmmo;
+            bool rightShootChecks = Owner.whoAmI == Main.myPlayer && (Owner.Calamity().mouseRight && !Main.mapFullscreen && !Owner.mouseInterface && starburstCooldown == 0 && starburstTimer == 0);
 
             if (Main.mouseLeft && !hasAmmo && OffsetLengthFromArm >= 24.5f)
             {
@@ -108,7 +110,7 @@ namespace CalamityMod.Projectiles.Ranged
                 FireShotgun();
             if (rightShootChecks)
             {
-                Projectile.netUpdate = true;
+                Projectile.ForceNetUpdate();
                 SoundStyle test = new("CalamityMod/Sounds/Item/StarfleetStarburst");
                 SoundEngine.PlaySound(test with { Volume = 1f, Pitch = 0f }, Projectile.Center);
                 starburstTimer++;
@@ -161,7 +163,7 @@ namespace CalamityMod.Projectiles.Ranged
         }
         public void FireShotgun()
         {
-            Projectile.netUpdate = true;
+            Projectile.ForceNetUpdate();
             // 50% chance to not consume ammo
             Owner.PickAmmo(HeldItem, out _, out _, out _, out _, out _, Main.rand.NextBool());
 
