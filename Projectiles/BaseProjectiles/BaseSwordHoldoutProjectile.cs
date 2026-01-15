@@ -308,7 +308,7 @@ namespace CalamityMod.Projectiles.BaseProjectiles
         private void FakeOnSpawn()
         {
             var player = Main.player[Projectile.owner];
-            angle = (player.Center - player.Calamity().mouseWorld).SafeNormalize(Vector2.One);
+            angle = (player.MountedCenter - player.Calamity().mouseWorld).SafeNormalize(Vector2.One);
             Projectile.velocity = Vector2.Zero;
             if (angle.X < 0)
             {
@@ -381,9 +381,9 @@ namespace CalamityMod.Projectiles.BaseProjectiles
             if (timer < StartupTime || timer > StartupTime + swingTime)
             {
                 if (inStartup)
-                    angle = Vector2.Lerp(angle, (player.Center - player.Calamity().mouseWorld).SafeNormalize(Vector2.One), RotateInStartup);
+                    angle = Vector2.Lerp(angle, (player.MountedCenter - player.Calamity().mouseWorld).SafeNormalize(Vector2.One), RotateInStartup);
                 if (inCooldown)
-                    angle = Vector2.Lerp(angle, (player.Center - player.Calamity().mouseWorld).SafeNormalize(Vector2.One), RotateInCooldown);
+                    angle = Vector2.Lerp(angle, (player.MountedCenter - player.Calamity().mouseWorld).SafeNormalize(Vector2.One), RotateInCooldown);
                 if (angle.X < 0)
                 {
                     player.direction = 1;
@@ -403,7 +403,7 @@ namespace CalamityMod.Projectiles.BaseProjectiles
             {
                 adust = MathHelper.ToRadians(-45);
             }
-            var armCenter = player.Center - new Vector2(5 * player.direction, 2);
+            var armCenter = player.MountedCenter - new Vector2(5 * player.direction, 2);
             if (AfterImageLength > 0)
             {
                 oldProjectileRot.Add(Projectile.rotation);
@@ -424,7 +424,7 @@ namespace CalamityMod.Projectiles.BaseProjectiles
             AdditionalAI();
             if (!Projectile.active)
                 return;
-            oldPlayerOffset = Projectile.Center - player.Center;
+            oldPlayerOffset = Projectile.Center - player.MountedCenter;
             player.itemTime = ExistsTime + 2 - timer;
             player.itemAnimation = ExistsTime + 2 - timer;
             if (timer > ExistsTime)
@@ -511,7 +511,7 @@ namespace CalamityMod.Projectiles.BaseProjectiles
             if (lineCollisionLength > 0)
             {
                 var player = Main.player[Projectile.owner];
-                var armcenter = player.Center - new Vector2(5 * player.direction, 2);
+                var armcenter = player.MountedCenter - new Vector2(5 * player.direction, 2);
                 var swordDir = armcenter.DirectionTo(Projectile.Center);
                 var collisionline = new Vector2(lineCollisionLength / 2f, 0).RotatedBy(swordDir.ToRotation()) * Projectile.scale;
                 bool c = Collision.CheckAABBvLineCollision(targetHitbox.Location.ToVector2(), targetHitbox.Size(), Projectile.Center, Projectile.Center + collisionline);

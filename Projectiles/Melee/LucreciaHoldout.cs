@@ -127,11 +127,11 @@ namespace CalamityMod.Projectiles.Melee
                     {
                         if (timer % 8 == 0)
                         {
-                            Vector2 pos = player.Center + Projectile.rotation.ToRotationVector2() * 60f;
+                            Vector2 pos = player.MountedCenter + Projectile.rotation.ToRotationVector2() * 60f;
                             Particle sparkle = new CritSpark(pos, new Vector2(7f, 0).RotatedBy(Projectile.rotation), Color.Lerp(Color.CornflowerBlue, Color.MediumPurple, Main.rand.NextFloat(1f)), Color.White * 0.33f, 1.2f, 12, 0.3f, 1.2f);
                             GeneralParticleHandler.SpawnParticle(sparkle);
                         }
-                        Particle smear = new CircularSmearVFX(player.Center, Color.CornflowerBlue * 0.35f, Projectile.rotation, Projectile.scale * 1.25f);
+                        Particle smear = new CircularSmearVFX(player.MountedCenter, Color.CornflowerBlue * 0.35f, Projectile.rotation, Projectile.scale * 1.25f);
                         GeneralParticleHandler.SpawnParticle(smear);
                     }
 
@@ -237,15 +237,15 @@ namespace CalamityMod.Projectiles.Melee
                         var mousePosition = Main.MouseWorld;
 
                         // Smear fx on swing
-                        Vector2 shootDir = player.Center.DirectionTo(mousePosition) * 10f;
+                        Vector2 shootDir = player.MountedCenter.DirectionTo(mousePosition) * 10f;
                         int dir = -Math.Sign(mousePosition.X);
-                        Particle swipe = new CustomSpark(player.Center - shootDir * 4, shootDir.RotatedBy(0.075f * (dir * (modplayer.swingNum % 2 == 0 ? 1 : -1))) * 1.22f, "CalamityMod/Particles/VerticalSmearLarge", false, (int)(14 / player.GetAttackSpeed(DamageClass.Melee)), 0.3f, modplayer.swingNum % 2 == 0 ? Color.CornflowerBlue * 0.85f : Color.MediumPurple * 0.8f, new Vector2(1.1f, 1.3f), true, false, 0, false, false);
+                        Particle swipe = new CustomSpark(player.MountedCenter - shootDir * 4, shootDir.RotatedBy(0.075f * (dir * (modplayer.swingNum % 2 == 0 ? 1 : -1))) * 1.22f, "CalamityMod/Particles/VerticalSmearLarge", false, (int)(14 / player.GetAttackSpeed(DamageClass.Melee)), 0.3f, modplayer.swingNum % 2 == 0 ? Color.CornflowerBlue * 0.85f : Color.MediumPurple * 0.8f, new Vector2(1.1f, 1.3f), true, false, 0, false, false);
                         GeneralParticleHandler.SpawnParticle(swipe);
 
-                        var fireDirection = Vector2.Normalize(mousePosition - player.Center);
+                        var fireDirection = Vector2.Normalize(mousePosition - player.MountedCenter);
                         var helixSpeed = 12f;
                         var helixVelocity = fireDirection * helixSpeed;
-                        Projectile.NewProjectile(Projectile.GetSource_FromThis(), player.Center + fireDirection * 3, helixVelocity, ModContent.ProjectileType<LucreciaBolt>(), Projectile.damage, Projectile.knockBack, Projectile.owner);
+                        Projectile.NewProjectile(Projectile.GetSource_FromThis(), player.MountedCenter + fireDirection * 3, helixVelocity, ModContent.ProjectileType<LucreciaBolt>(), Projectile.damage, Projectile.knockBack, Projectile.owner);
                         
                         SoundStyle projectile = new("CalamityMod/Sounds/Item/LucreciaBoltFire");
                         SoundEngine.PlaySound(projectile with { Volume = 0.8f, Pitch = Main.rand.NextFloat(-0.06f, 0.1f) }, Projectile.Center);
