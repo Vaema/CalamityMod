@@ -34,17 +34,6 @@ namespace CalamityMod.Systems
         #region ModifyWorldGenTasks
         public override void ModifyWorldGenTasks(List<GenPass> tasks, ref double totalWeight)
         {
-            // Replace the shimmer gen to make it place sanely
-            int shimmerIndex = tasks.FindIndex(genpass => genpass.Name.Equals("Shimmer"));
-            if (shimmerIndex != -1)
-            {
-                tasks[shimmerIndex] = new PassLegacy("Shimmer", (progress, config) =>
-                {
-                    progress.Message = Language.GetOrRegister("Mods.CalamityMod.UI.BetterShimmer").Value;
-                    CustomShimmer.NewShimmer();
-                });
-            }
-
             // Better Underworld structures after the world has been smoothed
             int underworldStructuresIndex = tasks.FindIndex(genpass => genpass.Name.Equals("Smooth World"));
             if (underworldStructuresIndex != -1)

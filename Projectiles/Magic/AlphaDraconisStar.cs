@@ -1,10 +1,17 @@
-﻿using CalamityMod.Buffs.DamageOverTime;
+﻿using System;
+using System.Linq;
+using CalamityMod.Buffs.DamageOverTime;
+using CalamityMod.Dusts;
+using CalamityMod.Graphics.Primitives;
 using CalamityMod.Particles;
 using CalamityMod.Utilities.Daybreak;
+using CalamityMod.Utilities.Daybreak.Buffers;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria;
 using Terraria.Audio;
+using Terraria.DataStructures;
+using Terraria.Graphics.Shaders;
 using Terraria.ID;
 using Terraria.ModLoader;
 
@@ -33,6 +40,11 @@ namespace CalamityMod.Projectiles.Magic
             Projectile.tileCollide = false;
             Projectile.timeLeft = Projectile.MaxUpdates * 300;
             Projectile.stopsDealingDamageAfterPenetrateHits = true;
+        }
+
+        public override void OnSpawn(IEntitySource source)
+        {
+            ProjectileID.Sets.TrailCacheLength[Type] = 8;
         }
 
         public override void AI()
@@ -104,13 +116,23 @@ namespace CalamityMod.Projectiles.Magic
                     }
                 }
             }
+
+            // Emit a small amount of dust while traveling
+            if (Main.rand.NextBool(10))
+            {
+                Dust dust = Dust.NewDustPerfect(Projectile.Center, Effects.ArsenalEffects.ArsenalPlasmaDust, -Projectile.velocity);
+                dust.scale = Main.rand.NextFloat(0.4f, 1f);
+                dust.velocity = -Projectile.velocity.RotatedByRandom(0.3f) * Main.rand.NextFloat(0.1f, 0.7f);
+                dust.noGravity = true;
+                dust.color = Color.CadetBlue;
+            }
         }
 
         public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
         {
             if (Projectile.ai[2] == 0)
             {
-                if (Main.rand.NextFloat() <= 0.5f) //50% chance to become pick-up-able stars
+                if (Main.rand.NextFloat() <= 0.33f) //33% chance to become pick-up-able stars
                 {
                     Projectile.ai[2] = 2;
                     Projectile.timeLeft = 600 * Projectile.MaxUpdates;
@@ -122,15 +144,127 @@ namespace CalamityMod.Projectiles.Magic
             }
         }
 
+        public override void OnKill(int timeLeft)
+        {
+            if (Projectile.ai[2] == 2)
+                return;
+            for (int i = 0; i < 4; i++)
+            {
+                Dust dust = Dust.NewDustPerfect(Projectile.Center, ModContent.DustType<SquashDustPixelated>(), -Projectile.velocity);
+                dust.scale = Main.rand.NextFloat(0.4f, 0.6f);
+                dust.velocity = (new Vector2(10, 10).RotatedByRandom(100) * Main.rand.NextFloat(0.2f, 1f));
+                dust.color = Color.CadetBlue;
+            }
+        }
+
+
+
+
         public override bool PreDraw(ref Color lightColor)
         {
-            using (Main.spriteBatch.Scope())
+            // Glow FX
+            Texture2D mainTexture = ModContent.Request<Texture2D>(Texture).Value;
+            SpriteEffects spriteEffects = SpriteEffects.None;
+
+            Vector2 drawOrigin = mainTexture.Size() / 2f;
+            float drawScale = Projectile.scale;
+            float drawRotation = Projectile.rotation;
+            Vector2 drawPosition;
+
+            float glowSine = ((float)Math.Sin(Main.GlobalTimeWrappedHourly * 14f) + 1f) / 2f;
+            float pulse = MathHelper.Lerp(0.25f, 0.8f, glowSine); // Least protruding to most protruding
+            drawPosition = Projectile.Center - Main.screenPosition;
+
+            for (int i = 0; i < 12; i++)
             {
-                Main.spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.Additive, SamplerState.PointClamp, DepthStencilState.None, Main.Rasterizer, null, Main.GameViewMatrix.TransformationMatrix);
-                CalamityUtils.DrawAfterimagesCentered(Projectile, 1, Color.White, shrink: true);
-                Main.spriteBatch.End();
+                Vector2 unitVector = (MathHelper.TwoPi * i / 12f).ToRotationVector2();
+
+                Vector2 innerOffset = unitVector * (1.4f * pulse);
+                Main.spriteBatch.Draw(mainTexture, drawPosition + innerOffset, null, Color.SkyBlue with { A = 0 } * 0.225f, drawRotation, drawOrigin, drawScale, spriteEffects, 0f);
+
+                Vector2 outerOffset = unitVector * (1.75f * pulse);
+                Main.spriteBatch.Draw(mainTexture, drawPosition + outerOffset, null, Color.DeepSkyBlue with { A = 0 } * 0.1f, drawRotation, drawOrigin, drawScale, spriteEffects, 0f);
             }
+
+            // Trail rendering
+            Main.spriteBatch.End(out var ss);
+
+            var device = Main.instance.GraphicsDevice;
+            using var lease = RenderTargetPool.Shared.Rent(
+                device,
+                Main.screenWidth / 2,
+                Main.screenHeight / 2,
+                RenderTargetDescriptor.Default
+            );
+
+            using (lease.Scope(clearColor: Color.Transparent))
+            {
+                if (Projectile.velocity.Length() > 1) // Will otherwise cause noticeable frame drops
+                {
+                    GameShaders.Misc["CalamityMod:ImpFlameTrail"].SetShaderTexture(ModContent.Request<Texture2D>("CalamityMod/ExtraTextures/Trails/ScarletDevilStreak"));
+                    PrimitiveRenderer.RenderTrail(Projectile.oldPos, new(FireWidthFunction, FireColorFunction, (_, _) => Projectile.Size * 0.5f, smoothen: true, pixelate: false, shader: GameShaders.Misc["CalamityMod:ImpFlameTrail"], useUnscaledMatrices: true), Projectile.oldPos.Length + 32);
+
+                    Vector2[] fireCoreLength = Projectile.oldPos.Take(8).ToArray();
+                    GameShaders.Misc["CalamityMod:ImpFlameTrail"].SetShaderTexture(ModContent.Request<Texture2D>("CalamityMod/ExtraTextures/Trails/SylvestaffStreak"));
+                    PrimitiveRenderer.RenderTrail(fireCoreLength, new(FireCoreWidthFunction, FireCoreColorFunction, (_, _) => Projectile.Size * 0.5f, smoothen: true, pixelate: false, shader: GameShaders.Misc["CalamityMod:ImpFlameTrail"], useUnscaledMatrices: true), fireCoreLength.Length + 24);
+                }
+            }
+
+            Main.spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, SamplerState.PointClamp, DepthStencilState.None, Main.Rasterizer, null, Main.GameViewMatrix.TransformationMatrix);
+            Main.spriteBatch.Draw(lease.Target, Vector2.Zero, null, Color.White, 0f, Vector2.Zero, 2f, SpriteEffects.None, 0f);
+            Main.spriteBatch.End();
+
+            Main.spriteBatch.Begin(ss);
             return false;
+        }
+
+        public float FireWidthFunction(float completion, Vector2 pos)
+        {
+            float width;
+            float maxBodyWidth = 32f * Projectile.scale;
+            float curveRatio = 0.05f;
+            var positions = Projectile.oldPos.ToList();
+            positions.RemoveAll(x => x == Vector2.Zero);
+            // Crop the tip of the trail into a conic shape.
+            if (completion < curveRatio)
+                width = MathF.Pow(completion / curveRatio, 0.5f) * maxBodyWidth;
+            else
+                width = Utils.Remap(completion, curveRatio, 1f, maxBodyWidth, 0f);
+
+            // Pulse inwards and outwards over time.
+            float pulseInterpolant = MathF.Cos(MathHelper.Pi * completion - Main.GlobalTimeWrappedHourly * 20f) * 0.5f + 0.5f;
+            float additionalPulseWidth = MathHelper.Lerp(0f, 12f, pulseInterpolant);
+            return (width + additionalPulseWidth) * positions.Count() / (float)ProjectileID.Sets.TrailCacheLength[Type];
+        }
+
+        public Color FireColorFunction(float completion, Vector2 pos)
+        {
+            Color mainColor = Color.CadetBlue * 1.1f;
+            Color endColor = Color.Lerp(mainColor, Color.Transparent, Utils.GetLerpValue(0.8f, 1f, completion, true));
+            return Color.Lerp(mainColor, endColor, completion) * Projectile.Opacity;
+        }
+
+        public float FireCoreWidthFunction(float completion, Vector2 pos)
+        {
+            float width;
+            float maxBodyWidth = Projectile.scale * 8;
+            float curveRatio = 0.1f;
+            var positions = Projectile.oldPos.ToList();
+            positions.RemoveAll(x => x == Vector2.Zero);
+
+            if (completion < curveRatio)
+                width = MathF.Sin(completion / curveRatio * MathHelper.PiOver2) * maxBodyWidth + curveRatio;
+            else
+                width = Utils.Remap(completion, curveRatio, 1f, maxBodyWidth, 0f);
+            return width * positions.Count() / (float)ProjectileID.Sets.TrailCacheLength[Type];
+        }
+
+        public Color FireCoreColorFunction(float completion, Vector2 pos)
+        {
+            Color mainColor = Color.CadetBlue;
+            Color tipColor = Color.Lerp(mainColor, Color.Transparent, Utils.GetLerpValue(0.2f, 1f, completion, true));
+            Color fullBodyColor = Color.Lerp(mainColor, tipColor, completion);
+            return Color.Lerp(fullBodyColor, Color.White, 0.175f) * Projectile.Opacity;
         }
     }
 }

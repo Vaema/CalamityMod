@@ -281,6 +281,7 @@ namespace CalamityMod.NPCs
             "Borgus", // <@!539127427482255376> (therealmeepman)
             "Postman Hiss", // <@!454638106122125312> (karinthefairy)
             "Cosmoec", // <@!793660591449309204> (cosmoecark)
+            "Junorism", // <@!740625002596008036> (hewhoshallnotbebaned)
         ];
         private static readonly string[] TruffleNames =
         [

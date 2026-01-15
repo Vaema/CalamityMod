@@ -1,4 +1,5 @@
-﻿using CalamityMod.Dusts;
+﻿using System;
+using CalamityMod.Dusts;
 using CalamityMod.Items.Weapons.DraedonsArsenal;
 using CalamityMod.Particles;
 using Microsoft.Xna.Framework;
@@ -87,8 +88,8 @@ namespace CalamityMod.Projectiles.DraedonsArsenal
                 {
                     if (Main.rand.NextBool(3) && canStick)
                     {
-                        Dust dust = Dust.NewDustPerfect(Projectile.Center, Main.rand.NextBool(6) ? Effects.ArsenalEffects.ArsenalDust : Effects.ArsenalEffects.ArsenalPlasmaDust, -Projectile.velocity);
-                        dust.scale = dust.type == Effects.ArsenalEffects.ArsenalDust ? Main.rand.NextFloat(0.3f, 0.6f) : Main.rand.NextFloat(0.6f, 1.4f);
+                        Dust dust = Dust.NewDustPerfect(Projectile.Center, Effects.ArsenalEffects.ArsenalPlasmaDust, -Projectile.velocity);
+                        dust.scale = Main.rand.NextFloat(0.6f, 1.4f);
                         dust.velocity = -Projectile.velocity.RotatedByRandom(0.3f) * Main.rand.NextFloat(0.1f, 0.7f);
                         dust.noGravity = true;
                         dust.color = Effects.ArsenalEffects.ArsenalPlasmaColor;
@@ -138,8 +139,8 @@ namespace CalamityMod.Projectiles.DraedonsArsenal
                 }
                 if (Main.rand.NextBool())
                 {
-                    Dust dust = Dust.NewDustPerfect(Projectile.Center, Main.rand.NextBool(6) ? Effects.ArsenalEffects.ArsenalDust : ModContent.DustType<SquashDust>(), -Projectile.velocity);
-                    dust.scale = dust.type == Effects.ArsenalEffects.ArsenalDust ? Main.rand.NextFloat(0.3f, 0.6f) : Main.rand.NextFloat(0.6f, 1.4f);
+                    Dust dust = Dust.NewDustPerfect(Projectile.Center, ModContent.DustType<SquashDust>(), -Projectile.velocity);
+                    dust.scale = Main.rand.NextFloat(0.6f, 1.4f);
                     dust.velocity = (new Vector2(35, 35).RotatedByRandom(100) * Main.rand.NextFloat(0.1f, 0.7f)) * Utils.GetLerpValue(90, 0, stuckTimer);
                     dust.noGravity = true;
                     dust.color = Effects.ArsenalEffects.ArsenalPlasmaColor;
@@ -212,8 +213,8 @@ namespace CalamityMod.Projectiles.DraedonsArsenal
 
             for (int i = 0; i < (int)(15 * bonus); i++)
             {
-                Dust dust = Dust.NewDustPerfect(Projectile.Center, Main.rand.NextBool(6) ? Effects.ArsenalEffects.ArsenalDust : stuckInGround ? ModContent.DustType<SquashDust>() : Effects.ArsenalEffects.ArsenalPlasmaDust, -Projectile.velocity);
-                dust.scale = dust.type == Effects.ArsenalEffects.ArsenalDust ? Main.rand.NextFloat(0.3f, 0.6f) : Main.rand.NextFloat(0.9f, 1.8f);
+                Dust dust = Dust.NewDustPerfect(Projectile.Center, stuckInGround ? ModContent.DustType<SquashDust>() : Effects.ArsenalEffects.ArsenalPlasmaDust, -Projectile.velocity);
+                dust.scale = Main.rand.NextFloat(0.9f, 1.8f);
                 dust.velocity = (new Vector2(35, 35).RotatedByRandom(100) * Main.rand.NextFloat(0.1f, 0.7f)) * Utils.GetLerpValue(90, 0, stuckTimer);
                 dust.noGravity = false;
                 dust.color = Effects.ArsenalEffects.ArsenalPlasmaColor;
@@ -231,24 +232,17 @@ namespace CalamityMod.Projectiles.DraedonsArsenal
                 return false;
 
             Asset<Texture2D> tex = ModContent.Request<Texture2D>("CalamityMod/Projectiles/DraedonsArsenal/ImmolationArrow");
+            Asset<Texture2D> bloom = ModContent.Request<Texture2D>("CalamityMod/Particles/BloomCircle");
 
-            if (!stuckInGround && !stuckInTarget && false)
-                CalamityUtils.DrawAfterimagesCentered(Projectile, ProjectileID.Sets.TrailingMode[Projectile.type], Effects.ArsenalEffects.ArsenalPlasmaColor with { A = 0 }, 1, tex.Value);
+            float randSize = Main.rand.NextFloat(0.9f, 1f);
+            float fadeIn = (float)Math.Pow(Utils.GetLerpValue(90, 5, stuckTimer, true), 3);
+            for (int i = 0; i < 6; i++)
+                Main.EntitySpriteDraw(tex.Value, Projectile.Center - Main.screenPosition - (Projectile.rotation - MathHelper.PiOver2).ToRotationVector2() * 6 * i, null, Color.Lerp(Color.White, Effects.ArsenalEffects.ArsenalPlasmaColor, i * 0.35f) with { A = 0 } * 0.5f, Projectile.rotation, tex.Size() * 0.5f, new Vector2(0.7f - 0.15f * i, 0.7f + 0.15f * i) * randSize * (0.6f + 0.25f * i) * 2, SpriteEffects.None);
 
-            float randSize = Main.rand.NextFloat(0.8f, 1.1f);
-            for (int i = 0; i < 20; i++)
-            {
-                Vector2 scale = Projectile.scale * new Vector2(0.5f, 1) * 1.5f * randSize;
-                Vector2 drawOffset = (MathHelper.TwoPi * i / 20f).ToRotationVector2() * 3;
-                Main.EntitySpriteDraw(tex.Value, Projectile.Center - Main.screenPosition + drawOffset, null, Effects.ArsenalEffects.ArsenalPlasmaColor with { A = 0 } * 0.2f, Projectile.rotation, tex.Size() * 0.5f, scale, SpriteEffects.None);
-            }
+            for (int i = 0; i < 3; i++)
+                Main.EntitySpriteDraw(bloom.Value, Projectile.Center - Main.screenPosition + (Projectile.rotation - MathHelper.PiOver2).ToRotationVector2() * 3, null, Color.Lerp(Color.White, Effects.ArsenalEffects.ArsenalPlasmaColor, 0.5f * i) with { A = 0 } * fadeIn * 0.3f, Projectile.rotation, bloom.Size() * 0.5f, new Vector2(1f - 0.2f * i, 1f + 0.35f * i) * randSize * (0.5f + 0.15f * i), SpriteEffects.None);
+
             Vector2 scale2 = 1.1f * new Vector2(0.5f, 1) * 1.5f * randSize;
-            Main.EntitySpriteDraw(tex.Value, Projectile.Center - Main.screenPosition, null, Effects.ArsenalEffects.ArsenalPlasmaColor with { A = 0 } * 0.5f, Projectile.rotation, tex.Size() * 0.5f, scale2, SpriteEffects.None);
-            if (stuckInTarget || stuckInGround)
-            {
-                Vector2 scale = 1.1f * new Vector2(0.5f, 1) * 1.5f * randSize;
-                Main.EntitySpriteDraw(tex.Value, Projectile.Center - Main.screenPosition, null, Color.White with { A = 0 } * Utils.GetLerpValue(90, 30, stuckTimer, true), Projectile.rotation, tex.Size() * 0.5f, scale, SpriteEffects.None);
-            }
             return false;
         }
     }

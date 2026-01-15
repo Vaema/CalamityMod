@@ -3,6 +3,7 @@ using CalamityMod.Effects;
 using CalamityMod.Graphics.Primitives;
 using CalamityMod.NPCs.DevourerofGods;
 using CalamityMod.Systems.Graphic;
+using CalamityMod.Utilities.Daybreak;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria;
@@ -413,23 +414,30 @@ namespace CalamityMod.Skies
 
         private void DrawDistortionRift(SpriteBatch spriteBatch)
         {
-            // Impose the distortion rift contents onto the primitives via shader.
-            var metaballShader = CalamityShaders.MetaballEdgeShader;
-            Texture2D distortionRiftContents = DoGVisualsManager.DistortionRiftBackgroundContentsTarget.Target;
-            Texture2D distortionRift = DoGVisualsManager.DistortionRiftPrimitivesTarget.Target;
+            using (spriteBatch.Scope())
+            {
+                spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, SamplerState.PointClamp, DepthStencilState.Default, null, CalamityShaders.MetaballEdgeShader.Value, Main.BackgroundViewMatrix.TransformationMatrix);
+                // Impose the distortion rift contents onto the primitives via shader.
+                var metaballShader = CalamityShaders.MetaballEdgeShader;
+                Texture2D distortionRiftContents = DoGVisualsManager.DistortionRiftBackgroundContentsTarget.Target;
+                Texture2D distortionRift = DoGVisualsManager.DistortionRiftPrimitivesTarget.Target;
 
-            Vector2 screenSize = new(Main.screenWidth, Main.screenHeight);
+                Vector2 screenSize = new(Main.graphics.graphicsDevice.Viewport.Width, Main.graphics.graphicsDevice.Viewport.Height);
 
-            metaballShader.Value.Parameters["layerSize"]?.SetValue(distortionRiftContents.Size());
-            metaballShader.Value.Parameters["screenSize"]?.SetValue(screenSize);
-            metaballShader.Value.Parameters["layerOffset"]?.SetValue(Vector2.Zero);
-            metaballShader.Value.Parameters["edgeColor"]?.SetValue(Color.Lerp(Color.Lerp(DoGSkyColor, Color.White, 0.6f), Color.Black, 0.15f).ToVector4());
+                metaballShader.Value.Parameters["layerSize"]?.SetValue(distortionRiftContents.Size());
+                metaballShader.Value.Parameters["screenSize"]?.SetValue(screenSize);
+                metaballShader.Value.Parameters["layerOffset"]?.SetValue(Vector2.Zero);
+                metaballShader.Value.Parameters["singleFrameScreenOffset"]?.SetValue(Vector2.Zero);
+                metaballShader.Value.Parameters["edgeColor"]?.SetValue(Color.Lerp(Color.Lerp(DoGSkyColor, Color.White, 0.6f), Color.Black, 0.15f).ToVector4());
+                metaballShader.Value.Parameters["layerColor"]?.SetValue(DoGSkyColor.ToVector4());
 
-            Main.instance.GraphicsDevice.Textures[1] = distortionRiftContents;
-            Main.instance.GraphicsDevice.SamplerStates[1] = SamplerState.LinearWrap;
+                Main.instance.GraphicsDevice.Textures[1] = distortionRiftContents;
+                Main.instance.GraphicsDevice.SamplerStates[1] = SamplerState.LinearWrap;
 
-            metaballShader.Value.CurrentTechnique.Passes[0].Apply();
-            spriteBatch.Draw(distortionRift, new Rectangle(0, 0, Main.screenWidth, Main.screenHeight), Color.White);
+                metaballShader.Value.CurrentTechnique.Passes[0].Apply();
+                spriteBatch.Draw(distortionRift, new Rectangle(0, 0, (int)screenSize.X, (int)screenSize.Y), Color.White);
+                Main.spriteBatch.End();
+            }
         }
 
         private void GetCorrectDoGColor()

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using CalamityMod.Events;
 using CalamityMod.Items.Accessories;
+using CalamityMod.Items.Accessories.Vanity;
 using CalamityMod.Items.Fishing;
 using CalamityMod.Items.Fishing.AstralCatches;
 using CalamityMod.Items.Fishing.BrimstoneCragCatches;
@@ -185,6 +186,23 @@ namespace CalamityMod.CalPlayer
                 if (Main.rand.NextBool(15))
                 {
                     itemDrop = ModContent.ItemType<EnergyCore>();
+                    return;
+                }
+
+                if (Main.rand.NextBool(50))
+                {
+                    switch (Main.rand.Next(3))
+                    {
+                        case 0:
+                            itemDrop = ModContent.ItemType<RoverDrive>();
+                            return;
+                        case 1:
+                            itemDrop = ModContent.ItemType<WulfrumBattery>();
+                            return;
+                        case 2:
+                            itemDrop = ModContent.ItemType<AbandonedWulfrumHelmet>();
+                            return;
+                    }
                     return;
                 }
             }
