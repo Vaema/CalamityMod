@@ -36,10 +36,8 @@ namespace CalamityMod.Items.Weapons.Melee
             base.SetDefaults();
         }
 
-        public override bool AltFunctionUse(Player player)
-        {
-            return true;
-        }
+        // You can only use the right-click if you have sufficient Elemental Mastery
+        public override bool AltFunctionUse(Player player) => player.Calamity().elementalMastery >= 100;
 
         public override void HoldItem(Player player)
         {
