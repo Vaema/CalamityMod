@@ -992,7 +992,11 @@ ThaumaticChair: {
 
 ThermalTorch: {
 	DisplayName: Thermal Torch
-	Tooltip: Can be placed in water
+	Tooltip:
+		'''
+		Can be placed in water
+		Can dispell the magical darkness of the Abyss when placed
+		'''
 }
 
 TranquilityCandle: {
@@ -1002,7 +1006,11 @@ TranquilityCandle: {
 
 VoidTorch: {
 	DisplayName: Void Torch
-	Tooltip: Can be placed in water
+	Tooltip:
+		'''
+		Can be placed in water
+		Can dispell the magical darkness of the Abyss when placed
+		'''
 }
 
 AnahitaTrophy: {

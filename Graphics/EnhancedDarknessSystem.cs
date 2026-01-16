@@ -14,20 +14,26 @@ namespace CalamityMod.Graphics
 {
     public class EnhancedDarknessSystem : ModSystem
     {
+
+        private static Asset<Texture2D> _defaultTexture;
         public class LightSource
         {
-            public Asset<Texture2D> texture;
+
+            public Texture2D texture = _defaultTexture.Value;
             public float scale = 1;
             public Vector2 vectorScale = Vector2.One;
             public Vector2 center = Main.LocalPlayer.Center;
             public float rotation = 0;
             public float opacity = 1;
-
+            public Color color = Color.White;
+            public int lifetime = 1;
+            public Rectangle? frame = null;
             public LightSource() { }
 
-            public LightSource(Vector2? center = null, Asset<Texture2D> texture = null, float scale = 1, float rotation = 0, Vector2? vectorScale = null, float opacity = 1)
+            // This constructor only gives the most common arguments. Frame, Color, lifetime, etc. must be set in curly braces afterwards to prevent this constructor getting too unwieldy.
+            public LightSource(Vector2? center = null, Texture2D texture = null, float scale = 1, float rotation = 0, Vector2? vectorScale = null, float opacity = 1)
             {
-                this.texture = texture ?? ModContent.Request<Texture2D>("CalamityMod/Particles/BloomCircle");
+                this.texture = texture ?? ModContent.Request<Texture2D>("CalamityMod/Particles/BloomCircle").Value;
                 this.scale = scale;
                 this.vectorScale = vectorScale ?? Vector2.One;
                 this.center = center ?? Main.LocalPlayer.Center;
@@ -37,10 +43,11 @@ namespace CalamityMod.Graphics
         }
 
         public static List<LightSource> lights = new();
-        public override void OnModLoad()
+        public override void Load()
         {
             On_OverlayManager.Draw += DrawShadowOverlay;
             On_LightingEngine.UpdateLightDecay += AdjustTransmissiveness;
+            _defaultTexture = ModContent.Request<Texture2D>("CalamityMod/Particles/BloomCircle");
         }
 
         private void DrawShadowOverlay(On_OverlayManager.orig_Draw orig, OverlayManager self, SpriteBatch spriteBatch, RenderLayers layer, bool beginSpriteBatch)
@@ -58,8 +65,8 @@ namespace CalamityMod.Graphics
             var device = Main.instance.GraphicsDevice;
             using var lease = RenderTargetPool.Shared.Rent(
                 device,
-                Main.screenWidth / 2,
-                Main.screenHeight / 2,
+                Main.screenWidth,
+                Main.screenHeight,
                 RenderTargetDescriptor.Default
             );
 
@@ -68,7 +75,7 @@ namespace CalamityMod.Graphics
                 Main.spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.Additive, SamplerState.PointClamp, DepthStencilState.Default, Main.Rasterizer, null, Matrix.Identity);
                 foreach (var item in lights)
                 {
-                    Main.spriteBatch.Draw(item.texture.Value, (item.center - Main.screenPosition) * 0.5f, null, Color.White * item.opacity, item.rotation, item.texture.Size() * 0.5f, item.vectorScale * item.scale * 0.5f, SpriteEffects.None, 0);
+                    Main.spriteBatch.Draw(item.texture, (item.center - Main.screenPosition), item.frame, item.color * item.opacity, item.rotation, item.frame is null ? item.texture.Size() * 0.5f : item.frame.Value.Size(), item.vectorScale * item.scale, SpriteEffects.None, 0);
                 }
                 Main.spriteBatch.End();
             }
@@ -79,7 +86,7 @@ namespace CalamityMod.Graphics
                 var shader = GameShaders.Misc["CalamityMod:DozeLightingShader"];
                 shader.UseOpacity(mp.darknessIntensity);
                 shader.Apply();
-                Main.spriteBatch.Draw(lease.Target, Vector2.Zero, null, Color.White, 0, Vector2.Zero, 2, 0, 0);
+                Main.spriteBatch.Draw(lease.Target, Vector2.Zero, null, Color.White, 0, Vector2.Zero, 1, 0, 0);
                 spriteBatch.End();
             }
         }
@@ -109,7 +116,17 @@ namespace CalamityMod.Graphics
         public override void PreUpdateEntities()
         {
             //Every frame, the light sources are determined by what was added on that frame only. Therefore, we reset the light list every frame.
-            lights.Clear();
+            //Lifetime is provided to smooth out things that don't run every frame consistently to prevent flickering, such as the abyss torches.
+            for (var i = 0; i < lights.Count; i++)
+            {
+                var item = lights[i];
+                item.lifetime--;
+                if (item.lifetime <= 0)
+                {
+                    lights.Remove(item);
+                    i--;
+                }   
+            }
         }
 
     }

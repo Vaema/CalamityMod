@@ -4956,7 +4956,7 @@ namespace CalamityMod.CalPlayer
                 //Flashlight
                 //Due to being in postUpdate we need to adjust the mousepos for the player's movement that will have happened
                 var mouseworld = Main.MouseWorld + Player.position - Player.oldPosition;
-                EnhancedDarknessSystem.lights.Add(new(center: Player.Center + Player.DirectionTo(mouseworld) * 750f, rotation: Player.DirectionTo(mouseworld).ToRotation() - MathHelper.PiOver2, vectorScale: new Vector2(0.75f * abyssFlashlightWidthMultiplier, 0.75f), texture: Request<Texture2D>("CalamityMod/Particles/BloomLineFade")));
+                EnhancedDarknessSystem.lights.Add(new(center: Player.Center + Player.DirectionTo(mouseworld) * 750f, rotation: Player.DirectionTo(mouseworld).ToRotation() - MathHelper.PiOver2, vectorScale: new Vector2(0.85f * abyssFlashlightWidthMultiplier, 0.75f), texture: Request<Texture2D>("CalamityMod/Particles/BloomLineFade").Value));
             }
 
             if (lastDeerclopsPosition.HasValue)
@@ -4969,7 +4969,7 @@ namespace CalamityMod.CalPlayer
 
                 //Add the main light circle for the arena
                 DeerclopsAI.ArenaTex ??= ModContent.Request<Texture2D>(DeerclopsAI.ArenaTexPath);
-                EnhancedDarknessSystem.lights.Add(new(lastDeerclopsPosition.Value, scale: DeerclopsAI.borderScale, texture: DeerclopsAI.ArenaTex));
+                EnhancedDarknessSystem.lights.Add(new(lastDeerclopsPosition.Value, scale: DeerclopsAI.borderScale, texture: DeerclopsAI.ArenaTex.Value));
 
                 //we draw light around the player when far away so they have some visibility, although very small. This is especially nice in multiplayer. we scale opacity with distance bc it looks better
                 EnhancedDarknessSystem.lights.Add(new EnhancedDarknessSystem.LightSource(scale: 0.75f, opacity: MathHelper.Clamp(Main.LocalPlayer.DistanceSQ(lastDeerclopsPosition.Value) / (409600 /*640^2*/), 0, 1)));
