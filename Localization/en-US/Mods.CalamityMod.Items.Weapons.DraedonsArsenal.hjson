@@ -73,7 +73,8 @@ HolofibreImmolator: {
 		Fires three gravity-affected plasma drops which dissolve through foes
 		Holding <left> quickly charges the bow, firing a high-speed plasma arrow
 		Plasma arrows will detonate after impact, creating stronger explosions if stuck into tiles
-		Holding <right> while firing will repeatedly fire uncharged shots
+		Holding <right> will repeatedly fire uncharged shots
+		Holding <right> and <left> will automatically fire charged arrows at a slightly slower rate
 		[c/1FFBFF:'The elegance of holofibre is unmatched.]
 		[c/1FFBFF:However, mechanical tension may have produced more consistent results.']
 		'''

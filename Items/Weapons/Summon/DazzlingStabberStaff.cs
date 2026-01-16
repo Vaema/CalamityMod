@@ -39,27 +39,43 @@ namespace CalamityMod.Items.Weapons.Summon
         }
         public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)
         {
+            float usedMinionSlots = 0;
+            foreach (var minions in Main.ActiveProjectiles)
+            {
+                if (minions.owner == player.whoAmI)
+                    usedMinionSlots += minions.minionSlots;
+            }
+            bool hasSlotsForSummon = true;
+            if (usedMinionSlots + 1 > player.maxMinions)
+                hasSlotsForSummon = false;
+
             player.AddBuff(Item.buffType, 2);
 
-            for (int i = 0; i < 3; i++)
+            int projCount = player.ownedProjectileCounts[type] + (hasSlotsForSummon ? 3 : 0);
+            if (hasSlotsForSummon)
             {
-                var minion = Projectile.NewProjectileDirect(source, player.ClampedMouseWorld(), Vector2.Zero, type, damage, knockback, player.whoAmI, 0, 0, i + 1);
-                minion.originalDamage = Item.damage;
+                for (int i = 0; i < 3; i++)
+                {
+                    var minion = Projectile.NewProjectileDirect(source, player.ClampedMouseWorld(), Vector2.Zero, type, damage, knockback, player.whoAmI, 0, 0, i + 1);
+                    minion.originalDamage = Item.damage;
+                }
             }
             float angleMax = MathHelper.ToRadians(360f);
-            if (player.ownedProjectileCounts[type] == 1)
+            if (projCount == 100)
                 angleMax = 0f;
             float index = 1f;
-            if (player.ownedProjectileCounts[Item.shoot] > 30)
+            if (projCount > 30)
             {
-                angleMax += MathHelper.ToRadians((player.ownedProjectileCounts[Item.shoot] - 30) * 2.5f);
+                angleMax += MathHelper.ToRadians((projCount - 30) * 2.5f);
             }
             angleMax = angleMax > MathHelper.ToRadians(360f) ? MathHelper.ToRadians(360f) : angleMax; // More intuitive than using a min function
             foreach (Projectile p in Main.ActiveProjectiles)
             {
                 if (p.type == type && p.owner == player.whoAmI)
                 {
-                    p.ai[1] = index / player.ownedProjectileCounts[type] * angleMax - angleMax / 2f;
+                    int adjustedProjCount = (int)(projCount);
+                    Main.NewText("index: " + index.ToString() + " | projCount: " + adjustedProjCount.ToString() + " | angleMax: " + angleMax.ToString());
+                    p.ai[1] = index / adjustedProjCount * angleMax - angleMax / 2f;
                     p.netUpdate = true;
                     index++;
                 }
