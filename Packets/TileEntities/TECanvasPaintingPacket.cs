@@ -8,8 +8,6 @@ namespace CalamityMod.Packets
     {
         public static TECanvasPaintingPacket Instance { get; private set; }
 
-        public override byte MessageType => (byte)CalamityModMessageType.UpdateCanvasPainting;
-
         public static void Send(TECanvasPainting painting, float posX, float posY, float scale, int toClient = -1, int ignoreClient = -1)
         {
             if (painting is null)

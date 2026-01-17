@@ -10,8 +10,6 @@ namespace CalamityMod.Packets
     {
         public static SpawnSuperDummyPacket Instance { get; private set; }
 
-        public override byte MessageType => (byte)CalamityModMessageType.SpawnSuperDummy;
-
         public static void Send(int x, int y, int toClient = -1, int ignoreClient = -1)
         {
             var packet = Instance.CreateBasePacket();

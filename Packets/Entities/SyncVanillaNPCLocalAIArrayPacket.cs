@@ -7,8 +7,6 @@ namespace CalamityMod.Packets
     {
         public static SyncVanillaNPCLocalAIArrayPacket Instance { get; private set; }
 
-        public override byte MessageType => (byte)CalamityModMessageType.SyncVanillaNPCLocalAIArray;
-
         public static void Send(NPC npc, int toClient = -1, int ignoreClient = -1)
         {
             if (npc is null)

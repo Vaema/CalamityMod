@@ -8,8 +8,6 @@ namespace CalamityMod.Packets
     {
         public static ExaltationDirectionSyncPacket Instance { get; private set; }
 
-        public override byte MessageType => (byte)CalamityModMessageType.ExaltationDirection;
-
         public static void Send(CalamityPlayer playerToSync, int toClient = -1, int ignoreClient = -1)
         {
             if (playerToSync is null)

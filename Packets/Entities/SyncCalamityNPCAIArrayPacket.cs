@@ -10,8 +10,6 @@ namespace CalamityMod.Packets
 
         public static SyncCalamityNPCAIArrayPacket Instance { get; private set; }
 
-        public override byte MessageType => (byte)CalamityModMessageType.SyncCalamityNPCAIArray;
-
         public static void Send(NPC npc, int toClient = -1, int ignoreClient = -1)
         {
             if (npc is null)

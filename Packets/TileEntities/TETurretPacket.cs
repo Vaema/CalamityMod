@@ -9,8 +9,6 @@ namespace CalamityMod.Packets
     {
         public static TETurretPacket Instance { get; private set; }
 
-        public override byte MessageType => (byte)CalamityModMessageType.Turret;
-
         public static void Send(TEBaseTurret turret, int toClient = -1, int ignoreClient = -1)
         {
             if (turret is null)

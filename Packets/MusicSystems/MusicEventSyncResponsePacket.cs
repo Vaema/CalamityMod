@@ -9,8 +9,6 @@ namespace CalamityMod.Packets
     {
         public static MusicEventSyncResponsePacket Instance { get; private set; }
 
-        public override byte MessageType => (byte)CalamityModMessageType.MusicEventSyncResponse;
-
         public static void Send(int toClient = -1, int ignoreClient = -1)
         {
             // Only Server should send Reponse to Clients

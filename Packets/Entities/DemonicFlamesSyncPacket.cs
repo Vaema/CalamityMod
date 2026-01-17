@@ -6,7 +6,6 @@ namespace CalamityMod.Packets.Entities
     internal sealed class DemonicFlamesSyncPacket : CalamityPacket
     {
         public static DemonicFlamesSyncPacket Instance { get; private set; }
-        public override byte MessageType => (byte)CalamityModMessageType.SyncNPCDemonicFlamesDamage;
 
         public static void Send(NPC npc, int toClient = -1, int ignoreClient = -1)
         {

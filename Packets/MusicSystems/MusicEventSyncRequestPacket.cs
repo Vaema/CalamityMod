@@ -8,8 +8,6 @@ namespace CalamityMod.Packets
     {
         public static MusicEventSyncRequestPacket Instance { get; private set; }
 
-        public override byte MessageType => (byte)CalamityModMessageType.MusicEventSyncRequest;
-
         public static void Send(int toClient = -1, int ignoreClient = -1)
         {
             // Only MP Client should send request!

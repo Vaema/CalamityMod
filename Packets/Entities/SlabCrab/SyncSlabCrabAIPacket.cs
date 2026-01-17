@@ -8,8 +8,6 @@ namespace CalamityMod.Packets
     {
         public static SyncSlabCrabAIPacket Instance { get; private set; }
 
-        public override byte MessageType => (byte)CalamityModMessageType.SyncSlabCrabAI;
-
         public static void Send(SlabCrab crab, int phase = -1, int toClient = -1, int ignoreClient = -1)
         {
             if (crab is null)

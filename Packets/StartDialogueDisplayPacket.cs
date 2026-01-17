@@ -1,18 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
+﻿using System.IO;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using CalamityMod.Items.Weapons.Ranged;
-using CalamityMod.Systems;
 using CalamityMod.UI.DialogueDisplay.DisplayEffects;
 using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Graphics;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader.IO;
-using Terraria.Net;
 using static CalamityMod.UI.DialogueDisplay.DialogueDisplaySystem;
 
 namespace CalamityMod.Packets
@@ -20,8 +12,6 @@ namespace CalamityMod.Packets
     internal sealed class StartDialogueDisplayPacket : CalamityPacket
     {
         public static StartDialogueDisplayPacket Instance { get; private set; }
-
-        public override byte MessageType => (byte)CalamityModMessageType.DialogueDisplayStart;
 
         public static void Send(string name, bool progressDialogue, Vector2 position, int index, int uptime, DisplayEffectID effect, float wrapWidth, int toClient = -1, int ignoreClient = -1)
         {

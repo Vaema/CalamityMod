@@ -8,8 +8,6 @@ namespace CalamityMod.Packets
     {
         public static SyncAndroombaAIPacket Instance { get; private set; }
 
-        public override byte MessageType => (byte)CalamityModMessageType.SyncAndroombaAI;
-
         public static void Send(AndroombaFriendly roomba, int phase = -1, int toClient = -1, int ignoreClient = -1)
         {
             if (roomba is null)

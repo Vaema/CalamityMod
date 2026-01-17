@@ -10,8 +10,6 @@ namespace CalamityMod.Packets
     {
         public static SwitchToDifficultyPacket Instance { get; private set; }
 
-        public override byte MessageType => (byte)CalamityModMessageType.SwitchToDifficulty;
-
         public static void Send(DifficultyMode modeToSwitch, int toClient = -1, int ignoreClient = -1)
         {
             var packet = Instance.CreateBasePacket();

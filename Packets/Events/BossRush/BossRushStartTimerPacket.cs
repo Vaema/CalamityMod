@@ -7,8 +7,6 @@ namespace CalamityMod.Packets
     {
         public static BossRushStartTimerPacket Instance { get; private set; }
 
-        public override byte MessageType => (byte)CalamityModMessageType.BossRushStartTimer;
-
         public static void Send(int toClient = -1, int ignoreClient = -1)
         {
             var packet = Instance.CreateBasePacket();

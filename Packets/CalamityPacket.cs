@@ -8,7 +8,6 @@ namespace CalamityMod.Packets
 {
     internal abstract class CalamityPacket : ILoadable
     {
-        public abstract byte MessageType { get; }
         public abstract void HandlePacket(in BinaryReader packet, int sender);
 
         private ushort _NetID;

@@ -10,8 +10,6 @@ namespace CalamityMod.Packets
     {
         public static CooldownRemovalPacket Instance { get; private set; }
 
-        public override byte MessageType => (byte)CalamityModMessageType.CooldownRemoval;
-
         public static void Send(CalamityPlayer player, ushort[] netIDsToRemove, int toClient = -1, int ignoreClient = -1)
         {
             if (player is null)

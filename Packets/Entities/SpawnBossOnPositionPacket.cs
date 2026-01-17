@@ -7,8 +7,6 @@ namespace CalamityMod.Packets
     {
         public static SpawnBossOnPositionPacket Instance { get; private set; }
 
-        public override byte MessageType => (byte)CalamityModMessageType.SpawnBossOnPosition;
-
         public static void Send(int x, int y, int npcType, Player target = null, int toClient = -1, int ignoreClient = -1)
         {
             var packet = Instance.CreateBasePacket();

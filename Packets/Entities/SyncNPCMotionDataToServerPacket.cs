@@ -8,8 +8,6 @@ namespace CalamityMod.Packets
     {
         public static SyncNPCMotionDataToServerPacket Instance { get; private set; }
 
-        public override byte MessageType => (byte)CalamityModMessageType.SyncNPCMotionDataToServer;
-
         public static void Send(NPC npc, int toClient = -1, int ignoreClient = -1)
         {
             if (npc is null)

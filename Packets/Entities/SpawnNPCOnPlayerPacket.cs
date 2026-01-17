@@ -8,8 +8,6 @@ namespace CalamityMod.Packets
     {
         public static SpawnNPCOnPlayerPacket Instance { get; private set; }
 
-        public override byte MessageType => (byte)CalamityModMessageType.SpawnNPCOnPlayer;
-
         public static void Send(Player player, int x, int y, int npcType, int toClient = -1, int ignoreClient = -1)
         {
             if (player is null)

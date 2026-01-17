@@ -7,8 +7,6 @@ namespace CalamityMod.Packets
     {
         public static TELabHologramProjectorPacket Instance { get; private set; }
 
-        public override byte MessageType => (byte)CalamityModMessageType.LabHologramProjector;
-
         public static void Send(TELabHologramProjector projector, bool poppingUp, int toClient = -1, int ignoreClient = -1)
         {
             if (projector is null)

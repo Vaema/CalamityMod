@@ -10,8 +10,6 @@ namespace CalamityMod.Packets
     {
         public static TEChargingStationStandardPacket Instance { get; private set; }
 
-        public override byte MessageType => (byte)CalamityModMessageType.ChargingStationStandard;
-
         public static void Send(TEChargingStation chargingStn, short timer, short cellStack, float chargeOrNaN, int toClient = -1, int ignoreClient = -1)
         {
             if (chargingStn is null)

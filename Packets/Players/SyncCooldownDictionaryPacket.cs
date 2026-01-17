@@ -14,8 +14,6 @@ namespace CalamityMod.Packets
     {
         public static SyncCooldownDictionaryPacket Instance { get; private set; }
 
-        public override byte MessageType => (byte)CalamityModMessageType.SyncCooldownDictionary;
-
         public static void Send(CalamityPlayer player, int toClient = -1, int ignoreClient = -1)
         {
             if (player is null)

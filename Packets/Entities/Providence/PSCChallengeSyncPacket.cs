@@ -7,8 +7,6 @@ namespace CalamityMod.Packets
     {
         public static PSCChallengeSyncPacket Instance { get; private set; }
 
-        public override byte MessageType => (byte)CalamityModMessageType.PSCChallengeSync;
-
         public static void Send(Providence providence, int toClient = -1, int ignoreClient = -1)
         {
             if (providence is null)

@@ -7,8 +7,6 @@ namespace CalamityMod.Packets
     {
         public static AcidRainOldDukeSummonSyncPacket Instance { get; private set; }
 
-        public override byte MessageType => (byte)CalamityModMessageType.AcidRainOldDukeSummonSync;
-
         public static void Send(int toClient = -1, int ignoreClient = -1)
         {
             var packet = Instance.CreateBasePacket();

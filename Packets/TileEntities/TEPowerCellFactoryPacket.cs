@@ -9,8 +9,6 @@ namespace CalamityMod.Packets
     {
         public static TEPowerCellFactoryPacket Instance { get; private set; }
 
-        public override byte MessageType => (byte)CalamityModMessageType.PowerCellFactory;
-
         public static void Send(TEPowerCellFactory cellFactory, long time, int stack, int toClient = -1, int ignoreClient = -1)
         {
             if (cellFactory is null)

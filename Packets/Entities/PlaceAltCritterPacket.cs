@@ -7,8 +7,6 @@ namespace CalamityMod.Packets
     {
         public static PlaceAltCritterPacket Instance { get; private set; }
 
-        public override byte MessageType => (byte)CalamityModMessageType.PlaceAltCritter;
-
         /// <summary>
         /// Same Method, but uses critterItem.makeNPC and critterItem.type for shorthanded call
         /// </summary>
