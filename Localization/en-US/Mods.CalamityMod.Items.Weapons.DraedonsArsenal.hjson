@@ -1,4 +1,4 @@
-AerialTracker: {
+﻿AerialTracker: {
 	DisplayName: P-LSR: Aerial Tracker
 	Tooltip:
 		'''
@@ -54,15 +54,6 @@ GalvanizingGlaive: {
 		When finished, the spear discharges an extra pulse of energy
 		[c/1FFBFF:'A tool which quickly and neatly cleaves one object into two.]
 		[c/1FFBFF:Its efficiency and reliability as a weapon is unmistakable.']
-		'''
-}
-
-GaussDagger: {
-	DisplayName: Gauss Dagger
-	Tooltip:
-		'''
-		Slices through foes with turbulent magnetic force
-		Striking foes envelops them in a damaging magnetic flux
 		'''
 }
 
@@ -129,7 +120,6 @@ Phaseslayer: {
 		Projects a colossal laser blade which is controlled by the cursor
 		Move the cursor to swing the blade and rip and tear through enemies
 		Faster swings deal more damage and release additional sword beams
-		When at low charge, the blade becomes smaller and weaker
 		'''
 }
 
