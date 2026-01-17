@@ -1,4 +1,5 @@
 ﻿using CalamityMod.Items.Materials;
+using CalamityMod.Items.Weapons.Ranged;
 using CalamityMod.Tiles.Crags;
 using Terraria;
 using Terraria.ID;
@@ -48,6 +49,9 @@ namespace CalamityMod.Items.Fishing.BrimstoneCragCatches
             // 2-5 Essences of Havoc @ 50%
             // This is our equivalent to Souls of Light/Night
             itemLoot.Add(ModContent.ItemType<EssenceofHavoc>(), 2, 2, 5);
+
+            // Slagfire Douser @ 10%
+            itemLoot.Add(ModContent.ItemType<SlagfireDouser>(), 10, 1, 1);
 
             itemLoot.AddBiomeCrateLootRules();
         }
