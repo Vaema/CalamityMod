@@ -14,7 +14,7 @@ namespace CalamityMod.Packets
             packet.Send(toClient, ignoreClient);
         }
 
-        public override void HandlePacket(in BinaryReader packet, int sender)
+        public override void HandlePacket(BinaryReader packet, int sender)
         {
             // There is nothing in the packet! We only need to call delete method on Server
             if (Main.dedServ)

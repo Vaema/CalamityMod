@@ -18,7 +18,7 @@ namespace CalamityMod.Packets
             packet.Send(toClient, ignoreClient);
         }
 
-        public override void HandlePacket(in BinaryReader packet, int sender)
+        public override void HandlePacket(BinaryReader packet, int sender)
         {
             var codeBreaker = packet.ReadTileEntity<TECodebreaker>();
             int countdown = packet.ReadInt32();

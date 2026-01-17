@@ -10,8 +10,6 @@ using Terraria.ModLoader;
 
 namespace CalamityMod
 {
-    public delegate void PacketHandlerDelegate(in BinaryReader packet, int sender);
-
     public class CalamityNetcode : ModSystem
     {
         private static List<CalamityPacket> _PacketHandlers = [];
@@ -23,7 +21,7 @@ namespace CalamityMod
             return id;
         }
 
-        internal static void WriteHandlerNetID(in BinaryWriter packet, ushort netID)
+        internal static void WriteHandlerNetID(BinaryWriter packet, ushort netID)
         {
             if (_PacketHandlers.Count > 256)
                 packet.Write(netID);
@@ -31,7 +29,7 @@ namespace CalamityMod
                 packet.Write((byte)netID);
         }
 
-        internal static ushort ReadHandlerNetID(in BinaryReader packet)
+        internal static ushort ReadHandlerNetID(BinaryReader packet)
         {
             if (_PacketHandlers.Count > 256)
                 return packet.ReadUInt16();
@@ -48,11 +46,11 @@ namespace CalamityMod
         {
             try
             {
-                var netID = ReadHandlerNetID(in reader);
+                var netID = ReadHandlerNetID(reader);
                 var packetHandler = _PacketHandlers[netID];
                 if (packetHandler is not null)
                 {
-                    packetHandler.HandlePacket(in reader, whoAmI);
+                    packetHandler.HandlePacket(reader, whoAmI);
                 }
                 else
                 {

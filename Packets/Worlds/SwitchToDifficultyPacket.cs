@@ -19,7 +19,7 @@ namespace CalamityMod.Packets
             packet.Send(toClient, ignoreClient);
         }
 
-        public override void HandlePacket(in BinaryReader packet, int sender)
+        public override void HandlePacket(BinaryReader packet, int sender)
         {
             var modeName = packet.ReadString();
             var difficulty = DifficultyModeSystem.Difficulties.SingleOrDefault(diff => diff.FullName.Equals(modeName));

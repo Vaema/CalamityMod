@@ -818,7 +818,7 @@ namespace CalamityMod.Items.Accessories
             packet.Send(toClient, ignoreClient);
         }
 
-        public override void HandlePacket(in BinaryReader packet, int sender)
+        public override void HandlePacket(BinaryReader packet, int sender)
         {
             var playerWhoAmI = packet.ReadByte();
             var swingLength = packet.ReadSingle();
@@ -873,7 +873,7 @@ namespace CalamityMod.Items.Accessories
             packet.Send(toClient, ignoreClient);
         }
 
-        public override void HandlePacket(in BinaryReader packet, int sender)
+        public override void HandlePacket(BinaryReader packet, int sender)
         {
             var playerWhoAmI = packet.ReadByte();
             var swingLength = packet.ReadSingle();
@@ -932,7 +932,7 @@ namespace CalamityMod.Items.Accessories
             packet.Send(toClient, ignoreClient);
         }
 
-        public override void HandlePacket(in BinaryReader packet, int sender)
+        public override void HandlePacket(BinaryReader packet, int sender)
         {
             var playerWhoAmI = packet.ReadByte();
             var swingLength = packet.ReadSingle();

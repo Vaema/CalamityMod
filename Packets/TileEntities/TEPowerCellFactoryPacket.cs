@@ -21,7 +21,7 @@ namespace CalamityMod.Packets
             packet.Send(toClient, ignoreClient);
         }
 
-        public override void HandlePacket(in BinaryReader packet, int sender)
+        public override void HandlePacket(BinaryReader packet, int sender)
         {
             var cellFactory = packet.ReadTileEntity<TEPowerCellFactory>();
             long time = packet.ReadInt64();

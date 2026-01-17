@@ -8,7 +8,7 @@ namespace CalamityMod.Packets
 {
     internal abstract class CalamityPacket : ILoadable
     {
-        public abstract void HandlePacket(in BinaryReader packet, int sender);
+        public abstract void HandlePacket(BinaryReader packet, int sender);
 
         private ushort _NetID;
         private PropertyInfo _Prop_Static_Instance;
@@ -36,7 +36,7 @@ namespace CalamityMod.Packets
             _Prop_Static_Instance = null;
         }
 
-        public void CloneAndBroadcast(in BinaryReader packet, long startIndex, int length, int ignoreClient = -1)
+        public void CloneAndBroadcast(BinaryReader packet, long startIndex, int length, int ignoreClient = -1)
         {
             if (!Main.dedServ)
                 return;

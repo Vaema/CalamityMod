@@ -24,7 +24,7 @@ namespace CalamityMod.Packets
             packet.Send(toClient, ignoreClient);
         }
 
-        public override void HandlePacket(in BinaryReader packet, int sender)
+        public override void HandlePacket(BinaryReader packet, int sender)
         {
             var player = packet.ReadCalamityPlayer();
             var roverCharge = (float)packet.ReadHalf();
