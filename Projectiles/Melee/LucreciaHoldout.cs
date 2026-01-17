@@ -9,6 +9,7 @@ using Terraria.DataStructures;
 using Terraria.ID;
 using Terraria.ModLoader;
 using CalamityMod.Sounds;
+using System.IO;
 
 namespace CalamityMod.Projectiles.Melee
 {
@@ -50,6 +51,16 @@ namespace CalamityMod.Projectiles.Melee
             Projectile.noEnchantmentVisuals = true;
             Projectile.Opacity = 0.2f; // Starting point, fades in quickly upon startup
             Projectile.width = Projectile.height = 54;
+            Projectile.netImportant = true;
+        }
+
+        public override void ReceiveExtraAI(BinaryReader reader)
+        {
+            base.ReceiveExtraAI(reader);
+        }
+        public override void SendExtraAI(BinaryWriter writer)
+        {
+            base.SendExtraAI(writer);
         }
 
         public override void Spawn()
@@ -238,15 +249,17 @@ namespace CalamityMod.Projectiles.Melee
 
                         // Smear fx on swing
                         Vector2 shootDir = player.Center.DirectionTo(mousePosition) * 10f;
-                        int dir = -Math.Sign(mousePosition.X);
+                        int dir = -player.direction;
                         Particle swipe = new CustomSpark(player.Center - shootDir * 4, shootDir.RotatedBy(0.075f * (dir * (modplayer.swingNum % 2 == 0 ? 1 : -1))) * 1.22f, "CalamityMod/Particles/VerticalSmearLarge", false, (int)(14 / player.GetAttackSpeed(DamageClass.Melee)), 0.3f, modplayer.swingNum % 2 == 0 ? Color.CornflowerBlue * 0.85f : Color.MediumPurple * 0.8f, new Vector2(1.1f, 1.3f), true, false, 0, false, false);
                         GeneralParticleHandler.SpawnParticle(swipe);
 
-                        var fireDirection = Vector2.Normalize(mousePosition - player.Center);
-                        var helixSpeed = 12f;
-                        var helixVelocity = fireDirection * helixSpeed;
-                        Projectile.NewProjectile(Projectile.GetSource_FromThis(), player.Center + fireDirection * 3, helixVelocity, ModContent.ProjectileType<LucreciaBolt>(), Projectile.damage, Projectile.knockBack, Projectile.owner);
-                        
+                        if (Main.myPlayer == Projectile.owner)
+                        {
+                            var fireDirection = Vector2.Normalize(mousePosition - player.Center);
+                            var helixVelocity = fireDirection * 12f;
+                            Projectile.NewProjectile(Projectile.GetSource_FromThis(), player.Center + fireDirection * 3, helixVelocity, ModContent.ProjectileType<LucreciaBolt>(), Projectile.damage, Projectile.knockBack, Projectile.owner);
+                        }
+
                         SoundStyle projectile = new("CalamityMod/Sounds/Item/LucreciaBoltFire");
                         SoundEngine.PlaySound(projectile with { Volume = 0.8f, Pitch = Main.rand.NextFloat(-0.06f, 0.1f) }, Projectile.Center);
                     }
