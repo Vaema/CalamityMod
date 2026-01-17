@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using CalamityMod.Packets;
 using Microsoft.Xna.Framework;
@@ -9,38 +10,46 @@ using Terraria.ModLoader;
 
 namespace CalamityMod
 {
+    public delegate void PacketHandlerDelegate(in BinaryReader packet, int sender);
+
     public class CalamityNetcode : ModSystem
     {
-        private static CalamityPacket[] _PacketRegistry = new CalamityPacket[256]; // This should allow to use 0-255 range (full byte range)
+        private static List<CalamityPacket> _PacketHandlers = [];
 
-        internal static void RegisterHandler(CalamityPacket handler)
+        internal static ushort RegisterHandler(CalamityPacket handler)
         {
-            var msgType = handler.MessageType;
-            var existingHandler = _PacketRegistry[msgType];
+            var id = (ushort)_PacketHandlers.Count;
+            _PacketHandlers.Add(handler);
+            return id;
+        }
 
-            if (existingHandler != null)
-            {
-                CalamityMod.Log.Error($"Packet instance has already registered by other type!" +
-                    $" [Failed On: '{handler.GetType().FullName}'" +
-                    $" Current Owner: '{existingHandler.GetType().FullName}'," +
-                    $" msgTypeToRegister: '{msgType}']");
-                return;
-            }
+        internal static void WriteHandlerNetID(in BinaryWriter packet, ushort netID)
+        {
+            if (_PacketHandlers.Count > 256)
+                packet.Write(netID);
+            else
+                packet.Write((byte)netID);
+        }
 
-            _PacketRegistry[msgType] = handler;
+        internal static ushort ReadHandlerNetID(in BinaryReader packet)
+        {
+            if (_PacketHandlers.Count > 256)
+                return packet.ReadUInt16();
+            else
+                return packet.ReadByte();
         }
 
         public override void OnModUnload()
         {
-            _PacketRegistry = null;
+            _PacketHandlers = null;
         }
 
         public static void HandlePacket(Mod mod, BinaryReader reader, int whoAmI)
         {
             try
             {
-                CalamityModMessageType msgType = (CalamityModMessageType)reader.ReadByte();
-                var packetHandler = _PacketRegistry[(byte)msgType];
+                var netID = ReadHandlerNetID(in reader);
+                var packetHandler = _PacketHandlers[netID];
                 if (packetHandler is not null)
                 {
                     packetHandler.HandlePacket(in reader, whoAmI);
@@ -52,7 +61,7 @@ namespace CalamityMod
                     // Throw an exception now instead of allowing the network stream to corrupt.
                     //
 
-                    CalamityMod.Log.Error($"Failed to parse Calamity packet: No Calamity packet exists with ID {msgType}.");
+                    CalamityMod.Log.Error($"Failed to parse Calamity packet: No Calamity packet exists with ID {netID}.");
                     throw new Exception("Failed to parse Calamity packet: Invalid Calamity packet ID.");
                 }
             }

@@ -11,11 +11,12 @@ namespace CalamityMod.Packets
         public abstract byte MessageType { get; }
         public abstract void HandlePacket(in BinaryReader packet, int sender);
 
+        private ushort _NetID;
         private PropertyInfo _Prop_Static_Instance;
 
         public void Load(Mod mod)
         {
-            CalamityNetcode.RegisterHandler(this);
+            _NetID = CalamityNetcode.RegisterHandler(this);
 
             var type = GetType();
             var instanceProperty = type.GetProperty("Instance", BindingFlags.Public | BindingFlags.Static | BindingFlags.NonPublic);
@@ -58,7 +59,7 @@ namespace CalamityMod.Packets
         public ModPacket CreateBasePacket()
         {
             var packet = CalamityMod.Instance.GetPacket();
-            packet.Write(MessageType);
+            CalamityNetcode.WriteHandlerNetID(packet, _NetID);
             return packet;
         }
     }
