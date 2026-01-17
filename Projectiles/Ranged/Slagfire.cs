@@ -1,9 +1,11 @@
 ﻿using CalamityMod.Buffs.StatDebuffs;
 using CalamityMod.Dusts;
+using CalamityMod.Packets;
 using CalamityMod.Particles;
 using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.ID;
+using Terraria.Localization;
 using Terraria.ModLoader;
 
 namespace CalamityMod.Projectiles.Ranged
@@ -140,23 +142,13 @@ namespace CalamityMod.Projectiles.Ranged
             {
                 if (target.life <= 0)
                 {
-                    for (int i = 0; i < 20; i++)
+                    if (Projectile.owner == Main.myPlayer)
                     {
-                        Dust.NewDustPerfect(target.Center, (int)CalamityDusts.Brimstone,
-                        new Vector2(Main.rand.NextFloat(-5f, 5f), Main.rand.NextFloat(-4f, 4f)),
-                        150, default, 2f).noGravity = true;
-                    }
+                        if (Main.netMode == NetmodeID.MultiplayerClient)
+                            SpawnBossOnPositionPacket.Send((int)Main.player[Projectile.owner].Center.X, (int)Main.player[Projectile.owner].Center.Y, NPCID.WallofFlesh, Main.player[Projectile.owner]);
 
-                    if (!NPC.AnyNPCs(NPCID.WallofFlesh))
-                    {
-                        int playerIndex = Projectile.owner;
-                        if (playerIndex >= 0 && Main.player[playerIndex].active)
-                        {
-                            if (Main.player[playerIndex].ZoneUnderworldHeight)
-                            {
-                                NPC.SpawnOnPlayer(playerIndex, NPCID.WallofFlesh);
-                            }
-                        }
+                        else
+                            NPC.SpawnWOF(Main.player[Projectile.owner].Center);
                     }
                 }
             }
