@@ -8,14 +8,14 @@ namespace CalamityMod.Packets
 {
     internal abstract class CalamityPacket : ILoadable
     {
-        public abstract byte MessageType { get; }
-        public abstract void HandlePacket(in BinaryReader packet, int sender);
+        public abstract void HandlePacket(BinaryReader packet, int sender);
 
+        private ushort _NetID;
         private PropertyInfo _Prop_Static_Instance;
 
         public void Load(Mod mod)
         {
-            CalamityNetcode.RegisterHandler(this);
+            _NetID = CalamityNetcode.RegisterHandler(this);
 
             var type = GetType();
             var instanceProperty = type.GetProperty("Instance", BindingFlags.Public | BindingFlags.Static | BindingFlags.NonPublic);
@@ -36,7 +36,7 @@ namespace CalamityMod.Packets
             _Prop_Static_Instance = null;
         }
 
-        public void CloneAndBroadcast(in BinaryReader packet, long startIndex, int length, int ignoreClient = -1)
+        public void CloneAndBroadcast(BinaryReader packet, long startIndex, int length, int ignoreClient = -1)
         {
             if (!Main.dedServ)
                 return;
@@ -58,7 +58,7 @@ namespace CalamityMod.Packets
         public ModPacket CreateBasePacket()
         {
             var packet = CalamityMod.Instance.GetPacket();
-            packet.Write(MessageType);
+            CalamityNetcode.WriteHandlerNetID(packet, _NetID);
             return packet;
         }
     }

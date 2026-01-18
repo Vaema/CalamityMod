@@ -6,7 +6,6 @@ namespace CalamityMod.Packets.Entities
     internal sealed class DemonSwordImpalesSyncPacket : CalamityPacket
     {
         public static DemonSwordImpalesSyncPacket Instance { get; private set; }
-        public override byte MessageType => (byte)CalamityModMessageType.SyncNPCDemonSwordImpales;
 
         public static void Send(NPC npc, int toClient = -1, int ignoreClient = -1)
         {
@@ -19,7 +18,7 @@ namespace CalamityMod.Packets.Entities
             packet.Send(toClient, ignoreClient);
         }
 
-        public override void HandlePacket(in BinaryReader packet, int sender)
+        public override void HandlePacket(BinaryReader packet, int sender)
         {
             var npc = packet.ReadNPC();
             var impales = packet.ReadInt32();
