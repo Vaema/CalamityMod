@@ -29,6 +29,7 @@ using Terraria.DataStructures;
 using Terraria.ID;
 using Terraria.Localization;
 using Terraria.ModLoader;
+using Terraria.UI;
 
 namespace CalamityMod.CalPlayer
 {
@@ -436,8 +437,8 @@ namespace CalamityMod.CalPlayer
                 if (!canSulphurFish || item.fishingPole <= 0 || item.holdStyle != 1)
                     fishingLevel = -1;
 
-                // If your bait is the Bloodworm, set the Fisherman's Pocket Guide to display Warning!
-                // This only happens when a fishing bobber projectile exists
+                // Set Fisherman's Pocket Guide to display "Warning!" with Bloodworm as bait
+                // This runs only while there is a fishing bobber; logic with no fishing bobber is handled in the ModifyDisplayParameters hook in the separate class below
                 Player.displayedFishingInfo = Language.GetTextValue("GameUI.FishingWarning");
             }
         }
@@ -479,5 +480,25 @@ namespace CalamityMod.CalPlayer
                 fish.stack = Main.rand.Next(1, 6);
         }
         #endregion
+    }
+
+    public class BloodwormFishPowerWarning : GlobalInfoDisplay
+    {
+        // Set Fisherman's Pocket Guide to display "Warning!" with Bloodworm as bait
+        // This runs only while there is no fishing bobber; logic with a fishing bobber is handled in the GetFishingLevel hook above
+        public override void ModifyDisplayParameters(InfoDisplay currentDisplay, ref string displayValue, ref string displayName, ref Color displayColor, ref Color displayShadowColor)
+        {
+            if (currentDisplay == InfoDisplay.FishFinder)
+            {
+                foreach (Projectile p in Main.ActiveProjectiles)
+                {
+                    if (p.owner == Main.myPlayer && p.bobber)
+                        return;
+                }
+
+                if (Main.LocalPlayer.GetFishingConditions().BaitItemType == ModContent.ItemType<BloodwormItem>())
+                    displayValue = Language.GetTextValue("GameUI.FishingWarning");
+            }
+        }
     }
 }

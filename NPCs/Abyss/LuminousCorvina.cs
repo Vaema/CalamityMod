@@ -3,6 +3,7 @@ using System.IO;
 using CalamityMod.BiomeManagers;
 using CalamityMod.Buffs.DamageOverTime;
 using CalamityMod.Buffs.StatDebuffs;
+using CalamityMod.Graphics;
 using CalamityMod.Items.Materials;
 using CalamityMod.Items.Placeables.Abyss;
 using CalamityMod.Items.Placeables.Banners;
@@ -84,6 +85,9 @@ namespace CalamityMod.NPCs.Abyss
 
         public override void AI()
         {
+
+            EnhancedDarknessSystem.lights.Add(new(NPC.Center,scale: 1f));
+
             NPC.spriteDirection = (NPC.direction > 0) ? 1 : -1;
             NPC.noGravity = true;
             if (NPC.direction == 0)

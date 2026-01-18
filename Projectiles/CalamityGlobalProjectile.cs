@@ -428,7 +428,7 @@ namespace CalamityMod.Projectiles
             //Light Pets will add light to the abyss darkness.
             //This uses local player on purpose, as the abyss darkness system is entirely client side.
             if (ProjectileID.Sets.LightPet[projectile.type] && Main.LocalPlayer.Calamity().ZoneAbyss)
-                EnhancedDarknessSystem.lights.Add(new() { center = projectile.Center, texture = ModContent.Request<Texture2D>("CalamityMod/Particles/BloomCircle"), scale = 1 });
+                EnhancedDarknessSystem.lights.Add(new() { center = projectile.Center, scale = 1 });
 
             ///Apply Hybrid iframes
             if (hybridIframes)

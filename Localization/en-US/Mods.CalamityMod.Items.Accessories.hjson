@@ -1197,7 +1197,7 @@ Nucleogenesis: {
 	DisplayName: Nucleogenesis
 	Tooltip:
 		'''
-		Increases your max number of mininons by 4
+		Increases your max number of minions by 4
 		Grants immunity to Shadowflame and Irradiated
 		15% increased summon damage, and increased minion knockback
 		Minions inflict a variety of debuffs

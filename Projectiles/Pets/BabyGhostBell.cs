@@ -49,7 +49,7 @@ namespace CalamityMod.Projectiles.Pets
             if (underwater)
             {
                 if (Main.LocalPlayer.Calamity().ZoneAbyss)
-                    EnhancedDarknessSystem.lights.Add(new() { center = Projectile.Center, rotation = 0, scale = 3, texture = ModContent.Request<Texture2D>("CalamityMod/Particles/BloomCircle") });
+                    EnhancedDarknessSystem.lights.Add(new() { center = Projectile.Center, rotation = 0, scale = 3, texture = ModContent.Request<Texture2D>("CalamityMod/Particles/BloomCircle").Value });
                 Lighting.AddLight(Projectile.Center, 0.3f, 0.9f, 1.5f);
             }
             else

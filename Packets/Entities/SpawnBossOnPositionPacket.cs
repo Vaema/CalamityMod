@@ -30,6 +30,11 @@ namespace CalamityMod.Packets
             if (!Main.dedServ)
                 return;
 
+            if (npcType == Terraria.ID.NPCID.WallofFlesh) // Divert to using SpawnWOF instead. Used by Slagfire Douser.
+            {
+                NPC.SpawnWOF(new (x, y));
+                return;
+            }
             int spawnedNPCIdx = NPC.NewNPC(NPC.GetBossSpawnSource(targetIndex), x, y, npcType, Start: 1);
             if (spawnedNPCIdx >= Main.maxNPCs)
                 return;
