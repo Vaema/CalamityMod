@@ -1,6 +1,7 @@
 ﻿using System;
 using CalamityMod.Enums;
 using CalamityMod.Items.Accessories;
+using CalamityMod.Particles;
 using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.Audio;
@@ -18,42 +19,41 @@ namespace CalamityMod.CalPlayer.Dashes
         public override DashCollisionType CollisionType => DashCollisionType.ShieldSlam;
 
         public override bool IsOmnidirectional => false;
+        public int Time = 0;
 
         public override void Load()
         {
             ID = DashID;
         }
 
-        public override float CalculateDashSpeed(Player player) => 13f;
+        public override float CalculateDashSpeed(Player player) => 6.5f;
 
-        public override void DashStartupEffects(Player player)
+        public override void OnDashEffects(Player player)
         {
-            player.velocity *= 0.9f;
+            Time = 0;
+            for (int m = 0; m < 3; m++)
+            {
+                PointParticle spark = new PointParticle(player.Center - player.velocity, -player.velocity * (0.08f * m), false, 25, 4f - (0.5f * m), (Main.rand.NextBool() ? Color.Firebrick : Color.OrangeRed) * 0.4f);
+                GeneralParticleHandler.SpawnParticle(spark);
+            }
         }
 
         public override void MidDashEffects(Player player, ref float dashSpeed, ref float dashSpeedDecelerationFactor, ref float runSpeedDecelerationFactor)
         {
-            dashSpeed = 10.5f;
+            Time++; // For VFX
 
+            player.velocity.X *= 0.925f;
 
-
-            // Spawn fire dust around the player's body.
-            if (DashTimeAdjustedForStartup > 14)
-                return;
-            for (int d = 0; d < 3; d++)
+            if (Time % 2 == 0)
             {
-                Dust holyFireDashDust = Dust.NewDustDirect(player.position + Vector2.UnitY * 4f, player.width, player.height - 8, Main.rand.NextBool() ? 296 : 158, 0f, 0f, 0, default, 1.2f);
-                holyFireDashDust.velocity = -player.velocity * Main.rand.NextFloat(0.1f, 0.75f);
-                holyFireDashDust.scale *= Main.rand.NextFloat(2f, 2.4f);
-                holyFireDashDust.shader = GameShaders.Armor.GetSecondaryShader(player.cShield, player);
-                holyFireDashDust.noGravity = true;
-                if (Main.rand.NextBool())
-                    holyFireDashDust.fadeIn = 0.1f;
+                Vector2 dustVel = -player.velocity.RotatedBy(0.05f + MathHelper.Clamp(Time * 0.03f, 0, 0.55f)) * 0.75f;
+                Vector2 dustVel2 = -player.velocity.RotatedBy(-0.05f - MathHelper.Clamp(Time * 0.03f, 0, 0.55f)) * 0.75f;
+
+                PointParticle spark = new PointParticle(player.Center + new Vector2(0, -15 * player.direction) + dustVel, dustVel, false, 8, 1.4f, (Main.rand.NextBool() ? Color.Firebrick : Color.OrangeRed) * 0.66f);
+                GeneralParticleHandler.SpawnParticle(spark);
+                PointParticle spark2 = new PointParticle(player.Center + new Vector2(0, 15 * player.direction) + dustVel2, dustVel2, false, 8, 1.4f, (Main.rand.NextBool() ? Color.Firebrick : Color.OrangeRed) * 0.66f);
+                GeneralParticleHandler.SpawnParticle(spark2);
             }
-            Vector2 dustPosition = player.Center + new Vector2(Main.rand.NextFloat(-6f, 6f), Main.rand.NextFloat(-15f, 15f)) - (player.velocity * 1.7f);
-            Dust dust = Dust.NewDustPerfect(dustPosition, DustID.FireworkFountain_Yellow, -player.velocity * Main.rand.NextFloat(0.15f, 0.4f), 0, default, 0.5f);
-            dust.noGravity = false;
-            dust.shader = GameShaders.Armor.GetSecondaryShader(player.cShield, player);
         }
     }
 }

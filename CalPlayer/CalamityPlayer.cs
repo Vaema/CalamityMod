@@ -936,6 +936,7 @@ namespace CalamityMod.CalPlayer
         public bool frostFlare = false;
         public bool evolution = false;
         public bool v8Engine = false;
+        public bool v8000Engine = false;
         public bool nanotech = false;
         public bool deadshotBrooch = false;
         public bool shadowMinions = false;
@@ -2373,6 +2374,7 @@ namespace CalamityMod.CalPlayer
             frostFlare = false;
             evolution = false;
             v8Engine = false;
+            v8000Engine = false;
             nanotech = false;
             deadshotBrooch = false;
             tesla = false;

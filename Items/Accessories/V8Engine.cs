@@ -1,8 +1,10 @@
 ﻿using CalamityMod.CalPlayer;
 using CalamityMod.CalPlayer.Dashes;
+using CalamityMod.Items.Materials;
 using CalamityMod.Rarities;
 using Terraria;
 using Terraria.DataStructures;
+using Terraria.GameContent.UI;
 using Terraria.ID;
 using Terraria.ModLoader;
 
@@ -12,12 +14,14 @@ namespace CalamityMod.Items.Accessories
     {
         public new string LocalizationCategory => "Items.Accessories";
 
+        public static float DashDelayModifier = 2f;
+
         public override void SetDefaults()
         {
             Item.width = 44;
             Item.height = 42;
-            Item.value = CalamityGlobalItem.RarityTurquoiseBuyPrice;
-            Item.rare = ModContent.RarityType<Turquoise>();
+            Item.value = CalamityGlobalItem.RarityLightRedBuyPrice;
+            Item.rare = ItemRarityID.LightRed;
             Item.accessory = true;
         }
 
@@ -27,6 +31,15 @@ namespace CalamityMod.Items.Accessories
             modPlayer.v8Engine = true;
             modPlayer.DashID = V8EngineDash.ID;
             player.dashType = 0;
+        }
+
+        public override void AddRecipes()
+        {
+            CreateRecipe().
+                AddRecipeGroup("AnyAdamantiteBar", 5).
+                AddIngredient(ModContent.ItemType<UnholyCore>(), 4).
+                AddTile(TileID.MythrilAnvil).
+                Register();
         }
     }
 }

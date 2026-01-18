@@ -2016,6 +2016,21 @@ UnstableGraniteCore: {
 		'''
 }
 
+V8Engine: {
+	DisplayName: V8 Engine
+	Tooltip: Grants a dash which can be used by both mounts and players alike
+}
+
+V8000Engine: {
+	DisplayName: V8000 Engine
+	Tooltip:
+		'''
+		Grants a dash which can be used by both mounts and players alike
+		Mounts are fashioned with a cowcatcher which can damage enemies
+		'Are soul-powered engines eco-friendly?'
+		'''
+}
+
 VampiricTalisman: {
 	DisplayName: Vampiric Talisman
 	Tooltip:
@@ -2204,9 +2219,4 @@ XyksBlessingOrange: {
 		'Even so, the march of time waits for none. Recall that feeling of fulfillment, and show it to the world.
 		[c/E1B65F:Prove that it was never a waste.']
 		'''
-}
-
-V8Engine: {
-	DisplayName: V8 Engine
-	Tooltip: ""
 }
