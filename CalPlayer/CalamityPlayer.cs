@@ -935,7 +935,6 @@ namespace CalamityMod.CalPlayer
         public bool seraphTracers = false;
         public bool frostFlare = false;
         public bool evolution = false;
-        public int evolutionLifeRegenCounter = 0;
         public bool nanotech = false;
         public bool deadshotBrooch = false;
         public bool shadowMinions = false;
@@ -3448,8 +3447,9 @@ namespace CalamityMod.CalPlayer
                 if (Player.armor[i].type == itemID)
                     return Player.armor[i];
             }
-            return new Item();
+            return ContentSamples.ItemsByType[itemID];
         }
+        public Item FindAccessory<T>() where T : ModItem => FindAccessory(ItemType<T>());
 
         public override void ProcessTriggers(TriggersSet triggersSet)
         {
@@ -3459,7 +3459,7 @@ namespace CalamityMod.CalPlayer
 
             if (ascendantInsignia && Main.myPlayer == Player.whoAmI && CalamityKeybinds.AscendantInsigniaHotKey.JustPressed && ascendantInsigniaCooldown <= 0)
             {
-                var source = Player.GetSource_Accessory(FindAccessory(ItemType<AscendantInsignia>()));
+                var source = Player.GetSource_Accessory(FindAccessory<AscendantInsignia>());
                 Projectile.NewProjectile(source, Player.Center - Vector2.UnitY * 45f, Vector2.Zero, ProjectileType<AscendantAura>(), 0, 0f);
                 SoundEngine.PlaySound(new SoundStyle("CalamityMod/Sounds/Item/AscendantActivate"));
                 ascendantInsigniaCooldown = AscendantInsignia.AbilityCooldown;
@@ -3557,7 +3557,7 @@ namespace CalamityMod.CalPlayer
                         angelAmt += 1f;
                 }
 
-                var source = Player.GetSource_Accessory(FindAccessory(ItemType<AngelicAlliance>()));
+                var source = Player.GetSource_Accessory(FindAccessory<AngelicAlliance>());
                 for (int projIndex = 0; projIndex < angelAmt; projIndex++)
                 {
                     Projectile proj = Main.projectile[projIndex];
@@ -4100,7 +4100,7 @@ namespace CalamityMod.CalPlayer
                 }
                 if (Player.statMana >= stormMana && !Player.silence)
                 {
-                    var source = Player.GetSource_ItemUse(ContentSamples.ItemsByType[ItemType<ForbiddenCirclet>()]);
+                    var source = Player.GetSource_ItemUse(FindAccessory<ForbiddenCirclet>());
                     Player.manaRegenDelay = (int)Player.maxRegenDelay;
                     Player.statMana -= stormMana;
 
@@ -4371,7 +4371,7 @@ namespace CalamityMod.CalPlayer
                         // Check if player hit some form of solid resistance (the ground)
                         if (0 == Player.velocity.Y)
                         {
-                            var source = Player.GetSource_Accessory(FindAccessory(ItemType<InterstellarStompers>()));
+                            var source = Player.GetSource_Accessory(FindAccessory<InterstellarStompers>());
                             // Spawn explosion. ai[0] is used for transferring the recorded falling time
 
                             int damage = Player.CalcIntDamage<MeleeDamageClass>(InterstellarStompers.SlamDamage);
@@ -4956,7 +4956,7 @@ namespace CalamityMod.CalPlayer
                 //Flashlight
                 //Due to being in postUpdate we need to adjust the mousepos for the player's movement that will have happened
                 var mouseworld = Main.MouseWorld + Player.position - Player.oldPosition;
-                EnhancedDarknessSystem.lights.Add(new(center: Player.Center + Player.DirectionTo(mouseworld) * 750f, rotation: Player.DirectionTo(mouseworld).ToRotation() - MathHelper.PiOver2, vectorScale: new Vector2(0.75f * abyssFlashlightWidthMultiplier, 0.75f), texture: Request<Texture2D>("CalamityMod/Particles/BloomLineFade")));
+                EnhancedDarknessSystem.lights.Add(new(center: Player.Center + Player.DirectionTo(mouseworld) * 750f, rotation: Player.DirectionTo(mouseworld).ToRotation() - MathHelper.PiOver2, vectorScale: new Vector2(0.85f * abyssFlashlightWidthMultiplier, 0.75f), texture: Request<Texture2D>("CalamityMod/Particles/BloomLineFade").Value));
             }
 
             if (lastDeerclopsPosition.HasValue)
@@ -4969,7 +4969,7 @@ namespace CalamityMod.CalPlayer
 
                 //Add the main light circle for the arena
                 DeerclopsAI.ArenaTex ??= ModContent.Request<Texture2D>(DeerclopsAI.ArenaTexPath);
-                EnhancedDarknessSystem.lights.Add(new(lastDeerclopsPosition.Value, scale: DeerclopsAI.borderScale, texture: DeerclopsAI.ArenaTex));
+                EnhancedDarknessSystem.lights.Add(new(lastDeerclopsPosition.Value, scale: DeerclopsAI.borderScale, texture: DeerclopsAI.ArenaTex.Value));
 
                 //we draw light around the player when far away so they have some visibility, although very small. This is especially nice in multiplayer. we scale opacity with distance bc it looks better
                 EnhancedDarknessSystem.lights.Add(new EnhancedDarknessSystem.LightSource(scale: 0.75f, opacity: MathHelper.Clamp(Main.LocalPlayer.DistanceSQ(lastDeerclopsPosition.Value) / (409600 /*640^2*/), 0, 1)));
@@ -5357,7 +5357,7 @@ namespace CalamityMod.CalPlayer
             }
             if (veneratedLocket)
             {
-                var LocketSource = Player.GetSource_Accessory(FindAccessory(ItemType<VeneratedLocket>()));
+                var LocketSource = Player.GetSource_Accessory(FindAccessory<VeneratedLocket>());
                 if (item.CountsAsClass<RogueDamageClass>())
                 {
                     if (!CalamityItemSets.DisablesVeneratedLocketEffect[item.type])

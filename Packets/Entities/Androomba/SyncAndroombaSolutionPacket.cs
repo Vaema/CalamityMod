@@ -8,8 +8,6 @@ namespace CalamityMod.Packets
     {
         public static SyncAndroombaSolutionPacket Instance { get; private set; }
 
-        public override byte MessageType => (byte)CalamityModMessageType.SyncAndroombaSolution;
-
         public static void Send(AndroombaFriendly roomba, int solType = -1, int toClient = -1, int ignoreClient = -1)
         {
             if (roomba is null)
@@ -21,7 +19,7 @@ namespace CalamityMod.Packets
             packet.Send(toClient, ignoreClient);
         }
 
-        public override void HandlePacket(in BinaryReader packet, int sender)
+        public override void HandlePacket(BinaryReader packet, int sender)
         {
             var roomba = packet.ReadModNPC<AndroombaFriendly>();
             var solution = packet.ReadInt32();

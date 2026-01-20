@@ -294,7 +294,7 @@ namespace CalamityMod.Projectiles.BaseProjectiles
             }
             var tex = SegmentTextureAssets[segment.segmentType].Value;
             Main.spriteBatch.Draw(tex, segment.Center - Main.screenPosition, null, color *segment.Opacity, segment.rotation, tex.Size() / 2 + (SegmentTypeDrawOffsets[segment.segmentType]), Projectile.scale, SpriteEffects.None, 1);
-            if (!GlowTextures.IndexInRange(segment.segmentType + 1) || GlowTextures[segment.segmentType + 1] is null)
+            if (GlowTextures is null || !GlowTextures.IndexInRange(segment.segmentType + 1) || GlowTextures[segment.segmentType + 1] is null)
             {
                 return;
             }

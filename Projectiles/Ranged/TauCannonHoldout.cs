@@ -129,7 +129,6 @@ namespace CalamityMod.Projectiles.Ranged
 
                         if (!HasShotBeam)
                         {
-                            modItem.Charge -= 0.2f;
                             HasShotBeam = true;
                         }
 
@@ -149,7 +148,6 @@ namespace CalamityMod.Projectiles.Ranged
                                 Projectile.owner,
                                 ai1: Projectile.whoAmI);
                             OffsetLengthFromArm -= 25f;
-                            modItem.Charge -= 0.8f;
                             HasShotBeam = true;
                             SoundEngine.PlaySound(SmallBeamSound, GunTipPosition);
                         }
@@ -187,7 +185,6 @@ namespace CalamityMod.Projectiles.Ranged
                                 }
                             }
 
-                            modItem.Charge -= 2.5f;
                             HasShotBeam = true;
                         }
 

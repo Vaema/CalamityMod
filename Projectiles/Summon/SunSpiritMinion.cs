@@ -1,4 +1,5 @@
-﻿using CalamityMod.Buffs.Summon;
+﻿using System.IO;
+using CalamityMod.Buffs.Summon;
 using CalamityMod.CalPlayer;
 using CalamityMod.Utilities.Daybreak;
 using Microsoft.Xna.Framework;
@@ -61,6 +62,7 @@ namespace CalamityMod.Projectiles.Summon
                     Projectile.minionSlots++;
                     minionSlotsAvaliable--;
                     MinionSlotsToAdd--;
+                    Projectile.netUpdate = true;
                 }
                 MinionSlotsToAdd = 0;
             }
@@ -110,6 +112,16 @@ namespace CalamityMod.Projectiles.Summon
                 beam.DamageType = DamageClass.Summon;
                 Projectile.ai[1] += 50f / Projectile.minionSlots;
             }
+        }
+
+        public override void SendExtraAI(BinaryWriter writer)
+        {
+            writer.Write(Projectile.minionSlots);
+        }
+
+        public override void ReceiveExtraAI(BinaryReader reader)
+        {
+            Projectile.minionSlots = reader.ReadSingle();
         }
 
         public override bool? CanDamage() => false;

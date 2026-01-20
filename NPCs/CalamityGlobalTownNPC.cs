@@ -184,6 +184,7 @@ namespace CalamityMod.NPCs
             "Robin", // <@!654737510030639112> (altzeus)
             "Curly", // <@!673092101780668416> (curly4830)
             "Cobalt", // <@!132962828922388481> (cobalt_44)
+            "Dizzetriya", // <@!719818245665980517> (dizzykbity)
         ];
         private static readonly string[] MerchantNames =
         [
@@ -206,6 +207,7 @@ namespace CalamityMod.NPCs
         [
             "Arin", // <@!268169458302976012> (kiyotu)
             "Typhäne", // <@!222064016107896832> (typhane.)
+            "Charlotte Linlin", // <@!563406464522125323> (vixcalibur)
         ];
         private static readonly string[] PirateNames =
         [
@@ -228,6 +230,7 @@ namespace CalamityMod.NPCs
             "Hael", // <@!641747280944431156> (kalebtull)
             "Yumesaki Mirrin", // <@!100235144744415232> (milinen)
             "Vela", // <@!208719047146209281> (nyxxynightstar)
+            "Misako Drevis", // <@!1103067115386323065> (threadsofmemory)
         ];
         private static readonly string[] SantaClausNames =
         [
@@ -279,6 +282,7 @@ namespace CalamityMod.NPCs
             "Borgus", // <@!539127427482255376> (therealmeepman)
             "Postman Hiss", // <@!454638106122125312> (karinthefairy)
             "Cosmoec", // <@!793660591449309204> (cosmoecark)
+            "Junorism", // <@!740625002596008036> (hewhoshallnotbebaned)
         ];
         private static readonly string[] TruffleNames =
         [
@@ -307,6 +311,7 @@ namespace CalamityMod.NPCs
             "Nextdoor Psycho", // <@!173261518572486656> (nextdoorpsycho)
             "Mike Cyclops", // <@!702327497475227741> (seichoseicho)
             "Derin", // <@!466703979695308820> (god_15)
+            "Umbara", // <@!450062421294579712> (umbaraeclipse)
         ];
         private static readonly string[] ZoologistNames =
         [
@@ -1230,10 +1235,7 @@ namespace CalamityMod.NPCs
                 shop.AddWithCustomValue(ItemType<M1Garand>(), Item.buyPrice(gold: 20), Condition.DownedSkeletron)
                 .Add<P90>(Condition.Hardmode)
                 .AddWithCustomValue(ItemID.Boomstick, Item.buyPrice(gold: 25), Condition.DownedQueenBee)
-                .AddWithCustomValue(ItemID.Uzi, Item.buyPrice(gold: 50), Condition.DownedPlantera)
-                .AddWithCustomValue(ItemID.TacticalShotgun, Item.buyPrice(platinum: 1), Condition.DownedGolem)
-                .AddWithCustomValue(ItemID.SniperRifle, Item.buyPrice(platinum: 1), Condition.DownedGolem)
-                .AddWithCustomValue(ItemID.RifleScope, Item.buyPrice(platinum: 1), Condition.DownedGolem);
+                .AddWithCustomValue(ItemID.Uzi, Item.buyPrice(gold: 50), Condition.DownedPlantera);
             }
 
             if (type == NPCID.Stylist)
@@ -1247,8 +1249,7 @@ namespace CalamityMod.NPCs
 
             if (type == NPCID.Cyborg)
             {
-                shop.AddWithCustomValue(ItemID.RocketLauncher, Item.buyPrice(platinum: 1), Condition.DownedGolem)
-                .Add<MartianDistressRemote>(Condition.DownedGolem)
+                shop.Add<MartianDistressRemote>(Condition.DownedGolem)
                 .Add<LionHeart>(CalamityConditions.DownedPolterghast);
             }
 
@@ -1310,10 +1311,6 @@ namespace CalamityMod.NPCs
             {
                 shop.Add<HowlsHeart>()
                 .AddWithCustomValue(ItemID.MagicMissile, Item.buyPrice(gold: 25))
-                .AddWithCustomValue(ItemID.SpectreStaff, Item.buyPrice(platinum: 1), Condition.DownedGolem)
-                .AddWithCustomValue(ItemID.InfernoFork, Item.buyPrice(platinum: 1), Condition.DownedGolem)
-                .AddWithCustomValue(ItemID.ShadowbeamStaff, Item.buyPrice(platinum: 1), Condition.DownedGolem)
-                .AddWithCustomValue(ItemID.MagnetSphere, Item.buyPrice(platinum: 1), Condition.DownedGolem)
                 .Add<ResilientCandle>()
                 .Add<SpitefulCandle>()
                 .Add<VigorousCandle>()
@@ -1326,8 +1323,7 @@ namespace CalamityMod.NPCs
                 .InsertAfter(ItemID.OasisFountain, ItemType<SulphurousFountainItem>())
                 .InsertAfter(ItemID.OasisFountain, ItemType<AbyssFountainItem>())
                 .InsertAfter(ItemID.OasisFountain, ItemType<AstralFountainItem>())
-                .InsertAfter(ItemID.OasisFountain, ItemType<BrimstoneLavaFountainItem>())
-                .AddWithCustomValue(ItemID.ButterflyDust, Item.buyPrice(gold: 25), Condition.DownedGolem);
+                .InsertAfter(ItemID.OasisFountain, ItemType<BrimstoneLavaFountainItem>());
             }
 
             if (type == NPCID.PartyGirl)

@@ -78,7 +78,7 @@ namespace CalamityMod.Projectiles.Ranged
 
             glowIntensity = MathHelper.Lerp(glowIntensity, (float)Math.Pow(Utils.GetLerpValue(recoilTimerMax, 0, shootingCooldown, true), 5), 0.2f);
             
-            if ((Owner.HeldItem.type != ItemType<Starfleet>() && doingNothing) || Owner.dead)
+            if ((Owner.HeldItem.type != ItemType<Starfleet>() && doingNothing) || (doingNothing && (Main.mapFullscreen || Owner.mouseInterface)) || Owner.dead)
             {
                 Projectile.Kill();
                 return;
@@ -128,7 +128,8 @@ namespace CalamityMod.Projectiles.Ranged
         {
             float slowdown = (float)Math.Pow(Utils.GetLerpValue(recoilTimerMax / 2, recoilTimerMax, Math.Max(shootingCooldown, starburstCooldown), true), 4);
             Vector2 movement = recoilDirection * (recoilIntensity) * slowdown;
-            if (Collision.SolidCollision(Owner.Center + movement, (int)(Owner.width * 1.1f), (int)(Owner.height * 1.1f)) || !Owner.Calamity().mouseRight)
+            bool enableRecoil = false;
+            if (!enableRecoil || Collision.SolidCollision(Owner.Center + movement, (int)(Owner.width * 1.1f), (int)(Owner.height * 1.1f)) || !Owner.Calamity().mouseRight)
             {
                 recoilIntensity = 0;
                 return;

@@ -1,4 +1,5 @@
 ﻿using CalamityMod.Items.PermanentBoosters;
+using CalamityMod.Items.Potions.Food;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
@@ -9,9 +10,13 @@ namespace CalamityMod.Items.Tools
     {
         public new string LocalizationCategory => "Items.Tools";
 
+        public override void SetStaticDefaults()
+        {
+            ItemID.Sets.ShimmerTransformToItem[Type] = ModContent.ItemType<DeliciousMeat>();
+        }
         public override void SetDefaults()
         {
-            Item.DefaultToFood(32, 30, 0, 0);
+            Item.DefaultToFood(26, 36, 0, 0);
             Item.value = 0;
             Item.UseSound = SoundID.NPCDeath13;
             Item.maxStack = 1;

@@ -4,7 +4,11 @@ using CalamityMod.Items.Fishing.FishingRods;
 using CalamityMod.Items.LoreItems;
 using CalamityMod.Items.Materials;
 using CalamityMod.Items.Placeables.Abyss;
+using CalamityMod.Items.Placeables.Furniture.BossRelics;
+using CalamityMod.Items.Placeables.Furniture.Monoliths;
+using CalamityMod.Items.Placeables.Furniture.Paintings;
 using CalamityMod.Items.Placeables.Furniture.Trophies;
+using CalamityMod.Items.Potions;
 using CalamityMod.Items.Tools;
 using CalamityMod.Items.TreasureBags;
 using CalamityMod.Items.Weapons.DraedonsArsenal;
@@ -53,17 +57,16 @@ namespace CalamityMod.Systems.Collections
         /// Set this for items which are dropped by enemies or bosses which spawn on the edges of the world.<br/>
         /// Defaults to <see langword="false"/>.
         /// </summary>
-        public static bool[] ItemForcedInsideWorld = Factory.CreateBoolSet(ItemID.HotlineFishingHook, ItemID.BottomlessBucket, ItemID.SuperAbsorbantSponge, ItemID.FishingPotion,
-                ItemID.SonarPotion, ItemID.CratePotion, ItemID.AnglerTackleBag, ItemID.HighTestFishingLine, ItemID.TackleBox, ItemID.AnglerEarring, ItemID.FishermansGuide, ItemID.WeatherRadio,
-                ItemID.Sextant, ItemID.AnglerHat, ItemID.AnglerVest, ItemID.AnglerPants, ItemID.GoldenBugNet, ItemID.FishronWings, ItemID.Flairon, ItemID.Tsunami, ItemID.BubbleGun,
-                ItemID.RazorbladeTyphoon, ItemID.TempestStaff, ItemID.FishronBossBag, ItemID.Coral, ItemID.Seashell, ItemID.Starfish, ItemID.SoulofSight, ItemID.GreaterHealingPotion,
-                ItemID.SuperHealingPotion, ItemID.SoulofFlight, ItemType<SubmarineShocker>(), ItemType<Barinautical>(), ItemType<Downpour>(), ItemType<DeepseaStaff>(), ItemType<ScourgeoftheSeas>(),
-                ItemType<InsidiousImpaler>(), ItemType<SepticSkewer>(), ItemType<FetidEmesis>(), ItemType<VitriolicViper>(), ItemType<CadaverousCarrion>(), ItemType<ToxicantTwister>(),
-                ItemType<OldDukeScales>(), ItemType<Greentide>(), ItemType<Leviatitan>(), ItemType<Atlantis>(), ItemType<AnahitasArpeggio>(), ItemType<Whitewater>(), ItemType<LeviathanTeeth>(),
-                ItemType<GastricBelcherStaff>(), ItemType<PearlofEnthrallment>(), ItemType<AquaticScourgeBag>(), ItemType<OldDukeBag>(), ItemType<LeviathanBag>(), ItemType<OldDukeMask>(),
-                ItemType<LeviathanMask>(), ItemType<AquaticScourgeMask>(), ItemType<OldDukeTrophy>(), ItemType<LeviathanTrophy>(), ItemType<AquaticScourgeTrophy>(), ItemType<LoreAquaticScourge>(),
-                ItemType<LoreLeviathanAnahita>(), ItemType<LoreSulphurSea>(), ItemType<LoreAbyss>(), ItemType<LoreOldDuke>(), ItemType<PearlShard>(), ItemType<AeroStone>(), ItemType<TheCommunity>(),
-                ItemType<DukesDecapitator>(), ItemType<SulphurousSand>(), ItemType<EssenceofSunlight>());
+        public static bool[] ItemForcedInsideWorld = Factory.CreateBoolSet(ItemID.FishronWings, ItemID.Flairon, ItemID.Tsunami, ItemID.BubbleGun, ItemID.RazorbladeTyphoon,
+                ItemID.TempestStaff, ItemID.FishronBossBag, ItemID.GreaterHealingPotion, ItemID.SoulofFlight, ItemType<SubmarineShocker>(), ItemType<Barinautical>(), ItemType<Downpour>(),
+                ItemType<DeepseaStaff>(), ItemType<ScourgeoftheSeas>(), ItemType<SeasSearing>(), ItemType<InsidiousImpaler>(), ItemType<SepticSkewer>(), ItemType<FetidEmesis>(),
+                ItemType<VitriolicViper>(), ItemType<CadaverousCarrion>(), ItemType<MutatedTruffle>(), ItemType<ToxicantTwister>(), ItemType<TheOldReaper>(), ItemType<Greentide>(),
+                ItemType<Leviatitan>(), ItemType<Atlantis>(), ItemType<AnahitasArpeggio>(), ItemType<Whitewater>(), ItemType<LeviathanTeeth>(), ItemType<GastricBelcherStaff>(),
+                ItemType<PearlofEnthrallment>(), ItemType<AquaticScourgeBag>(), ItemType<OldDukeBag>(), ItemType<LeviathanBag>(), ItemType<OldDukeMask>(), ItemType<LeviathanMask>(),
+                ItemType<AnahitaMask>(), ItemType<AquaticScourgeMask>(), ItemType<OldDukeTrophy>(), ItemType<LeviathanTrophy>(), ItemType<AquaticScourgeTrophy>(), ItemType<LoreAquaticScourge>(),
+                ItemType<LoreLeviathanAnahita>(), ItemType<LoreSulphurSea>(), ItemType<LoreAbyss>(), ItemType<LoreOldDuke>(), ItemType<OldDukeRelic>(), ItemType<LeviathanAnahitaRelic>(),
+                ItemType<AquaticScourgeRelic>(), ItemType<AeroStone>(), ItemType<CorrosiveSpine>(), ItemType<TheCommunity>(), ItemType<DeepSeaAnchor>(), ItemType<BrinyBaron>(),
+                ItemType<DukesDecapitator>(), ItemType<SulphurousSand>(), ItemType<SupremeHealingPotion>(), ItemType<EssenceofSunlight>(), ItemType<ThankYouPainting>());
 
         /// <summary>
         /// If <see langword="true"/> for an item type, prevents this rogue weapon from triggering Venerated Locket's clone projectile effect when used.<br/>

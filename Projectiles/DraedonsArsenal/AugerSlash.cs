@@ -117,6 +117,17 @@ namespace CalamityMod.Projectiles.DraedonsArsenal
                 }
             }
         }
+
+        public override bool? CanHitNPC(NPC target)
+        {
+            Player owner = Main.player[Projectile.owner];
+
+            if (!Collision.CanHitLine(
+                    owner.Center, 1, 1,
+                    target.Center, 1, 1))
+                return false;
+            return base.CanHitNPC(target);
+        }
         public override bool? Colliding(Rectangle projHitbox, Rectangle targetHitbox)
         {
             if (Projectile.timeLeft <= 10)

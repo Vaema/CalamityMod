@@ -127,12 +127,23 @@ namespace CalamityMod.Projectiles.Summon
                 return;
             }
 
+            if (float.IsNaN(SwingCenter.X) || float.IsNaN(SwingCenter.Y) || float.IsNaN(Projectile.velocity.X) || float.IsNaN(Projectile.velocity.Y))
+            {
+                SwingCenter = Target.Center;
+                Projectile.velocity = Vector2.Zero;
+            }
+
             SwingCenter += Projectile.velocity;
             Projectile.velocity *= 0.9f;
 
             var easing = new CalamityUtils.CurveSegment(CalamityUtils.PolyInOutEasing, 0f, 0f, 1f, 3);
-            float swingRotation = MathHelper.Lerp(-MathHelper.PiOver2, MathHelper.PiOver2, CalamityUtils.PiecewiseAnimation(Utils.GetLerpValue(SwingWait, SwingWait + SwingTime, SwingTimer, true), easing)) * MathF.Sign(Target.Center.X - SwingCenter.X);
+            float xDifference = Target.Center.X - SwingCenter.X;
+            int signDirection = float.IsNaN(xDifference) ? 1 : MathF.Sign(xDifference);
+            float swingRotation = MathHelper.Lerp(-MathHelper.PiOver2, MathHelper.PiOver2, CalamityUtils.PiecewiseAnimation(Utils.GetLerpValue(SwingWait, SwingWait + SwingTime, SwingTimer, true), easing)) * signDirection;
             Vector2 predictiveDirection = CalamityUtils.CalculatePredictiveAimToTarget(SwingCenter, Target, ProjectileSpeed);
+            
+            if (float.IsNaN(predictiveDirection.X) || float.IsNaN(predictiveDirection.Y))
+                predictiveDirection = Projectile.DirectionTo(Target.Center);
 
             Projectile.Center = SwingCenter + (predictiveDirection.ToRotation() + swingRotation).ToRotationVector2() * 40f;
             Projectile.rotation = Projectile.DirectionFrom(SwingCenter).ToRotation();
@@ -152,7 +163,9 @@ namespace CalamityMod.Projectiles.Summon
 
             if (DashTimer >= DashCooldown)
             {
-                Projectile.velocity = CalamityUtils.CalculatePredictiveAimToTarget(SwingCenter, Target, DashSpeed);
+                Vector2 dashVelocity = CalamityUtils.CalculatePredictiveAimToTarget(SwingCenter, Target, DashSpeed);
+                if (!float.IsNaN(dashVelocity.X) && !float.IsNaN(dashVelocity.Y))
+                    Projectile.velocity = dashVelocity;
                 DashTimer = 0f;
             }
 
@@ -179,17 +192,23 @@ namespace CalamityMod.Projectiles.Summon
 
             if (newState == AttackState)
             {
+                if (Target is null)
+                    return;
+
                 float targetSize = Target.Size.Length();
                 Vector2 previousCenter = Projectile.Center;
                 Vector2 newCenter = Target.Center + Main.rand.NextVector2CircularEdge(targetSize * 0.5f + 160f, targetSize * 0.5f + 160f);
 
                 int maxAttempts = 10;
                 int attempts = 0;
-                while (Main.tile[newCenter.ToSafeTileCoordinates()].IsTileSolid() || attempts == maxAttempts)
+                while (Main.tile[newCenter.ToSafeTileCoordinates()].IsTileSolid() && attempts < maxAttempts)
                 {
                     newCenter = Target.Center + Main.rand.NextVector2CircularEdge(targetSize * 0.5f + 160f, targetSize * 0.5f + 160f);
                     attempts++;
                 }
+
+                if (float.IsNaN(newCenter.X) || float.IsNaN(newCenter.Y))
+                    newCenter = Target.Center;
 
                 Projectile.Center = newCenter;
                 SwingCenter = Projectile.Center;

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.IO;
 using CalamityMod.Buffs.DamageOverTime;
 using CalamityMod.Particles;
 using Microsoft.Xna.Framework;
@@ -30,6 +31,18 @@ namespace CalamityMod.Projectiles.Melee
             Projectile.localNPCHitCooldown = 10;
         }
 
+        public override void SendExtraAI(BinaryWriter writer)
+        {
+            writer.WriteVector2(GoalPos);
+            writer.WriteVector2(StartPos);
+        }
+
+        public override void ReceiveExtraAI(BinaryReader reader)
+        {
+            GoalPos = reader.ReadVector2();
+            StartPos = reader.ReadVector2();
+        }
+
         Vector2 GoalPos = Vector2.Zero;
         Vector2 StartPos = Vector2.Zero;
         float offset = 0;
@@ -41,6 +54,7 @@ namespace CalamityMod.Projectiles.Melee
             {
                 GoalPos = player.Calamity().mouseWorld;
                 StartPos = Projectile.Center;
+                Projectile.netUpdate = true;
             }
             Projectile.Center = Vector2.Lerp(StartPos, GoalPos, MathHelper.Min(1,MathF.Pow(1 - (Projectile.timeLeft - 5) / 30f,0.5f)));
             Projectile.rotation = StartPos.DirectionTo(GoalPos).ToRotation();

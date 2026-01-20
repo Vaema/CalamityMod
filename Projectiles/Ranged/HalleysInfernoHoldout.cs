@@ -60,7 +60,7 @@ namespace CalamityMod.Projectiles.Ranged
                         ShotTimer += 35;
                     }
                     var spawnpos = Projectile.Center;
-                    Projectile.NewProjectile(Owner.GetSource_ItemUse_WithPotentialAmmo(Halley,AmmoID.Gel),spawnpos,spawnpos.DirectionTo(Main.MouseWorld) * Halley.shootSpeed,ModContent.ProjectileType<HalleysComet>(), (int)Owner.GetDamage(DamageClass.Ranged).ApplyTo(Halley.damage),Halley.knockBack,Projectile.owner);
+                        Projectile.NewProjectile(Owner.GetSource_ItemUse_WithPotentialAmmo(Halley,AmmoID.Gel),spawnpos,spawnpos.DirectionTo(Main.MouseWorld) * Halley.shootSpeed,ModContent.ProjectileType<HalleysComet>(), (int)Owner.GetDamage(DamageClass.Ranged).ApplyTo(Halley.damage),Halley.knockBack,Projectile.owner);
                     RecoilAmount = 8;
                     SoundEngine.PlaySound(HalleysInferno.ShootSound);
                     //consume gel
@@ -74,7 +74,30 @@ namespace CalamityMod.Projectiles.Ranged
                     ShotTimer = 4;
                     var spawnpos = Projectile.Center;
                     var dir = spawnpos.DirectionTo(Main.MouseWorld);
-                    Projectile.NewProjectile(Owner.GetSource_ItemUse_WithPotentialAmmo(Halley, AmmoID.Gel), spawnpos + dir * 16,dir * Halley.shootSpeed * 0.75f, ModContent.ProjectileType<HalleysStarburst>(), (int)Owner.GetDamage(DamageClass.Ranged).ApplyTo(Halley.damage), Halley.knockBack, Projectile.owner);
+                    var color = Main.rand.Next(1, 7);
+                    Color drawColor = Color.White;
+                    switch (color)
+                    {
+                        case 1:
+                            drawColor = Color.HotPink;
+                            break;
+                        case 2:
+                            drawColor = Color.Yellow;
+                            break;
+                        case 3:
+                            drawColor = Color.LimeGreen;
+                            break;
+                        case 4:
+                            drawColor = Color.SkyBlue;
+                            break;
+                        case 5:
+                            drawColor = Color.Lavender;
+                            break;
+                    }
+                    for (var i = 0; i < 5; i++)
+                        GeneralParticleHandler.SpawnParticle(new GlowSparkParticle(spawnpos + dir * 36, (dir * Halley.shootSpeed).RotatedByRandom(0.75f) * Main.rand.NextFloat(0.5f, 1.5f), false, 7, 0.02f, drawColor, new Vector2(0.5f, 1f)));
+                    if (Projectile.owner == Main.myPlayer)
+                        Projectile.NewProjectile(Owner.GetSource_ItemUse_WithPotentialAmmo(Halley, AmmoID.Gel), spawnpos + dir * 16,dir * Halley.shootSpeed * 0.75f, ModContent.ProjectileType<HalleysStarburst>(), (int)Owner.GetDamage(DamageClass.Ranged).ApplyTo(Halley.damage), Halley.knockBack, Projectile.owner, color);
                     Owner.Calamity().StratusStarburst--;
                     SoundEngine.PlaySound(HalleysInferno.ShootSound);
                     RecoilAmount = 4;

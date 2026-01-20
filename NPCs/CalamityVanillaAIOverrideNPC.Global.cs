@@ -22,13 +22,18 @@ public sealed partial class CalamityVanillaAIOverrideNPC : GlobalNPC
 
         // Don't do damage for 42 frames after spawning in
         if (npc.type == NPCID.Sharkron || npc.type == NPCID.Sharkron2)
+        {
             npc.damage = npc.alpha > 0 ? 0 : npc.defDamage;
+        }
 
         // Servant of Cthulhu light
-        if (npc.type == NPCID.ServantofCthulhu)
+        else if (npc.type == NPCID.ServantofCthulhu)
+        {
             Lighting.AddLight(npc.Center, 0.2f, 0.2f, 0.2f);
+        }
 
-        if (npc.type == NPCID.CultistBoss)
+        // Cultist Boss light and hitbox changes
+        else if (npc.type == NPCID.CultistBoss)
         {
             // Emit light
             float lifeRatio = npc.life / (float)npc.lifeMax;
@@ -45,7 +50,9 @@ public sealed partial class CalamityVanillaAIOverrideNPC : GlobalNPC
             if (npc.Size != hitboxSize)
                 npc.Size = hitboxSize;
         }
-        if (npc.type == NPCID.CultistBossClone)
+
+        // Cultist Clone Light
+        else if (npc.type == NPCID.CultistBossClone)
         {
             if (Main.npc[(int)npc.ai[3]].active)
             {

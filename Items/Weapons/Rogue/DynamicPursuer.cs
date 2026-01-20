@@ -15,8 +15,6 @@ namespace CalamityMod.Items.Weapons.Rogue
     {
         public override void SetDefaults()
         {
-            CalamityGlobalItem modItem = Item.Calamity();
-
             Item.width = 30;
             Item.height = 34;
             Item.damage = 2850;
@@ -38,10 +36,6 @@ namespace CalamityMod.Items.Weapons.Rogue
 
             Item.shoot = ModContent.ProjectileType<DynamicPursuerProjectile>();
             Item.shootSpeed = 17f;
-
-            modItem.UsesCharge = true;
-            modItem.MaxCharge = 300f; // Tesla Cannon = 250f
-            modItem.ChargePerUse = 0.4f; // Tesla Cannon = 0.9f
         }
         public static float StealthDmgMult = 0.3f; //So I can edit it directly via DragonLens instead of having to do math with CalTestHelpers
         public override float StealthDamageMultiplier => StealthDmgMult;

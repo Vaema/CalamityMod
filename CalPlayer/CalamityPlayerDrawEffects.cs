@@ -77,7 +77,7 @@ namespace CalamityMod.CalPlayer
             if (Starshield > 0 && drawInfo.shadow == 0)
             {
                 var color = Color.Lerp(Color.DeepSkyBlue, Color.LightSkyBlue, (StratusStarburst / (float)MaxStratusStarburst));
-                var opacity = MathHelper.Min(MathHelper.Min(Starshield / 30f, 1f), (3600 - Starshield) / 30f);
+                var opacity = MathHelper.Min(MathHelper.Min(Starshield / 30f, 1f), (CalamityUtils.MinutesToFrames(10) - Starshield) / 30f);
                 float size = 80 + 32 * (StratusStarburst / (float)MaxStratusStarburst);
 
                 Vector2 drawPosition = Player.Center + new Vector2(0, Player.gfxOffY) - Main.screenPosition;
@@ -95,7 +95,7 @@ namespace CalamityMod.CalPlayer
                     GameShaders.Misc["CalamityMod:OtherworldBarrierDistortion"].UseSaturation(0.2f);
                     GameShaders.Misc["CalamityMod:OtherworldBarrierDistortion"].SetShaderTexture(ModContent.Request<Texture2D>("CalamityMod/ExtraTextures/GreyscaleGradients/MeltyNoiseHighContrast"), 1);
                     GameShaders.Misc["CalamityMod:OtherworldBarrierDistortion"].Apply();
-                    Main.EntitySpriteDraw(telegraphBase, drawPosition, null, Color.DarkSlateBlue * opacity, 0, telegraphBase.Size() / 2f, size * 2f * opacity / telegraphBase.Width, 0, 0);
+                    Main.EntitySpriteDraw(telegraphBase, drawPosition, null, Color.DarkSlateBlue * opacity, 0, telegraphBase.Size() / 2f, size * 1.5f * opacity / telegraphBase.Width, 0, 0);
 
                     //Draw the outer particles
                     Main.spriteBatch.EnterShaderRegion(matrix: matrix);
@@ -120,27 +120,82 @@ namespace CalamityMod.CalPlayer
             }
             if (DoG != null && Main.mapStyle != 2)
             {
-                Rectangle screen = new((int)Main.screenPosition.X, (int)Main.screenPosition.Y, Main.screenWidth, Main.screenHeight);
-                var rift = DoG.GetRiftLocation();
-                if (rift != Vector2.Zero && !Main.zenithWorld)
+                int drawCount = calamityPlayer.trippy ? 4 : 1;
+
+                for (int i = 0; i < drawCount; i++)
                 {
-                    var dist = Player.Distance(rift);
-                    var tex = ModContent.Request<Texture2D>("Terraria/Images/Extra_173").Value;
-                    float scale = 1f;
-                    Main.spriteBatch.Draw(tex, Player.Center + Player.DirectionTo(rift) * 196 * Math.Min(dist / 2400f, 2) - Main.screenPosition, null, Color.White * 0.9f * Math.Clamp(MathHelper.Lerp(0, 1, (dist - 300) / 600), 0, 1), 0, tex.Size() / 2f, scale * 0.9f, SpriteEffects.FlipHorizontally, 0);
-                }
-                else
-                {
-                    var dis = Player.Distance(DoG.NPC.Center);
-                    if ((DoG.NPC.ai[3] < 3 || !DoG.Phase2Started) && DoG.NPC.Opacity > 0.5f && !DoG.Dying)
+                    var rift = DoG.GetRiftLocation();
+                    bool drawingRift = rift != Vector2.Zero && !Main.zenithWorld;
+
+                    Vector2 targetCenter = drawingRift ? rift : DoG.NPC.Center;
+                    float diffX = targetCenter.X - Player.Center.X;
+                    float diffY = targetCenter.Y - Player.Center.Y;
+
+                    // Mirror the offset based on i's index
+                    if (calamityPlayer.trippy)
                     {
-                        string phase1IconPath = "CalamityMod/NPCs/DevourerofGods/DevourerofGodsHead_Head_Boss";
-                        string phase2IconPath = "CalamityMod/NPCs/DevourerofGods/DevourerofGodsHead_P2_Head_Boss";
-                        var tex = ModContent.Request<Texture2D>((DoG.Phase2Started && DoG.NPC.localAI[2] < 300) ? phase2IconPath : phase1IconPath).Value;
-                        Main.spriteBatch.Draw(tex, Player.Center + Player.DirectionTo(DoG.NPC.Center) * 196 * Math.Min(dis / 2400f, 2) - Main.screenPosition, null, Color.White * 0.9f * Math.Clamp(MathHelper.Lerp(0, 1, (dis - 600) / 300), 0, 1), DoG.NPC.rotation, tex.Size() / 2f, 1, SpriteEffects.None, 0);
+                        switch (i)
+                        {
+                            case 0: diffX = -Math.Abs(diffX); diffY = -Math.Abs(diffY); break; // Top Left
+                            case 1: diffX = Math.Abs(diffX); diffY = -Math.Abs(diffY); break; // Top Right
+                            case 2: diffX = Math.Abs(diffX); diffY = Math.Abs(diffY); break; // Bottom Right
+                            case 3: diffX = -Math.Abs(diffX); diffY = Math.Abs(diffY); break; // Bottom Left
+                        }
+                    }
+
+                    Vector2 virtualTargetPos = Player.Center + new Vector2(diffX, diffY);
+                    float dist = Player.Distance(virtualTargetPos);
+                    Vector2 directionToTarget = Player.DirectionTo(virtualTargetPos);
+
+                    if (drawingRift)
+                    {
+                        var tex = ModContent.Request<Texture2D>("Terraria/Images/Extra_173").Value;
+                        float opacity = 0.9f * Math.Clamp(MathHelper.Lerp(0, 1, (dist - 300) / 600), 0, 1);
+
+                        Color drawColor = calamityPlayer.trippy ? Main.DiscoColor : Color.White * 0.9f;
+
+                        Main.spriteBatch.Draw(tex, Player.Center + directionToTarget * 196 * Math.Min(dist / 2400f, 2) - Main.screenPosition,
+                            null, drawColor * opacity, 0, tex.Size() / 2f, 0.9f, SpriteEffects.FlipHorizontally, 0);
+                    }
+                    else
+                    {
+                        var dis = Player.Distance(virtualTargetPos);
+                        if ((DoG.NPC.ai[3] < 3 || !DoG.Phase2Started) && DoG.NPC.Opacity > 0.5f && !DoG.Dying && !drawInfo.drawPlayer.isDisplayDollOrInanimate)
+                        {
+                            string phase1IconPath = "CalamityMod/NPCs/DevourerofGods/DevourerofGodsHead_Head_Boss";
+                            string phase2IconPath = "CalamityMod/NPCs/DevourerofGods/DevourerofGodsHead_P2_Head_Boss";
+                            var tex = ModContent.Request<Texture2D>((DoG.Phase2Started && DoG.NPC.localAI[2] < 300) ? phase2IconPath : phase1IconPath).Value;
+
+                            float baseRotation = DoG.NPC.rotation;
+
+                            if (calamityPlayer.trippy)
+                            {
+                                Vector2 rotVec = baseRotation.ToRotationVector2();
+                                switch (i)
+                                {
+                                    case 0:
+                                        rotVec.X *= -1;
+                                        rotVec.Y *= -1;
+                                        break;
+                                    case 1:
+                                        rotVec.Y *= -1;
+                                        break;
+                                    case 2:
+                                        break;
+                                    case 3:
+                                        rotVec.X *= -1;
+                                        break;
+                                }
+                                baseRotation = rotVec.ToRotation();
+                            }
+
+                            float opacity = 0.9f * Math.Clamp(MathHelper.Lerp(0, 1, (dis - 600) / 300), 0, 1);
+                            Color drawColor = calamityPlayer.trippy ? new Color(Main.DiscoR, Main.DiscoG, Main.DiscoB, (int)(255 * 0.9f)) : Color.White * 0.9f;
+
+                            Main.spriteBatch.Draw(tex, Player.Center + directionToTarget * 196 * Math.Min(dis / 2400f, 2) - Main.screenPosition, null, drawColor * opacity, baseRotation, tex.Size() / 2f, 1, SpriteEffects.None, 0);
+                        }
                     }
                 }
-
             }
 
             //Charge animation for Thread of Eradication

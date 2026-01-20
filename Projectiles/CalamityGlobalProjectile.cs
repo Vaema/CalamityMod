@@ -192,11 +192,6 @@ namespace CalamityMod.Projectiles
         public float conditionalHomingRange = 0f;
 
         /// <summary>
-        /// Causes a projectile to use both Static and Local iframes when set
-        /// </summary>
-        public bool hybridIframes = false;
-
-        /// <summary>
         /// Whether or not this proj was spawned with grape beer on
         /// this does NOT mean it has grape beer homing!
         /// </summary>
@@ -327,14 +322,12 @@ namespace CalamityMod.Projectiles
 
             void ApplyGrapeBeer()
             {
-
                 conditionalHomingRange = 600;
                 if (projectile.timeLeft > 300 * projectile.MaxUpdates)
                     projectile.timeLeft = 300 * projectile.MaxUpdates;
-                hybridIframes = true;
-                projectile.localNPCHitCooldown = -1;
+                //Calamity adds a hybrid iframe system when both local and static are set to true, so this works fine for both global and static projectiles.
                 projectile.usesLocalNPCImmunity = true;
-                Main.player[projectile.owner].Calamity().grapeBeerTimer++;
+                projectile.localNPCHitCooldown = -1;
             }
             if (source is EntitySource_ItemUse_WithAmmo {Item: Item item})
             {
@@ -430,16 +423,9 @@ namespace CalamityMod.Projectiles
             //Light Pets will add light to the abyss darkness.
             //This uses local player on purpose, as the abyss darkness system is entirely client side.
             if (ProjectileID.Sets.LightPet[projectile.type] && Main.LocalPlayer.Calamity().ZoneAbyss)
-                EnhancedDarknessSystem.lights.Add(new() { center = projectile.Center, texture = ModContent.Request<Texture2D>("CalamityMod/Particles/BloomCircle"), scale = 1 });
+                EnhancedDarknessSystem.lights.Add(new() { center = projectile.Center, scale = 1 });
 
-            ///Apply Hybrid iframes
-            if (hybridIframes)
-            {
-                projectile.usesIDStaticNPCImmunity = true;
-                projectile.usesLocalNPCImmunity = true;
-            }
-
-            if (projectile.bobber && projectile.type != ModContent.ProjectileType<VictideBobber>() && RunFishingMinigames(projectile))
+            if (projectile.bobber && projectile.type != ProjectileType<VictideBobber>() && RunFishingMinigames(projectile))
                 return false;
             //Reset the Homing Target immediately before AI can re-set it on applicable projectiles
             HomingTarget = -1;
@@ -2933,7 +2919,7 @@ namespace CalamityMod.Projectiles
             //Make sure Victide Snail actually fishes when using a minigame rod
             foreach (var item in Main.ActiveProjectiles)
             {
-                if (item.type == ModContent.ProjectileType<VictideSeaSnail>() && item.owner == projectile.owner)
+                if (item.type == ProjectileType<VictideSeaSnail>() && item.owner == projectile.owner)
                     item.ModProjectile<VictideSeaSnail>().PlayerFishingTimer = 600;
             }
             #region Utilities
@@ -3073,9 +3059,12 @@ namespace CalamityMod.Projectiles
                         var totalTime = 60 - speedup;
                         if (TimerToCatch + 90 >= 160 - owner.HeldItem.fishingPole && CatchTime >= 0)
                         {
+                            // TODO: Implications of rand here?
                             if (PersistentFishingData == 0)
                                 PersistentFishingData = Main.rand.NextBool() ? 1 : -1;
                             var timer = TimerToCatch - 160 - owner.HeldItem.fishingPole;
+
+                            // TODO: Fine for others to see?
                             SmallSplashAtOffset(new Vector2(200 * PersistentFishingData * (timer / 90f), 0));
                         }
                         if (TimerToCatch >= 160 - owner.HeldItem.fishingPole && CatchTime >= 0)
@@ -3091,10 +3080,16 @@ namespace CalamityMod.Projectiles
                         }
                         if (CatchTime < 0 && CatchTime % totalTime == 0)
                         {
+                            // TODO: Fine for others to see?
                             Splash();
+                            // TODO: Implications of rand here?
                             PersistentFishingData = Main.rand.Next(0, 4);
-                            var particle = new CustomSpark(projectile.Center, Vector2.UnitX.RotatedBy(PersistentFishingData * MathHelper.PiOver2) * 10, "CalamityMod/Particles/HighResHollowCircleHardEdgeAlt", false, 45 - speedup, 0.04f, Color.Blue, new(1, 2), shrinkSpeed: -0.2f);
-                            GeneralParticleHandler.SpawnParticle(particle);
+
+                            if (owner.whoAmI == Main.myPlayer)
+                            {
+                                var particle = new CustomSpark(projectile.Center, Vector2.UnitX.RotatedBy(PersistentFishingData * MathHelper.PiOver2) * 10, "CalamityMod/Particles/HighResHollowCircleHardEdgeAlt", false, 45 - speedup, 0.04f, Color.Blue, new(1, 2), shrinkSpeed: -0.2f);
+                                GeneralParticleHandler.SpawnParticle(particle);
+                            }
                         }
                         if (CatchTime < 0 && CatchTime % totalTime == -15)
                         {
@@ -3121,16 +3116,18 @@ namespace CalamityMod.Projectiles
                             }
                             else
                             {
-
-                                if (playerDir >= 0)
+                                if (owner.whoAmI == Main.myPlayer)
                                 {
-                                    var particle = new CustomSpark(projectile.Center, Vector2.UnitX.RotatedBy(playerDir * MathHelper.PiOver2) * 10, "CalamityMod/Particles/HighResHollowCircleHardEdgeAlt", false, 15, 0.04f, Color.Red, new(1, 2), shrinkSpeed: -0.2f);
-                                    GeneralParticleHandler.SpawnParticle(particle);
-                                }
-                                else
-                                {
-                                    var particle = new CustomSpark(projectile.Center, Vector2.Zero, "CalamityMod/Particles/HighResHollowCircleHardEdge", false, 15, 0.06f, Color.Red, Vector2.One);
-                                    GeneralParticleHandler.SpawnParticle(particle);
+                                    if (playerDir >= 0)
+                                    {
+                                        var particle = new CustomSpark(projectile.Center, Vector2.UnitX.RotatedBy(playerDir * MathHelper.PiOver2) * 10, "CalamityMod/Particles/HighResHollowCircleHardEdgeAlt", false, 15, 0.04f, Color.Red, new(1, 2), shrinkSpeed: -0.2f);
+                                        GeneralParticleHandler.SpawnParticle(particle);
+                                    }
+                                    else
+                                    {
+                                        var particle = new CustomSpark(projectile.Center, Vector2.Zero, "CalamityMod/Particles/HighResHollowCircleHardEdge", false, 15, 0.06f, Color.Red, Vector2.One);
+                                        GeneralParticleHandler.SpawnParticle(particle);
+                                    }
                                 }
                                 TimerToCatch = 0;
                                 CatchTime = 0;
@@ -3152,8 +3149,6 @@ namespace CalamityMod.Projectiles
                         }
                         if (projectile.ai[0] == 0)
                         {
-
-
                             projectile.ai[1] = CatchTime;
                             projectile.localAI[1] = TimerToCatch;
                             if (CaughtItemID != -1 && isReelingIn == 0)
@@ -3184,13 +3179,28 @@ namespace CalamityMod.Projectiles
                         {
                             owner.Calamity().ShouldHideControls = true;
                             if (owner.Calamity().pressedUp)
+                            {
                                 projectile.velocity.Y -= 0.125f;
+                                projectile.netUpdate = true;
+                            }
+
                             if (owner.Calamity().pressedDown)
+                            {
                                 projectile.velocity.Y += 0.125f;
+                                projectile.netUpdate = true;
+                            }
+
                             if (owner.Calamity().pressedLeft)
+                            {
                                 projectile.velocity.X -= 0.125f;
+                                projectile.netUpdate = true;
+                            }
+
                             if (owner.Calamity().pressedRight)
+                            {
                                 projectile.velocity.X += 0.125f;
+                                projectile.netUpdate = true;
+                            }
                         }
                         projectile.velocity *= 0.975f;
 
@@ -3202,32 +3212,35 @@ namespace CalamityMod.Projectiles
                                 projectile.FishingCheck();
                                 if (projectile.ai[1] < 0)
                                 {
-
                                     CaughtItemID = (int)projectile.localAI[1];
                                     projectile.ai[1] = 0;
                                     projectile.localAI[1] = 0;
-                                    for (var i = 0; i < 1000; i++)
+
+                                    if (owner.whoAmI == Main.myPlayer)
                                     {
-                                        var vectorToCheck = projectile.Center + new Vector2(Main.rand.Next(-200, 201), Main.rand.Next(-200, 201));
-                                        var tileCoordsToCheck = vectorToCheck.ToSafeTileCoordinates();
-                                        if (new Rectangle((int)Main.screenPosition.X, (int)Main.screenPosition.Y, Main.screenWidth, Main.screenHeight).Contains((int)vectorToCheck.X, (int)vectorToCheck.Y) && !Main.tile[tileCoordsToCheck.X, tileCoordsToCheck.Y].IsTileSolid() && Main.tile[tileCoordsToCheck.X, tileCoordsToCheck.Y].LiquidAmount > 0)
+                                        for (var i = 0; i < 1000; i++)
                                         {
-                                            if (projectile.localAI[2] >= 1)
+                                            var vectorToCheck = projectile.Center + new Vector2(Main.rand.Next(-200, 201), Main.rand.Next(-200, 201));
+                                            var tileCoordsToCheck = vectorToCheck.ToSafeTileCoordinates();
+                                            if (new Rectangle((int)Main.screenPosition.X, (int)Main.screenPosition.Y, Main.screenWidth, Main.screenHeight).Contains((int)vectorToCheck.X, (int)vectorToCheck.Y) && !Main.tile[tileCoordsToCheck.X, tileCoordsToCheck.Y].IsTileSolid() && Main.tile[tileCoordsToCheck.X, tileCoordsToCheck.Y].LiquidAmount > 0)
                                             {
-                                                int customSonarText = (int)(projectile.localAI[2] - 1);
-                                                if (Main.popupText[customSonarText].sonar)
+                                                if (projectile.localAI[2] >= 1)
                                                 {
-                                                    Main.popupText[customSonarText].position = vectorToCheck - FontAssets.MouseText.Value.MeasureString(Main.popupText[customSonarText].name) / 2f;
+                                                    int customSonarText = (int)(projectile.localAI[2] - 1);
+                                                    if (Main.popupText[customSonarText].sonar)
+                                                    {
+                                                        Main.popupText[customSonarText].position = vectorToCheck - FontAssets.MouseText.Value.MeasureString(Main.popupText[customSonarText].name) / 2f;
+                                                    }
                                                 }
+                                                PersistentFishingDataVector2 = vectorToCheck;
+                                                TimerToCatch = 600;
+                                                break;
                                             }
-                                            PersistentFishingDataVector2 = vectorToCheck;
-                                            TimerToCatch = 600;
-                                            break;
                                         }
                                     }
                                 }
                             }
-                            if (PersistentFishingDataVector2 != Vector2.Zero)
+                            if (PersistentFishingDataVector2 != Vector2.Zero && owner.whoAmI == Main.myPlayer)
                             {
                                 Dust.NewDustPerfect(PersistentFishingDataVector2, DustID.Smoke);
                                 if (Main.rand.NextBool(3))
@@ -3239,7 +3252,7 @@ namespace CalamityMod.Projectiles
                             }
 
                             //When in lava, give the bobber a particle over it to show its location
-                            if (projectile.lavaWet)
+                            if (projectile.lavaWet && owner.whoAmI == Main.myPlayer)
                             {
                                 var particle = new CustomSpark(projectile.Center, Vector2.Zero, "CalamityMod/Particles/HighResHollowCircleHardEdge", false, 2, 0.01f, Color.DarkGray, Vector2.One);
                                 GeneralParticleHandler.SpawnParticle(particle);
@@ -3366,10 +3379,13 @@ namespace CalamityMod.Projectiles
                         {
                             if (PersistentFishingData == 0)
                                 PersistentFishingData = Main.rand.NextBool() ? 1 : -1;
-                            var timer = TimerToCatch - 300;
-                            SmallSplashAtOffset(new Vector2(200 * PersistentFishingData * (timer / 90f), 0));
 
-                            SmallDustAtOffset(new Vector2(200 * PersistentFishingData * (timer / 90f), 0), DustID.BlueCrystalShard);
+                            if (owner.whoAmI == Main.myPlayer)
+                            {
+                                var timer = TimerToCatch - 300;
+                                SmallSplashAtOffset(new Vector2(200 * PersistentFishingData * (timer / 90f), 0));
+                                SmallDustAtOffset(new Vector2(200 * PersistentFishingData * (timer / 90f), 0), DustID.BlueCrystalShard);
+                            }
                         }
                         if (TimerToCatch >= 300 && CatchTime >= 0)
                         {
@@ -3382,7 +3398,7 @@ namespace CalamityMod.Projectiles
                             }
                             TimerToCatch = 0;
                         }
-                        if (CatchTime < 0 && CatchTime % totalTime == 0)
+                        if (CatchTime < 0 && CatchTime % totalTime == 0 && owner.whoAmI == Main.myPlayer)
                         {
                             Splash();
                             PersistentFishingData = Main.rand.Next(0, 2);
@@ -3406,16 +3422,18 @@ namespace CalamityMod.Projectiles
                             }
                             else
                             {
-
-                                if (playerDir >= 0)
+                                if (owner.whoAmI == Main.myPlayer)
                                 {
-                                    var particle = new CustomSpark(projectile.Center, Vector2.UnitX.RotatedBy(playerDir * MathHelper.Pi) * 10, "CalamityMod/Particles/HighResHollowCircleHardEdgeAlt", false, 15, 0.04f, Color.Red, new(1, 2), shrinkSpeed: -0.2f);
-                                    GeneralParticleHandler.SpawnParticle(particle);
-                                }
-                                else
-                                {
-                                    var particle = new CustomSpark(projectile.Center, Vector2.Zero, "CalamityMod/Particles/HighResHollowCircleHardEdge", false, 15, 0.06f, Color.Red, Vector2.One);
-                                    GeneralParticleHandler.SpawnParticle(particle);
+                                    if (playerDir >= 0)
+                                    {
+                                        var particle = new CustomSpark(projectile.Center, Vector2.UnitX.RotatedBy(playerDir * MathHelper.Pi) * 10, "CalamityMod/Particles/HighResHollowCircleHardEdgeAlt", false, 15, 0.04f, Color.Red, new(1, 2), shrinkSpeed: -0.2f);
+                                        GeneralParticleHandler.SpawnParticle(particle);
+                                    }
+                                    else
+                                    {
+                                        var particle = new CustomSpark(projectile.Center, Vector2.Zero, "CalamityMod/Particles/HighResHollowCircleHardEdge", false, 15, 0.06f, Color.Red, Vector2.One);
+                                        GeneralParticleHandler.SpawnParticle(particle);
+                                    }
                                 }
                                 TimerToCatch = 0;
                                 CatchTime = 0;
@@ -3529,7 +3547,7 @@ namespace CalamityMod.Projectiles
                             projectile.velocity *= 0.99f;
 
                         //When in lava, give the bobber a particle over it to show its location
-                        if (projectile.lavaWet)
+                        if (projectile.lavaWet && owner.whoAmI == Main.myPlayer)
                         {
                             var particle = new CustomSpark(projectile.Center, Vector2.Zero, "CalamityMod/Particles/HighResHollowCircleHardEdge", false, 2, 0.01f, Color.DarkGray, Vector2.One);
                             GeneralParticleHandler.SpawnParticle(particle);
@@ -3538,15 +3556,35 @@ namespace CalamityMod.Projectiles
                         {
 
                             if (owner.Calamity().pressedUp && projectile.velocity.Y < 0)
+                            {
                                 projectile.velocity.Y -= 0.3f;
+                                projectile.netUpdate = true;
+                            }
+
                             if (owner.Calamity().pressedUp && Waterline.Y < projectile.Center.Y)
+                            {
                                 projectile.velocity.Y -= 0.3f;
+                                projectile.netUpdate = true;
+                            }
+
                             if (owner.Calamity().pressedDown)
+                            {
                                 projectile.velocity.Y += 0.25f;
+                                projectile.netUpdate = true;
+                            }
+
                             if (owner.Calamity().pressedLeft)
+                            {
                                 projectile.velocity.X -= 0.25f;
+                                projectile.netUpdate = true;
+                            }
+
                             if (owner.Calamity().pressedRight)
+                            {
                                 projectile.velocity.X += 0.25f;
+                                projectile.netUpdate = true;
+                            }
+
                             if (Waterline.Y <= projectile.Center.Y - 8)
                                 TimerToCatch -= Main.rand.Next(1, 5);
                             if (TimerToCatch <= 0)
@@ -3579,7 +3617,7 @@ namespace CalamityMod.Projectiles
                                     }
                                 }
                             }
-                            if (PersistentFishingDataVector2 != Vector2.Zero && owner.miscCounter % 15 == 0)
+                            if (PersistentFishingDataVector2 != Vector2.Zero && owner.miscCounter % 15 == 0 && owner.whoAmI == Main.myPlayer)
                             {
 
                                 var particle = new CustomSpark(PersistentFishingDataVector2, Vector2.Zero, "CalamityMod/Particles/HighResHollowCircleHardEdge", false, 25, 0.02f, Color.Green, Vector2.One);
@@ -4647,7 +4685,7 @@ namespace CalamityMod.Projectiles
         public override void OnHitNPC(Projectile projectile, NPC target, NPC.HitInfo hit, int damageDone)
         {
             //Manage Hybrid iframes
-            if (hybridIframes && (projectile.penetrate != 1 || projectile.appliesImmunityTimeOnSingleHits))
+            if ((projectile.usesLocalNPCImmunity && projectile.usesIDStaticNPCImmunity) && (projectile.penetrate != 1 || projectile.appliesImmunityTimeOnSingleHits))
             {
                 projectile.localNPCImmunity[target.whoAmI] = projectile.localNPCHitCooldown;
                 Projectile.perIDStaticNPCImmunity[projectile.type][target.whoAmI] = Main.GameUpdateCount + (uint)projectile.idStaticNPCHitCooldown;
@@ -4783,7 +4821,7 @@ namespace CalamityMod.Projectiles
         public override bool? CanHitNPC(Projectile projectile, NPC target)
         {
 
-            if (hybridIframes && (projectile.localNPCImmunity[target.whoAmI] != 0 || Projectile.perIDStaticNPCImmunity[projectile.type][target.whoAmI] > Main.GameUpdateCount))
+            if ((projectile.usesLocalNPCImmunity && projectile.usesIDStaticNPCImmunity) && (projectile.localNPCImmunity[target.whoAmI] != 0 || Projectile.perIDStaticNPCImmunity[projectile.type][target.whoAmI] > Main.GameUpdateCount))
                 return false;
             if (target.Calamity().IsArmored() && HomingTarget > -1 && HomingTarget != target.whoAmI)
                 return false;

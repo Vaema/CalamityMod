@@ -437,14 +437,29 @@ namespace CalamityMod.Projectiles.Typeless
                     Owner.Center = respawnPoint;
             }
             killed = true;
-            Owner.fullRotationOrigin = Owner.Center - Owner.position;
-            Owner.fullRotation = 0;
             Owner.Calamity().rOfDelivarenceRam = false;
             Projectile.netUpdate = true;
             Projectile.Kill();
         }
+
+        public override void OnKill(int timeLeft)
+        {
+            if (Projectile.owner == Main.myPlayer && SoundEngine.TryGetActiveSound(digSoundSlot, out var sound))
+                sound.Stop();
+
+            Owner.fullRotationOrigin = Owner.Center - Owner.position;
+            Owner.fullRotation = 0f;
+
+            if (Main.netMode != NetmodeID.SinglePlayer)
+                NetMessage.SendData(MessageID.SyncPlayer, number: Owner.whoAmI);
+        }
+
         public override void ModifyHitNPC(NPC target, ref NPC.HitModifiers modifiers)
         {
+            bool crit = Main.rand.Next(0, 100 + 1) < Owner.GetTotalCritChance(Owner.GetBestClass());
+            if (crit)
+                modifiers.SetCrit();
+
             float minMult = 0.15f;
             int hitsToMinMult = 15;
             float damageMult = Utils.Remap(hitCountDamageSource, 0, hitsToMinMult, 1, minMult, true);

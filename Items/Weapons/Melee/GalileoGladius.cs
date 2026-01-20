@@ -24,7 +24,7 @@ namespace CalamityMod.Items.Weapons.Melee
             Item.width = 44;
             Item.height = 44;
             Item.useStyle = ItemUseStyleID.Rapier;
-            Item.damage = 202;
+            Item.damage = 600;
             Item.DamageType = DamageClass.Melee;
             Item.useAnimation = Item.useTime = 8;
             Item.knockBack = 10f;
@@ -59,7 +59,7 @@ namespace CalamityMod.Items.Weapons.Melee
             }
             if (player.altFunctionUse == 2)
             {
-                Projectile.NewProjectile(source,position,velocity,ModContent.ProjectileType<GalileoGladiusThrown>(),damage,knockback,player.whoAmI);
+                Projectile.NewProjectile(source,position,velocity*2,ModContent.ProjectileType<GalileoGladiusThrown>(),damage,knockback,player.whoAmI);
                 return false;
             }
             return base.Shoot(player, source, position, velocity, type, damage, knockback);

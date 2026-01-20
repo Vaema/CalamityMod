@@ -3,8 +3,10 @@ using System.IO;
 using CalamityMod.Events;
 using CalamityMod.World;
 using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
 using Terraria;
 using Terraria.Audio;
+using Terraria.GameContent;
 using Terraria.GameContent.Bestiary;
 using Terraria.ID;
 using Terraria.ModLoader;
@@ -36,14 +38,13 @@ namespace CalamityMod.NPCs.DesertScourge
             NPCID.Sets.BossBestiaryPriority.Add(Type);
             NPCID.Sets.NPCBestiaryDrawModifiers value = new NPCID.Sets.NPCBestiaryDrawModifiers()
             {
-                Scale = 0.6f,
-                PortraitScale = 0.6f,
-                CustomTexturePath = "CalamityMod/ExtraTextures/Bestiary/DesertNuisance_Bestiary",
-                PortraitPositionXOverride = 40,
-                PortraitPositionYOverride = 40
+                Scale = 0.65f,
+                PortraitScale = 0.7f,
+                PortraitPositionXOverride = 0,
+                PortraitPositionYOverride = 0
             };
-            value.Position.X += 45;
-            value.Position.Y += 30;
+            value.Position.X += 0;
+            value.Position.Y -= 20;
             NPCID.Sets.NPCBestiaryDrawOffset[Type] = value;
             NPCID.Sets.MPAllowedEnemies[Type] = true;
             NPCID.Sets.CantTakeLunchMoney[Type] = true;
@@ -572,6 +573,40 @@ namespace CalamityMod.NPCs.DesertScourge
                     NPC.ForceNetUpdate();
                 }
             }
+        }
+
+        public override bool PreDraw(SpriteBatch spriteBatch, Vector2 screenPos, Color drawColor)
+        {
+            if (NPC.IsABestiaryIconDummy)
+            {
+                Texture2D texture = TextureAssets.Npc[NPC.type].Value;
+                NPC.Opacity = 1f;
+                // Reimplementation of CalamityUtils.DrawAnimatedBestiaryWorm but tweaked due to this entity' animations
+                NPC.frame = texture.Frame();
+                // Buffers the segment position and rotations
+                float offset = -0.2f;
+                float startX = 60;
+                float startY = 70;
+                int segmentSpacing = 50;
+                int animationSpeed = 8;
+                float wormTimer = NPC.Calamity().bestiaryWormTimer;
+                int segCount = 3;
+                // Draw the body segments
+                for (int i = segCount; i > 0; i--)
+                {
+                    // The first segment is slightly closer to keep up with the head
+                    float bodyOffset = i * segmentSpacing - segmentSpacing * 0.5f;
+
+                    Texture2D toUse = i == 1 ? TextureAssets.Npc[ModContent.NPCType<DesertNuisanceBody>()].Value : DesertNuisanceBody.BodyTexture2.Value;
+                    int frameCount = i == 1 ? 7 : 1;
+                    spriteBatch.Draw(toUse, NPC.position + new Vector2(startX + bodyOffset, MathF.Sin((wormTimer + offset * i) * animationSpeed) * 2 + startY), toUse.Frame(1, frameCount, 0, 0), NPC.GetAlpha(drawColor), NPC.rotation - MathHelper.PiOver2 - MathF.Cos((wormTimer + offset * i) * animationSpeed) * MathHelper.PiOver4 * 0.075f, new Vector2(toUse.Width / 2, toUse.Height / (frameCount * 2)), NPC.scale, SpriteEffects.None, 0f);
+                }
+                // Draw the head
+                spriteBatch.Draw(texture, NPC.position + new Vector2(startX + 18, MathF.Sin(wormTimer * animationSpeed) * 2 + startY), texture.Frame(1, 7, 0, 0), NPC.GetAlpha(drawColor), NPC.rotation - MathHelper.PiOver2 - MathF.Cos(wormTimer * animationSpeed) * MathHelper.PiOver4 * 0.075f, new Vector2(texture.Width * 0.5f, texture.Height / 7), NPC.scale, SpriteEffects.None, 0f);
+
+                return false;
+            }
+            return true;
         }
 
         public override void ApplyDifficultyAndPlayerScaling(int numPlayers, float balance, float bossAdjustment)
