@@ -192,11 +192,6 @@ namespace CalamityMod.Projectiles
         public float conditionalHomingRange = 0f;
 
         /// <summary>
-        /// Causes a projectile to use both Static and Local iframes when set
-        /// </summary>
-        public bool hybridIframes = false;
-
-        /// <summary>
         /// Whether or not this proj was spawned with grape beer on
         /// this does NOT mean it has grape beer homing!
         /// </summary>
@@ -330,9 +325,9 @@ namespace CalamityMod.Projectiles
                 conditionalHomingRange = 600;
                 if (projectile.timeLeft > 300 * projectile.MaxUpdates)
                     projectile.timeLeft = 300 * projectile.MaxUpdates;
-                hybridIframes = true;
-                projectile.localNPCHitCooldown = -1;
+                //Calamity adds a hybrid iframe system when both local and static are set to true, so this works fine for both global and static projectiles.
                 projectile.usesLocalNPCImmunity = true;
+                projectile.localNPCHitCooldown = -1;
             }
             if (source is EntitySource_ItemUse_WithAmmo {Item: Item item})
             {
@@ -429,13 +424,6 @@ namespace CalamityMod.Projectiles
             //This uses local player on purpose, as the abyss darkness system is entirely client side.
             if (ProjectileID.Sets.LightPet[projectile.type] && Main.LocalPlayer.Calamity().ZoneAbyss)
                 EnhancedDarknessSystem.lights.Add(new() { center = projectile.Center, scale = 1 });
-
-            ///Apply Hybrid iframes
-            if (hybridIframes)
-            {
-                projectile.usesIDStaticNPCImmunity = true;
-                projectile.usesLocalNPCImmunity = true;
-            }
 
             if (projectile.bobber && projectile.type != ProjectileType<VictideBobber>() && RunFishingMinigames(projectile))
                 return false;
@@ -4697,7 +4685,7 @@ namespace CalamityMod.Projectiles
         public override void OnHitNPC(Projectile projectile, NPC target, NPC.HitInfo hit, int damageDone)
         {
             //Manage Hybrid iframes
-            if (hybridIframes && (projectile.penetrate != 1 || projectile.appliesImmunityTimeOnSingleHits))
+            if ((projectile.usesLocalNPCImmunity && projectile.usesIDStaticNPCImmunity) && (projectile.penetrate != 1 || projectile.appliesImmunityTimeOnSingleHits))
             {
                 projectile.localNPCImmunity[target.whoAmI] = projectile.localNPCHitCooldown;
                 Projectile.perIDStaticNPCImmunity[projectile.type][target.whoAmI] = Main.GameUpdateCount + (uint)projectile.idStaticNPCHitCooldown;
@@ -4833,7 +4821,7 @@ namespace CalamityMod.Projectiles
         public override bool? CanHitNPC(Projectile projectile, NPC target)
         {
 
-            if (hybridIframes && (projectile.localNPCImmunity[target.whoAmI] != 0 || Projectile.perIDStaticNPCImmunity[projectile.type][target.whoAmI] > Main.GameUpdateCount))
+            if ((projectile.usesLocalNPCImmunity && projectile.usesIDStaticNPCImmunity) && (projectile.localNPCImmunity[target.whoAmI] != 0 || Projectile.perIDStaticNPCImmunity[projectile.type][target.whoAmI] > Main.GameUpdateCount))
                 return false;
             if (target.Calamity().IsArmored() && HomingTarget > -1 && HomingTarget != target.whoAmI)
                 return false;

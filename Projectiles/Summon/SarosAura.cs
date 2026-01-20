@@ -1,4 +1,5 @@
-﻿using CalamityMod.Buffs.Summon;
+﻿using System.IO;
+using CalamityMod.Buffs.Summon;
 using CalamityMod.CalPlayer;
 using CalamityMod.Utilities.Daybreak;
 using Microsoft.Xna.Framework;
@@ -62,6 +63,7 @@ namespace CalamityMod.Projectiles.Summon
                     minionSlotsAvaliable--;
                     MinionSlotsToAdd--;
                     player.channel = false;
+                    Projectile.netUpdate = true;
                 }
                 if (MinionSlotsToAdd > 0)
                 {
@@ -125,6 +127,15 @@ namespace CalamityMod.Projectiles.Summon
             }
         }
 
+        public override void SendExtraAI(BinaryWriter writer)
+        {
+            writer.Write(Projectile.minionSlots);
+        }
+
+        public override void ReceiveExtraAI(BinaryReader reader)
+        {
+            Projectile.minionSlots = reader.ReadSingle();
+        }
         NPC GetTargetInRange(float range)
         {
             var player = Main.player[Projectile.owner];

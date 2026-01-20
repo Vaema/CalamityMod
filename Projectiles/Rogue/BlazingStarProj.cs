@@ -82,6 +82,7 @@ namespace CalamityMod.Projectiles.Rogue
             {
                 Projectile.ai[1] = index;
                 Projectile.velocity = CalamityUtils.CalculatePredictiveAimToTargetMaxUpdates(Projectile.Center, Main.npc[index], Projectile.velocity.Length(), Projectile.MaxUpdates);
+                Projectile.netUpdate = true;
             }
         }
         public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
